@@ -1,7 +1,7 @@
 /*
  * qemu_domain.c: QEMU domain private state
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -287,7 +287,7 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
             break;
         }
 
-        virBufferEscapeString(buf, "  <monitor path='%s'", monitorpath);
+        virBufferEscapeString(buf, "<monitor path='%s'", monitorpath);
         if (priv->monJSON)
             virBufferAddLit(buf, " json='1'");
         virBufferAsprintf(buf, " type='%s'/>\n",
@@ -297,34 +297,38 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
 
     if (priv->nvcpupids) {
         size_t i;
-        virBufferAddLit(buf, "  <vcpus>\n");
+        virBufferAddLit(buf, "<vcpus>\n");
+        virBufferAdjustIndent(buf, 2);
         for (i = 0; i < priv->nvcpupids; i++) {
-            virBufferAsprintf(buf, "    <vcpu pid='%d'/>\n", priv->vcpupids[i]);
+            virBufferAsprintf(buf, "<vcpu pid='%d'/>\n", priv->vcpupids[i]);
         }
-        virBufferAddLit(buf, "  </vcpus>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</vcpus>\n");
     }
 
     if (priv->qemuCaps) {
         size_t i;
-        virBufferAddLit(buf, "  <qemuCaps>\n");
+        virBufferAddLit(buf, "<qemuCaps>\n");
+        virBufferAdjustIndent(buf, 2);
         for (i = 0; i < QEMU_CAPS_LAST; i++) {
             if (virQEMUCapsGet(priv->qemuCaps, i)) {
-                virBufferAsprintf(buf, "    <flag name='%s'/>\n",
+                virBufferAsprintf(buf, "<flag name='%s'/>\n",
                                   virQEMUCapsTypeToString(i));
             }
         }
-        virBufferAddLit(buf, "  </qemuCaps>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</qemuCaps>\n");
     }
 
     if (priv->lockState)
-        virBufferAsprintf(buf, "  <lockstate>%s</lockstate>\n", priv->lockState);
+        virBufferAsprintf(buf, "<lockstate>%s</lockstate>\n", priv->lockState);
 
     job = priv->job.active;
     if (!qemuDomainTrackJob(job))
         priv->job.active = QEMU_JOB_NONE;
 
     if (priv->job.active || priv->job.asyncJob) {
-        virBufferAsprintf(buf, "  <job type='%s' async='%s'",
+        virBufferAsprintf(buf, "<job type='%s' async='%s'",
                           qemuDomainJobTypeToString(priv->job.active),
                           qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
         if (priv->job.phase) {
@@ -337,16 +341,18 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
     priv->job.active = job;
 
     if (priv->fakeReboot)
-        virBufferAddLit(buf, "  <fakereboot/>\n");
+        virBufferAddLit(buf, "<fakereboot/>\n");
 
     if (priv->qemuDevices && *priv->qemuDevices) {
         char **tmp = priv->qemuDevices;
-        virBufferAddLit(buf, "  <devices>\n");
+        virBufferAddLit(buf, "<devices>\n");
+        virBufferAdjustIndent(buf, 2);
         while (*tmp) {
-            virBufferAsprintf(buf, "    <device alias='%s'/>\n", *tmp);
+            virBufferAsprintf(buf, "<device alias='%s'/>\n", *tmp);
             tmp++;
         }
-        virBufferAddLit(buf, "  </devices>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</devices>\n");
     }
 
     return 0;
@@ -651,18 +657,21 @@ qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
     if (!cmd->num_args && !cmd->num_env)
         return 0;
 
-    virBufferAddLit(buf, "  <qemu:commandline>\n");
+    virBufferAddLit(buf, "<qemu:commandline>\n");
+    virBufferAdjustIndent(buf, 2);
+
     for (i = 0; i < cmd->num_args; i++)
-        virBufferEscapeString(buf, "    <qemu:arg value='%s'/>\n",
+        virBufferEscapeString(buf, "<qemu:arg value='%s'/>\n",
                               cmd->args[i]);
     for (i = 0; i < cmd->num_env; i++) {
-        virBufferAsprintf(buf, "    <qemu:env name='%s'", cmd->env_name[i]);
+        virBufferAsprintf(buf, "<qemu:env name='%s'", cmd->env_name[i]);
         if (cmd->env_value[i])
             virBufferEscapeString(buf, " value='%s'", cmd->env_value[i]);
         virBufferAddLit(buf, "/>\n");
     }
-    virBufferAddLit(buf, "  </qemu:commandline>\n");
 
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</qemu:commandline>\n");
     return 0;
 }
 

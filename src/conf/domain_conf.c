@@ -3155,22 +3155,22 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                           unsigned int flags)
 {
     if ((flags & VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) && info->bootIndex)
-        virBufferAsprintf(buf, "      <boot order='%d'/>\n", info->bootIndex);
+        virBufferAsprintf(buf, "<boot order='%d'/>\n", info->bootIndex);
 
     if (info->alias &&
         !(flags & VIR_DOMAIN_XML_INACTIVE)) {
-        virBufferAsprintf(buf, "      <alias name='%s'/>\n", info->alias);
+        virBufferAsprintf(buf, "<alias name='%s'/>\n", info->alias);
     }
 
     if (info->mastertype == VIR_DOMAIN_CONTROLLER_MASTER_USB) {
-        virBufferAsprintf(buf, "      <master startport='%d'/>\n",
+        virBufferAsprintf(buf, "<master startport='%d'/>\n",
                           info->master.usb.startport);
     }
 
     if ((flags & VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) &&
         (info->rombar || info->romfile)) {
 
-        virBufferAddLit(buf, "      <rom");
+        virBufferAddLit(buf, "<rom");
         if (info->rombar) {
 
             const char *rombar = virDomainPciRombarModeTypeToString(info->rombar);
@@ -3193,7 +3193,7 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         return 0;
 
     /* We'll be in domain/devices/[device type]/ so 3 level indent */
-    virBufferAsprintf(buf, "      <address type='%s'",
+    virBufferAsprintf(buf, "<address type='%s'",
                       virDomainDeviceAddressTypeToString(info->type));
 
     switch (info->type) {
@@ -3265,7 +3265,6 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
     }
 
     virBufferAddLit(buf, "/>\n");
-
     return 0;
 }
 
@@ -14536,7 +14535,7 @@ virDomainEventActionDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "  <%s>%s</%s>\n", name, typeStr, name);
+    virBufferAsprintf(buf, "<%s>%s</%s>\n", name, typeStr, name);
 
     return 0;
 }
@@ -14579,15 +14578,16 @@ virSecurityLabelDefFormat(virBufferPtr buf,
 
     if (def->label || def->imagelabel || def->baselabel) {
         virBufferAddLit(buf, ">\n");
-
-        virBufferEscapeString(buf, "  <label>%s</label>\n",
+        virBufferAdjustIndent(buf, 2);
+        virBufferEscapeString(buf, "<label>%s</label>\n",
                               def->label);
         if (!def->norelabel)
-            virBufferEscapeString(buf, "  <imagelabel>%s</imagelabel>\n",
+            virBufferEscapeString(buf, "<imagelabel>%s</imagelabel>\n",
                                   def->imagelabel);
         if (def->type == VIR_DOMAIN_SECLABEL_DYNAMIC)
-            virBufferEscapeString(buf, "  <baselabel>%s</baselabel>\n",
+            virBufferEscapeString(buf, "<baselabel>%s</baselabel>\n",
                                   def->baselabel);
+        virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</seclabel>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
@@ -14617,8 +14617,10 @@ virSecurityDeviceLabelDefFormat(virBufferPtr buf,
 
     if (def->label) {
         virBufferAddLit(buf, ">\n");
-        virBufferEscapeString(buf, "  <label>%s</label>\n",
+        virBufferAdjustIndent(buf, 2);
+        virBufferEscapeString(buf, "<label>%s</label>\n",
                               def->label);
+        virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</seclabel>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
@@ -14630,14 +14632,16 @@ static int
 virDomainLeaseDefFormat(virBufferPtr buf,
                         virDomainLeaseDefPtr def)
 {
-    virBufferAddLit(buf, "    <lease>\n");
-    virBufferEscapeString(buf, "      <lockspace>%s</lockspace>\n", def->lockspace);
-    virBufferEscapeString(buf, "      <key>%s</key>\n", def->key);
-    virBufferEscapeString(buf, "      <target path='%s'", def->path);
+    virBufferAddLit(buf, "<lease>\n");
+    virBufferAdjustIndent(buf, 2);
+    virBufferEscapeString(buf, "<lockspace>%s</lockspace>\n", def->lockspace);
+    virBufferEscapeString(buf, "<key>%s</key>\n", def->key);
+    virBufferEscapeString(buf, "<target path='%s'", def->path);
     if (def->offset)
         virBufferAsprintf(buf, " offset='%llu'", def->offset);
     virBufferAddLit(buf, "/>\n");
-    virBufferAddLit(buf, "    </lease>\n");
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</lease>\n");
 
     return 0;
 }
@@ -14653,7 +14657,7 @@ virDomainDiskGeometryDefFormat(virBufferPtr buf,
         def->geometry.heads > 0 &&
         def->geometry.sectors > 0) {
         virBufferAsprintf(buf,
-                          "      <geometry cyls='%u' heads='%u' secs='%u'",
+                          "<geometry cyls='%u' heads='%u' secs='%u'",
                           def->geometry.cylinders,
                           def->geometry.heads,
                           def->geometry.sectors);
@@ -14671,7 +14675,7 @@ virDomainDiskBlockIoDefFormat(virBufferPtr buf,
 {
     if (def->blockio.logical_block_size > 0 ||
         def->blockio.physical_block_size > 0) {
-        virBufferAddLit(buf, "      <blockio");
+        virBufferAddLit(buf, "<blockio");
         if (def->blockio.logical_block_size > 0) {
             virBufferAsprintf(buf,
                               " logical_block_size='%u'",
@@ -14702,11 +14706,11 @@ virDomainDiskSourceDefFormatSeclabel(virBufferPtr buf,
 
     if (nseclabels) {
         virBufferAddLit(buf, ">\n");
-        virBufferAdjustIndent(buf, 8);
+        virBufferAdjustIndent(buf, 2);
         for (n = 0; n < nseclabels; n++)
             virSecurityDeviceLabelDefFormat(buf, seclabels[n], flags);
-        virBufferAdjustIndent(buf, -8);
-        virBufferAddLit(buf, "      </source>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</source>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
     }
@@ -14734,7 +14738,7 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
     if (src || nhosts > 0 || srcpool || startupPolicy) {
         switch (type) {
         case VIR_DOMAIN_DISK_TYPE_FILE:
-            virBufferAddLit(buf, "      <source");
+            virBufferAddLit(buf, "<source");
             virBufferEscapeString(buf, " file='%s'", src);
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 
@@ -14742,7 +14746,7 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
            break;
 
         case VIR_DOMAIN_DISK_TYPE_BLOCK:
-            virBufferAddLit(buf, "      <source");
+            virBufferAddLit(buf, "<source");
             virBufferEscapeString(buf, " dev='%s'", src);
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 
@@ -14750,14 +14754,14 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
             break;
 
         case VIR_DOMAIN_DISK_TYPE_DIR:
-            virBufferAddLit(buf, "      <source");
+            virBufferAddLit(buf, "<source");
             virBufferEscapeString(buf, " dir='%s'", src);
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
             virBufferAddLit(buf, "/>\n");
             break;
 
         case VIR_DOMAIN_DISK_TYPE_NETWORK:
-            virBufferAsprintf(buf, "      <source protocol='%s'",
+            virBufferAsprintf(buf, "<source protocol='%s'",
                               virDomainDiskProtocolTypeToString(protocol));
             virBufferEscapeString(buf, " name='%s'", src);
 
@@ -14765,8 +14769,9 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
                 virBufferAddLit(buf, "/>\n");
             } else {
                 virBufferAddLit(buf, ">\n");
+                virBufferAdjustIndent(buf, 2);
                 for (n = 0; n < nhosts; n++) {
-                    virBufferAddLit(buf, "        <host");
+                    virBufferAddLit(buf, "<host");
                     virBufferEscapeString(buf, " name='%s'", hosts[n].name);
                     virBufferEscapeString(buf, " port='%s'", hosts[n].port);
 
@@ -14778,12 +14783,13 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
 
                     virBufferAddLit(buf, "/>\n");
                 }
-                virBufferAddLit(buf, "      </source>\n");
+                virBufferAdjustIndent(buf, -2);
+                virBufferAddLit(buf, "</source>\n");
             }
             break;
 
         case VIR_DOMAIN_DISK_TYPE_VOLUME:
-            virBufferAddLit(buf, "      <source");
+            virBufferAddLit(buf, "<source");
 
             if (srcpool) {
                 virBufferAsprintf(buf, " pool='%s' volume='%s'",
@@ -14880,7 +14886,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     }
 
     virBufferAsprintf(buf,
-                      "    <disk type='%s' device='%s'",
+                      "<disk type='%s' device='%s'",
                       type, device);
     if (def->rawio_specified) {
         if (def->rawio == 1) {
@@ -14898,10 +14904,11 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " snapshot='%s'",
                           virDomainSnapshotLocationTypeToString(def->snapshot));
     virBufferAddLit(buf, ">\n");
+    virBufferAdjustIndent(buf, 2);
 
     if (def->driverName || def->format > 0 || def->cachemode ||
         def->ioeventfd || def->event_idx || def->copy_on_read) {
-        virBufferAddLit(buf, "      <driver");
+        virBufferAddLit(buf, "<driver");
         if (def->driverName)
             virBufferAsprintf(buf, " name='%s'", def->driverName);
         if (def->format > 0)
@@ -14927,12 +14934,13 @@ virDomainDiskDefFormat(virBufferPtr buf,
     }
 
     if (def->auth.username) {
-        virBufferEscapeString(buf, "      <auth username='%s'>\n",
+        virBufferEscapeString(buf, "<auth username='%s'>\n",
                               def->auth.username);
+        virBufferAdjustIndent(buf, 2);
         if (def->protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI) {
-            virBufferAddLit(buf, "        <secret type='iscsi'");
+            virBufferAddLit(buf, "<secret type='iscsi'");
         } else if (def->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
-            virBufferAddLit(buf, "        <secret type='ceph'");
+            virBufferAddLit(buf, "<secret type='ceph'");
         }
 
         if (def->auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_UUID) {
@@ -14943,7 +14951,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
             virBufferEscapeString(buf, " usage='%s'/>\n",
                                   def->auth.secret.usage);
         }
-        virBufferAddLit(buf, "      </auth>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</auth>\n");
     }
 
     if (virDomainDiskSourceDefFormat(buf, def, flags) < 0)
@@ -14955,7 +14964,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
      * for live domains, therefore we ignore it on input except for
      * the internal parse on libvirtd restart.  */
     if (def->mirror && !(flags & VIR_DOMAIN_XML_INACTIVE)) {
-        virBufferEscapeString(buf, "      <mirror file='%s'", def->mirror);
+        virBufferEscapeString(buf, "<mirror file='%s'", def->mirror);
         if (def->mirrorFormat)
             virBufferAsprintf(buf, " format='%s'",
                               virStorageFileFormatTypeToString(def->mirrorFormat));
@@ -14964,7 +14973,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    virBufferAsprintf(buf, "      <target dev='%s' bus='%s'",
+    virBufferAsprintf(buf, "<target dev='%s' bus='%s'",
                       def->dst, bus);
     if ((def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY ||
          def->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
@@ -14985,64 +14994,60 @@ virDomainDiskDefFormat(virBufferPtr buf,
         def->blkdeviotune.total_iops_sec ||
         def->blkdeviotune.read_iops_sec ||
         def->blkdeviotune.write_iops_sec) {
-        virBufferAddLit(buf, "      <iotune>\n");
+        virBufferAddLit(buf, "<iotune>\n");
+        virBufferAdjustIndent(buf, 2);
         if (def->blkdeviotune.total_bytes_sec) {
-            virBufferAsprintf(buf, "        <total_bytes_sec>%llu</total_bytes_sec>\n",
+            virBufferAsprintf(buf, "<total_bytes_sec>%llu</total_bytes_sec>\n",
                               def->blkdeviotune.total_bytes_sec);
         }
 
         if (def->blkdeviotune.read_bytes_sec) {
-            virBufferAsprintf(buf, "        <read_bytes_sec>%llu</read_bytes_sec>\n",
+            virBufferAsprintf(buf, "<read_bytes_sec>%llu</read_bytes_sec>\n",
                               def->blkdeviotune.read_bytes_sec);
 
         }
 
         if (def->blkdeviotune.write_bytes_sec) {
-            virBufferAsprintf(buf, "        <write_bytes_sec>%llu</write_bytes_sec>\n",
+            virBufferAsprintf(buf, "<write_bytes_sec>%llu</write_bytes_sec>\n",
                               def->blkdeviotune.write_bytes_sec);
         }
 
         if (def->blkdeviotune.total_iops_sec) {
-            virBufferAsprintf(buf, "        <total_iops_sec>%llu</total_iops_sec>\n",
+            virBufferAsprintf(buf, "<total_iops_sec>%llu</total_iops_sec>\n",
                               def->blkdeviotune.total_iops_sec);
         }
 
         if (def->blkdeviotune.read_iops_sec) {
-            virBufferAsprintf(buf, "        <read_iops_sec>%llu</read_iops_sec>\n",
+            virBufferAsprintf(buf, "<read_iops_sec>%llu</read_iops_sec>\n",
                               def->blkdeviotune.read_iops_sec);
         }
 
         if (def->blkdeviotune.write_iops_sec) {
-            virBufferAsprintf(buf, "        <write_iops_sec>%llu</write_iops_sec>\n",
+            virBufferAsprintf(buf, "<write_iops_sec>%llu</write_iops_sec>\n",
                               def->blkdeviotune.write_iops_sec);
         }
-
-        virBufferAddLit(buf, "      </iotune>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</iotune>\n");
     }
 
     if (def->readonly)
-        virBufferAddLit(buf, "      <readonly/>\n");
+        virBufferAddLit(buf, "<readonly/>\n");
     if (def->shared)
-        virBufferAddLit(buf, "      <shareable/>\n");
+        virBufferAddLit(buf, "<shareable/>\n");
     if (def->transient)
-        virBufferAddLit(buf, "      <transient/>\n");
-    virBufferEscapeString(buf, "      <serial>%s</serial>\n", def->serial);
-    virBufferEscapeString(buf, "      <wwn>%s</wwn>\n", def->wwn);
-    virBufferEscapeString(buf, "      <vendor>%s</vendor>\n", def->vendor);
-    virBufferEscapeString(buf, "      <product>%s</product>\n", def->product);
-    if (def->encryption) {
-        virBufferAdjustIndent(buf, 6);
-        if (virStorageEncryptionFormat(buf, def->encryption) < 0)
-            return -1;
-        virBufferAdjustIndent(buf, -6);
-    }
-
+        virBufferAddLit(buf, "<transient/>\n");
+    virBufferEscapeString(buf, "<serial>%s</serial>\n", def->serial);
+    virBufferEscapeString(buf, "<wwn>%s</wwn>\n", def->wwn);
+    virBufferEscapeString(buf, "<vendor>%s</vendor>\n", def->vendor);
+    virBufferEscapeString(buf, "<product>%s</product>\n", def->product);
+    if (def->encryption && virStorageEncryptionFormat(buf, def->encryption) < 0)
+        return -1;
     if (virDomainDeviceInfoFormat(buf, &def->info,
                                   flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
         return -1;
 
-    virBufferAddLit(buf, "    </disk>\n");
-
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</disk>\n");
     return 0;
 }
 
@@ -15086,7 +15091,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
     }
 
     virBufferAsprintf(buf,
-                      "    <controller type='%s' index='%u'",
+                      "<controller type='%s' index='%u'",
                       type, def->idx);
 
     if (model) {
@@ -15117,20 +15122,21 @@ virDomainControllerDefFormat(virBufferPtr buf,
     if (def->queues || virDomainDeviceInfoIsSet(&def->info, flags) ||
         pcihole64) {
         virBufferAddLit(buf, ">\n");
-
+        virBufferAdjustIndent(buf, 2);
         if (def->queues)
-            virBufferAsprintf(buf, "      <driver queues='%u'/>\n", def->queues);
+            virBufferAsprintf(buf, "<driver queues='%u'/>\n", def->queues);
 
         if (virDomainDeviceInfoIsSet(&def->info, flags) &&
             virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
 
         if (pcihole64) {
-            virBufferAsprintf(buf, "      <pcihole64 unit='KiB'>%lu</"
+            virBufferAsprintf(buf, "<pcihole64 unit='KiB'>%lu</"
                               "pcihole64>\n", def->opts.pciopts.pcihole64size);
         }
 
-        virBufferAddLit(buf, "    </controller>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</controller>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
     }
@@ -15178,11 +15184,11 @@ virDomainFSDefFormat(virBufferPtr buf,
 
 
     virBufferAsprintf(buf,
-                      "    <filesystem type='%s' accessmode='%s'>\n",
+                      "<filesystem type='%s' accessmode='%s'>\n",
                       type, accessmode);
-
+    virBufferAdjustIndent(buf, 2);
     if (def->fsdriver) {
-        virBufferAsprintf(buf, "      <driver type='%s'", fsdriver);
+        virBufferAsprintf(buf, "<driver type='%s'", fsdriver);
 
         if (def->format)
             virBufferAsprintf(buf, " format='%s'",
@@ -15198,50 +15204,50 @@ virDomainFSDefFormat(virBufferPtr buf,
     switch (def->type) {
     case VIR_DOMAIN_FS_TYPE_MOUNT:
     case VIR_DOMAIN_FS_TYPE_BIND:
-        virBufferEscapeString(buf, "      <source dir='%s'/>\n",
+        virBufferEscapeString(buf, "<source dir='%s'/>\n",
                               def->src);
         break;
 
     case VIR_DOMAIN_FS_TYPE_BLOCK:
-        virBufferEscapeString(buf, "      <source dev='%s'/>\n",
+        virBufferEscapeString(buf, "<source dev='%s'/>\n",
                               def->src);
         break;
 
     case VIR_DOMAIN_FS_TYPE_FILE:
-        virBufferEscapeString(buf, "      <source file='%s'/>\n",
+        virBufferEscapeString(buf, "<source file='%s'/>\n",
                               def->src);
         break;
 
     case VIR_DOMAIN_FS_TYPE_TEMPLATE:
-        virBufferEscapeString(buf, "      <source name='%s'/>\n",
+        virBufferEscapeString(buf, "<source name='%s'/>\n",
                               def->src);
         break;
 
     case VIR_DOMAIN_FS_TYPE_RAM:
-        virBufferAsprintf(buf, "      <source usage='%lld' units='KiB'/>\n",
+        virBufferAsprintf(buf, "<source usage='%lld' units='KiB'/>\n",
                           def->usage / 1024);
         break;
     }
 
-    virBufferEscapeString(buf, "      <target dir='%s'/>\n",
+    virBufferEscapeString(buf, "<target dir='%s'/>\n",
                           def->dst);
 
     if (def->readonly)
-        virBufferAddLit(buf, "      <readonly/>\n");
+        virBufferAddLit(buf, "<readonly/>\n");
 
     if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;
 
 
     if (def->space_hard_limit)
-        virBufferAsprintf(buf, "      <space_hard_limit unit='bytes'>"
+        virBufferAsprintf(buf, "<space_hard_limit unit='bytes'>"
                           "%llu</space_hard_limit>\n", def->space_hard_limit);
     if (def->space_soft_limit) {
-        virBufferAsprintf(buf, "      <space_soft_limit unit='bytes'>"
+        virBufferAsprintf(buf, "<space_soft_limit unit='bytes'>"
                           "%llu</space_soft_limit>\n", def->space_soft_limit);
     }
-    virBufferAddLit(buf, "    </filesystem>\n");
-
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</filesystem>\n");
     return 0;
 }
 
@@ -15310,12 +15316,14 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
              def->origstates.states.pci.remove_slot ||
              def->origstates.states.pci.reprobe)) {
             virBufferAddLit(buf, "<origstates>\n");
+            virBufferAdjustIndent(buf, 2);
             if (def->origstates.states.pci.unbind_from_stub)
-                virBufferAddLit(buf, "  <unbind/>\n");
+                virBufferAddLit(buf, "<unbind/>\n");
             if (def->origstates.states.pci.remove_slot)
-                virBufferAddLit(buf, "  <removeslot/>\n");
+                virBufferAddLit(buf, "<removeslot/>\n");
             if (def->origstates.states.pci.reprobe)
-                virBufferAddLit(buf, "  <reprobe/>\n");
+                virBufferAddLit(buf, "<reprobe/>\n");
+            virBufferAdjustIndent(buf, -2);
             virBufferAddLit(buf, "</origstates>\n");
         }
         break;
@@ -15520,12 +15528,12 @@ virDomainNetDefFormat(virBufferPtr buf,
             hostdef = &def->data.hostdev.def;
     }
 
-    virBufferAsprintf(buf, "    <interface type='%s'", typeStr);
+    virBufferAsprintf(buf, "<interface type='%s'", typeStr);
     if (hostdef && hostdef->managed)
         virBufferAddLit(buf, " managed='yes'");
     virBufferAddLit(buf, ">\n");
 
-    virBufferAdjustIndent(buf, 6);
+    virBufferAdjustIndent(buf, 2);
     virBufferAsprintf(buf, "<mac address='%s'/>\n",
                       virMacAddrFormat(&def->mac, macstr));
 
@@ -15669,7 +15677,9 @@ virDomainNetDefFormat(virBufferPtr buf,
 
     if (def->tune.sndbuf_specified) {
         virBufferAddLit(buf,   "<tune>\n");
-        virBufferAsprintf(buf, "  <sndbuf>%lu</sndbuf>\n", def->tune.sndbuf);
+        virBufferAdjustIndent(buf, 2);
+        virBufferAsprintf(buf, "<sndbuf>%lu</sndbuf>\n", def->tune.sndbuf);
+        virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf,   "</tune>\n");
     }
 
@@ -15677,16 +15687,13 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, "<link state='%s'/>\n",
                           virDomainNetInterfaceLinkStateTypeToString(def->linkstate));
     }
-
-    virBufferAdjustIndent(buf, -6);
-
     if (virDomainDeviceInfoFormat(buf, &def->info,
                                   flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT
                                   | VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) < 0)
         return -1;
 
-    virBufferAddLit(buf, "    </interface>\n");
-
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</interface>\n");
     return 0;
 }
 
@@ -15730,7 +15737,7 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
         if (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
             (def->data.file.path &&
              !(flags & VIR_DOMAIN_XML_INACTIVE))) {
-            virBufferEscapeString(buf, "      <source path='%s'/>\n",
+            virBufferEscapeString(buf, "<source path='%s'/>\n",
                                   def->data.file.path);
         }
         break;
@@ -15739,55 +15746,55 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
         if (def->data.udp.bindService &&
             def->data.udp.bindHost) {
             virBufferAsprintf(buf,
-                              "      <source mode='bind' host='%s' "
+                              "<source mode='bind' host='%s' "
                               "service='%s'/>\n",
                               def->data.udp.bindHost,
                               def->data.udp.bindService);
         } else if (def->data.udp.bindHost) {
-            virBufferAsprintf(buf, "      <source mode='bind' host='%s'/>\n",
+            virBufferAsprintf(buf, "<source mode='bind' host='%s'/>\n",
                               def->data.udp.bindHost);
         } else if (def->data.udp.bindService) {
-            virBufferAsprintf(buf, "      <source mode='bind' service='%s'/>\n",
+            virBufferAsprintf(buf, "<source mode='bind' service='%s'/>\n",
                               def->data.udp.bindService);
         }
 
         if (def->data.udp.connectService &&
             def->data.udp.connectHost) {
             virBufferAsprintf(buf,
-                              "      <source mode='connect' host='%s' "
+                              "<source mode='connect' host='%s' "
                               "service='%s'/>\n",
                               def->data.udp.connectHost,
                               def->data.udp.connectService);
         } else if (def->data.udp.connectHost) {
-            virBufferAsprintf(buf, "      <source mode='connect' host='%s'/>\n",
+            virBufferAsprintf(buf, "<source mode='connect' host='%s'/>\n",
                               def->data.udp.connectHost);
         } else if (def->data.udp.connectService) {
             virBufferAsprintf(buf,
-                              "      <source mode='connect' service='%s'/>\n",
+                              "<source mode='connect' service='%s'/>\n",
                               def->data.udp.connectService);
         }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
         virBufferAsprintf(buf,
-                          "      <source mode='%s' host='%s' service='%s'/>\n",
+                          "<source mode='%s' host='%s' service='%s'/>\n",
                           def->data.tcp.listen ? "bind" : "connect",
                           def->data.tcp.host,
                           def->data.tcp.service);
-        virBufferAsprintf(buf, "      <protocol type='%s'/>\n",
+        virBufferAsprintf(buf, "<protocol type='%s'/>\n",
                           virDomainChrTcpProtocolTypeToString(
                               def->data.tcp.protocol));
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        virBufferAsprintf(buf, "      <source mode='%s'",
+        virBufferAsprintf(buf, "<source mode='%s'",
                           def->data.nix.listen ? "bind" : "connect");
         virBufferEscapeString(buf, " path='%s'", def->data.nix.path);
         virBufferAddLit(buf, "/>\n");
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
-        virBufferAsprintf(buf, "      <source channel='%s'/>\n",
+        virBufferAsprintf(buf, "<source channel='%s'/>\n",
                           def->data.spiceport.channel);
         break;
 
@@ -15816,7 +15823,8 @@ virDomainChrDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "    <%s", elementName);
+    virBufferAsprintf(buf, "<%s", elementName);
+    virBufferAdjustIndent(buf, 2);
     tty_compat = (def->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
                   def->target.port == 0 &&
                   def->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
@@ -15833,7 +15841,7 @@ virDomainChrDefFormat(virBufferPtr buf,
                            _("Could not format channel target type"));
             return -1;
         }
-        virBufferAsprintf(buf, "      <target type='%s'", targetType);
+        virBufferAsprintf(buf, "<target type='%s'", targetType);
 
         switch (def->targetType) {
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD: {
@@ -15868,7 +15876,7 @@ virDomainChrDefFormat(virBufferPtr buf,
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
         virBufferAsprintf(buf,
-                          "      <target type='%s' port='%d'/>\n",
+                          "<target type='%s' port='%d'/>\n",
                           virDomainChrTargetTypeToString(def->deviceType,
                                                          def->targetType),
                           def->target.port);
@@ -15877,14 +15885,14 @@ virDomainChrDefFormat(virBufferPtr buf,
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
         if (def->targetTypeAttr) {
             virBufferAsprintf(buf,
-                              "      <target type='%s' port='%d'/>\n",
+                              "<target type='%s' port='%d'/>\n",
                               virDomainChrTargetTypeToString(def->deviceType,
                                                              def->targetType),
                               def->target.port);
             break;
         }
     default:
-        virBufferAsprintf(buf, "      <target port='%d'/>\n",
+        virBufferAsprintf(buf, "<target port='%d'/>\n",
                           def->target.port);
         break;
     }
@@ -15902,7 +15910,8 @@ virDomainChrDefFormat(virBufferPtr buf,
         virBufferAdjustIndent(buf, -2);
     }
 
-    virBufferAsprintf(buf, "    </%s>\n", elementName);
+    virBufferAdjustIndent(buf, -2);
+    virBufferAsprintf(buf, "</%s>\n", elementName);
 
     return ret;
 }
@@ -15921,10 +15930,12 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "    <smartcard mode='%s'", mode);
+    virBufferAsprintf(buf, "<smartcard mode='%s'", mode);
+    virBufferAdjustIndent(buf, 2);
     switch (def->type) {
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
         if (!virDomainDeviceInfoIsSet(&def->info, flags)) {
+            virBufferAdjustIndent(buf, -2);
             virBufferAddLit(buf, "/>\n");
             return 0;
         }
@@ -15934,9 +15945,9 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES:
         virBufferAddLit(buf, ">\n");
         for (i = 0; i < VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES; i++)
-            virBufferEscapeString(buf, "      <certificate>%s</certificate>\n",
+            virBufferEscapeString(buf, "<certificate>%s</certificate>\n",
                                   def->data.cert.file[i]);
-        virBufferEscapeString(buf, "      <database>%s</database>\n",
+        virBufferEscapeString(buf, "<database>%s</database>\n",
                               def->data.cert.database);
         break;
 
@@ -15953,7 +15964,8 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
     }
     if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;
-    virBufferAddLit(buf, "    </smartcard>\n");
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</smartcard>\n");
     return 0;
 }
 
@@ -15969,7 +15981,7 @@ virDomainSoundCodecDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "      <codec type='%s'/>\n",  type);
+    virBufferAsprintf(buf, "<codec type='%s'/>\n",  type);
 
     return 0;
 }
@@ -15979,29 +15991,32 @@ virDomainTPMDefFormat(virBufferPtr buf,
                       virDomainTPMDefPtr def,
                       unsigned int flags)
 {
-    virBufferAsprintf(buf, "    <tpm model='%s'>\n",
+    virBufferAsprintf(buf, "<tpm model='%s'>\n",
                       virDomainTPMModelTypeToString(def->model));
-
-    virBufferAsprintf(buf, "      <backend type='%s'>\n",
+    virBufferAdjustIndent(buf, 2);
+    virBufferAsprintf(buf, "<backend type='%s'>\n",
                       virDomainTPMBackendTypeToString(def->type));
+    virBufferAdjustIndent(buf, 2);
 
     switch (def->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        virBufferEscapeString(buf, "        <device path='%s'/>\n",
+        virBufferEscapeString(buf, "<device path='%s'/>\n",
                               def->data.passthrough.source.data.file.path);
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }
 
-    virBufferAddLit(buf, "      </backend>\n");
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</backend>\n");
 
     if (virDomainDeviceInfoIsSet(&def->info, flags)) {
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
     }
 
-    virBufferAddLit(buf, "    </tpm>\n");
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</tpm>\n");
 
     return 0;
 }
@@ -16022,11 +16037,12 @@ virDomainSoundDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "    <sound model='%s'",  model);
+    virBufferAsprintf(buf, "<sound model='%s'",  model);
 
     for (i = 0; i < def->ncodecs; i++) {
         if (!children) {
             virBufferAddLit(buf, ">\n");
+            virBufferAdjustIndent(buf, 2);
             children = true;
         }
         virDomainSoundCodecDefFormat(buf, def->codecs[i]);
@@ -16035,6 +16051,7 @@ virDomainSoundDefFormat(virBufferPtr buf,
     if (virDomainDeviceInfoIsSet(&def->info, flags)) {
         if (!children) {
             virBufferAddLit(buf, ">\n");
+            virBufferAdjustIndent(buf, 2);
             children = true;
         }
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
@@ -16042,7 +16059,8 @@ virDomainSoundDefFormat(virBufferPtr buf,
     }
 
     if (children) {
-        virBufferAddLit(buf, "    </sound>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</sound>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
     }
@@ -16065,7 +16083,8 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "    <memballoon model='%s'", model);
+    virBufferAsprintf(buf, "<memballoon model='%s'", model);
+    virBufferAdjustIndent(buf, 2);
 
     if (virDomainDeviceInfoIsSet(&def->info, flags)) {
         virBufferAddLit(buf, ">\n");
@@ -16077,14 +16096,15 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
     if (def->period) {
         if (noopts)
             virBufferAddLit(buf, ">\n");
-        virBufferAsprintf(buf, "      <stats period='%u'/>\n", def->period);
+        virBufferAsprintf(buf, "<stats period='%u'/>\n", def->period);
         noopts = false;
     }
 
+    virBufferAdjustIndent(buf, -2);
     if (noopts)
         virBufferAddLit(buf, "/>\n");
     else
-        virBufferAddLit(buf, "    </memballoon>\n");
+        virBufferAddLit(buf, "</memballoon>\n");
 
     return 0;
 }
@@ -16094,12 +16114,14 @@ virDomainNVRAMDefFormat(virBufferPtr buf,
                         virDomainNVRAMDefPtr def,
                         unsigned int flags)
 {
-    virBufferAddLit(buf, "    <nvram>\n");
+    virBufferAddLit(buf, "<nvram>\n");
+    virBufferAdjustIndent(buf, 2);
     if (virDomainDeviceInfoIsSet(&def->info, flags) &&
         virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;
 
-    virBufferAddLit(buf, "    </nvram>\n");
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</nvram>\n");
 
     return 0;
 }
@@ -16136,14 +16158,16 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "    <watchdog model='%s' action='%s'",
+    virBufferAsprintf(buf, "<watchdog model='%s' action='%s'",
                       model, action);
 
     if (virDomainDeviceInfoIsSet(&def->info, flags)) {
         virBufferAddLit(buf, ">\n");
+        virBufferAdjustIndent(buf, 2);
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
-        virBufferAddLit(buf, "    </watchdog>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</watchdog>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
     }
@@ -16154,10 +16178,12 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
 static int virDomainPanicDefFormat(virBufferPtr buf,
                                      virDomainPanicDefPtr def)
 {
-    virBufferAddLit(buf, "    <panic>\n");
+    virBufferAddLit(buf, "<panic>\n");
+    virBufferAdjustIndent(buf, 2);
     if (virDomainDeviceInfoFormat(buf, &def->info, 0) < 0)
         return -1;
-    virBufferAddLit(buf, "    </panic>\n");
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</panic>\n");
 
     return 0;
 }
@@ -16170,14 +16196,15 @@ virDomainRNGDefFormat(virBufferPtr buf,
     const char *model = virDomainRNGModelTypeToString(def->model);
     const char *backend = virDomainRNGBackendTypeToString(def->backend);
 
-    virBufferAsprintf(buf, "    <rng model='%s'>\n", model);
+    virBufferAsprintf(buf, "<rng model='%s'>\n", model);
+    virBufferAdjustIndent(buf, 2);
     if (def->rate) {
-        virBufferAsprintf(buf, "      <rate bytes='%u'", def->rate);
+        virBufferAsprintf(buf, "<rate bytes='%u'", def->rate);
         if (def->period)
             virBufferAsprintf(buf, " period='%u'", def->period);
         virBufferAddLit(buf, "/>\n");
     }
-    virBufferAsprintf(buf, "      <backend model='%s'", backend);
+    virBufferAsprintf(buf, "<backend model='%s'", backend);
 
     switch ((enum virDomainRNGBackend) def->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
@@ -16194,7 +16221,7 @@ virDomainRNGDefFormat(virBufferPtr buf,
                                         false, flags) < 0)
             return -1;
         virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "      </backend>\n");
+        virBufferAddLit(buf, "</backend>\n");
 
     case VIR_DOMAIN_RNG_BACKEND_LAST:
         break;
@@ -16205,8 +16232,8 @@ virDomainRNGDefFormat(virBufferPtr buf,
             return -1;
     }
 
-    virBufferAddLit(buf, "    </rng>\n");
-
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</rng>\n");
     return 0;
 }
 
@@ -16235,7 +16262,7 @@ static void
 virDomainVideoAccelDefFormat(virBufferPtr buf,
                              virDomainVideoAccelDefPtr def)
 {
-    virBufferAsprintf(buf, "        <acceleration accel3d='%s'",
+    virBufferAsprintf(buf, "<acceleration accel3d='%s'",
                       def->support3d ? "yes" : "no");
     virBufferAsprintf(buf, " accel2d='%s'",
                       def->support2d ? "yes" : "no");
@@ -16256,8 +16283,9 @@ virDomainVideoDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAddLit(buf, "    <video>\n");
-    virBufferAsprintf(buf, "      <model type='%s'",
+    virBufferAddLit(buf, "<video>\n");
+    virBufferAdjustIndent(buf, 2);
+    virBufferAsprintf(buf, "<model type='%s'",
                       model);
     if (def->ram)
         virBufferAsprintf(buf, " ram='%u'", def->ram);
@@ -16269,8 +16297,10 @@ virDomainVideoDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, " primary='yes'");
     if (def->accel) {
         virBufferAddLit(buf, ">\n");
+        virBufferAdjustIndent(buf, 2);
         virDomainVideoAccelDefFormat(buf, def->accel);
-        virBufferAddLit(buf, "      </model>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</model>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
     }
@@ -16278,8 +16308,8 @@ virDomainVideoDefFormat(virBufferPtr buf,
     if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;
 
-    virBufferAddLit(buf, "    </video>\n");
-
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</video>\n");
     return 0;
 }
 
@@ -16302,14 +16332,16 @@ virDomainInputDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "    <input type='%s' bus='%s'",
+    virBufferAsprintf(buf, "<input type='%s' bus='%s'",
                       type, bus);
 
     if (virDomainDeviceInfoIsSet(&def->info, flags)) {
         virBufferAddLit(buf, ">\n");
+        virBufferAdjustIndent(buf, 2);
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
-        virBufferAddLit(buf, "    </input>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</input>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
     }
@@ -16329,7 +16361,7 @@ virDomainTimerDefFormat(virBufferPtr buf,
                        _("unexpected timer name %d"), def->name);
         return -1;
     }
-    virBufferAsprintf(buf, "    <timer name='%s'", name);
+    virBufferAsprintf(buf, "<timer name='%s'", name);
 
     if (def->present == 0) {
         virBufferAddLit(buf, " present='no'");
@@ -16387,7 +16419,8 @@ virDomainTimerDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     } else {
         virBufferAddLit(buf, ">\n");
-        virBufferAddLit(buf, "      <catchup");
+        virBufferAdjustIndent(buf, 2);
+        virBufferAddLit(buf, "<catchup");
         if (def->catchup.threshold > 0) {
             virBufferAsprintf(buf, " threshold='%lu'", def->catchup.threshold);
         }
@@ -16398,7 +16431,8 @@ virDomainTimerDefFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " limit='%lu'", def->catchup.limit);
         }
         virBufferAddLit(buf, "/>\n");
-        virBufferAddLit(buf, "    </timer>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</timer>\n");
     }
 
     return 0;
@@ -16440,8 +16474,7 @@ virDomainGraphicsListenDefFormat(virBufferPtr buf,
     if ((flags & VIR_DOMAIN_XML_MIGRATABLE) && def->fromConfig)
         return;
 
-    virBufferAddLit(buf, "      <listen");
-
+    virBufferAddLit(buf, "<listen");
     if (def->type) {
         virBufferAsprintf(buf, " type='%s'",
                           virDomainGraphicsListenTypeToString(def->type));
@@ -16498,7 +16531,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         }
     }
 
-    virBufferAsprintf(buf, "    <graphics type='%s'", type);
+    virBufferAsprintf(buf, "<graphics type='%s'", type);
 
     switch (def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
@@ -16617,6 +16650,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
             continue;
         if (!children) {
             virBufferAddLit(buf, ">\n");
+            virBufferAdjustIndent(buf, 2);
             children = true;
         }
         virDomainGraphicsListenDefFormat(buf, &def->listens[i], flags);
@@ -16630,10 +16664,11 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
 
             if (!children) {
                 virBufferAddLit(buf, ">\n");
+                virBufferAdjustIndent(buf, 2);
                 children = true;
             }
 
-            virBufferAsprintf(buf, "      <channel name='%s' mode='%s'/>\n",
+            virBufferAsprintf(buf, "<channel name='%s' mode='%s'/>\n",
                               virDomainGraphicsSpiceChannelNameTypeToString(i),
                               virDomainGraphicsSpiceChannelModeTypeToString(mode));
         }
@@ -16642,36 +16677,38 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
                           def->data.spice.streaming || def->data.spice.copypaste ||
                           def->data.spice.mousemode || def->data.spice.filetransfer)) {
             virBufferAddLit(buf, ">\n");
+            virBufferAdjustIndent(buf, 2);
             children = true;
         }
         if (def->data.spice.image)
-            virBufferAsprintf(buf, "      <image compression='%s'/>\n",
+            virBufferAsprintf(buf, "<image compression='%s'/>\n",
                               virDomainGraphicsSpiceImageCompressionTypeToString(def->data.spice.image));
         if (def->data.spice.jpeg)
-            virBufferAsprintf(buf, "      <jpeg compression='%s'/>\n",
+            virBufferAsprintf(buf, "<jpeg compression='%s'/>\n",
                               virDomainGraphicsSpiceJpegCompressionTypeToString(def->data.spice.jpeg));
         if (def->data.spice.zlib)
-            virBufferAsprintf(buf, "      <zlib compression='%s'/>\n",
+            virBufferAsprintf(buf, "<zlib compression='%s'/>\n",
                               virDomainGraphicsSpiceZlibCompressionTypeToString(def->data.spice.zlib));
         if (def->data.spice.playback)
-            virBufferAsprintf(buf, "      <playback compression='%s'/>\n",
+            virBufferAsprintf(buf, "<playback compression='%s'/>\n",
                               virDomainGraphicsSpicePlaybackCompressionTypeToString(def->data.spice.playback));
         if (def->data.spice.streaming)
-            virBufferAsprintf(buf, "      <streaming mode='%s'/>\n",
+            virBufferAsprintf(buf, "<streaming mode='%s'/>\n",
                               virDomainGraphicsSpiceStreamingModeTypeToString(def->data.spice.streaming));
         if (def->data.spice.mousemode)
-            virBufferAsprintf(buf, "      <mouse mode='%s'/>\n",
+            virBufferAsprintf(buf, "<mouse mode='%s'/>\n",
                               virDomainGraphicsSpiceMouseModeTypeToString(def->data.spice.mousemode));
         if (def->data.spice.copypaste)
-            virBufferAsprintf(buf, "      <clipboard copypaste='%s'/>\n",
+            virBufferAsprintf(buf, "<clipboard copypaste='%s'/>\n",
                               virDomainGraphicsSpiceClipboardCopypasteTypeToString(def->data.spice.copypaste));
         if (def->data.spice.filetransfer)
-            virBufferAsprintf(buf, "      <filetransfer enable='%s'/>\n",
+            virBufferAsprintf(buf, "<filetransfer enable='%s'/>\n",
                               virDomainGraphicsSpiceAgentFileTransferTypeToString(def->data.spice.filetransfer));
     }
 
     if (children) {
-        virBufferAddLit(buf, "    </graphics>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</graphics>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
     }
@@ -16719,7 +16756,7 @@ virDomainHostdevDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "    <hostdev mode='%s' type='%s'",
+    virBufferAsprintf(buf, "<hostdev mode='%s' type='%s'",
                       mode, type);
     if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         virBufferAsprintf(buf, " managed='%s'",
@@ -16732,8 +16769,8 @@ virDomainHostdevDefFormat(virBufferPtr buf,
                               virDomainDeviceSGIOTypeToString(def->source.subsys.u.scsi.sgio));
     }
     virBufferAddLit(buf, ">\n");
+    virBufferAdjustIndent(buf, 2);
 
-    virBufferAdjustIndent(buf, 6);
     switch (def->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
         if (virDomainHostdevDefFormatSubsys(buf, def, flags, false) < 0)
@@ -16749,14 +16786,14 @@ virDomainHostdevDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "<readonly/>\n");
     if (def->shareable)
         virBufferAddLit(buf, "<shareable/>\n");
-    virBufferAdjustIndent(buf, -6);
 
     if (virDomainDeviceInfoFormat(buf, def->info,
                                   flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT
                                   | VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) < 0)
         return -1;
 
-    virBufferAddLit(buf, "    </hostdev>\n");
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</hostdev>\n");
 
     return 0;
 }
@@ -16770,14 +16807,15 @@ virDomainRedirdevDefFormat(virBufferPtr buf,
 
     bus = virDomainRedirdevBusTypeToString(def->bus);
 
-    virBufferAsprintf(buf, "    <redirdev bus='%s'", bus);
+    virBufferAsprintf(buf, "<redirdev bus='%s'", bus);
+    virBufferAdjustIndent(buf, 2);
     if (virDomainChrSourceDefFormat(buf, &def->source.chr, false, flags) < 0)
         return -1;
     if (virDomainDeviceInfoFormat(buf, &def->info,
                                   flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
         return -1;
-    virBufferAddLit(buf, "    </redirdev>\n");
-
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</redirdev>\n");
     return 0;
 }
 
@@ -16787,10 +16825,11 @@ virDomainRedirFilterDefFormat(virBufferPtr buf,
 {
     size_t i;
 
-    virBufferAddLit(buf, "    <redirfilter>\n");
+    virBufferAddLit(buf, "<redirfilter>\n");
+    virBufferAdjustIndent(buf, 2);
     for (i = 0; i < filter->nusbdevs; i++) {
         virDomainRedirFilterUsbDevDefPtr usbdev = filter->usbdevs[i];
-        virBufferAddLit(buf, "      <usbdev");
+        virBufferAddLit(buf, "<usbdev");
         if (usbdev->usbClass >= 0)
             virBufferAsprintf(buf, " class='0x%02X'", usbdev->usbClass);
 
@@ -16810,7 +16849,8 @@ virDomainRedirFilterDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " allow='%s'/>\n", usbdev->allow ? "yes" : "no");
 
     }
-    virBufferAddLit(buf, "    </redirfilter>\n");
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</redirfilter>\n");
     return 0;
 }
 
@@ -16827,13 +16867,15 @@ virDomainHubDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "    <hub type='%s'", type);
+    virBufferAsprintf(buf, "<hub type='%s'", type);
 
     if (virDomainDeviceInfoIsSet(&def->info, flags)) {
         virBufferAddLit(buf, ">\n");
+        virBufferAdjustIndent(buf, 2);
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
-        virBufferAddLit(buf, "    </hub>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</hub>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
     }
@@ -16872,9 +16914,11 @@ static void
 virDomainResourceDefFormat(virBufferPtr buf,
                            virDomainResourceDefPtr def)
 {
-    virBufferAddLit(buf, "  <resource>\n");
-    virBufferEscapeString(buf, "    <partition>%s</partition>\n", def->partition);
-    virBufferAddLit(buf, "  </resource>\n");
+    virBufferAddLit(buf, "<resource>\n");
+    virBufferAdjustIndent(buf, 2);
+    virBufferEscapeString(buf, "<partition>%s</partition>\n", def->partition);
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</resource>\n");
 }
 
 
@@ -16928,16 +16972,17 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (def->namespaceData && def->ns.href)
         virBufferAsprintf(buf, " %s", (def->ns.href)());
     virBufferAddLit(buf, ">\n");
+    virBufferAdjustIndent(buf, 2);
 
-    virBufferEscapeString(buf, "  <name>%s</name>\n", def->name);
+    virBufferEscapeString(buf, "<name>%s</name>\n", def->name);
 
     uuid = def->uuid;
     virUUIDFormat(uuid, uuidstr);
-    virBufferAsprintf(buf, "  <uuid>%s</uuid>\n", uuidstr);
+    virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
 
-    virBufferEscapeString(buf, "  <title>%s</title>\n", def->title);
+    virBufferEscapeString(buf, "<title>%s</title>\n", def->title);
 
-    virBufferEscapeString(buf, "  <description>%s</description>\n",
+    virBufferEscapeString(buf, "<description>%s</description>\n",
                           def->description);
 
     if (def->metadata) {
@@ -16953,24 +16998,24 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         xmlIndentTreeOutput = 1;
         xmlbuf = xmlBufferCreate();
         if (xmlNodeDump(xmlbuf, def->metadata->doc, def->metadata,
-                        virBufferGetIndent(buf, false) / 2 + 1, 1) < 0) {
+                        virBufferGetIndent(buf, false) / 2, 1) < 0) {
             xmlBufferFree(xmlbuf);
             xmlIndentTreeOutput = oldIndentTreeOutput;
             goto error;
         }
-        virBufferAsprintf(buf, "  %s\n", (char *) xmlBufferContent(xmlbuf));
+        virBufferAsprintf(buf, "%s\n", (char *) xmlBufferContent(xmlbuf));
         xmlBufferFree(xmlbuf);
         xmlIndentTreeOutput = oldIndentTreeOutput;
     }
 
-    virBufferAddLit(buf, "  <memory");
+    virBufferAddLit(buf, "<memory");
     if (def->mem.dump_core)
         virBufferAsprintf(buf, " dumpCore='%s'",
                           virDomainMemDumpTypeToString(def->mem.dump_core));
     virBufferAsprintf(buf, " unit='KiB'>%llu</memory>\n",
                       def->mem.max_balloon);
 
-    virBufferAsprintf(buf, "  <currentMemory unit='KiB'>%llu</currentMemory>\n",
+    virBufferAsprintf(buf, "<currentMemory unit='KiB'>%llu</currentMemory>\n",
                       def->mem.cur_balloon);
 
     /* add blkiotune only if there are any */
@@ -16990,10 +17035,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     }
 
     if (blkio) {
-        virBufferAddLit(buf, "  <blkiotune>\n");
+        virBufferAddLit(buf, "<blkiotune>\n");
+        virBufferAdjustIndent(buf, 2);
 
         if (def->blkio.weight)
-            virBufferAsprintf(buf, "    <weight>%u</weight>\n",
+            virBufferAsprintf(buf, "<weight>%u</weight>\n",
                               def->blkio.weight);
 
         for (n = 0; n < def->blkio.ndevices; n++) {
@@ -17002,28 +17048,31 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             if (!dev->weight && !dev->riops && !dev->wiops &&
                 !dev->rbps && !dev->wbps)
                 continue;
-            virBufferAddLit(buf, "    <device>\n");
-            virBufferEscapeString(buf, "      <path>%s</path>\n",
+            virBufferAddLit(buf, "<device>\n");
+            virBufferAdjustIndent(buf, 2);
+            virBufferEscapeString(buf, "<path>%s</path>\n",
                                   dev->path);
             if (dev->weight)
-                virBufferAsprintf(buf, "      <weight>%u</weight>\n",
+                virBufferAsprintf(buf, "<weight>%u</weight>\n",
                                   dev->weight);
             if (dev->riops)
-                virBufferAsprintf(buf, "      <read_iops_sec>%u</read_iops_sec>\n",
+                virBufferAsprintf(buf, "<read_iops_sec>%u</read_iops_sec>\n",
                                   dev->riops);
             if (dev->wiops)
-                virBufferAsprintf(buf, "      <write_iops_sec>%u</write_iops_sec>\n",
+                virBufferAsprintf(buf, "<write_iops_sec>%u</write_iops_sec>\n",
                                   dev->wiops);
             if (dev->rbps)
-                virBufferAsprintf(buf, "      <read_bytes_sec>%llu</read_bytes_sec>\n",
+                virBufferAsprintf(buf, "<read_bytes_sec>%llu</read_bytes_sec>\n",
                                   dev->rbps);
             if (dev->wbps)
-                virBufferAsprintf(buf, "      <write_bytes_sec>%llu</write_bytes_sec>\n",
+                virBufferAsprintf(buf, "<write_bytes_sec>%llu</write_bytes_sec>\n",
                                   dev->wbps);
-            virBufferAddLit(buf, "    </device>\n");
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</device>\n");
         }
 
-        virBufferAddLit(buf, "  </blkiotune>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</blkiotune>\n");
     }
 
     /* add memtune only if there are any */
@@ -17034,38 +17083,42 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         (def->mem.swap_hard_limit &&
          def->mem.hard_limit != VIR_DOMAIN_MEMORY_PARAM_UNLIMITED) ||
         def->mem.min_guarantee) {
-        virBufferAddLit(buf, "  <memtune>\n");
+        virBufferAddLit(buf, "<memtune>\n");
+        virBufferAdjustIndent(buf, 2);
         if (def->mem.hard_limit) {
-            virBufferAsprintf(buf, "    <hard_limit unit='KiB'>"
+            virBufferAsprintf(buf, "<hard_limit unit='KiB'>"
                               "%llu</hard_limit>\n", def->mem.hard_limit);
         }
         if (def->mem.soft_limit) {
-            virBufferAsprintf(buf, "    <soft_limit unit='KiB'>"
+            virBufferAsprintf(buf, "<soft_limit unit='KiB'>"
                               "%llu</soft_limit>\n", def->mem.soft_limit);
         }
         if (def->mem.min_guarantee) {
-            virBufferAsprintf(buf, "    <min_guarantee unit='KiB'>"
+            virBufferAsprintf(buf, "<min_guarantee unit='KiB'>"
                               "%llu</min_guarantee>\n", def->mem.min_guarantee);
         }
         if (def->mem.swap_hard_limit) {
-            virBufferAsprintf(buf, "    <swap_hard_limit unit='KiB'>"
+            virBufferAsprintf(buf, "<swap_hard_limit unit='KiB'>"
                               "%llu</swap_hard_limit>\n", def->mem.swap_hard_limit);
         }
-        virBufferAddLit(buf, "  </memtune>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</memtune>\n");
     }
 
     if (def->mem.hugepage_backed || def->mem.nosharepages || def->mem.locked) {
-        virBufferAddLit(buf, "  <memoryBacking>\n");
+        virBufferAddLit(buf, "<memoryBacking>\n");
+        virBufferAdjustIndent(buf, 2);
         if (def->mem.hugepage_backed)
-            virBufferAddLit(buf, "    <hugepages/>\n");
+            virBufferAddLit(buf, "<hugepages/>\n");
         if (def->mem.nosharepages)
-            virBufferAddLit(buf, "    <nosharepages/>\n");
+            virBufferAddLit(buf, "<nosharepages/>\n");
         if (def->mem.locked)
-            virBufferAddLit(buf, "    <locked/>\n");
-        virBufferAddLit(buf, "  </memoryBacking>\n");
+            virBufferAddLit(buf, "<locked/>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</memoryBacking>\n");
     }
 
-    virBufferAddLit(buf, "  <vcpu");
+    virBufferAddLit(buf, "<vcpu");
     virBufferAsprintf(buf, " placement='%s'",
                       virDomainCpuPlacementModeTypeToString(def->placement_mode));
 
@@ -17085,25 +17138,26 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         def->cputune.period || def->cputune.quota ||
         def->cputune.emulatorpin ||
         def->cputune.emulator_period || def->cputune.emulator_quota)
-        virBufferAddLit(buf, "  <cputune>\n");
+        virBufferAddLit(buf, "<cputune>\n");
 
+    virBufferAdjustIndent(buf, 2);
     if (def->cputune.shares)
-        virBufferAsprintf(buf, "    <shares>%lu</shares>\n",
+        virBufferAsprintf(buf, "<shares>%lu</shares>\n",
                           def->cputune.shares);
     if (def->cputune.period)
-        virBufferAsprintf(buf, "    <period>%llu</period>\n",
+        virBufferAsprintf(buf, "<period>%llu</period>\n",
                           def->cputune.period);
     if (def->cputune.quota)
-        virBufferAsprintf(buf, "    <quota>%lld</quota>\n",
+        virBufferAsprintf(buf, "<quota>%lld</quota>\n",
                           def->cputune.quota);
 
     if (def->cputune.emulator_period)
-        virBufferAsprintf(buf, "    <emulator_period>%llu"
+        virBufferAsprintf(buf, "<emulator_period>%llu"
                           "</emulator_period>\n",
                           def->cputune.emulator_period);
 
     if (def->cputune.emulator_quota)
-        virBufferAsprintf(buf, "    <emulator_quota>%lld"
+        virBufferAsprintf(buf, "<emulator_quota>%lld"
                           "</emulator_quota>\n",
                           def->cputune.emulator_quota);
 
@@ -17115,7 +17169,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                            def->cputune.vcpupin[i]->cpumask))
             continue;
 
-        virBufferAsprintf(buf, "    <vcpupin vcpu='%u' ",
+        virBufferAsprintf(buf, "<vcpupin vcpu='%u' ",
                           def->cputune.vcpupin[i]->vcpuid);
 
         if (!(cpumask = virBitmapFormat(def->cputune.vcpupin[i]->cpumask))) {
@@ -17130,7 +17184,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     if (def->cputune.emulatorpin) {
         char *cpumask;
-        virBufferAddLit(buf, "    <emulatorpin ");
+        virBufferAddLit(buf, "<emulatorpin ");
 
         if (!(cpumask = virBitmapFormat(def->cputune.emulatorpin->cpumask))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -17141,22 +17195,24 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, "cpuset='%s'/>\n", cpumask);
         VIR_FREE(cpumask);
     }
+    virBufferAdjustIndent(buf, -2);
     if (def->cputune.shares ||
         (def->cputune.nvcpupin && !virDomainIsAllVcpupinInherited(def)) ||
         def->cputune.period || def->cputune.quota ||
         def->cputune.emulatorpin ||
         def->cputune.emulator_period || def->cputune.emulator_quota)
-        virBufferAddLit(buf, "  </cputune>\n");
+        virBufferAddLit(buf, "</cputune>\n");
 
     if (def->numatune.memory.nodemask ||
         def->numatune.memory.placement_mode) {
-        virBufferAddLit(buf, "  <numatune>\n");
         const char *mode;
         char *nodemask = NULL;
         const char *placement;
 
+        virBufferAddLit(buf, "<numatune>\n");
+        virBufferAdjustIndent(buf, 2);
         mode = virDomainNumatuneMemModeTypeToString(def->numatune.memory.mode);
-        virBufferAsprintf(buf, "    <memory mode='%s' ", mode);
+        virBufferAsprintf(buf, "<memory mode='%s' ", mode);
 
         if (def->numatune.memory.placement_mode ==
             VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC) {
@@ -17173,7 +17229,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             placement = virNumaTuneMemPlacementModeTypeToString(def->numatune.memory.placement_mode);
             virBufferAsprintf(buf, "placement='%s'/>\n", placement);
         }
-        virBufferAddLit(buf, "  </numatune>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</numatune>\n");
     }
 
     if (def->resource)
@@ -17183,16 +17240,16 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virDomainSysinfoDefFormat(buf, def->sysinfo);
 
     if (def->os.bootloader) {
-        virBufferEscapeString(buf, "  <bootloader>%s</bootloader>\n",
+        virBufferEscapeString(buf, "<bootloader>%s</bootloader>\n",
                               def->os.bootloader);
         virBufferEscapeString(buf,
-                              "  <bootloader_args>%s</bootloader_args>\n",
+                              "<bootloader_args>%s</bootloader_args>\n",
                               def->os.bootloaderArgs);
     }
 
-    virBufferAddLit(buf, "  <os>\n");
-
-    virBufferAddLit(buf, "    <type");
+    virBufferAddLit(buf, "<os>\n");
+    virBufferAdjustIndent(buf, 2);
+    virBufferAddLit(buf, "<type");
     if (def->os.arch)
         virBufferAsprintf(buf, " arch='%s'", virArchToString(def->os.arch));
     if (def->os.machine)
@@ -17208,22 +17265,22 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     else
         virBufferAsprintf(buf, ">%s</type>\n", def->os.type);
 
-    virBufferEscapeString(buf, "    <init>%s</init>\n",
+    virBufferEscapeString(buf, "<init>%s</init>\n",
                           def->os.init);
     for (i = 0; def->os.initargv && def->os.initargv[i]; i++)
-        virBufferEscapeString(buf, "    <initarg>%s</initarg>\n",
+        virBufferEscapeString(buf, "<initarg>%s</initarg>\n",
                               def->os.initargv[i]);
-    virBufferEscapeString(buf, "    <loader>%s</loader>\n",
+    virBufferEscapeString(buf, "<loader>%s</loader>\n",
                           def->os.loader);
-    virBufferEscapeString(buf, "    <kernel>%s</kernel>\n",
+    virBufferEscapeString(buf, "<kernel>%s</kernel>\n",
                           def->os.kernel);
-    virBufferEscapeString(buf, "    <initrd>%s</initrd>\n",
+    virBufferEscapeString(buf, "<initrd>%s</initrd>\n",
                           def->os.initrd);
-    virBufferEscapeString(buf, "    <cmdline>%s</cmdline>\n",
+    virBufferEscapeString(buf, "<cmdline>%s</cmdline>\n",
                           def->os.cmdline);
-    virBufferEscapeString(buf, "    <dtb>%s</dtb>\n",
+    virBufferEscapeString(buf, "<dtb>%s</dtb>\n",
                           def->os.dtb);
-    virBufferEscapeString(buf, "    <root>%s</root>\n",
+    virBufferEscapeString(buf, "<root>%s</root>\n",
                           def->os.root);
 
     if (!def->os.bootloader) {
@@ -17236,18 +17293,18 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                                def->os.bootDevs[n]);
                 goto error;
             }
-            virBufferAsprintf(buf, "    <boot dev='%s'/>\n", boottype);
+            virBufferAsprintf(buf, "<boot dev='%s'/>\n", boottype);
         }
 
         if (def->os.bootmenu != VIR_DOMAIN_BOOT_MENU_DEFAULT) {
             const char *enabled = (def->os.bootmenu ==
                                    VIR_DOMAIN_BOOT_MENU_ENABLED ? "yes"
                                                                 : "no");
-            virBufferAsprintf(buf, "    <bootmenu enable='%s'/>\n", enabled);
+            virBufferAsprintf(buf, "<bootmenu enable='%s'/>\n", enabled);
         }
 
         if (def->os.bios.useserial || def->os.bios.rt_set) {
-            virBufferAddLit(buf, "    <bios");
+            virBufferAddLit(buf, "<bios");
             if (def->os.bios.useserial)
                 virBufferAsprintf(buf, " useserial='%s'",
                                   (def->os.bios.useserial ==
@@ -17269,29 +17326,32 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                            _("unexpected smbios mode %d"), def->os.smbios_mode);
             goto error;
         }
-        virBufferAsprintf(buf, "    <smbios mode='%s'/>\n", mode);
+        virBufferAsprintf(buf, "<smbios mode='%s'/>\n", mode);
     }
 
-    virBufferAddLit(buf, "  </os>\n");
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</os>\n");
 
 
     if (def->idmap.uidmap) {
-        virBufferAddLit(buf, "  <idmap>\n");
+        virBufferAddLit(buf, "<idmap>\n");
+        virBufferAdjustIndent(buf, 2);
         for (i = 0; i < def->idmap.nuidmap; i++) {
             virBufferAsprintf(buf,
-                              "    <uid start='%u' target='%u' count='%u'/>\n",
+                              "<uid start='%u' target='%u' count='%u'/>\n",
                               def->idmap.uidmap[i].start,
                               def->idmap.uidmap[i].target,
                               def->idmap.uidmap[i].count);
         }
         for (i = 0; i < def->idmap.ngidmap; i++) {
             virBufferAsprintf(buf,
-                              "    <gid start='%u' target='%u' count='%u'/>\n",
+                              "<gid start='%u' target='%u' count='%u'/>\n",
                               def->idmap.gidmap[i].start,
                               def->idmap.gidmap[i].target,
                               def->idmap.gidmap[i].count);
         }
-        virBufferAddLit(buf, "  </idmap>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</idmap>\n");
     }
 
     for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
@@ -17300,7 +17360,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     }
 
     if (i != VIR_DOMAIN_FEATURE_LAST) {
-        virBufferAddLit(buf, "  <features>\n");
+        virBufferAddLit(buf, "<features>\n");
+        virBufferAdjustIndent(buf, 2);
 
         for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
             const char *name = virDomainFeatureTypeToString(i);
@@ -17323,7 +17384,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                     break;
 
                 case VIR_DOMAIN_FEATURE_STATE_ON:
-                   virBufferAsprintf(buf, "    <%s/>\n", name);
+                   virBufferAsprintf(buf, "<%s/>\n", name);
                    break;
 
                 case VIR_DOMAIN_FEATURE_STATE_LAST:
@@ -17344,11 +17405,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                     break;
 
                 case VIR_DOMAIN_FEATURE_STATE_ON:
-                   virBufferAsprintf(buf, "    <%s state='on'/>\n", name);
+                   virBufferAsprintf(buf, "<%s state='on'/>\n", name);
                    break;
 
                 case VIR_DOMAIN_FEATURE_STATE_OFF:
-                   virBufferAsprintf(buf, "    <%s state='off'/>\n", name);
+                   virBufferAsprintf(buf, "<%s state='off'/>\n", name);
                    break;
                 }
 
@@ -17356,7 +17417,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
             case VIR_DOMAIN_FEATURE_APIC:
                 if (def->features[i] == VIR_DOMAIN_FEATURE_STATE_ON) {
-                    virBufferAddLit(buf, "    <apic");
+                    virBufferAddLit(buf, "<apic");
                     if (def->apic_eoi) {
                         virBufferAsprintf(buf, " eoi='%s'",
                                           virDomainFeatureStateTypeToString(def->apic_eoi));
@@ -17369,13 +17430,14 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 if (def->features[i] != VIR_DOMAIN_FEATURE_STATE_ON)
                     break;
 
-                virBufferAddLit(buf, "    <hyperv>\n");
+                virBufferAddLit(buf, "<hyperv>\n");
+                virBufferAdjustIndent(buf, 2);
                 for (j = 0; j < VIR_DOMAIN_HYPERV_LAST; j++) {
                     switch ((enum virDomainHyperv) j) {
                     case VIR_DOMAIN_HYPERV_RELAXED:
                     case VIR_DOMAIN_HYPERV_VAPIC:
                         if (def->hyperv_features[j])
-                            virBufferAsprintf(buf, "      <%s state='%s'/>\n",
+                            virBufferAsprintf(buf, "<%s state='%s'/>\n",
                                               virDomainHypervTypeToString(j),
                                               virDomainFeatureStateTypeToString(
                                                   def->hyperv_features[j]));
@@ -17385,7 +17447,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                         if (def->hyperv_features[j] == 0)
                             break;
 
-                        virBufferAsprintf(buf, "      <spinlocks state='%s'",
+                        virBufferAsprintf(buf, "<spinlocks state='%s'",
                                           virDomainFeatureStateTypeToString(
                                               def->hyperv_features[j]));
                         if (def->hyperv_features[j] == VIR_DOMAIN_FEATURE_STATE_ON)
@@ -17398,7 +17460,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                         break;
                     }
                 }
-                virBufferAddLit(buf, "    </hyperv>\n");
+                virBufferAdjustIndent(buf, -2);
+                virBufferAddLit(buf, "</hyperv>\n");
                 break;
 
             case VIR_DOMAIN_FEATURE_LAST:
@@ -17406,15 +17469,14 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             }
         }
 
-        virBufferAddLit(buf, "  </features>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</features>\n");
     }
 
-    virBufferAdjustIndent(buf, 2);
     if (virCPUDefFormatBufFull(buf, def->cpu, flags) < 0)
         goto error;
-    virBufferAdjustIndent(buf, -2);
 
-    virBufferAsprintf(buf, "  <clock offset='%s'",
+    virBufferAsprintf(buf, "<clock offset='%s'",
                       virDomainClockOffsetTypeToString(def->clock.offset));
     switch (def->clock.offset) {
     case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
@@ -17439,11 +17501,13 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAddLit(buf, "/>\n");
     } else {
         virBufferAddLit(buf, ">\n");
+        virBufferAdjustIndent(buf, 2);
         for (n = 0; n < def->clock.ntimers; n++) {
             if (virDomainTimerDefFormat(buf, def->clock.timers[n]) < 0)
                 goto error;
         }
-        virBufferAddLit(buf, "  </clock>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</clock>\n");
     }
 
     if (virDomainEventActionDefFormat(buf, def->onPoweroff,
@@ -17465,21 +17529,24 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         goto error;
 
     if (def->pm.s3 || def->pm.s4) {
-        virBufferAddLit(buf, "  <pm>\n");
+        virBufferAddLit(buf, "<pm>\n");
+        virBufferAdjustIndent(buf, 2);
         if (def->pm.s3) {
-            virBufferAsprintf(buf, "    <suspend-to-mem enabled='%s'/>\n",
+            virBufferAsprintf(buf, "<suspend-to-mem enabled='%s'/>\n",
                               virDomainPMStateTypeToString(def->pm.s3));
         }
         if (def->pm.s4) {
-            virBufferAsprintf(buf, "    <suspend-to-disk enabled='%s'/>\n",
+            virBufferAsprintf(buf, "<suspend-to-disk enabled='%s'/>\n",
                               virDomainPMStateTypeToString(def->pm.s4));
         }
-        virBufferAddLit(buf, "  </pm>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</pm>\n");
     }
 
-    virBufferAddLit(buf, "  <devices>\n");
+    virBufferAddLit(buf, "<devices>\n");
+    virBufferAdjustIndent(buf, 2);
 
-    virBufferEscapeString(buf, "    <emulator>%s</emulator>\n",
+    virBufferEscapeString(buf, "<emulator>%s</emulator>\n",
                           def->emulator);
 
     for (n = 0; n < def->ndisks; n++)
@@ -17628,18 +17695,18 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virDomainPanicDefFormat(buf, def->panic) < 0)
         goto error;
 
-    virBufferAddLit(buf, "  </devices>\n");
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</devices>\n");
 
-    virBufferAdjustIndent(buf, 2);
     for (n = 0; n < def->nseclabels; n++)
         virSecurityLabelDefFormat(buf, def->seclabels[n], flags);
-    virBufferAdjustIndent(buf, -2);
 
     if (def->namespaceData && def->ns.format) {
         if ((def->ns.format)(buf, def->namespaceData) < 0)
             goto error;
     }
 
+    virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</domain>\n");
 
     if (virBufferError(buf))
@@ -17682,10 +17749,11 @@ virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
                       virDomainStateTypeToString(state),
                       virDomainStateReasonToString(state, reason),
                       (long long)obj->pid);
+    virBufferAdjustIndent(&buf, 2);
 
     for (i = 0; i < VIR_DOMAIN_TAINT_LAST; i++) {
         if (obj->taint & (1 << i))
-            virBufferAsprintf(&buf, "  <taint flag='%s'/>\n",
+            virBufferAsprintf(&buf, "<taint flag='%s'/>\n",
                               virDomainTaintTypeToString(i));
     }
 
@@ -17693,11 +17761,10 @@ virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
         ((xmlopt->privateData.format)(&buf, obj->privateData)) < 0)
         goto error;
 
-    virBufferAdjustIndent(&buf, 2);
     if (virDomainDefFormatInternal(obj->def, flags, &buf) < 0)
         goto error;
-    virBufferAdjustIndent(&buf, -2);
 
+    virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</domstatus>\n");
 
     if (virBufferError(&buf))

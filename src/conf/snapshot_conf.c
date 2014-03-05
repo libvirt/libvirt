@@ -1,7 +1,7 @@
 /*
  * snapshot_conf.c: domain snapshot XML processing
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -630,6 +630,7 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
     if (disk->format > 0)
         virBufferEscapeString(buf, "      <driver type='%s'/>\n",
                               virStorageFileFormatTypeToString(disk->format));
+    virBufferAdjustIndent(buf, 6);
     virDomainDiskSourceDefFormatInternal(buf,
                                          type,
                                          disk->file,
@@ -639,6 +640,7 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
                                          disk->hosts,
                                          0, NULL, NULL, 0);
 
+    virBufferAdjustIndent(buf, -6);
     virBufferAddLit(buf, "    </disk>\n");
 }
 
