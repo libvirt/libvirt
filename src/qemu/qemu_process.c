@@ -3687,8 +3687,10 @@ int qemuProcessStart(virConnectPtr conn,
     VIR_DEBUG("Preparing host devices");
     if (!cfg->relaxedACS)
         hostdev_flags |= VIR_HOSTDEV_STRICT_ACS_CHECK;
+    if (!migrateFrom)
+        hostdev_flags |= VIR_HOSTDEV_COLD_BOOT;
     if (qemuPrepareHostDevices(driver, vm->def, priv->qemuCaps,
-                               !migrateFrom, hostdev_flags) < 0)
+                               hostdev_flags) < 0)
         goto cleanup;
 
     VIR_DEBUG("Preparing chr devices");

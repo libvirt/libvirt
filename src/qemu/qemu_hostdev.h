@@ -29,6 +29,7 @@
 
 typedef enum {
     VIR_HOSTDEV_STRICT_ACS_CHECK     = (1 << 0), /* strict acs check */
+    VIR_HOSTDEV_COLD_BOOT            = (1 << 1), /* cold boot */
 } virHostdevFlag;
 
 int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
@@ -51,7 +52,7 @@ qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
                           const char *name,
                           virDomainHostdevDefPtr *hostdevs,
                           int nhostdevs,
-                          bool coldBoot);
+                          unsigned int flags);
 int qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
                                   const char *name,
                                   virDomainHostdevDefPtr *hostdevs,
@@ -59,7 +60,6 @@ int qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
 int qemuPrepareHostDevices(virQEMUDriverPtr driver,
                            virDomainDefPtr def,
                            virQEMUCapsPtr qemuCaps,
-                           bool coldBoot,
                            unsigned int flags);
 void
 qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,

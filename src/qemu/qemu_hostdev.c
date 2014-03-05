@@ -1003,13 +1003,14 @@ qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
                           const char *name,
                           virDomainHostdevDefPtr *hostdevs,
                           int nhostdevs,
-                          bool coldBoot)
+                          unsigned int flags)
 {
     size_t i;
     int ret = -1;
     virUSBDeviceListPtr list;
     virUSBDevicePtr tmp;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    bool coldBoot = !!(flags & VIR_HOSTDEV_COLD_BOOT);
 
     /* To prevent situation where USB device is assigned to two domains
      * we need to keep a list of currently assigned USB devices.
@@ -1201,7 +1202,6 @@ int
 qemuPrepareHostDevices(virQEMUDriverPtr driver,
                        virDomainDefPtr def,
                        virQEMUCapsPtr qemuCaps,
-                       bool coldBoot,
                        unsigned int flags)
 {
     if (!def->nhostdevs)
@@ -1213,7 +1213,7 @@ qemuPrepareHostDevices(virQEMUDriverPtr driver,
         return -1;
 
     if (qemuPrepareHostUSBDevices(driver, def->name,
-                                  def->hostdevs, def->nhostdevs, coldBoot) < 0)
+                                  def->hostdevs, def->nhostdevs, flags) < 0)
         return -1;
 
     if (qemuPrepareHostdevSCSIDevices(driver, def->name,
