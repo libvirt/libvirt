@@ -1256,8 +1256,6 @@ qemuPrepareHostDevices(virQEMUDriverPtr driver,
 static void
 qemuReattachPciDevice(virPCIDevicePtr dev, virHostdevManagerPtr mgr)
 {
-    int retries = 100;
-
     /* If the device is not managed and was attached to guest
      * successfully, it must have been inactive.
      */
@@ -1267,10 +1265,14 @@ qemuReattachPciDevice(virPCIDevicePtr dev, virHostdevManagerPtr mgr)
         return;
     }
 
-    while (virPCIDeviceWaitForCleanup(dev, "kvm_assigned_device")
-           && retries) {
-        usleep(100*1000);
-        retries--;
+    /* Wait for device cleanup if it is qemu/kvm */
+    if (STREQ(virPCIDeviceGetStubDriver(dev), "pci-stub")) {
+        int retries = 100;
+        while (virPCIDeviceWaitForCleanup(dev, "kvm_assigned_device")
+               && retries) {
+            usleep(100*1000);
+            retries--;
+        }
     }
 
     if (virPCIDeviceReattach(dev, mgr->activePciHostdevs,
