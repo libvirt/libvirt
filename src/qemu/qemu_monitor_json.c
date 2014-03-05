@@ -3678,8 +3678,12 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("Command '%s' is not found"), cmd_name);
         } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unexpected error"));
+            virJSONValuePtr error = virJSONValueObjectGet(reply, "error");
+
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unexpected error: (%s) '%s'"),
+                           NULLSTR(virJSONValueObjectGetString(error, "class")),
+                           NULLSTR(virJSONValueObjectGetString(error, "desc")));
         }
     }
 
