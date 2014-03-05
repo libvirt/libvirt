@@ -299,8 +299,8 @@ cleanup:
 
 
 static int
-qemuDomainHostdevPciSysfsPath(virDomainHostdevDefPtr hostdev,
-                              char **sysfs_path)
+virHostdevPciSysfsPath(virDomainHostdevDefPtr hostdev,
+                       char **sysfs_path)
 {
     virPCIDeviceAddress config_address;
 
@@ -314,12 +314,12 @@ qemuDomainHostdevPciSysfsPath(virDomainHostdevDefPtr hostdev,
 
 
 static int
-qemuDomainHostdevIsVirtualFunction(virDomainHostdevDefPtr hostdev)
+virHostdevIsVirtualFunction(virDomainHostdevDefPtr hostdev)
 {
     char *sysfs_path = NULL;
     int ret = -1;
 
-    if (qemuDomainHostdevPciSysfsPath(hostdev, &sysfs_path) < 0)
+    if (virHostdevPciSysfsPath(hostdev, &sysfs_path) < 0)
         return ret;
 
     ret = virPCIIsVirtualFunction(sysfs_path);
@@ -331,13 +331,13 @@ qemuDomainHostdevIsVirtualFunction(virDomainHostdevDefPtr hostdev)
 
 
 static int
-qemuDomainHostdevNetDevice(virDomainHostdevDefPtr hostdev, char **linkdev,
-                           int *vf)
+virHostdevNetDevice(virDomainHostdevDefPtr hostdev, char **linkdev,
+                    int *vf)
 {
     int ret = -1;
     char *sysfs_path = NULL;
 
-    if (qemuDomainHostdevPciSysfsPath(hostdev, &sysfs_path) < 0)
+    if (virHostdevPciSysfsPath(hostdev, &sysfs_path) < 0)
         return ret;
 
     if (virPCIIsVirtualFunction(sysfs_path) == 1) {
@@ -360,11 +360,11 @@ cleanup:
 
 
 static int
-qemuDomainHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
-                                          virNetDevVPortProfilePtr virtPort,
-                                          const virMacAddr *macaddr,
-                                          const unsigned char *uuid,
-                                          bool associate)
+virHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
+                                   virNetDevVPortProfilePtr virtPort,
+                                   const virMacAddr *macaddr,
+                                   const unsigned char *uuid,
+                                   bool associate)
 {
     int ret = -1;
 
@@ -400,9 +400,9 @@ qemuDomainHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
 
 
 static int
-qemuDomainHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
-                                  const unsigned char *uuid,
-                                  char *stateDir)
+virHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
+                           const unsigned char *uuid,
+                           char *stateDir)
 {
     char *linkdev = NULL;
     virNetDevVlanPtr vlan;
@@ -413,7 +413,7 @@ qemuDomainHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
     bool port_profile_associate = true;
     int isvf;
 
-    isvf = qemuDomainHostdevIsVirtualFunction(hostdev);
+    isvf = virHostdevIsVirtualFunction(hostdev);
     if (isvf <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Interface type hostdev is currently supported on"
@@ -421,7 +421,7 @@ qemuDomainHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
         return ret;
     }
 
-    if (qemuDomainHostdevNetDevice(hostdev, &linkdev, &vf) < 0)
+    if (virHostdevNetDevice(hostdev, &linkdev, &vf) < 0)
         return ret;
 
     vlan = virDomainNetGetActualVlan(hostdev->parent.data.net);
@@ -435,7 +435,7 @@ qemuDomainHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
                            virNetDevVPortTypeToString(virtPort->virtPortType));
             goto cleanup;
         }
-        ret = qemuDomainHostdevNetConfigVirtPortProfile(linkdev, vf,
+        ret = virHostdevNetConfigVirtPortProfile(linkdev, vf,
                             virtPort, &hostdev->parent.data.net->mac, uuid,
                             port_profile_associate);
     } else {
@@ -475,9 +475,9 @@ cleanup:
  * case, try to find in the old state dir.
  */
 static int
-qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
-                                  char *stateDir,
-                                  char *oldStateDir)
+virHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
+                           char *stateDir,
+                           char *oldStateDir)
 {
     char *linkdev = NULL;
     virNetDevVPortProfilePtr virtPort;
@@ -495,7 +495,7 @@ qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
         !hostdev->parent.data.net)
        return 0;
 
-    isvf = qemuDomainHostdevIsVirtualFunction(hostdev);
+    isvf = virHostdevIsVirtualFunction(hostdev);
     if (isvf <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Interface type hostdev is currently supported on"
@@ -503,15 +503,16 @@ qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
         return ret;
     }
 
-    if (qemuDomainHostdevNetDevice(hostdev, &linkdev, &vf) < 0)
+    if (virHostdevNetDevice(hostdev, &linkdev, &vf) < 0)
         return ret;
 
     virtPort = virDomainNetGetActualVirtPortProfile(
                                  hostdev->parent.data.net);
     if (virtPort) {
-        ret = qemuDomainHostdevNetConfigVirtPortProfile(linkdev, vf, virtPort,
-                                          &hostdev->parent.data.net->mac, NULL,
-                                          port_profile_associate);
+        ret = virHostdevNetConfigVirtPortProfile(linkdev, vf, virtPort,
+                                                 &hostdev->parent.data.net->mac,
+                                                 NULL,
+                                                 port_profile_associate);
     } else {
         ret = virNetDevRestoreNetConfig(linkdev, vf, stateDir);
         if (ret < 0 && oldStateDir != NULL)
@@ -748,8 +749,8 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
              continue;
          if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
              hostdev->parent.data.net) {
-             if (qemuDomainHostdevNetConfigReplace(hostdev, uuid,
-                                                   hostdev_mgr->stateDir) < 0) {
+             if (virHostdevNetConfigReplace(hostdev, uuid,
+                                            hostdev_mgr->stateDir) < 0) {
                  goto resetvfnetconfig;
              }
          }
@@ -833,8 +834,7 @@ inactivedevs:
 resetvfnetconfig:
     for (i = 0;
          last_processed_hostdev_vf != -1 && i < last_processed_hostdev_vf; i++)
-        qemuDomainHostdevNetConfigRestore(hostdevs[i], hostdev_mgr->stateDir,
-                                          NULL);
+        virHostdevNetConfigRestore(hostdevs[i], hostdev_mgr->stateDir, NULL);
 
 reattachdevs:
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
@@ -1343,8 +1343,8 @@ qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
      * reset and reattach device
      */
     for (i = 0; i < nhostdevs; i++)
-        qemuDomainHostdevNetConfigRestore(hostdevs[i], hostdev_mgr->stateDir,
-                                          oldStateDir);
+        virHostdevNetConfigRestore(hostdevs[i], hostdev_mgr->stateDir,
+                                   oldStateDir);
 
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
