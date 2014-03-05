@@ -40,8 +40,8 @@
 #include "virlog.h"
 #include "virerror.h"
 #include "viralloc.h"
+#include "vircrypto.h"
 #include "virfile.h"
-#include "md5.h"
 #include "virconf.h"
 #include "virstring.h"
 
@@ -509,36 +509,6 @@ static void virLockManagerSanlockFree(virLockManagerPtr lock)
 }
 
 
-static const char hex[] = { '0', '1', '2', '3', '4', '5', '6', '7',
-                            '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-
-static int virLockManagerSanlockDiskLeaseName(const char *path,
-                                              char *str,
-                                              size_t strbuflen)
-{
-    unsigned char buf[MD5_DIGEST_SIZE];
-    size_t i;
-
-    if (strbuflen < ((MD5_DIGEST_SIZE * 2) + 1)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("String length too small to store md5 checksum"));
-        return -1;
-    }
-
-    if (!(md5_buffer(path, strlen(path), buf))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unable to compute md5 checksum"));
-        return -1;
-    }
-
-    for (i = 0; i < MD5_DIGEST_SIZE; i++) {
-        str[i*2] = hex[(buf[i] >> 4) & 0xf];
-        str[(i*2)+1] = hex[buf[i] & 0xf];
-    }
-    str[(MD5_DIGEST_SIZE*2)+1] = '\0';
-    return 0;
-}
-
 static int virLockManagerSanlockAddLease(virLockManagerPtr lock,
                                          const char *name,
                                          size_t nparams,
@@ -606,6 +576,7 @@ static int virLockManagerSanlockAddDisk(virLockManagerPtr lock,
     int ret = -1;
     struct sanlk_resource *res = NULL;
     char *path = NULL;
+    char *hash = NULL;
 
     if (nparams) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -618,8 +589,14 @@ static int virLockManagerSanlockAddDisk(virLockManagerPtr lock,
 
     res->flags = shared ? SANLK_RES_SHARED : 0;
     res->num_disks = 1;
-    if (virLockManagerSanlockDiskLeaseName(name, res->name, SANLK_NAME_LEN) < 0)
+    if (virCryptoHashString(VIR_CRYPTO_HASH_MD5, name, &hash) < 0)
         goto cleanup;
+    if (!virStrcpy(res->name, hash, SANLK_NAME_LEN)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("MD5 hash '%s' unexpectedly larger than %d characters"),
+                       hash, (SANLK_NAME_LEN - 1));
+        goto cleanup;
+    }
 
     if (virAsprintf(&path, "%s/%s",
                     driver->autoDiskLeasePath, res->name) < 0)
@@ -649,6 +626,7 @@ cleanup:
     if (ret == -1)
         VIR_FREE(res);
     VIR_FREE(path);
+    VIR_FREE(hash);
     return ret;
 }
 

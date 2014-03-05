@@ -24,6 +24,7 @@
 #include "lock_driver.h"
 #include "virconf.h"
 #include "viralloc.h"
+#include "vircrypto.h"
 #include "virlog.h"
 #include "viruuid.h"
 #include "virfile.h"
@@ -31,7 +32,6 @@
 #include "rpc/virnetclient.h"
 #include "lock_protocol.h"
 #include "configmake.h"
-#include "sha256.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_LOCKING
@@ -505,34 +505,6 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
 }
 
 
-static const char hex[] = { '0', '1', '2', '3', '4', '5', '6', '7',
-                            '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-
-static char *virLockManagerLockDaemonDiskLeaseName(const char *path)
-{
-    unsigned char buf[SHA256_DIGEST_SIZE];
-    char *ret;
-    size_t i;
-
-    if (!(sha256_buffer(path, strlen(path), buf))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unable to compute sha256 checksum"));
-        return NULL;
-    }
-
-    if (VIR_ALLOC_N(ret, (SHA256_DIGEST_SIZE * 2) + 1) < 0)
-        return NULL;
-
-    for (i = 0; i < SHA256_DIGEST_SIZE; i++) {
-        ret[i*2] = hex[(buf[i] >> 4) & 0xf];
-        ret[(i*2)+1] = hex[buf[i] & 0xf];
-    }
-    ret[(SHA256_DIGEST_SIZE * 2) + 1] = '\0';
-
-    return ret;
-}
-
-
 static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
                                                unsigned int type,
                                                const char *name,
@@ -605,7 +577,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
         if (driver->fileLockSpaceDir) {
             if (VIR_STRDUP(newLockspace, driver->fileLockSpaceDir) < 0)
                 goto error;
-            if (!(newName = virLockManagerLockDaemonDiskLeaseName(name)))
+            if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, name, &newName) < 0)
                 goto error;
             autoCreate = true;
             VIR_DEBUG("Using indirect lease %s for %s", newName, name);
