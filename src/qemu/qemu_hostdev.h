@@ -27,11 +27,6 @@
 # include "qemu_conf.h"
 # include "domain_conf.h"
 
-typedef enum {
-    VIR_HOSTDEV_STRICT_ACS_CHECK     = (1 << 0), /* strict acs check */
-    VIR_HOSTDEV_COLD_BOOT            = (1 << 1), /* cold boot */
-} virHostdevFlag;
-
 int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
                                 virDomainDefPtr def);
 int qemuUpdateActiveUsbHostdevs(virQEMUDriverPtr driver,

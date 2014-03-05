@@ -65,6 +65,7 @@
 #include "viratomic.h"
 #include "virnuma.h"
 #include "virstring.h"
+#include "virhostdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

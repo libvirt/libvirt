@@ -1299,7 +1299,8 @@ virHookPresent;
 
 #util/virhostdev.h
 virHostdevManagerGetDefault;
-
+virHostdevPreparePCIDevices;
+virHostdevReAttachPCIDevices;
 
 # util/viridentity.h
 virIdentityGetAttr;
