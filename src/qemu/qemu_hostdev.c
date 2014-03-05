@@ -42,7 +42,7 @@
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 static virPCIDeviceListPtr
-qemuGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
+virHostdevGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
 {
     virPCIDeviceListPtr list;
     size_t i;
@@ -94,7 +94,7 @@ qemuGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
 
 
 /*
- * qemuGetActivePciHostDeviceList - make a new list with a *copy* of
+ * virHostdevGetActivePciHostDeviceList - make a new list with a *copy* of
  *   every virPCIDevice object that is found on the activePciHostdevs
  *   list *and* is in the hostdev list for this domain.
  *
@@ -103,9 +103,9 @@ qemuGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
  * Pre-condition: activePciHostdevs is locked
  */
 static virPCIDeviceListPtr
-qemuGetActivePciHostDeviceList(virHostdevManagerPtr mgr,
-                               virDomainHostdevDefPtr *hostdevs,
-                               int nhostdevs)
+virHostdevGetActivePciHostDeviceList(virHostdevManagerPtr mgr,
+                                     virDomainHostdevDefPtr *hostdevs,
+                                     int nhostdevs)
 {
     virPCIDeviceListPtr list;
     size_t i;
@@ -673,7 +673,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
     virObjectLock(hostdev_mgr->activePciHostdevs);
     virObjectLock(hostdev_mgr->inactivePciHostdevs);
 
-    if (!(pcidevs = qemuGetPciHostDeviceList(hostdevs, nhostdevs)))
+    if (!(pcidevs = virHostdevGetPciHostDeviceList(hostdevs, nhostdevs)))
         goto cleanup;
 
     /* We have to use 9 loops here. *All* devices must
@@ -1297,9 +1297,9 @@ qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
     virObjectLock(hostdev_mgr->activePciHostdevs);
     virObjectLock(hostdev_mgr->inactivePciHostdevs);
 
-    if (!(pcidevs = qemuGetActivePciHostDeviceList(hostdev_mgr,
-                                                   hostdevs,
-                                                   nhostdevs))) {
+    if (!(pcidevs = virHostdevGetActivePciHostDeviceList(hostdev_mgr,
+                                                         hostdevs,
+                                                         nhostdevs))) {
         virErrorPtr err = virGetLastError();
         VIR_ERROR(_("Failed to allocate PCI device list: %s"),
                   err ? err->message : _("unknown error"));
