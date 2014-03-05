@@ -1461,28 +1461,16 @@ qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
                               virDomainHostdevDefPtr hostdev)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virUSBDeviceList *list = NULL;
-    virUSBDevicePtr usb = NULL;
     char *devstr = NULL;
     bool added = false;
     bool teardowncgroup = false;
     bool teardownlabel = false;
     int ret = -1;
 
-    if (qemuFindHostdevUSBDevice(hostdev, true, &usb) < 0)
-        return -1;
-
-    if (!(list = virUSBDeviceListNew()))
-        goto cleanup;
-
-    if (virUSBDeviceListAdd(list, usb) < 0)
-        goto cleanup;
-
-    if (qemuPrepareHostdevUSBDevices(driver, vm->def->name, list) < 0)
+    if (qemuPrepareHostUSBDevices(driver, vm->def->name, &hostdev, 1, 0) < 0)
         goto cleanup;
 
     added = true;
-    virUSBDeviceListSteal(list, usb);
 
     if (qemuSetupHostdevCGroup(vm, hostdev) < 0)
         goto cleanup;
@@ -1527,13 +1515,8 @@ cleanup:
                                                   vm->def, hostdev, NULL) < 0)
             VIR_WARN("Unable to restore host device labelling on hotplug fail");
         if (added)
-            virUSBDeviceListSteal(driver->activeUsbHostdevs, usb);
+            qemuDomainReAttachHostUsbDevices(driver, vm->def->name, &hostdev, 1);
     }
-    if (list && usb &&
-        !virUSBDeviceListFind(list, usb) &&
-        !virUSBDeviceListFind(driver->activeUsbHostdevs, usb))
-        virUSBDeviceFree(usb);
-    virObjectUnref(list);
     VIR_FREE(devstr);
     return ret;
 }
@@ -2538,50 +2521,16 @@ qemuDomainRemovePCIHostDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainHostdevDefPtr hostdev)
 {
-    virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
-    virPCIDevicePtr pci;
-    virPCIDevicePtr activePci;
-
-    virObjectLock(driver->activePciHostdevs);
-    virObjectLock(driver->inactivePciHostdevs);
-    pci = virPCIDeviceNew(subsys->u.pci.addr.domain, subsys->u.pci.addr.bus,
-                          subsys->u.pci.addr.slot, subsys->u.pci.addr.function);
-    if (pci) {
-        activePci = virPCIDeviceListSteal(driver->activePciHostdevs, pci);
-        if (activePci &&
-            virPCIDeviceReset(activePci, driver->activePciHostdevs,
-                              driver->inactivePciHostdevs) == 0) {
-            qemuReattachPciDevice(activePci, driver);
-        } else {
-            /* reset of the device failed, treat it as if it was returned */
-            virPCIDeviceFree(activePci);
-        }
-        virPCIDeviceFree(pci);
-    }
-    virObjectUnlock(driver->activePciHostdevs);
-    virObjectUnlock(driver->inactivePciHostdevs);
-
+    qemuDomainReAttachHostdevDevices(driver, vm->def->name, &hostdev, 1);
     qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
 }
 
 static void
 qemuDomainRemoveUSBHostDevice(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm ATTRIBUTE_UNUSED,
+                              virDomainObjPtr vm,
                               virDomainHostdevDefPtr hostdev)
 {
-    virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
-    virUSBDevicePtr usb;
-
-    usb = virUSBDeviceNew(subsys->u.usb.bus, subsys->u.usb.device, NULL);
-    if (usb) {
-        virObjectLock(driver->activeUsbHostdevs);
-        virUSBDeviceListDel(driver->activeUsbHostdevs, usb);
-        virObjectUnlock(driver->activeUsbHostdevs);
-        virUSBDeviceFree(usb);
-    } else {
-        VIR_WARN("Unable to find device %03d.%03d in list of used USB devices",
-                 subsys->u.usb.bus, subsys->u.usb.device);
-    }
+    qemuDomainReAttachHostUsbDevices(driver, vm->def->name, &hostdev, 1);
 }
 
 static void
@@ -2628,8 +2577,6 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
     }
 
     virDomainAuditHostdev(vm, hostdev, "detach", true);
-
-    qemuDomainHostdevNetConfigRestore(hostdev, cfg->stateDir);
 
     switch ((enum virDomainHostdevSubsysType) hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:

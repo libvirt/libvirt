@@ -991,7 +991,7 @@ out:
 }
 
 
-static int
+int
 qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
                           const char *name,
                           virDomainHostdevDefPtr *hostdevs,
@@ -1334,7 +1334,7 @@ cleanup:
 }
 
 
-static void
+void
 qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,
                                  const char *name,
                                  virDomainHostdevDefPtr *hostdevs,
