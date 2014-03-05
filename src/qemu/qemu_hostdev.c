@@ -1288,6 +1288,7 @@ qemuReattachPciDevice(virPCIDevicePtr dev, virHostdevManagerPtr mgr)
  */
 static void
 virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
+                             const char *drv_name,
                              const char *name,
                              virDomainHostdevDefPtr *hostdevs,
                              int nhostdevs,
@@ -1326,7 +1327,7 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
             const char *usedby_drvname;
             const char *usedby_domname;
             virPCIDeviceGetUsedBy(activeDev, &usedby_drvname, &usedby_domname);
-            if (STRNEQ_NULLABLE(QEMU_DRIVER_NAME, usedby_drvname) ||
+            if (STRNEQ_NULLABLE(drv_name, usedby_drvname) ||
                 STRNEQ_NULLABLE(name, usedby_domname)) {
                     virPCIDeviceListDel(pcidevs, dev);
                     continue;
@@ -1381,7 +1382,7 @@ qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
     char *oldStateDir = cfg->stateDir;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
-    virHostdevReAttachPCIDevices(hostdev_mgr, name,
+    virHostdevReAttachPCIDevices(hostdev_mgr, QEMU_DRIVER_NAME, name,
                                  hostdevs, nhostdevs, oldStateDir);
 
     virObjectUnref(cfg);
