@@ -615,7 +615,7 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
     if (!disk->name)
         return;
 
-    virBufferEscapeString(buf, "    <disk name='%s'", disk->name);
+    virBufferEscapeString(buf, "<disk name='%s'", disk->name);
     if (disk->snapshot > 0)
         virBufferAsprintf(buf, " snapshot='%s'",
                           virDomainSnapshotLocationTypeToString(disk->snapshot));
@@ -626,11 +626,11 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
     }
 
     virBufferAsprintf(buf, " type='%s'>\n", virDomainDiskTypeToString(type));
+    virBufferAdjustIndent(buf, 2);
 
     if (disk->format > 0)
-        virBufferEscapeString(buf, "      <driver type='%s'/>\n",
+        virBufferEscapeString(buf, "<driver type='%s'/>\n",
                               virStorageFileFormatTypeToString(disk->format));
-    virBufferAdjustIndent(buf, 6);
     virDomainDiskSourceDefFormatInternal(buf,
                                          type,
                                          disk->file,
@@ -640,8 +640,8 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
                                          disk->hosts,
                                          0, NULL, NULL, 0);
 
-    virBufferAdjustIndent(buf, -6);
-    virBufferAddLit(buf, "    </disk>\n");
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</disk>\n");
 }
 
 char *virDomainSnapshotDefFormat(const char *domain_uuid,
@@ -658,45 +658,51 @@ char *virDomainSnapshotDefFormat(const char *domain_uuid,
     flags |= VIR_DOMAIN_XML_INACTIVE;
 
     virBufferAddLit(&buf, "<domainsnapshot>\n");
-    virBufferEscapeString(&buf, "  <name>%s</name>\n", def->name);
+    virBufferAdjustIndent(&buf, 2);
+    virBufferEscapeString(&buf, "<name>%s</name>\n", def->name);
     if (def->description)
-        virBufferEscapeString(&buf, "  <description>%s</description>\n",
+        virBufferEscapeString(&buf, "<description>%s</description>\n",
                               def->description);
-    virBufferAsprintf(&buf, "  <state>%s</state>\n",
+    virBufferAsprintf(&buf, "<state>%s</state>\n",
                       virDomainSnapshotStateTypeToString(def->state));
     if (def->parent) {
-        virBufferAddLit(&buf, "  <parent>\n");
-        virBufferEscapeString(&buf, "    <name>%s</name>\n", def->parent);
-        virBufferAddLit(&buf, "  </parent>\n");
+        virBufferAddLit(&buf, "<parent>\n");
+        virBufferAdjustIndent(&buf, 2);
+        virBufferEscapeString(&buf, "<name>%s</name>\n", def->parent);
+        virBufferAdjustIndent(&buf, -2);
+        virBufferAddLit(&buf, "</parent>\n");
     }
-    virBufferAsprintf(&buf, "  <creationTime>%lld</creationTime>\n",
+    virBufferAsprintf(&buf, "<creationTime>%lld</creationTime>\n",
                       def->creationTime);
     if (def->memory) {
-        virBufferAsprintf(&buf, "  <memory snapshot='%s'",
+        virBufferAsprintf(&buf, "<memory snapshot='%s'",
                           virDomainSnapshotLocationTypeToString(def->memory));
         virBufferEscapeString(&buf, " file='%s'", def->file);
         virBufferAddLit(&buf, "/>\n");
     }
     if (def->ndisks) {
-        virBufferAddLit(&buf, "  <disks>\n");
+        virBufferAddLit(&buf, "<disks>\n");
+        virBufferAdjustIndent(&buf, 2);
         for (i = 0; i < def->ndisks; i++)
             virDomainSnapshotDiskDefFormat(&buf, &def->disks[i]);
-        virBufferAddLit(&buf, "  </disks>\n");
+        virBufferAdjustIndent(&buf, -2);
+        virBufferAddLit(&buf, "</disks>\n");
     }
     if (def->dom) {
-        virBufferAdjustIndent(&buf, 2);
         if (virDomainDefFormatInternal(def->dom, flags, &buf) < 0) {
             virBufferFreeAndReset(&buf);
             return NULL;
         }
-        virBufferAdjustIndent(&buf, -2);
     } else if (domain_uuid) {
-        virBufferAddLit(&buf, "  <domain>\n");
-        virBufferAsprintf(&buf, "    <uuid>%s</uuid>\n", domain_uuid);
-        virBufferAddLit(&buf, "  </domain>\n");
+        virBufferAddLit(&buf, "<domain>\n");
+        virBufferAdjustIndent(&buf, 2);
+        virBufferAsprintf(&buf, "<uuid>%s</uuid>\n", domain_uuid);
+        virBufferAdjustIndent(&buf, -2);
+        virBufferAddLit(&buf, "</domain>\n");
     }
     if (internal)
-        virBufferAsprintf(&buf, "  <active>%d</active>\n", def->current);
+        virBufferAsprintf(&buf, "<active>%d</active>\n", def->current);
+    virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</domainsnapshot>\n");
 
     if (virBufferError(&buf)) {
