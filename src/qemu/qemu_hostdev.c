@@ -656,24 +656,18 @@ qemuPrepareHostdevPCICheckSupport(virDomainHostdevDefPtr *hostdevs,
     return true;
 }
 
-
-int
-qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
-                             const char *name,
-                             const unsigned char *uuid,
-                             virDomainHostdevDefPtr *hostdevs,
-                             int nhostdevs,
-                             virQEMUCapsPtr qemuCaps,
-                             unsigned int flags)
+static int
+virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
+                            const char *name,
+                            const unsigned char *uuid,
+                            virDomainHostdevDefPtr *hostdevs,
+                            int nhostdevs,
+                            unsigned int flags)
 {
     virPCIDeviceListPtr pcidevs = NULL;
     int last_processed_hostdev_vf = -1;
     size_t i;
     int ret = -1;
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
-
-    if (!qemuPrepareHostdevPCICheckSupport(hostdevs, nhostdevs, qemuCaps))
-        goto out;
 
     virObjectLock(hostdev_mgr->activePciHostdevs);
     virObjectLock(hostdev_mgr->inactivePciHostdevs);
@@ -857,6 +851,26 @@ cleanup:
     virObjectUnlock(hostdev_mgr->activePciHostdevs);
     virObjectUnlock(hostdev_mgr->inactivePciHostdevs);
     virObjectUnref(pcidevs);
+    return ret;
+}
+
+int
+qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
+                             const char *name,
+                             const unsigned char *uuid,
+                             virDomainHostdevDefPtr *hostdevs,
+                             int nhostdevs,
+                             virQEMUCapsPtr qemuCaps,
+                             unsigned int flags)
+{
+    int ret = -1;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    if (!qemuPrepareHostdevPCICheckSupport(hostdevs, nhostdevs, qemuCaps))
+        goto out;
+
+    ret = virHostdevPreparePCIDevices(hostdev_mgr, name, uuid, hostdevs,
+                                      nhostdevs, flags);
 out:
     return ret;
 }
@@ -1024,7 +1038,7 @@ qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
     /* To prevent situation where USB device is assigned to two domains
      * we need to keep a list of currently assigned USB devices.
      * This is done in several loops which cannot be joined into one big
-     * loop. See qemuPrepareHostdevPCIDevices()
+     * loop. See virHostdevPreparePCIDevices()
      */
     if (!(list = virUSBDeviceListNew()))
         goto cleanup;
@@ -1110,7 +1124,7 @@ qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
     /* To prevent situation where SCSI device is assigned to two domains
      * we need to keep a list of currently assigned SCSI devices.
      * This is done in several loops which cannot be joined into one big
-     * loop. See qemuPrepareHostdevPCIDevices()
+     * loop. See virHostdevPreparePCIDevices()
      */
     if (!(list = virSCSIDeviceListNew()))
         goto cleanup;
