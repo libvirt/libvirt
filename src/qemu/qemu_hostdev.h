@@ -27,6 +27,10 @@
 # include "qemu_conf.h"
 # include "domain_conf.h"
 
+typedef enum {
+    VIR_HOSTDEV_STRICT_ACS_CHECK     = (1 << 0), /* strict acs check */
+} virHostdevFlag;
+
 int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
                                 virDomainDefPtr def);
 int qemuUpdateActiveUsbHostdevs(virQEMUDriverPtr driver,
@@ -40,7 +44,8 @@ int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
                                  const unsigned char *uuid,
                                  virDomainHostdevDefPtr *hostdevs,
                                  int nhostdevs,
-                                 virQEMUCapsPtr qemuCaps);
+                                 virQEMUCapsPtr qemuCaps,
+                                 unsigned int flags);
 int
 qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
                           const char *name,
@@ -54,7 +59,8 @@ int qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
 int qemuPrepareHostDevices(virQEMUDriverPtr driver,
                            virDomainDefPtr def,
                            virQEMUCapsPtr qemuCaps,
-                           bool coldBoot);
+                           bool coldBoot,
+                           unsigned int flags);
 void
 qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,
                                  const char *name,

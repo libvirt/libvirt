@@ -3595,6 +3595,7 @@ int qemuProcessStart(virConnectPtr conn,
     unsigned int stop_flags;
     virQEMUDriverConfigPtr cfg;
     virCapsPtr caps = NULL;
+    unsigned int hostdev_flags = 0;
 
     VIR_DEBUG("vm=%p name=%s id=%d pid=%llu",
               vm, vm->def->name, vm->def->id,
@@ -3684,8 +3685,10 @@ int qemuProcessStart(virConnectPtr conn,
 
     /* Must be run before security labelling */
     VIR_DEBUG("Preparing host devices");
+    if (!cfg->relaxedACS)
+        hostdev_flags |= VIR_HOSTDEV_STRICT_ACS_CHECK;
     if (qemuPrepareHostDevices(driver, vm->def, priv->qemuCaps,
-                               !migrateFrom) < 0)
+                               !migrateFrom, hostdev_flags) < 0)
         goto cleanup;
 
     VIR_DEBUG("Preparing chr devices");

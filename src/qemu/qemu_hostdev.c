@@ -653,7 +653,8 @@ qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
                              const unsigned char *uuid,
                              virDomainHostdevDefPtr *hostdevs,
                              int nhostdevs,
-                             virQEMUCapsPtr qemuCaps)
+                             virQEMUCapsPtr qemuCaps,
+                             unsigned int flags)
 {
     virPCIDeviceListPtr pcidevs = NULL;
     int last_processed_hostdev_vf = -1;
@@ -686,8 +687,9 @@ qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
         virPCIDevicePtr other;
+        bool strict_acs_check = !!(flags & VIR_HOSTDEV_STRICT_ACS_CHECK);
 
-        if (!virPCIDeviceIsAssignable(dev, !cfg->relaxedACS)) {
+        if (!virPCIDeviceIsAssignable(dev, strict_acs_check)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("PCI device %s is not assignable"),
                            virPCIDeviceGetName(dev));
@@ -1199,14 +1201,15 @@ int
 qemuPrepareHostDevices(virQEMUDriverPtr driver,
                        virDomainDefPtr def,
                        virQEMUCapsPtr qemuCaps,
-                       bool coldBoot)
+                       bool coldBoot,
+                       unsigned int flags)
 {
     if (!def->nhostdevs)
         return 0;
 
     if (qemuPrepareHostdevPCIDevices(driver, def->name, def->uuid,
                                      def->hostdevs, def->nhostdevs,
-                                     qemuCaps) < 0)
+                                     qemuCaps, flags) < 0)
         return -1;
 
     if (qemuPrepareHostUSBDevices(driver, def->name,

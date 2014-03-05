@@ -1161,13 +1161,17 @@ qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
     bool teardownlabel = false;
     int backend;
     unsigned long long memKB;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    unsigned int flags = 0;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
         return -1;
 
+    if (!cfg->relaxedACS)
+        flags |= VIR_HOSTDEV_STRICT_ACS_CHECK;
     if (qemuPrepareHostdevPCIDevices(driver, vm->def->name, vm->def->uuid,
-                                     &hostdev, 1, priv->qemuCaps) < 0)
-        return -1;
+                                     &hostdev, 1, priv->qemuCaps, flags) < 0)
+        goto cleanup;
 
     /* this could have been changed by qemuPrepareHostdevPCIDevices */
     backend = hostdev->source.subsys.u.pci.backend;
@@ -1261,6 +1265,7 @@ qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
     VIR_FREE(devstr);
     VIR_FREE(configfd_name);
     VIR_FORCE_CLOSE(configfd);
+    virObjectUnref(cfg);
 
     return 0;
 
@@ -1281,6 +1286,8 @@ error:
     VIR_FREE(configfd_name);
     VIR_FORCE_CLOSE(configfd);
 
+cleanup:
+    virObjectUnref(cfg);
     return -1;
 }
 
