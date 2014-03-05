@@ -94,6 +94,7 @@
 #include "viraccessapicheck.h"
 #include "viraccessapicheckqemu.h"
 #include "storage/storage_driver.h"
+#include "virhostdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -690,16 +691,7 @@ qemuStateInitialize(bool privileged,
     if (qemuSecurityInit(qemu_driver) < 0)
         goto error;
 
-    if ((qemu_driver->activePciHostdevs = virPCIDeviceListNew()) == NULL)
-        goto error;
-
-    if ((qemu_driver->activeUsbHostdevs = virUSBDeviceListNew()) == NULL)
-        goto error;
-
-    if ((qemu_driver->inactivePciHostdevs = virPCIDeviceListNew()) == NULL)
-        goto error;
-
-    if ((qemu_driver->activeScsiHostdevs = virSCSIDeviceListNew()) == NULL)
+    if (!(qemu_driver->hostdevMgr = virHostdevManagerGetDefault()))
         goto error;
 
     if (!(qemu_driver->sharedDevices = virHashCreate(30, qemuSharedDeviceEntryFree)))
@@ -979,10 +971,7 @@ qemuStateCleanup(void) {
 
     virNWFilterUnRegisterCallbackDriver(&qemuCallbackDriver);
     virObjectUnref(qemu_driver->config);
-    virObjectUnref(qemu_driver->activePciHostdevs);
-    virObjectUnref(qemu_driver->inactivePciHostdevs);
-    virObjectUnref(qemu_driver->activeUsbHostdevs);
-    virObjectUnref(qemu_driver->activeScsiHostdevs);
+    virObjectUnref(qemu_driver->hostdevMgr);
     virHashFree(qemu_driver->sharedDevices);
     virObjectUnref(qemu_driver->caps);
     virQEMUCapsCacheFree(qemu_driver->qemuCapsCache);
@@ -11288,6 +11277,7 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
     char *xml = NULL;
     bool legacy = qemuHostdevHostSupportsPassthroughLegacy();
     bool vfio = qemuHostdevHostSupportsPassthroughVFIO();
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
     virCheckFlags(0, -1);
 
@@ -11346,18 +11336,18 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
         goto cleanup;
     }
 
-    virObjectLock(driver->activePciHostdevs);
-    virObjectLock(driver->inactivePciHostdevs);
+    virObjectLock(hostdev_mgr->activePciHostdevs);
+    virObjectLock(hostdev_mgr->inactivePciHostdevs);
 
-    if (virPCIDeviceDetach(pci, driver->activePciHostdevs,
-                           driver->inactivePciHostdevs) < 0) {
+    if (virPCIDeviceDetach(pci, hostdev_mgr->activePciHostdevs,
+                           hostdev_mgr->inactivePciHostdevs) < 0) {
         goto out;
     }
 
     ret = 0;
 out:
-    virObjectUnlock(driver->inactivePciHostdevs);
-    virObjectUnlock(driver->activePciHostdevs);
+    virObjectUnlock(hostdev_mgr->inactivePciHostdevs);
+    virObjectUnlock(hostdev_mgr->activePciHostdevs);
 cleanup:
     virPCIDeviceFree(pci);
     virNodeDeviceDefFree(def);
@@ -11381,6 +11371,7 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
     int ret = -1;
     virNodeDeviceDefPtr def = NULL;
     char *xml = NULL;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
     xml = virNodeDeviceGetXMLDesc(dev, 0);
     if (!xml)
@@ -11400,9 +11391,9 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
     if (!pci)
         goto cleanup;
 
-    virObjectLock(driver->activePciHostdevs);
-    virObjectLock(driver->inactivePciHostdevs);
-    other = virPCIDeviceListFind(driver->activePciHostdevs, pci);
+    virObjectLock(hostdev_mgr->activePciHostdevs);
+    virObjectLock(hostdev_mgr->inactivePciHostdevs);
+    other = virPCIDeviceListFind(hostdev_mgr->activePciHostdevs, pci);
     if (other) {
         const char *other_drvname = NULL;
         const char *other_domname = NULL;
@@ -11423,14 +11414,14 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
 
     virPCIDeviceReattachInit(pci);
 
-    if (virPCIDeviceReattach(pci, driver->activePciHostdevs,
-                             driver->inactivePciHostdevs) < 0)
+    if (virPCIDeviceReattach(pci, hostdev_mgr->activePciHostdevs,
+                             hostdev_mgr->inactivePciHostdevs) < 0)
         goto out;
 
     ret = 0;
 out:
-    virObjectUnlock(driver->inactivePciHostdevs);
-    virObjectUnlock(driver->activePciHostdevs);
+    virObjectUnlock(hostdev_mgr->inactivePciHostdevs);
+    virObjectUnlock(hostdev_mgr->activePciHostdevs);
     virPCIDeviceFree(pci);
 cleanup:
     virNodeDeviceDefFree(def);
@@ -11447,6 +11438,7 @@ qemuNodeDeviceReset(virNodeDevicePtr dev)
     int ret = -1;
     virNodeDeviceDefPtr def = NULL;
     char *xml = NULL;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
     xml = virNodeDeviceGetXMLDesc(dev, 0);
     if (!xml)
@@ -11466,17 +11458,16 @@ qemuNodeDeviceReset(virNodeDevicePtr dev)
     if (!pci)
         goto cleanup;
 
-    virObjectLock(driver->activePciHostdevs);
-    virObjectLock(driver->inactivePciHostdevs);
-
-    if (virPCIDeviceReset(pci, driver->activePciHostdevs,
-                          driver->inactivePciHostdevs) < 0)
+    virObjectLock(hostdev_mgr->activePciHostdevs);
+    virObjectLock(hostdev_mgr->inactivePciHostdevs);
+    if (virPCIDeviceReset(pci, hostdev_mgr->activePciHostdevs,
+                          hostdev_mgr->inactivePciHostdevs) < 0)
         goto out;
 
     ret = 0;
 out:
-    virObjectUnlock(driver->inactivePciHostdevs);
-    virObjectUnlock(driver->activePciHostdevs);
+    virObjectUnlock(hostdev_mgr->inactivePciHostdevs);
+    virObjectUnlock(hostdev_mgr->activePciHostdevs);
     virPCIDeviceFree(pci);
 cleanup:
     virNodeDeviceDefFree(def);
