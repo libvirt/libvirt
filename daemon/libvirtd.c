@@ -1152,6 +1152,8 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
+    virUpdateSelfLastChanged(argv[0]);
+
     if (strstr(argv[0], "lt-libvirtd") ||
         strstr(argv[0], "/daemon/.libs/libvirtd")) {
         char *tmp = strrchr(argv[0], '/');

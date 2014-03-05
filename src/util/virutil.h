@@ -194,4 +194,8 @@ const char *virGetEnvBlockSUID(const char *name);
 const char *virGetEnvAllowSUID(const char *name);
 bool virIsSUID(void);
 
+
+time_t virGetSelfLastChanged(void);
+void virUpdateSelfLastChanged(const char *path);
+
 #endif /* __VIR_UTIL_H__ */

@@ -74,6 +74,8 @@ virDriverLoadModule(const char *name)
         goto cleanup;
     }
 
+    virUpdateSelfLastChanged(modfile);
+
     handle = dlopen(modfile, RTLD_NOW | RTLD_GLOBAL);
     if (!handle) {
         VIR_ERROR(_("failed to load module %s %s"), modfile, dlerror());

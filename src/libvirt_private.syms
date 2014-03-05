@@ -1954,6 +1954,7 @@ virGetGroupID;
 virGetGroupList;
 virGetGroupName;
 virGetHostname;
+virGetSelfLastChanged;
 virGetUnprivSGIOSysfsPath;
 virGetUserCacheDirectory;
 virGetUserConfigDirectory;
@@ -1983,6 +1984,7 @@ virSetNonBlock;
 virSetUIDGID;
 virSetUIDGIDWithCaps;
 virStrIsPrint;
+virUpdateSelfLastChanged;
 virValidateWWN;
 
 

@@ -2173,3 +2173,26 @@ bool virIsSUID(void)
 {
     return getuid() != geteuid();
 }
+
+
+static time_t selfLastChanged;
+
+time_t virGetSelfLastChanged(void)
+{
+    return selfLastChanged;
+}
+
+
+void virUpdateSelfLastChanged(const char *path)
+{
+    struct stat sb;
+
+    if (stat(path, &sb) < 0)
+        return;
+
+    if (sb.st_ctime > selfLastChanged) {
+        VIR_DEBUG("Setting self last changed to %lld for '%s'",
+                  (long long)sb.st_ctime, path);
+        selfLastChanged = sb.st_ctime;
+    }
+}
