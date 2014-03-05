@@ -467,10 +467,17 @@ cleanup:
     return ret;
 }
 
-
+/* @oldStateDir:
+ * For upgrade purpose:
+ * To an existing VM on QEMU, the hostdev netconfig file is originally stored
+ * in cfg->stateDir (/var/run/libvirt/qemu). Switch to new version, it uses new
+ * location (hostdev_mgr->stateDir) but certainly will not find it. In this
+ * case, try to find in the old state dir.
+ */
 static int
 qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
-                                  char *stateDir)
+                                  char *stateDir,
+                                  char *oldStateDir)
 {
     char *linkdev = NULL;
     virNetDevVPortProfilePtr virtPort;
@@ -501,12 +508,15 @@ qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
 
     virtPort = virDomainNetGetActualVirtPortProfile(
                                  hostdev->parent.data.net);
-    if (virtPort)
+    if (virtPort) {
         ret = qemuDomainHostdevNetConfigVirtPortProfile(linkdev, vf, virtPort,
                                           &hostdev->parent.data.net->mac, NULL,
                                           port_profile_associate);
-    else
+    } else {
         ret = virNetDevRestoreNetConfig(linkdev, vf, stateDir);
+        if (ret < 0 && oldStateDir != NULL)
+            ret = virNetDevRestoreNetConfig(linkdev, vf, oldStateDir);
+    }
 
     VIR_FREE(linkdev);
 
@@ -660,7 +670,6 @@ qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
     int last_processed_hostdev_vf = -1;
     size_t i;
     int ret = -1;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
     if (!qemuPrepareHostdevPCICheckSupport(hostdevs, nhostdevs, qemuCaps))
@@ -746,7 +755,7 @@ qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
          if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
              hostdev->parent.data.net) {
              if (qemuDomainHostdevNetConfigReplace(hostdev, uuid,
-                                                   cfg->stateDir) < 0) {
+                                                   hostdev_mgr->stateDir) < 0) {
                  goto resetvfnetconfig;
              }
          }
@@ -830,7 +839,8 @@ inactivedevs:
 resetvfnetconfig:
     for (i = 0;
          last_processed_hostdev_vf != -1 && i < last_processed_hostdev_vf; i++)
-        qemuDomainHostdevNetConfigRestore(hostdevs[i], cfg->stateDir);
+        qemuDomainHostdevNetConfigRestore(hostdevs[i], hostdev_mgr->stateDir,
+                                          NULL);
 
 reattachdevs:
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
@@ -848,7 +858,6 @@ cleanup:
     virObjectUnlock(hostdev_mgr->inactivePciHostdevs);
     virObjectUnref(pcidevs);
 out:
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -1268,6 +1277,7 @@ qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
     virPCIDeviceListPtr pcidevs;
     size_t i;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    char *oldStateDir = cfg->stateDir;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
     virObjectLock(hostdev_mgr->activePciHostdevs);
@@ -1319,7 +1329,8 @@ qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
      * reset and reattach device
      */
     for (i = 0; i < nhostdevs; i++)
-        qemuDomainHostdevNetConfigRestore(hostdevs[i], cfg->stateDir);
+        qemuDomainHostdevNetConfigRestore(hostdevs[i], hostdev_mgr->stateDir,
+                                          oldStateDir);
 
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
