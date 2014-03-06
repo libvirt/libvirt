@@ -152,6 +152,7 @@ test_programs = virshtest sockettest \
 	virkmodtest \
 	vircapstest \
 	domainconftest \
+	virhostdevtest \
 	$(NULL)
 
 if WITH_REMOTE
@@ -821,6 +822,10 @@ vircgroupmock_la_LDFLAGS = -module -avoid-version \
 vircryptotest_SOURCES = \
 	vircryptotest.c testutils.h testutils.c
 vircryptotest_LDADD = $(LDADDS)
+
+virhostdevtest_SOURCES = \
+	virhostdevtest.c testutils.h testutils.c
+virhostdevtest_LDADD = $(LDADDS)
 
 virpcitest_SOURCES = \
 	virpcitest.c testutils.h testutils.c
