@@ -328,27 +328,19 @@ qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,
                                   name, hostdevs, nhostdevs);
 }
 
-
-void
-qemuDomainReAttachHostScsiDevices(virQEMUDriverPtr driver,
-                                  const char *name,
-                                  virDomainHostdevDefPtr *hostdevs,
-                                  int nhostdevs)
+static void
+virHostdevReAttachScsiHostdevs(virHostdevManagerPtr hostdev_mgr,
+                               const char *name,
+                               virDomainHostdevDefPtr *hostdevs,
+                               int nhostdevs)
 {
     size_t i;
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
     virObjectLock(hostdev_mgr->activeScsiHostdevs);
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         virSCSIDevicePtr scsi;
         virSCSIDevicePtr tmp;
-        virDomainDeviceDef dev;
-
-        dev.type = VIR_DOMAIN_DEVICE_HOSTDEV;
-        dev.data.hostdev = hostdev;
-
-        ignore_value(qemuRemoveSharedDevice(driver, &dev, name));
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
             hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
@@ -395,6 +387,28 @@ qemuDomainReAttachHostScsiDevices(virQEMUDriverPtr driver,
         virSCSIDeviceFree(scsi);
     }
     virObjectUnlock(hostdev_mgr->activeScsiHostdevs);
+}
+
+void
+qemuDomainReAttachHostScsiDevices(virQEMUDriverPtr driver,
+                                  const char *name,
+                                  virDomainHostdevDefPtr *hostdevs,
+                                  int nhostdevs)
+{
+    size_t i;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    for (i = 0; i < nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = hostdevs[i];
+        virDomainDeviceDef dev;
+
+        dev.type = VIR_DOMAIN_DEVICE_HOSTDEV;
+        dev.data.hostdev = hostdev;
+
+        ignore_value(qemuRemoveSharedDevice(driver, &dev, name));
+    }
+
+    virHostdevReAttachScsiHostdevs(hostdev_mgr, name, hostdevs, nhostdevs);
 }
 
 void
