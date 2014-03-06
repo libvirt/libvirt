@@ -129,9 +129,7 @@ error:
  * @conn: the hypervisor connection to release
  *
  * Unconditionally release all memory associated with a connection.
- * The conn.lock mutex must be held prior to calling this, and will
- * be released prior to this returning. The connection obj must not
- * be used once this method returns.
+ * The connection object must not be used once this method returns.
  */
 static void
 virConnectDispose(void *obj)
@@ -239,9 +237,7 @@ error:
  * @domain: the domain to release
  *
  * Unconditionally release all memory associated with a domain.
- * The conn.lock mutex must be held prior to calling this, and will
- * be released prior to this returning. The domain obj must not
- * be used once this method returns.
+ * The domain object must not be used once this method returns.
  *
  * It will also unreference the associated connection object,
  * which may also be released if its ref count hits zero.
@@ -306,9 +302,7 @@ error:
  * @network: the network to release
  *
  * Unconditionally release all memory associated with a network.
- * The conn.lock mutex must be held prior to calling this, and will
- * be released prior to this returning. The network obj must not
- * be used once this method returns.
+ * The network object must not be used once this method returns.
  *
  * It will also unreference the associated connection object,
  * which may also be released if its ref count hits zero.
@@ -377,9 +371,7 @@ error:
  * @interface: the interface to release
  *
  * Unconditionally release all memory associated with an interface.
- * The conn.lock mutex must be held prior to calling this, and will
- * be released prior to this returning. The interface obj must not
- * be used once this method returns.
+ * The interface object must not be used once this method returns.
  *
  * It will also unreference the associated connection object,
  * which may also be released if its ref count hits zero.
@@ -451,9 +443,7 @@ error:
  * @pool: the pool to release
  *
  * Unconditionally release all memory associated with a pool.
- * The conn.lock mutex must be held prior to calling this, and will
- * be released prior to this returning. The pool obj must not
- * be used once this method returns.
+ * The pool object must not be used once this method returns.
  *
  * It will also unreference the associated connection object,
  * which may also be released if its ref count hits zero.
@@ -532,10 +522,8 @@ error:
  * virStorageVolDispose:
  * @vol: the vol to release
  *
- * Unconditionally release all memory associated with a vol.
- * The conn.lock mutex must be held prior to calling this, and will
- * be released prior to this returning. The vol obj must not
- * be used once this method returns.
+ * Unconditionally release all memory associated with a volume.
+ * The volume object must not be used once this method returns.
  *
  * It will also unreference the associated connection object,
  * which may also be released if its ref count hits zero.
@@ -599,10 +587,8 @@ error:
  * virNodeDeviceDispose:
  * @dev: the dev to release
  *
- * Unconditionally release all memory associated with a dev.
- * The conn.lock mutex must be held prior to calling this, and will
- * be released prior to this returning. The dev obj must not
- * be used once this method returns.
+ * Unconditionally release all memory associated with a device.
+ * The device object must not be used once this method returns.
  *
  * It will also unreference the associated connection object,
  * which may also be released if its ref count hits zero.
@@ -666,12 +652,11 @@ error:
  * virSecretDispose:
  * @secret: the secret to release
  *
- * Unconditionally release all memory associated with a secret.  The conn.lock
- * mutex must be held prior to calling this, and will be released prior to this
- * returning. The secret obj must not be used once this method returns.
+ * Unconditionally release all memory associated with a secret.
+ * The secret object must not be used once this method returns.
  *
- * It will also unreference the associated connection object, which may also be
- * released if its ref count hits zero.
+ * It will also unreference the associated connection object,
+ * which may also be released if its ref count hits zero.
  */
 static void
 virSecretDispose(void *obj)
@@ -762,9 +747,7 @@ error:
  * @nwfilter: the nwfilter to release
  *
  * Unconditionally release all memory associated with a nwfilter.
- * The conn.lock mutex must be held prior to calling this, and will
- * be released prior to this returning. The nwfilter obj must not
- * be used once this method returns.
+ * The nwfilter object must not be used once this method returns.
  *
  * It will also unreference the associated connection object,
  * which may also be released if its ref count hits zero.
