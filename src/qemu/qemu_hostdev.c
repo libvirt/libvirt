@@ -330,6 +330,7 @@ qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,
 
 static void
 virHostdevReAttachScsiHostdevs(virHostdevManagerPtr hostdev_mgr,
+                               const char *drv_name,
                                const char *name,
                                virDomainHostdevDefPtr *hostdevs,
                                int nhostdevs)
@@ -383,7 +384,7 @@ virHostdevReAttachScsiHostdevs(virHostdevManagerPtr hostdev_mgr,
                    hostdev->source.subsys.u.scsi.unit,
                    name);
 
-        virSCSIDeviceListDel(hostdev_mgr->activeScsiHostdevs, tmp, QEMU_DRIVER_NAME, name);
+        virSCSIDeviceListDel(hostdev_mgr->activeScsiHostdevs, tmp, drv_name, name);
         virSCSIDeviceFree(scsi);
     }
     virObjectUnlock(hostdev_mgr->activeScsiHostdevs);
@@ -408,7 +409,8 @@ qemuDomainReAttachHostScsiDevices(virQEMUDriverPtr driver,
         ignore_value(qemuRemoveSharedDevice(driver, &dev, name));
     }
 
-    virHostdevReAttachScsiHostdevs(hostdev_mgr, name, hostdevs, nhostdevs);
+    virHostdevReAttachScsiHostdevs(hostdev_mgr, QEMU_DRIVER_NAME,
+                                   name, hostdevs, nhostdevs);
 }
 
 void
