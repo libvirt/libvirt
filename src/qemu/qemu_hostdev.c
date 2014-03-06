@@ -41,18 +41,14 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
-int
-qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
-                            virDomainDefPtr def)
+static int
+virHostdevUpdateActivePciHostdevs(virHostdevManagerPtr mgr,
+                                  virDomainDefPtr def)
 {
     virDomainHostdevDefPtr hostdev = NULL;
     virPCIDevicePtr dev = NULL;
     size_t i;
     int ret = -1;
-    virHostdevManagerPtr mgr = driver->hostdevMgr;
-
-    if (!def->nhostdevs)
-        return 0;
 
     virObjectLock(mgr->activePciHostdevs);
     virObjectLock(mgr->inactivePciHostdevs);
@@ -101,6 +97,18 @@ cleanup:
     virObjectUnlock(mgr->activePciHostdevs);
     virObjectUnlock(mgr->inactivePciHostdevs);
     return ret;
+}
+
+int
+qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
+                            virDomainDefPtr def)
+{
+    virHostdevManagerPtr mgr = driver->hostdevMgr;
+
+    if (!def->nhostdevs)
+        return 0;
+
+    return virHostdevUpdateActivePciHostdevs(mgr, def);
 }
 
 int
