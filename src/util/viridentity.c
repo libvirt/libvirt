@@ -168,16 +168,18 @@ virIdentityPtr virIdentityGetSystem(void)
         goto cleanup;
 
 #if WITH_SELINUX
-    if (getcon(&con) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to lookup SELinux process context"));
-        goto cleanup;
-    }
-    if (VIR_STRDUP(seccontext, con) < 0) {
+    if (is_selinux_enabled()) {
+        if (getcon(&con) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Unable to lookup SELinux process context"));
+            goto cleanup;
+        }
+        if (VIR_STRDUP(seccontext, con) < 0) {
+            freecon(con);
+            goto cleanup;
+        }
         freecon(con);
-        goto cleanup;
     }
-    freecon(con);
 #endif
 
     if (!(ret = virIdentityNew()))
