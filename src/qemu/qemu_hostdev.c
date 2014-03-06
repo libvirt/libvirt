@@ -235,6 +235,7 @@ out:
 
 static int
 virHostdevMarkUsbHostdevs(virHostdevManagerPtr mgr,
+                          const char *drv_name,
                           const char *name,
                           virUSBDeviceListPtr list)
 {
@@ -265,7 +266,7 @@ virHostdevMarkUsbHostdevs(virHostdevManagerPtr mgr,
             goto error;
         }
 
-        virUSBDeviceSetUsedBy(usb, QEMU_DRIVER_NAME, name);
+        virUSBDeviceSetUsedBy(usb, drv_name, name);
         VIR_DEBUG("Adding %03d.%03d dom=%s to activeUsbHostdevs",
                   virUSBDeviceGetBus(usb), virUSBDeviceGetDevno(usb), name);
         /*
@@ -379,6 +380,7 @@ out:
 
 static int
 virHostdevPrepareUSBDevices(virHostdevManagerPtr hostdev_mgr,
+                            const char *drv_name,
                             const char *name,
                             virDomainHostdevDefPtr *hostdevs,
                             int nhostdevs,
@@ -428,7 +430,7 @@ virHostdevPrepareUSBDevices(virHostdevManagerPtr hostdev_mgr,
      * and add them do driver list. However, if something goes
      * wrong, perform rollback.
      */
-    if (virHostdevMarkUsbHostdevs(hostdev_mgr, name, list) < 0)
+    if (virHostdevMarkUsbHostdevs(hostdev_mgr, drv_name, name, list) < 0)
         goto cleanup;
 
     /* Loop 2: Temporary list was successfully merged with
@@ -456,7 +458,7 @@ qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
 {
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
-    return virHostdevPrepareUSBDevices(hostdev_mgr, name,
+    return virHostdevPrepareUSBDevices(hostdev_mgr, QEMU_DRIVER_NAME, name,
                                        hostdevs, nhostdevs, flags);
 }
 
