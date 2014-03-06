@@ -1300,6 +1300,7 @@ virHookPresent;
 #util/virhostdev.h
 virHostdevManagerGetDefault;
 virHostdevPreparePCIDevices;
+virHostdevPrepareSCSIDevices;
 virHostdevPrepareUSBDevices;
 virHostdevReAttachPCIDevices;
 virHostdevUpdateActivePciHostdevs;
