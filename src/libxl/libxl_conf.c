@@ -1147,6 +1147,66 @@ libxlDriverConfigGet(libxlDriverPrivatePtr driver)
     return cfg;
 }
 
+int
+libxlMakePci(virDomainHostdevDefPtr hostdev, libxl_device_pci *pcidev)
+{
+    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+        return -1;
+    if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+        return -1;
+
+    pcidev->domain = hostdev->source.subsys.u.pci.addr.domain;
+    pcidev->bus = hostdev->source.subsys.u.pci.addr.bus;
+    pcidev->dev = hostdev->source.subsys.u.pci.addr.slot;
+    pcidev->func = hostdev->source.subsys.u.pci.addr.function;
+
+    return 0;
+}
+
+static int
+libxlMakePciList(virDomainDefPtr def, libxl_domain_config *d_config)
+{
+    virDomainHostdevDefPtr *l_hostdevs = def->hostdevs;
+    size_t nhostdevs = def->nhostdevs;
+    size_t npcidevs = 0;
+    libxl_device_pci *x_pcidevs;
+    size_t i, j;
+
+    if (nhostdevs == 0)
+        return 0;
+
+    if (VIR_ALLOC_N(x_pcidevs, nhostdevs) < 0)
+        return -1;
+
+    for (i = 0, j = 0; i < nhostdevs; i++) {
+        if (l_hostdevs[i]->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+        if (l_hostdevs[i]->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            continue;
+
+        libxl_device_pci_init(&x_pcidevs[j]);
+
+        if (libxlMakePci(l_hostdevs[i], &x_pcidevs[j]) < 0)
+            goto error;
+
+        npcidevs++;
+        j++;
+    }
+
+    VIR_SHRINK_N(x_pcidevs, nhostdevs, nhostdevs - npcidevs);
+    d_config->pcidevs = x_pcidevs;
+    d_config->num_pcidevs = npcidevs;
+
+    return 0;
+
+error:
+    for (i = 0; i < npcidevs; i++)
+        libxl_device_pci_dispose(&x_pcidevs[i]);
+
+    VIR_FREE(x_pcidevs);
+    return -1;
+}
+
 virCapsPtr
 libxlMakeCapabilities(libxl_ctx *ctx)
 {
@@ -1193,6 +1253,9 @@ libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
         return -1;
 
     if (libxlMakeVfbList(driver, def, d_config) < 0)
+        return -1;
+
+    if (libxlMakePciList(def, d_config) < 0)
         return -1;
 
     d_config->on_reboot = def->onReboot;

@@ -53,6 +53,7 @@
 #include "virsysinfo.h"
 #include "viraccessapicheck.h"
 #include "viratomic.h"
+#include "virhostdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -311,6 +312,10 @@ libxlVmCleanup(libxlDriverPrivatePtr driver,
     int vnc_port;
     char *file;
     size_t i;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    virHostdevReAttachDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+                                    vm->def, VIR_HOSTDEV_SP_PCI, NULL);
 
     vm->def->id = -1;
 
@@ -701,6 +706,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
 #ifdef LIBXL_HAVE_DOMAIN_CREATE_RESTORE_PARAMS
     libxl_domain_restore_params params;
 #endif
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
     if (libxlDomainObjPrivateInitCtx(vm) < 0)
         return ret;
@@ -762,6 +768,10 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                        d_config.c_info.name);
         goto endjob;
     }
+
+    if (virHostdevPrepareDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+                                       vm->def, VIR_HOSTDEV_SP_PCI) < 0)
+        goto endjob;
 
     /* Unlock virDomainObj while creating the domain */
     virObjectUnlock(vm);
@@ -869,6 +879,7 @@ libxlReconnectDomain(virDomainObjPtr vm,
     libxl_dominfo d_info;
     int len;
     uint8_t *data = NULL;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
     virObjectLock(vm);
 
@@ -892,6 +903,12 @@ libxlReconnectDomain(virDomainObjPtr vm,
 
     /* Update domid in case it changed (e.g. reboot) while we were gone? */
     vm->def->id = d_info.domid;
+
+    /* Update hostdev state */
+    if (virHostdevUpdateDomainActiveDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+                                            vm->def, VIR_HOSTDEV_SP_PCI) < 0)
+        goto out;
+
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_UNKNOWN);
 
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
@@ -924,6 +941,7 @@ libxlStateCleanup(void)
     if (!libxl_driver)
         return -1;
 
+    virObjectUnref(libxl_driver->hostdevMgr);
     virObjectUnref(libxl_driver->config);
     virObjectUnref(libxl_driver->xmlopt);
     virObjectUnref(libxl_driver->domains);
@@ -1001,6 +1019,9 @@ libxlStateInitialize(bool privileged,
         goto error;
 
     if (!(libxl_driver->domains = virDomainObjListNew()))
+        goto error;
+
+    if (!(libxl_driver->hostdevMgr = virHostdevManagerGetDefault()))
         goto error;
 
     if (!(cfg = libxlDriverConfigNew()))
@@ -3288,6 +3309,95 @@ cleanup:
 }
 
 static int
+libxlDomainAttachHostPCIDevice(libxlDriverPrivatePtr driver,
+                               libxlDomainObjPrivatePtr priv,
+                               virDomainObjPtr vm,
+                               virDomainHostdevDefPtr hostdev)
+{
+    libxl_device_pci pcidev;
+    virDomainHostdevDefPtr found;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+        return -1;
+
+    if (virDomainHostdevFind(vm->def, hostdev, &found) >= 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("target pci device %.4x:%.2x:%.2x.%.1x already exists"),
+                       hostdev->source.subsys.u.pci.addr.domain,
+                       hostdev->source.subsys.u.pci.addr.bus,
+                       hostdev->source.subsys.u.pci.addr.slot,
+                       hostdev->source.subsys.u.pci.addr.function);
+        return -1;
+    }
+
+    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
+        return -1;
+
+    if (virHostdevPreparePCIDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+                                    vm->def->name, vm->def->uuid,
+                                    &hostdev, 1, 0) < 0)
+        goto cleanup;
+
+    if (libxlMakePci(hostdev, &pcidev) < 0)
+        goto reattach_hostdev;
+
+    if (libxl_device_pci_add(priv->ctx, vm->def->id, &pcidev, 0) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("libxenlight failed to attach pci device %.4x:%.2x:%.2x.%.1x"),
+                       hostdev->source.subsys.u.pci.addr.domain,
+                       hostdev->source.subsys.u.pci.addr.bus,
+                       hostdev->source.subsys.u.pci.addr.slot,
+                       hostdev->source.subsys.u.pci.addr.function);
+        goto reattach_hostdev;
+    }
+
+    vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
+    return 0;
+
+reattach_hostdev:
+    virHostdevReAttachPCIDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+                                 vm->def->name, &hostdev, 1, NULL);
+
+cleanup:
+    return -1;
+}
+
+static int
+libxlDomainAttachHostDevice(libxlDriverPrivatePtr driver,
+                            libxlDomainObjPrivatePtr priv,
+                            virDomainObjPtr vm,
+                            virDomainDeviceDefPtr dev)
+{
+    virDomainHostdevDefPtr hostdev = dev->data.hostdev;
+
+    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("hostdev mode '%s' not supported"),
+                       virDomainHostdevModeTypeToString(hostdev->mode));
+        return -1;
+    }
+
+    switch (hostdev->source.subsys.type) {
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+        if (libxlDomainAttachHostPCIDevice(driver, priv, vm, hostdev) < 0)
+            goto error;
+        break;
+
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("hostdev subsys type '%s' not supported"),
+                       virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
+        goto error;
+    }
+
+    return 0;
+
+error:
+    return -1;
+}
+
+static int
 libxlDomainDetachDeviceDiskLive(libxlDomainObjPrivatePtr priv,
                                 virDomainObjPtr vm, virDomainDeviceDefPtr dev)
 {
@@ -3342,7 +3452,9 @@ cleanup:
 }
 
 static int
-libxlDomainAttachDeviceLive(libxlDomainObjPrivatePtr priv, virDomainObjPtr vm,
+libxlDomainAttachDeviceLive(libxlDriverPrivatePtr driver,
+                            libxlDomainObjPrivatePtr priv,
+                            virDomainObjPtr vm,
                             virDomainDeviceDefPtr dev)
 {
     int ret = -1;
@@ -3352,6 +3464,12 @@ libxlDomainAttachDeviceLive(libxlDomainObjPrivatePtr priv, virDomainObjPtr vm,
             ret = libxlDomainAttachDeviceDiskLive(priv, vm, dev);
             if (!ret)
                 dev->data.disk = NULL;
+            break;
+
+        case VIR_DOMAIN_DEVICE_HOSTDEV:
+            ret = libxlDomainAttachHostDevice(driver, priv, vm, dev);
+            if (!ret)
+                dev->data.hostdev = NULL;
             break;
 
         default:
@@ -3368,6 +3486,8 @@ static int
 libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
 {
     virDomainDiskDefPtr disk;
+    virDomainHostdevDefPtr hostdev;
+    virDomainHostdevDefPtr found;
 
     switch (dev->type) {
         case VIR_DOMAIN_DEVICE_DISK:
@@ -3382,6 +3502,25 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
             /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
             dev->data.disk = NULL;
             break;
+        case VIR_DOMAIN_DEVICE_HOSTDEV:
+            hostdev = dev->data.hostdev;
+
+            if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+                return -1;
+
+            if (virDomainHostdevFind(vmdef, hostdev, &found) >= 0) {
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("target pci device %.4x:%.2x:%.2x.%.1x\
+                                  already exists"),
+                               hostdev->source.subsys.u.pci.addr.domain,
+                               hostdev->source.subsys.u.pci.addr.bus,
+                               hostdev->source.subsys.u.pci.addr.slot,
+                               hostdev->source.subsys.u.pci.addr.function);
+                return -1;
+            }
+
+            virDomainHostdevInsert(vmdef, hostdev);
+            break;
 
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -3392,7 +3531,128 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
 }
 
 static int
-libxlDomainDetachDeviceLive(libxlDomainObjPrivatePtr priv, virDomainObjPtr vm,
+libxlComparePCIDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                      virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
+                      virDomainDeviceInfoPtr info1,
+                      void *opaque)
+{
+    virDomainDeviceInfoPtr info2 = opaque;
+
+    if (info1->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI ||
+        info2->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
+        return 0;
+
+    if (info1->addr.pci.domain == info2->addr.pci.domain &&
+        info1->addr.pci.bus == info2->addr.pci.bus &&
+        info1->addr.pci.slot == info2->addr.pci.slot &&
+        info1->addr.pci.function != info2->addr.pci.function)
+        return -1;
+    return 0;
+}
+
+static bool
+libxlIsMultiFunctionDevice(virDomainDefPtr def,
+                           virDomainDeviceInfoPtr dev)
+{
+    if (virDomainDeviceInfoIterate(def, libxlComparePCIDevice, dev) < 0)
+        return true;
+    return false;
+}
+
+static int
+libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
+                               libxlDomainObjPrivatePtr priv,
+                               virDomainObjPtr vm,
+                               virDomainHostdevDefPtr hostdev)
+{
+    virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
+    libxl_device_pci pcidev;
+    virDomainHostdevDefPtr detach;
+    int idx;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    if (subsys->type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+        return -1;
+
+    idx = virDomainHostdevFind(vm->def, hostdev, &detach);
+    if (idx < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("host pci device %.4x:%.2x:%.2x.%.1x not found"),
+                       subsys->u.pci.addr.domain, subsys->u.pci.addr.bus,
+                       subsys->u.pci.addr.slot, subsys->u.pci.addr.function);
+        return -1;
+    }
+
+    if (libxlIsMultiFunctionDevice(vm->def, detach->info)) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"),
+                       subsys->u.pci.addr.domain, subsys->u.pci.addr.bus,
+                       subsys->u.pci.addr.slot, subsys->u.pci.addr.function);
+        goto cleanup;
+    }
+
+
+    libxl_device_pci_init(&pcidev);
+
+    if (libxlMakePci(detach, &pcidev) < 0)
+        goto cleanup;
+
+    if (libxl_device_pci_remove(priv->ctx, vm->def->id, &pcidev, 0) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("libxenlight failed to detach pci device\
+                          %.4x:%.2x:%.2x.%.1x"),
+                       subsys->u.pci.addr.domain, subsys->u.pci.addr.bus,
+                       subsys->u.pci.addr.slot, subsys->u.pci.addr.function);
+        goto cleanup;
+    }
+
+    libxl_device_pci_dispose(&pcidev);
+
+    virDomainHostdevRemove(vm->def, idx);
+
+    virHostdevReAttachPCIDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+                                 vm->def->name, &hostdev, 1, NULL);
+
+    return 0;
+
+cleanup:
+    virDomainHostdevDefFree(detach);
+    return -1;
+}
+
+static int
+libxlDomainDetachHostDevice(libxlDriverPrivatePtr driver,
+                            libxlDomainObjPrivatePtr priv,
+                            virDomainObjPtr vm,
+                            virDomainDeviceDefPtr dev)
+{
+    virDomainHostdevDefPtr hostdev = dev->data.hostdev;
+    virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
+
+    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("hostdev mode '%s' not supported"),
+                       virDomainHostdevModeTypeToString(hostdev->mode));
+        return -1;
+    }
+
+    switch (subsys->type) {
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+            return libxlDomainDetachHostPCIDevice(driver, priv, vm, hostdev);
+
+        default:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected hostdev type %d"), subsys->type);
+            break;
+    }
+
+    return -1;
+}
+
+static int
+libxlDomainDetachDeviceLive(libxlDriverPrivatePtr driver,
+                            libxlDomainObjPrivatePtr priv,
+                            virDomainObjPtr vm,
                             virDomainDeviceDefPtr dev)
 {
     int ret = -1;
@@ -3400,6 +3660,10 @@ libxlDomainDetachDeviceLive(libxlDomainObjPrivatePtr priv, virDomainObjPtr vm,
     switch (dev->type) {
         case VIR_DOMAIN_DEVICE_DISK:
             ret = libxlDomainDetachDeviceDiskLive(priv, vm, dev);
+            break;
+
+        case VIR_DOMAIN_DEVICE_HOSTDEV:
+            ret = libxlDomainDetachHostDevice(driver, priv, vm, dev);
             break;
 
         default:
@@ -3411,6 +3675,7 @@ libxlDomainDetachDeviceLive(libxlDomainObjPrivatePtr priv, virDomainObjPtr vm,
 
     return ret;
 }
+
 
 static int
 libxlDomainDetachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
@@ -3589,7 +3854,7 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto endjob;
 
-        if ((ret = libxlDomainAttachDeviceLive(priv, vm, dev)) < 0)
+        if ((ret = libxlDomainAttachDeviceLive(driver, priv, vm, dev)) < 0)
             goto endjob;
 
         /*
@@ -3700,7 +3965,7 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto endjob;
 
-        if ((ret = libxlDomainDetachDeviceLive(priv, vm, dev)) < 0)
+        if ((ret = libxlDomainDetachDeviceLive(driver, priv, vm, dev)) < 0)
             goto endjob;
 
         /*
@@ -4604,10 +4869,185 @@ libxlConnectSupportsFeature(virConnectPtr conn, int feature)
     }
 }
 
+static int
+libxlNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
+                          unsigned *domain,
+                          unsigned *bus,
+                          unsigned *slot,
+                          unsigned *function)
+{
+    virNodeDevCapsDefPtr cap;
+    int ret = -1;
+
+    cap = def->caps;
+    while (cap) {
+        if (cap->type == VIR_NODE_DEV_CAP_PCI_DEV) {
+            *domain   = cap->data.pci_dev.domain;
+            *bus      = cap->data.pci_dev.bus;
+            *slot     = cap->data.pci_dev.slot;
+            *function = cap->data.pci_dev.function;
+            break;
+        }
+
+        cap = cap->next;
+    }
+
+    if (!cap) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("device %s is not a PCI device"), def->name);
+        goto out;
+    }
+
+    ret = 0;
+out:
+    return ret;
+}
+
+static int
+libxlNodeDeviceDetachFlags(virNodeDevicePtr dev,
+                           const char *driverName,
+                           unsigned int flags)
+{
+    virPCIDevicePtr pci = NULL;
+    unsigned domain = 0, bus = 0, slot = 0, function = 0;
+    int ret = -1;
+    virNodeDeviceDefPtr def = NULL;
+    char *xml = NULL;
+    libxlDriverPrivatePtr driver = dev->conn->privateData;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    virCheckFlags(0, -1);
+
+    xml = virNodeDeviceGetXMLDesc(dev, 0);
+    if (!xml)
+        goto cleanup;
+
+    def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL);
+    if (!def)
+        goto cleanup;
+
+    if (virNodeDeviceDetachFlagsEnsureACL(dev->conn, def) < 0)
+        goto cleanup;
+
+    if (libxlNodeDeviceGetPCIInfo(def, &domain, &bus, &slot, &function) < 0)
+        goto cleanup;
+
+    pci = virPCIDeviceNew(domain, bus, slot, function);
+    if (!pci)
+        goto cleanup;
+
+    if (!driverName || STREQ(driverName, "xen")) {
+        if (virPCIDeviceSetStubDriver(pci, "pciback") < 0)
+            goto cleanup;
+    } else {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unsupported driver name '%s'"), driverName);
+        goto cleanup;
+    }
+
+    if (virHostdevPCINodeDeviceDetach(hostdev_mgr, pci) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    virPCIDeviceFree(pci);
+    virNodeDeviceDefFree(def);
+    VIR_FREE(xml);
+    return ret;
+}
+
+static int
+libxlNodeDeviceDettach(virNodeDevicePtr dev)
+{
+    return libxlNodeDeviceDetachFlags(dev, NULL, 0);
+}
+
+static int
+libxlNodeDeviceReAttach(virNodeDevicePtr dev)
+{
+    virPCIDevicePtr pci = NULL;
+    unsigned domain = 0, bus = 0, slot = 0, function = 0;
+    int ret = -1;
+    virNodeDeviceDefPtr def = NULL;
+    char *xml = NULL;
+    libxlDriverPrivatePtr driver = dev->conn->privateData;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    xml = virNodeDeviceGetXMLDesc(dev, 0);
+    if (!xml)
+        goto cleanup;
+
+    def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL);
+    if (!def)
+        goto cleanup;
+
+    if (virNodeDeviceReAttachEnsureACL(dev->conn, def) < 0)
+        goto cleanup;
+
+    if (libxlNodeDeviceGetPCIInfo(def, &domain, &bus, &slot, &function) < 0)
+        goto cleanup;
+
+    pci = virPCIDeviceNew(domain, bus, slot, function);
+    if (!pci)
+        goto cleanup;
+
+    if (virHostdevPCINodeDeviceReAttach(hostdev_mgr, pci) < 0)
+        goto out;
+
+    ret = 0;
+out:
+    virPCIDeviceFree(pci);
+cleanup:
+    virNodeDeviceDefFree(def);
+    VIR_FREE(xml);
+    return ret;
+}
+
+static int
+libxlNodeDeviceReset(virNodeDevicePtr dev)
+{
+    virPCIDevicePtr pci;
+    unsigned domain = 0, bus = 0, slot = 0, function = 0;
+    int ret = -1;
+    virNodeDeviceDefPtr def = NULL;
+    char *xml = NULL;
+    libxlDriverPrivatePtr driver = dev->conn->privateData;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    xml = virNodeDeviceGetXMLDesc(dev, 0);
+    if (!xml)
+        goto cleanup;
+
+    def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL);
+    if (!def)
+        goto cleanup;
+
+    if (virNodeDeviceResetEnsureACL(dev->conn, def) < 0)
+        goto cleanup;
+
+    if (libxlNodeDeviceGetPCIInfo(def, &domain, &bus, &slot, &function) < 0)
+        goto cleanup;
+
+    pci = virPCIDeviceNew(domain, bus, slot, function);
+    if (!pci)
+        goto cleanup;
+
+    if (virHostdevPCINodeDeviceReset(hostdev_mgr, pci) < 0)
+        goto out;
+
+    ret = 0;
+out:
+    virPCIDeviceFree(pci);
+cleanup:
+    virNodeDeviceDefFree(def);
+    VIR_FREE(xml);
+    return ret;
+}
+
 
 static virDriver libxlDriver = {
     .no = VIR_DRV_LIBXL,
-    .name = "xenlight",
+    .name = LIBXL_DRIVER_NAME,
     .connectOpen = libxlConnectOpen, /* 0.9.0 */
     .connectClose = libxlConnectClose, /* 0.9.0 */
     .connectGetType = libxlConnectGetType, /* 0.9.0 */
@@ -4690,6 +5130,10 @@ static virDriver libxlDriver = {
     .connectDomainEventDeregisterAny = libxlConnectDomainEventDeregisterAny, /* 0.9.0 */
     .connectIsAlive = libxlConnectIsAlive, /* 0.9.8 */
     .connectSupportsFeature = libxlConnectSupportsFeature, /* 1.1.1 */
+    .nodeDeviceDettach = libxlNodeDeviceDettach, /* 1.2.3 */
+    .nodeDeviceDetachFlags = libxlNodeDeviceDetachFlags, /* 1.2.3 */
+    .nodeDeviceReAttach = libxlNodeDeviceReAttach, /* 1.2.3 */
+    .nodeDeviceReset = libxlNodeDeviceReset, /* 1.2.3 */
 };
 
 static virStateDriver libxlStateDriver = {

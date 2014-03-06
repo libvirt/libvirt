@@ -37,8 +37,9 @@
 # include "virportallocator.h"
 # include "virobject.h"
 # include "virchrdev.h"
+# include "virhostdev.h"
 
-
+# define LIBXL_DRIVER_NAME "xenlight"
 # define LIBXL_VNC_PORT_MIN  5900
 # define LIBXL_VNC_PORT_MAX  65535
 
@@ -90,6 +91,7 @@ struct _libxlDriverConfig {
 struct _libxlDriverPrivate {
     virMutex lock;
 
+    virHostdevManagerPtr hostdevMgr;
     /* Require lock to get reference on 'config',
      * then lockless thereafter */
     libxlDriverConfigPtr config;
@@ -148,6 +150,9 @@ libxlMakeNic(virDomainDefPtr def,
 int
 libxlMakeVfb(libxlDriverPrivatePtr driver,
              virDomainGraphicsDefPtr l_vfb, libxl_device_vfb *x_vfb);
+
+int
+libxlMakePci(virDomainHostdevDefPtr hostdev, libxl_device_pci *pcidev);
 
 int
 libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
