@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -214,7 +214,7 @@ virNetDevBandwidthRateFormat(virNetDevBandwidthRatePtr def,
         return 0;
 
     if (def->average || def->floor) {
-        virBufferAsprintf(buf, "  <%s", elem_name);
+        virBufferAsprintf(buf, "<%s", elem_name);
 
         if (def->average)
             virBufferAsprintf(buf, " average='%llu'", def->average);
@@ -257,9 +257,11 @@ virNetDevBandwidthFormat(virNetDevBandwidthPtr def, virBufferPtr buf)
     }
 
     virBufferAddLit(buf, "<bandwidth>\n");
+    virBufferAdjustIndent(buf, 2);
     if (virNetDevBandwidthRateFormat(def->in, buf, "inbound") < 0 ||
         virNetDevBandwidthRateFormat(def->out, buf, "outbound") < 0)
         goto cleanup;
+    virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</bandwidth>\n");
 
     ret = 0;

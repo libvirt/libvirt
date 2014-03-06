@@ -1,7 +1,7 @@
 /*
  * cpu_conf.c: CPU XML handling
  *
- * Copyright (C) 2009-2013 Red Hat, Inc.
+ * Copyright (C) 2009-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -541,12 +541,11 @@ virCPUDefFormatBufFull(virBufferPtr buf,
         }
     }
     virBufferAddLit(buf, ">\n");
+    virBufferAdjustIndent(buf, 2);
 
     if (def->arch)
-        virBufferAsprintf(buf, "  <arch>%s</arch>\n",
+        virBufferAsprintf(buf, "<arch>%s</arch>\n",
                           virArchToString(def->arch));
-
-    virBufferAdjustIndent(buf, 2);
     if (virCPUDefFormatBuf(buf, def, flags) < 0)
         return -1;
     virBufferAdjustIndent(buf, -2);
@@ -645,12 +644,14 @@ virCPUDefFormatBuf(virBufferPtr buf,
 
     if (def->ncells) {
         virBufferAddLit(buf, "<numa>\n");
+        virBufferAdjustIndent(buf, 2);
         for (i = 0; i < def->ncells; i++) {
-            virBufferAddLit(buf, "  <cell");
+            virBufferAddLit(buf, "<cell");
             virBufferAsprintf(buf, " cpus='%s'", def->cells[i].cpustr);
             virBufferAsprintf(buf, " memory='%d'", def->cells[i].mem);
             virBufferAddLit(buf, "/>\n");
         }
+        virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</numa>\n");
     }
     return 0;

@@ -1,7 +1,7 @@
 /*
  * secret_conf.c: internal <secret> XML handling
  *
- * Copyright (C) 2009, 2011, 2013 Red Hat, Inc.
+ * Copyright (C) 2009, 2011, 2013, 2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -254,27 +254,28 @@ virSecretDefFormatUsage(virBufferPtr buf,
                        def->usage_type);
         return -1;
     }
-    virBufferAsprintf(buf, "  <usage type='%s'>\n", type);
+    virBufferAsprintf(buf, "<usage type='%s'>\n", type);
+    virBufferAdjustIndent(buf, 2);
     switch (def->usage_type) {
     case VIR_SECRET_USAGE_TYPE_NONE:
         break;
 
     case VIR_SECRET_USAGE_TYPE_VOLUME:
         if (def->usage.volume != NULL)
-            virBufferEscapeString(buf, "    <volume>%s</volume>\n",
+            virBufferEscapeString(buf, "<volume>%s</volume>\n",
                                   def->usage.volume);
         break;
 
     case VIR_SECRET_USAGE_TYPE_CEPH:
         if (def->usage.ceph != NULL) {
-            virBufferEscapeString(buf, "    <name>%s</name>\n",
+            virBufferEscapeString(buf, "<name>%s</name>\n",
                                   def->usage.ceph);
         }
         break;
 
     case VIR_SECRET_USAGE_TYPE_ISCSI:
         if (def->usage.target != NULL) {
-            virBufferEscapeString(buf, "    <target>%s</target>\n",
+            virBufferEscapeString(buf, "<target>%s</target>\n",
                                   def->usage.target);
         }
         break;
@@ -285,7 +286,8 @@ virSecretDefFormatUsage(virBufferPtr buf,
                        def->usage_type);
         return -1;
     }
-    virBufferAddLit(buf, "  </usage>\n");
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</usage>\n");
 
     return 0;
 }
@@ -303,13 +305,15 @@ virSecretDefFormat(const virSecretDef *def)
 
     uuid = def->uuid;
     virUUIDFormat(uuid, uuidstr);
-    virBufferEscapeString(&buf, "  <uuid>%s</uuid>\n", uuidstr);
+    virBufferAdjustIndent(&buf, 2);
+    virBufferEscapeString(&buf, "<uuid>%s</uuid>\n", uuidstr);
     if (def->description != NULL)
-        virBufferEscapeString(&buf, "  <description>%s</description>\n",
+        virBufferEscapeString(&buf, "<description>%s</description>\n",
                               def->description);
     if (def->usage_type != VIR_SECRET_USAGE_TYPE_NONE &&
         virSecretDefFormatUsage(&buf, def) < 0)
         goto error;
+    virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</secret>\n");
 
     if (virBufferError(&buf))

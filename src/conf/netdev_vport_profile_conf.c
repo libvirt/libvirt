@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2009-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -232,7 +232,8 @@ virNetDevVPortProfileFormat(virNetDevVPortProfilePtr virtPort,
                               virNetDevVPortTypeToString(type));
         }
     }
-    virBufferAddLit(buf, "  <parameters");
+    virBufferAdjustIndent(buf, 2);
+    virBufferAddLit(buf, "<parameters");
 
     if (virtPort->managerID_specified &&
         (type == VIR_NETDEV_VPORT_PROFILE_8021QBG ||
@@ -274,6 +275,7 @@ virNetDevVPortProfileFormat(virNetDevVPortProfilePtr virtPort,
     }
 
     virBufferAddLit(buf, "/>\n");
+    virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</virtualport>\n");
     return 0;
 }

@@ -154,6 +154,7 @@ virNetDevVlanFormat(const virNetDevVlan *def, virBufferPtr buf)
     }
 
     virBufferAsprintf(buf, "<vlan%s>\n", def->trunk ? " trunk='yes'" : "");
+    virBufferAdjustIndent(buf, 2);
     for (i = 0; i < def->nTags; i++) {
         if (def->nativeMode != VIR_NATIVE_VLAN_MODE_DEFAULT &&
             def->nativeTag == def->tag[i]) {
@@ -163,12 +164,13 @@ virNetDevVlanFormat(const virNetDevVlan *def, virBufferPtr buf)
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Bad value for nativeMode"));
             }
-            virBufferAsprintf(buf, "  <tag id='%u' nativeMode='%s'/>\n",
+            virBufferAsprintf(buf, "<tag id='%u' nativeMode='%s'/>\n",
                               def->tag[i], mode);
         } else {
-            virBufferAsprintf(buf, "  <tag id='%u'/>\n", def->tag[i]);
+            virBufferAsprintf(buf, "<tag id='%u'/>\n", def->tag[i]);
         }
     }
+    virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</vlan>\n");
     return 0;
 }
