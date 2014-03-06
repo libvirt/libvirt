@@ -11372,34 +11372,11 @@ qemuNodeDeviceDettach(virNodeDevicePtr dev)
 }
 
 static int
-qemuNodeDeviceReAttach(virNodeDevicePtr dev)
+virHostdevPciNodeDeviceReAttach(virHostdevManagerPtr hostdev_mgr,
+                                virPCIDevicePtr pci)
 {
-    virQEMUDriverPtr driver = dev->conn->privateData;
-    virPCIDevicePtr pci = NULL;
     virPCIDevicePtr other;
-    unsigned domain = 0, bus = 0, slot = 0, function = 0;
     int ret = -1;
-    virNodeDeviceDefPtr def = NULL;
-    char *xml = NULL;
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
-
-    xml = virNodeDeviceGetXMLDesc(dev, 0);
-    if (!xml)
-        goto cleanup;
-
-    def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL);
-    if (!def)
-        goto cleanup;
-
-    if (virNodeDeviceReAttachEnsureACL(dev->conn, def) < 0)
-        goto cleanup;
-
-    if (qemuNodeDeviceGetPciInfo(def, &domain, &bus, &slot, &function) < 0)
-        goto cleanup;
-
-    pci = virPCIDeviceNew(domain, bus, slot, function);
-    if (!pci)
-        goto cleanup;
 
     virObjectLock(hostdev_mgr->activePciHostdevs);
     virObjectLock(hostdev_mgr->inactivePciHostdevs);
@@ -11432,6 +11409,40 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
 out:
     virObjectUnlock(hostdev_mgr->inactivePciHostdevs);
     virObjectUnlock(hostdev_mgr->activePciHostdevs);
+    return ret;
+}
+
+static int
+qemuNodeDeviceReAttach(virNodeDevicePtr dev)
+{
+    virQEMUDriverPtr driver = dev->conn->privateData;
+    virPCIDevicePtr pci = NULL;
+    unsigned domain = 0, bus = 0, slot = 0, function = 0;
+    int ret = -1;
+    virNodeDeviceDefPtr def = NULL;
+    char *xml = NULL;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    xml = virNodeDeviceGetXMLDesc(dev, 0);
+    if (!xml)
+        goto cleanup;
+
+    def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL);
+    if (!def)
+        goto cleanup;
+
+    if (virNodeDeviceReAttachEnsureACL(dev->conn, def) < 0)
+        goto cleanup;
+
+    if (qemuNodeDeviceGetPciInfo(def, &domain, &bus, &slot, &function) < 0)
+        goto cleanup;
+
+    pci = virPCIDeviceNew(domain, bus, slot, function);
+    if (!pci)
+        goto cleanup;
+
+    ret = virHostdevPciNodeDeviceReAttach(hostdev_mgr, pci);
+
     virPCIDeviceFree(pci);
 cleanup:
     virNodeDeviceDefFree(def);
