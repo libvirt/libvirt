@@ -1299,6 +1299,9 @@ virHookPresent;
 
 #util/virhostdev.h
 virHostdevManagerGetDefault;
+virHostdevPciNodeDeviceDetach;
+virHostdevPciNodeDeviceReAttach;
+virHostdevPciNodeDeviceReset;
 virHostdevPreparePCIDevices;
 virHostdevPrepareSCSIDevices;
 virHostdevPrepareUSBDevices;

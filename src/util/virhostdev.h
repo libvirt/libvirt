@@ -103,4 +103,12 @@ virHostdevUpdateActiveScsiHostdevs(virHostdevManagerPtr mgr,
                                    const char *drv_name,
                                    virDomainDefPtr def);
 
+/* functions used by NodeDevDetach/Reattach/Reset */
+int virHostdevPciNodeDeviceDetach(virHostdevManagerPtr mgr,
+                                  virPCIDevicePtr pci);
+int virHostdevPciNodeDeviceReAttach(virHostdevManagerPtr mgr,
+                                    virPCIDevicePtr pci);
+int virHostdevPciNodeDeviceReset(virHostdevManagerPtr mgr,
+                                 virPCIDevicePtr pci);
+
 #endif /* __VIR_HOSTDEV_H__ */

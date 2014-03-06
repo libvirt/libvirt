@@ -1379,3 +1379,84 @@ virHostdevReAttachScsiHostdevs(virHostdevManagerPtr hostdev_mgr,
     }
     virObjectUnlock(hostdev_mgr->activeScsiHostdevs);
 }
+
+int
+virHostdevPciNodeDeviceDetach(virHostdevManagerPtr hostdev_mgr,
+                              virPCIDevicePtr pci)
+{
+    int ret = -1;
+
+    virObjectLock(hostdev_mgr->activePciHostdevs);
+    virObjectLock(hostdev_mgr->inactivePciHostdevs);
+
+    if (virPCIDeviceDetach(pci, hostdev_mgr->activePciHostdevs,
+                           hostdev_mgr->inactivePciHostdevs) < 0) {
+        goto out;
+    }
+
+    ret = 0;
+out:
+    virObjectUnlock(hostdev_mgr->inactivePciHostdevs);
+    virObjectUnlock(hostdev_mgr->activePciHostdevs);
+    return ret;
+}
+
+int
+virHostdevPciNodeDeviceReAttach(virHostdevManagerPtr hostdev_mgr,
+                                virPCIDevicePtr pci)
+{
+    virPCIDevicePtr other;
+    int ret = -1;
+
+    virObjectLock(hostdev_mgr->activePciHostdevs);
+    virObjectLock(hostdev_mgr->inactivePciHostdevs);
+    other = virPCIDeviceListFind(hostdev_mgr->activePciHostdevs, pci);
+    if (other) {
+        const char *other_drvname = NULL;
+        const char *other_domname = NULL;
+        virPCIDeviceGetUsedBy(other, &other_drvname, &other_domname);
+
+        if (other_drvname && other_domname)
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("PCI device %s is still in use by "
+                             "driver %s, domain %s"),
+                           virPCIDeviceGetName(pci),
+                           other_drvname, other_domname);
+        else
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("PCI device %s is still in use"),
+                           virPCIDeviceGetName(pci));
+        goto out;
+    }
+
+    virPCIDeviceReattachInit(pci);
+
+    if (virPCIDeviceReattach(pci, hostdev_mgr->activePciHostdevs,
+                             hostdev_mgr->inactivePciHostdevs) < 0)
+        goto out;
+
+    ret = 0;
+out:
+    virObjectUnlock(hostdev_mgr->inactivePciHostdevs);
+    virObjectUnlock(hostdev_mgr->activePciHostdevs);
+    return ret;
+}
+
+int
+virHostdevPciNodeDeviceReset(virHostdevManagerPtr hostdev_mgr,
+                             virPCIDevicePtr pci)
+{
+    int ret = -1;
+
+    virObjectLock(hostdev_mgr->activePciHostdevs);
+    virObjectLock(hostdev_mgr->inactivePciHostdevs);
+    if (virPCIDeviceReset(pci, hostdev_mgr->activePciHostdevs,
+                          hostdev_mgr->inactivePciHostdevs) < 0)
+        goto out;
+
+    ret = 0;
+out:
+    virObjectUnlock(hostdev_mgr->inactivePciHostdevs);
+    virObjectUnlock(hostdev_mgr->activePciHostdevs);
+    return ret;
+}
