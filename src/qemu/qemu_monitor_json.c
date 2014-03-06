@@ -3307,7 +3307,7 @@ qemuMonitorJSONBlockCommit(qemuMonitorPtr mon, const char *device,
                                      "s:device", device,
                                      "U:speed", speed,
                                      "s:top", top,
-                                     base ? "s:base" : NULL, base,
+                                     "s:base", base,
                                      NULL);
     if (!cmd)
         return -1;

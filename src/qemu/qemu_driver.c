@@ -15437,10 +15437,15 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
                                            VIR_DISK_CHAIN_READ_WRITE) < 0))
         goto endjob;
 
-    /* Start the commit operation.  */
+    /* Start the commit operation.  Pass the user's original spelling,
+     * if any, through to qemu, since qemu may behave differently
+     * depending on whether the input was specified as relative or
+     * absolute (that is, our absolute top_canon may do the wrong
+     * thing if the user specified a relative name). */
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorBlockCommit(priv->mon, device, top_canon, base_canon,
-                                 bandwidth);
+    ret = qemuMonitorBlockCommit(priv->mon, device,
+                                 top ? top : top_canon,
+                                 base ? base : base_canon, bandwidth);
     qemuDomainObjExitMonitor(driver, vm);
 
 endjob:

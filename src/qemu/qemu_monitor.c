@@ -1,7 +1,7 @@
 /*
  * qemu_monitor.c: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -3188,7 +3188,7 @@ qemuMonitorBlockCommit(qemuMonitorPtr mon, const char *device,
     unsigned long long speed;
 
     VIR_DEBUG("mon=%p, device=%s, top=%s, base=%s, bandwidth=%ld",
-              mon, device, NULLSTR(top), NULLSTR(base), bandwidth);
+              mon, device, top, base, bandwidth);
 
     /* Convert bandwidth MiB to bytes - unfortunately the JSON QMP protocol is
      * limited to LLONG_MAX also for unsigned values */
