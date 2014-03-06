@@ -50,7 +50,8 @@ qemuUpdateActivePCIHostdevs(virQEMUDriverPtr driver,
     if (!def->nhostdevs)
         return 0;
 
-    return virHostdevUpdateActivePCIDevices(mgr, QEMU_DRIVER_NAME, def);
+    return virHostdevUpdateActivePCIDevices(mgr, def->hostdevs, def->nhostdevs,
+                                            QEMU_DRIVER_NAME, def->name);
 }
 
 int
@@ -62,7 +63,8 @@ qemuUpdateActiveUSBHostdevs(virQEMUDriverPtr driver,
     if (!def->nhostdevs)
         return 0;
 
-    return virHostdevUpdateActiveUSBDevices(mgr, QEMU_DRIVER_NAME, def);
+    return virHostdevUpdateActiveUSBDevices(mgr, def->hostdevs, def->nhostdevs,
+                                            QEMU_DRIVER_NAME, def->name);
 }
 
 int
@@ -74,7 +76,8 @@ qemuUpdateActiveSCSIHostdevs(virQEMUDriverPtr driver,
     if (!def->nhostdevs)
         return 0;
 
-    return virHostdevUpdateActiveSCSIDevices(mgr, QEMU_DRIVER_NAME, def);
+    return virHostdevUpdateActiveSCSIDevices(mgr, def->hostdevs, def->nhostdevs,
+                                             QEMU_DRIVER_NAME, def->name);
 }
 
 

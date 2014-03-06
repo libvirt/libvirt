@@ -776,8 +776,10 @@ cleanup:
 
 int
 virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
+                                 virDomainHostdevDefPtr *hostdevs,
+                                 int nhostdevs,
                                  const char *drv_name,
-                                 virDomainDefPtr def)
+                                 const char *dom_name)
 {
     virDomainHostdevDefPtr hostdev = NULL;
     virPCIDevicePtr dev = NULL;
@@ -787,8 +789,8 @@ virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
     virObjectLock(mgr->activePCIHostdevs);
     virObjectLock(mgr->inactivePCIHostdevs);
 
-    for (i = 0; i < def->nhostdevs; i++) {
-        hostdev = def->hostdevs[i];
+    for (i = 0; i < nhostdevs; i++) {
+        hostdev = hostdevs[i];
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
             continue;
@@ -813,7 +815,7 @@ virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
                 goto cleanup;
 
         }
-        virPCIDeviceSetUsedBy(dev, drv_name, def->name);
+        virPCIDeviceSetUsedBy(dev, drv_name, dom_name);
 
         /* Setup the original states for the PCI device */
         virPCIDeviceSetUnbindFromStub(dev, hostdev->origstates.states.pci.unbind_from_stub);
@@ -835,17 +837,19 @@ cleanup:
 
 int
 virHostdevUpdateActiveUSBDevices(virHostdevManagerPtr mgr,
+                                 virDomainHostdevDefPtr *hostdevs,
+                                 int nhostdevs,
                                  const char *drv_name,
-                                 virDomainDefPtr def)
+                                 const char *dom_name)
 {
     virDomainHostdevDefPtr hostdev = NULL;
     size_t i;
     int ret = -1;
 
     virObjectLock(mgr->activeUSBHostdevs);
-    for (i = 0; i < def->nhostdevs; i++) {
+    for (i = 0; i < nhostdevs; i++) {
         virUSBDevicePtr usb = NULL;
-        hostdev = def->hostdevs[i];
+        hostdev = hostdevs[i];
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
             continue;
@@ -859,11 +863,11 @@ virHostdevUpdateActiveUSBDevices(virHostdevManagerPtr mgr,
             VIR_WARN("Unable to reattach USB device %03d.%03d on domain %s",
                      hostdev->source.subsys.u.usb.bus,
                      hostdev->source.subsys.u.usb.device,
-                     def->name);
+                     dom_name);
             continue;
         }
 
-        virUSBDeviceSetUsedBy(usb, drv_name, def->name);
+        virUSBDeviceSetUsedBy(usb, drv_name, dom_name);
 
         if (virUSBDeviceListAdd(mgr->activeUSBHostdevs, usb) < 0) {
             virUSBDeviceFree(usb);
@@ -878,8 +882,10 @@ cleanup:
 
 int
 virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
+                                  virDomainHostdevDefPtr *hostdevs,
+                                  int nhostdevs,
                                   const char *drv_name,
-                                  virDomainDefPtr def)
+                                  const char *dom_name)
 {
     virDomainHostdevDefPtr hostdev = NULL;
     size_t i;
@@ -888,8 +894,8 @@ virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
     virSCSIDevicePtr tmp = NULL;
 
     virObjectLock(mgr->activeSCSIHostdevs);
-    for (i = 0; i < def->nhostdevs; i++) {
-        hostdev = def->hostdevs[i];
+    for (i = 0; i < nhostdevs; i++) {
+        hostdev = hostdevs[i];
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
             hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
@@ -905,13 +911,13 @@ virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
             goto cleanup;
 
         if ((tmp = virSCSIDeviceListFind(mgr->activeSCSIHostdevs, scsi))) {
-            if (virSCSIDeviceSetUsedBy(tmp, drv_name, def->name) < 0) {
+            if (virSCSIDeviceSetUsedBy(tmp, drv_name, dom_name) < 0) {
                 virSCSIDeviceFree(scsi);
                 goto cleanup;
             }
             virSCSIDeviceFree(scsi);
         } else {
-            if (virSCSIDeviceSetUsedBy(scsi, drv_name, def->name) < 0 ||
+            if (virSCSIDeviceSetUsedBy(scsi, drv_name, dom_name) < 0 ||
                 virSCSIDeviceListAdd(mgr->activeSCSIHostdevs, scsi) < 0) {
                 virSCSIDeviceFree(scsi);
                 goto cleanup;

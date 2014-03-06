@@ -92,16 +92,22 @@ virHostdevReAttachSCSIDevices(virHostdevManagerPtr hostdev_mgr,
                               int nhostdevs);
 int
 virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
+                                 virDomainHostdevDefPtr *hostdevs,
+                                 int nhostdevs,
                                  const char *drv_name,
-                                 virDomainDefPtr def);
+                                 const char *dom_name);
 int
 virHostdevUpdateActiveUSBDevices(virHostdevManagerPtr mgr,
+                                 virDomainHostdevDefPtr *hostdevs,
+                                 int nhostdevs,
                                  const char *drv_name,
-                                 virDomainDefPtr def);
+                                 const char *dom_name);
 int
 virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
+                                  virDomainHostdevDefPtr *hostdevs,
+                                  int nhostdevs,
                                   const char *drv_name,
-                                  virDomainDefPtr def);
+                                  const char *dom_name);
 
 /* functions used by NodeDevDetach/Reattach/Reset */
 int virHostdevPCINodeDeviceDetach(virHostdevManagerPtr mgr,
