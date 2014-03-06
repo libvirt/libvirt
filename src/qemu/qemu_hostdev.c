@@ -245,34 +245,16 @@ qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
                                        hostdevs, nhostdevs, flags);
 }
 
-
-int
-qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
-                              const char *name,
-                              virDomainHostdevDefPtr *hostdevs,
-                              int nhostdevs)
+static int
+virHostdevPrepareSCSIDevices(virHostdevManagerPtr hostdev_mgr,
+                             const char *name,
+                             virDomainHostdevDefPtr *hostdevs,
+                             int nhostdevs)
 {
     size_t i, j;
     int count;
     virSCSIDeviceListPtr list;
     virSCSIDevicePtr tmp;
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
-
-    /* Loop 1: Add the shared scsi host device to shared device
-     * table.
-     */
-    for (i = 0; i < nhostdevs; i++) {
-        virDomainDeviceDef dev;
-
-        dev.type = VIR_DOMAIN_DEVICE_HOSTDEV;
-        dev.data.hostdev = hostdevs[i];
-
-        if (qemuAddSharedDevice(driver, &dev, name) < 0)
-            return -1;
-
-        if (qemuSetUnprivSGIO(&dev) < 0)
-            return -1;
-    }
 
     /* To prevent situation where SCSI device is assigned to two domains
      * we need to keep a list of currently assigned SCSI devices.
@@ -282,7 +264,7 @@ qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
     if (!(list = virSCSIDeviceListNew()))
         goto cleanup;
 
-    /* Loop 2: build temporary list */
+    /* Loop 1: build temporary list */
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         virSCSIDevicePtr scsi;
@@ -312,7 +294,7 @@ qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
         }
     }
 
-    /* Loop 3: Mark devices in temporary list as used by @name
+    /* Loop 2: Mark devices in temporary list as used by @name
      * and add them to driver list. However, if something goes
      * wrong, perform rollback.
      */
@@ -350,7 +332,7 @@ qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
 
     virObjectUnlock(hostdev_mgr->activeScsiHostdevs);
 
-    /* Loop 4: Temporary list was successfully merged with
+    /* Loop 3: Temporary list was successfully merged with
      * driver list, so steal all items to avoid freeing them
      * when freeing temporary list.
      */
@@ -371,6 +353,35 @@ error:
 cleanup:
     virObjectUnref(list);
     return -1;
+}
+
+int
+qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
+                              const char *name,
+                              virDomainHostdevDefPtr *hostdevs,
+                              int nhostdevs)
+{
+    size_t i;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    /* Loop 1: Add the shared scsi host device to shared device
+     * table.
+     */
+    for (i = 0; i < nhostdevs; i++) {
+        virDomainDeviceDef dev;
+
+        dev.type = VIR_DOMAIN_DEVICE_HOSTDEV;
+        dev.data.hostdev = hostdevs[i];
+
+        if (qemuAddSharedDevice(driver, &dev, name) < 0)
+            return -1;
+
+        if (qemuSetUnprivSGIO(&dev) < 0)
+            return -1;
+    }
+
+    return virHostdevPrepareSCSIDevices(hostdev_mgr, name,
+                                        hostdevs, nhostdevs);
 }
 
 
