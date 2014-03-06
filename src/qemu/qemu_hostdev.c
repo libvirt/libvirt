@@ -318,6 +318,7 @@ qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
 
 static void
 virHostdevReAttachUsbHostdevs(virHostdevManagerPtr hostdev_mgr,
+                              const char *drv_name,
                               const char *name,
                               virDomainHostdevDefPtr *hostdevs,
                               int nhostdevs)
@@ -368,7 +369,7 @@ virHostdevReAttachUsbHostdevs(virHostdevManagerPtr hostdev_mgr,
         }
 
         virUSBDeviceGetUsedBy(tmp, &usedby_drvname, &usedby_domname);
-        if (STREQ_NULLABLE(QEMU_DRIVER_NAME, usedby_drvname) &&
+        if (STREQ_NULLABLE(drv_name, usedby_drvname) &&
             STREQ_NULLABLE(name, usedby_domname)) {
             VIR_DEBUG("Removing %03d.%03d dom=%s from activeUsbHostdevs",
                       hostdev->source.subsys.u.usb.bus,
@@ -389,7 +390,8 @@ qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,
 {
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
-    virHostdevReAttachUsbHostdevs(hostdev_mgr, name, hostdevs, nhostdevs);
+    virHostdevReAttachUsbHostdevs(hostdev_mgr, QEMU_DRIVER_NAME,
+                                  name, hostdevs, nhostdevs);
 }
 
 
