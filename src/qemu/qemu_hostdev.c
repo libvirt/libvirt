@@ -316,15 +316,13 @@ qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
     virObjectUnref(cfg);
 }
 
-
-void
-qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,
-                                 const char *name,
-                                 virDomainHostdevDefPtr *hostdevs,
-                                 int nhostdevs)
+static void
+virHostdevReAttachUsbHostdevs(virHostdevManagerPtr hostdev_mgr,
+                              const char *name,
+                              virDomainHostdevDefPtr *hostdevs,
+                              int nhostdevs)
 {
     size_t i;
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
     virObjectLock(hostdev_mgr->activeUsbHostdevs);
     for (i = 0; i < nhostdevs; i++) {
@@ -381,6 +379,17 @@ qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,
         }
     }
     virObjectUnlock(hostdev_mgr->activeUsbHostdevs);
+}
+
+void
+qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,
+                                 const char *name,
+                                 virDomainHostdevDefPtr *hostdevs,
+                                 int nhostdevs)
+{
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    virHostdevReAttachUsbHostdevs(hostdev_mgr, name, hostdevs, nhostdevs);
 }
 
 
