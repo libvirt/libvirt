@@ -377,19 +377,17 @@ out:
     return 0;
 }
 
-
-int
-qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
-                          const char *name,
-                          virDomainHostdevDefPtr *hostdevs,
-                          int nhostdevs,
-                          unsigned int flags)
+static int
+virHostdevPrepareUSBDevices(virHostdevManagerPtr hostdev_mgr,
+                            const char *name,
+                            virDomainHostdevDefPtr *hostdevs,
+                            int nhostdevs,
+                            unsigned int flags)
 {
     size_t i;
     int ret = -1;
     virUSBDeviceListPtr list;
     virUSBDevicePtr tmp;
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
     bool coldBoot = !!(flags & VIR_HOSTDEV_COLD_BOOT);
 
     /* To prevent situation where USB device is assigned to two domains
@@ -447,6 +445,19 @@ qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
 cleanup:
     virObjectUnref(list);
     return ret;
+}
+
+int
+qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
+                          const char *name,
+                          virDomainHostdevDefPtr *hostdevs,
+                          int nhostdevs,
+                          unsigned int flags)
+{
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    return virHostdevPrepareUSBDevices(hostdev_mgr, name,
+                                       hostdevs, nhostdevs, flags);
 }
 
 
