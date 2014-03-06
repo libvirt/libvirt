@@ -1468,3 +1468,106 @@ out:
     virObjectUnlock(hostdev_mgr->activePCIHostdevs);
     return ret;
 }
+
+int
+virHostdevPrepareDomainDevices(virHostdevManagerPtr mgr,
+                               const char *driver,
+                               virDomainDefPtr def,
+                               unsigned int flags)
+{
+    if (!def->nhostdevs)
+        return 0;
+
+    if (mgr == NULL)
+        return -1;
+
+    if (flags & VIR_HOSTDEV_SP_PCI) {
+        if (virHostdevPreparePCIDevices(mgr, driver,
+                                        def->name, def->uuid,
+                                        def->hostdevs,
+                                        def->nhostdevs,
+                                        flags) < 0)
+            return -1;
+    }
+
+    if (flags & VIR_HOSTDEV_SP_USB) {
+        if (virHostdevPrepareUSBDevices(mgr, driver, def->name,
+                                         def->hostdevs, def->nhostdevs,
+                                         flags) < 0)
+            return -1;
+    }
+
+    if (flags & VIR_HOSTDEV_SP_SCSI) {
+        if (virHostdevPrepareSCSIDevices(mgr, driver, def->name,
+                                         def->hostdevs, def->nhostdevs) < 0)
+        return -1;
+    }
+
+    return 0;
+}
+
+/* @oldStateDir
+ * For upgrade purpose: see virHostdevReAttachPciHostdevs
+ */
+void
+virHostdevReAttachDomainDevices(virHostdevManagerPtr mgr,
+                                const char *driver,
+                                virDomainDefPtr def,
+                                unsigned int flags,
+                                const char *oldStateDir)
+{
+    if (!def->nhostdevs || !mgr)
+        return;
+
+    if (flags & VIR_HOSTDEV_SP_PCI) {
+        virHostdevReAttachPCIDevices(mgr, driver, def->name,
+                                     def->hostdevs, def->nhostdevs,
+                                     oldStateDir);
+    }
+
+    if (flags & VIR_HOSTDEV_SP_USB) {
+        virHostdevReAttachUSBDevices(mgr, driver, def->name,
+                                     def->hostdevs, def->nhostdevs);
+    }
+
+    if (flags & VIR_HOSTDEV_SP_SCSI) {
+        virHostdevReAttachSCSIDevices(mgr, driver, def->name,
+                                      def->hostdevs, def->nhostdevs);
+    }
+}
+
+int
+virHostdevUpdateDomainActiveDevices(virHostdevManagerPtr mgr,
+                                    const char *driver,
+                                    virDomainDefPtr def,
+                                    unsigned int flags)
+{
+    if (!def->nhostdevs)
+        return 0;
+
+    if (flags & VIR_HOSTDEV_SP_PCI) {
+        if (virHostdevUpdateActivePCIDevices(mgr,
+                                             def->hostdevs,
+                                             def->nhostdevs,
+                                             driver, def->name) < 0)
+            return -1;
+    }
+
+    if (flags & VIR_HOSTDEV_SP_USB) {
+        if (virHostdevUpdateActiveUSBDevices(mgr,
+                                             def->hostdevs,
+                                             def->nhostdevs,
+                                             driver, def->name) < 0)
+            return -1;
+    }
+
+    if (flags & VIR_HOSTDEV_SP_SCSI) {
+        if (virHostdevUpdateActiveSCSIDevices(mgr,
+                                              def->hostdevs,
+                                              def->nhostdevs,
+                                              driver, def->name) < 0)
+            return -1;
+    }
+
+    return 0;
+}

@@ -1297,20 +1297,24 @@ virHookInitialize;
 virHookPresent;
 
 
-#util/virhostdev.h
+# util/virhostdev.h
 virHostdevManagerGetDefault;
 virHostdevPCINodeDeviceDetach;
 virHostdevPCINodeDeviceReAttach;
 virHostdevPCINodeDeviceReset;
+virHostdevPrepareDomainDevices;
 virHostdevPreparePCIDevices;
 virHostdevPrepareSCSIDevices;
 virHostdevPrepareUSBDevices;
+virHostdevReAttachDomainDevices;
 virHostdevReAttachPCIDevices;
 virHostdevReAttachSCSIDevices;
 virHostdevReAttachUSBDevices;
 virHostdevUpdateActivePCIDevices;
 virHostdevUpdateActiveSCSIDevices;
 virHostdevUpdateActiveUSBDevices;
+virHostdevUpdateDomainActiveDevices;
+
 
 # util/viridentity.h
 virIdentityGetAttr;

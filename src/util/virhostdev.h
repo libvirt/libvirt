@@ -35,6 +35,10 @@
 typedef enum {
     VIR_HOSTDEV_STRICT_ACS_CHECK     = (1 << 0), /* strict acs check */
     VIR_HOSTDEV_COLD_BOOT            = (1 << 1), /* cold boot */
+
+    VIR_HOSTDEV_SP_PCI               = (1 << 8), /* support pci passthrough */
+    VIR_HOSTDEV_SP_USB               = (1 << 9), /* support usb passthrough */
+    VIR_HOSTDEV_SP_SCSI              = (1 << 10), /* support scsi passthrough */
 } virHostdevFlag;
 
 
@@ -108,6 +112,22 @@ virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
                                   int nhostdevs,
                                   const char *drv_name,
                                   const char *dom_name);
+int
+virHostdevUpdateDomainActiveDevices(virHostdevManagerPtr mgr,
+                                    const char *driver,
+                                    virDomainDefPtr def,
+                                    unsigned int flags);
+int
+virHostdevPrepareDomainDevices(virHostdevManagerPtr mgr,
+                               const char *driver,
+                               virDomainDefPtr def,
+                               unsigned int flags);
+void
+virHostdevReAttachDomainDevices(virHostdevManagerPtr mgr,
+                                const char *driver,
+                                virDomainDefPtr def,
+                                unsigned int flags,
+                                const char *oldStateDir);
 
 /* functions used by NodeDevDetach/Reattach/Reset */
 int virHostdevPCINodeDeviceDetach(virHostdevManagerPtr mgr,
