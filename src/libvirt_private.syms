@@ -1299,18 +1299,18 @@ virHookPresent;
 
 #util/virhostdev.h
 virHostdevManagerGetDefault;
-virHostdevPciNodeDeviceDetach;
-virHostdevPciNodeDeviceReAttach;
-virHostdevPciNodeDeviceReset;
+virHostdevPCINodeDeviceDetach;
+virHostdevPCINodeDeviceReAttach;
+virHostdevPCINodeDeviceReset;
 virHostdevPreparePCIDevices;
 virHostdevPrepareSCSIDevices;
 virHostdevPrepareUSBDevices;
 virHostdevReAttachPCIDevices;
-virHostdevReAttachScsiHostdevs;
-virHostdevReAttachUsbHostdevs;
-virHostdevUpdateActivePciHostdevs;
-virHostdevUpdateActiveScsiHostdevs;
-virHostdevUpdateActiveUsbHostdevs;
+virHostdevReAttachSCSIHostdevs;
+virHostdevReAttachUSBHostdevs;
+virHostdevUpdateActivePCIHostdevs;
+virHostdevUpdateActiveSCSIHostdevs;
+virHostdevUpdateActiveUSBHostdevs;
 
 # util/viridentity.h
 virIdentityGetAttr;

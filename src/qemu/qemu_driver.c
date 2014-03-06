@@ -11231,7 +11231,7 @@ qemuDomainMigrateConfirm3Params(virDomainPtr domain,
 
 
 static int
-qemuNodeDeviceGetPciInfo(virNodeDeviceDefPtr def,
+qemuNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
                          unsigned *domain,
                          unsigned *bus,
                          unsigned *slot,
@@ -11292,7 +11292,7 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
     if (virNodeDeviceDetachFlagsEnsureACL(dev->conn, def) < 0)
         goto cleanup;
 
-    if (qemuNodeDeviceGetPciInfo(def, &domain, &bus, &slot, &function) < 0)
+    if (qemuNodeDeviceGetPCIInfo(def, &domain, &bus, &slot, &function) < 0)
         goto cleanup;
 
     pci = virPCIDeviceNew(domain, bus, slot, function);
@@ -11336,7 +11336,7 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
         goto cleanup;
     }
 
-    ret = virHostdevPciNodeDeviceDetach(hostdev_mgr, pci);
+    ret = virHostdevPCINodeDeviceDetach(hostdev_mgr, pci);
 cleanup:
     virPCIDeviceFree(pci);
     virNodeDeviceDefFree(def);
@@ -11372,14 +11372,14 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
     if (virNodeDeviceReAttachEnsureACL(dev->conn, def) < 0)
         goto cleanup;
 
-    if (qemuNodeDeviceGetPciInfo(def, &domain, &bus, &slot, &function) < 0)
+    if (qemuNodeDeviceGetPCIInfo(def, &domain, &bus, &slot, &function) < 0)
         goto cleanup;
 
     pci = virPCIDeviceNew(domain, bus, slot, function);
     if (!pci)
         goto cleanup;
 
-    ret = virHostdevPciNodeDeviceReAttach(hostdev_mgr, pci);
+    ret = virHostdevPCINodeDeviceReAttach(hostdev_mgr, pci);
 
     virPCIDeviceFree(pci);
 cleanup:
@@ -11410,14 +11410,14 @@ qemuNodeDeviceReset(virNodeDevicePtr dev)
     if (virNodeDeviceResetEnsureACL(dev->conn, def) < 0)
         goto cleanup;
 
-    if (qemuNodeDeviceGetPciInfo(def, &domain, &bus, &slot, &function) < 0)
+    if (qemuNodeDeviceGetPCIInfo(def, &domain, &bus, &slot, &function) < 0)
         goto cleanup;
 
     pci = virPCIDeviceNew(domain, bus, slot, function);
     if (!pci)
         goto cleanup;
 
-    ret = virHostdevPciNodeDeviceReset(hostdev_mgr, pci);
+    ret = virHostdevPCINodeDeviceReset(hostdev_mgr, pci);
 
     virPCIDeviceFree(pci);
 cleanup:

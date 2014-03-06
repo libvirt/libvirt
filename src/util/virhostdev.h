@@ -79,36 +79,36 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
                              int nhostdevs,
                              const char *oldStateDir);
 void
-virHostdevReAttachUsbHostdevs(virHostdevManagerPtr hostdev_mgr,
+virHostdevReAttachUSBHostdevs(virHostdevManagerPtr hostdev_mgr,
                               const char *drv_name,
                               const char *dom_name,
                               virDomainHostdevDefPtr *hostdevs,
                               int nhostdevs);
 void
-virHostdevReAttachScsiHostdevs(virHostdevManagerPtr hostdev_mgr,
+virHostdevReAttachSCSIHostdevs(virHostdevManagerPtr hostdev_mgr,
                                const char *drv_name,
                                const char *dom_name,
                                virDomainHostdevDefPtr *hostdevs,
                                int nhostdevs);
 int
-virHostdevUpdateActivePciHostdevs(virHostdevManagerPtr mgr,
+virHostdevUpdateActivePCIHostdevs(virHostdevManagerPtr mgr,
                                   const char *drv_name,
                                   virDomainDefPtr def);
 int
-virHostdevUpdateActiveUsbHostdevs(virHostdevManagerPtr mgr,
+virHostdevUpdateActiveUSBHostdevs(virHostdevManagerPtr mgr,
                                   const char *drv_name,
                                   virDomainDefPtr def);
 int
-virHostdevUpdateActiveScsiHostdevs(virHostdevManagerPtr mgr,
+virHostdevUpdateActiveSCSIHostdevs(virHostdevManagerPtr mgr,
                                    const char *drv_name,
                                    virDomainDefPtr def);
 
 /* functions used by NodeDevDetach/Reattach/Reset */
-int virHostdevPciNodeDeviceDetach(virHostdevManagerPtr mgr,
+int virHostdevPCINodeDeviceDetach(virHostdevManagerPtr mgr,
                                   virPCIDevicePtr pci);
-int virHostdevPciNodeDeviceReAttach(virHostdevManagerPtr mgr,
+int virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr mgr,
                                     virPCIDevicePtr pci);
-int virHostdevPciNodeDeviceReset(virHostdevManagerPtr mgr,
+int virHostdevPCINodeDeviceReset(virHostdevManagerPtr mgr,
                                  virPCIDevicePtr pci);
 
 #endif /* __VIR_HOSTDEV_H__ */

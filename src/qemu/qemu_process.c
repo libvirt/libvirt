@@ -3158,14 +3158,14 @@ qemuProcessReconnect(void *opaque)
         priv->agentError = true;
     }
 
-    if (qemuUpdateActivePciHostdevs(driver, obj->def) < 0) {
+    if (qemuUpdateActivePCIHostdevs(driver, obj->def) < 0) {
         goto error;
     }
 
-    if (qemuUpdateActiveUsbHostdevs(driver, obj->def) < 0)
+    if (qemuUpdateActiveUSBHostdevs(driver, obj->def) < 0)
         goto error;
 
-    if (qemuUpdateActiveScsiHostdevs(driver, obj->def) < 0)
+    if (qemuUpdateActiveSCSIHostdevs(driver, obj->def) < 0)
         goto error;
 
     if (qemuConnectCgroup(driver, obj) < 0)

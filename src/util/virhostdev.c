@@ -131,7 +131,7 @@ virHostdevManagerGetDefault(void)
 }
 
 static virPCIDeviceListPtr
-virHostdevGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
+virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
 {
     virPCIDeviceListPtr list;
     size_t i;
@@ -183,7 +183,7 @@ virHostdevGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
 
 
 /*
- * virHostdevGetActivePciHostDeviceList - make a new list with a *copy* of
+ * virHostdevGetActivePCIHostDeviceList - make a new list with a *copy* of
  *   every virPCIDevice object that is found on the activePciHostdevs
  *   list *and* is in the hostdev list for this domain.
  *
@@ -192,7 +192,7 @@ virHostdevGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
  * Pre-condition: activePciHostdevs is locked
  */
 static virPCIDeviceListPtr
-virHostdevGetActivePciHostDeviceList(virHostdevManagerPtr mgr,
+virHostdevGetActivePCIHostDeviceList(virHostdevManagerPtr mgr,
                                      virDomainHostdevDefPtr *hostdevs,
                                      int nhostdevs)
 {
@@ -226,7 +226,7 @@ virHostdevGetActivePciHostDeviceList(virHostdevManagerPtr mgr,
 }
 
 static int
-virHostdevPciSysfsPath(virDomainHostdevDefPtr hostdev,
+virHostdevPCISysfsPath(virDomainHostdevDefPtr hostdev,
                        char **sysfs_path)
 {
     virPCIDeviceAddress config_address;
@@ -246,7 +246,7 @@ virHostdevIsVirtualFunction(virDomainHostdevDefPtr hostdev)
     char *sysfs_path = NULL;
     int ret = -1;
 
-    if (virHostdevPciSysfsPath(hostdev, &sysfs_path) < 0)
+    if (virHostdevPCISysfsPath(hostdev, &sysfs_path) < 0)
         return ret;
 
     ret = virPCIIsVirtualFunction(sysfs_path);
@@ -264,7 +264,7 @@ virHostdevNetDevice(virDomainHostdevDefPtr hostdev, char **linkdev,
     int ret = -1;
     char *sysfs_path = NULL;
 
-    if (virHostdevPciSysfsPath(hostdev, &sysfs_path) < 0)
+    if (virHostdevPCISysfsPath(hostdev, &sysfs_path) < 0)
         return ret;
 
     if (virPCIIsVirtualFunction(sysfs_path) == 1) {
@@ -468,7 +468,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
     virObjectLock(hostdev_mgr->activePciHostdevs);
     virObjectLock(hostdev_mgr->inactivePciHostdevs);
 
-    if (!(pcidevs = virHostdevGetPciHostDeviceList(hostdevs, nhostdevs)))
+    if (!(pcidevs = virHostdevGetPCIHostDeviceList(hostdevs, nhostdevs)))
         goto cleanup;
 
     /* We have to use 9 loops here. *All* devices must
@@ -654,7 +654,7 @@ cleanup:
  * are locked
  */
 static void
-virHostdevReattachPciDevice(virPCIDevicePtr dev, virHostdevManagerPtr mgr)
+virHostdevReattachPCIDevice(virPCIDevicePtr dev, virHostdevManagerPtr mgr)
 {
     /* If the device is not managed and was attached to guest
      * successfully, it must have been inactive.
@@ -702,7 +702,7 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
     virObjectLock(hostdev_mgr->activePciHostdevs);
     virObjectLock(hostdev_mgr->inactivePciHostdevs);
 
-    if (!(pcidevs = virHostdevGetActivePciHostDeviceList(hostdev_mgr,
+    if (!(pcidevs = virHostdevGetActivePCIHostDeviceList(hostdev_mgr,
                                                          hostdevs,
                                                          nhostdevs))) {
         virErrorPtr err = virGetLastError();
@@ -765,7 +765,7 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
 
     while (virPCIDeviceListCount(pcidevs) > 0) {
         virPCIDevicePtr dev = virPCIDeviceListStealIndex(pcidevs, 0);
-        virHostdevReattachPciDevice(dev, hostdev_mgr);
+        virHostdevReattachPCIDevice(dev, hostdev_mgr);
     }
 
     virObjectUnref(pcidevs);
@@ -775,7 +775,7 @@ cleanup:
 }
 
 int
-virHostdevUpdateActivePciHostdevs(virHostdevManagerPtr mgr,
+virHostdevUpdateActivePCIHostdevs(virHostdevManagerPtr mgr,
                                   const char *drv_name,
                                   virDomainDefPtr def)
 {
@@ -834,7 +834,7 @@ cleanup:
 }
 
 int
-virHostdevUpdateActiveUsbHostdevs(virHostdevManagerPtr mgr,
+virHostdevUpdateActiveUSBHostdevs(virHostdevManagerPtr mgr,
                                   const char *drv_name,
                                   virDomainDefPtr def)
 {
@@ -877,7 +877,7 @@ cleanup:
 }
 
 int
-virHostdevUpdateActiveScsiHostdevs(virHostdevManagerPtr mgr,
+virHostdevUpdateActiveSCSIHostdevs(virHostdevManagerPtr mgr,
                                    const char *drv_name,
                                    virDomainDefPtr def)
 {
@@ -926,7 +926,7 @@ cleanup:
 }
 
 static int
-virHostdevMarkUsbHostdevs(virHostdevManagerPtr mgr,
+virHostdevMarkUSBHostdevs(virHostdevManagerPtr mgr,
                           const char *drv_name,
                           const char *dom_name,
                           virUSBDeviceListPtr list)
@@ -1123,7 +1123,7 @@ virHostdevPrepareUSBDevices(virHostdevManagerPtr hostdev_mgr,
      * and add them do driver list. However, if something goes
      * wrong, perform rollback.
      */
-    if (virHostdevMarkUsbHostdevs(hostdev_mgr, drv_name, dom_name, list) < 0)
+    if (virHostdevMarkUSBHostdevs(hostdev_mgr, drv_name, dom_name, list) < 0)
         goto cleanup;
 
     /* Loop 2: Temporary list was successfully merged with
@@ -1254,7 +1254,7 @@ cleanup:
 }
 
 void
-virHostdevReAttachUsbHostdevs(virHostdevManagerPtr hostdev_mgr,
+virHostdevReAttachUSBHostdevs(virHostdevManagerPtr hostdev_mgr,
                               const char *drv_name,
                               const char *dom_name,
                               virDomainHostdevDefPtr *hostdevs,
@@ -1320,7 +1320,7 @@ virHostdevReAttachUsbHostdevs(virHostdevManagerPtr hostdev_mgr,
 }
 
 void
-virHostdevReAttachScsiHostdevs(virHostdevManagerPtr hostdev_mgr,
+virHostdevReAttachSCSIHostdevs(virHostdevManagerPtr hostdev_mgr,
                                const char *drv_name,
                                const char *dom_name,
                                virDomainHostdevDefPtr *hostdevs,
@@ -1383,7 +1383,7 @@ virHostdevReAttachScsiHostdevs(virHostdevManagerPtr hostdev_mgr,
 }
 
 int
-virHostdevPciNodeDeviceDetach(virHostdevManagerPtr hostdev_mgr,
+virHostdevPCINodeDeviceDetach(virHostdevManagerPtr hostdev_mgr,
                               virPCIDevicePtr pci)
 {
     int ret = -1;
@@ -1404,7 +1404,7 @@ out:
 }
 
 int
-virHostdevPciNodeDeviceReAttach(virHostdevManagerPtr hostdev_mgr,
+virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr hostdev_mgr,
                                 virPCIDevicePtr pci)
 {
     virPCIDevicePtr other;
@@ -1445,7 +1445,7 @@ out:
 }
 
 int
-virHostdevPciNodeDeviceReset(virHostdevManagerPtr hostdev_mgr,
+virHostdevPCINodeDeviceReset(virHostdevManagerPtr hostdev_mgr,
                              virPCIDevicePtr pci)
 {
     int ret = -1;

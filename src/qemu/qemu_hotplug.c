@@ -597,7 +597,7 @@ error:
 
 
 static int
-qemuDomainAttachUsbMassstorageDevice(virConnectPtr conn,
+qemuDomainAttachUSBMassstorageDevice(virConnectPtr conn,
                                      virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      virDomainDiskDefPtr disk)
@@ -769,7 +769,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
                                _("disk device='lun' is not supported for usb bus"));
                 break;
             }
-            ret = qemuDomainAttachUsbMassstorageDevice(conn, driver, vm,
+            ret = qemuDomainAttachUSBMassstorageDevice(conn, driver, vm,
                                                        disk);
         } else if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
             ret = qemuDomainAttachVirtioDiskDevice(conn, driver, vm, disk);
@@ -1147,7 +1147,7 @@ try_remove:
 
 
 static int
-qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
+qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainHostdevDefPtr hostdev)
 {
@@ -1463,7 +1463,7 @@ cleanup:
 }
 
 static int
-qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
+qemuDomainAttachHostUSBDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainHostdevDefPtr hostdev)
 {
@@ -1522,14 +1522,14 @@ cleanup:
                                                   vm->def, hostdev, NULL) < 0)
             VIR_WARN("Unable to restore host device labelling on hotplug fail");
         if (added)
-            qemuDomainReAttachHostUsbDevices(driver, vm->def->name, &hostdev, 1);
+            qemuDomainReAttachHostUSBDevices(driver, vm->def->name, &hostdev, 1);
     }
     VIR_FREE(devstr);
     return ret;
 }
 
 static int
-qemuDomainAttachHostScsiDevice(virQEMUDriverPtr driver,
+qemuDomainAttachHostSCSIDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr hostdev)
 {
@@ -1611,7 +1611,7 @@ qemuDomainAttachHostScsiDevice(virQEMUDriverPtr driver,
     ret = 0;
 cleanup:
     if (ret < 0) {
-        qemuDomainReAttachHostScsiDevices(driver, vm->def->name, &hostdev, 1);
+        qemuDomainReAttachHostSCSIDevices(driver, vm->def->name, &hostdev, 1);
         if (teardowncgroup && qemuTeardownHostdevCgroup(vm, hostdev) < 0)
             VIR_WARN("Unable to remove host device cgroup ACL on hotplug fail");
         if (teardownlabel &&
@@ -1637,19 +1637,19 @@ int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
 
     switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        if (qemuDomainAttachHostPciDevice(driver, vm,
+        if (qemuDomainAttachHostPCIDevice(driver, vm,
                                           hostdev) < 0)
             goto error;
         break;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-        if (qemuDomainAttachHostUsbDevice(driver, vm,
+        if (qemuDomainAttachHostUSBDevice(driver, vm,
                                           hostdev) < 0)
             goto error;
         break;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-        if (qemuDomainAttachHostScsiDevice(driver, vm,
+        if (qemuDomainAttachHostSCSIDevice(driver, vm,
                                            hostdev) < 0)
             goto error;
         break;
@@ -2537,7 +2537,7 @@ qemuDomainRemoveUSBHostDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainHostdevDefPtr hostdev)
 {
-    qemuDomainReAttachHostUsbDevices(driver, vm->def->name, &hostdev, 1);
+    qemuDomainReAttachHostUSBDevices(driver, vm->def->name, &hostdev, 1);
 }
 
 static void
@@ -2545,7 +2545,7 @@ qemuDomainRemoveSCSIHostDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr hostdev)
 {
-    qemuDomainReAttachHostScsiDevices(driver, vm->def->name, &hostdev, 1);
+    qemuDomainReAttachHostSCSIDevices(driver, vm->def->name, &hostdev, 1);
 }
 
 static void
@@ -3123,7 +3123,7 @@ cleanup:
 }
 
 static int
-qemuDomainDetachHostPciDevice(virQEMUDriverPtr driver,
+qemuDomainDetachHostPCIDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainHostdevDefPtr detach)
 {
@@ -3160,7 +3160,7 @@ qemuDomainDetachHostPciDevice(virQEMUDriverPtr driver,
 }
 
 static int
-qemuDomainDetachHostUsbDevice(virQEMUDriverPtr driver,
+qemuDomainDetachHostUSBDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainHostdevDefPtr detach)
 {
@@ -3189,7 +3189,7 @@ qemuDomainDetachHostUsbDevice(virQEMUDriverPtr driver,
 }
 
 static int
-qemuDomainDetachHostScsiDevice(virQEMUDriverPtr driver,
+qemuDomainDetachHostSCSIDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr detach)
 {
@@ -3249,13 +3249,13 @@ qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
 
     switch (detach->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        ret = qemuDomainDetachHostPciDevice(driver, vm, detach);
+        ret = qemuDomainDetachHostPCIDevice(driver, vm, detach);
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-        ret = qemuDomainDetachHostUsbDevice(driver, vm, detach);
+        ret = qemuDomainDetachHostUSBDevice(driver, vm, detach);
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-        ret = qemuDomainDetachHostScsiDevice(driver, vm, detach);
+        ret = qemuDomainDetachHostSCSIDevice(driver, vm, detach);
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
