@@ -21,97 +21,131 @@
  *     Mark McLoughlin <markmc@redhat.com>
  */
 
-#ifndef __QEMUD_IPTABLES_H__
-# define __QEMUD_IPTABLES_H__
+#ifndef __VIR_IPTABLES_H__
+# define __VIR_IPTABLES_H__
 
 # include "virsocketaddr.h"
+# include "virfirewall.h"
 
-int              iptablesAddTcpInput             (int family,
+void             iptablesAddTcpInput             (virFirewallPtr fw,
+                                                  virFirewallLayer layer,
                                                   const char *iface,
                                                   int port);
-int              iptablesRemoveTcpInput          (int family,
-                                                  const char *iface,
-                                                  int port);
-
-int              iptablesAddUdpInput             (int family,
-                                                  const char *iface,
-                                                  int port);
-int              iptablesRemoveUdpInput          (int family,
+void             iptablesRemoveTcpInput          (virFirewallPtr fw,
+                                                  virFirewallLayer layer,
                                                   const char *iface,
                                                   int port);
 
-int              iptablesAddUdpOutput            (int family,
+void             iptablesAddUdpInput             (virFirewallPtr fw,
+                                                  virFirewallLayer layer,
                                                   const char *iface,
                                                   int port);
-int              iptablesRemoveUdpOutput         (int family,
+void             iptablesRemoveUdpInput          (virFirewallPtr fw,
+                                                  virFirewallLayer layer,
                                                   const char *iface,
                                                   int port);
 
-int              iptablesAddForwardAllowOut      (virSocketAddr *netaddr,
+void             iptablesAddUdpOutput            (virFirewallPtr fw,
+                                                  virFirewallLayer layer,
+                                                  const char *iface,
+                                                  int port);
+void             iptablesRemoveUdpOutput         (virFirewallPtr fw,
+                                                  virFirewallLayer layer,
+                                                  const char *iface,
+                                                  int port);
+
+int              iptablesAddForwardAllowOut      (virFirewallPtr fw,
+                                                  virSocketAddr *netaddr,
                                                   unsigned int prefix,
                                                   const char *iface,
-                                                  const char *physdev);
-int              iptablesRemoveForwardAllowOut   (virSocketAddr *netaddr,
+                                                  const char *physdev)
+    ATTRIBUTE_RETURN_CHECK;
+int              iptablesRemoveForwardAllowOut   (virFirewallPtr fw,
+                                                  virSocketAddr *netaddr,
                                                   unsigned int prefix,
                                                   const char *iface,
-                                                  const char *physdev);
-
-int              iptablesAddForwardAllowRelatedIn(virSocketAddr *netaddr,
+                                                  const char *physdev)
+    ATTRIBUTE_RETURN_CHECK;
+int              iptablesAddForwardAllowRelatedIn(virFirewallPtr fw,
+                                                  virSocketAddr *netaddr,
                                                   unsigned int prefix,
                                                   const char *iface,
-                                                  const char *physdev);
-int              iptablesRemoveForwardAllowRelatedIn(virSocketAddr *netaddr,
+                                                  const char *physdev)
+    ATTRIBUTE_RETURN_CHECK;
+int              iptablesRemoveForwardAllowRelatedIn(virFirewallPtr fw,
+                                                     virSocketAddr *netaddr,
+                                                     unsigned int prefix,
+                                                     const char *iface,
+                                                     const char *physdev)
+    ATTRIBUTE_RETURN_CHECK;
+
+int              iptablesAddForwardAllowIn       (virFirewallPtr fw,
+                                                  virSocketAddr *netaddr,
                                                   unsigned int prefix,
                                                   const char *iface,
-                                                  const char *physdev);
-
-int              iptablesAddForwardAllowIn       (virSocketAddr *netaddr,
+                                                  const char *physdev)
+    ATTRIBUTE_RETURN_CHECK;
+int              iptablesRemoveForwardAllowIn    (virFirewallPtr fw,
+                                                  virSocketAddr *netaddr,
                                                   unsigned int prefix,
                                                   const char *iface,
-                                                  const char *physdev);
-int              iptablesRemoveForwardAllowIn    (virSocketAddr *netaddr,
-                                                  unsigned int prefix,
-                                                  const char *iface,
-                                                  const char *physdev);
+                                                  const char *physdev)
+    ATTRIBUTE_RETURN_CHECK;
 
-int              iptablesAddForwardAllowCross    (int family,
+void             iptablesAddForwardAllowCross    (virFirewallPtr fw,
+                                                  virFirewallLayer layer,
                                                   const char *iface);
-int              iptablesRemoveForwardAllowCross (int family,
-                                                  const char *iface);
-
-int              iptablesAddForwardRejectOut     (int family,
-                                                  const char *iface);
-int              iptablesRemoveForwardRejectOut  (int family,
+void             iptablesRemoveForwardAllowCross (virFirewallPtr fw,
+                                                  virFirewallLayer layer,
                                                   const char *iface);
 
-int              iptablesAddForwardRejectIn      (int family,
+void             iptablesAddForwardRejectOut     (virFirewallPtr fw,
+                                                  virFirewallLayer layer,
                                                   const char *iface);
-int              iptablesRemoveForwardRejectIn   (int family,
+void             iptablesRemoveForwardRejectOut  (virFirewallPtr fw,
+                                                  virFirewallLayer layer,
                                                   const char *iface);
 
-int              iptablesAddForwardMasquerade    (virSocketAddr *netaddr,
+void             iptablesAddForwardRejectIn      (virFirewallPtr fw,
+                                                  virFirewallLayer layer,
+                                                  const char *iface);
+void             iptablesRemoveForwardRejectIn   (virFirewallPtr fw,
+                                                  virFirewallLayer layery,
+                                                  const char *iface);
+
+int              iptablesAddForwardMasquerade    (virFirewallPtr fw,
+                                                  virSocketAddr *netaddr,
                                                   unsigned int prefix,
                                                   const char *physdev,
                                                   virSocketAddrRangePtr addr,
                                                   virPortRangePtr port,
-                                                  const char *protocol);
-int              iptablesRemoveForwardMasquerade (virSocketAddr *netaddr,
+                                                  const char *protocol)
+    ATTRIBUTE_RETURN_CHECK;
+int              iptablesRemoveForwardMasquerade (virFirewallPtr fw,
+                                                  virSocketAddr *netaddr,
                                                   unsigned int prefix,
                                                   const char *physdev,
                                                   virSocketAddrRangePtr addr,
                                                   virPortRangePtr port,
-                                                  const char *protocol);
-int              iptablesAddDontMasquerade       (virSocketAddr *netaddr,
+                                                  const char *protocol)
+    ATTRIBUTE_RETURN_CHECK;
+int              iptablesAddDontMasquerade       (virFirewallPtr fw,
+                                                  virSocketAddr *netaddr,
                                                   unsigned int prefix,
                                                   const char *physdev,
-                                                  const char *destaddr);
-int              iptablesRemoveDontMasquerade    (virSocketAddr *netaddr,
+                                                  const char *destaddr)
+    ATTRIBUTE_RETURN_CHECK;
+int              iptablesRemoveDontMasquerade    (virFirewallPtr fw,
+                                                  virSocketAddr *netaddr,
                                                   unsigned int prefix,
                                                   const char *physdev,
-                                                  const char *destaddr);
-int              iptablesAddOutputFixUdpChecksum (const char *iface,
+                                                  const char *destaddr)
+    ATTRIBUTE_RETURN_CHECK;
+void             iptablesAddOutputFixUdpChecksum (virFirewallPtr fw,
+                                                  const char *iface,
                                                   int port);
-int              iptablesRemoveOutputFixUdpChecksum (const char *iface,
+void             iptablesRemoveOutputFixUdpChecksum (virFirewallPtr fw,
+                                                     const char *iface,
                                                      int port);
 
-#endif /* __QEMUD_IPTABLES_H__ */
+#endif /* __VIR_IPTABLES_H__ */
