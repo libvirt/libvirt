@@ -249,6 +249,9 @@ struct _vshControl {
     const char *escapeChar;     /* String representation of
                                    console escape character */
 
+    int keepalive_interval;     /* Client keepalive interval */
+    int keepalive_count;        /* Client keepalive count */
+
 # ifndef WIN32
     struct termios termattr;    /* settings of the tty terminal */
 # endif
@@ -268,6 +271,8 @@ void vshOutputLogFile(vshControl *ctl, int log_level, const char *format,
                       va_list ap)
     ATTRIBUTE_FMT_PRINTF(3, 0);
 void vshCloseLogFile(vshControl *ctl);
+
+virConnectPtr vshConnect(vshControl *ctl, const char *uri, bool readonly);
 
 const char *vshCmddefGetInfo(const vshCmdDef *cmd, const char *info);
 const vshCmdDef *vshCmddefSearch(const char *cmdname);

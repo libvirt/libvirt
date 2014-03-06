@@ -8785,7 +8785,7 @@ doMigrate(void *opaque)
         virConnectPtr dconn = NULL;
         virDomainPtr ddom = NULL;
 
-        dconn = virConnectOpenAuth(desturi, virConnectAuthPtrDefault, 0);
+        dconn = vshConnect(ctl, desturi, false);
         if (!dconn)
             goto out;
 

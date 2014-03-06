@@ -1,7 +1,7 @@
 #!/bin/sh
 # Ensure that virsh option parsing doesn't regress
 
-# Copyright (C) 2011-2012 Red Hat, Inc.
+# Copyright (C) 2011-2012, 2014 Red Hat, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ for args in \
     '--count 2 test' \
     '--count=2 test' \
 ; do
-  virsh -d0 -c $test_url setvcpus $args >out 2>>err || fail=1
+  virsh -k0 -d0 -c $test_url setvcpus $args >out 2>>err || fail=1
   LC_ALL=C sort out | compare exp-out - || fail=1
 done
 
