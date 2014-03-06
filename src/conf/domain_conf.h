@@ -415,6 +415,7 @@ typedef enum {
     VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT, /* detect automaticaly, prefer VFIO */
     VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM,    /* force legacy kvm style */
     VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO,   /* force vfio */
+    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN,    /* force legacy xen style, use pciback */
 
     VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST
 } virDomainHostdevSubsysPciBackendType;

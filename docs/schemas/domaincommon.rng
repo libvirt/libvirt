@@ -3421,6 +3421,7 @@
             <choice>
               <value>kvm</value>
               <value>vfio</value>
+              <value>xen</value>
             </choice>
           </attribute>
           <empty/>

@@ -627,7 +627,8 @@ VIR_ENUM_IMPL(virDomainHostdevSubsysPciBackend,
               VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST,
               "default",
               "kvm",
-              "vfio")
+              "vfio",
+              "xen")
 
 VIR_ENUM_IMPL(virDomainHostdevCaps, VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST,
               "storage",

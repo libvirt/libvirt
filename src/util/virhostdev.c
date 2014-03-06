@@ -170,6 +170,12 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
                 virObjectUnref(list);
                 return NULL;
             }
+        } else if (hostdev->source.subsys.u.pci.backend
+                   == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN) {
+            if (virPCIDeviceSetStubDriver(dev, "pciback") < 0) {
+                virObjectUnref(list);
+                return NULL;
+            }
         } else {
             if (virPCIDeviceSetStubDriver(dev, "pci-stub") < 0) {
                 virObjectUnref(list);
@@ -818,6 +824,10 @@ virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
         if (hostdev->source.subsys.u.pci.backend
             == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
             if (virPCIDeviceSetStubDriver(dev, "vfio-pci") < 0)
+                goto cleanup;
+        } else if (hostdev->source.subsys.u.pci.backend
+                   == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN) {
+            if (virPCIDeviceSetStubDriver(dev, "pciback") < 0)
                 goto cleanup;
         } else {
             if (virPCIDeviceSetStubDriver(dev, "pci-stub") < 0)

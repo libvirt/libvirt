@@ -1199,9 +1199,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
         virProcessSetMaxMemLock(vm->pid, memKB * 1024);
         break;
 
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
+    default:
         break;
     }
 
