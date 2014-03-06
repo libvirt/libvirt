@@ -465,6 +465,9 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
     size_t i;
     int ret = -1;
 
+    if (!nhostdevs)
+        return 0;
+
     virObjectLock(hostdev_mgr->activePCIHostdevs);
     virObjectLock(hostdev_mgr->inactivePCIHostdevs);
 
@@ -699,6 +702,9 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
     virPCIDeviceListPtr pcidevs;
     size_t i;
 
+    if (!nhostdevs)
+        return;
+
     virObjectLock(hostdev_mgr->activePCIHostdevs);
     virObjectLock(hostdev_mgr->inactivePCIHostdevs);
 
@@ -786,6 +792,9 @@ virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
     size_t i;
     int ret = -1;
 
+    if (!nhostdevs)
+        return 0;
+
     virObjectLock(mgr->activePCIHostdevs);
     virObjectLock(mgr->inactivePCIHostdevs);
 
@@ -846,6 +855,9 @@ virHostdevUpdateActiveUSBDevices(virHostdevManagerPtr mgr,
     size_t i;
     int ret = -1;
 
+    if (!nhostdevs)
+        return 0;
+
     virObjectLock(mgr->activeUSBHostdevs);
     for (i = 0; i < nhostdevs; i++) {
         virUSBDevicePtr usb = NULL;
@@ -892,6 +904,9 @@ virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
     int ret = -1;
     virSCSIDevicePtr scsi = NULL;
     virSCSIDevicePtr tmp = NULL;
+
+    if (!nhostdevs)
+        return 0;
 
     virObjectLock(mgr->activeSCSIHostdevs);
     for (i = 0; i < nhostdevs; i++) {
@@ -1091,6 +1106,9 @@ virHostdevPrepareUSBDevices(virHostdevManagerPtr hostdev_mgr,
     virUSBDevicePtr tmp;
     bool coldBoot = !!(flags & VIR_HOSTDEV_COLD_BOOT);
 
+    if (!nhostdevs)
+        return 0;
+
     /* To prevent situation where USB device is assigned to two domains
      * we need to keep a list of currently assigned USB devices.
      * This is done in several loops which cannot be joined into one big
@@ -1159,6 +1177,9 @@ virHostdevPrepareSCSIDevices(virHostdevManagerPtr hostdev_mgr,
     int count;
     virSCSIDeviceListPtr list;
     virSCSIDevicePtr tmp;
+
+    if (!nhostdevs)
+        return 0;
 
     /* To prevent situation where SCSI device is assigned to two domains
      * we need to keep a list of currently assigned SCSI devices.
@@ -1268,6 +1289,9 @@ virHostdevReAttachUSBDevices(virHostdevManagerPtr hostdev_mgr,
 {
     size_t i;
 
+    if (!nhostdevs)
+        return;
+
     virObjectLock(hostdev_mgr->activeUSBHostdevs);
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
@@ -1333,6 +1357,9 @@ virHostdevReAttachSCSIDevices(virHostdevManagerPtr hostdev_mgr,
                               int nhostdevs)
 {
     size_t i;
+
+    if (!nhostdevs)
+        return;
 
     virObjectLock(hostdev_mgr->activeSCSIHostdevs);
     for (i = 0; i < nhostdevs; i++) {

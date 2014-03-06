@@ -61,80 +61,96 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
                             const unsigned char *uuid,
                             virDomainHostdevDefPtr *hostdevs,
                             int nhostdevs,
-                            unsigned int flags);
+                            unsigned int flags)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(4);
 int
 virHostdevPrepareUSBDevices(virHostdevManagerPtr hostdev_mgr,
                             const char *drv_name,
                             const char *dom_name,
                             virDomainHostdevDefPtr *hostdevs,
                             int nhostdevs,
-                            unsigned int flags);
+                            unsigned int flags)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 int
 virHostdevPrepareSCSIDevices(virHostdevManagerPtr hostdev_mgr,
                              const char *drv_name,
                              const char *dom_name,
                              virDomainHostdevDefPtr *hostdevs,
-                             int nhostdevs);
+                             int nhostdevs)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 void
 virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
                              const char *drv_name,
                              const char *dom_name,
                              virDomainHostdevDefPtr *hostdevs,
                              int nhostdevs,
-                             const char *oldStateDir);
+                             const char *oldStateDir)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 void
 virHostdevReAttachUSBDevices(virHostdevManagerPtr hostdev_mgr,
                               const char *drv_name,
                               const char *dom_name,
                               virDomainHostdevDefPtr *hostdevs,
-                              int nhostdevs);
+                              int nhostdevs)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 void
 virHostdevReAttachSCSIDevices(virHostdevManagerPtr hostdev_mgr,
                               const char *drv_name,
                               const char *dom_name,
                               virDomainHostdevDefPtr *hostdevs,
-                              int nhostdevs);
+                              int nhostdevs)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 int
 virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
                                  virDomainHostdevDefPtr *hostdevs,
                                  int nhostdevs,
                                  const char *drv_name,
-                                 const char *dom_name);
+                                 const char *dom_name)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 int
 virHostdevUpdateActiveUSBDevices(virHostdevManagerPtr mgr,
                                  virDomainHostdevDefPtr *hostdevs,
                                  int nhostdevs,
                                  const char *drv_name,
-                                 const char *dom_name);
+                                 const char *dom_name)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 int
 virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
                                   virDomainHostdevDefPtr *hostdevs,
                                   int nhostdevs,
                                   const char *drv_name,
-                                  const char *dom_name);
+                                  const char *dom_name)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 int
 virHostdevUpdateDomainActiveDevices(virHostdevManagerPtr mgr,
                                     const char *driver,
                                     virDomainDefPtr def,
-                                    unsigned int flags);
+                                    unsigned int flags)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 int
 virHostdevPrepareDomainDevices(virHostdevManagerPtr mgr,
                                const char *driver,
                                virDomainDefPtr def,
-                               unsigned int flags);
+                               unsigned int flags)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 void
 virHostdevReAttachDomainDevices(virHostdevManagerPtr mgr,
                                 const char *driver,
                                 virDomainDefPtr def,
                                 unsigned int flags,
-                                const char *oldStateDir);
+                                const char *oldStateDir)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(5);
 
 /* functions used by NodeDevDetach/Reattach/Reset */
 int virHostdevPCINodeDeviceDetach(virHostdevManagerPtr mgr,
-                                  virPCIDevicePtr pci);
+                                  virPCIDevicePtr pci)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr mgr,
-                                    virPCIDevicePtr pci);
+                                    virPCIDevicePtr pci)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int virHostdevPCINodeDeviceReset(virHostdevManagerPtr mgr,
-                                 virPCIDevicePtr pci);
+                                 virPCIDevicePtr pci)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 #endif /* __VIR_HOSTDEV_H__ */
