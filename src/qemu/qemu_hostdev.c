@@ -234,9 +234,9 @@ out:
 
 
 static int
-qemuPrepareHostdevUSBDevices(virHostdevManagerPtr mgr,
-                             const char *name,
-                             virUSBDeviceListPtr list)
+virHostdevMarkUsbHostdevs(virHostdevManagerPtr mgr,
+                          const char *name,
+                          virUSBDeviceListPtr list)
 {
     size_t i, j;
     unsigned int count;
@@ -291,9 +291,9 @@ error:
 
 
 static int
-qemuFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
-                         bool mandatory,
-                         virUSBDevicePtr *usb)
+virHostdevFindUSBDevice(virDomainHostdevDefPtr hostdev,
+                        bool mandatory,
+                        virUSBDevicePtr *usb)
 {
     unsigned vendor = hostdev->source.subsys.u.usb.vendor;
     unsigned product = hostdev->source.subsys.u.usb.product;
@@ -415,7 +415,7 @@ virHostdevPrepareUSBDevices(virHostdevManagerPtr hostdev_mgr,
              !coldBoot))
             required = false;
 
-        if (qemuFindHostdevUSBDevice(hostdev, required, &usb) < 0)
+        if (virHostdevFindUSBDevice(hostdev, required, &usb) < 0)
             goto cleanup;
 
         if (usb && virUSBDeviceListAdd(list, usb) < 0) {
@@ -428,7 +428,7 @@ virHostdevPrepareUSBDevices(virHostdevManagerPtr hostdev_mgr,
      * and add them do driver list. However, if something goes
      * wrong, perform rollback.
      */
-    if (qemuPrepareHostdevUSBDevices(hostdev_mgr, name, list) < 0)
+    if (virHostdevMarkUsbHostdevs(hostdev_mgr, name, list) < 0)
         goto cleanup;
 
     /* Loop 2: Temporary list was successfully merged with
