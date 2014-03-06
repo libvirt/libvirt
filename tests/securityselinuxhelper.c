@@ -28,6 +28,9 @@
 # include <linux/magic.h>
 #endif
 #include <selinux/selinux.h>
+#if HAVE_SELINUX_LABEL_H
+# include <selinux/label.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,10 +42,32 @@
 # define NFS_SUPER_MAGIC 0x6969
 #endif
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
+#include "viralloc.h"
 #include "virstring.h"
 
 static int (*realstatfs)(const char *path, struct statfs *buf);
 static int (*realsecurity_get_boolean_active)(const char *name);
+static int (*realis_selinux_enabled)(void);
+
+static const char *(*realselinux_virtual_domain_context_path)(void);
+static const char *(*realselinux_virtual_image_context_path)(void);
+
+#ifdef HAVE_SELINUX_LXC_CONTEXTS_PATH
+static const char *(*realselinux_lxc_contexts_path)(void);
+#endif
+
+#if HAVE_SELINUX_LABEL_H
+static struct selabel_handle *(*realselabel_open)(unsigned int backend,
+                                                  struct selinux_opt *opts,
+                                                  unsigned nopts);
+static void (*realselabel_close)(struct selabel_handle *handle);
+static int (*realselabel_lookup_raw)(struct selabel_handle *handle,
+                                     security_context_t *con,
+                                     const char *key,
+                                     int type);
+#endif
 
 static void init_syms(void)
 {
@@ -59,6 +84,20 @@ static void init_syms(void)
 
     LOAD_SYM(statfs);
     LOAD_SYM(security_get_boolean_active);
+    LOAD_SYM(is_selinux_enabled);
+
+    LOAD_SYM(selinux_virtual_domain_context_path);
+    LOAD_SYM(selinux_virtual_image_context_path);
+
+#ifdef HAVE_SELINUX_LXC_CONTEXTS_PATH
+    LOAD_SYM(selinux_lxc_contexts_path);
+#endif
+
+#if HAVE_SELINUX_LABEL_H
+    LOAD_SYM(selabel_open);
+    LOAD_SYM(selabel_close);
+    LOAD_SYM(selabel_lookup_raw);
+#endif
 
 #undef LOAD_SYM
 }
@@ -76,12 +115,16 @@ static void init_syms(void)
 
 int getcon_raw(security_context_t *context)
 {
-    if (getenv("FAKE_CONTEXT") == NULL) {
+    if (!is_selinux_enabled()) {
+        errno = EINVAL;
+        return -1;
+    }
+    if (getenv("FAKE_SELINUX_CONTEXT") == NULL) {
         *context = NULL;
         errno = EINVAL;
         return -1;
     }
-    return VIR_STRDUP_QUIET(*context, getenv("FAKE_CONTEXT"));
+    return VIR_STRDUP_QUIET(*context, getenv("FAKE_SELINUX_CONTEXT"));
 }
 
 int getcon(security_context_t *context)
@@ -91,17 +134,21 @@ int getcon(security_context_t *context)
 
 int getpidcon_raw(pid_t pid, security_context_t *context)
 {
+    if (!is_selinux_enabled()) {
+        errno = EINVAL;
+        return -1;
+    }
     if (pid != getpid()) {
         *context = NULL;
         errno = ESRCH;
         return -1;
     }
-    if (getenv("FAKE_CONTEXT") == NULL) {
+    if (getenv("FAKE_SELINUX_CONTEXT") == NULL) {
         *context = NULL;
         errno = EINVAL;
         return -1;
     }
-    return VIR_STRDUP_QUIET(*context, getenv("FAKE_CONTEXT"));
+    return VIR_STRDUP_QUIET(*context, getenv("FAKE_SELINUX_CONTEXT"));
 }
 
 int getpidcon(pid_t pid, security_context_t *context)
@@ -111,7 +158,11 @@ int getpidcon(pid_t pid, security_context_t *context)
 
 int setcon_raw(security_context_t context)
 {
-    return setenv("FAKE_CONTEXT", context, 1);
+    if (!is_selinux_enabled()) {
+        errno = EINVAL;
+        return -1;
+    }
+    return setenv("FAKE_SELINUX_CONTEXT", context, 1);
 }
 
 int setcon(security_context_t context)
@@ -178,9 +229,28 @@ int statfs(const char *path, struct statfs *buf)
     return ret;
 }
 
+int is_selinux_enabled(void)
+{
+    return getenv("FAKE_SELINUX_DISABLED") == NULL;
+}
+
+int security_disable(void)
+{
+    if (!is_selinux_enabled()) {
+        errno = ENOENT;
+        return -1;
+    }
+
+    return setenv("FAKE_SELINUX_DISABLED", "1", 1);
+}
 
 int security_getenforce(void)
 {
+    if (!is_selinux_enabled()) {
+        errno = ENOENT;
+        return -1;
+    }
+
     /* For the purpose of our test, we are enforcing.  */
     return 1;
 }
@@ -188,6 +258,11 @@ int security_getenforce(void)
 
 int security_get_boolean_active(const char *name)
 {
+    if (!is_selinux_enabled()) {
+        errno = ENOENT;
+        return -1;
+    }
+
     /* For the purpose of our test, nfs is not permitted.  */
     if (STREQ(name, "virt_use_nfs"))
         return 0;
@@ -195,3 +270,80 @@ int security_get_boolean_active(const char *name)
     init_syms();
     return realsecurity_get_boolean_active(name);
 }
+
+const char *selinux_virtual_domain_context_path(void)
+{
+    init_syms();
+
+    if (realis_selinux_enabled())
+        return realselinux_virtual_domain_context_path();
+
+    return abs_builddir "/securityselinuxhelperdata/virtual_domain_context";
+}
+
+const char *selinux_virtual_image_context_path(void)
+{
+    init_syms();
+
+    if (realis_selinux_enabled())
+        return realselinux_virtual_image_context_path();
+
+    return abs_builddir "/securityselinuxhelperdata/virtual_image_context";
+}
+
+#ifdef HAVE_SELINUX_LXC_CONTEXTS_PATH
+const char *selinux_lxc_contexts_path(void)
+{
+    init_syms();
+
+    if (realis_selinux_enabled())
+        return realselinux_lxc_contexts_path();
+
+    return abs_builddir "/securityselinuxhelperdata/lxc_contexts";
+}
+#endif
+
+#if HAVE_SELINUX_LABEL_H
+struct selabel_handle *selabel_open(unsigned int backend,
+                                    struct selinux_opt *opts,
+                                    unsigned nopts)
+{
+    char *fake_handle;
+
+    init_syms();
+
+    if (realis_selinux_enabled())
+        return realselabel_open(backend, opts, nopts);
+
+    /* struct selabel_handle is opaque; fake it */
+    if (VIR_ALLOC(fake_handle) < 0)
+        return NULL;
+    return (struct selabel_handle *)fake_handle;
+}
+
+void selabel_close(struct selabel_handle *handle)
+{
+    init_syms();
+
+    if (realis_selinux_enabled())
+        return realselabel_close(handle);
+
+    VIR_FREE(handle);
+}
+
+int selabel_lookup_raw(struct selabel_handle *handle,
+                       security_context_t *con,
+                       const char *key,
+                       int type)
+{
+    init_syms();
+
+    if (realis_selinux_enabled())
+        return realselabel_lookup_raw(handle, con, key, type);
+
+    /* Unimplemented */
+    errno = ENOENT;
+    return -1;
+}
+
+#endif
