@@ -58,6 +58,13 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
                             virDomainHostdevDefPtr *hostdevs,
                             int nhostdevs,
                             unsigned int flags);
+int
+virHostdevPrepareUSBDevices(virHostdevManagerPtr hostdev_mgr,
+                            const char *drv_name,
+                            const char *name,
+                            virDomainHostdevDefPtr *hostdevs,
+                            int nhostdevs,
+                            unsigned int flags);
 void
 virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
                              const char *drv_name,
