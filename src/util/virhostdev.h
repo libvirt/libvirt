@@ -53,7 +53,7 @@ virHostdevManagerPtr virHostdevManagerGetDefault(void);
 int
 virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
                             const char *drv_name,
-                            const char *name,
+                            const char *dom_name,
                             const unsigned char *uuid,
                             virDomainHostdevDefPtr *hostdevs,
                             int nhostdevs,
@@ -61,33 +61,33 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
 int
 virHostdevPrepareUSBDevices(virHostdevManagerPtr hostdev_mgr,
                             const char *drv_name,
-                            const char *name,
+                            const char *dom_name,
                             virDomainHostdevDefPtr *hostdevs,
                             int nhostdevs,
                             unsigned int flags);
 int
 virHostdevPrepareSCSIDevices(virHostdevManagerPtr hostdev_mgr,
                              const char *drv_name,
-                             const char *name,
+                             const char *dom_name,
                              virDomainHostdevDefPtr *hostdevs,
                              int nhostdevs);
 void
 virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
                              const char *drv_name,
-                             const char *name,
+                             const char *dom_name,
                              virDomainHostdevDefPtr *hostdevs,
                              int nhostdevs,
                              char *oldStateDir);
 void
 virHostdevReAttachUsbHostdevs(virHostdevManagerPtr hostdev_mgr,
                               const char *drv_name,
-                              const char *name,
+                              const char *dom_name,
                               virDomainHostdevDefPtr *hostdevs,
                               int nhostdevs);
 void
 virHostdevReAttachScsiHostdevs(virHostdevManagerPtr hostdev_mgr,
                                const char *drv_name,
-                               const char *name,
+                               const char *dom_name,
                                virDomainHostdevDefPtr *hostdevs,
                                int nhostdevs);
 int
