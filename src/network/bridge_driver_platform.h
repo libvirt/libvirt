@@ -53,28 +53,6 @@ typedef virNetworkDriverState *virNetworkDriverStatePtr;
 
 int networkCheckRouteCollision(virNetworkObjPtr network);
 
-int networkAddMasqueradingFirewallRules(virNetworkObjPtr network,
-                                        virNetworkIpDefPtr ipdef);
-
-void networkRemoveMasqueradingFirewallRules(virNetworkObjPtr network,
-                                            virNetworkIpDefPtr ipdef);
-
-int networkAddRoutingFirewallRules(virNetworkObjPtr network,
-                                   virNetworkIpDefPtr ipdef);
-
-void networkRemoveRoutingFirewallRules(virNetworkObjPtr network,
-                                       virNetworkIpDefPtr ipdef);
-
-int networkAddGeneralFirewallRules(virNetworkObjPtr network);
-
-void networkRemoveGeneralFirewallRules(virNetworkObjPtr network);
-
-int networkAddIpSpecificFirewallRules(virNetworkObjPtr network,
-                                      virNetworkIpDefPtr ipdef);
-
-void networkRemoveIpSpecificFirewallRules(virNetworkObjPtr network,
-                                          virNetworkIpDefPtr ipdef);
-
 int networkAddFirewallRules(virNetworkObjPtr network);
 
 void networkRemoveFirewallRules(virNetworkObjPtr network);
