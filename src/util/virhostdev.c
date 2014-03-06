@@ -41,11 +41,33 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 #define HOSTDEV_STATE_DIR LOCALSTATEDIR "/run/libvirt/hostdevmgr"
 
-static virHostdevManagerPtr hostdevMgr;
+static virHostdevManagerPtr manager; /* global hostdev manager, never freed */
+
+static virClassPtr virHostdevManagerClass;
+static void virHostdevManagerDispose(void *obj);
+static virHostdevManagerPtr virHostdevManagerNew(void);
+
+static int virHostdevManagerOnceInit(void)
+{
+    if (!(virHostdevManagerClass = virClassNew(virClassForObject(),
+                                               "virHostdevManager",
+                                               sizeof(virHostdevManager),
+                                               virHostdevManagerDispose)))
+        return -1;
+
+    if (!(manager = virHostdevManagerNew()))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virHostdevManager)
 
 static void
-virHostdevManagerCleanup(void)
+virHostdevManagerDispose(void *obj)
 {
+    virHostdevManagerPtr hostdevMgr = obj;
+
     if (!hostdevMgr)
         return;
 
@@ -58,11 +80,13 @@ virHostdevManagerCleanup(void)
     VIR_FREE(hostdevMgr);
 }
 
-static int
-virHostdevOnceInit(void)
+static virHostdevManagerPtr
+virHostdevManagerNew(void)
 {
-    if (VIR_ALLOC(hostdevMgr) < 0)
-        goto error;
+    virHostdevManagerPtr hostdevMgr;
+
+    if (!(hostdevMgr = virObjectNew(virHostdevManagerClass)))
+        return NULL;
 
     if ((hostdevMgr->activePciHostdevs = virPCIDeviceListNew()) == NULL)
         goto error;
@@ -86,19 +110,18 @@ virHostdevOnceInit(void)
         goto error;
     }
 
-    return 0;
+    return hostdevMgr;
 
 error:
-    virHostdevManagerCleanup();
-    return -1;
+    virObjectUnref(hostdevMgr);
+    return NULL;
 }
-
-VIR_ONCE_GLOBAL_INIT(virHostdev)
 
 virHostdevManagerPtr
 virHostdevManagerGetDefault(void)
 {
-    if (virHostdevInitialize() < 0)
+    if (virHostdevManagerInitialize() < 0)
         return NULL;
-    return hostdevMgr;
+
+    return virObjectRef(manager);
 }
