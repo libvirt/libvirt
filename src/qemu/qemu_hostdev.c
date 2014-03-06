@@ -111,17 +111,13 @@ qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
     return virHostdevUpdateActivePciHostdevs(mgr, def);
 }
 
-int
-qemuUpdateActiveUsbHostdevs(virQEMUDriverPtr driver,
-                            virDomainDefPtr def)
+static int
+virHostdevUpdateActiveUsbHostdevs(virHostdevManagerPtr mgr,
+                                  virDomainDefPtr def)
 {
     virDomainHostdevDefPtr hostdev = NULL;
     size_t i;
     int ret = -1;
-    virHostdevManagerPtr mgr = driver->hostdevMgr;
-
-    if (!def->nhostdevs)
-        return 0;
 
     virObjectLock(mgr->activeUsbHostdevs);
     for (i = 0; i < def->nhostdevs; i++) {
@@ -155,6 +151,18 @@ qemuUpdateActiveUsbHostdevs(virQEMUDriverPtr driver,
 cleanup:
     virObjectUnlock(mgr->activeUsbHostdevs);
     return ret;
+}
+
+int
+qemuUpdateActiveUsbHostdevs(virQEMUDriverPtr driver,
+                            virDomainDefPtr def)
+{
+    virHostdevManagerPtr mgr = driver->hostdevMgr;
+
+    if (!def->nhostdevs)
+        return 0;
+
+    return virHostdevUpdateActiveUsbHostdevs(mgr, def);
 }
 
 int
