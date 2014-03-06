@@ -52,21 +52,6 @@ The B<virsh> program understands the following I<OPTIONS>.
 
 =over 4
 
-=item B<-h>, B<--help>
-
-Ignore all other arguments, and behave as if the B<help> command were
-given instead.
-
-=item B<-v>, B<--version[=short]>
-
-Ignore all other arguments, and prints the version of the libvirt library
-virsh is coming from
-
-=item B<-V>, B<--version=long>
-
-Ignore all other arguments, and prints the version of the libvirt library
-virsh is coming from and which options and driver are compiled in.
-
 =item B<-c>, B<--connect> I<URI>
 
 Connect to the specified I<URI>, as if by the B<connect> command,
@@ -77,6 +62,17 @@ instead of the default connection.
 Enable debug messages at integer I<LEVEL> and above.  I<LEVEL> can
 range from 0 to 4 (default).  See the documentation of B<VIRSH_DEBUG>
 environment variable below for the description of each I<LEVEL>.
+
+=item B<-e>, B<--escape> I<string>
+
+Set alternative escape sequence for I<console> command. By default,
+telnet's B<^]> is used. Allowed characters when using hat notation are:
+alphabetic character, @, [, ], \, ^, _.
+
+=item B<-h>, B<--help>
+
+Ignore all other arguments, and behave as if the B<help> command were
+given instead.
 
 =item B<-l>, B<--log> I<FILE>
 
@@ -95,11 +91,15 @@ option of the B<connect> command.
 
 Output elapsed time information for each command.
 
-=item B<-e>, B<--escape> I<string>
+=item B<-v>, B<--version[=short]>
 
-Set alternative escape sequence for I<console> command. By default,
-telnet's B<^]> is used. Allowed characters when using hat notation are:
-alphabetic character, @, [, ], \, ^, _.
+Ignore all other arguments, and prints the version of the libvirt library
+virsh is coming from
+
+=item B<-V>, B<--version=long>
+
+Ignore all other arguments, and prints the version of the libvirt library
+virsh is coming from and which options and driver are compiled in.
 
 =back
 

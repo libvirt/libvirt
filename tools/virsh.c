@@ -3110,16 +3110,16 @@ vshUsage(void)
                       "\n%s [options]... <command> [args...]\n\n"
                       "  options:\n"
                       "    -c | --connect=URI      hypervisor connection URI\n"
-                      "    -r | --readonly         connect readonly\n"
                       "    -d | --debug=NUM        debug level [0-4]\n"
+                      "    -e | --escape <char>    set escape sequence for console\n"
                       "    -h | --help             this help\n"
-                      "    -q | --quiet            quiet mode\n"
-                      "    -t | --timing           print timing information\n"
                       "    -l | --log=FILE         output logging to file\n"
+                      "    -q | --quiet            quiet mode\n"
+                      "    -r | --readonly         connect readonly\n"
+                      "    -t | --timing           print timing information\n"
                       "    -v                      short version\n"
                       "    -V                      long version\n"
                       "         --version[=TYPE]   version, TYPE is short or long (default short)\n"
-                      "    -e | --escape <char>    set escape sequence for console\n\n"
                       "  commands (non interactive mode):\n\n"), progname, progname);
 
     for (grp = cmdGroups; grp->name; grp++) {
@@ -3306,23 +3306,27 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
     size_t i;
     int longindex = -1;
     struct option opt[] = {
+        {"connect", required_argument, NULL, 'c'},
         {"debug", required_argument, NULL, 'd'},
+        {"escape", required_argument, NULL, 'e'},
         {"help", no_argument, NULL, 'h'},
+        {"log", required_argument, NULL, 'l'},
         {"quiet", no_argument, NULL, 'q'},
+        {"readonly", no_argument, NULL, 'r'},
         {"timing", no_argument, NULL, 't'},
         {"version", optional_argument, NULL, 'v'},
-        {"connect", required_argument, NULL, 'c'},
-        {"readonly", no_argument, NULL, 'r'},
-        {"log", required_argument, NULL, 'l'},
-        {"escape", required_argument, NULL, 'e'},
         {NULL, 0, NULL, 0}
     };
 
     /* Standard (non-command) options. The leading + ensures that no
      * argument reordering takes place, so that command options are
      * not confused with top-level virsh options. */
-    while ((arg = getopt_long(argc, argv, "+:d:hqtc:vVrl:e:", opt, &longindex)) != -1) {
+    while ((arg = getopt_long(argc, argv, "+:c:d:e:hl:qrtvV", opt, &longindex)) != -1) {
         switch (arg) {
+        case 'c':
+            VIR_FREE(ctl->name);
+            ctl->name = vshStrdup(ctl, optarg);
+            break;
         case 'd':
             if (virStrToLong_i(optarg, NULL, 10, &debug) < 0) {
                 vshError(ctl, _("option %s takes a numeric argument"),
@@ -3334,37 +3338,6 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
                          debug, VSH_ERR_DEBUG, VSH_ERR_ERROR);
             else
                 ctl->debug = debug;
-            break;
-        case 'h':
-            vshUsage();
-            exit(EXIT_SUCCESS);
-            break;
-        case 'q':
-            ctl->quiet = true;
-            break;
-        case 't':
-            ctl->timing = true;
-            break;
-        case 'c':
-            VIR_FREE(ctl->name);
-            ctl->name = vshStrdup(ctl, optarg);
-            break;
-        case 'v':
-            if (STRNEQ_NULLABLE(optarg, "long")) {
-                puts(VERSION);
-                exit(EXIT_SUCCESS);
-            }
-            /* fall through */
-        case 'V':
-            vshShowVersion(ctl);
-            exit(EXIT_SUCCESS);
-        case 'r':
-            ctl->readonly = true;
-            break;
-        case 'l':
-            vshCloseLogFile(ctl);
-            ctl->logfile = vshStrdup(ctl, optarg);
-            vshOpenLogFile(ctl);
             break;
         case 'e':
             len = strlen(optarg);
@@ -3379,6 +3352,33 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
                 exit(EXIT_FAILURE);
             }
             break;
+        case 'h':
+            vshUsage();
+            exit(EXIT_SUCCESS);
+            break;
+        case 'l':
+            vshCloseLogFile(ctl);
+            ctl->logfile = vshStrdup(ctl, optarg);
+            vshOpenLogFile(ctl);
+            break;
+        case 'q':
+            ctl->quiet = true;
+            break;
+        case 't':
+            ctl->timing = true;
+            break;
+        case 'r':
+            ctl->readonly = true;
+            break;
+        case 'v':
+            if (STRNEQ_NULLABLE(optarg, "long")) {
+                puts(VERSION);
+                exit(EXIT_SUCCESS);
+            }
+            /* fall through */
+        case 'V':
+            vshShowVersion(ctl);
+            exit(EXIT_SUCCESS);
         case ':':
             for (i = 0; opt[i].name != NULL; i++) {
                 if (opt[i].val == optopt)
