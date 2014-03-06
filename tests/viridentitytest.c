@@ -22,6 +22,10 @@
 
 #include <stdlib.h>
 
+#if WITH_SELINUX
+# include <selinux/selinux.h>
+#endif
+
 #include "testutils.h"
 
 #include "viridentity.h"
@@ -148,7 +152,7 @@ static int testIdentityEqual(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
 
     if (virIdentityIsEqual(identa, identb)) {
-        VIR_DEBUG("Mis-atched identities should not be equal");
+        VIR_DEBUG("Mis-matched identities should not be equal");
         goto cleanup;
     }
 
@@ -159,17 +163,86 @@ cleanup:
     return ret;
 }
 
+static int testIdentityGetSystem(const void *data)
+{
+    const char *context = data;
+    int ret = -1;
+    virIdentityPtr ident = NULL;
+    const char *val;
+
+#if !WITH_SELINUX
+    if (context) {
+        VIR_DEBUG("libvirt not compiled with SELinux, skipping this test");
+        ret = EXIT_AM_SKIP;
+        goto cleanup;
+    }
+#endif
+
+    if (!(ident = virIdentityGetSystem())) {
+        VIR_DEBUG("Unable to get system identity");
+        goto cleanup;
+    }
+
+    if (virIdentityGetAttr(ident,
+                           VIR_IDENTITY_ATTR_SELINUX_CONTEXT,
+                           &val) < 0)
+        goto cleanup;
+
+    if (STRNEQ_NULLABLE(val, context)) {
+        VIR_DEBUG("Unexpected SELinux context attribute");
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    virObjectUnref(ident);
+    return ret;
+}
+
+static int testSetFakeSELinuxContext(const void *data ATTRIBUTE_UNUSED)
+{
+#if WITH_SELINUX
+    return setcon_raw((security_context_t)data);
+#else
+    VIR_DEBUG("libvirt not compiled with SELinux, skipping this test");
+    return EXIT_AM_SKIP;
+#endif
+}
+
+static int testDisableFakeSELinux(const void *data ATTRIBUTE_UNUSED)
+{
+#if WITH_SELINUX
+    return security_disable();
+#else
+    VIR_DEBUG("libvirt not compiled with SELinux, skipping this test");
+    return EXIT_AM_SKIP;
+#endif
+}
+
 static int
 mymain(void)
 {
+    const char *context = "unconfined_u:unconfined_r:unconfined_t:s0";
     int ret = 0;
 
     if (virtTestRun("Identity attributes ", testIdentityAttrs, NULL) < 0)
         ret = -1;
     if (virtTestRun("Identity equality ", testIdentityEqual, NULL) < 0)
         ret = -1;
+    if (virtTestRun("Setting fake SELinux context ", testSetFakeSELinuxContext, context) < 0)
+        ret = -1;
+    if (virtTestRun("System identity (fake SELinux enabled) ", testIdentityGetSystem, context) < 0)
+        ret = -1;
+    if (virtTestRun("Disabling fake SELinux ", testDisableFakeSELinux, NULL) < 0)
+        ret = -1;
+    if (virtTestRun("System identity (fake SELinux disabled) ", testIdentityGetSystem, NULL) < 0)
+        ret = -1;
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
+#if WITH_SELINUX
+VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/libsecurityselinuxhelper.so")
+#else
 VIRT_TEST_MAIN(mymain)
+#endif

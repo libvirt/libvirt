@@ -779,6 +779,10 @@ virstoragetest_LDADD = $(LDADDS)
 viridentitytest_SOURCES = \
 	viridentitytest.c testutils.h testutils.c
 viridentitytest_LDADD = $(LDADDS)
+if WITH_SELINUX
+viridentitytest_DEPENDENCIES = libsecurityselinuxhelper.la \
+	../src/libvirt.la
+endif WITH_SELINUX
 
 virkeycodetest_SOURCES = \
 	virkeycodetest.c testutils.h testutils.c
