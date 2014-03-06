@@ -43,6 +43,7 @@
 
 static int
 virHostdevUpdateActivePciHostdevs(virHostdevManagerPtr mgr,
+                                  const char *drv_name,
                                   virDomainDefPtr def)
 {
     virDomainHostdevDefPtr hostdev = NULL;
@@ -79,7 +80,7 @@ virHostdevUpdateActivePciHostdevs(virHostdevManagerPtr mgr,
                 goto cleanup;
 
         }
-        virPCIDeviceSetUsedBy(dev, QEMU_DRIVER_NAME, def->name);
+        virPCIDeviceSetUsedBy(dev, drv_name, def->name);
 
         /* Setup the original states for the PCI device */
         virPCIDeviceSetUnbindFromStub(dev, hostdev->origstates.states.pci.unbind_from_stub);
@@ -108,11 +109,12 @@ qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
     if (!def->nhostdevs)
         return 0;
 
-    return virHostdevUpdateActivePciHostdevs(mgr, def);
+    return virHostdevUpdateActivePciHostdevs(mgr, QEMU_DRIVER_NAME, def);
 }
 
 static int
 virHostdevUpdateActiveUsbHostdevs(virHostdevManagerPtr mgr,
+                                  const char *drv_name,
                                   virDomainDefPtr def)
 {
     virDomainHostdevDefPtr hostdev = NULL;
@@ -140,7 +142,7 @@ virHostdevUpdateActiveUsbHostdevs(virHostdevManagerPtr mgr,
             continue;
         }
 
-        virUSBDeviceSetUsedBy(usb, QEMU_DRIVER_NAME, def->name);
+        virUSBDeviceSetUsedBy(usb, drv_name, def->name);
 
         if (virUSBDeviceListAdd(mgr->activeUsbHostdevs, usb) < 0) {
             virUSBDeviceFree(usb);
@@ -162,11 +164,12 @@ qemuUpdateActiveUsbHostdevs(virQEMUDriverPtr driver,
     if (!def->nhostdevs)
         return 0;
 
-    return virHostdevUpdateActiveUsbHostdevs(mgr, def);
+    return virHostdevUpdateActiveUsbHostdevs(mgr, QEMU_DRIVER_NAME, def);
 }
 
 static int
 virHostdevUpdateActiveScsiHostdevs(virHostdevManagerPtr mgr,
+                                   const char *drv_name,
                                    virDomainDefPtr def)
 {
     virDomainHostdevDefPtr hostdev = NULL;
@@ -193,13 +196,13 @@ virHostdevUpdateActiveScsiHostdevs(virHostdevManagerPtr mgr,
             goto cleanup;
 
         if ((tmp = virSCSIDeviceListFind(mgr->activeScsiHostdevs, scsi))) {
-            if (virSCSIDeviceSetUsedBy(tmp, QEMU_DRIVER_NAME, def->name) < 0) {
+            if (virSCSIDeviceSetUsedBy(tmp, drv_name, def->name) < 0) {
                 virSCSIDeviceFree(scsi);
                 goto cleanup;
             }
             virSCSIDeviceFree(scsi);
         } else {
-            if (virSCSIDeviceSetUsedBy(scsi, QEMU_DRIVER_NAME, def->name) < 0 ||
+            if (virSCSIDeviceSetUsedBy(scsi, drv_name, def->name) < 0 ||
                 virSCSIDeviceListAdd(mgr->activeScsiHostdevs, scsi) < 0) {
                 virSCSIDeviceFree(scsi);
                 goto cleanup;
@@ -222,7 +225,7 @@ qemuUpdateActiveScsiHostdevs(virQEMUDriverPtr driver,
     if (!def->nhostdevs)
         return 0;
 
-    return virHostdevUpdateActiveScsiHostdevs(mgr, def);
+    return virHostdevUpdateActiveScsiHostdevs(mgr, QEMU_DRIVER_NAME, def);
 }
 
 
