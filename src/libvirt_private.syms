@@ -1301,6 +1301,9 @@ virHookPresent;
 virHostdevManagerGetDefault;
 virHostdevPreparePCIDevices;
 virHostdevReAttachPCIDevices;
+virHostdevUpdateActivePciHostdevs;
+virHostdevUpdateActiveScsiHostdevs;
+virHostdevUpdateActiveUsbHostdevs;
 
 # util/viridentity.h
 virIdentityGetAttr;

@@ -41,65 +41,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
-static int
-virHostdevUpdateActivePciHostdevs(virHostdevManagerPtr mgr,
-                                  const char *drv_name,
-                                  virDomainDefPtr def)
-{
-    virDomainHostdevDefPtr hostdev = NULL;
-    virPCIDevicePtr dev = NULL;
-    size_t i;
-    int ret = -1;
-
-    virObjectLock(mgr->activePciHostdevs);
-    virObjectLock(mgr->inactivePciHostdevs);
-
-    for (i = 0; i < def->nhostdevs; i++) {
-        hostdev = def->hostdevs[i];
-
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
-            continue;
-        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
-            continue;
-
-        dev = virPCIDeviceNew(hostdev->source.subsys.u.pci.addr.domain,
-                              hostdev->source.subsys.u.pci.addr.bus,
-                              hostdev->source.subsys.u.pci.addr.slot,
-                              hostdev->source.subsys.u.pci.addr.function);
-
-        if (!dev)
-            goto cleanup;
-
-        virPCIDeviceSetManaged(dev, hostdev->managed);
-        if (hostdev->source.subsys.u.pci.backend
-            == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-            if (virPCIDeviceSetStubDriver(dev, "vfio-pci") < 0)
-                goto cleanup;
-        } else {
-            if (virPCIDeviceSetStubDriver(dev, "pci-stub") < 0)
-                goto cleanup;
-
-        }
-        virPCIDeviceSetUsedBy(dev, drv_name, def->name);
-
-        /* Setup the original states for the PCI device */
-        virPCIDeviceSetUnbindFromStub(dev, hostdev->origstates.states.pci.unbind_from_stub);
-        virPCIDeviceSetRemoveSlot(dev, hostdev->origstates.states.pci.remove_slot);
-        virPCIDeviceSetReprobe(dev, hostdev->origstates.states.pci.reprobe);
-
-        if (virPCIDeviceListAdd(mgr->activePciHostdevs, dev) < 0)
-            goto cleanup;
-        dev = NULL;
-    }
-
-    ret = 0;
-cleanup:
-    virPCIDeviceFree(dev);
-    virObjectUnlock(mgr->activePciHostdevs);
-    virObjectUnlock(mgr->inactivePciHostdevs);
-    return ret;
-}
-
 int
 qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
                             virDomainDefPtr def)
@@ -112,49 +53,6 @@ qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
     return virHostdevUpdateActivePciHostdevs(mgr, QEMU_DRIVER_NAME, def);
 }
 
-static int
-virHostdevUpdateActiveUsbHostdevs(virHostdevManagerPtr mgr,
-                                  const char *drv_name,
-                                  virDomainDefPtr def)
-{
-    virDomainHostdevDefPtr hostdev = NULL;
-    size_t i;
-    int ret = -1;
-
-    virObjectLock(mgr->activeUsbHostdevs);
-    for (i = 0; i < def->nhostdevs; i++) {
-        virUSBDevicePtr usb = NULL;
-        hostdev = def->hostdevs[i];
-
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
-            continue;
-        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
-            continue;
-
-        usb = virUSBDeviceNew(hostdev->source.subsys.u.usb.bus,
-                              hostdev->source.subsys.u.usb.device,
-                              NULL);
-        if (!usb) {
-            VIR_WARN("Unable to reattach USB device %03d.%03d on domain %s",
-                     hostdev->source.subsys.u.usb.bus,
-                     hostdev->source.subsys.u.usb.device,
-                     def->name);
-            continue;
-        }
-
-        virUSBDeviceSetUsedBy(usb, drv_name, def->name);
-
-        if (virUSBDeviceListAdd(mgr->activeUsbHostdevs, usb) < 0) {
-            virUSBDeviceFree(usb);
-            goto cleanup;
-        }
-    }
-    ret = 0;
-cleanup:
-    virObjectUnlock(mgr->activeUsbHostdevs);
-    return ret;
-}
-
 int
 qemuUpdateActiveUsbHostdevs(virQEMUDriverPtr driver,
                             virDomainDefPtr def)
@@ -165,55 +63,6 @@ qemuUpdateActiveUsbHostdevs(virQEMUDriverPtr driver,
         return 0;
 
     return virHostdevUpdateActiveUsbHostdevs(mgr, QEMU_DRIVER_NAME, def);
-}
-
-static int
-virHostdevUpdateActiveScsiHostdevs(virHostdevManagerPtr mgr,
-                                   const char *drv_name,
-                                   virDomainDefPtr def)
-{
-    virDomainHostdevDefPtr hostdev = NULL;
-    size_t i;
-    int ret = -1;
-    virSCSIDevicePtr scsi = NULL;
-    virSCSIDevicePtr tmp = NULL;
-
-    virObjectLock(mgr->activeScsiHostdevs);
-    for (i = 0; i < def->nhostdevs; i++) {
-        hostdev = def->hostdevs[i];
-
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
-            continue;
-
-        if (!(scsi = virSCSIDeviceNew(NULL,
-                                      hostdev->source.subsys.u.scsi.adapter,
-                                      hostdev->source.subsys.u.scsi.bus,
-                                      hostdev->source.subsys.u.scsi.target,
-                                      hostdev->source.subsys.u.scsi.unit,
-                                      hostdev->readonly,
-                                      hostdev->shareable)))
-            goto cleanup;
-
-        if ((tmp = virSCSIDeviceListFind(mgr->activeScsiHostdevs, scsi))) {
-            if (virSCSIDeviceSetUsedBy(tmp, drv_name, def->name) < 0) {
-                virSCSIDeviceFree(scsi);
-                goto cleanup;
-            }
-            virSCSIDeviceFree(scsi);
-        } else {
-            if (virSCSIDeviceSetUsedBy(scsi, drv_name, def->name) < 0 ||
-                virSCSIDeviceListAdd(mgr->activeScsiHostdevs, scsi) < 0) {
-                virSCSIDeviceFree(scsi);
-                goto cleanup;
-            }
-        }
-    }
-    ret = 0;
-
-cleanup:
-    virObjectUnlock(mgr->activeScsiHostdevs);
-    return ret;
 }
 
 int
