@@ -11265,6 +11265,27 @@ out:
 }
 
 static int
+virHostdevPciNodeDeviceDetach(virHostdevManagerPtr hostdev_mgr,
+                              virPCIDevicePtr pci)
+{
+    int ret = -1;
+
+    virObjectLock(hostdev_mgr->activePciHostdevs);
+    virObjectLock(hostdev_mgr->inactivePciHostdevs);
+
+    if (virPCIDeviceDetach(pci, hostdev_mgr->activePciHostdevs,
+                           hostdev_mgr->inactivePciHostdevs) < 0) {
+        goto out;
+    }
+
+    ret = 0;
+out:
+    virObjectUnlock(hostdev_mgr->inactivePciHostdevs);
+    virObjectUnlock(hostdev_mgr->activePciHostdevs);
+    return ret;
+}
+
+static int
 qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
                           const char *driverName,
                           unsigned int flags)
@@ -11336,18 +11357,7 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
         goto cleanup;
     }
 
-    virObjectLock(hostdev_mgr->activePciHostdevs);
-    virObjectLock(hostdev_mgr->inactivePciHostdevs);
-
-    if (virPCIDeviceDetach(pci, hostdev_mgr->activePciHostdevs,
-                           hostdev_mgr->inactivePciHostdevs) < 0) {
-        goto out;
-    }
-
-    ret = 0;
-out:
-    virObjectUnlock(hostdev_mgr->inactivePciHostdevs);
-    virObjectUnlock(hostdev_mgr->activePciHostdevs);
+    ret = virHostdevPciNodeDeviceDetach(hostdev_mgr, pci);
 cleanup:
     virPCIDeviceFree(pci);
     virNodeDeviceDefFree(def);
