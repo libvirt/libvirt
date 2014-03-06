@@ -247,6 +247,7 @@ qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
 
 static int
 virHostdevPrepareSCSIDevices(virHostdevManagerPtr hostdev_mgr,
+                             const char *drv_name,
                              const char *name,
                              virDomainHostdevDefPtr *hostdevs,
                              int nhostdevs)
@@ -317,10 +318,10 @@ virHostdevPrepareSCSIDevices(virHostdevManagerPtr hostdev_mgr,
                 goto error;
             }
 
-            if (virSCSIDeviceSetUsedBy(tmp, QEMU_DRIVER_NAME, name) < 0)
+            if (virSCSIDeviceSetUsedBy(tmp, drv_name, name) < 0)
                 goto error;
         } else {
-            if (virSCSIDeviceSetUsedBy(scsi, QEMU_DRIVER_NAME, name) < 0)
+            if (virSCSIDeviceSetUsedBy(scsi, drv_name, name) < 0)
                 goto error;
 
             VIR_DEBUG("Adding %s to activeScsiHostdevs", virSCSIDeviceGetName(scsi));
@@ -380,8 +381,8 @@ qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
             return -1;
     }
 
-    return virHostdevPrepareSCSIDevices(hostdev_mgr, name,
-                                        hostdevs, nhostdevs);
+    return virHostdevPrepareSCSIDevices(hostdev_mgr, QEMU_DRIVER_NAME,
+                                        name, hostdevs, nhostdevs);
 }
 
 
