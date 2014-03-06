@@ -11451,6 +11451,25 @@ cleanup:
 }
 
 static int
+virHostdevPciNodeDeviceReset(virHostdevManagerPtr hostdev_mgr,
+                             virPCIDevicePtr pci)
+{
+    int ret = -1;
+
+    virObjectLock(hostdev_mgr->activePciHostdevs);
+    virObjectLock(hostdev_mgr->inactivePciHostdevs);
+    if (virPCIDeviceReset(pci, hostdev_mgr->activePciHostdevs,
+                          hostdev_mgr->inactivePciHostdevs) < 0)
+        goto out;
+
+    ret = 0;
+out:
+    virObjectUnlock(hostdev_mgr->inactivePciHostdevs);
+    virObjectUnlock(hostdev_mgr->activePciHostdevs);
+    return ret;
+}
+
+static int
 qemuNodeDeviceReset(virNodeDevicePtr dev)
 {
     virQEMUDriverPtr driver = dev->conn->privateData;
@@ -11479,16 +11498,8 @@ qemuNodeDeviceReset(virNodeDevicePtr dev)
     if (!pci)
         goto cleanup;
 
-    virObjectLock(hostdev_mgr->activePciHostdevs);
-    virObjectLock(hostdev_mgr->inactivePciHostdevs);
-    if (virPCIDeviceReset(pci, hostdev_mgr->activePciHostdevs,
-                          hostdev_mgr->inactivePciHostdevs) < 0)
-        goto out;
+    ret = virHostdevPciNodeDeviceReset(hostdev_mgr, pci);
 
-    ret = 0;
-out:
-    virObjectUnlock(hostdev_mgr->inactivePciHostdevs);
-    virObjectUnlock(hostdev_mgr->activePciHostdevs);
     virPCIDeviceFree(pci);
 cleanup:
     virNodeDeviceDefFree(def);
