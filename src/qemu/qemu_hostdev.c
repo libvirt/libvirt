@@ -328,68 +328,6 @@ qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,
                                   name, hostdevs, nhostdevs);
 }
 
-static void
-virHostdevReAttachScsiHostdevs(virHostdevManagerPtr hostdev_mgr,
-                               const char *drv_name,
-                               const char *name,
-                               virDomainHostdevDefPtr *hostdevs,
-                               int nhostdevs)
-{
-    size_t i;
-
-    virObjectLock(hostdev_mgr->activeScsiHostdevs);
-    for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = hostdevs[i];
-        virSCSIDevicePtr scsi;
-        virSCSIDevicePtr tmp;
-
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
-            continue;
-
-        if (!(scsi = virSCSIDeviceNew(NULL,
-                                      hostdev->source.subsys.u.scsi.adapter,
-                                      hostdev->source.subsys.u.scsi.bus,
-                                      hostdev->source.subsys.u.scsi.target,
-                                      hostdev->source.subsys.u.scsi.unit,
-                                      hostdev->readonly,
-                                      hostdev->shareable))) {
-            VIR_WARN("Unable to reattach SCSI device %s:%d:%d:%d on domain %s",
-                     hostdev->source.subsys.u.scsi.adapter,
-                     hostdev->source.subsys.u.scsi.bus,
-                     hostdev->source.subsys.u.scsi.target,
-                     hostdev->source.subsys.u.scsi.unit,
-                     name);
-            continue;
-        }
-
-        /* Only delete the devices which are marked as being used by @name,
-         * because qemuProcessStart could fail on the half way. */
-
-        if (!(tmp = virSCSIDeviceListFind(hostdev_mgr->activeScsiHostdevs, scsi))) {
-            VIR_WARN("Unable to find device %s:%d:%d:%d "
-                     "in list of active SCSI devices",
-                     hostdev->source.subsys.u.scsi.adapter,
-                     hostdev->source.subsys.u.scsi.bus,
-                     hostdev->source.subsys.u.scsi.target,
-                     hostdev->source.subsys.u.scsi.unit);
-            virSCSIDeviceFree(scsi);
-            continue;
-        }
-
-        VIR_DEBUG("Removing %s:%d:%d:%d dom=%s from activeScsiHostdevs",
-                   hostdev->source.subsys.u.scsi.adapter,
-                   hostdev->source.subsys.u.scsi.bus,
-                   hostdev->source.subsys.u.scsi.target,
-                   hostdev->source.subsys.u.scsi.unit,
-                   name);
-
-        virSCSIDeviceListDel(hostdev_mgr->activeScsiHostdevs, tmp, drv_name, name);
-        virSCSIDeviceFree(scsi);
-    }
-    virObjectUnlock(hostdev_mgr->activeScsiHostdevs);
-}
-
 void
 qemuDomainReAttachHostScsiDevices(virQEMUDriverPtr driver,
                                   const char *name,

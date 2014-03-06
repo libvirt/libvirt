@@ -84,6 +84,12 @@ virHostdevReAttachUsbHostdevs(virHostdevManagerPtr hostdev_mgr,
                               const char *name,
                               virDomainHostdevDefPtr *hostdevs,
                               int nhostdevs);
+void
+virHostdevReAttachScsiHostdevs(virHostdevManagerPtr hostdev_mgr,
+                               const char *drv_name,
+                               const char *name,
+                               virDomainHostdevDefPtr *hostdevs,
+                               int nhostdevs);
 int
 virHostdevUpdateActivePciHostdevs(virHostdevManagerPtr mgr,
                                   const char *drv_name,
