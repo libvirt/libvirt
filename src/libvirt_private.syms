@@ -1303,6 +1303,7 @@ virHostdevPreparePCIDevices;
 virHostdevPrepareSCSIDevices;
 virHostdevPrepareUSBDevices;
 virHostdevReAttachPCIDevices;
+virHostdevReAttachUsbHostdevs;
 virHostdevUpdateActivePciHostdevs;
 virHostdevUpdateActiveScsiHostdevs;
 virHostdevUpdateActiveUsbHostdevs;
