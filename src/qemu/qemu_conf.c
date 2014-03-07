@@ -1084,13 +1084,7 @@ qemuRemoveSharedDevice(virQEMUDriverPtr driver,
         if (!(new_entry = qemuSharedDeviceEntryCopy(entry)))
             goto cleanup;
 
-        if (idx != new_entry->ref - 1)
-            memmove(&new_entry->domains[idx],
-                    &new_entry->domains[idx + 1],
-                    sizeof(*new_entry->domains) * (new_entry->ref - idx - 1));
-
-        VIR_SHRINK_N(new_entry->domains, new_entry->ref, 1);
-
+        VIR_DELETE_ELEMENT(new_entry->domains, idx, new_entry->ref);
         if (virHashUpdateEntry(driver->sharedDevices, key, new_entry) < 0){
             qemuSharedDeviceEntryFree(new_entry, NULL);
             goto cleanup;

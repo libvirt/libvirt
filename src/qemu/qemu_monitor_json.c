@@ -1212,7 +1212,7 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr reply,
         goto cleanup;
     }
 
-    if (VIR_REALLOC_N(threads, ncpus) < 0)
+    if (VIR_ALLOC_N(threads, ncpus) < 0)
         goto cleanup;
 
     for (i = 0; i < ncpus; i++) {

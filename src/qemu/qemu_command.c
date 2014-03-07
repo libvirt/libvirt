@@ -10981,15 +10981,18 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
                 }
 
                 if (j == dom->clock.ntimers) {
-                    if (VIR_REALLOC_N(dom->clock.timers, j + 1) < 0 ||
-                        VIR_ALLOC(dom->clock.timers[j]) < 0)
+                    virDomainTimerDefPtr timer;
+                    if (VIR_ALLOC(timer) < 0 ||
+                        VIR_APPEND_ELEMENT_COPY(dom->clock.timers,
+                                                dom->clock.ntimers, timer) < 0) {
+                        VIR_FREE(timer);
                         goto cleanup;
-                    dom->clock.timers[j]->name = VIR_DOMAIN_TIMER_NAME_KVMCLOCK;
-                    dom->clock.timers[j]->present = present;
-                    dom->clock.timers[j]->tickpolicy = -1;
-                    dom->clock.timers[j]->track = -1;
-                    dom->clock.timers[j]->mode = -1;
-                    dom->clock.ntimers++;
+                    }
+                    timer->name = VIR_DOMAIN_TIMER_NAME_KVMCLOCK;
+                    timer->present = present;
+                    timer->tickpolicy = -1;
+                    timer->track = -1;
+                    timer->mode = -1;
                 } else if (dom->clock.timers[j]->present != -1 &&
                     dom->clock.timers[j]->present != present) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -11225,7 +11228,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
     bool nographics = false;
     bool fullscreen = false;
     char *path;
-    int nnics = 0;
+    size_t nnics = 0;
     const char **nics = NULL;
     int video = VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
     int nvirtiodisk = 0;
@@ -11318,11 +11321,9 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
 
         if (STREQ(arg, "-net")) {
             WANT_VALUE();
-            if (STRPREFIX(val, "nic")) {
-                if (VIR_REALLOC_N(nics, nnics+1) < 0)
-                    goto error;
-                nics[nnics++] = val;
-            }
+            if (STRPREFIX(val, "nic") &&
+                VIR_APPEND_ELEMENT(nics, nnics, val) < 0)
+                goto error;
         }
     }
 
@@ -11456,11 +11457,10 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 vnc->data.vnc.autoport = false;
             }
 
-            if (VIR_REALLOC_N(def->graphics, def->ngraphics+1) < 0) {
+            if (VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, vnc) < 0) {
                 virDomainGraphicsDefFree(vnc);
                 goto error;
             }
-            def->graphics[def->ngraphics++] = vnc;
         } else if (STREQ(arg, "-m")) {
             int mem;
             WANT_VALUE();
@@ -11592,10 +11592,8 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 goto error;
             }
 
-            if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
+            if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
                 goto error;
-            def->disks[def->ndisks++] = disk;
-            disk = NULL;
         } else if (STREQ(arg, "-no-acpi")) {
             def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_DOMAIN_FEATURE_STATE_DEFAULT;
         } else if (STREQ(arg, "-no-reboot")) {
@@ -11732,13 +11730,12 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                     virDomainChrDefFree(chr);
                     goto error;
                 }
-                if (VIR_REALLOC_N(def->serials, def->nserials+1) < 0) {
+                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
+                chr->target.port = def->nserials;
+                if (VIR_APPEND_ELEMENT(def->serials, def->nserials, chr) < 0) {
                     virDomainChrDefFree(chr);
                     goto error;
                 }
-                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
-                chr->target.port = def->nserials;
-                def->serials[def->nserials++] = chr;
             }
         } else if (STREQ(arg, "-parallel")) {
             WANT_VALUE();
@@ -11752,13 +11749,12 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                     virDomainChrDefFree(chr);
                     goto error;
                 }
-                if (VIR_REALLOC_N(def->parallels, def->nparallels+1) < 0) {
+                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
+                chr->target.port = def->nparallels;
+                if (VIR_APPEND_ELEMENT(def->parallels, def->nparallels, chr) < 0) {
                     virDomainChrDefFree(chr);
                     goto error;
                 }
-                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
-                chr->target.port = def->nparallels;
-                def->parallels[def->nparallels++] = chr;
             }
         } else if (STREQ(arg, "-usbdevice")) {
             WANT_VALUE();
@@ -11794,19 +11790,16 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 disk->removable = VIR_DOMAIN_FEATURE_STATE_DEFAULT;
                 if (VIR_STRDUP(disk->dst, "sda") < 0)
                     goto error;
-                if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
+                if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
                     goto error;
-                def->disks[def->ndisks++] = disk;
-                disk = NULL;
             } else {
                 virDomainHostdevDefPtr hostdev;
                 if (!(hostdev = qemuParseCommandLineUSB(val)))
                     goto error;
-                if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs+1) < 0) {
+                if (VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev) < 0) {
                     virDomainHostdevDefFree(hostdev);
                     goto error;
                 }
-                def->hostdevs[def->nhostdevs++] = hostdev;
             }
         } else if (STREQ(arg, "-net")) {
             WANT_VALUE();
@@ -11814,11 +11807,10 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 virDomainNetDefPtr net;
                 if (!(net = qemuParseCommandLineNet(xmlopt, val, nnics, nics)))
                     goto error;
-                if (VIR_REALLOC_N(def->nets, def->nnets+1) < 0) {
+                if (VIR_APPEND_ELEMENT(def->nets, def->nnets, net) < 0) {
                     virDomainNetDefFree(net);
                     goto error;
                 }
-                def->nets[def->nnets++] = net;
             }
         } else if (STREQ(arg, "-drive")) {
             WANT_VALUE();
@@ -11826,23 +11818,19 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                                                   nvirtiodisk,
                                                   ceph_args != NULL)))
                 goto error;
-            if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
-                goto error;
             if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO)
                 nvirtiodisk++;
-
-            def->disks[def->ndisks++] = disk;
-            disk = NULL;
+            if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
+                goto error;
         } else if (STREQ(arg, "-pcidevice")) {
             virDomainHostdevDefPtr hostdev;
             WANT_VALUE();
             if (!(hostdev = qemuParseCommandLinePCI(val)))
                 goto error;
-            if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs+1) < 0) {
+            if (VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev) < 0) {
                 virDomainHostdevDefFree(hostdev);
                 goto error;
             }
-            def->hostdevs[def->nhostdevs++] = hostdev;
         } else if (STREQ(arg, "-soundhw")) {
             const char *start;
             WANT_VALUE();
@@ -11867,11 +11855,10 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                     if (VIR_ALLOC(snd) < 0)
                         goto error;
                     snd->model = type;
-                    if (VIR_REALLOC_N(def->sounds, def->nsounds+1) < 0) {
+                    if (VIR_APPEND_ELEMENT(def->sounds, def->nsounds, snd) < 0) {
                         VIR_FREE(snd);
                         goto error;
                     }
-                    def->sounds[def->nsounds++] = snd;
                 }
 
                 start = tmp ? tmp + 1 : NULL;
@@ -12009,16 +11996,17 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
         } else if (STREQ(arg, "-S")) {
             /* ignore, always added by libvirt */
         } else {
+            char *tmp = NULL;
             /* something we can't yet parse.  Add it to the qemu namespace
              * cmdline/environment advanced options and hope for the best
              */
             VIR_WARN("unknown QEMU argument '%s', adding to the qemu namespace",
                      arg);
-            if (VIR_REALLOC_N(cmd->args, cmd->num_args+1) < 0)
+            if (VIR_STRDUP(tmp, arg) < 0 ||
+                VIR_APPEND_ELEMENT(cmd->args, cmd->num_args, tmp) < 0) {
+                VIR_FREE(tmp);
                 goto error;
-            if (VIR_STRDUP(cmd->args[cmd->num_args], arg) < 0)
-                goto error;
-            cmd->num_args++;
+            }
         }
     }
 
@@ -12112,11 +12100,10 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             goto error;
         }
 
-        if (VIR_REALLOC_N(def->graphics, def->ngraphics+1) < 0) {
+        if (VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, sdl) < 0) {
             virDomainGraphicsDefFree(sdl);
             goto error;
         }
-        def->graphics[def->ngraphics++] = sdl;
     }
 
     if (def->ngraphics) {
@@ -12132,11 +12119,10 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                        virDomainVideoDefaultRAM(def, vid->type) : 0;
         vid->heads = 1;
 
-        if (VIR_REALLOC_N(def->videos, def->nvideos+1) < 0) {
+        if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, vid) < 0) {
             virDomainVideoDefFree(vid);
             goto error;
         }
-        def->videos[def->nvideos++] = vid;
     }
 
     /*

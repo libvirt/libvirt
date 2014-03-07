@@ -4044,17 +4044,19 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
                  */
                 virDomainVcpuPinDefPtr vcpupin = NULL;
 
-                if (VIR_REALLOC_N(vm->def->cputune.vcpupin,
-                                  vm->def->cputune.nvcpupin + 1) < 0)
-                    goto cleanup;
-
                 if (VIR_ALLOC(vcpupin) < 0)
                     goto cleanup;
 
                 vcpupin->cpumask = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN);
                 virBitmapCopy(vcpupin->cpumask, vm->def->cpumask);
                 vcpupin->vcpuid = i;
-                vm->def->cputune.vcpupin[vm->def->cputune.nvcpupin++] = vcpupin;
+                if (VIR_APPEND_ELEMENT_COPY(vm->def->cputune.vcpupin,
+                                            vm->def->cputune.nvcpupin, vcpupin) < 0) {
+                    virBitmapFree(vcpupin->cpumask);
+                    VIR_FREE(vcpupin);
+                    ret = -1;
+                    goto cleanup;
+                }
 
                 if (cgroup_vcpu) {
                     if (qemuSetupCgroupVcpuPin(cgroup_vcpu,

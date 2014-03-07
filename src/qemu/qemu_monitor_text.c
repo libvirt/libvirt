@@ -529,11 +529,10 @@ int qemuMonitorTextGetCPUInfo(qemuMonitorPtr mon,
         if (end == NULL || !c_isspace(*end))
             goto error;
 
-        if (VIR_REALLOC_N(cpupids, ncpupids+1) < 0)
+        if (VIR_APPEND_ELEMENT_COPY(cpupids, ncpupids, tid) < 0)
             goto error;
 
         VIR_DEBUG("tid=%d", tid);
-        cpupids[ncpupids++] = tid;
 
         /* Skip to next data line */
         line = strchr(offset, '\r');

@@ -248,7 +248,7 @@ struct _virQEMUDriver {
 typedef struct _qemuDomainCmdlineDef qemuDomainCmdlineDef;
 typedef qemuDomainCmdlineDef *qemuDomainCmdlineDefPtr;
 struct _qemuDomainCmdlineDef {
-    unsigned int num_args;
+    size_t num_args;
     char **args;
 
     unsigned int num_env;
