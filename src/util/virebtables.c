@@ -381,20 +381,7 @@ ebtablesContextFree(ebtablesContext *ctx)
     VIR_FREE(ctx);
 }
 
-int
-ebtablesAddForwardPolicyReject(ebtablesContext *ctx)
-{
-    return ebtablesForwardPolicyReject(ctx, ADD);
-}
-
-
-int
-ebtablesRemoveForwardPolicyReject(ebtablesContext *ctx)
-{
-    return ebtablesForwardPolicyReject(ctx, REMOVE);
-}
-
-int
+static int
 ebtablesForwardPolicyReject(ebtablesContext *ctx,
                             int action)
 {
@@ -414,6 +401,19 @@ ebtablesForwardPolicyReject(ebtablesContext *ctx,
                                  POLICY,
                                  "-P", ctx->forward_filter->chain, "DROP",
                                  NULL);
+}
+
+int
+ebtablesAddForwardPolicyReject(ebtablesContext *ctx)
+{
+    return ebtablesForwardPolicyReject(ctx, ADD);
+}
+
+
+int
+ebtablesRemoveForwardPolicyReject(ebtablesContext *ctx)
+{
+    return ebtablesForwardPolicyReject(ctx, REMOVE);
 }
 
 /*

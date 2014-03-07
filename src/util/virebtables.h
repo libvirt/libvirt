@@ -61,7 +61,4 @@ int              ebtablesAddForwardPolicyReject(ebtablesContext *ctx);
 
 int              ebtablesRemoveForwardPolicyReject(ebtablesContext *ctx);
 
-int              ebtablesForwardPolicyReject(ebtablesContext *ctx,
-                                                  int action);
-
 #endif /* __QEMUD_ebtabLES_H__ */
