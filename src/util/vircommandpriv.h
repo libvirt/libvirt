@@ -28,5 +28,16 @@
 
 # include "vircommand.h"
 
-void virCommandSetDryRun(virBufferPtr buf);
+typedef void (*virCommandDryRunCallback)(const char *const*args,
+                                         const char *const*env,
+                                         const char *input,
+                                         char **output,
+                                         char **error,
+                                         int *status,
+                                         void *opaque);
+
+void virCommandSetDryRun(virBufferPtr buf,
+                         virCommandDryRunCallback cb,
+                         void *opaque);
+
 #endif /* __VIR_COMMAND_PRIV_H__ */

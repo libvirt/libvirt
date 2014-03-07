@@ -135,6 +135,9 @@ struct _virCommand {
 
 /* See virCommandSetDryRun for description for this variable */
 static virBufferPtr dryRunBuffer;
+static virCommandDryRunCallback dryRunCallback;
+static void *dryRunOpaque;
+static int dryRunStatus;
 
 /*
  * virCommandFDIsSet:
@@ -1860,6 +1863,11 @@ virCommandProcessIO(virCommandPtr cmd)
     size_t inoff = 0;
     int ret = 0;
 
+    if (dryRunBuffer || dryRunCallback) {
+        VIR_DEBUG("Dry run requested, skipping I/O processing");
+        return 0;
+    }
+
     /* With an input buffer, feed data to child
      * via pipe */
     if (cmd->inbuf)
@@ -2267,16 +2275,25 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
     }
 
     str = virCommandToString(cmd);
-    if (dryRunBuffer) {
+    if (dryRunBuffer || dryRunCallback) {
+        dryRunStatus = 0;
         if (!str) {
             /* error already reported by virCommandToString */
             goto cleanup;
         }
 
-        VIR_DEBUG("Dry run requested, appending stringified "
-                  "command to dryRunBuffer=%p", dryRunBuffer);
-        virBufferAdd(dryRunBuffer, str, -1);
-        virBufferAddChar(dryRunBuffer, '\n');
+        if (dryRunBuffer) {
+            VIR_DEBUG("Dry run requested, appending stringified "
+                      "command to dryRunBuffer=%p", dryRunBuffer);
+            virBufferAdd(dryRunBuffer, str, -1);
+            virBufferAddChar(dryRunBuffer, '\n');
+        }
+        if (dryRunCallback) {
+            dryRunCallback((const char *const*)cmd->args,
+                           (const char *const*)cmd->env,
+                           cmd->inbuf, cmd->outbuf, cmd->errbuf,
+                           &dryRunStatus, dryRunOpaque);
+        }
         ret = 0;
         goto cleanup;
     }
@@ -2356,10 +2373,11 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
         return -1;
     }
 
-    if (dryRunBuffer) {
-        VIR_DEBUG("Dry run requested, claiming success");
+    if (dryRunBuffer || dryRunCallback) {
+        VIR_DEBUG("Dry run requested, returning status %d",
+                  dryRunStatus);
         if (exitstatus)
-            *exitstatus = 0;
+            *exitstatus = dryRunStatus;
         return 0;
     }
 
@@ -2704,6 +2722,7 @@ virCommandDoAsyncIO(virCommandPtr cmd)
 /**
  * virCommandSetDryRun:
  * @buf: buffer to store stringified commands
+ * @callback: callback to process input/output/args
  *
  * Sometimes it's desired to not actually run given command, but
  * see its string representation without having to change the
@@ -2712,8 +2731,13 @@ virCommandDoAsyncIO(virCommandPtr cmd)
  * virCommandRun* API. The virCommandSetDryRun allows you to
  * modify this behavior: once called, every call to
  * virCommandRun* results in command string representation being
- * appended to @buf instead of being executed. the strings are
- * escaped for a shell and separated by a newline. For example:
+ * appended to @buf instead of being executed. If @callback is
+ * provided, then it is invoked with the argv, env and stdin
+ * data string for the command. It is expected to fill the stdout
+ * and stderr data strings and exit status variables.
+ *
+ * The strings stored in @buf are escaped for a shell and
+ * separated by a newline. For example:
  *
  * virBuffer buffer = VIR_BUFFER_INITIALIZER;
  * virCommandSetDryRun(&buffer);
@@ -2725,10 +2749,14 @@ virCommandDoAsyncIO(virCommandPtr cmd)
  *
  * /bin/echo 'Hello world'\n
  *
- * To cancel this effect pass NULL.
+ * To cancel this effect pass NULL for @buf and @callback.
  */
 void
-virCommandSetDryRun(virBufferPtr buf)
+virCommandSetDryRun(virBufferPtr buf,
+                    virCommandDryRunCallback cb,
+                    void *opaque)
 {
     dryRunBuffer = buf;
+    dryRunCallback = cb;
+    dryRunOpaque = opaque;
 }

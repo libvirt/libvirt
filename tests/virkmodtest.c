@@ -96,7 +96,7 @@ testKModLoad(const void *args)
     bool useBlacklist = info->useBlacklist;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    virCommandSetDryRun(&buf);
+    virCommandSetDryRun(&buf, NULL, NULL);
 
     errbuf = virKModLoad(module, useBlacklist);
     if (errbuf) {
@@ -110,7 +110,7 @@ testKModLoad(const void *args)
     ret = 0;
 
 cleanup:
-    virCommandSetDryRun(NULL);
+    virCommandSetDryRun(NULL, NULL, NULL);
     VIR_FREE(errbuf);
     return ret;
 }
@@ -125,7 +125,7 @@ testKModUnload(const void *args)
     const char *module = info->module;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    virCommandSetDryRun(&buf);
+    virCommandSetDryRun(&buf, NULL, NULL);
 
     errbuf = virKModUnload(module);
     if (errbuf) {
@@ -139,7 +139,7 @@ testKModUnload(const void *args)
     ret = 0;
 
 cleanup:
-    virCommandSetDryRun(NULL);
+    virCommandSetDryRun(NULL, NULL, NULL);
     VIR_FREE(errbuf);
     return ret;
 }
