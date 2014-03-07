@@ -892,6 +892,12 @@ sc_prohibit_wrong_filename_in_comment:
 	    'actual file name' 1>&2; exit 1; }	                       \
 	fi;
 
+sc_prohibit_virConnectOpen_in_virsh:
+	@prohibit='\bvirConnectOpen[a-zA-Z]* *\('                       \
+	in_vc_files='^tools/virsh-.*\.[ch]$$'                            \
+	halt='Use vshConnect() in virsh instead of virConnectOpen*'     \
+	  $(_sc_search_regexp)
+
 
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
