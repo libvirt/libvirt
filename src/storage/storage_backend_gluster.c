@@ -498,7 +498,8 @@ virStorageFileBackendGlusterDeinit(virStorageFilePtr file)
               file, file->hosts[0].name, file->path);
     virStorageFileBackendGlusterPrivPtr priv = file->priv;
 
-    glfs_fini(priv->vol);
+    if (priv->vol)
+        glfs_fini(priv->vol);
     VIR_FREE(priv->volname);
 
     VIR_FREE(priv);
@@ -571,7 +572,8 @@ virStorageFileBackendGlusterInit(virStorageFilePtr file)
 
  error:
     VIR_FREE(priv->volname);
-    glfs_fini(priv->vol);
+    if (priv->vol)
+        glfs_fini(priv->vol);
     VIR_FREE(priv);
 
     return -1;
