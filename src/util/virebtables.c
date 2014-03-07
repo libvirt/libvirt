@@ -210,34 +210,18 @@ ebtablesContextFree(ebtablesContext *ctx)
     VIR_FREE(ctx);
 }
 
-static int
-ebtablesForwardPolicyReject(ebtablesContext *ctx,
-                            int action)
-{
-    /* create it, if it does not exist */
-    if (action == ADD) {
-        ebtablesAddRemoveRule("--new-chain", ctx->chain, NULL,
-                              NULL);
-        ebtablesAddRemoveRule("--insert", "FORWARD", "--jump",
-                              ctx->chain, NULL);
-    }
-
-    return ebtablesAddRemoveRule("-P", ctx->chain, "DROP",
-                                 NULL);
-}
 
 int
 ebtablesAddForwardPolicyReject(ebtablesContext *ctx)
 {
-    return ebtablesForwardPolicyReject(ctx, ADD);
+    ebtablesAddRemoveRule("--new-chain", ctx->chain, NULL,
+                          NULL);
+    ebtablesAddRemoveRule("--insert", "FORWARD", "--jump",
+                          ctx->chain, NULL);
+    return ebtablesAddRemoveRule("-P", ctx->chain, "DROP",
+                                 NULL);
 }
 
-
-int
-ebtablesRemoveForwardPolicyReject(ebtablesContext *ctx)
-{
-    return ebtablesForwardPolicyReject(ctx, REMOVE);
-}
 
 /*
  * Allow all traffic destined to the bridge, with a valid network address
