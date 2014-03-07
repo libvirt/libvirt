@@ -232,10 +232,8 @@ openvzReadNetworkConf(virDomainDefPtr def,
             if (VIR_STRDUP(net->data.ethernet.ipaddr, token) < 0)
                 goto error;
 
-            if (VIR_REALLOC_N(def->nets, def->nnets + 1) < 0)
+            if (VIR_APPEND_ELEMENT_COPY(def->nets, def->nnets, net) < 0)
                 goto error;
-            def->nets[def->nnets++] = net;
-            net = NULL;
 
             token = strtok_r(NULL, " ", &saveptr);
         }
@@ -326,10 +324,8 @@ openvzReadNetworkConf(virDomainDefPtr def,
                 p = ++next;
             } while (p < token + strlen(token));
 
-            if (VIR_REALLOC_N(def->nets, def->nnets + 1) < 0)
+            if (VIR_APPEND_ELEMENT_COPY(def->nets, def->nnets, net) < 0)
                 goto error;
-            def->nets[def->nnets++] = net;
-            net = NULL;
 
             token = strtok_r(NULL, ";", &saveptr);
         }
@@ -450,10 +446,8 @@ openvzReadFSConf(virDomainDefPtr def,
         }
     }
 
-    if (VIR_REALLOC_N(def->fss, def->nfss + 1) < 0)
+    if (VIR_APPEND_ELEMENT(def->fss, def->nfss, fs) < 0)
         goto error;
-    def->fss[def->nfss++] = fs;
-    fs = NULL;
 
     VIR_FREE(temp);
 
