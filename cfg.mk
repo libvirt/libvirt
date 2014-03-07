@@ -863,6 +863,30 @@ sc_prohibit_atoi:
 	halt='Use virStrToLong* instead of atoi, atol, atof, atoq, atoll' \
 	  $(_sc_search_regexp)
 
+sc_prohibit_wrong_filename_in_comment:
+	@fail=0;                                                       \
+	awk 'BEGIN {                                                   \
+	  fail=0;                                                      \
+	} FNR < 3 {                                                    \
+	  n=match($$0, /[[:space:]][^[:space:]]*[.][ch][[:space:]:]/); \
+	  if (n > 0) {                                                 \
+	    A=substr($$0, RSTART+1, RLENGTH-2);                        \
+	    n=split(FILENAME, arr, "/");                               \
+	    if (A != arr[n]) {                                         \
+	      print "in " FILENAME ": " A " mentioned in comments ";   \
+	      fail=1;                                                  \
+	    }                                                          \
+	  }                                                            \
+	} END {                                                        \
+	  if (fail == 1) {                                             \
+	    exit 1;                                                    \
+	  }                                                            \
+	}' $$($(VC_LIST_EXCEPT) | grep '\.[ch]$$') || fail=1;          \
+	if test $$fail -eq 1; then                                     \
+	  { echo '$(ME): The file name in comments must match the '    \
+	    'actual file name' 1>&2; exit 1; }	                       \
+	fi;
+
 
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null

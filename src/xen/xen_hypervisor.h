@@ -1,5 +1,5 @@
 /*
- * xen_internal.h: internal API for direct access to Xen hypervisor level
+ * xen_hypervisor.h: internal API for direct access to Xen hypervisor level
  *
  * Copyright (C) 2005, 2010-2011 Red Hat, Inc.
  *

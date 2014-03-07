@@ -1,5 +1,5 @@
 /*
- * parallels_storage.c: core privconn functions for managing
+ * parallels_network.c: core privconn functions for managing
  * Parallels Cloud Server hosts
  *
  * Copyright (C) 2013 Red Hat, Inc.

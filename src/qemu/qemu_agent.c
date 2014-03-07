@@ -1,5 +1,5 @@
 /*
- * qemu_agent.h: interaction with QEMU guest agent
+ * qemu_agent.c: interaction with QEMU guest agent
  *
  * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange

@@ -1,5 +1,5 @@
 /*
- * storage_backend_scsi.h: storage backend for SCSI handling
+ * storage_backend_mpath.h: storage backend for multipath handling
  *
  * Copyright (C) 2009-2009 Red Hat, Inc.
  * Copyright (C) 2009-2008 Dave Allan

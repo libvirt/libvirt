@@ -1,6 +1,6 @@
 /*
- * interface_driver.c: backend driver methods to handle physical
- *                     interface configuration using the netcf library.
+ * interface_backend_netcf.c: backend driver methods to handle physical
+ *                            interface configuration using the netcf library.
  *
  * Copyright (C) 2006-2013 Red Hat, Inc.
  *

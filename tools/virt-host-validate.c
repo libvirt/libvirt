@@ -1,5 +1,5 @@
 /*
- * virt-host-check.c: Sanity check a hypervisor host
+ * virt-host-validate.c: Sanity check a hypervisor host
  *
  * Copyright (C) 2012 Red Hat, Inc.
  *

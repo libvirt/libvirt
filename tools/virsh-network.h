@@ -1,5 +1,5 @@
 /*
- * virsh-network.c: Commands to manage network
+ * virsh-network.h: Commands to manage network
  *
  * Copyright (C) 2005, 2007-2012 Red Hat, Inc.
  *

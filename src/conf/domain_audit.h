@@ -1,5 +1,5 @@
 /*
- * domain_audit.c: Domain audit management
+ * domain_audit.h: Domain audit management
  *
  * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange

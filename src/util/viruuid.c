@@ -1,5 +1,5 @@
 /*
- * viruuid.h: helper APIs for dealing with UUIDs
+ * viruuid.c: helper APIs for dealing with UUIDs
  *
  * Copyright (C) 2007-2013 Red Hat, Inc.
  *

@@ -1,5 +1,5 @@
 /*
- * openvz_driver.h: common util functions for managing openvz VPEs
+ * openvz_util.h: common util functions for managing openvz VPEs
  *
  * Copyright (C) 2012 Guido Günther
  *

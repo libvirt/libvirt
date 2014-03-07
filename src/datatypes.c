@@ -1,5 +1,5 @@
 /*
- * datatypes.h: management of structs for public data types
+ * datatypes.c: management of structs for public data types
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  *

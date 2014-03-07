@@ -1,5 +1,5 @@
 /*
- * config.h: VM configuration management
+ * uml_conf.h: VM configuration management
  *
  * Copyright (C) 2006, 2007, 2010 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange

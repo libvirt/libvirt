@@ -1,5 +1,5 @@
 /*
- * bridge_driver.h: platform specific routines for bridge driver
+ * bridge_driver_platform.h: platform specific routines for bridge driver
  *
  * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange

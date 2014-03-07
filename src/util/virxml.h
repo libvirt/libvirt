@@ -1,5 +1,5 @@
 /*
- * virxml.c: helper APIs for dealing with XML documents
+ * virxml.h: helper APIs for dealing with XML documents
  *
  * Copyright (C) 2005, 2007-2012 Red Hat, Inc.
  *

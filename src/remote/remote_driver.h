@@ -1,5 +1,5 @@
 /*
- * remote_internal.h: driver to provide access to libvirtd running
+ * remote_driver.h: driver to provide access to libvirtd running
  *   on a remote machine
  *
  * Copyright (C) 2006-2007, 2010 Red Hat, Inc.

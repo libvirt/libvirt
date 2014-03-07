@@ -1,5 +1,5 @@
 /*
- * utils.c: test utils
+ * testutils.h: test utils
  *
  * Copyright (C) 2005, 2008-2013 Red Hat, Inc.
  *

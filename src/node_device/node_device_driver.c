@@ -1,5 +1,5 @@
 /*
- * node_device.c: node device enumeration
+ * node_device_driver.c: node device enumeration
  *
  * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2008 Virtual Iron Software, Inc.

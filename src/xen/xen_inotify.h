@@ -1,5 +1,5 @@
 /*
- * xen_inofify.h: Xen notification of xml files
+ * xen_inotify.h: Xen notification of xml files
  *
  * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2008 VirtualIron

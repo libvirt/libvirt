@@ -1,5 +1,5 @@
 /*
- * virLXC_hostdev.c: VIRLXC hostdev management
+ * lxc_hostdev.c: VIRLXC hostdev management
  *
  * Copyright (C) 2006-2007, 2009-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange

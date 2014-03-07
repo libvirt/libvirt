@@ -1,5 +1,5 @@
 /*
- * node_device.h: node device enumeration
+ * node_device_driver.h: node device enumeration
  *
  * Copyright (C) 2008 Virtual Iron Software, Inc.
  * Copyright (C) 2008 David F. Lively

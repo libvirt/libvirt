@@ -1,5 +1,5 @@
 /*
- * nodeinfo.c: Helper routines for OS specific node information
+ * nodeinfo.h: Helper routines for OS specific node information
  *
  * Copyright (C) 2006-2008, 2011-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange

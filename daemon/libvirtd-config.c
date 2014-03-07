@@ -1,5 +1,5 @@
 /*
- * libvirtd.c: daemon start of day, guest process & i/o management
+ * libvirtd-config.c: daemon start of day, guest process & i/o management
  *
  * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange

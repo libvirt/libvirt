@@ -1,5 +1,5 @@
 /*
- * virsh-interface.c: Commands to manage host interface
+ * virsh-interface.h: Commands to manage host interface
  *
  * Copyright (C) 2005, 2007-2012 Red Hat, Inc.
  *

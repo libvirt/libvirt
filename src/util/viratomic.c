@@ -1,5 +1,5 @@
 /*
- * viratomic.h: atomic integer operations
+ * viratomic.c: atomic integer operations
  *
  * Copyright (C) 2012 Red Hat, Inc.
  *

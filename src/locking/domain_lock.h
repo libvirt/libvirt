@@ -1,5 +1,5 @@
 /*
- * domain_lock.c: Locking for domain lifecycle operations
+ * domain_lock.h: Locking for domain lifecycle operations
  *
  * Copyright (C) 2010-2011 Red Hat, Inc.
  *

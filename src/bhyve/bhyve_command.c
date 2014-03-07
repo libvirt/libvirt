@@ -1,5 +1,5 @@
 /*
- * bhyve_process.c: bhyve command generation
+ * bhyve_command.c: bhyve command generation
  *
  * Copyright (C) 2014 Roman Bogorodskiy
  *

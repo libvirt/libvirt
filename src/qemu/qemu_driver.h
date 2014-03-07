@@ -1,5 +1,5 @@
 /*
- * driver.h: core driver methods for managing qemu guests
+ * qemu_driver.h: core driver methods for managing qemu guests
  *
  * Copyright (C) 2006, 2007 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange

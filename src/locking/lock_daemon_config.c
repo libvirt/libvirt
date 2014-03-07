@@ -1,5 +1,5 @@
 /*
- * lock_daemon_config.h: virtlockd config file handling
+ * lock_daemon_config.c: virtlockd config file handling
  *
  * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange

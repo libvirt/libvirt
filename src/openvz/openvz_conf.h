@@ -1,5 +1,5 @@
 /*
- * openvz_config.h: config information for OpenVZ VPSs
+ * openvz_conf.h: config information for OpenVZ VPSs
  *
  * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma.

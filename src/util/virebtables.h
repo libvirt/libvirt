@@ -1,5 +1,5 @@
 /*
- * virebtables.c: Helper APIs for managing ebtables
+ * virebtables.h: Helper APIs for managing ebtables
  *
  * Copyright (C) 2007-2008, 2013 Red Hat, Inc.
  * Copyright (C) 2009 IBM Corp.

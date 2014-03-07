@@ -1,5 +1,5 @@
 /*
- * xenapi_driver.h.c: Xen API driver header file to be included in libvirt.c.
+ * xenapi_driver.h: Xen API driver header file to be included in libvirt.c.
  * Copyright (C) 2009, 2010 Citrix Ltd.
  *
  * This library is free software; you can redistribute it and/or

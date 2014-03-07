@@ -1,5 +1,5 @@
 /*
- * virerror.c: error handling and reporting code for libvirt
+ * virerror.h: error handling and reporting code for libvirt
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  *

@@ -1,5 +1,5 @@
 /*
- * qemu_domain.h: QEMU domain private state
+ * qemu_domain.c: QEMU domain private state
  *
  * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange

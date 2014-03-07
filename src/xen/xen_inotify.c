@@ -1,5 +1,5 @@
 /*
- * xen_inofify.c: Xen notification of xml file activity in the
+ * xen_inotify.c: Xen notification of xml file activity in the
  *                following dirs:
  *                /etc/xen
  *                /var/lib/xend/domains

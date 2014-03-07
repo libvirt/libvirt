@@ -1,5 +1,5 @@
 /*
- * qemu_hotplug.h: QEMU device hotplug management
+ * qemu_hotplug.c: QEMU device hotplug management
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange

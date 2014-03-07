@@ -1,5 +1,5 @@
 /*
- * network_driver.h: core driver methods for managing networks
+ * bridge_driver.h: core driver methods for managing networks
  *
  * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange

@@ -1,6 +1,6 @@
 
 /*
- * hyperv_wmi.h: general WMI over WSMAN related functions and structures for
+ * hyperv_wmi.c: general WMI over WSMAN related functions and structures for
  *               managing Microsoft Hyper-V hosts
  *
  * Copyright (C) 2011 Matthias Bolte <matthias.bolte@googlemail.com>

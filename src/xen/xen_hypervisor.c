@@ -1,5 +1,5 @@
 /*
- * xen_internal.c: direct access to Xen hypervisor level
+ * xen_hypervisor.c: direct access to Xen hypervisor level
  *
  * Copyright (C) 2005-2013 Red Hat, Inc.
  *

@@ -1,5 +1,5 @@
 /*
- * xm_internal.h: helper routines for dealing with inactive domains
+ * xm_internal.c: helper routines for dealing with inactive domains
  *
  * Copyright (C) 2006-2007, 2009-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange

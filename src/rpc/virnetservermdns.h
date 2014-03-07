@@ -1,5 +1,5 @@
 /*
- * virnetservermdns.c: advertise server sockets
+ * virnetservermdns.h: advertise server sockets
  *
  * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2007 Daniel P. Berrange
