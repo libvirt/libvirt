@@ -2947,3 +2947,43 @@ virStorageFileStat(virStorageSourcePtr src,
 
     return ret;
 }
+
+
+/**
+ * virStorageFileReadHeader: read the beginning bytes of a file into a buffer
+ *
+ * @src: file structure pointing to the file
+ * @max_len: maximum number of bytes read from the storage file
+ * @buf: buffer to read the data into. buffer shall be freed by caller)
+ *
+ * Returns the count of bytes read on success and -1 on failure, -2 if the
+ * function isn't supported by the backend. Libvirt error is reported on failure.
+ */
+ssize_t
+virStorageFileReadHeader(virStorageSourcePtr src,
+                         ssize_t max_len,
+                         char **buf)
+{
+    ssize_t ret;
+
+    if (!virStorageFileIsInitialized(src)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("storage file backend not initialized"));
+        return -1;
+    }
+
+    if (!src->drv->backend->storageFileReadHeader) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("storage file header reading is not supported for "
+                         "storage type %s (protocol: %s)'"),
+                       virStorageTypeToString(src->type),
+                       virStorageNetProtocolTypeToString(src->protocol));
+        return -2;
+    }
+
+    ret = src->drv->backend->storageFileReadHeader(src, max_len, buf);
+
+    VIR_DEBUG("read of storage header %p: ret=%zd", src, ret);
+
+    return ret;
+}
