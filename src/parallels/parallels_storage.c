@@ -311,10 +311,8 @@ static int parallelsAddDiskVolume(virStoragePoolObjPtr pool,
     if (VIR_STRDUP(def->key, def->target.path) < 0)
         goto error;
 
-    if (VIR_REALLOC_N(pool->volumes.objs, pool->volumes.count + 1) < 0)
+    if (VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count, def) < 0)
         goto error;
-
-    pool->volumes.objs[pool->volumes.count++] = def;
 
     return 0;
 no_memory:
@@ -1229,9 +1227,6 @@ parallelsStorageVolDefineXML(virStoragePoolObjPtr pool,
         }
     }
 
-    if (VIR_REALLOC_N(pool->volumes.objs, pool->volumes.count + 1) < 0)
-        goto cleanup;
-
     if (virAsprintf(&privvol->target.path, "%s/%s",
                     pool->def->target.path, privvol->name) < 0)
         goto cleanup;
@@ -1255,7 +1250,9 @@ parallelsStorageVolDefineXML(virStoragePoolObjPtr pool,
                                 pool->def->allocation);
     }
 
-    pool->volumes.objs[pool->volumes.count++] = privvol;
+    if (VIR_APPEND_ELEMENT_COPY(pool->volumes.objs,
+                                pool->volumes.count, privvol) < 0)
+        goto cleanup;
 
     ret = privvol;
     privvol = NULL;
@@ -1362,10 +1359,6 @@ parallelsStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     privpool->def->available = (privpool->def->capacity -
                                 privpool->def->allocation);
 
-    if (VIR_REALLOC_N(privpool->volumes.objs,
-                      privpool->volumes.count + 1) < 0)
-        goto cleanup;
-
     if (virAsprintf(&privvol->target.path, "%s/%s",
                     privpool->def->target.path, privvol->name) == -1)
         goto cleanup;
@@ -1377,7 +1370,9 @@ parallelsStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     privpool->def->available = (privpool->def->capacity -
                                 privpool->def->allocation);
 
-    privpool->volumes.objs[privpool->volumes.count++] = privvol;
+    if (VIR_APPEND_ELEMENT_COPY(privpool->volumes.objs,
+                                privpool->volumes.count, privvol) < 0)
+        goto cleanup;
 
     ret = virGetStorageVol(pool->conn, privpool->def->name,
                            privvol->name, privvol->key,
@@ -1416,18 +1411,7 @@ int parallelsStorageVolDefRemove(virStoragePoolObjPtr privpool,
 
             virStorageVolDefFree(privvol);
 
-            if (i < (privpool->volumes.count - 1))
-                memmove(privpool->volumes.objs + i,
-                        privpool->volumes.objs + i + 1,
-                        sizeof(*(privpool->volumes.objs)) *
-                        (privpool->volumes.count - (i + 1)));
-
-            if (VIR_REALLOC_N(privpool->volumes.objs,
-                              privpool->volumes.count - 1) < 0) {
-                ;   /* Failure to reduce memory allocation isn't fatal */
-            }
-            privpool->volumes.count--;
-
+            VIR_DELETE_ELEMENT(privpool->volumes.objs, i, privpool->volumes.count);
             break;
         }
     }

@@ -231,10 +231,8 @@ parallelsAddSerialInfo(virDomainChrDefPtr **serials, size_t *nserials,
     if (parallelsGetSerialInfo(chr, key, value))
         goto cleanup;
 
-    if (VIR_REALLOC_N(*serials, *nserials + 1) < 0)
+    if (VIR_APPEND_ELEMENT(*serials, *nserials, chr) < 0)
         goto cleanup;
-
-    (*serials)[(*nserials)++] = chr;
 
     return 0;
 
@@ -273,10 +271,8 @@ parallelsAddVideoInfo(virDomainDefPtr def, virJSONValuePtr value)
     if (VIR_ALLOC(accel) < 0)
         goto error;
 
-    if (VIR_REALLOC_N(def->videos, def->nvideos + 1) < 0)
+    if (VIR_APPEND_ELEMENT_COPY(def->videos, def->nvideos, video) < 0)
         goto error;
-
-    def->videos[def->nvideos++] = video;
 
     video->type = VIR_DOMAIN_VIDEO_TYPE_VGA;
     video->vram = mem << 20;
@@ -386,10 +382,8 @@ parallelsAddHddInfo(virDomainDefPtr def, const char *key, virJSONValuePtr value)
     if (parallelsGetHddInfo(def, disk, key, value))
         goto error;
 
-    if (VIR_REALLOC_N(def->disks, def->ndisks + 1) < 0)
+    if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
         goto error;
-
-    def->disks[def->ndisks++] = disk;
 
     return 0;
 
@@ -625,10 +619,9 @@ parallelsAddVNCInfo(virDomainDefPtr def, virJSONValuePtr jobj_root)
 
     gr->listens[0].type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
 
-    if (VIR_REALLOC_N(def->graphics, def->ngraphics + 1) < 0)
+    if (VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, gr) < 0)
         goto cleanup;
 
-    def->graphics[def->ngraphics++] = gr;
     return 0;
 
   cleanup:
