@@ -104,7 +104,7 @@ typedef struct _xenUnifiedDomainInfo xenUnifiedDomainInfo;
 typedef xenUnifiedDomainInfo *xenUnifiedDomainInfoPtr;
 
 struct _xenUnifiedDomainInfoList {
-    unsigned int count;
+    size_t count;
     xenUnifiedDomainInfoPtr *doms;
 };
 typedef struct _xenUnifiedDomainInfoList xenUnifiedDomainInfoList;

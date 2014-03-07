@@ -71,7 +71,7 @@ typedef struct _xenStoreWatch xenStoreWatch;
 typedef xenStoreWatch *xenStoreWatchPtr;
 
 struct _xenStoreWatchList {
-    unsigned int count;
+    size_t count;
     xenStoreWatchPtr *watches;
 };
 typedef struct _xenStoreWatchList xenStoreWatchList;

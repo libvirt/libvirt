@@ -666,13 +666,8 @@ xenStoreAddWatch(virConnectPtr conn,
         VIR_STRDUP(watch->token, token) < 0)
         goto error;
 
-    /* Make space on list */
-    n = list->count;
-    if (VIR_REALLOC_N(list->watches, n + 1) < 0)
+    if (VIR_APPEND_ELEMENT_COPY(list->watches, list->count, watch) < 0)
         goto error;
-
-    list->watches[n] = watch;
-    list->count++;
 
     return xs_watch(priv->xshandle, watch->path, watch->token);
 
@@ -719,17 +714,7 @@ xenStoreRemoveWatch(virConnectPtr conn, const char *path, const char *token)
             VIR_FREE(list->watches[i]->token);
             VIR_FREE(list->watches[i]);
 
-            if (i < (list->count - 1))
-                memmove(list->watches + i,
-                        list->watches + i + 1,
-                        sizeof(*(list->watches)) *
-                                (list->count - (i + 1)));
-
-            if (VIR_REALLOC_N(list->watches,
-                              list->count - 1) < 0) {
-                ; /* Failure to reduce memory allocation isn't fatal */
-            }
-            list->count--;
+            VIR_DELETE_ELEMENT(list->watches, i, list->count);
             return 0;
         }
     }

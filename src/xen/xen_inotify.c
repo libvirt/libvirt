@@ -173,17 +173,8 @@ xenInotifyXendDomainsDirRemoveEntry(virConnectPtr conn, const char *fname)
             VIR_FREE(priv->configInfoList->doms[i]->name);
             VIR_FREE(priv->configInfoList->doms[i]);
 
-            if (i < (priv->configInfoList->count - 1))
-                memmove(priv->configInfoList->doms + i,
-                        priv->configInfoList->doms + i + 1,
-                        sizeof(*(priv->configInfoList->doms)) *
-                                (priv->configInfoList->count - (i + 1)));
-
-            if (VIR_REALLOC_N(priv->configInfoList->doms,
-                              priv->configInfoList->count - 1) < 0) {
-                ; /* Failure to reduce memory allocation isn't fatal */
-            }
-            priv->configInfoList->count--;
+            VIR_DELETE_ELEMENT(priv->configInfoList->doms, i,
+                               priv->configInfoList->count);
             return 0;
         }
     }

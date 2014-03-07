@@ -1262,10 +1262,8 @@ xenXMDomainAttachDeviceFlags(virConnectPtr conn,
 
     case VIR_DOMAIN_DEVICE_NET:
     {
-        if (VIR_REALLOC_N(def->nets, def->nnets+1) < 0)
+        if (VIR_APPEND_ELEMENT(def->nets, def->nnets, dev->data.net) < 0)
             goto cleanup;
-        def->nets[def->nnets++] = dev->data.net;
-        dev->data.net = NULL;
         break;
     }
 
@@ -1348,12 +1346,7 @@ xenXMDomainDetachDeviceFlags(virConnectPtr conn,
                 dev->data.disk->dst &&
                 STREQ(def->disks[i]->dst, dev->data.disk->dst)) {
                 virDomainDiskDefFree(def->disks[i]);
-                if (i < (def->ndisks - 1))
-                    memmove(def->disks + i,
-                            def->disks + i + 1,
-                            sizeof(*def->disks) *
-                            (def->ndisks - (i + 1)));
-                def->ndisks--;
+                VIR_DELETE_ELEMENT(def->disks, i, def->ndisks);
                 break;
             }
         }
@@ -1365,12 +1358,7 @@ xenXMDomainDetachDeviceFlags(virConnectPtr conn,
         for (i = 0; i < def->nnets; i++) {
             if (!virMacAddrCmp(&def->nets[i]->mac, &dev->data.net->mac)) {
                 virDomainNetDefFree(def->nets[i]);
-                if (i < (def->nnets - 1))
-                    memmove(def->nets + i,
-                            def->nets + i + 1,
-                            sizeof(*def->nets) *
-                            (def->nnets - (i + 1)));
-                def->nnets--;
+                VIR_DELETE_ELEMENT(def->nets, i, def->nnets);
                 break;
             }
         }

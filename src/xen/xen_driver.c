@@ -2879,13 +2879,9 @@ xenUnifiedAddDomainInfo(xenUnifiedDomainInfoListPtr list,
     info->id = id;
 
     /* Make space on list */
-    n = list->count;
-    if (VIR_REALLOC_N(list->doms, n + 1) < 0) {
+    if (VIR_APPEND_ELEMENT(list->doms, list->count, info) < 0)
         goto error;
-    }
 
-    list->doms[n] = info;
-    list->count++;
     return 0;
 error:
     if (info)
@@ -2915,18 +2911,7 @@ xenUnifiedRemoveDomainInfo(xenUnifiedDomainInfoListPtr list,
             VIR_FREE(list->doms[i]->name);
             VIR_FREE(list->doms[i]);
 
-            if (i < (list->count - 1))
-                memmove(list->doms + i,
-                        list->doms + i + 1,
-                        sizeof(*(list->doms)) *
-                                (list->count - (i + 1)));
-
-            if (VIR_REALLOC_N(list->doms,
-                              list->count - 1) < 0) {
-                ; /* Failure to reduce memory allocation isn't fatal */
-            }
-            list->count--;
-
+            VIR_DELETE_ELEMENT(list->doms, i, list->count);
             return 0;
         }
     }
