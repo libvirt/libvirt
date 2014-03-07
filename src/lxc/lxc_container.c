@@ -774,17 +774,18 @@ static int lxcContainerSetReadOnly(void)
     }
 
     while (getmntent_r(procmnt, &mntent, mntbuf, sizeof(mntbuf)) != NULL) {
+        char *tmp;
         if (STREQ(mntent.mnt_dir, "/") ||
             STREQ(mntent.mnt_dir, "/.oldroot") ||
             STRPREFIX(mntent.mnt_dir, "/.oldroot/") ||
             lxcIsBasicMountLocation(mntent.mnt_dir))
             continue;
 
-        if (VIR_REALLOC_N(mounts, nmounts + 1) < 0)
+        if (VIR_STRDUP(tmp, mntent.mnt_dir) < 0 ||
+            VIR_APPEND_ELEMENT(mounts, nmounts, tmp) < 0) {
+            VIR_FREE(tmp);
             goto cleanup;
-        if (VIR_STRDUP(mounts[nmounts], mntent.mnt_dir) < 0)
-            goto cleanup;
-        nmounts++;
+        }
     }
 
     if (mounts)
