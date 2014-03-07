@@ -25,66 +25,17 @@
 
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-#include <errno.h>
-#include <limits.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-
-#ifdef HAVE_PATHS_H
-# include <paths.h>
-#endif
-
 #include "internal.h"
 #include "virebtables.h"
-#include "vircommand.h"
 #include "viralloc.h"
 #include "virerror.h"
-#include "virfile.h"
 #include "virlog.h"
-#include "virthread.h"
 #include "virstring.h"
-#include "virutil.h"
+#include "virfirewall.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("util.ebtables");
-
-#if HAVE_FIREWALLD
-static char *firewall_cmd_path = NULL;
-
-static int
-virEbTablesOnceInit(void)
-{
-    firewall_cmd_path = virFindFileInPath("firewall-cmd");
-    if (!firewall_cmd_path) {
-        VIR_INFO("firewall-cmd not found on system. "
-                 "firewalld support disabled for ebtables.");
-    } else {
-        virCommandPtr cmd = virCommandNew(firewall_cmd_path);
-
-        virCommandAddArgList(cmd, "--state", NULL);
-        if (virCommandRun(cmd, NULL) < 0) {
-            VIR_INFO("firewall-cmd found but disabled for ebtables");
-            VIR_FREE(firewall_cmd_path);
-            firewall_cmd_path = NULL;
-        } else {
-            VIR_INFO("using firewalld for ebtables commands");
-        }
-        virCommandFree(cmd);
-    }
-    return 0;
-}
-
-VIR_ONCE_GLOBAL_INIT(virEbTables)
-
-#endif
 
 struct _ebtablesContext
 {
@@ -95,84 +46,6 @@ enum {
     ADD = 0,
     REMOVE,
 };
-
-
-static int ATTRIBUTE_SENTINEL
-ebtablesAddRemoveRule(const char *arg, ...)
-{
-    va_list args;
-    int retval = ENOMEM;
-    char **argv;
-    const char *s;
-    int n;
-
-    n = 1 + /* /sbin/ebtables  */
-        2 + /*   --table foo   */
-        2 + /*   --insert bar  */
-        1;  /*   arg           */
-
-#if HAVE_FIREWALLD
-    virEbTablesInitialize();
-    if (firewall_cmd_path)
-        n += 3; /* --direct --passthrough eb */
-#endif
-
-    va_start(args, arg);
-    while (va_arg(args, const char *))
-        n++;
-
-    va_end(args);
-
-    if (VIR_ALLOC_N(argv, n + 1) < 0)
-        goto error;
-
-    n = 0;
-
-#if HAVE_FIREWALLD
-    if (firewall_cmd_path) {
-        if (VIR_STRDUP(argv[n++], firewall_cmd_path) < 0)
-            goto error;
-        if (VIR_STRDUP(argv[n++], "--direct") < 0)
-            goto error;
-        if (VIR_STRDUP(argv[n++], "--passthrough") < 0)
-            goto error;
-        if (VIR_STRDUP(argv[n++], "eb") < 0)
-            goto error;
-    } else
-#endif
-    if (VIR_STRDUP(argv[n++], EBTABLES_PATH) < 0)
-        goto error;
-
-    if (VIR_STRDUP(argv[n++], arg) < 0)
-        goto error;
-
-    va_start(args, arg);
-
-    while ((s = va_arg(args, const char *))) {
-        if (VIR_STRDUP(argv[n++], s) < 0) {
-            va_end(args);
-            goto error;
-        }
-    }
-
-    va_end(args);
-
-    if (virRun((const char **)argv, NULL) < 0) {
-        retval = errno;
-        goto error;
-    }
-
- error:
-    if (argv) {
-        n = 0;
-        while (argv[n])
-            VIR_FREE(argv[n++]);
-        VIR_FREE(argv);
-    }
-
-    return retval;
-}
-
 
 /**
  * ebtablesContextNew:
@@ -216,12 +89,30 @@ ebtablesContextFree(ebtablesContext *ctx)
 int
 ebtablesAddForwardPolicyReject(ebtablesContext *ctx)
 {
-    ebtablesAddRemoveRule("--new-chain", ctx->chain, NULL,
-                          NULL);
-    ebtablesAddRemoveRule("--insert", "FORWARD", "--jump",
-                          ctx->chain, NULL);
-    return ebtablesAddRemoveRule("-P", ctx->chain, "DROP",
-                                 NULL);
+    virFirewallPtr fw = NULL;
+    int ret = -1;
+
+    fw = virFirewallNew();
+    virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
+    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                       "--new-chain", ctx->chain,
+                       NULL);
+    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                       "--insert", "FORWARD",
+                       "--jump", ctx->chain, NULL);
+
+    virFirewallStartTransaction(fw, 0);
+    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                       "-P", ctx->chain, "DROP",
+                       NULL);
+
+    if (virFirewallApply(fw) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virFirewallFree(fw);
+    return ret;
 }
 
 
@@ -234,12 +125,26 @@ ebtablesForwardAllowIn(ebtablesContext *ctx,
                        const char *macaddr,
                        int action)
 {
-    return ebtablesAddRemoveRule(action == ADD ? "--insert" : "--delete",
-                                 ctx->chain,
-                                 "--in-interface", iface,
-                                 "--source", macaddr,
-                                 "--jump", "ACCEPT",
-                                 NULL);
+    virFirewallPtr fw = NULL;
+    int ret = -1;
+
+    fw = virFirewallNew();
+    virFirewallStartTransaction(fw, 0);
+    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                       action == ADD ? "--insert" : "--delete",
+                       ctx->chain,
+                       "--in-interface", iface,
+                       "--source", macaddr,
+                       "--jump", "ACCEPT",
+                       NULL);
+
+    if (virFirewallApply(fw) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virFirewallFree(fw);
+    return ret;
 }
 
 /**
