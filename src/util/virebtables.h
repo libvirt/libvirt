@@ -50,8 +50,6 @@ typedef struct _ebtablesContext ebtablesContext;
 ebtablesContext *ebtablesContextNew              (const char *driver);
 void             ebtablesContextFree             (ebtablesContext *ctx);
 
-void             ebtablesSaveRules               (ebtablesContext *ctx);
-
 int              ebtablesAddForwardAllowIn       (ebtablesContext *ctx,
                                                   const char *iface,
                                                   const virMacAddr *mac);
