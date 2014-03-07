@@ -1,4 +1,3 @@
-
 /*
  * esx_vi_types.h: client for the VMware VI API 2.5 to manage ESX hosts
  *

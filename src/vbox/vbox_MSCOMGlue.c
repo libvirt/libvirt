@@ -1,4 +1,3 @@
-
 /*
  * vbox_MSCOMGlue.c: glue to the MSCOM based VirtualBox API
  *

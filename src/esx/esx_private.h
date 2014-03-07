@@ -1,4 +1,3 @@
-
 /*
  * esx_private.h: private driver struct for the VMware ESX driver
  *

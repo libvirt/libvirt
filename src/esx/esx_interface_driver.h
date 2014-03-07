@@ -1,4 +1,3 @@
-
 /*
  * esx_interface_driver.h: interface driver functions for managing VMware ESX
  *                         host interfaces

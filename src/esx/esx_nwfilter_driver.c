@@ -1,4 +1,3 @@
-
 /*
  * esx_nwfilter_driver.c: nwfilter driver functions for managing VMware ESX
  *                        firewall rules

@@ -1,4 +1,3 @@
-
 /*
  * virt-aa-helper: wrapper program used by AppArmor security driver.
  *

@@ -1,4 +1,3 @@
-
 /*
  * esx_storage_driver.c: storage driver functions for managing VMware ESX
  *                       host storage

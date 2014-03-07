@@ -1,4 +1,3 @@
-
 /*
  * vbox_glue.c: glue to the VirtualBox API
  *

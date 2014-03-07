@@ -1,4 +1,3 @@
-
 /*
  * openwsman.h: workarounds for bugs in openwsman
  *

@@ -1,4 +1,3 @@
-
 /*
  * hyperv_private.h: private driver struct for the Microsoft Hyper-V driver
  *

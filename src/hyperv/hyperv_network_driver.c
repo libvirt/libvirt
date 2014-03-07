@@ -1,4 +1,3 @@
-
 /*
  * hyperv_network_driver.c: network driver functions for managing
  *                          Microsoft Hyper-V host networks

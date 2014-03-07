@@ -1,4 +1,3 @@
-
 /*
  * hyperv_nwfilter_driver.c: nwfilter driver functions for managing
  *                           Microsoft Hyper-V firewall rules

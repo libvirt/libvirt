@@ -1,4 +1,3 @@
-
 /*
  * esx_driver.c: core driver functions for managing VMware ESX hosts
  *

@@ -1,4 +1,3 @@
-
 /*
  * esx_storage_backend_vmfs.h: ESX storage driver backend for
  *                             managing VMFS datastores

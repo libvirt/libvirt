@@ -1,4 +1,3 @@
-
 /*
  * hyperv_device_monitor.h: device monitor functions for managing
  *                          Microsoft Hyper-V host devices

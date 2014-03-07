@@ -1,4 +1,3 @@
-
 /*
  * qemu_migration.c: QEMU migration handling
  *

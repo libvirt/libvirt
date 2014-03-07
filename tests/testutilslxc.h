@@ -1,4 +1,3 @@
-
 #include "capabilities.h"
 
 #define FAKEDEVDIR0 "/fakedevdir0/bla/fasl"

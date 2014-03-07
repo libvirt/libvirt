@@ -1,4 +1,3 @@
-
 /*
  * vmx.h: VMware VMX parsing/formatting functions
  *

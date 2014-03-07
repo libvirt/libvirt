@@ -1,4 +1,3 @@
-
 /*
  * esx_network_driver.h: network driver functions for managing VMware ESX
  *                       host networks

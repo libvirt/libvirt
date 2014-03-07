@@ -1,4 +1,3 @@
-
 /*
  * hyperv_interface_driver.h: interface driver functions for managing
  *                            Microsoft Hyper-V host interfaces

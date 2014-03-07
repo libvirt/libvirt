@@ -1,4 +1,3 @@
-
 /*
  * hyperv_util.h: utility functions for the Microsoft Hyper-V driver
  *

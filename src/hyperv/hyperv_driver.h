@@ -1,4 +1,3 @@
-
 /*
  * hyperv_driver.h: core driver functions for managing Microsoft Hyper-V hosts
  *

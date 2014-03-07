@@ -1,4 +1,3 @@
-
 /*
  * hyperv_secret_driver.h: secret driver functions for Microsoft Hyper-V
  *                         secret manipulation

@@ -1,4 +1,3 @@
-
 /*
  * esx_util.c: utility functions for the VMware ESX driver
  *

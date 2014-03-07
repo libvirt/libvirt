@@ -1,4 +1,3 @@
-
 /*
  * esx_secret_driver.h: secret driver functions for VMware ESX secret manipulation
  *

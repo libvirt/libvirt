@@ -1,4 +1,3 @@
-
 /*
  * esx_device_monitor.c: device monitor functions for managing VMware ESX
  *                       host devices

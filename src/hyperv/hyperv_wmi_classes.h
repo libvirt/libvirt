@@ -1,4 +1,3 @@
-
 /*
  * hyperv_wmi_classes.h: WMI classes for managing Microsoft Hyper-V hosts
  *

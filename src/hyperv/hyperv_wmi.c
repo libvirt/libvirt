@@ -1,4 +1,3 @@
-
 /*
  * hyperv_wmi.c: general WMI over WSMAN related functions and structures for
  *               managing Microsoft Hyper-V hosts

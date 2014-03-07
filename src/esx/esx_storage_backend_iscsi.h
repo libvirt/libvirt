@@ -1,4 +1,3 @@
-
 /*
  * esx_storage_backend_iscsi.h: ESX storage backend for iSCSI handling
  *

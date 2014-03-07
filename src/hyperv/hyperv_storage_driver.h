@@ -1,4 +1,3 @@
-
 /*
  * hyperv_storage_driver.h: storage driver methods for managing
  *                          Microsoft Hyper-V host storage
