@@ -86,9 +86,7 @@ VIR_ONCE_GLOBAL_INIT(virEbTables)
 
 struct _ebtablesContext
 {
-    ebtRules *input_filter;
     ebtRules *forward_filter;
-    ebtRules *nat_postrouting;
 };
 
 enum {
@@ -324,34 +322,21 @@ ebtablesContextNew(const char *driver)
 {
     bool success = false;
     ebtablesContext *ctx = NULL;
-    char *input_chain = NULL;
     char *forward_chain = NULL;
-    char *nat_chain = NULL;
 
     if (VIR_ALLOC(ctx) < 0)
         return NULL;
 
-    if (virAsprintf(&input_chain, "libvirt_%s_INPUT", driver) < 0 ||
-        virAsprintf(&forward_chain, "libvirt_%s_FORWARD", driver) < 0 ||
-        virAsprintf(&nat_chain, "libvirt_%s_POSTROUTING", driver) < 0) {
-        goto cleanup;
-    }
-
-    if (!(ctx->input_filter = ebtRulesNew("filter", input_chain)))
+    if (virAsprintf(&forward_chain, "libvirt_%s_FORWARD", driver) < 0)
         goto cleanup;
 
     if (!(ctx->forward_filter = ebtRulesNew("filter", forward_chain)))
         goto cleanup;
 
-    if (!(ctx->nat_postrouting = ebtRulesNew("nat", nat_chain)))
-        goto cleanup;
-
     success = true;
 
 cleanup:
-    VIR_FREE(input_chain);
     VIR_FREE(forward_chain);
-    VIR_FREE(nat_chain);
 
     if (!success) {
         ebtablesContextFree(ctx);
@@ -372,12 +357,8 @@ ebtablesContextFree(ebtablesContext *ctx)
 {
     if (!ctx)
         return;
-    if (ctx->input_filter)
-        ebtRulesFree(ctx->input_filter);
     if (ctx->forward_filter)
         ebtRulesFree(ctx->forward_filter);
-    if (ctx->nat_postrouting)
-        ebtRulesFree(ctx->nat_postrouting);
     VIR_FREE(ctx);
 }
 
