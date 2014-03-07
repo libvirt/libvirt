@@ -46,6 +46,7 @@
 #include "libxl_driver.h"
 #include "libxl_conf.h"
 #include "xen_xm.h"
+#include "xen_sxpr.h"
 #include "virtypedparam.h"
 #include "viruri.h"
 #include "virstring.h"
@@ -62,6 +63,7 @@
 #define LIBXL_DOM_REQ_HALT     4
 
 #define LIBXL_CONFIG_FORMAT_XM "xen-xm"
+#define LIBXL_CONFIG_FORMAT_SEXPR "xen-sxpr"
 
 /* Number of Xen scheduler parameters */
 #define XEN_SCHED_CREDIT_NPARAM   2
@@ -2867,8 +2869,9 @@ libxlDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 }
 
 static char *
-libxlConnectDomainXMLFromNative(virConnectPtr conn, const char * nativeFormat,
-                                const char * nativeConfig,
+libxlConnectDomainXMLFromNative(virConnectPtr conn,
+                                const char *nativeFormat,
+                                const char *nativeConfig,
                                 unsigned int flags)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
@@ -2882,19 +2885,30 @@ libxlConnectDomainXMLFromNative(virConnectPtr conn, const char * nativeFormat,
     if (virConnectDomainXMLFromNativeEnsureACL(conn) < 0)
         goto cleanup;
 
-    if (STRNEQ(nativeFormat, LIBXL_CONFIG_FORMAT_XM)) {
+    if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_XM)) {
+        if (!(conf = virConfReadMem(nativeConfig, strlen(nativeConfig), 0)))
+            goto cleanup;
+
+        if (!(def = xenParseXM(conf,
+                               cfg->verInfo->xen_version_major,
+                               cfg->caps))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("parsing xm config failed"));
+            goto cleanup;
+        }
+    } else if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_SEXPR)) {
+        /* only support latest xend config format */
+        if (!(def = xenParseSxprString(nativeConfig,
+                                       XEND_CONFIG_VERSION_3_1_0,
+                                       NULL,
+                                       -1))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("parsing sxpr config failed"));
+            goto cleanup;
+        }
+    } else {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unsupported config type %s"), nativeFormat);
-        goto cleanup;
-    }
-
-    if (!(conf = virConfReadMem(nativeConfig, strlen(nativeConfig), 0)))
-        goto cleanup;
-
-    if (!(def = xenParseXM(conf,
-                           cfg->verInfo->xen_version_major,
-                           cfg->caps))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("parsing xm config failed"));
         goto cleanup;
     }
 
