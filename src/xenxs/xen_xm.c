@@ -608,10 +608,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 disk->shared = true;
 
             /* Maintain list in sorted order according to target device name */
-            if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
+            if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
                 goto cleanup;
-            def->disks[def->ndisks++] = disk;
-            disk = NULL;
 
             skipdisk:
             list = list->next;
@@ -637,10 +635,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
             disk->readonly = true;
 
-            if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
+            if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
                 goto cleanup;
-            def->disks[def->ndisks++] = disk;
-            disk = NULL;
         }
     }
 
@@ -778,10 +774,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 VIR_STRDUP(net->ifname, vifname) < 0)
                 goto cleanup;
 
-            if (VIR_REALLOC_N(def->nets, def->nnets+1) < 0)
+            if (VIR_APPEND_ELEMENT(def->nets, def->nnets, net) < 0)
                 goto cleanup;
-            def->nets[def->nnets++] = net;
-            net = NULL;
 
         skipnic:
             list = list->next;
@@ -869,12 +863,10 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             hostdev->source.subsys.u.pci.addr.slot = slotID;
             hostdev->source.subsys.u.pci.addr.function = funcID;
 
-            if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs+1) < 0) {
+            if (VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev) < 0) {
                 virDomainHostdevDefFree(hostdev);
                 goto cleanup;
             }
-            def->hostdevs[def->nhostdevs++] = hostdev;
-            hostdev = NULL;
 
         skippci:
             list = list->next;
@@ -1084,16 +1076,13 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 if (!(chr = xenParseSxprChar(port, NULL)))
                     goto cleanup;
 
-                if (VIR_REALLOC_N(def->serials, def->nserials+1) < 0) {
-                    virDomainChrDefFree(chr);
-                    goto cleanup;
-                }
-
                 chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
                 chr->target.port = portnum;
 
-                def->serials[def->nserials++] = chr;
-                chr = NULL;
+                if (VIR_APPEND_ELEMENT(def->serials, def->nserials, chr) < 0) {
+                    virDomainChrDefFree(chr);
+                    goto cleanup;
+                }
 
                 list = list->next;
             }

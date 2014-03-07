@@ -601,10 +601,9 @@ xenParseSxprNets(virDomainDefPtr def,
                 VIR_STRDUP(net->model, "netfront") < 0)
                 goto cleanup;
 
-            if (VIR_REALLOC_N(def->nets, def->nnets + 1) < 0)
+            if (VIR_APPEND_ELEMENT(def->nets, def->nnets, net) < 0)
                 goto cleanup;
 
-            def->nets[def->nnets++] = net;
             vif_index++;
         }
     }
@@ -685,12 +684,11 @@ xenParseSxprSound(virDomainDefPtr def,
                 goto error;
             }
 
-            if (VIR_REALLOC_N(def->sounds, def->nsounds+1) < 0) {
+            if (VIR_APPEND_ELEMENT(def->sounds, def->nsounds, sound) < 0) {
                 virDomainSoundDefFree(sound);
                 goto error;
             }
 
-            def->sounds[def->nsounds++] = sound;
             offset = offset2 ? offset2 + 1 : NULL;
         } while (offset);
     }
@@ -1057,10 +1055,8 @@ xenParseSxprPCI(virDomainDefPtr def,
         dev->source.subsys.u.pci.addr.slot = slotID;
         dev->source.subsys.u.pci.addr.function = funcID;
 
-        if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs+1) < 0)
+        if (VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, dev) < 0)
             goto error;
-
-        def->hostdevs[def->nhostdevs++] = dev;
     }
 
     return 0;
@@ -1326,11 +1322,10 @@ xenParseSxpr(const struct sexpr *root,
             disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
             disk->readonly = true;
 
-            if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
+            if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0) {
                 virDomainDiskDefFree(disk);
                 goto error;
             }
-            def->disks[def->ndisks++] = disk;
         }
     }
 
@@ -1361,11 +1356,10 @@ xenParseSxpr(const struct sexpr *root,
                 }
                 disk->bus = VIR_DOMAIN_DISK_BUS_FDC;
 
-                if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
+                if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0) {
                     virDomainDiskDefFree(disk);
                     goto error;
                 }
-                def->disks[def->ndisks++] = disk;
             }
         }
     }
@@ -1395,13 +1389,12 @@ xenParseSxpr(const struct sexpr *root,
                         virDomainChrDefPtr chr;
                         if ((chr = xenParseSxprChar(tmp, tty)) == NULL)
                             goto error;
-                        if (VIR_REALLOC_N(def->serials, def->nserials+1) < 0) {
+                        chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
+                        chr->target.port = def->nserials + ports_skipped;
+                        if (VIR_APPEND_ELEMENT(def->serials, def->nserials, chr) < 0) {
                             virDomainChrDefFree(chr);
                             goto error;
                         }
-                        chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
-                        chr->target.port = def->nserials + ports_skipped;
-                        def->serials[def->nserials++] = chr;
                     }
                     else
                         ports_skipped++;
@@ -1417,13 +1410,12 @@ xenParseSxpr(const struct sexpr *root,
                 virDomainChrDefPtr chr;
                 if ((chr = xenParseSxprChar(tmp, tty)) == NULL)
                     goto error;
-                if (VIR_REALLOC_N(def->serials, def->nserials+1) < 0) {
+                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
+                chr->target.port = 0;
+                if (VIR_APPEND_ELEMENT(def->serials, def->nserials, chr) < 0) {
                     virDomainChrDefFree(chr);
                     goto error;
                 }
-                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
-                chr->target.port = 0;
-                def->serials[def->nserials++] = chr;
             }
         }
 
@@ -1433,13 +1425,12 @@ xenParseSxpr(const struct sexpr *root,
             /* XXX does XenD stuff parallel port tty info into xenstore somewhere ? */
             if ((chr = xenParseSxprChar(tmp, NULL)) == NULL)
                 goto error;
-            if (VIR_REALLOC_N(def->parallels, def->nparallels+1) < 0) {
+            chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
+            chr->target.port = 0;
+            if (VIR_APPEND_ELEMENT(def->parallels, def->nparallels, chr) < 0) {
                 virDomainChrDefFree(chr);
                 goto error;
             }
-            chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
-            chr->target.port = 0;
-            def->parallels[def->nparallels++] = chr;
         }
     } else if (def->id != 0) {
         if (VIR_ALLOC_N(def->consoles, 1) < 0)
