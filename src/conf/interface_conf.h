@@ -171,7 +171,7 @@ struct _virInterfaceObj {
 typedef struct _virInterfaceObjList virInterfaceObjList;
 typedef virInterfaceObjList *virInterfaceObjListPtr;
 struct _virInterfaceObjList {
-    unsigned int count;
+    size_t count;
     virInterfaceObjPtr *objs;
 };
 

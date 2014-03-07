@@ -399,15 +399,13 @@ virNWFilterRuleDefAddString(virNWFilterRuleDefPtr nwf,
                             const char *string,
                             size_t maxstrlen)
 {
-    if (VIR_REALLOC_N(nwf->strings, nwf->nstrings+1) < 0)
-        return NULL;
+    char *tmp;
 
-    if (VIR_STRNDUP(nwf->strings[nwf->nstrings], string, maxstrlen) < 0)
-        return NULL;
+    if (VIR_STRNDUP(tmp, string, maxstrlen) < 0 ||
+        VIR_APPEND_ELEMENT_COPY(nwf->strings, nwf->nstrings, tmp) < 0)
+        VIR_FREE(tmp);
 
-    nwf->nstrings++;
-
-    return nwf->strings[nwf->nstrings-1];
+    return tmp;
 }
 
 
@@ -425,15 +423,7 @@ virNWFilterObjRemove(virNWFilterObjListPtr nwfilters,
             virNWFilterObjUnlock(nwfilters->objs[i]);
             virNWFilterObjFree(nwfilters->objs[i]);
 
-            if (i < (nwfilters->count - 1))
-                memmove(nwfilters->objs + i, nwfilters->objs + i + 1,
-                        sizeof(*(nwfilters->objs)) * (nwfilters->count - (i + 1)));
-
-            if (VIR_REALLOC_N(nwfilters->objs, nwfilters->count - 1) < 0) {
-                ; /* Failure to reduce memory allocation isn't fatal */
-            }
-            nwfilters->count--;
-
+            VIR_DELETE_ELEMENT(nwfilters->objs, i, nwfilters->count);
             break;
         }
         virNWFilterObjUnlock(nwfilters->objs[i]);
@@ -2593,11 +2583,11 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
             }
 
             if (entry->rule || entry->include) {
-                if (VIR_REALLOC_N(ret->filterEntries, ret->nentries+1) < 0) {
+                if (VIR_APPEND_ELEMENT_COPY(ret->filterEntries,
+                                            ret->nentries, entry) < 0) {
                     virNWFilterEntryFree(entry);
                     goto cleanup;
                 }
-                ret->filterEntries[ret->nentries++] = entry;
             } else
                 virNWFilterEntryFree(entry);
         }
@@ -3029,15 +3019,14 @@ virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
     }
     virNWFilterObjLock(nwfilter);
     nwfilter->active = 0;
-    nwfilter->def = def;
 
-    if (VIR_REALLOC_N(nwfilters->objs, nwfilters->count + 1) < 0) {
-        nwfilter->def = NULL;
+    if (VIR_APPEND_ELEMENT_COPY(nwfilters->objs,
+                                nwfilters->count, nwfilter) < 0) {
         virNWFilterObjUnlock(nwfilter);
         virNWFilterObjFree(nwfilter);
         return NULL;
     }
-    nwfilters->objs[nwfilters->count++] = nwfilter;
+    nwfilter->def = def;
 
     return nwfilter;
 }

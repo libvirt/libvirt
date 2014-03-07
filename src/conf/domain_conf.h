@@ -2003,7 +2003,7 @@ struct _virDomainDef {
         long long quota;
         unsigned long long emulator_period;
         long long emulator_quota;
-        int nvcpupin;
+        size_t nvcpupin;
         virDomainVcpuPinDefPtr *vcpupin;
         virDomainVcpuPinDefPtr emulatorpin;
     } cputune;
@@ -2410,7 +2410,7 @@ int virDomainDefCompatibleDevice(virDomainDefPtr def,
                                  virDomainDeviceDefPtr dev);
 
 int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
-                        int *nvcpupin,
+                        size_t *nvcpupin,
                         unsigned char *cpumap,
                         int maplen,
                         int vcpu);

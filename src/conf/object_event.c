@@ -266,8 +266,7 @@ virObjectEventCallbackListMarkDeleteID(virConnectPtr conn,
 static int
 virObjectEventCallbackListPurgeMarked(virObjectEventCallbackListPtr cbList)
 {
-    int old_count = cbList->count;
-    int n;
+    size_t n;
     for (n = 0; n < cbList->count; n++) {
         if (cbList->callbacks[n]->deleted) {
             virFreeCallback freecb = cbList->callbacks[n]->freecb;
@@ -276,18 +275,9 @@ virObjectEventCallbackListPurgeMarked(virObjectEventCallbackListPtr cbList)
             virObjectUnref(cbList->callbacks[n]->conn);
             VIR_FREE(cbList->callbacks[n]);
 
-            if (n < (cbList->count - 1))
-                memmove(cbList->callbacks + n,
-                        cbList->callbacks + n + 1,
-                        sizeof(*(cbList->callbacks)) *
-                                (cbList->count - (n + 1)));
-            cbList->count--;
+            VIR_DELETE_ELEMENT(cbList->callbacks, n, cbList->count);
             n--;
         }
-    }
-    if (cbList->count < old_count &&
-        VIR_REALLOC_N(cbList->callbacks, cbList->count) < 0) {
-        ; /* Failure to reduce memory allocation isn't fatal */
     }
     return 0;
 }

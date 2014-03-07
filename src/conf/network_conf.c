@@ -372,9 +372,6 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
         return network;
     }
 
-    if (VIR_REALLOC_N(nets->objs, nets->count + 1) < 0)
-        return NULL;
-
     if (VIR_ALLOC(network) < 0)
         return NULL;
     if (virMutexInit(&network->lock) < 0) {
@@ -384,9 +381,9 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
         return NULL;
     }
     virNetworkObjLock(network);
-    network->def = def;
 
-    if (!(network->class_id = virBitmapNew(CLASS_ID_BITMAP_SIZE)))
+    if (VIR_APPEND_ELEMENT_COPY(nets->objs, nets->count, network) < 0 ||
+        !(network->class_id = virBitmapNew(CLASS_ID_BITMAP_SIZE)))
         goto error;
 
     /* The first three class IDs are already taken */
@@ -395,8 +392,6 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
     ignore_value(virBitmapSetBit(network->class_id, 2));
 
     network->def = def;
-    nets->objs[nets->count] = network;
-    nets->count++;
 
     return network;
 error:
@@ -576,15 +571,7 @@ void virNetworkRemoveInactive(virNetworkObjListPtr nets,
             virNetworkObjUnlock(nets->objs[i]);
             virNetworkObjFree(nets->objs[i]);
 
-            if (i < (nets->count - 1))
-                memmove(nets->objs + i, nets->objs + i + 1,
-                        sizeof(*(nets->objs)) * (nets->count - (i + 1)));
-
-            if (VIR_REALLOC_N(nets->objs, nets->count - 1) < 0) {
-                ; /* Failure to reduce memory allocation isn't fatal */
-            }
-            nets->count--;
-
+            VIR_DELETE_ELEMENT(nets->objs, i, nets->count);
             break;
         }
         virNetworkObjUnlock(nets->objs[i]);
@@ -900,13 +887,17 @@ virNetworkDNSHostDefParseXML(const char *networkName,
         if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "hostname")) {
               if (cur->children != NULL) {
-                  if (VIR_REALLOC_N(def->names, def->nnames + 1) < 0)
-                      goto error;
-                  def->names[def->nnames++] = (char *)xmlNodeGetContent(cur);
-                  if (!def->names[def->nnames - 1]) {
+                  char *name = (char *) xmlNodeGetContent(cur);
+
+                  if (!name) {
                       virReportError(VIR_ERR_XML_DETAIL,
                                      _("Missing hostname in network '%s' DNS HOST record"),
                                      networkName);
+                      goto error;
+                  }
+                  if (VIR_APPEND_ELEMENT(def->names, def->nnames, name) < 0) {
+                      VIR_FREE(name);
+                      goto error;
                   }
               }
         }

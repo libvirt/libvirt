@@ -458,15 +458,7 @@ virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
             virStoragePoolObjUnlock(pools->objs[i]);
             virStoragePoolObjFree(pools->objs[i]);
 
-            if (i < (pools->count - 1))
-                memmove(pools->objs + i, pools->objs + i + 1,
-                        sizeof(*(pools->objs)) * (pools->count - (i + 1)));
-
-            if (VIR_REALLOC_N(pools->objs, pools->count - 1) < 0) {
-                ; /* Failure to reduce memory allocation isn't fatal */
-            }
-            pools->count--;
-
+            VIR_DELETE_ELEMENT(pools->objs, i, pools->count);
             break;
         }
         virStoragePoolObjUnlock(pools->objs[i]);
@@ -1782,15 +1774,13 @@ virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
     }
     virStoragePoolObjLock(pool);
     pool->active = 0;
-    pool->def = def;
 
-    if (VIR_REALLOC_N(pools->objs, pools->count+1) < 0) {
-        pool->def = NULL;
+    if (VIR_APPEND_ELEMENT_COPY(pools->objs, pools->count, pool) < 0) {
         virStoragePoolObjUnlock(pool);
         virStoragePoolObjFree(pool);
         return NULL;
     }
-    pools->objs[pools->count++] = pool;
+    pool->def = def;
 
     return pool;
 }

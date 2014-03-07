@@ -10216,17 +10216,9 @@ void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
         }
     }
 
-    /* No disks with this bus yet, so put at end of list */
-    if (insertAt == -1)
-        insertAt = def->ndisks;
-
-    if (insertAt < def->ndisks)
-        memmove(def->disks + insertAt + 1,
-                def->disks + insertAt,
-                (sizeof(def->disks[0]) * (def->ndisks-insertAt)));
-
-    def->disks[insertAt] = disk;
-    def->ndisks++;
+    /* VIR_INSERT_ELEMENT_INPLACE will never return an error here. */
+    ignore_value(VIR_INSERT_ELEMENT_INPLACE(def->disks, insertAt,
+                                            def->ndisks, disk));
 }
 
 
@@ -10235,19 +10227,7 @@ virDomainDiskRemove(virDomainDefPtr def, size_t i)
 {
     virDomainDiskDefPtr disk = def->disks[i];
 
-    if (def->ndisks > 1) {
-        memmove(def->disks + i,
-                def->disks + i + 1,
-                sizeof(*def->disks) *
-                (def->ndisks - (i + 1)));
-        def->ndisks--;
-        if (VIR_REALLOC_N(def->disks, def->ndisks) < 0) {
-            /* ignore, harmless */
-        }
-    } else {
-        VIR_FREE(def->disks);
-        def->ndisks = 0;
-    }
+    VIR_DELETE_ELEMENT(def->disks, i, def->ndisks);
     return disk;
 }
 
@@ -10274,13 +10254,17 @@ virDomainHasDiskMirror(virDomainObjPtr vm)
 
 int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net)
 {
-    if (VIR_REALLOC_N(def->nets, def->nnets + 1) < 0)
+    /* hostdev net devices must also exist in the hostdevs array */
+    if (net->type == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+        virDomainHostdevInsert(def, &net->data.hostdev.def) < 0)
         return -1;
-    def->nets[def->nnets]  = net;
-    def->nnets++;
-    if (net->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
-        /* hostdev net devices must also exist in the hostdevs array */
-        return virDomainHostdevInsert(def, &net->data.hostdev.def);
+
+    if (VIR_APPEND_ELEMENT(def->nets, def->nnets, net) < 0) {
+        /* virDomainHostdevInsert just appends new hostdevs, so we are sure
+         * that the hostdev we've added a few lines above is at the end of
+         * array. Although, devices are indexed from zero ... */
+        virDomainHostdevRemove(def, def->nhostdevs - 1);
+        return -1;
     }
     return 0;
 }
@@ -10360,19 +10344,7 @@ virDomainNetRemove(virDomainDefPtr def, size_t i)
     virDomainNetDefPtr net = def->nets[i];
 
     virDomainNetRemoveHostdev(def, net);
-
-    if (def->nnets > 1) {
-        memmove(def->nets + i,
-                def->nets + i + 1,
-                sizeof(*def->nets) * (def->nnets - (i + 1)));
-        def->nnets--;
-        if (VIR_REALLOC_N(def->nets, def->nnets) < 0) {
-            /* ignore harmless */
-        }
-    } else {
-        VIR_FREE(def->nets);
-        def->nnets = 0;
-    }
+    VIR_DELETE_ELEMENT(def->nets, i, def->nnets);
     return net;
 }
 
@@ -10415,17 +10387,9 @@ void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
         }
     }
 
-    /* No controllers with this bus yet, so put at end of list */
-    if (insertAt == -1)
-        insertAt = def->ncontrollers;
-
-    if (insertAt < def->ncontrollers)
-        memmove(def->controllers + insertAt + 1,
-                def->controllers + insertAt,
-                (sizeof(def->controllers[0]) * (def->ncontrollers-insertAt)));
-
-    def->controllers[insertAt] = controller;
-    def->ncontrollers++;
+    /* VIR_INSERT_ELEMENT_INPLACE will never return an error here. */
+    ignore_value(VIR_INSERT_ELEMENT_INPLACE(def->controllers, insertAt,
+                                            def->ncontrollers, controller));
 }
 
 int
@@ -10449,20 +10413,7 @@ virDomainControllerRemove(virDomainDefPtr def, size_t i)
 {
     virDomainControllerDefPtr controller = def->controllers[i];
 
-    if (def->ncontrollers > 1) {
-        memmove(def->controllers + i,
-                def->controllers + i + 1,
-                sizeof(*def->controllers) *
-                (def->ncontrollers - (i + 1)));
-        def->ncontrollers--;
-        if (VIR_REALLOC_N(def->controllers, def->ncontrollers) < 0) {
-            /* ignore, harmless */
-        }
-    } else {
-        VIR_FREE(def->controllers);
-        def->ncontrollers = 0;
-    }
-
+    VIR_DELETE_ELEMENT(def->controllers, i, def->ncontrollers);
     return controller;
 }
 
@@ -10520,16 +10471,7 @@ virDomainLeaseRemoveAt(virDomainDefPtr def, size_t i)
 
     virDomainLeaseDefPtr lease = def->leases[i];
 
-    if (def->nleases > 1) {
-        memmove(def->leases + i,
-                def->leases + i + 1,
-                sizeof(*def->leases) *
-                (def->nleases - (i + 1)));
-        VIR_SHRINK_N(def->leases, def->nleases, 1);
-    } else {
-        VIR_FREE(def->leases);
-        def->nleases = 0;
-    }
+    VIR_DELETE_ELEMENT(def->leases, i, def->nleases);
     return lease;
 }
 
@@ -14451,7 +14393,7 @@ virDomainVcpuPinFindByVcpu(virDomainVcpuPinDefPtr *def,
 
 int
 virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
-                    int *nvcpupin,
+                    size_t *nvcpupin,
                     unsigned char *cpumap,
                     int maplen,
                     int vcpu)
@@ -14484,10 +14426,8 @@ virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
     if (!vcpupin->cpumask)
         goto error;
 
-    if (VIR_REALLOC_N(*vcpupin_list, *nvcpupin + 1) < 0)
+    if (VIR_APPEND_ELEMENT(*vcpupin_list, *nvcpupin, vcpupin) < 0)
         goto error;
-
-    (*vcpupin_list)[(*nvcpupin)++] = vcpupin;
 
     return 0;
 
@@ -14500,7 +14440,6 @@ int
 virDomainVcpuPinDel(virDomainDefPtr def, int vcpu)
 {
     int n;
-    bool deleted = false;
     virDomainVcpuPinDefPtr *vcpupin_list = def->cputune.vcpupin;
 
     /* No vcpupin exists yet */
@@ -14512,22 +14451,9 @@ virDomainVcpuPinDel(virDomainDefPtr def, int vcpu)
         if (vcpupin_list[n]->vcpuid == vcpu) {
             virBitmapFree(vcpupin_list[n]->cpumask);
             VIR_FREE(vcpupin_list[n]);
-            memmove(&vcpupin_list[n],
-                    &vcpupin_list[n+1],
-                    (def->cputune.nvcpupin - n - 1) * sizeof(virDomainVcpuPinDef *));
-            deleted = true;
+            VIR_DELETE_ELEMENT(vcpupin_list, n, def->cputune.nvcpupin);
             break;
         }
-    }
-
-    if (!deleted)
-        return 0;
-
-    if (--def->cputune.nvcpupin == 0) {
-        VIR_FREE(def->cputune.vcpupin);
-    } else {
-        if (VIR_REALLOC_N(def->cputune.vcpupin, def->cputune.nvcpupin) < 0)
-            return -1;
     }
 
     return 0;

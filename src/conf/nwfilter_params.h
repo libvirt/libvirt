@@ -67,7 +67,7 @@ typedef virNWFilterHashTable *virNWFilterHashTablePtr;
 struct _virNWFilterHashTable {
     virHashTablePtr hashTable;
 
-    int nNames;
+    size_t nNames;
     char **names;
 };
 

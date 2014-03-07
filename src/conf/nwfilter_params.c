@@ -256,13 +256,7 @@ virNWFilterVarValueDelNthValue(virNWFilterVarValuePtr val, unsigned int pos)
     case NWFILTER_VALUE_TYPE_ARRAY:
         if (pos < val->u.array.nValues) {
             VIR_FREE(val->u.array.values[pos]);
-            val->u.array.nValues--;
-
-            if (pos < val->u.array.nValues)
-                memmove(&val->u.array.values[pos],
-                        &val->u.array.values[pos + 1],
-                        sizeof(val->u.array.values[0]) *
-                            (val->u.array.nValues - pos));
+            VIR_DELETE_ELEMENT(val->u.array.values, pos, val->u.array.nValues);
             return 0;
         }
         break;
@@ -642,11 +636,11 @@ virNWFilterHashTablePut(virNWFilterHashTablePtr table,
             if (VIR_STRDUP(newName, name) < 0)
                 return -1;
 
-            if (VIR_REALLOC_N(table->names, table->nNames + 1) < 0) {
+            if (VIR_APPEND_ELEMENT_COPY(table->names,
+                                        table->nNames, newName) < 0) {
                 VIR_FREE(newName);
                 return -1;
             }
-            table->names[table->nNames++] = newName;
         }
 
         if (virHashAddEntry(table->hashTable, name, val) < 0) {

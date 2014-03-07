@@ -108,7 +108,7 @@ typedef struct _virNetworkDNSHostDef virNetworkDNSHostDef;
 typedef virNetworkDNSHostDef *virNetworkDNSHostDefPtr;
 struct _virNetworkDNSHostDef {
     virSocketAddr ip;
-    int nnames;
+    size_t nnames;
     char **names;
 };
 
@@ -294,7 +294,7 @@ struct _virNetworkObj {
 typedef struct _virNetworkObjList virNetworkObjList;
 typedef virNetworkObjList *virNetworkObjListPtr;
 struct _virNetworkObjList {
-    unsigned int count;
+    size_t count;
     virNetworkObjPtr *objs;
 };
 

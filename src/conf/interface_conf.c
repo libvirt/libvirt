@@ -1266,16 +1266,14 @@ virInterfaceObjPtr virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
         return NULL;
     }
     virInterfaceObjLock(iface);
-    iface->def = def;
 
-    if (VIR_REALLOC_N(interfaces->objs, interfaces->count + 1) < 0) {
-        VIR_FREE(iface);
+    if (VIR_APPEND_ELEMENT_COPY(interfaces->objs,
+                                interfaces->count, iface) < 0) {
+        virInterfaceObjFree(iface);
         return NULL;
     }
 
-    interfaces->objs[interfaces->count] = iface;
-    interfaces->count++;
-
+    iface->def = def;
     return iface;
 
 }
@@ -1292,15 +1290,7 @@ void virInterfaceRemove(virInterfaceObjListPtr interfaces,
             virInterfaceObjUnlock(interfaces->objs[i]);
             virInterfaceObjFree(interfaces->objs[i]);
 
-            if (i < (interfaces->count - 1))
-                memmove(interfaces->objs + i, interfaces->objs + i + 1,
-                        sizeof(*(interfaces->objs)) * (interfaces->count - (i + 1)));
-
-            if (VIR_REALLOC_N(interfaces->objs, interfaces->count - 1) < 0) {
-                ; /* Failure to reduce memory allocation isn't fatal */
-            }
-            interfaces->count--;
-
+            VIR_DELETE_ELEMENT(interfaces->objs, i, interfaces->count);
             break;
         }
         virInterfaceObjUnlock(interfaces->objs[i]);

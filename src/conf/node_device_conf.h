@@ -204,7 +204,7 @@ struct _virNodeDeviceObj {
 typedef struct _virNodeDeviceObjList virNodeDeviceObjList;
 typedef virNodeDeviceObjList *virNodeDeviceObjListPtr;
 struct _virNodeDeviceObjList {
-    unsigned int count;
+    size_t count;
     virNodeDeviceObjPtr *objs;
 };
 

@@ -4301,7 +4301,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
     bool doReset = false;
-    int newVcpuPinNum = 0;
+    size_t newVcpuPinNum = 0;
     virDomainVcpuPinDefPtr *newVcpuPin = NULL;
     virBitmapPtr pcpumap = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -4575,7 +4575,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
     bool doReset = false;
-    int newVcpuPinNum = 0;
+    size_t newVcpuPinNum = 0;
     virDomainVcpuPinDefPtr *newVcpuPin = NULL;
     virBitmapPtr pcpumap = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
