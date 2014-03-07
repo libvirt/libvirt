@@ -30,19 +30,8 @@
 
 typedef struct
 {
-    char  *rule;
-    char **argv;
-    int    command_idx;
-} ebtRule;
-
-typedef struct
-{
     char  *table;
     char  *chain;
-
-    int      nrules;
-    ebtRule *rules;
-
 } ebtRules;
 
 typedef struct _ebtablesContext ebtablesContext;

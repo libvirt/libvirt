@@ -97,82 +97,12 @@ enum {
     INSERT
 };
 
-static void
-ebtRuleFree(ebtRule *rule)
-{
-    VIR_FREE(rule->rule);
-
-    if (rule->argv) {
-        size_t i = 0;
-        while (rule->argv[i])
-            VIR_FREE(rule->argv[i++]);
-        VIR_FREE(rule->argv);
-    }
-}
-
-static int
-ebtRulesAppend(ebtRules *rules,
-               char *rule,
-               char **argv,
-               int command_idx)
-{
-    if (VIR_REALLOC_N(rules->rules, rules->nrules+1) < 0) {
-        size_t i = 0;
-        while (argv[i])
-            VIR_FREE(argv[i++]);
-        VIR_FREE(argv);
-        return ENOMEM;
-    }
-
-    rules->rules[rules->nrules].rule        = rule;
-    rules->rules[rules->nrules].argv        = argv;
-    rules->rules[rules->nrules].command_idx = command_idx;
-
-    rules->nrules++;
-
-    return 0;
-}
-
-static int
-ebtRulesRemove(ebtRules *rules,
-               char *rule)
-{
-    size_t i;
-
-    for (i = 0; i < rules->nrules; i++)
-        if (STREQ(rules->rules[i].rule, rule))
-            break;
-
-    if (i >= rules->nrules)
-        return EINVAL;
-
-    ebtRuleFree(&rules->rules[i]);
-
-    memmove(&rules->rules[i],
-            &rules->rules[i+1],
-            (rules->nrules - i - 1) * sizeof(ebtRule));
-
-    rules->nrules--;
-
-    return 0;
-}
 
 static void
 ebtRulesFree(ebtRules *rules)
 {
-    size_t i;
-
     VIR_FREE(rules->table);
     VIR_FREE(rules->chain);
-
-    if (rules->rules) {
-        for (i = 0; i < rules->nrules; i++)
-            ebtRuleFree(&rules->rules[i]);
-
-        VIR_FREE(rules->rules);
-
-        rules->nrules = 0;
-    }
 
     VIR_FREE(rules);
 }
@@ -192,9 +122,6 @@ ebtRulesNew(const char *table,
     if (VIR_STRDUP(rules->chain, chain) < 0)
         goto error;
 
-    rules->rules = NULL;
-    rules->nrules = 0;
-
     return rules;
 
  error:
@@ -208,7 +135,6 @@ ebtablesAddRemoveRule(ebtRules *rules, int action, const char *arg, ...)
     va_list args;
     int retval = ENOMEM;
     char **argv;
-    char *rule = NULL;
     const char *s;
     int n, command_idx;
 
@@ -273,9 +199,6 @@ ebtablesAddRemoveRule(ebtRules *rules, int action, const char *arg, ...)
 
     va_end(args);
 
-    if (!(rule = virArgvToString((const char **) &argv[command_idx])))
-        goto error;
-
     if (action == REMOVE) {
         VIR_FREE(argv[command_idx]);
         if (VIR_STRDUP(argv[command_idx], "--delete") < 0)
@@ -287,18 +210,7 @@ ebtablesAddRemoveRule(ebtRules *rules, int action, const char *arg, ...)
         goto error;
     }
 
-    if (action == ADD || action == CREATE || action == POLICY ||
-        action == INSERT) {
-        retval = ebtRulesAppend(rules, rule, argv, command_idx);
-        rule = NULL;
-        argv = NULL;
-    } else {
-        retval = ebtRulesRemove(rules, rule);
-    }
-
  error:
-    VIR_FREE(rule);
-
     if (argv) {
         n = 0;
         while (argv[n])
