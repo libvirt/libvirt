@@ -115,9 +115,6 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
         if (VIR_STRDUP(vol->name, groups[0]) < 0)
             goto cleanup;
 
-        if (VIR_REALLOC_N(pool->volumes.objs,
-                          pool->volumes.count + 1))
-            goto cleanup;
     }
 
     if (vol->target.path == NULL) {
@@ -251,8 +248,9 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
         vol->source.nextent++;
     }
 
-    if (is_new_vol)
-        pool->volumes.objs[pool->volumes.count++] = vol;
+    if (is_new_vol &&
+        VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count, vol) < 0)
+        goto cleanup;
 
     ret = 0;
 

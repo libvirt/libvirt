@@ -382,11 +382,6 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn,
     for (name = names; name < names + max_size;) {
         virStorageVolDefPtr vol;
 
-        if (VIR_REALLOC_N(pool->volumes.objs, pool->volumes.count + 1) < 0) {
-            virStoragePoolObjClearVols(pool);
-            goto cleanup;
-        }
-
         if (STREQ(name, ""))
             break;
 
@@ -405,7 +400,10 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn,
             goto cleanup;
         }
 
-        pool->volumes.objs[pool->volumes.count++] = vol;
+        if (VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count, vol) < 0) {
+            virStoragePoolObjClearVols(pool);
+            goto cleanup;
+        }
     }
 
     VIR_DEBUG("Found %zu images in RBD pool %s",

@@ -447,13 +447,10 @@ virStorageBackendISCSIGetTargets(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
     if (VIR_STRDUP(target, groups[1]) < 0)
         return -1;
 
-    if (VIR_REALLOC_N(list->targets, list->ntargets + 1) < 0) {
+    if (VIR_APPEND_ELEMENT(list->targets, list->ntargets, target) < 0) {
         VIR_FREE(target);
         return -1;
     }
-
-    list->targets[list->ntargets] = target;
-    list->ntargets++;
 
     return 0;
 }

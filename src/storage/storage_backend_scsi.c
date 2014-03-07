@@ -249,12 +249,10 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
     pool->def->capacity += vol->capacity;
     pool->def->allocation += vol->allocation;
 
-    if (VIR_REALLOC_N(pool->volumes.objs,
-                      pool->volumes.count + 1) < 0) {
+    if (VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count, vol) < 0) {
         retval = -1;
         goto free_vol;
     }
-    pool->volumes.objs[pool->volumes.count++] = vol;
 
     goto out;
 

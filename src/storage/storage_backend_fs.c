@@ -905,11 +905,8 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
 
 
-        if (VIR_REALLOC_N(pool->volumes.objs,
-                          pool->volumes.count+1) < 0)
+        if (VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count, vol) < 0)
             goto cleanup;
-        pool->volumes.objs[pool->volumes.count++] = vol;
-        vol = NULL;
     }
     closedir(dir);
 

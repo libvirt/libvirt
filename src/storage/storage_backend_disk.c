@@ -52,20 +52,15 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
     if (vol == NULL) {
         if (VIR_ALLOC(vol) < 0)
             return -1;
-
-        if (VIR_REALLOC_N(pool->volumes.objs,
-                          pool->volumes.count+1) < 0) {
-            virStorageVolDefFree(vol);
-            return -1;
-        }
-        pool->volumes.objs[pool->volumes.count++] = vol;
-
         /* Prepended path will be same for all partitions, so we can
          * strip the path to form a reasonable pool-unique name
          */
         tmp = strrchr(groups[0], '/');
-        if (VIR_STRDUP(vol->name, tmp ? tmp + 1 : groups[0]) < 0)
+        if (VIR_STRDUP(vol->name, tmp ? tmp + 1 : groups[0]) < 0 ||
+            VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count, vol) < 0) {
+            virStorageVolDefFree(vol);
             return -1;
+        }
     }
 
     if (vol->target.path == NULL) {
