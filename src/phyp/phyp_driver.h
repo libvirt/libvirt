@@ -56,7 +56,7 @@ struct _lpar {
 typedef struct _uuid_table uuid_table_t;
 typedef uuid_table_t *uuid_tablePtr;
 struct _uuid_table {
-    int nlpars;
+    size_t nlpars;
     lparPtr *lpars;
 };
 

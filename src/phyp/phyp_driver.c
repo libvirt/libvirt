@@ -570,19 +570,16 @@ phypUUIDTable_AddLpar(virConnectPtr conn, unsigned char *uuid, int id)
 {
     phyp_driverPtr phyp_driver = conn->privateData;
     uuid_tablePtr uuid_table = phyp_driver->uuid_table;
+    lparPtr item = NULL;
 
-    uuid_table->nlpars++;
-    size_t i = uuid_table->nlpars;
-    i--;
-
-    if (VIR_REALLOC_N(uuid_table->lpars, uuid_table->nlpars) < 0)
+    if (VIR_ALLOC(item) < 0)
         goto err;
 
-    if (VIR_ALLOC(uuid_table->lpars[i]) < 0)
-        goto err;
+    item->id = id;
+    memcpy(item->uuid, uuid, VIR_UUID_BUFLEN);
 
-    uuid_table->lpars[i]->id = id;
-    memcpy(uuid_table->lpars[i]->uuid, uuid, VIR_UUID_BUFLEN);
+    if (VIR_APPEND_ELEMENT_COPY(uuid_table->lpars, uuid_table->nlpars, item) < 0)
+        goto err;
 
     if (phypUUIDTable_WriteFile(conn) == -1)
         goto err;
@@ -593,6 +590,7 @@ phypUUIDTable_AddLpar(virConnectPtr conn, unsigned char *uuid, int id)
     return 0;
 
 err:
+    VIR_FREE(item);
     return -1;
 }
 
