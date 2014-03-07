@@ -268,6 +268,14 @@ cleanup:
     return ret;
 }
 
+static void
+virSCSIDeviceUsedByInfoFree(virUsedByInfoPtr used_by)
+{
+    VIR_FREE(used_by->drvname);
+    VIR_FREE(used_by->domname);
+    VIR_FREE(used_by);
+}
+
 void
 virSCSIDeviceFree(virSCSIDevicePtr dev)
 {
@@ -279,11 +287,8 @@ virSCSIDeviceFree(virSCSIDevicePtr dev)
     VIR_FREE(dev->id);
     VIR_FREE(dev->name);
     VIR_FREE(dev->sg_path);
-    for (i = 0; i < dev->n_used_by; i++) {
-        VIR_FREE(dev->used_by[i]->drvname);
-        VIR_FREE(dev->used_by[i]->domname);
-        VIR_FREE(dev->used_by[i]);
-    }
+    for (i = 0; i < dev->n_used_by; i++)
+        virSCSIDeviceUsedByInfoFree(dev->used_by[i]);
     VIR_FREE(dev->used_by);
     VIR_FREE(dev);
 }
@@ -296,12 +301,18 @@ virSCSIDeviceSetUsedBy(virSCSIDevicePtr dev,
     virUsedByInfoPtr copy;
     if (VIR_ALLOC(copy) < 0)
         return -1;
-    if (VIR_STRDUP(copy->drvname, drvname) < 0)
-        return -1;
-    if (VIR_STRDUP(copy->domname, domname) < 0)
-        return -1;
+    if (VIR_STRDUP(copy->drvname, drvname) < 0 ||
+        VIR_STRDUP(copy->domname, domname) < 0)
+        goto cleanup;
 
-    return VIR_APPEND_ELEMENT(dev->used_by, dev->n_used_by, copy);
+    if (VIR_APPEND_ELEMENT(dev->used_by, dev->n_used_by, copy) < 0)
+        goto cleanup;
+
+    return 0;
+
+cleanup:
+    virSCSIDeviceUsedByInfoFree(copy);
+    return -1;
 }
 
 bool
@@ -449,9 +460,7 @@ virSCSIDeviceListDel(virSCSIDeviceListPtr list,
         if (STREQ_NULLABLE(dev->used_by[i]->drvname, drvname) &&
             STREQ_NULLABLE(dev->used_by[i]->domname, domname)) {
             if (dev->n_used_by > 1) {
-                VIR_FREE(dev->used_by[i]->drvname);
-                VIR_FREE(dev->used_by[i]->domname);
-                VIR_FREE(dev->used_by[i]);
+                virSCSIDeviceUsedByInfoFree(dev->used_by[i]);
                 VIR_DELETE_ELEMENT(dev->used_by, i, dev->n_used_by);
             } else {
                 tmp = virSCSIDeviceListSteal(list, dev);
