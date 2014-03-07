@@ -689,11 +689,7 @@ int virLockSpaceReleaseResource(virLockSpacePtr lockspace,
         goto cleanup;
     }
 
-    if (i < (res->nOwners - 1))
-        memmove(res->owners + i,
-                res->owners + i + 1,
-                (res->nOwners - i - 1) * sizeof(res->owners[0]));
-    VIR_SHRINK_N(res->owners, res->nOwners, 1);
+    VIR_DELETE_ELEMENT(res->owners, i, res->nOwners);
 
     if ((res->nOwners == 0) &&
         virHashRemoveEntry(lockspace->resources, resname) < 0)
@@ -735,11 +731,7 @@ virLockSpaceRemoveResourcesForOwner(const void *payload,
 
     data->count++;
 
-    if (i < (res->nOwners - 1))
-        memmove(res->owners + i,
-                res->owners + i + 1,
-                (res->nOwners - i - 1) * sizeof(res->owners[0]));
-    VIR_SHRINK_N(res->owners, res->nOwners, 1);
+    VIR_DELETE_ELEMENT(res->owners, i, res->nOwners);
 
     if (res->nOwners) {
         VIR_DEBUG("Other shared owners remain");

@@ -58,7 +58,7 @@ typedef virJSONParser *virJSONParserPtr;
 struct _virJSONParser {
     virJSONValuePtr head;
     virJSONParserStatePtr state;
-    unsigned int nstate;
+    size_t nstate;
 };
 
 
@@ -889,10 +889,7 @@ static int virJSONParserHandleEndMap(void *ctx)
         return 0;
     }
 
-    if (VIR_REALLOC_N(parser->state,
-                      parser->nstate - 1) < 0)
-        return 0;
-    parser->nstate--;
+    VIR_DELETE_ELEMENT(parser->state, parser->nstate - 1, parser->nstate);
 
     return 1;
 }
@@ -939,10 +936,7 @@ static int virJSONParserHandleEndArray(void *ctx)
         return 0;
     }
 
-    if (VIR_REALLOC_N(parser->state,
-                      parser->nstate - 1) < 0)
-        return 0;
-    parser->nstate--;
+    VIR_DELETE_ELEMENT(parser->state, parser->nstate - 1, parser->nstate);
 
     return 1;
 }
