@@ -41,7 +41,6 @@
 #include "qemu_command.h"
 #include "qemu_hostdev.h"
 #include "qemu_hotplug.h"
-#include "qemu_bridge_filter.h"
 #include "qemu_migration.h"
 
 #include "cpu/cpu.h"
@@ -4280,12 +4279,9 @@ void qemuProcessStop(virQEMUDriverPtr driver,
             virDomainNetDefPtr net = def->nets[i];
             if (net->ifname == NULL)
                 continue;
-            if ((errno = networkDisallowMacOnPort(driver, net->ifname,
-                                                  &net->mac))) {
-                virReportSystemError(errno,
-             _("failed to remove ebtables rule to allow MAC address on '%s'"),
-                                     net->ifname);
-            }
+            ignore_value(ebtablesRemoveForwardAllowIn(driver->ebtables,
+                                                      net->ifname,
+                                                      &net->mac));
         }
     }
 

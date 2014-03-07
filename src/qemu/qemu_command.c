@@ -26,7 +26,6 @@
 #include "qemu_command.h"
 #include "qemu_hostdev.h"
 #include "qemu_capabilities.h"
-#include "qemu_bridge_filter.h"
 #include "cpu/cpu.h"
 #include "dirname.h"
 #include "passfd.h"
@@ -380,12 +379,10 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     virDomainAuditNetDevice(def, net, "/dev/net/tun", true);
 
     if (cfg->macFilter &&
-        (ret = networkAllowMacOnPort(driver, net->ifname, &net->mac)) < 0) {
-        virReportSystemError(ret,
-                             _("failed to add ebtables rule "
-                               "to allow MAC address on '%s'"),
-                             net->ifname);
-    }
+        ebtablesAddForwardAllowIn(driver->ebtables,
+                                  net->ifname,
+                                  &net->mac) < 0)
+        goto cleanup;
 
     if (virNetDevBandwidthSet(net->ifname,
                               virDomainNetGetActualBandwidth(net),

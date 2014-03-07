@@ -53,7 +53,6 @@
 #include "qemu_hostdev.h"
 #include "qemu_hotplug.h"
 #include "qemu_monitor.h"
-#include "qemu_bridge_filter.h"
 #include "qemu_process.h"
 #include "qemu_migration.h"
 
@@ -663,12 +662,8 @@ qemuStateInitialize(bool privileged,
             goto error;
         }
 
-        if ((errno = networkDisableAllFrames(qemu_driver))) {
-            virReportSystemError(errno,
-                                 _("failed to add rule to drop all frames in '%s'"),
-                                 __FILE__);
+        if (ebtablesAddForwardPolicyReject(qemu_driver->ebtables) < 0)
             goto error;
-        }
    }
 
     /* Allocate bitmap for remote display port reservations. We cannot

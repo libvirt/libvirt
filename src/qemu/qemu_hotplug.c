@@ -29,7 +29,6 @@
 #include "qemu_capabilities.h"
 #include "qemu_domain.h"
 #include "qemu_command.h"
-#include "qemu_bridge_filter.h"
 #include "qemu_hostdev.h"
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
@@ -2710,13 +2709,9 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
     }
 
     if (cfg->macFilter && (net->ifname != NULL)) {
-        if ((errno = networkDisallowMacOnPort(driver,
-                                              net->ifname,
-                                              &net->mac))) {
-            virReportSystemError(errno,
-             _("failed to remove ebtables rule on '%s'"),
-                                 net->ifname);
-        }
+        ignore_value(ebtablesRemoveForwardAllowIn(driver->ebtables,
+                                                  net->ifname,
+                                                  &net->mac));
     }
 
     vport = virDomainNetGetActualVirtPortProfile(net);
