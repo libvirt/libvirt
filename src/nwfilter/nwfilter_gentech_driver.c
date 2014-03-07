@@ -133,10 +133,7 @@ int
 virNWFilterRuleInstAddData(virNWFilterRuleInstPtr res,
                            void *data)
 {
-    if (VIR_REALLOC_N(res->data, res->ndata+1) < 0)
-        return -1;
-    res->data[res->ndata++] = data;
-    return 0;
+    return VIR_APPEND_ELEMENT(res->data, res->ndata, data);
 }
 
 
@@ -404,7 +401,7 @@ _virNWFilterInstantiateRec(virNWFilterTechDriverPtr techdriver,
                            virNWFilterDefPtr filter,
                            const char *ifname,
                            virNWFilterHashTablePtr vars,
-                           int *nEntries,
+                           size_t *nEntries,
                            virNWFilterRuleInstPtr **insts,
                            enum instCase useNewFilter, bool *foundNewFilter,
                            virNWFilterDriverStatePtr driver)
@@ -430,12 +427,10 @@ _virNWFilterInstantiateRec(virNWFilterTechDriverPtr techdriver,
                 break;
             }
 
-            if (VIR_REALLOC_N(*insts, (*nEntries)+1) < 0) {
+            if (VIR_APPEND_ELEMENT_COPY(*insts, *nEntries, inst) < 0) {
                 rc = -1;
                 break;
             }
-
-            (*insts)[(*nEntries)++] = inst;
 
         } else if (inc) {
             VIR_DEBUG("Instantiating filter %s", inc->filterref);
@@ -675,7 +670,7 @@ virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
     int rc;
     size_t j;
     int nptrs;
-    int nEntries = 0;
+    size_t nEntries = 0;
     virNWFilterRuleInstPtr *insts = NULL;
     void **ptrs = NULL;
     bool instantiate = true;
