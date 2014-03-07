@@ -28,12 +28,6 @@
 
 # include "virmacaddr.h"
 
-typedef struct
-{
-    char  *table;
-    char  *chain;
-} ebtRules;
-
 typedef struct _ebtablesContext ebtablesContext;
 
 ebtablesContext *ebtablesContextNew              (const char *driver);
