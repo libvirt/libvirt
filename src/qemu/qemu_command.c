@@ -6020,7 +6020,7 @@ qemuBuildChrArgStr(virDomainChrSourceDefPtr dev, const char *prefix)
     if (prefix)
         virBufferAdd(&buf, prefix, strlen(prefix));
 
-    switch (dev->type) {
+    switch ((enum virDomainChrType)dev->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
         virBufferAddLit(&buf, "null");
         break;
@@ -6088,7 +6088,9 @@ qemuBuildChrArgStr(virDomainChrSourceDefPtr dev, const char *prefix)
                           dev->data.nix.listen ? ",server,nowait" : "");
         break;
 
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
         break;
     }
 

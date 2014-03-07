@@ -1178,7 +1178,7 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
     if (!def)
         return;
 
-    switch (def->type) {
+    switch ((enum virDomainGraphicsType)def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
         VIR_FREE(def->data.vnc.socket);
         VIR_FREE(def->data.vnc.keymap);
@@ -1200,6 +1200,9 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
         VIR_FREE(def->data.spice.keymap);
         virDomainGraphicsAuthDefClear(&def->data.spice.auth);
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
         break;
     }
 
@@ -1579,7 +1582,7 @@ virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
     if (tgt->type != src->type)
         return false;
 
-    switch (src->type) {
+    switch ((enum virDomainChrType)src->type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
@@ -1608,15 +1611,14 @@ virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
                               tgt->data.spiceport.channel);
         break;
 
+    case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_VC:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
         /* nada */
-        return true;
+        break;
     }
-
-    /* This should happen only on new,
-     * yet unhandled type */
 
     return false;
 }
@@ -7271,11 +7273,11 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     }
 
     switch ((enum virDomainChrType) def->type) {
-    case VIR_DOMAIN_CHR_TYPE_LAST:
     case VIR_DOMAIN_CHR_TYPE_NULL:
+    case VIR_DOMAIN_CHR_TYPE_VC:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
-    case VIR_DOMAIN_CHR_TYPE_VC:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
@@ -15726,11 +15728,12 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
     }
     virBufferAddLit(buf, ">\n");
 
-    switch (def->type) {
+    switch ((enum virDomainChrType)def->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_VC:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
         /* nada */
         break;
 
