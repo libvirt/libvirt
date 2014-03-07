@@ -920,16 +920,7 @@ void virNetClientRemoveStream(virNetClientPtr client,
     if (i == client->nstreams)
         goto cleanup;
 
-    if (client->nstreams > 1) {
-        memmove(client->streams + i,
-                client->streams + i + 1,
-                sizeof(*client->streams) *
-                (client->nstreams - (i + 1)));
-        VIR_SHRINK_N(client->streams, client->nstreams, 1);
-    } else {
-        VIR_FREE(client->streams);
-        client->nstreams = 0;
-    }
+    VIR_DELETE_ELEMENT(client->streams, i, client->nstreams);
     virObjectUnref(st);
 
 cleanup:

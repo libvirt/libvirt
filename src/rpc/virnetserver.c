@@ -1130,15 +1130,8 @@ void virNetServerRun(virNetServerPtr srv)
                 virNetServerClientClose(srv->clients[i]);
             if (virNetServerClientIsClosed(srv->clients[i])) {
                 virNetServerClientPtr client = srv->clients[i];
-                if (srv->nclients > 1) {
-                    memmove(srv->clients + i,
-                            srv->clients + i + 1,
-                            sizeof(*srv->clients) * (srv->nclients - (i + 1)));
-                    VIR_SHRINK_N(srv->clients, srv->nclients, 1);
-                } else {
-                    VIR_FREE(srv->clients);
-                    srv->nclients = 0;
-                }
+
+                VIR_DELETE_ELEMENT(srv->clients, i, srv->nclients);
 
                 /* Enable services if we can accept a new client.
                  * The new client can be accepted if we are at the limit. */
