@@ -1760,7 +1760,9 @@ if WITH_QEMU
 test_libvirt_lockd.aug: locking/test_libvirt_lockd.aug.in \
 		locking/qemu-lockd.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-lockd.conf $< $@
-endif WITH_QEMU
+else ! WITH_QEMU
+test_libvirt_lockd.aug:
+endif ! WITH_QEMU
 
 test_virtlockd.aug: locking/test_virtlockd.aug.in \
 		locking/virtlockd.conf $(AUG_GENTEST)
@@ -2125,12 +2127,12 @@ lockd_la_LIBADD = ../gnulib/lib/libgnu.la \
 	libvirt-net-rpc-client.la \
 	$(NULL)
 augeas_DATA += locking/libvirt_lockd.aug
-augeastest_DATA += test_libvirt_lockd.aug
-CLEANFILES += test_libvirt_lockd.aug
 if WITH_DTRACE_PROBES
 lockd_la_LIBADD += libvirt_probes.lo
 endif WITH_DTRACE_PROBES
 if WITH_QEMU
+augeastest_DATA += test_libvirt_lockd.aug
+CLEANFILES += test_libvirt_lockd.aug
 nodist_conf_DATA += locking/qemu-lockd.conf
 BUILT_SOURCES += locking/qemu-lockd.conf
 DISTCLEANFILES += locking/qemu-lockd.conf
