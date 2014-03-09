@@ -606,9 +606,6 @@ valid_path(const char *path, const bool readonly)
             return -1;
 
         switch (sb.st_mode & S_IFMT) {
-            case S_IFDIR:
-                return 1;
-                break;
             case S_IFSOCK:
                 return 1;
                 break;
@@ -775,7 +772,7 @@ get_definition(vahControl * ctl, const char *xmlStr)
 }
 
 static int
-vah_add_file(virBufferPtr buf, const char *path, const char *perms)
+vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursive)
 {
     char *tmp = NULL;
     int rc = -1;
@@ -816,16 +813,26 @@ vah_add_file(virBufferPtr buf, const char *path, const char *perms)
         goto cleanup;
     }
 
-    virBufferAsprintf(buf, "  \"%s\" %s,\n", tmp, perms);
+    virBufferAsprintf(buf, "  \"%s%s\" %s,\n", tmp, recursive ? "/**" : "", perms);
     if (readonly) {
         virBufferAddLit(buf, "  # don't audit writes to readonly files\n");
-        virBufferAsprintf(buf, "  deny \"%s\" w,\n", tmp);
+        virBufferAsprintf(buf, "  deny \"%s%s\" w,\n", tmp, recursive ? "/**" : "");
+    }
+    if (recursive) {
+        /* allow reading (but not creating) the dir */
+        virBufferAsprintf(buf, "  \"%s/\" r,\n", tmp);
     }
 
   cleanup:
     VIR_FREE(tmp);
 
     return rc;
+}
+
+static int
+vah_add_file(virBufferPtr buf, const char *path, const char *perms)
+{
+    return vah_add_path(buf, path, perms, false);
 }
 
 static int
@@ -1076,6 +1083,19 @@ get_files(vahControl * ctl)
                 break;
             } /* switch */
         }
+
+    for (i = 0; i < ctl->def->nfss; i++) {
+        if (ctl->def->fss[i] &&
+                ctl->def->fss[i]->type == VIR_DOMAIN_FS_TYPE_MOUNT &&
+                (ctl->def->fss[i]->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_PATH ||
+                 ctl->def->fss[i]->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT) &&
+                ctl->def->fss[i]->src){
+            virDomainFSDefPtr fs = ctl->def->fss[i];
+
+            if (vah_add_path(&buf, fs->src, fs->readonly ? "r" : "rw", true) != 0)
+                goto cleanup;
+        }
+    }
 
     if (ctl->newfile)
         if (vah_add_file(&buf, ctl->newfile, "rw") != 0)
