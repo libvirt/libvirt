@@ -874,9 +874,12 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         tapfdSize = vhostfdSize = net->driver.virtio.queues;
         if (!tapfdSize)
             tapfdSize = vhostfdSize = 1;
-        if (VIR_ALLOC_N(tapfd, tapfdSize) < 0 ||
-            VIR_ALLOC_N(vhostfd, vhostfdSize) < 0)
+        if (VIR_ALLOC_N(tapfd, tapfdSize) < 0)
             goto cleanup;
+        memset(tapfd, -1, sizeof(*tapfd) * tapfdSize);
+        if (VIR_ALLOC_N(vhostfd, vhostfdSize) < 0)
+            goto cleanup;
+        memset(vhostfd, -1, sizeof(*vhostfd) * vhostfdSize);
         if (qemuNetworkIfaceConnect(vm->def, conn, driver, net,
                                     priv->qemuCaps, tapfd, &tapfdSize) < 0)
             goto cleanup;
@@ -885,8 +888,12 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
         tapfdSize = vhostfdSize = 1;
-        if (VIR_ALLOC(tapfd) < 0 || VIR_ALLOC(vhostfd) < 0)
+        if (VIR_ALLOC(tapfd) < 0)
             goto cleanup;
+        *tapfd = -1;
+        if (VIR_ALLOC(vhostfd) < 0)
+            goto cleanup;
+        *vhostfd = -1;
         if ((tapfd[0] = qemuPhysIfaceConnect(vm->def, driver, net,
                                              priv->qemuCaps,
                                              VIR_NETDEV_VPORT_PROFILE_OP_CREATE)) < 0)
@@ -898,6 +905,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         vhostfdSize = 1;
         if (VIR_ALLOC(vhostfd) < 0)
             goto cleanup;
+        *vhostfd = -1;
         if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
     }
