@@ -342,7 +342,7 @@ virSecurityDACSetSecurityFileLabel(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
 
 static int
 virSecurityDACSetSecurityImageLabel(virSecurityManagerPtr mgr,
-                                    virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                    virDomainDefPtr def,
                                     virDomainDiskDefPtr disk)
 
 {
