@@ -28,6 +28,7 @@
 #include "cpu_map.h"
 #include "configmake.h"
 #include "virstring.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
@@ -85,6 +86,8 @@ int cpuMapLoad(const char *arch,
     int ret = -1;
     int element;
     const char *mapfile = (cpumap ? cpumap : CPUMAPFILE);
+
+    VIR_DEBUG("Loading CPU map from %s", mapfile);
 
     if (arch == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

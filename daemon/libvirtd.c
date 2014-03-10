@@ -103,6 +103,7 @@
 #include "configmake.h"
 
 #include "virdbus.h"
+#include "cpu/cpu_map.h"
 
 #if WITH_SASL
 virNetSASLContextPtr saslCtxt = NULL;
@@ -1157,13 +1158,16 @@ int main(int argc, char **argv) {
     if (strstr(argv[0], "lt-libvirtd") ||
         strstr(argv[0], "/daemon/.libs/libvirtd")) {
         char *tmp = strrchr(argv[0], '/');
+        char *cpumap;
         if (!tmp) {
             fprintf(stderr, _("%s: cannot identify driver directory\n"), argv[0]);
             exit(EXIT_FAILURE);
         }
         *tmp = '\0';
         char *driverdir;
-        if (virAsprintfQuiet(&driverdir, "%s/../../src/.libs", argv[0]) < 0) {
+        if (virAsprintfQuiet(&driverdir, "%s/../../src/.libs", argv[0]) < 0 ||
+            virAsprintfQuiet(&cpumap, "%s/../../src/cpu/cpu_map.xml",
+                             argv[0]) < 0) {
             fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
             exit(EXIT_FAILURE);
         }
@@ -1176,6 +1180,7 @@ int main(int argc, char **argv) {
 #ifdef WITH_DRIVER_MODULES
         virDriverModuleInitialize(driverdir);
 #endif
+        cpuMapOverride(cpumap);
         *tmp = '/';
         /* Must not free 'driverdir' - it is still used */
     }
