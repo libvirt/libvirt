@@ -800,6 +800,7 @@ virFDStreamConnectUNIX;
 virFDStreamCreateFile;
 virFDStreamOpen;
 virFDStreamOpenFile;
+virFDStreamOpenPTY;
 virFDStreamSetIOHelper;
 
 

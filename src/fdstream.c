@@ -31,6 +31,7 @@
 # include <sys/un.h>
 #endif
 #include <netinet/in.h>
+#include <termios.h>
 
 #include "fdstream.h"
 #include "virerror.h"
@@ -715,6 +716,58 @@ int virFDStreamCreateFile(virStreamPtr st,
                                        offset, length,
                                        oflags | O_CREAT, mode);
 }
+
+#ifdef HAVE_CFMAKERAW
+int virFDStreamOpenPTY(virStreamPtr st,
+                       const char *path,
+                       unsigned long long offset,
+                       unsigned long long length,
+                       int oflags)
+{
+    struct virFDStreamData *fdst = NULL;
+    struct termios rawattr;
+
+    if (virFDStreamOpenFileInternal(st, path,
+                                    offset, length,
+                                    oflags | O_CREAT, 0) < 0)
+        return -1;
+
+    fdst = st->privateData;
+
+    if (tcgetattr(fdst->fd, &rawattr) < 0) {
+        virReportSystemError(errno,
+                             _("unable to get tty attributes: %s"),
+                             path);
+        goto cleanup;
+    }
+
+    cfmakeraw(&rawattr);
+
+    if (tcsetattr(fdst->fd, TCSANOW, &rawattr) < 0) {
+        virReportSystemError(errno,
+                             _("unable to set tty attributes: %s"),
+                             path);
+        goto cleanup;
+    }
+
+    return 0;
+
+cleanup:
+    virFDStreamClose(st);
+    return -1;
+}
+#else /* !HAVE_CFMAKERAW */
+int virFDStreamOpenPTY(virStreamPtr st,
+                       const char *path,
+                       unsigned long long offset,
+                       unsigned long long length,
+                       int oflags)
+{
+    return virFDStreamOpenFileInternal(st, path,
+                                       offset, length,
+                                       oflags | O_CREAT, 0);
+}
+#endif /* !HAVE_CFMAKERAW */
 
 int virFDStreamSetInternalCloseCb(virStreamPtr st,
                                   virFDStreamInternalCloseCb cb,

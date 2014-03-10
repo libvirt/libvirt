@@ -54,6 +54,11 @@ int virFDStreamCreateFile(virStreamPtr st,
                           unsigned long long length,
                           int oflags,
                           mode_t mode);
+int virFDStreamOpenPTY(virStreamPtr st,
+                       const char *path,
+                       unsigned long long offset,
+                       unsigned long long length,
+                       int oflags);
 
 int virFDStreamSetInternalCloseCb(virStreamPtr st,
                                   virFDStreamInternalCloseCb cb,

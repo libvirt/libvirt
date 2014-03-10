@@ -410,7 +410,7 @@ int virChrdevOpen(virChrdevsPtr devs,
     /* open the character device */
     switch (source->type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        if (virFDStreamOpenFile(st, path, 0, 0, O_RDWR) < 0)
+        if (virFDStreamOpenPTY(st, path, 0, 0, O_RDWR) < 0)
             goto error;
         break;
     case VIR_DOMAIN_CHR_TYPE_UNIX:
