@@ -278,7 +278,7 @@ const char *selinux_virtual_domain_context_path(void)
     if (realis_selinux_enabled())
         return realselinux_virtual_domain_context_path();
 
-    return abs_builddir "/securityselinuxhelperdata/virtual_domain_context";
+    return abs_srcdir "/securityselinuxhelperdata/virtual_domain_context";
 }
 
 const char *selinux_virtual_image_context_path(void)
@@ -288,7 +288,7 @@ const char *selinux_virtual_image_context_path(void)
     if (realis_selinux_enabled())
         return realselinux_virtual_image_context_path();
 
-    return abs_builddir "/securityselinuxhelperdata/virtual_image_context";
+    return abs_srcdir "/securityselinuxhelperdata/virtual_image_context";
 }
 
 #ifdef HAVE_SELINUX_LXC_CONTEXTS_PATH
@@ -299,7 +299,7 @@ const char *selinux_lxc_contexts_path(void)
     if (realis_selinux_enabled())
         return realselinux_lxc_contexts_path();
 
-    return abs_builddir "/securityselinuxhelperdata/lxc_contexts";
+    return abs_srcdir "/securityselinuxhelperdata/lxc_contexts";
 }
 #endif
 
