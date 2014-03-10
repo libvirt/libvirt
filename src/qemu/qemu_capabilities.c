@@ -259,7 +259,7 @@ struct _virQEMUCaps {
     bool usedQMP;
 
     char *binary;
-    time_t mtime;
+    time_t ctime;
 
     virBitmapPtr flags;
 
@@ -2796,7 +2796,7 @@ virQEMUCapsPtr virQEMUCapsNewForBinary(const char *binary,
                              binary);
         goto error;
     }
-    qemuCaps->mtime = sb.st_mtime;
+    qemuCaps->ctime = sb.st_ctime;
 
     /* Make sure the binary we are about to try exec'ing exists.
      * Technically we could catch the exec() failure, but that's
@@ -2838,7 +2838,7 @@ bool virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps)
     if (stat(qemuCaps->binary, &sb) < 0)
         return false;
 
-    return sb.st_mtime == qemuCaps->mtime;
+    return sb.st_ctime == qemuCaps->ctime;
 }
 
 
