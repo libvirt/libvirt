@@ -4479,6 +4479,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     virDomainPausedReason reason;
     virSecurityLabelPtr seclabel = NULL;
     virSecurityLabelDefPtr seclabeldef = NULL;
+    bool seclabelgen = false;
     virSecurityManagerPtr* sec_managers = NULL;
     const char *model;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
@@ -4529,10 +4530,14 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto error;
 
     for (i = 0; sec_managers[i]; i++) {
+        seclabelgen = false;
         model = virSecurityManagerGetModel(sec_managers[i]);
         seclabeldef = virDomainDefGetSecurityLabelDef(vm->def, model);
-        if (seclabeldef == NULL)
-            goto error;
+        if (seclabeldef == NULL) {
+            if (!(seclabeldef = virDomainDefGenSecurityLabelDef(model)))
+                goto error;
+            seclabelgen = true;
+        }
         seclabeldef->type = VIR_DOMAIN_SECLABEL_STATIC;
         if (VIR_ALLOC(seclabel) < 0)
             goto error;
@@ -4546,6 +4551,12 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (VIR_STRDUP(seclabeldef->label, seclabel->label) < 0)
             goto error;
         VIR_FREE(seclabel);
+
+        if (seclabelgen) {
+            if (VIR_APPEND_ELEMENT(vm->def->seclabels, vm->def->nseclabels, seclabeldef) < 0)
+                goto error;
+            seclabelgen = false;
+        }
     }
 
     VIR_DEBUG("Creating domain log file");
@@ -4692,6 +4703,8 @@ error:
     VIR_FORCE_CLOSE(logfile);
     VIR_FREE(seclabel);
     VIR_FREE(sec_managers);
+    if (seclabelgen)
+        virSecurityLabelDefFree(seclabeldef);
     virDomainChrSourceDefFree(monConfig);
     virObjectUnref(cfg);
     virObjectUnref(caps);
