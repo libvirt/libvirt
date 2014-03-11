@@ -642,23 +642,20 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     if (nsource < 0)
         goto cleanup;
 
-    if (nsource > 0) {
-        if (VIR_ALLOC_N(source->devices, nsource) < 0) {
-            VIR_FREE(nodeset);
+    for (i = 0; i < nsource; i++) {
+        virStoragePoolSourceDevice dev = { .path = NULL };
+        dev.path = virXMLPropString(nodeset[i], "path");
+
+        if (dev.path == NULL) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing storage pool source device path"));
             goto cleanup;
         }
 
-        for (i = 0; i < nsource; i++) {
-            char *path = virXMLPropString(nodeset[i], "path");
-            if (path == NULL) {
-                VIR_FREE(nodeset);
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("missing storage pool source device path"));
-                goto cleanup;
-            }
-            source->devices[i].path = path;
+        if (VIR_APPEND_ELEMENT(source->devices, source->ndevice, dev) < 0) {
+            virStoragePoolSourceDeviceClear(&dev);
+            goto cleanup;
         }
-        source->ndevice = nsource;
     }
 
     source->dir = virXPathString("string(./dir/@path)", ctxt);

@@ -266,7 +266,7 @@ struct _virStoragePoolSource {
     virStoragePoolSourceHostPtr hosts;
 
     /* And either one or more devices ... */
-    int ndevice;
+    size_t ndevice;
     virStoragePoolSourceDevicePtr devices;
 
     /* Or a directory */
