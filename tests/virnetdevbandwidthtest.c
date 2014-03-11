@@ -21,7 +21,8 @@
 #include <config.h>
 
 #include "testutils.h"
-#include "vircommand.h"
+#define __VIR_COMMAND_PRIV_H_ALLOW__
+#include "vircommandpriv.h"
 #include "virnetdevbandwidth.h"
 #include "netdev_bandwidth_conf.c"
 

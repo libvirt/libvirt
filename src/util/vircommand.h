@@ -186,6 +186,4 @@ void virCommandAbort(virCommandPtr cmd);
 void virCommandFree(virCommandPtr cmd);
 
 void virCommandDoAsyncIO(virCommandPtr cmd);
-
-void virCommandSetDryRun(virBufferPtr buf);
 #endif /* __VIR_COMMAND_H__ */
