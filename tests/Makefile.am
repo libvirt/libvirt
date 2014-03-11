@@ -129,7 +129,8 @@ EXTRA_DIST =		\
 	xml2sexprdata \
 	xml2vmxdata \
 	vmwareverdata \
-	.valgrind.supp
+	.valgrind.supp \
+	virmock.h
 
 test_helpers = commandhelper ssh test_conf
 test_programs = virshtest sockettest \
