@@ -97,6 +97,7 @@ EXTRA_DIST =		\
 	qemuxml2xmloutdata \
 	qemuxmlnsdata \
 	secretxml2xmlin \
+	securityselinuxhelperdata \
 	securityselinuxlabeldata \
 	schematestutils.sh \
 	sexpr2xmldata \
