@@ -57,7 +57,8 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
          */
         tmp = strrchr(groups[0], '/');
         if (VIR_STRDUP(vol->name, tmp ? tmp + 1 : groups[0]) < 0 ||
-            VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count, vol) < 0) {
+            VIR_APPEND_ELEMENT_COPY(pool->volumes.objs,
+                                    pool->volumes.count, vol) < 0) {
             virStorageVolDefFree(vol);
             return -1;
         }

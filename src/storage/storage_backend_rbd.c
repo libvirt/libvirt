@@ -401,6 +401,7 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn,
         }
 
         if (VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count, vol) < 0) {
+            virStorageVolDefFree(vol);
             virStoragePoolObjClearVols(pool);
             goto cleanup;
         }
