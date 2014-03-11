@@ -357,6 +357,13 @@ virStoragePoolSourceAdapterClear(virStoragePoolSourceAdapter adapter)
 }
 
 void
+virStoragePoolSourceDeviceClear(virStoragePoolSourceDevicePtr dev)
+{
+    VIR_FREE(dev->freeExtents);
+    VIR_FREE(dev->path);
+}
+
+void
 virStoragePoolSourceClear(virStoragePoolSourcePtr source)
 {
     size_t i;
@@ -369,10 +376,8 @@ virStoragePoolSourceClear(virStoragePoolSourcePtr source)
     }
     VIR_FREE(source->hosts);
 
-    for (i = 0; i < source->ndevice; i++) {
-        VIR_FREE(source->devices[i].freeExtents);
-        VIR_FREE(source->devices[i].path);
-    }
+    for (i = 0; i < source->ndevice; i++)
+        virStoragePoolSourceDeviceClear(&source->devices[i]);
     VIR_FREE(source->devices);
     VIR_FREE(source->dir);
     VIR_FREE(source->name);

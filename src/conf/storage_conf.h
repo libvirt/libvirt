@@ -432,6 +432,7 @@ int virStoragePoolObjDeleteDef(virStoragePoolObjPtr pool);
 
 void virStorageVolDefFree(virStorageVolDefPtr def);
 void virStoragePoolSourceClear(virStoragePoolSourcePtr source);
+void virStoragePoolSourceDeviceClear(virStoragePoolSourceDevicePtr dev);
 void virStoragePoolSourceFree(virStoragePoolSourcePtr source);
 void virStoragePoolDefFree(virStoragePoolDefPtr def);
 void virStoragePoolObjFree(virStoragePoolObjPtr pool);
