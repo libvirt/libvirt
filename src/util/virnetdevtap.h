@@ -27,6 +27,12 @@
 # include "virnetdevvportprofile.h"
 # include "virnetdevvlan.h"
 
+# ifdef __FreeBSD__
+/* This should be defined on OSes that don't automatically
+ * cleanup released devices */
+#  define VIR_NETDEV_TAP_REQUIRE_MANUAL_CLEANUP 1
+# endif
+
 int virNetDevTapCreate(char **ifname,
                        int *tapfd,
                        int tapfdSize,

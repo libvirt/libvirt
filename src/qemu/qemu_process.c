@@ -4375,7 +4375,10 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     def = vm->def;
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
-        if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        vport = virDomainNetGetActualVirtPortProfile(net);
+
+        switch (virDomainNetGetActualType(net)) {
+        case VIR_DOMAIN_NET_TYPE_DIRECT:
             ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
                              net->ifname, &net->mac,
                              virDomainNetGetActualDirectDev(net),
@@ -4383,11 +4386,18 @@ void qemuProcessStop(virQEMUDriverPtr driver,
                              virDomainNetGetActualVirtPortProfile(net),
                              cfg->stateDir));
             VIR_FREE(net->ifname);
+            break;
+        case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        case VIR_DOMAIN_NET_TYPE_NETWORK:
+#ifdef VIR_NETDEV_TAP_REQUIRE_MANUAL_CLEANUP
+            if (!(vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH))
+                ignore_value(virNetDevTapDelete(net->ifname));
+#endif
+            break;
         }
         /* release the physical device (or any other resources used by
          * this interface in the network driver
          */
-        vport = virDomainNetGetActualVirtPortProfile(net);
         if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
             ignore_value(virNetDevOpenvswitchRemovePort(
                                        virDomainNetGetActualBridgeName(net),
