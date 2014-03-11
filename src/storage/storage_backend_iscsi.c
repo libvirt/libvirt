@@ -92,7 +92,7 @@ virStorageBackendISCSIExtractSession(virStoragePoolObjPtr pool,
 
 static char *
 virStorageBackendISCSISession(virStoragePoolObjPtr pool,
-                              int probe)
+                              bool probe)
 {
     /*
      * # iscsiadm --mode session
@@ -646,7 +646,7 @@ virStorageBackendISCSICheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    if ((session = virStorageBackendISCSISession(pool, 1)) != NULL) {
+    if ((session = virStorageBackendISCSISession(pool, true)) != NULL) {
         *isActive = true;
         VIR_FREE(session);
     }
@@ -806,7 +806,7 @@ virStorageBackendISCSIStartPool(virConnectPtr conn,
         return -1;
     }
 
-    if ((session = virStorageBackendISCSISession(pool, 1)) == NULL) {
+    if ((session = virStorageBackendISCSISession(pool, true)) == NULL) {
         if ((portal = virStorageBackendISCSIPortal(&pool->def->source)) == NULL)
             goto cleanup;
         /*
@@ -843,7 +843,7 @@ virStorageBackendISCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     pool->def->allocation = pool->def->capacity = pool->def->available = 0;
 
-    if ((session = virStorageBackendISCSISession(pool, 0)) == NULL)
+    if ((session = virStorageBackendISCSISession(pool, false)) == NULL)
         goto cleanup;
     if (virStorageBackendISCSIRescanLUNs(pool, session) < 0)
         goto cleanup;
