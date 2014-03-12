@@ -393,6 +393,15 @@
         with FreeIPA for Kerberos authentication, and in the future,
         certificate management.
       </dd>
+      <dt><a href="http://ispsystem.com/en/software/vmmanager">VMmanager</a></dt>
+      <dd>
+        VMmanager is a software solution for virtualization management
+        that can be used both for hosting virtual machines and
+        building a cloud.  VMmanager can manage not only one server,
+        but a large cluster of hypervisors.  It delivers a number of
+        functions, such as live migration that allows for load
+        balancing between cluster nodes, monitoring CPU, memory.
+      </dd>
     </dl>
 
     <h2><a name="mobile">Mobile applications</a></h2>
