@@ -775,9 +775,9 @@ cleanup:
 }
 
 int
-virHostdevUpdateActivePCIHostdevs(virHostdevManagerPtr mgr,
-                                  const char *drv_name,
-                                  virDomainDefPtr def)
+virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
+                                 const char *drv_name,
+                                 virDomainDefPtr def)
 {
     virDomainHostdevDefPtr hostdev = NULL;
     virPCIDevicePtr dev = NULL;
@@ -834,9 +834,9 @@ cleanup:
 }
 
 int
-virHostdevUpdateActiveUSBHostdevs(virHostdevManagerPtr mgr,
-                                  const char *drv_name,
-                                  virDomainDefPtr def)
+virHostdevUpdateActiveUSBDevices(virHostdevManagerPtr mgr,
+                                 const char *drv_name,
+                                 virDomainDefPtr def)
 {
     virDomainHostdevDefPtr hostdev = NULL;
     size_t i;
@@ -877,9 +877,9 @@ cleanup:
 }
 
 int
-virHostdevUpdateActiveSCSIHostdevs(virHostdevManagerPtr mgr,
-                                   const char *drv_name,
-                                   virDomainDefPtr def)
+virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
+                                  const char *drv_name,
+                                  virDomainDefPtr def)
 {
     virDomainHostdevDefPtr hostdev = NULL;
     size_t i;
@@ -926,10 +926,10 @@ cleanup:
 }
 
 static int
-virHostdevMarkUSBHostdevs(virHostdevManagerPtr mgr,
-                          const char *drv_name,
-                          const char *dom_name,
-                          virUSBDeviceListPtr list)
+virHostdevMarkUSBDevices(virHostdevManagerPtr mgr,
+                         const char *drv_name,
+                         const char *dom_name,
+                         virUSBDeviceListPtr list)
 {
     size_t i, j;
     unsigned int count;
@@ -1123,7 +1123,7 @@ virHostdevPrepareUSBDevices(virHostdevManagerPtr hostdev_mgr,
      * and add them do driver list. However, if something goes
      * wrong, perform rollback.
      */
-    if (virHostdevMarkUSBHostdevs(hostdev_mgr, drv_name, dom_name, list) < 0)
+    if (virHostdevMarkUSBDevices(hostdev_mgr, drv_name, dom_name, list) < 0)
         goto cleanup;
 
     /* Loop 2: Temporary list was successfully merged with
@@ -1254,11 +1254,11 @@ cleanup:
 }
 
 void
-virHostdevReAttachUSBHostdevs(virHostdevManagerPtr hostdev_mgr,
-                              const char *drv_name,
-                              const char *dom_name,
-                              virDomainHostdevDefPtr *hostdevs,
-                              int nhostdevs)
+virHostdevReAttachUSBDevices(virHostdevManagerPtr hostdev_mgr,
+                             const char *drv_name,
+                             const char *dom_name,
+                             virDomainHostdevDefPtr *hostdevs,
+                             int nhostdevs)
 {
     size_t i;
 
@@ -1320,11 +1320,11 @@ virHostdevReAttachUSBHostdevs(virHostdevManagerPtr hostdev_mgr,
 }
 
 void
-virHostdevReAttachSCSIHostdevs(virHostdevManagerPtr hostdev_mgr,
-                               const char *drv_name,
-                               const char *dom_name,
-                               virDomainHostdevDefPtr *hostdevs,
-                               int nhostdevs)
+virHostdevReAttachSCSIDevices(virHostdevManagerPtr hostdev_mgr,
+                              const char *drv_name,
+                              const char *dom_name,
+                              virDomainHostdevDefPtr *hostdevs,
+                              int nhostdevs)
 {
     size_t i;
 

@@ -50,7 +50,7 @@ qemuUpdateActivePCIHostdevs(virQEMUDriverPtr driver,
     if (!def->nhostdevs)
         return 0;
 
-    return virHostdevUpdateActivePCIHostdevs(mgr, QEMU_DRIVER_NAME, def);
+    return virHostdevUpdateActivePCIDevices(mgr, QEMU_DRIVER_NAME, def);
 }
 
 int
@@ -62,7 +62,7 @@ qemuUpdateActiveUSBHostdevs(virQEMUDriverPtr driver,
     if (!def->nhostdevs)
         return 0;
 
-    return virHostdevUpdateActiveUSBHostdevs(mgr, QEMU_DRIVER_NAME, def);
+    return virHostdevUpdateActiveUSBDevices(mgr, QEMU_DRIVER_NAME, def);
 }
 
 int
@@ -74,7 +74,7 @@ qemuUpdateActiveSCSIHostdevs(virQEMUDriverPtr driver,
     if (!def->nhostdevs)
         return 0;
 
-    return virHostdevUpdateActiveSCSIHostdevs(mgr, QEMU_DRIVER_NAME, def);
+    return virHostdevUpdateActiveSCSIDevices(mgr, QEMU_DRIVER_NAME, def);
 }
 
 
@@ -324,7 +324,7 @@ qemuDomainReAttachHostUSBDevices(virQEMUDriverPtr driver,
 {
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
-    virHostdevReAttachUSBHostdevs(hostdev_mgr, QEMU_DRIVER_NAME,
+    virHostdevReAttachUSBDevices(hostdev_mgr, QEMU_DRIVER_NAME,
                                   name, hostdevs, nhostdevs);
 }
 
@@ -347,8 +347,8 @@ qemuDomainReAttachHostSCSIDevices(virQEMUDriverPtr driver,
         ignore_value(qemuRemoveSharedDevice(driver, &dev, name));
     }
 
-    virHostdevReAttachSCSIHostdevs(hostdev_mgr, QEMU_DRIVER_NAME,
-                                   name, hostdevs, nhostdevs);
+    virHostdevReAttachSCSIDevices(hostdev_mgr, QEMU_DRIVER_NAME,
+                                  name, hostdevs, nhostdevs);
 }
 
 void

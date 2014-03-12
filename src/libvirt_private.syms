@@ -1306,11 +1306,11 @@ virHostdevPreparePCIDevices;
 virHostdevPrepareSCSIDevices;
 virHostdevPrepareUSBDevices;
 virHostdevReAttachPCIDevices;
-virHostdevReAttachSCSIHostdevs;
-virHostdevReAttachUSBHostdevs;
-virHostdevUpdateActivePCIHostdevs;
-virHostdevUpdateActiveSCSIHostdevs;
-virHostdevUpdateActiveUSBHostdevs;
+virHostdevReAttachSCSIDevices;
+virHostdevReAttachUSBDevices;
+virHostdevUpdateActivePCIDevices;
+virHostdevUpdateActiveSCSIDevices;
+virHostdevUpdateActiveUSBDevices;
 
 # util/viridentity.h
 virIdentityGetAttr;

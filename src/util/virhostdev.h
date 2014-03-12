@@ -79,29 +79,29 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
                              int nhostdevs,
                              const char *oldStateDir);
 void
-virHostdevReAttachUSBHostdevs(virHostdevManagerPtr hostdev_mgr,
+virHostdevReAttachUSBDevices(virHostdevManagerPtr hostdev_mgr,
                               const char *drv_name,
                               const char *dom_name,
                               virDomainHostdevDefPtr *hostdevs,
                               int nhostdevs);
 void
-virHostdevReAttachSCSIHostdevs(virHostdevManagerPtr hostdev_mgr,
-                               const char *drv_name,
-                               const char *dom_name,
-                               virDomainHostdevDefPtr *hostdevs,
-                               int nhostdevs);
+virHostdevReAttachSCSIDevices(virHostdevManagerPtr hostdev_mgr,
+                              const char *drv_name,
+                              const char *dom_name,
+                              virDomainHostdevDefPtr *hostdevs,
+                              int nhostdevs);
 int
-virHostdevUpdateActivePCIHostdevs(virHostdevManagerPtr mgr,
+virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
+                                 const char *drv_name,
+                                 virDomainDefPtr def);
+int
+virHostdevUpdateActiveUSBDevices(virHostdevManagerPtr mgr,
+                                 const char *drv_name,
+                                 virDomainDefPtr def);
+int
+virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
                                   const char *drv_name,
                                   virDomainDefPtr def);
-int
-virHostdevUpdateActiveUSBHostdevs(virHostdevManagerPtr mgr,
-                                  const char *drv_name,
-                                  virDomainDefPtr def);
-int
-virHostdevUpdateActiveSCSIHostdevs(virHostdevManagerPtr mgr,
-                                   const char *drv_name,
-                                   virDomainDefPtr def);
 
 /* functions used by NodeDevDetach/Reattach/Reset */
 int virHostdevPCINodeDeviceDetach(virHostdevManagerPtr mgr,
