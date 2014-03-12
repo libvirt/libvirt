@@ -566,15 +566,16 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
     /* Make XML of disk */
     virBufferAsprintf(&buf, "<disk type='%s'",
-                      (isFile) ? "file" : "block");
+                      isFile ? "file" : "block");
     if (type)
         virBufferAsprintf(&buf, " device='%s'", type);
     if (vshCommandOptBool(cmd, "rawio"))
         virBufferAddLit(&buf, " rawio='yes'");
     virBufferAddLit(&buf, ">\n");
+    virBufferAdjustIndent(&buf, 2);
 
     if (driver || subdriver || cache) {
-        virBufferAddLit(&buf, "  <driver");
+        virBufferAddLit(&buf, "<driver");
 
         if (driver)
             virBufferAsprintf(&buf, " name='%s'", driver);
@@ -587,18 +588,17 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (source)
-        virBufferAsprintf(&buf, "  <source %s='%s'/>\n",
-                          (isFile) ? "file" : "dev",
-                          source);
-    virBufferAsprintf(&buf, "  <target dev='%s'/>\n", target);
+        virBufferAsprintf(&buf, "<source %s='%s'/>\n",
+                          isFile ? "file" : "dev", source);
+    virBufferAsprintf(&buf, "<target dev='%s'/>\n", target);
     if (mode)
-        virBufferAsprintf(&buf, "  <%s/>\n", mode);
+        virBufferAsprintf(&buf, "<%s/>\n", mode);
 
     if (serial)
-        virBufferAsprintf(&buf, "  <serial>%s</serial>\n", serial);
+        virBufferAsprintf(&buf, "<serial>%s</serial>\n", serial);
 
     if (wwn)
-        virBufferAsprintf(&buf, "  <wwn>%s</wwn>\n", wwn);
+        virBufferAsprintf(&buf, "<wwn>%s</wwn>\n", wwn);
 
     if (straddr) {
         if (str2DiskAddress(straddr, &diskAddr) != 0) {
@@ -609,7 +609,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         if (STRPREFIX((const char *)target, "vd")) {
             if (diskAddr.type == DISK_ADDR_TYPE_PCI) {
                 virBufferAsprintf(&buf,
-                                  "  <address type='pci' domain='0x%04x'"
+                                  "<address type='pci' domain='0x%04x'"
                                   " bus ='0x%02x' slot='0x%02x' function='0x%0x'",
                                   diskAddr.addr.pci.domain, diskAddr.addr.pci.bus,
                                   diskAddr.addr.pci.slot, diskAddr.addr.pci.function);
@@ -623,7 +623,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         } else if (STRPREFIX((const char *)target, "sd")) {
             if (diskAddr.type == DISK_ADDR_TYPE_SCSI) {
                 virBufferAsprintf(&buf,
-                                  "  <address type='drive' controller='%d'"
+                                  "<address type='drive' controller='%d'"
                                   " bus='%d' unit='%d' />\n",
                                   diskAddr.addr.scsi.controller, diskAddr.addr.scsi.bus,
                                   diskAddr.addr.scsi.unit);
@@ -634,7 +634,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         } else if (STRPREFIX((const char *)target, "hd")) {
             if (diskAddr.type == DISK_ADDR_TYPE_IDE) {
                 virBufferAsprintf(&buf,
-                                  "  <address type='drive' controller='%d'"
+                                  "<address type='drive' controller='%d'"
                                   " bus='%d' unit='%d' />\n",
                                   diskAddr.addr.ide.controller, diskAddr.addr.ide.bus,
                                   diskAddr.addr.ide.unit);
@@ -645,6 +645,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         }
     }
 
+    virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</disk>\n");
 
     if (virBufferError(&buf)) {
@@ -876,25 +877,27 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 
     /* Make XML of interface */
     virBufferAsprintf(&buf, "<interface type='%s'>\n", type);
+    virBufferAdjustIndent(&buf, 2);
 
     if (typ == 1)
-        virBufferAsprintf(&buf, "  <source network='%s'/>\n", source);
+        virBufferAsprintf(&buf, "<source network='%s'/>\n", source);
     else if (typ == 2)
-        virBufferAsprintf(&buf, "  <source bridge='%s'/>\n", source);
+        virBufferAsprintf(&buf, "<source bridge='%s'/>\n", source);
 
     if (target != NULL)
-        virBufferAsprintf(&buf, "  <target dev='%s'/>\n", target);
+        virBufferAsprintf(&buf, "<target dev='%s'/>\n", target);
     if (mac != NULL)
-        virBufferAsprintf(&buf, "  <mac address='%s'/>\n", mac);
+        virBufferAsprintf(&buf, "<mac address='%s'/>\n", mac);
     if (script != NULL)
-        virBufferAsprintf(&buf, "  <script path='%s'/>\n", script);
+        virBufferAsprintf(&buf, "<script path='%s'/>\n", script);
     if (model != NULL)
-        virBufferAsprintf(&buf, "  <model type='%s'/>\n", model);
+        virBufferAsprintf(&buf, "<model type='%s'/>\n", model);
 
     if (inboundStr || outboundStr) {
-        virBufferAddLit(&buf, "  <bandwidth>\n");
+        virBufferAddLit(&buf, "<bandwidth>\n");
+        virBufferAdjustIndent(&buf, 2);
         if (inboundStr && inbound.average > 0) {
-            virBufferAsprintf(&buf, "    <inbound average='%llu'", inbound.average);
+            virBufferAsprintf(&buf, "<inbound average='%llu'", inbound.average);
             if (inbound.peak > 0)
                 virBufferAsprintf(&buf, " peak='%llu'", inbound.peak);
             if (inbound.burst > 0)
@@ -902,14 +905,15 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
             virBufferAddLit(&buf, "/>\n");
         }
         if (outboundStr && outbound.average > 0) {
-            virBufferAsprintf(&buf, "    <outbound average='%llu'", outbound.average);
+            virBufferAsprintf(&buf, "<outbound average='%llu'", outbound.average);
             if (outbound.peak > 0)
                 virBufferAsprintf(&buf, " peak='%llu'", outbound.peak);
             if (outbound.burst > 0)
                 virBufferAsprintf(&buf, " burst='%llu'", outbound.burst);
             virBufferAddLit(&buf, "/>\n");
         }
-        virBufferAddLit(&buf, "  </bandwidth>\n");
+        virBufferAdjustIndent(&buf, -2);
+        virBufferAddLit(&buf, "</bandwidth>\n");
     }
 
     virBufferAddLit(&buf, "</interface>\n");

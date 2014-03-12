@@ -251,28 +251,34 @@ vshBuildPoolXML(vshControl *ctl,
         goto cleanup;
 
     virBufferAsprintf(&buf, "<pool type='%s'>\n", type);
-    virBufferAsprintf(&buf, "  <name>%s</name>\n", name);
+    virBufferAdjustIndent(&buf, 2);
+    virBufferAsprintf(&buf, "<name>%s</name>\n", name);
     if (srcHost || srcPath || srcDev || srcFormat || srcName) {
-        virBufferAddLit(&buf, "  <source>\n");
+        virBufferAddLit(&buf, "<source>\n");
+        virBufferAdjustIndent(&buf, 2);
 
         if (srcHost)
-            virBufferAsprintf(&buf, "    <host name='%s'/>\n", srcHost);
+            virBufferAsprintf(&buf, "<host name='%s'/>\n", srcHost);
         if (srcPath)
-            virBufferAsprintf(&buf, "    <dir path='%s'/>\n", srcPath);
+            virBufferAsprintf(&buf, "<dir path='%s'/>\n", srcPath);
         if (srcDev)
-            virBufferAsprintf(&buf, "    <device path='%s'/>\n", srcDev);
+            virBufferAsprintf(&buf, "<device path='%s'/>\n", srcDev);
         if (srcFormat)
-            virBufferAsprintf(&buf, "    <format type='%s'/>\n", srcFormat);
+            virBufferAsprintf(&buf, "<format type='%s'/>\n", srcFormat);
         if (srcName)
-            virBufferAsprintf(&buf, "    <name>%s</name>\n", srcName);
+            virBufferAsprintf(&buf, "<name>%s</name>\n", srcName);
 
-        virBufferAddLit(&buf, "  </source>\n");
+        virBufferAdjustIndent(&buf, -2);
+        virBufferAddLit(&buf, "</source>\n");
     }
     if (target) {
-        virBufferAddLit(&buf, "  <target>\n");
-        virBufferAsprintf(&buf, "    <path>%s</path>\n", target);
-        virBufferAddLit(&buf, "  </target>\n");
+        virBufferAddLit(&buf, "<target>\n");
+        virBufferAdjustIndent(&buf, 2);
+        virBufferAsprintf(&buf, "<path>%s</path>\n", target);
+        virBufferAdjustIndent(&buf, -2);
+        virBufferAddLit(&buf, "</target>\n");
     }
+    virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</pool>\n");
 
     if (virBufferError(&buf)) {
@@ -1374,15 +1380,19 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
             return false;
         }
         virBufferAddLit(&buf, "<source>\n");
-        virBufferAsprintf(&buf, "  <host name='%s'", host);
+        virBufferAdjustIndent(&buf, 2);
+        virBufferAsprintf(&buf, "<host name='%s'", host);
         if (port)
             virBufferAsprintf(&buf, " port='%s'", port);
         virBufferAddLit(&buf, "/>\n");
         if (initiator) {
-            virBufferAddLit(&buf, "  <initiator>\n");
-            virBufferAsprintf(&buf, "    <iqn name='%s'/>\n", initiator);
-            virBufferAddLit(&buf, "  </initiator>\n");
+            virBufferAddLit(&buf, "<initiator>\n");
+            virBufferAdjustIndent(&buf, 2);
+            virBufferAsprintf(&buf, "<iqn name='%s'/>\n", initiator);
+            virBufferAdjustIndent(&buf, -2);
+            virBufferAddLit(&buf, "</initiator>\n");
         }
+        virBufferAdjustIndent(&buf, -2);
         virBufferAddLit(&buf, "</source>\n");
         if (virBufferError(&buf)) {
             vshError(ctl, "%s", _("Out of memory"));

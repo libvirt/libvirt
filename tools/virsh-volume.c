@@ -212,15 +212,18 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     virBufferAddLit(&buf, "<volume>\n");
-    virBufferAsprintf(&buf, "  <name>%s</name>\n", name);
-    virBufferAsprintf(&buf, "  <capacity>%llu</capacity>\n", capacity);
+    virBufferAdjustIndent(&buf, 2);
+    virBufferAsprintf(&buf, "<name>%s</name>\n", name);
+    virBufferAsprintf(&buf, "<capacity>%llu</capacity>\n", capacity);
     if (allocationStr)
-        virBufferAsprintf(&buf, "  <allocation>%llu</allocation>\n", allocation);
+        virBufferAsprintf(&buf, "<allocation>%llu</allocation>\n", allocation);
 
     if (format) {
-        virBufferAddLit(&buf, "  <target>\n");
-        virBufferAsprintf(&buf, "    <format type='%s'/>\n", format);
-        virBufferAddLit(&buf, "  </target>\n");
+        virBufferAddLit(&buf, "<target>\n");
+        virBufferAdjustIndent(&buf, 2);
+        virBufferAsprintf(&buf, "<format type='%s'/>\n", format);
+        virBufferAdjustIndent(&buf, -2);
+        virBufferAddLit(&buf, "</target>\n");
     }
 
     /* Convert the snapshot parameters into backingStore XML */
@@ -272,18 +275,21 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
         }
 
         /* Create XML for the backing store */
-        virBufferAddLit(&buf, "  <backingStore>\n");
-        virBufferAsprintf(&buf, "    <path>%s</path>\n", snapshotStrVolPath);
+        virBufferAddLit(&buf, "<backingStore>\n");
+        virBufferAdjustIndent(&buf, 2);
+        virBufferAsprintf(&buf, "<path>%s</path>\n", snapshotStrVolPath);
         if (snapshotStrFormat)
-            virBufferAsprintf(&buf, "    <format type='%s'/>\n",
+            virBufferAsprintf(&buf, "<format type='%s'/>\n",
                               snapshotStrFormat);
-        virBufferAddLit(&buf, "  </backingStore>\n");
+        virBufferAdjustIndent(&buf, -2);
+        virBufferAddLit(&buf, "</backingStore>\n");
 
         /* Cleanup snapshot allocations */
         VIR_FREE(snapshotStrVolPath);
         virStorageVolFree(snapVol);
     }
 
+    virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</volume>\n");
 
     if (virBufferError(&buf)) {

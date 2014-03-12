@@ -253,7 +253,7 @@ vshParseSnapshotMemspec(vshControl *ctl, virBufferPtr buf, const char *str)
             goto cleanup;
     }
 
-    virBufferAddLit(buf, "  <memory");
+    virBufferAddLit(buf, "<memory");
     virBufferEscapeString(buf, " snapshot='%s'", snapshot);
     virBufferEscapeString(buf, " file='%s'", file);
     virBufferAddLit(buf, "/>\n");
@@ -293,16 +293,18 @@ vshParseSnapshotDiskspec(vshControl *ctl, virBufferPtr buf, const char *str)
             goto cleanup;
     }
 
-    virBufferEscapeString(buf, "    <disk name='%s'", name);
+    virBufferEscapeString(buf, "<disk name='%s'", name);
     if (snapshot)
         virBufferAsprintf(buf, " snapshot='%s'", snapshot);
     if (driver || file) {
         virBufferAddLit(buf, ">\n");
+        virBufferAdjustIndent(buf, 2);
         if (driver)
-            virBufferAsprintf(buf, "      <driver type='%s'/>\n", driver);
+            virBufferAsprintf(buf, "<driver type='%s'/>\n", driver);
         if (file)
-            virBufferEscapeString(buf, "      <source file='%s'/>\n", file);
-        virBufferAddLit(buf, "    </disk>\n");
+            virBufferEscapeString(buf, "<source file='%s'/>\n", file);
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</disk>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
     }
@@ -424,8 +426,9 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     virBufferAddLit(&buf, "<domainsnapshot>\n");
-    virBufferEscapeString(&buf, "  <name>%s</name>\n", name);
-    virBufferEscapeString(&buf, "  <description>%s</description>\n", desc);
+    virBufferAdjustIndent(&buf, 2);
+    virBufferEscapeString(&buf, "<name>%s</name>\n", name);
+    virBufferEscapeString(&buf, "<description>%s</description>\n", desc);
 
     if (vshCommandOptStringReq(ctl, cmd, "memspec", &memspec) < 0)
         goto cleanup;
@@ -434,13 +437,16 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (vshCommandOptBool(cmd, "diskspec")) {
-        virBufferAddLit(&buf, "  <disks>\n");
+        virBufferAddLit(&buf, "<disks>\n");
+        virBufferAdjustIndent(&buf, 2);
         while ((opt = vshCommandOptArgv(cmd, opt))) {
             if (vshParseSnapshotDiskspec(ctl, &buf, opt->data) < 0)
                 goto cleanup;
         }
-        virBufferAddLit(&buf, "  </disks>\n");
+        virBufferAdjustIndent(&buf, -2);
+        virBufferAddLit(&buf, "</disks>\n");
     }
+    virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</domainsnapshot>\n");
 
     if (virBufferError(&buf)) {
