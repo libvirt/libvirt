@@ -1254,7 +1254,7 @@ qemuPrepareHostDevices(virQEMUDriverPtr driver,
  * are locked
  */
 static void
-qemuReattachPciDevice(virPCIDevicePtr dev, virHostdevManagerPtr mgr)
+virHostdevReattachPciDevice(virPCIDevicePtr dev, virHostdevManagerPtr mgr)
 {
     /* If the device is not managed and was attached to guest
      * successfully, it must have been inactive.
@@ -1365,7 +1365,7 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
 
     while (virPCIDeviceListCount(pcidevs) > 0) {
         virPCIDevicePtr dev = virPCIDeviceListStealIndex(pcidevs, 0);
-        qemuReattachPciDevice(dev, hostdev_mgr);
+        virHostdevReattachPciDevice(dev, hostdev_mgr);
     }
 
     virObjectUnref(pcidevs);
