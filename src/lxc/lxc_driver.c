@@ -4735,9 +4735,9 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
         VIR_WARN("cannot deny device %s for domain %s",
                  dst, vm->def->name);
 
-    virObjectLock(hostdev_mgr->activeUsbHostdevs);
-    virUSBDeviceListDel(hostdev_mgr->activeUsbHostdevs, usb);
-    virObjectUnlock(hostdev_mgr->activeUsbHostdevs);
+    virObjectLock(hostdev_mgr->activeUSBHostdevs);
+    virUSBDeviceListDel(hostdev_mgr->activeUSBHostdevs, usb);
+    virObjectUnlock(hostdev_mgr->activeUSBHostdevs);
 
     virDomainHostdevRemove(vm->def, idx);
     virDomainHostdevDefFree(def);

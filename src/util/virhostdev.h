@@ -43,10 +43,10 @@ typedef virHostdevManager *virHostdevManagerPtr;
 struct _virHostdevManager {
     char *stateDir;
 
-    virPCIDeviceListPtr activePciHostdevs;
-    virPCIDeviceListPtr inactivePciHostdevs;
-    virUSBDeviceListPtr activeUsbHostdevs;
-    virSCSIDeviceListPtr activeScsiHostdevs;
+    virPCIDeviceListPtr activePCIHostdevs;
+    virPCIDeviceListPtr inactivePCIHostdevs;
+    virUSBDeviceListPtr activeUSBHostdevs;
+    virSCSIDeviceListPtr activeSCSIHostdevs;
 };
 
 virHostdevManagerPtr virHostdevManagerGetDefault(void);
