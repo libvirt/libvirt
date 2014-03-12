@@ -732,6 +732,7 @@ virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
                                _("filter '%s' "
                                  "learning value '%s' invalid."),
                                filter->name, learning);
+                goto err_exit;
             }
         } else
              goto err_unresolvable_vars;
