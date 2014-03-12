@@ -365,7 +365,8 @@ test_libraries += bhyvexml2argvmock.la
 endif WITH_BHYVE
 
 if WITH_DBUS
-test_libraries += virsystemdmock.la
+test_libraries += virsystemdmock.la \
+		virmockdbus.la
 endif WITH_DBUS
 
 if WITH_LINUX
@@ -904,6 +905,12 @@ virdbustest_SOURCES = \
 virdbustest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
 virdbustest_LDADD = $(LDADDS) $(DBUS_LIBS)
 
+virmockdbus_la_SOURCES = \
+	virmockdbus.c
+virmockdbus_la_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
+virmockdbus_la_LDFLAGS = -module -avoid-version \
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+
 virsystemdtest_SOURCES = \
 	virsystemdtest.c testutils.h testutils.c
 virsystemdtest_CFLAGS = $(AM_CFLAGS)
@@ -916,7 +923,7 @@ virsystemdmock_la_LDFLAGS = -module -avoid-version \
         -rpath /evil/libtool/hack/to/force/shared/lib/creation
 
 else ! WITH_DBUS
-EXTRA_DIST += virdbustest.c virsystemdtest.c virsystemdmock.c
+EXTRA_DIST += virdbustest.c virmockdbus.c virsystemdtest.c virsystemdmock.c
 endif ! WITH_DBUS
 
 viruritest_SOURCES = \
