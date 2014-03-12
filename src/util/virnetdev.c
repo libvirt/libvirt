@@ -1758,9 +1758,9 @@ cleanup:
  *
  */
 int
-virNetDevReplaceNetConfig(char *linkdev, int vf,
+virNetDevReplaceNetConfig(const char *linkdev, int vf,
                           const virMacAddr *macaddress, int vlanid,
-                          char *stateDir)
+                          const char *stateDir)
 {
     if (vf == -1)
         return virNetDevReplaceMacAddress(linkdev, macaddress, stateDir);
@@ -1779,7 +1779,7 @@ virNetDevReplaceNetConfig(char *linkdev, int vf,
  *
  */
 int
-virNetDevRestoreNetConfig(char *linkdev, int vf, char *stateDir)
+virNetDevRestoreNetConfig(const char *linkdev, int vf, const char *stateDir)
 {
     if (vf == -1)
         return virNetDevRestoreMacAddress(linkdev, stateDir);

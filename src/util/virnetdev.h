@@ -133,12 +133,12 @@ int virNetDevLinkDump(const char *ifname, int ifindex,
                       uint32_t src_pid, uint32_t dst_pid)
     ATTRIBUTE_RETURN_CHECK;
 
-int virNetDevReplaceNetConfig(char *linkdev, int vf,
+int virNetDevReplaceNetConfig(const char *linkdev, int vf,
                               const virMacAddr *macaddress, int vlanid,
-                              char *stateDir)
+                              const char *stateDir)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(5);
 
-int virNetDevRestoreNetConfig(char *linkdev, int vf, char *stateDir)
+int virNetDevRestoreNetConfig(const char *linkdev, int vf, const char *stateDir)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 
 int virNetDevGetVirtualFunctionInfo(const char *vfname, char **pfname,

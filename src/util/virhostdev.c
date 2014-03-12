@@ -329,7 +329,7 @@ virHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
 static int
 virHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
                            const unsigned char *uuid,
-                           char *stateDir)
+                           const char *stateDir)
 {
     char *linkdev = NULL;
     virNetDevVlanPtr vlan;
@@ -403,8 +403,8 @@ cleanup:
  */
 static int
 virHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
-                           char *stateDir,
-                           char *oldStateDir)
+                           const char *stateDir,
+                           const char *oldStateDir)
 {
     char *linkdev = NULL;
     virNetDevVPortProfilePtr virtPort;
@@ -694,7 +694,7 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
                              const char *dom_name,
                              virDomainHostdevDefPtr *hostdevs,
                              int nhostdevs,
-                             char *oldStateDir)
+                             const char *oldStateDir)
 {
     virPCIDeviceListPtr pcidevs;
     size_t i;

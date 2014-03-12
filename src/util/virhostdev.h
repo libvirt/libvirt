@@ -77,7 +77,7 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
                              const char *dom_name,
                              virDomainHostdevDefPtr *hostdevs,
                              int nhostdevs,
-                             char *oldStateDir);
+                             const char *oldStateDir);
 void
 virHostdevReAttachUsbHostdevs(virHostdevManagerPtr hostdev_mgr,
                               const char *drv_name,

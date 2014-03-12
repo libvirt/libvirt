@@ -307,7 +307,7 @@ qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
                                  int nhostdevs)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    char *oldStateDir = cfg->stateDir;
+    const char *oldStateDir = cfg->stateDir;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
     virHostdevReAttachPCIDevices(hostdev_mgr, QEMU_DRIVER_NAME, name,
