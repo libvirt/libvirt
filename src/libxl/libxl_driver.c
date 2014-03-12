@@ -783,6 +783,7 @@ libxlDriverShouldLoad(bool privileged)
     bool ret = false;
     virCommandPtr cmd;
     int status;
+    char *output = NULL;
 
     /* Don't load if non-root */
     if (!privileged) {
@@ -790,8 +791,17 @@ libxlDriverShouldLoad(bool privileged)
         return ret;
     }
 
-    /* Don't load if not running on a Xen control domain (dom0) */
-    if (!virFileExists("/proc/xen/capabilities")) {
+    /*
+     * Don't load if not running on a Xen control domain (dom0). It is not
+     * sufficient to check for the file to exist as any guest can mount
+     * xenfs to /proc/xen.
+     */
+    status = virFileReadAll("/proc/xen/capabilities", 10, &output);
+    if (status >= 0) {
+        status = strncmp(output, "control_d", 9);
+    }
+    VIR_FREE(output);
+    if (status) {
         VIR_INFO("No Xen capabilities detected, probably not running "
                  "in a Xen Dom0.  Disabling libxenlight driver");
 
