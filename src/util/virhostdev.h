@@ -45,6 +45,8 @@ typedef enum {
 typedef struct _virHostdevManager virHostdevManager;
 typedef virHostdevManager *virHostdevManagerPtr;
 struct _virHostdevManager {
+    virObject parent;
+
     char *stateDir;
 
     virPCIDeviceListPtr activePCIHostdevs;
