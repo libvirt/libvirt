@@ -73,7 +73,6 @@ virCryptoHashString(virCryptoHash hash,
         (*output)[i * 2] = hex[(buf[i] >> 4) & 0xf];
         (*output)[(i * 2) + 1] = hex[buf[i] & 0xf];
     }
-    (*output)[hashstrlen] = '\0';
 
     return 0;
 }
