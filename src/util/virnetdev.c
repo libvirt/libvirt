@@ -1802,11 +1802,11 @@ virNetDevLinkDump(const char *ifname ATTRIBUTE_UNUSED,
 }
 
 int
-virNetDevReplaceNetConfig(char *linkdev ATTRIBUTE_UNUSED,
+virNetDevReplaceNetConfig(const char *linkdev ATTRIBUTE_UNUSED,
                           int vf ATTRIBUTE_UNUSED,
                           const virMacAddr *macaddress ATTRIBUTE_UNUSED,
                           int vlanid ATTRIBUTE_UNUSED,
-                          char *stateDir ATTRIBUTE_UNUSED)
+                          const char *stateDir ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to replace net config on this platform"));
@@ -1815,9 +1815,9 @@ virNetDevReplaceNetConfig(char *linkdev ATTRIBUTE_UNUSED,
 }
 
 int
-virNetDevRestoreNetConfig(char *linkdev ATTRIBUTE_UNUSED,
+virNetDevRestoreNetConfig(const char *linkdev ATTRIBUTE_UNUSED,
                           int vf ATTRIBUTE_UNUSED,
-                          char *stateDir ATTRIBUTE_UNUSED)
+                          const char *stateDir ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to restore net config on this platform"));
