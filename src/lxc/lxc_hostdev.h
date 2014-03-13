@@ -27,7 +27,7 @@
 # include "lxc_conf.h"
 # include "domain_conf.h"
 
-int virLXCUpdateActiveUsbHostdevs(virLXCDriverPtr driver,
+int virLXCUpdateActiveUSBHostdevs(virLXCDriverPtr driver,
                                   virDomainDefPtr def);
 int virLXCFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
                                bool mandatory,

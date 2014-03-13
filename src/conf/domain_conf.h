@@ -94,8 +94,8 @@ typedef virDomainHubDef *virDomainHubDefPtr;
 typedef struct _virDomainRedirdevDef virDomainRedirdevDef;
 typedef virDomainRedirdevDef *virDomainRedirdevDefPtr;
 
-typedef struct _virDomainRedirFilterUsbDevDef virDomainRedirFilterUsbDevDef;
-typedef virDomainRedirFilterUsbDevDef *virDomainRedirFilterUsbDevDefPtr;
+typedef struct _virDomainRedirFilterUSBDevDef virDomainRedirFilterUSBDevDef;
+typedef virDomainRedirFilterUSBDevDef *virDomainRedirFilterUSBDevDefPtr;
 
 typedef struct _virDomainRedirFilterDef virDomainRedirFilterDef;
 typedef virDomainRedirFilterDef *virDomainRedirFilterDefPtr;
@@ -1450,7 +1450,7 @@ struct _virDomainRedirdevDef {
     virDomainDeviceInfo info; /* Guest address */
 };
 
-struct _virDomainRedirFilterUsbDevDef {
+struct _virDomainRedirFilterUSBDevDef {
     int usbClass;
     int vendor;
     int product;
@@ -1460,7 +1460,7 @@ struct _virDomainRedirFilterUsbDevDef {
 
 struct _virDomainRedirFilterDef {
     size_t nusbdevs;
-    virDomainRedirFilterUsbDevDefPtr *usbdevs;
+    virDomainRedirFilterUSBDevDefPtr *usbdevs;
 };
 
 enum virDomainMemDump {

@@ -1501,7 +1501,7 @@ virLXCProcessReconnectDomain(virDomainObjPtr vm,
             goto error;
         }
 
-        if (virLXCUpdateActiveUsbHostdevs(driver, vm->def) < 0)
+        if (virLXCUpdateActiveUSBHostdevs(driver, vm->def) < 0)
             goto error;
 
         if (virSecurityManagerReserveLabel(driver->securityManager,

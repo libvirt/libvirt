@@ -34,7 +34,7 @@
 VIR_LOG_INIT("lxc.lxc_hostdev");
 
 int
-virLXCUpdateActiveUsbHostdevs(virLXCDriverPtr driver,
+virLXCUpdateActiveUSBHostdevs(virLXCDriverPtr driver,
                               virDomainDefPtr def)
 {
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
@@ -118,7 +118,7 @@ int virLXCPrepareHostDevices(virLXCDriverPtr driver,
 
 
 static void
-virLXCDomainReAttachHostUsbDevices(virLXCDriverPtr driver,
+virLXCDomainReAttachHostUSBDevices(virLXCDriverPtr driver,
                                    const char *name,
                                    virDomainHostdevDefPtr *hostdevs,
                                    int nhostdevs)
@@ -135,6 +135,6 @@ void virLXCDomainReAttachHostDevices(virLXCDriverPtr driver,
     if (!def->nhostdevs)
         return;
 
-    virLXCDomainReAttachHostUsbDevices(driver, def->name, def->hostdevs,
+    virLXCDomainReAttachHostUSBDevices(driver, def->name, def->hostdevs,
                                        def->nhostdevs);
 }

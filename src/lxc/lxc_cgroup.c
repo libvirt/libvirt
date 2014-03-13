@@ -317,7 +317,7 @@ struct _virLXCCgroupDevicePolicy {
 
 
 int
-virLXCSetupHostUsbDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
+virLXCSetupHostUSBDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                                const char *path,
                                void *opaque)
 {
@@ -333,7 +333,7 @@ virLXCSetupHostUsbDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
 
 
 int
-virLXCTeardownHostUsbDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
+virLXCTeardownHostUSBDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                                   const char *path,
                                   void *opaque)
 {
@@ -421,7 +421,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                                        NULL)) == NULL)
                 goto cleanup;
 
-            if (virUSBDeviceFileIterate(usb, virLXCSetupHostUsbDeviceCgroup,
+            if (virUSBDeviceFileIterate(usb, virLXCSetupHostUSBDeviceCgroup,
                                         cgroup) < 0) {
                 virUSBDeviceFree(usb);
                 goto cleanup;

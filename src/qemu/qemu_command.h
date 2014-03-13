@@ -162,7 +162,7 @@ char * qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
 int qemuOpenPCIConfig(virDomainHostdevDefPtr dev);
 
 /* Legacy, pre device support */
-char * qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev);
+char * qemuBuildUSBHostdevUSBDevStr(virDomainHostdevDefPtr dev);
 /* Current, best practice */
 char * qemuBuildUSBHostdevDevStr(virDomainDefPtr def,
                                  virDomainHostdevDefPtr dev,

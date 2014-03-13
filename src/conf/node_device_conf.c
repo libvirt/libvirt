@@ -876,7 +876,7 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
 }
 
 static int
-virNodeDevCapUsbInterfaceParseXML(xmlXPathContextPtr ctxt,
+virNodeDevCapUSBInterfaceParseXML(xmlXPathContextPtr ctxt,
                                   virNodeDeviceDefPtr def,
                                   xmlNodePtr node,
                                   union _virNodeDevCapData *data)
@@ -943,7 +943,7 @@ virNodeDevCapsDefParseHexId(const char *xpath,
 }
 
 static int
-virNodeDevCapUsbDevParseXML(xmlXPathContextPtr ctxt,
+virNodeDevCapUSBDevParseXML(xmlXPathContextPtr ctxt,
                             virNodeDeviceDefPtr def,
                             xmlNodePtr node,
                             union _virNodeDevCapData *data)
@@ -1189,10 +1189,10 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
         ret = virNodeDevCapPciDevParseXML(ctxt, def, node, &caps->data);
         break;
     case VIR_NODE_DEV_CAP_USB_DEV:
-        ret = virNodeDevCapUsbDevParseXML(ctxt, def, node, &caps->data);
+        ret = virNodeDevCapUSBDevParseXML(ctxt, def, node, &caps->data);
         break;
     case VIR_NODE_DEV_CAP_USB_INTERFACE:
-        ret = virNodeDevCapUsbInterfaceParseXML(ctxt, def, node, &caps->data);
+        ret = virNodeDevCapUSBInterfaceParseXML(ctxt, def, node, &caps->data);
         break;
     case VIR_NODE_DEV_CAP_NET:
         ret = virNodeDevCapNetParseXML(ctxt, def, node, &caps->data);

@@ -2994,7 +2994,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
 }
 
 static void
-qemuUsbId(virBufferPtr buf, int idx)
+qemuUSBId(virBufferPtr buf, int idx)
 {
     if (idx == 0)
         virBufferAddLit(buf, "usb");
@@ -3091,7 +3091,7 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
            virBufferAsprintf(buf, ".0x%x", info->addr.pci.function);
     } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
         virBufferAddLit(buf, ",bus=");
-        qemuUsbId(buf, info->addr.usb.bus);
+        qemuUSBId(buf, info->addr.usb.bus);
         virBufferAsprintf(buf, ".0,port=%s", info->addr.usb.port);
     } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO) {
         if (info->addr.spaprvio.has_reg)
@@ -4781,11 +4781,11 @@ qemuBuildUSBControllerDevStr(virDomainDefPtr domainDef,
 
     if (def->info.mastertype == VIR_DOMAIN_CONTROLLER_MASTER_USB) {
         virBufferAddLit(buf, ",masterbus=");
-        qemuUsbId(buf, def->idx);
+        qemuUSBId(buf, def->idx);
         virBufferAsprintf(buf, ".0,firstport=%d", def->info.master.usb.startport);
     } else {
         virBufferAddLit(buf, ",id=");
-        qemuUsbId(buf, def->idx);
+        qemuUSBId(buf, def->idx);
     }
 
     return 0;
@@ -5626,7 +5626,7 @@ qemuBuildRedirdevDevStr(virDomainDefPtr def,
         virBufferAddLit(&buf, ",filter=");
 
         for (i = 0; i < redirfilter->nusbdevs; i++) {
-            virDomainRedirFilterUsbDevDefPtr usbdev = redirfilter->usbdevs[i];
+            virDomainRedirFilterUSBDevDefPtr usbdev = redirfilter->usbdevs[i];
             if (usbdev->usbClass >= 0)
                 virBufferAsprintf(&buf, "0x%02X:", usbdev->usbClass);
             else
@@ -5758,7 +5758,7 @@ qemuBuildHubDevStr(virDomainDefPtr def,
 
 
 char *
-qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev)
+qemuBuildUSBHostdevUSBDevStr(virDomainHostdevDefPtr dev)
 {
     char *ret = NULL;
 
@@ -9465,7 +9465,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                 VIR_FREE(devstr);
             } else {
                 virCommandAddArg(cmd, "-usbdevice");
-                if (!(devstr = qemuBuildUSBHostdevUsbDevStr(hostdev)))
+                if (!(devstr = qemuBuildUSBHostdevUSBDevStr(hostdev)))
                     goto error;
                 virCommandAddArg(cmd, devstr);
                 VIR_FREE(devstr);

@@ -1480,12 +1480,12 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsPixx4PM[] = {
     { "disable_s4", QEMU_CAPS_DISABLE_S4 },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUsbRedir[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUSBRedir[] = {
     { "filter", QEMU_CAPS_USB_REDIR_FILTER },
     { "bootindex", QEMU_CAPS_USB_REDIR_BOOTINDEX },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUsbHost[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUSBHost[] = {
     { "bootindex", QEMU_CAPS_USB_HOST_BOOTINDEX },
 };
 
@@ -1501,7 +1501,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQ35PciHost[] = {
     { "pci-hole64-size", QEMU_CAPS_Q35_PCI_HOLE64_SIZE },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUsbStorage[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUSBStorage[] = {
     { "removable", QEMU_CAPS_USB_STORAGE_REMOVABLE },
 };
 
@@ -1540,18 +1540,18 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsIDEDrive) },
     { "PIIX4_PM", virQEMUCapsObjectPropsPixx4PM,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsPixx4PM) },
-    { "usb-redir", virQEMUCapsObjectPropsUsbRedir,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsUsbRedir) },
-    { "usb-host", virQEMUCapsObjectPropsUsbHost,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsUsbHost) },
+    { "usb-redir", virQEMUCapsObjectPropsUSBRedir,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsUSBRedir) },
+    { "usb-host", virQEMUCapsObjectPropsUSBHost,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsUSBHost) },
     { "scsi-generic", virQEMUCapsObjectPropsSCSIGeneric,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsSCSIGeneric) },
     { "i440FX-pcihost", virQEMUCapsObjectPropsI440FXPciHost,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsI440FXPciHost) },
     { "q35-pcihost", virQEMUCapsObjectPropsQ35PciHost,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsQ35PciHost) },
-    { "usb-storage", virQEMUCapsObjectPropsUsbStorage,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsUsbStorage) },
+    { "usb-storage", virQEMUCapsObjectPropsUSBStorage,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsUSBStorage) },
     { "kvm-pit", virQEMUCapsObjectPropsKVMPit,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsKVMPit) },
 };

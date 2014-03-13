@@ -4281,7 +4281,7 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
         goto cleanup;
 
     if (virUSBDeviceFileIterate(usb,
-                                virLXCSetupHostUsbDeviceCgroup,
+                                virLXCSetupHostUSBDeviceCgroup,
                                 priv->cgroup) < 0)
         goto cleanup;
 
@@ -4292,7 +4292,7 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
                                    dev,
                                    src) < 0) {
         if (virUSBDeviceFileIterate(usb,
-                                    virLXCTeardownHostUsbDeviceCgroup,
+                                    virLXCTeardownHostUSBDeviceCgroup,
                                     priv->cgroup) < 0)
             VIR_WARN("cannot deny device %s for domain %s",
                      src, vm->def->name);
@@ -4723,7 +4723,7 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
     virDomainAuditHostdev(vm, def, "detach", true);
 
     if (virUSBDeviceFileIterate(usb,
-                                virLXCTeardownHostUsbDeviceCgroup,
+                                virLXCTeardownHostUSBDeviceCgroup,
                                 priv->cgroup) < 0)
         VIR_WARN("cannot deny device %s for domain %s",
                  dst, vm->def->name);
