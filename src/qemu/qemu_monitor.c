@@ -2781,7 +2781,7 @@ int qemuMonitorAddNetdev(qemuMonitorPtr mon,
     VIR_DEBUG("mon=%p netdevstr=%s tapfd=%p tapfdName=%p tapfdSize=%d"
               "vhostfd=%p vhostfdName=%p vhostfdSize=%d",
               mon, netdevstr, tapfd, tapfdName, tapfdSize,
-              vhostfd, vhostfdName, tapfdSize);
+              vhostfd, vhostfdName, vhostfdSize);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
