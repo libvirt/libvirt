@@ -209,8 +209,10 @@ struct _arpHdrFilterDef {
     nwItemDesc dataOpcode;
     nwItemDesc dataARPSrcMACAddr;
     nwItemDesc dataARPSrcIPAddr;
+    nwItemDesc dataARPSrcIPMask;
     nwItemDesc dataARPDstMACAddr;
     nwItemDesc dataARPDstIPAddr;
+    nwItemDesc dataARPDstIPMask;
     nwItemDesc dataGratuitousARP;
     nwItemDesc dataComment;
 };

@@ -2052,6 +2052,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
 {
     char macaddr[VIR_MAC_STRING_BUFLEN],
          ipaddr[INET_ADDRSTRLEN],
+         ipmask[INET_ADDRSTRLEN],
          ipv6addr[INET6_ADDRSTRLEN],
          number[MAX(INT_BUFSIZE_BOUND(uint32_t),
                     INT_BUFSIZE_BOUND(int))],
@@ -2059,6 +2060,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
     char chain[MAX_CHAINNAME_LENGTH];
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *target;
+    bool hasMask = false;
 
     if (!ebtables_cmd_path) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2262,11 +2264,20 @@ ebtablesCreateRuleInstance(char chainPrefix,
                               &rule->p.arpHdrFilter.dataARPSrcIPAddr) < 0)
                 goto err_exit;
 
+            if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataARPSrcIPMask)) {
+                if (printDataType(vars,
+                                  ipmask, sizeof(ipmask),
+                                  &rule->p.arpHdrFilter.dataARPSrcIPMask) < 0)
+                    goto err_exit;
+                hasMask = true;
+            }
+
             virBufferAsprintf(&buf,
-                          " %s %s %s",
+                          " %s %s %s/%s",
                           reverse ? "--arp-ip-dst" : "--arp-ip-src",
                           ENTRY_GET_NEG_SIGN(&rule->p.arpHdrFilter.dataARPSrcIPAddr),
-                          ipaddr);
+                          ipaddr,
+                          hasMask ? ipmask : "32");
         }
 
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataARPDstIPAddr)) {
@@ -2275,11 +2286,20 @@ ebtablesCreateRuleInstance(char chainPrefix,
                               &rule->p.arpHdrFilter.dataARPDstIPAddr) < 0)
                 goto err_exit;
 
+            if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataARPDstIPMask)) {
+                if (printDataType(vars,
+                                  ipmask, sizeof(ipmask),
+                                  &rule->p.arpHdrFilter.dataARPDstIPMask) < 0)
+                    goto err_exit;
+                hasMask = true;
+            }
+
             virBufferAsprintf(&buf,
-                          " %s %s %s",
+                          " %s %s %s/%s",
                           reverse ? "--arp-ip-src" : "--arp-ip-dst",
                           ENTRY_GET_NEG_SIGN(&rule->p.arpHdrFilter.dataARPDstIPAddr),
-                          ipaddr);
+                          ipaddr,
+                          hasMask ? ipmask : "32");
         }
 
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataARPSrcMACAddr)) {

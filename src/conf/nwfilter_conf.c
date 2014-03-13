@@ -173,7 +173,9 @@ static const char dstmacmask_str[]    = "dstmacmask";
 static const char arpsrcmacaddr_str[] = "arpsrcmacaddr";
 static const char arpdstmacaddr_str[] = "arpdstmacaddr";
 static const char arpsrcipaddr_str[]  = "arpsrcipaddr";
+static const char arpsrcipmask_str[]  = "arpsrcipmask";
 static const char arpdstipaddr_str[]  = "arpdstipaddr";
+static const char arpdstipmask_str[]  = "arpdstipmask";
 static const char srcipaddr_str[]     = "srcipaddr";
 static const char srcipmask_str[]     = "srcipmask";
 static const char dstipaddr_str[]     = "dstipaddr";
@@ -198,7 +200,9 @@ static const char ipsetflags_str[]    = "ipsetflags";
 #define ARPSRCMACADDR arpsrcmacaddr_str
 #define ARPDSTMACADDR arpdstmacaddr_str
 #define ARPSRCIPADDR  arpsrcipaddr_str
+#define ARPSRCIPMASK  arpsrcipmask_str
 #define ARPDSTIPADDR  arpdstipaddr_str
+#define ARPDSTIPMASK  arpdstipmask_str
 #define SRCIPADDR     srcipaddr_str
 #define SRCIPMASK     srcipmask_str
 #define DSTIPADDR     dstipaddr_str
@@ -1302,9 +1306,17 @@ static const virXMLAttr2Struct arpAttributes[] = {
         .datatype = DATATYPE_IPADDR,
         .dataIdx = offsetof(virNWFilterRuleDef, p.arpHdrFilter.dataARPSrcIPAddr),
     }, {
+        .name = ARPSRCIPMASK,
+        .datatype = DATATYPE_IPMASK,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.arpHdrFilter.dataARPSrcIPMask),
+    }, {
         .name = ARPDSTIPADDR,
         .datatype = DATATYPE_IPADDR,
         .dataIdx = offsetof(virNWFilterRuleDef, p.arpHdrFilter.dataARPDstIPAddr),
+    }, {
+        .name = ARPDSTIPMASK,
+        .datatype = DATATYPE_IPMASK,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.arpHdrFilter.dataARPDstIPMask),
     }, {
         .name = "gratuitous",
         .datatype = DATATYPE_BOOLEAN,

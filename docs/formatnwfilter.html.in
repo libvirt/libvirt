@@ -990,9 +990,19 @@
          <td>Source IP address in ARP/RARP packet</td>
        </tr>
        <tr>
+         <td>arpsrcipmask <span class="since">(Since 1.2.3)</span></td>
+         <td>IP_MASK</td>
+         <td>Source IP mask</td>
+       </tr>
+       <tr>
          <td>arpdstipaddr</td>
          <td>IP_ADDR</td>
          <td>Destination IP address in ARP/RARP packet</td>
+       </tr>
+       <tr>
+         <td>arpdstipmask <span class="since">(Since 1.2.3)</span></td>
+         <td>IP_MASK</td>
+         <td>Destination IP mask</td>
        </tr>
        <tr>
          <td>comment <span class="since">(Since 0.8.5)</span></td>
