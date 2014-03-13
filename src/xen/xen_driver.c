@@ -1657,7 +1657,8 @@ xenUnifiedConnectDomainXMLToNative(virConnectPtr conn,
     }
 
     if (!(def = virDomainDefParseString(xmlData, priv->caps, priv->xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_XEN, 0)))
+                                        1 << VIR_DOMAIN_VIRT_XEN,
+                                        VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     if (STREQ(format, XEN_CONFIG_FORMAT_XM)) {

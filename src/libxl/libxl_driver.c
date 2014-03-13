@@ -2979,7 +2979,8 @@ libxlConnectDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
 
     if (!(def = virDomainDefParseString(domainXml,
                                         cfg->caps, driver->xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_XEN, 0)))
+                                        1 << VIR_DOMAIN_VIRT_XEN,
+                                        VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     if (!(conf = xenFormatXM(conn, def, cfg->verInfo->xen_version_major)))

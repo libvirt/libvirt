@@ -2836,7 +2836,8 @@ esxConnectDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
     }
 
     def = virDomainDefParseString(domainXml, priv->caps, priv->xmlopt,
-                                  1 << VIR_DOMAIN_VIRT_VMWARE, 0);
+                                  1 << VIR_DOMAIN_VIRT_VMWARE,
+                                  VIR_DOMAIN_XML_INACTIVE);
 
     if (!def) {
         return NULL;

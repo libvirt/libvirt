@@ -5812,7 +5812,8 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
 
     def = virDomainDefParseString(xmlData, caps, driver->xmlopt,
-                                  QEMU_EXPECTED_VIRT_TYPES, 0);
+                                  QEMU_EXPECTED_VIRT_TYPES,
+                                  VIR_DOMAIN_XML_INACTIVE);
     if (!def)
         goto cleanup;
 
