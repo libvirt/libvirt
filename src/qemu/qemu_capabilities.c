@@ -2539,38 +2539,39 @@ virQEMUCapsSaveCache(virQEMUCapsPtr qemuCaps, const char *filename)
     size_t i;
 
     virBufferAddLit(&buf, "<qemuCaps>\n");
+    virBufferAdjustIndent(&buf, 2);
 
-    virBufferAsprintf(&buf, "  <qemuctime>%llu</qemuctime>\n",
+    virBufferAsprintf(&buf, "<qemuctime>%llu</qemuctime>\n",
                       (long long)qemuCaps->ctime);
-    virBufferAsprintf(&buf, "  <selfctime>%llu</selfctime>\n",
+    virBufferAsprintf(&buf, "<selfctime>%llu</selfctime>\n",
                       (long long)virGetSelfLastChanged());
 
     if (qemuCaps->usedQMP)
-        virBufferAddLit(&buf, "  <usedQMP/>\n");
+        virBufferAddLit(&buf, "<usedQMP/>\n");
 
     for (i = 0; i < QEMU_CAPS_LAST; i++) {
         if (virQEMUCapsGet(qemuCaps, i)) {
-            virBufferAsprintf(&buf, "  <flag name='%s'/>\n",
+            virBufferAsprintf(&buf, "<flag name='%s'/>\n",
                               virQEMUCapsTypeToString(i));
         }
     }
 
-    virBufferAsprintf(&buf, "  <version>%d</version>\n",
+    virBufferAsprintf(&buf, "<version>%d</version>\n",
                       qemuCaps->version);
 
-    virBufferAsprintf(&buf, "  <kvmVersion>%d</kvmVersion>\n",
+    virBufferAsprintf(&buf, "<kvmVersion>%d</kvmVersion>\n",
                       qemuCaps->kvmVersion);
 
-    virBufferAsprintf(&buf, "  <arch>%s</arch>\n",
+    virBufferAsprintf(&buf, "<arch>%s</arch>\n",
                       virArchToString(qemuCaps->arch));
 
     for (i = 0; i < qemuCaps->ncpuDefinitions; i++) {
-        virBufferEscapeString(&buf, "  <cpu name='%s'/>\n",
+        virBufferEscapeString(&buf, "<cpu name='%s'/>\n",
                               qemuCaps->cpuDefinitions[i]);
     }
 
     for (i = 0; i < qemuCaps->nmachineTypes; i++) {
-        virBufferEscapeString(&buf, "  <machine name='%s'",
+        virBufferEscapeString(&buf, "<machine name='%s'",
                               qemuCaps->machineTypes[i]);
         if (qemuCaps->machineAliases[i])
             virBufferEscapeString(&buf, " alias='%s'",
@@ -2579,6 +2580,7 @@ virQEMUCapsSaveCache(virQEMUCapsPtr qemuCaps, const char *filename)
                           qemuCaps->machineMaxCpus[i]);
     }
 
+    virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</qemuCaps>\n");
 
     if (virBufferError(&buf))
