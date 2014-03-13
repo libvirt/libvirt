@@ -3770,6 +3770,23 @@ ebiptablesApplyNewRules(const char *ifname,
 
     NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
 
+    /* walk the list of rules and increase the priority
+     * of rules in case the chain priority is of higher value;
+     * this preserves the order of the rules and ensures that
+     * the chain will be created before the chain's rules
+     * are created; don't adjust rules in the root chain
+     * example: a rule of priority -510 will be adjusted to
+     * priority -500 and the chain with priority -500 will
+     * then be created before it.
+     */
+    for (i = 0; i < nruleInstances; i++) {
+        if (inst[i]->chainPriority > inst[i]->priority &&
+            !strstr("root", inst[i]->neededProtocolChain)) {
+
+             inst[i]->priority = inst[i]->chainPriority;
+        }
+    }
+
     /* process ebtables commands; interleave commands from filters with
        commands for creating and connecting ebtables chains */
     j = 0;
