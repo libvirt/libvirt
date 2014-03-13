@@ -7711,7 +7711,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                      int migrateFd,
                      virDomainSnapshotObjPtr snapshot,
                      enum virNetDevVPortProfileOp vmop,
-                     qemuBuildCommandLineCallbacksPtr callbacks)
+                     qemuBuildCommandLineCallbacksPtr callbacks,
+                     bool standalone)
 {
     virErrorPtr originalError = NULL;
     size_t i, j;
@@ -7820,7 +7821,10 @@ qemuBuildCommandLine(virConnectPtr conn,
             virCommandAddArg(cmd, def->name);
         }
     }
-    virCommandAddArg(cmd, "-S"); /* freeze CPU */
+
+    if (!standalone)
+        virCommandAddArg(cmd, "-S"); /* freeze CPU */
+
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_FIPS))
         virCommandAddArg(cmd, "-enable-fips");
 

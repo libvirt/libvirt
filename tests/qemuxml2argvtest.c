@@ -357,7 +357,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      (flags & FLAG_JSON), extraFlags,
                                      migrateFrom, migrateFd, NULL,
                                      VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
-                                     &testCallbacks))) {
+                                     &testCallbacks, false))) {
         if (!virtTestOOMActive() &&
             (flags & FLAG_EXPECT_FAILURE)) {
             ret = 0;

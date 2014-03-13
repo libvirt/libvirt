@@ -76,7 +76,8 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    int migrateFd,
                                    virDomainSnapshotObjPtr current_snapshot,
                                    enum virNetDevVPortProfileOp vmop,
-                                   qemuBuildCommandLineCallbacksPtr callbacks)
+                                   qemuBuildCommandLineCallbacksPtr callbacks,
+                                   bool forXMLToArgv)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(11);
 
 /* Generate '-device' string for chardev device */
