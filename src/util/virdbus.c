@@ -458,7 +458,7 @@ static int virDBusTypeStackPush(virDBusTypeStack **stack,
     (*stack)[(*nstack) - 1].types = types;
     (*stack)[(*nstack) - 1].nstruct = nstruct;
     (*stack)[(*nstack) - 1].narray = narray;
-    VIR_DEBUG("Pushed '%s'", types);
+    VIR_DEBUG("Pushed types='%s' nstruct=%zu narray=%zu", types, nstruct, narray);
     return 0;
 }
 
@@ -480,7 +480,7 @@ static int virDBusTypeStackPop(virDBusTypeStack **stack,
     *types = (*stack)[(*nstack) - 1].types;
     *nstruct = (*stack)[(*nstack) - 1].nstruct;
     *narray = (*stack)[(*nstack) - 1].narray;
-    VIR_DEBUG("Popped '%s'", *types);
+    VIR_DEBUG("Popped types='%s' nstruct=%zu narray=%zu", *types, *nstruct, *narray);
     VIR_SHRINK_N(*stack, *nstack, 1);
 
     return 0;
@@ -503,15 +503,24 @@ static void virDBusTypeStackFree(virDBusTypeStack **stack,
 
 # define SET_NEXT_VAL(dbustype, vargtype, sigtype, fmt)                 \
     do {                                                                \
-        dbustype x = (dbustype)va_arg(args, vargtype);                  \
+        dbustype x;                                                     \
+        if (arrayref) {                                                 \
+            vargtype *valarray = arrayptr;                              \
+            x = (dbustype)*valarray;                                    \
+            valarray++;                                                 \
+            arrayptr = valarray;                                        \
+        } else {                                                        \
+            x = (dbustype)va_arg(args, vargtype);                       \
+        }                                                               \
         if (!dbus_message_iter_append_basic(iter, sigtype, &x)) {       \
             virReportError(VIR_ERR_INTERNAL_ERROR,                      \
-                           _("Cannot append basic type %s"), #vargtype); \
+                           _("Cannot append basic type %s"), #vargtype);\
             goto cleanup;                                               \
         }                                                               \
-        VIR_DEBUG("Appended basic type '" #dbustype "' varg '" #vargtype \
+        VIR_DEBUG("Appended basic type '" #dbustype "' varg '" #vargtype\
                   "' sig '%c' val '" fmt "'", sigtype, (vargtype)x);    \
     } while (0)
+
 
 static int
 virDBusMessageIterEncode(DBusMessageIter *rootiter,
@@ -521,6 +530,8 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
     int ret = -1;
     size_t narray;
     size_t nstruct;
+    bool arrayref = false;
+    void *arrayptr = NULL;
     virDBusTypeStack *stack = NULL;
     size_t nstack = 0;
     size_t siglen;
@@ -546,6 +557,8 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
             (narray == (size_t)-1 &&
              nstruct == 0)) {
             DBusMessageIter *thisiter = iter;
+            arrayref = false;
+            arrayptr = NULL;
             VIR_DEBUG("Popping iter=%p", iter);
             if (nstack == 0)
                 break;
@@ -618,11 +631,31 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
             break;
 
         case DBUS_TYPE_ARRAY:
+            arrayptr = NULL;
+            if (t[1] == '&') {
+                VIR_DEBUG("Got array ref");
+                t++;
+                types++;
+                nstruct--;
+                arrayref = true;
+            } else {
+                VIR_DEBUG("Got array non-ref");
+                arrayref = false;
+            }
+
             if (virDBusSignatureLength(t + 1, &siglen) < 0)
                 goto cleanup;
 
             if (VIR_STRNDUP(contsig, t + 1, siglen) < 0)
                 goto cleanup;
+
+            if (arrayref && (strlen(contsig) > 1 ||
+                             !virDBusIsBasicType(*contsig))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Got array ref but '%s' is not a single basic type"),
+                               contsig);
+                goto cleanup;
+            }
 
             if (narray == (size_t)-1) {
                 types += siglen;
@@ -646,7 +679,9 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
             newiter = NULL;
             types = t + 1;
             nstruct = siglen;
-            narray = va_arg(args, int);
+            narray = (size_t)va_arg(args, int);
+            if (arrayref)
+                arrayptr = va_arg(args, void *);
             break;
 
         case DBUS_TYPE_VARIANT:
@@ -712,8 +747,9 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
 
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown type in signature '%s'"),
-                           types);
+                           _("Unknown type '%c' in signature '%s'"),
+                           *t, types);
+            goto cleanup;
         }
     }
 
@@ -741,7 +777,16 @@ cleanup:
 
 # define GET_NEXT_VAL(dbustype, vargtype, fmt)                          \
     do {                                                                \
-        dbustype *x = (dbustype *)va_arg(args, vargtype *);             \
+        dbustype *x;                                                    \
+        if (arrayref) {                                                 \
+            vargtype **xptrptr = arrayptr;                              \
+            if (VIR_EXPAND_N(*xptrptr, *narrayptr, 1) < 0)              \
+                goto cleanup;                                           \
+            x = (dbustype *)(*xptrptr + (*narrayptr - 1));              \
+            VIR_DEBUG("Expanded to %zu", *narrayptr);                   \
+        } else {                                                        \
+            x = (dbustype *)va_arg(args, vargtype *);                   \
+        }                                                               \
         dbus_message_iter_get_basic(iter, x);                           \
         VIR_DEBUG("Read basic type '" #dbustype "' varg '" #vargtype    \
                   "' val '" fmt "'", (vargtype)*x);                     \
@@ -756,6 +801,9 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
     int ret = -1;
     size_t narray;
     size_t nstruct;
+    bool arrayref = false;
+    void *arrayptr = NULL;
+    size_t *narrayptr = 0;
     virDBusTypeStack *stack = NULL;
     size_t nstack = 0;
     size_t siglen;
@@ -782,6 +830,8 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
             (narray == (size_t)-1 &&
              nstruct == 0)) {
             DBusMessageIter *thisiter = iter;
+            arrayref = false;
+            arrayptr = NULL;
             VIR_DEBUG("Popping iter=%p", iter);
             if (nstack == 0)
                 break;
@@ -851,7 +901,16 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
         case DBUS_TYPE_OBJECT_PATH:
         case DBUS_TYPE_SIGNATURE:
             do {
-                char **x = (char **)va_arg(args, char **);
+                char **x;
+                if (arrayref) {
+                    char ***xptrptr = arrayptr;
+                    if (VIR_EXPAND_N(*xptrptr, *narrayptr, 1) < 0)
+                        goto cleanup;
+                    x = (char **)(*xptrptr + (*narrayptr - 1));
+                    VIR_DEBUG("Expanded to %zu", *narrayptr);
+                } else {
+                    x = (char **)va_arg(args, char **);
+                }
                 char *s;
                 dbus_message_iter_get_basic(iter, &s);
                 if (VIR_STRDUP(*x, s) < 0)
@@ -862,12 +921,32 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
             break;
 
         case DBUS_TYPE_ARRAY:
+            arrayptr = NULL;
+            if (t[1] == '&') {
+                VIR_DEBUG("Got array ref");
+                t++;
+                types++;
+                nstruct--;
+                arrayref = true;
+            } else {
+                VIR_DEBUG("Got array non-ref");
+                arrayref = false;
+            }
+
             advanceiter = false;
             if (virDBusSignatureLength(t + 1, &siglen) < 0)
                 goto cleanup;
 
             if (VIR_STRNDUP(contsig, t + 1, siglen) < 0)
                 goto cleanup;
+
+            if (arrayref && (strlen(contsig) > 1 ||
+                             !virDBusIsBasicType(*contsig))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Got array ref but '%s' is not a single basic type"),
+                               contsig);
+                goto cleanup;
+            }
 
             if (narray == (size_t)-1) {
                 types += siglen;
@@ -887,7 +966,14 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
             newiter = NULL;
             types = t + 1;
             nstruct = siglen;
-            narray = va_arg(args, int);
+            if (arrayref) {
+                narrayptr = va_arg(args, size_t *);
+                arrayptr = va_arg(args, void *);
+                *narrayptr = 0;
+                *(char **)arrayptr = NULL;
+            } else {
+                narray = va_arg(args, int);
+            }
             break;
 
         case DBUS_TYPE_VARIANT:
@@ -947,8 +1033,17 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
 
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown type in signature '%s'"),
-                           types);
+                           _("Unknown type '%c' in signature '%s'"),
+                           *t, types);
+            goto cleanup;
+        }
+
+        if (arrayref) {
+            if (*t == '&' ||
+                dbus_message_iter_has_next(iter))
+                narray = 1;
+            else
+                narray = 0;
         }
 
         VIR_DEBUG("After stack=%zu array=%zu struct=%zu type='%s'",

@@ -228,6 +228,97 @@ cleanup:
     return ret;
 }
 
+static int testMessageArrayRef(const void *args ATTRIBUTE_UNUSED)
+{
+    DBusMessage *msg = NULL;
+    int ret = -1;
+    const char *in_str1 = "Hello";
+    int in_int32[] = {
+        100000000, 2000000000, -2000000000
+    };
+    const char *in_strv1[] = {
+        "Fishfood",
+    };
+    const char *in_strv2[] = {
+        "Hello", "World",
+    };
+    int *out_int32 = NULL;
+    size_t out_nint32 = 0;
+    char **out_strv1 = NULL;
+    char **out_strv2 = NULL;
+    size_t out_nstrv1 = 0;
+    size_t out_nstrv2 = 0;
+    const char *in_str2 = "World";
+    char *out_str1 = NULL, *out_str2 = NULL;
+
+    if (!(msg = dbus_message_new_method_call("org.libvirt.test",
+                                             "/org/libvirt/test",
+                                             "org.libvirt.test.astrochicken",
+                                             "cluck"))) {
+        VIR_DEBUG("Failed to allocate method call");
+        goto cleanup;
+    }
+
+    if (virDBusMessageEncode(msg,
+                             "sa&sa&ia&ss",
+                             in_str1,
+                             1, in_strv1,
+                             3, in_int32,
+                             2, in_strv2,
+                             in_str2) < 0) {
+        VIR_DEBUG("Failed to encode arguments");
+        goto cleanup;
+    }
+
+    if (virDBusMessageDecode(msg,
+                             "sa&sa&ia&ss",
+                             &out_str1,
+                             &out_nstrv1, &out_strv1,
+                             &out_nint32, &out_int32,
+                             &out_nstrv2, &out_strv2,
+                             &out_str2) < 0) {
+        VIR_DEBUG("Failed to decode arguments");
+        goto cleanup;
+    }
+
+
+    VERIFY_STR("str1", in_str1, out_str1, "%s");
+    if (out_nstrv1 != 1) {
+        fprintf(stderr, "Expected 1 string, but got %zu\n",
+                out_nstrv1);
+        goto cleanup;
+    }
+    VERIFY_STR("strv1[0]", in_strv1[0], out_strv1[0], "%s");
+
+    if (out_nint32 != 3) {
+        fprintf(stderr, "Expected 3 integers, but got %zu\n",
+                out_nint32);
+        goto cleanup;
+    }
+    VERIFY("int32a", in_int32[0], out_int32[0], "%d");
+    VERIFY("int32b", in_int32[1], out_int32[1], "%d");
+    VERIFY("int32c", in_int32[2], out_int32[2], "%d");
+
+    if (out_nstrv2 != 2) {
+        fprintf(stderr, "Expected 2 strings, but got %zu\n",
+                out_nstrv2);
+        goto cleanup;
+    }
+    VERIFY_STR("strv2[0]", in_strv2[0], out_strv2[0], "%s");
+    VERIFY_STR("strv2[1]", in_strv2[1], out_strv2[1], "%s");
+
+    VERIFY_STR("str2", in_str2, out_str2, "%s");
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(out_int32);
+    VIR_FREE(out_str1);
+    VIR_FREE(out_str2);
+    dbus_message_unref(msg);
+    return ret;
+}
+
 static int testMessageStruct(const void *args ATTRIBUTE_UNUSED)
 {
     DBusMessage *msg = NULL;
@@ -384,6 +475,8 @@ mymain(void)
     if (virtTestRun("Test message variant ", testMessageVariant, NULL) < 0)
         ret = -1;
     if (virtTestRun("Test message array ", testMessageArray, NULL) < 0)
+        ret = -1;
+    if (virtTestRun("Test message array ref ", testMessageArrayRef, NULL) < 0)
         ret = -1;
     if (virtTestRun("Test message struct ", testMessageStruct, NULL) < 0)
         ret = -1;
