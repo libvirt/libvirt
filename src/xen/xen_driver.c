@@ -2424,7 +2424,7 @@ xenUnifiedConnectDomainEventDeregisterAny(virConnectPtr conn,
 
 
 static int
-xenUnifiedNodeDeviceGetPciInfo(virNodeDevicePtr dev,
+xenUnifiedNodeDeviceGetPCIInfo(virNodeDevicePtr dev,
                                unsigned *domain,
                                unsigned *bus,
                                unsigned *slot,
@@ -2480,7 +2480,7 @@ xenUnifiedNodeDeviceDetachFlags(virNodeDevicePtr dev,
 
     virCheckFlags(0, -1);
 
-    if (xenUnifiedNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
+    if (xenUnifiedNodeDeviceGetPCIInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
 
     pci = virPCIDeviceNew(domain, bus, slot, function);
@@ -2538,7 +2538,7 @@ xenUnifiedNodeDeviceAssignedDomainId(virNodeDevicePtr dev)
     }
 
     /* Get pci bdf */
-    if (xenUnifiedNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
+    if (xenUnifiedNodeDeviceGetPCIInfo(dev, &domain, &bus, &slot, &function) < 0)
         goto out;
 
     if (virAsprintf(&bdf, "%04x:%02x:%02x.%0x",
@@ -2574,7 +2574,7 @@ xenUnifiedNodeDeviceReAttach(virNodeDevicePtr dev)
     int ret = -1;
     int domid;
 
-    if (xenUnifiedNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
+    if (xenUnifiedNodeDeviceGetPCIInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
 
     pci = virPCIDeviceNew(domain, bus, slot, function);
@@ -2605,7 +2605,7 @@ xenUnifiedNodeDeviceReset(virNodeDevicePtr dev)
     unsigned domain, bus, slot, function;
     int ret = -1;
 
-    if (xenUnifiedNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
+    if (xenUnifiedNodeDeviceGetPCIInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
 
     pci = virPCIDeviceNew(domain, bus, slot, function);

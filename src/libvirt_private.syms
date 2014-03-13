@@ -77,8 +77,8 @@ virCPUModeTypeToString;
 
 
 # conf/device_conf.h
-virDeviceAddressPciMultiTypeFromString;
-virDeviceAddressPciMultiTypeToString;
+virDeviceAddressPCIMultiTypeFromString;
+virDeviceAddressPCIMultiTypeToString;
 virDevicePCIAddressEqual;
 virDevicePCIAddressFormat;
 virDevicePCIAddressIsValid;
@@ -270,7 +270,7 @@ virDomainHostdevFind;
 virDomainHostdevInsert;
 virDomainHostdevModeTypeToString;
 virDomainHostdevRemove;
-virDomainHostdevSubsysPciBackendTypeToString;
+virDomainHostdevSubsysPCIBackendTypeToString;
 virDomainHostdevSubsysTypeToString;
 virDomainHubTypeFromString;
 virDomainHubTypeToString;
@@ -342,8 +342,8 @@ virDomainObjSetState;
 virDomainObjTaint;
 virDomainPausedReasonTypeFromString;
 virDomainPausedReasonTypeToString;
-virDomainPciRombarModeTypeFromString;
-virDomainPciRombarModeTypeToString;
+virDomainPCIRombarModeTypeFromString;
+virDomainPCIRombarModeTypeToString;
 virDomainPMStateTypeFromString;
 virDomainPMStateTypeToString;
 virDomainPMSuspendedReasonTypeFromString;

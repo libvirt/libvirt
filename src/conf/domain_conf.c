@@ -597,7 +597,7 @@ VIR_ENUM_IMPL(virDomainHostdevSubsys, VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST,
               "pci",
               "scsi")
 
-VIR_ENUM_IMPL(virDomainHostdevSubsysPciBackend,
+VIR_ENUM_IMPL(virDomainHostdevSubsysPCIBackend,
               VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST,
               "default",
               "kvm",
@@ -609,7 +609,7 @@ VIR_ENUM_IMPL(virDomainHostdevCaps, VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST,
               "misc",
               "net")
 
-VIR_ENUM_IMPL(virDomainPciRombarMode,
+VIR_ENUM_IMPL(virDomainPCIRombarMode,
               VIR_DOMAIN_PCI_ROMBAR_LAST,
               "default",
               "on",
@@ -3164,7 +3164,7 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         virBufferAddLit(buf, "<rom");
         if (info->rombar) {
 
-            const char *rombar = virDomainPciRombarModeTypeToString(info->rombar);
+            const char *rombar = virDomainPCIRombarModeTypeToString(info->rombar);
 
             if (!rombar) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3196,7 +3196,7 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                           info->addr.pci.function);
         if (info->addr.pci.multi) {
            virBufferAsprintf(buf, " multifunction='%s'",
-                             virDeviceAddressPciMultiTypeToString(info->addr.pci.multi));
+                             virDeviceAddressPCIMultiTypeToString(info->addr.pci.multi));
         }
         break;
 
@@ -3681,7 +3681,7 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
     if (rom) {
         char *rombar = virXMLPropString(rom, "bar");
         if (rombar &&
-            ((info->rombar = virDomainPciRombarModeTypeFromString(rombar)) <= 0)) {
+            ((info->rombar = virDomainPCIRombarModeTypeFromString(rombar)) <= 0)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown rom bar value '%s'"), rombar);
             VIR_FREE(rombar);
@@ -3939,7 +3939,7 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
  * </origstates>
  */
 static int
-virDomainHostdevSubsysPciOrigStatesDefParseXML(xmlNodePtr node,
+virDomainHostdevSubsysPCIOrigStatesDefParseXML(xmlNodePtr node,
                                                virDomainHostdevOrigStatesPtr def)
 {
     xmlNodePtr cur;
@@ -3967,7 +3967,7 @@ virDomainHostdevSubsysPciOrigStatesDefParseXML(xmlNodePtr node,
 }
 
 static int
-virDomainHostdevSubsysPciDefParseXML(xmlNodePtr node,
+virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
                                      virDomainHostdevDefPtr def,
                                      unsigned int flags)
 {
@@ -4000,7 +4000,7 @@ virDomainHostdevSubsysPciDefParseXML(xmlNodePtr node,
             } else if ((flags & VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES) &&
                        xmlStrEqual(cur->name, BAD_CAST "origstates")) {
                 virDomainHostdevOrigStatesPtr states = &def->origstates;
-                if (virDomainHostdevSubsysPciOrigStatesDefParseXML(cur, states) < 0)
+                if (virDomainHostdevSubsysPCIOrigStatesDefParseXML(cur, states) < 0)
                     goto out;
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4320,12 +4320,12 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
 
     switch (def->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        if (virDomainHostdevSubsysPciDefParseXML(sourcenode, def, flags) < 0)
+        if (virDomainHostdevSubsysPCIDefParseXML(sourcenode, def, flags) < 0)
             goto error;
 
         backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT;
         if ((backendStr = virXPathString("string(./driver/@name)", ctxt)) &&
-            (((backend = virDomainHostdevSubsysPciBackendTypeFromString(backendStr)) < 0) ||
+            (((backend = virDomainHostdevSubsysPCIBackendTypeFromString(backendStr)) < 0) ||
              backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unknown PCI device <driver name='%s'/> "
@@ -15327,7 +15327,7 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
 {
     if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
         def->source.subsys.u.pci.backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
-        const char *backend = virDomainHostdevSubsysPciBackendTypeToString(def->source.subsys.u.pci.backend);
+        const char *backend = virDomainHostdevSubsysPCIBackendTypeToString(def->source.subsys.u.pci.backend);
 
         if (!backend) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

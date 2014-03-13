@@ -136,10 +136,10 @@ struct fdCallback {
 };
 
 struct pciDevice **pciDevices = NULL;
-size_t nPciDevices = 0;
+size_t nPCIDevices = 0;
 
 struct pciDriver **pciDrivers = NULL;
-size_t nPciDrivers = 0;
+size_t nPCIDrivers = 0;
 
 struct fdCallback *callbacks = NULL;
 size_t nCallbacks = 0;
@@ -390,7 +390,7 @@ pci_device_new_from_stub(const struct pciDevice *data)
     if (pci_device_autobind(dev) < 0)
         ABORT("Unable to bind: %s", data->id);
 
-    if (VIR_APPEND_ELEMENT_QUIET(pciDevices, nPciDevices, dev) < 0)
+    if (VIR_APPEND_ELEMENT_QUIET(pciDevices, nPCIDevices, dev) < 0)
         ABORT_OOM();
 
     VIR_FREE(devpath);
@@ -401,7 +401,7 @@ static struct pciDevice *
 pci_device_find_by_id(const char *id)
 {
     size_t i;
-    for (i = 0; i < nPciDevices; i++) {
+    for (i = 0; i < nPCIDevices; i++) {
         struct pciDevice *dev = pciDevices[i];
 
         if (STREQ(dev->id, id))
@@ -479,7 +479,7 @@ pci_driver_new(const char *name, int fail, ...)
     make_file(driverpath, "new_id", NULL, -1);
     make_file(driverpath, "remove_id", NULL, -1);
 
-    if (VIR_APPEND_ELEMENT_QUIET(pciDrivers, nPciDrivers, driver) < 0)
+    if (VIR_APPEND_ELEMENT_QUIET(pciDrivers, nPCIDrivers, driver) < 0)
         ABORT_OOM();
 }
 
@@ -488,7 +488,7 @@ pci_driver_find_by_dev(struct pciDevice *dev)
 {
     size_t i;
 
-    for (i = 0; i < nPciDrivers; i++) {
+    for (i = 0; i < nPCIDrivers; i++) {
         struct pciDriver *driver = pciDrivers[i];
         size_t j;
 
@@ -507,7 +507,7 @@ pci_driver_find_by_path(const char *path)
 {
     size_t i;
 
-    for (i = 0; i < nPciDrivers; i++) {
+    for (i = 0; i < nPCIDrivers; i++) {
         struct pciDriver *driver = pciDrivers[i];
 
         if (strstr(path, driver->name))
@@ -709,7 +709,7 @@ pci_driver_handle_new_id(const char *path)
         driver->len++;
     }
 
-    for (i = 0; i < nPciDevices; i++) {
+    for (i = 0; i < nPCIDevices; i++) {
         struct pciDevice *dev = pciDevices[i];
 
         if (!dev->driver &&

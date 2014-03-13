@@ -1456,13 +1456,13 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioNet[] = {
     { "event_idx", QEMU_CAPS_VIRTIO_NET_EVENT_IDX },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsPciAssign[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsPCIAssign[] = {
     { "rombar", QEMU_CAPS_PCI_ROMBAR },
     { "configfd", QEMU_CAPS_PCI_CONFIGFD },
     { "bootindex", QEMU_CAPS_PCI_BOOTINDEX },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVfioPci[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVfioPCI[] = {
     { "bootindex", QEMU_CAPS_VFIO_PCI_BOOTINDEX },
 };
 
@@ -1493,11 +1493,11 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsSCSIGeneric[] = {
     { "bootindex", QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsI440FXPciHost[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsI440FXPCIHost[] = {
     { "pci-hole64-size", QEMU_CAPS_I440FX_PCI_HOLE64_SIZE },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQ35PciHost[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQ35PCIHost[] = {
     { "pci-hole64-size", QEMU_CAPS_Q35_PCI_HOLE64_SIZE },
 };
 
@@ -1528,12 +1528,12 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBlk) },
     { "virtio-net-s390", virQEMUCapsObjectPropsVirtioNet,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioNet) },
-    { "pci-assign", virQEMUCapsObjectPropsPciAssign,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsPciAssign) },
-    { "kvm-pci-assign", virQEMUCapsObjectPropsPciAssign,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsPciAssign) },
-    { "vfio-pci", virQEMUCapsObjectPropsVfioPci,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVfioPci) },
+    { "pci-assign", virQEMUCapsObjectPropsPCIAssign,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsPCIAssign) },
+    { "kvm-pci-assign", virQEMUCapsObjectPropsPCIAssign,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsPCIAssign) },
+    { "vfio-pci", virQEMUCapsObjectPropsVfioPCI,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVfioPCI) },
     { "scsi-disk", virQEMUCapsObjectPropsSCSIDisk,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsSCSIDisk) },
     { "ide-drive", virQEMUCapsObjectPropsIDEDrive,
@@ -1546,10 +1546,10 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsUSBHost) },
     { "scsi-generic", virQEMUCapsObjectPropsSCSIGeneric,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsSCSIGeneric) },
-    { "i440FX-pcihost", virQEMUCapsObjectPropsI440FXPciHost,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsI440FXPciHost) },
-    { "q35-pcihost", virQEMUCapsObjectPropsQ35PciHost,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsQ35PciHost) },
+    { "i440FX-pcihost", virQEMUCapsObjectPropsI440FXPCIHost,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsI440FXPCIHost) },
+    { "q35-pcihost", virQEMUCapsObjectPropsQ35PCIHost,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsQ35PCIHost) },
     { "usb-storage", virQEMUCapsObjectPropsUSBStorage,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsUSBStorage) },
     { "kvm-pit", virQEMUCapsObjectPropsKVMPit,

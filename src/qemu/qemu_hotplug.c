@@ -1191,7 +1191,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     /* this could have been changed by qemuPrepareHostdevPCIDevices */
     backend = hostdev->source.subsys.u.pci.backend;
 
-    switch ((virDomainHostdevSubsysPciBackendType) backend) {
+    switch ((virDomainHostdevSubsysPCIBackendType) backend) {
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

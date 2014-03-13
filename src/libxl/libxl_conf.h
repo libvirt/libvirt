@@ -156,7 +156,7 @@ libxlMakeVfb(libxlDriverPrivatePtr driver,
              virDomainGraphicsDefPtr l_vfb, libxl_device_vfb *x_vfb);
 
 int
-libxlMakePci(virDomainHostdevDefPtr hostdev, libxl_device_pci *pcidev);
+libxlMakePCI(virDomainHostdevDefPtr hostdev, libxl_device_pci *pcidev);
 
 int
 libxlBuildDomainConfig(libxlDriverPrivatePtr driver,

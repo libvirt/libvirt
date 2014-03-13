@@ -218,7 +218,7 @@ enum virDomainDeviceAddressType {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST
 };
 
-enum virDomainPciRombarMode {
+enum virDomainPCIRombarMode {
     VIR_DOMAIN_PCI_ROMBAR_DEFAULT = 0,
     VIR_DOMAIN_PCI_ROMBAR_ON,
     VIR_DOMAIN_PCI_ROMBAR_OFF,
@@ -322,7 +322,7 @@ struct _virDomainDeviceInfo {
     } master;
     /* rombar and romfile are only used for pci hostdev and network
      * devices. */
-    int rombar;         /* enum virDomainPciRombarMode */
+    int rombar;         /* enum virDomainPCIRombarMode */
     char *romfile;
     /* bootIndex is only used for disk, network interface, hostdev
      * and redirdev devices */
@@ -386,9 +386,9 @@ typedef enum {
     VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN,    /* force legacy xen style, use pciback */
 
     VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST
-} virDomainHostdevSubsysPciBackendType;
+} virDomainHostdevSubsysPCIBackendType;
 
-VIR_ENUM_DECL(virDomainHostdevSubsysPciBackend)
+VIR_ENUM_DECL(virDomainHostdevSubsysPCIBackend)
 
 typedef struct _virDomainHostdevSubsys virDomainHostdevSubsys;
 typedef virDomainHostdevSubsys *virDomainHostdevSubsysPtr;
@@ -406,7 +406,7 @@ struct _virDomainHostdevSubsys {
         } usb;
         struct {
             virDevicePCIAddress addr; /* host address */
-            int backend; /* enum virDomainHostdevSubsysPciBackendType */
+            int backend; /* enum virDomainHostdevSubsysPCIBackendType */
         } pci;
         struct {
             char *adapter;
@@ -708,9 +708,9 @@ struct _virDomainVirtioSerialOpts {
     int vectors; /* -1 == undef */
 };
 
-typedef struct _virDomainPciControllerOpts virDomainPciControllerOpts;
-typedef virDomainPciControllerOpts *virDomainPciControllerOptsPtr;
-struct _virDomainPciControllerOpts {
+typedef struct _virDomainPCIControllerOpts virDomainPCIControllerOpts;
+typedef virDomainPCIControllerOpts *virDomainPCIControllerOptsPtr;
+struct _virDomainPCIControllerOpts {
     bool pcihole64;
     unsigned long pcihole64size;
 };
@@ -723,7 +723,7 @@ struct _virDomainControllerDef {
     unsigned int queues;
     union {
         virDomainVirtioSerialOpts vioserial;
-        virDomainPciControllerOpts pciopts;
+        virDomainPCIControllerOpts pciopts;
     } opts;
     virDomainDeviceInfo info;
 };
@@ -2582,7 +2582,7 @@ VIR_ENUM_DECL(virDomainVideo)
 VIR_ENUM_DECL(virDomainHostdevMode)
 VIR_ENUM_DECL(virDomainHostdevSubsys)
 VIR_ENUM_DECL(virDomainHostdevCaps)
-VIR_ENUM_DECL(virDomainPciRombarMode)
+VIR_ENUM_DECL(virDomainPCIRombarMode)
 VIR_ENUM_DECL(virDomainHub)
 VIR_ENUM_DECL(virDomainRedirdevBus)
 VIR_ENUM_DECL(virDomainInput)

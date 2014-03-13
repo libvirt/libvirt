@@ -988,7 +988,7 @@ virNodeDevCapUSBDevParseXML(xmlXPathContextPtr ctxt,
 }
 
 static int
-virNodeDevCapPciDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
+virNodeDevCapPCIDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
                                       xmlNodePtr iommuGroupNode,
                                       union _virNodeDevCapData *data)
 {
@@ -1045,7 +1045,7 @@ virNodeDevCapPciDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
 
 
 static int
-virNodeDevCapPciDevParseXML(xmlXPathContextPtr ctxt,
+virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
                             virNodeDeviceDefPtr def,
                             xmlNodePtr node,
                             union _virNodeDevCapData *data)
@@ -1096,7 +1096,7 @@ virNodeDevCapPciDevParseXML(xmlXPathContextPtr ctxt,
     data->pci_dev.product_name = virXPathString("string(./product[1])", ctxt);
 
     if ((iommuGroupNode = virXPathNode("./iommuGroup[1]", ctxt))) {
-        if (virNodeDevCapPciDevIommuGroupParseXML(ctxt, iommuGroupNode,
+        if (virNodeDevCapPCIDevIommuGroupParseXML(ctxt, iommuGroupNode,
                                                   data) < 0) {
             goto out;
         }
@@ -1186,7 +1186,7 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
         ret = virNodeDevCapSystemParseXML(ctxt, def, node, &caps->data);
         break;
     case VIR_NODE_DEV_CAP_PCI_DEV:
-        ret = virNodeDevCapPciDevParseXML(ctxt, def, node, &caps->data);
+        ret = virNodeDevCapPCIDevParseXML(ctxt, def, node, &caps->data);
         break;
     case VIR_NODE_DEV_CAP_USB_DEV:
         ret = virNodeDevCapUSBDevParseXML(ctxt, def, node, &caps->data);

@@ -1571,7 +1571,7 @@ virHostdevPrepareDomainDevices(virHostdevManagerPtr mgr,
 }
 
 /* @oldStateDir
- * For upgrade purpose: see virHostdevReAttachPciHostdevs
+ * For upgrade purpose: see virHostdevReAttachPCIHostdevs
  */
 void
 virHostdevReAttachDomainDevices(virHostdevManagerPtr mgr,

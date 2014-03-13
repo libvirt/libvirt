@@ -2610,7 +2610,7 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivatePtr driver,
                                     &hostdev, 1, 0) < 0)
         return -1;
 
-    if (libxlMakePci(hostdev, &pcidev) < 0)
+    if (libxlMakePCI(hostdev, &pcidev) < 0)
         goto error;
 
     if (libxl_device_pci_add(priv->ctx, vm->def->id, &pcidev, 0) < 0) {
@@ -2860,7 +2860,7 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
 
     libxl_device_pci_init(&pcidev);
 
-    if (libxlMakePci(detach, &pcidev) < 0)
+    if (libxlMakePCI(detach, &pcidev) < 0)
         goto error;
 
     if (libxl_device_pci_remove(priv->ctx, vm->def->id, &pcidev, 0) < 0) {

@@ -3480,7 +3480,7 @@ networkAllocateActualDevice(virDomainDefPtr dom,
 
     } else if (netdef->forward.type == VIR_NETWORK_FORWARD_HOSTDEV) {
 
-        virDomainHostdevSubsysPciBackendType backend;
+        virDomainHostdevSubsysPCIBackendType backend;
 
         iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_HOSTDEV;
         if (netdef->forward.npfs > 0 && netdef->forward.nifs <= 0 &&

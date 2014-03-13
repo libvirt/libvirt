@@ -1072,7 +1072,7 @@ get_files(vahControl * ctl)
                            dev->source.subsys.u.pci.addr.slot,
                            dev->source.subsys.u.pci.addr.function);
 
-                virDomainHostdevSubsysPciBackendType backend = dev->source.subsys.u.pci.backend;
+                virDomainHostdevSubsysPCIBackendType backend = dev->source.subsys.u.pci.backend;
                 if (backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO ||
                         backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
                     needsVfio = true;
