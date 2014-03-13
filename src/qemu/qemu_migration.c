@@ -535,15 +535,17 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
 static void qemuMigrationCookieGraphicsXMLFormat(virBufferPtr buf,
                                                  qemuMigrationCookieGraphicsPtr grap)
 {
-    virBufferAsprintf(buf, "  <graphics type='%s' port='%d' listen='%s'",
+    virBufferAsprintf(buf, "<graphics type='%s' port='%d' listen='%s'",
                       virDomainGraphicsTypeToString(grap->type),
                       grap->port, grap->listen);
     if (grap->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE)
         virBufferAsprintf(buf, " tlsPort='%d'", grap->tlsPort);
     if (grap->tlsSubject) {
         virBufferAddLit(buf, ">\n");
-        virBufferEscapeString(buf, "    <cert info='subject' value='%s'/>\n", grap->tlsSubject);
-        virBufferAddLit(buf, "  </graphics>\n");
+        virBufferAdjustIndent(buf, 2);
+        virBufferEscapeString(buf, "<cert info='subject' value='%s'/>\n", grap->tlsSubject);
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</graphics>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
     }
@@ -561,23 +563,28 @@ qemuMigrationCookieNetworkXMLFormat(virBufferPtr buf,
         /* If optr->net[i].vporttype is not set, there is nothing to transfer */
         if (optr->net[i].vporttype != VIR_NETDEV_VPORT_PROFILE_NONE) {
             if (empty) {
-                virBufferAddLit(buf, "  <network>\n");
+                virBufferAddLit(buf, "<network>\n");
+                virBufferAdjustIndent(buf, 2);
                 empty = false;
             }
-            virBufferAsprintf(buf, "    <interface index='%zu' vporttype='%s'",
+            virBufferAsprintf(buf, "<interface index='%zu' vporttype='%s'",
                               i, virNetDevVPortTypeToString(optr->net[i].vporttype));
             if (optr->net[i].portdata) {
                 virBufferAddLit(buf, ">\n");
-                virBufferEscapeString(buf, "      <portdata>%s</portdata>\n",
+                virBufferAdjustIndent(buf, 2);
+                virBufferEscapeString(buf, "<portdata>%s</portdata>\n",
                                       optr->net[i].portdata);
-                virBufferAddLit(buf, "    </interface>\n");
+                virBufferAdjustIndent(buf, -2);
+                virBufferAddLit(buf, "</interface>\n");
             } else {
                 virBufferAddLit(buf, "/>\n");
             }
         }
     }
-    if (!empty)
-        virBufferAddLit(buf, "  </network>\n");
+    if (!empty) {
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</network>\n");
+    }
 }
 
 
@@ -594,14 +601,15 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
     virUUIDFormat(mig->localHostuuid, hostuuidstr);
 
     virBufferAddLit(buf, "<qemu-migration>\n");
-    virBufferEscapeString(buf, "  <name>%s</name>\n", mig->name);
-    virBufferAsprintf(buf, "  <uuid>%s</uuid>\n", uuidstr);
-    virBufferEscapeString(buf, "  <hostname>%s</hostname>\n", mig->localHostname);
-    virBufferAsprintf(buf, "  <hostuuid>%s</hostuuid>\n", hostuuidstr);
+    virBufferAdjustIndent(buf, 2);
+    virBufferEscapeString(buf, "<name>%s</name>\n", mig->name);
+    virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
+    virBufferEscapeString(buf, "<hostname>%s</hostname>\n", mig->localHostname);
+    virBufferAsprintf(buf, "<hostuuid>%s</hostuuid>\n", hostuuidstr);
 
     for (i = 0; i < QEMU_MIGRATION_COOKIE_FLAG_LAST; i++) {
         if (mig->flagsMandatory & (1 << i))
-            virBufferAsprintf(buf, "  <feature name='%s'/>\n",
+            virBufferAsprintf(buf, "<feature name='%s'/>\n",
                               qemuMigrationCookieFlagTypeToString(i));
     }
 
@@ -611,16 +619,17 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
 
     if ((mig->flags & QEMU_MIGRATION_COOKIE_LOCKSTATE) &&
         mig->lockState) {
-        virBufferAsprintf(buf, "  <lockstate driver='%s'>\n",
+        virBufferAsprintf(buf, "<lockstate driver='%s'>\n",
                           mig->lockDriver);
-        virBufferAsprintf(buf, "    <leases>%s</leases>\n",
+        virBufferAdjustIndent(buf, 2);
+        virBufferAsprintf(buf, "<leases>%s</leases>\n",
                           mig->lockState);
-        virBufferAddLit(buf, "  </lockstate>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</lockstate>\n");
     }
 
     if ((mig->flags & QEMU_MIGRATION_COOKIE_PERSISTENT) &&
         mig->persistent) {
-        virBufferAdjustIndent(buf, 2);
         if (qemuDomainDefFormatBuf(driver,
                                    mig->persistent,
                                    VIR_DOMAIN_XML_INACTIVE |
@@ -628,19 +637,19 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
                                    VIR_DOMAIN_XML_MIGRATABLE,
                                    buf) < 0)
             return -1;
-        virBufferAdjustIndent(buf, -2);
     }
 
     if ((mig->flags & QEMU_MIGRATION_COOKIE_NETWORK) && mig->network)
         qemuMigrationCookieNetworkXMLFormat(buf, mig->network);
 
     if ((mig->flags & QEMU_MIGRATION_COOKIE_NBD) && mig->nbd) {
-        virBufferAddLit(buf, "  <nbd");
+        virBufferAddLit(buf, "<nbd");
         if (mig->nbd->port)
             virBufferAsprintf(buf, " port='%d'", mig->nbd->port);
         virBufferAddLit(buf, "/>\n");
     }
 
+    virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</qemu-migration>\n");
     return 0;
 }
