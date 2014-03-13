@@ -690,7 +690,7 @@ static int qemuAssignDeviceDiskAliasFixed(virDomainDiskDefPtr disk)
 }
 
 static int
-qemuSetScsiControllerModel(virDomainDefPtr def,
+qemuSetSCSIControllerModel(virDomainDefPtr def,
                            virQEMUCapsPtr qemuCaps,
                            int *model)
 {
@@ -762,7 +762,7 @@ qemuAssignDeviceDiskAliasCustom(virDomainDefPtr def,
                 virDomainDeviceFindControllerModel(def, &disk->info,
                                                    VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
 
-            if ((qemuSetScsiControllerModel(def, qemuCaps, &controllerModel)) < 0)
+            if ((qemuSetSCSIControllerModel(def, qemuCaps, &controllerModel)) < 0)
                 return -1;
         }
 
@@ -1418,7 +1418,7 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
     for (i = 0; i < def->ncontrollers; i++) {
         model = def->controllers[i]->model;
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
-            if (qemuSetScsiControllerModel(def, qemuCaps, &model) < 0)
+            if (qemuSetSCSIControllerModel(def, qemuCaps, &model) < 0)
                 goto cleanup;
         }
 
@@ -4406,7 +4406,7 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
         controllerModel =
             virDomainDeviceFindControllerModel(def, &disk->info,
                                                VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
-        if ((qemuSetScsiControllerModel(def, qemuCaps, &controllerModel)) < 0)
+        if ((qemuSetSCSIControllerModel(def, qemuCaps, &controllerModel)) < 0)
             goto error;
 
         if (controllerModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
@@ -4811,7 +4811,7 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         model = def->model;
-        if ((qemuSetScsiControllerModel(domainDef, qemuCaps, &model)) < 0)
+        if ((qemuSetSCSIControllerModel(domainDef, qemuCaps, &model)) < 0)
             return NULL;
 
         switch (model) {
@@ -5837,7 +5837,7 @@ qemuBuildSCSIHostdevDevStr(virDomainDefPtr def,
     model = virDomainDeviceFindControllerModel(def, dev->info,
                                                VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
 
-    if (qemuSetScsiControllerModel(def, qemuCaps, &model) < 0)
+    if (qemuSetSCSIControllerModel(def, qemuCaps, &model) < 0)
         goto error;
 
     if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {

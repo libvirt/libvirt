@@ -1466,7 +1466,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVfioPci[] = {
     { "bootindex", QEMU_CAPS_VFIO_PCI_BOOTINDEX },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsScsiDisk[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsSCSIDisk[] = {
     { "channel", QEMU_CAPS_SCSI_DISK_CHANNEL },
     { "wwn", QEMU_CAPS_SCSI_DISK_WWN },
 };
@@ -1489,7 +1489,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUsbHost[] = {
     { "bootindex", QEMU_CAPS_USB_HOST_BOOTINDEX },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsScsiGeneric[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsSCSIGeneric[] = {
     { "bootindex", QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX },
 };
 
@@ -1534,8 +1534,8 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsPciAssign) },
     { "vfio-pci", virQEMUCapsObjectPropsVfioPci,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVfioPci) },
-    { "scsi-disk", virQEMUCapsObjectPropsScsiDisk,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsScsiDisk) },
+    { "scsi-disk", virQEMUCapsObjectPropsSCSIDisk,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsSCSIDisk) },
     { "ide-drive", virQEMUCapsObjectPropsIDEDrive,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsIDEDrive) },
     { "PIIX4_PM", virQEMUCapsObjectPropsPixx4PM,
@@ -1544,8 +1544,8 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsUsbRedir) },
     { "usb-host", virQEMUCapsObjectPropsUsbHost,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsUsbHost) },
-    { "scsi-generic", virQEMUCapsObjectPropsScsiGeneric,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsScsiGeneric) },
+    { "scsi-generic", virQEMUCapsObjectPropsSCSIGeneric,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsSCSIGeneric) },
     { "i440FX-pcihost", virQEMUCapsObjectPropsI440FXPciHost,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsI440FXPciHost) },
     { "q35-pcihost", virQEMUCapsObjectPropsQ35PciHost,

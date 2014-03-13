@@ -1143,7 +1143,7 @@ static int udevProcessStorage(struct udev_device *device,
 }
 
 static int
-udevProcessScsiGeneric(struct udev_device *dev,
+udevProcessSCSIGeneric(struct udev_device *dev,
                        virNodeDeviceDefPtr def)
 {
     if (udevGetStringProperty(dev,
@@ -1258,7 +1258,7 @@ static int udevGetDeviceDetails(struct udev_device *device,
         ret = udevProcessStorage(device, def);
         break;
     case VIR_NODE_DEV_CAP_SCSI_GENERIC:
-        ret = udevProcessScsiGeneric(device, def);
+        ret = udevProcessSCSIGeneric(device, def);
         break;
     default:
         VIR_ERROR(_("Unknown device type %d"), def->caps->type);

@@ -662,7 +662,7 @@ virNodeDevCapStorageParseXML(xmlXPathContextPtr ctxt,
 }
 
 static int
-virNodeDevCapScsiParseXML(xmlXPathContextPtr ctxt,
+virNodeDevCapSCSIParseXML(xmlXPathContextPtr ctxt,
                           virNodeDeviceDefPtr def,
                           xmlNodePtr node,
                           union _virNodeDevCapData *data)
@@ -707,7 +707,7 @@ virNodeDevCapScsiParseXML(xmlXPathContextPtr ctxt,
 
 
 static int
-virNodeDevCapScsiTargetParseXML(xmlXPathContextPtr ctxt,
+virNodeDevCapSCSITargetParseXML(xmlXPathContextPtr ctxt,
                                 virNodeDeviceDefPtr def,
                                 xmlNodePtr node,
                                 union _virNodeDevCapData *data)
@@ -735,7 +735,7 @@ virNodeDevCapScsiTargetParseXML(xmlXPathContextPtr ctxt,
 
 
 static int
-virNodeDevCapScsiHostParseXML(xmlXPathContextPtr ctxt,
+virNodeDevCapSCSIHostParseXML(xmlXPathContextPtr ctxt,
                               virNodeDeviceDefPtr def,
                               xmlNodePtr node,
                               union _virNodeDevCapData *data,
@@ -1198,16 +1198,16 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
         ret = virNodeDevCapNetParseXML(ctxt, def, node, &caps->data);
         break;
     case VIR_NODE_DEV_CAP_SCSI_HOST:
-        ret = virNodeDevCapScsiHostParseXML(ctxt, def, node,
+        ret = virNodeDevCapSCSIHostParseXML(ctxt, def, node,
                                             &caps->data,
                                             create,
                                             virt_type);
         break;
     case VIR_NODE_DEV_CAP_SCSI_TARGET:
-        ret = virNodeDevCapScsiTargetParseXML(ctxt, def, node, &caps->data);
+        ret = virNodeDevCapSCSITargetParseXML(ctxt, def, node, &caps->data);
         break;
     case VIR_NODE_DEV_CAP_SCSI:
-        ret = virNodeDevCapScsiParseXML(ctxt, def, node, &caps->data);
+        ret = virNodeDevCapSCSIParseXML(ctxt, def, node, &caps->data);
         break;
     case VIR_NODE_DEV_CAP_STORAGE:
         ret = virNodeDevCapStorageParseXML(ctxt, def, node, &caps->data);

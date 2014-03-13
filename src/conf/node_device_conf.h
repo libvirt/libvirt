@@ -69,7 +69,7 @@ enum virNodeDevStorageCapFlags {
     VIR_NODE_DEV_CAP_STORAGE_HOTPLUGGABLE		= (1 << 2),
 };
 
-enum virNodeDevScsiHostCapFlags {
+enum virNodeDevSCSIHostCapFlags {
     VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST			= (1 << 0),
     VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS			= (1 << 1),
 };

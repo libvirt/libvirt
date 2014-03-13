@@ -202,7 +202,7 @@ qemuSetupHostUsbDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
 }
 
 static int
-qemuSetupHostScsiDeviceCgroup(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
+qemuSetupHostSCSIDeviceCgroup(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
                               const char *path,
                               void *opaque)
 {
@@ -303,7 +303,7 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
                 goto cleanup;
 
             if (virSCSIDeviceFileIterate(scsi,
-                                         qemuSetupHostScsiDeviceCgroup,
+                                         qemuSetupHostSCSIDeviceCgroup,
                                          vm) < 0)
                 goto cleanup;
 

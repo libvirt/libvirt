@@ -2075,7 +2075,7 @@ struct _virDomainDefParserConfig {
     virFreeCallback privFree;
 
     /* data */
-    bool hasWideScsiBus;
+    bool hasWideSCSIBus;
     unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
 };
 
