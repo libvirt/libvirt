@@ -1051,23 +1051,21 @@ int virDBusMessageDecode(DBusMessage* msg,
 # define VIR_DBUS_METHOD_CALL_TIMEOUT_MILLIS 30 * 1000
 
 /**
- * virDBusCallMethod:
- * @conn: a DBus connection
- * @replyout: pointer to receive reply message, or NULL
+ * virDBusCreateMethodV:
+ * @call: pointer to be filled with a method call message
  * @destination: bus identifier of the target service
  * @path: object path of the target service
  * @iface: the interface of the object
  * @member: the name of the method in the interface
  * @types: type signature for following method arguments
- * @...: method arguments
+ * @args: method arguments
  *
- * This invokes a method on a remote service on the
- * DBus bus @conn. The @destination, @path, @iface
+ * This creates a DBus method call message and saves a
+ * pointer to it in @call. The @destination, @path, @iface
  * and @member parameters identify the object method to
  * be invoked. The optional @replyout parameter will be
- * filled with any reply to the method call. The
- * virDBusMethodReply method can be used to decode the
- * return values.
+ * filled with any reply to the method call. The method
+ * can be later invoked using virDBusCall.
  *
  * The @types parameter is a DBus signature describing
  * the method call parameters which will be provided
@@ -1168,38 +1166,91 @@ int virDBusMessageDecode(DBusMessage* msg,
  *     (3, "email", "s", "joe@blogs.com", "age", "i", 35,
  *      "address", "as", 3, "Some house", "Some road", "some city")
  */
-
-int virDBusCallMethod(DBusConnection *conn,
-                      DBusMessage **replyout,
-                      const char *destination,
-                      const char *path,
-                      const char *iface,
-                      const char *member,
-                      const char *types, ...)
+int virDBusCreateMethodV(DBusMessage **call,
+                         const char *destination,
+                         const char *path,
+                         const char *iface,
+                         const char *member,
+                         const char *types,
+                         va_list args)
 {
-    DBusMessage *call = NULL;
-    DBusMessage *reply = NULL;
-    DBusError error;
     int ret = -1;
-    va_list args;
 
-    dbus_error_init(&error);
-
-    if (!(call = dbus_message_new_method_call(destination,
-                                              path,
-                                              iface,
-                                              member))) {
+    if (!(*call = dbus_message_new_method_call(destination,
+                                               path,
+                                               iface,
+                                               member))) {
         virReportOOMError();
         goto cleanup;
     }
 
-    va_start(args, types);
-    ret = virDBusMessageEncodeArgs(call, types, args);
-    va_end(args);
-    if (ret < 0)
+    if (virDBusMessageEncodeArgs(*call, types, args) < 0) {
+        dbus_message_unref(*call);
+        *call = NULL;
         goto cleanup;
+    }
 
-    ret = -1;
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
+/**
+ * virDBusCreateMethod:
+ * @call: pointer to be filled with a method call message
+ * @destination: bus identifier of the target service
+ * @path: object path of the target service
+ * @iface: the interface of the object
+ * @member: the name of the method in the interface
+ * @types: type signature for following method arguments
+ * @...: method arguments
+ *
+ * See virDBusCreateMethodV for a description of the
+ * behaviour of this method.
+ */
+int virDBusCreateMethod(DBusMessage **call,
+                        const char *destination,
+                        const char *path,
+                        const char *iface,
+                        const char *member,
+                        const char *types, ...)
+{
+    va_list args;
+    int ret;
+
+    va_start(args, types);
+    ret = virDBusCreateMethodV(call, destination, path,
+                               iface, member, types, args);
+    va_end(args);
+
+    return ret;
+}
+
+
+/**
+ * virDBusCall:
+ * @conn: a DBus connection
+ * @call: pointer to a message to send
+ * @replyout: pointer to receive reply message, or NULL
+ *
+ * This invokes a method encoded in @call on a remote
+ * service on the DBus bus @conn. The optional @replyout
+ * parameter will be filled with any reply to the method
+ * call. The virDBusMethodReply method can be used to
+ * decode the return values.
+ *
+ * Returns 0 on success, or -1 upon error
+ */
+int virDBusCall(DBusConnection *conn,
+                DBusMessage *call,
+                DBusMessage **replyout)
+{
+    DBusMessage *reply = NULL;
+    DBusError error;
+    int ret = -1;
+
+    dbus_error_init(&error);
 
     if (!(reply = dbus_connection_send_with_reply_and_block(conn,
                                                             call,
@@ -1219,16 +1270,70 @@ int virDBusCallMethod(DBusConnection *conn,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     dbus_error_free(&error);
-    if (call)
-        dbus_message_unref(call);
     if (reply) {
         if (ret == 0 && replyout)
             *replyout = reply;
         else
             dbus_message_unref(reply);
     }
+    return ret;
+}
+
+
+/**
+ * virDBusCallMethod:
+ * @conn: a DBus connection
+ * @replyout: pointer to receive reply message, or NULL
+ * @destination: bus identifier of the target service
+ * @path: object path of the target service
+ * @iface: the interface of the object
+ * @member: the name of the method in the interface
+ * @types: type signature for following method arguments
+ * @...: method arguments
+ *
+ * This invokes a method on a remote service on the
+ * DBus bus @conn. The @destination, @path, @iface
+ * and @member parameters identify the object method to
+ * be invoked. The optional @replyout parameter will be
+ * filled with any reply to the method call. The
+ * virDBusMethodReply method can be used to decode the
+ * return values.
+ *
+ * The @types parameter is a DBus signature describing
+ * the method call parameters which will be provided
+ * as variadic args. See virDBusCreateMethodV for a
+ * description of this parameter.
+ *
+ * Returns: 0 on success, -1 on error
+ */
+int virDBusCallMethod(DBusConnection *conn,
+                      DBusMessage **replyout,
+                      const char *destination,
+                      const char *path,
+                      const char *iface,
+                      const char *member,
+                      const char *types, ...)
+{
+    DBusMessage *call = NULL;
+    int ret = -1;
+    va_list args;
+
+    va_start(args, types);
+    ret = virDBusCreateMethodV(&call, destination, path,
+                               iface, member, types, args);
+    va_end(args);
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    ret = virDBusCall(conn, call, replyout);
+
+ cleanup:
+    if (call)
+        dbus_message_unref(call);
     return ret;
 }
 
@@ -1369,6 +1474,40 @@ DBusConnection *virDBusGetSessionBus(void)
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("DBus support not compiled into this binary"));
     return NULL;
+}
+
+int virDBusCreateMethod(DBusMessage **call ATTRIBUTE_UNUSED,
+                        const char *destination ATTRIBUTE_UNUSED,
+                        const char *path ATTRIBUTE_UNUSED,
+                        const char *iface ATTRIBUTE_UNUSED,
+                        const char *member ATTRIBUTE_UNUSED,
+                        const char *types ATTRIBUTE_UNUSED, ...)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("DBus support not compiled into this binary"));
+    return -1;
+}
+
+int virDBusCreateMethodV(DBusMessage **call ATTRIBUTE_UNUSED,
+                         const char *destination ATTRIBUTE_UNUSED,
+                         const char *path ATTRIBUTE_UNUSED,
+                         const char *iface ATTRIBUTE_UNUSED,
+                         const char *member ATTRIBUTE_UNUSED,
+                         const char *types ATTRIBUTE_UNUSED,
+                         va_list args ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("DBus support not compiled into this binary"));
+    return -1;
+}
+
+int virDBusCall(DBusConnection *conn ATTRIBUTE_UNUSED,
+                DBusMessage *call ATTRIBUTE_UNUSED,
+                DBusMessage **reply ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("DBus support not compiled into this binary"));
+    return -1;
 }
 
 int virDBusCallMethod(DBusConnection *conn ATTRIBUTE_UNUSED,

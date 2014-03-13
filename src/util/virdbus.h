@@ -31,12 +31,28 @@
 # endif
 # include "internal.h"
 
+# include <stdarg.h>
+
 void virDBusSetSharedBus(bool shared);
 
 DBusConnection *virDBusGetSystemBus(void);
 bool virDBusHasSystemBus(void);
 void virDBusCloseSystemBus(void);
 DBusConnection *virDBusGetSessionBus(void);
+
+int virDBusCreateMethod(DBusMessage **call,
+                        const char *destination,
+                        const char *path,
+                        const char *iface,
+                        const char *member,
+                        const char *types, ...);
+int virDBusCreateMethodV(DBusMessage **call,
+                         const char *destination,
+                         const char *path,
+                         const char *iface,
+                         const char *member,
+                         const char *types,
+                         va_list args);
 
 int virDBusCallMethod(DBusConnection *conn,
                       DBusMessage **reply,
@@ -45,6 +61,9 @@ int virDBusCallMethod(DBusConnection *conn,
                       const char *iface,
                       const char *member,
                       const char *types, ...);
+int virDBusCall(DBusConnection *conn,
+                DBusMessage *call,
+                DBusMessage **reply);
 int virDBusMessageRead(DBusMessage *msg,
                        const char *types, ...);
 

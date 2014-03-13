@@ -1160,8 +1160,11 @@ virCryptoHashString;
 
 
 # util/virdbus.h
+virDBusCall;
 virDBusCallMethod;
 virDBusCloseSystemBus;
+virDBusCreateMethod;
+virDBusCreateMethodV;
 virDBusGetSessionBus;
 virDBusGetSystemBus;
 virDBusHasSystemBus;

@@ -24,7 +24,6 @@
 
 # include "virdbus.h"
 
-# include <stdarg.h>
 
 int virDBusMessageEncodeArgs(DBusMessage* msg,
                              const char *types,
