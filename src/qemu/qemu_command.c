@@ -7521,7 +7521,8 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
                               virQEMUCapsPtr qemuCaps,
                               int vlan,
                               int bootindex,
-                              enum virNetDevVPortProfileOp vmop)
+                              enum virNetDevVPortProfileOp vmop,
+                              bool standalone)
 {
     int ret = -1;
     char *nic = NULL, *host = NULL;
@@ -7579,10 +7580,11 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
             goto cleanup;
     }
 
-    if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-        actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-        actualType == VIR_DOMAIN_NET_TYPE_ETHERNET ||
-        actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
+    if ((actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+         actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+         actualType == VIR_DOMAIN_NET_TYPE_ETHERNET ||
+         actualType == VIR_DOMAIN_NET_TYPE_DIRECT) &&
+        !standalone) {
         /* Attempt to use vhost-net mode for these types of
            network device */
         vhostfdSize = net->driver.virtio.queues;
@@ -8759,7 +8761,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                 vlan = i;
 
             if (qemuBuildInterfaceCommandLine(cmd, driver, conn, def, net,
-                                              qemuCaps, vlan, bootNet, vmop) < 0)
+                                              qemuCaps, vlan, bootNet, vmop,
+                                              standalone) < 0)
                 goto error;
             last_good_net = i;
             bootNet = 0;
