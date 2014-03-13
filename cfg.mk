@@ -1,5 +1,5 @@
 # Customize Makefile.maint.                           -*- makefile -*-
-# Copyright (C) 2008-2013 Red Hat, Inc.
+# Copyright (C) 2008-2014 Red Hat, Inc.
 # Copyright (C) 2003-2008 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -515,6 +515,11 @@ sc_prohibit_virBufferAdd_with_string_literal:
 sc_prohibit_virBufferAsprintf_with_string_literal:
 	@prohibit='\<virBufferAsprintf *\([^,]+, *"([^%"\]|\\.|%%)*"\)'		\
 	halt='use virBufferAddLit, not virBufferAsprintf, with a string literal' \
+	  $(_sc_search_regexp)
+
+sc_forbid_manual_xml_indent:
+	@prohibit='virBuffer.*" +<'					      \
+	halt='use virBufferAdjustIndent instead of spaces when indenting xml' \
 	  $(_sc_search_regexp)
 
 # Not only do they fail to deal well with ipv6, but the gethostby*
