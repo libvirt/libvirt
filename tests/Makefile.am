@@ -272,6 +272,10 @@ endif WITH_STORAGE_SHEEPDOG
 
 test_programs += nwfilterxml2xmltest
 
+if WITH_NWFILTER
+test_programs += nwfilterebiptablestest
+endif WITH_NWFILTER
+
 if WITH_STORAGE
 test_programs += storagevolxml2argvtest
 endif WITH_STORAGE
@@ -695,6 +699,13 @@ nwfilterxml2xmltest_SOURCES = \
 	nwfilterxml2xmltest.c \
 	testutils.c testutils.h
 nwfilterxml2xmltest_LDADD = $(LDADDS)
+
+if WITH_NWFILTER
+nwfilterebiptablestest_SOURCES = \
+	nwfilterebiptablestest.c \
+	testutils.c testutils.h
+nwfilterebiptablestest_LDADD = ../src/libvirt_driver_nwfilter_impl.la $(LDADDS)
+endif WITH_NWFILTER
 
 secretxml2xmltest_SOURCES = \
 	secretxml2xmltest.c \
