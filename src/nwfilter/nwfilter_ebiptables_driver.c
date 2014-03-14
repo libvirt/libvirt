@@ -587,8 +587,7 @@ ebtablesHandleEthHdr(virBufferPtr buf,
 static int iptablesLinkIPTablesBaseChain(virBufferPtr buf,
                                          const char *udchain,
                                          const char *syschain,
-                                         unsigned int pos,
-                                         int stopOnError)
+                                         unsigned int pos)
 {
     virBufferAsprintf(buf,
                       "res=$($IPT -L %s -n --line-number | %s '%s')\n"
@@ -614,10 +613,10 @@ static int iptablesLinkIPTablesBaseChain(virBufferPtr buf,
                       pos,
 
                       syschain, pos, udchain,
-                      CMD_STOPONERR(stopOnError),
+                      CMD_STOPONERR(true),
 
                       syschain,
-                      CMD_STOPONERR(stopOnError));
+                      CMD_STOPONERR(true));
     return 0;
 }
 
@@ -629,13 +628,13 @@ static int iptablesCreateBaseChains(virBufferPtr buf)
                          "$IPT -N " VIRT_IN_POST_CHAIN CMD_SEPARATOR
                          "$IPT -N " HOST_IN_CHAIN      CMD_SEPARATOR);
     iptablesLinkIPTablesBaseChain(buf,
-                                  VIRT_IN_CHAIN,      "FORWARD", 1, 1);
+                                  VIRT_IN_CHAIN,      "FORWARD", 1);
     iptablesLinkIPTablesBaseChain(buf,
-                                  VIRT_OUT_CHAIN,     "FORWARD", 2, 1);
+                                  VIRT_OUT_CHAIN,     "FORWARD", 2);
     iptablesLinkIPTablesBaseChain(buf,
-                                  VIRT_IN_POST_CHAIN, "FORWARD", 3, 1);
+                                  VIRT_IN_POST_CHAIN, "FORWARD", 3);
     iptablesLinkIPTablesBaseChain(buf,
-                                  HOST_IN_CHAIN,      "INPUT",   1, 1);
+                                  HOST_IN_CHAIN,      "INPUT",   1);
 
     return 0;
 }
@@ -644,8 +643,7 @@ static int iptablesCreateBaseChains(virBufferPtr buf)
 static int
 iptablesCreateTmpRootChain(virBufferPtr buf,
                            char prefix,
-                           bool incoming, const char *ifname,
-                           int stopOnError)
+                           bool incoming, const char *ifname)
 {
     char chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix[2] = {
@@ -661,7 +659,7 @@ iptablesCreateTmpRootChain(virBufferPtr buf,
                       CMD_EXEC
                       "%s",
                       chain,
-                      CMD_STOPONERR(stopOnError));
+                      CMD_STOPONERR(true));
 
     return 0;
 }
@@ -671,9 +669,9 @@ static int
 iptablesCreateTmpRootChains(virBufferPtr buf,
                             const char *ifname)
 {
-    iptablesCreateTmpRootChain(buf, 'F', false, ifname, 1);
-    iptablesCreateTmpRootChain(buf, 'F', true, ifname, 1);
-    iptablesCreateTmpRootChain(buf, 'H', true, ifname, 1);
+    iptablesCreateTmpRootChain(buf, 'F', false, ifname);
+    iptablesCreateTmpRootChain(buf, 'F', true, ifname);
+    iptablesCreateTmpRootChain(buf, 'H', true, ifname);
     return 0;
 }
 
@@ -755,8 +753,7 @@ static int
 iptablesLinkTmpRootChain(virBufferPtr buf,
                          const char *basechain,
                          char prefix,
-                         bool incoming, const char *ifname,
-                         int stopOnError)
+                         bool incoming, const char *ifname)
 {
     char chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix[2] = {
@@ -777,7 +774,7 @@ iptablesLinkTmpRootChain(virBufferPtr buf,
                       basechain,
                       match, ifname, chain,
 
-                      CMD_STOPONERR(stopOnError));
+                      CMD_STOPONERR(true));
 
     return 0;
 }
@@ -787,9 +784,9 @@ static int
 iptablesLinkTmpRootChains(virBufferPtr buf,
                           const char *ifname)
 {
-    iptablesLinkTmpRootChain(buf, VIRT_OUT_CHAIN, 'F', false, ifname, 1);
-    iptablesLinkTmpRootChain(buf, VIRT_IN_CHAIN,  'F', true, ifname, 1);
-    iptablesLinkTmpRootChain(buf, HOST_IN_CHAIN,  'H', true, ifname, 1);
+    iptablesLinkTmpRootChain(buf, VIRT_OUT_CHAIN, 'F', false, ifname);
+    iptablesLinkTmpRootChain(buf, VIRT_IN_CHAIN,  'F', true, ifname);
+    iptablesLinkTmpRootChain(buf, HOST_IN_CHAIN,  'H', true, ifname);
 
     return 0;
 }
@@ -962,15 +959,14 @@ iptablesRenameTmpRootChains(virBufferPtr buf,
 
 static void
 iptablesInstCommand(virBufferPtr buf,
-                    const char *templ, char cmd, int pos,
-                    int stopOnError)
+                    const char *templ, char cmd, int pos)
 {
     char position[10] = { 0 };
     if (pos >= 0)
         snprintf(position, sizeof(position), "%d", pos);
     virBufferAsprintf(buf, templ, cmd, position);
     virBufferAsprintf(buf, CMD_SEPARATOR "%s",
-                      CMD_STOPONERR(stopOnError));
+                      CMD_STOPONERR(true));
 }
 
 
@@ -2871,8 +2867,7 @@ ebiptablesExecCLI(virBufferPtr buf, bool ignoreNonzero, char **outbuf)
 
 static int
 ebtablesCreateTmpRootChain(virBufferPtr buf,
-                           bool incoming, const char *ifname,
-                           int stopOnError)
+                           bool incoming, const char *ifname)
 {
     char chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix = incoming ? CHAINPREFIX_HOST_IN_TEMP
@@ -2885,7 +2880,7 @@ ebtablesCreateTmpRootChain(virBufferPtr buf,
                       CMD_EXEC
                       "%s",
                       chain,
-                      CMD_STOPONERR(stopOnError));
+                      CMD_STOPONERR(true));
 
     return 0;
 }
@@ -2893,8 +2888,7 @@ ebtablesCreateTmpRootChain(virBufferPtr buf,
 
 static int
 ebtablesLinkTmpRootChain(virBufferPtr buf,
-                         bool incoming, const char *ifname,
-                         int stopOnError)
+                         bool incoming, const char *ifname)
 {
     char chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix = incoming ? CHAINPREFIX_HOST_IN_TEMP
@@ -2911,7 +2905,7 @@ ebtablesLinkTmpRootChain(virBufferPtr buf,
                                : EBTABLES_CHAIN_OUTGOING,
                       iodev, ifname, chain,
 
-                      CMD_STOPONERR(stopOnError));
+                      CMD_STOPONERR(true));
 
     return 0;
 }
@@ -3011,7 +3005,6 @@ ebtablesCreateTmpSubChain(ebiptablesRuleInstPtr *inst,
                           const char *ifname,
                           enum l3_proto_idx protoidx,
                           const char *filtername,
-                          int stopOnError,
                           virNWFilterChainPriority priority)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -3059,11 +3052,11 @@ ebtablesCreateTmpSubChain(ebiptablesRuleInstPtr *inst,
                       chain,
                       chain,
 
-                      CMD_STOPONERR(stopOnError),
+                      CMD_STOPONERR(true),
 
                       rootchain, protostr, chain,
 
-                      CMD_STOPONERR(stopOnError));
+                      CMD_STOPONERR(true));
 
     VIR_FREE(protostr);
 
@@ -3219,7 +3212,7 @@ ebtablesRenameTmpSubAndRootChains(virBufferPtr buf,
 static void
 ebiptablesInstCommand(virBufferPtr buf,
                       const char *templ, char cmd, int pos,
-                      int stopOnError)
+                      bool stopOnError)
 {
     char position[10] = { 0 };
     if (pos >= 0)
@@ -3277,7 +3270,7 @@ ebtablesApplyBasicRules(const char *ifname,
 
     NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
 
-    ebtablesCreateTmpRootChain(&buf, true, ifname, 1);
+    ebtablesCreateTmpRootChain(&buf, true, ifname);
 
     PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
     virBufferAsprintf(&buf,
@@ -3312,7 +3305,7 @@ ebtablesApplyBasicRules(const char *ifname,
                       chain,
                       CMD_STOPONERR(1));
 
-    ebtablesLinkTmpRootChain(&buf, true, ifname, 1);
+    ebtablesLinkTmpRootChain(&buf, true, ifname);
     ebtablesRenameTmpRootChain(&buf, true, ifname);
 
     if (ebiptablesExecCLI(&buf, false, NULL) < 0)
@@ -3374,8 +3367,8 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
 
     NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
 
-    ebtablesCreateTmpRootChain(&buf, true, ifname, 1);
-    ebtablesCreateTmpRootChain(&buf, false, ifname, 1);
+    ebtablesCreateTmpRootChain(&buf, true, ifname);
+    ebtablesCreateTmpRootChain(&buf, false, ifname);
 
     PRINT_ROOT_CHAIN(chain_in, CHAINPREFIX_HOST_IN_TEMP, ifname);
     PRINT_ROOT_CHAIN(chain_out, CHAINPREFIX_HOST_OUT_TEMP, ifname);
@@ -3455,8 +3448,8 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
                       chain_out,
                       CMD_STOPONERR(1));
 
-    ebtablesLinkTmpRootChain(&buf, true, ifname, 1);
-    ebtablesLinkTmpRootChain(&buf, false, ifname, 1);
+    ebtablesLinkTmpRootChain(&buf, true, ifname);
+    ebtablesLinkTmpRootChain(&buf, false, ifname);
 
     if (!leaveTemporary) {
         ebtablesRenameTmpRootChain(&buf, true, ifname);
@@ -3506,8 +3499,8 @@ ebtablesApplyDropAllRules(const char *ifname)
 
     NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
 
-    ebtablesCreateTmpRootChain(&buf, true, ifname, 1);
-    ebtablesCreateTmpRootChain(&buf, false, ifname, 1);
+    ebtablesCreateTmpRootChain(&buf, true, ifname);
+    ebtablesCreateTmpRootChain(&buf, false, ifname);
 
     PRINT_ROOT_CHAIN(chain_in, CHAINPREFIX_HOST_IN_TEMP, ifname);
     PRINT_ROOT_CHAIN(chain_out, CHAINPREFIX_HOST_OUT_TEMP, ifname);
@@ -3528,8 +3521,8 @@ ebtablesApplyDropAllRules(const char *ifname)
                       chain_out,
                       CMD_STOPONERR(1));
 
-    ebtablesLinkTmpRootChain(&buf, true, ifname, 1);
-    ebtablesLinkTmpRootChain(&buf, false, ifname, 1);
+    ebtablesLinkTmpRootChain(&buf, true, ifname);
+    ebtablesLinkTmpRootChain(&buf, false, ifname);
     ebtablesRenameTmpRootChain(&buf, true, ifname);
     ebtablesRenameTmpRootChain(&buf, false, ifname);
 
@@ -3694,7 +3687,7 @@ ebtablesCreateTmpRootAndSubChains(virBufferPtr buf,
     virHashKeyValuePairPtr filter_names;
     const virNWFilterChainPriority *priority;
 
-    if (ebtablesCreateTmpRootChain(buf, incoming, ifname, 1) < 0)
+    if (ebtablesCreateTmpRootChain(buf, incoming, ifname) < 0)
         return -1;
 
     filter_names = virHashGetItems(chains,
@@ -3710,7 +3703,7 @@ ebtablesCreateTmpRootAndSubChains(virBufferPtr buf,
         priority = (const virNWFilterChainPriority *)filter_names[i].value;
         rc = ebtablesCreateTmpSubChain(inst, nRuleInstances,
                                        incoming, ifname, idx,
-                                       filter_names[i].key, 1,
+                                       filter_names[i].key,
                                        *priority);
         if (rc < 0)
             break;
@@ -3825,11 +3818,11 @@ ebiptablesApplyNewRules(const char *ifname,
                    ebtChains[j].priority <= inst[i]->priority) {
                 ebiptablesInstCommand(&buf,
                                       ebtChains[j++].commandTemplate,
-                                      'A', -1, 1);
+                                      'A', -1, true);
             }
             ebiptablesInstCommand(&buf,
                                   inst[i]->commandTemplate,
-                                  'A', -1, 1);
+                                  'A', -1, true);
         break;
         case RT_IPTABLES:
             haveIptables = true;
@@ -3843,7 +3836,7 @@ ebiptablesApplyNewRules(const char *ifname,
     while (j < nEbtChains)
         ebiptablesInstCommand(&buf,
                               ebtChains[j++].commandTemplate,
-                              'A', -1, 1);
+                              'A', -1, true);
 
     if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
         goto tear_down_tmpebchains;
@@ -3880,7 +3873,7 @@ ebiptablesApplyNewRules(const char *ifname,
             if (inst[i]->ruleType == RT_IPTABLES)
                 iptablesInstCommand(&buf,
                                     inst[i]->commandTemplate,
-                                    'A', -1, 1);
+                                    'A', -1);
         }
 
         if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
@@ -3920,7 +3913,7 @@ ebiptablesApplyNewRules(const char *ifname,
             if (inst[i]->ruleType == RT_IP6TABLES)
                 iptablesInstCommand(&buf,
                                     inst[i]->commandTemplate,
-                                    'A', -1, 1);
+                                    'A', -1);
         }
 
         if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
@@ -3932,9 +3925,9 @@ ebiptablesApplyNewRules(const char *ifname,
     NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
 
     if (virHashSize(chains_in_set) != 0)
-        ebtablesLinkTmpRootChain(&buf, true, ifname, 1);
+        ebtablesLinkTmpRootChain(&buf, true, ifname);
     if (virHashSize(chains_out_set) != 0)
-        ebtablesLinkTmpRootChain(&buf, false, ifname, 1);
+        ebtablesLinkTmpRootChain(&buf, false, ifname);
 
     if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
         goto tear_down_ebsubchains_and_unlink;
@@ -4115,7 +4108,7 @@ ebiptablesRemoveRules(const char *ifname ATTRIBUTE_UNUSED,
         ebiptablesInstCommand(&buf,
                               inst[i]->commandTemplate,
                               'D', -1,
-                              0);
+                              false);
 
     if (ebiptablesExecCLI(&buf, true, NULL) < 0)
         goto cleanup;
