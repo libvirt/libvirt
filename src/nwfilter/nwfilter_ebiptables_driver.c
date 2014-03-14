@@ -676,7 +676,7 @@ static void
 _iptablesRemoveRootChain(virBufferPtr buf,
                          char prefix,
                          bool incoming, const char *ifname,
-                         int isTempChain)
+                         bool isTempChain)
 {
     char chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix[2] = {
@@ -706,7 +706,7 @@ iptablesRemoveRootChain(virBufferPtr buf,
                         bool incoming,
                         const char *ifname)
 {
-    _iptablesRemoveRootChain(buf, prefix, incoming, ifname, 0);
+    _iptablesRemoveRootChain(buf, prefix, incoming, ifname, false);
 }
 
 
@@ -717,7 +717,7 @@ iptablesRemoveTmpRootChain(virBufferPtr buf,
                            const char *ifname)
 {
     _iptablesRemoveRootChain(buf, prefix,
-                             incoming, ifname, 1);
+                             incoming, ifname, true);
 }
 
 
@@ -817,7 +817,7 @@ _iptablesUnlinkRootChain(virBufferPtr buf,
                          const char *basechain,
                          char prefix,
                          bool incoming, const char *ifname,
-                         int isTempChain)
+                         bool isTempChain)
 {
     char chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix[2] = {
@@ -863,7 +863,7 @@ iptablesUnlinkRootChain(virBufferPtr buf,
                         bool incoming, const char *ifname)
 {
     _iptablesUnlinkRootChain(buf,
-                             basechain, prefix, incoming, ifname, 0);
+                             basechain, prefix, incoming, ifname, false);
 }
 
 
@@ -874,7 +874,7 @@ iptablesUnlinkTmpRootChain(virBufferPtr buf,
                            bool incoming, const char *ifname)
 {
     _iptablesUnlinkRootChain(buf,
-                             basechain, prefix, incoming, ifname, 1);
+                             basechain, prefix, incoming, ifname, true);
 }
 
 
@@ -2890,7 +2890,7 @@ ebtablesLinkTmpRootChain(virBufferPtr buf,
 static void
 _ebtablesRemoveRootChain(virBufferPtr buf,
                          bool incoming, const char *ifname,
-                         int isTempChain)
+                         bool isTempChain)
 {
     char chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix;
@@ -2915,7 +2915,7 @@ static void
 ebtablesRemoveRootChain(virBufferPtr buf,
                         bool incoming, const char *ifname)
 {
-    _ebtablesRemoveRootChain(buf, incoming, ifname, 0);
+    _ebtablesRemoveRootChain(buf, incoming, ifname, false);
 }
 
 
@@ -2923,14 +2923,14 @@ static void
 ebtablesRemoveTmpRootChain(virBufferPtr buf,
                            bool incoming, const char *ifname)
 {
-    _ebtablesRemoveRootChain(buf, incoming, ifname, 1);
+    _ebtablesRemoveRootChain(buf, incoming, ifname, true);
 }
 
 
 static void
 _ebtablesUnlinkRootChain(virBufferPtr buf,
                          bool incoming, const char *ifname,
-                         int isTempChain)
+                         bool isTempChain)
 {
     char chain[MAX_CHAINNAME_LENGTH];
     char iodev = incoming ? 'i' : 'o';
@@ -2958,7 +2958,7 @@ static void
 ebtablesUnlinkRootChain(virBufferPtr buf,
                         bool incoming, const char *ifname)
 {
-    _ebtablesUnlinkRootChain(buf, incoming, ifname, 0);
+    _ebtablesUnlinkRootChain(buf, incoming, ifname, false);
 }
 
 
@@ -2966,7 +2966,7 @@ static void
 ebtablesUnlinkTmpRootChain(virBufferPtr buf,
                            bool incoming, const char *ifname)
 {
-    _ebtablesUnlinkRootChain(buf, incoming, ifname, 1);
+    _ebtablesUnlinkRootChain(buf, incoming, ifname, true);
 }
 
 
