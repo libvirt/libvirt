@@ -2897,6 +2897,21 @@ ebtablesCreateTmpRootChain(virBufferPtr buf,
 
 
 static void
+ebtablesCreateTmpRootChainFW(virFirewallPtr fw,
+                             int incoming, const char *ifname)
+{
+    char chain[MAX_CHAINNAME_LENGTH];
+    char chainPrefix = (incoming) ? CHAINPREFIX_HOST_IN_TEMP
+                                  : CHAINPREFIX_HOST_OUT_TEMP;
+
+    PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
+
+    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                       "-t", "nat", "-N", chain, NULL);
+}
+
+
+static void
 ebtablesLinkTmpRootChain(virBufferPtr buf,
                          bool incoming, const char *ifname)
 {
@@ -2916,6 +2931,24 @@ ebtablesLinkTmpRootChain(virBufferPtr buf,
                       iodev, ifname, chain,
 
                       CMD_STOPONERR(true));
+}
+
+
+static void
+ebtablesLinkTmpRootChainFW(virFirewallPtr fw,
+                           int incoming, const char *ifname)
+{
+    char chain[MAX_CHAINNAME_LENGTH];
+    char chainPrefix = incoming ? CHAINPREFIX_HOST_IN_TEMP
+                                : CHAINPREFIX_HOST_OUT_TEMP;
+
+    PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
+
+    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                       "-t", "nat", "-A",
+                       incoming ? EBTABLES_CHAIN_INCOMING : EBTABLES_CHAIN_OUTGOING,
+                       incoming ? "-i" : "-o",
+                       ifname, "-j", chain, NULL);
 }
 
 
@@ -3436,74 +3469,54 @@ static int
 ebtablesApplyBasicRules(const char *ifname,
                         const virMacAddr *macaddr)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virFirewallPtr fw = virFirewallNew();
     char chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix = CHAINPREFIX_HOST_IN_TEMP;
     char macaddr_str[VIR_MAC_STRING_BUFLEN];
 
-    if (!ebtables_cmd_path) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot create rules since ebtables tool is "
-                         "missing."));
-        return -1;
-    }
-
     virMacAddrFormat(macaddr, macaddr_str);
 
-    ebiptablesAllTeardown(ifname);
+    if (ebiptablesAllTeardown(ifname) < 0)
+        goto error;
 
-    NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
+    virFirewallStartTransaction(fw, 0);
 
-    ebtablesCreateTmpRootChain(&buf, true, ifname);
+    ebtablesCreateTmpRootChainFW(fw, true, ifname);
 
     PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
-    virBufferAsprintf(&buf,
-                      CMD_DEF("$EBT -t nat -A %s -s ! %s -j DROP") CMD_SEPARATOR
-                      CMD_EXEC
-                      "%s",
+    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                       "-t", "nat", "-A", chain,
+                       "-s", "!", macaddr_str,
+                       "-j", "DROP", NULL);
+    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                       "-t", "nat", "-A", chain,
+                       "-p", "IPv4",
+                       "-j", "ACCEPT", NULL);
+    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                       "-t", "nat", "-A", chain,
+                       "-p", "ARP",
+                       "-j", "ACCEPT", NULL);
+    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                       "-t", "nat", "-A", chain,
+                       "-j", "DROP", NULL);
 
-                      chain, macaddr_str,
-                      CMD_STOPONERR(true));
+    ebtablesLinkTmpRootChainFW(fw, true, ifname);
+    ebtablesRenameTmpRootChainFW(fw, true, ifname);
 
-    virBufferAsprintf(&buf,
-                      CMD_DEF("$EBT -t nat -A %s -p IPv4 -j ACCEPT") CMD_SEPARATOR
-                      CMD_EXEC
-                      "%s",
-
-                      chain,
-                      CMD_STOPONERR(true));
-
-    virBufferAsprintf(&buf,
-                      CMD_DEF("$EBT -t nat -A %s -p ARP -j ACCEPT") CMD_SEPARATOR
-                      CMD_EXEC
-                      "%s",
-
-                      chain,
-                      CMD_STOPONERR(true));
-
-    virBufferAsprintf(&buf,
-                      CMD_DEF("$EBT -t nat -A %s -j DROP") CMD_SEPARATOR
-                      CMD_EXEC
-                      "%s",
-
-                      chain,
-                      CMD_STOPONERR(true));
-
-    ebtablesLinkTmpRootChain(&buf, true, ifname);
-    ebtablesRenameTmpRootChain(&buf, true, ifname);
-
-    if (ebiptablesExecCLI(&buf, false, NULL) < 0)
+    virMutexLock(&execCLIMutex);
+    if (virFirewallApply(fw) < 0) {
+        virMutexUnlock(&execCLIMutex);
         goto tear_down_tmpebchains;
+    }
+    virMutexUnlock(&execCLIMutex);
 
+    virFirewallFree(fw);
     return 0;
 
  tear_down_tmpebchains:
     ebtablesCleanAll(ifname);
-
-    virReportError(VIR_ERR_BUILD_FIREWALL,
-                   "%s",
-                   _("Some rules could not be created."));
-
+ error:
+    virFirewallFree(fw);
     return -1;
 }
 
