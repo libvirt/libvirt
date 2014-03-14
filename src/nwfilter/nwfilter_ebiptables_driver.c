@@ -3297,31 +3297,6 @@ ebtablesRemoveTmpSubChainsFW(virFirewallPtr fw,
 }
 
 static void
-ebtablesRenameTmpSubChain(virBufferPtr buf,
-                          bool incoming,
-                          const char *ifname,
-                          const char *protocol)
-{
-    char tmpchain[MAX_CHAINNAME_LENGTH], chain[MAX_CHAINNAME_LENGTH];
-    char tmpChainPrefix = incoming ? CHAINPREFIX_HOST_IN_TEMP
-                                   : CHAINPREFIX_HOST_OUT_TEMP;
-    char chainPrefix = incoming ? CHAINPREFIX_HOST_IN
-                                : CHAINPREFIX_HOST_OUT;
-
-    if (protocol) {
-        PRINT_CHAIN(tmpchain, tmpChainPrefix, ifname, protocol);
-        PRINT_CHAIN(chain, chainPrefix, ifname, protocol);
-    } else {
-        PRINT_ROOT_CHAIN(tmpchain, tmpChainPrefix, ifname);
-        PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
-    }
-
-    virBufferAsprintf(buf,
-                      "$EBT -t nat -E %s %s" CMD_SEPARATOR,
-                      tmpchain, chain);
-}
-
-static void
 ebtablesRenameTmpSubChainFW(virFirewallPtr fw,
                             int incoming,
                             const char *ifname,
@@ -3343,14 +3318,6 @@ ebtablesRenameTmpSubChainFW(virFirewallPtr fw,
 
     virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
                        "-t", "nat", "-E", tmpchain, chain, NULL);
-}
-
-static void
-ebtablesRenameTmpRootChain(virBufferPtr buf,
-                           bool incoming,
-                           const char *ifname)
-{
-    ebtablesRenameTmpSubChain(buf, incoming, ifname, NULL);
 }
 
 static void
@@ -3657,60 +3624,48 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
 static int
 ebtablesApplyDropAllRules(const char *ifname)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
     char chain_in [MAX_CHAINNAME_LENGTH],
          chain_out[MAX_CHAINNAME_LENGTH];
+    virFirewallPtr fw = virFirewallNew();
 
-    if (!ebtables_cmd_path) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot create rules since ebtables tool is "
-                         "missing."));
-        return -1;
-    }
+    if (ebiptablesAllTeardown(ifname) < 0)
+        goto error;
 
-    ebiptablesAllTeardown(ifname);
+    virFirewallStartTransaction(fw, 0);
 
-    NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
-
-    ebtablesCreateTmpRootChain(&buf, true, ifname);
-    ebtablesCreateTmpRootChain(&buf, false, ifname);
+    ebtablesCreateTmpRootChainFW(fw, true, ifname);
+    ebtablesCreateTmpRootChainFW(fw, false, ifname);
 
     PRINT_ROOT_CHAIN(chain_in, CHAINPREFIX_HOST_IN_TEMP, ifname);
     PRINT_ROOT_CHAIN(chain_out, CHAINPREFIX_HOST_OUT_TEMP, ifname);
 
-    virBufferAsprintf(&buf,
-                      CMD_DEF("$EBT -t nat -A %s -j DROP") CMD_SEPARATOR
-                      CMD_EXEC
-                      "%s",
+    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                       "-t", "nat", "-A", chain_in,
+                       "-j", "DROP", NULL);
 
-                      chain_in,
-                      CMD_STOPONERR(true));
+    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                       "-t", "nat", "-A", chain_out,
+                       "-j", "DROP", NULL);
 
-    virBufferAsprintf(&buf,
-                      CMD_DEF("$EBT -t nat -A %s -j DROP") CMD_SEPARATOR
-                      CMD_EXEC
-                      "%s",
+    ebtablesLinkTmpRootChainFW(fw, true, ifname);
+    ebtablesLinkTmpRootChainFW(fw, false, ifname);
+    ebtablesRenameTmpRootChainFW(fw, true, ifname);
+    ebtablesRenameTmpRootChainFW(fw, false, ifname);
 
-                      chain_out,
-                      CMD_STOPONERR(true));
-
-    ebtablesLinkTmpRootChain(&buf, true, ifname);
-    ebtablesLinkTmpRootChain(&buf, false, ifname);
-    ebtablesRenameTmpRootChain(&buf, true, ifname);
-    ebtablesRenameTmpRootChain(&buf, false, ifname);
-
-    if (ebiptablesExecCLI(&buf, false, NULL) < 0)
+    virMutexLock(&execCLIMutex);
+    if (virFirewallApply(fw) < 0) {
+        virMutexUnlock(&execCLIMutex);
         goto tear_down_tmpebchains;
+    }
+    virMutexUnlock(&execCLIMutex);
 
+    virFirewallFree(fw);
     return 0;
 
  tear_down_tmpebchains:
     ebtablesCleanAll(ifname);
-
-    virReportError(VIR_ERR_BUILD_FIREWALL,
-                   "%s",
-                   _("Some rules could not be created."));
-
+ error:
+    virFirewallFree(fw);
     return -1;
 }
 
