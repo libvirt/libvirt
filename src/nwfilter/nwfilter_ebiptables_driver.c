@@ -3544,92 +3544,69 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
                            virNWFilterVarValuePtr dhcpsrvrs,
                            bool leaveTemporary)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
     char chain_in [MAX_CHAINNAME_LENGTH],
          chain_out[MAX_CHAINNAME_LENGTH];
     char macaddr_str[VIR_MAC_STRING_BUFLEN];
     unsigned int idx = 0;
     unsigned int num_dhcpsrvrs;
-
-    if (!ebtables_cmd_path) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot create rules since ebtables tool is "
-                         "missing."));
-        return -1;
-    }
+    virFirewallPtr fw = virFirewallNew();
 
     virMacAddrFormat(macaddr, macaddr_str);
 
-    ebiptablesAllTeardown(ifname);
+    if (ebiptablesAllTeardown(ifname) < 0)
+        goto error;
 
-    NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
+    virFirewallStartTransaction(fw, 0);
 
-    ebtablesCreateTmpRootChain(&buf, true, ifname);
-    ebtablesCreateTmpRootChain(&buf, false, ifname);
+    ebtablesCreateTmpRootChainFW(fw, true, ifname);
+    ebtablesCreateTmpRootChainFW(fw, false, ifname);
 
     PRINT_ROOT_CHAIN(chain_in, CHAINPREFIX_HOST_IN_TEMP, ifname);
     PRINT_ROOT_CHAIN(chain_out, CHAINPREFIX_HOST_OUT_TEMP, ifname);
 
-    virBufferAsprintf(&buf,
-                      CMD_DEF("$EBT -t nat -A %s"
-                              " -s %s"
-                              " -p ipv4 --ip-protocol udp"
-                              " --ip-sport 68 --ip-dport 67"
-                              " -j ACCEPT") CMD_SEPARATOR
-                      CMD_EXEC
-                      "%s",
+    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                       "-t", "nat", "-A", chain_in,
+                       "-s", macaddr_str,
+                       "-p", "ipv4", "--ip-protocol", "udp",
+                       "--ip-sport", "68", "--ip-dport", "67",
+                       "-j", "ACCEPT", NULL);
 
-                      chain_in,
-                      macaddr_str,
-                      CMD_STOPONERR(true));
-
-    virBufferAsprintf(&buf,
-                      CMD_DEF("$EBT -t nat -A %s -j DROP") CMD_SEPARATOR
-                      CMD_EXEC
-                      "%s",
-
-                      chain_in,
-                      CMD_STOPONERR(true));
+    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                       "-t", "nat", "-A", chain_in,
+                       "-j", "DROP", NULL);
 
     num_dhcpsrvrs = (dhcpsrvrs != NULL)
                     ? virNWFilterVarValueGetCardinality(dhcpsrvrs)
                     : 0;
 
     while (true) {
-        char *srcIPParam = NULL;
+        const char *dhcpserver = NULL;
         int ctr;
 
-        if (idx < num_dhcpsrvrs) {
-            const char *dhcpserver;
-
+        if (idx < num_dhcpsrvrs)
             dhcpserver = virNWFilterVarValueGetNthValue(dhcpsrvrs, idx);
-
-            if (virAsprintf(&srcIPParam, "--ip-src %s", dhcpserver) < 0)
-                goto tear_down_tmpebchains;
-        }
 
         /*
          * create two rules allowing response to MAC address of VM
          * or to broadcast MAC address
          */
         for (ctr = 0; ctr < 2; ctr++) {
-            virBufferAsprintf(&buf,
-                              CMD_DEF("$EBT -t nat -A %s"
-                                      " -d %s"
-                                      " -p ipv4 --ip-protocol udp"
-                                      " %s"
-                                      " --ip-sport 67 --ip-dport 68"
-                                      " -j ACCEPT") CMD_SEPARATOR
-                              CMD_EXEC
-                              "%s",
-
-                              chain_out,
-                              (ctr == 0) ? macaddr_str : "ff:ff:ff:ff:ff:ff",
-                              srcIPParam != NULL ? srcIPParam : "",
-                              CMD_STOPONERR(true));
+            if (dhcpserver)
+                virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                                   "-t", "nat", "-A", chain_out,
+                                   "-d", (ctr == 0) ? macaddr_str : "ff:ff:ff:ff:ff:ff",
+                                   "-p", "ipv4", "--ip-protocol", "udp",
+                                   "--ip-src", dhcpserver,
+                                   "--ip-sport", "67", "--ip-dport", "68",
+                                   "-j", "ACCEPT", NULL);
+            else
+                virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                                   "-t", "nat", "-A", chain_out,
+                                   "-d", (ctr == 0) ? macaddr_str : "ff:ff:ff:ff:ff:ff",
+                                   "-p", "ipv4", "--ip-protocol", "udp",
+                                   "--ip-sport", "67", "--ip-dport", "68",
+                                   "-j", "ACCEPT", NULL);
         }
-
-        VIR_FREE(srcIPParam);
 
         idx++;
 
@@ -3637,34 +3614,33 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
             break;
     }
 
-    virBufferAsprintf(&buf,
-                      CMD_DEF("$EBT -t nat -A %s -j DROP") CMD_SEPARATOR
-                      CMD_EXEC
-                      "%s",
+    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                       "-t", "nat", "-A", chain_out,
+                       "-j", "DROP", NULL);
 
-                      chain_out,
-                      CMD_STOPONERR(true));
-
-    ebtablesLinkTmpRootChain(&buf, true, ifname);
-    ebtablesLinkTmpRootChain(&buf, false, ifname);
+    ebtablesLinkTmpRootChainFW(fw, true, ifname);
+    ebtablesLinkTmpRootChainFW(fw, false, ifname);
 
     if (!leaveTemporary) {
-        ebtablesRenameTmpRootChain(&buf, true, ifname);
-        ebtablesRenameTmpRootChain(&buf, false, ifname);
+        ebtablesRenameTmpRootChainFW(fw, true, ifname);
+        ebtablesRenameTmpRootChainFW(fw, false, ifname);
     }
 
-    if (ebiptablesExecCLI(&buf, false, NULL) < 0)
+    virMutexLock(&execCLIMutex);
+    if (virFirewallApply(fw) < 0) {
+        virMutexUnlock(&execCLIMutex);
         goto tear_down_tmpebchains;
+    }
+    virMutexUnlock(&execCLIMutex);
+
+    virFirewallFree(fw);
 
     return 0;
 
  tear_down_tmpebchains:
     ebtablesCleanAll(ifname);
-
-    virReportError(VIR_ERR_BUILD_FIREWALL,
-                   "%s",
-                   _("Some rules could not be created."));
-
+ error:
+    virFirewallFree(fw);
     return -1;
 }
 
