@@ -217,6 +217,67 @@ testNWFilterEBIPTablesRemoveBasicRules(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
+testNWFilterEBIPTablesTearNewRules(const void *opaque ATTRIBUTE_UNUSED)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *expected =
+        "iptables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FP-vnet0\n"
+        "iptables -D libvirt-out -m physdev --physdev-out vnet0 -g FP-vnet0\n"
+        "iptables -D libvirt-in -m physdev --physdev-in vnet0 -g FJ-vnet0\n"
+        "iptables -D libvirt-host-in -m physdev --physdev-in vnet0 -g HJ-vnet0\n"
+        "iptables -F FP-vnet0\n"
+        "iptables -X FP-vnet0\n"
+        "iptables -F FJ-vnet0\n"
+        "iptables -X FJ-vnet0\n"
+        "iptables -F HJ-vnet0\n"
+        "iptables -X HJ-vnet0\n"
+        "ip6tables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FP-vnet0\n"
+        "ip6tables -D libvirt-out -m physdev --physdev-out vnet0 -g FP-vnet0\n"
+        "ip6tables -D libvirt-in -m physdev --physdev-in vnet0 -g FJ-vnet0\n"
+        "ip6tables -D libvirt-host-in -m physdev --physdev-in vnet0 -g HJ-vnet0\n"
+        "ip6tables -F FP-vnet0\n"
+        "ip6tables -X FP-vnet0\n"
+        "ip6tables -F FJ-vnet0\n"
+        "ip6tables -X FJ-vnet0\n"
+        "ip6tables -F HJ-vnet0\n"
+        "ip6tables -X HJ-vnet0\n"
+        "ebtables -t nat -D PREROUTING -i vnet0 -j libvirt-J-vnet0\n"
+        "ebtables -t nat -D POSTROUTING -o vnet0 -j libvirt-P-vnet0\n"
+        "ebtables -t nat -L libvirt-J-vnet0\n"
+        "ebtables -t nat -L libvirt-P-vnet0\n"
+        "ebtables -t nat -F libvirt-J-vnet0\n"
+        "ebtables -t nat -X libvirt-J-vnet0\n"
+        "ebtables -t nat -F libvirt-P-vnet0\n"
+        "ebtables -t nat -X libvirt-P-vnet0\n";
+    char *actual = NULL;
+    int ret = -1;
+
+    virCommandSetDryRun(&buf, NULL, NULL);
+
+    if (ebiptables_driver.tearNewRules("vnet0") < 0)
+        goto cleanup;
+
+    if (virBufferError(&buf))
+        goto cleanup;
+
+    actual = virBufferContentAndReset(&buf);
+    virtTestClearCommandPath(actual);
+
+    if (STRNEQ_NULLABLE(actual, expected)) {
+        virtTestDifference(stderr, actual, expected);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virCommandSetDryRun(NULL, NULL, NULL);
+    virBufferFreeAndReset(&buf);
+    VIR_FREE(actual);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -238,6 +299,11 @@ mymain(void)
 
     if (virtTestRun("ebiptablesRemoveBasicRules",
                     testNWFilterEBIPTablesRemoveBasicRules,
+                    NULL) < 0)
+        ret = -1;
+
+    if (virtTestRun("ebiptablesTearNewRules",
+                    testNWFilterEBIPTablesTearNewRules,
                     NULL) < 0)
         ret = -1;
 

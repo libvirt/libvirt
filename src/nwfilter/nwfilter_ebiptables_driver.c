@@ -723,12 +723,35 @@ iptablesRemoveTmpRootChain(virBufferPtr buf,
 
 
 static void
+iptablesRemoveTmpRootChainFW(virFirewallPtr fw,
+                             virFirewallLayer layer,
+                             char prefix,
+                             bool incoming,
+                             const char *ifname)
+{
+    _iptablesRemoveRootChainFW(fw, layer, prefix,
+                               incoming, ifname, 1);
+}
+
+
+static void
 iptablesRemoveTmpRootChains(virBufferPtr buf,
                             const char *ifname)
 {
     iptablesRemoveTmpRootChain(buf, 'F', false, ifname);
     iptablesRemoveTmpRootChain(buf, 'F', true, ifname);
     iptablesRemoveTmpRootChain(buf, 'H', true, ifname);
+}
+
+
+static void
+iptablesRemoveTmpRootChainsFW(virFirewallPtr fw,
+                              virFirewallLayer layer,
+                              const char *ifname)
+{
+    iptablesRemoveTmpRootChainFW(fw, layer, 'F', false, ifname);
+    iptablesRemoveTmpRootChainFW(fw, layer, 'F', true, ifname);
+    iptablesRemoveTmpRootChainFW(fw, layer, 'H', true, ifname);
 }
 
 
@@ -934,6 +957,18 @@ iptablesUnlinkTmpRootChain(virBufferPtr buf,
 
 
 static void
+iptablesUnlinkTmpRootChainFW(virFirewallPtr fw,
+                             virFirewallLayer layer,
+                             const char *basechain,
+                             char prefix,
+                             bool incoming, const char *ifname)
+{
+    _iptablesUnlinkRootChainFW(fw, layer,
+                               basechain, prefix, incoming, ifname, 1);
+}
+
+
+static void
 iptablesUnlinkRootChainsFW(virFirewallPtr fw,
                            virFirewallLayer layer,
                            const char *ifname)
@@ -951,6 +986,17 @@ iptablesUnlinkTmpRootChains(virBufferPtr buf,
     iptablesUnlinkTmpRootChain(buf, VIRT_OUT_CHAIN, 'F', false, ifname);
     iptablesUnlinkTmpRootChain(buf, VIRT_IN_CHAIN,  'F', true, ifname);
     iptablesUnlinkTmpRootChain(buf, HOST_IN_CHAIN,  'H', true, ifname);
+}
+
+
+static void
+iptablesUnlinkTmpRootChainsFW(virFirewallPtr fw,
+                              virFirewallLayer layer,
+                              const char *ifname)
+{
+    iptablesUnlinkTmpRootChainFW(fw, layer, VIRT_OUT_CHAIN, 'F', false, ifname);
+    iptablesUnlinkTmpRootChainFW(fw, layer, VIRT_IN_CHAIN,  'F', true, ifname);
+    iptablesUnlinkTmpRootChainFW(fw, layer, HOST_IN_CHAIN,  'H', true, ifname);
 }
 
 
@@ -4251,36 +4297,28 @@ ebiptablesApplyNewRules(const char *ifname,
 static int
 ebiptablesTearNewRules(const char *ifname)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virFirewallPtr fw = virFirewallNew();
+    int ret = -1;
 
-    if (iptables_cmd_path) {
-        NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
+    virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
 
-        iptablesUnlinkTmpRootChains(&buf, ifname);
-        iptablesRemoveTmpRootChains(&buf, ifname);
-    }
+    iptablesUnlinkTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV4, ifname);
+    iptablesRemoveTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV4, ifname);
 
-    if (ip6tables_cmd_path) {
-        NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
+    iptablesUnlinkTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV6, ifname);
+    iptablesRemoveTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV6, ifname);
 
-        iptablesUnlinkTmpRootChains(&buf, ifname);
-        iptablesRemoveTmpRootChains(&buf, ifname);
-    }
+    ebtablesUnlinkTmpRootChainFW(fw, true, ifname);
+    ebtablesUnlinkTmpRootChainFW(fw, false, ifname);
+    ebtablesRemoveTmpSubChainsFW(fw, ifname);
+    ebtablesRemoveTmpRootChainFW(fw, true, ifname);
+    ebtablesRemoveTmpRootChainFW(fw, false, ifname);
 
-    if (ebtables_cmd_path) {
-        NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
-
-        ebtablesUnlinkTmpRootChain(&buf, true, ifname);
-        ebtablesUnlinkTmpRootChain(&buf, false, ifname);
-
-        ebtablesRemoveTmpSubChains(&buf, ifname);
-        ebtablesRemoveTmpRootChain(&buf, true, ifname);
-        ebtablesRemoveTmpRootChain(&buf, false, ifname);
-    }
-
-    ebiptablesExecCLI(&buf, true, NULL);
-
-    return 0;
+    virMutexLock(&execCLIMutex);
+    ret = virFirewallApply(fw);
+    virMutexUnlock(&execCLIMutex);
+    virFirewallFree(fw);
+    return ret;
 }
 
 
