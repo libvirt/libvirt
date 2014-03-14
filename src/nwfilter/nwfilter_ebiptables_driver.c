@@ -206,7 +206,7 @@ static const char *m_physdev_out_old_str = "-m physdev --physdev-out";
 static int ebtablesRemoveBasicRules(const char *ifname);
 static int ebiptablesDriverInit(bool privileged);
 static void ebiptablesDriverShutdown(void);
-static void ebtablesCleanAll(const char *ifname);
+static int ebtablesCleanAll(const char *ifname);
 static int ebiptablesAllTeardown(const char *ifname);
 
 static virMutex execCLIMutex = VIR_MUTEX_INITIALIZER;
@@ -250,6 +250,12 @@ static const struct ushort_map l3_protocols[] = {
 static char chainprefixes_host[3] = {
     CHAINPREFIX_HOST_IN,
     CHAINPREFIX_HOST_OUT,
+    0
+};
+
+static char chainprefixes_host_temp[3] = {
+    CHAINPREFIX_HOST_IN_TEMP,
+    CHAINPREFIX_HOST_OUT_TEMP,
     0
 };
 
@@ -2917,14 +2923,6 @@ _ebtablesRemoveRootChainFW(virFirewallPtr fw,
 
 
 static void
-ebtablesRemoveRootChain(virBufferPtr buf,
-                        bool incoming, const char *ifname)
-{
-    _ebtablesRemoveRootChain(buf, incoming, ifname, false);
-}
-
-
-static void
 ebtablesRemoveRootChainFW(virFirewallPtr fw,
                           bool incoming, const char *ifname)
 {
@@ -2937,6 +2935,14 @@ ebtablesRemoveTmpRootChain(virBufferPtr buf,
                            bool incoming, const char *ifname)
 {
     _ebtablesRemoveRootChain(buf, incoming, ifname, true);
+}
+
+
+static void
+ebtablesRemoveTmpRootChainFW(virFirewallPtr fw,
+                             bool incoming, const char *ifname)
+{
+    _ebtablesRemoveRootChainFW(fw, incoming, ifname, 1);
 }
 
 
@@ -2995,14 +3001,6 @@ _ebtablesUnlinkRootChainFW(virFirewallPtr fw,
 
 
 static void
-ebtablesUnlinkRootChain(virBufferPtr buf,
-                        bool incoming, const char *ifname)
-{
-    _ebtablesUnlinkRootChain(buf, incoming, ifname, false);
-}
-
-
-static void
 ebtablesUnlinkRootChainFW(virFirewallPtr fw,
                           bool incoming, const char *ifname)
 {
@@ -3015,6 +3013,14 @@ ebtablesUnlinkTmpRootChain(virBufferPtr buf,
                            bool incoming, const char *ifname)
 {
     _ebtablesUnlinkRootChain(buf, incoming, ifname, true);
+}
+
+
+static void
+ebtablesUnlinkTmpRootChainFW(virFirewallPtr fw,
+                             int incoming, const char *ifname)
+{
+    _ebtablesUnlinkRootChainFW(fw, incoming, ifname, 1);
 }
 
 
@@ -3185,19 +3191,6 @@ _ebtablesRemoveSubChainsFW(virFirewallPtr fw,
 }
 
 static void
-ebtablesRemoveSubChains(virBufferPtr buf,
-                        const char *ifname)
-{
-    char chains[3] = {
-        CHAINPREFIX_HOST_IN,
-        CHAINPREFIX_HOST_OUT,
-        0
-    };
-
-    _ebtablesRemoveSubChains(buf, ifname, chains);
-}
-
-static void
 ebtablesRemoveSubChainsFW(virFirewallPtr fw,
                           const char *ifname)
 {
@@ -3215,6 +3208,13 @@ ebtablesRemoveTmpSubChains(virBufferPtr buf,
     };
 
     _ebtablesRemoveSubChains(buf, ifname, chains);
+}
+
+static void
+ebtablesRemoveTmpSubChainsFW(virFirewallPtr fw,
+                             const char *ifname)
+{
+    _ebtablesRemoveSubChainsFW(fw, ifname, chainprefixes_host_temp);
 }
 
 static void
@@ -3683,34 +3683,35 @@ ebtablesApplyDropAllRules(const char *ifname)
 static int
 ebtablesRemoveBasicRules(const char *ifname)
 {
-    ebtablesCleanAll(ifname);
-    return 0;
+    return ebtablesCleanAll(ifname);
 }
 
 
-static void
+static int
 ebtablesCleanAll(const char *ifname)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virFirewallPtr fw = virFirewallNew();
+    int ret = -1;
 
-    if (!ebtables_cmd_path)
-        return;
+    virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
 
-    NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
+    ebtablesUnlinkRootChainFW(fw, true, ifname);
+    ebtablesUnlinkRootChainFW(fw, false, ifname);
+    ebtablesRemoveSubChainsFW(fw, ifname);
+    ebtablesRemoveRootChainFW(fw, true, ifname);
+    ebtablesRemoveRootChainFW(fw, false, ifname);
 
-    ebtablesUnlinkRootChain(&buf, true, ifname);
-    ebtablesUnlinkRootChain(&buf, false, ifname);
-    ebtablesRemoveSubChains(&buf, ifname);
-    ebtablesRemoveRootChain(&buf, true, ifname);
-    ebtablesRemoveRootChain(&buf, false, ifname);
+    ebtablesUnlinkTmpRootChainFW(fw, true, ifname);
+    ebtablesUnlinkTmpRootChainFW(fw, false, ifname);
+    ebtablesRemoveTmpSubChainsFW(fw, ifname);
+    ebtablesRemoveTmpRootChainFW(fw, true, ifname);
+    ebtablesRemoveTmpRootChainFW(fw, false, ifname);
 
-    ebtablesUnlinkTmpRootChain(&buf, true, ifname);
-    ebtablesUnlinkTmpRootChain(&buf, false, ifname);
-    ebtablesRemoveTmpSubChains(&buf, ifname);
-    ebtablesRemoveTmpRootChain(&buf, true, ifname);
-    ebtablesRemoveTmpRootChain(&buf, false, ifname);
-
-    ebiptablesExecCLI(&buf, true, NULL);
+    virMutexLock(&execCLIMutex);
+    ret = virFirewallApply(fw);
+    virMutexUnlock(&execCLIMutex);
+    virFirewallFree(fw);
+    return ret;
 }
 
 

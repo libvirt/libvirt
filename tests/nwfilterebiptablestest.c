@@ -168,6 +168,55 @@ testNWFilterEBIPTablesTearOldRules(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
+testNWFilterEBIPTablesRemoveBasicRules(const void *opaque ATTRIBUTE_UNUSED)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *expected =
+        "ebtables -t nat -D PREROUTING -i vnet0 -j libvirt-I-vnet0\n"
+        "ebtables -t nat -D POSTROUTING -o vnet0 -j libvirt-O-vnet0\n"
+        "ebtables -t nat -L libvirt-I-vnet0\n"
+        "ebtables -t nat -L libvirt-O-vnet0\n"
+        "ebtables -t nat -F libvirt-I-vnet0\n"
+        "ebtables -t nat -X libvirt-I-vnet0\n"
+        "ebtables -t nat -F libvirt-O-vnet0\n"
+        "ebtables -t nat -X libvirt-O-vnet0\n"
+        "ebtables -t nat -D PREROUTING -i vnet0 -j libvirt-J-vnet0\n"
+        "ebtables -t nat -D POSTROUTING -o vnet0 -j libvirt-P-vnet0\n"
+        "ebtables -t nat -L libvirt-J-vnet0\n"
+        "ebtables -t nat -L libvirt-P-vnet0\n"
+        "ebtables -t nat -F libvirt-J-vnet0\n"
+        "ebtables -t nat -X libvirt-J-vnet0\n"
+        "ebtables -t nat -F libvirt-P-vnet0\n"
+        "ebtables -t nat -X libvirt-P-vnet0\n";
+    char *actual = NULL;
+    int ret = -1;
+
+    virCommandSetDryRun(&buf, NULL, NULL);
+
+    if (ebiptables_driver.removeBasicRules("vnet0") < 0)
+        goto cleanup;
+
+    if (virBufferError(&buf))
+        goto cleanup;
+
+    actual = virBufferContentAndReset(&buf);
+    virtTestClearCommandPath(actual);
+
+    if (STRNEQ_NULLABLE(actual, expected)) {
+        virtTestDifference(stderr, actual, expected);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virCommandSetDryRun(NULL, NULL, NULL);
+    virBufferFreeAndReset(&buf);
+    VIR_FREE(actual);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -184,6 +233,11 @@ mymain(void)
 
     if (virtTestRun("ebiptablesTearOldRules",
                     testNWFilterEBIPTablesTearOldRules,
+                    NULL) < 0)
+        ret = -1;
+
+    if (virtTestRun("ebiptablesRemoveBasicRules",
+                    testNWFilterEBIPTablesRemoveBasicRules,
                     NULL) < 0)
         ret = -1;
 
