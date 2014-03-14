@@ -797,7 +797,7 @@ iptablesSetupVirtInPost(virBufferPtr buf,
                       "fi\n",
                       PHYSDEV_IN, ifname,
                       match, ifname,
-                      CMD_STOPONERR(1));
+                      CMD_STOPONERR(true));
 }
 
 
@@ -3246,7 +3246,7 @@ ebtablesApplyBasicRules(const char *ifname,
                       "%s",
 
                       chain, macaddr_str,
-                      CMD_STOPONERR(1));
+                      CMD_STOPONERR(true));
 
     virBufferAsprintf(&buf,
                       CMD_DEF("$EBT -t nat -A %s -p IPv4 -j ACCEPT") CMD_SEPARATOR
@@ -3254,7 +3254,7 @@ ebtablesApplyBasicRules(const char *ifname,
                       "%s",
 
                       chain,
-                      CMD_STOPONERR(1));
+                      CMD_STOPONERR(true));
 
     virBufferAsprintf(&buf,
                       CMD_DEF("$EBT -t nat -A %s -p ARP -j ACCEPT") CMD_SEPARATOR
@@ -3262,7 +3262,7 @@ ebtablesApplyBasicRules(const char *ifname,
                       "%s",
 
                       chain,
-                      CMD_STOPONERR(1));
+                      CMD_STOPONERR(true));
 
     virBufferAsprintf(&buf,
                       CMD_DEF("$EBT -t nat -A %s -j DROP") CMD_SEPARATOR
@@ -3270,7 +3270,7 @@ ebtablesApplyBasicRules(const char *ifname,
                       "%s",
 
                       chain,
-                      CMD_STOPONERR(1));
+                      CMD_STOPONERR(true));
 
     ebtablesLinkTmpRootChain(&buf, true, ifname);
     ebtablesRenameTmpRootChain(&buf, true, ifname);
@@ -3351,7 +3351,7 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
 
                       chain_in,
                       macaddr_str,
-                      CMD_STOPONERR(1));
+                      CMD_STOPONERR(true));
 
     virBufferAsprintf(&buf,
                       CMD_DEF("$EBT -t nat -A %s -j DROP") CMD_SEPARATOR
@@ -3359,7 +3359,7 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
                       "%s",
 
                       chain_in,
-                      CMD_STOPONERR(1));
+                      CMD_STOPONERR(true));
 
     num_dhcpsrvrs = (dhcpsrvrs != NULL)
                     ? virNWFilterVarValueGetCardinality(dhcpsrvrs)
@@ -3396,7 +3396,7 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
                               chain_out,
                               (ctr == 0) ? macaddr_str : "ff:ff:ff:ff:ff:ff",
                               srcIPParam != NULL ? srcIPParam : "",
-                              CMD_STOPONERR(1));
+                              CMD_STOPONERR(true));
         }
 
         VIR_FREE(srcIPParam);
@@ -3413,7 +3413,7 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
                       "%s",
 
                       chain_out,
-                      CMD_STOPONERR(1));
+                      CMD_STOPONERR(true));
 
     ebtablesLinkTmpRootChain(&buf, true, ifname);
     ebtablesLinkTmpRootChain(&buf, false, ifname);
@@ -3478,7 +3478,7 @@ ebtablesApplyDropAllRules(const char *ifname)
                       "%s",
 
                       chain_in,
-                      CMD_STOPONERR(1));
+                      CMD_STOPONERR(true));
 
     virBufferAsprintf(&buf,
                       CMD_DEF("$EBT -t nat -A %s -j DROP") CMD_SEPARATOR
@@ -3486,7 +3486,7 @@ ebtablesApplyDropAllRules(const char *ifname)
                       "%s",
 
                       chain_out,
-                      CMD_STOPONERR(1));
+                      CMD_STOPONERR(true));
 
     ebtablesLinkTmpRootChain(&buf, true, ifname);
     ebtablesLinkTmpRootChain(&buf, false, ifname);
@@ -4182,7 +4182,7 @@ ebiptablesDriverInitWithFirewallD(void)
                           CMD_DEF("$FWC --state") CMD_SEPARATOR
                           CMD_EXEC
                           "%s",
-                          CMD_STOPONERR(1));
+                          CMD_STOPONERR(true));
 
         if (ebiptablesExecCLI(&buf, false, &output) < 0) {
             VIR_INFO("firewalld support disabled for nwfilter");
@@ -4251,7 +4251,7 @@ ebiptablesDriverTestCLITools(void)
                           CMD_DEF("$EBT -t nat -L") CMD_SEPARATOR
                           CMD_EXEC
                           "%s",
-                          CMD_STOPONERR(1));
+                          CMD_STOPONERR(true));
 
         if (ebiptablesExecCLI(&buf, false, &errmsg) < 0) {
             VIR_FREE(ebtables_cmd_path);
@@ -4268,7 +4268,7 @@ ebiptablesDriverTestCLITools(void)
                           CMD_DEF("$IPT -n -L FORWARD") CMD_SEPARATOR
                           CMD_EXEC
                           "%s",
-                          CMD_STOPONERR(1));
+                          CMD_STOPONERR(true));
 
         if (ebiptablesExecCLI(&buf, false, &errmsg) < 0) {
             VIR_FREE(iptables_cmd_path);
@@ -4285,7 +4285,7 @@ ebiptablesDriverTestCLITools(void)
                           CMD_DEF("$IPT -n -L FORWARD") CMD_SEPARATOR
                           CMD_EXEC
                           "%s",
-                          CMD_STOPONERR(1));
+                          CMD_STOPONERR(true));
 
         if (ebiptablesExecCLI(&buf, false, &errmsg) < 0) {
             VIR_FREE(ip6tables_cmd_path);
