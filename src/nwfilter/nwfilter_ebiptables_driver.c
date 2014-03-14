@@ -695,16 +695,6 @@ _iptablesRemoveRootChainFW(virFirewallPtr fw,
 
 
 static void
-iptablesRemoveRootChain(virBufferPtr buf,
-                        char prefix,
-                        bool incoming,
-                        const char *ifname)
-{
-    _iptablesRemoveRootChain(buf, prefix, incoming, ifname, false);
-}
-
-
-static void
 iptablesRemoveRootChainFW(virFirewallPtr fw,
                           virFirewallLayer layer,
                           char prefix,
@@ -733,16 +723,6 @@ iptablesRemoveTmpRootChains(virBufferPtr buf,
     iptablesRemoveTmpRootChain(buf, 'F', false, ifname);
     iptablesRemoveTmpRootChain(buf, 'F', true, ifname);
     iptablesRemoveTmpRootChain(buf, 'H', true, ifname);
-}
-
-
-static void
-iptablesRemoveRootChains(virBufferPtr buf,
-                         const char *ifname)
-{
-    iptablesRemoveRootChain(buf, 'F', false, ifname);
-    iptablesRemoveRootChain(buf, 'F', true, ifname);
-    iptablesRemoveRootChain(buf, 'H', true, ifname);
 }
 
 
@@ -925,16 +905,6 @@ _iptablesUnlinkRootChainFW(virFirewallPtr fw,
 
 
 static void
-iptablesUnlinkRootChain(virBufferPtr buf,
-                        const char *basechain,
-                        char prefix,
-                        bool incoming, const char *ifname)
-{
-    _iptablesUnlinkRootChain(buf,
-                             basechain, prefix, incoming, ifname, false);
-}
-
-static void
 iptablesUnlinkRootChainFW(virFirewallPtr fw,
                           virFirewallLayer layer,
                           const char *basechain,
@@ -954,16 +924,6 @@ iptablesUnlinkTmpRootChain(virBufferPtr buf,
 {
     _iptablesUnlinkRootChain(buf,
                              basechain, prefix, incoming, ifname, true);
-}
-
-
-static void
-iptablesUnlinkRootChains(virBufferPtr buf,
-                         const char *ifname)
-{
-    iptablesUnlinkRootChain(buf, VIRT_OUT_CHAIN, 'F', false, ifname);
-    iptablesUnlinkRootChain(buf, VIRT_IN_CHAIN,  'F', true, ifname);
-    iptablesUnlinkRootChain(buf, HOST_IN_CHAIN,  'H', true, ifname);
 }
 
 
@@ -989,10 +949,11 @@ iptablesUnlinkTmpRootChains(virBufferPtr buf,
 
 
 static void
-iptablesRenameTmpRootChain(virBufferPtr buf,
-                           char prefix,
-                           bool incoming,
-                           const char *ifname)
+iptablesRenameTmpRootChainFW(virFirewallPtr fw,
+                             virFirewallLayer layer,
+                             char prefix,
+                             bool incoming,
+                             const char *ifname)
 {
     char tmpchain[MAX_CHAINNAME_LENGTH], chain[MAX_CHAINNAME_LENGTH];
     char tmpChainPrefix[2] = {
@@ -1009,20 +970,19 @@ iptablesRenameTmpRootChain(virBufferPtr buf,
     PRINT_IPT_ROOT_CHAIN(tmpchain, tmpChainPrefix, ifname);
     PRINT_IPT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
-    virBufferAsprintf(buf,
-                      "$IPT -E %s %s" CMD_SEPARATOR,
-                      tmpchain,
-                      chain);
+    virFirewallAddRule(fw, layer,
+                       "-E", tmpchain, chain, NULL);
 }
 
 
 static void
-iptablesRenameTmpRootChains(virBufferPtr buf,
-                            const char *ifname)
+iptablesRenameTmpRootChainsFW(virFirewallPtr fw,
+                              virFirewallLayer layer,
+                              const char *ifname)
 {
-    iptablesRenameTmpRootChain(buf, 'F', false, ifname);
-    iptablesRenameTmpRootChain(buf, 'F', true, ifname);
-    iptablesRenameTmpRootChain(buf, 'H', true, ifname);
+    iptablesRenameTmpRootChainFW(fw, layer, 'F', false, ifname);
+    iptablesRenameTmpRootChainFW(fw, layer, 'F', true, ifname);
+    iptablesRenameTmpRootChainFW(fw, layer, 'H', true, ifname);
 }
 
 
@@ -3283,6 +3243,30 @@ ebtablesRenameTmpSubChain(virBufferPtr buf,
 }
 
 static void
+ebtablesRenameTmpSubChainFW(virFirewallPtr fw,
+                            int incoming,
+                            const char *ifname,
+                            const char *protocol)
+{
+    char tmpchain[MAX_CHAINNAME_LENGTH], chain[MAX_CHAINNAME_LENGTH];
+    char tmpChainPrefix = (incoming) ? CHAINPREFIX_HOST_IN_TEMP
+                                     : CHAINPREFIX_HOST_OUT_TEMP;
+    char chainPrefix = (incoming) ? CHAINPREFIX_HOST_IN
+                                  : CHAINPREFIX_HOST_OUT;
+
+    if (protocol) {
+        PRINT_CHAIN(tmpchain, tmpChainPrefix, ifname, protocol);
+        PRINT_CHAIN(chain, chainPrefix, ifname, protocol);
+    } else {
+        PRINT_ROOT_CHAIN(tmpchain, tmpChainPrefix, ifname);
+        PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
+    }
+
+    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                       "-t", "nat", "-E", tmpchain, chain, NULL);
+}
+
+static void
 ebtablesRenameTmpRootChain(virBufferPtr buf,
                            bool incoming,
                            const char *ifname)
@@ -3291,38 +3275,79 @@ ebtablesRenameTmpRootChain(virBufferPtr buf,
 }
 
 static void
-ebtablesRenameTmpSubAndRootChains(virBufferPtr buf,
-                                  const char *ifname)
+ebtablesRenameTmpRootChainFW(virFirewallPtr fw,
+                             bool incoming,
+                             const char *ifname)
+{
+    ebtablesRenameTmpSubChainFW(fw, incoming, ifname, NULL);
+}
+
+
+static int
+ebtablesRenameTmpSubAndRootChainsQuery(virFirewallPtr fw,
+                                       const char *const *lines,
+                                       void *opaque ATTRIBUTE_UNUSED)
+{
+    size_t i;
+    char newchain[MAX_CHAINNAME_LENGTH];
+
+    for (i = 0; lines[i] != NULL; i++) {
+        VIR_DEBUG("Considering '%s'", lines[i]);
+        char *tmp = strstr(lines[i], "-j ");
+        if (!tmp)
+            continue;
+        tmp = tmp + 3;
+        if (tmp[0] != CHAINPREFIX_HOST_IN_TEMP &&
+            tmp[0] != CHAINPREFIX_HOST_OUT_TEMP)
+            continue;
+        if (tmp[1] != '-')
+            continue;
+
+        ignore_value(virStrcpyStatic(newchain, tmp));
+        if (newchain[0] == CHAINPREFIX_HOST_IN_TEMP)
+            newchain[0] = CHAINPREFIX_HOST_IN;
+        else
+            newchain[0] = CHAINPREFIX_HOST_OUT;
+        VIR_DEBUG("Renaming chain '%s' to '%s'", tmp, newchain);
+        virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                               false, ebtablesRenameTmpSubAndRootChainsQuery,
+                               NULL,
+                               "-t", "nat", "-L", tmp, NULL);
+        virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                               true, NULL, NULL,
+                               "-t", "nat", "-F", newchain, NULL);
+        virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                               true, NULL, NULL,
+                               "-t", "nat", "-X", newchain, NULL);
+        virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                           "-t", "nat", "-E", tmp, newchain, NULL);
+    }
+
+    return 0;
+}
+
+
+static void
+ebtablesRenameTmpSubAndRootChainsFW(virFirewallPtr fw,
+                                    const char *ifname)
 {
     char rootchain[MAX_CHAINNAME_LENGTH];
     size_t i;
     char chains[3] = {
         CHAINPREFIX_HOST_IN_TEMP,
         CHAINPREFIX_HOST_OUT_TEMP,
-        0};
-
-    NWFILTER_SET_EBTABLES_SHELLVAR(buf);
-
-    virBufferAsprintf(buf, NWFILTER_FUNC_COLLECT_CHAINS,
-                      chains);
-    virBufferAsprintf(buf, NWFILTER_FUNC_RENAME_CHAINS,
-                      CHAINPREFIX_HOST_IN_TEMP,
-                      CHAINPREFIX_HOST_IN,
-                      CHAINPREFIX_HOST_OUT_TEMP,
-                      CHAINPREFIX_HOST_OUT);
-
-    virBufferAsprintf(buf, NWFILTER_FUNC_SET_IFS);
-    virBufferAddLit(buf, "chains=\"$(collect_chains");
+        0
+    };
     for (i = 0; chains[i] != 0; i++) {
         PRINT_ROOT_CHAIN(rootchain, chains[i], ifname);
-        virBufferAsprintf(buf, " %s", rootchain);
+        virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                               false, ebtablesRenameTmpSubAndRootChainsQuery,
+                               NULL,
+                               "-t", "nat", "-L", rootchain, NULL);
     }
-    virBufferAddLit(buf, ")\"\n");
 
-    virBufferAddLit(buf, "rename_chains $chains\n");
-
-    ebtablesRenameTmpRootChain(buf, true, ifname);
-    ebtablesRenameTmpRootChain(buf, false, ifname);
+    ebtablesRenameTmpRootChainFW(fw, true, ifname);
+    ebtablesRenameTmpRootChainFW(fw, false, ifname);
 }
 
 static void
@@ -4261,46 +4286,31 @@ ebiptablesTearNewRules(const char *ifname)
 static int
 ebiptablesTearOldRules(const char *ifname)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virFirewallPtr fw = virFirewallNew();
+    int ret = -1;
 
-    /* switch to new iptables user defined chains */
-    if (iptables_cmd_path) {
-        NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
+    virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
 
-        iptablesUnlinkRootChains(&buf, ifname);
-        iptablesRemoveRootChains(&buf, ifname);
+    iptablesUnlinkRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV4, ifname);
+    iptablesRemoveRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV4, ifname);
+    iptablesRenameTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV4, ifname);
 
-        iptablesRenameTmpRootChains(&buf, ifname);
-        ebiptablesExecCLI(&buf, true, NULL);
-    }
+    iptablesUnlinkRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV6, ifname);
+    iptablesRemoveRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV6, ifname);
+    iptablesRenameTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV6, ifname);
 
-    if (ip6tables_cmd_path) {
-        NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
+    ebtablesUnlinkRootChainFW(fw, true, ifname);
+    ebtablesUnlinkRootChainFW(fw, false, ifname);
+    ebtablesRemoveSubChainsFW(fw, ifname);
+    ebtablesRemoveRootChainFW(fw, true, ifname);
+    ebtablesRemoveRootChainFW(fw, false, ifname);
+    ebtablesRenameTmpSubAndRootChainsFW(fw, ifname);
 
-        iptablesUnlinkRootChains(&buf, ifname);
-        iptablesRemoveRootChains(&buf, ifname);
-
-        iptablesRenameTmpRootChains(&buf, ifname);
-        ebiptablesExecCLI(&buf, true, NULL);
-    }
-
-    if (ebtables_cmd_path) {
-        NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
-
-        ebtablesUnlinkRootChain(&buf, true, ifname);
-        ebtablesUnlinkRootChain(&buf, false, ifname);
-
-        ebtablesRemoveSubChains(&buf, ifname);
-
-        ebtablesRemoveRootChain(&buf, true, ifname);
-        ebtablesRemoveRootChain(&buf, false, ifname);
-
-        ebtablesRenameTmpSubAndRootChains(&buf, ifname);
-
-        ebiptablesExecCLI(&buf, true, NULL);
-    }
-
-    return 0;
+    virMutexLock(&execCLIMutex);
+    ret = virFirewallApply(fw);
+    virMutexUnlock(&execCLIMutex);
+    virFirewallFree(fw);
+    return ret;
 }
 
 

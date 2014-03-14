@@ -97,6 +97,77 @@ testNWFilterEBIPTablesAllTeardown(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
+testNWFilterEBIPTablesTearOldRules(const void *opaque ATTRIBUTE_UNUSED)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *expected =
+        "iptables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FO-vnet0\n"
+        "iptables -D libvirt-out -m physdev --physdev-out vnet0 -g FO-vnet0\n"
+        "iptables -D libvirt-in -m physdev --physdev-in vnet0 -g FI-vnet0\n"
+        "iptables -D libvirt-host-in -m physdev --physdev-in vnet0 -g HI-vnet0\n"
+        "iptables -F FO-vnet0\n"
+        "iptables -X FO-vnet0\n"
+        "iptables -F FI-vnet0\n"
+        "iptables -X FI-vnet0\n"
+        "iptables -F HI-vnet0\n"
+        "iptables -X HI-vnet0\n"
+        "iptables -E FP-vnet0 FO-vnet0\n"
+        "iptables -E FJ-vnet0 FI-vnet0\n"
+        "iptables -E HJ-vnet0 HI-vnet0\n"
+        "ip6tables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FO-vnet0\n"
+        "ip6tables -D libvirt-out -m physdev --physdev-out vnet0 -g FO-vnet0\n"
+        "ip6tables -D libvirt-in -m physdev --physdev-in vnet0 -g FI-vnet0\n"
+        "ip6tables -D libvirt-host-in -m physdev --physdev-in vnet0 -g HI-vnet0\n"
+        "ip6tables -F FO-vnet0\n"
+        "ip6tables -X FO-vnet0\n"
+        "ip6tables -F FI-vnet0\n"
+        "ip6tables -X FI-vnet0\n"
+        "ip6tables -F HI-vnet0\n"
+        "ip6tables -X HI-vnet0\n"
+        "ip6tables -E FP-vnet0 FO-vnet0\n"
+        "ip6tables -E FJ-vnet0 FI-vnet0\n"
+        "ip6tables -E HJ-vnet0 HI-vnet0\n"
+        "ebtables -t nat -D PREROUTING -i vnet0 -j libvirt-I-vnet0\n"
+        "ebtables -t nat -D POSTROUTING -o vnet0 -j libvirt-O-vnet0\n"
+        "ebtables -t nat -L libvirt-I-vnet0\n"
+        "ebtables -t nat -L libvirt-O-vnet0\n"
+        "ebtables -t nat -F libvirt-I-vnet0\n"
+        "ebtables -t nat -X libvirt-I-vnet0\n"
+        "ebtables -t nat -F libvirt-O-vnet0\n"
+        "ebtables -t nat -X libvirt-O-vnet0\n"
+        "ebtables -t nat -L libvirt-J-vnet0\n"
+        "ebtables -t nat -L libvirt-P-vnet0\n"
+        "ebtables -t nat -E libvirt-J-vnet0 libvirt-I-vnet0\n"
+        "ebtables -t nat -E libvirt-P-vnet0 libvirt-O-vnet0\n";
+    char *actual = NULL;
+    int ret = -1;
+
+    virCommandSetDryRun(&buf, NULL, NULL);
+
+    if (ebiptables_driver.tearOldRules("vnet0") < 0)
+        goto cleanup;
+
+    if (virBufferError(&buf))
+        goto cleanup;
+
+    actual = virBufferContentAndReset(&buf);
+    virtTestClearCommandPath(actual);
+
+    if (STRNEQ_NULLABLE(actual, expected)) {
+        virtTestDifference(stderr, actual, expected);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virCommandSetDryRun(NULL, NULL, NULL);
+    virBufferFreeAndReset(&buf);
+    VIR_FREE(actual);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -108,6 +179,11 @@ mymain(void)
 
     if (virtTestRun("ebiptablesAllTeardown",
                     testNWFilterEBIPTablesAllTeardown,
+                    NULL) < 0)
+        ret = -1;
+
+    if (virtTestRun("ebiptablesTearOldRules",
+                    testNWFilterEBIPTablesTearOldRules,
                     NULL) < 0)
         ret = -1;
 
