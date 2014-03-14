@@ -650,8 +650,8 @@ iptablesCreateTmpRootChain(virBufferPtr buf,
     char chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix[2] = {
        prefix,
-       (incoming) ? CHAINPREFIX_HOST_IN_TEMP
-                  : CHAINPREFIX_HOST_OUT_TEMP
+       incoming ? CHAINPREFIX_HOST_IN_TEMP
+                : CHAINPREFIX_HOST_OUT_TEMP
     };
 
     PRINT_IPT_ROOT_CHAIN(chain, chainPrefix, ifname);
@@ -690,11 +690,11 @@ _iptablesRemoveRootChain(virBufferPtr buf,
     };
 
     if (isTempChain)
-        chainPrefix[1] = (incoming) ? CHAINPREFIX_HOST_IN_TEMP
-                                    : CHAINPREFIX_HOST_OUT_TEMP;
+        chainPrefix[1] = incoming ? CHAINPREFIX_HOST_IN_TEMP
+                                  : CHAINPREFIX_HOST_OUT_TEMP;
     else
-        chainPrefix[1] = (incoming) ? CHAINPREFIX_HOST_IN
-                                    : CHAINPREFIX_HOST_OUT;
+        chainPrefix[1] = incoming ? CHAINPREFIX_HOST_IN
+                                  : CHAINPREFIX_HOST_OUT;
 
     PRINT_IPT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
@@ -761,11 +761,11 @@ iptablesLinkTmpRootChain(virBufferPtr buf,
     char chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix[2] = {
         prefix,
-        (incoming) ? CHAINPREFIX_HOST_IN_TEMP
-                   : CHAINPREFIX_HOST_OUT_TEMP
+        incoming ? CHAINPREFIX_HOST_IN_TEMP
+                 : CHAINPREFIX_HOST_OUT_TEMP
     };
-    const char *match = (incoming) ? MATCH_PHYSDEV_IN
-                                   : MATCH_PHYSDEV_OUT;
+    const char *match = incoming ? MATCH_PHYSDEV_IN
+                                 : MATCH_PHYSDEV_OUT;
 
     PRINT_IPT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
@@ -841,15 +841,15 @@ _iptablesUnlinkRootChain(virBufferPtr buf,
         prefix,
     };
     if (isTempChain)
-        chainPrefix[1] = (incoming) ? CHAINPREFIX_HOST_IN_TEMP
-                                    : CHAINPREFIX_HOST_OUT_TEMP;
+        chainPrefix[1] = incoming ? CHAINPREFIX_HOST_IN_TEMP
+                                  : CHAINPREFIX_HOST_OUT_TEMP;
     else
-        chainPrefix[1] = (incoming) ? CHAINPREFIX_HOST_IN
-                                    : CHAINPREFIX_HOST_OUT;
-    const char *match = (incoming) ? MATCH_PHYSDEV_IN
-                                   : MATCH_PHYSDEV_OUT;
-    const char *old_match = (incoming) ? NULL
-                                       : MATCH_PHYSDEV_OUT_OLD;
+        chainPrefix[1] = incoming ? CHAINPREFIX_HOST_IN
+                                  : CHAINPREFIX_HOST_OUT;
+    const char *match = incoming ? MATCH_PHYSDEV_IN
+                                 : MATCH_PHYSDEV_OUT;
+    const char *old_match = incoming ? NULL
+                                     : MATCH_PHYSDEV_OUT_OLD;
 
     PRINT_IPT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
@@ -929,13 +929,13 @@ iptablesRenameTmpRootChain(virBufferPtr buf,
     char tmpchain[MAX_CHAINNAME_LENGTH], chain[MAX_CHAINNAME_LENGTH];
     char tmpChainPrefix[2] = {
         prefix,
-        (incoming) ? CHAINPREFIX_HOST_IN_TEMP
-                   : CHAINPREFIX_HOST_OUT_TEMP
+        incoming ? CHAINPREFIX_HOST_IN_TEMP
+                 : CHAINPREFIX_HOST_OUT_TEMP
     };
     char chainPrefix[2] = {
         prefix,
-        (incoming) ? CHAINPREFIX_HOST_IN
-                   : CHAINPREFIX_HOST_OUT
+        incoming ? CHAINPREFIX_HOST_IN
+                 : CHAINPREFIX_HOST_OUT
     };
 
     PRINT_IPT_ROOT_CHAIN(tmpchain, tmpChainPrefix, ifname);
@@ -2875,8 +2875,8 @@ ebtablesCreateTmpRootChain(virBufferPtr buf,
                            int stopOnError)
 {
     char chain[MAX_CHAINNAME_LENGTH];
-    char chainPrefix = (incoming) ? CHAINPREFIX_HOST_IN_TEMP
-                                  : CHAINPREFIX_HOST_OUT_TEMP;
+    char chainPrefix = incoming ? CHAINPREFIX_HOST_IN_TEMP
+                                : CHAINPREFIX_HOST_OUT_TEMP;
 
     PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
@@ -2897,9 +2897,9 @@ ebtablesLinkTmpRootChain(virBufferPtr buf,
                          int stopOnError)
 {
     char chain[MAX_CHAINNAME_LENGTH];
-    char chainPrefix = (incoming) ? CHAINPREFIX_HOST_IN_TEMP
-                                  : CHAINPREFIX_HOST_OUT_TEMP;
-    char iodev = (incoming) ? 'i' : 'o';
+    char chainPrefix = incoming ? CHAINPREFIX_HOST_IN_TEMP
+                                : CHAINPREFIX_HOST_OUT_TEMP;
+    char iodev = incoming ? 'i' : 'o';
 
     PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
@@ -2907,8 +2907,8 @@ ebtablesLinkTmpRootChain(virBufferPtr buf,
                       CMD_DEF("$EBT -t nat -A %s -%c %s -j %s") CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
-                      (incoming) ? EBTABLES_CHAIN_INCOMING
-                                 : EBTABLES_CHAIN_OUTGOING,
+                      incoming ? EBTABLES_CHAIN_INCOMING
+                               : EBTABLES_CHAIN_OUTGOING,
                       iodev, ifname, chain,
 
                       CMD_STOPONERR(stopOnError));
@@ -2925,11 +2925,11 @@ _ebtablesRemoveRootChain(virBufferPtr buf,
     char chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix;
     if (isTempChain)
-        chainPrefix = (incoming) ? CHAINPREFIX_HOST_IN_TEMP
-                                 : CHAINPREFIX_HOST_OUT_TEMP;
+        chainPrefix = incoming ? CHAINPREFIX_HOST_IN_TEMP
+                               : CHAINPREFIX_HOST_OUT_TEMP;
     else
-        chainPrefix = (incoming) ? CHAINPREFIX_HOST_IN
-                                 : CHAINPREFIX_HOST_OUT;
+        chainPrefix = incoming ? CHAINPREFIX_HOST_IN
+                               : CHAINPREFIX_HOST_OUT;
 
     PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
@@ -2965,23 +2965,23 @@ _ebtablesUnlinkRootChain(virBufferPtr buf,
                          int isTempChain)
 {
     char chain[MAX_CHAINNAME_LENGTH];
-    char iodev = (incoming) ? 'i' : 'o';
+    char iodev = incoming ? 'i' : 'o';
     char chainPrefix;
 
     if (isTempChain) {
-        chainPrefix = (incoming) ? CHAINPREFIX_HOST_IN_TEMP
-                                 : CHAINPREFIX_HOST_OUT_TEMP;
+        chainPrefix = incoming ? CHAINPREFIX_HOST_IN_TEMP
+                               : CHAINPREFIX_HOST_OUT_TEMP;
     } else {
-        chainPrefix = (incoming) ? CHAINPREFIX_HOST_IN
-                                 : CHAINPREFIX_HOST_OUT;
+        chainPrefix = incoming ? CHAINPREFIX_HOST_IN
+                               : CHAINPREFIX_HOST_OUT;
     }
 
     PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
     virBufferAsprintf(buf,
                       "$EBT -t nat -D %s -%c %s -j %s" CMD_SEPARATOR,
-                      (incoming) ? EBTABLES_CHAIN_INCOMING
-                                 : EBTABLES_CHAIN_OUTGOING,
+                      incoming ? EBTABLES_CHAIN_INCOMING
+                               : EBTABLES_CHAIN_OUTGOING,
                       iodev, ifname, chain);
 
     return 0;
@@ -3018,8 +3018,8 @@ ebtablesCreateTmpSubChain(ebiptablesRuleInstPtr *inst,
     ebiptablesRuleInstPtr tmp = *inst;
     size_t count = *nRuleInstances;
     char rootchain[MAX_CHAINNAME_LENGTH], chain[MAX_CHAINNAME_LENGTH];
-    char chainPrefix = (incoming) ? CHAINPREFIX_HOST_IN_TEMP
-                                  : CHAINPREFIX_HOST_OUT_TEMP;
+    char chainPrefix = incoming ? CHAINPREFIX_HOST_IN_TEMP
+                                : CHAINPREFIX_HOST_OUT_TEMP;
     char *protostr = NULL;
 
     PRINT_ROOT_CHAIN(rootchain, chainPrefix, ifname);
@@ -3152,10 +3152,10 @@ ebtablesRenameTmpSubChain(virBufferPtr buf,
                           const char *protocol)
 {
     char tmpchain[MAX_CHAINNAME_LENGTH], chain[MAX_CHAINNAME_LENGTH];
-    char tmpChainPrefix = (incoming) ? CHAINPREFIX_HOST_IN_TEMP
-                                     : CHAINPREFIX_HOST_OUT_TEMP;
-    char chainPrefix = (incoming) ? CHAINPREFIX_HOST_IN
-                                  : CHAINPREFIX_HOST_OUT;
+    char tmpChainPrefix = incoming ? CHAINPREFIX_HOST_IN_TEMP
+                                   : CHAINPREFIX_HOST_OUT_TEMP;
+    char chainPrefix = incoming ? CHAINPREFIX_HOST_IN
+                                : CHAINPREFIX_HOST_OUT;
 
     if (protocol) {
         PRINT_CHAIN(tmpchain, tmpChainPrefix, ifname, protocol);
