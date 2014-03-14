@@ -2239,6 +2239,7 @@ static virDriver openvzDriver = {
 };
 
 int openvzRegister(void) {
-    virRegisterDriver(&openvzDriver);
+    if (virRegisterDriver(&openvzDriver) < 0)
+        return -1;
     return 0;
 }
