@@ -184,6 +184,7 @@ static int
 bhyveBuildDiskArgStr(const virDomainDef *def, virCommandPtr cmd)
 {
     virDomainDiskDefPtr disk;
+    const char *bus_type;
 
     if (def->ndisks != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -193,7 +194,14 @@ bhyveBuildDiskArgStr(const virDomainDef *def, virCommandPtr cmd)
 
     disk = def->disks[0];
 
-    if (disk->bus != VIR_DOMAIN_DISK_BUS_SATA) {
+    switch (disk->bus) {
+    case VIR_DOMAIN_DISK_BUS_SATA:
+        bus_type = "ahci-hd";
+        break;
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        bus_type = "virtio-blk";
+        break;
+    default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("unsupported disk bus type"));
         return -1;
@@ -212,7 +220,7 @@ bhyveBuildDiskArgStr(const virDomainDef *def, virCommandPtr cmd)
     }
 
     virCommandAddArg(cmd, "-s");
-    virCommandAddArgFormat(cmd, "2:0,ahci-hd,%s", disk->src);
+    virCommandAddArgFormat(cmd, "2:0,%s,%s", bus_type, disk->src);
 
     return 0;
 }
