@@ -567,6 +567,12 @@ bhyveDomainDestroy(virDomainPtr dom)
     if (virDomainDestroyEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Domain is not running"));
+        goto cleanup;
+    }
+
     ret = virBhyveProcessStop(privconn, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
 
 cleanup:
