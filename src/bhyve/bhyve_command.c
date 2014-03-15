@@ -173,7 +173,6 @@ bhyveBuildNetArgStr(const virDomainDef *def, virCommandPtr cmd)
         return -1;
     }
 
-    virCommandAddArgList(cmd, "-s", "0:0,hostbridge", NULL);
     virCommandAddArg(cmd, "-s");
     virCommandAddArgFormat(cmd, "1:0,virtio-net,%s", realifname);
 
@@ -268,6 +267,7 @@ virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
     virCommandAddArg(cmd, "-H"); /* vmexit from guest on hlt */
     virCommandAddArg(cmd, "-P"); /* vmexit from guest on pause */
 
+    virCommandAddArgList(cmd, "-s", "0:0,hostbridge", NULL);
     /* Devices */
     if (bhyveBuildNetArgStr(vm->def, cmd) < 0)
         goto error;
