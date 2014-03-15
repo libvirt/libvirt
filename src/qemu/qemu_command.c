@@ -6095,6 +6095,7 @@ qemuBuildChrArgStr(virDomainChrSourceDefPtr dev, const char *prefix)
 
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
     case VIR_DOMAIN_CHR_TYPE_LAST:
         break;
     }

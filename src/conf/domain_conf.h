@@ -980,6 +980,7 @@ enum virDomainChrType {
     VIR_DOMAIN_CHR_TYPE_UNIX,
     VIR_DOMAIN_CHR_TYPE_SPICEVMC,
     VIR_DOMAIN_CHR_TYPE_SPICEPORT,
+    VIR_DOMAIN_CHR_TYPE_NMDM,
 
     VIR_DOMAIN_CHR_TYPE_LAST
 };
@@ -1011,6 +1012,10 @@ struct _virDomainChrSourceDef {
         struct {
             char *path;
         } file; /* pty, file, pipe, or device */
+        struct {
+            char *master;
+            char *slave;
+        } nmdm;
         struct {
             char *host;
             char *service;

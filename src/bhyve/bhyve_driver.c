@@ -22,6 +22,7 @@
 
 #include <config.h>
 
+#include <fcntl.h>
 #include <sys/utsname.h>
 
 #include "virerror.h"
@@ -749,6 +750,49 @@ bhyveDomainDestroy(virDomainPtr dom)
 }
 
 static int
+bhyveDomainOpenConsole(virDomainPtr dom,
+                       const char *dev_name ATTRIBUTE_UNUSED,
+                       virStreamPtr st,
+                       unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    virDomainChrDefPtr chr = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = bhyveDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainOpenConsoleEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (!vm->def->nserials) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("no console devices available"));
+        goto cleanup;
+    }
+
+    chr = vm->def->serials[0];
+
+    if (virFDStreamOpenPTY(st, chr->source.data.nmdm.slave,
+                           0, 0, O_RDWR) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virObjectUnlock(vm);
+    return ret;
+}
+
+static int
 bhyveNodeGetCPUStats(virConnectPtr conn,
                      int cpuNum,
                      virNodeCPUStatsPtr params,
@@ -964,6 +1008,7 @@ static virDriver bhyveDriver = {
     .domainIsPersistent = bhyveDomainIsPersistent, /* 1.2.2 */
     .domainGetAutostart = bhyveDomainGetAutostart, /* 1.2.4 */
     .domainSetAutostart = bhyveDomainSetAutostart, /* 1.2.4 */
+    .domainOpenConsole = bhyveDomainOpenConsole, /* 1.2.4 */
     .nodeGetCPUStats = bhyveNodeGetCPUStats, /* 1.2.2 */
     .nodeGetMemoryStats = bhyveNodeGetMemoryStats, /* 1.2.2 */
     .nodeGetInfo = bhyveNodeGetInfo, /* 1.2.3 */

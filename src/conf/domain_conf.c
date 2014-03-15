@@ -413,7 +413,8 @@ VIR_ENUM_IMPL(virDomainChr, VIR_DOMAIN_CHR_TYPE_LAST,
               "tcp",
               "unix",
               "spicevmc",
-              "spiceport")
+              "spiceport",
+              "nmdm")
 
 VIR_ENUM_IMPL(virDomainChrTcpProtocol, VIR_DOMAIN_CHR_TCP_PROTOCOL_LAST,
               "raw",
@@ -1403,6 +1404,11 @@ virDomainChrSourceDefClear(virDomainChrSourceDefPtr def)
         VIR_FREE(def->data.file.path);
         break;
 
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
+        VIR_FREE(def->data.nmdm.master);
+        VIR_FREE(def->data.nmdm.slave);
+        break;
+
     case VIR_DOMAIN_CHR_TYPE_UDP:
         VIR_FREE(def->data.udp.bindHost);
         VIR_FREE(def->data.udp.bindService);
@@ -1471,6 +1477,14 @@ virDomainChrSourceDefCopy(virDomainChrSourceDefPtr dest,
         if (VIR_STRDUP(dest->data.nix.path, src->data.nix.path) < 0)
             return -1;
         break;
+
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
+        if (VIR_STRDUP(dest->data.nmdm.master, src->data.nmdm.master) < 0)
+            return -1;
+        if (VIR_STRDUP(dest->data.nmdm.slave, src->data.nmdm.slave) < 0)
+            return -1;
+
+        break;
     }
 
     dest->type = src->type;
@@ -1508,6 +1522,10 @@ virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
         return STREQ_NULLABLE(src->data.file.path, tgt->data.file.path);
+        break;
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
+        return STREQ_NULLABLE(src->data.nmdm.master, tgt->data.nmdm.master) &&
+            STREQ_NULLABLE(src->data.nmdm.slave, tgt->data.nmdm.slave);
         break;
     case VIR_DOMAIN_CHR_TYPE_UDP:
         return STREQ_NULLABLE(src->data.udp.bindHost, tgt->data.udp.bindHost) &&
@@ -7148,6 +7166,8 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     char *mode = NULL;
     char *protocol = NULL;
     char *channel = NULL;
+    char *master = NULL;
+    char *slave = NULL;
     int remaining = 0;
 
     while (cur != NULL) {
@@ -7195,6 +7215,13 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                 case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
                     if (!channel)
                         channel = virXMLPropString(cur, "channel");
+                    break;
+
+                case VIR_DOMAIN_CHR_TYPE_NMDM:
+                    if (!master)
+                        master = virXMLPropString(cur, "master");
+                    if (!slave)
+                        slave = virXMLPropString(cur, "slave");
                     break;
 
                 case VIR_DOMAIN_CHR_TYPE_LAST:
@@ -7251,6 +7278,25 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
 
         def->data.file.path = path;
         path = NULL;
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
+        if (!master) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing master path attribute for nmdm device"));
+            goto error;
+        }
+
+        if (!slave) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing slave path attribute for nmdm device"));
+            goto error;
+        }
+
+        def->data.nmdm.master = master;
+        def->data.nmdm.slave = slave;
+        master = NULL;
+        slave = NULL;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
@@ -7421,6 +7467,11 @@ virDomainChrDefNew(void)
  * <serial type="unix">
  *   <source mode="bind" path="/tmp/foo"/>
  *   <target port="1"/>
+ * </serial>
+ *
+ * <serial type="nmdm">
+ *   <source master="/dev/nmdm0A" slave="/dev/nmdm0B"/>
+ *   <target port="1">
  * </serial>
  *
  */
@@ -15758,6 +15809,12 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
             virBufferEscapeString(buf, "<source path='%s'/>\n",
                                   def->data.file.path);
         }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
+        virBufferAsprintf(buf, "<source master='%s' slave='%s'/>\n",
+                          def->data.nmdm.master,
+                          def->data.nmdm.slave);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:

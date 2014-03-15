@@ -72,6 +72,7 @@ virDomainAuditChardevPath(virDomainChrSourceDefPtr chr)
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
         return chr->data.file.path;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
