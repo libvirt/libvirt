@@ -601,6 +601,16 @@ bhyveNodeGetMemoryStats(virConnectPtr conn,
 }
 
 static int
+bhyveNodeGetInfo(virConnectPtr conn,
+                      virNodeInfoPtr nodeinfo)
+{
+    if (virNodeGetInfoEnsureACL(conn) < 0)
+        return -1;
+
+    return nodeGetInfo(nodeinfo);
+}
+
+static int
 bhyveStateCleanup(void)
 {
     VIR_DEBUG("bhyve state cleanup");
@@ -703,6 +713,7 @@ static virDriver bhyveDriver = {
     .domainIsPersistent = bhyveDomainIsPersistent, /* 1.2.2 */
     .nodeGetCPUStats = bhyveNodeGetCPUStats, /* 1.2.2 */
     .nodeGetMemoryStats = bhyveNodeGetMemoryStats, /* 1.2.2 */
+    .nodeGetInfo = bhyveNodeGetInfo, /* 1.2.3 */
 };
 
 
