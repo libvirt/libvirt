@@ -82,6 +82,9 @@ virDomainSnapshotDiskDefClear(virDomainSnapshotDiskDefPtr disk)
 {
     VIR_FREE(disk->name);
     VIR_FREE(disk->file);
+    while (disk->nhosts)
+        virDomainDiskHostDefClear(&disk->hosts[--disk->nhosts]);
+    VIR_FREE(disk->hosts);
 }
 
 void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def)
