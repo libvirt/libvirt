@@ -94,6 +94,7 @@ EXTRA_DIST =		\
 	nwfilterxml2xmlout \
 	oomtrace.pl \
 	qemucapabilitiesdata \
+	qemucaps2xmldata \
 	qemuhelpdata \
 	qemuhotplugtestdata \
 	qemumonitorjsondata \
@@ -209,7 +210,7 @@ if WITH_QEMU
 test_programs += qemuxml2argvtest qemuxml2xmltest qemuxmlnstest \
 	qemuargv2xmltest qemuhelptest domainsnapshotxml2xmltest \
 	qemumonitortest qemumonitorjsontest qemuhotplugtest \
-	qemuagenttest qemucapabilitiestest
+	qemuagenttest qemucapabilitiestest qemucaps2xmltest
 endif WITH_QEMU
 
 if WITH_LXC
@@ -512,6 +513,12 @@ qemucapabilitiestest_SOURCES = \
 	$(NULL)
 qemucapabilitiestest_LDADD = libqemumonitortestutils.la $(qemu_LDADDS)
 
+qemucaps2xmltest_SOURCES = \
+	qemucaps2xmltest.c \
+	testutils.c testutils.h \
+	$(NULL)
+qemucaps2xmltest_LDADD = $(qemu_LDADDS)
+
 qemuagenttest_SOURCES = \
 	qemuagenttest.c \
 	testutils.c testutils.h \
@@ -536,6 +543,7 @@ EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuargv2xmltest.c \
 	qemumonitortest.c testutilsqemu.c testutilsqemu.h \
 	qemumonitorjsontest.c qemuhotplugtest.c \
 	qemuagenttest.c qemucapabilitiestest.c \
+	qemucaps2xmltest.c \
 	$(QEMUMONITORTESTUTILS_SOURCES)
 endif ! WITH_QEMU
 
