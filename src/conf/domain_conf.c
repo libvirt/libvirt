@@ -10283,8 +10283,7 @@ virDomainDiskIndexByName(virDomainDefPtr def, const char *name,
         if (*name != '/') {
             if (STREQ(vdisk->dst, name))
                 return i;
-        } else if (vdisk->src &&
-                   STREQ(vdisk->src, name)) {
+        } else if (STREQ_NULLABLE(virDomainDiskGetSource(vdisk), name)) {
             if (allow_ambiguous)
                 return i;
             if (candidate >= 0)
@@ -10303,7 +10302,7 @@ virDomainDiskPathByName(virDomainDefPtr def, const char *name)
 {
     int idx = virDomainDiskIndexByName(def, name, true);
 
-    return idx < 0 ? NULL : def->disks[idx]->src;
+    return idx < 0 ? NULL : virDomainDiskGetSource(def->disks[idx]);
 }
 
 int virDomainDiskInsert(virDomainDefPtr def,
@@ -18618,14 +18617,16 @@ virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
     int ret = -1;
     size_t depth = 0;
     virStorageFileMetadata *tmp;
+    const char *path = virDomainDiskGetSource(disk);
+    int type = virDomainDiskGetType(disk);
 
-    if (!disk->src || disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK ||
-        (disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
+    if (!path || type == VIR_DOMAIN_DISK_TYPE_NETWORK ||
+        (type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
          disk->srcpool &&
          disk->srcpool->mode == VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT))
         return 0;
 
-    if (iter(disk, disk->src, 0, opaque) < 0)
+    if (iter(disk, path, 0, opaque) < 0)
         goto cleanup;
 
     tmp = disk->backingChain;
@@ -19495,16 +19496,17 @@ virDomainDiskSourceIsBlockType(virDomainDiskDefPtr def)
     /* No reason to think the disk source is block type if
      * the source is empty
      */
-    if (!def->src)
+    if (!virDomainDiskGetSource(def))
         return false;
 
-    if (def->type == VIR_DOMAIN_DISK_TYPE_BLOCK)
+    if (virDomainDiskGetType(def) == VIR_DOMAIN_DISK_TYPE_BLOCK)
         return true;
 
     /* For volume types, check the srcpool.
      * If it's a block type source pool, then it's possible
      */
-    if (def->type == VIR_DOMAIN_DISK_TYPE_VOLUME && def->srcpool &&
+    if (virDomainDiskGetType(def) == VIR_DOMAIN_DISK_TYPE_VOLUME &&
+        def->srcpool &&
         def->srcpool->voltype == VIR_STORAGE_VOL_BLOCK) {
         /* We don't think the volume accessed by remote URI is
          * block type source, since we can't/shouldn't manage it

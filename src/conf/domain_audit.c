@@ -799,9 +799,10 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
     size_t i;
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
-        if (disk->src) /* Skips CDROM without media initially inserted */
-            virDomainAuditDisk(vm, NULL, disk->src, "start", true);
+        const char *src = virDomainDiskGetSource(vm->def->disks[i]);
+
+        if (src) /* Skips CDROM without media initially inserted */
+            virDomainAuditDisk(vm, NULL, src, "start", true);
     }
 
     for (i = 0; i < vm->def->nfss; i++) {

@@ -558,7 +558,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
 
         if (disk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL &&
             !disk->file) {
-            const char *original = def->dom->disks[i]->src;
+            const char *original = virDomainDiskGetSource(def->dom->disks[i]);
             const char *tmp;
             struct stat sb;
 
