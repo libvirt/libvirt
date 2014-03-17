@@ -56,9 +56,11 @@ int virPidFileDelete(const char *dir,
 
 
 int virPidFileAcquirePath(const char *path,
+                          bool waitForLock,
                           pid_t pid) ATTRIBUTE_RETURN_CHECK;
 int virPidFileAcquire(const char *dir,
                       const char *name,
+                      bool waitForLock,
                       pid_t pid) ATTRIBUTE_RETURN_CHECK;
 
 int virPidFileReleasePath(const char *path,

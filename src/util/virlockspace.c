@@ -82,7 +82,7 @@ static void virLockSpaceResourceFree(virLockSpaceResourcePtr res)
         if (res->flags & VIR_LOCK_SPACE_ACQUIRE_SHARED) {
             /* We must upgrade to an exclusive lock to ensure
              * no one else still has it before trying to delete */
-            if (virFileLock(res->fd, false, 0, 1) < 0) {
+            if (virFileLock(res->fd, false, 0, 1, false) < 0) {
                 VIR_DEBUG("Could not upgrade shared lease to exclusive, not deleting");
             } else {
                 if (unlink(res->path) < 0 &&
@@ -155,7 +155,7 @@ virLockSpaceResourceNew(virLockSpacePtr lockspace,
                 goto error;
             }
 
-            if (virFileLock(res->fd, shared, 0, 1) < 0) {
+            if (virFileLock(res->fd, shared, 0, 1, false) < 0) {
                 if (errno == EACCES || errno == EAGAIN) {
                     virReportError(VIR_ERR_RESOURCE_BUSY,
                                    _("Lockspace resource '%s' is locked"),
@@ -202,7 +202,7 @@ virLockSpaceResourceNew(virLockSpacePtr lockspace,
             goto error;
         }
 
-        if (virFileLock(res->fd, shared, 0, 1) < 0) {
+        if (virFileLock(res->fd, shared, 0, 1, false) < 0) {
             if (errno == EACCES || errno == EAGAIN) {
                 virReportError(VIR_ERR_RESOURCE_BUSY,
                                _("Lockspace resource '%s' is locked"),

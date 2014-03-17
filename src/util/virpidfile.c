@@ -372,6 +372,7 @@ cleanup:
 }
 
 int virPidFileAcquirePath(const char *path,
+                          bool waitForLock,
                           pid_t pid)
 {
     int fd = -1;
@@ -405,7 +406,7 @@ int virPidFileAcquirePath(const char *path,
             return -1;
         }
 
-        if (virFileLock(fd, false, 0, 1) < 0) {
+        if (virFileLock(fd, false, 0, 1, waitForLock) < 0) {
             virReportSystemError(errno,
                                  _("Failed to acquire pid file '%s'"),
                                  path);
@@ -448,6 +449,7 @@ int virPidFileAcquirePath(const char *path,
 
 int virPidFileAcquire(const char *dir,
                       const char *name,
+                      bool waitForLock,
                       pid_t pid)
 {
     int rc = 0;
@@ -463,7 +465,7 @@ int virPidFileAcquire(const char *dir,
         goto cleanup;
     }
 
-    rc = virPidFileAcquirePath(pidfile, pid);
+    rc = virPidFileAcquirePath(pidfile, waitForLock, pid);
 
 cleanup:
     VIR_FREE(pidfile);

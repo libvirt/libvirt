@@ -97,7 +97,7 @@ int virFileWrapperFdClose(virFileWrapperFdPtr dfd);
 
 void virFileWrapperFdFree(virFileWrapperFdPtr dfd);
 
-int virFileLock(int fd, bool shared, off_t start, off_t len);
+int virFileLock(int fd, bool shared, off_t start, off_t len, bool waitForLock);
 int virFileUnlock(int fd, off_t start, off_t len);
 
 typedef int (*virFileRewriteFunc)(int fd, void *opaque);

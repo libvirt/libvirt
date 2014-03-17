@@ -339,13 +339,14 @@ virFileWrapperFdFree(virFileWrapperFdPtr wfd)
  * @shared: type of lock to acquire
  * @start: byte offset to start lock
  * @len: length of lock (0 to acquire entire remaining file from @start)
+ * @waitForLock: wait for previously held lock or not
  *
  * Attempt to acquire a lock on the file @fd. If @shared
  * is true, then a shared lock will be acquired,
  * otherwise an exclusive lock will be acquired. If
  * the lock cannot be acquired, an error will be
- * returned. This will not wait to acquire the lock if
- * another process already holds it.
+ * returned. If @waitForLock is true, this will wait
+ * for the lock if another process has already acquired it.
  *
  * The lock will be released when @fd is closed. The lock
  * will also be released if *any* other open file descriptor
@@ -356,7 +357,7 @@ virFileWrapperFdFree(virFileWrapperFdPtr wfd)
  *
  * Returns 0 on success, or -errno otherwise
  */
-int virFileLock(int fd, bool shared, off_t start, off_t len)
+int virFileLock(int fd, bool shared, off_t start, off_t len, bool waitForLock)
 {
     struct flock fl = {
         .l_type = shared ? F_RDLCK : F_WRLCK,
@@ -365,7 +366,9 @@ int virFileLock(int fd, bool shared, off_t start, off_t len)
         .l_len = len,
     };
 
-    if (fcntl(fd, F_SETLK, &fl) < 0)
+    int cmd = waitForLock ? F_SETLKW : F_SETLK;
+
+    if (fcntl(fd, cmd, &fl) < 0)
         return -errno;
 
     return 0;
@@ -402,7 +405,8 @@ int virFileUnlock(int fd, off_t start, off_t len)
 int virFileLock(int fd ATTRIBUTE_UNUSED,
                 bool shared ATTRIBUTE_UNUSED,
                 off_t start ATTRIBUTE_UNUSED,
-                off_t len ATTRIBUTE_UNUSED)
+                off_t len ATTRIBUTE_UNUSED,
+                bool waitForLock ATTRIBUTE_UNUSED)
 {
     return -ENOSYS;
 }

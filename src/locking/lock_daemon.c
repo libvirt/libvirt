@@ -1020,7 +1020,7 @@ virLockDaemonPostExecRestart(const char *state_file,
 
     /* Re-claim PID file now as we will not be daemonizing */
     if (pid_file &&
-        (*pid_file_fd = virPidFileAcquirePath(pid_file, getpid())) < 0)
+        (*pid_file_fd = virPidFileAcquirePath(pid_file, false, getpid())) < 0)
         goto cleanup;
 
     if (!(lockDaemon = virLockDaemonNewPostExecRestart(object, privileged)))
@@ -1382,7 +1382,7 @@ int main(int argc, char **argv) {
         }
 
         /* If we have a pidfile set, claim it now, exiting if already taken */
-        if ((pid_file_fd = virPidFileAcquirePath(pid_file, getpid())) < 0) {
+        if ((pid_file_fd = virPidFileAcquirePath(pid_file, false, getpid())) < 0) {
             ret = VIR_LOCK_DAEMON_ERR_PIDFILE;
             goto cleanup;
         }
