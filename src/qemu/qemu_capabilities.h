@@ -295,4 +295,11 @@ bool virQEMUCapsSupportsChardev(virDomainDefPtr def,
                                 virQEMUCapsPtr qemuCaps,
                                 virDomainChrDefPtr chr);
 
+int virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
+                                   const char *binary,
+                                   virQEMUCapsPtr qemubinCaps,
+                                   const char *kvmbin,
+                                   virQEMUCapsPtr kvmbinCaps,
+                                   virArch guestarch);
+
 #endif /* __QEMU_CAPABILITIES_H__*/

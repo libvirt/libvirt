@@ -691,18 +691,12 @@ virQEMUCapsInitGuest(virCapsPtr caps,
                      virArch hostarch,
                      virArch guestarch)
 {
-    virCapsGuestPtr guest;
     size_t i;
-    bool haskvm = false;
-    bool haskqemu = false;
     char *kvmbin = NULL;
     char *binary = NULL;
-    virCapsGuestMachinePtr *machines = NULL;
-    size_t nmachines = 0;
     virQEMUCapsPtr qemubinCaps = NULL;
     virQEMUCapsPtr kvmbinCaps = NULL;
     int ret = -1;
-    bool hasdisksnapshot = false;
 
     /* Check for existence of base emulator, or alternate base
      * which can be used with magic cpu choice
@@ -750,6 +744,35 @@ virQEMUCapsInitGuest(virCapsPtr caps,
         }
     }
 
+    ret = virQEMUCapsInitGuestFromBinary(caps,
+                                         binary, qemubinCaps,
+                                         kvmbin, kvmbinCaps,
+                                         guestarch);
+
+    VIR_FREE(binary);
+    VIR_FREE(kvmbin);
+    virObjectUnref(qemubinCaps);
+    virObjectUnref(kvmbinCaps);
+
+    return ret;
+}
+
+int
+virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
+                               const char *binary,
+                               virQEMUCapsPtr qemubinCaps,
+                               const char *kvmbin,
+                               virQEMUCapsPtr kvmbinCaps,
+                               virArch guestarch)
+{
+    virCapsGuestPtr guest;
+    bool haskvm = false;
+    bool haskqemu = false;
+    virCapsGuestMachinePtr *machines = NULL;
+    size_t nmachines = 0;
+    int ret = -1;
+    bool hasdisksnapshot = false;
+
     if (!binary)
         return 0;
 
@@ -764,7 +787,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
         haskqemu = true;
 
     if (virQEMUCapsGetMachineTypesCaps(qemubinCaps, &nmachines, &machines) < 0)
-        goto error;
+        goto cleanup;
 
     /* We register kvm as the base emulator too, since we can
      * just give -no-kvm to disable acceleration if required */
@@ -775,7 +798,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
                                          NULL,
                                          nmachines,
                                          machines)) == NULL)
-        goto error;
+        goto cleanup;
 
     machines = NULL;
     nmachines = 0;
@@ -784,17 +807,17 @@ virQEMUCapsInitGuest(virCapsPtr caps,
         caps->host.cpu->model &&
         virQEMUCapsGetCPUDefinitions(qemubinCaps, NULL) > 0 &&
         !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
-        goto error;
+        goto cleanup;
 
     if (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_BOOTINDEX) &&
         !virCapabilitiesAddGuestFeature(guest, "deviceboot", 1, 0))
-        goto error;
+        goto cleanup;
 
     if (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_DISK_SNAPSHOT))
         hasdisksnapshot = true;
 
     if (!virCapabilitiesAddGuestFeature(guest, "disksnapshot", hasdisksnapshot, 0))
-        goto error;
+        goto cleanup;
 
     if (virCapabilitiesAddGuestDomain(guest,
                                       "qemu",
@@ -802,7 +825,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
                                       NULL,
                                       0,
                                       NULL) == NULL)
-        goto error;
+        goto cleanup;
 
     if (haskqemu &&
         virCapabilitiesAddGuestDomain(guest,
@@ -811,14 +834,14 @@ virQEMUCapsInitGuest(virCapsPtr caps,
                                       NULL,
                                       0,
                                       NULL) == NULL)
-        goto error;
+        goto cleanup;
 
     if (haskvm) {
         virCapsGuestDomainPtr dom;
 
         if (kvmbin &&
             virQEMUCapsGetMachineTypesCaps(kvmbinCaps, &nmachines, &machines) < 0)
-            goto error;
+            goto cleanup;
 
         if ((dom = virCapabilitiesAddGuestDomain(guest,
                                                  "kvm",
@@ -826,7 +849,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
                                                  NULL,
                                                  nmachines,
                                                  machines)) == NULL) {
-            goto error;
+            goto cleanup;
         }
 
         machines = NULL;
@@ -838,27 +861,20 @@ virQEMUCapsInitGuest(virCapsPtr caps,
          (guestarch == VIR_ARCH_X86_64)) &&
         (virCapabilitiesAddGuestFeature(guest, "acpi", 1, 1) == NULL ||
          virCapabilitiesAddGuestFeature(guest, "apic", 1, 0) == NULL))
-        goto error;
+        goto cleanup;
 
     if ((guestarch == VIR_ARCH_I686) &&
         (virCapabilitiesAddGuestFeature(guest, "pae", 1, 0) == NULL ||
          virCapabilitiesAddGuestFeature(guest, "nonpae", 1, 0) == NULL))
-        goto error;
+        goto cleanup;
 
     ret = 0;
 
  cleanup:
-    VIR_FREE(binary);
-    VIR_FREE(kvmbin);
-    virObjectUnref(qemubinCaps);
-    virObjectUnref(kvmbinCaps);
 
-    return ret;
-
- error:
     virCapabilitiesFreeMachines(machines, nmachines);
 
-    goto cleanup;
+    return ret;
 }
 
 
