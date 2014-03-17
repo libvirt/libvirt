@@ -7840,7 +7840,7 @@ remoteRegister(void)
     if (virRegisterNWFilterDriver(&nwfilter_driver) < 0)
         return -1;
 #ifdef WITH_LIBVIRTD
-    if (virRegisterStateDriver(&state_driver) == -1) < 0)
+    if (virRegisterStateDriver(&state_driver) < 0)
         return -1;
 #endif
 

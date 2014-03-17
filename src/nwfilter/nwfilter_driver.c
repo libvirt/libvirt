@@ -720,7 +720,6 @@ int nwfilterRegister(void) {
         return -1;
     if (virRegisterStateDriver(&stateDriver) < 0)
         return -1;
-    if (virDomainConfNWFilterRegister(&domainNWFilterDriver) < 0)
-        return -1;
+    virDomainConfNWFilterRegister(&domainNWFilterDriver);
     return 0;
 }
