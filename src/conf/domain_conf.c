@@ -6495,7 +6495,7 @@ error:
 }
 
 #define NET_MODEL_CHARS \
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ091234567890_-"
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"
 
 /* Parse the XML definition for a network interface
  * @param node XML nodeset to parse for net definition
