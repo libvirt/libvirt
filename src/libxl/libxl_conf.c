@@ -1022,6 +1022,20 @@ libxlMakeVfbList(libxlDriverPrivatePtr driver,
     d_config->vkbs = x_vkbs;
     d_config->num_vfbs = d_config->num_vkbs = nvfbs;
 
+    /*
+     * VNC or SDL info must also be set in libxl_domain_build_info
+     * for HVM domains.  Use the first vfb device.
+     */
+    if (STREQ(def->os.type, "hvm")) {
+        libxl_domain_build_info *b_info = &d_config->b_info;
+        libxl_device_vfb vfb = d_config->vfbs[0];
+
+        if (libxl_defbool_val(vfb.vnc.enable))
+            memcpy(&b_info->u.hvm.vnc, &vfb.vnc, sizeof(libxl_vnc_info));
+        else if (libxl_defbool_val(vfb.sdl.enable))
+            memcpy(&b_info->u.hvm.sdl, &vfb.sdl, sizeof(libxl_sdl_info));
+    }
+
     return 0;
 
 error:
