@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_controller.c: linux container process controller
@@ -382,21 +382,24 @@ static int virLXCControllerSetupLoopDeviceDisk(virDomainDiskDefPtr disk)
 {
     int lofd;
     char *loname = NULL;
+    const char *src = virDomainDiskGetSource(disk);
 
-    if ((lofd = virFileLoopDeviceAssociate(disk->src, &loname)) < 0)
+    if ((lofd = virFileLoopDeviceAssociate(src, &loname)) < 0)
         return -1;
 
     VIR_DEBUG("Changing disk %s to use type=block for dev %s",
-              disk->src, loname);
+              src, loname);
 
     /*
      * We now change it into a block device type, so that
      * the rest of container setup 'just works'
      */
-    disk->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
-    VIR_FREE(disk->src);
-    disk->src = loname;
-    loname = NULL;
+    virDomainDiskSetType(disk, VIR_DOMAIN_DISK_TYPE_BLOCK);
+    if (virDomainDiskSetSource(disk, loname) < 0) {
+        VIR_FREE(loname);
+        return -1;
+    }
+    VIR_FREE(loname);
 
     return lofd;
 }
@@ -435,28 +438,33 @@ static int virLXCControllerSetupNBDDeviceFS(virDomainFSDefPtr fs)
 static int virLXCControllerSetupNBDDeviceDisk(virDomainDiskDefPtr disk)
 {
     char *dev;
+    const char *src = virDomainDiskGetSource(disk);
+    int format = virDomainDiskGetFormat(disk);
 
-    if (disk->format <= VIR_STORAGE_FILE_NONE) {
+    if (format <= VIR_STORAGE_FILE_NONE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("An explicit disk format must be specified"));
         return -1;
     }
 
-    if (virFileNBDDeviceAssociate(disk->src,
-                                  disk->format,
+    if (virFileNBDDeviceAssociate(src,
+                                  format,
                                   disk->readonly,
                                   &dev) < 0)
         return -1;
 
     VIR_DEBUG("Changing disk %s to use type=block for dev %s",
-              disk->src, dev);
+              src, dev);
     /*
      * We now change it into a block device type, so that
      * the rest of container setup 'just works'
      */
-    disk->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
-    VIR_FREE(disk->src);
-    disk->src = dev;
+    virDomainDiskSetType(disk, VIR_DOMAIN_DISK_TYPE_BLOCK);
+    if (virDomainDiskSetSource(disk, dev) < 0) {
+        VIR_FREE(dev);
+        return -1;
+    }
+    VIR_FREE(dev);
 
     return 0;
 }
@@ -519,23 +527,25 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
     for (i = 0; i < ctrl->def->ndisks; i++) {
         virDomainDiskDefPtr disk = ctrl->def->disks[i];
         int fd;
+        const char *driver = virDomainDiskGetDriver(disk);
+        int format = virDomainDiskGetFormat(disk);
 
-        if (disk->type != VIR_DOMAIN_DISK_TYPE_FILE)
+        if (virDomainDiskGetType(disk) != VIR_DOMAIN_DISK_TYPE_FILE)
             continue;
 
         /* If no driverName is set, we prefer 'loop' for
          * dealing with raw or undefined formats, otherwise
          * we use 'nbd'.
          */
-        if (STREQ_NULLABLE(disk->driverName, "loop") ||
-            (!disk->driverName &&
-             (disk->format == VIR_STORAGE_FILE_RAW ||
-              disk->format == VIR_STORAGE_FILE_NONE))) {
-            if (disk->format != VIR_STORAGE_FILE_RAW &&
-                disk->format != VIR_STORAGE_FILE_NONE) {
+        if (STREQ_NULLABLE(driver, "loop") ||
+            (!driver &&
+             (format == VIR_STORAGE_FILE_RAW ||
+              format == VIR_STORAGE_FILE_NONE))) {
+            if (format != VIR_STORAGE_FILE_RAW &&
+                format != VIR_STORAGE_FILE_NONE) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("disk format %s is not supported"),
-                               virStorageFileFormatTypeToString(disk->format));
+                               virStorageFileFormatTypeToString(format));
                 goto cleanup;
             }
 
@@ -553,8 +563,7 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
                 goto cleanup;
             }
             ctrl->loopDevFds[ctrl->nloopDevs - 1] = fd;
-        } else if (STREQ_NULLABLE(disk->driverName, "nbd") ||
-                   !disk->driverName) {
+        } else if (!driver || STREQ(driver, "nbd")) {
             if (disk->cachemode != VIR_DOMAIN_DISK_CACHE_DEFAULT &&
                 disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -567,7 +576,7 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk driver %s is not supported"),
-                           disk->driverName);
+                           driver);
             goto cleanup;
         }
     }
@@ -1662,12 +1671,12 @@ static int virLXCControllerSetupDisk(virLXCControllerPtr ctrl,
     mode_t mode;
     char *tmpsrc = def->src;
 
-    if (def->type != VIR_DOMAIN_DISK_TYPE_BLOCK) {
+    if (virDomainDiskGetType(def) != VIR_DOMAIN_DISK_TYPE_BLOCK) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Can't setup disk for non-block device"));
         goto cleanup;
     }
-    if (def->src == NULL) {
+    if (!tmpsrc) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Can't setup disk without media"));
         goto cleanup;
@@ -1679,14 +1688,14 @@ static int virLXCControllerSetupDisk(virLXCControllerPtr ctrl,
 
     if (stat(def->src, &sb) < 0) {
         virReportSystemError(errno,
-                             _("Unable to access %s"), def->src);
+                             _("Unable to access %s"), tmpsrc);
         goto cleanup;
     }
 
     if (!S_ISCHR(sb.st_mode) && !S_ISBLK(sb.st_mode)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Disk source %s must be a character/block device"),
-                       def->src);
+                       tmpsrc);
         goto cleanup;
     }
 
@@ -1704,7 +1713,7 @@ static int virLXCControllerSetupDisk(virLXCControllerPtr ctrl,
      * to that normally implied by the device name
      */
     VIR_DEBUG("Creating dev %s (%d,%d) from %s",
-              dst, major(sb.st_rdev), minor(sb.st_rdev), def->src);
+              dst, major(sb.st_rdev), minor(sb.st_rdev), tmpsrc);
     if (mknod(dst, mode, sb.st_rdev) < 0) {
         virReportSystemError(errno,
                              _("Unable to create device %s"),

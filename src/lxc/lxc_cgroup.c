@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_cgroup.c: LXC cgroup helpers
@@ -372,11 +372,11 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
 
     VIR_DEBUG("Allowing any disk block devs");
     for (i = 0; i < def->ndisks; i++) {
-        if (def->disks[i]->type != VIR_DOMAIN_DISK_TYPE_BLOCK)
+        if (!virDomainDiskSourceIsBlockType(def->disks[i]))
             continue;
 
         if (virCgroupAllowDevicePath(cgroup,
-                                     def->disks[i]->src,
+                                     virDomainDiskGetSource(def->disks[i]),
                                      (def->disks[i]->readonly ?
                                       VIR_CGROUP_DEVICE_READ :
                                       VIR_CGROUP_DEVICE_RW) |

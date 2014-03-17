@@ -4023,6 +4023,7 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
     struct stat sb;
     char *file = NULL;
     int perms;
+    const char *src = NULL;
 
     if (!priv->initpid) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -4036,12 +4037,13 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
-    if (def->type != VIR_DOMAIN_DISK_TYPE_BLOCK) {
+    if (!virDomainDiskSourceIsBlockType(def)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Can't setup disk for non-block device"));
         goto cleanup;
     }
-    if (def->src == NULL) {
+    src = virDomainDiskGetSource(def);
+    if (src == NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Can't setup disk without media"));
         goto cleanup;
@@ -4053,16 +4055,16 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
-    if (stat(def->src, &sb) < 0) {
+    if (stat(src, &sb) < 0) {
         virReportSystemError(errno,
-                             _("Unable to access %s"), def->src);
+                             _("Unable to access %s"), src);
         goto cleanup;
     }
 
     if (!S_ISBLK(sb.st_mode)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Disk source %s must be a block device"),
-                       def->src);
+                       src);
         goto cleanup;
     }
 
@@ -4103,7 +4105,7 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
                                 minor(sb.st_rdev),
                                 perms) < 0)
             VIR_WARN("cannot deny device %s for domain %s",
-                     def->src, vm->def->name);
+                     src, vm->def->name);
         goto cleanup;
     }
 
@@ -4112,7 +4114,8 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
     ret = 0;
 
 cleanup:
-    virDomainAuditDisk(vm, NULL, def->src, "attach", ret == 0);
+    if (src)
+        virDomainAuditDisk(vm, NULL, src, "attach", ret == 0);
     VIR_FREE(file);
     return ret;
 }
@@ -4586,6 +4589,7 @@ lxcDomainDetachDeviceDiskLive(virDomainObjPtr vm,
     virDomainDiskDefPtr def = NULL;
     int idx, ret = -1;
     char *dst = NULL;
+    const char *src;
 
     if (!priv->initpid) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -4602,6 +4606,7 @@ lxcDomainDetachDeviceDiskLive(virDomainObjPtr vm,
     }
 
     def = vm->def->disks[idx];
+    src = virDomainDiskGetSource(def);
 
     if (virAsprintf(&dst, "/dev/%s", def->dst) < 0)
         goto cleanup;
@@ -4613,14 +4618,14 @@ lxcDomainDetachDeviceDiskLive(virDomainObjPtr vm,
     }
 
     if (lxcDomainAttachDeviceUnlink(vm, dst) < 0) {
-        virDomainAuditDisk(vm, def->src, NULL, "detach", false);
+        virDomainAuditDisk(vm, src, NULL, "detach", false);
         goto cleanup;
     }
-    virDomainAuditDisk(vm, def->src, NULL, "detach", true);
+    virDomainAuditDisk(vm, src, NULL, "detach", true);
 
-    if (virCgroupDenyDevicePath(priv->cgroup, def->src, VIR_CGROUP_DEVICE_RWM) != 0)
+    if (virCgroupDenyDevicePath(priv->cgroup, src, VIR_CGROUP_DEVICE_RWM) != 0)
         VIR_WARN("cannot deny device %s for domain %s",
-                 def->src, vm->def->name);
+                 src, vm->def->name);
 
     virDomainDiskRemove(vm->def, idx);
     virDomainDiskDefFree(def);
