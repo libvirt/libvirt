@@ -702,6 +702,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
     virQEMUCapsPtr qemubinCaps = NULL;
     virQEMUCapsPtr kvmbinCaps = NULL;
     int ret = -1;
+    bool hasdisksnapshot = false;
 
     /* Check for existence of base emulator, or alternate base
      * which can be used with magic cpu choice
@@ -787,6 +788,12 @@ virQEMUCapsInitGuest(virCapsPtr caps,
 
     if (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_BOOTINDEX) &&
         !virCapabilitiesAddGuestFeature(guest, "deviceboot", 1, 0))
+        goto error;
+
+    if (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_DISK_SNAPSHOT))
+        hasdisksnapshot = true;
+
+    if (!virCapabilitiesAddGuestFeature(guest, "disksnapshot", hasdisksnapshot, 0))
         goto error;
 
     if (virCapabilitiesAddGuestDomain(guest,
