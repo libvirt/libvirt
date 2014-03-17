@@ -716,8 +716,11 @@ static virDomainConfNWFilterDriver domainNWFilterDriver = {
 
 
 int nwfilterRegister(void) {
-    virRegisterNWFilterDriver(&nwfilterDriver);
-    virRegisterStateDriver(&stateDriver);
-    virDomainConfNWFilterRegister(&domainNWFilterDriver);
+    if (virRegisterNWFilterDriver(&nwfilterDriver) < 0)
+        return -1;
+    if (virRegisterStateDriver(&stateDriver) < 0)
+        return -1;
+    if (virDomainConfNWFilterRegister(&domainNWFilterDriver) < 0)
+        return -1;
     return 0;
 }

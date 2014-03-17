@@ -1194,7 +1194,9 @@ static virStateDriver stateDriver = {
 int
 secretRegister(void)
 {
-    virRegisterSecretDriver(&secretDriver);
-    virRegisterStateDriver(&stateDriver);
+    if (virRegisterSecretDriver(&secretDriver) < 0)
+        return -1;
+    if (virRegisterStateDriver(&stateDriver) < 0)
+        return -1;
     return 0;
 }

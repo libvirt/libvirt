@@ -5767,7 +5767,9 @@ static virStateDriver lxcStateDriver = {
 
 int lxcRegister(void)
 {
-    virRegisterDriver(&lxcDriver);
-    virRegisterStateDriver(&lxcStateDriver);
+    if (virRegisterDriver(&lxcDriver) < 0)
+        return -1;
+    if (virRegisterStateDriver(&lxcStateDriver) < 0)
+        return -1;
     return 0;
 }

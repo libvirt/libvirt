@@ -715,7 +715,9 @@ static virStateDriver bhyveStateDriver = {
 int
 bhyveRegister(void)
 {
-     virRegisterDriver(&bhyveDriver);
-     virRegisterStateDriver(&bhyveStateDriver);
+     if (virRegisterDriver(&bhyveDriver) < 0)
+        return -1;
+     if (virRegisterStateDriver(&bhyveStateDriver) < 0)
+        return -1;
      return 0;
 }

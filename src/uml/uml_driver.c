@@ -2909,7 +2909,9 @@ static virStateDriver umlStateDriver = {
 };
 
 int umlRegister(void) {
-    virRegisterDriver(&umlDriver);
-    virRegisterStateDriver(&umlStateDriver);
+    if (virRegisterDriver(&umlDriver) < 0)
+        return -1;
+    if (virRegisterStateDriver(&umlStateDriver) < 0)
+        return -1;
     return 0;
 }

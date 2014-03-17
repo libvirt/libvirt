@@ -1194,6 +1194,7 @@ int netcfIfaceRegister(void) {
                        _("failed to register netcf interface driver"));
         return -1;
     }
-    virRegisterStateDriver(&interfaceStateDriver);
+    if (virRegisterStateDriver(&interfaceStateDriver) < 0)
+        return -1;
     return 0;
 }

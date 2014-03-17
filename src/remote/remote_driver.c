@@ -7825,15 +7825,23 @@ remoteRegister(void)
 {
     remoteDriver = &remote_driver;
 
-    if (virRegisterDriver(&remote_driver) == -1) return -1;
-    if (virRegisterNetworkDriver(&network_driver) == -1) return -1;
-    if (virRegisterInterfaceDriver(&interface_driver) == -1) return -1;
-    if (virRegisterStorageDriver(&storage_driver) == -1) return -1;
-    if (virRegisterNodeDeviceDriver(&node_device_driver) == -1) return -1;
-    if (virRegisterSecretDriver(&secret_driver) == -1) return -1;
-    if (virRegisterNWFilterDriver(&nwfilter_driver) == -1) return -1;
+    if (virRegisterDriver(&remote_driver) < 0)
+        return -1;
+    if (virRegisterNetworkDriver(&network_driver) < 0)
+        return -1;
+    if (virRegisterInterfaceDriver(&interface_driver) < 0)
+        return -1;
+    if (virRegisterStorageDriver(&storage_driver) < 0)
+        return -1;
+    if (virRegisterNodeDeviceDriver(&node_device_driver) < 0)
+        return -1;
+    if (virRegisterSecretDriver(&secret_driver) < 0)
+        return -1;
+    if (virRegisterNWFilterDriver(&nwfilter_driver) < 0)
+        return -1;
 #ifdef WITH_LIBVIRTD
-    if (virRegisterStateDriver(&state_driver) == -1) return -1;
+    if (virRegisterStateDriver(&state_driver) == -1) < 0)
+        return -1;
 #endif
 
     return 0;

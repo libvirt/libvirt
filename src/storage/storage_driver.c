@@ -2696,7 +2696,8 @@ int storageRegister(void)
 {
     if (virRegisterStorageDriver(&storageDriver) < 0)
         return -1;
-    virRegisterStateDriver(&stateDriver);
+    if (virRegisterStateDriver(&stateDriver) < 0)
+        return -1;
     return 0;
 }
 

@@ -16796,7 +16796,9 @@ static virStateDriver qemuStateDriver = {
 };
 
 int qemuRegister(void) {
-    virRegisterDriver(&qemuDriver);
-    virRegisterStateDriver(&qemuStateDriver);
+    if (virRegisterDriver(&qemuDriver) < 0)
+        return -1;
+    if (virRegisterStateDriver(&qemuStateDriver) < 0)
+        return -1;
     return 0;
 }

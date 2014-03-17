@@ -3232,7 +3232,8 @@ static virStateDriver networkStateDriver = {
 int networkRegister(void) {
     if (virRegisterNetworkDriver(&networkDriver) < 0)
         return -1;
-    virRegisterStateDriver(&networkStateDriver);
+    if (virRegisterStateDriver(&networkStateDriver) < 0)
+        return -1;
     return 0;
 }
 
