@@ -526,10 +526,8 @@ next:
         }
     }
 
-    if (ci->nIter == i) {
-        virNWFilterVarCombIterFree(ci);
+    if (ci->nIter == i)
         return NULL;
-    }
 
     return ci;
 }

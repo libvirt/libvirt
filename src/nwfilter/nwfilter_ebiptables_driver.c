@@ -2772,14 +2772,14 @@ ebiptablesCreateRuleInstanceIterate(
                              virNWFilterRuleInstPtr res)
 {
     int rc = 0;
-    virNWFilterVarCombIterPtr vciter;
+    virNWFilterVarCombIterPtr vciter, tmp;
 
     /* rule->vars holds all the variables names that this rule will access.
      * iterate over all combinations of the variables' values and instantiate
      * the filtering rule with each combination.
      */
-    vciter = virNWFilterVarCombIterCreate(vars,
-                                          rule->varAccess, rule->nVarAccess);
+    tmp = vciter = virNWFilterVarCombIterCreate(vars,
+                                                rule->varAccess, rule->nVarAccess);
     if (!vciter)
         return -1;
 
@@ -2788,12 +2788,12 @@ ebiptablesCreateRuleInstanceIterate(
                                           nwfilter,
                                           rule,
                                           ifname,
-                                          vciter,
+                                          tmp,
                                           res);
         if (rc < 0)
             break;
-        vciter = virNWFilterVarCombIterNext(vciter);
-    } while (vciter != NULL);
+        tmp = virNWFilterVarCombIterNext(tmp);
+    } while (tmp != NULL);
 
     virNWFilterVarCombIterFree(vciter);
 
