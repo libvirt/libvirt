@@ -2256,7 +2256,17 @@ void virDomainDiskHostDefClear(virDomainDiskHostDefPtr def);
 void virDomainDiskHostDefFree(size_t nhosts, virDomainDiskHostDefPtr hosts);
 virDomainDiskHostDefPtr virDomainDiskHostDefCopy(size_t nhosts,
                                                  virDomainDiskHostDefPtr hosts);
+int virDomainDiskGetType(virDomainDiskDefPtr def);
+void virDomainDiskSetType(virDomainDiskDefPtr def, int type);
 int virDomainDiskGetActualType(virDomainDiskDefPtr def);
+const char *virDomainDiskGetSource(virDomainDiskDefPtr def);
+int virDomainDiskSetSource(virDomainDiskDefPtr def, const char *src)
+    ATTRIBUTE_RETURN_CHECK;
+const char *virDomainDiskGetDriver(virDomainDiskDefPtr def);
+int virDomainDiskSetDriver(virDomainDiskDefPtr def, const char *name)
+    ATTRIBUTE_RETURN_CHECK;
+int virDomainDiskGetFormat(virDomainDiskDefPtr def);
+void virDomainDiskSetFormat(virDomainDiskDefPtr def, int format);
 int virDomainDeviceFindControllerModel(virDomainDefPtr def,
                                        virDomainDeviceInfoPtr info,
                                        int controllerType);

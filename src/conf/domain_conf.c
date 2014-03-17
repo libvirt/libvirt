@@ -1355,12 +1355,84 @@ error:
 
 
 int
+virDomainDiskGetType(virDomainDiskDefPtr def)
+{
+    return def->type;
+}
+
+
+void
+virDomainDiskSetType(virDomainDiskDefPtr def, int type)
+{
+    def->type = type;
+}
+
+
+int
 virDomainDiskGetActualType(virDomainDiskDefPtr def)
 {
     if (def->type == VIR_DOMAIN_DISK_TYPE_VOLUME && def->srcpool)
         return def->srcpool->actualtype;
 
     return def->type;
+}
+
+
+const char *
+virDomainDiskGetSource(virDomainDiskDefPtr def)
+{
+    return def->src;
+}
+
+
+int
+virDomainDiskSetSource(virDomainDiskDefPtr def, const char *src)
+{
+    int ret;
+    char *tmp = def->src;
+
+    ret = VIR_STRDUP(def->src, src);
+    if (ret < 0)
+        def->src = tmp;
+    else
+        VIR_FREE(tmp);
+    return ret;
+}
+
+
+const char *
+virDomainDiskGetDriver(virDomainDiskDefPtr def)
+{
+    return def->driverName;
+}
+
+
+int
+virDomainDiskSetDriver(virDomainDiskDefPtr def, const char *name)
+{
+    int ret;
+    char *tmp = def->driverName;
+
+    ret = VIR_STRDUP(def->driverName, name);
+    if (ret < 0)
+        def->driverName = tmp;
+    else
+        VIR_FREE(tmp);
+    return ret;
+}
+
+
+int
+virDomainDiskGetFormat(virDomainDiskDefPtr def)
+{
+    return def->format;
+}
+
+
+void
+virDomainDiskSetFormat(virDomainDiskDefPtr def, int format)
+{
+    def->format = format;
 }
 
 
