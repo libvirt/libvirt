@@ -1321,13 +1321,6 @@ int virDBusCall(DBusConnection *conn,
         goto cleanup;
     }
 
-    if (dbus_set_error_from_message(&error,
-                                    reply)) {
-        virReportDBusServiceError(error.message ? error.message : "unknown error",
-                                  error.name);
-        goto cleanup;
-    }
-
     ret = 0;
 
  cleanup:
