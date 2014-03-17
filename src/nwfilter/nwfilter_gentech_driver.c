@@ -115,28 +115,6 @@ virNWFilterTechDriverForName(const char *name)
 }
 
 
-/**
- * virNWFilterRuleInstAddData:
- * @res : pointer to virNWFilterRuleInst object collecting the instantiation
- *        data of a single firewall rule.
- * @data : the opaque data that the driver wants to add
- *
- * Add instantiation data to a firewall rule. An instantiated firewall
- * rule may hold multiple data structure representing its instantiation
- * data. This may for example be the case if a rule has been defined
- * for bidirectional traffic and data needs to be added to the incoming
- * and outgoing chains.
- *
- * Returns 0 in case of success, -1 in case of an error.
- */
-int
-virNWFilterRuleInstAddData(virNWFilterRuleInstPtr res,
-                           void *data)
-{
-    return VIR_APPEND_ELEMENT(res->data, res->ndata, data);
-}
-
-
 static void
 virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
 {

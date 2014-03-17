@@ -507,7 +507,11 @@ ebiptablesAddRuleInst(virNWFilterRuleInstPtr res,
     inst->priority = priority;
     inst->ruleType = ruleType;
 
-    return virNWFilterRuleInstAddData(res, inst);
+    if (VIR_APPEND_ELEMENT(res->data, res->ndata, inst) < 0) {
+        VIR_FREE(inst);
+        return -1;
+    }
+    return 0;
 }
 
 

@@ -28,9 +28,6 @@
 
 virNWFilterTechDriverPtr virNWFilterTechDriverForName(const char *name);
 
-int virNWFilterRuleInstAddData(virNWFilterRuleInstPtr res,
-                               void *data);
-
 int virNWFilterTechDriversInit(bool privileged);
 void virNWFilterTechDriversShutdown(void);
 
