@@ -2514,11 +2514,9 @@ libxlDomainChangeEjectableMedia(libxlDomainObjPrivatePtr priv,
         goto cleanup;
     }
 
-    VIR_FREE(origdisk->src);
-    origdisk->src = disk->src;
-    disk->src = NULL;
-    origdisk->type = disk->type;
-
+    if (virDomainDiskSetSource(origdisk, virDomainDiskGetSource(disk)) < 0)
+        goto cleanup;
+    virDomainDiskSetType(origdisk, virDomainDiskGetType(disk));
 
     virDomainDiskDefFree(disk);
 
@@ -2548,7 +2546,7 @@ libxlDomainAttachDeviceDiskLive(libxlDomainObjPrivatePtr priv,
                     goto cleanup;
                 }
 
-                if (!l_disk->src) {
+                if (!virDomainDiskGetSource(l_disk)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("disk source path is missing"));
                     goto cleanup;
@@ -3033,16 +3031,12 @@ libxlDomainUpdateDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
                 goto cleanup;
             }
 
-            VIR_FREE(orig->src);
-            orig->src = disk->src;
-            orig->type = disk->type;
-            if (disk->driverName) {
-                VIR_FREE(orig->driverName);
-                orig->driverName = disk->driverName;
-                disk->driverName = NULL;
-            }
-            orig->format = disk->format;
-            disk->src = NULL;
+            if (virDomainDiskSetSource(orig, virDomainDiskGetSource(disk)) < 0)
+                goto cleanup;
+            virDomainDiskSetType(orig, virDomainDiskGetType(disk));
+            virDomainDiskSetFormat(orig, virDomainDiskGetFormat(disk));
+            if (virDomainDiskSetDriver(orig, virDomainDiskGetDriver(disk)) < 0)
+                goto cleanup;
             break;
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

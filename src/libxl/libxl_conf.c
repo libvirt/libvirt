@@ -1,7 +1,7 @@
 /*
  * libxl_conf.c: libxl configuration management
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  * Copyright (c) 2011-2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
  * Copyright (C) 2011 Univention GmbH.
  *
@@ -716,18 +716,22 @@ error:
 int
 libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
 {
+    const char *driver;
+    int format;
+
     libxl_device_disk_init(x_disk);
 
-    if (VIR_STRDUP(x_disk->pdev_path, l_disk->src) < 0)
+    if (VIR_STRDUP(x_disk->pdev_path, virDomainDiskGetSource(l_disk)) < 0)
         return -1;
 
     if (VIR_STRDUP(x_disk->vdev, l_disk->dst) < 0)
         return -1;
 
-    if (l_disk->driverName) {
-        if (STREQ(l_disk->driverName, "tap") ||
-            STREQ(l_disk->driverName, "tap2")) {
-            switch (l_disk->format) {
+    driver = virDomainDiskGetDriver(l_disk);
+    format = virDomainDiskGetFormat(l_disk);
+    if (driver) {
+        if (STREQ(driver, "tap") || STREQ(driver, "tap2")) {
+            switch (format) {
             case VIR_STORAGE_FILE_QCOW:
                 x_disk->format = LIBXL_DISK_FORMAT_QCOW;
                 x_disk->backend = LIBXL_DISK_BACKEND_QDISK;
@@ -750,13 +754,13 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("libxenlight does not support disk format %s "
                                  "with disk driver %s"),
-                               virStorageFileFormatTypeToString(l_disk->format),
-                               l_disk->driverName);
+                               virStorageFileFormatTypeToString(format),
+                               driver);
                 return -1;
             }
-        } else if (STREQ(l_disk->driverName, "qemu")) {
+        } else if (STREQ(driver, "qemu")) {
             x_disk->backend = LIBXL_DISK_BACKEND_QDISK;
-            switch (l_disk->format) {
+            switch (format) {
             case VIR_STORAGE_FILE_QCOW:
                 x_disk->format = LIBXL_DISK_FORMAT_QCOW;
                 break;
@@ -775,30 +779,30 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("libxenlight does not support disk format %s "
                                  "with disk driver %s"),
-                               virStorageFileFormatTypeToString(l_disk->format),
-                               l_disk->driverName);
+                               virStorageFileFormatTypeToString(format),
+                               driver);
                 return -1;
             }
-        } else if (STREQ(l_disk->driverName, "file")) {
-            if (l_disk->format != VIR_STORAGE_FILE_NONE &&
-                l_disk->format != VIR_STORAGE_FILE_RAW) {
+        } else if (STREQ(driver, "file")) {
+            if (format != VIR_STORAGE_FILE_NONE &&
+                format != VIR_STORAGE_FILE_RAW) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("libxenlight does not support disk format %s "
                                  "with disk driver %s"),
-                               virStorageFileFormatTypeToString(l_disk->format),
-                               l_disk->driverName);
+                               virStorageFileFormatTypeToString(format),
+                               driver);
                 return -1;
             }
             x_disk->format = LIBXL_DISK_FORMAT_RAW;
             x_disk->backend = LIBXL_DISK_BACKEND_TAP;
-        } else if (STREQ(l_disk->driverName, "phy")) {
-            if (l_disk->format != VIR_STORAGE_FILE_NONE &&
-                l_disk->format != VIR_STORAGE_FILE_RAW) {
+        } else if (STREQ(driver, "phy")) {
+            if (format != VIR_STORAGE_FILE_NONE &&
+                format != VIR_STORAGE_FILE_RAW) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("libxenlight does not support disk format %s "
                                  "with disk driver %s"),
-                               virStorageFileFormatTypeToString(l_disk->format),
-                               l_disk->driverName);
+                               virStorageFileFormatTypeToString(format),
+                               driver);
                 return -1;
             }
             x_disk->format = LIBXL_DISK_FORMAT_RAW;
@@ -806,7 +810,7 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("libxenlight does not support disk driver %s"),
-                           l_disk->driverName);
+                           driver);
             return -1;
         }
     } else {
