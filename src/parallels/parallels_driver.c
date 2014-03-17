@@ -2,6 +2,7 @@
  * parallels_driver.c: core driver functions for managing
  * Parallels Cloud Server hosts
  *
+ * Copyright (C) 2014 Red Hat, Inc.
  * Copyright (C) 2012 Parallels, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -301,24 +302,24 @@ parallelsGetHddInfo(virDomainDefPtr def,
     disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;
 
     if (virJSONValueObjectHasKey(value, "real") == 1) {
-        disk->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
+        virDomainDiskSetType(disk, VIR_DOMAIN_DISK_TYPE_BLOCK);
 
         if (!(tmp = virJSONValueObjectGetString(value, "real"))) {
             parallelsParseError();
             return -1;
         }
 
-        if (VIR_STRDUP(disk->src, tmp) < 0)
+        if (virDomainDiskSetSource(disk, tmp) < 0)
             return -1;
     } else {
-        disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
+        virDomainDiskSetType(disk, VIR_DOMAIN_DISK_TYPE_FILE);
 
         if (!(tmp = virJSONValueObjectGetString(value, "image"))) {
             parallelsParseError();
             return -1;
         }
 
-        if (VIR_STRDUP(disk->src, tmp) < 0)
+        if (virDomainDiskSetSource(disk, tmp) < 0)
             return -1;
     }
 
@@ -1647,10 +1648,11 @@ static int parallelsAddHdd(virConnectPtr conn,
     virStoragePoolObjPtr pool = NULL;
     virStorageVolPtr vol = NULL;
     int ret = -1;
+    const char *src = virDomainDiskGetSource(disk);
 
-    if (!(vol = parallelsStorageVolLookupByPathLocked(conn, disk->src))) {
+    if (!(vol = parallelsStorageVolLookupByPathLocked(conn, src))) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Can't find volume with path '%s'"), disk->src);
+                       _("Can't find volume with path '%s'"), src);
         return -1;
     }
 
@@ -1662,11 +1664,11 @@ static int parallelsAddHdd(virConnectPtr conn,
         goto cleanup;
     }
 
-    voldef = virStorageVolDefFindByPath(pool, disk->src);
+    voldef = virStorageVolDefFindByPath(pool, src);
     if (!voldef) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Can't find storage volume definition for path '%s'"),
-                       disk->src);
+                       src);
         goto cleanup;
     }
 
@@ -1725,7 +1727,8 @@ parallelsApplyDisksParams(virConnectPtr conn, parallelsDomObjPtr pdom,
 
         if (olddisk->bus != newdisk->bus ||
             olddisk->info.addr.drive.target != newdisk->info.addr.drive.target ||
-            !STREQ_NULLABLE(olddisk->src, newdisk->src)) {
+            !STREQ_NULLABLE(virDomainDiskGetSource(olddisk),
+                            virDomainDiskGetSource(newdisk))) {
 
             char prlname[16];
             char strpos[16];
@@ -2201,16 +2204,18 @@ parallelsCreateVm(virConnectPtr conn, virDomainDefPtr def)
     virStoragePoolObjPtr pool = NULL;
     virStorageVolPtr vol = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
+    const char *src;
 
     for (i = 0; i < def->ndisks; i++) {
         if (def->disks[i]->device != VIR_DOMAIN_DISK_DEVICE_DISK)
             continue;
 
-        vol = parallelsStorageVolLookupByPathLocked(conn, def->disks[i]->src);
+        src = virDomainDiskGetSource(def->disks[i]);
+        vol = parallelsStorageVolLookupByPathLocked(conn, src);
         if (!vol) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Can't find volume with path '%s'"),
-                           def->disks[i]->src);
+                           src);
             return -1;
         }
         break;
@@ -2234,11 +2239,11 @@ parallelsCreateVm(virConnectPtr conn, virDomainDefPtr def)
         goto error;
     }
 
-    privvol = virStorageVolDefFindByPath(pool, def->disks[i]->src);
+    privvol = virStorageVolDefFindByPath(pool, src);
     if (!privvol) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Can't find storage volume definition for path '%s'"),
-                       def->disks[i]->src);
+                       src);
         goto error2;
     }
 
