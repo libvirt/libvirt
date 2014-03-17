@@ -2132,15 +2132,15 @@ struct _virNWFilterDriver {
  * TODO: also need ways to (des)activate a given driver
  *       lookup based on the URI given in a virConnectOpen(ReadOnly)
  */
-int virRegisterDriver(virDriverPtr);
-int virRegisterNetworkDriver(virNetworkDriverPtr);
-int virRegisterInterfaceDriver(virInterfaceDriverPtr);
-int virRegisterStorageDriver(virStorageDriverPtr);
-int virRegisterNodeDeviceDriver(virNodeDeviceDriverPtr);
-int virRegisterSecretDriver(virSecretDriverPtr);
-int virRegisterNWFilterDriver(virNWFilterDriverPtr);
+int virRegisterDriver(virDriverPtr) ATTRIBUTE_RETURN_CHECK;
+int virRegisterNetworkDriver(virNetworkDriverPtr) ATTRIBUTE_RETURN_CHECK;
+int virRegisterInterfaceDriver(virInterfaceDriverPtr) ATTRIBUTE_RETURN_CHECK;
+int virRegisterStorageDriver(virStorageDriverPtr) ATTRIBUTE_RETURN_CHECK;
+int virRegisterNodeDeviceDriver(virNodeDeviceDriverPtr) ATTRIBUTE_RETURN_CHECK;
+int virRegisterSecretDriver(virSecretDriverPtr) ATTRIBUTE_RETURN_CHECK;
+int virRegisterNWFilterDriver(virNWFilterDriverPtr) ATTRIBUTE_RETURN_CHECK;
 # ifdef WITH_LIBVIRTD
-int virRegisterStateDriver(virStateDriverPtr);
+int virRegisterStateDriver(virStateDriverPtr) ATTRIBUTE_RETURN_CHECK;
 # endif
 void virDriverModuleInitialize(const char *defmoddir);
 void *virDriverLoadModule(const char *name);
