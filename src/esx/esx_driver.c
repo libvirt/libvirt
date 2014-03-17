@@ -1,7 +1,7 @@
 /*
  * esx_driver.c: core driver functions for managing VMware ESX hosts
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright (C) 2009-2013 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Maximilian Wilhelm <max@rfc2324.org>
  *
@@ -385,12 +385,12 @@ esxAutodetectSCSIControllerModel(virDomainDiskDefPtr def, int *model,
     esxVMX_Data *data = opaque;
     esxVI_FileInfo *fileInfo = NULL;
     esxVI_VmDiskFileInfo *vmDiskFileInfo = NULL;
+    const char *src = virDomainDiskGetSource(def);
 
     if (def->device != VIR_DOMAIN_DISK_DEVICE_DISK ||
         def->bus != VIR_DOMAIN_DISK_BUS_SCSI ||
-        def->type != VIR_DOMAIN_DISK_TYPE_FILE ||
-        !def->src ||
-        ! STRPREFIX(def->src, "[")) {
+        virDomainDiskGetType(def) != VIR_DOMAIN_DISK_TYPE_FILE ||
+        !src || !STRPREFIX(src, "[")) {
         /*
          * This isn't a file-based SCSI disk device with a datastore related
          * source path => do nothing.
@@ -398,7 +398,7 @@ esxAutodetectSCSIControllerModel(virDomainDiskDefPtr def, int *model,
         return 0;
     }
 
-    if (esxVI_LookupFileInfoByDatastorePath(data->ctx, def->src,
+    if (esxVI_LookupFileInfoByDatastorePath(data->ctx, src,
                                             false, &fileInfo,
                                             esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
@@ -408,7 +408,7 @@ esxAutodetectSCSIControllerModel(virDomainDiskDefPtr def, int *model,
 
     if (!vmDiskFileInfo || !vmDiskFileInfo->controllerType) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not lookup controller model for '%s'"), def->src);
+                       _("Could not lookup controller model for '%s'"), src);
         goto cleanup;
     }
 
@@ -427,7 +427,7 @@ esxAutodetectSCSIControllerModel(virDomainDiskDefPtr def, int *model,
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Found unexpected controller model '%s' for disk '%s'"),
-                       vmDiskFileInfo->controllerType, def->src);
+                       vmDiskFileInfo->controllerType, src);
         goto cleanup;
     }
 
@@ -3045,6 +3045,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
     esxVI_TaskInfoState taskInfoState;
     char *taskInfoErrorMessage = NULL;
     virDomainPtr domain = NULL;
+    const char *src;
 
     memset(&data, 0, sizeof(data));
 
@@ -3121,7 +3122,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
 
     for (i = 0; i < def->ndisks; ++i) {
         if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
-            def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE) {
+            virDomainDiskGetType(def->disks[i]) == VIR_DOMAIN_DISK_TYPE_FILE) {
             disk = def->disks[i];
             break;
         }
@@ -3134,22 +3135,23 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
         goto cleanup;
     }
 
-    if (!disk->src) {
+    src = virDomainDiskGetSource(disk);
+    if (!src) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("First file-based harddisk has no source, cannot deduce "
                          "datastore and path for VMX file"));
         goto cleanup;
     }
 
-    if (esxUtil_ParseDatastorePath(disk->src, &datastoreName, &directoryName,
+    if (esxUtil_ParseDatastorePath(src, &datastoreName, &directoryName,
                                    NULL) < 0) {
         goto cleanup;
     }
 
-    if (! virFileHasSuffix(disk->src, ".vmdk")) {
+    if (! virFileHasSuffix(src, ".vmdk")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Expecting source '%s' of first file-based harddisk to "
-                         "be a VMDK image"), disk->src);
+                         "be a VMDK image"), src);
         goto cleanup;
     }
 
