@@ -1388,6 +1388,7 @@ int virDBusCreateReply(DBusMessage **reply,
  * @conn: a DBus connection
  * @call: pointer to a message to send
  * @replyout: pointer to receive reply message, or NULL
+ * @error: pointer to receive error message
  *
  * This invokes a method encoded in @call on a remote
  * service on the DBus bus @conn. The optional @replyout
@@ -1395,31 +1396,43 @@ int virDBusCreateReply(DBusMessage **reply,
  * call. The virDBusMethodReply method can be used to
  * decode the return values.
  *
+ * If @error is NULL then a libvirt error will be raised
+ * when a DBus error is received and the return value will
+ * be -1. If @error is non-NULL then any DBus error will
+ * be saved into that object and the return value will
+ * be 0.
+ *
  * Returns 0 on success, or -1 upon error
  */
 int virDBusCall(DBusConnection *conn,
                 DBusMessage *call,
-                DBusMessage **replyout)
+                DBusMessage **replyout,
+                DBusError *error)
 {
     DBusMessage *reply = NULL;
-    DBusError error;
+    DBusError localerror;
     int ret = -1;
 
-    dbus_error_init(&error);
+    if (!error)
+        dbus_error_init(&localerror);
 
     if (!(reply = dbus_connection_send_with_reply_and_block(conn,
                                                             call,
                                                             VIR_DBUS_METHOD_CALL_TIMEOUT_MILLIS,
-                                                            &error))) {
-        virReportDBusServiceError(error.message ? error.message : "unknown error",
-                                  error.name);
+                                                            error ? error : &localerror))) {
+        if (error)
+            ret = 0;
+        else
+            virReportDBusServiceError(localerror.message ? localerror.message : "unknown error",
+                                      localerror.name);
         goto cleanup;
     }
 
     ret = 0;
 
  cleanup:
-    dbus_error_free(&error);
+    if (!error)
+        dbus_error_free(&localerror);
     if (reply) {
         if (ret == 0 && replyout)
             *replyout = reply;
@@ -1454,10 +1467,20 @@ int virDBusCall(DBusConnection *conn,
  * as variadic args. See virDBusCreateMethodV for a
  * description of this parameter.
  *
- * Returns: 0 on success, -1 on error
+ *
+ * If @error is NULL then a libvirt error will be raised
+ * when a DBus error is received and the return value will
+ * be -1. If @error is non-NULL then any DBus error will
+ * be saved into that object and the return value will
+ * be 0. If an error occurs while encoding method args
+ * the return value will always be -1 regardless of whether
+ * @error is set.
+ *
+ * Returns 0 on success, or -1 upon error
  */
 int virDBusCallMethod(DBusConnection *conn,
                       DBusMessage **replyout,
+                      DBusError *error,
                       const char *destination,
                       const char *path,
                       const char *iface,
@@ -1477,7 +1500,7 @@ int virDBusCallMethod(DBusConnection *conn,
 
     ret = -1;
 
-    ret = virDBusCall(conn, call, replyout);
+    ret = virDBusCall(conn, call, replyout, error);
 
  cleanup:
     if (call)
@@ -1527,6 +1550,7 @@ static int virDBusIsServiceInList(const char *listMethod, const char *name)
 
     if (virDBusCallMethod(conn,
                           &reply,
+                          NULL,
                           "org.freedesktop.DBus",
                           "/org/freedesktop/DBus",
                           "org.freedesktop.DBus",
@@ -1650,7 +1674,8 @@ int virDBusCreateMethodV(DBusMessage **call ATTRIBUTE_UNUSED,
 
 int virDBusCall(DBusConnection *conn ATTRIBUTE_UNUSED,
                 DBusMessage *call ATTRIBUTE_UNUSED,
-                DBusMessage **reply ATTRIBUTE_UNUSED)
+                DBusMessage **reply ATTRIBUTE_UNUSED,
+                DBusError *error ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("DBus support not compiled into this binary"));
@@ -1659,6 +1684,7 @@ int virDBusCall(DBusConnection *conn ATTRIBUTE_UNUSED,
 
 int virDBusCallMethod(DBusConnection *conn ATTRIBUTE_UNUSED,
                       DBusMessage **reply ATTRIBUTE_UNUSED,
+                      DBusError *error ATTRIBUTE_UNUSED,
                       const char *destination ATTRIBUTE_UNUSED,
                       const char *path ATTRIBUTE_UNUSED,
                       const char *iface ATTRIBUTE_UNUSED,

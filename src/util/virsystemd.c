@@ -236,6 +236,7 @@ int virSystemdCreateMachine(const char *name,
     VIR_DEBUG("Attempting to create machine via systemd");
     if (virDBusCallMethod(conn,
                           NULL,
+                          NULL,
                           "org.freedesktop.machine1",
                           "/org/freedesktop/machine1",
                           "org.freedesktop.machine1.Manager",
@@ -300,6 +301,7 @@ int virSystemdTerminateMachine(const char *name,
 
     VIR_DEBUG("Attempting to terminate machine via systemd");
     if (virDBusCallMethod(conn,
+                          NULL,
                           NULL,
                           "org.freedesktop.machine1",
                           "/org/freedesktop/machine1",

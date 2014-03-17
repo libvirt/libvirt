@@ -28,6 +28,7 @@
 # else
 #  define DBusConnection void
 #  define DBusMessage void
+#  define DBusError void
 # endif
 # include "internal.h"
 
@@ -61,6 +62,7 @@ int virDBusCreateReplyV(DBusMessage **reply,
 
 int virDBusCallMethod(DBusConnection *conn,
                       DBusMessage **reply,
+                      DBusError *error,
                       const char *destination,
                       const char *path,
                       const char *iface,
@@ -68,7 +70,8 @@ int virDBusCallMethod(DBusConnection *conn,
                       const char *types, ...);
 int virDBusCall(DBusConnection *conn,
                 DBusMessage *call,
-                DBusMessage **reply);
+                DBusMessage **reply,
+                DBusError *error);
 int virDBusMessageRead(DBusMessage *msg,
                        const char *types, ...);
 
