@@ -928,6 +928,12 @@ void qemuMonitorClose(qemuMonitorPtr mon)
         virCondSignal(&mon->notify);
     }
 
+    /* Propagate existing monitor error in case the current thread has no
+     * error set.
+     */
+    if (mon->lastError.code != VIR_ERR_OK && !virGetLastError())
+        virSetError(&mon->lastError);
+
     virObjectUnlock(mon);
     virObjectUnref(mon);
 }
