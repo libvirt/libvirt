@@ -1,7 +1,7 @@
 /*
  * domain_lock.c: Locking for domain lifecycle operations
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -72,12 +72,15 @@ static int virDomainLockManagerAddDisk(virLockManagerPtr lock,
                                        virDomainDiskDefPtr disk)
 {
     unsigned int diskFlags = 0;
-    if (!disk->src)
+    const char *src = virDomainDiskGetSource(disk);
+    int type = virDomainDiskGetType(disk);
+
+    if (!src)
         return 0;
 
-    if (!(disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK ||
-          disk->type == VIR_DOMAIN_DISK_TYPE_FILE ||
-          disk->type == VIR_DOMAIN_DISK_TYPE_DIR))
+    if (!(type == VIR_DOMAIN_DISK_TYPE_BLOCK ||
+          type == VIR_DOMAIN_DISK_TYPE_FILE ||
+          type == VIR_DOMAIN_DISK_TYPE_DIR))
         return 0;
 
     if (disk->readonly)
@@ -85,14 +88,14 @@ static int virDomainLockManagerAddDisk(virLockManagerPtr lock,
     if (disk->shared)
         diskFlags |= VIR_LOCK_MANAGER_RESOURCE_SHARED;
 
-    VIR_DEBUG("Add disk %s", disk->src);
+    VIR_DEBUG("Add disk %s", src);
     if (virLockManagerAddResource(lock,
                                   VIR_LOCK_MANAGER_RESOURCE_TYPE_DISK,
-                                  disk->src,
+                                  src,
                                   0,
                                   NULL,
                                   diskFlags) < 0) {
-        VIR_DEBUG("Failed add disk %s", disk->src);
+        VIR_DEBUG("Failed add disk %s", src);
         return -1;
     }
     return 0;
