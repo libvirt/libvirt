@@ -66,6 +66,8 @@
 #define LIBXL_CONFIG_FORMAT_XM "xen-xm"
 #define LIBXL_CONFIG_FORMAT_SEXPR "xen-sxpr"
 
+#define HYPERVISOR_CAPABILITIES "/proc/xen/capabilities"
+
 /* Number of Xen scheduler parameters */
 #define XEN_SCHED_CREDIT_NPARAM   2
 
@@ -970,12 +972,17 @@ libxlDriverShouldLoad(bool privileged)
         return ret;
     }
 
+    if (!virFileExists(HYPERVISOR_CAPABILITIES)) {
+        VIR_INFO("Disabling driver as " HYPERVISOR_CAPABILITIES
+                 " does not exist");
+        return false;
+    }
     /*
      * Don't load if not running on a Xen control domain (dom0). It is not
      * sufficient to check for the file to exist as any guest can mount
      * xenfs to /proc/xen.
      */
-    status = virFileReadAll("/proc/xen/capabilities", 10, &output);
+    status = virFileReadAll(HYPERVISOR_CAPABILITIES, 10, &output);
     if (status >= 0) {
         status = strncmp(output, "control_d", 9);
     }
