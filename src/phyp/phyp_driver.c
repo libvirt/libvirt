@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright IBM Corp. 2009
  *
  * phyp_driver.c: ssh layer to access Power Hypervisors
@@ -1709,7 +1709,7 @@ phypDomainAttachDevice(virDomainPtr domain, const char *xml)
                           managed_system, vios_id);
 
     virBufferAsprintf(&buf, "mkvdev -vdev %s -vadapter %s",
-                      dev->data.disk->src, scsi_adapter);
+                      virDomainDiskGetSource(dev->data.disk), scsi_adapter);
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
@@ -1730,7 +1730,7 @@ phypDomainAttachDevice(virDomainPtr domain, const char *xml)
         virBufferAsprintf(&buf, " -m %s", managed_system);
     virBufferAsprintf(&buf,
                       " slot_num,backing_device|grep %s|cut -d, -f1",
-                      dev->data.disk->src);
+                      virDomainDiskGetSource(dev->data.disk));
     if (phypExecInt(session, &buf, conn, &slot) < 0)
         goto cleanup;
 
@@ -3488,7 +3488,7 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
         goto cleanup;
     }
 
-    if (!def->disks[0]->src) {
+    if (!virDomainDiskGetSource(def->disks[0])) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Field <src> under <disk> on the domain XML file is "
                          "missing."));
@@ -3502,7 +3502,7 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
                       "max_mem=%lld,desired_procs=%d,virtual_scsi_adapters=%s",
                       def->name, def->mem.cur_balloon,
                       def->mem.cur_balloon, def->mem.max_balloon,
-                      (int) def->vcpus, def->disks[0]->src);
+                      (int) def->vcpus, virDomainDiskGetSource(def->disks[0]));
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
 
     if (exit_status < 0) {
