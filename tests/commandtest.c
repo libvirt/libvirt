@@ -1188,7 +1188,7 @@ cleanup:
     virMutexDestroy(&test->lock);
     VIR_FREE(test);
 
-    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN(mymain)

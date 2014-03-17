@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -425,7 +425,6 @@ mymain(void)
     if (virtTestRun("virStringSortCompare", testStringSortCompare, NULL) < 0)
         ret = -1;
 
-
 #define TEST_SEARCH(s, r, x, n, m, e)                                   \
     do {                                                                \
         struct stringSearchData data = {                                \
@@ -492,7 +491,7 @@ mymain(void)
     TEST_REPLACE("fooooofoooo", "foo", "barwizzeek", "barwizzeekooobarwizzeekoo");
     TEST_REPLACE("fooooofoooo", "foooo", "foo", "fooofoo");
 
-    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN(mymain)

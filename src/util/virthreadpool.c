@@ -1,6 +1,7 @@
 /*
  * virthreadpool.c: a generic thread pool implementation
  *
+ * Copyright (C) 2014 Red Hat, Inc.
  * Copyright (C) 2010 Hu Tao
  * Copyright (C) 2010 Daniel P. Berrange
  *
@@ -151,7 +152,7 @@ out:
         pool->nPrioWorkers--;
     else
         pool->nWorkers--;
-    if (pool->nWorkers == 0 && pool->nPrioWorkers==0)
+    if (pool->nWorkers == 0 && pool->nPrioWorkers == 0)
         virCondSignal(&pool->quit_cond);
     virMutexUnlock(&pool->mutex);
 }

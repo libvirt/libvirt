@@ -1,7 +1,7 @@
 /*
  * virnetclient.c: generic network RPC client
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1438,7 +1438,7 @@ virNetClientIOEventLoopPassTheBuck(virNetClientPtr client,
  * to someone else.
  *
  * Returns 1 if the call was queued and will be completed later (only
- * for nonBlock==true), 0 if the call was completed and -1 on error.
+ * for nonBlock == true), 0 if the call was completed and -1 on error.
  */
 static int virNetClientIOEventLoop(virNetClientPtr client,
                                    virNetClientCallPtr thiscall)
@@ -1688,7 +1688,7 @@ static void virNetClientIOUpdateCallback(virNetClientPtr client,
  * NB(7) Don't Panic!
  *
  * Returns 1 if the call was queued and will be completed later (only
- * for nonBlock==true), 0 if the call was completed and -1 on error.
+ * for nonBlock == true), 0 if the call was completed and -1 on error.
  */
 static int virNetClientIO(virNetClientPtr client,
                           virNetClientCallPtr thiscall)
@@ -1926,7 +1926,7 @@ virNetClientQueueNonBlocking(virNetClientPtr client,
 
 /*
  * Returns 1 if the call was queued and will be completed later (only
- * for nonBlock==true), 0 if the call was completed and -1 on error.
+ * for nonBlock == true), 0 if the call was completed and -1 on error.
  */
 static int virNetClientSendInternal(virNetClientPtr client,
                                     virNetMessagePtr msg,
@@ -2019,7 +2019,7 @@ int virNetClientSendNoReply(virNetClientPtr client,
  * this method returns 1.
  *
  * Returns 1 if the message was queued and will be completed later (only
- * for nonBlock==true), 0 if the message was completed and -1 on error.
+ * for nonBlock == true), 0 if the message was completed and -1 on error.
  */
 int virNetClientSendNonBlock(virNetClientPtr client,
                              virNetMessagePtr msg)

@@ -1,7 +1,7 @@
 /*
  * lock_driver_sanlock.c: A lock driver for Sanlock
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -912,7 +912,7 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
     /* We only initialize 'sock' if we are in the real
      * child process and we need it to be inherited
      *
-     * If sock==-1, then sanlock auto-open/closes a
+     * If sock == -1, then sanlock auto-open/closes a
      * temporary sock
      */
     if (priv->vm_pid == getpid()) {

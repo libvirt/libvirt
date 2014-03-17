@@ -205,7 +205,7 @@ mymain(void)
     DO_TEST("/dev/xvda1", 51713);
     DO_TEST("/dev/xvda15", 51727);
 
-    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN(mymain)

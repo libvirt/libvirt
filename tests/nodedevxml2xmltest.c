@@ -89,7 +89,7 @@ mymain(void)
     DO_TEST("usb_device_1d6b_1_0000_00_1d_0_if0");
     DO_TEST("usb_device_1d6b_1_0000_00_1d_0");
 
-    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN(mymain)

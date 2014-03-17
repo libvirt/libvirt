@@ -1203,7 +1203,7 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%-15s %d\n", _("Id:"), id);
     vshPrint(ctl, "%-15s %s\n", _("Name:"), virDomainGetName(dom));
 
-    if (virDomainGetUUIDString(dom, &uuid[0])==0)
+    if (virDomainGetUUIDString(dom, &uuid[0]) == 0)
         vshPrint(ctl, "%-15s %s\n", _("UUID:"), uuid);
 
     if ((str = virDomainGetOSType(dom))) {

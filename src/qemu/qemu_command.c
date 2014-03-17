@@ -649,7 +649,7 @@ static int qemuAssignDeviceDiskAliasFixed(virDomainDiskDefPtr disk)
 
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_IDE:
-        if (disk->device== VIR_DOMAIN_DISK_DEVICE_DISK)
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
             ret = virAsprintf(&dev_name, "ide%d-hd%d", busid, devid);
         else
             ret = virAsprintf(&dev_name, "ide%d-cd%d", busid, devid);
@@ -2479,7 +2479,7 @@ qemuValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
                                _("Primary video card must have PCI address 0:0:2.0"));
                 goto cleanup;
             }
-            /* If TYPE==PCI, then qemuCollectPCIAddress() function
+            /* If TYPE == PCI, then qemuCollectPCIAddress() function
              * has already reserved the address, so we must skip */
         }
     } else if (addrs->nbuses && !qemuDeviceVideoUsable) {
@@ -2649,7 +2649,7 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
                                _("Primary video card must have PCI address 0:0:1.0"));
                 goto cleanup;
             }
-            /* If TYPE==PCI, then qemuCollectPCIAddress() function
+            /* If TYPE == PCI, then qemuCollectPCIAddress() function
              * has already reserved the address, so we must skip */
         }
     } else if (addrs->nbuses && !qemuDeviceVideoUsable) {

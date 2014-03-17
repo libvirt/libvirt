@@ -1,6 +1,6 @@
 /*
  * xenapi_driver.c: Xen API driver.
- * Copyright (C) 2011-2013 Red Hat, Inc.
+ * Copyright (C) 2011-2014 Red Hat, Inc.
  * Copyright (C) 2009, 2010 Citrix Ltd.
  *
  * This library is free software; you can redistribute it and/or
@@ -1850,7 +1850,7 @@ xenapiDomainSetAutostart(virDomainPtr dom, int autostart)
         }
         vm = vms->contents[0];
         xen_vm_remove_from_other_config(session, vm, (char *)"auto_poweron");
-        if (autostart==1)
+        if (autostart == 1)
             value = (char *)"true";
         else
             value = (char *)"false";

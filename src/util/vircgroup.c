@@ -415,9 +415,9 @@ virCgroupCopyPlacement(virCgroupPtr group,
                 return -1;
         } else {
             /*
-             * parent=="/" + path="" => "/"
-             * parent=="/libvirt.service" + path=="" => "/libvirt.service"
-             * parent=="/libvirt.service" + path=="foo" => "/libvirt.service/foo"
+             * parent == "/" + path="" => "/"
+             * parent == "/libvirt.service" + path == "" => "/libvirt.service"
+             * parent == "/libvirt.service" + path == "foo" => "/libvirt.service/foo"
              */
             if (virAsprintf(&group->controllers[i].placement,
                             "%s%s%s",
@@ -516,9 +516,9 @@ virCgroupDetectPlacement(virCgroupPtr group,
                 }
 
                 /*
-                 * selfpath=="/" + path="" -> "/"
-                 * selfpath=="/libvirt.service" + path="" -> "/libvirt.service"
-                 * selfpath=="/libvirt.service" + path="foo" -> "/libvirt.service/foo"
+                 * selfpath == "/" + path="" -> "/"
+                 * selfpath == "/libvirt.service" + path == "" -> "/libvirt.service"
+                 * selfpath == "/libvirt.service" + path == "foo" -> "/libvirt.service/foo"
                  */
                 if (typelen == len && STREQLEN(typestr, tmp, len) &&
                     group->controllers[i].mountPoint != NULL &&

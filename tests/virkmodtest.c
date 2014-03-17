@@ -170,7 +170,7 @@ mymain(void)
     DO_TEST("unload", testKModUnload, false, RMMOD " vfio-pci\n");
     DO_TEST("blklist", testKModLoad, true, MODPROBE " -b vfio-pci\n");
 
-    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 
 }
 

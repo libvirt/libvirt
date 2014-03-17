@@ -1259,7 +1259,7 @@ static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id) {
     nsresult rc;
 
     /* Internal vbox IDs start from 0, the public libvirt ID
-     * starts from 1, so refuse id==0, and adjust the rest*/
+     * starts from 1, so refuse id == 0, and adjust the rest*/
     if (id == 0) {
         virReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching id %d"), id);

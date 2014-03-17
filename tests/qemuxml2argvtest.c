@@ -1359,7 +1359,7 @@ mymain(void)
     virObjectUnref(driver.xmlopt);
     VIR_FREE(map);
 
-    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/qemuxml2argvmock.so")

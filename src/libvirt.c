@@ -9209,7 +9209,7 @@ error:
  * Not all hypervisors will support sending signals to
  * arbitrary processes or process groups. If this API is
  * implemented the minimum requirement is to be able to
- * use @pid_value==1 (i.e. kill init). No other value is
+ * use @pid_value == 1 (i.e. kill init). No other value is
  * required to be supported.
  *
  * If the @signum is VIR_DOMAIN_PROCESS_SIGNAL_NOP then this
