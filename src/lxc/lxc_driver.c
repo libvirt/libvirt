@@ -384,7 +384,8 @@ cleanup:
     return ret;
 }
 
-static int lxcConnectListDomains(virConnectPtr conn, int *ids, int nids) {
+static int lxcConnectListDomains(virConnectPtr conn, int *ids, int nids)
+{
     virLXCDriverPtr driver = conn->privateData;
     int n;
 
@@ -397,7 +398,8 @@ static int lxcConnectListDomains(virConnectPtr conn, int *ids, int nids) {
     return n;
 }
 
-static int lxcConnectNumOfDomains(virConnectPtr conn) {
+static int lxcConnectNumOfDomains(virConnectPtr conn)
+{
     virLXCDriverPtr driver = conn->privateData;
     int n;
 
@@ -411,7 +413,8 @@ static int lxcConnectNumOfDomains(virConnectPtr conn) {
 }
 
 static int lxcConnectListDefinedDomains(virConnectPtr conn,
-                                        char **const names, int nnames) {
+                                        char **const names, int nnames)
+{
     virLXCDriverPtr driver = conn->privateData;
     int n;
 
@@ -425,7 +428,8 @@ static int lxcConnectListDefinedDomains(virConnectPtr conn,
 }
 
 
-static int lxcConnectNumOfDefinedDomains(virConnectPtr conn) {
+static int lxcConnectNumOfDefinedDomains(virConnectPtr conn)
+{
     virLXCDriverPtr driver = conn->privateData;
     int n;
 
@@ -677,7 +681,8 @@ cleanup:
     return ret;
 }
 
-static int lxcDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
+static int lxcDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax)
+{
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -702,7 +707,8 @@ cleanup:
     return ret;
 }
 
-static int lxcDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
+static int lxcDomainSetMemory(virDomainPtr dom, unsigned long newmem)
+{
     virDomainObjPtr vm;
     int ret = -1;
     virLXCDomainObjPrivatePtr priv;
@@ -1130,7 +1136,8 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
                             const char *xml,
                             unsigned int nfiles,
                             int *files,
-                            unsigned int flags) {
+                            unsigned int flags)
+{
     virLXCDriverPtr driver = conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def = NULL;
@@ -1206,7 +1213,8 @@ cleanup:
 static virDomainPtr
 lxcDomainCreateXML(virConnectPtr conn,
                    const char *xml,
-                   unsigned int flags) {
+                   unsigned int flags)
+{
     return lxcDomainCreateXMLWithFiles(conn, xml, 0, NULL,  flags);
 }
 
@@ -1639,7 +1647,8 @@ static void lxcNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
  * files and perform autostart
  */
 static int
-lxcStateReload(void) {
+lxcStateReload(void)
+{
     virLXCDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
 
@@ -3102,7 +3111,8 @@ lxcDomainInterfaceStats(virDomainPtr dom,
 #endif
 
 static int lxcDomainGetAutostart(virDomainPtr dom,
-                                   int *autostart) {
+                                   int *autostart)
+{
     virDomainObjPtr vm;
     int ret = -1;
 
