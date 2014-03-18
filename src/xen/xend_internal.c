@@ -1,7 +1,7 @@
 /*
  * xend_internal.c: access to Xen though the Xen Daemon interface
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright (C) 2005 Anthony Liguori <aliguori@us.ibm.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -3338,14 +3338,11 @@ virDomainXMLDevID(virConnectPtr conn,
     xenUnifiedPrivatePtr priv = conn->privateData;
     char *xref;
     char *tmp;
+    const char *driver = virDomainDiskGetDriver(dev->data.disk);
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
-        if (dev->data.disk->driverName &&
-            STREQ(dev->data.disk->driverName, "tap"))
-            strcpy(class, "tap");
-        else if (dev->data.disk->driverName &&
-            STREQ(dev->data.disk->driverName, "tap2"))
-            strcpy(class, "tap2");
+        if (STREQ_NULLABLE(driver, "tap") || STREQ_NULLABLE(driver, "tap2"))
+            strcpy(class, driver);
         else
             strcpy(class, "vbd");
 
