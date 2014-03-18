@@ -494,12 +494,15 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
                        _("Missing max_clients data in JSON document"));
         goto error;
     }
-    if (virJSONValueObjectHasKey(object, "max_anonymous_clients") &&
-        virJSONValueObjectGetNumberUint(object, "max_anonymous_clients",
-                                        &max_anonymous_clients) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Malformed max_anonymous_clients data in JSON document"));
-        goto error;
+    if (virJSONValueObjectHasKey(object, "max_anonymous_clients")) {
+        if (virJSONValueObjectGetNumberUint(object, "max_anonymous_clients",
+                                            &max_anonymous_clients) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Malformed max_anonymous_clients data in JSON document"));
+            goto error;
+        }
+    } else {
+        max_anonymous_clients = max_clients;
     }
     if (virJSONValueObjectGetNumberUint(object, "keepaliveInterval", &keepaliveInterval) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
