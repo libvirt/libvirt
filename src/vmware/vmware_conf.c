@@ -388,6 +388,7 @@ vmwareVmxPath(virDomainDefPtr vmdef, char **vmxPath)
     char *fileName = NULL;
     int ret = -1;
     size_t i;
+    const char *src;
 
     /*
      * Build VMX URL. Use the source of the first file-based harddisk
@@ -405,7 +406,7 @@ vmwareVmxPath(virDomainDefPtr vmdef, char **vmxPath)
 
     for (i = 0; i < vmdef->ndisks; ++i) {
         if (vmdef->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
-            vmdef->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE) {
+            virDomainDiskGetType(vmdef->disks[i]) == VIR_DOMAIN_DISK_TYPE_FILE) {
             disk = vmdef->disks[i];
             break;
         }
@@ -418,21 +419,22 @@ vmwareVmxPath(virDomainDefPtr vmdef, char **vmxPath)
         goto cleanup;
     }
 
-    if (disk->src == NULL) {
+    src = virDomainDiskGetSource(disk);
+    if (!src) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("First file-based harddisk has no source, cannot "
                          "deduce datastore and path for VMX file"));
         goto cleanup;
     }
 
-    if (vmwareParsePath(disk->src, &directoryName, &fileName) < 0) {
+    if (vmwareParsePath(src, &directoryName, &fileName) < 0) {
         goto cleanup;
     }
 
     if (!virFileHasSuffix(fileName, ".vmdk")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Expecting source '%s' of first file-based harddisk "
-                         "to be a VMDK image"), disk->src);
+                         "to be a VMDK image"), src);
         goto cleanup;
     }
 
