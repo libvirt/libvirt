@@ -893,9 +893,9 @@ sc_prohibit_wrong_filename_in_comment:
 	fi;
 
 sc_prohibit_virConnectOpen_in_virsh:
-	@prohibit='\bvirConnectOpen[a-zA-Z]* *\('                       \
-	in_vc_files='^tools/virsh-.*\.[ch]$$'                            \
-	halt='Use vshConnect() in virsh instead of virConnectOpen*'     \
+	@prohibit='\bvirConnectOpen[a-zA-Z]* *\('                      \
+	in_vc_files='^tools/virsh-.*\.[ch]$$'                          \
+	halt='Use vshConnect() in virsh instead of virConnectOpen*'    \
 	  $(_sc_search_regexp)
 
 
