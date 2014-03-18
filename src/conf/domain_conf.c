@@ -6193,7 +6193,8 @@ virDomainNetGenerateMAC(virDomainXMLOptionPtr xmlopt,
 static virDomainFSDefPtr
 virDomainFSDefParseXML(xmlNodePtr node,
                        xmlXPathContextPtr ctxt,
-                       unsigned int flags) {
+                       unsigned int flags)
+{
     virDomainFSDefPtr def;
     xmlNodePtr cur, save_node = ctxt->node;
     char *type = NULL;
@@ -7013,7 +7014,8 @@ error:
 }
 
 static int
-virDomainChrDefaultTargetType(int devtype) {
+virDomainChrDefaultTargetType(int devtype)
+{
     switch ((enum virDomainChrDeviceType) devtype) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
         virReportError(VIR_ERR_XML_ERROR,
@@ -7419,7 +7421,8 @@ error:
  * default port.
  */
 virDomainChrDefPtr
-virDomainChrDefNew(void) {
+virDomainChrDefNew(void)
+{
     virDomainChrDefPtr def = NULL;
 
     if (VIR_ALLOC(def) < 0)

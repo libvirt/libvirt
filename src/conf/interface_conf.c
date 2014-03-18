@@ -44,7 +44,8 @@ static int
 virInterfaceDefDevFormat(virBufferPtr buf, const virInterfaceDef *def);
 
 static
-void virInterfaceIpDefFree(virInterfaceIpDefPtr def) {
+void virInterfaceIpDefFree(virInterfaceIpDefPtr def)
+{
     if (def == NULL)
         return;
     VIR_FREE(def->address);
@@ -52,7 +53,8 @@ void virInterfaceIpDefFree(virInterfaceIpDefPtr def) {
 }
 
 static
-void virInterfaceProtocolDefFree(virInterfaceProtocolDefPtr def) {
+void virInterfaceProtocolDefFree(virInterfaceProtocolDefPtr def)
+{
     size_t i;
 
     if (def == NULL)
@@ -112,7 +114,8 @@ void virInterfaceDefFree(virInterfaceDefPtr def)
 
 static int
 virInterfaceDefParseName(virInterfaceDefPtr def,
-                         xmlXPathContextPtr ctxt) {
+                         xmlXPathContextPtr ctxt)
+{
     char *tmp;
 
     tmp = virXPathString("string(./@name)", ctxt);
@@ -127,7 +130,8 @@ virInterfaceDefParseName(virInterfaceDefPtr def,
 
 static int
 virInterfaceDefParseMtu(virInterfaceDefPtr def,
-                        xmlXPathContextPtr ctxt) {
+                        xmlXPathContextPtr ctxt)
+{
     unsigned long mtu;
     int ret;
 
@@ -144,7 +148,8 @@ virInterfaceDefParseMtu(virInterfaceDefPtr def,
 
 static int
 virInterfaceDefParseStartMode(virInterfaceDefPtr def,
-                              xmlXPathContextPtr ctxt) {
+                              xmlXPathContextPtr ctxt)
+{
     char *tmp;
 
     tmp = virXPathString("string(./start/@mode)", ctxt);
@@ -167,7 +172,8 @@ virInterfaceDefParseStartMode(virInterfaceDefPtr def,
 }
 
 static int
-virInterfaceDefParseBondMode(xmlXPathContextPtr ctxt) {
+virInterfaceDefParseBondMode(xmlXPathContextPtr ctxt)
+{
     char *tmp;
     int ret = 0;
 
@@ -198,7 +204,8 @@ virInterfaceDefParseBondMode(xmlXPathContextPtr ctxt) {
 }
 
 static int
-virInterfaceDefParseBondMiiCarrier(xmlXPathContextPtr ctxt) {
+virInterfaceDefParseBondMiiCarrier(xmlXPathContextPtr ctxt)
+{
     char *tmp;
     int ret = 0;
 
@@ -219,7 +226,8 @@ virInterfaceDefParseBondMiiCarrier(xmlXPathContextPtr ctxt) {
 }
 
 static int
-virInterfaceDefParseBondArpValid(xmlXPathContextPtr ctxt) {
+virInterfaceDefParseBondArpValid(xmlXPathContextPtr ctxt)
+{
     char *tmp;
     int ret = 0;
 
@@ -243,7 +251,8 @@ virInterfaceDefParseBondArpValid(xmlXPathContextPtr ctxt) {
 
 static int
 virInterfaceDefParseDhcp(virInterfaceProtocolDefPtr def,
-                         xmlNodePtr dhcp, xmlXPathContextPtr ctxt) {
+                         xmlNodePtr dhcp, xmlXPathContextPtr ctxt)
+{
     xmlNodePtr save;
     char *tmp;
     int ret = 0;
@@ -273,7 +282,8 @@ virInterfaceDefParseDhcp(virInterfaceProtocolDefPtr def,
 
 static int
 virInterfaceDefParseIp(virInterfaceIpDefPtr def,
-                       xmlXPathContextPtr ctxt) {
+                       xmlXPathContextPtr ctxt)
+{
     int ret = 0;
     char *tmp;
     long l;
@@ -296,7 +306,8 @@ virInterfaceDefParseIp(virInterfaceIpDefPtr def,
 
 static int
 virInterfaceDefParseProtoIPv4(virInterfaceProtocolDefPtr def,
-                              xmlXPathContextPtr ctxt) {
+                              xmlXPathContextPtr ctxt)
+{
     xmlNodePtr dhcp;
     xmlNodePtr *ipNodes = NULL;
     int nIpNodes, ret = -1;
@@ -346,7 +357,8 @@ error:
 
 static int
 virInterfaceDefParseProtoIPv6(virInterfaceProtocolDefPtr def,
-                              xmlXPathContextPtr ctxt) {
+                              xmlXPathContextPtr ctxt)
+{
     xmlNodePtr dhcp, autoconf;
     xmlNodePtr *ipNodes = NULL;
     int nIpNodes, ret = -1;
@@ -400,7 +412,8 @@ error:
 
 static int
 virInterfaceDefParseIfAdressing(virInterfaceDefPtr def,
-                                xmlXPathContextPtr ctxt) {
+                                xmlXPathContextPtr ctxt)
+{
     xmlNodePtr save;
     xmlNodePtr *protoNodes = NULL;
     int nProtoNodes, pp, ret = -1;
@@ -469,7 +482,8 @@ error:
 
 static int
 virInterfaceDefParseBridge(virInterfaceDefPtr def,
-                           xmlXPathContextPtr ctxt) {
+                           xmlXPathContextPtr ctxt)
+{
     xmlNodePtr *interfaces = NULL;
     xmlNodePtr bridge;
     virInterfaceDefPtr itf;
@@ -510,7 +524,8 @@ error:
 
 static int
 virInterfaceDefParseBondItfs(virInterfaceDefPtr def,
-                             xmlXPathContextPtr ctxt) {
+                             xmlXPathContextPtr ctxt)
+{
     xmlNodePtr *interfaces = NULL;
     xmlNodePtr bond = ctxt->node;
     virInterfaceDefPtr itf;
@@ -556,7 +571,8 @@ error:
 
 static int
 virInterfaceDefParseBond(virInterfaceDefPtr def,
-                         xmlXPathContextPtr ctxt) {
+                         xmlXPathContextPtr ctxt)
+{
     int res;
 
     def->data.bond.mode = virInterfaceDefParseBondMode(ctxt);
@@ -627,7 +643,8 @@ virInterfaceDefParseBond(virInterfaceDefPtr def,
 
 static int
 virInterfaceDefParseVlan(virInterfaceDefPtr def,
-                         xmlXPathContextPtr ctxt) {
+                         xmlXPathContextPtr ctxt)
+{
     def->data.vlan.tag = virXPathString("string(./@tag)", ctxt);
     if (def->data.vlan.tag == NULL) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -646,7 +663,8 @@ virInterfaceDefParseVlan(virInterfaceDefPtr def,
 }
 
 static virInterfaceDefPtr
-virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType) {
+virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType)
+{
     virInterfaceDefPtr def;
     int type;
     char *tmp;

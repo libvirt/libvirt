@@ -147,17 +147,20 @@ static virRWLock updateLock;
 static bool initialized = false;
 
 void
-virNWFilterReadLockFilterUpdates(void) {
+virNWFilterReadLockFilterUpdates(void)
+{
     virRWLockRead(&updateLock);
 }
 
 void
-virNWFilterWriteLockFilterUpdates(void) {
+virNWFilterWriteLockFilterUpdates(void)
+{
     virRWLockWrite(&updateLock);
 }
 
 void
-virNWFilterUnlockFilterUpdates(void) {
+virNWFilterUnlockFilterUpdates(void)
+{
     virRWLockUnlock(&updateLock);
 }
 
@@ -280,7 +283,8 @@ intMapGetByString(const struct int_map *intmap, const char *str, int casecmp,
 
 
 void
-virNWFilterRuleDefFree(virNWFilterRuleDefPtr def) {
+virNWFilterRuleDefFree(virNWFilterRuleDefPtr def)
+{
     size_t i;
     if (!def)
         return;
@@ -299,7 +303,8 @@ virNWFilterRuleDefFree(virNWFilterRuleDefPtr def) {
 
 
 static void
-virNWFilterIncludeDefFree(virNWFilterIncludeDefPtr inc) {
+virNWFilterIncludeDefFree(virNWFilterIncludeDefPtr inc)
+{
     if (!inc)
         return;
     virNWFilterHashTableFree(inc->params);
@@ -309,7 +314,8 @@ virNWFilterIncludeDefFree(virNWFilterIncludeDefPtr inc) {
 
 
 static void
-virNWFilterEntryFree(virNWFilterEntryPtr entry) {
+virNWFilterEntryFree(virNWFilterEntryPtr entry)
+{
     if (!entry)
         return;
 
@@ -320,7 +326,8 @@ virNWFilterEntryFree(virNWFilterEntryPtr entry) {
 
 
 void
-virNWFilterDefFree(virNWFilterDefPtr def) {
+virNWFilterDefFree(virNWFilterDefPtr def)
+{
     size_t i;
     if (!def)
         return;
@@ -2493,7 +2500,8 @@ err_exit:
 }
 
 static virNWFilterDefPtr
-virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
+virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
+{
     virNWFilterDefPtr ret;
     xmlNodePtr curr = ctxt->node;
     char *uuid = NULL;
@@ -2622,7 +2630,8 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
 
 virNWFilterDefPtr
 virNWFilterDefParseNode(xmlDocPtr xml,
-                        xmlNodePtr root) {
+                        xmlNodePtr root)
+{
     xmlXPathContextPtr ctxt = NULL;
     virNWFilterDefPtr def = NULL;
 
@@ -2650,7 +2659,8 @@ cleanup:
 
 static virNWFilterDefPtr
 virNWFilterDefParse(const char *xmlStr,
-                    const char *filename) {
+                    const char *filename)
+{
     virNWFilterDefPtr def = NULL;
     xmlDocPtr xml;
 

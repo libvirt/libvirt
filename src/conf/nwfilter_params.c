@@ -684,7 +684,8 @@ virNWFilterHashTableFree(virNWFilterHashTablePtr table)
 
 
 virNWFilterHashTablePtr
-virNWFilterHashTableCreate(int n) {
+virNWFilterHashTableCreate(int n)
+{
     virNWFilterHashTablePtr ret;
 
     if (VIR_ALLOC(ret) < 0)
