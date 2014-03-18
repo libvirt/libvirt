@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -355,7 +355,7 @@ virSecurityDACSetSecurityImageLabel(virSecurityManagerPtr mgr,
     if (!priv->dynamicOwnership)
         return 0;
 
-    if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
+    if (virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_NETWORK)
         return 0;
 
     params[0] = mgr;
@@ -374,11 +374,12 @@ virSecurityDACRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
                                            int migrated)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    const char *src = virDomainDiskGetSource(disk);
 
     if (!priv->dynamicOwnership)
         return 0;
 
-    if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
+    if (virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_NETWORK)
         return 0;
 
     /* Don't restore labels on readoly/shared disks, because
@@ -392,7 +393,7 @@ virSecurityDACRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
     if (disk->readonly || disk->shared)
         return 0;
 
-    if (!disk->src)
+    if (!src)
         return 0;
 
     /* If we have a shared FS & doing migrated, we must not
@@ -401,17 +402,17 @@ virSecurityDACRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
      * VM's I/O attempts :-)
      */
     if (migrated) {
-        int rc = virStorageFileIsSharedFS(disk->src);
+        int rc = virStorageFileIsSharedFS(src);
         if (rc < 0)
             return -1;
         if (rc == 1) {
             VIR_DEBUG("Skipping image label restore on %s because FS is shared",
-                      disk->src);
+                      src);
             return 0;
         }
     }
 
-    return virSecurityDACRestoreSecurityFileLabel(disk->src);
+    return virSecurityDACRestoreSecurityFileLabel(src);
 }
 
 
@@ -904,7 +905,7 @@ virSecurityDACSetSecurityAllLabel(virSecurityManagerPtr mgr,
 
     for (i = 0; i < def->ndisks; i++) {
         /* XXX fixme - we need to recursively label the entire tree :-( */
-        if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_DIR)
+        if (virDomainDiskGetType(def->disks[i]) == VIR_DOMAIN_DISK_TYPE_DIR)
             continue;
         if (virSecurityDACSetSecurityImageLabel(mgr,
                                                 def,
