@@ -215,7 +215,8 @@ virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
 /* virSysinfoRead for PowerPC
  * Gathers sysinfo data from /proc/cpuinfo */
 virSysinfoDefPtr
-virSysinfoRead(void) {
+virSysinfoRead(void)
+{
     virSysinfoDefPtr ret = NULL;
     char *outbuf = NULL;
 
@@ -332,7 +333,8 @@ error:
 /* virSysinfoRead for ARMv7
  * Gathers sysinfo data from /proc/cpuinfo */
 virSysinfoDefPtr
-virSysinfoRead(void) {
+virSysinfoRead(void)
+{
     virSysinfoDefPtr ret = NULL;
     char *outbuf = NULL;
 
@@ -459,7 +461,8 @@ cleanup:
 /* virSysinfoRead for s390x
  * Gathers sysinfo data from /proc/sysinfo and /proc/cpuinfo */
 virSysinfoDefPtr
-virSysinfoRead(void) {
+virSysinfoRead(void)
+{
     virSysinfoDefPtr ret = NULL;
     char *outbuf = NULL;
 
@@ -507,7 +510,8 @@ no_memory:
       defined(__aarch64__) || \
       defined(__powerpc__))
 virSysinfoDefPtr
-virSysinfoRead(void) {
+virSysinfoRead(void)
+{
     /*
      * this can probably be extracted from Windows using API or registry
      * http://www.microsoft.com/whdc/system/platform/firmware/SMBIOS.mspx
@@ -818,7 +822,8 @@ virSysinfoParseMemory(const char *base, virSysinfoDefPtr ret)
 }
 
 virSysinfoDefPtr
-virSysinfoRead(void) {
+virSysinfoRead(void)
+{
     char *path;
     virSysinfoDefPtr ret = NULL;
     char *outbuf = NULL;

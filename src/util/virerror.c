@@ -43,7 +43,8 @@ virErrorFunc virErrorHandler = NULL;     /* global error handler */
 void *virUserData = NULL;        /* associated data */
 virErrorLogPriorityFunc virErrorLogPriorityFilter = NULL;
 
-static virLogPriority virErrorLevelPriority(virErrorLevel level) {
+static virLogPriority virErrorLevelPriority(virErrorLevel level)
+{
     switch (level) {
         case VIR_ERR_NONE:
             return VIR_LOG_INFO;

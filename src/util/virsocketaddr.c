@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2013 Red Hat, Inc.
+ * Copyright (C) 2009-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -116,7 +116,8 @@ virSocketAddrParseInternal(struct addrinfo **res,
  *
  * Returns the length of the network address or -1 in case of error.
  */
-int virSocketAddrParse(virSocketAddrPtr addr, const char *val, int family) {
+int virSocketAddrParse(virSocketAddrPtr addr, const char *val, int family)
+{
     int len;
     struct addrinfo *res;
 
@@ -150,7 +151,8 @@ int virSocketAddrParse(virSocketAddrPtr addr, const char *val, int family) {
  * Returns the length of the network address or -1 in case of error.
  */
 int
-virSocketAddrParseIPv4(virSocketAddrPtr addr, const char *val) {
+virSocketAddrParseIPv4(virSocketAddrPtr addr, const char *val)
+{
     return virSocketAddrParse(addr, val, AF_INET);
 }
 
@@ -164,7 +166,8 @@ virSocketAddrParseIPv4(virSocketAddrPtr addr, const char *val) {
  * Returns the length of the network address or -1 in case of error.
  */
 int
-virSocketAddrParseIPv6(virSocketAddrPtr addr, const char *val) {
+virSocketAddrParseIPv6(virSocketAddrPtr addr, const char *val)
+{
     return virSocketAddrParse(addr, val, AF_INET6);
 }
 
@@ -355,7 +358,8 @@ error:
  * Returns 0 on success, -1 on failure
  */
 int
-virSocketAddrSetPort(virSocketAddrPtr addr, int port) {
+virSocketAddrSetPort(virSocketAddrPtr addr, int port)
+{
     if (addr == NULL)
         return -1;
 
@@ -380,7 +384,8 @@ virSocketAddrSetPort(virSocketAddrPtr addr, int port) {
  * Returns -1 if @addr is invalid
  */
 int
-virSocketAddrGetPort(virSocketAddrPtr addr) {
+virSocketAddrGetPort(virSocketAddrPtr addr)
+{
     if (addr == NULL)
         return -1;
 
@@ -401,7 +406,8 @@ virSocketAddrGetPort(virSocketAddrPtr addr) {
  *
  * Returns 0 in case of success and -1 in case of error
  */
-int virSocketAddrIsNetmask(virSocketAddrPtr netmask) {
+int virSocketAddrIsNetmask(virSocketAddrPtr netmask)
+{
     int n = virSocketAddrGetNumNetmaskBits(netmask);
     if (n < 0)
         return -1;
@@ -550,7 +556,8 @@ virSocketAddrBroadcastByPrefix(const virSocketAddr *addr,
  *         -1 in case of error
  */
 int virSocketAddrCheckNetmask(virSocketAddrPtr addr1, virSocketAddrPtr addr2,
-                              virSocketAddrPtr netmask) {
+                              virSocketAddrPtr netmask)
+{
     size_t i;
 
     if ((addr1 == NULL) || (addr2 == NULL) || (netmask == NULL))
@@ -606,7 +613,8 @@ int virSocketAddrCheckNetmask(virSocketAddrPtr addr1, virSocketAddrPtr addr2,
  *
  * Returns the size of the range or -1 in case of failure
  */
-int virSocketAddrGetRange(virSocketAddrPtr start, virSocketAddrPtr end) {
+int virSocketAddrGetRange(virSocketAddrPtr start, virSocketAddrPtr end)
+{
     int ret = 0;
     size_t i;
 

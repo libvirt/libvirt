@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2013 Red Hat, Inc.
+ * Copyright (C) 2009-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -449,7 +449,8 @@ static struct nla_policy ifla_port_policy[IFLA_PORT_MAX + 1] =
 };
 
 static uint32_t
-virNetDevVPortProfileGetLldpadPid(void) {
+virNetDevVPortProfileGetLldpadPid(void)
+{
     int fd;
     uint32_t pid = 0;
 

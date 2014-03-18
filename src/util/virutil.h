@@ -98,19 +98,23 @@ const char *virEnumToString(const char *const*types,
 
 /* No-op workarounds for functionality missing in mingw.  */
 # ifndef HAVE_GETUID
-static inline int getuid(void) { return 0; }
+static inline int getuid(void)
+{ return 0; }
 # endif
 
 # ifndef HAVE_GETEUID
-static inline int geteuid(void) { return 0; }
+static inline int geteuid(void)
+{ return 0; }
 # endif
 
 # ifndef HAVE_GETGID
-static inline int getgid(void) { return 0; }
+static inline int getgid(void)
+{ return 0; }
 # endif
 
 # ifndef HAVE_GETEGID
-static inline int getegid(void) { return 0; }
+static inline int getegid(void)
+{ return 0; }
 # endif
 
 # ifdef FUNC_PTHREAD_SIGMASK_BROKEN

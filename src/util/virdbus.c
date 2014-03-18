@@ -1,7 +1,7 @@
 /*
  * virdbus.c: helper for using DBus
  *
- * Copyright (C) 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -217,7 +217,8 @@ static int virDBusTranslateWatchFlags(int dbus_flags)
 }
 
 
-static void virDBusWatchFree(void *data) {
+static void virDBusWatchFree(void *data)
+{
     struct virDBusWatch *info = data;
     VIR_FREE(info);
 }
@@ -296,7 +297,8 @@ static const char virDBusBasicTypes[] = {
     DBUS_TYPE_SIGNATURE,
 };
 
-static bool virDBusIsBasicType(char c) {
+static bool virDBusIsBasicType(char c)
+{
     return !!memchr(virDBusBasicTypes, c, ARRAY_CARDINALITY(virDBusBasicTypes));
 }
 

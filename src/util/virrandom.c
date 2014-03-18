@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -165,7 +165,8 @@ uint32_t virRandomInt(uint32_t max)
 
 int
 virRandomGenerateWWN(char **wwn,
-                     const char *virt_type) {
+                     const char *virt_type)
+{
     const char *oui = NULL;
 
     if (!virt_type) {

@@ -1,7 +1,7 @@
 /*
  * viruuid.c: helper APIs for dealing with UUIDs
  *
- * Copyright (C) 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2007-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -149,7 +149,8 @@ virUUIDGenerate(unsigned char *uuid)
  * Returns 0 in case of success and -1 in case of error.
  */
 int
-virUUIDParse(const char *uuidstr, unsigned char *uuid) {
+virUUIDParse(const char *uuidstr, unsigned char *uuid)
+{
     const char *cur;
     size_t i;
 

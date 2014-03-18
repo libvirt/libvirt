@@ -1,7 +1,7 @@
 /*
  * virhook.c: implementation of the synchronous hooks support
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright (C) 2010 Daniel Veillard
  *
  * This library is free software; you can redistribute it and/or
@@ -107,7 +107,8 @@ static int virHooksFound = -1;
  * Returns 1 if found, 0 if not found, and -1 in case of error
  */
 static int
-virHookCheck(int no, const char *driver) {
+virHookCheck(int no, const char *driver)
+{
     char *path;
     int ret;
 
@@ -149,7 +150,8 @@ virHookCheck(int no, const char *driver) {
  * Returns the number of hooks found or -1 in case of failure
  */
 int
-virHookInitialize(void) {
+virHookInitialize(void)
+{
     size_t i;
     int res, ret = 0;
 
@@ -177,7 +179,8 @@ virHookInitialize(void) {
  * Returns 1 if present, 0 otherwise
  */
 int
-virHookPresent(int driver) {
+virHookPresent(int driver)
+{
     if ((driver < VIR_HOOK_DRIVER_DAEMON) ||
         (driver >= VIR_HOOK_DRIVER_LAST))
         return 0;
