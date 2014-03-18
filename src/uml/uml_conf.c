@@ -411,7 +411,7 @@ virCommandPtr umlBuildCommandLine(virConnectPtr conn,
             goto error;
         }
 
-        virCommandAddArgPair(cmd, disk->dst, disk->src);
+        virCommandAddArgPair(cmd, disk->dst, virDomainDiskGetSource(disk));
     }
 
     for (i = 0; i < vm->def->nnets; i++) {

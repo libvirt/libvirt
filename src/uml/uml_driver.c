@@ -2166,13 +2166,14 @@ static int umlDomainAttachUmlDisk(struct uml_driver *driver,
         }
     }
 
-    if (!disk->src) {
+    if (!virDomainDiskGetSource(disk)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("disk source path is missing"));
         goto error;
     }
 
-    if (virAsprintf(&cmd, "config %s=%s", disk->dst, disk->src) < 0)
+    if (virAsprintf(&cmd, "config %s=%s", disk->dst,
+                    virDomainDiskGetSource(disk)) < 0)
         return -1;
 
     if (umlMonitorCommand(driver, vm, cmd, &reply) < 0)
