@@ -2649,6 +2649,9 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                             VRDxServer->vtbl->GetPort(VRDxServer, &VRDPport);
                             if (VRDPport) {
                                 def->graphics[def->ngraphics]->data.rdp.port = VRDPport;
+                            } else {
+                                def->graphics[def->ngraphics]->data.rdp.autoport = true;
+                            }
 #elif VBOX_API_VERSION < 4000000 /* 3001000 <= VBOX_API_VERSION < 4000000 */
                             PRUnichar *VRDPport = NULL;
                             VRDxServer->vtbl->GetPorts(VRDxServer, &VRDPport);
@@ -2656,6 +2659,9 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                                 /* even if vbox supports mutilpe ports, single port for now here */
                                 def->graphics[def->ngraphics]->data.rdp.port = PRUnicharToInt(VRDPport);
                                 VBOX_UTF16_FREE(VRDPport);
+                            } else {
+                                def->graphics[def->ngraphics]->data.rdp.autoport = true;
+                            }
 #else /* VBOX_API_VERSION >= 4000000 */
                             PRUnichar *VRDEPortsKey = NULL;
                             PRUnichar *VRDEPortsValue = NULL;
@@ -2666,10 +2672,10 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                                 /* even if vbox supports mutilpe ports, single port for now here */
                                 def->graphics[def->ngraphics]->data.rdp.port = PRUnicharToInt(VRDEPortsValue);
                                 VBOX_UTF16_FREE(VRDEPortsValue);
-#endif /* VBOX_API_VERSION >= 4000000 */
                             } else {
                                 def->graphics[def->ngraphics]->data.rdp.autoport = true;
                             }
+#endif /* VBOX_API_VERSION >= 4000000 */
 
                             def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_RDP;
 
