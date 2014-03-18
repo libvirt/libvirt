@@ -1,6 +1,6 @@
 /*
  * xenapi_utils.c: Xen API driver -- utils parts.
- * Copyright (C) 2011-2013 Red Hat, Inc.
+ * Copyright (C) 2011-2014 Red Hat, Inc.
  * Copyright (C) 2009, 2010 Citrix Ltd.
  *
  * This library is free software; you can redistribute it and/or
@@ -181,7 +181,8 @@ createXenAPIBootOrderString(int nboot, int *bootDevs)
 
 /* convert boot order string to libvirt boot order enum */
 enum virDomainBootOrder
-map2LibvirtBootOrder(char c) {
+map2LibvirtBootOrder(char c)
+{
     switch (c) {
     case 'a':
         return VIR_DOMAIN_BOOT_FLOPPY;

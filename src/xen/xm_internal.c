@@ -1,7 +1,7 @@
 /*
  * xm_internal.c: helper routines for dealing with inactive domains
  *
- * Copyright (C) 2006-2007, 2009-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -94,7 +94,8 @@ static int xenInotifyActive(virConnectPtr conn)
 
 
 /* Release memory associated with a cached config object */
-static void xenXMConfigFree(void *payload, const void *key ATTRIBUTE_UNUSED) {
+static void xenXMConfigFree(void *payload, const void *key ATTRIBUTE_UNUSED)
+{
     xenXMConfCachePtr entry = (xenXMConfCachePtr)payload;
     virDomainDefFree(entry->def);
     VIR_FREE(entry->filename);
@@ -1117,7 +1118,10 @@ struct xenXMListIteratorContext {
 };
 
 static void
-xenXMListIterator(void *payload ATTRIBUTE_UNUSED, const void *name, void *data) {
+xenXMListIterator(void *payload ATTRIBUTE_UNUSED,
+                  const void *name,
+                  void *data)
+{
     struct xenXMListIteratorContext *ctx = data;
     virDomainDefPtr def = NULL;
 

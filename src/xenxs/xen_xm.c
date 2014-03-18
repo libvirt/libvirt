@@ -1,7 +1,7 @@
 /*
  * xen_xm.c: Xen XM parsing functions
  *
- * Copyright (C) 2006-2007, 2009-2010, 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2010, 2012-2014 Red Hat, Inc.
  * Copyright (C) 2011 Univention GmbH
  * Copyright (C) 2006 Daniel P. Berrange
  *
@@ -44,7 +44,8 @@
 static int xenXMConfigGetBool(virConfPtr conf,
                               const char *name,
                               int *value,
-                              int def) {
+                              int def)
+{
     virConfValuePtr val;
 
     *value = 0;
@@ -70,7 +71,8 @@ static int xenXMConfigGetBool(virConfPtr conf,
 static int xenXMConfigGetULong(virConfPtr conf,
                                const char *name,
                                unsigned long *value,
-                               unsigned long def) {
+                               unsigned long def)
+{
     virConfValuePtr val;
 
     *value = 0;
@@ -102,7 +104,8 @@ static int xenXMConfigGetULong(virConfPtr conf,
 static int xenXMConfigGetULongLong(virConfPtr conf,
                                    const char *name,
                                    unsigned long long *value,
-                                   unsigned long long def) {
+                                   unsigned long long def)
+{
     virConfValuePtr val;
 
     *value = 0;
@@ -134,7 +137,8 @@ static int xenXMConfigGetULongLong(virConfPtr conf,
 static int xenXMConfigGetString(virConfPtr conf,
                                 const char *name,
                                 const char **value,
-                                const char *def) {
+                                const char *def)
+{
     virConfValuePtr val;
 
     *value = NULL;
@@ -158,7 +162,8 @@ static int xenXMConfigGetString(virConfPtr conf,
 static int xenXMConfigCopyStringInternal(virConfPtr conf,
                                          const char *name,
                                          char **value,
-                                         int allowMissing) {
+                                         int allowMissing)
+{
     virConfValuePtr val;
 
     *value = NULL;
@@ -201,7 +206,9 @@ static int xenXMConfigCopyStringOpt(virConfPtr conf,
 
 
 /* Convenience method to grab a string UUID from the config file object */
-static int xenXMConfigGetUUID(virConfPtr conf, const char *name, unsigned char *uuid) {
+static int
+xenXMConfigGetUUID(virConfPtr conf, const char *name, unsigned char *uuid)
+{
     virConfValuePtr val;
 
     if (!uuid || !name || !conf) {
@@ -248,7 +255,8 @@ static int xenXMConfigGetUUID(virConfPtr conf, const char *name, unsigned char *
  */
 virDomainDefPtr
 xenParseXM(virConfPtr conf, int xendConfigVersion,
-                       virCapsPtr caps) {
+                       virCapsPtr caps)
+{
     const char *str;
     int hvm = 0;
     int val;
@@ -1139,7 +1147,8 @@ cleanup:
 
 
 static
-int xenXMConfigSetInt(virConfPtr conf, const char *setting, long long l) {
+int xenXMConfigSetInt(virConfPtr conf, const char *setting, long long l)
+{
     virConfValuePtr value = NULL;
 
     if ((long) l != l) {
@@ -1158,8 +1167,9 @@ int xenXMConfigSetInt(virConfPtr conf, const char *setting, long long l) {
 }
 
 
-static
-int xenXMConfigSetString(virConfPtr conf, const char *setting, const char *str) {
+static int
+xenXMConfigSetString(virConfPtr conf, const char *setting, const char *str)
+{
     virConfValuePtr value = NULL;
 
     if (VIR_ALLOC(value) < 0)
@@ -1478,7 +1488,8 @@ verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
 
 virConfPtr xenFormatXM(virConnectPtr conn,
                                    virDomainDefPtr def,
-                                   int xendConfigVersion) {
+                                   int xendConfigVersion)
+{
     virConfPtr conf = NULL;
     int hvm = 0, vmlocaltime = 0;
     size_t i;

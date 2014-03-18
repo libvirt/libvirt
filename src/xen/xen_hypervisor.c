@@ -1,7 +1,7 @@
 /*
  * xen_hypervisor.c: direct access to Xen hypervisor level
  *
- * Copyright (C) 2005-2013 Red Hat, Inc.
+ * Copyright (C) 2005-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2006,7 +2006,8 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
 }
 
 
-static int xenHypervisorOnceInit(void) {
+static int xenHypervisorOnceInit(void)
+{
     return xenHypervisorInit(NULL);
 }
 

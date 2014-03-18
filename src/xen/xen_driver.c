@@ -164,7 +164,8 @@ static virDomainDefPtr xenGetDomainDefForDom(virDomainPtr dom)
  * until reboot which might be false in future Xen implementations.
  */
 static void
-xenNumaInit(virConnectPtr conn) {
+xenNumaInit(virConnectPtr conn)
+{
     virNodeInfo nodeInfo;
     xenUnifiedPrivatePtr priv;
     int ret;
@@ -1916,7 +1917,8 @@ cleanup:
 }
 
 static int
-xenUnifiedDomainUndefine(virDomainPtr dom) {
+xenUnifiedDomainUndefine(virDomainPtr dom)
+{
     return xenUnifiedDomainUndefineFlags(dom, 0);
 }
 
