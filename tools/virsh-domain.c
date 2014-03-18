@@ -2615,7 +2615,7 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, _("inbound format is incorrect"));
             goto cleanup;
         }
-        if (inbound.average == 0) {
+        if (inbound.average == 0 && (inbound.burst || inbound.peak)) {
             vshError(ctl, _("inbound average is mandatory"));
             goto cleanup;
         }
@@ -2643,7 +2643,7 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, _("outbound format is incorrect"));
             goto cleanup;
         }
-        if (outbound.average == 0) {
+        if (outbound.average == 0 && (outbound.burst || outbound.peak)) {
             vshError(ctl, _("outbound average is mandatory"));
             goto cleanup;
         }

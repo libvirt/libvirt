@@ -9739,6 +9739,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     virNetDevBandwidthPtr bandwidth = NULL, newBandwidth = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
+    bool inboundSpecified = false, outboundSpecified = false;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -9800,12 +9801,14 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
 
         if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_AVERAGE)) {
             bandwidth->in->average = params[i].value.ui;
+            inboundSpecified = true;
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_PEAK)) {
             bandwidth->in->peak = params[i].value.ui;
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_BURST)) {
             bandwidth->in->burst = params[i].value.ui;
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE)) {
             bandwidth->out->average = params[i].value.ui;
+            outboundSpecified = true;
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_OUT_PEAK)) {
             bandwidth->out->peak = params[i].value.ui;
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_OUT_BURST)) {
@@ -9831,7 +9834,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
          * bandwidth parameters, so merge with old bandwidth parameters
          * here to prevent them from being lost. */
         if (bandwidth->in ||
-            (net->bandwidth && net->bandwidth->in)) {
+            (!inboundSpecified && net->bandwidth && net->bandwidth->in)) {
             if (VIR_ALLOC(newBandwidth->in) < 0)
                 goto cleanup;
 
@@ -9840,7 +9843,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
                    sizeof(*newBandwidth->in));
         }
         if (bandwidth->out ||
-            (net->bandwidth && net->bandwidth->out)) {
+            (!outboundSpecified && net->bandwidth && net->bandwidth->out)) {
             if (VIR_ALLOC(newBandwidth->out) < 0)
                 goto cleanup;
 
@@ -9857,8 +9860,12 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         }
 
         virNetDevBandwidthFree(net->bandwidth);
-        net->bandwidth = newBandwidth;
-        newBandwidth = NULL;
+        if (newBandwidth->in || newBandwidth->out) {
+            net->bandwidth = newBandwidth;
+            newBandwidth = NULL;
+        } else {
+            net->bandwidth = NULL;
+        }
     }
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         if (!persistentNet->bandwidth) {

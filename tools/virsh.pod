@@ -698,6 +698,9 @@ expressed in kilobytes per second, while I<burst> is expressed in kilobytes
 in a single burst at -I<peak> speed as described in the Network XML
 documentation at L<http://libvirt.org/formatnetwork.html#elementQoS>.
 
+To clear inbound or outbound settings, use I<--inbound> or I<--outbound>
+respectfully with average of value zero.
+
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
 If I<--current> is specified, affect the current guest state.
