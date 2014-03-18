@@ -319,7 +319,8 @@ testBuildXMLConfig(void)
 
 
 static virCapsPtr
-testBuildCapabilities(virConnectPtr conn) {
+testBuildCapabilities(virConnectPtr conn)
+{
     testConnPtr privconn = conn->privateData;
     virCapsPtr caps;
     virCapsGuestPtr guest;
@@ -504,7 +505,8 @@ testDomObjFromDomain(virDomainPtr domain)
 }
 
 static char *
-testDomainGenerateIfname(virDomainDefPtr domdef) {
+testDomainGenerateIfname(virDomainDefPtr domdef)
+{
     int maxif = 1024;
     int ifctr;
     size_t i;
@@ -851,7 +853,8 @@ error:
 
 
 static char *testBuildFilename(const char *relativeTo,
-                               const char *filename) {
+                               const char *filename)
+{
     char *offset;
     int baseLen;
     char *ret;
@@ -2495,7 +2498,8 @@ static char *testDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
     return ret;
 }
 
-static unsigned long long testDomainGetMaxMemory(virDomainPtr domain) {
+static unsigned long long testDomainGetMaxMemory(virDomainPtr domain)
+{
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     unsigned long long ret = 0;
@@ -2898,7 +2902,8 @@ cleanup:
     return ret;
 }
 
-static int testConnectNumOfDefinedDomains(virConnectPtr conn) {
+static int testConnectNumOfDefinedDomains(virConnectPtr conn)
+{
     testConnPtr privconn = conn->privateData;
     int count;
 
@@ -2911,7 +2916,8 @@ static int testConnectNumOfDefinedDomains(virConnectPtr conn) {
 
 static int testConnectListDefinedDomains(virConnectPtr conn,
                                          char **const names,
-                                         int maxnames) {
+                                         int maxnames)
+{
 
     testConnPtr privconn = conn->privateData;
     int n;
@@ -2926,7 +2932,8 @@ static int testConnectListDefinedDomains(virConnectPtr conn,
 }
 
 static virDomainPtr testDomainDefineXML(virConnectPtr conn,
-                                        const char *xml) {
+                                        const char *xml)
+{
     testConnPtr privconn = conn->privateData;
     virDomainPtr ret = NULL;
     virDomainDefPtr def;
@@ -3040,7 +3047,8 @@ cleanup:
 
 static int testNodeGetCellsFreeMemory(virConnectPtr conn,
                                       unsigned long long *freemems,
-                                      int startCell, int maxCells) {
+                                      int startCell, int maxCells)
+{
     testConnPtr privconn = conn->privateData;
     int cell;
     size_t i;
@@ -3066,7 +3074,8 @@ cleanup:
 }
 
 
-static int testDomainCreateWithFlags(virDomainPtr domain, unsigned int flags) {
+static int testDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
+{
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     virObjectEventPtr event = NULL;
@@ -3108,7 +3117,8 @@ cleanup:
     return ret;
 }
 
-static int testDomainCreate(virDomainPtr domain) {
+static int testDomainCreate(virDomainPtr domain)
+{
     return testDomainCreateWithFlags(domain, 0);
 }
 
@@ -3475,7 +3485,8 @@ static virDrvOpenStatus testNetworkOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int testNetworkClose(virConnectPtr conn) {
+static int testNetworkClose(virConnectPtr conn)
+{
     conn->networkPrivateData = NULL;
     return 0;
 }
@@ -3530,7 +3541,8 @@ cleanup:
 }
 
 
-static int testConnectNumOfNetworks(virConnectPtr conn) {
+static int testConnectNumOfNetworks(virConnectPtr conn)
+{
     testConnPtr privconn = conn->privateData;
     int numActive = 0;
     size_t i;
@@ -3574,7 +3586,8 @@ error:
     return -1;
 }
 
-static int testConnectNumOfDefinedNetworks(virConnectPtr conn) {
+static int testConnectNumOfDefinedNetworks(virConnectPtr conn)
+{
     testConnPtr privconn = conn->privateData;
     int numInactive = 0;
     size_t i;
@@ -3678,7 +3691,8 @@ cleanup:
 }
 
 
-static virNetworkPtr testNetworkCreateXML(virConnectPtr conn, const char *xml) {
+static virNetworkPtr testNetworkCreateXML(virConnectPtr conn, const char *xml)
+{
     testConnPtr privconn = conn->privateData;
     virNetworkDefPtr def;
     virNetworkObjPtr net = NULL;
@@ -3744,7 +3758,8 @@ cleanup:
     return ret;
 }
 
-static int testNetworkUndefine(virNetworkPtr network) {
+static int testNetworkUndefine(virNetworkPtr network)
+{
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     int ret = -1;
@@ -3831,7 +3846,8 @@ cleanup:
     return ret;
 }
 
-static int testNetworkCreate(virNetworkPtr network) {
+static int testNetworkCreate(virNetworkPtr network)
+{
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     int ret = -1;
@@ -3867,7 +3883,8 @@ cleanup:
     return ret;
 }
 
-static int testNetworkDestroy(virNetworkPtr network) {
+static int testNetworkDestroy(virNetworkPtr network)
+{
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     int ret = -1;
@@ -3960,7 +3977,8 @@ cleanup:
 }
 
 static int testNetworkGetAutostart(virNetworkPtr network,
-                                   int *autostart) {
+                                   int *autostart)
+{
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     int ret = -1;
@@ -3985,7 +4003,8 @@ cleanup:
 }
 
 static int testNetworkSetAutostart(virNetworkPtr network,
-                                   int autostart) {
+                                   int autostart)
+{
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     int ret = -1;
@@ -4443,7 +4462,8 @@ cleanup:
  */
 
 
-static int testStoragePoolObjSetDefaults(virStoragePoolObjPtr pool) {
+static int testStoragePoolObjSetDefaults(virStoragePoolObjPtr pool)
+{
 
     pool->def->capacity = defaultPoolCap;
     pool->def->allocation = defaultPoolAlloc;
@@ -4465,7 +4485,8 @@ static virDrvOpenStatus testStorageOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int testStorageClose(virConnectPtr conn) {
+static int testStorageClose(virConnectPtr conn)
+{
     conn->storagePrivateData = NULL;
     return 0;
 }
@@ -4473,7 +4494,8 @@ static int testStorageClose(virConnectPtr conn) {
 
 static virStoragePoolPtr
 testStoragePoolLookupByUUID(virConnectPtr conn,
-                            const unsigned char *uuid) {
+                            const unsigned char *uuid)
+{
     testConnPtr privconn = conn->privateData;
     virStoragePoolObjPtr pool;
     virStoragePoolPtr ret = NULL;
@@ -4498,7 +4520,8 @@ cleanup:
 
 static virStoragePoolPtr
 testStoragePoolLookupByName(virConnectPtr conn,
-                            const char *name) {
+                            const char *name)
+{
     testConnPtr privconn = conn->privateData;
     virStoragePoolObjPtr pool;
     virStoragePoolPtr ret = NULL;
@@ -4522,12 +4545,14 @@ cleanup:
 }
 
 static virStoragePoolPtr
-testStoragePoolLookupByVolume(virStorageVolPtr vol) {
+testStoragePoolLookupByVolume(virStorageVolPtr vol)
+{
     return testStoragePoolLookupByName(vol->conn, vol->pool);
 }
 
 static int
-testConnectNumOfStoragePools(virConnectPtr conn) {
+testConnectNumOfStoragePools(virConnectPtr conn)
+{
     testConnPtr privconn = conn->privateData;
     int numActive = 0;
     size_t i;
@@ -4544,7 +4569,8 @@ testConnectNumOfStoragePools(virConnectPtr conn) {
 static int
 testConnectListStoragePools(virConnectPtr conn,
                             char **const names,
-                            int nnames) {
+                            int nnames)
+{
     testConnPtr privconn = conn->privateData;
     int n = 0;
     size_t i;
@@ -4572,7 +4598,8 @@ error:
 }
 
 static int
-testConnectNumOfDefinedStoragePools(virConnectPtr conn) {
+testConnectNumOfDefinedStoragePools(virConnectPtr conn)
+{
     testConnPtr privconn = conn->privateData;
     int numInactive = 0;
     size_t i;
@@ -4592,7 +4619,8 @@ testConnectNumOfDefinedStoragePools(virConnectPtr conn) {
 static int
 testConnectListDefinedStoragePools(virConnectPtr conn,
                                    char **const names,
-                                   int nnames) {
+                                   int nnames)
+{
     testConnPtr privconn = conn->privateData;
     int n = 0;
     size_t i;
@@ -4858,7 +4886,8 @@ cleanup:
 }
 
 static int
-testStoragePoolUndefine(virStoragePoolPtr pool) {
+testStoragePoolUndefine(virStoragePoolPtr pool)
+{
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
@@ -4923,7 +4952,8 @@ cleanup:
 
 
 static int
-testStoragePoolDestroy(virStoragePoolPtr pool) {
+testStoragePoolDestroy(virStoragePoolPtr pool)
+{
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
@@ -5030,7 +5060,8 @@ cleanup:
 
 static int
 testStoragePoolGetInfo(virStoragePoolPtr pool,
-                       virStoragePoolInfoPtr info) {
+                       virStoragePoolInfoPtr info)
+{
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
@@ -5091,7 +5122,8 @@ cleanup:
 
 static int
 testStoragePoolGetAutostart(virStoragePoolPtr pool,
-                            int *autostart) {
+                            int *autostart)
+{
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
@@ -5121,7 +5153,8 @@ cleanup:
 
 static int
 testStoragePoolSetAutostart(virStoragePoolPtr pool,
-                            int autostart) {
+                            int autostart)
+{
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
@@ -5154,7 +5187,8 @@ cleanup:
 
 
 static int
-testStoragePoolNumOfVolumes(virStoragePoolPtr pool) {
+testStoragePoolNumOfVolumes(virStoragePoolPtr pool)
+{
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
@@ -5186,7 +5220,8 @@ cleanup:
 static int
 testStoragePoolListVolumes(virStoragePoolPtr pool,
                            char **const names,
-                           int maxnames) {
+                           int maxnames)
+{
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     size_t i = 0;
@@ -5232,7 +5267,8 @@ testStoragePoolListVolumes(virStoragePoolPtr pool,
 static int
 testStoragePoolListAllVolumes(virStoragePoolPtr obj,
                               virStorageVolPtr **vols,
-                              unsigned int flags) {
+                              unsigned int flags)
+{
     testConnPtr privconn = obj->conn->privateData;
     virStoragePoolObjPtr pool;
     size_t i;
@@ -5298,7 +5334,8 @@ testStoragePoolListAllVolumes(virStoragePoolPtr obj,
 
 static virStorageVolPtr
 testStorageVolLookupByName(virStoragePoolPtr pool,
-                           const char *name ATTRIBUTE_UNUSED) {
+                           const char *name ATTRIBUTE_UNUSED)
+{
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol;
@@ -5342,7 +5379,8 @@ cleanup:
 
 static virStorageVolPtr
 testStorageVolLookupByKey(virConnectPtr conn,
-                          const char *key) {
+                          const char *key)
+{
     testConnPtr privconn = conn->privateData;
     size_t i;
     virStorageVolPtr ret = NULL;
@@ -5377,7 +5415,8 @@ testStorageVolLookupByKey(virConnectPtr conn,
 
 static virStorageVolPtr
 testStorageVolLookupByPath(virConnectPtr conn,
-                           const char *path) {
+                           const char *path)
+{
     testConnPtr privconn = conn->privateData;
     size_t i;
     virStorageVolPtr ret = NULL;
@@ -5627,7 +5666,8 @@ cleanup:
 }
 
 
-static int testStorageVolumeTypeForPool(int pooltype) {
+static int testStorageVolumeTypeForPool(int pooltype)
+{
 
     switch (pooltype) {
         case VIR_STORAGE_POOL_DIR:
@@ -5641,7 +5681,8 @@ static int testStorageVolumeTypeForPool(int pooltype) {
 
 static int
 testStorageVolGetInfo(virStorageVolPtr vol,
-                      virStorageVolInfoPtr info) {
+                      virStorageVolInfoPtr info)
+{
     testConnPtr privconn = vol->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol;
@@ -5729,7 +5770,8 @@ cleanup:
 }
 
 static char *
-testStorageVolGetPath(virStorageVolPtr vol) {
+testStorageVolGetPath(virStorageVolPtr vol)
+{
     testConnPtr privconn = vol->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol;
@@ -5783,7 +5825,8 @@ static virDrvOpenStatus testNodeDeviceOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int testNodeDeviceClose(virConnectPtr conn) {
+static int testNodeDeviceClose(virConnectPtr conn)
+{
     conn->nodeDevicePrivateData = NULL;
     return 0;
 }
@@ -6252,7 +6295,8 @@ static virDrvOpenStatus testSecretOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int testSecretClose(virConnectPtr conn) {
+static int testSecretClose(virConnectPtr conn)
+{
     conn->secretPrivateData = NULL;
     return 0;
 }
@@ -6271,7 +6315,8 @@ static virDrvOpenStatus testNWFilterOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int testNWFilterClose(virConnectPtr conn) {
+static int testNWFilterClose(virConnectPtr conn)
+{
     conn->nwfilterPrivateData = NULL;
     return 0;
 }
