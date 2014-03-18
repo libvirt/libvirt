@@ -202,8 +202,7 @@ struct _virNetfsDiscoverState {
 typedef struct _virNetfsDiscoverState virNetfsDiscoverState;
 
 static int
-virStorageBackendFileSystemNetFindPoolSourcesFunc(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
-                                                  char **const groups,
+virStorageBackendFileSystemNetFindPoolSourcesFunc(char **const groups,
                                                   void *data)
 {
     virNetfsDiscoverState *state = data;
@@ -301,9 +300,9 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
                                source->hosts[0].name,
                                NULL);
 
-    if (virStorageBackendRunProgRegex(NULL, cmd, 1, regexes, vars,
-                            virStorageBackendFileSystemNetFindPoolSourcesFunc,
-                            &state, NULL) < 0)
+    if (virCommandRunRegex(cmd, 1, regexes, vars,
+                           virStorageBackendFileSystemNetFindPoolSourcesFunc,
+                           &state, NULL) < 0)
         goto cleanup;
 
     retval = virStoragePoolSourceListFormat(&state.list);

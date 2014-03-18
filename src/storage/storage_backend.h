@@ -159,28 +159,6 @@ char *virStorageBackendStablePath(virStoragePoolObjPtr pool,
                                   const char *devpath,
                                   bool loop);
 
-typedef int (*virStorageBackendListVolRegexFunc)(virStoragePoolObjPtr pool,
-                                                 char **const groups,
-                                                 void *data);
-typedef int (*virStorageBackendListVolNulFunc)(virStoragePoolObjPtr pool,
-                                               size_t n_tokens,
-                                               char **const groups,
-                                               void *data);
-
-int virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
-                                  virCommandPtr cmd,
-                                  int nregex,
-                                  const char **regex,
-                                  int *nvars,
-                                  virStorageBackendListVolRegexFunc func,
-                                  void *data, const char *cmd_to_ignore);
-
-int virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
-                                virCommandPtr cmd,
-                                size_t n_columns,
-                                virStorageBackendListVolNulFunc func,
-                                void *data);
-
 virCommandPtr
 virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
                                   virStoragePoolObjPtr pool,

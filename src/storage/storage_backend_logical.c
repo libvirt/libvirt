@@ -66,11 +66,17 @@ virStorageBackendLogicalSetActive(virStoragePoolObjPtr pool,
 
 #define VIR_STORAGE_VOL_LOGICAL_SEGTYPE_STRIPED "striped"
 
+struct virStorageBackendLogicalPoolVolData {
+    virStoragePoolObjPtr pool;
+    virStorageVolDefPtr vol;
+};
+
 static int
-virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
-                                char **const groups,
-                                void *data)
+virStorageBackendLogicalMakeVol(char **const groups,
+                                void *opaque)
 {
+    struct virStorageBackendLogicalPoolVolData *data = opaque;
+    virStoragePoolObjPtr pool = data->pool;
     virStorageVolDefPtr vol = NULL;
     bool is_new_vol = false;
     unsigned long long offset, size, length;
@@ -96,8 +102,8 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
         return 0;
 
     /* See if we're only looking for a specific volume */
-    if (data != NULL) {
-        vol = data;
+    if (data->vol != NULL) {
+        vol = data->vol;
         if (STRNEQ(vol->name, groups[0]))
             return 0;
     }
@@ -299,6 +305,10 @@ virStorageBackendLogicalFindLVs(virStoragePoolObjPtr pool,
     };
     int ret = -1;
     virCommandPtr cmd;
+    struct virStorageBackendLogicalPoolVolData cbdata = {
+        .pool = pool,
+        .vol = vol,
+    };
 
     cmd = virCommandNewArgList(LVS,
                                "--separator", "#",
@@ -310,13 +320,13 @@ virStorageBackendLogicalFindLVs(virStoragePoolObjPtr pool,
                                "lv_name,origin,uuid,devices,segtype,stripes,seg_size,vg_extent_size,size,lv_attr",
                                pool->def->source.name,
                                NULL);
-    if (virStorageBackendRunProgRegex(pool,
-                                      cmd,
-                                      1,
-                                      regexes,
-                                      vars,
-                                      virStorageBackendLogicalMakeVol,
-                                      vol, "lvs") < 0)
+    if (virCommandRunRegex(cmd,
+                           1,
+                           regexes,
+                           vars,
+                           virStorageBackendLogicalMakeVol,
+                           &cbdata,
+                           "lvs") < 0)
         goto cleanup;
 
     ret = 0;
@@ -326,10 +336,10 @@ cleanup:
 }
 
 static int
-virStorageBackendLogicalRefreshPoolFunc(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
-                                        char **const groups,
-                                        void *data ATTRIBUTE_UNUSED)
+virStorageBackendLogicalRefreshPoolFunc(char **const groups,
+                                        void *data)
 {
+    virStoragePoolObjPtr pool = data;
     if (virStrToLong_ull(groups[0], NULL, 10, &pool->def->capacity) < 0)
         return -1;
     if (virStrToLong_ull(groups[1], NULL, 10, &pool->def->available) < 0)
@@ -341,8 +351,7 @@ virStorageBackendLogicalRefreshPoolFunc(virStoragePoolObjPtr pool ATTRIBUTE_UNUS
 
 
 static int
-virStorageBackendLogicalFindPoolSourcesFunc(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
-                                            char **const groups,
+virStorageBackendLogicalFindPoolSourcesFunc(char **const groups,
                                             void *data)
 {
     virStoragePoolSourceListPtr sourceList = data;
@@ -432,9 +441,9 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
                                "--noheadings",
                                "-o", "pv_name,vg_name",
                                NULL);
-    if (virStorageBackendRunProgRegex(NULL, cmd, 1, regexes, vars,
-                                      virStorageBackendLogicalFindPoolSourcesFunc,
-                                      &sourceList, "pvs") < 0) {
+    if (virCommandRunRegex(cmd, 1, regexes, vars,
+                           virStorageBackendLogicalFindPoolSourcesFunc,
+                           &sourceList, "pvs") < 0) {
         virCommandFree(cmd);
         return NULL;
     }
@@ -593,13 +602,13 @@ virStorageBackendLogicalRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                NULL);
 
     /* Now get basic volgrp metadata */
-    if (virStorageBackendRunProgRegex(pool,
-                                      cmd,
-                                      1,
-                                      regexes,
-                                      vars,
-                                      virStorageBackendLogicalRefreshPoolFunc,
-                                      NULL, "vgs") < 0)
+    if (virCommandRunRegex(cmd,
+                           1,
+                           regexes,
+                           vars,
+                           virStorageBackendLogicalRefreshPoolFunc,
+                           pool,
+                           "vgs") < 0)
         goto cleanup;
 
     ret = 0;

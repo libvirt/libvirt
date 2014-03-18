@@ -187,4 +187,24 @@ void virCommandFree(virCommandPtr cmd);
 
 void virCommandDoAsyncIO(virCommandPtr cmd);
 
+typedef int (*virCommandRunRegexFunc)(char **const groups,
+                                      void *data);
+typedef int (*virCommandRunNulFunc)(size_t n_tokens,
+                                    char **const groups,
+                                    void *data);
+
+int virCommandRunRegex(virCommandPtr cmd,
+                       int nregex,
+                       const char **regex,
+                       int *nvars,
+                       virCommandRunRegexFunc func,
+                       void *data,
+                       const char *cmd_to_ignore);
+
+int virCommandRunNul(virCommandPtr cmd,
+                     size_t n_columns,
+                     virCommandRunNulFunc func,
+                     void *data);
+
+
 #endif /* __VIR_COMMAND_H__ */

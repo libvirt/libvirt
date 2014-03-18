@@ -79,16 +79,19 @@ virStorageBackendISCSIPortal(virStoragePoolSourcePtr source)
     return portal;
 }
 
+struct virStorageBackendISCSISessionData {
+    char *session;
+    const char *devpath;
+};
 
 static int
-virStorageBackendISCSIExtractSession(virStoragePoolObjPtr pool,
-                                     char **const groups,
-                                     void *data)
+virStorageBackendISCSIExtractSession(char **const groups,
+                                     void *opaque)
 {
-    char **session = data;
+    struct virStorageBackendISCSISessionData *data = opaque;
 
-    if (STREQ(groups[1], pool->def->source.devices[0].path))
-        return VIR_STRDUP(*session, groups[0]);
+    if (STREQ(groups[1], data->devpath))
+        return VIR_STRDUP(data->session, groups[0]);
     return 0;
 }
 
@@ -109,21 +112,22 @@ virStorageBackendISCSISession(virStoragePoolObjPtr pool,
     int vars[] = {
         2,
     };
-    char *session = NULL;
+    struct virStorageBackendISCSISessionData cbdata = {
+        .session = NULL,
+        .devpath = pool->def->source.devices[0].path
+    };
 
     virCommandPtr cmd = virCommandNewArgList(ISCSIADM, "--mode", "session", NULL);
 
-    if (virStorageBackendRunProgRegex(pool,
-                                      cmd,
-                                      1,
-                                      regexes,
-                                      vars,
-                                      virStorageBackendISCSIExtractSession,
-                                      &session, NULL) < 0)
+    if (virCommandRunRegex(cmd,
+                           1,
+                           regexes,
+                           vars,
+                           virStorageBackendISCSIExtractSession,
+                           &cbdata, NULL) < 0)
         goto cleanup;
 
-    if (session == NULL &&
-        !probe) {
+    if (cbdata.session == NULL && !probe) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot find session"));
         goto cleanup;
@@ -131,7 +135,7 @@ virStorageBackendISCSISession(virStoragePoolObjPtr pool,
 
 cleanup:
     virCommandFree(cmd);
-    return session;
+    return cbdata.session;
 }
 
 
@@ -439,8 +443,7 @@ struct virStorageBackendISCSITargetList {
 };
 
 static int
-virStorageBackendISCSIGetTargets(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
-                                 char **const groups,
+virStorageBackendISCSIGetTargets(char **const groups,
                                  void *data)
 {
     struct virStorageBackendISCSITargetList *list = data;
@@ -503,13 +506,12 @@ virStorageBackendISCSIScanTargets(const char *portal,
 
     memset(&list, 0, sizeof(list));
 
-    if (virStorageBackendRunProgRegex(NULL, /* No pool for callback */
-                                      cmd,
-                                      1,
-                                      regexes,
-                                      vars,
-                                      virStorageBackendISCSIGetTargets,
-                                      &list, NULL) < 0)
+    if (virCommandRunRegex(cmd,
+                           1,
+                           regexes,
+                           vars,
+                           virStorageBackendISCSIGetTargets,
+                           &list, NULL) < 0)
         goto cleanup;
 
     for (i = 0; i < list.ntargets; i++) {

@@ -188,12 +188,18 @@ virStorageBackendDiskMakeFreeExtent(virStoragePoolObjPtr pool,
 }
 
 
+struct virStorageBackendDiskPoolVolData {
+    virStoragePoolObjPtr pool;
+    virStorageVolDefPtr vol;
+};
+
 static int
-virStorageBackendDiskMakeVol(virStoragePoolObjPtr pool,
-                             size_t ntok ATTRIBUTE_UNUSED,
+virStorageBackendDiskMakeVol(size_t ntok ATTRIBUTE_UNUSED,
                              char **const groups,
-                             void *data)
+                             void *opaque)
 {
+    struct virStorageBackendDiskPoolVolData *data = opaque;
+    virStoragePoolObjPtr pool = data->pool;
     /*
      * Ignore normal+metadata, and logical+metadata partitions
      * since they're basically internal book-keeping regions
@@ -209,7 +215,7 @@ virStorageBackendDiskMakeVol(virStoragePoolObjPtr pool,
     /* Remaining data / metadata parts get turn into volumes... */
     if (STREQ(groups[2], "metadata") ||
         STREQ(groups[2], "data")) {
-        virStorageVolDefPtr vol = data;
+        virStorageVolDefPtr vol = data->vol;
 
         if (vol) {
             /* We're searching for a specific vol only */
@@ -233,7 +239,6 @@ virStorageBackendDiskMakeVol(virStoragePoolObjPtr pool,
         return -1;
     }
 }
-
 
 /* To get a list of partitions we run an external helper
  * tool which then uses parted APIs. This is because
@@ -259,25 +264,28 @@ virStorageBackendDiskReadPartitions(virStoragePoolObjPtr pool,
     virCommandPtr cmd = virCommandNewArgList(PARTHELPER,
                                              pool->def->source.devices[0].path,
                                              NULL);
+    struct virStorageBackendDiskPoolVolData cbdata = {
+        .pool = pool,
+        .vol = vol,
+    };
     int ret;
 
     pool->def->allocation = pool->def->capacity = pool->def->available = 0;
 
-    ret = virStorageBackendRunProgNul(pool,
-                                      cmd,
-                                      6,
-                                      virStorageBackendDiskMakeVol,
-                                      vol);
+    ret = virCommandRunNul(cmd,
+                           6,
+                           virStorageBackendDiskMakeVol,
+                           &cbdata);
     virCommandFree(cmd);
     return ret;
 }
 
 static int
-virStorageBackendDiskMakePoolGeometry(virStoragePoolObjPtr pool,
-                                      size_t ntok ATTRIBUTE_UNUSED,
+virStorageBackendDiskMakePoolGeometry(size_t ntok ATTRIBUTE_UNUSED,
                                       char **const groups,
-                                      void *data ATTRIBUTE_UNUSED)
+                                      void *data)
 {
+    virStoragePoolObjPtr pool = data;
     virStoragePoolSourceDevicePtr device = &(pool->def->source.devices[0]);
     if (virStrToLong_i(groups[0], NULL, 0, &device->geometry.cylinders) < 0 ||
         virStrToLong_i(groups[1], NULL, 0, &device->geometry.heads) < 0 ||
@@ -299,11 +307,10 @@ virStorageBackendDiskReadGeometry(virStoragePoolObjPtr pool)
                                              NULL);
     int ret;
 
-    ret = virStorageBackendRunProgNul(pool,
-                                      cmd,
-                                      3,
-                                      virStorageBackendDiskMakePoolGeometry,
-                                      NULL);
+    ret = virCommandRunNul(cmd,
+                           3,
+                           virStorageBackendDiskMakePoolGeometry,
+                           pool);
     virCommandFree(cmd);
     return ret;
 }

@@ -22,6 +22,7 @@
 #include <config.h>
 
 #include <poll.h>
+#include <regex.h>
 #include <signal.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -2760,3 +2761,247 @@ virCommandSetDryRun(virBufferPtr buf,
     dryRunCallback = cb;
     dryRunOpaque = opaque;
 }
+
+#ifndef WIN32
+/*
+ * Run an external program.
+ *
+ * Read its output and apply a series of regexes to each line
+ * When the entire set of regexes has matched consecutively
+ * then run a callback passing in all the matches
+ */
+int
+virCommandRunRegex(virCommandPtr cmd,
+                   int nregex,
+                   const char **regex,
+                   int *nvars,
+                   virCommandRunRegexFunc func,
+                   void *data,
+                   const char *prefix)
+{
+    int fd = -1, err, ret = -1;
+    FILE *list = NULL;
+    regex_t *reg;
+    regmatch_t *vars = NULL;
+    char line[1024];
+    int maxReg = 0;
+    size_t i, j;
+    int totgroups = 0, ngroup = 0, maxvars = 0;
+    char **groups;
+
+    /* Compile all regular expressions */
+    if (VIR_ALLOC_N(reg, nregex) < 0)
+        return -1;
+
+    for (i = 0; i < nregex; i++) {
+        err = regcomp(&reg[i], regex[i], REG_EXTENDED);
+        if (err != 0) {
+            char error[100];
+            regerror(err, &reg[i], error, sizeof(error));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to compile regex %s"), error);
+            for (j = 0; j < i; j++)
+                regfree(&reg[j]);
+            VIR_FREE(reg);
+            return -1;
+        }
+
+        totgroups += nvars[i];
+        if (nvars[i] > maxvars)
+            maxvars = nvars[i];
+
+    }
+
+    /* Storage for matched variables */
+    if (VIR_ALLOC_N(groups, totgroups) < 0)
+        goto cleanup;
+    if (VIR_ALLOC_N(vars, maxvars+1) < 0)
+        goto cleanup;
+
+    virCommandSetOutputFD(cmd, &fd);
+    if (virCommandRunAsync(cmd, NULL) < 0) {
+        goto cleanup;
+    }
+
+    if ((list = VIR_FDOPEN(fd, "r")) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("cannot read fd"));
+        goto cleanup;
+    }
+
+    while (fgets(line, sizeof(line), list) != NULL) {
+        char *p = NULL;
+        /* Strip trailing newline */
+        int len = strlen(line);
+        if (len && line[len-1] == '\n')
+            line[len-1] = '\0';
+
+        /* ignore any command prefix */
+        if (prefix)
+            p = STRSKIP(line, prefix);
+        if (!p)
+            p = line;
+
+        for (i = 0; i <= maxReg && i < nregex; i++) {
+            if (regexec(&reg[i], p, nvars[i]+1, vars, 0) == 0) {
+                maxReg++;
+
+                if (i == 0)
+                    ngroup = 0;
+
+                /* NULL terminate each captured group in the line */
+                for (j = 0; j < nvars[i]; j++) {
+                    /* NB vars[0] is the full pattern, so we offset j by 1 */
+                    p[vars[j+1].rm_eo] = '\0';
+                    if (VIR_STRDUP(groups[ngroup++], p + vars[j+1].rm_so) < 0)
+                        goto cleanup;
+                }
+
+                /* We're matching on the last regex, so callback time */
+                if (i == (nregex-1)) {
+                    if (((*func)(groups, data)) < 0)
+                        goto cleanup;
+
+                    /* Release matches & restart to matching the first regex */
+                    for (j = 0; j < totgroups; j++)
+                        VIR_FREE(groups[j]);
+                    maxReg = 0;
+                    ngroup = 0;
+                }
+            }
+        }
+    }
+
+    ret = virCommandWait(cmd, NULL);
+cleanup:
+    if (groups) {
+        for (j = 0; j < totgroups; j++)
+            VIR_FREE(groups[j]);
+        VIR_FREE(groups);
+    }
+    VIR_FREE(vars);
+
+    for (i = 0; i < nregex; i++)
+        regfree(&reg[i]);
+
+    VIR_FREE(reg);
+
+    VIR_FORCE_FCLOSE(list);
+    VIR_FORCE_CLOSE(fd);
+
+    return ret;
+}
+
+/*
+ * Run an external program and read from its standard output
+ * a stream of tokens from IN_STREAM, applying FUNC to
+ * each successive sequence of N_COLUMNS tokens.
+ * If FUNC returns < 0, stop processing input and return -1.
+ * Return -1 if N_COLUMNS == 0.
+ * Return -1 upon memory allocation error.
+ * If the number of input tokens is not a multiple of N_COLUMNS,
+ * then the final FUNC call will specify a number smaller than N_COLUMNS.
+ * If there are no input tokens (empty input), call FUNC with N_COLUMNS == 0.
+ */
+int
+virCommandRunNul(virCommandPtr cmd,
+                 size_t n_columns,
+                 virCommandRunNulFunc func,
+                 void *data)
+{
+    size_t n_tok = 0;
+    int fd = -1;
+    FILE *fp = NULL;
+    char **v;
+    int ret = -1;
+    size_t i;
+
+    if (n_columns == 0)
+        return -1;
+
+    if (VIR_ALLOC_N(v, n_columns) < 0)
+        return -1;
+    for (i = 0; i < n_columns; i++)
+        v[i] = NULL;
+
+    virCommandSetOutputFD(cmd, &fd);
+    if (virCommandRunAsync(cmd, NULL) < 0) {
+        goto cleanup;
+    }
+
+    if ((fp = VIR_FDOPEN(fd, "r")) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("cannot open file using fd"));
+        goto cleanup;
+    }
+
+    while (1) {
+        char *buf = NULL;
+        size_t buf_len = 0;
+        /* Be careful: even when it returns -1,
+           this use of getdelim allocates memory.  */
+        ssize_t tok_len = getdelim(&buf, &buf_len, 0, fp);
+        v[n_tok] = buf;
+        if (tok_len < 0) {
+            /* Maybe EOF, maybe an error.
+               If n_tok > 0, then we know it's an error.  */
+            if (n_tok && func(n_tok, v, data) < 0)
+                goto cleanup;
+            break;
+        }
+        ++n_tok;
+        if (n_tok == n_columns) {
+            if (func(n_tok, v, data) < 0)
+                goto cleanup;
+            n_tok = 0;
+            for (i = 0; i < n_columns; i++) {
+                VIR_FREE(v[i]);
+            }
+        }
+    }
+
+    if (feof(fp) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("read error on pipe"));
+        goto cleanup;
+    }
+
+    ret = virCommandWait(cmd, NULL);
+ cleanup:
+    for (i = 0; i < n_columns; i++)
+        VIR_FREE(v[i]);
+    VIR_FREE(v);
+
+    VIR_FORCE_FCLOSE(fp);
+    VIR_FORCE_CLOSE(fd);
+
+    return ret;
+}
+
+#else /* WIN32 */
+
+int
+virCommandRunRegex(virCommandPtr cmd ATTRIBUTE_UNUSED,
+                   int nregex ATTRIBUTE_UNUSED,
+                   const char **regex ATTRIBUTE_UNUSED,
+                   int *nvars ATTRIBUTE_UNUSED,
+                   virCommandRunRegexFunc func ATTRIBUTE_UNUSED,
+                   void *data ATTRIBUTE_UNUSED,
+                   const char *prefix ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("%s not implemented on Win32"), __FUNCTION__);
+    return -1;
+}
+
+int
+virCommandRunNul(virCommandPtr cmd ATTRIBUTE_UNUSED,
+                 size_t n_columns ATTRIBUTE_UNUSED,
+                 virCommandRunNulFunc func ATTRIBUTE_UNUSED,
+                 void *data ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("%s not implemented on Win32"), __FUNCTION__);
+    return -1;
+}
+#endif /* WIN32 */

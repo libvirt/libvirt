@@ -1113,6 +1113,8 @@ virCommandRawStatus;
 virCommandRequireHandshake;
 virCommandRun;
 virCommandRunAsync;
+virCommandRunNul;
+virCommandRunRegex;
 virCommandSetAppArmorProfile;
 virCommandSetDryRun;
 virCommandSetErrorBuffer;
