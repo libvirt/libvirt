@@ -299,7 +299,8 @@ error:
 
 
 static virDomainPtr openvzDomainLookupByID(virConnectPtr conn,
-                                           int id) {
+                                           int id)
+{
     struct openvz_driver *driver = conn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
@@ -323,7 +324,8 @@ cleanup:
     return dom;
 }
 
-static int openvzConnectGetVersion(virConnectPtr conn, unsigned long *version) {
+static int openvzConnectGetVersion(virConnectPtr conn, unsigned long *version)
+{
     struct  openvz_driver *driver = conn->privateData;
     openvzDriverLock(driver);
     *version = driver->version;
@@ -363,7 +365,8 @@ cleanup:
 
 
 static virDomainPtr openvzDomainLookupByUUID(virConnectPtr conn,
-                                             const unsigned char *uuid) {
+                                             const unsigned char *uuid)
+{
     struct  openvz_driver *driver = conn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
@@ -388,7 +391,8 @@ cleanup:
 }
 
 static virDomainPtr openvzDomainLookupByName(virConnectPtr conn,
-                                             const char *name) {
+                                             const char *name)
+{
     struct openvz_driver *driver = conn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
@@ -413,7 +417,8 @@ cleanup:
 }
 
 static int openvzDomainGetInfo(virDomainPtr dom,
-                               virDomainInfoPtr info) {
+                               virDomainInfoPtr info)
+{
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int state;
@@ -579,7 +584,8 @@ static void openvzSetProgramSentinal(const char **prog, const char *key)
     }
 }
 
-static int openvzDomainSuspend(virDomainPtr dom) {
+static int openvzDomainSuspend(virDomainPtr dom)
+{
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     const char *prog[] = {VZCTL, "--quiet", "chkpnt", PROGRAM_SENTINEL, "--suspend", NULL};
@@ -617,7 +623,8 @@ cleanup:
     return ret;
 }
 
-static int openvzDomainResume(virDomainPtr dom) {
+static int openvzDomainResume(virDomainPtr dom)
+{
   struct openvz_driver *driver = dom->conn->privateData;
   virDomainObjPtr vm;
   const char *prog[] = {VZCTL, "--quiet", "chkpnt", PROGRAM_SENTINEL, "--resume", NULL};
@@ -657,7 +664,8 @@ cleanup:
 
 static int
 openvzDomainShutdownFlags(virDomainPtr dom,
-                          unsigned int flags) {
+                          unsigned int flags)
+{
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     const char *prog[] = {VZCTL, "--quiet", "stop", PROGRAM_SENTINEL, NULL};
@@ -1476,7 +1484,8 @@ cleanup:
     return VIR_DRV_OPEN_ERROR;
 };
 
-static int openvzConnectClose(virConnectPtr conn) {
+static int openvzConnectClose(virConnectPtr conn)
+{
     struct openvz_driver *driver = conn->privateData;
 
     openvzFreeDriver(driver);
@@ -1489,12 +1498,14 @@ static const char *openvzConnectGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
     return "OpenVZ";
 }
 
-static int openvzConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED) {
+static int openvzConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
     /* Encryption is not relevant / applicable to way we talk to openvz */
     return 0;
 }
 
-static int openvzConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED) {
+static int openvzConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
     /* We run CLI tools directly so this is secure */
     return 1;
 }
@@ -1517,7 +1528,8 @@ static char *openvzConnectGetCapabilities(virConnectPtr conn) {
 }
 
 static int openvzConnectListDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                    int *ids, int nids) {
+                                    int *ids, int nids)
+{
     int got = 0;
     int veid;
     int outfd = -1;
@@ -1559,7 +1571,8 @@ cleanup:
     return rc;
 }
 
-static int openvzConnectNumOfDomains(virConnectPtr conn) {
+static int openvzConnectNumOfDomains(virConnectPtr conn)
+{
     struct openvz_driver *driver = conn->privateData;
     int n;
 
@@ -1671,7 +1684,8 @@ Version: 2.2
     return 0;
 }
 
-static int openvzConnectNumOfDefinedDomains(virConnectPtr conn) {
+static int openvzConnectNumOfDefinedDomains(virConnectPtr conn)
+{
     struct openvz_driver *driver =  conn->privateData;
     int n;
 
@@ -2240,7 +2254,8 @@ static virDriver openvzDriver = {
     .domainGetHostname = openvzDomainGetHostname, /* 0.10.0 */
 };
 
-int openvzRegister(void) {
+int openvzRegister(void)
+{
     if (virRegisterDriver(&openvzDriver) < 0)
         return -1;
     return 0;

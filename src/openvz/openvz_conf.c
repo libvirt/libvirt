@@ -205,7 +205,8 @@ no_memory:
 
 int
 openvzReadNetworkConf(virDomainDefPtr def,
-                      int veid) {
+                      int veid)
+{
     int ret;
     virDomainNetDefPtr net = NULL;
     char *temp = NULL;
@@ -378,7 +379,8 @@ openvz_replace(const char* str,
 
 static int
 openvzReadFSConf(virDomainDefPtr def,
-                 int veid) {
+                 int veid)
+{
     int ret;
     virDomainFSDefPtr fs = NULL;
     char *veid_str = NULL;
@@ -545,7 +547,8 @@ openvzFreeDriver(struct openvz_driver *driver)
 
 
 
-int openvzLoadDomains(struct openvz_driver *driver) {
+int openvzLoadDomains(struct openvz_driver *driver)
+{
     int veid, ret;
     char *status;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -1063,7 +1066,8 @@ cleanup:
 }
 
 static int
-openvzSetUUID(int vpsid){
+openvzSetUUID(int vpsid)
+{
     unsigned char uuid[VIR_UUID_BUFLEN];
 
     if (virUUIDGenerate(uuid)) {
@@ -1128,7 +1132,8 @@ static int openvzAssignUUIDs(void)
  *
  */
 
-int openvzGetVEID(const char *name) {
+int openvzGetVEID(const char *name)
+{
     virCommandPtr cmd;
     char *outbuf;
     char *temp;
