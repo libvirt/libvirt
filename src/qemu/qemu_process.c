@@ -448,7 +448,8 @@ qemuProcessGetVolumeQcowPassphrase(virConnectPtr conn,
         enc->secrets[0]->type !=
         VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("invalid <encryption> for volume %s"), disk->src);
+                       _("invalid <encryption> for volume %s"),
+                       virDomainDiskGetSource(disk));
         goto cleanup;
     }
 
@@ -467,7 +468,7 @@ qemuProcessGetVolumeQcowPassphrase(virConnectPtr conn,
         VIR_FREE(data);
         virReportError(VIR_ERR_XML_ERROR,
                        _("format='qcow' passphrase for %s must not contain a "
-                         "'\\0'"), disk->src);
+                         "'\\0'"), virDomainDiskGetSource(disk));
         goto cleanup;
     }
 
@@ -958,7 +959,7 @@ qemuProcessHandleIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     disk = qemuProcessFindDomainDiskByAlias(vm, diskAlias);
 
     if (disk) {
-        srcPath = disk->src;
+        srcPath = virDomainDiskGetSource(disk);
         devAlias = disk->info.alias;
     } else {
         srcPath = "";
@@ -1015,7 +1016,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     disk = qemuProcessFindDomainDiskByAlias(vm, diskAlias);
 
     if (disk) {
-        path = disk->src;
+        path = virDomainDiskGetSource(disk);
         event = virDomainEventBlockJobNewFromObj(vm, path, type, status);
         /* XXX If we completed a block pull or commit, then recompute
          * the cached backing chain to match.  Better would be storing
@@ -2222,7 +2223,7 @@ qemuProcessInitPasswords(virConnectPtr conn,
             const char *alias;
 
             if (!vm->def->disks[i]->encryption ||
-                !vm->def->disks[i]->src)
+                !virDomainDiskGetSource(vm->def->disks[i]))
                 continue;
 
             if (qemuProcessGetVolumeQcowPassphrase(conn,

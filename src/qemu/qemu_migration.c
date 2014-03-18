@@ -1159,7 +1159,7 @@ qemuMigrationStartNBDServer(virQEMUDriverPtr driver,
         virDomainDiskDefPtr disk = vm->def->disks[i];
 
         /* skip shared, RO and source-less disks */
-        if (disk->shared || disk->readonly || !disk->src)
+        if (disk->shared || disk->readonly || !virDomainDiskGetSource(disk))
             continue;
 
         VIR_FREE(diskAlias);
@@ -1265,7 +1265,7 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
         virDomainBlockJobInfo info;
 
         /* skip shared, RO and source-less disks */
-        if (disk->shared || disk->readonly || !disk->src)
+        if (disk->shared || disk->readonly || !virDomainDiskGetSource(disk))
             continue;
 
         VIR_FREE(diskAlias);
@@ -1351,7 +1351,7 @@ error:
         virDomainDiskDefPtr disk = vm->def->disks[--lastGood];
 
         /* skip shared, RO disks */
-        if (disk->shared || disk->readonly || !disk->src)
+        if (disk->shared || disk->readonly || !virDomainDiskGetSource(disk))
             continue;
 
         VIR_FREE(diskAlias);
@@ -1414,7 +1414,7 @@ qemuMigrationCancelDriveMirror(qemuMigrationCookiePtr mig,
         virDomainDiskDefPtr disk = vm->def->disks[i];
 
         /* skip shared, RO and source-less disks */
-        if (disk->shared || disk->readonly || !disk->src)
+        if (disk->shared || disk->readonly || !virDomainDiskGetSource(disk))
             continue;
 
         VIR_FREE(diskAlias);
@@ -1523,21 +1523,22 @@ qemuMigrationIsSafe(virDomainDefPtr def)
 
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDefPtr disk = def->disks[i];
+        const char *src = virDomainDiskGetSource(disk);
 
         /* Our code elsewhere guarantees shared disks are either readonly (in
          * which case cache mode doesn't matter) or used with cache=none */
-        if (disk->src &&
+        if (src &&
             !disk->shared &&
             !disk->readonly &&
             disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
             int rc;
 
-            if (disk->type == VIR_DOMAIN_DISK_TYPE_FILE) {
-                if ((rc = virStorageFileIsSharedFS(disk->src)) < 0)
+            if (virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_FILE) {
+                if ((rc = virStorageFileIsSharedFS(src)) < 0)
                     return false;
                 else if (rc == 0)
                     continue;
-                if ((rc = virStorageFileIsClusterFS(disk->src)) < 0)
+                if ((rc = virStorageFileIsClusterFS(src)) < 0)
                     return false;
                 else if (rc == 1)
                     continue;

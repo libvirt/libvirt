@@ -872,10 +872,10 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
             /* assign default storage format and driver according to config */
             if (cfg->allowDiskFormatProbing) {
                 /* default disk format for drives */
-                if (disk->format == VIR_STORAGE_FILE_NONE &&
-                    (disk->type == VIR_DOMAIN_DISK_TYPE_FILE ||
-                     disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK))
-                    disk->format = VIR_STORAGE_FILE_AUTO;
+                if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&
+                    (virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_FILE ||
+                     virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_BLOCK))
+                    virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_AUTO);
 
                  /* default disk format for mirrored drive */
                 if (disk->mirror &&
@@ -883,15 +883,15 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                     disk->mirrorFormat = VIR_STORAGE_FILE_AUTO;
             } else {
                 /* default driver if probing is forbidden */
-                if (!disk->driverName &&
-                    VIR_STRDUP(disk->driverName, "qemu") < 0)
+                if (!virDomainDiskGetDriver(disk) &&
+                    virDomainDiskSetDriver(disk, "qemu") < 0)
                         goto cleanup;
 
                 /* default disk format for drives */
-                if (disk->format == VIR_STORAGE_FILE_NONE &&
-                    (disk->type == VIR_DOMAIN_DISK_TYPE_FILE ||
-                     disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK))
-                    disk->format = VIR_STORAGE_FILE_RAW;
+                if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&
+                    (virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_FILE ||
+                     virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_BLOCK))
+                    virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_RAW);
 
                  /* default disk format for mirrored drive */
                 if (disk->mirror &&
@@ -1697,8 +1697,9 @@ void qemuDomainObjCheckDiskTaint(virQEMUDriverPtr driver,
                                  int logFD)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int format = virDomainDiskGetFormat(disk);
 
-    if ((!disk->format || disk->format == VIR_STORAGE_FILE_AUTO) &&
+    if ((!format || format == VIR_STORAGE_FILE_AUTO) &&
         cfg->allowDiskFormatProbing)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_DISK_PROBING, logFD);
 
@@ -1939,8 +1940,9 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriverPtr driver,
     for (i = 0; i < ndisks; i++) {
         /* FIXME: we also need to handle LVM here */
         if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-            if (def->disks[i]->format > 0 &&
-                def->disks[i]->format != VIR_STORAGE_FILE_QCOW2) {
+            int format = virDomainDiskGetFormat(def->disks[i]);
+
+            if (format > 0 && format != VIR_STORAGE_FILE_QCOW2) {
                 if (try_all) {
                     /* Continue on even in the face of error, since other
                      * disks in this VM may have the same snapshot name.
@@ -1962,7 +1964,7 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriverPtr driver,
                 return -1;
             }
 
-            qemuimgarg[4] = def->disks[i]->src;
+            qemuimgarg[4] = virDomainDiskGetSource(def->disks[i]);
 
             if (virRun(qemuimgarg, NULL) < 0) {
                 if (try_all) {
@@ -2160,28 +2162,29 @@ qemuDomainCheckRemoveOptionalDisk(virQEMUDriverPtr driver,
     char uuid[VIR_UUID_STRING_BUFLEN];
     virObjectEventPtr event = NULL;
     virDomainDiskDefPtr del_disk = NULL;
+    const char *src = virDomainDiskGetSource(disk);
 
     virUUIDFormat(vm->def->uuid, uuid);
 
     VIR_DEBUG("Dropping disk '%s' on domain '%s' (UUID '%s') "
               "due to inaccessible source '%s'",
-              disk->dst, vm->def->name, uuid, disk->src);
+              disk->dst, vm->def->name, uuid, src);
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ||
         disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
 
-        event = virDomainEventDiskChangeNewFromObj(vm, disk->src, NULL,
+        event = virDomainEventDiskChangeNewFromObj(vm, src, NULL,
                                                    disk->info.alias,
                                                    VIR_DOMAIN_EVENT_DISK_CHANGE_MISSING_ON_START);
-        VIR_FREE(disk->src);
+        ignore_value(virDomainDiskSetSource(disk, NULL));
     } else {
-        event = virDomainEventDiskChangeNewFromObj(vm, disk->src, NULL,
+        event = virDomainEventDiskChangeNewFromObj(vm, src, NULL,
                                                    disk->info.alias,
                                                    VIR_DOMAIN_EVENT_DISK_DROP_MISSING_ON_START);
 
-        if (!(del_disk = virDomainDiskRemoveByName(vm->def, disk->src))) {
+        if (!(del_disk = virDomainDiskRemoveByName(vm->def, src))) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("no source device %s"), disk->src);
+                           _("no source device %s"), src);
             return -1;
         }
         virDomainDiskDefFree(del_disk);
@@ -2244,7 +2247,7 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
     for (i = vm->def->ndisks; i > 0; i--) {
         disk = vm->def->disks[i - 1];
 
-        if (!disk->src)
+        if (!virDomainDiskGetSource(disk))
             continue;
 
         if (qemuDomainDetermineDiskChain(driver, vm, disk, false) >= 0 &&
@@ -2339,7 +2342,7 @@ qemuDiskChainCheckBroken(virDomainDiskDefPtr disk)
 {
     char *brokenFile = NULL;
 
-    if (!disk->src || !disk->backingChain)
+    if (!virDomainDiskGetSource(disk) || !disk->backingChain)
         return 0;
 
     if (virStorageFileChainGetBroken(disk->backingChain, &brokenFile) < 0)
@@ -2348,7 +2351,7 @@ qemuDiskChainCheckBroken(virDomainDiskDefPtr disk)
     if (brokenFile) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Backing file '%s' of image '%s' is missing."),
-                       brokenFile, disk->src);
+                       brokenFile, virDomainDiskGetSource(disk));
         VIR_FREE(brokenFile);
         return -1;
     }
@@ -2397,10 +2400,12 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
     int ret = 0;
     uid_t uid;
     gid_t gid;
+    const char *src = virDomainDiskGetSource(disk);
+    int type = virDomainDiskGetType(disk);
 
-    if (!disk->src ||
-        disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK ||
-        disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME)
+    if (!src ||
+        type == VIR_DOMAIN_DISK_TYPE_NETWORK ||
+        type == VIR_DOMAIN_DISK_TYPE_VOLUME)
         goto cleanup;
 
     if (disk->backingChain) {
@@ -2414,7 +2419,8 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 
     qemuDomainGetImageIds(cfg, vm, disk, &uid, &gid);
 
-    disk->backingChain = virStorageFileGetMetadata(disk->src, disk->format,
+    disk->backingChain = virStorageFileGetMetadata(src,
+                                                   virDomainDiskGetFormat(disk),
                                                    uid, gid,
                                                    cfg->allowDiskFormatProbing);
     if (!disk->backingChain)

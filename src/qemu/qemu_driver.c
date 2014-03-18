@@ -6546,7 +6546,7 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
     if (ret != 0 &&
         qemuTeardownDiskCgroup(vm, disk) < 0)
         VIR_WARN("Failed to teardown cgroup for disk path %s",
-                 NULLSTR(disk->src));
+                 NULLSTR(virDomainDiskGetSource(disk)));
 
 end:
     virObjectUnref(caps);
@@ -10301,13 +10301,13 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         goto cleanup;
     }
     disk = vm->def->disks[idx];
-    if (!disk->src) {
+    path = virDomainDiskGetSource(disk);
+    if (!path) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("disk %s does not currently have a source assigned"),
                        path);
         goto cleanup;
     }
-    path = disk->src;
 
     /* The path is correct, now try to open it and get its size. */
     fd = qemuOpenFile(driver, vm, path, O_RDONLY, NULL, NULL);
@@ -10315,18 +10315,18 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         goto cleanup;
 
     /* Probe for magic formats */
-    if (disk->format) {
-        format = disk->format;
+    if (virDomainDiskGetFormat(disk)) {
+        format = virDomainDiskGetFormat(disk);
     } else {
         if (cfg->allowDiskFormatProbing) {
-            if ((format = virStorageFileProbeFormat(disk->src,
+            if ((format = virStorageFileProbeFormat(path,
                                                     cfg->user,
                                                     cfg->group)) < 0)
                 goto cleanup;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("no disk format for %s and probing is disabled"),
-                           disk->src);
+                           path);
             goto cleanup;
         }
     }
@@ -10377,7 +10377,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     /* ..but if guest is not using raw disk format and on a block device,
      * then query highest allocated extent from QEMU
      */
-    if (disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK &&
+    if (virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_BLOCK &&
         format != VIR_STORAGE_FILE_RAW &&
         S_ISBLK(sb.st_mode)) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -14659,7 +14659,7 @@ qemuDiskPathToAlias(virDomainObjPtr vm, const char *path, int *idxret)
     if (idxret)
         *idxret = idx;
 
-    if (disk->src) {
+    if (virDomainDiskGetSource(disk)) {
         if (virAsprintf(&ret, "drive-%s", disk->info.alias) < 0)
             return NULL;
     }
