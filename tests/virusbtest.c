@@ -137,7 +137,8 @@ cleanup:
 static int
 testCheckNdevs(const char* occasion,
                size_t got,
-               size_t expected) {
+               size_t expected)
+{
     if (got != expected) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s: got %zu devices, expected %zu",

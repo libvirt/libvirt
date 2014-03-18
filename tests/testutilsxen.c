@@ -7,7 +7,8 @@
 #include "domain_conf.h"
 
 
-virCapsPtr testXenCapsInit(void) {
+virCapsPtr testXenCapsInit(void)
+{
     struct utsname utsname;
     virCapsPtr caps;
     virCapsGuestPtr guest;

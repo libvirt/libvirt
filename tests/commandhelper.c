@@ -1,7 +1,7 @@
 /*
  * commandhelper.c: Auxiliary program for commandtest
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,7 +37,8 @@
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
-static int envsort(const void *a, const void *b) {
+static int envsort(const void *a, const void *b)
+{
     const char *const*astrptr = a;
     const char *const*bstrptr = b;
     const char *astr = *astrptr;

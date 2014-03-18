@@ -36,7 +36,8 @@ static int blankProblemElements(char *data)
 
 static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdfile,
-                                     bool expect_warning) {
+                                     bool expect_warning)
+{
     char *expectxml = NULL;
     char *actualxml = NULL;
     char *cmd = NULL;

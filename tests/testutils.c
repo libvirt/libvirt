@@ -362,7 +362,8 @@ virtTestLoadFile(const char *file, char **buf)
 #ifndef WIN32
 static
 void virtTestCaptureProgramExecChild(const char *const argv[],
-                                     int pipefd) {
+                                     int pipefd)
+{
     size_t i;
     int open_max;
     int stdinfd = -1;
@@ -629,7 +630,8 @@ virtTestLogContentAndReset(void)
 
 
 static unsigned int
-virTestGetFlag(const char *name) {
+virTestGetFlag(const char *name)
+{
     char *flagStr;
     unsigned int flag;
 
@@ -643,21 +645,24 @@ virTestGetFlag(const char *name) {
 }
 
 unsigned int
-virTestGetDebug(void) {
+virTestGetDebug(void)
+{
     if (testDebug == -1)
         testDebug = virTestGetFlag("VIR_TEST_DEBUG");
     return testDebug;
 }
 
 unsigned int
-virTestGetVerbose(void) {
+virTestGetVerbose(void)
+{
     if (testVerbose == -1)
         testVerbose = virTestGetFlag("VIR_TEST_VERBOSE");
     return testVerbose || virTestGetDebug();
 }
 
 unsigned int
-virTestGetExpensive(void) {
+virTestGetExpensive(void)
+{
     if (testExpensive == -1)
         testExpensive = virTestGetFlag("VIR_TEST_EXPENSIVE");
     return testExpensive;

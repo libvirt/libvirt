@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011, 2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,7 +38,8 @@ static void shunloadError(void *userData ATTRIBUTE_UNUSED,
 
 int shunloadStart(void);
 
-int shunloadStart(void) {
+int shunloadStart(void)
+{
     virConnectPtr conn;
 
     virSetErrorFunc(NULL, shunloadError);

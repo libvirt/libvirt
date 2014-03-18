@@ -203,7 +203,8 @@ error:
     return -1;
 }
 
-virCapsPtr testQemuCapsInit(void) {
+virCapsPtr testQemuCapsInit(void)
+{
     virCapsPtr caps;
     virCapsGuestPtr guest;
     virCapsGuestMachinePtr *machines = NULL;
