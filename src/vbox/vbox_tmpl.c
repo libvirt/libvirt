@@ -284,17 +284,20 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml);
 static int vboxDomainCreate(virDomainPtr dom);
 static int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags);
 
-static void vboxDriverLock(vboxGlobalData *data) {
+static void vboxDriverLock(vboxGlobalData *data)
+{
     virMutexLock(&data->lock);
 }
 
-static void vboxDriverUnlock(vboxGlobalData *data) {
+static void vboxDriverUnlock(vboxGlobalData *data)
+{
     virMutexUnlock(&data->lock);
 }
 
 #if VBOX_API_VERSION == 2002000
 
-static void nsIDtoChar(unsigned char *uuid, const nsID *iid) {
+static void nsIDtoChar(unsigned char *uuid, const nsID *iid)
+{
     char uuidstrsrc[VIR_UUID_STRING_BUFLEN];
     char uuidstrdst[VIR_UUID_STRING_BUFLEN];
     unsigned char uuidinterim[VIR_UUID_BUFLEN];
@@ -334,7 +337,8 @@ static void nsIDtoChar(unsigned char *uuid, const nsID *iid) {
     ignore_value(virUUIDParse(uuidstrdst, uuid));
 }
 
-static void nsIDFromChar(nsID *iid, const unsigned char *uuid) {
+static void nsIDFromChar(nsID *iid, const unsigned char *uuid)
+{
     char uuidstrsrc[VIR_UUID_STRING_BUFLEN];
     char uuidstrdst[VIR_UUID_STRING_BUFLEN];
     unsigned char uuidinterim[VIR_UUID_BUFLEN];
@@ -621,7 +625,8 @@ static char *vboxGenerateMediumName(PRUint32  storageBus,
                                     PRInt32   devicePort,
                                     PRInt32   deviceSlot,
                                     PRUint32 *aMaxPortPerInst,
-                                    PRUint32 *aMaxSlotPerPort) {
+                                    PRUint32 *aMaxSlotPerPort)
+{
     const char *prefix = NULL;
     char *name  = NULL;
     int   total = 0;
@@ -734,7 +739,8 @@ static bool vboxGetDeviceDetails(const char *deviceName,
 
 static bool vboxGetMaxPortSlotValues(IVirtualBox *vbox,
                                      PRUint32 *maxPortPerInst,
-                                     PRUint32 *maxSlotPerPort) {
+                                     PRUint32 *maxSlotPerPort)
+{
     ISystemProperties *sysProps = NULL;
 
     if (!vbox)
@@ -779,7 +785,8 @@ static bool vboxGetMaxPortSlotValues(IVirtualBox *vbox,
 /**
  * Converts Utf-16 string to int
  */
-static int PRUnicharToInt(PRUnichar *strUtf16) {
+static int PRUnicharToInt(PRUnichar *strUtf16)
+{
     char *strUtf8 = NULL;
     int ret = 0;
 
@@ -957,7 +964,8 @@ cleanup:
     return -1;
 }
 
-static int vboxExtractVersion(vboxGlobalData *data) {
+static int vboxExtractVersion(vboxGlobalData *data)
+{
     int ret = -1;
     PRUnichar *versionUtf16 = NULL;
     nsresult rc;
@@ -985,7 +993,8 @@ static int vboxExtractVersion(vboxGlobalData *data) {
     return ret;
 }
 
-static void vboxUninitialize(vboxGlobalData *data) {
+static void vboxUninitialize(vboxGlobalData *data)
+{
     if (!data)
         return;
 
@@ -1078,7 +1087,8 @@ static virDrvOpenStatus vboxConnectOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int vboxConnectClose(virConnectPtr conn) {
+static int vboxConnectClose(virConnectPtr conn)
+{
     vboxGlobalData *data = conn->privateData;
     VIR_DEBUG("%s: in vboxClose", conn->driver->name);
 
@@ -1088,7 +1098,8 @@ static int vboxConnectClose(virConnectPtr conn) {
     return 0;
 }
 
-static int vboxConnectGetVersion(virConnectPtr conn, unsigned long *version) {
+static int vboxConnectGetVersion(virConnectPtr conn, unsigned long *version)
+{
     vboxGlobalData *data = conn->privateData;
     VIR_DEBUG("%s: in vboxGetVersion", conn->driver->name);
 
@@ -1106,12 +1117,14 @@ static char *vboxConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
 }
 
 
-static int vboxConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED) {
+static int vboxConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
     /* Driver is using local, non-network based transport */
     return 1;
 }
 
-static int vboxConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED) {
+static int vboxConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
     /* No encryption is needed, or used on the local transport*/
     return 0;
 }
@@ -1121,7 +1134,9 @@ static int vboxConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
     return 1;
 }
 
-static int vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED) {
+static int
+vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
+{
     VBOX_OBJECT_CHECK(conn, int, -1);
     PRUint32 maxCPUCount = 0;
 
@@ -1153,7 +1168,8 @@ static char *vboxConnectGetCapabilities(virConnectPtr conn) {
     return ret;
 }
 
-static int vboxConnectListDomains(virConnectPtr conn, int *ids, int nids) {
+static int vboxConnectListDomains(virConnectPtr conn, int *ids, int nids)
+{
     VBOX_OBJECT_CHECK(conn, int, -1);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
     PRUint32 state;
@@ -1191,7 +1207,8 @@ cleanup:
     return ret;
 }
 
-static int vboxConnectNumOfDomains(virConnectPtr conn) {
+static int vboxConnectNumOfDomains(virConnectPtr conn)
+{
     VBOX_OBJECT_CHECK(conn, int, -1);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
     PRUint32 state;
@@ -1227,7 +1244,8 @@ cleanup:
 }
 
 static virDomainPtr vboxDomainCreateXML(virConnectPtr conn, const char *xml,
-                                        unsigned int flags) {
+                                        unsigned int flags)
+{
     /* VirtualBox currently doesn't have support for running
      * virtual machines without actually defining them and thus
      * for time being just define new machine and start it.
@@ -1253,7 +1271,8 @@ static virDomainPtr vboxDomainCreateXML(virConnectPtr conn, const char *xml,
     return dom;
 }
 
-static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id) {
+static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id)
+{
     VBOX_OBJECT_CHECK(conn, virDomainPtr, NULL);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
     vboxIID iid = VBOX_IID_INITIALIZER;
@@ -1320,7 +1339,9 @@ static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id) {
     return ret;
 }
 
-static virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid) {
+static virDomainPtr
+vboxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
+{
     VBOX_OBJECT_CHECK(conn, virDomainPtr, NULL);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
     vboxIID iid = VBOX_IID_INITIALIZER;
@@ -1391,7 +1412,9 @@ static virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn, const unsigned ch
     return ret;
 }
 
-static virDomainPtr vboxDomainLookupByName(virConnectPtr conn, const char *name) {
+static virDomainPtr
+vboxDomainLookupByName(virConnectPtr conn, const char *name)
+{
     VBOX_OBJECT_CHECK(conn, virDomainPtr, NULL);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
     vboxIID iid = VBOX_IID_INITIALIZER;
@@ -1460,7 +1483,8 @@ static virDomainPtr vboxDomainLookupByName(virConnectPtr conn, const char *name)
 }
 
 
-static int vboxDomainIsActive(virDomainPtr dom) {
+static int vboxDomainIsActive(virDomainPtr dom)
+{
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
     vboxIID iid = VBOX_IID_INITIALIZER;
@@ -1552,7 +1576,8 @@ cleanup:
 }
 
 
-static int vboxDomainIsUpdated(virDomainPtr dom ATTRIBUTE_UNUSED) {
+static int vboxDomainIsUpdated(virDomainPtr dom ATTRIBUTE_UNUSED)
+{
     /* VBox domains never have a persistent state that differs from
      * current state.  However, we do want to check for existence.  */
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
@@ -1576,7 +1601,8 @@ cleanup:
     return ret;
 }
 
-static int vboxDomainSuspend(virDomainPtr dom) {
+static int vboxDomainSuspend(virDomainPtr dom)
+{
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
     vboxIID iid = VBOX_IID_INITIALIZER;
@@ -1627,7 +1653,8 @@ cleanup:
     return ret;
 }
 
-static int vboxDomainResume(virDomainPtr dom) {
+static int vboxDomainResume(virDomainPtr dom)
+{
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
     vboxIID iid = VBOX_IID_INITIALIZER;
@@ -1680,7 +1707,8 @@ cleanup:
 }
 
 static int vboxDomainShutdownFlags(virDomainPtr dom,
-                                   unsigned int flags) {
+                                   unsigned int flags)
+{
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
     vboxIID iid = VBOX_IID_INITIALIZER;
@@ -1732,7 +1760,8 @@ cleanup:
     return ret;
 }
 
-static int vboxDomainShutdown(virDomainPtr dom) {
+static int vboxDomainShutdown(virDomainPtr dom)
+{
     return vboxDomainShutdownFlags(dom, 0);
 }
 
@@ -1866,7 +1895,8 @@ static char *vboxDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
     return osType;
 }
 
-static int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory) {
+static int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory)
+{
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
     vboxIID iid = VBOX_IID_INITIALIZER;
@@ -1922,7 +1952,8 @@ cleanup:
     return ret;
 }
 
-static virDomainState vboxConvertState(enum MachineState state) {
+static virDomainState vboxConvertState(enum MachineState state)
+{
     switch (state) {
         case MachineState_Running:
             return VIR_DOMAIN_RUNNING;
@@ -1943,7 +1974,8 @@ static virDomainState vboxConvertState(enum MachineState state) {
     }
 }
 
-static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info) {
+static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
+{
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
     char *machineName    = NULL;
@@ -2058,7 +2090,8 @@ cleanup:
     return ret;
 }
 
-static int vboxDomainSave(virDomainPtr dom, const char *path ATTRIBUTE_UNUSED) {
+static int vboxDomainSave(virDomainPtr dom, const char *path ATTRIBUTE_UNUSED)
+{
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IConsole *console    = NULL;
     vboxIID iid = VBOX_IID_INITIALIZER;
@@ -3510,7 +3543,8 @@ cleanup:
     return ret;
 }
 
-static int vboxConnectNumOfDefinedDomains(virConnectPtr conn) {
+static int vboxConnectNumOfDefinedDomains(virConnectPtr conn)
+{
     VBOX_OBJECT_CHECK(conn, int, -1);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
     PRUint32 state       = MachineState_Null;
@@ -3711,7 +3745,8 @@ vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine,
     return ret;
 }
 
-static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags) {
+static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
+{
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
     unsigned char uuid[VIR_UUID_BUFLEN] = {0};
@@ -3778,7 +3813,8 @@ cleanup:
     return ret;
 }
 
-static int vboxDomainCreate(virDomainPtr dom) {
+static int vboxDomainCreate(virDomainPtr dom)
+{
     return vboxDomainCreateWithFlags(dom, 0);
 }
 
@@ -5064,7 +5100,8 @@ vboxAttachSharedFolder(virDomainDefPtr def, vboxGlobalData *data, IMachine *mach
     }
 }
 
-static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
+static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml)
+{
     VBOX_OBJECT_CHECK(conn, virDomainPtr, NULL);
     IMachine       *machine     = NULL;
     IBIOSSettings  *bios        = NULL;
@@ -5438,7 +5475,8 @@ vboxDomainUndefine(virDomainPtr dom)
 
 static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
                                       const char *xml,
-                                      int mediaChangeOnly ATTRIBUTE_UNUSED) {
+                                      int mediaChangeOnly ATTRIBUTE_UNUSED)
+{
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
     vboxIID iid = VBOX_IID_INITIALIZER;
@@ -5633,7 +5671,8 @@ cleanup:
     return ret;
 }
 
-static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
+static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml)
+{
     return vboxDomainAttachDeviceImpl(dom, xml, 0);
 }
 
@@ -5653,7 +5692,8 @@ vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
 }
 
 static int vboxDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
-                                       unsigned int flags) {
+                                       unsigned int flags)
+{
     virCheckFlags(VIR_DOMAIN_AFFECT_CURRENT |
                   VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -5667,7 +5707,8 @@ static int vboxDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
     return vboxDomainAttachDeviceImpl(dom, xml, 1);
 }
 
-static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
+static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
+{
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
     vboxIID iid = VBOX_IID_INITIALIZER;
@@ -7284,7 +7325,8 @@ static IVirtualBoxCallback *vboxAllocCallbackObj(void) {
 static void vboxReadCallback(int watch ATTRIBUTE_UNUSED,
                              int fd,
                              int events ATTRIBUTE_UNUSED,
-                             void *opaque ATTRIBUTE_UNUSED) {
+                             void *opaque ATTRIBUTE_UNUSED)
+{
     if (fd >= 0) {
         g_pVBoxGlobalData->vboxQueue->vtbl->ProcessPendingEvents(g_pVBoxGlobalData->vboxQueue);
     } else {
@@ -7399,7 +7441,8 @@ static int vboxConnectDomainEventRegisterAny(virConnectPtr conn,
                                              int eventID,
                                              virConnectDomainEventGenericCallback callback,
                                              void *opaque,
-                                             virFreeCallback freecb) {
+                                             virFreeCallback freecb)
+{
     VBOX_OBJECT_CHECK(conn, int, -1);
     int vboxRet          = -1;
     nsresult rc;
@@ -7522,13 +7565,15 @@ cleanup:
     return VIR_DRV_OPEN_DECLINED;
 }
 
-static int vboxNetworkClose(virConnectPtr conn) {
+static int vboxNetworkClose(virConnectPtr conn)
+{
     VIR_DEBUG("network uninitialized");
     conn->networkPrivateData = NULL;
     return 0;
 }
 
-static int vboxConnectNumOfNetworks(virConnectPtr conn) {
+static int vboxConnectNumOfNetworks(virConnectPtr conn)
+{
     VBOX_OBJECT_HOST_CHECK(conn, int, 0);
     vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
     size_t i = 0;
@@ -7606,7 +7651,8 @@ static int vboxConnectListNetworks(virConnectPtr conn, char **const names, int n
     return ret;
 }
 
-static int vboxConnectNumOfDefinedNetworks(virConnectPtr conn) {
+static int vboxConnectNumOfDefinedNetworks(virConnectPtr conn)
+{
     VBOX_OBJECT_HOST_CHECK(conn, int, 0);
     vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
     size_t i = 0;
@@ -7728,7 +7774,9 @@ vboxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     return ret;
 }
 
-static virNetworkPtr vboxNetworkLookupByName(virConnectPtr conn, const char *name) {
+static virNetworkPtr
+vboxNetworkLookupByName(virConnectPtr conn, const char *name)
+{
     VBOX_OBJECT_HOST_CHECK(conn, virNetworkPtr, NULL);
     PRUnichar *nameUtf16                    = NULL;
     IHostNetworkInterface *networkInterface = NULL;
@@ -7764,7 +7812,9 @@ static virNetworkPtr vboxNetworkLookupByName(virConnectPtr conn, const char *nam
     return ret;
 }
 
-static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start) {
+static virNetworkPtr
+vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
+{
     VBOX_OBJECT_HOST_CHECK(conn, virNetworkPtr, NULL);
     PRUnichar *networkInterfaceNameUtf16    = NULL;
     char      *networkInterfaceNameUtf8     = NULL;
@@ -7970,15 +8020,19 @@ cleanup:
     return ret;
 }
 
-static virNetworkPtr vboxNetworkCreateXML(virConnectPtr conn, const char *xml) {
+static virNetworkPtr vboxNetworkCreateXML(virConnectPtr conn, const char *xml)
+{
     return vboxNetworkDefineCreateXML(conn, xml, true);
 }
 
-static virNetworkPtr vboxNetworkDefineXML(virConnectPtr conn, const char *xml) {
+static virNetworkPtr vboxNetworkDefineXML(virConnectPtr conn, const char *xml)
+{
     return vboxNetworkDefineCreateXML(conn, xml, false);
 }
 
-static int vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterface) {
+static int
+vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterface)
+{
     VBOX_OBJECT_HOST_CHECK(network->conn, int, -1);
     char *networkNameUtf8 = NULL;
     PRUnichar *networkInterfaceNameUtf16    = NULL;
@@ -8062,11 +8116,13 @@ cleanup:
     return ret;
 }
 
-static int vboxNetworkUndefine(virNetworkPtr network) {
+static int vboxNetworkUndefine(virNetworkPtr network)
+{
     return vboxNetworkUndefineDestroy(network, true);
 }
 
-static int vboxNetworkCreate(virNetworkPtr network) {
+static int vboxNetworkCreate(virNetworkPtr network)
+{
     VBOX_OBJECT_HOST_CHECK(network->conn, int, -1);
     char *networkNameUtf8 = NULL;
     PRUnichar *networkInterfaceNameUtf16    = NULL;
@@ -8133,7 +8189,8 @@ cleanup:
     return ret;
 }
 
-static int vboxNetworkDestroy(virNetworkPtr network) {
+static int vboxNetworkDestroy(virNetworkPtr network)
+{
     return vboxNetworkUndefineDestroy(network, false);
 }
 
@@ -8323,13 +8380,15 @@ static virDrvOpenStatus vboxStorageOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int vboxStorageClose(virConnectPtr conn) {
+static int vboxStorageClose(virConnectPtr conn)
+{
     VIR_DEBUG("vbox storage uninitialized");
     conn->storagePrivateData = NULL;
     return 0;
 }
 
-static int vboxConnectNumOfStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED) {
+static int vboxConnectNumOfStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
 
     /** Currently only one pool supported, the default one
      * given by ISystemProperties::defaultHardDiskFolder()
@@ -8348,7 +8407,9 @@ static int vboxConnectListStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED,
     return numActive;
 }
 
-static virStoragePoolPtr vboxStoragePoolLookupByName(virConnectPtr conn, const char *name) {
+static virStoragePoolPtr
+vboxStoragePoolLookupByName(virConnectPtr conn, const char *name)
+{
     virStoragePoolPtr ret = NULL;
 
     /** Current limitation of the function: since
@@ -8367,7 +8428,8 @@ static virStoragePoolPtr vboxStoragePoolLookupByName(virConnectPtr conn, const c
     return ret;
 }
 
-static int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool) {
+static int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
+{
     VBOX_OBJECT_CHECK(pool->conn, int, -1);
     vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
     PRUint32 hardDiskAccessible = 0;
@@ -8448,7 +8510,9 @@ static int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names
     return ret;
 }
 
-static virStorageVolPtr vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name) {
+static virStorageVolPtr
+vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name)
+{
     VBOX_OBJECT_CHECK(pool->conn, virStorageVolPtr, NULL);
     vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
     nsresult rc;
@@ -8511,7 +8575,9 @@ static virStorageVolPtr vboxStorageVolLookupByName(virStoragePoolPtr pool, const
     return ret;
 }
 
-static virStorageVolPtr vboxStorageVolLookupByKey(virConnectPtr conn, const char *key) {
+static virStorageVolPtr
+vboxStorageVolLookupByKey(virConnectPtr conn, const char *key)
+{
     VBOX_OBJECT_CHECK(conn, virStorageVolPtr, NULL);
     vboxIID hddIID = VBOX_IID_INITIALIZER;
     unsigned char uuid[VIR_UUID_BUFLEN];
@@ -8575,7 +8641,9 @@ static virStorageVolPtr vboxStorageVolLookupByKey(virConnectPtr conn, const char
     return ret;
 }
 
-static virStorageVolPtr vboxStorageVolLookupByPath(virConnectPtr conn, const char *path) {
+static virStorageVolPtr
+vboxStorageVolLookupByPath(virConnectPtr conn, const char *path)
+{
     VBOX_OBJECT_CHECK(conn, virStorageVolPtr, NULL);
     PRUnichar *hddPathUtf16 = NULL;
     IHardDisk *hardDisk     = NULL;
@@ -8928,7 +8996,9 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
     return ret;
 }
 
-static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info) {
+static int
+vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info)
+{
     VBOX_OBJECT_CHECK(vol->conn, int, -1);
     IHardDisk *hardDisk  = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];

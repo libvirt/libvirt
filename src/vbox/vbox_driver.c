@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright (C) 2008-2009 Sun Microsystems, Inc.
  *
  * This file is part of a free software library; you can redistribute
@@ -79,7 +79,8 @@ static virDriver vboxDriverDummy;
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
-int vboxRegister(void) {
+int vboxRegister(void)
+{
     virDriverPtr        driver;
     virNetworkDriverPtr networkDriver;
     virStorageDriverPtr storageDriver;
