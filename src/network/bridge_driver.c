@@ -740,10 +740,6 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
     int r, ret = -1;
     int nbleases = 0;
     size_t i;
-    char *record = NULL;
-    char *recordPort = NULL;
-    char *recordWeight = NULL;
-    char *recordPriority = NULL;
     virNetworkDNSDefPtr dns = &network->def->dns;
     virNetworkIpDefPtr tmpipdef, ipdef, ipv4def, ipv6def;
     bool ipv6SLAAC;
@@ -884,33 +880,57 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
     }
 
     for (i = 0; i < dns->nsrvs; i++) {
-        if (dns->srvs[i].service && dns->srvs[i].protocol) {
-            if (dns->srvs[i].port &&
-                virAsprintf(&recordPort, "%d", dns->srvs[i].port) < 0)
-                goto cleanup;
-            if (dns->srvs[i].priority &&
-                virAsprintf(&recordPriority, "%d", dns->srvs[i].priority) < 0)
-                goto cleanup;
-            if (dns->srvs[i].weight &&
-                virAsprintf(&recordWeight, "%d", dns->srvs[i].weight) < 0)
-                goto cleanup;
-
-            if (virAsprintf(&record, "%s.%s.%s,%s,%s,%s,%s",
-                            dns->srvs[i].service,
-                            dns->srvs[i].protocol,
-                            dns->srvs[i].domain ? dns->srvs[i].domain : "",
-                            dns->srvs[i].target ? dns->srvs[i].target : "",
-                            recordPort           ? recordPort           : "",
-                            recordPriority       ? recordPriority       : "",
-                            recordWeight         ? recordWeight         : "") < 0)
-                goto cleanup;
-
-            virBufferAsprintf(&configbuf, "srv-host=%s\n", record);
-            VIR_FREE(record);
-            VIR_FREE(recordPort);
-            VIR_FREE(recordWeight);
-            VIR_FREE(recordPriority);
+        /* service/protocol are required, and should have been validated
+         * by the parser.
+         */
+        if (!dns->srvs[i].service) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Missing required 'service' "
+                             "attribute in SRV record of network '%s'"),
+                           network->def->name);
+            goto cleanup;
         }
+        if (!dns->srvs[i].protocol) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Missing required 'service' "
+                             "attribute in SRV record of network '%s'"),
+                           network->def->name);
+            goto cleanup;
+        }
+        /* RFC2782 requires that service and protocol be preceded by
+         * an underscore.
+         */
+        virBufferAsprintf(&configbuf, "srv-host=_%s._%s",
+                          dns->srvs[i].service, dns->srvs[i].protocol);
+
+        /* domain is optional - it defaults to the domain of this network */
+        if (dns->srvs[i].domain)
+            virBufferAsprintf(&configbuf, ".%s", dns->srvs[i].domain);
+
+        /* If target is empty or ".", that means "the service is
+         * decidedly not available at this domain" (RFC2782). In that
+         * case, any port, priority, or weight is irrelevant.
+         */
+        if (dns->srvs[i].target && STRNEQ(dns->srvs[i].target, ".")) {
+
+            virBufferAsprintf(&configbuf, ",%s", dns->srvs[i].target);
+            /* port, priority, and weight are optional, but are
+             * identified by their position in the line. If an item is
+             * unspecified, but something later in the line *is*
+             * specified, we need to give the default value for the
+             * unspecified item. (According to the dnsmasq manpage,
+             * the default for port is 1).
+             */
+            if (dns->srvs[i].port ||
+                dns->srvs[i].priority || dns->srvs[i].weight)
+                virBufferAsprintf(&configbuf, ",%d",
+                                  dns->srvs[i].port ? dns->srvs[i].port : 1);
+            if (dns->srvs[i].priority || dns->srvs[i].weight)
+                virBufferAsprintf(&configbuf, ",%d", dns->srvs[i].priority);
+            if (dns->srvs[i].weight)
+                virBufferAsprintf(&configbuf, ",%d", dns->srvs[i].weight);
+        }
+        virBufferAddLit(&configbuf, "\n");
     }
 
     /* Find the first dhcp for both IPv4 and IPv6 */
@@ -1086,10 +1106,6 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
 
  cleanup:
     virBufferFreeAndReset(&configbuf);
-    VIR_FREE(record);
-    VIR_FREE(recordPort);
-    VIR_FREE(recordWeight);
-    VIR_FREE(recordPriority);
     return ret;
 }
 

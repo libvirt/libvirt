@@ -6,7 +6,13 @@
   </forward>
   <bridge name='virbr0' stp='on' delay='0'/>
   <dns>
-    <srv service='name' protocol='tcp' domain='test-domain-name' target='.' port='1024' priority='10' weight='10'/>
+    <srv service='name' protocol='tcp' domain='test-domain-name.com' target='test.example.com' port='1111' priority='11' weight='111'/>
+    <srv service='name2' protocol='udp' target='test2.example.com' port='2222' priority='22' weight='222'/>
+    <srv service='name3' protocol='tcp' domain='test3.com' target='test3.example.com' port='3333' priority='33'/>
+    <srv service='name4' protocol='tcp' domain='test4.com' target='test4.example.com' port='4444'/>
+    <srv service='name5' protocol='udp' target='test5.example.com' priority='55' weight='555'/>
+    <srv service='name6' protocol='tcp' domain='test6.com' target='test6.example.com' port='6666' weight='666'/>
+    <srv service='name7' protocol='tcp' domain='test7.com' target='test7.example.com' weight='777'/>
   </dns>
   <ip address='192.168.122.1' netmask='255.255.255.0'>
     <dhcp>
