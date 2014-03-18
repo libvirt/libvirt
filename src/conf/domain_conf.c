@@ -1495,6 +1495,10 @@ virDomainChrSourceDefClear(virDomainChrSourceDefPtr def)
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         VIR_FREE(def->data.nix.path);
         break;
+
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+        VIR_FREE(def->data.spiceport.channel);
+        break;
     }
 }
 
