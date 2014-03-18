@@ -696,7 +696,8 @@ cleanup:
 
 static int
 bhyveConnectGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED,
-                        const char *type) {
+                        const char *type)
+{
     if (virConnectGetMaxVcpusEnsureACL(conn) < 0)
         return -1;
 

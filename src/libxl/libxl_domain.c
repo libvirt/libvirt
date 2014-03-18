@@ -739,7 +739,8 @@ libxlDomainEventQueue(libxlDriverPrivatePtr driver, virObjectEventPtr event)
 }
 
 char *
-libxlDomainManagedSavePath(libxlDriverPrivatePtr driver, virDomainObjPtr vm) {
+libxlDomainManagedSavePath(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
+{
     char *ret;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
 

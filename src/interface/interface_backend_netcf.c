@@ -2,7 +2,7 @@
  * interface_backend_netcf.c: backend driver methods to handle physical
  *                            interface configuration using the netcf library.
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -900,7 +900,8 @@ cleanup:
     return ret;
 }
 
-static int netcfInterfaceUndefine(virInterfacePtr ifinfo) {
+static int netcfInterfaceUndefine(virInterfacePtr ifinfo)
+{
     virNetcfDriverStatePtr driver = ifinfo->conn->interfacePrivateData;
     struct netcf_if *iface = NULL;
     virInterfaceDefPtr def = NULL;
@@ -1190,7 +1191,8 @@ static virStateDriver interfaceStateDriver = {
     .stateReload = netcfStateReload,
 };
 
-int netcfIfaceRegister(void) {
+int netcfIfaceRegister(void)
+{
     if (virRegisterInterfaceDriver(&interfaceDriver) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to register netcf interface driver"));

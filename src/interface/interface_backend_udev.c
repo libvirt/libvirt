@@ -1,6 +1,7 @@
 /*
  * interface_backend_udev.c: udev backend for virInterface
  *
+ * Copyright (C) 2014 Red Hat, Inc.
  * Copyright (C) 2012 Doug Goldstein <cardoe@cardoe.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -1186,7 +1187,8 @@ static virInterfaceDriver udevIfaceDriver = {
 };
 
 int
-udevIfaceRegister(void) {
+udevIfaceRegister(void)
+{
     if (virRegisterInterfaceDriver(&udevIfaceDriver) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to register udev interface driver"));

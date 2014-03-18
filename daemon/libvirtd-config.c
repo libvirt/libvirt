@@ -1,7 +1,7 @@
 /*
  * libvirtd-config.c: daemon start of day, guest process & i/o management
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2012, 2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -158,7 +158,12 @@ checkType(virConfValuePtr p, const char *filename,
     } while (0)
 
 
-static int remoteConfigGetAuth(virConfPtr conf, const char *key, int *auth, const char *filename) {
+static int
+remoteConfigGetAuth(virConfPtr conf,
+                    const char *key,
+                    int *auth,
+                    const char *filename)
+{
     virConfValuePtr p;
 
     p = virConfGetValue(conf, key);

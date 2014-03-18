@@ -560,7 +560,8 @@
 <pre>
 int runhook(const char *drvstr, const char *id,
             const char *opstr, const char *subopstr,
-            const char *extra) {
+            const char *extra)
+{
   int ret;
   char *path;
   virCommandPtr cmd;

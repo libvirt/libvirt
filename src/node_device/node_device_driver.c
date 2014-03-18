@@ -1,7 +1,7 @@
 /*
  * node_device_driver.c: node device enumeration
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright (C) 2008 Virtual Iron Software, Inc.
  * Copyright (C) 2008 David F. Lively
  *
@@ -626,7 +626,8 @@ out:
     return ret;
 }
 
-int nodedevRegister(void) {
+int nodedevRegister(void)
+{
 #if defined(WITH_HAL) && defined(WITH_UDEV)
     /* Register only one of these two - they conflict */
     if (udevNodeRegister() == -1)

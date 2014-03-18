@@ -1,6 +1,7 @@
 /*
  * interface_driver.c: loads the appropriate backend
  *
+ * Copyright (C) 2014 Red Hat, Inc.
  * Copyright (C) 2012 Doug Goldstein <cardoe@cardoe.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -22,7 +23,8 @@
 #include "interface_driver.h"
 
 int
-interfaceRegister(void) {
+interfaceRegister(void)
+{
 #ifdef WITH_NETCF
     /* Attempt to load the netcf based backend first */
     if (netcfIfaceRegister() == 0)

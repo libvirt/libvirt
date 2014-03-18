@@ -19,7 +19,8 @@
  * extract the domain 0 information
  */
 static void
-getDomainInfo(int id) {
+getDomainInfo(int id)
+{
     virConnectPtr conn = NULL; /* the hypervisor connection */
     virDomainPtr dom = NULL;   /* the domain being checked */
     virDomainInfo info;        /* the information being fetched */
@@ -55,8 +56,8 @@ error:
         virConnectClose(conn);
 }
 
-int main() {
-
+int main()
+{
     getDomainInfo(0);
 
     return 0;

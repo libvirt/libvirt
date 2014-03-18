@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -528,8 +528,10 @@ virSecurityStackSetHugepages(virSecurityManagerPtr mgr,
     return rc;
 }
 
-static char *virSecurityStackGetMountOptions(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                             virDomainDefPtr vm ATTRIBUTE_UNUSED) {
+static char *
+virSecurityStackGetMountOptions(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                virDomainDefPtr vm ATTRIBUTE_UNUSED)
+{
     return NULL;
 }
 

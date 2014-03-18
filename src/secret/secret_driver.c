@@ -1,7 +1,7 @@
 /*
  * secret_driver.c: local driver for secret manipulation API
  *
- * Copyright (C) 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2009-2012, 2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -537,7 +537,8 @@ secretOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
 }
 
 static int
-secretClose(virConnectPtr conn) {
+secretClose(virConnectPtr conn)
+{
     conn->secretPrivateData = NULL;
     return 0;
 }
@@ -631,7 +632,8 @@ secretUsageIDForDef(virSecretDefPtr def)
 static int
 secretConnectListAllSecrets(virConnectPtr conn,
                             virSecretPtr **secrets,
-                            unsigned int flags) {
+                            unsigned int flags)
+{
     virSecretDriverStatePtr driver = conn->secretPrivateData;
     virSecretPtr *tmp_secrets = NULL;
     int nsecrets = 0;
