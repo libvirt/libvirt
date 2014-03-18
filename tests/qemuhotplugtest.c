@@ -67,7 +67,7 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
                                                driver.caps,
                                                driver.xmlopt,
                                                QEMU_EXPECTED_VIRT_TYPES,
-                                               0)))
+                                               VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     priv = (*vm)->privateData;

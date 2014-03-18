@@ -1,5 +1,4 @@
     <console type='pty'>
       <source path='/dev/pts/26'/>
       <target type='virtio' port='1'/>
-      <alias name='console1'/>
     </console>
