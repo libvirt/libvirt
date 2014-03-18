@@ -1871,7 +1871,8 @@ cleanup:
 }
 
 static bool
-qemuDomainSupportsPCI(virDomainDefPtr def) {
+qemuDomainSupportsPCI(virDomainDefPtr def)
+{
     if ((def->os.arch != VIR_ARCH_ARMV7L) && (def->os.arch != VIR_ARCH_AARCH64))
         return true;
 
@@ -11197,7 +11198,8 @@ error:
 
 
 static void
-qemuParseCommandLineBootDevs(virDomainDefPtr def, const char *str) {
+qemuParseCommandLineBootDevs(virDomainDefPtr def, const char *str)
+{
     int n, b = 0;
 
     for (n = 0; str[n] && b < VIR_DOMAIN_BOOT_LAST; n++) {

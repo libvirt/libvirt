@@ -4340,7 +4340,8 @@ qemuMigrationPerform(virQEMUDriverPtr driver,
 }
 
 static int
-qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def) {
+qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def)
+{
     size_t i;
     int last_good_net = -1;
     virDomainNetDefPtr net;

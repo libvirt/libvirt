@@ -172,9 +172,11 @@ virQEMUDriverPtr qemu_driver = NULL;
 
 
 static void
-qemuVMDriverLock(void) {}
+qemuVMDriverLock(void)
+{}
 static void
-qemuVMDriverUnlock(void) {}
+qemuVMDriverUnlock(void)
+{}
 
 static int
 qemuVMFilterRebuild(virDomainObjListIterator iter, void *data)
@@ -879,7 +881,8 @@ static void qemuNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
  * files and update its state and the networking
  */
 static int
-qemuStateReload(void) {
+qemuStateReload(void)
+{
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
 
@@ -910,7 +913,8 @@ cleanup:
  *
  */
 static int
-qemuStateStop(void) {
+qemuStateStop(void)
+{
     int ret = -1;
     virConnectPtr conn;
     int numDomains = 0;
@@ -967,7 +971,8 @@ qemuStateStop(void) {
  * Shutdown the QEmu daemon, it will stop all active domains and networks
  */
 static int
-qemuStateCleanup(void) {
+qemuStateCleanup(void)
+{
     if (!qemu_driver)
         return -1;
 
@@ -1145,7 +1150,8 @@ static int qemuConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
 
 
 static int
-kvmGetMaxVCPUs(void) {
+kvmGetMaxVCPUs(void)
+{
     int fd;
     int ret;
 
@@ -1201,7 +1207,9 @@ qemuConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
     return virBufferContentAndReset(&buf);
 }
 
-static int qemuConnectGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED, const char *type) {
+static int
+qemuConnectGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED, const char *type)
+{
     if (virConnectGetMaxVcpusEnsureACL(conn) < 0)
         return -1;
 
@@ -1321,7 +1329,8 @@ qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
 
 
 static virDomainPtr qemuDomainLookupByID(virConnectPtr conn,
-                                         int id) {
+                                         int id)
+{
     virQEMUDriverPtr driver = conn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
@@ -1347,7 +1356,8 @@ cleanup:
 }
 
 static virDomainPtr qemuDomainLookupByUUID(virConnectPtr conn,
-                                           const unsigned char *uuid) {
+                                           const unsigned char *uuid)
+{
     virQEMUDriverPtr driver = conn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
@@ -1375,7 +1385,8 @@ cleanup:
 }
 
 static virDomainPtr qemuDomainLookupByName(virConnectPtr conn,
-                                           const char *name) {
+                                           const char *name)
+{
     virQEMUDriverPtr driver = conn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
@@ -1458,7 +1469,8 @@ cleanup:
     return ret;
 }
 
-static int qemuConnectGetVersion(virConnectPtr conn, unsigned long *version) {
+static int qemuConnectGetVersion(virConnectPtr conn, unsigned long *version)
+{
     virQEMUDriverPtr driver = conn->privateData;
     int ret = -1;
     unsigned int qemuVersion = 0;
@@ -1493,7 +1505,8 @@ static char *qemuConnectGetHostname(virConnectPtr conn)
 }
 
 
-static int qemuConnectListDomains(virConnectPtr conn, int *ids, int nids) {
+static int qemuConnectListDomains(virConnectPtr conn, int *ids, int nids)
+{
     virQEMUDriverPtr driver = conn->privateData;
     int n;
 
@@ -1506,7 +1519,8 @@ static int qemuConnectListDomains(virConnectPtr conn, int *ids, int nids) {
     return n;
 }
 
-static int qemuConnectNumOfDomains(virConnectPtr conn) {
+static int qemuConnectNumOfDomains(virConnectPtr conn)
+{
     virQEMUDriverPtr driver = conn->privateData;
     int n;
 
@@ -1542,7 +1556,8 @@ qemuCanonicalizeMachine(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
 
 static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
                                         const char *xml,
-                                        unsigned int flags) {
+                                        unsigned int flags)
+{
     virQEMUDriverPtr driver = conn->privateData;
     virDomainDefPtr def = NULL;
     virDomainObjPtr vm = NULL;
@@ -1648,7 +1663,8 @@ cleanup:
 }
 
 
-static int qemuDomainSuspend(virDomainPtr dom) {
+static int qemuDomainSuspend(virDomainPtr dom)
+{
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
@@ -1729,7 +1745,8 @@ cleanup:
 }
 
 
-static int qemuDomainResume(virDomainPtr dom) {
+static int qemuDomainResume(virDomainPtr dom)
+{
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
@@ -1793,7 +1810,8 @@ cleanup:
     return ret;
 }
 
-static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags) {
+static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
+{
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
@@ -2155,7 +2173,8 @@ cleanup:
 }
 
 static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
-                                    unsigned int flags) {
+                                    unsigned int flags)
+{
     virQEMUDriverPtr driver = dom->conn->privateData;
     qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
@@ -2652,7 +2671,8 @@ struct _virQEMUSaveHeader {
 };
 
 static inline void
-bswap_header(virQEMUSaveHeaderPtr hdr) {
+bswap_header(virQEMUSaveHeaderPtr hdr)
+{
     hdr->version = bswap_32(hdr->version);
     hdr->xml_len = bswap_32(hdr->xml_len);
     hdr->was_running = bswap_32(hdr->was_running);
@@ -4248,7 +4268,8 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
                        unsigned int vcpu,
                        unsigned char *cpumap,
                        int maplen,
-                       unsigned int flags) {
+                       unsigned int flags)
+{
 
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -4424,7 +4445,8 @@ static int
 qemuDomainPinVcpu(virDomainPtr dom,
                    unsigned int vcpu,
                    unsigned char *cpumap,
-                   int maplen) {
+                   int maplen)
+{
     return qemuDomainPinVcpuFlags(dom, vcpu, cpumap, maplen,
                                   VIR_DOMAIN_AFFECT_LIVE);
 }
@@ -4434,7 +4456,8 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
                          int ncpumaps,
                          unsigned char *cpumaps,
                          int maplen,
-                         unsigned int flags) {
+                         unsigned int flags)
+{
 
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
@@ -4758,7 +4781,8 @@ qemuDomainGetVcpus(virDomainPtr dom,
                    virVcpuInfoPtr info,
                    int maxinfo,
                    unsigned char *cpumaps,
-                   int maplen) {
+                   int maplen)
+{
     virDomainObjPtr vm;
     size_t i;
     int v, maxcpu, hostcpus;
@@ -5951,7 +5975,8 @@ cleanup:
     return ret;
 }
 
-static int qemuConnectNumOfDefinedDomains(virConnectPtr conn) {
+static int qemuConnectNumOfDefinedDomains(virConnectPtr conn)
+{
     virQEMUDriverPtr driver = conn->privateData;
     int ret = -1;
 
@@ -6099,7 +6124,8 @@ qemuDomainCreate(virDomainPtr dom)
     return qemuDomainCreateWithFlags(dom, 0);
 }
 
-static virDomainPtr qemuDomainDefineXML(virConnectPtr conn, const char *xml) {
+static virDomainPtr qemuDomainDefineXML(virConnectPtr conn, const char *xml)
+{
     virQEMUDriverPtr driver = conn->privateData;
     virDomainDefPtr def = NULL;
     virDomainDefPtr oldDef = NULL;
@@ -7289,7 +7315,8 @@ static int qemuDomainDetachDevice(virDomainPtr dom, const char *xml)
 }
 
 static int qemuDomainGetAutostart(virDomainPtr dom,
-                                  int *autostart) {
+                                  int *autostart)
+{
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -7309,7 +7336,8 @@ cleanup:
 }
 
 static int qemuDomainSetAutostart(virDomainPtr dom,
-                                  int autostart) {
+                                  int autostart)
+{
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *configFile = NULL, *autostartLink = NULL;
@@ -11447,7 +11475,8 @@ cleanup:
 
 
 static int qemuDomainGetJobInfo(virDomainPtr dom,
-                                virDomainJobInfoPtr info) {
+                                virDomainJobInfoPtr info)
+{
     virDomainObjPtr vm;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
@@ -11634,7 +11663,8 @@ cleanup:
 }
 
 
-static int qemuDomainAbortJob(virDomainPtr dom) {
+static int qemuDomainAbortJob(virDomainPtr dom)
+{
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
@@ -12006,7 +12036,8 @@ cleanup:
 
 
 static int
-qemuDomainSnapshotFSFreeze(virDomainObjPtr vm) {
+qemuDomainSnapshotFSFreeze(virDomainObjPtr vm)
+{
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int freezed;
 
@@ -16711,7 +16742,8 @@ static virStateDriver qemuStateDriver = {
     .stateStop = qemuStateStop,
 };
 
-int qemuRegister(void) {
+int qemuRegister(void)
+{
     if (virRegisterDriver(&qemuDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&qemuStateDriver) < 0)

@@ -1,7 +1,7 @@
 /*
  * qemu_monitor_text.c: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -364,7 +364,8 @@ qemuMonitorSendDiskPassphrase(qemuMonitorPtr mon,
 
 int
 qemuMonitorTextStartCPUs(qemuMonitorPtr mon,
-                         virConnectPtr conn) {
+                         virConnectPtr conn)
+{
     char *reply;
 
     if (qemuMonitorTextCommandWithHandler(mon, "cont",
@@ -379,7 +380,8 @@ qemuMonitorTextStartCPUs(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorTextStopCPUs(qemuMonitorPtr mon) {
+qemuMonitorTextStopCPUs(qemuMonitorPtr mon)
+{
     char *info;
     int ret;
 
@@ -434,7 +436,8 @@ cleanup:
 }
 
 
-int qemuMonitorTextSystemPowerdown(qemuMonitorPtr mon) {
+int qemuMonitorTextSystemPowerdown(qemuMonitorPtr mon)
+{
     char *info;
     int ret;
 
@@ -444,7 +447,11 @@ int qemuMonitorTextSystemPowerdown(qemuMonitorPtr mon) {
     return ret;
 }
 
-int qemuMonitorTextSetLink(qemuMonitorPtr mon, const char *name, enum virDomainNetInterfaceLinkState state) {
+int
+qemuMonitorTextSetLink(qemuMonitorPtr mon,
+                       const char *name,
+                       enum virDomainNetInterfaceLinkState state)
+{
     char *info = NULL;
     char *cmd = NULL;
     const char *st_str = NULL;
@@ -486,7 +493,8 @@ error:
     return -1;
 }
 
-int qemuMonitorTextSystemReset(qemuMonitorPtr mon) {
+int qemuMonitorTextSystemReset(qemuMonitorPtr mon)
+{
     char *info;
     int ret;
 

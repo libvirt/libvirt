@@ -1,7 +1,7 @@
 /*
  * qemu_agent.c: interaction with QEMU guest agent
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -574,7 +574,8 @@ static void qemuAgentUpdateWatch(qemuAgentPtr mon)
 
 
 static void
-qemuAgentIO(int watch, int fd, int events, void *opaque) {
+qemuAgentIO(int watch, int fd, int events, void *opaque)
+{
     qemuAgentPtr mon = opaque;
     bool error = false;
     bool eof = false;

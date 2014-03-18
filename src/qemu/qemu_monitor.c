@@ -597,7 +597,8 @@ static void qemuMonitorUpdateWatch(qemuMonitorPtr mon)
 
 
 static void
-qemuMonitorIO(int watch, int fd, int events, void *opaque) {
+qemuMonitorIO(int watch, int fd, int events, void *opaque)
+{
     qemuMonitorPtr mon = opaque;
     bool error = false;
     bool eof = false;
