@@ -936,6 +936,13 @@ sc_require_locale_h:
 	halt='setlocale() requires <locale.h>'				\
 	  $(_sc_search_regexp)
 
+sc_prohibit_empty_first_line:
+	@awk 'BEGIN { fail=0; }						\
+	FNR == 1 { if ($$0 == "") { print FILENAME ":1:"; fail=1; } }	\
+	END { if (fail == 1) {						\
+	  print "$(ME): Prohibited empty first line" > "/dev/stderr";	\
+	} exit fail; }' $$($(VC_LIST_EXCEPT));
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
@@ -1115,3 +1122,6 @@ exclude_file_name_regexp--sc_avoid_attribute_unused_in_header = \
 
 exclude_file_name_regexp--sc_prohibit_mixed_case_abbreviations = \
   ^src/(vbox/vbox_CAPI.*.h|esx/esx_vi.(c|h)|esx/esx_storage_backend_iscsi.c)$$
+
+exclude_file_name_regexp--sc_prohibit_empty_first_line = \
+  ^(README|daemon/THREADS\.txt|src/esx/README|docs/library.xen|tests/vmwareverdata/fusion-5.0.3.txt)$$
