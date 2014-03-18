@@ -178,6 +178,9 @@ bhyveConnectOpen(virConnectPtr conn,
 static int
 bhyveConnectClose(virConnectPtr conn)
 {
+    bhyveConnPtr privconn = conn->privateData;
+
+    virCloseCallbacksRun(privconn->closeCallbacks, conn, privconn->domains, privconn);
     conn->privateData = NULL;
 
     return 0;
@@ -530,16 +533,23 @@ cleanup:
 }
 
 static int
-bhyveDomainCreate(virDomainPtr dom)
+bhyveDomainCreateWithFlags(virDomainPtr dom,
+                           unsigned int flags)
 {
     bhyveConnPtr privconn = dom->conn->privateData;
     virDomainObjPtr vm;
+    unsigned int start_flags = 0;
     int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, -1);
+
+    if (flags & VIR_DOMAIN_START_AUTODESTROY)
+        start_flags |= VIR_BHYVE_PROCESS_START_AUTODESTROY;
 
     if (!(vm = bhyveDomObjFromDomain(dom)))
         goto cleanup;
 
-    if (virDomainCreateEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainCreateWithFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
     if (virDomainObjIsActive(vm)) {
@@ -549,11 +559,18 @@ bhyveDomainCreate(virDomainPtr dom)
     }
 
     ret = virBhyveProcessStart(dom->conn, privconn, vm,
-                               VIR_DOMAIN_RUNNING_BOOTED);
+                               VIR_DOMAIN_RUNNING_BOOTED,
+                               start_flags);
 
 cleanup:
     virObjectUnlock(vm);
     return ret;
+}
+
+static int
+bhyveDomainCreate(virDomainPtr dom)
+{
+    return bhyveDomainCreateWithFlags(dom, 0);
 }
 
 static int
@@ -629,6 +646,7 @@ bhyveStateCleanup(void)
     virObjectUnref(bhyve_driver->domains);
     virObjectUnref(bhyve_driver->caps);
     virObjectUnref(bhyve_driver->xmlopt);
+    virObjectUnref(bhyve_driver->closeCallbacks);
 
     virMutexDestroy(&bhyve_driver->lock);
     VIR_FREE(bhyve_driver);
@@ -654,6 +672,9 @@ bhyveStateInitialize(bool priveleged ATTRIBUTE_UNUSED,
         VIR_FREE(bhyve_driver);
         return -1;
     }
+
+    if (!(bhyve_driver->closeCallbacks = virCloseCallbacksNew()))
+        goto cleanup;
 
     if (!(bhyve_driver->caps = bhyveBuildCapabilities()))
         goto cleanup;
@@ -773,6 +794,7 @@ static virDriver bhyveDriver = {
     .connectListDefinedDomains = bhyveConnectListDefinedDomains, /* 1.2.2 */
     .connectNumOfDefinedDomains = bhyveConnectNumOfDefinedDomains, /* 1.2.2 */
     .domainCreate = bhyveDomainCreate, /* 1.2.2 */
+    .domainCreateWithFlags = bhyveDomainCreateWithFlags, /* 1.2.3 */
     .domainDestroy = bhyveDomainDestroy, /* 1.2.2 */
     .domainLookupByUUID = bhyveDomainLookupByUUID, /* 1.2.2 */
     .domainLookupByName = bhyveDomainLookupByName, /* 1.2.2 */

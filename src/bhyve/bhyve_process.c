@@ -46,11 +46,29 @@
 
 VIR_LOG_INIT("bhyve.bhyve_process");
 
+static virDomainObjPtr
+bhyveProcessAutoDestroy(virDomainObjPtr vm,
+                        virConnectPtr conn ATTRIBUTE_UNUSED,
+                        void *opaque)
+{
+    bhyveConnPtr driver = opaque;
+
+    virBhyveProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
+
+    if (!vm->persistent) {
+        virDomainObjListRemove(driver->domains, vm);
+        vm = NULL;
+    }
+
+    return vm;
+}
+
 int
 virBhyveProcessStart(virConnectPtr conn,
                      bhyveConnPtr driver,
                      virDomainObjPtr vm,
-                     virDomainRunningReason reason)
+                     virDomainRunningReason reason,
+                     unsigned int flags)
 {
     char *logfile = NULL;
     int logfd = -1;
@@ -121,20 +139,24 @@ virBhyveProcessStart(virConnectPtr conn,
 
     /* Now we can start the domain */
     VIR_DEBUG("Starting domain '%s'", vm->def->name);
-    ret = virCommandRun(cmd, NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
 
-    if (ret == 0) {
-        if (virPidFileReadPath(privconn->pidfile, &vm->pid) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Domain %s didn't show up"), vm->def->name);
-            goto cleanup;
-        }
-
-        vm->def->id = vm->pid;
-        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
-    } else {
+    if (virPidFileReadPath(privconn->pidfile, &vm->pid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Domain %s didn't show up"), vm->def->name);
         goto cleanup;
     }
+
+    if (flags & VIR_BHYVE_PROCESS_START_AUTODESTROY &&
+        virCloseCallbacksSet(driver->closeCallbacks, vm,
+                             conn, bhyveProcessAutoDestroy) < 0)
+        goto cleanup;
+
+    vm->def->id = vm->pid;
+    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
+
+    ret = 0;
 
 cleanup:
     if (ret < 0) {
@@ -202,6 +224,9 @@ virBhyveProcessStop(bhyveConnPtr driver,
         goto cleanup;
 
     ret = 0;
+
+    virCloseCallbacksUnset(driver->closeCallbacks, vm,
+                           bhyveProcessAutoDestroy);
 
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     vm->pid = -1;

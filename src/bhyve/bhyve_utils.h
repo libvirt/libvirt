@@ -26,6 +26,7 @@
 # include "domain_conf.h"
 # include "configmake.h"
 # include "virthread.h"
+# include "virclosecallbacks.h"
 
 # define BHYVE_AUTOSTART_DIR    SYSCONFDIR "/libvirt/bhyve/autostart"
 # define BHYVE_CONFIG_DIR       SYSCONFDIR "/libvirt/bhyve"
@@ -38,6 +39,8 @@ struct _bhyveConn {
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
     char *pidfile;
+
+    virCloseCallbacksPtr closeCallbacks;
 };
 
 typedef struct _bhyveConn bhyveConn;
