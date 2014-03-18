@@ -331,15 +331,15 @@ vmwareDomainConfigDisplay(vmwareDomainPtr pDomain, virDomainDefPtr def)
     }
 }
 
-int
-vmwareParsePath(char *path, char **directory, char **filename)
+static int
+vmwareParsePath(const char *path, char **directory, char **filename)
 {
     char *separator;
 
     separator = strrchr(path, '/');
 
     if (separator != NULL) {
-        *separator++ = '\0';
+        separator++;
 
         if (*separator == '\0') {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -347,7 +347,7 @@ vmwareParsePath(char *path, char **directory, char **filename)
             return -1;
         }
 
-        if (VIR_STRDUP(*directory, path) < 0)
+        if (VIR_STRNDUP(*directory, path, separator - path - 1) < 0)
             goto error;
         if (VIR_STRDUP(*filename, separator) < 0) {
             VIR_FREE(*directory);
