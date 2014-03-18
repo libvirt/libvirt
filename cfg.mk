@@ -888,7 +888,7 @@ sc_prohibit_wrong_filename_in_comment:
 	  }                                                            \
 	}' $$($(VC_LIST_EXCEPT) | grep '\.[ch]$$') || fail=1;          \
 	if test $$fail -eq 1; then                                     \
-	  { echo '$(ME): The file name in comments must match the '    \
+	  { echo '$(ME): The file name in comments must match the'     \
 	    'actual file name' 1>&2; exit 1; }	                       \
 	fi;
 
