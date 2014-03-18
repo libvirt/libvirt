@@ -1,7 +1,7 @@
 /*
  * uml_conf.c: UML driver configuration
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -52,7 +52,8 @@
 
 VIR_LOG_INIT("uml.uml_conf");
 
-virCapsPtr umlCapsInit(void) {
+virCapsPtr umlCapsInit(void)
+{
     virCapsPtr caps;
     virCapsGuestPtr guest;
 

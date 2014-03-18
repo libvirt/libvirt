@@ -209,7 +209,8 @@ umlAutostartDomain(virDomainObjPtr vm,
 }
 
 static void
-umlAutostartConfigs(struct uml_driver *driver) {
+umlAutostartConfigs(struct uml_driver *driver)
+{
     /* XXX: Figure out a better way todo this. The domain
      * startup code needs a connection handle in order
      * to lookup the bridge associated with a virtual
@@ -622,7 +623,8 @@ static void umlNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
  * files and update its state and the networking
  */
 static int
-umlStateReload(void) {
+umlStateReload(void)
+{
     if (!uml_driver)
         return 0;
 
@@ -660,7 +662,8 @@ umlShutdownOneVM(virDomainObjPtr dom, void *opaque)
  * Shutdown the Uml daemon, it will stop all active domains and networks
  */
 static int
-umlStateCleanup(void) {
+umlStateCleanup(void)
+{
     if (!uml_driver)
         return -1;
 
@@ -859,7 +862,8 @@ static int umlMonitorAddress(const struct uml_driver *driver,
 }
 
 static int umlOpenMonitor(struct uml_driver *driver,
-                          virDomainObjPtr vm) {
+                          virDomainObjPtr vm)
+{
     struct sockaddr_un addr;
     struct stat sb;
     int retries = 0;
@@ -1007,7 +1011,8 @@ error:
 }
 
 
-static void umlCleanupTapDevices(virDomainObjPtr vm) {
+static void umlCleanupTapDevices(virDomainObjPtr vm)
+{
     size_t i;
 
     for (i = 0; i < vm->def->nnets; i++) {
@@ -1024,7 +1029,8 @@ static void umlCleanupTapDevices(virDomainObjPtr vm) {
 static int umlStartVMDaemon(virConnectPtr conn,
                             struct uml_driver *driver,
                             virDomainObjPtr vm,
-                            bool autoDestroy) {
+                            bool autoDestroy)
+{
     int ret = -1;
     char *logfile;
     int logfd = -1;
@@ -1245,7 +1251,8 @@ static virDrvOpenStatus umlConnectOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int umlConnectClose(virConnectPtr conn) {
+static int umlConnectClose(virConnectPtr conn)
+{
     struct uml_driver *driver = conn->privateData;
 
     umlDriverLock(driver);
@@ -1343,7 +1350,8 @@ static int umlGetProcessInfo(unsigned long long *cpuTime, pid_t pid)
 
 
 static virDomainPtr umlDomainLookupByID(virConnectPtr conn,
-                                          int id) {
+                                          int id)
+{
     struct uml_driver *driver = (struct uml_driver *)conn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
@@ -1370,7 +1378,8 @@ cleanup:
 }
 
 static virDomainPtr umlDomainLookupByUUID(virConnectPtr conn,
-                                            const unsigned char *uuid) {
+                                            const unsigned char *uuid)
+{
     struct uml_driver *driver = (struct uml_driver *)conn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
@@ -1397,7 +1406,8 @@ cleanup:
 }
 
 static virDomainPtr umlDomainLookupByName(virConnectPtr conn,
-                                            const char *name) {
+                                            const char *name)
+{
     struct uml_driver *driver = (struct uml_driver *)conn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
@@ -1500,7 +1510,8 @@ cleanup:
     return ret;
 }
 
-static int umlConnectGetVersion(virConnectPtr conn, unsigned long *version) {
+static int umlConnectGetVersion(virConnectPtr conn, unsigned long *version)
+{
     struct uml_driver *driver = conn->privateData;
     struct utsname ut;
     int ret = -1;
@@ -1538,7 +1549,8 @@ static char *umlConnectGetHostname(virConnectPtr conn)
 }
 
 
-static int umlConnectListDomains(virConnectPtr conn, int *ids, int nids) {
+static int umlConnectListDomains(virConnectPtr conn, int *ids, int nids)
+{
     struct uml_driver *driver = conn->privateData;
     int n;
 
@@ -1552,7 +1564,8 @@ static int umlConnectListDomains(virConnectPtr conn, int *ids, int nids) {
 
     return n;
 }
-static int umlConnectNumOfDomains(virConnectPtr conn) {
+static int umlConnectNumOfDomains(virConnectPtr conn)
+{
     struct uml_driver *driver = conn->privateData;
     int n;
 
@@ -1567,7 +1580,8 @@ static int umlConnectNumOfDomains(virConnectPtr conn) {
     return n;
 }
 static virDomainPtr umlDomainCreateXML(virConnectPtr conn, const char *xml,
-                                       unsigned int flags) {
+                                       unsigned int flags)
+{
     struct uml_driver *driver = conn->privateData;
     virDomainDefPtr def;
     virDomainObjPtr vm = NULL;
@@ -1622,7 +1636,8 @@ cleanup:
 
 
 static int umlDomainShutdownFlags(virDomainPtr dom,
-                                  unsigned int flags) {
+                                  unsigned int flags)
+{
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *info = NULL;
@@ -1772,7 +1787,8 @@ cleanup:
     return ret;
 }
 
-static int umlDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
+static int umlDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax)
+{
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
@@ -1808,7 +1824,8 @@ cleanup:
     return ret;
 }
 
-static int umlDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
+static int umlDomainSetMemory(virDomainPtr dom, unsigned long newmem)
+{
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
@@ -1851,7 +1868,8 @@ cleanup:
 }
 
 static int umlDomainGetInfo(virDomainPtr dom,
-                              virDomainInfoPtr info) {
+                              virDomainInfoPtr info)
+{
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
@@ -1977,7 +1995,8 @@ static int umlConnectListDefinedDomains(virConnectPtr conn,
     return n;
 }
 
-static int umlConnectNumOfDefinedDomains(virConnectPtr conn) {
+static int umlConnectNumOfDefinedDomains(virConnectPtr conn)
+{
     struct uml_driver *driver = conn->privateData;
     int n;
 
@@ -1993,7 +2012,8 @@ static int umlConnectNumOfDefinedDomains(virConnectPtr conn) {
 }
 
 
-static int umlDomainCreateWithFlags(virDomainPtr dom, unsigned int flags) {
+static int umlDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
+{
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virObjectEventPtr event = NULL;
@@ -2032,11 +2052,13 @@ cleanup:
     return ret;
 }
 
-static int umlDomainCreate(virDomainPtr dom) {
+static int umlDomainCreate(virDomainPtr dom)
+{
     return umlDomainCreateWithFlags(dom, 0);
 }
 
-static virDomainPtr umlDomainDefineXML(virConnectPtr conn, const char *xml) {
+static virDomainPtr umlDomainDefineXML(virConnectPtr conn, const char *xml)
+{
     struct uml_driver *driver = conn->privateData;
     virDomainDefPtr def;
     virDomainObjPtr vm = NULL;
@@ -2297,7 +2319,8 @@ cleanup:
 }
 
 
-static int umlDomainDetachDevice(virDomainPtr dom, const char *xml) {
+static int umlDomainDetachDevice(virDomainPtr dom, const char *xml)
+{
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainDeviceDefPtr dev = NULL;
@@ -2367,7 +2390,8 @@ umlDomainDetachDeviceFlags(virDomainPtr dom,
 
 
 static int umlDomainGetAutostart(virDomainPtr dom,
-                            int *autostart) {
+                            int *autostart)
+{
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
@@ -2395,7 +2419,8 @@ cleanup:
 }
 
 static int umlDomainSetAutostart(virDomainPtr dom,
-                                   int autostart) {
+                                   int autostart)
+{
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *configFile = NULL, *autostartLink = NULL;
@@ -2910,7 +2935,8 @@ static virStateDriver umlStateDriver = {
     .stateReload = umlStateReload,
 };
 
-int umlRegister(void) {
+int umlRegister(void)
+{
     if (virRegisterDriver(&umlDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&umlStateDriver) < 0)
