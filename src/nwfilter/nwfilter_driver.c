@@ -2,7 +2,7 @@
  * nwfilter_driver.c: core driver for network filter APIs
  *                    (based on storage_driver.c)
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2011, 2014 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  * Copyright (C) 2010 IBM Corporation
  * Copyright (C) 2010 Stefan Berger
@@ -325,7 +325,8 @@ virNWFilterDriverIsWatchingFirewallD(void)
  * Shutdown the nwfilter driver, it will stop all active nwfilters
  */
 static int
-nwfilterStateCleanup(void) {
+nwfilterStateCleanup(void)
+{
     if (!driverState)
         return -1;
 
@@ -356,7 +357,8 @@ nwfilterStateCleanup(void) {
 
 static virNWFilterPtr
 nwfilterLookupByUUID(virConnectPtr conn,
-                     const unsigned char *uuid) {
+                     const unsigned char *uuid)
+{
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
     virNWFilterObjPtr nwfilter;
     virNWFilterPtr ret = NULL;
@@ -385,7 +387,8 @@ cleanup:
 
 static virNWFilterPtr
 nwfilterLookupByName(virConnectPtr conn,
-                     const char *name) {
+                     const char *name)
+{
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
     virNWFilterObjPtr nwfilter;
     virNWFilterPtr ret = NULL;
@@ -428,14 +431,16 @@ nwfilterOpen(virConnectPtr conn,
 
 
 static int
-nwfilterClose(virConnectPtr conn) {
+nwfilterClose(virConnectPtr conn)
+{
     conn->nwfilterPrivateData = NULL;
     return 0;
 }
 
 
 static int
-nwfilterConnectNumOfNWFilters(virConnectPtr conn) {
+nwfilterConnectNumOfNWFilters(virConnectPtr conn)
+{
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
     size_t i;
     int n;
@@ -459,7 +464,8 @@ nwfilterConnectNumOfNWFilters(virConnectPtr conn) {
 static int
 nwfilterConnectListNWFilters(virConnectPtr conn,
                              char **const names,
-                             int nnames) {
+                             int nnames)
+{
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
     int got = 0;
     size_t i;
@@ -495,7 +501,8 @@ nwfilterConnectListNWFilters(virConnectPtr conn,
 static int
 nwfilterConnectListAllNWFilters(virConnectPtr conn,
                                 virNWFilterPtr **filters,
-                                unsigned int flags) {
+                                unsigned int flags)
+{
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
     virNWFilterPtr *tmp_filters = NULL;
     int nfilters = 0;
@@ -594,7 +601,8 @@ cleanup:
 
 
 static int
-nwfilterUndefine(virNWFilterPtr obj) {
+nwfilterUndefine(virNWFilterPtr obj)
+{
     virNWFilterDriverStatePtr driver = obj->conn->nwfilterPrivateData;
     virNWFilterObjPtr nwfilter;
     int ret = -1;
@@ -682,7 +690,8 @@ nwfilterInstantiateFilter(virConnectPtr conn,
 
 
 static void
-nwfilterTeardownFilter(virDomainNetDefPtr net) {
+nwfilterTeardownFilter(virDomainNetDefPtr net)
+{
     if ((net->ifname) && (net->filter))
         virNWFilterTeardownFilter(net);
 }
@@ -717,7 +726,8 @@ static virDomainConfNWFilterDriver domainNWFilterDriver = {
 };
 
 
-int nwfilterRegister(void) {
+int nwfilterRegister(void)
+{
     if (virRegisterNWFilterDriver(&nwfilterDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&stateDriver) < 0)

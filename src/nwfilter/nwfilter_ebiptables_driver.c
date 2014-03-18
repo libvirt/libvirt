@@ -3198,7 +3198,8 @@ ebiptablesInstCommand(virBufferPtr buf,
  * In case of this driver we need the ebtables tool available.
  */
 static int
-ebiptablesCanApplyBasicRules(void) {
+ebiptablesCanApplyBasicRules(void)
+{
     return ebtables_cmd_path != NULL;
 }
 
