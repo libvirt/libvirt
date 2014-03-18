@@ -1,7 +1,7 @@
 /*
  * virnetserver.c: generic network RPC server
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2012, 2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -850,7 +850,8 @@ static void
 virNetServerSignalEvent(int watch,
                         int fd ATTRIBUTE_UNUSED,
                         int events ATTRIBUTE_UNUSED,
-                        void *opaque) {
+                        void *opaque)
+{
     virNetServerPtr srv = opaque;
     siginfo_t siginfo;
     size_t i;
@@ -1021,7 +1022,8 @@ int virNetServerSetTLSContext(virNetServerPtr srv,
 
 
 static void virNetServerAutoShutdownTimer(int timerid ATTRIBUTE_UNUSED,
-                                          void *opaque) {
+                                          void *opaque)
+{
     virNetServerPtr srv = opaque;
 
     virObjectLock(srv);

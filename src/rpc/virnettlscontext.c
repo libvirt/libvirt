@@ -1,7 +1,7 @@
 /*
  * virnettlscontext.c: TLS encryption/x509 handling
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -125,7 +125,8 @@ virNetTLSContextCheckCertFile(const char *type, const char *file, bool allowMiss
 
 
 static void virNetTLSLog(int level ATTRIBUTE_UNUSED,
-                         const char *str ATTRIBUTE_UNUSED) {
+                         const char *str ATTRIBUTE_UNUSED)
+{
     VIR_DEBUG("%d %s", level, str);
 }
 
