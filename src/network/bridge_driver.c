@@ -380,7 +380,8 @@ networkFindActiveConfigs(virNetworkDriverStatePtr driver)
 
 
 static void
-networkAutostartConfigs(virNetworkDriverStatePtr driver) {
+networkAutostartConfigs(virNetworkDriverStatePtr driver)
+{
     size_t i;
 
     for (i = 0; i < driver->networks.count; i++) {
@@ -398,7 +399,8 @@ networkAutostartConfigs(virNetworkDriverStatePtr driver) {
 #if HAVE_FIREWALLD
 static DBusHandlerResult
 firewalld_dbus_filter_bridge(DBusConnection *connection ATTRIBUTE_UNUSED,
-                             DBusMessage *message, void *user_data) {
+                             DBusMessage *message, void *user_data)
+{
     virNetworkDriverStatePtr _driverState = user_data;
 
     if (dbus_message_is_signal(message, DBUS_INTERFACE_DBUS,
@@ -567,7 +569,8 @@ networkStateAutoStart(void)
  * files and update its state and the networking
  */
 static int
-networkStateReload(void) {
+networkStateReload(void)
+{
     if (!driverState)
         return 0;
 
@@ -591,7 +594,8 @@ networkStateReload(void) {
  * Shutdown the QEmu daemon, it will stop all active domains and networks
  */
 static int
-networkStateCleanup(void) {
+networkStateCleanup(void)
+{
     if (!driverState)
         return -1;
 
@@ -2173,7 +2177,8 @@ static int networkShutdownNetwork(virNetworkDriverStatePtr driver,
 
 
 static virNetworkPtr networkLookupByUUID(virConnectPtr conn,
-                                         const unsigned char *uuid) {
+                                         const unsigned char *uuid)
+{
     virNetworkDriverStatePtr driver = conn->networkPrivateData;
     virNetworkObjPtr network;
     virNetworkPtr ret = NULL;
@@ -2199,7 +2204,8 @@ cleanup:
 }
 
 static virNetworkPtr networkLookupByName(virConnectPtr conn,
-                                         const char *name) {
+                                         const char *name)
+{
     virNetworkDriverStatePtr driver = conn->networkPrivateData;
     virNetworkObjPtr network;
     virNetworkPtr ret = NULL;
@@ -2237,12 +2243,14 @@ static virDrvOpenStatus networkOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int networkClose(virConnectPtr conn) {
+static int networkClose(virConnectPtr conn)
+{
     conn->networkPrivateData = NULL;
     return 0;
 }
 
-static int networkConnectNumOfNetworks(virConnectPtr conn) {
+static int networkConnectNumOfNetworks(virConnectPtr conn)
+{
     int nactive = 0;
     size_t i;
     virNetworkDriverStatePtr driver = conn->networkPrivateData;
@@ -2297,7 +2305,8 @@ static int networkConnectListNetworks(virConnectPtr conn, char **const names, in
     return -1;
 }
 
-static int networkConnectNumOfDefinedNetworks(virConnectPtr conn) {
+static int networkConnectNumOfDefinedNetworks(virConnectPtr conn)
+{
     int ninactive = 0;
     size_t i;
     virNetworkDriverStatePtr driver = conn->networkPrivateData;
@@ -2623,7 +2632,8 @@ networkValidate(virNetworkDriverStatePtr driver,
     return 0;
 }
 
-static virNetworkPtr networkCreateXML(virConnectPtr conn, const char *xml) {
+static virNetworkPtr networkCreateXML(virConnectPtr conn, const char *xml)
+{
     virNetworkDriverStatePtr driver = conn->networkPrivateData;
     virNetworkDefPtr def;
     virNetworkObjPtr network = NULL;
@@ -2673,7 +2683,8 @@ cleanup:
     return ret;
 }
 
-static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml) {
+static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml)
+{
     virNetworkDriverStatePtr driver = conn->networkPrivateData;
     virNetworkDefPtr def = NULL;
     bool freeDef = true;
@@ -2738,7 +2749,8 @@ cleanup:
 }
 
 static int
-networkUndefine(virNetworkPtr net) {
+networkUndefine(virNetworkPtr net)
+{
     virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     int ret = -1;
@@ -2969,7 +2981,8 @@ cleanup:
     return ret;
 }
 
-static int networkCreate(virNetworkPtr net) {
+static int networkCreate(virNetworkPtr net)
+{
     virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     int ret = -1;
@@ -3003,7 +3016,8 @@ cleanup:
     return ret;
 }
 
-static int networkDestroy(virNetworkPtr net) {
+static int networkDestroy(virNetworkPtr net)
+{
     virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     int ret = -1;
@@ -3107,7 +3121,8 @@ cleanup:
 }
 
 static int networkGetAutostart(virNetworkPtr net,
-                             int *autostart) {
+                             int *autostart)
+{
     virNetworkObjPtr network;
     int ret = -1;
 
@@ -3127,7 +3142,8 @@ cleanup:
 }
 
 static int networkSetAutostart(virNetworkPtr net,
-                               int autostart) {
+                               int autostart)
+{
     virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     char *configFile = NULL, *autostartLink = NULL;
@@ -3231,7 +3247,8 @@ static virStateDriver networkStateDriver = {
     .stateReload = networkStateReload,
 };
 
-int networkRegister(void) {
+int networkRegister(void)
+{
     if (virRegisterNetworkDriver(&networkDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&networkStateDriver) < 0)
@@ -3255,7 +3272,8 @@ int networkRegister(void) {
  * Creates an implicit interface pool of VF's when a PF dev is given
  */
 static int
-networkCreateInterfacePool(virNetworkDefPtr netdef) {
+networkCreateInterfacePool(virNetworkDefPtr netdef)
+{
     size_t num_virt_fns = 0;
     char **vfname = NULL;
     virPCIDeviceAddressPtr *virt_fns;
