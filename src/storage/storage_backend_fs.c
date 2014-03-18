@@ -330,7 +330,8 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
  * Return 0 if not mounted, 1 if mounted, -1 on error
  */
 static int
-virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool) {
+virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool)
+{
     FILE *mtab;
     struct mntent ent;
     char buf[1024];
@@ -363,7 +364,8 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool) {
  * Returns 0 if successfully mounted, -1 on error
  */
 static int
-virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
+virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
+{
     char *src = NULL;
     /* 'mount -t auto' doesn't seem to auto determine nfs (or cifs),
      *  while plain 'mount' does. We have to craft separate argvs to
@@ -467,7 +469,8 @@ cleanup:
  * Returns 0 if successfully unmounted, -1 on error
  */
 static int
-virStorageBackendFileSystemUnmount(virStoragePoolObjPtr pool) {
+virStorageBackendFileSystemUnmount(virStoragePoolObjPtr pool)
+{
     virCommandPtr cmd = NULL;
     int ret = -1;
     int rc;
@@ -562,7 +565,8 @@ virStorageBackendFileSystemStart(virConnectPtr conn ATTRIBUTE_UNUSED,
 #if WITH_BLKID
 static virStoragePoolProbeResult
 virStorageBackendFileSystemProbe(const char *device,
-                                 const char *format) {
+                                 const char *format)
+{
 
     virStoragePoolProbeResult ret = FILESYSTEM_PROBE_ERROR;
     blkid_probe probe = NULL;
