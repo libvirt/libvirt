@@ -168,6 +168,7 @@ src/util/virhostdev.c
 src/util/viridentity.c
 src/util/virinitctl.c
 src/util/viriptables.c
+src/util/viriscsi.c
 src/util/virjson.c
 src/util/virkeyfile.c
 src/util/virlockspace.c

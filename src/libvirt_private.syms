@@ -1359,6 +1359,15 @@ iptablesRemoveUdpInput;
 iptablesRemoveUdpOutput;
 
 
+# util/viriscsi.h
+virISCSIConnectionLogin;
+virISCSIConnectionLogout;
+virISCSIGetSession;
+virISCSINodeUpdate;
+virISCSIRescanLUNs;
+virISCSIScanTargets;
+
+
 # util/virjson.h
 virJSONValueArrayAppend;
 virJSONValueArrayGet;
