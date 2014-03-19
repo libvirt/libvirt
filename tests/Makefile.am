@@ -1016,7 +1016,7 @@ CILOPTINCS =
 CILOPTPACKAGES = -package unix,str,cil
 CILOPTLIBS = -linkpkg
 
-object_locking_SOURCES = objectlocking.ml
+objectlocking_SOURCES = objectlocking.ml
 
 %.cmx: %.ml
 	ocamlfind ocamlopt $(CILOPTFLAGS) $(CILOPTINCS) $(CILOPTPACKAGES) -c $<
