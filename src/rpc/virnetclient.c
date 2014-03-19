@@ -799,7 +799,7 @@ int virNetClientSetTLSSession(virNetClientPtr client,
         if (ret < 0 && (errno == EAGAIN || errno == EINTR))
             goto repoll;
 
-        ignore_value(pthread_sigmask(SIG_BLOCK, &oldmask, NULL));
+        ignore_value(pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
     }
 
     ret = virNetTLSContextCheckCertificate(tls, client->tls);
@@ -823,7 +823,7 @@ int virNetClientSetTLSSession(virNetClientPtr client,
     if (ret < 0 && (errno == EAGAIN || errno == EINTR))
         goto repoll2;
 
-    ignore_value(pthread_sigmask(SIG_BLOCK, &oldmask, NULL));
+    ignore_value(pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
 
     len = virNetTLSSessionRead(client->tls, buf, 1);
     if (len < 0 && errno != ENOMSG) {
