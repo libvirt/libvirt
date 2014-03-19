@@ -2616,10 +2616,10 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivatePtr driver,
     if (virHostdevPreparePCIDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
                                     vm->def->name, vm->def->uuid,
                                     &hostdev, 1, 0) < 0)
-        goto cleanup;
+        return -1;
 
     if (libxlMakePci(hostdev, &pcidev) < 0)
-        goto reattach_hostdev;
+        goto error;
 
     if (libxl_device_pci_add(priv->ctx, vm->def->id, &pcidev, 0) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2628,17 +2628,15 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivatePtr driver,
                        hostdev->source.subsys.u.pci.addr.bus,
                        hostdev->source.subsys.u.pci.addr.slot,
                        hostdev->source.subsys.u.pci.addr.function);
-        goto reattach_hostdev;
+        goto error;
     }
 
     vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
     return 0;
 
-reattach_hostdev:
+error:
     virHostdevReAttachPCIDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
                                  vm->def->name, &hostdev, 1, NULL);
-
-cleanup:
     return -1;
 }
 
@@ -2660,20 +2658,17 @@ libxlDomainAttachHostDevice(libxlDriverPrivatePtr driver,
     switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         if (libxlDomainAttachHostPCIDevice(driver, priv, vm, hostdev) < 0)
-            goto error;
+            return -1;
         break;
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("hostdev subsys type '%s' not supported"),
                        virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
-        goto error;
+        return -1;
     }
 
     return 0;
-
-error:
-    return -1;
 }
 
 static int
@@ -2867,14 +2862,14 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
                        _("cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"),
                        subsys->u.pci.addr.domain, subsys->u.pci.addr.bus,
                        subsys->u.pci.addr.slot, subsys->u.pci.addr.function);
-        goto cleanup;
+        goto error;
     }
 
 
     libxl_device_pci_init(&pcidev);
 
     if (libxlMakePci(detach, &pcidev) < 0)
-        goto cleanup;
+        goto error;
 
     if (libxl_device_pci_remove(priv->ctx, vm->def->id, &pcidev, 0) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2882,7 +2877,7 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
                           %.4x:%.2x:%.2x.%.1x"),
                        subsys->u.pci.addr.domain, subsys->u.pci.addr.bus,
                        subsys->u.pci.addr.slot, subsys->u.pci.addr.function);
-        goto cleanup;
+        goto error;
     }
 
     libxl_device_pci_dispose(&pcidev);
@@ -2894,7 +2889,7 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
 
     return 0;
 
-cleanup:
+error:
     virDomainHostdevDefFree(detach);
     return -1;
 }
@@ -4156,7 +4151,6 @@ libxlNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
                           unsigned *function)
 {
     virNodeDevCapsDefPtr cap;
-    int ret = -1;
 
     cap = def->caps;
     while (cap) {
@@ -4174,12 +4168,10 @@ libxlNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
     if (!cap) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("device %s is not a PCI device"), def->name);
-        goto out;
+        return -1;
     }
 
-    ret = 0;
-out:
-    return ret;
+    return 0;
 }
 
 static int
@@ -4271,12 +4263,12 @@ libxlNodeDeviceReAttach(virNodeDevicePtr dev)
         goto cleanup;
 
     if (virHostdevPCINodeDeviceReAttach(hostdev_mgr, pci) < 0)
-        goto out;
+        goto cleanup;
 
     ret = 0;
-out:
-    virPCIDeviceFree(pci);
+
 cleanup:
+    virPCIDeviceFree(pci);
     virNodeDeviceDefFree(def);
     VIR_FREE(xml);
     return ret;
@@ -4285,7 +4277,7 @@ cleanup:
 static int
 libxlNodeDeviceReset(virNodeDevicePtr dev)
 {
-    virPCIDevicePtr pci;
+    virPCIDevicePtr pci = NULL;
     unsigned domain = 0, bus = 0, slot = 0, function = 0;
     int ret = -1;
     virNodeDeviceDefPtr def = NULL;
@@ -4312,12 +4304,12 @@ libxlNodeDeviceReset(virNodeDevicePtr dev)
         goto cleanup;
 
     if (virHostdevPCINodeDeviceReset(hostdev_mgr, pci) < 0)
-        goto out;
+        goto cleanup;
 
     ret = 0;
-out:
-    virPCIDeviceFree(pci);
+
 cleanup:
+    virPCIDeviceFree(pci);
     virNodeDeviceDefFree(def);
     VIR_FREE(xml);
     return ret;
