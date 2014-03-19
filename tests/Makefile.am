@@ -16,6 +16,10 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
+# old automake does not provide abs_{src,build}dir variables
+abs_builddir = $(shell pwd)
+abs_srcdir = $(shell cd $(srcdir) && pwd)
+
 SHELL = $(PREFERABLY_POSIX_SHELL)
 
 INCLUDES = \
@@ -28,8 +32,8 @@ INCLUDES = \
 	$(GETTEXT_CPPFLAGS)
 
 AM_CFLAGS = \
-	-Dabs_builddir="\"`pwd`\"" \
-	-Dabs_srcdir="\"`cd '$(srcdir)'; pwd`\"" \
+	-Dabs_builddir="\"$(abs_builddir)\"" \
+	-Dabs_srcdir="\"$(abs_srcdir)\"" \
 	$(LIBXML_CFLAGS) \
 	$(GNUTLS_CFLAGS) \
 	$(SASL_CFLAGS) \
@@ -374,7 +378,7 @@ TESTS = $(test_programs) \
 # Also, BSD sh doesn't like 'a=b b=$$a', so we can't use an
 # intermediate shell variable, but must do all the expansion in make
 
-lv_abs_top_builddir=`cd '$(top_builddir)'; pwd`
+lv_abs_top_builddir=$(shell cd '$(top_builddir)' && pwd)
 path_add = $(subst :,$(PATH_SEPARATOR),\
 	$(subst !,$(lv_abs_top_builddir)/,!daemon:!tools:!tests))
 
@@ -382,9 +386,9 @@ VIR_TEST_EXPENSIVE ?= $(VIR_TEST_EXPENSIVE_DEFAULT)
 TESTS_ENVIRONMENT =				\
   abs_top_builddir=$(lv_abs_top_builddir)	\
   abs_top_srcdir=`cd '$(top_srcdir)'; pwd`	\
-  abs_builddir=`pwd`				\
-  abs_srcdir=`cd '$(srcdir)'; pwd`		\
-  CONFIG_HEADER="`cd '$(top_builddir)'; pwd`/config.h"	\
+  abs_builddir=$(abs_builddir)			\
+  abs_srcdir=$(abs_srcdir)			\
+  CONFIG_HEADER="$(lv_abs_top_builddir)/config.h"	\
   PATH="$(path_add)$(PATH_SEPARATOR)$$PATH"	\
   SHELL="$(SHELL)"				\
   LIBVIRT_DRIVER_DIR="$(lv_abs_top_builddir)/src/.libs" \
