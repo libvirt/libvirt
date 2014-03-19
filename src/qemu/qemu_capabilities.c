@@ -2376,7 +2376,7 @@ virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
     int n;
     xmlNodePtr *nodes = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    char *str;
+    char *str = NULL;
     long long int l;
 
     if (!(doc = virXMLParseFile(filename)))
@@ -2432,7 +2432,6 @@ virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
             if (flag < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unknown qemu capabilities flag %s"), str);
-                VIR_FREE(str);
                 goto cleanup;
             }
             VIR_FREE(str);
@@ -2463,6 +2462,7 @@ virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
                        _("unknown arch %s in QEMU capabilities cache"), str);
         goto cleanup;
     }
+    VIR_FREE(str);
 
     if ((n = virXPathNodeSet("./cpu", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2476,12 +2476,11 @@ virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
             goto cleanup;
 
         for (i = 0; i < n; i++) {
-            if (!(str = virXMLPropString(nodes[i], "name"))) {
+            if (!(qemuCaps->cpuDefinitions[i] = virXMLPropString(nodes[i], "name"))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("missing cpu name in QEMU capabilities cache"));
                 goto cleanup;
             }
-            qemuCaps->cpuDefinitions[i] = str;
         }
     }
     VIR_FREE(nodes);
@@ -2503,13 +2502,11 @@ virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
             goto cleanup;
 
         for (i = 0; i < n; i++) {
-            if (!(str = virXMLPropString(nodes[i], "name"))) {
+            if (!(qemuCaps->machineTypes[i] = virXMLPropString(nodes[i], "name"))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("missing machine name in QEMU capabilities cache"));
                 goto cleanup;
             }
-            qemuCaps->machineTypes[i] = str;
-
             qemuCaps->machineAliases[i] = virXMLPropString(nodes[i], "alias");
 
             str = virXMLPropString(nodes[i], "maxCpus");
@@ -2519,12 +2516,14 @@ virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
                                _("malformed machine cpu count in QEMU capabilities cache"));
                 goto cleanup;
             }
+            VIR_FREE(str);
         }
     }
     VIR_FREE(nodes);
 
     ret = 0;
- cleanup:
+cleanup:
+    VIR_FREE(str);
     VIR_FREE(nodes);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
@@ -2668,6 +2667,7 @@ virQEMUCapsReset(virQEMUCapsPtr qemuCaps)
     }
     VIR_FREE(qemuCaps->machineTypes);
     VIR_FREE(qemuCaps->machineAliases);
+    VIR_FREE(qemuCaps->machineMaxCpus);
     qemuCaps->nmachineTypes = 0;
 }
 
