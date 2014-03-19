@@ -2779,15 +2779,16 @@ virCommandRunRegex(virCommandPtr cmd,
                    void *data,
                    const char *prefix)
 {
-    int fd = -1, err, ret = -1;
-    FILE *list = NULL;
+    int err;
     regex_t *reg;
     regmatch_t *vars = NULL;
-    char line[1024];
     int maxReg = 0;
-    size_t i, j;
+    size_t i, j, k;
     int totgroups = 0, ngroup = 0, maxvars = 0;
     char **groups;
+    char *outbuf = NULL;
+    char **lines = NULL;
+    int ret = -1;
 
     /* Compile all regular expressions */
     if (VIR_ALLOC_N(reg, nregex) < 0)
@@ -2818,29 +2819,27 @@ virCommandRunRegex(virCommandPtr cmd,
     if (VIR_ALLOC_N(vars, maxvars+1) < 0)
         goto cleanup;
 
-    virCommandSetOutputFD(cmd, &fd);
-    if (virCommandRunAsync(cmd, NULL) < 0) {
+    virCommandSetOutputBuffer(cmd, &outbuf);
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    if (!outbuf) {
+        /* no output */
+        ret = 0;
         goto cleanup;
     }
 
-    if ((list = VIR_FDOPEN(fd, "r")) == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot read fd"));
+    if (!(lines = virStringSplit(outbuf, "\n", 0)))
         goto cleanup;
-    }
 
-    while (fgets(line, sizeof(line), list) != NULL) {
+    for (k = 0; lines[k]; k++) {
         char *p = NULL;
-        /* Strip trailing newline */
-        int len = strlen(line);
-        if (len && line[len-1] == '\n')
-            line[len-1] = '\0';
 
         /* ignore any command prefix */
         if (prefix)
-            p = STRSKIP(line, prefix);
+            p = STRSKIP(lines[k], prefix);
         if (!p)
-            p = line;
+            p = lines[k];
 
         for (i = 0; i <= maxReg && i < nregex; i++) {
             if (regexec(&reg[i], p, nvars[i]+1, vars, 0) == 0) {
@@ -2872,8 +2871,10 @@ virCommandRunRegex(virCommandPtr cmd,
         }
     }
 
-    ret = virCommandWait(cmd, NULL);
+    ret = 0;
 cleanup:
+    virStringFreeList(lines);
+    VIR_FREE(outbuf);
     if (groups) {
         for (j = 0; j < totgroups; j++)
             VIR_FREE(groups[j]);
@@ -2885,10 +2886,6 @@ cleanup:
         regfree(&reg[i]);
 
     VIR_FREE(reg);
-
-    VIR_FORCE_FCLOSE(list);
-    VIR_FORCE_CLOSE(fd);
-
     return ret;
 }
 
