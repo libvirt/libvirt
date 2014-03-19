@@ -494,7 +494,7 @@ struct _virDomainHostdevDef {
     virDomainDeviceInfoPtr info; /* Guest address */
 };
 
-/* Two types of disk backends */
+/* Types of disk backends (host resource) */
 enum virDomainDiskType {
     VIR_DOMAIN_DISK_TYPE_BLOCK,
     VIR_DOMAIN_DISK_TYPE_FILE,
@@ -505,7 +505,7 @@ enum virDomainDiskType {
     VIR_DOMAIN_DISK_TYPE_LAST
 };
 
-/* Three types of disk frontend */
+/* Types of disk frontend (guest view) */
 enum virDomainDiskDevice {
     VIR_DOMAIN_DISK_DEVICE_DISK,
     VIR_DOMAIN_DISK_DEVICE_CDROM,
@@ -529,7 +529,7 @@ enum virDomainDiskBus {
     VIR_DOMAIN_DISK_BUS_LAST
 };
 
-enum  virDomainDiskCache {
+enum virDomainDiskCache {
     VIR_DOMAIN_DISK_CACHE_DEFAULT,
     VIR_DOMAIN_DISK_CACHE_DISABLE,
     VIR_DOMAIN_DISK_CACHE_WRITETHRU,
@@ -540,7 +540,7 @@ enum  virDomainDiskCache {
     VIR_DOMAIN_DISK_CACHE_LAST
 };
 
-enum  virDomainDiskErrorPolicy {
+enum virDomainDiskErrorPolicy {
     VIR_DOMAIN_DISK_ERROR_POLICY_DEFAULT,
     VIR_DOMAIN_DISK_ERROR_POLICY_STOP,
     VIR_DOMAIN_DISK_ERROR_POLICY_REPORT,
@@ -580,7 +580,7 @@ enum virDomainDiskTray {
     VIR_DOMAIN_DISK_TRAY_LAST
 };
 
-enum  virDomainDiskGeometryTrans {
+enum virDomainDiskGeometryTrans {
     VIR_DOMAIN_DISK_TRANS_DEFAULT = 0,
     VIR_DOMAIN_DISK_TRANS_NONE,
     VIR_DOMAIN_DISK_TRANS_AUTO,
@@ -598,7 +598,7 @@ struct _virDomainDiskHostDef {
     char *socket;  /* path to unix socket */
 };
 
-enum  virDomainDiskIo {
+enum virDomainDiskIo {
     VIR_DOMAIN_DISK_IO_DEFAULT,
     VIR_DOMAIN_DISK_IO_NATIVE,
     VIR_DOMAIN_DISK_IO_THREADS,
@@ -707,14 +707,14 @@ typedef virDomainDiskSourcePoolDef *virDomainDiskSourcePoolDefPtr;
 
 /* Stores the virtual disk configuration */
 struct _virDomainDiskDef {
-    int type;
-    int device;
-    int bus;
+    int type; /* enum virDomainDiskType */
+    int device; /* enum virDomainDiskDevice */
+    int bus; /* enum virDomainDiskBus */
     char *src;
     char *dst;
-    int tray_status;
-    int removable;
-    int protocol;
+    int tray_status; /* enum virDomainDiskTray */
+    int removable; /* enum virDomainFeatureState */
+    int protocol; /* enum virDomainDiskProtocol */
     size_t nhosts;
     virDomainDiskHostDefPtr hosts;
     virDomainDiskSourcePoolDefPtr srcpool;
@@ -738,7 +738,7 @@ struct _virDomainDiskDef {
         unsigned int cylinders;
         unsigned int heads;
         unsigned int sectors;
-        int trans;
+        int trans; /* enum virDomainDiskGeometryTrans */
     } geometry;
 
     struct {
@@ -752,13 +752,13 @@ struct _virDomainDiskDef {
     char *wwn;
     char *vendor;
     char *product;
-    int cachemode;
+    int cachemode; /* enum virDomainDiskCache */
     int error_policy;  /* enum virDomainDiskErrorPolicy */
     int rerror_policy; /* enum virDomainDiskErrorPolicy */
-    int iomode;
-    int ioeventfd;
-    int event_idx;
-    int copy_on_read;
+    int iomode; /* enum virDomainDiskIo */
+    int ioeventfd; /* enum virDomainIoEventFd */
+    int event_idx; /* enum virDomainVirtioEventIdx */
+    int copy_on_read; /* enum virDomainDiskCopyOnRead */
     int snapshot; /* enum virDomainSnapshotLocation, snapshot_conf.h */
     int startupPolicy; /* enum virDomainStartupPolicy */
     bool readonly;
