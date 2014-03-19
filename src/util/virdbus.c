@@ -1421,7 +1421,6 @@ int virDBusMessageRead(DBusMessage *msg,
     ret = virDBusMessageDecodeArgs(msg, types, args);
     va_end(args);
 
-    dbus_message_unref(msg);
     return ret;
 }
 
