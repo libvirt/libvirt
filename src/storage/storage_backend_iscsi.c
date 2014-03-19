@@ -356,6 +356,24 @@ cleanup:
 }
 
 static int
+virStorageBackendISCSIConnectionLogin(const char *portal,
+                                      const char *initiatoriqn,
+                                      const char *target)
+{
+    const char *extraargv[] = { "--login", NULL };
+    return virStorageBackendISCSIConnection(portal, initiatoriqn, target, extraargv);
+}
+
+static int
+virStorageBackendISCSIConnectionLogout(const char *portal,
+                                       const char *initiatoriqn,
+                                       const char *target)
+{
+    const char *extraargv[] = { "--logout", NULL };
+    return virStorageBackendISCSIConnection(portal, initiatoriqn, target, extraargv);
+}
+
+static int
 virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
                                     uint32_t *host)
 {
@@ -789,7 +807,6 @@ virStorageBackendISCSIStartPool(virConnectPtr conn,
     char *portal = NULL;
     char *session = NULL;
     int ret = -1;
-    const char *loginargv[] = { "--login", NULL };
 
     if (pool->def->source.nhost != 1) {
          virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -825,10 +842,9 @@ virStorageBackendISCSIStartPool(virConnectPtr conn,
         if (virStorageBackendISCSISetAuth(portal, conn, pool->def) < 0)
             goto cleanup;
 
-        if (virStorageBackendISCSIConnection(portal,
-                                             pool->def->source.initiator.iqn,
-                                             pool->def->source.devices[0].path,
-                                             loginargv) < 0)
+        if (virStorageBackendISCSIConnectionLogin(portal,
+                                                  pool->def->source.initiator.iqn,
+                                                  pool->def->source.devices[0].path) < 0)
             goto cleanup;
     }
     ret = 0;
@@ -867,17 +883,15 @@ static int
 virStorageBackendISCSIStopPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                virStoragePoolObjPtr pool)
 {
-    const char *logoutargv[] = { "--logout", NULL };
     char *portal;
     int ret = -1;
 
     if ((portal = virStorageBackendISCSIPortal(&pool->def->source)) == NULL)
         return -1;
 
-    if (virStorageBackendISCSIConnection(portal,
-                                         pool->def->source.initiator.iqn,
-                                         pool->def->source.devices[0].path,
-                                         logoutargv) < 0)
+    if (virStorageBackendISCSIConnectionLogout(portal,
+                                               pool->def->source.initiator.iqn,
+                                               pool->def->source.devices[0].path) < 0)
         goto cleanup;
     ret = 0;
 
