@@ -209,6 +209,7 @@ testQemuHotplug(const void *data)
     const char *const *tmp;
     bool fail = test->fail;
     bool keep = test->keep;
+    unsigned int device_parse_flags = 0;
     virDomainObjPtr vm = NULL;
     virDomainDeviceDefPtr dev = NULL;
     virCapsPtr caps = NULL;
@@ -244,8 +245,12 @@ testQemuHotplug(const void *data)
             goto cleanup;
     }
 
+    if (test->action == ATTACH)
+        device_parse_flags = VIR_DOMAIN_XML_INACTIVE;
+
     if (!(dev = virDomainDeviceDefParse(device_xml, vm->def,
-                                        caps, driver.xmlopt, 0)))
+                                        caps, driver.xmlopt,
+                                        device_parse_flags)))
         goto cleanup;
 
     /* Now is the best time to feed the spoofed monitor with predefined

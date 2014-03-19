@@ -6949,7 +6949,7 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
     virDomainDefPtr vmdef = NULL;
     virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
     int ret = -1;
-    unsigned int affect, parse_flags = 0;
+    unsigned int affect, parse_flags = VIR_DOMAIN_XML_INACTIVE;
     virQEMUCapsPtr qemuCaps = NULL;
     qemuDomainObjPrivatePtr priv;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -6996,10 +6996,6 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
                         _("cannot modify device on transient domain"));
          goto endjob;
     }
-
-    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) &&
-        !(flags & VIR_DOMAIN_AFFECT_LIVE))
-        parse_flags |= VIR_DOMAIN_XML_INACTIVE;
 
     dev = dev_copy = virDomainDeviceDefParse(xml, vm->def,
                                              caps, driver->xmlopt,
