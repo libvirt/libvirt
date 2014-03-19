@@ -142,7 +142,7 @@ virHostdevReAttachDomainDevices(virHostdevManagerPtr mgr,
                                 virDomainDefPtr def,
                                 unsigned int flags,
                                 const char *oldStateDir)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(5);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 /* functions used by NodeDevDetach/Reattach/Reset */
 int virHostdevPCINodeDeviceDetach(virHostdevManagerPtr mgr,
