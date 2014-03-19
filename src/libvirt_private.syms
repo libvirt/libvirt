@@ -1165,6 +1165,8 @@ virDBusCallMethod;
 virDBusCloseSystemBus;
 virDBusCreateMethod;
 virDBusCreateMethodV;
+virDBusCreateReply;
+virDBusCreateReplyV;
 virDBusGetSessionBus;
 virDBusGetSystemBus;
 virDBusHasSystemBus;

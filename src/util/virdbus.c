@@ -1229,6 +1229,66 @@ int virDBusCreateMethod(DBusMessage **call,
 
 
 /**
+ * virDBusCreateReplyV:
+ * @reply: pointer to be filled with a method reply message
+ * @types: type signature for following method arguments
+ * @args: method arguments
+ *
+ * This creates a DBus method reply message and saves a
+ * pointer to it in @reply.
+ *
+ * The @types parameter is a DBus signature describing
+ * the method call parameters which will be provided
+ * as variadic args. See virDBusCreateMethodV for a
+ * description of this parameter.
+ */
+int virDBusCreateReplyV(DBusMessage **reply,
+                        const char *types,
+                        va_list args)
+{
+    int ret = -1;
+
+    if (!(*reply = dbus_message_new(DBUS_MESSAGE_TYPE_METHOD_RETURN))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virDBusMessageEncodeArgs(*reply, types, args) < 0) {
+        dbus_message_unref(*reply);
+        *reply = NULL;
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
+/**
+ * virDBusCreateReply:
+ * @reply: pointer to be filled with a method reply message
+ * @types: type signature for following method arguments
+ * @...: method arguments
+ *
+ * See virDBusCreateReplyV for a description of the
+ * behaviour of this method.
+ */
+int virDBusCreateReply(DBusMessage **reply,
+                       const char *types, ...)
+{
+    va_list args;
+    int ret;
+
+    va_start(args, types);
+    ret = virDBusCreateReplyV(reply, types, args);
+    va_end(args);
+
+    return ret;
+}
+
+
+/**
  * virDBusCall:
  * @conn: a DBus connection
  * @call: pointer to a message to send
