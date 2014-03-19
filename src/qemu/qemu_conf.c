@@ -797,8 +797,8 @@ qemuCheckSharedDevice(virHashTablePtr sharedDevices,
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("sgio of shared disk 'pool=%s' 'volume=%s' conflicts "
                          "with other active domains"),
-                       disk->srcpool->pool,
-                       disk->srcpool->volume);
+                       disk->src.srcpool->pool,
+                       disk->src.srcpool->volume);
     } else {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("sgio of shared disk '%s' conflicts with other "
@@ -1158,33 +1158,33 @@ qemuAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
     }
 
     /* iscsi pool only supports one host */
-    def->nhosts = 1;
+    def->src.nhosts = 1;
 
-    if (VIR_ALLOC_N(def->hosts, def->nhosts) < 0)
+    if (VIR_ALLOC_N(def->src.hosts, def->src.nhosts) < 0)
         goto cleanup;
 
-    if (VIR_STRDUP(def->hosts[0].name, pooldef->source.hosts[0].name) < 0)
+    if (VIR_STRDUP(def->src.hosts[0].name, pooldef->source.hosts[0].name) < 0)
         goto cleanup;
 
-    if (virAsprintf(&def->hosts[0].port, "%d",
+    if (virAsprintf(&def->src.hosts[0].port, "%d",
                     pooldef->source.hosts[0].port ?
                     pooldef->source.hosts[0].port :
                     3260) < 0)
         goto cleanup;
 
     /* iscsi volume has name like "unit:0:0:1" */
-    if (!(tokens = virStringSplit(def->srcpool->volume, ":", 0)))
+    if (!(tokens = virStringSplit(def->src.srcpool->volume, ":", 0)))
         goto cleanup;
 
     if (virStringListLength(tokens) != 4) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected iscsi volume name '%s'"),
-                       def->srcpool->volume);
+                       def->src.srcpool->volume);
         goto cleanup;
     }
 
     /* iscsi pool has only one source device path */
-    if (virAsprintf(&def->src, "%s/%s",
+    if (virAsprintf(&def->src.path, "%s/%s",
                     pooldef->source.devices[0].path,
                     tokens[3]) < 0)
         goto cleanup;
@@ -1192,10 +1192,10 @@ qemuAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
     /* Storage pool have not supported these 2 attributes yet,
      * use the defaults.
      */
-    def->hosts[0].transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
-    def->hosts[0].socket = NULL;
+    def->src.hosts[0].transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
+    def->src.hosts[0].socket = NULL;
 
-    def->protocol = VIR_DOMAIN_DISK_PROTOCOL_ISCSI;
+    def->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_ISCSI;
 
     ret = 0;
 
@@ -1220,34 +1220,34 @@ qemuTranslateDiskSourcePoolAuth(virDomainDiskDefPtr def,
      * into the virDomainDiskDef
      */
     if (pooldef->source.authType == VIR_STORAGE_POOL_AUTH_CHAP) {
-        if (VIR_STRDUP(def->auth.username,
+        if (VIR_STRDUP(def->src.auth.username,
                        pooldef->source.auth.chap.username) < 0)
             goto cleanup;
         if (pooldef->source.auth.chap.secret.uuidUsable) {
-            def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_UUID;
-            memcpy(def->auth.secret.uuid,
+            def->src.auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_UUID;
+            memcpy(def->src.auth.secret.uuid,
                    pooldef->source.auth.chap.secret.uuid,
                    VIR_UUID_BUFLEN);
         } else {
-            if (VIR_STRDUP(def->auth.secret.usage,
+            if (VIR_STRDUP(def->src.auth.secret.usage,
                            pooldef->source.auth.chap.secret.usage) < 0)
                 goto cleanup;
-            def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_USAGE;
+            def->src.auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_USAGE;
         }
     } else if (pooldef->source.authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
-        if (VIR_STRDUP(def->auth.username,
+        if (VIR_STRDUP(def->src.auth.username,
                        pooldef->source.auth.cephx.username) < 0)
             goto cleanup;
         if (pooldef->source.auth.cephx.secret.uuidUsable) {
-            def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_UUID;
-            memcpy(def->auth.secret.uuid,
+            def->src.auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_UUID;
+            memcpy(def->src.auth.secret.uuid,
                    pooldef->source.auth.cephx.secret.uuid,
                    VIR_UUID_BUFLEN);
         } else {
-            if (VIR_STRDUP(def->auth.secret.usage,
+            if (VIR_STRDUP(def->src.auth.secret.usage,
                            pooldef->source.auth.cephx.secret.usage) < 0)
                 goto cleanup;
-            def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_USAGE;
+            def->src.auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_USAGE;
         }
     }
     ret = 0;
@@ -1269,24 +1269,24 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
     int ret = -1;
     virErrorPtr savedError = NULL;
 
-    if (def->type != VIR_DOMAIN_DISK_TYPE_VOLUME)
+    if (def->src.type != VIR_DOMAIN_DISK_TYPE_VOLUME)
         return 0;
 
-    if (!def->srcpool)
+    if (!def->src.srcpool)
         return 0;
 
-    if (!(pool = virStoragePoolLookupByName(conn, def->srcpool->pool)))
+    if (!(pool = virStoragePoolLookupByName(conn, def->src.srcpool->pool)))
         return -1;
 
     if (virStoragePoolIsActive(pool) != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("storage pool '%s' containing volume '%s' "
                          "is not active"),
-                       def->srcpool->pool, def->srcpool->volume);
+                       def->src.srcpool->pool, def->src.srcpool->volume);
         goto cleanup;
     }
 
-    if (!(vol = virStorageVolLookupByName(pool, def->srcpool->volume)))
+    if (!(vol = virStorageVolLookupByName(pool, def->src.srcpool->volume)))
         goto cleanup;
 
     if (virStorageVolGetInfo(vol, &info) < 0)
@@ -1298,19 +1298,19 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
     if (!(pooldef = virStoragePoolDefParseString(poolxml)))
         goto cleanup;
 
-    def->srcpool->pooltype = pooldef->type;
-    def->srcpool->voltype = info.type;
+    def->src.srcpool->pooltype = pooldef->type;
+    def->src.srcpool->voltype = info.type;
 
-    if (def->srcpool->mode && pooldef->type != VIR_STORAGE_POOL_ISCSI) {
+    if (def->src.srcpool->mode && pooldef->type != VIR_STORAGE_POOL_ISCSI) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("disk source mode is only valid when "
                          "storage pool is of iscsi type"));
         goto cleanup;
     }
 
-    VIR_FREE(def->src);
-    virDomainDiskHostDefFree(def->nhosts, def->hosts);
-    virDomainDiskAuthClear(def);
+    VIR_FREE(def->src.path);
+    virDomainDiskHostDefFree(def->src.nhosts, def->src.hosts);
+    virDomainDiskAuthClear(&def->src);
 
     switch ((enum virStoragePoolType) pooldef->type) {
     case VIR_STORAGE_POOL_DIR:
@@ -1319,7 +1319,7 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
     case VIR_STORAGE_POOL_LOGICAL:
     case VIR_STORAGE_POOL_DISK:
     case VIR_STORAGE_POOL_SCSI:
-        if (!(def->src = virStorageVolGetPath(vol)))
+        if (!(def->src.path = virStorageVolGetPath(vol)))
             goto cleanup;
 
         if (def->startupPolicy && info.type != VIR_STORAGE_VOL_FILE) {
@@ -1332,15 +1332,15 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
 
         switch (info.type) {
         case VIR_STORAGE_VOL_FILE:
-            def->srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_FILE;
+            def->src.srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_FILE;
             break;
 
         case VIR_STORAGE_VOL_DIR:
-            def->srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_DIR;
+            def->src.srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_DIR;
             break;
 
         case VIR_STORAGE_VOL_BLOCK:
-            def->srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_BLOCK;
+            def->src.srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_BLOCK;
             break;
 
         case VIR_STORAGE_VOL_NETWORK:
@@ -1363,20 +1363,20 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
             goto cleanup;
         }
 
-       switch (def->srcpool->mode) {
+       switch (def->src.srcpool->mode) {
        case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DEFAULT:
        case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_LAST:
-           def->srcpool->mode = VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST;
+           def->src.srcpool->mode = VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST;
            /* fallthrough */
        case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST:
-           def->srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_BLOCK;
-           if (!(def->src = virStorageVolGetPath(vol)))
+           def->src.srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_BLOCK;
+           if (!(def->src.path = virStorageVolGetPath(vol)))
                goto cleanup;
            break;
 
        case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT:
-           def->srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_NETWORK;
-           def->protocol = VIR_DOMAIN_DISK_PROTOCOL_ISCSI;
+           def->src.srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_NETWORK;
+           def->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_ISCSI;
 
            if (qemuTranslateDiskSourcePoolAuth(def, pooldef) < 0)
                goto cleanup;

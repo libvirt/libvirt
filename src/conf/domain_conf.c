@@ -1248,25 +1248,19 @@ virDomainDiskSourcePoolDefFree(virDomainDiskSourcePoolDefPtr def)
     VIR_FREE(def);
 }
 
-void virDomainDiskDefFree(virDomainDiskDefPtr def)
+
+static void
+virDomainDiskSourceDefClear(virDomainDiskSourceDefPtr def)
 {
     size_t i;
 
     if (!def)
         return;
 
-    VIR_FREE(def->serial);
-    VIR_FREE(def->src);
+    VIR_FREE(def->path);
     virDomainDiskSourcePoolDefFree(def->srcpool);
-    VIR_FREE(def->dst);
     VIR_FREE(def->driverName);
-    virStorageFileFreeMetadata(def->backingChain);
-    VIR_FREE(def->mirror);
-    VIR_FREE(def->wwn);
-    VIR_FREE(def->vendor);
-    VIR_FREE(def->product);
     virStorageEncryptionFree(def->encryption);
-    virDomainDeviceInfoClear(&def->info);
 
     if (def->seclabels) {
         for (i = 0; i < def->nseclabels; i++)
@@ -1276,13 +1270,31 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
 
     virDomainDiskHostDefFree(def->nhosts, def->hosts);
     virDomainDiskAuthClear(def);
+}
+
+
+void
+virDomainDiskDefFree(virDomainDiskDefPtr def)
+{
+    if (!def)
+        return;
+
+    virDomainDiskSourceDefClear(&def->src);
+    VIR_FREE(def->serial);
+    VIR_FREE(def->dst);
+    virStorageFileFreeMetadata(def->backingChain);
+    VIR_FREE(def->mirror);
+    VIR_FREE(def->wwn);
+    VIR_FREE(def->vendor);
+    VIR_FREE(def->product);
+    virDomainDeviceInfoClear(&def->info);
 
     VIR_FREE(def);
 }
 
 
 void
-virDomainDiskAuthClear(virDomainDiskDefPtr def)
+virDomainDiskAuthClear(virDomainDiskSourceDefPtr def)
 {
     VIR_FREE(def->auth.username);
 
@@ -1357,31 +1369,31 @@ error:
 int
 virDomainDiskGetType(virDomainDiskDefPtr def)
 {
-    return def->type;
+    return def->src.type;
 }
 
 
 void
 virDomainDiskSetType(virDomainDiskDefPtr def, int type)
 {
-    def->type = type;
+    def->src.type = type;
 }
 
 
 int
 virDomainDiskGetActualType(virDomainDiskDefPtr def)
 {
-    if (def->type == VIR_DOMAIN_DISK_TYPE_VOLUME && def->srcpool)
-        return def->srcpool->actualtype;
+    if (def->src.type == VIR_DOMAIN_DISK_TYPE_VOLUME && def->src.srcpool)
+        return def->src.srcpool->actualtype;
 
-    return def->type;
+    return def->src.type;
 }
 
 
 const char *
 virDomainDiskGetSource(virDomainDiskDefPtr def)
 {
-    return def->src;
+    return def->src.path;
 }
 
 
@@ -1389,11 +1401,11 @@ int
 virDomainDiskSetSource(virDomainDiskDefPtr def, const char *src)
 {
     int ret;
-    char *tmp = def->src;
+    char *tmp = def->src.path;
 
-    ret = VIR_STRDUP(def->src, src);
+    ret = VIR_STRDUP(def->src.path, src);
     if (ret < 0)
-        def->src = tmp;
+        def->src.path = tmp;
     else
         VIR_FREE(tmp);
     return ret;
@@ -1403,7 +1415,7 @@ virDomainDiskSetSource(virDomainDiskDefPtr def, const char *src)
 const char *
 virDomainDiskGetDriver(virDomainDiskDefPtr def)
 {
-    return def->driverName;
+    return def->src.driverName;
 }
 
 
@@ -1411,11 +1423,11 @@ int
 virDomainDiskSetDriver(virDomainDiskDefPtr def, const char *name)
 {
     int ret;
-    char *tmp = def->driverName;
+    char *tmp = def->src.driverName;
 
-    ret = VIR_STRDUP(def->driverName, name);
+    ret = VIR_STRDUP(def->src.driverName, name);
     if (ret < 0)
-        def->driverName = tmp;
+        def->src.driverName = tmp;
     else
         VIR_FREE(tmp);
     return ret;
@@ -1425,14 +1437,14 @@ virDomainDiskSetDriver(virDomainDiskDefPtr def, const char *name)
 int
 virDomainDiskGetFormat(virDomainDiskDefPtr def)
 {
-    return def->format;
+    return def->src.format;
 }
 
 
 void
 virDomainDiskSetFormat(virDomainDiskDefPtr def, int format)
 {
-    def->format = format;
+    def->src.format = format;
 }
 
 
@@ -5309,13 +5321,13 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     type = virXMLPropString(node, "type");
     if (type) {
-        if ((def->type = virDomainDiskTypeFromString(type)) < 0) {
+        if ((def->src.type = virDomainDiskTypeFromString(type)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk type '%s'"), type);
             goto error;
         }
     } else {
-        def->type = VIR_DOMAIN_DISK_TYPE_FILE;
+        def->src.type = VIR_DOMAIN_DISK_TYPE_FILE;
     }
 
     snapshot = virXMLPropString(node, "snapshot");
@@ -5326,22 +5338,22 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (!source && !def->hosts && !def->srcpool &&
+            if (!source && !def->src.hosts && !def->src.srcpool &&
                 xmlStrEqual(cur->name, BAD_CAST "source")) {
                 sourceNode = cur;
 
-                if (virDomainDiskSourceDefParse(cur, def->type,
+                if (virDomainDiskSourceDefParse(cur, def->src.type,
                                                 &source,
-                                                &def->protocol,
-                                                &def->nhosts,
-                                                &def->hosts,
-                                                &def->srcpool) < 0)
+                                                &def->src.protocol,
+                                                &def->src.nhosts,
+                                                &def->src.hosts,
+                                                &def->src.srcpool) < 0)
                     goto error;
 
-                if (def->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
-                    if (def->protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI)
+                if (def->src.type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
+                    if (def->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI)
                         expected_secret_usage = VIR_SECRET_USAGE_TYPE_ISCSI;
-                    else if (def->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD)
+                    else if (def->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD)
                         expected_secret_usage = VIR_SECRET_USAGE_TYPE_CEPH;
                 }
 
@@ -5450,7 +5462,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                     goto error;
                 }
 
-                def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_NONE;
+                def->src.auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_NONE;
                 child = cur->children;
                 while (child != NULL) {
                     if (child->type == XML_ELEMENT_NODE &&
@@ -5487,17 +5499,17 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                         }
 
                         if (authUUID != NULL) {
-                            def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_UUID;
+                            def->src.auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_UUID;
                             if (virUUIDParse(authUUID,
-                                             def->auth.secret.uuid) < 0) {
+                                             def->src.auth.secret.uuid) < 0) {
                                 virReportError(VIR_ERR_XML_ERROR,
                                                _("malformed uuid %s"),
                                                authUUID);
                                 goto error;
                             }
                         } else if (authUsage != NULL) {
-                            def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_USAGE;
-                            def->auth.secret.usage = authUsage;
+                            def->src.auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_USAGE;
+                            def->src.auth.secret.usage = authUsage;
                             authUsage = NULL;
                         }
                     }
@@ -5642,7 +5654,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     /* Only CDROM and Floppy devices are allowed missing source path
      * to indicate no media present. LUN is for raw access CD-ROMs
      * that are not attached to a physical device presently */
-    if (source == NULL && def->hosts == NULL && !def->srcpool &&
+    if (source == NULL && def->src.hosts == NULL && !def->src.srcpool &&
         def->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
         def->device != VIR_DOMAIN_DISK_DEVICE_LUN &&
         def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
@@ -5655,8 +5667,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (sourceNode) {
         xmlNodePtr saved_node = ctxt->node;
         ctxt->node = sourceNode;
-        if (virSecurityDeviceLabelDefParseXML(&def->seclabels,
-                                              &def->nseclabels,
+        if (virSecurityDeviceLabelDefParseXML(&def->src.seclabels,
+                                              &def->src.nseclabels,
                                               vmSeclabels,
                                               nvmSeclabels,
                                               ctxt,
@@ -5666,10 +5678,10 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
 
     if (target == NULL) {
-        if (def->srcpool) {
+        if (def->src.srcpool) {
             char *tmp;
             if (virAsprintf(&tmp, "pool = '%s', volume = '%s'",
-                def->srcpool->pool, def->srcpool->volume) < 0)
+                def->src.srcpool->pool, def->src.srcpool->volume) < 0)
                 goto error;
 
             virReportError(VIR_ERR_NO_TARGET, "%s", tmp);
@@ -5934,7 +5946,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
         }
 
-        if (def->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
+        if (def->src.type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Setting disk %s is not allowed for "
                              "disk of network type"),
@@ -5953,18 +5965,18 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         def->startupPolicy = val;
     }
 
-    def->src = source;
+    def->src.path = source;
     source = NULL;
     def->dst = target;
     target = NULL;
-    def->auth.username = authUsername;
+    def->src.auth.username = authUsername;
     authUsername = NULL;
-    def->driverName = driverName;
+    def->src.driverName = driverName;
     driverName = NULL;
     def->mirror = mirror;
     mirror = NULL;
     def->mirroring = mirroring;
-    def->encryption = encryption;
+    def->src.encryption = encryption;
     encryption = NULL;
     def->serial = serial;
     serial = NULL;
@@ -5976,8 +5988,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     product = NULL;
 
     if (driverType) {
-        def->format = virStorageFileFormatTypeFromString(driverType);
-        if (def->format <= 0) {
+        def->src.format = virStorageFileFormatTypeFromString(driverType);
+        if (def->src.format <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown driver format value '%s'"),
                            driverType);
@@ -14950,15 +14962,15 @@ virDomainDiskSourceDefFormat(virBufferPtr buf,
                              unsigned int flags)
 {
     return virDomainDiskSourceDefFormatInternal(buf,
-                                                def->type,
-                                                def->src,
+                                                def->src.type,
+                                                def->src.path,
                                                 def->startupPolicy,
-                                                def->protocol,
-                                                def->nhosts,
-                                                def->hosts,
-                                                def->nseclabels,
-                                                def->seclabels,
-                                                def->srcpool,
+                                                def->src.protocol,
+                                                def->src.nhosts,
+                                                def->src.hosts,
+                                                def->src.nseclabels,
+                                                def->src.seclabels,
+                                                def->src.srcpool,
                                                 flags);
 }
 
@@ -14968,7 +14980,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
                        virDomainDiskDefPtr def,
                        unsigned int flags)
 {
-    const char *type = virDomainDiskTypeToString(def->type);
+    const char *type = virDomainDiskTypeToString(def->src.type);
     const char *device = virDomainDiskDeviceTypeToString(def->device);
     const char *bus = virDomainDiskBusTypeToString(def->bus);
     const char *cachemode = virDomainDiskCacheTypeToString(def->cachemode);
@@ -14985,7 +14997,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected disk type %d"), def->type);
+                       _("unexpected disk type %d"), def->src.type);
         return -1;
     }
     if (!device) {
@@ -15035,14 +15047,14 @@ virDomainDiskDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
 
-    if (def->driverName || def->format > 0 || def->cachemode ||
+    if (def->src.driverName || def->src.format > 0 || def->cachemode ||
         def->ioeventfd || def->event_idx || def->copy_on_read) {
         virBufferAddLit(buf, "<driver");
-        if (def->driverName)
-            virBufferAsprintf(buf, " name='%s'", def->driverName);
-        if (def->format > 0)
+        if (def->src.driverName)
+            virBufferAsprintf(buf, " name='%s'", def->src.driverName);
+        if (def->src.format > 0)
             virBufferAsprintf(buf, " type='%s'",
-                              virStorageFileFormatTypeToString(def->format));
+                              virStorageFileFormatTypeToString(def->src.format));
         if (def->cachemode)
             virBufferAsprintf(buf, " cache='%s'", cachemode);
         if (def->error_policy)
@@ -15062,23 +15074,23 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    if (def->auth.username) {
+    if (def->src.auth.username) {
         virBufferEscapeString(buf, "<auth username='%s'>\n",
-                              def->auth.username);
+                              def->src.auth.username);
         virBufferAdjustIndent(buf, 2);
-        if (def->protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI) {
+        if (def->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI) {
             virBufferAddLit(buf, "<secret type='iscsi'");
-        } else if (def->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
+        } else if (def->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
             virBufferAddLit(buf, "<secret type='ceph'");
         }
 
-        if (def->auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_UUID) {
-            virUUIDFormat(def->auth.secret.uuid, uuidstr);
+        if (def->src.auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_UUID) {
+            virUUIDFormat(def->src.auth.secret.uuid, uuidstr);
             virBufferAsprintf(buf, " uuid='%s'/>\n", uuidstr);
         }
-        if (def->auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_USAGE) {
+        if (def->src.auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_USAGE) {
             virBufferEscapeString(buf, " usage='%s'/>\n",
-                                  def->auth.secret.usage);
+                                  def->src.auth.secret.usage);
         }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</auth>\n");
@@ -15169,7 +15181,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
     virBufferEscapeString(buf, "<wwn>%s</wwn>\n", def->wwn);
     virBufferEscapeString(buf, "<vendor>%s</vendor>\n", def->vendor);
     virBufferEscapeString(buf, "<product>%s</product>\n", def->product);
-    if (def->encryption && virStorageEncryptionFormat(buf, def->encryption) < 0)
+    if (def->src.encryption &&
+        virStorageEncryptionFormat(buf, def->src.encryption) < 0)
         return -1;
     if (virDomainDeviceInfoFormat(buf, &def->info,
                                   flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
@@ -18622,8 +18635,8 @@ virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
 
     if (!path || type == VIR_DOMAIN_DISK_TYPE_NETWORK ||
         (type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
-         disk->srcpool &&
-         disk->srcpool->mode == VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT))
+         disk->src.srcpool &&
+         disk->src.srcpool->mode == VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT))
         return 0;
 
     if (iter(disk, path, 0, opaque) < 0)
@@ -19385,9 +19398,9 @@ virDomainDiskDefGetSecurityLabelDef(virDomainDiskDefPtr def, const char *model)
     if (def == NULL)
         return NULL;
 
-    for (i = 0; i < def->nseclabels; i++) {
-        if (STREQ_NULLABLE(def->seclabels[i]->model, model))
-            return def->seclabels[i];
+    for (i = 0; i < def->src.nseclabels; i++) {
+        if (STREQ_NULLABLE(def->src.seclabels[i]->model, model))
+            return def->src.seclabels[i];
     }
     return NULL;
 }
@@ -19506,14 +19519,14 @@ virDomainDiskSourceIsBlockType(virDomainDiskDefPtr def)
      * If it's a block type source pool, then it's possible
      */
     if (virDomainDiskGetType(def) == VIR_DOMAIN_DISK_TYPE_VOLUME &&
-        def->srcpool &&
-        def->srcpool->voltype == VIR_STORAGE_VOL_BLOCK) {
+        def->src.srcpool &&
+        def->src.srcpool->voltype == VIR_STORAGE_VOL_BLOCK) {
         /* We don't think the volume accessed by remote URI is
          * block type source, since we can't/shouldn't manage it
          * (e.g. set sgio=filtered|unfiltered for it) in libvirt.
          */
-         if (def->srcpool->pooltype == VIR_STORAGE_POOL_ISCSI &&
-             def->srcpool->mode == VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT)
+         if (def->src.srcpool->pooltype == VIR_STORAGE_POOL_ISCSI &&
+             def->src.srcpool->mode == VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT)
              return false;
 
         return true;

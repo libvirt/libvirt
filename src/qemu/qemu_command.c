@@ -3255,7 +3255,7 @@ static int qemuAddRBDHost(virDomainDiskDefPtr disk, char *hostport)
     size_t skip;
     char **parts;
 
-    if (VIR_EXPAND_N(disk->hosts, disk->nhosts, 1) < 0)
+    if (VIR_EXPAND_N(disk->src.hosts, disk->src.nhosts, 1) < 0)
         return -1;
 
     if ((port = strchr(hostport, ']'))) {
@@ -3270,29 +3270,29 @@ static int qemuAddRBDHost(virDomainDiskDefPtr disk, char *hostport)
     if (port) {
         *port = '\0';
         port += skip;
-        if (VIR_STRDUP(disk->hosts[disk->nhosts - 1].port, port) < 0)
+        if (VIR_STRDUP(disk->src.hosts[disk->src.nhosts - 1].port, port) < 0)
             goto error;
     } else {
-        if (VIR_STRDUP(disk->hosts[disk->nhosts - 1].port, "6789") < 0)
+        if (VIR_STRDUP(disk->src.hosts[disk->src.nhosts - 1].port, "6789") < 0)
             goto error;
     }
 
     parts = virStringSplit(hostport, "\\:", 0);
     if (!parts)
         goto error;
-    disk->hosts[disk->nhosts-1].name = virStringJoin((const char **)parts, ":");
+    disk->src.hosts[disk->src.nhosts-1].name = virStringJoin((const char **)parts, ":");
     virStringFreeList(parts);
-    if (!disk->hosts[disk->nhosts-1].name)
+    if (!disk->src.hosts[disk->src.nhosts-1].name)
         goto error;
 
-    disk->hosts[disk->nhosts-1].transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
-    disk->hosts[disk->nhosts-1].socket = NULL;
+    disk->src.hosts[disk->src.nhosts-1].transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
+    disk->src.hosts[disk->src.nhosts-1].socket = NULL;
 
     return 0;
 
 error:
-    VIR_FREE(disk->hosts[disk->nhosts-1].port);
-    VIR_FREE(disk->hosts[disk->nhosts-1].name);
+    VIR_FREE(disk->src.hosts[disk->src.nhosts-1].port);
+    VIR_FREE(disk->src.hosts[disk->src.nhosts-1].name);
     return -1;
 }
 
@@ -3302,7 +3302,7 @@ static int qemuParseRBDString(virDomainDiskDefPtr disk)
     char *options = NULL;
     char *p, *e, *next;
 
-    p = strchr(disk->src, ':');
+    p = strchr(disk->src.path, ':');
     if (p) {
         if (VIR_STRDUP(options, p + 1) < 0)
             goto error;
@@ -3331,7 +3331,7 @@ static int qemuParseRBDString(virDomainDiskDefPtr disk)
         }
 
         if (STRPREFIX(p, "id=") &&
-            VIR_STRDUP(disk->auth.username, p + strlen("id=")) < 0)
+            VIR_STRDUP(disk->src.auth.username, p + strlen("id=")) < 0)
             goto error;
         if (STRPREFIX(p, "mon_host=")) {
             char *h, *sep;
@@ -3374,7 +3374,7 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
     char *volimg = NULL;
     char *secret = NULL;
 
-    if (VIR_ALLOC(def->hosts) < 0)
+    if (VIR_ALLOC(def->src.hosts) < 0)
         goto error;
 
     transp = strchr(uri->scheme, '+');
@@ -3388,30 +3388,30 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
     }
 
     if (!transp) {
-        def->hosts->transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
+        def->src.hosts->transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
     } else {
-        def->hosts->transport = virDomainDiskProtocolTransportTypeFromString(transp);
-        if (def->hosts->transport < 0) {
+        def->src.hosts->transport = virDomainDiskProtocolTransportTypeFromString(transp);
+        if (def->src.hosts->transport < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid %s transport type '%s'"), scheme, transp);
             goto error;
         }
     }
-    def->nhosts = 0; /* set to 1 once everything succeeds */
+    def->src.nhosts = 0; /* set to 1 once everything succeeds */
 
-    if (def->hosts->transport != VIR_DOMAIN_DISK_PROTO_TRANS_UNIX) {
-        if (VIR_STRDUP(def->hosts->name, uri->server) < 0)
+    if (def->src.hosts->transport != VIR_DOMAIN_DISK_PROTO_TRANS_UNIX) {
+        if (VIR_STRDUP(def->src.hosts->name, uri->server) < 0)
             goto error;
 
-        if (virAsprintf(&def->hosts->port, "%d", uri->port) < 0)
+        if (virAsprintf(&def->src.hosts->port, "%d", uri->port) < 0)
             goto error;
     } else {
-        def->hosts->name = NULL;
-        def->hosts->port = 0;
+        def->src.hosts->name = NULL;
+        def->src.hosts->port = 0;
         if (uri->query) {
             if (STRPREFIX(uri->query, "socket=")) {
                 sock = strchr(uri->query, '=') + 1;
-                if (VIR_STRDUP(def->hosts->socket, sock) < 0)
+                if (VIR_STRDUP(def->src.hosts->socket, sock) < 0)
                     goto error;
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3422,12 +3422,11 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
     }
     if (uri->path) {
         volimg = uri->path + 1; /* skip the prefix slash */
-        VIR_FREE(def->src);
-        if (VIR_STRDUP(def->src, volimg) < 0)
+        VIR_FREE(def->src.path);
+        if (VIR_STRDUP(def->src.path, volimg) < 0)
             goto error;
     } else {
-        VIR_FREE(def->src);
-        def->src = NULL;
+        VIR_FREE(def->src.path);
     }
 
     if (uri->user) {
@@ -3435,11 +3434,11 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
         if (secret)
             *secret = '\0';
 
-        if (VIR_STRDUP(def->auth.username, uri->user) < 0)
+        if (VIR_STRDUP(def->src.auth.username, uri->user) < 0)
             goto error;
     }
 
-    def->nhosts = 1;
+    def->src.nhosts = 1;
     ret = 0;
 
 cleanup:
@@ -3448,8 +3447,8 @@ cleanup:
     return ret;
 
 error:
-    virDomainDiskHostDefClear(def->hosts);
-    VIR_FREE(def->hosts);
+    virDomainDiskHostDefClear(def->src.hosts);
+    VIR_FREE(def->src.hosts);
     goto cleanup;
 }
 
@@ -3458,7 +3457,7 @@ qemuParseGlusterString(virDomainDiskDefPtr def)
 {
     virURIPtr uri = NULL;
 
-    if (!(uri = virURIParse(def->src)))
+    if (!(uri = virURIParse(def->src.path)))
         return -1;
 
     return qemuParseDriveURIString(def, uri, "gluster");
@@ -3471,7 +3470,7 @@ qemuParseISCSIString(virDomainDiskDefPtr def)
     char *slash;
     unsigned lun;
 
-    if (!(uri = virURIParse(def->src)))
+    if (!(uri = virURIParse(def->src.path)))
         return -1;
 
     if (uri->path &&
@@ -3481,7 +3480,8 @@ qemuParseISCSIString(virDomainDiskDefPtr def)
             *slash = '\0';
         else if (virStrToLong_ui(slash + 1, NULL, 10, &lun) == -1) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("invalid name '%s' for iSCSI disk"), def->src);
+                           _("invalid name '%s' for iSCSI disk"),
+                           def->src.path);
             return -1;
         }
     }
@@ -3498,8 +3498,8 @@ qemuParseNBDString(virDomainDiskDefPtr disk)
 
     virURIPtr uri = NULL;
 
-    if (strstr(disk->src, "://")) {
-        if (!(uri = virURIParse(disk->src)))
+    if (strstr(disk->src.path, "://")) {
+        if (!(uri = virURIParse(disk->src.path)))
             return -1;
         return qemuParseDriveURIString(disk, uri, "nbd");
     }
@@ -3507,7 +3507,7 @@ qemuParseNBDString(virDomainDiskDefPtr disk)
     if (VIR_ALLOC(h) < 0)
         goto error;
 
-    host = disk->src + strlen("nbd:");
+    host = disk->src.path + strlen("nbd:");
     if (STRPREFIX(host, "unix:/")) {
         src = strchr(host + strlen("unix:"), ':');
         if (src)
@@ -3520,7 +3520,7 @@ qemuParseNBDString(virDomainDiskDefPtr disk)
         port = strchr(host, ':');
         if (!port) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot parse nbd filename '%s'"), disk->src);
+                           _("cannot parse nbd filename '%s'"), disk->src.path);
             goto error;
         }
 
@@ -3543,10 +3543,10 @@ qemuParseNBDString(virDomainDiskDefPtr disk)
         src = NULL;
     }
 
-    VIR_FREE(disk->src);
-    disk->src = src;
-    disk->nhosts = 1;
-    disk->hosts = h;
+    VIR_FREE(disk->src.path);
+    disk->src.path = src;
+    disk->src.nhosts = 1;
+    disk->src.hosts = h;
     return 0;
 
 error:
@@ -3875,35 +3875,35 @@ qemuDomainDiskGetSourceString(virConnectPtr conn,
     *source = NULL;
 
     if (actualType == VIR_DOMAIN_DISK_TYPE_NETWORK &&
-        disk->auth.username &&
-        (disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI ||
-         disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD)) {
+        disk->src.auth.username &&
+        (disk->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI ||
+         disk->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD)) {
         bool encode = false;
         int secretType = VIR_SECRET_USAGE_TYPE_ISCSI;
 
-        if (disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
+        if (disk->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
             /* qemu requires the secret to be encoded for RBD */
             encode = true;
             secretType = VIR_SECRET_USAGE_TYPE_CEPH;
         }
 
         if (!(secret = qemuGetSecretString(conn,
-                                           virDomainDiskProtocolTypeToString(disk->protocol),
+                                           virDomainDiskProtocolTypeToString(disk->src.protocol),
                                            encode,
-                                           disk->auth.secretType,
-                                           disk->auth.username,
-                                           disk->auth.secret.uuid,
-                                           disk->auth.secret.usage,
+                                           disk->src.auth.secretType,
+                                           disk->src.auth.username,
+                                           disk->src.auth.secret.uuid,
+                                           disk->src.auth.secret.usage,
                                            secretType)))
             goto cleanup;
     }
 
     ret = qemuGetDriveSourceString(virDomainDiskGetActualType(disk),
-                                   disk->src,
-                                   disk->protocol,
-                                   disk->nhosts,
-                                   disk->hosts,
-                                   disk->auth.username,
+                                   disk->src.path,
+                                   disk->src.protocol,
+                                   disk->src.nhosts,
+                                   disk->src.hosts,
+                                   disk->src.auth.username,
                                    secret,
                                    source);
 
@@ -4021,10 +4021,11 @@ qemuBuildDriveStr(virConnectPtr conn,
         switch (actualType) {
         case VIR_DOMAIN_DISK_TYPE_DIR:
             /* QEMU only supports magic FAT format for now */
-            if (disk->format > 0 && disk->format != VIR_STORAGE_FILE_FAT) {
+            if (disk->src.format > 0 &&
+                disk->src.format != VIR_STORAGE_FILE_FAT) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unsupported disk driver type for '%s'"),
-                               virStorageFileFormatTypeToString(disk->format));
+                               virStorageFileFormatTypeToString(disk->src.format));
                 goto error;
             }
 
@@ -4044,7 +4045,7 @@ qemuBuildDriveStr(virConnectPtr conn,
         case VIR_DOMAIN_DISK_TYPE_BLOCK:
             if (disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME ?
+                               disk->src.type == VIR_DOMAIN_DISK_TYPE_VOLUME ?
                                _("tray status 'open' is invalid for block type volume") :
                                _("tray status 'open' is invalid for block type disk"));
                 goto error;
@@ -4104,11 +4105,11 @@ qemuBuildDriveStr(virConnectPtr conn,
                        _("transient disks not supported yet"));
         goto error;
     }
-    if (disk->format > 0 &&
-        disk->type != VIR_DOMAIN_DISK_TYPE_DIR &&
+    if (disk->src.format > 0 &&
+        disk->src.type != VIR_DOMAIN_DISK_TYPE_DIR &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_FORMAT))
         virBufferAsprintf(&opt, ",format=%s",
-                          virStorageFileFormatTypeToString(disk->format));
+                          virStorageFileFormatTypeToString(disk->src.format));
 
     /* generate geometry command string */
     if (disk->geometry.cylinders > 0 &&
@@ -4319,11 +4320,11 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                            bus);
             goto error;
         }
-        if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
-            if (disk->protocol != VIR_DOMAIN_DISK_PROTOCOL_ISCSI) {
+        if (disk->src.type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
+            if (disk->src.protocol != VIR_DOMAIN_DISK_PROTOCOL_ISCSI) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("disk device='lun' is not supported for protocol='%s'"),
-                               virDomainDiskProtocolTypeToString(disk->protocol));
+                               virDomainDiskProtocolTypeToString(disk->src.protocol));
                 goto error;
             }
         } else if (!virDomainDiskSourceIsBlockType(disk)) {
@@ -8414,11 +8415,11 @@ qemuBuildCommandLine(virConnectPtr conn,
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDefPtr disk = def->disks[i];
 
-        if (disk->driverName != NULL &&
-            !STREQ(disk->driverName, "qemu")) {
+        if (disk->src.driverName != NULL &&
+            !STREQ(disk->src.driverName, "qemu")) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unsupported driver name '%s' for disk '%s'"),
-                           disk->driverName, disk->src);
+                           disk->src.driverName, disk->src.path);
             goto error;
         }
     }
@@ -8542,11 +8543,11 @@ qemuBuildCommandLine(virConnectPtr conn,
                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
                 if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
                     virCommandAddArg(cmd, "-usbdevice");
-                    virCommandAddArgFormat(cmd, "disk:%s", disk->src);
+                    virCommandAddArgFormat(cmd, "disk:%s", disk->src.path);
                 } else {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("unsupported usb disk type for '%s'"),
-                                   disk->src);
+                                   disk->src.path);
                     goto error;
                 }
                 continue;
@@ -8632,7 +8633,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             const char *fmt;
             virDomainDiskDefPtr disk = def->disks[i];
 
-            if ((disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK) &&
+            if ((disk->src.type == VIR_DOMAIN_DISK_TYPE_BLOCK) &&
                 (disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("tray status 'open' is invalid for "
@@ -8643,11 +8644,11 @@ qemuBuildCommandLine(virConnectPtr conn,
             if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
                 if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
                     virCommandAddArg(cmd, "-usbdevice");
-                    virCommandAddArgFormat(cmd, "disk:%s", disk->src);
+                    virCommandAddArgFormat(cmd, "disk:%s", disk->src.path);
                 } else {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("unsupported usb disk type for '%s'"),
-                                   disk->src);
+                                   disk->src.path);
                     goto error;
                 }
                 continue;
@@ -8655,7 +8656,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             if (STREQ(disk->dst, "hdc") &&
                 disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-                if (disk->src) {
+                if (disk->src.path) {
                     snprintf(dev, NAME_MAX, "-%s", "cdrom");
                 } else {
                     continue;
@@ -8671,12 +8672,13 @@ qemuBuildCommandLine(virConnectPtr conn,
                 }
             }
 
-            if (disk->type == VIR_DOMAIN_DISK_TYPE_DIR) {
+            if (disk->src.type == VIR_DOMAIN_DISK_TYPE_DIR) {
                 /* QEMU only supports magic FAT format for now */
-                if (disk->format > 0 && disk->format != VIR_STORAGE_FILE_FAT) {
+                if (disk->src.format > 0 &&
+                    disk->src.format != VIR_STORAGE_FILE_FAT) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("unsupported disk driver type for '%s'"),
-                                   virStorageFileFormatTypeToString(disk->format));
+                                   virStorageFileFormatTypeToString(disk->src.format));
                     goto error;
                 }
                 if (!disk->readonly) {
@@ -8691,11 +8693,11 @@ qemuBuildCommandLine(virConnectPtr conn,
 
                 if (virAsprintf(&file, fmt, disk->src) < 0)
                     goto error;
-            } else if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
+            } else if (disk->src.type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("network disks are only supported with -drive"));
             } else {
-                if (VIR_STRDUP(file, disk->src) < 0) {
+                if (VIR_STRDUP(file, disk->src.path) < 0) {
                     goto error;
                 }
             }
@@ -10199,28 +10201,28 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
     else
        def->bus = VIR_DOMAIN_DISK_BUS_IDE;
     def->device = VIR_DOMAIN_DISK_DEVICE_DISK;
-    def->type = VIR_DOMAIN_DISK_TYPE_FILE;
+    def->src.type = VIR_DOMAIN_DISK_TYPE_FILE;
 
     for (i = 0; i < nkeywords; i++) {
         if (STREQ(keywords[i], "file")) {
             if (values[i] && STRNEQ(values[i], "")) {
-                def->src = values[i];
+                def->src.path = values[i];
                 values[i] = NULL;
-                if (STRPREFIX(def->src, "/dev/"))
-                    def->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
-                else if (STRPREFIX(def->src, "nbd:") ||
-                         STRPREFIX(def->src, "nbd+")) {
-                    def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
-                    def->protocol = VIR_DOMAIN_DISK_PROTOCOL_NBD;
+                if (STRPREFIX(def->src.path, "/dev/"))
+                    def->src.type = VIR_DOMAIN_DISK_TYPE_BLOCK;
+                else if (STRPREFIX(def->src.path, "nbd:") ||
+                         STRPREFIX(def->src.path, "nbd+")) {
+                    def->src.type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                    def->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_NBD;
 
                     if (qemuParseNBDString(def) < 0)
                         goto error;
-                } else if (STRPREFIX(def->src, "rbd:")) {
-                    char *p = def->src;
+                } else if (STRPREFIX(def->src.path, "rbd:")) {
+                    char *p = def->src.path;
 
-                    def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
-                    def->protocol = VIR_DOMAIN_DISK_PROTOCOL_RBD;
-                    if (VIR_STRDUP(def->src, p + strlen("rbd:")) < 0)
+                    def->src.type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                    def->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_RBD;
+                    if (VIR_STRDUP(def->src.path, p + strlen("rbd:")) < 0)
                         goto error;
                     /* old-style CEPH_ARGS env variable is parsed later */
                     if (!old_style_ceph_args && qemuParseRBDString(def) < 0) {
@@ -10229,57 +10231,58 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                     }
 
                     VIR_FREE(p);
-                } else if (STRPREFIX(def->src, "gluster:") ||
-                           STRPREFIX(def->src, "gluster+")) {
-                    def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
-                    def->protocol = VIR_DOMAIN_DISK_PROTOCOL_GLUSTER;
+                } else if (STRPREFIX(def->src.path, "gluster:") ||
+                           STRPREFIX(def->src.path, "gluster+")) {
+                    def->src.type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                    def->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_GLUSTER;
 
                     if (qemuParseGlusterString(def) < 0)
                         goto error;
-                } else if (STRPREFIX(def->src, "iscsi:")) {
-                    def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
-                    def->protocol = VIR_DOMAIN_DISK_PROTOCOL_ISCSI;
+                } else if (STRPREFIX(def->src.path, "iscsi:")) {
+                    def->src.type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                    def->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_ISCSI;
 
                     if (qemuParseISCSIString(def) < 0)
                         goto error;
-                } else if (STRPREFIX(def->src, "sheepdog:")) {
-                    char *p = def->src;
+                } else if (STRPREFIX(def->src.path, "sheepdog:")) {
+                    char *p = def->src.path;
                     char *port, *vdi;
 
-                    def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
-                    def->protocol = VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG;
-                    if (VIR_STRDUP(def->src, p + strlen("sheepdog:")) < 0)
+                    def->src.type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                    def->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG;
+                    if (VIR_STRDUP(def->src.path, p + strlen("sheepdog:")) < 0)
                         goto error;
                     VIR_FREE(p);
 
-                    /* def->src must be [vdiname] or [host]:[port]:[vdiname] */
-                    port = strchr(def->src, ':');
+                    /* def->src.path must be [vdiname] or [host]:[port]:[vdiname] */
+                    port = strchr(def->src.path, ':');
                     if (port) {
                         *port = '\0';
                         vdi = strchr(port + 1, ':');
                         if (!vdi) {
                             *port = ':';
                             virReportError(VIR_ERR_INTERNAL_ERROR,
-                                           _("cannot parse sheepdog filename '%s'"), def->src);
+                                           _("cannot parse sheepdog filename '%s'"),
+                                           def->src.path);
                             goto error;
                         }
                         port++;
                         *vdi++ = '\0';
-                        if (VIR_ALLOC(def->hosts) < 0)
+                        if (VIR_ALLOC(def->src.hosts) < 0)
                             goto error;
-                        def->nhosts = 1;
-                        def->hosts->name = def->src;
-                        if (VIR_STRDUP(def->hosts->port, port) < 0)
+                        def->src.nhosts = 1;
+                        def->src.hosts->name = def->src.path;
+                        if (VIR_STRDUP(def->src.hosts->port, port) < 0)
                             goto error;
-                        def->hosts->transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
-                        def->hosts->socket = NULL;
-                        if (VIR_STRDUP(def->src, vdi) < 0)
+                        def->src.hosts->transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
+                        def->src.hosts->socket = NULL;
+                        if (VIR_STRDUP(def->src.path, vdi) < 0)
                             goto error;
                     }
                 } else
-                    def->type = VIR_DOMAIN_DISK_TYPE_FILE;
+                    def->src.type = VIR_DOMAIN_DISK_TYPE_FILE;
             } else {
-                def->type = VIR_DOMAIN_DISK_TYPE_FILE;
+                def->src.type = VIR_DOMAIN_DISK_TYPE_FILE;
             }
         } else if (STREQ(keywords[i], "if")) {
             if (STREQ(values[i], "ide")) {
@@ -10305,9 +10308,9 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
             } else if (STREQ(values[i], "floppy"))
                 def->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
         } else if (STREQ(keywords[i], "format")) {
-            if (VIR_STRDUP(def->driverName, "qemu") < 0)
+            if (VIR_STRDUP(def->src.driverName, "qemu") < 0)
                 goto error;
-            def->format = virStorageFileFormatTypeFromString(values[i]);
+            def->src.format = virStorageFileFormatTypeFromString(values[i]);
         } else if (STREQ(keywords[i], "cache")) {
             if (STREQ(values[i], "off") ||
                 STREQ(values[i], "none"))
@@ -10412,9 +10415,9 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
     if (def->rerror_policy == def->error_policy)
         def->rerror_policy = 0;
 
-    if (!def->src &&
+    if (!def->src.path &&
         def->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
-        def->type != VIR_DOMAIN_DISK_TYPE_NETWORK) {
+        def->src.type != VIR_DOMAIN_DISK_TYPE_NETWORK) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("missing file parameter in drive '%s'"), val);
         goto error;
@@ -11499,23 +11502,23 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 goto error;
 
             if (STRPREFIX(val, "/dev/"))
-                disk->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
+                disk->src.type = VIR_DOMAIN_DISK_TYPE_BLOCK;
             else if (STRPREFIX(val, "nbd:")) {
-                disk->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
-                disk->protocol = VIR_DOMAIN_DISK_PROTOCOL_NBD;
+                disk->src.type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                disk->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_NBD;
             } else if (STRPREFIX(val, "rbd:")) {
-                disk->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
-                disk->protocol = VIR_DOMAIN_DISK_PROTOCOL_RBD;
+                disk->src.type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                disk->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_RBD;
                 val += strlen("rbd:");
             } else if (STRPREFIX(val, "gluster")) {
-                disk->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
-                disk->protocol = VIR_DOMAIN_DISK_PROTOCOL_GLUSTER;
+                disk->src.type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                disk->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_GLUSTER;
             } else if (STRPREFIX(val, "sheepdog:")) {
-                disk->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
-                disk->protocol = VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG;
+                disk->src.type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                disk->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG;
                 val += strlen("sheepdog:");
             } else
-                disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
+                disk->src.type = VIR_DOMAIN_DISK_TYPE_FILE;
             if (STREQ(arg, "-cdrom")) {
                 disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
                 if (((def->os.arch == VIR_ARCH_PPC64) &&
@@ -11541,13 +11544,13 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 if (VIR_STRDUP(disk->dst, arg + 1) < 0)
                     goto error;
             }
-            if (VIR_STRDUP(disk->src, val) < 0)
+            if (VIR_STRDUP(disk->src.path, val) < 0)
                 goto error;
 
-            if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
+            if (disk->src.type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
                 char *port;
 
-                switch (disk->protocol) {
+                switch (disk->src.protocol) {
                 case VIR_DOMAIN_DISK_PROTOCOL_NBD:
                     if (qemuParseNBDString(disk) < 0)
                         goto error;
@@ -11559,7 +11562,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                     break;
                 case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
                     /* disk->src must be [vdiname] or [host]:[port]:[vdiname] */
-                    port = strchr(disk->src, ':');
+                    port = strchr(disk->src.path, ':');
                     if (port) {
                         char *vdi;
 
@@ -11571,13 +11574,13 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                             goto error;
                         }
                         *vdi++ = '\0';
-                        if (VIR_ALLOC(disk->hosts) < 0)
+                        if (VIR_ALLOC(disk->src.hosts) < 0)
                             goto error;
-                        disk->nhosts = 1;
-                        disk->hosts->name = disk->src;
-                        if (VIR_STRDUP(disk->hosts->port, port) < 0)
+                        disk->src.nhosts = 1;
+                        disk->src.hosts->name = disk->src.path;
+                        if (VIR_STRDUP(disk->src.hosts->port, port) < 0)
                             goto error;
-                        if (VIR_STRDUP(disk->src, vdi) < 0)
+                        if (VIR_STRDUP(disk->src.path, vdi) < 0)
                             goto error;
                     }
                     break;
@@ -11788,12 +11791,12 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             } else if (STRPREFIX(val, "disk:")) {
                 if (VIR_ALLOC(disk) < 0)
                     goto error;
-                if (VIR_STRDUP(disk->src, val + strlen("disk:")) < 0)
+                if (VIR_STRDUP(disk->src.path, val + strlen("disk:")) < 0)
                     goto error;
-                if (STRPREFIX(disk->src, "/dev/"))
-                    disk->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
+                if (STRPREFIX(disk->src.path, "/dev/"))
+                    disk->src.type = VIR_DOMAIN_DISK_TYPE_BLOCK;
                 else
-                    disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
+                    disk->src.type = VIR_DOMAIN_DISK_TYPE_FILE;
                 disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;
                 disk->bus = VIR_DOMAIN_DISK_BUS_USB;
                 disk->removable = VIR_DOMAIN_FEATURE_STATE_DEFAULT;
@@ -12024,8 +12027,8 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
         char *hosts, *port, *saveptr = NULL, *token;
         virDomainDiskDefPtr first_rbd_disk = NULL;
         for (i = 0; i < def->ndisks; i++) {
-            if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
-                def->disks[i]->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
+            if (def->disks[i]->src.type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
+                def->disks[i]->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
                 first_rbd_disk = def->disks[i];
                 break;
             }
@@ -12045,10 +12048,11 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
         }
         if (VIR_STRDUP(hosts, strchr(ceph_args, ' ') + 1) < 0)
             goto error;
-        first_rbd_disk->nhosts = 0;
+        first_rbd_disk->src.nhosts = 0;
         token = strtok_r(hosts, ",", &saveptr);
         while (token != NULL) {
-            if (VIR_REALLOC_N(first_rbd_disk->hosts, first_rbd_disk->nhosts + 1) < 0) {
+            if (VIR_REALLOC_N(first_rbd_disk->src.hosts,
+                              first_rbd_disk->src.nhosts + 1) < 0) {
                 VIR_FREE(hosts);
                 goto error;
             }
@@ -12060,21 +12064,21 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                     goto error;
                 }
             }
-            first_rbd_disk->hosts[first_rbd_disk->nhosts].port = port;
-            if (VIR_STRDUP(first_rbd_disk->hosts[first_rbd_disk->nhosts].name,
+            first_rbd_disk->src.hosts[first_rbd_disk->src.nhosts].port = port;
+            if (VIR_STRDUP(first_rbd_disk->src.hosts[first_rbd_disk->src.nhosts].name,
                            token) < 0) {
                 VIR_FREE(hosts);
                 goto error;
             }
-            first_rbd_disk->hosts[first_rbd_disk->nhosts].transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
-            first_rbd_disk->hosts[first_rbd_disk->nhosts].socket = NULL;
+            first_rbd_disk->src.hosts[first_rbd_disk->src.nhosts].transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
+            first_rbd_disk->src.hosts[first_rbd_disk->src.nhosts].socket = NULL;
 
-            first_rbd_disk->nhosts++;
+            first_rbd_disk->src.nhosts++;
             token = strtok_r(NULL, ",", &saveptr);
         }
         VIR_FREE(hosts);
 
-        if (first_rbd_disk->nhosts == 0) {
+        if (first_rbd_disk->src.nhosts == 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("found no rbd hosts in CEPH_ARGS '%s'"), ceph_args);
             goto error;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Red Hat, Inc.
+ * Copyright (C) 2011-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -169,11 +169,11 @@ testSELinuxLoadDef(const char *testname)
         goto cleanup;
 
     for (i = 0; i < def->ndisks; i++) {
-        if (def->disks[i]->type != VIR_DOMAIN_DISK_TYPE_FILE &&
-            def->disks[i]->type != VIR_DOMAIN_DISK_TYPE_BLOCK)
+        if (def->disks[i]->src.type != VIR_DOMAIN_DISK_TYPE_FILE &&
+            def->disks[i]->src.type != VIR_DOMAIN_DISK_TYPE_BLOCK)
             continue;
 
-        if (testSELinuxMungePath(&def->disks[i]->src) < 0)
+        if (testSELinuxMungePath(&def->disks[i]->src.path) < 0)
             goto cleanup;
     }
 

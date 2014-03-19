@@ -705,15 +705,15 @@ struct _virDomainDiskSourcePoolDef {
 };
 typedef virDomainDiskSourcePoolDef *virDomainDiskSourcePoolDefPtr;
 
-/* Stores the virtual disk configuration */
-struct _virDomainDiskDef {
+typedef struct _virDomainDiskSourceDef virDomainDiskSourceDef;
+typedef virDomainDiskSourceDef *virDomainDiskSourceDefPtr;
+
+/* Stores information related to a host resource.  In the case of
+ * backing chains, multiple source disks join to form a single guest
+ * view.  TODO Move this to util/ */
+struct _virDomainDiskSourceDef {
     int type; /* enum virDomainDiskType */
-    int device; /* enum virDomainDiskDevice */
-    int bus; /* enum virDomainDiskBus */
-    char *src;
-    char *dst;
-    int tray_status; /* enum virDomainDiskTray */
-    int removable; /* enum virDomainFeatureState */
+    char *path;
     int protocol; /* enum virDomainDiskProtocol */
     size_t nhosts;
     virDomainDiskHostDefPtr hosts;
@@ -726,8 +726,23 @@ struct _virDomainDiskDef {
             char *usage;
         } secret;
     } auth;
+    virStorageEncryptionPtr encryption;
     char *driverName;
     int format; /* enum virStorageFileFormat */
+
+    size_t nseclabels;
+    virSecurityDeviceLabelDefPtr *seclabels;
+};
+
+/* Stores the virtual disk configuration */
+struct _virDomainDiskDef {
+    virDomainDiskSourceDef src;
+
+    int device; /* enum virDomainDiskDevice */
+    int bus; /* enum virDomainDiskBus */
+    char *dst;
+    int tray_status; /* enum virDomainDiskTray */
+    int removable; /* enum virDomainFeatureState */
     virStorageFileMetadataPtr backingChain;
 
     char *mirror;
@@ -765,14 +780,10 @@ struct _virDomainDiskDef {
     bool shared;
     bool transient;
     virDomainDeviceInfo info;
-    virStorageEncryptionPtr encryption;
     bool rawio_specified;
     int rawio; /* no = 0, yes = 1 */
     int sgio; /* enum virDomainDeviceSGIO */
     int discard; /* enum virDomainDiskDiscard */
-
-    size_t nseclabels;
-    virSecurityDeviceLabelDefPtr *seclabels;
 };
 
 
@@ -2251,7 +2262,7 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def);
 void virDomainInputDefFree(virDomainInputDefPtr def);
 void virDomainDiskDefFree(virDomainDiskDefPtr def);
 void virDomainLeaseDefFree(virDomainLeaseDefPtr def);
-void virDomainDiskAuthClear(virDomainDiskDefPtr def);
+void virDomainDiskAuthClear(virDomainDiskSourceDefPtr def);
 void virDomainDiskHostDefClear(virDomainDiskHostDefPtr def);
 void virDomainDiskHostDefFree(size_t nhosts, virDomainDiskHostDefPtr hosts);
 virDomainDiskHostDefPtr virDomainDiskHostDefCopy(size_t nhosts,

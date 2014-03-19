@@ -2791,10 +2791,10 @@ virStorageFilePtr
 virStorageFileInitFromDiskDef(virDomainDiskDefPtr disk)
 {
     return virStorageFileInitInternal(virDomainDiskGetActualType(disk),
-                                      disk->src,
-                                      disk->protocol,
-                                      disk->nhosts,
-                                      disk->hosts);
+                                      disk->src.path,
+                                      disk->src.protocol,
+                                      disk->src.nhosts,
+                                      disk->src.hosts);
 }
 
 
