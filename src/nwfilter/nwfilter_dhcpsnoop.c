@@ -1605,6 +1605,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
     int tmp;
     virThread thread;
     virNWFilterVarValuePtr dhcpsrvrs;
+    bool threadPuts = false;
 
     virNWFilterSnoopIFKeyFMT(ifkey, vmuuid, macaddr);
 
@@ -1698,6 +1699,8 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
         goto exit_snoopreq_unlock;
     }
 
+    threadPuts = true;
+
     virAtomicIntInc(&virNWFilterSnoopState.nThreads);
 
     req->threadkey = virNWFilterSnoopActivate(req);
@@ -1737,7 +1740,8 @@ exit_rem_ifnametokey:
 exit_snoopunlock:
     virNWFilterSnoopUnlock();
 exit_snoopreqput:
-    virNWFilterSnoopReqPut(req);
+    if (!threadPuts)
+        virNWFilterSnoopReqPut(req);
 
     return -1;
 }
