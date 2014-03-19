@@ -50,10 +50,10 @@ struct _virNetworkDriverState {
 typedef struct _virNetworkDriverState virNetworkDriverState;
 typedef virNetworkDriverState *virNetworkDriverStatePtr;
 
-int networkCheckRouteCollision(virNetworkObjPtr network);
+int networkCheckRouteCollision(virNetworkDefPtr def);
 
-int networkAddFirewallRules(virNetworkObjPtr network);
+int networkAddFirewallRules(virNetworkDefPtr def);
 
-void networkRemoveFirewallRules(virNetworkObjPtr network);
+void networkRemoveFirewallRules(virNetworkDefPtr def);
 
 #endif /* __VIR_BRIDGE_DRIVER_PLATFORM_H__ */

@@ -1650,8 +1650,8 @@ networkReloadFirewallRules(virNetworkDriverStatePtr driver)
             /* Only the three L3 network types that are configured by libvirt
              * need to have iptables rules reloaded.
              */
-            networkRemoveFirewallRules(network);
-            if (networkAddFirewallRules(network) < 0) {
+            networkRemoveFirewallRules(network->def);
+            if (networkAddFirewallRules(network->def) < 0) {
                 /* failed to add but already logged */
             }
         }
@@ -1833,7 +1833,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     int tapfd = -1;
 
     /* Check to see if any network IP collides with an existing route */
-    if (networkCheckRouteCollision(network) < 0)
+    if (networkCheckRouteCollision(network->def) < 0)
         return -1;
 
     /* Create and configure the bridge device */
@@ -1882,7 +1882,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
         goto err1;
 
     /* Add "once per network" rules */
-    if (networkAddFirewallRules(network) < 0)
+    if (networkAddFirewallRules(network->def) < 0)
         goto err1;
 
     for (i = 0;
@@ -1975,7 +1975,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
  err2:
     if (!save_err)
         save_err = virSaveLastError();
-    networkRemoveFirewallRules(network);
+    networkRemoveFirewallRules(network->def);
 
  err1:
     if (!save_err)
@@ -2029,7 +2029,7 @@ static int networkShutdownNetworkVirtual(virNetworkDriverStatePtr driver ATTRIBU
 
     ignore_value(virNetDevSetOnline(network->def->bridge, 0));
 
-    networkRemoveFirewallRules(network);
+    networkRemoveFirewallRules(network->def);
 
     ignore_value(virNetDevBridgeDelete(network->def->bridge));
 
@@ -2897,7 +2897,7 @@ networkUpdate(virNetworkPtr net,
                  * old rules (and remember to load new ones after the
                  * update).
                  */
-                networkRemoveFirewallRules(network);
+                networkRemoveFirewallRules(network->def);
                 needFirewallRefresh = true;
                 break;
             default:
@@ -2909,11 +2909,11 @@ networkUpdate(virNetworkPtr net,
     /* update the network config in memory/on disk */
     if (virNetworkObjUpdate(network, command, section, parentIndex, xml, flags) < 0) {
         if (needFirewallRefresh)
-            ignore_value(networkAddFirewallRules(network));
+            ignore_value(networkAddFirewallRules(network->def));
         goto cleanup;
     }
 
-    if (needFirewallRefresh && networkAddFirewallRules(network) < 0)
+    if (needFirewallRefresh && networkAddFirewallRules(network->def) < 0)
         goto cleanup;
 
     if (flags & VIR_NETWORK_UPDATE_AFFECT_CONFIG) {

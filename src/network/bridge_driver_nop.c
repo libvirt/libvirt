@@ -21,16 +21,16 @@
 
 #include <config.h>
 
-int networkCheckRouteCollision(virNetworkObjPtr network ATTRIBUTE_UNUSED)
+int networkCheckRouteCollision(virNetworkDefPtr def ATTRIBUTE_UNUSED)
 {
     return 0;
 }
 
-int networkAddFirewallRules(virNetworkObjPtr network ATTRIBUTE_UNUSED)
+int networkAddFirewallRules(virNetworkDefPtr def ATTRIBUTE_UNUSED)
 {
     return 0;
 }
 
-void networkRemoveFirewallRules(virNetworkObjPtr network ATTRIBUTE_UNUSED)
+void networkRemoveFirewallRules(virNetworkDefPtr def ATTRIBUTE_UNUSED)
 {
 }

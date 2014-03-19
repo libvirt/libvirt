@@ -40,7 +40,7 @@ VIR_LOG_INIT("network.bridge_driver_linux");
  *      other scenarios where we can ruin host network connectivity.
  * XXX: Using a proper library is preferred over parsing /proc
  */
-int networkCheckRouteCollision(virNetworkObjPtr network)
+int networkCheckRouteCollision(virNetworkDefPtr def)
 {
     int ret = 0, len;
     char *cur, *buf = NULL;
@@ -100,7 +100,7 @@ int networkCheckRouteCollision(virNetworkObjPtr network)
         addr_val &= mask_val;
 
         for (i = 0;
-             (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, i));
+             (ipdef = virNetworkDefGetIpByIndex(def, AF_INET, i));
              i++) {
 
             unsigned int net_dest;
@@ -108,7 +108,7 @@ int networkCheckRouteCollision(virNetworkObjPtr network)
 
             if (virNetworkIpDefNetmask(ipdef, &netmask) < 0) {
                 VIR_WARN("Failed to get netmask of '%s'",
-                         network->def->bridge);
+                         def->bridge);
                 continue;
             }
 
@@ -136,16 +136,16 @@ static const char networkLocalBroadcast[] = "255.255.255.255/32";
 
 static int
 networkAddMasqueradingFirewallRules(virFirewallPtr fw,
-                                    virNetworkObjPtr network,
+                                    virNetworkDefPtr def,
                                     virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
-    const char *forwardIf = virNetworkDefForwardIf(network->def, 0);
+    const char *forwardIf = virNetworkDefForwardIf(def, 0);
 
     if (prefix < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid prefix or netmask for '%s'"),
-                       network->def->bridge);
+                       def->bridge);
         return -1;
     }
 
@@ -153,7 +153,7 @@ networkAddMasqueradingFirewallRules(virFirewallPtr fw,
     if (iptablesAddForwardAllowOut(fw,
                                    &ipdef->address,
                                    prefix,
-                                   network->def->bridge,
+                                   def->bridge,
                                    forwardIf) < 0)
         return -1;
 
@@ -163,7 +163,7 @@ networkAddMasqueradingFirewallRules(virFirewallPtr fw,
     if (iptablesAddForwardAllowRelatedIn(fw,
                                          &ipdef->address,
                                          prefix,
-                                         network->def->bridge,
+                                         def->bridge,
                                          forwardIf) < 0)
         return -1;
 
@@ -204,8 +204,8 @@ networkAddMasqueradingFirewallRules(virFirewallPtr fw,
                                      &ipdef->address,
                                      prefix,
                                      forwardIf,
-                                     &network->def->forward.addr,
-                                     &network->def->forward.port,
+                                     &def->forward.addr,
+                                     &def->forward.port,
                                      NULL) < 0)
         return -1;
 
@@ -214,8 +214,8 @@ networkAddMasqueradingFirewallRules(virFirewallPtr fw,
                                      &ipdef->address,
                                      prefix,
                                      forwardIf,
-                                     &network->def->forward.addr,
-                                     &network->def->forward.port,
+                                     &def->forward.addr,
+                                     &def->forward.port,
                                      "udp") < 0)
         return -1;
 
@@ -224,8 +224,8 @@ networkAddMasqueradingFirewallRules(virFirewallPtr fw,
                                      &ipdef->address,
                                      prefix,
                                      forwardIf,
-                                     &network->def->forward.addr,
-                                     &network->def->forward.port,
+                                     &def->forward.addr,
+                                     &def->forward.port,
                                      "tcp") < 0)
         return -1;
 
@@ -250,11 +250,11 @@ networkAddMasqueradingFirewallRules(virFirewallPtr fw,
 
 static int
 networkRemoveMasqueradingFirewallRules(virFirewallPtr fw,
-                                       virNetworkObjPtr network,
+                                       virNetworkDefPtr def,
                                        virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
-    const char *forwardIf = virNetworkDefForwardIf(network->def, 0);
+    const char *forwardIf = virNetworkDefForwardIf(def, 0);
 
     if (prefix < 0)
         return 0;
@@ -277,8 +277,8 @@ networkRemoveMasqueradingFirewallRules(virFirewallPtr fw,
                                         &ipdef->address,
                                         prefix,
                                         forwardIf,
-                                        &network->def->forward.addr,
-                                        &network->def->forward.port,
+                                        &def->forward.addr,
+                                        &def->forward.port,
                                         "tcp") < 0)
         return -1;
 
@@ -286,8 +286,8 @@ networkRemoveMasqueradingFirewallRules(virFirewallPtr fw,
                                         &ipdef->address,
                                         prefix,
                                         forwardIf,
-                                        &network->def->forward.addr,
-                                        &network->def->forward.port,
+                                        &def->forward.addr,
+                                        &def->forward.port,
                                         "udp") < 0)
         return -1;
 
@@ -295,22 +295,22 @@ networkRemoveMasqueradingFirewallRules(virFirewallPtr fw,
                                         &ipdef->address,
                                         prefix,
                                         forwardIf,
-                                        &network->def->forward.addr,
-                                        &network->def->forward.port,
+                                        &def->forward.addr,
+                                        &def->forward.port,
                                         NULL) < 0)
         return -1;
 
     if (iptablesRemoveForwardAllowRelatedIn(fw,
                                             &ipdef->address,
                                             prefix,
-                                            network->def->bridge,
+                                            def->bridge,
                                             forwardIf) < 0)
         return -1;
 
     if (iptablesRemoveForwardAllowOut(fw,
                                       &ipdef->address,
                                       prefix,
-                                      network->def->bridge,
+                                      def->bridge,
                                       forwardIf) < 0)
         return -1;
 
@@ -320,16 +320,16 @@ networkRemoveMasqueradingFirewallRules(virFirewallPtr fw,
 
 static int
 networkAddRoutingFirewallRules(virFirewallPtr fw,
-                               virNetworkObjPtr network,
+                               virNetworkDefPtr def,
                                virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
-    const char *forwardIf = virNetworkDefForwardIf(network->def, 0);
+    const char *forwardIf = virNetworkDefForwardIf(def, 0);
 
     if (prefix < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid prefix or netmask for '%s'"),
-                       network->def->bridge);
+                       def->bridge);
         return -1;
     }
 
@@ -337,7 +337,7 @@ networkAddRoutingFirewallRules(virFirewallPtr fw,
     if (iptablesAddForwardAllowOut(fw,
                                    &ipdef->address,
                                    prefix,
-                                   network->def->bridge,
+                                   def->bridge,
                                    forwardIf) < 0)
         return -1;
 
@@ -345,7 +345,7 @@ networkAddRoutingFirewallRules(virFirewallPtr fw,
     if (iptablesAddForwardAllowIn(fw,
                                   &ipdef->address,
                                   prefix,
-                                  network->def->bridge,
+                                  def->bridge,
                                   forwardIf) < 0)
         return -1;
 
@@ -355,11 +355,11 @@ networkAddRoutingFirewallRules(virFirewallPtr fw,
 
 static int
 networkRemoveRoutingFirewallRules(virFirewallPtr fw,
-                                  virNetworkObjPtr network,
+                                  virNetworkDefPtr def,
                                   virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
-    const char *forwardIf = virNetworkDefForwardIf(network->def, 0);
+    const char *forwardIf = virNetworkDefForwardIf(def, 0);
 
     if (prefix < 0)
         return 0;
@@ -367,14 +367,14 @@ networkRemoveRoutingFirewallRules(virFirewallPtr fw,
     if (iptablesRemoveForwardAllowIn(fw,
                                      &ipdef->address,
                                      prefix,
-                                     network->def->bridge,
+                                     def->bridge,
                                      forwardIf) < 0)
         return -1;
 
     if (iptablesRemoveForwardAllowOut(fw,
                                       &ipdef->address,
                                       prefix,
-                                      network->def->bridge,
+                                      def->bridge,
                                       forwardIf) < 0)
         return -1;
 
@@ -384,7 +384,7 @@ networkRemoveRoutingFirewallRules(virFirewallPtr fw,
 
 static void
 networkAddGeneralIPv4FirewallRules(virFirewallPtr fw,
-                                   virNetworkObjPtr network)
+                                   virNetworkDefPtr def)
 {
     size_t i;
     virNetworkIpDefPtr ipv4def;
@@ -392,60 +392,60 @@ networkAddGeneralIPv4FirewallRules(virFirewallPtr fw,
     /* First look for first IPv4 address that has dhcp or tftpboot defined. */
     /* We support dhcp config on 1 IPv4 interface only. */
     for (i = 0;
-         (ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, i));
+         (ipv4def = virNetworkDefGetIpByIndex(def, AF_INET, i));
          i++) {
         if (ipv4def->nranges || ipv4def->nhosts || ipv4def->tftproot)
             break;
     }
 
     /* allow DHCP requests through to dnsmasq */
-    iptablesAddTcpInput(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge, 67);
-    iptablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge, 67);
-    iptablesAddUdpOutput(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge, 68);
+    iptablesAddTcpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 67);
+    iptablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 67);
+    iptablesAddUdpOutput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 68);
 
     /* allow DNS requests through to dnsmasq */
-    iptablesAddTcpInput(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge, 53);
-    iptablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge, 53);
+    iptablesAddTcpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 53);
+    iptablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 53);
 
     /* allow TFTP requests through to dnsmasq if necessary */
     if (ipv4def && ipv4def->tftproot)
-        iptablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge, 69);
+        iptablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 69);
 
     /* Catch all rules to block forwarding to/from bridges */
-    iptablesAddForwardRejectOut(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge);
-    iptablesAddForwardRejectIn(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge);
+    iptablesAddForwardRejectOut(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge);
+    iptablesAddForwardRejectIn(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge);
 
     /* Allow traffic between guests on the same bridge */
-    iptablesAddForwardAllowCross(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge);
+    iptablesAddForwardAllowCross(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge);
 }
 
 static void
 networkRemoveGeneralIPv4FirewallRules(virFirewallPtr fw,
-                                      virNetworkObjPtr network)
+                                      virNetworkDefPtr def)
 {
     size_t i;
     virNetworkIpDefPtr ipv4def;
 
     for (i = 0;
-         (ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, i));
+         (ipv4def = virNetworkDefGetIpByIndex(def, AF_INET, i));
          i++) {
         if (ipv4def->nranges || ipv4def->nhosts || ipv4def->tftproot)
             break;
     }
 
-    iptablesRemoveForwardAllowCross(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge);
-    iptablesRemoveForwardRejectIn(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge);
-    iptablesRemoveForwardRejectOut(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge);
+    iptablesRemoveForwardAllowCross(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge);
+    iptablesRemoveForwardRejectIn(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge);
+    iptablesRemoveForwardRejectOut(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge);
 
     if (ipv4def && ipv4def->tftproot)
-        iptablesRemoveUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge, 69);
+        iptablesRemoveUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 69);
 
-    iptablesRemoveUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge, 53);
-    iptablesRemoveTcpInput(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge, 53);
+    iptablesRemoveUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 53);
+    iptablesRemoveTcpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 53);
 
-    iptablesRemoveUdpOutput(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge, 68);
-    iptablesRemoveUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge, 67);
-    iptablesRemoveTcpInput(fw, VIR_FIREWALL_LAYER_IPV4, network->def->bridge, 67);
+    iptablesRemoveUdpOutput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 68);
+    iptablesRemoveUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 67);
+    iptablesRemoveTcpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 67);
 }
 
 
@@ -456,73 +456,73 @@ networkRemoveGeneralIPv4FirewallRules(virFirewallPtr fw,
  */
 static void
 networkAddGeneralIPv6FirewallRules(virFirewallPtr fw,
-                                   virNetworkObjPtr network)
+                                   virNetworkDefPtr def)
 {
 
-    if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0) &&
-        !network->def->ipv6nogw) {
+    if (!virNetworkDefGetIpByIndex(def, AF_INET6, 0) &&
+        !def->ipv6nogw) {
         return;
     }
 
     /* Catch all rules to block forwarding to/from bridges */
-    iptablesAddForwardRejectOut(fw, VIR_FIREWALL_LAYER_IPV6, network->def->bridge);
-    iptablesAddForwardRejectIn(fw, VIR_FIREWALL_LAYER_IPV6, network->def->bridge);
+    iptablesAddForwardRejectOut(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge);
+    iptablesAddForwardRejectIn(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge);
 
     /* Allow traffic between guests on the same bridge */
-    iptablesAddForwardAllowCross(fw, VIR_FIREWALL_LAYER_IPV6, network->def->bridge);
+    iptablesAddForwardAllowCross(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge);
 
-    if (virNetworkDefGetIpByIndex(network->def, AF_INET6, 0)) {
+    if (virNetworkDefGetIpByIndex(def, AF_INET6, 0)) {
         /* allow DNS over IPv6 */
-        iptablesAddTcpInput(fw, VIR_FIREWALL_LAYER_IPV6, network->def->bridge, 53);
-        iptablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV6, network->def->bridge, 53);
-        iptablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV6, network->def->bridge, 547);
+        iptablesAddTcpInput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 53);
+        iptablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 53);
+        iptablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 547);
     }
 }
 
 static void
 networkRemoveGeneralIPv6FirewallRules(virFirewallPtr fw,
-                                      virNetworkObjPtr network)
+                                      virNetworkDefPtr def)
 {
-    if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0) &&
-        !network->def->ipv6nogw) {
+    if (!virNetworkDefGetIpByIndex(def, AF_INET6, 0) &&
+        !def->ipv6nogw) {
         return;
     }
 
-    if (virNetworkDefGetIpByIndex(network->def, AF_INET6, 0)) {
-        iptablesRemoveUdpInput(fw, VIR_FIREWALL_LAYER_IPV6, network->def->bridge, 547);
-        iptablesRemoveUdpInput(fw, VIR_FIREWALL_LAYER_IPV6, network->def->bridge, 53);
-        iptablesRemoveTcpInput(fw, VIR_FIREWALL_LAYER_IPV6, network->def->bridge, 53);
+    if (virNetworkDefGetIpByIndex(def, AF_INET6, 0)) {
+        iptablesRemoveUdpInput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 547);
+        iptablesRemoveUdpInput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 53);
+        iptablesRemoveTcpInput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 53);
     }
 
     /* the following rules are there if no IPv6 address has been defined
-     * but network->def->ipv6nogw == true
+     * but def->ipv6nogw == true
      */
-    iptablesRemoveForwardAllowCross(fw, VIR_FIREWALL_LAYER_IPV6, network->def->bridge);
-    iptablesRemoveForwardRejectIn(fw, VIR_FIREWALL_LAYER_IPV6, network->def->bridge);
-    iptablesRemoveForwardRejectOut(fw, VIR_FIREWALL_LAYER_IPV6, network->def->bridge);
+    iptablesRemoveForwardAllowCross(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge);
+    iptablesRemoveForwardRejectIn(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge);
+    iptablesRemoveForwardRejectOut(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge);
 }
 
 
 static void
 networkAddGeneralFirewallRules(virFirewallPtr fw,
-                               virNetworkObjPtr network)
+                               virNetworkDefPtr def)
 {
-    networkAddGeneralIPv4FirewallRules(fw, network);
-    networkAddGeneralIPv6FirewallRules(fw, network);
+    networkAddGeneralIPv4FirewallRules(fw, def);
+    networkAddGeneralIPv6FirewallRules(fw, def);
 }
 
 
 static void
 networkRemoveGeneralFirewallRules(virFirewallPtr fw,
-                                  virNetworkObjPtr network)
+                                  virNetworkDefPtr def)
 {
-    networkRemoveGeneralIPv4FirewallRules(fw, network);
-    networkRemoveGeneralIPv6FirewallRules(fw, network);
+    networkRemoveGeneralIPv4FirewallRules(fw, def);
+    networkRemoveGeneralIPv6FirewallRules(fw, def);
 }
 
 static void
 networkAddChecksumFirewallRules(virFirewallPtr fw,
-                                virNetworkObjPtr network)
+                                virNetworkDefPtr def)
 {
     size_t i;
     virNetworkIpDefPtr ipv4def;
@@ -530,7 +530,7 @@ networkAddChecksumFirewallRules(virFirewallPtr fw,
     /* First look for first IPv4 address that has dhcp or tftpboot defined. */
     /* We support dhcp config on 1 IPv4 interface only. */
     for (i = 0;
-         (ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, i));
+         (ipv4def = virNetworkDefGetIpByIndex(def, AF_INET, i));
          i++) {
         if (ipv4def->nranges || ipv4def->nhosts)
             break;
@@ -542,13 +542,13 @@ networkAddChecksumFirewallRules(virFirewallPtr fw,
      * aborting, since not all iptables implementations support it).
      */
     if (ipv4def)
-        iptablesAddOutputFixUdpChecksum(fw, network->def->bridge, 68);
+        iptablesAddOutputFixUdpChecksum(fw, def->bridge, 68);
 }
 
 
 static void
 networkRemoveChecksumFirewallRules(virFirewallPtr fw,
-                                   virNetworkObjPtr network)
+                                   virNetworkDefPtr def)
 {
     size_t i;
     virNetworkIpDefPtr ipv4def;
@@ -556,33 +556,33 @@ networkRemoveChecksumFirewallRules(virFirewallPtr fw,
     /* First look for first IPv4 address that has dhcp or tftpboot defined. */
     /* We support dhcp config on 1 IPv4 interface only. */
     for (i = 0;
-         (ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, i));
+         (ipv4def = virNetworkDefGetIpByIndex(def, AF_INET, i));
          i++) {
         if (ipv4def->nranges || ipv4def->nhosts)
             break;
     }
 
     if (ipv4def)
-        iptablesRemoveOutputFixUdpChecksum(fw, network->def->bridge, 68);
+        iptablesRemoveOutputFixUdpChecksum(fw, def->bridge, 68);
 }
 
 
 static int
 networkAddIpSpecificFirewallRules(virFirewallPtr fw,
-                                  virNetworkObjPtr network,
+                                  virNetworkDefPtr def,
                                   virNetworkIpDefPtr ipdef)
 {
     /* NB: in the case of IPv6, routing rules are added when the
      * forward mode is NAT. This is because IPv6 has no NAT.
      */
 
-    if (network->def->forward.type == VIR_NETWORK_FORWARD_NAT) {
+    if (def->forward.type == VIR_NETWORK_FORWARD_NAT) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET))
-            return networkAddMasqueradingFirewallRules(fw, network, ipdef);
+            return networkAddMasqueradingFirewallRules(fw, def, ipdef);
         else if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
-            return networkAddRoutingFirewallRules(fw, network, ipdef);
-    } else if (network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
-        return networkAddRoutingFirewallRules(fw, network, ipdef);
+            return networkAddRoutingFirewallRules(fw, def, ipdef);
+    } else if (def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
+        return networkAddRoutingFirewallRules(fw, def, ipdef);
     }
     return 0;
 }
@@ -590,23 +590,23 @@ networkAddIpSpecificFirewallRules(virFirewallPtr fw,
 
 static int
 networkRemoveIpSpecificFirewallRules(virFirewallPtr fw,
-                                     virNetworkObjPtr network,
+                                     virNetworkDefPtr def,
                                      virNetworkIpDefPtr ipdef)
 {
-    if (network->def->forward.type == VIR_NETWORK_FORWARD_NAT) {
+    if (def->forward.type == VIR_NETWORK_FORWARD_NAT) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET))
-            return networkRemoveMasqueradingFirewallRules(fw, network, ipdef);
+            return networkRemoveMasqueradingFirewallRules(fw, def, ipdef);
         else if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
-            return networkRemoveRoutingFirewallRules(fw, network, ipdef);
-    } else if (network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
-        return networkRemoveRoutingFirewallRules(fw, network, ipdef);
+            return networkRemoveRoutingFirewallRules(fw, def, ipdef);
+    } else if (def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
+        return networkRemoveRoutingFirewallRules(fw, def, ipdef);
     }
     return 0;
 }
 
 
 /* Add all rules for all ip addresses (and general rules) on a network */
-int networkAddFirewallRules(virNetworkObjPtr network)
+int networkAddFirewallRules(virNetworkDefPtr def)
 {
     size_t i;
     virNetworkIpDefPtr ipdef;
@@ -617,27 +617,27 @@ int networkAddFirewallRules(virNetworkObjPtr network)
 
     virFirewallStartTransaction(fw, 0);
 
-    networkAddGeneralFirewallRules(fw, network);
+    networkAddGeneralFirewallRules(fw, def);
 
     for (i = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, i));
+         (ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, i));
          i++) {
-        if (networkAddIpSpecificFirewallRules(fw, network, ipdef) < 0)
+        if (networkAddIpSpecificFirewallRules(fw, def, ipdef) < 0)
             goto cleanup;
     }
 
     virFirewallStartRollback(fw, 0);
 
     for (i = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, i));
+         (ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, i));
          i++) {
-        if (networkRemoveIpSpecificFirewallRules(fw, network, ipdef) < 0)
+        if (networkRemoveIpSpecificFirewallRules(fw, def, ipdef) < 0)
             goto cleanup;
     }
-    networkRemoveGeneralFirewallRules(fw, network);
+    networkRemoveGeneralFirewallRules(fw, def);
 
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
-    networkAddChecksumFirewallRules(fw, network);
+    networkAddChecksumFirewallRules(fw, def);
 
     if (virFirewallApply(fw) < 0)
         goto cleanup;
@@ -649,7 +649,7 @@ int networkAddFirewallRules(virNetworkObjPtr network)
 }
 
 /* Remove all rules for all ip addresses (and general rules) on a network */
-void networkRemoveFirewallRules(virNetworkObjPtr network)
+void networkRemoveFirewallRules(virNetworkDefPtr def)
 {
     size_t i;
     virNetworkIpDefPtr ipdef;
@@ -658,17 +658,17 @@ void networkRemoveFirewallRules(virNetworkObjPtr network)
     fw = virFirewallNew();
 
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
-    networkRemoveChecksumFirewallRules(fw, network);
+    networkRemoveChecksumFirewallRules(fw, def);
 
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
 
     for (i = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, i));
+         (ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, i));
          i++) {
-        if (networkRemoveIpSpecificFirewallRules(fw, network, ipdef) < 0)
+        if (networkRemoveIpSpecificFirewallRules(fw, def, ipdef) < 0)
             goto cleanup;
     }
-    networkRemoveGeneralFirewallRules(fw, network);
+    networkRemoveGeneralFirewallRules(fw, def);
 
     virFirewallApply(fw);
 
