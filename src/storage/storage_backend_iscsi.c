@@ -96,8 +96,8 @@ virStorageBackendISCSIExtractSession(char **const groups,
 }
 
 static char *
-virStorageBackendISCSISession(virStoragePoolObjPtr pool,
-                              bool probe)
+virStorageBackendISCSIGetSession(const char *devpath,
+                                 bool probe)
 {
     /*
      * # iscsiadm --mode session
@@ -114,7 +114,7 @@ virStorageBackendISCSISession(virStoragePoolObjPtr pool,
     };
     struct virStorageBackendISCSISessionData cbdata = {
         .session = NULL,
-        .devpath = pool->def->source.devices[0].path
+        .devpath = devpath,
     };
 
     virCommandPtr cmd = virCommandNewArgList(ISCSIADM, "--mode", "session", NULL);
@@ -136,6 +136,13 @@ virStorageBackendISCSISession(virStoragePoolObjPtr pool,
 cleanup:
     virCommandFree(cmd);
     return cbdata.session;
+}
+
+static char *
+virStorageBackendISCSISession(virStoragePoolObjPtr pool,
+                              bool probe)
+{
+    return virStorageBackendISCSIGetSession(pool->def->source.devices[0].path, probe);
 }
 
 
@@ -442,8 +449,7 @@ virStorageBackendISCSIFindLUs(virStoragePoolObjPtr pool,
 }
 
 static int
-virStorageBackendISCSIRescanLUNs(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
-                                 const char *session)
+virStorageBackendISCSIRescanLUNs(const char *session)
 {
     virCommandPtr cmd = virCommandNewArgList(ISCSIADM,
                                              "--mode", "session",
@@ -865,7 +871,7 @@ virStorageBackendISCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if ((session = virStorageBackendISCSISession(pool, false)) == NULL)
         goto cleanup;
-    if (virStorageBackendISCSIRescanLUNs(pool, session) < 0)
+    if (virStorageBackendISCSIRescanLUNs(session) < 0)
         goto cleanup;
     if (virStorageBackendISCSIFindLUs(pool, session) < 0)
         goto cleanup;
