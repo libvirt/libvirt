@@ -113,6 +113,7 @@ bhyveBuildNetArgStr(const virDomainDef *def, virCommandPtr cmd)
     char *brname = NULL;
     char *realifname = NULL;
     int *tapfd = NULL;
+    char macaddr[VIR_MAC_STRING_BUFLEN];
 
     if (def->nnets != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -176,7 +177,8 @@ bhyveBuildNetArgStr(const virDomainDef *def, virCommandPtr cmd)
     }
 
     virCommandAddArg(cmd, "-s");
-    virCommandAddArgFormat(cmd, "1:0,virtio-net,%s", realifname);
+    virCommandAddArgFormat(cmd, "1:0,virtio-net,%s,mac=%s",
+                           realifname, virMacAddrFormat(&net->mac, macaddr));
 
     return 0;
 }
