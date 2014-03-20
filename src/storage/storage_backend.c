@@ -1130,6 +1130,10 @@ virStorageBackendVolOpenCheckMode(const char *path, struct stat *sb,
     char *base = last_component(path);
 
     if (lstat(path, sb) < 0) {
+        if (errno == ENOENT && !(flags & VIR_STORAGE_VOL_OPEN_ERROR)) {
+            VIR_WARN("ignoring missing file '%s'", path);
+            return -2;
+        }
         virReportSystemError(errno,
                              _("cannot stat file '%s'"),
                              path);
@@ -1148,6 +1152,10 @@ virStorageBackendVolOpenCheckMode(const char *path, struct stat *sb,
         if ((errno == ENOENT || errno == ELOOP) &&
             S_ISLNK(sb->st_mode)) {
             VIR_WARN("ignoring dangling symlink '%s'", path);
+            return -2;
+        }
+        if (errno == ENOENT && !(flags & VIR_STORAGE_VOL_OPEN_ERROR)) {
+            VIR_WARN("ignoring missing file '%s'", path);
             return -2;
         }
 
