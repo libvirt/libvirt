@@ -2782,7 +2782,6 @@ virCommandRunRegex(virCommandPtr cmd,
     int err;
     regex_t *reg;
     regmatch_t *vars = NULL;
-    int maxReg = 0;
     size_t i, j, k;
     int totgroups = 0, ngroup = 0, maxvars = 0;
     char **groups;
@@ -2841,32 +2840,30 @@ virCommandRunRegex(virCommandPtr cmd,
         if (!p)
             p = lines[k];
 
-        for (i = 0; i <= maxReg && i < nregex; i++) {
-            if (regexec(&reg[i], p, nvars[i]+1, vars, 0) == 0) {
-                maxReg++;
+        for (i = 0; i < nregex; i++) {
+            if (regexec(&reg[i], p, nvars[i]+1, vars, 0) != 0)
+                break;
 
-                if (i == 0)
-                    ngroup = 0;
+            if (i == 0)
+                ngroup = 0;
 
-                /* NULL terminate each captured group in the line */
-                for (j = 0; j < nvars[i]; j++) {
-                    /* NB vars[0] is the full pattern, so we offset j by 1 */
-                    p[vars[j+1].rm_eo] = '\0';
-                    if (VIR_STRDUP(groups[ngroup++], p + vars[j+1].rm_so) < 0)
-                        goto cleanup;
-                }
+            /* NULL terminate each captured group in the line */
+            for (j = 0; j < nvars[i]; j++) {
+                /* NB vars[0] is the full pattern, so we offset j by 1 */
+                p[vars[j+1].rm_eo] = '\0';
+                if (VIR_STRDUP(groups[ngroup++], p + vars[j+1].rm_so) < 0)
+                    goto cleanup;
+            }
 
-                /* We're matching on the last regex, so callback time */
-                if (i == (nregex-1)) {
-                    if (((*func)(groups, data)) < 0)
-                        goto cleanup;
+            /* We're matching on the last regex, so callback time */
+            if (i == (nregex-1)) {
+                if (((*func)(groups, data)) < 0)
+                    goto cleanup;
 
-                    /* Release matches & restart to matching the first regex */
-                    for (j = 0; j < totgroups; j++)
-                        VIR_FREE(groups[j]);
-                    maxReg = 0;
-                    ngroup = 0;
-                }
+                /* Release matches & restart to matching the first regex */
+                for (j = 0; j < totgroups; j++)
+                    VIR_FREE(groups[j]);
+                ngroup = 0;
             }
         }
     }
