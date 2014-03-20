@@ -17873,11 +17873,30 @@ virDomainDeviceIsUSB(virDomainDeviceDefPtr dev)
     return false;
 }
 
+static int
+virDomainDeviceInfoCheckBootIndex(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                  virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
+                                  virDomainDeviceInfoPtr info,
+                                  void *opaque)
+{
+    virDomainDeviceInfoPtr newinfo = opaque;
+
+    if (info->bootIndex == newinfo->bootIndex) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("boot order %d is already used by another device"),
+                       newinfo->bootIndex);
+        return -1;
+    }
+    return 0;
+}
+
 int
 virDomainDefCompatibleDevice(virDomainDefPtr def,
                              virDomainDeviceDefPtr dev,
                              virDomainDeviceAction action)
 {
+    virDomainDeviceInfoPtr info = virDomainDeviceGetInfo(dev);
+
     if (action != VIR_DOMAIN_DEVICE_ACTION_ATTACH)
         return 0;
 
@@ -17888,6 +17907,19 @@ virDomainDefCompatibleDevice(virDomainDefPtr def,
                        _("Device configuration is not compatible: "
                          "Domain has no USB bus support"));
         return -1;
+    }
+
+    if (info && info->bootIndex > 0) {
+        if (def->os.nBootDevs > 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("per-device boot elements cannot be used"
+                             " together with os/boot elements"));
+            return -1;
+        }
+        if (virDomainDeviceInfoIterate(def,
+                                       virDomainDeviceInfoCheckBootIndex,
+                                       info) < 0)
+            return -1;
     }
 
     return 0;
