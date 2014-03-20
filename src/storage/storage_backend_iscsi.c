@@ -244,8 +244,8 @@ virStorageBackendISCSICheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     *isActive = false;
 
     if (pool->def->source.nhost != 1) {
-         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                        _("Expected exactly 1 host for the storage pool"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Expected exactly 1 host for the storage pool"));
         return -1;
     }
 
@@ -317,12 +317,12 @@ virStorageBackendISCSISetAuth(const char *portal,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("could not get the value of the secret "
                                  "for username %s using uuid '%s'"),
-                                 chap.username, uuidStr);
+                               chap.username, uuidStr);
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("could not get the value of the secret "
                                  "for username %s using usage value '%s'"),
-                                 chap.username, chap.secret.usage);
+                               chap.username, chap.secret.usage);
             }
             goto cleanup;
         }
@@ -371,8 +371,8 @@ virStorageBackendISCSIStartPool(virConnectPtr conn,
     int ret = -1;
 
     if (pool->def->source.nhost != 1) {
-         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                        _("Expected exactly 1 host for the storage pool"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Expected exactly 1 host for the storage pool"));
         return -1;
     }
 
@@ -435,7 +435,7 @@ virStorageBackendISCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     return 0;
 
- cleanup:
+cleanup:
     VIR_FREE(session);
     return -1;
 }
