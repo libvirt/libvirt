@@ -924,6 +924,10 @@ virCgroupMakeGroup(virCgroupPtr parent,
         if (!virFileExists(path)) {
             if (!create ||
                 mkdir(path, 0755) < 0) {
+                if (errno == EEXIST) {
+                    VIR_FREE(path);
+                    continue;
+                }
                 /* With a kernel that doesn't support multi-level directory
                  * for blkio controller, libvirt will fail and disable all
                  * other controllers even though they are available. So
