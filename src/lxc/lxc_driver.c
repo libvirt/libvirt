@@ -5025,13 +5025,14 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (virDomainDefCompatibleDevice(vm->def, dev) < 0)
-            goto cleanup;
-
         /* Make a copy for updated domain. */
         vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt);
         if (!vmdef)
             goto cleanup;
+
+        if (virDomainDefCompatibleDevice(vmdef, dev) < 0)
+            goto cleanup;
+
         if ((ret = lxcDomainAttachDeviceConfig(vmdef, dev)) < 0)
             goto cleanup;
     }
@@ -5151,13 +5152,14 @@ static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (virDomainDefCompatibleDevice(vm->def, dev) < 0)
-            goto cleanup;
-
         /* Make a copy for updated domain. */
         vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt);
         if (!vmdef)
             goto cleanup;
+
+        if (virDomainDefCompatibleDevice(vmdef, dev) < 0)
+            goto cleanup;
+
         if ((ret = lxcDomainUpdateDeviceConfig(vmdef, dev)) < 0)
             goto cleanup;
     }
@@ -5261,12 +5263,12 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (virDomainDefCompatibleDevice(vm->def, dev) < 0)
-            goto cleanup;
-
         /* Make a copy for updated domain. */
         vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt);
         if (!vmdef)
+            goto cleanup;
+
+        if (virDomainDefCompatibleDevice(vmdef, dev) < 0)
             goto cleanup;
 
         if ((ret = lxcDomainDetachDeviceConfig(vmdef, dev)) < 0)

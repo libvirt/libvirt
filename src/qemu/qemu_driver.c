@@ -6972,13 +6972,14 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
         goto cleanup;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (virDomainDefCompatibleDevice(vm->def, dev) < 0)
-            goto endjob;
-
         /* Make a copy for updated domain. */
         vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt);
         if (!vmdef)
             goto endjob;
+
+        if (virDomainDefCompatibleDevice(vmdef, dev) < 0)
+            goto endjob;
+
         if ((ret = qemuDomainAttachDeviceConfig(qemuCaps, vmdef, dev)) < 0)
             goto endjob;
     }
@@ -7115,12 +7116,12 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         goto cleanup;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (virDomainDefCompatibleDevice(vm->def, dev) < 0)
-            goto endjob;
-
         /* Make a copy for updated domain. */
         vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt);
         if (!vmdef)
+            goto endjob;
+
+        if (virDomainDefCompatibleDevice(vmdef, dev) < 0)
             goto endjob;
 
         if ((ret = qemuDomainUpdateDeviceConfig(qemuCaps, vmdef, dev)) < 0)
@@ -7254,13 +7255,14 @@ static int qemuDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
         goto cleanup;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (virDomainDefCompatibleDevice(vm->def, dev) < 0)
-            goto endjob;
-
         /* Make a copy for updated domain. */
         vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt);
         if (!vmdef)
             goto endjob;
+
+        if (virDomainDefCompatibleDevice(vmdef, dev) < 0)
+            goto endjob;
+
         if ((ret = qemuDomainDetachDeviceConfig(vmdef, dev)) < 0)
             goto endjob;
     }
