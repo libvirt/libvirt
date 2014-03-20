@@ -2858,10 +2858,10 @@ virCommandRunRegex(virCommandPtr cmd,
         if (i == nregex) {
             if (((*func)(groups, data)) < 0)
                 goto cleanup;
-
-            for (j = 0; j < totgroups; j++)
-                VIR_FREE(groups[j]);
         }
+
+        for (j = 0; j < ngroup; j++)
+            VIR_FREE(groups[j]);
     }
 
     ret = 0;
