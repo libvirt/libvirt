@@ -2832,7 +2832,7 @@ virCommandRunRegex(virCommandPtr cmd,
         goto cleanup;
 
     for (k = 0; lines[k]; k++) {
-        char *p = NULL;
+        const char *p = NULL;
 
         /* ignore any command prefix */
         if (prefix)
@@ -2845,11 +2845,10 @@ virCommandRunRegex(virCommandPtr cmd,
             if (regexec(&reg[i], p, nvars[i]+1, vars, 0) != 0)
                 break;
 
-            /* NULL terminate each captured group in the line */
             for (j = 0; j < nvars[i]; j++) {
                 /* NB vars[0] is the full pattern, so we offset j by 1 */
-                p[vars[j+1].rm_eo] = '\0';
-                if (VIR_STRDUP(groups[ngroup++], p + vars[j+1].rm_so) < 0)
+                if (VIR_STRNDUP(groups[ngroup++], p + vars[j+1].rm_so,
+                                vars[j+1].rm_eo - vars[j+1].rm_so) < 0)
                     goto cleanup;
             }
 
