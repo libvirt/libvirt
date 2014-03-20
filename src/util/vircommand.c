@@ -2845,10 +2845,10 @@ virCommandRunRegex(virCommandPtr cmd,
             if (regexec(&reg[i], p, nvars[i]+1, vars, 0) != 0)
                 break;
 
-            for (j = 0; j < nvars[i]; j++) {
-                /* NB vars[0] is the full pattern, so we offset j by 1 */
-                if (VIR_STRNDUP(groups[ngroup++], p + vars[j+1].rm_so,
-                                vars[j+1].rm_eo - vars[j+1].rm_so) < 0)
+            /* NB vars[0] is the full pattern, so we offset j by 1 */
+            for (j = 1; j <= nvars[i]; j++) {
+                if (VIR_STRNDUP(groups[ngroup++], p + vars[j].rm_so,
+                                vars[j].rm_eo - vars[j].rm_so) < 0)
                     goto cleanup;
             }
 
