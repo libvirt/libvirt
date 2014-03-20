@@ -1,0 +1,20 @@
+iptables --table filter --insert INPUT --in-interface virbr0 --protocol tcp \
+--destination-port 67 --jump ACCEPT
+iptables --table filter --insert INPUT --in-interface virbr0 --protocol udp \
+--destination-port 67 --jump ACCEPT
+iptables --table filter --insert OUTPUT --out-interface virbr0 --protocol udp \
+--destination-port 68 --jump ACCEPT
+iptables --table filter --insert INPUT --in-interface virbr0 --protocol tcp \
+--destination-port 53 --jump ACCEPT
+iptables --table filter --insert INPUT --in-interface virbr0 --protocol udp \
+--destination-port 53 --jump ACCEPT
+iptables --table filter --insert FORWARD --in-interface virbr0 --jump REJECT
+iptables --table filter --insert FORWARD --out-interface virbr0 --jump REJECT
+iptables --table filter --insert FORWARD --in-interface virbr0 \
+--out-interface virbr0 --jump ACCEPT
+iptables --table filter --insert FORWARD --source 192.168.122.0/24 \
+--in-interface virbr0 --jump ACCEPT
+iptables --table filter --insert FORWARD --destination 192.168.122.0/24 \
+--out-interface virbr0 --jump ACCEPT
+iptables --table mangle --insert POSTROUTING --out-interface virbr0 \
+--protocol udp --destination-port 68 --jump CHECKSUM --checksum-fill

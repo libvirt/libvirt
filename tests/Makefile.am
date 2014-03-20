@@ -91,6 +91,7 @@ EXTRA_DIST =		\
 	networkxml2confdata \
 	networkxml2xmlupdatein \
 	networkxml2xmlupdateout \
+	networkxml2firewalldata \
 	nodedevschemadata \
 	nodedevschematest \
 	nodeinfodata     \
@@ -253,10 +254,16 @@ if WITH_YAJL
 test_programs += jsontest
 endif WITH_YAJL
 
-test_programs += networkxml2xmltest networkxml2xmlupdatetest
+test_programs += \
+		networkxml2xmltest \
+		networkxml2xmlupdatetest \
+		$(NULL)
 
 if WITH_NETWORK
-test_programs += networkxml2conftest
+test_programs += \
+		networkxml2conftest \
+		networkxml2firewalltest \
+		$(NULL)
 endif WITH_NETWORK
 
 if WITH_STORAGE_SHEEPDOG
@@ -664,6 +671,12 @@ networkxml2conftest_SOURCES = \
 	networkxml2conftest.c \
 	testutils.c testutils.h
 networkxml2conftest_LDADD = ../src/libvirt_driver_network_impl.la $(LDADDS)
+
+networkxml2firewalltest_SOURCES = \
+	networkxml2firewalltest.c \
+	testutils.c testutils.h
+networkxml2firewalltest_LDADD = ../src/libvirt_driver_network_impl.la $(LDADDS)
+
 else ! WITH_NETWORK
 EXTRA_DIST += networkxml2conftest.c
 endif !	WITH_NETWORK

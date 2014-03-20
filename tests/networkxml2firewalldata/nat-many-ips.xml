@@ -1,0 +1,12 @@
+<network>
+  <name>default</name>
+  <bridge name="virbr0"/>
+  <forward/>
+  <ip address="192.168.122.1" netmask="255.255.255.0">
+    <dhcp>
+      <range start="192.168.122.2" end="192.168.122.254"/>
+    </dhcp>
+  </ip>
+  <ip address="192.168.128.1" netmask="255.255.255.0"/>
+  <ip address="192.168.150.1" netmask="255.255.255.0"/>
+</network>

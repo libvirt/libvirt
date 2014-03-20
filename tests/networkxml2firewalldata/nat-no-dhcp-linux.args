@@ -1,0 +1,42 @@
+iptables --table filter --insert INPUT --in-interface virbr0 --protocol tcp \
+--destination-port 67 --jump ACCEPT
+iptables --table filter --insert INPUT --in-interface virbr0 --protocol udp \
+--destination-port 67 --jump ACCEPT
+iptables --table filter --insert OUTPUT --out-interface virbr0 --protocol udp \
+--destination-port 68 --jump ACCEPT
+iptables --table filter --insert INPUT --in-interface virbr0 --protocol tcp \
+--destination-port 53 --jump ACCEPT
+iptables --table filter --insert INPUT --in-interface virbr0 --protocol udp \
+--destination-port 53 --jump ACCEPT
+iptables --table filter --insert FORWARD --in-interface virbr0 --jump REJECT
+iptables --table filter --insert FORWARD --out-interface virbr0 --jump REJECT
+iptables --table filter --insert FORWARD --in-interface virbr0 \
+--out-interface virbr0 --jump ACCEPT
+ip6tables --table filter --insert FORWARD --in-interface virbr0 --jump REJECT
+ip6tables --table filter --insert FORWARD --out-interface virbr0 --jump REJECT
+ip6tables --table filter --insert FORWARD --in-interface virbr0 \
+--out-interface virbr0 --jump ACCEPT
+ip6tables --table filter --insert INPUT --in-interface virbr0 --protocol tcp \
+--destination-port 53 --jump ACCEPT
+ip6tables --table filter --insert INPUT --in-interface virbr0 --protocol udp \
+--destination-port 53 --jump ACCEPT
+ip6tables --table filter --insert INPUT --in-interface virbr0 --protocol udp \
+--destination-port 547 --jump ACCEPT
+iptables --table filter --insert FORWARD --source 192.168.122.0/24 \
+--in-interface virbr0 --jump ACCEPT
+iptables --table filter --insert FORWARD --destination 192.168.122.0/24 \
+--out-interface virbr0 --match conntrack --ctstate ESTABLISHED,RELATED --jump ACCEPT
+iptables --table nat --insert POSTROUTING --source 192.168.122.0/24 '!' \
+--destination 192.168.122.0/24 --jump MASQUERADE
+iptables --table nat --insert POSTROUTING --source 192.168.122.0/24 \
+-p udp '!' --destination 192.168.122.0/24 --jump MASQUERADE --to-ports 1024-65535
+iptables --table nat --insert POSTROUTING --source 192.168.122.0/24 \
+-p tcp '!' --destination 192.168.122.0/24 --jump MASQUERADE --to-ports 1024-65535
+iptables --table nat --insert POSTROUTING --source 192.168.122.0/24 \
+--destination 255.255.255.255/32 --jump RETURN
+iptables --table nat --insert POSTROUTING --source 192.168.122.0/24 \
+--destination 224.0.0.0/24 --jump RETURN
+ip6tables --table filter --insert FORWARD --source 2001:db8:ca2:2::/64 \
+--in-interface virbr0 --jump ACCEPT
+ip6tables --table filter --insert FORWARD --destination 2001:db8:ca2:2::/64 \
+--out-interface virbr0 --jump ACCEPT
