@@ -5030,7 +5030,8 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
         if (!vmdef)
             goto cleanup;
 
-        if (virDomainDefCompatibleDevice(vmdef, dev) < 0)
+        if (virDomainDefCompatibleDevice(vmdef, dev,
+                                         VIR_DOMAIN_DEVICE_ACTION_ATTACH) < 0)
             goto cleanup;
 
         if ((ret = lxcDomainAttachDeviceConfig(vmdef, dev)) < 0)
@@ -5038,7 +5039,8 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (virDomainDefCompatibleDevice(vm->def, dev_copy) < 0)
+        if (virDomainDefCompatibleDevice(vm->def, dev_copy,
+                                         VIR_DOMAIN_DEVICE_ACTION_ATTACH) < 0)
             goto cleanup;
 
         if ((ret = lxcDomainAttachDeviceLive(dom->conn, driver, vm, dev_copy)) < 0)
@@ -5157,7 +5159,8 @@ static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
         if (!vmdef)
             goto cleanup;
 
-        if (virDomainDefCompatibleDevice(vmdef, dev) < 0)
+        if (virDomainDefCompatibleDevice(vmdef, dev,
+                                         VIR_DOMAIN_DEVICE_ACTION_UPDATE) < 0)
             goto cleanup;
 
         if ((ret = lxcDomainUpdateDeviceConfig(vmdef, dev)) < 0)
@@ -5165,7 +5168,8 @@ static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (virDomainDefCompatibleDevice(vm->def, dev_copy) < 0)
+        if (virDomainDefCompatibleDevice(vm->def, dev_copy,
+                                         VIR_DOMAIN_DEVICE_ACTION_UPDATE) < 0)
             goto cleanup;
 
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -5268,7 +5272,8 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
         if (!vmdef)
             goto cleanup;
 
-        if (virDomainDefCompatibleDevice(vmdef, dev) < 0)
+        if (virDomainDefCompatibleDevice(vmdef, dev,
+                                         VIR_DOMAIN_DEVICE_ACTION_DETACH) < 0)
             goto cleanup;
 
         if ((ret = lxcDomainDetachDeviceConfig(vmdef, dev)) < 0)
@@ -5276,7 +5281,8 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (virDomainDefCompatibleDevice(vm->def, dev_copy) < 0)
+        if (virDomainDefCompatibleDevice(vm->def, dev_copy,
+                                         VIR_DOMAIN_DEVICE_ACTION_DETACH) < 0)
             goto cleanup;
 
         if ((ret = lxcDomainDetachDeviceLive(driver, vm, dev_copy)) < 0)

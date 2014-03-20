@@ -6977,7 +6977,8 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
         if (!vmdef)
             goto endjob;
 
-        if (virDomainDefCompatibleDevice(vmdef, dev) < 0)
+        if (virDomainDefCompatibleDevice(vmdef, dev,
+                                         VIR_DOMAIN_DEVICE_ACTION_ATTACH) < 0)
             goto endjob;
 
         if ((ret = qemuDomainAttachDeviceConfig(qemuCaps, vmdef, dev)) < 0)
@@ -6985,7 +6986,8 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (virDomainDefCompatibleDevice(vm->def, dev_copy) < 0)
+        if (virDomainDefCompatibleDevice(vm->def, dev_copy,
+                                         VIR_DOMAIN_DEVICE_ACTION_ATTACH) < 0)
             goto endjob;
 
         if ((ret = qemuDomainAttachDeviceLive(vm, dev_copy, dom)) < 0)
@@ -7121,7 +7123,8 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         if (!vmdef)
             goto endjob;
 
-        if (virDomainDefCompatibleDevice(vmdef, dev) < 0)
+        if (virDomainDefCompatibleDevice(vmdef, dev,
+                                         VIR_DOMAIN_DEVICE_ACTION_UPDATE) < 0)
             goto endjob;
 
         if ((ret = qemuDomainUpdateDeviceConfig(qemuCaps, vmdef, dev)) < 0)
@@ -7129,7 +7132,8 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (virDomainDefCompatibleDevice(vm->def, dev_copy) < 0)
+        if (virDomainDefCompatibleDevice(vm->def, dev_copy,
+                                         VIR_DOMAIN_DEVICE_ACTION_UPDATE) < 0)
             goto endjob;
 
         if ((ret = qemuDomainUpdateDeviceLive(dom->conn, vm, dev_copy, dom, force)) < 0)
@@ -7260,7 +7264,8 @@ static int qemuDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
         if (!vmdef)
             goto endjob;
 
-        if (virDomainDefCompatibleDevice(vmdef, dev) < 0)
+        if (virDomainDefCompatibleDevice(vmdef, dev,
+                                         VIR_DOMAIN_DEVICE_ACTION_DETACH) < 0)
             goto endjob;
 
         if ((ret = qemuDomainDetachDeviceConfig(vmdef, dev)) < 0)
@@ -7268,7 +7273,8 @@ static int qemuDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (virDomainDefCompatibleDevice(vm->def, dev_copy) < 0)
+        if (virDomainDefCompatibleDevice(vm->def, dev_copy,
+                                         VIR_DOMAIN_DEVICE_ACTION_DETACH) < 0)
             goto endjob;
 
         if ((ret = qemuDomainDetachDeviceLive(vm, dev_copy, dom)) < 0)

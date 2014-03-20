@@ -2407,8 +2407,15 @@ int virDomainNetDefFormat(virBufferPtr buf,
                           virDomainNetDefPtr def,
                           unsigned int flags);
 
+typedef enum {
+    VIR_DOMAIN_DEVICE_ACTION_ATTACH,
+    VIR_DOMAIN_DEVICE_ACTION_DETACH,
+    VIR_DOMAIN_DEVICE_ACTION_UPDATE,
+} virDomainDeviceAction;
+
 int virDomainDefCompatibleDevice(virDomainDefPtr def,
-                                 virDomainDeviceDefPtr dev);
+                                 virDomainDeviceDefPtr dev,
+                                 virDomainDeviceAction action);
 
 int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
                         size_t *nvcpupin,

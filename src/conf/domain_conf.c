@@ -17828,8 +17828,12 @@ virDomainDeviceIsUSB(virDomainDeviceDefPtr dev)
 
 int
 virDomainDefCompatibleDevice(virDomainDefPtr def,
-                             virDomainDeviceDefPtr dev)
+                             virDomainDeviceDefPtr dev,
+                             virDomainDeviceAction action)
 {
+    if (action != VIR_DOMAIN_DEVICE_ACTION_ATTACH)
+        return 0;
+
     if (!virDomainDefHasUSB(def) &&
         STRNEQ(def->os.type, "exe") &&
         virDomainDeviceIsUSB(dev)) {
