@@ -2565,6 +2565,53 @@ int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
     return 0;
 }
 
+virDomainDeviceInfoPtr
+virDomainDeviceGetInfo(virDomainDeviceDefPtr device)
+{
+    switch ((virDomainDeviceType) device->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        return &device->data.disk->info;
+    case VIR_DOMAIN_DEVICE_FS:
+        return &device->data.fs->info;
+    case VIR_DOMAIN_DEVICE_NET:
+        return &device->data.net->info;
+    case VIR_DOMAIN_DEVICE_INPUT:
+        return &device->data.input->info;
+    case VIR_DOMAIN_DEVICE_SOUND:
+        return &device->data.sound->info;
+    case VIR_DOMAIN_DEVICE_VIDEO:
+        return &device->data.video->info;
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        return device->data.hostdev->info;
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+        return &device->data.watchdog->info;
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+        return &device->data.controller->info;
+    case VIR_DOMAIN_DEVICE_HUB:
+        return &device->data.hub->info;
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+        return &device->data.redirdev->info;
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+        return &device->data.smartcard->info;
+    case VIR_DOMAIN_DEVICE_CHR:
+        return &device->data.chr->info;
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+        return &device->data.memballoon->info;
+    case VIR_DOMAIN_DEVICE_NVRAM:
+        return &device->data.nvram->info;
+    case VIR_DOMAIN_DEVICE_RNG:
+        return &device->data.rng->info;
+
+    /* The following devices do not contain virDomainDeviceInfo */
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_LAST:
+    case VIR_DOMAIN_DEVICE_NONE:
+        break;
+    }
+    return NULL;
+}
+
 static bool
 virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info, unsigned int flags)
 {
