@@ -424,6 +424,7 @@ virSocketAddrMask(const virSocketAddr *addr,
                   const virSocketAddr *netmask,
                   virSocketAddrPtr network)
 {
+    memset(network, 0, sizeof(*network));
     if (addr->data.stor.ss_family != netmask->data.stor.ss_family) {
         network->data.stor.ss_family = AF_UNSPEC;
         return -1;

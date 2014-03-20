@@ -153,6 +153,49 @@ static int testNetmaskHelper(const void *opaque)
     return testNetmask(data->addr1, data->addr2, data->netmask, data->pass);
 }
 
+
+
+static int testMaskNetwork(const char *addrstr,
+                           int prefix,
+                           const char *networkstr)
+{
+    virSocketAddr addr;
+    virSocketAddr network;
+    char *gotnet = NULL;
+
+    /* Intentionally fill with garbage */
+    memset(&network, 1, sizeof(network));
+
+    if (virSocketAddrParse(&addr, addrstr, AF_UNSPEC) < 0)
+        return -1;
+
+    if (virSocketAddrMaskByPrefix(&addr, prefix, &network) < 0)
+        return -1;
+
+    if (!(gotnet = virSocketAddrFormat(&network)))
+        return -1;
+
+    if (STRNEQ(networkstr, gotnet)) {
+        VIR_FREE(gotnet);
+        fprintf(stderr, "Expected %s, got %s\n", networkstr, gotnet);
+        return -1;
+    }
+    VIR_FREE(gotnet);
+    return 0;
+}
+
+struct testMaskNetworkData {
+    const char *addr1;
+    int prefix;
+    const char *network;
+};
+static int testMaskNetworkHelper(const void *opaque)
+{
+    const struct testMaskNetworkData *data = opaque;
+    return testMaskNetwork(data->addr1, data->prefix, data->network);
+}
+
+
 static int testWildcard(const char *addrstr,
                         bool pass)
 {
@@ -255,6 +298,14 @@ mymain(void)
             ret = -1;                                                   \
     } while (0)
 
+#define DO_TEST_MASK_NETWORK(addr1, prefix, network)                    \
+    do {                                                                \
+        struct testMaskNetworkData data = { addr1, prefix, network };   \
+        if (virtTestRun("Test mask network " addr1 " / " #prefix " == " network, \
+                        testMaskNetworkHelper, &data) < 0)              \
+            ret = -1;                                                   \
+    } while (0)
+
 #define DO_TEST_WILDCARD(addr, pass)                                    \
     do {                                                                \
         struct testWildcardData data = { addr, pass};                   \
@@ -323,6 +374,8 @@ mymain(void)
                     "ffff:ffff:ffff:ffff:ffff:ffff:fff8:0", true);
     DO_TEST_NETMASK("2000::1:1", "9000::1:1",
                     "ffff:ffff:ffff:ffff:ffff:ffff:ffff:0", false);
+
+    DO_TEST_MASK_NETWORK("2001:db8:ca2:2::1", 64, "2001:db8:ca2:2::");
 
     DO_TEST_WILDCARD("0.0.0.0", true);
     DO_TEST_WILDCARD("::", true);
