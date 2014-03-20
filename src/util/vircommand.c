@@ -2840,12 +2840,10 @@ virCommandRunRegex(virCommandPtr cmd,
         if (!p)
             p = lines[k];
 
+        ngroup = 0;
         for (i = 0; i < nregex; i++) {
             if (regexec(&reg[i], p, nvars[i]+1, vars, 0) != 0)
                 break;
-
-            if (i == 0)
-                ngroup = 0;
 
             /* NULL terminate each captured group in the line */
             for (j = 0; j < nvars[i]; j++) {
@@ -2855,16 +2853,14 @@ virCommandRunRegex(virCommandPtr cmd,
                     goto cleanup;
             }
 
-            /* We're matching on the last regex, so callback time */
-            if (i == (nregex-1)) {
-                if (((*func)(groups, data)) < 0)
-                    goto cleanup;
+        }
+        /* We've matched on the last regex, so callback time */
+        if (i == nregex) {
+            if (((*func)(groups, data)) < 0)
+                goto cleanup;
 
-                /* Release matches & restart to matching the first regex */
-                for (j = 0; j < totgroups; j++)
-                    VIR_FREE(groups[j]);
-                ngroup = 0;
-            }
+            for (j = 0; j < totgroups; j++)
+                VIR_FREE(groups[j]);
         }
     }
 
