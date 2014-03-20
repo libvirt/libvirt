@@ -694,6 +694,67 @@ cleanup:
     return -1;
 }
 
+static int
+bhyveConnectGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED,
+                        const char *type) {
+    if (virConnectGetMaxVcpusEnsureACL(conn) < 0)
+        return -1;
+
+    /*
+     * Bhyve supports up to 16 VCPUs, but offers no method to check this
+     * value. Hardcode 16...
+     */
+    if (!type || STRCASEEQ(type, "bhyve"))
+        return 16;
+
+    virReportError(VIR_ERR_INVALID_ARG, _("unknown type '%s'"), type);
+    return -1;
+}
+
+static unsigned long long
+bhyveNodeGetFreeMemory(virConnectPtr conn)
+{
+    if (virNodeGetFreeMemoryEnsureACL(conn) < 0)
+        return 0;
+
+    return nodeGetFreeMemory();
+}
+
+static int
+bhyveNodeGetCPUMap(virConnectPtr conn,
+                   unsigned char **cpumap,
+                   unsigned int *online,
+                   unsigned int flags)
+{
+    if (virNodeGetCPUMapEnsureACL(conn) < 0)
+        return -1;
+
+    return nodeGetCPUMap(cpumap, online, flags);
+}
+
+static int
+bhyveNodeGetMemoryParameters(virConnectPtr conn,
+                             virTypedParameterPtr params,
+                             int *nparams,
+                             unsigned int flags)
+{
+    if (virNodeGetMemoryParametersEnsureACL(conn) < 0)
+        return -1;
+
+    return nodeGetMemoryParameters(params, nparams, flags);
+}
+
+static int
+bhyveNodeSetMemoryParameters(virConnectPtr conn,
+                             virTypedParameterPtr params,
+                             int nparams,
+                             unsigned int flags)
+{
+    if (virNodeSetMemoryParametersEnsureACL(conn) < 0)
+        return -1;
+
+    return nodeSetMemoryParameters(params, nparams, flags);
+}
 
 static virDriver bhyveDriver = {
     .no = VIR_DRV_BHYVE,
@@ -722,6 +783,11 @@ static virDriver bhyveDriver = {
     .nodeGetCPUStats = bhyveNodeGetCPUStats, /* 1.2.2 */
     .nodeGetMemoryStats = bhyveNodeGetMemoryStats, /* 1.2.2 */
     .nodeGetInfo = bhyveNodeGetInfo, /* 1.2.3 */
+    .connectGetMaxVcpus = bhyveConnectGetMaxVcpus, /* 1.2.3 */
+    .nodeGetFreeMemory = bhyveNodeGetFreeMemory, /* 1.2.3 */
+    .nodeGetCPUMap = bhyveNodeGetCPUMap, /* 1.2.3 */
+    .nodeGetMemoryParameters = bhyveNodeGetMemoryParameters, /* 1.2.3 */
+    .nodeSetMemoryParameters = bhyveNodeSetMemoryParameters, /* 1.2.3 */
 };
 
 

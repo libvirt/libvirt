@@ -1699,6 +1699,23 @@ nodeGetCellsFreeMemoryFake(unsigned long long *freeMems,
 static unsigned long long
 nodeGetFreeMemoryFake(void)
 {
+#if defined(__FreeBSD__)
+    unsigned long pagesize = getpagesize();
+    u_int value;
+    size_t value_size = sizeof(value);
+    unsigned long long freemem;
+
+    if (sysctlbyname("vm.stats.vm.v_free_count", &value,
+                     &value_size, NULL, 0) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("sysctl failed for vm.stats.vm.v_free_count"));
+        return 0;
+    }
+
+    freemem = value * (unsigned long long)pagesize;
+
+    return freemem;
+#else
     double avail = physmem_available();
     unsigned long long ret;
 
@@ -1709,6 +1726,7 @@ nodeGetFreeMemoryFake(void)
     }
 
     return ret;
+#endif
 }
 
 /* returns 1 on success, 0 if the detection failed and -1 on hard error */
