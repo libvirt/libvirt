@@ -169,7 +169,7 @@ virIdentityPtr virIdentityGetSystem(void)
         goto cleanup;
 
 #if WITH_SELINUX
-    if (is_selinux_enabled()) {
+    if (is_selinux_enabled() > 0) {
         if (getcon(&con) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Unable to lookup SELinux process context"));

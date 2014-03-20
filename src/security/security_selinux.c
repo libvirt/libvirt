@@ -784,7 +784,7 @@ error:
 static int
 virSecuritySELinuxSecurityDriverProbe(const char *virtDriver)
 {
-    if (!is_selinux_enabled())
+    if (is_selinux_enabled() <= 0)
         return SECURITY_DRIVER_DISABLE;
 
     if (virtDriver && STREQ(virtDriver, "LXC")) {
