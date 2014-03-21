@@ -1672,6 +1672,23 @@ int virDBusCreateMethodV(DBusMessage **call ATTRIBUTE_UNUSED,
     return -1;
 }
 
+int virDBusCreateReplyV(DBusMessage **reply ATTRIBUTE_UNUSED,
+                        const char *types ATTRIBUTE_UNUSED,
+                        va_list args ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("DBus support not compiled into this binary"));
+    return -1;
+}
+
+int virDBusCreateReply(DBusMessage **reply ATTRIBUTE_UNUSED,
+                       const char *types ATTRIBUTE_UNUSED, ...)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("DBus support not compiled into this binary"));
+    return -1;
+}
+
 int virDBusCall(DBusConnection *conn ATTRIBUTE_UNUSED,
                 DBusMessage *call ATTRIBUTE_UNUSED,
                 DBusMessage **reply ATTRIBUTE_UNUSED,
