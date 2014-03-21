@@ -1852,8 +1852,12 @@ if test "$with_storage_iscsi" = "yes" || test "$with_storage_iscsi" = "check"; t
 
   if test "$with_storage_iscsi" = "yes" ; then
     AC_DEFINE_UNQUOTED([WITH_STORAGE_ISCSI], 1, [whether iSCSI backend for storage driver is enabled])
-    AC_DEFINE_UNQUOTED([ISCSIADM],["$ISCSIADM"],[Location of iscsiadm program])
   fi
+fi
+if test -z "$ISCIADM" ; then
+    AC_DEFINE_UNQUOTED([ISCSIADM],["iscsiadm"],[Name of iscsiadm program])
+else
+    AC_DEFINE_UNQUOTED([ISCSIADM],["$ISCSIADM"],[Location of iscsiadm program])
 fi
 AM_CONDITIONAL([WITH_STORAGE_ISCSI], [test "$with_storage_iscsi" = "yes"])
 
