@@ -898,6 +898,12 @@ sc_prohibit_virConnectOpen_in_virsh:
 	halt='Use vshConnect() in virsh instead of virConnectOpen*'    \
 	  $(_sc_search_regexp)
 
+sc_require_space_before_label:
+	@prohibit='^(   ?)?[_a-zA-Z0-9]+:$$'                           \
+	in_vc_files='\.[ch]$$'                                         \
+	halt="Top-level labels should be indented by one space"        \
+	  $(_sc_search_regexp)
+
 sc_curly_braces_style:
 	@files=$$($(VC_LIST_EXCEPT) | grep '\.[ch]$$');                \
 	$(GREP) -nHP                                                   \

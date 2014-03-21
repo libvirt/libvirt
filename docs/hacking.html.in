@@ -273,26 +273,11 @@
       In short, use spaces-not-TABs for indentation, use 4 spaces for each
       indentation level, and other than that, follow the K&amp;R style.
     </p>
-    <p>
-      If you use Emacs, add the following to one of one of your start-up files
-      (e.g., ~/.emacs), to help ensure that you get indentation right:
-    </p>
-<pre>
-  ;;; When editing C sources in libvirt, use this style.
-  (defun libvirt-c-mode ()
-    "C mode with adjusted defaults for use with libvirt."
-    (interactive)
-    (c-set-style "K&amp;R")
-    (setq indent-tabs-mode nil) ; indent using spaces, not TABs
-    (setq c-indent-level 4)
-    (setq c-basic-offset 4))
-  (add-hook 'c-mode-hook
-            '(lambda () (if (string-match "/libvirt" (buffer-file-name))
-                            (libvirt-c-mode))))
-</pre>
 
     <p>
-      If you use vim, append the following to your ~/.vimrc file:
+      If you use Emacs, the project includes a file .dir-locals.el
+      that sets up the preferred indentation. If you use vim,
+      append the following to your ~/.vimrc file:
     </p>
 <pre>
   set nocompatible
@@ -303,7 +288,7 @@
   set tabstop=8
   set shiftwidth=4
   set expandtab
-  set cinoptions=(0,:0,l1,t0
+  set cinoptions=(0,:0,l1,t0,L3
   filetype plugin indent on
   au FileType make setlocal noexpandtab
   au BufRead,BufNewFile *.am setlocal noexpandtab
@@ -1137,6 +1122,20 @@
     cleanup: A path taken upon return with success code + optional error
   no_memory: A path only taken upon return with an OOM error code
       retry: If needing to jump upwards (e.g., retry on EINTR)
+</pre>
+
+    <p>
+    Top-level labels should be indented by one space (putting them on
+    the beginning of the line confuses function context detection in git):
+    </p>
+
+<pre>
+int foo()
+{
+    /* ... do stuff ... */
+ cleanup:
+    /* ... do other stuff ... */
+}
 </pre>
 
 
