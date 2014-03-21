@@ -1365,7 +1365,7 @@ virLogGetNbOutputs(void)
  *    3: WARNING
  *    4: ERROR
  *
- * Returns the parsed log level or -1 on error.
+ * Returns 0 if successful, -1 in case of error.
  */
 int
 virLogParseDefaultPriority(const char *priority)
