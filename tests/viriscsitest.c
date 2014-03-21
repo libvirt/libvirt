@@ -20,6 +20,8 @@
 
 #include <config.h>
 
+#include "testutils.h"
+
 #ifdef WIN32
 int
 main(void)
@@ -29,7 +31,6 @@ main(void)
 #else
 # define __VIR_COMMAND_PRIV_H_ALLOW__
 
-# include "testutils.h"
 # include "vircommandpriv.h"
 # include "viriscsi.h"
 
