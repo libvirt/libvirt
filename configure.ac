@@ -433,7 +433,7 @@ AC_DEFINE_UNQUOTED([DNSMASQ],["$DNSMASQ"],
 AC_DEFINE_UNQUOTED([RADVD],["$RADVD"],
         [Location or name of the radvd program])
 AC_DEFINE_UNQUOTED([TC],["$TC"],
-        [Location or name of the tc profram (see iproute2)])
+        [Location or name of the tc program (see iproute2)])
 AC_DEFINE_UNQUOTED([OVSVSCTL],["$OVSVSCTL"],
         [Location or name of the ovs-vsctl program])
 
