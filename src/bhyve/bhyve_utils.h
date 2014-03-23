@@ -46,6 +46,11 @@ struct _bhyveConn {
 typedef struct _bhyveConn bhyveConn;
 typedef struct _bhyveConn *bhyveConnPtr;
 
+struct bhyveAutostartData {
+    bhyveConnPtr driver;
+    virConnectPtr conn;
+};
+
 void bhyveDriverLock(bhyveConnPtr driver);
 void bhyveDriverUnlock(bhyveConnPtr driver);
 

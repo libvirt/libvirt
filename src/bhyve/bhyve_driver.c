@@ -72,6 +72,44 @@ bhyveDriverUnlock(bhyveConnPtr driver)
     virMutexUnlock(&driver->lock);
 }
 
+static int
+bhyveAutostartDomain(virDomainObjPtr vm, void *opaque)
+{
+    const struct bhyveAutostartData *data = opaque;
+    int ret = 0;
+    virObjectLock(vm);
+    if (vm->autostart && !virDomainObjIsActive(vm)) {
+        virResetLastError();
+        ret = virBhyveProcessStart(data->conn, data->driver, vm,
+                                   VIR_DOMAIN_RUNNING_BOOTED, 0);
+        if (ret < 0) {
+            virErrorPtr err = virGetLastError();
+            VIR_ERROR(_("Failed to autostart VM '%s': %s"),
+                      vm->def->name, err ? err->message : _("unknown error"));
+        }
+    }
+    virObjectUnlock(vm);
+    return ret;
+}
+
+static void
+bhyveAutostartDomains(bhyveConnPtr driver)
+{
+    /* XXX: Figure out a better way todo this. The domain
+     * startup code needs a connection handle in order
+     * to lookup the bridge associated with a virtual
+     * network
+     */
+    virConnectPtr conn = virConnectOpen("bhyve:///system");
+    /* Ignoring NULL conn which is mostly harmless here */
+
+    struct bhyveAutostartData data = { driver, conn };
+
+    virDomainObjListForEach(driver->domains, bhyveAutostartDomain, &data);
+
+    virObjectUnref(conn);
+}
+
 static virCapsPtr
 bhyveBuildCapabilities(void)
 {
@@ -257,6 +295,89 @@ bhyveDomainGetState(virDomainPtr domain,
     ret = 0;
 
  cleanup:
+    virObjectUnlock(vm);
+    return ret;
+}
+
+static int
+bhyveDomainGetAutostart(virDomainPtr domain, int *autostart)
+{
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainGetAutostartEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    *autostart = vm->autostart;
+    ret = 0;
+
+ cleanup:
+    virObjectUnlock(vm);
+    return ret;
+}
+
+static int
+bhyveDomainSetAutostart(virDomainPtr domain, int autostart)
+{
+    virDomainObjPtr vm;
+    char *configFile = NULL;
+    char *autostartLink = NULL;
+    int ret = -1;
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainSetAutostartEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!vm->persistent) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot set autostart for transient domain"));
+        goto cleanup;
+    }
+
+    autostart = (autostart != 0);
+
+    if (vm->autostart != autostart) {
+        if ((configFile = virDomainConfigFile(BHYVE_CONFIG_DIR, vm->def->name)) == NULL)
+            goto cleanup;
+        if ((autostartLink = virDomainConfigFile(BHYVE_AUTOSTART_DIR, vm->def->name)) == NULL)
+            goto cleanup;
+
+        if (autostart) {
+            if (virFileMakePath(BHYVE_AUTOSTART_DIR) < 0) {
+                virReportSystemError(errno,
+                                     _("cannot create autostart directory %s"),
+                                     BHYVE_AUTOSTART_DIR);
+                goto cleanup;
+            }
+
+            if (symlink(configFile, autostartLink) < 0) {
+                virReportSystemError(errno,
+                                     _("Failed to create symlink '%s' to '%s'"),
+                                     autostartLink, configFile);
+                goto cleanup;
+            }
+        } else {
+            if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
+                virReportSystemError(errno,
+                                     _("Failed to delete symlink '%s'"),
+                                     autostartLink);
+                goto cleanup;
+            }
+        }
+
+        vm->autostart = autostart;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(configFile);
+    VIR_FREE(autostartLink);
     virObjectUnlock(vm);
     return ret;
 }
@@ -729,7 +850,7 @@ bhyveStateInitialize(bool priveleged ATTRIBUTE_UNUSED,
 
     if (virDomainObjListLoadAllConfigs(bhyve_driver->domains,
                                        BHYVE_CONFIG_DIR,
-                                       NULL, 0,
+                                       BHYVE_AUTOSTART_DIR, 0,
                                        bhyve_driver->caps,
                                        bhyve_driver->xmlopt,
                                        1 << VIR_DOMAIN_VIRT_BHYVE,
@@ -741,6 +862,15 @@ bhyveStateInitialize(bool priveleged ATTRIBUTE_UNUSED,
  cleanup:
     bhyveStateCleanup();
     return -1;
+}
+
+static void
+bhyveStateAutoStart(void)
+{
+    if (!bhyve_driver)
+        return;
+
+    bhyveAutostartDomains(bhyve_driver);
 }
 
 static int
@@ -832,6 +962,8 @@ static virDriver bhyveDriver = {
     .domainGetXMLDesc = bhyveDomainGetXMLDesc, /* 1.2.2 */
     .domainIsActive = bhyveDomainIsActive, /* 1.2.2 */
     .domainIsPersistent = bhyveDomainIsPersistent, /* 1.2.2 */
+    .domainGetAutostart = bhyveDomainGetAutostart, /* 1.2.4 */
+    .domainSetAutostart = bhyveDomainSetAutostart, /* 1.2.4 */
     .nodeGetCPUStats = bhyveNodeGetCPUStats, /* 1.2.2 */
     .nodeGetMemoryStats = bhyveNodeGetMemoryStats, /* 1.2.2 */
     .nodeGetInfo = bhyveNodeGetInfo, /* 1.2.3 */
@@ -846,6 +978,7 @@ static virDriver bhyveDriver = {
 static virStateDriver bhyveStateDriver = {
     .name = "bhyve",
     .stateInitialize = bhyveStateInitialize,
+    .stateAutoStart = bhyveStateAutoStart,
     .stateCleanup = bhyveStateCleanup,
 };
 
