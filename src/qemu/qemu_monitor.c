@@ -2368,6 +2368,27 @@ int qemuMonitorMigrateCancel(qemuMonitorPtr mon)
     return ret;
 }
 
+/**
+ * Returns 1 if @capability is supported, 0 if it's not, or -1 on error.
+ */
+int qemuMonitorGetDumpGuestMemoryCapability(qemuMonitorPtr mon,
+                                            const char *capability)
+{
+    VIR_DEBUG("mon=%p capability=%s", mon, capability);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    /* No capability is supported without JSON monitor */
+    if (!mon->json)
+        return 0;
+
+    return qemuMonitorJSONGetDumpGuestMemoryCapability(mon, capability);
+}
+
 int
 qemuMonitorDumpToFd(qemuMonitorPtr mon, int fd)
 {

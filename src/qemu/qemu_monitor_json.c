@@ -2658,6 +2658,71 @@ int qemuMonitorJSONMigrateCancel(qemuMonitorPtr mon)
 }
 
 int
+qemuMonitorJSONGetDumpGuestMemoryCapability(qemuMonitorPtr mon,
+                                            const char *capability)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr caps;
+    virJSONValuePtr formats;
+    size_t i;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-dump-guest-memory-capability",
+                                           NULL)))
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0) {
+        if (qemuMonitorJSONHasError(reply, "CommandNotFound"))
+            goto cleanup;
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+    }
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    caps = virJSONValueObjectGet(reply, "return");
+    if (!caps || caps->type != VIR_JSON_TYPE_OBJECT) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing dump guest memory capabilities"));
+        goto cleanup;
+    }
+
+    formats = virJSONValueObjectGet(caps, "formats");
+    if (!formats || formats->type != VIR_JSON_TYPE_ARRAY) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing supported dump formats"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < virJSONValueArraySize(formats); i++) {
+        virJSONValuePtr dumpformat = virJSONValueArrayGet(formats, i);
+
+        if (!dumpformat || dumpformat->type != VIR_JSON_TYPE_STRING) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing entry in supported dump formats"));
+            goto cleanup;
+        }
+
+        if (STREQ(virJSONValueGetString(dumpformat), capability)) {
+            ret = 1;
+            goto cleanup;
+        }
+
+        ret = 0;
+    }
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+int
 qemuMonitorJSONDump(qemuMonitorPtr mon,
                     const char *protocol)
 {

@@ -506,6 +506,9 @@ int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
 
 int qemuMonitorMigrateCancel(qemuMonitorPtr mon);
 
+int qemuMonitorGetDumpGuestMemoryCapability(qemuMonitorPtr mon,
+                                            const char *capability);
+
 int qemuMonitorDumpToFd(qemuMonitorPtr mon,
                         int fd);
 

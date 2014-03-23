@@ -1959,6 +1959,48 @@ cleanup:
     return ret;
 }
 
+static int
+testQemuMonitorJSONqemuMonitorJSONGetDumpGuestMemoryCapability(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    int ret = -1;
+    int cap;
+    const char *reply =
+        "{"
+        "    \"return\": {"
+        "        \"formats\": ["
+        "            \"elf\","
+        "            \"kdump-zlib\","
+        "            \"kdump-lzo\","
+        "            \"kdump-snappy\""
+        "        ]"
+        "    },"
+        "    \"id\": \"libvirt-9\""
+        "}";
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "query-dump-guest-memory-capability",
+                               reply) < 0)
+        goto cleanup;
+
+    cap = qemuMonitorJSONGetDumpGuestMemoryCapability(
+                                    qemuMonitorTestGetMonitor(test), "elf");
+
+    if (cap != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Unexpected capability: %d, expecting 1",
+                       cap);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
 
 struct testCPUData {
     const char *name;
@@ -2187,6 +2229,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetCPUInfo);
     DO_TEST(qemuMonitorJSONGetVirtType);
     DO_TEST(qemuMonitorJSONSendKey);
+    DO_TEST(qemuMonitorJSONGetDumpGuestMemoryCapability);
 
     DO_TEST_CPU_DATA("host");
     DO_TEST_CPU_DATA("full");
