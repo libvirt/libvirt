@@ -1010,6 +1010,7 @@ I<format> argument may be B<xen-xm> or B<xen-sxpr>.
 
 =item B<dump> I<domain> I<corefilepath> [I<--bypass-cache>]
 { [I<--live>] | [I<--crash>] | [I<--reset>] } [I<--verbose>] [I<--memory-only>]
+[I<--format> I<string>]
 
 Dumps the core of a domain to a file for analysis.
 If I<--live> is specified, the domain continues to run until the core
@@ -1023,6 +1024,10 @@ cache, although this may slow down the operation.
 If I<--memory-only> is specified, the file is elf file, and will only
 include domain's memory and cpu common register value. It is very
 useful if the domain uses host devices directly.
+I<--format> I<string> is used to specify the format of 'memory-only'
+dump, and I<string> can be one of them: elf, kdump-zlib(kdump-compressed
+format with zlib-compressed), kdump-lzo(kdump-compressed format with
+lzo-compressed), kdump-snappy(kdump-compressed format with snappy-compressed).
 
 The progress may be monitored using B<domjobinfo> virsh command and canceled
 with B<domjobabort> command (sent by another virsh instance). Another option

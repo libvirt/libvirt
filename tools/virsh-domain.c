@@ -4490,6 +4490,10 @@ static const vshCmdOptDef opts_dump[] = {
      .type = VSH_OT_BOOL,
      .help = N_("dump domain's memory only")
     },
+    {.name = "format",
+     .type = VSH_OT_DATA,
+     .help = N_("specify the format of memory-only dump")
+    },
     {.name = NULL}
 };
 
@@ -4505,6 +4509,8 @@ doDump(void *opaque)
     const char *name = NULL;
     const char *to = NULL;
     unsigned int flags = 0;
+    const char *format = NULL;
+    unsigned int dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_RAW;
 
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);
@@ -4528,9 +4534,40 @@ doDump(void *opaque)
     if (vshCommandOptBool(cmd, "memory-only"))
         flags |= VIR_DUMP_MEMORY_ONLY;
 
-    if (virDomainCoreDump(dom, to, flags) < 0) {
-        vshError(ctl, _("Failed to core dump domain %s to %s"), name, to);
-        goto out;
+    if (vshCommandOptBool(cmd, "format")) {
+        if (!(flags & VIR_DUMP_MEMORY_ONLY)) {
+            vshError(ctl, "%s", _("--format only works with --memory-only"));
+            goto out;
+        }
+
+        if (vshCommandOptString(cmd, "format", &format)) {
+            if (STREQ(format, "kdump-zlib")) {
+                dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_KDUMP_ZLIB;
+            } else if (STREQ(format, "kdump-lzo")) {
+                dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_KDUMP_LZO;
+            } else if (STREQ(format, "kdump-snappy")) {
+                dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_KDUMP_SNAPPY;
+            } else if (STREQ(format, "elf")) {
+                dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_RAW;
+            } else {
+                vshError(ctl, _("format '%s' is not supported, expecting "
+                                "'kdump-zlib', 'kdump-lzo', 'kdump-snappy' "
+                                "or 'elf'"), format);
+                goto out;
+            }
+        }
+    }
+
+    if (dumpformat != VIR_DOMAIN_CORE_DUMP_FORMAT_RAW) {
+        if (virDomainCoreDumpWithFormat(dom, to, dumpformat, flags) < 0) {
+            vshError(ctl, _("Failed to core dump domain %s to %s"), name, to);
+            goto out;
+        }
+    } else {
+        if (virDomainCoreDump(dom, to, flags) < 0) {
+            vshError(ctl, _("Failed to core dump domain %s to %s"), name, to);
+            goto out;
+        }
     }
 
     ret = '0';
