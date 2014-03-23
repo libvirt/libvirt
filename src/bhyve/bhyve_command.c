@@ -69,6 +69,10 @@ virBhyveTapGetRealDeviceName(char *name)
                 goto cleanup;
             }
             if ((fd = open(devpath, O_RDWR)) < 0) {
+                if (errno == EBUSY) {
+                    VIR_FREE(devpath);
+                    continue;
+                }
                 virReportSystemError(errno, _("Unable to open '%s'"), devpath);
                 goto cleanup;
             }
