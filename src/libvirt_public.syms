@@ -645,5 +645,10 @@ LIBVIRT_1.2.1 {
         virConnectNetworkEventDeregisterAny;
 } LIBVIRT_1.1.3;
 
+LIBVIRT_1.2.3 {
+    global:
+        virDomainCoreDumpWithFormat;
+} LIBVIRT_1.2.1;
+
 
 # .... define new API here using predicted next version number ....

@@ -2428,9 +2428,10 @@ testDomainRestore(virConnectPtr conn,
     return testDomainRestoreFlags(conn, path, NULL, 0);
 }
 
-static int testDomainCoreDump(virDomainPtr domain,
-                              const char *to,
-                              unsigned int flags)
+static int testDomainCoreDumpWithFormat(virDomainPtr domain,
+                                        const char *to,
+                                        unsigned int dumpformat,
+                                        unsigned int flags)
 {
     testConnPtr privconn = domain->conn->privateData;
     int fd = -1;
@@ -2468,6 +2469,13 @@ static int testDomainCoreDump(virDomainPtr domain,
         goto cleanup;
     }
 
+    /* we don't support non-raw formats in test driver */
+    if (dumpformat != VIR_DOMAIN_CORE_DUMP_FORMAT_RAW) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("kdump-compressed format is not supported here"));
+        goto cleanup;
+    }
+
     if (flags & VIR_DUMP_CRASH) {
         testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_CRASHED);
         event = virDomainEventLifecycleNewFromObj(privdom,
@@ -2491,14 +2499,29 @@ cleanup:
     return ret;
 }
 
-static char *testDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
+
+static int
+testDomainCoreDump(virDomainPtr domain,
+                   const char *to,
+                   unsigned int flags)
+{
+    return testDomainCoreDumpWithFormat(domain, to,
+                                        VIR_DOMAIN_CORE_DUMP_FORMAT_RAW, flags);
+}
+
+
+static char *
+testDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED)
+{
     char *ret;
 
     ignore_value(VIR_STRDUP(ret, "linux"));
     return ret;
 }
 
-static unsigned long long testDomainGetMaxMemory(virDomainPtr domain)
+
+static unsigned long long
+testDomainGetMaxMemory(virDomainPtr domain)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
@@ -7383,6 +7406,7 @@ static virDriver testDriver = {
     .domainRestore = testDomainRestore, /* 0.3.2 */
     .domainRestoreFlags = testDomainRestoreFlags, /* 0.9.4 */
     .domainCoreDump = testDomainCoreDump, /* 0.3.2 */
+    .domainCoreDumpWithFormat = testDomainCoreDumpWithFormat, /* 1.2.3 */
     .domainSetVcpus = testDomainSetVcpus, /* 0.1.4 */
     .domainSetVcpusFlags = testDomainSetVcpusFlags, /* 0.8.5 */
     .domainGetVcpusFlags = testDomainGetVcpusFlags, /* 0.8.5 */

@@ -904,6 +904,13 @@ struct remote_domain_core_dump_args {
     unsigned int flags;
 };
 
+struct remote_domain_core_dump_with_format_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string to;
+    unsigned int dumpformat;
+    unsigned int flags;
+};
+
 struct remote_domain_screenshot_args {
     remote_nonnull_domain dom;
     unsigned int screen;
@@ -5262,5 +5269,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_REMOVED = 333
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_REMOVED = 333,
+
+    /**
+     * @generate: both
+     * @acl: domain:core_dump
+     */
+    REMOTE_PROC_DOMAIN_CORE_DUMP_WITH_FORMAT = 334
 };

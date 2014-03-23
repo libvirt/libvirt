@@ -7653,6 +7653,7 @@ static virDriver remote_driver = {
     .domainSaveImageGetXMLDesc = remoteDomainSaveImageGetXMLDesc, /* 0.9.4 */
     .domainSaveImageDefineXML = remoteDomainSaveImageDefineXML, /* 0.9.4 */
     .domainCoreDump = remoteDomainCoreDump, /* 0.3.0 */
+    .domainCoreDumpWithFormat = remoteDomainCoreDumpWithFormat, /* 1.2.3 */
     .domainScreenshot = remoteDomainScreenshot, /* 0.9.2 */
     .domainSetVcpus = remoteDomainSetVcpus, /* 0.3.0 */
     .domainSetVcpusFlags = remoteDomainSetVcpusFlags, /* 0.8.5 */

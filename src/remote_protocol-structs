@@ -557,6 +557,12 @@ struct remote_domain_core_dump_args {
         remote_nonnull_string      to;
         u_int                      flags;
 };
+struct remote_domain_core_dump_with_format_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      to;
+        u_int                      dumpformat;
+        u_int                      flags;
+};
 struct remote_domain_screenshot_args {
         remote_nonnull_domain      dom;
         u_int                      screen;
@@ -2755,4 +2761,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_CALLBACK_BALLOON_CHANGE = 331,
         REMOTE_PROC_DOMAIN_EVENT_CALLBACK_PMSUSPEND_DISK = 332,
         REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_REMOVED = 333,
+        REMOTE_PROC_DOMAIN_CORE_DUMP_WITH_FORMAT = 334,
 };

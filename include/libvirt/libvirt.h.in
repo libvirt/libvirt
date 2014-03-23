@@ -1180,6 +1180,29 @@ typedef enum {
     VIR_DUMP_MEMORY_ONLY  = (1 << 4), /* use dump-guest-memory */
 } virDomainCoreDumpFlags;
 
+/**
+ * virDomainCoreDumpFormat:
+ *
+ * Values for specifying different formats of domain core dumps.
+ */
+typedef enum {
+    VIR_DOMAIN_CORE_DUMP_FORMAT_RAW,          /* dump guest memory in raw format */
+    VIR_DOMAIN_CORE_DUMP_FORMAT_KDUMP_ZLIB,   /* kdump-compressed format, with
+                                               * zlib compression */
+    VIR_DOMAIN_CORE_DUMP_FORMAT_KDUMP_LZO,    /* kdump-compressed format, with
+                                               * lzo compression */
+    VIR_DOMAIN_CORE_DUMP_FORMAT_KDUMP_SNAPPY, /* kdump-compressed format, with
+                                               * snappy compression */
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_CORE_DUMP_FORMAT_LAST
+    /*
+     * NB: this enum value will increase over time as new events are
+     * added to the libvirt API. It reflects the last state supported
+     * by this version of the libvirt API.
+     */
+#endif
+} virDomainCoreDumpFormat;
+
 /* Domain migration flags. */
 typedef enum {
     VIR_MIGRATE_LIVE              = (1 << 0), /* live migration */
@@ -1729,6 +1752,14 @@ int                    virDomainManagedSaveRemove(virDomainPtr dom,
  */
 int                     virDomainCoreDump       (virDomainPtr domain,
                                                  const char *to,
+                                                 unsigned int flags);
+
+/*
+ * Domain core dump with format specified
+ */
+int                 virDomainCoreDumpWithFormat (virDomainPtr domain,
+                                                 const char *to,
+                                                 unsigned int dumpformat,
                                                  unsigned int flags);
 
 /*

@@ -306,6 +306,12 @@ typedef int
                         const char *to,
                         unsigned int flags);
 
+typedef int
+(*virDrvDomainCoreDumpWithFormat)(virDomainPtr domain,
+                                  const char *to,
+                                  unsigned int dumpformat,
+                                  unsigned int flags);
+
 typedef char *
 (*virDrvDomainScreenshot)(virDomainPtr domain,
                           virStreamPtr stream,
@@ -1213,6 +1219,7 @@ struct _virDriver {
     virDrvDomainSaveImageGetXMLDesc domainSaveImageGetXMLDesc;
     virDrvDomainSaveImageDefineXML domainSaveImageDefineXML;
     virDrvDomainCoreDump domainCoreDump;
+    virDrvDomainCoreDumpWithFormat domainCoreDumpWithFormat;
     virDrvDomainScreenshot domainScreenshot;
     virDrvDomainSetVcpus domainSetVcpus;
     virDrvDomainSetVcpusFlags domainSetVcpusFlags;
