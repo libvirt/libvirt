@@ -2724,16 +2724,26 @@ cleanup:
 
 int
 qemuMonitorJSONDump(qemuMonitorPtr mon,
-                    const char *protocol)
+                    const char *protocol,
+                    const char *dumpformat)
 {
     int ret;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
 
-    cmd = qemuMonitorJSONMakeCommand("dump-guest-memory",
-                                     "b:paging", false,
-                                     "s:protocol", protocol,
-                                     NULL);
+    if (dumpformat) {
+        cmd = qemuMonitorJSONMakeCommand("dump-guest-memory",
+                                         "b:paging", false,
+                                         "s:protocol", protocol,
+                                         "s:format", dumpformat,
+                                         NULL);
+    } else {
+        cmd = qemuMonitorJSONMakeCommand("dump-guest-memory",
+                                         "b:paging", false,
+                                         "s:protocol", protocol,
+                                         NULL);
+    }
+
     if (!cmd)
         return -1;
 

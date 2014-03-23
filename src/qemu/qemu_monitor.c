@@ -2390,10 +2390,10 @@ int qemuMonitorGetDumpGuestMemoryCapability(qemuMonitorPtr mon,
 }
 
 int
-qemuMonitorDumpToFd(qemuMonitorPtr mon, int fd)
+qemuMonitorDumpToFd(qemuMonitorPtr mon, int fd, const char *dumpformat)
 {
     int ret;
-    VIR_DEBUG("mon=%p fd=%d", mon, fd);
+    VIR_DEBUG("mon=%p fd=%d dumpformat=%s", mon, fd, dumpformat);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2413,7 +2413,7 @@ qemuMonitorDumpToFd(qemuMonitorPtr mon, int fd)
     if (qemuMonitorSendFileHandle(mon, "dump", fd) < 0)
         return -1;
 
-    ret = qemuMonitorJSONDump(mon, "fd:dump");
+    ret = qemuMonitorJSONDump(mon, "fd:dump", dumpformat);
 
     if (ret < 0) {
         if (qemuMonitorCloseFileHandle(mon, "dump") < 0)

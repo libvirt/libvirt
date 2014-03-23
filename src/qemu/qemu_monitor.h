@@ -510,7 +510,8 @@ int qemuMonitorGetDumpGuestMemoryCapability(qemuMonitorPtr mon,
                                             const char *capability);
 
 int qemuMonitorDumpToFd(qemuMonitorPtr mon,
-                        int fd);
+                        int fd,
+                        const char *dumpformat);
 
 int qemuMonitorGraphicsRelocate(qemuMonitorPtr mon,
                                 int type,

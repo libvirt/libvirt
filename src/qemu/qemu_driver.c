@@ -2659,6 +2659,13 @@ VIR_ENUM_IMPL(qemuSaveCompression, QEMU_SAVE_FORMAT_LAST,
               "xz",
               "lzop")
 
+VIR_ENUM_DECL(qemuDumpFormat)
+VIR_ENUM_IMPL(qemuDumpFormat, VIR_DOMAIN_CORE_DUMP_FORMAT_LAST,
+              "elf",
+              "kdump-zlib",
+              "kdump-lzo",
+              "kdump-snappy")
+
 typedef struct _virQEMUSaveHeader virQEMUSaveHeader;
 typedef virQEMUSaveHeader *virQEMUSaveHeaderPtr;
 struct _virQEMUSaveHeader {
@@ -3373,7 +3380,8 @@ cleanup:
 }
 
 static int qemuDumpToFd(virQEMUDriverPtr driver, virDomainObjPtr vm,
-                        int fd, enum qemuDomainAsyncJob asyncJob)
+                        int fd, enum qemuDomainAsyncJob asyncJob,
+                        const char *dumpformat)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
@@ -3393,7 +3401,20 @@ static int qemuDumpToFd(virQEMUDriverPtr driver, virDomainObjPtr vm,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    ret = qemuMonitorDumpToFd(priv->mon, fd);
+    if (dumpformat) {
+        ret = qemuMonitorGetDumpGuestMemoryCapability(priv->mon, dumpformat);
+
+        if (ret <= 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("unsupported dumpformat '%s'"), dumpformat);
+            ret = -1;
+            goto cleanup;
+        }
+    }
+
+    ret = qemuMonitorDumpToFd(priv->mon, fd, dumpformat);
+
+cleanup:
     qemuDomainObjExitMonitor(driver, vm);
 
     return ret;
@@ -3404,13 +3425,15 @@ doCoreDump(virQEMUDriverPtr driver,
            virDomainObjPtr vm,
            const char *path,
            virQEMUSaveFormat compress,
-           unsigned int dump_flags)
+           unsigned int dump_flags,
+           unsigned int dumpformat)
 {
     int fd = -1;
     int ret = -1;
     virFileWrapperFdPtr wrapperFd = NULL;
     int directFlag = 0;
     unsigned int flags = VIR_FILE_WRAPPER_NON_BLOCKING;
+    const char *memory_dump_format = NULL;
 
     /* Create an empty file with appropriate ownership.  */
     if (dump_flags & VIR_DUMP_BYPASS_CACHE) {
@@ -3434,8 +3457,25 @@ doCoreDump(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (dump_flags & VIR_DUMP_MEMORY_ONLY) {
-        ret = qemuDumpToFd(driver, vm, fd, QEMU_ASYNC_JOB_DUMP);
+        if (!(memory_dump_format = qemuDumpFormatTypeToString(dumpformat))) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("unknown dumpformat '%d'"), dumpformat);
+            goto cleanup;
+        }
+
+        /* qemu dumps in "elf" without dumpformat set */
+        if (STREQ(memory_dump_format, "elf"))
+            memory_dump_format = NULL;
+
+        ret = qemuDumpToFd(driver, vm, fd, QEMU_ASYNC_JOB_DUMP,
+                           memory_dump_format);
     } else {
+        if (dumpformat != VIR_DOMAIN_CORE_DUMP_FORMAT_RAW) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("kdump-compressed format is only supported with "
+                             "memory-only dump"));
+            goto cleanup;
+        }
         ret = qemuMigrationToFile(driver, vm, fd, 0, path,
                                   qemuCompressProgramName(compress), false,
                                   QEMU_ASYNC_JOB_DUMP);
@@ -3497,9 +3537,10 @@ cleanup:
     return ret;
 }
 
-static int qemuDomainCoreDump(virDomainPtr dom,
-                              const char *path,
-                              unsigned int flags)
+static int qemuDomainCoreDumpWithFormat(virDomainPtr dom,
+                                        const char *path,
+                                        unsigned int dumpformat,
+                                        unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -3515,7 +3556,7 @@ static int qemuDomainCoreDump(virDomainPtr dom,
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
 
-    if (virDomainCoreDumpEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainCoreDumpWithFormatEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
     if (qemuDomainObjBeginAsyncJob(driver, vm,
@@ -3547,7 +3588,8 @@ static int qemuDomainCoreDump(virDomainPtr dom,
         }
     }
 
-    ret = doCoreDump(driver, vm, path, getCompressionType(driver), flags);
+    ret = doCoreDump(driver, vm, path, getCompressionType(driver), flags,
+                     dumpformat);
     if (ret < 0)
         goto endjob;
 
@@ -3599,6 +3641,14 @@ cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
     return ret;
+}
+
+static int qemuDomainCoreDump(virDomainPtr dom,
+                              const char *path,
+                              unsigned int flags)
+{
+    return qemuDomainCoreDumpWithFormat(dom, path,
+                                        VIR_DOMAIN_CORE_DUMP_FORMAT_RAW, flags);
 }
 
 static char *
@@ -3724,7 +3774,8 @@ static void processWatchdogEvent(virQEMUDriverPtr driver, virDomainObjPtr vm, in
 
             flags |= cfg->autoDumpBypassCache ? VIR_DUMP_BYPASS_CACHE: 0;
             ret = doCoreDump(driver, vm, dumpfile,
-                             getCompressionType(driver), flags);
+                             getCompressionType(driver), flags,
+                             VIR_DOMAIN_CORE_DUMP_FORMAT_RAW);
             if (ret < 0)
                 virReportError(VIR_ERR_OPERATION_FAILED,
                                "%s", _("Dump failed"));
@@ -3788,7 +3839,8 @@ doCoreDumpToAutoDumpPath(virQEMUDriverPtr driver,
 
     flags |= cfg->autoDumpBypassCache ? VIR_DUMP_BYPASS_CACHE: 0;
     ret = doCoreDump(driver, vm, dumpfile,
-                     getCompressionType(driver), flags);
+                     getCompressionType(driver), flags,
+                     VIR_DOMAIN_CORE_DUMP_FORMAT_RAW);
     if (ret < 0)
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("Dump failed"));
@@ -16653,6 +16705,7 @@ static virDriver qemuDriver = {
     .domainSaveImageGetXMLDesc = qemuDomainSaveImageGetXMLDesc, /* 0.9.4 */
     .domainSaveImageDefineXML = qemuDomainSaveImageDefineXML, /* 0.9.4 */
     .domainCoreDump = qemuDomainCoreDump, /* 0.7.0 */
+    .domainCoreDumpWithFormat = qemuDomainCoreDumpWithFormat, /* 1.2.3 */
     .domainScreenshot = qemuDomainScreenshot, /* 0.9.2 */
     .domainSetVcpus = qemuDomainSetVcpus, /* 0.4.4 */
     .domainSetVcpusFlags = qemuDomainSetVcpusFlags, /* 0.8.5 */
