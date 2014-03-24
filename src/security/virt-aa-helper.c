@@ -1281,7 +1281,9 @@ main(int argc, char **argv)
             if (vah_add_file(&buf, ctl->newfile, "rw") != 0)
                 goto cleanup;
         } else {
-            if (ctl->def->virtType == VIR_DOMAIN_VIRT_QEMU) {
+            if (ctl->def->virtType == VIR_DOMAIN_VIRT_QEMU ||
+                ctl->def->virtType == VIR_DOMAIN_VIRT_KQEMU ||
+                ctl->def->virtType == VIR_DOMAIN_VIRT_KVM) {
                 virBufferAsprintf(&buf, "  \"%s/log/libvirt/**/%s.log\" w,\n",
                                   LOCALSTATEDIR, ctl->def->name);
                 virBufferAsprintf(&buf, "  \"%s/lib/libvirt/**/%s.monitor\" rw,\n",
