@@ -117,11 +117,9 @@ main(int argc, char **argv)
             ret = EXIT_SUCCESS;
         break;
 
+    case VIR_DOMAIN_LOCK_FAILURE_DEFAULT:
     case VIR_DOMAIN_LOCK_FAILURE_IGNORE:
-        ret = EXIT_SUCCESS;
-        break;
-
-    default:
+    case VIR_DOMAIN_LOCK_FAILURE_LAST:
         fprintf(stderr, _("unsupported failure action: '%s'\n"),
                 virDomainLockFailureTypeToString(action));
         break;

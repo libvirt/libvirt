@@ -781,7 +781,17 @@ virLockManagerSanlockRegisterKillscript(int sock,
     int ret = -1;
     int rv;
 
-    if (action > VIR_DOMAIN_LOCK_FAILURE_IGNORE) {
+    switch (action) {
+    case VIR_DOMAIN_LOCK_FAILURE_DEFAULT:
+        return 0;
+
+    case VIR_DOMAIN_LOCK_FAILURE_POWEROFF:
+    case VIR_DOMAIN_LOCK_FAILURE_RESTART:
+    case VIR_DOMAIN_LOCK_FAILURE_PAUSE:
+        break;
+
+    case VIR_DOMAIN_LOCK_FAILURE_IGNORE:
+    case VIR_DOMAIN_LOCK_FAILURE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Failure action %s is not supported by sanlock"),
                        virDomainLockFailureTypeToString(action));
