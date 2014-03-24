@@ -948,8 +948,8 @@ get_files(vahControl * ctl)
          */
         if (!disk->backingChain) {
             bool probe = ctl->allowDiskFormatProbing;
-            disk->backingChain = virStorageFileGetMetadata(disk->src,
-                                                           disk->format,
+            disk->backingChain = virStorageFileGetMetadata(virDomainDiskGetSource(disk),
+                                                           virDomainDiskGetFormat(disk),
                                                            -1, -1, probe);
         }
 

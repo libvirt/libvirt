@@ -688,7 +688,7 @@ AppArmorRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
                                   virDomainDefPtr def,
                                   virDomainDiskDefPtr disk)
 {
-    if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
+    if (virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_NETWORK)
         return 0;
 
     return reload_profile(mgr, def, NULL, false);
@@ -710,14 +710,16 @@ AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
     if (secdef->norelabel)
         return 0;
 
-    if (!disk->src || disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
+    if (!virDomainDiskGetSource(disk) ||
+        virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_NETWORK)
         return 0;
 
     if (secdef->imagelabel) {
         /* if the device doesn't exist, error out */
-        if (!virFileExists(disk->src)) {
+        if (!virFileExists(virDomainDiskGetSource(disk))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("\'%s\' does not exist"), disk->src);
+                           _("\'%s\' does not exist"),
+                           virDomainDiskGetSource(disk));
             return rc;
         }
 
@@ -726,7 +728,8 @@ AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
 
         /* update the profile only if it is loaded */
         if (profile_loaded(secdef->imagelabel) >= 0) {
-            if (load_profile(mgr, secdef->imagelabel, def, disk->src,
+            if (load_profile(mgr, secdef->imagelabel, def,
+                             virDomainDiskGetSource(disk),
                              false) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot update AppArmor profile "
