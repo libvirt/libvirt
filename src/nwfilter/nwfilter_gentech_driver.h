@@ -25,6 +25,7 @@
 # define __NWFILTER_GENTECH_DRIVER_H
 
 # include "nwfilter_conf.h"
+# include "nwfilter_tech_driver.h"
 
 virNWFilterTechDriverPtr virNWFilterTechDriverForName(const char *name);
 

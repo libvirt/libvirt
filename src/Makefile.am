@@ -860,6 +860,7 @@ UTIL_IO_HELPER_SOURCES =					\
 # Network filters
 NWFILTER_DRIVER_SOURCES =						\
 		nwfilter/nwfilter_driver.h nwfilter/nwfilter_driver.c	\
+		nwfilter/nwfilter_tech_driver.h				\
 		nwfilter/nwfilter_gentech_driver.c			\
 		nwfilter/nwfilter_gentech_driver.h			\
 		nwfilter/nwfilter_dhcpsnoop.c				\

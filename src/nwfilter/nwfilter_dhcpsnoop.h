@@ -25,6 +25,8 @@
 #ifndef __NWFILTER_DHCPSNOOP_H
 # define __NWFILTER_DHCPSNOOP_H
 
+# include "nwfilter_tech_driver.h"
+
 int virNWFilterDHCPSnoopInit(void);
 void virNWFilterDHCPSnoopShutdown(void);
 int virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,

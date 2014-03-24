@@ -567,19 +567,6 @@ struct _virNWFilterDriverState {
 };
 
 
-typedef struct _virNWFilterTechDriver virNWFilterTechDriver;
-typedef virNWFilterTechDriver *virNWFilterTechDriverPtr;
-
-
-typedef struct _virNWFilterRuleInst virNWFilterRuleInst;
-typedef virNWFilterRuleInst *virNWFilterRuleInstPtr;
-struct _virNWFilterRuleInst {
-   size_t ndata;
-   void **data;
-   virNWFilterTechDriverPtr techdriver;
-};
-
-
 enum UpdateStep {
     STEP_APPLY_NEW,
     STEP_TEAR_NEW,
@@ -592,79 +579,6 @@ struct domUpdateCBStruct {
     enum UpdateStep step;
     virHashTablePtr skipInterfaces;
 };
-
-
-typedef int (*virNWFilterTechDrvInit)(bool privileged);
-typedef void (*virNWFilterTechDrvShutdown)(void);
-
-enum virDomainNetType;
-
-typedef int (*virNWFilterRuleCreateInstance)(enum virDomainNetType nettype,
-                                             virNWFilterDefPtr filter,
-                                             virNWFilterRuleDefPtr rule,
-                                             const char *ifname,
-                                             virNWFilterHashTablePtr vars,
-                                             virNWFilterRuleInstPtr res);
-
-typedef int (*virNWFilterRuleApplyNewRules)(const char *ifname,
-                                            int nruleInstances,
-                                            void **_inst);
-
-typedef int (*virNWFilterRuleTeardownNewRules)(const char *ifname);
-
-typedef int (*virNWFilterRuleTeardownOldRules)(const char *ifname);
-
-typedef int (*virNWFilterRuleRemoveRules)(const char *ifname,
-                                          int nruleInstances,
-                                          void **_inst);
-
-typedef int (*virNWFilterRuleAllTeardown)(const char *ifname);
-
-typedef int (*virNWFilterRuleFreeInstanceData)(void * _inst);
-
-typedef int (*virNWFilterRuleDisplayInstanceData)(void *_inst);
-
-typedef int (*virNWFilterCanApplyBasicRules)(void);
-
-typedef int (*virNWFilterApplyBasicRules)(const char *ifname,
-                                          const virMacAddr *macaddr);
-
-typedef int (*virNWFilterApplyDHCPOnlyRules)(const char *ifname,
-                                             const virMacAddr *macaddr,
-                                             virNWFilterVarValuePtr dhcpsrvs,
-                                             bool leaveTemporary);
-
-typedef int (*virNWFilterRemoveBasicRules)(const char *ifname);
-
-typedef int (*virNWFilterDropAllRules)(const char *ifname);
-
-enum techDrvFlags {
-    TECHDRV_FLAG_INITIALIZED = (1 << 0),
-};
-
-struct _virNWFilterTechDriver {
-    const char *name;
-    enum techDrvFlags flags;
-
-    virNWFilterTechDrvInit init;
-    virNWFilterTechDrvShutdown shutdown;
-
-    virNWFilterRuleCreateInstance createRuleInstance;
-    virNWFilterRuleApplyNewRules applyNewRules;
-    virNWFilterRuleTeardownNewRules tearNewRules;
-    virNWFilterRuleTeardownOldRules tearOldRules;
-    virNWFilterRuleRemoveRules removeRules;
-    virNWFilterRuleAllTeardown allTeardown;
-    virNWFilterRuleFreeInstanceData freeRuleInstance;
-    virNWFilterRuleDisplayInstanceData displayRuleInstance;
-
-    virNWFilterCanApplyBasicRules canApplyBasicRules;
-    virNWFilterApplyBasicRules applyBasicRules;
-    virNWFilterApplyDHCPOnlyRules applyDHCPOnlyRules;
-    virNWFilterDropAllRules applyDropAllRules;
-    virNWFilterRemoveBasicRules removeBasicRules;
-};
-
 
 
 void virNWFilterRuleDefFree(virNWFilterRuleDefPtr def);

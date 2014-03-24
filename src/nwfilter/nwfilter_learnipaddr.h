@@ -27,6 +27,7 @@
 # define __NWFILTER_LEARNIPADDR_H
 
 # include "conf/nwfilter_params.h"
+# include "nwfilter_tech_driver.h"
 # include <net/if.h>
 
 enum howDetect {

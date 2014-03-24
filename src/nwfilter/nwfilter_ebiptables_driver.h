@@ -23,6 +23,8 @@
 #ifndef VIR_NWFILTER_EBTABLES_DRIVER_H__
 # define VIR_NWFILTER_EBTABLES_DRIVER_H__
 
+# include "nwfilter_tech_driver.h"
+
 # define MAX_CHAINNAME_LENGTH  32 /* see linux/netfilter_bridge/ebtables.h */
 
 enum RuleType {
