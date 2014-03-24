@@ -32,7 +32,6 @@ void virNWFilterDHCPSnoopShutdown(void);
 int virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
                             const char *ifname,
                             const char *linkdev,
-                            enum virDomainNetType nettype,
                             const unsigned char *vmuuid,
                             const virMacAddr *macaddr,
                             const char *filtername,

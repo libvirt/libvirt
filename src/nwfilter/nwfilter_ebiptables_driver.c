@@ -2649,8 +2649,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
  * pointed to by res, -1 otherwise
  */
 static int
-ebiptablesCreateRuleInstance(enum virDomainNetType nettype ATTRIBUTE_UNUSED,
-                             virNWFilterDefPtr nwfilter,
+ebiptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                              virNWFilterRuleDefPtr rule,
                              const char *ifname,
                              virNWFilterVarCombIterPtr vars,
@@ -2740,13 +2739,11 @@ ebiptablesCreateRuleInstance(enum virDomainNetType nettype ATTRIBUTE_UNUSED,
 }
 
 static int
-ebiptablesCreateRuleInstanceIterate(
-                             enum virDomainNetType nettype ATTRIBUTE_UNUSED,
-                             virNWFilterDefPtr nwfilter,
-                             virNWFilterRuleDefPtr rule,
-                             const char *ifname,
-                             virNWFilterHashTablePtr vars,
-                             virNWFilterRuleInstPtr res)
+ebiptablesCreateRuleInstanceIterate(virNWFilterDefPtr nwfilter,
+                                    virNWFilterRuleDefPtr rule,
+                                    const char *ifname,
+                                    virNWFilterHashTablePtr vars,
+                                    virNWFilterRuleInstPtr res)
 {
     int rc = 0;
     virNWFilterVarCombIterPtr vciter, tmp;
@@ -2761,8 +2758,7 @@ ebiptablesCreateRuleInstanceIterate(
         return -1;
 
     do {
-        rc = ebiptablesCreateRuleInstance(nettype,
-                                          nwfilter,
+        rc = ebiptablesCreateRuleInstance(nwfilter,
                                           rule,
                                           ifname,
                                           tmp,

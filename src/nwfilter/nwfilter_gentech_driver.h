@@ -51,7 +51,6 @@ int virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
                                      const char *ifname,
                                      int ifindex,
                                      const char *linkdev,
-                                     enum virDomainNetType nettype,
                                      const virMacAddr *macaddr,
                                      const char *filtername,
                                      virNWFilterHashTablePtr filterparams);

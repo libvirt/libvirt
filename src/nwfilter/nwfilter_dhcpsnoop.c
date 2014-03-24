@@ -137,7 +137,6 @@ struct _virNWFilterSnoopReq {
     char                                *ifname;
     int                                  ifindex;
     char                                *linkdev;
-    enum virDomainNetType                nettype;
     char                                 ifkey[VIR_IFKEY_LEN];
     virMacAddr                           macaddr;
     char                                *filtername;
@@ -493,7 +492,6 @@ virNWFilterSnoopIPLeaseInstallRule(virNWFilterSnoopIPLeasePtr ipl,
                                               req->ifname,
                                               req->ifindex,
                                               req->linkdev,
-                                              req->nettype,
                                               &req->macaddr,
                                               req->filtername,
                                               req->vars);
@@ -879,7 +877,6 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
                                                req->ifname,
                                                req->ifindex,
                                                req->linkdev,
-                                               req->nettype,
                                                &req->macaddr,
                                                req->filtername,
                                                req->vars);
@@ -1592,7 +1589,6 @@ int
 virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
                         const char *ifname,
                         const char *linkdev,
-                        enum virDomainNetType nettype,
                         const unsigned char *vmuuid,
                         const virMacAddr *macaddr,
                         const char *filtername,
@@ -1628,7 +1624,6 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
     req->driver = driver;
     req->techdriver = techdriver;
     tmp = virNetDevGetIndex(ifname, &req->ifindex);
-    req->nettype = nettype;
     virMacAddrSet(&req->macaddr, macaddr);
     req->vars = virNWFilterHashTableCreate(0);
     req->linkdev = NULL;
@@ -2230,7 +2225,6 @@ int
 virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver ATTRIBUTE_UNUSED,
                         const char *ifname ATTRIBUTE_UNUSED,
                         const char *linkdev ATTRIBUTE_UNUSED,
-                        enum virDomainNetType nettype ATTRIBUTE_UNUSED,
                         const unsigned char *vmuuid ATTRIBUTE_UNUSED,
                         const virMacAddr *macaddr ATTRIBUTE_UNUSED,
                         const char *filtername ATTRIBUTE_UNUSED,

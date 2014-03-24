@@ -44,10 +44,7 @@ struct _virNWFilterRuleInst {
 typedef int (*virNWFilterTechDrvInit)(bool privileged);
 typedef void (*virNWFilterTechDrvShutdown)(void);
 
-enum virDomainNetType;
-
-typedef int (*virNWFilterRuleCreateInstance)(enum virDomainNetType nettype,
-                                             virNWFilterDefPtr filter,
+typedef int (*virNWFilterRuleCreateInstance)(virNWFilterDefPtr filter,
                                              virNWFilterRuleDefPtr rule,
                                              const char *ifname,
                                              virNWFilterHashTablePtr vars,

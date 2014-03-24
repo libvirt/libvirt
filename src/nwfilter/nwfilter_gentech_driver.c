@@ -289,7 +289,6 @@ virNWFilterPrintVars(virHashTablePtr vars,
  */
 static virNWFilterRuleInstPtr
 virNWFilterRuleInstantiate(virNWFilterTechDriverPtr techdriver,
-                           enum virDomainNetType nettype,
                            virNWFilterDefPtr filter,
                            virNWFilterRuleDefPtr rule,
                            const char *ifname,
@@ -304,7 +303,7 @@ virNWFilterRuleInstantiate(virNWFilterTechDriverPtr techdriver,
 
     ret->techdriver = techdriver;
 
-    rc = techdriver->createRuleInstance(nettype, filter,
+    rc = techdriver->createRuleInstance(filter,
                                         rule, ifname, vars, ret);
 
     if (rc) {
@@ -376,7 +375,6 @@ virNWFilterCreateVarsFrom(virNWFilterHashTablePtr vars1,
  */
 static int
 _virNWFilterInstantiateRec(virNWFilterTechDriverPtr techdriver,
-                           enum virDomainNetType nettype,
                            virNWFilterDefPtr filter,
                            const char *ifname,
                            virNWFilterHashTablePtr vars,
@@ -396,7 +394,6 @@ _virNWFilterInstantiateRec(virNWFilterTechDriverPtr techdriver,
         virNWFilterIncludeDefPtr inc  = filter->filterEntries[i]->include;
         if (rule) {
             inst = virNWFilterRuleInstantiate(techdriver,
-                                              nettype,
                                               filter,
                                               rule,
                                               ifname,
@@ -449,7 +446,6 @@ _virNWFilterInstantiateRec(virNWFilterTechDriverPtr techdriver,
                 }
 
                 rc = _virNWFilterInstantiateRec(techdriver,
-                                                nettype,
                                                 next_filter,
                                                 ifname,
                                                 tmpvars,
@@ -634,7 +630,6 @@ virNWFilterRuleInstancesToArray(int nEntries,
 static int
 virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
                        virNWFilterTechDriverPtr techdriver,
-                       enum virDomainNetType nettype,
                        virNWFilterDefPtr filter,
                        const char *ifname,
                        int ifindex,
@@ -690,7 +685,7 @@ virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
             }
             if (STRCASEEQ(learning, "dhcp")) {
                 rc = virNWFilterDHCPSnoopReq(techdriver, ifname, linkdev,
-                                             nettype, vmuuid, macaddr,
+                                             vmuuid, macaddr,
                                              filter->name, vars, driver);
                 goto err_exit;
             } else if (STRCASEEQ(learning, "any")) {
@@ -699,7 +694,7 @@ virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
                                                    ifname,
                                                    ifindex,
                                                    linkdev,
-                                                   nettype, macaddr,
+                                                   macaddr,
                                                    filter->name,
                                                    vars, driver,
                                                    DETECT_DHCP|DETECT_STATIC);
@@ -723,7 +718,6 @@ virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
     }
 
     rc = _virNWFilterInstantiateRec(techdriver,
-                                    nettype,
                                     filter,
                                     ifname,
                                     vars,
@@ -805,7 +799,6 @@ __virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
                                const char *ifname,
                                int ifindex,
                                const char *linkdev,
-                               enum virDomainNetType nettype,
                                const virMacAddr *macaddr,
                                const char *filtername,
                                virNWFilterHashTablePtr filterparams,
@@ -892,7 +885,6 @@ __virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
 
     rc = virNWFilterInstantiate(vmuuid,
                                 techdriver,
-                                nettype,
                                 filter,
                                 ifname,
                                 ifindex,
@@ -953,7 +945,6 @@ _virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
                                         net->ifname,
                                         ifindex,
                                         linkdev,
-                                        net->type,
                                         &net->mac,
                                         net->filter,
                                         net->filterparams,
@@ -974,7 +965,6 @@ virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
                                  const char *ifname,
                                  int ifindex,
                                  const char *linkdev,
-                                 enum virDomainNetType nettype,
                                  const virMacAddr *macaddr,
                                  const char *filtername,
                                  virNWFilterHashTablePtr filterparams)
@@ -991,7 +981,6 @@ virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
                                         ifname,
                                         ifindex,
                                         linkdev,
-                                        nettype,
                                         macaddr,
                                         filtername,
                                         filterparams,
