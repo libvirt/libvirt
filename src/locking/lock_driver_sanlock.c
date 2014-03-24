@@ -786,10 +786,10 @@ virLockManagerSanlockRegisterKillscript(int sock,
         return 0;
 
     case VIR_DOMAIN_LOCK_FAILURE_POWEROFF:
-    case VIR_DOMAIN_LOCK_FAILURE_RESTART:
     case VIR_DOMAIN_LOCK_FAILURE_PAUSE:
         break;
 
+    case VIR_DOMAIN_LOCK_FAILURE_RESTART:
     case VIR_DOMAIN_LOCK_FAILURE_IGNORE:
     case VIR_DOMAIN_LOCK_FAILURE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

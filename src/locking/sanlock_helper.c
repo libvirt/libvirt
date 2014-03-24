@@ -91,33 +91,13 @@ main(int argc, char **argv)
             ret = EXIT_SUCCESS;
         break;
 
-    case VIR_DOMAIN_LOCK_FAILURE_RESTART:
-        if (virDomainIsPersistent(dom)) {
-            if ((virDomainDestroy(dom) == 0 ||
-                 virDomainIsActive(dom) == 0) &&
-                virDomainCreate(dom) == 0)
-                ret = EXIT_SUCCESS;
-        } else {
-            xml = virDomainGetXMLDesc(dom,
-                                      VIR_DOMAIN_XML_SECURE |
-                                      VIR_DOMAIN_XML_INACTIVE);
-
-            if (!xml ||
-                (virDomainDestroy(dom) < 0 &&
-                 virDomainIsActive(dom) != 0))
-                goto cleanup;
-            virDomainFree(dom);
-            if ((dom = virDomainCreateXML(conn, xml, 0)))
-                ret = EXIT_SUCCESS;
-        }
-        break;
-
     case VIR_DOMAIN_LOCK_FAILURE_PAUSE:
         if (virDomainSuspend(dom) == 0)
             ret = EXIT_SUCCESS;
         break;
 
     case VIR_DOMAIN_LOCK_FAILURE_DEFAULT:
+    case VIR_DOMAIN_LOCK_FAILURE_RESTART:
     case VIR_DOMAIN_LOCK_FAILURE_IGNORE:
     case VIR_DOMAIN_LOCK_FAILURE_LAST:
         fprintf(stderr, _("unsupported failure action: '%s'\n"),
