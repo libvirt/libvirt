@@ -631,33 +631,14 @@ hashDataFree(void *payload, const void *name ATTRIBUTE_UNUSED)
 int
 virNWFilterHashTablePut(virNWFilterHashTablePtr table,
                         const char *name,
-                        virNWFilterVarValuePtr val,
-                        int copyName)
+                        virNWFilterVarValuePtr val)
 {
     if (!virHashLookup(table->hashTable, name)) {
-        char *newName;
-        if (copyName) {
-            if (VIR_STRDUP(newName, name) < 0)
-                return -1;
-
-            if (VIR_APPEND_ELEMENT_COPY(table->names,
-                                        table->nNames, newName) < 0) {
-                VIR_FREE(newName);
-                return -1;
-            }
-        }
-
-        if (virHashAddEntry(table->hashTable, name, val) < 0) {
-            if (copyName) {
-                VIR_FREE(newName);
-                table->nNames--;
-            }
+        if (virHashAddEntry(table->hashTable, name, val) < 0)
             return -1;
-        }
     } else {
-        if (virHashUpdateEntry(table->hashTable, name, val) < 0) {
+        if (virHashUpdateEntry(table->hashTable, name, val) < 0)
             return -1;
-        }
     }
     return 0;
 }
@@ -675,14 +656,10 @@ virNWFilterHashTablePut(virNWFilterHashTablePtr table,
 void
 virNWFilterHashTableFree(virNWFilterHashTablePtr table)
 {
-    size_t i;
     if (!table)
         return;
     virHashFree(table->hashTable);
 
-    for (i = 0; i < table->nNames; i++)
-        VIR_FREE(table->names[i]);
-    VIR_FREE(table->names);
     VIR_FREE(table);
 }
 
@@ -707,20 +684,7 @@ void *
 virNWFilterHashTableRemoveEntry(virNWFilterHashTablePtr ht,
                                 const char *entry)
 {
-    size_t i;
-    void *value = virHashSteal(ht->hashTable, entry);
-
-    if (value) {
-        for (i = 0; i < ht->nNames; i++) {
-            if (STREQ(ht->names[i], entry)) {
-                VIR_FREE(ht->names[i]);
-                ht->names[i] = ht->names[--ht->nNames];
-                ht->names[ht->nNames] = NULL;
-                break;
-            }
-        }
-    }
-    return value;
+    return virHashSteal(ht->hashTable, entry);
 }
 
 
@@ -745,7 +709,7 @@ addToTable(void *payload, const void *name, void *data)
         return;
     }
 
-    if (virNWFilterHashTablePut(atts->target, (const char *)name, val, 1) < 0){
+    if (virNWFilterHashTablePut(atts->target, (const char *)name, val) < 0){
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not put variable '%s' into hashmap"),
                        (const char *)name);
@@ -850,7 +814,7 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
                         value = virNWFilterParseVarValue(val);
                         if (!value)
                             goto skip_entry;
-                        if (virNWFilterHashTablePut(table, nam, value, 1) < 0)
+                        if (virNWFilterHashTablePut(table, nam, value) < 0)
                             goto err_exit;
                     }
                     value = NULL;

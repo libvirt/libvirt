@@ -66,9 +66,6 @@ typedef struct _virNWFilterHashTable virNWFilterHashTable;
 typedef virNWFilterHashTable *virNWFilterHashTablePtr;
 struct _virNWFilterHashTable {
     virHashTablePtr hashTable;
-
-    size_t nNames;
-    char **names;
 };
 
 
@@ -81,8 +78,7 @@ virNWFilterHashTablePtr virNWFilterHashTableCreate(int n);
 void virNWFilterHashTableFree(virNWFilterHashTablePtr table);
 int virNWFilterHashTablePut(virNWFilterHashTablePtr table,
                             const char *name,
-                            virNWFilterVarValuePtr val,
-                            int freeName);
+                            virNWFilterVarValuePtr val);
 void *virNWFilterHashTableRemoveEntry(virNWFilterHashTablePtr table,
                                       const char *name);
 int virNWFilterHashTablePutAll(virNWFilterHashTablePtr src,
