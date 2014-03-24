@@ -4046,45 +4046,6 @@ ebiptablesTearOldRules(const char *ifname)
 
 
 /**
- * ebiptablesRemoveRules:
- * @ifname : the name of the interface to which the rules apply
- * @nRuleInstance : the number of given rules
- * @_inst : array of rule instantiation data
- *
- * Remove all rules one after the other
- *
- * Return 0 on success, -1 if execution of one or more cleanup
- * commands failed.
- */
-static int
-ebiptablesRemoveRules(const char *ifname ATTRIBUTE_UNUSED,
-                      int nruleInstances,
-                      void **_inst)
-{
-    int rc = -1;
-    size_t i;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    ebiptablesRuleInstPtr *inst = (ebiptablesRuleInstPtr *)_inst;
-
-    NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
-
-    for (i = 0; i < nruleInstances; i++)
-        ebiptablesInstCommand(&buf,
-                              inst[i]->commandTemplate,
-                              'D', -1,
-                              false);
-
-    if (ebiptablesExecCLI(&buf, true, NULL) < 0)
-        goto cleanup;
-
-    rc = 0;
-
- cleanup:
-    return rc;
-}
-
-
-/**
  * ebiptablesAllTeardown:
  * @ifname : the name of the interface to which the rules apply
  *
@@ -4143,7 +4104,6 @@ virNWFilterTechDriver ebiptables_driver = {
     .tearNewRules        = ebiptablesTearNewRules,
     .tearOldRules        = ebiptablesTearOldRules,
     .allTeardown         = ebiptablesAllTeardown,
-    .removeRules         = ebiptablesRemoveRules,
     .freeRuleInstance    = ebiptablesFreeRuleInstance,
     .displayRuleInstance = ebiptablesDisplayRuleInstance,
 

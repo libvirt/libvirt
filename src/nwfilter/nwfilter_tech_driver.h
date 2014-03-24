@@ -58,10 +58,6 @@ typedef int (*virNWFilterRuleTeardownNewRules)(const char *ifname);
 
 typedef int (*virNWFilterRuleTeardownOldRules)(const char *ifname);
 
-typedef int (*virNWFilterRuleRemoveRules)(const char *ifname,
-                                          int nruleInstances,
-                                          void **_inst);
-
 typedef int (*virNWFilterRuleAllTeardown)(const char *ifname);
 
 typedef int (*virNWFilterRuleFreeInstanceData)(void * _inst);
@@ -97,7 +93,6 @@ struct _virNWFilterTechDriver {
     virNWFilterRuleApplyNewRules applyNewRules;
     virNWFilterRuleTeardownNewRules tearNewRules;
     virNWFilterRuleTeardownOldRules tearOldRules;
-    virNWFilterRuleRemoveRules removeRules;
     virNWFilterRuleAllTeardown allTeardown;
     virNWFilterRuleFreeInstanceData freeRuleInstance;
     virNWFilterRuleDisplayInstanceData displayRuleInstance;
