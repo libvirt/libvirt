@@ -2781,17 +2781,6 @@ ebiptablesFreeRuleInstance(void *_inst)
 }
 
 
-static int
-ebiptablesDisplayRuleInstance(void *_inst)
-{
-    ebiptablesRuleInstPtr inst = (ebiptablesRuleInstPtr)_inst;
-    VIR_INFO("Command Template: '%s', Needed protocol: '%s'",
-             inst->commandTemplate,
-             inst->neededProtocolChain);
-    return 0;
-}
-
-
 /**
  * ebiptablesExecCLI:
  * @buf: pointer to virBuffer containing the string with the commands to
@@ -4105,7 +4094,6 @@ virNWFilterTechDriver ebiptables_driver = {
     .tearOldRules        = ebiptablesTearOldRules,
     .allTeardown         = ebiptablesAllTeardown,
     .freeRuleInstance    = ebiptablesFreeRuleInstance,
-    .displayRuleInstance = ebiptablesDisplayRuleInstance,
 
     .canApplyBasicRules  = ebiptablesCanApplyBasicRules,
     .applyBasicRules     = ebtablesApplyBasicRules,

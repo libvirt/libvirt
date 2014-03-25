@@ -62,8 +62,6 @@ typedef int (*virNWFilterRuleAllTeardown)(const char *ifname);
 
 typedef int (*virNWFilterRuleFreeInstanceData)(void * _inst);
 
-typedef int (*virNWFilterRuleDisplayInstanceData)(void *_inst);
-
 typedef int (*virNWFilterCanApplyBasicRules)(void);
 
 typedef int (*virNWFilterApplyBasicRules)(const char *ifname,
@@ -95,7 +93,6 @@ struct _virNWFilterTechDriver {
     virNWFilterRuleTeardownOldRules tearOldRules;
     virNWFilterRuleAllTeardown allTeardown;
     virNWFilterRuleFreeInstanceData freeRuleInstance;
-    virNWFilterRuleDisplayInstanceData displayRuleInstance;
 
     virNWFilterCanApplyBasicRules canApplyBasicRules;
     virNWFilterApplyBasicRules applyBasicRules;
