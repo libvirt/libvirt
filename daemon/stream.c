@@ -260,7 +260,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
         daemonStreamUpdateEvents(stream);
     }
 
-cleanup:
+ cleanup:
     virMutexUnlock(&priv->lock);
 }
 
@@ -301,7 +301,7 @@ daemonStreamFilter(virNetServerClientPtr client ATTRIBUTE_UNUSED,
     daemonStreamUpdateEvents(stream);
     ret = 1;
 
-cleanup:
+ cleanup:
     virMutexUnlock(&stream->priv->lock);
     return ret;
 }

@@ -215,7 +215,7 @@ daemonConfigFilePath(bool privileged, char **configfile)
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -301,7 +301,7 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
 
     return data;
 
-error:
+ error:
     daemonConfigFree(data);
     return NULL;
 }
@@ -443,7 +443,7 @@ daemonConfigLoadOptions(struct daemonConfig *data,
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 

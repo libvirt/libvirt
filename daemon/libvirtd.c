@@ -242,7 +242,7 @@ static int daemonForkIntoBackground(const char *argv0)
         }
     }
 
-error:
+ error:
     VIR_FORCE_CLOSE(statuspipe[0]);
     VIR_FORCE_CLOSE(statuspipe[1]);
     return -1;
@@ -280,7 +280,7 @@ daemonPidFilePath(bool privileged,
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -325,7 +325,7 @@ daemonUnixSocketPaths(struct daemonConfig *config,
     }
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -618,7 +618,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
 
     return 0;
 
-error:
+ error:
 #if WITH_GNUTLS
     virObjectUnref(svcTLS);
 #endif
@@ -735,7 +735,7 @@ daemonSetupLogging(struct daemonConfig *config,
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -948,7 +948,7 @@ static void daemonRunStateInit(void *opaque)
 #endif
     /* Only now accept clients from network */
     virNetServerUpdateServices(srv, true);
-cleanup:
+ cleanup:
     daemonInhibitCallback(false, srv);
     virObjectUnref(srv);
     virObjectUnref(sysident);
@@ -1539,7 +1539,7 @@ int main(int argc, char **argv) {
     virHookCall(VIR_HOOK_DRIVER_DAEMON, "-", VIR_HOOK_DAEMON_OP_SHUTDOWN,
                 0, "shutdown", NULL, NULL);
 
-cleanup:
+ cleanup:
     virNetlinkEventServiceStopAll();
     virObjectUnref(remoteProgram);
     virObjectUnref(lxcProgram);
