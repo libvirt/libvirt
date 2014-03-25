@@ -245,23 +245,23 @@ nwfilterStateInitialize(bool privileged,
 
     return 0;
 
-error:
+ error:
     VIR_FREE(base);
     nwfilterDriverUnlock(driverState);
     nwfilterStateCleanup();
 
     return -1;
 
-err_techdrivers_shutdown:
+ err_techdrivers_shutdown:
     virNWFilterTechDriversShutdown();
-err_dhcpsnoop_shutdown:
+ err_dhcpsnoop_shutdown:
     virNWFilterDHCPSnoopShutdown();
-err_exit_learnshutdown:
+ err_exit_learnshutdown:
     virNWFilterLearnShutdown();
-err_exit_ipaddrmapshutdown:
+ err_exit_ipaddrmapshutdown:
     virNWFilterIPAddrMapShutdown();
 
-err_free_driverstate:
+ err_free_driverstate:
     VIR_FREE(driverState);
 
     return -1;
@@ -378,7 +378,7 @@ nwfilterLookupByUUID(virConnectPtr conn,
 
     ret = virGetNWFilter(conn, nwfilter->def->name, nwfilter->def->uuid);
 
-cleanup:
+ cleanup:
     if (nwfilter)
         virNWFilterObjUnlock(nwfilter);
     return ret;
@@ -408,7 +408,7 @@ nwfilterLookupByName(virConnectPtr conn,
 
     ret = virGetNWFilter(conn, nwfilter->def->name, nwfilter->def->uuid);
 
-cleanup:
+ cleanup:
     if (nwfilter)
         virNWFilterObjUnlock(nwfilter);
     return ret;
@@ -588,7 +588,7 @@ nwfilterDefineXML(virConnectPtr conn,
 
     ret = virGetNWFilter(conn, nwfilter->def->name, nwfilter->def->uuid);
 
-cleanup:
+ cleanup:
     virNWFilterDefFree(def);
     if (nwfilter)
         virNWFilterObjUnlock(nwfilter);
@@ -637,7 +637,7 @@ nwfilterUndefine(virNWFilterPtr obj)
     nwfilter = NULL;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (nwfilter)
         virNWFilterObjUnlock(nwfilter);
 
@@ -673,7 +673,7 @@ nwfilterGetXMLDesc(virNWFilterPtr obj,
 
     ret = virNWFilterDefFormat(nwfilter->def);
 
-cleanup:
+ cleanup:
     if (nwfilter)
         virNWFilterObjUnlock(nwfilter);
     return ret;

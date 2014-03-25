@@ -345,7 +345,7 @@ virNWFilterCreateVarsFrom(virNWFilterHashTablePtr vars1,
 
     return res;
 
-err_exit:
+ err_exit:
     virNWFilterHashTableFree(res);
     return NULL;
 }
@@ -768,7 +768,7 @@ virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
         virNWFilterUnlockIface(ifname);
     }
 
-err_exit:
+ err_exit:
 
     for (j = 0; j < nEntries; j++)
         virNWFilterRuleInstFree(insts[j]);
@@ -780,7 +780,7 @@ err_exit:
 
     return rc;
 
-err_unresolvable_vars:
+ err_unresolvable_vars:
 
     buf = virNWFilterPrintVars(missing_vars->hashTable, ", ", false, reportIP);
     if (buf) {
@@ -906,10 +906,10 @@ __virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
 
     virNWFilterHashTableFree(vars);
 
-err_exit_vars1:
+ err_exit_vars1:
     virNWFilterHashTableFree(vars1);
 
-err_exit:
+ err_exit:
     virNWFilterObjUnlock(obj);
 
     VIR_FREE(str_ipaddr);
@@ -961,7 +961,7 @@ _virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
                                         false,
                                         foundNewFilter);
 
-cleanup:
+ cleanup:
     virMutexUnlock(&updateMutex);
 
     return rc;

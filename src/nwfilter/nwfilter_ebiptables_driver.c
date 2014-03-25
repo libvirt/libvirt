@@ -978,7 +978,7 @@ iptablesHandleSrcMacAddr(virBufferPtr buf,
 
     return 0;
 
-err_exit:
+ err_exit:
     virBufferFreeAndReset(buf);
 
     return -1;
@@ -1174,7 +1174,7 @@ iptablesHandleIpHdr(virBufferPtr buf,
 
     return 0;
 
-err_exit:
+ err_exit:
     virBufferFreeAndReset(buf);
     virBufferFreeAndReset(afterStateMatch);
 
@@ -1246,7 +1246,7 @@ iptablesHandlePortData(virBufferPtr buf,
 
     return 0;
 
-err_exit:
+ err_exit:
     return -1;
 }
 
@@ -1741,14 +1741,14 @@ _iptablesCreateRuleInstance(bool directionIn,
                                  (isIPv6) ? RT_IP6TABLES : RT_IPTABLES);
 
 
-err_exit:
+ err_exit:
     virBufferFreeAndReset(&buf);
     virBufferFreeAndReset(&prefix);
     virBufferFreeAndReset(&afterStateMatch);
 
     return -1;
 
-exit_no_error:
+ exit_no_error:
     virBufferFreeAndReset(&buf);
     virBufferFreeAndReset(&prefix);
     virBufferFreeAndReset(&afterStateMatch);
@@ -2628,7 +2628,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
                                  rule->priority,
                                  RT_EBTABLES);
 
-err_exit:
+ err_exit:
     virBufferFreeAndReset(&buf);
 
     return -1;
@@ -3281,7 +3281,7 @@ ebtablesApplyBasicRules(const char *ifname,
 
     return 0;
 
-tear_down_tmpebchains:
+ tear_down_tmpebchains:
     ebtablesCleanAll(ifname);
 
     virReportError(VIR_ERR_BUILD_FIREWALL,
@@ -3429,7 +3429,7 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
 
     return 0;
 
-tear_down_tmpebchains:
+ tear_down_tmpebchains:
     ebtablesCleanAll(ifname);
 
     virReportError(VIR_ERR_BUILD_FIREWALL,
@@ -3499,7 +3499,7 @@ ebtablesApplyDropAllRules(const char *ifname)
 
     return 0;
 
-tear_down_tmpebchains:
+ tear_down_tmpebchains:
     ebtablesCleanAll(ifname);
 
     virReportError(VIR_ERR_BUILD_FIREWALL,
@@ -3565,7 +3565,7 @@ ebiptablesRuleOrderSort(const void *a, const void *b)
     if (root_b) {
         return 1; /* b before a */
     }
-normal:
+ normal:
     /* priorities are limited to range [-1000, 1000] */
     return insta->priority - instb->priority;
 }
@@ -3911,7 +3911,7 @@ ebiptablesApplyNewRules(const char *ifname,
 
     return 0;
 
-tear_down_ebsubchains_and_unlink:
+ tear_down_ebsubchains_and_unlink:
     if (ebtables_cmd_path) {
         NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
 
@@ -3919,7 +3919,7 @@ tear_down_ebsubchains_and_unlink:
         ebtablesUnlinkTmpRootChain(&buf, false, ifname);
     }
 
-tear_down_tmpip6tchains:
+ tear_down_tmpip6tchains:
     if (haveIp6tables) {
         NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
 
@@ -3927,7 +3927,7 @@ tear_down_tmpip6tchains:
         iptablesRemoveTmpRootChains(&buf, ifname);
     }
 
-tear_down_tmpiptchains:
+ tear_down_tmpiptchains:
     if (haveIptables) {
         NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
 
@@ -3935,7 +3935,7 @@ tear_down_tmpiptchains:
         iptablesRemoveTmpRootChains(&buf, ifname);
     }
 
-tear_down_tmpebchains:
+ tear_down_tmpebchains:
     if (ebtables_cmd_path) {
         NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
 
@@ -3953,7 +3953,7 @@ tear_down_tmpebchains:
                    errmsg ? ": " : "",
                    errmsg ? errmsg : "");
 
-exit_free_sets:
+ exit_free_sets:
     virHashFree(chains_in_set);
     virHashFree(chains_out_set);
 
@@ -4083,7 +4083,7 @@ ebiptablesRemoveRules(const char *ifname ATTRIBUTE_UNUSED,
 
     rc = 0;
 
-cleanup:
+ cleanup:
     return rc;
 }
 
@@ -4209,7 +4209,7 @@ ebiptablesDriverInitWithFirewallD(void)
         }
     }
 
-err_exit:
+ err_exit:
     VIR_FREE(firewall_cmd_path);
     VIR_FREE(output);
 
@@ -4365,7 +4365,7 @@ ebiptablesDriverProbeStateMatch(void)
         m_state_in_str = m_state_in_str_new;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(cmdout);
     return;
 }

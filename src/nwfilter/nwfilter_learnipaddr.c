@@ -761,13 +761,13 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
 
     return 0;
 
-err_dereg_req:
+ err_dereg_req:
     virNWFilterDeregisterLearnReq(ifindex);
-err_free_ht:
+ err_free_ht:
     virNWFilterHashTableFree(ht);
-err_free_req:
+ err_free_req:
     virNWFilterIPAddrLearnReqFree(req);
-err_no_req:
+ err_no_req:
     return -1;
 }
 
