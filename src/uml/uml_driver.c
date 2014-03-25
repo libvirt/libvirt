@@ -242,7 +242,7 @@ umlIdentifyOneChrPTY(struct uml_driver *driver,
     int retries = 0;
     if (virAsprintf(&cmd, "config %s%d", dev, def->target.port) < 0)
         return -1;
-requery:
+ requery:
     if (umlMonitorCommand(driver, dom, cmd, &res) < 0)
         return -1;
 
@@ -309,7 +309,7 @@ umlInotifyEvent(int watch,
     if (watch != driver->inotifyWatch)
         goto cleanup;
 
-reread:
+ reread:
     got = read(fd, buf, sizeof(buf));
     if (got == -1) {
         if (errno == EINTR)
@@ -414,7 +414,7 @@ reread:
         }
     }
 
-cleanup:
+ cleanup:
     umlDriverUnlock(driver);
 }
 
@@ -576,10 +576,10 @@ umlStateInitialize(bool privileged,
     virNWFilterRegisterCallbackDriver(&umlCallbackDriver);
     return 0;
 
-out_of_memory:
+ out_of_memory:
     VIR_ERROR(_("umlStartup: out of memory"));
 
-error:
+ error:
     VIR_FREE(userdir);
     VIR_FREE(base);
     umlDriverUnlock(uml_driver);
@@ -809,7 +809,7 @@ static int umlReadPidFile(struct uml_driver *driver,
                     driver->monitorDir, vm->def->name) < 0)
         return -1;
 
-reopen:
+ reopen:
     if (!(file = fopen(pidfile, "r"))) {
         if (errno == ENOENT &&
             retries++ < 50) {
@@ -873,7 +873,7 @@ static int umlOpenMonitor(struct uml_driver *driver,
         return -1;
 
     VIR_DEBUG("Dest address for monitor is '%s'", addr.sun_path);
-restat:
+ restat:
     if (stat(addr.sun_path, &sb) < 0) {
         if (errno == ENOENT &&
             retries++ < 50) {
@@ -1005,7 +1005,7 @@ static int umlMonitorCommand(const struct uml_driver *driver,
 
     return ret;
 
-error:
+ error:
     VIR_FREE(retdata);
     return -1;
 }
@@ -1126,7 +1126,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
         goto cleanup;
 
     ret = virDomainObjSetDefTransient(driver->caps, driver->xmlopt, vm, false);
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(logfd);
     virCommandFree(cmd);
 
@@ -1371,7 +1371,7 @@ static virDomainPtr umlDomainLookupByID(virConnectPtr conn,
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom) dom->id = vm->def->id;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return dom;
@@ -1399,7 +1399,7 @@ static virDomainPtr umlDomainLookupByUUID(virConnectPtr conn,
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom) dom->id = vm->def->id;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return dom;
@@ -1427,7 +1427,7 @@ static virDomainPtr umlDomainLookupByName(virConnectPtr conn,
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom) dom->id = vm->def->id;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return dom;
@@ -1453,7 +1453,7 @@ static int umlDomainIsActive(virDomainPtr dom)
 
     ret = virDomainObjIsActive(obj);
 
-cleanup:
+ cleanup:
     if (obj)
         virObjectUnlock(obj);
     return ret;
@@ -1479,7 +1479,7 @@ static int umlDomainIsPersistent(virDomainPtr dom)
 
     ret = obj->persistent;
 
-cleanup:
+ cleanup:
     if (obj)
         virObjectUnlock(obj);
     return ret;
@@ -1504,7 +1504,7 @@ static int umlDomainIsUpdated(virDomainPtr dom)
 
     ret = obj->updated;
 
-cleanup:
+ cleanup:
     if (obj)
         virObjectUnlock(obj);
     return ret;
@@ -1534,7 +1534,7 @@ static int umlConnectGetVersion(virConnectPtr conn, unsigned long *version)
     *version = driver->umlVersion;
     ret = 0;
 
-cleanup:
+ cleanup:
     umlDriverUnlock(driver);
     return ret;
 }
@@ -1623,7 +1623,7 @@ static virDomainPtr umlDomainCreateXML(virConnectPtr conn, const char *xml,
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom) dom->id = vm->def->id;
 
-cleanup:
+ cleanup:
     virDomainDefFree(def);
     if (vm)
         virObjectUnlock(vm);
@@ -1666,7 +1666,7 @@ static int umlDomainShutdownFlags(virDomainPtr dom,
     ret = 0;
 #endif
 
-cleanup:
+ cleanup:
     VIR_FREE(info);
     if (vm)
         virObjectUnlock(vm);
@@ -1713,7 +1713,7 @@ umlDomainDestroyFlags(virDomainPtr dom,
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     if (event)
@@ -1749,7 +1749,7 @@ static char *umlDomainGetOSType(virDomainPtr dom) {
     if (VIR_STRDUP(type, vm->def->os.type) < 0)
         goto cleanup;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return type;
@@ -1781,7 +1781,7 @@ umlDomainGetMaxMemory(virDomainPtr dom)
 
     ret = vm->def->mem.max_balloon;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -1818,7 +1818,7 @@ static int umlDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax)
     vm->def->mem.max_balloon = newmax;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -1861,7 +1861,7 @@ static int umlDomainSetMemory(virDomainPtr dom, unsigned long newmem)
     vm->def->mem.cur_balloon = newmem;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -1904,7 +1904,7 @@ static int umlDomainGetInfo(virDomainPtr dom,
     info->nrVirtCpu = vm->def->vcpus;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -1939,7 +1939,7 @@ umlDomainGetState(virDomainPtr dom,
     *state = virDomainObjGetState(vm, reason);
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -1972,7 +1972,7 @@ static char *umlDomainGetXMLDesc(virDomainPtr dom,
                              vm->newDef : vm->def,
                              flags);
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -2042,7 +2042,7 @@ static int umlDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
                                          VIR_DOMAIN_EVENT_STARTED,
                                          VIR_DOMAIN_EVENT_STARTED_BOOTED);
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     if (event)
@@ -2091,7 +2091,7 @@ static virDomainPtr umlDomainDefineXML(virConnectPtr conn, const char *xml)
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom) dom->id = vm->def->id;
 
-cleanup:
+ cleanup:
     virDomainDefFree(def);
     if (vm)
         virObjectUnlock(vm);
@@ -2137,7 +2137,7 @@ static int umlDomainUndefineFlags(virDomainPtr dom,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     umlDriverUnlock(driver);
@@ -2189,7 +2189,7 @@ static int umlDomainAttachUmlDisk(struct uml_driver *driver,
 
     return 0;
 
-error:
+ error:
 
     VIR_FREE(reply);
     VIR_FREE(cmd);
@@ -2248,7 +2248,7 @@ static int umlDomainAttachDevice(virDomainPtr dom, const char *xml)
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
 
     virDomainDeviceDefFree(dev);
     if (vm)
@@ -2313,7 +2313,7 @@ static int umlDomainDetachUmlDisk(struct uml_driver *driver,
 
     VIR_FREE(reply);
 
-cleanup:
+ cleanup:
     VIR_FREE(cmd);
 
     return ret;
@@ -2364,7 +2364,7 @@ static int umlDomainDetachDevice(virDomainPtr dom, const char *xml)
                        "%s", _("This type of device cannot be hot unplugged"));
     }
 
-cleanup:
+ cleanup:
     virDomainDeviceDefFree(dev);
     if (vm)
         virObjectUnlock(vm);
@@ -2412,7 +2412,7 @@ static int umlDomainGetAutostart(virDomainPtr dom,
     *autostart = vm->autostart;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     umlDriverUnlock(driver);
@@ -2480,7 +2480,7 @@ static int umlDomainSetAutostart(virDomainPtr dom,
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
     if (vm)
@@ -2552,7 +2552,7 @@ umlDomainBlockPeek(virDomainPtr dom,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     if (vm)
         virObjectUnlock(vm);
@@ -2626,7 +2626,7 @@ umlDomainOpenConsole(virDomainPtr dom,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     umlDriverUnlock(driver);

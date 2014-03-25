@@ -140,7 +140,7 @@ static int udevGetDeviceProperty(struct udev_device *udev_device,
               property_key, *property_value,
               udev_device_get_sysname(udev_device));
 
-out:
+ out:
     return ret;
 }
 
@@ -227,7 +227,7 @@ static int udevGetDeviceSysfsAttr(struct udev_device *udev_device,
               attr_name, *attr_value,
               udev_device_get_sysname(udev_device));
 
-out:
+ out:
     return ret;
 }
 
@@ -414,7 +414,7 @@ static int udevTranslatePCIIds(unsigned int vendor,
 
     ret = 0;
 
-out:
+ out:
     return ret;
 }
 
@@ -524,7 +524,7 @@ static int udevProcessPCI(struct udev_device *device,
 
     ret = 0;
 
-out:
+ out:
     return ret;
 }
 
@@ -581,7 +581,7 @@ static int udevProcessUSBDevice(struct udev_device *device,
 
     ret = 0;
 
-out:
+ out:
     return ret;
 }
 
@@ -626,7 +626,7 @@ static int udevProcessUSBInterface(struct udev_device *device,
 
     ret = 0;
 
-out:
+ out:
     return ret;
 }
 
@@ -669,7 +669,7 @@ static int udevProcessNetworkInterface(struct udev_device *device,
 
     ret = 0;
 
-out:
+ out:
     return ret;
 }
 
@@ -704,7 +704,7 @@ static int udevProcessSCSIHost(struct udev_device *device ATTRIBUTE_UNUSED,
 
     ret = 0;
 
-out:
+ out:
     return ret;
 }
 
@@ -727,7 +727,7 @@ static int udevProcessSCSITarget(struct udev_device *device ATTRIBUTE_UNUSED,
 
     ret = 0;
 
-out:
+ out:
     return ret;
 }
 
@@ -845,7 +845,7 @@ static int udevProcessSCSIDevice(struct udev_device *device ATTRIBUTE_UNUSED,
 
     ret = 0;
 
-out:
+ out:
     if (ret != 0) {
         VIR_ERROR(_("Failed to process SCSI device with sysfs path '%s'"),
                   def->sysfs_path);
@@ -876,7 +876,7 @@ static int udevProcessDisk(struct udev_device *device,
     data->storage.size = data->storage.num_blocks *
         data->storage.logical_block_size;
 
-out:
+ out:
     return ret;
 }
 
@@ -924,7 +924,7 @@ static int udevProcessRemoveableMedia(struct udev_device *device,
             def->caps->data.storage.logical_block_size;
     }
 
-out:
+ out:
     return ret;
 }
 
@@ -948,7 +948,7 @@ static int udevProcessCDROM(struct udev_device *device,
         has_media = tmp_int;
 
     ret = udevProcessRemoveableMedia(device, def, has_media);
-out:
+ out:
     return ret;
 }
 
@@ -996,7 +996,7 @@ static int udevProcessSD(struct udev_device *device,
     data->storage.size = data->storage.num_blocks *
         data->storage.logical_block_size;
 
-out:
+ out:
     return ret;
 }
 
@@ -1137,7 +1137,7 @@ static int udevProcessStorage(struct udev_device *device,
         goto out;
     }
 
-out:
+ out:
     VIR_DEBUG("Storage ret=%d", ret);
     return ret;
 }
@@ -1337,7 +1337,7 @@ static int udevSetParent(struct udev_device *device,
 
     ret = 0;
 
-out:
+ out:
     return ret;
 }
 
@@ -1388,7 +1388,7 @@ static int udevAddOneDevice(struct udev_device *device)
 
     ret = 0;
 
-out:
+ out:
     if (ret != 0) {
         VIR_DEBUG("Discarding device %d %p %s", ret, def,
                   def ? NULLSTR(def->sysfs_path) : "");
@@ -1444,7 +1444,7 @@ static int udevEnumerateDevices(struct udev *udev)
         udevProcessDeviceListEntry(udev, list_entry);
     }
 
-out:
+ out:
     udev_enumerate_unref(udev_enumerate);
     return ret;
 }
@@ -1534,7 +1534,7 @@ static void udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
         goto out;
     }
 
-out:
+ out:
     udev_device_unref(device);
     nodeDeviceUnlock(driverState);
     return;
@@ -1608,7 +1608,7 @@ udevGetDMIData(union _virNodeDevCapData *data)
         goto out;
     }
 
-out:
+ out:
     VIR_FREE(tmp);
     if (device != NULL) {
         udev_device_unref(device);
@@ -1647,7 +1647,7 @@ static int udevSetupSystemDev(void)
 
     ret = 0;
 
-out:
+ out:
     if (ret == -1) {
         virNodeDeviceDefFree(def);
     }
@@ -1758,10 +1758,10 @@ static int nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
         goto out_unlock;
     }
 
-out_unlock:
+ out_unlock:
     nodeDeviceUnlock(driverState);
 
-out:
+ out:
     if (ret == -1) {
         nodeStateCleanup();
     }

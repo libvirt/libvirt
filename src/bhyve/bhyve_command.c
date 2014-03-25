@@ -99,7 +99,7 @@ virBhyveTapGetRealDeviceName(char *name)
         virReportSystemError(errno, "%s",
                              _("Unable to iterate over TAP devices"));
 
-cleanup:
+ cleanup:
     VIR_FREE(devpath);
     VIR_FORCE_CLOSE(fd);
     closedir(dirp);
@@ -282,7 +282,7 @@ virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
 
     return cmd;
 
-error:
+ error:
     virCommandFree(cmd);
     return NULL;
 }

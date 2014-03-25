@@ -116,13 +116,13 @@ vmwareCapsInit(void)
             goto error;
     }
 
-cleanup:
+ cleanup:
     virCPUDefFree(cpu);
     cpuDataFree(data);
 
     return caps;
 
-error:
+ error:
     virObjectUnref(caps);
     goto cleanup;
 }
@@ -194,7 +194,7 @@ vmwareLoadDomains(struct vmware_driver *driver)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(outbuf);
     virDomainDefFree(vmdef);
@@ -303,7 +303,7 @@ vmwareExtractVersion(struct vmware_driver *driver)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(outbuf);
     VIR_FREE(bin);
@@ -361,7 +361,7 @@ vmwareParsePath(const char *path, char **directory, char **filename)
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -443,7 +443,7 @@ vmwareVmxPath(virDomainDefPtr vmdef, char **vmxPath)
 
     ret = 0;
 
-  cleanup:
+ cleanup:
     VIR_FREE(directoryName);
     VIR_FREE(fileName);
     return ret;
@@ -525,7 +525,7 @@ vmwareExtractPid(const char * vmxPath)
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(vmxDir);
     VIR_FREE(logFilePath);
     VIR_FORCE_FCLOSE(logFile);

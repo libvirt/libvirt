@@ -105,7 +105,7 @@ openvzExtractVersionInfo(const char *cmdstr, int *retversion)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(help);
 
@@ -160,7 +160,7 @@ openvzParseBarrierLimit(const char* value,
         }
     }
     ret = 0;
-error:
+ error:
     VIR_FREE(str);
     return ret;
 }
@@ -197,7 +197,7 @@ virCapsPtr openvzCapsInit(void)
 
     return caps;
 
-no_memory:
+ no_memory:
     virObjectUnref(caps);
     return NULL;
 }
@@ -336,7 +336,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
 
     return 0;
 
-error:
+ error:
     VIR_FREE(temp);
     virDomainNetDefFree(net);
     return -1;
@@ -454,9 +454,9 @@ openvzReadFSConf(virDomainDefPtr def,
     VIR_FREE(temp);
 
     return 0;
-no_memory:
+ no_memory:
     virReportOOMError();
-error:
+ error:
     VIR_FREE(temp);
     virDomainFSDefFree(fs);
     return -1;
@@ -526,7 +526,7 @@ openvzReadMemConf(virDomainDefPtr def, int veid)
     }
 
     ret = 0;
-error:
+ error:
     VIR_FREE(temp);
     return ret;
 }
@@ -729,7 +729,7 @@ openvzWriteConfigParam(const char * conf_file, const char *param, const char *va
 
     return 0;
 
-error:
+ error:
     VIR_FREE(line);
     VIR_FORCE_FCLOSE(fp);
     VIR_FORCE_CLOSE(temp_fd);
@@ -862,7 +862,7 @@ openvz_copyfile(char* from_path, char* to_path)
 
     return 0;
 
-error:
+ error:
     VIR_FREE(line);
     VIR_FORCE_FCLOSE(fp);
     VIR_FORCE_CLOSE(copy_fd);
@@ -901,7 +901,7 @@ openvzCopyDefaultConfig(int vpsid)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(confdir);
     VIR_FREE(default_conf_file);
     VIR_FREE(configfile_value);
@@ -945,7 +945,7 @@ openvzLocateConfDir(void)
         i++;
     }
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -1016,7 +1016,7 @@ openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len)
         }
     }
     retval = 0;
-cleanup:
+ cleanup:
     VIR_FREE(line);
     VIR_FORCE_FCLOSE(fp);
     VIR_FREE(conf_file);
@@ -1059,7 +1059,7 @@ openvzSetDefinedUUID(int vpsid, unsigned char *uuid)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FORCE_FCLOSE(fp);
     VIR_FREE(conf_file);
     return ret;

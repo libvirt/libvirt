@@ -276,7 +276,7 @@ virSecuritySELinuxMCSGetProcessRange(char **sens,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (ret < 0)
         VIR_FREE(*sens);
     freecon(ourSecContext);
@@ -316,7 +316,7 @@ virSecuritySELinuxContextAddRange(security_context_t src,
 
     ignore_value(VIR_STRDUP(ret, str));
 
-cleanup:
+ cleanup:
     if (srccon) context_free(srccon);
     if (dstcon) context_free(dstcon);
     return ret;
@@ -387,7 +387,7 @@ virSecuritySELinuxGenNewContext(const char *basecontext,
     if (VIR_STRDUP(ret, str) < 0)
         goto cleanup;
     VIR_DEBUG("Generated context '%s'",  ret);
-cleanup:
+ cleanup:
     freecon(ourSecContext);
     context_free(ourContext);
     context_free(context);
@@ -454,7 +454,7 @@ virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
     virConfFree(selinux_conf);
     return 0;
 
-error:
+ error:
 # if HAVE_SELINUX_LABEL_H
     selabel_close(data->label_handle);
     data->label_handle = NULL;
@@ -542,7 +542,7 @@ virSecuritySELinuxQEMUInitialize(virSecurityManagerPtr mgr)
 
     return 0;
 
-error:
+ error:
 #if HAVE_SELINUX_LABEL_H
     selabel_close(data->label_handle);
     data->label_handle = NULL;
@@ -702,7 +702,7 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
 
     rc = 0;
 
-cleanup:
+ cleanup:
     if (rc != 0) {
         if (seclabel->type == VIR_DOMAIN_SECLABEL_DYNAMIC)
             VIR_FREE(seclabel->label);
@@ -775,7 +775,7 @@ virSecuritySELinuxReserveSecurityLabel(virSecurityManagerPtr mgr,
 
     return 0;
 
-error:
+ error:
     context_free(ctx);
     return -1;
 }
@@ -1042,7 +1042,7 @@ virSecuritySELinuxRestoreSecurityFileLabel(virSecurityManagerPtr mgr,
         rc = virSecuritySELinuxSetFilecon(newpath, fcon);
     }
 
-err:
+ err:
     freecon(fcon);
     VIR_FREE(newpath);
     return rc;
@@ -1382,7 +1382,7 @@ virSecuritySELinuxSetSecurityHostdevSubsysLabel(virDomainDefPtr def,
         break;
     }
 
-done:
+ done:
     return ret;
 }
 
@@ -1575,7 +1575,7 @@ virSecuritySELinuxRestoreSecurityHostdevSubsysLabel(virSecurityManagerPtr mgr,
         break;
     }
 
-done:
+ done:
     return ret;
 }
 
@@ -1720,7 +1720,7 @@ virSecuritySELinuxSetSecurityChardevLabel(virDomainDefPtr def,
         break;
     }
 
-done:
+ done:
     VIR_FREE(in);
     VIR_FREE(out);
     return ret;
@@ -1784,7 +1784,7 @@ virSecuritySELinuxRestoreSecurityChardevLabel(virSecurityManagerPtr mgr,
         break;
     }
 
-done:
+ done:
     VIR_FREE(in);
     VIR_FREE(out);
     return ret;
@@ -2122,7 +2122,7 @@ virSecuritySELinuxSetSecurityDaemonSocketLabel(virSecurityManagerPtr mgr ATTRIBU
     }
 
     rc = 0;
-done:
+ done:
 
     if (security_getenforce() != 1)
         rc = 0;
@@ -2165,7 +2165,7 @@ virSecuritySELinuxSetSecuritySocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNU
 
     rc = 0;
 
-done:
+ done:
     if (security_getenforce() != 1)
         rc = 0;
 
@@ -2389,7 +2389,7 @@ virSecuritySELinuxSetTapFDLabel(virSecurityManagerPtr mgr,
         rc = virSecuritySELinuxFSetFilecon(fd, str);
     }
 
-cleanup:
+ cleanup:
     freecon(fcon);
     VIR_FREE(str);
     return rc;
@@ -2427,7 +2427,7 @@ virSecuritySELinuxGenImageLabel(virSecurityManagerPtr mgr,
         }
     }
 
-cleanup:
+ cleanup:
     context_free(ctx);
     VIR_FREE(mcs);
     return label;

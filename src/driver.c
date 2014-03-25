@@ -103,7 +103,7 @@ virDriverLoadModule(const char *name)
     VIR_FREE(regfunc);
     return handle;
 
-cleanup:
+ cleanup:
     VIR_FREE(modfile);
     VIR_FREE(regfunc);
     if (handle)

@@ -196,7 +196,7 @@ freebsdNodeGetCPUStats(int cpuNum,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(cpu_times);
 
     return ret;
@@ -329,7 +329,7 @@ virNodeGetCpuValue(const char *dir, unsigned int cpu, const char *file,
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     VIR_FORCE_FCLOSE(pathfp);
     VIR_FREE(path);
 
@@ -378,7 +378,7 @@ virNodeCountThreadSiblings(const char *dir, unsigned int cpu)
         i++;
     }
 
-cleanup:
+ cleanup:
     VIR_FORCE_FCLOSE(pathfp);
     VIR_FREE(path);
 
@@ -553,7 +553,7 @@ virNodeParseNode(const char *node,
 
     ret = processors;
 
-cleanup:
+ cleanup:
     /* don't shadow a more serious error */
     if (cpudir && closedir(cpudir) < 0 && ret >= 0) {
         virReportSystemError(errno, _("problem closing %s"), node);
@@ -711,7 +711,7 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
     if (nodeinfo->cpus && nodeinfo->nodes)
         goto done;
 
-fallback:
+ fallback:
     VIR_FREE(sysfs_cpudir);
 
     if (virAsprintf(&sysfs_cpudir, "%s/cpu", sysfs_dir) < 0)
@@ -727,7 +727,7 @@ fallback:
     nodeinfo->cores = cores;
     nodeinfo->threads = threads;
 
-done:
+ done:
     /* There should always be at least one cpu, socket, node, and thread. */
     if (nodeinfo->cpus == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("no CPUs found"));
@@ -763,7 +763,7 @@ done:
 
     ret = 0;
 
-cleanup:
+ cleanup:
     /* don't shadow a more serious error */
     if (nodedir && closedir(nodedir) < 0 && ret >= 0) {
         virReportSystemError(errno, _("problem closing %s"), sysfs_nodedir);
@@ -861,7 +861,7 @@ linuxNodeGetCPUStats(FILE *procstat,
                         _("Invalid cpuNum in %s"),
                         __FUNCTION__);
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -967,7 +967,7 @@ linuxNodeGetMemoryStats(FILE *meminfo,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -995,7 +995,7 @@ linuxParseCPUmax(const char *path)
     } while (*tmp++ != '\n');
     ret++;
 
-cleanup:
+ cleanup:
     VIR_FREE(str);
     return ret;
 }
@@ -1020,7 +1020,7 @@ linuxParseCPUmap(int max_cpuid, const char *path)
     VIR_FREE(str);
     return map;
 
-error:
+ error:
     VIR_FREE(str);
     virBitmapFree(map);
     return NULL;
@@ -1044,7 +1044,7 @@ virNodeGetSiblingsList(const char *dir, int cpu_id)
     if (virBitmapParse(buf, 0, &ret, virNumaGetMaxCPUs()) < 0)
         goto cleanup;
 
-cleanup:
+ cleanup:
     VIR_FREE(buf);
     VIR_FREE(path);
     return ret;
@@ -1077,7 +1077,7 @@ int nodeGetInfo(virNodeInfoPtr nodeinfo)
     /* Convert to KB. */
     nodeinfo->memory = physmem_total() / 1024;
 
-cleanup:
+ cleanup:
     VIR_FORCE_FCLOSE(cpuinfo);
     return ret;
     }
@@ -1319,7 +1319,7 @@ nodeSetMemoryParameterValue(virTypedParameterPtr param)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(path);
     VIR_FREE(strval);
     return ret;
@@ -1442,7 +1442,7 @@ nodeGetMemoryParameterValue(const char *field,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(path);
     VIR_FREE(buf);
     return ret;
@@ -1617,7 +1617,7 @@ nodeGetCPUMap(unsigned char **cpumap,
         *online = virBitmapCountBits(cpus);
 
     ret = maxpresent;
-cleanup:
+ cleanup:
     if (ret < 0 && cpumap)
         VIR_FREE(*cpumap);
     virBitmapFree(cpus);
@@ -1819,7 +1819,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (topology_failed || ret < 0)
         virCapabilitiesClearHostNUMACellCPUTopology(cpus, ncpus);
 
@@ -1867,7 +1867,7 @@ nodeGetCellsFreeMemory(unsigned long long *freeMems,
     }
     ret = numCells;
 
-cleanup:
+ cleanup:
     return ret;
 }
 

@@ -39,7 +39,7 @@ VIR_LOG_INIT("vmx.vmx");
 
 /*
 
-mapping:
+ mapping:
 
 domain-xml                        <=>   vmx
 
@@ -637,7 +637,7 @@ virVMXConvertToUTF8(const char *encoding, const char *string)
     result = (char *)utf8->content;
     utf8->content = NULL;
 
-  cleanup:
+ cleanup:
     xmlCharEncCloseFunc(handler);
     xmlBufferFree(input);
     xmlBufferFree(utf8);
@@ -1209,7 +1209,7 @@ virVMXGatherSCSIControllers(virVMXContext *ctx, virDomainDefPtr def,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     VIR_FREE(autodetectedModels);
 
     return result;
@@ -1778,7 +1778,7 @@ virVMXParseConfig(virVMXContext *ctx,
 
     success = true;
 
-  cleanup:
+ cleanup:
     if (! success) {
         virDomainDefFree(def);
         def = NULL;
@@ -1855,7 +1855,7 @@ virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
 
     return 0;
 
-  failure:
+ failure:
     VIR_FREE(listenAddr);
     virDomainGraphicsDefFree(*def);
     *def = NULL;
@@ -1929,7 +1929,7 @@ virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     VIR_FREE(virtualDev_string);
 
     return result;
@@ -2313,7 +2313,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
 
     result = 0;
 
-  cleanup:
+ cleanup:
     if (result < 0) {
         virDomainDiskDefFree(*def);
         *def = NULL;
@@ -2327,7 +2327,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
 
     return result;
 
-  ignore:
+ ignore:
     virDomainDiskDefFree(*def);
     *def = NULL;
 
@@ -2416,7 +2416,7 @@ int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     if (result < 0) {
         virDomainFSDefFree(*def);
         *def = NULL;
@@ -2427,7 +2427,7 @@ int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def)
 
     return result;
 
-  ignore:
+ ignore:
     virDomainFSDefFree(*def);
     *def = NULL;
 
@@ -2641,7 +2641,7 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     if (result < 0) {
         virDomainNetDefFree(*def);
         *def = NULL;
@@ -2657,7 +2657,7 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
 
     return result;
 
-  ignore:
+ ignore:
     virDomainNetDefFree(*def);
     *def = NULL;
 
@@ -2838,7 +2838,7 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     if (result < 0) {
         virDomainChrDefFree(*def);
         *def = NULL;
@@ -2851,7 +2851,7 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
 
     return result;
 
-  ignore:
+ ignore:
     virDomainChrDefFree(*def);
     *def = NULL;
 
@@ -2955,7 +2955,7 @@ virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     if (result < 0) {
         virDomainChrDefFree(*def);
         *def = NULL;
@@ -2966,7 +2966,7 @@ virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
 
     return result;
 
-  ignore:
+ ignore:
     virDomainChrDefFree(*def);
     *def = NULL;
 
@@ -3003,7 +3003,7 @@ virVMXParseSVGA(virConfPtr conf, virDomainVideoDefPtr *def)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     if (result < 0) {
         virDomainVideoDefFree(*def);
         *def = NULL;
@@ -3350,7 +3350,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
 
     vmx = virBufferContentAndReset(&buffer);
 
-  cleanup:
+ cleanup:
     if (vmx == NULL) {
         virBufferFreeAndReset(&buffer);
     }

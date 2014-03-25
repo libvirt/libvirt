@@ -236,7 +236,7 @@ hypervEnumAndPull(hypervPrivate *priv, virBufferPtr query, const char *root,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     if (options != NULL) {
         wsmc_options_destroy(options);
     }
@@ -517,7 +517,7 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     if (options != NULL) {
         wsmc_options_destroy(options);
     }

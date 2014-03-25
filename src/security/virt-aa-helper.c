@@ -246,7 +246,7 @@ parserCommand(const char *profile_name, const char cmd)
 
     result = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(profile);
 
     return result;
@@ -315,7 +315,7 @@ update_include_file(const char *include_file, const char *included_files,
     }
     rc = 0;
 
-  cleanup:
+ cleanup:
     VIR_FREE(pcontent);
     VIR_FREE(existing);
 
@@ -448,15 +448,15 @@ create_profile(const char *profile, const char *profile_name,
     }
     rc = 0;
 
-  clean_all:
+ clean_all:
     VIR_FREE(pcontent);
-  clean_replace:
+ clean_replace:
     VIR_FREE(replace_name);
     VIR_FREE(replace_files);
     VIR_FREE(replace_driver);
-  clean_tcontent:
+ clean_tcontent:
     VIR_FREE(tcontent);
-  end:
+ end:
     VIR_FREE(template);
     return rc;
 }
@@ -656,7 +656,7 @@ verify_xpath_context(xmlXPathContextPtr ctxt)
 
     rc = 0;
 
-  error:
+ error:
     return rc;
 }
 
@@ -704,7 +704,7 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
 
     rc = 0;
 
-  cleanup:
+ cleanup:
     xmlFreeDoc(xml);
     xmlXPathFreeContext(ctxt);
 
@@ -766,7 +766,7 @@ get_definition(vahControl * ctl, const char *xmlStr)
 
     rc = 0;
 
-  exit:
+ exit:
     return rc;
 }
 
@@ -822,7 +822,7 @@ vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursi
         virBufferAsprintf(buf, "  \"%s/\" r,\n", tmp);
     }
 
-  cleanup:
+ cleanup:
     VIR_FREE(tmp);
 
     return rc;
@@ -875,7 +875,7 @@ vah_add_file_chardev(virBufferPtr buf,
         rc = 0;
     }
 
-  cleanup:
+ cleanup:
     return rc;
 }
 
@@ -1109,7 +1109,7 @@ get_files(vahControl * ctl)
     rc = 0;
     ctl->files = virBufferContentAndReset(&buf);
 
-  cleanup:
+ cleanup:
     VIR_FREE(uuid);
     return rc;
 }

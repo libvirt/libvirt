@@ -167,7 +167,7 @@ xenParseSxprOS(const struct sexpr *node,
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -312,7 +312,7 @@ xenParseSxprChar(const char *value,
 
     return def;
 
-error:
+ error:
     virDomainChrDefFree(def);
     return NULL;
 }
@@ -516,7 +516,7 @@ xenParseSxprDisks(virDomainDefPtr def,
 
     return 0;
 
-error:
+ error:
     virDomainDiskDefFree(disk);
     return -1;
 }
@@ -611,7 +611,7 @@ xenParseSxprNets(virDomainDefPtr def,
 
     return 0;
 
-cleanup:
+ cleanup:
     virDomainNetDefFree(net);
     return -1;
 }
@@ -696,7 +696,7 @@ xenParseSxprSound(virDomainDefPtr def,
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -748,7 +748,7 @@ xenParseSxprUSB(virDomainDefPtr def,
     }
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -841,7 +841,7 @@ xenParseSxprGraphicsOld(virDomainDefPtr def,
 
     return 0;
 
-error:
+ error:
     virDomainGraphicsDefFree(graphics);
     return -1;
 }
@@ -943,7 +943,7 @@ xenParseSxprGraphicsNew(virDomainDefPtr def,
 
     return 0;
 
-error:
+ error:
     virDomainGraphicsDefFree(graphics);
     return -1;
 }
@@ -1062,7 +1062,7 @@ xenParseSxprPCI(virDomainDefPtr def,
 
     return 0;
 
-error:
+ error:
     virDomainHostdevDefFree(dev);
     return -1;
 }
@@ -1457,7 +1457,7 @@ xenParseSxpr(const struct sexpr *root,
 
     return def;
 
-error:
+ error:
     VIR_FREE(tty);
     virDomainDefFree(def);
     return NULL;
@@ -2560,7 +2560,7 @@ xenFormatSxpr(virConnectPtr conn,
     VIR_DEBUG("Formatted sexpr: \n%s", bufout);
     return bufout;
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }

@@ -125,7 +125,7 @@ virAccessDriverPolkitFormatProcess(const char *actionid)
         goto cleanup;
 #endif
 
-cleanup:
+ cleanup:
     virObjectUnref(identity);
     return ret;
 }
@@ -181,7 +181,7 @@ virAccessDriverPolkitCheck(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(actionid);
     VIR_FREE(process);

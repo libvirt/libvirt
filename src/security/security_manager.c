@@ -534,7 +534,7 @@ int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnlock(mgr);
     if (generated)
         virSecurityLabelDefFree(seclabel);

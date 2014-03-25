@@ -259,7 +259,7 @@ gather_scsi_host_cap(LibHalContext *ctx, const char *udi,
         goto out;
     }
 
-out:
+ out:
     return retval;
 }
 
@@ -527,7 +527,7 @@ dev_create(const char *udi)
 
  failure:
     VIR_DEBUG("FAILED TO ADD dev %s", name);
-cleanup:
+ cleanup:
     VIR_FREE(privData);
     virNodeDeviceDefFree(def);
     nodeDeviceUnlock(driverState);

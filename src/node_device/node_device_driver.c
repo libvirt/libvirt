@@ -97,7 +97,7 @@ static int update_driver_name(virNodeDeviceObjPtr dev)
         goto cleanup;
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(driver_link);
     VIR_FREE(devpath);
     return ret;
@@ -232,7 +232,7 @@ nodeDeviceLookupByName(virConnectPtr conn, const char *name)
 
     ret = virGetNodeDevice(conn, name);
 
-cleanup:
+ cleanup:
     if (obj)
         virNodeDeviceObjUnlock(obj);
     return ret;
@@ -284,7 +284,7 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
         virNodeDeviceObjUnlock(obj);
     }
 
-out:
+ out:
     nodeDeviceUnlock(driver);
     return dev;
 }
@@ -319,7 +319,7 @@ nodeDeviceGetXMLDesc(virNodeDevicePtr dev,
 
     ret = virNodeDeviceDefFormat(obj->def);
 
-cleanup:
+ cleanup:
     if (obj)
         virNodeDeviceObjUnlock(obj);
     return ret;
@@ -355,7 +355,7 @@ nodeDeviceGetParent(virNodeDevicePtr dev)
                        "%s", _("no parent for this device"));
     }
 
-cleanup:
+ cleanup:
     if (obj)
         virNodeDeviceObjUnlock(obj);
     return ret;
@@ -389,7 +389,7 @@ nodeDeviceNumOfCaps(virNodeDevicePtr dev)
         ++ncaps;
     ret = ncaps;
 
-cleanup:
+ cleanup:
     if (obj)
         virNodeDeviceObjUnlock(obj);
     return ret;
@@ -425,7 +425,7 @@ nodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
     }
     ret = ncaps;
 
-cleanup:
+ cleanup:
     if (obj)
         virNodeDeviceObjUnlock(obj);
     if (ret == -1) {
@@ -555,7 +555,7 @@ nodeDeviceCreateXML(virConnectPtr conn,
         virReportError(VIR_ERR_NO_NODE_DEVICE, NULL);
     }
 
-cleanup:
+ cleanup:
     nodeDeviceUnlock(driver);
     virNodeDeviceDefFree(def);
     VIR_FREE(wwnn);
@@ -617,7 +617,7 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
     }
 
     ret = 0;
-out:
+ out:
     if (obj)
         virNodeDeviceObjUnlock(obj);
     VIR_FREE(parent_name);

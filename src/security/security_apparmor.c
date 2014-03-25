@@ -106,7 +106,7 @@ profile_status(const char *str, const int check_enforcing)
     }
 
     VIR_FREE(content);
-  cleanup:
+ cleanup:
     VIR_FREE(tmp);
     VIR_FREE(etmp);
 
@@ -153,7 +153,7 @@ profile_status_file(const char *str)
     else
         rc = 1;
 
-  failed:
+ failed:
     VIR_FREE(tmp);
     VIR_FREE(profile);
     VIR_FREE(content);
@@ -199,7 +199,7 @@ load_profile(virSecurityManagerPtr mgr,
     virCommandSetInputBuffer(cmd, xml);
     rc = virCommandRun(cmd, NULL);
 
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     virCommandFree(cmd);
 
@@ -259,7 +259,7 @@ use_apparmor(void)
 
     rc = profile_status(libvirt_daemon, 1);
 
-cleanup:
+ cleanup:
     VIR_FREE(libvirt_daemon);
     return rc;
 }
@@ -299,7 +299,7 @@ reload_profile(virSecurityManagerPtr mgr,
     }
 
     rc = 0;
-  cleanup:
+ cleanup:
     VIR_FREE(profile_name);
 
     return rc;
@@ -369,7 +369,7 @@ AppArmorSecurityManagerProbe(const char *virtDriver ATTRIBUTE_UNUSED)
     }
     rc = SECURITY_DRIVER_ENABLE;
 
-  cleanup:
+ cleanup:
     VIR_FREE(template);
 
     return rc;
@@ -461,12 +461,12 @@ AppArmorGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     rc = 0;
     goto cleanup;
 
-  err:
+ err:
     VIR_FREE(secdef->label);
     VIR_FREE(secdef->imagelabel);
     VIR_FREE(secdef->model);
 
-  cleanup:
+ cleanup:
     VIR_FREE(profile_name);
 
     return rc;
@@ -521,7 +521,7 @@ AppArmorGetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     }
     rc = 0;
 
-  cleanup:
+ cleanup:
     VIR_FREE(profile_name);
 
     return rc;
@@ -608,7 +608,7 @@ AppArmorSetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     }
     rc = 0;
 
-  cleanup:
+ cleanup:
     VIR_FREE(profile_name);
 
     return rc;
@@ -654,7 +654,7 @@ AppArmorSetSecurityChildProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     virCommandSetAppArmorProfile(cmd, profile_name);
     rc = 0;
 
-  cleanup:
+ cleanup:
     VIR_FREE(profile_name);
     VIR_FREE(cmd_str);
     return rc;
@@ -741,7 +741,7 @@ AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
     }
     rc = 0;
 
-  cleanup:
+ cleanup:
     VIR_FREE(profile_name);
 
     return rc;
@@ -871,7 +871,7 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
         break;
     }
 
-done:
+ done:
     VIR_FREE(ptr);
     return ret;
 }

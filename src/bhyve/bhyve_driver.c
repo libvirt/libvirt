@@ -94,7 +94,7 @@ bhyveBuildCapabilities(void)
 
     return caps;
 
-error:
+ error:
     virObjectUnref(caps);
     return NULL;
 }
@@ -231,7 +231,7 @@ bhyveDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     info->nrVirtCpu = vm->def->vcpus;
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnlock(vm);
     return ret;
 }
@@ -256,7 +256,7 @@ bhyveDomainGetState(virDomainPtr domain,
     *state = virDomainObjGetState(vm, reason);
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnlock(vm);
     return ret;
 }
@@ -275,7 +275,7 @@ bhyveDomainIsActive(virDomainPtr domain)
 
     ret = virDomainObjIsActive(obj);
 
-cleanup:
+ cleanup:
     virObjectUnlock(obj);
     return ret;
 }
@@ -294,7 +294,7 @@ bhyveDomainIsPersistent(virDomainPtr domain)
 
     ret = obj->persistent;
 
-cleanup:
+ cleanup:
     virObjectUnlock(obj);
     return ret;
 }
@@ -313,7 +313,7 @@ bhyveDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     ret = virDomainDefFormat(vm->def, flags);
 
-cleanup:
+ cleanup:
     virObjectUnlock(vm);
     return ret;
 }
@@ -349,7 +349,7 @@ bhyveDomainDefineXML(virConnectPtr conn, const char *xml)
     if (virDomainSaveConfig(BHYVE_CONFIG_DIR, vm->def) < 0)
         goto cleanup;
 
-cleanup:
+ cleanup:
     virDomainDefFree(def);
     virObjectUnlock(vm);
 
@@ -389,7 +389,7 @@ bhyveDomainUndefine(virDomainPtr domain)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnlock(vm);
     return ret;
 }
@@ -500,7 +500,7 @@ bhyveDomainLookupByUUID(virConnectPtr conn,
     if (dom)
         dom->id = vm->def->id;
 
-cleanup:
+ cleanup:
     virObjectUnlock(vm);
     return dom;
 }
@@ -527,7 +527,7 @@ static virDomainPtr bhyveDomainLookupByName(virConnectPtr conn,
     if (dom)
         dom->id = vm->def->id;
 
-cleanup:
+ cleanup:
     virObjectUnlock(vm);
     return dom;
 }
@@ -562,7 +562,7 @@ bhyveDomainCreateWithFlags(virDomainPtr dom,
                                VIR_DOMAIN_RUNNING_BOOTED,
                                start_flags);
 
-cleanup:
+ cleanup:
     virObjectUnlock(vm);
     return ret;
 }
@@ -594,7 +594,7 @@ bhyveDomainDestroy(virDomainPtr dom)
 
     ret = virBhyveProcessStop(privconn, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
 
-cleanup:
+ cleanup:
     virObjectUnlock(vm);
     return ret;
 }
@@ -710,7 +710,7 @@ bhyveStateInitialize(bool priveleged ATTRIBUTE_UNUSED,
 
     return 0;
 
-cleanup:
+ cleanup:
     bhyveStateCleanup();
     return -1;
 }

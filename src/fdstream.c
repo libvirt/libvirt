@@ -121,7 +121,7 @@ static int virFDStreamRemoveCallback(virStreamPtr stream)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virMutexUnlock(&fdst->lock);
     return ret;
 }
@@ -149,7 +149,7 @@ static int virFDStreamUpdateCallback(virStreamPtr stream, int events)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virMutexUnlock(&fdst->lock);
     return ret;
 }
@@ -246,7 +246,7 @@ virFDStreamAddCallback(virStreamPtr st,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virMutexUnlock(&fdst->lock);
     return ret;
 }
@@ -396,7 +396,7 @@ static int virFDStreamWrite(virStreamPtr st, const char *bytes, size_t nbytes)
             nbytes = fdst->length - fdst->offset;
     }
 
-retry:
+ retry:
     ret = write(fdst->fd, bytes, nbytes);
     if (ret < 0) {
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -446,7 +446,7 @@ static int virFDStreamRead(virStreamPtr st, char *bytes, size_t nbytes)
             nbytes = fdst->length - fdst->offset;
     }
 
-retry:
+ retry:
     ret = read(fdst->fd, bytes, nbytes);
     if (ret < 0) {
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -565,7 +565,7 @@ int virFDStreamConnectUNIX(virStreamPtr st,
         goto error;
     return 0;
 
-error:
+ error:
     VIR_FORCE_CLOSE(fd);
     return -1;
 }
@@ -678,7 +678,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
 
     return 0;
 
-error:
+ error:
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(fd);
     VIR_FORCE_CLOSE(childfd);
@@ -752,7 +752,7 @@ int virFDStreamOpenPTY(virStreamPtr st,
 
     return 0;
 
-cleanup:
+ cleanup:
     virFDStreamClose(st);
     return -1;
 }

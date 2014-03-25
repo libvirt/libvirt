@@ -79,7 +79,7 @@ openvzVEGetStringParam(virDomainPtr domain, const char* param)
     if (len && output[len - 1] == '\n')
         output[len - 1] = '\0';
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return output;
 }

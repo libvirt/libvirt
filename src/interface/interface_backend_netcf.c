@@ -141,7 +141,7 @@ netcfStateReload(void)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virObjectUnlock(driverState);
 
     return ret;
@@ -170,7 +170,7 @@ netcfGetMinimalDefForDevice(struct netcf_if *iface)
 
     return def;
 
-cleanup:
+ cleanup:
     virInterfaceDefFree(def);
     return NULL;
 }
@@ -261,7 +261,7 @@ netcfInterfaceObjIsActive(struct netcf_if *iface,
     *active = flags & NETCF_IFACE_ACTIVE;
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(driverState);
     return ret;
 }
@@ -377,7 +377,7 @@ static int netcfConnectNumOfInterfacesImpl(virConnectPtr conn,
 
     ret = want;
 
-cleanup:
+ cleanup:
     if (names && count > 0)
         for (i = 0; i < count; i++)
             VIR_FREE(names[i]);
@@ -474,7 +474,7 @@ static int netcfConnectListInterfacesImpl(virConnectPtr conn,
 
     ret = want;
 
-cleanup:
+ cleanup:
     if (allnames && count > 0)
         for (i = 0; i < count; i++)
             VIR_FREE(allnames[i]);
@@ -683,7 +683,7 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
 
     ret = niface_objs;
 
-cleanup:
+ cleanup:
     ncf_if_free(iface);
 
     if (names && count > 0)
@@ -737,7 +737,7 @@ static virInterfacePtr netcfInterfaceLookupByName(virConnectPtr conn,
 
     ret = virGetInterface(conn, ncf_if_name(iface), ncf_if_mac_string(iface));
 
-cleanup:
+ cleanup:
     ncf_if_free(iface);
     virInterfaceDefFree(def);
     virObjectUnlock(driver);
@@ -786,7 +786,7 @@ static virInterfacePtr netcfInterfaceLookupByMACString(virConnectPtr conn,
 
     ret = virGetInterface(conn, ncf_if_name(iface), ncf_if_mac_string(iface));
 
-cleanup:
+ cleanup:
     ncf_if_free(iface);
     virInterfaceDefFree(def);
     virObjectUnlock(driver);
@@ -842,7 +842,7 @@ static char *netcfInterfaceGetXMLDesc(virInterfacePtr ifinfo,
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     ncf_if_free(iface);
     VIR_FREE(xmlstr);
     virInterfaceDefFree(ifacedef);
@@ -892,7 +892,7 @@ static virInterfacePtr netcfInterfaceDefineXML(virConnectPtr conn,
 
     ret = virGetInterface(conn, ncf_if_name(iface), ncf_if_mac_string(iface));
 
-cleanup:
+ cleanup:
     ncf_if_free(iface);
     VIR_FREE(xmlstr);
     virInterfaceDefFree(ifacedef);
@@ -933,7 +933,7 @@ static int netcfInterfaceUndefine(virInterfacePtr ifinfo)
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     ncf_if_free(iface);
     virInterfaceDefFree(def);
     virObjectUnlock(driver);
@@ -986,7 +986,7 @@ static int netcfInterfaceCreate(virInterfacePtr ifinfo,
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     ncf_if_free(iface);
     virInterfaceDefFree(def);
     virObjectUnlock(driver);
@@ -1039,7 +1039,7 @@ static int netcfInterfaceDestroy(virInterfacePtr ifinfo,
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     ncf_if_free(iface);
     virInterfaceDefFree(def);
     virObjectUnlock(driver);
@@ -1073,7 +1073,7 @@ static int netcfInterfaceIsActive(virInterfacePtr ifinfo)
 
     ret = active ? 1 : 0;
 
-cleanup:
+ cleanup:
     ncf_if_free(iface);
     virInterfaceDefFree(def);
     virObjectUnlock(driver);

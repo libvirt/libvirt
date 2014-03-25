@@ -92,7 +92,7 @@ virDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
 
     virReportUnsupportedError();
 
-error:
+ error:
     virDispatchError(conn);
     return -1;
 }
@@ -159,7 +159,7 @@ virDomainQemuAttach(virConnectPtr conn,
 
     virReportUnsupportedError();
 
-error:
+ error:
     virDispatchError(conn);
     return NULL;
 }
@@ -213,7 +213,7 @@ virDomainQemuAgentCommand(virDomainPtr domain,
 
     virReportUnsupportedError();
 
-error:
+ error:
     virDispatchError(conn);
     return NULL;
 }
@@ -299,7 +299,7 @@ virConnectDomainQemuMonitorEventRegister(virConnectPtr conn,
     }
 
     virReportUnsupportedError();
-error:
+ error:
     virDispatchError(conn);
     return -1;
 }
@@ -337,7 +337,7 @@ virConnectDomainQemuMonitorEventDeregister(virConnectPtr conn,
     }
 
     virReportUnsupportedError();
-error:
+ error:
     virDispatchError(conn);
     return -1;
 }

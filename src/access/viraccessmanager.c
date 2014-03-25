@@ -170,7 +170,7 @@ virAccessManagerPtr virAccessManagerNewStack(const char **names)
 
     return manager;
 
-error:
+ error:
     virObjectUnref(manager);
     return NULL;
 }

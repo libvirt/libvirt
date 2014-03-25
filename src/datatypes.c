@@ -121,7 +121,7 @@ virGetConnect(void)
 
     return ret;
 
-error:
+ error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -227,7 +227,7 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid)
 
     return ret;
 
-error:
+ error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -290,7 +290,7 @@ virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid)
 
     return ret;
 
-error:
+ error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -356,7 +356,7 @@ virGetInterface(virConnectPtr conn, const char *name, const char *mac)
 
     return ret;
 
-error:
+ error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -425,7 +425,7 @@ virGetStoragePool(virConnectPtr conn, const char *name,
 
     return ret;
 
-error:
+ error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -503,7 +503,7 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name,
 
     return ret;
 
-error:
+ error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -566,7 +566,7 @@ virGetNodeDevice(virConnectPtr conn, const char *name)
     ret->conn = virObjectRef(conn);
     return ret;
 
-error:
+ error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -630,7 +630,7 @@ virGetSecret(virConnectPtr conn, const unsigned char *uuid,
 
     return ret;
 
-error:
+ error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -740,7 +740,7 @@ virGetNWFilter(virConnectPtr conn, const char *name,
 
     return ret;
 
-error:
+ error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -800,7 +800,7 @@ virGetDomainSnapshot(virDomainPtr domain, const char *name)
 
     return ret;
 
-error:
+ error:
     virObjectUnref(ret);
     return NULL;
 }

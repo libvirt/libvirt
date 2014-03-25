@@ -77,7 +77,7 @@ hypervParseUri(hypervParsedUri **parsedUri, virURIPtr uri)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     if (result < 0) {
         hypervFreeParsedUri(parsedUri);
     }

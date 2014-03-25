@@ -317,7 +317,7 @@ virSecurityDACRestoreSecurityFileLabel(const char *path)
     /* XXX record previous ownership */
     rc = virSecurityDACSetOwnership(newpath, 0, 0);
 
-err:
+ err:
     VIR_FREE(newpath);
     return rc;
 }
@@ -559,7 +559,7 @@ virSecurityDACSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
         break;
     }
 
-done:
+ done:
     return ret;
 }
 
@@ -677,7 +677,7 @@ virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
         break;
     }
 
-done:
+ done:
     return ret;
 }
 
@@ -724,7 +724,7 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
         break;
     }
 
-done:
+ done:
     VIR_FREE(in);
     VIR_FREE(out);
     return ret;
@@ -763,7 +763,7 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
         break;
     }
 
-done:
+ done:
     VIR_FREE(in);
     VIR_FREE(out);
     return ret;

@@ -1138,7 +1138,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     VIR_FREE(script);
     return def;
 
-cleanup:
+ cleanup:
     virDomainGraphicsDefFree(graphics);
     virDomainNetDefFree(net);
     virDomainDiskDefFree(disk);
@@ -1269,7 +1269,7 @@ xenFormatXMDisk(virConfValuePtr list,
 
     return 0;
 
-cleanup:
+ cleanup:
     virBufferFreeAndReset(&buf);
     return -1;
 }
@@ -1308,7 +1308,7 @@ static int xenFormatXMSerial(virConfValuePtr list,
 
     return 0;
 
-cleanup:
+ cleanup:
     virBufferFreeAndReset(&buf);
     return -1;
 }
@@ -1414,7 +1414,7 @@ static int xenFormatXMNet(virConnectPtr conn,
 
     return 0;
 
-cleanup:
+ cleanup:
     virBufferFreeAndReset(&buf);
     return -1;
 }
@@ -1483,7 +1483,7 @@ xenFormatXMPCI(virConfPtr conf,
 
     return 0;
 
-error:
+ error:
     virConfFreeValue(pciVal);
     return -1;
 }
@@ -2016,7 +2016,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
 
     return conf;
 
-cleanup:
+ cleanup:
     virConfFreeValue(diskVal);
     virConfFreeValue(netVal);
     VIR_FREE(cpus);

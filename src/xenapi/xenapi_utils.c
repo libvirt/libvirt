@@ -114,11 +114,11 @@ xenapiUtil_ParseQuery(virConnectPtr conn, virURIPtr uri, int *noVerify)
         }
     }
 
-  cleanup:
+ cleanup:
 
     return result;
 
-  failure:
+ failure:
     result = -1;
 
     goto cleanup;
@@ -357,7 +357,7 @@ allocStringMap(xen_string_string_map **strings, char *key, char *val)
         VIR_STRDUP((*strings)->contents[sz-1].val, val) < 0)
         goto error;
     return 0;
-  error:
+ error:
     xen_string_string_map_free(*strings);
     return -1;
 }
@@ -559,7 +559,7 @@ createVMRecordFromXml(virConnectPtr conn, virDomainDefPtr def,
     }
     return 0;
 
-  error:
+ error:
     xen_vm_record_free(*record);
     return -1;
 }

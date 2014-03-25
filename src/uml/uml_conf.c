@@ -145,7 +145,7 @@ umlConnectTapDevice(virConnectPtr conn,
     VIR_FORCE_CLOSE(tapfd);
     return 0;
 
-error:
+ error:
     VIR_FORCE_CLOSE(tapfd);
     return -1;
 }
@@ -273,7 +273,7 @@ umlBuildCommandLineNet(virConnectPtr conn,
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }

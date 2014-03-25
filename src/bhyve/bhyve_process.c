@@ -158,7 +158,7 @@ virBhyveProcessStart(virConnectPtr conn,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (ret < 0) {
         virCommandPtr destroy_cmd;
         if ((destroy_cmd = virBhyveProcessBuildDestroyCmd(driver, vm)) != NULL) {
@@ -232,7 +232,7 @@ virBhyveProcessStop(bhyveConnPtr driver,
     vm->pid = -1;
     vm->def->id = -1;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }
