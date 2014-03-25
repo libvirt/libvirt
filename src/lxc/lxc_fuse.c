@@ -78,7 +78,7 @@ static int lxcProcGetattr(const char *path, struct stat *stbuf)
     } else
         res = -ENOENT;
 
-cleanup:
+ cleanup:
     VIR_FREE(mempath);
     return res;
 }
@@ -219,7 +219,7 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
     res = copied;
     memcpy(buf, virBufferCurrentContent(new_meminfo), copied);
 
-cleanup:
+ cleanup:
     VIR_FREE(line);
     virBufferFreeAndReset(new_meminfo);
     VIR_FORCE_FCLOSE(fd);
@@ -322,14 +322,14 @@ int lxcSetupFuse(virLXCFusePtr *f, virDomainDefPtr def)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     fuse_opt_free_args(&args);
     *f = fuse;
     return ret;
-cleanup1:
+ cleanup1:
     VIR_FREE(fuse->mountpoint);
     virMutexDestroy(&fuse->lock);
-cleanup2:
+ cleanup2:
     VIR_FREE(fuse);
     goto cleanup;
 }

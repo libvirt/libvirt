@@ -262,7 +262,7 @@ static virDomainPtr lxcDomainLookupByID(virConnectPtr conn,
     if (dom)
         dom->id = vm->def->id;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return dom;
@@ -292,7 +292,7 @@ static virDomainPtr lxcDomainLookupByUUID(virConnectPtr conn,
     if (dom)
         dom->id = vm->def->id;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return dom;
@@ -319,7 +319,7 @@ static virDomainPtr lxcDomainLookupByName(virConnectPtr conn,
     if (dom)
         dom->id = vm->def->id;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return dom;
@@ -339,7 +339,7 @@ static int lxcDomainIsActive(virDomainPtr dom)
 
     ret = virDomainObjIsActive(obj);
 
-cleanup:
+ cleanup:
     if (obj)
         virObjectUnlock(obj);
     return ret;
@@ -359,7 +359,7 @@ static int lxcDomainIsPersistent(virDomainPtr dom)
 
     ret = obj->persistent;
 
-cleanup:
+ cleanup:
     if (obj)
         virObjectUnlock(obj);
     return ret;
@@ -378,7 +378,7 @@ static int lxcDomainIsUpdated(virDomainPtr dom)
 
     ret = obj->updated;
 
-cleanup:
+ cleanup:
     if (obj)
         virObjectUnlock(obj);
     return ret;
@@ -499,7 +499,7 @@ static virDomainPtr lxcDomainDefineXML(virConnectPtr conn, const char *xml)
     if (dom)
         dom->id = vm->def->id;
 
-cleanup:
+ cleanup:
     virDomainDefFree(def);
     virDomainDefFree(oldDef);
     if (vm)
@@ -552,7 +552,7 @@ static int lxcDomainUndefineFlags(virDomainPtr dom,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     if (event)
@@ -608,7 +608,7 @@ static int lxcDomainGetInfo(virDomainPtr dom,
     info->nrVirtCpu = vm->def->vcpus;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -634,7 +634,7 @@ lxcDomainGetState(virDomainPtr dom,
     *state = virDomainObjGetState(vm, reason);
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -654,7 +654,7 @@ static char *lxcDomainGetOSType(virDomainPtr dom)
     if (VIR_STRDUP(ret, vm->def->os.type) < 0)
         goto cleanup;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -675,7 +675,7 @@ lxcDomainGetMaxMemory(virDomainPtr dom)
 
     ret = vm->def->mem.max_balloon;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -701,7 +701,7 @@ static int lxcDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax)
     vm->def->mem.max_balloon = newmax;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -741,7 +741,7 @@ static int lxcDomainSetMemory(virDomainPtr dom, unsigned long newmem)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -871,7 +871,7 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(caps);
@@ -968,7 +968,7 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
         *nparams = LXC_NB_MEM_PARAM;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(caps);
@@ -993,7 +993,7 @@ static char *lxcDomainGetXMLDesc(virDomainPtr dom,
                              vm->newDef ? vm->newDef : vm->def,
                              flags);
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -1023,7 +1023,7 @@ static char *lxcConnectDomainXMLFromNative(virConnectPtr conn,
 
     xml = virDomainDefFormat(def, 0);
 
-cleanup:
+ cleanup:
     virDomainDefFree(def);
     return xml;
 }
@@ -1084,7 +1084,7 @@ static int lxcDomainCreateWithFiles(virDomainPtr dom,
         virDomainAuditStart(vm, "booted", false);
     }
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     if (event)
@@ -1197,7 +1197,7 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
     if (dom)
         dom->id = vm->def->id;
 
-cleanup:
+ cleanup:
     virDomainDefFree(def);
     if (vm)
         virObjectUnlock(vm);
@@ -1273,7 +1273,7 @@ static int lxcDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr secla
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -1317,7 +1317,7 @@ static int lxcNodeGetSecurityModel(virConnectPtr conn,
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     virObjectUnref(caps);
     return ret;
 }
@@ -1448,7 +1448,7 @@ lxcDomainDestroyFlags(virDomainPtr dom,
         vm = NULL;
     }
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     if (event)
@@ -1500,7 +1500,7 @@ lxcSecurityInit(virLXCDriverConfigPtr cfg)
 
     return mgr;
 
-error:
+ error:
     VIR_ERROR(_("Failed to initialize security drivers"));
     virObjectUnref(mgr);
     return NULL;
@@ -1607,7 +1607,7 @@ static int lxcStateInitialize(bool privileged,
     virNWFilterRegisterCallbackDriver(&lxcCallbackDriver);
     return 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(caps);
     lxcStateCleanup();
     return -1;
@@ -1776,7 +1776,7 @@ static char *lxcDomainGetSchedulerType(virDomainPtr dom,
 
     ignore_value(VIR_STRDUP(ret, "posix"));
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -1821,7 +1821,7 @@ static int lxcSetVcpuBWLive(virCgroupPtr cgroup, unsigned long long period,
 
     return 0;
 
-error:
+ error:
     if (period) {
         virErrorPtr saved = virSaveLastError();
         virCgroupSetCpuCfsPeriod(cgroup, old_period);
@@ -1951,7 +1951,7 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virDomainDefFree(vmdef);
     if (vm)
         virObjectUnlock(vm);
@@ -2032,7 +2032,7 @@ lxcDomainGetSchedulerParametersFlags(virDomainPtr dom,
         if (rc != 0)
             goto cleanup;
     }
-out:
+ out:
     if (virTypedParameterAssign(&params[0], VIR_DOMAIN_SCHEDULER_CPU_SHARES,
                                 VIR_TYPED_PARAM_ULLONG, shares) < 0)
         goto cleanup;
@@ -2060,7 +2060,7 @@ out:
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(caps);
@@ -2162,11 +2162,11 @@ lxcDomainParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
 
     return 0;
 
-error:
+ error:
     virReportError(VIR_ERR_INVALID_ARG,
                    _("unable to parse blkio device '%s' '%s'"),
                    type, blkioDeviceStr);
-cleanup:
+ cleanup:
     virBlkioDeviceArrayClear(result, ndevices);
     VIR_FREE(result);
     return -1;
@@ -2300,7 +2300,7 @@ lxcDomainBlockStats(virDomainPtr dom,
                                             &stats->wr_bytes,
                                             &stats->rd_req,
                                             &stats->wr_req);
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -2426,7 +2426,7 @@ lxcDomainBlockStatsFlags(virDomainPtr dom,
     ret = 0;
     *nparams = tmp;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -2633,7 +2633,7 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
             ret = -1;
     }
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(caps);
@@ -3049,7 +3049,7 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
         *nparams = LXC_NB_BLKIO_PARAM;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(caps);
@@ -3094,7 +3094,7 @@ lxcDomainInterfaceStats(virDomainPtr dom,
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Invalid path, '%s' is not a known interface"), path);
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -3125,7 +3125,7 @@ static int lxcDomainGetAutostart(virDomainPtr dom,
     *autostart = vm->autostart;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -3194,7 +3194,7 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
     vm->autostart = autostart;
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
     if (vm)
@@ -3275,7 +3275,7 @@ static int lxcFreezeContainer(virDomainObjPtr vm)
         VIR_FREE(state);
     }
     VIR_DEBUG("lxcFreezeContainer timeout");
-error:
+ error:
     /*
      * If timeout or an error on reading the state occurs,
      * activate the group again and return an error.
@@ -3284,7 +3284,7 @@ error:
     virCgroupSetFreezerState(priv->cgroup, "THAWED");
     ret = -1;
 
-cleanup:
+ cleanup:
     VIR_FREE(state);
     return ret;
 }
@@ -3326,7 +3326,7 @@ static int lxcDomainSuspend(virDomainPtr dom)
         goto cleanup;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (event)
         virObjectEventStateQueue(driver->domainEventState, event);
     if (vm)
@@ -3376,7 +3376,7 @@ static int lxcDomainResume(virDomainPtr dom)
         goto cleanup;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (event)
         virObjectEventStateQueue(driver->domainEventState, event);
     if (vm)
@@ -3443,7 +3443,7 @@ lxcDomainOpenConsole(virDomainPtr dom,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -3516,7 +3516,7 @@ lxcDomainSendProcessSignal(virDomainPtr dom,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -3615,7 +3615,7 @@ lxcDomainShutdownFlags(virDomainPtr dom,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -3692,7 +3692,7 @@ lxcDomainReboot(virDomainPtr dom,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -3750,7 +3750,7 @@ lxcDomainAttachDeviceConfig(virDomainDefPtr vmdef,
          break;
     }
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -3793,7 +3793,7 @@ lxcDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
         break;
     }
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -3858,7 +3858,7 @@ lxcDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         break;
     }
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -4113,7 +4113,7 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (src)
         virDomainAuditDisk(vm, NULL, src, "attach", ret == 0);
     VIR_FREE(file);
@@ -4230,7 +4230,7 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (!ret) {
         vm->def->nets[vm->def->nnets++] = net;
     } else if (veth) {
@@ -4316,7 +4316,7 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virDomainAuditHostdev(vm, def, "attach", ret == 0);
     virUSBDeviceFree(usb);
     VIR_FREE(src);
@@ -4390,7 +4390,7 @@ lxcDomainAttachDeviceHostdevStorageLive(virLXCDriverPtr driver,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virDomainAuditHostdev(vm, def, "attach", ret == 0);
     return ret;
 }
@@ -4462,7 +4462,7 @@ lxcDomainAttachDeviceHostdevMiscLive(virLXCDriverPtr driver,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virDomainAuditHostdev(vm, def, "attach", ret == 0);
     return ret;
 }
@@ -4632,7 +4632,7 @@ lxcDomainDetachDeviceDiskLive(virDomainObjPtr vm,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(dst);
     return ret;
 }
@@ -4694,7 +4694,7 @@ lxcDomainDetachDeviceNetLive(virDomainObjPtr vm,
                         virDomainNetGetActualBridgeName(detach),
                         detach->ifname));
     ret = 0;
-cleanup:
+ cleanup:
     if (!ret) {
         networkReleaseActualDevice(vm->def, detach);
         virDomainNetRemove(vm->def, detachidx);
@@ -4760,7 +4760,7 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virUSBDeviceFree(usb);
     VIR_FREE(dst);
     return ret;
@@ -4811,7 +4811,7 @@ lxcDomainDetachDeviceHostdevStorageLive(virDomainObjPtr vm,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -4860,7 +4860,7 @@ lxcDomainDetachDeviceHostdevMiscLive(virDomainObjPtr vm,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -5070,7 +5070,7 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
         }
     }
 
-cleanup:
+ cleanup:
     virDomainDefFree(vmdef);
     if (dev != dev_copy)
         virDomainDeviceDefFree(dev_copy);
@@ -5192,7 +5192,7 @@ static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
         }
     }
 
-cleanup:
+ cleanup:
     virDomainDefFree(vmdef);
     if (dev != dev_copy)
         virDomainDeviceDefFree(dev_copy);
@@ -5312,7 +5312,7 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
         }
     }
 
-cleanup:
+ cleanup:
     virDomainDefFree(vmdef);
     if (dev != dev_copy)
         virDomainDeviceDefFree(dev_copy);
@@ -5369,7 +5369,7 @@ static int lxcDomainLxcOpenNamespace(virDomainPtr dom,
         goto cleanup;
 
     ret = nfds;
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -5465,7 +5465,7 @@ lxcDomainMemoryStats(virDomainPtr dom,
         ret++;
     }
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -5606,7 +5606,7 @@ lxcDomainSetMetadata(virDomainPtr dom,
     ret = virDomainObjSetMetadata(vm, type, metadata, key, uri, caps,
                                   driver->xmlopt, cfg->configDir, flags);
 
-cleanup:
+ cleanup:
     virObjectUnlock(vm);
     virObjectUnref(caps);
     virObjectUnref(cfg);
@@ -5636,7 +5636,7 @@ lxcDomainGetMetadata(virDomainPtr dom,
 
     ret = virDomainObjGetMetadata(vm, type, uri, caps, driver->xmlopt, flags);
 
-cleanup:
+ cleanup:
     virObjectUnlock(vm);
     virObjectUnref(caps);
     return ret;
@@ -5683,7 +5683,7 @@ lxcDomainGetCPUStats(virDomainPtr dom,
     else
         ret = virCgroupGetPercpuStats(priv->cgroup, params,
                                       nparams, start_cpu, ncpus);
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;

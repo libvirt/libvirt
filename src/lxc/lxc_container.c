@@ -373,7 +373,7 @@ static int lxcContainerSetupFDs(int *ttyfd,
 
     rc = 0;
 
-cleanup:
+ cleanup:
     VIR_DEBUG("rc=%d", rc);
     return rc;
 }
@@ -400,7 +400,7 @@ int lxcContainerSendContinue(int control)
     }
 
     rc = 0;
-error_out:
+ error_out:
     return rc;
 }
 
@@ -506,7 +506,7 @@ static int lxcContainerRenameAndEnableInterfaces(bool privNet,
     if (veths || privNet)
         rc = virNetDevSetOnline("lo", true);
 
-error_out:
+ error_out:
     VIR_FREE(newname);
     return rc;
 }
@@ -580,7 +580,7 @@ static int lxcContainerUnmountSubtree(const char *prefix,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virStringFreeList(mounts);
 
     return ret;
@@ -718,7 +718,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
 
     ret = 0;
 
-err:
+ err:
     VIR_FREE(oldroot);
     VIR_FREE(newroot);
 
@@ -805,7 +805,7 @@ static int lxcContainerSetReadOnly(void)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     for (i = 0; i < nmounts; i++)
         VIR_FREE(mounts[i]);
     VIR_FREE(mounts);
@@ -892,7 +892,7 @@ static int lxcContainerMountBasicFS(bool userns_enabled)
 
     rc = 0;
 
-cleanup:
+ cleanup:
     VIR_DEBUG("rc=%d", rc);
     return rc;
 }
@@ -961,7 +961,7 @@ static int lxcContainerMountFSDev(virDomainDefPtr def,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(path);
     return ret;
 }
@@ -996,7 +996,7 @@ static int lxcContainerMountFSDevPTS(virDomainDefPtr def,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(path);
     return ret;
 }
@@ -1126,7 +1126,7 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(src);
     return ret;
 }
@@ -1193,9 +1193,9 @@ lxcContainerMountDetectFilesystem(const char *src, char **type)
     if (VIR_STRDUP(*type, data) < 0)
         goto cleanup;
 
-done:
+ done:
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     if (blkid)
         blkid_free_probe(blkid);
@@ -1237,7 +1237,7 @@ static int lxcContainerMountFSBlockAuto(virDomainFSDefPtr fs,
     VIR_DEBUG("src=%s dst=%s srcprefix=%s", src, fs->dst, srcprefix);
 
     /* First time around we use /etc/filesystems */
-retry:
+ retry:
     if (virAsprintf(&fslist, "%s%s", srcprefix,
                     tryProc ? "/proc/filesystems" : "/etc/filesystems") < 0)
         goto cleanup;
@@ -1338,7 +1338,7 @@ retry:
 
     VIR_DEBUG("Done mounting filesystem ret=%d tryProc=%d", ret, tryProc);
 
-cleanup:
+ cleanup:
     VIR_FREE(line);
     VIR_FREE(fslist);
     VIR_FORCE_FCLOSE(fp);
@@ -1386,7 +1386,7 @@ static int lxcContainerMountFSBlockHelper(virDomainFSDefPtr fs,
         ret = lxcContainerMountFSBlockAuto(fs, fsflags, src, srcprefix, sec_mount_options);
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(format);
     return ret;
 }
@@ -1408,7 +1408,7 @@ static int lxcContainerMountFSBlock(virDomainFSDefPtr fs,
 
     VIR_DEBUG("Done mounting filesystem ret=%d", ret);
 
-cleanup:
+ cleanup:
     VIR_FREE(src);
     return ret;
 }
@@ -1452,7 +1452,7 @@ static int lxcContainerMountFSTmpfs(virDomainFSDefPtr fs,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(data);
     return ret;
 }
@@ -1540,7 +1540,7 @@ int lxcContainerSetupHostdevCapsMakePath(const char *dev)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(dir);
     return ret;
 }
@@ -1594,7 +1594,7 @@ static int lxcContainerUnmountForSharedRoot(const char *stateDir,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(tmp);
     return ret;
 }
@@ -1682,7 +1682,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(stateDir);
     virCgroupFree(&cgroup);
     VIR_FREE(sec_mount_options);
@@ -1894,7 +1894,7 @@ static int lxcContainerChild(void *data)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(ttyPath);
     VIR_FORCE_CLOSE(ttyfd);
     VIR_FORCE_CLOSE(argv->monitor);

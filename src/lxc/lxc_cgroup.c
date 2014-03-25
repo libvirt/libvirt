@@ -51,7 +51,7 @@ static int virLXCCgroupSetupCpuTune(virDomainDefPtr def,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -97,7 +97,7 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(mask);
     return ret;
 }
@@ -168,7 +168,7 @@ static int virLXCCgroupSetupMemTune(virDomainDefPtr def,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -263,7 +263,7 @@ static int virLXCCgroupGetMemStat(virCgroupPtr cgroup,
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(line);
     VIR_FREE(statFile);
     VIR_FORCE_FCLOSE(statfd);
@@ -292,7 +292,7 @@ int virLXCCgroupGetMeminfo(virLXCMeminfoPtr meminfo)
     virLXCCgroupGetMemSwapUsage(cgroup, meminfo);
 
     ret = 0;
-cleanup:
+ cleanup:
     virCgroupFree(&cgroup);
     return ret;
 }
@@ -452,7 +452,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
     VIR_DEBUG("Device whitelist complete");
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -498,7 +498,7 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def)
         }
     }
 
-cleanup:
+ cleanup:
     return cgroup;
 }
 
@@ -526,6 +526,6 @@ int virLXCCgroupSetup(virDomainDefPtr def,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }

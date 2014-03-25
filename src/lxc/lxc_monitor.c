@@ -183,11 +183,11 @@ virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,
     virNetClientSetCloseCallback(mon->client, virLXCMonitorEOFNotify, mon,
                                  virLXCMonitorCloseFreeCallback);
 
-cleanup:
+ cleanup:
     VIR_FREE(sockpath);
     return mon;
 
-error:
+ error:
     virObjectUnref(mon);
     mon = NULL;
     goto cleanup;

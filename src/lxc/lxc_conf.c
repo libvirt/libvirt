@@ -157,7 +157,7 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
 
     return caps;
 
-error:
+ error:
     virObjectUnref(caps);
     return NULL;
 }
@@ -230,7 +230,7 @@ virLXCDriverConfigNew(void)
         goto error;
 
     return cfg;
-error:
+ error:
     virObjectUnref(cfg);
     return NULL;
 }
@@ -283,7 +283,7 @@ virLXCLoadDriverConfig(virLXCDriverConfigPtr cfg,
 
     virConfFree(conf);
 
-done:
+ done:
     return 0;
 }
 

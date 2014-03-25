@@ -186,13 +186,13 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
                                                   NULL)) < 0)
         goto error;
 
-cleanup:
+ cleanup:
     VIR_FREE(configFile);
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
     return ctrl;
 
-error:
+ error:
     virLXCControllerFree(ctrl);
     ctrl = NULL;
     goto cleanup;
@@ -584,7 +584,7 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
     VIR_DEBUG("Setup all loop devices");
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -665,7 +665,7 @@ static int virLXCControllerGetNumadAdvice(virLXCControllerPtr ctrl,
     ret = 0;
     *mask = nodemask;
 
-cleanup:
+ cleanup:
     VIR_FREE(nodeset);
     return ret;
 }
@@ -696,7 +696,7 @@ static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     virBitmapFree(nodemask);
     return ret;
 }
@@ -789,7 +789,7 @@ static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
     VIR_FREE(sockpath);
     return 0;
 
-error:
+ error:
     VIR_FREE(sockpath);
     virObjectUnref(ctrl->server);
     ctrl->server = NULL;
@@ -945,7 +945,7 @@ static void virLXCControllerConsoleUpdateWatch(virLXCControllerConsolePtr consol
         }
         console->contEpoll = 0;
     }
-cleanup:
+ cleanup:
     return;
 }
 
@@ -993,7 +993,7 @@ static void virLXCControllerConsoleEPoll(int watch, int fd, int events, void *op
         }
     }
 
-cleanup:
+ cleanup:
     virMutexUnlock(&lock);
 }
 
@@ -1078,7 +1078,7 @@ static void virLXCControllerConsoleIO(int watch, int fd, int events, void *opaqu
     virMutexUnlock(&lock);
     return;
 
-error:
+ error:
     virEventRemoveHandle(console->contWatch);
     virEventRemoveHandle(console->hostWatch);
     console->contWatch = console->hostWatch = -1;
@@ -1157,9 +1157,9 @@ static int virLXCControllerMain(virLXCControllerPtr ctrl)
     if (!err || err->code == VIR_ERR_OK)
         rc = wantReboot ? 1 : 0;
 
-cleanup:
+ cleanup:
     virMutexDestroy(&lock);
-cleanup2:
+ cleanup2:
 
     for (i = 0; i < ctrl->nconsoles; i++)
         virLXCControllerConsoleClose(&(ctrl->consoles[i]));
@@ -1192,11 +1192,11 @@ virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virBufferFreeAndReset(&map_value);
     return ret;
 
-no_memory:
+ no_memory:
     virReportOOMError();
     goto cleanup;
 }
@@ -1235,7 +1235,7 @@ static int virLXCControllerSetupUserns(virLXCControllerPtr ctrl)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(uid_map);
     VIR_FREE(gid_map);
     return ret;
@@ -1285,7 +1285,7 @@ static int virLXCControllerSetupDev(virLXCControllerPtr ctrl)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(opts);
     VIR_FREE(mount_options);
     VIR_FREE(dev);
@@ -1336,7 +1336,7 @@ static int virLXCControllerPopulateDevices(virLXCControllerPtr ctrl)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(path);
     return ret;
 }
@@ -1411,7 +1411,7 @@ virLXCControllerSetupHostdevSubsysUSB(virDomainDefPtr vmDef,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(src);
     VIR_FREE(dstfile);
     VIR_FREE(dstdir);
@@ -1491,7 +1491,7 @@ virLXCControllerSetupHostdevCapsStorage(virDomainDefPtr vmDef,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     def->source.caps.u.storage.block = dev;
     VIR_FREE(dst);
     VIR_FREE(path);
@@ -1570,7 +1570,7 @@ virLXCControllerSetupHostdevCapsMisc(virDomainDefPtr vmDef,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     def->source.caps.u.misc.chardev = dev;
     VIR_FREE(dst);
     VIR_FREE(path);
@@ -1732,7 +1732,7 @@ static int virLXCControllerSetupDisk(virLXCControllerPtr ctrl,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     def->src.path = tmpsrc;
     VIR_FREE(dst);
     return ret;
@@ -1878,7 +1878,7 @@ lxcCreateTty(virLXCControllerPtr ctrl, int *ttymaster,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (ret != 0) {
         VIR_FORCE_CLOSE(*ttymaster);
         VIR_FREE(*ttyName);
@@ -1927,7 +1927,7 @@ virLXCControllerSetupPrivateNS(void)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -1985,7 +1985,7 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(opts);
     VIR_FREE(devpts);
     VIR_FREE(mount_options);
@@ -2031,7 +2031,7 @@ virLXCControllerSetupConsoles(virLXCControllerPtr ctrl,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(ttyHostPath);
     return ret;
 }
@@ -2073,7 +2073,7 @@ virLXCControllerEventSend(virLXCControllerPtr ctrl,
     xdr_free(proc, data);
     return;
 
-error:
+ error:
     virNetMessageFree(msg);
     xdr_free(proc, data);
 }
@@ -2246,7 +2246,7 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
 
     virLXCControllerEventSendExit(ctrl, rc);
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(control[0]);
     VIR_FORCE_CLOSE(control[1]);
     VIR_FORCE_CLOSE(containerhandshake[0]);
@@ -2474,7 +2474,7 @@ int main(int argc, char *argv[])
 
     rc = virLXCControllerRun(ctrl);
 
-cleanup:
+ cleanup:
     if (rc < 0) {
         virErrorPtr err = virGetLastError();
         if (err && err->message)
