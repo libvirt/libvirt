@@ -200,6 +200,7 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
     bool output = false;
     int pipefd[2] = { -1, -1 };
     int mode = -1;
+    char *iohelper_path = NULL;
 
     if (!flags) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -243,8 +244,15 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
         goto error;
     }
 
-    ret->cmd = virCommandNewArgList(LIBEXECDIR "/libvirt_iohelper",
-                                    name, "0", NULL);
+    if (!(iohelper_path = virFileFindResource("libvirt_iohelper",
+                                              "src",
+                                              LIBEXECDIR)))
+        goto error;
+
+    ret->cmd = virCommandNewArgList(iohelper_path, name, "0", NULL);
+
+    VIR_FREE(iohelper_path);
+
     if (output) {
         virCommandSetInputFD(ret->cmd, pipefd[0]);
         virCommandSetOutputFD(ret->cmd, fd);
@@ -275,6 +283,7 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
     return ret;
 
  error:
+    VIR_FREE(iohelper_path);
     VIR_FORCE_CLOSE(pipefd[0]);
     VIR_FORCE_CLOSE(pipefd[1]);
     virFileWrapperFdFree(ret);
