@@ -962,13 +962,16 @@ printTCPFlags(virBufferPtr buf, uint8_t flags)
 }
 
 
-void
-virNWFilterPrintTCPFlags(virBufferPtr buf,
-                         uint8_t mask, char sep, uint8_t flags)
+char *
+virNWFilterPrintTCPFlags(uint8_t flags)
 {
-    printTCPFlags(buf, mask);
-    virBufferAddChar(buf, sep);
-    printTCPFlags(buf, flags);
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    printTCPFlags(&buf, flags);
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        return NULL;
+    }
+    return virBufferContentAndReset(&buf);
 }
 
 
@@ -977,10 +980,9 @@ tcpFlagsFormatter(virBufferPtr buf,
                   virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED,
                   nwItemDesc *item)
 {
-    virNWFilterPrintTCPFlags(buf,
-                             item->u.tcpFlags.mask,
-                             '/',
-                             item->u.tcpFlags.flags);
+    printTCPFlags(buf, item->u.tcpFlags.mask);
+    virBufferAddLit(buf, "/");
+    printTCPFlags(buf, item->u.tcpFlags.flags);
 
     return true;
 }

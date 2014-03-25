@@ -82,8 +82,8 @@ enum virNWFilterEntryItemFlags {
 # define HAS_ENTRY_ITEM(data) \
   (((data)->flags) & NWFILTER_ENTRY_ITEM_FLAG_EXISTS)
 
-# define ENTRY_GET_NEG_SIGN(data) \
-  ((((data)->flags) & NWFILTER_ENTRY_ITEM_FLAG_IS_NEG) ? "!" : "")
+# define ENTRY_WANT_NEG_SIGN(data) \
+  (((data)->flags) & NWFILTER_ENTRY_ITEM_FLAG_IS_NEG)
 
 /* datatypes appearing in rule attributes */
 enum attrDatatype {
@@ -673,8 +673,7 @@ void virNWFilterCallbackDriversLock(void);
 void virNWFilterCallbackDriversUnlock(void);
 
 
-void virNWFilterPrintTCPFlags(virBufferPtr buf, uint8_t mask,
-                              char sep, uint8_t flags);
+char *virNWFilterPrintTCPFlags(uint8_t flags);
 
 
 bool virNWFilterRuleIsProtocolIPv4(virNWFilterRuleDefPtr rule);
