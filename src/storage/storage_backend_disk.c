@@ -40,8 +40,6 @@
 
 VIR_LOG_INIT("storage.storage_backend_disk");
 
-#define PARTHELPER LIBEXECDIR "/libvirt_parthelper"
-
 #define SECTOR_SIZE 512
 
 static int
@@ -262,14 +260,23 @@ virStorageBackendDiskReadPartitions(virStoragePoolObjPtr pool,
      * -              normal   metadata 100027630080 100030242304      2612736
      *
      */
-    virCommandPtr cmd = virCommandNewArgList(PARTHELPER,
-                                             pool->def->source.devices[0].path,
-                                             NULL);
+
+    char *parthelper_path;
+    virCommandPtr cmd;
     struct virStorageBackendDiskPoolVolData cbdata = {
         .pool = pool,
         .vol = vol,
     };
     int ret;
+
+    if (!(parthelper_path = virFileFindResource("libvirt_parthelper",
+                                                "src",
+                                                LIBEXECDIR)))
+        return -1;
+
+    cmd = virCommandNewArgList(parthelper_path,
+                               pool->def->source.devices[0].path,
+                               NULL);
 
     pool->def->allocation = pool->def->capacity = pool->def->available = 0;
 
@@ -278,6 +285,7 @@ virStorageBackendDiskReadPartitions(virStoragePoolObjPtr pool,
                            virStorageBackendDiskMakeVol,
                            &cbdata);
     virCommandFree(cmd);
+    VIR_FREE(parthelper_path);
     return ret;
 }
 
@@ -302,17 +310,26 @@ virStorageBackendDiskMakePoolGeometry(size_t ntok ATTRIBUTE_UNUSED,
 static int
 virStorageBackendDiskReadGeometry(virStoragePoolObjPtr pool)
 {
-    virCommandPtr cmd = virCommandNewArgList(PARTHELPER,
+    char *parthelper_path;
+    virCommandPtr cmd;
+    int ret;
+
+    if (!(parthelper_path = virFileFindResource("libvirt_parthelper",
+                                                "src",
+                                                LIBEXECDIR)))
+        return -1;
+
+    cmd = virCommandNewArgList(parthelper_path,
                                              pool->def->source.devices[0].path,
                                              "-g",
                                              NULL);
-    int ret;
 
     ret = virCommandRunNul(cmd,
                            3,
                            virStorageBackendDiskMakePoolGeometry,
                            pool);
     virCommandFree(cmd);
+    VIR_FREE(parthelper_path);
     return ret;
 }
 
