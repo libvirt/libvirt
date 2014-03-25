@@ -255,7 +255,7 @@ esxParseVMXFileName(const char *fileName, void *opaque)
         }
     }
 
-  cleanup:
+ cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&datastoreList);
     esxVI_DatastoreHostMount_Free(&hostMount);
@@ -361,7 +361,7 @@ esxFormatVMXFileName(const char *fileName, void *opaque)
 
     success = true;
 
-  cleanup:
+ cleanup:
     if (! success) {
         virBufferFreeAndReset(&buffer);
         VIR_FREE(result);
@@ -433,7 +433,7 @@ esxAutodetectSCSIControllerModel(virDomainDiskDefPtr def, int *model,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_FileInfo_Free(&fileInfo);
 
     return result;
@@ -508,7 +508,7 @@ esxSupportsLongMode(esxPrivate *priv)
         }
     }
 
-  cleanup:
+ cleanup:
     /*
      * If we goto cleanup in case of an error then priv->supportsLongMode
      * is still esxVI_Boolean_Undefined, therefore we don't need to set it.
@@ -557,7 +557,7 @@ esxLookupHostSystemBiosUuid(esxPrivate *priv, unsigned char *uuid)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&hostSystem);
 
@@ -624,7 +624,7 @@ esxCapsInit(esxPrivate *priv)
 
     return caps;
 
-  failure:
+ failure:
     virObjectUnref(caps);
 
     return NULL;
@@ -742,7 +742,7 @@ esxConnectToHost(esxPrivate *priv,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     VIR_FREE(username);
     VIR_FREE(unescapedPassword);
     VIR_FREE(password);
@@ -843,7 +843,7 @@ esxConnectToVCenter(esxPrivate *priv,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     VIR_FREE(username);
     VIR_FREE(unescapedPassword);
     VIR_FREE(password);
@@ -1070,7 +1070,7 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     priv = NULL;
     result = VIR_DRV_OPEN_SUCCESS;
 
-  cleanup:
+ cleanup:
     esxFreePrivate(&priv);
     VIR_FREE(potentialVCenterIpAddress);
 
@@ -1132,7 +1132,7 @@ esxSupportsVMotion(esxPrivate *priv)
         goto cleanup;
     }
 
-  cleanup:
+ cleanup:
     /*
      * If we goto cleanup in case of an error then priv->supportsVMotion is
      * still esxVI_Boolean_Undefined, therefore we don't need to set it.
@@ -1258,7 +1258,7 @@ esxConnectGetHostname(virConnectPtr conn)
             goto cleanup;
     }
 
-  cleanup:
+ cleanup:
     /*
      * If we goto cleanup in case of an error then complete is still NULL,
      * either VIR_STRDUP returned -1 or virAsprintf failed. When virAsprintf
@@ -1407,7 +1407,7 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&hostSystem);
 
@@ -1487,7 +1487,7 @@ esxConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 
     success = true;
 
-  cleanup:
+ cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachineList);
 
@@ -1577,7 +1577,7 @@ esxDomainLookupByID(virConnectPtr conn, int id)
         virReportError(VIR_ERR_NO_DOMAIN, _("No domain with ID %d"), id);
     }
 
-  cleanup:
+ cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachineList);
     VIR_FREE(name_candidate);
@@ -1626,7 +1626,7 @@ esxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         domain->id = -1;
     }
 
-  cleanup:
+ cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
     VIR_FREE(name);
@@ -1684,7 +1684,7 @@ esxDomainLookupByName(virConnectPtr conn, const char *name)
         domain->id = -1;
     }
 
-  cleanup:
+ cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
 
@@ -1740,7 +1740,7 @@ esxDomainSuspend(virDomainPtr domain)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_String_Free(&propertyNameList);
     esxVI_ManagedObjectReference_Free(&task);
@@ -1798,7 +1798,7 @@ esxDomainResume(virDomainPtr domain)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_String_Free(&propertyNameList);
     esxVI_ManagedObjectReference_Free(&task);
@@ -1845,7 +1845,7 @@ esxDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_String_Free(&propertyNameList);
 
@@ -1896,7 +1896,7 @@ esxDomainReboot(virDomainPtr domain, unsigned int flags)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_String_Free(&propertyNameList);
 
@@ -1963,7 +1963,7 @@ esxDomainDestroyFlags(virDomainPtr domain,
     domain->id = -1;
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_String_Free(&propertyNameList);
     esxVI_ManagedObjectReference_Free(&task);
@@ -2034,7 +2034,7 @@ esxDomainGetMaxMemory(virDomainPtr domain)
         }
     }
 
-  cleanup:
+ cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
 
@@ -2102,7 +2102,7 @@ esxDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_VirtualMachineConfigSpec_Free(&spec);
@@ -2159,7 +2159,7 @@ esxDomainSetMemory(virDomainPtr domain, unsigned long memory)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_VirtualMachineConfigSpec_Free(&spec);
     esxVI_ManagedObjectReference_Free(&task);
@@ -2427,7 +2427,7 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 
     result = 0;
 
-  cleanup:
+ cleanup:
 #if ESX_QUERY_FOR_USED_CPU_TIME
     /*
      * Remove values owned by data structures to prevent them from being freed
@@ -2492,7 +2492,7 @@ esxDomainGetState(virDomainPtr domain,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
 
@@ -2571,7 +2571,7 @@ esxDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_VirtualMachineConfigSpec_Free(&spec);
     esxVI_ManagedObjectReference_Free(&task);
@@ -2635,7 +2635,7 @@ esxDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
         }
     }
 
-  cleanup:
+ cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&hostSystem);
 
@@ -2745,7 +2745,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
         xml = virDomainDefFormat(def, flags);
     }
 
-  cleanup:
+ cleanup:
     if (!url) {
         virBufferFreeAndReset(&buffer);
     }
@@ -2916,7 +2916,7 @@ esxConnectListDefinedDomains(virConnectPtr conn, char **const names, int maxname
 
     success = true;
 
-  cleanup:
+ cleanup:
     if (! success) {
         for (i = 0; i < count; ++i) {
             VIR_FREE(names[i]);
@@ -3001,7 +3001,7 @@ esxDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
     domain->id = id;
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_String_Free(&propertyNameList);
     esxVI_ManagedObjectReference_Free(&task);
@@ -3229,7 +3229,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
 
     /* FIXME: Add proper rollback in case of an error */
 
-  cleanup:
+ cleanup:
     if (!url) {
         virBufferFreeAndReset(&buffer);
     }
@@ -3301,7 +3301,7 @@ esxDomainUndefineFlags(virDomainPtr domain,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_String_Free(&propertyNameList);
 
@@ -3373,7 +3373,7 @@ esxDomainGetAutostart(virDomainPtr domain, int *autostart)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_AutoStartDefaults_Free(&defaults);
     esxVI_AutoStartPowerInfo_Free(&powerInfoList);
@@ -3480,7 +3480,7 @@ esxDomainSetAutostart(virDomainPtr domain, int autostart)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     if (newPowerInfo) {
         newPowerInfo->key = NULL;
         newPowerInfo->startAction = NULL;
@@ -3655,7 +3655,7 @@ esxDomainGetSchedulerParametersFlags(virDomainPtr domain,
     *nparams = i;
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
 
@@ -3796,7 +3796,7 @@ esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_SharesInfo_Free(&sharesInfo);
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_VirtualMachineConfigSpec_Free(&spec);
@@ -3979,7 +3979,7 @@ esxDomainMigratePerform(virDomainPtr domain,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     virURIFree(parsedUri);
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_Event_Free(&eventList);
@@ -4052,7 +4052,7 @@ esxNodeGetFreeMemory(virConnectPtr conn)
 
     result = resourcePoolResourceUsage->unreservedForVm->value;
 
-  cleanup:
+ cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&resourcePool);
     esxVI_ResourcePoolResourceUsage_Free(&resourcePoolResourceUsage);
@@ -4135,7 +4135,7 @@ esxDomainIsActive(virDomainPtr domain)
         result = 0;
     }
 
-  cleanup:
+ cleanup:
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_String_Free(&propertyNameList);
 
@@ -4163,7 +4163,7 @@ esxDomainIsPersistent(virDomainPtr domain)
 
     result = 1;
 
-cleanup:
+ cleanup:
     esxVI_ObjectContent_Free(&virtualMachine);
 
     return result;
@@ -4190,7 +4190,7 @@ esxDomainIsUpdated(virDomainPtr domain ATTRIBUTE_UNUSED)
 
     result = 0;
 
-cleanup:
+ cleanup:
     esxVI_ObjectContent_Free(&virtualMachine);
 
     return result;
@@ -4274,7 +4274,7 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
 
     snapshot = virGetDomainSnapshot(domain, def->name);
 
-  cleanup:
+ cleanup:
     virDomainSnapshotDefFree(def);
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotList);
@@ -4330,7 +4330,7 @@ esxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     xml = virDomainSnapshotDefFormat(uuid_string, &def, flags, 0);
 
-  cleanup:
+ cleanup:
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotList);
 
     return xml;
@@ -4460,7 +4460,7 @@ esxDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot, unsigned int flags)
     count = esxVI_GetNumberOfSnapshotTrees(snapshotTree->childSnapshotList,
                                            recurse, leaves);
 
-cleanup:
+ cleanup:
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotTreeList);
 
     return count;
@@ -4517,7 +4517,7 @@ esxDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
     result = esxVI_GetSnapshotTreeNames(snapshotTree->childSnapshotList,
                                         names, nameslen, recurse, leaves);
 
-cleanup:
+ cleanup:
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotTreeList);
 
     return result;
@@ -4550,7 +4550,7 @@ esxDomainSnapshotLookupByName(virDomainPtr domain, const char *name,
 
     snapshot = virGetDomainSnapshot(domain, name);
 
-  cleanup:
+ cleanup:
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotTreeList);
 
     return snapshot;
@@ -4618,7 +4618,7 @@ esxDomainSnapshotGetParent(virDomainSnapshotPtr snapshot, unsigned int flags)
 
     parent = virGetDomainSnapshot(snapshot->domain, snapshotTreeParent->name);
 
-cleanup:
+ cleanup:
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotList);
 
     return parent;
@@ -4685,7 +4685,7 @@ esxDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot, unsigned int flags)
 
     ret = STREQ(snapshot->name, currentSnapshotTree->name);
 
-cleanup:
+ cleanup:
     esxVI_VirtualMachineSnapshotTree_Free(&currentSnapshotTree);
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotList);
     return ret;
@@ -4717,7 +4717,7 @@ esxDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot, unsigned int flags)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotList);
     return ret;
 }
@@ -4766,7 +4766,7 @@ esxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot, unsigned int flags)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotList);
     esxVI_ManagedObjectReference_Free(&task);
     VIR_FREE(taskInfoErrorMessage);
@@ -4832,7 +4832,7 @@ esxDomainSnapshotDelete(virDomainSnapshotPtr snapshot, unsigned int flags)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotList);
     esxVI_ManagedObjectReference_Free(&task);
     VIR_FREE(taskInfoErrorMessage);
@@ -4903,7 +4903,7 @@ esxDomainSetMemoryParameters(virDomainPtr domain, virTypedParameterPtr params,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_VirtualMachineConfigSpec_Free(&spec);
     esxVI_ManagedObjectReference_Free(&task);
@@ -4954,7 +4954,7 @@ esxDomainGetMemoryParameters(virDomainPtr domain, virTypedParameterPtr params,
     *nparams = 1;
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_Long_Free(&reservation);
@@ -5168,7 +5168,7 @@ esxConnectListAllDomains(virConnectPtr conn,
     doms = NULL;
     ret = count;
 
-cleanup:
+ cleanup:
     if (doms) {
         for (id = 0; id < count; id++) {
             virDomainFree(doms[id]);

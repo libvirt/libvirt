@@ -121,7 +121,7 @@ esxConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
 
     success = true;
 
-  cleanup:
+ cleanup:
     if (! success) {
         for (i = 0; i < count; ++i) {
             VIR_FREE(names[i]);
@@ -273,7 +273,7 @@ esxInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
 
     xml = virInterfaceDefFormat(&def);
 
-  cleanup:
+ cleanup:
     esxVI_PhysicalNic_Free(&physicalNic);
 
     return xml;

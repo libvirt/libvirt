@@ -247,7 +247,7 @@ esxVI_RetrieveServiceContent(esxVI_Context *ctx,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_Response_Free(&response);
 
     return result;

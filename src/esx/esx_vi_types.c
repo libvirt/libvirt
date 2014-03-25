@@ -739,7 +739,7 @@ esxVI_GetActualObjectType(xmlNodePtr node, esxVI_Type baseType,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     VIR_FREE(type);
 
     return result;
@@ -1001,7 +1001,7 @@ esxVI_AnyType_DeepCopy(esxVI_AnyType **dest, esxVI_AnyType *src)
 
     return 0;
 
-  failure:
+ failure:
     esxVI_AnyType_Free(dest);
 
     return -1;
@@ -1118,7 +1118,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
 
     return 0;
 
-  failure:
+ failure:
     esxVI_AnyType_Free(anyType);
 
     return -1;
@@ -1182,7 +1182,7 @@ esxVI_String_AppendValueToList(esxVI_String **stringList, const char *value)
 
     return 0;
 
-  failure:
+ failure:
     esxVI_String_Free(&string);
 
     return -1;
@@ -1209,7 +1209,7 @@ esxVI_String_AppendValueListToList(esxVI_String **stringList,
 
     return 0;
 
-  failure:
+ failure:
     esxVI_String_Free(&stringListToAppend);
 
     return -1;
@@ -1293,7 +1293,7 @@ esxVI_String_Deserialize(xmlNodePtr node, esxVI_String **string)
 
     return 0;
 
-  failure:
+ failure:
     esxVI_String_Free(string);
 
     return -1;
@@ -1501,7 +1501,7 @@ esxVI_DateTime_Deserialize(xmlNodePtr node, esxVI_DateTime **dateTime)
 
     return 0;
 
-  failure:
+ failure:
     esxVI_DateTime_Free(dateTime);
 
     return -1;
@@ -1675,7 +1675,7 @@ esxVI_MethodFault_Deserialize(xmlNodePtr node, esxVI_MethodFault **methodFault)
 
     return 0;
 
-  failure:
+ failure:
     esxVI_MethodFault_Free(methodFault);
 
     return -1;
@@ -1775,7 +1775,7 @@ esxVI_ManagedObjectReference_Deserialize
 
     return 0;
 
-  failure:
+ failure:
     esxVI_ManagedObjectReference_Free(managedObjectReference);
 
     return -1;

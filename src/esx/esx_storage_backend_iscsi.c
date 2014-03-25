@@ -84,7 +84,7 @@ esxConnectNumOfStoragePools(virConnectPtr conn)
 
     success = true;
 
-  cleanup:
+ cleanup:
     esxVI_HostInternetScsiHba_Free(&hostInternetScsiHba);
 
     return success ? count : -1;
@@ -137,7 +137,7 @@ esxConnectListStoragePools(virConnectPtr conn, char **const names,
 
     success = true;
 
-  cleanup:
+ cleanup:
     if (! success) {
         for (i = 0; i < count; ++i) {
             VIR_FREE(names[i]);
@@ -185,7 +185,7 @@ esxStoragePoolLookupByName(virConnectPtr conn,
 
     pool = virGetStoragePool(conn, name, md5, &esxStorageBackendISCSI, NULL);
 
-  cleanup:
+ cleanup:
     esxVI_HostInternetScsiHbaStaticTarget_Free(&target);
 
     return pool;
@@ -234,7 +234,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn,
     pool = virGetStoragePool(conn, target->iScsiName, md5,
                              &esxStorageBackendISCSI, NULL);
 
-  cleanup:
+ cleanup:
     esxVI_HostInternetScsiHba_Free(&hostInternetScsiHba);
 
     return pool;
@@ -269,7 +269,7 @@ esxStoragePoolRefresh(virStoragePoolPtr pool,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_HostInternetScsiHba_Free(&hostInternetScsiHba);
 
     return result;
@@ -344,7 +344,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
     /* TODO: add CHAP authentication params */
     xml = virStoragePoolDefFormat(&def);
 
-  cleanup:
+ cleanup:
     VIR_FREE(def.source.hosts);
     esxVI_HostInternetScsiHba_Free(&hostInternetScsiHba);
 
@@ -422,7 +422,7 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
 
     success = true;
 
-  cleanup:
+ cleanup:
     if (! success) {
         for (i = 0; i < count; ++i) {
             VIR_FREE(names[i]);
@@ -478,7 +478,7 @@ esxStorageVolLookupByName(virStoragePoolPtr pool,
         }
     }
 
-  cleanup:
+ cleanup:
     esxVI_ScsiLun_Free(&scsiLunList);
 
     return volume;
@@ -525,7 +525,7 @@ esxStorageVolLookupByPath(virConnectPtr conn, const char *path)
         }
     }
 
-  cleanup:
+ cleanup:
     esxVI_ScsiLun_Free(&scsiLunList);
     VIR_FREE(poolName);
 
@@ -580,7 +580,7 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
         }
     }
 
-  cleanup:
+ cleanup:
     esxVI_ScsiLun_Free(&scsiLunList);
     VIR_FREE(poolName);
 
@@ -687,7 +687,7 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
 
     xml = virStorageVolDefFormat(&pool, &def);
 
-  cleanup:
+ cleanup:
     esxVI_ScsiLun_Free(&scsiLunList);
     VIR_FREE(def.key);
 

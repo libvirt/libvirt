@@ -129,7 +129,7 @@ esxConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
 
     success = true;
 
-  cleanup:
+ cleanup:
     if (! success) {
         for (i = 0; i < count; ++i) {
             VIR_FREE(names[i]);
@@ -202,7 +202,7 @@ esxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
     network = virGetNetwork(conn, hostVirtualSwitch->name, uuid);
 
-  cleanup:
+ cleanup:
     esxVI_HostVirtualSwitch_Free(&hostVirtualSwitchList);
 
     return network;
@@ -304,7 +304,7 @@ esxBandwidthToShapingPolicy(virNetDevBandwidthPtr bandwidth,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     if (result < 0) {
         esxVI_HostNetworkTrafficShapingPolicy_Free(shapingPolicy);
     }
@@ -510,7 +510,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
 
     network = virGetNetwork(conn, hostVirtualSwitch->name, md5);
 
-  cleanup:
+ cleanup:
     virNetworkDefFree(def);
     esxVI_HostVirtualSwitch_Free(&hostVirtualSwitch);
     esxVI_HostPortGroup_Free(&hostPortGroupList);
@@ -616,7 +616,7 @@ esxNetworkUndefine(virNetworkPtr network)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     esxVI_HostVirtualSwitch_Free(&hostVirtualSwitch);
     esxVI_HostPortGroup_Free(&hostPortGroupList);
 
@@ -842,7 +842,7 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
 
     xml = virNetworkDefFormat(def, flags);
 
-  cleanup:
+ cleanup:
     esxVI_HostVirtualSwitch_Free(&hostVirtualSwitch);
     esxVI_PhysicalNic_Free(&physicalNicList);
     esxVI_HostPortGroup_Free(&hostPortGroupList);
