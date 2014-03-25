@@ -1003,7 +1003,7 @@ virLogOutputToJournald(virLogSourcePtr source,
 
     mh.msg_controllen = cmsg->cmsg_len;
 
-    sendmsg(journalfd, &mh, MSG_NOSIGNAL);
+    ignore_value(sendmsg(journalfd, &mh, MSG_NOSIGNAL));
 
  cleanup:
     VIR_LOG_CLOSE(buffd);
