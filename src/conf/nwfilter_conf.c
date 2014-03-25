@@ -3484,3 +3484,29 @@ void virNWFilterObjUnlock(virNWFilterObjPtr obj)
 {
     virMutexUnlock(&obj->lock);
 }
+
+
+bool virNWFilterRuleIsProtocolIPv4(virNWFilterRuleDefPtr rule)
+{
+    if (rule->prtclType >= VIR_NWFILTER_RULE_PROTOCOL_TCP &&
+        rule->prtclType <= VIR_NWFILTER_RULE_PROTOCOL_ALL)
+        return true;
+    return false;
+}
+
+
+bool virNWFilterRuleIsProtocolIPv6(virNWFilterRuleDefPtr rule)
+{
+    if (rule->prtclType >= VIR_NWFILTER_RULE_PROTOCOL_TCPoIPV6 &&
+        rule->prtclType <= VIR_NWFILTER_RULE_PROTOCOL_ALLoIPV6)
+        return true;
+    return false;
+}
+
+
+bool virNWFilterRuleIsProtocolEthernet(virNWFilterRuleDefPtr rule)
+{
+    if (rule->prtclType <= VIR_NWFILTER_RULE_PROTOCOL_IPV6)
+        return true;
+    return false;
+}

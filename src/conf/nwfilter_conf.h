@@ -373,7 +373,13 @@ enum virNWFilterChainPolicyType {
     VIR_NWFILTER_CHAIN_POLICY_LAST,
 };
 
+
+/*
+ * If adding protocols be sure to update the
+ * virNWFilterRuleIsProtocolXXXX function impls
+ */
 enum virNWFilterRuleProtocolType {
+    /* Ethernet layer protocols */
     VIR_NWFILTER_RULE_PROTOCOL_NONE = 0,
     VIR_NWFILTER_RULE_PROTOCOL_MAC,
     VIR_NWFILTER_RULE_PROTOCOL_VLAN,
@@ -382,6 +388,8 @@ enum virNWFilterRuleProtocolType {
     VIR_NWFILTER_RULE_PROTOCOL_RARP,
     VIR_NWFILTER_RULE_PROTOCOL_IP,
     VIR_NWFILTER_RULE_PROTOCOL_IPV6,
+
+    /* IPv4 layer protocols */
     VIR_NWFILTER_RULE_PROTOCOL_TCP,
     VIR_NWFILTER_RULE_PROTOCOL_ICMP,
     VIR_NWFILTER_RULE_PROTOCOL_IGMP,
@@ -391,6 +399,8 @@ enum virNWFilterRuleProtocolType {
     VIR_NWFILTER_RULE_PROTOCOL_AH,
     VIR_NWFILTER_RULE_PROTOCOL_SCTP,
     VIR_NWFILTER_RULE_PROTOCOL_ALL,
+
+    /* IPv6 layer protocols */
     VIR_NWFILTER_RULE_PROTOCOL_TCPoIPV6,
     VIR_NWFILTER_RULE_PROTOCOL_ICMPV6,
     VIR_NWFILTER_RULE_PROTOCOL_UDPoIPV6,
@@ -666,6 +676,10 @@ void virNWFilterCallbackDriversUnlock(void);
 void virNWFilterPrintTCPFlags(virBufferPtr buf, uint8_t mask,
                               char sep, uint8_t flags);
 
+
+bool virNWFilterRuleIsProtocolIPv4(virNWFilterRuleDefPtr rule);
+bool virNWFilterRuleIsProtocolIPv6(virNWFilterRuleDefPtr rule);
+bool virNWFilterRuleIsProtocolEthernet(virNWFilterRuleDefPtr rule);
 
 VIR_ENUM_DECL(virNWFilterRuleAction);
 VIR_ENUM_DECL(virNWFilterRuleDirection);

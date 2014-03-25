@@ -2656,18 +2656,8 @@ ebiptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                              virNWFilterRuleInstPtr res)
 {
     int rc = 0;
-    bool isIPv6;
 
-    switch (rule->prtclType) {
-    case VIR_NWFILTER_RULE_PROTOCOL_IP:
-    case VIR_NWFILTER_RULE_PROTOCOL_MAC:
-    case VIR_NWFILTER_RULE_PROTOCOL_VLAN:
-    case VIR_NWFILTER_RULE_PROTOCOL_STP:
-    case VIR_NWFILTER_RULE_PROTOCOL_ARP:
-    case VIR_NWFILTER_RULE_PROTOCOL_RARP:
-    case VIR_NWFILTER_RULE_PROTOCOL_NONE:
-    case VIR_NWFILTER_RULE_PROTOCOL_IPV6:
-
+    if (virNWFilterRuleIsProtocolEthernet(rule)) {
         if (rule->tt == VIR_NWFILTER_RULE_DIRECTION_OUT ||
             rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT) {
             rc = ebtablesCreateRuleInstance(CHAINPREFIX_HOST_IN_TEMP,
@@ -2691,48 +2681,24 @@ ebiptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                                             res,
                                             false);
         }
-    break;
+    } else {
+        bool isIPv6;
+        if (virNWFilterRuleIsProtocolIPv6(rule)) {
+            isIPv6 = true;
+        } else if (virNWFilterRuleIsProtocolIPv4(rule)) {
+            isIPv6 = false;
+        } else {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           "%s", _("unexpected protocol type"));
+            return -1;
+        }
 
-    case VIR_NWFILTER_RULE_PROTOCOL_TCP:
-    case VIR_NWFILTER_RULE_PROTOCOL_UDP:
-    case VIR_NWFILTER_RULE_PROTOCOL_UDPLITE:
-    case VIR_NWFILTER_RULE_PROTOCOL_ESP:
-    case VIR_NWFILTER_RULE_PROTOCOL_AH:
-    case VIR_NWFILTER_RULE_PROTOCOL_SCTP:
-    case VIR_NWFILTER_RULE_PROTOCOL_ICMP:
-    case VIR_NWFILTER_RULE_PROTOCOL_IGMP:
-    case VIR_NWFILTER_RULE_PROTOCOL_ALL:
-        isIPv6 = false;
         rc = iptablesCreateRuleInstance(nwfilter,
                                         rule,
                                         ifname,
                                         vars,
                                         res,
                                         isIPv6);
-    break;
-
-    case VIR_NWFILTER_RULE_PROTOCOL_TCPoIPV6:
-    case VIR_NWFILTER_RULE_PROTOCOL_UDPoIPV6:
-    case VIR_NWFILTER_RULE_PROTOCOL_UDPLITEoIPV6:
-    case VIR_NWFILTER_RULE_PROTOCOL_ESPoIPV6:
-    case VIR_NWFILTER_RULE_PROTOCOL_AHoIPV6:
-    case VIR_NWFILTER_RULE_PROTOCOL_SCTPoIPV6:
-    case VIR_NWFILTER_RULE_PROTOCOL_ICMPV6:
-    case VIR_NWFILTER_RULE_PROTOCOL_ALLoIPV6:
-        isIPv6 = true;
-        rc = iptablesCreateRuleInstance(nwfilter,
-                                        rule,
-                                        ifname,
-                                        vars,
-                                        res,
-                                        isIPv6);
-    break;
-
-    case VIR_NWFILTER_RULE_PROTOCOL_LAST:
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("illegal protocol type"));
-        rc = -1;
-    break;
     }
 
     return rc;
