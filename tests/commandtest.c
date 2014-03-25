@@ -690,6 +690,7 @@ static int test17(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
+    sa_assert(outbuf);
     if (*outbuf) {
         puts("output buffer is not an allocated empty string");
         goto cleanup;
