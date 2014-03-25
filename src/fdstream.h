@@ -33,9 +33,6 @@ typedef void (*virFDStreamInternalCloseCb)(virStreamPtr st, void *opaque);
 typedef void (*virFDStreamInternalCloseCbFreeOpaque)(void *opaque);
 
 
-/* Only for use by test suite */
-void virFDStreamSetIOHelper(const char *path);
-
 int virFDStreamOpen(virStreamPtr st,
                     int fd);
 

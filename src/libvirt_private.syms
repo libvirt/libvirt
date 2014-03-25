@@ -786,7 +786,6 @@ virFDStreamCreateFile;
 virFDStreamOpen;
 virFDStreamOpenFile;
 virFDStreamOpenPTY;
-virFDStreamSetIOHelper;
 
 
 # libvirt_internal.h

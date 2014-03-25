@@ -78,17 +78,6 @@ struct virFDStreamData {
 };
 
 
-static const char *iohelper_path = LIBEXECDIR "/libvirt_iohelper";
-
-void virFDStreamSetIOHelper(const char *path)
-{
-    if (path == NULL)
-        iohelper_path = LIBEXECDIR "/libvirt_iohelper";
-    else
-        iohelper_path = path;
-}
-
-
 static int virFDStreamRemoveCallback(virStreamPtr stream)
 {
     struct virFDStreamData *fdst = stream->privateData;
@@ -593,6 +582,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
     struct stat sb;
     virCommandPtr cmd = NULL;
     int errfd = -1;
+    char *iohelper_path = NULL;
 
     VIR_DEBUG("st=%p path=%s oflags=%x offset=%llu length=%llu mode=%o",
               st, path, oflags, offset, length, mode);
@@ -648,9 +638,17 @@ virFDStreamOpenFileInternal(virStreamPtr st,
             goto error;
         }
 
+        if (!(iohelper_path = virFileFindResource("libvirt_iohelper",
+                                                  "src",
+                                                  LIBEXECDIR)))
+            goto error;
+
         cmd = virCommandNewArgList(iohelper_path,
                                    path,
                                    NULL);
+
+        VIR_FREE(iohelper_path);
+
         virCommandAddArgFormat(cmd, "%llu", length);
         virCommandPassFD(cmd, fd,
                          VIR_COMMAND_PASS_FD_CLOSE_PARENT);
@@ -683,6 +681,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
     VIR_FORCE_CLOSE(fd);
     VIR_FORCE_CLOSE(childfd);
     VIR_FORCE_CLOSE(errfd);
+    VIR_FREE(iohelper_path);
     if (oflags & O_CREAT)
         unlink(path);
     return -1;

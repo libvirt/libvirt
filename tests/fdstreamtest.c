@@ -321,9 +321,6 @@ mymain(void)
 {
     char scratchdir[] = SCRATCHDIRTEMPLATE;
     int ret = 0;
-    const char *iohelper = abs_builddir "/../src/libvirt_iohelper";
-
-    virFDStreamSetIOHelper(iohelper);
 
     if (!mkdtemp(scratchdir)) {
         virFilePrintf(stderr, "Cannot create fakesysfsdir");
