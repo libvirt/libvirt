@@ -33,14 +33,14 @@ int
 virISCSIConnectionLogin(const char *portal,
                         const char *initiatoriqn,
                         const char *target)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_RETURN_CHECK;
 
 int
 virISCSIConnectionLogout(const char *portal,
                          const char *initiatoriqn,
                          const char *target)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_RETURN_CHECK;
 
 int
@@ -52,8 +52,7 @@ virISCSIScanTargets(const char *portal,
                     const char *initiatoriqn,
                     size_t *ntargetsret,
                     char ***targetsret)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 int
 virISCSINodeUpdate(const char *portal,
