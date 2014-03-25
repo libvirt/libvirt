@@ -262,7 +262,7 @@ virStorageBackendLogicalMakeVol(char **const groups,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(regex);
     VIR_FREE(reg);
     VIR_FREE(vars);
@@ -330,7 +330,7 @@ virStorageBackendLogicalFindLVs(virStoragePoolObjPtr pool,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }
@@ -394,7 +394,7 @@ virStorageBackendLogicalFindPoolSourcesFunc(char **const groups,
 
     return 0;
 
-error:
+ error:
     VIR_FREE(pvname);
     VIR_FREE(vgname);
 
@@ -558,7 +558,7 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandFree(vgcmd);
     return ret;
 }
@@ -613,7 +613,7 @@ virStorageBackendLogicalRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     if (ret < 0)
         virStoragePoolObjClearVols(pool);
@@ -669,7 +669,7 @@ virStorageBackendLogicalDeletePool(virConnectPtr conn ATTRIBUTE_UNUSED,
         cmd = NULL;
     }
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }
@@ -703,7 +703,7 @@ virStorageBackendLogicalDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virCommandFree(lvchange_cmd);
     virCommandFree(lvremove_cmd);
     return ret;

@@ -226,7 +226,7 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(secret_value);
     VIR_FREE(rados_key);
 
@@ -318,7 +318,7 @@ static int volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     rbd_close(image);
     return ret;
 }
@@ -414,7 +414,7 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(names);
     virStorageBackendRBDCloseRADOSConn(&ptr);
     return ret;
@@ -454,7 +454,7 @@ static int virStorageBackendRBDDeleteVol(virConnectPtr conn,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virStorageBackendRBDCloseRADOSConn(&ptr);
     return ret;
 }
@@ -545,7 +545,7 @@ virStorageBackendRBDBuildVol(virConnectPtr conn,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virStorageBackendRBDCloseRADOSConn(&ptr);
     return ret;
 }
@@ -573,7 +573,7 @@ static int virStorageBackendRBDRefreshVol(virConnectPtr conn,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virStorageBackendRBDCloseRADOSConn(&ptr);
     return ret;
 }
@@ -617,7 +617,7 @@ static int virStorageBackendRBDResizeVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (image != NULL)
        rbd_close(image);
     virStorageBackendRBDCloseRADOSConn(&ptr);

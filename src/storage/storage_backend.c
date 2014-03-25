@@ -248,7 +248,7 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
     }
     inputfd = -1;
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(inputfd);
 
     VIR_FREE(zerobuf);
@@ -326,7 +326,7 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
     fd = -1;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
 
     return ret;
@@ -403,7 +403,7 @@ createRawFile(int fd, virStorageVolDefPtr vol,
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -453,7 +453,7 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
         /* createRawFile already reported the exact error. */
         ret = -1;
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -553,7 +553,7 @@ virStorageGenerateQcowEncryption(virConnectPtr conn,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (secret != NULL) {
         if (ret != 0 &&
             conn->secretDriver->secretUndefine != NULL)
@@ -653,7 +653,7 @@ virStorageBackendQemuImgSupportsCompat(const char *qemuimg)
     if (strstr(output, "\ncompat "))
         ret = true;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(output);
     return ret;
@@ -699,7 +699,7 @@ virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
         ret = QEMU_IMG_BACKING_FORMAT_NONE;
     }
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(help);
     return ret;
@@ -761,9 +761,9 @@ virStorageBackendCreateQemuImgOpts(char **opts,
     *opts = virBufferContentAndReset(&buf);
     return 0;
 
-no_memory:
+ no_memory:
     virReportOOMError();
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return -1;
 }
@@ -1010,7 +1010,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     ret = virStorageBackendCreateExecCommand(pool, vol, cmd);
 
     virCommandFree(cmd);
-cleanup:
+ cleanup:
     VIR_FREE(create_tool);
     return ret;
 }

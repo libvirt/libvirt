@@ -180,10 +180,10 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
 
     goto cleanup;
 
-error:
+ error:
     VIR_FORCE_CLOSE(fd);
 
-cleanup:
+ cleanup:
     virStorageFileFreeMetadata(meta);
     VIR_FREE(header);
     return ret;
@@ -237,7 +237,7 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(char **const groups,
     src->format = VIR_STORAGE_POOL_NETFS_NFS;
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -452,7 +452,7 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(src);
     return ret;
@@ -510,7 +510,7 @@ virStorageBackendFileSystemUnmount(virStoragePoolObjPtr pool)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }
@@ -621,7 +621,7 @@ virStorageBackendFileSystemProbe(const char *device,
         ret = FILESYSTEM_PROBE_ERROR;
     }
 
-error:
+ error:
     VIR_FREE(libblkid_format);
 
     if (probe != NULL) {
@@ -724,7 +724,7 @@ virStorageBackendMakeFileSystem(virStoragePoolObjPtr pool,
         ret = virStorageBackendExecuteMKFS(device, format);
     }
 
-error:
+ error:
     return ret;
 }
 
@@ -816,7 +816,7 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
         ret = 0;
     }
 
-error:
+ error:
     VIR_FREE(parent);
     return ret;
 }

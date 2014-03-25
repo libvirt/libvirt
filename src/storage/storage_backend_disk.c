@@ -426,7 +426,7 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         ret = virCommandRun(cmd, NULL);
     }
 
-error:
+ error:
     virCommandFree(cmd);
     return ret;
 }
@@ -674,7 +674,7 @@ virStorageBackendDiskCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     res = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(partFormat);
     virCommandFree(cmd);
     return res;
@@ -758,7 +758,7 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     rc = 0;
-cleanup:
+ cleanup:
     VIR_FREE(devpath);
     virCommandFree(cmd);
     return rc;

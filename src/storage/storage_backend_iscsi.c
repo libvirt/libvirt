@@ -119,7 +119,7 @@ virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
     }
 
     closedir(sysdir);
-out:
+ out:
     return retval;
 }
 
@@ -217,7 +217,7 @@ virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!(ret = virStoragePoolSourceListFormat(&list)))
         goto cleanup;
 
-cleanup:
+ cleanup:
     if (list.sources) {
         for (i = 0; i < ntargets; i++) {
             VIR_FREE(list.sources[i].hosts);
@@ -356,7 +356,7 @@ virStorageBackendISCSISetAuth(const char *portal,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(secret);
     VIR_FREE(secret_value);
     return ret;
@@ -411,7 +411,7 @@ virStorageBackendISCSIStartPool(virConnectPtr conn,
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(portal);
     VIR_FREE(session);
     return ret;
@@ -435,7 +435,7 @@ virStorageBackendISCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     return 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(session);
     return -1;
 }
@@ -457,7 +457,7 @@ virStorageBackendISCSIStopPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(portal);
     return ret;
 }

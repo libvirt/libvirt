@@ -97,7 +97,7 @@ getDeviceType(uint32_t host,
 
     VIR_DEBUG("Device type is %d", *type);
 
-out:
+ out:
     VIR_FREE(type_path);
     return retval;
 }
@@ -128,7 +128,7 @@ virStorageBackendSCSIUpdateVolTargetInfo(virStorageVolTargetPtr target,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
 
     return ret;
@@ -164,7 +164,7 @@ virStorageBackendSCSISerial(const char *dev)
     }
 
 #ifdef WITH_UDEV
-cleanup:
+ cleanup:
     virCommandFree(cmd);
 #endif
 
@@ -258,9 +258,9 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
 
     goto out;
 
-free_vol:
+ free_vol:
     virStorageVolDefFree(vol);
-out:
+ out:
     VIR_FREE(devpath);
     return retval;
 }
@@ -309,7 +309,7 @@ getNewStyleBlockDevice(const char *lun_path,
 
     closedir(block_dir);
 
-out:
+ out:
     VIR_FREE(block_path);
     return retval;
 }
@@ -341,7 +341,7 @@ getOldStyleBlockDevice(const char *lun_path ATTRIBUTE_UNUSED,
         VIR_DEBUG("Block device is '%s'", *block_device);
     }
 
-out:
+ out:
     return retval;
 }
 
@@ -388,7 +388,7 @@ getBlockDevice(uint32_t host,
 
     closedir(lun_dir);
 
-out:
+ out:
     VIR_FREE(lun_path);
     return retval;
 }
@@ -448,7 +448,7 @@ processLU(virStoragePoolObjPtr pool,
 
     VIR_FREE(type_path);
 
-out:
+ out:
     VIR_FREE(block_device);
     return retval;
 }
@@ -537,9 +537,9 @@ virStorageBackendSCSITriggerRescan(uint32_t host)
     }
 
     VIR_FORCE_CLOSE(fd);
-free_path:
+ free_path:
     VIR_FREE(path);
-out:
+ out:
     VIR_DEBUG("Rescan of host %d complete", host);
     return retval;
 }
@@ -663,7 +663,7 @@ deleteVport(virStoragePoolSourceAdapter adapter)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(name);
     return ret;
 }
@@ -704,7 +704,7 @@ virStorageBackendSCSICheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     *isActive = virFileExists(path);
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(path);
     VIR_FREE(name);
     return ret;
@@ -734,7 +734,7 @@ virStorageBackendSCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     virStorageBackendSCSIFindLUs(pool, host);
 
     ret = 0;
-out:
+ out:
     VIR_FREE(name);
     return ret;
 }

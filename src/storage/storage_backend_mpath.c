@@ -66,7 +66,7 @@ virStorageBackendMpathUpdateVolTargetInfo(virStorageVolTargetPtr target,
         goto out;
 
     ret = 0;
-out:
+ out:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -107,7 +107,7 @@ virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
     pool->def->allocation += vol->allocation;
     ret = 0;
 
-cleanup:
+ cleanup:
 
     if (ret != 0)
         virStorageVolDefFree(vol);
@@ -155,7 +155,7 @@ virStorageBackendIsMultipath(const char *dev_name)
         ret = 1;
     }
 
-out:
+ out:
     if (dmt != NULL) {
         dm_task_destroy(dmt);
     }
@@ -189,7 +189,7 @@ virStorageBackendGetMinorNumber(const char *dev_name, uint32_t *minor)
     *minor = info.minor;
     ret = 0;
 
-out:
+ out:
     if (dmt != NULL)
         dm_task_destroy(dmt);
 
@@ -242,7 +242,7 @@ virStorageBackendCreateVols(virStoragePoolObjPtr pool,
     } while (next);
 
     retval = 0;
-out:
+ out:
     return retval;
 }
 
@@ -278,7 +278,7 @@ virStorageBackendGetMaps(virStoragePoolObjPtr pool)
 
     virStorageBackendCreateVols(pool, names);
 
-out:
+ out:
     if (dmt != NULL) {
         dm_task_destroy(dmt);
     }

@@ -143,7 +143,7 @@ virStorageBackendGlusterOpen(virStoragePoolObjPtr pool)
 
     return ret;
 
-error:
+ error:
     virStorageBackendGlusterClose(ret);
     return NULL;
 }
@@ -220,7 +220,7 @@ virStorageBackendGlusterSetMetadata(virStorageBackendGlusterStatePtr state,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -321,7 +321,7 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
     *volptr = vol;
     vol = NULL;
     ret = 0;
-cleanup:
+ cleanup:
     virStorageFileFreeMetadata(meta);
     virStorageVolDefFree(vol);
     if (fd)
@@ -401,7 +401,7 @@ virStorageBackendGlusterRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     pool->def->allocation = pool->def->capacity - pool->def->available;
 
     ret = 0;
-cleanup:
+ cleanup:
     if (dir)
         glfs_closedir(dir);
     virStorageBackendGlusterClose(state);
@@ -466,7 +466,7 @@ virStorageBackendGlusterVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virStorageBackendGlusterClose(state);
     return ret;
 }
@@ -569,7 +569,7 @@ virStorageFileBackendGlusterInit(virStorageFilePtr file)
 
     return 0;
 
-error:
+ error:
     VIR_FREE(priv->volname);
     glfs_fini(priv->vol);
     VIR_FREE(priv);
