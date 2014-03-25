@@ -125,7 +125,7 @@ int networkCheckRouteCollision(virNetworkObjPtr network)
         }
     }
 
-out:
+ out:
     VIR_FREE(buf);
     return ret;
 }
@@ -410,12 +410,12 @@ networkAddRoutingFirewallRules(virNetworkObjPtr network,
 
     return 0;
 
-routeerr2:
+ routeerr2:
     iptablesRemoveForwardAllowOut(&ipdef->address,
                                   prefix,
                                   network->def->bridge,
                                   forwardIf);
-routeerr1:
+ routeerr1:
     return -1;
 }
 
@@ -507,17 +507,17 @@ networkAddGeneralIp6tablesRules(virNetworkObjPtr network)
     return 0;
 
     /* unwind in reverse order from the point of failure */
-err6:
+ err6:
     iptablesRemoveUdpInput(AF_INET6, network->def->bridge, 53);
-err5:
+ err5:
     iptablesRemoveTcpInput(AF_INET6, network->def->bridge, 53);
-err4:
+ err4:
     iptablesRemoveForwardAllowCross(AF_INET6, network->def->bridge);
-err3:
+ err3:
     iptablesRemoveForwardRejectIn(AF_INET6, network->def->bridge);
-err2:
+ err2:
     iptablesRemoveForwardRejectOut(AF_INET6, network->def->bridge);
-err1:
+ err1:
     return -1;
 }
 
@@ -650,27 +650,27 @@ networkAddGeneralFirewallRules(virNetworkObjPtr network)
     return 0;
 
     /* unwind in reverse order from the point of failure */
-err10:
+ err10:
     iptablesRemoveForwardAllowCross(AF_INET, network->def->bridge);
-err9:
+ err9:
     iptablesRemoveForwardRejectIn(AF_INET, network->def->bridge);
-err8:
+ err8:
     iptablesRemoveForwardRejectOut(AF_INET, network->def->bridge);
-err7:
+ err7:
     if (ipv4def && ipv4def->tftproot) {
         iptablesRemoveUdpInput(AF_INET, network->def->bridge, 69);
     }
-err6:
+ err6:
     iptablesRemoveUdpInput(AF_INET, network->def->bridge, 53);
-err5:
+ err5:
     iptablesRemoveTcpInput(AF_INET, network->def->bridge, 53);
-err4:
+ err4:
     iptablesRemoveUdpOutput(AF_INET, network->def->bridge, 68);
-err3:
+ err3:
     iptablesRemoveUdpInput(AF_INET, network->def->bridge, 67);
-err2:
+ err2:
     iptablesRemoveTcpInput(AF_INET, network->def->bridge, 67);
-err1:
+ err1:
     return -1;
 }
 
@@ -763,7 +763,7 @@ int networkAddFirewallRules(virNetworkObjPtr network)
     }
     return 0;
 
-err:
+ err:
     /* store the previous error message before attempting removal of rules */
     orig_error = virSaveLastError();
 
