@@ -35,32 +35,26 @@ typedef virNWFilterTechDriver *virNWFilterTechDriverPtr;
 typedef struct _virNWFilterRuleInst virNWFilterRuleInst;
 typedef virNWFilterRuleInst *virNWFilterRuleInstPtr;
 struct _virNWFilterRuleInst {
-   size_t ndata;
-   void **data;
-   virNWFilterTechDriverPtr techdriver;
+    const char *chainSuffix;
+    virNWFilterChainPriority chainPriority;
+    virNWFilterRuleDefPtr def;
+    virNWFilterRulePriority priority;
+    virNWFilterHashTablePtr vars;
 };
 
 
 typedef int (*virNWFilterTechDrvInit)(bool privileged);
 typedef void (*virNWFilterTechDrvShutdown)(void);
 
-typedef int (*virNWFilterRuleCreateInstance)(virNWFilterDefPtr filter,
-                                             virNWFilterRuleDefPtr rule,
-                                             const char *ifname,
-                                             virNWFilterHashTablePtr vars,
-                                             virNWFilterRuleInstPtr res);
-
 typedef int (*virNWFilterRuleApplyNewRules)(const char *ifname,
-                                            int nruleInstances,
-                                            void **_inst);
+                                            virNWFilterRuleInstPtr *rules,
+                                            size_t nrules);
 
 typedef int (*virNWFilterRuleTeardownNewRules)(const char *ifname);
 
 typedef int (*virNWFilterRuleTeardownOldRules)(const char *ifname);
 
 typedef int (*virNWFilterRuleAllTeardown)(const char *ifname);
-
-typedef int (*virNWFilterRuleFreeInstanceData)(void * _inst);
 
 typedef int (*virNWFilterCanApplyBasicRules)(void);
 
@@ -87,12 +81,10 @@ struct _virNWFilterTechDriver {
     virNWFilterTechDrvInit init;
     virNWFilterTechDrvShutdown shutdown;
 
-    virNWFilterRuleCreateInstance createRuleInstance;
     virNWFilterRuleApplyNewRules applyNewRules;
     virNWFilterRuleTeardownNewRules tearNewRules;
     virNWFilterRuleTeardownOldRules tearOldRules;
     virNWFilterRuleAllTeardown allTeardown;
-    virNWFilterRuleFreeInstanceData freeRuleInstance;
 
     virNWFilterCanApplyBasicRules canApplyBasicRules;
     virNWFilterApplyBasicRules applyBasicRules;

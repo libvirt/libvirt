@@ -477,46 +477,6 @@ printCommentVar(virBufferPtr dest, const char *buf)
 }
 
 
-static void
-ebiptablesRuleInstFree(ebiptablesRuleInstPtr inst)
-{
-    if (!inst)
-        return;
-
-    VIR_FREE(inst->commandTemplate);
-    VIR_FREE(inst);
-}
-
-
-static int
-ebiptablesAddRuleInst(virNWFilterRuleInstPtr res,
-                      char *commandTemplate,
-                      const char *neededChain,
-                      virNWFilterChainPriority chainPriority,
-                      char chainprefix,
-                      virNWFilterRulePriority priority,
-                      enum RuleType ruleType)
-{
-    ebiptablesRuleInstPtr inst;
-
-    if (VIR_ALLOC(inst) < 0)
-        return -1;
-
-    inst->commandTemplate = commandTemplate;
-    inst->neededProtocolChain = neededChain;
-    inst->chainPriority = chainPriority;
-    inst->chainprefix = chainprefix;
-    inst->priority = priority;
-    inst->ruleType = ruleType;
-
-    if (VIR_APPEND_ELEMENT(res->data, res->ndata, inst) < 0) {
-        VIR_FREE(inst);
-        return -1;
-    }
-    return 0;
-}
-
-
 static int
 ebtablesHandleEthHdr(virBufferPtr buf,
                      virNWFilterVarCombIterPtr vars,
@@ -2648,13 +2608,18 @@ ebtablesCreateRuleInstance(char chainPrefix,
  * pointed to by res, -1 otherwise
  */
 static int
-ebiptablesCreateRuleInstance(virNWFilterChainPriority chainPriority,
-                             const char *chainSuffix,
+ebiptablesCreateRuleInstance(const char *chainSuffix,
                              virNWFilterRuleDefPtr rule,
                              const char *ifname,
                              virNWFilterVarCombIterPtr vars,
-                             virNWFilterRuleInstPtr res)
+                             char ***templates,
+                             size_t *ntemplates)
 {
+    size_t i;
+
+    *templates = NULL;
+    *ntemplates = 0;
+
     if (virNWFilterRuleIsProtocolEthernet(rule)) {
         if (rule->tt == VIR_NWFILTER_RULE_DIRECTION_OUT ||
             rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT) {
@@ -2666,17 +2631,11 @@ ebiptablesCreateRuleInstance(virNWFilterChainPriority chainPriority,
                                            vars,
                                            rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT,
                                            &template) < 0)
-                return -1;
+                goto error;
 
-            if (ebiptablesAddRuleInst(res,
-                                      template,
-                                      chainSuffix,
-                                      chainPriority,
-                                      CHAINPREFIX_HOST_IN_TEMP,
-                                      rule->priority,
-                                      RT_EBTABLES) < 0) {
+            if (VIR_APPEND_ELEMENT(*templates, *ntemplates, template) < 0) {
                 VIR_FREE(template);
-                return -1;
+                goto error;
             }
         }
 
@@ -2690,24 +2649,15 @@ ebiptablesCreateRuleInstance(virNWFilterChainPriority chainPriority,
                                            vars,
                                            false,
                                            &template) < 0)
-                return -1;
+                goto error;
 
-            if (ebiptablesAddRuleInst(res,
-                                      template,
-                                      chainSuffix,
-                                      chainPriority,
-                                      CHAINPREFIX_HOST_OUT_TEMP,
-                                      rule->priority,
-                                      RT_EBTABLES) < 0) {
+            if (VIR_APPEND_ELEMENT(*templates, *ntemplates, template) < 0) {
                 VIR_FREE(template);
-                return -1;
+                goto error;
             }
         }
     } else {
         bool isIPv6;
-        char **templates = NULL;
-        size_t ntemplates = 0;
-        size_t i, j;
         if (virNWFilterRuleIsProtocolIPv6(rule)) {
             isIPv6 = true;
         } else if (virNWFilterRuleIsProtocolIPv4(rule)) {
@@ -2715,76 +2665,27 @@ ebiptablesCreateRuleInstance(virNWFilterChainPriority chainPriority,
         } else {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            "%s", _("unexpected protocol type"));
-            return -1;
+            goto error;
         }
 
         if (iptablesCreateRuleInstance(rule,
                                        ifname,
                                        vars,
                                        isIPv6,
-                                       &templates,
-                                       &ntemplates) < 0)
-            return -1;
-
-        for (i = 0; i < ntemplates; i++) {
-            if (ebiptablesAddRuleInst(res,
-                                      templates[i],
-                                      chainSuffix,
-                                      chainPriority,
-                                      '\0',
-                                      rule->priority,
-                                      (isIPv6) ? RT_IP6TABLES : RT_IPTABLES) < 0) {
-                for (j = i; j < ntemplates; j++)
-                    VIR_FREE(templates[j]);
-                return -1;
-            }
-        }
+                                       templates,
+                                       ntemplates) < 0)
+            goto error;
     }
 
     return 0;
-}
 
-static int
-ebiptablesCreateRuleInstanceIterate(virNWFilterDefPtr nwfilter,
-                                    virNWFilterRuleDefPtr rule,
-                                    const char *ifname,
-                                    virNWFilterHashTablePtr vars,
-                                    virNWFilterRuleInstPtr res)
-{
-    int rc = 0;
-    virNWFilterVarCombIterPtr vciter, tmp;
-
-    /* rule->vars holds all the variables names that this rule will access.
-     * iterate over all combinations of the variables' values and instantiate
-     * the filtering rule with each combination.
-     */
-    tmp = vciter = virNWFilterVarCombIterCreate(vars,
-                                                rule->varAccess, rule->nVarAccess);
-    if (!vciter)
-        return -1;
-
-    do {
-        rc = ebiptablesCreateRuleInstance(nwfilter->chainPriority,
-                                          nwfilter->chainsuffix,
-                                          rule,
-                                          ifname,
-                                          tmp,
-                                          res);
-        if (rc < 0)
-            break;
-        tmp = virNWFilterVarCombIterNext(tmp);
-    } while (tmp != NULL);
-
-    virNWFilterVarCombIterFree(vciter);
-
-    return rc;
-}
-
-static int
-ebiptablesFreeRuleInstance(void *_inst)
-{
-    ebiptablesRuleInstFree((ebiptablesRuleInstPtr)_inst);
-    return 0;
+ error:
+    for (i = 0; i < *ntemplates; i++)
+        VIR_FREE((*templates)[i]);
+    VIR_FREE(*templates);
+    *templates = NULL;
+    *ntemplates = 0;
+    return -1;
 }
 
 
@@ -3562,12 +3463,40 @@ ebiptablesRuleOrderSort(const void *a, const void *b)
     return insta->priority - instb->priority;
 }
 
+
 static int
-ebiptablesRuleOrderSortPtr(const void *a, const void *b)
+virNWFilterRuleInstSort(const void *a, const void *b)
 {
-    ebiptablesRuleInst * const *insta = a;
-    ebiptablesRuleInst * const *instb = b;
-    return ebiptablesRuleOrderSort(*insta, *instb);
+    const virNWFilterRuleInst *insta = a;
+    const virNWFilterRuleInst *instb = b;
+    const char *root = virNWFilterChainSuffixTypeToString(
+                                     VIR_NWFILTER_CHAINSUFFIX_ROOT);
+    bool root_a = STREQ(insta->chainSuffix, root);
+    bool root_b = STREQ(instb->chainSuffix, root);
+
+    /* ensure root chain commands appear before all others since
+       we will need them to create the child chains */
+    if (root_a) {
+        if (root_b) {
+            goto normal;
+        }
+        return -1; /* a before b */
+    }
+    if (root_b) {
+        return 1; /* b before a */
+    }
+ normal:
+    /* priorities are limited to range [-1000, 1000] */
+    return insta->priority - instb->priority;
+}
+
+
+static int
+virNWFilterRuleInstSortPtr(const void *a, const void *b)
+{
+    virNWFilterRuleInst * const *insta = a;
+    virNWFilterRuleInst * const *instb = b;
+    return virNWFilterRuleInstSort(*insta, *instb);
 }
 
 static int
@@ -3673,13 +3602,106 @@ ebtablesCreateTmpRootAndSubChains(virBufferPtr buf,
     return rc;
 }
 
+
+static int
+iptablesRuleInstCommand(virBufferPtr buf,
+                        const char *ifname,
+                        virNWFilterRuleInstPtr rule,
+                        char cmd, int pos)
+{
+    virNWFilterVarCombIterPtr vciter, tmp;
+    char **templates = NULL;
+    size_t ntemplates = 0;
+    size_t i;
+    int ret = -1;
+
+    /* rule->vars holds all the variables names that this rule will access.
+     * iterate over all combinations of the variables' values and instantiate
+     * the filtering rule with each combination.
+     */
+    tmp = vciter = virNWFilterVarCombIterCreate(rule->vars,
+                                                rule->def->varAccess,
+                                                rule->def->nVarAccess);
+    if (!vciter)
+        return -1;
+
+    do {
+        if (ebiptablesCreateRuleInstance(rule->chainSuffix,
+                                         rule->def,
+                                         ifname,
+                                         tmp,
+                                         &templates,
+                                         &ntemplates) < 0)
+            goto cleanup;
+        tmp = virNWFilterVarCombIterNext(tmp);
+    } while (tmp != NULL);
+
+    for (i = 0; i < ntemplates; i++)
+        iptablesInstCommand(buf, templates[i], cmd, pos);
+
+    ret = 0;
+ cleanup:
+    for (i = 0; i < ntemplates; i++)
+        VIR_FREE(templates[i]);
+    VIR_FREE(templates);
+    virNWFilterVarCombIterFree(vciter);
+    return ret;
+}
+
+
+static int
+ebtablesRuleInstCommand(virBufferPtr buf,
+                        const char *ifname,
+                        virNWFilterRuleInstPtr rule,
+                        char cmd, int pos,
+                        bool stopOnError)
+{
+    virNWFilterVarCombIterPtr vciter, tmp;
+    char **templates = NULL;
+    size_t ntemplates = 0;
+    size_t i;
+    int ret = -1;
+
+    /* rule->vars holds all the variables names that this rule will access.
+     * iterate over all combinations of the variables' values and instantiate
+     * the filtering rule with each combination.
+     */
+    tmp = vciter = virNWFilterVarCombIterCreate(rule->vars,
+                                                rule->def->varAccess,
+                                                rule->def->nVarAccess);
+    if (!vciter)
+        return -1;
+
+    do {
+        if (ebiptablesCreateRuleInstance(rule->chainSuffix,
+                                         rule->def,
+                                         ifname,
+                                         tmp,
+                                         &templates,
+                                         &ntemplates) < 0)
+            goto cleanup;
+        tmp = virNWFilterVarCombIterNext(tmp);
+    } while (tmp != NULL);
+
+    for (i = 0; i < ntemplates; i++)
+        ebiptablesInstCommand(buf, templates[i], cmd, pos, stopOnError);
+
+    ret = 0;
+ cleanup:
+    for (i = 0; i < ntemplates; i++)
+        VIR_FREE(templates[i]);
+    VIR_FREE(templates);
+    virNWFilterVarCombIterFree(vciter);
+    return ret;
+}
+
+
 static int
 ebiptablesApplyNewRules(const char *ifname,
-                        int nruleInstances,
-                        void **_inst)
+                        virNWFilterRuleInstPtr *rules,
+                        size_t nrules)
 {
     size_t i, j;
-    ebiptablesRuleInstPtr *inst = (ebiptablesRuleInstPtr *)_inst;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virHashTablePtr chains_in_set  = virHashCreate(10, NULL);
     virHashTablePtr chains_out_set = virHashCreate(10, NULL);
@@ -3689,28 +3711,27 @@ ebiptablesApplyNewRules(const char *ifname,
     int nEbtChains = 0;
     char *errmsg = NULL;
 
-    if (inst == NULL)
-        nruleInstances = 0;
-
     if (!chains_in_set || !chains_out_set)
         goto exit_free_sets;
 
-    if (nruleInstances > 1 && inst)
-        qsort(inst, nruleInstances, sizeof(inst[0]),
-              ebiptablesRuleOrderSortPtr);
+    if (nrules)
+        qsort(rules, nrules, sizeof(rules[0]),
+              virNWFilterRuleInstSortPtr);
 
     /* scan the rules to see which chains need to be created */
-    for (i = 0; i < nruleInstances; i++) {
-        sa_assert(inst);
-        if (inst[i]->ruleType == RT_EBTABLES) {
-            const char *name = inst[i]->neededProtocolChain;
-            if (inst[i]->chainprefix == CHAINPREFIX_HOST_IN_TEMP) {
+    for (i = 0; i < nrules; i++) {
+        if (virNWFilterRuleIsProtocolEthernet(rules[i]->def)) {
+            const char *name = rules[i]->chainSuffix;
+            if (rules[i]->def->tt == VIR_NWFILTER_RULE_DIRECTION_OUT ||
+                rules[i]->def->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT) {
                 if (virHashUpdateEntry(chains_in_set, name,
-                                       &inst[i]->chainPriority) < 0)
+                                       &rules[i]->chainPriority) < 0)
                     goto exit_free_sets;
-            } else {
+            }
+            if (rules[i]->def->tt == VIR_NWFILTER_RULE_DIRECTION_IN ||
+                rules[i]->def->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT) {
                 if (virHashUpdateEntry(chains_out_set, name,
-                                       &inst[i]->chainPriority) < 0)
+                                       &rules[i]->chainPriority) < 0)
                     goto exit_free_sets;
             }
         }
@@ -3759,37 +3780,34 @@ ebiptablesApplyNewRules(const char *ifname,
      * priority -500 and the chain with priority -500 will
      * then be created before it.
      */
-    for (i = 0; i < nruleInstances; i++) {
-        if (inst[i]->chainPriority > inst[i]->priority &&
-            !strstr("root", inst[i]->neededProtocolChain)) {
+    for (i = 0; i < nrules; i++) {
+        if (rules[i]->chainPriority > rules[i]->priority &&
+            !strstr("root", rules[i]->chainSuffix)) {
 
-             inst[i]->priority = inst[i]->chainPriority;
+             rules[i]->priority = rules[i]->chainPriority;
         }
     }
 
     /* process ebtables commands; interleave commands from filters with
        commands for creating and connecting ebtables chains */
     j = 0;
-    for (i = 0; i < nruleInstances; i++) {
-        sa_assert(inst);
-        switch (inst[i]->ruleType) {
-        case RT_EBTABLES:
+    for (i = 0; i < nrules; i++) {
+        if (virNWFilterRuleIsProtocolEthernet(rules[i]->def)) {
             while (j < nEbtChains &&
-                   ebtChains[j].priority <= inst[i]->priority) {
+                   ebtChains[j].priority <= rules[i]->priority) {
                 ebiptablesInstCommand(&buf,
                                       ebtChains[j++].commandTemplate,
                                       'A', -1, true);
             }
-            ebiptablesInstCommand(&buf,
-                                  inst[i]->commandTemplate,
-                                  'A', -1, true);
-        break;
-        case RT_IPTABLES:
-            haveIptables = true;
-        break;
-        case RT_IP6TABLES:
-            haveIp6tables = true;
-        break;
+            ebtablesRuleInstCommand(&buf,
+                                    ifname,
+                                    rules[i],
+                                    'A', -1, true);
+        } else {
+            if (virNWFilterRuleIsProtocolIPv4(rules[i]->def))
+                haveIptables = true;
+            else if (virNWFilterRuleIsProtocolIPv6(rules[i]->def))
+                haveIp6tables = true;
         }
     }
 
@@ -3828,12 +3846,12 @@ ebiptablesApplyNewRules(const char *ifname,
 
         NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
 
-        for (i = 0; i < nruleInstances; i++) {
-            sa_assert(inst);
-            if (inst[i]->ruleType == RT_IPTABLES)
-                iptablesInstCommand(&buf,
-                                    inst[i]->commandTemplate,
-                                    'A', -1);
+        for (i = 0; i < nrules; i++) {
+            if (virNWFilterRuleIsProtocolIPv4(rules[i]->def))
+                iptablesRuleInstCommand(&buf,
+                                        ifname,
+                                        rules[i],
+                                        'A', -1);
         }
 
         if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
@@ -3869,11 +3887,12 @@ ebiptablesApplyNewRules(const char *ifname,
 
         NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
 
-        for (i = 0; i < nruleInstances; i++) {
-            if (inst[i]->ruleType == RT_IP6TABLES)
-                iptablesInstCommand(&buf,
-                                    inst[i]->commandTemplate,
-                                    'A', -1);
+        for (i = 0; i < nrules; i++) {
+            if (virNWFilterRuleIsProtocolIPv6(rules[i]->def))
+                iptablesRuleInstCommand(&buf,
+                                        ifname,
+                                        rules[i],
+                                        'A', -1);
         }
 
         if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
@@ -4095,12 +4114,10 @@ virNWFilterTechDriver ebiptables_driver = {
     .init     = ebiptablesDriverInit,
     .shutdown = ebiptablesDriverShutdown,
 
-    .createRuleInstance  = ebiptablesCreateRuleInstanceIterate,
     .applyNewRules       = ebiptablesApplyNewRules,
     .tearNewRules        = ebiptablesTearNewRules,
     .tearOldRules        = ebiptablesTearOldRules,
     .allTeardown         = ebiptablesAllTeardown,
-    .freeRuleInstance    = ebiptablesFreeRuleInstance,
 
     .canApplyBasicRules  = ebiptablesCanApplyBasicRules,
     .applyBasicRules     = ebtablesApplyBasicRules,
