@@ -128,7 +128,7 @@ virDomainAuditDisk(virDomainObjPtr vm,
               virt, reason, vmname, uuidstr,
               oldsrc, newsrc);
 
-cleanup:
+ cleanup:
     VIR_FREE(vmname);
     VIR_FREE(oldsrc);
     VIR_FREE(newsrc);
@@ -209,13 +209,13 @@ virDomainAuditRNG(virDomainObjPtr vm,
               virt, reason, vmname, uuidstr,
               oldsrc, newsrc);
 
-cleanup:
+ cleanup:
     VIR_FREE(vmname);
     VIR_FREE(oldsrc);
     VIR_FREE(newsrc);
     return;
 
-no_memory:
+ no_memory:
     VIR_WARN("OOM while encoding audit message");
     goto cleanup;
 }
@@ -261,7 +261,7 @@ virDomainAuditFS(virDomainObjPtr vm,
               virt, reason, vmname, uuidstr,
               oldsrc, newsrc);
 
-cleanup:
+ cleanup:
     VIR_FREE(vmname);
     VIR_FREE(oldsrc);
     VIR_FREE(newsrc);
@@ -345,7 +345,7 @@ virDomainAuditNetDevice(virDomainDefPtr vmDef, virDomainNetDefPtr netDef,
               "virt=%s resrc=net reason=open %s uuid=%s net=%s %s rdev=%s",
               virt, vmname, uuidstr, macstr, dev_name, VIR_AUDIT_STR(rdev));
 
-cleanup:
+ cleanup:
     VIR_FREE(vmname);
     VIR_FREE(dev_name);
     VIR_FREE(rdev);
@@ -469,7 +469,7 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(vmname);
     VIR_FREE(device);
     VIR_FREE(address);
@@ -530,7 +530,7 @@ virDomainAuditRedirdev(virDomainObjPtr vm, virDomainRedirdevDefPtr redirdev,
               virDomainRedirdevBusTypeToString(redirdev->bus),
               device);
 
-cleanup:
+ cleanup:
     VIR_FREE(vmname);
     VIR_FREE(device);
     VIR_FREE(address);
@@ -583,7 +583,7 @@ virDomainAuditTPM(virDomainObjPtr vm, virDomainTPMDefPtr tpm,
         break;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(vmname);
     VIR_FREE(device);
 }
@@ -704,7 +704,7 @@ virDomainAuditCgroupPath(virDomainObjPtr vm, virCgroupPtr cgroup,
 
     virDomainAuditCgroup(vm, cgroup, reason, extra, rc == 0);
 
-cleanup:
+ cleanup:
     VIR_FREE(extra);
     VIR_FREE(detail);
     VIR_FREE(rdev);

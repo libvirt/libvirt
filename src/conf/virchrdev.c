@@ -96,7 +96,7 @@ static char *virChrdevLockFilePath(const char *dev)
 
     sanitizedPath = virFileSanitizePath(path);
 
-cleanup:
+ cleanup:
     VIR_FREE(path);
     VIR_FREE(devCopy);
 
@@ -175,7 +175,7 @@ static int virChrdevLockFileCreate(const char *dev)
     /* we hold the lock */
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(lockfd);
     VIR_FREE(path);
     VIR_FREE(pidStr);
@@ -284,7 +284,7 @@ virChrdevsPtr virChrdevAlloc(void)
         goto error;
 
     return devs;
-error:
+ error:
     virChrdevFree(devs);
     return NULL;
 }
@@ -433,7 +433,7 @@ int virChrdevOpen(virChrdevsPtr devs,
     virMutexUnlock(&devs->lock);
     return 0;
 
-error:
+ error:
     savedError = virSaveLastError();
 
     if (added)

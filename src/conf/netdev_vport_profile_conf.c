@@ -183,7 +183,7 @@ virNetDevVPortProfileParse(xmlNodePtr node, unsigned int flags)
     if (virNetDevVPortProfileCheckNoExtras(virtPort) < 0)
         goto error;
 
-cleanup:
+ cleanup:
     VIR_FREE(virtPortManagerID);
     VIR_FREE(virtPortTypeID);
     VIR_FREE(virtPortTypeIDVersion);
@@ -194,7 +194,7 @@ cleanup:
 
     return virtPort;
 
-error:
+ error:
     VIR_FREE(virtPort);
     goto cleanup;
 }

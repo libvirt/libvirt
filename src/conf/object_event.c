@@ -439,7 +439,7 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
             ret++;
     }
 
-cleanup:
+ cleanup:
     if (event)
         virObjectUnref(event->conn);
     VIR_FREE(event);
@@ -593,7 +593,7 @@ virObjectEventStateNew(void)
 
     return state;
 
-error:
+ error:
     virObjectEventStateFree(state);
     return NULL;
 }
@@ -902,7 +902,7 @@ virObjectEventStateRegisterID(virConnectPtr conn,
         state->timer = -1;
     }
 
-cleanup:
+ cleanup:
     virObjectEventStateUnlock(state);
     return ret;
 }

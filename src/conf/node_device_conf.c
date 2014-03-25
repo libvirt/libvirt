@@ -655,7 +655,7 @@ virNodeDevCapStorageParseXML(xmlXPathContextPtr ctxt,
     }
 
     ret = 0;
-out:
+ out:
     VIR_FREE(nodes);
     ctxt->node = orignode;
     return ret;
@@ -700,7 +700,7 @@ virNodeDevCapScsiParseXML(xmlXPathContextPtr ctxt,
     data->scsi.type = virXPathString("string(./type[1])", ctxt);
 
     ret = 0;
-out:
+ out:
     ctxt->node = orignode;
     return ret;
 }
@@ -728,7 +728,7 @@ virNodeDevCapScsiTargetParseXML(xmlXPathContextPtr ctxt,
 
     ret = 0;
 
-out:
+ out:
     ctxt->node = orignode;
     return ret;
 }
@@ -823,7 +823,7 @@ virNodeDevCapScsiHostParseXML(xmlXPathContextPtr ctxt,
 
     ret = 0;
 
-out:
+ out:
     VIR_FREE(type);
     ctxt->node = orignode;
     VIR_FREE(nodes);
@@ -870,7 +870,7 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
     }
 
     ret = 0;
-out:
+ out:
     ctxt->node = orignode;
     return ret;
 }
@@ -914,7 +914,7 @@ virNodeDevCapUsbInterfaceParseXML(xmlXPathContextPtr ctxt,
     data->usb_if.description = virXPathString("string(./description[1])", ctxt);
 
     ret = 0;
-out:
+ out:
     ctxt->node = orignode;
     return ret;
 }
@@ -982,7 +982,7 @@ virNodeDevCapUsbDevParseXML(xmlXPathContextPtr ctxt,
     data->usb_dev.product_name = virXPathString("string(./product[1])", ctxt);
 
     ret = 0;
-out:
+ out:
     ctxt->node = orignode;
     return ret;
 }
@@ -1035,7 +1035,7 @@ virNodeDevCapPciDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     ctxt->node = origNode;
     VIR_FREE(numberStr);
     VIR_FREE(addrNodes);
@@ -1102,7 +1102,7 @@ virNodeDevCapPciDevParseXML(xmlXPathContextPtr ctxt,
         }
     }
     ret = 0;
-out:
+ out:
     ctxt->node = orignode;
     return ret;
 }
@@ -1146,7 +1146,7 @@ virNodeDevCapSystemParseXML(xmlXPathContextPtr ctxt,
     data->system.firmware.release_date = virXPathString("string(./firmware/release_date[1])", ctxt);
 
     ret = 0;
-out:
+ out:
     ctxt->node = orignode;
     return ret;
 }
@@ -1224,7 +1224,7 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
         goto error;
     return caps;
 
-error:
+ error:
     virNodeDevCapsDefFree(caps);
     return NULL;
 }
@@ -1320,7 +1320,7 @@ virNodeDeviceDefParseNode(xmlDocPtr xml,
     ctxt->node = root;
     def = virNodeDeviceDefParseXML(ctxt, create, virt_type);
 
-cleanup:
+ cleanup:
     xmlXPathFreeContext(ctxt);
     return def;
 }
@@ -1393,7 +1393,7 @@ virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -1441,7 +1441,7 @@ virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
 
     virNodeDeviceObjUnlock(parent);
 
-out:
+ out:
     return ret;
 }
 
@@ -1636,7 +1636,7 @@ virNodeDeviceObjListExport(virConnectPtr conn,
 
     ret = ndevices;
 
-cleanup:
+ cleanup:
     if (tmp_devices) {
         for (i = 0; i < ndevices; i++) {
             if (tmp_devices[i])

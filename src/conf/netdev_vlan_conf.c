@@ -129,7 +129,7 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr de
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     ctxt->node = save;
     VIR_FREE(tagNodes);
     VIR_FREE(trunk);

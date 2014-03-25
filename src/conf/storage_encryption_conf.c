@@ -117,7 +117,7 @@ virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
     ctxt->node = old_node;
     return ret;
 
-  cleanup:
+ cleanup:
     virStorageEncryptionSecretFree(ret);
     VIR_FREE(uuidstr);
     ctxt->node = old_node;
@@ -169,7 +169,7 @@ virStorageEncryptionParseXML(xmlXPathContextPtr ctxt)
 
     return ret;
 
-  cleanup:
+ cleanup:
     VIR_FREE(nodes);
     virStorageEncryptionFree(ret);
     return NULL;
@@ -197,7 +197,7 @@ virStorageEncryptionParseNode(xmlDocPtr xml, xmlNodePtr root)
     ctxt->node = root;
     enc = virStorageEncryptionParseXML(ctxt);
 
-  cleanup:
+ cleanup:
     xmlXPathFreeContext(ctxt);
     return enc;
 }

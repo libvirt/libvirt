@@ -69,7 +69,7 @@ virNWFilterIPAddrMapAddIPAddr(const char *ifname, char *addr)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virMutexUnlock(&ipAddressMapLock);
 
     return ret;
@@ -108,7 +108,7 @@ virNWFilterIPAddrMapDelIPAddr(const char *ifname, const char *ipaddr)
             ret = virNWFilterVarValueGetCardinality(val);
         }
     } else {
-remove_entry:
+ remove_entry:
         /* remove whole entry */
         val = virNWFilterHashTableRemoveEntry(ipAddressMap, ifname);
         virNWFilterVarValueFree(val);

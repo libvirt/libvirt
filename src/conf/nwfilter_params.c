@@ -97,7 +97,7 @@ virNWFilterVarValueCopy(const virNWFilterVarValue *val)
 
     return res;
 
-err_exit:
+ err_exit:
     virNWFilterVarValueFree(res);
     return NULL;
 }
@@ -505,7 +505,7 @@ virNWFilterVarCombIterCreate(virNWFilterHashTablePtr hash,
 
     return res;
 
-err_exit:
+ err_exit:
     virNWFilterVarCombIterFree(res);
     return NULL;
 }
@@ -516,7 +516,7 @@ virNWFilterVarCombIterNext(virNWFilterVarCombIterPtr ci)
     size_t i;
 
     for (i = 0; i < ci->nIter; i++) {
-next:
+ next:
         ci->iter[i].curValue++;
         if (ci->iter[i].curValue <= ci->iter[i].maxValue) {
             if (!virNWFilterVarCombIterEntryAreUniqueEntries(
@@ -766,7 +766,7 @@ virNWFilterHashTablePutAll(virNWFilterHashTablePtr src,
 
     return 0;
 
-err_exit:
+ err_exit:
     return -1;
 }
 
@@ -851,7 +851,7 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
                     }
                     value = NULL;
                 }
-skip_entry:
+ skip_entry:
                 virNWFilterVarValueFree(value);
                 VIR_FREE(nam);
                 VIR_FREE(val);
@@ -861,7 +861,7 @@ skip_entry:
     }
     return table;
 
-err_exit:
+ err_exit:
     VIR_FREE(nam);
     VIR_FREE(val);
     virNWFilterVarValueFree(value);
@@ -1049,7 +1049,7 @@ virNWFilterVarAccessParse(const char *varAccess)
                        _("Malformatted variable"));
     }
 
-err_exit:
+ err_exit:
     virNWFilterVarAccessFree(dest);
 
     return NULL;

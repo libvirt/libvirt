@@ -350,7 +350,7 @@ virInterfaceDefParseProtoIPv4(virInterfaceProtocolDefPtr def,
 
     ret = 0;
 
-error:
+ error:
     VIR_FREE(ipNodes);
     return ret;
 }
@@ -405,7 +405,7 @@ virInterfaceDefParseProtoIPv6(virInterfaceProtocolDefPtr def,
 
     ret = 0;
 
-error:
+ error:
     VIR_FREE(ipNodes);
     return ret;
 }
@@ -473,7 +473,7 @@ virInterfaceDefParseIfAdressing(virInterfaceDefPtr def,
 
     ret = 0;
 
-error:
+ error:
     VIR_FREE(protoNodes);
     ctxt->node = save;
     return ret;
@@ -516,7 +516,7 @@ virInterfaceDefParseBridge(virInterfaceDefPtr def,
         }
     }
 
-error:
+ error:
     VIR_FREE(interfaces);
     ctxt->node = bridge;
     return ret;
@@ -563,7 +563,7 @@ virInterfaceDefParseBondItfs(virInterfaceDefPtr def,
         def->data.bond.itf[i] = itf;
     }
 
-error:
+ error:
     VIR_FREE(interfaces);
     ctxt->node = bond;
     return ret;
@@ -814,7 +814,7 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType)
     ctxt->node = cur;
     return def;
 
-error:
+ error:
     ctxt->node = cur;
     virInterfaceDefFree(def);
     return NULL;
@@ -843,7 +843,7 @@ virInterfaceDefPtr virInterfaceDefParseNode(xmlDocPtr xml,
     ctxt->node = root;
     def = virInterfaceDefParseXML(ctxt, VIR_INTERFACE_TYPE_LAST);
 
-cleanup:
+ cleanup:
     xmlXPathFreeContext(ctxt);
     return def;
 }
@@ -1123,9 +1123,9 @@ virInterfaceDefDevFormat(virBufferPtr buf, const virInterfaceDef *def)
     if (virBufferError(buf))
         goto no_memory;
     return 0;
-no_memory:
+ no_memory:
     virReportOOMError();
-cleanup:
+ cleanup:
     return -1;
 }
 
@@ -1248,7 +1248,7 @@ int virInterfaceObjListClone(virInterfaceObjListPtr src,
     }
 
     ret = cnt;
-cleanup:
+ cleanup:
     if ((ret < 0) && dest)
        virInterfaceObjListFree(dest);
     return ret;

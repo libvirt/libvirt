@@ -991,7 +991,7 @@ virDomainBlkioDeviceParseXML(xmlNodePtr root,
 
     return 0;
 
-error:
+ error:
     VIR_FREE(c);
     VIR_FREE(dev->path);
     return -1;
@@ -1360,7 +1360,7 @@ virDomainDiskHostDefCopy(size_t nhosts,
 
     return ret;
 
-error:
+ error:
     virDomainDiskHostDefFree(nhosts, ret);
     return NULL;
 }
@@ -2049,7 +2049,7 @@ virDomainVcpuPinDefCopy(virDomainVcpuPinDefPtr *src, int nvcpupin)
 
     return ret;
 
-error:
+ error:
     if (ret) {
         for (i = 0; i < nvcpupin; i++) {
             if (ret[i]) {
@@ -2298,7 +2298,7 @@ virDomainObjNew(virDomainXMLOptionPtr xmlopt)
     VIR_DEBUG("obj=%p", domain);
     return domain;
 
-error:
+ error:
     virObjectUnref(domain);
     return NULL;
 }
@@ -2439,10 +2439,10 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
             return NULL;
         }
     }
-cleanup:
+ cleanup:
     return vm;
 
-error:
+ error:
     virObjectUnlock(vm);
     vm = NULL;
     goto cleanup;
@@ -2496,7 +2496,7 @@ virDomainObjSetDefTransient(virCapsPtr caps,
         goto out;
 
     ret = 0;
-out:
+ out:
     return ret;
 }
 
@@ -2571,7 +2571,7 @@ virDomainLiveConfigHelperMethod(virCapsPtr caps,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -2988,7 +2988,7 @@ virDomainDefRejectDuplicateControllers(virDomainDefPtr def)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     for (i = 0; i < nbitmaps; i++)
         virBitmapFree(bitmaps[i]);
     return ret;
@@ -3451,7 +3451,7 @@ virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(controller);
     VIR_FREE(bus);
     VIR_FREE(target);
@@ -3498,7 +3498,7 @@ virDomainDeviceVirtioSerialAddressParseXML(
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(controller);
     VIR_FREE(bus);
     VIR_FREE(port);
@@ -3556,7 +3556,7 @@ virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(cssid);
     VIR_FREE(ssid);
     VIR_FREE(devno);
@@ -3591,7 +3591,7 @@ virDomainDeviceCcidAddressParseXML(xmlNodePtr node,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(controller);
     VIR_FREE(slot);
     return ret;
@@ -3632,7 +3632,7 @@ virDomainDeviceUSBAddressParseXML(xmlNodePtr node,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(bus);
     VIR_FREE(port);
     return ret;
@@ -3660,7 +3660,7 @@ virDomainDeviceSpaprVioAddressParseXML(xmlNodePtr node,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(reg);
     return ret;
 }
@@ -3685,7 +3685,7 @@ virDomainDeviceUSBMasterParseXML(xmlNodePtr node,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(startport);
     return ret;
 }
@@ -3727,7 +3727,7 @@ virDomainDeviceBootParseXML(xmlNodePtr node,
     *bootIndex = boot;
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(order);
     return ret;
 }
@@ -3760,7 +3760,7 @@ virDomainDeviceISAAddressParseXML(xmlNodePtr node,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(iobase);
     VIR_FREE(irq);
     return ret;
@@ -3911,7 +3911,7 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (ret == -1)
         VIR_FREE(info->alias);
     VIR_FREE(type);
@@ -4074,7 +4074,7 @@ virDomainHostdevSubsysUsbDefParseXML(xmlNodePtr node,
     }
 
     ret = 0;
-out:
+ out:
     return ret;
 }
 
@@ -4161,7 +4161,7 @@ virDomainHostdevSubsysPciDefParseXML(xmlNodePtr node,
     }
 
     ret = 0;
-out:
+ out:
     return ret;
 }
 
@@ -4246,7 +4246,7 @@ virDomainHostdevSubsysScsiDefParseXML(xmlNodePtr node,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(bus);
     VIR_FREE(target);
     VIR_FREE(unit);
@@ -4502,7 +4502,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     }
 
     ret = 0;
-error:
+ error:
     VIR_FREE(managed);
     VIR_FREE(sgio);
     VIR_FREE(backendStr);
@@ -4578,7 +4578,7 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
         goto error;
     }
     ret = 0;
-error:
+ error:
     return ret;
 }
 
@@ -4803,7 +4803,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
 
     return def;
 
-error:
+ error:
     virSecurityLabelDefFree(def);
     return NULL;
 }
@@ -4884,7 +4884,7 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
 
     return 0;
 
-error:
+ error:
     ctxt->node = saved_node;
     for (; i > 0; i--) {
         virSecurityLabelDefFree(def->seclabels[i - 1]);
@@ -4991,7 +4991,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
 
     return 0;
 
-error:
+ error:
     for (i = 0; i < nseclabels; i++) {
         virSecurityDeviceLabelDefFree(seclabels[i]);
     }
@@ -5056,7 +5056,7 @@ virDomainLeaseDefParseXML(xmlNodePtr node)
     def->path = path;
     path = key = lockspace = NULL;
 
-cleanup:
+ cleanup:
     VIR_FREE(lockspace);
     VIR_FREE(key);
     VIR_FREE(path);
@@ -5112,7 +5112,7 @@ virDomainDiskSourcePoolDefParse(xmlNodePtr node,
     source = NULL;
     ret = 0;
 
-cleanup:
+ cleanup:
     virDomainDiskSourcePoolDefFree(source);
     VIR_FREE(mode);
     return ret;
@@ -5239,7 +5239,7 @@ virDomainDiskSourceDefParse(xmlNodePtr node,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virDomainDiskHostDefClear(&host);
     VIR_FREE(protocol);
     VIR_FREE(transport);
@@ -6011,7 +6011,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         && virDomainDiskDefAssignAddress(xmlopt, def) < 0)
         goto error;
 
-cleanup:
+ cleanup:
     VIR_FREE(bus);
     VIR_FREE(type);
     VIR_FREE(snapshot);
@@ -6052,7 +6052,7 @@ cleanup:
     ctxt->node = save_ctxt;
     return def;
 
-error:
+ error:
     virDomainDiskDefFree(def);
     def = NULL;
     goto cleanup;
@@ -6105,7 +6105,7 @@ virDomainParseScaledValue(const char *xpath,
 
     *val = bytes;
     ret = 1;
-cleanup:
+ cleanup:
     VIR_FREE(xpath_full);
     VIR_FREE(unit);
     return ret;
@@ -6294,7 +6294,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         goto error;
     }
 
-cleanup:
+ cleanup:
     ctxt->node = saved;
     VIR_FREE(type);
     VIR_FREE(idx);
@@ -6475,7 +6475,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
-cleanup:
+ cleanup:
     ctxt->node = save_node;
     VIR_FREE(type);
     VIR_FREE(fsdriver);
@@ -6620,7 +6620,7 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     *def = actual;
     actual = NULL;
     ret = 0;
-error:
+ error:
     VIR_FREE(type);
     VIR_FREE(mode);
     VIR_FREE(addrtype);
@@ -7109,7 +7109,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
     }
 
-cleanup:
+ cleanup:
     ctxt->node = oldnode;
     VIR_FREE(macaddr);
     VIR_FREE(network);
@@ -7138,7 +7138,7 @@ cleanup:
 
     return def;
 
-error:
+ error:
     virDomainNetDefFree(def);
     def = NULL;
     goto cleanup;
@@ -7293,7 +7293,7 @@ virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
 
 
     ret = 0;
-error:
+ error:
     VIR_FREE(targetType);
     VIR_FREE(addrStr);
     VIR_FREE(portStr);
@@ -7530,7 +7530,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         break;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(mode);
     VIR_FREE(protocol);
     VIR_FREE(bindHost);
@@ -7542,7 +7542,7 @@ cleanup:
 
     return remaining;
 
-error:
+ error:
     virDomainChrSourceDefClear(def);
     remaining = -1;
     goto cleanup;
@@ -7678,12 +7678,12 @@ virDomainChrDefParseXML(xmlXPathContextPtr ctxt,
         goto error;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(type);
 
     return def;
 
-error:
+ error:
     virDomainChrDefFree(def);
     def = NULL;
     goto cleanup;
@@ -7804,13 +7804,13 @@ virDomainSmartcardDefParseXML(xmlNodePtr node,
         goto error;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(mode);
     VIR_FREE(type);
 
     return def;
 
-error:
+ error:
     virDomainSmartcardDefFree(def);
     def = NULL;
     goto cleanup;
@@ -7900,7 +7900,7 @@ virDomainTPMDefParseXML(xmlNodePtr node,
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
-cleanup:
+ cleanup:
     VIR_FREE(type);
     VIR_FREE(path);
     VIR_FREE(model);
@@ -7909,7 +7909,7 @@ cleanup:
     ctxt->node = save;
     return def;
 
-error:
+ error:
     virDomainTPMDefFree(def);
     def = NULL;
     goto cleanup;
@@ -8004,13 +8004,13 @@ virDomainInputDefParseXML(const virDomainDef *dom,
         goto error;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(type);
     VIR_FREE(bus);
 
     return def;
 
-error:
+ error:
     virDomainInputDefFree(def);
     def = NULL;
     goto cleanup;
@@ -8044,12 +8044,12 @@ virDomainHubDefParseXML(xmlNodePtr node, unsigned int flags)
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
-cleanup:
+ cleanup:
     VIR_FREE(type);
 
     return def;
 
-error:
+ error:
     virDomainHubDefFree(def);
     def = NULL;
     goto cleanup;
@@ -8172,7 +8172,7 @@ virDomainTimerDefParseXML(xmlNodePtr node,
         }
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(name);
     VIR_FREE(present);
     VIR_FREE(tickpolicy);
@@ -8182,7 +8182,7 @@ cleanup:
 
     return def;
 
-error:
+ error:
     VIR_FREE(def);
     goto cleanup;
 }
@@ -8319,7 +8319,7 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
     }
 
     ret = 0;
-error:
+ error:
     if (ret < 0)
         virDomainGraphicsListenDefClear(def);
     VIR_FREE(type);
@@ -8862,7 +8862,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
         }
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(type);
     VIR_FREE(listenNodes);
     VIR_FREE(listenAddr);
@@ -8870,7 +8870,7 @@ cleanup:
     ctxt->node = save;
     return def;
 
-error:
+ error:
     virDomainGraphicsDefFree(def);
     def = NULL;
     goto cleanup;
@@ -8893,12 +8893,12 @@ virDomainSoundCodecDefParseXML(xmlNodePtr node)
         goto error;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(type);
 
     return def;
 
-error:
+ error:
     virDomainSoundCodecDefFree(def);
     def = NULL;
     goto cleanup;
@@ -8961,13 +8961,13 @@ virDomainSoundDefParseXML(xmlNodePtr node,
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
-cleanup:
+ cleanup:
     VIR_FREE(model);
 
     ctxt->node = save;
     return def;
 
-error:
+ error:
     virDomainSoundDefFree(def);
     def = NULL;
     goto cleanup;
@@ -9014,13 +9014,13 @@ virDomainWatchdogDefParseXML(xmlNodePtr node,
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
-cleanup:
+ cleanup:
     VIR_FREE(action);
     VIR_FREE(model);
 
     return def;
 
-error:
+ error:
     virDomainWatchdogDefFree(def);
     def = NULL;
     goto cleanup;
@@ -9133,7 +9133,7 @@ virDomainRNGDefParseXML(xmlNodePtr node,
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
-cleanup:
+ cleanup:
     VIR_FREE(model);
     VIR_FREE(backend);
     VIR_FREE(type);
@@ -9141,7 +9141,7 @@ cleanup:
     ctxt->node = save;
     return def;
 
-error:
+ error:
     virDomainRNGDefFree(def);
     def = NULL;
     goto cleanup;
@@ -9183,13 +9183,13 @@ virDomainMemballoonDefParseXML(xmlNodePtr node,
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
-cleanup:
+ cleanup:
     VIR_FREE(model);
 
     ctxt->node = save;
     return def;
 
-error:
+ error:
     virDomainMemballoonDefFree(def);
     def = NULL;
     goto cleanup;
@@ -9209,7 +9209,7 @@ virDomainNVRAMDefParseXML(xmlNodePtr node,
 
     return def;
 
-error:
+ error:
     virDomainNVRAMDefFree(def);
     return NULL;
 }
@@ -9320,12 +9320,12 @@ virSysinfoParseXML(xmlNodePtr node,
     def->system_family =
         virXPathString("string(system/entry[@name='family'])", ctxt);
 
-cleanup:
+ cleanup:
     VIR_FREE(type);
     VIR_FREE(tmpUUID);
     return def;
 
-error:
+ error:
     virSysinfoDefFree(def);
     def = NULL;
     goto cleanup;
@@ -9533,7 +9533,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
 
     return def;
 
-error:
+ error:
     virDomainVideoDefFree(def);
     VIR_FREE(type);
     VIR_FREE(ram);
@@ -9621,13 +9621,13 @@ virDomainHostdevDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(type);
     VIR_FREE(mode);
     ctxt->node = save;
     return def;
 
-error:
+ error:
     virDomainHostdevDefFree(def);
     def = NULL;
     goto cleanup;
@@ -9697,12 +9697,12 @@ virDomainRedirdevDefParseXML(xmlNodePtr node,
     }
 
 
-cleanup:
+ cleanup:
     VIR_FREE(bus);
     VIR_FREE(type);
     return def;
 
-error:
+ error:
     virDomainRedirdevDefFree(def);
     def = NULL;
     goto cleanup;
@@ -9766,7 +9766,7 @@ virDomainRedirFilterUsbVersionHelper(const char *version,
     def->version = hex;
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(version_copy);
     return ret;
 }
@@ -9848,7 +9848,7 @@ virDomainRedirFilterUsbDevDefParseXML(xmlNodePtr node)
         goto error;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(class);
     VIR_FREE(vendor);
     VIR_FREE(product);
@@ -9856,7 +9856,7 @@ cleanup:
     VIR_FREE(allow);
     return def;
 
-error:
+ error:
     VIR_FREE(def);
     def = NULL;
     goto cleanup;
@@ -9896,7 +9896,7 @@ virDomainRedirFilterDefParseXML(xmlNodePtr node,
     ctxt->node = save;
     return def;
 
-error:
+ error:
     VIR_FREE(nodes);
     virDomainRedirFilterDefFree(def);
     return NULL;
@@ -10079,12 +10079,12 @@ virDomainDeviceDefParse(const char *xmlStr,
     if (virDomainDeviceDefPostParse(dev, def,  caps, xmlopt) < 0)
         goto error;
 
-cleanup:
+ cleanup:
     xmlFreeDoc(xml);
     xmlXPathFreeContext(ctxt);
     return dev;
 
-error:
+ error:
     VIR_FREE(dev);
     goto cleanup;
 }
@@ -10924,7 +10924,7 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(tmp);
     VIR_FREE(nodes);
     return ret;
@@ -10984,7 +10984,7 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     ctxt->node = save_ctxt;
     return idmap;
 }
@@ -11001,7 +11001,7 @@ virDomainPanicDefParseXML(xmlNodePtr node)
         goto error;
 
     return panic;
-error:
+ error:
     virDomainPanicDefFree(panic);
     return NULL;
 }
@@ -11075,11 +11075,11 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
         goto error;
     }
 
-cleanup:
+ cleanup:
     ctxt->node = oldnode;
     return def;
 
-error:
+ error:
     VIR_FREE(def);
     goto cleanup;
 }
@@ -11195,7 +11195,7 @@ virDomainParseMemory(const char *xpath, xmlXPathContextPtr ctxt,
     /* Yes, we really do use kibibytes for our internal sizing.  */
     *mem = VIR_DIV_UP(bytes, 1024);
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -11222,7 +11222,7 @@ virDomainResourceDefParse(xmlNodePtr node,
     ctxt->node = tmp;
     return def;
 
-error:
+ error:
     ctxt->node = tmp;
     virDomainResourceDefFree(def);
     return NULL;
@@ -12989,7 +12989,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     return def;
 
-error:
+ error:
     VIR_FREE(tmp);
     VIR_FREE(nodes);
     virHashFree(bootHash);
@@ -13091,7 +13091,7 @@ virDomainObjParseXML(xmlDocPtr xml,
 
     return obj;
 
-error:
+ error:
     virObjectUnref(obj);
     VIR_FREE(nodes);
     return NULL;
@@ -13172,7 +13172,7 @@ virDomainDefParseNode(xmlDocPtr xml,
     def = virDomainDefParseXML(xml, root, ctxt, caps, xmlopt,
                                expectedVirtTypes, flags);
 
-cleanup:
+ cleanup:
     xmlXPathFreeContext(ctxt);
     return def;
 }
@@ -13205,7 +13205,7 @@ virDomainObjParseNode(xmlDocPtr xml,
     ctxt->node = root;
     obj = virDomainObjParseXML(xml, ctxt, caps, xmlopt, expectedVirtTypes, flags);
 
-cleanup:
+ cleanup:
     xmlXPathFreeContext(ctxt);
     return obj;
 }
@@ -14346,7 +14346,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
 
     return true;
 
-error:
+ error:
     err = virSaveLastError();
 
     strSrc = virDomainDefFormat(src, 0);
@@ -14591,7 +14591,7 @@ virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
 
     return 0;
 
-error:
+ error:
     virDomainVcpuPinDefFree(vcpupin);
     return -1;
 }
@@ -17915,9 +17915,9 @@ virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
 
     return virBufferContentAndReset(&buf);
 
-no_memory:
+ no_memory:
     virReportOOMError();
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -18052,7 +18052,7 @@ virDomainSaveConfig(const char *configDir,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     return ret;
 }
@@ -18078,7 +18078,7 @@ virDomainSaveStatus(virDomainXMLOptionPtr xmlopt,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     return ret;
 }
@@ -18127,7 +18127,7 @@ virDomainObjListLoadConfig(virDomainObjListPtr doms,
     VIR_FREE(autostartLink);
     return dom;
 
-error:
+ error:
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
     virDomainDefFree(def);
@@ -18176,7 +18176,7 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
     VIR_FREE(statusFile);
     return obj;
 
-error:
+ error:
     virObjectUnref(obj);
     VIR_FREE(statusFile);
     return NULL;
@@ -18279,7 +18279,7 @@ virDomainDeleteConfig(const char *configDir,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
     return ret;
@@ -18392,7 +18392,7 @@ virDomainObjListCount(void *payload,
         if (!data->active)
             data->count++;
     }
-cleanup:
+ cleanup:
     virObjectUnlock(obj);
 }
 
@@ -18430,7 +18430,7 @@ virDomainObjListCopyActiveIDs(void *payload,
         goto cleanup;
     if (virDomainObjIsActive(obj) && data->numids < data->maxids)
         data->ids[data->numids++] = obj->def->id;
-cleanup:
+ cleanup:
     virObjectUnlock(obj);
 }
 
@@ -18479,7 +18479,7 @@ virDomainObjListCopyInactiveNames(void *payload,
         else
             data->numnames++;
     }
-cleanup:
+ cleanup:
     virObjectUnlock(obj);
 }
 
@@ -18587,7 +18587,7 @@ virDomainChrDefForeach(virDomainDefPtr def,
             goto done;
     }
 
-done:
+ done:
     return rc;
 }
 
@@ -18611,7 +18611,7 @@ virDomainSmartcardDefForeach(virDomainDefPtr def,
             goto done;
     }
 
-done:
+ done:
     return rc;
 }
 
@@ -18657,7 +18657,7 @@ virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -19214,7 +19214,7 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
     xmlStr = virBufferContentAndReset(&buf);
     ret = virDomainDeviceDefParse(xmlStr, def, caps, xmlopt, flags);
 
-cleanup:
+ cleanup:
     VIR_FREE(xmlStr);
     return ret;
 }
@@ -19318,7 +19318,7 @@ virDomainListPopulate(void *payload,
 
     data->domains[data->ndomains++] = dom;
 
-cleanup:
+ cleanup:
     virObjectUnlock(vm);
     return;
 }
@@ -19359,7 +19359,7 @@ virDomainObjListExport(virDomainObjListPtr doms,
 
     ret = data.ndomains;
 
-cleanup:
+ cleanup:
     if (data.domains) {
         int count = virHashSize(doms->objs);
         for (i = 0; i < count; i++)
@@ -19586,7 +19586,7 @@ virDomainObjGetMetadata(virDomainObjPtr vm,
         virReportError(VIR_ERR_NO_DOMAIN_METADATA, "%s",
                        _("Requested metadata element is not present"));
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -19666,7 +19666,7 @@ virDomainDefSetMetadata(virDomainDefPtr def,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     xmlFreeDoc(doc);
     return ret;
 }

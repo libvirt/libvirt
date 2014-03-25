@@ -168,7 +168,7 @@ virCPUDefCopy(const virCPUDef *cpu)
 
     return copy;
 
-error:
+ error:
     virCPUDefFree(copy);
     return NULL;
 }
@@ -472,13 +472,13 @@ virCPUDefParseXML(xmlNodePtr node,
         }
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(fallback);
     VIR_FREE(vendor_id);
     VIR_FREE(nodes);
     return def;
 
-error:
+ error:
     virCPUDefFree(def);
     def = NULL;
     goto cleanup;
@@ -499,9 +499,9 @@ virCPUDefFormat(virCPUDefPtr def,
 
     return virBufferContentAndReset(&buf);
 
-no_memory:
+ no_memory:
     virReportOOMError();
-cleanup:
+ cleanup:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -820,6 +820,6 @@ virCPUDefIsEqual(virCPUDefPtr src,
 
     identical = true;
 
-cleanup:
+ cleanup:
     return identical;
 }

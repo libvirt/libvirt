@@ -394,7 +394,7 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
     network->def = def;
 
     return network;
-error:
+ error:
     virNetworkObjUnlock(network);
     virNetworkObjFree(network);
     return NULL;
@@ -510,7 +510,7 @@ virNetworkDefCopy(virNetworkDefPtr def, unsigned int flags)
     if (!(xml = virNetworkDefFormat(def, flags)))
         goto cleanup;
     newDef = virNetworkDefParseString(xml);
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     return newDef;
 }
@@ -555,7 +555,7 @@ virNetworkConfigChangeSetup(virNetworkObjPtr network, unsigned int flags)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -668,7 +668,7 @@ virSocketAddrRangeParseXML(const char *networkName,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(start);
     VIR_FREE(end);
     return ret;
@@ -784,7 +784,7 @@ virNetworkDHCPHostDefParseXML(const char *networkName,
         host->ip = inaddr;
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(mac);
     VIR_FREE(id);
     VIR_FREE(name);
@@ -919,7 +919,7 @@ virNetworkDNSHostDefParseXML(const char *networkName,
 
     return 0;
 
-error:
+ error:
     virNetworkDNSHostDefClear(def);
     return -1;
 }
@@ -1003,7 +1003,7 @@ virNetworkDNSSrvDefParseXML(const char *networkName,
     }
     return 0;
 
-error:
+ error:
     virNetworkDNSSrvDefClear(def);
     return -1;
 }
@@ -1041,7 +1041,7 @@ virNetworkDNSTxtDefParseXML(const char *networkName,
     }
     return 0;
 
-error:
+ error:
     virNetworkDNSTxtDefClear(def);
     return -1;
 }
@@ -1162,7 +1162,7 @@ virNetworkDNSDefParseXML(const char *networkName,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(forwardPlainNames);
     VIR_FREE(fwdNodes);
     VIR_FREE(hostNodes);
@@ -1312,7 +1312,7 @@ virNetworkIPDefParseXML(const char *networkName,
 
     result = 0;
 
-cleanup:
+ cleanup:
     if (result < 0) {
         virNetworkIpDefClear(def);
     }
@@ -1538,7 +1538,7 @@ virNetworkRouteDefParseXML(const char *networkName,
 
     result = 0;
 
-cleanup:
+ cleanup:
     if (result < 0) {
         virNetworkRouteDefClear(def);
     }
@@ -1599,7 +1599,7 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
         goto cleanup;
 
     result = 0;
-cleanup:
+ cleanup:
     if (result < 0) {
         virPortGroupDefClear(def);
     }
@@ -1707,7 +1707,7 @@ virNetworkForwardNatDefParseXML(const char *networkName,
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(addrStart);
     VIR_FREE(addrEnd);
     VIR_FREE(natAddrNodes);
@@ -1936,7 +1936,7 @@ virNetworkForwardDefParseXML(const char *networkName,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(type);
     VIR_FREE(forwardDev);
     VIR_FREE(forwardManaged);
@@ -2238,7 +2238,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     ctxt->node = save;
     return def;
 
-error:
+ error:
     VIR_FREE(routeNodes);
     VIR_FREE(stp);
     virNetworkDefFree(def);
@@ -2298,7 +2298,7 @@ virNetworkDefPtr virNetworkDefParseNode(xmlDocPtr xml,
     ctxt->node = root;
     def = virNetworkDefParseXML(ctxt);
 
-cleanup:
+ cleanup:
     xmlXPathFreeContext(ctxt);
     return def;
 }
@@ -2479,7 +2479,7 @@ virNetworkIpDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "</ip>\n");
 
     result = 0;
-error:
+ error:
     return result;
 }
 
@@ -2526,7 +2526,7 @@ virNetworkRouteDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "/>\n");
 
     result = 0;
-error:
+ error:
     return result;
 }
 
@@ -2594,7 +2594,7 @@ virNetworkForwardNatDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "</nat>\n");
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(addrStart);
     VIR_FREE(addrEnd);
     return ret;
@@ -2760,7 +2760,7 @@ virNetworkDefFormatBuf(virBufferPtr buf,
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -2778,9 +2778,9 @@ virNetworkDefFormat(const virNetworkDef *def,
 
     return virBufferContentAndReset(&buf);
 
-no_memory:
+ no_memory:
     virReportOOMError();
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -2819,9 +2819,9 @@ virNetworkObjFormat(virNetworkObjPtr net,
 
     return virBufferContentAndReset(&buf);
 
-no_memory:
+ no_memory:
     virReportOOMError();
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -2883,7 +2883,7 @@ int virNetworkSaveConfig(const char *configDir,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     return ret;
 }
@@ -2903,7 +2903,7 @@ int virNetworkSaveStatus(const char *statusDir,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     return ret;
 }
@@ -3018,13 +3018,13 @@ virNetworkLoadState(virNetworkObjListPtr nets,
 
     net->taint = taint;
 
-cleanup:
+ cleanup:
     VIR_FREE(configFile);
     xmlFreeDoc(xml);
     xmlXPathFreeContext(ctxt);
     return net;
 
-error:
+ error:
     VIR_FREE(nodes);
     virBitmapFree(class_id_map);
     virNetworkDefFree(def);
@@ -3082,7 +3082,7 @@ virNetworkObjPtr virNetworkLoadConfig(virNetworkObjListPtr nets,
 
     return net;
 
-error:
+ error:
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
     virNetworkDefFree(def);
@@ -3188,7 +3188,7 @@ int virNetworkDeleteConfig(const char *configDir,
 
     ret = 0;
 
-error:
+ error:
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
     return ret;
@@ -3273,7 +3273,7 @@ int virNetworkSetBridgeName(virNetworkObjListPtr nets,
     }
 
     ret = 0;
-error:
+ error:
     return ret;
 }
 
@@ -3513,7 +3513,7 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virNetworkDHCPHostDefClear(&host);
     return ret;
 }
@@ -3602,7 +3602,7 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -3707,7 +3707,7 @@ virNetworkDefUpdateForwardInterface(virNetworkDefPtr def,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virNetworkForwardIfDefClear(&iface);
     return ret;
 }
@@ -3813,7 +3813,7 @@ virNetworkDefUpdatePortGroup(virNetworkDefPtr def,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virPortGroupDefClear(&portgroup);
     return ret;
 }
@@ -3907,7 +3907,7 @@ virNetworkDefUpdateDNSHost(virNetworkDefPtr def,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virNetworkDNSHostDefClear(&host);
     return ret;
 }
@@ -3993,7 +3993,7 @@ virNetworkDefUpdateDNSSrv(virNetworkDefPtr def,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virNetworkDNSSrvDefClear(&srv);
     return ret;
 }
@@ -4066,7 +4066,7 @@ virNetworkDefUpdateDNSTxt(virNetworkDefPtr def,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virNetworkDNSTxtDefClear(&txt);
     return ret;
 }
@@ -4137,7 +4137,7 @@ virNetworkDefUpdateSection(virNetworkDefPtr def,
         break;
     }
 
-cleanup:
+ cleanup:
     xmlFreeDoc(doc);
     xmlXPathFreeContext(ctxt);
     return ret;
@@ -4223,7 +4223,7 @@ virNetworkObjUpdate(virNetworkObjPtr network,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virNetworkDefFree(livedef);
     virNetworkDefFree(configdef);
     return ret;
@@ -4285,7 +4285,7 @@ virNetworkObjIsDuplicate(virNetworkObjListPtr doms,
         ret = 0;
     }
 
-cleanup:
+ cleanup:
     if (vm)
         virNetworkObjUnlock(vm);
     return ret;
@@ -4379,7 +4379,7 @@ virNetworkObjListExport(virConnectPtr conn,
 
     ret = nnets;
 
-cleanup:
+ cleanup:
     if (tmp_nets) {
         for (i = 0; i < nnets; i++) {
             if (tmp_nets[i])

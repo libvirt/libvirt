@@ -106,7 +106,7 @@ virDevicePCIAddressParseXML(xmlNodePtr node,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(domain);
     VIR_FREE(bus);
     VIR_FREE(slot);

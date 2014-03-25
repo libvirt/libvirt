@@ -886,7 +886,7 @@ virDomainEventDiskChangeNew(int id,
 
     return (virObjectEventPtr)ev;
 
-error:
+ error:
     virObjectUnref(ev);
     return NULL;
 }
@@ -939,7 +939,7 @@ virDomainEventTrayChangeNew(int id,
 
     return (virObjectEventPtr)ev;
 
-error:
+ error:
     virObjectUnref(ev);
     return NULL;
 }
@@ -1129,7 +1129,7 @@ virDomainEventDeviceRemovedNew(int id,
 
     return (virObjectEventPtr)ev;
 
-error:
+ error:
     virObjectUnref(ev);
     return NULL;
 }
@@ -1346,7 +1346,7 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
 
     VIR_WARN("Unexpected event ID %d", event->eventID);
 
-cleanup:
+ cleanup:
     virDomainFree(dom);
 }
 
@@ -1380,7 +1380,7 @@ virDomainQemuMonitorEventNew(int id,
 
     return (virObjectEventPtr)ev;
 
-error:
+ error:
     virObjectUnref(ev);
     return NULL;
 }

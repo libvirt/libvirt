@@ -118,7 +118,7 @@ virNetworkEventDispatchDefaultFunc(virConnectPtr conn,
     }
     VIR_WARN("Unexpected event ID %d", event->eventID);
 
-cleanup:
+ cleanup:
     virNetworkFree(net);
 }
 

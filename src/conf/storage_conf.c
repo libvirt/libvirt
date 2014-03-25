@@ -501,7 +501,7 @@ virStoragePoolDefParseAuthSecret(xmlXPathContextPtr ctxt,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(uuid);
     return ret;
 }
@@ -553,7 +553,7 @@ virStoragePoolDefParseAuth(xmlXPathContextPtr ctxt,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(authType);
     VIR_FREE(username);
     return ret;
@@ -720,7 +720,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     source->product = virXPathString("string(./product/@name)", ctxt);
 
     ret = 0;
-cleanup:
+ cleanup:
     ctxt->node = relnode;
 
     VIR_FREE(port);
@@ -758,7 +758,7 @@ virStoragePoolDefParseSourceString(const char *srcSpec,
 
     ret = def;
     def = NULL;
-cleanup:
+ cleanup:
     virStoragePoolSourceFree(def);
     xmlFreeDoc(doc);
     xmlXPathFreeContext(xpath_ctxt);
@@ -838,7 +838,7 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
     perms->label = virXPathString("string(./label)", ctxt);
 
     ret = 0;
-error:
+ error:
     ctxt->node = relnode;
     return ret;
 }
@@ -992,13 +992,13 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
             goto error;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(uuid);
     VIR_FREE(type);
     VIR_FREE(target_path);
     return ret;
 
-error:
+ error:
     virStoragePoolDefFree(ret);
     ret = NULL;
     goto cleanup;
@@ -1027,7 +1027,7 @@ virStoragePoolDefParseNode(xmlDocPtr xml,
 
     ctxt->node = root;
     def = virStoragePoolDefParseXML(ctxt);
-cleanup:
+ cleanup:
     xmlXPathFreeContext(ctxt);
     return def;
 }
@@ -1250,9 +1250,9 @@ virStoragePoolDefFormat(virStoragePoolDefPtr def)
 
     return virBufferContentAndReset(&buf);
 
-no_memory:
+ no_memory:
     virReportOOMError();
-cleanup:
+ cleanup:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -1429,7 +1429,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
                                 DEFAULT_VOL_PERM_MODE) < 0)
         goto error;
 
-cleanup:
+ cleanup:
     VIR_FREE(nodes);
     VIR_FREE(allocation);
     VIR_FREE(capacity);
@@ -1437,7 +1437,7 @@ cleanup:
     VIR_FREE(type);
     return ret;
 
-error:
+ error:
     virStorageVolDefFree(ret);
     ret = NULL;
     goto cleanup;
@@ -1467,7 +1467,7 @@ virStorageVolDefParseNode(virStoragePoolDefPtr pool,
 
     ctxt->node = root;
     def = virStorageVolDefParseXML(pool, ctxt);
-cleanup:
+ cleanup:
     xmlXPathFreeContext(ctxt);
     return def;
 }
@@ -1669,9 +1669,9 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
 
     return virBufferContentAndReset(&buf);
 
-no_memory:
+ no_memory:
     virReportOOMError();
-cleanup:
+ cleanup:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -2018,9 +2018,9 @@ virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def)
 
     return virBufferContentAndReset(&buf);
 
-no_memory:
+ no_memory:
     virReportOOMError();
-cleanup:
+ cleanup:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -2082,7 +2082,7 @@ virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
         ret = 0;
     }
 
-cleanup:
+ cleanup:
     if (pool)
         virStoragePoolObjUnlock(pool);
     return ret;
@@ -2291,7 +2291,7 @@ virStoragePoolObjListExport(virConnectPtr conn,
 
     ret = npools;
 
-cleanup:
+ cleanup:
     if (tmp_pools) {
         for (i = 0; i < npools; i++) {
             if (tmp_pools[i])

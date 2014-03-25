@@ -183,7 +183,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
         def->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(snapshot);
     VIR_FREE(type);
     if (ret < 0)
@@ -357,7 +357,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
 
     ret = def;
 
-cleanup:
+ cleanup:
     VIR_FREE(creation);
     VIR_FREE(state);
     VIR_FREE(nodes);
@@ -394,7 +394,7 @@ virDomainSnapshotDefParseNode(xmlDocPtr xml,
     ctxt->node = root;
     def = virDomainSnapshotDefParse(ctxt, caps, xmlopt,
                                     expectedVirtTypes, flags);
-cleanup:
+ cleanup:
     xmlXPathFreeContext(ctxt);
     return def;
 }
@@ -606,7 +606,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virBitmapFree(map);
     return ret;
 }
@@ -1120,7 +1120,7 @@ virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
     ret = count;
     *snaps = list;
 
-cleanup:
+ cleanup:
     for (i = 0; i < count; i++)
         VIR_FREE(names[i]);
     VIR_FREE(names);
@@ -1301,7 +1301,7 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 

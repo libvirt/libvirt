@@ -1006,7 +1006,7 @@ ipsetValidator(enum attrDatatype datatype ATTRIBUTE_UNUSED, union data *val,
 
     return true;
 
-arg_err_exit:
+ arg_err_exit:
     virReportError(VIR_ERR_INVALID_ARG,
                    "%s", errmsg);
     return false;
@@ -1052,7 +1052,7 @@ ipsetFlagsValidator(enum attrDatatype datatype ATTRIBUTE_UNUSED, union data *val
 
     return true;
 
-arg_err_exit:
+ arg_err_exit:
     virReportError(VIR_ERR_INVALID_ARG,
                    "%s", errmsg);
     return false;
@@ -2070,10 +2070,10 @@ virNWFilterIncludeParse(xmlNodePtr cur)
     if (!ret->params)
         goto err_exit;
 
-cleanup:
+ cleanup:
     return ret;
 
-err_exit:
+ err_exit:
     virNWFilterIncludeDefFree(ret);
     ret = NULL;
     goto cleanup;
@@ -2405,7 +2405,7 @@ virNWFilterRuleParse(xmlNodePtr node)
 
     virNWFilterRuleDefFixup(ret);
 
-cleanup:
+ cleanup:
     VIR_FREE(prio);
     VIR_FREE(action);
     VIR_FREE(direction);
@@ -2413,7 +2413,7 @@ cleanup:
 
     return ret;
 
-err_exit:
+ err_exit:
     virNWFilterRuleDefFree(ret);
     ret = NULL;
     goto cleanup;
@@ -2495,7 +2495,7 @@ virNWFilterIsAllowedChain(const char *chainname)
     virReportError(VIR_ERR_INVALID_ARG, "%s", msg);
     VIR_FREE(msg);
 
-err_exit:
+ err_exit:
     return NULL;
 }
 
@@ -2651,7 +2651,7 @@ virNWFilterDefParseNode(xmlDocPtr xml,
     ctxt->node = root;
     def = virNWFilterDefParseXML(ctxt);
 
-cleanup:
+ cleanup:
     xmlXPathFreeContext(ctxt);
     return def;
 }
@@ -2762,7 +2762,7 @@ int virNWFilterSaveConfig(const char *configDir,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     return ret;
 }
@@ -2971,7 +2971,7 @@ virNWFilterDefEqual(const virNWFilterDef *def1, virNWFilterDefPtr def2,
 
     ret = STREQ(xml1, xml2);
 
-cleanup:
+ cleanup:
     if (!cmpUUIDs)
         memcpy(def2->uuid, rem_uuid, sizeof(rem_uuid));
 
@@ -3339,7 +3339,7 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
        virBufferAsprintf(buf,
                          "<%s/>\n", type);
 
-err_exit:
+ err_exit:
     return;
 }
 

@@ -428,7 +428,7 @@ virCapabilitiesAddGuest(virCapsPtr caps,
 
     return guest;
 
-error:
+ error:
     virCapabilitiesFreeGuest(guest);
     return NULL;
 }
@@ -477,7 +477,7 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
 
     return dom;
 
-error:
+ error:
     virCapabilitiesFreeGuestDomain(dom);
     return NULL;
 }
@@ -552,7 +552,7 @@ virCapabilitiesHostSecModelAddBaseLabel(virCapsHostSecModelPtr secmodel,
 
     return 0;
 
-no_memory:
+ no_memory:
     VIR_FREE(l);
     VIR_FREE(t);
     return -1;

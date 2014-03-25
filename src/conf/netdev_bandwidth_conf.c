@@ -92,7 +92,7 @@ virNetDevBandwidthParseRate(xmlNodePtr node, virNetDevBandwidthRatePtr rate)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(average);
     VIR_FREE(peak);
     VIR_FREE(burst);
@@ -198,7 +198,7 @@ virNetDevBandwidthParse(xmlNodePtr node,
 
     return def;
 
-error:
+ error:
     virNetDevBandwidthFree(def);
     return NULL;
 }
@@ -266,6 +266,6 @@ virNetDevBandwidthFormat(virNetDevBandwidthPtr def, virBufferPtr buf)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
