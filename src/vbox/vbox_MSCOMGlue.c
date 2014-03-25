@@ -389,7 +389,7 @@ vboxLookupRegistryValue(HKEY key, const char *keyName, const char *valueName)
         value[length] = '\0';
     }
 
-  cleanup:
+ cleanup:
     return value;
 }
 
@@ -441,7 +441,7 @@ vboxLookupVersionInRegistry(void)
 
     result = 0;
 
-  cleanup:
+ cleanup:
     VIR_FREE(value);
     RegCloseKey(key);
 
@@ -580,7 +580,7 @@ vboxComInitialize_v2(const char *pszVirtualBoxIID, IVirtualBox **ppVirtualBox,
 
     result = 0;
 
-  cleanup:
+ cleanup:
     if (result < 0) {
         if (vboxVirtualBox != NULL) {
             vboxVirtualBox->vtbl->nsisupports.Release((nsISupports *)vboxVirtualBox);

@@ -164,7 +164,7 @@ tryLoadOne(const char *dir, bool setAppHome, bool ignoreMissing,
         VIR_DEBUG("Found %s in dynamic linker search path", DYNLIB_NAME);
     }
 
-cleanup:
+ cleanup:
     if (hVBoxXPCOMC != NULL && result < 0) {
         dlclose(hVBoxXPCOMC);
         hVBoxXPCOMC = NULL;

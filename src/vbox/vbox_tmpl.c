@@ -856,7 +856,7 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
 
     result = 0;
 
-cleanup:
+ cleanup:
     VBOX_UTF8_FREE(utf8);
 
     return result;
@@ -907,7 +907,7 @@ static virCapsPtr vboxCapsInit(void)
 
     return caps;
 
-no_memory:
+ no_memory:
     virObjectUnref(caps);
     return NULL;
 }
@@ -960,7 +960,7 @@ vboxInitialize(vboxGlobalData *data)
 
     return 0;
 
-cleanup:
+ cleanup:
     return -1;
 }
 
@@ -1202,7 +1202,7 @@ static int vboxConnectListDomains(virConnectPtr conn, int *ids, int nids)
         }
     }
 
-cleanup:
+ cleanup:
     vboxArrayRelease(&machines);
     return ret;
 }
@@ -1238,7 +1238,7 @@ static int vboxConnectNumOfDomains(virConnectPtr conn)
         }
     }
 
-cleanup:
+ cleanup:
     vboxArrayRelease(&machines);
     return ret;
 }
@@ -1569,7 +1569,7 @@ static int vboxDomainIsPersistent(virDomainPtr dom ATTRIBUTE_UNUSED)
 
     ret = 1;
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
     return ret;
@@ -1595,7 +1595,7 @@ static int vboxDomainIsUpdated(virDomainPtr dom ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
     return ret;
@@ -1647,7 +1647,7 @@ static int vboxDomainSuspend(virDomainPtr dom)
         }
     }
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
     return ret;
@@ -1700,7 +1700,7 @@ static int vboxDomainResume(virDomainPtr dom)
         }
     }
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
     return ret;
@@ -1754,7 +1754,7 @@ static int vboxDomainShutdownFlags(virDomainPtr dom,
         VBOX_SESSION_CLOSE();
     }
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
     return ret;
@@ -1809,7 +1809,7 @@ static int vboxDomainReboot(virDomainPtr dom, unsigned int flags)
         }
     }
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
     return ret;
@@ -1871,7 +1871,7 @@ vboxDomainDestroyFlags(virDomainPtr dom,
         VBOX_SESSION_CLOSE();
     }
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
     return ret;
@@ -1946,7 +1946,7 @@ static int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory)
         }
     }
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
     return ret;
@@ -2050,7 +2050,7 @@ static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
 
     vboxArrayRelease(&machines);
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -2085,7 +2085,7 @@ vboxDomainGetState(virDomainPtr dom,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     vboxIIDUnalloc(&domiid);
     return ret;
 }
@@ -2356,10 +2356,10 @@ static void vboxHostDeviceGetXMLDesc(vboxGlobalData *data, virDomainDefPtr def, 
         USBFilterCount++;
     }
 
-release_filters:
+ release_filters:
     vboxArrayRelease(&deviceFilters);
 #if VBOX_API_VERSION < 4003000
-release_controller:
+ release_controller:
     VBOX_RELEASE(USBController);
 #else
     VBOX_RELEASE(USBDeviceFilters);
@@ -2367,7 +2367,7 @@ release_controller:
 
     return;
 
-release_hostdevs:
+ release_hostdevs:
     for (i = 0; i < def->nhostdevs; i++)
         virDomainHostdevDefFree(def->hostdevs[i]);
     VIR_FREE(def->hostdevs);
@@ -3047,7 +3047,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                 }
             }
 
-sharedFoldersCleanup:
+ sharedFoldersCleanup:
             vboxArrayRelease(&sharedFolders);
 
             /* dump network cards if present */
@@ -3491,7 +3491,7 @@ sharedFoldersCleanup:
     if (gotAllABoutDef == 0)
         ret = virDomainDefFormat(def, flags);
 
-cleanup:
+ cleanup:
     vboxIIDUnalloc(&iid);
     virDomainDefFree(def);
     return ret;
@@ -3546,7 +3546,7 @@ static int vboxConnectListDefinedDomains(virConnectPtr conn, char ** const names
         }
     }
 
-cleanup:
+ cleanup:
     vboxArrayRelease(&machines);
     return ret;
 }
@@ -3584,7 +3584,7 @@ static int vboxConnectNumOfDefinedDomains(virConnectPtr conn)
         }
     }
 
-cleanup:
+ cleanup:
     vboxArrayRelease(&machines);
     return ret;
 }
@@ -3817,7 +3817,7 @@ static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     /* Do the cleanup and take care you dont leak any memory */
     vboxArrayRelease(&machines);
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -5299,7 +5299,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml)
 
     return ret;
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
     virDomainDefFree(def);
@@ -5679,7 +5679,7 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
         }
     }
 
-cleanup:
+ cleanup:
     vboxIIDUnalloc(&iid);
     virDomainDefFree(def);
     virDomainDeviceDefFree(dev);
@@ -5851,7 +5851,7 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
         }
     }
 
-cleanup:
+ cleanup:
     vboxIIDUnalloc(&iid);
     virDomainDefFree(def);
     virDomainDeviceDefFree(dev);
@@ -5946,11 +5946,11 @@ vboxDomainSnapshotGetAll(virDomainPtr dom,
         vboxArrayRelease(&children);
     }
 
-out:
+ out:
     *snapshots = list;
     return count;
 
-error:
+ error:
     if (list) {
         for (next = 0; next < count; next++)
             VBOX_RELEASE(list[next]);
@@ -6002,7 +6002,7 @@ vboxDomainSnapshotGet(vboxGlobalData *data,
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     if (count > 0) {
         for (i = 0; i < count; i++) {
             if (snapshots[i] != snapshot)
@@ -6118,7 +6118,7 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
 
     ret = virGetDomainSnapshot(dom, def->name);
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(progress);
     VBOX_UTF16_FREE(description);
     VBOX_UTF16_FREE(name);
@@ -6232,7 +6232,7 @@ vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     virUUIDFormat(dom->uuid, uuidstr);
     ret = virDomainSnapshotDefFormat(uuidstr, def, flags, 0);
 
-cleanup:
+ cleanup:
     virDomainSnapshotDefFree(def);
     VBOX_RELEASE(parent);
     VBOX_RELEASE(snap);
@@ -6282,7 +6282,7 @@ vboxDomainSnapshotNum(virDomainPtr dom,
     else
         ret = snapshotCount;
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
     return ret;
@@ -6367,7 +6367,7 @@ vboxDomainSnapshotListNames(virDomainPtr dom,
     else
         ret = nameslen;
 
-cleanup:
+ cleanup:
     if (count > 0) {
         for (i = 0; i < count; i++)
             VBOX_RELEASE(snapshots[i]);
@@ -6404,7 +6404,7 @@ vboxDomainSnapshotLookupByName(virDomainPtr dom,
 
     ret = virGetDomainSnapshot(dom, name);
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(snapshot);
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
@@ -6443,7 +6443,7 @@ vboxDomainHasCurrentSnapshot(virDomainPtr dom,
     else
         ret = 0;
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
     return ret;
@@ -6505,7 +6505,7 @@ vboxDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
 
     ret = virGetDomainSnapshot(dom, name);
 
-cleanup:
+ cleanup:
     VBOX_UTF8_FREE(name);
     VBOX_UTF16_FREE(nameUtf16);
     VBOX_RELEASE(snap);
@@ -6565,7 +6565,7 @@ vboxDomainSnapshotCurrent(virDomainPtr dom,
 
     ret = virGetDomainSnapshot(dom, name);
 
-cleanup:
+ cleanup:
     VBOX_UTF8_FREE(name);
     VBOX_UTF16_FREE(nameUtf16);
     VBOX_RELEASE(snapshot);
@@ -6627,7 +6627,7 @@ vboxDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
 
     ret = STREQ(snapshot->name, name);
 
-cleanup:
+ cleanup:
     VBOX_UTF8_FREE(name);
     VBOX_UTF16_FREE(nameUtf16);
     VBOX_RELEASE(snap);
@@ -6664,7 +6664,7 @@ vboxDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(snap);
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
@@ -6697,7 +6697,7 @@ vboxDomainSnapshotRestore(virDomainPtr dom,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     vboxIIDUnalloc(&iid);
     return ret;
 }
@@ -6769,7 +6769,7 @@ vboxDomainSnapshotRestore(virDomainPtr dom,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(progress);
     VBOX_RELEASE(console);
     VBOX_SESSION_CLOSE();
@@ -6846,7 +6846,7 @@ vboxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     } else
         ret = 0;
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(prevSnapshot);
     VBOX_RELEASE(newSnapshot);
     vboxIIDUnalloc(&domiid);
@@ -6901,7 +6901,7 @@ vboxDomainSnapshotDeleteSingle(vboxGlobalData *data,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(progress);
     vboxIIDUnalloc(&iid);
     return ret;
@@ -6931,7 +6931,7 @@ vboxDomainSnapshotDeleteTree(vboxGlobalData *data,
 
     ret = vboxDomainSnapshotDeleteSingle(data, console, snapshot);
 
-cleanup:
+ cleanup:
     vboxArrayRelease(&children);
     return ret;
 }
@@ -7000,7 +7000,7 @@ vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     else
         ret = vboxDomainSnapshotDeleteSingle(data, console, snap);
 
-cleanup:
+ cleanup:
     VBOX_RELEASE(console);
     VBOX_RELEASE(snap);
     vboxIIDUnalloc(&domiid);
@@ -7578,7 +7578,7 @@ static virDrvOpenStatus vboxNetworkOpen(virConnectPtr conn,
     /* conn->networkPrivateData = some network specific data */
     return VIR_DRV_OPEN_SUCCESS;
 
-cleanup:
+ cleanup:
     return VIR_DRV_OPEN_DECLINED;
 }
 
@@ -8032,7 +8032,7 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
     VBOX_UTF16_FREE(networkInterfaceNameUtf16);
     VBOX_RELEASE(host);
 
-cleanup:
+ cleanup:
     virNetworkDefFree(def);
     return ret;
 }
@@ -8128,7 +8128,7 @@ vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterface)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(networkNameUtf8);
     return ret;
 }
@@ -8201,7 +8201,7 @@ static int vboxNetworkCreate(virNetworkPtr network)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(networkNameUtf8);
     return ret;
 }
@@ -8366,7 +8366,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network,
 
     ret = virNetworkDefFormat(def, 0);
 
-cleanup:
+ cleanup:
     virNetworkDefFree(def);
     VIR_FREE(networkNameUtf8);
     return ret;
@@ -8832,7 +8832,7 @@ static virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
     VBOX_UTF16_FREE(hddFormatUtf16);
     VBOX_UTF16_FREE(hddNameUtf16);
 
-cleanup:
+ cleanup:
     virStorageVolDefFree(def);
     return ret;
 }
@@ -9374,7 +9374,7 @@ vboxDomainScreenshot(virDomainPtr dom,
                                    _("unable to open stream"));
                     VIR_FREE(ret);
                 }
-endjob:
+ endjob:
                 VIR_FREE(screenData);
                 VBOX_RELEASE(display);
             }
@@ -9534,7 +9534,7 @@ vboxConnectListAllDomains(virConnectPtr conn,
 
     ret = count;
 
-cleanup:
+ cleanup:
     if (doms) {
         for (i = 0; i < count; i++) {
             if (doms[i])
