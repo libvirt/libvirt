@@ -38,6 +38,7 @@
 #include "lxc_container.h"
 #include "virnodesuspend.h"
 #include "virstring.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -66,6 +67,7 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
     virCapsPtr caps;
     virCapsGuestPtr guest;
     virArch altArch;
+    char *lxc_path = NULL;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    0, 0)) == NULL)
@@ -89,10 +91,15 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
         goto error;
     }
 
+    if (!(lxc_path = virFileFindResource("libvirt_lxc",
+                                         "src",
+                                         LIBEXECDIR)))
+        goto error;
+
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "exe",
                                          caps->host.arch,
-                                         LIBEXECDIR "/libvirt_lxc",
+                                         lxc_path,
                                          NULL,
                                          0,
                                          NULL)) == NULL)
@@ -111,7 +118,7 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
         if ((guest = virCapabilitiesAddGuest(caps,
                                              "exe",
                                              altArch,
-                                             LIBEXECDIR "/libvirt_lxc",
+                                             lxc_path,
                                              NULL,
                                              0,
                                              NULL)) == NULL)
@@ -125,6 +132,8 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
                                           NULL) == NULL)
             goto error;
     }
+
+    VIR_FREE(lxc_path);
 
     if (driver) {
         /* Security driver data */
@@ -158,6 +167,7 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
     return caps;
 
  error:
+    VIR_FREE(lxc_path);
     virObjectUnref(caps);
     return NULL;
 }
