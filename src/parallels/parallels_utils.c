@@ -47,7 +47,7 @@ parallelsDoCmdRun(char **outbuf, const char *binary, va_list list)
 
     ret = 0;
 
-  cleanup:
+ cleanup:
     virCommandFree(cmd);
     if (ret && outbuf)
         VIR_FREE(*outbuf);

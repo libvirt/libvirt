@@ -148,7 +148,7 @@ parallelsBuildCapabilities(void)
 
     return caps;
 
-  error:
+ error:
     virObjectUnref(caps);
     return NULL;
 }
@@ -239,7 +239,7 @@ parallelsAddSerialInfo(virDomainChrDefPtr **serials, size_t *nserials,
 
     return 0;
 
-  cleanup:
+ cleanup:
     virDomainChrDefFree(chr);
     return -1;
 }
@@ -284,7 +284,7 @@ parallelsAddVideoInfo(virDomainDefPtr def, virJSONValuePtr value)
 
     return 0;
 
-error:
+ error:
     VIR_FREE(accel);
     virDomainVideoDefFree(video);
     return -1;
@@ -390,7 +390,7 @@ parallelsAddHddInfo(virDomainDefPtr def, const char *key, virJSONValuePtr value)
 
     return 0;
 
-error:
+ error:
     virDomainDiskDefFree(disk);
     return -1;
 }
@@ -422,7 +422,7 @@ parallelsMacAddrParse(const char *str, virMacAddrPtr addr)
     }
 
     return 0;
-error:
+ error:
     virReportError(VIR_ERR_INVALID_ARG,
                    _("Invalid MAC address format '%s'"), str);
     return -1;
@@ -488,7 +488,7 @@ parallelsGetNetInfo(virDomainNetDefPtr net,
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -510,7 +510,7 @@ parallelsAddNetInfo(virDomainDefPtr def, const char *key, virJSONValuePtr value)
 
     return 0;
 
-error:
+ error:
     virDomainNetDefFree(net);
     return -1;
 }
@@ -554,7 +554,7 @@ parallelsAddDomainHardware(virDomainDefPtr def, virJSONValuePtr jobj)
 
     return 0;
 
-  cleanup:
+ cleanup:
     return -1;
 }
 
@@ -627,7 +627,7 @@ parallelsAddVNCInfo(virDomainDefPtr def, virJSONValuePtr jobj_root)
 
     return 0;
 
-  cleanup:
+ cleanup:
     virDomainGraphicsDefFree(gr);
     return ret;
 }
@@ -818,7 +818,7 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
 
     return dom;
 
-  cleanup:
+ cleanup:
     virDomainDefFree(def);
     parallelsDomObjFreePrivate(pdom);
     return NULL;
@@ -867,7 +867,7 @@ parallelsLoadDomains(parallelsConnPtr privconn, const char *domain_name)
 
     ret = 0;
 
-  cleanup:
+ cleanup:
     virJSONValueFree(jobj);
     return ret;
 }
@@ -908,7 +908,7 @@ parallelsOpenDefault(virConnectPtr conn)
 
     return VIR_DRV_OPEN_SUCCESS;
 
-  error:
+ error:
     virObjectUnref(privconn->domains);
     virObjectUnref(privconn->caps);
     virStoragePoolObjListFree(&privconn->pools);
@@ -1008,7 +1008,7 @@ parallelsConnectGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *h
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(output);
     return ret;
 }
@@ -1114,7 +1114,7 @@ parallelsDomainLookupByID(virConnectPtr conn, int id)
     if (ret)
         ret->id = dom->def->id;
 
-  cleanup:
+ cleanup:
     if (dom)
         virObjectUnlock(dom);
     return ret;
@@ -1143,7 +1143,7 @@ parallelsDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (ret)
         ret->id = dom->def->id;
 
-  cleanup:
+ cleanup:
     if (dom)
         virObjectUnlock(dom);
     return ret;
@@ -1170,7 +1170,7 @@ parallelsDomainLookupByName(virConnectPtr conn, const char *name)
     if (ret)
         ret->id = dom->def->id;
 
-  cleanup:
+ cleanup:
     if (dom)
         virObjectUnlock(dom);
     return ret;
@@ -1199,7 +1199,7 @@ parallelsDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     info->cpuTime = 0;
     ret = 0;
 
-  cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -1222,7 +1222,7 @@ parallelsDomainGetOSType(virDomainPtr domain)
 
     ignore_value(VIR_STRDUP(ret, privdom->def->os.type));
 
-  cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     parallelsDriverUnlock(privconn);
@@ -1245,7 +1245,7 @@ parallelsDomainIsPersistent(virDomainPtr domain)
 
     ret = 1;
 
-  cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     parallelsDriverUnlock(privconn);
@@ -1273,7 +1273,7 @@ parallelsDomainGetState(virDomainPtr domain,
     *state = virDomainObjGetState(privdom, reason);
     ret = 0;
 
-  cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -1303,7 +1303,7 @@ parallelsDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     ret = virDomainDefFormat(def, flags);
 
-  cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -1328,7 +1328,7 @@ parallelsDomainGetAutostart(virDomainPtr domain, int *autostart)
     *autostart = privdom->autostart;
     ret = 0;
 
-  cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -1371,7 +1371,7 @@ parallelsDomainChangeState(virDomainPtr domain,
 
     ret = 0;
 
-  cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
 
@@ -1490,7 +1490,7 @@ parallelsApplyGraphicsParams(virDomainGraphicsDefPtr *oldgraphics, int nold,
     }
 
     return 0;
-error:
+ error:
     virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                    _("changing display parameters is not supported "
                      "by parallels driver"));
@@ -1538,7 +1538,7 @@ parallelsApplySerialParams(virDomainChrDefPtr *oldserials, int nold,
     }
 
     return 0;
-error:
+ error:
     virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                    _("changing serial device parameters is "
                      "not supported by parallels driver"));
@@ -1634,7 +1634,7 @@ static int parallelsAddHddByVolume(parallelsDomObjPtr pdom,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }
@@ -1674,7 +1674,7 @@ static int parallelsAddHdd(virConnectPtr conn,
 
     ret = parallelsAddHddByVolume(pdom, disk, pool, voldef);
 
-cleanup:
+ cleanup:
     if (pool)
         virStoragePoolObjUnlock(pool);
     virObjectUnref(vol);
@@ -1895,7 +1895,7 @@ static int parallelsApplyIfaceParams(parallelsDomObjPtr pdom,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (create)
         VIR_FREE(oldnet);
     virCommandFree(cmd);
@@ -2262,9 +2262,9 @@ parallelsCreateVm(virConnectPtr conn, virDomainDefPtr def)
 
     return 0;
 
-  error2:
+ error2:
     virStoragePoolObjUnlock(pool);
-  error:
+ error:
     virObjectUnref(vol);
     return -1;
 }
@@ -2295,7 +2295,7 @@ parallelsCreateCt(virConnectPtr conn ATTRIBUTE_UNUSED, virDomainDefPtr def)
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -2361,7 +2361,7 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
     if (ret)
         ret->id = dom->def->id;
 
-  cleanup:
+ cleanup:
     virDomainDefFree(def);
     if (dom)
         virObjectUnlock(dom);

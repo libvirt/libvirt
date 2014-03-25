@@ -94,7 +94,7 @@ static int parallelsGetBridgedNetInfo(virNetworkDefPtr def, virJSONValuePtr jobj
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(bridgeLink);
     VIR_FREE(bridgePath);
     VIR_FREE(bridgeAddress);
@@ -175,7 +175,7 @@ static int parallelsGetHostOnlyNetInfo(virNetworkDefPtr def, const char *name)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virJSONValueFree(jobj);
     return ret;
 }
@@ -236,7 +236,7 @@ parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
     virNetworkObjUnlock(net);
     return net;
 
-cleanup:
+ cleanup:
     virNetworkDefFree(def);
     return NULL;
 }
@@ -273,7 +273,7 @@ parallelsAddRoutedNetwork(parallelsConnPtr privconn)
 
     return net;
 
-cleanup:
+ cleanup:
     virNetworkDefFree(def);
     return NULL;
 }
@@ -317,7 +317,7 @@ static int parallelsLoadNetworks(parallelsConnPtr privconn)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virJSONValueFree(jobj);
     return ret;
 }
@@ -480,7 +480,7 @@ static virNetworkPtr parallelsNetworkLookupByUUID(virConnectPtr conn,
 
     ret = virGetNetwork(conn, network->def->name, network->def->uuid);
 
-cleanup:
+ cleanup:
     if (network)
         virNetworkObjUnlock(network);
     return ret;
@@ -504,7 +504,7 @@ static virNetworkPtr parallelsNetworkLookupByName(virConnectPtr conn,
 
     ret = virGetNetwork(conn, network->def->name, network->def->uuid);
 
-cleanup:
+ cleanup:
     if (network)
         virNetworkObjUnlock(network);
     return ret;
@@ -531,7 +531,7 @@ static char *parallelsNetworkGetXMLDesc(virNetworkPtr net,
 
     ret = virNetworkDefFormat(network->def, flags);
 
-cleanup:
+ cleanup:
     if (network)
         virNetworkObjUnlock(network);
     return ret;
@@ -552,7 +552,7 @@ static int parallelsNetworkIsActive(virNetworkPtr net)
     }
     ret = virNetworkObjIsActive(obj);
 
-cleanup:
+ cleanup:
     if (obj)
         virNetworkObjUnlock(obj);
     return ret;
@@ -573,7 +573,7 @@ static int parallelsNetworkIsPersistent(virNetworkPtr net)
     }
     ret = obj->persistent;
 
-cleanup:
+ cleanup:
     if (obj)
         virNetworkObjUnlock(obj);
     return ret;
@@ -598,7 +598,7 @@ static int parallelsNetworkGetAutostart(virNetworkPtr net,
     *autostart = network->autostart;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (network)
         virNetworkObjUnlock(network);
     return ret;
