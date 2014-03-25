@@ -898,12 +898,9 @@ iptablesRenameTmpRootChains(virBufferPtr buf,
 
 static void
 iptablesInstCommand(virBufferPtr buf,
-                    const char *templ, char cmd, int pos)
+                    const char *cmdstr)
 {
-    char position[10] = { 0 };
-    if (pos >= 0)
-        snprintf(position, sizeof(position), "%d", pos);
-    virBufferAsprintf(buf, templ, cmd, position);
+    virBufferAdd(buf, cmdstr, -1);
     virBufferAsprintf(buf, CMD_SEPARATOR "%s",
                       CMD_STOPONERR(true));
 }
@@ -1298,7 +1295,7 @@ _iptablesCreateRuleInstance(bool directionIn,
     case VIR_NWFILTER_RULE_PROTOCOL_TCP:
     case VIR_NWFILTER_RULE_PROTOCOL_TCPoIPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "$IPT -%%c %s %%s",
+                          CMD_DEF_PRE "$IPT -A %s",
                           chain);
 
         virBufferAddLit(&buf, " -p tcp");
@@ -1353,7 +1350,7 @@ _iptablesCreateRuleInstance(bool directionIn,
     case VIR_NWFILTER_RULE_PROTOCOL_UDP:
     case VIR_NWFILTER_RULE_PROTOCOL_UDPoIPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "$IPT -%%c %s %%s",
+                          CMD_DEF_PRE "$IPT -A %s",
                           chain);
 
         virBufferAddLit(&buf, " -p udp");
@@ -1386,7 +1383,7 @@ _iptablesCreateRuleInstance(bool directionIn,
     case VIR_NWFILTER_RULE_PROTOCOL_UDPLITE:
     case VIR_NWFILTER_RULE_PROTOCOL_UDPLITEoIPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "$IPT -%%c %s %%s",
+                          CMD_DEF_PRE "$IPT -A %s",
                           chain);
 
         virBufferAddLit(&buf, " -p udplite");
@@ -1414,7 +1411,7 @@ _iptablesCreateRuleInstance(bool directionIn,
     case VIR_NWFILTER_RULE_PROTOCOL_ESP:
     case VIR_NWFILTER_RULE_PROTOCOL_ESPoIPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "$IPT -%%c %s %%s",
+                          CMD_DEF_PRE "$IPT -A %s",
                           chain);
 
         virBufferAddLit(&buf, " -p esp");
@@ -1442,7 +1439,7 @@ _iptablesCreateRuleInstance(bool directionIn,
     case VIR_NWFILTER_RULE_PROTOCOL_AH:
     case VIR_NWFILTER_RULE_PROTOCOL_AHoIPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "$IPT -%%c %s %%s",
+                          CMD_DEF_PRE "$IPT -A %s",
                           chain);
 
         virBufferAddLit(&buf, " -p ah");
@@ -1470,7 +1467,7 @@ _iptablesCreateRuleInstance(bool directionIn,
     case VIR_NWFILTER_RULE_PROTOCOL_SCTP:
     case VIR_NWFILTER_RULE_PROTOCOL_SCTPoIPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "$IPT -%%c %s %%s",
+                          CMD_DEF_PRE "$IPT -A %s",
                           chain);
 
         virBufferAddLit(&buf, " -p sctp");
@@ -1503,7 +1500,7 @@ _iptablesCreateRuleInstance(bool directionIn,
     case VIR_NWFILTER_RULE_PROTOCOL_ICMP:
     case VIR_NWFILTER_RULE_PROTOCOL_ICMPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "$IPT -%%c %s %%s",
+                          CMD_DEF_PRE "$IPT -A %s",
                           chain);
 
         if (rule->prtclType == VIR_NWFILTER_RULE_PROTOCOL_ICMP)
@@ -1568,7 +1565,7 @@ _iptablesCreateRuleInstance(bool directionIn,
 
     case VIR_NWFILTER_RULE_PROTOCOL_IGMP:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "$IPT -%%c %s %%s",
+                          CMD_DEF_PRE "$IPT -A %s",
                           chain);
 
         virBufferAddLit(&buf, " -p igmp");
@@ -1596,7 +1593,7 @@ _iptablesCreateRuleInstance(bool directionIn,
     case VIR_NWFILTER_RULE_PROTOCOL_ALL:
     case VIR_NWFILTER_RULE_PROTOCOL_ALLoIPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "$IPT -%%c %s %%s",
+                          CMD_DEF_PRE "$IPT -A %s",
                           chain);
 
         virBufferAddLit(&buf, " -p all");
@@ -2026,7 +2023,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
     case VIR_NWFILTER_RULE_PROTOCOL_MAC:
 
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "$EBT -t nat -%%c %s %%s",
+                          CMD_DEF_PRE "$EBT -t nat -A %s",
                           chain);
 
         if (ebtablesHandleEthHdr(&buf,
@@ -2050,7 +2047,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
     case VIR_NWFILTER_RULE_PROTOCOL_VLAN:
 
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "$EBT -t nat -%%c %s %%s",
+                          CMD_DEF_PRE "$EBT -t nat -A %s",
                           chain);
 
 
@@ -2117,7 +2114,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         }
 
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "$EBT -t nat -%%c %s %%s",
+                          CMD_DEF_PRE "$EBT -t nat -A %s",
                           chain);
 
 
@@ -2155,7 +2152,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
     case VIR_NWFILTER_RULE_PROTOCOL_RARP:
 
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "$EBT -t nat -%%c %s %%s",
+                          CMD_DEF_PRE "$EBT -t nat -A %s",
                           chain);
 
         if (ebtablesHandleEthHdr(&buf,
@@ -2282,7 +2279,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
     case VIR_NWFILTER_RULE_PROTOCOL_IP:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "$EBT -t nat -%%c %s %%s",
+                          CMD_DEF_PRE "$EBT -t nat -A %s",
                           chain);
 
         if (ebtablesHandleEthHdr(&buf,
@@ -2424,7 +2421,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
     case VIR_NWFILTER_RULE_PROTOCOL_IPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "$EBT -t nat -%%c %s %%s",
+                          CMD_DEF_PRE "$EBT -t nat -A %s",
                           chain);
 
         if (ebtablesHandleEthHdr(&buf,
@@ -2554,7 +2551,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
     case VIR_NWFILTER_RULE_PROTOCOL_NONE:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "$EBT -t nat -%%c %s %%s",
+                          CMD_DEF_PRE "$EBT -t nat -A %s",
                           chain);
     break;
 
@@ -2908,7 +2905,7 @@ ebtablesCreateTmpSubChain(ebiptablesRuleInstPtr *inst,
                       CMD_DEF("$EBT -t nat -N %s") CMD_SEPARATOR
                       CMD_EXEC
                       "%s"
-                      CMD_DEF("$EBT -t nat -%%c %s %%s %s-j %s")
+                      CMD_DEF("$EBT -t nat -A %s %s-j %s")
                           CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
@@ -3071,15 +3068,11 @@ ebtablesRenameTmpSubAndRootChains(virBufferPtr buf,
 
 static void
 ebiptablesInstCommand(virBufferPtr buf,
-                      const char *templ, char cmd, int pos,
-                      bool stopOnError)
+                      const char *cmdstr)
 {
-    char position[10] = { 0 };
-    if (pos >= 0)
-        snprintf(position, sizeof(position), "%d", pos);
-    virBufferAsprintf(buf, templ, cmd, position);
+    virBufferAdd(buf, cmdstr, -1);
     virBufferAsprintf(buf, CMD_SEPARATOR "%s",
-                      CMD_STOPONERR(stopOnError));
+                      CMD_STOPONERR(true));
 }
 
 
@@ -3606,12 +3599,11 @@ ebtablesCreateTmpRootAndSubChains(virBufferPtr buf,
 static int
 iptablesRuleInstCommand(virBufferPtr buf,
                         const char *ifname,
-                        virNWFilterRuleInstPtr rule,
-                        char cmd, int pos)
+                        virNWFilterRuleInstPtr rule)
 {
     virNWFilterVarCombIterPtr vciter, tmp;
-    char **templates = NULL;
-    size_t ntemplates = 0;
+    char **cmds = NULL;
+    size_t ncmds = 0;
     size_t i;
     int ret = -1;
 
@@ -3630,20 +3622,20 @@ iptablesRuleInstCommand(virBufferPtr buf,
                                          rule->def,
                                          ifname,
                                          tmp,
-                                         &templates,
-                                         &ntemplates) < 0)
+                                         &cmds,
+                                         &ncmds) < 0)
             goto cleanup;
         tmp = virNWFilterVarCombIterNext(tmp);
     } while (tmp != NULL);
 
-    for (i = 0; i < ntemplates; i++)
-        iptablesInstCommand(buf, templates[i], cmd, pos);
+    for (i = 0; i < ncmds; i++)
+        iptablesInstCommand(buf, cmds[i]);
 
     ret = 0;
  cleanup:
-    for (i = 0; i < ntemplates; i++)
-        VIR_FREE(templates[i]);
-    VIR_FREE(templates);
+    for (i = 0; i < ncmds; i++)
+        VIR_FREE(cmds[i]);
+    VIR_FREE(cmds);
     virNWFilterVarCombIterFree(vciter);
     return ret;
 }
@@ -3652,13 +3644,11 @@ iptablesRuleInstCommand(virBufferPtr buf,
 static int
 ebtablesRuleInstCommand(virBufferPtr buf,
                         const char *ifname,
-                        virNWFilterRuleInstPtr rule,
-                        char cmd, int pos,
-                        bool stopOnError)
+                        virNWFilterRuleInstPtr rule)
 {
     virNWFilterVarCombIterPtr vciter, tmp;
-    char **templates = NULL;
-    size_t ntemplates = 0;
+    char **cmds = NULL;
+    size_t ncmds = 0;
     size_t i;
     int ret = -1;
 
@@ -3677,20 +3667,20 @@ ebtablesRuleInstCommand(virBufferPtr buf,
                                          rule->def,
                                          ifname,
                                          tmp,
-                                         &templates,
-                                         &ntemplates) < 0)
+                                         &cmds,
+                                         &ncmds) < 0)
             goto cleanup;
         tmp = virNWFilterVarCombIterNext(tmp);
     } while (tmp != NULL);
 
-    for (i = 0; i < ntemplates; i++)
-        ebiptablesInstCommand(buf, templates[i], cmd, pos, stopOnError);
+    for (i = 0; i < ncmds; i++)
+        ebiptablesInstCommand(buf, cmds[i]);
 
     ret = 0;
  cleanup:
-    for (i = 0; i < ntemplates; i++)
-        VIR_FREE(templates[i]);
-    VIR_FREE(templates);
+    for (i = 0; i < ncmds; i++)
+        VIR_FREE(cmds[i]);
+    VIR_FREE(cmds);
     virNWFilterVarCombIterFree(vciter);
     return ret;
 }
@@ -3796,13 +3786,11 @@ ebiptablesApplyNewRules(const char *ifname,
             while (j < nEbtChains &&
                    ebtChains[j].priority <= rules[i]->priority) {
                 ebiptablesInstCommand(&buf,
-                                      ebtChains[j++].commandTemplate,
-                                      'A', -1, true);
+                                      ebtChains[j++].commandTemplate);
             }
             ebtablesRuleInstCommand(&buf,
                                     ifname,
-                                    rules[i],
-                                    'A', -1, true);
+                                    rules[i]);
         } else {
             if (virNWFilterRuleIsProtocolIPv4(rules[i]->def))
                 haveIptables = true;
@@ -3813,8 +3801,7 @@ ebiptablesApplyNewRules(const char *ifname,
 
     while (j < nEbtChains)
         ebiptablesInstCommand(&buf,
-                              ebtChains[j++].commandTemplate,
-                              'A', -1, true);
+                              ebtChains[j++].commandTemplate);
 
     if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
         goto tear_down_tmpebchains;
@@ -3850,8 +3837,7 @@ ebiptablesApplyNewRules(const char *ifname,
             if (virNWFilterRuleIsProtocolIPv4(rules[i]->def))
                 iptablesRuleInstCommand(&buf,
                                         ifname,
-                                        rules[i],
-                                        'A', -1);
+                                        rules[i]);
         }
 
         if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
@@ -3891,8 +3877,7 @@ ebiptablesApplyNewRules(const char *ifname,
             if (virNWFilterRuleIsProtocolIPv6(rules[i]->def))
                 iptablesRuleInstCommand(&buf,
                                         ifname,
-                                        rules[i],
-                                        'A', -1);
+                                        rules[i]);
         }
 
         if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
