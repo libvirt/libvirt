@@ -107,7 +107,7 @@ test3(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(wwnn);
     VIR_FREE(wwpn);
     VIR_FREE(fabric_wwn);
@@ -133,7 +133,7 @@ test4(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(hostname);
     return ret;
 }
@@ -153,7 +153,7 @@ test5(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(hostname);
     return ret;
 }
@@ -180,7 +180,7 @@ mymain(void)
     if (virtTestRun("test5", test5, NULL) < 0)
         ret = -1;
 
-cleanup:
+ cleanup:
     VIR_FREE(fchost_prefix);
     return ret;
 }

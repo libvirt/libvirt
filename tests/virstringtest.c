@@ -80,7 +80,7 @@ static int testSplit(const void *args)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virStringFreeList(got);
 
     return ret;
@@ -103,7 +103,7 @@ static int testJoin(const void *args)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(got);
 
     return ret;
@@ -192,7 +192,7 @@ testStrdup(const void *data ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     for (i = 0; i < ARRAY_CARDINALITY(array); i++)
         VIR_FREE(array[i]);
     return ret;
@@ -228,7 +228,7 @@ testStrndupNegative(const void *opaque ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(dst);
     return ret;
 }

@@ -65,7 +65,7 @@ testFilterXML(char *xml)
 
     ret = virBufferContentAndReset(&buf);
 
-cleanup:
+ cleanup:
     virBufferFreeAndReset(&buf);
     virStringFreeList(xmlLines);
     return ret;
@@ -123,7 +123,7 @@ testCompareXMLToXMLFiles(const char *inxml,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(inXmlData);
     VIR_FREE(outXmlData);
     VIR_FREE(actual);
@@ -226,7 +226,7 @@ mymain(void)
     DO_TEST_IN("description_only", NULL);
     DO_TEST_IN("name_only", NULL);
 
-cleanup:
+ cleanup:
     if (testSnapshotXMLVariableLineRegex)
         regfree(testSnapshotXMLVariableLineRegex);
     VIR_FREE(testSnapshotXMLVariableLineRegex);

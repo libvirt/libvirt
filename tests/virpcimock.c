@@ -219,7 +219,7 @@ pci_read_file(const char *path,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(newpath);
     realclose(fd);
     return ret;
@@ -283,7 +283,7 @@ add_fd(int fd, const char *path)
 
     callbacks[nCallbacks++].fd = fd;
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -307,7 +307,7 @@ remove_fd(int fd)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -558,7 +558,7 @@ pci_driver_bind(struct pciDriver *driver,
 
     dev->driver = driver;
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(devpath);
     VIR_FREE(driverpath);
     return ret;
@@ -592,7 +592,7 @@ pci_driver_unbind(struct pciDriver *driver,
 
     dev->driver = NULL;
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(devpath);
     VIR_FREE(driverpath);
     return ret;
@@ -649,7 +649,7 @@ pci_driver_handle_bind(const char *path)
     }
 
     ret = pci_driver_bind(driver, dev);
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -666,7 +666,7 @@ pci_driver_handle_unbind(const char *path)
     }
 
     ret = pci_driver_unbind(dev->driver, dev);
-cleanup:
+ cleanup:
     return ret;
 }
 static int
@@ -720,7 +720,7 @@ pci_driver_handle_new_id(const char *path)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -761,7 +761,7 @@ pci_driver_handle_remove_id(const char *path)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 

@@ -57,7 +57,7 @@ test1(const void *data ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-error:
+ error:
     virBitmapFree(bitmap);
     return ret;
 }
@@ -138,7 +138,7 @@ test2(const void *data ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-error:
+ error:
     virBitmapFree(bitmap);
     VIR_FREE(bitsString2);
     return ret;
@@ -166,7 +166,7 @@ test3(const void *data ATTRIBUTE_UNUSED)
         goto error;
     ret = 0;
 
-error:
+ error:
     virBitmapFree(bitmap);
     return ret;
 }
@@ -261,7 +261,7 @@ test4(const void *data ATTRIBUTE_UNUSED)
     virBitmapFree(bitmap);
     return 0;
 
-error:
+ error:
     virBitmapFree(bitmap);
     return -1;
 }
@@ -308,7 +308,7 @@ test5(const void *v ATTRIBUTE_UNUSED)
         goto error;
 
     ret = 0;
-error:
+ error:
     virBitmapFree(bitmap);
     VIR_FREE(data2);
     return ret;
@@ -392,7 +392,7 @@ test6(const void *v ATTRIBUTE_UNUSED)
 
 
     ret = 0;
-error:
+ error:
     virBitmapFree(bitmap);
     VIR_FREE(str);
     return ret;
@@ -433,7 +433,7 @@ test7(const void *v ATTRIBUTE_UNUSED)
 
     return 0;
 
-error:
+ error:
     virBitmapFree(bitmap);
     return -1;
 }
@@ -459,7 +459,7 @@ test8(const void *v ATTRIBUTE_UNUSED)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     virBitmapFree(bitmap);
     return ret;
 }
@@ -491,7 +491,7 @@ test9(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     virBitmapFree(bitmap);
     return ret;
 

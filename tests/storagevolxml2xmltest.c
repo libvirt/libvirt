@@ -86,7 +86,7 @@ testCompareXMLToXMLHelper(const void *data)
 
     result = testCompareXMLToXMLFiles(poolxml, inxml, outxml);
 
-cleanup:
+ cleanup:
     VIR_FREE(poolxml);
     VIR_FREE(inxml);
     VIR_FREE(outxml);

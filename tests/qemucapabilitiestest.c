@@ -80,7 +80,7 @@ testQemuFeedMonitor(char *replies,
 
     return test;
 
-error:
+ error:
     qemuMonitorTestFree(test);
     return NULL;
 }
@@ -126,7 +126,7 @@ testQemuGetCaps(char *caps)
     xmlXPathFreeContext(ctxt);
     return qemuCaps;
 
-error:
+ error:
     VIR_FREE(nodes);
     virObjectUnref(qemuCaps);
     xmlFreeDoc(xml);
@@ -203,7 +203,7 @@ testQemuCaps(const void *opaque)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(repliesFile);
     VIR_FREE(capsFile);
     VIR_FREE(replies);

@@ -103,7 +103,7 @@ fakeStoragePoolLookupByName(virConnectPtr conn,
 
     ret = virGetStoragePool(conn, name, fakeUUID, NULL, NULL);
 
-cleanup:
+ cleanup:
     VIR_FREE(xmlpath);
     return ret;
 }
@@ -140,11 +140,11 @@ fakeStorageVolLookupByName(virStoragePoolPtr pool,
     ret = virGetStorageVol(pool->conn, pool->name, volinfo[1], volinfo[0],
                            NULL, NULL);
 
-cleanup:
+ cleanup:
     virStringFreeList(volinfo);
     return ret;
 
-fallback:
+ fallback:
     ret = virGetStorageVol(pool->conn, pool->name, name, "block", NULL, NULL);
     goto cleanup;
 }
@@ -203,7 +203,7 @@ fakeStoragePoolGetXMLDesc(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(xmlpath);
 
     return xmlbuf;
@@ -403,7 +403,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     ret = 0;
 
-out:
+ out:
     VIR_FREE(log);
     VIR_FREE(expectargv);
     VIR_FREE(actualargv);
@@ -444,7 +444,7 @@ testCompareXMLToArgvHelper(const void *data)
                                        info->migrateFrom, info->migrateFd,
                                        flags);
 
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     VIR_FREE(args);
     return result;

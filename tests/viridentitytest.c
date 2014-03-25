@@ -91,7 +91,7 @@ static int testIdentityAttrs(const void *data ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virObjectUnref(ident);
     return ret;
 }
@@ -158,7 +158,7 @@ static int testIdentityEqual(const void *data ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virObjectUnref(identa);
     virObjectUnref(identb);
     return ret;
@@ -195,7 +195,7 @@ static int testIdentityGetSystem(const void *data)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virObjectUnref(ident);
     return ret;
 }

@@ -82,7 +82,7 @@ static int testMessageHeaderEncode(const void *args ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virNetMessageFree(msg);
     return ret;
 }
@@ -178,7 +178,7 @@ static int testMessageHeaderDecode(const void *args ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virNetMessageFree(msg);
     return ret;
 }
@@ -274,7 +274,7 @@ static int testMessagePayloadEncode(const void *args ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     if (err.message)
         VIR_FREE(*err.message);
     if (err.str1)
@@ -449,7 +449,7 @@ static int testMessagePayloadDecode(const void *args ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     xdr_free((xdrproc_t)xdr_virNetMessageError, (void*)&err);
     virNetMessageFree(msg);
     return ret;
@@ -516,7 +516,7 @@ static int testMessagePayloadStreamEncode(const void *args ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virNetMessageFree(msg);
     return ret;
 }

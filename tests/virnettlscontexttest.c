@@ -101,7 +101,7 @@ static int testTLSContextInit(const void *opaque)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(ctxt);
     return ret;
 }

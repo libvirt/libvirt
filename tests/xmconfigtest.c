@@ -188,7 +188,7 @@ testCompareHelper(const void *data)
     else
         result = testCompareFormatXML(cfg, xml, info->version);
 
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     VIR_FREE(cfg);
 

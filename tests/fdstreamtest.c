@@ -147,7 +147,7 @@ static int testFDStreamReadCommon(const char *scratchdir, bool blocking)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     if (st)
         virStreamFree(st);
     VIR_FORCE_CLOSE(fd);
@@ -290,7 +290,7 @@ static int testFDStreamWriteCommon(const char *scratchdir, bool blocking)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     if (st)
         virStreamFree(st);
     VIR_FORCE_CLOSE(fd);

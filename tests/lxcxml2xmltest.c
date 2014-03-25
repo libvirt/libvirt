@@ -101,7 +101,7 @@ testCompareXMLToXMLHelper(const void *data)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(xml_in);
     VIR_FREE(xml_out);
     return ret;

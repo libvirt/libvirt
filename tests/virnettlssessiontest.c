@@ -223,7 +223,7 @@ static int testTLSSessionInit(const void *opaque)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(serverCtxt);
     virObjectUnref(clientCtxt);
     virObjectUnref(serverSess);

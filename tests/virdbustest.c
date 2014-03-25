@@ -117,7 +117,7 @@ static int testMessageSimple(const void *args ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(out_string);
     VIR_FREE(out_signature);
     VIR_FREE(out_objectpath);
@@ -168,7 +168,7 @@ static int testMessageVariant(const void *args ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(out_str1);
     VIR_FREE(out_str2);
     dbus_message_unref(msg);
@@ -221,7 +221,7 @@ static int testMessageArray(const void *args ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(out_str1);
     VIR_FREE(out_str2);
     dbus_message_unref(msg);
@@ -311,7 +311,7 @@ static int testMessageArrayRef(const void *args ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(out_int32);
     VIR_FREE(out_str1);
     VIR_FREE(out_str2);
@@ -386,7 +386,7 @@ static int testMessageStruct(const void *args ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(out_string);
     VIR_FREE(out_signature);
     VIR_FREE(out_objectpath);
@@ -454,7 +454,7 @@ static int testMessageDict(const void *args ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(out_str1);
     VIR_FREE(out_str2);
     VIR_FREE(out_key1);

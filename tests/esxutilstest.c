@@ -75,14 +75,14 @@ testParseDatastorePath(const void *data ATTRIBUTE_UNUSED)
         }
     }
 
-  cleanup:
+ cleanup:
     VIR_FREE(datastoreName);
     VIR_FREE(directoryName);
     VIR_FREE(directoryAndFileName);
 
     return result;
 
-  failure:
+ failure:
     result = -1;
 
     goto cleanup;

@@ -156,7 +156,7 @@ int main(int argc, char **argv) {
 
     return EXIT_SUCCESS;
 
-error:
+ error:
     return EXIT_FAILURE;
 }
 

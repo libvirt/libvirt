@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 
     exit_code = EXIT_SUCCESS;
 
-cleanup:
+ cleanup:
     VIR_FREE(buffer);
     return exit_code;
 }

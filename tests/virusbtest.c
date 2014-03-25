@@ -127,7 +127,7 @@ static int testDeviceFind(const void *opaque)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(devs);
     virUSBDeviceFree(dev);
     return ret;
@@ -226,7 +226,7 @@ testUSBList(const void *opaque ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(list);
     virObjectUnref(devlist);
     virUSBDeviceFree(dev);

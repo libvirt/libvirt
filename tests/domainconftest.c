@@ -78,7 +78,7 @@ static int testGetFilesystem(const void *opaque)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virDomainDefFree(def);
     VIR_FREE(xmlData);
     VIR_FREE(filename);

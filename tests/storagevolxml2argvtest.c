@@ -120,7 +120,7 @@ testCompareXMLToArgvFiles(bool shouldFail,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virStoragePoolDefFree(pool);
     virStoragePoolDefFree(inputpool);
     virStorageVolDefFree(vol);
@@ -181,7 +181,7 @@ testCompareXMLToArgvHelper(const void *data)
                                        cmdline, info->flags,
                                        info->imgformat);
 
-cleanup:
+ cleanup:
     VIR_FREE(poolxml);
     VIR_FREE(volxml);
     VIR_FREE(inputvolxml);

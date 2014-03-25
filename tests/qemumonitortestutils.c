@@ -157,7 +157,7 @@ qemuMonitorReportError(qemuMonitorTestPtr test, const char *errmsg, ...)
 
     ret = qemuMonitorTestAddReponse(test, jsonmsg);
 
-cleanup:
+ cleanup:
     va_end(msgargs);
     VIR_FREE(msg);
     VIR_FREE(jsonmsg);
@@ -269,7 +269,7 @@ qemuMonitorTestIO(virNetSocketPtr sock,
                   VIR_EVENT_HANDLE_ERROR))
         err = true;
 
-cleanup:
+ cleanup:
     if (err) {
         virNetSocketRemoveIOCallback(sock);
         virNetSocketClose(sock);
@@ -404,7 +404,7 @@ qemuMonitorTestAddHandler(qemuMonitorTestPtr test,
 
     return 0;
 
-error:
+ error:
     if (freecb)
         (freecb)(opaque);
     VIR_FREE(item);
@@ -493,7 +493,7 @@ qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
     else
         ret = qemuMonitorTestAddReponse(test, data->response);
 
-cleanup:
+ cleanup:
     VIR_FREE(cmdcopy);
     virJSONValueFree(val);
     return ret;
@@ -563,7 +563,7 @@ qemuMonitorTestProcessGuestAgentSync(qemuMonitorTestPtr test,
 
     ret = qemuMonitorTestAddReponse(test, retmsg);
 
-cleanup:
+ cleanup:
     virJSONValueFree(val);
     VIR_FREE(retmsg);
     return ret;
@@ -653,7 +653,7 @@ qemuMonitorTestProcessCommandWithArgs(qemuMonitorTestPtr test,
     /* arguments checked out, return the response */
     ret = qemuMonitorTestAddReponse(test, data->response);
 
-cleanup:
+ cleanup:
     VIR_FREE(argstr);
     virJSONValueFree(val);
     return ret;
@@ -706,7 +706,7 @@ qemuMonitorTestAddItemParams(qemuMonitorTestPtr test,
                                      qemuMonitorTestProcessCommandWithArgs,
                                      data, qemuMonitorTestHandlerDataFree);
 
-error:
+ error:
     va_end(args);
     qemuMonitorTestHandlerDataFree(data);
     return -1;
@@ -804,10 +804,10 @@ qemuMonitorCommonTestNew(virDomainXMLOptionPtr xmlopt,
     if (virNetSocketListen(test->server, 1) < 0)
         goto error;
 
-cleanup:
+ cleanup:
     return test;
 
-error:
+ error:
     VIR_FREE(path);
     VIR_FREE(tmpdir_template);
     qemuMonitorTestFree(test);
@@ -854,7 +854,7 @@ qemuMonitorCommonTestInit(qemuMonitorTestPtr test)
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -913,7 +913,7 @@ qemuMonitorTestNew(bool json,
 
     return test;
 
-error:
+ error:
     virDomainChrSourceDefClear(&src);
     qemuMonitorTestFree(test);
     return NULL;
@@ -944,7 +944,7 @@ qemuMonitorTestNewAgent(virDomainXMLOptionPtr xmlopt)
 
     return test;
 
-error:
+ error:
     virDomainChrSourceDefClear(&src);
     qemuMonitorTestFree(test);
     return NULL;

@@ -52,7 +52,7 @@ testVirPCIDeviceCheckDriver(virPCIDevicePtr dev, const char *expected)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(path);
     VIR_FREE(driver);
     return ret;
@@ -77,7 +77,7 @@ testVirPCIDeviceNew(const void *opaque ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virPCIDeviceFree(dev);
     return ret;
 }
@@ -122,7 +122,7 @@ testVirPCIDeviceDetach(const void *oaque ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     for (i = 0; i < nDev; i++)
         virPCIDeviceFree(dev[i]);
     virObjectUnref(activeDevs);
@@ -156,7 +156,7 @@ testVirPCIDeviceReset(const void *opaque ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     for (i = 0; i < nDev; i++)
         virPCIDeviceFree(dev[i]);
     virObjectUnref(activeDevs);
@@ -205,7 +205,7 @@ testVirPCIDeviceReattach(const void *opaque ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virObjectUnref(activeDevs);
     virObjectUnref(inactiveDevs);
     return ret;
@@ -233,7 +233,7 @@ testVirPCIDeviceIsAssignable(const void *opaque)
         ret = 0;
 
     virPCIDeviceFree(dev);
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -253,7 +253,7 @@ testVirPCIDeviceDetachSingle(const void *opaque)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     virPCIDeviceFree(dev);
     return ret;
 }
@@ -284,7 +284,7 @@ testVirPCIDeviceDetachFail(const void *opaque)
                        virPCIDeviceGetStubDriver(dev));
     }
 
-cleanup:
+ cleanup:
     virPCIDeviceFree(dev);
     return ret;
 }
@@ -305,7 +305,7 @@ testVirPCIDeviceReattachSingle(const void *opaque)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     virPCIDeviceFree(dev);
     return ret;
 }
@@ -325,7 +325,7 @@ testVirPCIDeviceCheckDriverTest(const void *opaque)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     virPCIDeviceFree(dev);
     return ret;
 }
@@ -345,7 +345,7 @@ testVirPCIDeviceUnbind(const void *opaque)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     virPCIDeviceFree(dev);
     return ret;
 }

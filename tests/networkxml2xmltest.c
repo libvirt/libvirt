@@ -74,7 +74,7 @@ testCompareXMLToXMLHelper(const void *data)
 
     result = testCompareXMLToXMLFiles(inxml, outxml, info->flags);
 
-cleanup:
+ cleanup:
     VIR_FREE(inxml);
     VIR_FREE(outxml);
 

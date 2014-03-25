@@ -54,7 +54,7 @@ static int testLockSpaceCreate(const void *args ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virLockSpaceFree(lockspace);
     rmdir(LOCKSPACE_DIR);
     return ret;
@@ -88,7 +88,7 @@ static int testLockSpaceResourceLifecycle(const void *args ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virLockSpaceFree(lockspace);
     rmdir(LOCKSPACE_DIR);
     return ret;
@@ -134,7 +134,7 @@ static int testLockSpaceResourceLockExcl(const void *args ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virLockSpaceFree(lockspace);
     rmdir(LOCKSPACE_DIR);
     return ret;
@@ -172,7 +172,7 @@ static int testLockSpaceResourceLockExclAuto(const void *args ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virLockSpaceFree(lockspace);
     rmdir(LOCKSPACE_DIR);
     return ret;
@@ -226,7 +226,7 @@ static int testLockSpaceResourceLockShr(const void *args ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virLockSpaceFree(lockspace);
     rmdir(LOCKSPACE_DIR);
     return ret;
@@ -286,7 +286,7 @@ static int testLockSpaceResourceLockShrAuto(const void *args ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virLockSpaceFree(lockspace);
     rmdir(LOCKSPACE_DIR);
     return ret;
@@ -332,7 +332,7 @@ static int testLockSpaceResourceLockPath(const void *args ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virLockSpaceFree(lockspace);
     rmdir(LOCKSPACE_DIR);
     return ret;

@@ -61,7 +61,7 @@ static int testKeycodeMapping(const void *data ATTRIBUTE_UNUSED)
 #undef TRANSLATE
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -88,7 +88,7 @@ static int testKeycodeStrings(const void *data ATTRIBUTE_UNUSED)
 #undef TRANSLATE
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 

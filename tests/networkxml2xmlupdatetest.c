@@ -56,7 +56,7 @@ testCompareXMLToXMLFiles(const char *netxml, const char *updatexml,
 
     ret = 0;
 
-fail:
+ fail:
     if (expectFailure) {
         if (ret == 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s", "Failed to fail.");
@@ -66,7 +66,7 @@ fail:
             ret = 0;
         }
     }
-error:
+ error:
     VIR_FREE(netXmlData);
     VIR_FREE(updateXmlData);
     VIR_FREE(outXmlData);
@@ -109,7 +109,7 @@ testCompareXMLToXMLHelper(const void *data)
                                       info->command, info->section,
                                       info->parentIndex, info->expectFailure);
 
-cleanup:
+ cleanup:
     VIR_FREE(netxml);
     VIR_FREE(updatexml);
     VIR_FREE(outxml);

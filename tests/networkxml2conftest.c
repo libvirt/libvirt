@@ -93,7 +93,7 @@ testCompareXMLToConfHelper(const void *data)
 
     result = testCompareXMLToConfFiles(inxml, outxml, info->caps);
 
-cleanup:
+ cleanup:
     VIR_FREE(inxml);
     VIR_FREE(outxml);
 

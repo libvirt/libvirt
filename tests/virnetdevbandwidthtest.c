@@ -100,7 +100,7 @@ testVirNetDevBandwidthSet(const void *data)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virCommandSetDryRun(NULL, NULL, NULL);
     virNetDevBandwidthFree(band);
     virBufferFreeAndReset(&buf);

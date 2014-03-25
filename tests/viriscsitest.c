@@ -119,7 +119,7 @@ testISCSIGetSession(const void *data)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandSetDryRun(NULL, NULL, NULL);
     VIR_FREE(actual_session);
     return ret;
@@ -165,7 +165,7 @@ testISCSIScanTargets(const void *data)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandSetDryRun(NULL, NULL, NULL);
     for (i = 0; i < ntargets; i++)
         VIR_FREE(targets[i]);

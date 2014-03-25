@@ -96,7 +96,7 @@ cpuTestLoadXML(const char *arch, const char *name)
 
     cpu = virCPUDefParseXML(ctxt->node, ctxt, VIR_CPU_TYPE_AUTO);
 
-cleanup:
+ cleanup:
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
     VIR_FREE(xml);
@@ -136,14 +136,14 @@ cpuTestLoadMultiXML(const char *arch,
 
     *count = n;
 
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     VIR_FREE(nodes);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
     return cpus;
 
-cleanup_cpus:
+ cleanup_cpus:
     for (i = 0; i < n; i++)
         virCPUDefFree(cpus[i]);
     VIR_FREE(cpus);
@@ -181,7 +181,7 @@ cpuTestCompareXML(const char *arch,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     VIR_FREE(expected);
     VIR_FREE(actual);
@@ -247,7 +247,7 @@ cpuTestCompare(const void *arg)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCPUDefFree(host);
     virCPUDefFree(cpu);
     return ret;
@@ -307,7 +307,7 @@ cpuTestGuestData(const void *arg)
 
     ret = cpuTestCompareXML(data->arch, guest, result, 0);
 
-cleanup:
+ cleanup:
     VIR_FREE(result);
     cpuDataFree(guestData);
     virCPUDefFree(host);
@@ -374,7 +374,7 @@ cpuTestBaseline(const void *arg)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (cpus) {
         for (i = 0; i < ncpus; i++)
             virCPUDefFree(cpus[i]);
@@ -408,7 +408,7 @@ cpuTestUpdate(const void *arg)
     ret = cpuTestCompareXML(data->arch, cpu, result,
                             VIR_DOMAIN_XML_UPDATE_CPU);
 
-cleanup:
+ cleanup:
     virCPUDefFree(host);
     virCPUDefFree(cpu);
     VIR_FREE(result);
@@ -449,7 +449,7 @@ cpuTestHasFeature(const void *arg)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     cpuDataFree(hostData);
     virCPUDefFree(host);
     return ret;

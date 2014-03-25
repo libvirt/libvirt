@@ -101,7 +101,7 @@ static int testParse(const void *args ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virKeyFileFree(kf);
     return ret;
 }

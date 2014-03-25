@@ -52,7 +52,7 @@ testKModConfig(const void *args ATTRIBUTE_UNUSED)
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(outbuf);
     return ret;
 }
@@ -80,7 +80,7 @@ checkOutput(virBufferPtr buf, const char *exp_cmd)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(actual_cmd);
     return ret;
 }
@@ -109,7 +109,7 @@ testKModLoad(const void *args)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandSetDryRun(NULL, NULL, NULL);
     VIR_FREE(errbuf);
     return ret;
@@ -138,7 +138,7 @@ testKModUnload(const void *args)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandSetDryRun(NULL, NULL, NULL);
     VIR_FREE(errbuf);
     return ret;

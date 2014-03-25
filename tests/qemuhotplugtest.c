@@ -91,7 +91,7 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -296,7 +296,7 @@ testQemuHotplug(const void *data)
         ret = testQemuHotplugUpdate(vm, dev);
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(domain_filename);
     VIR_FREE(device_filename);
     VIR_FREE(result_filename);

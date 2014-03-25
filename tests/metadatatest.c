@@ -76,7 +76,7 @@ getMetadataFromXML(virDomainPtr dom)
 
     ret = virXMLNodeToString(node->doc, node);
 
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     xmlFreeDoc(doc);
     xmlXPathFreeContext(ctxt);
@@ -156,7 +156,7 @@ verifyMetadata(virDomainPtr dom,
 
     ret = true;
 
-cleanup:
+ cleanup:
     VIR_FREE(metadataXML);
     VIR_FREE(metadataAPI);
 

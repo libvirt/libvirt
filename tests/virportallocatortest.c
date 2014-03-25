@@ -184,7 +184,7 @@ static int testAllocAll(const void *args ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virObjectUnref(alloc);
     return ret;
 }
@@ -237,7 +237,7 @@ static int testAllocReuse(const void *args ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virObjectUnref(alloc);
     return ret;
 }

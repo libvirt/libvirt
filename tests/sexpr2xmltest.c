@@ -108,7 +108,7 @@ testCompareHelper(const void *data)
 
     result = testCompareFiles(xml, args, info->version);
 
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     VIR_FREE(args);
 

@@ -114,7 +114,7 @@ testCompareXMLToArgvHelper(const void *data)
 
     result = testCompareXMLToArgvFiles(xml, args, !!info->extraFlags);
 
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     VIR_FREE(args);
     return result;

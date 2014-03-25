@@ -78,7 +78,7 @@ testCompareOutputLit(const char *expectData,
 
     result = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(actualData);
 
     return result;

@@ -53,7 +53,7 @@ testCompareXMLToConfigFiles(const char *xml,
 
     ret = 0;
 
-fail:
+ fail:
     VIR_FREE(expectxml);
     VIR_FREE(actualxml);
     VIR_FREE(config);
@@ -82,7 +82,7 @@ testCompareXMLToConfigHelper(const void *data)
 
     result = testCompareXMLToConfigFiles(xml, config, info->expectError);
 
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     VIR_FREE(config);
     return result;

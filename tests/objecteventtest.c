@@ -155,7 +155,7 @@ testDomainCreateXMLOld(const void *data)
     registered = false;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (registered)
         virConnectDomainEventDeregister(test->conn, domainLifecycleCb);
     if (dom) {
@@ -196,7 +196,7 @@ testDomainCreateXMLNew(const void *data)
     id = -1;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (id >= 0)
         virConnectDomainEventDeregisterAny(test->conn, id);
     if (dom) {
@@ -267,7 +267,7 @@ testDomainCreateXMLMixed(const void *data)
     id2 = -1;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (id1 >= 0)
         virConnectDomainEventDeregisterAny(test->conn, id1);
     if (id2 >= 0)
@@ -327,7 +327,7 @@ testDomainDefine(const void *data)
     }
 
 
-cleanup:
+ cleanup:
     virConnectDomainEventDeregisterAny(test->conn, id);
     if (dom != NULL)
         virDomainFree(dom);
@@ -388,7 +388,7 @@ testDomainStartStopEvent(const void *data)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     virConnectDomainEventDeregisterAny(test->conn, id);
     virDomainFree(dom);
     if (dom2)
@@ -426,7 +426,7 @@ testNetworkCreateXML(const void *data)
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     virConnectNetworkEventDeregisterAny(test->conn, id);
     virNetworkDestroy(net);
 
@@ -478,7 +478,7 @@ testNetworkDefine(const void *data)
     }
 
 
-cleanup:
+ cleanup:
     virConnectNetworkEventDeregisterAny(test->conn, id);
     virNetworkFree(net);
 
@@ -512,7 +512,7 @@ testNetworkStartStopEvent(const void *data)
         ret = -1;
         goto cleanup;
     }
-cleanup:
+ cleanup:
     virConnectNetworkEventDeregisterAny(test->conn, id);
 
     return ret;

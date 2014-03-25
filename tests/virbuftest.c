@@ -48,7 +48,7 @@ static int testBufInfiniteLoop(const void *data)
         virBufferAsprintf(buf, "%s", addstr);
 
     ret = 0;
-out:
+ out:
     bufret = virBufferContentAndReset(buf);
     if (!bufret) {
         TEST_ERROR("Buffer had error set");
@@ -194,7 +194,7 @@ static int testBufTrim(const void *data ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virBufferFreeAndReset(buf);
     VIR_FREE(result);
     return ret;

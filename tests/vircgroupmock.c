@@ -168,7 +168,7 @@ static int make_file(const char *path,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     if (fd != -1 && close(fd) < 0)
         ret = -1;
     free(filepath);
@@ -368,7 +368,7 @@ static int make_controller(const char *path, mode_t mode)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 

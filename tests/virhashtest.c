@@ -121,7 +121,7 @@ testHashGrow(const void *data)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virHashFree(hash);
     return ret;
 }
@@ -163,7 +163,7 @@ testHashUpdate(const void *data ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virHashFree(hash);
     return ret;
 }
@@ -195,7 +195,7 @@ testHashRemove(const void *data ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virHashFree(hash);
     return ret;
 }
@@ -290,7 +290,7 @@ testHashRemoveForEach(const void *data)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virHashFree(hash);
     return ret;
 }
@@ -322,7 +322,7 @@ testHashSteal(const void *data ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virHashFree(hash);
     return ret;
 }
@@ -393,7 +393,7 @@ testHashForEach(const void *data ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virHashFree(hash);
     return ret;
 }
@@ -453,7 +453,7 @@ testHashRemoveSet(const void *data ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virHashFree(hash);
     return ret;
 }
@@ -494,7 +494,7 @@ testHashSearch(const void *data ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virHashFree(hash);
     return ret;
 }
@@ -577,7 +577,7 @@ testHashGetItems(const void *data ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(array);
     virHashFree(hash);
     return ret;
@@ -655,7 +655,7 @@ testHashEqual(const void *data ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virHashFree(hash1);
     virHashFree(hash2);
     return ret;

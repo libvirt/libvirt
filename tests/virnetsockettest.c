@@ -141,7 +141,7 @@ checkProtocols(bool *hasIPv4, bool *hasIPv6,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(s4);
     VIR_FORCE_CLOSE(s6);
     return ret;
@@ -194,7 +194,7 @@ static int testSocketTCPAccept(const void *opaque)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(ssock);
     for (i = 0; i < nlsock; i++)
         virObjectUnref(lsock[i]);
@@ -245,7 +245,7 @@ static int testSocketUNIXAccept(const void *data ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(path);
     virObjectUnref(lsock);
     virObjectUnref(ssock);
@@ -323,7 +323,7 @@ static int testSocketUNIXAddrs(const void *data ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(path);
     virObjectUnref(lsock);
     virObjectUnref(ssock);
@@ -356,7 +356,7 @@ static int testSocketCommandNormal(const void *data ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(csock);
     return ret;
 }
@@ -379,7 +379,7 @@ static int testSocketCommandFail(const void *data ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(csock);
     return ret;
 }
@@ -448,7 +448,7 @@ static int testSocketSSH(const void *opaque)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(csock);
     return ret;
 }

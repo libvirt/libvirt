@@ -47,7 +47,7 @@ test1(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(name);
     return ret;
 }
@@ -151,7 +151,7 @@ test2(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(sgname);
     if (free_dev)
         virSCSIDeviceFree(dev);
@@ -180,7 +180,7 @@ mymain(void)
     if (virtTestRun("test2", test2, NULL) < 0)
         ret = -1;
 
-cleanup:
+ cleanup:
     VIR_FREE(virscsi_prefix);
     return ret;
 }

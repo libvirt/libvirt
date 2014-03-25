@@ -64,7 +64,7 @@ static char *get_fake_path(const char *real_path)
 
     return path;
 
-error:
+ error:
     errno = ENOMEM;
     return NULL;
 }

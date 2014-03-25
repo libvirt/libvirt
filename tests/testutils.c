@@ -884,7 +884,7 @@ virCapsPtr virTestGenericCapsInit(void)
 
     return caps;
 
-error:
+ error:
     virObjectUnref(caps);
     return NULL;
 }

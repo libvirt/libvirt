@@ -93,7 +93,7 @@ static int checkoutput(const char *testname)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (actualname)
         unlink(actualname);
     VIR_FREE(actuallog);
@@ -123,7 +123,7 @@ static int test0(const void *unused ATTRIBUTE_UNUSED)
     virResetLastError();
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }
@@ -152,7 +152,7 @@ static int test1(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }
@@ -221,7 +221,7 @@ static int test3(const void *unused ATTRIBUTE_UNUSED)
 
     ret = checkoutput("test3");
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     /* coverity[double_close] */
     VIR_FORCE_CLOSE(newfd1);
@@ -263,7 +263,7 @@ static int test4(const void *unused ATTRIBUTE_UNUSED)
 
     ret = checkoutput("test4");
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     if (pidfile)
         unlink(pidfile);
@@ -512,7 +512,7 @@ static int test13(const void *unused ATTRIBUTE_UNUSED)
 
     ret = checkoutput("test13");
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(outactual);
     return ret;
@@ -584,7 +584,7 @@ static int test14(const void *unused ATTRIBUTE_UNUSED)
 
     ret = checkoutput("test14");
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(outactual);
     VIR_FREE(erractual);
@@ -615,7 +615,7 @@ static int test15(const void *unused ATTRIBUTE_UNUSED)
 
     ret = checkoutput("test15");
 
-cleanup:
+ cleanup:
     VIR_FREE(cwd);
     virCommandFree(cmd);
 
@@ -661,7 +661,7 @@ static int test16(const void *unused ATTRIBUTE_UNUSED)
 
     ret = checkoutput("test16");
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(fd);
     VIR_FREE(outactual);
@@ -718,7 +718,7 @@ static int test17(const void *unused ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(outbuf);
     VIR_FREE(errbuf);
@@ -766,7 +766,7 @@ static int test18(const void *unused ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     if (pidfile)
         unlink(pidfile);
@@ -806,7 +806,7 @@ static int test19(const void *unused ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }
@@ -841,7 +841,7 @@ static int test20(const void *unused ATTRIBUTE_UNUSED)
     }
 
     ret = checkoutput("test20");
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(buf);
     return ret;
@@ -900,7 +900,7 @@ static int test21(const void *unused ATTRIBUTE_UNUSED)
     }
 
     ret = checkoutput("test21");
-cleanup:
+ cleanup:
     VIR_FREE(outbuf);
     VIR_FREE(errbuf);
     virCommandFree(cmd);
@@ -957,7 +957,7 @@ test22(const void *unused ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }
@@ -1016,7 +1016,7 @@ test23(const void *unused ATTRIBUTE_UNUSED)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -1178,7 +1178,7 @@ mymain(void)
     }
     virMutexUnlock(&test->lock);
 
-cleanup:
+ cleanup:
     if (test->running)
         virThreadJoin(&test->thread);
 

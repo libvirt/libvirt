@@ -80,7 +80,7 @@ static int testQemuAddPPC64Guest(virCapsPtr caps)
 
     return 0;
 
-error:
+ error:
     /* No way to free a guest? */
     virCapabilitiesFreeMachines(machines, 1);
     return -1;
@@ -110,7 +110,7 @@ static int testQemuAddPPCGuest(virCapsPtr caps)
 
     return 0;
 
-error:
+ error:
     /* No way to free a guest? */
     virCapabilitiesFreeMachines(machines, 1);
     return -1;
@@ -140,7 +140,7 @@ static int testQemuAddS390Guest(virCapsPtr caps)
 
     return 0;
 
-error:
+ error:
     virCapabilitiesFreeMachines(machines, ARRAY_CARDINALITY(s390_machines));
     return -1;
 }
@@ -170,7 +170,7 @@ static int testQemuAddArmGuest(virCapsPtr caps)
 
     return 0;
 
-error:
+ error:
     virCapabilitiesFreeMachines(capsmachines, ARRAY_CARDINALITY(machines));
     return -1;
 }
@@ -198,7 +198,7 @@ static int testQemuAddAARCH64Guest(virCapsPtr caps)
 
     return 0;
 
-error:
+ error:
     virCapabilitiesFreeMachines(capsmachines, ARRAY_CARDINALITY(machines));
     return -1;
 }
@@ -348,7 +348,7 @@ virCapsPtr testQemuCapsInit(void)
 
     return caps;
 
-cleanup:
+ cleanup:
     virCapabilitiesFreeMachines(machines, nmachines);
     virObjectUnref(caps);
     return NULL;

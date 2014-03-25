@@ -73,7 +73,7 @@ linuxTestCompareFiles(const char *cpuinfofile,
 
     ret = 0;
 
-fail:
+ fail:
     VIR_FREE(expectData);
     VIR_FREE(actualData);
     return ret;
@@ -157,7 +157,7 @@ linuxCPUStatsCompareFiles(const char *cpustatfile,
 
     ret = 0;
 
-fail:
+ fail:
     virBufferFreeAndReset(&buf);
     VIR_FORCE_FCLOSE(cpustat);
     VIR_FREE(expectData);
@@ -193,7 +193,7 @@ linuxTestNodeInfo(const void *data)
 
     result = linuxTestCompareFiles(cpuinfo, sysfs_dir, output);
 
-cleanup:
+ cleanup:
     VIR_FREE(cpuinfo);
     VIR_FREE(output);
     VIR_FREE(sysfs_dir);
@@ -223,7 +223,7 @@ linuxTestNodeCPUStats(const void *data)
     result = linuxCPUStatsCompareFiles(cpustatfile,
                                        testData->ncpus,
                                        outfile);
-fail:
+ fail:
     VIR_FREE(cpustatfile);
     VIR_FREE(outfile);
     return result;

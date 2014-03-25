@@ -49,7 +49,7 @@ testJSONFromString(const void *data)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virJSONValueFree(json);
     return ret;
 }
@@ -122,7 +122,7 @@ testJSONAddRemove(const void *data)
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     virJSONValueFree(json);
     virJSONValueFree(name);
     VIR_FREE(result);

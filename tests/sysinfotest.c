@@ -89,7 +89,7 @@ testSysinfo(const void *data)
 
     result = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(sysfsExpectData);
     virSysinfoDefFree(ret);
     virBufferFreeAndReset(&buf);
@@ -123,7 +123,7 @@ sysinfotest_run(const char *test,
 
     ret = EXIT_SUCCESS;
 
-error:
+ error:
     VIR_FREE(testdata.decoder);
     VIR_FREE(testdata.sysinfo);
     VIR_FREE(testdata.cpuinfo);

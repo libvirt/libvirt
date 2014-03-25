@@ -75,7 +75,7 @@ testQemuAgentFSFreeze(const void *data)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     qemuMonitorTestFree(test);
     return ret;
 }
@@ -125,7 +125,7 @@ testQemuAgentFSThaw(const void *data)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     qemuMonitorTestFree(test);
     return ret;
 }
@@ -155,7 +155,7 @@ testQemuAgentFSTrim(const void *data)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     qemuMonitorTestFree(test);
     return ret;
 }
@@ -201,7 +201,7 @@ testQemuAgentSuspend(const void *data)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     qemuMonitorTestFree(test);
     return ret;
 }
@@ -264,7 +264,7 @@ qemuAgentShutdownTestMonitorHandler(qemuMonitorTestPtr test,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virJSONValueFree(val);
     return ret;
 
@@ -349,7 +349,7 @@ testQemuAgentShutdown(const void *data)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     qemuMonitorTestFree(test);
     return ret;
 }
@@ -467,7 +467,7 @@ testQemuAgentCPU(const void *data)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(cpuinfo);
     qemuMonitorTestFree(test);
     return ret;
@@ -511,7 +511,7 @@ testQemuAgentArbitraryCommand(const void *data)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(reply);
     qemuMonitorTestFree(test);
     return ret;
@@ -572,7 +572,7 @@ testQemuAgentTimeout(const void *data)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(reply);
     qemuMonitorTestFree(test);
     return ret;

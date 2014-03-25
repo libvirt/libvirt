@@ -139,7 +139,7 @@ testSELinuxLoadFileList(const char *testname,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FORCE_FCLOSE(fp);
     VIR_FREE(path);
     VIR_FREE(line);
@@ -200,7 +200,7 @@ testSELinuxLoadDef(const char *testname)
         testSELinuxMungePath(&def->os.initrd) < 0)
         goto cleanup;
 
-cleanup:
+ cleanup:
     VIR_FREE(xmlfile);
     VIR_FREE(xmlstr);
     return def;
@@ -298,7 +298,7 @@ testSELinuxLabeling(const void *opaque)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (testSELinuxDeleteDisks(files, nfiles) < 0)
         VIR_WARN("unable to fully clean up");
 

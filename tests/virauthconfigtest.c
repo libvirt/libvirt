@@ -78,7 +78,7 @@ static int testAuthLookup(const void *args)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 

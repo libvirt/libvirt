@@ -130,7 +130,7 @@ static int testURIParse(const void *args)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(uristr);
     virURIFree(uri);
     return ret;

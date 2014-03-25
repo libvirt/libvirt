@@ -153,7 +153,7 @@ testCorrupt(const void *opaque)
         break;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(newdata);
     daemonConfigFree(conf);
     return ret;
@@ -232,7 +232,7 @@ mymain(void)
             ret = -1;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(filename);
     VIR_FREE(filedata);
     VIR_FREE(params);

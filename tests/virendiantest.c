@@ -51,7 +51,7 @@ test1(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -82,7 +82,7 @@ test2(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 

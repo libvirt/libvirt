@@ -74,7 +74,7 @@ buildNUMATopology(int seq)
 
     return caps;
 
-error:
+ error:
     virCapabilitiesClearHostNUMACellCPUTopology(cell_cpus, MAX_CPUS_IN_CELL);
     VIR_FREE(cell_cpus);
     virObjectUnref(caps);
@@ -108,7 +108,7 @@ test_virCapabilitiesGetCpusForNodemask(const void *data ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-error:
+ error:
     virObjectUnref(caps);
     virBitmapFree(nodemask);
     virBitmapFree(cpumap);

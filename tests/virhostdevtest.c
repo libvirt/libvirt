@@ -116,7 +116,7 @@ myInit(void)
 
     return 0;
 
-cleanup:
+ cleanup:
     myCleanup();
     return -1;
 }
@@ -139,7 +139,7 @@ virHostdevHostSupportsPassthroughKVM(void)
     ret = true;
 #  endif
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(kvmfd);
 
     return ret;
@@ -206,7 +206,7 @@ testVirHostdevPreparePCIHostdevs_unmanaged(const void *oaque ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 
 }
@@ -240,7 +240,7 @@ testVirHostdevReAttachPCIHostdevs_unmanaged(const void *oaque ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 
 }
@@ -286,7 +286,7 @@ testVirHostdevPreparePCIHostdevs_managed(const void *oaque ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 
 }
@@ -318,7 +318,7 @@ testVirHostdevReAttachPCIHostdevs_managed(const void *oaque ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 
 }
@@ -339,7 +339,7 @@ testVirHostdevDetachPCINodeDevice(const void *oaque ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 static int
@@ -355,7 +355,7 @@ testVirHostdevResetPCINodeDevice(const void *oaque ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 
 }
@@ -376,7 +376,7 @@ testVirHostdevReAttachPCINodeDevice(const void *oaque ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 
 }
@@ -403,7 +403,7 @@ testVirHostdevUpdateActivePCIHostdevs(const void *oaque ATTRIBUTE_UNUSED)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 

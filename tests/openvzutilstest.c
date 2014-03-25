@@ -64,7 +64,7 @@ testReadConfigParam(const void *data ATTRIBUTE_UNUSED)
 
     result = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(conf);
     VIR_FREE(value);
 
@@ -132,7 +132,7 @@ testReadNetworkConf(const void *data ATTRIBUTE_UNUSED)
 
     result = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(actual);
     virDomainDefFree(def);
 

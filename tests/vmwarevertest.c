@@ -66,7 +66,7 @@ testVerStrParse(const void *data)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(path);
     VIR_FREE(databuf);
     return ret;
