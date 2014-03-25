@@ -229,7 +229,7 @@ int virThreadCreate(virThreadPtr thread,
     /* New thread owns 'args' in success case, so don't free */
 
     ret = 0;
-cleanup:
+ cleanup:
     pthread_attr_destroy(&attr);
     if (ret < 0)
         errno = err;

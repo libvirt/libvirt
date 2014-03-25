@@ -148,7 +148,7 @@ virCloseCallbacksSet(virCloseCallbacksPtr closeCallbacks,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virObjectUnlock(closeCallbacks);
     return ret;
 }
@@ -180,7 +180,7 @@ virCloseCallbacksUnset(virCloseCallbacksPtr closeCallbacks,
     }
 
     ret = virHashRemoveEntry(closeCallbacks->list, uuidstr);
-cleanup:
+ cleanup:
     virObjectUnlock(closeCallbacks);
     return ret;
 }

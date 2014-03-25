@@ -343,7 +343,7 @@ virSocketAddrFormatFull(const virSocketAddr *addr,
 
     return addrstr;
 
-error:
+ error:
     return NULL;
 }
 
@@ -802,7 +802,7 @@ virSocketAddrPrefixToNetmask(unsigned int prefix,
         result = 0;
     }
 
-error:
+ error:
     return result;
  }
 

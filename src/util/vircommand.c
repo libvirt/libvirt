@@ -1993,7 +1993,7 @@ virCommandProcessIO(virCommandPtr cmd)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     if (cmd->outbuf && *cmd->outbuf)
         (*cmd->outbuf)[outlen] = '\0';
     if (cmd->errbuf && *cmd->errbuf)
@@ -2333,7 +2333,7 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
         }
     }
 
-cleanup:
+ cleanup:
     if (ret < 0) {
         VIR_FORCE_CLOSE(cmd->infd);
         VIR_FORCE_CLOSE(cmd->inpipe);
@@ -2872,7 +2872,7 @@ virCommandRunRegex(virCommandPtr cmd,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virStringFreeList(lines);
     VIR_FREE(outbuf);
     if (groups) {

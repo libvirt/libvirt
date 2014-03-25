@@ -197,7 +197,7 @@ int virNetDevVethCreate(char** veth1, char** veth2)
                    _("Failed to allocate free veth pair after %d attempts"),
                    MAX_VETH_RETRIES);
 
-cleanup:
+ cleanup:
     virMutexUnlock(&virNetDevVethCreateMutex);
     virCommandFree(cmd);
     VIR_FREE(veth1auto);
@@ -237,7 +237,7 @@ int virNetDevVethDelete(const char *veth)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }

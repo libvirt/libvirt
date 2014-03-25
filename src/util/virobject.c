@@ -147,7 +147,7 @@ virClassPtr virClassNew(virClassPtr parent,
 
     return klass;
 
-error:
+ error:
     VIR_FREE(klass);
     return NULL;
 }

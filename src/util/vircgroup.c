@@ -177,7 +177,7 @@ virCgroupPartitionNeedsEscaping(const char *path)
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(line);
     VIR_FORCE_FCLOSE(fp);
     return ret;
@@ -393,7 +393,7 @@ virCgroupDetectMounts(virCgroupPtr group)
 
     return 0;
 
-error:
+ error:
     VIR_FORCE_FCLOSE(mounts);
     return -1;
 }
@@ -546,7 +546,7 @@ virCgroupDetectPlacement(virCgroupPtr group,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(procfile);
     VIR_FORCE_FCLOSE(mapping);
 
@@ -693,7 +693,7 @@ virCgroupSetValueStr(virCgroupPtr group,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(keypath);
     return ret;
 }
@@ -727,7 +727,7 @@ virCgroupGetValueStr(virCgroupPtr group,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(keypath);
     return ret;
 }
@@ -794,7 +794,7 @@ virCgroupGetValueI64(virCgroupPtr group,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(strval);
     return ret;
 }
@@ -821,7 +821,7 @@ virCgroupGetValueU64(virCgroupPtr group,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(strval);
     return ret;
 }
@@ -976,7 +976,7 @@ virCgroupMakeGroup(virCgroupPtr parent,
     VIR_DEBUG("Done making controllers for group");
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -1027,7 +1027,7 @@ virCgroupNew(pid_t pid,
 
     return 0;
 
-error:
+ error:
     virCgroupFree(group);
     *group = NULL;
 
@@ -1063,7 +1063,7 @@ virCgroupAddTask(virCgroupPtr group, pid_t pid)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -1137,7 +1137,7 @@ virCgroupAddTaskStrController(virCgroupPtr group,
         }
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(str);
     return rc;
 }
@@ -1186,7 +1186,7 @@ virCgroupMoveTask(virCgroupPtr src_group, virCgroupPtr dest_group)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(content);
     return ret;
 }
@@ -1232,7 +1232,7 @@ virCgroupSetPartitionSuffix(const char *path, char **res)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virStringFreeList(tokens);
     return ret;
 }
@@ -1294,7 +1294,7 @@ virCgroupNewPartition(const char *path,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     if (ret != 0)
         virCgroupFree(group);
     virCgroupFree(&parent);
@@ -1370,7 +1370,7 @@ virCgroupNewDomainPartition(virCgroupPtr partition,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(grpname);
     return ret;
 }
@@ -1413,7 +1413,7 @@ virCgroupNewVcpu(virCgroupPtr domain,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(name);
     return ret;
 }
@@ -1450,7 +1450,7 @@ virCgroupNewEmulator(virCgroupPtr domain,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -1639,10 +1639,10 @@ virCgroupNewMachineManual(const char *name,
         }
     }
 
-done:
+ done:
     ret = 0;
 
-cleanup:
+ cleanup:
     virCgroupFree(&parent);
     return ret;
 }
@@ -1898,7 +1898,7 @@ virCgroupGetBlkioIoServiced(virCgroupPtr group,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(str2);
     VIR_FREE(str1);
     return ret;
@@ -2016,7 +2016,7 @@ virCgroupGetBlkioIoDeviceServiced(virCgroupPtr group,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(str3);
     VIR_FREE(str2);
     VIR_FREE(str1);
@@ -2656,7 +2656,7 @@ virCgroupAllowDevice(virCgroupPtr group, char type, int major, int minor,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(devstr);
     return ret;
 }
@@ -2693,7 +2693,7 @@ virCgroupAllowDeviceMajor(virCgroupPtr group, char type, int major,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(devstr);
     return ret;
 }
@@ -2767,7 +2767,7 @@ virCgroupDenyDevice(virCgroupPtr group, char type, int major, int minor,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(devstr);
     return ret;
 }
@@ -2804,7 +2804,7 @@ virCgroupDenyDeviceMajor(virCgroupPtr group, char type, int major,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(devstr);
     return ret;
 }
@@ -2900,7 +2900,7 @@ virCgroupGetPercpuStats(virCgroupPtr group,
 
     rv = nparams;
 
-cleanup:
+ cleanup:
     VIR_FREE(buf);
     return rv;
 }
@@ -3225,7 +3225,7 @@ virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr pids)
  done:
     ret = killedAny ? 1 : 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(keypath);
     VIR_FORCE_FCLOSE(fp);
 
@@ -3346,7 +3346,7 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
  done:
     ret = killedAny ? 1 : 0;
 
-cleanup:
+ cleanup:
     virCgroupFree(&subgroup);
     closedir(dp);
 
@@ -3501,7 +3501,7 @@ virCgroupGetCpuacctStat(virCgroupPtr group, unsigned long long *user,
     *sys *= scale;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(str);
     return ret;
 }
@@ -3607,7 +3607,7 @@ virCgroupIsolateMount(virCgroupPtr group, const char *oldroot,
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(root);
     VIR_FREE(opts);
     return ret;
@@ -3708,7 +3708,7 @@ virCgroupSupportsCpuBW(virCgroupPtr cgroup)
 
     ret = virFileExists(path);
 
-cleanup:
+ cleanup:
     VIR_FREE(path);
     return ret;
 }

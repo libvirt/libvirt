@@ -103,7 +103,7 @@ static int virNetDevBridgeCmd(const char *brname,
 
     ret = ioctl(s, SIOCSDRVSPEC, &ifd);
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(s);
 
     return ret;
@@ -159,7 +159,7 @@ static int virNetDevBridgeSet(const char *brname,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(path);
     return ret;
 }
@@ -213,7 +213,7 @@ static int virNetDevBridgeGet(const char *brname,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(path);
     return ret;
 }
@@ -245,7 +245,7 @@ int virNetDevBridgeCreate(const char *brname)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -270,7 +270,7 @@ int virNetDevBridgeCreate(const char *brname)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(s);
     return ret;
 }
@@ -308,7 +308,7 @@ int virNetDevBridgeDelete(const char *brname)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -330,7 +330,7 @@ int virNetDevBridgeDelete(const char *brname)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(s);
     return ret;
 }
@@ -376,7 +376,7 @@ int virNetDevBridgeAddPort(const char *brname,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -446,7 +446,7 @@ int virNetDevBridgeRemovePort(const char *brname,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -507,7 +507,7 @@ int virNetDevBridgeSetSTPDelay(const char *brname,
     ret = virNetDevBridgeSet(brname, "forward_delay", MS_TO_JIFFIES(delay),
                              fd, &ifr);
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -539,7 +539,7 @@ int virNetDevBridgeGetSTPDelay(const char *brname,
                              fd, &ifr);
     *delayms = JIFFIES_TO_MS(val);
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -568,7 +568,7 @@ int virNetDevBridgeSetSTP(const char *brname,
     ret = virNetDevBridgeSet(brname, "stp_state", enable ? 1 : 0,
                              fd, &ifr);
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -599,7 +599,7 @@ int virNetDevBridgeGetSTP(const char *brname,
                              fd, &ifr);
     *enabled = val ? true : false;
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }

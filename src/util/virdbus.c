@@ -755,7 +755,7 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     while (nstack > 0) {
         DBusMessageIter *thisiter = iter;
         VIR_DEBUG("Popping iter=%p", iter);
@@ -1067,7 +1067,7 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virDBusTypeStackFree(&stack, &nstack);
     VIR_FREE(contsig);
     VIR_FREE(newiter);
@@ -1113,7 +1113,7 @@ int virDBusMessageDecodeArgs(DBusMessage* msg,
 
     ret = virDBusMessageIterDecode(&iter, types, args);
 
-cleanup:
+ cleanup:
     return ret;
 }
 

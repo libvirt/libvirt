@@ -176,7 +176,7 @@ virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -320,7 +320,7 @@ virNumaGetNodeCPUs(int node,
     cpumap = NULL;
     ret = ncpus;
 
-cleanup:
+ cleanup:
     VIR_FREE(mask);
     VIR_FREE(allonesmask);
     VIR_FREE(cpumap);

@@ -668,9 +668,9 @@ int virEventPollRunOnce(void)
     VIR_FREE(fds);
     return 0;
 
-error:
+ error:
     virMutexUnlock(&eventLoop.lock);
-error_unlocked:
+ error_unlocked:
     VIR_FREE(fds);
     return -1;
 }

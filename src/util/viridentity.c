@@ -217,7 +217,7 @@ virIdentityPtr virIdentityGetSystem(void)
                            processtime) < 0)
         goto error;
 
-cleanup:
+ cleanup:
     VIR_FREE(username);
     VIR_FREE(userid);
     VIR_FREE(groupname);
@@ -227,7 +227,7 @@ cleanup:
     VIR_FREE(processtime);
     return ret;
 
-error:
+ error:
     virObjectUnref(ret);
     ret = NULL;
     goto cleanup;
@@ -295,7 +295,7 @@ int virIdentitySetAttr(virIdentityPtr ident,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -349,6 +349,6 @@ bool virIdentityIsEqual(virIdentityPtr identA,
     }
 
     ret = true;
-cleanup:
+ cleanup:
     return ret;
 }

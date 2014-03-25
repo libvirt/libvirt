@@ -685,7 +685,7 @@ dnsmasqCapsSetFromBuffer(dnsmasqCapsPtr caps, const char *buf)
              dnsmasqCapsGet(caps, DNSMASQ_CAPS_BIND_DYNAMIC) ? "" : "NOT ");
     return 0;
 
-fail:
+ fail:
     p = strchrnul(buf, '\n');
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("cannot parse %s version number in '%.*s'"),
@@ -705,7 +705,7 @@ dnsmasqCapsSetFromFile(dnsmasqCapsPtr caps, const char *path)
 
     ret = dnsmasqCapsSetFromBuffer(caps, buf);
 
-cleanup:
+ cleanup:
     VIR_FREE(buf);
     return ret;
 }
@@ -767,7 +767,7 @@ dnsmasqCapsRefreshInternal(dnsmasqCapsPtr caps, bool force)
 
     ret = dnsmasqCapsSetFromBuffer(caps, complete);
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(help);
     VIR_FREE(version);
@@ -790,7 +790,7 @@ dnsmasqCapsNewEmpty(const char *binaryPath)
         goto error;
     return caps;
 
-error:
+ error:
     virObjectUnref(caps);
     return NULL;
 }

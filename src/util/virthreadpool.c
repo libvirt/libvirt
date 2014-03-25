@@ -147,7 +147,7 @@ static void virThreadPoolWorker(void *opaque)
         virMutexLock(&pool->mutex);
     }
 
-out:
+ out:
     if (priority)
         pool->nPrioWorkers--;
     else
@@ -231,7 +231,7 @@ virThreadPoolPtr virThreadPoolNew(size_t minWorkers,
 
     return pool;
 
-error:
+ error:
     VIR_FREE(data);
     virThreadPoolFree(pool);
     return NULL;
@@ -366,7 +366,7 @@ int virThreadPoolSendJob(virThreadPoolPtr pool,
     virMutexUnlock(&pool->mutex);
     return 0;
 
-error:
+ error:
     virMutexUnlock(&pool->mutex);
     return -1;
 }

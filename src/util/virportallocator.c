@@ -168,7 +168,7 @@ static int virPortAllocatorBindToPort(bool *used,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -217,7 +217,7 @@ int virPortAllocatorAcquire(virPortAllocatorPtr pa,
                        _("Unable to find an unused port in range '%s' (%d-%d)"),
                        pa->name, pa->start, pa->end);
     }
-cleanup:
+ cleanup:
     virObjectUnlock(pa);
     return ret;
 }
@@ -248,7 +248,7 @@ int virPortAllocatorRelease(virPortAllocatorPtr pa,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virObjectUnlock(pa);
     return ret;
 }

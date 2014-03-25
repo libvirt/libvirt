@@ -771,12 +771,12 @@ virXMLParseHelper(int domcode,
         (*ctxt)->node = xmlDocGetRootElement(xml);
     }
 
-cleanup:
+ cleanup:
     xmlFreeParserCtxt(pctxt);
 
     return xml;
 
-error:
+ error:
     xmlFreeDoc(xml);
     xml = NULL;
 
@@ -923,7 +923,7 @@ virXMLNodeToString(xmlDocPtr doc,
 
      ignore_value(VIR_STRDUP(ret, (const char *)xmlBufferContent(xmlbuf)));
 
-cleanup:
+ cleanup:
      xmlBufferFree(xmlbuf);
 
      return ret;
@@ -1044,7 +1044,7 @@ virXMLExtractNamespaceXML(xmlNodePtr root,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (doc)
         *doc = xmlstr;
     else

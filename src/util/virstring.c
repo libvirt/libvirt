@@ -111,7 +111,7 @@ char **virStringSplit(const char *string,
 
     return tokens;
 
-error:
+ error:
     for (i = 0; i < ntokens; i++)
         VIR_FREE(tokens[i]);
     VIR_FREE(tokens);
@@ -743,7 +743,7 @@ virStringSearch(const char *str,
 
     ret = nmatches - 1; /* don't count the trailing null */
 
-cleanup:
+ cleanup:
     regfree(&re);
     if (ret < 0) {
         virStringFreeList(*matches);

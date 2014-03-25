@@ -213,7 +213,7 @@ virPipeReadUntilEOF(int outfd, int errfd,
 
     return 0;
 
-error:
+ error:
     VIR_FREE(*outbuf);
     VIR_FREE(*errbuf);
     return -1;
@@ -649,7 +649,7 @@ char *virGetHostname(void)
 
     freeaddrinfo(info);
 
-cleanup:
+ cleanup:
     return result;
 }
 
@@ -721,7 +721,7 @@ virGetUserEnt(uid_t uid, char **name, gid_t *group, char **dir)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(strbuf);
     return ret;
 }
@@ -883,7 +883,7 @@ virGetUserIDByName(const char *name, uid_t *uid)
     *uid = pw->pw_uid;
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(strbuf);
 
     return ret;
@@ -963,7 +963,7 @@ virGetGroupIDByName(const char *name, gid_t *gid)
     *gid = gr->gr_gid;
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(strbuf);
 
     return ret;
@@ -1043,7 +1043,7 @@ virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
         }
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(user);
     return ret;
 }
@@ -1426,7 +1426,7 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -1610,7 +1610,7 @@ virSetDeviceUnprivSGIO(const char *path,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(sysfs_path);
     VIR_FREE(val);
     return ret;
@@ -1648,7 +1648,7 @@ virGetDeviceUnprivSGIO(const char *path,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(sysfs_path);
     VIR_FREE(buf);
     return ret;
@@ -1701,7 +1701,7 @@ virReadFCHost(const char *sysfs_prefix,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(sysfs_path);
     VIR_FREE(buf);
     return ret;
@@ -1752,7 +1752,7 @@ virIsCapableVport(const char *sysfs_prefix,
         virFileExists(scsi_host_path))
         ret = true;
 
-cleanup:
+ cleanup:
     VIR_FREE(fc_host_path);
     VIR_FREE(scsi_host_path);
     return ret;
@@ -1819,7 +1819,7 @@ virManageVport(const int parent_host,
                                "vport create/delete failed"),
                              vport_name, operation_path);
 
-cleanup:
+ cleanup:
     VIR_FREE(vport_name);
     VIR_FREE(operation_path);
     return ret;
@@ -1913,7 +1913,7 @@ virGetFCHostNameByWWN(const char *sysfs_prefix,
         break;
     }
 
-cleanup:
+ cleanup:
 # undef READ_WWN
     closedir(dir);
     VIR_FREE(wwnn_path);
@@ -2003,7 +2003,7 @@ virFindFCHostCapableVport(const char *sysfs_prefix)
         VIR_FREE(vports);
     }
 
-cleanup:
+ cleanup:
     closedir(dir);
     VIR_FREE(max_vports);
     VIR_FREE(vports);
@@ -2137,7 +2137,7 @@ virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
 
     rc = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(tmp_label);
 
     return rc;

@@ -69,7 +69,7 @@ prepare(const char *path, int oflags, int mode,
         }
     }
 
-cleanup:
+ cleanup:
     return fd;
 }
 
@@ -189,7 +189,7 @@ runIO(const char *path, int fd, int oflags, unsigned long long length)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (VIR_CLOSE(fd) < 0 &&
         ret == 0) {
         virReportSystemError(errno, _("Unable to close %s"), path);
@@ -309,7 +309,7 @@ main(int argc, char **argv)
 
     return 0;
 
-error:
+ error:
     err = virGetLastError();
     if (err) {
         fprintf(stderr, "%s: %s\n", program_name, err->message);

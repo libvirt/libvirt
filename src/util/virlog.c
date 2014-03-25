@@ -321,7 +321,7 @@ virLogDefineFilter(const char *match,
     virLogFilters[i].flags = flags;
     virLogNbFilters++;
     virLogFiltersSerial++;
-cleanup:
+ cleanup:
     virLogUnlock();
     if (ret < 0)
         virReportOOMError();
@@ -409,7 +409,7 @@ virLogDefineOutput(virLogOutputFunc f,
     virLogOutputs[ret].priority = priority;
     virLogOutputs[ret].dest = dest;
     virLogOutputs[ret].name = ndup;
-cleanup:
+ cleanup:
     virLogUnlock();
     return ret;
 }
@@ -633,7 +633,7 @@ virLogVMessage(virLogSourcePtr source,
     }
     virLogUnlock();
 
-cleanup:
+ cleanup:
     VIR_FREE(str);
     VIR_FREE(msg);
     errno = saved_errno;
@@ -1005,7 +1005,7 @@ virLogOutputToJournald(virLogSourcePtr source,
 
     sendmsg(journalfd, &mh, MSG_NOSIGNAL);
 
-cleanup:
+ cleanup:
     VIR_LOG_CLOSE(buffd);
 }
 
@@ -1171,7 +1171,7 @@ virLogParseOutputs(const char *outputs)
         virSkipSpaces(&cur);
     }
     ret = count;
-cleanup:
+ cleanup:
     if (ret == -1)
         VIR_WARN("Ignoring invalid log output setting.");
     return ret;
@@ -1234,7 +1234,7 @@ virLogParseFilters(const char *filters)
         virSkipSpaces(&cur);
     }
     ret = count;
-cleanup:
+ cleanup:
     if (ret == -1)
         VIR_WARN("Ignoring invalid log filter setting.");
     return ret;

@@ -114,7 +114,7 @@ static int virUSBSysReadFile(const char *f_name, const char *d_name,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(filename);
     VIR_FREE(buf);
     return ret;
@@ -199,7 +199,7 @@ virUSBDeviceSearch(unsigned int vendor,
     }
     ret = list;
 
-cleanup:
+ cleanup:
     if (dir) {
         int saved_errno = errno;
         closedir(dir);

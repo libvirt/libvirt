@@ -91,11 +91,11 @@ virAuthGetConfigFilePathURI(virURIPtr uri,
 
     VIR_FREE(*path);
 
-done:
+ done:
     ret = 0;
 
     VIR_DEBUG("Using auth file '%s'", NULLSTR(*path));
-cleanup:
+ cleanup:
     VIR_FREE(userdir);
 
     return ret;
@@ -141,7 +141,7 @@ virAuthGetCredential(const char *servicename,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virAuthConfigFree(config);
     return ret;
 }

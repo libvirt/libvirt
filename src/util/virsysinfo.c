@@ -239,7 +239,7 @@ virSysinfoRead(void)
 
     return ret;
 
-no_memory:
+ no_memory:
     VIR_FREE(outbuf);
     return NULL;
 }
@@ -325,7 +325,7 @@ virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
     VIR_FREE(processor_type);
     return 0;
 
-error:
+ error:
     VIR_FREE(processor_type);
     return -1;
 }
@@ -357,7 +357,7 @@ virSysinfoRead(void)
 
     return ret;
 
-no_memory:
+ no_memory:
     VIR_FREE(outbuf);
     return NULL;
 }
@@ -452,7 +452,7 @@ virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
     }
     result = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(manufacturer);
     VIR_FREE(procline);
     return result;
@@ -496,7 +496,7 @@ virSysinfoRead(void)
 
     return ret;
 
-no_memory:
+ no_memory:
     virSysinfoDefFree(ret);
     VIR_FREE(outbuf);
     return NULL;
@@ -864,13 +864,13 @@ virSysinfoRead(void)
     if (virSysinfoParseMemory(outbuf, ret) < 0)
         goto error;
 
-cleanup:
+ cleanup:
     VIR_FREE(outbuf);
     virCommandFree(cmd);
 
     return ret;
 
-error:
+ error:
     virSysinfoDefFree(ret);
     ret = NULL;
     goto cleanup;
@@ -1119,6 +1119,6 @@ bool virSysinfoIsEqual(virSysinfoDefPtr src,
 
     identical = true;
 
-cleanup:
+ cleanup:
     return identical;
 }

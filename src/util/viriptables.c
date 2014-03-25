@@ -858,7 +858,7 @@ iptablesForwardMasquerade(virSocketAddr *netaddr,
      }
 
     ret = virCommandRun(cmd, NULL);
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(networkstr);
     VIR_FREE(addrStartStr);
@@ -952,7 +952,7 @@ iptablesForwardDontMasquerade(virSocketAddr *netaddr,
     virCommandAddArgList(cmd, "--source", networkstr,
                          "--destination", destaddr, "--jump", "RETURN", NULL);
     ret = virCommandRun(cmd, NULL);
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(networkstr);
     return ret;

@@ -1008,7 +1008,7 @@ virJSONValuePtr virJSONValueFromString(const char *jsonstring)
         ret = parser.head;
     }
 
-cleanup:
+ cleanup:
     yajl_free(hand);
 
     if (parser.nstate) {
@@ -1128,7 +1128,7 @@ char *virJSONValueToString(virJSONValuePtr object,
 
     ignore_value(VIR_STRDUP(ret, (const char *)str));
 
-cleanup:
+ cleanup:
     yajl_gen_free(g);
 
     VIR_DEBUG("result=%s", NULLSTR(ret));

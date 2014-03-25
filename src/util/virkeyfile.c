@@ -137,7 +137,7 @@ static int virKeyFileParseGroup(virKeyFileParserCtxtPtr ctxt)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     if (ret != 0) {
         virHashFree(ctxt->group);
         ctxt->group = NULL;
@@ -195,7 +195,7 @@ static int virKeyFileParseValue(virKeyFileParserCtxtPtr ctxt)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(key);
     return ret;
 }
@@ -268,7 +268,7 @@ static int virKeyFileParse(virKeyFilePtr conf,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(ctxt.groupname);
     return ret;
 }
@@ -293,7 +293,7 @@ virKeyFilePtr virKeyFileNew(void)
 
     return conf;
 
-error:
+ error:
     virKeyFileFree(conf);
     return NULL;
 }

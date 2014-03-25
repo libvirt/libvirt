@@ -233,7 +233,7 @@ virNetDevBandwidthSet(const char *ifname,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(average);
     VIR_FREE(peak);
@@ -316,7 +316,7 @@ virNetDevBandwidthCopy(virNetDevBandwidthPtr *dest,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (ret < 0) {
         virNetDevBandwidthFree(*dest);
         *dest = NULL;
@@ -465,7 +465,7 @@ virNetDevBandwidthPlug(const char *brname,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(mac[1]);
     VIR_FREE(mac[0]);
     VIR_FREE(ceil);
@@ -534,7 +534,7 @@ virNetDevBandwidthUnplug(const char *brname,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(filter_id);
     VIR_FREE(qdisc_id);
     VIR_FREE(class_id);
@@ -582,7 +582,7 @@ virNetDevBandwidthUpdateRate(const char *ifname,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(rate);
     VIR_FREE(ceil);

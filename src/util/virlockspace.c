@@ -226,7 +226,7 @@ virLockSpaceResourceNew(virLockSpacePtr lockspace,
 
     return res;
 
-error:
+ error:
     virLockSpaceResourceFree(res);
     return NULL;
 }
@@ -282,7 +282,7 @@ virLockSpacePtr virLockSpaceNew(const char *directory)
 
     return lockspace;
 
-error:
+ error:
     virLockSpaceFree(lockspace);
     return NULL;
 }
@@ -431,7 +431,7 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
 
     return lockspace;
 
-error:
+ error:
     virLockSpaceFree(lockspace);
     return NULL;
 }
@@ -514,7 +514,7 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
     virMutexUnlock(&lockspace->lock);
     return object;
 
-  error:
+ error:
     VIR_FREE(pairs);
     virJSONValueFree(object);
     virMutexUnlock(&lockspace->lock);
@@ -565,7 +565,7 @@ int virLockSpaceCreateResource(virLockSpacePtr lockspace,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virMutexUnlock(&lockspace->lock);
     VIR_FREE(respath);
     return ret;
@@ -602,7 +602,7 @@ int virLockSpaceDeleteResource(virLockSpacePtr lockspace,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virMutexUnlock(&lockspace->lock);
     VIR_FREE(respath);
     return ret;
@@ -649,10 +649,10 @@ int virLockSpaceAcquireResource(virLockSpacePtr lockspace,
         goto cleanup;
     }
 
-done:
+ done:
     ret = 0;
 
-cleanup:
+ cleanup:
     virMutexUnlock(&lockspace->lock);
     return ret;
 }
@@ -699,7 +699,7 @@ int virLockSpaceReleaseResource(virLockSpacePtr lockspace,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virMutexUnlock(&lockspace->lock);
     return ret;
 }
@@ -767,7 +767,7 @@ int virLockSpaceReleaseResourcesForOwner(virLockSpacePtr lockspace,
     virMutexUnlock(&lockspace->lock);
     return ret;
 
-error:
+ error:
     virMutexUnlock(&lockspace->lock);
     return -1;
 }

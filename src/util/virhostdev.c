@@ -119,7 +119,7 @@ virHostdevManagerNew(void)
 
     return hostdevMgr;
 
-error:
+ error:
     virObjectUnref(hostdevMgr);
     return NULL;
 }
@@ -288,7 +288,7 @@ virHostdevNetDevice(virDomainHostdevDefPtr hostdev, char **linkdev,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(sysfs_path);
 
     return ret;
@@ -398,7 +398,7 @@ virHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
                                         &hostdev->parent.data.net->mac,
                                         vlanid, stateDir);
     }
-cleanup:
+ cleanup:
     VIR_FREE(linkdev);
     return ret;
 }
@@ -629,7 +629,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
     ret = 0;
     goto cleanup;
 
-inactivedevs:
+ inactivedevs:
     /* Only steal all the devices from activePCIHostdevs. We will
      * free them in virObjectUnref().
      */
@@ -638,12 +638,12 @@ inactivedevs:
         virPCIDeviceListSteal(hostdev_mgr->activePCIHostdevs, dev);
     }
 
-resetvfnetconfig:
+ resetvfnetconfig:
     for (i = 0;
          last_processed_hostdev_vf != -1 && i < last_processed_hostdev_vf; i++)
         virHostdevNetConfigRestore(hostdevs[i], hostdev_mgr->stateDir, NULL);
 
-reattachdevs:
+ reattachdevs:
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
 
@@ -654,7 +654,7 @@ reattachdevs:
                                           NULL));
     }
 
-cleanup:
+ cleanup:
     virObjectUnlock(hostdev_mgr->activePCIHostdevs);
     virObjectUnlock(hostdev_mgr->inactivePCIHostdevs);
     virObjectUnref(pcidevs);
@@ -784,7 +784,7 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
     }
 
     virObjectUnref(pcidevs);
-cleanup:
+ cleanup:
     virObjectUnlock(hostdev_mgr->activePCIHostdevs);
     virObjectUnlock(hostdev_mgr->inactivePCIHostdevs);
 }
@@ -850,7 +850,7 @@ virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virPCIDeviceFree(dev);
     virObjectUnlock(mgr->activePCIHostdevs);
     virObjectUnlock(mgr->inactivePCIHostdevs);
@@ -900,7 +900,7 @@ virHostdevUpdateActiveUSBDevices(virHostdevManagerPtr mgr,
         }
     }
     ret = 0;
-cleanup:
+ cleanup:
     virObjectUnlock(mgr->activeUSBHostdevs);
     return ret;
 }
@@ -954,7 +954,7 @@ virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnlock(mgr->activeSCSIHostdevs);
     return ret;
 }
@@ -1008,7 +1008,7 @@ virHostdevMarkUSBDevices(virHostdevManagerPtr mgr,
     virObjectUnlock(mgr->activeUSBHostdevs);
     return 0;
 
-error:
+ error:
     for (j = 0; j < i; j++) {
         tmp = virUSBDeviceListGet(list, i);
         virUSBDeviceListSteal(mgr->activeUSBHostdevs, tmp);
@@ -1099,7 +1099,7 @@ virHostdevFindUSBDevice(virDomainHostdevDefPtr hostdev,
             return -1;
     }
 
-out:
+ out:
     if (!*usb)
         hostdev->missing = true;
     return 0;
@@ -1174,7 +1174,7 @@ virHostdevPrepareUSBDevices(virHostdevManagerPtr hostdev_mgr,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(list);
     return ret;
 }
@@ -1282,13 +1282,13 @@ virHostdevPrepareSCSIDevices(virHostdevManagerPtr hostdev_mgr,
     virObjectUnref(list);
     return 0;
 
-error:
+ error:
     for (j = 0; j < i; j++) {
         tmp = virSCSIDeviceListGet(list, i);
         virSCSIDeviceListSteal(hostdev_mgr->activeSCSIHostdevs, tmp);
     }
     virObjectUnlock(hostdev_mgr->activeSCSIHostdevs);
-cleanup:
+ cleanup:
     virObjectUnref(list);
     return -1;
 }
@@ -1443,7 +1443,7 @@ virHostdevPCINodeDeviceDetach(virHostdevManagerPtr hostdev_mgr,
     }
 
     ret = 0;
-out:
+ out:
     virObjectUnlock(hostdev_mgr->inactivePCIHostdevs);
     virObjectUnlock(hostdev_mgr->activePCIHostdevs);
     return ret;
@@ -1484,7 +1484,7 @@ virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr hostdev_mgr,
         goto out;
 
     ret = 0;
-out:
+ out:
     virObjectUnlock(hostdev_mgr->inactivePCIHostdevs);
     virObjectUnlock(hostdev_mgr->activePCIHostdevs);
     return ret;
@@ -1503,7 +1503,7 @@ virHostdevPCINodeDeviceReset(virHostdevManagerPtr hostdev_mgr,
         goto out;
 
     ret = 0;
-out:
+ out:
     virObjectUnlock(hostdev_mgr->inactivePCIHostdevs);
     virObjectUnlock(hostdev_mgr->activePCIHostdevs);
     return ret;

@@ -381,7 +381,7 @@ virBitmapParse(const char *str,
 
     return virBitmapCountBits(*bitmap);
 
-error:
+ error:
     virReportError(VIR_ERR_INVALID_ARG,
                    _("Failed to parse bitmap '%s'"), str);
     virBitmapFree(*bitmap);

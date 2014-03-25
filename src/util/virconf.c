@@ -730,7 +730,7 @@ virConfParse(const char *filename, const char *content, int len,
 
     return ctxt.conf;
 
-error:
+ error:
     virConfFree(ctxt.conf);
     return NULL;
 }

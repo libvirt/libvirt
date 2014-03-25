@@ -226,7 +226,7 @@ int virNetDevTapCreate(char **ifname,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (ret < 0) {
         VIR_FORCE_CLOSE(fd);
         while (i--)
@@ -273,7 +273,7 @@ int virNetDevTapDelete(const char *ifname)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -359,7 +359,7 @@ int virNetDevTapCreate(char **ifname,
 
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(s);
 
     return ret;
@@ -382,7 +382,7 @@ int virNetDevTapDelete(const char *ifname)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(s);
     return ret;
 }
@@ -500,7 +500,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
 
     return 0;
 
-error:
+ error:
     for (i = 0; i < tapfdSize && tapfd[i] >= 0; i++)
         VIR_FORCE_CLOSE(tapfd[i]);
 

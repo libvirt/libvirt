@@ -342,7 +342,7 @@ _string2sexpr(const char *buffer, size_t * end)
 
     return ret;
 
-  error:
+ error:
     sexpr_free(ret);
     return NULL;
 }
@@ -430,7 +430,7 @@ sexpr_lookup_key(const struct sexpr *sexpr, const char *node)
 
     result = (struct sexpr *) sexpr;
 
-cleanup:
+ cleanup:
     VIR_FREE(buffer);
 
     return result;

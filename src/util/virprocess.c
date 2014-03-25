@@ -139,7 +139,7 @@ virProcessAbort(pid_t pid)
     }
     VIR_DEBUG("failed to reap child %lld, abandoning it", (long long) pid);
 
-cleanup:
+ cleanup:
     VIR_FREE(tmp);
     errno = saved_errno;
 }
@@ -210,7 +210,7 @@ virProcessWait(pid_t pid, int *exitstatus, bool raw)
 
     return 0;
 
-error:
+ error:
     {
         char *st = virProcessTranslateStatus(status);
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -341,7 +341,7 @@ virProcessKillPainfully(pid_t pid, bool force)
                          _("Failed to terminate process %lld with SIG%s"),
                          (long long)pid, signame);
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -365,7 +365,7 @@ int virProcessSetAffinity(pid_t pid, virBitmapPtr map)
      *
      * http://lkml.org/lkml/2009/7/28/620
      */
-realloc:
+ realloc:
     masklen = CPU_ALLOC_SIZE(numcpus);
     mask = CPU_ALLOC(numcpus);
 
@@ -434,7 +434,7 @@ int virProcessGetAffinity(pid_t pid,
      *
      * http://lkml.org/lkml/2009/7/28/620
      */
-realloc:
+ realloc:
     masklen = CPU_ALLOC_SIZE(numcpus);
     mask = CPU_ALLOC(numcpus);
 
@@ -591,7 +591,7 @@ int virProcessGetNamespaces(pid_t pid,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(nsfile);
     if (ret < 0) {
         for (i = 0; i < *nfdlist; i++)
@@ -856,7 +856,7 @@ int virProcessGetStartTime(pid_t pid,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virStringFreeList(tokens);
     VIR_FREE(filename);
     VIR_FREE(buf);
@@ -984,7 +984,7 @@ virProcessRunInMountNamespace(pid_t pid,
         VIR_FREE(buf);
     }
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(errfd[0]);
     VIR_FORCE_CLOSE(errfd[1]);
     return ret;

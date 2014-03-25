@@ -434,7 +434,7 @@ int virNetDevVPortProfileMerge3(virNetDevVPortProfilePtr *result,
 
     ret = 0;
 
-error:
+ error:
     if (ret < 0)
         VIR_FREE(*result);
     return ret;
@@ -578,7 +578,7 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
             goto cleanup;
         }
     }
-cleanup:
+ cleanup:
     return rc;
 }
 
@@ -747,17 +747,17 @@ virNetDevVPortProfileOpSetLink(const char *ifname, int ifindex,
     }
 
     rc = 0;
-cleanup:
+ cleanup:
     nlmsg_free(nl_msg);
     VIR_FREE(resp);
     return rc;
 
-malformed_resp:
+ malformed_resp:
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
     goto cleanup;
 
-buffer_too_small:
+ buffer_too_small:
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("allocated netlink buffer is too small"));
     goto cleanup;
@@ -907,7 +907,7 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
         rc = -2;
     }
 
-cleanup:
+ cleanup:
 
     return rc;
 }
@@ -1006,7 +1006,7 @@ virNetDevVPortProfileOp8021Qbg(const char *ifname,
                                        vf,
                                        op,
                                        setlink_only);
-cleanup:
+ cleanup:
     return rc;
 }
 
@@ -1109,7 +1109,7 @@ virNetDevVPortProfileOp8021Qbh(const char *ifname,
         rc = -1;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(physfndev);
     return rc;
 }

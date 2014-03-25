@@ -156,7 +156,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virBufferFreeAndReset(&buf);
     VIR_FREE(attachedmac_ex_id);
     VIR_FREE(ifaceid_ex_id);
@@ -189,7 +189,7 @@ int virNetDevOpenvswitchRemovePort(const char *brname ATTRIBUTE_UNUSED, const ch
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }
@@ -224,7 +224,7 @@ int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
     /* Wipeout the newline */
     (*migrate)[strlen(*migrate) - 1] = '\0';
     ret = 0;
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }
@@ -256,7 +256,7 @@ int virNetDevOpenvswitchSetMigrateData(char *migrate, const char *ifname)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }

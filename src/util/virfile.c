@@ -267,7 +267,7 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
     *fd = pipefd[output];
     return ret;
 
-error:
+ error:
     VIR_FORCE_CLOSE(pipefd[0]);
     VIR_FORCE_CLOSE(pipefd[1]);
     virFileWrapperFdFree(ret);
@@ -465,7 +465,7 @@ virFileRewrite(const char *path,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     if (newfile) {
         unlink(newfile);
@@ -643,7 +643,7 @@ static int virFileLoopDeviceOpenSearch(char **dev_name)
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to find a free loop device in /dev"));
 
-cleanup:
+ cleanup:
     if (fd != -1) {
         VIR_DEBUG("Got free loop device %s %d", looppath, fd);
         *dev_name = looppath;
@@ -719,7 +719,7 @@ int virFileLoopDeviceAssociate(const char *file,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(loname);
     VIR_FORCE_CLOSE(fsfd);
     if (ret == -1)
@@ -752,7 +752,7 @@ virFileNBDDeviceIsBusy(const char *devname)
     }
     ret = 1;
 
-cleanup:
+ cleanup:
     VIR_FREE(path);
     return ret;
 }
@@ -794,7 +794,7 @@ virFileNBDDeviceFindUnused(void)
         virReportSystemError(EBUSY, "%s",
                              _("No free NBD devices"));
 
-cleanup:
+ cleanup:
     closedir(dh);
     return ret;
 }
@@ -850,7 +850,7 @@ int virFileNBDDeviceAssociate(const char *file,
     nbddev = NULL;
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(nbddev);
     VIR_FREE(qemunbd);
     virCommandFree(cmd);
@@ -957,7 +957,7 @@ int virFileDeleteTree(const char *dir)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(filepath);
     closedir(dh);
     return ret;
@@ -1137,7 +1137,7 @@ virFileFindMountPoint(const char *type)
     if (!ret)
         errno = ENOENT;
 
-cleanup:
+ cleanup:
     endmntent(f);
 
     return ret;
@@ -1644,7 +1644,7 @@ virFileGetMountSubtreeImpl(const char *mtabpath,
     *nmountsret = nmounts ? nmounts - 1 : 0;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (ret < 0)
         virStringFreeList(mounts);
     endmntent(procmnt);
@@ -1776,7 +1776,7 @@ virFileAccessibleAs(const char *path, int mode,
     if (access(path, mode) < 0)
         ret = errno;
 
-childerror:
+ childerror:
     if ((ret & 0xFF) != ret) {
         VIR_WARN("unable to pass desired return value %d", ret);
         ret = 0xFF;
@@ -2064,7 +2064,7 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
     /* File is successfully opened */
     return fd;
 
-error:
+ error:
     if (fd >= 0) {
         /* some other failure after the open succeeded */
         VIR_FORCE_CLOSE(fd);
@@ -2110,7 +2110,7 @@ virDirCreateNoFork(const char *path,
                              path, mode);
         goto error;
     }
-error:
+ error:
     return ret;
 }
 
@@ -2168,7 +2168,7 @@ virDirCreate(const char *path,
              * some cases */
             return virDirCreateNoFork(path, mode, uid, gid, flags);
         }
-parenterror:
+ parenterror:
         return ret;
     }
 
@@ -2210,7 +2210,7 @@ parenterror:
                              path, mode);
         goto childerror;
     }
-childerror:
+ childerror:
     _exit(ret);
 }
 
@@ -2322,7 +2322,7 @@ virFileMakePathWithMode(const char *path,
 
     ret = virFileMakePathHelper(tmp, mode);
 
-cleanup:
+ cleanup:
     VIR_FREE(tmp);
     return ret;
 }
@@ -2443,7 +2443,7 @@ virFileOpenTty(int *ttymaster, char **ttyName, int rawmode)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (ret != 0)
         VIR_FORCE_CLOSE(*ttymaster);
     VIR_FORCE_CLOSE(slave);
@@ -2641,7 +2641,7 @@ int virFilePrintf(FILE *fp, const char *msg, ...)
 
     VIR_FREE(str);
 
-cleanup:
+ cleanup:
     va_end(vargs);
 
     return ret;

@@ -50,7 +50,7 @@ virURIParamAppend(virURIPtr uri,
 
     return 0;
 
-error:
+ error:
     VIR_FREE(pname);
     VIR_FREE(pvalue);
     return -1;
@@ -210,7 +210,7 @@ virURIParse(const char *uri)
 
     return ret;
 
-error:
+ error:
     xmlFreeURI(xmluri);
     virURIFree(ret);
     return NULL;
@@ -264,7 +264,7 @@ virURIFormat(virURIPtr uri)
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(tmpserver);
 
     return ret;

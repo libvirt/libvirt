@@ -77,7 +77,7 @@ int virPidFileWritePath(const char *pidfile,
 
     rc = 0;
 
-cleanup:
+ cleanup:
     if (VIR_CLOSE(fd) < 0)
         rc = -errno;
 
@@ -109,7 +109,7 @@ int virPidFileWrite(const char *dir,
 
     rc = virPidFileWritePath(pidfile, pid);
 
-cleanup:
+ cleanup:
     VIR_FREE(pidfile);
     return rc;
 }
@@ -150,7 +150,7 @@ int virPidFileReadPath(const char *path,
     *pid = pid_value;
     rc = 0;
 
-cleanup:
+ cleanup:
     if (VIR_CLOSE(fd) < 0)
         rc = -errno;
 
@@ -282,7 +282,7 @@ int virPidFileReadPathIfAlive(const char *path,
 
     ret = STREQ(resolvedBinPath, resolvedProcLink) ? 0 : -1;
 
-cleanup:
+ cleanup:
     VIR_FREE(procPath);
     VIR_FREE(procLink);
     VIR_FREE(resolvedProcLink);
@@ -333,7 +333,7 @@ int virPidFileReadIfAlive(const char *dir,
 
     rc = virPidFileReadPathIfAlive(pidfile, pid, binpath);
 
-cleanup:
+ cleanup:
     VIR_FREE(pidfile);
     return rc;
 }
@@ -368,7 +368,7 @@ int virPidFileDelete(const char *dir,
 
     rc = virPidFileDeletePath(pidfile);
 
-cleanup:
+ cleanup:
     VIR_FREE(pidfile);
     return rc;
 }
@@ -469,7 +469,7 @@ int virPidFileAcquire(const char *dir,
 
     rc = virPidFileAcquirePath(pidfile, waitForLock, pid);
 
-cleanup:
+ cleanup:
     VIR_FREE(pidfile);
     return rc;
 }
@@ -517,7 +517,7 @@ int virPidFileRelease(const char *dir,
 
     rc = virPidFileReleasePath(pidfile, fd);
 
-cleanup:
+ cleanup:
     VIR_FREE(pidfile);
     return rc;
 }

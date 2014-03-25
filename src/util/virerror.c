@@ -288,7 +288,7 @@ virSetError(virErrorPtr newerr)
 
     virResetError(err);
     ret = virCopyError(newerr, err);
-cleanup:
+ cleanup:
     errno = saved_errno;
     return ret;
 }

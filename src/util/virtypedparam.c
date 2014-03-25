@@ -108,7 +108,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     va_end(ap);
     return ret;
 
@@ -227,7 +227,7 @@ virTypedParameterAssign(virTypedParameterPtr param, const char *name,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     va_end(ap);
     return ret;
 }
@@ -321,7 +321,7 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param, const char *name,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -381,7 +381,7 @@ virTypedParamsReplaceString(virTypedParameterPtr *params,
     *nparams = n;
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -769,7 +769,7 @@ virTypedParamsAddInt(virTypedParameterPtr *params,
     *nparams += 1;
     return 0;
 
-error:
+ error:
     virDispatchError(NULL);
     return -1;
 }
@@ -817,7 +817,7 @@ virTypedParamsAddUInt(virTypedParameterPtr *params,
     *nparams += 1;
     return 0;
 
-error:
+ error:
     virDispatchError(NULL);
     return -1;
 }
@@ -865,7 +865,7 @@ virTypedParamsAddLLong(virTypedParameterPtr *params,
     *nparams += 1;
     return 0;
 
-error:
+ error:
     virDispatchError(NULL);
     return -1;
 }
@@ -913,7 +913,7 @@ virTypedParamsAddULLong(virTypedParameterPtr *params,
     *nparams += 1;
     return 0;
 
-error:
+ error:
     virDispatchError(NULL);
     return -1;
 }
@@ -961,7 +961,7 @@ virTypedParamsAddDouble(virTypedParameterPtr *params,
     *nparams += 1;
     return 0;
 
-error:
+ error:
     virDispatchError(NULL);
     return -1;
 }
@@ -1009,7 +1009,7 @@ virTypedParamsAddBoolean(virTypedParameterPtr *params,
     *nparams += 1;
     return 0;
 
-error:
+ error:
     virDispatchError(NULL);
     return -1;
 }
@@ -1065,7 +1065,7 @@ virTypedParamsAddString(virTypedParameterPtr *params,
     *nparams += 1;
     return 0;
 
-error:
+ error:
     virDispatchError(NULL);
     return -1;
 }
@@ -1117,7 +1117,7 @@ virTypedParamsAddFromString(virTypedParameterPtr *params,
     *nparams += 1;
     return 0;
 
-error:
+ error:
     virDispatchError(NULL);
     return -1;
 }

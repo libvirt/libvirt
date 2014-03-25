@@ -58,6 +58,6 @@ virTPMCreateCancelPath(const char *devpath)
                        _("Missing TPM device path"));
     }
 
-cleanup:
+ cleanup:
     return path;
 }

@@ -137,7 +137,7 @@ char *virSystemdMakeMachineName(const char *name,
             goto cleanup;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(username);
 
     return machinename;
@@ -260,7 +260,7 @@ int virSystemdCreateMachine(const char *name,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(creatorname);
     VIR_FREE(machinename);
     VIR_FREE(slicename);
@@ -313,7 +313,7 @@ int virSystemdTerminateMachine(const char *name,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(machinename);
     return ret;
 }

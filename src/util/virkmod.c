@@ -46,7 +46,7 @@ doModprobe(const char *opts, const char *module, char **outbuf, char **errbuf)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }
@@ -65,7 +65,7 @@ doRmmod(const char *module, char **errbuf)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }
@@ -174,7 +174,7 @@ virKModIsBlacklisted(const char *module)
     if (strstr(outbuf, drvblklst))
         retval = true;
 
-cleanup:
+ cleanup:
     VIR_FREE(drvblklst);
     VIR_FREE(outbuf);
     return retval;

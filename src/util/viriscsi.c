@@ -96,7 +96,7 @@ virISCSIGetSession(const char *devpath,
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return cbdata.session;
 }
@@ -184,7 +184,7 @@ virStorageBackendIQNFound(const char *initiatoriqn,
     if (virCommandWait(cmd, NULL) < 0)
         ret = IQN_ERROR;
 
-out:
+ out:
     if (ret == IQN_MISSING) {
         VIR_DEBUG("Could not find interface with IQN '%s'", iqn);
     }
@@ -262,7 +262,7 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(temp_ifacename);
     if (ret != 0)
@@ -314,7 +314,7 @@ virISCSIConnection(const char *portal,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(ifacename);
 
@@ -458,7 +458,7 @@ virISCSIScanTargets(const char *portal,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }
@@ -492,7 +492,7 @@ virISCSINodeUpdate(const char *portal,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }

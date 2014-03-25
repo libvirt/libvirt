@@ -154,7 +154,7 @@ virInitctlSetRunLevel(virInitctlRunLevel level)
 
     ret = 1;
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
