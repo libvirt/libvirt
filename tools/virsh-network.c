@@ -480,7 +480,7 @@ vshNetworkListCollect(vshControl *ctl,
     goto cleanup;
 
 
-fallback:
+ fallback:
     /* fall back to old method (0.10.1 and older) */
     vshResetLibvirtError();
 
@@ -550,7 +550,7 @@ fallback:
     /* truncate networks that weren't found */
     deleted = nAllNets - list->nnets;
 
-filter:
+ filter:
     /* filter list the list if the list was acquired by fallback means */
     for (i = 0; i < list->nnets; i++) {
         net = list->nets[i];
@@ -581,14 +581,14 @@ filter:
         /* the pool matched all filters, it may stay */
         continue;
 
-remove_entry:
+ remove_entry:
         /* the pool has to be removed as it failed one of the filters */
         virNetworkFree(list->nets[i]);
         list->nets[i] = NULL;
         deleted++;
     }
 
-finished:
+ finished:
     /* sort the list */
     if (list->nets && list->nnets)
         qsort(list->nets, list->nnets,
@@ -600,7 +600,7 @@ finished:
 
     success = true;
 
-cleanup:
+ cleanup:
     for (i = 0; i < nAllNets; i++)
         VIR_FREE(names[i]);
     VIR_FREE(names);
@@ -1007,7 +1007,7 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
     vshPrint(ctl, _("Updated network %s %s"),
              virNetworkGetName(network), affected);
     ret = true;
-cleanup:
+ cleanup:
     vshReportError(ctl);
     virNetworkFree(network);
     VIR_FREE(xmlFromFile);
@@ -1274,7 +1274,7 @@ cmdNetworkEvent(vshControl *ctl, const vshCmd *cmd)
     if (data.count)
         ret = true;
 
-cleanup:
+ cleanup:
     vshEventCleanup(ctl);
     if (eventId >= 0 &&
         virConnectNetworkEventDeregisterAny(ctl->conn, eventId) < 0)

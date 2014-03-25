@@ -344,7 +344,7 @@ dissect_libvirt_payload(tvbuff_t *tvb, proto_tree *tree,
     }
     return;
 
-unknown:
+ unknown:
     dbg("Cannot determine payload: Prog=%u, Proc=%u, Type=%u, Status=%u", prog, proc, type, status);
     proto_tree_add_item(tree, hf_libvirt_unknown, tvb, VIR_HEADER_LEN, -1, ENC_NA);
 }

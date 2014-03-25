@@ -99,7 +99,7 @@ vshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
 
     ret = true;
 
-cleanup:
+ cleanup:
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
     if (snapshot)
@@ -214,7 +214,7 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
 
     ret = vshSnapshotCreate(ctl, dom, buffer, flags, from);
 
-cleanup:
+ cleanup:
     VIR_FREE(buffer);
     if (dom)
         virDomainFree(dom);
@@ -258,7 +258,7 @@ vshParseSnapshotMemspec(vshControl *ctl, virBufferPtr buf, const char *str)
     virBufferEscapeString(buf, " file='%s'", file);
     virBufferAddLit(buf, "/>\n");
     ret = 0;
-cleanup:
+ cleanup:
     if (ret < 0)
         vshError(ctl, _("unable to parse memspec: %s"), str);
     virStringFreeList(array);
@@ -309,7 +309,7 @@ vshParseSnapshotDiskspec(vshControl *ctl, virBufferPtr buf, const char *str)
         virBufferAddLit(buf, "/>\n");
     }
     ret = 0;
-cleanup:
+ cleanup:
     if (ret < 0)
         vshError(ctl, _("unable to parse diskspec: %s"), str);
     virStringFreeList(array);
@@ -464,7 +464,7 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
 
     ret = vshSnapshotCreate(ctl, dom, buffer, flags, NULL);
 
-cleanup:
+ cleanup:
     virBufferFreeAndReset(&buf);
     VIR_FREE(buffer);
     virDomainFree(dom);
@@ -620,7 +620,7 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     if (!ret && name)
         vshError(ctl, _("Failed to update %s"), name);
     if (edited)
@@ -739,7 +739,7 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     if (!ret)
         vshReportError(ctl);
     VIR_FREE(xml);
@@ -795,7 +795,7 @@ vshGetSnapshotParent(vshControl *ctl, virDomainSnapshotPtr snapshot,
     *parent_name = virXPathString("string(/domainsnapshot/parent/name)", ctxt);
     ret = 0;
 
-cleanup:
+ cleanup:
     if (ret < 0) {
         vshReportError(ctl);
         vshError(ctl, "%s", _("unable to determine if snapshot has parent"));
@@ -859,7 +859,7 @@ vshSnapshotFilter(vshControl *ctl, virDomainSnapshotPtr snapshot,
             ret = !!(flags & VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE);
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(state);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xmldoc);
@@ -1030,7 +1030,7 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     VIR_FREE(state);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xmldoc);
@@ -1375,7 +1375,7 @@ vshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
         }
     }
 
-success:
+ success:
     if (filter_fallback) {
         /* Older API didn't filter on status or location, but the
          * information is available in domain XML.  */
@@ -1406,7 +1406,7 @@ success:
     ret = snaplist;
     snaplist = NULL;
 
-cleanup:
+ cleanup:
     vshSnapshotListFree(snaplist);
     if (names && count > 0)
         for (i = 0; i < count; i++)
@@ -1673,7 +1673,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     /* this frees up memory from the last iteration of the loop */
     vshSnapshotListFree(snaplist);
     VIR_FREE(parent_snap);
@@ -1747,7 +1747,7 @@ cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
     vshPrint(ctl, "%s", xml);
     ret = true;
 
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
@@ -1814,7 +1814,7 @@ cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     VIR_FREE(parent);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
@@ -1908,7 +1908,7 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     if (snapshot)
         virDomainSnapshotFree(snapshot);
     if (dom)
@@ -1998,7 +1998,7 @@ cmdSnapshotDelete(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     if (snapshot)
         virDomainSnapshotFree(snapshot);
     if (dom)

@@ -379,7 +379,7 @@ cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, _("Failed to create vol from %s"), from);
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(buffer);
     virStoragePoolFree(pool);
     return ret;
@@ -463,7 +463,7 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
     }
 
     ret = true;
-cleanup:
+ cleanup:
     VIR_FREE(buffer);
     if (pool)
         virStoragePoolFree(pool);
@@ -496,7 +496,7 @@ vshMakeCloneXML(const char *origxml, const char *newname)
     xmlNodeSetContent(obj->nodesetval->nodeTab[0], (const xmlChar *)newname);
     xmlDocDumpMemory(doc, &newxml, &size);
 
-cleanup:
+ cleanup:
     xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
@@ -587,7 +587,7 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     VIR_FREE(origxml);
     xmlFree(newxml);
     if (origvol)
@@ -708,7 +708,7 @@ cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     if (vol)
         virStorageVolFree(vol);
     if (st)
@@ -822,7 +822,7 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     if (!ret && created)
         unlink(file);
@@ -952,7 +952,7 @@ cmdVolWipe(vshControl *ctl, const vshCmd *cmd)
 
     vshPrint(ctl, _("Vol %s wiped\n"), name);
     ret = true;
-out:
+ out:
     virStorageVolFree(vol);
     return ret;
 }
@@ -1131,7 +1131,7 @@ cmdVolResize(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-cleanup:
+ cleanup:
     virStorageVolFree(vol);
     return ret;
 }
@@ -1251,7 +1251,7 @@ vshStorageVolListCollect(vshControl *ctl,
     vshError(ctl, "%s", _("Failed to list volumes"));
     goto cleanup;
 
-fallback:
+ fallback:
     /* fall back to old method (0.10.1 and older) */
     vshResetLibvirtError();
 
@@ -1286,7 +1286,7 @@ fallback:
     /* truncate the list for not found vols */
     deleted = nvols - list->nvols;
 
-finished:
+ finished:
     /* sort the list */
     if (list->vols && list->nvols)
         qsort(list->vols, list->nvols, sizeof(*list->vols), vshStorageVolSorter);
@@ -1296,7 +1296,7 @@ finished:
 
     success = true;
 
-cleanup:
+ cleanup:
     if (nvols > 0)
         for (i = 0; i < nvols; i++)
             VIR_FREE(names[i]);
@@ -1529,7 +1529,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     /* Cleanup and return */
     ret = true;
 
-cleanup:
+ cleanup:
 
     /* Safely free the memory allocated in this function */
     if (list && list->nvols) {

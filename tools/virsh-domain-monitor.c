@@ -105,7 +105,7 @@ vshGetDomainDescription(vshControl *ctl, virDomainPtr dom, bool title,
     if (!desc)
         desc = vshStrdup(ctl, "");
 
-cleanup:
+ cleanup:
     VIR_FREE(domxml);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
@@ -370,7 +370,7 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
     }
 
     ret = true;
-cleanup:
+ cleanup:
     virDomainFree(dom);
     return ret;
 }
@@ -425,7 +425,7 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     virDomainFree(dom);
     return ret;
 }
@@ -547,7 +547,7 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     VIR_FREE(disks);
     virDomainFree(dom);
     VIR_FREE(xml);
@@ -648,7 +648,7 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     VIR_FREE(interfaces);
     virDomainFree(dom);
     VIR_FREE(xml);
@@ -760,7 +760,7 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     VIR_FREE(desc);
     VIR_FREE(state);
     VIR_FREE(interfaces);
@@ -819,7 +819,7 @@ cmdDomControl(vshControl *ctl, const vshCmd *cmd)
                  vshDomainControlStateToString(info.state));
     }
 
-cleanup:
+ cleanup:
     virDomainFree(dom);
     return ret;
 }
@@ -1008,7 +1008,7 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     VIR_FREE(params);
     virDomainFree(dom);
     return ret;
@@ -1087,7 +1087,7 @@ cmdDomIfstat(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     virDomainFree(dom);
     return ret;
 }
@@ -1151,7 +1151,7 @@ cmdDomBlkError(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     VIR_FREE(disks);
     virDomainFree(dom);
     return ret;
@@ -1350,7 +1350,7 @@ cmdDomstate(vshControl *ctl, const vshCmd *cmd)
                  vshDomainStateToString(state));
     }
 
-cleanup:
+ cleanup:
     virDomainFree(dom);
     return ret;
 }
@@ -1474,7 +1474,7 @@ vshDomainListCollect(vshControl *ctl, unsigned int flags)
     goto cleanup;
 
 
-fallback:
+ fallback:
     /* fall back to old method (0.9.12 and older) */
     vshResetLibvirtError();
 
@@ -1534,7 +1534,7 @@ fallback:
     /* truncate domains that weren't found */
     deleted = (nids + nnames) - list->ndomains;
 
-filter:
+ filter:
     /* filter list the list if the list was acquired by fallback means */
     for (i = 0; i < list->ndomains; i++) {
         dom = list->domains[i];
@@ -1610,14 +1610,14 @@ filter:
         /* the domain matched all filters, it may stay */
         continue;
 
-remove_entry:
+ remove_entry:
         /* the domain has to be removed as it failed one of the filters */
         virDomainFree(list->domains[i]);
         list->domains[i] = NULL;
         deleted++;
     }
 
-finished:
+ finished:
     /* sort the list */
     if (list->domains && list->ndomains)
         qsort(list->domains, list->ndomains, sizeof(*list->domains),
@@ -1629,7 +1629,7 @@ finished:
 
     success = true;
 
-cleanup:
+ cleanup:
     for (i = 0; nnames != -1 && i < nnames; i++)
         VIR_FREE(names[i]);
 
@@ -1838,7 +1838,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
     }
 
     ret = true;
-cleanup:
+ cleanup:
     vshDomainListFree(list);
     return ret;
 }

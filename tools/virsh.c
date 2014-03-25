@@ -291,7 +291,7 @@ vshReportError(vshControl *ctl)
 
     vshError(ctl, "%s", last_error->message);
 
-out:
+ out:
     vshResetLibvirtError();
 }
 
@@ -686,7 +686,7 @@ vshTreePrintInternal(vshControl *ctl,
     if (!root)
         virBufferTrim(indent, NULL, 2);
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -799,7 +799,7 @@ vshEditFile(vshControl *ctl, const char *filename)
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     return ret;
 }
@@ -1162,7 +1162,7 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
         vshError(ctl, _("command '%s' doesn't support option --%s"),
                  cmd->name, name);
     }
-cleanup:
+ cleanup:
     VIR_FREE(alias);
     return ret;
 }
@@ -1995,7 +1995,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                 data_only = true;
                 continue;
             } else {
-get_data:
+ get_data:
                 /* Special case 'help' to ignore spurious data */
                 if (!(opt = vshCmddefGetData(cmd, &opts_need_arg,
                                              &opts_seen)) &&
@@ -2814,7 +2814,7 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
     VIR_FREE(str);
     return;
 
-error:
+ error:
     vshCloseLogFile(ctl);
     vshError(ctl, "%s", _("failed to write the log file"));
     virBufferFreeAndReset(&buf);

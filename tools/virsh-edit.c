@@ -80,7 +80,7 @@ do {
     if (!tmp)
         goto edit_cleanup;
 
-reedit:
+ reedit:
     /* Start the editor. */
     if (vshEditFile(ctl, tmp) == -1)
         goto edit_cleanup;
@@ -96,7 +96,7 @@ reedit:
         EDIT_NOT_CHANGED;
     }
 
-redefine:
+ redefine:
     msg = NULL;
 
     /* Now re-read the object XML.  Did someone else change it while
@@ -144,7 +144,7 @@ redefine:
 
     edit_success = true;
 
-edit_cleanup:
+ edit_cleanup:
     VIR_FREE(doc);
     VIR_FREE(doc_edited);
     VIR_FREE(doc_reread);

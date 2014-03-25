@@ -182,7 +182,7 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
     VIR_FREE(nodes);
@@ -302,7 +302,7 @@ cmdNodeCpuMap(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     ret = true;
 
-  cleanup:
+ cleanup:
     VIR_FREE(cpumap);
     return ret;
 }
@@ -446,7 +446,7 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     VIR_FREE(params);
     return ret;
 }
@@ -511,7 +511,7 @@ cmdNodeMemStats(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-  cleanup:
+ cleanup:
     VIR_FREE(params);
     return ret;
 }
@@ -928,13 +928,13 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     virTypedParamsFree(params, nparams);
     return ret;
 
-save_error:
+ save_error:
     vshSaveLibvirtError();
-error:
+ error:
     vshError(ctl, "%s", _("Unable to change memory parameters"));
     goto cleanup;
 }

@@ -389,7 +389,7 @@ vshRunConsole(vshControl *ctl,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virConsoleFree(con);
 
     /* Restore original signal handlers */
@@ -399,7 +399,7 @@ cleanup:
     sigaction(SIGHUP,  &old_sighup,  NULL);
     sigaction(SIGPIPE, &old_sigpipe, NULL);
 
-resettty:
+ resettty:
     /* Put STDIN back into the (sane?) state we found
        it in before starting */
     vshTTYRestore(ctl);

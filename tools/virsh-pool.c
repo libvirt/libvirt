@@ -290,7 +290,7 @@ vshBuildPoolXML(vshControl *ctl,
     *retname = name;
     return true;
 
-cleanup:
+ cleanup:
     virBufferFreeAndReset(&buf);
     return false;
 }
@@ -755,7 +755,7 @@ vshStoragePoolListCollect(vshControl *ctl,
     goto cleanup;
 
 
-fallback:
+ fallback:
     /* fall back to old method (0.10.1 and older) */
     vshResetLibvirtError();
 
@@ -832,7 +832,7 @@ fallback:
     /* truncate pools that weren't found */
     deleted = nAllPools - list->npools;
 
-filter:
+ filter:
     /* filter list the list if the list was acquired by fallback means */
     for (i = 0; i < list->npools; i++) {
         pool = list->pools[i];
@@ -864,14 +864,14 @@ filter:
         /* the pool matched all filters, it may stay */
         continue;
 
-remove_entry:
+ remove_entry:
         /* the pool has to be removed as it failed one of the filters */
         virStoragePoolFree(list->pools[i]);
         list->pools[i] = NULL;
         deleted++;
     }
 
-finished:
+ finished:
     /* sort the list */
     if (list->pools && list->npools)
         qsort(list->pools, list->npools,
@@ -883,7 +883,7 @@ finished:
 
     success = true;
 
-cleanup:
+ cleanup:
     for (i = 0; i < nAllPools; i++)
         VIR_FREE(names[i]);
 
@@ -1305,7 +1305,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     /* Cleanup and return */
     ret = true;
 
-cleanup:
+ cleanup:
     VIR_FREE(outputStr);
     if (list && list->npools) {
         for (i = 0; i < list->npools; i++) {

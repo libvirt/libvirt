@@ -94,7 +94,7 @@ static int virLoginShellAllowedUser(virConfPtr conf,
     virReportSystemError(EPERM,
                          _("%s not matched against 'allowed_users' in %s"),
                          name, conf_file);
-cleanup:
+ cleanup:
     VIR_FREE(gname);
     return ret;
 }
@@ -130,7 +130,7 @@ static char **virLoginShellGetShellArgv(virConfPtr conf)
         }
     }
     return shargv;
-error:
+ error:
     virStringFreeList(shargv);
     return NULL;
 }
@@ -338,7 +338,7 @@ main(int argc, char **argv)
 
     /* At this point, the parent is now waiting for the child to exit,
      * but as that may take a long time, we release resources now.  */
-cleanup:
+ cleanup:
     if (nfdlist > 0)
         for (i = 0; i < nfdlist; i++)
             VIR_FORCE_CLOSE(fdlist[i]);

@@ -284,7 +284,7 @@ vshNWFilterListCollect(vshControl *ctl,
     goto cleanup;
 
 
-fallback:
+ fallback:
     /* fall back to old method (0.9.13 and older) */
     vshResetLibvirtError();
 
@@ -318,7 +318,7 @@ fallback:
     /* truncate network filters that weren't found */
     deleted = nfilters - list->nfilters;
 
-finished:
+ finished:
     /* sort the list */
     if (list->filters && list->nfilters)
         qsort(list->filters, list->nfilters,
@@ -330,7 +330,7 @@ finished:
 
     success = true;
 
-cleanup:
+ cleanup:
     for (i = 0; nfilters != -1 && i < nfilters; i++)
         VIR_FREE(names[i]);
     VIR_FREE(names);
@@ -438,7 +438,7 @@ cmdNWFilterEdit(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     if (nwfilter)
         virNWFilterFree(nwfilter);
     if (nwfilter_edited)

@@ -138,7 +138,7 @@ cmdInterfaceEdit(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
 
-cleanup:
+ cleanup:
     if (iface)
         virInterfaceFree(iface);
     if (iface_edited)
@@ -217,7 +217,7 @@ vshInterfaceListCollect(vshControl *ctl,
     goto cleanup;
 
 
-fallback:
+ fallback:
     /* fall back to old method (0.10.1 and older) */
     vshResetLibvirtError();
 
@@ -287,7 +287,7 @@ fallback:
     /* truncate interfaces that weren't found */
     deleted = nAllIfaces - list->nifaces;
 
-finished:
+ finished:
     /* sort the list */
     if (list->ifaces && list->nifaces)
         qsort(list->ifaces, list->nifaces,
@@ -299,7 +299,7 @@ finished:
 
     success = true;
 
-cleanup:
+ cleanup:
     for (i = 0; nActiveIfaces != -1 && i < nActiveIfaces; i++)
         VIR_FREE(activeNames[i]);
 
