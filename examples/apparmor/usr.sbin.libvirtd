@@ -25,6 +25,9 @@
   capability fsetid,
   capability audit_write,
 
+  # Needed for vfio
+  capability sys_resource,
+
   network inet stream,
   network inet dgram,
   network inet6 stream,
