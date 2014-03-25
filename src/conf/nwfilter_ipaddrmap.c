@@ -33,7 +33,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
-static virMutex ipAddressMapLock;
+static virMutex ipAddressMapLock = VIR_MUTEX_INITIALIZER;
 static virNWFilterHashTablePtr ipAddressMap;
 
 
@@ -146,11 +146,6 @@ virNWFilterIPAddrMapInit(void)
     ipAddressMap = virNWFilterHashTableCreate(0);
     if (!ipAddressMap)
         return -1;
-
-    if (virMutexInit(&ipAddressMapLock) < 0) {
-        virNWFilterIPAddrMapShutdown();
-        return -1;
-    }
 
     return 0;
 }

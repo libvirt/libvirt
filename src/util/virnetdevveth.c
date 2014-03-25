@@ -41,18 +41,7 @@ VIR_LOG_INIT("util.netdevveth");
 
 /* Functions */
 
-virMutex virNetDevVethCreateMutex;
-
-static int virNetDevVethCreateMutexOnceInit(void)
-{
-    if (virMutexInit(&virNetDevVethCreateMutex) < 0) {
-        virReportSystemError(errno, "%s", _("unable to init mutex"));
-        return -1;
-    }
-    return 0;
-}
-
-VIR_ONCE_GLOBAL_INIT(virNetDevVethCreateMutex);
+virMutex virNetDevVethCreateMutex = VIR_MUTEX_INITIALIZER;
 
 static int virNetDevVethExists(int devNum)
 {
@@ -132,9 +121,6 @@ int virNetDevVethCreate(char** veth1, char** veth2)
      * We might race with other containers, but this is reasonably
      * unlikely, so don't do too many retries for device creation
      */
-    if (virNetDevVethCreateMutexInitialize() < 0)
-        return -1;
-
     virMutexLock(&virNetDevVethCreateMutex);
 #define MAX_VETH_RETRIES 10
 

@@ -46,7 +46,7 @@ VIR_LOG_INIT("util.nodesuspend");
 static unsigned int nodeSuspendTargetMask;
 static bool nodeSuspendTargetMaskInit;
 
-static virMutex virNodeSuspendMutex;
+static virMutex virNodeSuspendMutex = VIR_MUTEX_INITIALIZER;
 
 static bool aboutToSuspend;
 
@@ -59,20 +59,6 @@ static void virNodeSuspendUnlock(void)
 {
     virMutexUnlock(&virNodeSuspendMutex);
 }
-
-
-static int virNodeSuspendOnceInit(void)
-{
-    if (virMutexInit(&virNodeSuspendMutex) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unable to initialize mutex"));
-        return -1;
-    }
-
-    return 0;
-}
-
-VIR_ONCE_GLOBAL_INIT(virNodeSuspend)
 
 
 /**
@@ -178,9 +164,6 @@ int nodeSuspendForDuration(unsigned int target,
 
     virCheckFlags(0, -1);
 
-    if (virNodeSuspendInitialize() < 0)
-        return -1;
-
     if (virNodeSuspendGetTargetMask(&supported) < 0)
         return -1;
 
@@ -266,9 +249,6 @@ virNodeSuspendSupportsTarget(unsigned int target, bool *supported)
     virCommandPtr cmd;
     int status;
     int ret = -1;
-
-    if (virNodeSuspendInitialize() < 0)
-        return -1;
 
     *supported = false;
 

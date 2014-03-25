@@ -119,10 +119,10 @@ struct ether_vlan_header
 } ATTRIBUTE_PACKED;
 
 
-static virMutex pendingLearnReqLock;
+static virMutex pendingLearnReqLock = VIR_MUTEX_INITIALIZER;
 static virHashTablePtr pendingLearnReq;
 
-static virMutex ifaceMapLock;
+static virMutex ifaceMapLock = VIR_MUTEX_INITIALIZER;
 static virHashTablePtr ifaceLockMap;
 
 typedef struct _virNWFilterIfaceLock virNWFilterIfaceLock;
@@ -806,18 +806,8 @@ virNWFilterLearnInit(void)
         return -1;
     }
 
-    if (virMutexInit(&pendingLearnReqLock) < 0) {
-        virNWFilterLearnShutdown();
-        return -1;
-    }
-
     ifaceLockMap = virHashCreate(0, virHashValueFree);
     if (!ifaceLockMap) {
-        virNWFilterLearnShutdown();
-        return -1;
-    }
-
-    if (virMutexInit(&ifaceMapLock) < 0) {
         virNWFilterLearnShutdown();
         return -1;
     }

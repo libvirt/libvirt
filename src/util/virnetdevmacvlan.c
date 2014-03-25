@@ -73,18 +73,7 @@ VIR_LOG_INIT("util.netdevmacvlan");
 # define MACVLAN_NAME_PREFIX	"macvlan"
 # define MACVLAN_NAME_PATTERN	"macvlan%d"
 
-virMutex virNetDevMacVLanCreateMutex;
-
-static int virNetDevMacVLanCreateMutexOnceInit(void)
-{
-    if (virMutexInit(&virNetDevMacVLanCreateMutex) < 0) {
-        virReportSystemError(errno, "%s", _("unable to init mutex"));
-        return -1;
-    }
-    return 0;
-}
-
-VIR_ONCE_GLOBAL_INIT(virNetDevMacVLanCreateMutex);
+virMutex virNetDevMacVLanCreateMutex = VIR_MUTEX_INITIALIZER;
 
 /**
  * virNetDevMacVLanCreate:
@@ -873,8 +862,6 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
     } else {
  create_name:
         retries = 5;
-        if (virNetDevMacVLanCreateMutexInitialize() < 0)
-            return -1;
         virMutexLock(&virNetDevMacVLanCreateMutex);
         for (c = 0; c < 8192; c++) {
             snprintf(ifname, sizeof(ifname), pattern, c);

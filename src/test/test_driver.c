@@ -119,7 +119,7 @@ typedef struct _testConn *testConnPtr;
 
 static testConn defaultConn;
 static int defaultConnections;
-static virMutex defaultLock;
+static virMutex defaultLock = VIR_MUTEX_INITIALIZER;
 
 #define TEST_MODEL "i686"
 #define TEST_MODEL_WORDSIZE 32
@@ -140,15 +140,6 @@ static const virNodeInfo defaultNodeInfo = {
 static int testConnectClose(virConnectPtr conn);
 static void testObjectEventQueue(testConnPtr driver,
                                  virObjectEventPtr event);
-
-static int
-testOnceInit(void)
-{
-    return virMutexInit(&defaultLock);
-}
-
-VIR_ONCE_GLOBAL_INIT(test)
-
 
 static void testDriverLock(testConnPtr driver)
 {
@@ -1554,9 +1545,6 @@ static virDrvOpenStatus testConnectOpen(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (testInitialize() < 0)
-        return VIR_DRV_OPEN_ERROR;
-
     if (!conn->uri)
         return VIR_DRV_OPEN_DECLINED;
 
@@ -1595,9 +1583,6 @@ static virDrvOpenStatus testConnectOpen(virConnectPtr conn,
 static int testConnectClose(virConnectPtr conn)
 {
     testConnPtr privconn = conn->privateData;
-
-    if (testInitialize() < 0)
-        return -1;
 
     if (privconn == &defaultConn) {
         virMutexLock(&defaultLock);

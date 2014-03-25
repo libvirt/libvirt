@@ -823,7 +823,7 @@ static int lxcControllerClearCapabilities(void)
 }
 
 static bool wantReboot = false;
-static virMutex lock;
+static virMutex lock = VIR_MUTEX_INITIALIZER;
 
 
 static void virLXCControllerSignalChildIO(virNetServerPtr server,
@@ -1108,9 +1108,6 @@ static int virLXCControllerMain(virLXCControllerPtr ctrl)
     int rc = -1;
     size_t i;
 
-    if (virMutexInit(&lock) < 0)
-        goto cleanup2;
-
     if (virNetServerAddSignalHandler(ctrl->server,
                                      SIGCHLD,
                                      virLXCControllerSignalChildIO,
@@ -1164,9 +1161,6 @@ static int virLXCControllerMain(virLXCControllerPtr ctrl)
         rc = wantReboot ? 1 : 0;
 
  cleanup:
-    virMutexDestroy(&lock);
- cleanup2:
-
     for (i = 0; i < ctrl->nconsoles; i++)
         virLXCControllerConsoleClose(&(ctrl->consoles[i]));
 

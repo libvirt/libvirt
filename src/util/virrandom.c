@@ -56,7 +56,7 @@ enum {
 
 static char randomState[RANDOM_STATE_SIZE];
 static struct random_data randomData;
-static virMutex randomLock;
+static virMutex randomLock = VIR_MUTEX_INITIALIZER;
 
 
 static int
@@ -73,9 +73,6 @@ virRandomOnceInit(void)
     if (debug && virStrToLong_ui(debug, NULL, 0, &seed) < 0)
         return -1;
 #endif
-
-    if (virMutexInit(&randomLock) < 0)
-        return -1;
 
     if (initstate_r(seed,
                     randomState,

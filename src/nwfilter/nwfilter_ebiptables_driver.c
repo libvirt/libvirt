@@ -211,7 +211,7 @@ static void ebiptablesDriverShutdown(void);
 static void ebtablesCleanAll(const char *ifname);
 static int ebiptablesAllTeardown(const char *ifname);
 
-static virMutex execCLIMutex;
+static virMutex execCLIMutex = VIR_MUTEX_INITIALIZER;
 
 struct ushort_map {
     unsigned short attr;
@@ -4375,9 +4375,6 @@ ebiptablesDriverInit(bool privileged)
 {
     if (!privileged)
         return 0;
-
-    if (virMutexInit(&execCLIMutex) < 0)
-        return -EINVAL;
 
     grep_cmd_path = virFindFileInPath("grep");
 

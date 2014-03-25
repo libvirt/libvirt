@@ -71,6 +71,11 @@ struct virOnceControl {
 };
 
 
+# define VIR_MUTEX_INITIALIZER            \
+    {                                     \
+        .lock = PTHREAD_MUTEX_INITIALIZER \
+    }
+
 # define VIR_ONCE_CONTROL_INITIALIZER \
     {                                 \
         .once = PTHREAD_ONCE_INIT     \
