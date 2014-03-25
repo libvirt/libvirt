@@ -175,10 +175,10 @@ static int virNetServerProcessMsg(virNetServerPtr srv,
                                     msg) < 0)
         goto cleanup;
 
-done:
+ done:
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -198,7 +198,7 @@ static void virNetServerHandleJob(void *jobOpaque, void *opaque)
     VIR_FREE(job);
     return;
 
-error:
+ error:
     virObjectUnref(job->prog);
     virNetMessageFree(job->msg);
     virNetServerClientClose(job->client);
@@ -252,7 +252,7 @@ static int virNetServerDispatchNewMessage(virNetServerClientPtr client,
         ret = virNetServerProcessMsg(srv, client, prog, msg);
     }
 
-cleanup:
+ cleanup:
     virObjectUnlock(srv);
 
     return ret;
@@ -306,7 +306,7 @@ static int virNetServerAddClient(virNetServerPtr srv,
     virObjectUnlock(srv);
     return 0;
 
-error:
+ error:
     virObjectUnlock(srv);
     return -1;
 }
@@ -403,7 +403,7 @@ virNetServerPtr virNetServerNew(size_t min_workers,
 
     return srv;
 
-error:
+ error:
     virObjectUnref(srv);
     return NULL;
 }
@@ -564,7 +564,7 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
 
     return srv;
 
-error:
+ error:
     virObjectUnref(srv);
     return NULL;
 }
@@ -672,7 +672,7 @@ virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
 
     return object;
 
-error:
+ error:
     virJSONValueFree(object);
     virObjectUnlock(srv);
     return NULL;
@@ -729,7 +729,7 @@ static void virNetServerGotInhibitReply(DBusPendingCall *pending,
     }
     dbus_message_unref(reply);
 
-cleanup:
+ cleanup:
     virObjectUnlock(srv);
 }
 
@@ -879,7 +879,7 @@ virNetServerSignalEvent(int watch,
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("Unexpected signal received: %d"), siginfo.si_signo);
 
-cleanup:
+ cleanup:
     virObjectUnlock(srv);
 }
 
@@ -911,7 +911,7 @@ static int virNetServerSignalSetup(virNetServerPtr srv)
 
     return 0;
 
-error:
+ error:
     VIR_FORCE_CLOSE(fds[0]);
     VIR_FORCE_CLOSE(fds[1]);
     return -1;
@@ -952,7 +952,7 @@ int virNetServerAddSignalHandler(virNetServerPtr srv,
     virObjectUnlock(srv);
     return 0;
 
-error:
+ error:
     VIR_FREE(sigdata);
     virObjectUnlock(srv);
     return -1;
@@ -988,7 +988,7 @@ int virNetServerAddService(virNetServerPtr srv,
     virObjectUnlock(srv);
     return 0;
 
-error:
+ error:
     virObjectUnlock(srv);
     return -1;
 }
@@ -1006,7 +1006,7 @@ int virNetServerAddProgram(virNetServerPtr srv,
     virObjectUnlock(srv);
     return 0;
 
-error:
+ error:
     virObjectUnlock(srv);
     return -1;
 }
@@ -1169,7 +1169,7 @@ void virNetServerRun(virNetServerPtr srv)
         }
     }
 
-cleanup:
+ cleanup:
     virObjectUnlock(srv);
 }
 

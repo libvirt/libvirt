@@ -389,7 +389,7 @@ virNetServerClientNewInternal(virNetSocketPtr sock,
 
     return client;
 
-error:
+ error:
     virObjectUnref(client);
     return NULL;
 }
@@ -506,7 +506,7 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
 
     return client;
 
-error:
+ error:
     virObjectUnref(client);
     return NULL;
 }
@@ -549,7 +549,7 @@ virJSONValuePtr virNetServerClientPreExecRestart(virNetServerClientPtr client)
     virObjectUnlock(client);
     return object;
 
-error:
+ error:
     virObjectUnlock(client);
     virJSONValueFree(object);
     return NULL;
@@ -767,7 +767,7 @@ virNetServerClientCreateIdentity(virNetServerClientPtr client)
                            seccontext) < 0)
         goto error;
 
-cleanup:
+ cleanup:
     VIR_FREE(username);
     VIR_FREE(userid);
     VIR_FREE(groupname);
@@ -783,7 +783,7 @@ cleanup:
 #endif
     return ret;
 
-error:
+ error:
     virObjectUnref(ret);
     ret = NULL;
     goto cleanup;
@@ -1085,7 +1085,7 @@ int virNetServerClientInit(virNetServerClientPtr client)
     virObjectUnlock(client);
     return 0;
 
-error:
+ error:
     client->wantClose = true;
     virObjectUnlock(client);
     return -1;
@@ -1130,7 +1130,7 @@ static ssize_t virNetServerClientRead(virNetServerClientPtr client)
  */
 static void virNetServerClientDispatchRead(virNetServerClientPtr client)
 {
-readmore:
+ readmore:
     if (client->rx->nfds == 0) {
         if (virNetServerClientRead(client) < 0) {
             client->wantClose = true;
@@ -1534,7 +1534,7 @@ virNetServerClientInitKeepAlive(virNetServerClientPtr client,
 
     client->keepalive = ka;
 
-cleanup:
+ cleanup:
     virObjectUnlock(client);
 
     return ret;
@@ -1558,7 +1558,7 @@ virNetServerClientStartKeepAlive(virNetServerClientPtr client)
 
     ret = virKeepAliveStart(client->keepalive, 0, 0);
 
-cleanup:
+ cleanup:
     virObjectUnlock(client);
     return ret;
 }

@@ -85,7 +85,7 @@ static void virNetServerServiceAccept(virNetSocketPtr sock,
 
     svc->dispatchFunc(svc, clientsock, svc->dispatchOpaque);
 
-cleanup:
+ cleanup:
     virObjectUnref(clientsock);
 }
 
@@ -142,7 +142,7 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
 
     return svc;
 
-error:
+ error:
     virObjectUnref(svc);
     return NULL;
 }
@@ -206,7 +206,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
 
     return svc;
 
-error:
+ error:
     virObjectUnref(svc);
     return NULL;
 }
@@ -257,7 +257,7 @@ virNetServerServicePtr virNetServerServiceNewFD(int fd,
 
     return svc;
 
-error:
+ error:
     virObjectUnref(svc);
     return NULL;
 }
@@ -338,7 +338,7 @@ virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr obj
 
     return svc;
 
-error:
+ error:
     virObjectUnref(svc);
     return NULL;
 }
@@ -381,7 +381,7 @@ virJSONValuePtr virNetServerServicePreExecRestart(virNetServerServicePtr svc)
 
     return object;
 
-error:
+ error:
     virJSONValueFree(object);
     return NULL;
 }

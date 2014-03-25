@@ -254,7 +254,7 @@ int virNetClientStreamSetError(virNetClientStreamPtr st,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     xdr_free((xdrproc_t)xdr_virNetMessageError, (void*)&err);
     virObjectUnlock(st);
     return ret;
@@ -296,7 +296,7 @@ int virNetClientStreamQueuePacket(virNetClientStreamPtr st,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnlock(st);
     return ret;
 }
@@ -350,7 +350,7 @@ int virNetClientStreamSendPacket(virNetClientStreamPtr st,
 
     return nbytes;
 
-error:
+ error:
     virNetMessageFree(msg);
     return -1;
 }
@@ -415,7 +415,7 @@ int virNetClientStreamRecvPacket(virNetClientStreamPtr st,
 
     virNetClientStreamEventTimerUpdate(st);
 
-cleanup:
+ cleanup:
     virObjectUnlock(st);
     return rv;
 }
@@ -455,7 +455,7 @@ int virNetClientStreamEventAddCallback(virNetClientStreamPtr st,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnlock(st);
     return ret;
 }
@@ -478,7 +478,7 @@ int virNetClientStreamEventUpdateCallback(virNetClientStreamPtr st,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnlock(st);
     return ret;
 }
@@ -505,7 +505,7 @@ int virNetClientStreamEventRemoveCallback(virNetClientStreamPtr st)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnlock(st);
     return ret;
 }

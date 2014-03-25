@@ -329,7 +329,7 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
           client, client->sock);
     return client;
 
-error:
+ error:
     VIR_FORCE_CLOSE(wakeupFD[0]);
     VIR_FORCE_CLOSE(wakeupFD[1]);
     virObjectUnref(client);
@@ -484,7 +484,7 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
         goto cleanup;
     sock = NULL;
 
-cleanup:
+ cleanup:
     VIR_FREE(command);
     VIR_FREE(privkey);
     VIR_FREE(knownhosts);
@@ -494,7 +494,7 @@ cleanup:
     virObjectUnref(sock);
     return ret;
 
-no_memory:
+ no_memory:
     virReportOOMError();
     goto cleanup;
 }
@@ -834,7 +834,7 @@ int virNetClientSetTLSSession(virNetClientPtr client,
     virObjectUnlock(client);
     return 0;
 
-error:
+ error:
     virObjectUnref(client->tls);
     client->tls = NULL;
     virObjectUnlock(client);
@@ -886,7 +886,7 @@ int virNetClientAddProgram(virNetClientPtr client,
     virObjectUnlock(client);
     return 0;
 
-error:
+ error:
     virObjectUnlock(client);
     return -1;
 }
@@ -905,7 +905,7 @@ int virNetClientAddStream(virNetClientPtr client,
     virObjectUnlock(client);
     return 0;
 
-error:
+ error:
     virObjectUnlock(client);
     return -1;
 }
@@ -926,7 +926,7 @@ void virNetClientRemoveStream(virNetClientPtr client,
     VIR_DELETE_ELEMENT(client->streams, i, client->nstreams);
     virObjectUnref(st);
 
-cleanup:
+ cleanup:
     virObjectUnlock(client);
 }
 
@@ -1597,7 +1597,7 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
         }
     }
 
-error:
+ error:
     virNetClientCallRemove(&client->waitDispatch, thiscall);
     virNetClientIOEventLoopPassTheBuck(client, thiscall);
     return -1;
@@ -1792,7 +1792,7 @@ static int virNetClientIO(virNetClientPtr client,
         virGetLastError())
         rv = -1;
 
-cleanup:
+ cleanup:
     VIR_DEBUG("All done with our call head=%p call=%p rv=%d",
               client->waitDispatch, thiscall, rv);
     return rv;
@@ -1843,7 +1843,7 @@ void virNetClientIncomingEvent(virNetSocketPtr sock,
                                     NULL);
     virNetClientIOUpdateCallback(client, true);
 
-done:
+ done:
     if (client->wantClose && !client->haveTheBuck) {
         virNetClientCloseLocked(client);
         virNetClientCallRemovePredicate(&client->waitDispatch,
@@ -1900,7 +1900,7 @@ virNetClientCallNew(virNetMessagePtr msg,
 
     return call;
 
-error:
+ error:
     VIR_FREE(call);
     return NULL;
 }

@@ -192,7 +192,7 @@ virNetSSHSessionAuthMethodNew(virNetSSHSessionPtr sess)
 
     return auth;
 
-error:
+ error:
     VIR_FREE(auth);
     return NULL;
 }
@@ -267,7 +267,7 @@ virNetSSHKbIntCb(const char *name ATTRIBUTE_UNUSED,
         responses[i].length = askcred[i].resultlen;
     }
 
-cleanup:
+ cleanup:
     if (askcred) {
         for (i = 0; i < num_prompts; i++) {
             char *prompt = (char *)askcred[i].prompt;
@@ -755,7 +755,7 @@ virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
     else
         return -1;
 
-cleanup:
+ cleanup:
     VIR_FREE(password);
     return ret;
 }
@@ -1034,7 +1034,7 @@ virNetSSHSessionAuthAddPasswordAuth(virNetSSHSessionPtr sess,
     virObjectUnlock(sess);
     return 0;
 
-error:
+ error:
     VIR_FREE(user);
     virObjectUnlock(sess);
     return -1;
@@ -1068,7 +1068,7 @@ virNetSSHSessionAuthAddAgentAuth(virNetSSHSessionPtr sess,
     virObjectUnlock(sess);
     return 0;
 
-error:
+ error:
     VIR_FREE(user);
     virObjectUnlock(sess);
     return -1;
@@ -1111,7 +1111,7 @@ virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSessionPtr sess,
     virObjectUnlock(sess);
     return 0;
 
-error:
+ error:
     VIR_FREE(user);
     VIR_FREE(pass);
     VIR_FREE(file);
@@ -1149,7 +1149,7 @@ virNetSSHSessionAuthAddKeyboardAuth(virNetSSHSessionPtr sess,
     virObjectUnlock(sess);
     return 0;
 
-error:
+ error:
     VIR_FREE(user);
     virObjectUnlock(sess);
     return -1;
@@ -1222,7 +1222,7 @@ virNetSSHSessionSetHostKeyVerification(virNetSSHSessionPtr sess,
     virObjectUnlock(sess);
     return 0;
 
-error:
+ error:
     virObjectUnlock(sess);
     return -1;
 }
@@ -1273,7 +1273,7 @@ virNetSSHSessionPtr virNetSSHSessionNew(void)
 
     return sess;
 
-error:
+ error:
     virObjectUnref(sess);
     return NULL;
 }
@@ -1330,7 +1330,7 @@ virNetSSHSessionConnect(virNetSSHSessionPtr sess,
     virObjectUnlock(sess);
     return ret;
 
-error:
+ error:
     sess->state = VIR_NET_SSH_STATE_ERROR;
     virObjectUnlock(sess);
     return ret;
@@ -1439,11 +1439,11 @@ virNetSSHChannelRead(virNetSSHSessionPtr sess,
         return -1;
     }
 
-success:
+ success:
     virObjectUnlock(sess);
     return read_n;
 
-error:
+ error:
     sess->state = VIR_NET_SSH_STATE_ERROR;
     virObjectUnlock(sess);
     return ret;
@@ -1501,7 +1501,7 @@ virNetSSHChannelWrite(virNetSSHSessionPtr sess,
                        _("write failed: %s"), msg);
     }
 
-cleanup:
+ cleanup:
     virObjectUnlock(sess);
     return ret;
 }

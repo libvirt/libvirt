@@ -537,7 +537,7 @@ static gnutls_x509_crt_t virNetTLSContextLoadCertFromFile(const char *certFile,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (ret != 0) {
         gnutls_x509_crt_deinit(cert);
         cert = NULL;
@@ -575,7 +575,7 @@ static int virNetTLSContextLoadCACertListFromFile(const char *certFile,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(buf);
     return ret;
 }
@@ -616,7 +616,7 @@ static int virNetTLSContextSanityCheckCredentials(bool isServer,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (cert)
         gnutls_x509_crt_deinit(cert);
     for (i = 0; i < ncacerts; i++)
@@ -699,7 +699,7 @@ static int virNetTLSContextLoadCredentials(virNetTLSContextPtr ctxt,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -783,7 +783,7 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
 
     return ctxt;
 
-error:
+ error:
     if (isServer)
         gnutls_dh_params_deinit(ctxt->dhParams);
     gnutls_certificate_free_credentials(ctxt->x509cred);
@@ -906,7 +906,7 @@ static int virNetTLSContextLocateCredentials(const char *pkipath,
 
     return 0;
 
-error:
+ error:
     VIR_FREE(*cacert);
     VIR_FREE(*cacrl);
     VIR_FREE(*key);
@@ -1117,14 +1117,14 @@ static int virNetTLSContextValidCertificate(virNetTLSContextPtr ctxt,
 
     return 0;
 
-authdeny:
+ authdeny:
     PROBE(RPC_TLS_CONTEXT_SESSION_DENY,
           "ctxt=%p sess=%p dname=%s",
           ctxt, sess, dnameptr);
 
     return -1;
 
-authfail:
+ authfail:
     PROBE(RPC_TLS_CONTEXT_SESSION_FAIL,
           "ctxt=%p sess=%p",
           ctxt, sess);
@@ -1153,7 +1153,7 @@ int virNetTLSContextCheckCertificate(virNetTLSContextPtr ctxt,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnlock(ctxt);
     virObjectUnlock(sess);
 
@@ -1264,7 +1264,7 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
 
     return sess;
 
-error:
+ error:
     virObjectUnref(sess);
     return NULL;
 }
@@ -1311,7 +1311,7 @@ ssize_t virNetTLSSessionWrite(virNetTLSSessionPtr sess,
 
     ret = -1;
 
-cleanup:
+ cleanup:
     virObjectUnlock(sess);
     return ret;
 }
@@ -1341,7 +1341,7 @@ ssize_t virNetTLSSessionRead(virNetTLSSessionPtr sess,
 
     ret = -1;
 
-cleanup:
+ cleanup:
     virObjectUnlock(sess);
     return ret;
 }
@@ -1373,7 +1373,7 @@ int virNetTLSSessionHandshake(virNetTLSSessionPtr sess)
                    gnutls_strerror(ret));
     ret = -1;
 
-cleanup:
+ cleanup:
     virObjectUnlock(sess);
     return ret;
 }
@@ -1406,7 +1406,7 @@ int virNetTLSSessionGetKeySize(virNetTLSSessionPtr sess)
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     virObjectUnlock(sess);
     return ssf;
 }

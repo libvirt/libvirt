@@ -108,7 +108,7 @@ virKeepAliveMessage(virKeepAlivePtr ka, int proc)
 
     return msg;
 
-error:
+ error:
     VIR_WARN("Failed to generate keepalive %s", procstr);
     return NULL;
 }
@@ -181,7 +181,7 @@ virKeepAliveTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
     virObjectLock(ka);
     virObjectUnref(ka);
 
-cleanup:
+ cleanup:
     virObjectUnlock(ka);
 }
 
@@ -294,7 +294,7 @@ virKeepAliveStart(virKeepAlivePtr ka,
     virObjectRef(ka);
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnlock(ka);
     return ret;
 }

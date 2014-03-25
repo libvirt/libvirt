@@ -188,7 +188,7 @@ virNetClientProgramDispatchError(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     xdr_free((xdrproc_t)xdr_virNetMessageError, (void*)&err);
     return ret;
 }
@@ -262,7 +262,7 @@ int virNetClientProgramDispatch(virNetClientProgramPtr prog,
 
     xdr_free(event->msg_filter, evdata);
 
-cleanup:
+ cleanup:
     VIR_FREE(evdata);
     return 0;
 }
@@ -394,7 +394,7 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
 
     return 0;
 
-error:
+ error:
     virNetMessageFree(msg);
     if (infds && ninfds) {
         for (i = 0; i < *ninfds; i++)
