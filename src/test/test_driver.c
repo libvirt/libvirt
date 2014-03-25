@@ -294,7 +294,7 @@ testDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
     *data = nsdata;
     return 0;
 
-error:
+ error:
     VIR_FREE(nodes);
     testDomainDefNamespaceFree(nsdata);
     return -1;
@@ -385,7 +385,7 @@ testBuildCapabilities(virConnectPtr conn)
 
     return caps;
 
-error:
+ error:
     virObjectUnref(caps);
     return NULL;
 }
@@ -642,7 +642,7 @@ testDomainUpdateVCPUs(testConnPtr privconn,
 
     dom->def->vcpus = nvcpus;
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -685,7 +685,7 @@ testDomainStartState(testConnPtr privconn,
 
     dom->hasManagedSave = false;
     ret = 0;
-cleanup:
+ cleanup:
     if (ret < 0)
         testDomainShutdownState(NULL, dom, VIR_DOMAIN_SHUTOFF_FAILED);
     return ret;
@@ -835,7 +835,7 @@ testOpenDefault(virConnectPtr conn)
 
     return VIR_DRV_OPEN_SUCCESS;
 
-error:
+ error:
     virObjectUnref(privconn->domains);
     virNetworkObjListFree(&privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);
@@ -915,7 +915,7 @@ testParseXMLDocFromFile(xmlNodePtr node, const char *file, const char *type)
         ret = node;
     }
 
-error:
+ error:
     xmlFreeDoc(doc);
     VIR_FREE(absFile);
     return ret;
@@ -1006,7 +1006,7 @@ testParseNodeInfo(virNodeInfoPtr nodeInfo, xmlXPathContextPtr ctxt)
     }
 
     return 0;
-error:
+ error:
     return -1;
 }
 
@@ -1063,7 +1063,7 @@ testParseDomainSnapshots(testConnPtr privconn,
     }
 
     ret = 0;
-error:
+ error:
     return ret;
 }
 
@@ -1129,7 +1129,7 @@ testParseDomains(testConnPtr privconn,
     }
 
     ret = 0;
-error:
+ error:
     VIR_FREE(nodes);
     return ret;
 }
@@ -1170,7 +1170,7 @@ testParseNetworks(testConnPtr privconn,
     }
 
     ret = 0;
-error:
+ error:
     VIR_FREE(nodes);
     return ret;
 }
@@ -1211,7 +1211,7 @@ testParseInterfaces(testConnPtr privconn,
     }
 
     ret = 0;
-error:
+ error:
     VIR_FREE(nodes);
     return ret;
 }
@@ -1267,7 +1267,7 @@ testOpenVolumesForPool(const char *file,
     }
 
     ret = 0;
-error:
+ error:
     virStorageVolDefFree(def);
     VIR_FREE(nodes);
     return ret;
@@ -1321,7 +1321,7 @@ testParseStorage(testConnPtr privconn,
     }
 
     ret = 0;
-error:
+ error:
     VIR_FREE(nodes);
     return ret;
 }
@@ -1361,7 +1361,7 @@ testParseNodedevs(testConnPtr privconn,
     }
 
     ret = 0;
-error:
+ error:
     VIR_FREE(nodes);
     return ret;
 }
@@ -1401,7 +1401,7 @@ testParseAuthUsers(testConnPtr privconn,
     }
 
     ret = 0;
-error:
+ error:
     VIR_FREE(nodes);
     return ret;
 }
@@ -1520,7 +1520,7 @@ testConnectAuthenticate(virConnectPtr conn,
     }
     i = -1;
 
-found_user:
+ found_user:
     /* Even if we didn't find the user, we still ask for a password. */
     if (i == -1 || privconn->auths[i].password != NULL) {
         password = virAuthGetPassword(conn, auth, "test",
@@ -1540,7 +1540,7 @@ found_user:
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(username);
     VIR_FREE(password);
     return ret;
@@ -1726,7 +1726,7 @@ static int testDomainIsActive(virDomainPtr dom)
     }
     ret = virDomainObjIsActive(obj);
 
-cleanup:
+ cleanup:
     if (obj)
         virObjectUnlock(obj);
     return ret;
@@ -1747,7 +1747,7 @@ static int testDomainIsPersistent(virDomainPtr dom)
     }
     ret = obj->persistent;
 
-cleanup:
+ cleanup:
     if (obj)
         virObjectUnlock(obj);
     return ret;
@@ -1797,7 +1797,7 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
     if (ret)
         ret->id = dom->def->id;
 
-cleanup:
+ cleanup:
     if (dom)
         virObjectUnlock(dom);
     if (event)
@@ -1828,7 +1828,7 @@ static virDomainPtr testDomainLookupByID(virConnectPtr conn,
     if (ret)
         ret->id = dom->def->id;
 
-cleanup:
+ cleanup:
     if (dom)
         virObjectUnlock(dom);
     return ret;
@@ -1854,7 +1854,7 @@ static virDomainPtr testDomainLookupByUUID(virConnectPtr conn,
     if (ret)
         ret->id = dom->def->id;
 
-cleanup:
+ cleanup:
     if (dom)
         virObjectUnlock(dom);
     return ret;
@@ -1880,7 +1880,7 @@ static virDomainPtr testDomainLookupByName(virConnectPtr conn,
     if (ret)
         ret->id = dom->def->id;
 
-cleanup:
+ cleanup:
     if (dom)
         virObjectUnlock(dom);
     return ret;
@@ -1928,7 +1928,7 @@ static int testDomainDestroy(virDomainPtr domain)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     if (event)
@@ -1967,7 +1967,7 @@ static int testDomainResume(virDomainPtr domain)
                                      VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     if (event) {
@@ -2009,7 +2009,7 @@ static int testDomainSuspend(virDomainPtr domain)
                                      VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
 
@@ -2058,7 +2058,7 @@ static int testDomainShutdownFlags(virDomainPtr domain,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     if (event)
@@ -2134,7 +2134,7 @@ static int testDomainReboot(virDomainPtr domain,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     if (event)
@@ -2174,7 +2174,7 @@ static int testDomainGetInfo(virDomainPtr domain,
     info->cpuTime = ((tv.tv_sec * 1000ll * 1000ll  * 1000ll) + (tv.tv_usec * 1000ll));
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -2205,7 +2205,7 @@ testDomainGetState(virDomainPtr domain,
     *state = virDomainObjGetState(privdom, reason);
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -2297,7 +2297,7 @@ testDomainSaveFlags(virDomainPtr domain, const char *path,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(xml);
 
     /* Don't report failure in close or unlink, because
@@ -2409,7 +2409,7 @@ testDomainRestoreFlags(virConnectPtr conn,
                                      VIR_DOMAIN_EVENT_STARTED_RESTORED);
     ret = 0;
 
-cleanup:
+ cleanup:
     virDomainDefFree(def);
     VIR_FREE(xml);
     VIR_FORCE_CLOSE(fd);
@@ -2489,7 +2489,7 @@ static int testDomainCoreDumpWithFormat(virDomainPtr domain,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
     if (privdom)
         virObjectUnlock(privdom);
@@ -2539,7 +2539,7 @@ testDomainGetMaxMemory(virDomainPtr domain)
 
     ret = privdom->def->mem.max_balloon;
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -2566,7 +2566,7 @@ static int testDomainSetMaxMemory(virDomainPtr domain,
     privdom->def->mem.max_balloon = memory;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -2597,7 +2597,7 @@ static int testDomainSetMemory(virDomainPtr domain,
     privdom->def->mem.cur_balloon = memory;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -2636,7 +2636,7 @@ testDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 
     ret = (flags & VIR_DOMAIN_VCPU_MAXIMUM) ? def->maxvcpus : def->vcpus;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -2735,7 +2735,7 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
         break;
     }
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -2830,7 +2830,7 @@ static int testDomainGetVcpus(virDomainPtr domain,
     }
 
     ret = maxinfo;
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -2888,7 +2888,7 @@ static int testDomainPinVcpu(virDomainPtr domain,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -2919,7 +2919,7 @@ static char *testDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     ret = virDomainDefFormat(def,
                              flags);
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -2991,7 +2991,7 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
     if (ret)
         ret->id = dom->def->id;
 
-cleanup:
+ cleanup:
     virDomainDefFree(def);
     virDomainDefFree(oldDef);
     if (dom)
@@ -3027,7 +3027,7 @@ static char *testDomainGetMetadata(virDomainPtr dom,
     ret = virDomainObjGetMetadata(privdom, type, uri, privconn->caps,
                                   privconn->xmlopt, flags);
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -3061,7 +3061,7 @@ static int testDomainSetMetadata(virDomainPtr dom,
                                   privconn->caps, privconn->xmlopt,
                                   NULL, flags);
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -3091,7 +3091,7 @@ static int testNodeGetCellsFreeMemory(virConnectPtr conn,
     }
     ret = i;
 
-cleanup:
+ cleanup:
     testDriverUnlock(privconn);
     return ret;
 }
@@ -3131,7 +3131,7 @@ static int testDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
                                      VIR_DOMAIN_EVENT_STARTED_BOOTED);
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     if (event)
@@ -3207,7 +3207,7 @@ static int testDomainUndefineFlags(virDomainPtr domain,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     if (event)
@@ -3241,7 +3241,7 @@ static int testDomainGetAutostart(virDomainPtr domain,
     *autostart = privdom->autostart;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -3268,7 +3268,7 @@ static int testDomainSetAutostart(virDomainPtr domain,
     privdom->autostart = autostart ? 1 : 0;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -3318,7 +3318,7 @@ testDomainGetSchedulerParametersFlags(virDomainPtr domain,
     *nparams = 1;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -3369,7 +3369,7 @@ testDomainSetSchedulerParametersFlags(virDomainPtr domain,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -3430,7 +3430,7 @@ static int testDomainBlockStats(virDomainPtr domain,
     stats->errs = tv.tv_sec / 2;
 
     ret = 0;
-error:
+ error:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -3489,7 +3489,7 @@ static int testDomainInterfaceStats(virDomainPtr domain,
     stats->tx_drop = tv.tv_sec / 4;
 
     ret = 0;
-error:
+ error:
     if (privdom)
         virObjectUnlock(privdom);
     return ret;
@@ -3533,7 +3533,7 @@ static virNetworkPtr testNetworkLookupByUUID(virConnectPtr conn,
 
     ret = virGetNetwork(conn, net->def->name, net->def->uuid);
 
-cleanup:
+ cleanup:
     if (net)
         virNetworkObjUnlock(net);
     return ret;
@@ -3557,7 +3557,7 @@ static virNetworkPtr testNetworkLookupByName(virConnectPtr conn,
 
     ret = virGetNetwork(conn, net->def->name, net->def->uuid);
 
-cleanup:
+ cleanup:
     if (net)
         virNetworkObjUnlock(net);
     return ret;
@@ -3602,7 +3602,7 @@ static int testConnectListNetworks(virConnectPtr conn, char **const names, int n
 
     return n;
 
-error:
+ error:
     for (n = 0; n < nnames; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -3647,7 +3647,7 @@ static int testConnectListDefinedNetworks(virConnectPtr conn, char **const names
 
     return n;
 
-error:
+ error:
     for (n = 0; n < nnames; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -3686,7 +3686,7 @@ static int testNetworkIsActive(virNetworkPtr net)
     }
     ret = virNetworkObjIsActive(obj);
 
-cleanup:
+ cleanup:
     if (obj)
         virNetworkObjUnlock(obj);
     return ret;
@@ -3707,7 +3707,7 @@ static int testNetworkIsPersistent(virNetworkPtr net)
     }
     ret = obj->persistent;
 
-cleanup:
+ cleanup:
     if (obj)
         virNetworkObjUnlock(obj);
     return ret;
@@ -3737,7 +3737,7 @@ static virNetworkPtr testNetworkCreateXML(virConnectPtr conn, const char *xml)
 
     ret = virGetNetwork(conn, net->def->name, net->def->uuid);
 
-cleanup:
+ cleanup:
     virNetworkDefFree(def);
     if (event)
         testObjectEventQueue(privconn, event);
@@ -3771,7 +3771,7 @@ virNetworkPtr testNetworkDefineXML(virConnectPtr conn, const char *xml)
 
     ret = virGetNetwork(conn, net->def->name, net->def->uuid);
 
-cleanup:
+ cleanup:
     virNetworkDefFree(def);
     if (event)
         testObjectEventQueue(privconn, event);
@@ -3812,7 +3812,7 @@ static int testNetworkUndefine(virNetworkPtr network)
     privnet = NULL;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (event)
         testObjectEventQueue(privconn, event);
     if (privnet)
@@ -3864,7 +3864,7 @@ testNetworkUpdate(virNetworkPtr net,
        goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     testDriverUnlock(privconn);
     return ret;
 }
@@ -3898,7 +3898,7 @@ static int testNetworkCreate(virNetworkPtr network)
                                         0);
     ret = 0;
 
-cleanup:
+ cleanup:
     if (event)
         testObjectEventQueue(privconn, event);
     if (privnet)
@@ -3933,7 +3933,7 @@ static int testNetworkDestroy(virNetworkPtr network)
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     if (event)
         testObjectEventQueue(privconn, event);
     if (privnet)
@@ -3963,7 +3963,7 @@ static char *testNetworkGetXMLDesc(virNetworkPtr network,
 
     ret = virNetworkDefFormat(privnet->def, flags);
 
-cleanup:
+ cleanup:
     if (privnet)
         virNetworkObjUnlock(privnet);
     return ret;
@@ -3993,7 +3993,7 @@ static char *testNetworkGetBridgeName(virNetworkPtr network) {
 
     ignore_value(VIR_STRDUP(bridge, privnet->def->bridge));
 
-cleanup:
+ cleanup:
     if (privnet)
         virNetworkObjUnlock(privnet);
     return bridge;
@@ -4019,7 +4019,7 @@ static int testNetworkGetAutostart(virNetworkPtr network,
     *autostart = privnet->autostart;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privnet)
         virNetworkObjUnlock(privnet);
     return ret;
@@ -4045,7 +4045,7 @@ static int testNetworkSetAutostart(virNetworkPtr network,
     privnet->autostart = autostart ? 1 : 0;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privnet)
         virNetworkObjUnlock(privnet);
     return ret;
@@ -4116,7 +4116,7 @@ static int testConnectListInterfaces(virConnectPtr conn, char **const names, int
 
     return n;
 
-error:
+ error:
     for (n = 0; n < nnames; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -4163,7 +4163,7 @@ static int testConnectListDefinedInterfaces(virConnectPtr conn, char **const nam
 
     return n;
 
-error:
+ error:
     for (n = 0; n < nnames; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -4188,7 +4188,7 @@ static virInterfacePtr testInterfaceLookupByName(virConnectPtr conn,
 
     ret = virGetInterface(conn, iface->def->name, iface->def->mac);
 
-cleanup:
+ cleanup:
     if (iface)
         virInterfaceObjUnlock(iface);
     return ret;
@@ -4218,7 +4218,7 @@ static virInterfacePtr testInterfaceLookupByMACString(virConnectPtr conn,
 
     ret = virGetInterface(conn, iface->def->name, iface->def->mac);
 
-cleanup:
+ cleanup:
     if (iface)
         virInterfaceObjUnlock(iface);
     return ret;
@@ -4239,7 +4239,7 @@ static int testInterfaceIsActive(virInterfacePtr iface)
     }
     ret = virInterfaceObjIsActive(obj);
 
-cleanup:
+ cleanup:
     if (obj)
         virInterfaceObjUnlock(obj);
     return ret;
@@ -4267,7 +4267,7 @@ static int testInterfaceChangeBegin(virConnectPtr conn,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     testDriverUnlock(privconn);
     return ret;
 }
@@ -4294,7 +4294,7 @@ static int testInterfaceChangeCommit(virConnectPtr conn,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     testDriverUnlock(privconn);
 
     return ret;
@@ -4327,7 +4327,7 @@ static int testInterfaceChangeRollback(virConnectPtr conn,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     testDriverUnlock(privconn);
     return ret;
 }
@@ -4353,7 +4353,7 @@ static char *testInterfaceGetXMLDesc(virInterfacePtr iface,
 
     ret = virInterfaceDefFormat(privinterface->def);
 
-cleanup:
+ cleanup:
     if (privinterface)
         virInterfaceObjUnlock(privinterface);
     return ret;
@@ -4380,7 +4380,7 @@ static virInterfacePtr testInterfaceDefineXML(virConnectPtr conn, const char *xm
 
     ret = virGetInterface(conn, iface->def->name, iface->def->mac);
 
-cleanup:
+ cleanup:
     virInterfaceDefFree(def);
     if (iface)
         virInterfaceObjUnlock(iface);
@@ -4407,7 +4407,7 @@ static int testInterfaceUndefine(virInterfacePtr iface)
                        privinterface);
     ret = 0;
 
-cleanup:
+ cleanup:
     testDriverUnlock(privconn);
     return ret;
 }
@@ -4438,7 +4438,7 @@ static int testInterfaceCreate(virInterfacePtr iface,
     privinterface->active = 1;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privinterface)
         virInterfaceObjUnlock(privinterface);
     testDriverUnlock(privconn);
@@ -4471,7 +4471,7 @@ static int testInterfaceDestroy(virInterfacePtr iface,
     privinterface->active = 0;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privinterface)
         virInterfaceObjUnlock(privinterface);
     testDriverUnlock(privconn);
@@ -4535,7 +4535,7 @@ testStoragePoolLookupByUUID(virConnectPtr conn,
     ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid,
                             NULL, NULL);
 
-cleanup:
+ cleanup:
     if (pool)
         virStoragePoolObjUnlock(pool);
     return ret;
@@ -4561,7 +4561,7 @@ testStoragePoolLookupByName(virConnectPtr conn,
     ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid,
                             NULL, NULL);
 
-cleanup:
+ cleanup:
     if (pool)
         virStoragePoolObjUnlock(pool);
     return ret;
@@ -4613,7 +4613,7 @@ testConnectListStoragePools(virConnectPtr conn,
 
     return n;
 
-error:
+ error:
     for (n = 0; n < nnames; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -4663,7 +4663,7 @@ testConnectListDefinedStoragePools(virConnectPtr conn,
 
     return n;
 
-error:
+ error:
     for (n = 0; n < nnames; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -4703,7 +4703,7 @@ static int testStoragePoolIsActive(virStoragePoolPtr pool)
     }
     ret = virStoragePoolObjIsActive(obj);
 
-cleanup:
+ cleanup:
     if (obj)
         virStoragePoolObjUnlock(obj);
     return ret;
@@ -4724,7 +4724,7 @@ static int testStoragePoolIsPersistent(virStoragePoolPtr pool)
     }
     ret = obj->configFile ? 1 : 0;
 
-cleanup:
+ cleanup:
     if (obj)
         virStoragePoolObjUnlock(obj);
     return ret;
@@ -4761,7 +4761,7 @@ testStoragePoolCreate(virStoragePoolPtr pool,
     privpool->active = 1;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     return ret;
@@ -4814,7 +4814,7 @@ testConnectFindStoragePoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
                        _("pool type '%s' does not support source discovery"), type);
     }
 
-cleanup:
+ cleanup:
     virStoragePoolSourceFree(source);
     return ret;
 }
@@ -4859,7 +4859,7 @@ testStoragePoolCreateXML(virConnectPtr conn,
     ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid,
                             NULL, NULL);
 
-cleanup:
+ cleanup:
     virStoragePoolDefFree(def);
     if (pool)
         virStoragePoolObjUnlock(pool);
@@ -4900,7 +4900,7 @@ testStoragePoolDefineXML(virConnectPtr conn,
     ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid,
                             NULL, NULL);
 
-cleanup:
+ cleanup:
     virStoragePoolDefFree(def);
     if (pool)
         virStoragePoolObjUnlock(pool);
@@ -4933,7 +4933,7 @@ testStoragePoolUndefine(virStoragePoolPtr pool)
     virStoragePoolObjRemove(&privconn->pools, privpool);
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     testDriverUnlock(privconn);
@@ -4967,7 +4967,7 @@ testStoragePoolBuild(virStoragePoolPtr pool,
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     return ret;
@@ -5004,7 +5004,7 @@ testStoragePoolDestroy(virStoragePoolPtr pool)
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     testDriverUnlock(privconn);
@@ -5040,7 +5040,7 @@ testStoragePoolDelete(virStoragePoolPtr pool,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     return ret;
@@ -5074,7 +5074,7 @@ testStoragePoolRefresh(virStoragePoolPtr pool,
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     return ret;
@@ -5109,7 +5109,7 @@ testStoragePoolGetInfo(virStoragePoolPtr pool,
     info->available = privpool->def->available;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     return ret;
@@ -5137,7 +5137,7 @@ testStoragePoolGetXMLDesc(virStoragePoolPtr pool,
 
     ret = virStoragePoolDefFormat(privpool->def);
 
-cleanup:
+ cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     return ret;
@@ -5168,7 +5168,7 @@ testStoragePoolGetAutostart(virStoragePoolPtr pool,
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     return ret;
@@ -5202,7 +5202,7 @@ testStoragePoolSetAutostart(virStoragePoolPtr pool,
     privpool->autostart = autostart;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     return ret;
@@ -5234,7 +5234,7 @@ testStoragePoolNumOfVolumes(virStoragePoolPtr pool)
 
     ret = privpool->volumes.count;
 
-cleanup:
+ cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     return ret;
@@ -5393,7 +5393,7 @@ testStorageVolLookupByName(virStoragePoolPtr pool,
                            privvol->name, privvol->key,
                            NULL, NULL);
 
-cleanup:
+ cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     return ret;
@@ -5538,7 +5538,7 @@ testStorageVolCreateXML(virStoragePoolPtr pool,
                            NULL, NULL);
     privvol = NULL;
 
-cleanup:
+ cleanup:
     virStorageVolDefFree(privvol);
     if (privpool)
         virStoragePoolObjUnlock(privpool);
@@ -5622,7 +5622,7 @@ testStorageVolCreateXMLFrom(virStoragePoolPtr pool,
                            NULL, NULL);
     privvol = NULL;
 
-cleanup:
+ cleanup:
     virStorageVolDefFree(privvol);
     if (privpool)
         virStoragePoolObjUnlock(privpool);
@@ -5682,7 +5682,7 @@ testStorageVolDelete(virStorageVolPtr vol,
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     return ret;
@@ -5742,7 +5742,7 @@ testStorageVolGetInfo(virStorageVolPtr vol,
     info->allocation = privvol->allocation;
     ret = 0;
 
-cleanup:
+ cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     return ret;
@@ -5786,7 +5786,7 @@ testStorageVolGetXMLDesc(virStorageVolPtr vol,
 
     ret = virStorageVolDefFormat(privpool->def, privvol);
 
-cleanup:
+ cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     return ret;
@@ -5827,7 +5827,7 @@ testStorageVolGetPath(virStorageVolPtr vol)
 
     ignore_value(VIR_STRDUP(ret, privvol->target.path));
 
-cleanup:
+ cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     return ret;
@@ -5930,7 +5930,7 @@ testNodeDeviceLookupByName(virConnectPtr conn, const char *name)
 
     ret = virGetNodeDevice(conn, name);
 
-cleanup:
+ cleanup:
     if (obj)
         virNodeDeviceObjUnlock(obj);
     return ret;
@@ -5959,7 +5959,7 @@ testNodeDeviceGetXMLDesc(virNodeDevicePtr dev,
 
     ret = virNodeDeviceDefFormat(obj->def);
 
-cleanup:
+ cleanup:
     if (obj)
         virNodeDeviceObjUnlock(obj);
     return ret;
@@ -5990,7 +5990,7 @@ testNodeDeviceGetParent(virNodeDevicePtr dev)
                        "%s", _("no parent for this device"));
     }
 
-cleanup:
+ cleanup:
     if (obj)
         virNodeDeviceObjUnlock(obj);
     return ret;
@@ -6021,7 +6021,7 @@ testNodeDeviceNumOfCaps(virNodeDevicePtr dev)
         ++ncaps;
     ret = ncaps;
 
-cleanup:
+ cleanup:
     if (obj)
         virNodeDeviceObjUnlock(obj);
     return ret;
@@ -6054,7 +6054,7 @@ testNodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
     }
     ret = ncaps;
 
-cleanup:
+ cleanup:
     if (obj)
         virNodeDeviceObjUnlock(obj);
     if (ret == -1) {
@@ -6124,7 +6124,7 @@ testNodeDeviceCreateXML(virConnectPtr conn,
 
     dev = virGetNodeDevice(conn, def->name);
     def = NULL;
-cleanup:
+ cleanup:
     testDriverUnlock(driver);
     virNodeDeviceDefFree(def);
     VIR_FREE(wwnn);
@@ -6175,7 +6175,7 @@ testNodeDeviceDestroy(virNodeDevicePtr dev)
     virNodeDeviceObjLock(obj);
     virNodeDeviceObjRemove(&driver->devs, obj);
 
-out:
+ out:
     if (obj)
         virNodeDeviceObjUnlock(obj);
     VIR_FREE(parent_name);
@@ -6385,7 +6385,7 @@ testNodeGetCPUMap(virConnectPtr conn,
 
     ret = 8;
 
-cleanup:
+ cleanup:
     testDriverUnlock(privconn);
     return ret;
 }
@@ -6459,7 +6459,7 @@ testDomainManagedSave(virDomainPtr dom, unsigned int flags)
     vm->hasManagedSave = true;
 
     ret = 0;
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     if (event) {
@@ -6490,7 +6490,7 @@ testDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
     }
 
     ret = vm->hasManagedSave;
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     testDriverUnlock(privconn);
@@ -6516,7 +6516,7 @@ testDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 
     vm->hasManagedSave = false;
     ret = 0;
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     testDriverUnlock(privconn);
@@ -6568,7 +6568,7 @@ testDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
 
     n = virDomainSnapshotObjListNum(vm->snapshots, NULL, flags);
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return n;
@@ -6592,7 +6592,7 @@ testDomainSnapshotListNames(virDomainPtr domain,
     n = virDomainSnapshotObjListGetNames(vm->snapshots, NULL, names, nameslen,
                                          flags);
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return n;
@@ -6614,7 +6614,7 @@ testDomainListAllSnapshots(virDomainPtr domain,
 
     n = virDomainListSnapshots(vm->snapshots, NULL, domain, snaps, flags);
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return n;
@@ -6642,7 +6642,7 @@ testDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
     n = virDomainSnapshotObjListGetNames(vm->snapshots, snap, names, nameslen,
                                          flags);
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return n;
@@ -6667,7 +6667,7 @@ testDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
 
     n = virDomainSnapshotObjListNum(vm->snapshots, snap, flags);
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return n;
@@ -6694,7 +6694,7 @@ testDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
     n = virDomainListSnapshots(vm->snapshots, snap, snapshot->domain, snaps,
                                flags);
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return n;
@@ -6719,7 +6719,7 @@ testDomainSnapshotLookupByName(virDomainPtr domain,
 
     snapshot = virGetDomainSnapshot(domain, snap->def->name);
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return snapshot;
@@ -6739,7 +6739,7 @@ testDomainHasCurrentSnapshot(virDomainPtr domain,
 
     ret = (vm->current_snapshot != NULL);
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -6770,7 +6770,7 @@ testDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
 
     parent = virGetDomainSnapshot(snapshot->domain, snap->def->parent);
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return parent;
@@ -6796,7 +6796,7 @@ testDomainSnapshotCurrent(virDomainPtr domain,
 
     snapshot = virGetDomainSnapshot(domain, vm->current_snapshot->def->name);
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return snapshot;
@@ -6823,7 +6823,7 @@ testDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     xml = virDomainSnapshotDefFormat(uuidstr, snap->def, flags, 0);
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return xml;
@@ -6844,7 +6844,7 @@ testDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
     ret = (vm->current_snapshot &&
            STREQ(snapshot->name, vm->current_snapshot->def->name));
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -6868,7 +6868,7 @@ testDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
 
     ret = 1;
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -6998,7 +6998,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
     }
 
     snapshot = virGetDomainSnapshot(domain, snap->def->name);
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     if (vm) {
         if (snapshot) {
@@ -7150,7 +7150,7 @@ testDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -7356,7 +7356,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
     vm->current_snapshot = snap;
     ret = 0;
-cleanup:
+ cleanup:
     if (event) {
         testObjectEventQueue(privconn, event);
         if (event2)
