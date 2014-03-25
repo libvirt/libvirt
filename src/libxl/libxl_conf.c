@@ -475,7 +475,7 @@ libxlMakeDomCreateInfo(libxl_ctx *ctx,
 
     return 0;
 
-error:
+ error:
     libxl_domain_create_info_dispose(c_info);
     return -1;
 }
@@ -708,7 +708,7 @@ libxlMakeDomBuildInfo(virDomainObjPtr vm, libxl_domain_config *d_config)
 
     return 0;
 
-error:
+ error:
     libxl_domain_build_info_dispose(b_info);
     return -1;
 }
@@ -857,7 +857,7 @@ libxlMakeDiskList(virDomainDefPtr def, libxl_domain_config *d_config)
 
     return 0;
 
-error:
+ error:
     for (i = 0; i < ndisks; i++)
         libxl_device_disk_dispose(&x_disks[i]);
     VIR_FREE(x_disks);
@@ -942,7 +942,7 @@ libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
 
     return 0;
 
-error:
+ error:
     for (i = 0; i < nnics; i++)
         libxl_device_nic_dispose(&x_nics[i]);
     VIR_FREE(x_nics);
@@ -1042,7 +1042,7 @@ libxlMakeVfbList(libxlDriverPrivatePtr driver,
 
     return 0;
 
-error:
+ error:
     for (i = 0; i < nvfbs; i++) {
         libxl_device_vfb_dispose(&x_vfbs[i]);
         libxl_device_vkb_dispose(&x_vkbs[i]);
@@ -1150,7 +1150,7 @@ libxlDriverConfigNew(void)
 
     return cfg;
 
-error:
+ error:
     VIR_FREE(log_file);
     virObjectUnref(cfg);
     return NULL;
@@ -1219,7 +1219,7 @@ libxlMakePciList(virDomainDefPtr def, libxl_domain_config *d_config)
 
     return 0;
 
-error:
+ error:
     for (i = 0; i < npcidevs; i++)
         libxl_device_pci_dispose(&x_pcidevs[i]);
 
@@ -1258,7 +1258,7 @@ libxlDriverNodeGetInfo(libxlDriverPrivatePtr driver, virNodeInfoPtr info)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(cfg);
     return ret;
 }
@@ -1282,7 +1282,7 @@ libxlMakeCapabilities(libxl_ctx *ctx)
 
     return caps;
 
-error:
+ error:
     virObjectUnref(caps);
     return NULL;
 }

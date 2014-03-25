@@ -364,7 +364,7 @@ libxlDomainObjBeginJob(libxlDriverPrivatePtr driver ATTRIBUTE_UNUSED,
 
     return 0;
 
-error:
+ error:
     VIR_WARN("Cannot start job (%s) for domain %s;"
              " current job is (%s) owned by (%d)",
              libxlDomainJobTypeToString(job),
@@ -578,7 +578,7 @@ libxlDomainShutdownThread(void *opaque)
         goto cleanup;
     }
 
-destroy:
+ destroy:
     if (dom_event) {
         libxlDomainEventQueue(driver, dom_event);
         dom_event = NULL;
@@ -592,7 +592,7 @@ destroy:
     }
     goto cleanup;
 
-restart:
+ restart:
     if (dom_event) {
         libxlDomainEventQueue(driver, dom_event);
         dom_event = NULL;
@@ -601,7 +601,7 @@ restart:
     libxlDomainCleanupJob(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
     libxlDomainStart(driver, vm, 0, -1);
 
-cleanup:
+ cleanup:
     if (vm)
         virObjectUnlock(vm);
     if (dom_event)
@@ -667,7 +667,7 @@ libxlEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
      */
     return;
 
-error:
+ error:
     /* Cast away any const */
     libxl_event_free(priv->ctx, (libxl_event *)event);
 }
@@ -727,7 +727,7 @@ libxlDomainObjPrivateInitCtx(virDomainObjPtr vm)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(log_file);
     return ret;
 }
@@ -816,7 +816,7 @@ libxlDomainSaveImageOpen(libxlDriverPrivatePtr driver,
 
     return fd;
 
-error:
+ error:
     VIR_FREE(xml);
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
@@ -930,7 +930,7 @@ libxlDomainEventsRegister(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
 
     return 0;
 
-error:
+ error:
     if (priv->deathW) {
         libxl_evdisable_domain_death(priv->ctx, priv->deathW);
         priv->deathW = NULL;
@@ -975,7 +975,7 @@ libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
     ignore_value(libxlDomainObjEndJob(driver, vm));
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(dumpfile);
     virObjectUnref(cfg);
 
@@ -1031,7 +1031,7 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(cpumap);
     return ret;
 }
@@ -1238,12 +1238,12 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     ret = 0;
     goto endjob;
 
-cleanup_dom:
+ cleanup_dom:
     libxl_domain_destroy(priv->ctx, domid, NULL);
     vm->def->id = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_FAILED);
 
-endjob:
+ endjob:
     if (!libxlDomainObjEndJob(driver, vm))
         vm = NULL;
 
