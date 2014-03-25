@@ -49,7 +49,7 @@ getDomainInfo(int id)
 
     printf("Domains %d: %d CPUs\n", id, info.nrVirtCpu);
 
-error:
+ error:
     if (dom != NULL)
         virDomainFree(dom);
     if (conn != NULL)

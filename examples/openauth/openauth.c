@@ -40,7 +40,7 @@ showError(virConnectPtr conn)
     virResetError(err);
     free(err);
 
-out:
+ out:
     return;
 }
 
@@ -82,7 +82,7 @@ showHypervisorInfo(virConnectPtr conn)
            minor,
            release);
 
-out:
+ out:
     return ret;
 }
 
@@ -144,7 +144,7 @@ showDomains(virConnectPtr conn)
         free(*(nameList + i));
     }
 
-out:
+ out:
     free(nameList);
     return ret;
 }
@@ -274,7 +274,7 @@ main(int argc, char *argv[])
         goto disconnect;
     }
 
-  disconnect:
+ disconnect:
     if (virConnectClose(conn) != 0) {
         printf("Failed to disconnect from hypervisor\n");
         showError(conn);
@@ -283,6 +283,6 @@ main(int argc, char *argv[])
         printf("Disconnected from hypervisor\n");
     }
 
-  out:
+ out:
     return ret;
 }

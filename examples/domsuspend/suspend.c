@@ -130,7 +130,7 @@ parse_argv(int argc, char *argv[],
         *dom_name = argv[optind];
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -161,7 +161,7 @@ fetch_domains(virConnectPtr conn)
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     free(domains);
     return ret;
 }
@@ -216,7 +216,7 @@ suspend_and_resume(virConnectPtr conn,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     if (dom)
         virDomainFree(dom);
     return ret;
@@ -257,7 +257,7 @@ main(int argc, char *argv[])
         goto cleanup;
 
     ret = EXIT_SUCCESS;
-cleanup:
+ cleanup:
     if (conn) {
         int tmp;
         tmp = virConnectClose(conn);
