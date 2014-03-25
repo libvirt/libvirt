@@ -459,12 +459,12 @@ x86DataToCPU(const virCPUx86Data *data,
         x86DataToCPUFeatures(cpu, VIR_CPU_FEATURE_DISABLE, modelData, map))
         goto error;
 
-cleanup:
+ cleanup:
     virCPUx86DataFree(modelData);
     virCPUx86DataFree(copy);
     return cpu;
 
-error:
+ error:
     virCPUDefFree(cpu);
     cpu = NULL;
     goto cleanup;
@@ -549,14 +549,14 @@ x86VendorLoad(xmlXPathContextPtr ctxt,
         map->vendors = vendor;
     }
 
-out:
+ out:
     VIR_FREE(string);
 
     return ret;
 
-error:
+ error:
     ret = -1;
-ignore:
+ ignore:
     x86VendorFree(vendor);
     goto out;
 }
@@ -717,16 +717,16 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
         map->features = feature;
     }
 
-out:
+ out:
     ctxt->node = ctxt_node;
     VIR_FREE(nodes);
 
     return ret;
 
-error:
+ error:
     ret = -1;
 
-ignore:
+ ignore:
     x86FeatureFree(feature);
     goto out;
 }
@@ -756,7 +756,7 @@ x86DataFromCPUFeatures(virCPUDefPtr cpu,
 
     return data;
 
-error:
+ error:
     virCPUx86DataFree(data);
     return NULL;
 }
@@ -869,7 +869,7 @@ x86ModelFromCPU(const virCPUDef *cpu,
 
     return model;
 
-error:
+ error:
     x86ModelFree(model);
     return NULL;
 }
@@ -1055,15 +1055,15 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
         map->models = model;
     }
 
-out:
+ out:
     VIR_FREE(vendor);
     VIR_FREE(nodes);
     return ret;
 
-error:
+ error:
     ret = -1;
 
-ignore:
+ ignore:
     x86ModelFree(model);
     goto out;
 }
@@ -1155,7 +1155,7 @@ x86MapLoadInternalFeatures(struct x86_map *map)
 
     return 0;
 
-error:
+ error:
     x86FeatureFree(feature);
     return -1;
 }
@@ -1177,7 +1177,7 @@ virCPUx86LoadMap(void)
 
     return map;
 
-error:
+ error:
     x86MapFree(map);
     return NULL;
 }
@@ -1273,7 +1273,7 @@ x86CPUDataParse(const char *xmlStr)
 
     cpuData = virCPUx86MakeData(VIR_ARCH_X86_64, &data);
 
-cleanup:
+ cleanup:
     VIR_FREE(nodes);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
@@ -1442,7 +1442,7 @@ x86Compute(virCPUDefPtr host,
         }
     }
 
-cleanup:
+ cleanup:
     x86ModelFree(host_model);
     x86ModelFree(diff);
     x86ModelFree(cpu_force);
@@ -1454,7 +1454,7 @@ cleanup:
 
     return ret;
 
-error:
+ error:
     ret = VIR_CPU_COMPARE_ERROR;
     goto cleanup;
 }
@@ -1593,7 +1593,7 @@ x86Decode(virCPUDefPtr cpu,
 
     ret = 0;
 
-out:
+ out:
     virCPUDefFree(cpuModel);
     virCPUx86DataFree(copy);
     virCPUx86DataFree(features);
@@ -1732,7 +1732,7 @@ x86Encode(virArch arch,
 
     return 0;
 
-error:
+ error:
     virCPUx86DataFree(data_forced);
     virCPUx86DataFree(data_required);
     virCPUx86DataFree(data_optional);
@@ -1831,7 +1831,7 @@ x86NodeData(virArch arch)
 
     return cpuData;
 
-error:
+ error:
     virCPUx86DataFree(data);
 
     return NULL;
@@ -1948,12 +1948,12 @@ x86Baseline(virCPUDefPtr *cpus,
 
     cpu->arch = VIR_ARCH_NONE;
 
-cleanup:
+ cleanup:
     x86ModelFree(base_model);
 
     return cpu;
 
-error:
+ error:
     x86ModelFree(model);
     virCPUDefFree(cpu);
     cpu = NULL;
@@ -2001,7 +2001,7 @@ x86UpdateCustom(virCPUDefPtr guest,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     x86ModelFree(host_model);
     return ret;
 }
@@ -2083,7 +2083,7 @@ x86HasFeature(const virCPUData *data,
 
     ret = x86DataIsSubset(data->data.x86, feature->data) ? 1 : 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 

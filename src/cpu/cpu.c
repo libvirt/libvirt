@@ -103,7 +103,7 @@ cpuCompareXML(virCPUDefPtr host,
 
     ret = cpuCompare(host, cpu);
 
-cleanup:
+ cleanup:
     virCPUDefFree(cpu);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
@@ -335,7 +335,7 @@ cpuBaselineXML(const char **xmlCPUs,
 
     cpustr = virCPUDefFormat(cpu, 0);
 
-cleanup:
+ cleanup:
     if (cpus) {
         for (i = 0; i < ncpus; i++)
             virCPUDefFree(cpus[i]);
@@ -347,7 +347,7 @@ cleanup:
 
     return cpustr;
 
-error:
+ error:
     cpustr = NULL;
     goto cleanup;
 }
@@ -577,7 +577,7 @@ cpuGetModels(const char *archName, char ***models)
 
     return data.len - 1;
 
-error:
+ error:
     virStringFreeList(data.data);
     return -1;
 }

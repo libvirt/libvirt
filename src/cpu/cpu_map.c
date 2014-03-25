@@ -70,7 +70,7 @@ static int load(xmlXPathContextPtr ctxt,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     ctxt->node = ctxt_node;
 
     return ret;
@@ -137,14 +137,14 @@ int cpuMapLoad(const char *arch,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
     VIR_FREE(xpath);
 
     return ret;
 
-no_memory:
+ no_memory:
     virReportOOMError();
     goto cleanup;
 }

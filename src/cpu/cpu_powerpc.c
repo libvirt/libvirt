@@ -163,7 +163,7 @@ ppcModelFromCPU(const virCPUDef *cpu,
 
     return model;
 
-error:
+ error:
     ppcModelFree(model);
     return NULL;
 }
@@ -198,10 +198,10 @@ ppcVendorLoad(xmlXPathContextPtr ctxt,
         map->vendors = vendor;
     }
 
-cleanup:
+ cleanup:
     return 0;
 
-ignore:
+ ignore:
     ppcVendorFree(vendor);
     goto cleanup;
 }
@@ -263,11 +263,11 @@ ppcModelLoad(xmlXPathContextPtr ctxt,
         map->models = model;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(vendor);
     return 0;
 
-ignore:
+ ignore:
     ppcModelFree(model);
     goto cleanup;
 }
@@ -326,7 +326,7 @@ ppcLoadMap(void)
 
     return map;
 
-error:
+ error:
     ppcMapFree(map);
     return NULL;
 }
@@ -431,7 +431,7 @@ ppcCompute(virCPUDefPtr host,
 
     ret = VIR_CPU_COMPARE_IDENTICAL;
 
-cleanup:
+ cleanup:
     ppcMapFree(map);
     ppcModelFree(host_model);
     ppcModelFree(guest_model);
@@ -487,7 +487,7 @@ ppcDecode(virCPUDefPtr cpu,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     ppcMapFree(map);
 
     return ret;
@@ -632,12 +632,12 @@ ppcBaseline(virCPUDefPtr *cpus,
     cpu->type = VIR_CPU_TYPE_GUEST;
     cpu->match = VIR_CPU_MATCH_EXACT;
 
-cleanup:
+ cleanup:
     ppcMapFree(map);
 
     return cpu;
 
-error:
+ error:
     virCPUDefFree(cpu);
     cpu = NULL;
     goto cleanup;

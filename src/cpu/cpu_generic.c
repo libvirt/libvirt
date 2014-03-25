@@ -103,7 +103,7 @@ genericCompare(virCPUDefPtr host,
     else
         ret = VIR_CPU_COMPARE_IDENTICAL;
 
-cleanup:
+ cleanup:
     virHashFree(hash);
     return ret;
 }
@@ -188,12 +188,12 @@ genericBaseline(virCPUDefPtr *cpus,
             goto error;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(features);
 
     return cpu;
 
-error:
+ error:
     virCPUDefFree(cpu);
     cpu = NULL;
     goto cleanup;
