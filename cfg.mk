@@ -760,17 +760,17 @@ sc_prohibit_gettext_markup:
 # lower-level code must not include higher-level headers.
 cross_dirs=$(patsubst $(srcdir)/src/%.,%,$(wildcard $(srcdir)/src/*/.))
 cross_dirs_re=($(subst / ,/|,$(cross_dirs)))
+mid_dirs=access|conf|cpu|locking|network|node_device|rpc|security|storage
 sc_prohibit_cross_inclusion:
 	@for dir in $(cross_dirs); do					\
 	  case $$dir in							\
 	    util/) safe="util";;					\
-	    locking/)							\
-	      safe="($$dir|util|conf|rpc)";;				\
-	    cpu/ | locking/ | network/ | rpc/ | security/)		\
+	    access/ | conf/) safe="($$dir|conf|util)";;			\
+	    locking/) safe="($$dir|util|conf|rpc)";;			\
+	    cpu/| network/| node_device/| rpc/| security/| storage/)	\
 	      safe="($$dir|util|conf)";;				\
 	    xenapi/ | xenxs/ ) safe="($$dir|util|conf|xen)";;		\
-	    qemu/ ) safe="($$dir|util|conf|cpu|network|locking|rpc|security|storage)";; \
-	    *) safe="($$dir|util|conf|cpu|network|locking|rpc|security)";; \
+	    *) safe="($$dir|$(mid_dirs)|util)";;			\
 	  esac;								\
 	  in_vc_files="^src/$$dir"					\
 	  prohibit='^# *include .$(cross_dirs_re)'			\
