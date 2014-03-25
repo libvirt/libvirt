@@ -1277,17 +1277,17 @@ iptablesEnforceDirection(bool directionIn,
 /*
  * _iptablesCreateRuleInstance:
  * @chainPrefix : The prefix to put in front of the name of the chain
- * @nwfilter : The filter
  * @rule: The rule of the filter to convert
  * @ifname : The name of the interface to apply the rule to
  * @vars : A map containing the variables to resolve
- * @res : The data structure to store the result(s) into
  * @match : optional string for state match
  * @accept_target : where to jump to on accepted traffic, i.e., "RETURN"
  *    "ACCEPT"
  * @isIPv6 : Whether this is an IPv6 rule
  * @maySkipICMP : whether this rule may under certain circumstances skip
  *           the ICMP rule from being created
+ * @templates: pointer to array to store rule template
+ * @ntemplates: pointer to storage rule template count
  *
  * Convert a single rule into its representation for later instantiation
  *
@@ -1297,15 +1297,15 @@ iptablesEnforceDirection(bool directionIn,
 static int
 _iptablesCreateRuleInstance(bool directionIn,
                             const char *chainPrefix,
-                            virNWFilterDefPtr nwfilter,
                             virNWFilterRuleDefPtr rule,
                             const char *ifname,
                             virNWFilterVarCombIterPtr vars,
-                            virNWFilterRuleInstPtr res,
                             const char *match, bool defMatch,
                             const char *accept_target,
                             bool isIPv6,
-                            bool maySkipICMP)
+                            bool maySkipICMP,
+                            char ***templates,
+                            size_t *ntemplates)
 {
     char chain[MAX_CHAINNAME_LENGTH];
     char number[MAX(INT_BUFSIZE_BOUND(uint32_t),
@@ -1322,6 +1322,7 @@ _iptablesCreateRuleInstance(bool directionIn,
     bool skipRule = false;
     bool skipMatch = false;
     bool hasICMPType = false;
+    char *template;
 
     if (!iptables_cmd) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1732,14 +1733,13 @@ _iptablesCreateRuleInstance(bool directionIn,
         final = &buf;
 
 
-    return ebiptablesAddRuleInst(res,
-                                 virBufferContentAndReset(final),
-                                 nwfilter->chainsuffix,
-                                 nwfilter->chainPriority,
-                                 '\0',
-                                 rule->priority,
-                                 (isIPv6) ? RT_IP6TABLES : RT_IPTABLES);
+    template = virBufferContentAndReset(final);
+    if (VIR_APPEND_ELEMENT(*templates, *ntemplates, template) < 0) {
+        VIR_FREE(template);
+        return -1;
+    }
 
+    return 0;
 
  err_exit:
     virBufferFreeAndReset(&buf);
@@ -1775,12 +1775,12 @@ printStateMatchFlags(int32_t flags, char **bufptr)
 }
 
 static int
-iptablesCreateRuleInstanceStateCtrl(virNWFilterDefPtr nwfilter,
-                                    virNWFilterRuleDefPtr rule,
+iptablesCreateRuleInstanceStateCtrl(virNWFilterRuleDefPtr rule,
                                     const char *ifname,
                                     virNWFilterVarCombIterPtr vars,
-                                    virNWFilterRuleInstPtr res,
-                                    bool isIPv6)
+                                    bool isIPv6,
+                                    char ***templates,
+                                    size_t *ntemplates)
 {
     int rc;
     bool directionIn = false;
@@ -1816,15 +1816,15 @@ iptablesCreateRuleInstanceStateCtrl(virNWFilterDefPtr nwfilter,
     if (create) {
         rc = _iptablesCreateRuleInstance(directionIn,
                                          chainPrefix,
-                                         nwfilter,
                                          rule,
                                          ifname,
                                          vars,
-                                         res,
                                          matchState, false,
                                          "RETURN",
                                          isIPv6,
-                                         maySkipICMP);
+                                         maySkipICMP,
+                                         templates,
+                                         ntemplates);
 
         VIR_FREE(matchState);
         if (rc < 0)
@@ -1848,15 +1848,15 @@ iptablesCreateRuleInstanceStateCtrl(virNWFilterDefPtr nwfilter,
     if (create) {
         rc = _iptablesCreateRuleInstance(!directionIn,
                                          chainPrefix,
-                                         nwfilter,
                                          rule,
                                          ifname,
                                          vars,
-                                         res,
                                          matchState, false,
                                          "ACCEPT",
                                          isIPv6,
-                                         maySkipICMP);
+                                         maySkipICMP,
+                                         templates,
+                                         ntemplates);
 
         VIR_FREE(matchState);
 
@@ -1883,15 +1883,15 @@ iptablesCreateRuleInstanceStateCtrl(virNWFilterDefPtr nwfilter,
         chainPrefix[1] = CHAINPREFIX_HOST_IN_TEMP;
         rc = _iptablesCreateRuleInstance(directionIn,
                                          chainPrefix,
-                                         nwfilter,
                                          rule,
                                          ifname,
                                          vars,
-                                         res,
                                          matchState, false,
                                          "RETURN",
                                          isIPv6,
-                                         maySkipICMP);
+                                         maySkipICMP,
+                                         templates,
+                                         ntemplates);
         VIR_FREE(matchState);
     }
 
@@ -1900,12 +1900,12 @@ iptablesCreateRuleInstanceStateCtrl(virNWFilterDefPtr nwfilter,
 
 
 static int
-iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
-                           virNWFilterRuleDefPtr rule,
+iptablesCreateRuleInstance(virNWFilterRuleDefPtr rule,
                            const char *ifname,
                            virNWFilterVarCombIterPtr vars,
-                           virNWFilterRuleInstPtr res,
-                           bool isIPv6)
+                           bool isIPv6,
+                           char ***templates,
+                           size_t *ntemplates)
 {
     int rc;
     bool directionIn = false;
@@ -1916,12 +1916,12 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
 
     if (!(rule->flags & RULE_FLAG_NO_STATEMATCH) &&
          (rule->flags & IPTABLES_STATE_FLAGS)) {
-        return iptablesCreateRuleInstanceStateCtrl(nwfilter,
-                                                   rule,
+        return iptablesCreateRuleInstanceStateCtrl(rule,
                                                    ifname,
                                                    vars,
-                                                   res,
-                                                   isIPv6);
+                                                   isIPv6,
+                                                   templates,
+                                                   ntemplates);
     }
 
     if ((rule->tt == VIR_NWFILTER_RULE_DIRECTION_IN) ||
@@ -1947,15 +1947,15 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
     chainPrefix[1] = CHAINPREFIX_HOST_IN_TEMP;
     rc = _iptablesCreateRuleInstance(directionIn,
                                      chainPrefix,
-                                     nwfilter,
                                      rule,
                                      ifname,
                                      vars,
-                                     res,
                                      matchState, true,
                                      "RETURN",
                                      isIPv6,
-                                     maySkipICMP);
+                                     maySkipICMP,
+                                     templates,
+                                     ntemplates);
     if (rc < 0)
         return rc;
 
@@ -1969,15 +1969,15 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
     chainPrefix[1] = CHAINPREFIX_HOST_OUT_TEMP;
     rc = _iptablesCreateRuleInstance(!directionIn,
                                      chainPrefix,
-                                     nwfilter,
                                      rule,
                                      ifname,
                                      vars,
-                                     res,
                                      matchState, true,
                                      "ACCEPT",
                                      isIPv6,
-                                     maySkipICMP);
+                                     maySkipICMP,
+                                     templates,
+                                     ntemplates);
     if (rc < 0)
         return rc;
 
@@ -1991,15 +1991,15 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
     chainPrefix[1] = CHAINPREFIX_HOST_IN_TEMP;
     rc = _iptablesCreateRuleInstance(directionIn,
                                      chainPrefix,
-                                     nwfilter,
                                      rule,
                                      ifname,
                                      vars,
-                                     res,
                                      matchState, true,
                                      "RETURN",
                                      isIPv6,
-                                     maySkipICMP);
+                                     maySkipICMP,
+                                     templates,
+                                     ntemplates);
 
     return rc;
 }
@@ -2010,12 +2010,13 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
 /*
  * ebtablesCreateRuleInstance:
  * @chainPrefix : The prefix to put in front of the name of the chain
- * @nwfilter : The filter
+ * @chainSuffix: The suffix to put on the end of the name of the chain
  * @rule: The rule of the filter to convert
  * @ifname : The name of the interface to apply the rule to
  * @vars : A map containing the variables to resolve
- * @res : The data structure to store the result(s) into
  * @reverse : Whether to reverse src and dst attributes
+ * @templates: pointer to array to store rule template
+ * @ntemplates: pointer to storage rule template count
  *
  * Convert a single rule into its representation for later instantiation
  *
@@ -2024,12 +2025,12 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
  */
 static int
 ebtablesCreateRuleInstance(char chainPrefix,
-                           virNWFilterDefPtr nwfilter,
+                           const char *chainSuffix,
                            virNWFilterRuleDefPtr rule,
                            const char *ifname,
                            virNWFilterVarCombIterPtr vars,
-                           virNWFilterRuleInstPtr res,
-                           bool reverse)
+                           bool reverse,
+                           char **template)
 {
     char macaddr[VIR_MAC_STRING_BUFLEN],
          ipaddr[INET_ADDRSTRLEN],
@@ -2043,6 +2044,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
     const char *target;
     bool hasMask = false;
 
+    *template = NULL;
+
     if (!ebtables_cmd_path) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot create rule since ebtables tool is "
@@ -2050,13 +2053,13 @@ ebtablesCreateRuleInstance(char chainPrefix,
         goto err_exit;
     }
 
-    if (STREQ(nwfilter->chainsuffix,
+    if (STREQ(chainSuffix,
               virNWFilterChainSuffixTypeToString(
                   VIR_NWFILTER_CHAINSUFFIX_ROOT)))
         PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
     else
         PRINT_CHAIN(chain, chainPrefix, ifname,
-                    nwfilter->chainsuffix);
+                    chainSuffix);
 
 
     switch (rule->prtclType) {
@@ -2620,13 +2623,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
         return -1;
     }
 
-    return ebiptablesAddRuleInst(res,
-                                 virBufferContentAndReset(&buf),
-                                 nwfilter->chainsuffix,
-                                 nwfilter->chainPriority,
-                                 chainPrefix,
-                                 rule->priority,
-                                 RT_EBTABLES);
+    *template = virBufferContentAndReset(&buf);
+    return 0;
 
  err_exit:
     virBufferFreeAndReset(&buf);
@@ -2637,7 +2635,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
 /*
  * ebiptablesCreateRuleInstance:
- * @nwfilter : The filter
+ * @chainPriority : The priority of the chain
+ * @chainSuffix: The suffix to put on the end of the name of the chain
  * @rule: The rule of the filter to convert
  * @ifname : The name of the interface to apply the rule to
  * @vars : A map containing the variables to resolve
@@ -2649,40 +2648,66 @@ ebtablesCreateRuleInstance(char chainPrefix,
  * pointed to by res, -1 otherwise
  */
 static int
-ebiptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
+ebiptablesCreateRuleInstance(virNWFilterChainPriority chainPriority,
+                             const char *chainSuffix,
                              virNWFilterRuleDefPtr rule,
                              const char *ifname,
                              virNWFilterVarCombIterPtr vars,
                              virNWFilterRuleInstPtr res)
 {
-    int rc = 0;
-
     if (virNWFilterRuleIsProtocolEthernet(rule)) {
         if (rule->tt == VIR_NWFILTER_RULE_DIRECTION_OUT ||
             rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT) {
-            rc = ebtablesCreateRuleInstance(CHAINPREFIX_HOST_IN_TEMP,
-                                            nwfilter,
-                                            rule,
-                                            ifname,
-                                            vars,
-                                            res,
-                                            rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT);
-            if (rc < 0)
-                return rc;
+            char *template;
+            if (ebtablesCreateRuleInstance(CHAINPREFIX_HOST_IN_TEMP,
+                                           chainSuffix,
+                                           rule,
+                                           ifname,
+                                           vars,
+                                           rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT,
+                                           &template) < 0)
+                return -1;
+
+            if (ebiptablesAddRuleInst(res,
+                                      template,
+                                      chainSuffix,
+                                      chainPriority,
+                                      CHAINPREFIX_HOST_IN_TEMP,
+                                      rule->priority,
+                                      RT_EBTABLES) < 0) {
+                VIR_FREE(template);
+                return -1;
+            }
         }
 
         if (rule->tt == VIR_NWFILTER_RULE_DIRECTION_IN ||
             rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT) {
-            rc = ebtablesCreateRuleInstance(CHAINPREFIX_HOST_OUT_TEMP,
-                                            nwfilter,
-                                            rule,
-                                            ifname,
-                                            vars,
-                                            res,
-                                            false);
+            char *template;
+            if (ebtablesCreateRuleInstance(CHAINPREFIX_HOST_OUT_TEMP,
+                                           chainSuffix,
+                                           rule,
+                                           ifname,
+                                           vars,
+                                           false,
+                                           &template) < 0)
+                return -1;
+
+            if (ebiptablesAddRuleInst(res,
+                                      template,
+                                      chainSuffix,
+                                      chainPriority,
+                                      CHAINPREFIX_HOST_OUT_TEMP,
+                                      rule->priority,
+                                      RT_EBTABLES) < 0) {
+                VIR_FREE(template);
+                return -1;
+            }
         }
     } else {
         bool isIPv6;
+        char **templates = NULL;
+        size_t ntemplates = 0;
+        size_t i, j;
         if (virNWFilterRuleIsProtocolIPv6(rule)) {
             isIPv6 = true;
         } else if (virNWFilterRuleIsProtocolIPv4(rule)) {
@@ -2693,15 +2718,30 @@ ebiptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
             return -1;
         }
 
-        rc = iptablesCreateRuleInstance(nwfilter,
-                                        rule,
-                                        ifname,
-                                        vars,
-                                        res,
-                                        isIPv6);
+        if (iptablesCreateRuleInstance(rule,
+                                       ifname,
+                                       vars,
+                                       isIPv6,
+                                       &templates,
+                                       &ntemplates) < 0)
+            return -1;
+
+        for (i = 0; i < ntemplates; i++) {
+            if (ebiptablesAddRuleInst(res,
+                                      templates[i],
+                                      chainSuffix,
+                                      chainPriority,
+                                      '\0',
+                                      rule->priority,
+                                      (isIPv6) ? RT_IP6TABLES : RT_IPTABLES) < 0) {
+                for (j = i; j < ntemplates; j++)
+                    VIR_FREE(templates[j]);
+                return -1;
+            }
+        }
     }
 
-    return rc;
+    return 0;
 }
 
 static int
@@ -2724,7 +2764,8 @@ ebiptablesCreateRuleInstanceIterate(virNWFilterDefPtr nwfilter,
         return -1;
 
     do {
-        rc = ebiptablesCreateRuleInstance(nwfilter,
+        rc = ebiptablesCreateRuleInstance(nwfilter->chainPriority,
+                                          nwfilter->chainsuffix,
                                           rule,
                                           ifname,
                                           tmp,
