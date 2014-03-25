@@ -105,7 +105,7 @@ main(int argc, char **argv)
         break;
     }
 
-cleanup:
+ cleanup:
     if (dom)
         virDomainFree(dom);
     if (conn)

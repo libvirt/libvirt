@@ -155,7 +155,7 @@ static virLockManagerPtr virDomainLockManagerNew(virLockManagerPluginPtr plugin,
 
     return lock;
 
-error:
+ error:
     virLockManagerFree(lock);
     return NULL;
 }
@@ -270,7 +270,7 @@ int virDomainLockDiskAttach(virLockManagerPluginPtr plugin,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virLockManagerFree(lock);
 
     return ret;
@@ -297,7 +297,7 @@ int virDomainLockDiskDetach(virLockManagerPluginPtr plugin,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virLockManagerFree(lock);
 
     return ret;
@@ -327,7 +327,7 @@ int virDomainLockLeaseAttach(virLockManagerPluginPtr plugin,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virLockManagerFree(lock);
 
     return ret;
@@ -354,7 +354,7 @@ int virDomainLockLeaseDetach(virLockManagerPluginPtr plugin,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virLockManagerFree(lock);
 
     return ret;

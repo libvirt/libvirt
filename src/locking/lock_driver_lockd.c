@@ -220,7 +220,7 @@ virLockManagerLockDaemonConnectionRegister(virLockManagerPtr lock,
 
     rv = 0;
 
-cleanup:
+ cleanup:
     return rv;
 }
 
@@ -249,7 +249,7 @@ virLockManagerLockDaemonConnectionRestrict(virLockManagerPtr lock ATTRIBUTE_UNUS
 
     rv = 0;
 
-cleanup:
+ cleanup:
     return rv;
 }
 
@@ -288,7 +288,7 @@ static virNetClientPtr virLockManagerLockDaemonConnectionNew(bool privileged,
 
     return client;
 
-error:
+ error:
     VIR_FREE(lockdpath);
     virNetClientClose(client);
     virObjectUnref(client);
@@ -315,7 +315,7 @@ virLockManagerLockDaemonConnect(virLockManagerPtr lock,
 
     return client;
 
-error:
+ error:
     virNetClientClose(client);
     virObjectUnref(client);
     return NULL;
@@ -355,7 +355,7 @@ static int virLockManagerLockDaemonSetupLockspace(const char *path)
 
     rv = 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(program);
     virNetClientClose(client);
     virObjectUnref(client);
@@ -401,7 +401,7 @@ static int virLockManagerLockDaemonInit(unsigned int version,
 
     return 0;
 
-error:
+ error:
     virLockManagerLockDaemonDeinit();
     return -1;
 }
@@ -649,7 +649,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
 
     return 0;
 
-error:
+ error:
     VIR_FREE(newLockspace);
     VIR_FREE(newName);
     return -1;
@@ -715,7 +715,7 @@ static int virLockManagerLockDaemonAcquire(virLockManagerPtr lock,
 
     rv = 0;
 
-cleanup:
+ cleanup:
     if (rv != 0 && fd)
         VIR_FORCE_CLOSE(*fd);
     virNetClientClose(client);
@@ -770,7 +770,7 @@ static int virLockManagerLockDaemonRelease(virLockManagerPtr lock,
 
     rv = 0;
 
-cleanup:
+ cleanup:
     virNetClientClose(client);
     virObjectUnref(client);
     virObjectUnref(program);

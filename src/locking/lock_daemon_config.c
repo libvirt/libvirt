@@ -102,7 +102,7 @@ virLockDaemonConfigFilePath(bool privileged, char **configfile)
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -144,7 +144,7 @@ virLockDaemonConfigLoadOptions(virLockDaemonConfigPtr data,
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 

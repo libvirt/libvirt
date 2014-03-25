@@ -197,7 +197,7 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
     VIR_FREE(modfile);
     return plugin;
 
-cleanup:
+ cleanup:
     VIR_FREE(configFile);
     VIR_FREE(plugin);
     VIR_FREE(modfile);

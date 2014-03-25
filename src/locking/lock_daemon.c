@@ -164,7 +164,7 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
 
     return lockd;
 
-error:
+ error:
     virLockDaemonFree(lockd);
     return NULL;
 }
@@ -246,7 +246,7 @@ virLockDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
 
     return lockd;
 
-error:
+ error:
     virLockDaemonFree(lockd);
     return NULL;
 }
@@ -396,7 +396,7 @@ virLockDaemonPidFilePath(bool privileged,
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -431,7 +431,7 @@ virLockDaemonUnixSocketPaths(bool privileged,
     }
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -551,7 +551,7 @@ virLockDaemonSetupLogging(virLockDaemonConfigPtr config,
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -816,7 +816,7 @@ virLockDaemonClientNew(virNetServerClientPtr client,
 
     return priv;
 
-error:
+ error:
     virMutexDestroy(&priv->lock);
     VIR_FREE(priv);
     return NULL;
@@ -871,7 +871,7 @@ virLockDaemonClientNewPostExecRestart(virNetServerClientPtr client,
     }
     return priv;
 
-error:
+ error:
     virLockDaemonClientFree(priv);
     return NULL;
 }
@@ -917,7 +917,7 @@ virLockDaemonClientPreExecRestart(virNetServerClientPtr client ATTRIBUTE_UNUSED,
 
     return object;
 
-error:
+ error:
     virJSONValueFree(object);
     return NULL;
 }
@@ -955,7 +955,7 @@ virLockDaemonExecRestartStatePath(bool privileged,
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -1028,7 +1028,7 @@ virLockDaemonPostExecRestart(const char *state_file,
 
     ret = 1;
 
-cleanup:
+ cleanup:
     unlink(state_file);
     VIR_FREE(wantmagic);
     VIR_FREE(state);
@@ -1123,7 +1123,7 @@ virLockDaemonPreExecRestart(const char *state_file,
 
     abort(); /* This should be impossible to reach */
 
-cleanup:
+ cleanup:
     VIR_FREE(pairs);
     VIR_FREE(state);
     virJSONValueFree(object);
@@ -1451,7 +1451,7 @@ int main(int argc, char **argv) {
     else
         ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(lockProgram);
     virLockDaemonFree(lockDaemon);
     if (statuswrite != -1) {
@@ -1472,7 +1472,7 @@ cleanup:
     VIR_FREE(run_dir);
     return ret;
 
-no_memory:
+ no_memory:
     VIR_ERROR(_("Can't allocate memory"));
     exit(EXIT_FAILURE);
 }

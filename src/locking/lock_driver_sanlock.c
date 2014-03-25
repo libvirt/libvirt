@@ -334,7 +334,7 @@ static int virLockManagerSanlockSetupLockspace(void)
      * either call a sanlock API that blocks us until lockspace changes state,
      * or we can fallback to polling.
      */
-retry:
+ retry:
     if ((rv = sanlock_add_lockspace(&ls, 0)) < 0) {
         if (-rv == EINPROGRESS && --retries) {
 #ifdef HAVE_SANLOCK_INQ_LOCKSPACE
@@ -373,9 +373,9 @@ retry:
     VIR_FREE(dir);
     return 0;
 
-error_unlink:
+ error_unlink:
     unlink(path);
-error:
+ error:
     VIR_FORCE_CLOSE(fd);
     VIR_FREE(path);
     VIR_FREE(dir);
@@ -424,7 +424,7 @@ static int virLockManagerSanlockInit(unsigned int version,
 
     return 0;
 
-error:
+ error:
     virLockManagerSanlockDeinit();
     return -1;
 }
@@ -490,7 +490,7 @@ static int virLockManagerSanlockNew(virLockManagerPtr lock,
     lock->privateData = priv;
     return 0;
 
-error:
+ error:
     VIR_FREE(priv);
     return -1;
 }
@@ -559,7 +559,7 @@ static int virLockManagerSanlockAddLease(virLockManagerPtr lock,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (ret == -1)
         VIR_FREE(res);
     return ret;
@@ -624,7 +624,7 @@ static int virLockManagerSanlockAddDisk(virLockManagerPtr lock,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (ret == -1)
         VIR_FREE(res);
     VIR_FREE(path);
@@ -707,7 +707,7 @@ static int virLockManagerSanlockCreateLease(struct sanlk_resource *res)
 
     return 0;
 
-error_unlink:
+ error_unlink:
     unlink(res->disks[0].path);
     VIR_FORCE_CLOSE(fd);
     return -1;
@@ -850,7 +850,7 @@ virLockManagerSanlockRegisterKillscript(int sock,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(args);
     return ret;
 }
@@ -1002,7 +1002,7 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
 
     return 0;
 
-error:
+ error:
     if (res_free) {
         for (i = 0; i < res_count; i++) {
             VIR_FREE(res_args[i]);
