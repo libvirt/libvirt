@@ -491,7 +491,7 @@ xenXMDomainGetInfo(virConnectPtr conn,
     xenUnifiedUnlock(priv);
     return 0;
 
-error:
+ error:
     xenUnifiedUnlock(priv);
     return -1;
 }
@@ -525,7 +525,7 @@ xenXMDomainGetXMLDesc(virConnectPtr conn,
                            priv->xmlopt,
                            false);
 
-cleanup:
+ cleanup:
     xenUnifiedUnlock(priv);
     return ret;
 }
@@ -570,7 +570,7 @@ xenXMDomainSetMemory(virConnectPtr conn,
         goto cleanup;
     ret = 0;
 
-cleanup:
+ cleanup:
     xenUnifiedUnlock(priv);
     return ret;
 }
@@ -614,7 +614,7 @@ xenXMDomainSetMaxMemory(virConnectPtr conn,
         goto cleanup;
     ret = 0;
 
-cleanup:
+ cleanup:
     xenUnifiedUnlock(priv);
     return ret;
 }
@@ -641,7 +641,7 @@ xenXMDomainGetMaxMemory(virConnectPtr conn,
 
     ret = entry->def->mem.max_balloon;
 
-cleanup:
+ cleanup:
     xenUnifiedUnlock(priv);
     return ret;
 }
@@ -719,7 +719,7 @@ xenXMDomainSetVcpusFlags(virConnectPtr conn,
         goto cleanup;
     ret = 0;
 
-cleanup:
+ cleanup:
     xenUnifiedUnlock(priv);
     return ret;
 }
@@ -765,7 +765,7 @@ xenXMDomainGetVcpusFlags(virConnectPtr conn,
     ret = ((flags & VIR_DOMAIN_VCPU_MAXIMUM) ? entry->def->maxvcpus
            : entry->def->vcpus);
 
-cleanup:
+ cleanup:
     xenUnifiedUnlock(priv);
     return ret;
 }
@@ -849,7 +849,7 @@ xenXMDomainLookupByName(virConnectPtr conn, const char *domname)
 
     ret = virDomainDefNew(domname, entry->def->uuid, -1);
 
-cleanup:
+ cleanup:
     xenUnifiedUnlock(priv);
     return ret;
 }
@@ -892,7 +892,7 @@ xenXMDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
     ret = virDomainDefNew(entry->def->name, uuid, -1);
 
-cleanup:
+ cleanup:
     xenUnifiedUnlock(priv);
     return ret;
 }
@@ -1104,7 +1104,7 @@ xenXMDomainUndefine(virConnectPtr conn,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     xenUnifiedUnlock(priv);
     return ret;
 }
@@ -1179,7 +1179,7 @@ xenXMListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
 
     ret = ctx.count;
 
-cleanup:
+ cleanup:
     xenUnifiedUnlock(priv);
     return ret;
 }
@@ -1201,7 +1201,7 @@ xenXMNumOfDefinedDomains(virConnectPtr conn)
 
     ret = virHashSize(priv->nameConfigMap);
 
-cleanup:
+ cleanup:
     xenUnifiedUnlock(priv);
     return ret;
 }
@@ -1444,7 +1444,7 @@ xenXMDomainGetAutostart(virDomainDefPtr def,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(linkname);
     VIR_FREE(config);
     return ret;
@@ -1481,7 +1481,7 @@ xenXMDomainSetAutostart(virDomainDefPtr def,
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(linkname);
     VIR_FREE(config);
 

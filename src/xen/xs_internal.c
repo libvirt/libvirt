@@ -242,7 +242,7 @@ xenStoreNumOfDomains(virConnectPtr conn)
             if (xenHypervisorHasDomain(conn, (int)id))
                 realnum++;
         }
-out:
+ out:
         VIR_FREE(idlist);
         ret = realnum;
     }
@@ -287,7 +287,7 @@ xenStoreDoListDomains(virConnectPtr conn,
             ids[ret++] = (int) id;
     }
 
-out:
+ out:
     VIR_FREE(idlist);
     return ret;
 }
@@ -673,7 +673,7 @@ xenStoreAddWatch(virConnectPtr conn,
 
     return xs_watch(priv->xshandle, watch->path, watch->token);
 
-  error:
+ error:
     if (watch) {
         VIR_FREE(watch->path);
         VIR_FREE(watch->token);
@@ -773,7 +773,7 @@ xenStoreWatchEvent(int watch ATTRIBUTE_UNUSED,
         sw->cb(conn, path, token, sw->opaque);
     VIR_FREE(event);
 
-cleanup:
+ cleanup:
     xenUnifiedUnlock(priv);
 }
 
@@ -797,7 +797,7 @@ xenStoreDomainIntroduced(virConnectPtr conn,
 
     xenUnifiedPrivatePtr priv = opaque;
 
-retry:
+ retry:
     new_domain_cnt = xenStoreNumOfDomains(conn);
     if (new_domain_cnt < 0)
         return -1;
@@ -880,7 +880,7 @@ xenStoreDomainReleased(virConnectPtr conn,
 
     if (!priv->activeDomainList->count) return 0;
 
-retry:
+ retry:
     new_domain_cnt = xenStoreNumOfDomains(conn);
     if (new_domain_cnt < 0)
         return -1;

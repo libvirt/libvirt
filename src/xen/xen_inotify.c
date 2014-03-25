@@ -251,7 +251,7 @@ xenInotifyEvent(int watch ATTRIBUTE_UNUSED,
 
     xenUnifiedLock(priv);
 
-reread:
+ reread:
     got = read(fd, buf, sizeof(buf));
     if (got == -1) {
         if (errno == EINTR)
@@ -320,7 +320,7 @@ reread:
 
     }
 
-cleanup:
+ cleanup:
     xenUnifiedUnlock(priv);
 }
 

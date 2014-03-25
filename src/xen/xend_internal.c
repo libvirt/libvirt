@@ -586,7 +586,7 @@ sexpr_get(virConnectPtr xend, const char *fmt, ...)
 
     res = string2sexpr(buffer);
 
-cleanup:
+ cleanup:
     VIR_FREE(buffer);
     return res;
 }
@@ -785,11 +785,11 @@ xenDaemonListDomainsOld(virConnectPtr xend)
 
     ret[i] = NULL;
 
-  error:
+ error:
     sexpr_free(root);
     return ret;
 
-no_memory:
+ no_memory:
     for (i = 0; i < count; i++)
         VIR_FREE(ret[i]);
     VIR_FREE(ret);
@@ -865,7 +865,7 @@ xenDaemonDomainLookupByName_ids(virConnectPtr xend,
         }
     }
 
-  error:
+ error:
     sexpr_free(root);
     return ret;
 }
@@ -1107,9 +1107,9 @@ sexpr_to_xend_topology(const struct sexpr *root, virCapsPtr caps)
 
     return 0;
 
-  parse_error:
+ parse_error:
     virReportError(VIR_ERR_XEN_CALL, "%s", _("topology syntax error"));
-  error:
+ error:
     virCapabilitiesClearHostNUMACellCPUTopology(cpuInfo, nb_cpus);
     VIR_FREE(cpuInfo);
     return -1;
@@ -1153,7 +1153,7 @@ sexpr_to_domain(virConnectPtr conn, const struct sexpr *root)
 
     return virDomainDefNew(name, uuid, id);
 
-error:
+ error:
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("failed to parse Xend domain information"));
     virObjectUnref(ret);
@@ -1237,7 +1237,7 @@ xenDaemonOpen(virConnectPtr conn,
  done:
     ret = 0;
 
-failed:
+ failed:
     VIR_FREE(port);
     return ret;
 }
@@ -1601,7 +1601,7 @@ xenDaemonDomainFetch(virConnectPtr conn, int domid, const char *name,
                              vncport)))
         goto cleanup;
 
-cleanup:
+ cleanup:
     sexpr_free(root);
 
     return def;
@@ -1711,7 +1711,7 @@ xenDaemonLookupByName(virConnectPtr conn, const char *domname)
 
     ret = sexpr_to_domain(conn, root);
 
-error:
+ error:
     sexpr_free(root);
     return ret;
 }
@@ -1914,7 +1914,7 @@ xenDaemonDomainPinVcpu(virConnectPtr conn,
 
     return ret;
 
-cleanup:
+ cleanup:
     virDomainDefFree(def);
     return -1;
 }
@@ -2186,7 +2186,7 @@ xenDaemonCreateXML(virConnectPtr conn, virDomainDefPtr def)
 
     return 0;
 
-  error:
+ error:
     /* Make sure we don't leave a still-born domain around */
     if (def->id != -1)
         xenDaemonDomainDestroy(conn, def);
@@ -2333,7 +2333,7 @@ xenDaemonAttachDeviceFlags(virConnectPtr conn,
         }
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(sexpr);
     virDomainDefFree(def);
     virDomainDeviceDefFree(dev);
@@ -2438,7 +2438,7 @@ xenDaemonUpdateDeviceFlags(virConnectPtr conn,
                       "config", sexpr, "dev", ref, NULL);
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(sexpr);
     virDomainDefFree(def);
     virDomainDeviceDefFree(dev);
@@ -2536,7 +2536,7 @@ xenDaemonDetachDeviceFlags(virConnectPtr conn,
                       NULL);
     }
 
-cleanup:
+ cleanup:
     virDomainDefFree(def);
     virDomainDeviceDefFree(dev);
 
@@ -2627,7 +2627,7 @@ xenDaemonDomainSetAutostart(virConnectPtr conn,
     }
 
     ret = 0;
-  error:
+ error:
     virBufferFreeAndReset(&buffer);
     VIR_FREE(content);
     sexpr_free(root);
@@ -2840,7 +2840,7 @@ xenDaemonDomainDefineXML(virConnectPtr conn, virDomainDefPtr def)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -2897,7 +2897,7 @@ xenDaemonNumOfDefinedDomains(virConnectPtr conn)
         ret++;
     }
 
-error:
+ error:
     sexpr_free(root);
     return ret;
 }
@@ -2932,11 +2932,11 @@ xenDaemonListDefinedDomains(virConnectPtr conn,
             break;
     }
 
-cleanup:
+ cleanup:
     sexpr_free(root);
     return ret;
 
-error:
+ error:
     for (i = 0; i < ret; ++i)
         VIR_FREE(names[i]);
 
@@ -2996,7 +2996,7 @@ xenDaemonGetSchedulerType(virConnectPtr conn,
         goto error;
     }
 
-error:
+ error:
     sexpr_free(root);
     return schedulertype;
 
@@ -3102,7 +3102,7 @@ xenDaemonGetSchedulerParameters(virConnectPtr conn,
             goto error;
     }
 
-error:
+ error:
     sexpr_free(root);
     VIR_FREE(sched_type);
     return ret;
@@ -3209,7 +3209,7 @@ xenDaemonSetSchedulerParameters(virConnectPtr conn,
             goto error;
     }
 
-error:
+ error:
     sexpr_free(root);
     VIR_FREE(sched_type);
     return ret;

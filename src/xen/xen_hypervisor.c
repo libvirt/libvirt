@@ -2275,7 +2275,7 @@ get_cpu_flags(virConnectPtr conn, const char **hvm, int *pae, int *longmode)
 
     ret = 1;
 
-out:
+ out:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -2537,7 +2537,7 @@ xenHypervisorMakeCapabilities(virConnectPtr conn)
     if (virNodeSuspendGetTargetMask(&caps->host.powerMgmt) < 0)
         VIR_WARN("Failed to get host power management capabilities");
 
-cleanup:
+ cleanup:
     VIR_FORCE_FCLOSE(cpuinfo);
     VIR_FORCE_FCLOSE(capabilities);
 
