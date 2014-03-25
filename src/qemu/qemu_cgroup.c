@@ -313,7 +313,7 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virPCIDeviceFree(pci);
     virUSBDeviceFree(usb);
     virSCSIDeviceFree(scsi);
@@ -374,7 +374,7 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virPCIDeviceFree(pci);
     VIR_FREE(path);
     return ret;
@@ -569,7 +569,7 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virObjectUnref(cfg);
     return ret;
 }
@@ -633,7 +633,7 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(mem_mask);
     VIR_FREE(cpu_mask);
     return ret;
@@ -716,9 +716,9 @@ qemuInitCgroup(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-done:
+ done:
     ret = 0;
-cleanup:
+ cleanup:
     virObjectUnref(cfg);
     return ret;
 }
@@ -750,9 +750,9 @@ qemuConnectCgroup(virQEMUDriverPtr driver,
                                   &priv->cgroup) < 0)
         goto cleanup;
 
-done:
+ done:
     ret = 0;
-cleanup:
+ cleanup:
     virObjectUnref(cfg);
     return ret;
 }
@@ -797,7 +797,7 @@ qemuSetupCgroup(virQEMUDriverPtr driver,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     virObjectUnref(caps);
     return ret;
 }
@@ -827,7 +827,7 @@ qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
 
     return 0;
 
-error:
+ error:
     if (period) {
         virErrorPtr saved = virSaveLastError();
         ignore_value(virCgroupSetCpuCfsPeriod(cgroup, old_period));
@@ -875,7 +875,7 @@ qemuSetupCgroupEmulatorPin(virCgroupPtr cgroup,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(new_cpus);
     return ret;
 }
@@ -948,7 +948,7 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
 
     return 0;
 
-cleanup:
+ cleanup:
     if (cgroup_vcpu) {
         virCgroupRemove(cgroup_vcpu);
         virCgroupFree(&cgroup_vcpu);
@@ -1013,7 +1013,7 @@ qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
     virBitmapFree(cpumap);
     return 0;
 
-cleanup:
+ cleanup:
     virBitmapFree(cpumap);
 
     if (cgroup_emulator) {

@@ -114,7 +114,7 @@ qemuHostdevHostSupportsPassthroughVFIO(void)
 
     ret = true;
 
-cleanup:
+ cleanup:
     if (iommuDir)
         closedir(iommuDir);
 
@@ -140,7 +140,7 @@ qemuHostdevHostSupportsPassthroughLegacy(void)
     ret = true;
 # endif
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(kvmfd);
 
     return ret;
@@ -235,7 +235,7 @@ qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
     ret = virHostdevPreparePCIDevices(hostdev_mgr, QEMU_DRIVER_NAME,
                                       name, uuid, hostdevs,
                                       nhostdevs, flags);
-out:
+ out:
     return ret;
 }
 

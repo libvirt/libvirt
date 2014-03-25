@@ -257,7 +257,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
 
     return cfg;
 
-error:
+ error:
     virObjectUnref(cfg);
     return NULL;
 }
@@ -578,7 +578,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virConfFree(conf);
     return ret;
 }
@@ -662,7 +662,7 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
     virObjectUnref(cfg);
     return caps;
 
-error:
+ error:
     VIR_FREE(sec_managers);
     virObjectUnref(caps);
     virObjectUnref(cfg);
@@ -806,7 +806,7 @@ qemuCheckSharedDevice(virHashTablePtr sharedDevices,
     }
 
     ret = -1;
-cleanup:
+ cleanup:
     VIR_FREE(sysfs_path);
     VIR_FREE(key);
     return ret;
@@ -866,7 +866,7 @@ qemuSharedDeviceEntryCopy(const qemuSharedDeviceEntry *entry)
 
     return ret;
 
-cleanup:
+ cleanup:
     qemuSharedDeviceEntryFree(ret, NULL);
     return NULL;
 }
@@ -973,7 +973,7 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     qemuDriverUnlock(driver);
     VIR_FREE(dev_name);
     VIR_FREE(dev_path);
@@ -1067,7 +1067,7 @@ qemuRemoveSharedDevice(virQEMUDriverPtr driver,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     qemuDriverUnlock(driver);
     VIR_FREE(dev_name);
     VIR_FREE(dev_path);
@@ -1133,7 +1133,7 @@ qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
         virSetDeviceUnprivSGIO(path, NULL, val) < 0)
         ret = -1;
 
-cleanup:
+ cleanup:
     VIR_FREE(sysfs_path);
     return ret;
 }
@@ -1199,7 +1199,7 @@ qemuAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virStringFreeList(tokens);
     return ret;
 }
@@ -1252,7 +1252,7 @@ qemuTranslateDiskSourcePoolAuth(virDomainDiskDefPtr def,
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -1400,7 +1400,7 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     if (ret < 0)
         savedError = virSaveLastError();
     if (pool)

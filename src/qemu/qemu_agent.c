@@ -240,7 +240,7 @@ qemuAgentOpenUnix(const char *monitor, pid_t cpid, bool *inProgress)
 
     return monfd;
 
-error:
+ error:
     VIR_FORCE_CLOSE(monfd);
     return -1;
 }
@@ -264,7 +264,7 @@ qemuAgentOpenPty(const char *monitor)
 
     return monfd;
 
-error:
+ error:
     VIR_FORCE_CLOSE(monfd);
     return -1;
 }
@@ -352,7 +352,7 @@ qemuAgentIOProcessLine(qemuAgentPtr mon,
                        _("Unknown JSON reply '%s'"), line);
     }
 
-cleanup:
+ cleanup:
     virJSONValueFree(obj);
     return ret;
 }
@@ -777,7 +777,7 @@ qemuAgentOpen(virDomainObjPtr vm,
 
     return mon;
 
-cleanup:
+ cleanup:
     /* We don't want the 'destroy' callback invoked during
      * cleanup from construction failure, because that can
      * give a double-unref on virDomainObjPtr in the caller,
@@ -888,7 +888,7 @@ static int qemuAgentSend(qemuAgentPtr mon,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     mon->msg = NULL;
     qemuAgentUpdateWatch(mon);
 
@@ -959,7 +959,7 @@ qemuAgentGuestSync(qemuAgentPtr mon)
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     virJSONValueFree(sync_msg.rxObject);
     VIR_FREE(sync_msg.txBuffer);
     return ret;
@@ -1012,7 +1012,7 @@ qemuAgentCommand(qemuAgentPtr mon,
         }
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(cmdstr);
     VIR_FREE(msg.txBuffer);
 
@@ -1226,7 +1226,7 @@ qemuAgentMakeCommand(const char *cmdname,
 
     return obj;
 
-error:
+ error:
     virJSONValueFree(obj);
     virJSONValueFree(jargs);
     va_end(args);
@@ -1317,7 +1317,7 @@ int qemuAgentFSFreeze(qemuAgentPtr mon)
                        _("malformed return value"));
     }
 
-cleanup:
+ cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -1355,7 +1355,7 @@ int qemuAgentFSThaw(qemuAgentPtr mon)
                        _("malformed return value"));
     }
 
-cleanup:
+ cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -1426,7 +1426,7 @@ qemuAgentArbitraryCommand(qemuAgentPtr mon,
         ret = -1;
 
 
-cleanup:
+ cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -1526,7 +1526,7 @@ qemuAgentGetVCPUs(qemuAgentPtr mon,
 
     ret = ndata;
 
-cleanup:
+ cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -1590,7 +1590,7 @@ qemuAgentSetVCPUs(qemuAgentPtr mon,
                        _("malformed return value"));
     }
 
-cleanup:
+ cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     virJSONValueFree(cpu);

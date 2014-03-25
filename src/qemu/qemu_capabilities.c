@@ -482,7 +482,7 @@ virQEMUCapsProbeMachineTypes(virQEMUCapsPtr qemuCaps,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(output);
     virCommandFree(cmd);
 
@@ -546,7 +546,7 @@ virQEMUCapsParseX86Models(const char *output,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -595,7 +595,7 @@ virQEMUCapsParsePPCModels(const char *output,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -630,7 +630,7 @@ virQEMUCapsProbeCPUModels(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(output);
     virCommandFree(cmd);
 
@@ -840,7 +840,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(binary);
     VIR_FREE(kvmbin);
     virObjectUnref(qemubinCaps);
@@ -848,7 +848,7 @@ cleanup:
 
     return ret;
 
-error:
+ error:
     virCapabilitiesFreeMachines(machines, nmachines);
 
     goto cleanup;
@@ -884,12 +884,12 @@ virQEMUCapsInitCPU(virCapsPtr caps,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     cpuDataFree(data);
 
     return ret;
 
-error:
+ error:
     virCPUDefFree(cpu);
     goto cleanup;
 }
@@ -937,7 +937,7 @@ virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
 
     return caps;
 
-error:
+ error:
     virObjectUnref(caps);
     return NULL;
 }
@@ -1325,7 +1325,7 @@ int virQEMUCapsParseHelpStr(const char *qemu,
 
     return 0;
 
-fail:
+ fail:
     p = strchr(help, '\n');
     if (!p)
         p = strchr(help, '\0');
@@ -1334,7 +1334,7 @@ fail:
                    _("cannot parse %s version number in '%.*s'"),
                    qemu, (int) (p - help), help);
 
-cleanup:
+ cleanup:
     return -1;
 }
 
@@ -1596,7 +1596,7 @@ virQEMUCapsParseDeviceStrObjectTypes(const char *str,
     *types = typelist;
     ret = ntypelist;
 
-cleanup:
+ cleanup:
     if (ret < 0)
         virQEMUCapsFreeStringList(ntypelist, typelist);
     return ret;
@@ -1649,7 +1649,7 @@ virQEMUCapsParseDeviceStrObjectProps(const char *str,
     *props = proplist;
     ret = nproplist;
 
-cleanup:
+ cleanup:
     if (ret < 0)
         virQEMUCapsFreeStringList(nproplist, proplist);
     return ret;
@@ -1731,7 +1731,7 @@ virQEMUCapsExtractDeviceStr(const char *qemu,
 
     ret = virQEMUCapsParseDeviceStr(qemuCaps, output);
 
-cleanup:
+ cleanup:
     VIR_FREE(output);
     virCommandFree(cmd);
     return ret;
@@ -1787,7 +1787,7 @@ virQEMUCapsNew(void)
 
     return qemuCaps;
 
-error:
+ error:
     virObjectUnref(qemuCaps);
     return NULL;
 }
@@ -1832,7 +1832,7 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
 
     return ret;
 
-error:
+ error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -1995,7 +1995,7 @@ int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
 
     return 0;
 
-error:
+ error:
     virCapabilitiesFreeMachines(*machines, *nmachines);
     *nmachines = 0;
     *machines = NULL;
@@ -2179,7 +2179,7 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     for (i = 0; i < nmachines; i++)
         qemuMonitorMachineInfoFree(machines[i]);
     VIR_FREE(machines);
@@ -2522,7 +2522,7 @@ virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
     VIR_FREE(nodes);
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(str);
     VIR_FREE(nodes);
     xmlXPathFreeContext(ctxt);
@@ -2815,7 +2815,7 @@ virQEMUCapsInitHelp(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid)
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(help);
     return ret;
@@ -2928,7 +2928,7 @@ virQEMUCapsInitArchQMPBasic(virQEMUCapsPtr qemuCaps,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(archstr);
     return ret;
 }
@@ -3013,7 +3013,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(package);
     return ret;
 }
@@ -3140,7 +3140,7 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (mon)
         virObjectUnlock(mon);
     qemuMonitorClose(mon);
@@ -3243,7 +3243,7 @@ virQEMUCapsPtr virQEMUCapsNewForBinary(const char *binary,
 
     return qemuCaps;
 
-error:
+ error:
     virObjectUnref(qemuCaps);
     qemuCaps = NULL;
     return NULL;
@@ -3301,7 +3301,7 @@ virQEMUCapsCacheNew(const char *libDir,
 
     return cache;
 
-error:
+ error:
     virQEMUCapsCacheFree(cache);
     return NULL;
 }

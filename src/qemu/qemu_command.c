@@ -196,7 +196,7 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
     virObjectUnref(cfg);
     return rc;
 
-error:
+ error:
     ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
                      res_ifname, &net->mac,
                      virDomainNetGetActualDirectDev(net),
@@ -274,7 +274,7 @@ static int qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
         *tapfd = -1;
     }
 
-cleanup:
+ cleanup:
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(pair[0]);
     return *tapfd < 0 ? -1 : 0;
@@ -402,7 +402,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     if (ret < 0) {
         size_t i;
         for (i = 0; i < *tapfdSize && tapfd[i] >= 0; i++)
@@ -525,7 +525,7 @@ qemuOpenVhostNet(virDomainDefPtr def,
     virDomainAuditNetDevice(def, net, "/dev/vhost-net", *vhostfdSize);
     return 0;
 
-error:
+ error:
     while (i--)
         VIR_FORCE_CLOSE(vhostfd[i]);
 
@@ -579,7 +579,7 @@ qemuNetworkPrepareDevices(virDomainDefPtr def)
         }
     }
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -1155,7 +1155,7 @@ int qemuDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(addr);
     return ret;
 }
@@ -1274,7 +1274,7 @@ qemuDomainCCWAddressSetCreate(void)
     addrs->next.assigned = 0;
     return addrs;
 
-error:
+ error:
     qemuDomainCCWAddressSetFree(addrs);
     return NULL;
 }
@@ -1329,7 +1329,7 @@ qemuDomainAssignS390Addresses(virDomainDefPtr def,
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     qemuDomainCCWAddressSetFree(addrs);
 
     return ret;
@@ -1459,7 +1459,7 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -1866,7 +1866,7 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
         goto cleanup;
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -1967,7 +1967,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     qemuDomainPCIAddressSetFree(addrs);
 
     return ret;
@@ -2050,7 +2050,7 @@ qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
 
     return addrs;
 
-error:
+ error:
     qemuDomainPCIAddressSetFree(addrs);
     return NULL;
 }
@@ -2130,7 +2130,7 @@ qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(addrStr);
     return ret;
 }
@@ -2180,7 +2180,7 @@ int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
         ret = qemuDomainPCIAddressReserveNextSlot(addrs, dev, flags);
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(addrStr);
     return ret;
 }
@@ -2212,7 +2212,7 @@ qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs,
 
     addrs->buses[addr->bus].slots[addr->slot] = 0;
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(addrStr);
     return ret;
 }
@@ -2303,11 +2303,11 @@ qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("No more available PCI slots"));
-error:
+ error:
     VIR_FREE(addrStr);
     return -1;
 
-success:
+ success:
     VIR_DEBUG("Found free PCI slot %.4x:%.2x:%.2x",
               a.domain, a.bus, a.slot);
     *next_addr = a;
@@ -2499,7 +2499,7 @@ qemuValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
         }
     }
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(addrStr);
     return ret;
 }
@@ -2669,7 +2669,7 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
         }
     }
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(addrStr);
     return ret;
 }
@@ -2995,7 +2995,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -3111,7 +3111,7 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(devStr);
     return ret;
 }
@@ -3243,7 +3243,7 @@ qemuGetSecretString(virConnectPtr conn,
         secret = base64;
     }
 
-cleanup:
+ cleanup:
     virObjectUnref(sec);
     return secret;
 }
@@ -3290,7 +3290,7 @@ static int qemuAddRBDHost(virDomainDiskDefPtr disk, char *hostport)
 
     return 0;
 
-error:
+ error:
     VIR_FREE(disk->src.hosts[disk->src.nhosts-1].port);
     VIR_FREE(disk->src.hosts[disk->src.nhosts-1].name);
     return -1;
@@ -3359,7 +3359,7 @@ static int qemuParseRBDString(virDomainDiskDefPtr disk)
     VIR_FREE(options);
     return 0;
 
-error:
+ error:
     VIR_FREE(options);
     return -1;
 }
@@ -3441,12 +3441,12 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
     def->src.nhosts = 1;
     ret = 0;
 
-cleanup:
+ cleanup:
     virURIFree(uri);
 
     return ret;
 
-error:
+ error:
     virDomainDiskHostDefClear(def->src.hosts);
     VIR_FREE(def->src.hosts);
     goto cleanup;
@@ -3549,7 +3549,7 @@ qemuParseNBDString(virDomainDiskDefPtr disk)
     disk->src.hosts = h;
     return 0;
 
-error:
+ error:
     virDomainDiskHostDefClear(h);
     VIR_FREE(h);
     return -1;
@@ -3813,7 +3813,7 @@ qemuBuildNetworkDriveURI(int protocol,
             goto cleanup;
     }
 
-cleanup:
+ cleanup:
     virBufferFreeAndReset(&buf);
     virURIFree(uri);
 
@@ -3907,7 +3907,7 @@ qemuDomainDiskGetSourceString(virConnectPtr conn,
                                    secret,
                                    source);
 
-cleanup:
+ cleanup:
     VIR_FREE(secret);
     return ret;
 }
@@ -4270,7 +4270,7 @@ qemuBuildDriveStr(virConnectPtr conn,
 
     return virBufferContentAndReset(&opt);
 
-error:
+ error:
     VIR_FREE(source);
     virBufferFreeAndReset(&opt);
     return NULL;
@@ -4612,7 +4612,7 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
 
     return virBufferContentAndReset(&opt);
 
-error:
+ error:
     virBufferFreeAndReset(&opt);
     return NULL;
 }
@@ -4688,7 +4688,7 @@ char *qemuBuildFSStr(virDomainFSDefPtr fs,
 
     return virBufferContentAndReset(&opt);
 
-error:
+ error:
     virBufferFreeAndReset(&opt);
     return NULL;
 }
@@ -4722,7 +4722,7 @@ qemuBuildFSDevStr(virDomainDefPtr def,
 
     return virBufferContentAndReset(&opt);
 
-error:
+ error:
     virBufferFreeAndReset(&opt);
     return NULL;
 }
@@ -4948,7 +4948,7 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -5061,7 +5061,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -5226,7 +5226,7 @@ qemuBuildWatchdogDevStr(virDomainDefPtr def,
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -5267,7 +5267,7 @@ qemuBuildMemballoonDevStr(virDomainDefPtr def,
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -5294,7 +5294,7 @@ qemuBuildNVRAMDevStr(virDomainNVRAMDefPtr dev)
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -5330,7 +5330,7 @@ qemuBuildUSBInputDevStr(virDomainDefPtr def,
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -5383,7 +5383,7 @@ qemuBuildSoundDevStr(virDomainDefPtr def,
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -5427,7 +5427,7 @@ qemuBuildSoundCodecStr(virDomainSoundDefPtr sound,
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -5498,7 +5498,7 @@ qemuBuildDeviceVideoStr(virDomainDefPtr def,
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -5574,7 +5574,7 @@ qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -5678,7 +5678,7 @@ qemuBuildRedirdevDevStr(virDomainDefPtr def,
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -5718,7 +5718,7 @@ qemuBuildUSBHostdevDevStr(virDomainDefPtr def,
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -5756,7 +5756,7 @@ qemuBuildHubDevStr(virDomainDefPtr def,
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -5825,7 +5825,7 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
 
     VIR_FREE(sg);
     return virBufferContentAndReset(&buf);
-error:
+ error:
     VIR_FREE(sg);
     virBufferFreeAndReset(&buf);
     return NULL;
@@ -5889,7 +5889,7 @@ qemuBuildSCSIHostdevDevStr(virDomainDefPtr def,
     }
 
     return virBufferContentAndReset(&buf);
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -6010,7 +6010,7 @@ qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias,
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -6105,7 +6105,7 @@ qemuBuildChrArgStr(virDomainChrSourceDefPtr dev, const char *prefix)
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -6185,7 +6185,7 @@ qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev,
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -6217,7 +6217,7 @@ qemuBuildSclpDevStr(virDomainChrDefPtr dev)
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -6275,7 +6275,7 @@ qemuBuildRNGBackendArgs(virCommandPtr cmd,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virBufferFreeAndReset(&buf);
     VIR_FREE(backend);
     return ret;
@@ -6324,7 +6324,7 @@ qemuBuildRNGDeviceArgs(virCommandPtr cmd,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virBufferFreeAndReset(&buf);
     return ret;
 }
@@ -6444,7 +6444,7 @@ static char *qemuBuildSmbiosBiosStr(virSysinfoDefPtr def)
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -6491,7 +6491,7 @@ static char *qemuBuildSmbiosSystemStr(virSysinfoDefPtr def, bool skip_uuid)
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -6595,7 +6595,7 @@ qemuBuildClockArgStr(virDomainClockDefPtr def)
 
     return virBufferContentAndReset(&buf);
 
-error:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -6838,7 +6838,7 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(compare_msg);
     cpuDataFree(data);
     virCPUDefFree(guest);
@@ -7085,7 +7085,7 @@ qemuBuildNumaArgStr(const virDomainDef *def, virCommandPtr cmd)
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(cpumask);
     virBufferFreeAndReset(&buf);
     return ret;
@@ -7231,7 +7231,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
 
     return 0;
 
-error:
+ error:
     VIR_FREE(netAddr);
     virBufferFreeAndReset(&opt);
     return -1;
@@ -7456,7 +7456,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
 
     return 0;
 
-error:
+ error:
     VIR_FREE(netAddr);
     virBufferFreeAndReset(&opt);
     return -1;
@@ -7657,7 +7657,7 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     if (ret < 0)
         virDomainConfNWFilterTeardown(net);
     for (i = 0; tapfd && i < tapfdSize && tapfd[i] >= 0; i++) {
@@ -9742,7 +9742,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     virObjectUnref(cfg);
     return cmd;
 
-error:
+ error:
     virObjectUnref(cfg);
     /* free up any resources in the network driver
      * but don't overwrite the original error */
@@ -9808,7 +9808,7 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
     *deviceStr = virBufferContentAndReset(&cmd);
     return 0;
 
-error:
+ error:
     virBufferFreeAndReset(&cmd);
     return -1;
 }
@@ -9861,7 +9861,7 @@ qemuBuildChannelChrDeviceStr(char **deviceStr,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     VIR_FREE(addr);
     return ret;
 }
@@ -9896,7 +9896,7 @@ qemuBuildConsoleChrDeviceStr(char **deviceStr,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -10029,7 +10029,7 @@ static int qemuStringToArgvEnv(const char *args,
 
     return 0;
 
-error:
+ error:
     VIR_FREE(progenv);
     VIR_FREE(progargv);
     virStringFreeList(arglist);
@@ -10151,7 +10151,7 @@ qemuParseKeywords(const char *str,
     *retnkeywords = keywordCount;
     return 0;
 
-error:
+ error:
     for (i = 0; i < keywordCount; i++) {
         VIR_FREE(keywords[i]);
         VIR_FREE(values[i]);
@@ -10481,7 +10481,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
         /* fall through to "cleanup" */
     }
 
-cleanup:
+ cleanup:
     for (i = 0; i < nkeywords; i++) {
         VIR_FREE(keywords[i]);
         VIR_FREE(values[i]);
@@ -10490,7 +10490,7 @@ cleanup:
     VIR_FREE(values);
     return def;
 
-error:
+ error:
     virDomainDiskDefFree(def);
     def = NULL;
     goto cleanup;
@@ -10677,7 +10677,7 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
     if (genmac)
         virDomainNetGenerateMAC(xmlopt, &def->mac);
 
-cleanup:
+ cleanup:
     for (i = 0; i < nkeywords; i++) {
         VIR_FREE(keywords[i]);
         VIR_FREE(values[i]);
@@ -10907,7 +10907,7 @@ qemuParseCommandLineChr(virDomainChrSourceDefPtr source,
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -11112,13 +11112,13 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(model);
     virStringFreeList(tokens);
     virStringFreeList(hv_tokens);
     return ret;
 
-syntax:
+ syntax:
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("unknown CPU syntax '%s'"), val);
     goto cleanup;
@@ -11181,7 +11181,7 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     for (i = 0; i < nkws; i++) {
         VIR_FREE(kws[i]);
         VIR_FREE(vals[i]);
@@ -11191,10 +11191,10 @@ cleanup:
 
     return ret;
 
-syntax:
+ syntax:
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("cannot parse CPU topology '%s'"), val);
-error:
+ error:
     ret = -1;
     goto cleanup;
 }
@@ -12167,7 +12167,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
 
     return def;
 
-error:
+ error:
     virDomainDiskDefFree(disk);
     qemuDomainCmdlineDefFree(cmd);
     virDomainDefFree(def);
@@ -12199,7 +12199,7 @@ virDomainDefPtr qemuParseCommandLineString(virCapsPtr qemuCaps,
     def = qemuParseCommandLine(qemuCaps, xmlopt, progenv, progargv,
                                pidfile, monConfig, monJSON);
 
-cleanup:
+ cleanup:
     virStringFreeList(progargv);
     virStringFreeList(progenv);
 
@@ -12246,7 +12246,7 @@ static int qemuParseProcFileStrings(int pid_value,
     ret = nstr-1;
     *list = str;
 
-cleanup:
+ cleanup:
     if (ret < 0)
         virStringFreeList(str);
     VIR_FREE(data);
@@ -12290,7 +12290,7 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr qemuCaps,
     VIR_FREE(def->emulator);
     def->emulator = emulator;
 
-cleanup:
+ cleanup:
     VIR_FREE(exepath);
     virStringFreeList(progargv);
     virStringFreeList(progenv);

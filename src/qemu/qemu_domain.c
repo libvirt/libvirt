@@ -232,7 +232,7 @@ qemuDomainObjPrivateAlloc(void)
 
     return priv;
 
-error:
+ error:
     VIR_FREE(priv);
     return NULL;
 }
@@ -520,7 +520,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
 
     return 0;
 
-error:
+ error:
     virDomainChrSourceDefFree(priv->monConfig);
     priv->monConfig = NULL;
     VIR_FREE(nodes);
@@ -643,7 +643,7 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
 
     return 0;
 
-error:
+ error:
     VIR_FREE(nodes);
     qemuDomainDefNamespaceFree(cmd);
     return -1;
@@ -934,7 +934,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(cfg);
     return ret;
 }
@@ -1071,7 +1071,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
 
     virObjectRef(obj);
 
-retry:
+ retry:
     if (cfg->maxQueuedJobs &&
         priv->jobs_queued > cfg->maxQueuedJobs) {
         goto error;
@@ -1119,7 +1119,7 @@ retry:
     virObjectUnref(cfg);
     return 0;
 
-error:
+ error:
     VIR_WARN("Cannot start job (%s, %s) for domain %s;"
              " current job is (%s, %s) owned by (%llu, %llu)",
              qemuDomainJobTypeToString(job),
@@ -1451,7 +1451,7 @@ qemuDomainDefCopy(virQEMUDriverPtr driver,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-cleanup:
+ cleanup:
     VIR_FREE(xml);
     virObjectUnref(caps);
     return ret;
@@ -1558,7 +1558,7 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
 
     ret = virDomainDefFormatInternal(def, flags, buf);
 
-cleanup:
+ cleanup:
     def->cpu = def_cpu;
     virCPUDefFree(cpu);
     if (controllers) {
@@ -1766,7 +1766,7 @@ qemuDomainOpenLogHelper(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(logfile);
     return fd;
 }
@@ -1856,7 +1856,7 @@ int qemuDomainAppendLog(virQEMUDriverPtr driver,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     va_end(argptr);
 
     if (fd != logFD)
@@ -1907,7 +1907,7 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
 
     ret = virXMLSaveFile(snapFile, NULL, "snapshot-edit", newxml);
 
-cleanup:
+ cleanup:
     VIR_FREE(snapFile);
     VIR_FREE(snapDir);
     VIR_FREE(newxml);
@@ -2066,7 +2066,7 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FREE(snapFile);
     virObjectUnref(cfg);
     return ret;
@@ -2150,7 +2150,7 @@ qemuDomainSetFakeReboot(virQEMUDriverPtr driver,
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         VIR_WARN("Failed to save status on vm %s", vm->def->name);
 
-cleanup:
+ cleanup:
     virObjectUnref(cfg);
 }
 
@@ -2230,7 +2230,7 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
 
     return 0;
 
-error:
+ error:
     return -1;
 }
 
@@ -2266,7 +2266,7 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
 
     ret = 0;
 
-error:
+ error:
     return ret;
 }
 
@@ -2426,7 +2426,7 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
     if (!disk->backingChain)
         ret = -1;
 
-cleanup:
+ cleanup:
     virObjectUnref(cfg);
     return ret;
 }
@@ -2469,7 +2469,7 @@ qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
 
     ret = virDomainDefCheckABIStability(migratableDefSrc, migratableDefDst);
 
-cleanup:
+ cleanup:
     virDomainDefFree(migratableDefSrc);
     virDomainDefFree(migratableDefDst);
     return ret;

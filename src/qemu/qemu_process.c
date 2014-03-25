@@ -107,7 +107,7 @@ qemuProcessRemoveDomainStatus(virQEMUDriverPtr driver,
                  vm->def->name, virStrerror(errno, ebuf, sizeof(ebuf)));
 
     ret = 0;
-cleanup:
+ cleanup:
     virObjectUnref(cfg);
     return ret;
 }
@@ -151,7 +151,7 @@ qemuProcessHandleAgentEOF(qemuAgentPtr agent,
     qemuAgentClose(agent);
     return;
 
-unlock:
+ unlock:
     virObjectUnlock(vm);
     return;
 }
@@ -276,7 +276,7 @@ qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -334,10 +334,10 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-unlock:
+ unlock:
     virObjectUnlock(vm);
 
-cleanup:
+ cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
 }
@@ -488,7 +488,7 @@ qemuProcessGetVolumeQcowPassphrase(virConnectPtr conn,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -512,7 +512,7 @@ qemuProcessFindVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     ret = qemuProcessGetVolumeQcowPassphrase(conn, disk, secretRet, secretLen);
 
-cleanup:
+ cleanup:
     virObjectUnlock(vm);
     return ret;
 }
@@ -608,11 +608,11 @@ qemuProcessFakeReboot(void *opaque)
 
     ret = 0;
 
-endjob:
+ endjob:
     if (!qemuDomainObjEndJob(driver, vm))
         vm = NULL;
 
-cleanup:
+ cleanup:
     if (vm) {
         if (ret == -1) {
             ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
@@ -722,7 +722,7 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     qemuProcessShutdownOrReboot(driver, vm);
 
-unlock:
+ unlock:
     virObjectUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
@@ -769,7 +769,7 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         }
     }
 
-unlock:
+ unlock:
     virObjectUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
@@ -823,7 +823,7 @@ qemuProcessHandleResume(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         }
     }
 
-unlock:
+ unlock:
     virObjectUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
@@ -1109,7 +1109,7 @@ qemuProcessHandleGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     return 0;
 
-error:
+ error:
     if (localAddr) {
         VIR_FREE(localAddr->service);
         VIR_FREE(localAddr->node);
@@ -1354,7 +1354,7 @@ qemuProcessHandleGuestPanic(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         VIR_FREE(processEvent);
     }
 
-cleanup:
+ cleanup:
     if (vm)
        virObjectUnlock(vm);
 
@@ -1387,7 +1387,7 @@ qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         VIR_WARN("unable to save domain status with balloon change");
 
-cleanup:
+ cleanup:
     virObjectUnlock(vm);
     virObjectUnref(cfg);
     return 0;
@@ -1476,7 +1476,7 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int logfd)
         ret = virQEMUCapsProbeQMP(priv->qemuCaps, priv->mon);
     qemuDomainObjExitMonitor(driver, vm);
 
-error:
+ error:
 
     return ret;
 }
@@ -1594,7 +1594,7 @@ qemuProcessReadLogOutput(virDomainObjPtr vm,
                    _("Timed out while reading %s log output: %s"),
                    what, buf);
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -1657,7 +1657,7 @@ qemuProcessReadChildErrors(virQEMUDriverPtr driver,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(logfd);
     return ret;
 }
@@ -1924,7 +1924,7 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
     if (ret == 0)
         ret = qemuProcessFindCharDevicePTYsMonitor(vm, qemuCaps, paths);
 
-cleanup:
+ cleanup:
     virHashFree(paths);
 
     if (pos != -1 && kill(vm->pid, 0) == -1 && errno == ESRCH) {
@@ -1948,7 +1948,7 @@ cleanup:
         ret = -1;
     }
 
-closelog:
+ closelog:
     if (VIR_CLOSE(logfd) < 0) {
         char ebuf[1024];
         VIR_WARN("Unable to close logfile: %s",
@@ -2049,7 +2049,7 @@ qemuPrepareCpumap(virQEMUDriverPtr driver,
         }
     }
 
-cleanup:
+ cleanup:
     virObjectUnref(caps);
     return cpumap;
 }
@@ -2097,7 +2097,7 @@ qemuProcessInitCpuAffinity(virQEMUDriverPtr driver,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virBitmapFree(cpumap);
     return ret;
 }
@@ -2164,7 +2164,7 @@ qemuProcessSetVcpuAffinities(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -2241,7 +2241,7 @@ qemuProcessInitPasswords(virConnectPtr conn,
         }
     }
 
-cleanup:
+ cleanup:
     virObjectUnref(cfg);
     return ret;
 }
@@ -2706,7 +2706,7 @@ static int qemuProcessHook(void *data)
 
     ret = 0;
 
-cleanup:
+ cleanup:
     virObjectUnref(h->cfg);
     VIR_DEBUG("Hook complete ret=%d", ret);
     return ret;
@@ -2765,7 +2765,7 @@ qemuProcessStartCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
         VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
     }
 
-cleanup:
+ cleanup:
     virObjectUnref(cfg);
     return ret;
 }
@@ -3123,7 +3123,7 @@ qemuProcessUpdateDevices(virQEMUDriverPtr driver,
     }
     ret = 0;
 
-cleanup:
+ cleanup:
     virStringFreeList(old);
     return ret;
 }
@@ -3295,7 +3295,7 @@ qemuProcessReconnect(void *opaque)
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
-endjob:
+ endjob:
     if (!qemuDomainObjEndJob(driver, obj))
         obj = NULL;
 
@@ -3307,7 +3307,7 @@ endjob:
 
     return;
 
-error:
+ error:
     if (!qemuDomainObjEndJob(driver, obj))
         obj = NULL;
 
@@ -3411,7 +3411,7 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
 
     return 0;
 
-error:
+ error:
     VIR_FREE(data);
     return -1;
 }
@@ -3533,7 +3533,7 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
 
     return 0;
 
-error:
+ error:
     virPortAllocatorRelease(driver->remotePorts, port);
     return -1;
 }
@@ -3597,7 +3597,7 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver, virDomainObjPtr vm)
 
     ret = true;
 
-cleanup:
+ cleanup:
     cpuDataFree(guestcpu);
     return ret;
 }
@@ -4198,7 +4198,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     return 0;
 
-cleanup:
+ cleanup:
     /* We jump here if we failed to start the VM for any reason, or
      * if we failed to initialize the now running VM. kill it off and
      * pretend we never started it */
@@ -4440,7 +4440,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         networkReleaseActualDevice(vm->def, net);
     }
 
-retry:
+ retry:
     if ((ret = qemuRemoveCgroup(vm)) < 0) {
         if (ret == -EBUSY && (retries++ < 5)) {
             usleep(200*1000);
@@ -4741,7 +4741,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     return 0;
 
-error:
+ error:
     /* We jump here if we failed to attach to the VM for any reason.
      * Leave the domain running, but pretend we never attempted to
      * attach to it.  */
@@ -4800,7 +4800,7 @@ qemuProcessAutoDestroy(virDomainObjPtr dom,
     if (event)
         qemuDomainEventQueue(driver, event);
 
-cleanup:
+ cleanup:
     return dom;
 }
 

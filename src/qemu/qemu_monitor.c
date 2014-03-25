@@ -319,7 +319,7 @@ qemuMonitorOpenUnix(const char *monitor, pid_t cpid)
 
     return monfd;
 
-error:
+ error:
     VIR_FORCE_CLOSE(monfd);
     return -1;
 }
@@ -357,12 +357,12 @@ qemuMonitorGetErrorFromLog(qemuMonitorPtr mon)
     if ((len = qemuProcessReadLog(mon->logfd, logbuf, 4096 - 1, 0, true)) <= 0)
         goto error;
 
-cleanup:
+ cleanup:
     errno = orig_errno;
     VIR_FORCE_CLOSE(mon->logfd);
     return logbuf;
 
-error:
+ error:
     VIR_FREE(logbuf);
     goto cleanup;
 }
@@ -830,7 +830,7 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
 
     return mon;
 
-cleanup:
+ cleanup:
     /* We don't want the 'destroy' callback invoked during
      * cleanup from construction failure, because that can
      * give a double-unref on virDomainObjPtr in the caller,
@@ -985,7 +985,7 @@ int qemuMonitorSend(qemuMonitorPtr mon,
 
     ret = 0;
 
-cleanup:
+ cleanup:
     mon->msg = NULL;
     qemuMonitorUpdateWatch(mon);
 
@@ -1108,7 +1108,7 @@ qemuMonitorFindBalloonObjectPath(qemuMonitorPtr mon,
         }
     }
 
-cleanup:
+ cleanup:
     for (i = 0; i < npaths; i++)
         qemuMonitorJSONListPathFree(paths[i]);
     VIR_FREE(paths);
@@ -1141,7 +1141,7 @@ int qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
         ret = qemuMonitorTextCommandWithFd(mon, cmd, scm_fd, reply);
     }
 
-cleanup:
+ cleanup:
     VIR_FREE(json_cmd);
     return ret;
 }
@@ -1403,7 +1403,7 @@ int qemuMonitorSetCapabilities(qemuMonitorPtr mon)
         ret = 0;
     }
 
-cleanup:
+ cleanup:
     return ret;
 }
 
@@ -2251,7 +2251,7 @@ int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
     else
         ret = qemuMonitorTextMigrate(mon, flags, dest);
 
-cleanup:
+ cleanup:
     VIR_FREE(argstr);
     VIR_FREE(dest);
     return ret;
@@ -2316,7 +2316,7 @@ int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
     else
         ret = qemuMonitorTextMigrate(mon, flags, dest);
 
-cleanup:
+ cleanup:
     VIR_FREE(safe_target);
     VIR_FREE(argstr);
     VIR_FREE(dest);
@@ -2661,7 +2661,7 @@ int qemuMonitorCloseFileHandle(qemuMonitorPtr mon,
     else
         ret = qemuMonitorTextCloseFileHandle(mon, fdname);
 
-cleanup:
+ cleanup:
     if (error) {
         virSetError(error);
         virFreeError(error);
@@ -2733,7 +2733,7 @@ qemuMonitorRemoveFd(qemuMonitorPtr mon, int fdset, int fd)
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("remove fd requires JSON monitor"));
 
-cleanup:
+ cleanup:
     if (error) {
         virSetError(error);
         virFreeError(error);
@@ -2776,7 +2776,7 @@ int qemuMonitorAddHostNetwork(qemuMonitorPtr mon,
     else
         ret = qemuMonitorTextAddHostNetwork(mon, netstr);
 
-cleanup:
+ cleanup:
     if (ret < 0) {
         while (i--) {
             if (qemuMonitorCloseFileHandle(mon, tapfdName[i]) < 0)
@@ -2848,7 +2848,7 @@ int qemuMonitorAddNetdev(qemuMonitorPtr mon,
     else
         ret = qemuMonitorTextAddNetdev(mon, netdevstr);
 
-cleanup:
+ cleanup:
     if (ret < 0) {
         while (i--) {
             if (qemuMonitorCloseFileHandle(mon, tapfdName[i]) < 0)
