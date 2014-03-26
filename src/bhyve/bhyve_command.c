@@ -21,10 +21,7 @@
 
 #include <config.h>
 
-#include <fcntl.h>
 #include <sys/types.h>
-#include <dirent.h>
-#include <sys/ioctl.h>
 #include <net/if.h>
 #include <net/if_tap.h>
 
@@ -40,75 +37,6 @@
 #define VIR_FROM_THIS VIR_FROM_BHYVE
 
 VIR_LOG_INIT("bhyve.bhyve_command");
-
-static char*
-virBhyveTapGetRealDeviceName(char *name)
-{
-    /* This is an ugly hack, because if we rename
-     * tap device to vnet%d, its device name will be
-     * still /dev/tap%d, and bhyve tries to open /dev/tap%d,
-     * so we have to find the real name
-     */
-    char *ret = NULL;
-    struct dirent *dp;
-    char *devpath = NULL;
-    int fd;
-
-    DIR *dirp = opendir("/dev");
-    if (dirp == NULL) {
-        virReportSystemError(errno,
-                             _("Failed to opendir path '%s'"),
-                             "/dev");
-        return NULL;
-    }
-
-    while ((dp = readdir(dirp)) != NULL) {
-        if (STRPREFIX(dp->d_name, "tap")) {
-            struct ifreq ifr;
-            if (virAsprintf(&devpath, "/dev/%s", dp->d_name) < 0) {
-                goto cleanup;
-            }
-            if ((fd = open(devpath, O_RDWR)) < 0) {
-                if (errno == EBUSY) {
-                    VIR_FREE(devpath);
-                    continue;
-                }
-                virReportSystemError(errno, _("Unable to open '%s'"), devpath);
-                goto cleanup;
-            }
-
-            if (ioctl(fd, TAPGIFNAME, (void *)&ifr) < 0) {
-                virReportSystemError(errno, "%s",
-                                     _("Unable to query tap interface name"));
-                goto cleanup;
-            }
-
-            if (STREQ(name, ifr.ifr_name)) {
-                /* we can ignore the return value
-                 * because we still have nothing
-                 * to do but return;
-                 */
-                ignore_value(VIR_STRDUP(ret, dp->d_name));
-                goto cleanup;
-            }
-
-            VIR_FREE(devpath);
-            VIR_FORCE_CLOSE(fd);
-        }
-
-        errno = 0;
-    }
-
-    if (errno != 0)
-        virReportSystemError(errno, "%s",
-                             _("Unable to iterate over TAP devices"));
-
- cleanup:
-    VIR_FREE(devpath);
-    VIR_FORCE_CLOSE(fd);
-    closedir(dirp);
-    return ret;
-}
 
 static int
 bhyveBuildNetArgStr(const virDomainDef *def, virCommandPtr cmd)
@@ -161,7 +89,7 @@ bhyveBuildNetArgStr(const virDomainDef *def, virCommandPtr cmd)
         }
     }
 
-    realifname = virBhyveTapGetRealDeviceName(net->ifname);
+    realifname = virNetDevTapGetRealDeviceName(net->ifname);
 
     if (realifname == NULL) {
         VIR_FREE(net->ifname);

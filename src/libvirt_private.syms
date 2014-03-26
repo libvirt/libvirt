@@ -1584,6 +1584,7 @@ virNetDevTapCreate;
 virNetDevTapCreateInBridgePort;
 virNetDevTapDelete;
 virNetDevTapGetName;
+virNetDevTapGetRealDeviceName;
 
 
 # util/virnetdevveth.h
