@@ -316,6 +316,11 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
 
     virStorageBackendFileSystemNetFindNFSPoolSources(&state);
 
+    if (virStorageBackendFindGlusterPoolSources(state.host,
+                                                VIR_STORAGE_POOL_NETFS_GLUSTERFS,
+                                                &state.list) < 0)
+        goto cleanup;
+
     if (!(ret = virStoragePoolSourceListFormat(&state.list)))
         goto cleanup;
 

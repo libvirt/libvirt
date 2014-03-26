@@ -1636,3 +1636,92 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
 
     return stablepath;
 }
+
+#ifdef GLUSTER_CLI
+int
+virStorageBackendFindGlusterPoolSources(const char *host,
+                                        int pooltype,
+                                        virStoragePoolSourceListPtr list)
+{
+    char *outbuf = NULL;
+    virCommandPtr cmd = NULL;
+    xmlDocPtr doc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlNodePtr *nodes = NULL;
+    virStoragePoolSource *src = NULL;
+    size_t i;
+    int nnodes;
+    int rc;
+
+    int ret = -1;
+
+    cmd = virCommandNewArgList(GLUSTER_CLI,
+                               "--xml",
+                               "--log-file=/dev/null",
+                               "volume", "info", "all", NULL);
+
+    virCommandAddArgFormat(cmd, "--remote-host=%s", host);
+    virCommandSetOutputBuffer(cmd, &outbuf);
+
+    if (virCommandRun(cmd, &rc) < 0)
+        goto cleanup;
+
+    if (rc != 0) {
+        VIR_INFO("failed to query host '%s' for gluster volumes: %s",
+                 host, outbuf);
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (!(doc = virXMLParseStringCtxt(outbuf, _("(gluster_cli_output)"),
+                                      &ctxt)))
+        goto cleanup;
+
+    if ((nnodes = virXPathNodeSet("//volumes/volume", ctxt, &nodes)) <= 0) {
+        VIR_INFO("no gluster volumes available on '%s'", host);
+        ret = 0;
+        goto cleanup;
+    }
+
+    for (i = 0; i < nnodes; i++) {
+        ctxt->node = nodes[i];
+
+        if (!(src = virStoragePoolSourceListNewSource(list)))
+            goto cleanup;
+
+        if (!(src->dir = virXPathString("string(//name)", ctxt))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to extract gluster volume name"));
+            goto cleanup;
+        }
+
+        if (VIR_ALLOC_N(src->hosts, 1) < 0)
+            goto cleanup;
+        src->nhost = 1;
+
+        if (VIR_STRDUP(src->hosts[0].name, host) < 0)
+            goto cleanup;
+
+        src->format = pooltype;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(nodes);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(doc);
+    VIR_FREE(outbuf);
+    virCommandFree(cmd);
+    return ret;
+}
+#else /* #ifdef GLUSTER_CLI */
+int
+virStorageBackendFindGlusterPoolSources(const char *host ATTRIBUTE_UNUSED,
+                                        int pooltype ATTRIBUTE_UNUSED,
+                                        virStoragePoolSourceListPtr list ATTRIBUTE_UNUSED)
+{
+    VIR_INFO("gluster cli tool not installed");
+    return 0;
+}
+#endif /* #ifdef GLUSTER_CLI */

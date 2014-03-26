@@ -87,6 +87,10 @@ int virStorageBackendFindFSImageTool(char **tool);
 virStorageBackendBuildVolFrom
 virStorageBackendFSImageToolTypeToFunc(int tool_type);
 
+int virStorageBackendFindGlusterPoolSources(const char *host,
+                                            int pooltype,
+                                            virStoragePoolSourceListPtr list);
+
 
 typedef struct _virStorageBackend virStorageBackend;
 typedef virStorageBackend *virStorageBackendPtr;

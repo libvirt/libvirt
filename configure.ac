@@ -1936,6 +1936,12 @@ if test "$with_storage_gluster" = "yes"; then
 fi
 AM_CONDITIONAL([WITH_STORAGE_GLUSTER], [test "$with_storage_gluster" = "yes"])
 
+if test "$with_storage_fs" = "yes" ||
+   test "$with_storage_gluster" = "yes"; then
+  AC_PATH_PROG([GLUSTER_CLI], [gluster], [], [$PATH:/sbin:/usr/sbin])
+  AC_DEFINE_UNQUOTED([GLUSTER_CLI], ["$GLUSTER_CLI"],
+    [Location or name of the gluster command line tool])
+fi
 
 LIBPARTED_CFLAGS=
 LIBPARTED_LIBS=
