@@ -12748,8 +12748,8 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     char *device = NULL;
     char *source = NULL;
     char *newsource = NULL;
-    virDomainDiskHostDefPtr newhosts = NULL;
-    virDomainDiskHostDefPtr persistHosts = NULL;
+    virStorageNetHostDefPtr newhosts = NULL;
+    virStorageNetHostDefPtr persistHosts = NULL;
     int format = snap->format;
     const char *formatStr = NULL;
     char *persistSource = NULL;
@@ -12815,11 +12815,11 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     case VIR_DOMAIN_DISK_TYPE_NETWORK:
         switch (snap->protocol) {
         case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
-            if (!(newhosts = virDomainDiskHostDefCopy(snap->nhosts, snap->hosts)))
+            if (!(newhosts = virStorageNetHostDefCopy(snap->nhosts, snap->hosts)))
                 goto cleanup;
 
             if (persistDisk &&
-                !(persistHosts = virDomainDiskHostDefCopy(snap->nhosts, snap->hosts)))
+                !(persistHosts = virStorageNetHostDefCopy(snap->nhosts, snap->hosts)))
                 goto cleanup;
 
             break;
@@ -12870,7 +12870,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     need_unlink = false;
 
     VIR_FREE(disk->src.path);
-    virDomainDiskHostDefFree(disk->src.nhosts, disk->src.hosts);
+    virStorageNetHostDefFree(disk->src.nhosts, disk->src.hosts);
 
     disk->src.path = newsource;
     disk->src.format = format;
@@ -12884,7 +12884,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
 
     if (persistDisk) {
         VIR_FREE(persistDisk->src.path);
-        virDomainDiskHostDefFree(persistDisk->src.nhosts,
+        virStorageNetHostDefFree(persistDisk->src.nhosts,
                                  persistDisk->src.hosts);
 
         persistDisk->src.path = persistSource;
@@ -12906,8 +12906,8 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     VIR_FREE(source);
     VIR_FREE(newsource);
     VIR_FREE(persistSource);
-    virDomainDiskHostDefFree(snap->nhosts, newhosts);
-    virDomainDiskHostDefFree(snap->nhosts, persistHosts);
+    virStorageNetHostDefFree(snap->nhosts, newhosts);
+    virStorageNetHostDefFree(snap->nhosts, persistHosts);
     return ret;
 }
 
@@ -12947,9 +12947,9 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
     disk->src.format = origdisk->src.format;
     disk->src.type = origdisk->src.type;
     disk->src.protocol = origdisk->src.protocol;
-    virDomainDiskHostDefFree(disk->src.nhosts, disk->src.hosts);
+    virStorageNetHostDefFree(disk->src.nhosts, disk->src.hosts);
     disk->src.nhosts = origdisk->src.nhosts;
-    disk->src.hosts = virDomainDiskHostDefCopy(origdisk->src.nhosts,
+    disk->src.hosts = virStorageNetHostDefCopy(origdisk->src.nhosts,
                                                origdisk->src.hosts);
     if (persistDisk) {
         VIR_FREE(persistDisk->src.path);
@@ -12958,10 +12958,10 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
         persistDisk->src.format = origdisk->src.format;
         persistDisk->src.type = origdisk->src.type;
         persistDisk->src.protocol = origdisk->src.protocol;
-        virDomainDiskHostDefFree(persistDisk->src.nhosts,
+        virStorageNetHostDefFree(persistDisk->src.nhosts,
                                  persistDisk->src.hosts);
         persistDisk->src.nhosts = origdisk->src.nhosts;
-        persistDisk->src.hosts = virDomainDiskHostDefCopy(origdisk->src.nhosts,
+        persistDisk->src.hosts = virStorageNetHostDefCopy(origdisk->src.nhosts,
                                                           origdisk->src.hosts);
     }
 

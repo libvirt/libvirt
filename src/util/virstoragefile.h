@@ -1,7 +1,7 @@
 /*
  * virstoragefile.h: file utility functions for FS storage backend
  *
- * Copyright (C) 2007-2009, 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2007-2009, 2012-2014 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -83,6 +83,28 @@ struct _virStorageFileMetadata {
     char *compat;
 };
 
+
+/* Information related to network storage */
+enum virStorageNetHostTransport {
+    VIR_STORAGE_NET_HOST_TRANS_TCP,
+    VIR_STORAGE_NET_HOST_TRANS_UNIX,
+    VIR_STORAGE_NET_HOST_TRANS_RDMA,
+
+    VIR_STORAGE_NET_HOST_TRANS_LAST
+};
+
+VIR_ENUM_DECL(virStorageNetHostTransport)
+
+typedef struct _virStorageNetHostDef virStorageNetHostDef;
+typedef virStorageNetHostDef *virStorageNetHostDefPtr;
+struct _virStorageNetHostDef {
+    char *name;
+    char *port;
+    int transport; /* enum virStorageNetHostTransport */
+    char *socket;  /* path to unix socket */
+};
+
+
 # ifndef DEV_BSIZE
 #  define DEV_BSIZE 512
 # endif
@@ -137,5 +159,11 @@ int virStorageFileGetLVMKey(const char *path,
                             char **key);
 int virStorageFileGetSCSIKey(const char *path,
                              char **key);
+
+void virStorageNetHostDefClear(virStorageNetHostDefPtr def);
+void virStorageNetHostDefFree(size_t nhosts, virStorageNetHostDefPtr hosts);
+virStorageNetHostDefPtr virStorageNetHostDefCopy(size_t nhosts,
+                                                 virStorageNetHostDefPtr hosts);
+
 
 #endif /* __VIR_STORAGE_FILE_H__ */

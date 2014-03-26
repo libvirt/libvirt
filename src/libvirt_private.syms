@@ -203,17 +203,12 @@ virDomainDiskGetDriver;
 virDomainDiskGetFormat;
 virDomainDiskGetSource;
 virDomainDiskGetType;
-virDomainDiskHostDefClear;
-virDomainDiskHostDefCopy;
-virDomainDiskHostDefFree;
 virDomainDiskIndexByName;
 virDomainDiskInsert;
 virDomainDiskInsertPreAlloced;
 virDomainDiskIoTypeFromString;
 virDomainDiskIoTypeToString;
 virDomainDiskPathByName;
-virDomainDiskProtocolTransportTypeFromString;
-virDomainDiskProtocolTransportTypeToString;
 virDomainDiskProtocolTypeToString;
 virDomainDiskRemove;
 virDomainDiskRemoveByName;
@@ -1842,6 +1837,11 @@ virStorageFileIsSharedFSType;
 virStorageFileProbeFormat;
 virStorageFileProbeFormatFromBuf;
 virStorageFileResize;
+virStorageNetHostDefClear;
+virStorageNetHostDefCopy;
+virStorageNetHostDefFree;
+virStorageNetHostTransportTypeFromString;
+virStorageNetHostTransportTypeToString;
 
 
 # util/virstring.h

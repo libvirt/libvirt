@@ -2742,7 +2742,7 @@ virStorageFileFree(virStorageFilePtr file)
         file->backend->backendDeinit(file);
 
     VIR_FREE(file->path);
-    virDomainDiskHostDefFree(file->nhosts, file->hosts);
+    virStorageNetHostDefFree(file->nhosts, file->hosts);
     VIR_FREE(file);
 }
 
@@ -2752,7 +2752,7 @@ virStorageFileInitInternal(int type,
                            const char *path,
                            int protocol,
                            size_t nhosts,
-                           virDomainDiskHostDefPtr hosts)
+                           virStorageNetHostDefPtr hosts)
 {
     virStorageFilePtr file = NULL;
 
@@ -2766,7 +2766,7 @@ virStorageFileInitInternal(int type,
     if (VIR_STRDUP(file->path, path) < 0)
         goto error;
 
-    if (!(file->hosts = virDomainDiskHostDefCopy(nhosts, hosts)))
+    if (!(file->hosts = virStorageNetHostDefCopy(nhosts, hosts)))
         goto error;
 
     if (!(file->backend = virStorageFileBackendForType(file->type,
@@ -2781,7 +2781,7 @@ virStorageFileInitInternal(int type,
 
  error:
     VIR_FREE(file->path);
-    virDomainDiskHostDefFree(file->nhosts, file->hosts);
+    virStorageNetHostDefFree(file->nhosts, file->hosts);
     VIR_FREE(file);
     return NULL;
 }

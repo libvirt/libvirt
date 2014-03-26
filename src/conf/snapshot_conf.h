@@ -1,7 +1,7 @@
 /*
  * snapshot_conf.h: domain snapshot XML processing
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -56,7 +56,7 @@ struct _virDomainSnapshotDiskDef {
     int format;     /* enum virStorageFileFormat */
     int protocol;   /* network source protocol */
     size_t nhosts;  /* network source hosts count */
-    virDomainDiskHostDefPtr hosts; /* network source hosts */
+    virStorageNetHostDefPtr hosts; /* network source hosts */
 };
 
 /* Stores the complete snapshot metadata */

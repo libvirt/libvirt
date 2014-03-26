@@ -1,7 +1,7 @@
 /*
  * storage_backend_gluster.c: storage backend for Gluster handling
  *
- * Copyright (C) 2013 Red Hat, Inc.
+ * Copyright (C) 2013-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -566,7 +566,7 @@ static int
 virStorageFileBackendGlusterInit(virStorageFilePtr file)
 {
     virStorageFileBackendGlusterPrivPtr priv = NULL;
-    virDomainDiskHostDefPtr host = &(file->hosts[0]);
+    virStorageNetHostDefPtr host = &(file->hosts[0]);
     const char *hostname = host->name;
     int port = 0;
 
@@ -597,7 +597,7 @@ virStorageFileBackendGlusterInit(virStorageFilePtr file)
         goto error;
     }
 
-    if (host->transport == VIR_DOMAIN_DISK_PROTO_TRANS_UNIX)
+    if (host->transport == VIR_STORAGE_NET_HOST_TRANS_UNIX)
         hostname = host->socket;
 
 
@@ -607,7 +607,7 @@ virStorageFileBackendGlusterInit(virStorageFilePtr file)
     }
 
     if (glfs_set_volfile_server(priv->vol,
-                                virDomainDiskProtocolTransportTypeToString(host->transport),
+                                virStorageNetHostTransportTypeToString(host->transport),
                                 hostname, port) < 0) {
         virReportSystemError(errno,
                              _("failed to set gluster volfile server '%s'"),

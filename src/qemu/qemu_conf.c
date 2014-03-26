@@ -1192,7 +1192,7 @@ qemuAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
     /* Storage pool have not supported these 2 attributes yet,
      * use the defaults.
      */
-    def->src.hosts[0].transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
+    def->src.hosts[0].transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
     def->src.hosts[0].socket = NULL;
 
     def->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_ISCSI;
@@ -1309,7 +1309,7 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
     }
 
     VIR_FREE(def->src.path);
-    virDomainDiskHostDefFree(def->src.nhosts, def->src.hosts);
+    virStorageNetHostDefFree(def->src.nhosts, def->src.hosts);
     virDomainDiskAuthClear(&def->src);
 
     switch ((enum virStoragePoolType) pooldef->type) {

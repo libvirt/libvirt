@@ -42,7 +42,7 @@ struct _virStorageFile {
     int protocol;
 
     size_t nhosts;
-    virDomainDiskHostDefPtr hosts;
+    virStorageNetHostDefPtr hosts;
 };
 
 virStorageFilePtr

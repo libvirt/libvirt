@@ -276,11 +276,6 @@ VIR_ENUM_IMPL(virDomainDiskProtocol, VIR_DOMAIN_DISK_PROTOCOL_LAST,
               "ftps",
               "tftp")
 
-VIR_ENUM_IMPL(virDomainDiskProtocolTransport, VIR_DOMAIN_DISK_PROTO_TRANS_LAST,
-              "tcp",
-              "unix",
-              "rdma")
-
 VIR_ENUM_IMPL(virDomainDiskSecretType, VIR_DOMAIN_DISK_SECRET_TYPE_LAST,
               "none",
               "uuid",
@@ -1245,7 +1240,7 @@ virDomainDiskSourceDefClear(virDomainDiskSourceDefPtr def)
         VIR_FREE(def->seclabels);
     }
 
-    virDomainDiskHostDefFree(def->nhosts, def->hosts);
+    virStorageNetHostDefFree(def->nhosts, def->hosts);
     virDomainDiskAuthClear(def);
 }
 
@@ -1279,67 +1274,6 @@ virDomainDiskAuthClear(virDomainDiskSourceDefPtr def)
         VIR_FREE(def->auth.secret.usage);
 
     def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_NONE;
-}
-
-
-void virDomainDiskHostDefClear(virDomainDiskHostDefPtr def)
-{
-    if (!def)
-        return;
-
-    VIR_FREE(def->name);
-    VIR_FREE(def->port);
-    VIR_FREE(def->socket);
-}
-
-
-void
-virDomainDiskHostDefFree(size_t nhosts,
-                         virDomainDiskHostDefPtr hosts)
-{
-    size_t i;
-
-    if (!hosts)
-        return;
-
-    for (i = 0; i < nhosts; i++)
-        virDomainDiskHostDefClear(&hosts[i]);
-
-    VIR_FREE(hosts);
-}
-
-
-virDomainDiskHostDefPtr
-virDomainDiskHostDefCopy(size_t nhosts,
-                         virDomainDiskHostDefPtr hosts)
-{
-    virDomainDiskHostDefPtr ret = NULL;
-    size_t i;
-
-    if (VIR_ALLOC_N(ret, nhosts) < 0)
-        goto error;
-
-    for (i = 0; i < nhosts; i++) {
-        virDomainDiskHostDefPtr src = &hosts[i];
-        virDomainDiskHostDefPtr dst = &ret[i];
-
-        dst->transport = src->transport;
-
-        if (VIR_STRDUP(dst->name, src->name) < 0)
-            goto error;
-
-        if (VIR_STRDUP(dst->port, src->port) < 0)
-            goto error;
-
-        if (VIR_STRDUP(dst->socket, src->socket) < 0)
-            goto error;
-    }
-
-    return ret;
-
- error:
-    virDomainDiskHostDefFree(nhosts, ret);
-    return NULL;
 }
 
 
@@ -5102,12 +5036,12 @@ virDomainDiskSourceDefParse(xmlNodePtr node,
                             char **source,
                             int *proto,
                             size_t *nhosts,
-                            virDomainDiskHostDefPtr *hosts,
+                            virStorageNetHostDefPtr *hosts,
                             virDomainDiskSourcePoolDefPtr *srcpool)
 {
     char *protocol = NULL;
     char *transport = NULL;
-    virDomainDiskHostDef host;
+    virStorageNetHostDef host;
     xmlNodePtr child;
     int ret = -1;
 
@@ -5148,11 +5082,11 @@ virDomainDiskSourceDefParse(xmlNodePtr node,
             if (child->type == XML_ELEMENT_NODE &&
                 xmlStrEqual(child->name, BAD_CAST "host")) {
 
-                host.transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
+                host.transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
 
                 /* transport can be tcp (default), unix or rdma.  */
                 if ((transport = virXMLPropString(child, "transport"))) {
-                    host.transport = virDomainDiskProtocolTransportTypeFromString(transport);
+                    host.transport = virStorageNetHostTransportTypeFromString(transport);
                     if (host.transport < 0) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                        _("unknown protocol transport type '%s'"),
@@ -5163,14 +5097,14 @@ virDomainDiskSourceDefParse(xmlNodePtr node,
 
                 host.socket = virXMLPropString(child, "socket");
 
-                if (host.transport == VIR_DOMAIN_DISK_PROTO_TRANS_UNIX &&
+                if (host.transport == VIR_STORAGE_NET_HOST_TRANS_UNIX &&
                     host.socket == NULL) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("missing socket for unix transport"));
                     goto cleanup;
                 }
 
-                if (host.transport != VIR_DOMAIN_DISK_PROTO_TRANS_UNIX &&
+                if (host.transport != VIR_STORAGE_NET_HOST_TRANS_UNIX &&
                     host.socket != NULL) {
                     virReportError(VIR_ERR_XML_ERROR,
                                    _("transport '%s' does not support "
@@ -5181,7 +5115,7 @@ virDomainDiskSourceDefParse(xmlNodePtr node,
 
                 VIR_FREE(transport);
 
-                if (host.transport != VIR_DOMAIN_DISK_PROTO_TRANS_UNIX) {
+                if (host.transport != VIR_STORAGE_NET_HOST_TRANS_UNIX) {
                     if (!(host.name = virXMLPropString(child, "name"))) {
                         virReportError(VIR_ERR_XML_ERROR, "%s",
                                        _("missing name for host"));
@@ -5217,7 +5151,7 @@ virDomainDiskSourceDefParse(xmlNodePtr node,
     ret = 0;
 
  cleanup:
-    virDomainDiskHostDefClear(&host);
+    virStorageNetHostDefClear(&host);
     VIR_FREE(protocol);
     VIR_FREE(transport);
     return ret;
@@ -14843,7 +14777,7 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
                                      int policy,
                                      int protocol,
                                      size_t nhosts,
-                                     virDomainDiskHostDefPtr hosts,
+                                     virStorageNetHostDefPtr hosts,
                                      size_t nseclabels,
                                      virSecurityDeviceLabelDefPtr *seclabels,
                                      virDomainDiskSourcePoolDefPtr srcpool,
@@ -14897,7 +14831,7 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
 
                     if (hosts[n].transport)
                         virBufferAsprintf(buf, " transport='%s'",
-                                          virDomainDiskProtocolTransportTypeToString(hosts[n].transport));
+                                          virStorageNetHostTransportTypeToString(hosts[n].transport));
 
                     virBufferEscapeString(buf, " socket='%s'", hosts[n].socket);
 

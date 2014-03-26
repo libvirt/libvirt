@@ -1,7 +1,7 @@
 /*
  * virstoragefile.c: file utility functions for FS storage backend
  *
- * Copyright (C) 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2007-2014 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -65,6 +65,13 @@ VIR_ENUM_IMPL(virStorageFileFeature,
               VIR_STORAGE_FILE_FEATURE_LAST,
               "lazy_refcounts",
               )
+
+
+VIR_ENUM_IMPL(virStorageNetHostTransport, VIR_STORAGE_NET_HOST_TRANS_LAST,
+              "tcp",
+              "unix",
+              "rdma")
+
 
 enum lv_endian {
     LV_LITTLE_ENDIAN = 1, /* 1234 */
@@ -1554,5 +1561,67 @@ virStorageFileChainLookup(virStorageFileMetadataPtr chain, const char *start,
     *parent = NULL;
     if (meta)
         *meta = NULL;
+    return NULL;
+}
+
+
+void
+virStorageNetHostDefClear(virStorageNetHostDefPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def->name);
+    VIR_FREE(def->port);
+    VIR_FREE(def->socket);
+}
+
+
+void
+virStorageNetHostDefFree(size_t nhosts,
+                         virStorageNetHostDefPtr hosts)
+{
+    size_t i;
+
+    if (!hosts)
+        return;
+
+    for (i = 0; i < nhosts; i++)
+        virStorageNetHostDefClear(&hosts[i]);
+
+    VIR_FREE(hosts);
+}
+
+
+virStorageNetHostDefPtr
+virStorageNetHostDefCopy(size_t nhosts,
+                         virStorageNetHostDefPtr hosts)
+{
+    virStorageNetHostDefPtr ret = NULL;
+    size_t i;
+
+    if (VIR_ALLOC_N(ret, nhosts) < 0)
+        goto error;
+
+    for (i = 0; i < nhosts; i++) {
+        virStorageNetHostDefPtr src = &hosts[i];
+        virStorageNetHostDefPtr dst = &ret[i];
+
+        dst->transport = src->transport;
+
+        if (VIR_STRDUP(dst->name, src->name) < 0)
+            goto error;
+
+        if (VIR_STRDUP(dst->port, src->port) < 0)
+            goto error;
+
+        if (VIR_STRDUP(dst->socket, src->socket) < 0)
+            goto error;
+    }
+
+    return ret;
+
+ error:
+    virStorageNetHostDefFree(nhosts, ret);
     return NULL;
 }

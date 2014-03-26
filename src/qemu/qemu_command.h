@@ -1,7 +1,7 @@
 /*
  * qemu_command.h: QEMU command generation
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -185,7 +185,7 @@ char * qemuBuildRedirdevDevStr(virDomainDefPtr def,
 char *qemuBuildNetworkDriveURI(int proto,
                                const char *src,
                                size_t nhosts,
-                               virDomainDiskHostDefPtr hosts,
+                               virStorageNetHostDefPtr hosts,
                                const char *username,
                                const char *secret);
 
@@ -318,7 +318,7 @@ int qemuGetDriveSourceString(int type,
                              const char *src,
                              int protocol,
                              size_t nhosts,
-                             virDomainDiskHostDefPtr hosts,
+                             virStorageNetHostDefPtr hosts,
                              const char *username,
                              const char *secret,
                              char **path);
