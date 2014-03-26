@@ -242,10 +242,8 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(char **const groups,
 }
 
 
-static char *
-virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                              const char *srcSpec,
-                                              unsigned int flags)
+static void
+virStorageBackendFileSystemNetFindNFSPoolSources(virNetfsDiscoverState *state)
 {
     /*
      *  # showmount --no-headers -e HOSTNAME
@@ -261,6 +259,29 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
     int vars[] = {
         1
     };
+
+    virCommandPtr cmd = NULL;
+
+    cmd = virCommandNewArgList(SHOWMOUNT,
+                               "--no-headers",
+                               "--exports",
+                               state->host,
+                               NULL);
+
+    if (virCommandRunRegex(cmd, 1, regexes, vars,
+                           virStorageBackendFileSystemNetFindPoolSourcesFunc,
+                           &state, NULL) < 0)
+        virResetLastError();
+
+    virCommandFree(cmd);
+}
+
+
+static char *
+virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                              const char *srcSpec,
+                                              unsigned int flags)
+{
     virNetfsDiscoverState state = {
         .host = NULL,
         .list = {
@@ -270,15 +291,14 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
         }
     };
     virStoragePoolSourcePtr source = NULL;
-    char *retval = NULL;
+    char *ret = NULL;
     size_t i;
-    virCommandPtr cmd = NULL;
 
     virCheckFlags(0, NULL);
 
     if (!srcSpec) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       "%s", _("hostname must be specified for netfs sources"));
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("hostname must be specified for netfs sources"));
         return NULL;
     }
 
@@ -294,19 +314,9 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
 
     state.host = source->hosts[0].name;
 
-    cmd = virCommandNewArgList(SHOWMOUNT,
-                               "--no-headers",
-                               "--exports",
-                               source->hosts[0].name,
-                               NULL);
+    virStorageBackendFileSystemNetFindNFSPoolSources(&state);
 
-    if (virCommandRunRegex(cmd, 1, regexes, vars,
-                           virStorageBackendFileSystemNetFindPoolSourcesFunc,
-                           &state, NULL) < 0)
-        goto cleanup;
-
-    retval = virStoragePoolSourceListFormat(&state.list);
-    if (retval == NULL)
+    if (!(ret = virStoragePoolSourceListFormat(&state.list)))
         goto cleanup;
 
  cleanup:
@@ -315,8 +325,7 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
     VIR_FREE(state.list.sources);
 
     virStoragePoolSourceFree(source);
-    virCommandFree(cmd);
-    return retval;
+    return ret;
 }
 
 
