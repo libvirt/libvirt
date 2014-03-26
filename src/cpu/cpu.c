@@ -108,12 +108,6 @@ cpuCompareXML(virCPUDefPtr host,
     if (cpu == NULL)
         goto cleanup;
 
-    if (!cpu->model) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("no CPU model specified"));
-        goto cleanup;
-    }
-
     ret = cpuCompare(host, cpu);
 
  cleanup:
@@ -145,6 +139,12 @@ cpuCompare(virCPUDefPtr host,
     struct cpuArchDriver *driver;
 
     VIR_DEBUG("host=%p, cpu=%p", host, cpu);
+
+    if (!cpu->model) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("no guest CPU model specified"));
+        return VIR_CPU_COMPARE_ERROR;
+    }
 
     if ((driver = cpuGetSubDriver(host->arch)) == NULL)
         return VIR_CPU_COMPARE_ERROR;
@@ -203,14 +203,15 @@ cpuDecode(virCPUDefPtr cpu,
     }
 
     if (models == NULL && nmodels != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("nonzero nmodels doesn't match with NULL models"));
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("nonzero nmodels doesn't match with NULL models"));
         return -1;
     }
 
-    if (cpu == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("invalid CPU definition"));
+    if (cpu->type > VIR_CPU_TYPE_GUEST ||
+        cpu->mode != VIR_CPU_MODE_CUSTOM) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("invalid CPU definition stub"));
         return -1;
     }
 
@@ -263,6 +264,12 @@ cpuEncode(virArch arch,
               "optional=%p, disabled=%p, forbidden=%p, vendor=%p",
               virArchToString(arch), cpu, forced, required,
               optional, disabled, forbidden, vendor);
+
+    if (!cpu->model) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("no guest CPU model specified"));
+        return -1;
+    }
 
     if ((driver = cpuGetSubDriver(arch)) == NULL)
         return -1;
@@ -366,6 +373,12 @@ cpuGuestData(virCPUDefPtr host,
     struct cpuArchDriver *driver;
 
     VIR_DEBUG("host=%p, guest=%p, data=%p, msg=%p", host, guest, data, msg);
+
+    if (!guest->model) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("no guest CPU model specified"));
+        return VIR_CPU_COMPARE_ERROR;
+    }
 
     if ((driver = cpuGetSubDriver(host->arch)) == NULL)
         return VIR_CPU_COMPARE_ERROR;
@@ -527,6 +540,19 @@ cpuBaseline(virCPUDefPtr *cpus,
     if (ncpus < 1) {
         virReportError(VIR_ERR_INVALID_ARG, "%s", _("No CPUs given"));
         return NULL;
+    }
+
+    for (i = 0; i < ncpus; i++) {
+        if (!cpus[i]) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("invalid CPU definition at index %zu"), i);
+            return NULL;
+        }
+        if (!cpus[i]->model) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("no CPU model specified at index %zu"), i);
+            return NULL;
+        }
     }
 
     if (models == NULL && nmodels != 0) {

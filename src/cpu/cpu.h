@@ -119,18 +119,21 @@ struct cpuArchDriver {
 
 extern virCPUCompareResult
 cpuCompareXML(virCPUDefPtr host,
-              const char *xml);
+              const char *xml)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 extern virCPUCompareResult
 cpuCompare  (virCPUDefPtr host,
-             virCPUDefPtr cpu);
+             virCPUDefPtr cpu)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 extern int
 cpuDecode   (virCPUDefPtr cpu,
              const virCPUData *data,
              const char **models,
              unsigned int nmodels,
-             const char *preferred);
+             const char *preferred)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 extern int
 cpuEncode   (virArch arch,
@@ -140,7 +143,8 @@ cpuEncode   (virArch arch,
              virCPUDataPtr *optional,
              virCPUDataPtr *disabled,
              virCPUDataPtr *forbidden,
-             virCPUDataPtr *vendor);
+             virCPUDataPtr *vendor)
+    ATTRIBUTE_NONNULL(2);
 
 extern void
 cpuDataFree (virCPUDataPtr data);
@@ -152,7 +156,8 @@ extern virCPUCompareResult
 cpuGuestData(virCPUDefPtr host,
              virCPUDefPtr guest,
              virCPUDataPtr *data,
-             char **msg);
+             char **msg)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 extern char *
 cpuBaselineXML(const char **xmlCPUs,
@@ -166,30 +171,37 @@ cpuBaseline (virCPUDefPtr *cpus,
              unsigned int ncpus,
              const char **models,
              unsigned int nmodels,
-             unsigned int flags);
+             unsigned int flags)
+    ATTRIBUTE_NONNULL(1);
 
 extern int
 cpuUpdate   (virCPUDefPtr guest,
-             const virCPUDef *host);
+             const virCPUDef *host)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 extern int
 cpuHasFeature(const virCPUData *data,
-              const char *feature);
+              const char *feature)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 
 bool
 cpuModelIsAllowed(const char *model,
                   const char **models,
-                  unsigned int nmodels);
+                  unsigned int nmodels)
+    ATTRIBUTE_NONNULL(1);
 
 extern int
-cpuGetModels(const char *arch, char ***models);
+cpuGetModels(const char *arch, char ***models)
+    ATTRIBUTE_NONNULL(1);
 
 /* cpuDataFormat and cpuDataParse are implemented for unit tests only and
  * have no real-life usage
  */
-char *cpuDataFormat(const virCPUData *data);
+char *cpuDataFormat(const virCPUData *data)
+    ATTRIBUTE_NONNULL(1);
 virCPUDataPtr cpuDataParse(virArch arch,
-                           const char *xmlStr);
+                           const char *xmlStr)
+    ATTRIBUTE_NONNULL(2);
 
 #endif /* __VIR_CPU_H__ */
