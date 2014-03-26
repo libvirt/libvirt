@@ -2006,11 +2006,13 @@ virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def)
     }
 
     virBufferAddLit(&buf, "<sources>\n");
+    virBufferAdjustIndent(&buf, 2);
 
     for (i = 0; i < def->nsources; i++) {
         virStoragePoolSourceFormat(&buf, options, &def->sources[i]);
     }
 
+    virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</sources>\n");
 
     if (virBufferError(&buf))
