@@ -1149,29 +1149,6 @@ virDomainGraphicsListenDefClear(virDomainGraphicsListenDefPtr def)
     return;
 }
 
-void
-virSecurityLabelDefFree(virSecurityLabelDefPtr def)
-{
-    if (!def)
-        return;
-    VIR_FREE(def->model);
-    VIR_FREE(def->label);
-    VIR_FREE(def->imagelabel);
-    VIR_FREE(def->baselabel);
-    VIR_FREE(def);
-}
-
-
-void
-virSecurityDeviceLabelDefFree(virSecurityDeviceLabelDefPtr def)
-{
-    if (!def)
-        return;
-    VIR_FREE(def->model);
-    VIR_FREE(def->label);
-    VIR_FREE(def);
-}
-
 
 void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
 {
@@ -19420,34 +19397,6 @@ virDomainChrDefGetSecurityLabelDef(virDomainChrDefPtr def, const char *model)
             return def->seclabels[i];
     }
     return NULL;
-}
-
-virSecurityLabelDefPtr
-virDomainDefGenSecurityLabelDef(const char *model)
-{
-    virSecurityLabelDefPtr seclabel = NULL;
-
-    if (VIR_ALLOC(seclabel) < 0 ||
-        VIR_STRDUP(seclabel->model, model) < 0) {
-        virSecurityLabelDefFree(seclabel);
-        seclabel = NULL;
-    }
-
-    return seclabel;
-}
-
-virSecurityDeviceLabelDefPtr
-virDomainDiskDefGenSecurityLabelDef(const char *model)
-{
-    virSecurityDeviceLabelDefPtr seclabel = NULL;
-
-    if (VIR_ALLOC(seclabel) < 0 ||
-        VIR_STRDUP(seclabel->model, model) < 0) {
-        virSecurityDeviceLabelDefFree(seclabel);
-        seclabel = NULL;
-    }
-
-    return seclabel;
 }
 
 

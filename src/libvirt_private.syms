@@ -161,7 +161,6 @@ virDomainDefFindDevice;
 virDomainDefFormat;
 virDomainDefFormatInternal;
 virDomainDefFree;
-virDomainDefGenSecurityLabelDef;
 virDomainDefGetDefaultEmulator;
 virDomainDefGetSecurityLabelDef;
 virDomainDefMaybeAddController;
@@ -191,7 +190,6 @@ virDomainDiskCopyOnReadTypeToString;
 virDomainDiskDefAssignAddress;
 virDomainDiskDefForeachPath;
 virDomainDiskDefFree;
-virDomainDiskDefGenSecurityLabelDef;
 virDomainDiskDefGetSecurityLabelDef;
 virDomainDiskDeviceTypeToString;
 virDomainDiskDiscardTypeToString;
@@ -425,8 +423,6 @@ virDomainWatchdogModelTypeFromString;
 virDomainWatchdogModelTypeToString;
 virDomainXMLOptionGetNamespace;
 virDomainXMLOptionNew;
-virSecurityDeviceLabelDefFree;
-virSecurityLabelDefFree;
 
 
 # conf/domain_event.h
@@ -1776,6 +1772,13 @@ virSCSIDeviceListNew;
 virSCSIDeviceListSteal;
 virSCSIDeviceNew;
 virSCSIDeviceSetUsedBy;
+
+
+# util/virseclabel.h
+virSecurityDeviceLabelDefFree;
+virSecurityDeviceLabelDefNew;
+virSecurityLabelDefFree;
+virSecurityLabelDefNew;
 
 
 # util/virsexpr.h

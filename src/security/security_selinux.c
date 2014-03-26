@@ -1233,7 +1233,7 @@ virSecuritySELinuxSetSecurityFileLabel(virDomainDiskDefPtr disk,
     if (ret == 1 && !disk_seclabel) {
         /* If we failed to set a label, but virt_use_nfs let us
          * proceed anyway, then we don't need to relabel later.  */
-        disk_seclabel = virDomainDiskDefGenSecurityLabelDef(SECURITY_SELINUX_NAME);
+        disk_seclabel = virSecurityDeviceLabelDefNew(SECURITY_SELINUX_NAME);
         if (!disk_seclabel)
             return -1;
         disk_seclabel->labelskip = true;

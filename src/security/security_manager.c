@@ -485,7 +485,7 @@ int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
         generated = false;
         seclabel = virDomainDefGetSecurityLabelDef(vm, sec_managers[i]->drv->name);
         if (!seclabel) {
-            if (!(seclabel = virDomainDefGenSecurityLabelDef(sec_managers[i]->drv->name)))
+            if (!(seclabel = virSecurityLabelDefNew(sec_managers[i]->drv->name)))
                 goto cleanup;
             generated = seclabel->implicit = true;
         }

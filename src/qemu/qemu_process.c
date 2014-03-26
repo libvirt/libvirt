@@ -4582,7 +4582,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         model = virSecurityManagerGetModel(sec_managers[i]);
         seclabeldef = virDomainDefGetSecurityLabelDef(vm->def, model);
         if (seclabeldef == NULL) {
-            if (!(seclabeldef = virDomainDefGenSecurityLabelDef(model)))
+            if (!(seclabeldef = virSecurityLabelDefNew(model)))
                 goto error;
             seclabelgen = true;
         }

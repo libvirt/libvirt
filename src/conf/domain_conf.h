@@ -47,6 +47,7 @@
 # include "virbitmap.h"
 # include "virstoragefile.h"
 # include "virnuma.h"
+# include "virseclabel.h"
 
 /* forward declarations of all device types, required by
  * virDomainDeviceDef
@@ -326,39 +327,6 @@ struct _virDomainDeviceInfo {
     /* bootIndex is only used for disk, network interface, hostdev
      * and redirdev devices */
     int bootIndex;
-};
-
-enum virDomainSeclabelType {
-    VIR_DOMAIN_SECLABEL_DEFAULT,
-    VIR_DOMAIN_SECLABEL_NONE,
-    VIR_DOMAIN_SECLABEL_DYNAMIC,
-    VIR_DOMAIN_SECLABEL_STATIC,
-
-    VIR_DOMAIN_SECLABEL_LAST
-};
-
-/* Security configuration for domain */
-typedef struct _virSecurityLabelDef virSecurityLabelDef;
-typedef virSecurityLabelDef *virSecurityLabelDefPtr;
-struct _virSecurityLabelDef {
-    char *model;        /* name of security model */
-    char *label;        /* security label string */
-    char *imagelabel;   /* security image label string */
-    char *baselabel;    /* base name of label string */
-    int type;           /* virDomainSeclabelType */
-    bool norelabel;
-    bool implicit;      /* true if seclabel is auto-added */
-};
-
-
-/* Security configuration for domain */
-typedef struct _virSecurityDeviceLabelDef virSecurityDeviceLabelDef;
-typedef virSecurityDeviceLabelDef *virSecurityDeviceLabelDefPtr;
-struct _virSecurityDeviceLabelDef {
-    char *model;
-    char *label;        /* image label string */
-    bool norelabel;     /* true to skip label attempts */
-    bool labelskip;     /* live-only; true if skipping failed label attempt */
 };
 
 
@@ -2673,15 +2641,6 @@ virDomainDiskDefGetSecurityLabelDef(virDomainDiskDefPtr def, const char *model);
 
 virSecurityDeviceLabelDefPtr
 virDomainChrDefGetSecurityLabelDef(virDomainChrDefPtr def, const char *model);
-
-virSecurityLabelDefPtr
-virDomainDefGenSecurityLabelDef(const char *model);
-
-virSecurityDeviceLabelDefPtr
-virDomainDiskDefGenSecurityLabelDef(const char *model);
-
-void virSecurityLabelDefFree(virSecurityLabelDefPtr def);
-void virSecurityDeviceLabelDefFree(virSecurityDeviceLabelDefPtr def);
 
 typedef const char* (*virEventActionToStringFunc)(int type);
 typedef int (*virEventActionFromStringFunc)(const char *type);
