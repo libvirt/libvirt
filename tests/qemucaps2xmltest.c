@@ -125,6 +125,7 @@ testGetCaps(char *capsData, const testQemuData *data)
         goto error;
     }
 
+    virObjectUnref(qemuCaps);
     return caps;
 
  error:
