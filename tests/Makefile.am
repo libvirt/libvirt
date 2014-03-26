@@ -64,6 +64,7 @@ LDADDS = \
 	../src/libvirt.la
 
 EXTRA_DIST =		\
+	bhyvexml2argvdata \
 	capabilityschemadata \
 	capabilityschematest \
 	commanddata \
@@ -233,6 +234,10 @@ if WITH_VMWARE
 test_programs += vmwarevertest
 endif WITH_VMWARE
 
+if WITH_BHYVE
+test_programs += bhyvexml2argvtest
+endif WITH_BHYVE
+
 if WITH_CIL
 test_programs += objectlocking
 endif WITH_CIL
@@ -353,6 +358,10 @@ test_libraries += libqemumonitortestutils.la \
 		qemuxml2argvmock.la \
 		$(NULL)
 endif WITH_QEMU
+
+if WITH_BHYVE
+test_libraries += bhyvexml2argvmock.la
+endif WITH_BHYVE
 
 if WITH_DBUS
 test_libraries += virsystemdmock.la
@@ -609,6 +618,23 @@ vmwarevertest_LDADD = $(LDADDS)
 else ! WITH_VMWARE
 EXTRA_DIST += vmwarevertest.c
 endif ! WITH_VMWARE
+
+if WITH_BHYVE
+bhyvexml2argvmock_la_SOURCES = \
+	bhyvexml2argvmock.c
+bhyvexml2argvmock_la_CFLAGS = $(AM_CFLAGS)
+bhyvexml2argvmock_la_LDFLAGS = -module -avoid-version \
+			-rpath /evil/libtool/hack/to/force/shared/lib/creation
+
+bhyve_LDADDS = ../src/libvirt_driver_bhyve_impl.la
+bhyve_LDADDS += $(LDADDS)
+bhyvexml2argvtest_SOURCES = \
+	bhyvexml2argvtest.c \
+	testutils.c testutils.h
+bhyvexml2argvtest_LDADD = $(bhyve_LDADDS)
+else ! WITH_BHYVE
+EXTRA_DIST += bhyvexml2argvtest.c bhyvexml2argvmock.c
+endif ! WITH_BHYVE
 
 networkxml2xmltest_SOURCES = \
 	networkxml2xmltest.c \
