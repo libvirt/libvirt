@@ -77,6 +77,19 @@ cpuGetSubDriver(virArch arch)
 }
 
 
+/**
+ * cpuCompareXML:
+ *
+ * @host: host CPU definition
+ * @xml: XML description of either guest or host CPU to be compared with @host
+ *
+ * Compares the CPU described by @xml with @host CPU.
+ *
+ * Returns VIR_CPU_COMPARE_ERROR on error, VIR_CPU_COMPARE_INCOMPATIBLE when
+ * the two CPUs are incompatible, VIR_CPU_COMPARE_IDENTICAL when the two CPUs
+ * are identical, VIR_CPU_COMPARE_SUPERSET when the @xml CPU is a superset of
+ * the @host CPU.
+ */
 virCPUCompareResult
 cpuCompareXML(virCPUDefPtr host,
               const char *xml)
@@ -112,6 +125,19 @@ cpuCompareXML(virCPUDefPtr host,
 }
 
 
+/**
+ * cpuCompare:
+ *
+ * @host: host CPU definition
+ * @cpu: either guest or host CPU to be compared with @host
+ *
+ * Compares the CPU described by @cpu with @host CPU.
+ *
+ * Returns VIR_CPU_COMPARE_ERROR on error, VIR_CPU_COMPARE_INCOMPATIBLE when
+ * the two CPUs are incompatible, VIR_CPU_COMPARE_IDENTICAL when the two CPUs
+ * are identical, VIR_CPU_COMPARE_SUPERSET when the @cpu CPU is a superset of
+ * the @host CPU.
+ */
 virCPUCompareResult
 cpuCompare(virCPUDefPtr host,
            virCPUDefPtr cpu)
@@ -134,6 +160,31 @@ cpuCompare(virCPUDefPtr host,
 }
 
 
+/**
+ * cpuDecode:
+ *
+ * @cpu: CPU definition stub to be filled in
+ * @data: internal CPU data to be decoded into @cpu definition
+ * @models: list of CPU models that can be considered when decoding @data
+ * @nmodels: number of CPU models in @models
+ * @preferred: CPU models that should be used if possible
+ *
+ * Decodes internal CPU data into a CPU definition consisting of a CPU model
+ * and a list of CPU features. The @cpu model stub is supposed to have arch,
+ * type, match and fallback members set, this function will add the rest. If
+ * @models list is NULL, all models supported by libvirt will be considered
+ * when decoding the data. In general, this function will select the model
+ * closest to the CPU specified by @data unless @preferred is non-NULL, in
+ * which case the @preferred model will be used as long as it is compatible
+ * with @data.
+ *
+ * For VIR_ARCH_I686 and VIR_ARCH_X86_64 architectures this means the computed
+ * CPU definition will have the shortest possible list of additional features.
+ * When @preferred is non-NULL, the @preferred model will be used even if
+ * other models would result in a shorter list of additional features.
+ *
+ * Returns 0 on success, -1 on error.
+ */
 int
 cpuDecode(virCPUDefPtr cpu,
           const virCPUData *data,
@@ -177,6 +228,25 @@ cpuDecode(virCPUDefPtr cpu,
 }
 
 
+/**
+ * cpuEncode:
+ *
+ * @arch: CPU architecture
+ * @cpu: CPU definition to be encoded into internal CPU driver representation
+ * @forced: where to store CPU data corresponding to forced features
+ * @required: where to store CPU data corresponding to required features
+ * @optional: where to store CPU data corresponding to optional features
+ * @disabled: where to store CPU data corresponding to disabled features
+ * @forbidden: where to store CPU data corresponding to forbidden features
+ * @vendor: where to store CPU data corresponding to CPU vendor
+ *
+ * Encode CPU definition from @cpu into internal CPU driver representation.
+ * Any of @forced, @required, @optional, @disabled, @forbidden and @vendor
+ * arguments can be NULL in case the caller is not interested in the
+ * corresponding data.
+ *
+ * Returns 0 on success, -1 on error.
+ */
 int
 cpuEncode(virArch arch,
           const virCPUDef *cpu,
@@ -209,6 +279,15 @@ cpuEncode(virArch arch,
 }
 
 
+/**
+ * cpuDataFree:
+ *
+ * @data: CPU data structure to be freed
+ *
+ * Free internal CPU data.
+ *
+ * Returns nothing.
+ */
 void
 cpuDataFree(virCPUDataPtr data)
 {
@@ -233,6 +312,13 @@ cpuDataFree(virCPUDataPtr data)
 }
 
 
+/**
+ * cpuNodeData:
+ *
+ * @arch: CPU architecture
+ *
+ * Returns CPU data for host CPU or NULL on error.
+ */
 virCPUDataPtr
 cpuNodeData(virArch arch)
 {
@@ -254,6 +340,23 @@ cpuNodeData(virArch arch)
 }
 
 
+/**
+ * cpuGuestData:
+ *
+ * @host: host CPU definition
+ * @guest: guest CPU definition
+ * @data: computed guest CPU data
+ * @msg: error message describing why the @guest and @host CPUs are considered
+ *       incompatible
+ *
+ * Computes guest CPU data for the @guest CPU definition when run on the @host
+ * CPU.
+ *
+ * Returns VIR_CPU_COMPARE_ERROR on error, VIR_CPU_COMPARE_INCOMPATIBLE when
+ * the two CPUs are incompatible (@msg will describe the incompatibility),
+ * VIR_CPU_COMPARE_IDENTICAL when the two CPUs are identical,
+ * VIR_CPU_COMPARE_SUPERSET when the @guest CPU is a superset of the @host CPU.
+ */
 virCPUCompareResult
 cpuGuestData(virCPUDefPtr host,
              virCPUDefPtr guest,
@@ -278,6 +381,27 @@ cpuGuestData(virCPUDefPtr host,
 }
 
 
+/**
+ * cpuBaselineXML:
+ *
+ * @xmlCPUs: list of host CPU XML descriptions
+ * @ncpus: number of CPUs in @xmlCPUs
+ * @models: list of CPU models that can be considered for the baseline CPU
+ * @nmodels: number of CPU models in @models
+ * @flags: bitwise-OR of virConnectBaselineCPUFlags
+ *
+ * Computes the most feature-rich CPU which is compatible with all given
+ * host CPUs. If @models array is NULL, all models supported by libvirt will
+ * be considered when computing the baseline CPU model, otherwise the baseline
+ * CPU model will be one of the provided CPU @models.
+ *
+ * If @flags includes VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES then libvirt
+ * will explicitly list all CPU features that are part of the host CPU,
+ * without this flag features that are part of the CPU model will not be
+ * listed.
+ *
+ * Returns XML description of the baseline CPU or NULL on error.
+ */
 char *
 cpuBaselineXML(const char **xmlCPUs,
                unsigned int ncpus,
@@ -353,6 +477,27 @@ cpuBaselineXML(const char **xmlCPUs,
 }
 
 
+/**
+ * cpuBaseline:
+ *
+ * @cpus: list of host CPU definitions
+ * @ncpus: number of CPUs in @cpus
+ * @models: list of CPU models that can be considered for the baseline CPU
+ * @nmodels: number of CPU models in @models
+ * @flags: bitwise-OR of virConnectBaselineCPUFlags
+ *
+ * Computes the most feature-rich CPU which is compatible with all given
+ * host CPUs. If @models array is NULL, all models supported by libvirt will
+ * be considered when computing the baseline CPU model, otherwise the baseline
+ * CPU model will be one of the provided CPU @models.
+ *
+ * If @flags includes VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES then libvirt
+ * will explicitly list all CPU features that are part of the host CPU,
+ * without this flag features that are part of the CPU model will not be
+ * listed.
+ *
+ * Returns baseline CPU definition or NULL on error.
+ */
 virCPUDefPtr
 cpuBaseline(virCPUDefPtr *cpus,
             unsigned int ncpus,
@@ -404,6 +549,20 @@ cpuBaseline(virCPUDefPtr *cpus,
 }
 
 
+/**
+ * cpuUpdate:
+ *
+ * @guest: guest CPU definition
+ * @host: host CPU definition
+ *
+ * Updates @guest CPU definition according to @host CPU. This is required to
+ * support guest CPU definition which are relative to host CPU, such as CPUs
+ * with VIR_CPU_MODE_CUSTOM and optional features or VIR_CPU_MATCH_MINIMUM, or
+ * CPUs with non-custom mode (VIR_CPU_MODE_HOST_MODEL,
+ * VIR_CPU_MODE_HOST_PASSTHROUGH).
+ *
+ * Returns 0 on success, -1 on error.
+ */
 int
 cpuUpdate(virCPUDefPtr guest,
           const virCPUDef *host)
@@ -425,6 +584,18 @@ cpuUpdate(virCPUDefPtr guest,
     return driver->update(guest, host);
 }
 
+
+/**
+ * cpuHasFeature:
+ *
+ * @data: internal CPU representation
+ * @feature: feature to be checked for
+ *
+ * Checks whether @feature is supported by the CPU described by @data.
+ *
+ * Returns 1 if the feature is supported, 0 if it's not supported, or
+ * -1 on error.
+ */
 int
 cpuHasFeature(const virCPUData *data,
               const char *feature)
@@ -446,6 +617,16 @@ cpuHasFeature(const virCPUData *data,
     return driver->hasFeature(data, feature);
 }
 
+
+/**
+ * cpuDataFormat:
+ *
+ * @data: internal CPU representation
+ *
+ * Formats @data into XML for test purposes.
+ *
+ * Returns string representation of the XML describing @data or NULL on error.
+ */
 char *
 cpuDataFormat(const virCPUData *data)
 {
@@ -466,6 +647,17 @@ cpuDataFormat(const virCPUData *data)
     return driver->dataFormat(data);
 }
 
+
+/**
+ * cpuDataParse:
+ *
+ * @arch: CPU architecture
+ * @xmlStr: XML string produced by cpuDataFormat
+ *
+ * Parses XML representation of virCPUData structure for test purposes.
+ *
+ * Returns internal CPU data structure parsed from the XML or NULL on error.
+ */
 virCPUDataPtr
 cpuDataParse(virArch arch,
              const char *xmlStr)
@@ -541,6 +733,16 @@ cpuGetArchModels(const char *arch, struct cpuGetModelsData *data)
 }
 
 
+/**
+ * cpuGetModels:
+ *
+ * @archName: CPU architecture string
+ * @models: where to store the list of supported models
+ *
+ * Fetches all CPU models supported by libvirt on @archName.
+ *
+ * Returns number of supported CPU models or -1 on error.
+ */
 int
 cpuGetModels(const char *archName, char ***models)
 {
