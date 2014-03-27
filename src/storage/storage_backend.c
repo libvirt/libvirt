@@ -1187,7 +1187,7 @@ virStorageFileBackendForType(int type,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("missing storage backend for network files "
                          "using %s protocol"),
-                       virDomainDiskProtocolTypeToString(protocol));
+                       virStorageNetProtocolTypeToString(protocol));
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("missing storage backend for '%s' storage"),

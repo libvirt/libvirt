@@ -1195,7 +1195,7 @@ qemuAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
     def->src.hosts[0].transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
     def->src.hosts[0].socket = NULL;
 
-    def->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_ISCSI;
+    def->src.protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
 
     ret = 0;
 
@@ -1376,7 +1376,7 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
 
        case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT:
            def->src.srcpool->actualtype = VIR_STORAGE_TYPE_NETWORK;
-           def->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_ISCSI;
+           def->src.protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
 
            if (qemuTranslateDiskSourcePoolAuth(def, pooldef) < 0)
                goto cleanup;

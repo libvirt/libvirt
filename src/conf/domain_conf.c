@@ -257,18 +257,6 @@ VIR_ENUM_IMPL(virDomainDiskErrorPolicy, VIR_DOMAIN_DISK_ERROR_POLICY_LAST,
               "ignore",
               "enospace")
 
-VIR_ENUM_IMPL(virDomainDiskProtocol, VIR_DOMAIN_DISK_PROTOCOL_LAST,
-              "nbd",
-              "rbd",
-              "sheepdog",
-              "gluster",
-              "iscsi",
-              "http",
-              "https",
-              "ftp",
-              "ftps",
-              "tftp")
-
 VIR_ENUM_IMPL(virDomainDiskSecretType, VIR_DOMAIN_DISK_SECRET_TYPE_LAST,
               "none",
               "uuid",
@@ -5057,14 +5045,14 @@ virDomainDiskSourceDefParse(xmlNodePtr node,
             goto cleanup;
         }
 
-        if ((*proto = virDomainDiskProtocolTypeFromString(protocol)) < 0){
+        if ((*proto = virStorageNetProtocolTypeFromString(protocol)) < 0){
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown protocol type '%s'"), protocol);
             goto cleanup;
         }
 
         if (!(*source = virXMLPropString(node, "name")) &&
-            *proto != VIR_DOMAIN_DISK_PROTOCOL_NBD) {
+            *proto != VIR_STORAGE_NET_PROTOCOL_NBD) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing name for disk source"));
             goto cleanup;
@@ -5255,9 +5243,9 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                     goto error;
 
                 if (def->src.type == VIR_STORAGE_TYPE_NETWORK) {
-                    if (def->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI)
+                    if (def->src.protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI)
                         expected_secret_usage = VIR_SECRET_USAGE_TYPE_ISCSI;
-                    else if (def->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD)
+                    else if (def->src.protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
                         expected_secret_usage = VIR_SECRET_USAGE_TYPE_CEPH;
                 }
 
@@ -14809,7 +14797,7 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
 
         case VIR_STORAGE_TYPE_NETWORK:
             virBufferAsprintf(buf, "<source protocol='%s'",
-                              virDomainDiskProtocolTypeToString(protocol));
+                              virStorageNetProtocolTypeToString(protocol));
             virBufferEscapeString(buf, " name='%s'", src);
 
             if (nhosts == 0) {
@@ -14984,9 +14972,9 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, "<auth username='%s'>\n",
                               def->src.auth.username);
         virBufferAdjustIndent(buf, 2);
-        if (def->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI) {
+        if (def->src.protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI) {
             virBufferAddLit(buf, "<secret type='iscsi'");
-        } else if (def->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
+        } else if (def->src.protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
             virBufferAddLit(buf, "<secret type='ceph'");
         }
 

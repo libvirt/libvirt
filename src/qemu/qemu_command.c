@@ -3573,35 +3573,35 @@ qemuNetworkDriveGetPort(int protocol,
         return ret;
     }
 
-    switch ((enum virDomainDiskProtocol) protocol) {
-        case VIR_DOMAIN_DISK_PROTOCOL_HTTP:
+    switch ((enum virStorageNetProtocol) protocol) {
+        case VIR_STORAGE_NET_PROTOCOL_HTTP:
             return 80;
 
-        case VIR_DOMAIN_DISK_PROTOCOL_HTTPS:
+        case VIR_STORAGE_NET_PROTOCOL_HTTPS:
             return 443;
 
-        case VIR_DOMAIN_DISK_PROTOCOL_FTP:
+        case VIR_STORAGE_NET_PROTOCOL_FTP:
             return 21;
 
-        case VIR_DOMAIN_DISK_PROTOCOL_FTPS:
+        case VIR_STORAGE_NET_PROTOCOL_FTPS:
             return 990;
 
-        case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
+        case VIR_STORAGE_NET_PROTOCOL_TFTP:
             return 69;
 
-        case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
+        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
             return 7000;
 
-        case VIR_DOMAIN_DISK_PROTOCOL_NBD:
+        case VIR_STORAGE_NET_PROTOCOL_NBD:
             return 10809;
 
-        case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
-        case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
+        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
             /* no default port specified */
             return 0;
 
-        case VIR_DOMAIN_DISK_PROTOCOL_RBD:
-        case VIR_DOMAIN_DISK_PROTOCOL_LAST:
+        case VIR_STORAGE_NET_PROTOCOL_RBD:
+        case VIR_STORAGE_NET_PROTOCOL_LAST:
             /* not aplicable */
             return -1;
     }
@@ -3624,12 +3624,12 @@ qemuBuildNetworkDriveURI(int protocol,
     virURIPtr uri = NULL;
     size_t i;
 
-    switch ((enum virDomainDiskProtocol) protocol) {
-        case VIR_DOMAIN_DISK_PROTOCOL_NBD:
+    switch ((enum virStorageNetProtocol) protocol) {
+        case VIR_STORAGE_NET_PROTOCOL_NBD:
             if (nhosts != 1) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("protocol '%s' accepts only one host"),
-                               virDomainDiskProtocolTypeToString(protocol));
+                               virStorageNetProtocolTypeToString(protocol));
                 goto cleanup;
             }
 
@@ -3682,17 +3682,17 @@ qemuBuildNetworkDriveURI(int protocol,
             /* fallthrough */
             /* NBD code uses same formatting scheme as others in some cases */
 
-        case VIR_DOMAIN_DISK_PROTOCOL_HTTP:
-        case VIR_DOMAIN_DISK_PROTOCOL_HTTPS:
-        case VIR_DOMAIN_DISK_PROTOCOL_FTP:
-        case VIR_DOMAIN_DISK_PROTOCOL_FTPS:
-        case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
-        case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
-        case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
+        case VIR_STORAGE_NET_PROTOCOL_HTTP:
+        case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+        case VIR_STORAGE_NET_PROTOCOL_FTP:
+        case VIR_STORAGE_NET_PROTOCOL_FTPS:
+        case VIR_STORAGE_NET_PROTOCOL_TFTP:
+        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
             if (nhosts != 1) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("protocol '%s' accepts only one host"),
-                               virDomainDiskProtocolTypeToString(protocol));
+                               virStorageNetProtocolTypeToString(protocol));
                 goto cleanup;
             }
 
@@ -3701,11 +3701,11 @@ qemuBuildNetworkDriveURI(int protocol,
 
             if (hosts->transport == VIR_STORAGE_NET_HOST_TRANS_TCP) {
                 if (VIR_STRDUP(uri->scheme,
-                               virDomainDiskProtocolTypeToString(protocol)) < 0)
+                               virStorageNetProtocolTypeToString(protocol)) < 0)
                     goto cleanup;
             } else {
                 if (virAsprintf(&uri->scheme, "%s+%s",
-                                virDomainDiskProtocolTypeToString(protocol),
+                                virStorageNetProtocolTypeToString(protocol),
                                 virStorageNetHostTransportTypeToString(hosts->transport)) < 0)
                     goto cleanup;
             }
@@ -3740,7 +3740,7 @@ qemuBuildNetworkDriveURI(int protocol,
 
             break;
 
-        case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
+        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
             if (!src) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("missing disk source for 'sheepdog' protocol"));
@@ -3764,7 +3764,7 @@ qemuBuildNetworkDriveURI(int protocol,
 
             break;
 
-        case VIR_DOMAIN_DISK_PROTOCOL_RBD:
+        case VIR_STORAGE_NET_PROTOCOL_RBD:
             if (strchr(src, ':')) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("':' not allowed in RBD source volume name '%s'"),
@@ -3809,7 +3809,7 @@ qemuBuildNetworkDriveURI(int protocol,
             break;
 
 
-        case VIR_DOMAIN_DISK_PROTOCOL_LAST:
+        case VIR_STORAGE_NET_PROTOCOL_LAST:
             goto cleanup;
     }
 
@@ -3876,19 +3876,19 @@ qemuDomainDiskGetSourceString(virConnectPtr conn,
 
     if (actualType == VIR_STORAGE_TYPE_NETWORK &&
         disk->src.auth.username &&
-        (disk->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI ||
-         disk->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD)) {
+        (disk->src.protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI ||
+         disk->src.protocol == VIR_STORAGE_NET_PROTOCOL_RBD)) {
         bool encode = false;
         int secretType = VIR_SECRET_USAGE_TYPE_ISCSI;
 
-        if (disk->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
+        if (disk->src.protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
             /* qemu requires the secret to be encoded for RBD */
             encode = true;
             secretType = VIR_SECRET_USAGE_TYPE_CEPH;
         }
 
         if (!(secret = qemuGetSecretString(conn,
-                                           virDomainDiskProtocolTypeToString(disk->src.protocol),
+                                           virStorageNetProtocolTypeToString(disk->src.protocol),
                                            encode,
                                            disk->src.auth.secretType,
                                            disk->src.auth.username,
@@ -4321,10 +4321,10 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
             goto error;
         }
         if (disk->src.type == VIR_STORAGE_TYPE_NETWORK) {
-            if (disk->src.protocol != VIR_DOMAIN_DISK_PROTOCOL_ISCSI) {
+            if (disk->src.protocol != VIR_STORAGE_NET_PROTOCOL_ISCSI) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("disk device='lun' is not supported for protocol='%s'"),
-                               virDomainDiskProtocolTypeToString(disk->src.protocol));
+                               virStorageNetProtocolTypeToString(disk->src.protocol));
                 goto error;
             }
         } else if (!virDomainDiskSourceIsBlockType(disk)) {
@@ -10213,7 +10213,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                 else if (STRPREFIX(def->src.path, "nbd:") ||
                          STRPREFIX(def->src.path, "nbd+")) {
                     def->src.type = VIR_STORAGE_TYPE_NETWORK;
-                    def->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_NBD;
+                    def->src.protocol = VIR_STORAGE_NET_PROTOCOL_NBD;
 
                     if (qemuParseNBDString(def) < 0)
                         goto error;
@@ -10221,7 +10221,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                     char *p = def->src.path;
 
                     def->src.type = VIR_STORAGE_TYPE_NETWORK;
-                    def->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_RBD;
+                    def->src.protocol = VIR_STORAGE_NET_PROTOCOL_RBD;
                     if (VIR_STRDUP(def->src.path, p + strlen("rbd:")) < 0)
                         goto error;
                     /* old-style CEPH_ARGS env variable is parsed later */
@@ -10234,13 +10234,13 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                 } else if (STRPREFIX(def->src.path, "gluster:") ||
                            STRPREFIX(def->src.path, "gluster+")) {
                     def->src.type = VIR_STORAGE_TYPE_NETWORK;
-                    def->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_GLUSTER;
+                    def->src.protocol = VIR_STORAGE_NET_PROTOCOL_GLUSTER;
 
                     if (qemuParseGlusterString(def) < 0)
                         goto error;
                 } else if (STRPREFIX(def->src.path, "iscsi:")) {
                     def->src.type = VIR_STORAGE_TYPE_NETWORK;
-                    def->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_ISCSI;
+                    def->src.protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
 
                     if (qemuParseISCSIString(def) < 0)
                         goto error;
@@ -10249,7 +10249,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                     char *port, *vdi;
 
                     def->src.type = VIR_STORAGE_TYPE_NETWORK;
-                    def->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG;
+                    def->src.protocol = VIR_STORAGE_NET_PROTOCOL_SHEEPDOG;
                     if (VIR_STRDUP(def->src.path, p + strlen("sheepdog:")) < 0)
                         goto error;
                     VIR_FREE(p);
@@ -11505,17 +11505,17 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 disk->src.type = VIR_STORAGE_TYPE_BLOCK;
             else if (STRPREFIX(val, "nbd:")) {
                 disk->src.type = VIR_STORAGE_TYPE_NETWORK;
-                disk->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_NBD;
+                disk->src.protocol = VIR_STORAGE_NET_PROTOCOL_NBD;
             } else if (STRPREFIX(val, "rbd:")) {
                 disk->src.type = VIR_STORAGE_TYPE_NETWORK;
-                disk->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_RBD;
+                disk->src.protocol = VIR_STORAGE_NET_PROTOCOL_RBD;
                 val += strlen("rbd:");
             } else if (STRPREFIX(val, "gluster")) {
                 disk->src.type = VIR_STORAGE_TYPE_NETWORK;
-                disk->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_GLUSTER;
+                disk->src.protocol = VIR_STORAGE_NET_PROTOCOL_GLUSTER;
             } else if (STRPREFIX(val, "sheepdog:")) {
                 disk->src.type = VIR_STORAGE_TYPE_NETWORK;
-                disk->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG;
+                disk->src.protocol = VIR_STORAGE_NET_PROTOCOL_SHEEPDOG;
                 val += strlen("sheepdog:");
             } else
                 disk->src.type = VIR_STORAGE_TYPE_FILE;
@@ -11551,16 +11551,16 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 char *port;
 
                 switch (disk->src.protocol) {
-                case VIR_DOMAIN_DISK_PROTOCOL_NBD:
+                case VIR_STORAGE_NET_PROTOCOL_NBD:
                     if (qemuParseNBDString(disk) < 0)
                         goto error;
                     break;
-                case VIR_DOMAIN_DISK_PROTOCOL_RBD:
+                case VIR_STORAGE_NET_PROTOCOL_RBD:
                     /* old-style CEPH_ARGS env variable is parsed later */
                     if (!ceph_args && qemuParseRBDString(disk) < 0)
                         goto error;
                     break;
-                case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
+                case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
                     /* disk->src must be [vdiname] or [host]:[port]:[vdiname] */
                     port = strchr(disk->src.path, ':');
                     if (port) {
@@ -11584,12 +11584,12 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                             goto error;
                     }
                     break;
-                case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
+                case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
                     if (qemuParseGlusterString(disk) < 0)
                         goto error;
 
                     break;
-                case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
+                case VIR_STORAGE_NET_PROTOCOL_ISCSI:
                     if (qemuParseISCSIString(disk) < 0)
                         goto error;
 
@@ -12028,7 +12028,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
         virDomainDiskDefPtr first_rbd_disk = NULL;
         for (i = 0; i < def->ndisks; i++) {
             if (def->disks[i]->src.type == VIR_STORAGE_TYPE_NETWORK &&
-                def->disks[i]->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
+                def->disks[i]->src.protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
                 first_rbd_disk = def->disks[i];
                 break;
             }

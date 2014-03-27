@@ -209,7 +209,6 @@ virDomainDiskInsertPreAlloced;
 virDomainDiskIoTypeFromString;
 virDomainDiskIoTypeToString;
 virDomainDiskPathByName;
-virDomainDiskProtocolTypeToString;
 virDomainDiskRemove;
 virDomainDiskRemoveByName;
 virDomainDiskSetDriver;
@@ -1840,6 +1839,7 @@ virStorageNetHostDefCopy;
 virStorageNetHostDefFree;
 virStorageNetHostTransportTypeFromString;
 virStorageNetHostTransportTypeToString;
+virStorageNetProtocolTypeToString;
 virStorageTypeFromString;
 virStorageTypeToString;
 

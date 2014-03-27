@@ -73,6 +73,17 @@ VIR_ENUM_IMPL(virStorageFileFeature,
               "lazy_refcounts",
               )
 
+VIR_ENUM_IMPL(virStorageNetProtocol, VIR_STORAGE_NET_PROTOCOL_LAST,
+              "nbd",
+              "rbd",
+              "sheepdog",
+              "gluster",
+              "iscsi",
+              "http",
+              "https",
+              "ftp",
+              "ftps",
+              "tftp")
 
 VIR_ENUM_IMPL(virStorageNetHostTransport, VIR_STORAGE_NET_HOST_TRANS_LAST,
               "tcp",

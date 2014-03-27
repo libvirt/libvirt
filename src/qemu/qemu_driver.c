@@ -12356,22 +12356,22 @@ qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
         return 0;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        switch ((enum virDomainDiskProtocol) disk->src.protocol) {
-        case VIR_DOMAIN_DISK_PROTOCOL_NBD:
-        case VIR_DOMAIN_DISK_PROTOCOL_RBD:
-        case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
-        case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
-        case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
-        case VIR_DOMAIN_DISK_PROTOCOL_HTTP:
-        case VIR_DOMAIN_DISK_PROTOCOL_HTTPS:
-        case VIR_DOMAIN_DISK_PROTOCOL_FTP:
-        case VIR_DOMAIN_DISK_PROTOCOL_FTPS:
-        case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
-        case VIR_DOMAIN_DISK_PROTOCOL_LAST:
+        switch ((enum virStorageNetProtocol) disk->src.protocol) {
+        case VIR_STORAGE_NET_PROTOCOL_NBD:
+        case VIR_STORAGE_NET_PROTOCOL_RBD:
+        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
+        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+        case VIR_STORAGE_NET_PROTOCOL_HTTP:
+        case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+        case VIR_STORAGE_NET_PROTOCOL_FTP:
+        case VIR_STORAGE_NET_PROTOCOL_FTPS:
+        case VIR_STORAGE_NET_PROTOCOL_TFTP:
+        case VIR_STORAGE_NET_PROTOCOL_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("external inactive snapshots are not supported on "
                              "'network' disks using '%s' protocol"),
-                           virDomainDiskProtocolTypeToString(disk->src.protocol));
+                           virStorageNetProtocolTypeToString(disk->src.protocol));
             return -1;
         }
         break;
@@ -12417,24 +12417,24 @@ qemuDomainSnapshotPrepareDiskExternalOverlayActive(virDomainSnapshotDiskDefPtr d
         return 0;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        switch ((enum virDomainDiskProtocol) disk->protocol) {
-        case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
+        switch ((enum virStorageNetProtocol) disk->protocol) {
+        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
             return 0;
 
-        case VIR_DOMAIN_DISK_PROTOCOL_NBD:
-        case VIR_DOMAIN_DISK_PROTOCOL_RBD:
-        case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
-        case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
-        case VIR_DOMAIN_DISK_PROTOCOL_HTTP:
-        case VIR_DOMAIN_DISK_PROTOCOL_HTTPS:
-        case VIR_DOMAIN_DISK_PROTOCOL_FTP:
-        case VIR_DOMAIN_DISK_PROTOCOL_FTPS:
-        case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
-        case VIR_DOMAIN_DISK_PROTOCOL_LAST:
+        case VIR_STORAGE_NET_PROTOCOL_NBD:
+        case VIR_STORAGE_NET_PROTOCOL_RBD:
+        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+        case VIR_STORAGE_NET_PROTOCOL_HTTP:
+        case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+        case VIR_STORAGE_NET_PROTOCOL_FTP:
+        case VIR_STORAGE_NET_PROTOCOL_FTPS:
+        case VIR_STORAGE_NET_PROTOCOL_TFTP:
+        case VIR_STORAGE_NET_PROTOCOL_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("external active snapshots are not supported on "
                              "'network' disks using '%s' protocol"),
-                           virDomainDiskProtocolTypeToString(disk->protocol));
+                           virStorageNetProtocolTypeToString(disk->protocol));
             return -1;
 
         }
@@ -12561,22 +12561,22 @@ qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
         return 0;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        switch ((enum virDomainDiskProtocol) disk->src.protocol) {
-        case VIR_DOMAIN_DISK_PROTOCOL_NBD:
-        case VIR_DOMAIN_DISK_PROTOCOL_RBD:
-        case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
-        case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
-        case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
-        case VIR_DOMAIN_DISK_PROTOCOL_HTTP:
-        case VIR_DOMAIN_DISK_PROTOCOL_HTTPS:
-        case VIR_DOMAIN_DISK_PROTOCOL_FTP:
-        case VIR_DOMAIN_DISK_PROTOCOL_FTPS:
-        case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
-        case VIR_DOMAIN_DISK_PROTOCOL_LAST:
+        switch ((enum virStorageNetProtocol) disk->src.protocol) {
+        case VIR_STORAGE_NET_PROTOCOL_NBD:
+        case VIR_STORAGE_NET_PROTOCOL_RBD:
+        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
+        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+        case VIR_STORAGE_NET_PROTOCOL_HTTP:
+        case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+        case VIR_STORAGE_NET_PROTOCOL_FTP:
+        case VIR_STORAGE_NET_PROTOCOL_FTPS:
+        case VIR_STORAGE_NET_PROTOCOL_TFTP:
+        case VIR_STORAGE_NET_PROTOCOL_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("internal inactive snapshots are not supported on "
                              "'network' disks using '%s' protocol"),
-                           virDomainDiskProtocolTypeToString(disk->src.protocol));
+                           virStorageNetProtocolTypeToString(disk->src.protocol));
             return -1;
         }
         break;
@@ -12637,8 +12637,8 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
                 goto cleanup;
 
             if (dom_disk->src.type == VIR_STORAGE_TYPE_NETWORK &&
-                (dom_disk->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG ||
-                 dom_disk->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD)) {
+                (dom_disk->src.protocol == VIR_STORAGE_NET_PROTOCOL_SHEEPDOG ||
+                 dom_disk->src.protocol == VIR_STORAGE_NET_PROTOCOL_RBD)) {
                 break;
             }
             if (vm->def->disks[i]->src.format > 0 &&
@@ -12814,7 +12814,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
 
     case VIR_STORAGE_TYPE_NETWORK:
         switch (snap->protocol) {
-        case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
+        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
             if (!(newhosts = virStorageNetHostDefCopy(snap->nhosts, snap->hosts)))
                 goto cleanup;
 
@@ -12828,7 +12828,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                            _("snapshots on volumes using '%s' protocol "
                              "are not supported"),
-                           virDomainDiskProtocolTypeToString(snap->protocol));
+                           virStorageNetProtocolTypeToString(snap->protocol));
             goto cleanup;
         }
         break;

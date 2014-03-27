@@ -509,20 +509,6 @@ enum virDomainDiskErrorPolicy {
     VIR_DOMAIN_DISK_ERROR_POLICY_LAST
 };
 
-enum virDomainDiskProtocol {
-    VIR_DOMAIN_DISK_PROTOCOL_NBD,
-    VIR_DOMAIN_DISK_PROTOCOL_RBD,
-    VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG,
-    VIR_DOMAIN_DISK_PROTOCOL_GLUSTER,
-    VIR_DOMAIN_DISK_PROTOCOL_ISCSI,
-    VIR_DOMAIN_DISK_PROTOCOL_HTTP,
-    VIR_DOMAIN_DISK_PROTOCOL_HTTPS,
-    VIR_DOMAIN_DISK_PROTOCOL_FTP,
-    VIR_DOMAIN_DISK_PROTOCOL_FTPS,
-    VIR_DOMAIN_DISK_PROTOCOL_TFTP,
-
-    VIR_DOMAIN_DISK_PROTOCOL_LAST
-};
 
 enum virDomainDiskTray {
     VIR_DOMAIN_DISK_TRAY_CLOSED,
@@ -656,7 +642,7 @@ typedef virDomainDiskSourceDef *virDomainDiskSourceDefPtr;
 struct _virDomainDiskSourceDef {
     int type; /* enum virStorageType */
     char *path;
-    int protocol; /* enum virDomainDiskProtocol */
+    int protocol; /* enum virStorageNetProtocol */
     size_t nhosts;
     virStorageNetHostDefPtr hosts;
     virDomainDiskSourcePoolDefPtr srcpool;
@@ -2632,7 +2618,6 @@ VIR_ENUM_DECL(virDomainDiskGeometryTrans)
 VIR_ENUM_DECL(virDomainDiskBus)
 VIR_ENUM_DECL(virDomainDiskCache)
 VIR_ENUM_DECL(virDomainDiskErrorPolicy)
-VIR_ENUM_DECL(virDomainDiskProtocol)
 VIR_ENUM_DECL(virDomainDiskIo)
 VIR_ENUM_DECL(virDomainDiskSecretType)
 VIR_ENUM_DECL(virDomainDeviceSGIO)
