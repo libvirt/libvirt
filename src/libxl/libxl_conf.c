@@ -827,6 +827,9 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
     x_disk->removable = 1;
     x_disk->readwrite = !l_disk->readonly;
     x_disk->is_cdrom = l_disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ? 1 : 0;
+    /* An empty CDROM must have the empty format, otherwise libxl fails. */
+    if (x_disk->is_cdrom && !x_disk->pdev_path)
+        x_disk->format = LIBXL_DISK_FORMAT_EMPTY;
     if (l_disk->transient) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("libxenlight does not support transient disks"));
