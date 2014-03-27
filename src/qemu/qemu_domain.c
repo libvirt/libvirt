@@ -873,8 +873,8 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
             if (cfg->allowDiskFormatProbing) {
                 /* default disk format for drives */
                 if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&
-                    (virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_FILE ||
-                     virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_BLOCK))
+                    (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE ||
+                     virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK))
                     virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_AUTO);
 
                  /* default disk format for mirrored drive */
@@ -889,8 +889,8 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
                 /* default disk format for drives */
                 if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&
-                    (virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_FILE ||
-                     virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_BLOCK))
+                    (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE ||
+                     virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK))
                     virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_RAW);
 
                  /* default disk format for mirrored drive */
@@ -2404,8 +2404,8 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
     int type = virDomainDiskGetType(disk);
 
     if (!src ||
-        type == VIR_DOMAIN_DISK_TYPE_NETWORK ||
-        type == VIR_DOMAIN_DISK_TYPE_VOLUME)
+        type == VIR_STORAGE_TYPE_NETWORK ||
+        type == VIR_STORAGE_TYPE_VOLUME)
         goto cleanup;
 
     if (disk->backingChain) {

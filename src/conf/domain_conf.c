@@ -219,13 +219,6 @@ VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "virtio-mmio",
               "isa")
 
-VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
-              "block",
-              "file",
-              "dir",
-              "network",
-              "volume")
-
 VIR_ENUM_IMPL(virDomainDiskDevice, VIR_DOMAIN_DISK_DEVICE_LAST,
               "disk",
               "cdrom",
@@ -1294,7 +1287,7 @@ virDomainDiskSetType(virDomainDiskDefPtr def, int type)
 int
 virDomainDiskGetActualType(virDomainDiskDefPtr def)
 {
-    if (def->src.type == VIR_DOMAIN_DISK_TYPE_VOLUME && def->src.srcpool)
+    if (def->src.type == VIR_STORAGE_TYPE_VOLUME && def->src.srcpool)
         return def->src.srcpool->actualtype;
 
     return def->src.type;
@@ -5048,16 +5041,16 @@ virDomainDiskSourceDefParse(xmlNodePtr node,
     memset(&host, 0, sizeof(host));
 
     switch (type) {
-    case VIR_DOMAIN_DISK_TYPE_FILE:
+    case VIR_STORAGE_TYPE_FILE:
         *source = virXMLPropString(node, "file");
         break;
-    case VIR_DOMAIN_DISK_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_BLOCK:
         *source = virXMLPropString(node, "dev");
         break;
-    case VIR_DOMAIN_DISK_TYPE_DIR:
+    case VIR_STORAGE_TYPE_DIR:
         *source = virXMLPropString(node, "dir");
         break;
-    case VIR_DOMAIN_DISK_TYPE_NETWORK:
+    case VIR_STORAGE_TYPE_NETWORK:
         if (!(protocol = virXMLPropString(node, "protocol"))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing network source protocol type"));
@@ -5131,14 +5124,14 @@ virDomainDiskSourceDefParse(xmlNodePtr node,
             child = child->next;
         }
         break;
-    case VIR_DOMAIN_DISK_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_VOLUME:
         if (virDomainDiskSourcePoolDefParse(node, srcpool) < 0)
             goto cleanup;
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected disk type %s"),
-                       virDomainDiskTypeToString(type));
+                       virStorageTypeToString(type));
         goto cleanup;
     }
 
@@ -5232,13 +5225,13 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     type = virXMLPropString(node, "type");
     if (type) {
-        if ((def->src.type = virDomainDiskTypeFromString(type)) < 0) {
+        if ((def->src.type = virStorageTypeFromString(type)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk type '%s'"), type);
             goto error;
         }
     } else {
-        def->src.type = VIR_DOMAIN_DISK_TYPE_FILE;
+        def->src.type = VIR_STORAGE_TYPE_FILE;
     }
 
     snapshot = virXMLPropString(node, "snapshot");
@@ -5261,7 +5254,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                                                 &def->src.srcpool) < 0)
                     goto error;
 
-                if (def->src.type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
+                if (def->src.type == VIR_STORAGE_TYPE_NETWORK) {
                     if (def->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI)
                         expected_secret_usage = VIR_SECRET_USAGE_TYPE_ISCSI;
                     else if (def->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD)
@@ -5857,7 +5850,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
         }
 
-        if (def->src.type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
+        if (def->src.type == VIR_STORAGE_TYPE_NETWORK) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Setting disk %s is not allowed for "
                              "disk of network type"),
@@ -14791,7 +14784,7 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
 
     if (src || nhosts > 0 || srcpool || startupPolicy) {
         switch (type) {
-        case VIR_DOMAIN_DISK_TYPE_FILE:
+        case VIR_STORAGE_TYPE_FILE:
             virBufferAddLit(buf, "<source");
             virBufferEscapeString(buf, " file='%s'", src);
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
@@ -14799,7 +14792,7 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
             virDomainDiskSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
            break;
 
-        case VIR_DOMAIN_DISK_TYPE_BLOCK:
+        case VIR_STORAGE_TYPE_BLOCK:
             virBufferAddLit(buf, "<source");
             virBufferEscapeString(buf, " dev='%s'", src);
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
@@ -14807,14 +14800,14 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
             virDomainDiskSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
             break;
 
-        case VIR_DOMAIN_DISK_TYPE_DIR:
+        case VIR_STORAGE_TYPE_DIR:
             virBufferAddLit(buf, "<source");
             virBufferEscapeString(buf, " dir='%s'", src);
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
             virBufferAddLit(buf, "/>\n");
             break;
 
-        case VIR_DOMAIN_DISK_TYPE_NETWORK:
+        case VIR_STORAGE_TYPE_NETWORK:
             virBufferAsprintf(buf, "<source protocol='%s'",
                               virDomainDiskProtocolTypeToString(protocol));
             virBufferEscapeString(buf, " name='%s'", src);
@@ -14842,7 +14835,7 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
             }
             break;
 
-        case VIR_DOMAIN_DISK_TYPE_VOLUME:
+        case VIR_STORAGE_TYPE_VOLUME:
             virBufferAddLit(buf, "<source");
 
             if (srcpool) {
@@ -14860,7 +14853,7 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected disk type %s"),
-                           virDomainDiskTypeToString(type));
+                           virStorageTypeToString(type));
             return -1;
         }
     }
@@ -14893,7 +14886,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
                        virDomainDiskDefPtr def,
                        unsigned int flags)
 {
-    const char *type = virDomainDiskTypeToString(def->src.type);
+    const char *type = virStorageTypeToString(def->src.type);
     const char *device = virDomainDiskDeviceTypeToString(def->device);
     const char *bus = virDomainDiskBusTypeToString(def->bus);
     const char *cachemode = virDomainDiskCacheTypeToString(def->cachemode);
@@ -18546,8 +18539,8 @@ virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
     const char *path = virDomainDiskGetSource(disk);
     int type = virDomainDiskGetType(disk);
 
-    if (!path || type == VIR_DOMAIN_DISK_TYPE_NETWORK ||
-        (type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
+    if (!path || type == VIR_STORAGE_TYPE_NETWORK ||
+        (type == VIR_STORAGE_TYPE_VOLUME &&
          disk->src.srcpool &&
          disk->src.srcpool->mode == VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT))
         return 0;
@@ -19397,13 +19390,13 @@ virDomainDiskSourceIsBlockType(virDomainDiskDefPtr def)
     if (!virDomainDiskGetSource(def))
         return false;
 
-    if (virDomainDiskGetType(def) == VIR_DOMAIN_DISK_TYPE_BLOCK)
+    if (virDomainDiskGetType(def) == VIR_STORAGE_TYPE_BLOCK)
         return true;
 
     /* For volume types, check the srcpool.
      * If it's a block type source pool, then it's possible
      */
-    if (virDomainDiskGetType(def) == VIR_DOMAIN_DISK_TYPE_VOLUME &&
+    if (virDomainDiskGetType(def) == VIR_STORAGE_TYPE_VOLUME &&
         def->src.srcpool &&
         def->src.srcpool->voltype == VIR_STORAGE_VOL_BLOCK) {
         /* We don't think the volume accessed by remote URI is

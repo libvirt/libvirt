@@ -2772,7 +2772,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                         def->disks[i]->device = VIR_DOMAIN_DISK_DEVICE_DISK;
                         def->disks[i]->bus = VIR_DOMAIN_DISK_BUS_IDE;
                         virDomainDiskSetType(def->disks[i],
-                                             VIR_DOMAIN_DISK_TYPE_FILE);
+                                             VIR_STORAGE_TYPE_FILE);
                     }
                 }
             }
@@ -2975,7 +2975,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                     def->disks[diskCount]->readonly = true;
 
                 virDomainDiskSetType(def->disks[diskCount],
-                                     VIR_DOMAIN_DISK_TYPE_FILE);
+                                     VIR_STORAGE_TYPE_FILE);
 
                 VBOX_RELEASE(medium);
                 VBOX_RELEASE(storageController);
@@ -3251,7 +3251,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                                 def->disks[def->ndisks - 1]->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
                                 def->disks[def->ndisks - 1]->bus = VIR_DOMAIN_DISK_BUS_IDE;
                                 virDomainDiskSetType(def->disks[def->ndisks - 1],
-                                                     VIR_DOMAIN_DISK_TYPE_FILE);
+                                                     VIR_STORAGE_TYPE_FILE);
                                 def->disks[def->ndisks - 1]->readonly = true;
                                 ignore_value(virDomainDiskSetSource(def->disks[def->ndisks - 1], location));
                                 ignore_value(VIR_STRDUP(def->disks[def->ndisks - 1]->dst, "hdc"));
@@ -3298,7 +3298,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                                     def->disks[def->ndisks - 1]->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
                                     def->disks[def->ndisks - 1]->bus = VIR_DOMAIN_DISK_BUS_FDC;
                                     virDomainDiskSetType(def->disks[def->ndisks - 1],
-                                                         VIR_DOMAIN_DISK_TYPE_FILE);
+                                                         VIR_STORAGE_TYPE_FILE);
                                     def->disks[def->ndisks - 1]->readonly = false;
                                     ignore_value(virDomainDiskSetSource(def->disks[def->ndisks - 1], location));
                                     ignore_value(VIR_STRDUP(def->disks[def->ndisks - 1]->dst, "fda"));
@@ -3911,7 +3911,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                                              ? "True" : "False"));
 
         if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-            if (type == VIR_DOMAIN_DISK_TYPE_FILE && src) {
+            if (type == VIR_STORAGE_TYPE_FILE && src) {
                 IDVDDrive *dvdDrive = NULL;
                 /* Currently CDROM/DVD Drive is always IDE
                  * Secondary Master so neglecting the following
@@ -3962,10 +3962,10 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                     VBOX_UTF16_FREE(dvdfileUtf16);
                     VBOX_RELEASE(dvdDrive);
                 }
-            } else if (type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
+            } else if (type == VIR_STORAGE_TYPE_BLOCK) {
             }
         } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-            if (type == VIR_DOMAIN_DISK_TYPE_FILE && src) {
+            if (type == VIR_STORAGE_TYPE_FILE && src) {
                 IHardDisk *hardDisk     = NULL;
                 PRUnichar *hddfileUtf16 = NULL;
                 vboxIID hdduuid = VBOX_IID_INITIALIZER;
@@ -4066,10 +4066,10 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 vboxIIDUnalloc(&hdduuid);
                 VBOX_UTF16_FREE(hddEmpty);
                 VBOX_UTF16_FREE(hddfileUtf16);
-            } else if (type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
+            } else if (type == VIR_STORAGE_TYPE_BLOCK) {
             }
         } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-            if (type == VIR_DOMAIN_DISK_TYPE_FILE && src) {
+            if (type == VIR_STORAGE_TYPE_FILE && src) {
                 IFloppyDrive *floppyDrive;
                 machine->vtbl->GetFloppyDrive(machine, &floppyDrive);
                 if (floppyDrive) {
@@ -4119,7 +4119,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                     }
                     VBOX_RELEASE(floppyDrive);
                 }
-            } else if (type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
+            } else if (type == VIR_STORAGE_TYPE_BLOCK) {
             }
         }
     }
@@ -4193,7 +4193,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         VIR_DEBUG("disk(%zu) shared:     %s", i, (def->disks[i]->shared
                                              ? "True" : "False"));
 
-        if (type == VIR_DOMAIN_DISK_TYPE_FILE && src) {
+        if (type == VIR_STORAGE_TYPE_FILE && src) {
             IMedium   *medium          = NULL;
             PRUnichar *mediumUUID      = NULL;
             PRUnichar *mediumFileUtf16 = NULL;
@@ -5536,7 +5536,7 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
                     int type = virDomainDiskGetType(dev->data.disk);
 
                     if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-                        if (type == VIR_DOMAIN_DISK_TYPE_FILE && src) {
+                        if (type == VIR_STORAGE_TYPE_FILE && src) {
                             IDVDDrive *dvdDrive = NULL;
                             /* Currently CDROM/DVD Drive is always IDE
                              * Secondary Master so neglecting the following
@@ -5582,10 +5582,10 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
                                 VBOX_UTF16_FREE(dvdfileUtf16);
                                 VBOX_RELEASE(dvdDrive);
                             }
-                        } else if (type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
+                        } else if (type == VIR_STORAGE_TYPE_BLOCK) {
                         }
                     } else if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-                        if (type == VIR_DOMAIN_DISK_TYPE_FILE && src) {
+                        if (type == VIR_STORAGE_TYPE_FILE && src) {
                             IFloppyDrive *floppyDrive;
                             machine->vtbl->GetFloppyDrive(machine, &floppyDrive);
                             if (floppyDrive) {
@@ -5632,7 +5632,7 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
                                 }
                                 VBOX_RELEASE(floppyDrive);
                             }
-                        } else if (type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
+                        } else if (type == VIR_STORAGE_TYPE_BLOCK) {
                         }
                     }
 #else  /* VBOX_API_VERSION >= 3001000 */
@@ -5769,7 +5769,7 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
                     int type = virDomainDiskGetType(dev->data.disk);
 
                     if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-                        if (type == VIR_DOMAIN_DISK_TYPE_FILE) {
+                        if (type == VIR_STORAGE_TYPE_FILE) {
                             IDVDDrive *dvdDrive = NULL;
                             /* Currently CDROM/DVD Drive is always IDE
                              * Secondary Master so neglecting the following
@@ -5787,10 +5787,10 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
                                 }
                                 VBOX_RELEASE(dvdDrive);
                             }
-                        } else if (type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
+                        } else if (type == VIR_STORAGE_TYPE_BLOCK) {
                         }
                     } else if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-                        if (type == VIR_DOMAIN_DISK_TYPE_FILE) {
+                        if (type == VIR_STORAGE_TYPE_FILE) {
                             IFloppyDrive *floppyDrive;
                             machine->vtbl->GetFloppyDrive(machine, &floppyDrive);
                             if (floppyDrive) {
@@ -5815,7 +5815,7 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
                                 }
                                 VBOX_RELEASE(floppyDrive);
                             }
-                        } else if (type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
+                        } else if (type == VIR_STORAGE_TYPE_BLOCK) {
                         }
                     }
 #else  /* VBOX_API_VERSION >= 3001000 */

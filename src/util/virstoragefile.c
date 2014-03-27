@@ -53,6 +53,13 @@
 
 VIR_LOG_INIT("util.storagefile");
 
+VIR_ENUM_IMPL(virStorage, VIR_STORAGE_TYPE_LAST,
+              "block",
+              "file",
+              "dir",
+              "network",
+              "volume")
+
 VIR_ENUM_IMPL(virStorageFileFormat,
               VIR_STORAGE_FILE_LAST,
               "none",

@@ -10433,7 +10433,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     /* ..but if guest is not using raw disk format and on a block device,
      * then query highest allocated extent from QEMU
      */
-    if (virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_BLOCK &&
+    if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK &&
         format != VIR_STORAGE_FILE_RAW &&
         S_ISBLK(sb.st_mode)) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -12350,12 +12350,12 @@ qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
 {
     int actualType = virDomainDiskGetActualType(disk);
 
-    switch ((enum virDomainDiskType) actualType) {
-    case VIR_DOMAIN_DISK_TYPE_BLOCK:
-    case VIR_DOMAIN_DISK_TYPE_FILE:
+    switch ((enum virStorageType) actualType) {
+    case VIR_STORAGE_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_FILE:
         return 0;
 
-    case VIR_DOMAIN_DISK_TYPE_NETWORK:
+    case VIR_STORAGE_TYPE_NETWORK:
         switch ((enum virDomainDiskProtocol) disk->src.protocol) {
         case VIR_DOMAIN_DISK_PROTOCOL_NBD:
         case VIR_DOMAIN_DISK_PROTOCOL_RBD:
@@ -12376,12 +12376,12 @@ qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
         }
         break;
 
-    case VIR_DOMAIN_DISK_TYPE_DIR:
-    case VIR_DOMAIN_DISK_TYPE_VOLUME:
-    case VIR_DOMAIN_DISK_TYPE_LAST:
+    case VIR_STORAGE_TYPE_DIR:
+    case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("external inactive snapshots are not supported on "
-                         "'%s' disks"), virDomainDiskTypeToString(actualType));
+                         "'%s' disks"), virStorageTypeToString(actualType));
         return -1;
     }
 
@@ -12394,7 +12394,7 @@ qemuDomainSnapshotPrepareDiskExternalBackingActive(virDomainDiskDefPtr disk)
 {
     int actualType = virDomainDiskGetActualType(disk);
 
-    if (actualType == VIR_DOMAIN_DISK_TYPE_BLOCK &&
+    if (actualType == VIR_STORAGE_TYPE_BLOCK &&
         disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("external active snapshots are not supported on scsi "
@@ -12411,12 +12411,12 @@ qemuDomainSnapshotPrepareDiskExternalOverlayActive(virDomainSnapshotDiskDefPtr d
 {
     int actualType = virDomainSnapshotDiskGetActualType(disk);
 
-    switch ((enum virDomainDiskType) actualType) {
-    case VIR_DOMAIN_DISK_TYPE_BLOCK:
-    case VIR_DOMAIN_DISK_TYPE_FILE:
+    switch ((enum virStorageType) actualType) {
+    case VIR_STORAGE_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_FILE:
         return 0;
 
-    case VIR_DOMAIN_DISK_TYPE_NETWORK:
+    case VIR_STORAGE_TYPE_NETWORK:
         switch ((enum virDomainDiskProtocol) disk->protocol) {
         case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
             return 0;
@@ -12440,12 +12440,12 @@ qemuDomainSnapshotPrepareDiskExternalOverlayActive(virDomainSnapshotDiskDefPtr d
         }
         break;
 
-    case VIR_DOMAIN_DISK_TYPE_DIR:
-    case VIR_DOMAIN_DISK_TYPE_VOLUME:
-    case VIR_DOMAIN_DISK_TYPE_LAST:
+    case VIR_STORAGE_TYPE_DIR:
+    case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("external active snapshots are not supported on "
-                         "'%s' disks"), virDomainDiskTypeToString(actualType));
+                         "'%s' disks"), virStorageTypeToString(actualType));
         return -1;
     }
 
@@ -12458,18 +12458,18 @@ qemuDomainSnapshotPrepareDiskExternalOverlayInactive(virDomainSnapshotDiskDefPtr
 {
     int actualType = virDomainSnapshotDiskGetActualType(disk);
 
-    switch ((enum virDomainDiskType) actualType) {
-    case VIR_DOMAIN_DISK_TYPE_BLOCK:
-    case VIR_DOMAIN_DISK_TYPE_FILE:
+    switch ((enum virStorageType) actualType) {
+    case VIR_STORAGE_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_FILE:
         return 0;
 
-    case VIR_DOMAIN_DISK_TYPE_NETWORK:
-    case VIR_DOMAIN_DISK_TYPE_DIR:
-    case VIR_DOMAIN_DISK_TYPE_VOLUME:
-    case VIR_DOMAIN_DISK_TYPE_LAST:
+    case VIR_STORAGE_TYPE_NETWORK:
+    case VIR_STORAGE_TYPE_DIR:
+    case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("external inactive snapshots are not supported on "
-                         "'%s' disks"), virDomainDiskTypeToString(actualType));
+                         "'%s' disks"), virStorageTypeToString(actualType));
         return -1;
     }
 
@@ -12555,12 +12555,12 @@ qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
 
     actualType = virDomainDiskGetActualType(disk);
 
-    switch ((enum virDomainDiskType) actualType) {
-    case VIR_DOMAIN_DISK_TYPE_BLOCK:
-    case VIR_DOMAIN_DISK_TYPE_FILE:
+    switch ((enum virStorageType) actualType) {
+    case VIR_STORAGE_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_FILE:
         return 0;
 
-    case VIR_DOMAIN_DISK_TYPE_NETWORK:
+    case VIR_STORAGE_TYPE_NETWORK:
         switch ((enum virDomainDiskProtocol) disk->src.protocol) {
         case VIR_DOMAIN_DISK_PROTOCOL_NBD:
         case VIR_DOMAIN_DISK_PROTOCOL_RBD:
@@ -12581,12 +12581,12 @@ qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
         }
         break;
 
-    case VIR_DOMAIN_DISK_TYPE_DIR:
-    case VIR_DOMAIN_DISK_TYPE_VOLUME:
-    case VIR_DOMAIN_DISK_TYPE_LAST:
+    case VIR_STORAGE_TYPE_DIR:
+    case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("internal inactive snapshots are not supported on "
-                         "'%s' disks"), virDomainDiskTypeToString(actualType));
+                         "'%s' disks"), virStorageTypeToString(actualType));
         return -1;
     }
 
@@ -12636,7 +12636,7 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
                                                       active) < 0)
                 goto cleanup;
 
-            if (dom_disk->src.type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
+            if (dom_disk->src.type == VIR_STORAGE_TYPE_NETWORK &&
                 (dom_disk->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG ||
                  dom_disk->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD)) {
                 break;
@@ -12789,10 +12789,10 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
         goto cleanup;
 
     switch (snap->type) {
-    case VIR_DOMAIN_DISK_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_BLOCK:
         reuse = true;
         /* fallthrough */
-    case VIR_DOMAIN_DISK_TYPE_FILE:
+    case VIR_STORAGE_TYPE_FILE:
 
         /* create the stub file and set selinux labels; manipulate disk in
          * place, in a way that can be reverted on failure. */
@@ -12812,7 +12812,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
         }
         break;
 
-    case VIR_DOMAIN_DISK_TYPE_NETWORK:
+    case VIR_STORAGE_TYPE_NETWORK:
         switch (snap->protocol) {
         case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
             if (!(newhosts = virStorageNetHostDefCopy(snap->nhosts, snap->hosts)))
@@ -12836,7 +12836,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     default:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("snapshots are not supported on '%s' volumes"),
-                       virDomainDiskTypeToString(snap->type));
+                       virStorageTypeToString(snap->type));
         goto cleanup;
     }
 

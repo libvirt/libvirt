@@ -138,7 +138,7 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         int type = virDomainDiskGetType(disk);
         int diskFormat = virDomainDiskGetFormat(disk);
 
-        if (type != VIR_DOMAIN_DISK_TYPE_DIR) {
+        if (type != VIR_STORAGE_TYPE_DIR) {
             if (diskFormat > 0) {
                 format = virStorageFileFormatTypeToString(diskFormat);
             } else {

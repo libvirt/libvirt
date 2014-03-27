@@ -462,18 +462,9 @@ struct _virDomainHostdevDef {
     virDomainDeviceInfoPtr info; /* Guest address */
 };
 
-/* Types of disk backends (host resource) */
-enum virDomainDiskType {
-    VIR_DOMAIN_DISK_TYPE_BLOCK,
-    VIR_DOMAIN_DISK_TYPE_FILE,
-    VIR_DOMAIN_DISK_TYPE_DIR,
-    VIR_DOMAIN_DISK_TYPE_NETWORK,
-    VIR_DOMAIN_DISK_TYPE_VOLUME,
 
-    VIR_DOMAIN_DISK_TYPE_LAST
-};
-
-/* Types of disk frontend (guest view) */
+/* Types of disk frontend (guest view).  For backends (host view), see
+ * virStorageType in util/virstoragefile.h */
 enum virDomainDiskDevice {
     VIR_DOMAIN_DISK_DEVICE_DISK,
     VIR_DOMAIN_DISK_DEVICE_CDROM,
@@ -651,7 +642,7 @@ struct _virDomainDiskSourcePoolDef {
     char *volume; /* volume name */
     int voltype; /* enum virStorageVolType, internal only */
     int pooltype; /* enum virStoragePoolType, internal only */
-    int actualtype; /* enum virDomainDiskType, internal only */
+    int actualtype; /* enum virStorageType, internal only */
     int mode; /* enum virDomainDiskSourcePoolMode */
 };
 typedef virDomainDiskSourcePoolDef *virDomainDiskSourcePoolDefPtr;
@@ -663,7 +654,7 @@ typedef virDomainDiskSourceDef *virDomainDiskSourceDefPtr;
  * backing chains, multiple source disks join to form a single guest
  * view.  TODO Move this to util/ */
 struct _virDomainDiskSourceDef {
-    int type; /* enum virDomainDiskType */
+    int type; /* enum virStorageType */
     char *path;
     int protocol; /* enum virDomainDiskProtocol */
     size_t nhosts;
@@ -2636,7 +2627,6 @@ VIR_ENUM_DECL(virDomainLifecycleCrash)
 VIR_ENUM_DECL(virDomainPMState)
 VIR_ENUM_DECL(virDomainDevice)
 VIR_ENUM_DECL(virDomainDeviceAddress)
-VIR_ENUM_DECL(virDomainDisk)
 VIR_ENUM_DECL(virDomainDiskDevice)
 VIR_ENUM_DECL(virDomainDiskGeometryTrans)
 VIR_ENUM_DECL(virDomainDiskBus)

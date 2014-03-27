@@ -1175,7 +1175,7 @@ virStorageFileBackendForType(int type,
 
     for (i = 0; fileBackends[i]; i++) {
         if (fileBackends[i]->type == type) {
-            if (type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
+            if (type == VIR_STORAGE_TYPE_NETWORK &&
                 fileBackends[i]->protocol != protocol)
                 continue;
 
@@ -1183,7 +1183,7 @@ virStorageFileBackendForType(int type,
         }
     }
 
-    if (type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
+    if (type == VIR_STORAGE_TYPE_NETWORK) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("missing storage backend for network files "
                          "using %s protocol"),
@@ -1191,7 +1191,7 @@ virStorageFileBackendForType(int type,
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("missing storage backend for '%s' storage"),
-                       virDomainDiskTypeToString(type));
+                       virStorageTypeToString(type));
     }
 
     return NULL;

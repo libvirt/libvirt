@@ -1533,7 +1533,7 @@ qemuMigrationIsSafe(virDomainDefPtr def)
             disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
             int rc;
 
-            if (virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_FILE) {
+            if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE) {
                 if ((rc = virStorageFileIsSharedFS(src)) < 0)
                     return false;
                 else if (rc == 0)
@@ -1542,7 +1542,7 @@ qemuMigrationIsSafe(virDomainDefPtr def)
                     return false;
                 else if (rc == 1)
                     continue;
-            } else if (disk->src.type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
+            } else if (disk->src.type == VIR_STORAGE_TYPE_NETWORK &&
                        disk->src.protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
                 continue;
             }

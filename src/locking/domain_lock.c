@@ -78,9 +78,9 @@ static int virDomainLockManagerAddDisk(virLockManagerPtr lock,
     if (!src)
         return 0;
 
-    if (!(type == VIR_DOMAIN_DISK_TYPE_BLOCK ||
-          type == VIR_DOMAIN_DISK_TYPE_FILE ||
-          type == VIR_DOMAIN_DISK_TYPE_DIR))
+    if (!(type == VIR_STORAGE_TYPE_BLOCK ||
+          type == VIR_STORAGE_TYPE_FILE ||
+          type == VIR_STORAGE_TYPE_DIR))
         return 0;
 
     if (disk->readonly)

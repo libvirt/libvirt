@@ -35,6 +35,21 @@
  * beyond this size, in practice that doesn't matter.  */
 # define VIR_STORAGE_MAX_HEADER 0x8200
 
+
+/* Types of disk backends (host resource) */
+enum virStorageType {
+    VIR_STORAGE_TYPE_BLOCK,
+    VIR_STORAGE_TYPE_FILE,
+    VIR_STORAGE_TYPE_DIR,
+    VIR_STORAGE_TYPE_NETWORK,
+    VIR_STORAGE_TYPE_VOLUME,
+
+    VIR_STORAGE_TYPE_LAST
+};
+
+VIR_ENUM_DECL(virStorage)
+
+
 enum virStorageFileFormat {
     VIR_STORAGE_FILE_AUTO_SAFE = -2,
     VIR_STORAGE_FILE_AUTO = -1,

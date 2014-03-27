@@ -1163,7 +1163,7 @@ virSecuritySELinuxRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
     if (disk->readonly || disk->shared)
         return 0;
 
-    if (!src || virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_NETWORK)
+    if (!src || virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_NETWORK)
         return 0;
 
     /* If we have a shared FS & doing migrated, we must not
@@ -1263,7 +1263,7 @@ virSecuritySELinuxSetSecurityImageLabel(virSecurityManagerPtr mgr,
     if (cbdata.secdef->norelabel)
         return 0;
 
-    if (virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_NETWORK)
+    if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_NETWORK)
         return 0;
 
     return virDomainDiskDefForeachPath(disk,
@@ -2272,7 +2272,7 @@ virSecuritySELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
 
     for (i = 0; i < def->ndisks; i++) {
         /* XXX fixme - we need to recursively label the entire tree :-( */
-        if (virDomainDiskGetType(def->disks[i]) == VIR_DOMAIN_DISK_TYPE_DIR) {
+        if (virDomainDiskGetType(def->disks[i]) == VIR_STORAGE_TYPE_DIR) {
             VIR_WARN("Unable to relabel directory tree %s for disk %s",
                      virDomainDiskGetSource(def->disks[i]),
                      def->disks[i]->dst);

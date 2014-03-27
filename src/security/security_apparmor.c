@@ -1,7 +1,7 @@
 /*
  * AppArmor security driver for libvirt
  *
- * Copyright (C) 2011-2013 Red Hat, Inc.
+ * Copyright (C) 2011-2014 Red Hat, Inc.
  * Copyright (C) 2009-2010 Canonical Ltd.
  *
  * This library is free software; you can redistribute it and/or
@@ -688,7 +688,7 @@ AppArmorRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
                                   virDomainDefPtr def,
                                   virDomainDiskDefPtr disk)
 {
-    if (virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_NETWORK)
+    if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_NETWORK)
         return 0;
 
     return reload_profile(mgr, def, NULL, false);
@@ -711,7 +711,7 @@ AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
         return 0;
 
     if (!virDomainDiskGetSource(disk) ||
-        virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_NETWORK)
+        virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_NETWORK)
         return 0;
 
     if (secdef->imagelabel) {

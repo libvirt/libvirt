@@ -447,17 +447,17 @@ xenParseSxprDisks(virDomainDefPtr def,
                        so we assume common case here. If blktap becomes
                        omnipotent, we can revisit this, perhaps stat()'ing
                        the src file in question */
-                    virDomainDiskSetType(disk, VIR_DOMAIN_DISK_TYPE_FILE);
+                    virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
                 } else if (STREQ(virDomainDiskGetDriver(disk), "phy")) {
-                    virDomainDiskSetType(disk, VIR_DOMAIN_DISK_TYPE_BLOCK);
+                    virDomainDiskSetType(disk, VIR_STORAGE_TYPE_BLOCK);
                 } else if (STREQ(virDomainDiskGetDriver(disk), "file")) {
-                    virDomainDiskSetType(disk, VIR_DOMAIN_DISK_TYPE_FILE);
+                    virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
                 }
             } else {
                 /* No CDROM media so can't really tell. We'll just
                    call if a FILE for now and update when media
                    is inserted later */
-                virDomainDiskSetType(disk, VIR_DOMAIN_DISK_TYPE_FILE);
+                virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
             }
 
             if (STREQLEN(dst, "ioemu:", 6))
@@ -1310,7 +1310,7 @@ xenParseSxpr(const struct sexpr *root,
                 virDomainDiskDefFree(disk);
                 goto error;
             }
-            virDomainDiskSetType(disk, VIR_DOMAIN_DISK_TYPE_FILE);
+            virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
             disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
             if (VIR_STRDUP(disk->dst, "hdc") < 0) {
                 virDomainDiskDefFree(disk);
@@ -1345,7 +1345,7 @@ xenParseSxpr(const struct sexpr *root,
                     VIR_FREE(disk);
                     goto error;
                 }
-                virDomainDiskSetType(disk, VIR_DOMAIN_DISK_TYPE_FILE);
+                virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
                 disk->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
                 if (VIR_STRDUP(disk->dst, fds[i]) < 0) {
                     virDomainDiskDefFree(disk);
@@ -1801,9 +1801,9 @@ xenFormatSxprDisk(virDomainDiskDefPtr def,
         } else {
             int type = virDomainDiskGetType(def);
 
-            if (type == VIR_DOMAIN_DISK_TYPE_FILE) {
+            if (type == VIR_STORAGE_TYPE_FILE) {
                 virBufferEscapeSexpr(buf, "(uname 'file:%s')", src);
-            } else if (type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
+            } else if (type == VIR_STORAGE_TYPE_BLOCK) {
                 if (src[0] == '/')
                     virBufferEscapeSexpr(buf, "(uname 'phy:%s')", src);
                 else
@@ -1812,7 +1812,7 @@ xenFormatSxprDisk(virDomainDiskDefPtr def,
             } else {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unsupported disk type %s"),
-                               virDomainDiskTypeToString(type));
+                               virStorageTypeToString(type));
                 return -1;
             }
         }

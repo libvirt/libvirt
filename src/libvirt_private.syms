@@ -217,8 +217,6 @@ virDomainDiskSetFormat;
 virDomainDiskSetSource;
 virDomainDiskSetType;
 virDomainDiskSourceIsBlockType;
-virDomainDiskTypeFromString;
-virDomainDiskTypeToString;
 virDomainEmulatorPinAdd;
 virDomainEmulatorPinDel;
 virDomainFeatureStateTypeFromString;
@@ -1842,6 +1840,8 @@ virStorageNetHostDefCopy;
 virStorageNetHostDefFree;
 virStorageNetHostTransportTypeFromString;
 virStorageNetHostTransportTypeToString;
+virStorageTypeFromString;
+virStorageTypeToString;
 
 
 # util/virstring.h

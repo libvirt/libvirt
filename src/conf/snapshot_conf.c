@@ -134,15 +134,15 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
     }
 
     if ((type = virXMLPropString(node, "type"))) {
-        if ((def->type = virDomainDiskTypeFromString(type)) < 0 ||
-            def->type == VIR_DOMAIN_DISK_TYPE_VOLUME ||
-            def->type == VIR_DOMAIN_DISK_TYPE_DIR) {
+        if ((def->type = virStorageTypeFromString(type)) < 0 ||
+            def->type == VIR_STORAGE_TYPE_VOLUME ||
+            def->type == VIR_STORAGE_TYPE_DIR) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("unknown disk snapshot type '%s'"), type);
             goto cleanup;
         }
     } else {
-        def->type = VIR_DOMAIN_DISK_TYPE_FILE;
+        def->type = VIR_STORAGE_TYPE_FILE;
     }
 
     for (cur = node->children; cur; cur = cur->next) {
@@ -543,7 +543,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
             goto cleanup;
         disk->index = i;
         disk->snapshot = def->dom->disks[i]->snapshot;
-        disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
+        disk->type = VIR_STORAGE_TYPE_FILE;
         if (!disk->snapshot)
             disk->snapshot = default_snapshot;
     }
@@ -561,11 +561,11 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
             const char *tmp;
             struct stat sb;
 
-            if (disk->type != VIR_DOMAIN_DISK_TYPE_FILE) {
+            if (disk->type != VIR_STORAGE_TYPE_FILE) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("cannot generate external snapshot name "
                                  "for disk '%s' on a '%s' device"),
-                               disk->name, virDomainDiskTypeToString(disk->type));
+                               disk->name, virStorageTypeToString(disk->type));
                 goto cleanup;
             }
 
@@ -629,7 +629,7 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
         return;
     }
 
-    virBufferAsprintf(buf, " type='%s'>\n", virDomainDiskTypeToString(type));
+    virBufferAsprintf(buf, " type='%s'>\n", virStorageTypeToString(type));
     virBufferAdjustIndent(buf, 2);
 
     if (disk->format > 0)

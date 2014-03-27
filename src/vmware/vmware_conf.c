@@ -406,7 +406,7 @@ vmwareVmxPath(virDomainDefPtr vmdef, char **vmxPath)
 
     for (i = 0; i < vmdef->ndisks; ++i) {
         if (vmdef->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
-            virDomainDiskGetType(vmdef->disks[i]) == VIR_DOMAIN_DISK_TYPE_FILE) {
+            virDomainDiskGetType(vmdef->disks[i]) == VIR_STORAGE_TYPE_FILE) {
             disk = vmdef->disks[i];
             break;
         }

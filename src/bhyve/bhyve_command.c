@@ -148,7 +148,7 @@ bhyveBuildDiskArgStr(const virDomainDef *def, virCommandPtr cmd)
         return -1;
     }
 
-    if (virDomainDiskGetType(disk) != VIR_DOMAIN_DISK_TYPE_FILE) {
+    if (virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_FILE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("unsupported disk type"));
         return -1;
@@ -252,7 +252,7 @@ virBhyveProcessBuildLoadCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
         return NULL;
     }
 
-    if (virDomainDiskGetType(disk) != VIR_DOMAIN_DISK_TYPE_FILE) {
+    if (virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_FILE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("unsupported disk type"));
         return NULL;

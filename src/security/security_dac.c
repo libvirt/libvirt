@@ -355,7 +355,7 @@ virSecurityDACSetSecurityImageLabel(virSecurityManagerPtr mgr,
     if (!priv->dynamicOwnership)
         return 0;
 
-    if (virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_NETWORK)
+    if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_NETWORK)
         return 0;
 
     params[0] = mgr;
@@ -379,7 +379,7 @@ virSecurityDACRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
     if (!priv->dynamicOwnership)
         return 0;
 
-    if (virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_NETWORK)
+    if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_NETWORK)
         return 0;
 
     /* Don't restore labels on readoly/shared disks, because
@@ -905,7 +905,7 @@ virSecurityDACSetSecurityAllLabel(virSecurityManagerPtr mgr,
 
     for (i = 0; i < def->ndisks; i++) {
         /* XXX fixme - we need to recursively label the entire tree :-( */
-        if (virDomainDiskGetType(def->disks[i]) == VIR_DOMAIN_DISK_TYPE_DIR)
+        if (virDomainDiskGetType(def->disks[i]) == VIR_STORAGE_TYPE_DIR)
             continue;
         if (virSecurityDACSetSecurityImageLabel(mgr,
                                                 def,

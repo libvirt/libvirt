@@ -793,7 +793,7 @@ qemuCheckSharedDevice(virHashTablePtr sharedDevices,
          disk->sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED))
         goto cleanup;
 
-    if (virDomainDiskGetType(disk) == VIR_DOMAIN_DISK_TYPE_VOLUME) {
+    if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_VOLUME) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("sgio of shared disk 'pool=%s' 'volume=%s' conflicts "
                          "with other active domains"),
@@ -1269,7 +1269,7 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
     int ret = -1;
     virErrorPtr savedError = NULL;
 
-    if (def->src.type != VIR_DOMAIN_DISK_TYPE_VOLUME)
+    if (def->src.type != VIR_STORAGE_TYPE_VOLUME)
         return 0;
 
     if (!def->src.srcpool)
@@ -1332,15 +1332,15 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
 
         switch (info.type) {
         case VIR_STORAGE_VOL_FILE:
-            def->src.srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_FILE;
+            def->src.srcpool->actualtype = VIR_STORAGE_TYPE_FILE;
             break;
 
         case VIR_STORAGE_VOL_DIR:
-            def->src.srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_DIR;
+            def->src.srcpool->actualtype = VIR_STORAGE_TYPE_DIR;
             break;
 
         case VIR_STORAGE_VOL_BLOCK:
-            def->src.srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_BLOCK;
+            def->src.srcpool->actualtype = VIR_STORAGE_TYPE_BLOCK;
             break;
 
         case VIR_STORAGE_VOL_NETWORK:
@@ -1369,13 +1369,13 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
            def->src.srcpool->mode = VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST;
            /* fallthrough */
        case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST:
-           def->src.srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_BLOCK;
+           def->src.srcpool->actualtype = VIR_STORAGE_TYPE_BLOCK;
            if (!(def->src.path = virStorageVolGetPath(vol)))
                goto cleanup;
            break;
 
        case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT:
-           def->src.srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_NETWORK;
+           def->src.srcpool->actualtype = VIR_STORAGE_TYPE_NETWORK;
            def->src.protocol = VIR_DOMAIN_DISK_PROTOCOL_ISCSI;
 
            if (qemuTranslateDiskSourcePoolAuth(def, pooldef) < 0)
@@ -1422,7 +1422,7 @@ int
 qemuTranslateSnapshotDiskSourcePool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                     virDomainSnapshotDiskDefPtr def)
 {
-    if (def->type != VIR_DOMAIN_DISK_TYPE_VOLUME)
+    if (def->type != VIR_STORAGE_TYPE_VOLUME)
         return 0;
 
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

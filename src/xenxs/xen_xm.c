@@ -592,8 +592,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             /* phy: type indicates a block device */
             virDomainDiskSetType(disk,
                                  STREQ(virDomainDiskGetDriver(disk), "phy") ?
-                                 VIR_DOMAIN_DISK_TYPE_BLOCK :
-                                 VIR_DOMAIN_DISK_TYPE_FILE);
+                                 VIR_STORAGE_TYPE_BLOCK :
+                                 VIR_STORAGE_TYPE_FILE);
 
             /* Check for a :cdrom/:disk postfix */
             disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;
@@ -635,7 +635,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             if (VIR_ALLOC(disk) < 0)
                 goto cleanup;
 
-            virDomainDiskSetType(disk, VIR_DOMAIN_DISK_TYPE_FILE);
+            virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
             disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
             if (virDomainDiskSetDriver(disk, "file") < 0)
                 goto cleanup;
@@ -1214,16 +1214,16 @@ xenFormatXMDisk(virConfValuePtr list,
                 virBufferAsprintf(&buf, "%s:", type);
         } else {
             switch (virDomainDiskGetType(disk)) {
-            case VIR_DOMAIN_DISK_TYPE_FILE:
+            case VIR_STORAGE_TYPE_FILE:
                 virBufferAddLit(&buf, "file:");
                 break;
-            case VIR_DOMAIN_DISK_TYPE_BLOCK:
+            case VIR_STORAGE_TYPE_BLOCK:
                 virBufferAddLit(&buf, "phy:");
                 break;
             default:
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unsupported disk type %s"),
-                               virDomainDiskTypeToString(virDomainDiskGetType(disk)));
+                               virStorageTypeToString(virDomainDiskGetType(disk)));
                 goto cleanup;
             }
         }

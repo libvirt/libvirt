@@ -3087,9 +3087,9 @@ phypDiskType(virConnectPtr conn, char *backing_device)
         goto cleanup;
 
     if (STREQ(ret, "LVPOOL"))
-        disk_type = VIR_DOMAIN_DISK_TYPE_BLOCK;
+        disk_type = VIR_STORAGE_TYPE_BLOCK;
     else if (STREQ(ret, "FBPOOL"))
-        disk_type = VIR_DOMAIN_DISK_TYPE_FILE;
+        disk_type = VIR_STORAGE_TYPE_FILE;
 
  cleanup:
     VIR_FREE(ret);

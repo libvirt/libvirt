@@ -668,7 +668,7 @@ virStorageFileBackendGlusterStat(virStorageFilePtr file,
 
 
 virStorageFileBackend virStorageFileBackendGluster = {
-    .type = VIR_DOMAIN_DISK_TYPE_NETWORK,
+    .type = VIR_STORAGE_TYPE_NETWORK,
     .protocol = VIR_DOMAIN_DISK_PROTOCOL_GLUSTER,
 
     .backendInit = virStorageFileBackendGlusterInit,

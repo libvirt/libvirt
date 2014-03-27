@@ -169,8 +169,8 @@ testSELinuxLoadDef(const char *testname)
         goto cleanup;
 
     for (i = 0; i < def->ndisks; i++) {
-        if (def->disks[i]->src.type != VIR_DOMAIN_DISK_TYPE_FILE &&
-            def->disks[i]->src.type != VIR_DOMAIN_DISK_TYPE_BLOCK)
+        if (def->disks[i]->src.type != VIR_STORAGE_TYPE_FILE &&
+            def->disks[i]->src.type != VIR_STORAGE_TYPE_BLOCK)
             continue;
 
         if (testSELinuxMungePath(&def->disks[i]->src.path) < 0)

@@ -1377,7 +1377,7 @@ virStorageFileBackendFileStat(virStorageFilePtr file,
 
 
 virStorageFileBackend virStorageFileBackendFile = {
-    .type = VIR_DOMAIN_DISK_TYPE_FILE,
+    .type = VIR_STORAGE_TYPE_FILE,
 
     .storageFileUnlink = virStorageFileBackendFileUnlink,
     .storageFileStat = virStorageFileBackendFileStat,
@@ -1385,7 +1385,7 @@ virStorageFileBackend virStorageFileBackendFile = {
 
 
 virStorageFileBackend virStorageFileBackendBlock = {
-    .type = VIR_DOMAIN_DISK_TYPE_BLOCK,
+    .type = VIR_STORAGE_TYPE_BLOCK,
 
     .storageFileStat = virStorageFileBackendFileStat,
 };

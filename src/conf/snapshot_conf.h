@@ -51,7 +51,7 @@ struct _virDomainSnapshotDiskDef {
     char *name;     /* name matching the <target dev='...' of the domain */
     int index;      /* index within snapshot->dom->disks that matches name */
     int snapshot;   /* enum virDomainSnapshotLocation */
-    int type;       /* enum virDomainDiskType */
+    int type;       /* enum virStorageType */
     char *file;     /* new source file when snapshot is external */
     int format;     /* enum virStorageFileFormat */
     int protocol;   /* network source protocol */
