@@ -49,6 +49,7 @@ domain-xml                        <=>   vmx
                                         virtualHW.version = "7"                 # essential for ESX 4.0
                                         virtualHW.version = "8"                 # essential for ESX 5.0
                                         virtualHW.version = "9"                 # essential for ESX 5.1
+                                        virtualHW.version = "10"                # essential for ESX 5.5
 
 
 ???                               <=>   guestOS = "<value>"                     # essential, FIXME: not representable
@@ -1316,10 +1317,11 @@ virVMXParseConfig(virVMXContext *ctx,
     }
 
     if (virtualHW_version != 4 && virtualHW_version != 7 &&
-        virtualHW_version != 8 && virtualHW_version != 9) {
+        virtualHW_version != 8 && virtualHW_version != 9 &&
+        virtualHW_version != 10) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Expecting VMX entry 'virtualHW.version' to be "
-                         "4, 7, 8 or 9 but found %lld"),
+                         "4, 7, 8, 9 or 10 but found %lld"),
                        virtualHW_version);
         goto cleanup;
     }
