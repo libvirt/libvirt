@@ -770,10 +770,10 @@ libxlDomainSuspend(virDomainPtr dom)
     priv = vm->privateData;
 
     if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
-        if (libxl_domain_pause(priv->ctx, dom->id) != 0) {
+        if (libxl_domain_pause(priv->ctx, vm->def->id) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to suspend domain '%d' with libxenlight"),
-                           dom->id);
+                           vm->def->id);
             goto endjob;
         }
 
@@ -829,10 +829,10 @@ libxlDomainResume(virDomainPtr dom)
     priv = vm->privateData;
 
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
-        if (libxl_domain_unpause(priv->ctx, dom->id) != 0) {
+        if (libxl_domain_unpause(priv->ctx, vm->def->id) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to resume domain '%d' with libxenlight"),
-                           dom->id);
+                           vm->def->id);
             goto endjob;
         }
 
@@ -883,10 +883,10 @@ libxlDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
     }
 
     priv = vm->privateData;
-    if (libxl_domain_shutdown(priv->ctx, dom->id) != 0) {
+    if (libxl_domain_shutdown(priv->ctx, vm->def->id) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to shutdown domain '%d' with libxenlight"),
-                       dom->id);
+                       vm->def->id);
         goto cleanup;
     }
 
@@ -930,10 +930,10 @@ libxlDomainReboot(virDomainPtr dom, unsigned int flags)
     }
 
     priv = vm->privateData;
-    if (libxl_domain_reboot(priv->ctx, dom->id) != 0) {
+    if (libxl_domain_reboot(priv->ctx, vm->def->id) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to reboot domain '%d' with libxenlight"),
-                       dom->id);
+                       vm->def->id);
         goto cleanup;
     }
     ret = 0;
@@ -974,7 +974,7 @@ libxlDomainDestroyFlags(virDomainPtr dom,
     priv = vm->privateData;
     if (libxl_domain_destroy(priv->ctx, vm->def->id, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to destroy domain '%d'"), dom->id);
+                       _("Failed to destroy domain '%d'"), vm->def->id);
         goto cleanup;
     }
 
@@ -1105,10 +1105,10 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
 
         if (flags & VIR_DOMAIN_MEM_LIVE) {
             priv = vm->privateData;
-            if (libxl_domain_setmaxmem(priv->ctx, dom->id, newmem) < 0) {
+            if (libxl_domain_setmaxmem(priv->ctx, vm->def->id, newmem) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Failed to set maximum memory for domain '%d'"
-                                 " with libxenlight"), dom->id);
+                                 " with libxenlight"), vm->def->id);
                 goto endjob;
             }
         }
@@ -1138,13 +1138,13 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
             priv = vm->privateData;
             /* Unlock virDomainObj while ballooning memory */
             virObjectUnlock(vm);
-            res = libxl_set_memory_target(priv->ctx, dom->id, newmem, 0,
+            res = libxl_set_memory_target(priv->ctx, vm->def->id, newmem, 0,
                                           /* force */ 1);
             virObjectLock(vm);
             if (res < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Failed to set memory for domain '%d'"
-                                 " with libxenlight"), dom->id);
+                                 " with libxenlight"), vm->def->id);
                 goto endjob;
             }
         }
@@ -1202,9 +1202,10 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
         info->memory = vm->def->mem.cur_balloon;
         info->maxMem = vm->def->mem.max_balloon;
     } else {
-        if (libxl_domain_info(priv->ctx, &d_info, dom->id) != 0) {
+        if (libxl_domain_info(priv->ctx, &d_info, vm->def->id) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("libxl_domain_info failed for domain '%d'"), dom->id);
+                           _("libxl_domain_info failed for domain '%d'"),
+                           vm->def->id);
             goto cleanup;
         }
         info->cpuTime = d_info.cpu_time;
@@ -1483,11 +1484,11 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
 
     if (!(flags & VIR_DUMP_LIVE) &&
         virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
-        if (libxl_domain_pause(priv->ctx, dom->id) != 0) {
+        if (libxl_domain_pause(priv->ctx, vm->def->id) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Before dumping core, failed to suspend domain '%d'"
                              " with libxenlight"),
-                           dom->id);
+                           vm->def->id);
             goto endjob;
         }
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_DUMP);
@@ -1496,20 +1497,20 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
 
     /* Unlock virDomainObj while dumping core */
     virObjectUnlock(vm);
-    ret = libxl_domain_core_dump(priv->ctx, dom->id, to, NULL);
+    ret = libxl_domain_core_dump(priv->ctx, vm->def->id, to, NULL);
     virObjectLock(vm);
     if (ret != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to dump core of domain '%d' with libxenlight"),
-                       dom->id);
+                       vm->def->id);
         ret = -1;
         goto unpause;
     }
 
     if (flags & VIR_DUMP_CRASH) {
-        if (libxl_domain_destroy(priv->ctx, dom->id, NULL) < 0) {
+        if (libxl_domain_destroy(priv->ctx, vm->def->id, NULL) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to destroy domain '%d'"), dom->id);
+                           _("Failed to destroy domain '%d'"), vm->def->id);
             goto unpause;
         }
 
@@ -1524,10 +1525,10 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
 
  unpause:
     if (virDomainObjIsActive(vm) && paused) {
-        if (libxl_domain_unpause(priv->ctx, dom->id) != 0) {
+        if (libxl_domain_unpause(priv->ctx, vm->def->id) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("After dumping core, failed to resume domain '%d' with"
-                             " libxenlight"), dom->id);
+                             " libxenlight"), vm->def->id);
         } else {
             virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                                  VIR_DOMAIN_RUNNING_UNPAUSED);
@@ -1786,19 +1787,19 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         break;
 
     case VIR_DOMAIN_VCPU_LIVE:
-        if (libxl_set_vcpuonline(priv->ctx, dom->id, &map) != 0) {
+        if (libxl_set_vcpuonline(priv->ctx, vm->def->id, &map) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to set vcpus for domain '%d'"
-                             " with libxenlight"), dom->id);
+                             " with libxenlight"), vm->def->id);
             goto endjob;
         }
         break;
 
     case VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG:
-        if (libxl_set_vcpuonline(priv->ctx, dom->id, &map) != 0) {
+        if (libxl_set_vcpuonline(priv->ctx, vm->def->id, &map) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to set vcpus for domain '%d'"
-                             " with libxenlight"), dom->id);
+                             " with libxenlight"), vm->def->id);
             goto endjob;
         }
         def->vcpus = nvcpus;
@@ -1934,7 +1935,7 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
         libxlDomainObjPrivatePtr priv;
 
         priv = vm->privateData;
-        if (libxl_set_vcpuaffinity(priv->ctx, dom->id, vcpu, &map) != 0) {
+        if (libxl_set_vcpuaffinity(priv->ctx, vm->def->id, vcpu, &map) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to pin vcpu '%d' with libxenlight"),
                            vcpu);
@@ -2099,11 +2100,11 @@ libxlDomainGetVcpus(virDomainPtr dom, virVcpuInfoPtr info, int maxinfo,
     }
 
     priv = vm->privateData;
-    if ((vcpuinfo = libxl_list_vcpu(priv->ctx, dom->id, &maxcpu,
+    if ((vcpuinfo = libxl_list_vcpu(priv->ctx, vm->def->id, &maxcpu,
                                     &hostcpus)) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to list vcpus for domain '%d' with libxenlight"),
-                       dom->id);
+                       vm->def->id);
         goto cleanup;
     }
 
@@ -3608,7 +3609,7 @@ libxlDomainGetSchedulerType(virDomainPtr dom, int *nparams)
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("Failed to get scheduler id for domain '%d'"
-                     " with libxenlight"), dom->id);
+                     " with libxenlight"), vm->def->id);
         goto cleanup;
     }
 
@@ -3659,10 +3660,10 @@ libxlDomainGetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (libxl_domain_sched_params_get(priv->ctx, dom->id, &sc_info) != 0) {
+    if (libxl_domain_sched_params_get(priv->ctx, vm->def->id, &sc_info) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to get scheduler parameters for domain '%d'"
-                         " with libxenlight"), dom->id);
+                         " with libxenlight"), vm->def->id);
         goto cleanup;
     }
 
@@ -3740,10 +3741,10 @@ libxlDomainSetSchedulerParametersFlags(virDomainPtr dom,
         goto endjob;
     }
 
-    if (libxl_domain_sched_params_get(priv->ctx, dom->id, &sc_info) != 0) {
+    if (libxl_domain_sched_params_get(priv->ctx, vm->def->id, &sc_info) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to get scheduler parameters for domain '%d'"
-                         " with libxenlight"), dom->id);
+                         " with libxenlight"), vm->def->id);
         goto endjob;
     }
 
@@ -3756,10 +3757,10 @@ libxlDomainSetSchedulerParametersFlags(virDomainPtr dom,
             sc_info.cap = params[i].value.ui;
     }
 
-    if (libxl_domain_sched_params_set(priv->ctx, dom->id, &sc_info) != 0) {
+    if (libxl_domain_sched_params_set(priv->ctx, vm->def->id, &sc_info) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to set scheduler parameters for domain '%d'"
-                         " with libxenlight"), dom->id);
+                         " with libxenlight"), vm->def->id);
         goto endjob;
     }
 
