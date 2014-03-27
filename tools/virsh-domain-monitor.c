@@ -1718,7 +1718,7 @@ static const vshCmdOptDef opts_list[] = {
     },
     {.name = "title",
      .type = VSH_OT_BOOL,
-     .help = N_("show short domain description")
+     .help = N_("show domain title")
     },
     {.name = NULL}
 };
