@@ -478,10 +478,60 @@ virStorageBackendGlusterVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static char *
+virStorageBackendGlusterFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                        const char *srcSpec,
+                                        unsigned int flags)
+{
+    virStoragePoolSourceList list = { .type = VIR_STORAGE_POOL_GLUSTER,
+                                      .nsources = 0,
+                                      .sources = NULL
+                                    };
+    virStoragePoolSourcePtr source = NULL;
+    char *ret = NULL;
+    size_t i;
+
+    virCheckFlags(0, NULL);
+
+    if (!srcSpec) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("hostname must be specified for gluster sources"));
+        return NULL;
+    }
+
+    if (!(source = virStoragePoolDefParseSourceString(srcSpec,
+                                                      VIR_STORAGE_POOL_GLUSTER)))
+        return NULL;
+
+    if (source->nhost != 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Expected exactly 1 host for the storage pool"));
+        goto cleanup;
+    }
+
+    if (virStorageBackendFindGlusterPoolSources(source->hosts[0].name,
+                                                0, /* currently ignored */
+                                                &list) < 0)
+        goto cleanup;
+
+    if (!(ret = virStoragePoolSourceListFormat(&list)))
+        goto cleanup;
+
+ cleanup:
+    for (i = 0; i < list.nsources; i++)
+        virStoragePoolSourceClear(&list.sources[i]);
+    VIR_FREE(list.sources);
+
+    virStoragePoolSourceFree(source);
+    return ret;
+}
+
+
 virStorageBackend virStorageBackendGluster = {
     .type = VIR_STORAGE_POOL_GLUSTER,
 
     .refreshPool = virStorageBackendGlusterRefreshPool,
+    .findPoolSources = virStorageBackendGlusterFindPoolSources,
 
     .deleteVol = virStorageBackendGlusterVolDelete,
 };
