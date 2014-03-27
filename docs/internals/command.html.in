@@ -547,7 +547,7 @@
       There is no need to check if <code>cmd</code> is NULL
       before calling <code>virCommandFree</code>. This scenario
       is handled automatically. If the command is still running,
-      it will be forcably killed and cleaned up (via waitpid).
+      it will be forcibly killed and cleaned up (via waitpid).
     </p>
 
     <h2><a name="example">Complete examples</a></h2>

@@ -283,7 +283,7 @@ int virProcessKill(pid_t pid, int sig)
  * Try to kill the process and verify it has exited
  *
  * Returns 0 if it was killed gracefully, 1 if it
- * was killed forcably, -1 if it is still alive,
+ * was killed forcibly, -1 if it is still alive,
  * or another error occurred.
  */
 int
