@@ -33,9 +33,9 @@
 
     <p>
       The LXC driver is capable of using the <code>cpuset</code>,
-      <code>cpu</code>, <code>cpuset</code>, <code>freezer</code>,
+      <code>cpu</code>, <code>cpuacct</code>, <code>freezer</code>,
       <code>memory</code>, <code>blkio</code> and <code>devices</code>
-      controllers. The <code>cpuset</code>, <code>devices</code>
+      controllers. The <code>cpuacct</code>, <code>devices</code>
       and <code>memory</code> controllers are compulsory. Without
       them mounted, no containers can be started. If any of the
       other controllers are not mounted, the resource management APIs
