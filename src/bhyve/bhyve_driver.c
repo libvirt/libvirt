@@ -532,6 +532,34 @@ static virDomainPtr bhyveDomainLookupByName(virConnectPtr conn,
     return dom;
 }
 
+static virDomainPtr
+bhyveDomainLookupByID(virConnectPtr conn,
+                      int id)
+{
+    bhyveConnPtr privconn = conn->privateData;
+    virDomainObjPtr vm;
+    virDomainPtr dom = NULL;
+
+    vm = virDomainObjListFindByID(privconn->domains, id);
+
+    if (!vm) {
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching ID '%d'"), id);
+        goto cleanup;
+    }
+
+    if (virDomainLookupByIDEnsureACL(conn, vm->def) < 0)
+        goto cleanup;
+
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
+    if (dom)
+        dom->id = vm->def->id;
+
+ cleanup:
+    virObjectUnlock(vm);
+    return dom;
+}
+
 static int
 bhyveDomainCreateWithFlags(virDomainPtr dom,
                            unsigned int flags)
@@ -798,6 +826,7 @@ static virDriver bhyveDriver = {
     .domainDestroy = bhyveDomainDestroy, /* 1.2.2 */
     .domainLookupByUUID = bhyveDomainLookupByUUID, /* 1.2.2 */
     .domainLookupByName = bhyveDomainLookupByName, /* 1.2.2 */
+    .domainLookupByID = bhyveDomainLookupByID, /* 1.2.3 */
     .domainDefineXML = bhyveDomainDefineXML, /* 1.2.2 */
     .domainUndefine = bhyveDomainUndefine, /* 1.2.2 */
     .domainGetXMLDesc = bhyveDomainGetXMLDesc, /* 1.2.2 */
