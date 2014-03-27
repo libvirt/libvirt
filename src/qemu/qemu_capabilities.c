@@ -1994,11 +1994,12 @@ int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
 {
     size_t i;
 
-    *nmachines = 0;
     *machines = NULL;
-    if (VIR_ALLOC_N(*machines, qemuCaps->nmachineTypes) < 0)
-        goto error;
     *nmachines = qemuCaps->nmachineTypes;
+
+    if (*nmachines &&
+        VIR_ALLOC_N(*machines, qemuCaps->nmachineTypes) < 0)
+        goto error;
 
     for (i = 0; i < qemuCaps->nmachineTypes; i++) {
         virCapsGuestMachinePtr mach;
