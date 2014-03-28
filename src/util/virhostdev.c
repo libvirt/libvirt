@@ -89,6 +89,7 @@ static virHostdevManagerPtr
 virHostdevManagerNew(void)
 {
     virHostdevManagerPtr hostdevMgr;
+    bool privileged = geteuid() == 0;
 
     if (!(hostdevMgr = virObjectNew(virHostdevManagerClass)))
         return NULL;
@@ -105,14 +106,39 @@ virHostdevManagerNew(void)
     if ((hostdevMgr->activeSCSIHostdevs = virSCSIDeviceListNew()) == NULL)
         goto error;
 
-    if (VIR_STRDUP(hostdevMgr->stateDir, HOSTDEV_STATE_DIR) < 0)
-        goto error;
+    if (privileged) {
+        if (VIR_STRDUP(hostdevMgr->stateDir, HOSTDEV_STATE_DIR) < 0)
+            goto error;
 
-    if (virFileMakePath(hostdevMgr->stateDir) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Failed to create state dir '%s'"),
-                       hostdevMgr->stateDir);
-        goto error;
+        if (virFileMakePath(hostdevMgr->stateDir) < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("Failed to create state dir '%s'"),
+                           hostdevMgr->stateDir);
+            goto error;
+        }
+    } else {
+        char *rundir = NULL;
+        mode_t old_umask;
+
+        if (!(rundir = virGetUserRuntimeDirectory()))
+            goto error;
+
+        if (virAsprintf(&hostdevMgr->stateDir, "%s/hostdevmgr", rundir) < 0) {
+            VIR_FREE(rundir);
+            goto error;
+        }
+        VIR_FREE(rundir);
+
+        old_umask = umask(077);
+
+        if (virFileMakePath(hostdevMgr->stateDir) < 0) {
+            umask(old_umask);
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("Failed to create state dir '%s'"),
+                           hostdevMgr->stateDir);
+            goto error;
+        }
+        umask(old_umask);
     }
 
     return hostdevMgr;
