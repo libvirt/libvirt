@@ -3070,7 +3070,7 @@ is specified, the snapshot will not include vm state.
 The I<--memspec> option can be used to control whether a checkpoint
 is internal or external.  The I<--memspec> flag is mandatory, followed
 by a B<memspec> of the form B<[file=]name[,snapshot=type]>, where
-type can be B<none>, B<internal>, or B<external>.  To include a literal
+type can be B<no>, B<internal>, or B<external>.  To include a literal
 comma in B<file=name>, escape it with a second comma. I<--memspec> cannot
 be used together with I<--disk-only>.
 
