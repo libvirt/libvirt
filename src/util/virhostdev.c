@@ -83,8 +83,6 @@ virHostdevManagerDispose(void *obj)
     virObjectUnref(hostdevMgr->activeUSBHostdevs);
     virObjectUnref(hostdevMgr->activeSCSIHostdevs);
     VIR_FREE(hostdevMgr->stateDir);
-
-    VIR_FREE(hostdevMgr);
 }
 
 static virHostdevManagerPtr
