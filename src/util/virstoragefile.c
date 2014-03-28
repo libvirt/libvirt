@@ -90,6 +90,11 @@ VIR_ENUM_IMPL(virStorageNetHostTransport, VIR_STORAGE_NET_HOST_TRANS_LAST,
               "unix",
               "rdma")
 
+VIR_ENUM_IMPL(virStorageSourcePoolMode,
+              VIR_STORAGE_SOURCE_POOL_MODE_LAST,
+              "default",
+              "host",
+              "direct")
 
 enum lv_endian {
     LV_LITTLE_ENDIAN = 1, /* 1234 */

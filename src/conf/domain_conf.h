@@ -602,37 +602,6 @@ struct _virDomainBlockIoTuneInfo {
 };
 typedef virDomainBlockIoTuneInfo *virDomainBlockIoTuneInfoPtr;
 
-/*
- * Used for volume "type" disk to indicate how to represent
- * the disk source if the specified "pool" is of iscsi type.
- */
-enum virDomainDiskSourcePoolMode {
-    VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DEFAULT = 0,
-
-    /* Use the path as it shows up on host, e.g.
-     * /dev/disk/by-path/ip-$ip-iscsi-$iqn:iscsi.iscsi-pool0-lun-1
-     */
-    VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST,
-
-    /* Use the URI from the storage pool source element host attribute. E.g.
-     * file=iscsi://demo.org:6000/iqn.1992-01.com.example/1.
-     */
-    VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT,
-
-    VIR_DOMAIN_DISK_SOURCE_POOL_MODE_LAST
-};
-
-typedef struct _virDomainDiskSourcePoolDef virDomainDiskSourcePoolDef;
-struct _virDomainDiskSourcePoolDef {
-    char *pool; /* pool name */
-    char *volume; /* volume name */
-    int voltype; /* enum virStorageVolType, internal only */
-    int pooltype; /* enum virStoragePoolType, internal only */
-    int actualtype; /* enum virStorageType, internal only */
-    int mode; /* enum virDomainDiskSourcePoolMode */
-};
-typedef virDomainDiskSourcePoolDef *virDomainDiskSourcePoolDefPtr;
-
 typedef struct _virDomainDiskSourceDef virDomainDiskSourceDef;
 typedef virDomainDiskSourceDef *virDomainDiskSourceDefPtr;
 
@@ -645,7 +614,7 @@ struct _virDomainDiskSourceDef {
     int protocol; /* enum virStorageNetProtocol */
     size_t nhosts;
     virStorageNetHostDefPtr hosts;
-    virDomainDiskSourcePoolDefPtr srcpool;
+    virStorageSourcePoolDefPtr srcpool;
     struct {
         char *username;
         int secretType; /* enum virDomainDiskSecretType */
@@ -2347,7 +2316,7 @@ int virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
                                          virStorageNetHostDefPtr hosts,
                                          size_t nseclabels,
                                          virSecurityDeviceLabelDefPtr *seclabels,
-                                         virDomainDiskSourcePoolDefPtr srcpool,
+                                         virStorageSourcePoolDefPtr srcpool,
                                          unsigned int flags);
 
 int virDomainNetDefFormat(virBufferPtr buf,
@@ -2401,7 +2370,7 @@ int virDomainDiskSourceDefParse(xmlNodePtr node,
                                 int *proto,
                                 size_t *nhosts,
                                 virStorageNetHostDefPtr *hosts,
-                                virDomainDiskSourcePoolDefPtr *srcpool);
+                                virStorageSourcePoolDefPtr *srcpool);
 
 bool virDomainHasDiskMirror(virDomainObjPtr vm);
 
@@ -2623,7 +2592,6 @@ VIR_ENUM_DECL(virDomainDiskSecretType)
 VIR_ENUM_DECL(virDomainDeviceSGIO)
 VIR_ENUM_DECL(virDomainDiskTray)
 VIR_ENUM_DECL(virDomainDiskDiscard)
-VIR_ENUM_DECL(virDomainDiskSourcePoolMode)
 VIR_ENUM_DECL(virDomainIoEventFd)
 VIR_ENUM_DECL(virDomainVirtioEventIdx)
 VIR_ENUM_DECL(virDomainDiskCopyOnRead)

@@ -1364,17 +1364,17 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
         }
 
        switch (def->src.srcpool->mode) {
-       case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DEFAULT:
-       case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_LAST:
-           def->src.srcpool->mode = VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST;
+       case VIR_STORAGE_SOURCE_POOL_MODE_DEFAULT:
+       case VIR_STORAGE_SOURCE_POOL_MODE_LAST:
+           def->src.srcpool->mode = VIR_STORAGE_SOURCE_POOL_MODE_HOST;
            /* fallthrough */
-       case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST:
+       case VIR_STORAGE_SOURCE_POOL_MODE_HOST:
            def->src.srcpool->actualtype = VIR_STORAGE_TYPE_BLOCK;
            if (!(def->src.path = virStorageVolGetPath(vol)))
                goto cleanup;
            break;
 
-       case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT:
+       case VIR_STORAGE_SOURCE_POOL_MODE_DIRECT:
            def->src.srcpool->actualtype = VIR_STORAGE_TYPE_NETWORK;
            def->src.protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
 

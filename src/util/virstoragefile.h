@@ -137,6 +137,41 @@ struct _virStorageNetHostDef {
     char *socket;  /* path to unix socket */
 };
 
+/* Information for a storage volume from a virStoragePool */
+
+/*
+ * Used for volume "type" disk to indicate how to represent
+ * the disk source if the specified "pool" is of iscsi type.
+ */
+enum virStorageSourcePoolMode {
+    VIR_STORAGE_SOURCE_POOL_MODE_DEFAULT = 0,
+
+    /* Use the path as it shows up on host, e.g.
+     * /dev/disk/by-path/ip-$ip-iscsi-$iqn:iscsi.iscsi-pool0-lun-1
+     */
+    VIR_STORAGE_SOURCE_POOL_MODE_HOST,
+
+    /* Use the URI from the storage pool source element host attribute. E.g.
+     * file=iscsi://demo.org:6000/iqn.1992-01.com.example/1.
+     */
+    VIR_STORAGE_SOURCE_POOL_MODE_DIRECT,
+
+    VIR_STORAGE_SOURCE_POOL_MODE_LAST
+};
+
+VIR_ENUM_DECL(virStorageSourcePoolMode)
+
+typedef struct _virStorageSourcePoolDef virStorageSourcePoolDef;
+struct _virStorageSourcePoolDef {
+    char *pool; /* pool name */
+    char *volume; /* volume name */
+    int voltype; /* enum virStorageVolType, internal only */
+    int pooltype; /* enum virStoragePoolType, internal only */
+    int actualtype; /* enum virStorageType, internal only */
+    int mode; /* enum virStorageSourcePoolMode */
+};
+typedef virStorageSourcePoolDef *virStorageSourcePoolDefPtr;
+
 
 # ifndef DEV_BSIZE
 #  define DEV_BSIZE 512

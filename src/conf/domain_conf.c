@@ -763,11 +763,6 @@ VIR_ENUM_IMPL(virDomainDiskDiscard, VIR_DOMAIN_DISK_DISCARD_LAST,
               "default",
               "unmap",
               "ignore")
-VIR_ENUM_IMPL(virDomainDiskSourcePoolMode,
-              VIR_DOMAIN_DISK_SOURCE_POOL_MODE_LAST,
-              "default",
-              "host",
-              "direct")
 
 #define VIR_DOMAIN_XML_WRITE_FLAGS  VIR_DOMAIN_XML_SECURE
 #define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
@@ -1190,7 +1185,7 @@ void virDomainLeaseDefFree(virDomainLeaseDefPtr def)
 }
 
 static void
-virDomainDiskSourcePoolDefFree(virDomainDiskSourcePoolDefPtr def)
+virDomainDiskSourcePoolDefFree(virStorageSourcePoolDefPtr def)
 {
     if (!def)
         return;
@@ -4964,10 +4959,10 @@ virDomainLeaseDefParseXML(xmlNodePtr node)
 
 static int
 virDomainDiskSourcePoolDefParse(xmlNodePtr node,
-                                virDomainDiskSourcePoolDefPtr *srcpool)
+                                virStorageSourcePoolDefPtr *srcpool)
 {
     char *mode = NULL;
-    virDomainDiskSourcePoolDefPtr source;
+    virStorageSourcePoolDefPtr source;
     int ret = -1;
 
     *srcpool = NULL;
@@ -4993,7 +4988,7 @@ virDomainDiskSourcePoolDefParse(xmlNodePtr node,
     }
 
     if (mode &&
-        (source->mode = virDomainDiskSourcePoolModeTypeFromString(mode)) <= 0) {
+        (source->mode = virStorageSourcePoolModeTypeFromString(mode)) <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown source mode '%s' for volume type disk"),
                        mode);
@@ -5018,7 +5013,7 @@ virDomainDiskSourceDefParse(xmlNodePtr node,
                             int *proto,
                             size_t *nhosts,
                             virStorageNetHostDefPtr *hosts,
-                            virDomainDiskSourcePoolDefPtr *srcpool)
+                            virStorageSourcePoolDefPtr *srcpool)
 {
     char *protocol = NULL;
     char *transport = NULL;
@@ -14761,7 +14756,7 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
                                      virStorageNetHostDefPtr hosts,
                                      size_t nseclabels,
                                      virSecurityDeviceLabelDefPtr *seclabels,
-                                     virDomainDiskSourcePoolDefPtr srcpool,
+                                     virStorageSourcePoolDefPtr srcpool,
                                      unsigned int flags)
 {
     size_t n;
@@ -14831,7 +14826,7 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
                                   srcpool->pool, srcpool->volume);
                 if (srcpool->mode)
                     virBufferAsprintf(buf, " mode='%s'",
-                                      virDomainDiskSourcePoolModeTypeToString(srcpool->mode));
+                                      virStorageSourcePoolModeTypeToString(srcpool->mode));
             }
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 
@@ -18530,7 +18525,7 @@ virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
     if (!path || type == VIR_STORAGE_TYPE_NETWORK ||
         (type == VIR_STORAGE_TYPE_VOLUME &&
          disk->src.srcpool &&
-         disk->src.srcpool->mode == VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT))
+         disk->src.srcpool->mode == VIR_STORAGE_SOURCE_POOL_MODE_DIRECT))
         return 0;
 
     if (iter(disk, path, 0, opaque) < 0)
@@ -19392,7 +19387,7 @@ virDomainDiskSourceIsBlockType(virDomainDiskDefPtr def)
          * (e.g. set sgio=filtered|unfiltered for it) in libvirt.
          */
          if (def->src.srcpool->pooltype == VIR_STORAGE_POOL_ISCSI &&
-             def->src.srcpool->mode == VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT)
+             def->src.srcpool->mode == VIR_STORAGE_SOURCE_POOL_MODE_DIRECT)
              return false;
 
         return true;

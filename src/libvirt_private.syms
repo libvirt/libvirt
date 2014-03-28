@@ -1840,6 +1840,8 @@ virStorageNetHostDefFree;
 virStorageNetHostTransportTypeFromString;
 virStorageNetHostTransportTypeToString;
 virStorageNetProtocolTypeToString;
+virStorageSourcePoolModeTypeFromString;
+virStorageSourcePoolModeTypeToString;
 virStorageTypeFromString;
 virStorageTypeToString;
 
