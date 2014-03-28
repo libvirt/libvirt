@@ -1,5 +1,5 @@
 /*
- * storage_encryption_conf.c: volume encryption information
+ * virstorageencryption.c: volume encryption information
  *
  * Copyright (C) 2009-2014 Red Hat, Inc.
  *
@@ -29,8 +29,7 @@
 
 #include "virbuffer.h"
 #include "viralloc.h"
-#include "storage_conf.h"
-#include "storage_encryption_conf.h"
+#include "virstorageencryption.h"
 #include "virxml.h"
 #include "virerror.h"
 #include "viruuid.h"

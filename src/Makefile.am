@@ -146,6 +146,7 @@ UTIL_SOURCES =							\
 		util/virsexpr.c util/virsexpr.h			\
 		util/virsocketaddr.h util/virsocketaddr.c	\
 		util/virstatslinux.c util/virstatslinux.h	\
+		util/virstorageencryption.c util/virstorageencryption.h \
 		util/virstoragefile.c util/virstoragefile.h	\
 		util/virstring.h util/virstring.c		\
 		util/virsysinfo.c util/virsysinfo.h		\
@@ -288,9 +289,6 @@ SECRET_CONF_SOURCES =                                          \
 NODE_DEVICE_CONF_SOURCES =                                     \
 		conf/node_device_conf.c conf/node_device_conf.h
 
-ENCRYPTION_CONF_SOURCES =					\
-		conf/storage_encryption_conf.c conf/storage_encryption_conf.h
-
 CPU_CONF_SOURCES =						\
 		conf/cpu_conf.c conf/cpu_conf.h
 
@@ -312,7 +310,6 @@ CONF_SOURCES =							\
 		$(NWFILTER_CONF_SOURCES)			\
 		$(NODE_DEVICE_CONF_SOURCES)			\
 		$(STORAGE_CONF_SOURCES)				\
-		$(ENCRYPTION_CONF_SOURCES)			\
 		$(INTERFACE_CONF_SOURCES)			\
 		$(SECRET_CONF_SOURCES)				\
 		$(CPU_CONF_SOURCES)				\

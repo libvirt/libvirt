@@ -1,7 +1,7 @@
 /*
  * storage_conf.h: config handling for storage driver
  *
- * Copyright (C) 2006-2008, 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010-2014 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@
 # define __VIR_STORAGE_CONF_H__
 
 # include "internal.h"
-# include "storage_encryption_conf.h"
+# include "virstorageencryption.h"
 # include "virbitmap.h"
 # include "virthread.h"
 

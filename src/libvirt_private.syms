@@ -729,13 +729,6 @@ virStorageVolTypeFromString;
 virStorageVolTypeToString;
 
 
-# conf/storage_encryption_conf.h
-virStorageEncryptionFormat;
-virStorageEncryptionFree;
-virStorageEncryptionParseNode;
-virStorageGenerateQcowPassphrase;
-
-
 # conf/virchrdev.h
 virChrdevAlloc;
 virChrdevFree;
@@ -1813,6 +1806,13 @@ virSocketAddrParseIPv6;
 virSocketAddrPrefixToNetmask;
 virSocketAddrSetIPv4Addr;
 virSocketAddrSetPort;
+
+
+# util/virstorageencryption.h
+virStorageEncryptionFormat;
+virStorageEncryptionFree;
+virStorageEncryptionParseNode;
+virStorageGenerateQcowPassphrase;
 
 
 # util/virstoragefile.h
