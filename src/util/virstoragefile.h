@@ -25,6 +25,8 @@
 # define __VIR_STORAGE_FILE_H__
 
 # include "virbitmap.h"
+# include "virseclabel.h"
+# include "virstorageencryption.h"
 # include "virutil.h"
 
 /* Minimum header size required to probe all known formats with
@@ -179,6 +181,36 @@ enum virStorageSecretType {
     VIR_STORAGE_SECRET_TYPE_USAGE,
 
     VIR_STORAGE_SECRET_TYPE_LAST
+};
+
+
+typedef struct _virStorageSource virStorageSource;
+typedef virStorageSource *virStorageSourcePtr;
+
+/* Stores information related to a host resource.  In the case of
+ * backing chains, multiple source disks join to form a single guest
+ * view.  */
+struct _virStorageSource {
+    int type; /* enum virStorageType */
+    char *path;
+    int protocol; /* enum virStorageNetProtocol */
+    size_t nhosts;
+    virStorageNetHostDefPtr hosts;
+    virStorageSourcePoolDefPtr srcpool;
+    struct {
+        char *username;
+        int secretType; /* enum virStorageSecretType */
+        union {
+            unsigned char uuid[VIR_UUID_BUFLEN];
+            char *usage;
+        } secret;
+    } auth;
+    virStorageEncryptionPtr encryption;
+    char *driverName;
+    int format; /* enum virStorageFileFormat */
+
+    size_t nseclabels;
+    virSecurityDeviceLabelDefPtr *seclabels;
 };
 
 

@@ -595,38 +595,10 @@ struct _virDomainBlockIoTuneInfo {
 };
 typedef virDomainBlockIoTuneInfo *virDomainBlockIoTuneInfoPtr;
 
-typedef struct _virDomainDiskSourceDef virDomainDiskSourceDef;
-typedef virDomainDiskSourceDef *virDomainDiskSourceDefPtr;
-
-/* Stores information related to a host resource.  In the case of
- * backing chains, multiple source disks join to form a single guest
- * view.  TODO Move this to util/ */
-struct _virDomainDiskSourceDef {
-    int type; /* enum virStorageType */
-    char *path;
-    int protocol; /* enum virStorageNetProtocol */
-    size_t nhosts;
-    virStorageNetHostDefPtr hosts;
-    virStorageSourcePoolDefPtr srcpool;
-    struct {
-        char *username;
-        int secretType; /* enum virStorageSecretType */
-        union {
-            unsigned char uuid[VIR_UUID_BUFLEN];
-            char *usage;
-        } secret;
-    } auth;
-    virStorageEncryptionPtr encryption;
-    char *driverName;
-    int format; /* enum virStorageFileFormat */
-
-    size_t nseclabels;
-    virSecurityDeviceLabelDefPtr *seclabels;
-};
 
 /* Stores the virtual disk configuration */
 struct _virDomainDiskDef {
-    virDomainDiskSourceDef src;
+    virStorageSource src;
 
     int device; /* enum virDomainDiskDevice */
     int bus; /* enum virDomainDiskBus */
@@ -2153,7 +2125,7 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def);
 void virDomainInputDefFree(virDomainInputDefPtr def);
 void virDomainDiskDefFree(virDomainDiskDefPtr def);
 void virDomainLeaseDefFree(virDomainLeaseDefPtr def);
-void virDomainDiskAuthClear(virDomainDiskSourceDefPtr def);
+void virDomainDiskAuthClear(virStorageSourcePtr def);
 int virDomainDiskGetType(virDomainDiskDefPtr def);
 void virDomainDiskSetType(virDomainDiskDefPtr def, int type);
 int virDomainDiskGetActualType(virDomainDiskDefPtr def);

@@ -1193,7 +1193,7 @@ virDomainDiskSourcePoolDefFree(virStorageSourcePoolDefPtr def)
 
 
 static void
-virDomainDiskSourceDefClear(virDomainDiskSourceDefPtr def)
+virDomainDiskSourceDefClear(virStorageSourcePtr def)
 {
     size_t i;
 
@@ -1237,7 +1237,7 @@ virDomainDiskDefFree(virDomainDiskDefPtr def)
 
 
 void
-virDomainDiskAuthClear(virDomainDiskSourceDefPtr def)
+virDomainDiskAuthClear(virStorageSourcePtr def)
 {
     VIR_FREE(def->auth.username);
 

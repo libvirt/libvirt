@@ -148,6 +148,7 @@ virt_host_validate_LDADD = \
 		$(NULL)
 
 virt_host_validate_CFLAGS = \
+		$(LIBXML_CFLAGS)				\
 		$(WARN_CFLAGS)					\
 		$(PIE_CFLAGS)					\
 		$(COVERAGE_CFLAGS)				\
@@ -173,6 +174,7 @@ virt_login_shell_LDADD =					\
 
 virt_login_shell_CFLAGS =					\
 		-DLIBVIRT_SETUID_RPC_CLIENT			\
+		$(LIBXML_CFLAGS)				\
 		$(WARN_CFLAGS)					\
 		$(PIE_CFLAGS)					\
 		$(COVERAGE_CFLAGS)
