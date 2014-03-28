@@ -1224,7 +1224,7 @@ qemuTranslateDiskSourcePoolAuth(virDomainDiskDefPtr def,
                        pooldef->source.auth.chap.username) < 0)
             goto cleanup;
         if (pooldef->source.auth.chap.secret.uuidUsable) {
-            def->src.auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_UUID;
+            def->src.auth.secretType = VIR_STORAGE_SECRET_TYPE_UUID;
             memcpy(def->src.auth.secret.uuid,
                    pooldef->source.auth.chap.secret.uuid,
                    VIR_UUID_BUFLEN);
@@ -1232,14 +1232,14 @@ qemuTranslateDiskSourcePoolAuth(virDomainDiskDefPtr def,
             if (VIR_STRDUP(def->src.auth.secret.usage,
                            pooldef->source.auth.chap.secret.usage) < 0)
                 goto cleanup;
-            def->src.auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_USAGE;
+            def->src.auth.secretType = VIR_STORAGE_SECRET_TYPE_USAGE;
         }
     } else if (pooldef->source.authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
         if (VIR_STRDUP(def->src.auth.username,
                        pooldef->source.auth.cephx.username) < 0)
             goto cleanup;
         if (pooldef->source.auth.cephx.secret.uuidUsable) {
-            def->src.auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_UUID;
+            def->src.auth.secretType = VIR_STORAGE_SECRET_TYPE_UUID;
             memcpy(def->src.auth.secret.uuid,
                    pooldef->source.auth.cephx.secret.uuid,
                    VIR_UUID_BUFLEN);
@@ -1247,7 +1247,7 @@ qemuTranslateDiskSourcePoolAuth(virDomainDiskDefPtr def,
             if (VIR_STRDUP(def->src.auth.secret.usage,
                            pooldef->source.auth.cephx.secret.usage) < 0)
                 goto cleanup;
-            def->src.auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_USAGE;
+            def->src.auth.secretType = VIR_STORAGE_SECRET_TYPE_USAGE;
         }
     }
     ret = 0;

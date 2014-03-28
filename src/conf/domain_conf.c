@@ -257,11 +257,6 @@ VIR_ENUM_IMPL(virDomainDiskErrorPolicy, VIR_DOMAIN_DISK_ERROR_POLICY_LAST,
               "ignore",
               "enospace")
 
-VIR_ENUM_IMPL(virDomainDiskSecretType, VIR_DOMAIN_DISK_SECRET_TYPE_LAST,
-              "none",
-              "uuid",
-              "usage")
-
 VIR_ENUM_IMPL(virDomainDiskIo, VIR_DOMAIN_DISK_IO_LAST,
               "default",
               "native",
@@ -1246,10 +1241,10 @@ virDomainDiskAuthClear(virDomainDiskSourceDefPtr def)
 {
     VIR_FREE(def->auth.username);
 
-    if (def->auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_USAGE)
+    if (def->auth.secretType == VIR_STORAGE_SECRET_TYPE_USAGE)
         VIR_FREE(def->auth.secret.usage);
 
-    def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_NONE;
+    def->auth.secretType = VIR_STORAGE_SECRET_TYPE_NONE;
 }
 
 
@@ -5349,7 +5344,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                     goto error;
                 }
 
-                def->src.auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_NONE;
+                def->src.auth.secretType = VIR_STORAGE_SECRET_TYPE_NONE;
                 child = cur->children;
                 while (child != NULL) {
                     if (child->type == XML_ELEMENT_NODE &&
@@ -5386,7 +5381,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                         }
 
                         if (authUUID != NULL) {
-                            def->src.auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_UUID;
+                            def->src.auth.secretType = VIR_STORAGE_SECRET_TYPE_UUID;
                             if (virUUIDParse(authUUID,
                                              def->src.auth.secret.uuid) < 0) {
                                 virReportError(VIR_ERR_XML_ERROR,
@@ -5395,7 +5390,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                                 goto error;
                             }
                         } else if (authUsage != NULL) {
-                            def->src.auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_USAGE;
+                            def->src.auth.secretType = VIR_STORAGE_SECRET_TYPE_USAGE;
                             def->src.auth.secret.usage = authUsage;
                             authUsage = NULL;
                         }
@@ -14973,11 +14968,11 @@ virDomainDiskDefFormat(virBufferPtr buf,
             virBufferAddLit(buf, "<secret type='ceph'");
         }
 
-        if (def->src.auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_UUID) {
+        if (def->src.auth.secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
             virUUIDFormat(def->src.auth.secret.uuid, uuidstr);
             virBufferAsprintf(buf, " uuid='%s'/>\n", uuidstr);
         }
-        if (def->src.auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_USAGE) {
+        if (def->src.auth.secretType == VIR_STORAGE_SECRET_TYPE_USAGE) {
             virBufferEscapeString(buf, " usage='%s'/>\n",
                                   def->src.auth.secret.usage);
         }

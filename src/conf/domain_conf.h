@@ -567,13 +567,6 @@ enum virDomainStartupPolicy {
     VIR_DOMAIN_STARTUP_POLICY_LAST
 };
 
-enum virDomainDiskSecretType {
-    VIR_DOMAIN_DISK_SECRET_TYPE_NONE,
-    VIR_DOMAIN_DISK_SECRET_TYPE_UUID,
-    VIR_DOMAIN_DISK_SECRET_TYPE_USAGE,
-
-    VIR_DOMAIN_DISK_SECRET_TYPE_LAST
-};
 
 enum virDomainDeviceSGIO {
     VIR_DOMAIN_DEVICE_SGIO_DEFAULT = 0,
@@ -617,7 +610,7 @@ struct _virDomainDiskSourceDef {
     virStorageSourcePoolDefPtr srcpool;
     struct {
         char *username;
-        int secretType; /* enum virDomainDiskSecretType */
+        int secretType; /* enum virStorageSecretType */
         union {
             unsigned char uuid[VIR_UUID_BUFLEN];
             char *usage;
@@ -2588,7 +2581,6 @@ VIR_ENUM_DECL(virDomainDiskBus)
 VIR_ENUM_DECL(virDomainDiskCache)
 VIR_ENUM_DECL(virDomainDiskErrorPolicy)
 VIR_ENUM_DECL(virDomainDiskIo)
-VIR_ENUM_DECL(virDomainDiskSecretType)
 VIR_ENUM_DECL(virDomainDeviceSGIO)
 VIR_ENUM_DECL(virDomainDiskTray)
 VIR_ENUM_DECL(virDomainDiskDiscard)

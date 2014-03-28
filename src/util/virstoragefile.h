@@ -173,6 +173,15 @@ struct _virStorageSourcePoolDef {
 typedef virStorageSourcePoolDef *virStorageSourcePoolDefPtr;
 
 
+enum virStorageSecretType {
+    VIR_STORAGE_SECRET_TYPE_NONE,
+    VIR_STORAGE_SECRET_TYPE_UUID,
+    VIR_STORAGE_SECRET_TYPE_USAGE,
+
+    VIR_STORAGE_SECRET_TYPE_LAST
+};
+
+
 # ifndef DEV_BSIZE
 #  define DEV_BSIZE 512
 # endif
