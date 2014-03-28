@@ -420,7 +420,7 @@ nodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
         goto cleanup;
 
     for (caps = obj->def->caps; caps && ncaps < maxnames; caps = caps->next) {
-        if (VIR_STRDUP(names[ncaps], virNodeDevCapTypeToString(caps->type)) < 0)
+        if (VIR_STRDUP(names[ncaps++], virNodeDevCapTypeToString(caps->type)) < 0)
             goto cleanup;
     }
     ret = ncaps;
