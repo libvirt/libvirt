@@ -912,6 +912,11 @@ sc_curly_braces_style:
 			  'braces around function body, see'           \
 			  'HACKING' 1>&2; exit 1; } || :
 
+sc_prohibit_windows_special_chars_in_filename:
+	@files=$$($(VC_LIST_EXCEPT) | grep '[:*?"<>|]');               \
+	test -n "$$files" && { echo '$(ME): Windows special chars'     \
+	  'in filename not allowed:' 1>&2; echo $$files 1>&2; exit 1; } || :
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
