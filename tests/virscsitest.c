@@ -25,10 +25,13 @@
 
 #include "virscsi.h"
 #include "testutils.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 #define VIR_SCSI_DATA "/virscsidata"
+
+VIR_LOG_INIT("tests.scsitest");
 
 static const char *abs_top_srcdir;
 static char *virscsi_prefix = NULL;
@@ -162,9 +165,38 @@ test2(const void *data ATTRIBUTE_UNUSED)
 }
 
 static int
+create_symlink(const char *tmpdir, const char *src_name, const char *dst_name)
+{
+    int ret = -1;
+    char *src_path = NULL;
+    char *dst_path = NULL;
+
+    if (virAsprintf(&src_path, "%s/%s", virscsi_prefix, src_name) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&dst_path, "%s/%s", tmpdir, dst_name) < 0)
+        goto cleanup;
+
+    if (symlink(src_path, dst_path) < 0) {
+        VIR_WARN("Failed to create symlink '%s' to '%s'", src_path, dst_path);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(src_path);
+    VIR_FREE(dst_path);
+
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
+    char *tmpdir = NULL;
+    char template[] = "/tmp/libvirt_XXXXXX";
 
     abs_top_srcdir = getenv("abs_top_srcdir");
     if (!abs_top_srcdir)
@@ -175,12 +207,42 @@ mymain(void)
         goto cleanup;
     }
 
+    tmpdir = mkdtemp(template);
+
+    if (tmpdir == NULL) {
+        VIR_WARN("Failed to create temporary directory");
+        ret = -1;
+        goto cleanup;
+    }
+
+#define CREATE_SYMLINK(src_name, dst_name)                    \
+    do {                                                      \
+        if (create_symlink(tmpdir, src_name, dst_name) < 0) { \
+            ret = -1;                                         \
+            goto cleanup;                                     \
+        }                                                     \
+    } while (0)
+
+    CREATE_SYMLINK("0-0-0-0", "0:0:0:0");
+    CREATE_SYMLINK("1-0-0-0", "1:0:0:0");
+    CREATE_SYMLINK("sg0", "sg0");
+    CREATE_SYMLINK("sg8", "sg8");
+
+    VIR_FREE(virscsi_prefix);
+
+    if (VIR_STRDUP(virscsi_prefix, tmpdir) < 0) {
+        ret = -1;
+        goto cleanup;
+    }
+
     if (virtTestRun("test1", test1, NULL) < 0)
         ret = -1;
     if (virtTestRun("test2", test2, NULL) < 0)
         ret = -1;
 
  cleanup:
+    if (tmpdir && getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
+        virFileDeleteTree(tmpdir);
     VIR_FREE(virscsi_prefix);
     return ret;
 }
