@@ -2790,7 +2790,7 @@ qemuOpenFileAs(uid_t fallback_uid, gid_t fallback_gid,
     bool bypass_security = false;
     unsigned int vfoflags = 0;
     int fd = -1;
-    int path_shared = virStorageFileIsSharedFS(path);
+    int path_shared = virFileIsSharedFS(path);
     uid_t uid = geteuid();
     gid_t gid = getegid();
 

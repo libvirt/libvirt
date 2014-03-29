@@ -250,19 +250,7 @@ int virStorageFileResize(const char *path,
                          unsigned long long orig_capacity,
                          bool pre_allocate);
 
-enum {
-    VIR_STORAGE_FILE_SHFS_NFS = (1 << 0),
-    VIR_STORAGE_FILE_SHFS_GFS2 = (1 << 1),
-    VIR_STORAGE_FILE_SHFS_OCFS = (1 << 2),
-    VIR_STORAGE_FILE_SHFS_AFS = (1 << 3),
-    VIR_STORAGE_FILE_SHFS_SMB = (1 << 4),
-    VIR_STORAGE_FILE_SHFS_CIFS = (1 << 5),
-};
-
-int virStorageFileIsSharedFS(const char *path);
 int virStorageFileIsClusterFS(const char *path);
-int virStorageFileIsSharedFSType(const char *path,
-                                 int fstypes);
 
 int virStorageFileGetLVMKey(const char *path,
                             char **key);

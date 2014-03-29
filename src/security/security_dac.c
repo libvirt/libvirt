@@ -402,7 +402,7 @@ virSecurityDACRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
      * VM's I/O attempts :-)
      */
     if (migrated) {
-        int rc = virStorageFileIsSharedFS(src);
+        int rc = virFileIsSharedFS(src);
         if (rc < 0)
             return -1;
         if (rc == 1) {

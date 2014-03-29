@@ -920,8 +920,7 @@ virSecuritySELinuxSetFileconHelper(const char *path, char *tcon, bool optional)
                 return -1;
         } else {
             const char *msg;
-            if ((virStorageFileIsSharedFSType(path,
-                                              VIR_STORAGE_FILE_SHFS_NFS) == 1) &&
+            if (virFileIsSharedFSType(path, VIR_FILE_SHFS_NFS) == 1 &&
                 security_get_boolean_active("virt_use_nfs") != 1) {
                 msg = _("Setting security context '%s' on '%s' not supported. "
                         "Consider setting virt_use_nfs");
@@ -1172,7 +1171,7 @@ virSecuritySELinuxRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
      * VM's I/O attempts :-)
      */
     if (migrated) {
-        int rc = virStorageFileIsSharedFS(src);
+        int rc = virFileIsSharedFS(src);
         if (rc < 0)
             return -1;
         if (rc == 1) {
@@ -2323,8 +2322,7 @@ virSecuritySELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
 
     if (stdin_path) {
         if (virSecuritySELinuxSetFilecon(stdin_path, data->content_context) < 0 &&
-            virStorageFileIsSharedFSType(stdin_path,
-                                         VIR_STORAGE_FILE_SHFS_NFS) != 1)
+            virFileIsSharedFSType(stdin_path, VIR_FILE_SHFS_NFS) != 1)
             return -1;
     }
 

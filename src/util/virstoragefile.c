@@ -28,12 +28,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
-#ifdef __linux__
-# if HAVE_LINUX_MAGIC_H
-#  include <linux/magic.h>
-# endif
-# include <sys/statfs.h>
-#endif
 #include "dirname.h"
 #include "viralloc.h"
 #include "virerror.h"
@@ -1283,126 +1277,15 @@ virStorageFileResize(const char *path,
     return ret;
 }
 
-#ifdef __linux__
-
-# ifndef NFS_SUPER_MAGIC
-#  define NFS_SUPER_MAGIC 0x6969
-# endif
-# ifndef OCFS2_SUPER_MAGIC
-#  define OCFS2_SUPER_MAGIC 0x7461636f
-# endif
-# ifndef GFS2_MAGIC
-#  define GFS2_MAGIC 0x01161970
-# endif
-# ifndef AFS_FS_MAGIC
-#  define AFS_FS_MAGIC 0x6B414653
-# endif
-# ifndef SMB_SUPER_MAGIC
-#  define SMB_SUPER_MAGIC 0x517B
-# endif
-# ifndef CIFS_SUPER_MAGIC
-#  define CIFS_SUPER_MAGIC 0xFF534D42
-# endif
-
-
-int virStorageFileIsSharedFSType(const char *path,
-                                 int fstypes)
-{
-    char *dirpath, *p;
-    struct statfs sb;
-    int statfs_ret;
-
-    if (VIR_STRDUP(dirpath, path) < 0)
-        return -1;
-
-    do {
-
-        /* Try less and less of the path until we get to a
-         * directory we can stat. Even if we don't have 'x'
-         * permission on any directory in the path on the NFS
-         * server (assuming it's NFS), we will be able to stat the
-         * mount point, and that will properly tell us if the
-         * fstype is NFS.
-         */
-
-        if ((p = strrchr(dirpath, '/')) == NULL) {
-            virReportSystemError(EINVAL,
-                         _("Invalid relative path '%s'"), path);
-            VIR_FREE(dirpath);
-            return -1;
-        }
-
-        if (p == dirpath)
-            *(p+1) = '\0';
-        else
-            *p = '\0';
-
-        statfs_ret = statfs(dirpath, &sb);
-
-    } while ((statfs_ret < 0) && (p != dirpath));
-
-    VIR_FREE(dirpath);
-
-    if (statfs_ret < 0) {
-        virReportSystemError(errno,
-                             _("cannot determine filesystem for '%s'"),
-                             path);
-        return -1;
-    }
-
-    VIR_DEBUG("Check if path %s with FS magic %lld is shared",
-              path, (long long int)sb.f_type);
-
-    if ((fstypes & VIR_STORAGE_FILE_SHFS_NFS) &&
-        (sb.f_type == NFS_SUPER_MAGIC))
-        return 1;
-
-    if ((fstypes & VIR_STORAGE_FILE_SHFS_GFS2) &&
-        (sb.f_type == GFS2_MAGIC))
-        return 1;
-    if ((fstypes & VIR_STORAGE_FILE_SHFS_OCFS) &&
-        (sb.f_type == OCFS2_SUPER_MAGIC))
-        return 1;
-    if ((fstypes & VIR_STORAGE_FILE_SHFS_AFS) &&
-        (sb.f_type == AFS_FS_MAGIC))
-        return 1;
-    if ((fstypes & VIR_STORAGE_FILE_SHFS_SMB) &&
-        (sb.f_type == SMB_SUPER_MAGIC))
-        return 1;
-    if ((fstypes & VIR_STORAGE_FILE_SHFS_CIFS) &&
-        (sb.f_type == CIFS_SUPER_MAGIC))
-        return 1;
-
-    return 0;
-}
-#else
-int virStorageFileIsSharedFSType(const char *path ATTRIBUTE_UNUSED,
-                                 int fstypes ATTRIBUTE_UNUSED)
-{
-    /* XXX implement me :-) */
-    return 0;
-}
-#endif
-
-int virStorageFileIsSharedFS(const char *path)
-{
-    return virStorageFileIsSharedFSType(path,
-                                        VIR_STORAGE_FILE_SHFS_NFS |
-                                        VIR_STORAGE_FILE_SHFS_GFS2 |
-                                        VIR_STORAGE_FILE_SHFS_OCFS |
-                                        VIR_STORAGE_FILE_SHFS_AFS |
-                                        VIR_STORAGE_FILE_SHFS_SMB |
-                                        VIR_STORAGE_FILE_SHFS_CIFS);
-}
 
 int virStorageFileIsClusterFS(const char *path)
 {
     /* These are coherent cluster filesystems known to be safe for
      * migration with cache != none
      */
-    return virStorageFileIsSharedFSType(path,
-                                        VIR_STORAGE_FILE_SHFS_GFS2 |
-                                        VIR_STORAGE_FILE_SHFS_OCFS);
+    return virFileIsSharedFSType(path,
+                                 VIR_FILE_SHFS_GFS2 |
+                                 VIR_FILE_SHFS_OCFS);
 }
 
 #ifdef LVS

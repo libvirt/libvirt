@@ -1534,7 +1534,7 @@ qemuMigrationIsSafe(virDomainDefPtr def)
             int rc;
 
             if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE) {
-                if ((rc = virStorageFileIsSharedFS(src)) < 0)
+                if ((rc = virFileIsSharedFS(src)) < 0)
                     return false;
                 else if (rc == 0)
                     continue;
