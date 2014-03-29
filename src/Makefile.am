@@ -2069,7 +2069,6 @@ libvirt_setuid_rpc_client_la_SOURCES = 		\
 		util/virprocess.c		\
 		util/virrandom.c		\
 		util/virsocketaddr.c		\
-		util/virstoragefile.c		\
 		util/virstring.c		\
 		util/virtime.c			\
 		util/virthread.c		\

@@ -540,7 +540,8 @@ int virFileUpdatePerm(const char *path,
 }
 
 
-#if defined(__linux__) && HAVE_DECL_LO_FLAGS_AUTOCLEAR
+#if defined(__linux__) && HAVE_DECL_LO_FLAGS_AUTOCLEAR && \
+    !defined(LIBVIRT_SETUID_RPC_CLIENT)
 
 # if HAVE_DECL_LOOP_CTL_GET_FREE
 
