@@ -12028,10 +12028,10 @@ qemuDomainSnapshotDiskGetSourceString(virDomainSnapshotDiskDefPtr disk,
     *source = NULL;
 
     return qemuGetDriveSourceString(virDomainSnapshotDiskGetActualType(disk),
-                                    disk->file,
-                                    disk->protocol,
-                                    disk->nhosts,
-                                    disk->hosts,
+                                    disk->src.path,
+                                    disk->src.protocol,
+                                    disk->src.nhosts,
+                                    disk->src.hosts,
                                     NULL,
                                     NULL,
                                     source);
@@ -12178,14 +12178,14 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
         if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
             continue;
 
-        if (!snapdisk->format)
-            snapdisk->format = VIR_STORAGE_FILE_QCOW2;
+        if (!snapdisk->src.format)
+            snapdisk->src.format = VIR_STORAGE_FILE_QCOW2;
 
         /* creates cmd line args: qemu-img create -f qcow2 -o */
         if (!(cmd = virCommandNewArgList(qemuImgPath,
                                          "create",
                                          "-f",
-                                         virStorageFileFormatTypeToString(snapdisk->format),
+                                         virStorageFileFormatTypeToString(snapdisk->src.format),
                                          "-o",
                                          NULL)))
             goto cleanup;
@@ -12209,10 +12209,10 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
         }
 
         /* adds cmd line args: /path/to/target/file */
-        virCommandAddArg(cmd, snapdisk->file);
+        virCommandAddArg(cmd, snapdisk->src.path);
 
         /* If the target does not exist, we're going to create it possibly */
-        if (!virFileExists(snapdisk->file))
+        if (!virFileExists(snapdisk->src.path))
             ignore_value(virBitmapSetBit(created, i));
 
         if (virCommandRun(cmd, NULL) < 0)
@@ -12229,11 +12229,11 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
 
         if (snapdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
             VIR_FREE(defdisk->src.path);
-            if (VIR_STRDUP(defdisk->src.path, snapdisk->file) < 0) {
+            if (VIR_STRDUP(defdisk->src.path, snapdisk->src.path) < 0) {
                 /* we cannot rollback here in a sane way */
                 goto cleanup;
             }
-            defdisk->src.format = snapdisk->format;
+            defdisk->src.format = snapdisk->src.format;
         }
     }
 
@@ -12247,9 +12247,9 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
         ssize_t bit = -1;
         while ((bit = virBitmapNextSetBit(created, bit)) >= 0) {
             snapdisk = &(snap->def->disks[bit]);
-            if (unlink(snapdisk->file) < 0)
+            if (unlink(snapdisk->src.path) < 0)
                 VIR_WARN("Failed to remove snapshot image '%s'",
-                         snapdisk->file);
+                         snapdisk->src.path);
         }
     }
     virBitmapFree(created);
@@ -12417,7 +12417,7 @@ qemuDomainSnapshotPrepareDiskExternalOverlayActive(virDomainSnapshotDiskDefPtr d
         return 0;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        switch ((enum virStorageNetProtocol) disk->protocol) {
+        switch ((enum virStorageNetProtocol) disk->src.protocol) {
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
             return 0;
 
@@ -12434,7 +12434,7 @@ qemuDomainSnapshotPrepareDiskExternalOverlayActive(virDomainSnapshotDiskDefPtr d
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("external active snapshots are not supported on "
                              "'network' disks using '%s' protocol"),
-                           virStorageNetProtocolTypeToString(disk->protocol));
+                           virStorageNetProtocolTypeToString(disk->src.protocol));
             return -1;
 
         }
@@ -12515,19 +12515,19 @@ qemuDomainSnapshotPrepareDiskExternal(virConnectPtr conn,
         if (errno != ENOENT) {
             virReportSystemError(errno,
                                  _("unable to stat for disk %s: %s"),
-                                 snapdisk->name, snapdisk->file);
+                                 snapdisk->name, snapdisk->src.path);
             goto cleanup;
         } else if (reuse) {
             virReportSystemError(errno,
                                  _("missing existing file for disk %s: %s"),
-                                 snapdisk->name, snapdisk->file);
+                                 snapdisk->name, snapdisk->src.path);
             goto cleanup;
         }
     } else if (!S_ISBLK(st.st_mode) && st.st_size && !reuse) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("external snapshot file for disk %s already "
                          "exists and is not a block device: %s"),
-                       snapdisk->name, snapdisk->file);
+                       snapdisk->name, snapdisk->src.path);
         goto cleanup;
     }
 
@@ -12654,15 +12654,15 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
             break;
 
         case VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL:
-            if (!disk->format) {
-                disk->format = VIR_STORAGE_FILE_QCOW2;
-            } else if (disk->format != VIR_STORAGE_FILE_QCOW2 &&
-                       disk->format != VIR_STORAGE_FILE_QED) {
+            if (!disk->src.format) {
+                disk->src.format = VIR_STORAGE_FILE_QCOW2;
+            } else if (disk->src.format != VIR_STORAGE_FILE_QCOW2 &&
+                       disk->src.format != VIR_STORAGE_FILE_QED) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("external snapshot format for disk %s "
                                  "is unsupported: %s"),
                                disk->name,
-                               virStorageFileFormatTypeToString(disk->format));
+                               virStorageFileFormatTypeToString(disk->src.format));
                 goto cleanup;
             }
 
@@ -12750,7 +12750,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     char *newsource = NULL;
     virStorageNetHostDefPtr newhosts = NULL;
     virStorageNetHostDefPtr persistHosts = NULL;
-    int format = snap->format;
+    int format = snap->src.format;
     const char *formatStr = NULL;
     char *persistSource = NULL;
     int ret = -1;
@@ -12781,14 +12781,14 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     if (qemuDomainSnapshotDiskGetSourceString(snap, &source) < 0)
         goto cleanup;
 
-    if (VIR_STRDUP(newsource, snap->file) < 0)
+    if (VIR_STRDUP(newsource, snap->src.path) < 0)
         goto cleanup;
 
     if (persistDisk &&
-        VIR_STRDUP(persistSource, snap->file) < 0)
+        VIR_STRDUP(persistSource, snap->src.path) < 0)
         goto cleanup;
 
-    switch (snap->type) {
+    switch (snap->src.type) {
     case VIR_STORAGE_TYPE_BLOCK:
         reuse = true;
         /* fallthrough */
@@ -12813,13 +12813,15 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
         break;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        switch (snap->protocol) {
+        switch (snap->src.protocol) {
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
-            if (!(newhosts = virStorageNetHostDefCopy(snap->nhosts, snap->hosts)))
+            if (!(newhosts = virStorageNetHostDefCopy(snap->src.nhosts,
+                                                      snap->src.hosts)))
                 goto cleanup;
 
             if (persistDisk &&
-                !(persistHosts = virStorageNetHostDefCopy(snap->nhosts, snap->hosts)))
+                !(persistHosts = virStorageNetHostDefCopy(snap->src.nhosts,
+                                                          snap->src.hosts)))
                 goto cleanup;
 
             break;
@@ -12828,7 +12830,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                            _("snapshots on volumes using '%s' protocol "
                              "are not supported"),
-                           virStorageNetProtocolTypeToString(snap->protocol));
+                           virStorageNetProtocolTypeToString(snap->src.protocol));
             goto cleanup;
         }
         break;
@@ -12836,13 +12838,13 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     default:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("snapshots are not supported on '%s' volumes"),
-                       virStorageTypeToString(snap->type));
+                       virStorageTypeToString(snap->src.type));
         goto cleanup;
     }
 
     /* create the actual snapshot */
-    if (snap->format)
-        formatStr = virStorageFileFormatTypeToString(snap->format);
+    if (snap->src.format)
+        formatStr = virStorageFileFormatTypeToString(snap->src.format);
 
     /* The monitor is only accessed if qemu doesn't support transactions.
      * Otherwise the following monitor command only constructs the command.
@@ -12874,9 +12876,9 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
 
     disk->src.path = newsource;
     disk->src.format = format;
-    disk->src.type = snap->type;
-    disk->src.protocol = snap->protocol;
-    disk->src.nhosts = snap->nhosts;
+    disk->src.type = snap->src.type;
+    disk->src.protocol = snap->src.protocol;
+    disk->src.nhosts = snap->src.nhosts;
     disk->src.hosts = newhosts;
 
     newsource = NULL;
@@ -12889,9 +12891,9 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
 
         persistDisk->src.path = persistSource;
         persistDisk->src.format = format;
-        persistDisk->src.type = snap->type;
-        persistDisk->src.protocol = snap->protocol;
-        persistDisk->src.nhosts = snap->nhosts;
+        persistDisk->src.type = snap->src.type;
+        persistDisk->src.protocol = snap->src.protocol;
+        persistDisk->src.nhosts = snap->src.nhosts;
         persistDisk->src.hosts = persistHosts;
 
         persistSource = NULL;
@@ -12906,8 +12908,8 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     VIR_FREE(source);
     VIR_FREE(newsource);
     VIR_FREE(persistSource);
-    virStorageNetHostDefFree(snap->nhosts, newhosts);
-    virStorageNetHostDefFree(snap->nhosts, persistHosts);
+    virStorageNetHostDefFree(snap->src.nhosts, newhosts);
+    virStorageNetHostDefFree(snap->src.nhosts, persistHosts);
     return ret;
 }
 

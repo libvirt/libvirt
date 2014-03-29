@@ -2802,10 +2802,10 @@ virStorageFilePtr
 virStorageFileInitFromSnapshotDef(virDomainSnapshotDiskDefPtr disk)
 {
     return virStorageFileInitInternal(virDomainSnapshotDiskGetActualType(disk),
-                                      disk->file,
-                                      disk->protocol,
-                                      disk->nhosts,
-                                      disk->hosts);
+                                      disk->src.path,
+                                      disk->src.protocol,
+                                      disk->src.nhosts,
+                                      disk->src.hosts);
 }
 
 
