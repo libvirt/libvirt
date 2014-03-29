@@ -1531,3 +1531,52 @@ virStorageNetHostDefCopy(size_t nhosts,
     virStorageNetHostDefFree(nhosts, ret);
     return NULL;
 }
+
+
+void
+virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def->pool);
+    VIR_FREE(def->volume);
+
+    VIR_FREE(def);
+}
+
+
+void
+virStorageSourceAuthClear(virStorageSourcePtr def)
+{
+    VIR_FREE(def->auth.username);
+
+    if (def->auth.secretType == VIR_STORAGE_SECRET_TYPE_USAGE)
+        VIR_FREE(def->auth.secret.usage);
+
+    def->auth.secretType = VIR_STORAGE_SECRET_TYPE_NONE;
+}
+
+
+void
+virStorageSourceClear(virStorageSourcePtr def)
+{
+    size_t i;
+
+    if (!def)
+        return;
+
+    VIR_FREE(def->path);
+    virStorageSourcePoolDefFree(def->srcpool);
+    VIR_FREE(def->driverName);
+    virStorageEncryptionFree(def->encryption);
+
+    if (def->seclabels) {
+        for (i = 0; i < def->nseclabels; i++)
+            virSecurityDeviceLabelDefFree(def->seclabels[i]);
+        VIR_FREE(def->seclabels);
+    }
+
+    virStorageNetHostDefFree(def->nhosts, def->hosts);
+    virStorageSourceAuthClear(def);
+}

@@ -262,5 +262,8 @@ void virStorageNetHostDefFree(size_t nhosts, virStorageNetHostDefPtr hosts);
 virStorageNetHostDefPtr virStorageNetHostDefCopy(size_t nhosts,
                                                  virStorageNetHostDefPtr hosts);
 
+void virStorageSourceAuthClear(virStorageSourcePtr def);
+void virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def);
+void virStorageSourceClear(virStorageSourcePtr def);
 
 #endif /* __VIR_STORAGE_FILE_H__ */

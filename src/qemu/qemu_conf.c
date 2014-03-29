@@ -1310,7 +1310,7 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
 
     VIR_FREE(def->src.path);
     virStorageNetHostDefFree(def->src.nhosts, def->src.hosts);
-    virDomainDiskAuthClear(&def->src);
+    virStorageSourceAuthClear(&def->src);
 
     switch ((enum virStoragePoolType) pooldef->type) {
     case VIR_STORAGE_POOL_DIR:
