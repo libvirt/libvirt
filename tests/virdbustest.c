@@ -250,6 +250,7 @@ static int testMessageArrayRef(const void *args ATTRIBUTE_UNUSED)
     size_t out_nstrv2 = 0;
     const char *in_str2 = "World";
     char *out_str1 = NULL, *out_str2 = NULL;
+    size_t i;
 
     if (!(msg = dbus_message_new_method_call("org.libvirt.test",
                                              "/org/libvirt/test",
@@ -315,6 +316,12 @@ static int testMessageArrayRef(const void *args ATTRIBUTE_UNUSED)
     VIR_FREE(out_int32);
     VIR_FREE(out_str1);
     VIR_FREE(out_str2);
+    for (i = 0; i < out_nstrv1; i++)
+        VIR_FREE(out_strv1[i]);
+    VIR_FREE(out_strv1);
+    for (i = 0; i < out_nstrv2; i++)
+        VIR_FREE(out_strv2[i]);
+    VIR_FREE(out_strv2);
     dbus_message_unref(msg);
     return ret;
 }
