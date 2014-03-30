@@ -1569,6 +1569,8 @@ virStorageSourceClear(virStorageSourcePtr def)
     VIR_FREE(def->path);
     virStorageSourcePoolDefFree(def->srcpool);
     VIR_FREE(def->driverName);
+    virBitmapFree(def->features);
+    VIR_FREE(def->compat);
     virStorageEncryptionFree(def->encryption);
 
     if (def->seclabels) {
@@ -1576,6 +1578,11 @@ virStorageSourceClear(virStorageSourcePtr def)
             virSecurityDeviceLabelDefFree(def->seclabels[i]);
         VIR_FREE(def->seclabels);
     }
+    if (def->perms) {
+        VIR_FREE(def->perms->label);
+        VIR_FREE(def->perms);
+    }
+    VIR_FREE(def->timestamps);
 
     virStorageNetHostDefFree(def->nhosts, def->hosts);
     virStorageSourceAuthClear(def);

@@ -85,6 +85,26 @@ enum virStorageFileFeature {
 
 VIR_ENUM_DECL(virStorageFileFeature);
 
+typedef struct _virStoragePerms virStoragePerms;
+typedef virStoragePerms *virStoragePermsPtr;
+struct _virStoragePerms {
+    mode_t mode;
+    uid_t uid;
+    gid_t gid;
+    char *label;
+};
+
+
+typedef struct _virStorageTimestamps virStorageTimestamps;
+typedef virStorageTimestamps *virStorageTimestampsPtr;
+struct _virStorageTimestamps {
+    struct timespec atime;
+    struct timespec btime; /* birth time unknown if btime.tv_nsec == -1 */
+    struct timespec ctime;
+    struct timespec mtime;
+};
+
+
 typedef struct _virStorageFileMetadata virStorageFileMetadata;
 typedef virStorageFileMetadata *virStorageFileMetadataPtr;
 struct _virStorageFileMetadata {
@@ -206,9 +226,14 @@ struct _virStorageSource {
         } secret;
     } auth;
     virStorageEncryptionPtr encryption;
+
     char *driverName;
     int format; /* enum virStorageFileFormat */
+    virBitmapPtr features;
+    char *compat;
 
+    virStoragePermsPtr perms;
+    virStorageTimestampsPtr timestamps;
     size_t nseclabels;
     virSecurityDeviceLabelDefPtr *seclabels;
 };

@@ -26,32 +26,11 @@
 
 # include "internal.h"
 # include "virstorageencryption.h"
+# include "virstoragefile.h"
 # include "virbitmap.h"
 # include "virthread.h"
 
 # include <libxml/tree.h>
-
-typedef struct _virStoragePerms virStoragePerms;
-typedef virStoragePerms *virStoragePermsPtr;
-struct _virStoragePerms {
-    mode_t mode;
-    uid_t uid;
-    gid_t gid;
-    char *label;
-};
-
-typedef struct _virStorageTimestamps virStorageTimestamps;
-typedef virStorageTimestamps *virStorageTimestampsPtr;
-struct _virStorageTimestamps {
-    struct timespec atime;
-    /* if btime.tv_nsec == -1 then
-     * birth time is unknown
-     */
-    struct timespec btime;
-    struct timespec ctime;
-    struct timespec mtime;
-};
-
 
 /*
  * How the volume's data is stored on underlying
