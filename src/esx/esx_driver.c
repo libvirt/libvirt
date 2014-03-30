@@ -2,7 +2,7 @@
  * esx_driver.c: core driver functions for managing VMware ESX hosts
  *
  * Copyright (C) 2010-2014 Red Hat, Inc.
- * Copyright (C) 2009-2013 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2014 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Maximilian Wilhelm <max@rfc2324.org>
  *
  * This library is free software; you can redistribute it and/or
@@ -44,6 +44,7 @@
 #include "esx_vi.h"
 #include "esx_vi_methods.h"
 #include "esx_util.h"
+#include "esx_stream.h"
 #include "virstring.h"
 #include "viruri.h"
 
@@ -968,6 +969,7 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     priv->maxVcpus = -1;
     priv->supportsVMotion = esxVI_Boolean_Undefined;
     priv->supportsLongMode = esxVI_Boolean_Undefined;
+    priv->supportsScreenshot = esxVI_Boolean_Undefined;
     priv->usedCpuTimeCounterId = -1;
 
     /*
@@ -1139,6 +1141,40 @@ esxSupportsVMotion(esxPrivate *priv)
     esxVI_ObjectContent_Free(&hostSystem);
 
     return priv->supportsVMotion;
+}
+
+
+
+static esxVI_Boolean
+esxSupportsScreenshot(esxPrivate *priv)
+{
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *hostSystem = NULL;
+
+    if (priv->supportsScreenshot != esxVI_Boolean_Undefined)
+        return priv->supportsScreenshot;
+
+    if (esxVI_EnsureSession(priv->primary) < 0)
+        return esxVI_Boolean_Undefined;
+
+    if (esxVI_String_AppendValueToList(&propertyNameList,
+                                       "capability.screenshotSupported") < 0 ||
+        esxVI_LookupHostSystemProperties(priv->primary, propertyNameList,
+                                         &hostSystem) < 0 ||
+        esxVI_GetBoolean(hostSystem, "capability.screenshotSupported",
+                         &priv->supportsScreenshot,
+                         esxVI_Occurrence_RequiredItem) < 0)
+        goto cleanup;
+
+ cleanup:
+    /*
+     * If we goto cleanup in case of an error then priv->supportsScreenshot is
+     * still esxVI_Boolean_Undefined, therefore we don't need to set it.
+     */
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&hostSystem);
+
+    return priv->supportsScreenshot;
 }
 
 
@@ -2489,6 +2525,84 @@ esxDomainGetState(virDomainPtr domain,
     esxVI_ObjectContent_Free(&virtualMachine);
 
     return result;
+}
+
+
+
+static char *
+esxDomainScreenshot(virDomainPtr domain, virStreamPtr stream,
+                    unsigned int screen, unsigned int flags)
+{
+    char *mimeType = NULL;
+    esxPrivate *priv = domain->conn->privateData;
+    esxVI_Boolean supportsScreenshot = esxVI_Boolean_Undefined;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *virtualMachine = NULL;
+    esxVI_VirtualMachinePowerState powerState;
+    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    char *url = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (screen != 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Screen cannot be selected"));
+        return NULL;
+    }
+
+    supportsScreenshot = esxSupportsScreenshot(priv);
+
+    if (supportsScreenshot == esxVI_Boolean_Undefined)
+        return NULL;
+
+    if (supportsScreenshot != esxVI_Boolean_True) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("Screenshot feature is unsupported"));
+        return NULL;
+    }
+
+    if (esxVI_EnsureSession(priv->primary) < 0)
+        return NULL;
+
+    if (esxVI_String_AppendValueToList(&propertyNameList,
+                                       "runtime.powerState") < 0 ||
+        esxVI_LookupVirtualMachineByUuid(priv->primary, domain->uuid,
+                                         propertyNameList, &virtualMachine,
+                                         esxVI_Occurrence_RequiredItem) < 0 ||
+        esxVI_GetVirtualMachinePowerState(virtualMachine, &powerState) < 0)
+        goto cleanup;
+
+    if (powerState != esxVI_VirtualMachinePowerState_PoweredOn) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Domain is not powered on"));
+        goto cleanup;
+    }
+
+    /* Build URL */
+    virBufferAsprintf(&buffer, "%s://%s:%d/screen?id=", priv->parsedUri->transport,
+                      domain->conn->uri->server, domain->conn->uri->port);
+    virBufferURIEncodeString(&buffer, virtualMachine->obj->value);
+
+    if (virBufferCheckError(&buffer))
+        goto cleanup;
+
+    url = virBufferContentAndReset(&buffer);
+
+    if (VIR_STRDUP(mimeType, "image/png") < 0)
+        goto cleanup;
+
+    if (esxStreamOpenDownload(stream, priv, url, 0, 0) < 0) {
+        VIR_FREE(mimeType);
+        goto cleanup;
+    }
+
+ cleanup:
+    virBufferFreeAndReset(&buffer);
+
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&virtualMachine);
+
+    return mimeType;
 }
 
 
@@ -5209,6 +5323,7 @@ static virDriver esxDriver = {
     .domainGetMemoryParameters = esxDomainGetMemoryParameters, /* 0.8.6 */
     .domainGetInfo = esxDomainGetInfo, /* 0.7.0 */
     .domainGetState = esxDomainGetState, /* 0.9.2 */
+    .domainScreenshot = esxDomainScreenshot, /* 1.2.10 */
     .domainSetVcpus = esxDomainSetVcpus, /* 0.7.0 */
     .domainSetVcpusFlags = esxDomainSetVcpusFlags, /* 0.8.5 */
     .domainGetVcpusFlags = esxDomainGetVcpusFlags, /* 0.8.5 */

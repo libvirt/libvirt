@@ -38,6 +38,7 @@ typedef struct _esxPrivate {
     int32_t maxVcpus;
     esxVI_Boolean supportsVMotion;
     esxVI_Boolean supportsLongMode; /* aka x86_64 */
+    esxVI_Boolean supportsScreenshot;
     int32_t usedCpuTimeCounterId;
 } esxPrivate;
 
