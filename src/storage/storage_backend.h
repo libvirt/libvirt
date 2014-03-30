@@ -114,10 +114,6 @@ struct _virStorageBackend {
 
 virStorageBackendPtr virStorageBackendForType(int type);
 
-int virStorageBackendVolOpen(const char *path)
-ATTRIBUTE_RETURN_CHECK
-ATTRIBUTE_NONNULL(1);
-
 /* VolOpenCheckMode flags */
 enum {
     VIR_STORAGE_VOL_OPEN_ERROR  = 1 << 0, /* warn if unexpected type
@@ -132,8 +128,8 @@ enum {
                                        VIR_STORAGE_VOL_OPEN_REG      |\
                                        VIR_STORAGE_VOL_OPEN_BLOCK)
 
-int virStorageBackendVolOpenCheckMode(const char *path, struct stat *sb,
-                                      unsigned int flags)
+int virStorageBackendVolOpen(const char *path, struct stat *sb,
+                             unsigned int flags)
     ATTRIBUTE_RETURN_CHECK
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 

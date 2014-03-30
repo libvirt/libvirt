@@ -1279,8 +1279,8 @@ virStorageBackendDetectBlockVolFormatFD(virStorageVolTargetPtr target,
  * volume is a dangling symbolic link.
  */
 int
-virStorageBackendVolOpenCheckMode(const char *path, struct stat *sb,
-                                  unsigned int flags)
+virStorageBackendVolOpen(const char *path, struct stat *sb,
+                         unsigned int flags)
 {
     int fd, mode = 0;
     char *base = last_component(path);
@@ -1379,13 +1379,6 @@ virStorageBackendVolOpenCheckMode(const char *path, struct stat *sb,
     return fd;
 }
 
-int virStorageBackendVolOpen(const char *path)
-{
-    struct stat sb;
-    return virStorageBackendVolOpenCheckMode(path, &sb,
-                                             VIR_STORAGE_VOL_OPEN_DEFAULT);
-}
-
 int
 virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                      unsigned long long *allocation,
@@ -1396,8 +1389,7 @@ virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
     int ret, fd = -1;
     struct stat sb;
 
-    if ((ret = virStorageBackendVolOpenCheckMode(target->path, &sb,
-                                                 openflags)) < 0)
+    if ((ret = virStorageBackendVolOpen(target->path, &sb, openflags)) < 0)
         goto cleanup;
     fd = ret;
 

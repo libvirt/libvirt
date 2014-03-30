@@ -719,6 +719,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     int fd = -1;
     virCommandPtr cmd = NULL;
     virErrorPtr err;
+    struct stat sb;
 
     if (vol->target.encryption != NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -760,7 +761,8 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     virCommandFree(cmd);
     cmd = NULL;
 
-    if ((fd = virStorageBackendVolOpen(vol->target.path)) < 0)
+    if ((fd = virStorageBackendVolOpen(vol->target.path, &sb,
+                                       VIR_STORAGE_VOL_OPEN_DEFAULT)) < 0)
         goto error;
 
     /* We can only chown/grp if root */
