@@ -1239,9 +1239,9 @@ virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
 }
 
 int
-virStorageBackendUpdateVolInfoFlags(virStorageVolDefPtr vol,
-                                    int withCapacity,
-                                    unsigned int openflags)
+virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
+                               bool withCapacity,
+                               unsigned int openflags)
 {
     int ret;
 
@@ -1258,13 +1258,6 @@ virStorageBackendUpdateVolInfoFlags(virStorageVolDefPtr vol,
         return ret;
 
     return 0;
-}
-
-int virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
-                                   int withCapacity)
-{
-    return virStorageBackendUpdateVolInfoFlags(vol, withCapacity,
-                                               VIR_STORAGE_VOL_OPEN_DEFAULT);
 }
 
 /*

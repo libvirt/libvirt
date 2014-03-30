@@ -1164,8 +1164,8 @@ virStorageBackendFileSystemVolRefresh(virConnectPtr conn,
     int ret;
 
     /* Refresh allocation / permissions info in case its changed */
-    ret = virStorageBackendUpdateVolInfoFlags(vol, 0,
-                                              VIR_STORAGE_VOL_FS_OPEN_FLAGS);
+    ret = virStorageBackendUpdateVolInfo(vol, false,
+                                         VIR_STORAGE_VOL_FS_OPEN_FLAGS);
     if (ret < 0)
         return ret;
 

@@ -115,11 +115,8 @@ int virStorageBackendVolOpenCheckMode(const char *path, struct stat *sb,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
-                                   int withCapacity);
-
-int virStorageBackendUpdateVolInfoFlags(virStorageVolDefPtr vol,
-                                        int withCapacity,
-                                        unsigned int openflags);
+                                   bool withCapacity,
+                                   unsigned int openflags);
 int virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                          unsigned long long *allocation,
                                          unsigned long long *capacity,
