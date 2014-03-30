@@ -116,19 +116,18 @@ int virStorageBackendVolOpenCheckMode(const char *path, struct stat *sb,
 
 int virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
                                    bool withCapacity,
+                                   bool withBlockVolFormat,
                                    unsigned int openflags);
 int virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                          unsigned long long *allocation,
                                          unsigned long long *capacity,
+                                         bool withBlockVolFormat,
                                          unsigned int openflags);
 int virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
                                            int fd,
                                            struct stat *sb,
                                            unsigned long long *allocation,
                                            unsigned long long *capacity);
-int
-virStorageBackendDetectBlockVolFormatFD(virStorageVolTargetPtr target,
-                                        int fd);
 
 char *virStorageBackendStablePath(virStoragePoolObjPtr pool,
                                   const char *devpath,
