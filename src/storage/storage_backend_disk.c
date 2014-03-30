@@ -113,7 +113,8 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
     }
 
     /* Refresh allocation/capacity/perms */
-    if (virStorageBackendUpdateVolInfo(vol, 1) < 0)
+    if (virStorageBackendUpdateVolInfo(vol, true,
+                                       VIR_STORAGE_VOL_OPEN_DEFAULT) < 0)
         return -1;
 
     /* set partition type */
