@@ -63,6 +63,24 @@ bhyveProcessAutoDestroy(virDomainObjPtr vm,
     return vm;
 }
 
+static void
+bhyveNetCleanup(virDomainObjPtr vm)
+{
+    size_t i;
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        virDomainNetDefPtr net = vm->def->nets[i];
+        int actualType = virDomainNetGetActualType(net);
+
+        if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+            ignore_value(virNetDevBridgeRemovePort(
+                            virDomainNetGetActualBridgeName(net),
+                            net->ifname));
+            ignore_value(virNetDevTapDelete(net->ifname));
+        }
+    }
+}
+
 int
 virBhyveProcessStart(virConnectPtr conn,
                      bhyveConnPtr driver,
@@ -167,6 +185,8 @@ virBhyveProcessStart(virConnectPtr conn,
             ignore_value(virCommandRun(destroy_cmd, NULL));
             virCommandFree(destroy_cmd);
         }
+
+        bhyveNetCleanup(vm);
     }
 
     virCommandFree(load_cmd);
@@ -181,7 +201,6 @@ virBhyveProcessStop(bhyveConnPtr driver,
                     virDomainObjPtr vm,
                     virDomainShutoffReason reason ATTRIBUTE_UNUSED)
 {
-    size_t i;
     int ret = -1;
     virCommandPtr cmd = NULL;
 
@@ -203,17 +222,8 @@ virBhyveProcessStop(bhyveConnPtr driver,
                  vm->def->name,
                  (int)vm->pid);
 
-    for (i = 0; i < vm->def->nnets; i++) {
-        virDomainNetDefPtr net = vm->def->nets[i];
-        int actualType = virDomainNetGetActualType(net);
-
-        if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-            ignore_value(virNetDevBridgeRemovePort(
-                            virDomainNetGetActualBridgeName(net),
-                            net->ifname));
-            ignore_value(virNetDevTapDelete(net->ifname));
-        }
-    }
+    /* Cleanup network interfaces */
+    bhyveNetCleanup(vm);
 
     /* No matter if shutdown was successful or not, we
      * need to unload the VM */
