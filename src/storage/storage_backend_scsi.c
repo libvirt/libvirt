@@ -102,39 +102,6 @@ getDeviceType(uint32_t host,
     return retval;
 }
 
-static int
-virStorageBackendSCSIUpdateVolTargetInfo(virStorageVolTargetPtr target,
-                                         unsigned long long *allocation,
-                                         unsigned long long *capacity)
-{
-    int fdret, fd = -1;
-    int ret = -1;
-    struct stat sb;
-
-    if ((fdret = virStorageBackendVolOpenCheckMode(target->path, &sb,
-                                                   VIR_STORAGE_VOL_OPEN_DEFAULT)) < 0)
-        goto cleanup;
-    fd = fdret;
-
-    if (virStorageBackendUpdateVolTargetInfoFD(target,
-                                               fd,
-                                               &sb,
-                                               allocation,
-                                               capacity) < 0)
-        goto cleanup;
-
-    if (virStorageBackendDetectBlockVolFormatFD(target, fd) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-
-    return ret;
-}
-
-
 static char *
 virStorageBackendSCSISerial(const char *dev)
 {
@@ -232,10 +199,8 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
         goto free_vol;
     }
 
-    if (virStorageBackendSCSIUpdateVolTargetInfo(&vol->target,
-                                                 &vol->allocation,
-                                                 &vol->capacity) < 0) {
-
+    if (virStorageBackendUpdateVolInfo(vol, true, true,
+                                       VIR_STORAGE_VOL_OPEN_DEFAULT) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to update volume for '%s'"),
                        devpath);

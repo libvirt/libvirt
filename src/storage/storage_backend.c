@@ -1198,6 +1198,80 @@ virStorageFileBackendForType(int type,
 }
 
 
+struct diskType {
+    int part_table_type;
+    unsigned short offset;
+    unsigned short length;
+    unsigned long long magic;
+};
+
+
+static struct diskType const disk_types[] = {
+    { VIR_STORAGE_POOL_DISK_LVM2, 0x218, 8, 0x31303020324D564CULL },
+    { VIR_STORAGE_POOL_DISK_GPT,  0x200, 8, 0x5452415020494645ULL },
+    { VIR_STORAGE_POOL_DISK_DVH,  0x0,   4, 0x41A9E50BULL },
+    { VIR_STORAGE_POOL_DISK_MAC,  0x0,   2, 0x5245ULL },
+    { VIR_STORAGE_POOL_DISK_BSD,  0x40,  4, 0x82564557ULL },
+    { VIR_STORAGE_POOL_DISK_SUN,  0x1fc, 2, 0xBEDAULL },
+    /*
+     * NOTE: pc98 is funky; the actual signature is 0x55AA (just like dos), so
+     * we can't use that.  At the moment I'm relying on the "dummy" IPL
+     * bootloader data that comes from parted.  Luckily, the chances of running
+     * into a pc98 machine running libvirt are approximately nil.
+     */
+    /*{ 0x1fe, 2, 0xAA55UL },*/
+    { VIR_STORAGE_POOL_DISK_PC98, 0x0,   8, 0x314C5049000000CBULL },
+    /*
+     * NOTE: the order is important here; some other disk types (like GPT and
+     * and PC98) also have 0x55AA at this offset.  For that reason, the DOS
+     * one must be the last one.
+     */
+    { VIR_STORAGE_POOL_DISK_DOS,  0x1fe, 2, 0xAA55ULL },
+    { -1,                         0x0,   0, 0x0ULL },
+};
+
+
+static int
+virStorageBackendDetectBlockVolFormatFD(virStorageVolTargetPtr target,
+                                        int fd)
+{
+    size_t i;
+    off_t start;
+    unsigned char buffer[1024];
+    ssize_t bytes;
+
+    /* make sure to set the target format "unknown" to begin with */
+    target->format = VIR_STORAGE_POOL_DISK_UNKNOWN;
+
+    start = lseek(fd, 0, SEEK_SET);
+    if (start < 0) {
+        virReportSystemError(errno,
+                             _("cannot seek to beginning of file '%s'"),
+                             target->path);
+        return -1;
+    }
+    bytes = saferead(fd, buffer, sizeof(buffer));
+    if (bytes < 0) {
+        virReportSystemError(errno,
+                             _("cannot read beginning of file '%s'"),
+                             target->path);
+        return -1;
+    }
+
+    for (i = 0; disk_types[i].part_table_type != -1; i++) {
+        if (disk_types[i].offset + disk_types[i].length > bytes)
+            continue;
+        if (memcmp(buffer+disk_types[i].offset, &disk_types[i].magic,
+            disk_types[i].length) == 0) {
+            target->format = disk_types[i].part_table_type;
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
 /*
  * Allows caller to silently ignore files with improper mode
  *
@@ -1316,22 +1390,30 @@ int
 virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                      unsigned long long *allocation,
                                      unsigned long long *capacity,
+                                     bool withBlockVolFormat,
                                      unsigned int openflags)
 {
-    int ret, fd;
+    int ret, fd = -1;
     struct stat sb;
 
     if ((ret = virStorageBackendVolOpenCheckMode(target->path, &sb,
                                                  openflags)) < 0)
-        return ret;
-
+        goto cleanup;
     fd = ret;
-    ret = virStorageBackendUpdateVolTargetInfoFD(target,
-                                                 fd,
-                                                 &sb,
-                                                 allocation,
-                                                 capacity);
 
+    if ((ret = virStorageBackendUpdateVolTargetInfoFD(target,
+                                                      fd,
+                                                      &sb,
+                                                      allocation,
+                                                      capacity)) < 0)
+        goto cleanup;
+
+    if (withBlockVolFormat) {
+        if ((ret = virStorageBackendDetectBlockVolFormatFD(target, fd)) < 0)
+            goto cleanup;
+    }
+
+  cleanup:
     VIR_FORCE_CLOSE(fd);
 
     return ret;
@@ -1340,6 +1422,7 @@ virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
 int
 virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
                                bool withCapacity,
+                               bool withBlockVolFormat,
                                unsigned int openflags)
 {
     int ret;
@@ -1347,12 +1430,14 @@ virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
     if ((ret = virStorageBackendUpdateVolTargetInfo(&vol->target,
                                     &vol->allocation,
                                     withCapacity ? &vol->capacity : NULL,
+                                    withBlockVolFormat,
                                     openflags)) < 0)
         return ret;
 
     if (vol->backingStore.path &&
         (ret = virStorageBackendUpdateVolTargetInfo(&vol->backingStore,
                                             NULL, NULL,
+                                            withBlockVolFormat,
                                             VIR_STORAGE_VOL_OPEN_DEFAULT)) < 0)
         return ret;
 
@@ -1450,80 +1535,6 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
         }
     }
 #endif
-
-    return 0;
-}
-
-
-struct diskType {
-    int part_table_type;
-    unsigned short offset;
-    unsigned short length;
-    unsigned long long magic;
-};
-
-
-static struct diskType const disk_types[] = {
-    { VIR_STORAGE_POOL_DISK_LVM2, 0x218, 8, 0x31303020324D564CULL },
-    { VIR_STORAGE_POOL_DISK_GPT,  0x200, 8, 0x5452415020494645ULL },
-    { VIR_STORAGE_POOL_DISK_DVH,  0x0,   4, 0x41A9E50BULL },
-    { VIR_STORAGE_POOL_DISK_MAC,  0x0,   2, 0x5245ULL },
-    { VIR_STORAGE_POOL_DISK_BSD,  0x40,  4, 0x82564557ULL },
-    { VIR_STORAGE_POOL_DISK_SUN,  0x1fc, 2, 0xBEDAULL },
-    /*
-     * NOTE: pc98 is funky; the actual signature is 0x55AA (just like dos), so
-     * we can't use that.  At the moment I'm relying on the "dummy" IPL
-     * bootloader data that comes from parted.  Luckily, the chances of running
-     * into a pc98 machine running libvirt are approximately nil.
-     */
-    /*{ 0x1fe, 2, 0xAA55UL },*/
-    { VIR_STORAGE_POOL_DISK_PC98, 0x0,   8, 0x314C5049000000CBULL },
-    /*
-     * NOTE: the order is important here; some other disk types (like GPT and
-     * and PC98) also have 0x55AA at this offset.  For that reason, the DOS
-     * one must be the last one.
-     */
-    { VIR_STORAGE_POOL_DISK_DOS,  0x1fe, 2, 0xAA55ULL },
-    { -1,                         0x0,   0, 0x0ULL },
-};
-
-
-int
-virStorageBackendDetectBlockVolFormatFD(virStorageVolTargetPtr target,
-                                        int fd)
-{
-    size_t i;
-    off_t start;
-    unsigned char buffer[1024];
-    ssize_t bytes;
-
-    /* make sure to set the target format "unknown" to begin with */
-    target->format = VIR_STORAGE_POOL_DISK_UNKNOWN;
-
-    start = lseek(fd, 0, SEEK_SET);
-    if (start < 0) {
-        virReportSystemError(errno,
-                             _("cannot seek to beginning of file '%s'"),
-                             target->path);
-        return -1;
-    }
-    bytes = saferead(fd, buffer, sizeof(buffer));
-    if (bytes < 0) {
-        virReportSystemError(errno,
-                             _("cannot read beginning of file '%s'"),
-                             target->path);
-        return -1;
-    }
-
-    for (i = 0; disk_types[i].part_table_type != -1; i++) {
-        if (disk_types[i].offset + disk_types[i].length > bytes)
-            continue;
-        if (memcmp(buffer+disk_types[i].offset, &disk_types[i].magic,
-            disk_types[i].length) == 0) {
-            target->format = disk_types[i].part_table_type;
-            break;
-        }
-    }
 
     return 0;
 }

@@ -42,37 +42,6 @@
 VIR_LOG_INIT("storage.storage_backend_mpath");
 
 static int
-virStorageBackendMpathUpdateVolTargetInfo(virStorageVolTargetPtr target,
-                                          unsigned long long *allocation,
-                                          unsigned long long *capacity)
-{
-    int ret = -1;
-    int fdret, fd = -1;
-    struct stat sb;
-
-    if ((fdret = virStorageBackendVolOpenCheckMode(target->path, &sb,
-                                                   VIR_STORAGE_VOL_OPEN_DEFAULT)) < 0)
-        goto out;
-    fd = fdret;
-
-    if (virStorageBackendUpdateVolTargetInfoFD(target,
-                                               fd,
-                                               &sb,
-                                               allocation,
-                                               capacity) < 0)
-        goto out;
-
-    if (virStorageBackendDetectBlockVolFormatFD(target, fd) < 0)
-        goto out;
-
-    ret = 0;
- out:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
-}
-
-
-static int
 virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
                              const int devnum,
                              const char *dev)
@@ -91,9 +60,8 @@ virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
     if (virAsprintf(&vol->target.path, "/dev/%s", dev) < 0)
         goto cleanup;
 
-    if (virStorageBackendMpathUpdateVolTargetInfo(&vol->target,
-                                                  &vol->allocation,
-                                                  &vol->capacity) < 0) {
+    if (virStorageBackendUpdateVolInfo(vol, true, true,
+                                       VIR_STORAGE_VOL_OPEN_DEFAULT) < 0) {
         goto cleanup;
     }
 
