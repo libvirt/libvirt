@@ -2,7 +2,7 @@
  * esx_vi.h: client for the VMware VI API 2.5 to manage ESX hosts
  *
  * Copyright (C) 2011 Red Hat, Inc.
- * Copyright (C) 2009-2012 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2012, 2014 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,10 @@
 # include "datatypes.h"
 # include "esx_vi_types.h"
 # include "esx_util.h"
+
+/* curl_multi_wait was added in libcurl 7.28.0, emulate it on older versions */
+# define ESX_EMULATE_CURL_MULTI_WAIT (LIBCURL_VERSION_NUM < 0x071C00)
+
 
 
 # define ESX_VI__SOAP__REQUEST_HEADER                                         \
@@ -175,7 +179,7 @@ int esxVI_CURL_Upload(esxVI_CURL *curl, const char *url, const char *content);
 struct _esxVI_SharedCURL {
     CURLSH *handle;
     virMutex locks[3]; /* share, cookie, dns */
-    size_t count;
+    size_t count; /* number of added easy handle */
 };
 
 int esxVI_SharedCURL_Alloc(esxVI_SharedCURL **shared);
@@ -191,13 +195,22 @@ int esxVI_SharedCURL_Remove(esxVI_SharedCURL *shared, esxVI_CURL *curl);
 
 struct _esxVI_MultiCURL {
     CURLM *handle;
-    size_t count;
+    size_t count; /* number of added easy handle */
+# if ESX_EMULATE_CURL_MULTI_WAIT
+    struct pollfd *pollfds;
+    size_t npollfds;
+    bool timeoutPending;
+# endif
 };
 
 int esxVI_MultiCURL_Alloc(esxVI_MultiCURL **multi);
 void esxVI_MultiCURL_Free(esxVI_MultiCURL **multi);
 int esxVI_MultiCURL_Add(esxVI_MultiCURL *multi, esxVI_CURL *curl);
 int esxVI_MultiCURL_Remove(esxVI_MultiCURL *multi, esxVI_CURL *curl);
+int esxVI_MultiCURL_Wait(esxVI_MultiCURL *multi, int *runningHandles);
+int esxVI_MultiCURL_Perform(esxVI_MultiCURL *multi, int *runningHandles);
+int esxVI_MultiCURL_CheckFirstMessage(esxVI_MultiCURL *multi, long *responseCode,
+                                      CURLcode *errorCode);
 
 
 

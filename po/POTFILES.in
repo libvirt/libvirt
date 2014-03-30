@@ -44,6 +44,7 @@ src/esx/esx_network_driver.c
 src/esx/esx_storage_backend_iscsi.c
 src/esx/esx_storage_backend_vmfs.c
 src/esx/esx_storage_driver.c
+src/esx/esx_stream.c
 src/esx/esx_util.c
 src/esx/esx_vi.c
 src/esx/esx_vi_methods.c

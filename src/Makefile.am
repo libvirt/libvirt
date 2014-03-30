@@ -736,6 +736,7 @@ ESX_DRIVER_SOURCES =							\
 		esx/esx_storage_backend_iscsi.c esx/esx_storage_backend_iscsi.h	\
 		esx/esx_device_monitor.c esx/esx_device_monitor.h	\
 		esx/esx_secret_driver.c esx/esx_secret_driver.h		\
+		esx/esx_stream.c esx/esx_stream.h			\
 		esx/esx_nwfilter_driver.c esx/esx_nwfilter_driver.h	\
 		esx/esx_util.c esx/esx_util.h				\
 		esx/esx_vi.c esx/esx_vi.h				\
