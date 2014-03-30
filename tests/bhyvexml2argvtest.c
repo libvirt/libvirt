@@ -132,6 +132,8 @@ mymain(void)
     DO_TEST("acpiapic");
     DO_TEST("disk-virtio");
     DO_TEST("macaddr");
+    DO_TEST("serial");
+    DO_TEST("console");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
