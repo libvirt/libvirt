@@ -77,7 +77,7 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
     if (encryption)
         *encryption = NULL;
 
-    if ((ret = virStorageBackendVolOpenCheckMode(target->path, &sb,
+    if ((ret = virStorageBackendVolOpen(target->path, &sb,
                                         VIR_STORAGE_VOL_FS_REFRESH_FLAGS)) < 0)
         goto error; /* Take care to propagate ret, it is not always -1 */
     fd = ret;
