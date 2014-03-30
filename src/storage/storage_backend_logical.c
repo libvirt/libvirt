@@ -1,7 +1,7 @@
 /*
  * storage_backend_logical.c: storage backend for logical volume handling
  *
- * Copyright (C) 2007-2009, 2011, 2013 Red Hat, Inc.
+ * Copyright (C) 2007-2014 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -767,14 +767,14 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
 
     /* We can only chown/grp if root */
     if (geteuid() == 0) {
-        if (fchown(fd, vol->target.perms.uid, vol->target.perms.gid) < 0) {
+        if (fchown(fd, vol->target.perms->uid, vol->target.perms->gid) < 0) {
             virReportSystemError(errno,
                                  _("cannot set file owner '%s'"),
                                  vol->target.path);
             goto error;
         }
     }
-    if (fchmod(fd, vol->target.perms.mode) < 0) {
+    if (fchmod(fd, vol->target.perms->mode) < 0) {
         virReportSystemError(errno,
                              _("cannot set file mode '%s'"),
                              vol->target.path);

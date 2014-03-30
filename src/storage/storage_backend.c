@@ -301,8 +301,10 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
                              vol->target.path);
         goto cleanup;
     }
-    uid = (vol->target.perms.uid != st.st_uid) ? vol->target.perms.uid : (uid_t) -1;
-    gid = (vol->target.perms.gid != st.st_gid) ? vol->target.perms.gid : (gid_t) -1;
+    uid = (vol->target.perms->uid != st.st_uid) ? vol->target.perms->uid
+        : (uid_t) -1;
+    gid = (vol->target.perms->gid != st.st_gid) ? vol->target.perms->gid
+        : (gid_t) -1;
     if (((uid != (uid_t) -1) || (gid != (gid_t) -1))
         && (fchown(fd, uid, gid) < 0)) {
         virReportSystemError(errno,
@@ -311,10 +313,10 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
                              (unsigned int) gid);
         goto cleanup;
     }
-    if (fchmod(fd, vol->target.perms.mode) < 0) {
+    if (fchmod(fd, vol->target.perms->mode) < 0) {
         virReportSystemError(errno,
                              _("cannot set mode of '%s' to %04o"),
-                             vol->target.path, vol->target.perms.mode);
+                             vol->target.path, vol->target.perms->mode);
         goto cleanup;
     }
     if (VIR_CLOSE(fd) < 0) {
@@ -439,9 +441,9 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if ((fd = virFileOpenAs(vol->target.path,
                             O_RDWR | O_CREAT | O_EXCL,
-                            vol->target.perms.mode,
-                            vol->target.perms.uid,
-                            vol->target.perms.gid,
+                            vol->target.perms->mode,
+                            vol->target.perms->uid,
+                            vol->target.perms->gid,
                             operation_flags)) < 0) {
         virReportSystemError(-fd,
                              _("Failed to create file '%s'"),
@@ -578,13 +580,13 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
 
     if ((pool->def->type == VIR_STORAGE_POOL_NETFS)
         && (((geteuid() == 0)
-             && (vol->target.perms.uid != (uid_t) -1)
-             && (vol->target.perms.uid != 0))
-            || ((vol->target.perms.gid != (gid_t) -1)
-                && (vol->target.perms.gid != getegid())))) {
+             && (vol->target.perms->uid != (uid_t) -1)
+             && (vol->target.perms->uid != 0))
+            || ((vol->target.perms->gid != (gid_t) -1)
+                && (vol->target.perms->gid != getegid())))) {
 
-        virCommandSetUID(cmd, vol->target.perms.uid);
-        virCommandSetGID(cmd, vol->target.perms.gid);
+        virCommandSetUID(cmd, vol->target.perms->uid);
+        virCommandSetGID(cmd, vol->target.perms->gid);
 
         if (virCommandRun(cmd, NULL) == 0) {
             /* command was successfully run, check if the file was created */
@@ -608,8 +610,10 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
         }
     }
 
-    uid = (vol->target.perms.uid != st.st_uid) ? vol->target.perms.uid : (uid_t) -1;
-    gid = (vol->target.perms.gid != st.st_gid) ? vol->target.perms.gid : (gid_t) -1;
+    uid = (vol->target.perms->uid != st.st_uid) ? vol->target.perms->uid
+        : (uid_t) -1;
+    gid = (vol->target.perms->gid != st.st_gid) ? vol->target.perms->gid
+        : (gid_t) -1;
     if (((uid != (uid_t) -1) || (gid != (gid_t) -1))
         && (chown(vol->target.path, uid, gid) < 0)) {
         virReportSystemError(errno,
@@ -618,10 +622,10 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
                              (unsigned int) gid);
         return -1;
     }
-    if (chmod(vol->target.path, vol->target.perms.mode) < 0) {
+    if (chmod(vol->target.path, vol->target.perms->mode) < 0) {
         virReportSystemError(errno,
                              _("cannot set mode of '%s' to %04o"),
-                             vol->target.path, vol->target.perms.mode);
+                             vol->target.path, vol->target.perms->mode);
         return -1;
     }
     return 0;
@@ -1495,9 +1499,11 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
         }
     }
 
-    target->perms.mode = sb->st_mode & S_IRWXUGO;
-    target->perms.uid = sb->st_uid;
-    target->perms.gid = sb->st_gid;
+    if (!target->perms && VIR_ALLOC(target->perms) < 0)
+        return -1;
+    target->perms->mode = sb->st_mode & S_IRWXUGO;
+    target->perms->uid = sb->st_uid;
+    target->perms->gid = sb->st_gid;
 
     if (!target->timestamps && VIR_ALLOC(target->timestamps) < 0)
         return -1;
@@ -1506,7 +1512,7 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
     target->timestamps->ctime = get_stat_ctime(sb);
     target->timestamps->mtime = get_stat_mtime(sb);
 
-    VIR_FREE(target->perms.label);
+    VIR_FREE(target->perms->label);
 
 #if WITH_SELINUX
     /* XXX: make this a security driver call */
@@ -1519,7 +1525,7 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
                 return -1;
             }
         } else {
-            if (VIR_STRDUP(target->perms.label, filecon) < 0) {
+            if (VIR_STRDUP(target->perms->label, filecon) < 0) {
                 freecon(filecon);
                 return -1;
             }

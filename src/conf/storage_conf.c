@@ -332,11 +332,17 @@ virStorageVolDefFree(virStorageVolDefPtr def)
     VIR_FREE(def->target.compat);
     virBitmapFree(def->target.features);
     VIR_FREE(def->target.path);
-    VIR_FREE(def->target.perms.label);
+    if (def->target.perms) {
+        VIR_FREE(def->target.perms->label);
+        VIR_FREE(def->target.perms);
+    }
     VIR_FREE(def->target.timestamps);
     virStorageEncryptionFree(def->target.encryption);
     VIR_FREE(def->backingStore.path);
-    VIR_FREE(def->backingStore.perms.label);
+    if (def->backingStore.perms) {
+        VIR_FREE(def->backingStore.perms->label);
+        VIR_FREE(def->backingStore.perms);
+    }
     VIR_FREE(def->backingStore.timestamps);
     virStorageEncryptionFree(def->backingStore.encryption);
     VIR_FREE(def);
@@ -1355,7 +1361,9 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
         VIR_FREE(format);
     }
 
-    if (virStorageDefParsePerms(ctxt, &ret->target.perms,
+    if (VIR_ALLOC(ret->target.perms) < 0)
+        goto error;
+    if (virStorageDefParsePerms(ctxt, ret->target.perms,
                                 "./target/permissions",
                                 DEFAULT_VOL_PERM_MODE) < 0)
         goto error;
@@ -1424,7 +1432,9 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
         VIR_FREE(nodes);
     }
 
-    if (virStorageDefParsePerms(ctxt, &ret->backingStore.perms,
+    if (VIR_ALLOC(ret->backingStore.perms) < 0)
+        goto error;
+    if (virStorageDefParsePerms(ctxt, ret->backingStore.perms,
                                 "./backingStore/permissions",
                                 DEFAULT_VOL_PERM_MODE) < 0)
         goto error;
@@ -1541,15 +1551,15 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
     virBufferAdjustIndent(buf, 2);
 
     virBufferAsprintf(buf, "<mode>0%o</mode>\n",
-                      def->perms.mode);
+                      def->perms->mode);
     virBufferAsprintf(buf, "<owner>%u</owner>\n",
-                      (unsigned int) def->perms.uid);
+                      (unsigned int) def->perms->uid);
     virBufferAsprintf(buf, "<group>%u</group>\n",
-                      (unsigned int) def->perms.gid);
+                      (unsigned int) def->perms->gid);
 
 
     virBufferEscapeString(buf, "<label>%s</label>\n",
-                          def->perms.label);
+                          def->perms->label);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</permissions>\n");

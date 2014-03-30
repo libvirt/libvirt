@@ -1051,9 +1051,9 @@ static int createFileDir(virConnectPtr conn ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    if ((err = virDirCreate(vol->target.path, vol->target.perms.mode,
-                            vol->target.perms.uid,
-                            vol->target.perms.gid,
+    if ((err = virDirCreate(vol->target.path, vol->target.perms->mode,
+                            vol->target.perms->uid,
+                            vol->target.perms->gid,
                             VIR_DIR_CREATE_FORCE_PERMS |
                             (pool->def->type == VIR_STORAGE_POOL_NETFS
                              ? VIR_DIR_CREATE_AS_UID : 0))) < 0) {

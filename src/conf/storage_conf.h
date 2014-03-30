@@ -71,6 +71,9 @@ typedef virStorageVolSource *virStorageVolSourcePtr;
 struct _virStorageVolSource {
     int nextent;
     virStorageVolSourceExtentPtr extents;
+
+    int partType; /* enum virStorageVolTypeDisk, only used by disk
+                   * backend for partition type creation */
 };
 
 
@@ -81,10 +84,10 @@ typedef struct _virStorageVolTarget virStorageVolTarget;
 typedef virStorageVolTarget *virStorageVolTargetPtr;
 struct _virStorageVolTarget {
     char *path;
-    int format;
-    virStoragePerms perms;
+    int format; /* enum virStorageFileFormat */
+    virStoragePermsPtr perms;
     virStorageTimestampsPtr timestamps;
-    int type; /* only used by disk backend for partition type */
+
     /* The next three are currently only used in vol->target,
      * not in vol->backingStore. */
     virStorageEncryptionPtr encryption;

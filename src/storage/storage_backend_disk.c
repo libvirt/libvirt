@@ -119,13 +119,13 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
 
     /* set partition type */
     if (STREQ(groups[1], "normal"))
-       vol->target.type = VIR_STORAGE_VOL_DISK_TYPE_PRIMARY;
+       vol->source.partType = VIR_STORAGE_VOL_DISK_TYPE_PRIMARY;
     else if (STREQ(groups[1], "logical"))
-       vol->target.type = VIR_STORAGE_VOL_DISK_TYPE_LOGICAL;
+       vol->source.partType = VIR_STORAGE_VOL_DISK_TYPE_LOGICAL;
     else if (STREQ(groups[1], "extended"))
-       vol->target.type = VIR_STORAGE_VOL_DISK_TYPE_EXTENDED;
+       vol->source.partType = VIR_STORAGE_VOL_DISK_TYPE_EXTENDED;
     else
-       vol->target.type = VIR_STORAGE_VOL_DISK_TYPE_NONE;
+       vol->source.partType = VIR_STORAGE_VOL_DISK_TYPE_NONE;
 
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
@@ -445,10 +445,10 @@ virStorageBackendDiskPartTypeToCreate(virStoragePoolObjPtr pool)
         size_t i;
         int count = 0;
         for (i = 0; i < pool->volumes.count; i++) {
-             if (pool->volumes.objs[i]->target.type == VIR_STORAGE_VOL_DISK_TYPE_PRIMARY ||
-                 pool->volumes.objs[i]->target.type == VIR_STORAGE_VOL_DISK_TYPE_EXTENDED) {
-                     count++;
-             }
+            int partType = pool->volumes.objs[i]->source.partType;
+            if (partType == VIR_STORAGE_VOL_DISK_TYPE_PRIMARY ||
+                partType == VIR_STORAGE_VOL_DISK_TYPE_EXTENDED)
+                count++;
         }
         if (count >= 4) {
             return VIR_STORAGE_VOL_DISK_TYPE_LOGICAL;
@@ -614,7 +614,7 @@ virStorageBackendDiskPartBoundaries(virStoragePoolObjPtr pool,
         *end -= (*start % cylinderSize);
     }
 
-    /* counting in byte, we want the last byte of the current sector */
+    /* counting in bytes, we want the last byte of the current sector */
     *end -= 1;
     VIR_DEBUG("final aligned start %llu, end %llu", *start, *end);
     return 0;
