@@ -59,23 +59,6 @@ VIR_LOG_INIT("nwfilter.nwfilter_ebiptables_driver");
 #define CHAINPREFIX_HOST_IN_TEMP  'J'
 #define CHAINPREFIX_HOST_OUT_TEMP 'P'
 
-/* This file generates a temporary shell script.  Since ebiptables is
-   Linux-specific, we can be reasonably certain that /bin/sh is more
-   or less POSIX-compliant, so we can use $() and $(()).  However, we
-   cannot assume that /bin/sh is bash, so stick to POSIX syntax.  */
-
-#define CMD_SEPARATOR "\n"
-#define CMD_DEF_PRE  "cmd='"
-#define CMD_DEF_POST "'"
-#define CMD_DEF(X) CMD_DEF_PRE X CMD_DEF_POST
-#define CMD_EXEC   "eval res=\\$\\(\"${cmd} 2>&1\"\\)" CMD_SEPARATOR
-#define CMD_STOPONERR(X) \
-    X ? "if [ $? -ne 0 ]; then" \
-        "  echo \"Failure to execute command '${cmd}' : '${res}'.\";" \
-        "  exit 1;" \
-        "fi" CMD_SEPARATOR \
-      : ""
-
 
 #define PROC_BRIDGE_NF_CALL_IPTABLES \
         "/proc/sys/net/bridge/bridge-nf-call-iptables"
@@ -83,11 +66,6 @@ VIR_LOG_INIT("nwfilter.nwfilter_ebiptables_driver");
         "/proc/sys/net/bridge/bridge-nf-call-ip6tables"
 
 #define BRIDGE_NF_CALL_ALERT_INTERVAL  10 /* seconds */
-
-static char *ebtables_cmd_path;
-static char *iptables_cmd_path;
-static char *ip6tables_cmd_path;
-static char *grep_cmd_path;
 
 /*
  * --ctdir original vs. --ctdir reply's meaning was inverted in netfilter
@@ -104,14 +82,6 @@ static enum ctdirStatus iptables_ctdir_corrected;
     snprintf(buf, sizeof(buf), "libvirt-%c-%s", prefix, ifname)
 #define PRINT_CHAIN(buf, prefix, ifname, suffix) \
     snprintf(buf, sizeof(buf), "%c-%s-%s", prefix, ifname, suffix)
-
-
-#define NWFILTER_SET_EBTABLES_SHELLVAR(BUFPTR) \
-    virBufferAsprintf(BUFPTR, "EBT=\"%s\"\n", ebtables_cmd_path);
-#define NWFILTER_SET_IPTABLES_SHELLVAR(BUFPTR) \
-    virBufferAsprintf(BUFPTR, "IPT=\"%s\"\n", iptables_cmd_path);
-#define NWFILTER_SET_IP6TABLES_SHELLVAR(BUFPTR) \
-    virBufferAsprintf(BUFPTR, "IPT=\"%s\"\n", ip6tables_cmd_path);
 
 #define VIRT_IN_CHAIN      "libvirt-in"
 #define VIRT_OUT_CHAIN     "libvirt-out"
@@ -132,8 +102,6 @@ static int ebiptablesDriverInit(bool privileged);
 static void ebiptablesDriverShutdown(void);
 static int ebtablesCleanAll(const char *ifname);
 static int ebiptablesAllTeardown(const char *ifname);
-
-static virMutex execCLIMutex = VIR_MUTEX_INITIALIZER;
 
 struct ushort_map {
     unsigned short attr;
@@ -2491,55 +2459,6 @@ ebiptablesCreateRuleInstance(virFirewallPtr fw,
 }
 
 
-/**
- * ebiptablesExecCLI:
- * @buf: pointer to virBuffer containing the string with the commands to
- *       execute.
- * @ignoreNonzero: true if non-zero status is not fatal
- * @outbuf: Optional pointer to a string that will hold the buffer with
- *          output of the executed command. The actual buffer holding
- *          the message will be newly allocated by this function and
- *          any passed in buffer freed first.
- *
- * Returns 0 in case of success, < 0 in case of an error. The returned
- * value is NOT the result of running the commands inside the shell
- * script.
- *
- * Execute a sequence of commands (held in the given buffer) as a /bin/sh
- * script.  Depending on ignoreNonzero, this function will fail if the
- * script has unexpected status.
- */
-static int
-ebiptablesExecCLI(virBufferPtr buf, bool ignoreNonzero, char **outbuf)
-{
-    int rc = -1;
-    virCommandPtr cmd;
-    int status;
-
-    if (!virBufferError(buf) && !virBufferUse(buf))
-        return 0;
-
-    if (outbuf)
-        VIR_FREE(*outbuf);
-
-    VIR_INFO("Run [%s]", virBufferCurrentContent(buf));
-    cmd = virCommandNewArgList("/bin/sh", "-c", NULL);
-    virCommandAddArgBuffer(cmd, buf);
-    if (outbuf)
-        virCommandSetOutputBuffer(cmd, outbuf);
-
-    virMutexLock(&execCLIMutex);
-
-    rc = virCommandRun(cmd, ignoreNonzero ? &status : NULL);
-
-    virMutexUnlock(&execCLIMutex);
-
-    virCommandFree(cmd);
-
-    return rc;
-}
-
-
 static void
 ebtablesCreateTmpRootChainFW(virFirewallPtr fw,
                              int incoming, const char *ifname)
@@ -2883,7 +2802,7 @@ ebtablesRenameTmpSubAndRootChainsFW(virFirewallPtr fw,
 static int
 ebiptablesCanApplyBasicRules(void)
 {
-    return ebtables_cmd_path != NULL;
+    return true;
 }
 
 /**
@@ -2937,12 +2856,8 @@ ebtablesApplyBasicRules(const char *ifname,
     ebtablesLinkTmpRootChainFW(fw, true, ifname);
     ebtablesRenameTmpRootChainFW(fw, true, ifname);
 
-    virMutexLock(&execCLIMutex);
-    if (virFirewallApply(fw) < 0) {
-        virMutexUnlock(&execCLIMutex);
+    if (virFirewallApply(fw) < 0)
         goto tear_down_tmpebchains;
-    }
-    virMutexUnlock(&execCLIMutex);
 
     virFirewallFree(fw);
     return 0;
@@ -3060,12 +2975,8 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
         ebtablesRenameTmpRootChainFW(fw, false, ifname);
     }
 
-    virMutexLock(&execCLIMutex);
-    if (virFirewallApply(fw) < 0) {
-        virMutexUnlock(&execCLIMutex);
+    if (virFirewallApply(fw) < 0)
         goto tear_down_tmpebchains;
-    }
-    virMutexUnlock(&execCLIMutex);
 
     virFirewallFree(fw);
 
@@ -3119,12 +3030,8 @@ ebtablesApplyDropAllRules(const char *ifname)
     ebtablesRenameTmpRootChainFW(fw, true, ifname);
     ebtablesRenameTmpRootChainFW(fw, false, ifname);
 
-    virMutexLock(&execCLIMutex);
-    if (virFirewallApply(fw) < 0) {
-        virMutexUnlock(&execCLIMutex);
+    if (virFirewallApply(fw) < 0)
         goto tear_down_tmpebchains;
-    }
-    virMutexUnlock(&execCLIMutex);
 
     virFirewallFree(fw);
     return 0;
@@ -3164,9 +3071,7 @@ ebtablesCleanAll(const char *ifname)
     ebtablesRemoveTmpRootChainFW(fw, true, ifname);
     ebtablesRemoveTmpRootChainFW(fw, false, ifname);
 
-    virMutexLock(&execCLIMutex);
     ret = virFirewallApply(fw);
-    virMutexUnlock(&execCLIMutex);
     virFirewallFree(fw);
     return ret;
 }
@@ -3613,12 +3518,8 @@ ebiptablesApplyNewRules(const char *ifname,
     ebtablesRemoveTmpRootChainFW(fw, true, ifname);
     ebtablesRemoveTmpRootChainFW(fw, false, ifname);
 
-    virMutexLock(&execCLIMutex);
-    if (virFirewallApply(fw) < 0) {
-        virMutexUnlock(&execCLIMutex);
+    if (virFirewallApply(fw) < 0)
         goto cleanup;
-    }
-    virMutexUnlock(&execCLIMutex);
 
     ret = 0;
 
@@ -3655,9 +3556,7 @@ ebiptablesTearNewRules(const char *ifname)
     ebtablesRemoveTmpRootChainFW(fw, true, ifname);
     ebtablesRemoveTmpRootChainFW(fw, false, ifname);
 
-    virMutexLock(&execCLIMutex);
     ret = virFirewallApply(fw);
-    virMutexUnlock(&execCLIMutex);
     virFirewallFree(fw);
     return ret;
 }
@@ -3686,9 +3585,7 @@ ebiptablesTearOldRules(const char *ifname)
     ebtablesRemoveRootChainFW(fw, false, ifname);
     ebtablesRenameTmpSubAndRootChainsFW(fw, ifname);
 
-    virMutexLock(&execCLIMutex);
     ret = virFirewallApply(fw);
-    virMutexUnlock(&execCLIMutex);
     virFirewallFree(fw);
     return ret;
 }
@@ -3727,9 +3624,7 @@ ebiptablesAllTeardown(const char *ifname)
     ebtablesRemoveRootChainFW(fw, true, ifname);
     ebtablesRemoveRootChainFW(fw, false, ifname);
 
-    virMutexLock(&execCLIMutex);
     ret = virFirewallApply(fw);
-    virMutexUnlock(&execCLIMutex);
     virFirewallFree(fw);
     return ret;
 }
@@ -3753,149 +3648,6 @@ virNWFilterTechDriver ebiptables_driver = {
     .applyDropAllRules   = ebtablesApplyDropAllRules,
     .removeBasicRules    = ebtablesRemoveBasicRules,
 };
-
-/*
- * ebiptablesDriverInitWithFirewallD
- *
- * Try to use firewall-cmd by testing it once; if it works, have ebtables
- * and ip6tables commands use firewall-cmd.
- */
-static int
-ebiptablesDriverInitWithFirewallD(void)
-{
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *firewall_cmd_path;
-    char *output = NULL;
-    int ret = -1;
-
-    if (!virNWFilterDriverIsWatchingFirewallD())
-        return -1;
-
-    firewall_cmd_path = virFindFileInPath("firewall-cmd");
-
-    if (firewall_cmd_path) {
-        virBufferAsprintf(&buf, "FWC=%s\n", firewall_cmd_path);
-        virBufferAsprintf(&buf,
-                          CMD_DEF("$FWC --state") CMD_SEPARATOR
-                          CMD_EXEC
-                          "%s",
-                          CMD_STOPONERR(true));
-
-        if (ebiptablesExecCLI(&buf, false, &output) < 0) {
-            VIR_INFO("firewalld support disabled for nwfilter");
-        } else {
-            VIR_INFO("firewalld support enabled for nwfilter");
-
-            if (virAsprintf(&ebtables_cmd_path,
-                            "%s --direct --passthrough eb",
-                            firewall_cmd_path) < 0 ||
-                virAsprintf(&iptables_cmd_path,
-                            "%s --direct --passthrough ipv4",
-                            firewall_cmd_path) < 0 ||
-                virAsprintf(&ip6tables_cmd_path,
-                            "%s --direct --passthrough ipv6",
-                            firewall_cmd_path) < 0) {
-                VIR_FREE(ebtables_cmd_path);
-                VIR_FREE(iptables_cmd_path);
-                VIR_FREE(ip6tables_cmd_path);
-                ret = -1;
-                goto err_exit;
-            }
-            ret = 0;
-        }
-    }
-
- err_exit:
-    VIR_FREE(firewall_cmd_path);
-    VIR_FREE(output);
-
-    return ret;
-}
-
-static void
-ebiptablesDriverInitCLITools(void)
-{
-    ebtables_cmd_path = virFindFileInPath("ebtables");
-    if (!ebtables_cmd_path)
-        VIR_WARN("Could not find 'ebtables' executable");
-
-    iptables_cmd_path = virFindFileInPath("iptables");
-    if (!iptables_cmd_path)
-        VIR_WARN("Could not find 'iptables' executable");
-
-    ip6tables_cmd_path = virFindFileInPath("ip6tables");
-    if (!ip6tables_cmd_path)
-        VIR_WARN("Could not find 'ip6tables' executable");
-}
-
-/*
- * ebiptablesDriverTestCLITools
- *
- * Test the CLI tools. If one is found not to be working, free the buffer
- * holding its path as a sign that the tool cannot be used.
- */
-static int
-ebiptablesDriverTestCLITools(void)
-{
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *errmsg = NULL;
-    int ret = 0;
-
-    if (ebtables_cmd_path) {
-        NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
-        /* basic probing */
-        virBufferAsprintf(&buf,
-                          CMD_DEF("$EBT -t nat -L") CMD_SEPARATOR
-                          CMD_EXEC
-                          "%s",
-                          CMD_STOPONERR(true));
-
-        if (ebiptablesExecCLI(&buf, false, &errmsg) < 0) {
-            VIR_FREE(ebtables_cmd_path);
-            VIR_ERROR(_("Testing of ebtables command failed: %s"),
-                      errmsg);
-            ret = -1;
-        }
-    }
-
-    if (iptables_cmd_path) {
-        NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
-
-        virBufferAsprintf(&buf,
-                          CMD_DEF("$IPT -n -L FORWARD") CMD_SEPARATOR
-                          CMD_EXEC
-                          "%s",
-                          CMD_STOPONERR(true));
-
-        if (ebiptablesExecCLI(&buf, false, &errmsg) < 0) {
-            VIR_FREE(iptables_cmd_path);
-            VIR_ERROR(_("Testing of iptables command failed: %s"),
-                      errmsg);
-            ret = -1;
-        }
-    }
-
-    if (ip6tables_cmd_path) {
-        NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
-
-        virBufferAsprintf(&buf,
-                          CMD_DEF("$IPT -n -L FORWARD") CMD_SEPARATOR
-                          CMD_EXEC
-                          "%s",
-                          CMD_STOPONERR(true));
-
-        if (ebiptablesExecCLI(&buf, false, &errmsg) < 0) {
-            VIR_FREE(ip6tables_cmd_path);
-            VIR_ERROR(_("Testing of ip6tables command failed: %s"),
-                      errmsg);
-            ret = -1;
-        }
-    }
-
-    VIR_FREE(errmsg);
-
-    return ret;
-}
 
 static void
 ebiptablesDriverProbeCtdir(void)
@@ -3957,11 +3709,8 @@ ebiptablesDriverProbeStateMatchQuery(virFirewallPtr fw ATTRIBUTE_UNUSED,
 static int
 ebiptablesDriverProbeStateMatch(void)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned long version;
     virFirewallPtr fw = virFirewallNew();
-
-    NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
 
     virFirewallStartTransaction(fw, 0);
     virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_IPV4,
@@ -3987,39 +3736,9 @@ ebiptablesDriverInit(bool privileged)
     if (!privileged)
         return 0;
 
-    grep_cmd_path = virFindFileInPath("grep");
-
-    /*
-     * check whether we can run with firewalld's tools --
-     * if not, we just fall back to eb/iptables command
-     * line tools.
-     */
-    if (ebiptablesDriverInitWithFirewallD() < 0)
-        ebiptablesDriverInitCLITools();
-
-    /* make sure tools are available and work */
-    ebiptablesDriverTestCLITools();
-
-    /* ip(6)tables support needs awk & grep, ebtables doesn't */
-    if ((iptables_cmd_path != NULL || ip6tables_cmd_path != NULL) &&
-        !grep_cmd_path) {
-        VIR_ERROR(_("essential tools to support ip(6)tables "
-                  "firewalls could not be located"));
-        VIR_FREE(iptables_cmd_path);
-        VIR_FREE(ip6tables_cmd_path);
-    }
-
-    if (!ebtables_cmd_path && !iptables_cmd_path && !ip6tables_cmd_path) {
-        VIR_ERROR(_("firewall tools were not found or cannot be used"));
-        ebiptablesDriverShutdown();
-        return -ENOTSUP;
-    }
-
-    if (iptables_cmd_path) {
-        ebiptablesDriverProbeCtdir();
-        if (ebiptablesDriverProbeStateMatch() < 0)
-            return -1;
-    }
+    ebiptablesDriverProbeCtdir();
+    if (ebiptablesDriverProbeStateMatch() < 0)
+        return -1;
 
     ebiptables_driver.flags = TECHDRV_FLAG_INITIALIZED;
 
@@ -4030,9 +3749,5 @@ ebiptablesDriverInit(bool privileged)
 static void
 ebiptablesDriverShutdown(void)
 {
-    VIR_FREE(grep_cmd_path);
-    VIR_FREE(ebtables_cmd_path);
-    VIR_FREE(iptables_cmd_path);
-    VIR_FREE(ip6tables_cmd_path);
     ebiptables_driver.flags = 0;
 }
