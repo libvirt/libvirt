@@ -3923,45 +3923,62 @@ ebiptablesDriverProbeCtdir(void)
         iptables_ctdir_corrected = CTDIR_STATUS_OLD;
 }
 
-static void
-ebiptablesDriverProbeStateMatch(void)
+
+static int
+ebiptablesDriverProbeStateMatchQuery(virFirewallPtr fw ATTRIBUTE_UNUSED,
+                                     const char *const *lines,
+                                     void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *cmdout = NULL, *version;
-    unsigned long thisversion;
+    unsigned long *version = opaque;
+    char *tmp;
 
-    NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
-
-    virBufferAsprintf(&buf,
-                      "$IPT --version");
-
-    if (ebiptablesExecCLI(&buf, false, &cmdout) < 0) {
-        VIR_ERROR(_("Testing of iptables command failed: %s"),
-                  cmdout);
-        return;
+    if (!lines || !lines[0]) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("No output from iptables --version"));
+        return -1;
     }
 
     /*
      * we expect output in the format
-     * iptables v1.4.16
+     * 'iptables v1.4.16'
      */
-    if (!(version = strchr(cmdout, 'v')) ||
-        virParseVersionString(version + 1, &thisversion, true) < 0) {
-        VIR_ERROR(_("Could not determine iptables version from string %s"),
-                  cmdout);
-        goto cleanup;
+    if (!(tmp = strchr(lines[0], 'v')) ||
+        virParseVersionString(tmp + 1, version, true) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot parse version string '%s'"),
+                       lines[0]);
+        return -1;
     }
+
+    return 0;
+}
+
+
+static int
+ebiptablesDriverProbeStateMatch(void)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    unsigned long version;
+    virFirewallPtr fw = virFirewallNew();
+
+    NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
+
+    virFirewallStartTransaction(fw, 0);
+    virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_IPV4,
+                           false, ebiptablesDriverProbeStateMatchQuery, &version,
+                           "--version", NULL);
+
+    if (virFirewallApply(fw) < 0)
+        return -1;
 
     /*
      * since version 1.4.16 '-m state --state ...' will be converted to
      * '-m conntrack --ctstate ...'
      */
-    if (thisversion >= 1 * 1000000 + 4 * 1000 + 16)
+    if (version >= 1 * 1000000 + 4 * 1000 + 16)
         newMatchState = true;
 
- cleanup:
-    VIR_FREE(cmdout);
-    return;
+    return 0;
 }
 
 static int
@@ -4000,7 +4017,8 @@ ebiptablesDriverInit(bool privileged)
 
     if (iptables_cmd_path) {
         ebiptablesDriverProbeCtdir();
-        ebiptablesDriverProbeStateMatch();
+        if (ebiptablesDriverProbeStateMatch() < 0)
+            return -1;
     }
 
     ebiptables_driver.flags = TECHDRV_FLAG_INITIALIZED;
