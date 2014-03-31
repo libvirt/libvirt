@@ -7640,8 +7640,12 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
 
     ret = 0;
  cleanup:
-    if (ret < 0)
+    if (ret < 0) {
+        virErrorPtr saved_err = virSaveLastError();
         virDomainConfNWFilterTeardown(net);
+        virSetError(saved_err);
+        virFreeError(saved_err);
+    }
     for (i = 0; tapfd && i < tapfdSize && tapfd[i] >= 0; i++) {
         if (ret < 0)
             VIR_FORCE_CLOSE(tapfd[i]);
