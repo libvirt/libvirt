@@ -1148,7 +1148,6 @@ virCgroupAddTaskStrController(virCgroupPtr group,
  *
  * @src_group: The source cgroup where all tasks are removed from
  * @dest_group: The destination where all tasks are added to
- * @controller: The cgroup controller to be operated on
  *
  * Returns: 0 on success or -1 on failure
  */
