@@ -1180,7 +1180,7 @@ vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static const vshCmdInfo info_network_event[] = {
-    {.name = "net-event",
+    {.name = "help",
      .data = N_("Network Events")
     },
     {.name = "desc",

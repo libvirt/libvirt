@@ -11030,7 +11030,7 @@ static vshEventCallback vshEventCallbacks[] = {
 verify(VIR_DOMAIN_EVENT_ID_LAST == ARRAY_CARDINALITY(vshEventCallbacks));
 
 static const vshCmdInfo info_event[] = {
-    {.name = "event",
+    {.name = "help",
      .data = N_("Domain Events")
     },
     {.name = "desc",
