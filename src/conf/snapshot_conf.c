@@ -150,13 +150,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
         if (!def->src.path &&
             xmlStrEqual(cur->name, BAD_CAST "source")) {
 
-            if (virDomainDiskSourceDefParse(cur,
-                                            def->src.type,
-                                            &def->src.path,
-                                            &def->src.protocol,
-                                            &def->src.nhosts,
-                                            &def->src.hosts,
-                                            NULL) < 0)
+            if (virDomainDiskSourceParse(cur, &def->src) < 0)
                 goto cleanup;
 
         } else if (!def->src.format &&
@@ -635,14 +629,7 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
     if (disk->src.format > 0)
         virBufferEscapeString(buf, "<driver type='%s'/>\n",
                               virStorageFileFormatTypeToString(disk->src.format));
-    virDomainDiskSourceDefFormatInternal(buf,
-                                         type,
-                                         disk->src.path,
-                                         0,
-                                         disk->src.protocol,
-                                         disk->src.nhosts,
-                                         disk->src.hosts,
-                                         0, NULL, NULL, 0);
+    virDomainDiskSourceFormat(buf, &disk->src, 0, 0);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</disk>\n");

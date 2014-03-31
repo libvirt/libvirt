@@ -4954,13 +4954,8 @@ virDomainDiskSourcePoolDefParse(xmlNodePtr node,
 
 
 int
-virDomainDiskSourceDefParse(xmlNodePtr node,
-                            int type,
-                            char **source,
-                            int *proto,
-                            size_t *nhosts,
-                            virStorageNetHostDefPtr *hosts,
-                            virStorageSourcePoolDefPtr *srcpool)
+virDomainDiskSourceParse(xmlNodePtr node,
+                         virStorageSourcePtr src)
 {
     char *protocol = NULL;
     char *transport = NULL;
@@ -4970,15 +4965,15 @@ virDomainDiskSourceDefParse(xmlNodePtr node,
 
     memset(&host, 0, sizeof(host));
 
-    switch (type) {
+    switch (src->type) {
     case VIR_STORAGE_TYPE_FILE:
-        *source = virXMLPropString(node, "file");
+        src->path = virXMLPropString(node, "file");
         break;
     case VIR_STORAGE_TYPE_BLOCK:
-        *source = virXMLPropString(node, "dev");
+        src->path = virXMLPropString(node, "dev");
         break;
     case VIR_STORAGE_TYPE_DIR:
-        *source = virXMLPropString(node, "dir");
+        src->path = virXMLPropString(node, "dir");
         break;
     case VIR_STORAGE_TYPE_NETWORK:
         if (!(protocol = virXMLPropString(node, "protocol"))) {
@@ -4987,14 +4982,14 @@ virDomainDiskSourceDefParse(xmlNodePtr node,
             goto cleanup;
         }
 
-        if ((*proto = virStorageNetProtocolTypeFromString(protocol)) < 0){
+        if ((src->protocol = virStorageNetProtocolTypeFromString(protocol)) < 0){
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown protocol type '%s'"), protocol);
             goto cleanup;
         }
 
-        if (!(*source = virXMLPropString(node, "name")) &&
-            *proto != VIR_STORAGE_NET_PROTOCOL_NBD) {
+        if (!(src->path = virXMLPropString(node, "name")) &&
+            src->protocol != VIR_STORAGE_NET_PROTOCOL_NBD) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing name for disk source"));
             goto cleanup;
@@ -5048,28 +5043,28 @@ virDomainDiskSourceDefParse(xmlNodePtr node,
                     host.port = virXMLPropString(child, "port");
                 }
 
-                if (VIR_APPEND_ELEMENT(*hosts, *nhosts, host) < 0)
+                if (VIR_APPEND_ELEMENT(src->hosts, src->nhosts, host) < 0)
                     goto cleanup;
             }
             child = child->next;
         }
         break;
     case VIR_STORAGE_TYPE_VOLUME:
-        if (virDomainDiskSourcePoolDefParse(node, srcpool) < 0)
+        if (virDomainDiskSourcePoolDefParse(node, &src->srcpool) < 0)
             goto cleanup;
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected disk type %s"),
-                       virStorageTypeToString(type));
+                       virStorageTypeToString(src->type));
         goto cleanup;
     }
 
     /* People sometimes pass a bogus '' source path when they mean to omit the
      * source element completely (e.g. CDROM without media). This is just a
      * little compatibility check to help those broken apps */
-    if (*source && STREQ(*source, ""))
-        VIR_FREE(*source);
+    if (src->path && !*src->path)
+        VIR_FREE(src->path);
 
     ret = 0;
 
@@ -5107,7 +5102,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *sgio = NULL;
     char *driverName = NULL;
     char *driverType = NULL;
-    char *source = NULL;
+    const char *source = NULL;
     char *target = NULL;
     char *trans = NULL;
     char *bus = NULL;
@@ -5176,13 +5171,9 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 xmlStrEqual(cur->name, BAD_CAST "source")) {
                 sourceNode = cur;
 
-                if (virDomainDiskSourceDefParse(cur, def->src.type,
-                                                &source,
-                                                &def->src.protocol,
-                                                &def->src.nhosts,
-                                                &def->src.hosts,
-                                                &def->src.srcpool) < 0)
+                if (virDomainDiskSourceParse(cur, &def->src) < 0)
                     goto error;
+                source = def->src.path;
 
                 if (def->src.type == VIR_STORAGE_TYPE_NETWORK) {
                     if (def->src.protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI)
@@ -5799,8 +5790,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         def->startupPolicy = val;
     }
 
-    def->src.path = source;
-    source = NULL;
     def->dst = target;
     target = NULL;
     def->src.auth.username = authUsername;
@@ -5852,7 +5841,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(rawio);
     VIR_FREE(sgio);
     VIR_FREE(target);
-    VIR_FREE(source);
     VIR_FREE(tray);
     VIR_FREE(removable);
     VIR_FREE(trans);
@@ -14694,17 +14682,10 @@ virDomainDiskSourceDefFormatSeclabel(virBufferPtr buf,
 }
 
 int
-virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
-                                     int type,
-                                     const char *src,
-                                     int policy,
-                                     int protocol,
-                                     size_t nhosts,
-                                     virStorageNetHostDefPtr hosts,
-                                     size_t nseclabels,
-                                     virSecurityDeviceLabelDefPtr *seclabels,
-                                     virStorageSourcePoolDefPtr srcpool,
-                                     unsigned int flags)
+virDomainDiskSourceFormat(virBufferPtr buf,
+                          virStorageSourcePtr src,
+                          int policy,
+                          unsigned int flags)
 {
     size_t n;
     const char *startupPolicy = NULL;
@@ -14712,51 +14693,56 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
     if (policy)
         startupPolicy = virDomainStartupPolicyTypeToString(policy);
 
-    if (src || nhosts > 0 || srcpool || startupPolicy) {
-        switch (type) {
+    if (src->path || src->nhosts > 0 || src->srcpool || startupPolicy) {
+        switch ((enum virStorageType)src->type) {
         case VIR_STORAGE_TYPE_FILE:
             virBufferAddLit(buf, "<source");
-            virBufferEscapeString(buf, " file='%s'", src);
+            virBufferEscapeString(buf, " file='%s'", src->path);
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 
-            virDomainDiskSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
+            virDomainDiskSourceDefFormatSeclabel(buf, src->nseclabels,
+                                                 src->seclabels, flags);
            break;
 
         case VIR_STORAGE_TYPE_BLOCK:
             virBufferAddLit(buf, "<source");
-            virBufferEscapeString(buf, " dev='%s'", src);
+            virBufferEscapeString(buf, " dev='%s'", src->path);
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 
-            virDomainDiskSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
+            virDomainDiskSourceDefFormatSeclabel(buf, src->nseclabels,
+                                                 src->seclabels, flags);
             break;
 
         case VIR_STORAGE_TYPE_DIR:
             virBufferAddLit(buf, "<source");
-            virBufferEscapeString(buf, " dir='%s'", src);
+            virBufferEscapeString(buf, " dir='%s'", src->path);
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
             virBufferAddLit(buf, "/>\n");
             break;
 
         case VIR_STORAGE_TYPE_NETWORK:
             virBufferAsprintf(buf, "<source protocol='%s'",
-                              virStorageNetProtocolTypeToString(protocol));
-            virBufferEscapeString(buf, " name='%s'", src);
+                              virStorageNetProtocolTypeToString(src->protocol));
+            virBufferEscapeString(buf, " name='%s'", src->path);
 
-            if (nhosts == 0) {
+            if (src->nhosts == 0) {
                 virBufferAddLit(buf, "/>\n");
             } else {
                 virBufferAddLit(buf, ">\n");
                 virBufferAdjustIndent(buf, 2);
-                for (n = 0; n < nhosts; n++) {
+                for (n = 0; n < src->nhosts; n++) {
                     virBufferAddLit(buf, "<host");
-                    virBufferEscapeString(buf, " name='%s'", hosts[n].name);
-                    virBufferEscapeString(buf, " port='%s'", hosts[n].port);
+                    virBufferEscapeString(buf, " name='%s'",
+                                          src->hosts[n].name);
+                    virBufferEscapeString(buf, " port='%s'",
+                                          src->hosts[n].port);
 
-                    if (hosts[n].transport)
+                    if (src->hosts[n].transport)
                         virBufferAsprintf(buf, " transport='%s'",
-                                          virStorageNetHostTransportTypeToString(hosts[n].transport));
+                                          virStorageNetHostTransportTypeToString(src->hosts[n].transport));
 
-                    virBufferEscapeString(buf, " socket='%s'", hosts[n].socket);
+                    virBufferEscapeString(buf, " socket='%s'",
+                                          src->hosts[n].socket);
 
                     virBufferAddLit(buf, "/>\n");
                 }
@@ -14768,46 +14754,28 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
         case VIR_STORAGE_TYPE_VOLUME:
             virBufferAddLit(buf, "<source");
 
-            if (srcpool) {
-                virBufferAsprintf(buf, " pool='%s' volume='%s'",
-                                  srcpool->pool, srcpool->volume);
-                if (srcpool->mode)
+            if (src->srcpool) {
+                virBufferEscapeString(buf, " pool='%s'", src->srcpool->pool);
+                virBufferEscapeString(buf, " volume='%s'",
+                                      src->srcpool->volume);
+                if (src->srcpool->mode)
                     virBufferAsprintf(buf, " mode='%s'",
-                                      virStorageSourcePoolModeTypeToString(srcpool->mode));
+                                      virStorageSourcePoolModeTypeToString(src->srcpool->mode));
             }
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 
-            virDomainDiskSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
+            virDomainDiskSourceDefFormatSeclabel(buf, src->nseclabels,
+                                                 src->seclabels, flags);
             break;
 
-        default:
+        case VIR_STORAGE_TYPE_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected disk type %s"),
-                           virStorageTypeToString(type));
+                           _("unexpected disk type %d"), src->type);
             return -1;
         }
     }
 
     return 0;
-}
-
-
-static int
-virDomainDiskSourceDefFormat(virBufferPtr buf,
-                             virDomainDiskDefPtr def,
-                             unsigned int flags)
-{
-    return virDomainDiskSourceDefFormatInternal(buf,
-                                                def->src.type,
-                                                def->src.path,
-                                                def->startupPolicy,
-                                                def->src.protocol,
-                                                def->src.nhosts,
-                                                def->src.hosts,
-                                                def->src.nseclabels,
-                                                def->src.seclabels,
-                                                def->src.srcpool,
-                                                flags);
 }
 
 
@@ -14932,7 +14900,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "</auth>\n");
     }
 
-    if (virDomainDiskSourceDefFormat(buf, def, flags) < 0)
+    if (virDomainDiskSourceFormat(buf, &def->src, def->startupPolicy,
+                                  flags) < 0)
         return -1;
     virDomainDiskGeometryDefFormat(buf, def);
     virDomainDiskBlockIoDefFormat(buf, def);

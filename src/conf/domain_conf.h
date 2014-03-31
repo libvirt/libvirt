@@ -2271,17 +2271,10 @@ int virDomainDefFormatInternal(virDomainDefPtr def,
                                unsigned int flags,
                                virBufferPtr buf);
 
-int virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
-                                         int type,
-                                         const char *src,
-                                         int policy,
-                                         int protocol,
-                                         size_t nhosts,
-                                         virStorageNetHostDefPtr hosts,
-                                         size_t nseclabels,
-                                         virSecurityDeviceLabelDefPtr *seclabels,
-                                         virStorageSourcePoolDefPtr srcpool,
-                                         unsigned int flags);
+int virDomainDiskSourceFormat(virBufferPtr buf,
+                              virStorageSourcePtr src,
+                              int policy,
+                              unsigned int flags);
 
 int virDomainNetDefFormat(virBufferPtr buf,
                           virDomainNetDefPtr def,
@@ -2328,13 +2321,8 @@ virDomainDiskDefPtr
 virDomainDiskRemove(virDomainDefPtr def, size_t i);
 virDomainDiskDefPtr
 virDomainDiskRemoveByName(virDomainDefPtr def, const char *name);
-int virDomainDiskSourceDefParse(xmlNodePtr node,
-                                int type,
-                                char **source,
-                                int *proto,
-                                size_t *nhosts,
-                                virStorageNetHostDefPtr *hosts,
-                                virStorageSourcePoolDefPtr *srcpool);
+int virDomainDiskSourceParse(xmlNodePtr node,
+                             virStorageSourcePtr src);
 
 bool virDomainHasDiskMirror(virDomainObjPtr vm);
 
