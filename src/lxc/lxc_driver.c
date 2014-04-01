@@ -3768,22 +3768,12 @@ lxcDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
     int ret = -1;
     virDomainNetDefPtr net;
     int idx;
-    char mac[VIR_MAC_STRING_BUFLEN];
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_NET:
         net = dev->data.net;
-        idx = virDomainNetFindIdx(vmdef, net);
-        if (idx == -2) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("multiple devices matching mac address %s found"),
-                           virMacAddrFormat(&net->mac, mac));
+        if ((idx = virDomainNetFindIdx(vmdef, net)) < 0)
             goto cleanup;
-        } else if (idx < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("no matching network device was found"));
-            goto cleanup;
-        }
 
         virDomainNetDefFree(vmdef->nets[idx]);
 
@@ -3813,7 +3803,6 @@ lxcDomainDetachDeviceConfig(virDomainDefPtr vmdef,
     virDomainNetDefPtr net;
     virDomainHostdevDefPtr hostdev, det_hostdev;
     int idx;
-    char mac[VIR_MAC_STRING_BUFLEN];
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
@@ -3829,17 +3818,9 @@ lxcDomainDetachDeviceConfig(virDomainDefPtr vmdef,
 
     case VIR_DOMAIN_DEVICE_NET:
         net = dev->data.net;
-        idx = virDomainNetFindIdx(vmdef, net);
-        if (idx == -2) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("multiple devices matching mac address %s found"),
-                           virMacAddrFormat(&net->mac, mac));
+        if ((idx = virDomainNetFindIdx(vmdef, net)) < 0)
             goto cleanup;
-        } else if (idx < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("no matching network device was found"));
-            goto cleanup;
-        }
+
         /* this is guaranteed to succeed */
         virDomainNetDefFree(virDomainNetRemove(vmdef, idx));
         ret = 0;
@@ -4650,21 +4631,11 @@ lxcDomainDetachDeviceNetLive(virDomainObjPtr vm,
 {
     int detachidx, ret = -1;
     virDomainNetDefPtr detach = NULL;
-    char mac[VIR_MAC_STRING_BUFLEN];
     virNetDevVPortProfilePtr vport = NULL;
 
-    detachidx = virDomainNetFindIdx(vm->def, dev->data.net);
-    if (detachidx == -2) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("multiple devices matching mac address %s found"),
-                       virMacAddrFormat(&dev->data.net->mac, mac));
+    if ((detachidx = virDomainNetFindIdx(vm->def, dev->data.net)) < 0)
         goto cleanup;
-    } else if (detachidx < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("network device %s not found"),
-                       virMacAddrFormat(&dev->data.net->mac, mac));
-        goto cleanup;
-    }
+
     detach = vm->def->nets[detachidx];
 
     switch (virDomainNetGetActualType(detach)) {

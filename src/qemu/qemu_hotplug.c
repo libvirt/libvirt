@@ -3362,21 +3362,10 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int vlan;
     char *hostnet_name = NULL;
-    char mac[VIR_MAC_STRING_BUFLEN];
 
-    detachidx = virDomainNetFindIdx(vm->def, dev->data.net);
-    if (detachidx == -2) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("multiple devices matching mac address %s found"),
-                       virMacAddrFormat(&dev->data.net->mac, mac));
+    if ((detachidx = virDomainNetFindIdx(vm->def, dev->data.net)) < 0)
         goto cleanup;
-    }
-    else if (detachidx < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("network device %s not found"),
-                       virMacAddrFormat(&dev->data.net->mac, mac));
-        goto cleanup;
-    }
+
     detach = vm->def->nets[detachidx];
 
     if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_HOSTDEV) {

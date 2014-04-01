@@ -6763,7 +6763,6 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
     virDomainChrDefPtr chr;
     virDomainFSDefPtr fs;
     int idx;
-    char mac[VIR_MAC_STRING_BUFLEN];
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
@@ -6778,17 +6777,9 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
 
     case VIR_DOMAIN_DEVICE_NET:
         net = dev->data.net;
-        idx = virDomainNetFindIdx(vmdef, net);
-        if (idx == -2) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("multiple devices matching mac address %s found"),
-                           virMacAddrFormat(&net->mac, mac));
+        if ((idx = virDomainNetFindIdx(vmdef, net)) < 0)
             return -1;
-        } else if (idx < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("no matching network device was found"));
-            return -1;
-        }
+
         /* this is guaranteed to succeed */
         virDomainNetDefFree(virDomainNetRemove(vmdef, idx));
         break;
@@ -6868,7 +6859,6 @@ qemuDomainUpdateDeviceConfig(virQEMUCapsPtr qemuCaps,
     virDomainDiskDefPtr orig, disk;
     virDomainNetDefPtr net;
     int pos;
-    char mac[VIR_MAC_STRING_BUFLEN];
 
 
     switch (dev->type) {
@@ -6907,20 +6897,8 @@ qemuDomainUpdateDeviceConfig(virQEMUCapsPtr qemuCaps,
 
     case VIR_DOMAIN_DEVICE_NET:
         net = dev->data.net;
-        pos = virDomainNetFindIdx(vmdef, net);
-        if (pos == -2) {
-            virMacAddrFormat(&net->mac, mac);
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("couldn't find matching device "
-                             "with mac address %s"), mac);
+        if ((pos = virDomainNetFindIdx(vmdef, net)) < 0)
             return -1;
-        } else if (pos < 0) {
-            virMacAddrFormat(&net->mac, mac);
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("couldn't find matching device "
-                             "with mac address %s"), mac);
-            return -1;
-        }
 
         virDomainNetDefFree(vmdef->nets[pos]);
 

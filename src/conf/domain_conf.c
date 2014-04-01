@@ -10236,14 +10236,14 @@ int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net)
  *                      PCI address (if specified)
  *
  * Return: index of match if unique match found
- *         -1 if not found
- *         -2 if multiple matches
+ *         -1 otherwise and an error is logged
  */
 int
 virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net)
 {
     size_t i;
     int matchidx = -1;
+    char mac[VIR_MAC_STRING_BUFLEN];
     bool PCIAddrSpecified = virDomainDeviceAddressIsValid(&net->info,
                                                           VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI);
 
@@ -10258,8 +10258,10 @@ virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net)
              * specify only vendor and product ID, and there may be
              * multiples of those.
              */
-            matchidx = -2; /* indicates "multiple matches" to caller */
-            break;
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("multiple devices matching mac address %s found"),
+                           virMacAddrFormat(&net->mac, mac));
+            return -1;
         }
         if (PCIAddrSpecified) {
             if (virDevicePCIAddressEqual(&def->nets[i]->info.addr.pci,
@@ -10274,6 +10276,11 @@ virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net)
             /* no PCI address given, so there may be multiple matches */
             matchidx = i;
         }
+    }
+    if (matchidx < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("no device matching mac address %s found"),
+                       virMacAddrFormat(&net->mac, mac));
     }
     return matchidx;
 }
