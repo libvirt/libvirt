@@ -115,6 +115,8 @@ struct _qemuAgent {
     qemuAgentEvent await_event;
 };
 
+static int qemuAgentCheckError(virJSONValuePtr cmd, virJSONValuePtr reply);
+
 static virClassPtr qemuAgentClass;
 static void qemuAgentDispose(void *obj);
 
@@ -1005,6 +1007,7 @@ qemuAgentCommand(qemuAgentPtr mon,
             }
         } else {
             *reply = msg.rxObject;
+            ret = qemuAgentCheckError(cmd, *reply);
         }
     }
 
@@ -1273,9 +1276,6 @@ int qemuAgentShutdown(qemuAgentPtr mon,
     ret = qemuAgentCommand(mon, cmd, &reply,
                            VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK);
 
-    if (reply && ret == 0)
-        ret = qemuAgentCheckError(cmd, reply);
-
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -1304,8 +1304,7 @@ int qemuAgentFSFreeze(qemuAgentPtr mon)
         return -1;
 
     if (qemuAgentCommand(mon, cmd, &reply,
-                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0 ||
-        qemuAgentCheckError(cmd, reply) < 0)
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
         goto cleanup;
 
     if (virJSONValueObjectGetNumberInt(reply, "return", &ret) < 0) {
@@ -1342,8 +1341,7 @@ int qemuAgentFSThaw(qemuAgentPtr mon)
         return -1;
 
     if (qemuAgentCommand(mon, cmd, &reply,
-                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0 ||
-        qemuAgentCheckError(cmd, reply) < 0)
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
         goto cleanup;
 
     if (virJSONValueObjectGetNumberInt(reply, "return", &ret) < 0) {
@@ -1382,9 +1380,6 @@ qemuAgentSuspend(qemuAgentPtr mon,
     ret = qemuAgentCommand(mon, cmd, &reply,
                            VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK);
 
-    if (reply && ret == 0)
-        ret = qemuAgentCheckError(cmd, reply);
-
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -1415,9 +1410,6 @@ qemuAgentArbitraryCommand(qemuAgentPtr mon,
     if ((ret = qemuAgentCommand(mon, cmd, &reply, timeout)) < 0)
         goto cleanup;
 
-    if ((ret = qemuAgentCheckError(cmd, reply)) < 0)
-        goto cleanup;
-
     if (!(*result = virJSONValueToString(reply, false)))
         ret = -1;
 
@@ -1445,9 +1437,6 @@ qemuAgentFSTrim(qemuAgentPtr mon,
     ret = qemuAgentCommand(mon, cmd, &reply,
                            VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK);
 
-    if (reply && ret == 0)
-        ret = qemuAgentCheckError(cmd, reply);
-
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -1468,8 +1457,7 @@ qemuAgentGetVCPUs(qemuAgentPtr mon,
         return -1;
 
     if (qemuAgentCommand(mon, cmd, &reply,
-                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0 ||
-        qemuAgentCheckError(cmd, reply) < 0)
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
         goto cleanup;
 
     if (!(data = virJSONValueObjectGet(reply, "return"))) {
@@ -1577,8 +1565,7 @@ qemuAgentSetVCPUs(qemuAgentPtr mon,
     cpus = NULL;
 
     if (qemuAgentCommand(mon, cmd, &reply,
-                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0 ||
-        qemuAgentCheckError(cmd, reply) < 0)
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
         goto cleanup;
 
     if (virJSONValueObjectGetNumberInt(reply, "return", &ret) < 0) {
