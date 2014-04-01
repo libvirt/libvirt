@@ -1,0 +1,13 @@
+iptables -A FP-vnet0 -p tcp --dport 22 -j ACCEPT
+iptables -A FJ-vnet0 -p tcp --sport 22 -j RETURN
+iptables -A HJ-vnet0 -p tcp --sport 22 -j RETURN
+iptables -A FJ-vnet0 -p tcp --sport 80 -m state --state ESTABLISHED -j RETURN
+iptables -A FP-vnet0 -p tcp --dport 80 -m state --state NEW,ESTABLISHED \
+-j ACCEPT
+iptables -A HJ-vnet0 -p tcp --sport 80 -m state --state ESTABLISHED -j RETURN
+iptables -A FJ-vnet0 -p tcp -j REJECT
+iptables -A FP-vnet0 -p tcp -j REJECT
+iptables -A HJ-vnet0 -p tcp -j REJECT
+iptables -A FJ-vnet0 -p all -j DROP
+iptables -A FP-vnet0 -p all -j DROP
+iptables -A HJ-vnet0 -p all -j DROP

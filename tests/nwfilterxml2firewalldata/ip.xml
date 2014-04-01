@@ -1,0 +1,28 @@
+<filter name='tck-testcase'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='accept' direction='out'>
+     <ip  srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+          dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff'
+          srcipaddr='10.1.2.3' srcipmask='255.255.255.255'
+          dstipaddr='10.1.2.3' dstipmask='255.255.255.255'
+          protocol='udp'
+          srcportstart='20' srcportend='22'
+          dstportstart='100' dstportend='101'
+      />
+  </rule>
+
+  <rule action='accept' direction='out'>
+     <ip  srcipaddr='10.1.2.3' srcipmask='255.255.128.0'
+          dstipaddr='10.1.2.3' dstipmask='255.255.255.0'
+          protocol='17' dscp='63'
+      />
+  </rule>
+
+  <rule action='accept' direction='in'>
+     <ip  srcipaddr='10.1.2.3' srcipmask='255.255.255.254'
+          dstipaddr='10.1.2.3' dstipmask='255.255.255.128'
+          protocol='255' dscp='63'
+      />
+  </rule>
+
+</filter>

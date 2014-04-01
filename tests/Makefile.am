@@ -274,6 +274,7 @@ test_programs += nwfilterxml2xmltest
 
 if WITH_NWFILTER
 test_programs += nwfilterebiptablestest
+test_programs += nwfilterxml2firewalltest
 endif WITH_NWFILTER
 
 if WITH_STORAGE
@@ -705,6 +706,12 @@ nwfilterebiptablestest_SOURCES = \
 	nwfilterebiptablestest.c \
 	testutils.c testutils.h
 nwfilterebiptablestest_LDADD = ../src/libvirt_driver_nwfilter_impl.la $(LDADDS)
+
+nwfilterxml2firewalltest_SOURCES = \
+	nwfilterxml2firewalltest.c \
+	testutils.c testutils.h
+nwfilterxml2firewalltest_LDADD = \
+	../src/libvirt_driver_nwfilter_impl.la $(LDADDS)
 endif WITH_NWFILTER
 
 secretxml2xmltest_SOURCES = \

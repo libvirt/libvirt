@@ -1,0 +1,8 @@
+ebtables -t nat -A libvirt-J-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff -p ipv4 --ip-source 10.1.2.3/32 \
+--ip-destination 10.1.2.3/32 --ip-protocol 17 --ip-source-port 20:22 \
+--ip-destination-port 100:101 -j ACCEPT
+ebtables -t nat -A libvirt-J-vnet0 -p ipv4 --ip-source 10.1.2.3/17 \
+--ip-destination 10.1.2.3/24 --ip-protocol 17 --ip-tos 0x3f -j ACCEPT
+ebtables -t nat -A libvirt-P-vnet0 -p ipv4 --ip-source 10.1.2.3/31 \
+--ip-destination 10.1.2.3/25 --ip-protocol 255 --ip-tos 0x3f -j ACCEPT

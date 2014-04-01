@@ -1,0 +1,7 @@
+iptables -A FJ-vnet0 -p icmp -m connlimit --connlimit-above 1 -j DROP
+iptables -A HJ-vnet0 -p icmp -m connlimit --connlimit-above 1 -j DROP
+iptables -A FJ-vnet0 -p tcp -m connlimit --connlimit-above 2 -j DROP
+iptables -A HJ-vnet0 -p tcp -m connlimit --connlimit-above 2 -j DROP
+iptables -A FJ-vnet0 -p all -m state --state NEW,ESTABLISHED -j RETURN
+iptables -A FP-vnet0 -p all -m state --state ESTABLISHED -j ACCEPT
+iptables -A HJ-vnet0 -p all -m state --state NEW,ESTABLISHED -j RETURN

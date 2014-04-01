@@ -1,0 +1,9 @@
+iptables -A FJ-vnet0 -p icmp -m mac --mac-source 01:02:03:04:05:06 \
+--destination 10.1.2.3/32 -m dscp --dscp 2 --icmp-type 12/11 -m state \
+--state NEW,ESTABLISHED -j RETURN
+iptables -A HJ-vnet0 -p icmp -m mac --mac-source 01:02:03:04:05:06 \
+--destination 10.1.2.3/32 -m dscp --dscp 2 --icmp-type 12/11 -m state \
+--state NEW,ESTABLISHED -j RETURN
+iptables -A FP-vnet0 -p icmp -m mac --mac-source 01:02:03:04:05:06 \
+--source 10.1.2.3/22 -m dscp --dscp 33 --icmp-type 255/255 -m state \
+--state NEW,ESTABLISHED -j ACCEPT

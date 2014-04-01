@@ -1,0 +1,9 @@
+iptables -A FP-vnet0 -p icmp --icmp-type 8 -m state --state NEW,ESTABLISHED \
+-j ACCEPT
+iptables -A FJ-vnet0 -p icmp --icmp-type 0 -m state --state NEW,ESTABLISHED \
+-j RETURN
+iptables -A HJ-vnet0 -p icmp --icmp-type 0 -m state --state NEW,ESTABLISHED \
+-j RETURN
+iptables -A FJ-vnet0 -p icmp -j DROP
+iptables -A FP-vnet0 -p icmp -j DROP
+iptables -A HJ-vnet0 -p icmp -j DROP

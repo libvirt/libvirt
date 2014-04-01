@@ -1,0 +1,19 @@
+<filter name='tck-testcase' chain='root'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='accept' direction='out'>
+     <mac srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+     protocolid='arp'/>
+  </rule>
+  <rule action='accept' direction='in'>
+     <mac dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff'
+     protocolid='ipv4'/>
+  </rule>
+  <rule action='accept' direction='in'>
+     <mac dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff'
+     protocolid='1536'/>
+  </rule>
+  <rule action='accept' direction='in'>
+     <mac dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff'
+     protocolid='65535'/>
+  </rule>
+</filter>

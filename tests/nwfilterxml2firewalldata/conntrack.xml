@@ -1,0 +1,12 @@
+<filter name='tck-testcase' chain='root'>
+  <uuid>0a5288ea-612c-834a-6bbf-82a03a1a3244</uuid>
+  <rule action='drop' direction='out' priority='500'>
+    <icmp connlimit-above='1'/>
+  </rule>
+  <rule action='drop' direction='out' priority='500'>
+    <tcp connlimit-above='2'/>
+  </rule>
+  <rule action='accept' direction='out' priority='500'>
+    <all/>
+  </rule>
+</filter>

@@ -1,0 +1,10 @@
+<filter name='tck-testcase'>
+    <uuid>d6b1a2af-def6-2898-9f8d-4a74e3c39558</uuid>
+    <rule action='accept' direction='out' priority='500'>
+        <icmp/>
+    </rule>
+    <!-- drop all other traffic -->
+    <rule action='drop' direction='inout' priority='600'>
+        <all/>
+    </rule>
+</filter>

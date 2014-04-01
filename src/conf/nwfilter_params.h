@@ -60,6 +60,7 @@ unsigned int virNWFilterVarValueGetCardinality(const virNWFilterVarValue *);
 bool virNWFilterVarValueEqual(const virNWFilterVarValue *a,
                               const virNWFilterVarValue *b);
 int virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value);
+int virNWFilterVarValueAddValueCopy(virNWFilterVarValuePtr val, const char *value);
 int virNWFilterVarValueDelValue(virNWFilterVarValuePtr val, const char *value);
 
 typedef struct _virNWFilterHashTable virNWFilterHashTable;

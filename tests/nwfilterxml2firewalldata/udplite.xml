@@ -1,0 +1,18 @@
+<filter name='tck-testcase' chain='root'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='accept' direction='out'>
+     <udplite srcmacaddr='1:2:3:4:5:6'
+              dstipaddr='10.1.2.3' dstipmask='255.255.255.255'
+              dscp='2'/>
+  </rule>
+  <rule action='accept' direction='in'>
+     <udplite srcmacaddr='1:2:3:4:5:6'
+              srcipaddr='10.1.2.3' srcipmask='22'
+              dscp='33'/>
+  </rule>
+  <rule action='accept' direction='in'>
+     <udplite srcmacaddr='1:2:3:4:5:6'
+              srcipaddr='10.1.2.3' srcipmask='22'
+              dscp='33'/>
+  </rule>
+</filter>

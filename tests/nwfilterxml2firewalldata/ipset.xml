@@ -1,0 +1,25 @@
+<!-- #ipset help && iptables -t match-set -h && ipset list tck_test || ipset create tck_test hash:ip# -->
+<filter name='tck-testcase' chain='root'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='accept' direction='out'>
+     <all  ipset='tck_test' ipsetflags='src,dst' />
+  </rule>
+  <rule action='accept' direction='in'>
+     <all  state='NONE' ipset='tck_test' ipsetflags='src,dst' comment='in+NONE'/>
+  </rule>
+  <rule action='accept' direction='out'>
+     <all  state='NONE' ipset='tck_test' ipsetflags='src,dst' comment='out+NONE'/>
+  </rule>
+  <rule action='accept' direction='in'>
+     <all  ipset='tck_test' ipsetflags='SRC,DST,SRC' />
+  </rule>
+  <rule action='accept' direction='in'>
+     <all  ipset='tck_test' ipsetflags='SRC,dSt,SRC' />
+  </rule>
+  <rule action='accept' direction='in'>
+     <all  ipset='$IPSETNAME' ipsetflags='src,dst' />
+  </rule>
+  <rule action='accept' direction='inout'>
+     <all  ipset='$IPSETNAME' ipsetflags='src,dst' comment='inout'/>
+  </rule>
+</filter>

@@ -1,0 +1,12 @@
+ebtables -t nat -N libvirt-J-vnet0
+ebtables -t nat -A libvirt-J-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff -p 0x8035 --arp-htype 12 --arp-opcode 1 \
+--arp-ptype 0x22 --arp-mac-src 01:02:03:04:05:06 --arp-mac-dst 0a:0b:0c:0d:0e:0f \
+-j ACCEPT
+ebtables -t nat -A libvirt-J-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-p 0x8035 --arp-htype 255 --arp-opcode 1 --arp-ptype 0xff -j ACCEPT
+ebtables -t nat -A libvirt-J-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-p 0x8035 --arp-htype 256 --arp-opcode 11 --arp-ptype 0x100 -j ACCEPT
+ebtables -t nat -A libvirt-J-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-p 0x8035 --arp-htype 65535 --arp-opcode 65535 --arp-ptype 0xffff -j ACCEPT
+ebtables -t nat -A PREROUTING -i vnet0 -j libvirt-J-vnet0

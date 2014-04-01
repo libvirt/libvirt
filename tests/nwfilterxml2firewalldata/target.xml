@@ -1,0 +1,66 @@
+<filter name='tck-testcase' chain='root'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='accept' direction='out'>
+     <all  srcmacaddr='1:2:3:4:5:6'
+           dstipaddr='10.1.2.3' dstipmask='255.255.255.255'
+           dscp='2' comment='accept rule -- dir out'/>
+  </rule>
+  <rule action='drop' direction='out'>
+     <all  srcmacaddr='1:2:3:4:5:6'
+           dstipaddr='10.1.2.3' dstipmask='255.255.255.255'
+           dscp='2' comment='drop rule   -- dir out'/>
+  </rule>
+  <rule action='reject' direction='out'>
+     <all  srcmacaddr='1:2:3:4:5:6'
+           dstipaddr='10.1.2.3' dstipmask='255.255.255.255'
+           dscp='2' comment='reject rule -- dir out'/>
+  </rule>
+  <rule action='accept' direction='in'>
+     <all  srcmacaddr='1:2:3:4:5:6'
+           srcipaddr='10.1.2.3' srcipmask='22'
+           dscp='33' comment='accept rule -- dir in'/>
+  </rule>
+  <rule action='drop' direction='in'>
+     <all  srcmacaddr='1:2:3:4:5:6'
+           srcipaddr='10.1.2.3' srcipmask='22'
+           dscp='33' comment='drop rule   -- dir in'/>
+  </rule>
+  <rule action='reject' direction='in'>
+     <all  srcmacaddr='1:2:3:4:5:6'
+           srcipaddr='10.1.2.3' srcipmask='22'
+           dscp='33' comment='reject rule -- dir in'/>
+  </rule>
+  <rule action='accept' direction='inout'>
+     <all  comment='accept rule -- dir inout'/>
+  </rule>
+  <rule action='drop' direction='in'>
+     <all  comment='drop   rule -- dir inout'/>
+  </rule>
+  <rule action='reject' direction='in'>
+     <all  comment='reject rule -- dir inout'/>
+  </rule>
+  <rule action='accept' direction='out'>
+     <mac srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+     protocolid='arp'/>
+  </rule>
+  <rule action='drop' direction='out'>
+     <mac srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+     protocolid='arp'/>
+  </rule>
+  <rule action='reject' direction='out'>
+     <mac srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+     protocolid='arp'/>
+  </rule>
+  <rule action='accept' direction='in'>
+     <mac dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff'
+     protocolid='ipv4'/>
+  </rule>
+  <rule action='drop' direction='in'>
+     <mac dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff'
+     protocolid='ipv4'/>
+  </rule>
+  <rule action='reject' direction='in'>
+     <mac dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff'
+     protocolid='ipv4'/>
+  </rule>
+</filter>

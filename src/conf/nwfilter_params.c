@@ -252,6 +252,21 @@ virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value)
     return rc;
 }
 
+
+int
+virNWFilterVarValueAddValueCopy(virNWFilterVarValuePtr val, const char *value)
+{
+    char *valdup;
+    if (VIR_STRDUP(valdup, value) < 0)
+        return -1;
+    if (virNWFilterVarValueAddValue(val, valdup) < 0) {
+        VIR_FREE(valdup);
+        return -1;
+    }
+    return 0;
+}
+
+
 static int
 virNWFilterVarValueDelNthValue(virNWFilterVarValuePtr val, unsigned int pos)
 {

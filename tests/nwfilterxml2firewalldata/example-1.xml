@@ -1,0 +1,24 @@
+<filter name='tck-testcase'>
+  <uuid>0a5288ea-612c-834a-6bbf-82a03a1a3244</uuid>
+
+  <!-- allow incoming ssh connections -->
+  <rule action='accept' direction='in' priority='100'>
+    <tcp dstportstart='22'/>
+  </rule>
+
+  <!-- allow incoming ICMP (ping) packets -->
+  <rule action='accept' direction='in' priority='200'>
+    <icmp/>
+  </rule>
+
+  <!-- allow all outgoing traffic -->
+  <rule action='accept' direction='in' priority='300'>
+    <all/>
+  </rule>
+
+  <!-- drop all other traffic -->
+  <rule action='drop' direction='inout' priority='1000'>
+    <all/>
+  </rule>
+
+</filter>

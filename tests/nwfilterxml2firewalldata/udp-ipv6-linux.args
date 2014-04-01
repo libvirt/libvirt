@@ -1,0 +1,22 @@
+ip6tables -A FJ-vnet0 -p udp -m mac --mac-source 01:02:03:04:05:06 \
+--destination a:b:c::d:e:f/128 -m dscp --dscp 2 -m state --state NEW,ESTABLISHED \
+-j RETURN
+ip6tables -A FP-vnet0 -p udp --source a:b:c::d:e:f/128 -m dscp --dscp 2 \
+-m state --state ESTABLISHED -j ACCEPT
+ip6tables -A HJ-vnet0 -p udp -m mac --mac-source 01:02:03:04:05:06 \
+--destination a:b:c::d:e:f/128 -m dscp --dscp 2 -m state --state NEW,ESTABLISHED \
+-j RETURN
+ip6tables -A FJ-vnet0 -p udp --destination ::a:b:c/128 -m dscp --dscp 33 \
+--dport 20:21 --sport 100:1111 -m state --state ESTABLISHED -j RETURN
+ip6tables -A FP-vnet0 -p udp -m mac --mac-source 01:02:03:04:05:06 \
+--source ::a:b:c/128 -m dscp --dscp 33 --sport 20:21 --dport 100:1111 -m state \
+--state NEW,ESTABLISHED -j ACCEPT
+ip6tables -A HJ-vnet0 -p udp --destination ::a:b:c/128 -m dscp --dscp 33 \
+--dport 20:21 --sport 100:1111 -m state --state ESTABLISHED -j RETURN
+ip6tables -A FJ-vnet0 -p udp --destination ::10.1.2.3/128 -m dscp --dscp 63 \
+--dport 255:256 --sport 65535:65535 -m state --state ESTABLISHED -j RETURN
+ip6tables -A FP-vnet0 -p udp -m mac --mac-source 01:02:03:04:05:06 \
+--source ::10.1.2.3/128 -m dscp --dscp 63 --sport 255:256 --dport 65535:65535 \
+-m state --state NEW,ESTABLISHED -j ACCEPT
+ip6tables -A HJ-vnet0 -p udp --destination ::10.1.2.3/128 -m dscp --dscp 63 \
+--dport 255:256 --sport 65535:65535 -m state --state ESTABLISHED -j RETURN

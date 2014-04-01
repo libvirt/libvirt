@@ -1,0 +1,13 @@
+<filter name='tck-testcase' chain='root'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='accept' direction='out'>
+     <tcp  srcipaddr='$A[ 0]' srcportstart='$B[  @0 ] ' dscp='1'/>
+  </rule>
+  <rule action='accept' direction='out'>
+     <udp  srcipaddr='$A[1 ]' srcportstart='$B[ @2 ]' dscp='2'/>
+  </rule>
+  <rule action='accept' direction='out'>
+     <sctp  srcipaddr='$A[ 1 ] ' srcportstart='$B[2 ] ' dstportstart='$C[ 2 ]'
+           dscp='3'/>
+  </rule>
+</filter>

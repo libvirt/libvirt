@@ -1,0 +1,75 @@
+ebtables -t nat -A libvirt-J-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-p 0x806 -j ACCEPT
+ebtables -t nat -A libvirt-J-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-p 0x806 -j DROP
+ebtables -t nat -A libvirt-J-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-p 0x806 -j DROP
+ebtables -t nat -A libvirt-P-vnet0 -d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
+-p 0x800 -j ACCEPT
+ebtables -t nat -A libvirt-P-vnet0 -d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
+-p 0x800 -j DROP
+ebtables -t nat -A libvirt-P-vnet0 -d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
+-p 0x800 -j DROP
+iptables -A FJ-vnet0 -p all -m mac --mac-source 01:02:03:04:05:06 \
+--destination 10.1.2.3/32 -m dscp --dscp 2 -m state --state NEW,ESTABLISHED -m comment \
+--comment 'accept rule -- dir out' -j RETURN
+iptables -A FP-vnet0 -p all --source 10.1.2.3/32 -m dscp --dscp 2 -m state \
+--state ESTABLISHED -m comment --comment 'accept rule -- dir out' -j ACCEPT
+iptables -A HJ-vnet0 -p all -m mac --mac-source 01:02:03:04:05:06 \
+--destination 10.1.2.3/32 -m dscp --dscp 2 -m state --state NEW,ESTABLISHED -m comment \
+--comment 'accept rule -- dir out' -j RETURN
+iptables -A FJ-vnet0 -p all -m mac --mac-source 01:02:03:04:05:06 \
+--destination 10.1.2.3/32 -m dscp --dscp 2 -m comment \
+--comment 'drop rule   -- dir out' -j DROP
+iptables -A FP-vnet0 -p all --source 10.1.2.3/32 -m dscp --dscp 2 -m comment \
+--comment 'drop rule   -- dir out' -j DROP
+iptables -A HJ-vnet0 -p all -m mac --mac-source 01:02:03:04:05:06 \
+--destination 10.1.2.3/32 -m dscp --dscp 2 -m comment \
+--comment 'drop rule   -- dir out' -j DROP
+iptables -A FJ-vnet0 -p all -m mac --mac-source 01:02:03:04:05:06 \
+--destination 10.1.2.3/32 -m dscp --dscp 2 -m comment \
+--comment 'reject rule -- dir out' -j REJECT
+iptables -A FP-vnet0 -p all --source 10.1.2.3/32 -m dscp --dscp 2 \
+-m comment --comment 'reject rule -- dir out' -j REJECT
+iptables -A HJ-vnet0 -p all -m mac --mac-source 01:02:03:04:05:06 \
+--destination 10.1.2.3/32 -m dscp --dscp 2 -m comment \
+--comment 'reject rule -- dir out' -j REJECT
+iptables -A FJ-vnet0 -p all --destination 10.1.2.3/22 -m dscp --dscp 33 \
+-m state --state ESTABLISHED -m comment --comment 'accept rule -- dir in' -j RETURN
+iptables -A FP-vnet0 -p all -m mac --mac-source 01:02:03:04:05:06 \
+--source 10.1.2.3/22 -m dscp --dscp 33 -m state --state NEW,ESTABLISHED -m comment \
+--comment 'accept rule -- dir in' -j ACCEPT
+iptables -A HJ-vnet0 -p all --destination 10.1.2.3/22 -m dscp --dscp 33 \
+-m state --state ESTABLISHED -m comment --comment 'accept rule -- dir in' -j RETURN
+iptables -A FJ-vnet0 -p all --destination 10.1.2.3/22 -m dscp --dscp 33 \
+-m comment --comment 'drop rule   -- dir in' -j DROP
+iptables -A FP-vnet0 -p all -m mac --mac-source 01:02:03:04:05:06 \
+--source 10.1.2.3/22 -m dscp --dscp 33 -m comment --comment 'drop rule   -- dir in' \
+-j DROP
+iptables -A HJ-vnet0 -p all --destination 10.1.2.3/22 -m dscp --dscp 33 \
+-m comment --comment 'drop rule   -- dir in' -j DROP
+iptables -A FJ-vnet0 -p all --destination 10.1.2.3/22 -m dscp --dscp 33 \
+-m comment --comment 'reject rule -- dir in' -j REJECT
+iptables -A FP-vnet0 -p all -m mac --mac-source 01:02:03:04:05:06 \
+--source 10.1.2.3/22 -m dscp --dscp 33 -m comment --comment 'reject rule -- dir in' \
+-j REJECT
+iptables -A HJ-vnet0 -p all --destination 10.1.2.3/22 -m dscp --dscp 33 \
+-m comment --comment 'reject rule -- dir in' -j REJECT
+iptables -A FJ-vnet0 -p all -m comment --comment 'accept rule -- dir inout' \
+-j RETURN
+iptables -A FP-vnet0 -p all -m comment --comment 'accept rule -- dir inout' \
+-j ACCEPT
+iptables -A HJ-vnet0 -p all -m comment --comment 'accept rule -- dir inout' \
+-j RETURN
+iptables -A FJ-vnet0 -p all -m comment --comment 'drop   rule -- dir inout' \
+-j DROP
+iptables -A FP-vnet0 -p all -m comment --comment 'drop   rule -- dir inout' \
+-j DROP
+iptables -A HJ-vnet0 -p all -m comment --comment 'drop   rule -- dir inout' \
+-j DROP
+iptables -A FJ-vnet0 -p all -m comment --comment 'reject rule -- dir inout' \
+-j REJECT
+iptables -A FP-vnet0 -p all -m comment --comment 'reject rule -- dir inout' \
+-j REJECT
+iptables -A HJ-vnet0 -p all -m comment --comment 'reject rule -- dir inout' \
+-j REJECT

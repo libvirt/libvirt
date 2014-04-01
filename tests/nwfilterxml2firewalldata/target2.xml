@@ -1,0 +1,18 @@
+<filter name='tck-testcase' chain='root'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='accept' direction='in'>
+     <tcp dstportstart='22' state='NONE'/>
+  </rule>
+  <rule action='accept' direction='out'>
+     <tcp srcportstart='22' state='NONE'/>
+  </rule>
+  <rule action='accept' direction='in'>
+     <tcp dstportstart='80'/>
+  </rule>
+  <rule action='reject' direction='inout'>
+     <tcp/>
+  </rule>
+  <rule action='drop' direction='inout'>
+     <all/>
+  </rule>
+</filter>

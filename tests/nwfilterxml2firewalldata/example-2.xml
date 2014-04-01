@@ -1,0 +1,37 @@
+<filter name='tck-testcase'>
+  <uuid>0a5288ea-612c-834a-6bbf-82a03a1a3244</uuid>
+
+  <!-- VM outgoing: allow all established and related connections -->
+  <rule action='accept' direction='out' priority='100'>
+    <all state='ESTABLISHED,RELATED'
+         comment='out: existing and related (ftp) connections'/>
+  </rule>
+
+  <!-- VM incoming: allow all established connections -->
+  <rule action='accept' direction='in' priority='100'>
+    <all state='ESTABLISHED'
+         comment='in: existing connections'/>
+  </rule>
+
+  <!-- allow incoming ssh and ftp traffic -->
+  <rule action='accept' direction='in' priority='200'>
+    <tcp dstportstart='21' dstportend='22' state='NEW'
+         comment='in: ftp and ssh'/>
+  </rule>
+
+  <!-- allow incoming ICMP (ping) packets -->
+  <rule action='accept' direction='in' priority='300'>
+    <icmp state='NEW' comment='in: icmp'/>
+  </rule>
+
+  <!-- allow outgong DNS lookups -->
+  <rule action='accept' direction='out' priority='300'>
+    <udp dstportstart='53' state='NEW' comment='out: DNS lookups'/>
+  </rule>
+
+  <!-- drop all other traffic -->
+  <rule action='drop' direction='inout' priority='1000'>
+    <all comment='inout: drop all non-accepted traffic'/>
+  </rule>
+
+</filter>
