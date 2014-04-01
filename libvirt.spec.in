@@ -2219,6 +2219,13 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Tue Apr  1 2014 Daniel Veillard <veillard@redhat.com> - 1.2.3-1
+- add new virDomainCoreDumpWithFormat API (Qiao Nuohan)
+- conf: Introduce virDomainDeviceGetInfo API (Jiri Denemark)
+- more features and fixes on bhyve driver (Roman Bogorodskiy)
+- lot of cleanups and improvement on the Xen driver (Chunyan Liu, Jim Fehlig)
+- a lot of various improvements and bug fixes
+
 * Sun Mar  2 2014 Daniel Veillard <veillard@redhat.com> - 1.2.2-1
 - add LXC from native conversion tool
 - vbox: add support for v4.2.20+ and v4.3.4+
