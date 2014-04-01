@@ -2,7 +2,7 @@
  * parallels_storage.c: core driver functions for managing
  * Parallels Cloud Server hosts
  *
- * Copyright (C) 2013 Red Hat, Inc.
+ * Copyright (C) 2013-2014 Red Hat, Inc.
  * Copyright (C) 2012 Parallels, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -257,15 +257,15 @@ static int parallelsDiskDescParseNode(xmlDocPtr xml,
     ctxt->node = root;
 
     if (virXPathULongLong("string(./Disk_Parameters/Disk_size)",
-                          ctxt, &def->capacity) < 0) {
+                          ctxt, &def->target.capacity) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        "%s", _("failed to get disk size from "
                                "the disk descriptor xml"));
         goto cleanup;
     }
 
-    def->capacity <<= 9;
-    def->allocation = def->capacity;
+    def->target.capacity <<= 9;
+    def->target.allocation = def->target.capacity;
     ret = 0;
  cleanup:
     xmlXPathFreeContext(ctxt);
@@ -1218,7 +1218,7 @@ parallelsStorageVolDefineXML(virStoragePoolObjPtr pool,
 
     if (is_new) {
         /* Make sure enough space */
-        if ((pool->def->allocation + privvol->allocation) >
+        if ((pool->def->allocation + privvol->target.allocation) >
             pool->def->capacity) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Not enough free space in pool for volume '%s'"),
@@ -1245,7 +1245,7 @@ parallelsStorageVolDefineXML(virStoragePoolObjPtr pool,
             goto cleanup;
         }
 
-        pool->def->allocation += privvol->allocation;
+        pool->def->allocation += privvol->target.allocation;
         pool->def->available = (pool->def->capacity -
                                 pool->def->allocation);
     }
@@ -1349,7 +1349,7 @@ parallelsStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     }
 
     /* Make sure enough space */
-    if ((privpool->def->allocation + privvol->allocation) >
+    if ((privpool->def->allocation + privvol->target.allocation) >
         privpool->def->capacity) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Not enough free space in pool for volume '%s'"),
@@ -1366,7 +1366,7 @@ parallelsStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     if (VIR_STRDUP(privvol->key, privvol->target.path) < 0)
         goto cleanup;
 
-    privpool->def->allocation += privvol->allocation;
+    privpool->def->allocation += privvol->target.allocation;
     privpool->def->available = (privpool->def->capacity -
                                 privpool->def->allocation);
 
@@ -1393,7 +1393,7 @@ int parallelsStorageVolDefRemove(virStoragePoolObjPtr privpool,
     char *xml_path = NULL;
     size_t i;
 
-    privpool->def->allocation -= privvol->allocation;
+    privpool->def->allocation -= privvol->target.allocation;
     privpool->def->available = (privpool->def->capacity -
                                 privpool->def->allocation);
 
@@ -1516,8 +1516,8 @@ parallelsStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info)
 
     memset(info, 0, sizeof(*info));
     info->type = parallelsStorageVolTypeForPool(privpool->def->type);
-    info->capacity = privvol->capacity;
-    info->allocation = privvol->allocation;
+    info->capacity = privvol->target.capacity;
+    info->allocation = privvol->target.allocation;
     ret = 0;
 
  cleanup:

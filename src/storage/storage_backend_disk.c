@@ -131,11 +131,11 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
 
     /* The above gets allocation wrong for
      * extended partitions, so overwrite it */
-    vol->allocation = vol->capacity =
+    vol->target.allocation = vol->target.capacity =
         (vol->source.extents[0].end - vol->source.extents[0].start);
 
     if (STRNEQ(groups[2], "metadata"))
-        pool->def->allocation += vol->allocation;
+        pool->def->allocation += vol->target.allocation;
     if (vol->source.extents[0].end > pool->def->capacity)
         pool->def->capacity = vol->source.extents[0].end;
 
@@ -649,7 +649,7 @@ virStorageBackendDiskCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (virStorageBackendDiskPartBoundaries(pool, &startOffset,
                                             &endOffset,
-                                            vol->capacity) != 0) {
+                                            vol->target.capacity) != 0) {
         goto cleanup;
     }
 

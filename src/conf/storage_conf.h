@@ -65,9 +65,6 @@ struct _virStorageVolDef {
 
     unsigned int building;
 
-    unsigned long long allocation; /* bytes */
-    unsigned long long capacity; /* bytes */
-
     virStorageVolSource source;
     virStorageSource target;
     virStorageSource backingStore;

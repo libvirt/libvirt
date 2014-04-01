@@ -1,7 +1,7 @@
 /*
  * storage_backend_sheepdog.c: storage backend for Sheepdog handling
  *
- * Copyright (C) 2013 Red Hat, Inc.
+ * Copyright (C) 2013-2014 Red Hat, Inc.
  * Copyright (C) 2012 Wido den Hollander
  * Copyright (C) 2012 Frank Spijkerman
  * Copyright (C) 2012 Sebastian Wiedenroth
@@ -267,7 +267,7 @@ virStorageBackendSheepdogBuildVol(virConnectPtr conn,
     virCheckFlags(0, -1);
 
     virCommandPtr cmd = virCommandNewArgList(COLLIE, "vdi", "create", vol->name, NULL);
-    virCommandAddArgFormat(cmd, "%llu", vol->capacity);
+    virCommandAddArgFormat(cmd, "%llu", vol->target.capacity);
     virStorageBackendSheepdogAddHostArg(cmd, pool);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
@@ -298,7 +298,7 @@ virStorageBackendSheepdogParseVdiList(virStorageVolDefPtr vol,
     int id;
     const char *p, *next;
 
-    vol->allocation = vol->capacity = 0;
+    vol->target.allocation = vol->target.capacity = 0;
 
     p = output;
     do {
@@ -329,12 +329,12 @@ virStorageBackendSheepdogParseVdiList(virStorageVolDefPtr vol,
 
         p = end + 1;
 
-        if (virStrToLong_ull(p, &end, 10, &vol->capacity) < 0)
+        if (virStrToLong_ull(p, &end, 10, &vol->target.capacity) < 0)
             return -1;
 
         p = end + 1;
 
-        if (virStrToLong_ull(p, &end, 10, &vol->allocation) < 0)
+        if (virStrToLong_ull(p, &end, 10, &vol->target.allocation) < 0)
             return -1;
 
         return 0;

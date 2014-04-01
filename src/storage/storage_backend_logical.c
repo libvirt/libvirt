@@ -177,7 +177,7 @@ virStorageBackendLogicalMakeVol(char **const groups,
                        "%s", _("malformed volume extent size value"));
         goto cleanup;
     }
-    if (virStrToLong_ull(groups[8], NULL, 10, &vol->allocation) < 0) {
+    if (virStrToLong_ull(groups[8], NULL, 10, &vol->target.allocation) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("malformed volume allocation value"));
         goto cleanup;
@@ -744,12 +744,14 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
                                "--name", vol->name,
                                NULL);
     virCommandAddArg(cmd, "-L");
-    if (vol->capacity != vol->allocation) {
+    if (vol->target.capacity != vol->target.allocation) {
         virCommandAddArgFormat(cmd, "%lluK",
-                VIR_DIV_UP(vol->allocation ? vol->allocation : 1, 1024));
+                               VIR_DIV_UP(vol->target.allocation
+                                          ? vol->target.allocation : 1, 1024));
         virCommandAddArg(cmd, "--virtualsize");
     }
-    virCommandAddArgFormat(cmd, "%lluK", VIR_DIV_UP(vol->capacity, 1024));
+    virCommandAddArgFormat(cmd, "%lluK", VIR_DIV_UP(vol->target.capacity,
+                                                    1024));
     if (vol->backingStore.path)
         virCommandAddArgList(cmd, "-s", vol->backingStore.path, NULL);
     else

@@ -1317,17 +1317,17 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
                        _("missing capacity element"));
         goto error;
     }
-    if (virStorageSize(unit, capacity, &ret->capacity) < 0)
+    if (virStorageSize(unit, capacity, &ret->target.capacity) < 0)
         goto error;
     VIR_FREE(unit);
 
     allocation = virXPathString("string(./allocation)", ctxt);
     if (allocation) {
         unit = virXPathString("string(./allocation/@unit)", ctxt);
-        if (virStorageSize(unit, allocation, &ret->allocation) < 0)
+        if (virStorageSize(unit, allocation, &ret->target.allocation) < 0)
             goto error;
     } else {
-        ret->allocation = ret->capacity;
+        ret->target.allocation = ret->target.capacity;
     }
 
     ret->target.path = virXPathString("string(./target/path)", ctxt);
@@ -1644,9 +1644,9 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
     virBufferAddLit(&buf, "</source>\n");
 
     virBufferAsprintf(&buf, "<capacity unit='bytes'>%llu</capacity>\n",
-                      def->capacity);
+                      def->target.capacity);
     virBufferAsprintf(&buf, "<allocation unit='bytes'>%llu</allocation>\n",
-                      def->allocation);
+                      def->target.allocation);
 
     if (virStorageVolTargetDefFormat(options, &buf,
                                      &def->target, "target") < 0)

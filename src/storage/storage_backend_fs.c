@@ -880,8 +880,8 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
         if ((ret = virStorageBackendProbeTarget(&vol->target,
                                                 &backingStore,
                                                 &backingStoreFormat,
-                                                &vol->allocation,
-                                                &vol->capacity,
+                                                &vol->target.allocation,
+                                                &vol->target.capacity,
                                                 &vol->target.encryption)) < 0) {
             if (ret == -2) {
                 /* Silently ignore non-regular files,
@@ -1280,7 +1280,7 @@ virStorageBackendFileSystemVolResize(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (vol->target.format == VIR_STORAGE_FILE_RAW) {
         return virStorageFileResize(vol->target.path, capacity,
-                                    vol->allocation, pre_allocate);
+                                    vol->target.allocation, pre_allocate);
     } else {
         if (pre_allocate) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",

@@ -1613,7 +1613,7 @@ static int parallelsAddHddByVolume(parallelsDomObjPtr pdom,
 
     virCommandPtr cmd = virCommandNewArgList(PRLCTL, "set", pdom->uuid,
                                              "--device-add", "hdd", NULL);
-    virCommandAddArgFormat(cmd, "--size=%lluM", voldef->capacity >> 20);
+    virCommandAddArgFormat(cmd, "--size=%lluM", voldef->target.capacity >> 20);
 
     if (!(strbus = parallelsGetDiskBusName(disk->bus))) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,

@@ -287,7 +287,7 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    remain = vol->allocation;
+    remain = vol->target.allocation;
 
     if (inputvol) {
         int res = virStorageBackendCopyToFD(vol, inputvol,
@@ -344,7 +344,7 @@ createRawFile(int fd, virStorageVolDefPtr vol,
 
     /* Seek to the final size, so the capacity is available upfront
      * for progress reporting */
-    if (ftruncate(fd, vol->capacity) < 0) {
+    if (ftruncate(fd, vol->target.capacity) < 0) {
         ret = -errno;
         virReportSystemError(errno,
                              _("cannot extend file '%s'"),
@@ -361,27 +361,27 @@ createRawFile(int fd, virStorageVolDefPtr vol,
      * to writing zeroes block by block in case fallocate isn't
      * available, and since we're going to copy data from another
      * file it doesn't make sense to write the file twice. */
-    if (vol->allocation) {
-        if (fallocate(fd, 0, 0, vol->allocation) == 0) {
+    if (vol->target.allocation) {
+        if (fallocate(fd, 0, 0, vol->target.allocation) == 0) {
             need_alloc = false;
         } else if (errno != ENOSYS && errno != EOPNOTSUPP) {
             ret = -errno;
             virReportSystemError(errno,
                                  _("cannot allocate %llu bytes in file '%s'"),
-                                 vol->allocation, vol->target.path);
+                                 vol->target.allocation, vol->target.path);
             goto cleanup;
         }
     }
 #endif
 
-    remain = vol->allocation;
+    remain = vol->target.allocation;
 
     if (inputvol) {
         /* allow zero blocks to be skipped if we've requested sparse
          * allocation (allocation < capacity) or we have already
          * been able to allocate the required space. */
         bool want_sparse = !need_alloc ||
-                           (vol->allocation < inputvol->capacity);
+            (vol->target.allocation < inputvol->target.capacity);
 
         ret = virStorageBackendCopyToFD(vol, inputvol, fd, &remain, want_sparse);
         if (ret < 0) {
@@ -390,7 +390,7 @@ createRawFile(int fd, virStorageVolDefPtr vol,
     }
 
     if (remain && need_alloc) {
-        if (safezero(fd, vol->allocation - remain, remain) < 0) {
+        if (safezero(fd, vol->target.allocation - remain, remain) < 0) {
             ret = -errno;
             virReportSystemError(errno, _("cannot fill file '%s'"),
                                  vol->target.path);
@@ -924,7 +924,7 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
     }
 
     /* Size in KB */
-    size_arg = VIR_DIV_UP(vol->capacity, 1024);
+    size_arg = VIR_DIV_UP(vol->target.capacity, 1024);
 
     cmd = virCommandNew(create_tool);
 
@@ -1070,7 +1070,7 @@ virStorageBackendCreateQcowCreate(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     /* Size in MB - yes different units to qemu-img :-( */
     if (virAsprintf(&size, "%llu",
-                    VIR_DIV_UP(vol->capacity, (1024 * 1024))) < 0)
+                    VIR_DIV_UP(vol->target.capacity, (1024 * 1024))) < 0)
         return -1;
 
     cmd = virCommandNewArgList("qcow-create", size, vol->target.path, NULL);
@@ -1424,8 +1424,8 @@ virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
     int ret;
 
     if ((ret = virStorageBackendUpdateVolTargetInfo(&vol->target,
-                                    &vol->allocation,
-                                    withCapacity ? &vol->capacity : NULL,
+                                    &vol->target.allocation,
+                                    withCapacity ? &vol->target.capacity : NULL,
                                     withBlockVolFormat,
                                     openflags)) < 0)
         return ret;

@@ -1260,7 +1260,7 @@ testOpenVolumesForPool(const char *file,
         if (VIR_APPEND_ELEMENT_COPY(pool->volumes.objs, pool->volumes.count, def) < 0)
             goto error;
 
-        pool->def->allocation += def->allocation;
+        pool->def->allocation += def->target.allocation;
         pool->def->available = (pool->def->capacity -
                                 pool->def->allocation);
         def = NULL;
@@ -5511,7 +5511,7 @@ testStorageVolCreateXML(virStoragePoolPtr pool,
     }
 
     /* Make sure enough space */
-    if ((privpool->def->allocation + privvol->allocation) >
+    if ((privpool->def->allocation + privvol->target.allocation) >
          privpool->def->capacity) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Not enough free space in pool for volume '%s'"),
@@ -5529,7 +5529,7 @@ testStorageVolCreateXML(virStoragePoolPtr pool,
                                 privpool->volumes.count, privvol) < 0)
         goto cleanup;
 
-    privpool->def->allocation += privvol->allocation;
+    privpool->def->allocation += privvol->target.allocation;
     privpool->def->available = (privpool->def->capacity -
                                 privpool->def->allocation);
 
@@ -5593,7 +5593,7 @@ testStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     }
 
     /* Make sure enough space */
-    if ((privpool->def->allocation + privvol->allocation) >
+    if ((privpool->def->allocation + privvol->target.allocation) >
          privpool->def->capacity) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Not enough free space in pool for volume '%s'"),
@@ -5613,7 +5613,7 @@ testStorageVolCreateXMLFrom(virStoragePoolPtr pool,
                                 privpool->volumes.count, privvol) < 0)
         goto cleanup;
 
-    privpool->def->allocation += privvol->allocation;
+    privpool->def->allocation += privvol->target.allocation;
     privpool->def->available = (privpool->def->capacity -
                                 privpool->def->allocation);
 
@@ -5668,7 +5668,7 @@ testStorageVolDelete(virStorageVolPtr vol,
     }
 
 
-    privpool->def->allocation -= privvol->allocation;
+    privpool->def->allocation -= privvol->target.allocation;
     privpool->def->available = (privpool->def->capacity -
                                 privpool->def->allocation);
 
@@ -5738,8 +5738,8 @@ testStorageVolGetInfo(virStorageVolPtr vol,
 
     memset(info, 0, sizeof(*info));
     info->type = testStorageVolumeTypeForPool(privpool->def->type);
-    info->capacity = privvol->capacity;
-    info->allocation = privvol->allocation;
+    info->capacity = privvol->target.capacity;
+    info->allocation = privvol->target.allocation;
     ret = 0;
 
  cleanup:

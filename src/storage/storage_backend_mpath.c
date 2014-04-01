@@ -1,7 +1,7 @@
 /*
  * storage_backend_mpath.c: storage backend for multipath handling
  *
- * Copyright (C) 2009-2011, 2013 Red Hat, Inc.
+ * Copyright (C) 2009-2014 Red Hat, Inc.
  * Copyright (C) 2009-2008 Dave Allan
  *
  * This library is free software; you can redistribute it and/or
@@ -71,8 +71,8 @@ virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
 
     if (VIR_APPEND_ELEMENT_COPY(pool->volumes.objs, pool->volumes.count, vol) < 0)
         goto cleanup;
-    pool->def->capacity += vol->capacity;
-    pool->def->allocation += vol->allocation;
+    pool->def->capacity += vol->target.capacity;
+    pool->def->allocation += vol->target.allocation;
     ret = 0;
 
  cleanup:

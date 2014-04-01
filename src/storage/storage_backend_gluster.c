@@ -268,8 +268,8 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
         goto cleanup;
 
     if (virStorageBackendUpdateVolTargetInfoFD(&vol->target, -1, st,
-                                               &vol->allocation,
-                                               &vol->capacity) < 0)
+                                               &vol->target.allocation,
+                                               &vol->target.capacity) < 0)
         goto cleanup;
 
     if (virStorageBackendGlusterSetMetadata(state, vol, name) < 0)
@@ -311,7 +311,7 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
             vol->backingStore.format = VIR_STORAGE_FILE_RAW;
     }
     if (meta->capacity)
-        vol->capacity = meta->capacity;
+        vol->target.capacity = meta->capacity;
     if (meta->encrypted) {
         if (VIR_ALLOC(vol->target.encryption) < 0)
             goto cleanup;

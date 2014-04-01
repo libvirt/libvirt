@@ -2,7 +2,7 @@
  * esx_storage_backend_vmfs.c: ESX storage driver backend for
  *                             managing VMFS datastores
  *
- * Copyright (C) 2010-2011, 2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright (C) 2010-2012 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2012 Ata E Husain Bohra <ata.husain@hotmail.com>
  *
@@ -954,13 +954,13 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
         }
 
         /* From the vSphere API documentation about VirtualDiskType ... */
-        if (def->allocation == def->capacity) {
+        if (def->target.allocation == def->target.capacity) {
             /*
              * "A preallocated disk has all space allocated at creation time
              *  and the space is zeroed on demand as the space is used."
              */
             virtualDiskSpec->diskType = (char *)"preallocated";
-        } else if (def->allocation == 0) {
+        } else if (def->target.allocation == 0) {
             /*
              * "Space required for thin-provisioned virtual disk is allocated
              *  and zeroed on demand as the space is used."
@@ -980,7 +980,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
         virtualDiskSpec->adapterType = (char *)"busLogic";
 
         virtualDiskSpec->capacityKb->value =
-          VIR_DIV_UP(def->capacity, 1024); /* Scale from byte to kilobyte */
+          VIR_DIV_UP(def->target.capacity, 1024); /* Scale from byte to kilobyte */
 
         if (esxVI_CreateVirtualDisk_Task
               (priv->primary, datastorePath,
@@ -1424,18 +1424,18 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
 
     if (vmDiskFileInfo) {
         /* Scale from kilobyte to byte */
-        def.capacity = vmDiskFileInfo->capacityKb->value * 1024;
-        def.allocation = vmDiskFileInfo->fileSize->value;
+        def.target.capacity = vmDiskFileInfo->capacityKb->value * 1024;
+        def.target.allocation = vmDiskFileInfo->fileSize->value;
 
         def.target.format = VIR_STORAGE_FILE_VMDK;
     } else if (isoImageFileInfo) {
-        def.capacity = fileInfo->fileSize->value;
-        def.allocation = fileInfo->fileSize->value;
+        def.target.capacity = fileInfo->fileSize->value;
+        def.target.allocation = fileInfo->fileSize->value;
 
         def.target.format = VIR_STORAGE_FILE_ISO;
     } else if (floppyImageFileInfo) {
-        def.capacity = fileInfo->fileSize->value;
-        def.allocation = fileInfo->fileSize->value;
+        def.target.capacity = fileInfo->fileSize->value;
+        def.target.allocation = fileInfo->fileSize->value;
 
         def.target.format = VIR_STORAGE_FILE_RAW;
     } else {

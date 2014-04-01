@@ -8786,10 +8786,11 @@ static virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
         rc = data->vboxObj->vtbl->CreateHardDisk(data->vboxObj, hddFormatUtf16, hddNameUtf16, &hardDisk);
         if (NS_SUCCEEDED(rc)) {
             IProgress *progress    = NULL;
-            PRUint64   logicalSize = VIR_DIV_UP(def->capacity, 1024 * 1024);
+            PRUint64   logicalSize = VIR_DIV_UP(def->target.capacity,
+                                                1024 * 1024);
             PRUint32   variant     = HardDiskVariant_Standard;
 
-            if (def->capacity == def->allocation)
+            if (def->target.capacity == def->target.allocation)
                 variant = HardDiskVariant_Fixed;
 
 #if VBOX_API_VERSION < 4003000
@@ -9142,16 +9143,16 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
             rc = hardDisk->vtbl->GetLogicalSize(hardDisk, &hddLogicalSize);
             if (NS_SUCCEEDED(rc) && defOk) {
 #if VBOX_API_VERSION < 4000000
-                def.capacity = hddLogicalSize * 1024 * 1024; /* MB => Bytes */
+                def.target.capacity = hddLogicalSize * 1024 * 1024; /* MB => Bytes */
 #else /* VBOX_API_VERSION >= 4000000 */
-                def.capacity = hddLogicalSize;
+                def.target.capacity = hddLogicalSize;
 #endif /* VBOX_API_VERSION >= 4000000 */
             } else
                 defOk = 0;
 
             rc = VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetSize, &hddActualSize);
             if (NS_SUCCEEDED(rc) && defOk)
-                def.allocation = hddActualSize;
+                def.target.allocation = hddActualSize;
             else
                 defOk = 0;
 

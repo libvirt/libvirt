@@ -1613,8 +1613,8 @@ storageVolDelete(virStorageVolPtr obj,
         goto cleanup;
 
     /* Update pool metadata */
-    pool->def->allocation -= vol->allocation;
-    pool->def->available += vol->allocation;
+    pool->def->allocation -= vol->target.allocation;
+    pool->def->available += vol->target.allocation;
 
     for (i = 0; i < pool->volumes.count; i++) {
         if (pool->volumes.objs[i] == vol) {
@@ -1747,8 +1747,8 @@ storageVolCreateXML(virStoragePoolPtr obj,
     }
 
     /* Update pool metadata */
-    pool->def->allocation += buildvoldef->allocation;
-    pool->def->available -= buildvoldef->allocation;
+    pool->def->allocation += buildvoldef->target.allocation;
+    pool->def->available -= buildvoldef->target.allocation;
 
     VIR_INFO("Creating volume '%s' in storage pool '%s'",
              volobj->name, pool->def->name);
@@ -1841,13 +1841,13 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
     }
 
     /* Is there ever a valid case for this? */
-    if (newvol->capacity < origvol->capacity)
-        newvol->capacity = origvol->capacity;
+    if (newvol->target.capacity < origvol->target.capacity)
+        newvol->target.capacity = origvol->target.capacity;
 
     /* Make sure allocation is at least as large as the destination cap,
      * to make absolutely sure we copy all possible contents */
-    if (newvol->allocation < origvol->capacity)
-        newvol->allocation = origvol->capacity;
+    if (newvol->target.allocation < origvol->target.capacity)
+        newvol->target.allocation = origvol->target.capacity;
 
     if (!backend->buildVolFrom) {
         virReportError(VIR_ERR_NO_SUPPORT,
@@ -1907,7 +1907,7 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
 
     origvol->building = 0;
     newvol->building = 0;
-    allocation = newvol->allocation;
+    allocation = newvol->target.allocation;
     newvol = NULL;
     pool->asyncjobs--;
 
@@ -2152,20 +2152,20 @@ storageVolResize(virStorageVolPtr obj,
     }
 
     if (flags & VIR_STORAGE_VOL_RESIZE_DELTA) {
-        abs_capacity = vol->capacity + capacity;
+        abs_capacity = vol->target.capacity + capacity;
         flags &= ~VIR_STORAGE_VOL_RESIZE_DELTA;
     } else {
         abs_capacity = capacity;
     }
 
-    if (abs_capacity < vol->allocation) {
+    if (abs_capacity < vol->target.allocation) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("can't shrink capacity below "
                          "existing allocation"));
         goto cleanup;
     }
 
-    if (abs_capacity < vol->capacity &&
+    if (abs_capacity < vol->target.capacity &&
         !(flags & VIR_STORAGE_VOL_RESIZE_SHRINK)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Can't shrink capacity below current "
@@ -2173,7 +2173,7 @@ storageVolResize(virStorageVolPtr obj,
         goto cleanup;
     }
 
-    if (abs_capacity > vol->capacity + pool->def->available) {
+    if (abs_capacity > vol->target.capacity + pool->def->available) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Not enough space left on storage pool"));
         goto cleanup;
@@ -2189,13 +2189,13 @@ storageVolResize(virStorageVolPtr obj,
     if (backend->resizeVol(obj->conn, pool, vol, abs_capacity, flags) < 0)
         goto cleanup;
 
-    vol->capacity = abs_capacity;
+    vol->target.capacity = abs_capacity;
     if (flags & VIR_STORAGE_VOL_RESIZE_ALLOCATE)
-        vol->allocation = abs_capacity;
+        vol->target.allocation = abs_capacity;
 
     /* Update pool metadata */
-    pool->def->allocation += (abs_capacity - vol->capacity);
-    pool->def->available -= (abs_capacity - vol->capacity);
+    pool->def->allocation += (abs_capacity - vol->target.capacity);
+    pool->def->available -= (abs_capacity - vol->target.capacity);
 
     ret = 0;
 
@@ -2388,7 +2388,7 @@ storageVolWipeInternal(virStorageVolDefPtr def,
             ret = storageWipeExtent(def,
                                     fd,
                                     0,
-                                    def->allocation,
+                                    def->target.allocation,
                                     writebuf,
                                     st.st_blksize,
                                     &bytes_wiped);
@@ -2529,8 +2529,8 @@ storageVolGetInfo(virStorageVolPtr obj,
 
     memset(info, 0, sizeof(*info));
     info->type = vol->type;
-    info->capacity = vol->capacity;
-    info->allocation = vol->allocation;
+    info->capacity = vol->target.capacity;
+    info->allocation = vol->target.allocation;
     ret = 0;
 
  cleanup:
