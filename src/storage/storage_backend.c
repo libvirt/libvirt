@@ -1236,7 +1236,7 @@ static struct diskType const disk_types[] = {
 
 
 static int
-virStorageBackendDetectBlockVolFormatFD(virStorageVolTargetPtr target,
+virStorageBackendDetectBlockVolFormatFD(virStorageSourcePtr target,
                                         int fd)
 {
     size_t i;
@@ -1384,7 +1384,7 @@ virStorageBackendVolOpen(const char *path, struct stat *sb,
 }
 
 int
-virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
+virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
                                      unsigned long long *allocation,
                                      unsigned long long *capacity,
                                      bool withBlockVolFormat,
@@ -1451,7 +1451,7 @@ virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
  * Returns 0 for success, -1 on a legitimate error condition.
  */
 int
-virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
+virStorageBackendUpdateVolTargetInfoFD(virStorageSourcePtr target,
                                        int fd,
                                        struct stat *sb,
                                        unsigned long long *allocation,

@@ -56,24 +56,6 @@ struct _virStorageVolSource {
 };
 
 
-/*
- * How the volume appears on the host
- */
-typedef struct _virStorageVolTarget virStorageVolTarget;
-typedef virStorageVolTarget *virStorageVolTargetPtr;
-struct _virStorageVolTarget {
-    char *path;
-    int format; /* enum virStorageFileFormat */
-    virStoragePermsPtr perms;
-    virStorageTimestampsPtr timestamps;
-
-    /* The next three are currently only used in vol->target,
-     * not in vol->backingStore. */
-    virStorageEncryptionPtr encryption;
-    virBitmapPtr features;
-    char *compat;
-};
-
 typedef struct _virStorageVolDef virStorageVolDef;
 typedef virStorageVolDef *virStorageVolDefPtr;
 struct _virStorageVolDef {
@@ -87,8 +69,8 @@ struct _virStorageVolDef {
     unsigned long long capacity; /* bytes */
 
     virStorageVolSource source;
-    virStorageVolTarget target;
-    virStorageVolTarget backingStore;
+    virStorageSource target;
+    virStorageSource backingStore;
 };
 
 typedef struct _virStorageVolDefList virStorageVolDefList;

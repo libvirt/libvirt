@@ -62,7 +62,7 @@ VIR_LOG_INIT("storage.storage_backend_fs");
                                              ~VIR_STORAGE_VOL_OPEN_ERROR)
 
 static int ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-virStorageBackendProbeTarget(virStorageVolTargetPtr target,
+virStorageBackendProbeTarget(virStorageSourcePtr target,
                              char **backingStore,
                              int *backingStoreFormat,
                              unsigned long long *allocation,

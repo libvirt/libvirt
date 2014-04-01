@@ -329,22 +329,8 @@ virStorageVolDefFree(virStorageVolDefPtr def)
     }
     VIR_FREE(def->source.extents);
 
-    VIR_FREE(def->target.compat);
-    virBitmapFree(def->target.features);
-    VIR_FREE(def->target.path);
-    if (def->target.perms) {
-        VIR_FREE(def->target.perms->label);
-        VIR_FREE(def->target.perms);
-    }
-    VIR_FREE(def->target.timestamps);
-    virStorageEncryptionFree(def->target.encryption);
-    VIR_FREE(def->backingStore.path);
-    if (def->backingStore.perms) {
-        VIR_FREE(def->backingStore.perms->label);
-        VIR_FREE(def->backingStore.perms);
-    }
-    VIR_FREE(def->backingStore.timestamps);
-    virStorageEncryptionFree(def->backingStore.encryption);
+    virStorageSourceClear(&def->target);
+    virStorageSourceClear(&def->backingStore);
     VIR_FREE(def);
 }
 
@@ -1528,7 +1514,7 @@ virStorageVolTimestampFormat(virBufferPtr buf, const char *name,
 static int
 virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
                              virBufferPtr buf,
-                             virStorageVolTargetPtr def,
+                             virStorageSourcePtr def,
                              const char *type)
 {
     virBufferAsprintf(buf, "<%s>\n", type);
