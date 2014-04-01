@@ -65,8 +65,6 @@ static int ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
 virStorageBackendProbeTarget(virStorageSourcePtr target,
                              char **backingStore,
                              int *backingStoreFormat,
-                             unsigned long long *allocation,
-                             unsigned long long *capacity,
                              virStorageEncryptionPtr *encryption)
 {
     int fd = -1;
@@ -86,9 +84,7 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
         goto error; /* Take care to propagate ret, it is not always -1 */
     fd = ret;
 
-    if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd, &sb,
-                                                      allocation,
-                                                      capacity)) < 0) {
+    if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd, &sb)) < 0) {
         goto error;
     }
 
@@ -143,8 +139,8 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
         ret = 0;
     }
 
-    if (capacity && meta && meta->capacity)
-        *capacity = meta->capacity;
+    if (meta && meta->capacity)
+        target->capacity = meta->capacity;
 
     if (encryption && meta && meta->encrypted) {
         if (VIR_ALLOC(*encryption) < 0)
@@ -880,8 +876,6 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
         if ((ret = virStorageBackendProbeTarget(&vol->target,
                                                 &backingStore,
                                                 &backingStoreFormat,
-                                                &vol->target.allocation,
-                                                &vol->target.capacity,
                                                 &vol->target.encryption)) < 0) {
             if (ret == -2) {
                 /* Silently ignore non-regular files,
@@ -909,7 +903,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
             vol->backingStore.format = backingStoreFormat;
 
             if (virStorageBackendUpdateVolTargetInfo(&vol->backingStore,
-                                        NULL, NULL, false,
+                                                     false,
                                         VIR_STORAGE_VOL_OPEN_DEFAULT) < 0) {
                 /* The backing file is currently unavailable, the capacity,
                  * allocation, owner, group and mode are unknown. Just log the
@@ -1194,7 +1188,7 @@ virStorageBackendFileSystemVolRefresh(virConnectPtr conn,
     int ret;
 
     /* Refresh allocation / permissions info in case its changed */
-    ret = virStorageBackendUpdateVolInfo(vol, false, false,
+    ret = virStorageBackendUpdateVolInfo(vol, false,
                                          VIR_STORAGE_VOL_FS_OPEN_FLAGS);
     if (ret < 0)
         return ret;

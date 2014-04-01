@@ -138,19 +138,14 @@ int virStorageBackendVolOpen(const char *path, struct stat *sb,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
-                                   bool withCapacity,
                                    bool withBlockVolFormat,
                                    unsigned int openflags);
 int virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
-                                         unsigned long long *allocation,
-                                         unsigned long long *capacity,
                                          bool withBlockVolFormat,
                                          unsigned int openflags);
 int virStorageBackendUpdateVolTargetInfoFD(virStorageSourcePtr target,
                                            int fd,
-                                           struct stat *sb,
-                                           unsigned long long *allocation,
-                                           unsigned long long *capacity);
+                                           struct stat *sb);
 
 char *virStorageBackendStablePath(virStoragePoolObjPtr pool,
                                   const char *devpath,

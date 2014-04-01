@@ -1385,8 +1385,6 @@ virStorageBackendVolOpen(const char *path, struct stat *sb,
 
 int
 virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
-                                     unsigned long long *allocation,
-                                     unsigned long long *capacity,
                                      bool withBlockVolFormat,
                                      unsigned int openflags)
 {
@@ -1397,11 +1395,7 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
         goto cleanup;
     fd = ret;
 
-    if ((ret = virStorageBackendUpdateVolTargetInfoFD(target,
-                                                      fd,
-                                                      &sb,
-                                                      allocation,
-                                                      capacity)) < 0)
+    if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd, &sb)) < 0)
         goto cleanup;
 
     if (withBlockVolFormat) {
@@ -1417,22 +1411,18 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
 
 int
 virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
-                               bool withCapacity,
                                bool withBlockVolFormat,
                                unsigned int openflags)
 {
     int ret;
 
     if ((ret = virStorageBackendUpdateVolTargetInfo(&vol->target,
-                                    &vol->target.allocation,
-                                    withCapacity ? &vol->target.capacity : NULL,
                                     withBlockVolFormat,
                                     openflags)) < 0)
         return ret;
 
     if (vol->backingStore.path &&
         (ret = virStorageBackendUpdateVolTargetInfo(&vol->backingStore,
-                                            NULL, NULL,
                                             withBlockVolFormat,
                                             VIR_STORAGE_VOL_OPEN_DEFAULT)) < 0)
         return ret;
@@ -1453,50 +1443,42 @@ virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
 int
 virStorageBackendUpdateVolTargetInfoFD(virStorageSourcePtr target,
                                        int fd,
-                                       struct stat *sb,
-                                       unsigned long long *allocation,
-                                       unsigned long long *capacity)
+                                       struct stat *sb)
 {
 #if WITH_SELINUX
     security_context_t filecon = NULL;
 #endif
 
-    if (allocation) {
-        if (S_ISREG(sb->st_mode)) {
+    if (S_ISREG(sb->st_mode)) {
 #ifndef WIN32
-            *allocation = (unsigned long long)sb->st_blocks *
-                          (unsigned long long)DEV_BSIZE;
+        target->allocation = (unsigned long long)sb->st_blocks *
+            (unsigned long long)DEV_BSIZE;
 #else
-            *allocation = sb->st_size;
+        target->allocation = sb->st_size;
 #endif
-            /* Regular files may be sparse, so logical size (capacity) is not same
-             * as actual allocation above
-             */
-            if (capacity)
-                *capacity = sb->st_size;
-        } else if (S_ISDIR(sb->st_mode)) {
-            *allocation = 0;
-            if (capacity)
-                *capacity = 0;
-
-        } else if (fd >= 0) {
-            off_t end;
-            /* XXX this is POSIX compliant, but doesn't work for CHAR files,
-             * only BLOCK. There is a Linux specific ioctl() for getting
-             * size of both CHAR / BLOCK devices we should check for in
-             * configure
-             */
-            end = lseek(fd, 0, SEEK_END);
-            if (end == (off_t)-1) {
-                virReportSystemError(errno,
-                                     _("cannot seek to end of file '%s'"),
-                                     target->path);
-                return -1;
-            }
-            *allocation = end;
-            if (capacity)
-                *capacity = end;
+        /* Regular files may be sparse, so logical size (capacity) is not same
+         * as actual allocation above
+         */
+        target->capacity = sb->st_size;
+    } else if (S_ISDIR(sb->st_mode)) {
+        target->allocation = 0;
+        target->capacity = 0;
+    } else if (fd >= 0) {
+        off_t end;
+        /* XXX this is POSIX compliant, but doesn't work for CHAR files,
+         * only BLOCK. There is a Linux specific ioctl() for getting
+         * size of both CHAR / BLOCK devices we should check for in
+         * configure
+         */
+        end = lseek(fd, 0, SEEK_END);
+        if (end == (off_t)-1) {
+            virReportSystemError(errno,
+                                 _("cannot seek to end of file '%s'"),
+                                 target->path);
+            return -1;
         }
+        target->allocation = end;
+        target->capacity = end;
     }
 
     if (!target->perms && VIR_ALLOC(target->perms) < 0)
