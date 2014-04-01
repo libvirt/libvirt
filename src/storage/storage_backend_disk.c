@@ -1,7 +1,7 @@
 /*
  * storage_backend_disk.c: storage backend for disk handling
  *
- * Copyright (C) 2007-2008, 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2007-2014 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -440,7 +440,7 @@ static int
 virStorageBackendDiskPartTypeToCreate(virStoragePoolObjPtr pool)
 {
     if (pool->def->source.format == VIR_STORAGE_POOL_DISK_DOS) {
-        /* count primary and extended paritions,
+        /* count primary and extended partitions,
            can't be more than 3 to create a new primary partition */
         size_t i;
         int count = 0;
@@ -532,10 +532,10 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
  * partitions
  */
 static int
-virStorageBackendDiskPartBoundries(virStoragePoolObjPtr pool,
-                                   unsigned long long *start,
-                                   unsigned long long *end,
-                                   unsigned long long allocation)
+virStorageBackendDiskPartBoundaries(virStoragePoolObjPtr pool,
+                                    unsigned long long *start,
+                                    unsigned long long *end,
+                                    unsigned long long allocation)
 {
     size_t i;
     int smallestExtent = -1;
@@ -568,7 +568,7 @@ virStorageBackendDiskPartBoundries(virStoragePoolObjPtr pool,
                     the extra bytes we have */
                  neededSize += cylinderSize;
              }
-             /* if we are creating a logical patition, we need one extra
+             /* if we are creating a logical partition, we need one extra
                 block between partitions (or actually move start one block) */
              if (partType == VIR_STORAGE_VOL_DISK_TYPE_LOGICAL) {
                  size -= SECTOR_SIZE;
@@ -647,9 +647,9 @@ virStorageBackendDiskCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
     virCommandAddArg(cmd, partFormat);
 
-    if (virStorageBackendDiskPartBoundries(pool, &startOffset,
-                                           &endOffset,
-                                           vol->capacity) != 0) {
+    if (virStorageBackendDiskPartBoundaries(pool, &startOffset,
+                                            &endOffset,
+                                            vol->capacity) != 0) {
         goto cleanup;
     }
 
