@@ -2007,7 +2007,7 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
         goto err;
     }
 
-    if (voldef->capacity) {
+    if (!voldef->capacity) {
         VIR_ERROR(_("Capacity cannot be empty."));
         goto err;
     }
