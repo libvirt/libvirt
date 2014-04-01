@@ -1,7 +1,7 @@
 /*
  * storage_backend.c: internal storage driver backend contract
  *
- * Copyright (C) 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2007-2014 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1405,7 +1405,7 @@ virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
             goto cleanup;
     }
 
-  cleanup:
+ cleanup:
     VIR_FORCE_CLOSE(fd);
 
     return ret;
