@@ -1193,8 +1193,9 @@ virStorageBackendDetectBlockVolFormatFD(virStorageVolTargetPtr target,
 /*
  * Allows caller to silently ignore files with improper mode
  *
- * Returns -1 on error, -2 if file mode is unexpected or the
- * volume is a dangling symbolic link.
+ * Returns -1 on error. If VIR_STORAGE_VOL_OPEN_NOERROR is passed, we
+ * return -2 if file mode is unexpected or the volume is a dangling
+ * symbolic link.
  */
 int
 virStorageBackendVolOpen(const char *path, struct stat *sb,
@@ -1202,9 +1203,10 @@ virStorageBackendVolOpen(const char *path, struct stat *sb,
 {
     int fd, mode = 0;
     char *base = last_component(path);
+    bool noerror = (flags & VIR_STORAGE_VOL_OPEN_NOERROR);
 
     if (lstat(path, sb) < 0) {
-        if (errno == ENOENT && !(flags & VIR_STORAGE_VOL_OPEN_ERROR)) {
+        if (errno == ENOENT && noerror) {
             VIR_WARN("ignoring missing file '%s'", path);
             return -2;
         }
@@ -1215,34 +1217,40 @@ virStorageBackendVolOpen(const char *path, struct stat *sb,
     }
 
     if (S_ISFIFO(sb->st_mode)) {
-        VIR_WARN("ignoring FIFO '%s'", path);
-        return -2;
+        if (noerror) {
+            VIR_WARN("ignoring FIFO '%s'", path);
+            return -2;
+        }
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Volume path '%s' is a FIFO"), path);
+        return -1;
     } else if (S_ISSOCK(sb->st_mode)) {
-        VIR_WARN("ignoring socket '%s'", path);
-        return -2;
+        if (noerror) {
+            VIR_WARN("ignoring socket '%s'", path);
+            return -2;
+        }
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Volume path '%s' is a socket"), path);
+        return -1;
     }
 
     if ((fd = open(path, O_RDONLY|O_NONBLOCK|O_NOCTTY)) < 0) {
         if ((errno == ENOENT || errno == ELOOP) &&
-            S_ISLNK(sb->st_mode)) {
+            S_ISLNK(sb->st_mode) && noerror) {
             VIR_WARN("ignoring dangling symlink '%s'", path);
             return -2;
         }
-        if (errno == ENOENT && !(flags & VIR_STORAGE_VOL_OPEN_ERROR)) {
+        if (errno == ENOENT && noerror) {
             VIR_WARN("ignoring missing file '%s'", path);
             return -2;
         }
 
-        virReportSystemError(errno,
-                             _("cannot open volume '%s'"),
-                             path);
+        virReportSystemError(errno, _("cannot open volume '%s'"), path);
         return -1;
     }
 
     if (fstat(fd, sb) < 0) {
-        virReportSystemError(errno,
-                             _("cannot stat file '%s'"),
-                             path);
+        virReportSystemError(errno, _("cannot stat file '%s'"), path);
         VIR_FORCE_CLOSE(fd);
         return -1;
     }
@@ -1259,22 +1267,42 @@ virStorageBackendVolOpen(const char *path, struct stat *sb,
         if (STREQ(base, ".") ||
             STREQ(base, "..")) {
             VIR_FORCE_CLOSE(fd);
-            VIR_INFO("Skipping special dir '%s'", base);
+            if (noerror) {
+                VIR_INFO("Skipping special dir '%s'", base);
+                return -2;
+            }
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot use volume path '%s'"), path);
+            return -1;
+        }
+    } else {
+        VIR_FORCE_CLOSE(fd);
+        if (noerror) {
+            VIR_WARN("ignoring unexpected type for file '%s'", path);
             return -2;
         }
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected type for file '%s'"), path);
+        return -1;
+    }
+
+    if (virSetBlocking(fd, true) < 0) {
+        VIR_FORCE_CLOSE(fd);
+        virReportSystemError(errno, _("unable to set blocking mode for '%s'"),
+                             path);
+        return -1;
     }
 
     if (!(mode & flags)) {
         VIR_FORCE_CLOSE(fd);
-        VIR_INFO("Skipping volume '%s'", path);
-
-        if (mode & VIR_STORAGE_VOL_OPEN_ERROR) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected storage mode for '%s'"), path);
-            return -1;
+        if (noerror) {
+            VIR_INFO("Skipping volume '%s'", path);
+            return -2;
         }
 
-        return -2;
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected storage mode for '%s'"), path);
+        return -1;
     }
 
     return fd;

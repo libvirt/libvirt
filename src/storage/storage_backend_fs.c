@@ -54,10 +54,10 @@
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
-#define VIR_STORAGE_VOL_FS_OPEN_FLAGS       (VIR_STORAGE_VOL_OPEN_DEFAULT   |\
-                                             VIR_STORAGE_VOL_OPEN_DIR)
-#define VIR_STORAGE_VOL_FS_REFRESH_FLAGS    (VIR_STORAGE_VOL_FS_OPEN_FLAGS  &\
-                                             ~VIR_STORAGE_VOL_OPEN_ERROR)
+#define VIR_STORAGE_VOL_FS_OPEN_FLAGS    (VIR_STORAGE_VOL_OPEN_DEFAULT | \
+                                          VIR_STORAGE_VOL_OPEN_DIR)
+#define VIR_STORAGE_VOL_FS_PROBE_FLAGS   (VIR_STORAGE_VOL_FS_OPEN_FLAGS | \
+                                          VIR_STORAGE_VOL_OPEN_NOERROR)
 
 static int ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
 virStorageBackendProbeTarget(virStorageVolTargetPtr target,
@@ -78,7 +78,7 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
         *encryption = NULL;
 
     if ((ret = virStorageBackendVolOpen(target->path, &sb,
-                                        VIR_STORAGE_VOL_FS_REFRESH_FLAGS)) < 0)
+                                        VIR_STORAGE_VOL_FS_PROBE_FLAGS)) < 0)
         goto error; /* Take care to propagate ret, it is not always -1 */
     fd = ret;
 
@@ -874,19 +874,13 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
             vol->backingStore.path = backingStore;
             vol->backingStore.format = backingStoreFormat;
 
-            if (virStorageBackendUpdateVolTargetInfo(&vol->backingStore,
-                                        NULL, NULL, false,
-                                        VIR_STORAGE_VOL_OPEN_DEFAULT) < 0) {
-                /* The backing file is currently unavailable, the capacity,
-                 * allocation, owner, group and mode are unknown. Just log the
-                 * error and continue.
-                 * Unfortunately virStorageBackendProbeTarget() might already
-                 * have logged a similar message for the same problem, but only
-                 * if AUTO format detection was used. */
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot probe backing volume info: %s"),
-                               vol->backingStore.path);
-            }
+            ignore_value(virStorageBackendUpdateVolTargetInfo(
+                                               &vol->backingStore,
+                                               NULL, NULL, false,
+                                               VIR_STORAGE_VOL_OPEN_DEFAULT));
+            /* If this failed, the backing file is currently unavailable,
+             * the capacity, allocation, owner, group and mode are unknown.
+             * An error message was raised, but we just continue. */
         }
 
 
