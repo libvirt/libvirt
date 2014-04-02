@@ -514,6 +514,8 @@ int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
 
         if (!sec_managers[i]->drv->domainGenSecurityLabel) {
             virReportUnsupportedError();
+            virSecurityLabelDefFree(seclabel);
+            seclabel = NULL;
         } else {
             /* The seclabel must be added to @vm prior calling domainGenSecurityLabel
              * which may require seclabel to be presented already */
