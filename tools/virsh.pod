@@ -3162,7 +3162,7 @@ with I<--current>.
 =item B<snapshot-list> I<domain> [I<--metadata>] [I<--no-metadata>]
 [{I<--parent> | I<--roots> | [{I<--tree> | I<--name>}]}]
 [{[I<--from>] B<snapshot> | I<--current>} [I<--descendants>]]
-[I<--leaves>] [I<--no-leaves>] p[I<--inactive>] [I<--active>]
+[I<--leaves>] [I<--no-leaves>] [I<--inactive>] [I<--active>]
 [I<--disk-only>] [I<--internal>] [I<--external>]
 
 List all of the available snapshots for the given domain, defaulting
