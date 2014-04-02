@@ -201,9 +201,6 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
 
     if (virStorageBackendUpdateVolInfo(vol, true,
                                        VIR_STORAGE_VOL_OPEN_DEFAULT) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to update volume for '%s'"),
-                       devpath);
         retval = -1;
         goto free_vol;
     }
