@@ -3856,6 +3856,7 @@ qemuGetDriveSourceString(int type,
         break;
 
     case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_NONE:
     case VIR_STORAGE_TYPE_LAST:
         break;
     }

@@ -38,10 +38,14 @@
 # define VIR_STORAGE_MAX_HEADER 0x8200
 
 
-/* Types of disk backends (host resource) */
+/* Types of disk backends (host resource).  Comparable to the public
+ * virStorageVolType, except we have an undetermined state, don't have
+ * a netdir type, and add a volume type for reference through a
+ * storage pool.  */
 enum virStorageType {
-    VIR_STORAGE_TYPE_BLOCK,
+    VIR_STORAGE_TYPE_NONE,
     VIR_STORAGE_TYPE_FILE,
+    VIR_STORAGE_TYPE_BLOCK,
     VIR_STORAGE_TYPE_DIR,
     VIR_STORAGE_TYPE_NETWORK,
     VIR_STORAGE_TYPE_VOLUME,

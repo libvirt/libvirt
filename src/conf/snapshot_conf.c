@@ -132,7 +132,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
     }
 
     if ((type = virXMLPropString(node, "type"))) {
-        if ((def->src.type = virStorageTypeFromString(type)) < 0 ||
+        if ((def->src.type = virStorageTypeFromString(type)) <= 0 ||
             def->src.type == VIR_STORAGE_TYPE_VOLUME ||
             def->src.type == VIR_STORAGE_TYPE_DIR) {
             virReportError(VIR_ERR_XML_ERROR,

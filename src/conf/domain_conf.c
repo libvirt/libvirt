@@ -4965,7 +4965,7 @@ virDomainDiskSourceParse(xmlNodePtr node,
 
     memset(&host, 0, sizeof(host));
 
-    switch (src->type) {
+    switch ((enum virStorageType)src->type) {
     case VIR_STORAGE_TYPE_FILE:
         src->path = virXMLPropString(node, "file");
         break;
@@ -5053,7 +5053,8 @@ virDomainDiskSourceParse(xmlNodePtr node,
         if (virDomainDiskSourcePoolDefParse(node, &src->srcpool) < 0)
             goto cleanup;
         break;
-    default:
+    case VIR_STORAGE_TYPE_NONE:
+    case VIR_STORAGE_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected disk type %s"),
                        virStorageTypeToString(src->type));
@@ -5150,7 +5151,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     type = virXMLPropString(node, "type");
     if (type) {
-        if ((def->src.type = virStorageTypeFromString(type)) < 0) {
+        if ((def->src.type = virStorageTypeFromString(type)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk type '%s'"), type);
             goto error;
@@ -14836,6 +14837,7 @@ virDomainDiskSourceFormat(virBufferPtr buf,
                                                  src->seclabels, flags);
             break;
 
+        case VIR_STORAGE_TYPE_NONE:
         case VIR_STORAGE_TYPE_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected disk type %d"), src->type);
@@ -14867,7 +14869,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
 
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if (!type) {
+    if (!type || !def->src.type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected disk type %d"), def->src.type);
         return -1;
