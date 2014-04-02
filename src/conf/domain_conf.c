@@ -13699,6 +13699,42 @@ virDomainHubDefCheckABIStability(virDomainHubDefPtr src,
     return true;
 }
 
+
+static bool
+virDomainRedirdevDefCheckABIStability(virDomainRedirdevDefPtr src,
+                                      virDomainRedirdevDefPtr dst)
+{
+    if (src->bus != dst->bus) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target redirected device bus %s does not match "
+                         "source %s"),
+                       virDomainRedirdevBusTypeToString(dst->bus),
+                       virDomainRedirdevBusTypeToString(src->bus));
+        return false;
+    }
+
+    switch ((enum virDomainRedirdevBus) src->bus) {
+    case VIR_DOMAIN_REDIRDEV_BUS_USB:
+        if (src->source.chr.type != dst->source.chr.type) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Target redirected device source type %s does "
+                             "not match source device source type %s"),
+                           virDomainChrTypeToString(dst->source.chr.type),
+                           virDomainChrTypeToString(src->source.chr.type));
+            return false;
+        }
+        break;
+    case VIR_DOMAIN_REDIRDEV_BUS_LAST:
+        break;
+    }
+
+    if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
+        return false;
+
+    return true;
+}
+
+
 static bool
 virDomainRedirFilterDefCheckABIStability(virDomainRedirFilterDefPtr src,
                                          virDomainRedirFilterDefPtr dst)
@@ -14138,6 +14174,20 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
     for (i = 0; i < src->nhubs; i++)
         if (!virDomainHubDefCheckABIStability(src->hubs[i], dst->hubs[i]))
             goto error;
+
+    if (src->nredirdevs != dst->nredirdevs) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain redirected devices count %zu "
+                         "does not match source %zu"),
+                       dst->nconsoles, src->nconsoles);
+        goto error;
+    }
+
+    for (i = 0; i < src->nredirdevs; i++) {
+        if (!virDomainRedirdevDefCheckABIStability(src->redirdevs[i],
+                                                   dst->redirdevs[i]))
+            goto error;
+    }
 
     if ((!src->redirfilter && dst->redirfilter) ||
         (src->redirfilter && !dst->redirfilter)) {
