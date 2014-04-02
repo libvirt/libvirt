@@ -837,7 +837,8 @@ virStorageFileGetMetadataInternal(const char *path,
 
         crypt_format = virReadBufInt32BE(buf +
                                          fileTypeInfo[format].qcowCryptOffset);
-        meta->encrypted = crypt_format != 0;
+        if (crypt_format && VIR_ALLOC(meta->encryption) < 0)
+            goto cleanup;
     }
 
     if (fileTypeInfo[format].getBackingStore != NULL) {
@@ -1209,6 +1210,7 @@ virStorageFileFreeMetadata(virStorageFileMetadata *meta)
     VIR_FREE(meta->compat);
     VIR_FREE(meta->directory);
     virBitmapFree(meta->features);
+    virStorageEncryptionFree(meta->encryption);
     VIR_FREE(meta);
 }
 

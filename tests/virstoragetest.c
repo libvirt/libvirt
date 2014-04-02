@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Red Hat, Inc.
+ * Copyright (C) 2013-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -284,7 +284,7 @@ testStorageChain(const void *args)
                         NULLSTR(elt->backingStoreRaw),
                         NULLSTR(elt->directory),
                         elt->backingStoreFormat, elt->backingStoreIsFile,
-                        elt->capacity, elt->encrypted) < 0) {
+                        elt->capacity, !!elt->encryption) < 0) {
             VIR_FREE(expect);
             VIR_FREE(actual);
             goto cleanup;

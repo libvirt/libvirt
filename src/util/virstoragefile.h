@@ -114,8 +114,9 @@ struct _virStorageFileMetadata {
     int backingStoreFormat; /* enum virStorageFileFormat */
     bool backingStoreIsFile;
     virStorageFileMetadataPtr backingMeta;
+
+    virStorageEncryptionPtr encryption;
     unsigned long long capacity;
-    bool encrypted;
     virBitmapPtr features; /* bits described by enum virStorageFileFeature */
     char *compat;
 };

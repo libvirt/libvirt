@@ -310,9 +310,9 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
     }
     if (meta->capacity)
         vol->target.capacity = meta->capacity;
-    if (meta->encrypted) {
-        if (VIR_ALLOC(vol->target.encryption) < 0)
-            goto cleanup;
+    if (meta->encryption) {
+        vol->target.encryption = meta->encryption;
+        meta->encryption = NULL;
         if (vol->target.format == VIR_STORAGE_FILE_QCOW ||
             vol->target.format == VIR_STORAGE_FILE_QCOW2)
             vol->target.encryption->format = VIR_STORAGE_ENCRYPTION_FORMAT_QCOW;

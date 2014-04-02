@@ -142,9 +142,9 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
     if (meta && meta->capacity)
         target->capacity = meta->capacity;
 
-    if (encryption && meta && meta->encrypted) {
-        if (VIR_ALLOC(*encryption) < 0)
-            goto cleanup;
+    if (encryption && meta && meta->encryption) {
+        *encryption = meta->encryption;
+        meta->encryption = NULL;
 
         switch (target->format) {
         case VIR_STORAGE_FILE_QCOW:
