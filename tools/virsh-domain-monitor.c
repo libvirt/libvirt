@@ -1356,6 +1356,116 @@ cmdDomstate(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "domtime" command
+ */
+static const vshCmdInfo info_domtime[] = {
+    {.name = "help",
+     .data = N_("domain time")
+    },
+    {.name = "desc",
+     .data = N_("Gets or sets the domain's system time")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_domtime[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = "now",
+     .type = VSH_OT_BOOL,
+     .help = N_("set to the time of the host running virsh")
+    },
+    {.name = "pretty",
+     .type = VSH_OT_BOOL,
+     .help = N_("print domain's time in human readable form")
+    },
+    {.name = "sync",
+     .type = VSH_OT_BOOL,
+     .help = N_("instead of setting given time, synchronize from domain's RTC"),
+    },
+    {.name = "time",
+     .type = VSH_OT_INT,
+     .help = N_("time to set")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdDomTime(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    bool ret = false;
+    bool now = vshCommandOptBool(cmd, "now");
+    bool pretty = vshCommandOptBool(cmd, "pretty");
+    bool sync = vshCommandOptBool(cmd, "sync");
+    long long seconds = 0;
+    unsigned int nseconds = 0;
+    unsigned int flags = 0;
+    bool doSet = false;
+    int rv;
+
+    VSH_EXCLUSIVE_OPTIONS("time", "now");
+    VSH_EXCLUSIVE_OPTIONS("time", "sync");
+    VSH_EXCLUSIVE_OPTIONS("now", "sync");
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    rv = vshCommandOptLongLong(cmd, "time", &seconds);
+
+    if (rv < 0) {
+        /* invalid integer format */
+        vshError(ctl, "%s",
+                 _("Unable to parse integer parameter to --time."));
+        goto cleanup;
+    } else if (rv > 0) {
+        /* valid integer to set */
+        doSet = true;
+    }
+
+    if (doSet || now || sync) {
+        if (now && ((seconds = time(NULL)) == (time_t) -1)) {
+            vshError(ctl, _("Unable to get current time"));
+            goto cleanup;
+        }
+
+        if (sync)
+            flags |= VIR_DOMAIN_TIME_SYNC;
+
+        if (virDomainSetTime(dom, seconds, nseconds, flags) < 0)
+            goto cleanup;
+
+    } else {
+        if (virDomainGetTime(dom, &seconds, &nseconds, flags) < 0)
+            goto cleanup;
+
+        if (pretty) {
+            char timestr[100];
+            time_t cur_time = seconds;
+            struct tm time_info;
+
+            if (!gmtime_r(&cur_time, &time_info)) {
+                vshError(ctl, _("Unable to format time"));
+                goto cleanup;
+            }
+            strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S", &time_info);
+
+            vshPrint(ctl, _("Time: %s"), timestr);
+        } else {
+            vshPrint(ctl, _("Time: %lld"), seconds);
+        }
+    }
+
+    ret = true;
+ cleanup:
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "list" command
  */
 static const vshCmdInfo info_list[] = {
@@ -1909,6 +2019,12 @@ const vshCmdDef domMonitoringCmds[] = {
      .handler = cmdDomstate,
      .opts = opts_domstate,
      .info = info_domstate,
+     .flags = 0
+    },
+    {.name = "domtime",
+     .handler = cmdDomTime,
+     .opts = opts_domtime,
+     .info = info_domtime,
      .flags = 0
     },
     {.name = "list",

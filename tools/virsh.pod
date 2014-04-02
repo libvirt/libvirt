@@ -1017,6 +1017,24 @@ Returns state of an interface to VMM used to control a domain.  For
 states other than "ok" or "error" the command also prints number of
 seconds elapsed since the control interface entered its current state.
 
+=item B<domtime> I<domain> { [I<--now>] [I<--pretty>] [I<--sync>]
+[I<--time> B<time>] }
+
+Gets or sets the domain's system time. When run without any arguments
+(but I<domain>), the current domain's system time is printed out. The
+I<--pretty> modifier can be used to print the time in more human
+readable form.
+
+When I<--time> B<time> is specified, the domain's time is
+not gotten but set instead. The I<--now> modifier acts like if it was
+an alias for I<--time> B<$now>, which means it sets the time that is
+currently on the host virsh is running at. In both cases (setting and
+getting), time is in seconds relative to Epoch of 1970-01-01 in UTC.
+The I<--sync> modifies the set behavior a bit: The time passed is
+ignored, but the time to set is read from domain's RTC instead. Please
+note, that some hypervisors may require a guest agent to be configured
+in order to get or set the guest time.
+
 =item B<domxml-from-native> I<format> I<config>
 
 Convert the file I<config> in the native guest configuration format
