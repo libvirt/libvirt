@@ -62,8 +62,6 @@ static char *abslink2;
 static void
 testCleanupImages(void)
 {
-    virCommandPtr cmd;
-
     VIR_FREE(qemuimg);
     VIR_FREE(absraw);
     VIR_FREE(canonraw);
@@ -79,9 +77,7 @@ testCleanupImages(void)
         return;
     }
 
-    cmd = virCommandNewArgList("rm", "-rf", datadir, NULL);
-    ignore_value(virCommandRun(cmd, NULL));
-    virCommandFree(cmd);
+    virFileDeleteTree(datadir);
 }
 
 static int
