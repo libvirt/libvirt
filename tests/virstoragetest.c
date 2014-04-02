@@ -339,60 +339,115 @@ mymain(void)
 
     /* Expected details about files in chains */
     const testFileData raw = {
-        NULL, NULL, NULL, VIR_STORAGE_FILE_NONE, false, 0, false,
+        .expFormat = VIR_STORAGE_FILE_NONE,
     };
     const testFileData qcow2_relback_relstart = {
-        canonraw, "raw", ".", VIR_STORAGE_FILE_RAW, true, 1024, false,
+        .expBackingStore = canonraw,
+        .expBackingStoreRaw = "raw",
+        .expDirectory = ".",
+        .expFormat = VIR_STORAGE_FILE_RAW,
+        .expIsFile = true,
+        .expCapacity = 1024,
     };
     const testFileData qcow2_relback_absstart = {
-        canonraw, "raw", datadir, VIR_STORAGE_FILE_RAW, true, 1024, false,
+        .expBackingStore = canonraw,
+        .expBackingStoreRaw = "raw",
+        .expDirectory = datadir,
+        .expFormat = VIR_STORAGE_FILE_RAW,
+        .expIsFile = true,
+        .expCapacity = 1024,
     };
     const testFileData qcow2_absback = {
-        canonraw, absraw, datadir, VIR_STORAGE_FILE_RAW, true, 1024, false,
+        .expBackingStore = canonraw,
+        .expBackingStoreRaw = absraw,
+        .expDirectory = datadir,
+        .expFormat = VIR_STORAGE_FILE_RAW,
+        .expIsFile = true,
+        .expCapacity = 1024,
     };
     const testFileData qcow2_as_probe = {
-        canonraw, absraw, datadir, VIR_STORAGE_FILE_AUTO, true, 1024, false,
+        .expBackingStore = canonraw,
+        .expBackingStoreRaw = absraw,
+        .expDirectory = datadir,
+        .expFormat = VIR_STORAGE_FILE_AUTO,
+        .expIsFile = true,
+        .expCapacity = 1024,
     };
     const testFileData qcow2_bogus = {
-        NULL, datadir "/bogus", datadir, VIR_STORAGE_FILE_NONE,
-        false, 1024, false,
+        .expBackingStoreRaw = datadir "/bogus",
+        .expDirectory = datadir,
+        .expFormat = VIR_STORAGE_FILE_NONE,
+        .expCapacity = 1024,
     };
     const testFileData qcow2_protocol = {
-        "nbd:example.org:6000", NULL, NULL, VIR_STORAGE_FILE_RAW,
-        false, 1024, false,
+        .expBackingStore = "nbd:example.org:6000",
+        .expFormat = VIR_STORAGE_FILE_RAW,
+        .expCapacity = 1024,
     };
     const testFileData wrap = {
-        canonqcow2, absqcow2, datadir, VIR_STORAGE_FILE_QCOW2,
-        true, 1024, false,
+        .expBackingStore = canonqcow2,
+        .expBackingStoreRaw = absqcow2,
+        .expDirectory = datadir,
+        .expFormat = VIR_STORAGE_FILE_QCOW2,
+        .expIsFile = true,
+        .expCapacity = 1024,
     };
     const testFileData wrap_as_raw = {
-        canonqcow2, absqcow2, datadir, VIR_STORAGE_FILE_RAW,
-        true, 1024, false,
+        .expBackingStore = canonqcow2,
+        .expBackingStoreRaw = absqcow2,
+        .expDirectory = datadir,
+        .expFormat = VIR_STORAGE_FILE_RAW,
+        .expIsFile = true,
+        .expCapacity = 1024,
     };
     const testFileData wrap_as_probe = {
-        canonqcow2, absqcow2, datadir, VIR_STORAGE_FILE_AUTO,
-        true, 1024, false,
+        .expBackingStore = canonqcow2,
+        .expBackingStoreRaw = absqcow2,
+        .expDirectory = datadir,
+        .expFormat = VIR_STORAGE_FILE_AUTO,
+        .expIsFile = true,
+        .expCapacity = 1024,
     };
     const testFileData qed = {
-        canonraw, absraw, datadir, VIR_STORAGE_FILE_RAW,
-        true, 1024, false,
+        .expBackingStore = canonraw,
+        .expBackingStoreRaw = absraw,
+        .expDirectory = datadir,
+        .expFormat = VIR_STORAGE_FILE_RAW,
+        .expIsFile = true,
+        .expCapacity = 1024,
     };
 #if HAVE_SYMLINK
     const testFileData link1_rel = {
-        canonraw, "../raw", "sub/../sub/..", VIR_STORAGE_FILE_RAW,
-        true, 1024, false,
+        .expBackingStore = canonraw,
+        .expBackingStoreRaw = "../raw",
+        .expDirectory = "sub/../sub/..",
+        .expFormat = VIR_STORAGE_FILE_RAW,
+        .expIsFile = true,
+        .expCapacity = 1024,
     };
     const testFileData link1_abs = {
-        canonraw, "../raw", datadir "/sub/../sub/..", VIR_STORAGE_FILE_RAW,
-        true, 1024, false,
+        .expBackingStore = canonraw,
+        .expBackingStoreRaw = "../raw",
+        .expDirectory = datadir "/sub/../sub/..",
+        .expFormat = VIR_STORAGE_FILE_RAW,
+        .expIsFile = true,
+        .expCapacity = 1024,
     };
     const testFileData link2_rel = {
-        canonqcow2, "../sub/link1", "sub/../sub", VIR_STORAGE_FILE_QCOW2,
-        true, 1024, false,
+        .expBackingStore = canonqcow2,
+        .expBackingStoreRaw = "../sub/link1",
+        .expDirectory = "sub/../sub",
+        .expFormat = VIR_STORAGE_FILE_QCOW2,
+        .expIsFile = true,
+        .expCapacity = 1024,
     };
     const testFileData link2_abs = {
-        canonqcow2, "../sub/link1", datadir "/sub/../sub",
-        VIR_STORAGE_FILE_QCOW2, true, 1024, false,
+        .expBackingStore = canonqcow2,
+        .expBackingStoreRaw = "../sub/link1",
+        .expDirectory = datadir "/sub/../sub",
+        .expFormat = VIR_STORAGE_FILE_QCOW2,
+        .expIsFile = true,
+        .expCapacity = 1024,
     };
 #endif
 
