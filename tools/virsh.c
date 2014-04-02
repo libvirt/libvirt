@@ -1852,7 +1852,8 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
         if (!ret && disconnected != 0)
             vshReconnect(ctl);
 
-        if (STREQ(cmd->def->name, "quit"))        /* hack ... */
+        if (STREQ(cmd->def->name, "quit") ||
+            STREQ(cmd->def->name, "exit"))        /* hack ... */
             return ret;
 
         if (enable_timing) {
