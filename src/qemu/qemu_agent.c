@@ -114,8 +114,6 @@ struct _qemuAgent {
     qemuAgentEvent await_event;
 };
 
-static int qemuAgentCheckError(virJSONValuePtr cmd, virJSONValuePtr reply);
-
 static virClassPtr qemuAgentClass;
 static void qemuAgentDispose(void *obj);
 
@@ -967,65 +965,6 @@ cleanup:
     return ret;
 }
 
-static int
-qemuAgentCommand(qemuAgentPtr mon,
-                 virJSONValuePtr cmd,
-                 virJSONValuePtr *reply,
-                 int seconds)
-{
-    int ret = -1;
-    qemuAgentMessage msg;
-    char *cmdstr = NULL;
-    int await_event = mon->await_event;
-
-    *reply = NULL;
-
-    if (qemuAgentGuestSync(mon) < 0) {
-        /* helper reported the error */
-        return -1;
-    }
-
-    memset(&msg, 0, sizeof(msg));
-
-    if (!(cmdstr = virJSONValueToString(cmd, false)))
-        goto cleanup;
-    if (virAsprintf(&msg.txBuffer, "%s" LINE_ENDING, cmdstr) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-    msg.txLength = strlen(msg.txBuffer);
-
-    VIR_DEBUG("Send command '%s' for write, seconds = %d", cmdstr, seconds);
-
-    ret = qemuAgentSend(mon, &msg, seconds);
-
-    VIR_DEBUG("Receive command reply ret=%d rxObject=%p",
-              ret, msg.rxObject);
-
-    if (ret == 0) {
-        /* If we haven't obtained any reply but we wait for an
-         * event, then don't report this as error */
-        if (!msg.rxObject) {
-            if (await_event) {
-                VIR_DEBUG("Woken up by event %d", await_event);
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Missing monitor reply object"));
-                ret = -1;
-            }
-        } else {
-            *reply = msg.rxObject;
-            ret = qemuAgentCheckError(cmd, *reply);
-        }
-    }
-
-cleanup:
-    VIR_FREE(cmdstr);
-    VIR_FREE(msg.txBuffer);
-
-    return ret;
-}
-
 static const char *
 qemuAgentStringifyErrorClass(const char *klass)
 {
@@ -1135,6 +1074,63 @@ qemuAgentCheckError(virJSONValuePtr cmd,
         return -1;
     }
     return 0;
+}
+
+static int
+qemuAgentCommand(qemuAgentPtr mon,
+                 virJSONValuePtr cmd,
+                 virJSONValuePtr *reply,
+                 int seconds)
+{
+    int ret = -1;
+    qemuAgentMessage msg;
+    char *cmdstr = NULL;
+    int await_event = mon->await_event;
+
+    *reply = NULL;
+
+    if (qemuAgentGuestSync(mon) < 0)
+        return -1;
+
+    memset(&msg, 0, sizeof(msg));
+
+    if (!(cmdstr = virJSONValueToString(cmd, false)))
+        goto cleanup;
+    if (virAsprintf(&msg.txBuffer, "%s" LINE_ENDING, cmdstr) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    msg.txLength = strlen(msg.txBuffer);
+
+    VIR_DEBUG("Send command '%s' for write, seconds = %d", cmdstr, seconds);
+
+    ret = qemuAgentSend(mon, &msg, seconds);
+
+    VIR_DEBUG("Receive command reply ret=%d rxObject=%p",
+              ret, msg.rxObject);
+
+    if (ret == 0) {
+        /* If we haven't obtained any reply but we wait for an
+         * event, then don't report this as error */
+        if (!msg.rxObject) {
+            if (await_event) {
+                VIR_DEBUG("Woken up by event %d", await_event);
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Missing monitor reply object"));
+                ret = -1;
+            }
+        } else {
+            *reply = msg.rxObject;
+            ret = qemuAgentCheckError(cmd, *reply);
+        }
+    }
+
+ cleanup:
+    VIR_FREE(cmdstr);
+    VIR_FREE(msg.txBuffer);
+
+    return ret;
 }
 
 static virJSONValuePtr ATTRIBUTE_SENTINEL
