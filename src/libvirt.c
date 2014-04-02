@@ -20791,3 +20791,97 @@ virDomainFSThaw(virDomainPtr dom,
     virDispatchError(dom->conn);
     return -1;
 }
+
+/**
+ * virDomainGetTime:
+ * @dom: a domain object
+ * @seconds: domain's time in seconds
+ * @nseconds: the nanoscond part of @seconds
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Extract information about guest time and store it into
+ * @seconds and @nseconds. The @seconds represents the number of
+ * seconds since the UNIX Epoch of 1970-01-01 00:00:00 in UTC.
+ *
+ * Please note that some hypervisors may require guest agent to
+ * be configured and running in order to run this API.
+ *
+ * Returns 0 on success, -1 otherwise.
+ */
+int
+virDomainGetTime(virDomainPtr dom,
+                 long long *seconds,
+                 unsigned int *nseconds,
+                 unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(dom, "seconds=%p, nseconds=%p, flags=%x",
+                     seconds, nseconds, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(dom, -1);
+
+    if (dom->conn->driver->domainGetTime) {
+        int ret = dom->conn->driver->domainGetTime(dom, seconds,
+                                                   nseconds, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+/**
+ * virDomainSetTime:
+ * @dom: a domain object
+ * @seconds: time to set
+ * @nseconds: the nanosecond part of @seconds
+ * @flags: bitwise-OR of virDomainSetTimeFlags
+ *
+ * When a domain is suspended or restored from a file the
+ * domain's OS has no idea that there was a big gap in the time.
+ * Depending on how long the gap was, NTP might not be able to
+ * resynchronize the guest.
+ *
+ * This API tries to set guest time to the given value. The time
+ * to set (@seconds and @nseconds) should be in seconds relative
+ * to the Epoch of 1970-01-01 00:00:00 in UTC.
+ *
+ * Please note that some hypervisors may require guest agent to
+ * be configured and running in order to be able to run this API.
+ *
+ * Returns 0 on success, -1 otherwise.
+ */
+int
+virDomainSetTime(virDomainPtr dom,
+                 long long seconds,
+                 unsigned int nseconds,
+                 unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(dom, "seconds=%lld, nseconds=%u, flags=%x",
+                     seconds, nseconds, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(dom, -1);
+    virCheckReadOnlyGoto(dom->conn->flags, error);
+
+    if (dom->conn->driver->domainSetTime) {
+        int ret = dom->conn->driver->domainSetTime(dom, seconds,
+                                                   nseconds, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(dom->conn);
+    return -1;
+}

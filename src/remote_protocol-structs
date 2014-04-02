@@ -2290,6 +2290,20 @@ struct remote_domain_fstrim_args {
         uint64_t                   minimum;
         u_int                      flags;
 };
+struct remote_domain_get_time_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
+struct remote_domain_get_time_ret {
+        int64_t                    seconds;
+        u_int                      nseconds;
+};
+struct remote_domain_set_time_args {
+        remote_nonnull_domain      dom;
+        int64_t                    seconds;
+        u_int                      nseconds;
+        u_int                      flags;
+};
 struct remote_domain_migrate_begin3_params_args {
         remote_nonnull_domain      dom;
         struct {
@@ -2786,4 +2800,6 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_CORE_DUMP_WITH_FORMAT = 334,
         REMOTE_PROC_DOMAIN_FSFREEZE = 335,
         REMOTE_PROC_DOMAIN_FSTHAW = 336,
+        REMOTE_PROC_DOMAIN_GET_TIME = 337,
+        REMOTE_PROC_DOMAIN_SET_TIME = 338,
 };

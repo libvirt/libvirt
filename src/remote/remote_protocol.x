@@ -2855,6 +2855,23 @@ struct remote_domain_fstrim_args {
     unsigned int flags;
 };
 
+struct remote_domain_get_time_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_get_time_ret {
+    hyper seconds;
+    unsigned int nseconds;
+};
+
+struct remote_domain_set_time_args {
+    remote_nonnull_domain dom;
+    hyper seconds;
+    unsigned int nseconds;
+    unsigned int flags;
+};
+
 struct remote_domain_migrate_begin3_params_args {
     remote_nonnull_domain dom;
     remote_typed_param params<REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX>;
@@ -5309,5 +5326,17 @@ enum remote_procedure {
      * @generate: both
      * @acl: domain:fs_freeze
      */
-    REMOTE_PROC_DOMAIN_FSTHAW = 336
+    REMOTE_PROC_DOMAIN_FSTHAW = 336,
+
+    /**
+     * @generate: none
+     * @acl: domain:read
+     */
+    REMOTE_PROC_DOMAIN_GET_TIME = 337,
+
+    /**
+     * @generate: both
+     * @acl: domain:set_time
+     */
+    REMOTE_PROC_DOMAIN_SET_TIME = 338
 };

@@ -6077,6 +6077,43 @@ qemuDispatchConnectDomainMonitorEventDeregister(virNetServerPtr server ATTRIBUTE
     return rv;
 }
 
+static int
+remoteDispatchDomainGetTime(virNetServerPtr server ATTRIBUTE_UNUSED,
+                            virNetServerClientPtr client,
+                            virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                            virNetMessageErrorPtr rerr,
+                            remote_domain_get_time_args *args,
+                            remote_domain_get_time_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    long long seconds;
+    unsigned int nseconds;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    if (virDomainGetTime(dom, &seconds, &nseconds, args->flags) < 0)
+        goto cleanup;
+
+    ret->seconds = seconds;
+    ret->nseconds = nseconds;
+    rv = 0;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
 
 /*----- Helpers. -----*/
 

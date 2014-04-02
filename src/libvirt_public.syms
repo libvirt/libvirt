@@ -654,6 +654,8 @@ LIBVIRT_1.2.5 {
     global:
         virDomainFSFreeze;
         virDomainFSThaw;
+        virDomainGetTime;
+        virDomainSetTime;
 } LIBVIRT_1.2.3;
 
 

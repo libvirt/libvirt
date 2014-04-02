@@ -43,7 +43,7 @@ VIR_ENUM_IMPL(virAccessPermDomain,
               "fs_trim", "fs_freeze",
               "block_read", "block_write", "mem_read",
               "open_graphics", "open_device", "screenshot",
-              "open_namespace");
+              "open_namespace", "set_time");
 
 VIR_ENUM_IMPL(virAccessPermInterface,
               VIR_ACCESS_PERM_INTERFACE_LAST,

@@ -288,12 +288,17 @@ typedef enum {
      */
     VIR_ACCESS_PERM_DOMAIN_SCREENSHOT,    /* Trigger a screen shot */
 
-
     /**
      * @desc: Open domain namespace
      * @message: Opening domain namespaces requires authorization
      */
     VIR_ACCESS_PERM_DOMAIN_OPEN_NAMESPACE,
+
+    /**
+     * @desc: Write domain time
+     * @message: Setting the domain time requires authorization
+     */
+    VIR_ACCESS_PERM_DOMAIN_SET_TIME,
 
     VIR_ACCESS_PERM_DOMAIN_LAST,
 } virAccessPermDomain;

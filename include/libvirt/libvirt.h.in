@@ -5289,6 +5289,20 @@ int virDomainFSThaw(virDomainPtr dom,
                     unsigned int nmountpoints,
                     unsigned int flags);
 
+int virDomainGetTime(virDomainPtr dom,
+                     long long *seconds,
+                     unsigned int *nseconds,
+                     unsigned int flags);
+
+typedef enum {
+    VIR_DOMAIN_TIME_SYNC = (1 << 0), /* Re-sync domain time from domain's RTC */
+} virDomainSetTimeFlags;
+
+int virDomainSetTime(virDomainPtr dom,
+                     long long seconds,
+                     unsigned int nseconds,
+                     unsigned int flags);
+
 /**
  * virSchedParameterType:
  *

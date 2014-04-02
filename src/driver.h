@@ -1084,6 +1084,18 @@ typedef int
                       unsigned int flags);
 
 typedef int
+(*virDrvDomainGetTime)(virDomainPtr dom,
+                       long long *seconds,
+                       unsigned int *nseconds,
+                       unsigned int flags);
+
+typedef int
+(*virDrvDomainSetTime)(virDomainPtr dom,
+                       long long seconds,
+                       unsigned int nseconds,
+                       unsigned int flags);
+
+typedef int
 (*virDrvDomainLxcOpenNamespace)(virDomainPtr dom,
                                 int **fdlist,
                                 unsigned int flags);
@@ -1377,6 +1389,8 @@ struct _virDriver {
     virDrvConnectGetCPUModelNames connectGetCPUModelNames;
     virDrvDomainFSFreeze domainFSFreeze;
     virDrvDomainFSThaw domainFSThaw;
+    virDrvDomainGetTime domainGetTime;
+    virDrvDomainSetTime domainSetTime;
 };
 
 
