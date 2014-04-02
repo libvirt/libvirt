@@ -1685,3 +1685,96 @@ qemuAgentUpdateCPUInfo(unsigned int nvcpus,
 
     return 0;
 }
+
+
+int
+qemuAgentGetTime(qemuAgentPtr mon,
+                 long long *seconds,
+                 unsigned int *nseconds)
+{
+    int ret = -1;
+    unsigned long long json_time;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    cmd = qemuAgentMakeCommand("guest-get-time",
+                               NULL);
+    if (!cmd)
+        return ret;
+
+    if (qemuAgentCommand(mon, cmd, &reply, true,
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
+        goto cleanup;
+
+    if (virJSONValueObjectGetNumberUlong(reply, "return", &json_time) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("malformed return value"));
+        goto cleanup;
+    }
+
+    /* guest agent returns time in nanoseconds,
+     * we need it in seconds here */
+    *seconds = json_time / 1000000000LL;
+    *nseconds = json_time % 1000000000LL;
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
+/**
+ * qemuAgentSetTime:
+ * @setTime: time to set
+ * @sync: let guest agent to read domain's RTC (@setTime is ignored)
+ */
+int
+qemuAgentSetTime(qemuAgentPtr mon,
+                long long seconds,
+                unsigned int nseconds,
+                bool sync)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    if (sync) {
+        cmd = qemuAgentMakeCommand("guest-set-time", NULL);
+    } else {
+        /* guest agent expect time with nanosecond granularity.
+         * Impressing. */
+        long long json_time;
+
+        /* Check if we overflow. For some reason qemu doesn't handle unsigned
+         * long long on the monitor well as it silently truncates numbers to
+         * signed long long. Therefore we must check overflow against LLONG_MAX
+         * not ULLONG_MAX. */
+        if (seconds > LLONG_MAX / 1000000000LL) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Time '%lld' is too big for guest agent"),
+                           seconds);
+            return ret;
+        }
+
+        json_time = seconds * 1000000000LL;
+        json_time += nseconds;
+        cmd = qemuAgentMakeCommand("guest-set-time",
+                                   "I:time", json_time,
+                                   NULL);
+    }
+
+    if (!cmd)
+        return ret;
+
+    if (qemuAgentCommand(mon, cmd, &reply, true,
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

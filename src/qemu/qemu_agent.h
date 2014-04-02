@@ -98,4 +98,12 @@ int qemuAgentSetVCPUs(qemuAgentPtr mon, qemuAgentCPUInfoPtr cpus, size_t ncpus);
 int qemuAgentUpdateCPUInfo(unsigned int nvcpus,
                            qemuAgentCPUInfoPtr cpuinfo,
                            int ncpuinfo);
+
+int qemuAgentGetTime(qemuAgentPtr mon,
+                     long long *seconds,
+                     unsigned int *nseconds);
+int qemuAgentSetTime(qemuAgentPtr mon,
+                     long long seconds,
+                     unsigned int nseconds,
+                     bool sync);
 #endif /* __QEMU_AGENT_H__ */
