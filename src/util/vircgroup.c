@@ -2832,25 +2832,91 @@ virCgroupDenyDevicePath(virCgroupPtr group, const char *path, int perms)
 }
 
 
+/* This function gets the sums of cpu time consumed by all vcpus.
+ * For example, if there are 4 physical cpus, and 2 vcpus in a domain,
+ * then for each vcpu, the cpuacct.usage_percpu looks like this:
+ *   t0 t1 t2 t3
+ * and we have 2 groups of such data:
+ *   v\p   0   1   2   3
+ *   0   t00 t01 t02 t03
+ *   1   t10 t11 t12 t13
+ * for each pcpu, the sum is cpu time consumed by all vcpus.
+ *   s0 = t00 + t10
+ *   s1 = t01 + t11
+ *   s2 = t02 + t12
+ *   s3 = t03 + t13
+ */
+static int
+virCgroupGetPercpuVcpuSum(virCgroupPtr group,
+                          unsigned int nvcpupids,
+                          unsigned long long *sum_cpu_time,
+                          unsigned int num)
+{
+    int ret = -1;
+    size_t i;
+    char *buf = NULL;
+    virCgroupPtr group_vcpu = NULL;
+
+    for (i = 0; i < nvcpupids; i++) {
+        char *pos;
+        unsigned long long tmp;
+        size_t j;
+
+        if (virCgroupNewVcpu(group, i, false, &group_vcpu) < 0)
+            goto cleanup;
+
+        if (virCgroupGetCpuacctPercpuUsage(group_vcpu, &buf) < 0)
+            goto cleanup;
+
+        pos = buf;
+        for (j = 0; j < num; j++) {
+            if (virStrToLong_ull(pos, &pos, 10, &tmp) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("cpuacct parse error"));
+                goto cleanup;
+            }
+            sum_cpu_time[j] += tmp;
+        }
+
+        virCgroupFree(&group_vcpu);
+        VIR_FREE(buf);
+    }
+
+    ret = 0;
+ cleanup:
+    virCgroupFree(&group_vcpu);
+    VIR_FREE(buf);
+    return ret;
+}
+
+
 int
 virCgroupGetPercpuStats(virCgroupPtr group,
                         virTypedParameterPtr params,
                         unsigned int nparams,
                         int start_cpu,
-                        unsigned int ncpus)
+                        unsigned int ncpus,
+                        unsigned int nvcpupids)
 {
     int rv = -1;
     size_t i;
     int id, max_id;
     char *pos;
     char *buf = NULL;
+    unsigned long long *sum_cpu_time = NULL;
+    unsigned long long *sum_cpu_pos;
+    unsigned int n = 0;
     virTypedParameterPtr ent;
     int param_idx;
     unsigned long long cpu_time;
 
     /* return the number of supported params */
-    if (nparams == 0 && ncpus != 0)
-        return CGROUP_NB_PER_CPU_STAT_PARAM;
+    if (nparams == 0 && ncpus != 0) {
+        if (nvcpupids == 0)
+            return CGROUP_NB_PER_CPU_STAT_PARAM;
+        else
+            return CGROUP_NB_PER_CPU_STAT_PARAM + 1;
+    }
 
     /* To parse account file, we need to know how many cpus are present.  */
     max_id = nodeGetCPUCount();
@@ -2888,6 +2954,8 @@ virCgroupGetPercpuStats(virCgroupPtr group,
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cpuacct parse error"));
             goto cleanup;
+        } else {
+            n++;
         }
         if (i < start_cpu)
             continue;
@@ -2897,9 +2965,34 @@ virCgroupGetPercpuStats(virCgroupPtr group,
             goto cleanup;
     }
 
+    if (nvcpupids == 0 || param_idx + 1 >= nparams)
+        goto success;
+    /* return percpu vcputime in index 1 */
+    param_idx++;
+
+    if (VIR_ALLOC_N(sum_cpu_time, n) < 0)
+        goto cleanup;
+    if (virCgroupGetPercpuVcpuSum(group, nvcpupids, sum_cpu_time, n) < 0)
+        goto cleanup;
+
+    sum_cpu_pos = sum_cpu_time;
+    for (i = 0; i <= id; i++) {
+        cpu_time = *(sum_cpu_pos++);
+        if (i < start_cpu)
+            continue;
+        if (virTypedParameterAssign(&params[(i - start_cpu) * nparams +
+                                            param_idx],
+                                    VIR_DOMAIN_CPU_STATS_VCPUTIME,
+                                    VIR_TYPED_PARAM_ULLONG,
+                                    cpu_time) < 0)
+            goto cleanup;
+    }
+
+ success:
     rv = param_idx + 1;
 
  cleanup:
+    VIR_FREE(sum_cpu_time);
     VIR_FREE(buf);
     return rv;
 }

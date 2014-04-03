@@ -206,7 +206,8 @@ virCgroupGetPercpuStats(virCgroupPtr group,
                         virTypedParameterPtr params,
                         unsigned int nparams,
                         int start_cpu,
-                        unsigned int ncpus);
+                        unsigned int ncpus,
+                        unsigned int nvcpupids);
 
 int
 virCgroupGetDomainTotalCpuStats(virCgroupPtr group,
