@@ -15979,22 +15979,22 @@ qemuDomainGetMetadata(virDomainPtr dom,
  *   s3 = t03 + t13
  */
 static int
-getSumVcpuPercpuStats(virDomainObjPtr vm,
+getSumVcpuPercpuStats(virCgroupPtr group,
+                      unsigned int nvcpupids,
                       unsigned long long *sum_cpu_time,
                       unsigned int num)
 {
     int ret = -1;
     size_t i;
     char *buf = NULL;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     virCgroupPtr group_vcpu = NULL;
 
-    for (i = 0; i < priv->nvcpupids; i++) {
+    for (i = 0; i < nvcpupids; i++) {
         char *pos;
         unsigned long long tmp;
         size_t j;
 
-        if (virCgroupNewVcpu(priv->cgroup, i, false, &group_vcpu) < 0)
+        if (virCgroupNewVcpu(group, i, false, &group_vcpu) < 0)
             goto cleanup;
 
         if (virCgroupGetCpuacctPercpuUsage(group_vcpu, &buf) < 0)
@@ -16022,11 +16022,12 @@ getSumVcpuPercpuStats(virDomainObjPtr vm,
 }
 
 static int
-qemuDomainGetPercpuStats(virDomainObjPtr vm,
+qemuDomainGetPercpuStats(virCgroupPtr group,
                          virTypedParameterPtr params,
                          unsigned int nparams,
                          int start_cpu,
-                         unsigned int ncpus)
+                         unsigned int ncpus,
+                         unsigned int nvcpupids)
 {
     int rv = -1;
     size_t i;
@@ -16036,7 +16037,6 @@ qemuDomainGetPercpuStats(virDomainObjPtr vm,
     unsigned long long *sum_cpu_time = NULL;
     unsigned long long *sum_cpu_pos;
     unsigned int n = 0;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     virTypedParameterPtr ent;
     int param_idx;
     unsigned long long cpu_time;
@@ -16063,7 +16063,7 @@ qemuDomainGetPercpuStats(virDomainObjPtr vm,
     }
 
     /* we get percpu cputime accounting info. */
-    if (virCgroupGetCpuacctPercpuUsage(priv->cgroup, &buf))
+    if (virCgroupGetCpuacctPercpuUsage(group, &buf))
         goto cleanup;
     pos = buf;
 
@@ -16100,7 +16100,7 @@ qemuDomainGetPercpuStats(virDomainObjPtr vm,
 
     if (VIR_ALLOC_N(sum_cpu_time, n) < 0)
         goto cleanup;
-    if (getSumVcpuPercpuStats(vm, sum_cpu_time, n) < 0)
+    if (getSumVcpuPercpuStats(group, nvcpupids, sum_cpu_time, n) < 0)
         goto cleanup;
 
     sum_cpu_pos = sum_cpu_time;
@@ -16164,8 +16164,8 @@ qemuDomainGetCPUStats(virDomainPtr domain,
         ret = virCgroupGetDomainTotalCpuStats(priv->cgroup,
                                               params, nparams);
     else
-        ret = qemuDomainGetPercpuStats(vm, params, nparams,
-                                       start_cpu, ncpus);
+        ret = qemuDomainGetPercpuStats(priv->cgroup, params, nparams,
+                                       start_cpu, ncpus, priv->nvcpupids);
  cleanup:
     if (vm)
         virObjectUnlock(vm);
