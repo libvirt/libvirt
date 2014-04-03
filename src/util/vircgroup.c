@@ -2928,10 +2928,10 @@ virCgroupGetPercpuStats(virCgroupPtr group,
         goto cleanup;
     }
 
-    if (start_cpu > total_cpus) {
+    if (start_cpu >= total_cpus) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("start_cpu %d larger than maximum of %d"),
-                       start_cpu, total_cpus);
+                       start_cpu, total_cpus - 1);
         goto cleanup;
     }
 
