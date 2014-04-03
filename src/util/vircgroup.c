@@ -2904,8 +2904,6 @@ virCgroupGetPercpuStats(virCgroupPtr group,
     char *pos;
     char *buf = NULL;
     unsigned long long *sum_cpu_time = NULL;
-    unsigned long long *sum_cpu_pos;
-    unsigned int n = 0;
     virTypedParameterPtr ent;
     int param_idx;
     unsigned long long cpu_time;
@@ -2919,14 +2917,11 @@ virCgroupGetPercpuStats(virCgroupPtr group,
     }
 
     /* To parse account file, we need to know how many cpus are present.  */
-    total_cpus = nodeGetCPUCount();
-    if (total_cpus < 0)
+    if ((total_cpus = nodeGetCPUCount()) < 0)
         return rv;
 
-    if (ncpus == 0) {
-        rv = total_cpus;
-        goto cleanup;
-    }
+    if (ncpus == 0)
+        return total_cpus;
 
     if (start_cpu >= total_cpus) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -2944,18 +2939,13 @@ virCgroupGetPercpuStats(virCgroupPtr group,
     param_idx = 0;
 
     /* number of cpus to compute */
-    if (start_cpu >= total_cpus - ncpus)
-        need_cpus = total_cpus - 1;
-    else
-        need_cpus = start_cpu + ncpus - 1;
+    need_cpus = MIN(total_cpus, start_cpu + ncpus);
 
-    for (i = 0; i <= need_cpus; i++) {
+    for (i = 0; i < need_cpus; i++) {
         if (virStrToLong_ull(pos, &pos, 10, &cpu_time) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cpuacct parse error"));
             goto cleanup;
-        } else {
-            n++;
         }
         if (i < start_cpu)
             continue;
@@ -2970,21 +2960,17 @@ virCgroupGetPercpuStats(virCgroupPtr group,
     /* return percpu vcputime in index 1 */
     param_idx++;
 
-    if (VIR_ALLOC_N(sum_cpu_time, n) < 0)
+    if (VIR_ALLOC_N(sum_cpu_time, need_cpus) < 0)
         goto cleanup;
-    if (virCgroupGetPercpuVcpuSum(group, nvcpupids, sum_cpu_time, n) < 0)
+    if (virCgroupGetPercpuVcpuSum(group, nvcpupids, sum_cpu_time, need_cpus) < 0)
         goto cleanup;
 
-    sum_cpu_pos = sum_cpu_time;
-    for (i = 0; i <= need_cpus; i++) {
-        cpu_time = *(sum_cpu_pos++);
-        if (i < start_cpu)
-            continue;
+    for (i = start_cpu; i < need_cpus; i++) {
         if (virTypedParameterAssign(&params[(i - start_cpu) * nparams +
                                             param_idx],
                                     VIR_DOMAIN_CPU_STATS_VCPUTIME,
                                     VIR_TYPED_PARAM_ULLONG,
-                                    cpu_time) < 0)
+                                    sum_cpu_time[i]) < 0)
             goto cleanup;
     }
 
