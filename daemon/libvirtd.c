@@ -1182,6 +1182,7 @@ int main(int argc, char **argv) {
         virDriverModuleInitialize(driverdir);
 #endif
         cpuMapOverride(cpumap);
+        VIR_FREE(cpumap);
         *tmp = '/';
         /* Must not free 'driverdir' - it is still used */
     }
