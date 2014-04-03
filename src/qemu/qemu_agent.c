@@ -1080,6 +1080,7 @@ static int
 qemuAgentCommand(qemuAgentPtr mon,
                  virJSONValuePtr cmd,
                  virJSONValuePtr *reply,
+                 bool needReply,
                  int seconds)
 {
     int ret = -1;
@@ -1113,7 +1114,7 @@ qemuAgentCommand(qemuAgentPtr mon,
         /* If we haven't obtained any reply but we wait for an
          * event, then don't report this as error */
         if (!msg.rxObject) {
-            if (await_event) {
+            if (await_event && !needReply) {
                 VIR_DEBUG("Woken up by event %d", await_event);
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1275,7 +1276,7 @@ int qemuAgentShutdown(qemuAgentPtr mon,
         mon->await_event = QEMU_AGENT_EVENT_RESET;
     else
         mon->await_event = QEMU_AGENT_EVENT_SHUTDOWN;
-    ret = qemuAgentCommand(mon, cmd, &reply,
+    ret = qemuAgentCommand(mon, cmd, &reply, false,
                            VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK);
 
     virJSONValueFree(cmd);
@@ -1305,7 +1306,7 @@ int qemuAgentFSFreeze(qemuAgentPtr mon)
     if (!cmd)
         return -1;
 
-    if (qemuAgentCommand(mon, cmd, &reply,
+    if (qemuAgentCommand(mon, cmd, &reply, true,
                          VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
         goto cleanup;
 
@@ -1342,7 +1343,7 @@ int qemuAgentFSThaw(qemuAgentPtr mon)
     if (!cmd)
         return -1;
 
-    if (qemuAgentCommand(mon, cmd, &reply,
+    if (qemuAgentCommand(mon, cmd, &reply, true,
                          VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
         goto cleanup;
 
@@ -1379,7 +1380,7 @@ qemuAgentSuspend(qemuAgentPtr mon,
         return -1;
 
     mon->await_event = QEMU_AGENT_EVENT_SUSPEND;
-    ret = qemuAgentCommand(mon, cmd, &reply,
+    ret = qemuAgentCommand(mon, cmd, &reply, false,
                            VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK);
 
     virJSONValueFree(cmd);
@@ -1409,7 +1410,7 @@ qemuAgentArbitraryCommand(qemuAgentPtr mon,
     if (!(cmd = virJSONValueFromString(cmd_str)))
         goto cleanup;
 
-    if ((ret = qemuAgentCommand(mon, cmd, &reply, timeout)) < 0)
+    if ((ret = qemuAgentCommand(mon, cmd, &reply, true, timeout)) < 0)
         goto cleanup;
 
     if (!(*result = virJSONValueToString(reply, false)))
@@ -1436,7 +1437,7 @@ qemuAgentFSTrim(qemuAgentPtr mon,
     if (!cmd)
         return ret;
 
-    ret = qemuAgentCommand(mon, cmd, &reply,
+    ret = qemuAgentCommand(mon, cmd, &reply, false,
                            VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK);
 
     virJSONValueFree(cmd);
