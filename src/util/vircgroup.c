@@ -2900,7 +2900,7 @@ virCgroupGetPercpuStats(virCgroupPtr group,
 {
     int rv = -1;
     size_t i;
-    int id, max_id;
+    int need_cpus, total_cpus;
     char *pos;
     char *buf = NULL;
     unsigned long long *sum_cpu_time = NULL;
@@ -2919,19 +2919,19 @@ virCgroupGetPercpuStats(virCgroupPtr group,
     }
 
     /* To parse account file, we need to know how many cpus are present.  */
-    max_id = nodeGetCPUCount();
-    if (max_id < 0)
+    total_cpus = nodeGetCPUCount();
+    if (total_cpus < 0)
         return rv;
 
-    if (ncpus == 0) { /* returns max cpu ID */
-        rv = max_id;
+    if (ncpus == 0) {
+        rv = total_cpus;
         goto cleanup;
     }
 
-    if (start_cpu > max_id) {
+    if (start_cpu > total_cpus) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("start_cpu %d larger than maximum of %d"),
-                       start_cpu, max_id);
+                       start_cpu, total_cpus);
         goto cleanup;
     }
 
@@ -2944,12 +2944,12 @@ virCgroupGetPercpuStats(virCgroupPtr group,
     param_idx = 0;
 
     /* number of cpus to compute */
-    if (start_cpu >= max_id - ncpus)
-        id = max_id - 1;
+    if (start_cpu >= total_cpus - ncpus)
+        need_cpus = total_cpus - 1;
     else
-        id = start_cpu + ncpus - 1;
+        need_cpus = start_cpu + ncpus - 1;
 
-    for (i = 0; i <= id; i++) {
+    for (i = 0; i <= need_cpus; i++) {
         if (virStrToLong_ull(pos, &pos, 10, &cpu_time) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cpuacct parse error"));
@@ -2976,7 +2976,7 @@ virCgroupGetPercpuStats(virCgroupPtr group,
         goto cleanup;
 
     sum_cpu_pos = sum_cpu_time;
-    for (i = 0; i <= id; i++) {
+    for (i = 0; i <= need_cpus; i++) {
         cpu_time = *(sum_cpu_pos++);
         if (i < start_cpu)
             continue;
