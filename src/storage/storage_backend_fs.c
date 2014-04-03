@@ -665,11 +665,13 @@ virStorageBackendExecuteMKFS(const char *device,
     int ret = 0;
     virCommandPtr cmd = NULL;
 
-    cmd = virCommandNewArgList(MKFS,
-                               "-t",
-                               format,
-                               device,
-                               NULL);
+    cmd = virCommandNewArgList(MKFS, "-t", format, NULL);
+
+    /* use the force, otherwise mkfs.xfs won't overwrite existing fs */
+    if (STREQ(format, "xfs"))
+        virCommandAddArg(cmd, "-f");
+
+    virCommandAddArg(cmd, device);
 
     if (virCommandRun(cmd, NULL) < 0) {
         virReportSystemError(errno,
