@@ -218,7 +218,7 @@ struct testChainData
 {
     const char *start;
     enum virStorageFileFormat format;
-    const testFileData *files;
+    const testFileData *files[5];
     int nfiles;
     unsigned int flags;
 };
@@ -267,13 +267,13 @@ testStorageChain(const void *args)
 
         if (virAsprintf(&expect,
                         "store:%s\nraw:%s\ndirectory:%s\nother:%d %d %lld %d",
-                        NULLSTR(data->files[i].expBackingStore),
-                        NULLSTR(data->files[i].expBackingStoreRaw),
-                        NULLSTR(data->files[i].expDirectory),
-                        data->files[i].expFormat,
-                        data->files[i].expIsFile,
-                        data->files[i].expCapacity,
-                        data->files[i].expEncrypted) < 0 ||
+                        NULLSTR(data->files[i]->expBackingStore),
+                        NULLSTR(data->files[i]->expBackingStoreRaw),
+                        NULLSTR(data->files[i]->expDirectory),
+                        data->files[i]->expFormat,
+                        data->files[i]->expIsFile,
+                        data->files[i]->expCapacity,
+                        data->files[i]->expEncrypted) < 0 ||
             virAsprintf(&actual,
                         "store:%s\nraw:%s\ndirectory:%s\nother:%d %d %lld %d",
                         NULLSTR(elt->backingStore),
@@ -312,29 +312,42 @@ mymain(void)
 {
     int ret;
     virCommandPtr cmd = NULL;
+    struct testChainData data;
 
     /* Prep some files with qemu-img; if that is not found on PATH, or
      * if it lacks support for qcow2 and qed, skip this test.  */
     if ((ret = testPrepImages()) != 0)
         return ret;
 
-#define TEST_ONE_CHAIN(id, start, format, chain, flags)              \
+#define TEST_ONE_CHAIN(id, start, format, flags, ...)                \
     do {                                                             \
-        struct testChainData data = {                                \
-            start, format, chain, ARRAY_CARDINALITY(chain), flags,   \
+        size_t i;                                                    \
+        memset(&data, 0, sizeof(data));                              \
+        data = (struct testChainData){                               \
+            start, format, { __VA_ARGS__ }, 0, flags,                \
         };                                                           \
+        for (i = 0; i < ARRAY_CARDINALITY(data.files); i++)          \
+            if (data.files[i])                                       \
+                data.nfiles++;                                       \
         if (virtTestRun("Storage backing chain " id,                 \
                         testStorageChain, &data) < 0)                \
             ret = -1;                                                \
     } while (0)
 
+#define VIR_FLATTEN_2(...) __VA_ARGS__
+#define VIR_FLATTEN_1(_1) VIR_FLATTEN_2 _1
+
 #define TEST_CHAIN(id, relstart, absstart, format, chain1, flags1,   \
                    chain2, flags2, chain3, flags3, chain4, flags4)   \
     do {                                                             \
-        TEST_ONE_CHAIN(#id "a", relstart, format, chain1, flags1);   \
-        TEST_ONE_CHAIN(#id "b", relstart, format, chain2, flags2);   \
-        TEST_ONE_CHAIN(#id "c", absstart, format, chain3, flags3);   \
-        TEST_ONE_CHAIN(#id "d", absstart, format, chain4, flags4);   \
+        TEST_ONE_CHAIN(#id "a", relstart, format, flags1,            \
+                       VIR_FLATTEN_1(chain1));                       \
+        TEST_ONE_CHAIN(#id "b", relstart, format, flags2,            \
+                       VIR_FLATTEN_1(chain2));                       \
+        TEST_ONE_CHAIN(#id "c", absstart, format, flags3,            \
+                       VIR_FLATTEN_1(chain3));                       \
+        TEST_ONE_CHAIN(#id "d", absstart, format, flags4,            \
+                       VIR_FLATTEN_1(chain4));                       \
     } while (0)
 
     /* Expected details about files in chains */
@@ -454,36 +467,31 @@ mymain(void)
     /* The actual tests, in several groups. */
 
     /* Missing file */
-    const testFileData chain0[] = { };
-    TEST_ONE_CHAIN("0", "bogus", VIR_STORAGE_FILE_RAW, chain0, EXP_FAIL);
+    TEST_ONE_CHAIN("0", "bogus", VIR_STORAGE_FILE_RAW, EXP_FAIL);
 
     /* Raw image, whether with right format or no specified format */
-    const testFileData chain1[] = { raw };
     TEST_CHAIN(1, "raw", absraw, VIR_STORAGE_FILE_RAW,
-               chain1, EXP_PASS,
-               chain1, ALLOW_PROBE | EXP_PASS,
-               chain1, EXP_PASS,
-               chain1, ALLOW_PROBE | EXP_PASS);
+               (&raw), EXP_PASS,
+               (&raw), ALLOW_PROBE | EXP_PASS,
+               (&raw), EXP_PASS,
+               (&raw), ALLOW_PROBE | EXP_PASS);
     TEST_CHAIN(2, "raw", absraw, VIR_STORAGE_FILE_AUTO,
-               chain1, EXP_PASS,
-               chain1, ALLOW_PROBE | EXP_PASS,
-               chain1, EXP_PASS,
-               chain1, ALLOW_PROBE | EXP_PASS);
+               (&raw), EXP_PASS,
+               (&raw), ALLOW_PROBE | EXP_PASS,
+               (&raw), EXP_PASS,
+               (&raw), ALLOW_PROBE | EXP_PASS);
 
     /* Qcow2 file with relative raw backing, format provided */
-    const testFileData chain3a[] = { qcow2_relback_relstart, raw };
-    const testFileData chain3c[] = { qcow2_relback_absstart, raw };
-    const testFileData chain4a[] = { raw };
     TEST_CHAIN(3, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               chain3a, EXP_PASS,
-               chain3a, ALLOW_PROBE | EXP_PASS,
-               chain3c, EXP_PASS,
-               chain3c, ALLOW_PROBE | EXP_PASS);
+               (&qcow2_relback_relstart, &raw), EXP_PASS,
+               (&qcow2_relback_relstart, &raw), ALLOW_PROBE | EXP_PASS,
+               (&qcow2_relback_absstart, &raw), EXP_PASS,
+               (&qcow2_relback_absstart, &raw), ALLOW_PROBE | EXP_PASS);
     TEST_CHAIN(4, "qcow2", absqcow2, VIR_STORAGE_FILE_AUTO,
-               chain4a, EXP_PASS,
-               chain3a, ALLOW_PROBE | EXP_PASS,
-               chain4a, EXP_PASS,
-               chain3c, ALLOW_PROBE | EXP_PASS);
+               (&raw), EXP_PASS,
+               (&qcow2_relback_relstart, &raw), ALLOW_PROBE | EXP_PASS,
+               (&raw), EXP_PASS,
+               (&qcow2_relback_absstart, &raw), ALLOW_PROBE | EXP_PASS);
 
     /* Rewrite qcow2 file to use absolute backing name */
     virCommandFree(cmd);
@@ -493,26 +501,23 @@ mymain(void)
         ret = -1;
 
     /* Qcow2 file with raw as absolute backing, backing format provided */
-    const testFileData chain5[] = { qcow2_absback, raw };
-    const testFileData chain6[] = { raw };
     TEST_CHAIN(5, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               chain5, EXP_PASS,
-               chain5, ALLOW_PROBE | EXP_PASS,
-               chain5, EXP_PASS,
-               chain5, ALLOW_PROBE | EXP_PASS);
+               (&qcow2_absback, &raw), EXP_PASS,
+               (&qcow2_absback, &raw), ALLOW_PROBE | EXP_PASS,
+               (&qcow2_absback, &raw), EXP_PASS,
+               (&qcow2_absback, &raw), ALLOW_PROBE | EXP_PASS);
     TEST_CHAIN(6, "qcow2", absqcow2, VIR_STORAGE_FILE_AUTO,
-               chain6, EXP_PASS,
-               chain5, ALLOW_PROBE | EXP_PASS,
-               chain6, EXP_PASS,
-               chain5, ALLOW_PROBE | EXP_PASS);
+               (&raw), EXP_PASS,
+               (&qcow2_absback, &raw), ALLOW_PROBE | EXP_PASS,
+               (&raw), EXP_PASS,
+               (&qcow2_absback, &raw), ALLOW_PROBE | EXP_PASS);
 
     /* Wrapped file access */
-    const testFileData chain7[] = { wrap, qcow2_absback, raw };
     TEST_CHAIN(7, "wrap", abswrap, VIR_STORAGE_FILE_QCOW2,
-               chain7, EXP_PASS,
-               chain7, ALLOW_PROBE | EXP_PASS,
-               chain7, EXP_PASS,
-               chain7, ALLOW_PROBE | EXP_PASS);
+               (&wrap, &qcow2_absback, &raw), EXP_PASS,
+               (&wrap, &qcow2_absback, &raw), ALLOW_PROBE | EXP_PASS,
+               (&wrap, &qcow2_absback, &raw), EXP_PASS,
+               (&wrap, &qcow2_absback, &raw), ALLOW_PROBE | EXP_PASS);
 
     /* Rewrite qcow2 and wrap file to omit backing file type */
     virCommandFree(cmd);
@@ -528,13 +533,11 @@ mymain(void)
         ret = -1;
 
     /* Qcow2 file with raw as absolute backing, backing format omitted */
-    const testFileData chain8a[] = { wrap_as_raw, raw };
-    const testFileData chain8b[] = { wrap_as_probe, qcow2_as_probe, raw };
     TEST_CHAIN(8, "wrap", abswrap, VIR_STORAGE_FILE_QCOW2,
-               chain8a, EXP_PASS,
-               chain8b, ALLOW_PROBE | EXP_PASS,
-               chain8a, EXP_PASS,
-               chain8b, ALLOW_PROBE | EXP_PASS);
+               (&wrap_as_raw, &raw), EXP_PASS,
+               (&wrap_as_probe, &qcow2_as_probe, &raw), ALLOW_PROBE | EXP_PASS,
+               (&wrap_as_raw, &raw), EXP_PASS,
+               (&wrap_as_probe, &qcow2_as_probe, &raw), ALLOW_PROBE | EXP_PASS);
 
     /* Rewrite qcow2 to a missing backing file, with backing type */
     virCommandFree(cmd);
@@ -545,12 +548,11 @@ mymain(void)
         ret = -1;
 
     /* Qcow2 file with missing backing file but specified type */
-    const testFileData chain9[] = { qcow2_bogus };
     TEST_CHAIN(9, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               chain9, EXP_WARN,
-               chain9, ALLOW_PROBE | EXP_WARN,
-               chain9, EXP_WARN,
-               chain9, ALLOW_PROBE | EXP_WARN);
+               (&qcow2_bogus), EXP_WARN,
+               (&qcow2_bogus), ALLOW_PROBE | EXP_WARN,
+               (&qcow2_bogus), EXP_WARN,
+               (&qcow2_bogus), ALLOW_PROBE | EXP_WARN);
 
     /* Rewrite qcow2 to a missing backing file, without backing type */
     virCommandFree(cmd);
@@ -560,12 +562,11 @@ mymain(void)
         ret = -1;
 
     /* Qcow2 file with missing backing file and no specified type */
-    const testFileData chain10[] = { qcow2_bogus };
     TEST_CHAIN(10, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               chain10, EXP_WARN,
-               chain10, ALLOW_PROBE | EXP_WARN,
-               chain10, EXP_WARN,
-               chain10, ALLOW_PROBE | EXP_WARN);
+               (&qcow2_bogus), EXP_WARN,
+               (&qcow2_bogus), ALLOW_PROBE | EXP_WARN,
+               (&qcow2_bogus), EXP_WARN,
+               (&qcow2_bogus), ALLOW_PROBE | EXP_WARN);
 
     /* Rewrite qcow2 to use an nbd: protocol as backend */
     virCommandFree(cmd);
@@ -576,21 +577,18 @@ mymain(void)
         ret = -1;
 
     /* Qcow2 file with backing protocol instead of file */
-    const testFileData chain11[] = { qcow2_protocol };
     TEST_CHAIN(11, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               chain11, EXP_PASS,
-               chain11, ALLOW_PROBE | EXP_PASS,
-               chain11, EXP_PASS,
-               chain11, ALLOW_PROBE | EXP_PASS);
+               (&qcow2_protocol), EXP_PASS,
+               (&qcow2_protocol), ALLOW_PROBE | EXP_PASS,
+               (&qcow2_protocol), EXP_PASS,
+               (&qcow2_protocol), ALLOW_PROBE | EXP_PASS);
 
     /* qed file */
-    const testFileData chain12a[] = { raw };
-    const testFileData chain12b[] = { qed, raw };
     TEST_CHAIN(12, "qed", absqed, VIR_STORAGE_FILE_AUTO,
-               chain12a, EXP_PASS,
-               chain12b, ALLOW_PROBE | EXP_PASS,
-               chain12a, EXP_PASS,
-               chain12b, ALLOW_PROBE | EXP_PASS);
+               (&raw), EXP_PASS,
+               (&qed, &raw), ALLOW_PROBE | EXP_PASS,
+               (&raw), EXP_PASS,
+               (&qed, &raw), ALLOW_PROBE | EXP_PASS);
 
 #ifdef HAVE_SYMLINK
     /* Rewrite qcow2 and wrap file to use backing names relative to a
@@ -609,15 +607,12 @@ mymain(void)
         ret = -1;
 
     /* Behavior of symlinks to qcow2 with relative backing files */
-    const testFileData chain13a[] = { link2_rel, link1_rel, raw };
-    const testFileData chain13c[] = { link2_abs, link1_abs, raw };
     TEST_CHAIN(13, "sub/link2", abslink2, VIR_STORAGE_FILE_QCOW2,
-               chain13a, EXP_PASS,
-               chain13a, ALLOW_PROBE | EXP_PASS,
-               chain13c, EXP_PASS,
-               chain13c, ALLOW_PROBE | EXP_PASS);
+               (&link2_rel, &link1_rel, &raw), EXP_PASS,
+               (&link2_rel, &link1_rel, &raw), ALLOW_PROBE | EXP_PASS,
+               (&link2_abs, &link1_abs, &raw), EXP_PASS,
+               (&link2_abs, &link1_abs, &raw), ALLOW_PROBE | EXP_PASS);
 #endif
-
     /* Final cleanup */
     testCleanupImages();
     virCommandFree(cmd);
