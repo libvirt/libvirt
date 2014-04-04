@@ -2897,7 +2897,7 @@ virCgroupGetPercpuStats(virCgroupPtr group,
             goto cleanup;
     }
 
-    rv = nparams;
+    rv = param_idx + 1;
 
  cleanup:
     VIR_FREE(buf);
