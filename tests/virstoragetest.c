@@ -218,6 +218,8 @@ struct _testFileData
     bool expIsFile;
     unsigned long long expCapacity;
     bool expEncrypted;
+    const char *pathRel;
+    const char *pathAbs;
 };
 
 enum {
@@ -286,6 +288,7 @@ testStorageChain(const void *args)
         char *expect = NULL;
         char *actual = NULL;
         const char *expBackingDirectory;
+        const char *expPath;
 
         if (i == data->nfiles) {
             fprintf(stderr, "probed chain was too long\n");
@@ -294,22 +297,28 @@ testStorageChain(const void *args)
 
         expBackingDirectory = isAbs ? data->files[i]->expBackingDirAbs
             : data->files[i]->expBackingDirRel;
+        expPath = isAbs ? data->files[i]->pathAbs
+            : data->files[i]->pathRel;
         if (virAsprintf(&expect,
-                        "store:%s\nraw:%s\ndirectory:%s\nother:%d %d %lld %d",
+                        "store:%s\nraw:%s\ndirectory:%s\nother:%d %d %lld %d\n"
+                        "path:%s\n",
                         NULLSTR(data->files[i]->expBackingStore),
                         NULLSTR(data->files[i]->expBackingStoreRaw),
                         NULLSTR(expBackingDirectory),
                         data->files[i]->expBackingFormat,
                         data->files[i]->expIsFile,
                         data->files[i]->expCapacity,
-                        data->files[i]->expEncrypted) < 0 ||
+                        data->files[i]->expEncrypted,
+                        NULLSTR(expPath)) < 0 ||
             virAsprintf(&actual,
-                        "store:%s\nraw:%s\ndirectory:%s\nother:%d %d %lld %d",
+                        "store:%s\nraw:%s\ndirectory:%s\nother:%d %d %lld %d\n"
+                        "path:%s\n",
                         NULLSTR(elt->backingStore),
                         NULLSTR(elt->backingStoreRaw),
                         NULLSTR(elt->directory),
                         elt->backingStoreFormat, elt->backingStoreIsFile,
-                        elt->capacity, !!elt->encryption) < 0) {
+                        elt->capacity, !!elt->encryption,
+                        NULLSTR(elt->path)) < 0) {
             VIR_FREE(expect);
             VIR_FREE(actual);
             goto cleanup;
@@ -389,6 +398,8 @@ mymain(void)
     /* Raw image, whether with right format or no specified format */
     testFileData raw = {
         .expBackingFormat = VIR_STORAGE_FILE_NONE,
+        .pathRel = "raw",
+        .pathAbs = canonraw,
     };
     TEST_CHAIN(1, "raw", absraw, VIR_STORAGE_FILE_RAW,
                (&raw), EXP_PASS,
@@ -402,6 +413,7 @@ mymain(void)
                (&raw), ALLOW_PROBE | EXP_PASS);
 
     /* Qcow2 file with relative raw backing, format provided */
+    raw.pathAbs = "raw";
     testFileData qcow2 = {
         .expBackingStore = canonraw,
         .expBackingStoreRaw = "raw",
@@ -410,6 +422,13 @@ mymain(void)
         .expBackingFormat = VIR_STORAGE_FILE_RAW,
         .expIsFile = true,
         .expCapacity = 1024,
+        .pathRel = "qcow2",
+        .pathAbs = canonqcow2,
+    };
+    testFileData qcow2_as_raw = {
+        .expBackingFormat = VIR_STORAGE_FILE_NONE,
+        .pathRel = "qcow2",
+        .pathAbs = canonqcow2,
     };
     TEST_CHAIN(3, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2, &raw), EXP_PASS,
@@ -417,9 +436,9 @@ mymain(void)
                (&qcow2, &raw), EXP_PASS,
                (&qcow2, &raw), ALLOW_PROBE | EXP_PASS);
     TEST_CHAIN(4, "qcow2", absqcow2, VIR_STORAGE_FILE_AUTO,
-               (&raw), EXP_PASS,
+               (&qcow2_as_raw), EXP_PASS,
                (&qcow2, &raw), ALLOW_PROBE | EXP_PASS,
-               (&raw), EXP_PASS,
+               (&qcow2_as_raw), EXP_PASS,
                (&qcow2, &raw), ALLOW_PROBE | EXP_PASS);
 
     /* Rewrite qcow2 file to use absolute backing name */
@@ -430,6 +449,8 @@ mymain(void)
         ret = -1;
     qcow2.expBackingStoreRaw = absraw;
     qcow2.expBackingDirRel = datadir;
+    raw.pathRel = absraw;
+    raw.pathAbs = absraw;
 
     /* Qcow2 file with raw as absolute backing, backing format provided */
     TEST_CHAIN(5, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
@@ -438,9 +459,9 @@ mymain(void)
                (&qcow2, &raw), EXP_PASS,
                (&qcow2, &raw), ALLOW_PROBE | EXP_PASS);
     TEST_CHAIN(6, "qcow2", absqcow2, VIR_STORAGE_FILE_AUTO,
-               (&raw), EXP_PASS,
+               (&qcow2_as_raw), EXP_PASS,
                (&qcow2, &raw), ALLOW_PROBE | EXP_PASS,
-               (&raw), EXP_PASS,
+               (&qcow2_as_raw), EXP_PASS,
                (&qcow2, &raw), ALLOW_PROBE | EXP_PASS);
 
     /* Wrapped file access */
@@ -452,7 +473,10 @@ mymain(void)
         .expBackingFormat = VIR_STORAGE_FILE_QCOW2,
         .expIsFile = true,
         .expCapacity = 1024,
+        .pathRel = "wrap",
+        .pathAbs = abswrap,
     };
+    qcow2.pathRel = absqcow2;
     TEST_CHAIN(7, "wrap", abswrap, VIR_STORAGE_FILE_QCOW2,
                (&wrap, &qcow2, &raw), EXP_PASS,
                (&wrap, &qcow2, &raw), ALLOW_PROBE | EXP_PASS,
@@ -473,6 +497,7 @@ mymain(void)
         ret = -1;
     wrap.expBackingFormat = VIR_STORAGE_FILE_AUTO;
     qcow2.expBackingFormat = VIR_STORAGE_FILE_AUTO;
+    qcow2_as_raw.pathRel = absqcow2;
 
     /* Qcow2 file with raw as absolute backing, backing format omitted */
     testFileData wrap_as_raw = {
@@ -483,11 +508,13 @@ mymain(void)
         .expBackingFormat = VIR_STORAGE_FILE_RAW,
         .expIsFile = true,
         .expCapacity = 1024,
+        .pathRel = "wrap",
+        .pathAbs = abswrap,
     };
     TEST_CHAIN(8, "wrap", abswrap, VIR_STORAGE_FILE_QCOW2,
-               (&wrap_as_raw, &raw), EXP_PASS,
+               (&wrap_as_raw, &qcow2_as_raw), EXP_PASS,
                (&wrap, &qcow2, &raw), ALLOW_PROBE | EXP_PASS,
-               (&wrap_as_raw, &raw), EXP_PASS,
+               (&wrap_as_raw, &qcow2_as_raw), EXP_PASS,
                (&wrap, &qcow2, &raw), ALLOW_PROBE | EXP_PASS);
 
     /* Rewrite qcow2 to a missing backing file, with backing type */
@@ -501,6 +528,7 @@ mymain(void)
     qcow2.expBackingStoreRaw = datadir "/bogus";
     qcow2.expBackingFormat = VIR_STORAGE_FILE_NONE;
     qcow2.expIsFile = false;
+    qcow2.pathRel = "qcow2";
 
     /* Qcow2 file with missing backing file but specified type */
     TEST_CHAIN(9, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
@@ -552,16 +580,24 @@ mymain(void)
         .expBackingFormat = VIR_STORAGE_FILE_RAW,
         .expIsFile = true,
         .expCapacity = 1024,
+        .pathRel = "qed",
+        .pathAbs = absqed,
+    };
+    testFileData qed_as_raw = {
+        .expBackingFormat = VIR_STORAGE_FILE_NONE,
+        .pathRel = "qed",
+        .pathAbs = absqed,
     };
     TEST_CHAIN(12, "qed", absqed, VIR_STORAGE_FILE_AUTO,
-               (&raw), EXP_PASS,
+               (&qed_as_raw), EXP_PASS,
                (&qed, &raw), ALLOW_PROBE | EXP_PASS,
-               (&raw), EXP_PASS,
+               (&qed_as_raw), EXP_PASS,
                (&qed, &raw), ALLOW_PROBE | EXP_PASS);
 
     /* directory */
     testFileData dir = {
-        .expIsFile = false,
+        .pathRel = "dir",
+        .pathAbs = absdir,
     };
     TEST_CHAIN(13, "dir", absdir, VIR_STORAGE_FILE_AUTO,
                (&dir), EXP_PASS,
@@ -599,6 +635,8 @@ mymain(void)
         .expBackingFormat = VIR_STORAGE_FILE_RAW,
         .expIsFile = true,
         .expCapacity = 1024,
+        .pathRel = "../sub/link1",
+        .pathAbs = "../sub/link1",
     };
     testFileData link2 = {
         .expBackingStore = canonqcow2,
@@ -608,7 +646,11 @@ mymain(void)
         .expBackingFormat = VIR_STORAGE_FILE_QCOW2,
         .expIsFile = true,
         .expCapacity = 1024,
+        .pathRel = "sub/link2",
+        .pathAbs = abslink2,
     };
+    raw.pathRel = "../raw";
+    raw.pathAbs = "../raw";
     TEST_CHAIN(15, "sub/link2", abslink2, VIR_STORAGE_FILE_QCOW2,
                (&link2, &link1, &raw), EXP_PASS,
                (&link2, &link1, &raw), ALLOW_PROBE | EXP_PASS,
@@ -650,6 +692,7 @@ mymain(void)
         ret = -1;
     qcow2.expBackingStoreRaw = "wrap";
     qcow2.expBackingDirRel = datadir;
+    qcow2.pathRel = absqcow2;
     wrap.expBackingFormat = VIR_STORAGE_FILE_QCOW2;
 
     /* Behavior of an infinite loop chain */
