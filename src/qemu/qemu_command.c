@@ -1102,12 +1102,6 @@ qemuCCWAdressIncrement(virDomainDeviceCCWAddressPtr addr)
     return 0;
 }
 
-static void
-qemuDomainCCWAddressSetFreeEntry(void *payload,
-                                 const void *name ATTRIBUTE_UNUSED)
-{
-    VIR_FREE(payload);
-}
 
 int qemuDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
                                qemuDomainCCWAddressSetPtr addrs,
@@ -1264,7 +1258,7 @@ qemuDomainCCWAddressSetCreate(void)
     if (VIR_ALLOC(addrs) < 0)
         goto error;
 
-    if (!(addrs->defined = virHashCreate(10, qemuDomainCCWAddressSetFreeEntry)))
+    if (!(addrs->defined = virHashCreate(10, virHashValueFree)))
         goto error;
 
     /* must use cssid = 0xfe (254) for virtio-ccw devices */

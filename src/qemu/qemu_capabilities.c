@@ -3288,13 +3288,6 @@ bool virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps)
 }
 
 
-static void
-virQEMUCapsHashDataFree(void *payload, const void *key ATTRIBUTE_UNUSED)
-{
-    virObjectUnref(payload);
-}
-
-
 virQEMUCapsCachePtr
 virQEMUCapsCacheNew(const char *libDir,
                     const char *cacheDir,
@@ -3313,7 +3306,7 @@ virQEMUCapsCacheNew(const char *libDir,
         return NULL;
     }
 
-    if (!(cache->binaries = virHashCreate(10, virQEMUCapsHashDataFree)))
+    if (!(cache->binaries = virHashCreate(10, virObjectFreeHashData)))
         goto error;
     if (VIR_STRDUP(cache->libDir, libDir) < 0)
         goto error;

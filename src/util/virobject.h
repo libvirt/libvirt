@@ -1,7 +1,7 @@
 /*
  * virobject.h: libvirt reference counted object
  *
- * Copyright (C) 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -89,6 +89,7 @@ bool virObjectIsClass(void *obj,
     ATTRIBUTE_NONNULL(2);
 
 void virObjectFreeCallback(void *opaque);
+void virObjectFreeHashData(void *opaque, const void *name);
 
 void *virObjectLockableNew(virClassPtr klass)
     ATTRIBUTE_NONNULL(1);

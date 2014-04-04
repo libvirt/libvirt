@@ -1678,7 +1678,7 @@ qemuMonitorGetBlockInfo(qemuMonitorPtr mon)
         return NULL;
     }
 
-    if (!(table = virHashCreate(32, (virHashDataFree) free)))
+    if (!(table = virHashCreate(32, virHashValueFree)))
         return NULL;
 
     if (mon->json)

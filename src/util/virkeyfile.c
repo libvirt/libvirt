@@ -1,7 +1,7 @@
 /*
  * virkeyfile.c: "ini"-style configuration file handling
  *
- * Copyright (C) 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -103,11 +103,6 @@ virKeyFileErrorHelper(const char *file, const char *func, size_t line,
 }
 
 
-static void virKeyFileValueFree(void *value, const void *name ATTRIBUTE_UNUSED)
-{
-    VIR_FREE(value);
-}
-
 static int virKeyFileParseGroup(virKeyFileParserCtxtPtr ctxt)
 {
     int ret = -1;
@@ -130,7 +125,7 @@ static int virKeyFileParseGroup(virKeyFileParserCtxtPtr ctxt)
 
     NEXT;
 
-    if (!(ctxt->group = virHashCreate(10, virKeyFileValueFree)))
+    if (!(ctxt->group = virHashCreate(10, virHashValueFree)))
         goto cleanup;
 
     if (virHashAddEntry(ctxt->conf->groups, ctxt->groupname, ctxt->group) < 0)

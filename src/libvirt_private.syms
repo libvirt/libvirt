@@ -1290,6 +1290,7 @@ virHashSize;
 virHashSteal;
 virHashTableSize;
 virHashUpdateEntry;
+virHashValueFree;
 
 
 # util/virhook.h
@@ -1628,6 +1629,7 @@ virClassIsDerivedFrom;
 virClassName;
 virClassNew;
 virObjectFreeCallback;
+virObjectFreeHashData;
 virObjectIsClass;
 virObjectLock;
 virObjectLockableNew;

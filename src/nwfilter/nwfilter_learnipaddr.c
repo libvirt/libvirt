@@ -188,13 +188,6 @@ virNWFilterLockIface(const char *ifname)
 }
 
 
-static void
-freeIfaceLock(void *payload, const void *name ATTRIBUTE_UNUSED)
-{
-    VIR_FREE(payload);
-}
-
-
 void
 virNWFilterUnlockIface(const char *ifname)
 {
@@ -818,7 +811,7 @@ virNWFilterLearnInit(void)
         return -1;
     }
 
-    ifaceLockMap = virHashCreate(0, freeIfaceLock);
+    ifaceLockMap = virHashCreate(0, virHashValueFree);
     if (!ifaceLockMap) {
         virNWFilterLearnShutdown();
         return -1;

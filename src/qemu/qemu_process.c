@@ -1871,10 +1871,6 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
     return 0;
 }
 
-static void qemuProcessFreePtyPath(void *payload, const void *name ATTRIBUTE_UNUSED)
-{
-    VIR_FREE(payload);
-}
 
 static int
 qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
@@ -1911,7 +1907,7 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
      * reliable if it's available.
      * Note that the monitor itself can be on a pty, so we still need to try the
      * log output method. */
-    paths = virHashCreate(0, qemuProcessFreePtyPath);
+    paths = virHashCreate(0, virHashValueFree);
     if (paths == NULL)
         goto cleanup;
 

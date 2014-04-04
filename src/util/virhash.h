@@ -3,7 +3,7 @@
  * Description: This module implements the hash table and allocation and
  *              deallocation of domains and connections
  *
- * Copyright (C) 2005-2013 Red Hat, Inc.
+ * Copyright (C) 2005-2014 Red Hat, Inc.
  * Copyright (C) 2000 Bjorn Reese and Daniel Veillard.
  *
  * Author: Bjorn Reese <bjorn.reese@systematic.dk>
@@ -183,5 +183,8 @@ ssize_t virHashForEach(virHashTablePtr table, virHashIterator iter, void *data);
 ssize_t virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void *data);
 void *virHashSearch(const virHashTable *table, virHashSearcher iter,
                     const void *data);
+
+/* Convenience for when VIR_FREE(value) is sufficient as a data freer.  */
+void virHashValueFree(void *value, const void *name);
 
 #endif                          /* ! __VIR_HASH_H__ */

@@ -3,7 +3,7 @@
  *
  * Reference: Your favorite introductory book on algorithms
  *
- * Copyright (C) 2005-2013 Red Hat, Inc.
+ * Copyright (C) 2005-2014 Red Hat, Inc.
  * Copyright (C) 2000 Bjorn Reese and Daniel Veillard.
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -96,6 +96,13 @@ static void *virHashStrCopy(const void *name)
 static void virHashStrFree(void *name)
 {
     VIR_FREE(name);
+}
+
+
+void
+virHashValueFree(void *value, const void *name ATTRIBUTE_UNUSED)
+{
+    VIR_FREE(value);
 }
 
 
