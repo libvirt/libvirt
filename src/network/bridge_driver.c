@@ -41,6 +41,7 @@
 #include <sys/wait.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
+#include <dirent.h>
 #if HAVE_SYS_SYSCTL_H
 # include <sys/sysctl.h>
 #endif
@@ -416,6 +417,88 @@ firewalld_dbus_filter_bridge(DBusConnection *connection ATTRIBUTE_UNUSED,
 }
 #endif
 
+static int
+networkMigrateStateFiles(virNetworkDriverStatePtr driver)
+{
+    /* Due to a change in location of network state xml beginning in
+     * libvirt 1.2.4 (from /var/lib/libvirt/network to
+     * /var/run/libvirt/network), we must check for state files in two
+     * locations. Anything found in the old location must be written
+     * to the new location, then erased from the old location. (Note
+     * that we read/write the file rather than calling rename()
+     * because the old and new state directories are likely in
+     * different filesystems).
+     */
+    int ret = -1;
+    const char *oldStateDir = LOCALSTATEDIR "/lib/libvirt/network";
+    DIR *dir;
+    struct dirent *entry;
+    char *oldPath = NULL, *newPath = NULL;
+    char *contents = NULL;
+
+    if (!(dir = opendir(oldStateDir))) {
+        if (errno == ENOENT)
+            return 0;
+
+        virReportSystemError(errno, _("failed to open directory '%s'"),
+                             oldStateDir);
+        return -1;
+    }
+
+    if (virFileMakePath(driver->stateDir) < 0) {
+        virReportSystemError(errno, _("cannot create directory %s"),
+                             driver->stateDir);
+        goto cleanup;
+    }
+
+    for (;;) {
+        errno = 0;
+        entry = readdir(dir);
+        if (!entry) {
+            if (errno) {
+                virReportSystemError(errno, _("failed to read directory '%s'"),
+                                     oldStateDir);
+                goto cleanup;
+            }
+            break;
+        }
+
+        if (entry->d_type != DT_REG ||
+            STREQ(entry->d_name, ".") ||
+            STREQ(entry->d_name, ".."))
+            continue;
+
+        if (virAsprintf(&oldPath, "%s/%s",
+                        oldStateDir, entry->d_name) < 0)
+           goto cleanup;
+        if (virFileReadAll(oldPath, 1024*1024, &contents) < 0)
+           goto cleanup;
+
+        if (virAsprintf(&newPath, "%s/%s",
+                        driver->stateDir, entry->d_name) < 0)
+           goto cleanup;
+        if (virFileWriteStr(newPath, contents, S_IRUSR | S_IWUSR) < 0) {
+            virReportSystemError(errno,
+                                 _("failed to write network status file '%s'"),
+                                 newPath);
+            goto cleanup;
+        }
+
+        unlink(oldPath);
+        VIR_FREE(oldPath);
+        VIR_FREE(newPath);
+        VIR_FREE(contents);
+    }
+
+    ret = 0;
+ cleanup:
+    closedir(dir);
+    VIR_FREE(oldPath);
+    VIR_FREE(newPath);
+    VIR_FREE(contents);
+    return ret;
+}
+
 /**
  * networkStateInitialize:
  *
@@ -445,11 +528,6 @@ networkStateInitialize(bool privileged,
     /* configuration/state paths are one of
      * ~/.config/libvirt/... (session/unprivileged)
      * /etc/libvirt/... && /var/(run|lib)/libvirt/... (system/privileged).
-     *
-     * NB: The qemu driver puts its domain state in /var/run, and I
-     * think the network driver should have used /var/run too (instead
-     * of /var/lib), but it's been this way for a long time, and we
-     * probably shouldn't change it now.
      */
     if (privileged) {
         if (VIR_STRDUP(driverState->networkConfigDir,
@@ -457,13 +535,20 @@ networkStateInitialize(bool privileged,
             VIR_STRDUP(driverState->networkAutostartDir,
                        SYSCONFDIR "/libvirt/qemu/networks/autostart") < 0 ||
             VIR_STRDUP(driverState->stateDir,
-                       LOCALSTATEDIR "/lib/libvirt/network") < 0 ||
+                       LOCALSTATEDIR "/run/libvirt/network") < 0 ||
             VIR_STRDUP(driverState->pidDir,
                        LOCALSTATEDIR "/run/libvirt/network") < 0 ||
             VIR_STRDUP(driverState->dnsmasqStateDir,
                        LOCALSTATEDIR "/lib/libvirt/dnsmasq") < 0 ||
             VIR_STRDUP(driverState->radvdStateDir,
                        LOCALSTATEDIR "/lib/libvirt/radvd") < 0)
+            goto error;
+
+        /* migration from old to new location is only applicable for
+         * privileged mode - unprivileged mode directories haven't
+         * changed location.
+         */
+        if (networkMigrateStateFiles(driverState) < 0)
             goto error;
     } else {
         configdir = virGetUserConfigDirectory();
