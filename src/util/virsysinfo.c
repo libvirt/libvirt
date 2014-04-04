@@ -50,6 +50,7 @@ static const char *sysinfoCpuinfo = "/proc/cpuinfo";
 #define SYSINFO_SMBIOS_DECODER sysinfoDmidecode
 #define SYSINFO sysinfoSysinfo
 #define CPUINFO sysinfoCpuinfo
+#define CPUINFO_FILE_LEN (10*1024)	/* 10KB limit for /proc/cpuinfo file */
 
 /* only to be used test programs, therefore not in sysinfo.h */
 extern void virSysinfoSetup(const char *dmidecode, const char *sysinfo,
@@ -223,7 +224,7 @@ virSysinfoRead(void)
     if (VIR_ALLOC(ret) < 0)
         goto no_memory;
 
-    if (virFileReadAll(CPUINFO, 2048, &outbuf) < 0) {
+    if (virFileReadAll(CPUINFO, CPUINFO_FILE_LEN, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to open %s"), CPUINFO);
         return NULL;
@@ -341,7 +342,7 @@ virSysinfoRead(void)
     if (VIR_ALLOC(ret) < 0)
         goto no_memory;
 
-    if (virFileReadAll(CPUINFO, 2048, &outbuf) < 0) {
+    if (virFileReadAll(CPUINFO, CPUINFO_FILE_LEN, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to open %s"), CPUINFO);
         return NULL;
@@ -470,7 +471,7 @@ virSysinfoRead(void)
         goto no_memory;
 
     /* Gather info from /proc/cpuinfo */
-    if (virFileReadAll(CPUINFO, 8192, &outbuf) < 0) {
+    if (virFileReadAll(CPUINFO, CPUINFO_FILE_LEN, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to open %s"), CPUINFO);
         return NULL;
