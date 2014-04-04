@@ -57,6 +57,7 @@ static char *absqcow2;
 static char *canonqcow2;
 static char *abswrap;
 static char *absqed;
+static char *absdir;
 static char *abslink2;
 
 static void
@@ -69,6 +70,7 @@ testCleanupImages(void)
     VIR_FREE(canonqcow2);
     VIR_FREE(abswrap);
     VIR_FREE(absqed);
+    VIR_FREE(absdir);
     VIR_FREE(abslink2);
 
     if (chdir(abs_builddir) < 0) {
@@ -110,11 +112,16 @@ testPrepImages(void)
         virAsprintf(&absqcow2, "%s/qcow2", datadir) < 0 ||
         virAsprintf(&abswrap, "%s/wrap", datadir) < 0 ||
         virAsprintf(&absqed, "%s/qed", datadir) < 0 ||
+        virAsprintf(&absdir, "%s/dir", datadir) < 0 ||
         virAsprintf(&abslink2, "%s/sub/link2", datadir) < 0)
         goto cleanup;
 
     if (virFileMakePath(datadir "/sub") < 0) {
         fprintf(stderr, "unable to create directory %s\n", datadir "/sub");
+        goto cleanup;
+    }
+    if (virFileMakePath(datadir "/dir") < 0) {
+        fprintf(stderr, "unable to create directory %s\n", datadir "/dir");
         goto cleanup;
     }
 
@@ -231,6 +238,7 @@ testStorageChain(const void *args)
     virStorageFileMetadataPtr meta;
     virStorageFileMetadataPtr elt;
     size_t i = 0;
+    char *broken = NULL;
 
     meta = virStorageFileGetMetadata(data->start, data->format, -1, -1,
                                      (data->flags & ALLOW_PROBE) != 0);
@@ -250,9 +258,19 @@ testStorageChain(const void *args)
             goto cleanup;
         }
         virResetLastError();
-    } else if (virGetLastError()) {
-        fprintf(stderr, "call should not have warned\n");
-        goto cleanup;
+        if (virStorageFileChainGetBroken(meta, &broken) || !broken) {
+            fprintf(stderr, "call should identify broken part of chain\n");
+            goto cleanup;
+        }
+    } else {
+        if (virGetLastError()) {
+            fprintf(stderr, "call should not have warned\n");
+            goto cleanup;
+        }
+        if (virStorageFileChainGetBroken(meta, &broken) || broken) {
+            fprintf(stderr, "chain should not be identified as broken\n");
+            goto cleanup;
+        }
     }
 
     elt = meta;
@@ -303,6 +321,7 @@ testStorageChain(const void *args)
 
     ret = 0;
  cleanup:
+    VIR_FREE(broken);
     virStorageFileFreeMetadata(meta);
     return ret;
 }
@@ -429,6 +448,40 @@ mymain(void)
         .expIsFile = true,
         .expCapacity = 1024,
     };
+
+    const testFileData dir = {
+        .expIsFile = false,
+    };
+
+    const testFileData qcow2_loop1_rel = {
+        .expBackingStoreRaw = "qcow2",
+        .expDirectory = ".",
+        .expFormat = VIR_STORAGE_FILE_NONE,
+        .expIsFile = true,
+        .expCapacity = 1024,
+    };
+    const testFileData qcow2_loop1_abs = {
+        .expBackingStoreRaw = "qcow2",
+        .expDirectory = datadir,
+        .expFormat = VIR_STORAGE_FILE_NONE,
+        .expIsFile = true,
+        .expCapacity = 1024,
+    };
+    const testFileData qcow2_loop2_rel = {
+        .expBackingStoreRaw = "wrap",
+        .expDirectory = datadir,
+        .expFormat = VIR_STORAGE_FILE_NONE,
+        .expIsFile = true,
+        .expCapacity = 1024,
+    };
+    const testFileData qcow2_loop2_abs = {
+        .expBackingStoreRaw = "wrap",
+        .expDirectory = datadir,
+        .expFormat = VIR_STORAGE_FILE_NONE,
+        .expIsFile = true,
+        .expCapacity = 1024,
+    };
+
 #if HAVE_SYMLINK
     const testFileData link1_rel = {
         .expBackingStore = canonraw,
@@ -590,6 +643,18 @@ mymain(void)
                (&raw), EXP_PASS,
                (&qed, &raw), ALLOW_PROBE | EXP_PASS);
 
+    /* directory */
+    TEST_CHAIN(13, "dir", absdir, VIR_STORAGE_FILE_AUTO,
+               (&dir), EXP_PASS,
+               (&dir), ALLOW_PROBE | EXP_PASS,
+               (&dir), EXP_PASS,
+               (&dir), ALLOW_PROBE | EXP_PASS);
+    TEST_CHAIN(14, "dir", absdir, VIR_STORAGE_FILE_DIR,
+               (&dir), EXP_PASS,
+               (&dir), ALLOW_PROBE | EXP_PASS,
+               (&dir), EXP_PASS,
+               (&dir), ALLOW_PROBE | EXP_PASS);
+
 #ifdef HAVE_SYMLINK
     /* Rewrite qcow2 and wrap file to use backing names relative to a
      * symlink from a different directory */
@@ -607,12 +672,47 @@ mymain(void)
         ret = -1;
 
     /* Behavior of symlinks to qcow2 with relative backing files */
-    TEST_CHAIN(13, "sub/link2", abslink2, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(15, "sub/link2", abslink2, VIR_STORAGE_FILE_QCOW2,
                (&link2_rel, &link1_rel, &raw), EXP_PASS,
                (&link2_rel, &link1_rel, &raw), ALLOW_PROBE | EXP_PASS,
                (&link2_abs, &link1_abs, &raw), EXP_PASS,
                (&link2_abs, &link1_abs, &raw), ALLOW_PROBE | EXP_PASS);
 #endif
+
+    /* Rewrite qcow2 to be a self-referential loop */
+    virCommandFree(cmd);
+    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
+                               "-F", "qcow2", "-b", "qcow2", "qcow2", NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        ret = -1;
+
+    /* Behavior of an infinite loop chain */
+    TEST_CHAIN(16, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
+               (&qcow2_loop1_rel), EXP_WARN,
+               (&qcow2_loop1_rel), ALLOW_PROBE | EXP_WARN,
+               (&qcow2_loop1_abs), EXP_WARN,
+               (&qcow2_loop1_abs), ALLOW_PROBE | EXP_WARN);
+
+    /* Rewrite wrap and qcow2 to be mutually-referential loop */
+    virCommandFree(cmd);
+    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
+                               "-F", "qcow2", "-b", "wrap", "qcow2", NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        ret = -1;
+
+    virCommandFree(cmd);
+    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
+                               "-F", "qcow2", "-b", absqcow2, "wrap", NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        ret = -1;
+
+    /* Behavior of an infinite loop chain */
+    TEST_CHAIN(17, "wrap", abswrap, VIR_STORAGE_FILE_QCOW2,
+               (&wrap, &qcow2_loop2_rel), EXP_WARN,
+               (&wrap, &qcow2_loop2_rel), ALLOW_PROBE | EXP_WARN,
+               (&wrap, &qcow2_loop2_abs), EXP_WARN,
+               (&wrap, &qcow2_loop2_abs), ALLOW_PROBE | EXP_WARN);
+
     /* Final cleanup */
     testCleanupImages();
     virCommandFree(cmd);
