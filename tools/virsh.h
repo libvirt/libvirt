@@ -154,7 +154,7 @@ typedef char **(*vshCompleter)(unsigned int flags);
  * vshCmdInfo -- name/value pair for information about command
  *
  * Commands should have at least the following names:
- * "name" - command name
+ * "help" - short description of command
  * "desc" - description of command, or empty string
  */
 struct _vshCmdInfo {
