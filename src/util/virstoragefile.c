@@ -1144,7 +1144,7 @@ virStorageFileGetMetadata(const char *path, int format,
     virHashTablePtr cycle = virHashCreate(5, NULL);
     virStorageFileMetadataPtr ret;
 
-    if (!cycle || !path)
+    if (!cycle)
         return NULL;
 
     if (format <= VIR_STORAGE_FILE_NONE)
