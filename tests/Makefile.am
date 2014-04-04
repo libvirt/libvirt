@@ -146,7 +146,6 @@ test_programs = virshtest sockettest \
 	virpcitest \
 	virendiantest \
 	virfiletest \
-	viridentitytest \
 	viriscsitest \
 	virkeycodetest \
 	virlockspacetest \
@@ -188,7 +187,8 @@ endif WITH_DBUS
 
 if WITH_SECDRIVER_SELINUX
 if WITH_ATTR
-test_programs += securityselinuxtest
+test_programs += securityselinuxtest \
+                 viridentitytest
 if WITH_QEMU
 test_programs += securityselinuxlabeltest
 endif WITH_QEMU
