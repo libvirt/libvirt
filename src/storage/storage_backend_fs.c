@@ -266,7 +266,7 @@ virStorageBackendFileSystemNetFindNFSPoolSources(virNetfsDiscoverState *state)
 
     if (virCommandRunRegex(cmd, 1, regexes, vars,
                            virStorageBackendFileSystemNetFindPoolSourcesFunc,
-                           &state, NULL) < 0)
+                           state, NULL) < 0)
         virResetLastError();
 
     virCommandFree(cmd);
