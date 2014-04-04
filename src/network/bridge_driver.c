@@ -487,6 +487,13 @@ networkStateInitialize(bool privileged,
         }
     }
 
+    if (virFileMakePath(driverState->stateDir) < 0) {
+        virReportSystemError(errno,
+                             _("cannot create directory %s"),
+                             driverState->stateDir);
+        goto error;
+    }
+
     /* if this fails now, it will be retried later with dnsmasqCapsRefresh() */
     driverState->dnsmasqCaps = dnsmasqCapsNewFromBinary(DNSMASQ);
 
@@ -1169,12 +1176,6 @@ networkStartDhcpDaemon(virNetworkDriverStatePtr driver,
         virReportSystemError(errno,
                              _("cannot create directory %s"),
                              driverState->pidDir);
-        goto cleanup;
-    }
-    if (virFileMakePath(driverState->stateDir) < 0) {
-        virReportSystemError(errno,
-                             _("cannot create directory %s"),
-                             driverState->stateDir);
         goto cleanup;
     }
 
