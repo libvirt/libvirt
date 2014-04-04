@@ -193,7 +193,7 @@ virNetDevBandwidthSet(const char *ifname,
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
         virCommandAddArgList(cmd, "filter", "add", "dev", ifname, "parent",
-                             "1:0", "protocol", "ip", "handle", "1", "fw",
+                             "1:0", "protocol", "all", "handle", "1", "fw",
                              "flowid", "1", NULL);
 
         if (virCommandRun(cmd, NULL) < 0)
@@ -221,9 +221,10 @@ virNetDevBandwidthSet(const char *ifname,
 
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
+        /* Set filter to match all ingress traffic */
         virCommandAddArgList(cmd, "filter", "add", "dev", ifname, "parent",
-                             "ffff:", "protocol", "ip", "u32", "match", "ip",
-                             "src", "0.0.0.0/0", "police", "rate", average,
+                             "ffff:", "protocol", "all", "u32", "match", "u32",
+                             "0", "0", "police", "rate", average,
                              "burst", burst, "mtu", "64kb", "drop", "flowid",
                              ":1", NULL);
 
