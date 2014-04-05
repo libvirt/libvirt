@@ -202,12 +202,18 @@ testPrepImages(void)
     goto cleanup;
 }
 
+/* Many fields of virStorageFileMetadata have the same content whether
+ * we access the file relatively or absolutely; but file names differ
+ * depending on how the chain was opened.  For ease of testing, we
+ * test both relative and absolute starts, and use a flag to say which
+ * of the two variations to compare against.  */
 typedef struct _testFileData testFileData;
 struct _testFileData
 {
     const char *expBackingStore;
     const char *expBackingStoreRaw;
-    const char *expDirectory;
+    const char *expDirectoryRel;
+    const char *expDirectoryAbs;
     enum virStorageFileFormat expFormat;
     bool expIsFile;
     unsigned long long expCapacity;
@@ -219,13 +225,14 @@ enum {
     EXP_FAIL = 1,
     EXP_WARN = 2,
     ALLOW_PROBE = 4,
+    ABS_START = 8,
 };
 
 struct testChainData
 {
     const char *start;
     enum virStorageFileFormat format;
-    const testFileData *files[5];
+    const testFileData *files[4];
     int nfiles;
     unsigned int flags;
 };
@@ -239,6 +246,7 @@ testStorageChain(const void *args)
     virStorageFileMetadataPtr elt;
     size_t i = 0;
     char *broken = NULL;
+    bool abs = !!(data->flags & ABS_START);
 
     meta = virStorageFileGetMetadata(data->start, data->format, -1, -1,
                                      (data->flags & ALLOW_PROBE) != 0);
@@ -277,17 +285,20 @@ testStorageChain(const void *args)
     while (elt) {
         char *expect = NULL;
         char *actual = NULL;
+        const char *expDirectory;
 
         if (i == data->nfiles) {
             fprintf(stderr, "probed chain was too long\n");
             goto cleanup;
         }
 
+        expDirectory = abs ? data->files[i]->expDirectoryAbs
+            : data->files[i]->expDirectoryRel;
         if (virAsprintf(&expect,
                         "store:%s\nraw:%s\ndirectory:%s\nother:%d %d %lld %d",
                         NULLSTR(data->files[i]->expBackingStore),
                         NULLSTR(data->files[i]->expBackingStoreRaw),
-                        NULLSTR(data->files[i]->expDirectory),
+                        NULLSTR(expDirectory),
                         data->files[i]->expFormat,
                         data->files[i]->expIsFile,
                         data->files[i]->expCapacity,
@@ -364,9 +375,9 @@ mymain(void)
                        VIR_FLATTEN_1(chain1));                       \
         TEST_ONE_CHAIN(#id "b", relstart, format, flags2,            \
                        VIR_FLATTEN_1(chain2));                       \
-        TEST_ONE_CHAIN(#id "c", absstart, format, flags3,            \
+        TEST_ONE_CHAIN(#id "c", absstart, format, flags3 | ABS_START,\
                        VIR_FLATTEN_1(chain3));                       \
-        TEST_ONE_CHAIN(#id "d", absstart, format, flags4,            \
+        TEST_ONE_CHAIN(#id "d", absstart, format, flags4 | ABS_START,\
                        VIR_FLATTEN_1(chain4));                       \
     } while (0)
 
@@ -391,32 +402,25 @@ mymain(void)
                (&raw), ALLOW_PROBE | EXP_PASS);
 
     /* Qcow2 file with relative raw backing, format provided */
-    testFileData qcow2_relstart = {
+    testFileData qcow2 = {
         .expBackingStore = canonraw,
         .expBackingStoreRaw = "raw",
-        .expDirectory = ".",
-        .expFormat = VIR_STORAGE_FILE_RAW,
-        .expIsFile = true,
-        .expCapacity = 1024,
-    };
-    testFileData qcow2_absstart = {
-        .expBackingStore = canonraw,
-        .expBackingStoreRaw = "raw",
-        .expDirectory = datadir,
+        .expDirectoryRel = ".",
+        .expDirectoryAbs = datadir,
         .expFormat = VIR_STORAGE_FILE_RAW,
         .expIsFile = true,
         .expCapacity = 1024,
     };
     TEST_CHAIN(3, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               (&qcow2_relstart, &raw), EXP_PASS,
-               (&qcow2_relstart, &raw), ALLOW_PROBE | EXP_PASS,
-               (&qcow2_absstart, &raw), EXP_PASS,
-               (&qcow2_absstart, &raw), ALLOW_PROBE | EXP_PASS);
+               (&qcow2, &raw), EXP_PASS,
+               (&qcow2, &raw), ALLOW_PROBE | EXP_PASS,
+               (&qcow2, &raw), EXP_PASS,
+               (&qcow2, &raw), ALLOW_PROBE | EXP_PASS);
     TEST_CHAIN(4, "qcow2", absqcow2, VIR_STORAGE_FILE_AUTO,
                (&raw), EXP_PASS,
-               (&qcow2_relstart, &raw), ALLOW_PROBE | EXP_PASS,
+               (&qcow2, &raw), ALLOW_PROBE | EXP_PASS,
                (&raw), EXP_PASS,
-               (&qcow2_absstart, &raw), ALLOW_PROBE | EXP_PASS);
+               (&qcow2, &raw), ALLOW_PROBE | EXP_PASS);
 
     /* Rewrite qcow2 file to use absolute backing name */
     virCommandFree(cmd);
@@ -424,36 +428,36 @@ mymain(void)
                                "-F", "raw", "-b", absraw, "qcow2", NULL);
     if (virCommandRun(cmd, NULL) < 0)
         ret = -1;
-    qcow2_relstart.expBackingStoreRaw = absraw;
-    qcow2_relstart.expDirectory = datadir;
-    qcow2_absstart.expBackingStoreRaw = absraw;
+    qcow2.expBackingStoreRaw = absraw;
+    qcow2.expDirectoryRel = datadir;
 
     /* Qcow2 file with raw as absolute backing, backing format provided */
     TEST_CHAIN(5, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               (&qcow2_relstart, &raw), EXP_PASS,
-               (&qcow2_relstart, &raw), ALLOW_PROBE | EXP_PASS,
-               (&qcow2_absstart, &raw), EXP_PASS,
-               (&qcow2_absstart, &raw), ALLOW_PROBE | EXP_PASS);
+               (&qcow2, &raw), EXP_PASS,
+               (&qcow2, &raw), ALLOW_PROBE | EXP_PASS,
+               (&qcow2, &raw), EXP_PASS,
+               (&qcow2, &raw), ALLOW_PROBE | EXP_PASS);
     TEST_CHAIN(6, "qcow2", absqcow2, VIR_STORAGE_FILE_AUTO,
                (&raw), EXP_PASS,
-               (&qcow2_relstart, &raw), ALLOW_PROBE | EXP_PASS,
+               (&qcow2, &raw), ALLOW_PROBE | EXP_PASS,
                (&raw), EXP_PASS,
-               (&qcow2_absstart, &raw), ALLOW_PROBE | EXP_PASS);
+               (&qcow2, &raw), ALLOW_PROBE | EXP_PASS);
 
     /* Wrapped file access */
     testFileData wrap = {
         .expBackingStore = canonqcow2,
         .expBackingStoreRaw = absqcow2,
-        .expDirectory = datadir,
+        .expDirectoryRel = datadir,
+        .expDirectoryAbs = datadir,
         .expFormat = VIR_STORAGE_FILE_QCOW2,
         .expIsFile = true,
         .expCapacity = 1024,
     };
     TEST_CHAIN(7, "wrap", abswrap, VIR_STORAGE_FILE_QCOW2,
-               (&wrap, &qcow2_relstart, &raw), EXP_PASS,
-               (&wrap, &qcow2_relstart, &raw), ALLOW_PROBE | EXP_PASS,
-               (&wrap, &qcow2_absstart, &raw), EXP_PASS,
-               (&wrap, &qcow2_absstart, &raw), ALLOW_PROBE | EXP_PASS);
+               (&wrap, &qcow2, &raw), EXP_PASS,
+               (&wrap, &qcow2, &raw), ALLOW_PROBE | EXP_PASS,
+               (&wrap, &qcow2, &raw), EXP_PASS,
+               (&wrap, &qcow2, &raw), ALLOW_PROBE | EXP_PASS);
 
     /* Rewrite qcow2 and wrap file to omit backing file type */
     virCommandFree(cmd);
@@ -468,23 +472,23 @@ mymain(void)
     if (virCommandRun(cmd, NULL) < 0)
         ret = -1;
     wrap.expFormat = VIR_STORAGE_FILE_AUTO;
-    qcow2_relstart.expFormat = VIR_STORAGE_FILE_AUTO;
-    qcow2_absstart.expFormat = VIR_STORAGE_FILE_AUTO;
+    qcow2.expFormat = VIR_STORAGE_FILE_AUTO;
 
     /* Qcow2 file with raw as absolute backing, backing format omitted */
     testFileData wrap_as_raw = {
         .expBackingStore = canonqcow2,
         .expBackingStoreRaw = absqcow2,
-        .expDirectory = datadir,
+        .expDirectoryRel = datadir,
+        .expDirectoryAbs = datadir,
         .expFormat = VIR_STORAGE_FILE_RAW,
         .expIsFile = true,
         .expCapacity = 1024,
     };
     TEST_CHAIN(8, "wrap", abswrap, VIR_STORAGE_FILE_QCOW2,
                (&wrap_as_raw, &raw), EXP_PASS,
-               (&wrap, &qcow2_relstart, &raw), ALLOW_PROBE | EXP_PASS,
+               (&wrap, &qcow2, &raw), ALLOW_PROBE | EXP_PASS,
                (&wrap_as_raw, &raw), EXP_PASS,
-               (&wrap, &qcow2_absstart, &raw), ALLOW_PROBE | EXP_PASS);
+               (&wrap, &qcow2, &raw), ALLOW_PROBE | EXP_PASS);
 
     /* Rewrite qcow2 to a missing backing file, with backing type */
     virCommandFree(cmd);
@@ -493,17 +497,17 @@ mymain(void)
                                "qcow2", NULL);
     if (virCommandRun(cmd, NULL) < 0)
         ret = -1;
-    qcow2_absstart.expBackingStore = NULL;
-    qcow2_absstart.expBackingStoreRaw = datadir "/bogus";
-    qcow2_absstart.expFormat = VIR_STORAGE_FILE_NONE;
-    qcow2_absstart.expIsFile = false;
+    qcow2.expBackingStore = NULL;
+    qcow2.expBackingStoreRaw = datadir "/bogus";
+    qcow2.expFormat = VIR_STORAGE_FILE_NONE;
+    qcow2.expIsFile = false;
 
     /* Qcow2 file with missing backing file but specified type */
     TEST_CHAIN(9, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               (&qcow2_absstart), EXP_WARN,
-               (&qcow2_absstart), ALLOW_PROBE | EXP_WARN,
-               (&qcow2_absstart), EXP_WARN,
-               (&qcow2_absstart), ALLOW_PROBE | EXP_WARN);
+               (&qcow2), EXP_WARN,
+               (&qcow2), ALLOW_PROBE | EXP_WARN,
+               (&qcow2), EXP_WARN,
+               (&qcow2), ALLOW_PROBE | EXP_WARN);
 
     /* Rewrite qcow2 to a missing backing file, without backing type */
     virCommandFree(cmd);
@@ -514,10 +518,10 @@ mymain(void)
 
     /* Qcow2 file with missing backing file and no specified type */
     TEST_CHAIN(10, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               (&qcow2_absstart), EXP_WARN,
-               (&qcow2_absstart), ALLOW_PROBE | EXP_WARN,
-               (&qcow2_absstart), EXP_WARN,
-               (&qcow2_absstart), ALLOW_PROBE | EXP_WARN);
+               (&qcow2), EXP_WARN,
+               (&qcow2), ALLOW_PROBE | EXP_WARN,
+               (&qcow2), EXP_WARN,
+               (&qcow2), ALLOW_PROBE | EXP_WARN);
 
     /* Rewrite qcow2 to use an nbd: protocol as backend */
     virCommandFree(cmd);
@@ -526,23 +530,25 @@ mymain(void)
                                "qcow2", NULL);
     if (virCommandRun(cmd, NULL) < 0)
         ret = -1;
-    qcow2_absstart.expBackingStore = "nbd:example.org:6000";
-    qcow2_absstart.expBackingStoreRaw = NULL;
-    qcow2_absstart.expDirectory = NULL;
-    qcow2_absstart.expFormat = VIR_STORAGE_FILE_RAW;
+    qcow2.expBackingStore = "nbd:example.org:6000";
+    qcow2.expBackingStoreRaw = NULL;
+    qcow2.expDirectoryRel = NULL;
+    qcow2.expDirectoryAbs = NULL;
+    qcow2.expFormat = VIR_STORAGE_FILE_RAW;
 
     /* Qcow2 file with backing protocol instead of file */
     TEST_CHAIN(11, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               (&qcow2_absstart), EXP_PASS,
-               (&qcow2_absstart), ALLOW_PROBE | EXP_PASS,
-               (&qcow2_absstart), EXP_PASS,
-               (&qcow2_absstart), ALLOW_PROBE | EXP_PASS);
+               (&qcow2), EXP_PASS,
+               (&qcow2), ALLOW_PROBE | EXP_PASS,
+               (&qcow2), EXP_PASS,
+               (&qcow2), ALLOW_PROBE | EXP_PASS);
 
     /* qed file */
     testFileData qed = {
         .expBackingStore = canonraw,
         .expBackingStoreRaw = absraw,
-        .expDirectory = datadir,
+        .expDirectoryRel = datadir,
+        .expDirectoryAbs = datadir,
         .expFormat = VIR_STORAGE_FILE_RAW,
         .expIsFile = true,
         .expCapacity = 1024,
@@ -585,43 +591,29 @@ mymain(void)
         ret = -1;
 
     /* Behavior of symlinks to qcow2 with relative backing files */
-    testFileData link1_rel = {
+    testFileData link1 = {
         .expBackingStore = canonraw,
         .expBackingStoreRaw = "../raw",
-        .expDirectory = "sub/../sub/..",
+        .expDirectoryRel = "sub/../sub/..",
+        .expDirectoryAbs = datadir "/sub/../sub/..",
         .expFormat = VIR_STORAGE_FILE_RAW,
         .expIsFile = true,
         .expCapacity = 1024,
     };
-    testFileData link1_abs = {
-        .expBackingStore = canonraw,
-        .expBackingStoreRaw = "../raw",
-        .expDirectory = datadir "/sub/../sub/..",
-        .expFormat = VIR_STORAGE_FILE_RAW,
-        .expIsFile = true,
-        .expCapacity = 1024,
-    };
-    testFileData link2_rel = {
+    testFileData link2 = {
         .expBackingStore = canonqcow2,
         .expBackingStoreRaw = "../sub/link1",
-        .expDirectory = "sub/../sub",
-        .expFormat = VIR_STORAGE_FILE_QCOW2,
-        .expIsFile = true,
-        .expCapacity = 1024,
-    };
-    testFileData link2_abs = {
-        .expBackingStore = canonqcow2,
-        .expBackingStoreRaw = "../sub/link1",
-        .expDirectory = datadir "/sub/../sub",
+        .expDirectoryRel = "sub/../sub",
+        .expDirectoryAbs = datadir "/sub/../sub",
         .expFormat = VIR_STORAGE_FILE_QCOW2,
         .expIsFile = true,
         .expCapacity = 1024,
     };
     TEST_CHAIN(15, "sub/link2", abslink2, VIR_STORAGE_FILE_QCOW2,
-               (&link2_rel, &link1_rel, &raw), EXP_PASS,
-               (&link2_rel, &link1_rel, &raw), ALLOW_PROBE | EXP_PASS,
-               (&link2_abs, &link1_abs, &raw), EXP_PASS,
-               (&link2_abs, &link1_abs, &raw), ALLOW_PROBE | EXP_PASS);
+               (&link2, &link1, &raw), EXP_PASS,
+               (&link2, &link1, &raw), ALLOW_PROBE | EXP_PASS,
+               (&link2, &link1, &raw), EXP_PASS,
+               (&link2, &link1, &raw), ALLOW_PROBE | EXP_PASS);
 #endif
 
     /* Rewrite qcow2 to be a self-referential loop */
@@ -630,23 +622,19 @@ mymain(void)
                                "-F", "qcow2", "-b", "qcow2", "qcow2", NULL);
     if (virCommandRun(cmd, NULL) < 0)
         ret = -1;
-    qcow2_relstart.expBackingStore = NULL;
-    qcow2_relstart.expBackingStoreRaw = "qcow2";
-    qcow2_relstart.expDirectory = ".";
-    qcow2_relstart.expFormat= VIR_STORAGE_FILE_NONE;
-    qcow2_relstart.expIsFile = true;
-    qcow2_absstart.expBackingStore = NULL;
-    qcow2_absstart.expBackingStoreRaw = "qcow2";
-    qcow2_absstart.expDirectory = datadir;
-    qcow2_absstart.expFormat= VIR_STORAGE_FILE_NONE;
-    qcow2_absstart.expIsFile = true;
+    qcow2.expBackingStore = NULL;
+    qcow2.expBackingStoreRaw = "qcow2";
+    qcow2.expDirectoryRel = ".";
+    qcow2.expDirectoryAbs = datadir;
+    qcow2.expFormat= VIR_STORAGE_FILE_NONE;
+    qcow2.expIsFile = true;
 
     /* Behavior of an infinite loop chain */
     TEST_CHAIN(16, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               (&qcow2_relstart), EXP_WARN,
-               (&qcow2_relstart), ALLOW_PROBE | EXP_WARN,
-               (&qcow2_absstart), EXP_WARN,
-               (&qcow2_absstart), ALLOW_PROBE | EXP_WARN);
+               (&qcow2), EXP_WARN,
+               (&qcow2), ALLOW_PROBE | EXP_WARN,
+               (&qcow2), EXP_WARN,
+               (&qcow2), ALLOW_PROBE | EXP_WARN);
 
     /* Rewrite wrap and qcow2 to be mutually-referential loop */
     virCommandFree(cmd);
@@ -660,17 +648,16 @@ mymain(void)
                                "-F", "qcow2", "-b", absqcow2, "wrap", NULL);
     if (virCommandRun(cmd, NULL) < 0)
         ret = -1;
-    qcow2_relstart.expBackingStoreRaw = "wrap";
-    qcow2_relstart.expDirectory = datadir;
-    qcow2_absstart.expBackingStoreRaw = "wrap";
+    qcow2.expBackingStoreRaw = "wrap";
+    qcow2.expDirectoryRel = datadir;
     wrap.expFormat = VIR_STORAGE_FILE_QCOW2;
 
     /* Behavior of an infinite loop chain */
     TEST_CHAIN(17, "wrap", abswrap, VIR_STORAGE_FILE_QCOW2,
-               (&wrap, &qcow2_relstart), EXP_WARN,
-               (&wrap, &qcow2_relstart), ALLOW_PROBE | EXP_WARN,
-               (&wrap, &qcow2_absstart), EXP_WARN,
-               (&wrap, &qcow2_absstart), ALLOW_PROBE | EXP_WARN);
+               (&wrap, &qcow2), EXP_WARN,
+               (&wrap, &qcow2), ALLOW_PROBE | EXP_WARN,
+               (&wrap, &qcow2), EXP_WARN,
+               (&wrap, &qcow2), ALLOW_PROBE | EXP_WARN);
 
     /* Final cleanup */
     testCleanupImages();
