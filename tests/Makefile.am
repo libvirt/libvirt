@@ -65,6 +65,7 @@ LDADDS = \
 
 EXTRA_DIST =		\
 	bhyvexml2argvdata \
+	bhyvexml2xmloutdata \
 	capabilityschemadata \
 	capabilityschematest \
 	commanddata \
@@ -236,7 +237,7 @@ test_programs += vmwarevertest
 endif WITH_VMWARE
 
 if WITH_BHYVE
-test_programs += bhyvexml2argvtest
+test_programs += bhyvexml2argvtest bhyvexml2xmltest
 endif WITH_BHYVE
 
 if WITH_CIL
@@ -634,8 +635,13 @@ bhyvexml2argvtest_SOURCES = \
 	bhyvexml2argvtest.c \
 	testutils.c testutils.h
 bhyvexml2argvtest_LDADD = $(bhyve_LDADDS)
+
+bhyvexml2xmltest_SOURCES = \
+	bhyvexml2xmltest.c \
+	testutils.c testutils.h
+bhyvexml2xmltest_LDADD = $(bhyve_LDADDS)
 else ! WITH_BHYVE
-EXTRA_DIST += bhyvexml2argvtest.c bhyvexml2argvmock.c
+EXTRA_DIST += bhyvexml2argvtest.c bhyvexml2xmltest.c bhyvexml2argvmock.c
 endif ! WITH_BHYVE
 
 networkxml2xmltest_SOURCES = \

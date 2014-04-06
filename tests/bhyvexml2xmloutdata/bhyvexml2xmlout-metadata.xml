@@ -1,0 +1,33 @@
+<domain type='bhyve'>
+  <name>bhyve</name>
+  <uuid>df3be7e7-a104-11e3-aeb0-50e5492bd3dc</uuid>
+  <metadata>
+    <app1:foo xmlns:app1="http://foo.org/">fooish</app1:foo>
+    <app2:bar xmlns:app2="http://bar.com/" maman="baz">barish</app2:bar>
+  </metadata>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='hda' bus='sata'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='sata' index='0'/>
+    <interface type='bridge'>
+      <mac address='52:54:00:ad:55:51'/>
+      <source bridge='virbr0'/>
+      <model type='virtio'/>
+    </interface>
+  </devices>
+</domain>
