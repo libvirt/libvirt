@@ -802,6 +802,69 @@ bhyveDomainOpenConsole(virDomainPtr dom,
 }
 
 static int
+bhyveDomainSetMetadata(virDomainPtr dom,
+                       int type,
+                       const char *metadata,
+                       const char *key,
+                       const char *uri,
+                       unsigned int flags)
+{
+    bhyveConnPtr privconn = dom->conn->privateData;
+    virDomainObjPtr vm;
+    virCapsPtr caps = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(vm = bhyveDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainSetMetadataEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (!(caps = bhyveDriverGetCapabilities(privconn)))
+        goto cleanup;
+
+    ret = virDomainObjSetMetadata(vm, type, metadata, key, uri, caps,
+                                  privconn->xmlopt, BHYVE_CONFIG_DIR, flags);
+
+ cleanup:
+    virObjectUnref(caps);
+    virObjectUnlock(vm);
+    return ret;
+}
+
+static char *
+bhyveDomainGetMetadata(virDomainPtr dom,
+                      int type,
+                      const char *uri,
+                      unsigned int flags)
+{
+    bhyveConnPtr privconn = dom->conn->privateData;
+    virDomainObjPtr vm;
+    virCapsPtr caps = NULL;
+    char *ret = NULL;
+
+    if (!(vm = bhyveDomObjFromDomain(dom)))
+        return NULL;
+
+    if (virDomainGetMetadataEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!(caps = bhyveDriverGetCapabilities(privconn)))
+        goto cleanup;
+
+    ret = virDomainObjGetMetadata(vm, type, uri, caps,
+                                  privconn->xmlopt, flags);
+
+ cleanup:
+    virObjectUnref(caps);
+    virObjectUnlock(vm);
+    return ret;
+}
+
+static int
 bhyveNodeGetCPUStats(virConnectPtr conn,
                      int cpuNum,
                      virNodeCPUStatsPtr params,
@@ -1067,6 +1130,8 @@ static virDriver bhyveDriver = {
     .domainGetAutostart = bhyveDomainGetAutostart, /* 1.2.4 */
     .domainSetAutostart = bhyveDomainSetAutostart, /* 1.2.4 */
     .domainOpenConsole = bhyveDomainOpenConsole, /* 1.2.4 */
+    .domainSetMetadata = bhyveDomainSetMetadata, /* 1.2.4 */
+    .domainGetMetadata = bhyveDomainGetMetadata, /* 1.2.4 */
     .nodeGetCPUStats = bhyveNodeGetCPUStats, /* 1.2.2 */
     .nodeGetMemoryStats = bhyveNodeGetMemoryStats, /* 1.2.2 */
     .nodeGetInfo = bhyveNodeGetInfo, /* 1.2.3 */
