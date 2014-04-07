@@ -802,6 +802,7 @@ static char *netcfInterfaceGetXMLDesc(virInterfacePtr ifinfo,
     char *xmlstr = NULL;
     virInterfaceDefPtr ifacedef = NULL;
     char *ret = NULL;
+    bool active;
 
     virCheckFlags(VIR_INTERFACE_XML_INACTIVE, NULL);
 
@@ -813,7 +814,10 @@ static char *netcfInterfaceGetXMLDesc(virInterfacePtr ifinfo,
         goto cleanup;
     }
 
-    if ((flags & VIR_INTERFACE_XML_INACTIVE)) {
+    if (netcfInterfaceObjIsActive(iface, &active) < 0)
+       goto cleanup;
+
+    if ((flags & VIR_INTERFACE_XML_INACTIVE) || !active) {
         xmlstr = ncf_if_xml_desc(iface);
     } else {
         xmlstr = ncf_if_xml_state(iface);
