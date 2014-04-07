@@ -1011,6 +1011,36 @@ bhyveConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
     return cpu;
 }
 
+static int
+bhyveConnectCompareCPU(virConnectPtr conn,
+                       const char *xmlDesc,
+                       unsigned int flags)
+{
+    bhyveConnPtr driver = conn->privateData;
+    int ret = VIR_CPU_COMPARE_ERROR;
+    virCapsPtr caps = NULL;
+
+    virCheckFlags(0, VIR_CPU_COMPARE_ERROR);
+
+    if (virConnectCompareCPUEnsureACL(conn) < 0)
+        goto cleanup;
+
+    if (!(caps = bhyveDriverGetCapabilities(driver)))
+        goto cleanup;
+
+    if (!caps->host.cpu ||
+        !caps->host.cpu->model) {
+        VIR_WARN("cannot get host CPU capabilities");
+        ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+    } else {
+        ret = cpuCompareXML(caps->host.cpu, xmlDesc);
+    }
+
+ cleanup:
+    virObjectUnref(caps);
+    return ret;
+}
+
 static virDriver bhyveDriver = {
     .no = VIR_DRV_BHYVE,
     .name = "bhyve",
@@ -1049,6 +1079,7 @@ static virDriver bhyveDriver = {
     .nodeGetMemoryParameters = bhyveNodeGetMemoryParameters, /* 1.2.3 */
     .nodeSetMemoryParameters = bhyveNodeSetMemoryParameters, /* 1.2.3 */
     .connectBaselineCPU = bhyveConnectBaselineCPU, /* 1.2.4 */
+    .connectCompareCPU = bhyveConnectCompareCPU, /* 1.2.4 */
 };
 
 
