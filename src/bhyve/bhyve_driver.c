@@ -980,6 +980,25 @@ bhyveNodeSetMemoryParameters(virConnectPtr conn,
     return nodeSetMemoryParameters(params, nparams, flags);
 }
 
+static char *
+bhyveConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
+                        const char **xmlCPUs,
+                        unsigned int ncpus,
+                        unsigned int flags)
+{
+    char *cpu = NULL;
+
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, NULL);
+
+    if (virConnectBaselineCPUEnsureACL(conn) < 0)
+        goto cleanup;
+
+    cpu = cpuBaselineXML(xmlCPUs, ncpus, NULL, 0, flags);
+
+ cleanup:
+    return cpu;
+}
+
 static virDriver bhyveDriver = {
     .no = VIR_DRV_BHYVE,
     .name = "bhyve",
@@ -1017,6 +1036,7 @@ static virDriver bhyveDriver = {
     .nodeGetCPUMap = bhyveNodeGetCPUMap, /* 1.2.3 */
     .nodeGetMemoryParameters = bhyveNodeGetMemoryParameters, /* 1.2.3 */
     .nodeSetMemoryParameters = bhyveNodeSetMemoryParameters, /* 1.2.3 */
+    .connectBaselineCPU = bhyveConnectBaselineCPU, /* 1.2.4 */
 };
 
 
