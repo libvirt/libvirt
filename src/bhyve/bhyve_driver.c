@@ -135,22 +135,24 @@ bhyveConnectGetCapabilities(virConnectPtr conn)
 {
     bhyveConnPtr privconn = conn->privateData;
     virCapsPtr caps;
-    char *xml;
+    char *xml = NULL;
 
     if (virConnectGetCapabilitiesEnsureACL(conn) < 0)
         return NULL;
 
-    caps = bhyveDriverGetCapabilities(privconn);
-    if (!caps)
+    if (!(caps = bhyveDriverGetCapabilities(privconn))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to get Capabilities"));
-
-    if ((xml = virCapabilitiesFormatXML(privconn->caps)) == NULL) {
-        virObjectUnref(caps);
-        virReportOOMError();
+        goto cleanup;
     }
-    virObjectUnref(caps);
 
+    if (!(xml = virCapabilitiesFormatXML(caps))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+ cleanup:
+    virObjectUnref(caps);
     return xml;
 }
 
