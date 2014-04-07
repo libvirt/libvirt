@@ -2,6 +2,7 @@
  * bhyve_driver.c: core driver methods for managing bhyve guests
  *
  * Copyright (C) 2014 Roman Bogorodskiy
+ * Copyright (C) 2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -123,16 +124,10 @@ bhyveAutostartDomains(bhyveConnPtr driver)
  * Returns: a reference to a virCapsPtr instance or NULL
  */
 static virCapsPtr
-bhyveDriverGetCapabilities(bhyveConnPtr driver)
+bhyveDriverGetCapabilities(bhyveConnPtr driver ATTRIBUTE_NONNULL)
 {
-    virCapsPtr ret = NULL;
 
-    if (driver == NULL)
-        return NULL;
-
-    ret = virObjectRef(driver->caps);
-
-    return ret;
+    return virObjectRef(driver->caps);
 }
 
 static char *
