@@ -54,6 +54,7 @@
 #include "bhyve_driver.h"
 #include "bhyve_process.h"
 #include "bhyve_utils.h"
+#include "bhyve_capabilities.h"
 
 #define VIR_FROM_THIS   VIR_FROM_BHYVE
 
@@ -111,44 +112,49 @@ bhyveAutostartDomains(bhyveConnPtr driver)
     virObjectUnref(conn);
 }
 
+/**
+ * bhyveDriverGetCapabilities:
+ *
+ * Get a reference to the virCapsPtr instance for the
+ * driver.
+ *
+ * The caller must release the reference with virObjetUnref
+ *
+ * Returns: a reference to a virCapsPtr instance or NULL
+ */
 static virCapsPtr
-bhyveBuildCapabilities(void)
+bhyveDriverGetCapabilities(bhyveConnPtr driver)
 {
-    virCapsPtr caps;
-    virCapsGuestPtr guest;
+    virCapsPtr ret = NULL;
 
-    if ((caps = virCapabilitiesNew(virArchFromHost(),
-                                   0, 0)) == NULL)
+    if (driver == NULL)
         return NULL;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "hvm",
-                                         VIR_ARCH_X86_64,
-                                         "bhyve",
-                                         NULL, 0, NULL)) == NULL)
-        goto error;
+    ret = virObjectRef(driver->caps);
 
-    if (virCapabilitiesAddGuestDomain(guest,
-                                      "bhyve", NULL, NULL, 0, NULL) == NULL)
-        goto error;
-
-    return caps;
-
- error:
-    virObjectUnref(caps);
-    return NULL;
+    return ret;
 }
 
 static char *
 bhyveConnectGetCapabilities(virConnectPtr conn)
 {
     bhyveConnPtr privconn = conn->privateData;
+    virCapsPtr caps;
     char *xml;
 
     if (virConnectGetCapabilitiesEnsureACL(conn) < 0)
         return NULL;
 
-    if ((xml = virCapabilitiesFormatXML(privconn->caps)) == NULL)
+    caps = bhyveDriverGetCapabilities(privconn);
+    if (!caps)
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to get Capabilities"));
+
+    if ((xml = virCapabilitiesFormatXML(privconn->caps)) == NULL) {
+        virObjectUnref(caps);
         virReportOOMError();
+    }
+    virObjectUnref(caps);
 
     return xml;
 }
@@ -448,8 +454,13 @@ bhyveDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainDefPtr def = NULL;
     virDomainDefPtr oldDef = NULL;
     virDomainObjPtr vm = NULL;
+    virCapsPtr caps = NULL;
 
-    if ((def = virDomainDefParseString(xml, privconn->caps, privconn->xmlopt,
+    caps = bhyveDriverGetCapabilities(privconn);
+    if (!caps)
+        return NULL;
+
+    if ((def = virDomainDefParseString(xml, caps, privconn->xmlopt,
                                        1 << VIR_DOMAIN_VIRT_BHYVE,
                                        VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
@@ -472,6 +483,7 @@ bhyveDomainDefineXML(virConnectPtr conn, const char *xml)
         goto cleanup;
 
  cleanup:
+    virObjectUnref(caps);
     virDomainDefFree(def);
     virObjectUnlock(vm);
 
@@ -869,7 +881,7 @@ bhyveStateInitialize(bool priveleged ATTRIBUTE_UNUSED,
     if (!(bhyve_driver->closeCallbacks = virCloseCallbacksNew()))
         goto cleanup;
 
-    if (!(bhyve_driver->caps = bhyveBuildCapabilities()))
+    if (!(bhyve_driver->caps = virBhyveCapsBuild()))
         goto cleanup;
 
     if (!(bhyve_driver->xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)))

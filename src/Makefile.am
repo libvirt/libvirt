@@ -778,6 +778,8 @@ PARALLELS_DRIVER_SOURCES =					\
 		parallels/parallels_network.c
 
 BHYVE_DRIVER_SOURCES =						\
+		bhyve/bhyve_capabilities.c			\
+		bhyve/bhyve_capabilities.h			\
 		bhyve/bhyve_command.c				\
 		bhyve/bhyve_command.h				\
 		bhyve/bhyve_driver.h				\
