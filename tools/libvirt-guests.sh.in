@@ -89,13 +89,15 @@ test_connect()
 {
     uri=$1
 
-    for ((i = 0; i < ${CONNECT_RETRIES}; i++)); do
+    i=${CONNECT_RETRIES}
+    while [ $i -gt 0 ]; do
         run_virsh "$uri" connect 2>/dev/null
         if [ $? -eq 0 ]; then
             return 0;
         fi
         sleep ${RETRIES_SLEEP}
         eval_gettext "Unable to connect to libvirt currently. Retrying .. \$i"
+        i=$(($i-1))
     done
     eval_gettext "Can't connect to \$uri. Skipping."
     echo
