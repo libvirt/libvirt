@@ -2,6 +2,7 @@
  * bhyve_capabilities.c: bhyve capabilities module
  *
  * Copyright (C) 2014 Roman Bogorodskiy
+ * Copyright (C) 2014 Semihalf
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
