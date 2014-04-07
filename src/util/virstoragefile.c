@@ -1719,3 +1719,14 @@ virStorageSourceClear(virStorageSourcePtr def)
     virStorageNetHostDefFree(def->nhosts, def->hosts);
     virStorageSourceAuthClear(def);
 }
+
+
+void
+virStorageSourceFree(virStorageSourcePtr def)
+{
+    if (!def)
+        return;
+
+    virStorageSourceClear(def);
+    VIR_FREE(def);
+}
