@@ -18,7 +18,7 @@
       <weight>300</weight>
     </device>
   </blkiotune>
-  <vcpu placement='static' current='0'>1</vcpu>
+  <vcpu placement='static'>1</vcpu>
   <os>
     <type>exe</type>
     <init>/sbin/init</init>

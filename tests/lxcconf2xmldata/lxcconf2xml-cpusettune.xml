@@ -3,7 +3,7 @@
   <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
   <memory unit='KiB'>65536</memory>
   <currentMemory unit='KiB'>0</currentMemory>
-  <vcpu placement='static' cpuset='1-2,5-7' current='0'>1</vcpu>
+  <vcpu placement='static' cpuset='1-2,5-7'>1</vcpu>
   <numatune>
     <memory mode='strict' nodeset='1-4'/>
   </numatune>

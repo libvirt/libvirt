@@ -8,7 +8,7 @@
     <soft_limit unit='KiB'>131072</soft_limit>
     <swap_hard_limit unit='KiB'>2097152</swap_hard_limit>
   </memtune>
-  <vcpu placement='static' current='0'>1</vcpu>
+  <vcpu placement='static'>1</vcpu>
   <os>
     <type>exe</type>
     <init>/sbin/init</init>
