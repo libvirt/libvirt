@@ -128,6 +128,9 @@ mymain(void)
     int ret = 0;
 
     driver.config = virQEMUDriverConfigNew(false);
+    if (driver.config == NULL)
+        return EXIT_FAILURE;
+
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
 
