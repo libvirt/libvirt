@@ -1577,6 +1577,16 @@ virStorageSourceAuthClear(virStorageSourcePtr def)
 }
 
 
+int
+virStorageSourceGetActualType(virStorageSourcePtr def)
+{
+    if (def->type == VIR_STORAGE_TYPE_VOLUME && def->srcpool)
+        return def->srcpool->actualtype;
+
+    return def->type;
+}
+
+
 void
 virStorageSourceClear(virStorageSourcePtr def)
 {

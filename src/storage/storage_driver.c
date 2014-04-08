@@ -2813,7 +2813,7 @@ virStorageFileInitInternal(int type,
 virStorageFilePtr
 virStorageFileInitFromDiskDef(virDomainDiskDefPtr disk)
 {
-    return virStorageFileInitInternal(virDomainDiskGetActualType(disk),
+    return virStorageFileInitInternal(virStorageSourceGetActualType(&disk->src),
                                       disk->src.path,
                                       disk->src.protocol,
                                       disk->src.nhosts,
@@ -2824,7 +2824,7 @@ virStorageFileInitFromDiskDef(virDomainDiskDefPtr disk)
 virStorageFilePtr
 virStorageFileInitFromSnapshotDef(virDomainSnapshotDiskDefPtr disk)
 {
-    return virStorageFileInitInternal(virDomainSnapshotDiskGetActualType(disk),
+    return virStorageFileInitInternal(virStorageSourceGetActualType(&disk->src),
                                       disk->src.path,
                                       disk->src.protocol,
                                       disk->src.nhosts,

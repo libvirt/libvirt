@@ -2132,7 +2132,6 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def);
 void virDomainLeaseDefFree(virDomainLeaseDefPtr def);
 int virDomainDiskGetType(virDomainDiskDefPtr def);
 void virDomainDiskSetType(virDomainDiskDefPtr def, int type);
-int virDomainDiskGetActualType(virDomainDiskDefPtr def);
 const char *virDomainDiskGetSource(virDomainDiskDefPtr def);
 int virDomainDiskSetSource(virDomainDiskDefPtr def, const char *src)
     ATTRIBUTE_RETURN_CHECK;

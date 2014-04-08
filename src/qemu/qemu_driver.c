@@ -12005,7 +12005,7 @@ qemuDomainSnapshotDiskGetSourceString(virDomainSnapshotDiskDefPtr disk,
 {
     *source = NULL;
 
-    return qemuGetDriveSourceString(virDomainSnapshotDiskGetActualType(disk),
+    return qemuGetDriveSourceString(virStorageSourceGetActualType(&disk->src),
                                     disk->src.path,
                                     disk->src.protocol,
                                     disk->src.nhosts,
@@ -12326,7 +12326,7 @@ qemuDomainSnapshotCreateActiveInternal(virConnectPtr conn,
 static int
 qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
 {
-    int actualType = virDomainDiskGetActualType(disk);
+    int actualType = virStorageSourceGetActualType(&disk->src);
 
     switch ((enum virStorageType) actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
@@ -12371,7 +12371,7 @@ qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
 static int
 qemuDomainSnapshotPrepareDiskExternalBackingActive(virDomainDiskDefPtr disk)
 {
-    int actualType = virDomainDiskGetActualType(disk);
+    int actualType = virStorageSourceGetActualType(&disk->src);
 
     if (actualType == VIR_STORAGE_TYPE_BLOCK &&
         disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
@@ -12388,7 +12388,7 @@ qemuDomainSnapshotPrepareDiskExternalBackingActive(virDomainDiskDefPtr disk)
 static int
 qemuDomainSnapshotPrepareDiskExternalOverlayActive(virDomainSnapshotDiskDefPtr disk)
 {
-    int actualType = virDomainSnapshotDiskGetActualType(disk);
+    int actualType = virStorageSourceGetActualType(&disk->src);
 
     switch ((enum virStorageType) actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
@@ -12436,7 +12436,7 @@ qemuDomainSnapshotPrepareDiskExternalOverlayActive(virDomainSnapshotDiskDefPtr d
 static int
 qemuDomainSnapshotPrepareDiskExternalOverlayInactive(virDomainSnapshotDiskDefPtr disk)
 {
-    int actualType = virDomainSnapshotDiskGetActualType(disk);
+    int actualType = virStorageSourceGetActualType(&disk->src);
 
     switch ((enum virStorageType) actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
@@ -12534,7 +12534,7 @@ qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
     if (qemuTranslateDiskSourcePool(conn, disk) < 0)
         return -1;
 
-    actualType = virDomainDiskGetActualType(disk);
+    actualType = virStorageSourceGetActualType(&disk->src);
 
     switch ((enum virStorageType) actualType) {
     case VIR_STORAGE_TYPE_BLOCK:

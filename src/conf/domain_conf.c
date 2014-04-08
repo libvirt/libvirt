@@ -1215,16 +1215,6 @@ virDomainDiskSetType(virDomainDiskDefPtr def, int type)
 }
 
 
-int
-virDomainDiskGetActualType(virDomainDiskDefPtr def)
-{
-    if (def->src.type == VIR_STORAGE_TYPE_VOLUME && def->src.srcpool)
-        return def->src.srcpool->actualtype;
-
-    return def->src.type;
-}
-
-
 const char *
 virDomainDiskGetSource(virDomainDiskDefPtr def)
 {

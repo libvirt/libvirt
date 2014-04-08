@@ -1290,10 +1290,3 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
  cleanup:
     return ret;
 }
-
-
-int
-virDomainSnapshotDiskGetActualType(virDomainSnapshotDiskDefPtr def)
-{
-    return def->src.type;
-}
