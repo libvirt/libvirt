@@ -3605,7 +3605,7 @@ qemuNetworkDriveGetPort(int protocol,
 
 #define QEMU_DEFAULT_NBD_PORT "10809"
 
-char *
+static char *
 qemuBuildNetworkDriveURI(int protocol,
                          const char *src,
                          size_t nhosts,
