@@ -310,10 +310,10 @@ virNetDevReplaceMacAddress(const char *linkdev,
     virMacAddr oldmac;
     char *path = NULL;
     char macstr[VIR_MAC_STRING_BUFLEN];
+    int ret = -1;
 
     if (virNetDevGetMAC(linkdev, &oldmac) < 0)
         return -1;
-
 
     if (virAsprintf(&path, "%s/%s",
                     stateDir,
@@ -323,13 +323,17 @@ virNetDevReplaceMacAddress(const char *linkdev,
     if (virFileWriteStr(path, macstr, O_CREAT|O_TRUNC|O_WRONLY) < 0) {
         virReportSystemError(errno, _("Unable to preserve mac for %s"),
                              linkdev);
-        return -1;
+        goto cleanup;
     }
 
     if (virNetDevSetMAC(linkdev, macaddress) < 0)
-        return -1;
+        goto cleanup;
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(path);
+    return ret;
 }
 
 /**
@@ -344,7 +348,7 @@ int
 virNetDevRestoreMacAddress(const char *linkdev,
                            const char *stateDir)
 {
-    int rc;
+    int rc = -1;
     char *oldmacname = NULL;
     char *macstr = NULL;
     char *path = NULL;
@@ -356,21 +360,22 @@ virNetDevRestoreMacAddress(const char *linkdev,
         return -1;
 
     if (virFileReadAll(path, VIR_MAC_STRING_BUFLEN, &macstr) < 0)
-        return -1;
+        goto cleanup;
 
     if (virMacAddrParse(macstr, &oldmac) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot parse MAC address from '%s'"),
                        oldmacname);
-        VIR_FREE(macstr);
-        return -1;
+        goto cleanup;
     }
 
     /*reset mac and remove file-ignore results*/
     rc = virNetDevSetMAC(linkdev, &oldmac);
     ignore_value(unlink(path));
-    VIR_FREE(macstr);
 
+ cleanup:
+    VIR_FREE(macstr);
+    VIR_FREE(path);
     return rc;
 }
 
