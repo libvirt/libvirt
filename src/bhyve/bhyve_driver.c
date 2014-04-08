@@ -123,8 +123,8 @@ bhyveAutostartDomains(bhyveConnPtr driver)
  *
  * Returns: a reference to a virCapsPtr instance or NULL
  */
-static virCapsPtr
-bhyveDriverGetCapabilities(bhyveConnPtr driver ATTRIBUTE_NONNULL)
+static virCapsPtr ATTRIBUTE_NONNULL(1)
+bhyveDriverGetCapabilities(bhyveConnPtr driver)
 {
 
     return virObjectRef(driver->caps);
