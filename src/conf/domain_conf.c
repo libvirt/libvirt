@@ -14231,7 +14231,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain redirected devices count %zu "
                          "does not match source %zu"),
-                       dst->nconsoles, src->nconsoles);
+                       dst->nredirdevs, src->nredirdevs);
         goto error;
     }
 
