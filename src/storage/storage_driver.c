@@ -1553,6 +1553,52 @@ storageVolLookupByPath(virConnectPtr conn,
 
 
 static int
+storageVolDeleteInternal(virStorageVolPtr obj,
+                         virStorageBackendPtr backend,
+                         virStoragePoolObjPtr pool,
+                         virStorageVolDefPtr vol,
+                         unsigned int flags,
+                         bool updateMeta)
+{
+    size_t i;
+    int ret = -1;
+
+    if (!backend->deleteVol) {
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       "%s", _("storage pool does not support vol deletion"));
+
+        goto cleanup;
+    }
+
+    if (backend->deleteVol(obj->conn, pool, vol, flags) < 0)
+        goto cleanup;
+
+    /* Update pool metadata - don't update meta data from error paths
+     * in this module since the allocation/available weren't adjusted yet
+     */
+    if (updateMeta) {
+        pool->def->allocation -= vol->target.allocation;
+        pool->def->available += vol->target.allocation;
+    }
+
+    for (i = 0; i < pool->volumes.count; i++) {
+        if (pool->volumes.objs[i] == vol) {
+            VIR_INFO("Deleting volume '%s' from storage pool '%s'",
+                     vol->name, pool->def->name);
+            virStorageVolDefFree(vol);
+
+            VIR_DELETE_ELEMENT(pool->volumes.objs, i, pool->volumes.count);
+            break;
+        }
+    }
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
+static int
 storageVolDelete(virStorageVolPtr obj,
                  unsigned int flags)
 {
@@ -1560,7 +1606,6 @@ storageVolDelete(virStorageVolPtr obj,
     virStoragePoolObjPtr pool;
     virStorageBackendPtr backend;
     virStorageVolDefPtr vol = NULL;
-    size_t i;
     int ret = -1;
 
     storageDriverLock(driver);
@@ -1602,30 +1647,9 @@ storageVolDelete(virStorageVolPtr obj,
         goto cleanup;
     }
 
-    if (!backend->deleteVol) {
-        virReportError(VIR_ERR_NO_SUPPORT,
-                       "%s", _("storage pool does not support vol deletion"));
-
-        goto cleanup;
-    }
-
-    if (backend->deleteVol(obj->conn, pool, vol, flags) < 0)
+    if (storageVolDeleteInternal(obj, backend, pool, vol, flags, true) < 0)
         goto cleanup;
 
-    /* Update pool metadata */
-    pool->def->allocation -= vol->target.allocation;
-    pool->def->available += vol->target.allocation;
-
-    for (i = 0; i < pool->volumes.count; i++) {
-        if (pool->volumes.objs[i] == vol) {
-            VIR_INFO("Deleting volume '%s' from storage pool '%s'",
-                     vol->name, pool->def->name);
-            virStorageVolDefFree(vol);
-
-            VIR_DELETE_ELEMENT(pool->volumes.objs, i, pool->volumes.count);
-            break;
-        }
-    }
     ret = 0;
 
  cleanup:
@@ -1738,9 +1762,9 @@ storageVolCreateXML(virStoragePoolPtr obj,
         voldef = NULL;
 
         if (buildret < 0) {
-            virStoragePoolObjUnlock(pool);
-            storageVolDelete(volobj, 0);
-            pool = NULL;
+            storageVolDeleteInternal(volobj, backend, pool, buildvoldef,
+                                     0, false);
+            buildvoldef = NULL;
             goto cleanup;
         }
 
@@ -1908,7 +1932,6 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
     origvol->building = 0;
     newvol->building = 0;
     allocation = newvol->target.allocation;
-    newvol = NULL;
     pool->asyncjobs--;
 
     if (origpool) {
@@ -1918,11 +1941,11 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
     }
 
     if (buildret < 0) {
-        virStoragePoolObjUnlock(pool);
-        storageVolDelete(volobj, 0);
-        pool = NULL;
+        storageVolDeleteInternal(volobj, backend, pool, newvol, 0, false);
+        newvol = NULL;
         goto cleanup;
     }
+    newvol = NULL;
 
     /* Updating pool metadata */
     pool->def->allocation += allocation;
