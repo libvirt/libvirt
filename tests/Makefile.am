@@ -144,6 +144,7 @@ test_programs = virshtest sockettest \
 	viratomictest \
 	utiltest shunloadtest \
 	virtimetest viruritest virkeyfiletest \
+	viralloctest \
 	virauthconfigtest \
 	virbitmaptest \
 	vircgrouptest \
@@ -936,6 +937,10 @@ viruritest_LDADD = $(LDADDS)
 virkeyfiletest_SOURCES = \
 	virkeyfiletest.c testutils.h testutils.c
 virkeyfiletest_LDADD = $(LDADDS)
+
+viralloctest_SOURCES = \
+	viralloctest.c testutils.h testutils.c
+viralloctest_LDADD = $(LDADDS)
 
 virauthconfigtest_SOURCES = \
 	virauthconfigtest.c testutils.h testutils.c
