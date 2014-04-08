@@ -48,7 +48,7 @@ struct vmware_driver {
     virDomainXMLOptionPtr xmlopt;
 
     virDomainObjListPtr domains;
-    int version;
+    unsigned long version;
     int type;
     char *vmrun;
 };

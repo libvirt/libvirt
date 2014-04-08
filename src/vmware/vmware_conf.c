@@ -259,7 +259,6 @@ vmwareParseVersionStr(int type, const char *verbuf, unsigned long *version)
 int
 vmwareExtractVersion(struct vmware_driver *driver)
 {
-    unsigned long version = 0;
     int ret = -1;
     virCommandPtr cmd = NULL;
     char * outbuf = NULL;
@@ -298,7 +297,7 @@ vmwareExtractVersion(struct vmware_driver *driver)
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
-    if (vmwareParseVersionStr(driver->type, outbuf, &version) < 0)
+    if (vmwareParseVersionStr(driver->type, outbuf, &driver->version) < 0)
         goto cleanup;
 
     ret = 0;
