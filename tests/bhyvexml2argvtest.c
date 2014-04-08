@@ -6,39 +6,13 @@
 
 # include "datatypes.h"
 
+# include "bhyve/bhyve_capabilities.h"
 # include "bhyve/bhyve_utils.h"
 # include "bhyve/bhyve_command.h"
 
 # define VIR_FROM_THIS VIR_FROM_BHYVE
 
 static bhyveConn driver;
-
-static virCapsPtr
-testBhyveBuildCapabilities(void)
-{
-    virCapsPtr caps;
-    virCapsGuestPtr guest;
-
-    if ((caps = virCapabilitiesNew(virArchFromHost(),
-                                   0, 0)) == NULL)
-        return NULL;
-
-    if ((guest = virCapabilitiesAddGuest(caps, "hvm",
-                                         VIR_ARCH_X86_64,
-                                         "bhyve",
-                                         NULL, 0, NULL)) == NULL)
-        goto error;
-
-    if (virCapabilitiesAddGuestDomain(guest,
-                                      "bhyve", NULL, NULL, 0, NULL) == NULL)
-        goto error;
-
-    return caps;
-
- error:
-    virObjectUnref(caps);
-    return NULL;
-}
 
 static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline)
@@ -114,7 +88,7 @@ mymain(void)
 {
     int ret = 0;
 
-    if ((driver.caps = testBhyveBuildCapabilities()) == NULL)
+    if ((driver.caps = virBhyveCapsBuild()) == NULL)
         return EXIT_FAILURE;
 
     if ((driver.xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)) == NULL)
