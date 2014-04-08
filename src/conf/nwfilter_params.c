@@ -126,10 +126,14 @@ virNWFilterVarValuePtr
 virNWFilterVarValueCreateSimpleCopyValue(const char *value)
 {
     char *val;
+    virNWFilterVarValuePtr ret;
 
     if (VIR_STRDUP(val, value) < 0)
         return NULL;
-    return virNWFilterVarValueCreateSimple(val);
+    ret = virNWFilterVarValueCreateSimple(val);
+    if (!ret)
+        VIR_FREE(val);
+    return ret;
 }
 
 const char *
