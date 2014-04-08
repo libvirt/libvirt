@@ -3816,37 +3816,68 @@ qemuBuildNetworkDriveURI(int protocol,
 
 
 int
-qemuGetDriveSourceString(int type,
-                         const char *src,
-                         int protocol,
-                         size_t nhosts,
-                         virStorageNetHostDefPtr hosts,
-                         const char *username,
-                         const char *secret,
-                         char **path)
+qemuGetDriveSourceString(virStorageSourcePtr src,
+                         virConnectPtr conn,
+                         char **source)
 {
-    *path = NULL;
+    int actualType = virStorageSourceGetActualType(src);
+    char *secret = NULL;
+    char *username = NULL;
+    int ret = -1;
 
-    switch ((enum virStorageType) type) {
+    *source = NULL;
+
+    if (conn) {
+        if (actualType == VIR_STORAGE_TYPE_NETWORK &&
+            src->auth.username &&
+            (src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI ||
+             src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)) {
+            bool encode = false;
+            int secretType = VIR_SECRET_USAGE_TYPE_ISCSI;
+            const char *protocol = virStorageNetProtocolTypeToString(src->protocol);
+
+            username = src->auth.username;
+
+            if (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
+                /* qemu requires the secret to be encoded for RBD */
+                encode = true;
+                secretType = VIR_SECRET_USAGE_TYPE_CEPH;
+            }
+
+            if (!(secret = qemuGetSecretString(conn,
+                                               protocol,
+                                               encode,
+                                               src->auth.secretType,
+                                               username,
+                                               src->auth.secret.uuid,
+                                               src->auth.secret.usage,
+                                               secretType)))
+                goto cleanup;
+        }
+    }
+
+    switch ((enum virStorageType) actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_DIR:
-        if (!src)
-            return 1;
+        if (!src->path) {
+            ret = 1;
+            goto cleanup;
+        }
 
-        if (VIR_STRDUP(*path, src) < 0)
-            return -1;
+        if (VIR_STRDUP(*source, src->path) < 0)
+            goto cleanup;
 
         break;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        if (!(*path = qemuBuildNetworkDriveURI(protocol,
-                                               src,
-                                               nhosts,
-                                               hosts,
-                                               username,
-                                               secret)))
-            return -1;
+        if (!(*source = qemuBuildNetworkDriveURI(src->protocol,
+                                                 src->path,
+                                                 src->nhosts,
+                                                 src->hosts,
+                                                 username,
+                                                 secret)))
+            goto cleanup;
         break;
 
     case VIR_STORAGE_TYPE_VOLUME:
@@ -3855,52 +3886,7 @@ qemuGetDriveSourceString(int type,
         break;
     }
 
-    return 0;
-}
-
-static int
-qemuDomainDiskGetSourceString(virConnectPtr conn,
-                              virDomainDiskDefPtr disk,
-                              char **source)
-{
-    int actualType = virStorageSourceGetActualType(&disk->src);
-    char *secret = NULL;
-    int ret = -1;
-
-    *source = NULL;
-
-    if (actualType == VIR_STORAGE_TYPE_NETWORK &&
-        disk->src.auth.username &&
-        (disk->src.protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI ||
-         disk->src.protocol == VIR_STORAGE_NET_PROTOCOL_RBD)) {
-        bool encode = false;
-        int secretType = VIR_SECRET_USAGE_TYPE_ISCSI;
-
-        if (disk->src.protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
-            /* qemu requires the secret to be encoded for RBD */
-            encode = true;
-            secretType = VIR_SECRET_USAGE_TYPE_CEPH;
-        }
-
-        if (!(secret = qemuGetSecretString(conn,
-                                           virStorageNetProtocolTypeToString(disk->src.protocol),
-                                           encode,
-                                           disk->src.auth.secretType,
-                                           disk->src.auth.username,
-                                           disk->src.auth.secret.uuid,
-                                           disk->src.auth.secret.usage,
-                                           secretType)))
-            goto cleanup;
-    }
-
-    ret = qemuGetDriveSourceString(actualType,
-                                   disk->src.path,
-                                   disk->src.protocol,
-                                   disk->src.nhosts,
-                                   disk->src.hosts,
-                                   disk->src.auth.username,
-                                   secret,
-                                   source);
+    ret = 0;
 
  cleanup:
     VIR_FREE(secret);
@@ -4003,7 +3989,7 @@ qemuBuildDriveStr(virConnectPtr conn,
         break;
     }
 
-    if (qemuDomainDiskGetSourceString(conn, disk, &source) < 0)
+    if (qemuGetDriveSourceString(&disk->src, conn, &source) < 0)
         goto error;
 
     if (source &&

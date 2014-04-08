@@ -11999,23 +11999,6 @@ qemuDomainMigrateGetMaxSpeed(virDomainPtr dom,
 }
 
 
-static int
-qemuDomainSnapshotDiskGetSourceString(virDomainSnapshotDiskDefPtr disk,
-                                      char **source)
-{
-    *source = NULL;
-
-    return qemuGetDriveSourceString(virStorageSourceGetActualType(&disk->src),
-                                    disk->src.path,
-                                    disk->src.protocol,
-                                    disk->src.nhosts,
-                                    disk->src.hosts,
-                                    NULL,
-                                    NULL,
-                                    source);
-}
-
-
 typedef enum {
     VIR_DISK_CHAIN_NO_ACCESS,
     VIR_DISK_CHAIN_READ_ONLY,
@@ -12758,7 +12741,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     if (virStorageFileInit(&snap->src) < 0)
         goto cleanup;
 
-    if (qemuDomainSnapshotDiskGetSourceString(snap, &source) < 0)
+    if (qemuGetDriveSourceString(&snap->src, NULL, &source) < 0)
         goto cleanup;
 
     if (VIR_STRDUP(newsource, snap->src.path) < 0)
