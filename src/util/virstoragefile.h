@@ -208,6 +208,8 @@ enum virStorageSecretType {
     VIR_STORAGE_SECRET_TYPE_LAST
 };
 
+typedef struct _virStorageDriverData virStorageDriverData;
+typedef virStorageDriverData *virStorageDriverDataPtr;
 
 typedef struct _virStorageSource virStorageSource;
 typedef virStorageSource *virStorageSourcePtr;
@@ -243,6 +245,9 @@ struct _virStorageSource {
     unsigned long long capacity; /* in bytes, 0 if unknown */
     size_t nseclabels;
     virSecurityDeviceLabelDefPtr *seclabels;
+
+    /* metadata for storage driver access to remote and local volumes */
+    virStorageDriverDataPtr drv;
 };
 
 

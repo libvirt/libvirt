@@ -160,23 +160,33 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
                                   int imgformat);
 
 /* ------- virStorageFile backends ------------ */
+typedef struct _virStorageFileBackend virStorageFileBackend;
+typedef virStorageFileBackend *virStorageFileBackendPtr;
+
+struct _virStorageDriverData {
+    virStorageFileBackendPtr backend;
+    void *priv;
+};
+
 typedef int
-(*virStorageFileBackendInit)(virStorageFilePtr file);
+(*virStorageFileBackendInit)(virStorageSourcePtr src);
 
 typedef void
-(*virStorageFileBackendDeinit)(virStorageFilePtr file);
+(*virStorageFileBackendDeinit)(virStorageSourcePtr src);
 
 typedef int
-(*virStorageFileBackendCreate)(virStorageFilePtr file);
+(*virStorageFileBackendCreate)(virStorageSourcePtr src);
 
 typedef int
-(*virStorageFileBackendUnlink)(virStorageFilePtr file);
+(*virStorageFileBackendUnlink)(virStorageSourcePtr src);
 
 typedef int
-(*virStorageFileBackendStat)(virStorageFilePtr file,
+(*virStorageFileBackendStat)(virStorageSourcePtr src,
                              struct stat *st);
 
 virStorageFileBackendPtr virStorageFileBackendForType(int type, int protocol);
+
+
 
 struct _virStorageFileBackend {
     int type;

@@ -1335,31 +1335,31 @@ virStorageBackend virStorageBackendNetFileSystem = {
 
 
 static int
-virStorageFileBackendFileUnlink(virStorageFilePtr file)
+virStorageFileBackendFileUnlink(virStorageSourcePtr src)
 {
     int ret;
 
-    ret = unlink(file->path);
+    ret = unlink(src->path);
     /* preserve errno */
 
     VIR_DEBUG("removing storage file %p(%s): ret=%d, errno=%d",
-              file, file->path, ret, errno);
+              src, src->path, ret, errno);
 
     return ret;
 }
 
 
 static int
-virStorageFileBackendFileStat(virStorageFilePtr file,
+virStorageFileBackendFileStat(virStorageSourcePtr src,
                               struct stat *st)
 {
     int ret;
 
-    ret = stat(file->path, st);
+    ret = stat(src->path, st);
     /* preserve errno */
 
     VIR_DEBUG("stat of storage file %p(%s): ret=%d, errno=%d",
-              file, file->path, ret, errno);
+              src, src->path, ret, errno);
 
     return ret;
 }

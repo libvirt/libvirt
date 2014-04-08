@@ -2754,82 +2754,74 @@ int storageRegister(void)
 
 
 /* ----------- file handlers cooperating with storage driver --------------- */
-void
-virStorageFileFree(virStorageFilePtr file)
+static bool
+virStorageFileIsInitialized(virStorageSourcePtr src)
 {
-    if (!file)
+    return !!src->drv;
+}
+
+void
+virStorageFileDeinit(virStorageSourcePtr src)
+{
+    if (!virStorageFileIsInitialized(src))
         return;
 
-    if (file->backend &&
-        file->backend->backendDeinit)
-        file->backend->backendDeinit(file);
+    if (src->drv->backend &&
+        src->drv->backend->backendDeinit)
+        src->drv->backend->backendDeinit(src);
 
-    VIR_FREE(file->path);
-    virStorageNetHostDefFree(file->nhosts, file->hosts);
-    VIR_FREE(file);
+    VIR_FREE(src->drv);
 }
 
 
-virStorageFilePtr
+int
 virStorageFileInit(virStorageSourcePtr src)
 {
-    virStorageFilePtr file = NULL;
+    int actualType = virStorageSourceGetActualType(src);
+    if (VIR_ALLOC(src->drv) < 0)
+        return -1;
 
-    if (VIR_ALLOC(file) < 0)
-        return NULL;
-
-    file->type = virStorageSourceGetActualType(src);
-    file->protocol = src->protocol;
-    file->nhosts = src->nhosts;
-
-    if (VIR_STRDUP(file->path, src->path) < 0)
+    if (!(src->drv->backend = virStorageFileBackendForType(actualType,
+                                                           src->protocol)))
         goto error;
 
-    if (!(file->hosts = virStorageNetHostDefCopy(src->nhosts, src->hosts)))
+    if (src->drv->backend->backendInit &&
+        src->drv->backend->backendInit(src) < 0)
         goto error;
 
-    if (!(file->backend = virStorageFileBackendForType(file->type,
-                                                       file->protocol)))
-        goto error;
-
-    if (file->backend->backendInit &&
-        file->backend->backendInit(file) < 0)
-        goto error;
-
-    return file;
+    return 0;
 
  error:
-    VIR_FREE(file->path);
-    virStorageNetHostDefFree(file->nhosts, file->hosts);
-    VIR_FREE(file);
-    return NULL;
+    VIR_FREE(src->drv);
+    return -1;
 }
 
 
 /**
  * virStorageFileCreate: Creates an empty storage file via storage driver
  *
- * @file: file structure pointing to the file
+ * @src: file structure pointing to the file
  *
  * Returns 0 on success, -2 if the function isn't supported by the backend,
  * -1 on other failure. Errno is set in case of failure.
  */
 int
-virStorageFileCreate(virStorageFilePtr file)
+virStorageFileCreate(virStorageSourcePtr src)
 {
-    if (!file->backend->storageFileCreate) {
+    if (!virStorageFileIsInitialized(src) ||
+        !src->drv->backend->storageFileCreate) {
         errno = ENOSYS;
         return -2;
     }
 
-    return file->backend->storageFileCreate(file);
+    return src->drv->backend->storageFileCreate(src);
 }
 
 
 /**
  * virStorageFileUnlink: Unlink storage file via storage driver
  *
- * @file: file structure pointing to the file
+ * @src: file structure pointing to the file
  *
  * Unlinks the file described by the @file structure.
  *
@@ -2837,34 +2829,36 @@ virStorageFileCreate(virStorageFilePtr file)
  * -1 on other failure. Errno is set in case of failure.
  */
 int
-virStorageFileUnlink(virStorageFilePtr file)
+virStorageFileUnlink(virStorageSourcePtr src)
 {
-    if (!file->backend->storageFileUnlink) {
+    if (!virStorageFileIsInitialized(src) ||
+        !src->drv->backend->storageFileUnlink) {
         errno = ENOSYS;
         return -2;
     }
 
-    return file->backend->storageFileUnlink(file);
+    return src->drv->backend->storageFileUnlink(src);
 }
 
 
 /**
  * virStorageFileStat: returns stat struct of a file via storage driver
  *
- * @file: file structure pointing to the file
+ * @src: file structure pointing to the file
  * @stat: stat structure to return data
  *
  * Returns 0 on success, -2 if the function isn't supported by the backend,
  * -1 on other failure. Errno is set in case of failure.
 */
 int
-virStorageFileStat(virStorageFilePtr file,
+virStorageFileStat(virStorageSourcePtr src,
                    struct stat *st)
 {
-    if (!(file->backend->storageFileStat)) {
+    if (!virStorageFileIsInitialized(src) ||
+        !src->drv->backend->storageFileStat) {
         errno = ENOSYS;
         return -2;
     }
 
-    return file->backend->storageFileStat(file, st);
+    return src->drv->backend->storageFileStat(src, st);
 }

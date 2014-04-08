@@ -29,30 +29,13 @@
 # include "storage_conf.h"
 # include "virstoragefile.h"
 
-typedef struct _virStorageFileBackend virStorageFileBackend;
-typedef virStorageFileBackend *virStorageFileBackendPtr;
-
-typedef struct _virStorageFile virStorageFile;
-typedef virStorageFile *virStorageFilePtr;
-struct _virStorageFile {
-    virStorageFileBackendPtr backend;
-    void *priv;
-
-    char *path;
-    int type;
-    int protocol;
-
-    size_t nhosts;
-    virStorageNetHostDefPtr hosts;
-};
-
-virStorageFilePtr
+int
 virStorageFileInit(virStorageSourcePtr src);
-void virStorageFileFree(virStorageFilePtr file);
+void virStorageFileDeinit(virStorageSourcePtr src);
 
-int virStorageFileCreate(virStorageFilePtr file);
-int virStorageFileUnlink(virStorageFilePtr file);
-int virStorageFileStat(virStorageFilePtr file,
+int virStorageFileCreate(virStorageSourcePtr src);
+int virStorageFileUnlink(virStorageSourcePtr src);
+int virStorageFileStat(virStorageSourcePtr src,
                        struct stat *stat);
 
 int storageRegister(void);

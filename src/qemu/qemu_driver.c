@@ -12465,7 +12465,6 @@ qemuDomainSnapshotPrepareDiskExternal(virConnectPtr conn,
                                       bool active,
                                       bool reuse)
 {
-    virStorageFilePtr snapfile = NULL;
     int ret = -1;
     struct stat st;
 
@@ -12489,10 +12488,10 @@ qemuDomainSnapshotPrepareDiskExternal(virConnectPtr conn,
             return -1;
     }
 
-    if (!(snapfile = virStorageFileInit(&snapdisk->src)))
+    if (virStorageFileInit(&snapdisk->src) < 0)
         return -1;
 
-    if (virStorageFileStat(snapfile, &st) < 0) {
+    if (virStorageFileStat(&snapdisk->src, &st) < 0) {
         if (errno != ENOENT) {
             virReportSystemError(errno,
                                  _("unable to stat for disk %s: %s"),
@@ -12515,7 +12514,7 @@ qemuDomainSnapshotPrepareDiskExternal(virConnectPtr conn,
     ret = 0;
 
  cleanup:
-    virStorageFileFree(snapfile);
+    virStorageFileDeinit(&snapdisk->src);
     return ret;
 }
 
@@ -12738,7 +12737,6 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     int ret = -1;
     int fd = -1;
     bool need_unlink = false;
-    virStorageFilePtr snapfile = NULL;
 
     if (snap->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -12757,7 +12755,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     virStorageFileFreeMetadata(disk->backingChain);
     disk->backingChain = NULL;
 
-    if (!(snapfile = virStorageFileInit(&snap->src)))
+    if (virStorageFileInit(&snap->src) < 0)
         goto cleanup;
 
     if (qemuDomainSnapshotDiskGetSourceString(snap, &source) < 0)
@@ -12886,9 +12884,9 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     }
 
  cleanup:
-    if (need_unlink && virStorageFileUnlink(snapfile))
+    if (need_unlink && virStorageFileUnlink(&snap->src))
         VIR_WARN("unable to unlink just-created %s", source);
-    virStorageFileFree(snapfile);
+    virStorageFileDeinit(&snap->src);
     VIR_FREE(device);
     VIR_FREE(source);
     VIR_FREE(newsource);
@@ -12911,10 +12909,9 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
 {
     char *source = NULL;
     char *persistSource = NULL;
-    virStorageFilePtr diskfile = NULL;
     struct stat st;
 
-    diskfile = virStorageFileInit(&disk->src);
+    ignore_value(virStorageFileInit(&disk->src));
 
     if (VIR_STRDUP(source, origdisk->src.path) < 0 ||
         (persistDisk && VIR_STRDUP(persistSource, source) < 0))
@@ -12922,9 +12919,9 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
 
     qemuDomainPrepareDiskChainElement(driver, vm, disk, disk->src.path,
                                       VIR_DISK_CHAIN_NO_ACCESS);
-    if (need_unlink && diskfile &&
-        virStorageFileStat(diskfile, &st) == 0 && S_ISREG(st.st_mode) &&
-        virStorageFileUnlink(diskfile) < 0)
+    if (need_unlink &&
+        virStorageFileStat(&disk->src, &st) == 0 && S_ISREG(st.st_mode) &&
+        virStorageFileUnlink(&disk->src) < 0)
         VIR_WARN("Unable to remove just-created %s", disk->src.path);
 
     /* Update vm in place to match changes.  */
@@ -12953,7 +12950,7 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
     }
 
  cleanup:
-    virStorageFileFree(diskfile);
+    virStorageFileDeinit(&disk->src);
     VIR_FREE(source);
     VIR_FREE(persistSource);
 }
