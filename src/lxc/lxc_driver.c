@@ -1475,8 +1475,7 @@ static int lxcCheckNetNsSupport(void)
     const char *argv[] = {"ip", "link", "set", "lo", "netns", "-1", NULL};
     int ip_rc;
 
-    if (virRun(argv, &ip_rc) < 0 ||
-        !(WIFEXITED(ip_rc) && (WEXITSTATUS(ip_rc) != 255)))
+    if (virRun(argv, &ip_rc) < 0 || ip_rc == 255)
         return 0;
 
     if (lxcContainerAvailable(LXC_CONTAINER_FEATURE_NET) < 0)
