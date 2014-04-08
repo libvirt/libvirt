@@ -112,17 +112,43 @@ struct _virStorageTimestamps {
 typedef struct _virStorageFileMetadata virStorageFileMetadata;
 typedef virStorageFileMetadata *virStorageFileMetadataPtr;
 struct _virStorageFileMetadata {
-    char *backingStore; /* Canonical name (absolute file, or protocol) */
-    char *backingStoreRaw; /* If file, original name, possibly relative */
-    char *directory; /* The directory containing basename of backingStoreRaw */
-    int backingStoreFormat; /* enum virStorageFileFormat */
-    bool backingStoreIsFile;
+    /* Name of the current file as spelled by the user (top level) or
+     * metadata of the overlay (if this is a backing store).  */
+    char *path;
+    /* Canonical name of the current file, used to detect loops in the
+     * backing store chain.  */
+    char *canonPath;
+    /* Directory to start from if backingStoreRaw is a relative file
+     * name.  */
+    char *relDir;
+    /* Name of the child backing store recorded in metadata of the
+     * current file.  */
+    char *backingStoreRaw;
+
+    /* Backing chain.  In the common case, the child's
+     * backingMeta->path will be a duplicate of this file's
+     * backingStoreRaw; this setup makes it possible to detect missing
+     * backing files: if backingStoreRaw is NULL, this field should be
+     * NULL.  If this field is NULL and backingStoreRaw is non-NULL,
+     * there was an error following the chain (such as a missing
+     * file).  Otherwise, information about the child is here.  */
     virStorageFileMetadataPtr backingMeta;
 
+    /* Details about the current image */
+    int type; /* enum virStorageType */
+    int format; /* enum virStorageFileFormat */
     virStorageEncryptionPtr encryption;
     unsigned long long capacity;
     virBitmapPtr features; /* bits described by enum virStorageFileFeature */
     char *compat;
+
+    /* Fields I'm trying to delete, because it is confusing to have to
+     * query the parent metadata for details about the backing
+     * store.  */
+    char *backingStore; /* Canonical name (absolute file, or protocol). Should be same as backingMeta->canonPath */
+    char *directory; /* The directory containing basename of backingStoreRaw. Should be same as backingMeta->relDir */
+    int backingStoreFormat; /* enum virStorageFileFormat. Should be same as backingMeta->format */
+    bool backingStoreIsFile; /* Should be same as backingMeta->type < VIR_STORAGE_TYPE_NETWORK */
 };
 
 

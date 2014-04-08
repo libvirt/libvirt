@@ -789,6 +789,13 @@ virStorageFileGetMetadataInternal(const char *path,
     VIR_DEBUG("path=%s, canonPath=%s, dir=%s, buf=%p, len=%zu, format=%d",
               path, canonPath, directory, buf, len, format);
 
+    if (VIR_STRDUP(meta->path, path) < 0)
+        goto cleanup;
+    if (VIR_STRDUP(meta->canonPath, canonPath) < 0)
+        goto cleanup;
+    if (VIR_STRDUP(meta->relDir, directory) < 0)
+        goto cleanup;
+
     if (format == VIR_STORAGE_FILE_AUTO)
         format = virStorageFileProbeFormatFromBuf(path, buf, len);
 
@@ -798,6 +805,7 @@ virStorageFileGetMetadataInternal(const char *path,
                              format);
         goto cleanup;
     }
+    meta->format = format;
 
     /* XXX we should consider moving virStorageBackendUpdateVolInfo
      * code into this method, for non-magic files
@@ -1020,8 +1028,14 @@ virStorageFileGetMetadataFromFDInternal(const char *path,
         return -1;
     }
 
-    /* No header to probe for directories, but also no backing file */
     if (S_ISDIR(sb.st_mode)) {
+        /* No header to probe for directories, but also no backing
+         * file; therefore, no inclusion loop is possible, and we
+         * don't need canonName or relDir.  */
+        if (VIR_STRDUP(meta->path, path) < 0)
+            goto cleanup;
+        meta->type = VIR_STORAGE_TYPE_DIR;
+        meta->format = VIR_STORAGE_FILE_DIR;
         ret = 0;
         goto cleanup;
     }
@@ -1039,6 +1053,12 @@ virStorageFileGetMetadataFromFDInternal(const char *path,
     ret = virStorageFileGetMetadataInternal(path, canonPath, directory,
                                             buf, len, format, meta);
 
+    if (ret == 0) {
+        if (S_ISREG(sb.st_mode))
+            meta->type = VIR_STORAGE_TYPE_FILE;
+        else if (S_ISBLK(sb.st_mode))
+            meta->type = VIR_STORAGE_TYPE_BLOCK;
+    }
  cleanup:
     VIR_FREE(buf);
     return ret;
@@ -1265,6 +1285,10 @@ virStorageFileFreeMetadata(virStorageFileMetadata *meta)
 {
     if (!meta)
         return;
+
+    VIR_FREE(meta->path);
+    VIR_FREE(meta->canonPath);
+    VIR_FREE(meta->relDir);
 
     virStorageFileFreeMetadata(meta->backingMeta);
     VIR_FREE(meta->backingStore);
