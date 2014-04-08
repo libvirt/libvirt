@@ -33,13 +33,16 @@
 #endif
 #include <sched.h>
 
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) || HAVE_BSD_CPU_AFFINITY
 # include <sys/param.h>
+#endif
+
+#ifdef  __FreeBSD__
 # include <sys/sysctl.h>
 # include <sys/user.h>
 #endif
 
-#ifdef HAVE_BSD_CPU_AFFINITY
+#if HAVE_BSD_CPU_AFFINITY
 # include <sys/cpuset.h>
 #endif
 
