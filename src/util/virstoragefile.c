@@ -771,25 +771,23 @@ qcow2GetFeatures(virBitmapPtr *features,
 
 /* Given a header in BUF with length LEN, as parsed from the file with
  * user-provided name PATH and opened from CANONPATH, and where any
- * relative backing file will be opened from DIRECTORY, return
- * metadata about that file, assuming it has the given FORMAT. */
-static virStorageFileMetadataPtr ATTRIBUTE_NONNULL(1)
-ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
+ * relative backing file will be opened from DIRECTORY, and assuming
+ * it has the given FORMAT, populate the newly-allocated META with
+ * information about the file and its backing store.  */
+static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(7)
 virStorageFileGetMetadataInternal(const char *path,
                                   const char *canonPath,
                                   const char *directory,
                                   char *buf,
                                   size_t len,
-                                  int format)
+                                  int format,
+                                  virStorageFileMetadataPtr meta)
 {
-    virStorageFileMetadata *meta = NULL;
-    virStorageFileMetadata *ret = NULL;
+    int ret = -1;
 
     VIR_DEBUG("path=%s, canonPath=%s, dir=%s, buf=%p, len=%zu, format=%d",
               path, canonPath, directory, buf, len, format);
-
-    if (VIR_ALLOC(meta) < 0)
-        return NULL;
 
     if (format == VIR_STORAGE_FILE_AUTO)
         format = virStorageFileProbeFormatFromBuf(path, buf, len);
@@ -886,11 +884,9 @@ virStorageFileGetMetadataInternal(const char *path,
         goto cleanup;
 
  done:
-    ret = meta;
-    meta = NULL;
+    ret = 0;
 
  cleanup:
-    virStorageFileFreeMetadata(meta);
     return ret;
 }
 
@@ -981,44 +977,52 @@ virStorageFileGetMetadataFromBuf(const char *path,
                                  size_t len,
                                  int format)
 {
-    virStorageFileMetadataPtr ret;
+    virStorageFileMetadataPtr ret = NULL;
     char *canonPath;
 
     if (!(canonPath = canonicalize_file_name(path))) {
         virReportSystemError(errno, _("unable to resolve '%s'"), path);
         return NULL;
     }
+    if (VIR_ALLOC(ret) < 0)
+        goto cleanup;
 
-    ret = virStorageFileGetMetadataInternal(path, canonPath, ".", buf, len,
-                                            format);
+    if (virStorageFileGetMetadataInternal(path, canonPath, ".", buf, len,
+                                          format, ret) < 0) {
+        virStorageFileFreeMetadata(ret);
+        ret = NULL;
+    }
+
+ cleanup:
     VIR_FREE(canonPath);
     return ret;
 }
 
 
 /* Internal version that also supports a containing directory name.  */
-static virStorageFileMetadataPtr
+static int
 virStorageFileGetMetadataFromFDInternal(const char *path,
                                         const char *canonPath,
                                         const char *directory,
                                         int fd,
-                                        int format)
+                                        int format,
+                                        virStorageFileMetadataPtr meta)
 {
     char *buf = NULL;
     ssize_t len = VIR_STORAGE_MAX_HEADER;
     struct stat sb;
-    virStorageFileMetadataPtr ret = NULL;
+    int ret = -1;
 
     if (fstat(fd, &sb) < 0) {
         virReportSystemError(errno,
                              _("cannot stat file '%s'"),
                              path);
-        return NULL;
+        return -1;
     }
 
     /* No header to probe for directories, but also no backing file */
     if (S_ISDIR(sb.st_mode)) {
-        ignore_value(VIR_ALLOC(ret));
+        ret = 0;
         goto cleanup;
     }
 
@@ -1033,7 +1037,8 @@ virStorageFileGetMetadataFromFDInternal(const char *path,
     }
 
     ret = virStorageFileGetMetadataInternal(path, canonPath, directory,
-                                            buf, len, format);
+                                            buf, len, format, meta);
+
  cleanup:
     VIR_FREE(buf);
     return ret;
@@ -1063,71 +1068,81 @@ virStorageFileGetMetadataFromFD(const char *path,
                                 int fd,
                                 int format)
 {
-    virStorageFileMetadataPtr ret;
+    virStorageFileMetadataPtr ret = NULL;
     char *canonPath;
 
     if (!(canonPath = canonicalize_file_name(path))) {
         virReportSystemError(errno, _("unable to resolve '%s'"), path);
         return NULL;
     }
-    ret = virStorageFileGetMetadataFromFDInternal(path, canonPath, ".",
-                                                  fd, format);
+    if (VIR_ALLOC(ret) < 0)
+        goto cleanup;
+    if (virStorageFileGetMetadataFromFDInternal(path, canonPath, ".",
+                                                fd, format, ret) < 0) {
+        virStorageFileFreeMetadata(ret);
+        ret = NULL;
+    }
+
+ cleanup:
     VIR_FREE(canonPath);
     return ret;
 }
 
 
 /* Recursive workhorse for virStorageFileGetMetadata.  */
-static virStorageFileMetadataPtr
+static int
 virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
                                  const char *directory,
                                  int format, uid_t uid, gid_t gid,
-                                 bool allow_probe, virHashTablePtr cycle)
+                                 bool allow_probe, virHashTablePtr cycle,
+                                 virStorageFileMetadataPtr meta)
 {
     int fd;
+    int ret = -1;
     VIR_DEBUG("path=%s canonPath=%s dir=%s format=%d uid=%d gid=%d probe=%d",
               path, canonPath, NULLSTR(directory), format,
               (int)uid, (int)gid, allow_probe);
-
-    virStorageFileMetadataPtr ret = NULL;
 
     if (virHashLookup(cycle, canonPath)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("backing store for %s is self-referential"),
                        path);
-        return NULL;
+        return -1;
     }
     if (virHashAddEntry(cycle, canonPath, (void *)1) < 0)
-        return NULL;
+        return -1;
 
     if ((fd = virFileOpenAs(canonPath, O_RDONLY, 0, uid, gid, 0)) < 0) {
         virReportSystemError(-fd, _("Failed to open file '%s'"), path);
-        return NULL;
+        return -1;
     }
 
     ret = virStorageFileGetMetadataFromFDInternal(path, canonPath, directory,
-                                                  fd, format);
+                                                  fd, format, meta);
 
     if (VIR_CLOSE(fd) < 0)
         VIR_WARN("could not close file %s", path);
 
-    if (ret && ret->backingStoreIsFile) {
-        if (ret->backingStoreFormat == VIR_STORAGE_FILE_AUTO && !allow_probe)
-            ret->backingStoreFormat = VIR_STORAGE_FILE_RAW;
-        else if (ret->backingStoreFormat == VIR_STORAGE_FILE_AUTO_SAFE)
-            ret->backingStoreFormat = VIR_STORAGE_FILE_AUTO;
-        format = ret->backingStoreFormat;
-        ret->backingMeta = virStorageFileGetMetadataRecurse(ret->backingStoreRaw,
-                                                            ret->backingStore,
-                                                            ret->directory,
-                                                            format,
-                                                            uid, gid,
-                                                            allow_probe,
-                                                            cycle);
-        if (!ret->backingMeta) {
+    if (ret == 0 && meta->backingStoreIsFile) {
+        virStorageFileMetadataPtr backing;
+
+        if (meta->backingStoreFormat == VIR_STORAGE_FILE_AUTO && !allow_probe)
+            meta->backingStoreFormat = VIR_STORAGE_FILE_RAW;
+        else if (meta->backingStoreFormat == VIR_STORAGE_FILE_AUTO_SAFE)
+            meta->backingStoreFormat = VIR_STORAGE_FILE_AUTO;
+        format = meta->backingStoreFormat;
+        if (VIR_ALLOC(backing) < 0 ||
+            virStorageFileGetMetadataRecurse(meta->backingStoreRaw,
+                                             meta->backingStore,
+                                             meta->directory, format,
+                                             uid, gid, allow_probe,
+                                             cycle, backing) < 0) {
             /* If we failed to get backing data, mark the chain broken */
-            ret->backingStoreFormat = VIR_STORAGE_FILE_NONE;
-            VIR_FREE(ret->backingStore);
+            meta->backingStoreFormat = VIR_STORAGE_FILE_NONE;
+            VIR_FREE(meta->backingStore);
+            virStorageFileFreeMetadata(backing);
+        } else {
+            meta->backingMeta = backing;
         }
     }
     return ret;
@@ -1164,6 +1179,7 @@ virStorageFileGetMetadata(const char *path, int format,
               path, format, (int)uid, (int)gid, allow_probe);
 
     virHashTablePtr cycle = virHashCreate(5, NULL);
+    virStorageFileMetadataPtr meta = NULL;
     virStorageFileMetadataPtr ret = NULL;
     char *canonPath = NULL;
     char *directory = NULL;
@@ -1179,12 +1195,20 @@ virStorageFileGetMetadata(const char *path, int format,
         virReportOOMError();
         goto cleanup;
     }
+    if (VIR_ALLOC(meta) < 0)
+        goto cleanup;
 
     if (format <= VIR_STORAGE_FILE_NONE)
         format = allow_probe ? VIR_STORAGE_FILE_AUTO : VIR_STORAGE_FILE_RAW;
-    ret = virStorageFileGetMetadataRecurse(path, canonPath, directory, format,
-                                           uid, gid, allow_probe, cycle);
+    if (virStorageFileGetMetadataRecurse(path, canonPath, directory, format,
+                                         uid, gid, allow_probe, cycle,
+                                         meta) < 0)
+        goto cleanup;
+    ret = meta;
+    meta = NULL;
+
  cleanup:
+    virStorageFileFreeMetadata(meta);
     VIR_FREE(canonPath);
     VIR_FREE(directory);
     virHashFree(cycle);
