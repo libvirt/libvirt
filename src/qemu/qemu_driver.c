@@ -12489,7 +12489,7 @@ qemuDomainSnapshotPrepareDiskExternal(virConnectPtr conn,
             return -1;
     }
 
-    if (!(snapfile = virStorageFileInitFromSnapshotDef(snapdisk)))
+    if (!(snapfile = virStorageFileInit(&snapdisk->src)))
         return -1;
 
     if (virStorageFileStat(snapfile, &st) < 0) {
@@ -12757,7 +12757,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     virStorageFileFreeMetadata(disk->backingChain);
     disk->backingChain = NULL;
 
-    if (!(snapfile = virStorageFileInitFromSnapshotDef(snap)))
+    if (!(snapfile = virStorageFileInit(&snap->src)))
         goto cleanup;
 
     if (qemuDomainSnapshotDiskGetSourceString(snap, &source) < 0)
@@ -12914,7 +12914,7 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
     virStorageFilePtr diskfile = NULL;
     struct stat st;
 
-    diskfile = virStorageFileInitFromDiskDef(disk);
+    diskfile = virStorageFileInit(&disk->src);
 
     if (VIR_STRDUP(source, origdisk->src.path) < 0 ||
         (persistDisk && VIR_STRDUP(persistSource, source) < 0))

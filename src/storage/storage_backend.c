@@ -55,6 +55,7 @@
 #include "virfile.h"
 #include "stat-time.h"
 #include "virstring.h"
+#include "virxml.h"
 
 #if WITH_STORAGE_LVM
 # include "storage_backend_logical.h"

@@ -24,9 +24,10 @@
 #ifndef __VIR_STORAGE_DRIVER_H__
 # define __VIR_STORAGE_DRIVER_H__
 
+# include <sys/stat.h>
+
 # include "storage_conf.h"
-# include "conf/domain_conf.h"
-# include "conf/snapshot_conf.h"
+# include "virstoragefile.h"
 
 typedef struct _virStorageFileBackend virStorageFileBackend;
 typedef virStorageFileBackend *virStorageFileBackendPtr;
@@ -46,9 +47,7 @@ struct _virStorageFile {
 };
 
 virStorageFilePtr
-virStorageFileInitFromDiskDef(virDomainDiskDefPtr disk);
-virStorageFilePtr
-virStorageFileInitFromSnapshotDef(virDomainSnapshotDiskDefPtr disk);
+virStorageFileInit(virStorageSourcePtr src);
 void virStorageFileFree(virStorageFilePtr file);
 
 int virStorageFileCreate(virStorageFilePtr file);

@@ -2770,26 +2770,22 @@ virStorageFileFree(virStorageFilePtr file)
 }
 
 
-static virStorageFilePtr
-virStorageFileInitInternal(int type,
-                           const char *path,
-                           int protocol,
-                           size_t nhosts,
-                           virStorageNetHostDefPtr hosts)
+virStorageFilePtr
+virStorageFileInit(virStorageSourcePtr src)
 {
     virStorageFilePtr file = NULL;
 
     if (VIR_ALLOC(file) < 0)
         return NULL;
 
-    file->type = type;
-    file->protocol = protocol;
-    file->nhosts = nhosts;
+    file->type = virStorageSourceGetActualType(src);
+    file->protocol = src->protocol;
+    file->nhosts = src->nhosts;
 
-    if (VIR_STRDUP(file->path, path) < 0)
+    if (VIR_STRDUP(file->path, src->path) < 0)
         goto error;
 
-    if (!(file->hosts = virStorageNetHostDefCopy(nhosts, hosts)))
+    if (!(file->hosts = virStorageNetHostDefCopy(src->nhosts, src->hosts)))
         goto error;
 
     if (!(file->backend = virStorageFileBackendForType(file->type,
@@ -2808,29 +2804,6 @@ virStorageFileInitInternal(int type,
     VIR_FREE(file);
     return NULL;
 }
-
-
-virStorageFilePtr
-virStorageFileInitFromDiskDef(virDomainDiskDefPtr disk)
-{
-    return virStorageFileInitInternal(virStorageSourceGetActualType(&disk->src),
-                                      disk->src.path,
-                                      disk->src.protocol,
-                                      disk->src.nhosts,
-                                      disk->src.hosts);
-}
-
-
-virStorageFilePtr
-virStorageFileInitFromSnapshotDef(virDomainSnapshotDiskDefPtr disk)
-{
-    return virStorageFileInitInternal(virStorageSourceGetActualType(&disk->src),
-                                      disk->src.path,
-                                      disk->src.protocol,
-                                      disk->src.nhosts,
-                                      disk->src.hosts);
-}
-
 
 
 /**
