@@ -866,14 +866,12 @@ virStorageFileGetMetadataInternal(const char *path,
         if (store == BACKING_STORE_ERROR)
             goto cleanup;
 
-        meta->backingStoreIsFile = false;
         if (backing != NULL) {
             if (VIR_STRDUP(meta->backingStore, backing) < 0) {
                 VIR_FREE(backing);
                 goto cleanup;
             }
             if (virStorageIsFile(backing)) {
-                meta->backingStoreIsFile = true;
                 meta->backingStoreRaw = meta->backingStore;
                 meta->backingStore = NULL;
                 if (virFindBackingFile(directory, backing,
@@ -882,7 +880,6 @@ virStorageFileGetMetadataInternal(const char *path,
                     /* the backing file is (currently) unavailable, treat this
                      * file as standalone:
                      * backingStoreRaw is kept to mark broken image chains */
-                    meta->backingStoreIsFile = false;
                     backingFormat = VIR_STORAGE_FILE_NONE;
                     VIR_WARN("Backing file '%s' of image '%s' is missing.",
                              meta->backingStoreRaw, path);
@@ -1570,7 +1567,7 @@ virStorageFileChainLookup(virStorageFileMetadataPtr chain, const char *start,
         } else if (STREQ_NULLABLE(name, owner->backingStoreRaw) ||
                    STREQ(name, owner->backingStore)) {
             break;
-        } else if (owner->backingStoreIsFile) {
+        } else if (virStorageIsFile(owner->backingStore)) {
             char *absName = NULL;
             if (virFindBackingFile(owner->directory, name,
                                    NULL, &absName) < 0)

@@ -148,7 +148,6 @@ struct _virStorageFileMetadata {
     char *backingStore; /* Canonical name (absolute file, or protocol). Should be same as backingMeta->canonPath */
     char *directory; /* The directory containing basename of backingStoreRaw. Should be same as backingMeta->relDir */
     int backingStoreFormat; /* enum virStorageFileFormat. Should be same as backingMeta->format */
-    bool backingStoreIsFile; /* Should be same as backingMeta->type < VIR_STORAGE_TYPE_NETWORK */
 };
 
 
