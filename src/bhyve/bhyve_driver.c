@@ -753,8 +753,14 @@ bhyveDomainDestroy(virDomainPtr dom)
 
     ret = virBhyveProcessStop(privconn, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
 
+    if (!vm->persistent) {
+        virDomainObjListRemove(privconn->domains, vm);
+        vm = NULL;
+    }
+
  cleanup:
-    virObjectUnlock(vm);
+    if (vm)
+        virObjectUnlock(vm);
     return ret;
 }
 
