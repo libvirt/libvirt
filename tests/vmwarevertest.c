@@ -88,6 +88,7 @@ mymain(void)
     } while (0)
 
     DO_TEST("ws", "workstation-7.0.0", 7000000);
+    DO_TEST("ws", "workstation-7.0.0-with-garbage", 7000000);
     DO_TEST("fusion", "fusion-5.0.3", 5000003);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

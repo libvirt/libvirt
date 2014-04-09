@@ -1,0 +1,3 @@
+garbage line
+VMware Workstation 7.0.0 build-203739 Release
+garbage line
