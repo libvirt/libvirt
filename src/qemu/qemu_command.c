@@ -9742,6 +9742,10 @@ qemuBuildCommandLine(virConnectPtr conn,
         virCommandSetMaxMemLock(cmd, memKB * 1024);
     }
 
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MSG_TIMESTAMP) &&
+        cfg->logTimestamp)
+        virCommandAddArgList(cmd, "-msg", "timestamp=on", NULL);
+
     virObjectUnref(cfg);
     return cmd;
 

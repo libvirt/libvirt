@@ -255,6 +255,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "usb-kbd", /* 165 */
               "host-pci-multidomain",
+              "msg-timestamp",
     );
 
 
@@ -2378,6 +2379,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "boot-opts", "strict", QEMU_CAPS_BOOT_STRICT },
     { "boot-opts", "reboot-timeout", QEMU_CAPS_REBOOT_TIMEOUT },
     { "spice", "disable-agent-file-xfer", QEMU_CAPS_SPICE_FILE_XFER_DISABLE },
+    { "msg", "timestamp", QEMU_CAPS_MSG_TIMESTAMP },
 };
 
 static int

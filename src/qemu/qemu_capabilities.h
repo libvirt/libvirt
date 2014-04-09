@@ -205,6 +205,7 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_CHARDEV_SPICEPORT  = 164, /* -chardev spiceport */
     QEMU_CAPS_DEVICE_USB_KBD     = 165, /* -device usb-kbd */
     QEMU_CAPS_HOST_PCI_MULTIDOMAIN = 166, /* support domain > 0 in host pci address */
+    QEMU_CAPS_MSG_TIMESTAMP      = 167, /* -msg timestamp */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

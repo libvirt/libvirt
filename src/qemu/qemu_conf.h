@@ -167,6 +167,8 @@ struct _virQEMUDriverConfig {
     char *migrationAddress;
     int migrationPortMin;
     int migrationPortMax;
+
+    bool logTimestamp;
 };
 
 /* Main driver state */

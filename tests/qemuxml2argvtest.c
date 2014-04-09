@@ -578,6 +578,7 @@ mymain(void)
     unsetenv("SDL_AUDIODRIVER");
 
     DO_TEST("minimal", QEMU_CAPS_NAME);
+    DO_TEST("minimal-msg-timestamp", QEMU_CAPS_NAME, QEMU_CAPS_MSG_TIMESTAMP);
     DO_TEST("minimal-s390", QEMU_CAPS_NAME);
     DO_TEST("machine-aliases1", NONE);
     DO_TEST("machine-aliases2", QEMU_CAPS_KVM);
