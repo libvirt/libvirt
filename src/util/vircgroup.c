@@ -4469,7 +4469,8 @@ virCgroupGetPercpuStats(virCgroupPtr group ATTRIBUTE_UNUSED,
                         virTypedParameterPtr params ATTRIBUTE_UNUSED,
                         unsigned int nparams ATTRIBUTE_UNUSED,
                         int start_cpu ATTRIBUTE_UNUSED,
-                        unsigned int ncpus ATTRIBUTE_UNUSED)
+                        unsigned int ncpus ATTRIBUTE_UNUSED,
+                        unsigned int nvcpupids ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
