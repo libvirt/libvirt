@@ -234,9 +234,11 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(char **const groups,
 }
 
 
-static void
+static int
 virStorageBackendFileSystemNetFindNFSPoolSources(virNetfsDiscoverState *state)
 {
+    int ret = -1;
+
     /*
      *  # showmount --no-headers -e HOSTNAME
      *  /tmp   *
@@ -263,9 +265,13 @@ virStorageBackendFileSystemNetFindNFSPoolSources(virNetfsDiscoverState *state)
     if (virCommandRunRegex(cmd, 1, regexes, vars,
                            virStorageBackendFileSystemNetFindPoolSourcesFunc,
                            state, NULL) < 0)
-        virResetLastError();
+        goto cleanup;
 
+    ret = 0;
+
+ cleanup:
     virCommandFree(cmd);
+    return ret;
 }
 
 
@@ -285,6 +291,7 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
     virStoragePoolSourcePtr source = NULL;
     char *ret = NULL;
     size_t i;
+    int retNFS = -1, retGluster = -1;
 
     virCheckFlags(0, NULL);
 
@@ -306,11 +313,16 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
 
     state.host = source->hosts[0].name;
 
-    virStorageBackendFileSystemNetFindNFSPoolSources(&state);
+    retNFS = virStorageBackendFileSystemNetFindNFSPoolSources(&state);
 
-    if (virStorageBackendFindGlusterPoolSources(state.host,
+# ifdef GLUSTER_CLI
+    retGluster =
+        virStorageBackendFindGlusterPoolSources(state.host,
                                                 VIR_STORAGE_POOL_NETFS_GLUSTERFS,
-                                                &state.list) < 0)
+                                                &state.list);
+# endif
+    /* If both fail, then we won't return an empty list - return an error */
+    if (retNFS < 0 && retGluster < 0)
         goto cleanup;
 
     if (!(ret = virStoragePoolSourceListFormat(&state.list)))
