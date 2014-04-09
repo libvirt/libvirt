@@ -246,7 +246,7 @@ testStorageChain(const void *args)
     virStorageFileMetadataPtr elt;
     size_t i = 0;
     char *broken = NULL;
-    bool abs = !!(data->flags & ABS_START);
+    bool isAbs = !!(data->flags & ABS_START);
 
     meta = virStorageFileGetMetadata(data->start, data->format, -1, -1,
                                      (data->flags & ALLOW_PROBE) != 0);
@@ -292,7 +292,7 @@ testStorageChain(const void *args)
             goto cleanup;
         }
 
-        expDirectory = abs ? data->files[i]->expDirectoryAbs
+        expDirectory = isAbs ? data->files[i]->expDirectoryAbs
             : data->files[i]->expDirectoryRel;
         if (virAsprintf(&expect,
                         "store:%s\nraw:%s\ndirectory:%s\nother:%d %d %lld %d",
