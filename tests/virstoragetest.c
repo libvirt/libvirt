@@ -624,17 +624,24 @@ mymain(void)
     if (virCommandRun(cmd, NULL) < 0)
         ret = -1;
     qcow2.expBackingStore = "nbd:example.org:6000";
-    qcow2.expBackingStoreRaw = NULL;
+    qcow2.expBackingStoreRaw = "nbd:example.org:6000";
     qcow2.expBackingDirRel = NULL;
     qcow2.expBackingDirAbs = NULL;
     qcow2.expBackingFormat = VIR_STORAGE_FILE_RAW;
 
     /* Qcow2 file with backing protocol instead of file */
+    testFileData nbd = {
+        .pathRel = "nbd:example.org:6000",
+        .pathAbs = "nbd:example.org:6000",
+        .canonPath = "nbd:example.org:6000",
+        .type = VIR_STORAGE_TYPE_NETWORK,
+        .format = VIR_STORAGE_FILE_RAW,
+    };
     TEST_CHAIN(11, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               (&qcow2), EXP_PASS,
-               (&qcow2), ALLOW_PROBE | EXP_PASS,
-               (&qcow2), EXP_PASS,
-               (&qcow2), ALLOW_PROBE | EXP_PASS);
+               (&qcow2, &nbd), EXP_PASS,
+               (&qcow2, &nbd), ALLOW_PROBE | EXP_PASS,
+               (&qcow2, &nbd), EXP_PASS,
+               (&qcow2, &nbd), ALLOW_PROBE | EXP_PASS);
 
     /* qed file */
     testFileData qed = {

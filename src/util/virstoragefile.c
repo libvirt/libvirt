@@ -569,6 +569,14 @@ static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
 virFindBackingFile(const char *start, const char *path,
                    char **directory, char **canonical)
 {
+    /* FIXME - when we eventually allow non-raw network devices, we
+     * must ensure that we handle backing files the same way as qemu.
+     * For a qcow2 top file of gluster://server/vol/img, qemu treats
+     * the relative backing file 'rel' as meaning
+     * 'gluster://server/vol/rel', while the backing file '/abs' is
+     * used as a local file.  But we cannot canonicalize network
+     * devices via canonicalize_file_name(), because they are not part
+     * of the local file system.  */
     char *combined = NULL;
     int ret = -1;
 
@@ -874,6 +882,12 @@ virStorageFileGetMetadataInternal(const char *path,
                              meta->backingStoreRaw, path);
 
                 }
+            } else {
+                if (VIR_STRDUP(meta->backingStoreRaw, backing) < 0) {
+                    VIR_FREE(backing);
+                    goto cleanup;
+                }
+                backingFormat = VIR_STORAGE_FILE_RAW;
             }
             VIR_FREE(backing);
             meta->backingStoreFormat = backingFormat;
@@ -1132,18 +1146,32 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
     if (virHashAddEntry(cycle, canonPath, (void *)1) < 0)
         return -1;
 
-    if ((fd = virFileOpenAs(canonPath, O_RDONLY, 0, uid, gid, 0)) < 0) {
-        virReportSystemError(-fd, _("Failed to open file '%s'"), path);
-        return -1;
+    if (virBackingStoreIsFile(path)) {
+        if ((fd = virFileOpenAs(canonPath, O_RDONLY, 0, uid, gid, 0)) < 0) {
+            virReportSystemError(-fd, _("Failed to open file '%s'"), path);
+            return -1;
+        }
+
+        ret = virStorageFileGetMetadataFromFDInternal(path, canonPath,
+                                                      directory,
+                                                      fd, format, meta);
+
+        if (VIR_CLOSE(fd) < 0)
+            VIR_WARN("could not close file %s", path);
+    } else {
+        /* FIXME: when the proper storage drivers are compiled in, it
+         * would be nice to read metadata from the network storage to
+         * allow for non-raw images.  */
+        if (VIR_STRDUP(meta->path, path) < 0)
+            return -1;
+        if (VIR_STRDUP(meta->canonPath, path) < 0)
+            return -1;
+        meta->type = VIR_STORAGE_TYPE_NETWORK;
+        meta->format = VIR_STORAGE_FILE_RAW;
+        ret = 0;
     }
 
-    ret = virStorageFileGetMetadataFromFDInternal(path, canonPath, directory,
-                                                  fd, format, meta);
-
-    if (VIR_CLOSE(fd) < 0)
-        VIR_WARN("could not close file %s", path);
-
-    if (ret == 0 && meta->backingStoreIsFile) {
+    if (ret == 0 && meta->backingStore) {
         virStorageFileMetadataPtr backing;
 
         if (meta->backingStoreFormat == VIR_STORAGE_FILE_AUTO && !allow_probe)
@@ -1207,12 +1235,16 @@ virStorageFileGetMetadata(const char *path, int format,
     if (!cycle)
         return NULL;
 
-    if (!(canonPath = canonicalize_file_name(path))) {
-        virReportSystemError(errno, _("unable to resolve '%s'"), path);
-        goto cleanup;
-    }
-    if (!(directory = mdir_name(path))) {
-        virReportOOMError();
+    if (virBackingStoreIsFile(path)) {
+        if (!(canonPath = canonicalize_file_name(path))) {
+            virReportSystemError(errno, _("unable to resolve '%s'"), path);
+            goto cleanup;
+        }
+        if (!(directory = mdir_name(path))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    } else if (VIR_STRDUP(canonPath, path) < 0) {
         goto cleanup;
     }
     if (VIR_ALLOC(meta) < 0)
@@ -1240,7 +1272,8 @@ virStorageFileGetMetadata(const char *path, int format,
  *
  * If CHAIN is broken, set *brokenFile to the broken file name,
  * otherwise set it to NULL. Caller MUST free *brokenFile after use.
- * Return 0 on success, negative on error.
+ * Return 0 on success (including when brokenFile is set), negative on
+ * error (allocation failure).
  */
 int
 virStorageFileChainGetBroken(virStorageFileMetadataPtr chain,
@@ -1249,15 +1282,15 @@ virStorageFileChainGetBroken(virStorageFileMetadataPtr chain,
     virStorageFileMetadataPtr tmp;
     int ret = -1;
 
+    *brokenFile = NULL;
+
     if (!chain)
         return 0;
 
-    *brokenFile = NULL;
-
     tmp = chain;
     while (tmp) {
-        /* Break if no backing store, backing store is not file, or
-         * other problem such as infinite loop */
+        /* Break when we hit end of chain; report error if we detected
+         * a missing backing file, infinite loop, or other error */
        if (!tmp->backingStoreRaw)
            break;
        if (!tmp->backingStore) {
