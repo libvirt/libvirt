@@ -1833,6 +1833,7 @@ virStorageFileIsClusterFS;
 virStorageFileProbeFormat;
 virStorageFileProbeFormatFromBuf;
 virStorageFileResize;
+virStorageIsFile;
 virStorageNetHostDefClear;
 virStorageNetHostDefCopy;
 virStorageNetHostDefFree;

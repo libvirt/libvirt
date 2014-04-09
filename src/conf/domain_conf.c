@@ -18565,7 +18565,7 @@ virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
         goto cleanup;
 
     tmp = disk->backingChain;
-    while (tmp && tmp->backingStoreIsFile) {
+    while (tmp && virStorageIsFile(tmp->backingStore)) {
         if (!ignoreOpenFailure && !tmp->backingMeta) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to visit backing chain file %s"),

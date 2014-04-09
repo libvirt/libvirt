@@ -688,11 +688,17 @@ virStorageFileMatchesVersion(int format,
     return false;
 }
 
-static bool
-virBackingStoreIsFile(const char *backing)
+bool
+virStorageIsFile(const char *backing)
 {
-    char *colon = strchr(backing, ':');
-    char *slash = strchr(backing, '/');
+    char *colon;
+    char *slash;
+
+    if (!backing)
+        return false;
+
+    colon = strchr(backing, ':');
+    slash = strchr(backing, '/');
 
     /* Reject anything that looks like a protocol (such as nbd: or
      * rbd:); if someone really does want a relative file name that
@@ -866,7 +872,7 @@ virStorageFileGetMetadataInternal(const char *path,
                 VIR_FREE(backing);
                 goto cleanup;
             }
-            if (virBackingStoreIsFile(backing)) {
+            if (virStorageIsFile(backing)) {
                 meta->backingStoreIsFile = true;
                 meta->backingStoreRaw = meta->backingStore;
                 meta->backingStore = NULL;
@@ -1146,7 +1152,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
     if (virHashAddEntry(cycle, canonPath, (void *)1) < 0)
         return -1;
 
-    if (virBackingStoreIsFile(path)) {
+    if (virStorageIsFile(path)) {
         if ((fd = virFileOpenAs(canonPath, O_RDONLY, 0, uid, gid, 0)) < 0) {
             virReportSystemError(-fd, _("Failed to open file '%s'"), path);
             return -1;
@@ -1235,7 +1241,7 @@ virStorageFileGetMetadata(const char *path, int format,
     if (!cycle)
         return NULL;
 
-    if (virBackingStoreIsFile(path)) {
+    if (virStorageIsFile(path)) {
         if (!(canonPath = canonicalize_file_name(path))) {
             virReportSystemError(errno, _("unable to resolve '%s'"), path);
             goto cleanup;
