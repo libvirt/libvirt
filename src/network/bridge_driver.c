@@ -328,38 +328,69 @@ networkBridgeDummyNicName(const char *brname)
     return nicname;
 }
 
+/* Update the internal status of all allegedly active networks
+ * according to external conditions on the host (i.e. anything that
+ * isn't stored directly in each network's state file). */
 static void
-networkFindActiveConfigs(virNetworkDriverStatePtr driver)
+networkUpdateAllState(virNetworkDriverStatePtr driver)
 {
     size_t i;
 
     for (i = 0; i < driver->networks.count; i++) {
         virNetworkObjPtr obj = driver->networks.objs[i];
 
+        if (!obj->active)
+           continue;
+
         virNetworkObjLock(obj);
 
-        /* If bridge exists, then mark it active */
-        if (obj->def->bridge &&
-            virNetDevExists(obj->def->bridge) == 1) {
-            obj->active = 1;
+        switch (obj->def->forward.type) {
+        case VIR_NETWORK_FORWARD_NONE:
+        case VIR_NETWORK_FORWARD_NAT:
+        case VIR_NETWORK_FORWARD_ROUTE:
+            /* If bridge doesn't exist, then mark it inactive */
+            if (!(obj->def->bridge && virNetDevExists(obj->def->bridge) == 1))
+                obj->active = 0;
+            break;
 
-            /* Try and read dnsmasq/radvd pids if any */
-            if (obj->def->ips && (obj->def->nips > 0)) {
-                char *radvdpidbase;
-
-                ignore_value(virPidFileReadIfAlive(driverState->pidDir, obj->def->name,
-                                                   &obj->dnsmasqPid,
-                                                   dnsmasqCapsGetBinaryPath(driver->dnsmasqCaps)));
-
-                if (!(radvdpidbase = networkRadvdPidfileBasename(obj->def->name)))
-                    goto cleanup;
-                ignore_value(virPidFileReadIfAlive(driverState->pidDir, radvdpidbase,
-                                                   &obj->radvdPid, RADVD));
-                VIR_FREE(radvdpidbase);
+        case VIR_NETWORK_FORWARD_BRIDGE:
+            if (obj->def->bridge) {
+                if (virNetDevExists(obj->def->bridge) != 1)
+                    obj->active = 0;
+                break;
             }
+            /* intentionally drop through to common case for all
+             * macvtap networks (forward='bridge' with no bridge
+             * device defined is macvtap using its 'bridge' mode)
+             */
+        case VIR_NETWORK_FORWARD_PRIVATE:
+        case VIR_NETWORK_FORWARD_VEPA:
+        case VIR_NETWORK_FORWARD_PASSTHROUGH:
+            /* so far no extra checks */
+            break;
+
+        case VIR_NETWORK_FORWARD_HOSTDEV:
+            /* so far no extra checks */
+            break;
         }
 
-    cleanup:
+        /* Try and read dnsmasq/radvd pids of active networks */
+        if (obj->active && obj->def->ips && (obj->def->nips > 0)) {
+            char *radvdpidbase;
+
+            ignore_value(virPidFileReadIfAlive(driverState->pidDir,
+                                               obj->def->name,
+                                               &obj->dnsmasqPid,
+                                               dnsmasqCapsGetBinaryPath(driver->dnsmasqCaps)));
+            radvdpidbase = networkRadvdPidfileBasename(obj->def->name);
+            if (!radvdpidbase)
+                break;
+            ignore_value(virPidFileReadIfAlive(driverState->pidDir,
+                                               radvdpidbase,
+                                               &obj->radvdPid, RADVD));
+            VIR_FREE(radvdpidbase);
+        }
+
         virNetworkObjUnlock(obj);
     }
 
@@ -591,7 +622,7 @@ networkStateInitialize(bool privileged,
                                  driverState->networkAutostartDir) < 0)
         goto error;
 
-    networkFindActiveConfigs(driverState);
+    networkUpdateAllState(driverState);
     networkReloadFirewallRules(driverState);
     networkRefreshDaemons(driverState);
 
