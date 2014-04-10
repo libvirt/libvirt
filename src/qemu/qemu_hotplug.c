@@ -1710,7 +1710,6 @@ qemuDomainNetGetBridgeName(virConnectPtr conn, virDomainNetDefPtr net)
         if (VIR_STRDUP(brname, tmpbr) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        int active;
         virErrorPtr errobj;
         virNetworkPtr network;
 
@@ -1720,15 +1719,7 @@ qemuDomainNetGetBridgeName(virConnectPtr conn, virDomainNetDefPtr net)
                            net->data.network.name);
             goto cleanup;
         }
-
-        active = virNetworkIsActive(network);
-        if (active == 1) {
-            brname = virNetworkGetBridgeName(network);
-        } else if (active == 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Network '%s' is not active."),
-                           net->data.network.name);
-        }
+        brname = virNetworkGetBridgeName(network);
 
         /* Make sure any above failure is preserved */
         errobj = virSaveLastError();

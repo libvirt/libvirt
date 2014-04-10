@@ -3166,7 +3166,8 @@ static int networkDestroy(virNetworkPtr net)
 
     if (!virNetworkObjIsActive(network)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("network is not active"));
+                       _("network '%s' is not active"),
+                       network->def->name);
         goto cleanup;
     }
 
@@ -3509,6 +3510,13 @@ networkAllocateActualDevice(virDomainDefPtr dom,
         goto error;
     }
     netdef = network->def;
+
+    if (!virNetworkObjIsActive(network)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("network '%s' is not active"),
+                       netdef->name);
+        goto error;
+    }
 
     if (VIR_ALLOC(iface->data.network.actual) < 0)
         goto error;

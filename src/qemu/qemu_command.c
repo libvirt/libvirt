@@ -297,7 +297,6 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        int active;
         bool fail = false;
         virErrorPtr errobj;
         virNetworkPtr network = virNetworkLookupByName(conn,
@@ -305,21 +304,8 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         if (!network)
             return ret;
 
-        active = virNetworkIsActive(network);
-        if (active != 1) {
-            fail = true;
-
-            if (active == 0)
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Network '%s' is not active."),
-                               net->data.network.name);
-        }
-
-        if (!fail) {
-            brname = virNetworkGetBridgeName(network);
-            if (brname == NULL)
-                fail = true;
-        }
+        if (!(brname = virNetworkGetBridgeName(network)))
+           fail = true;
 
         /* Make sure any above failure is preserved */
         errobj = virSaveLastError();
