@@ -732,6 +732,65 @@ bhyveDomainCreate(virDomainPtr dom)
     return bhyveDomainCreateWithFlags(dom, 0);
 }
 
+static virDomainPtr
+bhyveDomainCreateXML(virConnectPtr conn,
+                     const char *xml,
+                     unsigned int flags)
+{
+    bhyveConnPtr privconn = conn->privateData;
+    virDomainPtr dom = NULL;
+    virDomainDefPtr def = NULL;
+    virDomainObjPtr vm = NULL;
+    virCapsPtr caps = NULL;
+    unsigned int start_flags = 0;
+
+    virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, NULL);
+
+    if (flags & VIR_DOMAIN_START_AUTODESTROY)
+        start_flags |= VIR_BHYVE_PROCESS_START_AUTODESTROY;
+
+    caps = bhyveDriverGetCapabilities(privconn);
+    if (!caps)
+        return NULL;
+
+    if ((def = virDomainDefParseString(xml, caps, privconn->xmlopt,
+                                       1 << VIR_DOMAIN_VIRT_BHYVE,
+                                       VIR_DOMAIN_XML_INACTIVE)) == NULL)
+        goto cleanup;
+
+    if (virDomainCreateXMLEnsureACL(conn, def) < 0)
+        goto cleanup;
+
+    if (!(vm = virDomainObjListAdd(privconn->domains, def,
+                                   privconn->xmlopt,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE, NULL)))
+        goto cleanup;
+    def = NULL;
+
+    if (virBhyveProcessStart(conn, privconn, vm,
+                             VIR_DOMAIN_RUNNING_BOOTED,
+                             start_flags) < 0) {
+        /* If domain is not persistent, remove its data */
+        if (!vm->persistent) {
+            virDomainObjListRemove(privconn->domains, vm);
+            vm = NULL;
+        }
+        goto cleanup;
+    }
+
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
+    if (dom)
+        dom->id = vm->def->id;
+
+ cleanup:
+    virObjectUnref(caps);
+    virDomainDefFree(def);
+    if (vm)
+        virObjectUnlock(vm);
+
+    return dom;
+}
+
 static int
 bhyveDomainDestroy(virDomainPtr dom)
 {
@@ -1124,6 +1183,7 @@ static virDriver bhyveDriver = {
     .connectNumOfDefinedDomains = bhyveConnectNumOfDefinedDomains, /* 1.2.2 */
     .domainCreate = bhyveDomainCreate, /* 1.2.2 */
     .domainCreateWithFlags = bhyveDomainCreateWithFlags, /* 1.2.3 */
+    .domainCreateXML = bhyveDomainCreateXML, /* 1.2.4 */
     .domainDestroy = bhyveDomainDestroy, /* 1.2.2 */
     .domainLookupByUUID = bhyveDomainLookupByUUID, /* 1.2.2 */
     .domainLookupByName = bhyveDomainLookupByName, /* 1.2.2 */
