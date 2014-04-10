@@ -378,12 +378,83 @@ testStorageChain(const void *args)
     return ret;
 }
 
+struct testLookupData
+{
+    virStorageFileMetadataPtr chain;
+    const char *start;
+    const char *name;
+    const char *expResult;
+    virStorageFileMetadataPtr expMeta;
+    const char *expParent;
+};
+
+static int
+testStorageLookup(const void *args)
+{
+    const struct testLookupData *data = args;
+    int ret = 0;
+    const char *actualResult;
+    virStorageFileMetadataPtr actualMeta;
+    const char *actualParent;
+
+    /* This function is documented as giving results within chain, but
+     * as the same string may be duplicated into more than one field,
+     * we rely on STREQ rather than pointer equality.  Test twice to
+     * ensure optional parameters don't cause NULL deref.  */
+    actualResult = virStorageFileChainLookup(data->chain, data->start,
+                                             data->name, NULL, NULL);
+
+    if (!data->expResult) {
+        if (!virGetLastError()) {
+            fprintf(stderr, "call should have failed\n");
+            ret = -1;
+        }
+        virResetLastError();
+    } else {
+        if (virGetLastError()) {
+            fprintf(stderr, "call should not have warned\n");
+            ret = -1;
+        }
+    }
+
+    if (STRNEQ_NULLABLE(data->expResult, actualResult)) {
+        fprintf(stderr, "result 1: expected %s, got %s\n",
+                NULLSTR(data->expResult), NULLSTR(actualResult));
+        ret = -1;
+    }
+
+    actualResult = virStorageFileChainLookup(data->chain, data->start,
+                                             data->name, &actualMeta,
+                                             &actualParent);
+    if (!data->expResult)
+        virResetLastError();
+    if (STRNEQ_NULLABLE(data->expResult, actualResult)) {
+        fprintf(stderr, "result 2: expected %s, got %s\n",
+                NULLSTR(data->expResult), NULLSTR(actualResult));
+        ret = -1;
+    }
+    if (data->expMeta != actualMeta) {
+        fprintf(stderr, "meta: expected %p, got %p\n",
+                data->expMeta, actualMeta);
+        ret = -1;
+    }
+    if (STRNEQ_NULLABLE(data->expParent, actualParent)) {
+        fprintf(stderr, "parent: expected %s, got %s\n",
+                NULLSTR(data->expParent), NULLSTR(actualParent));
+        ret = -1;
+    }
+
+    return ret;
+}
+
 static int
 mymain(void)
 {
     int ret;
     virCommandPtr cmd = NULL;
     struct testChainData data;
+    virStorageFileMetadataPtr chain = NULL;
+    const char *start = NULL;
 
     /* Prep some files with qemu-img; if that is not found on PATH, or
      * if it lacks support for qcow2 and qed, skip this test.  */
@@ -771,7 +842,115 @@ mymain(void)
                (&wrap, &qcow2), EXP_WARN,
                (&wrap, &qcow2), ALLOW_PROBE | EXP_WARN);
 
+    /* Rewrite wrap and qcow2 back to 3-deep chain, absolute backing */
+    virCommandFree(cmd);
+    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
+                               "-F", "qcow2", "-b", absraw, "qcow2", NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        ret = -1;
+
+    /* Test behavior of chain lookups, absolute backing */
+    start = "wrap";
+    chain = virStorageFileGetMetadata("wrap", VIR_STORAGE_FILE_QCOW2,
+                                      -1, -1, false);
+    if (!chain) {
+        ret = -1;
+        goto cleanup;
+    }
+
+#define TEST_LOOKUP(id, name, result, meta, parent)                  \
+    do {                                                             \
+        struct testLookupData data2 = { chain, start, name,          \
+                                        result, meta, parent, };     \
+        if (virtTestRun("Chain lookup " #id,                         \
+                        testStorageLookup, &data2) < 0)              \
+            ret = -1;                                                \
+    } while (0)
+
+    TEST_LOOKUP(0, "bogus", NULL, NULL, NULL);
+    TEST_LOOKUP(1, "wrap", start, chain, NULL);
+    TEST_LOOKUP(2, abswrap, start, chain, NULL);
+    TEST_LOOKUP(3, "qcow2", chain->backingStore, chain->backingMeta, start);
+    TEST_LOOKUP(4, absqcow2, chain->backingStore, chain->backingMeta, start);
+    TEST_LOOKUP(5, "raw", chain->backingMeta->backingStore,
+                chain->backingMeta->backingMeta, chain->backingStore);
+    TEST_LOOKUP(6, absraw, chain->backingMeta->backingStore,
+                chain->backingMeta->backingMeta, chain->backingStore);
+    TEST_LOOKUP(7, NULL, chain->backingMeta->backingStore,
+                chain->backingMeta->backingMeta, chain->backingStore);
+
+    /* Rewrite wrap and qcow2 back to 3-deep chain, relative backing */
+    virCommandFree(cmd);
+    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
+                               "-F", "raw", "-b", "raw", "qcow2", NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        ret = -1;
+
+    virCommandFree(cmd);
+    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
+                               "-F", "qcow2", "-b", "qcow2", "wrap", NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        ret = -1;
+
+    /* Test behavior of chain lookups, relative backing */
+    start = abswrap;
+    virStorageFileFreeMetadata(chain);
+    chain = virStorageFileGetMetadata(abswrap, VIR_STORAGE_FILE_QCOW2,
+                                      -1, -1, false);
+    if (!chain) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    TEST_LOOKUP(8, "bogus", NULL, NULL, NULL);
+    TEST_LOOKUP(9, "wrap", start, chain, NULL);
+    TEST_LOOKUP(10, abswrap, start, chain, NULL);
+    TEST_LOOKUP(11, "qcow2", chain->backingStore, chain->backingMeta, start);
+    TEST_LOOKUP(12, absqcow2, chain->backingStore, chain->backingMeta, start);
+    TEST_LOOKUP(13, "raw", chain->backingMeta->backingStore,
+                chain->backingMeta->backingMeta, chain->backingStore);
+    TEST_LOOKUP(14, absraw, chain->backingMeta->backingStore,
+                chain->backingMeta->backingMeta, chain->backingStore);
+    TEST_LOOKUP(15, NULL, chain->backingMeta->backingStore,
+                chain->backingMeta->backingMeta, chain->backingStore);
+
+    /* Use link to wrap with cross-directory relative backing */
+    virCommandFree(cmd);
+    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
+                               "-F", "qcow2", "-b", "../qcow2", "wrap", NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        ret = -1;
+
+    /* Test behavior of chain lookups, relative backing */
+    start = "sub/link2";
+    virStorageFileFreeMetadata(chain);
+    chain = virStorageFileGetMetadata(start, VIR_STORAGE_FILE_QCOW2,
+                                      -1, -1, false);
+    if (!chain) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    TEST_LOOKUP(16, "bogus", NULL, NULL, NULL);
+    TEST_LOOKUP(17, "sub/link2", start, chain, NULL);
+    TEST_LOOKUP(18, "wrap", start, chain, NULL);
+    TEST_LOOKUP(19, abswrap, start, chain, NULL);
+    TEST_LOOKUP(20, "../qcow2", chain->backingStore, chain->backingMeta, start);
+    /* FIXME: 21 is questionable, since there is no 'sub/qcow2' and
+     * since relative backing files should be looked up in the context
+     * of the directory containing the parent.  */
+    TEST_LOOKUP(21, "qcow2", chain->backingStore, chain->backingMeta, start);
+    TEST_LOOKUP(22, absqcow2, chain->backingStore, chain->backingMeta, start);
+    TEST_LOOKUP(23, "raw", chain->backingMeta->backingStore,
+                chain->backingMeta->backingMeta, chain->backingStore);
+    TEST_LOOKUP(24, absraw, chain->backingMeta->backingStore,
+                chain->backingMeta->backingMeta, chain->backingStore);
+    TEST_LOOKUP(25, NULL, chain->backingMeta->backingStore,
+                chain->backingMeta->backingMeta, chain->backingStore);
+
+ cleanup:
     /* Final cleanup */
+    virStorageFileFreeMetadata(chain);
     testCleanupImages();
     virCommandFree(cmd);
 
