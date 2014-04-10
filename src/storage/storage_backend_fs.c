@@ -106,7 +106,9 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
 
         if (!(meta = virStorageFileGetMetadataFromBuf(target->path,
                                                       header, len,
-                                                      target->format))) {
+                                                      target->format,
+                                                      backingStore,
+                                                      backingStoreFormat))) {
             ret = -1;
             goto error;
         }
@@ -114,25 +116,19 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
 
     VIR_FORCE_CLOSE(fd);
 
-    if (meta && meta->backingStore) {
-        *backingStore = meta->backingStore;
-        meta->backingStore = NULL;
-        if (meta->backingStoreFormat == VIR_STORAGE_FILE_AUTO &&
-            virStorageIsFile(*backingStore)) {
-            if ((ret = virStorageFileProbeFormat(*backingStore, -1, -1)) < 0) {
-                /* If the backing file is currently unavailable, only log an error,
-                 * but continue. Returning -1 here would disable the whole storage
-                 * pool, making it unavailable for even maintenance. */
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot probe backing volume format: %s"),
-                               *backingStore);
-                ret = -3;
-            } else {
-                *backingStoreFormat = ret;
-                ret = 0;
-            }
+    if (meta && *backingStore &&
+        *backingStoreFormat == VIR_STORAGE_FILE_AUTO &&
+        virStorageIsFile(*backingStore)) {
+        if ((ret = virStorageFileProbeFormat(*backingStore, -1, -1)) < 0) {
+            /* If the backing file is currently unavailable, only log an error,
+             * but continue. Returning -1 here would disable the whole storage
+             * pool, making it unavailable for even maintenance. */
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot probe backing volume format: %s"),
+                           *backingStore);
+            ret = -3;
         } else {
-            *backingStoreFormat = meta->backingStoreFormat;
+            *backingStoreFormat = ret;
             ret = 0;
         }
     } else {

@@ -790,13 +790,16 @@ qcow2GetFeatures(virBitmapPtr *features,
  * information about the file and its backing store.  */
 static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
 ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(7)
+ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(9)
 virStorageFileGetMetadataInternal(const char *path,
                                   const char *canonPath,
                                   const char *directory,
                                   char *buf,
                                   size_t len,
                                   int format,
-                                  virStorageFileMetadataPtr meta)
+                                  virStorageFileMetadataPtr meta,
+                                  char **backingStore,
+                                  int *backingFormat)
 {
     int ret = -1;
 
@@ -855,10 +858,9 @@ virStorageFileGetMetadataInternal(const char *path,
     }
 
     if (fileTypeInfo[format].getBackingStore != NULL) {
-        char *backing;
-        int backingFormat;
+        char *backing = NULL;
         int store = fileTypeInfo[format].getBackingStore(&backing,
-                                                         &backingFormat,
+                                                         backingFormat,
                                                          buf, len);
         if (store == BACKING_STORE_INVALID)
             goto done;
@@ -880,23 +882,20 @@ virStorageFileGetMetadataInternal(const char *path,
                     /* the backing file is (currently) unavailable, treat this
                      * file as standalone:
                      * backingStoreRaw is kept to mark broken image chains */
-                    backingFormat = VIR_STORAGE_FILE_NONE;
+                    *backingFormat = VIR_STORAGE_FILE_NONE;
                     VIR_WARN("Backing file '%s' of image '%s' is missing.",
                              meta->backingStoreRaw, path);
 
                 }
             } else {
-                if (VIR_STRDUP(meta->backingStoreRaw, backing) < 0) {
-                    VIR_FREE(backing);
-                    goto cleanup;
-                }
-                backingFormat = VIR_STORAGE_FILE_RAW;
+                *backingStore = backing;
+                backing = NULL;
+                *backingFormat = VIR_STORAGE_FILE_RAW;
             }
             VIR_FREE(backing);
-            meta->backingStoreFormat = backingFormat;
         } else {
             meta->backingStore = NULL;
-            meta->backingStoreFormat = VIR_STORAGE_FILE_NONE;
+            *backingFormat = VIR_STORAGE_FILE_NONE;
         }
     }
 
@@ -980,6 +979,8 @@ virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid)
  * @buf: header bytes from @path
  * @len: length of @buf
  * @format: expected image format
+ * @backing: output malloc'd name of backing image, if any
+ * @backingFormat: format of @backing
  *
  * Extract metadata about the storage volume with the specified
  * image format. If image format is VIR_STORAGE_FILE_AUTO, it
@@ -989,7 +990,7 @@ virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid)
  * format, since a malicious guest can turn a raw file into any
  * other non-raw format at will.
  *
- * If the returned meta.backingStoreFormat is VIR_STORAGE_FILE_AUTO
+ * If the returned @backingFormat is VIR_STORAGE_FILE_AUTO
  * it indicates the image didn't specify an explicit format for its
  * backing store. Callers are advised against probing for the
  * backing store format in this case.
@@ -1000,7 +1001,9 @@ virStorageFileMetadataPtr
 virStorageFileGetMetadataFromBuf(const char *path,
                                  char *buf,
                                  size_t len,
-                                 int format)
+                                 int format,
+                                 char **backing,
+                                 int *backingFormat)
 {
     virStorageFileMetadataPtr ret = NULL;
     char *canonPath;
@@ -1013,7 +1016,8 @@ virStorageFileGetMetadataFromBuf(const char *path,
         goto cleanup;
 
     if (virStorageFileGetMetadataInternal(path, canonPath, ".", buf, len,
-                                          format, ret) < 0) {
+                                          format, ret, backing,
+                                          backingFormat) < 0) {
         virStorageFileFreeMetadata(ret);
         ret = NULL;
     }
@@ -1068,7 +1072,9 @@ virStorageFileGetMetadataFromFDInternal(const char *path,
     }
 
     ret = virStorageFileGetMetadataInternal(path, canonPath, directory,
-                                            buf, len, format, meta);
+                                            buf, len, format, meta,
+                                            &meta->backingStoreRaw,
+                                            &meta->backingStoreFormat);
 
     if (ret == 0) {
         if (S_ISREG(sb.st_mode))
