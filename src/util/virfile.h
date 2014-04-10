@@ -143,7 +143,12 @@ int virFileStripSuffix(char *str,
                        const char *suffix) ATTRIBUTE_RETURN_CHECK;
 
 int virFileLinkPointsTo(const char *checkLink,
-                        const char *checkDest);
+                        const char *checkDest)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int virFileRelLinkPointsTo(const char *directory,
+                           const char *checkLink,
+                           const char *checkDest)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int virFileResolveLink(const char *linkpath,
                        char **resultpath) ATTRIBUTE_RETURN_CHECK;

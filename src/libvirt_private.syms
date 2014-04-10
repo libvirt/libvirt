@@ -1255,6 +1255,7 @@ virFilePrintf;
 virFileReadAll;
 virFileReadHeaderFD;
 virFileReadLimFD;
+virFileRelLinkPointsTo;
 virFileResolveAllLinks;
 virFileResolveLink;
 virFileRewrite;

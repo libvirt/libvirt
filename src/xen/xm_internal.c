@@ -1427,25 +1427,24 @@ int
 xenXMDomainGetAutostart(virDomainDefPtr def,
                         int *autostart)
 {
-    char *linkname = xenXMAutostartLinkName(def);
     char *config = xenXMDomainConfigName(def);
     int ret = -1;
 
-    if (!linkname || !config)
+    if (!config)
         goto cleanup;
 
-    *autostart = virFileLinkPointsTo(linkname, config);
+    *autostart = virFileRelLinkPointsTo("/etc/xen/auto/", def->name, config);
     if (*autostart < 0) {
         virReportSystemError(errno,
-                             _("cannot check link %s points to config %s"),
-                             linkname, config);
+                             _("cannot check link /etc/xen/auto/%s points "
+                               "to config %s"),
+                             def->name, config);
         goto cleanup;
     }
 
     ret = 0;
 
  cleanup:
-    VIR_FREE(linkname);
     VIR_FREE(config);
     return ret;
 }

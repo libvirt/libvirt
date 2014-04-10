@@ -1368,7 +1368,8 @@ virFileHasSuffix(const char *str,
    && (Stat_buf_1).st_dev == (Stat_buf_2).st_dev)
 
 /* Return nonzero if checkLink and checkDest
-   refer to the same file.  Otherwise, return 0.  */
+ * refer to the same file.  Otherwise, return 0.
+ */
 int
 virFileLinkPointsTo(const char *checkLink,
                     const char *checkDest)
@@ -1379,6 +1380,35 @@ virFileLinkPointsTo(const char *checkLink,
     return (stat(checkLink, &src_sb) == 0
             && stat(checkDest, &dest_sb) == 0
             && SAME_INODE(src_sb, dest_sb));
+}
+
+
+/* Return positive if checkLink (residing within directory if not
+ * absolute) and checkDest refer to the same file.  Otherwise, return
+ * -1 on allocation failure (error reported), or 0 if not the same
+ * (silent).
+ */
+int
+virFileRelLinkPointsTo(const char *directory,
+                       const char *checkLink,
+                       const char *checkDest)
+{
+    char *candidate;
+    int ret;
+
+    if (*checkLink == '/')
+        return virFileLinkPointsTo(checkLink, checkDest);
+    if (!directory) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot resolve '%s' without starting directory"),
+                       checkLink);
+        return -1;
+    }
+    if (virAsprintf(&candidate, "%s/%s", directory, checkLink) < 0)
+        return -1;
+    ret = virFileLinkPointsTo(candidate, checkDest);
+    VIR_FREE(candidate);
+    return ret;
 }
 
 
