@@ -43,6 +43,9 @@ AM_CFLAGS = \
 	$(COVERAGE_CFLAGS) \
 	$(WARN_CFLAGS)
 
+AM_LDFLAGS = \
+	-export-dynamic
+
 if WITH_DRIVER_MODULES
 INCLUDES += \
 	-DTEST_DRIVER_DIR=\"$(top_builddir)/src/.libs\"
@@ -921,7 +924,6 @@ virsystemdtest_SOURCES = \
 	virsystemdtest.c testutils.h testutils.c
 virsystemdtest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
 virsystemdtest_LDADD = $(LDADDS)
-virsystemdtest_LDFLAGS = $(DRIVER_MODULE_LDFLAGS)
 
 else ! WITH_DBUS
 EXTRA_DIST += virdbustest.c virmockdbus.c virsystemdtest.c
