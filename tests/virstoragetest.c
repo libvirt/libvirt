@@ -102,6 +102,9 @@ testPrepImages(void)
     if (!qemuimg)
         goto skip;
 
+    /* Clean up from any earlier failed tests */
+    virFileDeleteTree(datadir);
+
     /* See if qemu-img supports '-o compat=xxx'.  If so, we force the
      * use of both v2 and v3 files; if not, it is v2 only but the test
      * still works. */
