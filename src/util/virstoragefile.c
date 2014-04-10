@@ -1035,13 +1035,18 @@ virStorageFileGetMetadataFromFDInternal(const char *path,
                                         const char *directory,
                                         int fd,
                                         int format,
-                                        virStorageFileMetadataPtr meta)
+                                        virStorageFileMetadataPtr meta,
+                                        int *backingFormat)
 {
     char *buf = NULL;
     ssize_t len = VIR_STORAGE_MAX_HEADER;
     struct stat sb;
     int ret = -1;
+    int dummy;
 
+    if (!backingFormat)
+        backingFormat = &dummy;
+    *backingFormat = VIR_STORAGE_FILE_NONE;
     if (fstat(fd, &sb) < 0) {
         virReportSystemError(errno,
                              _("cannot stat file '%s'"),
@@ -1074,7 +1079,7 @@ virStorageFileGetMetadataFromFDInternal(const char *path,
     ret = virStorageFileGetMetadataInternal(path, canonPath, directory,
                                             buf, len, format, meta,
                                             &meta->backingStoreRaw,
-                                            &meta->backingStoreFormat);
+                                            backingFormat);
 
     if (ret == 0) {
         if (S_ISREG(sb.st_mode))
@@ -1099,11 +1104,6 @@ virStorageFileGetMetadataFromFDInternal(const char *path,
  * format, since a malicious guest can turn a raw file into any
  * other non-raw format at will.
  *
- * If the returned meta.backingStoreFormat is VIR_STORAGE_FILE_AUTO
- * it indicates the image didn't specify an explicit format for its
- * backing store. Callers are advised against probing for the
- * backing store format in this case.
- *
  * Caller MUST free the result after use via virStorageFileFreeMetadata.
  */
 virStorageFileMetadataPtr
@@ -1121,7 +1121,7 @@ virStorageFileGetMetadataFromFD(const char *path,
     if (VIR_ALLOC(ret) < 0)
         goto cleanup;
     if (virStorageFileGetMetadataFromFDInternal(path, canonPath, ".",
-                                                fd, format, ret) < 0) {
+                                                fd, format, ret, NULL) < 0) {
         virStorageFileFreeMetadata(ret);
         ret = NULL;
     }
@@ -1142,6 +1142,8 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
 {
     int fd;
     int ret = -1;
+    int backingFormat;
+
     VIR_DEBUG("path=%s canonPath=%s dir=%s format=%d uid=%d gid=%d probe=%d",
               path, canonPath, NULLSTR(directory), format,
               (int)uid, (int)gid, allow_probe);
@@ -1163,7 +1165,8 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
 
         ret = virStorageFileGetMetadataFromFDInternal(path, canonPath,
                                                       directory,
-                                                      fd, format, meta);
+                                                      fd, format, meta,
+                                                      &backingFormat);
 
         if (VIR_CLOSE(fd) < 0)
             VIR_WARN("could not close file %s", path);
@@ -1183,19 +1186,17 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
     if (ret == 0 && meta->backingStore) {
         virStorageFileMetadataPtr backing;
 
-        if (meta->backingStoreFormat == VIR_STORAGE_FILE_AUTO && !allow_probe)
-            meta->backingStoreFormat = VIR_STORAGE_FILE_RAW;
-        else if (meta->backingStoreFormat == VIR_STORAGE_FILE_AUTO_SAFE)
-            meta->backingStoreFormat = VIR_STORAGE_FILE_AUTO;
-        format = meta->backingStoreFormat;
+        if (backingFormat == VIR_STORAGE_FILE_AUTO && !allow_probe)
+            backingFormat = VIR_STORAGE_FILE_RAW;
+        else if (backingFormat == VIR_STORAGE_FILE_AUTO_SAFE)
+            backingFormat = VIR_STORAGE_FILE_AUTO;
         if (VIR_ALLOC(backing) < 0 ||
             virStorageFileGetMetadataRecurse(meta->backingStoreRaw,
                                              meta->backingStore,
-                                             meta->directory, format,
+                                             meta->directory, backingFormat,
                                              uid, gid, allow_probe,
                                              cycle, backing) < 0) {
             /* If we failed to get backing data, mark the chain broken */
-            meta->backingStoreFormat = VIR_STORAGE_FILE_NONE;
             VIR_FREE(meta->backingStore);
             virStorageFileFreeMetadata(backing);
         } else {
@@ -1219,11 +1220,6 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
  * Callers are advised never to use VIR_STORAGE_FILE_AUTO as a
  * format, since a malicious guest can turn a raw file into any
  * other non-raw format at will.
- *
- * If the returned meta.backingStoreFormat is VIR_STORAGE_FILE_AUTO
- * it indicates the image didn't specify an explicit format for its
- * backing store. Callers are advised against using ALLOW_PROBE, as
- * it would probe the backing store format in this case.
  *
  * Caller MUST free result after use via virStorageFileFreeMetadata.
  */
