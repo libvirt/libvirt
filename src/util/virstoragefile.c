@@ -799,7 +799,8 @@ virStorageFileGetMetadataInternal(const char *path,
                                   int format,
                                   virStorageFileMetadataPtr meta,
                                   char **backingStore,
-                                  int *backingFormat)
+                                  int *backingFormat,
+                                  char **backingDirectory)
 {
     int ret = -1;
 
@@ -877,7 +878,7 @@ virStorageFileGetMetadataInternal(const char *path,
                 meta->backingStoreRaw = meta->backingStore;
                 meta->backingStore = NULL;
                 if (virFindBackingFile(directory, backing,
-                                       &meta->directory,
+                                       backingDirectory,
                                        &meta->backingStore) < 0) {
                     /* the backing file is (currently) unavailable, treat this
                      * file as standalone:
@@ -1017,7 +1018,7 @@ virStorageFileGetMetadataFromBuf(const char *path,
 
     if (virStorageFileGetMetadataInternal(path, canonPath, ".", buf, len,
                                           format, ret, backing,
-                                          backingFormat) < 0) {
+                                          backingFormat, NULL) < 0) {
         virStorageFileFreeMetadata(ret);
         ret = NULL;
     }
@@ -1036,7 +1037,8 @@ virStorageFileGetMetadataFromFDInternal(const char *path,
                                         int fd,
                                         int format,
                                         virStorageFileMetadataPtr meta,
-                                        int *backingFormat)
+                                        int *backingFormat,
+                                        char **backingDirectory)
 {
     char *buf = NULL;
     ssize_t len = VIR_STORAGE_MAX_HEADER;
@@ -1079,7 +1081,7 @@ virStorageFileGetMetadataFromFDInternal(const char *path,
     ret = virStorageFileGetMetadataInternal(path, canonPath, directory,
                                             buf, len, format, meta,
                                             &meta->backingStoreRaw,
-                                            backingFormat);
+                                            backingFormat, backingDirectory);
 
     if (ret == 0) {
         if (S_ISREG(sb.st_mode))
@@ -1121,7 +1123,8 @@ virStorageFileGetMetadataFromFD(const char *path,
     if (VIR_ALLOC(ret) < 0)
         goto cleanup;
     if (virStorageFileGetMetadataFromFDInternal(path, canonPath, ".",
-                                                fd, format, ret, NULL) < 0) {
+                                                fd, format, ret,
+                                                NULL, NULL) < 0) {
         virStorageFileFreeMetadata(ret);
         ret = NULL;
     }
@@ -1143,6 +1146,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
     int fd;
     int ret = -1;
     int backingFormat;
+    char *backingDirectory = NULL;
 
     VIR_DEBUG("path=%s canonPath=%s dir=%s format=%d uid=%d gid=%d probe=%d",
               path, canonPath, NULLSTR(directory), format,
@@ -1166,7 +1170,8 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
         ret = virStorageFileGetMetadataFromFDInternal(path, canonPath,
                                                       directory,
                                                       fd, format, meta,
-                                                      &backingFormat);
+                                                      &backingFormat,
+                                                      &backingDirectory);
 
         if (VIR_CLOSE(fd) < 0)
             VIR_WARN("could not close file %s", path);
@@ -1193,7 +1198,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
         if (VIR_ALLOC(backing) < 0 ||
             virStorageFileGetMetadataRecurse(meta->backingStoreRaw,
                                              meta->backingStore,
-                                             meta->directory, backingFormat,
+                                             backingDirectory, backingFormat,
                                              uid, gid, allow_probe,
                                              cycle, backing) < 0) {
             /* If we failed to get backing data, mark the chain broken */
@@ -1332,7 +1337,6 @@ virStorageFileFreeMetadata(virStorageFileMetadata *meta)
     VIR_FREE(meta->backingStore);
     VIR_FREE(meta->backingStoreRaw);
     VIR_FREE(meta->compat);
-    VIR_FREE(meta->directory);
     virBitmapFree(meta->features);
     virStorageEncryptionFree(meta->encryption);
     VIR_FREE(meta);

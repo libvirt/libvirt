@@ -146,7 +146,6 @@ struct _virStorageFileMetadata {
      * query the parent metadata for details about the backing
      * store.  */
     char *backingStore; /* Canonical name (absolute file, or protocol). Should be same as backingMeta->canonPath */
-    char *directory; /* The directory containing basename of backingStoreRaw. Should be same as backingMeta->relDir */
 };
 
 
