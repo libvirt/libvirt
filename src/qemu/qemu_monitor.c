@@ -2047,6 +2047,13 @@ int qemuMonitorSetMigrationSpeed(qemuMonitorPtr mon,
         return -1;
     }
 
+    if (bandwidth > QEMU_DOMAIN_MIG_BANDWIDTH_MAX) {
+        virReportError(VIR_ERR_OVERFLOW,
+                       _("bandwidth must be less than %llu"),
+                       QEMU_DOMAIN_MIG_BANDWIDTH_MAX + 1ULL);
+        return -1;
+    }
+
     if (mon->json)
         ret = qemuMonitorJSONSetMigrationSpeed(mon, bandwidth);
     else
