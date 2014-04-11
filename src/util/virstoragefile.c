@@ -1537,7 +1537,8 @@ int virStorageFileGetSCSIKey(const char *path,
  * backing element is not a file).  If PARENT is not NULL, set *PARENT
  * to the preferred name of the parent (or to NULL if NAME matches
  * START).  Since the results point within CHAIN, they must not be
- * independently freed.  */
+ * independently freed.  Reports an error and returns NULL if NAME is
+ * not found.  */
 const char *
 virStorageFileChainLookup(virStorageFileMetadataPtr chain, const char *start,
                           const char *name, virStorageFileMetadataPtr *meta,
@@ -1570,15 +1571,12 @@ virStorageFileChainLookup(virStorageFileMetadataPtr chain, const char *start,
                    STREQ(name, owner->backingStore)) {
             break;
         } else if (virStorageIsFile(owner->backingStore)) {
-            char *absName = NULL;
-            if (virFindBackingFile(owner->directory, name,
-                                   NULL, &absName) < 0)
+            int result = virFileRelLinkPointsTo(owner->directory, name,
+                                                owner->backingStore);
+            if (result < 0)
                 goto error;
-            if (absName && STREQ(absName, owner->backingStore)) {
-                VIR_FREE(absName);
+            if (result > 0)
                 break;
-            }
-            VIR_FREE(absName);
         }
         *parent = owner->backingStore;
         owner = owner->backingMeta;
@@ -1590,6 +1588,14 @@ virStorageFileChainLookup(virStorageFileMetadataPtr chain, const char *start,
     return owner->backingStore;
 
  error:
+    if (name)
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("could not find image '%s' in chain for '%s'"),
+                       name, start);
+    else
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("could not find base image in chain for '%s'"),
+                       start);
     *parent = NULL;
     if (meta)
         *meta = NULL;

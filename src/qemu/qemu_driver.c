@@ -15346,9 +15346,6 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
                                                        disk->src.path,
                                                        top, &top_meta,
                                                        &top_parent))) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("could not find top '%s' in chain for '%s'"),
-                       top, path);
         goto endjob;
     }
     if (!top_meta || !top_meta->backingStore) {
@@ -15357,16 +15354,12 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
                        top_canon, path);
         goto endjob;
     }
-    if (!base && (flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW)) {
+    if (!base && (flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW))
         base_canon = top_meta->backingStore;
-    } else if (!(base_canon = virStorageFileChainLookup(top_meta, top_canon,
-                                                        base, NULL, NULL))) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("could not find base '%s' below '%s' in chain "
-                         "for '%s'"),
-                       base ? base : "(default)", top_canon, path);
+    else if (!(base_canon = virStorageFileChainLookup(top_meta, top_canon,
+                                                      base, NULL, NULL)))
         goto endjob;
-    }
+
     /* Note that this code exploits the fact that
      * virStorageFileChainLookup guarantees a simple pointer
      * comparison will work, rather than needing full-blown STREQ.  */
