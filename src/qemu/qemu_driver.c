@@ -11927,6 +11927,13 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
     if (virDomainMigrateSetMaxSpeedEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (bandwidth > QEMU_DOMAIN_MIG_BANDWIDTH_MAX) {
+        virReportError(VIR_ERR_OVERFLOW,
+                       _("bandwidth must be less than %llu"),
+                       QEMU_DOMAIN_MIG_BANDWIDTH_MAX + 1ULL);
+        goto cleanup;
+    }
+
     if (virDomainObjIsActive(vm)) {
         if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MIGRATION_OP) < 0)
             goto cleanup;
