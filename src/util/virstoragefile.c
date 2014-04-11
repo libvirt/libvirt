@@ -1544,48 +1544,40 @@ virStorageFileChainLookup(virStorageFileMetadataPtr chain,
                           const char **parent)
 {
     const char *start = chain->canonPath;
-    virStorageFileMetadataPtr owner;
     const char *tmp;
+    const char *parentDir = ".";
+    bool nameIsFile = virStorageIsFile(name);
 
     if (!parent)
         parent = &tmp;
 
     *parent = NULL;
-    if (name ? STREQ(start, name) || virFileLinkPointsTo(start, name) :
-        !chain->backingStore) {
-        if (meta)
-            *meta = chain;
-        return start;
-    }
-
-    owner = chain;
-    *parent = start;
-    while (owner) {
-        if (!owner->backingStore)
-            goto error;
+    while (chain) {
         if (!name) {
-            if (!owner->backingMeta ||
-                !owner->backingMeta->backingStore)
+            if (!chain->backingMeta)
                 break;
-        } else if (STREQ_NULLABLE(name, owner->backingStoreRaw) ||
-                   STREQ(name, owner->backingStore)) {
-            break;
-        } else if (virStorageIsFile(owner->backingStore)) {
-            int result = virFileRelLinkPointsTo(owner->directory, name,
-                                                owner->backingStore);
-            if (result < 0)
-                goto error;
-            if (result > 0)
+        } else {
+            if (STREQ(name, chain->path))
                 break;
+            if (nameIsFile && (chain->type == VIR_STORAGE_TYPE_FILE ||
+                               chain->type == VIR_STORAGE_TYPE_BLOCK)) {
+                int result = virFileRelLinkPointsTo(parentDir, name,
+                                                    chain->canonPath);
+                if (result < 0)
+                    goto error;
+                if (result > 0)
+                    break;
+            }
         }
-        *parent = owner->backingStore;
-        owner = owner->backingMeta;
+        *parent = chain->canonPath;
+        parentDir = chain->relDir;
+        chain = chain->backingMeta;
     }
-    if (!owner)
+    if (!chain)
         goto error;
     if (meta)
-        *meta = owner->backingMeta;
-    return owner->backingStore;
+        *meta = chain;
+    return chain->canonPath;
 
  error:
     if (name)

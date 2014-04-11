@@ -935,8 +935,7 @@ mymain(void)
     TEST_LOOKUP(19, abswrap, chain->canonPath, chain, NULL);
     TEST_LOOKUP(20, "../qcow2", chain->backingStore, chain->backingMeta,
                 chain->canonPath);
-    TEST_LOOKUP(21, "qcow2", chain->backingStore, chain->backingMeta,
-                chain->canonPath);
+    TEST_LOOKUP(21, "qcow2", NULL, NULL, NULL);
     TEST_LOOKUP(22, absqcow2, chain->backingStore, chain->backingMeta,
                 chain->canonPath);
     TEST_LOOKUP(23, "raw", chain->backingMeta->backingStore,
