@@ -95,7 +95,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
 struct testInfo {
     const char *name;
     unsigned long long extraFlags;
-    const char *migrateFrom;
 };
 
 static int
@@ -137,16 +136,16 @@ mymain(void)
     if (!(driver.xmlopt = virQEMUDriverCreateXMLConf(&driver)))
         return EXIT_FAILURE;
 
-# define DO_TEST_FULL(name, extraFlags, migrateFrom)                    \
+# define DO_TEST_FULL(name, extraFlags)                                 \
     do {                                                                \
-        const struct testInfo info = { name, extraFlags, migrateFrom }; \
+        const struct testInfo info = { name, extraFlags };              \
         if (virtTestRun("QEMU ARGV-2-XML " name,                        \
                         testCompareXMLToArgvHelper, &info) < 0)         \
             ret = -1;                                                   \
     } while (0)
 
 # define DO_TEST(name)                                                  \
-        DO_TEST_FULL(name, 0, NULL)
+        DO_TEST_FULL(name, 0)
 
     setenv("PATH", "/bin", 1);
     setenv("USER", "test", 1);
@@ -264,12 +263,11 @@ mymain(void)
 
     DO_TEST("nosharepages");
 
-    DO_TEST_FULL("restore-v1", 0, "stdio");
-    DO_TEST_FULL("restore-v2", 0, "stdio");
-    DO_TEST_FULL("restore-v2", 0, "exec:cat");
-    DO_TEST_FULL("migrate", 0, "tcp:10.0.0.1:5000");
+    DO_TEST("restore-v1");
+    DO_TEST("restore-v2");
+    DO_TEST("migrate");
 
-    DO_TEST_FULL("qemu-ns-no-env", 1, NULL);
+    DO_TEST_FULL("qemu-ns-no-env", 1);
 
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
