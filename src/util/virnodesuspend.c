@@ -22,6 +22,7 @@
 #include <config.h>
 #include "virnodesuspend.h"
 
+#include "virsystemd.h"
 #include "vircommand.h"
 #include "virthread.h"
 #include "datatypes.h"
@@ -228,23 +229,9 @@ int nodeSuspendForDuration(unsigned int target,
     return ret;
 }
 
-
-/**
- * virNodeSuspendSupportsTarget:
- * @target: The power management target to check whether it is supported
- *           by the host. Values could be:
- *           VIR_NODE_SUSPEND_TARGET_MEM
- *           VIR_NODE_SUSPEND_TARGET_DISK
- *           VIR_NODE_SUSPEND_TARGET_HYBRID
- * @supported: set to true if supported, false otherwise
- *
- * Run the script 'pm-is-supported' (from the pm-utils package)
- * to find out if @target is supported by the host.
- *
- * Returns 0 if the query was successful, -1 on failure.
- */
+#ifdef WITH_PM_UTILS
 static int
-virNodeSuspendSupportsTarget(unsigned int target, bool *supported)
+virNodeSuspendSupportsTargetPMUtils(unsigned int target, bool *supported)
 {
     virCommandPtr cmd;
     int status;
@@ -278,6 +265,59 @@ virNodeSuspendSupportsTarget(unsigned int target, bool *supported)
 
  cleanup:
     virCommandFree(cmd);
+    return ret;
+}
+#endif
+
+static int
+virNodeSuspendSupportsTargetSystemd(unsigned int target, bool *supported)
+{
+    int ret = -1;
+
+    *supported = false;
+
+    switch (target) {
+    case VIR_NODE_SUSPEND_TARGET_MEM:
+        ret = virSystemdCanSuspend(supported);
+        break;
+    case VIR_NODE_SUSPEND_TARGET_DISK:
+        ret = virSystemdCanHibernate(supported);
+        break;
+    case VIR_NODE_SUSPEND_TARGET_HYBRID:
+        ret = virSystemdCanHybridSleep(supported);
+        break;
+    default:
+        return ret;
+    }
+
+    return ret;
+}
+
+/**
+ * virNodeSuspendSupportsTarget:
+ * @target: The power management target to check whether it is supported
+ *           by the host. Values could be:
+ *           VIR_NODE_SUSPEND_TARGET_MEM
+ *           VIR_NODE_SUSPEND_TARGET_DISK
+ *           VIR_NODE_SUSPEND_TARGET_HYBRID
+ * @supported: set to true if supported, false otherwise
+ *
+ * Run the script 'pm-is-supported' (from the pm-utils package)
+ * to find out if @target is supported by the host.
+ *
+ * Returns 0 if the query was successful, -1 on failure.
+ */
+static int
+virNodeSuspendSupportsTarget(unsigned int target, bool *supported)
+{
+    int ret;
+
+    ret = virNodeSuspendSupportsTargetSystemd(target, supported);
+#ifdef WITH_PM_UTILS
+    if (ret < 0)
+        ret = virNodeSuspendSupportsTargetPMUtils(target, supported);
+#endif
+
     return ret;
 }
 

@@ -48,4 +48,10 @@ int virSystemdTerminateMachine(const char *name,
 
 void virSystemdNotifyStartup(void);
 
+int virSystemdCanSuspend(bool *result);
+
+int virSystemdCanHibernate(bool *result);
+
+int virSystemdCanHybridSleep(bool *result);
+
 #endif /* __VIR_SYSTEMD_H__ */

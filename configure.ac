@@ -563,6 +563,10 @@ AC_ARG_WITH([chrdev-lock-files],
     [location for UUCP style lock files for character devices
      (use auto for default paths on some platforms) @<:@default=auto@:>@])])
 m4_divert_text([DEFAULTS], [with_chrdev_lock_files=auto])
+AC_ARG_WITH([pm-utils],
+  [AS_HELP_STRING([--with-pm-utils],
+    [use pm-utils for power management @<:@default=yes@:>@])])
+m4_divert_text([DEFAULTS], [with_pm_utils=check])
 
 dnl
 dnl in case someone want to build static binaries
@@ -1620,6 +1624,23 @@ if test "$with_phyp" = "yes"; then
 fi
 
 AM_CONDITIONAL([WITH_PHYP],[test "$with_phyp" = "yes"])
+
+dnl
+dnl Should we build with pm-utils support?
+dnl
+if test "$with_pm_utils" = "check"; then
+    with_pm_utils=yes
+    if test "$with_dbus" = "yes"; then
+        if test "$init_systemd" = "yes"; then
+            with_pm_utils=no
+        fi
+    fi
+fi
+
+if test "$with_pm_utils" = "yes"; then
+    AC_DEFINE_UNQUOTED([WITH_PM_UTILS], 1, [whether to use pm-utils])
+fi
+AM_CONDITIONAL([WITH_PM_UTILS], [test "$with_pm_utils" = "yes"])
 
 dnl virsh libraries
 VIRSH_LIBS="$VIRSH_LIBS $READLINE_LIBS"
@@ -2853,6 +2874,7 @@ AC_MSG_NOTICE([     rbd: $LIBRBD_LIBS])
 else
 AC_MSG_NOTICE([     rbd: no])
 fi
+AC_MSG_NOTICE([pm-utils: $with_pm_utils])
 
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Test suite])

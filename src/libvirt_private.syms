@@ -1888,6 +1888,9 @@ virSysinfoSetup;
 
 
 # util/virsystemd.h
+virSystemdCanHibernate;
+virSystemdCanHybridSleep;
+virSystemdCanSuspend;
 virSystemdCreateMachine;
 virSystemdMakeMachineName;
 virSystemdMakeScopeName;
