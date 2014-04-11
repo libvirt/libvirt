@@ -4020,6 +4020,18 @@ doPeer2PeerMigrate3(virQEMUDriverPtr driver,
 }
 
 
+static int virConnectCredType[] = {
+    VIR_CRED_AUTHNAME,
+    VIR_CRED_PASSPHRASE,
+};
+
+
+static virConnectAuth virConnectAuthConfig = {
+    .credtype = virConnectCredType,
+    .ncredtype = ARRAY_CARDINALITY(virConnectCredType),
+};
+
+
 static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
                               virConnectPtr sconn,
                               virDomainObjPtr vm,
@@ -4053,7 +4065,7 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
      */
 
     qemuDomainObjEnterRemote(vm);
-    dconn = virConnectOpen(dconnuri);
+    dconn = virConnectOpenAuth(dconnuri, &virConnectAuthConfig, 0);
     qemuDomainObjExitRemote(vm);
     if (dconn == NULL) {
         virReportError(VIR_ERR_OPERATION_FAILED,
