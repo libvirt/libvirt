@@ -2730,6 +2730,7 @@ AC_CONFIG_FILES([\
         examples/object-events/Makefile \
         examples/domsuspend/Makefile \
         examples/dominfo/Makefile \
+        examples/dommigrate/Makefile \
         examples/openauth/Makefile \
         examples/hellolibvirt/Makefile \
         examples/systemtap/Makefile \

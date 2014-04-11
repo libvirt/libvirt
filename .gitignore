@@ -74,6 +74,7 @@
 /examples/object-events/event-test
 /examples/dominfo/info1
 /examples/domsuspend/suspend
+/examples/dommigrate/dommigrate
 /examples/hellolibvirt/hellolibvirt
 /examples/openauth/openauth
 /gnulib/lib/*
