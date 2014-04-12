@@ -11,11 +11,13 @@
       <driver name='file' type='raw'/>
       <source file='/tmp/freebsd.img'/>
       <target dev='hda' bus='sata'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </disk>
     <interface type='bridge'>
       <mac address="52:54:00:22:ee:11"/>
       <model type='virtio'/>
       <source bridge="virbr0"/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
   </devices>
 </domain>

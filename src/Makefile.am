@@ -789,6 +789,10 @@ BHYVE_DRIVER_SOURCES =						\
 		bhyve/bhyve_capabilities.h			\
 		bhyve/bhyve_command.c				\
 		bhyve/bhyve_command.h				\
+		bhyve/bhyve_device.c				\
+		bhyve/bhyve_device.h				\
+		bhyve/bhyve_domain.c				\
+		bhyve/bhyve_domain.h				\
 		bhyve/bhyve_driver.h				\
 		bhyve/bhyve_driver.c				\
 		bhyve/bhyve_process.c				\

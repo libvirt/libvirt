@@ -31,6 +31,7 @@
 #include <net/if.h>
 #include <net/if_tap.h>
 
+#include "bhyve_device.h"
 #include "bhyve_process.h"
 #include "bhyve_command.h"
 #include "datatypes.h"
@@ -129,6 +130,9 @@ virBhyveProcessStart(virConnectPtr conn,
                              privconn->pidfile);
         goto cleanup;
     }
+
+    if (bhyveDomainAssignAddresses(vm->def, NULL) < 0)
+        goto cleanup;
 
     /* Call bhyve to start the VM */
     if (!(cmd = virBhyveProcessBuildBhyveCmd(driver,

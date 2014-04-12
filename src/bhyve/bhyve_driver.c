@@ -53,8 +53,10 @@
 #include "viraccessapicheck.h"
 #include "nodeinfo.h"
 
+#include "bhyve_device.h"
 #include "bhyve_driver.h"
 #include "bhyve_command.h"
+#include "bhyve_domain.h"
 #include "bhyve_process.h"
 #include "bhyve_utils.h"
 #include "bhyve_capabilities.h"
@@ -509,6 +511,9 @@ bhyveDomainDefineXML(virConnectPtr conn, const char *xml)
     if (virDomainDefineXMLEnsureACL(conn, def) < 0)
         goto cleanup;
 
+    if (bhyveDomainAssignAddresses(def, NULL) < 0)
+        goto cleanup;
+
     if (!(vm = virDomainObjListAdd(privconn->domains, def,
                                    privconn->xmlopt,
                                    0, &oldDef)))
@@ -683,6 +688,9 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
     if (!(def = virDomainDefParseString(xmlData, caps, privconn->xmlopt,
                                   1 << VIR_DOMAIN_VIRT_BHYVE,
                                   VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    if (bhyveDomainAssignAddresses(def, NULL) < 0)
         goto cleanup;
 
     if (!(loadcmd = virBhyveProcessBuildLoadCmd(privconn, def)))
@@ -895,6 +903,9 @@ bhyveDomainCreateXML(virConnectPtr conn,
         goto cleanup;
 
     if (virDomainCreateXMLEnsureACL(conn, def) < 0)
+        goto cleanup;
+
+    if (bhyveDomainAssignAddresses(def, NULL) < 0)
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(privconn->domains, def,
@@ -1160,7 +1171,9 @@ bhyveStateInitialize(bool priveleged ATTRIBUTE_UNUSED,
     if (!(bhyve_driver->caps = virBhyveCapsBuild()))
         goto cleanup;
 
-    if (!(bhyve_driver->xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)))
+    if (!(bhyve_driver->xmlopt = virDomainXMLOptionNew(&virBhyveDriverDomainDefParserConfig,
+                                                       &virBhyveDriverPrivateDataCallbacks,
+                                                       NULL)))
         goto cleanup;
 
     if (!(bhyve_driver->domains = virDomainObjListNew()))
