@@ -303,11 +303,10 @@ int virStorageFileChainGetBroken(virStorageFileMetadataPtr chain,
                                  char **broken_file);
 
 const char *virStorageFileChainLookup(virStorageFileMetadataPtr chain,
-                                      const char *start,
                                       const char *name,
                                       virStorageFileMetadataPtr *meta,
                                       const char **parent)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+    ATTRIBUTE_NONNULL(1);
 
 void virStorageFileFreeMetadata(virStorageFileMetadataPtr meta);
 

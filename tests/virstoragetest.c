@@ -381,7 +381,6 @@ testStorageChain(const void *args)
 struct testLookupData
 {
     virStorageFileMetadataPtr chain;
-    const char *start;
     const char *name;
     const char *expResult;
     virStorageFileMetadataPtr expMeta;
@@ -401,8 +400,8 @@ testStorageLookup(const void *args)
      * as the same string may be duplicated into more than one field,
      * we rely on STREQ rather than pointer equality.  Test twice to
      * ensure optional parameters don't cause NULL deref.  */
-    actualResult = virStorageFileChainLookup(data->chain, data->start,
-                                             data->name, NULL, NULL);
+    actualResult = virStorageFileChainLookup(data->chain, data->name,
+                                             NULL, NULL);
 
     if (!data->expResult) {
         if (!virGetLastError()) {
@@ -423,9 +422,8 @@ testStorageLookup(const void *args)
         ret = -1;
     }
 
-    actualResult = virStorageFileChainLookup(data->chain, data->start,
-                                             data->name, &actualMeta,
-                                             &actualParent);
+    actualResult = virStorageFileChainLookup(data->chain, data->name,
+                                             &actualMeta, &actualParent);
     if (!data->expResult)
         virResetLastError();
     if (STRNEQ_NULLABLE(data->expResult, actualResult)) {
@@ -454,7 +452,6 @@ mymain(void)
     virCommandPtr cmd = NULL;
     struct testChainData data;
     virStorageFileMetadataPtr chain = NULL;
-    const char *start = NULL;
 
     /* Prep some files with qemu-img; if that is not found on PATH, or
      * if it lacks support for qcow2 and qed, skip this test.  */
@@ -849,8 +846,7 @@ mymain(void)
     if (virCommandRun(cmd, NULL) < 0)
         ret = -1;
 
-    /* Test behavior of chain lookups, absolute backing */
-    start = "wrap";
+    /* Test behavior of chain lookups, absolute backing from relative start */
     chain = virStorageFileGetMetadata("wrap", VIR_STORAGE_FILE_QCOW2,
                                       -1, -1, false);
     if (!chain) {
@@ -860,7 +856,7 @@ mymain(void)
 
 #define TEST_LOOKUP(id, name, result, meta, parent)                  \
     do {                                                             \
-        struct testLookupData data2 = { chain, start, name,          \
+        struct testLookupData data2 = { chain, name,                 \
                                         result, meta, parent, };     \
         if (virtTestRun("Chain lookup " #id,                         \
                         testStorageLookup, &data2) < 0)              \
@@ -868,10 +864,12 @@ mymain(void)
     } while (0)
 
     TEST_LOOKUP(0, "bogus", NULL, NULL, NULL);
-    TEST_LOOKUP(1, "wrap", start, chain, NULL);
-    TEST_LOOKUP(2, abswrap, start, chain, NULL);
-    TEST_LOOKUP(3, "qcow2", chain->backingStore, chain->backingMeta, start);
-    TEST_LOOKUP(4, absqcow2, chain->backingStore, chain->backingMeta, start);
+    TEST_LOOKUP(1, "wrap", chain->canonPath, chain, NULL);
+    TEST_LOOKUP(2, abswrap, chain->canonPath, chain, NULL);
+    TEST_LOOKUP(3, "qcow2", chain->backingStore, chain->backingMeta,
+                chain->canonPath);
+    TEST_LOOKUP(4, absqcow2, chain->backingStore, chain->backingMeta,
+                chain->canonPath);
     TEST_LOOKUP(5, "raw", chain->backingMeta->backingStore,
                 chain->backingMeta->backingMeta, chain->backingStore);
     TEST_LOOKUP(6, absraw, chain->backingMeta->backingStore,
@@ -892,8 +890,7 @@ mymain(void)
     if (virCommandRun(cmd, NULL) < 0)
         ret = -1;
 
-    /* Test behavior of chain lookups, relative backing */
-    start = abswrap;
+    /* Test behavior of chain lookups, relative backing from absolute start */
     virStorageFileFreeMetadata(chain);
     chain = virStorageFileGetMetadata(abswrap, VIR_STORAGE_FILE_QCOW2,
                                       -1, -1, false);
@@ -903,10 +900,12 @@ mymain(void)
     }
 
     TEST_LOOKUP(8, "bogus", NULL, NULL, NULL);
-    TEST_LOOKUP(9, "wrap", start, chain, NULL);
-    TEST_LOOKUP(10, abswrap, start, chain, NULL);
-    TEST_LOOKUP(11, "qcow2", chain->backingStore, chain->backingMeta, start);
-    TEST_LOOKUP(12, absqcow2, chain->backingStore, chain->backingMeta, start);
+    TEST_LOOKUP(9, "wrap", chain->canonPath, chain, NULL);
+    TEST_LOOKUP(10, abswrap, chain->canonPath, chain, NULL);
+    TEST_LOOKUP(11, "qcow2", chain->backingStore, chain->backingMeta,
+                chain->canonPath);
+    TEST_LOOKUP(12, absqcow2, chain->backingStore, chain->backingMeta,
+                chain->canonPath);
     TEST_LOOKUP(13, "raw", chain->backingMeta->backingStore,
                 chain->backingMeta->backingMeta, chain->backingStore);
     TEST_LOOKUP(14, absraw, chain->backingMeta->backingStore,
@@ -922,9 +921,8 @@ mymain(void)
         ret = -1;
 
     /* Test behavior of chain lookups, relative backing */
-    start = "sub/link2";
     virStorageFileFreeMetadata(chain);
-    chain = virStorageFileGetMetadata(start, VIR_STORAGE_FILE_QCOW2,
+    chain = virStorageFileGetMetadata("sub/link2", VIR_STORAGE_FILE_QCOW2,
                                       -1, -1, false);
     if (!chain) {
         ret = -1;
@@ -932,15 +930,15 @@ mymain(void)
     }
 
     TEST_LOOKUP(16, "bogus", NULL, NULL, NULL);
-    TEST_LOOKUP(17, "sub/link2", start, chain, NULL);
-    TEST_LOOKUP(18, "wrap", start, chain, NULL);
-    TEST_LOOKUP(19, abswrap, start, chain, NULL);
-    TEST_LOOKUP(20, "../qcow2", chain->backingStore, chain->backingMeta, start);
-    /* FIXME: 21 is questionable, since there is no 'sub/qcow2' and
-     * since relative backing files should be looked up in the context
-     * of the directory containing the parent.  */
-    TEST_LOOKUP(21, "qcow2", chain->backingStore, chain->backingMeta, start);
-    TEST_LOOKUP(22, absqcow2, chain->backingStore, chain->backingMeta, start);
+    TEST_LOOKUP(17, "sub/link2", chain->canonPath, chain, NULL);
+    TEST_LOOKUP(18, "wrap", chain->canonPath, chain, NULL);
+    TEST_LOOKUP(19, abswrap, chain->canonPath, chain, NULL);
+    TEST_LOOKUP(20, "../qcow2", chain->backingStore, chain->backingMeta,
+                chain->canonPath);
+    TEST_LOOKUP(21, "qcow2", chain->backingStore, chain->backingMeta,
+                chain->canonPath);
+    TEST_LOOKUP(22, absqcow2, chain->backingStore, chain->backingMeta,
+                chain->canonPath);
     TEST_LOOKUP(23, "raw", chain->backingMeta->backingStore,
                 chain->backingMeta->backingMeta, chain->backingStore);
     TEST_LOOKUP(24, absraw, chain->backingMeta->backingStore,

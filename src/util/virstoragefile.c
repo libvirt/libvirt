@@ -1529,21 +1529,21 @@ int virStorageFileGetSCSIKey(const char *path,
 }
 #endif
 
-/* Given a CHAIN that starts at the named file START, return a string
- * pointing to either START or within CHAIN that gives the preferred
- * name for the backing file NAME within that chain.  Pass NULL for
- * NAME to find the base of the chain.  If META is not NULL, set *META
- * to the point in the chain that describes NAME (or to NULL if the
- * backing element is not a file).  If PARENT is not NULL, set *PARENT
- * to the preferred name of the parent (or to NULL if NAME matches
- * START).  Since the results point within CHAIN, they must not be
+/* Given a CHAIN, look for the backing file NAME within the chain and
+ * return its canonical name.  Pass NULL for NAME to find the base of
+ * the chain.  If META is not NULL, set *META to the point in the
+ * chain that describes NAME (or to NULL if the backing element is not
+ * a file).  If PARENT is not NULL, set *PARENT to the preferred name
+ * of the parent (or to NULL if NAME matches the start of the chain).
+ * Since the results point within CHAIN, they must not be
  * independently freed.  Reports an error and returns NULL if NAME is
  * not found.  */
 const char *
-virStorageFileChainLookup(virStorageFileMetadataPtr chain, const char *start,
+virStorageFileChainLookup(virStorageFileMetadataPtr chain,
                           const char *name, virStorageFileMetadataPtr *meta,
                           const char **parent)
 {
+    const char *start = chain->canonPath;
     virStorageFileMetadataPtr owner;
     const char *tmp;
 
