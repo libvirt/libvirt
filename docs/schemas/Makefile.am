@@ -1,4 +1,4 @@
-## Copyright (C) 2005-2011, 2013 Red Hat, Inc.
+## Copyright (C) 2005-2011, 2013-2014 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -27,8 +27,7 @@ schema_DATA = \
 	nodedev.rng \
 	nwfilter.rng \
 	secret.rng \
-	storageencryption.rng \
-	storagefilefeatures.rng \
+	storagecommon.rng \
 	storagepool.rng \
 	storagevol.rng
 

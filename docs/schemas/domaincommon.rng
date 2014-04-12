@@ -2,7 +2,7 @@
 <grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <!-- domain-related definitions used in multiple grammars -->
   <include href='basictypes.rng'/>
-  <include href='storageencryption.rng'/>
+  <include href='storagecommon.rng'/>
   <include href='networkcommon.rng'/>
 
   <!--

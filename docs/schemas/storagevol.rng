@@ -7,8 +7,7 @@
     <ref name='vol'/>
   </start>
 
-  <include href='storageencryption.rng'/>
-  <include href='storagefilefeatures.rng'/>
+  <include href='storagecommon.rng'/>
 
 
   <define name='vol'>

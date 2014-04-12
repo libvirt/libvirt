@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
-<!-- A Relax NG schema for the libvirt volume encryption XML format -->
+<!-- A Relax NG schema for common libvirt XML storage elements -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
     datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+  <!-- This schema is not designed for standalone use; another file
+       must include both this file and basictypes.rng -->
 
   <define name='encryption'>
     <element name='encryption'>
@@ -25,8 +28,27 @@
         </choice>
       </attribute>
       <attribute name='uuid'>
-          <ref name="UUID"/>
+        <ref name="UUID"/>
       </attribute>
+    </element>
+  </define>
+
+  <define name='compat'>
+    <element name='compat'>
+      <data type='string'>
+        <param name='pattern'>[0-9]+\.[0-9]+</param>
+      </data>
+    </element>
+  </define>
+  <define name='fileFormatFeatures'>
+    <element name='features'>
+      <interleave>
+        <optional>
+          <element name='lazy_refcounts'>
+            <empty/>
+          </element>
+        </optional>
+      </interleave>
     </element>
   </define>
 
