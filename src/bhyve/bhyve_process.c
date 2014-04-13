@@ -128,7 +128,8 @@ virBhyveProcessStart(virConnectPtr conn,
 
     /* Call bhyve to start the VM */
     if (!(cmd = virBhyveProcessBuildBhyveCmd(driver,
-                                             vm)))
+                                             vm->def,
+                                             false)))
         goto cleanup;
 
     virCommandSetOutputFD(cmd, &logfd);
@@ -140,7 +141,7 @@ virBhyveProcessStart(virConnectPtr conn,
     /* Now bhyve command is constructed, meaning the
      * domain is ready to be started, so we can build
      * and execute bhyveload command */
-    if (!(load_cmd = virBhyveProcessBuildLoadCmd(driver, vm)))
+    if (!(load_cmd = virBhyveProcessBuildLoadCmd(driver, vm->def)))
         goto cleanup;
     virCommandSetOutputFD(load_cmd, &logfd);
     virCommandSetErrorFD(load_cmd, &logfd);
@@ -179,7 +180,8 @@ virBhyveProcessStart(virConnectPtr conn,
  cleanup:
     if (ret < 0) {
         virCommandPtr destroy_cmd;
-        if ((destroy_cmd = virBhyveProcessBuildDestroyCmd(driver, vm)) != NULL) {
+        if ((destroy_cmd = virBhyveProcessBuildDestroyCmd(driver,
+                                                          vm->def)) != NULL) {
             virCommandSetOutputFD(load_cmd, &logfd);
             virCommandSetErrorFD(load_cmd, &logfd);
             ignore_value(virCommandRun(destroy_cmd, NULL));
@@ -227,7 +229,7 @@ virBhyveProcessStop(bhyveConnPtr driver,
 
     /* No matter if shutdown was successful or not, we
      * need to unload the VM */
-    if (!(cmd = virBhyveProcessBuildDestroyCmd(driver, vm)))
+    if (!(cmd = virBhyveProcessBuildDestroyCmd(driver, vm->def)))
         goto cleanup;
 
     if (virCommandRun(cmd, NULL) < 0)

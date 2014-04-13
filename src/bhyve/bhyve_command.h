@@ -28,14 +28,14 @@
 # include "vircommand.h"
 
 virCommandPtr virBhyveProcessBuildBhyveCmd(bhyveConnPtr,
-                             virDomainObjPtr vm);
+                             virDomainDefPtr def, bool dryRun);
 
 virCommandPtr
 virBhyveProcessBuildDestroyCmd(bhyveConnPtr driver,
-                               virDomainObjPtr vm);
+                               virDomainDefPtr def);
 
 virCommandPtr
 virBhyveProcessBuildLoadCmd(bhyveConnPtr driver,
-                            virDomainObjPtr vm);
+                            virDomainDefPtr def);
 
 #endif /* __BHYVE_COMMAND_H__ */

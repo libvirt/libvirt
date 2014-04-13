@@ -33,7 +33,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     vm.def = vmdef;
 
-    if (!(cmd = virBhyveProcessBuildBhyveCmd(&driver, &vm)))
+    if (!(cmd = virBhyveProcessBuildBhyveCmd(&driver, vmdef, false)))
         goto out;
 
     if (!(actualargv = virCommandToString(cmd)))

@@ -39,7 +39,7 @@
 VIR_LOG_INIT("bhyve.bhyve_command");
 
 static int
-bhyveBuildNetArgStr(const virDomainDef *def, virCommandPtr cmd)
+bhyveBuildNetArgStr(const virDomainDef *def, virCommandPtr cmd, bool dryRun)
 {
     virDomainNetDefPtr net = NULL;
     char *brname = NULL;
@@ -78,35 +78,42 @@ bhyveBuildNetArgStr(const virDomainDef *def, virCommandPtr cmd)
             }
         }
 
-        if (virNetDevTapCreateInBridgePort(brname, &net->ifname, &net->mac,
-                                           def->uuid, tapfd, 1,
-                                           virDomainNetGetActualVirtPortProfile(net),
-                                           virDomainNetGetActualVlan(net),
-                                           VIR_NETDEV_TAP_CREATE_IFUP | VIR_NETDEV_TAP_CREATE_PERSIST) < 0) {
+        if (!dryRun)
+            if (virNetDevTapCreateInBridgePort(brname, &net->ifname, &net->mac,
+                                               def->uuid, tapfd, 1,
+                                               virDomainNetGetActualVirtPortProfile(net),
+                                               virDomainNetGetActualVlan(net),
+                                               VIR_NETDEV_TAP_CREATE_IFUP | VIR_NETDEV_TAP_CREATE_PERSIST) < 0) {
+                VIR_FREE(net->ifname);
+                VIR_FREE(brname);
+                return -1;
+            }
+    }
+
+    if (!dryRun) {
+        realifname = virNetDevTapGetRealDeviceName(net->ifname);
+
+        if (realifname == NULL) {
             VIR_FREE(net->ifname);
             VIR_FREE(brname);
             return -1;
         }
+
+        VIR_DEBUG("%s -> %s", net->ifname, realifname);
+        /* hack on top of other hack: we need to set
+         * interface to 'UP' again after re-opening to find its
+         * name
+         */
+        if (virNetDevSetOnline(net->ifname, true) != 0) {
+            VIR_FREE(net->ifname);
+            VIR_FREE(brname);
+            return -1;
+        }
+    } else {
+        if (VIR_STRDUP(realifname, "tap0") < 0)
+            return -1;
     }
 
-    realifname = virNetDevTapGetRealDeviceName(net->ifname);
-
-    if (realifname == NULL) {
-        VIR_FREE(net->ifname);
-        VIR_FREE(brname);
-        return -1;
-    }
-
-    VIR_DEBUG("%s -> %s", net->ifname, realifname);
-    /* hack on top of other hack: we need to set
-     * interface to 'UP' again after re-opening to find its
-     * name
-     */
-    if (virNetDevSetOnline(net->ifname, true) != 0) {
-        VIR_FREE(net->ifname);
-        VIR_FREE(brname);
-        return -1;
-    }
 
     virCommandAddArg(cmd, "-s");
     virCommandAddArgFormat(cmd, "1:0,virtio-net,%s,mac=%s",
@@ -195,7 +202,7 @@ bhyveBuildDiskArgStr(const virDomainDef *def, virCommandPtr cmd)
 
 virCommandPtr
 virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
-                             virDomainObjPtr vm)
+                             virDomainDefPtr def, bool dryRun)
 {
     /*
      * /usr/sbin/bhyve -c 2 -m 256 -AI -H -P \
@@ -209,17 +216,17 @@ virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
 
     /* CPUs */
     virCommandAddArg(cmd, "-c");
-    virCommandAddArgFormat(cmd, "%d", vm->def->vcpus);
+    virCommandAddArgFormat(cmd, "%d", def->vcpus);
 
     /* Memory */
     virCommandAddArg(cmd, "-m");
     virCommandAddArgFormat(cmd, "%llu",
-                           VIR_DIV_UP(vm->def->mem.max_balloon, 1024));
+                           VIR_DIV_UP(def->mem.max_balloon, 1024));
 
     /* Options */
-    if (vm->def->features[VIR_DOMAIN_FEATURE_ACPI] == VIR_DOMAIN_FEATURE_STATE_ON)
+    if (def->features[VIR_DOMAIN_FEATURE_ACPI] == VIR_DOMAIN_FEATURE_STATE_ON)
         virCommandAddArg(cmd, "-A"); /* Create an ACPI table */
-    if (vm->def->features[VIR_DOMAIN_FEATURE_APIC] == VIR_DOMAIN_FEATURE_STATE_ON)
+    if (def->features[VIR_DOMAIN_FEATURE_APIC] == VIR_DOMAIN_FEATURE_STATE_ON)
         virCommandAddArg(cmd, "-I"); /* Present ioapic to the guest */
 
     /* Clarification about -H and -P flags from Peter Grehan:
@@ -238,13 +245,13 @@ virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
 
     virCommandAddArgList(cmd, "-s", "0:0,hostbridge", NULL);
     /* Devices */
-    if (bhyveBuildNetArgStr(vm->def, cmd) < 0)
+    if (bhyveBuildNetArgStr(def, cmd, dryRun) < 0)
         goto error;
-    if (bhyveBuildDiskArgStr(vm->def, cmd) < 0)
+    if (bhyveBuildDiskArgStr(def, cmd) < 0)
         goto error;
-    if (bhyveBuildConsoleArgStr(vm->def, cmd) < 0)
+    if (bhyveBuildConsoleArgStr(def, cmd) < 0)
         goto error;
-    virCommandAddArg(cmd, vm->def->name);
+    virCommandAddArg(cmd, def->name);
 
     return cmd;
 
@@ -255,30 +262,30 @@ virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
 
 virCommandPtr
 virBhyveProcessBuildDestroyCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
-                               virDomainObjPtr vm)
+                               virDomainDefPtr def)
 {
     virCommandPtr cmd = virCommandNew(BHYVECTL);
 
     virCommandAddArg(cmd, "--destroy");
-    virCommandAddArgPair(cmd, "--vm", vm->def->name);
+    virCommandAddArgPair(cmd, "--vm", def->name);
 
     return cmd;
 }
 
 virCommandPtr
 virBhyveProcessBuildLoadCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
-                            virDomainObjPtr vm)
+                            virDomainDefPtr def)
 {
     virCommandPtr cmd;
     virDomainDiskDefPtr disk;
 
-    if (vm->def->ndisks != 1) {
+    if (def->ndisks != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("domain should have one and only one disk defined"));
         return NULL;
     }
 
-    disk = vm->def->disks[0];
+    disk = def->disks[0];
 
     if (disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -297,14 +304,14 @@ virBhyveProcessBuildLoadCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
     /* Memory */
     virCommandAddArg(cmd, "-m");
     virCommandAddArgFormat(cmd, "%llu",
-                           VIR_DIV_UP(vm->def->mem.max_balloon, 1024));
+                           VIR_DIV_UP(def->mem.max_balloon, 1024));
 
     /* Image path */
     virCommandAddArg(cmd, "-d");
     virCommandAddArg(cmd, virDomainDiskGetSource(disk));
 
     /* VM name */
-    virCommandAddArg(cmd, vm->def->name);
+    virCommandAddArg(cmd, def->name);
 
     return cmd;
 }
