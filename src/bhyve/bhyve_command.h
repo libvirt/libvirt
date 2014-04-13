@@ -27,6 +27,8 @@
 # include "domain_conf.h"
 # include "vircommand.h"
 
+# define BHYVE_CONFIG_FORMAT_ARGV "bhyve-argv"
+
 virCommandPtr virBhyveProcessBuildBhyveCmd(bhyveConnPtr,
                              virDomainDefPtr def, bool dryRun);
 

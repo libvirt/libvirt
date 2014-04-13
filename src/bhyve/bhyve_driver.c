@@ -53,6 +53,7 @@
 #include "nodeinfo.h"
 
 #include "bhyve_driver.h"
+#include "bhyve_command.h"
 #include "bhyve_process.h"
 #include "bhyve_utils.h"
 #include "bhyve_capabilities.h"
@@ -591,6 +592,63 @@ bhyveConnectNumOfDefinedDomains(virConnectPtr conn)
                                          virConnectNumOfDefinedDomainsCheckACL, conn);
 
     return count;
+}
+
+static char *
+bhyveConnectDomainXMLToNative(virConnectPtr conn,
+                              const char *format,
+                              const char *xmlData,
+                              unsigned int flags)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    bhyveConnPtr privconn = conn->privateData;
+    virDomainDefPtr def = NULL;
+    virCommandPtr cmd = NULL, loadcmd = NULL;
+    virCapsPtr caps = NULL;
+    char *ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (virConnectDomainXMLToNativeEnsureACL(conn) < 0)
+        goto cleanup;
+
+    if (STRNEQ(format, BHYVE_CONFIG_FORMAT_ARGV)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Unsupported config type %s"), format);
+        goto cleanup;
+    }
+
+    if (!(caps = bhyveDriverGetCapabilities(privconn)))
+        goto cleanup;
+
+    if (!(def = virDomainDefParseString(xmlData, caps, privconn->xmlopt,
+                                  1 << VIR_DOMAIN_VIRT_BHYVE,
+                                  VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    if (!(loadcmd = virBhyveProcessBuildLoadCmd(privconn, def)))
+        goto cleanup;
+
+    if (!(cmd = virBhyveProcessBuildBhyveCmd(privconn, def, true)))
+        goto cleanup;
+
+    virBufferAdd(&buf, virCommandToString(loadcmd), -1);
+    virBufferAddChar(&buf, '\n');
+    virBufferAdd(&buf, virCommandToString(cmd), -1);
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ret = virBufferContentAndReset(&buf);
+
+ cleanup:
+    virCommandFree(loadcmd);
+    virCommandFree(cmd);
+    virDomainDefFree(def);
+    virObjectUnref(caps);
+    return ret;
 }
 
 static int
@@ -1187,6 +1245,7 @@ static virDriver bhyveDriver = {
     .connectListAllDomains = bhyveConnectListAllDomains, /* 1.2.2 */
     .connectListDefinedDomains = bhyveConnectListDefinedDomains, /* 1.2.2 */
     .connectNumOfDefinedDomains = bhyveConnectNumOfDefinedDomains, /* 1.2.2 */
+    .connectDomainXMLToNative = bhyveConnectDomainXMLToNative, /* 1.2.5 */
     .domainCreate = bhyveDomainCreate, /* 1.2.2 */
     .domainCreateWithFlags = bhyveDomainCreateWithFlags, /* 1.2.3 */
     .domainCreateXML = bhyveDomainCreateXML, /* 1.2.4 */
