@@ -52,4 +52,24 @@
     </element>
   </define>
 
+  <define name='storageFormat'>
+    <choice>
+      <value>raw</value>
+      <value>dir</value>
+      <value>bochs</value>
+      <value>cloop</value>
+      <value>cow</value>
+      <value>dmg</value>
+      <value>iso</value>
+      <value>qcow</value>
+      <value>qcow2</value>
+      <value>qed</value>
+      <value>vmdk</value>
+      <value>vpc</value>
+      <value>fat</value>
+      <value>vhd</value>
+      <value>vdi</value>
+    </choice>
+  </define>
+
 </grammar>
