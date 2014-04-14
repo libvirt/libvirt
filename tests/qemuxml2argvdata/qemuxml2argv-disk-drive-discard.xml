@@ -25,7 +25,7 @@
       <driver discard='unmap' name='qemu' type='qcow2'/>
     </disk>
     <disk type='file' device='cdrom'>
-      <driver name='qemu' type='raw' discard='ignore'/>
+      <driver discard='ignore'/>
       <source file='/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso'/>
       <target dev='hdc' bus='ide'/>
       <readonly/>

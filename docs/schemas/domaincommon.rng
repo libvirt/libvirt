@@ -1461,20 +1461,12 @@
     -->
   <define name="diskDriver">
     <element name="driver">
-      <choice>
-        <group>
-          <ref name="driverFormat"/>
-          <optional>
-            <ref name="driverCache"/>
-          </optional>
-        </group>
-        <group>
-          <optional>
-            <ref name="driverFormat"/>
-          </optional>
-          <ref name="driverCache"/>
-        </group>
-      </choice>
+      <optional>
+        <ref name="driverFormat"/>
+      </optional>
+      <optional>
+        <ref name="driverCache"/>
+      </optional>
       <optional>
         <ref name="driverErrorPolicy"/>
       </optional>

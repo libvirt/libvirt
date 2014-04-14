@@ -14963,7 +14963,9 @@ virDomainDiskDefFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, 2);
 
     if (def->src.driverName || def->src.format > 0 || def->cachemode ||
-        def->ioeventfd || def->event_idx || def->copy_on_read) {
+        def->error_policy || def->rerror_policy || def->iomode ||
+        def->ioeventfd || def->event_idx || def->copy_on_read ||
+        def->discard) {
         virBufferAddLit(buf, "<driver");
         if (def->src.driverName)
             virBufferAsprintf(buf, " name='%s'", def->src.driverName);
