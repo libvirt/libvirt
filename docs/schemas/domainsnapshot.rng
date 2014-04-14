@@ -75,7 +75,12 @@
                 <ref name="UUID"/>
               </element>
             </element>
-            <ref name='domain'/>
+            <!-- Nested grammar ensures that any of our overrides of
+                 storagecommon/domaincommon defines do not conflict
+                 with any domain.rng overrides.  -->
+            <grammar>
+              <include href='domain.rng'/>
+            </grammar>
           </choice>
         </optional>
         <optional>
@@ -100,6 +105,11 @@
       <value>crashed</value>
       <value>disk-snapshot</value>
     </choice>
+  </define>
+
+  <define name='storageSourceExtra' combine='choice'>
+    <!-- overrides the no-op version in storagecommon.rng -->
+    <ref name='disksnapshotdriver'/>
   </define>
 
   <define name='disksnapshot'>
@@ -138,10 +148,13 @@
                         <ref name='absFilePath'/>
                       </attribute>
                     </optional>
+                    <optional>
+                      <ref name='storageStartupPolicy'/>
+                    </optional>
                     <empty/>
                   </element>
                 </optional>
-                <ref name='disksnapshotdriver'/>
+                <ref name='storageSourceExtra'/>
               </interleave>
             </group>
             <group>
@@ -157,7 +170,7 @@
                     <empty/>
                   </element>
                 </optional>
-                <ref name='disksnapshotdriver'/>
+                <ref name='storageSourceExtra'/>
               </interleave>
             </group>
             <group>
@@ -170,7 +183,7 @@
                     <ref name='diskSourceNetwork'/>
                   </element>
                 </optional>
-                <ref name='disksnapshotdriver'/>
+                <ref name='storageSourceExtra'/>
               </interleave>
             </group>
           </choice>

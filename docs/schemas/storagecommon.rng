@@ -79,4 +79,18 @@
     </choice>
   </define>
 
+  <define name='storageStartupPolicy'>
+    <!-- Use a combine='choice' override in client files that want to
+         add additional attributes to a <source> sub-element
+         associated with a storage source -->
+    <notAllowed/>
+  </define>
+
+  <define name='storageSourceExtra'>
+    <!-- Use a combine='choice' override in client files that want to
+         add additional elements as siblings of a <source> sub-element
+         associated with a storage source -->
+    <notAllowed/>
+  </define>
+
 </grammar>

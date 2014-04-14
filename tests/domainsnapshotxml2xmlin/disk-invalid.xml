@@ -1,0 +1,10 @@
+<domainsnapshot>
+  <name>asdf</name>
+  <description>adsf</description>
+  <disks>
+    <disk name='vda' snapshot='external'>
+      <source file='/tmp/foo' startupPolicy='optional'/>
+      <driver/>
+    </disk>
+  </disks>
+</domainsnapshot>

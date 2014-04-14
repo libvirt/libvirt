@@ -1213,7 +1213,7 @@
                     </attribute>
                   </optional>
                   <optional>
-                    <ref name="startupPolicy"/>
+                    <ref name="storageStartupPolicy"/>
                   </optional>
                   <optional>
                     <ref name='devSeclabel'/>
@@ -1235,7 +1235,7 @@
                     </attribute>
                   </optional>
                   <optional>
-                    <ref name="startupPolicy"/>
+                    <ref name="storageStartupPolicy"/>
                   </optional>
                   <optional>
                     <ref name='devSeclabel'/>
@@ -1255,7 +1255,7 @@
                     <ref name="absFilePath"/>
                   </attribute>
                   <optional>
-                    <ref name="startupPolicy"/>
+                    <ref name="storageStartupPolicy"/>
                   </optional>
                   <empty/>
                 </element>
@@ -1296,7 +1296,7 @@
                     </attribute>
                   </optional>
                   <optional>
-                    <ref name="startupPolicy"/>
+                    <ref name="storageStartupPolicy"/>
                   </optional>
                   <optional>
                     <ref name='devSeclabel'/>
@@ -1306,10 +1306,11 @@
             </interleave>
           </group>
         </choice>
-        <ref name="diskspec"/>
+        <ref name="storageSourceExtra"/>
       </interleave>
     </element>
   </define>
+
   <define name="diskSourceNetwork">
     <attribute name="protocol">
       <choice>
