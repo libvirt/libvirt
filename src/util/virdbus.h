@@ -74,6 +74,7 @@ int virDBusCall(DBusConnection *conn,
                 DBusError *error);
 int virDBusMessageRead(DBusMessage *msg,
                        const char *types, ...);
+void virDBusMessageUnref(DBusMessage *msg);
 
 int virDBusIsServiceEnabled(const char *name);
 int virDBusIsServiceRegistered(const char *name);

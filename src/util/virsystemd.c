@@ -326,7 +326,6 @@ virSystemdNotifyStartup(void)
 #endif
 }
 
-#ifdef WITH_SYSTEMD_DAEMON
 static int
 virSystemdPMSupportTarget(const char *methodName, bool *result)
 {
@@ -365,19 +364,11 @@ virSystemdPMSupportTarget(const char *methodName, bool *result)
     ret = 0;
 
  cleanup:
-    dbus_message_unref(message);
+    virDBusMessageUnref(message);
     VIR_FREE(response);
 
     return ret;
 }
-#else /* ! WITH_SYSTEMD_DAEMON */
-static int
-virSystemdPMSupportTarget(const char *methodName ATTRIBUTE_UNUSED,
-                          bool *result ATTRIBUTE_UNUSED)
-{
-    return -2;
-}
-#endif /* ! WITH_SYSTEMD_DAEMON */
 
 int virSystemdCanSuspend(bool *result)
 {

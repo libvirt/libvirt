@@ -1614,6 +1614,11 @@ int virDBusIsServiceRegistered(const char *name)
     return ret;
 }
 
+void virDBusMessageUnref(DBusMessage *msg)
+{
+    dbus_message_unref(msg);
+}
+
 #else /* ! WITH_DBUS */
 void virDBusSetSharedBus(bool shared ATTRIBUTE_UNUSED)
 {
@@ -1751,4 +1756,8 @@ int virDBusIsServiceRegistered(const char *name ATTRIBUTE_UNUSED)
     return -2;
 }
 
+void virDBusMessageUnref(DBusMessage *msg ATTRIBUTE_UNUSED)
+{
+    /* nothing */
+}
 #endif /* ! WITH_DBUS */
