@@ -864,8 +864,7 @@ virStorageFileGetMetadataInternal(const char *path,
     }
 
     if (fileTypeInfo[format].getBackingStore != NULL) {
-        char *backing = NULL;
-        int store = fileTypeInfo[format].getBackingStore(&backing,
+        int store = fileTypeInfo[format].getBackingStore(&meta->backingStoreRaw,
                                                          backingFormat,
                                                          buf, len);
         if (store == BACKING_STORE_INVALID)
@@ -874,15 +873,10 @@ virStorageFileGetMetadataInternal(const char *path,
         if (store == BACKING_STORE_ERROR)
             goto cleanup;
 
-        if (backing != NULL) {
-            if (VIR_STRDUP(meta->backingStore, backing) < 0) {
-                VIR_FREE(backing);
-                goto cleanup;
-            }
-            if (virStorageIsFile(backing)) {
-                meta->backingStoreRaw = meta->backingStore;
-                meta->backingStore = NULL;
-                if (virFindBackingFile(directory, backing,
+        if (meta->backingStoreRaw) {
+            if (virStorageIsFile(meta->backingStoreRaw)) {
+                if (virFindBackingFile(directory,
+                                       meta->backingStoreRaw,
                                        backingDirectory,
                                        &meta->backingStore) < 0) {
                     /* the backing file is (currently) unavailable, treat this
@@ -894,11 +888,15 @@ virStorageFileGetMetadataInternal(const char *path,
 
                 }
             } else {
-                *backingStore = backing;
-                backing = NULL;
+                if (VIR_STRDUP(meta->backingStore, meta->backingStoreRaw) < 0)
+                    goto cleanup;
+
+                if (backingStore &&
+                    VIR_STRDUP(*backingStore, meta->backingStoreRaw) < 0)
+                    goto cleanup;
+
                 *backingFormat = VIR_STORAGE_FILE_RAW;
             }
-            VIR_FREE(backing);
         } else {
             meta->backingStore = NULL;
             *backingFormat = VIR_STORAGE_FILE_NONE;
@@ -1085,7 +1083,7 @@ virStorageFileGetMetadataFromFDInternal(const char *path,
 
     ret = virStorageFileGetMetadataInternal(path, canonPath, directory,
                                             buf, len, format, meta,
-                                            &meta->backingStoreRaw,
+                                            NULL,
                                             backingFormat, backingDirectory);
 
     if (ret == 0) {
@@ -1296,31 +1294,24 @@ virStorageFileChainGetBroken(virStorageFileMetadataPtr chain,
                              char **brokenFile)
 {
     virStorageFileMetadataPtr tmp;
-    int ret = -1;
 
     *brokenFile = NULL;
 
     if (!chain)
         return 0;
 
-    tmp = chain;
-    while (tmp) {
+    for (tmp = chain; tmp; tmp = tmp->backingMeta) {
         /* Break when we hit end of chain; report error if we detected
          * a missing backing file, infinite loop, or other error */
-       if (!tmp->backingStoreRaw)
-           break;
-       if (!tmp->backingStore) {
-           if (VIR_STRDUP(*brokenFile, tmp->backingStoreRaw) < 0)
-               goto error;
-           break;
-       }
-       tmp = tmp->backingMeta;
+        if (!tmp->backingMeta && tmp->backingStoreRaw) {
+            if (VIR_STRDUP(*brokenFile, tmp->backingStoreRaw) < 0)
+                return -1;
+
+           return 0;
+        }
     }
 
-    ret = 0;
-
- error:
-    return ret;
+    return 0;
 }
 
 
