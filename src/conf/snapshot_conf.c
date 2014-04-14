@@ -158,9 +158,12 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
             char *driver = virXMLPropString(cur, "type");
             if (driver) {
                 def->src.format = virStorageFileFormatTypeFromString(driver);
-                if (def->src.format <= 0) {
+                if (def->src.format < VIR_STORAGE_FILE_BACKING) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown disk snapshot driver '%s'"),
+                                   def->src.format <= 0
+                                   ? _("unknown disk snapshot driver '%s'")
+                                   : _("disk format '%s' lacks backing file "
+                                       "support"),
                                    driver);
                     VIR_FREE(driver);
                     goto cleanup;

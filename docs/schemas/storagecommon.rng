@@ -52,23 +52,30 @@
     </element>
   </define>
 
+  <!-- split the list of known storage formats into two, those where
+       we know how to follow backing chains, and all others -->
+  <define name='storageFormatBacking'>
+    <choice>
+      <value>cow</value>
+      <value>qcow</value>
+      <value>qcow2</value>
+      <value>qed</value>
+      <value>vmdk</value>
+    </choice>
+  </define>
   <define name='storageFormat'>
     <choice>
       <value>raw</value>
       <value>dir</value>
       <value>bochs</value>
       <value>cloop</value>
-      <value>cow</value>
       <value>dmg</value>
       <value>iso</value>
-      <value>qcow</value>
-      <value>qcow2</value>
-      <value>qed</value>
-      <value>vmdk</value>
       <value>vpc</value>
+      <value>vdi</value>
       <value>fat</value>
       <value>vhd</value>
-      <value>vdi</value>
+      <ref name='storageFormatBacking'/>
     </choice>
   </define>
 

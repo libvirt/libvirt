@@ -59,9 +59,12 @@ VIR_ENUM_IMPL(virStorageFileFormat,
               VIR_STORAGE_FILE_LAST,
               "none",
               "raw", "dir", "bochs",
-              "cloop", "cow", "dmg", "iso",
-              "qcow", "qcow2", "qed", "vmdk", "vpc",
-              "fat", "vhd", "vdi")
+              "cloop", "dmg", "iso",
+              "vpc", "vdi",
+              /* Not direct file formats, but used for various drivers */
+              "fat", "vhd",
+              /* Formats with backing file below here */
+              "cow", "qcow", "qcow2", "qed", "vmdk")
 
 VIR_ENUM_IMPL(virStorageFileFeature,
               VIR_STORAGE_FILE_FEATURE_LAST,
@@ -198,11 +201,6 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         LV_LITTLE_ENDIAN, -1, {0},
         -1, 0, 0, -1, NULL, NULL
     },
-    [VIR_STORAGE_FILE_COW] = {
-        0, "OOOM", NULL,
-        LV_BIG_ENDIAN, 4, {2},
-        4+4+1024+4, 8, 1, -1, cowGetBackingStore, NULL
-    },
     [VIR_STORAGE_FILE_DMG] = {
         /* XXX QEMU says there's no magic for dmg,
          * /usr/share/misc/magic lists double magic (both offsets
@@ -215,6 +213,29 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         32769, "CD001", ".iso",
         LV_LITTLE_ENDIAN, -2, {0},
         -1, 0, 0, -1, NULL, NULL
+    },
+    [VIR_STORAGE_FILE_VPC] = {
+        0, "conectix", NULL,
+        LV_BIG_ENDIAN, 12, {0x10000},
+        8 + 4 + 4 + 8 + 4 + 4 + 2 + 2 + 4, 8, 1, -1, NULL, NULL
+    },
+    /* TODO: add getBackingStore function */
+    [VIR_STORAGE_FILE_VDI] = {
+        64, "\x7f\x10\xda\xbe", ".vdi",
+        LV_LITTLE_ENDIAN, 68, {0x00010001},
+        64 + 5 * 4 + 256 + 7 * 4, 8, 1, -1, NULL, NULL},
+
+    /* Not direct file formats, but used for various drivers */
+    [VIR_STORAGE_FILE_FAT] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
+                               -1, {0}, 0, 0, 0, 0, NULL, NULL },
+    [VIR_STORAGE_FILE_VHD] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
+                               -1, {0}, 0, 0, 0, 0, NULL, NULL },
+
+    /* All formats with a backing store probe below here */
+    [VIR_STORAGE_FILE_COW] = {
+        0, "OOOM", NULL,
+        LV_BIG_ENDIAN, 4, {2},
+        4+4+1024+4, 8, 1, -1, cowGetBackingStore, NULL
     },
     [VIR_STORAGE_FILE_QCOW] = {
         0, "QFI", NULL,
@@ -238,22 +259,6 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         LV_LITTLE_ENDIAN, 4, {1, 2},
         4+4+4, 8, 512, -1, vmdk4GetBackingStore, NULL
     },
-    [VIR_STORAGE_FILE_VPC] = {
-        0, "conectix", NULL,
-        LV_BIG_ENDIAN, 12, {0x10000},
-        8 + 4 + 4 + 8 + 4 + 4 + 2 + 2 + 4, 8, 1, -1, NULL, NULL
-    },
-    /* TODO: add getBackingStore function */
-    [VIR_STORAGE_FILE_VDI] = {
-        64, "\x7f\x10\xda\xbe", ".vdi",
-        LV_LITTLE_ENDIAN, 68, {0x00010001},
-        64 + 5 * 4 + 256 + 7 * 4, 8, 1, -1, NULL, NULL},
-
-    /* Not direct file formats, but used for various drivers */
-    [VIR_STORAGE_FILE_FAT] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
-                               -1, {0}, 0, 0, 0, 0, NULL, NULL },
-    [VIR_STORAGE_FILE_VHD] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
-                               -1, {0}, 0, 0, 0, 0, NULL, NULL },
 };
 verify(ARRAY_CARDINALITY(fileTypeInfo) == VIR_STORAGE_FILE_LAST);
 

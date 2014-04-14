@@ -64,17 +64,24 @@ enum virStorageFileFormat {
     VIR_STORAGE_FILE_DIR,
     VIR_STORAGE_FILE_BOCHS,
     VIR_STORAGE_FILE_CLOOP,
-    VIR_STORAGE_FILE_COW,
     VIR_STORAGE_FILE_DMG,
     VIR_STORAGE_FILE_ISO,
+    VIR_STORAGE_FILE_VPC,
+    VIR_STORAGE_FILE_VDI,
+
+    /* Not direct file formats, but used for various drivers */
+    VIR_STORAGE_FILE_FAT,
+    VIR_STORAGE_FILE_VHD,
+
+    /* Not a format, but a marker: all formats below this point have
+     * libvirt support for following a backing chain */
+    VIR_STORAGE_FILE_BACKING,
+
+    VIR_STORAGE_FILE_COW = VIR_STORAGE_FILE_BACKING,
     VIR_STORAGE_FILE_QCOW,
     VIR_STORAGE_FILE_QCOW2,
     VIR_STORAGE_FILE_QED,
     VIR_STORAGE_FILE_VMDK,
-    VIR_STORAGE_FILE_VPC,
-    VIR_STORAGE_FILE_FAT,
-    VIR_STORAGE_FILE_VHD,
-    VIR_STORAGE_FILE_VDI,
 
     VIR_STORAGE_FILE_LAST,
 };
