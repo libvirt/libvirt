@@ -1196,119 +1196,118 @@
       <optional>
         <ref name="snapshot"/>
       </optional>
-      <choice>
-        <group>
-          <attribute name="type">
-            <value>file</value>
-          </attribute>
-          <interleave>
+      <interleave>
+        <choice>
+          <group>
             <optional>
-              <element name="source">
-                <optional>
-                  <attribute name="file">
+              <attribute name="type">
+                <value>file</value>
+              </attribute>
+            </optional>
+            <interleave>
+              <optional>
+                <element name="source">
+                  <optional>
+                    <attribute name="file">
+                      <ref name="absFilePath"/>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <ref name="startupPolicy"/>
+                  </optional>
+                  <optional>
+                    <ref name='devSeclabel'/>
+                  </optional>
+                </element>
+              </optional>
+            </interleave>
+          </group>
+          <group>
+            <attribute name="type">
+              <value>block</value>
+            </attribute>
+            <interleave>
+              <optional>
+                <element name="source">
+                  <optional>
+                    <attribute name="dev">
+                      <ref name="absFilePath"/>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <ref name="startupPolicy"/>
+                  </optional>
+                  <optional>
+                    <ref name='devSeclabel'/>
+                  </optional>
+                </element>
+              </optional>
+            </interleave>
+          </group>
+          <group>
+            <attribute name="type">
+              <value>dir</value>
+            </attribute>
+            <interleave>
+              <optional>
+                <element name="source">
+                  <attribute name="dir">
                     <ref name="absFilePath"/>
                   </attribute>
-                </optional>
-                <optional>
-                  <ref name="startupPolicy"/>
-                </optional>
-                <optional>
-                  <ref name='devSeclabel'/>
-                </optional>
-              </element>
-            </optional>
-            <ref name="diskspec"/>
-          </interleave>
-        </group>
-        <group>
-          <attribute name="type">
-            <value>block</value>
-          </attribute>
-          <interleave>
-            <optional>
-              <element name="source">
-                <optional>
-                  <attribute name="dev">
-                    <ref name="absFilePath"/>
+                  <optional>
+                    <ref name="startupPolicy"/>
+                  </optional>
+                  <empty/>
+                </element>
+              </optional>
+            </interleave>
+          </group>
+          <group>
+            <attribute name="type">
+              <value>network</value>
+            </attribute>
+            <interleave>
+              <optional>
+                <element name="source">
+                  <ref name='diskSourceNetwork'/>
+                </element>
+              </optional>
+            </interleave>
+          </group>
+          <group>
+            <attribute name="type">
+              <value>volume</value>
+            </attribute>
+            <interleave>
+              <optional>
+                <element name="source">
+                  <attribute name="pool">
+                    <ref name="genericName"/>
                   </attribute>
-                </optional>
-                <optional>
-                  <ref name="startupPolicy"/>
-                </optional>
-                <optional>
-                  <ref name='devSeclabel'/>
-                </optional>
-              </element>
-            </optional>
-            <ref name="diskspec"/>
-          </interleave>
-        </group>
-        <group>
-          <attribute name="type">
-            <value>dir</value>
-          </attribute>
-          <interleave>
-            <optional>
-              <element name="source">
-                <attribute name="dir">
-                  <ref name="absFilePath"/>
-                </attribute>
-                <optional>
-                  <ref name="startupPolicy"/>
-                </optional>
-                <empty/>
-              </element>
-            </optional>
-            <ref name="diskspec"/>
-          </interleave>
-        </group>
-        <group>
-          <attribute name="type">
-            <value>network</value>
-          </attribute>
-          <interleave>
-            <optional>
-              <element name="source">
-                <ref name='diskSourceNetwork'/>
-              </element>
-            </optional>
-            <ref name="diskspec"/>
-          </interleave>
-        </group>
-        <group>
-          <attribute name="type">
-            <value>volume</value>
-          </attribute>
-          <interleave>
-            <optional>
-              <element name="source">
-                <attribute name="pool">
-                  <ref name="genericName"/>
-                </attribute>
-                <attribute name="volume">
-                  <ref name="volName"/>
-                </attribute>
-                <optional>
-                  <attribute name="mode">
-                    <choice>
-                      <value>host</value>
-                      <value>direct</value>
-                    </choice>
+                  <attribute name="volume">
+                    <ref name="volName"/>
                   </attribute>
-                </optional>
-                <optional>
-                  <ref name="startupPolicy"/>
-                </optional>
-                <optional>
-                  <ref name='devSeclabel'/>
-                </optional>
-              </element>
-            </optional>
-            <ref name="diskspec"/>
-          </interleave>
-        </group>
+                  <optional>
+                    <attribute name="mode">
+                      <choice>
+                        <value>host</value>
+                        <value>direct</value>
+                      </choice>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <ref name="startupPolicy"/>
+                  </optional>
+                  <optional>
+                    <ref name='devSeclabel'/>
+                  </optional>
+                </element>
+              </optional>
+            </interleave>
+          </group>
+        </choice>
         <ref name="diskspec"/>
-      </choice>
+      </interleave>
     </element>
   </define>
   <define name="diskSourceNetwork">
