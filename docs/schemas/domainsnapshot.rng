@@ -173,19 +173,7 @@
                 <ref name='storageSourceExtra'/>
               </interleave>
             </group>
-            <group>
-              <attribute name="type">
-                <value>network</value>
-              </attribute>
-              <interleave>
-                <optional>
-                  <element name="source">
-                    <ref name='diskSourceNetwork'/>
-                  </element>
-                </optional>
-                <ref name='storageSourceExtra'/>
-              </interleave>
-            </group>
+            <ref name='diskSourceNetwork'/>
           </choice>
         </group>
       </choice>

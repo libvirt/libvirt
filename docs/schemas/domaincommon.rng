@@ -1196,176 +1196,187 @@
       <optional>
         <ref name="snapshot"/>
       </optional>
-      <interleave>
-        <choice>
-          <group>
-            <optional>
-              <attribute name="type">
-                <value>file</value>
-              </attribute>
-            </optional>
-            <interleave>
-              <optional>
-                <element name="source">
-                  <optional>
-                    <attribute name="file">
-                      <ref name="absFilePath"/>
-                    </attribute>
-                  </optional>
-                  <optional>
-                    <ref name="storageStartupPolicy"/>
-                  </optional>
-                  <optional>
-                    <ref name='devSeclabel'/>
-                  </optional>
-                </element>
-              </optional>
-            </interleave>
-          </group>
-          <group>
-            <attribute name="type">
-              <value>block</value>
-            </attribute>
-            <interleave>
-              <optional>
-                <element name="source">
-                  <optional>
-                    <attribute name="dev">
-                      <ref name="absFilePath"/>
-                    </attribute>
-                  </optional>
-                  <optional>
-                    <ref name="storageStartupPolicy"/>
-                  </optional>
-                  <optional>
-                    <ref name='devSeclabel'/>
-                  </optional>
-                </element>
-              </optional>
-            </interleave>
-          </group>
-          <group>
-            <attribute name="type">
-              <value>dir</value>
-            </attribute>
-            <interleave>
-              <optional>
-                <element name="source">
-                  <attribute name="dir">
-                    <ref name="absFilePath"/>
-                  </attribute>
-                  <optional>
-                    <ref name="storageStartupPolicy"/>
-                  </optional>
-                  <empty/>
-                </element>
-              </optional>
-            </interleave>
-          </group>
-          <group>
-            <attribute name="type">
-              <value>network</value>
-            </attribute>
-            <interleave>
-              <optional>
-                <element name="source">
-                  <ref name='diskSourceNetwork'/>
-                </element>
-              </optional>
-            </interleave>
-          </group>
-          <group>
-            <attribute name="type">
-              <value>volume</value>
-            </attribute>
-            <interleave>
-              <optional>
-                <element name="source">
-                  <attribute name="pool">
-                    <ref name="genericName"/>
-                  </attribute>
-                  <attribute name="volume">
-                    <ref name="volName"/>
-                  </attribute>
-                  <optional>
-                    <attribute name="mode">
-                      <choice>
-                        <value>host</value>
-                        <value>direct</value>
-                      </choice>
-                    </attribute>
-                  </optional>
-                  <optional>
-                    <ref name="storageStartupPolicy"/>
-                  </optional>
-                  <optional>
-                    <ref name='devSeclabel'/>
-                  </optional>
-                </element>
-              </optional>
-            </interleave>
-          </group>
-        </choice>
-        <ref name="storageSourceExtra"/>
-      </interleave>
+      <ref name="diskSource"/>
     </element>
   </define>
 
-  <define name="diskSourceNetwork">
-    <attribute name="protocol">
-      <choice>
-        <value>nbd</value>
-        <value>rbd</value>
-        <value>sheepdog</value>
-        <value>gluster</value>
-        <value>iscsi</value>
-        <value>http</value>
-        <value>https</value>
-        <value>ftp</value>
-        <value>ftps</value>
-        <value>tftp</value>
-      </choice>
-    </attribute>
+  <define name="diskSource">
+    <choice>
+      <ref name="diskSourceFile"/>
+      <ref name="diskSourceBlock"/>
+      <ref name="diskSourceDir"/>
+      <ref name="diskSourceNetwork"/>
+      <ref name="diskSourceVolume"/>
+    </choice>
+  </define>
+
+  <define name="diskSourceFile">
     <optional>
-      <attribute name="name"/>
+      <attribute name="type">
+        <value>file</value>
+      </attribute>
     </optional>
-    <zeroOrMore>
-      <element name="host">
-        <choice>
-          <group>
-            <optional>
-              <attribute name="transport">
-                <choice>
-                  <value>tcp</value>
-                  <value>rdma</value>
-                </choice>
-              </attribute>
-            </optional>
-            <attribute name="name">
-              <choice>
-                <ref name="dnsName"/>
-                <ref name="ipAddr"/>
-              </choice>
-            </attribute>
-            <optional>
-              <attribute name="port">
-                <ref name="unsignedInt"/>
-              </attribute>
-            </optional>
-          </group>
-          <group>
-            <attribute name="transport">
-              <value>unix</value>
-            </attribute>
-            <attribute name="socket">
+    <interleave>
+      <optional>
+        <element name="source">
+          <optional>
+            <attribute name="file">
               <ref name="absFilePath"/>
             </attribute>
-          </group>
-        </choice>
-      </element>
-    </zeroOrMore>
-    <empty/>
+          </optional>
+          <optional>
+            <ref name="storageStartupPolicy"/>
+          </optional>
+          <optional>
+            <ref name='devSeclabel'/>
+          </optional>
+        </element>
+      </optional>
+      <ref name='storageSourceExtra'/>
+    </interleave>
   </define>
+
+  <define name="diskSourceBlock">
+    <attribute name="type">
+      <value>block</value>
+    </attribute>
+    <interleave>
+      <optional>
+        <element name="source">
+          <optional>
+            <attribute name="dev">
+              <ref name="absFilePath"/>
+            </attribute>
+          </optional>
+          <optional>
+            <ref name="storageStartupPolicy"/>
+          </optional>
+          <optional>
+            <ref name='devSeclabel'/>
+          </optional>
+        </element>
+      </optional>
+      <ref name='storageSourceExtra'/>
+    </interleave>
+  </define>
+
+  <define name="diskSourceDir">
+    <attribute name="type">
+      <value>dir</value>
+    </attribute>
+    <interleave>
+      <optional>
+        <element name="source">
+          <attribute name="dir">
+            <ref name="absFilePath"/>
+          </attribute>
+          <optional>
+            <ref name="storageStartupPolicy"/>
+          </optional>
+          <empty/>
+        </element>
+      </optional>
+      <ref name='storageSourceExtra'/>
+    </interleave>
+  </define>
+
+  <define name="diskSourceNetwork">
+    <attribute name="type">
+      <value>network</value>
+    </attribute>
+    <interleave>
+      <element name="source">
+        <attribute name="protocol">
+          <choice>
+            <value>nbd</value>
+            <value>rbd</value>
+            <value>sheepdog</value>
+            <value>gluster</value>
+            <value>iscsi</value>
+            <value>http</value>
+            <value>https</value>
+            <value>ftp</value>
+            <value>ftps</value>
+            <value>tftp</value>
+          </choice>
+        </attribute>
+        <optional>
+          <attribute name="name"/>
+        </optional>
+        <zeroOrMore>
+          <element name="host">
+            <choice>
+              <group>
+                <optional>
+                  <attribute name="transport">
+                    <choice>
+                      <value>tcp</value>
+                      <value>rdma</value>
+                    </choice>
+                  </attribute>
+                </optional>
+                <attribute name="name">
+                  <choice>
+                    <ref name="dnsName"/>
+                    <ref name="ipAddr"/>
+                  </choice>
+                </attribute>
+                <optional>
+                  <attribute name="port">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+              </group>
+              <group>
+                <attribute name="transport">
+                  <value>unix</value>
+                </attribute>
+                <attribute name="socket">
+                  <ref name="absFilePath"/>
+                </attribute>
+              </group>
+            </choice>
+          </element>
+        </zeroOrMore>
+        <empty/>
+      </element>
+      <ref name='storageSourceExtra'/>
+    </interleave>
+  </define>
+
+  <define name="diskSourceVolume">
+    <attribute name="type">
+      <value>volume</value>
+    </attribute>
+    <interleave>
+      <optional>
+        <element name="source">
+          <attribute name="pool">
+            <ref name="genericName"/>
+          </attribute>
+          <attribute name="volume">
+            <ref name="volName"/>
+          </attribute>
+          <optional>
+            <attribute name="mode">
+              <choice>
+                <value>host</value>
+                <value>direct</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <ref name="storageStartupPolicy"/>
+          </optional>
+          <optional>
+            <ref name='devSeclabel'/>
+          </optional>
+        </element>
+      </optional>
+      <ref name='storageSourceExtra'/>
+    </interleave>
+  </define>
+
   <define name="diskTarget">
     <data type="string">
       <param name="pattern">(ioemu:)?(fd|hd|sd|vd|xvd|ubd)[a-zA-Z0-9_]+</param>

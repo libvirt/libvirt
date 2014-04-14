@@ -1,0 +1,12 @@
+<domainsnapshot>
+  <name>my snap name</name>
+  <description>!@#$%^</description>
+  <disks>
+    <disk name='hdg' snapshot='external' type='network'>
+      <source protocol='gluster' name='volume/path'>
+        <host name='host' port='1234'/>
+        <seclabel model='dac' relabel='no'/>
+      </source>
+    </disk>
+  </disks>
+</domainsnapshot>
