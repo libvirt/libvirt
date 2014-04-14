@@ -1,7 +1,7 @@
 /*
  * virsystemd.c: helpers for using systemd APIs
  *
- * Copyright (C) 2013 Red Hat, Inc.
+ * Copyright (C) 2013, 2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -326,6 +326,7 @@ virSystemdNotifyStartup(void)
 #endif
 }
 
+#ifdef WITH_SYSTEMD_DAEMON
 static int
 virSystemdPMSupportTarget(const char *methodName, bool *result)
 {
@@ -369,6 +370,14 @@ virSystemdPMSupportTarget(const char *methodName, bool *result)
 
     return ret;
 }
+#else /* ! WITH_SYSTEMD_DAEMON */
+static int
+virSystemdPMSupportTarget(const char *methodName ATTRIBUTE_UNUSED,
+                          bool *result ATTRIBUTE_UNUSED)
+{
+    return -2;
+}
+#endif /* ! WITH_SYSTEMD_DAEMON */
 
 int virSystemdCanSuspend(bool *result)
 {

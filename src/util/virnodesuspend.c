@@ -1,6 +1,7 @@
 /*
  * virnodesuspend.c: Support for suspending a node (host machine)
  *
+ * Copyright (C) 2014 Red Hat, Inc.
  * Copyright (C) 2011 Srivatsa S. Bhat <srivatsa.bhat@linux.vnet.ibm.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -267,7 +268,14 @@ virNodeSuspendSupportsTargetPMUtils(unsigned int target, bool *supported)
     virCommandFree(cmd);
     return ret;
 }
-#endif
+#else /* ! WITH_PM_UTILS */
+static int
+virNodeSuspendSupportsTargetPMUtils(unsigned int target ATTRIBUTE_UNUSED,
+                                    bool *supported ATTRIBUTE_UNUSED)
+{
+    return -2;
+}
+#endif /* ! WITH_PM_UTILS */
 
 static int
 virNodeSuspendSupportsTargetSystemd(unsigned int target, bool *supported)
@@ -313,10 +321,17 @@ virNodeSuspendSupportsTarget(unsigned int target, bool *supported)
     int ret;
 
     ret = virNodeSuspendSupportsTargetSystemd(target, supported);
-#ifdef WITH_PM_UTILS
-    if (ret < 0)
+
+    /* If just unavailable, try other options */
+    if (ret == -2)
         ret = virNodeSuspendSupportsTargetPMUtils(target, supported);
-#endif
+
+    /* If still unavailable, then report error */
+    if (ret == -2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot probe for supported suspend types"));
+        ret = -1;
+    }
 
     return ret;
 }
