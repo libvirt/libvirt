@@ -795,7 +795,7 @@ qcow2GetFeatures(virBitmapPtr *features,
  * information about the file and its backing store.  */
 static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
 ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(7)
-ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(9)
+ATTRIBUTE_NONNULL(8)
 virStorageFileGetMetadataInternal(const char *path,
                                   const char *canonPath,
                                   const char *directory,
@@ -803,7 +803,6 @@ virStorageFileGetMetadataInternal(const char *path,
                                   size_t len,
                                   int format,
                                   virStorageFileMetadataPtr meta,
-                                  char **backingStore,
                                   int *backingFormat,
                                   char **backingDirectory)
 {
@@ -889,10 +888,6 @@ virStorageFileGetMetadataInternal(const char *path,
                 }
             } else {
                 if (VIR_STRDUP(meta->backingStore, meta->backingStoreRaw) < 0)
-                    goto cleanup;
-
-                if (backingStore &&
-                    VIR_STRDUP(*backingStore, meta->backingStoreRaw) < 0)
                     goto cleanup;
 
                 *backingFormat = VIR_STORAGE_FILE_RAW;
@@ -1020,8 +1015,13 @@ virStorageFileGetMetadataFromBuf(const char *path,
         goto cleanup;
 
     if (virStorageFileGetMetadataInternal(path, canonPath, ".", buf, len,
-                                          format, ret, backing,
+                                          format, ret,
                                           backingFormat, NULL) < 0) {
+        virStorageFileFreeMetadata(ret);
+        ret = NULL;
+    }
+
+    if (VIR_STRDUP(*backing, ret->backingStoreRaw) < 0) {
         virStorageFileFreeMetadata(ret);
         ret = NULL;
     }
@@ -1083,7 +1083,6 @@ virStorageFileGetMetadataFromFDInternal(const char *path,
 
     ret = virStorageFileGetMetadataInternal(path, canonPath, directory,
                                             buf, len, format, meta,
-                                            NULL,
                                             backingFormat, backingDirectory);
 
     if (ret == 0) {
