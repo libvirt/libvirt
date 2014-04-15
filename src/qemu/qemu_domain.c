@@ -2234,6 +2234,28 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
     return -1;
 }
 
+static int
+qemuDiskChainCheckBroken(virDomainDiskDefPtr disk)
+{
+    char *brokenFile = NULL;
+
+    if (!virDomainDiskGetSource(disk) || !disk->backingChain)
+        return 0;
+
+    if (virStorageFileChainGetBroken(disk->backingChain, &brokenFile) < 0)
+        return -1;
+
+    if (brokenFile) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Backing file '%s' of image '%s' is missing."),
+                       brokenFile, virDomainDiskGetSource(disk));
+        VIR_FREE(brokenFile);
+        return -1;
+    }
+
+    return 0;
+}
+
 int
 qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
@@ -2335,28 +2357,6 @@ qemuDomainCleanupRun(virQEMUDriverPtr driver,
     VIR_FREE(priv->cleanupCallbacks);
     priv->ncleanupCallbacks = 0;
     priv->ncleanupCallbacks_max = 0;
-}
-
-int
-qemuDiskChainCheckBroken(virDomainDiskDefPtr disk)
-{
-    char *brokenFile = NULL;
-
-    if (!virDomainDiskGetSource(disk) || !disk->backingChain)
-        return 0;
-
-    if (virStorageFileChainGetBroken(disk->backingChain, &brokenFile) < 0)
-        return -1;
-
-    if (brokenFile) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Backing file '%s' of image '%s' is missing."),
-                       brokenFile, virDomainDiskGetSource(disk));
-        VIR_FREE(brokenFile);
-        return -1;
-    }
-
-    return 0;
 }
 
 static void
