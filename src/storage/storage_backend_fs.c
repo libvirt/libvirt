@@ -84,7 +84,8 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
         goto error; /* Take care to propagate ret, it is not always -1 */
     fd = ret;
 
-    if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd, &sb)) < 0) {
+    if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd,
+                                                      &sb, true)) < 0) {
         goto error;
     }
 
@@ -914,7 +915,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
             vol->backingStore.format = backingStoreFormat;
 
             ignore_value(virStorageBackendUpdateVolTargetInfo(
-                                               &vol->backingStore, false,
+                                               &vol->backingStore, true, false,
                                                VIR_STORAGE_VOL_OPEN_DEFAULT));
             /* If this failed, the backing file is currently unavailable,
              * the capacity, allocation, owner, group and mode are unknown.
@@ -1192,8 +1193,10 @@ virStorageBackendFileSystemVolRefresh(virConnectPtr conn,
 {
     int ret;
 
-    /* Refresh allocation / permissions info in case its changed */
-    ret = virStorageBackendUpdateVolInfo(vol, false,
+    /* Refresh allocation / permissions info in case its changed
+     * don't update the capacity value for this pass
+     */
+    ret = virStorageBackendUpdateVolInfo(vol, false, false,
                                          VIR_STORAGE_VOL_FS_OPEN_FLAGS);
     if (ret < 0)
         return ret;

@@ -1403,6 +1403,7 @@ virStorageBackendVolOpen(const char *path, struct stat *sb,
 
 int
 virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
+                                     bool updateCapacity,
                                      bool withBlockVolFormat,
                                      unsigned int openflags)
 {
@@ -1413,7 +1414,8 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
         goto cleanup;
     fd = ret;
 
-    if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd, &sb)) < 0)
+    if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd, &sb,
+                                                      updateCapacity)) < 0)
         goto cleanup;
 
     if (withBlockVolFormat) {
@@ -1429,18 +1431,21 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
 
 int
 virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
+                               bool updateCapacity,
                                bool withBlockVolFormat,
                                unsigned int openflags)
 {
     int ret;
 
     if ((ret = virStorageBackendUpdateVolTargetInfo(&vol->target,
+                                    updateCapacity,
                                     withBlockVolFormat,
                                     openflags)) < 0)
         return ret;
 
     if (vol->backingStore.path &&
         (ret = virStorageBackendUpdateVolTargetInfo(&vol->backingStore,
+                                            updateCapacity,
                                             withBlockVolFormat,
                                             VIR_STORAGE_VOL_OPEN_DEFAULT)) < 0)
         return ret;
@@ -1453,15 +1458,15 @@ virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
  * @target: target definition ptr of volume to update
  * @fd: fd of storage volume to update, via virStorageBackendOpenVol*, or -1
  * @sb: details about file (must match @fd, if that is provided)
- * @allocation: If not NULL, updated allocation information will be stored
- * @capacity: If not NULL, updated capacity info will be stored
+ * @updateCapacity: If true, updated capacity info will be stored
  *
  * Returns 0 for success, -1 on a legitimate error condition.
  */
 int
 virStorageBackendUpdateVolTargetInfoFD(virStorageSourcePtr target,
                                        int fd,
-                                       struct stat *sb)
+                                       struct stat *sb,
+                                       bool updateCapacity)
 {
 #if WITH_SELINUX
     security_context_t filecon = NULL;
@@ -1477,10 +1482,12 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageSourcePtr target,
         /* Regular files may be sparse, so logical size (capacity) is not same
          * as actual allocation above
          */
-        target->capacity = sb->st_size;
+        if (updateCapacity)
+            target->capacity = sb->st_size;
     } else if (S_ISDIR(sb->st_mode)) {
         target->allocation = 0;
-        target->capacity = 0;
+        if (updateCapacity)
+            target->capacity = 0;
     } else if (fd >= 0) {
         off_t end;
         /* XXX this is POSIX compliant, but doesn't work for CHAR files,
@@ -1496,7 +1503,8 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageSourcePtr target,
             return -1;
         }
         target->allocation = end;
-        target->capacity = end;
+        if (updateCapacity)
+            target->capacity = end;
     }
 
     if (!target->perms && VIR_ALLOC(target->perms) < 0)

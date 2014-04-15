@@ -149,7 +149,7 @@ virStorageBackendLogicalMakeVol(char **const groups,
     if (!vol->key && VIR_STRDUP(vol->key, groups[2]) < 0)
         goto cleanup;
 
-    if (virStorageBackendUpdateVolInfo(vol, false,
+    if (virStorageBackendUpdateVolInfo(vol, true, false,
                                        VIR_STORAGE_VOL_OPEN_DEFAULT) < 0)
         goto cleanup;
 

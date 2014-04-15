@@ -60,7 +60,7 @@ virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
     if (virAsprintf(&vol->target.path, "/dev/%s", dev) < 0)
         goto cleanup;
 
-    if (virStorageBackendUpdateVolInfo(vol, true,
+    if (virStorageBackendUpdateVolInfo(vol, true, true,
                                        VIR_STORAGE_VOL_OPEN_DEFAULT) < 0) {
         goto cleanup;
     }
