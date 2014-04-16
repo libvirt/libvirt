@@ -1196,8 +1196,49 @@
       <optional>
         <ref name="snapshot"/>
       </optional>
-      <ref name="diskSource"/>
+      <interleave>
+        <ref name="diskSource"/>
+        <ref name="storageSourceExtra"/>
+        <ref name="diskBackingChain"/>
+      </interleave>
     </element>
+  </define>
+
+  <define name="diskBackingChain">
+    <choice>
+      <ref name="diskBackingStore"/>
+      <ref name="diskBackingStoreLast"/>
+    </choice>
+  </define>
+
+  <define name="diskBackingStore">
+    <element name="backingStore">
+      <attribute name="index">
+        <ref name="positiveInteger"/>
+      </attribute>
+      <interleave>
+        <ref name="diskSource"/>
+        <ref name="diskBackingChain"/>
+        <ref name="diskFormat"/>
+      </interleave>
+    </element>
+  </define>
+
+  <define name="diskFormat">
+    <element name="format">
+      <attribute name="type">
+        <ref name="storageFormat"/>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="diskBackingStoreLast">
+    <optional>
+      <element name="backingStore">
+        <empty/>
+      </element>
+    </optional>
   </define>
 
   <define name="diskSource">
@@ -1232,7 +1273,6 @@
           </optional>
         </element>
       </optional>
-      <ref name='storageSourceExtra'/>
     </interleave>
   </define>
 
@@ -1256,7 +1296,6 @@
           </optional>
         </element>
       </optional>
-      <ref name='storageSourceExtra'/>
     </interleave>
   </define>
 
@@ -1276,7 +1315,6 @@
           <empty/>
         </element>
       </optional>
-      <ref name='storageSourceExtra'/>
     </interleave>
   </define>
 
@@ -1340,7 +1378,6 @@
         </zeroOrMore>
         <empty/>
       </element>
-      <ref name='storageSourceExtra'/>
     </interleave>
   </define>
 
@@ -1373,7 +1410,6 @@
           </optional>
         </element>
       </optional>
-      <ref name='storageSourceExtra'/>
     </interleave>
   </define>
 

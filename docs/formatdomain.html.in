@@ -1624,6 +1624,20 @@
       &lt;/auth&gt;
       &lt;target dev='vda' bus='virtio'/&gt;
     &lt;/disk&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;driver name='qemu' type='qcow2'/&gt;
+      &lt;source file='/var/lib/libvirt/images/domain.qcow'/&gt;
+      &lt;backingStore type='file'&gt;
+        &lt;format type='qcow2'/&gt;
+        &lt;source file='/var/lib/libvirt/images/snapshot.qcow'/&gt;
+        &lt;backingStore type='block'&gt;
+          &lt;format type='raw'/&gt;
+          &lt;source dev='/dev/mapper/base'/&gt;
+          &lt;backingStore/&gt;
+        &lt;/backingStore&gt;
+      &lt;/backingStore&gt;
+      &lt;target dev='vda' bus='virtio'/&gt;
+    &lt;/disk&gt;
   &lt;/devices&gt;
   ...</pre>
 
@@ -1814,6 +1828,53 @@
         This feature doesn't support migration currently.
         </p>
         </dd>
+      <dt><code>backingStore</code></dt>
+      <dd>
+        This element describes the backing store used by the disk specified by
+        sibling <code>source</code> element. It is currently ignored on input
+        and only used for output to describe the detected backing chains.
+        <span class="since">Since 1.2.4</span>. An empty
+        <code>backingStore</code> element means the sibling source is
+        self-contained and is not based on any backing store. The following
+        attributes and sub-elements are supported in
+        <code>backingStore</code>:
+        <dl>
+          <dt><code>type</code> attribute</dt>
+          <dd>
+            The <code>type</code> attribute represents the type of disk used
+            by the backing store, see disk type attribute above for more
+            details and possible values.
+          </dd>
+          <dt><code>index</code> attribute</dt>
+          <dd>
+            This attribute is only valid in output (and ignored on input) and
+            it can be used to refer to a specific part of the disk chain when
+            doing block operations (such as via the
+            <code>virDomainBlockRebase</code> API). For example,
+            <code>vda[2]</code> refers to the backing store with
+            <code>index='2'</code> of the disk with <code>vda</code> target.
+          </dd>
+          <dt><code>format</code> sub-element</dt>
+          <dd>
+            The <code>format</code> element contains <code>type</code>
+            attribute which specifies the internal format of the backing
+            store, such as <code>raw</code> or <code>qcow2</code>.
+          </dd>
+          <dt><code>source</code> sub-element</dt>
+          <dd>
+            This element has the same structure as the <code>source</code>
+            element in <code>disk</code>. It specifies which file, device,
+            or network location contains the data of the described backing
+            store.
+          </dd>
+          <dt><code>backingStore</code> sub-element</dt>
+          <dd>
+            If the backing store is not self-contained, the next element
+            in the chain is described by nested <code>backingStore</code>
+            element.
+          </dd>
+        </dl>
+      </dd>
       <dt><code>mirror</code></dt>
       <dd>
         This element is present if the hypervisor has started a block

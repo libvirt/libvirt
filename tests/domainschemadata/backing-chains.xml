@@ -1,0 +1,94 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu</emulator>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source protocol='gluster' name='Volume2/Image'>
+        <host transport='unix' socket='/path/to/sock'/>
+      </source>
+      <backingStore type='file' index='1'>
+        <format type='qcow2'/>
+        <source file='/tmp/missing-backing-store.qcow'/>
+      </backingStore>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source protocol='nbd' name='bar'>
+        <host transport='unix' socket='/var/run/nbdsock'/>
+      </source>
+      <backingStore type='block' index='1'>
+        <format type='qcow2'/>
+        <source dev='/dev/HostVG/QEMUGuest1'/>
+        <backingStore type='file' index='2'>
+          <format type='qcow2'/>
+          <source file='/tmp/image2.qcow'/>
+          <backingStore type='file' index='3'>
+            <format type='qcow2'/>
+            <source file='/tmp/image3.qcow'/>
+            <backingStore type='file' index='4'>
+              <format type='qcow2'/>
+              <source file='/tmp/image4.qcow'/>
+              <backingStore type='file' index='5'>
+                <source file='/tmp/image5.qcow'/>
+                <format type='qcow2'/>
+                <backingStore type='file' index='6'>
+                  <format type='raw'/>
+                  <source file='/tmp/Fedora-17-x86_64-Live-KDE.iso'/>
+                  <backingStore/>
+                </backingStore>
+              </backingStore>
+            </backingStore>
+          </backingStore>
+        </backingStore>
+      </backingStore>
+      <target dev='vdb' bus='virtio'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <backingStore/>
+      <source protocol='gluster' name='Volume1/Image'>
+        <host name='example.org' port='6000'/>
+      </source>
+      <target dev='vdc' bus='virtio'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <auth username='myname'>
+        <secret type='ceph' usage='mycluster_myname'/>
+      </auth>
+      <source protocol='rbd' name='pool/image'>
+        <host name='mon1.example.org' port='6321'/>
+        <host name='mon2.example.org' port='6322'/>
+        <host name='mon3.example.org' port='6322'/>
+      </source>
+      <backingStore type='file' index='1'>
+        <source file='/tmp/image.qcow'/>
+        <backingStore/>
+        <format type='qcow2'/>
+      </backingStore>
+      <target dev='vdd' bus='virtio'/>
+    </disk>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source dev='/dev/HostVG/QEMUGuest11'/>
+      <target dev='vde' bus='virtio'/>
+    </disk>
+    <controller type='usb' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>
