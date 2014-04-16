@@ -2788,12 +2788,16 @@
         device assignment. Use the <code>name</code> attribute to
         select either "vfio" (for the new VFIO device assignment
         backend, which is compatible with UEFI SecureBoot) or "kvm"
-        (for the legacy device assignment handled directly by the KVM
+        (the legacy device assignment handled directly by the KVM
         kernel module)<span class="since">Since 1.0.5 (QEMU and KVM
-        only, requires kernel 3.6 or newer)</span>. The default, when
-        the driver name is not explicitly specified, is to check whether
-        VFIO is available and use it if it's the case. If VFIO is not
-        available, the legacy "kvm" assignment is attempted.
+        only, requires kernel 3.6 or newer)</span>. When specified,
+        device assignment will fail if the requested method of device
+        assignment isn't available on the host. When not specified,
+        the default is "vfio" on systems where the VFIO driver is
+        available and loaded, and "kvm" on older systems, or those
+        where the VFIO driver hasn't been
+        loaded <span class="since">Since 1.1.3</span> (prior to that
+        the default was always "kvm").
       </dd>
       <dt><code>readonly</code></dt>
       <dd>Indicates that the device is readonly, only supported by SCSI host

@@ -282,17 +282,22 @@
             definition. <span class="since"> Since 0.10.0</span>
 
             <p>
-              To use VFIO device assignment rather than
-              traditional/legacy KVM device assignment (VFIO is a new
-              method of device assignment that is compatible with UEFI
-              Secure Boot), a &lt;forward type='hostdev'&gt; interface
-              can have an optional <code>driver</code> sub-element
-              with a <code>name</code> attribute set to "vfio". To use
-              legacy KVM device assignment you can
-              set <code>name</code> to "kvm" (or simply omit the
-              &lt;driver&gt; element, since "kvm" is currently the
-              default).
-              <span class="since">Since 1.0.5 (QEMU and KVM only, requires kernel 3.6 or newer)</span>
+              To force use of a particular type of device assignment,
+              a &lt;forward type='hostdev'&gt; interface can have an
+              optional <code>driver</code> sub-element with
+              a <code>name</code> attribute set to either "vfio" (VFIO
+              is a new method of device assignment that is compatible
+              with UEFI Secure Boot) or "kvm" (the legacy device
+              assignment handled directly by the KVM kernel module)
+              <span class="since">Since 1.0.5 (QEMU and KVM only,
+              requires kernel 3.6 or newer)</span>. When specified,
+              device assignment will fail if the requested method of
+              device assignment isn't available on the host. When not
+              specified, the default is "vfio" on systems where the
+              VFIO driver is available and loaded, and "kvm" on older
+              systems, or those where the VFIO driver hasn't been
+              loaded <span class="since">Since 1.1.3</span> (prior to
+              that the default was always "kvm").
             </p>
 
             <p>Note that this "intelligent passthrough" of network
