@@ -64,6 +64,7 @@ struct _virStorageVolDef {
     int type; /* enum virStorageVolType */
 
     unsigned int building;
+    unsigned int in_use;
 
     virStorageVolSource source;
     virStorageSource target;

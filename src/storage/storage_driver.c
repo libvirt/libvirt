@@ -1640,6 +1640,13 @@ storageVolDelete(virStorageVolPtr obj,
     if (virStorageVolDeleteEnsureACL(obj->conn, pool->def, vol) < 0)
         goto cleanup;
 
+    if (vol->in_use) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("volume '%s' is still in use."),
+                       vol->name);
+        goto cleanup;
+    }
+
     if (vol->building) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("volume '%s' is still being allocated."),
@@ -1912,8 +1919,8 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
 
     /* Drop the pool lock during volume allocation */
     pool->asyncjobs++;
-    origvol->building = 1;
     newvol->building = 1;
+    origvol->in_use++;
     virStoragePoolObjUnlock(pool);
 
     if (origpool) {
@@ -1929,7 +1936,7 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
         virStoragePoolObjLock(origpool);
     storageDriverUnlock(driver);
 
-    origvol->building = 0;
+    origvol->in_use--;
     newvol->building = 0;
     allocation = newvol->target.allocation;
     pool->asyncjobs--;
@@ -2076,6 +2083,13 @@ storageVolUpload(virStorageVolPtr obj,
     if (virStorageVolUploadEnsureACL(obj->conn, pool->def, vol) < 0)
         goto cleanup;
 
+    if (vol->in_use) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("volume '%s' is still in use."),
+                       vol->name);
+        goto cleanup;
+    }
+
     if (vol->building) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("volume '%s' is still being allocated."),
@@ -2166,6 +2180,13 @@ storageVolResize(virStorageVolPtr obj,
 
     if (virStorageVolResizeEnsureACL(obj->conn, pool->def, vol) < 0)
         goto cleanup;
+
+    if (vol->in_use) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("volume '%s' is still in use."),
+                       vol->name);
+        goto cleanup;
+    }
 
     if (vol->building) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -2473,6 +2494,13 @@ storageVolWipePattern(virStorageVolPtr obj,
 
     if (virStorageVolWipePatternEnsureACL(obj->conn, pool->def, vol) < 0)
         goto cleanup;
+
+    if (vol->in_use) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("volume '%s' is still in use."),
+                       vol->name);
+        goto cleanup;
+    }
 
     if (vol->building) {
         virReportError(VIR_ERR_OPERATION_INVALID,
