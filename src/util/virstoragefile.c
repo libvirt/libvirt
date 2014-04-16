@@ -803,8 +803,7 @@ virStorageFileGetMetadataInternal(const char *path,
                                   size_t len,
                                   int format,
                                   virStorageFileMetadataPtr meta,
-                                  int *backingFormat,
-                                  char **backingDirectory)
+                                  int *backingFormat)
 {
     int ret = -1;
 
@@ -871,31 +870,6 @@ virStorageFileGetMetadataInternal(const char *path,
 
         if (store == BACKING_STORE_ERROR)
             goto cleanup;
-
-        if (meta->backingStoreRaw) {
-            if (virStorageIsFile(meta->backingStoreRaw)) {
-                if (virFindBackingFile(directory,
-                                       meta->backingStoreRaw,
-                                       backingDirectory,
-                                       &meta->backingStore) < 0) {
-                    /* the backing file is (currently) unavailable, treat this
-                     * file as standalone:
-                     * backingStoreRaw is kept to mark broken image chains */
-                    *backingFormat = VIR_STORAGE_FILE_NONE;
-                    VIR_WARN("Backing file '%s' of image '%s' is missing.",
-                             meta->backingStoreRaw, path);
-
-                }
-            } else {
-                if (VIR_STRDUP(meta->backingStore, meta->backingStoreRaw) < 0)
-                    goto cleanup;
-
-                *backingFormat = VIR_STORAGE_FILE_RAW;
-            }
-        } else {
-            meta->backingStore = NULL;
-            *backingFormat = VIR_STORAGE_FILE_NONE;
-        }
     }
 
     if (fileTypeInfo[format].getFeatures != NULL &&
@@ -1016,7 +990,7 @@ virStorageFileGetMetadataFromBuf(const char *path,
 
     if (virStorageFileGetMetadataInternal(path, canonPath, ".", buf, len,
                                           format, ret,
-                                          backingFormat, NULL) < 0) {
+                                          backingFormat) < 0) {
         virStorageFileFreeMetadata(ret);
         ret = NULL;
     }
@@ -1040,8 +1014,7 @@ virStorageFileGetMetadataFromFDInternal(const char *path,
                                         int fd,
                                         int format,
                                         virStorageFileMetadataPtr meta,
-                                        int *backingFormat,
-                                        char **backingDirectory)
+                                        int *backingFormat)
 {
     char *buf = NULL;
     ssize_t len = VIR_STORAGE_MAX_HEADER;
@@ -1083,7 +1056,7 @@ virStorageFileGetMetadataFromFDInternal(const char *path,
 
     ret = virStorageFileGetMetadataInternal(path, canonPath, directory,
                                             buf, len, format, meta,
-                                            backingFormat, backingDirectory);
+                                            backingFormat);
 
     if (ret == 0) {
         if (S_ISREG(sb.st_mode))
@@ -1126,7 +1099,7 @@ virStorageFileGetMetadataFromFD(const char *path,
         goto cleanup;
     if (virStorageFileGetMetadataFromFDInternal(path, canonPath, ".",
                                                 fd, format, ret,
-                                                NULL, NULL) < 0) {
+                                                NULL) < 0) {
         virStorageFileFreeMetadata(ret);
         ret = NULL;
     }
@@ -1172,8 +1145,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
         ret = virStorageFileGetMetadataFromFDInternal(path, canonPath,
                                                       directory,
                                                       fd, format, meta,
-                                                      &backingFormat,
-                                                      &backingDirectory);
+                                                      &backingFormat);
 
         if (VIR_CLOSE(fd) < 0)
             VIR_WARN("could not close file %s", path);
@@ -1190,8 +1162,26 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
         ret = 0;
     }
 
-    if (ret == 0 && meta->backingStore) {
+    if (ret == 0 && meta->backingStoreRaw) {
         virStorageFileMetadataPtr backing;
+
+        if (virStorageIsFile(meta->backingStoreRaw)) {
+            if (virFindBackingFile(directory,
+                                   meta->backingStoreRaw,
+                                   &backingDirectory,
+                                   &meta->backingStore) < 0) {
+                /* the backing file is (currently) unavailable, treat this
+                 * file as standalone:
+                 * backingStoreRaw is kept to mark broken image chains */
+                VIR_WARN("Backing file '%s' of image '%s' is missing.",
+                         meta->backingStoreRaw, path);
+
+                return 0;
+            }
+        } else {
+            if (VIR_STRDUP(meta->backingStore, meta->backingStoreRaw) < 0)
+                return -1;
+        }
 
         if (backingFormat == VIR_STORAGE_FILE_AUTO && !allow_probe)
             backingFormat = VIR_STORAGE_FILE_RAW;
