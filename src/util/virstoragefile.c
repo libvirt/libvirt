@@ -1718,6 +1718,13 @@ virStorageSourceClear(virStorageSourcePtr def)
 
     virStorageNetHostDefFree(def->nhosts, def->hosts);
     virStorageSourceAuthClear(def);
+
+    VIR_FREE(def->relPath);
+    VIR_FREE(def->relDir);
+    VIR_FREE(def->backingStoreRaw);
+
+    /* recursively free backing chain */
+    virStorageSourceFree(def->backingMeta);
 }
 
 

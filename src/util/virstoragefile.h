@@ -271,8 +271,22 @@ struct _virStorageSource {
     size_t nseclabels;
     virSecurityDeviceLabelDefPtr *seclabels;
 
+    /* backing chain of the storage source */
+    virStorageSourcePtr backingMeta;
+
     /* metadata for storage driver access to remote and local volumes */
     virStorageDriverDataPtr drv;
+
+    /* metadata about storage image which need separate fields */
+    /* Name of the current file as spelled by the user (top level) or
+     * metadata of the overlay (if this is a backing store).  */
+    char *relPath;
+    /* Directory to start from if backingStoreRaw is a relative file
+     * name.  */
+    char *relDir;
+    /* Name of the child backing store recorded in metadata of the
+     * current file.  */
+    char *backingStoreRaw;
 };
 
 
