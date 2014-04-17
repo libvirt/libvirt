@@ -949,12 +949,12 @@ virStorageFileMetadataNew(const char *path,
         goto error;
 
     if (virStorageIsFile(path)) {
-        if (!(ret->canonPath = canonicalize_file_name(path))) {
+        if (!(ret->path = canonicalize_file_name(path))) {
             virReportSystemError(errno, _("unable to resolve '%s'"), path);
             goto error;
         }
     } else {
-        if (VIR_STRDUP(ret->canonPath, path) < 0)
+        if (VIR_STRDUP(ret->path, path) < 0)
             goto error;
     }
 
@@ -1047,7 +1047,7 @@ virStorageFileGetMetadataFromFDInternal(virStorageFileMetadataPtr meta,
          * file; therefore, no inclusion loop is possible, and we
          * don't need canonName or relDir.  */
         VIR_FREE(meta->relDir);
-        VIR_FREE(meta->canonPath);
+        VIR_FREE(meta->path);
         meta->type = VIR_STORAGE_TYPE_DIR;
         meta->format = VIR_STORAGE_FILE_DIR;
         ret = 0;
@@ -1140,7 +1140,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
     if (virStorageIsFile(path)) {
         if (VIR_STRDUP(meta->relPath, path) < 0)
             return -1;
-        if (VIR_STRDUP(meta->canonPath, canonPath) < 0)
+        if (VIR_STRDUP(meta->path, canonPath) < 0)
             return -1;
         if (VIR_STRDUP(meta->relDir, directory) < 0)
             return -1;
@@ -1161,7 +1161,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
          * allow for non-raw images.  */
         if (VIR_STRDUP(meta->relPath, path) < 0)
             return -1;
-        if (VIR_STRDUP(meta->canonPath, path) < 0)
+        if (VIR_STRDUP(meta->path, path) < 0)
             return -1;
         meta->type = VIR_STORAGE_TYPE_NETWORK;
         meta->format = VIR_STORAGE_FILE_RAW;
@@ -1322,7 +1322,7 @@ virStorageFileFreeMetadata(virStorageFileMetadata *meta)
         return;
 
     VIR_FREE(meta->relPath);
-    VIR_FREE(meta->canonPath);
+    VIR_FREE(meta->path);
     VIR_FREE(meta->relDir);
 
     virStorageFileFreeMetadata(meta->backingMeta);
@@ -1539,7 +1539,7 @@ virStorageFileChainLookup(virStorageFileMetadataPtr chain,
                           const char *name, virStorageFileMetadataPtr *meta,
                           const char **parent)
 {
-    const char *start = chain->canonPath;
+    const char *start = chain->path;
     const char *tmp;
     const char *parentDir = ".";
     bool nameIsFile = virStorageIsFile(name);
@@ -1558,14 +1558,14 @@ virStorageFileChainLookup(virStorageFileMetadataPtr chain,
             if (nameIsFile && (chain->type == VIR_STORAGE_TYPE_FILE ||
                                chain->type == VIR_STORAGE_TYPE_BLOCK)) {
                 int result = virFileRelLinkPointsTo(parentDir, name,
-                                                    chain->canonPath);
+                                                    chain->path);
                 if (result < 0)
                     goto error;
                 if (result > 0)
                     break;
             }
         }
-        *parent = chain->canonPath;
+        *parent = chain->path;
         parentDir = chain->relDir;
         chain = chain->backingMeta;
     }
@@ -1573,7 +1573,7 @@ virStorageFileChainLookup(virStorageFileMetadataPtr chain,
         goto error;
     if (meta)
         *meta = chain;
-    return chain->canonPath;
+    return chain->path;
 
  error:
     if (name)

@@ -124,7 +124,7 @@ struct _virStorageFileMetadata {
     char *relPath;
     /* Canonical name of the current file, used to detect loops in the
      * backing store chain.  */
-    char *canonPath;
+    char *path;
     /* Directory to start from if backingStoreRaw is a relative file
      * name.  */
     char *relDir;
