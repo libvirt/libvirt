@@ -1143,10 +1143,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
     if (strstr(help, "-machine"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_OPT);
 
-     /* USB option is supported v1.3.0 onwards */
-    if (qemuCaps->version >= 1003000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_USB_OPT);
-
     /*
      * Handling of -incoming arg with varying features
      *  -incoming tcp    (kvm >= 79, qemu >= 0.10.0)
