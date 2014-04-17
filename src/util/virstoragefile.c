@@ -1190,8 +1190,6 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
                 return -1;
         }
 
-        if (VIR_STRDUP(meta->backingStore, backingPath) < 0)
-            return -1;
 
         if (backingFormat == VIR_STORAGE_FILE_AUTO && !allow_probe)
             backingFormat = VIR_STORAGE_FILE_RAW;
@@ -1204,7 +1202,6 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
                                              uid, gid, allow_probe,
                                              cycle, backing) < 0) {
             /* If we failed to get backing data, mark the chain broken */
-            VIR_FREE(meta->backingStore);
             virStorageFileFreeMetadata(backing);
         } else {
             meta->backingMeta = backing;
@@ -1332,7 +1329,6 @@ virStorageFileFreeMetadata(virStorageFileMetadata *meta)
     VIR_FREE(meta->relDir);
 
     virStorageFileFreeMetadata(meta->backingMeta);
-    VIR_FREE(meta->backingStore);
     VIR_FREE(meta->backingStoreRaw);
     VIR_FREE(meta->compat);
     virBitmapFree(meta->features);

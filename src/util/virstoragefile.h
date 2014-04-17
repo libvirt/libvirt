@@ -148,11 +148,6 @@ struct _virStorageFileMetadata {
     unsigned long long capacity;
     virBitmapPtr features; /* bits described by enum virStorageFileFeature */
     char *compat;
-
-    /* Fields I'm trying to delete, because it is confusing to have to
-     * query the parent metadata for details about the backing
-     * store.  */
-    char *backingStore; /* Canonical name (absolute file, or protocol). Should be same as backingMeta->canonPath */
 };
 
 
