@@ -795,7 +795,7 @@ qcow2GetFeatures(virBitmapPtr *features,
  * pre-populated in META */
 static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
 ATTRIBUTE_NONNULL(4)
-virStorageFileGetMetadataInternal(virStorageFileMetadataPtr meta,
+virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
                                   char *buf,
                                   size_t len,
                                   int *backingFormat)
@@ -933,11 +933,11 @@ virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid)
 }
 
 
-static virStorageFileMetadataPtr
+static virStorageSourcePtr
 virStorageFileMetadataNew(const char *path,
                           int format)
 {
-    virStorageFileMetadataPtr ret = NULL;
+    virStorageSourcePtr ret = NULL;
 
     if (VIR_ALLOC(ret) < 0)
         return NULL;
@@ -961,7 +961,7 @@ virStorageFileMetadataNew(const char *path,
     return ret;
 
  error:
-    virStorageFileFreeMetadata(ret);
+    virStorageSourceFree(ret);
     return NULL;
 }
 
@@ -988,9 +988,9 @@ virStorageFileMetadataNew(const char *path,
  * backing store. Callers are advised against probing for the
  * backing store format in this case.
  *
- * Caller MUST free the result after use via virStorageFileFreeMetadata.
+ * Caller MUST free the result after use via virStorageSourceFree.
  */
-virStorageFileMetadataPtr
+virStorageSourcePtr
 virStorageFileGetMetadataFromBuf(const char *path,
                                  char *buf,
                                  size_t len,
@@ -998,19 +998,19 @@ virStorageFileGetMetadataFromBuf(const char *path,
                                  char **backing,
                                  int *backingFormat)
 {
-    virStorageFileMetadataPtr ret = NULL;
+    virStorageSourcePtr ret = NULL;
 
     if (!(ret = virStorageFileMetadataNew(path, format)))
         return NULL;
 
     if (virStorageFileGetMetadataInternal(ret, buf, len,
                                           backingFormat) < 0) {
-        virStorageFileFreeMetadata(ret);
+        virStorageSourceFree(ret);
         ret = NULL;
     }
 
     if (VIR_STRDUP(*backing, ret->backingStoreRaw) < 0) {
-        virStorageFileFreeMetadata(ret);
+        virStorageSourceFree(ret);
         ret = NULL;
     }
 
@@ -1020,7 +1020,7 @@ virStorageFileGetMetadataFromBuf(const char *path,
 
 /* Internal version that also supports a containing directory name.  */
 static int
-virStorageFileGetMetadataFromFDInternal(virStorageFileMetadataPtr meta,
+virStorageFileGetMetadataFromFDInternal(virStorageSourcePtr meta,
                                         int fd,
                                         int *backingFormat)
 {
@@ -1089,20 +1089,20 @@ virStorageFileGetMetadataFromFDInternal(virStorageFileMetadataPtr meta,
  * format, since a malicious guest can turn a raw file into any
  * other non-raw format at will.
  *
- * Caller MUST free the result after use via virStorageFileFreeMetadata.
+ * Caller MUST free the result after use via virStorageSourceFree.
  */
-virStorageFileMetadataPtr
+virStorageSourcePtr
 virStorageFileGetMetadataFromFD(const char *path,
                                 int fd,
                                 int format)
 {
-    virStorageFileMetadataPtr ret = NULL;
+    virStorageSourcePtr ret = NULL;
 
     if (!(ret = virStorageFileMetadataNew(path, format)))
         goto cleanup;
 
     if (virStorageFileGetMetadataFromFDInternal(ret, fd, NULL) < 0) {
-        virStorageFileFreeMetadata(ret);
+        virStorageSourceFree(ret);
         ret = NULL;
     }
 
@@ -1117,7 +1117,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
                                  const char *directory,
                                  int format, uid_t uid, gid_t gid,
                                  bool allow_probe, virHashTablePtr cycle,
-                                 virStorageFileMetadataPtr meta)
+                                 virStorageSourcePtr meta)
 {
     int fd;
     int ret = -1;
@@ -1170,7 +1170,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
     }
 
     if (ret == 0 && meta->backingStoreRaw) {
-        virStorageFileMetadataPtr backing;
+        virStorageSourcePtr backing;
 
         if (virStorageIsFile(meta->backingStoreRaw)) {
             if (virFindBackingFile(directory,
@@ -1190,7 +1190,6 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
                 return -1;
         }
 
-
         if (backingFormat == VIR_STORAGE_FILE_AUTO && !allow_probe)
             backingFormat = VIR_STORAGE_FILE_RAW;
         else if (backingFormat == VIR_STORAGE_FILE_AUTO_SAFE)
@@ -1202,7 +1201,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
                                              uid, gid, allow_probe,
                                              cycle, backing) < 0) {
             /* If we failed to get backing data, mark the chain broken */
-            virStorageFileFreeMetadata(backing);
+            virStorageSourceFree(backing);
         } else {
             meta->backingMeta = backing;
         }
@@ -1228,9 +1227,9 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
  * format, since a malicious guest can turn a raw file into any
  * other non-raw format at will.
  *
- * Caller MUST free result after use via virStorageFileFreeMetadata.
+ * Caller MUST free result after use via virStorageSourceFree.
  */
-virStorageFileMetadataPtr
+virStorageSourcePtr
 virStorageFileGetMetadata(const char *path, int format,
                           uid_t uid, gid_t gid,
                           bool allow_probe)
@@ -1239,8 +1238,8 @@ virStorageFileGetMetadata(const char *path, int format,
               path, format, (int)uid, (int)gid, allow_probe);
 
     virHashTablePtr cycle = virHashCreate(5, NULL);
-    virStorageFileMetadataPtr meta = NULL;
-    virStorageFileMetadataPtr ret = NULL;
+    virStorageSourcePtr meta = NULL;
+    virStorageSourcePtr ret = NULL;
     char *canonPath = NULL;
     char *directory = NULL;
 
@@ -1272,7 +1271,7 @@ virStorageFileGetMetadata(const char *path, int format,
     meta = NULL;
 
  cleanup:
-    virStorageFileFreeMetadata(meta);
+    virStorageSourceFree(meta);
     VIR_FREE(canonPath);
     VIR_FREE(directory);
     virHashFree(cycle);
@@ -1288,10 +1287,10 @@ virStorageFileGetMetadata(const char *path, int format,
  * error (allocation failure).
  */
 int
-virStorageFileChainGetBroken(virStorageFileMetadataPtr chain,
+virStorageFileChainGetBroken(virStorageSourcePtr chain,
                              char **brokenFile)
 {
-    virStorageFileMetadataPtr tmp;
+    virStorageSourcePtr tmp;
 
     *brokenFile = NULL;
 
@@ -1314,7 +1313,7 @@ virStorageFileChainGetBroken(virStorageFileMetadataPtr chain,
 
 
 /**
- * virStorageFileFreeMetadata:
+ * virStorageFileMetadataFree:
  *
  * Free pointers in passed structure and structure itself.
  */
@@ -1537,8 +1536,8 @@ int virStorageFileGetSCSIKey(const char *path,
  * independently freed.  Reports an error and returns NULL if NAME is
  * not found.  */
 const char *
-virStorageFileChainLookup(virStorageFileMetadataPtr chain,
-                          const char *name, virStorageFileMetadataPtr *meta,
+virStorageFileChainLookup(virStorageSourcePtr chain,
+                          const char *name, virStorageSourcePtr *meta,
                           const char **parent)
 {
     const char *start = chain->path;

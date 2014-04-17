@@ -2410,7 +2410,7 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 
     if (disk->backingChain) {
         if (force) {
-            virStorageFileFreeMetadata(disk->backingChain);
+            virStorageSourceFree(disk->backingChain);
             disk->backingChain = NULL;
         } else {
             goto cleanup;

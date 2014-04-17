@@ -298,28 +298,28 @@ int virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid);
 int virStorageFileProbeFormatFromBuf(const char *path, char *buf,
                                      size_t buflen);
 
-virStorageFileMetadataPtr virStorageFileGetMetadata(const char *path,
-                                                    int format,
-                                                    uid_t uid, gid_t gid,
-                                                    bool allow_probe)
+virStorageSourcePtr virStorageFileGetMetadata(const char *path,
+                                              int format,
+                                              uid_t uid, gid_t gid,
+                                              bool allow_probe)
     ATTRIBUTE_NONNULL(1);
-virStorageFileMetadataPtr virStorageFileGetMetadataFromFD(const char *path,
-                                                          int fd,
-                                                          int format);
-virStorageFileMetadataPtr virStorageFileGetMetadataFromBuf(const char *path,
-                                                           char *buf,
-                                                           size_t len,
-                                                           int format,
-                                                           char **backing,
-                                                           int *backingFormat)
+virStorageSourcePtr virStorageFileGetMetadataFromFD(const char *path,
+                                                    int fd,
+                                                    int format);
+virStorageSourcePtr virStorageFileGetMetadataFromBuf(const char *path,
+                                                     char *buf,
+                                                     size_t len,
+                                                     int format,
+                                                     char **backing,
+                                                     int *backingFormat)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5)
     ATTRIBUTE_NONNULL(6);
-int virStorageFileChainGetBroken(virStorageFileMetadataPtr chain,
+int virStorageFileChainGetBroken(virStorageSourcePtr chain,
                                  char **broken_file);
 
-const char *virStorageFileChainLookup(virStorageFileMetadataPtr chain,
+const char *virStorageFileChainLookup(virStorageSourcePtr chain,
                                       const char *name,
-                                      virStorageFileMetadataPtr *meta,
+                                      virStorageSourcePtr *meta,
                                       const char **parent)
     ATTRIBUTE_NONNULL(1);
 

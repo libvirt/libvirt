@@ -10292,7 +10292,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     int ret = -1;
     int fd = -1;
     off_t end;
-    virStorageFileMetadata *meta = NULL;
+    virStorageSourcePtr meta = NULL;
     virDomainDiskDefPtr disk = NULL;
     struct stat sb;
     int idx;
@@ -10439,7 +10439,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
 
  cleanup:
     VIR_FREE(alias);
-    virStorageFileFreeMetadata(meta);
+    virStorageSourceFree(meta);
     VIR_FORCE_CLOSE(fd);
 
     /* If we failed to get data from a domain because it's inactive and
@@ -12011,7 +12011,7 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
      * temporarily modify the disk in place.  */
     char *origsrc = disk->src.path;
     int origformat = disk->src.format;
-    virStorageFileMetadataPtr origchain = disk->backingChain;
+    virStorageSourcePtr origchain = disk->backingChain;
     bool origreadonly = disk->readonly;
     int ret = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
@@ -12724,7 +12724,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
      * recompute it.  Better would be storing the chain ourselves rather than
      * reprobing, but this requires modifying domain_conf and our XML to fully
      * track the chain across libvirtd restarts.  */
-    virStorageFileFreeMetadata(disk->backingChain);
+    virStorageSourceFree(disk->backingChain);
     disk->backingChain = NULL;
 
     if (virStorageFileInit(&snap->src) < 0)
@@ -14704,7 +14704,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
     bool resume = false;
     char *oldsrc = NULL;
     int oldformat;
-    virStorageFileMetadataPtr oldchain = NULL;
+    virStorageSourcePtr oldchain = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     /* Probe the status, if needed.  */
@@ -14799,7 +14799,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
          * fact that we aren't tracking the full chain ourselves; so
          * for now, we leak the access to the original.  */
         VIR_FREE(oldsrc);
-        virStorageFileFreeMetadata(oldchain);
+        virStorageSourceFree(oldchain);
         disk->mirror = NULL;
     } else {
         /* On failure, qemu abandons the mirror, and reverts back to
@@ -14812,7 +14812,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
          * success case, there's security labeling to worry about.  */
         disk->src.path = oldsrc;
         disk->src.format = oldformat;
-        virStorageFileFreeMetadata(disk->backingChain);
+        virStorageSourceFree(disk->backingChain);
         disk->backingChain = oldchain;
         VIR_FREE(disk->mirror);
     }
@@ -15286,7 +15286,7 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
     int idx;
     virDomainDiskDefPtr disk = NULL;
     const char *top_canon = NULL;
-    virStorageFileMetadataPtr top_meta = NULL;
+    virStorageSourcePtr top_meta = NULL;
     const char *top_parent = NULL;
     const char *base_canon = NULL;
     bool clean_access = false;

@@ -1190,7 +1190,7 @@ virDomainDiskDefFree(virDomainDiskDefPtr def)
     virStorageSourceClear(&def->src);
     VIR_FREE(def->serial);
     VIR_FREE(def->dst);
-    virStorageFileFreeMetadata(def->backingChain);
+    virStorageSourceFree(def->backingChain);
     VIR_FREE(def->mirror);
     VIR_FREE(def->wwn);
     VIR_FREE(def->vendor);
@@ -18526,7 +18526,7 @@ virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
 {
     int ret = -1;
     size_t depth = 0;
-    virStorageFileMetadata *tmp;
+    virStorageSourcePtr tmp;
     const char *path = virDomainDiskGetSource(disk);
     int type = virDomainDiskGetType(disk);
 

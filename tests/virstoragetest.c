@@ -266,8 +266,8 @@ testStorageChain(const void *args)
 {
     const struct testChainData *data = args;
     int ret = -1;
-    virStorageFileMetadataPtr meta;
-    virStorageFileMetadataPtr elt;
+    virStorageSourcePtr meta;
+    virStorageSourcePtr elt;
     size_t i = 0;
     char *broken = NULL;
     bool isAbs = !!(data->flags & ABS_START);
@@ -367,16 +367,16 @@ testStorageChain(const void *args)
     ret = 0;
  cleanup:
     VIR_FREE(broken);
-    virStorageFileFreeMetadata(meta);
+    virStorageSourceFree(meta);
     return ret;
 }
 
 struct testLookupData
 {
-    virStorageFileMetadataPtr chain;
+    virStorageSourcePtr chain;
     const char *name;
     const char *expResult;
-    virStorageFileMetadataPtr expMeta;
+    virStorageSourcePtr expMeta;
     const char *expParent;
 };
 
@@ -386,7 +386,7 @@ testStorageLookup(const void *args)
     const struct testLookupData *data = args;
     int ret = 0;
     const char *actualResult;
-    virStorageFileMetadataPtr actualMeta;
+    virStorageSourcePtr actualMeta;
     const char *actualParent;
 
     /* This function is documented as giving results within chain, but
@@ -444,7 +444,7 @@ mymain(void)
     int ret;
     virCommandPtr cmd = NULL;
     struct testChainData data;
-    virStorageFileMetadataPtr chain = NULL;
+    virStorageSourcePtr chain = NULL;
 
     /* Prep some files with qemu-img; if that is not found on PATH, or
      * if it lacks support for qcow2 and qed, skip this test.  */
@@ -866,7 +866,7 @@ mymain(void)
         ret = -1;
 
     /* Test behavior of chain lookups, relative backing from absolute start */
-    virStorageFileFreeMetadata(chain);
+    virStorageSourceFree(chain);
     chain = virStorageFileGetMetadata(abswrap, VIR_STORAGE_FILE_QCOW2,
                                       -1, -1, false);
     if (!chain) {
@@ -896,7 +896,7 @@ mymain(void)
         ret = -1;
 
     /* Test behavior of chain lookups, relative backing */
-    virStorageFileFreeMetadata(chain);
+    virStorageSourceFree(chain);
     chain = virStorageFileGetMetadata("sub/link2", VIR_STORAGE_FILE_QCOW2,
                                       -1, -1, false);
     if (!chain) {
@@ -922,7 +922,7 @@ mymain(void)
 
  cleanup:
     /* Final cleanup */
-    virStorageFileFreeMetadata(chain);
+    virStorageSourceFree(chain);
     testCleanupImages();
     virCommandFree(cmd);
 

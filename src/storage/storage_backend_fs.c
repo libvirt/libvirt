@@ -69,7 +69,7 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
 {
     int fd = -1;
     int ret = -1;
-    virStorageFileMetadata *meta = NULL;
+    virStorageSourcePtr meta = NULL;
     struct stat sb;
     char *header = NULL;
     ssize_t len = VIR_STORAGE_MAX_HEADER;
@@ -176,7 +176,7 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
     VIR_FORCE_CLOSE(fd);
 
  cleanup:
-    virStorageFileFreeMetadata(meta);
+    virStorageSourceFree(meta);
     VIR_FREE(header);
     return ret;
 
