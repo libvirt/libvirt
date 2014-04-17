@@ -18540,9 +18540,9 @@ virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
         goto cleanup;
     /* XXX: temporarily we need to select the second element of the backing
      * chain to start as the first is the copy of the disk itself. */
-    tmp = disk->backingChain ? disk->backingChain->backingMeta : NULL;
+    tmp = disk->backingChain ? disk->backingChain->backingStore : NULL;
     while (tmp && virStorageIsFile(tmp->path)) {
-        if (!ignoreOpenFailure && tmp->backingStoreRaw && !tmp->backingMeta) {
+        if (!ignoreOpenFailure && tmp->backingStoreRaw && !tmp->backingStore) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to visit backing chain file %s"),
                            tmp->backingStoreRaw);
@@ -18550,7 +18550,7 @@ virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
         }
         if (iter(disk, tmp->path, ++depth, opaque) < 0)
             goto cleanup;
-        tmp = tmp->backingMeta;
+        tmp = tmp->backingStore;
     }
 
     ret = 0;

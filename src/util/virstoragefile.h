@@ -237,7 +237,7 @@ struct _virStorageSource {
     virSecurityDeviceLabelDefPtr *seclabels;
 
     /* backing chain of the storage source */
-    virStorageSourcePtr backingMeta;
+    virStorageSourcePtr backingStore;
 
     /* metadata for storage driver access to remote and local volumes */
     virStorageDriverDataPtr drv;

@@ -15123,7 +15123,7 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
 
     if ((flags & VIR_DOMAIN_BLOCK_REBASE_SHALLOW) &&
         STREQ_NULLABLE(format, "raw") &&
-        disk->backingChain->backingMeta->path) {
+        disk->backingChain->backingStore->path) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("disk '%s' has backing file, so raw shallow copy "
                          "is not possible"),
@@ -15336,14 +15336,14 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
                                                        &top_parent))) {
         goto endjob;
     }
-    if (!top_meta || !top_meta->backingMeta) {
+    if (!top_meta || !top_meta->backingStore) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("top '%s' in chain for '%s' has no backing file"),
                        top_canon, path);
         goto endjob;
     }
     if (!base && (flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW))
-        base_canon = top_meta->backingMeta->path;
+        base_canon = top_meta->backingStore->path;
     else if (!(base_canon = virStorageFileChainLookup(top_meta,
                                                       base, NULL, NULL)))
         goto endjob;
@@ -15352,7 +15352,7 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
      * virStorageFileChainLookup guarantees a simple pointer
      * comparison will work, rather than needing full-blown STREQ.  */
     if ((flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW) &&
-        base_canon != top_meta->backingMeta->path) {
+        base_canon != top_meta->backingStore->path) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("base '%s' is not immediately below '%s' in chain "
                          "for '%s'"),

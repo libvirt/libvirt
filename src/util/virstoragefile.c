@@ -1203,7 +1203,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
             /* If we failed to get backing data, mark the chain broken */
             virStorageSourceFree(backing);
         } else {
-            meta->backingMeta = backing;
+            meta->backingStore = backing;
         }
     }
 
@@ -1297,10 +1297,10 @@ virStorageFileChainGetBroken(virStorageSourcePtr chain,
     if (!chain)
         return 0;
 
-    for (tmp = chain; tmp; tmp = tmp->backingMeta) {
+    for (tmp = chain; tmp; tmp = tmp->backingStore) {
         /* Break when we hit end of chain; report error if we detected
          * a missing backing file, infinite loop, or other error */
-        if (!tmp->backingMeta && tmp->backingStoreRaw) {
+        if (!tmp->backingStore && tmp->backingStoreRaw) {
             if (VIR_STRDUP(*brokenFile, tmp->backingStoreRaw) < 0)
                 return -1;
 
@@ -1528,7 +1528,7 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
     *parent = NULL;
     while (chain) {
         if (!name) {
-            if (!chain->backingMeta)
+            if (!chain->backingStore)
                 break;
         } else {
             if (STREQ(name, chain->relPath))
@@ -1545,7 +1545,7 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
         }
         *parent = chain->path;
         parentDir = chain->relDir;
-        chain = chain->backingMeta;
+        chain = chain->backingStore;
     }
     if (!chain)
         goto error;
@@ -1700,7 +1700,7 @@ virStorageSourceClear(virStorageSourcePtr def)
     VIR_FREE(def->backingStoreRaw);
 
     /* recursively free backing chain */
-    virStorageSourceFree(def->backingMeta);
+    virStorageSourceFree(def->backingStore);
 }
 
 
