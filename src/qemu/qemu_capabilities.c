@@ -2431,7 +2431,6 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_RTC);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOST_NET);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_HPET);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NODEFCONFIG);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_BOOT_MENU);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_FSDEV);
@@ -2490,6 +2489,7 @@ virQEMUCapsInitArchQMPBasic(virQEMUCapsPtr qemuCaps,
         qemuCaps->arch == VIR_ARCH_I686) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_PCI_MULTIBUS);
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_ACPI);
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_HPET);
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_KVM_PIT);
     }
 
