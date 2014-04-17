@@ -1122,6 +1122,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
     int fd;
     int ret = -1;
     int backingFormat;
+    char *backingPath = NULL;
     char *backingDirectory = NULL;
 
     VIR_DEBUG("path=%s canonPath=%s dir=%s format=%d uid=%d gid=%d probe=%d",
@@ -1175,7 +1176,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
             if (virFindBackingFile(directory,
                                    meta->backingStoreRaw,
                                    &backingDirectory,
-                                   &meta->backingStore) < 0) {
+                                   &backingPath) < 0) {
                 /* the backing file is (currently) unavailable, treat this
                  * file as standalone:
                  * backingStoreRaw is kept to mark broken image chains */
@@ -1185,9 +1186,12 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
                 return 0;
             }
         } else {
-            if (VIR_STRDUP(meta->backingStore, meta->backingStoreRaw) < 0)
+            if (VIR_STRDUP(backingPath, meta->backingStoreRaw) < 0)
                 return -1;
         }
+
+        if (VIR_STRDUP(meta->backingStore, backingPath) < 0)
+            return -1;
 
         if (backingFormat == VIR_STORAGE_FILE_AUTO && !allow_probe)
             backingFormat = VIR_STORAGE_FILE_RAW;
@@ -1195,7 +1199,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
             backingFormat = VIR_STORAGE_FILE_AUTO;
         if (VIR_ALLOC(backing) < 0 ||
             virStorageFileGetMetadataRecurse(meta->backingStoreRaw,
-                                             meta->backingStore,
+                                             backingPath,
                                              backingDirectory, backingFormat,
                                              uid, gid, allow_probe,
                                              cycle, backing) < 0) {
@@ -1206,7 +1210,9 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
             meta->backingMeta = backing;
         }
     }
+
     VIR_FREE(backingDirectory);
+    VIR_FREE(backingPath);
     return ret;
 }
 
