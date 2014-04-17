@@ -1148,7 +1148,7 @@ virSecuritySELinuxRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
      * be tracked in domain XML, at which point labelskip should be a
      * per-file attribute instead of a disk attribute.  */
     if (disk_seclabel && disk_seclabel->labelskip &&
-        !disk->backingChain)
+        !disk->src.backingStore)
         return 0;
 
     /* Don't restore labels on readoly/shared disks, because

@@ -12011,14 +12011,14 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
      * temporarily modify the disk in place.  */
     char *origsrc = disk->src.path;
     int origformat = disk->src.format;
-    virStorageSourcePtr origchain = disk->backingChain;
+    virStorageSourcePtr origchain = disk->src.backingStore;
     bool origreadonly = disk->readonly;
     int ret = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     disk->src.path = (char *) file; /* casting away const is safe here */
     disk->src.format = VIR_STORAGE_FILE_RAW;
-    disk->backingChain = NULL;
+    disk->src.backingStore = NULL;
     disk->readonly = mode == VIR_DISK_CHAIN_READ_ONLY;
 
     if (mode == VIR_DISK_CHAIN_NO_ACCESS) {
@@ -12043,7 +12043,7 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
  cleanup:
     disk->src.path = origsrc;
     disk->src.format = origformat;
-    disk->backingChain = origchain;
+    disk->src.backingStore = origchain;
     disk->readonly = origreadonly;
     virObjectUnref(cfg);
     return ret;
@@ -12719,13 +12719,13 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     if (virAsprintf(&device, "drive-%s", disk->info.alias) < 0)
         goto cleanup;
 
-    /* XXX Here, we know we are about to alter disk->backingChain if
+    /* XXX Here, we know we are about to alter disk->src.backingStore if
      * successful, so we nuke the existing chain so that future commands will
      * recompute it.  Better would be storing the chain ourselves rather than
      * reprobing, but this requires modifying domain_conf and our XML to fully
      * track the chain across libvirtd restarts.  */
-    virStorageSourceFree(disk->backingChain);
-    disk->backingChain = NULL;
+    virStorageSourceFree(disk->src.backingStore);
+    disk->src.backingStore = NULL;
 
     if (virStorageFileInit(&snap->src) < 0)
         goto cleanup;
@@ -14763,14 +14763,14 @@ qemuDomainBlockPivot(virConnectPtr conn,
      * we know for sure that there is a backing chain.  */
     oldsrc = disk->src.path;
     oldformat = disk->src.format;
-    oldchain = disk->backingChain;
+    oldchain = disk->src.backingStore;
     disk->src.path = disk->mirror;
     disk->src.format = disk->mirrorFormat;
-    disk->backingChain = NULL;
+    disk->src.backingStore = NULL;
     if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0) {
         disk->src.path = oldsrc;
         disk->src.format = oldformat;
-        disk->backingChain = oldchain;
+        disk->src.backingStore = oldchain;
         goto cleanup;
     }
     if (disk->mirrorFormat && disk->mirrorFormat != VIR_STORAGE_FILE_RAW &&
@@ -14781,7 +14781,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
                                          disk) < 0)) {
         disk->src.path = oldsrc;
         disk->src.format = oldformat;
-        disk->backingChain = oldchain;
+        disk->src.backingStore = oldchain;
         goto cleanup;
     }
 
@@ -14812,8 +14812,8 @@ qemuDomainBlockPivot(virConnectPtr conn,
          * success case, there's security labeling to worry about.  */
         disk->src.path = oldsrc;
         disk->src.format = oldformat;
-        virStorageSourceFree(disk->backingChain);
-        disk->backingChain = oldchain;
+        virStorageSourceFree(disk->src.backingStore);
+        disk->src.backingStore = oldchain;
         VIR_FREE(disk->mirror);
     }
     disk->mirrorFormat = VIR_STORAGE_FILE_NONE;
@@ -15123,7 +15123,7 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
 
     if ((flags & VIR_DOMAIN_BLOCK_REBASE_SHALLOW) &&
         STREQ_NULLABLE(format, "raw") &&
-        disk->backingChain->backingStore->path) {
+        disk->src.backingStore->backingStore->path) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("disk '%s' has backing file, so raw shallow copy "
                          "is not possible"),
@@ -15330,8 +15330,8 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
 
     if (!top) {
         top_canon = disk->src.path;
-        top_meta = disk->backingChain;
-    } else if (!(top_canon = virStorageFileChainLookup(disk->backingChain,
+        top_meta = disk->src.backingStore;
+    } else if (!(top_canon = virStorageFileChainLookup(disk->src.backingStore,
                                                        top, &top_meta,
                                                        &top_parent))) {
         goto endjob;

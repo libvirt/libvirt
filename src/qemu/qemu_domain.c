@@ -2239,10 +2239,10 @@ qemuDiskChainCheckBroken(virDomainDiskDefPtr disk)
 {
     char *brokenFile = NULL;
 
-    if (!virDomainDiskGetSource(disk) || !disk->backingChain)
+    if (!virDomainDiskGetSource(disk) || !disk->src.backingStore)
         return 0;
 
-    if (virStorageFileChainGetBroken(disk->backingChain, &brokenFile) < 0)
+    if (virStorageFileChainGetBroken(disk->src.backingStore, &brokenFile) < 0)
         return -1;
 
     if (brokenFile) {
@@ -2408,10 +2408,10 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
         type == VIR_STORAGE_TYPE_VOLUME)
         goto cleanup;
 
-    if (disk->backingChain) {
+    if (disk->src.backingStore) {
         if (force) {
-            virStorageSourceFree(disk->backingChain);
-            disk->backingChain = NULL;
+            virStorageSourceFree(disk->src.backingStore);
+            disk->src.backingStore = NULL;
         } else {
             goto cleanup;
         }
@@ -2419,11 +2419,11 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 
     qemuDomainGetImageIds(cfg, vm, disk, &uid, &gid);
 
-    disk->backingChain = virStorageFileGetMetadata(src,
-                                                   virDomainDiskGetFormat(disk),
-                                                   uid, gid,
-                                                   cfg->allowDiskFormatProbing);
-    if (!disk->backingChain)
+    disk->src.backingStore = virStorageFileGetMetadata(src,
+                                                       virDomainDiskGetFormat(disk),
+                                                       uid, gid,
+                                                       cfg->allowDiskFormatProbing);
+    if (!disk->src.backingStore)
         ret = -1;
 
  cleanup:

@@ -1190,7 +1190,6 @@ virDomainDiskDefFree(virDomainDiskDefPtr def)
     virStorageSourceClear(&def->src);
     VIR_FREE(def->serial);
     VIR_FREE(def->dst);
-    virStorageSourceFree(def->backingChain);
     VIR_FREE(def->mirror);
     VIR_FREE(def->wwn);
     VIR_FREE(def->vendor);
@@ -18514,7 +18513,7 @@ virDomainSmartcardDefForeach(virDomainDefPtr def,
 
 
 /* Call iter(disk, name, depth, opaque) for each element of disk and
- * its backing chain in the pre-populated disk->backingChain.
+ * its backing chain in the pre-populated disk->src.backingStore.
  * ignoreOpenFailure determines whether to warn about a chain that
  * mentions a backing file without also having metadata on that
  * file.  */
@@ -18540,7 +18539,7 @@ virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
         goto cleanup;
     /* XXX: temporarily we need to select the second element of the backing
      * chain to start as the first is the copy of the disk itself. */
-    tmp = disk->backingChain ? disk->backingChain->backingStore : NULL;
+    tmp = disk->src.backingStore ? disk->src.backingStore->backingStore : NULL;
     while (tmp && virStorageIsFile(tmp->path)) {
         if (!ignoreOpenFailure && tmp->backingStoreRaw && !tmp->backingStore) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

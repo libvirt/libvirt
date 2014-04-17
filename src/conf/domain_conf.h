@@ -605,7 +605,6 @@ struct _virDomainDiskDef {
     char *dst;
     int tray_status; /* enum virDomainDiskTray */
     int removable; /* enum virDomainFeatureState */
-    virStorageSourcePtr backingChain;
 
     char *mirror;
     int mirrorFormat; /* enum virStorageFileFormat */
