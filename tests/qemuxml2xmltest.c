@@ -360,6 +360,8 @@ mymain(void)
 
     DO_TEST("panic");
 
+    DO_TEST_DIFFERENT("disk-backing-chains");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 
