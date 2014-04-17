@@ -6140,7 +6140,7 @@ qemuDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     virNWFilterReadLockFilterUpdates();
 
     if (!(vm = qemuDomObjFromDomain(dom)))
-        return -1;
+        goto cleanup;
 
     if (virDomainCreateWithFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
