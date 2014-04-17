@@ -16,23 +16,27 @@
     <emulator>/usr/bin/qemu</emulator>
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/QEMUGuest1'/>
+      <backingStore/>
       <mirror file='/dev/HostVG/QEMUGuest1Copy' ready='yes'/>
       <target dev='hda' bus='ide'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='block' device='cdrom'>
       <source dev='/dev/HostVG/QEMUGuest2'/>
+      <backingStore/>
       <target dev='hdc' bus='ide'/>
       <readonly/>
       <address type='drive' controller='0' bus='1' target='0' unit='0'/>
     </disk>
     <disk type='file' device='disk'>
       <source file='/tmp/data.img'/>
+      <backingStore/>
       <mirror file='/tmp/copy.img' format='qcow2'/>
       <target dev='vda' bus='virtio'/>
     </disk>
     <disk type='file' device='disk'>
       <source file='/tmp/logs.img'/>
+      <backingStore/>
       <target dev='vdb' bus='virtio'/>
     </disk>
     <controller type='usb' index='0'/>

@@ -19,6 +19,7 @@
     <disk type='file' device='disk'>
       <driver name='file'/>
       <source file='/root/some.img'/>
+      <backingStore/>
       <target dev='xvda' bus='xen'/>
     </disk>
     <serial type='pty'>

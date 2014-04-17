@@ -23,9 +23,11 @@
     <disk type='block' device='disk'>
       <driver name='phy'/>
       <source dev='/dev/sda8'/>
+      <backingStore/>
       <target dev='hda' bus='ide'/>
     </disk>
     <disk type='file' device='cdrom'>
+      <backingStore/>
       <target dev='hdc' bus='ide'/>
       <readonly/>
     </disk>

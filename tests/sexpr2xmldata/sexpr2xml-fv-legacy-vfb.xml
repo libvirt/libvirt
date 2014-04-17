@@ -26,6 +26,7 @@
     <disk type='block' device='disk'>
       <driver name='phy'/>
       <source dev='/dev/zvol/dsk/export/s10u4-root'/>
+      <backingStore/>
       <target dev='hda' bus='ide'/>
     </disk>
     <input type='mouse' bus='ps2'/>

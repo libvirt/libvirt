@@ -23,11 +23,13 @@
     <disk type='file' device='disk'>
       <driver name='file'/>
       <source file='/root/foo.img'/>
+      <backingStore/>
       <target dev='hda' bus='ide'/>
     </disk>
     <disk type='file' device='cdrom'>
       <driver name='file'/>
       <source file='/root/boot.iso'/>
+      <backingStore/>
       <target dev='hdc' bus='ide'/>
       <readonly/>
     </disk>
