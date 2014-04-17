@@ -1213,6 +1213,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
             meta->backingMeta = backing;
         }
     }
+    VIR_FREE(backingDirectory);
     return ret;
 }
 
