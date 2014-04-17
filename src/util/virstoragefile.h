@@ -121,7 +121,7 @@ typedef virStorageFileMetadata *virStorageFileMetadataPtr;
 struct _virStorageFileMetadata {
     /* Name of the current file as spelled by the user (top level) or
      * metadata of the overlay (if this is a backing store).  */
-    char *path;
+    char *relPath;
     /* Canonical name of the current file, used to detect loops in the
      * backing store chain.  */
     char *canonPath;

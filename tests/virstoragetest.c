@@ -323,7 +323,7 @@ testStorageChain(const void *args)
             : data->files[i]->relDirRel;
         if (virAsprintf(&expect,
                         "store:%s\nraw:%s\nother:%lld %d\n"
-                        "path:%s\ncanon:%s\nrelDir:%s\ntype:%d %d\n",
+                        "relPath:%s\ncanon:%s\nrelDir:%s\ntype:%d %d\n",
                         NULLSTR(data->files[i]->expBackingStore),
                         NULLSTR(data->files[i]->expBackingStoreRaw),
                         data->files[i]->expCapacity,
@@ -335,11 +335,11 @@ testStorageChain(const void *args)
                         data->files[i]->format) < 0 ||
             virAsprintf(&actual,
                         "store:%s\nraw:%s\nother:%lld %d\n"
-                        "path:%s\ncanon:%s\nrelDir:%s\ntype:%d %d\n",
+                        "relPath:%s\ncanon:%s\nrelDir:%s\ntype:%d %d\n",
                         NULLSTR(elt->backingStore),
                         NULLSTR(elt->backingStoreRaw),
                         elt->capacity, !!elt->encryption,
-                        NULLSTR(elt->path),
+                        NULLSTR(elt->relPath),
                         NULLSTR(elt->canonPath),
                         NULLSTR(elt->relDir),
                         elt->type, elt->format) < 0) {

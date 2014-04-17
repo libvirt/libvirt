@@ -802,11 +802,11 @@ virStorageFileGetMetadataInternal(virStorageFileMetadataPtr meta,
 {
     int ret = -1;
 
-    VIR_DEBUG("path=%s, buf=%p, len=%zu, meta->format=%d",
-              meta->path, buf, len, meta->format);
+    VIR_DEBUG("relPath=%s, buf=%p, len=%zu, meta->format=%d",
+              meta->relPath, buf, len, meta->format);
 
     if (meta->format == VIR_STORAGE_FILE_AUTO)
-        meta->format = virStorageFileProbeFormatFromBuf(meta->path, buf, len);
+        meta->format = virStorageFileProbeFormatFromBuf(meta->relPath, buf, len);
 
     if (meta->format <= VIR_STORAGE_FILE_NONE ||
         meta->format >= VIR_STORAGE_FILE_LAST) {
@@ -945,7 +945,7 @@ virStorageFileMetadataNew(const char *path,
     ret->format = format;
     ret->type = VIR_STORAGE_TYPE_FILE;
 
-    if (VIR_STRDUP(ret->path, path) < 0)
+    if (VIR_STRDUP(ret->relPath, path) < 0)
         goto error;
 
     if (virStorageIsFile(path)) {
@@ -1038,7 +1038,7 @@ virStorageFileGetMetadataFromFDInternal(virStorageFileMetadataPtr meta,
     if (fstat(fd, &sb) < 0) {
         virReportSystemError(errno,
                              _("cannot stat file '%s'"),
-                             meta->path);
+                             meta->relPath);
         return -1;
     }
 
@@ -1055,12 +1055,12 @@ virStorageFileGetMetadataFromFDInternal(virStorageFileMetadataPtr meta,
     }
 
     if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
-        virReportSystemError(errno, _("cannot seek to start of '%s'"), meta->path);
+        virReportSystemError(errno, _("cannot seek to start of '%s'"), meta->relPath);
         goto cleanup;
     }
 
     if ((len = virFileReadHeaderFD(fd, len, &buf)) < 0) {
-        virReportSystemError(errno, _("cannot read header '%s'"), meta->path);
+        virReportSystemError(errno, _("cannot read header '%s'"), meta->relPath);
         goto cleanup;
     }
 
@@ -1138,7 +1138,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
         return -1;
 
     if (virStorageIsFile(path)) {
-        if (VIR_STRDUP(meta->path, path) < 0)
+        if (VIR_STRDUP(meta->relPath, path) < 0)
             return -1;
         if (VIR_STRDUP(meta->canonPath, canonPath) < 0)
             return -1;
@@ -1159,7 +1159,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *canonPath,
         /* FIXME: when the proper storage drivers are compiled in, it
          * would be nice to read metadata from the network storage to
          * allow for non-raw images.  */
-        if (VIR_STRDUP(meta->path, path) < 0)
+        if (VIR_STRDUP(meta->relPath, path) < 0)
             return -1;
         if (VIR_STRDUP(meta->canonPath, path) < 0)
             return -1;
@@ -1321,7 +1321,7 @@ virStorageFileFreeMetadata(virStorageFileMetadata *meta)
     if (!meta)
         return;
 
-    VIR_FREE(meta->path);
+    VIR_FREE(meta->relPath);
     VIR_FREE(meta->canonPath);
     VIR_FREE(meta->relDir);
 
@@ -1553,7 +1553,7 @@ virStorageFileChainLookup(virStorageFileMetadataPtr chain,
             if (!chain->backingMeta)
                 break;
         } else {
-            if (STREQ(name, chain->path))
+            if (STREQ(name, chain->relPath))
                 break;
             if (nameIsFile && (chain->type == VIR_STORAGE_TYPE_FILE ||
                                chain->type == VIR_STORAGE_TYPE_BLOCK)) {
