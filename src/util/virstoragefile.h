@@ -116,41 +116,6 @@ struct _virStorageTimestamps {
 };
 
 
-typedef struct _virStorageFileMetadata virStorageFileMetadata;
-typedef virStorageFileMetadata *virStorageFileMetadataPtr;
-struct _virStorageFileMetadata {
-    /* Name of the current file as spelled by the user (top level) or
-     * metadata of the overlay (if this is a backing store).  */
-    char *relPath;
-    /* Canonical name of the current file, used to detect loops in the
-     * backing store chain.  */
-    char *path;
-    /* Directory to start from if backingStoreRaw is a relative file
-     * name.  */
-    char *relDir;
-    /* Name of the child backing store recorded in metadata of the
-     * current file.  */
-    char *backingStoreRaw;
-
-    /* Backing chain.  In the common case, the child's
-     * backingMeta->path will be a duplicate of this file's
-     * backingStoreRaw; this setup makes it possible to detect missing
-     * backing files: if backingStoreRaw is NULL, this field should be
-     * NULL.  If this field is NULL and backingStoreRaw is non-NULL,
-     * there was an error following the chain (such as a missing
-     * file).  Otherwise, information about the child is here.  */
-    virStorageFileMetadataPtr backingMeta;
-
-    /* Details about the current image */
-    int type; /* enum virStorageType */
-    int format; /* enum virStorageFileFormat */
-    virStorageEncryptionPtr encryption;
-    unsigned long long capacity;
-    virBitmapPtr features; /* bits described by enum virStorageFileFeature */
-    char *compat;
-};
-
-
 /* Information related to network storage */
 enum virStorageNetProtocol {
     VIR_STORAGE_NET_PROTOCOL_NBD,
@@ -322,8 +287,6 @@ const char *virStorageFileChainLookup(virStorageSourcePtr chain,
                                       virStorageSourcePtr *meta,
                                       const char **parent)
     ATTRIBUTE_NONNULL(1);
-
-void virStorageFileFreeMetadata(virStorageFileMetadataPtr meta);
 
 int virStorageFileResize(const char *path,
                          unsigned long long capacity,

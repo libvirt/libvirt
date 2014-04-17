@@ -1823,7 +1823,6 @@ virStorageFileFeatureTypeFromString;
 virStorageFileFeatureTypeToString;
 virStorageFileFormatTypeFromString;
 virStorageFileFormatTypeToString;
-virStorageFileFreeMetadata;
 virStorageFileGetLVMKey;
 virStorageFileGetMetadata;
 virStorageFileGetMetadataFromBuf;

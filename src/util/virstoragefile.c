@@ -1313,29 +1313,6 @@ virStorageFileChainGetBroken(virStorageSourcePtr chain,
 
 
 /**
- * virStorageFileMetadataFree:
- *
- * Free pointers in passed structure and structure itself.
- */
-void
-virStorageFileFreeMetadata(virStorageFileMetadata *meta)
-{
-    if (!meta)
-        return;
-
-    VIR_FREE(meta->relPath);
-    VIR_FREE(meta->path);
-    VIR_FREE(meta->relDir);
-
-    virStorageFileFreeMetadata(meta->backingMeta);
-    VIR_FREE(meta->backingStoreRaw);
-    VIR_FREE(meta->compat);
-    virBitmapFree(meta->features);
-    virStorageEncryptionFree(meta->encryption);
-    VIR_FREE(meta);
-}
-
-/**
  * virStorageFileResize:
  *
  * Change the capacity of the raw storage file at 'path'.
