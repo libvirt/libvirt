@@ -1043,11 +1043,8 @@ virStorageFileGetMetadataFromFDInternal(virStorageSourcePtr meta,
     }
 
     if (S_ISDIR(sb.st_mode)) {
-        /* No header to probe for directories, but also no backing
-         * file; therefore, no inclusion loop is possible, and we
-         * don't need canonName or relDir.  */
-        VIR_FREE(meta->relDir);
-        VIR_FREE(meta->path);
+        /* No header to probe for directories, but also no backing file. Just
+         * update the metadata.*/
         meta->type = VIR_STORAGE_TYPE_DIR;
         meta->format = VIR_STORAGE_FILE_DIR;
         ret = 0;

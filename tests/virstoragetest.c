@@ -709,6 +709,9 @@ mymain(void)
     testFileData dir = {
         .pathRel = "dir",
         .pathAbs = absdir,
+        .path = canondir,
+        .relDirRel = ".",
+        .relDirAbs = datadir,
         .type = VIR_STORAGE_TYPE_DIR,
         .format = VIR_STORAGE_FILE_DIR,
     };
