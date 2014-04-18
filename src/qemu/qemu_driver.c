@@ -15285,8 +15285,7 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
     int ret = -1;
     int idx;
     virDomainDiskDefPtr disk = NULL;
-    const char *top_canon = NULL;
-    virStorageSourcePtr top_meta = NULL;
+    virStorageSourcePtr topSource;
     const char *top_parent = NULL;
     const char *base_canon = NULL;
     bool clean_access = false;
@@ -15329,22 +15328,22 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
         goto endjob;
 
     if (!top) {
-        top_canon = disk->src.path;
-        top_meta = &disk->src;
-    } else if (!(top_canon = virStorageFileChainLookup(&disk->src,
-                                                       top, &top_meta,
-                                                       &top_parent))) {
+        topSource = &disk->src;
+    } else if (!(virStorageFileChainLookup(&disk->src,
+                                           top, &topSource,
+                                           &top_parent))) {
         goto endjob;
     }
-    if (!top_meta || !top_meta->backingStore) {
+    if (!topSource->backingStore) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("top '%s' in chain for '%s' has no backing file"),
-                       top_canon, path);
+                       topSource->path, path);
         goto endjob;
     }
+
     if (!base && (flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW))
-        base_canon = top_meta->backingStore->path;
-    else if (!(base_canon = virStorageFileChainLookup(top_meta,
+        base_canon = topSource->backingStore->path;
+    else if (!(base_canon = virStorageFileChainLookup(topSource,
                                                       base, NULL, NULL)))
         goto endjob;
 
@@ -15352,11 +15351,11 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
      * virStorageFileChainLookup guarantees a simple pointer
      * comparison will work, rather than needing full-blown STREQ.  */
     if ((flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW) &&
-        base_canon != top_meta->backingStore->path) {
+        base_canon != topSource->backingStore->path) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("base '%s' is not immediately below '%s' in chain "
                          "for '%s'"),
-                       base, top_canon, path);
+                       base, topSource->path, path);
         goto endjob;
     }
 
@@ -15383,7 +15382,7 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
      * thing if the user specified a relative name). */
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorBlockCommit(priv->mon, device,
-                                 top ? top : top_canon,
+                                 top ? top : topSource->path,
                                  base ? base : base_canon, bandwidth);
     qemuDomainObjExitMonitor(driver, vm);
 
