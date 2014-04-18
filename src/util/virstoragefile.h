@@ -281,8 +281,15 @@ virStorageSourcePtr virStorageFileGetMetadataFromBuf(const char *path,
 int virStorageFileChainGetBroken(virStorageSourcePtr chain,
                                  char **broken_file);
 
+int virStorageFileParseChainIndex(const char *diskTarget,
+                                  const char *name,
+                                  unsigned int *chainIndex)
+    ATTRIBUTE_NONNULL(3);
+
 virStorageSourcePtr virStorageFileChainLookup(virStorageSourcePtr chain,
+                                              virStorageSourcePtr startFrom,
                                               const char *name,
+                                              unsigned int idx,
                                               const char **parent)
     ATTRIBUTE_NONNULL(1);
 

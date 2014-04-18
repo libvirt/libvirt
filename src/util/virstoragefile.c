@@ -1507,32 +1507,85 @@ int virStorageFileGetSCSIKey(const char *path,
 }
 #endif
 
-/* Given a CHAIN, look for the backing file NAME within the chain and
- * return its canonical name.  Pass NULL for NAME to find the base of
- * the chain.  If META is not NULL, set *META to the point in the
- * chain that describes NAME (or to NULL if the backing element is not
- * a file).  If PARENT is not NULL, set *PARENT to the preferred name
- * of the parent (or to NULL if NAME matches the start of the chain).
- * Since the results point within CHAIN, they must not be
- * independently freed.  Reports an error and returns NULL if NAME is
- * not found.  */
+int
+virStorageFileParseChainIndex(const char *diskTarget,
+                              const char *name,
+                              unsigned int *chainIndex)
+{
+    char **strings = NULL;
+    unsigned int idx = 0;
+    char *suffix;
+    int ret = 0;
+
+    *chainIndex = 0;
+
+    if (name && diskTarget)
+        strings = virStringSplit(name, "[", 2);
+
+    if (virStringListLength(strings) != 2)
+        goto cleanup;
+
+    if (virStrToLong_ui(strings[1], &suffix, 10, &idx) < 0 ||
+        STRNEQ(suffix, "]"))
+        goto cleanup;
+
+    if (STRNEQ(diskTarget, strings[0])) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("requested target '%s' does not match target '%s'"),
+                       strings[0], diskTarget);
+        ret = -1;
+        goto cleanup;
+    }
+
+    *chainIndex = idx;
+
+ cleanup:
+    virStringFreeList(strings);
+    return ret;
+}
+
+/* Given a @chain, look for the backing store @name within the chain starting
+ * from @startFrom or @chain if @startFrom is NULL and return that location
+ * within the chain.  @chain must always point to the top of the chain.  Pass
+ * NULL for @name and 0 for @idx to find the base of the chain.  Pass nonzero
+ * @idx to find the backing source according to its position in the backing
+ * chain.  If @parent is not NULL, set *@parent to the preferred name of the
+ * parent (or to NULL if @name matches the start of the chain).  Since the
+ * results point within @chain, they must not be independently freed.
+ * Reports an error and returns NULL if @name is not found.
+ */
 virStorageSourcePtr
 virStorageFileChainLookup(virStorageSourcePtr chain,
+                          virStorageSourcePtr startFrom,
                           const char *name,
+                          unsigned int idx,
                           const char **parent)
 {
     const char *start = chain->path;
     const char *tmp;
     const char *parentDir = ".";
     bool nameIsFile = virStorageIsFile(name);
+    size_t i;
 
     if (!parent)
         parent = &tmp;
-
     *parent = NULL;
+
+    i = 0;
+    if (startFrom) {
+        while (chain && chain != startFrom) {
+            chain = chain->backingStore;
+            i++;
+        }
+    }
+
     while (chain) {
-        if (!name) {
+        if (!name && !idx) {
             if (!chain->backingStore)
+                break;
+        } else if (idx) {
+            VIR_DEBUG("%zu: %s", i, chain->path);
+            if (idx == i)
                 break;
         } else {
             if (STREQ(name, chain->relPath))
@@ -1550,6 +1603,7 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
         *parent = chain->path;
         parentDir = chain->relDir;
         chain = chain->backingStore;
+        i++;
     }
 
     if (!chain)
@@ -1557,7 +1611,11 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
     return chain;
 
  error:
-    if (name) {
+    if (idx) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("could not find backing store %u in chain for '%s'"),
+                       idx, start);
+    } else if (name) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("could not find image '%s' in chain for '%s'"),
                        name, start);

@@ -19669,7 +19669,8 @@ virDomainBlockPull(virDomainPtr dom, const char *disk,
  * virDomainBlockRebase:
  * @dom: pointer to domain object
  * @disk: path to the block device, or device shorthand
- * @base: path to backing file to keep, or NULL for no backing file
+ * @base: path to backing file to keep, or device shorthand,
+ *        or NULL for no backing file
  * @bandwidth: (optional) specify copy bandwidth limit in MiB/s
  * @flags: bitwise-OR of virDomainBlockRebaseFlags
  *
@@ -19730,6 +19731,14 @@ virDomainBlockPull(virDomainPtr dom, const char *disk,
  * <target dev='...'/> sub-element, such as "xvda").  Valid names
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
+ *
+ * The @base parameter can be either a path to a file within the backing
+ * chain, or the device target shorthand (the <target dev='...'/>
+ * sub-element, such as "vda") followed by an index to the backing chain
+ * enclosed in square brackets. Backing chain indexes can be found by
+ * inspecting //disk//backingStore/@index in the domain XML. Thus, for
+ * example, "vda[3]" refers to the backing store with index equal to "3"
+ * in the chain of disk "vda".
  *
  * The maximum bandwidth (in MiB/s) that will be used to do the copy can be
  * specified with the bandwidth parameter.  If set to 0, libvirt will choose a
@@ -19793,9 +19802,10 @@ virDomainBlockRebase(virDomainPtr dom, const char *disk,
  * virDomainBlockCommit:
  * @dom: pointer to domain object
  * @disk: path to the block device, or device shorthand
- * @base: path to backing file to merge into, or NULL for default
+ * @base: path to backing file to merge into, or device shorthand,
+ *        or NULL for default
  * @top: path to file within backing chain that contains data to be merged,
- *       or NULL to merge all possible data
+ *       or device shorthand, or NULL to merge all possible data
  * @bandwidth: (optional) specify commit bandwidth limit in MiB/s
  * @flags: bitwise-OR of virDomainBlockCommitFlags
  *
@@ -19844,6 +19854,14 @@ virDomainBlockRebase(virDomainPtr dom, const char *disk,
  * <target dev='...'/> sub-element, such as "xvda").  Valid names
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
+ *
+ * The @base and @top parameters can be either paths to files within the
+ * backing chain, or the device target shorthand (the <target dev='...'/>
+ * sub-element, such as "vda") followed by an index to the backing chain
+ * enclosed in square brackets. Backing chain indexes can be found by
+ * inspecting //disk//backingStore/@index in the domain XML. Thus, for
+ * example, "vda[3]" refers to the backing store with index equal to "3"
+ * in the chain of disk "vda".
  *
  * The maximum bandwidth (in MiB/s) that will be used to do the commit can be
  * specified with the bandwidth parameter.  If set to 0, libvirt will choose a

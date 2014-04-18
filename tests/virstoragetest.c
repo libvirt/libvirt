@@ -413,7 +413,9 @@ testStorageChain(const void *args)
 struct testLookupData
 {
     virStorageSourcePtr chain;
+    const char *target;
     const char *name;
+    unsigned int expIndex;
     const char *expResult;
     virStorageSourcePtr expMeta;
     const char *expParent;
@@ -426,9 +428,22 @@ testStorageLookup(const void *args)
     int ret = 0;
     virStorageSourcePtr result;
     const char *actualParent;
+    unsigned int idx;
+
+    if (virStorageFileParseChainIndex(data->target, data->name, &idx) < 0 &&
+        data->expIndex) {
+        fprintf(stderr, "call should not have failed\n");
+        ret = -1;
+    }
+    if (idx != data->expIndex) {
+        fprintf(stderr, "index: expected %u, got %u\n", data->expIndex, idx);
+        ret = -1;
+    }
 
      /* Test twice to ensure optional parameter doesn't cause NULL deref. */
-    result = virStorageFileChainLookup(data->chain, data->name, NULL);
+    result = virStorageFileChainLookup(data->chain, NULL,
+                                       idx ? NULL : data->name,
+                                       idx, NULL);
 
     if (!data->expResult) {
         if (!virGetLastError()) {
@@ -455,7 +470,8 @@ testStorageLookup(const void *args)
         ret = -1;
     }
 
-    result = virStorageFileChainLookup(data->chain, data->name, &actualParent);
+    result = virStorageFileChainLookup(data->chain, data->chain,
+                                       data->name, idx, &actualParent);
     if (!data->expResult)
         virResetLastError();
 
@@ -878,14 +894,16 @@ mymain(void)
         goto cleanup;
     }
 
-#define TEST_LOOKUP(id, name, result, meta, parent)                  \
-    do {                                                             \
-        struct testLookupData data2 = { chain, name,                 \
-                                        result, meta, parent, };     \
-        if (virtTestRun("Chain lookup " #id,                         \
-                        testStorageLookup, &data2) < 0)              \
-            ret = -1;                                                \
+#define TEST_LOOKUP_TARGET(id, target, name, index, result, meta, parent)   \
+    do {                                                                    \
+        struct testLookupData data2 = { chain, target, name, index,         \
+                                        result, meta, parent, };            \
+        if (virtTestRun("Chain lookup " #id,                                \
+                        testStorageLookup, &data2) < 0)                     \
+            ret = -1;                                                       \
     } while (0)
+#define TEST_LOOKUP(id, name, result, meta, parent)                         \
+    TEST_LOOKUP_TARGET(id, NULL, name, 0, result, meta, parent)
 
     TEST_LOOKUP(0, "bogus", NULL, NULL, NULL);
     TEST_LOOKUP(1, "wrap", chain->path, chain, NULL);
@@ -968,6 +986,21 @@ mymain(void)
                 chain->backingStore->backingStore, chain->backingStore->path);
     TEST_LOOKUP(25, NULL, chain->backingStore->backingStore->path,
                 chain->backingStore->backingStore, chain->backingStore->path);
+
+    TEST_LOOKUP_TARGET(26, "vda", "bogus[1]", 0, NULL, NULL, NULL);
+    TEST_LOOKUP_TARGET(27, "vda", "vda[-1]", 0, NULL, NULL, NULL);
+    TEST_LOOKUP_TARGET(28, "vda", "vda[1][1]", 0, NULL, NULL, NULL);
+    TEST_LOOKUP_TARGET(29, "vda", "wrap", 0, chain->path, chain, NULL);
+    TEST_LOOKUP_TARGET(30, "vda", "vda[0]", 0, NULL, NULL, NULL);
+    TEST_LOOKUP_TARGET(31, "vda", "vda[1]", 1,
+                       chain->backingStore->path,
+                       chain->backingStore,
+                       chain->path);
+    TEST_LOOKUP_TARGET(32, "vda", "vda[2]", 2,
+                       chain->backingStore->backingStore->path,
+                       chain->backingStore->backingStore,
+                       chain->backingStore->path);
+    TEST_LOOKUP_TARGET(33, "vda", "vda[3]", 3, NULL, NULL, NULL);
 
  cleanup:
     /* Final cleanup */

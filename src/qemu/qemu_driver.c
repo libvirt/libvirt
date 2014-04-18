@@ -14854,6 +14854,8 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     virObjectEventPtr event = NULL;
     int idx;
     virDomainDiskDefPtr disk;
+    virStorageSourcePtr baseSource = NULL;
+    unsigned int baseIndex = 0;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -14915,12 +14917,17 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
         goto endjob;
     }
 
+    if (base &&
+        (virStorageFileParseChainIndex(disk->dst, base, &baseIndex) < 0 ||
+         !(baseSource = virStorageFileChainLookup(&disk->src,
+                                                  disk->src.backingStore,
+                                                  base, baseIndex, NULL))))
+        goto endjob;
+
     qemuDomainObjEnterMonitor(driver, vm);
-    /* XXX - libvirt should really be tracking the backing file chain
-     * itself, and validating that base is on the chain, rather than
-     * relying on qemu to do this.  */
-    ret = qemuMonitorBlockJob(priv->mon, device, base, bandwidth, info, mode,
-                              async);
+    ret = qemuMonitorBlockJob(priv->mon, device,
+                              baseIndex ? baseSource->path : base,
+                              bandwidth, info, mode, async);
     qemuDomainObjExitMonitor(driver, vm);
     if (ret < 0)
         goto endjob;
@@ -15274,8 +15281,11 @@ qemuDomainBlockPull(virDomainPtr dom, const char *path, unsigned long bandwidth,
 
 
 static int
-qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
-                      const char *top, unsigned long bandwidth,
+qemuDomainBlockCommit(virDomainPtr dom,
+                      const char *path,
+                      const char *base,
+                      const char *top,
+                      unsigned long bandwidth,
                       unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
@@ -15286,7 +15296,9 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
     int idx;
     virDomainDiskDefPtr disk = NULL;
     virStorageSourcePtr topSource;
+    unsigned int topIndex = 0;
     virStorageSourcePtr baseSource;
+    unsigned int baseIndex = 0;
     const char *top_parent = NULL;
     bool clean_access = false;
 
@@ -15327,12 +15339,15 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
     if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0)
         goto endjob;
 
-    if (!top) {
+    if (!top)
         topSource = &disk->src;
-    } else if (!(topSource = virStorageFileChainLookup(disk->src.backingStore,
-                                                       top, &top_parent))) {
+    else if (virStorageFileParseChainIndex(disk->dst, top, &topIndex) < 0 ||
+             !(topSource = virStorageFileChainLookup(&disk->src,
+                                                     disk->src.backingStore,
+                                                     top, topIndex,
+                                                     &top_parent)))
         goto endjob;
-    }
+
     if (!topSource->backingStore) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("top '%s' in chain for '%s' has no backing file"),
@@ -15342,7 +15357,9 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
 
     if (!base && (flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW))
         baseSource = topSource->backingStore;
-    else if (!(baseSource = virStorageFileChainLookup(topSource, base, NULL)))
+    else if (virStorageFileParseChainIndex(disk->dst, base, &baseIndex) < 0 ||
+             !(baseSource = virStorageFileChainLookup(&disk->src, topSource,
+                                                      base, baseIndex, NULL)))
         goto endjob;
 
     if ((flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW) &&
@@ -15377,8 +15394,9 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
      * thing if the user specified a relative name). */
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorBlockCommit(priv->mon, device,
-                                 top ? top : topSource->path,
-                                 base ? base : baseSource->path, bandwidth);
+                                 top && !topIndex ? top : topSource->path,
+                                 base && !baseIndex ? base : baseSource->path,
+                                 bandwidth);
     qemuDomainObjExitMonitor(driver, vm);
 
  endjob:

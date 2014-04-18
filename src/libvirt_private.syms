@@ -1829,6 +1829,7 @@ virStorageFileGetMetadataFromBuf;
 virStorageFileGetMetadataFromFD;
 virStorageFileGetSCSIKey;
 virStorageFileIsClusterFS;
+virStorageFileParseChainIndex;
 virStorageFileProbeFormat;
 virStorageFileProbeFormatFromBuf;
 virStorageFileResize;
