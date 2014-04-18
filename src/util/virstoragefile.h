@@ -263,10 +263,9 @@ int virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid);
 int virStorageFileProbeFormatFromBuf(const char *path, char *buf,
                                      size_t buflen);
 
-virStorageSourcePtr virStorageFileGetMetadata(const char *path,
-                                              int format,
-                                              uid_t uid, gid_t gid,
-                                              bool allow_probe)
+int virStorageFileGetMetadata(virStorageSourcePtr src,
+                              uid_t uid, gid_t gid,
+                              bool allow_probe)
     ATTRIBUTE_NONNULL(1);
 virStorageSourcePtr virStorageFileGetMetadataFromFD(const char *path,
                                                     int fd,

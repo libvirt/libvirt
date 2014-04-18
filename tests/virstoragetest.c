@@ -29,6 +29,7 @@
 #include "virlog.h"
 #include "virstoragefile.h"
 #include "virstring.h"
+#include "dirname.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -86,6 +87,44 @@ testCleanupImages(void)
     }
 
     virFileDeleteTree(datadir);
+}
+
+
+static virStorageSourcePtr
+testStorageFileGetMetadata(const char *path,
+                           int format,
+                           uid_t uid, gid_t gid,
+                           bool allow_probe)
+{
+    virStorageSourcePtr ret = NULL;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    ret->type = VIR_STORAGE_TYPE_FILE;
+    ret->format = format;
+
+    if (VIR_STRDUP(ret->relPath, path) < 0)
+        goto error;
+
+    if (!(ret->relDir = mdir_name(path))) {
+        virReportOOMError();
+        goto error;
+    }
+
+    if (!(ret->path = canonicalize_file_name(path))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "failed to resolve '%s'", path);
+        goto error;
+    }
+
+    if (virStorageFileGetMetadata(ret, uid, gid, allow_probe) < 0)
+        goto error;
+
+    return ret;
+
+ error:
+    virStorageSourceFree(ret);
+    return NULL;
 }
 
 static int
@@ -272,8 +311,8 @@ testStorageChain(const void *args)
     char *broken = NULL;
     bool isAbs = !!(data->flags & ABS_START);
 
-    meta = virStorageFileGetMetadata(data->start, data->format, -1, -1,
-                                     (data->flags & ALLOW_PROBE) != 0);
+    meta = testStorageFileGetMetadata(data->start, data->format, -1, -1,
+                                      (data->flags & ALLOW_PROBE) != 0);
     if (!meta) {
         if (data->flags & EXP_FAIL) {
             virResetLastError();
@@ -825,8 +864,8 @@ mymain(void)
         ret = -1;
 
     /* Test behavior of chain lookups, absolute backing from relative start */
-    chain = virStorageFileGetMetadata("wrap", VIR_STORAGE_FILE_QCOW2,
-                                      -1, -1, false);
+    chain = testStorageFileGetMetadata("wrap", VIR_STORAGE_FILE_QCOW2,
+                                       -1, -1, false);
     if (!chain) {
         ret = -1;
         goto cleanup;
@@ -870,8 +909,8 @@ mymain(void)
 
     /* Test behavior of chain lookups, relative backing from absolute start */
     virStorageSourceFree(chain);
-    chain = virStorageFileGetMetadata(abswrap, VIR_STORAGE_FILE_QCOW2,
-                                      -1, -1, false);
+    chain = testStorageFileGetMetadata(abswrap, VIR_STORAGE_FILE_QCOW2,
+                                       -1, -1, false);
     if (!chain) {
         ret = -1;
         goto cleanup;
@@ -900,8 +939,8 @@ mymain(void)
 
     /* Test behavior of chain lookups, relative backing */
     virStorageSourceFree(chain);
-    chain = virStorageFileGetMetadata("sub/link2", VIR_STORAGE_FILE_QCOW2,
-                                      -1, -1, false);
+    chain = testStorageFileGetMetadata("sub/link2", VIR_STORAGE_FILE_QCOW2,
+                                       -1, -1, false);
     if (!chain) {
         ret = -1;
         goto cleanup;

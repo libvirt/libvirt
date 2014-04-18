@@ -2239,10 +2239,10 @@ qemuDiskChainCheckBroken(virDomainDiskDefPtr disk)
 {
     char *brokenFile = NULL;
 
-    if (!virDomainDiskGetSource(disk) || !disk->src.backingStore)
+    if (!virDomainDiskGetSource(disk))
         return 0;
 
-    if (virStorageFileChainGetBroken(disk->src.backingStore, &brokenFile) < 0)
+    if (virStorageFileChainGetBroken(&disk->src, &brokenFile) < 0)
         return -1;
 
     if (brokenFile) {
@@ -2419,11 +2419,9 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 
     qemuDomainGetImageIds(cfg, vm, disk, &uid, &gid);
 
-    disk->src.backingStore = virStorageFileGetMetadata(src,
-                                                       virDomainDiskGetFormat(disk),
-                                                       uid, gid,
-                                                       cfg->allowDiskFormatProbing);
-    if (!disk->src.backingStore)
+    if (virStorageFileGetMetadata(&disk->src,
+                                  uid, gid,
+                                  cfg->allowDiskFormatProbing) < 0)
         ret = -1;
 
  cleanup:

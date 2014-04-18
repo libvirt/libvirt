@@ -15123,7 +15123,7 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
 
     if ((flags & VIR_DOMAIN_BLOCK_REBASE_SHALLOW) &&
         STREQ_NULLABLE(format, "raw") &&
-        disk->src.backingStore->backingStore->path) {
+        disk->src.backingStore->path) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("disk '%s' has backing file, so raw shallow copy "
                          "is not possible"),
@@ -15330,8 +15330,8 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
 
     if (!top) {
         top_canon = disk->src.path;
-        top_meta = disk->src.backingStore;
-    } else if (!(top_canon = virStorageFileChainLookup(disk->src.backingStore,
+        top_meta = &disk->src;
+    } else if (!(top_canon = virStorageFileChainLookup(&disk->src,
                                                        top, &top_meta,
                                                        &top_parent))) {
         goto endjob;

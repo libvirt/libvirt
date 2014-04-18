@@ -18537,9 +18537,8 @@ virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
 
     if (iter(disk, path, 0, opaque) < 0)
         goto cleanup;
-    /* XXX: temporarily we need to select the second element of the backing
-     * chain to start as the first is the copy of the disk itself. */
-    tmp = disk->src.backingStore ? disk->src.backingStore->backingStore : NULL;
+
+    tmp = disk->src.backingStore;
     while (tmp && virStorageIsFile(tmp->path)) {
         if (!ignoreOpenFailure && tmp->backingStoreRaw && !tmp->backingStore) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
