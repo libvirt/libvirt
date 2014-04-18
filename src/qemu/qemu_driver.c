@@ -15286,8 +15286,8 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
     int idx;
     virDomainDiskDefPtr disk = NULL;
     virStorageSourcePtr topSource;
+    virStorageSourcePtr baseSource;
     const char *top_parent = NULL;
-    const char *base_canon = NULL;
     bool clean_access = false;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW, -1);
@@ -15342,16 +15342,12 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
     }
 
     if (!base && (flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW))
-        base_canon = topSource->backingStore->path;
-    else if (!(base_canon = virStorageFileChainLookup(topSource,
-                                                      base, NULL, NULL)))
+        baseSource = topSource->backingStore;
+    else if (!(virStorageFileChainLookup(topSource, base, &baseSource, NULL)))
         goto endjob;
 
-    /* Note that this code exploits the fact that
-     * virStorageFileChainLookup guarantees a simple pointer
-     * comparison will work, rather than needing full-blown STREQ.  */
     if ((flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW) &&
-        base_canon != topSource->backingStore->path) {
+        baseSource != topSource->backingStore) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("base '%s' is not immediately below '%s' in chain "
                          "for '%s'"),
@@ -15367,7 +15363,7 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
      * operation succeeds, but doing that requires tracking the
      * operation in XML across libvirtd restarts.  */
     clean_access = true;
-    if (qemuDomainPrepareDiskChainElement(driver, vm, disk, base_canon,
+    if (qemuDomainPrepareDiskChainElement(driver, vm, disk, baseSource->path,
                                           VIR_DISK_CHAIN_READ_WRITE) < 0 ||
         (top_parent && top_parent != disk->src.path &&
          qemuDomainPrepareDiskChainElement(driver, vm, disk,
@@ -15383,13 +15379,13 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorBlockCommit(priv->mon, device,
                                  top ? top : topSource->path,
-                                 base ? base : base_canon, bandwidth);
+                                 base ? base : baseSource->path, bandwidth);
     qemuDomainObjExitMonitor(driver, vm);
 
  endjob:
     if (ret < 0 && clean_access) {
         /* Revert access to read-only, if possible.  */
-        qemuDomainPrepareDiskChainElement(driver, vm, disk, base_canon,
+        qemuDomainPrepareDiskChainElement(driver, vm, disk, baseSource->path,
                                           VIR_DISK_CHAIN_READ_ONLY);
         if (top_parent && top_parent != disk->src.path)
             qemuDomainPrepareDiskChainElement(driver, vm, disk,
