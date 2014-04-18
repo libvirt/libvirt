@@ -424,16 +424,11 @@ testStorageLookup(const void *args)
 {
     const struct testLookupData *data = args;
     int ret = 0;
-    const char *actualResult;
-    virStorageSourcePtr actualMeta;
+    virStorageSourcePtr result;
     const char *actualParent;
 
-    /* This function is documented as giving results within chain, but
-     * as the same string may be duplicated into more than one field,
-     * we rely on STREQ rather than pointer equality.  Test twice to
-     * ensure optional parameters don't cause NULL deref.  */
-    actualResult = virStorageFileChainLookup(data->chain, data->name,
-                                             NULL, NULL);
+     /* Test twice to ensure optional parameter doesn't cause NULL deref. */
+    result = virStorageFileChainLookup(data->chain, data->name, NULL);
 
     if (!data->expResult) {
         if (!virGetLastError()) {
@@ -448,24 +443,36 @@ testStorageLookup(const void *args)
         }
     }
 
-    if (STRNEQ_NULLABLE(data->expResult, actualResult)) {
+    if (!result) {
+        if (data->expResult) {
+            fprintf(stderr, "result 1: expected %s, got NULL\n",
+                    data->expResult);
+            ret = -1;
+        }
+    } else if (STRNEQ_NULLABLE(data->expResult, result->path)) {
         fprintf(stderr, "result 1: expected %s, got %s\n",
-                NULLSTR(data->expResult), NULLSTR(actualResult));
+                NULLSTR(data->expResult), NULLSTR(result->path));
         ret = -1;
     }
 
-    actualResult = virStorageFileChainLookup(data->chain, data->name,
-                                             &actualMeta, &actualParent);
+    result = virStorageFileChainLookup(data->chain, data->name, &actualParent);
     if (!data->expResult)
         virResetLastError();
-    if (STRNEQ_NULLABLE(data->expResult, actualResult)) {
+
+    if (!result) {
+        if (data->expResult) {
+            fprintf(stderr, "result 2: expected %s, got NULL\n",
+                    data->expResult);
+            ret = -1;
+        }
+    } else if (STRNEQ_NULLABLE(data->expResult, result->path)) {
         fprintf(stderr, "result 2: expected %s, got %s\n",
-                NULLSTR(data->expResult), NULLSTR(actualResult));
+                NULLSTR(data->expResult), NULLSTR(result->path));
         ret = -1;
     }
-    if (data->expMeta != actualMeta) {
+    if (data->expMeta != result) {
         fprintf(stderr, "meta: expected %p, got %p\n",
-                data->expMeta, actualMeta);
+                data->expMeta, result);
         ret = -1;
     }
     if (STRNEQ_NULLABLE(data->expParent, actualParent)) {

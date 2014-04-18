@@ -281,10 +281,9 @@ virStorageSourcePtr virStorageFileGetMetadataFromBuf(const char *path,
 int virStorageFileChainGetBroken(virStorageSourcePtr chain,
                                  char **broken_file);
 
-const char *virStorageFileChainLookup(virStorageSourcePtr chain,
-                                      const char *name,
-                                      virStorageSourcePtr *meta,
-                                      const char **parent)
+virStorageSourcePtr virStorageFileChainLookup(virStorageSourcePtr chain,
+                                              const char *name,
+                                              const char **parent)
     ATTRIBUTE_NONNULL(1);
 
 int virStorageFileResize(const char *path,

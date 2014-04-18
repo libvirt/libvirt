@@ -15329,9 +15329,8 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
 
     if (!top) {
         topSource = &disk->src;
-    } else if (!(virStorageFileChainLookup(&disk->src,
-                                           top, &topSource,
-                                           &top_parent))) {
+    } else if (!(topSource = virStorageFileChainLookup(disk->src.backingStore,
+                                                       top, &top_parent))) {
         goto endjob;
     }
     if (!topSource->backingStore) {
@@ -15343,7 +15342,7 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
 
     if (!base && (flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW))
         baseSource = topSource->backingStore;
-    else if (!(virStorageFileChainLookup(topSource, base, &baseSource, NULL)))
+    else if (!(baseSource = virStorageFileChainLookup(topSource, base, NULL)))
         goto endjob;
 
     if ((flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW) &&

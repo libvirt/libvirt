@@ -1516,9 +1516,9 @@ int virStorageFileGetSCSIKey(const char *path,
  * Since the results point within CHAIN, they must not be
  * independently freed.  Reports an error and returns NULL if NAME is
  * not found.  */
-const char *
+virStorageSourcePtr
 virStorageFileChainLookup(virStorageSourcePtr chain,
-                          const char *name, virStorageSourcePtr *meta,
+                          const char *name,
                           const char **parent)
 {
     const char *start = chain->path;
@@ -1551,24 +1551,22 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
         parentDir = chain->relDir;
         chain = chain->backingStore;
     }
+
     if (!chain)
         goto error;
-    if (meta)
-        *meta = chain;
-    return chain->path;
+    return chain;
 
  error:
-    if (name)
+    if (name) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("could not find image '%s' in chain for '%s'"),
                        name, start);
-    else
+    } else {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("could not find base image in chain for '%s'"),
                        start);
+    }
     *parent = NULL;
-    if (meta)
-        *meta = NULL;
     return NULL;
 }
 
