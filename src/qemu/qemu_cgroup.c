@@ -527,7 +527,7 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
 
     for (i = 0; deviceACL[i] != NULL; i++) {
         if (!virFileExists(deviceACL[i])) {
-            VIR_DEBUG("Ignoring non-existant device %s", deviceACL[i]);
+            VIR_DEBUG("Ignoring non-existent device %s", deviceACL[i]);
             continue;
         }
 

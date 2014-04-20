@@ -482,7 +482,7 @@ virStorageGenerateSecretUUID(virConnectPtr conn,
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("too many conflicts when generating an uuid"));
+                   _("too many conflicts when generating a uuid"));
 
     return -1;
 }

@@ -1304,7 +1304,7 @@ qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
     /* We got jiffies
      * We want nanoseconds
      * _SC_CLK_TCK is jiffies per second
-     * So calulate thus....
+     * So calculate thus....
      */
     if (cpuTime)
         *cpuTime = 1000ull * 1000ull * 1000ull * (usertime + systime) / (unsigned long long)sysconf(_SC_CLK_TCK);
@@ -2934,7 +2934,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
      * we don't have an explicit offset in the header, so we fake
      * it by padding the XML string with NUL bytes.  Additionally,
      * we want to ensure that virDomainSaveImageDefineXML can supply
-     * slightly larger XML, so we add a miminum padding prior to
+     * slightly larger XML, so we add a minimum padding prior to
      * rounding out to page boundaries.
      */
     pad = 1024;
@@ -12509,7 +12509,7 @@ qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
 {
     int actualType;
 
-    /* active disks are handeled by qemu itself so no need to worry about those */
+    /* active disks are handled by qemu itself so no need to worry about those */
     if (active)
         return 0;
 

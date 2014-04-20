@@ -2936,7 +2936,7 @@ B<blockresize> for live resizing.
 The following commands manipulate "secrets" (e.g. passwords, passphrases and
 encryption keys).  Libvirt can store secrets independently from their use, and
 other objects (e.g. volumes or domains) can refer to the secrets for encryption
-or possibly other uses.  Secrets are identified using an UUID.  See
+or possibly other uses.  Secrets are identified using a UUID.  See
 L<http://libvirt.org/formatsecret.html> for documentation of the XML format
 used to represent properties of secrets.
 
@@ -2946,7 +2946,7 @@ used to represent properties of secrets.
 
 Create a secret with the properties specified in I<file>, with no associated
 secret value.  If I<file> does not specify a UUID, choose one automatically.
-If I<file> specifies an UUID of an existing secret, replace its properties by
+If I<file> specifies a UUID of an existing secret, replace its properties by
 properties defined in I<file>, without affecting the secret value.
 
 =item B<secret-dumpxml> I<secret>

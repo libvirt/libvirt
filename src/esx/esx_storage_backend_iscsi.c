@@ -460,7 +460,7 @@ esxStorageVolLookupByName(virStoragePoolPtr pool,
          scsiLun = scsiLun->_next) {
         if (STREQ(scsiLun->deviceName, name)) {
             /*
-             * ScsiLun provides an UUID field that is unique accross
+             * ScsiLun provides a UUID field that is unique across
              * multiple servers. But this field length is ~55 characters
              * compute MD5 hash to transform it to an acceptable
              * libvirt format

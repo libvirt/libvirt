@@ -355,7 +355,7 @@ xenStoreDomainGetVNCPort(virConnectPtr conn, int domid)
  * serial console is attached.
  *
  * Returns the path to the serial console. It is the callers
- * responsibilty to free() the return string. Returns NULL
+ * responsibility to free() the return string. Returns NULL
  * on error
  *
  * The caller must hold the lock on the privateData
@@ -376,7 +376,7 @@ xenStoreDomainGetConsolePath(virConnectPtr conn, int domid)
  * serial console is attached.
  *
  * Returns the path to the serial console. It is the callers
- * responsibilty to free() the return string. Returns NULL
+ * responsibility to free() the return string. Returns NULL
  * on error
  *
  * The caller must hold the lock on the privateData

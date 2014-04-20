@@ -2296,7 +2296,7 @@ virQEMUCapsProbeQMPKVMState(virQEMUCapsPtr qemuCaps,
 
     /* The QEMU_CAPS_KVM flag was initially set according to the QEMU
      * reporting the recognition of 'query-kvm' QMP command. That merely
-     * indicates existance of the command though, not whether KVM support
+     * indicates existence of the command though, not whether KVM support
      * is actually available, nor whether it is enabled by default.
      *
      * If it is not present we need to clear the flag, and if it is

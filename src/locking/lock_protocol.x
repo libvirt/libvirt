@@ -77,7 +77,7 @@ const VIR_LOCK_SPACE_PROTOCOL_PROGRAM = 0xEA7BEEF;
 const VIR_LOCK_SPACE_PROTOCOL_PROGRAM_VERSION = 1;
 
 enum virLockSpaceProtocolProcedure {
-    /* Each function must be preceeded by a comment providing one or
+    /* Each function must be preceded by a comment providing one or
      * more annotations:
      *
      * - @generate: none|client|server|both

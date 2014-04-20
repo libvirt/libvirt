@@ -693,7 +693,8 @@ static int virNetTLSContextLoadCredentials(virNetTLSContextPtr ctxt,
                 goto cleanup;
             }
         } else {
-            VIR_DEBUG("Skipping non-existant cert %s key %s on client", cert, key);
+            VIR_DEBUG("Skipping non-existent cert %s key %s on client",
+                      cert, key);
         }
     }
 

@@ -178,7 +178,7 @@ virSecuritySELinuxMCSFind(virSecurityManagerPtr mgr,
  * the category part, since that's what we're really
  * interested in. This won't work in Enforcing mode,
  * but will prevent libvirtd breaking in Permissive
- * mode when run with a wierd process label.
+ * mode when run with a weird process label.
  */
 static int
 virSecuritySELinuxMCSGetProcessRange(char **sens,

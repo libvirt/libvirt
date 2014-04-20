@@ -758,7 +758,7 @@ virStringSearch(const char *str,
  * @oldneedle: the substring to locate
  * @newneedle: the substring to insert
  *
- * Search @haystack and replace all occurences of @oldneedle with @newneedle.
+ * Search @haystack and replace all occurrences of @oldneedle with @newneedle.
  *
  * Returns: a new string with all the replacements, or NULL on error
  */

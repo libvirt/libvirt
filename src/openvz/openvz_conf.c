@@ -215,7 +215,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
     /*parse routing network configuration*
      * Sample from config:
      *   IP_ADDRESS="1.1.1.1 1.1.1.2"
-     *   splited IPs by space
+     * IPs split by space
      */
     ret = openvzReadVPSConfigParam(veid, "IP_ADDRESS", &temp);
     if (ret < 0) {
@@ -242,8 +242,8 @@ openvzReadNetworkConf(virDomainDefPtr def,
 
     /*parse bridge devices*/
     /*Sample from config:
-     *NETIF="ifname=eth10,mac=00:18:51:C1:05:EE,host_ifname=veth105.10,host_mac=00:18:51:8F:D9:F3"
-     *devices splited by ';'
+     * NETIF="ifname=eth10,mac=00:18:51:C1:05:EE,host_ifname=veth105.10,host_mac=00:18:51:8F:D9:F3"
+     *devices split by ';'
      */
     ret = openvzReadVPSConfigParam(veid, "NETIF", &temp);
     if (ret < 0) {

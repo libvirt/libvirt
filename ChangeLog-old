@@ -4286,7 +4286,7 @@ Wed Dec 17 21:45:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 Wed Dec 17 21:41:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
-	* src/libvirt_sym.version.in: Remove non-existant symbols
+	* src/libvirt_sym.version.in: Remove non-existent symbols
 	(John Levon)
 
 Wed Dec 17 21:35:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
@@ -12415,7 +12415,7 @@ Thu Jul 12 11:02:17 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 Thu Jul 12 11:00:17 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
-	* qemud/qemud.c: Add explicit checks for existance of x509
+	* qemud/qemud.c: Add explicit checks for existence of x509
 	certificate & key files to get better error reporting than
 	GNU TLS offers when it can't load a file
 
@@ -13276,7 +13276,7 @@ Tue Apr 17 11:30:46 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 Mon Apr 16 09:11:04 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
-	* qemud/conf.c: Check for existance of QEMU binary path. Fix check
+	* qemud/conf.c: Check for existence of QEMU binary path. Fix check
 	for -no-kqemu flag to work with x86_64 on i386
 
 Mon Apr 16 09:09:04 EST 2007 Daniel P. Berrange <berrange@redhat.com>
@@ -15020,7 +15020,7 @@ Tue Nov  7 16:33:43 CET 2006 Daniel Veillard <veillard@redhat.com>
 Tue Oct 31 10:31:34 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: when getting informations about a non
-	  existant domain, it is not a good idea to raise the HTTP
+	  existent domain, it is not a good idea to raise the HTTP
 	  404 GET error, the handling is better done somewhere up in
 	  the stack.
 

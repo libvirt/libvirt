@@ -386,7 +386,7 @@ esxStorageVolLookupByPath(virConnectPtr conn, const char *path)
     /*
      * FIXME: calling backends blindly may set unwanted error codes
      *
-     * VMFS Datastore path follows cannonical format i.e.:
+     * VMFS Datastore path follows canonical format i.e.:
      * [<datastore_name>] <file_path>
      *          WHEREAS
      * iSCSI LUNs device path follows normal linux path convention

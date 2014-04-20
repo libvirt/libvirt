@@ -597,7 +597,7 @@ sexpr_get(virConnectPtr xend, const char *fmt, ...)
  * @sexpr: an S-Expression
  * @name: the name for the value
  *
- * convenience function to lookup an UUID value from the S-Expression
+ * convenience function to lookup a UUID value from the S-Expression
  *
  * Returns a -1 on error, 0 on success
  */

@@ -66,7 +66,7 @@ virUdevStatusString(virUdevStatus status)
 /*
  * Get a minimal virInterfaceDef containing enough metadata
  * for access control checks to be performed. Currently
- * this implies existance of name and mac address attributes
+ * this implies existence of name and mac address attributes
  */
 static virInterfaceDef * ATTRIBUTE_NONNULL(1)
 udevGetMinimalDefForDevice(struct udev_device *dev)

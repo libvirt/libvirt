@@ -2424,7 +2424,7 @@ Security:<br/>
       Auto-detect existing cgroup placement (Daniel P. Berrange),<br/>
       Add API for checking if a cgroup is valid for a domain (Daniel P. Berrange),<br/>
       Add a virCgroupNewDetect API for finding cgroup placement (Daniel P. Berrange),<br/>
-      Add logic for handling systemd-machined non-existance (Daniel P. Berrange),<br/>
+      Add logic for handling systemd-machined non-existence (Daniel P. Berrange),<br/>
       Fix handling of DBus errors emitted by the bus itself (Daniel P. Berrange),<br/>
       storage: Add connection for autostart storage pool (John Ferlan),<br/>
       Adjust 'ceph' authentication secret usage for rbd pool. (John Ferlan),<br/>
@@ -3898,7 +3898,7 @@ Security:<br/>
       Use separate symbol file for GNUTLS symbols (Daniel P. Berrange),<br/>
       Apply security label when entering LXC namespaces (Daniel P. Berrange),<br/>
       virCaps: conf: start splitting out irrelevant data (Peter Krempa),<br/>
-      Remove hack using existance of an 'identity' string to disable auth (Daniel P. Berrange),<br/>
+      Remove hack using existence of an 'identity' string to disable auth (Daniel P. Berrange),<br/>
       Convert HAVE_SELINUX to WITH_SELINUX (Guido Günther),<br/>
       capabilities: add NUMA memory information (Dusty Mabe),<br/>
       apparmor: use AppArmorSetFDLabel for both imageFD and tapFD (Guannan Ren),<br/>
@@ -4014,7 +4014,7 @@ Security:<br/>
       qemu: Don't fail to shutdown domains with unresponsive agent (Michal Privoznik),<br/>
       qemu: virConnectGetVersion returns bogus value (Viktor Mihajlovski),<br/>
       qemu: fix use-after-free when parsing NBD disk (Paolo Bonzini),<br/>
-      Don't try to add non-existant devices to ACL (Daniel P. Berrange),<br/>
+      Don't try to add non-existent devices to ACL (Daniel P. Berrange),<br/>
       Fix typo in internal VIR_QEMU_PROCESS_START_AUTODESROY constant (Daniel P. Berrange),<br/>
       Fix autodestroy of QEMU guests (Daniel P. Berrange),<br/>
       qemu: -numa doesn't (yet) support disjoint range (Eric Blake),<br/>
@@ -4367,7 +4367,7 @@ Security:<br/>
       qemu_monitor: Fix tray-open attribute in query-block (Michal Privoznik),<br/>
       Fix bogus reporting of KVM support for non-native emulators (Daniel P. Berrange),<br/>
       Move QEMU capabilities initialization later in QEMU startup (Daniel P. Berrange),<br/>
-      Fix performance &amp; reliabilty of QMP probing (Daniel P. Berrange),<br/>
+      Fix performance &amp; reliability of QMP probing (Daniel P. Berrange),<br/>
       qemu: escape ipv6 for rbd network disk hosts (Josh Durgin),<br/>
       snapshot: fix state after external snapshot of S3 domain (Eric Blake),<br/>
       python: Fix bindings for virDomainSnapshotGet{Domain,Connect} (Jiri Denemark),<br/>
@@ -6402,7 +6402,7 @@ Security:<br/>
       python: Don't generate bodies for close callback functions (Peter Krempa),<br/>
       maint: regenerate bootstrap (Eric Blake),<br/>
       Remove accidentally committed virNetClientSetEOFNotify symbol (Daniel P. Berrange),<br/>
-      Remove two non-existant NWFilter driver symbols from .syms (Daniel P. Berrange),<br/>
+      Remove two non-existent NWFilter driver symbols from .syms (Daniel P. Berrange),<br/>
       tests: reduce length of nodeinfodata test names (Eric Blake),<br/>
       rpc: remove trailing whitespace character in error string (Guannan Ren),<br/>
       po: avoid spurious double spaces in messages (Eric Blake),<br/>
@@ -9238,7 +9238,7 @@ Security:<br/>
       Make hvsupport.pl pick up the host device drivers (Matthias Bolte)
       </li>
       <li> Portability:<br/>
-      Explicitely invoke python for API doc generator (Daniel Veillard),<br/>
+      Explicitly invoke python for API doc generator (Daniel Veillard),<br/>
       fix virParseVersionString with linux 3.0 (Scott Moser),<br/>
       Add conditionals to allow build without SASL (Daniel P. Berrange),<br/>
       Add missing include of signal.h in virnetsocket.c (Daniel P. Berrange),<br/>
@@ -14263,7 +14263,7 @@ Security:<br/>
       Factor qemudMonitorSend() out of qemudMonitorCommandExtra() (Mark
       McLoughlin), Fix cgroup compile warnings (Daniel P. Berrange),
       Fix misc build problems due to new drivers (Daniel P. Berrange),
-      Fix wierd build problems due to autopoint overwriting gnulib m4
+      Fix weird build problems due to autopoint overwriting gnulib m4
       (Daniel P. Berrange), Makefile.cfg: Rename to... (Jim Meyering),
       make .gnulib a submodule (Jim Meyering), make "make syntax-check"
       consistent with "git diff --check" (Jim Meyering), Minor qemu

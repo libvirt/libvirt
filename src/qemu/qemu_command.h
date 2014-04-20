@@ -39,7 +39,7 @@
 # define QEMU_FSDEV_HOST_PREFIX "fsdev-"
 
 /* These are only defaults, they can be changed now in qemu.conf and
- * explicitely specified port is checked against these two (makes
+ * explicitly specified port is checked against these two (makes
  * sense to limit the values).
  *
  * This limitation is mentioned in qemu.conf, so bear in mind that the

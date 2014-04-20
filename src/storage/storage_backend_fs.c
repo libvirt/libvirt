@@ -1196,7 +1196,7 @@ virStorageBackendFileSystemVolRefresh(virConnectPtr conn,
     if (ret < 0)
         return ret;
 
-    /* Load any secrets if posible */
+    /* Load any secrets if possible */
     if (vol->target.encryption &&
         vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_QCOW &&
         vol->target.encryption->nsecrets == 0) {

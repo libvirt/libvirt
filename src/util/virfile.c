@@ -545,7 +545,7 @@ int virFileUpdatePerm(const char *path,
 
 # if HAVE_DECL_LOOP_CTL_GET_FREE
 
-/* virFileLoopDeviceOpenLoopCtl() returns -1 when a real failure has occured
+/* virFileLoopDeviceOpenLoopCtl() returns -1 when a real failure has occurred
  * while in the process of allocating or opening the loop device.  On success
  * we return 0 and modify the fd to the appropriate file descriptor.
  * If /dev/loop-control does not exist, we return 0 and do not set fd. */

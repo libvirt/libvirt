@@ -392,7 +392,7 @@ vmwareVmxPath(virDomainDefPtr vmdef, char **vmxPath)
     /*
      * Build VMX URL. Use the source of the first file-based harddisk
      * to deduce the path for the VMX file. Don't just use the
-     * first disk, because it may be CDROM disk and ISO images are normaly not
+     * first disk, because it may be CDROM disk and ISO images are normally not
      * located in the virtual machine's directory. This approach
      * isn't perfect but should work in the majority of cases.
      */

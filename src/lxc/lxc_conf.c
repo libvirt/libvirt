@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010, 2014 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_conf.c: config functions for managing linux containers
@@ -242,7 +242,7 @@ virLXCLoadDriverConfig(virLXCDriverConfigPtr cfg,
     virConfPtr conf;
     virConfValuePtr p;
 
-    /* Avoid error from non-existant or unreadable file. */
+    /* Avoid error from non-existent or unreadable file. */
     if (access(filename, R_OK) == -1)
         goto done;
     conf = virConfReadFile(filename, 0);

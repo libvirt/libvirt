@@ -1337,7 +1337,7 @@ static int umlGetProcessInfo(unsigned long long *cpuTime, pid_t pid)
     /* We got jiffies
      * We want nanoseconds
      * _SC_CLK_TCK is jiffies per second
-     * So calulate thus....
+     * So calculate thus....
      */
     *cpuTime = 1000ull * 1000ull * 1000ull * (usertime + systime) / (unsigned long long)sysconf(_SC_CLK_TCK);
 
