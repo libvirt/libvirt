@@ -1,7 +1,7 @@
 /*
  * nodeinfo.c: Helper routines for OS specific node information
  *
- * Copyright (C) 2006-2008, 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -440,6 +440,7 @@ virNodeParseNode(const char *node,
     int siblings;
     unsigned int cpu;
     int online;
+    int direrr;
 
     *threads = 0;
     *cores = 0;
@@ -452,8 +453,7 @@ virNodeParseNode(const char *node,
 
     /* enumerate sockets in the node */
     CPU_ZERO(&sock_map);
-    errno = 0;
-    while ((cpudirent = readdir(cpudir))) {
+    while ((direrr = virDirRead(cpudir, &cpudirent, node)) > 0) {
         if (sscanf(cpudirent->d_name, "cpu%u", &cpu) != 1)
             continue;
 
@@ -470,14 +470,10 @@ virNodeParseNode(const char *node,
 
         if (sock > sock_max)
             sock_max = sock;
-
-        errno = 0;
     }
 
-    if (errno) {
-        virReportSystemError(errno, _("problem reading %s"), node);
+    if (direrr < 0)
         goto cleanup;
-    }
 
     sock_max++;
 
@@ -490,8 +486,7 @@ virNodeParseNode(const char *node,
 
     /* iterate over all CPU's in the node */
     rewinddir(cpudir);
-    errno = 0;
-    while ((cpudirent = readdir(cpudir))) {
+    while ((direrr = virDirRead(cpudir, &cpudirent, node)) > 0) {
         if (sscanf(cpudirent->d_name, "cpu%u", &cpu) != 1)
             continue;
 
@@ -530,14 +525,10 @@ virNodeParseNode(const char *node,
 
         if (siblings > *threads)
             *threads = siblings;
-
-        errno = 0;
     }
 
-    if (errno) {
-        virReportSystemError(errno, _("problem reading %s"), node);
+    if (direrr < 0)
         goto cleanup;
-    }
 
     /* finalize the returned data */
     *sockets = CPU_COUNT(&sock_map);
@@ -576,6 +567,7 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
     int ret = -1;
     char *sysfs_nodedir = NULL;
     char *sysfs_cpudir = NULL;
+    int direrr;
 
     /* Start with parsing CPU clock speed from /proc/cpuinfo */
     while (fgets(line, sizeof(line), cpuinfo) != NULL) {
@@ -672,8 +664,7 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
         goto fallback;
     }
 
-    errno = 0;
-    while ((nodedirent = readdir(nodedir))) {
+    while ((direrr = virDirRead(nodedir, &nodedirent, sysfs_nodedir)) > 0) {
         if (sscanf(nodedirent->d_name, "node%u", &node) != 1)
             continue;
 
@@ -699,14 +690,10 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
 
         if (threads > nodeinfo->threads)
             nodeinfo->threads = threads;
-
-        errno = 0;
     }
 
-    if (errno) {
-        virReportSystemError(errno, _("problem reading %s"), sysfs_nodedir);
+    if (direrr < 0)
         goto cleanup;
-    }
 
     if (nodeinfo->cpus && nodeinfo->nodes)
         goto done;
