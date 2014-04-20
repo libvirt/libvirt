@@ -2391,6 +2391,39 @@ virDirCreate(const char *path ATTRIBUTE_UNUSED,
 }
 #endif /* WIN32 */
 
+/**
+ * virDirRead:
+ * @dirp: directory to read
+ * @end: output one entry
+ * @name: if non-NULL, the name related to @dirp for use in error reporting
+ *
+ * Wrapper around readdir. Typical usage:
+ *   struct dirent ent;
+ *   int value;
+ *   DIR *dir;
+ *   if (!(dir = opendir(name)))
+ *       goto error;
+ *   while ((value = virDirRead(dir, &ent, name)) > 0)
+ *       process ent;
+ *   if (value < 0)
+ *       goto error;
+ *
+ * Returns -1 on error, with error already reported if @name was
+ * supplied.  On success, returns 1 for entry read, 0 for end-of-dir.
+ */
+int virDirRead(DIR *dirp, struct dirent **ent, const char *name)
+{
+    errno = 0;
+    *ent = readdir(dirp);
+    if (!*ent && errno) {
+        if (name)
+            virReportSystemError(errno, _("Unable to read directory '%s'"),
+                                 name);
+        return -1;
+    }
+    return !!*ent;
+}
+
 static int
 virFileMakePathHelper(char *path, mode_t mode)
 {

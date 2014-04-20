@@ -1222,6 +1222,7 @@ safewrite;
 safezero;
 virBuildPathInternal;
 virDirCreate;
+virDirRead;
 virFileAbsPath;
 virFileAccessibleAs;
 virFileActivateDirOverride;

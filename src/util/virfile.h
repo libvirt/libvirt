@@ -27,6 +27,7 @@
 # define __VIR_FILE_H_
 
 # include <stdio.h>
+# include <dirent.h>
 
 # include "internal.h"
 # include "virstoragefile.h"
@@ -225,6 +226,9 @@ enum {
 };
 int virDirCreate(const char *path, mode_t mode, uid_t uid, gid_t gid,
                  unsigned int flags) ATTRIBUTE_RETURN_CHECK;
+int virDirRead(DIR *dirp, struct dirent **ent, const char *dirname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
 int virFileMakePath(const char *path) ATTRIBUTE_RETURN_CHECK;
 int virFileMakePathWithMode(const char *path,
                             mode_t mode) ATTRIBUTE_RETURN_CHECK;
