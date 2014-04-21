@@ -79,5 +79,37 @@ in libvirt bhyve driver is yet to be implemented).
 &lt;/domain&gt;
 </pre>
 
+
+<h2><a name="usage">Guest usage / management</a></h2>
+
+<h3><a name="console">Connecting to a guest console</a></h3>
+
+<p>
+Guest console connection is supported through the <code>nmdm</code> device. It could be enabled by adding
+the following to the domain XML (<span class="since">Since 1.2.4</span>):
+</p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;serial type="nmdm"&gt;
+      &lt;source master="/dev/nmdm0A" slave="/dev/nmdm0B"/&gt;
+    &lt;/serial&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
+<p>
+Then <code>virsh console</code> command can be used to connect to the text console
+of a guest.</p>
+
+<p><b>NB:</b> Some versions of bhyve have a bug that prevents guests from booting
+until the console is opened by a client. This bug was fixed in FreeBSD
+<a href="http://svnweb.freebsd.org/changeset/base/262884">r262884</a>. If
+an older version is used, one either has to open a console manually with <code>virsh console</code>
+to let a guest boot or start a guest using:</p>
+
+<pre>start --console domname</pre>
+
+
   </body>
 </html>

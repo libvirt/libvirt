@@ -4782,6 +4782,35 @@ qemu-kvm -net nic,model=? /dev/null
   &lt;/devices&gt;
   ...</pre>
 
+    <h6><a name="elementsNmdm">Nmdm device</a></h6>
+
+    <p>
+      The nmdm device driver, available on FreeBSD, provides two
+      tty devices connected together by a virual null modem cable.
+      <span class="since">Since 1.2.4</span>
+    </p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;serial type="nmdm"&gt;
+      &lt;source master="/dev/nmdm0A" slave="/dev/nmdm0B"/&gt;
+    &lt;/serial&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
+    <p>
+      The <code>source</code> element has these attributes:
+    </p>
+
+    <dl>
+      <dt><code>master</code></dt>
+      <dd>Master device of the pair, that is passed to the hypervisor.</dd>
+
+      <dt><code>slave</code></dt>
+      <dd>Slave device of the pair, that is passed to the clients for connection
+      to the guest console.</dd>
+    </dl>
 
     <h4><a name="elementsSound">Sound devices</a></h4>
 
