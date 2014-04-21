@@ -472,17 +472,23 @@ bhyveDomainDefineXML(virConnectPtr conn, const char *xml)
     def = NULL;
     vm->persistent = 1;
 
+    if (virDomainSaveConfig(BHYVE_CONFIG_DIR,
+                            vm->newDef ? vm->newDef : vm->def) < 0) {
+        virDomainObjListRemove(privconn->domains, vm);
+        vm = NULL;
+        goto cleanup;
+    }
+
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom)
         dom->id = vm->def->id;
 
-    if (virDomainSaveConfig(BHYVE_CONFIG_DIR, vm->def) < 0)
-        goto cleanup;
-
  cleanup:
     virObjectUnref(caps);
     virDomainDefFree(def);
-    virObjectUnlock(vm);
+    virDomainDefFree(oldDef);
+    if (vm)
+        virObjectUnlock(vm);
 
     return dom;
 }
