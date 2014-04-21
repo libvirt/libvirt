@@ -269,6 +269,13 @@ bhyveDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     if (virDomainGetInfoEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
 
+    if (virDomainObjIsActive(vm)) {
+        if (virBhyveGetDomainTotalCpuStats(vm, &(info->cpuTime)) < 0)
+            goto cleanup;
+    } else {
+        info->cpuTime = 0;
+    }
+
     info->state = virDomainObjGetState(vm, NULL);
     info->maxMem = vm->def->mem.max_balloon;
     info->nrVirtCpu = vm->def->vcpus;

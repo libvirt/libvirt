@@ -34,6 +34,9 @@ int virBhyveProcessStop(bhyveConnPtr driver,
                         virDomainObjPtr vm,
                         virDomainShutoffReason reason);
 
+int virBhyveGetDomainTotalCpuStats(virDomainObjPtr vm,
+                                   unsigned long long *cpustats);
+
 typedef enum {
     VIR_BHYVE_PROCESS_START_AUTODESTROY = 1 << 0,
 } bhyveProcessStartFlags;

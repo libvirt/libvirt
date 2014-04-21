@@ -2684,6 +2684,13 @@ AC_CHECK_DECLS([cpuset_getaffinity],
                 #include <sys/cpuset.h>
                ])
 
+# Check for BSD kvm (kernel memory interface)
+if test $with_freebsd = yes; then
+     AC_CHECK_LIB([kvm], [kvm_getprocs], [],
+                  [AC_MSG_ERROR([BSD kernel memory interface library is required to build on FreeBSD])]
+                 )
+fi
+
 # Check if we need to look for ifconfig
 if test "$want_ifconfig" = "yes"; then
      AC_PATH_PROG([IFCONFIG_PATH], [ifconfig])
