@@ -2401,7 +2401,7 @@ virDirCreate(const char *path ATTRIBUTE_UNUSED,
 int virDirRead(DIR *dirp, struct dirent **ent, const char *name)
 {
     errno = 0;
-    *ent = readdir(dirp);
+    *ent = readdir(dirp); /* exempt from syntax-check */
     if (!*ent && errno) {
         if (name)
             virReportSystemError(errno, _("Unable to read directory '%s'"),

@@ -421,6 +421,12 @@ sc_prohibit_gethostname:
 	halt='use virGetHostname, not gethostname'			\
 	  $(_sc_search_regexp)
 
+sc_prohibit_readdir:
+	@prohibit='\breaddir *\('					\
+	exclude='exempt from syntax-check'				\
+	halt='use virDirRead, not readdir'				\
+	  $(_sc_search_regexp)
+
 sc_prohibit_gettext_noop:
 	@prohibit='gettext_noop *\('					\
 	halt='use N_, not gettext_noop'					\
