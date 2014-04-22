@@ -10966,26 +10966,6 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
     goto cleanup;
 }
 
-/*
- * Return the vcpupin related with the vcpu id on SUCCESS, or
- * NULL on failure.
- */
-virDomainVcpuPinDefPtr
-virDomainLookupVcpuPin(virDomainDefPtr def,
-                       int vcpuid)
-{
-    size_t i;
-
-    if (!def->cputune.vcpupin)
-        return NULL;
-
-    for (i = 0; i < def->cputune.nvcpupin; i++) {
-        if (def->cputune.vcpupin[i]->vcpuid == vcpuid)
-            return def->cputune.vcpupin[i];
-    }
-
-    return NULL;
-}
 
 int
 virDomainDefMaybeAddController(virDomainDefPtr def,

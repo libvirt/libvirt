@@ -2671,9 +2671,6 @@ int virDomainObjListExport(virDomainObjListPtr doms,
                            virDomainObjListFilter filter,
                            unsigned int flags);
 
-virDomainVcpuPinDefPtr virDomainLookupVcpuPin(virDomainDefPtr def,
-                                              int vcpuid);
-
 int
 virDomainDefMaybeAddController(virDomainDefPtr def,
                                int type,

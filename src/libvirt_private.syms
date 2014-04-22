@@ -292,7 +292,6 @@ virDomainLifecycleTypeToString;
 virDomainLiveConfigHelperMethod;
 virDomainLockFailureTypeFromString;
 virDomainLockFailureTypeToString;
-virDomainLookupVcpuPin;
 virDomainMemballoonModelTypeFromString;
 virDomainMemballoonModelTypeToString;
 virDomainMemDumpTypeFromString;

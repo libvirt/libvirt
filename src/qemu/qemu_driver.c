@@ -4120,8 +4120,6 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
         }
     } else {
         for (i = oldvcpus - 1; i >= nvcpus; i--) {
-            virDomainVcpuPinDefPtr vcpupin = NULL;
-
             if (priv->cgroup) {
                 if (virCgroupNewVcpu(priv->cgroup, i, false, &cgroup_vcpu) < 0)
                     goto cleanup;
@@ -4132,9 +4130,7 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
             }
 
             /* Free vcpupin setting */
-            if ((vcpupin = virDomainLookupVcpuPin(vm->def, i))) {
-                VIR_FREE(vcpupin);
-            }
+            ignore_value(virDomainVcpuPinDel(vm->def, i));
         }
     }
 
