@@ -14510,27 +14510,20 @@ virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
     return -1;
 }
 
-int
+void
 virDomainVcpuPinDel(virDomainDefPtr def, int vcpu)
 {
     int n;
     virDomainVcpuPinDefPtr *vcpupin_list = def->cputune.vcpupin;
-
-    /* No vcpupin exists yet */
-    if (!def->cputune.nvcpupin) {
-        return 0;
-    }
 
     for (n = 0; n < def->cputune.nvcpupin; n++) {
         if (vcpupin_list[n]->vcpuid == vcpu) {
             virBitmapFree(vcpupin_list[n]->cpumask);
             VIR_FREE(vcpupin_list[n]);
             VIR_DELETE_ELEMENT(vcpupin_list, n, def->cputune.nvcpupin);
-            break;
+            return;
         }
     }
-
-    return 0;
 }
 
 int

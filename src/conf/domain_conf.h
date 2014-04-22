@@ -2300,7 +2300,7 @@ int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
                         int maplen,
                         int vcpu);
 
-int virDomainVcpuPinDel(virDomainDefPtr def, int vcpu);
+void virDomainVcpuPinDel(virDomainDefPtr def, int vcpu);
 
 int virDomainEmulatorPinAdd(virDomainDefPtr def,
                               unsigned char *cpumap,

@@ -4130,7 +4130,7 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
             }
 
             /* Free vcpupin setting */
-            ignore_value(virDomainVcpuPinDel(vm->def, i));
+            virDomainVcpuPinDel(vm->def, i);
         }
     }
 
@@ -4423,12 +4423,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
         }
 
         if (doReset) {
-            if (virDomainVcpuPinDel(vm->def, vcpu) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("failed to delete vcpupin xml of "
-                                 "a running domain"));
-                goto cleanup;
-            }
+            virDomainVcpuPinDel(vm->def, vcpu);
         } else {
             if (vm->def->cputune.vcpupin)
                 virDomainVcpuPinDefArrayFree(vm->def->cputune.vcpupin, vm->def->cputune.nvcpupin);
@@ -4448,12 +4443,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
 
         if (doReset) {
-            if (virDomainVcpuPinDel(persistentDef, vcpu) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("failed to delete vcpupin xml of "
-                                 "a persistent domain"));
-                goto cleanup;
-            }
+            virDomainVcpuPinDel(persistentDef, vcpu);
         } else {
             if (!persistentDef->cputune.vcpupin) {
                 if (VIR_ALLOC(persistentDef->cputune.vcpupin) < 0)

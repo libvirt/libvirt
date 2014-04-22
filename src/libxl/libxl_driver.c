@@ -1945,12 +1945,7 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
 
     /* full bitmap means reset the settings (if any). */
     if (virBitmapIsAllSet(pcpumap)) {
-        if (virDomainVcpuPinDel(targetDef, vcpu) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to delete vcpupin xml for vcpu '%d'"),
-                           vcpu);
-            goto endjob;
-        }
+        virDomainVcpuPinDel(targetDef, vcpu);
         goto done;
     }
 
