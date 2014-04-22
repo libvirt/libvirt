@@ -1333,6 +1333,14 @@ virStorageBackend virStorageBackendNetFileSystem = {
 };
 
 
+typedef struct _virStorageFileBackendFsPriv virStorageFileBackendFsPriv;
+typedef virStorageFileBackendFsPriv *virStorageFileBackendFsPrivPtr;
+
+struct _virStorageFileBackendFsPriv {
+    char *canonpath; /* unique file identifier (canonical path) */
+};
+
+
 static void
 virStorageFileBackendFileDeinit(virStorageSourcePtr src)
 {
@@ -1340,15 +1348,26 @@ virStorageFileBackendFileDeinit(virStorageSourcePtr src)
               virStorageTypeToString(virStorageSourceGetActualType(src)),
               src->path);
 
+    virStorageFileBackendFsPrivPtr priv = src->drv->priv;
+
+    VIR_FREE(priv->canonpath);
+    VIR_FREE(priv);
 }
 
 
 static int
 virStorageFileBackendFileInit(virStorageSourcePtr src)
 {
+    virStorageFileBackendFsPrivPtr priv = NULL;
+
     VIR_DEBUG("initializing FS storage file %p (%s:%s)", src,
               virStorageTypeToString(virStorageSourceGetActualType(src)),
               src->path);
+
+    if (VIR_ALLOC(priv) < 0)
+        return -1;
+
+    src->drv->priv = priv;
 
     return 0;
 }
@@ -1397,6 +1416,23 @@ virStorageFileBackendFileReadHeader(virStorageSourcePtr src,
 }
 
 
+static const char *
+virStorageFileBackendFileGetUniqueIdentifier(virStorageSourcePtr src)
+{
+    virStorageFileBackendFsPrivPtr priv = src->drv->priv;
+
+    if (!priv->canonpath) {
+        if (!(priv->canonpath = canonicalize_file_name(src->path))) {
+            virReportSystemError(errno, _("can't canonicalize path '%s'"),
+                                 src->path);
+            return NULL;
+        }
+    }
+
+    return priv->canonpath;
+}
+
+
 virStorageFileBackend virStorageFileBackendFile = {
     .type = VIR_STORAGE_TYPE_FILE,
 
@@ -1406,6 +1442,8 @@ virStorageFileBackend virStorageFileBackendFile = {
     .storageFileUnlink = virStorageFileBackendFileUnlink,
     .storageFileStat = virStorageFileBackendFileStat,
     .storageFileReadHeader = virStorageFileBackendFileReadHeader,
+
+    .storageFileGetUniqueIdentifier = virStorageFileBackendFileGetUniqueIdentifier,
 };
 
 
@@ -1417,7 +1455,18 @@ virStorageFileBackend virStorageFileBackendBlock = {
 
     .storageFileStat = virStorageFileBackendFileStat,
     .storageFileReadHeader = virStorageFileBackendFileReadHeader,
+
+    .storageFileGetUniqueIdentifier = virStorageFileBackendFileGetUniqueIdentifier,
 };
 
+
+virStorageFileBackend virStorageFileBackendDir = {
+    .type = VIR_STORAGE_TYPE_DIR,
+
+    .backendInit = virStorageFileBackendFileInit,
+    .backendDeinit = virStorageFileBackendFileDeinit,
+
+    .storageFileGetUniqueIdentifier = virStorageFileBackendFileGetUniqueIdentifier,
+};
 
 #endif /* WITH_STORAGE_FS */

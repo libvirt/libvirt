@@ -195,6 +195,8 @@ typedef ssize_t
                                    ssize_t max_len,
                                    char **buf);
 
+typedef const char *
+(*virStorageFileBackendGetUniqueIdentifier)(virStorageSourcePtr src);
 
 virStorageFileBackendPtr virStorageFileBackendForType(int type, int protocol);
 
@@ -211,6 +213,7 @@ struct _virStorageFileBackend {
     virStorageFileBackendInit backendInit;
     virStorageFileBackendDeinit backendDeinit;
     virStorageFileBackendReadHeader storageFileReadHeader;
+    virStorageFileBackendGetUniqueIdentifier storageFileGetUniqueIdentifier;
 
     /* The following group of callbacks is expected to set errno
      * and return -1 on error. No libvirt error shall be reported */

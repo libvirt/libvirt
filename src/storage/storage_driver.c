@@ -2987,3 +2987,33 @@ virStorageFileReadHeader(virStorageSourcePtr src,
 
     return ret;
 }
+
+
+/*
+ * virStorageFileGetUniqueIdentifier: Get a unique string describing the volume
+ *
+ * @src: file structure pointing to the file
+ *
+ * Returns a string uniquely describing a single volume (canonical path).
+ * The string shall not be freed and is valid until the storage file is
+ * deinitialized. Returns NULL on error and sets a libvirt error code */
+const char *
+virStorageFileGetUniqueIdentifier(virStorageSourcePtr src)
+{
+    if (!virStorageFileIsInitialized(src)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("storage file backend not initialized"));
+        return NULL;
+    }
+
+    if (!src->drv->backend->storageFileGetUniqueIdentifier) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unique storage file identifier not implemented for "
+                          "storage type %s (protocol: %s)'"),
+                       virStorageTypeToString(src->type),
+                       virStorageNetProtocolTypeToString(src->protocol));
+        return NULL;
+    }
+
+    return src->drv->backend->storageFileGetUniqueIdentifier(src);
+}
