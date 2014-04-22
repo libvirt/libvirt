@@ -4355,7 +4355,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     if (vcpu > (priv->nvcpupids-1)) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("vcpu number out of range %d > %d"),
-                       vcpu, priv->nvcpupids);
+                       vcpu, priv->nvcpupids - 1);
         goto cleanup;
     }
 
