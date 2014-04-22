@@ -784,7 +784,6 @@ testOpenDefault(virConnectPtr conn)
         goto error;
     }
     netobj->active = 1;
-    netobj->persistent = 1;
     virNetworkObjUnlock(netobj);
 
     if (!(interfacedef = virInterfaceDefParseString(defaultInterfaceXML)))
@@ -1155,7 +1154,6 @@ testParseNetworks(testConnPtr privconn,
             goto error;
         }
 
-        obj->persistent = 1;
         obj->active = 1;
         virNetworkObjUnlock(obj);
     }
@@ -3711,7 +3709,7 @@ static virNetworkPtr testNetworkCreateXML(virConnectPtr conn, const char *xml)
     if ((def = virNetworkDefParseString(xml)) == NULL)
         goto cleanup;
 
-    if (!(net = virNetworkAssignDef(&privconn->networks, def, false)))
+    if (!(net = virNetworkAssignDef(&privconn->networks, def, true)))
         goto cleanup;
     def = NULL;
     net->active = 1;
@@ -3748,7 +3746,6 @@ virNetworkPtr testNetworkDefineXML(virConnectPtr conn, const char *xml)
     if (!(net = virNetworkAssignDef(&privconn->networks, def, false)))
         goto cleanup;
     def = NULL;
-    net->persistent = 1;
 
     event = virNetworkEventLifecycleNew(net->def->name, net->def->uuid,
                                         VIR_NETWORK_EVENT_DEFINED,

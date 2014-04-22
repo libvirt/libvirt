@@ -2667,10 +2667,11 @@ static virNetworkPtr networkCreateXML(virConnectPtr conn, const char *xml)
     if (networkValidate(driver, def, true) < 0)
        goto cleanup;
 
-    /* NB: "live" is false because this transient network hasn't yet
-     * been started
+    /* NB: even though this transient network hasn't yet been started,
+     * we assign the def with live = true in anticipation that it will
+     * be started momentarily.
      */
-    if (!(network = virNetworkAssignDef(&driver->networks, def, false)))
+    if (!(network = virNetworkAssignDef(&driver->networks, def, true)))
         goto cleanup;
     def = NULL;
 
@@ -2719,19 +2720,10 @@ static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml)
     if (networkValidate(driver, def, false) < 0)
        goto cleanup;
 
-    if ((network = virNetworkFindByName(&driver->networks, def->name))) {
-        network->persistent = 1;
-        if (virNetworkObjAssignDef(network, def, false) < 0)
-            goto cleanup;
-    } else {
-        if (!(network = virNetworkAssignDef(&driver->networks, def, false)))
-            goto cleanup;
-    }
+    if (!(network = virNetworkAssignDef(&driver->networks, def, false)))
+       goto cleanup;
 
-    /* define makes the network persistent - always */
-    network->persistent = 1;
-
-    /* def was asigned */
+    /* def was assigned to network object */
     freeDef = false;
 
     if (virNetworkSaveConfig(driver->networkConfigDir, def) < 0) {
@@ -2740,9 +2732,11 @@ static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml)
             network = NULL;
             goto cleanup;
         }
-        network->persistent = 0;
-        virNetworkDefFree(network->newDef);
-        network->newDef = NULL;
+        /* if network was active already, just undo new persistent
+         * definition by making it transient.
+         * XXX - this isn't necessarily the correct thing to do.
+         */
+        virNetworkObjAssignDef(network, NULL, false);
         goto cleanup;
     }
 
@@ -2788,16 +2782,12 @@ networkUndefine(virNetworkPtr net)
     if (virNetworkObjIsActive(network))
         active = true;
 
+    /* remove autostart link */
     if (virNetworkDeleteConfig(driver->networkConfigDir,
                                driver->networkAutostartDir,
                                network) < 0)
         goto cleanup;
-
-    /* make the network transient */
-    network->persistent = 0;
     network->autostart = 0;
-    virNetworkDefFree(network->newDef);
-    network->newDef = NULL;
 
     event = virNetworkEventLifecycleNew(network->def->name,
                                         network->def->uuid,
@@ -2811,6 +2801,12 @@ networkUndefine(virNetworkPtr net)
             goto cleanup;
         }
         network = NULL;
+    } else {
+
+        /* if the network still exists, it was active, and we need to make
+         * it transient (by deleting the persistent def)
+         */
+        virNetworkObjAssignDef(network, NULL, false);
     }
 
     ret = 0;

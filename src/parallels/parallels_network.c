@@ -231,7 +231,6 @@ parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
         goto cleanup;
     }
     net->active = 1;
-    net->persistent = 1;
     net->autostart = 1;
     virNetworkObjUnlock(net);
     return net;
@@ -267,7 +266,6 @@ parallelsAddRoutedNetwork(parallelsConnPtr privconn)
         goto cleanup;
     }
     net->active = 1;
-    net->persistent = 1;
     net->autostart = 1;
     virNetworkObjUnlock(net);
 

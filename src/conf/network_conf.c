@@ -302,46 +302,62 @@ void virNetworkObjListFree(virNetworkObjListPtr nets)
 /*
  * virNetworkObjAssignDef:
  * @network: the network object to update
- * @def: the new NetworkDef (will be consumed by this function iff successful)
+ * @def: the new NetworkDef (will be consumed by this function)
  * @live: is this new def the "live" version, or the "persistent" version
  *
- * Replace the appropriate copy of the given network's NetworkDef
+ * Replace the appropriate copy of the given network's def or newDef
  * with def. Use "live" and current state of the network to determine
- * which to replace.
+ * which to replace and what to do with the old defs. When a non-live
+ * def is set, indicate that the network is now persistent.
  *
- * Returns 0 on success, -1 on failure.
+ * NB: a persistent network can be made transient by calling with:
+ * virNetworkObjAssignDef(network, NULL, false) (i.e. set the
+ * persistent def to NULL)
+ *
  */
-int
+void
 virNetworkObjAssignDef(virNetworkObjPtr network,
                        virNetworkDefPtr def,
                        bool live)
 {
-    if (virNetworkObjIsActive(network)) {
-        if (live) {
+    if (live) {
+        /* before setting new live def, save (into newDef) any
+         * existing persistent (!live) def to be restored when the
+         * network is destroyed, unless there is one already saved.
+         */
+        if (network->persistent && !network->newDef)
+            network->newDef = network->def;
+        else
             virNetworkDefFree(network->def);
-            network->def = def;
-        } else if (network->persistent) {
-            /* save current configuration to be restored on network shutdown */
-            virNetworkDefFree(network->newDef);
-            network->newDef = def;
-        } else {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("cannot save persistent config of transient "
-                             "network '%s'"), network->def->name);
-            return -1;
-        }
-    } else if (!live) {
-        virNetworkDefFree(network->newDef);
-        virNetworkDefFree(network->def);
-        network->newDef = NULL;
         network->def = def;
-    } else {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("cannot save live config of inactive "
-                         "network '%s'"), network->def->name);
-        return -1;
+    } else { /* !live */
+        virNetworkDefFree(network->newDef);
+        if (virNetworkObjIsActive(network)) {
+            /* save new configuration to be restored on network
+             * shutdown, leaving current live def alone
+             */
+            network->newDef = def;
+        } else { /* !live and !active */
+            if (network->def && !network->persistent) {
+                /* network isn't (yet) marked active or persistent,
+                 * but already has a "live" def set. This means we are
+                 * currently setting the persistent def as a part of
+                 * the process of starting the network, so we need to
+                 * preserve the "not yet live" def in network->def.
+                 */
+                network->newDef = def;
+            } else {
+                /* either there is no live def set, or this network
+                 * was already set as persistent, so the proper thing
+                 * is to overwrite network->def.
+                 */
+                network->newDef = NULL;
+                virNetworkDefFree(network->def);
+                network->def = def;
+            }
+        }
+        network->persistent = !!def;
     }
-    return 0;
 }
 
 /*
@@ -365,10 +381,7 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
     virNetworkObjPtr network;
 
     if ((network = virNetworkFindByName(nets, def->name))) {
-        if (virNetworkObjAssignDef(network, def, live) < 0) {
-            virNetworkObjUnlock(network);
-            return NULL;
-        }
+        virNetworkObjAssignDef(network, def, live);
         return network;
     }
 
@@ -392,8 +405,9 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
     ignore_value(virBitmapSetBit(network->class_id, 2));
 
     network->def = def;
-
+    network->persistent = !live;
     return network;
+
  error:
     virNetworkObjUnlock(network);
     virNetworkObjFree(network);
@@ -3118,7 +3132,6 @@ virNetworkObjPtr virNetworkLoadConfig(virNetworkObjListPtr nets,
         goto error;
 
     net->autostart = autostart;
-    net->persistent = 1;
 
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);

@@ -335,9 +335,9 @@ typedef bool (*virNetworkObjListFilter)(virConnectPtr conn,
 virNetworkObjPtr virNetworkAssignDef(virNetworkObjListPtr nets,
                                      virNetworkDefPtr def,
                                      bool live);
-int virNetworkObjAssignDef(virNetworkObjPtr network,
-                           virNetworkDefPtr def,
-                           bool live);
+void virNetworkObjAssignDef(virNetworkObjPtr network,
+                            virNetworkDefPtr def,
+                            bool live);
 int virNetworkObjSetDefTransient(virNetworkObjPtr network, bool live);
 void virNetworkObjUnsetDefTransient(virNetworkObjPtr network);
 virNetworkDefPtr virNetworkObjGetPersistentDef(virNetworkObjPtr network);
