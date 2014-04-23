@@ -8453,7 +8453,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                            cont->model == -1 &&
                            !qemuDomainMachineIsQ35(def) &&
                            (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI) ||
-                            def->os.arch == VIR_ARCH_PPC64)) {
+                            (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI) &&
+                             def->os.arch == VIR_ARCH_PPC64))) {
                     if (usblegacy) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                        _("Multiple legacy USB controllers are "

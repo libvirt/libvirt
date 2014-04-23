@@ -3,5 +3,5 @@ LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
 -nographic -nodefconfig -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/test-monitor,server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline -no-acpi -boot c \
--usb -chardev pty,id=charserial0 \
+-device pci-ohci,id=usb,bus=pci,addr=0x1 -chardev pty,id=charserial0 \
 -device spapr-vty,chardev=charserial0,reg=0x30000000
