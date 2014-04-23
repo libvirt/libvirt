@@ -23,6 +23,7 @@
 # define __BHYVE_UTILS_H__
 
 # include "driver.h"
+# include "domain_event.h"
 # include "domain_conf.h"
 # include "configmake.h"
 # include "virthread.h"
@@ -40,6 +41,8 @@ struct _bhyveConn {
     virDomainXMLOptionPtr xmlopt;
     char *pidfile;
     virSysinfoDefPtr hostsysinfo;
+
+    virObjectEventStatePtr domainEventState;
 
     virCloseCallbacksPtr closeCallbacks;
 };

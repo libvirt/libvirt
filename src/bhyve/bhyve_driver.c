@@ -36,6 +36,7 @@
 #include "network_conf.h"
 #include "interface_conf.h"
 #include "domain_audit.h"
+#include "domain_event.h"
 #include "domain_conf.h"
 #include "snapshot_conf.h"
 #include "fdstream.h"
@@ -486,6 +487,7 @@ bhyveDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainDefPtr def = NULL;
     virDomainDefPtr oldDef = NULL;
     virDomainObjPtr vm = NULL;
+    virObjectEventPtr event = NULL;
     virCapsPtr caps = NULL;
 
     caps = bhyveDriverGetCapabilities(privconn);
@@ -514,6 +516,12 @@ bhyveDomainDefineXML(virConnectPtr conn, const char *xml)
         goto cleanup;
     }
 
+    event = virDomainEventLifecycleNewFromObj(vm,
+                                              VIR_DOMAIN_EVENT_DEFINED,
+                                              !oldDef ?
+                                              VIR_DOMAIN_EVENT_DEFINED_ADDED :
+                                              VIR_DOMAIN_EVENT_DEFINED_UPDATED);
+
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom)
         dom->id = vm->def->id;
@@ -524,6 +532,8 @@ bhyveDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainDefFree(oldDef);
     if (vm)
         virObjectUnlock(vm);
+    if (event)
+        virObjectEventStateQueue(privconn->domainEventState, event);
 
     return dom;
 }
@@ -532,6 +542,7 @@ static int
 bhyveDomainUndefine(virDomainPtr domain)
 {
     bhyveConnPtr privconn = domain->conn->privateData;
+    virObjectEventPtr event = NULL;
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -552,6 +563,10 @@ bhyveDomainUndefine(virDomainPtr domain)
                               vm) < 0)
         goto cleanup;
 
+    event = virDomainEventLifecycleNewFromObj(vm,
+                                              VIR_DOMAIN_EVENT_UNDEFINED,
+                                              VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
+
     if (virDomainObjIsActive(vm)) {
         vm->persistent = 0;
     } else {
@@ -562,7 +577,10 @@ bhyveDomainUndefine(virDomainPtr domain)
     ret = 0;
 
  cleanup:
-    virObjectUnlock(vm);
+    if (vm)
+        virObjectUnlock(vm);
+    if (event)
+        virObjectEventStateQueue(privconn->domainEventState, event);
     return ret;
 }
 
@@ -795,6 +813,7 @@ bhyveDomainCreateWithFlags(virDomainPtr dom,
 {
     bhyveConnPtr privconn = dom->conn->privateData;
     virDomainObjPtr vm;
+    virObjectEventPtr event = NULL;
     unsigned int start_flags = 0;
     int ret = -1;
 
@@ -819,8 +838,15 @@ bhyveDomainCreateWithFlags(virDomainPtr dom,
                                VIR_DOMAIN_RUNNING_BOOTED,
                                start_flags);
 
+    if (ret == 0)
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_STARTED,
+                                                  VIR_DOMAIN_EVENT_STARTED_BOOTED);
+
  cleanup:
     virObjectUnlock(vm);
+    if (event)
+        virObjectEventStateQueue(privconn->domainEventState, event);
     return ret;
 }
 
@@ -839,6 +865,7 @@ bhyveDomainCreateXML(virConnectPtr conn,
     virDomainPtr dom = NULL;
     virDomainDefPtr def = NULL;
     virDomainObjPtr vm = NULL;
+    virObjectEventPtr event = NULL;
     virCapsPtr caps = NULL;
     unsigned int start_flags = 0;
 
@@ -876,6 +903,10 @@ bhyveDomainCreateXML(virConnectPtr conn,
         goto cleanup;
     }
 
+    event = virDomainEventLifecycleNewFromObj(vm,
+                                              VIR_DOMAIN_EVENT_STARTED,
+                                              VIR_DOMAIN_EVENT_STARTED_BOOTED);
+
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom)
         dom->id = vm->def->id;
@@ -885,6 +916,8 @@ bhyveDomainCreateXML(virConnectPtr conn,
     virDomainDefFree(def);
     if (vm)
         virObjectUnlock(vm);
+    if (event)
+        virObjectEventStateQueue(privconn->domainEventState, event);
 
     return dom;
 }
@@ -894,6 +927,7 @@ bhyveDomainDestroy(virDomainPtr dom)
 {
     bhyveConnPtr privconn = dom->conn->privateData;
     virDomainObjPtr vm;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     if (!(vm = bhyveDomObjFromDomain(dom)))
@@ -909,6 +943,9 @@ bhyveDomainDestroy(virDomainPtr dom)
     }
 
     ret = virBhyveProcessStop(privconn, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
+    event = virDomainEventLifecycleNewFromObj(vm,
+                                              VIR_DOMAIN_EVENT_STOPPED,
+                                              VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
     if (!vm->persistent) {
         virDomainObjListRemove(privconn->domains, vm);
@@ -918,6 +955,8 @@ bhyveDomainDestroy(virDomainPtr dom)
  cleanup:
     if (vm)
         virObjectUnlock(vm);
+    if (event)
+        virObjectEventStateQueue(privconn->domainEventState, event);
     return ret;
 }
 
@@ -1076,6 +1115,7 @@ bhyveStateCleanup(void)
     virObjectUnref(bhyve_driver->xmlopt);
     virObjectUnref(bhyve_driver->hostsysinfo);
     virObjectUnref(bhyve_driver->closeCallbacks);
+    virObjectEventStateFree(bhyve_driver->domainEventState);
 
     virMutexDestroy(&bhyve_driver->lock);
     VIR_FREE(bhyve_driver);
@@ -1112,6 +1152,9 @@ bhyveStateInitialize(bool priveleged ATTRIBUTE_UNUSED,
         goto cleanup;
 
     if (!(bhyve_driver->domains = virDomainObjListNew()))
+        goto cleanup;
+
+    if (!(bhyve_driver->domainEventState = virObjectEventStateNew()))
         goto cleanup;
 
     bhyve_driver->hostsysinfo = virSysinfoRead();
@@ -1267,6 +1310,46 @@ bhyveConnectCompareCPU(virConnectPtr conn,
     return ret;
 }
 
+static int
+bhyveConnectDomainEventRegisterAny(virConnectPtr conn,
+                                   virDomainPtr dom,
+                                   int eventID,
+                                   virConnectDomainEventGenericCallback callback,
+                                   void *opaque,
+                                   virFreeCallback freecb)
+{
+    bhyveConnPtr privconn = conn->privateData;
+    int ret;
+
+    if (virConnectDomainEventRegisterAnyEnsureACL(conn) < 0)
+        return -1;
+
+    if (virDomainEventStateRegisterID(conn,
+                                      privconn->domainEventState,
+                                      dom, eventID,
+                                      callback, opaque, freecb, &ret) < 0)
+        ret = -1;
+
+    return ret;
+}
+
+static int
+bhyveConnectDomainEventDeregisterAny(virConnectPtr conn,
+                                     int callbackID)
+{
+    bhyveConnPtr privconn = conn->privateData;
+
+    if (virConnectDomainEventDeregisterAnyEnsureACL(conn) < 0)
+        return -1;
+
+    if (virObjectEventStateDeregisterID(conn,
+                                        privconn->domainEventState,
+                                        callbackID) < 0)
+        return -1;
+
+    return 0;
+}
+
 static virDriver bhyveDriver = {
     .no = VIR_DRV_BHYVE,
     .name = "bhyve",
@@ -1311,6 +1394,8 @@ static virDriver bhyveDriver = {
     .nodeSetMemoryParameters = bhyveNodeSetMemoryParameters, /* 1.2.3 */
     .connectBaselineCPU = bhyveConnectBaselineCPU, /* 1.2.4 */
     .connectCompareCPU = bhyveConnectCompareCPU, /* 1.2.4 */
+    .connectDomainEventRegisterAny = bhyveConnectDomainEventRegisterAny, /* 1.2.5 */
+    .connectDomainEventDeregisterAny = bhyveConnectDomainEventDeregisterAny, /* 1.2.5 */
 };
 
 
