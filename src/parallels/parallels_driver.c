@@ -2258,9 +2258,6 @@ parallelsCreateVm(virConnectPtr conn, virDomainDefPtr def)
                         "--uuid", uuidstr, NULL) < 0)
         goto error2;
 
-    if (parallelsCmdRun(PRLCTL, "set", def->name, "--vnc-mode", "auto", NULL) < 0)
-        goto error2;
-
     virStoragePoolObjUnlock(pool);
     virObjectUnref(vol);
 
@@ -2292,9 +2289,6 @@ parallelsCreateCt(virConnectPtr conn ATTRIBUTE_UNUSED, virDomainDefPtr def)
     if (parallelsCmdRun(PRLCTL, "create", def->name, "--vmtype", "ct",
                         "--uuid", uuidstr,
                         "--ostemplate", def->fss[0]->src, NULL) < 0)
-        goto error;
-
-    if (parallelsCmdRun(PRLCTL, "set", def->name, "--vnc-mode", "auto", NULL) < 0)
         goto error;
 
     return 0;
