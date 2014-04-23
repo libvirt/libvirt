@@ -39,6 +39,7 @@ struct _bhyveConn {
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
     char *pidfile;
+    virSysinfoDefPtr hostsysinfo;
 
     virCloseCallbacksPtr closeCallbacks;
 };

@@ -238,6 +238,33 @@ bhyveConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
     return virGetHostname();
 }
 
+static char *
+bhyveConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
+{
+    bhyveConnPtr privconn = conn->privateData;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virCheckFlags(0, NULL);
+
+    if (virConnectGetSysinfoEnsureACL(conn) < 0)
+        return NULL;
+
+    if (!privconn->hostsysinfo) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Host SMBIOS information is not available"));
+        return NULL;
+    }
+
+    if (virSysinfoFormat(&buf, privconn->hostsysinfo) < 0)
+        return NULL;
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
+}
+
 static int
 bhyveConnectGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *version)
 {
@@ -1047,6 +1074,7 @@ bhyveStateCleanup(void)
     virObjectUnref(bhyve_driver->domains);
     virObjectUnref(bhyve_driver->caps);
     virObjectUnref(bhyve_driver->xmlopt);
+    virObjectUnref(bhyve_driver->hostsysinfo);
     virObjectUnref(bhyve_driver->closeCallbacks);
 
     virMutexDestroy(&bhyve_driver->lock);
@@ -1085,6 +1113,8 @@ bhyveStateInitialize(bool priveleged ATTRIBUTE_UNUSED,
 
     if (!(bhyve_driver->domains = virDomainObjListNew()))
         goto cleanup;
+
+    bhyve_driver->hostsysinfo = virSysinfoRead();
 
     if (virFileMakePath(BHYVE_LOG_DIR) < 0) {
         virReportSystemError(errno,
@@ -1244,6 +1274,7 @@ static virDriver bhyveDriver = {
     .connectClose = bhyveConnectClose, /* 1.2.2 */
     .connectGetVersion = bhyveConnectGetVersion, /* 1.2.2 */
     .connectGetHostname = bhyveConnectGetHostname, /* 1.2.2 */
+    .connectGetSysinfo = bhyveConnectGetSysinfo, /* 1.2.5 */
     .domainGetInfo = bhyveDomainGetInfo, /* 1.2.2 */
     .domainGetState = bhyveDomainGetState, /* 1.2.2 */
     .connectGetCapabilities = bhyveConnectGetCapabilities, /* 1.2.2 */
