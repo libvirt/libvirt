@@ -1,7 +1,7 @@
 /*
  * node_device_udev.c: node device enumeration - libudev implementation
  *
- * Copyright (C) 2009-2013 Red Hat, Inc.
+ * Copyright (C) 2009-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1093,20 +1093,27 @@ static int udevProcessStorage(struct udev_device *device,
 
     if (udevGetStringProperty(device,
                               "ID_TYPE",
-                              &data->storage.drive_type) != PROPERTY_FOUND) {
+                              &data->storage.drive_type) != PROPERTY_FOUND ||
+        STREQ(def->caps->data.storage.drive_type, "generic")) {
         int tmp_int = 0;
 
         /* All floppy drives have the ID_DRIVE_FLOPPY prop. This is
          * needed since legacy floppies don't have a drive_type */
-        if ((udevGetIntProperty(device, "ID_DRIVE_FLOPPY",
-                                &tmp_int, 0) == PROPERTY_FOUND) &&
-            (tmp_int == 1)) {
+        if (udevGetIntProperty(device, "ID_DRIVE_FLOPPY",
+                               &tmp_int, 0) == PROPERTY_FOUND &&
+            tmp_int == 1) {
 
             if (VIR_STRDUP(data->storage.drive_type, "floppy") < 0)
                 goto out;
-        } else if ((udevGetIntProperty(device, "ID_DRIVE_FLASH_SD",
-                                       &tmp_int, 0) == PROPERTY_FOUND) &&
-                   (tmp_int == 1)) {
+        } else if (udevGetIntProperty(device, "ID_CDROM",
+                                      &tmp_int, 0) == PROPERTY_FOUND &&
+                   tmp_int == 1) {
+
+            if (VIR_STRDUP(data->storage.drive_type, "cd") < 0)
+                goto out;
+        } else if (udevGetIntProperty(device, "ID_DRIVE_FLASH_SD",
+                                      &tmp_int, 0) == PROPERTY_FOUND &&
+                   tmp_int == 1) {
 
             if (VIR_STRDUP(data->storage.drive_type, "sd") < 0)
                 goto out;
