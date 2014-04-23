@@ -1955,6 +1955,7 @@ static int
 parallelsApplyChanges(virConnectPtr conn, virDomainObjPtr dom, virDomainDefPtr new)
 {
     char buf[32];
+    size_t i;
 
     virDomainDefPtr old = dom->def;
     parallelsDomObjPtr pdom = dom->privateData;
@@ -2131,11 +2132,13 @@ parallelsApplyChanges(virConnectPtr conn, virDomainObjPtr dom, virDomainDefPtr n
         return -1;
     }
 
-    if (old->features != new->features) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("changing features is not supported "
-                         "by parallels driver"));
-        return -1;
+    for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
+        if (old->features[i] != new->features[i]) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("changing features is not supported "
+                             "by parallels driver"));
+            return -1;
+        }
     }
 
     if (new->clock.offset != VIR_DOMAIN_CLOCK_OFFSET_UTC ||
