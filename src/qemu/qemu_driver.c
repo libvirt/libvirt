@@ -4273,6 +4273,9 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         if (flags & VIR_DOMAIN_AFFECT_LIVE) {
             if (qemuDomainHotplugVcpus(driver, vm, nvcpus) < 0)
                 goto endjob;
+
+            if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+                goto endjob;
         }
 
         if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
