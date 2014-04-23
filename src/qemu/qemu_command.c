@@ -3069,7 +3069,7 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
                 goto cleanup;
             }
         } else {
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_MULTIBUS)) {
+            if (virQEMUCapsHasPCIMultiBus(qemuCaps, domainDef)) {
                 virBufferAsprintf(buf, ",bus=%s", contAlias);
             } else {
                 virBufferAddLit(buf, ",bus=pci");
