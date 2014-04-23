@@ -2303,7 +2303,7 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
     parallelsConnPtr privconn = conn->privateData;
     virDomainPtr ret = NULL;
     virDomainDefPtr def;
-    virDomainObjPtr dom = NULL, olddom = NULL;
+    virDomainObjPtr olddom = NULL;
 
     parallelsDriverLock(privconn);
     if ((def = virDomainDefParseString(xml, privconn->caps, privconn->xmlopt,
@@ -2345,24 +2345,12 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
     }
     virObjectUnlock(olddom);
 
-    if (!(dom = virDomainObjListAdd(privconn->domains, def,
-                                    privconn->xmlopt,
-                                    0, NULL))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Can't allocate domobj"));
-        goto cleanup;
-    }
-
-    def = NULL;
-
-    ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
+    ret = virGetDomain(conn, def->name, def->uuid);
     if (ret)
-        ret->id = dom->def->id;
+        ret->id = def->id;
 
  cleanup:
     virDomainDefFree(def);
-    if (dom)
-        virObjectUnlock(dom);
     parallelsDriverUnlock(privconn);
     return ret;
 }
