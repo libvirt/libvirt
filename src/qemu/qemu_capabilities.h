@@ -239,6 +239,9 @@ void virQEMUCapsClear(virQEMUCapsPtr qemuCaps,
 bool virQEMUCapsGet(virQEMUCapsPtr qemuCaps,
                     enum virQEMUCapsFlags flag);
 
+bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
+                               virDomainDefPtr def);
+
 char *virQEMUCapsFlagsString(virQEMUCapsPtr qemuCaps);
 
 const char *virQEMUCapsGetBinary(virQEMUCapsPtr qemuCaps);

@@ -1928,6 +1928,56 @@ virQEMUCapsGet(virQEMUCapsPtr qemuCaps,
 }
 
 
+bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
+                               virDomainDefPtr def)
+{
+    bool hasMultiBus = virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_MULTIBUS);
+
+    if (hasMultiBus)
+        return true;
+
+    if (def->os.arch == VIR_ARCH_PPC ||
+        def->os.arch == VIR_ARCH_PPC64) {
+        /*
+         * Usage of pci.0 naming:
+         *
+         *    ref405ep: no pci
+         *       taihu: no pci
+         *      bamboo: 1.1.0
+         *       mac99: 2.0.0
+         *     g3beige: 2.0.0
+         *        prep: 1.4.0
+         *     pseries: 2.0.0
+         *   mpc8544ds: forever
+         * virtex-m507: no pci
+         *     ppce500: 1.6.0
+         */
+
+        if (qemuCaps->version >= 2000000)
+            return true;
+
+        if (qemuCaps->version >= 1006000 &&
+            STREQ(def->os.machine, "ppce500"))
+            return true;
+
+        if (qemuCaps->version >= 1004000 &&
+            STREQ(def->os.machine, "prep"))
+            return true;
+
+        if (qemuCaps->version >= 1001000 &&
+            STREQ(def->os.machine, "bamboo"))
+            return true;
+
+        if (STREQ(def->os.machine, "mpc8544ds"))
+            return true;
+
+        return false;
+    }
+
+    return false;
+}
+
+
 const char *virQEMUCapsGetBinary(virQEMUCapsPtr qemuCaps)
 {
     return qemuCaps->binary;
@@ -2809,15 +2859,22 @@ virQEMUCapsInitHelp(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid)
                                 false) < 0)
         goto cleanup;
 
-    /* Currently only x86_64 and i686 support PCI-multibus. */
+    /* x86_64 and i686 support PCI-multibus on all machine types
+     * since forever. For other architectures, it has been changing
+     * across releases, per machine type, so we can't simply detect
+     * it here. Thus the rest of the logic is provided in a separate
+     * helper virQEMUCapsHasPCIMultiBus() which keys off the machine
+     * stored in virDomainDef and QEMU version number
+     */
     if (qemuCaps->arch == VIR_ARCH_X86_64 ||
-        qemuCaps->arch == VIR_ARCH_I686) {
+        qemuCaps->arch == VIR_ARCH_I686)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_PCI_MULTIBUS);
-    } else {
-        /* -no-acpi is not supported on other archs
-         * even if qemu reports it in -help */
+
+    /* -no-acpi is not supported on non-x86
+     * even if qemu reports it in -help */
+    if (qemuCaps->arch != VIR_ARCH_X86_64 &&
+        qemuCaps->arch != VIR_ARCH_I686)
         virQEMUCapsClear(qemuCaps, QEMU_CAPS_NO_ACPI);
-    }
 
     /* virQEMUCapsExtractDeviceStr will only set additional caps if qemu
      * understands the 0.13.0+ notion of "-device driver,".  */
@@ -2934,9 +2991,14 @@ virQEMUCapsInitArchQMPBasic(virQEMUCapsPtr qemuCaps,
         goto cleanup;
     }
 
-    /*
-     * Currently only x86_64 and i686 support PCI-multibus,
-     * -no-acpi and -no-kvm-pit-reinjection.
+    /* x86_64 and i686 support PCI-multibus on all machine types
+     * since forever. For other architectures, it has been changing
+     * across releases, per machine type, so we can't simply detect
+     * it here. Thus the rest of the logic is provided in a separate
+     * helper virQEMUCapsHasPCIMultiBus() which keys off the machine
+     * stored in virDomainDef and QEMU version number
+     *
+     * ACPI/HPET/KVM PIT are also x86 specific
      */
     if (qemuCaps->arch == VIR_ARCH_X86_64 ||
         qemuCaps->arch == VIR_ARCH_I686) {
