@@ -1743,7 +1743,9 @@ domain is next started.
 
 If I<--live> is specified, the guest domain must be active, and the change
 takes place immediately.  Both the I<--config> and I<--live> flags may be
-specified together if supported by the hypervisor.
+specified together if supported by the hypervisor.  If this command is run
+before the guest has finished booting, the guest may fail to process
+the change.
 
 If I<--current> is specified, affect the current guest state.
 

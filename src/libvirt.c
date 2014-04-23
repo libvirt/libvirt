@@ -9368,8 +9368,11 @@ virDomainSendProcessSignal(virDomainPtr domain,
  *
  * Dynamically change the number of virtual CPUs used by the domain.
  * Note that this call may fail if the underlying virtualization hypervisor
- * does not support it or if growing the number is arbitrary limited.
+ * does not support it or if growing the number is arbitrarily limited.
  * This function may require privileged access to the hypervisor.
+ *
+ * Note that if this call is executed before the guest has finished booting,
+ * the guest may fail to process the change.
  *
  * This command only changes the runtime configuration of the domain,
  * so can only be called on an active domain.  It is hypervisor-dependent
@@ -9417,7 +9420,7 @@ virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
  *
  * Dynamically change the number of virtual CPUs used by the domain.
  * Note that this call may fail if the underlying virtualization hypervisor
- * does not support it or if growing the number is arbitrary limited.
+ * does not support it or if growing the number is arbitrarily limited.
  * This function may require privileged access to the hypervisor.
  *
  * @flags may include VIR_DOMAIN_AFFECT_LIVE to affect a running
@@ -9428,6 +9431,9 @@ virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
  * then an inactive domain modifies persistent setup, while an active domain
  * is hypervisor-dependent on whether just live or both live and persistent
  * state is changed.
+ *
+ * Note that if this call is executed before the guest has finished booting,
+ * the guest may fail to process the change.
  *
  * If @flags includes VIR_DOMAIN_VCPU_MAXIMUM, then
  * VIR_DOMAIN_AFFECT_LIVE must be clear, and only the maximum virtual
