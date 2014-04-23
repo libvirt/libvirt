@@ -2362,6 +2362,23 @@ parallelsNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
     return nodeGetInfo(nodeinfo);
 }
 
+static int parallelsConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Encryption is not relevant / applicable to way we talk to PCS */
+    return 0;
+}
+
+static int parallelsConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* We run CLI tools directly so this is secure */
+    return 1;
+}
+
+static int parallelsConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
+}
+
 
 static virDriver parallelsDriver = {
     .no = VIR_DRV_PARALLELS,
@@ -2392,6 +2409,9 @@ static virDriver parallelsDriver = {
     .domainShutdown = parallelsDomainShutdown, /* 0.10.0 */
     .domainCreate = parallelsDomainCreate,    /* 0.10.0 */
     .domainDefineXML = parallelsDomainDefineXML,      /* 0.10.0 */
+    .connectIsEncrypted = parallelsConnectIsEncrypted, /* 1.2.5 */
+    .connectIsSecure = parallelsConnectIsSecure, /* 1.2.5 */
+    .connectIsAlive = parallelsConnectIsAlive, /* 1.2.5 */
 };
 
 /**
