@@ -14937,7 +14937,7 @@ static int
 virDomainDiskBackingStoreFormat(virBufferPtr buf,
                                 virStorageSourcePtr backingStore,
                                 const char *backingStoreRaw,
-                                unsigned int index)
+                                unsigned int idx)
 {
     const char *type;
     const char *format;
@@ -14965,7 +14965,7 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
     }
 
     virBufferAsprintf(buf, "<backingStore type='%s' index='%u'>\n",
-                      type, index);
+                      type, idx);
     virBufferAdjustIndent(buf, 2);
 
     virBufferAsprintf(buf, "<format type='%s'/>\n", format);
@@ -14973,7 +14973,7 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
         virDomainDiskBackingStoreFormat(buf,
                                         backingStore->backingStore,
                                         backingStore->backingStoreRaw,
-                                        index + 1) < 0)
+                                        idx + 1) < 0)
         return -1;
 
     virBufferAdjustIndent(buf, -2);
