@@ -18219,6 +18219,7 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
 {
     DIR *dir;
     struct dirent *entry;
+    int ret = -1;
 
     VIR_INFO("Scanning for configs in %s", configDir);
 
@@ -18233,7 +18234,7 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
 
     virObjectLock(doms);
 
-    while ((entry = readdir(dir))) {
+    while ((ret = virDirRead(dir, &entry, configDir)) > 0) {
         virDomainObjPtr dom;
 
         if (entry->d_name[0] == '.')
@@ -18273,7 +18274,7 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
 
     closedir(dir);
     virObjectUnlock(doms);
-    return 0;
+    return ret;
 }
 
 int

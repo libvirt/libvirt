@@ -1862,6 +1862,7 @@ virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
 {
     DIR *dir;
     struct dirent *entry;
+    int ret;
 
     if (!(dir = opendir(configDir))) {
         if (errno == ENOENT)
@@ -1871,7 +1872,7 @@ virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
         return -1;
     }
 
-    while ((entry = readdir(dir))) {
+    while ((ret = virDirRead(dir, &entry, configDir)) > 0) {
         char *path;
         char *autostartLink;
         virStoragePoolObjPtr pool;
@@ -1901,8 +1902,7 @@ virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
     }
 
     closedir(dir);
-
-    return 0;
+    return ret;
 }
 
 int

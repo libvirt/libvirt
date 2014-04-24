@@ -3153,6 +3153,7 @@ virNetworkLoadAllState(virNetworkObjListPtr nets,
 {
     DIR *dir;
     struct dirent *entry;
+    int ret = -1;
 
     if (!(dir = opendir(stateDir))) {
         if (errno == ENOENT)
@@ -3162,7 +3163,7 @@ virNetworkLoadAllState(virNetworkObjListPtr nets,
         return -1;
     }
 
-    while ((entry = readdir(dir))) {
+    while ((ret = virDirRead(dir, &entry, stateDir)) > 0) {
         virNetworkObjPtr net;
 
         if (entry->d_name[0] == '.')
@@ -3176,7 +3177,7 @@ virNetworkLoadAllState(virNetworkObjListPtr nets,
     }
 
     closedir(dir);
-    return 0;
+    return ret;
 }
 
 
@@ -3186,6 +3187,7 @@ int virNetworkLoadAllConfigs(virNetworkObjListPtr nets,
 {
     DIR *dir;
     struct dirent *entry;
+    int ret = -1;
 
     if (!(dir = opendir(configDir))) {
         if (errno == ENOENT)
@@ -3196,7 +3198,7 @@ int virNetworkLoadAllConfigs(virNetworkObjListPtr nets,
         return -1;
     }
 
-    while ((entry = readdir(dir))) {
+    while ((ret = virDirRead(dir, &entry, configDir)) > 0) {
         virNetworkObjPtr net;
 
         if (entry->d_name[0] == '.')
@@ -3216,8 +3218,7 @@ int virNetworkLoadAllConfigs(virNetworkObjListPtr nets,
     }
 
     closedir(dir);
-
-    return 0;
+    return ret;
 }
 
 int virNetworkDeleteConfig(const char *configDir,

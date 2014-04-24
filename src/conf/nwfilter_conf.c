@@ -3097,6 +3097,7 @@ virNWFilterLoadAllConfigs(virNWFilterObjListPtr nwfilters,
 {
     DIR *dir;
     struct dirent *entry;
+    int ret = -1;
 
     if (!(dir = opendir(configDir))) {
         if (errno == ENOENT) {
@@ -3107,7 +3108,7 @@ virNWFilterLoadAllConfigs(virNWFilterObjListPtr nwfilters,
         return -1;
     }
 
-    while ((entry = readdir(dir))) {
+    while ((ret = virDirRead(dir, &entry, configDir)) > 0) {
         char *path;
         virNWFilterObjPtr nwfilter;
 
@@ -3128,8 +3129,7 @@ virNWFilterLoadAllConfigs(virNWFilterObjListPtr nwfilters,
     }
 
     closedir(dir);
-
-    return 0;
+    return ret;
 }
 
 
