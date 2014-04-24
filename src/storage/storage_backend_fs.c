@@ -854,6 +854,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
     struct dirent *ent;
     struct statvfs sb;
     virStorageVolDefPtr vol = NULL;
+    int direrr;
 
     if (!(dir = opendir(pool->def->target.path))) {
         virReportSystemError(errno,
@@ -862,7 +863,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    while ((ent = readdir(dir)) != NULL) {
+    while ((direrr = virDirRead(dir, &ent, pool->def->target.path)) > 0) {
         int ret;
         char *backingStore;
         int backingStoreFormat;
@@ -924,8 +925,9 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count, vol) < 0)
             goto cleanup;
     }
+    if (direrr < 0)
+        goto cleanup;
     closedir(dir);
-
 
     if (statvfs(pool->def->target.path, &sb) < 0) {
         virReportSystemError(errno,

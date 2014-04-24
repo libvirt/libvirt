@@ -1564,6 +1564,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
     char *stablepath;
     int opentries = 0;
     int retry = 0;
+    int direrr;
 
     /* Short circuit if pool has no target, or if its /dev */
     if (pool->def->target.path == NULL ||
@@ -1604,10 +1605,11 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
      * to this device node.
      *
      * And it might need some time till the stable path shows
-     * up, so add timeout to retry here.
+     * up, so add timeout to retry here.  Ignore readdir failures,
+     * since we have a fallback.
      */
  retry:
-    while ((dent = readdir(dh)) != NULL) {
+    while ((direrr = virDirRead(dh, &dent, NULL)) > 0) {
         if (dent->d_name[0] == '.')
             continue;
 
@@ -1626,7 +1628,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
         VIR_FREE(stablepath);
     }
 
-    if (loop && ++retry < 100) {
+    if (!direrr && loop && ++retry < 100) {
         usleep(100 * 1000);
         goto retry;
     }

@@ -237,6 +237,7 @@ getNewStyleBlockDevice(const char *lun_path,
     DIR *block_dir = NULL;
     struct dirent *block_dirent = NULL;
     int retval = 0;
+    int direrr;
 
     if (virAsprintf(&block_path, "%s/block", lun_path) < 0)
         goto out;
@@ -252,7 +253,7 @@ getNewStyleBlockDevice(const char *lun_path,
         goto out;
     }
 
-    while ((block_dirent = readdir(block_dir))) {
+    while ((direrr = virDirRead(block_dir, &block_dirent, block_path)) > 0) {
 
         if (STREQLEN(block_dirent->d_name, ".", 1)) {
             continue;
@@ -268,6 +269,8 @@ getNewStyleBlockDevice(const char *lun_path,
 
         break;
     }
+    if (direrr < 0)
+        retval = -1;
 
     closedir(block_dir);
 
@@ -319,6 +322,7 @@ getBlockDevice(uint32_t host,
     DIR *lun_dir = NULL;
     struct dirent *lun_dirent = NULL;
     int retval = 0;
+    int direrr;
 
     if (virAsprintf(&lun_path, "/sys/bus/scsi/devices/%u:%u:%u:%u",
                     host, bus, target, lun) < 0)
@@ -333,7 +337,7 @@ getBlockDevice(uint32_t host,
         goto out;
     }
 
-    while ((lun_dirent = readdir(lun_dir))) {
+    while ((direrr = virDirRead(lun_dir, &lun_dirent, lun_path)) > 0) {
         if (STREQLEN(lun_dirent->d_name, "block", 5)) {
             if (strlen(lun_dirent->d_name) == 5) {
                 retval = getNewStyleBlockDevice(lun_path,
@@ -442,7 +446,7 @@ virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
 
     snprintf(devicepattern, sizeof(devicepattern), "%u:%%u:%%u:%%u\n", scanhost);
 
-    while ((lun_dirent = readdir(devicedir))) {
+    while ((retval = virDirRead(devicedir, &lun_dirent, device_path)) > 0) {
         if (sscanf(lun_dirent->d_name, devicepattern,
                    &bus, &target, &lun) != 3) {
             continue;

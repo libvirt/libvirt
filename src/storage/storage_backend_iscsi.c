@@ -93,6 +93,7 @@ virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
     int retval = 0;
     DIR *sysdir = NULL;
     struct dirent *dirent = NULL;
+    int direrr;
 
     VIR_DEBUG("Finding host number from '%s'", sysfs_path);
 
@@ -107,7 +108,7 @@ virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
         goto out;
     }
 
-    while ((dirent = readdir(sysdir))) {
+    while ((direrr = virDirRead(sysdir, &dirent, sysfs_path)) > 0) {
         if (STREQLEN(dirent->d_name, "target", strlen("target"))) {
             if (sscanf(dirent->d_name,
                        "target%u:", host) != 1) {
@@ -117,6 +118,8 @@ virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
             }
         }
     }
+    if (direrr < 0)
+        retval = -1;
 
     closedir(sysdir);
  out:
