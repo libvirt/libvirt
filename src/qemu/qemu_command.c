@@ -3046,7 +3046,8 @@ qemuNetworkDriveGetPort(int protocol,
 
         case VIR_STORAGE_NET_PROTOCOL_RBD:
         case VIR_STORAGE_NET_PROTOCOL_LAST:
-            /* not aplicable */
+        case VIR_STORAGE_NET_PROTOCOL_NONE:
+            /* not applicable */
             return -1;
     }
 
@@ -3262,6 +3263,7 @@ qemuBuildNetworkDriveURI(int protocol,
 
 
         case VIR_STORAGE_NET_PROTOCOL_LAST:
+        case VIR_STORAGE_NET_PROTOCOL_NONE:
             goto cleanup;
     }
 
@@ -11080,6 +11082,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 case VIR_STORAGE_NET_PROTOCOL_FTPS:
                 case VIR_STORAGE_NET_PROTOCOL_TFTP:
                 case VIR_STORAGE_NET_PROTOCOL_LAST:
+                case VIR_STORAGE_NET_PROTOCOL_NONE:
                     /* ignored for now */
                     break;
                 }

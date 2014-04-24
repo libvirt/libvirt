@@ -119,6 +119,7 @@ struct _virStorageTimestamps {
 
 /* Information related to network storage */
 typedef enum {
+    VIR_STORAGE_NET_PROTOCOL_NONE,
     VIR_STORAGE_NET_PROTOCOL_NBD,
     VIR_STORAGE_NET_PROTOCOL_RBD,
     VIR_STORAGE_NET_PROTOCOL_SHEEPDOG,

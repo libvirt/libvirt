@@ -72,6 +72,7 @@ VIR_ENUM_IMPL(virStorageFileFeature,
               )
 
 VIR_ENUM_IMPL(virStorageNetProtocol, VIR_STORAGE_NET_PROTOCOL_LAST,
+              "none",
               "nbd",
               "rbd",
               "sheepdog",

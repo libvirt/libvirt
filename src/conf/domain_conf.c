@@ -4989,7 +4989,7 @@ virDomainDiskSourceParse(xmlNodePtr node,
             goto cleanup;
         }
 
-        if ((src->protocol = virStorageNetProtocolTypeFromString(protocol)) < 0){
+        if ((src->protocol = virStorageNetProtocolTypeFromString(protocol)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown protocol type '%s'"), protocol);
             goto cleanup;
