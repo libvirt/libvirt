@@ -1173,8 +1173,9 @@ virStorageBackendForType(int type)
 
 
 virStorageFileBackendPtr
-virStorageFileBackendForType(int type,
-                             int protocol)
+virStorageFileBackendForTypeInternal(int type,
+                                     int protocol,
+                                     bool report)
 {
     size_t i;
 
@@ -1188,6 +1189,9 @@ virStorageFileBackendForType(int type,
         }
     }
 
+    if (!report)
+        return NULL;
+
     if (type == VIR_STORAGE_TYPE_NETWORK) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("missing storage backend for network files "
@@ -1200,6 +1204,14 @@ virStorageFileBackendForType(int type,
     }
 
     return NULL;
+}
+
+
+virStorageFileBackendPtr
+virStorageFileBackendForType(int type,
+                             int protocol)
+{
+    return virStorageFileBackendForTypeInternal(type, protocol, true);
 }
 
 

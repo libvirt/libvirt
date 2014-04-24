@@ -203,7 +203,9 @@ typedef int
                                int mode);
 
 virStorageFileBackendPtr virStorageFileBackendForType(int type, int protocol);
-
+virStorageFileBackendPtr virStorageFileBackendForTypeInternal(int type,
+                                                              int protocol,
+                                                              bool report);
 
 
 struct _virStorageFileBackend {
