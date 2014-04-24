@@ -55,6 +55,8 @@
 #include "virrandom.h"
 #include "virstring.h"
 
+#include "storage/storage_driver.h"
+
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
 static char *progname;

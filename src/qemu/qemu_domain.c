@@ -40,6 +40,8 @@
 #include "virstoragefile.h"
 #include "virstring.h"
 
+#include "storage/storage_driver.h"
+
 #include <sys/time.h>
 #include <fcntl.h>
 

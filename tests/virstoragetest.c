@@ -31,6 +31,8 @@
 #include "virstring.h"
 #include "dirname.h"
 
+#include "storage/storage_driver.h"
+
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("tests.storagetest");

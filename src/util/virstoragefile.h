@@ -265,10 +265,9 @@ struct _virStorageSource {
 
 int virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid);
 
-int virStorageFileGetMetadata(virStorageSourcePtr src,
-                              uid_t uid, gid_t gid,
-                              bool allow_probe)
-    ATTRIBUTE_NONNULL(1);
+int virStorageFileGetMetadataFromFDInternal(virStorageSourcePtr meta,
+                                            int fd,
+                                            int *backingFormat);
 virStorageSourcePtr virStorageFileGetMetadataFromFD(const char *path,
                                                     int fd,
                                                     int format,

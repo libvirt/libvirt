@@ -44,6 +44,11 @@ ssize_t virStorageFileReadHeader(virStorageSourcePtr src,
 const char *virStorageFileGetUniqueIdentifier(virStorageSourcePtr src);
 int virStorageFileAccess(virStorageSourcePtr src, int mode);
 
+int virStorageFileGetMetadata(virStorageSourcePtr src,
+                              uid_t uid, gid_t gid,
+                              bool allow_probe)
+    ATTRIBUTE_NONNULL(1);
+
 int storageRegister(void);
 
 #endif /* __VIR_STORAGE_DRIVER_H__ */

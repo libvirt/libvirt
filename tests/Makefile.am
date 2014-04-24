@@ -869,7 +869,13 @@ virstringtest_LDADD = $(LDADDS)
 
 virstoragetest_SOURCES = \
 	virstoragetest.c testutils.h testutils.c
-virstoragetest_LDADD = $(LDADDS)
+virstoragetest_LDADD = $(LDADDS) \
+	../src/libvirt.la \
+	../src/libvirt_conf.la \
+	../src/libvirt_util.la \
+	../src/libvirt_driver_storage_impl.la \
+	../gnulib/lib/libgnu.la \
+	$(NULL)
 
 viridentitytest_SOURCES = \
 	viridentitytest.c testutils.h testutils.c
