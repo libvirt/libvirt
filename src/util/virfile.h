@@ -160,6 +160,20 @@ int virFileIsLink(const char *linkpath)
 
 char *virFindFileInPath(const char *file);
 
+char *virFileFindResource(const char *filename,
+                          const char *builddir,
+                          const char *installdir)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+char *virFileFindResourceFull(const char *filename,
+                              const char *prefix,
+                              const char *suffix,
+                              const char *builddir,
+                              const char *installdir,
+                              const char *envname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
+void virFileActivateDirOverride(const char *argv0)
+    ATTRIBUTE_NONNULL(1);
+
 bool virFileIsDir (const char *file) ATTRIBUTE_NONNULL(1);
 bool virFileExists(const char *file) ATTRIBUTE_NONNULL(1);
 bool virFileIsExecutable(const char *file) ATTRIBUTE_NONNULL(1);

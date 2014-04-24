@@ -18,6 +18,7 @@
 
 # old automake does not provide abs_{src,build}dir variables
 abs_builddir = $(shell pwd)
+abs_topbuilddir = $(shell cd .. && pwd)
 abs_srcdir = $(shell cd $(srcdir) && pwd)
 
 # No libraries with the exception of LIBXML should be listed
@@ -30,6 +31,7 @@ INCLUDES =	-I../gnulib/lib					\
 		-I$(top_srcdir)/include				\
 		-I$(top_srcdir)/src/util			\
 		-DIN_LIBVIRT					\
+		-Dabs_topbuilddir="\"$(abs_topbuilddir)\""	\
 		$(GETTEXT_CPPFLAGS)
 
 AM_CFLAGS =	$(LIBXML_CFLAGS)				\

@@ -1542,6 +1542,93 @@ virFindFileInPath(const char *file)
     return fullpath;
 }
 
+
+static bool useDirOverride;
+
+/**
+ * virFileFindResourceFull:
+ * @filename: libvirt distributed filename without any path
+ * @prefix: optional string to prepend to filename
+ * @suffix: optional string to append to filename
+ * @builddir: location of the binary in the source tree build tree
+ * @installdir: location of the installed binary
+ * @envname: environment variable used to override all dirs
+ *
+ * A helper which will return a path to @filename within
+ * the current build tree, if the calling binary is being
+ * run from the source tree. Otherwise it will return the
+ * path in the installed location.
+ *
+ * If @envname is non-NULL it will override all other
+ * directory lookup
+ *
+ * Only use this with @filename files that are part of
+ * the libvirt tree, not 3rd party binaries/files.
+ *
+ * Returns the resolved path (caller frees) or NULL on error
+ */
+char *
+virFileFindResourceFull(const char *filename,
+                        const char *prefix,
+                        const char *suffix,
+                        const char *builddir,
+                        const char *installdir,
+                        const char *envname)
+{
+    char *ret = NULL;
+    const char *envval = envname ? virGetEnvBlockSUID(envname) : NULL;
+
+    if (!prefix)
+        prefix = "";
+    if (!suffix)
+        suffix = "";
+
+    if (envval) {
+        if (virAsprintf(&ret, "%s/%s%s%s", envval, prefix, filename, suffix) < 0)
+            return NULL;
+    } else if (useDirOverride) {
+        if (virAsprintf(&ret, "%s/%s/%s%s%s", abs_topbuilddir, builddir, prefix, filename, suffix) < 0)
+            return NULL;
+    } else {
+        if (virAsprintf(&ret, "%s/%s%s%s", installdir, prefix, filename, suffix) < 0)
+            return NULL;
+    }
+
+    VIR_DEBUG("Resolved '%s' to '%s'", filename, ret);
+    return ret;
+}
+
+char *
+virFileFindResource(const char *filename,
+                    const char *builddir,
+                    const char *installdir)
+{
+    return virFileFindResourceFull(filename, NULL, NULL, builddir, installdir, NULL);
+}
+
+
+/**
+ * virFileActivateDirOverride:
+ * @argv0: argv[0] of the calling program
+ *
+ * Look at @argv0 and try to detect if running from
+ * a build directory, by looking for a 'lt-' prefix
+ * on the binary name, or '/.libs/' in the path
+ */
+void
+virFileActivateDirOverride(const char *argv0)
+{
+    char *file = strrchr(argv0, '/');
+    if (!file || file[1] == '\0')
+        return;
+    file++;
+    if (STRPREFIX(file, "lt-") ||
+        strstr(argv0, "/.libs/")) {
+        useDirOverride = true;
+        VIR_DEBUG("Activating build dir override for %s", argv0);
+    }
+}
+
 bool
 virFileIsDir(const char *path)
 {
