@@ -1156,6 +1156,8 @@ int main(int argc, char **argv) {
 
     virUpdateSelfLastChanged(argv[0]);
 
+    virFileActivateDirOverride(argv[0]);
+
     if (strstr(argv[0], "lt-libvirtd") ||
         strstr(argv[0], "/daemon/.libs/libvirtd")) {
         char *tmp = strrchr(argv[0], '/');

@@ -678,6 +678,8 @@ int virtTestMain(int argc,
     char *oomstr;
 #endif
 
+    virFileActivateDirOverride(argv[0]);
+
     if (!virFileExists(abs_srcdir))
         return EXIT_AM_HARDFAIL;
 

@@ -3594,6 +3594,8 @@ main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
+    virFileActivateDirOverride(argv[0]);
+
     if (!(progname = strrchr(argv[0], '/')))
         progname = argv[0];
     else
