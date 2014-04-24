@@ -1812,14 +1812,14 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver, virDomainObjPtr vm,
         /* Poll every 50ms for progress & to allow cancellation */
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
 
+        if (qemuMigrationUpdateJobStatus(driver, vm, job, asyncJob) < 0)
+            goto cleanup;
+
         /* cancel migration if disk I/O error is emitted while migrating */
         if (abort_on_error &&
             virDomainObjGetState(vm, &pauseReason) == VIR_DOMAIN_PAUSED &&
             pauseReason == VIR_DOMAIN_PAUSED_IOERROR)
             goto cancel;
-
-        if (qemuMigrationUpdateJobStatus(driver, vm, job, asyncJob) < 0)
-            goto cleanup;
 
         if (dconn && virConnectIsAlive(dconn) <= 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
