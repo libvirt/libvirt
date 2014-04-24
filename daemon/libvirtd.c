@@ -1167,25 +1167,14 @@ int main(int argc, char **argv) {
             exit(EXIT_FAILURE);
         }
         *tmp = '\0';
-        char *driverdir;
-        if (virAsprintfQuiet(&driverdir, "%s/../../src/.libs", argv[0]) < 0 ||
-            virAsprintfQuiet(&cpumap, "%s/../../src/cpu/cpu_map.xml",
+        if (virAsprintfQuiet(&cpumap, "%s/../../src/cpu/cpu_map.xml",
                              argv[0]) < 0) {
             fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
             exit(EXIT_FAILURE);
         }
-        if (access(driverdir, R_OK) < 0) {
-            fprintf(stderr, _("%s: expected driver directory '%s' is missing\n"),
-                    argv[0], driverdir);
-            exit(EXIT_FAILURE);
-        }
-#ifdef WITH_DRIVER_MODULES
-        virDriverModuleInitialize(driverdir);
-#endif
         cpuMapOverride(cpumap);
         VIR_FREE(cpumap);
         *tmp = '/';
-        /* Must not free 'driverdir' - it is still used */
     }
 
     while (1) {

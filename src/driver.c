@@ -26,6 +26,7 @@
 
 #include "driver.h"
 #include "viralloc.h"
+#include "virfile.h"
 #include "virlog.h"
 #include "virutil.h"
 #include "configmake.h"
@@ -41,21 +42,6 @@ VIR_LOG_INIT("driver");
 
 # include <dlfcn.h>
 
-static const char *moddir = NULL;
-
-void
-virDriverModuleInitialize(const char *defmoddir)
-{
-    const char *custommoddir = virGetEnvBlockSUID("LIBVIRT_DRIVER_DIR");
-    if (custommoddir)
-        moddir = custommoddir;
-    else if (defmoddir)
-        moddir = defmoddir;
-    else
-        moddir = DEFAULT_DRIVER_DIR;
-    VIR_DEBUG("Module dir %s", moddir);
-}
-
 void *
 virDriverLoadModule(const char *name)
 {
@@ -63,12 +49,14 @@ virDriverLoadModule(const char *name)
     void *handle = NULL;
     int (*regsym)(void);
 
-    if (moddir == NULL)
-        virDriverModuleInitialize(NULL);
-
     VIR_DEBUG("Module load %s", name);
 
-    if (virAsprintfQuiet(&modfile, "%s/libvirt_driver_%s.so", moddir, name) < 0)
+    if (!(modfile = virFileFindResourceFull(name,
+                                            "libvirt_driver_",
+                                            ".so",
+                                            "src/.libs",
+                                            LIBDIR "/libvirt/connection-driver",
+                                            "LIBVIRT_DRIVER_DIR")))
         return NULL;
 
     if (access(modfile, R_OK) < 0) {

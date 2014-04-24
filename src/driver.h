@@ -2164,7 +2164,6 @@ int virRegisterNWFilterDriver(virNWFilterDriverPtr) ATTRIBUTE_RETURN_CHECK;
 # ifdef WITH_LIBVIRTD
 int virRegisterStateDriver(virStateDriverPtr) ATTRIBUTE_RETURN_CHECK;
 # endif
-void virDriverModuleInitialize(const char *defmoddir);
 void *virDriverLoadModule(const char *name);
 
 #endif /* __VIR_DRIVER_H__ */

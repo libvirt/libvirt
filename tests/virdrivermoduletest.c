@@ -65,8 +65,6 @@ mymain(void)
             ret = -1;                                                   \
     } while (0)
 
-    virDriverModuleInitialize(abs_builddir "/../src/.libs");
-
 #ifdef WITH_NETWORK
 # define USE_NETWORK "network"
     TEST("network", NULL);
