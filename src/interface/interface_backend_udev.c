@@ -25,6 +25,7 @@
 #include <libudev.h>
 
 #include "virerror.h"
+#include "virfile.h"
 #include "c-ctype.h"
 #include "datatypes.h"
 #include "domain_conf.h"
@@ -966,31 +967,64 @@ udevGetIfaceDefVlan(struct udev *udev ATTRIBUTE_UNUSED,
                     const char *name,
                     virInterfaceDef *ifacedef)
 {
-    const char *vid;
+    char *procpath = NULL;
+    char *buf = NULL;
+    char *vid_pos, *dev_pos;
+    size_t vid_len, dev_len;
+    const char *vid_prefix = "VID: ";
+    const char *dev_prefix = "\nDevice: ";
+    int ret = -1;
 
-    /* Find the DEVICE.VID again */
-    vid = strrchr(name, '.');
-    if (!vid) {
+    if (virAsprintf(&procpath, "/proc/net/vlan/%s", name) < 0)
+        goto cleanup;
+
+    if (virFileReadAll(procpath, BUFSIZ, &buf) < 0)
+        goto cleanup;
+
+    if ((vid_pos = strstr(buf, vid_prefix)) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to find the VID for the VLAN device '%s'"),
                        name);
-        return -1;
+        goto cleanup;
+    }
+    vid_pos += strlen(vid_prefix);
+
+    if ((vid_len = strspn(vid_pos, "0123456789")) == 0 ||
+        !c_isspace(vid_pos[vid_len])) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to find the VID for the VLAN device '%s'"),
+                       name);
+        goto cleanup;
     }
 
-    /* Set the VLAN specifics */
-    if (VIR_STRDUP(ifacedef->data.vlan.tag, vid + 1) < 0)
-        goto error;
-    if (VIR_STRNDUP(ifacedef->data.vlan.devname,
-                    name, (vid - name)) < 0)
-        goto error;
+    if ((dev_pos = strstr(vid_pos + vid_len, dev_prefix)) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to find the real device for the VLAN device '%s'"),
+                       name);
+        goto cleanup;
+    }
+    dev_pos += strlen(dev_prefix);
 
-    return 0;
+    if ((dev_len = strcspn(dev_pos, "\n")) == 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to find the real device for the VLAN device '%s'"),
+                       name);
+        goto cleanup;
+    }
 
- error:
-    VIR_FREE(ifacedef->data.vlan.tag);
-    VIR_FREE(ifacedef->data.vlan.devname);
+    if (VIR_STRNDUP(ifacedef->data.vlan.tag, vid_pos, vid_len) < 0)
+        goto cleanup;
+    if (VIR_STRNDUP(ifacedef->data.vlan.devname, dev_pos, dev_len) < 0) {
+        VIR_FREE(ifacedef->data.vlan.tag);
+        goto cleanup;
+    }
 
-    return -1;
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(procpath);
+    VIR_FREE(buf);
+    return ret;
 }
 
 static virInterfaceDef * ATTRIBUTE_NONNULL(1)
