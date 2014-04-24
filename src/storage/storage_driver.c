@@ -2788,6 +2788,30 @@ virStorageFileIsInitialized(virStorageSourcePtr src)
     return !!src->drv;
 }
 
+
+static bool
+virStorageFileSupportsBackingChainTraversal(virStorageSourcePtr src)
+{
+    int actualType = virStorageSourceGetActualType(src);
+    virStorageFileBackendPtr backend;
+
+    if (!src)
+        return false;
+
+    if (src->drv) {
+        backend = src->drv->backend;
+    } else {
+        if (!(backend = virStorageFileBackendForTypeInternal(actualType,
+                                                             src->protocol,
+                                                             false)))
+            return false;
+    }
+
+    return backend->storageFileGetUniqueIdentifier &&
+           backend->storageFileReadHeader &&
+           backend->storageFileAccess;
+}
+
 void
 virStorageFileDeinit(virStorageSourcePtr src)
 {
@@ -3104,7 +3128,6 @@ virFindBackingFile(const char *start, const char *path,
 /* Recursive workhorse for virStorageFileGetMetadata.  */
 static int
 virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
-                                 const char *canonPath,
                                  uid_t uid, gid_t gid,
                                  bool allow_probe,
                                  virHashTablePtr cycle)
@@ -3112,49 +3135,63 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     int fd;
     int ret = -1;
     struct stat st;
+    const char *uniqueName;
     virStorageSourcePtr backingStore = NULL;
     int backingFormat;
 
-    VIR_DEBUG("path=%s canonPath=%s dir=%s format=%d uid=%d gid=%d probe=%d",
-              src->path, canonPath, NULLSTR(src->relDir), src->format,
+    VIR_DEBUG("path=%s dir=%s format=%d uid=%d gid=%d probe=%d",
+              src->path, NULLSTR(src->relDir), src->format,
               (int)uid, (int)gid, allow_probe);
 
-    if (virHashLookup(cycle, canonPath)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("backing store for %s is self-referential"),
-                       src->path);
+    /* exit if we can't load information about the current image */
+    if (!virStorageFileSupportsBackingChainTraversal(src))
+        return 0;
+
+    if (virStorageFileInitAs(src, uid, gid) < 0)
         return -1;
+
+    if (!(uniqueName = virStorageFileGetUniqueIdentifier(src)))
+        goto cleanup;
+
+    if (virHashLookup(cycle, uniqueName)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("backing store for %s (%s) is self-referential"),
+                       src->path, uniqueName);
+        goto cleanup;
     }
 
-    if (virHashAddEntry(cycle, canonPath, (void *)1) < 0)
-        return -1;
+    if (virHashAddEntry(cycle, uniqueName, (void *)1) < 0)
+        goto cleanup;
 
     if (virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_NETWORK) {
         if ((fd = virFileOpenAs(src->path, O_RDONLY, 0, uid, gid, 0)) < 0) {
             virReportSystemError(-fd, _("Failed to open file '%s'"),
                                  src->path);
-            return -1;
+            goto cleanup;
         }
 
         if (virStorageFileGetMetadataFromFDInternal(src, fd,
                                                     &backingFormat) < 0) {
             VIR_FORCE_CLOSE(fd);
-            return -1;
+            goto cleanup;
         }
 
         if (VIR_CLOSE(fd) < 0)
             VIR_WARN("could not close file %s", src->path);
     } else {
         /* TODO: currently we call this only for local storage */
-        return 0;
+        ret = 0;
+        goto cleanup;
     }
 
     /* check whether we need to go deeper */
-    if (!src->backingStoreRaw)
-        return 0;
+    if (!src->backingStoreRaw) {
+        ret = 0;
+        goto cleanup;
+    }
 
     if (VIR_ALLOC(backingStore) < 0)
-        return -1;
+        goto cleanup;
 
     if (VIR_STRDUP(backingStore->relPath, src->backingStoreRaw) < 0)
         goto cleanup;
@@ -3201,7 +3238,6 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         backingStore->format = backingFormat;
 
     if (virStorageFileGetMetadataRecurse(backingStore,
-                                         backingStore->path,
                                          uid, gid, allow_probe,
                                          cycle) < 0) {
         /* if we fail somewhere midway, just accept and return a
@@ -3215,6 +3251,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     ret = 0;
 
  cleanup:
+    virStorageFileDeinit(src);
     virStorageSourceFree(backingStore);
     return ret;
 }
@@ -3253,12 +3290,6 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
         return -1;
 
     if (virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_NETWORK) {
-        if (!(canonPath = canonicalize_file_name(src->path))) {
-            virReportSystemError(errno, _("unable to resolve '%s'"),
-                                 src->path);
-            goto cleanup;
-        }
-
         if (!src->relPath &&
             VIR_STRDUP(src->relPath, src->path) < 0)
             goto cleanup;
@@ -3277,7 +3308,7 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
     if (src->format <= VIR_STORAGE_FILE_NONE)
         src->format = allow_probe ? VIR_STORAGE_FILE_AUTO : VIR_STORAGE_FILE_RAW;
 
-    ret = virStorageFileGetMetadataRecurse(src, canonPath, uid, gid,
+    ret = virStorageFileGetMetadataRecurse(src, uid, gid,
                                            allow_probe, cycle);
 
  cleanup:
