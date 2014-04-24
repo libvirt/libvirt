@@ -48,7 +48,4 @@ cpuMapLoad(const char *arch,
            cpuMapLoadCallback cb,
            void *data);
 
-extern int
-cpuMapOverride(const char *path);
-
 #endif /* __VIR_CPU_MAP_H__ */

@@ -483,7 +483,6 @@ static int
 mymain(void)
 {
     int ret = 0;
-    char *map = NULL;
     bool skipLegacyCPUs = false;
 
     abs_top_srcdir = getenv("abs_top_srcdir");
@@ -530,11 +529,6 @@ mymain(void)
     driver.config->spiceTLS = 1;
     if (VIR_STRDUP_QUIET(driver.config->spicePassword, "123456") < 0)
         return EXIT_FAILURE;
-    if (virAsprintf(&map, "%s/src/cpu/cpu_map.xml", abs_top_srcdir) < 0 ||
-        cpuMapOverride(map) < 0) {
-        VIR_FREE(map);
-        return EXIT_FAILURE;
-    }
 
 # define DO_TEST_FULL(name, migrateFrom, migrateFd, flags, ...)         \
     do {                                                                \
@@ -1364,7 +1358,6 @@ mymain(void)
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
-    VIR_FREE(map);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

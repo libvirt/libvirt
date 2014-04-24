@@ -744,7 +744,6 @@ cpuEncode;
 cpuGetModels;
 cpuGuestData;
 cpuHasFeature;
-cpuMapOverride;
 cpuNodeData;
 cpuUpdate;
 

@@ -40,8 +40,6 @@
 #include "cpu/cpu_map.h"
 #include "virstring.h"
 
-static const char *abs_top_srcdir;
-
 #define VIR_FROM_THIS VIR_FROM_CPU
 
 enum cpuTestBoolWithError {
@@ -504,17 +502,6 @@ static int
 mymain(void)
 {
     int ret = 0;
-    char *map = NULL;
-
-    abs_top_srcdir = getenv("abs_top_srcdir");
-    if (!abs_top_srcdir)
-        abs_top_srcdir = abs_srcdir "/..";
-
-    if (virAsprintf(&map, "%s/src/cpu/cpu_map.xml", abs_top_srcdir) < 0 ||
-        cpuMapOverride(map) < 0) {
-        VIR_FREE(map);
-        return EXIT_FAILURE;
-    }
 
 #define DO_TEST(arch, api, name, host, cpu,                             \
                 models, nmodels, preferred, flags, result)              \
@@ -657,7 +644,6 @@ mymain(void)
     DO_TEST_GUESTDATA("ppc64", "host", "guest", ppc_models, NULL, 0);
     DO_TEST_GUESTDATA("ppc64", "host", "guest-nofallback", ppc_models, "POWER7_v2.1", -1);
 
-    VIR_FREE(map);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

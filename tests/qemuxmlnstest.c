@@ -205,7 +205,6 @@ static int
 mymain(void)
 {
     int ret = 0;
-    char *map = NULL;
     bool json = false;
 
     abs_top_srcdir = getenv("abs_top_srcdir");
@@ -217,11 +216,6 @@ mymain(void)
         return EXIT_FAILURE;
     if (!(driver.xmlopt = virQEMUDriverCreateXMLConf(&driver)))
         return EXIT_FAILURE;
-    if (virAsprintf(&map, "%s/src/cpu/cpu_map.xml", abs_top_srcdir) < 0 ||
-        cpuMapOverride(map) < 0) {
-        VIR_FREE(map);
-        return EXIT_FAILURE;
-    }
 
 # define DO_TEST_FULL(name, migrateFrom, migrateFd, expectError, ...)   \
     do {                                                                \
@@ -266,7 +260,6 @@ mymain(void)
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
-    VIR_FREE(map);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

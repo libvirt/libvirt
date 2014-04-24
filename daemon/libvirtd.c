@@ -1158,25 +1158,6 @@ int main(int argc, char **argv) {
 
     virFileActivateDirOverride(argv[0]);
 
-    if (strstr(argv[0], "lt-libvirtd") ||
-        strstr(argv[0], "/daemon/.libs/libvirtd")) {
-        char *tmp = strrchr(argv[0], '/');
-        char *cpumap;
-        if (!tmp) {
-            fprintf(stderr, _("%s: cannot identify driver directory\n"), argv[0]);
-            exit(EXIT_FAILURE);
-        }
-        *tmp = '\0';
-        if (virAsprintfQuiet(&cpumap, "%s/../../src/cpu/cpu_map.xml",
-                             argv[0]) < 0) {
-            fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
-            exit(EXIT_FAILURE);
-        }
-        cpuMapOverride(cpumap);
-        VIR_FREE(cpumap);
-        *tmp = '/';
-    }
-
     while (1) {
         int optidx = 0;
         int c;
