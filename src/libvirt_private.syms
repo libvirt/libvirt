@@ -840,7 +840,6 @@ virLockManagerPluginRef;
 virLockManagerPluginUnref;
 virLockManagerPluginUsesState;
 virLockManagerRelease;
-virLockManagerSetPluginDir;
 
 
 # nodeinfo.h

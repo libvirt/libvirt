@@ -1179,7 +1179,6 @@ int main(int argc, char **argv) {
                     argv[0], driverdir);
             exit(EXIT_FAILURE);
         }
-        virLockManagerSetPluginDir(driverdir);
 #ifdef WITH_DRIVER_MODULES
         virDriverModuleInitialize(driverdir);
 #endif

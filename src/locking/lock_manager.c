@@ -24,6 +24,7 @@
 #include "lock_manager.h"
 #include "lock_driver_nop.h"
 #include "virerror.h"
+#include "virfile.h"
 #include "virlog.h"
 #include "viralloc.h"
 #include "viruuid.h"
@@ -63,18 +64,6 @@ struct _virLockManagerPlugin {
     void *handle;
     int refs;
 };
-
-#define DEFAULT_LOCK_MANAGER_PLUGIN_DIR LIBDIR "/libvirt/lock-driver"
-
-static const char *virLockManagerPluginDir = DEFAULT_LOCK_MANAGER_PLUGIN_DIR;
-
-void
-virLockManagerSetPluginDir(const char *dir)
-{
-    if (dir)
-        virLockManagerPluginDir = dir;
-}
-
 
 static void virLockManagerLogParams(size_t nparams,
                                     virLockManagerParamPtr params)
@@ -137,7 +126,6 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
     void *handle = NULL;
     virLockDriverPtr driver;
     virLockManagerPluginPtr plugin = NULL;
-    const char *moddir = virGetEnvBlockSUID("LIBVIRT_LOCK_MANAGER_PLUGIN_DIR");
     char *modfile = NULL;
     char *configFile = NULL;
 
@@ -151,13 +139,15 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
     if (STREQ(name, "nop")) {
         driver = &virLockDriverNop;
     } else {
-        if (moddir == NULL)
-            moddir = virLockManagerPluginDir;
-
-        VIR_DEBUG("Module load %s from %s", name, moddir);
-
-        if (virAsprintf(&modfile, "%s/%s.so", moddir, name) < 0)
+        if (!(modfile = virFileFindResourceFull(name,
+                                                NULL,
+                                                ".so",
+                                                "src/.libs",
+                                                LIBDIR "/libvirt/lock-driver",
+                                                "LIBVIRT_LOCK_MANAGER_PLUGIN_DIR")))
             goto cleanup;
+
+        VIR_DEBUG("Module load %s from %s", name, modfile);
 
         if (access(modfile, R_OK) < 0) {
             virReportSystemError(errno,

@@ -28,7 +28,6 @@
 typedef struct _virLockManagerPlugin virLockManagerPlugin;
 typedef virLockManagerPlugin *virLockManagerPluginPtr;
 
-void virLockManagerSetPluginDir(const char *dir);
 virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
                                                 const char *driverName,
                                                 const char *configDir,
