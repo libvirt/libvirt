@@ -1543,6 +1543,7 @@ libvirt_driver_nwfilter_la_SOURCES =
 libvirt_driver_nwfilter_la_LIBADD = libvirt_driver_nwfilter_impl.la
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_nwfilter.la
+libvirt_driver_nwfilter_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 else ! WITH_DRIVER_MODULES
 noinst_LTLIBRARIES += libvirt_driver_nwfilter.la
 # Stateful, so linked to daemon instead
