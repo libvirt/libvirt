@@ -174,37 +174,6 @@ remoteStateInitialize(bool privileged ATTRIBUTE_UNUSED,
 }
 #endif
 
-#ifndef WIN32
-/**
- * remoteFindDaemonPath:
- *
- * Tries to find the path to the libvirtd binary.
- *
- * Returns path on success or NULL in case of error.
- */
-static const char *
-remoteFindDaemonPath(void)
-{
-    static const char *serverPaths[] = {
-        SBINDIR "/libvirtd",
-        SBINDIR "/libvirtd_dbg",
-        NULL
-    };
-    size_t i;
-    const char *customDaemon = virGetEnvBlockSUID("LIBVIRTD_PATH");
-
-    if (customDaemon)
-        return customDaemon;
-
-    for (i = 0; serverPaths[i]; i++) {
-        if (virFileIsExecutable(serverPaths[i])) {
-            return serverPaths[i];
-        }
-    }
-    return NULL;
-}
-#endif
-
 
 static void
 remoteDomainBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -887,14 +856,13 @@ doRemoteOpen(virConnectPtr conn,
         }
 
         if ((flags & VIR_DRV_OPEN_REMOTE_AUTOSTART) &&
-            !(daemonPath = remoteFindDaemonPath())) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to locate libvirtd daemon in %s "
-                             "(to override, set $LIBVIRTD_PATH to the "
-                             "name of the libvirtd binary)"),
-                           SBINDIR);
+            !(daemonPath = virFileFindResourceFull("libvirtd",
+                                                   NULL, NULL,
+                                                   "daemon",
+                                                   SBINDIR,
+                                                   "LIBVIRTD_PATH")))
             goto failed;
-        }
+
         if (!(priv->client = virNetClientNewUNIX(sockname,
                                                  flags & VIR_DRV_OPEN_REMOTE_AUTOSTART,
                                                  daemonPath)))
