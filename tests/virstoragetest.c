@@ -98,6 +98,7 @@ testStorageFileGetMetadata(const char *path,
                            uid_t uid, gid_t gid,
                            bool allow_probe)
 {
+    struct stat st;
     virStorageSourcePtr ret = NULL;
 
     if (VIR_ALLOC(ret) < 0)
@@ -105,6 +106,15 @@ testStorageFileGetMetadata(const char *path,
 
     ret->type = VIR_STORAGE_TYPE_FILE;
     ret->format = format;
+
+    if (stat(path, &st) == 0) {
+        if (S_ISDIR(st.st_mode)) {
+            ret->type = VIR_STORAGE_TYPE_DIR;
+            ret->format = VIR_STORAGE_FILE_DIR;
+        } else if (S_ISBLK(st.st_mode)) {
+            ret->type = VIR_STORAGE_TYPE_BLOCK;
+        }
+    }
 
     if (VIR_STRDUP(ret->relPath, path) < 0)
         goto error;
