@@ -169,6 +169,9 @@ typedef virStorageFileBackend *virStorageFileBackendPtr;
 struct _virStorageDriverData {
     virStorageFileBackendPtr backend;
     void *priv;
+
+    uid_t uid;
+    gid_t gid;
 };
 
 typedef int

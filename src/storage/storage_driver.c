@@ -2801,12 +2801,36 @@ virStorageFileDeinit(virStorageSourcePtr src)
 }
 
 
+/**
+ * virStorageFileInitAs:
+ *
+ * @src: storage source definition
+ * @uid: uid used to access the file, or -1 for current uid
+ * @gid: gid used to access the file, or -1 for current gid
+ *
+ * Initialize a storage source to be used with storage driver. Use the provided
+ * uid and gid if possible for the operations.
+ *
+ * Returns 0 if the storage file was successfully initialized, -1 if the
+ * initialization failed. Libvirt error is reported.
+ */
 int
-virStorageFileInit(virStorageSourcePtr src)
+virStorageFileInitAs(virStorageSourcePtr src,
+                     uid_t uid, gid_t gid)
 {
     int actualType = virStorageSourceGetActualType(src);
     if (VIR_ALLOC(src->drv) < 0)
         return -1;
+
+    if (uid == (uid_t) -1)
+        src->drv->uid = geteuid();
+    else
+        src->drv->uid = uid;
+
+    if (gid == (gid_t) -1)
+        src->drv->gid = getegid();
+    else
+        src->drv->gid = gid;
 
     if (!(src->drv->backend = virStorageFileBackendForType(actualType,
                                                            src->protocol)))
@@ -2821,6 +2845,19 @@ virStorageFileInit(virStorageSourcePtr src)
  error:
     VIR_FREE(src->drv);
     return -1;
+}
+
+
+/**
+ * virStorageFileInit:
+ *
+ * See virStorageFileInitAs. The file is initialized to be accessed by the
+ * current user.
+ */
+int
+virStorageFileInit(virStorageSourcePtr src)
+{
+    return virStorageFileInitAs(src, -1, -1);
 }
 
 

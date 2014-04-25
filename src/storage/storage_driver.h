@@ -29,8 +29,9 @@
 # include "storage_conf.h"
 # include "virstoragefile.h"
 
-int
-virStorageFileInit(virStorageSourcePtr src);
+int virStorageFileInit(virStorageSourcePtr src);
+int virStorageFileInitAs(virStorageSourcePtr src,
+                         uid_t uid, gid_t gid);
 void virStorageFileDeinit(virStorageSourcePtr src);
 
 int virStorageFileCreate(virStorageSourcePtr src);
