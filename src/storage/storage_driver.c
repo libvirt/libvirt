@@ -3111,6 +3111,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
 {
     int fd;
     int ret = -1;
+    struct stat st;
     virStorageSourcePtr backingStore = NULL;
     int backingFormat;
 
@@ -3172,6 +3173,16 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
                      src->backingStoreRaw, src->path);
             ret = 0;
             goto cleanup;
+        }
+
+        /* update the type for local storage */
+        if (stat(backingStore->path, &st) == 0) {
+            if (S_ISDIR(st.st_mode)) {
+                backingStore->type = VIR_STORAGE_TYPE_DIR;
+                backingStore->format = VIR_STORAGE_FILE_DIR;
+            } else if (S_ISBLK(st.st_mode)) {
+                backingStore->type = VIR_STORAGE_TYPE_BLOCK;
+            }
         }
     } else {
         /* TODO: To satisfy the test case, copy the network URI as path. This
