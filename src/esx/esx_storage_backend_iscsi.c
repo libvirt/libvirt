@@ -621,6 +621,52 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool ATTRIBUTE_UNUSED,
 
 
 
+static int
+esxStorageVolGetInfo(virStorageVolPtr volume,
+                     virStorageVolInfoPtr info)
+{
+    int result = -1;
+    esxPrivate *priv = volume->conn->storagePrivateData;
+    esxVI_ScsiLun *scsiLunList = NULL;
+    esxVI_ScsiLun *scsiLun;
+    esxVI_HostScsiDisk *hostScsiDisk = NULL;
+
+    if (esxVI_LookupScsiLunList(priv->primary, &scsiLunList) < 0) {
+        goto cleanup;
+    }
+
+    for (scsiLun = scsiLunList; scsiLun;
+         scsiLun = scsiLun->_next) {
+        hostScsiDisk = esxVI_HostScsiDisk_DynamicCast(scsiLun);
+
+        if (hostScsiDisk &&
+            STREQ(hostScsiDisk->deviceName, volume->name)) {
+            break;
+        }
+    }
+
+    if (!hostScsiDisk) {
+        virReportError(VIR_ERR_NO_STORAGE_VOL,
+                       _("Could not find volume with name: %s"),
+                       volume->name);
+        goto cleanup;
+    }
+
+    info->type = VIR_STORAGE_VOL_BLOCK;
+    info->capacity = hostScsiDisk->capacity->block->value *
+                     hostScsiDisk->capacity->blockSize->value;
+    info->allocation = info->capacity;
+
+    result = 0;
+
+ cleanup:
+    esxVI_ScsiLun_Free(&scsiLunList);
+
+    return result;
+}
+
+
+
 static char *
 esxStorageVolGetXMLDesc(virStorageVolPtr volume,
                         unsigned int flags)
@@ -752,6 +798,7 @@ virStorageDriver esxStorageBackendISCSI = {
     .storageVolLookupByKey = esxStorageVolLookupByKey, /* 1.0.1 */
     .storageVolCreateXML = esxStorageVolCreateXML, /* 1.0.1 */
     .storageVolCreateXMLFrom = esxStorageVolCreateXMLFrom, /* 1.0.1 */
+    .storageVolGetInfo = esxStorageVolGetInfo, /* 1.2.5 */
     .storageVolGetXMLDesc = esxStorageVolGetXMLDesc, /* 1.0.1 */
     .storageVolDelete = esxStorageVolDelete, /* 1.0.1 */
     .storageVolWipe = esxStorageVolWipe, /* 1.0.1 */
