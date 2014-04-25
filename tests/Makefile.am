@@ -96,6 +96,7 @@ EXTRA_DIST =		\
 	nodedevschematest \
 	nodeinfodata     \
 	nwfilterschematest \
+	nwfilterxml2firewalldata \
 	nwfilterxml2xmlin \
 	nwfilterxml2xmlout \
 	oomtrace.pl \
