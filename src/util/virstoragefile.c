@@ -740,8 +740,7 @@ qcow2GetFeatures(virBitmapPtr *features,
  * with information about the file and its backing store. Return format
  * of the backing store as BACKING_FORMAT. PATH and FORMAT have to be
  * pre-populated in META */
-static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-ATTRIBUTE_NONNULL(4)
+int
 virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
                                   char *buf,
                                   size_t len,
@@ -955,7 +954,7 @@ virStorageFileGetMetadataFromBuf(const char *path,
 
 
 /* Internal version that also supports a containing directory name.  */
-int
+static int
 virStorageFileGetMetadataFromFDInternal(virStorageSourcePtr meta,
                                         int fd,
                                         int *backingFormat)

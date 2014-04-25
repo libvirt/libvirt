@@ -1865,7 +1865,7 @@ virStorageFileFormatTypeToString;
 virStorageFileGetLVMKey;
 virStorageFileGetMetadataFromBuf;
 virStorageFileGetMetadataFromFD;
-virStorageFileGetMetadataFromFDInternal;
+virStorageFileGetMetadataInternal;
 virStorageFileGetSCSIKey;
 virStorageFileIsClusterFS;
 virStorageFileParseChainIndex;

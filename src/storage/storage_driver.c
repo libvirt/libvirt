@@ -3132,10 +3132,11 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
                                  bool allow_probe,
                                  virHashTablePtr cycle)
 {
-    int fd;
     int ret = -1;
     struct stat st;
     const char *uniqueName;
+    char *buf = NULL;
+    ssize_t headerLen;
     virStorageSourcePtr backingStore = NULL;
     int backingFormat;
 
@@ -3163,26 +3164,13 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     if (virHashAddEntry(cycle, uniqueName, (void *)1) < 0)
         goto cleanup;
 
-    if (virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_NETWORK) {
-        if ((fd = virFileOpenAs(src->path, O_RDONLY, 0, uid, gid, 0)) < 0) {
-            virReportSystemError(-fd, _("Failed to open file '%s'"),
-                                 src->path);
-            goto cleanup;
-        }
-
-        if (virStorageFileGetMetadataFromFDInternal(src, fd,
-                                                    &backingFormat) < 0) {
-            VIR_FORCE_CLOSE(fd);
-            goto cleanup;
-        }
-
-        if (VIR_CLOSE(fd) < 0)
-            VIR_WARN("could not close file %s", src->path);
-    } else {
-        /* TODO: currently we call this only for local storage */
-        ret = 0;
+    if ((headerLen = virStorageFileReadHeader(src, VIR_STORAGE_MAX_HEADER,
+                                              &buf)) < 0)
         goto cleanup;
-    }
+
+    if (virStorageFileGetMetadataInternal(src, buf, headerLen,
+                                          &backingFormat) < 0)
+        goto cleanup;
 
     /* check whether we need to go deeper */
     if (!src->backingStoreRaw) {
