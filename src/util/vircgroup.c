@@ -3137,6 +3137,7 @@ virCgroupRemoveRecursively(char *grppath)
     DIR *grpdir;
     struct dirent *ent;
     int rc = 0;
+    int direrr;
 
     grpdir = opendir(grppath);
     if (grpdir == NULL) {
@@ -3147,16 +3148,10 @@ virCgroupRemoveRecursively(char *grppath)
         return rc;
     }
 
-    for (;;) {
+    /* This is best-effort cleanup: we want to log failures with just
+     * VIR_ERROR instead of normal virReportError */
+    while ((direrr = virDirRead(grpdir, &ent, NULL)) > 0) {
         char *path;
-
-        errno = 0;
-        ent = readdir(grpdir);
-        if (ent == NULL) {
-            if ((rc = -errno))
-                VIR_ERROR(_("Failed to readdir for %s (%d)"), grppath, errno);
-            break;
-        }
 
         if (ent->d_name[0] == '.') continue;
         if (ent->d_type != DT_DIR) continue;
@@ -3170,6 +3165,11 @@ virCgroupRemoveRecursively(char *grppath)
         if (rc != 0)
             break;
     }
+    if (direrr < 0) {
+        rc = -errno;
+        VIR_ERROR(_("Failed to readdir for %s (%d)"), grppath, errno);
+    }
+
     closedir(grpdir);
 
     VIR_DEBUG("Removing cgroup %s", grppath);
@@ -3373,6 +3373,7 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
     DIR *dp;
     virCgroupPtr subgroup = NULL;
     struct dirent *ent;
+    int direrr;
     VIR_DEBUG("group=%p path=%s signum=%d pids=%p",
               group, group->path, signum, pids);
 
@@ -3396,7 +3397,7 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
         return -1;
     }
 
-    while ((ent = readdir(dp))) {
+    while ((direrr = virDirRead(dp, &ent, keypath)) > 0) {
         if (STREQ(ent->d_name, "."))
             continue;
         if (STREQ(ent->d_name, ".."))
@@ -3420,6 +3421,8 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
 
         virCgroupFree(&subgroup);
     }
+    if (direrr < 0)
+        goto cleanup;
 
  done:
     ret = killedAny ? 1 : 0;
@@ -3701,6 +3704,7 @@ int virCgroupSetOwner(virCgroupPtr cgroup,
     size_t i;
     char *base = NULL, *entry = NULL;
     DIR *dh = NULL;
+    int direrr;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         struct dirent *de;
@@ -3721,7 +3725,7 @@ int virCgroupSetOwner(virCgroupPtr cgroup,
             goto cleanup;
         }
 
-        while ((de = readdir(dh)) != NULL) {
+        while ((direrr = virDirRead(dh, &de, base)) > 0) {
             if (STREQ(de->d_name, ".") ||
                 STREQ(de->d_name, ".."))
                 continue;
@@ -3738,6 +3742,8 @@ int virCgroupSetOwner(virCgroupPtr cgroup,
 
             VIR_FREE(entry);
         }
+        if (direrr < 0)
+            goto cleanup;
 
         if (chown(base, uid, gid) < 0) {
             virReportSystemError(errno,

@@ -1,7 +1,7 @@
 /*
  * virpci.c: helper APIs for managing host PCI devices
  *
- * Copyright (C) 2009-2013 Red Hat, Inc.
+ * Copyright (C) 2009-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -445,7 +445,7 @@ virPCIDeviceIterDevices(virPCIDeviceIterPredicate predicate,
         return -1;
     }
 
-    while ((entry = readdir(dir))) {
+    while ((ret = virDirRead(dir, &entry, PCI_SYSFS "devices")) > 0) {
         unsigned int domain, bus, slot, function;
         virPCIDevicePtr check;
         char *tmp;
@@ -1907,6 +1907,7 @@ int virPCIDeviceFileIterate(virPCIDevicePtr dev,
     DIR *dir = NULL;
     int ret = -1;
     struct dirent *ent;
+    int direrr;
 
     if (virAsprintf(&pcidir, "/sys/bus/pci/devices/%04x:%02x:%02x.%x",
                     dev->domain, dev->bus, dev->slot, dev->function) < 0)
@@ -1918,7 +1919,7 @@ int virPCIDeviceFileIterate(virPCIDevicePtr dev,
         goto cleanup;
     }
 
-    while ((ent = readdir(dir)) != NULL) {
+    while ((direrr = virDirRead(dir, &ent, pcidir)) > 0) {
         /* Device assignment requires:
          *   $PCIDIR/config, $PCIDIR/resource, $PCIDIR/resourceNNN,
          *   $PCIDIR/rom, $PCIDIR/reset
@@ -1935,6 +1936,8 @@ int virPCIDeviceFileIterate(virPCIDevicePtr dev,
             VIR_FREE(file);
         }
     }
+    if (direrr < 0)
+        goto cleanup;
 
     ret = 0;
 
@@ -1961,6 +1964,7 @@ virPCIDeviceAddressIOMMUGroupIterate(virPCIDeviceAddressPtr orig,
     DIR *groupDir = NULL;
     int ret = -1;
     struct dirent *ent;
+    int direrr;
 
     if (virAsprintf(&groupPath,
                     PCI_SYSFS "devices/%04x:%02x:%02x.%x/iommu_group/devices",
@@ -1973,7 +1977,7 @@ virPCIDeviceAddressIOMMUGroupIterate(virPCIDeviceAddressPtr orig,
         goto cleanup;
     }
 
-    while ((errno = 0, ent = readdir(groupDir)) != NULL) {
+    while ((direrr = virDirRead(groupDir, &ent, groupPath)) > 0) {
         virPCIDeviceAddress newDev;
 
         if (ent->d_name[0] == '.')
@@ -1989,12 +1993,8 @@ virPCIDeviceAddressIOMMUGroupIterate(virPCIDeviceAddressPtr orig,
         if ((actor)(&newDev, opaque) < 0)
             goto cleanup;
     }
-    if (errno != 0) {
-        virReportSystemError(errno,
-                             _("Failed to read directory entry for %s"),
-                             groupPath);
+    if (direrr < 0)
         goto cleanup;
-    }
 
     ret = 0;
 
@@ -2638,7 +2638,7 @@ virPCIGetNetName(char *device_link_sysfs_path, char **netname)
     if (dir == NULL)
         goto out;
 
-    while ((entry = readdir(dir))) {
+    while (virDirRead(dir, &entry, pcidev_sysfs_net_path) > 0) {
         if (STREQ(entry->d_name, ".") ||
             STREQ(entry->d_name, ".."))
             continue;

@@ -1867,7 +1867,7 @@ virGetFCHostNameByWWN(const char *sysfs_prefix,
             p = buf;                                  \
     } while (0)
 
-    while ((entry = readdir(dir))) {
+    while (virDirRead(dir, &entry, prefix) > 0) {
         if (entry->d_name[0] == '.')
             continue;
 
@@ -1949,7 +1949,7 @@ virFindFCHostCapableVport(const char *sysfs_prefix)
         return NULL;
     }
 
-    while ((entry = readdir(dir))) {
+    while (virDirRead(dir, &entry, prefix) > 0) {
         unsigned int host;
         char *p = NULL;
 

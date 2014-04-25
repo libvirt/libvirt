@@ -607,6 +607,7 @@ static int virFileLoopDeviceOpenSearch(char **dev_name)
     struct dirent *de;
     char *looppath = NULL;
     struct loop_info64 lo;
+    int direrr;
 
     VIR_DEBUG("Looking for loop devices in /dev");
 
@@ -616,8 +617,7 @@ static int virFileLoopDeviceOpenSearch(char **dev_name)
         goto cleanup;
     }
 
-    errno = 0;
-    while ((de = readdir(dh)) != NULL) {
+    while ((direrr = virDirRead(dh, &de, "/dev")) > 0) {
         /* Checking 'loop' prefix is insufficient, since
          * new kernels have a dev named 'loop-control'
          */
@@ -650,15 +650,11 @@ static int virFileLoopDeviceOpenSearch(char **dev_name)
         /* Oh well, try the next device */
         VIR_FORCE_CLOSE(fd);
         VIR_FREE(looppath);
-        errno = 0;
     }
-
-    if (errno != 0)
-        virReportSystemError(errno, "%s",
-                             _("Unable to iterate over loop devices"));
-    else
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unable to find a free loop device in /dev"));
+    if (direrr < 0)
+        goto cleanup;
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("Unable to find a free loop device in /dev"));
 
  cleanup:
     if (fd != -1) {
@@ -781,6 +777,7 @@ virFileNBDDeviceFindUnused(void)
     DIR *dh;
     char *ret = NULL;
     struct dirent *de;
+    int direrr;
 
     if (!(dh = opendir(SYSFS_BLOCK_DIR))) {
         virReportSystemError(errno,
@@ -789,8 +786,7 @@ virFileNBDDeviceFindUnused(void)
         return NULL;
     }
 
-    errno = 0;
-    while ((de = readdir(dh)) != NULL) {
+    while ((direrr = virDirRead(dh, &de, SYSFS_BLOCK_DIR)) > 0) {
         if (STRPREFIX(de->d_name, "nbd")) {
             int rv = virFileNBDDeviceIsBusy(de->d_name);
             if (rv < 0)
@@ -801,15 +797,11 @@ virFileNBDDeviceFindUnused(void)
                 goto cleanup;
             }
         }
-        errno = 0;
     }
-
-    if (errno != 0)
-        virReportSystemError(errno, "%s",
-                             _("Unable to iterate over NBD devices"));
-    else
-        virReportSystemError(EBUSY, "%s",
-                             _("No free NBD devices"));
+    if (direrr < 0)
+        goto cleanup;
+    virReportSystemError(EBUSY, "%s",
+                         _("No free NBD devices"));
 
  cleanup:
     closedir(dh);
@@ -918,6 +910,7 @@ int virFileDeleteTree(const char *dir)
     struct dirent *de;
     char *filepath = NULL;
     int ret = -1;
+    int direrr;
 
     if (!dh) {
         virReportSystemError(errno, _("Cannot open dir '%s'"),
@@ -925,8 +918,7 @@ int virFileDeleteTree(const char *dir)
         return -1;
     }
 
-    errno = 0;
-    while ((de = readdir(dh)) != NULL) {
+    while ((direrr = virDirRead(dh, &de, dir)) > 0) {
         struct stat sb;
 
         if (STREQ(de->d_name, ".") ||
@@ -956,14 +948,9 @@ int virFileDeleteTree(const char *dir)
         }
 
         VIR_FREE(filepath);
-        errno = 0;
     }
-
-    if (errno) {
-        virReportSystemError(errno, _("Cannot read dir '%s'"),
-                             dir);
+    if (direrr < 0)
         goto cleanup;
-    }
 
     if (rmdir(dir) < 0 && errno != ENOENT) {
         virReportSystemError(errno,

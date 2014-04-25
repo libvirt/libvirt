@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2007-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -105,7 +105,7 @@ virNetDevTapGetRealDeviceName(char *ifname ATTRIBUTE_UNUSED)
         return NULL;
     }
 
-    while ((dp = readdir(dirp)) != NULL) {
+    while (virDirRead(dirp, &dp, "/dev") > 0) {
         if (STRPREFIX(dp->d_name, "tap")) {
             struct ifreq ifr;
             if (virAsprintf(&devpath, "/dev/%s", dp->d_name) < 0) {
@@ -139,13 +139,7 @@ virNetDevTapGetRealDeviceName(char *ifname ATTRIBUTE_UNUSED)
             VIR_FREE(devpath);
             VIR_FORCE_CLOSE(fd);
         }
-
-        errno = 0;
     }
-
-    if (errno != 0)
-        virReportSystemError(errno, "%s",
-                             _("Unable to iterate over TAP devices"));
 
  cleanup:
     VIR_FREE(devpath);

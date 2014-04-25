@@ -133,12 +133,13 @@ virSCSIDeviceGetSgName(const char *sysfs_prefix,
         goto cleanup;
     }
 
-    while ((entry = readdir(dir))) {
+    while (virDirRead(dir, &entry, path) > 0) {
         if (entry->d_name[0] == '.')
             continue;
 
-        if (VIR_STRDUP(sg, entry->d_name) < 0)
-            goto cleanup;
+        /* Assume a single directory entry */
+        ignore_value(VIR_STRDUP(sg, entry->d_name));
+        break;
     }
 
  cleanup:
@@ -178,7 +179,7 @@ virSCSIDeviceGetDevName(const char *sysfs_prefix,
         goto cleanup;
     }
 
-    while ((entry = readdir(dir))) {
+    while (virDirRead(dir, &entry, path) > 0) {
         if (entry->d_name[0] == '.')
             continue;
 

@@ -1,7 +1,7 @@
 /*
  * virusb.c: helper APIs for managing host USB devices
  *
- * Copyright (C) 2009-2013 Red Hat, Inc.
+ * Copyright (C) 2009-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -134,6 +134,7 @@ virUSBDeviceSearch(unsigned int vendor,
     struct dirent *de;
     virUSBDeviceListPtr list = NULL, ret = NULL;
     virUSBDevicePtr usb;
+    int direrr;
 
     if (!(list = virUSBDeviceListNew()))
         goto cleanup;
@@ -146,7 +147,7 @@ virUSBDeviceSearch(unsigned int vendor,
         goto cleanup;
     }
 
-    while ((de = readdir(dir))) {
+    while ((direrr = virDirRead(dir, &de, USB_SYSFS "/devices")) > 0) {
         unsigned int found_prod, found_vend, found_bus, found_devno;
         char *tmpstr = de->d_name;
 
@@ -197,6 +198,8 @@ virUSBDeviceSearch(unsigned int vendor,
         if (found)
             break;
     }
+    if (direrr < 0)
+        goto cleanup;
     ret = list;
 
  cleanup:
