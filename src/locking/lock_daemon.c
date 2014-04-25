@@ -1143,6 +1143,7 @@ virLockDaemonUsage(const char *argv0, bool privileged)
               "  -h | --help            Display program help:\n"
               "  -v | --verbose         Verbose messages.\n"
               "  -d | --daemon          Run as a daemon & write PID file.\n"
+              "  -t | --timeout <secs>  Exit after timeout period.\n"
               "  -f | --config <file>   Configuration file.\n"
               "  -V | --version         Display version information.\n"
               "  -p | --pid-file <file> Change name of PID file.\n"
@@ -1195,6 +1196,7 @@ int main(int argc, char **argv) {
     char *pid_file = NULL;
     int pid_file_fd = -1;
     char *sock_file = NULL;
+    int timeout = -1;        /* -t: Shutdown timeout */
     char *state_file = NULL;
     bool implicit_conf = false;
     mode_t old_umask;
@@ -1206,6 +1208,7 @@ int main(int argc, char **argv) {
         { "verbose", no_argument, &verbose, 'v'},
         { "daemon", no_argument, &godaemon, 'd'},
         { "config", required_argument, NULL, 'f'},
+        { "timeout", required_argument, NULL, 't'},
         { "pid-file", required_argument, NULL, 'p'},
         { "version", no_argument, NULL, 'V' },
         { "help", no_argument, NULL, 'h' },
@@ -1226,6 +1229,7 @@ int main(int argc, char **argv) {
     while (1) {
         int optidx = 0;
         int c;
+        char *tmp;
 
         c = getopt_long(argc, argv, "ldf:p:t:vVh", opts, &optidx);
 
@@ -1242,6 +1246,16 @@ int main(int argc, char **argv) {
             break;
         case 'd':
             godaemon = 1;
+            break;
+
+        case 't':
+            if (virStrToLong_i(optarg, &tmp, 10, &timeout) != 0
+                || timeout <= 0
+                /* Ensure that we can multiply by 1000 without overflowing.  */
+                || timeout > INT_MAX / 1000) {
+                VIR_ERROR(_("Invalid value for timeout"));
+                exit(EXIT_FAILURE);
+            }
             break;
 
         case 'p':
@@ -1405,6 +1419,12 @@ int main(int argc, char **argv) {
             ret = VIR_LOCK_DAEMON_ERR_NETWORK;
             goto cleanup;
         }
+    }
+
+    if (timeout != -1) {
+        VIR_DEBUG("Registering shutdown timeout %d", timeout);
+        virNetServerAutoShutdown(lockDaemon->srv,
+                                 timeout);
     }
 
     if ((virLockDaemonSetupSignals(lockDaemon->srv)) < 0) {
