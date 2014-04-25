@@ -22,7 +22,9 @@
 #ifndef __VIR_MOCK_H__
 # define __VIR_MOCK_H__
 
-# include <dlfcn.h>
+# if HAVE_DLFCN_H
+#  include <dlfcn.h>
+# endif
 # include <stdlib.h>
 # include <stdio.h>
 
