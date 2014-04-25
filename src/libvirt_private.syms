@@ -1883,6 +1883,7 @@ virStorageSourceClear;
 virStorageSourceClearBackingStore;
 virStorageSourceFree;
 virStorageSourceGetActualType;
+virStorageSourceNewFromBacking;
 virStorageSourcePoolDefFree;
 virStorageSourcePoolModeTypeFromString;
 virStorageSourcePoolModeTypeToString;

@@ -38,6 +38,8 @@
 #include "virendian.h"
 #include "virstring.h"
 #include "virutil.h"
+#include "viruri.h"
+#include "dirname.h"
 #if HAVE_SYS_SYSCALL_H
 # include <sys/syscall.h>
 #endif
@@ -656,6 +658,19 @@ virStorageIsFile(const char *backing)
      * includes ':', they can always prefix './'.  */
     if (colon && (!slash || colon < slash))
         return false;
+    return true;
+}
+
+
+static bool
+virStorageIsRelative(const char *backing)
+{
+    if (backing[0] == '/')
+        return false;
+
+    if (!virStorageIsFile(backing))
+        return false;
+
     return true;
 }
 
@@ -1562,4 +1577,353 @@ virStorageSourceFree(virStorageSourcePtr def)
 
     virStorageSourceClear(def);
     VIR_FREE(def);
+}
+
+
+static virStorageSourcePtr
+virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
+                                       const char *rel)
+{
+    char *dirname = NULL;
+    const char *parentdir = "";
+    virStorageSourcePtr ret;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    ret->backingRelative = true;
+
+    /* XXX Once we get rid of the need to use canonical names in path, we will be
+     * able to use mdir_name on parent->path instead of using parent->relDir */
+    if (STRNEQ(parent->relDir, "/"))
+        parentdir = parent->relDir;
+
+    if (virAsprintf(&ret->path, "%s/%s", parentdir, rel) < 0)
+        goto error;
+
+    if (virStorageSourceGetActualType(parent) != VIR_STORAGE_TYPE_NETWORK) {
+        ret->type = VIR_STORAGE_TYPE_FILE;
+
+        /* XXX store the relative directory name for test's sake */
+        if (!(ret->relDir = mdir_name(ret->path))) {
+            virReportOOMError();
+            goto error;
+        }
+
+        /* XXX we don't currently need to store the canonical path but the
+         * change would break the test suite. Get rid of this later */
+        char *tmp = ret->path;
+        if (!(ret->path = canonicalize_file_name(tmp))) {
+            ret->path = tmp;
+            tmp = NULL;
+        }
+        VIR_FREE(tmp);
+    } else {
+        ret->type = VIR_STORAGE_TYPE_NETWORK;
+
+        /* copy the host network part */
+        ret->protocol = parent->protocol;
+        if (!(ret->hosts = virStorageNetHostDefCopy(parent->nhosts, parent->hosts)))
+            goto error;
+        ret->nhosts = parent->nhosts;
+
+        if (VIR_STRDUP(ret->volume, parent->volume) < 0)
+            goto error;
+
+        /* XXX store the relative directory name for test's sake */
+        if (!(ret->relDir = mdir_name(ret->path))) {
+            virReportOOMError();
+            goto error;
+        }
+    }
+
+ cleanup:
+    VIR_FREE(dirname);
+    return ret;
+
+ error:
+    virStorageSourceFree(ret);
+    ret = NULL;
+    goto cleanup;
+}
+
+
+static int
+virStorageSourceParseBackingURI(virStorageSourcePtr src,
+                                const char *path)
+{
+    virURIPtr uri = NULL;
+    char **scheme = NULL;
+    int ret = -1;
+
+    if (!(uri = virURIParse(path))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to parse backing file location '%s'"),
+                       path);
+        goto cleanup;
+    }
+
+    if (!(scheme = virStringSplit(uri->scheme, "+", 2)))
+        goto cleanup;
+
+    if (!scheme[0] ||
+        (src->protocol = virStorageNetProtocolTypeFromString(scheme[0])) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid backing protocol '%s'"),
+                       NULLSTR(scheme[0]));
+        goto cleanup;
+    }
+
+    if (scheme[1] &&
+        (src->hosts->transport = virStorageNetHostTransportTypeFromString(scheme[1])) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid protocol transport type '%s'"),
+                       scheme[1]);
+        goto cleanup;
+    }
+
+    /* handle socket stored as a query */
+    if (uri->query) {
+        if (VIR_STRDUP(src->hosts->socket, STRSKIP(uri->query, "socket=")) < 0)
+            goto cleanup;
+    }
+
+    /* XXX We currently don't support auth, so don't bother parsing it */
+
+    /* possibly skip the leading slash */
+    if (VIR_STRDUP(src->path,
+                   *uri->path == '/' ? uri->path + 1 : uri->path) < 0)
+        goto cleanup;
+
+    if (src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER) {
+        char *tmp;
+        if (!(tmp = strchr(src->path, '/')) ||
+            tmp == src->path) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("missing volume name or file name in "
+                             "gluster source path '%s'"), src->path);
+            goto cleanup;
+        }
+
+        src->volume = src->path;
+
+        if (VIR_STRDUP(src->path, tmp) < 0)
+            goto cleanup;
+
+        tmp[0] = '\0';
+    }
+
+    if (VIR_ALLOC(src->hosts) < 0)
+        goto cleanup;
+
+    src->nhosts = 1;
+
+    if (uri->port > 0) {
+        if (virAsprintf(&src->hosts->port, "%d", uri->port) < 0)
+            goto cleanup;
+    }
+
+    if (VIR_STRDUP(src->hosts->name, uri->server) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virURIFree(uri);
+    virStringFreeList(scheme);
+    return ret;
+}
+
+
+static int
+virStorageSourceParseBackingColon(virStorageSourcePtr src,
+                                  const char *path)
+{
+    char **backing = NULL;
+    int ret = -1;
+
+    if (!(backing = virStringSplit(path, ":", 0)))
+        goto cleanup;
+
+    if (!backing[0] ||
+        (src->protocol = virStorageNetProtocolTypeFromString(backing[0])) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid backing protocol '%s'"),
+                       NULLSTR(backing[0]));
+        goto cleanup;
+    }
+
+    switch ((virStorageNetProtocol) src->protocol) {
+    case VIR_STORAGE_NET_PROTOCOL_NBD:
+        if (VIR_ALLOC_N(src->hosts, 1) < 0)
+            goto cleanup;
+        src->nhosts = 1;
+        src->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
+
+        /* format: [] denotes optional sections, uppercase are variable strings
+         * nbd:unix:/PATH/TO/SOCKET[:exportname=EXPORTNAME]
+         * nbd:HOSTNAME:PORT[:exportname=EXPORTNAME]
+         */
+        if (!backing[1]) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("missing remote information in '%s' for protocol nbd"),
+                           path);
+            goto cleanup;
+        } else if (STREQ(backing[1], "unix")) {
+            if (!backing[2]) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("missing unix socket path in nbd backing string %s"),
+                               path);
+                goto cleanup;
+            }
+
+            if (VIR_STRDUP(src->hosts->socket, backing[2]) < 0)
+                goto cleanup;
+
+       } else {
+            if (!backing[1]) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("missing host name in nbd string '%s'"),
+                               path);
+                goto cleanup;
+            }
+
+            if (VIR_STRDUP(src->hosts->name, backing[1]) < 0)
+                goto cleanup;
+
+            if (!backing[2]) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("missing port in nbd string '%s'"),
+                               path);
+                goto cleanup;
+            }
+
+            if (VIR_STRDUP(src->hosts->port, backing[2]) < 0)
+                goto cleanup;
+        }
+
+        if (backing[3] && STRPREFIX(backing[3], "exportname=")) {
+            if (VIR_STRDUP(src->path, backing[3] + strlen("exportname=")) < 0)
+                goto cleanup;
+        }
+     break;
+
+    case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+    case VIR_STORAGE_NET_PROTOCOL_RBD:
+    case VIR_STORAGE_NET_PROTOCOL_LAST:
+    case VIR_STORAGE_NET_PROTOCOL_NONE:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("backing store parser is not implemented for protocol %s"),
+                       backing[0]);
+        goto cleanup;
+
+    case VIR_STORAGE_NET_PROTOCOL_HTTP:
+    case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+    case VIR_STORAGE_NET_PROTOCOL_FTP:
+    case VIR_STORAGE_NET_PROTOCOL_FTPS:
+    case VIR_STORAGE_NET_PROTOCOL_TFTP:
+    case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+    case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("malformed backing store path for protocol %s"),
+                       backing[0]);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virStringFreeList(backing);
+    return ret;
+
+}
+
+
+static virStorageSourcePtr
+virStorageSourceNewFromBackingAbsolute(const char *path)
+{
+    virStorageSourcePtr ret;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    if (virStorageIsFile(path)) {
+        ret->type = VIR_STORAGE_TYPE_FILE;
+
+        /* XXX store the relative directory name for test's sake */
+        if (!(ret->relDir = mdir_name(path))) {
+            virReportOOMError();
+            goto error;
+        }
+
+        /* XXX we don't currently need to store the canonical path but the
+         * change would break the test suite. Get rid of this later */
+        if (!(ret->path = canonicalize_file_name(path))) {
+            if (VIR_STRDUP(ret->path, path) < 0)
+                goto error;
+        }
+    } else {
+        ret->type = VIR_STORAGE_TYPE_NETWORK;
+
+        /* handle URI formatted backing stores */
+        if (strstr(path, "://")) {
+            if (virStorageSourceParseBackingURI(ret, path) < 0)
+                goto error;
+        } else {
+            if (virStorageSourceParseBackingColon(ret, path) < 0)
+                goto error;
+        }
+
+        /* XXX fill relative path so that relative names work with network storage too */
+        if (ret->path) {
+            if (!(ret->relDir = mdir_name(ret->path))) {
+                virReportOOMError();
+                goto error;
+            }
+        } else {
+            if (VIR_STRDUP(ret->relDir, "") < 0)
+                goto error;
+        }
+    }
+
+    return ret;
+
+ error:
+    virStorageSourceFree(ret);
+    return NULL;
+}
+
+
+virStorageSourcePtr
+virStorageSourceNewFromBacking(virStorageSourcePtr parent)
+{
+    struct stat st;
+    virStorageSourcePtr ret;
+
+    if (virStorageIsRelative(parent->backingStoreRaw))
+        ret = virStorageSourceNewFromBackingRelative(parent,
+                                                     parent->backingStoreRaw);
+    else
+        ret = virStorageSourceNewFromBackingAbsolute(parent->backingStoreRaw);
+
+    if (ret) {
+        if (VIR_STRDUP(ret->relPath, parent->backingStoreRaw) < 0) {
+            virStorageSourceFree(ret);
+            return NULL;
+        }
+
+        /* possibly update local type */
+        if (ret->type == VIR_STORAGE_TYPE_FILE) {
+            if (stat(ret->path, &st) == 0) {
+                if (S_ISDIR(st.st_mode)) {
+                    ret->type = VIR_STORAGE_TYPE_DIR;
+                    ret->format = VIR_STORAGE_FILE_DIR;
+                } else if (S_ISBLK(st.st_mode)) {
+                    ret->type = VIR_STORAGE_TYPE_BLOCK;
+                }
+            }
+        }
+    }
+
+    return ret;
 }

@@ -256,6 +256,8 @@ struct _virStorageSource {
     /* Name of the child backing store recorded in metadata of the
      * current file.  */
     char *backingStoreRaw;
+    /* is backing store identified as relative */
+    bool backingRelative;
 };
 
 
@@ -321,5 +323,7 @@ void virStorageSourceClear(virStorageSourcePtr def);
 int virStorageSourceGetActualType(virStorageSourcePtr def);
 void virStorageSourceFree(virStorageSourcePtr def);
 void virStorageSourceClearBackingStore(virStorageSourcePtr def);
+virStorageSourcePtr virStorageSourceNewFromBacking(virStorageSourcePtr parent);
+
 
 #endif /* __VIR_STORAGE_FILE_H__ */
