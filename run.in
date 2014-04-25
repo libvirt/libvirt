@@ -55,7 +55,7 @@ export LD_LIBRARY_PATH
 
 export LIBVIRT_DRIVER_DIR="$b/src/.libs"
 export LIBVIRT_LOCK_MANAGER_PLUGIN_DIR="$b/src/.libs"
-export VIRTLOCKD_PATH="$b/src/virtlockd"
+export VIRTLOCKD_PATH="$b/src"
 export LIBVIRTD_PATH="$b/daemon"
 
 # This is a cheap way to find some use-after-free and uninitialized

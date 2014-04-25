@@ -81,22 +81,6 @@ struct _virLockManagerLockDaemonDriver {
 
 static virLockManagerLockDaemonDriverPtr driver = NULL;
 
-#define VIRTLOCKD_PATH SBINDIR "/virtlockd"
-
-static const char *
-virLockManagerLockDaemonFindDaemon(void)
-{
-    const char *customDaemon = virGetEnvBlockSUID("VIRTLOCKD_PATH");
-
-    if (customDaemon)
-        return customDaemon;
-
-    if (virFileIsExecutable(VIRTLOCKD_PATH))
-        return VIRTLOCKD_PATH;
-
-    return NULL;
-}
-
 static int virLockManagerLockDaemonLoadConfig(const char *configFile)
 {
     virConfPtr conf;
@@ -266,8 +250,13 @@ static virNetClientPtr virLockManagerLockDaemonConnectionNew(bool privileged,
     if (!(lockdpath = virLockManagerLockDaemonPath(privileged)))
         goto error;
 
-    if (!privileged)
-        daemonPath = virLockManagerLockDaemonFindDaemon();
+    if (!privileged &&
+        !(daemonPath = virFileFindResourceFull("virtlockd",
+                                               NULL, NULL,
+                                               "src",
+                                               SBINDIR,
+                                               "VIRTLOCKD_PATH")))
+        goto error;
 
     if (!(client = virNetClientNewUNIX(lockdpath,
                                        daemonPath != NULL,
