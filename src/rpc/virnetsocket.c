@@ -255,8 +255,7 @@ int virNetSocketNewListenTCP(const char *nodename,
             goto error;
         }
 
-        int opt = 1;
-        if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        if (virSetSockReuseAddr(fd) < 0) {
             virReportSystemError(errno, "%s", _("Unable to enable port reuse"));
             goto error;
         }
@@ -460,15 +459,13 @@ int virNetSocketNewConnectTCP(const char *nodename,
 
     runp = ai;
     while (runp) {
-        int opt = 1;
-
         if ((fd = socket(runp->ai_family, runp->ai_socktype,
                          runp->ai_protocol)) < 0) {
             virReportSystemError(errno, "%s", _("Unable to create socket"));
             goto error;
         }
 
-        if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        if (virSetSockReuseAddr(fd) < 0) {
             VIR_WARN("Unable to enable port reuse");
         }
 

@@ -136,6 +136,29 @@ int virSetCloseExec(int fd)
     return virSetInherit(fd, false);
 }
 
+#ifdef WIN32
+int virSetSockReuseAddr(int fd ATTRIBUTE_UNUSED)
+{
+    /*
+     * SO_REUSEADDR on Windows is actually akin to SO_REUSEPORT
+     * on Linux/BSD. ie it allows 2 apps to listen to the same
+     * port at once which is certainly not what we want here.
+     *
+     * Win32 sockets have Linux/BSD-like SO_REUSEADDR behaviour
+     * by default, so we can be a no-op.
+     *
+     * http://msdn.microsoft.com/en-us/library/windows/desktop/ms740621.aspx
+     */
+    return 0;
+}
+#else
+int virSetSockReuseAddr(int fd)
+{
+    int opt = 1;
+    return setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+}
+#endif
+
 int
 virPipeReadUntilEOF(int outfd, int errfd,
                     char **outbuf, char **errbuf) {

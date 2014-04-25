@@ -2060,6 +2060,7 @@ virSetCloseExec;
 virSetDeviceUnprivSGIO;
 virSetInherit;
 virSetNonBlock;
+virSetSockReuseAddr;
 virSetUIDGID;
 virSetUIDGIDWithCaps;
 virStrIsPrint;
