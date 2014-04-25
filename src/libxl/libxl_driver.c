@@ -3780,6 +3780,7 @@ libxlDomainOpenConsole(virDomainPtr dom,
 {
     virDomainObjPtr vm = NULL;
     int ret = -1;
+    libxl_console_type console_type;
     virDomainChrDefPtr chr = NULL;
     libxlDomainObjPrivatePtr priv;
     char *console = NULL;
@@ -3807,8 +3808,8 @@ libxlDomainOpenConsole(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (vm->def->nserials)
-        chr = vm->def->serials[0];
+    if (vm->def->nconsoles)
+        chr = vm->def->consoles[0];
 
     if (!chr) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3824,7 +3825,12 @@ libxlDomainOpenConsole(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = libxl_primary_console_get_tty(priv->ctx, vm->def->id, &console);
+    console_type =
+        (chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ?
+                            LIBXL_CONSOLE_TYPE_SERIAL : LIBXL_CONSOLE_TYPE_PV);
+
+    ret = libxl_console_get_tty(priv->ctx, vm->def->id, chr->target.port,
+                                console_type, &console);
     if (ret)
         goto cleanup;
 
