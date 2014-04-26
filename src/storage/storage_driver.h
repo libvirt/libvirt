@@ -42,6 +42,7 @@ ssize_t virStorageFileReadHeader(virStorageSourcePtr src,
                                  ssize_t max_len,
                                  char **buf);
 const char *virStorageFileGetUniqueIdentifier(virStorageSourcePtr src);
+int virStorageFileAccess(virStorageSourcePtr src, int mode);
 
 int storageRegister(void);
 

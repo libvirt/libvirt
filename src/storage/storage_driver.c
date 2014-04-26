@@ -3017,3 +3017,27 @@ virStorageFileGetUniqueIdentifier(virStorageSourcePtr src)
 
     return src->drv->backend->storageFileGetUniqueIdentifier(src);
 }
+
+
+/**
+ * virStorageFileAccess: Check accessibility of a storage file
+ *
+ * @src: storage file to check access permissions
+ * @mode: accessibility check options (see man 2 access)
+ *
+ * Returns 0 on success, -1 on error and sets errno. No libvirt
+ * error is reported. Returns -2 if the operation isn't supported
+ * by libvirt storage backend.
+ */
+int
+virStorageFileAccess(virStorageSourcePtr src,
+                     int mode)
+{
+    if (!virStorageFileIsInitialized(src) ||
+        !src->drv->backend->storageFileAccess) {
+        errno = ENOSYS;
+        return -2;
+    }
+
+    return src->drv->backend->storageFileAccess(src, mode);
+}

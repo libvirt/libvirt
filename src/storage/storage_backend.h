@@ -198,6 +198,10 @@ typedef ssize_t
 typedef const char *
 (*virStorageFileBackendGetUniqueIdentifier)(virStorageSourcePtr src);
 
+typedef int
+(*virStorageFileBackendAccess)(virStorageSourcePtr src,
+                               int mode);
+
 virStorageFileBackendPtr virStorageFileBackendForType(int type, int protocol);
 
 
@@ -220,6 +224,7 @@ struct _virStorageFileBackend {
     virStorageFileBackendCreate storageFileCreate;
     virStorageFileBackendUnlink storageFileUnlink;
     virStorageFileBackendStat   storageFileStat;
+    virStorageFileBackendAccess storageFileAccess;
 };
 
 #endif /* __VIR_STORAGE_BACKEND_H__ */

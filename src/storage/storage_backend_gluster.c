@@ -703,6 +703,16 @@ virStorageFileBackendGlusterReadHeader(virStorageSourcePtr src,
 }
 
 
+static int
+virStorageFileBackendGlusterAccess(virStorageSourcePtr src,
+                                   int mode)
+{
+    virStorageFileBackendGlusterPrivPtr priv = src->drv->priv;
+
+    return glfs_access(priv->vol, src->path, mode);
+}
+
+
 virStorageFileBackend virStorageFileBackendGluster = {
     .type = VIR_STORAGE_TYPE_NETWORK,
     .protocol = VIR_STORAGE_NET_PROTOCOL_GLUSTER,
@@ -713,4 +723,5 @@ virStorageFileBackend virStorageFileBackendGluster = {
     .storageFileUnlink = virStorageFileBackendGlusterUnlink,
     .storageFileStat = virStorageFileBackendGlusterStat,
     .storageFileReadHeader = virStorageFileBackendGlusterReadHeader,
+    .storageFileAccess = virStorageFileBackendGlusterAccess,
 };
