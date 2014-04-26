@@ -18686,34 +18686,37 @@ virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
     int ret = -1;
     size_t depth = 0;
     virStorageSourcePtr tmp;
-    const char *path = virDomainDiskGetSource(disk);
-    int type = virDomainDiskGetType(disk);
+    char *brokenRaw = NULL;
 
-    if (!path || type == VIR_STORAGE_TYPE_NETWORK ||
-        (type == VIR_STORAGE_TYPE_VOLUME &&
-         disk->src.srcpool &&
-         disk->src.srcpool->mode == VIR_STORAGE_SOURCE_POOL_MODE_DIRECT))
-        return 0;
+    if (!ignoreOpenFailure) {
+        if (virStorageFileChainGetBroken(&disk->src, &brokenRaw) < 0)
+            goto cleanup;
 
-    if (iter(disk, path, 0, opaque) < 0)
-        goto cleanup;
-
-    tmp = disk->src.backingStore;
-    while (tmp && virStorageIsFile(tmp->path)) {
-        if (!ignoreOpenFailure && tmp->backingStoreRaw && !tmp->backingStore) {
+        if (brokenRaw) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to visit backing chain file %s"),
-                           tmp->backingStoreRaw);
+                           brokenRaw);
             goto cleanup;
         }
-        if (iter(disk, tmp->path, ++depth, opaque) < 0)
-            goto cleanup;
-        tmp = tmp->backingStore;
+    }
+
+    for (tmp = &disk->src; tmp; tmp = tmp->backingStore) {
+        int actualType = virStorageSourceGetActualType(tmp);
+        /* execute the callback only for local storage */
+        if (actualType != VIR_STORAGE_TYPE_NETWORK &&
+            actualType != VIR_STORAGE_TYPE_VOLUME &&
+            tmp->path) {
+            if (iter(disk, tmp->path, depth, opaque) < 0)
+                goto cleanup;
+        }
+
+        depth++;
     }
 
     ret = 0;
 
  cleanup:
+    VIR_FREE(brokenRaw);
     return ret;
 }
 
