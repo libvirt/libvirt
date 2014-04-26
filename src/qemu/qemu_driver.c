@@ -417,6 +417,7 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
                           VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL);
     int ret = -1;
     virCapsPtr caps = NULL;
+    int direrr;
 
     virObjectLock(vm);
     if (virAsprintf(&snapDir, "%s/%s", baseDir, vm->def->name) < 0) {
@@ -439,7 +440,7 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    while ((entry = readdir(dir))) {
+    while ((direrr = virDirRead(dir, &entry, NULL)) > 0) {
         if (entry->d_name[0] == '.')
             continue;
 
@@ -485,6 +486,8 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
         VIR_FREE(fullpath);
         VIR_FREE(xmlStr);
     }
+    if (direrr < 0)
+        VIR_ERROR(_("Failed to fully read directory %s"), snapDir);
 
     if (vm->current_snapshot != current) {
         VIR_ERROR(_("Too many snapshots claiming to be current for domain %s"),

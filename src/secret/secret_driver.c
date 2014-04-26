@@ -1,7 +1,7 @@
 /*
  * secret_driver.c: local driver for secret manipulation API
  *
- * Copyright (C) 2009-2012, 2014 Red Hat, Inc.
+ * Copyright (C) 2009-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -484,7 +484,7 @@ loadSecrets(virSecretDriverStatePtr driver,
                              driver->directory);
         goto cleanup;
     }
-    while ((de = readdir(dir)) != NULL) {
+    while (virDirRead(dir, &de, NULL) > 0) {
         virSecretEntryPtr secret;
 
         if (STREQ(de->d_name, ".") || STREQ(de->d_name, ".."))
@@ -503,7 +503,7 @@ loadSecrets(virSecretDriverStatePtr driver,
         }
         listInsert(&list, secret);
     }
-    /* Ignore error reported by readdir(), if any.  It's better to keep the
+    /* Ignore error reported by readdir, if any.  It's better to keep the
        secrets we managed to find. */
 
     while (list != NULL) {

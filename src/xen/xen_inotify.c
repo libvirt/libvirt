@@ -4,7 +4,7 @@
  *                /etc/xen
  *                /var/lib/xend/domains
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright (C) 2008 VirtualIron
  *
  * This library is free software; you can redistribute it and/or
@@ -343,6 +343,7 @@ xenInotifyOpen(virConnectPtr conn,
     struct dirent *ent;
     char *path;
     xenUnifiedPrivatePtr priv = conn->privateData;
+    int direrr;
 
     virCheckFlags(VIR_CONNECT_RO, -1);
 
@@ -363,7 +364,7 @@ xenInotifyOpen(virConnectPtr conn,
                                  priv->configDir);
             return -1;
         }
-        while ((ent = readdir(dh))) {
+        while ((direrr = virDirRead(dh, &ent, priv->configDir)) > 0) {
             if (STRPREFIX(ent->d_name, "."))
                 continue;
 
@@ -384,6 +385,8 @@ xenInotifyOpen(virConnectPtr conn,
             VIR_FREE(path);
         }
         closedir(dh);
+        if (direrr < 0)
+            return -1;
     }
 
     if ((priv->inotifyFD = inotify_init()) < 0) {

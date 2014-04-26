@@ -93,6 +93,7 @@ parallelsFindVolumes(virStoragePoolObjPtr pool)
     struct dirent *ent;
     char *path = NULL;
     int ret = -1;
+    int direrr;
 
     if (!(dir = opendir(pool->def->target.path))) {
         virReportSystemError(errno,
@@ -101,7 +102,7 @@ parallelsFindVolumes(virStoragePoolObjPtr pool)
         return -1;
     }
 
-    while ((ent = readdir(dir)) != NULL) {
+    while ((direrr = virDirRead(dir, &ent, pool->def->target.path)) > 0) {
         if (!virFileHasSuffix(ent->d_name, ".xml"))
             continue;
 
@@ -113,6 +114,8 @@ parallelsFindVolumes(virStoragePoolObjPtr pool)
 
         VIR_FREE(path);
     }
+    if (direrr < 0)
+        goto cleanup;
 
     ret = 0;
  cleanup:
@@ -331,6 +334,7 @@ static int parallelsFindVmVolumes(virStoragePoolObjPtr pool,
     char *diskPath = NULL, *diskDescPath = NULL;
     struct stat sb;
     int ret = -1;
+    int direrr;
 
     if (!(dir = opendir(pdom->home))) {
         virReportSystemError(errno,
@@ -339,7 +343,7 @@ static int parallelsFindVmVolumes(virStoragePoolObjPtr pool,
         goto cleanup;
     }
 
-    while ((ent = readdir(dir)) != NULL) {
+    while ((direrr = virDirRead(dir, &ent, pdom->home)) > 0) {
         VIR_FREE(diskPath);
         VIR_FREE(diskDescPath);
 
@@ -368,8 +372,9 @@ static int parallelsFindVmVolumes(virStoragePoolObjPtr pool,
         if (parallelsAddDiskVolume(pool, dom, ent->d_name,
                                    diskPath, diskDescPath))
             goto cleanup;
-
     }
+    if (direrr < 0)
+        goto cleanup;
 
     ret = 0;
  cleanup:

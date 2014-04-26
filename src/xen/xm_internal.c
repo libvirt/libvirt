@@ -327,7 +327,7 @@ xenXMConfigCacheRefresh(virConnectPtr conn)
         return -1;
     }
 
-    while ((ent = readdir(dh))) {
+    while ((ret = virDirRead(dh, &ent, priv->configDir)) > 0) {
         struct stat st;
         char *path;
 
@@ -386,7 +386,6 @@ xenXMConfigCacheRefresh(virConnectPtr conn)
     args.now = now;
     args.priv = priv;
     virHashRemoveSet(priv->configCache, xenXMConfigReaper, &args);
-    ret = 0;
 
     closedir(dh);
 

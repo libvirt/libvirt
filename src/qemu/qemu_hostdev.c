@@ -1,7 +1,7 @@
 /*
  * qemu_hostdev.c: QEMU hostdev management
  *
- * Copyright (C) 2006-2007, 2009-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -90,12 +90,13 @@ qemuHostdevHostSupportsPassthroughVFIO(void)
     DIR *iommuDir = NULL;
     struct dirent *iommuGroup = NULL;
     bool ret = false;
+    int direrr;
 
     /* condition 1 - /sys/kernel/iommu_groups/ contains entries */
     if (!(iommuDir = opendir("/sys/kernel/iommu_groups/")))
         goto cleanup;
 
-    while ((iommuGroup = readdir(iommuDir))) {
+    while ((direrr = virDirRead(iommuDir, &iommuGroup, NULL)) > 0) {
         /* skip ./ ../ */
         if (STRPREFIX(iommuGroup->d_name, "."))
             continue;
@@ -104,7 +105,7 @@ qemuHostdevHostSupportsPassthroughVFIO(void)
         break;
     }
 
-    if (!iommuGroup)
+    if (direrr < 0 || !iommuGroup)
         goto cleanup;
     /* okay, iommu is on and recognizes groups */
 

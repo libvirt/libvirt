@@ -1105,20 +1105,13 @@ static int openvzAssignUUIDs(void)
         return 0;
     }
 
-    errno = 0;
-    while ((dent = readdir(dp))) {
+    while ((ret = virDirRead(dp, &dent, conf_dir)) > 0) {
         if (virStrToLong_i(dent->d_name, &ext, 10, &vpsid) < 0 ||
             *ext++ != '.' ||
             STRNEQ(ext, "conf"))
             continue;
         if (vpsid > 0) /* '0.conf' belongs to the host, ignore it */
             openvzSetUUID(vpsid);
-        errno = 0;
-    }
-    if (errno) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to scan configuration directory"));
-        ret = -1;
     }
 
     closedir(dp);
