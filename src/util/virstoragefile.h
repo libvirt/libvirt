@@ -316,5 +316,6 @@ void virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def);
 void virStorageSourceClear(virStorageSourcePtr def);
 int virStorageSourceGetActualType(virStorageSourcePtr def);
 void virStorageSourceFree(virStorageSourcePtr def);
+void virStorageSourceClearBackingStore(virStorageSourcePtr def);
 
 #endif /* __VIR_STORAGE_FILE_H__ */

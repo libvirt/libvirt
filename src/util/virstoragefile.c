@@ -1726,6 +1726,29 @@ virStorageSourceGetActualType(virStorageSourcePtr def)
 }
 
 
+/**
+ * virStorageSourceClearBackingStore:
+ *
+ * @src: disk source to clear
+ *
+ * Clears information about backing store of the current storage file.
+ */
+void
+virStorageSourceClearBackingStore(virStorageSourcePtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def->relPath);
+    VIR_FREE(def->relDir);
+    VIR_FREE(def->backingStoreRaw);
+
+    /* recursively free backing chain */
+    virStorageSourceFree(def->backingStore);
+    def->backingStore = NULL;
+}
+
+
 void
 virStorageSourceClear(virStorageSourcePtr def)
 {
@@ -1755,12 +1778,7 @@ virStorageSourceClear(virStorageSourcePtr def)
     virStorageNetHostDefFree(def->nhosts, def->hosts);
     virStorageSourceAuthClear(def);
 
-    VIR_FREE(def->relPath);
-    VIR_FREE(def->relDir);
-    VIR_FREE(def->backingStoreRaw);
-
-    /* recursively free backing chain */
-    virStorageSourceFree(def->backingStore);
+    virStorageSourceClearBackingStore(def);
 }
 
 

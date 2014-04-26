@@ -2421,12 +2421,10 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (disk->src.backingStore) {
-        if (force) {
-            virStorageSourceFree(disk->src.backingStore);
-            disk->src.backingStore = NULL;
-        } else {
+        if (force)
+            virStorageSourceClearBackingStore(&disk->src);
+        else
             goto cleanup;
-        }
     }
 
     qemuDomainGetImageIds(cfg, vm, disk, &uid, &gid);

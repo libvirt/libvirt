@@ -1865,6 +1865,7 @@ virStorageNetHostTransportTypeToString;
 virStorageNetProtocolTypeToString;
 virStorageSourceAuthClear;
 virStorageSourceClear;
+virStorageSourceClearBackingStore;
 virStorageSourceFree;
 virStorageSourceGetActualType;
 virStorageSourcePoolDefFree;

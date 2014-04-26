@@ -12734,8 +12734,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
      * recompute it.  Better would be storing the chain ourselves rather than
      * reprobing, but this requires modifying domain_conf and our XML to fully
      * track the chain across libvirtd restarts.  */
-    virStorageSourceFree(disk->src.backingStore);
-    disk->src.backingStore = NULL;
+    virStorageSourceClearBackingStore(&disk->src);
 
     if (virStorageFileInit(&snap->src) < 0)
         goto cleanup;
