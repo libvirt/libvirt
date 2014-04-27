@@ -26,32 +26,32 @@
 
 # include "internal.h"
 
-enum virHookDriverType {
+typedef enum {
     VIR_HOOK_DRIVER_DAEMON = 0,        /* Daemon related events */
     VIR_HOOK_DRIVER_QEMU,              /* QEmu domains related events */
     VIR_HOOK_DRIVER_LXC,               /* LXC domains related events */
     VIR_HOOK_DRIVER_NETWORK,           /* network related events */
 
     VIR_HOOK_DRIVER_LAST,
-};
+} virHookDriverType;
 
-enum virHookDaemonOpType {
+typedef enum {
     VIR_HOOK_DAEMON_OP_START,          /* daemon is about to start */
     VIR_HOOK_DAEMON_OP_SHUTDOWN,       /* daemon is about to shutdown */
     VIR_HOOK_DAEMON_OP_RELOAD,         /* driver reload with SIGHUP */
 
     VIR_HOOK_DAEMON_OP_LAST,
-};
+} virHookDaemonOpType;
 
-enum virHookSubopType {
+typedef enum {
     VIR_HOOK_SUBOP_NONE,               /* no sub-operation */
     VIR_HOOK_SUBOP_BEGIN,              /* beginning of the operation */
     VIR_HOOK_SUBOP_END,                /* end of the operation */
 
     VIR_HOOK_SUBOP_LAST,
-};
+} virHookSubopType;
 
-enum virHookQemuOpType {
+typedef enum {
     VIR_HOOK_QEMU_OP_START,            /* domain is about to start */
     VIR_HOOK_QEMU_OP_STOPPED,          /* domain has stopped */
     VIR_HOOK_QEMU_OP_PREPARE,          /* domain startup initiated */
@@ -62,9 +62,9 @@ enum virHookQemuOpType {
     VIR_HOOK_QEMU_OP_ATTACH,           /* domain is being attached to be libvirt */
 
     VIR_HOOK_QEMU_OP_LAST,
-};
+} virHookQemuOpType;
 
-enum virHookLxcOpType {
+typedef enum {
     VIR_HOOK_LXC_OP_START,            /* domain is about to start */
     VIR_HOOK_LXC_OP_STOPPED,          /* domain has stopped */
     VIR_HOOK_LXC_OP_PREPARE,          /* domain startup initiated */
@@ -73,9 +73,9 @@ enum virHookLxcOpType {
     VIR_HOOK_LXC_OP_RECONNECT,        /* domain is being reconnected by libvirt */
 
     VIR_HOOK_LXC_OP_LAST,
-};
+} virHookLxcOpType;
 
-enum virHookNetworkOpType {
+typedef enum {
     VIR_HOOK_NETWORK_OP_START,          /* network is about to start */
     VIR_HOOK_NETWORK_OP_STARTED,        /* network has start */
     VIR_HOOK_NETWORK_OP_STOPPED,        /* network has stopped */
@@ -83,7 +83,7 @@ enum virHookNetworkOpType {
     VIR_HOOK_NETWORK_OP_IFACE_UNPLUGGED,    /* an interface was unplugged from the network */
 
     VIR_HOOK_NETWORK_OP_LAST,
-};
+} virHookNetworkOpType;
 
 int virHookInitialize(void);
 

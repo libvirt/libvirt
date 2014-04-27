@@ -163,7 +163,7 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
                      virQEMUDriverPtr driver,
                      virDomainNetDefPtr net,
                      virQEMUCapsPtr qemuCaps,
-                     enum virNetDevVPortProfileOp vmop)
+                     virNetDevVPortProfileOp vmop)
 {
     int rc;
     char *res_ifname = NULL;
@@ -3553,7 +3553,7 @@ qemuNetworkDriveGetPort(int protocol,
         return ret;
     }
 
-    switch ((enum virStorageNetProtocol) protocol) {
+    switch ((virStorageNetProtocol) protocol) {
         case VIR_STORAGE_NET_PROTOCOL_HTTP:
             return 80;
 
@@ -3604,7 +3604,7 @@ qemuBuildNetworkDriveURI(int protocol,
     virURIPtr uri = NULL;
     size_t i;
 
-    switch ((enum virStorageNetProtocol) protocol) {
+    switch ((virStorageNetProtocol) protocol) {
         case VIR_STORAGE_NET_PROTOCOL_NBD:
             if (nhosts != 1) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3842,7 +3842,7 @@ qemuGetDriveSourceString(virStorageSourcePtr src,
         }
     }
 
-    switch ((enum virStorageType) actualType) {
+    switch ((virStorageType) actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_DIR:
@@ -7495,7 +7495,7 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
                               virQEMUCapsPtr qemuCaps,
                               int vlan,
                               int bootindex,
-                              enum virNetDevVPortProfileOp vmop,
+                              virNetDevVPortProfileOp vmop,
                               bool standalone)
 {
     int ret = -1;
@@ -7690,7 +7690,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                      const char *migrateFrom,
                      int migrateFd,
                      virDomainSnapshotObjPtr snapshot,
-                     enum virNetDevVPortProfileOp vmop,
+                     virNetDevVPortProfileOp vmop,
                      qemuBuildCommandLineCallbacksPtr callbacks,
                      bool standalone)
 {

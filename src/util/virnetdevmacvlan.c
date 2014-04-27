@@ -434,7 +434,7 @@ struct virNetlinkCallbackData {
     char *linkdev;
     int vf;
     unsigned char vmuuid[VIR_UUID_BUFLEN];
-    enum virNetDevVPortProfileOp vmOp;
+    virNetDevVPortProfileOp vmOp;
     unsigned int linkState;
 };
 
@@ -748,7 +748,7 @@ virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
                                              const char *linkdev,
                                              const unsigned char *vmuuid,
                                              virNetDevVPortProfilePtr virtPortProfile,
-                                             enum virNetDevVPortProfileOp vmOp)
+                                             virNetDevVPortProfileOp vmOp)
 {
     virNetlinkCallbackDataPtr calld = NULL;
 
@@ -803,13 +803,13 @@ virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
 int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
                                            const virMacAddr *macaddress,
                                            const char *linkdev,
-                                           enum virNetDevMacVLanMode mode,
+                                           virNetDevMacVLanMode mode,
                                            bool withTap,
                                            int vnet_hdr,
                                            const unsigned char *vmuuid,
                                            virNetDevVPortProfilePtr virtPortProfile,
                                            char **res_ifname,
-                                           enum virNetDevVPortProfileOp vmOp,
+                                           virNetDevVPortProfileOp vmOp,
                                            char *stateDir,
                                            virNetDevBandwidthPtr bandwidth)
 {
@@ -1022,7 +1022,7 @@ int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname,
                                            const char *linkdev,
                                            const unsigned char *vmuuid,
                                            virNetDevVPortProfilePtr virtPortProfile,
-                                           enum virNetDevVPortProfileOp vmOp)
+                                           virNetDevVPortProfileOp vmOp)
 {
     int rc = 0;
 

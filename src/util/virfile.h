@@ -32,7 +32,7 @@
 # include "internal.h"
 # include "virstoragefile.h"
 
-typedef enum virFileCloseFlags {
+typedef enum {
     VIR_FILE_CLOSE_PRESERVE_ERRNO = 1 << 0,
     VIR_FILE_CLOSE_IGNORE_EBADF = 1 << 1,
     VIR_FILE_CLOSE_DONT_LOG = 1 << 2,
@@ -84,10 +84,10 @@ typedef virFileWrapperFd *virFileWrapperFdPtr;
 
 int virFileDirectFdFlag(void);
 
-enum virFileWrapperFdFlags {
+typedef enum {
     VIR_FILE_WRAPPER_BYPASS_CACHE   = (1 << 0),
     VIR_FILE_WRAPPER_NON_BLOCKING   = (1 << 1),
-};
+} virFileWrapperFdFlags;
 
 virFileWrapperFdPtr virFileWrapperFdNew(int *fd,
                                         const char *name,
@@ -117,7 +117,7 @@ int virFileLoopDeviceAssociate(const char *file,
                                char **dev);
 
 int virFileNBDDeviceAssociate(const char *file,
-                              enum virStorageFileFormat fmt,
+                              virStorageFileFormat fmt,
                               bool readonly,
                               char **dev);
 

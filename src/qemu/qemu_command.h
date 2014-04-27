@@ -75,7 +75,7 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    const char *migrateFrom,
                                    int migrateFd,
                                    virDomainSnapshotObjPtr current_snapshot,
-                                   enum virNetDevVPortProfileOp vmop,
+                                   virNetDevVPortProfileOp vmop,
                                    qemuBuildCommandLineCallbacksPtr callbacks,
                                    bool forXMLToArgv)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(11);
@@ -195,7 +195,7 @@ int qemuPhysIfaceConnect(virDomainDefPtr def,
                          virQEMUDriverPtr driver,
                          virDomainNetDefPtr net,
                          virQEMUCapsPtr qemuCaps,
-                         enum virNetDevVPortProfileOp vmop);
+                         virNetDevVPortProfileOp vmop);
 
 int qemuOpenVhostNet(virDomainDefPtr def,
                      virDomainNetDefPtr net,

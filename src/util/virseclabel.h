@@ -22,14 +22,14 @@
 #ifndef __SECLABEL_H
 # define __SECLABEL_H
 
-enum virDomainSeclabelType {
+typedef enum {
     VIR_DOMAIN_SECLABEL_DEFAULT,
     VIR_DOMAIN_SECLABEL_NONE,
     VIR_DOMAIN_SECLABEL_DYNAMIC,
     VIR_DOMAIN_SECLABEL_STATIC,
 
     VIR_DOMAIN_SECLABEL_LAST
-};
+} virDomainSeclabelType;
 
 /* Security configuration for domain */
 typedef struct _virSecurityLabelDef virSecurityLabelDef;

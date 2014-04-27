@@ -2269,8 +2269,8 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
     for (i = vm->def->ndisks; i > 0; i--) {
         disk = vm->def->disks[i - 1];
         const char *path = virDomainDiskGetSource(disk);
-        enum virStorageFileFormat format = virDomainDiskGetFormat(disk);
-        enum virStorageType type = virStorageSourceGetActualType(&disk->src);
+        virStorageFileFormat format = virDomainDiskGetFormat(disk);
+        virStorageType type = virStorageSourceGetActualType(&disk->src);
 
         if (!path)
             continue;

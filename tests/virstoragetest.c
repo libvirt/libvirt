@@ -294,7 +294,7 @@ enum {
 struct testChainData
 {
     const char *start;
-    enum virStorageFileFormat format;
+    virStorageFileFormat format;
     const testFileData *files[4];
     int nfiles;
     unsigned int flags;

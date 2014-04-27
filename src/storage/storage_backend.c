@@ -736,7 +736,7 @@ virStorageBackendCreateQemuImgOpts(char **opts,
         for (i = 0; i < VIR_STORAGE_FILE_FEATURE_LAST; i++) {
             ignore_value(virBitmapGetBit(features, i, &b));
             if (b) {
-                switch ((enum virStorageFileFeature) i) {
+                switch ((virStorageFileFeature) i) {
                 case VIR_STORAGE_FILE_FEATURE_LAZY_REFCOUNTS:
                     if (STREQ_NULLABLE(compat, "0.10")) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

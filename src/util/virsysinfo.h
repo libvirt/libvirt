@@ -28,11 +28,11 @@
 # include "virutil.h"
 # include "virbuffer.h"
 
-enum virSysinfoType {
+typedef enum {
     VIR_SYSINFO_SMBIOS,
 
     VIR_SYSINFO_LAST
-};
+} virSysinfoType;
 
 typedef struct _virSysinfoProcessorDef virSysinfoProcessorDef;
 typedef virSysinfoProcessorDef *virSysinfoProcessorDefPtr;

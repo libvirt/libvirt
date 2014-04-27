@@ -1139,7 +1139,7 @@ virNetDevVPortProfileAssociate(const char *macvtap_ifname,
                                const char *linkdev,
                                int vf,
                                const unsigned char *vmuuid,
-                               enum virNetDevVPortProfileOp vmOp,
+                               virNetDevVPortProfileOp vmOp,
                                bool setlink_only)
 {
     int rc = 0;
@@ -1202,7 +1202,7 @@ virNetDevVPortProfileDisassociate(const char *macvtap_ifname,
                                   const virMacAddr *macvtap_macaddr,
                                   const char *linkdev,
                                   int vf,
-                                  enum virNetDevVPortProfileOp vmOp)
+                                  virNetDevVPortProfileOp vmOp)
 {
     int rc = 0;
 

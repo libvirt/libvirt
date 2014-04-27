@@ -12310,13 +12310,13 @@ qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
 {
     int actualType = virStorageSourceGetActualType(&disk->src);
 
-    switch ((enum virStorageType) actualType) {
+    switch ((virStorageType) actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
         return 0;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        switch ((enum virStorageNetProtocol) disk->src.protocol) {
+        switch ((virStorageNetProtocol) disk->src.protocol) {
         case VIR_STORAGE_NET_PROTOCOL_NBD:
         case VIR_STORAGE_NET_PROTOCOL_RBD:
         case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
@@ -12372,13 +12372,13 @@ qemuDomainSnapshotPrepareDiskExternalOverlayActive(virDomainSnapshotDiskDefPtr d
 {
     int actualType = virStorageSourceGetActualType(&disk->src);
 
-    switch ((enum virStorageType) actualType) {
+    switch ((virStorageType) actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
         return 0;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        switch ((enum virStorageNetProtocol) disk->src.protocol) {
+        switch ((virStorageNetProtocol) disk->src.protocol) {
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
             return 0;
 
@@ -12420,7 +12420,7 @@ qemuDomainSnapshotPrepareDiskExternalOverlayInactive(virDomainSnapshotDiskDefPtr
 {
     int actualType = virStorageSourceGetActualType(&disk->src);
 
-    switch ((enum virStorageType) actualType) {
+    switch ((virStorageType) actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
         return 0;
@@ -12517,13 +12517,13 @@ qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
 
     actualType = virStorageSourceGetActualType(&disk->src);
 
-    switch ((enum virStorageType) actualType) {
+    switch ((virStorageType) actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
         return 0;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        switch ((enum virStorageNetProtocol) disk->src.protocol) {
+        switch ((virStorageNetProtocol) disk->src.protocol) {
         case VIR_STORAGE_NET_PROTOCOL_NBD:
         case VIR_STORAGE_NET_PROTOCOL_RBD:
         case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
@@ -12749,7 +12749,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
         VIR_STRDUP(persistSource, snap->src.path) < 0)
         goto cleanup;
 
-    switch ((enum virStorageType)snap->src.type) {
+    switch ((virStorageType)snap->src.type) {
     case VIR_STORAGE_TYPE_BLOCK:
         reuse = true;
         /* fallthrough */

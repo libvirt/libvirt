@@ -57,7 +57,7 @@ int qemuProcessStart(virConnectPtr conn,
                      int stdin_fd,
                      const char *stdin_path,
                      virDomainSnapshotObjPtr snapshot,
-                     enum virNetDevVPortProfileOp vmop,
+                     virNetDevVPortProfileOp vmop,
                      unsigned int flags);
 
 typedef enum {

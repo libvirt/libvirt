@@ -29,11 +29,11 @@
 
 # include <libxml/tree.h>
 
-enum virStorageEncryptionSecretType {
+typedef enum {
     VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE = 0,
 
     VIR_STORAGE_ENCRYPTION_SECRET_TYPE_LAST
-};
+} virStorageEncryptionSecretType;
 VIR_ENUM_DECL(virStorageEncryptionSecretType)
 
 typedef struct _virStorageEncryptionSecret virStorageEncryptionSecret;

@@ -26,13 +26,13 @@
 # include "virbitmap.h"
 # include "virutil.h"
 
-enum virNumaTuneMemPlacementMode {
+typedef enum {
     VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_DEFAULT = 0,
     VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC,
     VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO,
 
     VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_LAST
-};
+} virNumaTuneMemPlacementMode;
 
 VIR_ENUM_DECL(virNumaTuneMemPlacementMode)
 

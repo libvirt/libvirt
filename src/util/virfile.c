@@ -810,7 +810,7 @@ virFileNBDDeviceFindUnused(void)
 
 
 int virFileNBDDeviceAssociate(const char *file,
-                              enum virStorageFileFormat fmt,
+                              virStorageFileFormat fmt,
                               bool readonly,
                               char **dev)
 {
@@ -879,7 +879,7 @@ int virFileLoopDeviceAssociate(const char *file,
 }
 
 int virFileNBDDeviceAssociate(const char *file,
-                              enum virStorageFileFormat fmt ATTRIBUTE_UNUSED,
+                              virStorageFileFormat fmt ATTRIBUTE_UNUSED,
                               bool readonly ATTRIBUTE_UNUSED,
                               char **dev ATTRIBUTE_UNUSED)
 {

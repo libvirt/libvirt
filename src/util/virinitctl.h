@@ -24,8 +24,7 @@
 #ifndef __VIR_INITCTL_H__
 # define __VIR_INITCTL_H__
 
-typedef enum virInitctlRunLevel virInitctlRunLevel;
-enum virInitctlRunLevel {
+typedef enum {
     VIR_INITCTL_RUNLEVEL_POWEROFF = 0,
     VIR_INITCTL_RUNLEVEL_1 = 1,
     VIR_INITCTL_RUNLEVEL_2 = 2,
@@ -35,7 +34,7 @@ enum virInitctlRunLevel {
     VIR_INITCTL_RUNLEVEL_REBOOT = 6,
 
     VIR_INITCTL_RUNLEVEL_LAST
-};
+} virInitctlRunLevel;
 
 int virInitctlSetRunLevel(virInitctlRunLevel level);
 

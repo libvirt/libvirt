@@ -82,7 +82,7 @@ void virAuditSend(virLogSourcePtr source,
                   const char *funcname,
                   const char *clienttty ATTRIBUTE_UNUSED,
                   const char *clientaddr ATTRIBUTE_UNUSED,
-                  enum virAuditRecordType type ATTRIBUTE_UNUSED, bool success,
+                  virAuditRecordType type ATTRIBUTE_UNUSED, bool success,
                   const char *fmt, ...)
 {
     char *str = NULL;

@@ -42,7 +42,7 @@
  * virStorageVolType, except we have an undetermined state, don't have
  * a netdir type, and add a volume type for reference through a
  * storage pool.  */
-enum virStorageType {
+typedef enum {
     VIR_STORAGE_TYPE_NONE,
     VIR_STORAGE_TYPE_FILE,
     VIR_STORAGE_TYPE_BLOCK,
@@ -51,12 +51,12 @@ enum virStorageType {
     VIR_STORAGE_TYPE_VOLUME,
 
     VIR_STORAGE_TYPE_LAST
-};
+} virStorageType;
 
 VIR_ENUM_DECL(virStorage)
 
 
-enum virStorageFileFormat {
+typedef enum {
     VIR_STORAGE_FILE_AUTO_SAFE = -2,
     VIR_STORAGE_FILE_AUTO = -1,
     VIR_STORAGE_FILE_NONE = 0,
@@ -84,15 +84,15 @@ enum virStorageFileFormat {
     VIR_STORAGE_FILE_VMDK,
 
     VIR_STORAGE_FILE_LAST,
-};
+} virStorageFileFormat;
 
 VIR_ENUM_DECL(virStorageFileFormat);
 
-enum virStorageFileFeature {
+typedef enum {
     VIR_STORAGE_FILE_FEATURE_LAZY_REFCOUNTS = 0,
 
     VIR_STORAGE_FILE_FEATURE_LAST
-};
+} virStorageFileFeature;
 
 VIR_ENUM_DECL(virStorageFileFeature);
 
@@ -117,7 +117,7 @@ struct _virStorageTimestamps {
 
 
 /* Information related to network storage */
-enum virStorageNetProtocol {
+typedef enum {
     VIR_STORAGE_NET_PROTOCOL_NBD,
     VIR_STORAGE_NET_PROTOCOL_RBD,
     VIR_STORAGE_NET_PROTOCOL_SHEEPDOG,
@@ -130,18 +130,18 @@ enum virStorageNetProtocol {
     VIR_STORAGE_NET_PROTOCOL_TFTP,
 
     VIR_STORAGE_NET_PROTOCOL_LAST
-};
+} virStorageNetProtocol;
 
 VIR_ENUM_DECL(virStorageNetProtocol)
 
 
-enum virStorageNetHostTransport {
+typedef enum {
     VIR_STORAGE_NET_HOST_TRANS_TCP,
     VIR_STORAGE_NET_HOST_TRANS_UNIX,
     VIR_STORAGE_NET_HOST_TRANS_RDMA,
 
     VIR_STORAGE_NET_HOST_TRANS_LAST
-};
+} virStorageNetHostTransport;
 
 VIR_ENUM_DECL(virStorageNetHostTransport)
 
@@ -160,7 +160,7 @@ struct _virStorageNetHostDef {
  * Used for volume "type" disk to indicate how to represent
  * the disk source if the specified "pool" is of iscsi type.
  */
-enum virStorageSourcePoolMode {
+typedef enum {
     VIR_STORAGE_SOURCE_POOL_MODE_DEFAULT = 0,
 
     /* Use the path as it shows up on host, e.g.
@@ -174,7 +174,7 @@ enum virStorageSourcePoolMode {
     VIR_STORAGE_SOURCE_POOL_MODE_DIRECT,
 
     VIR_STORAGE_SOURCE_POOL_MODE_LAST
-};
+} virStorageSourcePoolMode;
 
 VIR_ENUM_DECL(virStorageSourcePoolMode)
 
@@ -190,13 +190,13 @@ struct _virStorageSourcePoolDef {
 typedef virStorageSourcePoolDef *virStorageSourcePoolDefPtr;
 
 
-enum virStorageSecretType {
+typedef enum {
     VIR_STORAGE_SECRET_TYPE_NONE,
     VIR_STORAGE_SECRET_TYPE_UUID,
     VIR_STORAGE_SECRET_TYPE_USAGE,
 
     VIR_STORAGE_SECRET_TYPE_LAST
-};
+} virStorageSecretType;
 
 typedef struct _virStorageDriverData virStorageDriverData;
 typedef virStorageDriverData *virStorageDriverDataPtr;

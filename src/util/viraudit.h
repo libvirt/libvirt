@@ -26,11 +26,11 @@
 # include "internal.h"
 # include "virlog.h"
 
-enum virAuditRecordType {
+typedef enum {
     VIR_AUDIT_RECORD_MACHINE_CONTROL,
     VIR_AUDIT_RECORD_MACHINE_ID,
     VIR_AUDIT_RECORD_RESOURCE,
-};
+} virAuditRecordType;
 
 int virAuditOpen(void);
 
@@ -39,7 +39,7 @@ void virAuditLog(int enabled);
 void virAuditSend(virLogSourcePtr source,
                   const char *filename, size_t linenr, const char *funcname,
                   const char *clienttty, const char *clientaddr,
-                  enum virAuditRecordType type, bool success,
+                  virAuditRecordType type, bool success,
                   const char *fmt, ...)
     ATTRIBUTE_FMT_PRINTF(9, 10);
 
