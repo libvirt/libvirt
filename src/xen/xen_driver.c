@@ -315,13 +315,16 @@ xenUnifiedProbe(void)
 static bool
 xenUnifiedXendProbe(void)
 {
-    virCommandPtr cmd;
     bool ret = false;
 
-    cmd = virCommandNewArgList("/usr/sbin/xend", "status", NULL);
-    if (virCommandRun(cmd, NULL) == 0)
-        ret = true;
-    virCommandFree(cmd);
+    if (virFileExists("/usr/sbin/xend")) {
+        virCommandPtr cmd;
+
+        cmd = virCommandNewArgList("/usr/sbin/xend", "status", NULL);
+        if (virCommandRun(cmd, NULL) == 0)
+            ret = true;
+        virCommandFree(cmd);
+    }
 
     return ret;
 }

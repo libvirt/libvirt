@@ -223,7 +223,6 @@ static bool
 libxlDriverShouldLoad(bool privileged)
 {
     bool ret = false;
-    virCommandPtr cmd;
     int status;
     char *output = NULL;
 
@@ -236,7 +235,7 @@ libxlDriverShouldLoad(bool privileged)
     if (!virFileExists(HYPERVISOR_CAPABILITIES)) {
         VIR_INFO("Disabling driver as " HYPERVISOR_CAPABILITIES
                  " does not exist");
-        return false;
+        return ret;
     }
     /*
      * Don't load if not running on a Xen control domain (dom0). It is not
@@ -256,14 +255,20 @@ libxlDriverShouldLoad(bool privileged)
     }
 
     /* Don't load if legacy xen toolstack (xend) is in use */
-    cmd = virCommandNewArgList("/usr/sbin/xend", "status", NULL);
-    if (virCommandRun(cmd, &status) == 0 && status == 0) {
-        VIR_INFO("Legacy xen tool stack seems to be in use, disabling "
-                  "libxenlight driver.");
+    if (virFileExists("/usr/sbin/xend")) {
+        virCommandPtr cmd;
+
+        cmd = virCommandNewArgList("/usr/sbin/xend", "status", NULL);
+        if (virCommandRun(cmd, NULL) == 0) {
+            VIR_INFO("Legacy xen tool stack seems to be in use, disabling "
+                     "libxenlight driver.");
+        } else {
+            ret = true;
+        }
+        virCommandFree(cmd);
     } else {
         ret = true;
     }
-    virCommandFree(cmd);
 
     return ret;
 }
