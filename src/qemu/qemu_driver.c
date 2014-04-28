@@ -15046,10 +15046,19 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     virDomainDiskDefPtr disk;
     virStorageSourcePtr baseSource = NULL;
     unsigned int baseIndex = 0;
+    char *basePath = NULL;
+    char *backingPath = NULL;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_BLOCK_REBASE_RELATIVE && !base) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("flag VIR_DOMAIN_BLOCK_REBASE_RELATIVE is valid only "
+                         "with non-null base"));
         goto cleanup;
     }
 
@@ -15113,10 +15122,35 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
                                                   base, baseIndex, NULL))))
         goto endjob;
 
+    if (baseSource) {
+        if (qemuGetDriveSourceString(baseSource, NULL, &basePath) < 0)
+            goto endjob;
+
+        if (flags & VIR_DOMAIN_BLOCK_REBASE_RELATIVE) {
+            if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHANGE_BACKING_FILE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("this QEMU binary doesn't support relative "
+                                 "block pull/rebase"));
+                goto endjob;
+            }
+
+            if (virStorageFileGetRelativeBackingPath(disk->src->backingStore,
+                                                     baseSource,
+                                                     &backingPath) < 0)
+                goto endjob;
+
+
+            if (!backingPath) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("can't keep relative backing relationship"));
+                goto endjob;
+            }
+        }
+    }
+
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorBlockJob(priv->mon, device,
-                              baseIndex ? baseSource->path : base,
-                              NULL, bandwidth, info, mode, async);
+    ret = qemuMonitorBlockJob(priv->mon, device, basePath, backingPath,
+                              bandwidth, info, mode, async);
     qemuDomainObjExitMonitor(driver, vm);
     if (ret < 0)
         goto endjob;
@@ -15191,6 +15225,8 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     }
 
  cleanup:
+    VIR_FREE(basePath);
+    VIR_FREE(backingPath);
     VIR_FREE(device);
     if (vm)
         virObjectUnlock(vm);
@@ -15441,7 +15477,8 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     virCheckFlags(VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
                   VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
                   VIR_DOMAIN_BLOCK_REBASE_COPY |
-                  VIR_DOMAIN_BLOCK_REBASE_COPY_RAW, -1);
+                  VIR_DOMAIN_BLOCK_REBASE_COPY_RAW |
+                  VIR_DOMAIN_BLOCK_REBASE_RELATIVE, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
