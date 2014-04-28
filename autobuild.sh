@@ -85,8 +85,7 @@ if test -x /usr/bin/i686-w64-mingw32-gcc ; then
     --host=i686-w64-mingw32 \
     --prefix="$AUTOBUILD_INSTALL_ROOT/i686-w64-mingw32/sys-root/mingw" \
     --enable-expensive-tests \
-    --enable-werror \
-    --without-libvirtd
+    --enable-werror
 
   make
   make install
@@ -105,8 +104,7 @@ if test -x /usr/bin/x86_64-w64-mingw32-gcc ; then
     --host=x86_64-w64-mingw32 \
     --prefix="$AUTOBUILD_INSTALL_ROOT/x86_64-w64-mingw32/sys-root/mingw" \
     --enable-expensive-tests \
-    --enable-werror \
-    --without-libvirtd
+    --enable-werror
 
   make
   make install

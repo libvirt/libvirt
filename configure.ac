@@ -175,6 +175,7 @@ case $host in
   *-*-linux*) with_linux=yes ;;
   *-*-darwin*) with_osx=yes ;;
   *-*-freebsd*) with_freebsd=yes ;;
+  *-*-mingw* | *-*-msvc* ) with_win=yes ;;
 esac
 
 if test $with_linux = no; then
@@ -193,6 +194,11 @@ fi
 
 AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
 AM_CONDITIONAL([WITH_FREEBSD], [test "$with_freebsd" = "yes"])
+
+# We don't support the daemon yet
+if test "$with_win" = "yes" ; then
+  with_libvirtd=no
+fi
 
 # The daemon requires remote support.  Likewise, if we are not using
 # RPC, we don't need several libraries.
