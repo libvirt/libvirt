@@ -3189,19 +3189,13 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
     if (!(cycle = virHashCreate(5, NULL)))
         return -1;
 
-    if (virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_NETWORK) {
-        if (!src->relPath &&
-            VIR_STRDUP(src->relPath, src->path) < 0)
-            goto cleanup;
+    if (!src->relPath &&
+        VIR_STRDUP(src->relPath, src->path) < 0)
+        goto cleanup;
 
-        if (!src->relDir &&
-            !(src->relDir = mdir_name(src->path))) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    } else {
-        /* TODO: currently unimplemented for non-local storage */
-        ret = 0;
+    if (!src->relDir &&
+        !(src->relDir = mdir_name(src->path))) {
+        virReportOOMError();
         goto cleanup;
     }
 

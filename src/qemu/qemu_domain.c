@@ -2428,12 +2428,10 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
     int ret = 0;
     uid_t uid;
     gid_t gid;
-    const char *src = virDomainDiskGetSource(disk);
-    int type = virDomainDiskGetType(disk);
+    int type = virStorageSourceGetActualType(&disk->src);
 
-    if (!src ||
-        type == VIR_STORAGE_TYPE_NETWORK ||
-        type == VIR_STORAGE_TYPE_VOLUME)
+    if (type != VIR_STORAGE_TYPE_NETWORK &&
+        !disk->src.path)
         goto cleanup;
 
     if (disk->src.backingStore) {
