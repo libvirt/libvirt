@@ -116,7 +116,7 @@ static int networkUnplugBandwidth(virNetworkObjPtr net,
                                   virDomainNetDefPtr iface);
 
 static void networkNetworkObjTaint(virNetworkObjPtr net,
-                                   enum virNetworkTaintFlags taint);
+                                   virNetworkTaintFlags taint);
 
 static virNetworkDriverStatePtr driverState = NULL;
 
@@ -4525,7 +4525,7 @@ networkUnplugBandwidth(virNetworkObjPtr net,
 
 static void
 networkNetworkObjTaint(virNetworkObjPtr net,
-                       enum virNetworkTaintFlags taint)
+                       virNetworkTaintFlags taint)
 {
     if (virNetworkObjTaint(net, taint)) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];

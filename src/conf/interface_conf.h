@@ -34,27 +34,27 @@
 
 /* There is currently 3 types of interfaces */
 
-enum virInterfaceType {
+typedef enum {
     VIR_INTERFACE_TYPE_ETHERNET,  /* simple ethernet */
     VIR_INTERFACE_TYPE_BRIDGE,    /* bridge interface */
     VIR_INTERFACE_TYPE_BOND,      /* bonding interface */
     VIR_INTERFACE_TYPE_VLAN,      /* vlan description */
 
     VIR_INTERFACE_TYPE_LAST,
-};
+} virInterfaceType;
 
 VIR_ENUM_DECL(virInterface)
 
 /* types of start mode */
 
-enum virInterfaceStartMode {
+typedef enum {
     VIR_INTERFACE_START_UNSPECIFIED = 0, /* not given in config */
     VIR_INTERFACE_START_NONE,     /* specified as not defined */
     VIR_INTERFACE_START_ONBOOT,   /* startup at boot */
     VIR_INTERFACE_START_HOTPLUG,  /* on hotplug */
-};
+} virInterfaceStartMode;
 
-enum virInterfaceBondMode {
+typedef enum {
     VIR_INTERFACE_BOND_NONE = 0,
     VIR_INTERFACE_BOND_BALRR,     /* balance-rr */
     VIR_INTERFACE_BOND_ABACKUP,   /* active backup */
@@ -63,26 +63,26 @@ enum virInterfaceBondMode {
     VIR_INTERFACE_BOND_8023AD,    /* 802.3ad */
     VIR_INTERFACE_BOND_BALTLB,    /* balance-tlb */
     VIR_INTERFACE_BOND_BALALB,    /* balance-alb */
-};
+} virInterfaceBondMode;
 
-enum virInterfaceBondMonit {
+typedef enum {
     VIR_INTERFACE_BOND_MONIT_NONE = 0,
     VIR_INTERFACE_BOND_MONIT_MII, /* mii based monitoring */
     VIR_INTERFACE_BOND_MONIT_ARP, /* arp based monitoring */
-};
+} virInterfaceBondMonit;
 
-enum virInterfaceBondMiiCarrier {
+typedef enum {
     VIR_INTERFACE_BOND_MII_NONE = 0,
     VIR_INTERFACE_BOND_MII_IOCTL, /* mii/ethtool ioctl */
     VIR_INTERFACE_BOND_MII_NETIF, /* netif_carrier_ok */
-};
+} virInterfaceBondMiiCarrier;
 
-enum virInterfaceBondArpValid {
+typedef enum {
     VIR_INTERFACE_BOND_ARP_NONE = 0,
     VIR_INTERFACE_BOND_ARP_ACTIVE, /* validate active */
     VIR_INTERFACE_BOND_ARP_BACKUP, /* validate backup */
     VIR_INTERFACE_BOND_ARP_ALL,    /* validate all */
-};
+} virInterfaceBondArpValid;
 
 struct _virInterfaceDef; /* forward declaration required for bridge/bond */
 
@@ -147,7 +147,7 @@ struct _virInterfaceDef {
     unsigned int mtu;        /* maximum transmit size in byte */
     char *mac;               /* MAC address */
 
-    enum virInterfaceStartMode startmode; /* how it is started */
+    virInterfaceStartMode startmode; /* how it is started */
 
     union {
         virInterfaceBridgeDef bridge;

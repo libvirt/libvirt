@@ -40,7 +40,7 @@
 # include "device_conf.h"
 # include "virbitmap.h"
 
-enum virNetworkForwardType {
+typedef enum {
     VIR_NETWORK_FORWARD_NONE   = 0,
     VIR_NETWORK_FORWARD_NAT,
     VIR_NETWORK_FORWARD_ROUTE,
@@ -51,16 +51,16 @@ enum virNetworkForwardType {
     VIR_NETWORK_FORWARD_HOSTDEV,
 
     VIR_NETWORK_FORWARD_LAST,
-};
+} virNetworkForwardType;
 
-enum virNetworkForwardHostdevDeviceType {
+typedef enum {
     VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NONE = 0,
     VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI,
     VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV,
     /* USB Device to be added here when supported */
 
     VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_LAST,
-};
+} virNetworkForwardHostdevDeviceType;
 
 /* The backend driver used for devices from the pool. Currently used
  * only for PCI devices (vfio vs. kvm), but could be used for other
@@ -298,7 +298,7 @@ struct _virNetworkObjList {
     virNetworkObjPtr *objs;
 };
 
-enum virNetworkTaintFlags {
+typedef enum {
     VIR_NETWORK_TAINT_HOOK,                 /* Hook script was executed over
                                                network. We can't guarantee
                                                connectivity or other settings
@@ -307,7 +307,7 @@ enum virNetworkTaintFlags {
                                              */
 
     VIR_NETWORK_TAINT_LAST
-};
+} virNetworkTaintFlags;
 
 static inline int
 virNetworkObjIsActive(const virNetworkObj *net)
@@ -316,7 +316,7 @@ virNetworkObjIsActive(const virNetworkObj *net)
 }
 
 bool virNetworkObjTaint(virNetworkObjPtr obj,
-                        enum virNetworkTaintFlags taint);
+                        virNetworkTaintFlags taint);
 
 virNetworkObjPtr virNetworkFindByUUID(virNetworkObjListPtr nets,
                                       const unsigned char *uuid);

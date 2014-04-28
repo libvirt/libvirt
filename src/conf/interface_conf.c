@@ -1030,7 +1030,7 @@ virInterfaceProtocolDefFormat(virBufferPtr buf, const virInterfaceDef *def)
 
 static int
 virInterfaceStartmodeDefFormat(virBufferPtr buf,
-                               enum virInterfaceStartMode startmode)
+                               virInterfaceStartMode startmode)
 {
     const char *mode;
     switch (startmode) {

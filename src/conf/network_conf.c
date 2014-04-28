@@ -77,7 +77,7 @@ VIR_ENUM_IMPL(virNetworkTaint, VIR_NETWORK_TAINT_LAST,
 
 bool
 virNetworkObjTaint(virNetworkObjPtr obj,
-                   enum virNetworkTaintFlags taint)
+                   virNetworkTaintFlags taint)
 {
     unsigned int flag = (1 << taint);
 
