@@ -463,6 +463,7 @@ networkMigrateStateFiles(virNetworkDriverStatePtr driver)
     int ret = -1;
     const char *oldStateDir = LOCALSTATEDIR "/lib/libvirt/network";
     DIR *dir;
+    int direrr;
     struct dirent *entry;
     char *oldPath = NULL, *newPath = NULL;
     char *contents = NULL;
@@ -482,17 +483,7 @@ networkMigrateStateFiles(virNetworkDriverStatePtr driver)
         goto cleanup;
     }
 
-    for (;;) {
-        errno = 0;
-        entry = readdir(dir);
-        if (!entry) {
-            if (errno) {
-                virReportSystemError(errno, _("failed to read directory '%s'"),
-                                     oldStateDir);
-                goto cleanup;
-            }
-            break;
-        }
+    while ((direrr = virDirRead(dir, &entry, oldStateDir)) > 0) {
 
         if (entry->d_type != DT_REG ||
             STREQ(entry->d_name, ".") ||
@@ -520,6 +511,8 @@ networkMigrateStateFiles(virNetworkDriverStatePtr driver)
         VIR_FREE(newPath);
         VIR_FREE(contents);
     }
+    if (direrr < 0)
+       goto cleanup;
 
     ret = 0;
  cleanup:
