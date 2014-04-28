@@ -15505,9 +15505,13 @@ qemuDomainBlockCommit(virDomainPtr dom,
     unsigned int baseIndex = 0;
     const char *top_parent = NULL;
     bool clean_access = false;
+    char *topPath = NULL;
+    char *basePath = NULL;
+    char *backingPath = NULL;
 
     /* XXX Add support for COMMIT_ACTIVE, COMMIT_DELETE */
-    virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW, -1);
+    virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW |
+                  VIR_DOMAIN_BLOCK_COMMIT_RELATIVE, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
@@ -15617,6 +15621,31 @@ qemuDomainBlockCommit(virDomainPtr dom,
                                                VIR_DISK_CHAIN_READ_WRITE) < 0))
         goto endjob;
 
+    if (qemuGetDriveSourceString(topSource, NULL, &topPath) < 0)
+        goto endjob;
+
+    if (qemuGetDriveSourceString(baseSource, NULL, &basePath) < 0)
+        goto endjob;
+
+    if (flags & VIR_DOMAIN_BLOCK_COMMIT_RELATIVE &&
+        topSource != disk->src) {
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHANGE_BACKING_FILE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this qemu doesn't support relative blockpull"));
+            goto endjob;
+        }
+
+        if (virStorageFileGetRelativeBackingPath(topSource, baseSource,
+                                                 &backingPath) < 0)
+            goto endjob;
+
+        if (!backingPath) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("can't keep relative backing relationship"));
+            goto endjob;
+        }
+    }
+
     /* Start the commit operation.  Pass the user's original spelling,
      * if any, through to qemu, since qemu may behave differently
      * depending on whether the input was specified as relative or
@@ -15624,9 +15653,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
      * thing if the user specified a relative name). */
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorBlockCommit(priv->mon, device,
-                                 top && !topIndex ? top : topSource->path,
-                                 base && !baseIndex ? base : baseSource->path,
-                                 NULL,
+                                 topPath, basePath, backingPath,
                                  bandwidth);
     qemuDomainObjExitMonitor(driver, vm);
 
@@ -15644,6 +15671,9 @@ qemuDomainBlockCommit(virDomainPtr dom,
         vm = NULL;
 
  cleanup:
+    VIR_FREE(topPath);
+    VIR_FREE(basePath);
+    VIR_FREE(backingPath);
     VIR_FREE(device);
     if (vm)
         virObjectUnlock(vm);
