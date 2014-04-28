@@ -3103,13 +3103,6 @@ virFindBackingFile(const char *start, const char *path,
         goto cleanup;
     }
 
-    if (virFileAccessibleAs(combined, F_OK, geteuid(), getegid()) < 0) {
-        virReportSystemError(errno,
-                             _("Cannot access backing file '%s'"),
-                             combined);
-        goto cleanup;
-    }
-
     if (!(*canonical = canonicalize_file_name(combined))) {
         virReportSystemError(errno,
                              _("Can't canonicalize path '%s'"), path);
@@ -3150,6 +3143,13 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
 
     if (virStorageFileInitAs(src, uid, gid) < 0)
         return -1;
+
+    if (virStorageFileAccess(src, F_OK) < 0) {
+        virReportSystemError(errno,
+                             _("Cannot access backing file %s"),
+                             src->path);
+        goto cleanup;
+    }
 
     if (!(uniqueName = virStorageFileGetUniqueIdentifier(src)))
         goto cleanup;
