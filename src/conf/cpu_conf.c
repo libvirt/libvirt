@@ -176,7 +176,7 @@ virCPUDefCopy(const virCPUDef *cpu)
 virCPUDefPtr
 virCPUDefParseXML(xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
-                  enum virCPUType mode)
+                  virCPUType mode)
 {
     virCPUDefPtr def;
     xmlNodePtr *nodes = NULL;

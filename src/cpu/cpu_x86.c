@@ -1615,7 +1615,7 @@ x86DecodeCPUData(virCPUDefPtr cpu,
 static virCPUx86Data *
 x86EncodePolicy(const virCPUDef *cpu,
                 const struct x86_map *map,
-                enum virCPUFeaturePolicy policy)
+                virCPUFeaturePolicy policy)
 {
     struct x86_model *model;
     virCPUx86Data *data = NULL;
@@ -2045,7 +2045,7 @@ static int
 x86Update(virCPUDefPtr guest,
           const virCPUDef *host)
 {
-    switch ((enum virCPUMode) guest->mode) {
+    switch ((virCPUMode) guest->mode) {
     case VIR_CPU_MODE_CUSTOM:
         return x86UpdateCustom(guest, host);
 

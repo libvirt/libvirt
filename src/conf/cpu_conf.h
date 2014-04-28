@@ -32,46 +32,46 @@
 
 # define VIR_CPU_VENDOR_ID_LENGTH 12
 
-enum virCPUType {
+typedef enum {
     VIR_CPU_TYPE_HOST,
     VIR_CPU_TYPE_GUEST,
     VIR_CPU_TYPE_AUTO,
 
     VIR_CPU_TYPE_LAST
-};
+} virCPUType;
 
 VIR_ENUM_DECL(virCPU)
 
-enum virCPUMode {
+typedef enum {
     VIR_CPU_MODE_CUSTOM,
     VIR_CPU_MODE_HOST_MODEL,
     VIR_CPU_MODE_HOST_PASSTHROUGH,
 
     VIR_CPU_MODE_LAST
-};
+} virCPUMode;
 
 VIR_ENUM_DECL(virCPUMode)
 
-enum virCPUMatch {
+typedef enum {
     VIR_CPU_MATCH_MINIMUM,
     VIR_CPU_MATCH_EXACT,
     VIR_CPU_MATCH_STRICT,
 
     VIR_CPU_MATCH_LAST
-};
+} virCPUMatch;
 
 VIR_ENUM_DECL(virCPUMatch)
 
-enum virCPUFallback {
+typedef enum {
     VIR_CPU_FALLBACK_ALLOW,
     VIR_CPU_FALLBACK_FORBID,
 
     VIR_CPU_FALLBACK_LAST
-};
+} virCPUFallback;
 
 VIR_ENUM_DECL(virCPUFallback)
 
-enum virCPUFeaturePolicy {
+typedef enum {
     VIR_CPU_FEATURE_FORCE,
     VIR_CPU_FEATURE_REQUIRE,
     VIR_CPU_FEATURE_OPTIONAL,
@@ -79,7 +79,7 @@ enum virCPUFeaturePolicy {
     VIR_CPU_FEATURE_FORBID,
 
     VIR_CPU_FEATURE_LAST
-};
+} virCPUFeaturePolicy;
 
 VIR_ENUM_DECL(virCPUFeaturePolicy)
 
@@ -140,7 +140,7 @@ virCPUDefCopy(const virCPUDef *cpu);
 virCPUDefPtr
 virCPUDefParseXML(xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
-                  enum virCPUType mode);
+                  virCPUType mode);
 
 bool
 virCPUDefIsEqual(virCPUDefPtr src,

@@ -32,13 +32,13 @@
 # include "virthread.h"
 # include "virbuffer.h"
 
-enum virDeviceAddressPCIMulti {
+typedef enum {
     VIR_DEVICE_ADDRESS_PCI_MULTI_DEFAULT = 0,
     VIR_DEVICE_ADDRESS_PCI_MULTI_ON,
     VIR_DEVICE_ADDRESS_PCI_MULTI_OFF,
 
     VIR_DEVICE_ADDRESS_PCI_MULTI_LAST
-};
+} virDeviceAddressPCIMulti;
 
 typedef struct _virDevicePCIAddress virDevicePCIAddress;
 typedef virDevicePCIAddress *virDevicePCIAddressPtr;
