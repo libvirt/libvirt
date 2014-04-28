@@ -59,7 +59,7 @@ virFirewallRulePtr virFirewallAddRuleFull(virFirewallPtr firewall,
                                           virFirewallQueryCallback cb,
                                           void *opaque,
                                           ...)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_SENTINEL;
+    ATTRIBUTE_SENTINEL;
 
 void virFirewallRemoveRule(virFirewallPtr firewall,
                            virFirewallRulePtr rule);
