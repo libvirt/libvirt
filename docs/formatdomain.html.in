@@ -126,9 +126,10 @@
         these. <span class="since">Since 0.0.1</span></dd>
       <dt><code>loader</code></dt>
       <dd>The optional <code>loader</code> tag refers to a firmware blob
-        used to assist the domain creation process. At this time, it is
-        only needed by Xen fully virtualized
-        domains. <span class="since">Since 0.1.0</span></dd>
+        used to assist the domain creation process. It is used by Xen
+        fully virtualized domains as well as setting the QEMU BIOS file
+        path for QEMU/KVM domains. <span class="since">Xen since 0.1.0,
+        QEMU/KVM since 0.9.12</span></dd>
       <dt><code>boot</code></dt>
       <dd>The <code>dev</code> attribute takes one of the values "fd", "hd",
         "cdrom" or "network" and is used to specify the next boot device
