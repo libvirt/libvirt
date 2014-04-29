@@ -492,7 +492,7 @@ static int virStorageBackendRBDCreateImage(rados_ioctx_t io,
     uint64_t stripe_unit = 4194304;
 
     if (rbd_create3(io, name, capacity, features, &order,
-                    stripe_count, stripe_unit) < 0) {
+                    stripe_unit, stripe_count) < 0) {
 #else
     if (rbd_create(io, name, capacity, &order) < 0) {
 #endif
