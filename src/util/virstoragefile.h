@@ -260,8 +260,6 @@ struct _virStorageSource {
 # endif
 
 int virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid);
-int virStorageFileProbeFormatFromBuf(const char *path, char *buf,
-                                     size_t buflen);
 
 int virStorageFileGetMetadata(virStorageSourcePtr src,
                               uid_t uid, gid_t gid,
@@ -273,11 +271,10 @@ virStorageSourcePtr virStorageFileGetMetadataFromFD(const char *path,
 virStorageSourcePtr virStorageFileGetMetadataFromBuf(const char *path,
                                                      char *buf,
                                                      size_t len,
-                                                     int format,
                                                      char **backing,
                                                      int *backingFormat)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5)
-    ATTRIBUTE_NONNULL(6);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
+    ATTRIBUTE_NONNULL(5);
 int virStorageFileChainGetBroken(virStorageSourcePtr chain,
                                  char **broken_file);
 

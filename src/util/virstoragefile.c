@@ -713,7 +713,8 @@ virStorageIsFile(const char *backing)
     return true;
 }
 
-int
+
+static int
 virStorageFileProbeFormatFromBuf(const char *path,
                                  char *buf,
                                  size_t buflen)
@@ -971,16 +972,13 @@ virStorageFileMetadataNew(const char *path,
  * @path: name of file, for error messages
  * @buf: header bytes from @path
  * @len: length of @buf
- * @format: expected image format
  * @backing: output malloc'd name of backing image, if any
  * @backingFormat: format of @backing
  *
- * Extract metadata about the storage volume with the specified
- * image format. If image format is VIR_STORAGE_FILE_AUTO, it
- * will probe to automatically identify the format.  Does not recurse.
- *
- * Callers are advised never to use VIR_STORAGE_FILE_AUTO as a
- * format, since a malicious guest can turn a raw file into any
+ * Extract metadata about the storage volume, including probing its
+ * format.  Does not recurse.  Callers are advised not to trust the
+ * learned format if a guest has ever used the volume when it was
+ * raw, since a malicious guest can turn a raw file into any
  * other non-raw format at will.
  *
  * If the returned @backingFormat is VIR_STORAGE_FILE_AUTO
@@ -994,14 +992,13 @@ virStorageSourcePtr
 virStorageFileGetMetadataFromBuf(const char *path,
                                  char *buf,
                                  size_t len,
-                                 int format,
                                  char **backing,
                                  int *backingFormat)
 {
     virStorageSourcePtr ret = NULL;
     virStorageSourcePtr meta = NULL;
 
-    if (!(meta = virStorageFileMetadataNew(path, format)))
+    if (!(meta = virStorageFileMetadataNew(path, VIR_STORAGE_FILE_AUTO)))
         return NULL;
 
     if (virStorageFileGetMetadataInternal(meta, buf, len,

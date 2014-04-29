@@ -98,16 +98,8 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
             goto error;
         }
 
-        target->format = virStorageFileProbeFormatFromBuf(target->path,
-                                                          header, len);
-        if (target->format < 0) {
-            ret = -1;
-            goto error;
-        }
-
         if (!(meta = virStorageFileGetMetadataFromBuf(target->path,
                                                       header, len,
-                                                      target->format,
                                                       backingStore,
                                                       backingStoreFormat))) {
             ret = -1;
