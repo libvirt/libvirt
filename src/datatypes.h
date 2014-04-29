@@ -469,7 +469,7 @@ struct _virNodeDevice {
 struct _virSecret {
     virObject object;
     virConnectPtr conn;                  /* pointer back to the connection */
-    unsigned char uuid[VIR_UUID_BUFLEN]; /* the domain unique identifier */
+    unsigned char uuid[VIR_UUID_BUFLEN]; /* the secret unique identifier */
     int usageType;                       /* the type of usage */
     char *usageID;                       /* the usage's unique identifier */
 };
