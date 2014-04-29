@@ -999,21 +999,21 @@ virStorageFileGetMetadataFromBuf(const char *path,
                                  int *backingFormat)
 {
     virStorageSourcePtr ret = NULL;
+    virStorageSourcePtr meta = NULL;
 
-    if (!(ret = virStorageFileMetadataNew(path, format)))
+    if (!(meta = virStorageFileMetadataNew(path, format)))
         return NULL;
 
-    if (virStorageFileGetMetadataInternal(ret, buf, len,
-                                          backingFormat) < 0) {
-        virStorageSourceFree(ret);
-        ret = NULL;
-    }
+    if (virStorageFileGetMetadataInternal(meta, buf, len,
+                                          backingFormat) < 0)
+        goto cleanup;
+    if (VIR_STRDUP(*backing, meta->backingStoreRaw) < 0)
+        goto cleanup;
 
-    if (VIR_STRDUP(*backing, ret->backingStoreRaw) < 0) {
-        virStorageSourceFree(ret);
-        ret = NULL;
-    }
-
+    ret = meta;
+    meta = NULL;
+ cleanup:
+    virStorageSourceFree(meta);
     return ret;
 }
 
