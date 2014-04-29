@@ -3807,11 +3807,6 @@ int qemuProcessStart(virConnectPtr conn,
     if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
         goto cleanup;
 
-    if (qemuDomainCheckDiskPresence(driver, vm,
-                                    flags & VIR_QEMU_PROCESS_START_COLD) < 0)
-        goto cleanup;
-
-
     /* Get the advisory nodeset from numad if 'placement' of
      * either <vcpu> or <numatune> is 'auto'.
      */
@@ -3839,6 +3834,10 @@ int qemuProcessStart(virConnectPtr conn,
         if (qemuTranslateDiskSourcePool(conn, vm->def->disks[i]) < 0)
             goto cleanup;
     }
+
+    if (qemuDomainCheckDiskPresence(driver, vm,
+                                    flags & VIR_QEMU_PROCESS_START_COLD) < 0)
+        goto cleanup;
 
     if (VIR_ALLOC(priv->monConfig) < 0)
         goto cleanup;
