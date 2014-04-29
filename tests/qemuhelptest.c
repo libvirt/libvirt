@@ -517,7 +517,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_SCSI_GENERIC,
             QEMU_CAPS_DEVICE_USB_KBD,
-            QEMU_CAPS_DEVICE_USB_STORAGE);
+            QEMU_CAPS_DEVICE_USB_STORAGE,
+            QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
     DO_TEST("qemu-kvm-0.12.1.2-rhel61", 12001, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,

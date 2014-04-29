@@ -254,6 +254,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "spiceport",
 
               "usb-kbd", /* 165 */
+              "host-pci-multidomain",
     );
 
 
@@ -1043,6 +1044,8 @@ virQEMUCapsComputeCmdFlags(const char *help,
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL);
     if (strstr(help, "-pcidevice"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_PCIDEVICE);
+    if (strstr(help, "host=[seg:]bus"))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
     if (strstr(help, "-mem-path"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MEM_PATH);
     if (strstr(help, "-chardev")) {
@@ -2970,6 +2973,7 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_OPT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DUMP_GUEST_CORE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC_SHARE_POLICY);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
 }
 
 /* Capabilities that are architecture depending
