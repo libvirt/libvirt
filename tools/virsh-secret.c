@@ -542,7 +542,7 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         const char *usageStr = virSecretUsageTypeTypeToString(usageType);
         char uuid[VIR_UUID_STRING_BUFLEN];
 
-        if (virSecretGetUUIDString(list->secrets[i], uuid) < 0) {
+        if (virSecretGetUUIDString(sec, uuid) < 0) {
             vshError(ctl, "%s", _("Failed to get uuid of secret"));
             goto cleanup;
         }
