@@ -3536,14 +3536,9 @@ ebiptablesApplyNewRules(const char *ifname,
 }
 
 
-static int
-ebiptablesTearNewRules(const char *ifname)
+static void
+ebiptablesTearNewRulesFW(virFirewallPtr fw, const char *ifname)
 {
-    virFirewallPtr fw = virFirewallNew();
-    int ret = -1;
-
-    virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
-
     iptablesUnlinkTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV4, ifname);
     iptablesRemoveTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV4, ifname);
 
@@ -3555,12 +3550,23 @@ ebiptablesTearNewRules(const char *ifname)
     ebtablesRemoveTmpSubChainsFW(fw, ifname);
     ebtablesRemoveTmpRootChainFW(fw, true, ifname);
     ebtablesRemoveTmpRootChainFW(fw, false, ifname);
+}
+
+
+static int
+ebiptablesTearNewRules(const char *ifname)
+{
+    virFirewallPtr fw = virFirewallNew();
+    int ret = -1;
+
+    virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
+
+    ebiptablesTearNewRulesFW(fw, ifname);
 
     ret = virFirewallApply(fw);
     virFirewallFree(fw);
     return ret;
 }
-
 
 static int
 ebiptablesTearOldRules(const char *ifname)
@@ -3607,6 +3613,8 @@ ebiptablesAllTeardown(const char *ifname)
     int ret = -1;
 
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
+
+    ebiptablesTearNewRulesFW(fw, ifname);
 
     iptablesUnlinkRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV4, ifname);
     iptablesClearVirtInPostFW(fw, VIR_FIREWALL_LAYER_IPV4, ifname);

@@ -33,11 +33,43 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+
+#define VIR_NWFILTER_NEW_RULES_TEARDOWN \
+    "iptables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FP-vnet0\n" \
+    "iptables -D libvirt-out -m physdev --physdev-out vnet0 -g FP-vnet0\n" \
+    "iptables -D libvirt-in -m physdev --physdev-in vnet0 -g FJ-vnet0\n" \
+    "iptables -D libvirt-host-in -m physdev --physdev-in vnet0 -g HJ-vnet0\n" \
+    "iptables -F FP-vnet0\n" \
+    "iptables -X FP-vnet0\n" \
+    "iptables -F FJ-vnet0\n" \
+    "iptables -X FJ-vnet0\n" \
+    "iptables -F HJ-vnet0\n" \
+    "iptables -X HJ-vnet0\n" \
+    "ip6tables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FP-vnet0\n" \
+    "ip6tables -D libvirt-out -m physdev --physdev-out vnet0 -g FP-vnet0\n" \
+    "ip6tables -D libvirt-in -m physdev --physdev-in vnet0 -g FJ-vnet0\n" \
+    "ip6tables -D libvirt-host-in -m physdev --physdev-in vnet0 -g HJ-vnet0\n" \
+    "ip6tables -F FP-vnet0\n" \
+    "ip6tables -X FP-vnet0\n" \
+    "ip6tables -F FJ-vnet0\n" \
+    "ip6tables -X FJ-vnet0\n" \
+    "ip6tables -F HJ-vnet0\n" \
+    "ip6tables -X HJ-vnet0\n" \
+    "ebtables -t nat -D PREROUTING -i vnet0 -j libvirt-J-vnet0\n" \
+    "ebtables -t nat -D POSTROUTING -o vnet0 -j libvirt-P-vnet0\n" \
+    "ebtables -t nat -L libvirt-J-vnet0\n" \
+    "ebtables -t nat -L libvirt-P-vnet0\n" \
+    "ebtables -t nat -F libvirt-J-vnet0\n" \
+    "ebtables -t nat -X libvirt-J-vnet0\n" \
+    "ebtables -t nat -F libvirt-P-vnet0\n" \
+    "ebtables -t nat -X libvirt-P-vnet0\n"
+
 static int
 testNWFilterEBIPTablesAllTeardown(const void *opaque ATTRIBUTE_UNUSED)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
+        VIR_NWFILTER_NEW_RULES_TEARDOWN
         "iptables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FO-vnet0\n"
         "iptables -D libvirt-out -m physdev --physdev-out vnet0 -g FO-vnet0\n"
         "iptables -D libvirt-in -m physdev --physdev-in vnet0 -g FI-vnet0\n"
@@ -221,34 +253,7 @@ testNWFilterEBIPTablesTearNewRules(const void *opaque ATTRIBUTE_UNUSED)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
-        "iptables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FP-vnet0\n"
-        "iptables -D libvirt-out -m physdev --physdev-out vnet0 -g FP-vnet0\n"
-        "iptables -D libvirt-in -m physdev --physdev-in vnet0 -g FJ-vnet0\n"
-        "iptables -D libvirt-host-in -m physdev --physdev-in vnet0 -g HJ-vnet0\n"
-        "iptables -F FP-vnet0\n"
-        "iptables -X FP-vnet0\n"
-        "iptables -F FJ-vnet0\n"
-        "iptables -X FJ-vnet0\n"
-        "iptables -F HJ-vnet0\n"
-        "iptables -X HJ-vnet0\n"
-        "ip6tables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FP-vnet0\n"
-        "ip6tables -D libvirt-out -m physdev --physdev-out vnet0 -g FP-vnet0\n"
-        "ip6tables -D libvirt-in -m physdev --physdev-in vnet0 -g FJ-vnet0\n"
-        "ip6tables -D libvirt-host-in -m physdev --physdev-in vnet0 -g HJ-vnet0\n"
-        "ip6tables -F FP-vnet0\n"
-        "ip6tables -X FP-vnet0\n"
-        "ip6tables -F FJ-vnet0\n"
-        "ip6tables -X FJ-vnet0\n"
-        "ip6tables -F HJ-vnet0\n"
-        "ip6tables -X HJ-vnet0\n"
-        "ebtables -t nat -D PREROUTING -i vnet0 -j libvirt-J-vnet0\n"
-        "ebtables -t nat -D POSTROUTING -o vnet0 -j libvirt-P-vnet0\n"
-        "ebtables -t nat -L libvirt-J-vnet0\n"
-        "ebtables -t nat -L libvirt-P-vnet0\n"
-        "ebtables -t nat -F libvirt-J-vnet0\n"
-        "ebtables -t nat -X libvirt-J-vnet0\n"
-        "ebtables -t nat -F libvirt-P-vnet0\n"
-        "ebtables -t nat -X libvirt-P-vnet0\n";
+        VIR_NWFILTER_NEW_RULES_TEARDOWN;
     char *actual = NULL;
     int ret = -1;
 
@@ -282,6 +287,7 @@ testNWFilterEBIPTablesApplyBasicRules(const void *opaque ATTRIBUTE_UNUSED)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
+        VIR_NWFILTER_NEW_RULES_TEARDOWN
         "iptables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FO-vnet0\n"
         "iptables -D libvirt-out -m physdev --physdev-out vnet0 -g FO-vnet0\n"
         "iptables -D libvirt-in -m physdev --physdev-in vnet0 -g FI-vnet0\n"
@@ -353,6 +359,7 @@ testNWFilterEBIPTablesApplyDHCPOnlyRules(const void *opaque ATTRIBUTE_UNUSED)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
+        VIR_NWFILTER_NEW_RULES_TEARDOWN
         "iptables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FO-vnet0\n"
         "iptables -D libvirt-out -m physdev --physdev-out vnet0 -g FO-vnet0\n"
         "iptables -D libvirt-in -m physdev --physdev-in vnet0 -g FI-vnet0\n"
@@ -443,6 +450,7 @@ testNWFilterEBIPTablesApplyDropAllRules(const void *opaque ATTRIBUTE_UNUSED)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
+        VIR_NWFILTER_NEW_RULES_TEARDOWN
         "iptables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FO-vnet0\n"
         "iptables -D libvirt-out -m physdev --physdev-out vnet0 -g FO-vnet0\n"
         "iptables -D libvirt-in -m physdev --physdev-in vnet0 -g FI-vnet0\n"
