@@ -21,9 +21,10 @@
 
 #include <config.h>
 
+#include "testutils.h"
+
 #if defined (__linux__)
 
-# include "testutils.h"
 # include "network/bridge_driver_platform.h"
 # include "virbuffer.h"
 
