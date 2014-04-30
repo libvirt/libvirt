@@ -2095,6 +2095,66 @@ virNWFilterRuleDefFixupIPSet(ipHdrDataDefPtr ipHdr)
     }
 }
 
+
+/*
+ * virNWFilterRuleValidate
+ *
+ * Perform some basic rule validation to prevent rules from being
+ * defined that cannot be instantiated.
+ */
+static int
+virNWFilterRuleValidate(virNWFilterRuleDefPtr rule)
+{
+    int ret = 0;
+    portDataDefPtr portData = NULL;
+    nwItemDescPtr dataProtocolID;
+    const char *protocol;
+
+    switch (rule->prtclType) {
+    case VIR_NWFILTER_RULE_PROTOCOL_IP:
+        portData = &rule->p.ipHdrFilter.portData;
+        protocol = "IP";
+        dataProtocolID = &rule->p.ipHdrFilter.ipHdr.dataProtocolID;
+        /* fall through */
+    case VIR_NWFILTER_RULE_PROTOCOL_IPV6:
+        if (portData == NULL) {
+            portData = &rule->p.ipv6HdrFilter.portData;
+            protocol = "IPv6";
+            dataProtocolID = &rule->p.ipv6HdrFilter.ipHdr.dataProtocolID;
+        }
+        if (HAS_ENTRY_ITEM(&portData->dataSrcPortStart) ||
+            HAS_ENTRY_ITEM(&portData->dataDstPortStart) ||
+            HAS_ENTRY_ITEM(&portData->dataSrcPortEnd) ||
+            HAS_ENTRY_ITEM(&portData->dataDstPortEnd)) {
+            if (HAS_ENTRY_ITEM(dataProtocolID)) {
+                switch (dataProtocolID->u.u8) {
+                case 6:   /* tcp */
+                case 17:  /* udp */
+                case 33:  /* dccp */
+                case 132: /* sctp */
+                    break;
+                default:
+                    ret = -1;
+                }
+            } else {
+                ret = -1;
+            }
+            if (ret < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("%s rule with port specification requires "
+                                 "protocol specification with protocol to be "
+                                 "either one of tcp(6), udp(17), dccp(33), or "
+                                 "sctp(132)"), protocol);
+            }
+        }
+        break;
+    default:
+        break;
+    }
+
+    return ret;
+}
+
 static void
 virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
 {
@@ -2391,6 +2451,8 @@ virNWFilterRuleParse(xmlNodePtr node)
                                                     virAttr[i].att) < 0) {
                         goto err_exit;
                     }
+                    if (virNWFilterRuleValidate(ret) < 0)
+                        goto err_exit;
                     break;
                 }
                 if (!found) {
