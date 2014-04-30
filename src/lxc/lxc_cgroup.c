@@ -325,7 +325,7 @@ virLXCSetupHostUSBDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
 
     VIR_DEBUG("Process path '%s' for USB device", path);
     if (virCgroupAllowDevicePath(cgroup, path,
-                                 VIR_CGROUP_DEVICE_RW) < 0)
+                                 VIR_CGROUP_DEVICE_RWM) < 0)
         return -1;
 
     return 0;
@@ -341,7 +341,7 @@ virLXCTeardownHostUSBDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
 
     VIR_DEBUG("Process path '%s' for USB device", path);
     if (virCgroupDenyDevicePath(cgroup, path,
-                                VIR_CGROUP_DEVICE_RW) < 0)
+                                VIR_CGROUP_DEVICE_RWM) < 0)
         return -1;
 
     return 0;
