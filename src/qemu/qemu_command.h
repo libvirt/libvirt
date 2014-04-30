@@ -152,7 +152,8 @@ char * qemuBuildSoundDevStr(virDomainDefPtr domainDef,
                             virQEMUCapsPtr qemuCaps);
 
 /* Legacy, pre device support */
-char * qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev);
+char * qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev,
+                                    virQEMUCapsPtr qemuCaps);
 /* Current, best practice */
 char * qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
                                  virDomainHostdevDefPtr dev,
