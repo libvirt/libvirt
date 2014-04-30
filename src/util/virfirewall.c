@@ -307,7 +307,7 @@ virFirewallAddRuleFullV(virFirewallPtr firewall,
     VIR_FIREWALL_RETURN_NULL_IF_ERROR(firewall);
 
     if (firewall->ngroups == 0) {
-        firewall->err = ENODATA;
+        firewall->err = EINVAL;
         return NULL;
     }
     group = firewall->groups[firewall->currentGroup];
@@ -608,7 +608,7 @@ void virFirewallStartRollback(virFirewallPtr firewall,
     VIR_FIREWALL_RETURN_IF_ERROR(firewall);
 
     if (firewall->ngroups == 0) {
-        firewall->err = ENODATA;
+        firewall->err = EINVAL;
         return;
     }
 
