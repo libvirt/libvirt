@@ -10319,6 +10319,10 @@ virNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
  * in an existing CDROM/Floppy device, however, applications are
  * recommended to use the virDomainUpdateDeviceFlag method instead.
  *
+ * Be aware that hotplug changes might not persist across a domain going
+ * into S4 state (also known as hibernation) unless you also modify the
+ * persistent domain definition.
+ *
  * Returns 0 in case of success, -1 in case of failure.
  */
 int
@@ -10374,6 +10378,10 @@ virDomainAttachDevice(virDomainPtr domain, const char *xml)
  * in an existing CDROM/Floppy device, however, applications are
  * recommended to use the virDomainUpdateDeviceFlag method instead.
  *
+ * Be aware that hotplug changes might not persist across a domain going
+ * into S4 state (also known as hibernation) unless you also modify the
+ * persistent domain definition.
+ *
  * Returns 0 in case of success, -1 in case of failure.
  */
 int
@@ -10415,6 +10423,10 @@ virDomainAttachDeviceFlags(virDomainPtr domain,
  *
  * Destroy a virtual device attachment to backend.  This function,
  * having hot-unplug semantics, is only allowed on an active domain.
+ *
+ * Be aware that hotplug changes might not persist across a domain going
+ * into S4 state (also known as hibernation) unless you also modify the
+ * persistent domain definition.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
@@ -10486,6 +10498,10 @@ virDomainDetachDevice(virDomainPtr domain, const char *xml)
  * asynchronous device removal that finishes shortly after the request into
  * a synchronous removal. In other words, this API may wait a bit for the
  * removal to complete in case it was not synchronous.
+ *
+ * Be aware that hotplug changes might not persist across a domain going
+ * into S4 state (also known as hibernation) unless you also modify the
+ * persistent domain definition.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
