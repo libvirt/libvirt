@@ -939,7 +939,9 @@ libxlDomainReboot(virDomainPtr dom, unsigned int flags)
     int ret = -1;
     libxlDomainObjPrivatePtr priv;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_REBOOT_PARAVIRT, -1);
+    if (flags == 0)
+        flags = VIR_DOMAIN_REBOOT_PARAVIRT;
 
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
@@ -954,13 +956,16 @@ libxlDomainReboot(virDomainPtr dom, unsigned int flags)
     }
 
     priv = vm->privateData;
-    if (libxl_domain_reboot(priv->ctx, vm->def->id) != 0) {
+    if (flags & VIR_DOMAIN_REBOOT_PARAVIRT) {
+        ret = libxl_domain_reboot(priv->ctx, vm->def->id);
+        if (ret == 0)
+            goto cleanup;
+
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to reboot domain '%d' with libxenlight"),
                        vm->def->id);
-        goto cleanup;
+        ret = -1;
     }
-    ret = 0;
 
  cleanup:
     if (vm)
