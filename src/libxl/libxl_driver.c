@@ -873,7 +873,11 @@ libxlDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
     int ret = -1;
     libxlDomainObjPrivatePtr priv;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN |
+                  VIR_DOMAIN_SHUTDOWN_PARAVIRT, -1);
+    if (flags == 0)
+        flags = VIR_DOMAIN_SHUTDOWN_PARAVIRT |
+            VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN;
 
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
@@ -888,17 +892,32 @@ libxlDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
     }
 
     priv = vm->privateData;
-    if (libxl_domain_shutdown(priv->ctx, vm->def->id) != 0) {
+    if (flags & VIR_DOMAIN_SHUTDOWN_PARAVIRT) {
+        ret = libxl_domain_shutdown(priv->ctx, vm->def->id);
+        if (ret == 0)
+            goto cleanup;
+
+        if (ret != ERROR_NOPARAVIRT) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to shutdown domain '%d' with libxenlight"),
+                           vm->def->id);
+            ret = -1;
+            goto cleanup;
+        }
+        ret = -1;
+    }
+
+    if (flags & VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN) {
+        ret = libxl_send_trigger(priv->ctx, vm->def->id,
+                                 LIBXL_TRIGGER_POWER, 0);
+        if (ret == 0)
+            goto cleanup;
+
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to shutdown domain '%d' with libxenlight"),
                        vm->def->id);
-        goto cleanup;
+        ret = -1;
     }
-
-    /* vm is marked shutoff (or removed from domains list if not persistent)
-     * in shutdown event handler.
-     */
-    ret = 0;
 
  cleanup:
     if (vm)
