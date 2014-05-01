@@ -1899,8 +1899,11 @@ virStrToLong_i;
 virStrToLong_l;
 virStrToLong_ll;
 virStrToLong_ui;
+virStrToLong_uip;
 virStrToLong_ul;
 virStrToLong_ull;
+virStrToLong_ullp;
+virStrToLong_ulp;
 virTrimSpaces;
 virVasprintfInternal;
 

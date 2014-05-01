@@ -211,7 +211,9 @@ virStrToLong_i(char const *s, char **end_ptr, int base, int *result)
     return 0;
 }
 
-/* Just like virStrToLong_i, above, but produce an "unsigned int" value.  */
+/* Just like virStrToLong_i, above, but produce an "unsigned int"
+ * value.  This version allows twos-complement wraparound of negative
+ * numbers. */
 int
 virStrToLong_ui(char const *s, char **end_ptr, int base, unsigned int *result)
 {
@@ -242,6 +244,27 @@ virStrToLong_ui(char const *s, char **end_ptr, int base, unsigned int *result)
     return 0;
 }
 
+/* Just like virStrToLong_i, above, but produce an "unsigned int"
+ * value.  This version rejects any negative signs.  */
+int
+virStrToLong_uip(char const *s, char **end_ptr, int base, unsigned int *result)
+{
+    unsigned long int val;
+    char *p;
+    bool err = false;
+
+    errno = 0;
+    val = strtoul(s, &p, base); /* exempt from syntax-check */
+    err = (memchr(s, '-', p - s) ||
+           errno || (!end_ptr && *p) || p == s || (unsigned int) val != val);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
 /* Just like virStrToLong_i, above, but produce a "long" value.  */
 int
 virStrToLong_l(char const *s, char **end_ptr, int base, long *result)
@@ -261,7 +284,9 @@ virStrToLong_l(char const *s, char **end_ptr, int base, long *result)
     return 0;
 }
 
-/* Just like virStrToLong_i, above, but produce an "unsigned long" value.  */
+/* Just like virStrToLong_i, above, but produce an "unsigned long"
+ * value.  This version allows twos-complement wraparound of negative
+ * numbers. */
 int
 virStrToLong_ul(char const *s, char **end_ptr, int base, unsigned long *result)
 {
@@ -272,6 +297,28 @@ virStrToLong_ul(char const *s, char **end_ptr, int base, unsigned long *result)
     errno = 0;
     val = strtoul(s, &p, base); /* exempt from syntax-check */
     err = (errno || (!end_ptr && *p) || p == s);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
+/* Just like virStrToLong_i, above, but produce an "unsigned long"
+ * value.  This version rejects any negative signs.  */
+int
+virStrToLong_ulp(char const *s, char **end_ptr, int base,
+                 unsigned long *result)
+{
+    unsigned long int val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtoul(s, &p, base); /* exempt from syntax-check */
+    err = (memchr(s, '-', p - s) ||
+           errno || (!end_ptr && *p) || p == s);
     if (end_ptr)
         *end_ptr = p;
     if (err)
@@ -299,9 +346,12 @@ virStrToLong_ll(char const *s, char **end_ptr, int base, long long *result)
     return 0;
 }
 
-/* Just like virStrToLong_i, above, but produce an "unsigned long long" value.  */
+/* Just like virStrToLong_i, above, but produce an "unsigned long
+ * long" value.  This version allows twos-complement wraparound of
+ * negative numbers. */
 int
-virStrToLong_ull(char const *s, char **end_ptr, int base, unsigned long long *result)
+virStrToLong_ull(char const *s, char **end_ptr, int base,
+                 unsigned long long *result)
 {
     unsigned long long val;
     char *p;
@@ -310,6 +360,28 @@ virStrToLong_ull(char const *s, char **end_ptr, int base, unsigned long long *re
     errno = 0;
     val = strtoull(s, &p, base); /* exempt from syntax-check */
     err = (errno || (!end_ptr && *p) || p == s);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
+/* Just like virStrToLong_i, above, but produce an "unsigned long
+ * long" value.  This version rejects any negative signs.  */
+int
+virStrToLong_ullp(char const *s, char **end_ptr, int base,
+                  unsigned long long *result)
+{
+    unsigned long long val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtoull(s, &p, base); /* exempt from syntax-check */
+    err = (memchr(s, '-', p - s) ||
+           errno || (!end_ptr && *p) || p == s);
     if (end_ptr)
         *end_ptr = p;
     if (err)

@@ -408,6 +408,13 @@ testStringToLong(const void *opaque)
     char *end;
     long l;
     unsigned long ul;
+    bool negative;
+
+    if (data->suffix)
+        negative = !!memchr(data->str, '-',
+                            strlen(data->str) - strlen(data->suffix));
+    else
+        negative = !!strchr(data->str, '-');
 
 #define TEST_ONE(Str, Suff, Type, Fn, Fmt, Exp, Exp_ret)                \
     do {                                                                \
@@ -441,6 +448,11 @@ testStringToLong(const void *opaque)
              data->si, data->si_ret);
     TEST_ONE(data->str, data->suffix, unsigned int, ui, "%u",
              data->ui, data->ui_ret);
+    if (negative)
+        TEST_ONE(data->str, data->suffix, unsigned int, uip, "%u", 0U, -1);
+    else
+        TEST_ONE(data->str, data->suffix, unsigned int, uip, "%u",
+                 data->ui, data->ui_ret);
 
     /* We hate adding new API with 'long', and prefer 'int' or 'long
      * long' instead, since platform-specific results are evil */
@@ -450,11 +462,22 @@ testStringToLong(const void *opaque)
     ul = (sizeof(int) == sizeof(long)) ? data->ui : data->ull;
     TEST_ONE(data->str, data->suffix, unsigned long, ul, "%lu",
              ul, (sizeof(int) == sizeof(long)) ? data->ui_ret : data->ull_ret);
+    if (negative)
+        TEST_ONE(data->str, data->suffix, unsigned long, ulp, "%lu", 0UL, -1);
+    else
+        TEST_ONE(data->str, data->suffix, unsigned long, ulp, "%lu", ul,
+                 (sizeof(int) == sizeof(long)) ? data->ui_ret : data->ull_ret);
 
     TEST_ONE(data->str, data->suffix, long long, ll, "%lld",
              data->ll, data->ll_ret);
     TEST_ONE(data->str, data->suffix, unsigned long long, ull, "%llu",
              data->ull, data->ull_ret);
+    if (negative)
+        TEST_ONE(data->str, data->suffix, unsigned long long, ullp, "%llu",
+                 0ULL, -1);
+    else
+        TEST_ONE(data->str, data->suffix, unsigned long long, ullp, "%llu",
+                 data->ull, data->ull_ret);
 
 #undef TEST_ONE
 

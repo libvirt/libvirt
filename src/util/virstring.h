@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -50,6 +50,10 @@ int virStrToLong_ui(char const *s,
                     char **end_ptr,
                     int base,
                     unsigned int *result);
+int virStrToLong_uip(char const *s,
+                     char **end_ptr,
+                     int base,
+                     unsigned int *result);
 int virStrToLong_l(char const *s,
                    char **end_ptr,
                    int base,
@@ -58,6 +62,10 @@ int virStrToLong_ul(char const *s,
                     char **end_ptr,
                     int base,
                     unsigned long *result);
+int virStrToLong_ulp(char const *s,
+                     char **end_ptr,
+                     int base,
+                     unsigned long *result);
 int virStrToLong_ll(char const *s,
                     char **end_ptr,
                     int base,
@@ -66,6 +74,10 @@ int virStrToLong_ull(char const *s,
                      char **end_ptr,
                      int base,
                      unsigned long long *result);
+int virStrToLong_ullp(char const *s,
+                      char **end_ptr,
+                      int base,
+                      unsigned long long *result);
 int virStrToDouble(char const *s,
                    char **end_ptr,
                    double *result);
