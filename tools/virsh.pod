@@ -1302,8 +1302,8 @@ I<on_reboot> parameter in the domain's XML definition.
 By default the hypervisor will try to pick a suitable shutdown
 method. To specify an alternative method, the I<--mode> parameter
 can specify a comma separated list which includes C<acpi>, C<agent>,
-C<initctl> and C<signal>. The order in which drivers will try each
-mode is undefined, and not related to the order specified to virsh.
+C<initctl>, C<signal> and C<paravirt>. The order in which drivers will
+try each mode is undefined, and not related to the order specified to virsh.
 For strict control over ordering, use a single mode at a time and
 repeat the command.
 
@@ -1781,8 +1781,8 @@ snapshot metadata with B<snapshot-create>.
 By default the hypervisor will try to pick a suitable shutdown
 method. To specify an alternative method, the I<--mode> parameter
 can specify a comma separated list which includes C<acpi>, C<agent>,
-C<initctl> and C<signal>. The order in which drivers will try each
-mode is undefined, and not related to the order specified to virsh.
+C<initctl>, C<signal> and C<paravirt>. The order in which drivers will
+try each mode is undefined, and not related to the order specified to virsh.
 For strict control over ordering, use a single mode at a time and
 repeat the command.
 

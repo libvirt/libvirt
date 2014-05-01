@@ -1652,6 +1652,7 @@ typedef enum {
     VIR_DOMAIN_SHUTDOWN_GUEST_AGENT    = (1 << 1), /* Use guest agent */
     VIR_DOMAIN_SHUTDOWN_INITCTL        = (1 << 2), /* Use initctl */
     VIR_DOMAIN_SHUTDOWN_SIGNAL         = (1 << 3), /* Send a signal */
+    VIR_DOMAIN_SHUTDOWN_PARAVIRT       = (1 << 4), /* Use paravirt guest control */
 } virDomainShutdownFlagValues;
 
 int                     virDomainShutdown       (virDomainPtr domain);
@@ -1664,6 +1665,7 @@ typedef enum {
     VIR_DOMAIN_REBOOT_GUEST_AGENT    = (1 << 1), /* Use guest agent */
     VIR_DOMAIN_REBOOT_INITCTL        = (1 << 2), /* Use initctl */
     VIR_DOMAIN_REBOOT_SIGNAL         = (1 << 3), /* Send a signal */
+    VIR_DOMAIN_REBOOT_PARAVIRT       = (1 << 4), /* Use paravirt guest control */
 } virDomainRebootFlagValues;
 
 int                     virDomainReboot         (virDomainPtr domain,
