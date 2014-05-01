@@ -8153,7 +8153,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                    is to raise an error if present="yes" */
                 if (def->clock.timers[i]->present == 1) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   "%s", _("pit timer is not supported"));
+                                   "%s", _("hpet timer is not supported"));
+                    goto error;
                 }
             }
             break;
@@ -8197,7 +8198,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     if (def->pm.s4) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISABLE_S4)) {
-         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("setting ACPI S4 not supported"));
             goto error;
         }
@@ -8669,6 +8670,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             } else if (disk->src.type == VIR_STORAGE_TYPE_NETWORK) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("network disks are only supported with -drive"));
+                goto error;
             } else {
                 if (VIR_STRDUP(file, disk->src.path) < 0) {
                     goto error;
@@ -10451,7 +10453,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                        _("invalid device name '%s'"), def->dst);
         virDomainDiskDefFree(def);
         def = NULL;
-        /* fall through to "cleanup" */
+        goto cleanup;
     }
 
  cleanup:
