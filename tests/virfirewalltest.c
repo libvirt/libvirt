@@ -24,23 +24,26 @@
 #define __VIR_COMMAND_PRIV_H_ALLOW__
 
 #include "testutils.h"
-#include "virbuffer.h"
-#include "vircommandpriv.h"
-#include "virfirewallpriv.h"
-#include "virmock.h"
-#include "virdbuspriv.h"
 
-#define VIR_FROM_THIS VIR_FROM_FIREWALL
+#if defined(__linux__)
 
-#if WITH_DBUS
-# include <dbus/dbus.h>
-#endif
+# include "virbuffer.h"
+# include "vircommandpriv.h"
+# include "virfirewallpriv.h"
+# include "virmock.h"
+# include "virdbuspriv.h"
+
+# define VIR_FROM_THIS VIR_FROM_FIREWALL
+
+# if WITH_DBUS
+#  include <dbus/dbus.h>
+# endif
 
 static bool fwDisabled = true;
 static virBufferPtr fwBuf;
 static bool fwError;
 
-#define TEST_FILTER_TABLE_LIST                                  \
+# define TEST_FILTER_TABLE_LIST                                 \
     "Chain INPUT (policy ACCEPT)\n"                             \
     "target     prot opt source               destination\n"    \
     "\n"                                                        \
@@ -50,7 +53,7 @@ static bool fwError;
     "Chain OUTPUT (policy ACCEPT)\n"                            \
     "target     prot opt source               destination\n"
 
-#define TEST_NAT_TABLE_LIST                                             \
+# define TEST_NAT_TABLE_LIST                                            \
     "Chain PREROUTING (policy ACCEPT)\n"                                \
     "target     prot opt source               destination\n"            \
     "\n"                                                                \
@@ -63,7 +66,7 @@ static bool fwError;
     "Chain POSTROUTING (policy ACCEPT)\n"                               \
     "target     prot opt source               destination\n"
 
-#if WITH_DBUS
+# if WITH_DBUS
 VIR_MOCK_IMPL_RET_ARGS(dbus_connection_send_with_reply_and_block,
                        DBusMessage *,
                        DBusConnection *, connection,
@@ -186,7 +189,7 @@ VIR_MOCK_IMPL_RET_ARGS(dbus_connection_send_with_reply_and_block,
 
     goto cleanup;
 }
-#endif
+# endif
 
 struct testFirewallData {
     virFirewallBackend tryBackend;
@@ -1126,7 +1129,7 @@ mymain(void)
 {
     int ret = 0;
 
-#define RUN_TEST_DIRECT(name, method)                                   \
+# define RUN_TEST_DIRECT(name, method)                                  \
     do {                                                                \
         struct testFirewallData data;                                   \
         data.tryBackend = VIR_FIREWALL_BACKEND_AUTOMATIC;               \
@@ -1141,8 +1144,8 @@ mymain(void)
             ret = -1;                                                   \
     } while (0)
 
-#if WITH_DBUS
-# define RUN_TEST_FIREWALLD(name, method)                               \
+# if WITH_DBUS
+#  define RUN_TEST_FIREWALLD(name, method)                              \
     do {                                                                \
         struct testFirewallData data;                                   \
         data.tryBackend = VIR_FIREWALL_BACKEND_AUTOMATIC;               \
@@ -1157,13 +1160,13 @@ mymain(void)
             ret = -1;                                                   \
     } while (0)
 
-# define RUN_TEST(name, method)                 \
+#  define RUN_TEST(name, method)                \
     RUN_TEST_DIRECT(name, method);              \
     RUN_TEST_FIREWALLD(name, method)
-#else /* ! WITH_DBUS */
-# define RUN_TEST(name, method)                 \
+# else /* ! WITH_DBUS */
+#  define RUN_TEST(name, method)                \
     RUN_TEST_DIRECT(name, method)
-#endif /* ! WITH_DBUS */
+# endif /* ! WITH_DBUS */
 
     RUN_TEST("single group", testFirewallSingleGroup);
     RUN_TEST("remove rule", testFirewallRemoveRule);
@@ -1179,8 +1182,17 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-#if WITH_DBUS
+# if WITH_DBUS
 VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virmockdbus.so")
-#else
+# else
 VIRT_TEST_MAIN(mymain)
-#endif
+# endif
+
+#else /* ! defined (__linux__) */
+
+int main(void)
+{
+    return EXIT_AM_SKIP;
+}
+
+#endif /* ! defined(__linux__) */
