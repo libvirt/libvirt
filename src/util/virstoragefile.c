@@ -1525,7 +1525,7 @@ virStorageFileParseChainIndex(const char *diskTarget,
     if (virStringListLength(strings) != 2)
         goto cleanup;
 
-    if (virStrToLong_ui(strings[1], &suffix, 10, &idx) < 0 ||
+    if (virStrToLong_uip(strings[1], &suffix, 10, &idx) < 0 ||
         STRNEQ(suffix, "]"))
         goto cleanup;
 
