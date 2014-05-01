@@ -1824,7 +1824,8 @@ qemuDomainChangeNetFilter(virConnectPtr conn,
 
     virDomainConfNWFilterTeardown(olddev);
 
-    if (virDomainConfNWFilterInstantiate(conn, vm->def->uuid, newdev) < 0) {
+    if (newdev->filter &&
+        virDomainConfNWFilterInstantiate(conn, vm->def->uuid, newdev) < 0) {
         virErrorPtr errobj;
 
         virReportError(VIR_ERR_OPERATION_FAILED,
