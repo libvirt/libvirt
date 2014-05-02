@@ -2835,13 +2835,20 @@ virStorageFileInit(virStorageSourcePtr src)
 int
 virStorageFileCreate(virStorageSourcePtr src)
 {
+    int ret;
+
     if (!virStorageFileIsInitialized(src) ||
         !src->drv->backend->storageFileCreate) {
         errno = ENOSYS;
         return -2;
     }
 
-    return src->drv->backend->storageFileCreate(src);
+    ret = src->drv->backend->storageFileCreate(src);
+
+    VIR_DEBUG("created storage file %p: ret=%d, errno=%d",
+              src, ret, errno);
+
+    return ret;
 }
 
 
@@ -2858,13 +2865,20 @@ virStorageFileCreate(virStorageSourcePtr src)
 int
 virStorageFileUnlink(virStorageSourcePtr src)
 {
+    int ret;
+
     if (!virStorageFileIsInitialized(src) ||
         !src->drv->backend->storageFileUnlink) {
         errno = ENOSYS;
         return -2;
     }
 
-    return src->drv->backend->storageFileUnlink(src);
+    ret = src->drv->backend->storageFileUnlink(src);
+
+    VIR_DEBUG("unlinked storage file %p: ret=%d, errno=%d",
+              src, ret, errno);
+
+    return ret;
 }
 
 
@@ -2881,11 +2895,18 @@ int
 virStorageFileStat(virStorageSourcePtr src,
                    struct stat *st)
 {
+    int ret;
+
     if (!virStorageFileIsInitialized(src) ||
         !src->drv->backend->storageFileStat) {
         errno = ENOSYS;
         return -2;
     }
 
-    return src->drv->backend->storageFileStat(src, st);
+    ret = src->drv->backend->storageFileStat(src, st);
+
+    VIR_DEBUG("stat of storage file %p: ret=%d, errno=%d",
+              src, ret, errno);
+
+    return ret;
 }

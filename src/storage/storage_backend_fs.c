@@ -1339,18 +1339,31 @@ virStorageBackend virStorageBackendNetFileSystem = {
 };
 
 
+static void
+virStorageFileBackendFileDeinit(virStorageSourcePtr src)
+{
+    VIR_DEBUG("deinitializing FS storage file %p (%s:%s)", src,
+              virStorageTypeToString(virStorageSourceGetActualType(src)),
+              src->path);
+
+}
+
+
+static int
+virStorageFileBackendFileInit(virStorageSourcePtr src)
+{
+    VIR_DEBUG("initializing FS storage file %p (%s:%s)", src,
+              virStorageTypeToString(virStorageSourceGetActualType(src)),
+              src->path);
+
+    return 0;
+}
+
+
 static int
 virStorageFileBackendFileUnlink(virStorageSourcePtr src)
 {
-    int ret;
-
-    ret = unlink(src->path);
-    /* preserve errno */
-
-    VIR_DEBUG("removing storage file %p(%s): ret=%d, errno=%d",
-              src, src->path, ret, errno);
-
-    return ret;
+    return unlink(src->path);
 }
 
 
@@ -1358,20 +1371,15 @@ static int
 virStorageFileBackendFileStat(virStorageSourcePtr src,
                               struct stat *st)
 {
-    int ret;
-
-    ret = stat(src->path, st);
-    /* preserve errno */
-
-    VIR_DEBUG("stat of storage file %p(%s): ret=%d, errno=%d",
-              src, src->path, ret, errno);
-
-    return ret;
+    return stat(src->path, st);
 }
 
 
 virStorageFileBackend virStorageFileBackendFile = {
     .type = VIR_STORAGE_TYPE_FILE,
+
+    .backendInit = virStorageFileBackendFileInit,
+    .backendDeinit = virStorageFileBackendFileDeinit,
 
     .storageFileUnlink = virStorageFileBackendFileUnlink,
     .storageFileStat = virStorageFileBackendFileStat,
@@ -1380,6 +1388,9 @@ virStorageFileBackend virStorageFileBackendFile = {
 
 virStorageFileBackend virStorageFileBackendBlock = {
     .type = VIR_STORAGE_TYPE_BLOCK,
+
+    .backendInit = virStorageFileBackendFileInit,
+    .backendDeinit = virStorageFileBackendFileDeinit,
 
     .storageFileStat = virStorageFileBackendFileStat,
 };
