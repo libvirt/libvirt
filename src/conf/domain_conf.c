@@ -5002,6 +5002,27 @@ virDomainDiskSourceParse(xmlNodePtr node,
             goto cleanup;
         }
 
+        /* for historical reasons the volume name for gluster volume is stored
+         * as a part of the path. This is hard to work with when dealing with
+         * relative names. Split out the volume into a separate variable */
+        if (src->path && src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER) {
+            char *tmp;
+            if (!(tmp = strchr(src->path, '/')) ||
+                tmp == src->path) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("missing volume name or file name in "
+                                 "gluster source path '%s'"), src->path);
+                goto cleanup;
+            }
+
+            src->volume = src->path;
+
+            if (VIR_STRDUP(src->path, tmp) < 0)
+                goto cleanup;
+
+            tmp[0] = '\0';
+        }
+
         child = node->children;
         while (child != NULL) {
             if (child->type == XML_ELEMENT_NODE &&
@@ -14841,6 +14862,7 @@ virDomainDiskSourceFormat(virBufferPtr buf,
                           unsigned int flags)
 {
     size_t n;
+    char *path = NULL;
     const char *startupPolicy = NULL;
 
     if (policy)
@@ -14876,7 +14898,16 @@ virDomainDiskSourceFormat(virBufferPtr buf,
         case VIR_STORAGE_TYPE_NETWORK:
             virBufferAsprintf(buf, "<source protocol='%s'",
                               virStorageNetProtocolTypeToString(src->protocol));
-            virBufferEscapeString(buf, " name='%s'", src->path);
+
+
+            if (src->volume) {
+                if (virAsprintf(&path, "%s%s", src->volume, src->path) < 0)
+                    return -1;
+            }
+
+            virBufferEscapeString(buf, " name='%s'", path ? path : src->path);
+
+            VIR_FREE(path);
 
             if (src->nhosts == 0) {
                 virBufferAddLit(buf, "/>\n");

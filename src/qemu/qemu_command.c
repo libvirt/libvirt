@@ -3058,6 +3058,7 @@ qemuNetworkDriveGetPort(int protocol,
 static char *
 qemuBuildNetworkDriveURI(int protocol,
                          const char *src,
+                         const char *volume,
                          size_t nhosts,
                          virStorageNetHostDefPtr hosts,
                          const char *username,
@@ -3157,11 +3158,18 @@ qemuBuildNetworkDriveURI(int protocol,
             if ((uri->port = qemuNetworkDriveGetPort(protocol, hosts->port)) < 0)
                 goto cleanup;
 
-            if (src &&
-                virAsprintf(&uri->path, "%s%s",
-                            src[0] == '/' ? "" : "/",
-                            src) < 0)
-                goto cleanup;
+            if (src) {
+                if (volume) {
+                    if (virAsprintf(&uri->path, "/%s%s",
+                                    volume, src) < 0)
+                        goto cleanup;
+                } else {
+                    if (virAsprintf(&uri->path, "%s%s",
+                                    src[0] == '/' ? "" : "/",
+                                    src) < 0)
+                        goto cleanup;
+                }
+            }
 
             if (hosts->socket &&
                 virAsprintf(&uri->query, "socket=%s", hosts->socket) < 0)
@@ -3323,6 +3331,7 @@ qemuGetDriveSourceString(virStorageSourcePtr src,
     case VIR_STORAGE_TYPE_NETWORK:
         if (!(*source = qemuBuildNetworkDriveURI(src->protocol,
                                                  src->path,
+                                                 src->volume,
                                                  src->nhosts,
                                                  src->hosts,
                                                  username,

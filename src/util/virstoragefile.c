@@ -1757,6 +1757,7 @@ virStorageSourceClear(virStorageSourcePtr def)
         return;
 
     VIR_FREE(def->path);
+    VIR_FREE(def->volume);
     virStorageSourcePoolDefFree(def->srcpool);
     VIR_FREE(def->driverName);
     virBitmapFree(def->features);

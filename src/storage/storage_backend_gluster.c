@@ -533,8 +533,6 @@ typedef virStorageFileBackendGlusterPriv *virStorageFileBackendGlusterPrivPtr;
 
 struct _virStorageFileBackendGlusterPriv {
     glfs_t *vol;
-    char *volname;
-    char *path;
 };
 
 
@@ -547,7 +545,6 @@ virStorageFileBackendGlusterDeinit(virStorageSourcePtr src)
 
     if (priv->vol)
         glfs_fini(priv->vol);
-    VIR_FREE(priv->volname);
 
     VIR_FREE(priv);
     src->drv->priv = NULL;
@@ -564,21 +561,14 @@ virStorageFileBackendGlusterInit(virStorageSourcePtr src)
     VIR_DEBUG("initializing gluster storage file %p(%s/%s)",
               src, hostname, src->path);
 
-    if (VIR_ALLOC(priv) < 0)
-        return -1;
-
-    if (VIR_STRDUP(priv->volname, src->path) < 0)
-        goto error;
-
-    if (!(priv->path = strchr(priv->volname, '/'))) {
+    if (!src->volume) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid path of gluster volume: '%s'"),
-                       src->path);
-        goto error;
+                       _("missing gluster volume name for path '%s'"), src->path);
+        return -1;
     }
 
-    *priv->path = '\0';
-    priv->path++;
+    if (VIR_ALLOC(priv) < 0)
+        return -1;
 
     if (host->port &&
         virStrToLong_i(host->port, NULL, 10, &port) < 0) {
@@ -591,7 +581,7 @@ virStorageFileBackendGlusterInit(virStorageSourcePtr src)
     if (host->transport == VIR_STORAGE_NET_HOST_TRANS_UNIX)
         hostname = host->socket;
 
-    if (!(priv->vol = glfs_new(priv->volname))) {
+    if (!(priv->vol = glfs_new(src->volume))) {
         virReportOOMError();
         goto error;
     }
@@ -617,7 +607,6 @@ virStorageFileBackendGlusterInit(virStorageSourcePtr src)
     return 0;
 
  error:
-    VIR_FREE(priv->volname);
     if (priv->vol)
         glfs_fini(priv->vol);
     VIR_FREE(priv);
@@ -632,7 +621,7 @@ virStorageFileBackendGlusterUnlink(virStorageSourcePtr src)
     virStorageFileBackendGlusterPrivPtr priv = src->drv->priv;
     int ret;
 
-    ret = glfs_unlink(priv->vol, priv->path);
+    ret = glfs_unlink(priv->vol, src->path);
     /* preserve errno */
 
     VIR_DEBUG("removing storage file %p(%s/%s): ret=%d, errno=%d",
@@ -648,7 +637,7 @@ virStorageFileBackendGlusterStat(virStorageSourcePtr src,
     virStorageFileBackendGlusterPrivPtr priv = src->drv->priv;
     int ret;
 
-    ret = glfs_stat(priv->vol, priv->path, st);
+    ret = glfs_stat(priv->vol, src->path, st);
     /* preserve errno */
 
     VIR_DEBUG("stat of storage file %p(%s/%s): ret=%d, errno=%d",

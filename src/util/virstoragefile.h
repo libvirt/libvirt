@@ -212,6 +212,7 @@ struct _virStorageSource {
     int type; /* virStorageType */
     char *path;
     int protocol; /* virStorageNetProtocol */
+    char *volume; /* volume name for remote storage */
     size_t nhosts;
     virStorageNetHostDefPtr hosts;
     virStorageSourcePoolDefPtr srcpool;
