@@ -1235,6 +1235,32 @@ qemuAgentMakeCommand(const char *cmdname,
     return NULL;
 }
 
+static virJSONValuePtr
+qemuAgentMakeStringsArray(const char **strings, unsigned int len)
+{
+    size_t i;
+    virJSONValuePtr ret = virJSONValueNewArray(), str;
+
+    if (!ret)
+        return NULL;
+
+    for (i = 0; i < len; i++) {
+        str = virJSONValueNewString(strings[i]);
+        if (!str)
+            goto error;
+
+        if (virJSONValueArrayAppend(ret, str) < 0) {
+            virJSONValueFree(str);
+            goto error;
+        }
+    }
+    return ret;
+
+ error:
+    virJSONValueFree(ret);
+    return NULL;
+}
+
 void qemuAgentNotifyEvent(qemuAgentPtr mon,
                           qemuAgentEvent event)
 {
@@ -1287,21 +1313,34 @@ int qemuAgentShutdown(qemuAgentPtr mon,
 /*
  * qemuAgentFSFreeze:
  * @mon: Agent
+ * @mountpoints: Array of mountpoint paths to be frozen, or NULL for all
+ * @nmountpoints: Number of mountpoints to be frozen, or 0 for all
  *
  * Issue guest-fsfreeze-freeze command to guest agent,
- * which freezes all mounted file systems and returns
+ * which freezes file systems mounted on specified mountpoints
+ * (or all file systems when @mountpoints is NULL), and returns
  * number of frozen file systems on success.
  *
  * Returns: number of file system frozen on success,
  *          -1 on error.
  */
-int qemuAgentFSFreeze(qemuAgentPtr mon)
+int qemuAgentFSFreeze(qemuAgentPtr mon, const char **mountpoints,
+                      unsigned int nmountpoints)
 {
     int ret = -1;
-    virJSONValuePtr cmd;
+    virJSONValuePtr cmd, arg;
     virJSONValuePtr reply = NULL;
 
-    cmd = qemuAgentMakeCommand("guest-fsfreeze-freeze", NULL);
+    if (mountpoints && nmountpoints) {
+        arg = qemuAgentMakeStringsArray(mountpoints, nmountpoints);
+        if (!arg)
+            return -1;
+
+        cmd = qemuAgentMakeCommand("guest-fsfreeze-freeze",
+                                   "a:mountpoints", arg, NULL);
+    } else {
+        cmd = qemuAgentMakeCommand("guest-fsfreeze-freeze", NULL);
+    }
 
     if (!cmd)
         return -1;

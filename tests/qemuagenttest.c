@@ -36,6 +36,7 @@ testQemuAgentFSFreeze(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    const char *mountpoints[] = {"/fs1", "/fs2", "/fs3", "/fs4", "/fs5"};
     int ret = -1;
 
     if (!test)
@@ -55,7 +56,8 @@ testQemuAgentFSFreeze(const void *data)
                                "{ \"return\" : 7 }") < 0)
         goto cleanup;
 
-    if ((ret = qemuAgentFSFreeze(qemuMonitorTestGetAgent(test))) < 0)
+    if ((ret = qemuAgentFSFreeze(qemuMonitorTestGetAgent(test),
+                                 mountpoints, 5)) < 0)
         goto cleanup;
 
     if (ret != 5) {
@@ -64,7 +66,7 @@ testQemuAgentFSFreeze(const void *data)
         goto cleanup;
     }
 
-    if ((ret = qemuAgentFSFreeze(qemuMonitorTestGetAgent(test))) < 0)
+    if ((ret = qemuAgentFSFreeze(qemuMonitorTestGetAgent(test), NULL, 0)) < 0)
         goto cleanup;
 
     if (ret != 7) {
@@ -547,7 +549,7 @@ testQemuAgentTimeout(const void *data)
                                   NULL, NULL) < 0)
         goto cleanup;
 
-    if (qemuAgentFSFreeze(qemuMonitorTestGetAgent(test)) != -1) {
+    if (qemuAgentFSFreeze(qemuMonitorTestGetAgent(test), NULL, 0) != -1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "agent command should have failed");
         goto cleanup;

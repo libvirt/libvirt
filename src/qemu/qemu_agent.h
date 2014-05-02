@@ -70,7 +70,8 @@ typedef enum {
 int qemuAgentShutdown(qemuAgentPtr mon,
                       qemuAgentShutdownMode mode);
 
-int qemuAgentFSFreeze(qemuAgentPtr mon);
+int qemuAgentFSFreeze(qemuAgentPtr mon,
+                      const char **mountpoints, unsigned int nmountpoints);
 int qemuAgentFSThaw(qemuAgentPtr mon);
 
 int qemuAgentSuspend(qemuAgentPtr mon,

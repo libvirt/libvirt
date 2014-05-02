@@ -12087,7 +12087,9 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
  * returned, FSThaw should be called revert the quiesced status. */
 static int
 qemuDomainSnapshotFSFreeze(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm)
+                           virDomainObjPtr vm,
+                           const char **mountpoints,
+                           unsigned int nmountpoints)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg;
@@ -12113,7 +12115,7 @@ qemuDomainSnapshotFSFreeze(virQEMUDriverPtr driver,
     virObjectUnref(cfg);
 
     qemuDomainObjEnterAgent(vm);
-    frozen = qemuAgentFSFreeze(priv->agent);
+    frozen = qemuAgentFSFreeze(priv->agent, mountpoints, nmountpoints);
     qemuDomainObjExitAgent(vm);
     return frozen < 0 ? -2 : frozen;
 }
@@ -13160,7 +13162,7 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
      * The command will fail if the guest is paused or the guest agent
      * is not running, or is already quiesced.  */
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) {
-        int freeze = qemuDomainSnapshotFSFreeze(driver, vm);
+        int freeze = qemuDomainSnapshotFSFreeze(driver, vm, NULL, 0);
         if (freeze < 0) {
             /* the helper reported the error */
             if (freeze == -2)
@@ -16561,12 +16563,6 @@ qemuDomainFSFreeze(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (mountpoints || nmountpoints) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("specifying mountpoints is not supported"));
-        return ret;
-    }
-
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
 
@@ -16582,7 +16578,7 @@ qemuDomainFSFreeze(virDomainPtr dom,
         goto endjob;
     }
 
-    ret = qemuDomainSnapshotFSFreeze(driver, vm);
+    ret = qemuDomainSnapshotFSFreeze(driver, vm, mountpoints, nmountpoints);
     if (ret == -2) {
         qemuDomainSnapshotFSThaw(driver, vm, false);
         ret = -1;
