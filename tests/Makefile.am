@@ -48,6 +48,9 @@ if WITH_DTRACE_PROBES
 PROBES_O += ../src/libvirt_probes.lo
 endif
 
+GNULIB_LIBS = \
+	../gnulib/lib/libgnu.la
+
 LDADDS = \
         $(WARN_CFLAGS) \
 	$(PROBES_O) \
@@ -550,7 +553,13 @@ commandtest_LDADD = $(LDADDS)
 
 commandhelper_SOURCES = \
 	commandhelper.c
-commandhelper_LDADD = $(LDADDS)
+commandhelper_LDADD = \
+	$(WARN_CFLAGS) \
+	$(NO_INDIRECT_LDFLAGS) \
+	$(PROBES_O) \
+	../src/libvirt_util.la \
+	$(GNULIB_LIBS)
+
 commandhelper_LDFLAGS = -static
 
 if WITH_LIBVIRTD
