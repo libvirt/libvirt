@@ -941,6 +941,29 @@ Output a URI which can be used to connect to the graphical display of the
 domain via VNC, SPICE or RDP. If I<--include-password> is specified, the
 SPICE channel password will be included in the URI.
 
+=item B<domfsfreeze> I<domain> [[I<--mountpoint>] B<mountpoint>...]
+
+Freeze mounted filesystems within a running domain to prepare for consistent
+snapshots.
+
+The I<--mountpoint> option takes a parameter B<mountpoint>, which is a
+mount point path of the filesystem to be frozen. This option can occur
+multiple times. If this is not specified, every mounted filesystem is frozen.
+
+Note: B<snapshot-create> command has a I<--quiesce> option to freeze
+and thaw the filesystems automatically to keep snapshots consistent.
+B<domfsfreeze> command is only needed when a user wants to utilize the
+native snapshot features of storage devices not supported by libvirt.
+
+=item B<domfsthaw> I<domain> [[I<--mountpoint>] B<mountpoint>...]
+
+Thaw mounted filesystems within a running domain, which have been frozen by
+domfsfreeze command.
+
+The I<--mountpoint> option takes a parameter B<mountpoint>, which is a
+mount point path of the filesystem to be thawed. This option can occur
+multiple times. If this is not specified, every mounted filesystem is thawed.
+
 =item B<domfstrim> I<domain> [I<--minimum> B<bytes>]
 [I<--mountpoint mountPoint>]
 

@@ -11397,6 +11397,120 @@ cmdDomFSTrim(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+static const vshCmdInfo info_domfsfreeze[] = {
+    {.name = "help",
+     .data = N_("Freeze domain's mounted filesystems.")
+    },
+    {.name = "desc",
+     .data = N_("Freeze domain's mounted filesystems.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_domfsfreeze[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = "mountpoint",
+     .type = VSH_OT_ARGV,
+     .help = N_("mountpoint path to be frozen")
+    },
+    {.name = NULL}
+};
+static bool
+cmdDomFSFreeze(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    int ret = -1;
+    const vshCmdOpt *opt = NULL;
+    const char **mountpoints = NULL;
+    size_t nmountpoints = 0;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    while ((opt = vshCommandOptArgv(cmd, opt))) {
+        if (VIR_EXPAND_N(mountpoints, nmountpoints, 1) < 0) {
+            vshError(ctl, _("%s: %d: failed to allocate mountpoints"),
+                     __FILE__, __LINE__);
+            goto cleanup;
+        }
+        mountpoints[nmountpoints-1] = opt->data;
+    }
+
+    ret = virDomainFSFreeze(dom, mountpoints, nmountpoints, 0);
+    if (ret < 0) {
+        vshError(ctl, _("Unable to freeze filesystems"));
+        goto cleanup;
+    }
+
+    vshPrint(ctl, _("Froze %d filesystem(s)\n"), ret);
+
+ cleanup:
+    VIR_FREE(mountpoints);
+    virDomainFree(dom);
+    return ret >= 0;
+}
+
+static const vshCmdInfo info_domfsthaw[] = {
+    {.name = "help",
+     .data = N_("Thaw domain's mounted filesystems.")
+    },
+    {.name = "desc",
+     .data = N_("Thaw domain's mounted filesystems.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_domfsthaw[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = "mountpoint",
+     .type = VSH_OT_ARGV,
+     .help = N_("mountpoint path to be thawed")
+    },
+    {.name = NULL}
+};
+static bool
+cmdDomFSThaw(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    int ret = -1;
+    const vshCmdOpt *opt = NULL;
+    const char **mountpoints = NULL;
+    size_t nmountpoints = 0;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    while ((opt = vshCommandOptArgv(cmd, opt))) {
+        if (VIR_EXPAND_N(mountpoints, nmountpoints, 1) < 0) {
+            vshError(ctl, _("%s: %d: failed to allocate mountpoints"),
+                     __FILE__, __LINE__);
+            goto cleanup;
+        }
+        mountpoints[nmountpoints-1] = opt->data;
+    }
+
+    ret = virDomainFSThaw(dom, mountpoints, nmountpoints, 0);
+    if (ret < 0) {
+        vshError(ctl, _("Unable to thaw filesystems"));
+        goto cleanup;
+    }
+
+    vshPrint(ctl, _("Thawed %d filesystem(s)\n"), ret);
+
+ cleanup:
+    VIR_FREE(mountpoints);
+    virDomainFree(dom);
+    return ret >= 0;
+}
+
 const vshCmdDef domManagementCmds[] = {
     {.name = "attach-device",
      .handler = cmdAttachDevice,
@@ -11542,6 +11656,18 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdDomDisplay,
      .opts = opts_domdisplay,
      .info = info_domdisplay,
+     .flags = 0
+    },
+    {.name = "domfsfreeze",
+     .handler = cmdDomFSFreeze,
+     .opts = opts_domfsfreeze,
+     .info = info_domfsfreeze,
+     .flags = 0
+    },
+    {.name = "domfsthaw",
+     .handler = cmdDomFSThaw,
+     .opts = opts_domfsthaw,
+     .info = info_domfsthaw,
      .flags = 0
     },
     {.name = "domfstrim",
