@@ -357,6 +357,9 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
         virBufferAddLit(buf, "</devices>\n");
     }
 
+    if (priv->quiesced)
+        virBufferAddLit(buf, "<quiesced/>\n");
+
     return 0;
 }
 
@@ -517,6 +520,8 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
         }
     }
     VIR_FREE(nodes);
+
+    priv->quiesced = virXPathBoolean("boolean(./quiesced)", ctxt) == 1;
 
     return 0;
 

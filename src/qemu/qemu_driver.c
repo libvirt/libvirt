@@ -12060,31 +12060,61 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
 }
 
 
+/* Return -1 if request is not sent to agent due to misconfig, -2 if request
+ * is sent but failed, and number of frozen filesystems on success. If -2 is
+ * returned, FSThaw should be called revert the quiesced status. */
 static int
-qemuDomainSnapshotFSFreeze(virDomainObjPtr vm)
+qemuDomainSnapshotFSFreeze(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverConfigPtr cfg;
     int freezed;
+
+    if (priv->quiesced) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is already quiesced"));
+        return -1;
+    }
 
     if (!qemuDomainAgentAvailable(priv, true))
         return -1;
 
+    priv->quiesced = true;
+
+    cfg = virQEMUDriverGetConfig(driver);
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
+        priv->quiesced = false;
+        virObjectUnref(cfg);
+        return -1;
+    }
+    virObjectUnref(cfg);
+
     qemuDomainObjEnterAgent(vm);
     freezed = qemuAgentFSFreeze(priv->agent);
     qemuDomainObjExitAgent(vm);
-
-    return freezed;
+    return freezed < 0 ? -2 : freezed;
 }
 
+/* Return -1 on error, otherwise number of thawed filesystems. */
 static int
-qemuDomainSnapshotFSThaw(virDomainObjPtr vm, bool report)
+qemuDomainSnapshotFSThaw(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         bool report)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverConfigPtr cfg;
     int thawed;
     virErrorPtr err = NULL;
 
     if (!qemuDomainAgentAvailable(priv, report))
         return -1;
+
+    if (!priv->quiesced && report) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not quiesced"));
+        return -1;
+    }
 
     qemuDomainObjEnterAgent(vm);
     if (!report)
@@ -12095,6 +12125,19 @@ qemuDomainSnapshotFSThaw(virDomainObjPtr vm, bool report)
     qemuDomainObjExitAgent(vm);
 
     virFreeError(err);
+
+    if (!report || thawed >= 0) {
+        priv->quiesced = false;
+
+        cfg = virQEMUDriverGetConfig(driver);
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
+            /* Revert the statuses when we failed to save them. */
+            priv->quiesced = true;
+            thawed = -1;
+        }
+        virObjectUnref(cfg);
+    }
+
     return thawed;
 }
 
@@ -13091,17 +13134,18 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
         goto cleanup;
 
     /* If quiesce was requested, then issue a freeze command, and a
-     * counterpart thaw command, no matter what.  The command will
-     * fail if the guest is paused or the guest agent is not
-     * running.  */
+     * counterpart thaw command when it is actually sent to agent.
+     * The command will fail if the guest is paused or the guest agent
+     * is not running, or is already quiesced.  */
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) {
-        if (qemuDomainSnapshotFSFreeze(vm) < 0) {
-            /* helper reported the error */
-            thaw = -1;
+        int freeze = qemuDomainSnapshotFSFreeze(driver, vm);
+        if (freeze < 0) {
+            /* the helper reported the error */
+            if (freeze == -2)
+                thaw = -1; /* the command is sent but agent failed */
             goto endjob;
-        } else {
-            thaw = 1;
         }
+        thaw = 1;
     }
 
     /* We need to track what state the guest is in, since taking the
@@ -13242,7 +13286,7 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
         goto cleanup;
     }
     if (vm && thaw != 0 &&
-        qemuDomainSnapshotFSThaw(vm, thaw > 0) < 0) {
+        qemuDomainSnapshotFSThaw(driver, vm, thaw > 0) < 0) {
         /* helper reported the error, if it was needed */
         if (thaw > 0)
             ret = -1;

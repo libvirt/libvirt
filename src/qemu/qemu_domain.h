@@ -176,6 +176,8 @@ struct _qemuDomainObjPrivate {
     char **qemuDevices; /* NULL-terminated list of devices aliases known to QEMU */
 
     bool hookRun;  /* true if there was a hook run over this domain */
+
+    bool quiesced; /* true if filesystems are quiesced */
 };
 
 typedef enum {
