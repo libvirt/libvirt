@@ -238,9 +238,15 @@ typedef enum {
 
     /**
      * @desc: Trim domain filesystems
-     * @message: Trimming domain filesystems require authorization
+     * @message: Trimming domain filesystems requires authorization
      */
     VIR_ACCESS_PERM_DOMAIN_FS_TRIM,      /* Issue TRIM to guest filesystems */
+
+    /**
+     * @desc: Freeze and thaw domain filesystems
+     * @message: Freezing and thawing domain filesystems requires authorization
+     */
+    VIR_ACCESS_PERM_DOMAIN_FS_FREEZE,    /* Freeze and thaw guest filesystems */
 
     /* Peeking at guest */
 

@@ -2427,6 +2427,28 @@ struct remote_network_event_lifecycle_msg {
         int                        event;
         int                        detail;
 };
+struct remote_domain_fsfreeze_args {
+        remote_nonnull_domain      dom;
+        struct {
+                u_int              mountpoints_len;
+                remote_nonnull_string * mountpoints_val;
+        } mountpoints;
+        u_int                      flags;
+};
+struct remote_domain_fsfreeze_ret {
+        int                        filesystems;
+};
+struct remote_domain_fsthaw_args {
+        remote_nonnull_domain      dom;
+        struct {
+                u_int              mountpoints_len;
+                remote_nonnull_string * mountpoints_val;
+        } mountpoints;
+        u_int                      flags;
+};
+struct remote_domain_fsthaw_ret {
+        int                        filesystems;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -2762,4 +2784,6 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_CALLBACK_PMSUSPEND_DISK = 332,
         REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_REMOVED = 333,
         REMOTE_PROC_DOMAIN_CORE_DUMP_WITH_FORMAT = 334,
+        REMOTE_PROC_DOMAIN_FSFREEZE = 335,
+        REMOTE_PROC_DOMAIN_FSTHAW = 336,
 };

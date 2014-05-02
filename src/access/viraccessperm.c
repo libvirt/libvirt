@@ -1,7 +1,7 @@
 /*
  * viraccessperm.c: access control permissions
  *
- * Copyright (C) 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,7 +39,8 @@ VIR_ENUM_IMPL(virAccessPermDomain,
               "start", "stop", "reset",
               "save", "delete",
               "migrate", "snapshot", "suspend", "hibernate", "core_dump", "pm_control",
-              "init_control", "inject_nmi", "send_input", "send_signal", "fs_trim",
+              "init_control", "inject_nmi", "send_input", "send_signal",
+              "fs_trim", "fs_freeze",
               "block_read", "block_write", "mem_read",
               "open_graphics", "open_device", "screenshot",
               "open_namespace");
