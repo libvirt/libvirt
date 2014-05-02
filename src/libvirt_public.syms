@@ -650,5 +650,11 @@ LIBVIRT_1.2.3 {
         virDomainCoreDumpWithFormat;
 } LIBVIRT_1.2.1;
 
+LIBVIRT_1.2.5 {
+    global:
+        virDomainFSFreeze;
+        virDomainFSThaw;
+} LIBVIRT_1.2.3;
+
 
 # .... define new API here using predicted next version number ....

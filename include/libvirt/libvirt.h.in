@@ -5279,6 +5279,16 @@ int virDomainFSTrim(virDomainPtr dom,
                     unsigned long long minimum,
                     unsigned int flags);
 
+int virDomainFSFreeze(virDomainPtr dom,
+                      const char **mountpoints,
+                      unsigned int nmountpoints,
+                      unsigned int flags);
+
+int virDomainFSThaw(virDomainPtr dom,
+                    const char **mountpoints,
+                    unsigned int nmountpoints,
+                    unsigned int flags);
+
 /**
  * virSchedParameterType:
  *

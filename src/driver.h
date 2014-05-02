@@ -1149,6 +1149,18 @@ typedef int
                                      unsigned int flags,
                                      int cancelled);
 
+typedef int
+(*virDrvDomainFSFreeze)(virDomainPtr dom,
+                        const char **mountpoints,
+                        unsigned int nmountpoints,
+                        unsigned int flags);
+
+typedef int
+(*virDrvDomainFSThaw)(virDomainPtr dom,
+                      const char **mountpoints,
+                      unsigned int nmountpoints,
+                      unsigned int flags);
+
 typedef struct _virDriver virDriver;
 typedef virDriver *virDriverPtr;
 
@@ -1363,6 +1375,8 @@ struct _virDriver {
     virDrvDomainMigrateFinish3Params domainMigrateFinish3Params;
     virDrvDomainMigrateConfirm3Params domainMigrateConfirm3Params;
     virDrvConnectGetCPUModelNames connectGetCPUModelNames;
+    virDrvDomainFSFreeze domainFSFreeze;
+    virDrvDomainFSThaw domainFSThaw;
 };
 
 

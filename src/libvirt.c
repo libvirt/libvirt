@@ -20698,3 +20698,96 @@ virDomainFSTrim(virDomainPtr dom,
     virDispatchError(dom->conn);
     return -1;
 }
+
+/**
+ * virDomainFSFreeze:
+ * @dom: a domain object
+ * @mountpoints: list of mount points to be frozen
+ * @nmountpoints: the number of mount points specified in @mountpoints
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Freeze specified filesystems within the guest (hence guest agent
+ * may be required depending on hypervisor used). If @mountpoints is NULL and
+ * @nmountpoints is 0, every mounted filesystem on the guest is frozen.
+ * In some environments (e.g. QEMU guest with guest agent which doesn't
+ * support mountpoints argument), @mountpoints may need to be NULL.
+ *
+ * Returns the number of frozen filesystems on success, -1 otherwise.
+ */
+int
+virDomainFSFreeze(virDomainPtr dom,
+                  const char **mountpoints,
+                  unsigned int nmountpoints,
+                  unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(dom, "mountpoints=%p, nmountpoints=%d, flags=%x",
+                     mountpoints, nmountpoints, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(dom, -1);
+    virCheckReadOnlyGoto(dom->conn->flags, error);
+    if (nmountpoints)
+        virCheckNonNullArgGoto(mountpoints, error);
+    else
+        virCheckNullArgGoto(mountpoints, error);
+
+    if (dom->conn->driver->domainFSFreeze) {
+        int ret = dom->conn->driver->domainFSFreeze(
+            dom, mountpoints, nmountpoints, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+/**
+ * virDomainFSThaw:
+ * @dom: a domain object
+ * @mountpoints: list of mount points to be thawed
+ * @nmountpoints: the number of mount points specified in @mountpoints
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Thaw specified filesystems within the guest. If @mountpoints is NULL and
+ * @nmountpoints is 0, every mounted filesystem on the guest is thawed.
+ * In some drivers (e.g. QEMU driver), @mountpoints may need to be NULL.
+ *
+ * Returns the number of thawed filesystems on success, -1 otherwise.
+ */
+int
+virDomainFSThaw(virDomainPtr dom,
+                const char **mountpoints,
+                unsigned int nmountpoints,
+                unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(dom, "flags=%x", flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(dom, -1);
+    virCheckReadOnlyGoto(dom->conn->flags, error);
+    if (nmountpoints)
+        virCheckNonNullArgGoto(mountpoints, error);
+    else
+        virCheckNullArgGoto(mountpoints, error);
+
+    if (dom->conn->driver->domainFSThaw) {
+        int ret = dom->conn->driver->domainFSThaw(
+            dom, mountpoints, nmountpoints, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(dom->conn);
+    return -1;
+}
