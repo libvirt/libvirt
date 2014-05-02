@@ -40,6 +40,7 @@
 #include "virutil.h"
 #include "viruri.h"
 #include "dirname.h"
+#include "virbuffer.h"
 #if HAVE_SYS_SYSCALL_H
 # include <sys/syscall.h>
 #endif
@@ -1955,6 +1956,223 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent)
             }
         }
     }
+
+    return ret;
+}
+
+
+static char *
+virStorageFileCanonicalizeFormatPath(char **components,
+                                     size_t ncomponents,
+                                     bool beginSlash,
+                                     bool beginDoubleSlash)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+    char *ret = NULL;
+
+    if (beginSlash)
+        virBufferAddLit(&buf, "/");
+
+    if (beginDoubleSlash)
+        virBufferAddLit(&buf, "/");
+
+    for (i = 0; i < ncomponents; i++) {
+        if (i != 0)
+            virBufferAddLit(&buf, "/");
+
+        virBufferAdd(&buf, components[i], -1);
+    }
+
+    if (virBufferError(&buf) != 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    /* if the output string is empty just return an empty string */
+    if (!(ret = virBufferContentAndReset(&buf)))
+        ignore_value(VIR_STRDUP(ret, ""));
+
+    return ret;
+}
+
+
+static int
+virStorageFileCanonicalizeInjectSymlink(const char *path,
+                                        size_t at,
+                                        char ***components,
+                                        size_t *ncomponents)
+{
+    char **tmp = NULL;
+    char **next;
+    size_t ntmp = 0;
+    int ret = -1;
+
+    if (!(tmp = virStringSplitCount(path, "/", 0, &ntmp)))
+        goto cleanup;
+
+    /* prepend */
+    for (next = tmp; *next; next++) {
+        if (VIR_INSERT_ELEMENT(*components, at, *ncomponents, *next) < 0)
+            goto cleanup;
+
+        at++;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virStringFreeListCount(tmp, ntmp);
+    return ret;
+}
+
+
+char *
+virStorageFileCanonicalizePath(const char *path,
+                               virStorageFileSimplifyPathReadlinkCallback cb,
+                               void *cbdata)
+{
+    virHashTablePtr cycle = NULL;
+    bool beginSlash = false;
+    bool beginDoubleSlash = false;
+    char **components = NULL;
+    size_t ncomponents = 0;
+    char *linkpath = NULL;
+    char *currentpath = NULL;
+    size_t i = 0;
+    size_t j = 0;
+    int rc;
+    char *ret = NULL;
+
+    if (path[0] == '/') {
+        beginSlash = true;
+
+        if (path[1] == '/' && path[2] != '/')
+            beginDoubleSlash = true;
+    }
+
+    if (!(cycle = virHashCreate(10, NULL)))
+        goto cleanup;
+
+    if (!(components = virStringSplitCount(path, "/", 0, &ncomponents)))
+        goto cleanup;
+
+    j = 0;
+    while (j < ncomponents) {
+        /* skip slashes */
+        if (STREQ(components[j], "")) {
+            VIR_FREE(components[j]);
+            VIR_DELETE_ELEMENT(components, j, ncomponents);
+            continue;
+        }
+        j++;
+    }
+
+    while (i < ncomponents) {
+        /* skip '.'s unless it's the last one remaining */
+        if (STREQ(components[i], ".") &&
+            (beginSlash || ncomponents  > 1)) {
+            VIR_FREE(components[i]);
+            VIR_DELETE_ELEMENT(components, i, ncomponents);
+            continue;
+        }
+
+        /* resolve changes to parent directory */
+        if (STREQ(components[i], "..")) {
+            if (!beginSlash &&
+                (i == 0 || STREQ(components[i - 1], ".."))) {
+                i++;
+                continue;
+            }
+
+            VIR_FREE(components[i]);
+            VIR_DELETE_ELEMENT(components, i, ncomponents);
+
+            if (i != 0) {
+                VIR_FREE(components[i - 1]);
+                VIR_DELETE_ELEMENT(components, i - 1, ncomponents);
+                i--;
+            }
+
+            continue;
+        }
+
+        /* check if the actual path isn't resulting into a symlink */
+        if (!(currentpath = virStorageFileCanonicalizeFormatPath(components,
+                                                                 i + 1,
+                                                                 beginSlash,
+                                                                 beginDoubleSlash)))
+            goto cleanup;
+
+        if ((rc = cb(currentpath, &linkpath, cbdata)) < 0)
+            goto cleanup;
+
+        if (rc == 0) {
+            if (virHashLookup(cycle, currentpath)) {
+                virReportSystemError(ELOOP,
+                                     _("Failed to canonicalize path '%s'"), path);
+                goto cleanup;
+            }
+
+            if (virHashAddEntry(cycle, currentpath, (void *) 1) < 0)
+                goto cleanup;
+
+            if (linkpath[0] == '/') {
+                /* kill everything from the beginning including the actual component */
+                i++;
+                while (i--) {
+                    VIR_FREE(components[0]);
+                    VIR_DELETE_ELEMENT(components, 0, ncomponents);
+                }
+                beginSlash = true;
+
+                if (linkpath[1] == '/' && linkpath[2] != '/')
+                    beginDoubleSlash = true;
+                else
+                    beginDoubleSlash = false;
+
+                i = 0;
+            } else {
+                VIR_FREE(components[i]);
+                VIR_DELETE_ELEMENT(components, i, ncomponents);
+            }
+
+            if (virStorageFileCanonicalizeInjectSymlink(linkpath,
+                                                        i,
+                                                        &components,
+                                                        &ncomponents) < 0)
+                goto cleanup;
+
+            j = 0;
+            while (j < ncomponents) {
+                /* skip slashes */
+                if (STREQ(components[j], "")) {
+                    VIR_FREE(components[j]);
+                    VIR_DELETE_ELEMENT(components, j, ncomponents);
+                    continue;
+                }
+                j++;
+            }
+
+            VIR_FREE(linkpath);
+            VIR_FREE(currentpath);
+
+            continue;
+        }
+
+        VIR_FREE(currentpath);
+
+        i++;
+    }
+
+    ret = virStorageFileCanonicalizeFormatPath(components, ncomponents,
+                                               beginSlash, beginDoubleSlash);
+
+ cleanup:
+    virHashFree(cycle);
+    virStringFreeListCount(components, ncomponents);
+    VIR_FREE(linkpath);
+    VIR_FREE(currentpath);
 
     return ret;
 }

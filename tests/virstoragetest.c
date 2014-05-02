@@ -525,6 +525,71 @@ testStorageLookup(const void *args)
     return ret;
 }
 
+
+struct testPathCanonicalizeData
+{
+    const char *path;
+    const char *expect;
+};
+
+static const char *testPathCanonicalizeSymlinks[][2] =
+{
+    {"/path/blah", "/other/path/huzah"},
+    {"/path/to/relative/symlink", "../../actual/file"},
+    {"/cycle", "/cycle"},
+    {"/cycle2/link", "./link"},
+};
+
+static int
+testPathCanonicalizeReadlink(const char *path,
+                             char **link,
+                             void *data ATTRIBUTE_UNUSED)
+{
+    size_t i;
+
+    *link = NULL;
+
+    for (i = 0; i < ARRAY_CARDINALITY(testPathCanonicalizeSymlinks); i++) {
+        if (STREQ(path, testPathCanonicalizeSymlinks[i][0])) {
+            if (VIR_STRDUP(*link, testPathCanonicalizeSymlinks[i][1]) < 0)
+                return -1;
+
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+
+static int
+testPathCanonicalize(const void *args)
+{
+    const struct testPathCanonicalizeData *data = args;
+    char *canon = NULL;
+    int ret = -1;
+
+    canon = virStorageFileCanonicalizePath(data->path,
+                                           testPathCanonicalizeReadlink,
+                                           NULL);
+
+    if (STRNEQ_NULLABLE(data->expect, canon)) {
+        fprintf(stderr,
+                "path canonicalization of '%s' failed: expected '%s' got '%s'\n",
+                data->path, NULLSTR(data->expect), NULLSTR(canon));
+
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(canon);
+
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -532,6 +597,7 @@ mymain(void)
     virCommandPtr cmd = NULL;
     struct testChainData data;
     struct testLookupData data2;
+    struct testPathCanonicalizeData data3;
     virStorageSourcePtr chain = NULL;
     virStorageSourcePtr chain2; /* short for chain->backingStore */
     virStorageSourcePtr chain3; /* short for chain2->backingStore */
@@ -1071,6 +1137,49 @@ mymain(void)
                        chain2->path);
     TEST_LOOKUP_TARGET(80, "vda", chain3, "vda[2]", 2, NULL, NULL, NULL);
     TEST_LOOKUP_TARGET(81, "vda", NULL, "vda[3]", 3, NULL, NULL, NULL);
+
+#define TEST_PATH_CANONICALIZE(id, PATH, EXPECT)                            \
+    do {                                                                    \
+        data3.path = PATH;                                                  \
+        data3.expect = EXPECT;                                              \
+        if (virtTestRun("Path canonicalize " #id,                           \
+                        testPathCanonicalize, &data3) < 0)                  \
+            ret = -1;                                                       \
+    } while (0)
+
+    TEST_PATH_CANONICALIZE(1, "/", "/");
+    TEST_PATH_CANONICALIZE(2, "/path", "/path");
+    TEST_PATH_CANONICALIZE(3, "/path/to/blah", "/path/to/blah");
+    TEST_PATH_CANONICALIZE(4, "/path/", "/path");
+    TEST_PATH_CANONICALIZE(5, "///////", "/");
+    TEST_PATH_CANONICALIZE(6, "//", "//");
+    TEST_PATH_CANONICALIZE(7, "", "");
+    TEST_PATH_CANONICALIZE(8, ".", ".");
+    TEST_PATH_CANONICALIZE(9, "../", "..");
+    TEST_PATH_CANONICALIZE(10, "../../", "../..");
+    TEST_PATH_CANONICALIZE(11, "../../blah", "../../blah");
+    TEST_PATH_CANONICALIZE(12, "/./././blah", "/blah");
+    TEST_PATH_CANONICALIZE(13, ".././../././../blah", "../../../blah");
+    TEST_PATH_CANONICALIZE(14, "/././", "/");
+    TEST_PATH_CANONICALIZE(15, "./././", ".");
+    TEST_PATH_CANONICALIZE(16, "blah/../foo", "foo");
+    TEST_PATH_CANONICALIZE(17, "foo/bar/../blah", "foo/blah");
+    TEST_PATH_CANONICALIZE(18, "foo/bar/.././blah", "foo/blah");
+    TEST_PATH_CANONICALIZE(19, "/path/to/foo/bar/../../../../../../../../baz", "/baz");
+    TEST_PATH_CANONICALIZE(20, "path/to/foo/bar/../../../../../../../../baz", "../../../../baz");
+    TEST_PATH_CANONICALIZE(21, "path/to/foo/bar", "path/to/foo/bar");
+    TEST_PATH_CANONICALIZE(22, "//foo//bar", "//foo/bar");
+    TEST_PATH_CANONICALIZE(23, "/bar//foo", "/bar/foo");
+    TEST_PATH_CANONICALIZE(24, "//../blah", "//blah");
+
+    /* test paths with symlinks */
+    TEST_PATH_CANONICALIZE(25, "/path/blah", "/other/path/huzah");
+    TEST_PATH_CANONICALIZE(26, "/path/to/relative/symlink", "/path/actual/file");
+    TEST_PATH_CANONICALIZE(27, "/path/to/relative/symlink/blah", "/path/actual/file/blah");
+    TEST_PATH_CANONICALIZE(28, "/path/blah/yippee", "/other/path/huzah/yippee");
+    TEST_PATH_CANONICALIZE(29, "/cycle", NULL);
+    TEST_PATH_CANONICALIZE(30, "/cycle2/link", NULL);
+    TEST_PATH_CANONICALIZE(31, "///", "/");
 
  cleanup:
     /* Final cleanup */

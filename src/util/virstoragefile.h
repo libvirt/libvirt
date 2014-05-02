@@ -329,5 +329,12 @@ void virStorageSourceFree(virStorageSourcePtr def);
 void virStorageSourceClearBackingStore(virStorageSourcePtr def);
 virStorageSourcePtr virStorageSourceNewFromBacking(virStorageSourcePtr parent);
 
+typedef int
+(*virStorageFileSimplifyPathReadlinkCallback)(const char *path,
+                                              char **link,
+                                              void *data);
+char *virStorageFileCanonicalizePath(const char *path,
+                                     virStorageFileSimplifyPathReadlinkCallback cb,
+                                     void *cbdata);
 
 #endif /* __VIR_STORAGE_FILE_H__ */
