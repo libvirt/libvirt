@@ -647,7 +647,13 @@ commandtest_LDADD = $(LDADDS)
 
 commandhelper_SOURCES = \
 	commandhelper.c
-commandhelper_LDADD = $(LDADDS)
+commandhelper_LDADD = \
+	$(WARN_CFLAGS) \
+	$(NO_INDIRECT_LDFLAGS) \
+	$(PROBES_O) \
+	../src/libvirt_util.la \
+	$(GNULIB_LIBS)
+
 commandhelper_LDFLAGS = -static
 
 if WITH_LIBVIRTD
