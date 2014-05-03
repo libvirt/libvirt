@@ -963,7 +963,7 @@ virmockdbus_la_LDFLAGS = -module -avoid-version \
 virsystemdtest_SOURCES = \
 	virsystemdtest.c testutils.h testutils.c
 virsystemdtest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
-virsystemdtest_LDADD = $(LDADDS)
+virsystemdtest_LDADD = $(LDADDS) $(DBUS_LIBS)
 
 else ! WITH_DBUS
 EXTRA_DIST += virdbustest.c virmockdbus.c virsystemdtest.c
@@ -1047,7 +1047,7 @@ virfiletest_LDADD = $(LDADDS)
 
 virfirewalltest_SOURCES = \
 	virfirewalltest.c testutils.h testutils.c
-virfirewalltest_LDADD = $(LDADDS)
+virfirewalltest_LDADD = $(LDADDS) $(DBUS_LIBS)
 virfirewalltest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
 
 jsontest_SOURCES = \
