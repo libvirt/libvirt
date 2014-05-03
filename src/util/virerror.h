@@ -99,7 +99,7 @@ void virReportSystemErrorFull(int domcode,
                       #argname,                                      \
                       NULL,                                          \
                       0, 0,                                          \
-                      _("%s in %s must greater than zero"),          \
+                      _("%s in %s must be greater than zero"),       \
                       #argname, __FUNCTION__)
 # define virReportInvalidNonZeroArg(argname)                         \
     virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__,              \
