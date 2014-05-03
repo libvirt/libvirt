@@ -145,17 +145,6 @@ void virReportSystemErrorFull(int domcode,
                       0, 0,                                          \
                       (fmt), __VA_ARGS__)
 
-# define virReportDBusServiceError(message, name)                    \
-    virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__,              \
-                      VIR_FROM_THIS,                                 \
-                      VIR_ERR_DBUS_SERVICE,                          \
-                      VIR_ERR_ERROR,                                 \
-                      __FUNCTION__,                                  \
-                      name,                                          \
-                      NULL,                                          \
-                      0, 0,                                          \
-                      "%s", message);
-
 # define virReportUnsupportedError()                                    \
     virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_NO_SUPPORT,             \
                          __FILE__, __FUNCTION__, __LINE__, __FUNCTION__)

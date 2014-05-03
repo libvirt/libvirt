@@ -1423,9 +1423,10 @@ virDBusCall(DBusConnection *conn,
                                                             error ? error : &localerror))) {
         if (error)
             ret = 0;
-        else
-            virReportDBusServiceError(localerror.message ? localerror.message : "unknown error",
-                                      localerror.name);
+        else {
+            virReportError(VIR_ERR_DBUS_SERVICE, "%s",
+                localerror.message ? localerror.message : _("unknown error"));
+        }
         goto cleanup;
     }
 
