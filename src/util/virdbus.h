@@ -68,10 +68,6 @@ int virDBusCallMethod(DBusConnection *conn,
                       const char *iface,
                       const char *member,
                       const char *types, ...);
-int virDBusCall(DBusConnection *conn,
-                DBusMessage *call,
-                DBusMessage **reply,
-                DBusError *error);
 int virDBusMessageRead(DBusMessage *msg,
                        const char *types, ...);
 void virDBusMessageUnref(DBusMessage *msg);

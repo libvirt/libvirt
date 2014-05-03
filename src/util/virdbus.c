@@ -1404,10 +1404,11 @@ int virDBusCreateReply(DBusMessage **reply,
  *
  * Returns 0 on success, or -1 upon error
  */
-int virDBusCall(DBusConnection *conn,
-                DBusMessage *call,
-                DBusMessage **replyout,
-                DBusError *error)
+static int
+virDBusCall(DBusConnection *conn,
+            DBusMessage *call,
+            DBusMessage **replyout,
+            DBusError *error)
 {
     DBusMessage *reply = NULL;
     DBusError localerror;
@@ -1688,16 +1689,6 @@ int virDBusCreateReplyV(DBusMessage **reply ATTRIBUTE_UNUSED,
 
 int virDBusCreateReply(DBusMessage **reply ATTRIBUTE_UNUSED,
                        const char *types ATTRIBUTE_UNUSED, ...)
-{
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   "%s", _("DBus support not compiled into this binary"));
-    return -1;
-}
-
-int virDBusCall(DBusConnection *conn ATTRIBUTE_UNUSED,
-                DBusMessage *call ATTRIBUTE_UNUSED,
-                DBusMessage **reply ATTRIBUTE_UNUSED,
-                DBusError *error ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("DBus support not compiled into this binary"));
