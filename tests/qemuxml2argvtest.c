@@ -499,9 +499,11 @@ mymain(void)
         return EXIT_FAILURE;
     }
 
-    driver.config = virQEMUDriverConfigNew(true);
+    driver.config = virQEMUDriverConfigNew(false);
     if (driver.config == NULL)
         return EXIT_FAILURE;
+    else
+        driver.config->privileged = true;
 
     VIR_FREE(driver.config->spiceListen);
     VIR_FREE(driver.config->vncListen);
