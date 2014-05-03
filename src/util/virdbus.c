@@ -1408,7 +1408,8 @@ static int
 virDBusCall(DBusConnection *conn,
             DBusMessage *call,
             DBusMessage **replyout,
-            DBusError *error)
+            DBusError *error,
+            const char *member)
 {
     DBusMessage *reply = NULL;
     DBusError localerror;
@@ -1424,7 +1425,7 @@ virDBusCall(DBusConnection *conn,
         if (error)
             ret = 0;
         else {
-            virReportError(VIR_ERR_DBUS_SERVICE, "%s",
+            virReportError(VIR_ERR_DBUS_SERVICE, _("%s: %s"), member,
                 localerror.message ? localerror.message : _("unknown error"));
         }
         goto cleanup;
@@ -1502,7 +1503,7 @@ int virDBusCallMethod(DBusConnection *conn,
 
     ret = -1;
 
-    ret = virDBusCall(conn, call, replyout, error);
+    ret = virDBusCall(conn, call, replyout, error, member);
 
  cleanup:
     if (call)
