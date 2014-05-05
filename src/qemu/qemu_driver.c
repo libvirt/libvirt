@@ -12020,22 +12020,26 @@ static int
 qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   virDomainDiskDefPtr disk,
-                                  const char *file,
+                                  virStorageSourcePtr elem,
                                   qemuDomainDiskChainMode mode)
 {
     /* The easiest way to label a single file with the same
      * permissions it would have as if part of the disk chain is to
      * temporarily modify the disk in place.  */
-    char *origsrc = disk->src.path;
-    int origformat = disk->src.format;
-    virStorageSourcePtr origchain = disk->src.backingStore;
+    virStorageSource origdisk;
     bool origreadonly = disk->readonly;
+    virQEMUDriverConfigPtr cfg = NULL;
     int ret = -1;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
-    disk->src.path = (char *) file; /* casting away const is safe here */
-    disk->src.format = VIR_STORAGE_FILE_RAW;
-    disk->src.backingStore = NULL;
+    /* XXX Labelling of non-local files isn't currently supported */
+    if (virStorageSourceGetActualType(&disk->src) == VIR_STORAGE_TYPE_NETWORK)
+        return 0;
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    /* XXX This would be easier when disk->src will be a pointer */
+    memcpy(&origdisk, &disk->src, sizeof(origdisk));
+    memcpy(&disk->src, elem, sizeof(*elem));
     disk->readonly = mode == VIR_DISK_CHAIN_READ_ONLY;
 
     if (mode == VIR_DISK_CHAIN_NO_ACCESS) {
@@ -12058,9 +12062,7 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    disk->src.path = origsrc;
-    disk->src.format = origformat;
-    disk->src.backingStore = origchain;
+    memcpy(&disk->src, &origdisk, sizeof(origdisk));
     disk->readonly = origreadonly;
     virObjectUnref(cfg);
     return ret;
@@ -12070,6 +12072,25 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
 /* Return -1 if request is not sent to agent due to misconfig, -2 if request
  * is sent but failed, and number of frozen filesystems on success. If -2 is
  * returned, FSThaw should be called revert the quiesced status. */
+static int
+qemuDomainPrepareDiskChainElementPath(virQEMUDriverPtr driver,
+                                      virDomainObjPtr vm,
+                                      virDomainDiskDefPtr disk,
+                                      const char *file,
+                                      qemuDomainDiskChainMode mode)
+{
+    virStorageSource src;
+
+    memset(&src, 0, sizeof(src));
+
+    src.type = VIR_STORAGE_TYPE_FILE;
+    src.format = VIR_STORAGE_FILE_RAW;
+    src.path = (char *) file; /* casting away const is safe here */
+
+    return qemuDomainPrepareDiskChainElement(driver, vm, disk, &src, mode);
+}
+
+
 static int
 qemuDomainSnapshotFSFreeze(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
@@ -12829,9 +12850,9 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
             VIR_FORCE_CLOSE(fd);
         }
 
-        if (qemuDomainPrepareDiskChainElement(driver, vm, disk, source,
+        if (qemuDomainPrepareDiskChainElement(driver, vm, disk, &snap->src,
                                               VIR_DISK_CHAIN_READ_WRITE) < 0) {
-            qemuDomainPrepareDiskChainElement(driver, vm, disk, source,
+            qemuDomainPrepareDiskChainElement(driver, vm, disk, &snap->src,
                                               VIR_DISK_CHAIN_NO_ACCESS);
             goto cleanup;
         }
@@ -12962,7 +12983,7 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
         (persistDisk && VIR_STRDUP(persistSource, source) < 0))
         goto cleanup;
 
-    qemuDomainPrepareDiskChainElement(driver, vm, disk, disk->src.path,
+    qemuDomainPrepareDiskChainElement(driver, vm, disk, &disk->src,
                                       VIR_DISK_CHAIN_NO_ACCESS);
     if (need_unlink &&
         virStorageFileStat(&disk->src, &st) == 0 && S_ISREG(st.st_mode) &&
@@ -15276,10 +15297,10 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     if (VIR_STRDUP(mirror, dest) < 0)
         goto endjob;
 
-    if (qemuDomainPrepareDiskChainElement(driver, vm, disk, dest,
-                                          VIR_DISK_CHAIN_READ_WRITE) < 0) {
-        qemuDomainPrepareDiskChainElement(driver, vm, disk, dest,
-                                          VIR_DISK_CHAIN_NO_ACCESS);
+    if (qemuDomainPrepareDiskChainElementPath(driver, vm, disk, dest,
+                                              VIR_DISK_CHAIN_READ_WRITE) < 0) {
+        qemuDomainPrepareDiskChainElementPath(driver, vm, disk, dest,
+                                              VIR_DISK_CHAIN_NO_ACCESS);
         goto endjob;
     }
 
@@ -15290,8 +15311,8 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     virDomainAuditDisk(vm, NULL, dest, "mirror", ret >= 0);
     qemuDomainObjExitMonitor(driver, vm);
     if (ret < 0) {
-        qemuDomainPrepareDiskChainElement(driver, vm, disk, dest,
-                                          VIR_DISK_CHAIN_NO_ACCESS);
+        qemuDomainPrepareDiskChainElementPath(driver, vm, disk, dest,
+                                              VIR_DISK_CHAIN_NO_ACCESS);
         goto endjob;
     }
 
@@ -15468,12 +15489,12 @@ qemuDomainBlockCommit(virDomainPtr dom,
      * operation succeeds, but doing that requires tracking the
      * operation in XML across libvirtd restarts.  */
     clean_access = true;
-    if (qemuDomainPrepareDiskChainElement(driver, vm, disk, baseSource->path,
+    if (qemuDomainPrepareDiskChainElement(driver, vm, disk, baseSource,
                                           VIR_DISK_CHAIN_READ_WRITE) < 0 ||
         (top_parent && top_parent != disk->src.path &&
-         qemuDomainPrepareDiskChainElement(driver, vm, disk,
-                                           top_parent,
-                                           VIR_DISK_CHAIN_READ_WRITE) < 0))
+         qemuDomainPrepareDiskChainElementPath(driver, vm, disk,
+                                               top_parent,
+                                               VIR_DISK_CHAIN_READ_WRITE) < 0))
         goto endjob;
 
     /* Start the commit operation.  Pass the user's original spelling,
@@ -15491,12 +15512,12 @@ qemuDomainBlockCommit(virDomainPtr dom,
  endjob:
     if (ret < 0 && clean_access) {
         /* Revert access to read-only, if possible.  */
-        qemuDomainPrepareDiskChainElement(driver, vm, disk, baseSource->path,
+        qemuDomainPrepareDiskChainElement(driver, vm, disk, baseSource,
                                           VIR_DISK_CHAIN_READ_ONLY);
         if (top_parent && top_parent != disk->src.path)
-            qemuDomainPrepareDiskChainElement(driver, vm, disk,
-                                              top_parent,
-                                              VIR_DISK_CHAIN_READ_ONLY);
+            qemuDomainPrepareDiskChainElementPath(driver, vm, disk,
+                                                  top_parent,
+                                                  VIR_DISK_CHAIN_READ_ONLY);
     }
     if (!qemuDomainObjEndJob(driver, vm))
         vm = NULL;
