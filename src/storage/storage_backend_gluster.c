@@ -534,6 +534,7 @@ typedef virStorageFileBackendGlusterPriv *virStorageFileBackendGlusterPrivPtr;
 
 struct _virStorageFileBackendGlusterPriv {
     glfs_t *vol;
+    char *canonpath;
 };
 
 
@@ -548,6 +549,7 @@ virStorageFileBackendGlusterDeinit(virStorageSourcePtr src)
 
     if (priv->vol)
         glfs_fini(priv->vol);
+    VIR_FREE(priv->canonpath);
 
     VIR_FREE(priv);
     src->drv->priv = NULL;
@@ -713,6 +715,80 @@ virStorageFileBackendGlusterAccess(virStorageSourcePtr src,
     return glfs_access(priv->vol, src->path, mode);
 }
 
+static int
+virStorageFileBackendGlusterReadlinkCallback(const char *path,
+                                             char **link,
+                                             void *data)
+{
+    virStorageFileBackendGlusterPrivPtr priv = data;
+    char *buf = NULL;
+    size_t bufsiz = 0;
+    ssize_t ret;
+    struct stat st;
+
+    *link = NULL;
+
+    if (glfs_stat(priv->vol, path, &st) < 0) {
+        virReportSystemError(errno,
+                             _("failed to stat gluster path '%s'"),
+                             path);
+        return -1;
+    }
+
+    if (!S_ISLNK(st.st_mode))
+        return 1;
+
+ realloc:
+    if (VIR_EXPAND_N(buf, bufsiz, 256) < 0)
+        goto error;
+
+    if ((ret = glfs_readlink(priv->vol, path, buf, bufsiz)) < 0) {
+        virReportSystemError(errno,
+                             _("failed to read link of gluster file '%s'"),
+                             path);
+        goto error;
+    }
+
+    if (ret == bufsiz)
+        goto realloc;
+
+    buf[ret] = '\0';
+
+    *link = buf;
+
+    return 0;
+
+ error:
+    VIR_FREE(buf);
+    return -1;
+}
+
+
+static const char *
+virStorageFileBackendGlusterGetUniqueIdentifier(virStorageSourcePtr src)
+{
+    virStorageFileBackendGlusterPrivPtr priv = src->drv->priv;
+    char *filePath = NULL;
+
+    if (priv->canonpath)
+        return priv->canonpath;
+
+    if (!(filePath = virStorageFileCanonicalizePath(src->path,
+                                                    virStorageFileBackendGlusterReadlinkCallback,
+                                                    priv)))
+        return NULL;
+
+    ignore_value(virAsprintf(&priv->canonpath, "gluster://%s:%s/%s/%s",
+                             src->hosts->name,
+                             src->hosts->port,
+                             src->volume,
+                             filePath));
+
+    VIR_FREE(filePath);
+
+    return priv->canonpath;
+}
+
 
 virStorageFileBackend virStorageFileBackendGluster = {
     .type = VIR_STORAGE_TYPE_NETWORK,
@@ -725,4 +801,8 @@ virStorageFileBackend virStorageFileBackendGluster = {
     .storageFileStat = virStorageFileBackendGlusterStat,
     .storageFileReadHeader = virStorageFileBackendGlusterReadHeader,
     .storageFileAccess = virStorageFileBackendGlusterAccess,
+
+    .storageFileGetUniqueIdentifier = virStorageFileBackendGlusterGetUniqueIdentifier,
+
+
 };
