@@ -730,20 +730,22 @@ mymain(void)
     /* Rewrite qcow2 to use an nbd: protocol as backend */
     virCommandFree(cmd);
     cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "raw", "-b", "nbd:example.org:6000",
+                               "-F", "raw", "-b", "nbd:example.org:6000:exportname=blah",
                                "qcow2", NULL);
     if (virCommandRun(cmd, NULL) < 0)
         ret = -1;
-    qcow2.expBackingStore = "nbd:example.org:6000";
-    qcow2.expBackingStoreRaw = "nbd:example.org:6000";
+    qcow2.expBackingStore = "blah";
+    qcow2.expBackingStoreRaw = "nbd:example.org:6000:exportname=blah";
 
     /* Qcow2 file with backing protocol instead of file */
     testFileData nbd = {
-        .pathRel = "nbd:example.org:6000",
-        .pathAbs = "nbd:example.org:6000",
-        .path = "nbd:example.org:6000",
+        .pathRel = "nbd:example.org:6000:exportname=blah",
+        .pathAbs = "nbd:example.org:6000:exportname=blah",
+        .path = "blah",
         .type = VIR_STORAGE_TYPE_NETWORK,
         .format = VIR_STORAGE_FILE_RAW,
+        .relDirRel = ".",
+        .relDirAbs = ".",
     };
     TEST_CHAIN(11, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2, &nbd), EXP_PASS,

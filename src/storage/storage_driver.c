@@ -3068,56 +3068,6 @@ virStorageFileAccess(virStorageSourcePtr src,
 }
 
 
-/**
- * Given a starting point START (a directory containing the original
- * file, if the original file was opened via a relative path; ignored
- * if NAME is absolute), determine the location of the backing file
- * NAME (possibly relative), and compute the relative DIRECTORY
- * (optional) and CANONICAL (mandatory) location of the backing file.
- * Return 0 on success, negative on error.
- */
-static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
-virFindBackingFile(const char *start, const char *path,
-                   char **directory, char **canonical)
-{
-    /* FIXME - when we eventually allow non-raw network devices, we
-     * must ensure that we handle backing files the same way as qemu.
-     * For a qcow2 top file of gluster://server/vol/img, qemu treats
-     * the relative backing file 'rel' as meaning
-     * 'gluster://server/vol/rel', while the backing file '/abs' is
-     * used as a local file.  But we cannot canonicalize network
-     * devices via canonicalize_file_name(), because they are not part
-     * of the local file system.  */
-    char *combined = NULL;
-    int ret = -1;
-
-    if (*path == '/') {
-        /* Safe to cast away const */
-        combined = (char *)path;
-    } else if (virAsprintf(&combined, "%s/%s", start, path) < 0) {
-        goto cleanup;
-    }
-
-    if (directory && !(*directory = mdir_name(combined))) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    if (!(*canonical = canonicalize_file_name(combined))) {
-        virReportSystemError(errno,
-                             _("Can't canonicalize path '%s'"), path);
-        goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-    if (combined != path)
-        VIR_FREE(combined);
-    return ret;
-}
-
-
 /* Recursive workhorse for virStorageFileGetMetadata.  */
 static int
 virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
@@ -3126,7 +3076,6 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
                                  virHashTablePtr cycle)
 {
     int ret = -1;
-    struct stat st;
     const char *uniqueName;
     char *buf = NULL;
     ssize_t headerLen;
@@ -3178,45 +3127,8 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         goto cleanup;
     }
 
-    if (VIR_ALLOC(backingStore) < 0)
+    if (!(backingStore = virStorageSourceNewFromBacking(src)))
         goto cleanup;
-
-    if (VIR_STRDUP(backingStore->relPath, src->backingStoreRaw) < 0)
-        goto cleanup;
-
-    if (virStorageIsFile(src->backingStoreRaw)) {
-        backingStore->type = VIR_STORAGE_TYPE_FILE;
-
-        if (virFindBackingFile(src->relDir,
-                               src->backingStoreRaw,
-                               &backingStore->relDir,
-                               &backingStore->path) < 0) {
-            /* the backing file is (currently) unavailable, treat this
-             * file as standalone:
-             * backingStoreRaw is kept to mark broken image chains */
-            VIR_WARN("Backing file '%s' of image '%s' is missing.",
-                     src->backingStoreRaw, src->path);
-            ret = 0;
-            goto cleanup;
-        }
-
-        /* update the type for local storage */
-        if (stat(backingStore->path, &st) == 0) {
-            if (S_ISDIR(st.st_mode)) {
-                backingStore->type = VIR_STORAGE_TYPE_DIR;
-                backingStore->format = VIR_STORAGE_FILE_DIR;
-            } else if (S_ISBLK(st.st_mode)) {
-                backingStore->type = VIR_STORAGE_TYPE_BLOCK;
-            }
-        }
-    } else {
-        /* TODO: To satisfy the test case, copy the network URI as path. This
-         * will be removed later. */
-        backingStore->type = VIR_STORAGE_TYPE_NETWORK;
-
-        if (VIR_STRDUP(backingStore->path, src->backingStoreRaw) < 0)
-            goto cleanup;
-    }
 
     if (backingFormat == VIR_STORAGE_FILE_AUTO && !allow_probe)
         backingStore->format = VIR_STORAGE_FILE_RAW;
