@@ -15,7 +15,7 @@ Specific development tools and versions will be checked for and listed by
 the bootstrap script.
 
 Valgrind <http://valgrind.org/> is also highly recommended, if
-Valgrind supports your architecture. See also README-valgrind.
+Valgrind supports your architecture.
 
 While building from a just-cloned source tree may require installing a
 few prerequisites, later, a plain `git pull && make' should be sufficient.
