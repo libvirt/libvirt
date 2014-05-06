@@ -4787,7 +4787,7 @@ qemu-kvm -net nic,model=? /dev/null
 
     <p>
       The nmdm device driver, available on FreeBSD, provides two
-      tty devices connected together by a virual null modem cable.
+      tty devices connected together by a virtual null modem cable.
       <span class="since">Since 1.2.4</span>
     </p>
 
