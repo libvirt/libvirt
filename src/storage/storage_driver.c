@@ -1766,12 +1766,11 @@ storageVolCreateXML(virStoragePoolPtr obj,
         voldef->building = 0;
         pool->asyncjobs--;
 
-        voldef = NULL;
-
         if (buildret < 0) {
-            storageVolDeleteInternal(volobj, backend, pool, buildvoldef,
+            VIR_FREE(buildvoldef);
+            storageVolDeleteInternal(volobj, backend, pool, voldef,
                                      0, false);
-            buildvoldef = NULL;
+            voldef = NULL;
             goto cleanup;
         }
 
