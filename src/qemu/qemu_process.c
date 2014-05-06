@@ -3612,6 +3612,7 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver, virDomainObjPtr vm)
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int rc;
     bool ret = false;
+    size_t i;
 
     switch (arch) {
     case VIR_ARCH_I686:
@@ -3631,6 +3632,20 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver, virDomainObjPtr vm)
             if (!cpuHasFeature(guestcpu, VIR_CPU_x86_KVM_PV_UNHALT)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("host doesn't support paravirtual spinlocks"));
+                goto cleanup;
+            }
+        }
+
+        for (i = 0; i < def->cpu->nfeatures; i++) {
+            virCPUFeatureDefPtr feature = &def->cpu->features[i];
+
+            if (feature->policy != VIR_CPU_FEATURE_REQUIRE)
+                continue;
+
+            if (STREQ(feature->name, "invtsc") &&
+                !cpuHasFeature(guestcpu, feature->name)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("host doesn't support invariant TSC"));
                 goto cleanup;
             }
         }

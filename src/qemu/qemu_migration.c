@@ -1513,6 +1513,21 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
         return false;
     }
 
+    for (i = 0; i < def->cpu->nfeatures; i++) {
+        virCPUFeatureDefPtr feature = &def->cpu->features[i];
+
+        if (feature->policy != VIR_CPU_FEATURE_REQUIRE)
+            continue;
+
+        /* QEMU blocks migration and save with invariant TSC enabled */
+        if (STREQ(feature->name, "invtsc")) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("domain has CPU feature: %s"),
+                           feature->name);
+            return false;
+        }
+    }
+
     return true;
 }
 

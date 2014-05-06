@@ -327,6 +327,11 @@
       <cpuid function='0x00000007' ebx='0x00100000'/>
     </feature>
 
+    <!-- Advanced Power Management edx features -->
+    <feature name='invtsc'>
+      <cpuid function='0x80000007' edx='0x00000100'/>
+    </feature>
+
     <!-- models -->
     <model name='486'>
       <feature name='fpu'/>
