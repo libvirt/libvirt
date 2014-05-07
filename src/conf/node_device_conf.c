@@ -346,6 +346,9 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
                 virBufferAdjustIndent(&buf, -2);
                 virBufferAddLit(&buf, "</iommuGroup>\n");
             }
+            if (data->pci_dev.numa_node >= 0)
+                virBufferAsprintf(&buf, "<numa node='%d'/>\n",
+                                  data->pci_dev.numa_node);
             break;
         case VIR_NODE_DEV_CAP_USB_DEV:
             virBufferAsprintf(&buf, "<bus>%d</bus>\n", data->usb_dev.bus);
@@ -518,6 +521,41 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
     virReportOOMError();
     virBufferFreeAndReset(&buf);
     return NULL;
+}
+
+/**
+ * virNodeDevCapsDefParseIntOptional:
+ * @xpath:  XPath to evaluate
+ * @ctxt:   Context
+ * @value:  Where to store parsed value
+ * @def:    Node device which is parsed
+ * @invalid_error_fmt:  error message to print on invalid format
+ *
+ * Returns: -1 on error (invalid int format under @xpath)
+ *           0 if @xpath was not found (@value is untouched)
+ *           1 on success
+ */
+static int
+virNodeDevCapsDefParseIntOptional(const char *xpath,
+                                  xmlXPathContextPtr ctxt,
+                                  int *value,
+                                  virNodeDeviceDefPtr def,
+                                  const char *invalid_error_fmt)
+{
+    int ret;
+    int val;
+
+    ret = virXPathInt(xpath, ctxt, &val);
+    if (ret < -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       invalid_error_fmt,
+                       def->name);
+        return -1;
+    } else if (ret == -1) {
+        return 0;
+    }
+    *value = val;
+    return 1;
 }
 
 static int
@@ -1101,6 +1139,12 @@ virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
             goto out;
         }
     }
+
+    if (virNodeDevCapsDefParseIntOptional("number(./numa[1]/@node)", ctxt,
+                                          &data->pci_dev.numa_node, def,
+                                          _("invalid NUMA node ID supplied for '%s'")) < 0)
+        goto out;
+
     ret = 0;
  out:
     ctxt->node = orignode;

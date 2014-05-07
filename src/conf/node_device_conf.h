@@ -115,6 +115,7 @@ struct _virNodeDevCapsDef {
             virPCIDeviceAddressPtr *iommuGroupDevices;
             size_t nIommuGroupDevices;
             unsigned int iommuGroupNumber;
+            int numa_node;
         } pci_dev;
         struct {
             unsigned int bus;

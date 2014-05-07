@@ -158,6 +158,16 @@
       </element>
     </optional>
 
+    <optional>
+      <element name='numa'>
+        <optional>
+          <attribute name='node'>
+            <data type='int'/>
+          </attribute>
+        </optional>
+      </element>
+    </optional>
+
   </define>
 
   <define name='capusbdev'>

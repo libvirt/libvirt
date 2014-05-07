@@ -110,6 +110,13 @@
                 have a list of <code>address</code> subelements, one
                 for each VF on this PF.
               </dd>
+              <dt><code>numa</code></dt>
+              <dd>
+                This optional element contains information on the PCI device
+                with respect to NUMA. For example, the optional
+                <code>node</code> attribute tells which NUMA node is the PCI
+                device associated with.
+              </dd>
             </dl>
           </dd>
           <dt><code>usb_device</code></dt>

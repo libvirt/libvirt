@@ -493,6 +493,18 @@ static int udevProcessPCI(struct udev_device *device,
         goto out;
     }
 
+    rc = udevGetIntSysfsAttr(device,
+                            "numa_node",
+                            &data->pci_dev.numa_node,
+                            10);
+    if (rc == PROPERTY_ERROR) {
+        goto out;
+    } else if (rc == PROPERTY_MISSING) {
+        /* The default value is -1, because it can't be 0
+         * as zero is valid node number. */
+        data->pci_dev.numa_node = -1;
+    }
+
     if (!virPCIGetPhysicalFunction(syspath, &data->pci_dev.physical_function))
         data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
 
