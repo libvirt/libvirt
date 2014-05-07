@@ -72,6 +72,7 @@ typedef enum {
     /* Not direct file formats, but used for various drivers */
     VIR_STORAGE_FILE_FAT,
     VIR_STORAGE_FILE_VHD,
+    VIR_STORAGE_FILE_PLOOP,
 
     /* Not a format, but a marker: all formats below this point have
      * libvirt support for following a backing chain */
