@@ -321,6 +321,8 @@ parallelsGetHddInfo(virDomainDefPtr def,
 
         if (virDomainDiskSetSource(disk, tmp) < 0)
             return -1;
+
+        virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_PLOOP);
     }
 
     tmp = virJSONValueObjectGetString(value, "port");
