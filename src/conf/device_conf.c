@@ -38,6 +38,13 @@ VIR_ENUM_IMPL(virDeviceAddressPCIMulti,
               "on",
               "off")
 
+VIR_ENUM_IMPL(virInterfaceState,
+              VIR_INTERFACE_STATE_LAST,
+              "" /* value of zero means no state */,
+              "unknown", "notpresent",
+              "down", "lowerlayerdown",
+              "testing", "dormant", "up")
+
 int virDevicePCIAddressIsValid(virDevicePCIAddressPtr addr)
 {
     /* PCI bus has 32 slots and 8 functions per slot */
@@ -141,4 +148,59 @@ virDevicePCIAddressEqual(virDevicePCIAddress *addr1,
         return true;
     }
     return false;
+}
+
+int
+virInterfaceLinkParseXML(xmlNodePtr node,
+                         virInterfaceLinkPtr lnk)
+{
+    int ret = -1;
+    char *stateStr, *speedStr;
+    int state;
+
+    stateStr = virXMLPropString(node, "state");
+    speedStr = virXMLPropString(node, "speed");
+
+    if (stateStr) {
+        if ((state = virInterfaceStateTypeFromString(stateStr)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown link state: %s"),
+                           stateStr);
+            goto cleanup;
+        }
+        lnk->state = state;
+    }
+
+    if (speedStr &&
+        virStrToLong_ui(speedStr, NULL, 10, &lnk->speed) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Unable to parse link speed: %s"),
+                       speedStr);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(stateStr);
+    VIR_FREE(speedStr);
+    return ret;
+}
+
+int
+virInterfaceLinkFormat(virBufferPtr buf,
+                       const virInterfaceLink *lnk)
+{
+    if (!lnk->speed && !lnk->state) {
+        /* If there's nothing to format, return early. */
+        return 0;
+    }
+
+    virBufferAddLit(buf, "<link");
+    if (lnk->speed)
+        virBufferAsprintf(buf, " speed='%u'", lnk->speed);
+    if (lnk->state)
+        virBufferAsprintf(buf, " state='%s'",
+                          virInterfaceStateTypeToString(lnk->state));
+    virBufferAddLit(buf, "/>\n");
+    return 0;
 }

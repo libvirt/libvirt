@@ -83,6 +83,10 @@ virDevicePCIAddressEqual;
 virDevicePCIAddressFormat;
 virDevicePCIAddressIsValid;
 virDevicePCIAddressParseXML;
+virInterfaceLinkFormat;
+virInterfaceLinkParseXML;
+virInterfaceStateTypeFromString;
+virInterfaceStateTypeToString;
 
 
 # conf/domain_addr.h

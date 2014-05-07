@@ -397,4 +397,29 @@
     </optional>
   </define>
 
+  <define name="link-speed-state">
+    <optional>
+      <element name="link">
+        <optional>
+          <attribute name="speed">
+            <ref name="unsignedInt"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="state">
+            <choice>
+              <value>unknown</value>
+              <value>notpresent</value>
+              <value>down</value>
+              <value>lowerlayerdown</value>
+              <value>testing</value>
+              <value>dormant</value>
+              <value>up</value>
+            </choice>
+          </attribute>
+        </optional>
+      </element>
+    </optional>
+  </define>
+
 </grammar>

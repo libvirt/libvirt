@@ -41,6 +41,7 @@
         <attribute name="address"><ref name="macAddr"/></attribute>
       </element>
     </optional>
+    <ref name="link-speed-state"/>
     <!-- FIXME: Allow (some) ethtool options -->
   </define>
 

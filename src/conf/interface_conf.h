@@ -31,6 +31,7 @@
 # include "internal.h"
 # include "virutil.h"
 # include "virthread.h"
+# include "device_conf.h"
 
 /* There is currently 3 types of interfaces */
 
@@ -146,6 +147,7 @@ struct _virInterfaceDef {
     char *name;              /* interface name */
     unsigned int mtu;        /* maximum transmit size in byte */
     char *mac;               /* MAC address */
+    virInterfaceLink lnk;    /* interface link info */
 
     virInterfaceStartMode startmode; /* how it is started */
 

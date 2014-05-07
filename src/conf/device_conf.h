@@ -40,6 +40,21 @@ typedef enum {
     VIR_DEVICE_ADDRESS_PCI_MULTI_LAST
 } virDeviceAddressPCIMulti;
 
+VIR_ENUM_DECL(virDeviceAddressPCIMulti)
+
+typedef enum {
+    VIR_INTERFACE_STATE_UNKNOWN = 1,
+    VIR_INTERFACE_STATE_NOT_PRESENT,
+    VIR_INTERFACE_STATE_DOWN,
+    VIR_INTERFACE_STATE_LOWER_LAYER_DOWN,
+    VIR_INTERFACE_STATE_TESTING,
+    VIR_INTERFACE_STATE_DORMANT,
+    VIR_INTERFACE_STATE_UP,
+    VIR_INTERFACE_STATE_LAST
+} virInterfaceState;
+
+VIR_ENUM_DECL(virInterfaceState)
+
 typedef struct _virDevicePCIAddress virDevicePCIAddress;
 typedef virDevicePCIAddress *virDevicePCIAddressPtr;
 struct _virDevicePCIAddress {
@@ -48,6 +63,13 @@ struct _virDevicePCIAddress {
     unsigned int slot;
     unsigned int function;
     int          multi;  /* enum virDomainDeviceAddressPCIMulti */
+};
+
+typedef struct _virInterfaceLink virInterfaceLink;
+typedef virInterfaceLink *virInterfaceLinkPtr;
+struct _virInterfaceLink {
+    virInterfaceState state; /* link state */
+    unsigned int speed;      /* link speed in Mbits per second */
 };
 
 int virDevicePCIAddressIsValid(virDevicePCIAddressPtr addr);
@@ -62,7 +84,10 @@ int virDevicePCIAddressFormat(virBufferPtr buf,
 bool virDevicePCIAddressEqual(virDevicePCIAddress *addr1,
                               virDevicePCIAddress *addr2);
 
+int virInterfaceLinkParseXML(xmlNodePtr node,
+                             virInterfaceLinkPtr lnk);
 
-VIR_ENUM_DECL(virDeviceAddressPCIMulti)
+int virInterfaceLinkFormat(virBufferPtr buf,
+                           const virInterfaceLink *lnk);
 
 #endif /* __DEVICE_CONF_H__ */
