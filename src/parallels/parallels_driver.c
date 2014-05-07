@@ -2177,74 +2177,17 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
 }
 
 static int
-parallelsCreateVm(virConnectPtr conn, virDomainDefPtr def)
+parallelsCreateVm(virConnectPtr conn ATTRIBUTE_UNUSED, virDomainDefPtr def)
 {
-    parallelsConnPtr privconn = conn->privateData;
-    size_t i;
-    virStorageVolDefPtr privvol = NULL;
-    virStoragePoolObjPtr pool = NULL;
-    virStorageVolPtr vol = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    const char *src;
-
-    for (i = 0; i < def->ndisks; i++) {
-        if (def->disks[i]->device != VIR_DOMAIN_DISK_DEVICE_DISK)
-            continue;
-
-        src = virDomainDiskGetSource(def->disks[i]);
-        vol = parallelsStorageVolLookupByPathLocked(conn, src);
-        if (!vol) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("Can't find volume with path '%s'"),
-                           src);
-            return -1;
-        }
-        break;
-    }
-
-    if (!vol) {
-        /* We determine path to VM directory from volume, so
-         * let's report error if no disk until better solution
-         * will be found */
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Can't create VM '%s' without hard disks"),
-                       def->name ? def->name : _("(unnamed)"));
-        return -1;
-    }
-
-    pool = virStoragePoolObjFindByName(&privconn->pools, vol->pool);
-    if (!pool) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Can't find storage pool with name '%s'"),
-                       vol->pool);
-        goto error;
-    }
-
-    privvol = virStorageVolDefFindByPath(pool, src);
-    if (!privvol) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Can't find storage volume definition for path '%s'"),
-                       src);
-        goto error2;
-    }
 
     virUUIDFormat(def->uuid, uuidstr);
 
-    if (parallelsCmdRun(PRLCTL, "create", def->name, "--dst",
-                        pool->def->target.path, "--no-hdd",
+    if (parallelsCmdRun(PRLCTL, "create", def->name, "--no-hdd",
                         "--uuid", uuidstr, NULL) < 0)
-        goto error2;
-
-    virStoragePoolObjUnlock(pool);
-    virObjectUnref(vol);
+        return -1;
 
     return 0;
-
- error2:
-    virStoragePoolObjUnlock(pool);
- error:
-    virObjectUnref(vol);
-    return -1;
 }
 
 static int
