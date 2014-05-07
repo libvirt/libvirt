@@ -108,11 +108,18 @@ AArch64Baseline(virCPUDefPtr *cpus,
     return cpu;
 }
 
+static virCPUCompareResult
+AArch64Compare(virCPUDefPtr host ATTRIBUTE_UNUSED,
+               virCPUDefPtr cpu ATTRIBUTE_UNUSED)
+{
+    return VIR_CPU_COMPARE_IDENTICAL;
+}
+
 struct cpuArchDriver cpuDriverAARCH64 = {
     .name = "aarch64",
     .arch = archs,
     .narch = ARRAY_CARDINALITY(archs),
-    .compare = NULL,
+    .compare = AArch64Compare,
     .decode = AArch64Decode,
     .encode = NULL,
     .free = AArch64DataFree,

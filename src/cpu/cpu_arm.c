@@ -109,11 +109,18 @@ ArmBaseline(virCPUDefPtr *cpus,
     return cpu;
 }
 
+static virCPUCompareResult
+ArmCompare(virCPUDefPtr host ATTRIBUTE_UNUSED,
+           virCPUDefPtr cpu ATTRIBUTE_UNUSED)
+{
+    return VIR_CPU_COMPARE_IDENTICAL;
+}
+
 struct cpuArchDriver cpuDriverArm = {
     .name = "arm",
     .arch = archs,
     .narch = ARRAY_CARDINALITY(archs),
-    .compare = NULL,
+    .compare = ArmCompare,
     .decode = ArmDecode,
     .encode = NULL,
     .free = ArmDataFree,
