@@ -3507,10 +3507,22 @@
       guest instead of &lt;interface type='hostdev'/&gt;.
     </p>
 
+    <p>
+      Similar to the functionality of a standard &lt;hostdev&gt; device,
+      when <code>managed</code> is "yes", it is detached from the host
+      before being passed on to the guest, and reattached to the host
+      after the guest exits. If <code>managed</code> is omitted or "no",
+      the user is responsible to call <code>virNodeDeviceDettach</code>
+      (or <code>virsh nodedev-dettach</code>) before starting the guest
+      or hot-plugging the device, and <code>virNodeDeviceReAttach</code>
+      (or <code>virsh nodedev-reattach</code>) after hot-unplug or
+      stopping the guest.
+    </p>
+
 <pre>
   ...
   &lt;devices&gt;
-    &lt;interface type='hostdev'&gt;
+    &lt;interface type='hostdev' managed='yes'&gt;
       &lt;driver name='vfio'/&gt;
       &lt;source&gt;
         &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/&gt;
