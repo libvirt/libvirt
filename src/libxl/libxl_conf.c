@@ -921,25 +921,31 @@ static int
 libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
 {
     virDomainNetDefPtr *l_nics = def->nets;
-    int nnics = def->nnets;
+    size_t nnics = def->nnets;
     libxl_device_nic *x_nics;
-    size_t i;
+    size_t i, nvnics = 0;
 
     if (VIR_ALLOC_N(x_nics, nnics) < 0)
         return -1;
 
     for (i = 0; i < nnics; i++) {
-        if (libxlMakeNic(def, l_nics[i], &x_nics[i]))
+        if (l_nics[i]->type == VIR_DOMAIN_NET_TYPE_HOSTDEV)
+            continue;
+
+        if (libxlMakeNic(def, l_nics[i], &x_nics[nvnics]))
             goto error;
         /*
          * The devid (at least right now) will not get initialized by
          * libxl in the setup case but is required for starting the
          * device-model.
          */
-        if (x_nics[i].devid < 0)
-            x_nics[i].devid = i;
+        if (x_nics[nvnics].devid < 0)
+            x_nics[nvnics].devid = nvnics;
+
+        nvnics++;
     }
 
+    VIR_SHRINK_N(x_nics, nnics, nnics - nvnics);
     d_config->nics = x_nics;
     d_config->num_nics = nnics;
 
