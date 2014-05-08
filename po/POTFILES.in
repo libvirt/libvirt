@@ -74,6 +74,7 @@ src/lxc/lxc_process.c
 src/libxl/libxl_domain.c
 src/libxl/libxl_driver.c
 src/libxl/libxl_conf.c
+src/libxl/libxl_migration.c
 src/network/bridge_driver.c
 src/network/bridge_driver_linux.c
 src/network/leaseshelper.c

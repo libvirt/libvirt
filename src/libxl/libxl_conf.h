@@ -43,6 +43,9 @@
 # define LIBXL_VNC_PORT_MIN  5900
 # define LIBXL_VNC_PORT_MAX  65535
 
+# define LIBXL_MIGRATION_PORT_MIN  49152
+# define LIBXL_MIGRATION_PORT_MAX  49216
+
 # define LIBXL_CONFIG_DIR SYSCONFDIR "/libvirt/libxl"
 # define LIBXL_AUTOSTART_DIR LIBXL_CONFIG_DIR "/autostart"
 # define LIBXL_STATE_DIR LOCALSTATEDIR "/run/libvirt/libxl"
@@ -114,6 +117,9 @@ struct _libxlDriverPrivate {
 
     /* Immutable pointer, self-locking APIs */
     virPortAllocatorPtr reservedVNCPorts;
+
+    /* Immutable pointer, self-locking APIs */
+    virPortAllocatorPtr migrationPorts;
 
     /* Immutable pointer, lockless APIs*/
     virSysinfoDefPtr hostsysinfo;

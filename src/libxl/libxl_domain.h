@@ -69,6 +69,7 @@ struct _libxlDomainObjPrivate {
     virChrdevsPtr devs;
     libxl_evgen_domain_death *deathW;
     libxlDriverPrivatePtr driver;
+    unsigned short migrationPort;
 
     struct libxlDomainJobObj job;
 };
