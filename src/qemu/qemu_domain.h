@@ -26,6 +26,7 @@
 
 # include "virthread.h"
 # include "vircgroup.h"
+# include "domain_addr.h"
 # include "domain_conf.h"
 # include "snapshot_conf.h"
 # include "qemu_monitor.h"
@@ -116,9 +117,6 @@ struct qemuDomainJobObj {
     bool asyncAbort;                    /* abort of async job requested */
 };
 
-typedef struct _qemuDomainPCIAddressSet qemuDomainPCIAddressSet;
-typedef qemuDomainPCIAddressSet *qemuDomainPCIAddressSetPtr;
-
 typedef void (*qemuDomainCleanupCallback)(virQEMUDriverPtr driver,
                                           virDomainObjPtr vm);
 typedef struct _qemuDomainCCWAddressSet qemuDomainCCWAddressSet;
@@ -146,7 +144,7 @@ struct _qemuDomainObjPrivate {
     int nvcpupids;
     int *vcpupids;
 
-    qemuDomainPCIAddressSetPtr pciaddrs;
+    virDomainPCIAddressSetPtr pciaddrs;
     qemuDomainCCWAddressSetPtr ccwaddrs;
     int persistentAddrs;
 

@@ -24,6 +24,7 @@
 #ifndef __QEMU_COMMAND_H__
 # define __QEMU_COMMAND_H__
 
+# include "domain_addr.h"
 # include "domain_conf.h"
 # include "vircommand.h"
 # include "capabilities.h"
@@ -234,55 +235,33 @@ void qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
                                     virDomainDeviceInfoPtr info,
                                     const char *devstr);
 
-typedef enum {
-   QEMU_PCI_CONNECT_HOTPLUGGABLE = 1 << 0,
-   /* This bus supports hot-plug */
-   QEMU_PCI_CONNECT_SINGLESLOT   = 1 << 1,
-   /* This "bus" has only a single downstream slot/port */
-
-   QEMU_PCI_CONNECT_TYPE_PCI     = 1 << 2,
-   /* PCI devices can connect to this bus */
-   QEMU_PCI_CONNECT_TYPE_PCIE    = 1 << 3,
-   /* PCI Express devices can connect to this bus */
-   QEMU_PCI_CONNECT_TYPE_EITHER_IF_CONFIG = 1 << 4,
-   /* PCI *and* PCIe devices allowed, if the address
-    * was specified in the config by the user
-    */
-} qemuDomainPCIConnectFlags;
-
-/* a combination of all bit that describe the type of connections
- * allowed, e.g. PCI, PCIe, switch
- */
-# define QEMU_PCI_CONNECT_TYPES_MASK \
-   (QEMU_PCI_CONNECT_TYPE_PCI | QEMU_PCI_CONNECT_TYPE_PCIE)
-
 
 int qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                                  virQEMUCapsPtr qemuCaps,
                                  virDomainObjPtr obj);
-qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
-                                                         unsigned int nbuses,
-                                                         bool dryRun);
-int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
+virDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
+                                                        unsigned int nbuses,
+                                                        bool dryRun);
+int qemuDomainPCIAddressReserveSlot(virDomainPCIAddressSetPtr addrs,
                                     virDevicePCIAddressPtr addr,
-                                    qemuDomainPCIConnectFlags flags);
-int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
+                                    virDomainPCIConnectFlags flags);
+int qemuDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
                                     virDevicePCIAddressPtr addr,
-                                    qemuDomainPCIConnectFlags flags,
+                                    virDomainPCIConnectFlags flags,
                                     bool reserveEntireSlot,
                                     bool fromConfig);
-int qemuDomainPCIAddressReserveNextSlot(qemuDomainPCIAddressSetPtr addrs,
+int qemuDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
                                         virDomainDeviceInfoPtr dev,
-                                        qemuDomainPCIConnectFlags flags);
-int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
+                                        virDomainPCIConnectFlags flags);
+int qemuDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
                                    virDomainDeviceInfoPtr dev);
-int qemuDomainPCIAddressReleaseAddr(qemuDomainPCIAddressSetPtr addrs,
+int qemuDomainPCIAddressReleaseAddr(virDomainPCIAddressSetPtr addrs,
                                     virDevicePCIAddressPtr addr);
 
-void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs);
+void qemuDomainPCIAddressSetFree(virDomainPCIAddressSetPtr addrs);
 int  qemuAssignDevicePCISlots(virDomainDefPtr def,
                               virQEMUCapsPtr qemuCaps,
-                              qemuDomainPCIAddressSetPtr addrs);
+                              virDomainPCIAddressSetPtr addrs);
 
 int qemuDomainCCWAddressAssign(virDomainDeviceInfoPtr dev, qemuDomainCCWAddressSetPtr addrs,
                                bool autoassign);

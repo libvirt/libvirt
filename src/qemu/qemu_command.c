@@ -39,6 +39,7 @@
 #include "viruuid.h"
 #include "c-ctype.h"
 #include "domain_nwfilter.h"
+#include "domain_addr.h"
 #include "domain_audit.h"
 #include "domain_conf.h"
 #include "snapshot_conf.h"
@@ -1443,47 +1444,21 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
     return ret;
 }
 
-#define QEMU_PCI_ADDRESS_SLOT_LAST 31
-#define QEMU_PCI_ADDRESS_FUNCTION_LAST 7
-
-typedef struct {
-    virDomainControllerModelPCI model;
-    /* flags an min/max can be computed from model, but
-     * having them ready makes life easier.
-     */
-    qemuDomainPCIConnectFlags flags;
-    size_t minSlot, maxSlot; /* usually 0,0 or 1,31 */
-    /* Each bit in a slot represents one function on that slot. If the
-     * bit is set, that function is in use by a device.
-     */
-    uint8_t slots[QEMU_PCI_ADDRESS_SLOT_LAST + 1];
-} qemuDomainPCIAddressBus;
-typedef qemuDomainPCIAddressBus *qemuDomainPCIAddressBusPtr;
-
-struct _qemuDomainPCIAddressSet {
-    qemuDomainPCIAddressBus *buses;
-    size_t nbuses;
-    virDevicePCIAddress lastaddr;
-    qemuDomainPCIConnectFlags lastFlags;
-    bool dryRun;          /* on a dry run, new buses are auto-added
-                             and addresses aren't saved in device infos */
-};
-
 
 static bool
 qemuDomainPCIAddressFlagsCompatible(virDevicePCIAddressPtr addr,
                                     const char *addrStr,
-                                    qemuDomainPCIConnectFlags busFlags,
-                                    qemuDomainPCIConnectFlags devFlags,
+                                    virDomainPCIConnectFlags busFlags,
+                                    virDomainPCIConnectFlags devFlags,
                                     bool reportError,
                                     bool fromConfig)
 {
     virErrorNumber errType = (fromConfig
                               ? VIR_ERR_XML_ERROR : VIR_ERR_INTERNAL_ERROR);
-    qemuDomainPCIConnectFlags flagsMatchMask = QEMU_PCI_CONNECT_TYPES_MASK;
+    virDomainPCIConnectFlags flagsMatchMask = VIR_PCI_CONNECT_TYPES_MASK;
 
     if (fromConfig)
-       flagsMatchMask |= QEMU_PCI_CONNECT_TYPE_EITHER_IF_CONFIG;
+       flagsMatchMask |= VIR_PCI_CONNECT_TYPE_EITHER_IF_CONFIG;
 
     /* If this bus doesn't allow the type of connection (PCI
      * vs. PCIe) required by the device, or if the device requires
@@ -1491,13 +1466,13 @@ qemuDomainPCIAddressFlagsCompatible(virDevicePCIAddressPtr addr,
      */
     if (!(devFlags & busFlags & flagsMatchMask)) {
         if (reportError) {
-            if (devFlags & QEMU_PCI_CONNECT_TYPE_PCI) {
+            if (devFlags & VIR_PCI_CONNECT_TYPE_PCI) {
                 virReportError(errType,
                                _("PCI bus is not compatible with the device "
                                  "at %s. Device requires a standard PCI slot, "
                                  "which is not provided by bus %.4x:%.2x"),
                                addrStr, addr->domain, addr->bus);
-            } else if (devFlags & QEMU_PCI_CONNECT_TYPE_PCIE) {
+            } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCIE) {
                 virReportError(errType,
                                _("PCI bus is not compatible with the device "
                                  "at %s. Device requires a PCI Express slot, "
@@ -1514,8 +1489,8 @@ qemuDomainPCIAddressFlagsCompatible(virDevicePCIAddressPtr addr,
         }
         return false;
     }
-    if ((devFlags & QEMU_PCI_CONNECT_HOTPLUGGABLE) &&
-        !(busFlags & QEMU_PCI_CONNECT_HOTPLUGGABLE)) {
+    if ((devFlags & VIR_PCI_CONNECT_HOTPLUGGABLE) &&
+        !(busFlags & VIR_PCI_CONNECT_HOTPLUGGABLE)) {
         if (reportError) {
             virReportError(errType,
                            _("PCI bus is not compatible with the device "
@@ -1534,13 +1509,13 @@ qemuDomainPCIAddressFlagsCompatible(virDevicePCIAddressPtr addr,
  * comparing the flags).
  */
 static bool
-qemuDomainPCIAddressValidate(qemuDomainPCIAddressSetPtr addrs,
+qemuDomainPCIAddressValidate(virDomainPCIAddressSetPtr addrs,
                              virDevicePCIAddressPtr addr,
                              const char *addrStr,
-                             qemuDomainPCIConnectFlags flags,
+                             virDomainPCIConnectFlags flags,
                              bool fromConfig)
 {
-    qemuDomainPCIAddressBusPtr bus;
+    virDomainPCIAddressBusPtr bus;
     virErrorNumber errType = (fromConfig
                               ? VIR_ERR_XML_ERROR : VIR_ERR_INTERNAL_ERROR);
 
@@ -1585,10 +1560,10 @@ qemuDomainPCIAddressValidate(qemuDomainPCIAddressSetPtr addrs,
                        addrStr, bus->maxSlot);
         return false;
     }
-    if (addr->function > QEMU_PCI_ADDRESS_FUNCTION_LAST) {
+    if (addr->function > VIR_PCI_ADDRESS_FUNCTION_LAST) {
         virReportError(errType,
                        _("Invalid PCI address %s. function must be <= %u"),
-                       addrStr, QEMU_PCI_ADDRESS_FUNCTION_LAST);
+                       addrStr, VIR_PCI_ADDRESS_FUNCTION_LAST);
         return false;
     }
     return true;
@@ -1596,33 +1571,33 @@ qemuDomainPCIAddressValidate(qemuDomainPCIAddressSetPtr addrs,
 
 
 static int
-qemuDomainPCIAddressBusSetModel(qemuDomainPCIAddressBusPtr bus,
+qemuDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
                                 virDomainControllerModelPCI model)
 {
     switch (model) {
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
-        bus->flags = (QEMU_PCI_CONNECT_HOTPLUGGABLE |
-                      QEMU_PCI_CONNECT_TYPE_PCI);
+        bus->flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
+                      VIR_PCI_CONNECT_TYPE_PCI);
         bus->minSlot = 1;
-        bus->maxSlot = QEMU_PCI_ADDRESS_SLOT_LAST;
+        bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
         /* slots 1 - 31, no hotplug, PCIe only unless the address was
          * specified in user config *and* the particular device being
          * attached also allows it
          */
-        bus->flags = (QEMU_PCI_CONNECT_TYPE_PCIE |
-                      QEMU_PCI_CONNECT_TYPE_EITHER_IF_CONFIG);
+        bus->flags = (VIR_PCI_CONNECT_TYPE_PCIE |
+                      VIR_PCI_CONNECT_TYPE_EITHER_IF_CONFIG);
         bus->minSlot = 1;
-        bus->maxSlot = QEMU_PCI_ADDRESS_SLOT_LAST;
+        bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
         /* slots 1 - 31, standard PCI slots,
          * but *not* hot-pluggable */
-        bus->flags = QEMU_PCI_CONNECT_TYPE_PCI;
+        bus->flags = VIR_PCI_CONNECT_TYPE_PCI;
         bus->minSlot = 1;
-        bus->maxSlot = QEMU_PCI_ADDRESS_SLOT_LAST;
+        bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1646,9 +1621,9 @@ qemuDomainPCIAddressBusSetModel(qemuDomainPCIAddressBusPtr bus,
  * >0 = number of buses added
  */
 static int
-qemuDomainPCIAddressSetGrow(qemuDomainPCIAddressSetPtr addrs,
+qemuDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
                             virDevicePCIAddressPtr addr,
-                            qemuDomainPCIConnectFlags flags)
+                            virDomainPCIConnectFlags flags)
 {
     int add;
     size_t i;
@@ -1659,7 +1634,7 @@ qemuDomainPCIAddressSetGrow(qemuDomainPCIAddressSetPtr addrs,
         return 0;
 
     /* auto-grow only works when we're adding plain PCI devices */
-    if (!(flags & QEMU_PCI_CONNECT_TYPE_PCI)) {
+    if (!(flags & VIR_PCI_CONNECT_TYPE_PCI)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot automatically add a new PCI bus for a "
                          "device requiring a slot other than standard PCI."));
@@ -1702,13 +1677,13 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
                       virDomainDeviceInfoPtr info,
                       void *opaque)
 {
-    qemuDomainPCIAddressSetPtr addrs = opaque;
+    virDomainPCIAddressSetPtr addrs = opaque;
     int ret = -1;
     virDevicePCIAddressPtr addr = &info->addr.pci;
     bool entireSlot;
     /* flags may be changed from default below */
-    qemuDomainPCIConnectFlags flags = (QEMU_PCI_CONNECT_HOTPLUGGABLE |
-                                       QEMU_PCI_CONNECT_TYPE_PCI);
+    virDomainPCIConnectFlags flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
+                                      VIR_PCI_CONNECT_TYPE_PCI);
 
     if ((info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
         || ((device->type == VIR_DOMAIN_DEVICE_HOSTDEV) &&
@@ -1732,13 +1707,13 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
                 /* pci-bridge needs a PCI slot, but it isn't
                  * hot-pluggable, so it doesn't need a hot-pluggable slot.
                  */
-                flags = QEMU_PCI_CONNECT_TYPE_PCI;
+                flags = VIR_PCI_CONNECT_TYPE_PCI;
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
                 /* pci-bridge needs a PCIe slot, but it isn't
                  * hot-pluggable, so it doesn't need a hot-pluggable slot.
                  */
-                flags = QEMU_PCI_CONNECT_TYPE_PCIE;
+                flags = VIR_PCI_CONNECT_TYPE_PCIE;
                 break;
             default:
                 break;
@@ -1749,7 +1724,7 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
             /* SATA controllers aren't hot-plugged, and can be put in
              * either a PCI or PCIe slot
              */
-            flags = QEMU_PCI_CONNECT_TYPE_PCI | QEMU_PCI_CONNECT_TYPE_PCIE;
+            flags = VIR_PCI_CONNECT_TYPE_PCI | VIR_PCI_CONNECT_TYPE_PCIE;
             break;
 
         case VIR_DOMAIN_CONTROLLER_TYPE_USB:
@@ -1763,14 +1738,14 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
            case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2:
            case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3:
            case VIR_DOMAIN_CONTROLLER_MODEL_USB_VT82C686B_UHCI:
-              flags = (QEMU_PCI_CONNECT_TYPE_PCI |
-                       QEMU_PCI_CONNECT_TYPE_EITHER_IF_CONFIG);
+              flags = (VIR_PCI_CONNECT_TYPE_PCI |
+                       VIR_PCI_CONNECT_TYPE_EITHER_IF_CONFIG);
               break;
            case VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI:
               /* should this be PCIE-only? Or do we need to allow PCI
                * for backward compatibility?
                */
-              flags = QEMU_PCI_CONNECT_TYPE_PCI | QEMU_PCI_CONNECT_TYPE_PCIE;
+              flags = VIR_PCI_CONNECT_TYPE_PCI | VIR_PCI_CONNECT_TYPE_PCIE;
               break;
            case VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI:
            case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI:
@@ -1785,8 +1760,8 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
         switch (device->data.sound->model) {
         case VIR_DOMAIN_SOUND_MODEL_ICH6:
         case VIR_DOMAIN_SOUND_MODEL_ICH9:
-            flags = (QEMU_PCI_CONNECT_TYPE_PCI |
-                     QEMU_PCI_CONNECT_TYPE_EITHER_IF_CONFIG);
+            flags = (VIR_PCI_CONNECT_TYPE_PCI |
+                     VIR_PCI_CONNECT_TYPE_EITHER_IF_CONFIG);
             break;
         }
         break;
@@ -1795,7 +1770,7 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
         /* video cards aren't hot-plugged, and can be put in either a
          * PCI or PCIe slot
          */
-        flags = QEMU_PCI_CONNECT_TYPE_PCI | QEMU_PCI_CONNECT_TYPE_PCIE;
+        flags = VIR_PCI_CONNECT_TYPE_PCI | VIR_PCI_CONNECT_TYPE_PCIE;
         break;
     }
 
@@ -1827,7 +1802,7 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
              * commandline, but that don't really care if a PCI bus
              * actually exists. */
             if (addrs->nbuses > 0 &&
-                !(addrs->buses[0].flags & QEMU_PCI_CONNECT_TYPE_PCI)) {
+                !(addrs->buses[0].flags & VIR_PCI_CONNECT_TYPE_PCI)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Bus 0 must be PCI for integrated PIIX3 "
                                  "USB or IDE controllers"));
@@ -1868,7 +1843,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                              virDomainObjPtr obj)
 {
     int ret = -1;
-    qemuDomainPCIAddressSetPtr addrs = NULL;
+    virDomainPCIAddressSetPtr addrs = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
@@ -1876,7 +1851,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
         int nbuses = 0;
         size_t i;
         int rv;
-        qemuDomainPCIConnectFlags flags = QEMU_PCI_CONNECT_TYPE_PCI;
+        virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_TYPE_PCI;
 
         for (i = 0; i < def->ncontrollers; i++) {
             if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
@@ -1901,7 +1876,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                 goto cleanup;
 
             for (i = 1; i < addrs->nbuses; i++) {
-                qemuDomainPCIAddressBusPtr bus = &addrs->buses[i];
+                virDomainPCIAddressBusPtr bus = &addrs->buses[i];
 
                 if ((rv = virDomainDefMaybeAddController(
                          def, VIR_DOMAIN_CONTROLLER_TYPE_PCI,
@@ -1975,12 +1950,12 @@ int qemuDomainAssignAddresses(virDomainDefPtr def,
 }
 
 
-qemuDomainPCIAddressSetPtr
+virDomainPCIAddressSetPtr
 qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
                               unsigned int nbuses,
                               bool dryRun)
 {
-    qemuDomainPCIAddressSetPtr addrs;
+    virDomainPCIAddressSetPtr addrs;
     size_t i;
 
     if (VIR_ALLOC(addrs) < 0)
@@ -2038,7 +2013,7 @@ qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
 /*
  * Check if the PCI slot is used by another device.
  */
-static bool qemuDomainPCIAddressSlotInUse(qemuDomainPCIAddressSetPtr addrs,
+static bool qemuDomainPCIAddressSlotInUse(virDomainPCIAddressSetPtr addrs,
                                           virDevicePCIAddressPtr addr)
 {
     return !!addrs->buses[addr->bus].slots[addr->slot];
@@ -2055,15 +2030,15 @@ static bool qemuDomainPCIAddressSlotInUse(qemuDomainPCIAddressSetPtr addrs,
  * XML).
  */
 int
-qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
+qemuDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
                                 virDevicePCIAddressPtr addr,
-                                qemuDomainPCIConnectFlags flags,
+                                virDomainPCIConnectFlags flags,
                                 bool reserveEntireSlot,
                                 bool fromConfig)
 {
     int ret = -1;
     char *addrStr = NULL;
-    qemuDomainPCIAddressBusPtr bus;
+    virDomainPCIAddressBusPtr bus;
     virErrorNumber errType = (fromConfig
                               ? VIR_ERR_XML_ERROR : VIR_ERR_INTERNAL_ERROR);
 
@@ -2117,14 +2092,14 @@ qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
 
 
 int
-qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
+qemuDomainPCIAddressReserveSlot(virDomainPCIAddressSetPtr addrs,
                                 virDevicePCIAddressPtr addr,
-                                qemuDomainPCIConnectFlags flags)
+                                virDomainPCIConnectFlags flags)
 {
     return qemuDomainPCIAddressReserveAddr(addrs, addr, flags, true, false);
 }
 
-int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
+int qemuDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
                                    virDomainDeviceInfoPtr dev)
 {
     int ret = -1;
@@ -2134,8 +2109,8 @@ int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
      * function is only used for hot-plug, though, and hot-plug is
      * only supported for standard PCI devices, so we can safely use
      * the setting below */
-    qemuDomainPCIConnectFlags flags = (QEMU_PCI_CONNECT_HOTPLUGGABLE |
-                                       QEMU_PCI_CONNECT_TYPE_PCI);
+    virDomainPCIConnectFlags flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
+                                      VIR_PCI_CONNECT_TYPE_PCI);
 
     if (!(addrStr = qemuDomainPCIAddressAsString(&dev->addr.pci)))
         goto cleanup;
@@ -2166,7 +2141,7 @@ int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
 }
 
 
-int qemuDomainPCIAddressReleaseAddr(qemuDomainPCIAddressSetPtr addrs,
+int qemuDomainPCIAddressReleaseAddr(virDomainPCIAddressSetPtr addrs,
                                     virDevicePCIAddressPtr addr)
 {
     addrs->buses[addr->bus].slots[addr->slot] &= ~(1 << addr->function);
@@ -2174,13 +2149,13 @@ int qemuDomainPCIAddressReleaseAddr(qemuDomainPCIAddressSetPtr addrs,
 }
 
 static int
-qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs,
+qemuDomainPCIAddressReleaseSlot(virDomainPCIAddressSetPtr addrs,
                                 virDevicePCIAddressPtr addr)
 {
     /* permit any kind of connection type in validation, since we
      * already had it, and are giving it back.
      */
-    qemuDomainPCIConnectFlags flags = QEMU_PCI_CONNECT_TYPES_MASK;
+    virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_TYPES_MASK;
     int ret = -1;
     char *addrStr = NULL;
 
@@ -2197,7 +2172,7 @@ qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs,
     return ret;
 }
 
-void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs)
+void qemuDomainPCIAddressSetFree(virDomainPCIAddressSetPtr addrs)
 {
     if (!addrs)
         return;
@@ -2208,9 +2183,9 @@ void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs)
 
 
 static int
-qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
+qemuDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
                                 virDevicePCIAddressPtr next_addr,
-                                qemuDomainPCIConnectFlags flags)
+                                virDomainPCIConnectFlags flags)
 {
     /* default to starting the search for a free slot from
      * 0000:00:00.0
@@ -2241,7 +2216,7 @@ qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
                       a.domain, a.bus);
             continue;
         }
-        for (; a.slot <= QEMU_PCI_ADDRESS_SLOT_LAST; a.slot++) {
+        for (; a.slot <= VIR_PCI_ADDRESS_SLOT_LAST; a.slot++) {
             if (!qemuDomainPCIAddressSlotInUse(addrs, &a))
                 goto success;
 
@@ -2271,7 +2246,7 @@ qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
                           a.domain, a.bus);
                 continue;
             }
-            for (a.slot = 1; a.slot <= QEMU_PCI_ADDRESS_SLOT_LAST; a.slot++) {
+            for (a.slot = 1; a.slot <= VIR_PCI_ADDRESS_SLOT_LAST; a.slot++) {
                 if (!qemuDomainPCIAddressSlotInUse(addrs, &a))
                     goto success;
 
@@ -2296,9 +2271,9 @@ qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
 }
 
 int
-qemuDomainPCIAddressReserveNextSlot(qemuDomainPCIAddressSetPtr addrs,
+qemuDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
                                     virDomainDeviceInfoPtr dev,
-                                    qemuDomainPCIConnectFlags flags)
+                                    virDomainPCIConnectFlags flags)
 {
     virDevicePCIAddress addr;
     if (qemuDomainPCIAddressGetNextSlot(addrs, &addr, flags) < 0)
@@ -2354,14 +2329,14 @@ qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
 static int
 qemuValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
                                 virQEMUCapsPtr qemuCaps,
-                                qemuDomainPCIAddressSetPtr addrs)
+                                virDomainPCIAddressSetPtr addrs)
 {
     int ret = -1;
     size_t i;
     virDevicePCIAddress tmp_addr;
     bool qemuDeviceVideoUsable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     char *addrStr = NULL;
-    qemuDomainPCIConnectFlags flags = QEMU_PCI_CONNECT_HOTPLUGGABLE | QEMU_PCI_CONNECT_TYPE_PCI;
+    virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_HOTPLUGGABLE | VIR_PCI_CONNECT_TYPE_PCI;
 
     /* Verify that first IDE and USB controllers (if any) is on the PIIX3, fn 1 */
     for (i = 0; i < def->ncontrollers; i++) {
@@ -2507,14 +2482,14 @@ qemuDomainMachineIsI440FX(virDomainDefPtr def)
 static int
 qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
                                     virQEMUCapsPtr qemuCaps,
-                                    qemuDomainPCIAddressSetPtr addrs)
+                                    virDomainPCIAddressSetPtr addrs)
 {
     int ret = -1;
     size_t i;
     virDevicePCIAddress tmp_addr;
     bool qemuDeviceVideoUsable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     char *addrStr = NULL;
-    qemuDomainPCIConnectFlags flags = QEMU_PCI_CONNECT_TYPE_PCIE;
+    virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_TYPE_PCIE;
 
     for (i = 0; i < def->ncontrollers; i++) {
         switch (def->controllers[i]->type) {
@@ -2690,10 +2665,10 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
 int
 qemuAssignDevicePCISlots(virDomainDefPtr def,
                          virQEMUCapsPtr qemuCaps,
-                         qemuDomainPCIAddressSetPtr addrs)
+                         virDomainPCIAddressSetPtr addrs)
 {
     size_t i, j;
-    qemuDomainPCIConnectFlags flags;
+    virDomainPCIConnectFlags flags;
     virDevicePCIAddress tmp_addr;
 
     if ((STRPREFIX(def->os.machine, "pc-0.") ||
@@ -2725,16 +2700,16 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
                 /* pci-bridge doesn't require hot-plug
                  * (although it does provide hot-plug in its slots)
                  */
-                flags = QEMU_PCI_CONNECT_TYPE_PCI;
+                flags = VIR_PCI_CONNECT_TYPE_PCI;
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
                 /* dmi-to-pci-bridge requires a non-hotplug PCIe
                  * slot
                  */
-                flags = QEMU_PCI_CONNECT_TYPE_PCIE;
+                flags = VIR_PCI_CONNECT_TYPE_PCIE;
                 break;
             default:
-                flags = QEMU_PCI_CONNECT_HOTPLUGGABLE | QEMU_PCI_CONNECT_TYPE_PCI;
+                flags = VIR_PCI_CONNECT_HOTPLUGGABLE | VIR_PCI_CONNECT_TYPE_PCI;
                 break;
             }
             if (qemuDomainPCIAddressReserveNextSlot(addrs,
@@ -2744,7 +2719,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
         }
     }
 
-    flags = QEMU_PCI_CONNECT_HOTPLUGGABLE | QEMU_PCI_CONNECT_TYPE_PCI;
+    flags = VIR_PCI_CONNECT_HOTPLUGGABLE | VIR_PCI_CONNECT_TYPE_PCI;
 
     for (i = 0; i < def->nfss; i++) {
         if (def->fss[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
