@@ -1316,12 +1316,10 @@ virVMXParseConfig(virVMXContext *ctx,
         goto cleanup;
     }
 
-    if (virtualHW_version != 4 && virtualHW_version != 7 &&
-        virtualHW_version != 8 && virtualHW_version != 9 &&
-        virtualHW_version != 10) {
+    if (virtualHW_version < 4) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Expecting VMX entry 'virtualHW.version' to be "
-                         "4, 7, 8, 9 or 10 but found %lld"),
+                         "4 or higher but found %lld"),
                        virtualHW_version);
         goto cleanup;
     }
