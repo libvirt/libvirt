@@ -1753,7 +1753,7 @@ typedef struct _virAttributes virAttributes;
 struct _virAttributes {
     const char *id;
     const virXMLAttr2Struct *att;
-    enum virNWFilterRuleProtocolType prtclType;
+    virNWFilterRuleProtocolType prtclType;
 };
 
 #define PROTOCOL_ENTRY(ID, ATT, PRTCLTYPE) \
@@ -1799,7 +1799,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
     char *prop;
     bool found = false;
     enum attrDatatype datatype, att_datatypes;
-    enum virNWFilterEntryItemFlags *flags, match_flag = 0, flags_set = 0;
+    virNWFilterEntryItemFlags *flags, match_flag = 0, flags_set = 0;
     nwItemDesc *item;
     int int_val;
     unsigned int uint_val;
@@ -2511,7 +2511,7 @@ virNWFilterIsValidChainName(const char *chainname)
 static const char *
 virNWFilterIsAllowedChain(const char *chainname)
 {
-    enum virNWFilterChainSuffixType i;
+    virNWFilterChainSuffixType i;
     const char *name;
     char *msg;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -3287,7 +3287,7 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
         VIR_WARNINGS_NO_CAST_ALIGN
         item = (nwItemDesc *)((char *)def + att[i].dataIdx);
         VIR_WARNINGS_RESET
-        enum virNWFilterEntryItemFlags flags = item->flags;
+        virNWFilterEntryItemFlags flags = item->flags;
         if ((flags & NWFILTER_ENTRY_ITEM_FLAG_EXISTS)) {
             if (!typeShown) {
                 virBufferAsprintf(buf, "<%s", type);
