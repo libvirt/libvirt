@@ -1029,7 +1029,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                 return false;
             }
 
-            switch ((enum virStoragePoolType) poolType) {
+            switch ((virStoragePoolType) poolType) {
             case VIR_STORAGE_POOL_DIR:
                 flags |= VIR_CONNECT_LIST_STORAGE_POOLS_DIR;
                 break;

@@ -607,7 +607,7 @@ struct _virDomainDiskDef {
     int removable; /* enum virDomainFeatureState */
 
     char *mirror;
-    int mirrorFormat; /* enum virStorageFileFormat */
+    int mirrorFormat; /* virStorageFileFormat */
     bool mirroring;
 
     struct {
@@ -776,7 +776,7 @@ struct _virDomainFSDef {
     int fsdriver; /* enum virDomainFSDriverType */
     int accessmode; /* enum virDomainFSAccessMode */
     int wrpolicy; /* enum virDomainFSWrpolicy */
-    int format; /* enum virStorageFileFormat */
+    int format; /* virStorageFileFormat */
     unsigned long long usage; /* in bytes */
     char *src;
     char *dst;

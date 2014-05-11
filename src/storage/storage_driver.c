@@ -1483,7 +1483,7 @@ storageVolLookupByPath(virConnectPtr conn,
            continue;
         }
 
-        switch ((enum virStoragePoolType) pool->def->type) {
+        switch ((virStoragePoolType) pool->def->type) {
             case VIR_STORAGE_POOL_DIR:
             case VIR_STORAGE_POOL_FS:
             case VIR_STORAGE_POOL_NETFS:
@@ -2096,7 +2096,7 @@ storageVolUpload(virStorageVolPtr obj,
         goto cleanup;
     }
 
-    switch ((enum virStoragePoolType) pool->def->type) {
+    switch ((virStoragePoolType) pool->def->type) {
     case VIR_STORAGE_POOL_DIR:
     case VIR_STORAGE_POOL_FS:
     case VIR_STORAGE_POOL_NETFS:

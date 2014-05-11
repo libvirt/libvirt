@@ -51,7 +51,7 @@ struct _virStorageVolSource {
     int nextent;
     virStorageVolSourceExtentPtr extents;
 
-    int partType; /* enum virStorageVolTypeDisk, only used by disk
+    int partType; /* virStorageVolTypeDisk, only used by disk
                    * backend for partition type creation */
 };
 
@@ -61,7 +61,7 @@ typedef virStorageVolDef *virStorageVolDefPtr;
 struct _virStorageVolDef {
     char *name;
     char *key;
-    int type; /* enum virStorageVolType */
+    int type; /* virStorageVolType */
 
     unsigned int building;
     unsigned int in_use;
@@ -80,7 +80,7 @@ struct _virStorageVolDefList {
 
 VIR_ENUM_DECL(virStorageVol)
 
-enum virStoragePoolType {
+typedef enum {
     VIR_STORAGE_POOL_DIR,      /* Local directory */
     VIR_STORAGE_POOL_FS,       /* Local filesystem */
     VIR_STORAGE_POOL_NETFS,    /* Networked filesystem - eg NFS, GFS, etc */
@@ -94,25 +94,25 @@ enum virStoragePoolType {
     VIR_STORAGE_POOL_GLUSTER,  /* Gluster device */
 
     VIR_STORAGE_POOL_LAST,
-};
+} virStoragePoolType;
 
 VIR_ENUM_DECL(virStoragePool)
 
-enum virStoragePoolDeviceType {
+typedef enum {
     VIR_STORAGE_DEVICE_TYPE_DISK = 0x00,
     VIR_STORAGE_DEVICE_TYPE_ROM = 0x05,
 
     VIR_STORAGE_DEVICE_TYPE_LAST,
-};
+} virStoragePoolDeviceType;
 
 
-enum virStoragePoolAuthType {
+typedef enum {
     VIR_STORAGE_POOL_AUTH_NONE,
     VIR_STORAGE_POOL_AUTH_CHAP,
     VIR_STORAGE_POOL_AUTH_CEPHX,
 
     VIR_STORAGE_POOL_AUTH_LAST,
-};
+} virStoragePoolAuthType;
 VIR_ENUM_DECL(virStoragePoolAuthType)
 
 typedef struct _virStoragePoolAuthSecret virStoragePoolAuthSecret;
@@ -152,12 +152,12 @@ struct _virStoragePoolSourceHost {
  * For MSDOS partitions, the free area is important when
  * creating logical partitions
  */
-enum virStorageFreeType {
+typedef enum {
     VIR_STORAGE_FREE_NONE = 0,
     VIR_STORAGE_FREE_NORMAL,
     VIR_STORAGE_FREE_LOGICAL,
     VIR_STORAGE_FREE_LAST
-};
+} virStorageFreeType;
 
 /*
  * Available extents on the underlying storage
@@ -167,7 +167,7 @@ typedef virStoragePoolSourceDeviceExtent *virStoragePoolSourceDeviceExtentPtr;
 struct _virStoragePoolSourceDeviceExtent {
     unsigned long long start;
     unsigned long long end;
-    int type; /* enum virStorageFreeType */
+    int type; /* virStorageFreeType */
 };
 
 typedef struct _virStoragePoolSourceInitiatorAttr virStoragePoolSourceInitiatorAttr;
@@ -197,18 +197,18 @@ struct _virStoragePoolSourceDevice {
     } geometry;
 };
 
-enum virStoragePoolSourceAdapterType {
+typedef enum {
     VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_DEFAULT = 0,
     VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST,
     VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST,
 
     VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_LAST,
-};
+} virStoragePoolSourceAdapterType;
 VIR_ENUM_DECL(virStoragePoolSourceAdapterType)
 
 typedef struct _virStoragePoolSourceAdapter virStoragePoolSourceAdapter;
 struct _virStoragePoolSourceAdapter {
-    int type; /* enum virStoragePoolSourceAdapterType */
+    int type; /* virStoragePoolSourceAdapterType */
 
     union {
         char *name;
@@ -273,7 +273,7 @@ typedef virStoragePoolDef *virStoragePoolDefPtr;
 struct _virStoragePoolDef {
     char *name;
     unsigned char uuid[VIR_UUID_BUFLEN];
-    int type; /* enum virStoragePoolType */
+    int type; /* virStoragePoolType */
 
     unsigned long long allocation; /* bytes */
     unsigned long long capacity; /* bytes */
@@ -420,7 +420,7 @@ void virStoragePoolObjLock(virStoragePoolObjPtr obj);
 void virStoragePoolObjUnlock(virStoragePoolObjPtr obj);
 
 
-enum virStoragePoolFormatFileSystem {
+typedef enum {
     VIR_STORAGE_POOL_FS_AUTO = 0,
     VIR_STORAGE_POOL_FS_EXT2,
     VIR_STORAGE_POOL_FS_EXT3,
@@ -435,19 +435,19 @@ enum virStoragePoolFormatFileSystem {
     VIR_STORAGE_POOL_FS_XFS,
     VIR_STORAGE_POOL_FS_OCFS2,
     VIR_STORAGE_POOL_FS_LAST,
-};
+} virStoragePoolFormatFileSystem;
 VIR_ENUM_DECL(virStoragePoolFormatFileSystem)
 
-enum virStoragePoolFormatFileSystemNet {
+typedef enum {
     VIR_STORAGE_POOL_NETFS_AUTO = 0,
     VIR_STORAGE_POOL_NETFS_NFS,
     VIR_STORAGE_POOL_NETFS_GLUSTERFS,
     VIR_STORAGE_POOL_NETFS_CIFS,
     VIR_STORAGE_POOL_NETFS_LAST,
-};
+} virStoragePoolFormatFileSystemNet;
 VIR_ENUM_DECL(virStoragePoolFormatFileSystemNet)
 
-enum virStoragePoolFormatDisk {
+typedef enum {
     VIR_STORAGE_POOL_DISK_UNKNOWN = 0,
     VIR_STORAGE_POOL_DISK_DOS = 1,
     VIR_STORAGE_POOL_DISK_DVH,
@@ -458,14 +458,14 @@ enum virStoragePoolFormatDisk {
     VIR_STORAGE_POOL_DISK_SUN,
     VIR_STORAGE_POOL_DISK_LVM2,
     VIR_STORAGE_POOL_DISK_LAST,
-};
+} virStoragePoolFormatDisk;
 VIR_ENUM_DECL(virStoragePoolFormatDisk)
 
-enum virStoragePoolFormatLogical {
+typedef enum {
     VIR_STORAGE_POOL_LOGICAL_UNKNOWN = 0,
     VIR_STORAGE_POOL_LOGICAL_LVM2 = 1,
     VIR_STORAGE_POOL_LOGICAL_LAST,
-};
+} virStoragePoolFormatLogical;
 VIR_ENUM_DECL(virStoragePoolFormatLogical)
 
 /*
@@ -477,7 +477,7 @@ VIR_ENUM_DECL(virStoragePoolFormatLogical)
  *
  * So this is a semi-generic set
  */
-enum virStorageVolFormatDisk {
+typedef enum {
     VIR_STORAGE_VOL_DISK_NONE = 0,
     VIR_STORAGE_VOL_DISK_LINUX,
     VIR_STORAGE_VOL_DISK_FAT16,
@@ -487,22 +487,22 @@ enum virStorageVolFormatDisk {
     VIR_STORAGE_VOL_DISK_LINUX_RAID,
     VIR_STORAGE_VOL_DISK_EXTENDED,
     VIR_STORAGE_VOL_DISK_LAST,
-};
+} virStorageVolFormatDisk;
 VIR_ENUM_DECL(virStorageVolFormatDisk)
 
-enum virStorageVolTypeDisk {
+typedef enum {
     VIR_STORAGE_VOL_DISK_TYPE_NONE = 0,
     VIR_STORAGE_VOL_DISK_TYPE_PRIMARY,
     VIR_STORAGE_VOL_DISK_TYPE_LOGICAL,
     VIR_STORAGE_VOL_DISK_TYPE_EXTENDED,
     VIR_STORAGE_VOL_DISK_TYPE_LAST,
-};
+} virStorageVolTypeDisk;
 
 /*
  * Mapping of Parted fs-types MUST be kept in the
  * same order as virStorageVolFormatDisk
  */
-enum virStoragePartedFsType {
+typedef enum {
     VIR_STORAGE_PARTED_FS_TYPE_NONE = 0,
     VIR_STORAGE_PARTED_FS_TYPE_LINUX,
     VIR_STORAGE_PARTED_FS_TYPE_FAT16,
@@ -512,7 +512,7 @@ enum virStoragePartedFsType {
     VIR_STORAGE_PARTED_FS_TYPE_LINUX_RAID,
     VIR_STORAGE_PARTED_FS_TYPE_EXTENDED,
     VIR_STORAGE_PARTED_FS_TYPE_LAST,
-};
+} virStoragePartedFsType;
 VIR_ENUM_DECL(virStoragePartedFsType)
 
 # define VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE   \

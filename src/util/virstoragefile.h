@@ -150,7 +150,7 @@ typedef virStorageNetHostDef *virStorageNetHostDefPtr;
 struct _virStorageNetHostDef {
     char *name;
     char *port;
-    int transport; /* enum virStorageNetHostTransport */
+    int transport; /* virStorageNetHostTransport */
     char *socket;  /* path to unix socket */
 };
 
@@ -182,10 +182,10 @@ typedef struct _virStorageSourcePoolDef virStorageSourcePoolDef;
 struct _virStorageSourcePoolDef {
     char *pool; /* pool name */
     char *volume; /* volume name */
-    int voltype; /* enum virStorageVolType, internal only */
-    int pooltype; /* enum virStoragePoolType, internal only */
-    int actualtype; /* enum virStorageType, internal only */
-    int mode; /* enum virStorageSourcePoolMode */
+    int voltype; /* virStorageVolType, internal only */
+    int pooltype; /* virStoragePoolType, internal only */
+    int actualtype; /* virStorageType, internal only */
+    int mode; /* virStorageSourcePoolMode */
 };
 typedef virStorageSourcePoolDef *virStorageSourcePoolDefPtr;
 
@@ -208,15 +208,15 @@ typedef virStorageSource *virStorageSourcePtr;
  * backing chains, multiple source disks join to form a single guest
  * view.  */
 struct _virStorageSource {
-    int type; /* enum virStorageType */
+    int type; /* virStorageType */
     char *path;
-    int protocol; /* enum virStorageNetProtocol */
+    int protocol; /* virStorageNetProtocol */
     size_t nhosts;
     virStorageNetHostDefPtr hosts;
     virStorageSourcePoolDefPtr srcpool;
     struct {
         char *username;
-        int secretType; /* enum virStorageSecretType */
+        int secretType; /* virStorageSecretType */
         union {
             unsigned char uuid[VIR_UUID_BUFLEN];
             char *usage;
@@ -225,7 +225,7 @@ struct _virStorageSource {
     virStorageEncryptionPtr encryption;
 
     char *driverName;
-    int format; /* enum virStorageFileFormat */
+    int format; /* virStorageFileFormat */
     virBitmapPtr features;
     char *compat;
 
