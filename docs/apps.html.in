@@ -110,6 +110,12 @@
         application stap can use libvirt to gather data within virtual
         machines.
       </dd>
+      <dt><a href="https://github.com/pradels/vagrant-libvirt/">vagrant-libvirt</a></dt>
+      <dd>
+        Vagrant-Libvirt is a Vagrant plugin that uses libvirt to manage virtual
+        machines. It is a command line tool for developers that makes it very
+        fast and easy to deploy and re-deploy an environment of vm's.
+      </dd>
     </dl>
 
     <h2><a name="configmgmt">Configuration Management</a></h2>
