@@ -29,20 +29,20 @@
 
 /* Items related to snapshot state */
 
-enum virDomainSnapshotLocation {
+typedef enum {
     VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT = 0,
     VIR_DOMAIN_SNAPSHOT_LOCATION_NONE,
     VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL,
     VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL,
 
     VIR_DOMAIN_SNAPSHOT_LOCATION_LAST
-};
+} virDomainSnapshotLocation;
 
-enum virDomainSnapshotState {
+typedef enum {
     /* Inherit the VIR_DOMAIN_* states from virDomainState.  */
     VIR_DOMAIN_DISK_SNAPSHOT = VIR_DOMAIN_LAST,
     VIR_DOMAIN_SNAPSHOT_STATE_LAST
-};
+} virDomainSnapshotState;
 
 /* Stores disk-snapshot information */
 typedef struct _virDomainSnapshotDiskDef virDomainSnapshotDiskDef;
@@ -50,7 +50,7 @@ typedef virDomainSnapshotDiskDef *virDomainSnapshotDiskDefPtr;
 struct _virDomainSnapshotDiskDef {
     char *name;     /* name matching the <target dev='...' of the domain */
     int index;      /* index within snapshot->dom->disks that matches name */
-    int snapshot;   /* enum virDomainSnapshotLocation */
+    int snapshot;   /* virDomainSnapshotLocation */
 
     virStorageSource src; /* new wrapper file when snapshot is external */
 };
@@ -64,9 +64,9 @@ struct _virDomainSnapshotDef {
     char *description;
     char *parent;
     long long creationTime; /* in seconds */
-    int state; /* enum virDomainSnapshotState */
+    int state; /* virDomainSnapshotState */
 
-    int memory; /* enum virDomainMemorySnapshot */
+    int memory; /* virDomainMemorySnapshot */
     char *file; /* memory state file when snapshot is external */
 
     size_t ndisks; /* should not exceed dom->ndisks */

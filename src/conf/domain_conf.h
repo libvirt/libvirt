@@ -635,7 +635,7 @@ struct _virDomainDiskDef {
     int ioeventfd; /* enum virDomainIoEventFd */
     int event_idx; /* enum virDomainVirtioEventIdx */
     int copy_on_read; /* enum virDomainDiskCopyOnRead */
-    int snapshot; /* enum virDomainSnapshotLocation, snapshot_conf.h */
+    int snapshot; /* virDomainSnapshotLocation, snapshot_conf.h */
     int startupPolicy; /* enum virDomainStartupPolicy */
     bool readonly;
     bool shared;
