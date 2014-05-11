@@ -625,7 +625,7 @@ sc_libvirt_unmarked_diagnostics:
 	  $(_sc_search_regexp)
 	@{ grep     -nE '\<$(func_re) *\(.*;$$' $$($(VC_LIST_EXCEPT));   \
 	   grep -A1 -nE '\<$(func_re) *\(.*,$$' $$($(VC_LIST_EXCEPT)); } \
-	   | sed 's/_("\([^\"]\|\\.\)\+"//;s/[	 ]"%s"//'		\
+	   | $(SED) 's/_("\([^\"]\|\\.\)\+"//;s/[	 ]"%s"//'		\
 	   | grep '[	 ]"' &&						\
 	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
 	    exit 1; } || :
@@ -650,7 +650,7 @@ sc_prohibit_newline_at_end_of_diagnostic:
 sc_prohibit_diagnostic_without_format:
 	@{ grep     -nE '\<$(func_re) *\(.*;$$' $$($(VC_LIST_EXCEPT));   \
 	   grep -A2 -nE '\<$(func_re) *\(.*,$$' $$($(VC_LIST_EXCEPT)); } \
-	   | sed -rn -e ':l; /[,"]$$/ {N;b l;}'				 \
+	   | $(SED) -rn -e ':l; /[,"]$$/ {N;b l;}'				 \
 		-e '/(xenapiSessionErrorHandler|vah_(error|warning))/d'	 \
 		-e '/\<$(func_re) *\([^"]*"([^%"]|"\n[^"]*")*"[,)]/p'	 \
            | grep -vE 'VIR_ERROR' &&					 \
@@ -672,7 +672,7 @@ sc_prohibit_useless_translation:
 # or \n on one side of the split.
 sc_require_whitespace_in_translation:
 	@grep -n -A1 '"$$' $$($(VC_LIST_EXCEPT))   			\
-	   | sed -ne ':l; /"$$/ {N;b l;}; s/"\n[^"]*"/""/g; s/\\n/ /g'	\
+	   | $(SED) -ne ':l; /"$$/ {N;b l;}; s/"\n[^"]*"/""/g; s/\\n/ /g'	\
 		-e '/_(.*[^\ ]""[^\ ]/p' | grep . &&			\
 	  { echo '$(ME): missing whitespace at line split' 1>&2;	\
 	    exit 1; } || :
@@ -692,11 +692,11 @@ sc_preprocessor_indentation:
 sc_spec_indentation:
 	@if cppi --version >/dev/null 2>&1; then			\
 	  for f in $$($(VC_LIST_EXCEPT) | grep '\.spec\.in$$'); do	\
-	    sed -e 's|#|// #|; s|%ifn*\(arch\)* |#if a // |'		\
+	    $(SED) -e 's|#|// #|; s|%ifn*\(arch\)* |#if a // |'		\
 		-e 's/%\(else\|endif\|define\)/#\1/'			\
 		-e 's/^\( *\)\1\1\1#/#\1/'				\
 		-e 's|^\( *[^#/ ]\)|// \1|; s|^\( */[^/]\)|// \1|' $$f	\
-	    | cppi -a -c 2>&1 | sed "s|standard input|$$f|";		\
+	    | cppi -a -c 2>&1 | $(SED) "s|standard input|$$f|";		\
 	  done | { if grep . >&2; then false; else :; fi; }		\
 	    || { echo '$(ME): incorrect preprocessor indentation' 1>&2;	\
 		exit 1; };						\
@@ -789,7 +789,7 @@ sc_prohibit_cross_inclusion:
 # elements added to the enum by using a _LAST marker.
 sc_require_enum_last_marker:
 	@grep -A1 -nE '^[^#]*VIR_ENUM_IMPL *\(' $$($(VC_LIST_EXCEPT))	\
-	   | sed -ne '/VIR_ENUM_IMPL[^,]*,$$/N'				\
+	   | $(SED) -ne '/VIR_ENUM_IMPL[^,]*,$$/N'				\
 	     -e '/VIR_ENUM_IMPL[^,]*,[^,]*[^_,][^L,][^A,][^S,][^T,],/p'	\
 	     -e '/VIR_ENUM_IMPL[^,]*,[^,]\{0,4\},/p'			\
 	   | grep . &&							\
@@ -944,7 +944,7 @@ ifeq (0,$(MAKELEVEL))
   # b653eda3ac4864de205419d9f41eec267cb89eeb
   #
   # Keep this logic in sync with autogen.sh.
-  _submodule_hash = sed 's/^[ +-]//;s/ .*//'
+  _submodule_hash = $(SED) 's/^[ +-]//;s/ .*//'
   _update_required := $(shell						\
       cd '$(srcdir)';							\
       test -d .git || { echo 0; exit; };				\
