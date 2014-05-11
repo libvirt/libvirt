@@ -1,7 +1,7 @@
 /*
  * node_device_hal.c: node device enumeration - HAL-based implementation
  *
- * Copyright (C) 2011, 2013 Red Hat, Inc.
+ * Copyright (C) 2011-2014 Red Hat, Inc.
  * Copyright (C) 2008 Virtual Iron Software, Inc.
  * Copyright (C) 2008 David F. Lively
  *
@@ -343,7 +343,7 @@ gather_system_cap(LibHalContext *ctx, const char *udi,
 
 struct _caps_tbl_entry {
     const char *cap_name;
-    enum virNodeDevCapType type;
+    virNodeDevCapType type;
     int (*gather_fn)(LibHalContext *ctx,
                      const char *udi,
                      union _virNodeDevCapData *data);

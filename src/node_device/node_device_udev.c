@@ -1176,7 +1176,7 @@ udevHasDeviceProperty(struct udev_device *dev,
 
 static int
 udevGetDeviceType(struct udev_device *device,
-                  enum virNodeDevCapType *type)
+                  virNodeDevCapType *type)
 {
     const char *devtype = NULL;
     char *subsystem = NULL;

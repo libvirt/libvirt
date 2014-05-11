@@ -1061,7 +1061,7 @@ virNWFilterVarAccessGetVarName(const virNWFilterVarAccess *vap)
     return vap->varName;
 }
 
-enum virNWFilterVarAccessType
+virNWFilterVarAccessType
 virNWFilterVarAccessGetType(const virNWFilterVarAccess *vap)
 {
     return vap->accessType;
