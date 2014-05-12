@@ -9413,7 +9413,6 @@ qemuDomainBlockResize(virDomainPtr dom,
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
     int ret = -1, idx;
-    unsigned long long size_up;
     char *device = NULL;
     virDomainDiskDefPtr disk = NULL;
 
@@ -9434,12 +9433,6 @@ qemuDomainBlockResize(virDomainPtr dom,
             return -1;
         }
         size *= 1024;
-        size_up = size;
-    } else {
-        /* For 'qcow2' and 'qed', qemu resize blocks expects values
-         * on sector boundary, so round our value up to prepare
-         */
-        size_up = VIR_ROUND_UP(size, 512);
     }
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -9465,21 +9458,6 @@ qemuDomainBlockResize(virDomainPtr dom,
         goto endjob;
     }
     disk = vm->def->disks[idx];
-
-    /* qcow2 and qed must be sized appropriately, so be sure our value
-     * is sized appropriately and will fit
-     */
-    if (size != size_up &&
-        (disk->src.format == VIR_STORAGE_FILE_QCOW2 ||
-         disk->src.format == VIR_STORAGE_FILE_QED)) {
-        if (size_up > ULLONG_MAX) {
-            virReportError(VIR_ERR_OVERFLOW,
-                           _("size must be less than %llu KiB"),
-                           ULLONG_MAX / 1024);
-            goto endjob;
-        }
-        size = size_up;
-    }
 
     if (virAsprintf(&device, "%s%s", QEMU_DRIVE_HOST_PREFIX,
                     disk->info.alias) < 0)
