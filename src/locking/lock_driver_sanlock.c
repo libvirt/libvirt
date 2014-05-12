@@ -896,31 +896,6 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
     if (VIR_ALLOC(opt) < 0)
         return -1;
 
-    /* sanlock doesn't use owner_name for anything, so it's safe to take just
-     * the first SANLK_NAME_LEN - 1 characters from vm_name */
-    ignore_value(virStrncpy(opt->owner_name, priv->vm_name,
-                            SANLK_NAME_LEN - 1, SANLK_NAME_LEN));
-
-    if (state && STRNEQ(state, "")) {
-        if ((rv = sanlock_state_to_args((char *)state,
-                                        &res_count,
-                                        &res_args)) < 0) {
-            if (rv <= -200)
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unable to parse lock state %s: error %d"),
-                               state, rv);
-            else
-                virReportSystemError(-rv,
-                                     _("Unable to parse lock state %s"),
-                                     state);
-            goto error;
-        }
-        res_free = true;
-    } else {
-        res_args = priv->res_args;
-        res_count = priv->res_count;
-    }
-
     /* We only initialize 'sock' if we are in the real
      * child process and we need it to be inherited
      *
@@ -947,6 +922,31 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
                                                         uuidstr, action) < 0)
                 goto error;
         }
+    }
+
+    /* sanlock doesn't use owner_name for anything, so it's safe to take just
+     * the first SANLK_NAME_LEN - 1 characters from vm_name */
+    ignore_value(virStrncpy(opt->owner_name, priv->vm_name,
+                            SANLK_NAME_LEN - 1, SANLK_NAME_LEN));
+
+    if (state && STRNEQ(state, "")) {
+        if ((rv = sanlock_state_to_args((char *)state,
+                                        &res_count,
+                                        &res_args)) < 0) {
+            if (rv <= -200)
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Unable to parse lock state %s: error %d"),
+                               state, rv);
+            else
+                virReportSystemError(-rv,
+                                     _("Unable to parse lock state %s"),
+                                     state);
+            goto error;
+        }
+        res_free = true;
+    } else {
+        res_args = priv->res_args;
+        res_count = priv->res_count;
     }
 
     if (!(flags & VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY)) {
