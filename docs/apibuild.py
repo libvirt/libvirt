@@ -926,7 +926,7 @@ class CParser:
                 if i < len(l) and l[i] == ' ':
                     i = i + 1
                 l = l[i:]
-            if len(l) >= 6 and  l[0:7] == "returns" or l[0:7] == "Returns":
+            if len(l) >= 6 and l[0:7] == "Returns":
                 try:
                     l = string.split(l, ' ', 1)[1]
                 except:
