@@ -9459,6 +9459,13 @@ qemuDomainBlockResize(virDomainPtr dom,
     }
     disk = vm->def->disks[idx];
 
+    /* qcow2 and qed must be sized on 512 byte blocks/sectors,
+     * so adjust size if necessary to round up.
+     */
+    if (disk->src.format == VIR_STORAGE_FILE_QCOW2 ||
+        disk->src.format == VIR_STORAGE_FILE_QED)
+        size = VIR_ROUND_UP(size, 512);
+
     if (virAsprintf(&device, "%s%s", QEMU_DRIVE_HOST_PREFIX,
                     disk->info.alias) < 0)
         goto endjob;
