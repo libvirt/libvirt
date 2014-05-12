@@ -91,6 +91,9 @@ struct _virLockManagerSanlockPrivate {
     bool hasRWDisks;
     int res_count;
     struct sanlk_resource *res_args[SANLK_MAX_RESOURCES];
+
+    /* whether the VM was registered or not */
+    bool registered;
 };
 
 /*
@@ -450,6 +453,7 @@ static int virLockManagerSanlockNew(virLockManagerPtr lock,
     virLockManagerParamPtr param;
     virLockManagerSanlockPrivatePtr priv;
     size_t i;
+    int resCount = 0;
 
     virCheckFlags(0, -1);
 
@@ -486,6 +490,16 @@ static int virLockManagerSanlockNew(virLockManagerPtr lock,
             priv->vm_uri = param->value.cstr;
         }
     }
+
+    /* Sanlock needs process registration, but the only way how to probe
+     * whether a process has been registered is to inquire the lock.  If
+     * sanlock_inquire() returns -ESRCH, then it is not registered, but
+     * if it returns any other error (rv < 0), then we cannot fail due
+     * to back-compat.  So this whole call is non-fatal, because it's
+     * called from all over the place (it will usually fail).  It merely
+     * updates privateData. */
+    if (sanlock_inquire(-1, priv->vm_pid, 0, &resCount, NULL) >= 0)
+        priv->registered = true;
 
     lock->privateData = priv;
     return 0;
@@ -915,6 +929,9 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
             goto error;
         }
 
+        /* Mark the pid as registered */
+        priv->registered = true;
+
         if (action != VIR_DOMAIN_LOCK_FAILURE_DEFAULT) {
             char uuidstr[VIR_UUID_STRING_BUFLEN];
             virUUIDFormat(priv->vm_uuid, uuidstr);
@@ -922,6 +939,9 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
                                                         uuidstr, action) < 0)
                 goto error;
         }
+    } else if (!priv->registered) {
+        VIR_DEBUG("Process not registered, not acquiring lock");
+        return 0;
     }
 
     /* sanlock doesn't use owner_name for anything, so it's safe to take just
@@ -1025,6 +1045,11 @@ static int virLockManagerSanlockRelease(virLockManagerPtr lock,
 
     virCheckFlags(0, -1);
 
+    if (!priv->registered) {
+        VIR_DEBUG("Process not registered, skipping release");
+        return 0;
+    }
+
     if (state) {
         if ((rv = sanlock_inquire(-1, priv->vm_pid, 0, &res_count, state)) < 0) {
             if (rv <= -200)
@@ -1069,6 +1094,12 @@ static int virLockManagerSanlockInquire(virLockManagerPtr lock,
     }
 
     VIR_DEBUG("pid=%d", priv->vm_pid);
+
+    if (!priv->registered) {
+        VIR_DEBUG("Process not registered, skipping inquiry");
+        VIR_FREE(*state);
+        return 0;
+    }
 
     if ((rv = sanlock_inquire(-1, priv->vm_pid, 0, &res_count, state)) < 0) {
         if (rv <= -200)
