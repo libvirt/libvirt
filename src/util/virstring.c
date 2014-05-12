@@ -43,13 +43,15 @@ VIR_LOG_INIT("util.string");
  */
 
 /**
- * virStringSplit:
+ * virStringSplitCount:
  * @string: a string to split
  * @delim: a string which specifies the places at which to split
  *     the string. The delimiter is not included in any of the resulting
  *     strings, unless @max_tokens is reached.
  * @max_tokens: the maximum number of pieces to split @string into.
  *     If this is 0, the string is split completely.
+ * @tokcount: If provided, the value is set to the count of pieces the string
+ *            was split to excluding the terminating NULL element.
  *
  * Splits a string into a maximum of @max_tokens pieces, using the given
  * @delim. If @max_tokens is reached, the remainder of @string is
@@ -65,9 +67,11 @@ VIR_LOG_INIT("util.string");
  * Return value: a newly-allocated NULL-terminated array of strings. Use
  *    virStringFreeList() to free it.
  */
-char **virStringSplit(const char *string,
-                      const char *delim,
-                      size_t max_tokens)
+char **
+virStringSplitCount(const char *string,
+                    const char *delim,
+                    size_t max_tokens,
+                    size_t *tokcount)
 {
     char **tokens = NULL;
     size_t ntokens = 0;
@@ -109,6 +113,9 @@ char **virStringSplit(const char *string,
         goto error;
     tokens[ntokens++] = NULL;
 
+    if (tokcount)
+        *tokcount = ntokens - 1;
+
     return tokens;
 
  error:
@@ -116,6 +123,15 @@ char **virStringSplit(const char *string,
         VIR_FREE(tokens[i]);
     VIR_FREE(tokens);
     return NULL;
+}
+
+
+char **
+virStringSplit(const char *string,
+               const char *delim,
+               size_t max_tokens)
+{
+    return virStringSplitCount(string, delim, max_tokens, NULL);
 }
 
 

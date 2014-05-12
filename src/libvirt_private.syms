@@ -1908,6 +1908,7 @@ virStringSearch;
 virStringSortCompare;
 virStringSortRevCompare;
 virStringSplit;
+virStringSplitCount;
 virStrncpy;
 virStrndup;
 virStrToDouble;

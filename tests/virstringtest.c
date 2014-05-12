@@ -53,11 +53,14 @@ static int testSplit(const void *args)
 {
     const struct testSplitData *data = args;
     char **got;
+    size_t ntokens;
+    size_t exptokens = 0;
     char **tmp1;
     const char **tmp2;
     int ret = -1;
 
-    if (!(got = virStringSplit(data->string, data->delim, data->max_tokens))) {
+    if (!(got = virStringSplitCount(data->string, data->delim,
+                                    data->max_tokens, &ntokens))) {
         VIR_DEBUG("Got no tokens at all");
         return -1;
     }
@@ -71,6 +74,7 @@ static int testSplit(const void *args)
         }
         tmp1++;
         tmp2++;
+        exptokens++;
     }
     if (*tmp1) {
         virFilePrintf(stderr, "Too many pieces returned\n");
@@ -78,6 +82,14 @@ static int testSplit(const void *args)
     }
     if (*tmp2) {
         virFilePrintf(stderr, "Too few pieces returned\n");
+        goto cleanup;
+    }
+
+    if (ntokens != exptokens) {
+        virFilePrintf(stderr,
+                      "Returned token count (%zu) doesn't match "
+                      "expected count (%zu)",
+                      ntokens, exptokens);
         goto cleanup;
     }
 
