@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright (C) 2010-2012 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -180,7 +180,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
                       uint32_t src_pid, uint32_t dst_pid,
                       unsigned int protocol, unsigned int groups)
 {
-    int rc = 0;
+    int ret = -1;
     struct sockaddr_nl nladdr = {
             .nl_family = AF_NETLINK,
             .nl_pid    = dst_pid,
@@ -192,41 +192,39 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
     int n;
     struct nlmsghdr *nlmsg = nlmsg_hdr(nl_msg);
     virNetlinkHandle *nlhandle = NULL;
+    int len = 0;
 
     if (protocol >= MAX_LINKS) {
         virReportSystemError(EINVAL,
                              _("invalid protocol argument: %d"), protocol);
-        return -EINVAL;
+        goto cleanup;
     }
 
     nlhandle = virNetlinkAlloc();
     if (!nlhandle) {
         virReportSystemError(errno,
                              "%s", _("cannot allocate nlhandle for netlink"));
-        return -1;
+        goto cleanup;
     }
 
     if (nl_connect(nlhandle, protocol) < 0) {
         virReportSystemError(errno,
                         _("cannot connect to netlink socket with protocol %d"),
                              protocol);
-        rc = -1;
-        goto error;
+        goto cleanup;
     }
 
     fd = nl_socket_get_fd(nlhandle);
     if (fd < 0) {
         virReportSystemError(errno,
                              "%s", _("cannot get netlink socket fd"));
-        rc = -1;
-        goto error;
+        goto cleanup;
     }
 
     if (groups && nl_socket_add_membership(nlhandle, groups) < 0) {
         virReportSystemError(errno,
                              "%s", _("cannot add netlink membership"));
-        rc = -1;
-        goto error;
+        goto cleanup;
     }
 
     nlmsg_set_dst(nl_msg, &nladdr);
@@ -237,8 +235,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
     if (nbytes < 0) {
         virReportSystemError(errno,
                              "%s", _("cannot send to netlink socket"));
-        rc = -1;
-        goto error;
+        goto cleanup;
     }
 
     memset(fds, 0, sizeof(fds));
@@ -253,26 +250,30 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
         if (n == 0)
             virReportSystemError(ETIMEDOUT, "%s",
                                  _("no valid netlink response was received"));
-        rc = -1;
-        goto error;
+        goto cleanup;
     }
 
-    *respbuflen = nl_recv(nlhandle, &nladdr,
-                          (unsigned char **)resp, NULL);
-    if (*respbuflen <= 0) {
-        virReportSystemError(errno,
-                             "%s", _("nl_recv failed"));
-        rc = -1;
+    len = nl_recv(nlhandle, &nladdr, (unsigned char **)resp, NULL);
+    if (len == 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("nl_recv failed - returned 0 bytes"));
+        goto cleanup;
     }
- error:
-    if (rc == -1) {
-        VIR_FREE(*resp);
+    if (len < 0) {
+        virReportSystemError(errno, "%s", _("nl_recv failed"));
+        goto cleanup;
+    }
+
+    ret = 0;
+    *respbuflen = len;
+ cleanup:
+    if (ret < 0) {
         *resp = NULL;
         *respbuflen = 0;
     }
 
     virNetlinkFree(nlhandle);
-    return rc;
+    return ret;
 }
 
 static void
