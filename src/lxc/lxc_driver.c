@@ -3231,7 +3231,7 @@ static int lxcFreezeContainer(virDomainObjPtr vm)
 
         /*
          * Returning EBUSY explicitly indicates that the group is
-         * being freezed but incomplete and other errors are true
+         * being frozen but incomplete, and other errors are true
          * errors.
          */
         if (r < 0 && r != -EBUSY) {

@@ -12091,7 +12091,7 @@ qemuDomainSnapshotFSFreeze(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg;
-    int freezed;
+    int frozen;
 
     if (priv->quiesced) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -12113,9 +12113,9 @@ qemuDomainSnapshotFSFreeze(virQEMUDriverPtr driver,
     virObjectUnref(cfg);
 
     qemuDomainObjEnterAgent(vm);
-    freezed = qemuAgentFSFreeze(priv->agent);
+    frozen = qemuAgentFSFreeze(priv->agent);
     qemuDomainObjExitAgent(vm);
-    return freezed < 0 ? -2 : freezed;
+    return frozen < 0 ? -2 : frozen;
 }
 
 /* Return -1 on error, otherwise number of thawed filesystems. */
