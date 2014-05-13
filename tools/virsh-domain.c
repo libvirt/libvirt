@@ -9392,12 +9392,6 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
         passwd = virXPathString(xpath, ctxt);
         VIR_FREE(xpath);
 
-        if (STREQ(scheme[iter], "vnc")) {
-            /* VNC protocol handlers take their port number as
-             * 'port' - 5900 */
-            port -= 5900;
-        }
-
         /* Build up the full URI, starting with the scheme */
         virBufferAsprintf(&buf, "%s://", scheme[iter]);
 
@@ -9416,8 +9410,15 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
             virBufferAsprintf(&buf, "%s", listen_addr);
 
         /* Add the port */
-        if (port)
+        if (port) {
+            if (STREQ(scheme[iter], "vnc")) {
+                /* VNC protocol handlers take their port number as
+                 * 'port' - 5900 */
+                port -= 5900;
+            }
+
             virBufferAsprintf(&buf, ":%d", port);
+        }
 
         /* TLS Port */
         if (tls_port) {
