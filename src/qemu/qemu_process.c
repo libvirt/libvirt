@@ -2659,6 +2659,19 @@ qemuProcessPrepareChardevDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
 }
 
 
+static int
+qemuProcessCleanupChardevDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                virDomainChrDefPtr dev,
+                                void *opaque ATTRIBUTE_UNUSED)
+{
+    if (dev->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
+        dev->source.data.nix.listen)
+        unlink(dev->source.data.nix.path);
+
+    return 0;
+}
+
+
 struct qemuProcessHookData {
     virConnectPtr conn;
     virDomainObjPtr vm;
@@ -4352,6 +4365,12 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         virDomainChrSourceDefFree(priv->monConfig);
         priv->monConfig = NULL;
     }
+
+    ignore_value(virDomainChrDefForeach(vm->def,
+                                        false,
+                                        qemuProcessCleanupChardevDevice,
+                                        NULL));
+
 
     /* shut it off for sure */
     ignore_value(qemuProcessKill(vm,
