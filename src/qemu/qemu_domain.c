@@ -1059,6 +1059,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
     unsigned long long then;
     bool nested = job == QEMU_JOB_ASYNC_NESTED;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int ret;
 
     VIR_DEBUG("Starting %s: %s (async=%s vm=%p name=%s)",
               job == QEMU_JOB_ASYNC ? "async job" : "job",
@@ -1135,21 +1136,25 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
              qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
              priv->job.owner, priv->job.asyncOwner);
 
-    if (errno == ETIMEDOUT)
+    ret = -1;
+    if (errno == ETIMEDOUT) {
         virReportError(VIR_ERR_OPERATION_TIMEOUT,
                        "%s", _("cannot acquire state change lock"));
-    else if (cfg->maxQueuedJobs &&
-             priv->jobs_queued > cfg->maxQueuedJobs)
+        ret = -2;
+    } else if (cfg->maxQueuedJobs &&
+               priv->jobs_queued > cfg->maxQueuedJobs) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("cannot acquire state change lock "
                                "due to max_queued limit"));
-    else
+        ret = -2;
+    } else {
         virReportSystemError(errno,
                              "%s", _("cannot acquire job mutex"));
+    }
     priv->jobs_queued--;
     virObjectUnref(obj);
     virObjectUnref(cfg);
-    return -1;
+    return ret;
 }
 
 /*
@@ -1165,16 +1170,22 @@ int qemuDomainObjBeginJob(virQEMUDriverPtr driver,
                           virDomainObjPtr obj,
                           enum qemuDomainJob job)
 {
-    return qemuDomainObjBeginJobInternal(driver, obj, job,
-                                         QEMU_ASYNC_JOB_NONE);
+    if (qemuDomainObjBeginJobInternal(driver, obj, job,
+                                      QEMU_ASYNC_JOB_NONE) < 0)
+        return -1;
+    else
+        return 0;
 }
 
 int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
                                virDomainObjPtr obj,
                                enum qemuDomainAsyncJob asyncJob)
 {
-    return qemuDomainObjBeginJobInternal(driver, obj, QEMU_JOB_ASYNC,
-                                         asyncJob);
+    if (qemuDomainObjBeginJobInternal(driver, obj, QEMU_JOB_ASYNC,
+                                      asyncJob) < 0)
+        return -1;
+    else
+        return 0;
 }
 
 static int ATTRIBUTE_RETURN_CHECK
