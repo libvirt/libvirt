@@ -81,10 +81,9 @@ virSecurityDACSetDynamicOwnership(virSecurityManagerPtr mgr,
 
 /* returns 1 if label isn't found, 0 on success, -1 on error */
 static int
+ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
 virSecurityDACParseIds(virDomainDefPtr def, uid_t *uidPtr, gid_t *gidPtr)
 {
-    uid_t uid;
-    gid_t gid;
     virSecurityLabelDefPtr seclabel;
 
     if (def == NULL)
@@ -96,18 +95,14 @@ virSecurityDACParseIds(virDomainDefPtr def, uid_t *uidPtr, gid_t *gidPtr)
         return 1;
     }
 
-    if (virParseOwnershipIds(seclabel->label, &uid, &gid) < 0)
+    if (virParseOwnershipIds(seclabel->label, uidPtr, gidPtr) < 0)
         return -1;
-
-    if (uidPtr)
-        *uidPtr = uid;
-    if (gidPtr)
-        *gidPtr = gid;
 
     return 0;
 }
 
 static int
+ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
 virSecurityDACGetIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
                      uid_t *uidPtr, gid_t *gidPtr,
                      gid_t **groups, int *ngroups)
@@ -136,10 +131,8 @@ virSecurityDACGetIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
         return -1;
     }
 
-    if (uidPtr)
-        *uidPtr = priv->user;
-    if (gidPtr)
-        *gidPtr = priv->group;
+    *uidPtr = priv->user;
+    *gidPtr = priv->group;
 
     return 0;
 }
@@ -147,11 +140,10 @@ virSecurityDACGetIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
 
 /* returns 1 if label isn't found, 0 on success, -1 on error */
 static int
+ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
 virSecurityDACParseImageIds(virDomainDefPtr def,
                             uid_t *uidPtr, gid_t *gidPtr)
 {
-    uid_t uid;
-    gid_t gid;
     virSecurityLabelDefPtr seclabel;
 
     if (def == NULL)
@@ -163,18 +155,14 @@ virSecurityDACParseImageIds(virDomainDefPtr def,
         return 1;
     }
 
-    if (virParseOwnershipIds(seclabel->imagelabel, &uid, &gid) < 0)
+    if (virParseOwnershipIds(seclabel->imagelabel, uidPtr, gidPtr) < 0)
         return -1;
-
-    if (uidPtr)
-        *uidPtr = uid;
-    if (gidPtr)
-        *gidPtr = gid;
 
     return 0;
 }
 
 static int
+ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
 virSecurityDACGetImageIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
                           uid_t *uidPtr, gid_t *gidPtr)
 {
@@ -197,10 +185,8 @@ virSecurityDACGetImageIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
         return -1;
     }
 
-    if (uidPtr)
-        *uidPtr = priv->user;
-    if (gidPtr)
-        *gidPtr = priv->group;
+    *uidPtr = priv->user;
+    *gidPtr = priv->group;
 
     return 0;
 }
