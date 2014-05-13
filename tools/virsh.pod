@@ -820,7 +820,7 @@ address of virtual interface (such as I<detach-interface> or
 I<domif-setlink>) will accept the MAC address printed by this command.
 
 =item B<blockcommit> I<domain> I<path> [I<bandwidth>]
-[I<base>] [I<--shallow>] [I<top>] [I<--delete>]
+[I<base>] [I<--shallow>] [I<top>] [I<--delete>] [I<--keep-relative>]
 [I<--wait> [I<--async>] [I<--verbose>]] [I<--timeout> B<seconds>]
 [I<--active>] [{I<--pivot> | I<--keep-overlay>}]
 
@@ -833,7 +833,8 @@ I<--shallow> can be used instead of I<base> to specify the immediate
 backing file of the resulting top image to be committed.  The files
 being committed are rendered invalid, possibly as soon as the operation
 starts; using the I<--delete> flag will attempt to remove these invalidated
-files at the successful completion of the commit operation.
+files at the successful completion of the commit operation. When the
+I<--keep-relative> flag is used, the backing file paths will be kept relative.
 
 When I<top> is omitted or specified as the active image, it is also
 possible to specify I<--active> to trigger a two-phase active commit. In

@@ -19884,6 +19884,11 @@ virDomainBlockRebase(virDomainPtr dom, const char *disk,
  * VIR_DOMAIN_BLOCK_COMMIT_DELETE, then this command will unlink all files
  * that were invalidated, after the commit successfully completes.
  *
+ * If @flags contains VIR_DOMAIN_BLOCK_COMMIT_RELATIVE, the name recorded
+ * into the overlay of the @top image (if there is such image) as the
+ * path to the new backing file will be kept relative to other images.
+ * The operation will fail if libvirt can't infer the name.
+ *
  * By default, if @base is NULL, the commit target will be the bottom of
  * the backing chain; if @flags contains VIR_DOMAIN_BLOCK_COMMIT_SHALLOW,
  * then the immediate backing file of @top will be used instead.  If @top

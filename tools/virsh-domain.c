@@ -1505,6 +1505,8 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
             vshCommandOptBool(cmd, "pivot") ||
             vshCommandOptBool(cmd, "keep-overlay"))
             flags |= VIR_DOMAIN_BLOCK_COMMIT_ACTIVE;
+        if (vshCommandOptBool(cmd, "keep-relative"))
+            flags |= VIR_DOMAIN_BLOCK_COMMIT_RELATIVE;
         ret = virDomainBlockCommit(dom, path, base, top, bandwidth, flags);
         break;
     case VSH_CMD_BLOCK_JOB_COPY:
@@ -1637,6 +1639,10 @@ static const vshCmdOptDef opts_block_commit[] = {
     {.name = "async",
      .type = VSH_OT_BOOL,
      .help = N_("with --wait, don't wait for cancel to finish")
+    },
+    {.name = "keep-relative",
+     .type = VSH_OT_BOOL,
+     .help = N_("keep the backing chain relatively referenced")
     },
     {.name = NULL}
 };
