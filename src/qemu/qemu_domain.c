@@ -1288,8 +1288,9 @@ qemuDomainObjEnterMonitorInternal(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
     if (asyncJob != QEMU_ASYNC_JOB_NONE) {
-        if (qemuDomainObjBeginNestedJob(driver, obj, asyncJob) < 0)
-            return -1;
+        int ret;
+        if ((ret = qemuDomainObjBeginNestedJob(driver, obj, asyncJob)) < 0)
+            return ret;
         if (!virDomainObjIsActive(obj)) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("domain is no longer running"));
@@ -1368,8 +1369,9 @@ void qemuDomainObjExitMonitor(virQEMUDriverPtr driver,
  * with the same asyncJob.
  *
  * Returns 0 if job was started, in which case this must be followed with
- * qemuDomainObjExitMonitor(); or -1 if the job could not be
- * started (probably because the vm exited in the meantime).
+ * qemuDomainObjExitMonitor(); -2 if waiting for the nested job times out;
+ * or -1 if the job could not be started (probably because the vm exited
+ * in the meantime).
  */
 int
 qemuDomainObjEnterMonitorAsync(virQEMUDriverPtr driver,

@@ -1714,8 +1714,9 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
 
     ret = qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob);
     if (ret < 0) {
-        /* Guest already exited; nothing further to update.  */
-        return -1;
+        /* Guest already exited or waiting for the job timed out; nothing
+         * further to update. */
+        return ret;
     }
     ret = qemuMonitorGetMigrationStatus(priv->mon, &status);
 
@@ -1812,7 +1813,7 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver, virDomainObjPtr vm,
         /* Poll every 50ms for progress & to allow cancellation */
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
 
-        if (qemuMigrationUpdateJobStatus(driver, vm, job, asyncJob) < 0)
+        if (qemuMigrationUpdateJobStatus(driver, vm, job, asyncJob) == -1)
             goto cleanup;
 
         /* cancel migration if disk I/O error is emitted while migrating */
