@@ -3370,7 +3370,7 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
     int rc;
     bool killedAny = false;
     char *keypath = NULL;
-    DIR *dp;
+    DIR *dp = NULL;
     virCgroupPtr subgroup = NULL;
     struct dirent *ent;
     int direrr;
@@ -3381,7 +3381,7 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
         return -1;
 
     if ((rc = virCgroupKillInternal(group, signum, pids)) < 0)
-        return -1;
+        goto cleanup;
     if (rc == 1)
         killedAny = true;
 
@@ -3394,7 +3394,7 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
         }
         virReportSystemError(errno,
                              _("Cannot open %s"), keypath);
-        return -1;
+        goto cleanup;
     }
 
     while ((direrr = virDirRead(dp, &ent, keypath)) > 0) {
@@ -3429,7 +3429,9 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
 
  cleanup:
     virCgroupFree(&subgroup);
-    closedir(dp);
+    VIR_FREE(keypath);
+    if (dp)
+        closedir(dp);
 
     return ret;
 }
