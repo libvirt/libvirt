@@ -3465,6 +3465,7 @@ qemuMonitorJSONTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
 int
 qemuMonitorJSONBlockCommit(qemuMonitorPtr mon, const char *device,
                            const char *top, const char *base,
+                           const char *backingName,
                            unsigned long long speed)
 {
     int ret = -1;
@@ -3476,6 +3477,7 @@ qemuMonitorJSONBlockCommit(qemuMonitorPtr mon, const char *device,
                                      "U:speed", speed,
                                      "S:top", top,
                                      "S:base", base,
+                                     "S:backing-file", backingName,
                                      NULL);
     if (!cmd)
         return -1;

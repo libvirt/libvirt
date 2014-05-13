@@ -261,6 +261,7 @@ int qemuMonitorJSONBlockCommit(qemuMonitorPtr mon,
                                const char *device,
                                const char *top,
                                const char *base,
+                               const char *backingName,
                                unsigned long long bandwidth)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 

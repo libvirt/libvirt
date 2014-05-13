@@ -3231,13 +3231,14 @@ qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
 int
 qemuMonitorBlockCommit(qemuMonitorPtr mon, const char *device,
                        const char *top, const char *base,
+                       const char *backingName,
                        unsigned long bandwidth)
 {
     int ret = -1;
     unsigned long long speed;
 
-    VIR_DEBUG("mon=%p, device=%s, top=%s, base=%s, bandwidth=%ld",
-              mon, device, top, base, bandwidth);
+    VIR_DEBUG("mon=%p, device=%s, top=%s, base=%s, backingName=%s, bandwidth=%lu",
+              mon, device, top, base, NULLSTR(backingName), bandwidth);
 
     /* Convert bandwidth MiB to bytes - unfortunately the JSON QMP protocol is
      * limited to LLONG_MAX also for unsigned values */
@@ -3251,7 +3252,8 @@ qemuMonitorBlockCommit(qemuMonitorPtr mon, const char *device,
     speed <<= 20;
 
     if (mon->json)
-        ret = qemuMonitorJSONBlockCommit(mon, device, top, base, speed);
+        ret = qemuMonitorJSONBlockCommit(mon, device, top, base,
+                                         backingName, speed);
     else
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("block-commit requires JSON monitor"));
@@ -3266,7 +3268,7 @@ qemuMonitorSupportsActiveCommit(qemuMonitorPtr mon)
     if (!mon->json)
         return false;
 
-    return qemuMonitorJSONBlockCommit(mon, "bogus", NULL, NULL, 0) == -2;
+    return qemuMonitorJSONBlockCommit(mon, "bogus", NULL, NULL, NULL, 0) == -2;
 }
 
 

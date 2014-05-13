@@ -15600,6 +15600,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     ret = qemuMonitorBlockCommit(priv->mon, device,
                                  top && !topIndex ? top : topSource->path,
                                  base && !baseIndex ? base : baseSource->path,
+                                 NULL,
                                  bandwidth);
     qemuDomainObjExitMonitor(driver, vm);
 
