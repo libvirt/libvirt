@@ -589,6 +589,104 @@ testPathCanonicalize(const void *args)
     return ret;
 }
 
+static virStorageSource backingchain[12];
+
+static void
+testPathRelativePrepare(void)
+{
+    size_t i;
+
+    for (i = 0; i < ARRAY_CARDINALITY(backingchain); i++) {
+        if (i < ARRAY_CARDINALITY(backingchain) - 1)
+            backingchain[i].backingStore = &backingchain[i + 1];
+        else
+            backingchain[i].backingStore = NULL;
+
+        backingchain[i].backingRelative = true;
+    }
+
+    /* normal relative backing chain */
+    backingchain[0].path = (char *) "/path/to/some/img";
+    backingchain[0].relPath = (char *) "/path/to/some/img";
+    backingchain[0].backingRelative = false;
+
+    backingchain[1].path = (char *) "/path/to/some/asdf";
+    backingchain[1].relPath = (char *) "asdf";
+
+    backingchain[2].path = (char *) "/path/to/some/test";
+    backingchain[2].relPath = (char *) "test";
+
+    backingchain[3].path = (char *) "/path/to/some/blah";
+    backingchain[3].relPath = (char *) "blah";
+
+    /* ovirt's backing chain */
+    backingchain[4].path = (char *) "/path/to/volume/image1";
+    backingchain[4].relPath = (char *) "/path/to/volume/image1";
+    backingchain[4].backingRelative = false;
+
+    backingchain[5].path = (char *) "/path/to/volume/image2";
+    backingchain[5].relPath = (char *) "../volume/image2";
+
+    backingchain[6].path = (char *) "/path/to/volume/image3";
+    backingchain[6].relPath = (char *) "../volume/image3";
+
+    backingchain[7].path = (char *) "/path/to/volume/image4";
+    backingchain[7].relPath = (char *) "../volume/image4";
+
+    /* some arbitrarily crazy backing chains */
+    backingchain[8].path = (char *) "/crazy/base/image";
+    backingchain[8].relPath = (char *) "/crazy/base/image";
+    backingchain[8].backingRelative = false;
+
+    backingchain[9].path = (char *) "/crazy/base/directory/stuff/volumes/garbage/image2";
+    backingchain[9].relPath = (char *) "directory/stuff/volumes/garbage/image2";
+
+    backingchain[10].path = (char *) "/crazy/base/directory/image3";
+    backingchain[10].relPath = (char *) "../../../image3";
+
+    backingchain[11].path = (char *) "/crazy/base/blah/image4";
+    backingchain[11].relPath = (char *) "../blah/image4";
+}
+
+
+struct testPathRelativeBacking
+{
+    virStorageSourcePtr top;
+    virStorageSourcePtr base;
+
+    const char *expect;
+};
+
+static int
+testPathRelative(const void *args)
+{
+    const struct testPathRelativeBacking *data = args;
+    char *actual = NULL;
+    int ret = -1;
+
+    if (virStorageFileGetRelativeBackingPath(data->top,
+                                             data->base,
+                                             &actual) < 0) {
+        fprintf(stderr, "relative backing path resolution failed\n");
+        goto cleanup;
+    }
+
+    if (STRNEQ_NULLABLE(data->expect, actual)) {
+        fprintf(stderr, "relative path resolution from '%s' to '%s': "
+                "expected '%s', got '%s'\n",
+                data->top->path, data->base->path,
+                NULLSTR(data->expect), NULLSTR(actual));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(actual);
+
+    return ret;
+}
+
 
 static int
 mymain(void)
@@ -598,6 +696,7 @@ mymain(void)
     struct testChainData data;
     struct testLookupData data2;
     struct testPathCanonicalizeData data3;
+    struct testPathRelativeBacking data4;
     virStorageSourcePtr chain = NULL;
     virStorageSourcePtr chain2; /* short for chain->backingStore */
     virStorageSourcePtr chain3; /* short for chain2->backingStore */
@@ -1180,6 +1279,53 @@ mymain(void)
     TEST_PATH_CANONICALIZE(29, "/cycle", NULL);
     TEST_PATH_CANONICALIZE(30, "/cycle2/link", NULL);
     TEST_PATH_CANONICALIZE(31, "///", "/");
+
+#define TEST_RELATIVE_BACKING(id, TOP, BASE, EXPECT)                        \
+    do {                                                                    \
+        data4.top = &TOP;                                                   \
+        data4.base = &BASE;                                                 \
+        data4.expect = EXPECT;                                              \
+        if (virtTestRun("Path relative resolve " #id,                       \
+                        testPathRelative, &data4) < 0)                      \
+            ret = -1;                                                       \
+    } while (0)
+
+    testPathRelativePrepare();
+
+    /* few negative tests first */
+
+    /* a non-relative image is in the backing chain span */
+    TEST_RELATIVE_BACKING(1, backingchain[0], backingchain[1], NULL);
+    TEST_RELATIVE_BACKING(2, backingchain[0], backingchain[2], NULL);
+    TEST_RELATIVE_BACKING(3, backingchain[0], backingchain[3], NULL);
+    TEST_RELATIVE_BACKING(4, backingchain[1], backingchain[5], NULL);
+
+    /* image is not in chain (specified backwards) */
+    TEST_RELATIVE_BACKING(5, backingchain[2], backingchain[1], NULL);
+
+    /* positive tests */
+    TEST_RELATIVE_BACKING(6, backingchain[1], backingchain[1], "asdf");
+    TEST_RELATIVE_BACKING(7, backingchain[1], backingchain[2], "test");
+    TEST_RELATIVE_BACKING(8, backingchain[1], backingchain[3], "blah");
+    TEST_RELATIVE_BACKING(9, backingchain[2], backingchain[2], "test");
+    TEST_RELATIVE_BACKING(10, backingchain[2], backingchain[3], "blah");
+    TEST_RELATIVE_BACKING(11, backingchain[3], backingchain[3], "blah");
+
+    /* oVirt spelling */
+    TEST_RELATIVE_BACKING(12, backingchain[5], backingchain[5], "../volume/image2");
+    TEST_RELATIVE_BACKING(13, backingchain[5], backingchain[6], "../volume/../volume/image3");
+    TEST_RELATIVE_BACKING(14, backingchain[5], backingchain[7], "../volume/../volume/../volume/image4");
+    TEST_RELATIVE_BACKING(15, backingchain[6], backingchain[6], "../volume/image3");
+    TEST_RELATIVE_BACKING(16, backingchain[6], backingchain[7], "../volume/../volume/image4");
+    TEST_RELATIVE_BACKING(17, backingchain[7], backingchain[7], "../volume/image4");
+
+    /* crazy spellings */
+    TEST_RELATIVE_BACKING(17, backingchain[9], backingchain[9], "directory/stuff/volumes/garbage/image2");
+    TEST_RELATIVE_BACKING(18, backingchain[9], backingchain[10], "directory/stuff/volumes/garbage/../../../image3");
+    TEST_RELATIVE_BACKING(19, backingchain[9], backingchain[11], "directory/stuff/volumes/garbage/../../../../blah/image4");
+    TEST_RELATIVE_BACKING(20, backingchain[10], backingchain[10], "../../../image3");
+    TEST_RELATIVE_BACKING(21, backingchain[10], backingchain[11], "../../../../blah/image4");
+    TEST_RELATIVE_BACKING(22, backingchain[11], backingchain[11], "../blah/image4");
 
  cleanup:
     /* Final cleanup */

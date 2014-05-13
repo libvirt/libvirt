@@ -2176,3 +2176,89 @@ virStorageFileCanonicalizePath(const char *path,
 
     return ret;
 }
+
+
+/**
+ * virStorageFileRemoveLastPathComponent:
+ *
+ * @path: Path string to remove the last component from
+ *
+ * Removes the last path component of a path. This function is designed to be
+ * called on file paths only (no trailing slashes in @path). Caller is
+ * responsible to free the returned string.
+ */
+static char *
+virStorageFileRemoveLastPathComponent(const char *path)
+{
+    char *tmp;
+    char *ret;
+
+    if (VIR_STRDUP(ret, path ? path : "") < 0)
+        return NULL;
+
+    if ((tmp = strrchr(ret, '/')))
+        tmp[1] = '\0';
+    else
+        ret[0] = '\0';
+
+    return ret;
+}
+
+
+/*
+ * virStorageFileGetRelativeBackingPath:
+ *
+ * Resolve relative path to be written to the overlay of @top image when
+ * collapsing the backing chain between @top and @base.
+ *
+ * Returns 0 on success; 1 if backing chain isn't relative and -1 on error.
+ */
+int
+virStorageFileGetRelativeBackingPath(virStorageSourcePtr top,
+                                     virStorageSourcePtr base,
+                                     char **relpath)
+{
+    virStorageSourcePtr next;
+    char *tmp = NULL;
+    char *path = NULL;
+    char ret = -1;
+
+    *relpath = NULL;
+
+    for (next = top; next; next = next->backingStore) {
+        if (!next->backingRelative || !next->relPath) {
+            ret = 1;
+            goto cleanup;
+        }
+
+        if (!(tmp = virStorageFileRemoveLastPathComponent(path)))
+            goto cleanup;
+
+        VIR_FREE(path);
+
+        if (virAsprintf(&path, "%s%s", tmp, next->relPath) < 0)
+            goto cleanup;
+
+        VIR_FREE(tmp);
+
+        if (next == base)
+            break;
+    }
+
+    if (next != base) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to resolve relative backing name: "
+                         "base image is not in backing chain"));
+        goto cleanup;
+    }
+
+    *relpath = path;
+    path = NULL;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(path);
+    VIR_FREE(tmp);
+    return ret;
+}

@@ -1890,6 +1890,7 @@ virStorageFileGetLVMKey;
 virStorageFileGetMetadataFromBuf;
 virStorageFileGetMetadataFromFD;
 virStorageFileGetMetadataInternal;
+virStorageFileGetRelativeBackingPath;
 virStorageFileGetSCSIKey;
 virStorageFileIsClusterFS;
 virStorageFileParseChainIndex;

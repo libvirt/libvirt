@@ -337,4 +337,9 @@ char *virStorageFileCanonicalizePath(const char *path,
                                      virStorageFileSimplifyPathReadlinkCallback cb,
                                      void *cbdata);
 
+int virStorageFileGetRelativeBackingPath(virStorageSourcePtr from,
+                                         virStorageSourcePtr to,
+                                         char **relpath)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+
 #endif /* __VIR_STORAGE_FILE_H__ */
