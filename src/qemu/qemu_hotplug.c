@@ -284,7 +284,7 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
                 goto error;
         } else if (!disk->info.type ||
                     disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-            if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &disk->info) < 0)
+            if (virDomainPCIAddressEnsureAddr(priv->pciaddrs, &disk->info) < 0)
                 goto error;
         }
         releaseaddr = true;
@@ -386,7 +386,7 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
 
         if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
             controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-            if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &controller->info) < 0)
+            if (virDomainPCIAddressEnsureAddr(priv->pciaddrs, &controller->info) < 0)
                 goto cleanup;
         } else if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
             if (qemuDomainCCWAddressAssign(&controller->info, priv->ccwaddrs,
@@ -940,7 +940,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("virtio-s390 net device cannot be hotplugged."));
     else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-             qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &net->info) < 0)
+             virDomainPCIAddressEnsureAddr(priv->pciaddrs, &net->info) < 0)
              goto cleanup;
 
     releaseaddr = true;
@@ -1230,7 +1230,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
             goto error;
-        if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, hostdev->info) < 0)
+        if (virDomainPCIAddressEnsureAddr(priv->pciaddrs, hostdev->info) < 0)
             goto error;
         releaseaddr = true;
         if (backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO &&

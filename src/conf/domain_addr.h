@@ -76,4 +76,74 @@ typedef virDomainPCIAddressSet *virDomainPCIAddressSetPtr;
 # define VIR_PCI_CONNECT_TYPES_MASK \
    (VIR_PCI_CONNECT_TYPE_PCI | VIR_PCI_CONNECT_TYPE_PCIE)
 
+char *virDomainPCIAddressAsString(virDevicePCIAddressPtr addr)
+      ATTRIBUTE_NONNULL(1);
+
+virDomainPCIAddressSetPtr virDomainPCIAddressSetAlloc(unsigned int nbuses);
+
+void virDomainPCIAddressSetFree(virDomainPCIAddressSetPtr addrs);
+
+bool virDomainPCIAddressFlagsCompatible(virDevicePCIAddressPtr addr,
+                                        const char *addrStr,
+                                        virDomainPCIConnectFlags busFlags,
+                                        virDomainPCIConnectFlags devFlags,
+                                        bool reportError,
+                                        bool fromConfig)
+     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+bool virDomainPCIAddressValidate(virDomainPCIAddressSetPtr addrs,
+                                 virDevicePCIAddressPtr addr,
+                                 const char *addrStr,
+                                 virDomainPCIConnectFlags flags,
+                                 bool fromConfig)
+     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+
+
+int virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
+                                   virDomainControllerModelPCI model)
+    ATTRIBUTE_NONNULL(1);
+
+bool virDomainPCIAddressSlotInUse(virDomainPCIAddressSetPtr addrs,
+                                  virDevicePCIAddressPtr addr)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
+                               virDevicePCIAddressPtr addr,
+                               virDomainPCIConnectFlags flags)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int virDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
+                                   virDevicePCIAddressPtr addr,
+                                   virDomainPCIConnectFlags flags,
+                                   bool reserveEntireSlot,
+                                   bool fromConfig)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int virDomainPCIAddressReserveSlot(virDomainPCIAddressSetPtr addrs,
+                                   virDevicePCIAddressPtr addr,
+                                   virDomainPCIConnectFlags flags)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
+                                  virDomainDeviceInfoPtr dev)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int virDomainPCIAddressReleaseAddr(virDomainPCIAddressSetPtr addrs,
+                                   virDevicePCIAddressPtr addr)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int virDomainPCIAddressReleaseSlot(virDomainPCIAddressSetPtr addrs,
+                                   virDevicePCIAddressPtr addr)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int virDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
+                                   virDevicePCIAddressPtr next_addr,
+                                   virDomainPCIConnectFlags flags)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int virDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
+                                       virDomainDeviceInfoPtr dev,
+                                       virDomainPCIConnectFlags flags)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 #endif /* __DOMAIN_ADDR_H__ */

@@ -34,6 +34,7 @@
 #include "cpu/cpu.h"
 #include "viruuid.h"
 #include "virfile.h"
+#include "domain_addr.h"
 #include "domain_event.h"
 #include "virtime.h"
 #include "virstoragefile.h"
@@ -245,7 +246,7 @@ qemuDomainObjPrivateFree(void *data)
     virObjectUnref(priv->qemuCaps);
 
     virCgroupFree(&priv->cgroup);
-    qemuDomainPCIAddressSetFree(priv->pciaddrs);
+    virDomainPCIAddressSetFree(priv->pciaddrs);
     qemuDomainCCWAddressSetFree(priv->ccwaddrs);
     virDomainChrSourceDefFree(priv->monConfig);
     qemuDomainObjFreeJob(priv);

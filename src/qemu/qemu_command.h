@@ -242,23 +242,7 @@ int qemuDomainAssignPCIAddresses(virDomainDefPtr def,
 virDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
                                                         unsigned int nbuses,
                                                         bool dryRun);
-int qemuDomainPCIAddressReserveSlot(virDomainPCIAddressSetPtr addrs,
-                                    virDevicePCIAddressPtr addr,
-                                    virDomainPCIConnectFlags flags);
-int qemuDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
-                                    virDevicePCIAddressPtr addr,
-                                    virDomainPCIConnectFlags flags,
-                                    bool reserveEntireSlot,
-                                    bool fromConfig);
-int qemuDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
-                                        virDomainDeviceInfoPtr dev,
-                                        virDomainPCIConnectFlags flags);
-int qemuDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
-                                   virDomainDeviceInfoPtr dev);
-int qemuDomainPCIAddressReleaseAddr(virDomainPCIAddressSetPtr addrs,
-                                    virDevicePCIAddressPtr addr);
 
-void qemuDomainPCIAddressSetFree(virDomainPCIAddressSetPtr addrs);
 int  qemuAssignDevicePCISlots(virDomainDefPtr def,
                               virQEMUCapsPtr qemuCaps,
                               virDomainPCIAddressSetPtr addrs);

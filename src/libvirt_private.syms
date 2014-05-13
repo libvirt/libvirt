@@ -85,6 +85,23 @@ virDevicePCIAddressIsValid;
 virDevicePCIAddressParseXML;
 
 
+# conf/domain_addr.h
+virDomainPCIAddressAsString;
+virDomainPCIAddressBusSetModel;
+virDomainPCIAddressEnsureAddr;
+virDomainPCIAddressFlagsCompatible;
+virDomainPCIAddressGetNextSlot;
+virDomainPCIAddressReleaseSlot;
+virDomainPCIAddressReserveAddr;
+virDomainPCIAddressReserveNextSlot;
+virDomainPCIAddressReserveSlot;
+virDomainPCIAddressSetAlloc;
+virDomainPCIAddressSetFree;
+virDomainPCIAddressSetGrow;
+virDomainPCIAddressSlotInUse;
+virDomainPCIAddressValidate;
+
+
 # conf/domain_audit.h
 virDomainAuditCgroup;
 virDomainAuditCgroupMajor;
