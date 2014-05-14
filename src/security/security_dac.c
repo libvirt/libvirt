@@ -880,7 +880,7 @@ virSecurityDACRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityDACSetChardevCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
+virSecurityDACSetChardevCallback(virDomainDefPtr def,
                                  virDomainChrDefPtr dev,
                                  void *opaque)
 {
@@ -984,7 +984,7 @@ virSecurityDACRestoreSavedStateLabel(virSecurityManagerPtr mgr,
 
 static int
 virSecurityDACSetProcessLabel(virSecurityManagerPtr mgr,
-                              virDomainDefPtr def ATTRIBUTE_UNUSED)
+                              virDomainDefPtr def)
 {
     uid_t user;
     gid_t group;
@@ -1007,7 +1007,7 @@ virSecurityDACSetProcessLabel(virSecurityManagerPtr mgr,
 
 static int
 virSecurityDACSetChildProcessLabel(virSecurityManagerPtr mgr,
-                                   virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                   virDomainDefPtr def,
                                    virCommandPtr cmd)
 {
     uid_t user;
@@ -1119,9 +1119,9 @@ virSecurityDACReserveLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 
 static int
 virSecurityDACGetProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                              virDomainDefPtr def ATTRIBUTE_UNUSED,
+                              virDomainDefPtr def,
                               pid_t pid ATTRIBUTE_UNUSED,
-                              virSecurityLabelPtr seclabel ATTRIBUTE_UNUSED)
+                              virSecurityLabelPtr seclabel)
 {
     virSecurityLabelDefPtr secdef =
         virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
