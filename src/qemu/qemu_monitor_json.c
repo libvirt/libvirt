@@ -1465,12 +1465,22 @@ int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,
                                            NULL)))
         goto cleanup;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
+        goto cleanup;
 
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if ((data = virJSONValueObjectGet(reply, "error"))) {
+        const char *klass = virJSONValueObjectGetString(data, "class");
+        const char *desc = virJSONValueObjectGetString(data, "desc");
 
-    if (ret < 0)
+        if (STREQ_NULLABLE(klass, "GenericError") &&
+            STREQ_NULLABLE(desc, "guest hasn't updated any stats yet")) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("the guest hasn't updated any stats yet"));
+            goto cleanup;
+        }
+    }
+
+    if ((ret = qemuMonitorJSONCheckError(cmd, reply)) < 0)
         goto cleanup;
 
     if (!(data = virJSONValueObjectGet(reply, "return"))) {
