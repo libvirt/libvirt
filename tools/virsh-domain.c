@@ -2979,8 +2979,14 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     size_t i;
     size_t j;
 
-
     ignore_value(vshCommandOptString(cmd, "storage", &vol_string));
+
+    if (!(vol_string || remove_all_storage) && wipe_storage) {
+        vshError(ctl,
+                 _("'--wipe-storage' requires '--storage <string>' or "
+                   "'--remove-all-storage'"));
+        return false;
+    }
 
     if (managed_save) {
         flags |= VIR_DOMAIN_UNDEFINE_MANAGED_SAVE;
