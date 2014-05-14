@@ -8763,13 +8763,8 @@ static virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
         (def->type != VIR_STORAGE_VOL_FILE))
         goto cleanup;
 
-    /* TODO: for now only the vmdk, vpc and vdi type harddisk
-     * variants can be created, also since there is no vdi
-     * type in enum virStorageFileFormat {} the default
-     * will be to create vdi if nothing is specified in
-     * def->target.format
-     */
-
+    /* For now only the vmdk, vpc and vdi type harddisk
+     * variants can be created.  For historical reason, we default to vdi */
     if (def->target.format == VIR_STORAGE_FILE_VMDK) {
         VBOX_UTF8_TO_UTF16("VMDK", &hddFormatUtf16);
     } else if (def->target.format == VIR_STORAGE_FILE_VPC) {
@@ -9175,12 +9170,10 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
                         def.target.format = VIR_STORAGE_FILE_VMDK;
                     else if (STRCASEEQ("vhd", hddFormatUtf8))
                         def.target.format = VIR_STORAGE_FILE_VPC;
+                    else if (STRCASEEQ("vdi", hddFormatUtf8))
+                        def.target.format = VIR_STORAGE_FILE_VDI;
                     else
                         def.target.format = VIR_STORAGE_FILE_RAW;
-
-                    /* TODO: need to add vdi to enum virStorageFileFormat {}
-                     * and then add it here
-                     */
 
                     VBOX_UTF8_FREE(hddFormatUtf8);
                 }
