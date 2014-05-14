@@ -2747,23 +2747,26 @@ qemuProcessStartCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
     }
     VIR_FREE(priv->lockState);
 
-    ret = qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob);
-    if (ret == 0) {
-        ret = qemuMonitorStartCPUs(priv->mon, conn);
-        qemuDomainObjExitMonitor(driver, vm);
-    }
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        goto release;
 
-    if (ret == 0) {
-        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
-    } else {
-        if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
-            VIR_WARN("Unable to release lease on %s", vm->def->name);
-        VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
-    }
+    ret = qemuMonitorStartCPUs(priv->mon, conn);
+    qemuDomainObjExitMonitor(driver, vm);
+
+    if (ret < 0)
+        goto release;
+
+    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
 
  cleanup:
     virObjectUnref(cfg);
     return ret;
+
+ release:
+    if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
+        VIR_WARN("Unable to release lease on %s", vm->def->name);
+    VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
+    goto cleanup;
 }
 
 
@@ -2771,24 +2774,26 @@ int qemuProcessStopCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
                         virDomainPausedReason reason,
                         enum qemuDomainAsyncJob asyncJob)
 {
-    int ret;
+    int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     VIR_FREE(priv->lockState);
 
-    ret = qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob);
-    if (ret == 0) {
-        ret = qemuMonitorStopCPUs(priv->mon);
-        qemuDomainObjExitMonitor(driver, vm);
-    }
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        goto cleanup;
 
-    if (ret == 0) {
-        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
-        if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
-            VIR_WARN("Unable to release lease on %s", vm->def->name);
-        VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
-    }
+    ret = qemuMonitorStopCPUs(priv->mon);
+    qemuDomainObjExitMonitor(driver, vm);
 
+    if (ret < 0)
+        goto cleanup;
+
+    virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
+    if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
+        VIR_WARN("Unable to release lease on %s", vm->def->name);
+    VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
+
+ cleanup:
     return ret;
 }
 
