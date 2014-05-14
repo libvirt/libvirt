@@ -1042,9 +1042,8 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
 
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
-    if (seclabel == NULL) {
+    if (seclabel == NULL)
         return rc;
-    }
 
     if (seclabel->imagelabel) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
