@@ -750,7 +750,7 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
         if (virFileExists(in) && virFileExists(out)) {
             if ((virSecurityDACRestoreSecurityFileLabel(out) < 0) ||
                 (virSecurityDACRestoreSecurityFileLabel(in) < 0)) {
-            goto done;
+                goto done;
             }
         } else if (virSecurityDACRestoreSecurityFileLabel(dev->data.file.path) < 0) {
             goto done;
