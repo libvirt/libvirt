@@ -11065,6 +11065,14 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                         goto error;
 
                     break;
+                case VIR_STORAGE_NET_PROTOCOL_HTTP:
+                case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+                case VIR_STORAGE_NET_PROTOCOL_FTP:
+                case VIR_STORAGE_NET_PROTOCOL_FTPS:
+                case VIR_STORAGE_NET_PROTOCOL_TFTP:
+                case VIR_STORAGE_NET_PROTOCOL_LAST:
+                    /* ignored for now */
+                    break;
                 }
             }
 

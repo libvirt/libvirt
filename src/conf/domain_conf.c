@@ -4972,7 +4972,7 @@ virDomainDiskSourceParse(xmlNodePtr node,
 
     memset(&host, 0, sizeof(host));
 
-    switch ((virStorageType)src->type) {
+    switch (src->type) {
     case VIR_STORAGE_TYPE_FILE:
         src->path = virXMLPropString(node, "file");
         break;
@@ -14847,7 +14847,7 @@ virDomainDiskSourceFormat(virBufferPtr buf,
         startupPolicy = virDomainStartupPolicyTypeToString(policy);
 
     if (src->path || src->nhosts > 0 || src->srcpool || startupPolicy) {
-        switch ((virStorageType)src->type) {
+        switch (src->type) {
         case VIR_STORAGE_TYPE_FILE:
             virBufferAddLit(buf, "<source");
             virBufferEscapeString(buf, " file='%s'", src->path);
