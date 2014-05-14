@@ -1,7 +1,7 @@
 /*
  * secret_conf.c: internal <secret> XML handling
  *
- * Copyright (C) 2009, 2011, 2013, 2014 Red Hat, Inc.
+ * Copyright (C) 2009-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,7 +36,7 @@
 
 VIR_LOG_INIT("conf.secret_conf");
 
-VIR_ENUM_IMPL(virSecretUsageType, VIR_SECRET_USAGE_TYPE_LAST,
+VIR_ENUM_IMPL(virSecretUsage, VIR_SECRET_USAGE_TYPE_LAST,
               "none", "volume", "ceph", "iscsi")
 
 void
@@ -82,7 +82,7 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
                        _("unknown secret usage type"));
         return -1;
     }
-    type = virSecretUsageTypeTypeFromString(type_str);
+    type = virSecretUsageTypeFromString(type_str);
     if (type < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown secret usage type %s"), type_str);
@@ -249,7 +249,7 @@ virSecretDefFormatUsage(virBufferPtr buf,
 {
     const char *type;
 
-    type = virSecretUsageTypeTypeToString(def->usage_type);
+    type = virSecretUsageTypeToString(def->usage_type);
     if (type == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected secret usage type %d"),

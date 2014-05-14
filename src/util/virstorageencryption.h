@@ -34,7 +34,7 @@ typedef enum {
 
     VIR_STORAGE_ENCRYPTION_SECRET_TYPE_LAST
 } virStorageEncryptionSecretType;
-VIR_ENUM_DECL(virStorageEncryptionSecretType)
+VIR_ENUM_DECL(virStorageEncryptionSecret)
 
 typedef struct _virStorageEncryptionSecret virStorageEncryptionSecret;
 typedef virStorageEncryptionSecret *virStorageEncryptionSecretPtr;

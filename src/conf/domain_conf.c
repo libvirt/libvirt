@@ -329,7 +329,7 @@ VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
               "ram",
               "bind")
 
-VIR_ENUM_IMPL(virDomainFSDriverType, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
+VIR_ENUM_IMPL(virDomainFSDriver, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
               "default",
               "path",
               "handle",
@@ -5375,7 +5375,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                             goto error;
                         }
                         auth_secret_usage =
-                            virSecretUsageTypeTypeFromString(usageType);
+                            virSecretUsageTypeFromString(usageType);
                         if (auth_secret_usage < 0) {
                             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                            _("invalid secret type %s"),
@@ -5537,7 +5537,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (auth_secret_usage != -1 && auth_secret_usage != expected_secret_usage) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid secret type '%s'"),
-                       virSecretUsageTypeTypeToString(auth_secret_usage));
+                       virSecretUsageTypeToString(auth_secret_usage));
         goto error;
     }
 
@@ -6313,7 +6313,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
     }
 
     if (fsdriver) {
-        if ((def->fsdriver = virDomainFSDriverTypeTypeFromString(fsdriver)) <= 0) {
+        if ((def->fsdriver = virDomainFSDriverTypeFromString(fsdriver)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown fs driver type '%s'"), fsdriver);
             goto error;
@@ -15327,7 +15327,7 @@ virDomainFSDefFormat(virBufferPtr buf,
 {
     const char *type = virDomainFSTypeToString(def->type);
     const char *accessmode = virDomainFSAccessModeTypeToString(def->accessmode);
-    const char *fsdriver = virDomainFSDriverTypeTypeToString(def->fsdriver);
+    const char *fsdriver = virDomainFSDriverTypeToString(def->fsdriver);
     const char *wrpolicy = virDomainFSWrpolicyTypeToString(def->wrpolicy);
 
     if (!type) {

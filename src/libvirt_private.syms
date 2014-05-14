@@ -671,8 +671,8 @@ virSecretDefFormat;
 virSecretDefFree;
 virSecretDefParseFile;
 virSecretDefParseString;
-virSecretUsageTypeTypeFromString;
-virSecretUsageTypeTypeToString;
+virSecretUsageTypeFromString;
+virSecretUsageTypeToString;
 
 
 # conf/snapshot_conf.h
@@ -701,7 +701,7 @@ virDomainSnapshotUpdateRelations;
 
 
 # conf/storage_conf.h
-virStoragePartedFsTypeTypeToString;
+virStoragePartedFsTypeToString;
 virStoragePoolDefFormat;
 virStoragePoolDefFree;
 virStoragePoolDefParseFile;
@@ -724,8 +724,8 @@ virStoragePoolObjLock;
 virStoragePoolObjRemove;
 virStoragePoolObjSaveDef;
 virStoragePoolObjUnlock;
-virStoragePoolSourceAdapterTypeTypeFromString;
-virStoragePoolSourceAdapterTypeTypeToString;
+virStoragePoolSourceAdapterTypeFromString;
+virStoragePoolSourceAdapterTypeToString;
 virStoragePoolSourceClear;
 virStoragePoolSourceDeviceClear;
 virStoragePoolSourceFindDuplicate;

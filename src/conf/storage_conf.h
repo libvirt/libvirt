@@ -113,7 +113,7 @@ typedef enum {
 
     VIR_STORAGE_POOL_AUTH_LAST,
 } virStoragePoolAuthType;
-VIR_ENUM_DECL(virStoragePoolAuthType)
+VIR_ENUM_DECL(virStoragePoolAuth)
 
 typedef struct _virStoragePoolAuthSecret virStoragePoolAuthSecret;
 typedef virStoragePoolAuthSecret *virStoragePoolAuthSecretPtr;
@@ -204,7 +204,7 @@ typedef enum {
 
     VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_LAST,
 } virStoragePoolSourceAdapterType;
-VIR_ENUM_DECL(virStoragePoolSourceAdapterType)
+VIR_ENUM_DECL(virStoragePoolSourceAdapter)
 
 typedef struct _virStoragePoolSourceAdapter virStoragePoolSourceAdapter;
 struct _virStoragePoolSourceAdapter {
@@ -513,7 +513,7 @@ typedef enum {
     VIR_STORAGE_PARTED_FS_TYPE_EXTENDED,
     VIR_STORAGE_PARTED_FS_TYPE_LAST,
 } virStoragePartedFsType;
-VIR_ENUM_DECL(virStoragePartedFsType)
+VIR_ENUM_DECL(virStoragePartedFs)
 
 # define VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE   \
                 (VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE | \

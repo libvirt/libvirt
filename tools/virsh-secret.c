@@ -1,7 +1,7 @@
 /*
  * virsh-secret.c: Commands to manage secret
  *
- * Copyright (C) 2005, 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -539,7 +539,7 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     for (i = 0; i < list->nsecrets; i++) {
         virSecretPtr sec = list->secrets[i];
         int usageType = virSecretGetUsageType(sec);
-        const char *usageStr = virSecretUsageTypeTypeToString(usageType);
+        const char *usageStr = virSecretUsageTypeToString(usageType);
         char uuid[VIR_UUID_STRING_BUFLEN];
 
         if (virSecretGetUUIDString(sec, uuid) < 0) {

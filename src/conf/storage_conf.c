@@ -87,18 +87,18 @@ VIR_ENUM_IMPL(virStorageVolFormatDisk,
               "linux-lvm", "linux-raid",
               "extended")
 
-VIR_ENUM_IMPL(virStoragePartedFsType,
+VIR_ENUM_IMPL(virStoragePartedFs,
               VIR_STORAGE_PARTED_FS_TYPE_LAST,
               "ext2", "ext2", "fat16",
               "fat32", "linux-swap",
               "ext2", "ext2",
               "extended")
 
-VIR_ENUM_IMPL(virStoragePoolSourceAdapterType,
+VIR_ENUM_IMPL(virStoragePoolSourceAdapter,
               VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_LAST,
               "default", "scsi_host", "fc_host")
 
-VIR_ENUM_IMPL(virStoragePoolAuthType,
+VIR_ENUM_IMPL(virStoragePoolAuth,
               VIR_STORAGE_POOL_AUTH_LAST,
               "none", "chap", "ceph")
 
@@ -514,7 +514,7 @@ virStoragePoolDefParseAuth(xmlXPathContextPtr ctxt,
     }
 
     if ((source->authType =
-         virStoragePoolAuthTypeTypeFromString(authType)) < 0) {
+         virStoragePoolAuthTypeFromString(authType)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown auth type '%s'"),
                        authType);
@@ -657,7 +657,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
 
     if ((adapter_type = virXPathString("string(./adapter/@type)", ctxt))) {
         if ((source->adapter.type =
-             virStoragePoolSourceAdapterTypeTypeFromString(adapter_type)) <= 0) {
+             virStoragePoolSourceAdapterTypeFromString(adapter_type)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unknown pool adapter type '%s'"),
                            adapter_type);
@@ -1100,7 +1100,7 @@ virStoragePoolSourceFormat(virBufferPtr buf,
         if (src->adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST ||
             src->adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST)
             virBufferAsprintf(buf, "<adapter type='%s'",
-                              virStoragePoolSourceAdapterTypeTypeToString(src->adapter.type));
+                              virStoragePoolSourceAdapterTypeToString(src->adapter.type));
 
         if (src->adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
             virBufferEscapeString(buf, " parent='%s'",
@@ -1141,7 +1141,7 @@ virStoragePoolSourceFormat(virBufferPtr buf,
     if (src->authType == VIR_STORAGE_POOL_AUTH_CHAP ||
         src->authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
         virBufferAsprintf(buf, "<auth type='%s' ",
-                          virStoragePoolAuthTypeTypeToString(src->authType));
+                          virStoragePoolAuthTypeToString(src->authType));
         virBufferEscapeString(buf, "username='%s'>\n",
                               (src->authType == VIR_STORAGE_POOL_AUTH_CHAP ?
                                src->auth.chap.username :

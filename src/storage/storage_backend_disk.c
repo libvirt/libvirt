@@ -484,7 +484,7 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
     size_t i;
     if (pool->def->source.format == VIR_STORAGE_POOL_DISK_DOS) {
         const char *partedFormat;
-        partedFormat = virStoragePartedFsTypeTypeToString(vol->target.format);
+        partedFormat = virStoragePartedFsTypeToString(vol->target.format);
         if (partedFormat == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("Invalid partition type"));

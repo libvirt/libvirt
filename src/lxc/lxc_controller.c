@@ -523,7 +523,7 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("fs driver %s is not supported"),
-                           virDomainFSDriverTypeTypeToString(fs->fsdriver));
+                           virDomainFSDriverTypeToString(fs->fsdriver));
             goto cleanup;
         }
     }

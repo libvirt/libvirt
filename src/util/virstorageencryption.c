@@ -37,7 +37,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
-VIR_ENUM_IMPL(virStorageEncryptionSecretType,
+VIR_ENUM_IMPL(virStorageEncryptionSecret,
               VIR_STORAGE_ENCRYPTION_SECRET_TYPE_LAST, "passphrase")
 
 VIR_ENUM_IMPL(virStorageEncryptionFormat,
@@ -88,7 +88,7 @@ virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
                        _("unknown volume encryption secret type"));
         goto cleanup;
     }
-    type = virStorageEncryptionSecretTypeTypeFromString(type_str);
+    type = virStorageEncryptionSecretTypeFromString(type_str);
     if (type < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown volume encryption secret type %s"),
@@ -209,7 +209,7 @@ virStorageEncryptionSecretFormat(virBufferPtr buf,
     const char *type;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    type = virStorageEncryptionSecretTypeTypeToString(secret->type);
+    type = virStorageEncryptionSecretTypeToString(secret->type);
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unexpected volume encryption secret type"));
