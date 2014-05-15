@@ -76,9 +76,37 @@ typedef enum {
 } virNodeDevSCSIHostCapFlags;
 
 typedef enum {
-    VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION		= (1 << 0),
-    VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION		= (1 << 1),
+    VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION     = (1 << 0),
+    VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION      = (1 << 1),
+    VIR_NODE_DEV_CAP_FLAG_PCIE                      = (1 << 2),
 } virNodeDevPCICapFlags;
+
+typedef enum {
+    VIR_PCIE_LINK_SPEED_NA = 0,
+    VIR_PCIE_LINK_SPEED_25,
+    VIR_PCIE_LINK_SPEED_5,
+    VIR_PCIE_LINK_SPEED_8,
+    VIR_PCIE_LINK_SPEED_LAST
+} virPCIELinkSpeed;
+
+VIR_ENUM_DECL(virPCIELinkSpeed)
+
+typedef struct _virPCIELink virPCIELink;
+typedef virPCIELink *virPCIELinkPtr;
+struct _virPCIELink {
+    int port;
+    virPCIELinkSpeed speed;
+    unsigned int width;
+};
+
+typedef struct _virPCIEDeviceInfo virPCIEDeviceInfo;
+typedef virPCIEDeviceInfo *virPCIEDeviceInfoPtr;
+struct _virPCIEDeviceInfo {
+    /* Not all PCI Express devices has link. For example this 'Root Complex
+     * Integrated Endpoint' and 'Root Complex Event Collector' don't have it. */
+    virPCIELink *link_cap;   /* PCIe device link capabilities */
+    virPCIELink *link_sta;   /* Actually negotiated capabilities */
+};
 
 typedef struct _virNodeDevCapsDef virNodeDevCapsDef;
 typedef virNodeDevCapsDef *virNodeDevCapsDefPtr;
@@ -117,6 +145,7 @@ struct _virNodeDevCapsDef {
             size_t nIommuGroupDevices;
             unsigned int iommuGroupNumber;
             int numa_node;
+            virPCIEDeviceInfoPtr pci_express;
         } pci_dev;
         struct {
             unsigned int bus;

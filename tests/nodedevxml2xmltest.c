@@ -88,6 +88,8 @@ mymain(void)
     DO_TEST("storage_serial_SATA_HTS721010G9SA00_MPCZ12Y0GNGWSE");
     DO_TEST("usb_device_1d6b_1_0000_00_1d_0_if0");
     DO_TEST("usb_device_1d6b_1_0000_00_1d_0");
+    DO_TEST("pci_8086_4238_pcie_wireless");
+    DO_TEST("pci_8086_0c0c_snd_hda_intel");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

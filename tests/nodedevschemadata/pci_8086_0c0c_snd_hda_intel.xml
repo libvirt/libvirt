@@ -1,0 +1,16 @@
+<device>
+  <name>pci_0000_00_03_0</name>
+  <parent>computer</parent>
+  <capability type='pci'>
+    <domain>0</domain>
+    <bus>0</bus>
+    <slot>3</slot>
+    <function>0</function>
+    <product id='0x0c0c'>Xeon E3-1200 v3/4th Gen Core Processor HD Audio Controller</product>
+    <vendor id='0x8086'>Intel Corporation</vendor>
+    <iommuGroup number='2'>
+      <address domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </iommuGroup>
+    <pci-express/>
+  </capability>
+</device>

@@ -58,6 +58,9 @@ VIR_ENUM_IMPL(virNodeDevNetCap, VIR_NODE_DEV_CAP_NET_LAST,
               "80203",
               "80211")
 
+VIR_ENUM_IMPL(virPCIELinkSpeed, VIR_PCIE_LINK_SPEED_LAST,
+              "", "2.5", "5", "8")
+
 static int
 virNodeDevCapsDefParseString(const char *xpath,
                              xmlXPathContextPtr ctxt,
@@ -218,6 +221,43 @@ void virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
     }
 }
 
+static void
+virPCIELinkFormat(virBufferPtr buf,
+                  virPCIELinkPtr lnk,
+                  const char *attrib)
+{
+    if (!lnk)
+        return;
+
+    virBufferAsprintf(buf, "<link validity='%s'", attrib);
+    if (lnk->port >= 0)
+        virBufferAsprintf(buf, " port='%d'", lnk->port);
+    if (lnk->speed)
+        virBufferAsprintf(buf, " speed='%s'",
+                          virPCIELinkSpeedTypeToString(lnk->speed));
+    virBufferAsprintf(buf, " width='%d'", lnk->width);
+    virBufferAddLit(buf, "/>\n");
+}
+
+static void
+virPCIEDeviceInfoFormat(virBufferPtr buf,
+                        virPCIEDeviceInfoPtr info)
+{
+    if (!info->link_cap && !info->link_sta) {
+        virBufferAddLit(buf, "<pci-express/>\n");
+        return;
+    }
+
+    virBufferAddLit(buf, "<pci-express>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    virPCIELinkFormat(buf, info->link_cap, "cap");
+    virPCIELinkFormat(buf, info->link_sta, "sta");
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</pci-express>\n");
+}
+
 char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -349,6 +389,8 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
             if (data->pci_dev.numa_node >= 0)
                 virBufferAsprintf(&buf, "<numa node='%d'/>\n",
                                   data->pci_dev.numa_node);
+            if (data->pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCIE)
+                virPCIEDeviceInfoFormat(&buf, data->pci_dev.pci_express);
             break;
         case VIR_NODE_DEV_CAP_USB_DEV:
             virBufferAsprintf(&buf, "<bus>%d</bus>\n", data->usb_dev.bus);
@@ -1086,6 +1128,86 @@ virNodeDevCapPCIDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
     return ret;
 }
 
+static int
+virPCIEDeviceInfoLinkParseXML(xmlXPathContextPtr ctxt,
+                              xmlNodePtr linkNode,
+                              virPCIELinkPtr lnk)
+{
+    xmlNodePtr origNode = ctxt->node;
+    int ret = -1, speed;
+    char *speedStr = NULL, *portStr = NULL;
+
+    ctxt->node = linkNode;
+
+    if (virXPathUInt("number(./@width)", ctxt, &lnk->width) < 0) {
+        virReportError(VIR_ERR_XML_DETAIL, "%s",
+                       _("mandatory attribute 'width' is missing or malformed"));
+        goto cleanup;
+    }
+
+    if ((speedStr = virXPathString("string(./@speed)", ctxt))) {
+        if ((speed = virPCIELinkSpeedTypeFromString(speedStr)) < 0) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("malformed 'speed' attribute: %s"),
+                           speedStr);
+            goto cleanup;
+        }
+        lnk->speed = speed;
+    }
+
+    if ((portStr = virXPathString("string(./@port)", ctxt))) {
+        if (virStrToLong_i(portStr, NULL, 10, &lnk->port) < 0) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("malformed 'port' attribute: %s"),
+                           portStr);
+            goto cleanup;
+        }
+    } else {
+        lnk->port = -1;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(portStr);
+    VIR_FREE(speedStr);
+    ctxt->node = origNode;
+    return ret;
+}
+
+static int
+virPCIEDeviceInfoParseXML(xmlXPathContextPtr ctxt,
+                          xmlNodePtr pciExpressNode,
+                          virPCIEDeviceInfoPtr pci_express)
+{
+    xmlNodePtr lnk, origNode = ctxt->node;
+    int ret = -1;
+
+    ctxt->node = pciExpressNode;
+
+    if ((lnk = virXPathNode("./link[@validity='cap']", ctxt))) {
+        if (VIR_ALLOC(pci_express->link_cap) < 0)
+            goto cleanup;
+
+        if (virPCIEDeviceInfoLinkParseXML(ctxt, lnk,
+                                          pci_express->link_cap) < 0)
+            goto cleanup;
+    }
+
+    if ((lnk = virXPathNode("./link[@validity='sta']", ctxt))) {
+        if (VIR_ALLOC(pci_express->link_sta) < 0)
+            goto cleanup;
+
+        if (virPCIEDeviceInfoLinkParseXML(ctxt, lnk,
+                                          pci_express->link_sta) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    ctxt->node = origNode;
+    return ret;
+}
+
 
 static int
 virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
@@ -1093,8 +1215,9 @@ virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
                             xmlNodePtr node,
                             union _virNodeDevCapData *data)
 {
-    xmlNodePtr orignode, iommuGroupNode;
+    xmlNodePtr orignode, iommuGroupNode, pciExpress;
     int ret = -1;
+    virPCIEDeviceInfoPtr pci_express = NULL;
 
     orignode = ctxt->node;
     ctxt->node = node;
@@ -1152,8 +1275,21 @@ virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
                                           _("invalid NUMA node ID supplied for '%s'")) < 0)
         goto out;
 
+    if ((pciExpress = virXPathNode("./pci-express[1]", ctxt))) {
+        if (VIR_ALLOC(pci_express) < 0)
+            goto out;
+
+        if (virPCIEDeviceInfoParseXML(ctxt, pciExpress, pci_express) < 0)
+            goto out;
+
+        data->pci_dev.pci_express = pci_express;
+        pci_express = NULL;
+        data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCIE;
+    }
+
     ret = 0;
  out:
+    VIR_FREE(pci_express);
     ctxt->node = orignode;
     return ret;
 }

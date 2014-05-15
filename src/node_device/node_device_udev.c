@@ -426,6 +426,8 @@ static int udevProcessPCI(struct udev_device *device,
     const char *syspath = NULL;
     union _virNodeDevCapData *data = &def->caps->data;
     virPCIDeviceAddress addr;
+    virPCIEDeviceInfoPtr pci_express = NULL;
+    virPCIDevicePtr pciDev = NULL;
     int tmpGroup, ret = -1;
     char *p;
     int rc;
@@ -535,9 +537,41 @@ static int udevProcessPCI(struct udev_device *device,
         data->pci_dev.iommuGroupNumber = tmpGroup;
     }
 
+    if (!(pciDev = virPCIDeviceNew(data->pci_dev.domain,
+                                   data->pci_dev.bus,
+                                   data->pci_dev.slot,
+                                   data->pci_dev.function)))
+        goto out;
+
+    if (virPCIDeviceIsPCIExpress(pciDev) > 0) {
+        if (VIR_ALLOC(pci_express) < 0)
+            goto out;
+
+        if (virPCIDeviceHasPCIExpressLink(pciDev) > 0) {
+            if (VIR_ALLOC(pci_express->link_cap) < 0 ||
+                VIR_ALLOC(pci_express->link_sta) < 0)
+                goto out;
+
+            if (virPCIDeviceGetLinkCapSta(pciDev,
+                                          &pci_express->link_cap->port,
+                                          &pci_express->link_cap->speed,
+                                          &pci_express->link_cap->width,
+                                          &pci_express->link_sta->speed,
+                                          &pci_express->link_sta->width) < 0)
+                goto out;
+
+            pci_express->link_sta->port = -1; /* PCIe can't negotiate port. Yet :) */
+        }
+        data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCIE;
+        data->pci_dev.pci_express = pci_express;
+        pci_express = NULL;
+    }
+
     ret = 0;
 
  out:
+    virPCIDeviceFree(pciDev);
+    VIR_FREE(pci_express);
     return ret;
 }
 

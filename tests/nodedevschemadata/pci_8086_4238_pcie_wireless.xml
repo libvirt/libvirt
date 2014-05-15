@@ -1,0 +1,26 @@
+<device>
+  <name>pci_0000_03_00_0</name>
+  <parent>pci_0000_00_1c_1</parent>
+  <capability type='pci'>
+    <domain>0</domain>
+    <bus>3</bus>
+    <slot>0</slot>
+    <function>0</function>
+    <product id='0x4238'>Centrino Ultimate-N 6300</product>
+    <vendor id='0x8086'>Intel Corporation</vendor>
+    <iommuGroup number='8'>
+      <address domain='0x0000' bus='0x00' slot='0x1c' function='0x0'/>
+      <address domain='0x0000' bus='0x00' slot='0x1c' function='0x1'/>
+      <address domain='0x0000' bus='0x00' slot='0x1c' function='0x3'/>
+      <address domain='0x0000' bus='0x00' slot='0x1c' function='0x4'/>
+      <address domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
+      <address domain='0x0000' bus='0x0d' slot='0x00' function='0x0'/>
+      <address domain='0x0000' bus='0x0d' slot='0x00' function='0x1'/>
+      <address domain='0x0000' bus='0x0d' slot='0x00' function='0x3'/>
+    </iommuGroup>
+    <pci-express>
+      <link validity='cap' port='1' speed='2.5' width='1'/>
+      <link validity='sta' speed='2.5' width='1'/>
+    </pci-express>
+  </capability>
+</device>

@@ -117,6 +117,21 @@
                 <code>node</code> attribute tells which NUMA node is the PCI
                 device associated with.
               </dd>
+              <dt><code>pci-express</code></dt>
+              <dd>
+              This optional element contains information on PCI Express part of
+              the device. For example, it can contain a child element
+              <code>link</code> which addresses the PCI Express device's link.
+              While a device has it's own capabilities
+              (<code>validity='cap'</code>), the actual run time capabilities
+              are negotiated on the device initialization
+              (<code>validity='sta'</code>). The <code>link</code> element then
+              contains three attributes: <code>port</code> which says in which
+              port is the device plugged in, <code>speed</code> (in
+              GigaTransfers per second) and <code>width</code> for the number
+              of lanes used. Since the port can't be negotiated, it's not
+              exposed in <code>./pci-express/link/[@validity='sta']</code>.
+              </dd>
             </dl>
           </dd>
           <dt><code>usb_device</code></dt>
@@ -305,6 +320,10 @@
       &lt;address domain='0x0000' bus='0x02' slot='0x00' function='0x0'/&gt;
       &lt;address domain='0x0000' bus='0x02' slot='0x00' function='0x1'/&gt;
     &lt;/iommuGroup&gt;
+    &lt;pci-express&gt;
+      &lt;link validity='cap' port='1' speed='2.5' width='1'/&gt;
+      &lt;link validity='sta' speed='2.5' width='1'/&gt;
+    &lt;/pci-express&gt;
   &lt;/capability&gt;
 &lt;/device&gt;
     </pre>
