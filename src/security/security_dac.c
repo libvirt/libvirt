@@ -693,11 +693,13 @@ virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
 static int
 virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr def,
-                              virDomainChrSourceDefPtr dev)
+                              virDomainChrDefPtr dev,
+                              virDomainChrSourceDefPtr dev_source)
 
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDefPtr seclabel;
+    virSecurityDeviceLabelDefPtr chr_seclabel = NULL;
     char *in = NULL, *out = NULL;
     int ret = -1;
     uid_t user;
@@ -705,25 +707,38 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
 
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
 
-    if (virSecurityDACGetIds(seclabel, priv, &user, &group, NULL, NULL))
-        return -1;
+    if (dev)
+        chr_seclabel = virDomainChrDefGetSecurityLabelDef(dev,
+                                                          SECURITY_DAC_NAME);
 
-    switch ((enum virDomainChrType) dev->type) {
+    if (chr_seclabel && chr_seclabel->norelabel)
+        return 0;
+
+    if (chr_seclabel && chr_seclabel->label) {
+        if (virParseOwnershipIds(chr_seclabel->label, &user, &group) < 0)
+            return -1;
+    } else {
+        if (virSecurityDACGetIds(seclabel, priv, &user, &group, NULL, NULL) < 0)
+            return -1;
+    }
+
+    switch ((enum virDomainChrType) dev_source->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        ret = virSecurityDACSetOwnership(dev->data.file.path, user, group);
+        ret = virSecurityDACSetOwnership(dev_source->data.file.path,
+                                         user, group);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if ((virAsprintf(&in, "%s.in", dev->data.file.path) < 0) ||
-            (virAsprintf(&out, "%s.out", dev->data.file.path) < 0))
+        if ((virAsprintf(&in, "%s.in", dev_source->data.file.path) < 0) ||
+            (virAsprintf(&out, "%s.out", dev_source->data.file.path) < 0))
             goto done;
         if (virFileExists(in) && virFileExists(out)) {
             if ((virSecurityDACSetOwnership(in, user, group) < 0) ||
                 (virSecurityDACSetOwnership(out, user, group) < 0)) {
                 goto done;
             }
-        } else if (virSecurityDACSetOwnership(dev->data.file.path,
+        } else if (virSecurityDACSetOwnership(dev_source->data.file.path,
                                               user, group) < 0) {
             goto done;
         }
@@ -753,27 +768,40 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
 
 static int
 virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                  virDomainChrSourceDefPtr dev)
+                                  virDomainDefPtr def,
+                                  virDomainChrDefPtr dev,
+                                  virDomainChrSourceDefPtr dev_source)
 {
+    virSecurityLabelDefPtr seclabel;
+    virSecurityDeviceLabelDefPtr chr_seclabel = NULL;
     char *in = NULL, *out = NULL;
     int ret = -1;
 
-    switch ((enum virDomainChrType) dev->type) {
+    seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
+
+    if (dev)
+        chr_seclabel = virDomainChrDefGetSecurityLabelDef(dev,
+                                                          SECURITY_DAC_NAME);
+
+    if (seclabel->norelabel || (chr_seclabel && chr_seclabel->norelabel))
+        return 0;
+
+    switch ((enum virDomainChrType) dev_source->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        ret = virSecurityDACRestoreSecurityFileLabel(dev->data.file.path);
+        ret = virSecurityDACRestoreSecurityFileLabel(dev_source->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if ((virAsprintf(&out, "%s.out", dev->data.file.path) < 0) ||
-            (virAsprintf(&in, "%s.in", dev->data.file.path) < 0))
+        if ((virAsprintf(&out, "%s.out", dev_source->data.file.path) < 0) ||
+            (virAsprintf(&in, "%s.in", dev_source->data.file.path) < 0))
             goto done;
         if (virFileExists(in) && virFileExists(out)) {
             if ((virSecurityDACRestoreSecurityFileLabel(out) < 0) ||
                 (virSecurityDACRestoreSecurityFileLabel(in) < 0)) {
                 goto done;
             }
-        } else if (virSecurityDACRestoreSecurityFileLabel(dev->data.file.path) < 0) {
+        } else if (virSecurityDACRestoreSecurityFileLabel(dev_source->data.file.path) < 0) {
             goto done;
         }
         ret = 0;
@@ -802,13 +830,13 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 
 
 static int
-virSecurityDACRestoreChardevCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
+virSecurityDACRestoreChardevCallback(virDomainDefPtr def,
                                      virDomainChrDefPtr dev,
                                      void *opaque)
 {
     virSecurityManagerPtr mgr = opaque;
 
-    return virSecurityDACRestoreChardevLabel(mgr, &dev->source);
+    return virSecurityDACRestoreChardevLabel(mgr, def, dev, &dev->source);
 }
 
 
@@ -821,7 +849,7 @@ virSecurityDACSetSecurityTPMFileLabel(virSecurityManagerPtr mgr,
 
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        ret = virSecurityDACSetChardevLabel(mgr, def,
+        ret = virSecurityDACSetChardevLabel(mgr, def, NULL,
                                             &tpm->data.passthrough.source);
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
@@ -834,13 +862,14 @@ virSecurityDACSetSecurityTPMFileLabel(virSecurityManagerPtr mgr,
 
 static int
 virSecurityDACRestoreSecurityTPMFileLabel(virSecurityManagerPtr mgr,
+                                          virDomainDefPtr def,
                                           virDomainTPMDefPtr tpm)
 {
     int ret = 0;
 
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        ret = virSecurityDACRestoreChardevLabel(mgr,
+        ret = virSecurityDACRestoreChardevLabel(mgr, def, NULL,
                                           &tpm->data.passthrough.source);
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
@@ -892,6 +921,7 @@ virSecurityDACRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
 
     if (def->tpm) {
         if (virSecurityDACRestoreSecurityTPMFileLabel(mgr,
+                                                      def,
                                                       def->tpm) < 0)
             rc = -1;
     }
@@ -919,7 +949,7 @@ virSecurityDACSetChardevCallback(virDomainDefPtr def,
 {
     virSecurityManagerPtr mgr = opaque;
 
-    return virSecurityDACSetChardevLabel(mgr, def, &dev->source);
+    return virSecurityDACSetChardevLabel(mgr, def, dev, &dev->source);
 }
 
 
