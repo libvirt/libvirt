@@ -823,12 +823,14 @@ virSecurityDACRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
                                       int migrated)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityLabelDefPtr secdef;
     size_t i;
     int rc = 0;
 
-    if (!priv->dynamicOwnership)
-        return 0;
+    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
 
+    if (!priv->dynamicOwnership || (secdef && secdef->norelabel))
+        return 0;
 
     VIR_DEBUG("Restoring security label on %s migrated=%d",
               def->name, migrated);
@@ -898,10 +900,10 @@ virSecurityDACSetSecurityAllLabel(virSecurityManagerPtr mgr,
     uid_t user;
     gid_t group;
 
-    if (!priv->dynamicOwnership)
-        return 0;
-
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
+
+    if (!priv->dynamicOwnership || (secdef && secdef->norelabel))
+        return 0;
 
     for (i = 0; i < def->ndisks; i++) {
         /* XXX fixme - we need to recursively label the entire tree :-( */
