@@ -289,7 +289,7 @@ virSecurityDACRestoreSecurityFileLabel(const char *path)
 
 
 static int
-virSecurityDACSetSecurityFileLabel(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
+virSecurityDACSetSecurityFileLabel(virDomainDiskDefPtr disk,
                                    const char *path,
                                    size_t depth ATTRIBUTE_UNUSED,
                                    void *opaque)
@@ -298,11 +298,23 @@ virSecurityDACSetSecurityFileLabel(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
     virSecurityManagerPtr mgr = cbdata->manager;
     virSecurityLabelDefPtr secdef = cbdata->secdef;
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityDeviceLabelDefPtr disk_seclabel;
     uid_t user;
     gid_t group;
 
-    if (virSecurityDACGetImageIds(secdef, priv, &user, &group))
-        return -1;
+    disk_seclabel = virDomainDiskDefGetSecurityLabelDef(disk,
+                                                        SECURITY_DAC_NAME);
+
+    if (disk_seclabel && disk_seclabel->norelabel)
+        return 0;
+
+    if (disk_seclabel && disk_seclabel->label) {
+        if (virParseOwnershipIds(disk_seclabel->label, &user, &group) < 0)
+            return -1;
+    } else {
+        if (virSecurityDACGetImageIds(secdef, priv, &user, &group))
+            return -1;
+    }
 
     return virSecurityDACSetOwnership(path, user, group);
 }
@@ -326,6 +338,9 @@ virSecurityDACSetSecurityImageLabel(virSecurityManagerPtr mgr,
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
 
+    if (secdef && secdef->norelabel)
+        return 0;
+
     cbdata.manager = mgr;
     cbdata.secdef = secdef;
     return virDomainDiskDefForeachPath(disk,
@@ -337,17 +352,30 @@ virSecurityDACSetSecurityImageLabel(virSecurityManagerPtr mgr,
 
 static int
 virSecurityDACRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
-                                           virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                           virDomainDefPtr def,
                                            virDomainDiskDefPtr disk,
                                            int migrated)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityLabelDefPtr secdef;
+    virSecurityDeviceLabelDefPtr disk_seclabel;
     const char *src = virDomainDiskGetSource(disk);
 
     if (!priv->dynamicOwnership)
         return 0;
 
     if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_NETWORK)
+        return 0;
+
+    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
+
+    if (secdef && secdef->norelabel)
+        return 0;
+
+    disk_seclabel = virDomainDiskDefGetSecurityLabelDef(disk,
+                                                        SECURITY_DAC_NAME);
+
+    if (disk_seclabel && disk_seclabel->norelabel)
         return 0;
 
     /* Don't restore labels on readoly/shared disks, because
