@@ -485,6 +485,9 @@ virSecurityDACSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     cbdata.manager = mgr;
     cbdata.secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
 
+    if (cbdata.secdef && cbdata.secdef->norelabel)
+        return 0;
+
     switch ((enum virDomainHostdevSubsysType) dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
         virUSBDevicePtr usb;
@@ -601,9 +604,12 @@ virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
 
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityLabelDefPtr secdef;
     int ret = -1;
 
-    if (!priv->dynamicOwnership)
+    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
+
+    if (!priv->dynamicOwnership || (secdef && secdef->norelabel))
         return 0;
 
     if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
