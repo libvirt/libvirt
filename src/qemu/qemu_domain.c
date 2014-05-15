@@ -2176,11 +2176,11 @@ qemuDomainSetFakeReboot(virQEMUDriverPtr driver,
 static int
 qemuDomainCheckRemoveOptionalDisk(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
-                                  virDomainDiskDefPtr disk)
+                                  size_t diskIndex)
 {
     char uuid[VIR_UUID_STRING_BUFLEN];
     virObjectEventPtr event = NULL;
-    virDomainDiskDefPtr del_disk = NULL;
+    virDomainDiskDefPtr disk = vm->def->disks[diskIndex];
     const char *src = virDomainDiskGetSource(disk);
 
     virUUIDFormat(vm->def->uuid, uuid);
@@ -2200,13 +2200,8 @@ qemuDomainCheckRemoveOptionalDisk(virQEMUDriverPtr driver,
         event = virDomainEventDiskChangeNewFromObj(vm, src, NULL,
                                                    disk->info.alias,
                                                    VIR_DOMAIN_EVENT_DISK_DROP_MISSING_ON_START);
-
-        if (!(del_disk = virDomainDiskRemoveByName(vm->def, src))) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("no source device %s"), src);
-            return -1;
-        }
-        virDomainDiskDefFree(del_disk);
+        virDomainDiskRemove(vm->def, diskIndex);
+        virDomainDiskDefFree(disk);
     }
 
     if (event)
@@ -2218,11 +2213,11 @@ qemuDomainCheckRemoveOptionalDisk(virQEMUDriverPtr driver,
 static int
 qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
-                                 virDomainDiskDefPtr disk,
+                                 size_t diskIndex,
                                  bool cold_boot)
 {
     char uuid[VIR_UUID_STRING_BUFLEN];
-    int startupPolicy = disk->startupPolicy;
+    int startupPolicy = vm->def->disks[diskIndex]->startupPolicy;
 
     virUUIDFormat(vm->def->uuid, uuid);
 
@@ -2244,7 +2239,7 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
             break;
     }
 
-    if (qemuDomainCheckRemoveOptionalDisk(driver, vm, disk) < 0)
+    if (qemuDomainCheckRemoveOptionalDisk(driver, vm, diskIndex) < 0)
         goto error;
 
     return 0;
@@ -2282,11 +2277,11 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
 {
     int ret = -1;
     size_t i;
-    virDomainDiskDefPtr disk;
 
     VIR_DEBUG("Checking for disk presence");
     for (i = vm->def->ndisks; i > 0; i--) {
-        disk = vm->def->disks[i - 1];
+        size_t idx = i - 1;
+        virDomainDiskDefPtr disk = vm->def->disks[idx];
         const char *path = virDomainDiskGetSource(disk);
         virStorageFileFormat format = virDomainDiskGetFormat(disk);
         virStorageType type = virStorageSourceGetActualType(&disk->src);
@@ -2308,7 +2303,7 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
             continue;
 
         if (disk->startupPolicy &&
-            qemuDomainCheckDiskStartupPolicy(driver, vm, disk,
+            qemuDomainCheckDiskStartupPolicy(driver, vm, idx,
                                              cold_boot) >= 0) {
             virResetLastError();
             continue;
