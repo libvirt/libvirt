@@ -120,6 +120,7 @@ struct _virPCIDeviceList {
 
 /* PCI30 6.7  Capabilities List */
 #define PCI_CAPABILITY_LIST     0x34    /* Offset of first capability list entry */
+#define PCI_CAP_FLAGS           2       /* Capability defined flags (16 bits) */
 
 /* PM12 3.2.1  Capability Identifier */
 #define PCI_CAP_ID_PM           0x01    /* Power Management */
@@ -130,7 +131,13 @@ struct _virPCIDeviceList {
 
 /* PCIe20 7.8.3  Device Capabilities Register (Offset 04h) */
 #define PCI_EXP_DEVCAP          0x4     /* Device capabilities */
-#define PCI_EXP_DEVCAP_FLR     (1<<28) /* Function Level Reset */
+#define PCI_EXP_DEVCAP_FLR     (1<<28)  /* Function Level Reset */
+#define PCI_EXP_LNKCAP          0xc     /* Link Capabilities */
+#define PCI_EXP_LNKCAP_SPEED    0x0000f /* Maximum Link Speed */
+#define PCI_EXP_LNKCAP_WIDTH    0x003f0 /* Maximum Link Width */
+#define PCI_EXP_LNKSTA          0x12    /* Link Status */
+#define PCI_EXP_LNKSTA_SPEED    0x000f  /* Negotiated Link Speed */
+#define PCI_EXP_LNKSTA_WIDTH    0x03f0  /* Negotiated Link Width */
 
 /* Header type 1 BR12 3.2 PCI-to-PCI Bridge Configuration Space Header Format */
 #define PCI_PRIMARY_BUS         0x18    /* BR12 3.2.5.2 Primary bus number */
@@ -172,6 +179,9 @@ struct _virPCIDeviceList {
                                  PCI_EXT_CAP_ACS_RR |   \
                                  PCI_EXT_CAP_ACS_CR |   \
                                  PCI_EXT_CAP_ACS_UF)
+
+#define PCI_EXP_TYPE_ROOT_INT_EP 0x9    /* Root Complex Integrated Endpoint */
+#define PCI_EXP_TYPE_ROOT_EC 0xa        /* Root Complex Event Collector */
 
 static virClassPtr virPCIDeviceListClass;
 
@@ -2750,3 +2760,87 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path ATTRIBUTE_UNUSED,
     return -1;
 }
 #endif /* __linux__ */
+
+int
+virPCIDeviceIsPCIExpress(virPCIDevicePtr dev)
+{
+    int fd;
+    int ret = -1;
+
+    if ((fd = virPCIDeviceConfigOpen(dev, true)) < 0)
+        return ret;
+
+    if (virPCIDeviceInit(dev, fd) < 0)
+        goto cleanup;
+
+    ret = dev->pcie_cap_pos != 0;
+
+ cleanup:
+    virPCIDeviceConfigClose(dev, fd);
+    return ret;
+}
+
+int
+virPCIDeviceHasPCIExpressLink(virPCIDevicePtr dev)
+{
+    int fd;
+    int ret = -1;
+    uint16_t cap, type;
+
+    if ((fd = virPCIDeviceConfigOpen(dev, true)) < 0)
+        return ret;
+
+    if (virPCIDeviceInit(dev, fd) < 0)
+        goto cleanup;
+
+    cap = virPCIDeviceRead16(dev, fd, dev->pcie_cap_pos + PCI_CAP_FLAGS);
+    type = (cap & PCI_EXP_FLAGS_TYPE) >> 4;
+
+    ret = type != PCI_EXP_TYPE_ROOT_INT_EP && type != PCI_EXP_TYPE_ROOT_EC;
+
+ cleanup:
+    virPCIDeviceConfigClose(dev, fd);
+    return ret;
+}
+
+int
+virPCIDeviceGetLinkCapSta(virPCIDevicePtr dev,
+                          int *cap_port,
+                          unsigned int *cap_speed,
+                          unsigned int *cap_width,
+                          unsigned int *sta_speed,
+                          unsigned int *sta_width)
+{
+    uint32_t t;
+    int fd;
+    int ret = -1;
+
+    if ((fd = virPCIDeviceConfigOpen(dev, true)) < 0)
+        return ret;
+
+    if (virPCIDeviceInit(dev, fd) < 0)
+        goto cleanup;
+
+    if (!dev->pcie_cap_pos) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("pci device %s is not a PCI-Express device"),
+                       dev->name);
+        goto cleanup;
+    }
+
+    t = virPCIDeviceRead32(dev, fd, dev->pcie_cap_pos + PCI_EXP_LNKCAP);
+
+    *cap_port = t >> 24;
+    *cap_speed = t & PCI_EXP_LNKCAP_SPEED;
+    *cap_width = (t & PCI_EXP_LNKCAP_WIDTH) >> 4;
+
+    t = virPCIDeviceRead16(dev, fd, dev->pcie_cap_pos + PCI_EXP_LNKSTA);
+
+    *sta_speed = t & PCI_EXP_LNKSTA_SPEED;
+    *sta_width = (t & PCI_EXP_LNKSTA_WIDTH) >> 4;
+    ret = 0;
+
+ cleanup:
+    virPCIDeviceConfigClose(dev, fd);
+    return ret;
+}

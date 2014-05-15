@@ -176,4 +176,12 @@ int virPCIDeviceGetDriverPathAndName(virPCIDevicePtr dev,
                                      char **path,
                                      char **name);
 
+int virPCIDeviceIsPCIExpress(virPCIDevicePtr dev);
+int virPCIDeviceHasPCIExpressLink(virPCIDevicePtr dev);
+int virPCIDeviceGetLinkCapSta(virPCIDevicePtr dev,
+                              int *ca_port,
+                              unsigned int *cap_speed,
+                              unsigned int *cap_width,
+                              unsigned int *sta_speed,
+                              unsigned int *sta_width);
 #endif /* __VIR_PCI_H__ */
