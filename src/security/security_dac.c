@@ -472,7 +472,7 @@ virSecurityDACSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
         return 0;
 
-    switch (dev->source.subsys.type) {
+    switch ((enum virDomainHostdevSubsysType) dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
         virUSBDevicePtr usb;
 
@@ -540,7 +540,7 @@ virSecurityDACSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
         break;
     }
 
-    default:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         ret = 0;
         break;
     }
@@ -593,7 +593,7 @@ virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
     if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
         return 0;
 
-    switch (dev->source.subsys.type) {
+    switch ((enum virDomainHostdevSubsysType) dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
         virUSBDevicePtr usb;
 
@@ -658,7 +658,7 @@ virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
         break;
     }
 
-    default:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         ret = 0;
         break;
     }
@@ -683,7 +683,7 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
     if (virSecurityDACGetIds(def, priv, &user, &group, NULL, NULL))
         return -1;
 
-    switch (dev->type) {
+    switch ((enum virDomainChrType) dev->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
         ret = virSecurityDACSetOwnership(dev->data.file.path, user, group);
@@ -705,7 +705,17 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
         ret = 0;
         break;
 
-    default:
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+    case VIR_DOMAIN_CHR_TYPE_NULL:
+    case VIR_DOMAIN_CHR_TYPE_VC:
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+    case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_UDP:
+    case VIR_DOMAIN_CHR_TYPE_TCP:
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
         ret = 0;
         break;
     }
@@ -723,7 +733,7 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     char *in = NULL, *out = NULL;
     int ret = -1;
 
-    switch (dev->type) {
+    switch ((enum virDomainChrType) dev->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
         ret = virSecurityDACRestoreSecurityFileLabel(dev->data.file.path);
@@ -744,7 +754,17 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
         ret = 0;
         break;
 
-    default:
+    case VIR_DOMAIN_CHR_TYPE_NULL:
+    case VIR_DOMAIN_CHR_TYPE_VC:
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+    case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_UDP:
+    case VIR_DOMAIN_CHR_TYPE_TCP:
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
         ret = 0;
         break;
     }
@@ -1047,7 +1067,7 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
             return rc;
     }
 
-    switch (seclabel->type) {
+    switch ((virDomainSeclabelType) seclabel->type) {
     case VIR_DOMAIN_SECLABEL_STATIC:
         if (seclabel->label == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1071,7 +1091,8 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
     case VIR_DOMAIN_SECLABEL_NONE:
         /* no op */
         return 0;
-    default:
+    case VIR_DOMAIN_SECLABEL_DEFAULT:
+    case VIR_DOMAIN_SECLABEL_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected security label type '%s'"),
                        virDomainSeclabelTypeToString(seclabel->type));
