@@ -1488,10 +1488,14 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
     case VSH_CMD_BLOCK_JOB_PULL:
         if (vshCommandOptStringReq(ctl, cmd, "base", &base) < 0)
             goto cleanup;
-        if (base)
-            ret = virDomainBlockRebase(dom, path, base, bandwidth, 0);
+        if (vshCommandOptBool(cmd, "keep-relative"))
+            flags |= VIR_DOMAIN_BLOCK_REBASE_RELATIVE;
+
+        if (base || flags)
+            ret = virDomainBlockRebase(dom, path, base, bandwidth, flags);
         else
             ret = virDomainBlockPull(dom, path, bandwidth, 0);
+
         break;
     case VSH_CMD_BLOCK_JOB_COMMIT:
         if (vshCommandOptStringReq(ctl, cmd, "base", &base) < 0 ||
@@ -2126,6 +2130,10 @@ static const vshCmdOptDef opts_block_pull[] = {
     {.name = "async",
      .type = VSH_OT_BOOL,
      .help = N_("with --wait, don't wait for cancel to finish")
+    },
+    {.name = "keep-relative",
+     .type = VSH_OT_BOOL,
+     .help = N_("keep the backing chain relatively referenced")
     },
     {.name = NULL}
 };

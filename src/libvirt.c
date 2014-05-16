@@ -19721,6 +19721,10 @@ virDomainBlockPull(virDomainPtr dom, const char *disk,
  * exists.  If the job is aborted, a new one can be started later to
  * resume from the same point.
  *
+ * If @flags contains VIR_DOMAIN_BLOCK_REBASE_RELATIVE, the name recorded
+ * into the active disk as the location for @base will be kept relative.
+ * The operation will fail if libvirt can't infer the name.
+ *
  * When @flags includes VIR_DOMAIN_BLOCK_REBASE_COPY, this starts a copy,
  * where @base must be the name of a new file to copy the chain to.  By
  * default, the copy will pull the entire source chain into the destination

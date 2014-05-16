@@ -2587,6 +2587,9 @@ typedef enum {
                                                    file for a copy */
     VIR_DOMAIN_BLOCK_REBASE_COPY_RAW  = 1 << 2, /* Make destination file raw */
     VIR_DOMAIN_BLOCK_REBASE_COPY      = 1 << 3, /* Start a copy job */
+    VIR_DOMAIN_BLOCK_REBASE_RELATIVE  = 1 << 4, /* Keep backing chain
+                                                   referenced using relative
+                                                   names */
 } virDomainBlockRebaseFlags;
 
 int           virDomainBlockRebase(virDomainPtr dom, const char *disk,

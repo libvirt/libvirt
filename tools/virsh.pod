@@ -911,6 +911,7 @@ I<bandwidth> specifies copying bandwidth limit in MiB/s.
 
 =item B<blockpull> I<domain> I<path> [I<bandwidth>] [I<base>]
 [I<--wait> [I<--verbose>] [I<--timeout> B<seconds>] [I<--async>]]
+[I<--keep-relative>]
 
 Populate a disk from its backing image chain. By default, this command
 flattens the entire chain; but if I<base> is specified, containing the
@@ -929,6 +930,9 @@ with I<--wait> will produce periodic status updates.  If job cancellation
 is triggered, I<--async> will return control to the user as fast as
 possible, otherwise the command may continue to block a little while
 longer until the job is done cleaning up.
+
+Using the I<--keep-relative> flag will keep the backing chain names
+relative.
 
 I<path> specifies fully-qualified path of the disk; it corresponds
 to a unique target name (<target dev='name'/>) or source file (<source
