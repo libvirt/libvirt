@@ -1968,7 +1968,8 @@ VIR_ENUM_IMPL(vshDomainBlockJob,
               N_("Unknown job"),
               N_("Block Pull"),
               N_("Block Copy"),
-              N_("Block Commit"))
+              N_("Block Commit"),
+              N_("Active Block Commit"))
 
 static const char *
 vshDomainBlockJobToString(int type)

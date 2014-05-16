@@ -19473,13 +19473,16 @@ virDomainOpenChannel(virDomainPtr dom,
  *
  * If the current block job for @disk is VIR_DOMAIN_BLOCK_JOB_TYPE_COPY, then
  * the default is to abort the mirroring and revert to the source disk;
- * adding @flags of VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT causes this call to
- * fail with VIR_ERR_BLOCK_COPY_ACTIVE if the copy is not fully populated,
- * otherwise it will swap the disk over to the copy to end the mirroring.  An
- * event will be issued when the job is ended, and it is possible to use
- * VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC to control whether this command waits
- * for the completion of the job.  Restarting this job requires starting
- * over from the beginning of the first phase.
+ * likewise, if the current job is VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT,
+ * the default is to abort without changing the active layer of @disk.
+ * Adding @flags of VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT causes this call to
+ * fail with VIR_ERR_BLOCK_COPY_ACTIVE if the copy or commit is not yet
+ * ready; otherwise it will swap the disk over to the new active image
+ * to end the mirroring or active commit.  An event will be issued when the
+ * job is ended, and it is possible to use VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC
+ * to control whether this command waits for the completion of the job.
+ * Restarting a copy or active commit job requires starting over from the
+ * beginning of the first phase.
  *
  * Returns -1 in case of failure, 0 when successful.
  */
@@ -19849,17 +19852,32 @@ virDomainBlockRebase(virDomainPtr dom, const char *disk,
  * the job is aborted, it is up to the hypervisor whether starting a new
  * job will resume from the same point, or start over.
  *
+ * As a special case, if @top is the active image (or NULL), and @flags
+ * includes VIR_DOMAIN_BLOCK_COMMIT_ACTIVE, the block job will have a type
+ * of VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT, and operates in two phases.
+ * In the first phase, the contents are being committed into @base, and the
+ * job can only be canceled.  The job transitions to the second phase when
+ * the job info states cur == end, and remains alive to keep all further
+ * changes to @top synchronized into @base; an event with status
+ * VIR_DOMAIN_BLOCK_JOB_READY is also issued to mark the job transition.
+ * Once in the second phase, the user must choose whether to cancel the job
+ * (keeping @top as the active image, but now containing only the changes
+ * since the time the job ended) or to pivot the job (adjusting to @base as
+ * the active image, and invalidating @top).
+ *
  * Be aware that this command may invalidate files even if it is aborted;
  * the user is cautioned against relying on the contents of invalidated
- * intermediate files such as @top without manually rebasing those files
- * to use a backing file of a read-only copy of @base prior to the point
- * where the commit operation was started (although such a rebase cannot
- * be safely done until the commit has successfully completed).  However,
- * the domain itself will not have any issues; the active layer remains
- * valid throughout the entire commit operation.  As a convenience,
- * if @flags contains VIR_DOMAIN_BLOCK_COMMIT_DELETE, this command will
- * unlink all files that were invalidated, after the commit successfully
- * completes.
+ * intermediate files such as @top (when @top is not the active image)
+ * without manually rebasing those files to use a backing file of a
+ * read-only copy of @base prior to the point where the commit operation
+ * was started (and such a rebase cannot be safely done until the commit
+ * has successfully completed).  However, the domain itself will not have
+ * any issues; the active layer remains valid throughout the entire commit
+ * operation.
+ *
+ * Some hypervisors may support a shortcut where if @flags contains
+ * VIR_DOMAIN_BLOCK_COMMIT_DELETE, then this command will unlink all files
+ * that were invalidated, after the commit successfully completes.
  *
  * By default, if @base is NULL, the commit target will be the bottom of
  * the backing chain; if @flags contains VIR_DOMAIN_BLOCK_COMMIT_SHALLOW,
@@ -19867,8 +19885,9 @@ virDomainBlockRebase(virDomainPtr dom, const char *disk,
  * is NULL, the active image at the top of the chain will be used.  Some
  * hypervisors place restrictions on how much can be committed, and might
  * fail if @base is not the immediate backing file of @top, or if @top is
- * the active layer in use by a running domain, or if @top is not the
- * top-most file; restrictions may differ for online vs. offline domains.
+ * the active layer in use by a running domain but @flags did not include
+ * VIR_DOMAIN_BLOCK_COMMIT_ACTIVE, or if @top is not the top-most file;
+ * restrictions may differ for online vs. offline domains.
  *
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as

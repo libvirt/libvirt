@@ -15128,6 +15128,8 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
      * to prevent newly scheduled block jobs from confusing us.  */
     if (mode == BLOCK_JOB_ABORT) {
         if (!async) {
+            /* Older qemu that lacked async reporting also lacked
+             * active commit, so we can hardcode the event to pull */
             int type = VIR_DOMAIN_BLOCK_JOB_TYPE_PULL;
             int status = VIR_DOMAIN_BLOCK_JOB_CANCELED;
             event = virDomainEventBlockJobNewFromObj(vm, disk->src->path, type,
@@ -15482,6 +15484,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     const char *top_parent = NULL;
     bool clean_access = false;
 
+    /* XXX Add support for COMMIT_ACTIVE, COMMIT_DELETE */
     virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -15532,8 +15535,25 @@ qemuDomainBlockCommit(virDomainPtr dom,
      * process; qemu 2.1 is further improving active commit. We need
      * to start supporting it in libvirt. */
     if (topSource == disk->src) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("committing the active layer not supported yet"));
+        /* We assume that no one will backport qemu 2.0 active commit
+         * to an earlier qemu without also backporting the block job
+         * ready event; but this makes sure of that fact */
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("active commit not supported with this QEMU binary"));
+            goto endjob;
+        }
+        /* XXX Should we auto-pivot when COMMIT_ACTIVE is not specified? */
+        if (!(flags & VIR_DOMAIN_BLOCK_COMMIT_ACTIVE)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("commit of '%s' active layer requires active flag"),
+                           disk->dst);
+            goto endjob;
+        }
+    } else if (flags & VIR_DOMAIN_BLOCK_COMMIT_ACTIVE) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("active commit requested but '%s' is not active"),
+                       topSource->path);
         goto endjob;
     }
 

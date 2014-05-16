@@ -2513,6 +2513,7 @@ typedef enum {
     VIR_DOMAIN_BLOCK_JOB_TYPE_PULL = 1,
     VIR_DOMAIN_BLOCK_JOB_TYPE_COPY = 2,
     VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT = 3,
+    VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT = 4,
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_BLOCK_JOB_TYPE_LAST
@@ -2523,7 +2524,8 @@ typedef enum {
  * virDomainBlockJobAbortFlags:
  *
  * VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC: Request only, do not wait for completion
- * VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT: Pivot to mirror when ending a copy job
+ * VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT: Pivot to new file when ending a copy or
+ *                                   active commit job
  */
 typedef enum {
     VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC = 1 << 0,
@@ -2588,6 +2590,8 @@ typedef enum {
     VIR_DOMAIN_BLOCK_COMMIT_DELETE  = 1 << 1, /* Delete any files that are now
                                                  invalid after their contents
                                                  have been committed */
+    VIR_DOMAIN_BLOCK_COMMIT_ACTIVE  = 1 << 2, /* Allow a two-phase commit when
+                                                 top is the active layer */
 } virDomainBlockCommitFlags;
 
 int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
@@ -4823,8 +4827,8 @@ typedef void (*virConnectDomainEventGraphicsCallback)(virConnectPtr conn,
 /**
  * virConnectDomainEventBlockJobStatus:
  *
- * The final status of a virDomainBlockPull() or virDomainBlockRebase()
- * operation
+ * Tracks status of a virDomainBlockPull(), virDomainBlockRebase(),
+ * or virDomainBlockCommit() operation
  */
 typedef enum {
     VIR_DOMAIN_BLOCK_JOB_COMPLETED = 0,
@@ -4843,7 +4847,7 @@ typedef enum {
  * @dom: domain on which the event occurred
  * @disk: fully-qualified filename of the affected disk
  * @type: type of block job (virDomainBlockJobType)
- * @status: final status of the operation (virConnectDomainEventBlockJobStatus)
+ * @status: status of the operation (virConnectDomainEventBlockJobStatus)
  * @opaque: application specified data
  *
  * The callback signature to use when registering for an event of type
