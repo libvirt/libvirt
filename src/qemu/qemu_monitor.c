@@ -3362,6 +3362,7 @@ int qemuMonitorScreendump(qemuMonitorPtr mon,
 int qemuMonitorBlockJob(qemuMonitorPtr mon,
                         const char *device,
                         const char *base,
+                        const char *backingName,
                         unsigned long bandwidth,
                         virDomainBlockJobInfoPtr info,
                         qemuMonitorBlockJobCmd mode,
@@ -3370,9 +3371,10 @@ int qemuMonitorBlockJob(qemuMonitorPtr mon,
     int ret = -1;
     unsigned long long speed;
 
-    VIR_DEBUG("mon=%p, device=%s, base=%s, bandwidth=%luM, info=%p, mode=%o, "
-              "modern=%d", mon, device, NULLSTR(base), bandwidth, info, mode,
-              modern);
+    VIR_DEBUG("mon=%p, device=%s, base=%s, backingName=%s, bandwidth=%luM, "
+              "info=%p, mode=%o, modern=%d",
+              mon, device, NULLSTR(base), NULLSTR(backingName),
+              bandwidth, info, mode, modern);
 
     /* Convert bandwidth MiB to bytes - unfortunately the JSON QMP protocol is
      * limited to LLONG_MAX also for unsigned values */
@@ -3386,8 +3388,8 @@ int qemuMonitorBlockJob(qemuMonitorPtr mon,
     speed <<= 20;
 
     if (mon->json)
-        ret = qemuMonitorJSONBlockJob(mon, device, base, speed, info, mode,
-                                      modern);
+        ret = qemuMonitorJSONBlockJob(mon, device, base, backingName,
+                                      speed, info, mode, modern);
     else
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("block jobs require JSON monitor"));

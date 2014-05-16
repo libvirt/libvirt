@@ -14873,7 +14873,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
     /* Probe the status, if needed.  */
     if (!disk->mirroring) {
         qemuDomainObjEnterMonitor(driver, vm);
-        rc = qemuMonitorBlockJob(priv->mon, device, NULL, 0, &info,
+        rc = qemuMonitorBlockJob(priv->mon, device, NULL, NULL, 0, &info,
                                   BLOCK_JOB_INFO, true);
         qemuDomainObjExitMonitor(driver, vm);
         if (rc < 0)
@@ -15090,7 +15090,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorBlockJob(priv->mon, device,
                               baseIndex ? baseSource->path : base,
-                              bandwidth, info, mode, async);
+                              NULL, bandwidth, info, mode, async);
     qemuDomainObjExitMonitor(driver, vm);
     if (ret < 0)
         goto endjob;
@@ -15135,8 +15135,8 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
                 virDomainBlockJobInfo dummy;
 
                 qemuDomainObjEnterMonitor(driver, vm);
-                ret = qemuMonitorBlockJob(priv->mon, device, NULL, 0, &dummy,
-                                          BLOCK_JOB_INFO, async);
+                ret = qemuMonitorBlockJob(priv->mon, device, NULL, NULL, 0,
+                                          &dummy, BLOCK_JOB_INFO, async);
                 qemuDomainObjExitMonitor(driver, vm);
 
                 if (ret <= 0)

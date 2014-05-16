@@ -692,7 +692,8 @@ typedef enum {
 
 int qemuMonitorBlockJob(qemuMonitorPtr mon,
                         const char *device,
-                        const char *back,
+                        const char *base,
+                        const char *backingName,
                         unsigned long bandwidth,
                         virDomainBlockJobInfoPtr info,
                         qemuMonitorBlockJobCmd mode,

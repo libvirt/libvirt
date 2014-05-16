@@ -3789,6 +3789,7 @@ int
 qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
                         const char *device,
                         const char *base,
+                        const char *backingName,
                         unsigned long long speed,
                         virDomainBlockJobInfoPtr info,
                         qemuMonitorBlockJobCmd mode,
@@ -3804,6 +3805,19 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
                        _("only modern block pull supports base: %s"), base);
         return -1;
     }
+
+    if (backingName && mode != BLOCK_JOB_PULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("backing name is supported only for block pull"));
+        return -1;
+    }
+
+    if (backingName && !base) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("backing name requires a base image"));
+        return -1;
+    }
+
     if (speed && mode == BLOCK_JOB_PULL && !modern) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("only modern block pull supports speed: %llu"),
@@ -3838,6 +3852,7 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
                                          "s:device", device,
                                          "P:speed", speed,
                                          "S:base", base,
+                                         "S:backing-file", backingName,
                                          NULL);
         break;
     }
