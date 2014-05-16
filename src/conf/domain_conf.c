@@ -14809,16 +14809,16 @@ virDomainDiskBlockIoDefFormat(virBufferPtr buf,
 }
 
 
-/* virDomainDiskSourceDefFormatSeclabel:
+/* virDomainSourceDefFormatSeclabel:
  *
  * This function automaticaly closes the <source> element and formats any
  * possible seclabels.
  */
 static void
-virDomainDiskSourceDefFormatSeclabel(virBufferPtr buf,
-                                     size_t nseclabels,
-                                     virSecurityDeviceLabelDefPtr *seclabels,
-                                     unsigned int flags)
+virDomainSourceDefFormatSeclabel(virBufferPtr buf,
+                                 size_t nseclabels,
+                                 virSecurityDeviceLabelDefPtr *seclabels,
+                                 unsigned int flags)
 {
     size_t n;
 
@@ -14853,17 +14853,17 @@ virDomainDiskSourceFormat(virBufferPtr buf,
             virBufferEscapeString(buf, " file='%s'", src->path);
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 
-            virDomainDiskSourceDefFormatSeclabel(buf, src->nseclabels,
-                                                 src->seclabels, flags);
-           break;
+            virDomainSourceDefFormatSeclabel(buf, src->nseclabels,
+                                             src->seclabels, flags);
+            break;
 
         case VIR_STORAGE_TYPE_BLOCK:
             virBufferAddLit(buf, "<source");
             virBufferEscapeString(buf, " dev='%s'", src->path);
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 
-            virDomainDiskSourceDefFormatSeclabel(buf, src->nseclabels,
-                                                 src->seclabels, flags);
+            virDomainSourceDefFormatSeclabel(buf, src->nseclabels,
+                                             src->seclabels, flags);
             break;
 
         case VIR_STORAGE_TYPE_DIR:
@@ -14917,8 +14917,8 @@ virDomainDiskSourceFormat(virBufferPtr buf,
             }
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 
-            virDomainDiskSourceDefFormatSeclabel(buf, src->nseclabels,
-                                                 src->seclabels, flags);
+            virDomainSourceDefFormatSeclabel(buf, src->nseclabels,
+                                             src->seclabels, flags);
             break;
 
         case VIR_STORAGE_TYPE_NONE:
