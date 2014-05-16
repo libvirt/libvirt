@@ -3213,6 +3213,11 @@ qemuProcessReconnect(void *opaque)
         if (qemuTranslateDiskSourcePool(conn, obj->def->disks[i]) < 0)
             goto error;
 
+        /* XXX we should be able to restore all data from XML in the future */
+        if (qemuDomainDetermineDiskChain(driver, obj,
+                                         obj->def->disks[i], true) < 0)
+            goto error;
+
         dev.type = VIR_DOMAIN_DEVICE_DISK;
         dev.data.disk = obj->def->disks[i];
         if (qemuAddSharedDevice(driver, &dev, obj->def->name) < 0)
