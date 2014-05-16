@@ -7850,7 +7850,7 @@ virDomainSetSchedulerParametersFlags(virDomainPtr domain,
  * devices attached to the domain.
  *
  * The @disk parameter is either the device target shorthand (the
- * <target dev='...'/> sub-element, such as "xvda"), or (since 0.9.8)
+ * <target dev='...'/> sub-element, such as "vda"), or (since 0.9.8)
  * an unambiguous source name of the block device (the <source
  * file='...'/> sub-element, such as "/path/to/image").  Valid names
  * can be found by calling virDomainGetXMLDesc() and inspecting
@@ -7918,7 +7918,7 @@ virDomainBlockStats(virDomainPtr dom, const char *disk,
  * devices attached to the domain.
  *
  * The @disk parameter is either the device target shorthand (the
- * <target dev='...'/> sub-element, such as "xvda"), or (since 0.9.8)
+ * <target dev='...'/> sub-element, such as "vda"), or (since 0.9.8)
  * an unambiguous source name of the block device (the <source
  * file='...'/> sub-element, such as "/path/to/image").  Valid names
  * can be found by calling virDomainGetXMLDesc() and inspecting
@@ -8270,7 +8270,7 @@ virDomainMemoryStats(virDomainPtr dom, virDomainMemoryStatPtr stats,
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or (since 0.9.5) the device target shorthand
- * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * (the <target dev='...'/> sub-element, such as "vda").  Valid names
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
@@ -8348,7 +8348,7 @@ virDomainBlockPeek(virDomainPtr dom,
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or (since 0.9.5) the device target shorthand
- * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * (the <target dev='...'/> sub-element, such as "vda").  Valid names
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
@@ -8510,7 +8510,7 @@ virDomainMemoryPeek(virDomainPtr dom,
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or (since 0.9.5) the device target shorthand
- * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * (the <target dev='...'/> sub-element, such as "vda").  Valid names
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
@@ -19448,7 +19448,7 @@ virDomainOpenChannel(virDomainPtr dom,
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or (since 0.9.5) the device target shorthand
- * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * (the <target dev='...'/> sub-element, such as "vda").  Valid names
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
@@ -19522,7 +19522,7 @@ virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or (since 0.9.5) the device target shorthand
- * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * (the <target dev='...'/> sub-element, such as "vda").  Valid names
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
@@ -19576,7 +19576,7 @@ virDomainGetBlockJobInfo(virDomainPtr dom, const char *disk,
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or (since 0.9.5) the device target shorthand
- * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * (the <target dev='...'/> sub-element, such as "vda").  Valid names
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
@@ -19633,7 +19633,7 @@ virDomainBlockJobSetSpeed(virDomainPtr dom, const char *disk,
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or (since 0.9.5) the device target shorthand
- * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * (the <target dev='...'/> sub-element, such as "vda").  Valid names
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
@@ -19744,7 +19744,7 @@ virDomainBlockPull(virDomainPtr dom, const char *disk,
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or the device target shorthand (the
- * <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * <target dev='...'/> sub-element, such as "vda").  Valid names
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
@@ -19867,7 +19867,7 @@ virDomainBlockRebase(virDomainPtr dom, const char *disk,
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or the device target shorthand (the
- * <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * <target dev='...'/> sub-element, such as "vda").  Valid names
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
