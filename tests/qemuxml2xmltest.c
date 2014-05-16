@@ -362,6 +362,8 @@ mymain(void)
 
     DO_TEST_DIFFERENT("disk-backing-chains");
 
+    DO_TEST("chardev-label");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 

@@ -15862,11 +15862,19 @@ virDomainNetDefFormat(virBufferPtr buf,
  * output at " type='type'>". */
 static int
 virDomainChrSourceDefFormat(virBufferPtr buf,
+                            virDomainChrDefPtr chr_def,
                             virDomainChrSourceDefPtr def,
                             bool tty_compat,
                             unsigned int flags)
 {
     const char *type = virDomainChrTypeToString(def->type);
+    size_t nseclabels = 0;
+    virSecurityDeviceLabelDefPtr *seclabels = NULL;
+
+    if (chr_def) {
+        nseclabels = chr_def->nseclabels;
+        seclabels = chr_def->seclabels;
+    }
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -15898,8 +15906,9 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
         if (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
             (def->data.file.path &&
              !(flags & VIR_DOMAIN_XML_INACTIVE))) {
-            virBufferEscapeString(buf, "<source path='%s'/>\n",
+            virBufferEscapeString(buf, "<source path='%s'",
                                   def->data.file.path);
+            virDomainSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
         }
         break;
 
@@ -15957,7 +15966,7 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, "<source mode='%s'",
                           def->data.nix.listen ? "bind" : "connect");
         virBufferEscapeString(buf, " path='%s'", def->data.nix.path);
-        virBufferAddLit(buf, "/>\n");
+        virDomainSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
@@ -15979,7 +15988,6 @@ virDomainChrDefFormat(virBufferPtr buf,
     const char *targetType = virDomainChrTargetTypeToString(def->deviceType,
                                                             def->targetType);
     bool tty_compat;
-    size_t n;
 
     int ret = 0;
 
@@ -15997,7 +16005,7 @@ virDomainChrDefFormat(virBufferPtr buf,
                   def->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
                   !(flags & VIR_DOMAIN_XML_INACTIVE) &&
                   def->source.data.file.path);
-    if (virDomainChrSourceDefFormat(buf, &def->source, tty_compat, flags) < 0)
+    if (virDomainChrSourceDefFormat(buf, def, &def->source, tty_compat, flags) < 0)
         return -1;
 
     /* Format <target> block */
@@ -16069,14 +16077,6 @@ virDomainChrDefFormat(virBufferPtr buf,
             return -1;
     }
 
-    /* Security label overrides, if any. */
-    if (def->seclabels && def->nseclabels > 0) {
-        virBufferAdjustIndent(buf, 2);
-        for (n = 0; n < def->nseclabels; n++)
-            virSecurityDeviceLabelDefFormat(buf, def->seclabels[n], flags);
-        virBufferAdjustIndent(buf, -2);
-    }
-
     virBufferAdjustIndent(buf, -2);
     virBufferAsprintf(buf, "</%s>\n", elementName);
 
@@ -16119,7 +16119,7 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
-        if (virDomainChrSourceDefFormat(buf, &def->data.passthru, false,
+        if (virDomainChrSourceDefFormat(buf, NULL, &def->data.passthru, false,
                                         flags) < 0)
             return -1;
         break;
@@ -16384,7 +16384,7 @@ virDomainRNGDefFormat(virBufferPtr buf,
 
     case VIR_DOMAIN_RNG_BACKEND_EGD:
         virBufferAdjustIndent(buf, 2);
-        if (virDomainChrSourceDefFormat(buf, def->source.chardev,
+        if (virDomainChrSourceDefFormat(buf, NULL, def->source.chardev,
                                         false, flags) < 0)
             return -1;
         virBufferAdjustIndent(buf, -2);
@@ -16976,7 +16976,7 @@ virDomainRedirdevDefFormat(virBufferPtr buf,
 
     virBufferAsprintf(buf, "<redirdev bus='%s'", bus);
     virBufferAdjustIndent(buf, 2);
-    if (virDomainChrSourceDefFormat(buf, &def->source.chr, false, flags) < 0)
+    if (virDomainChrSourceDefFormat(buf, NULL, &def->source.chr, false, flags) < 0)
         return -1;
     if (virDomainDeviceInfoFormat(buf, &def->info,
                                   flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
