@@ -4311,6 +4311,12 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;source path='/dev/pts/3'/&gt;
       &lt;target port='0'/&gt;
     &lt;/serial&gt;
+    &lt;serial type='file&gt;
+      &lt;source path='/tmp/file'&gt;
+        &lt;seclabel model='dac' relabel='no'/&gt;
+      &lt;/source&gt;
+      &lt;target port='0'&gt;
+    &lt;/serial&gt;
     &lt;console type='pty'&gt;
       &lt;source path='/dev/pts/4'/&gt;
       &lt;target port='0'/&gt;
