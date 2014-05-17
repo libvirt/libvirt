@@ -310,7 +310,8 @@ bhyveDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     ret = 0;
 
  cleanup:
-    virObjectUnlock(vm);
+    if (vm)
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -335,7 +336,8 @@ bhyveDomainGetState(virDomainPtr domain,
     ret = 0;
 
  cleanup:
-    virObjectUnlock(vm);
+    if (vm)
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -355,7 +357,8 @@ bhyveDomainGetAutostart(virDomainPtr domain, int *autostart)
     ret = 0;
 
  cleanup:
-    virObjectUnlock(vm);
+    if (vm)
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -418,7 +421,8 @@ bhyveDomainSetAutostart(virDomainPtr domain, int autostart)
  cleanup:
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
-    virObjectUnlock(vm);
+    if (vm)
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -437,7 +441,8 @@ bhyveDomainIsActive(virDomainPtr domain)
     ret = virDomainObjIsActive(obj);
 
  cleanup:
-    virObjectUnlock(obj);
+    if (obj)
+        virObjectUnlock(obj);
     return ret;
 }
 
@@ -456,7 +461,8 @@ bhyveDomainIsPersistent(virDomainPtr domain)
     ret = obj->persistent;
 
  cleanup:
-    virObjectUnlock(obj);
+    if (obj)
+        virObjectUnlock(obj);
     return ret;
 }
 
@@ -475,7 +481,8 @@ bhyveDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     ret = virDomainDefFormat(vm->def, flags);
 
  cleanup:
-    virObjectUnlock(vm);
+    if (vm)
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -748,7 +755,8 @@ bhyveDomainLookupByUUID(virConnectPtr conn,
         dom->id = vm->def->id;
 
  cleanup:
-    virObjectUnlock(vm);
+    if (vm)
+        virObjectUnlock(vm);
     return dom;
 }
 
@@ -775,7 +783,8 @@ static virDomainPtr bhyveDomainLookupByName(virConnectPtr conn,
         dom->id = vm->def->id;
 
  cleanup:
-    virObjectUnlock(vm);
+    if (vm)
+        virObjectUnlock(vm);
     return dom;
 }
 
@@ -803,7 +812,8 @@ bhyveDomainLookupByID(virConnectPtr conn,
         dom->id = vm->def->id;
 
  cleanup:
-    virObjectUnlock(vm);
+    if (vm)
+        virObjectUnlock(vm);
     return dom;
 }
 
@@ -844,7 +854,8 @@ bhyveDomainCreateWithFlags(virDomainPtr dom,
                                                   VIR_DOMAIN_EVENT_STARTED_BOOTED);
 
  cleanup:
-    virObjectUnlock(vm);
+    if (vm)
+        virObjectUnlock(vm);
     if (event)
         virObjectEventStateQueue(privconn->domainEventState, event);
     return ret;
@@ -999,7 +1010,8 @@ bhyveDomainOpenConsole(virDomainPtr dom,
     ret = 0;
 
  cleanup:
-    virObjectUnlock(vm);
+    if (vm)
+        virObjectUnlock(vm);
     return ret;
 }
 
