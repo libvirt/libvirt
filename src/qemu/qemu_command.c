@@ -11021,7 +11021,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             if (disk->src.type == VIR_STORAGE_TYPE_NETWORK) {
                 char *port;
 
-                switch (disk->src.protocol) {
+                switch ((virStorageNetProtocol) disk->src.protocol) {
                 case VIR_STORAGE_NET_PROTOCOL_NBD:
                     if (qemuParseNBDString(disk) < 0)
                         goto error;

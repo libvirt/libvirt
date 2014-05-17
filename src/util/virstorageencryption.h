@@ -39,7 +39,7 @@ VIR_ENUM_DECL(virStorageEncryptionSecret)
 typedef struct _virStorageEncryptionSecret virStorageEncryptionSecret;
 typedef virStorageEncryptionSecret *virStorageEncryptionSecretPtr;
 struct _virStorageEncryptionSecret {
-    virStorageEncryptionSecretType type;
+    int type; /* virStorageEncryptionSecretType */
     unsigned char uuid[VIR_UUID_BUFLEN];
 };
 
@@ -55,7 +55,7 @@ VIR_ENUM_DECL(virStorageEncryptionFormat)
 typedef struct _virStorageEncryption virStorageEncryption;
 typedef virStorageEncryption *virStorageEncryptionPtr;
 struct _virStorageEncryption {
-    virStorageEncryptionFormatType format;
+    int format; /* virStorageEncryptionFormatType */
 
     size_t nsecrets;
     virStorageEncryptionSecretPtr *secrets;
