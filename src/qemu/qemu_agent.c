@@ -1734,13 +1734,13 @@ int
 qemuAgentSetTime(qemuAgentPtr mon,
                 long long seconds,
                 unsigned int nseconds,
-                bool sync)
+                bool rtcSync)
 {
     int ret = -1;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
 
-    if (sync) {
+    if (rtcSync) {
         cmd = qemuAgentMakeCommand("guest-set-time", NULL);
     } else {
         /* guest agent expect time with nanosecond granularity.
