@@ -663,6 +663,7 @@ VMWARE_DRIVER_SOURCES =						\
 VBOX_DRIVER_SOURCES =						\
 	vbox/vbox_glue.c vbox/vbox_glue.h			\
 	vbox/vbox_driver.c vbox/vbox_driver.h			\
+	vbox/vbox_snapshot_conf.c vbox/vbox_snapshot_conf.h \
 	vbox/vbox_V2_2.c vbox/vbox_CAPI_v2_2.h			\
 	vbox/vbox_V3_0.c vbox/vbox_CAPI_v3_0.h			\
 	vbox/vbox_V3_1.c vbox/vbox_CAPI_v3_1.h			\

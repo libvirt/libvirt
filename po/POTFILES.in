@@ -212,6 +212,7 @@ src/util/virxml.c
 src/vbox/vbox_MSCOMGlue.c
 src/vbox/vbox_XPCOMCGlue.c
 src/vbox/vbox_driver.c
+src/vbox/vbox_snapshot_conf.c
 src/vbox/vbox_tmpl.c
 src/vmware/vmware_conf.c
 src/vmware/vmware_driver.c

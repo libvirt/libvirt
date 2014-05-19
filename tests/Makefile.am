@@ -125,6 +125,7 @@ EXTRA_DIST =		\
 	sysinfodata \
 	test-lib.sh	\
 	vircaps2xmldata \
+	vboxsnapshotxmldata \
 	virsh-uriprecedence \
 	virfiledata \
 	virpcitestdata \
@@ -235,6 +236,10 @@ endif WITH_OPENVZ
 if WITH_ESX
 test_programs += esxutilstest
 endif WITH_ESX
+
+if WITH_VBOX
+test_programs += vboxsnapshotxmltest
+endif WITH_VBOX
 
 if WITH_VMX
 test_programs += vmx2xmltest xml2vmxtest
@@ -618,6 +623,16 @@ esxutilstest_LDADD = $(LDADDS)
 else ! WITH_ESX
 EXTRA_DIST += esxutilstest.c
 endif ! WITH_ESX
+
+if WITH_VBOX
+vboxsnapshotxmltest_SOURCES = \
+	vboxsnapshotxmltest.c \
+	testutils.c testutils.h
+vbox_LDADDS = ../src/libvirt_driver_vbox_impl.la
+vboxsnapshotxmltest_LDADD = $(LDADDS) $(vbox_LDADDS)
+else ! WITH_VBOX
+EXTRA_DIST += vboxsnapshotxmltest.c
+endif ! WITH_VBOX
 
 if WITH_VMX
 vmx2xmltest_SOURCES = \
