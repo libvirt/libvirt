@@ -768,22 +768,19 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
 
 static int
 virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                  virDomainDefPtr def,
+                                  virDomainDefPtr def ATTRIBUTE_UNUSED,
                                   virDomainChrDefPtr dev,
                                   virDomainChrSourceDefPtr dev_source)
 {
-    virSecurityLabelDefPtr seclabel;
     virSecurityDeviceLabelDefPtr chr_seclabel = NULL;
     char *in = NULL, *out = NULL;
     int ret = -1;
-
-    seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
 
     if (dev)
         chr_seclabel = virDomainChrDefGetSecurityLabelDef(dev,
                                                           SECURITY_DAC_NAME);
 
-    if (seclabel->norelabel || (chr_seclabel && chr_seclabel->norelabel))
+    if (chr_seclabel && chr_seclabel->norelabel)
         return 0;
 
     switch ((enum virDomainChrType) dev_source->type) {
