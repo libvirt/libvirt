@@ -58,6 +58,8 @@
 #include "fdstream.h"
 #include "viruri.h"
 #include "virstring.h"
+#include "virtime.h"
+#include "virutil.h"
 
 /* This one changes from version to version. */
 #if VBOX_API_VERSION == 2002000
@@ -6039,7 +6041,9 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA, NULL);
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, data->caps,
-                                                data->xmlopt, 0, 0)))
+                                                data->xmlopt, -1,
+                                                VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
+                                                VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE)))
         goto cleanup;
 
     if (def->ndisks) {
@@ -6130,6 +6134,431 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     return ret;
 }
 
+#if VBOX_API_VERSION >=4002000
+static
+int vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
+                                    virDomainSnapshotPtr snapshot)
+{
+    virDomainPtr dom = snapshot->domain;
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIID domiid = VBOX_IID_INITIALIZER;
+    IMachine *machine = NULL;
+    ISnapshot *snap = NULL;
+    IMachine *snapMachine = NULL;
+    vboxArray mediumAttachments         = VBOX_ARRAY_INITIALIZER;
+    PRUint32   maxPortPerInst[StorageBus_Floppy + 1] = {};
+    PRUint32   maxSlotPerPort[StorageBus_Floppy + 1] = {};
+    int diskCount = 0;
+    nsresult rc;
+    vboxIID snapIid = VBOX_IID_INITIALIZER;
+    char *snapshotUuidStr = NULL;
+    size_t i = 0;
+
+    vboxIIDFromUUID(&domiid, dom->uuid);
+    rc = VBOX_OBJECT_GET_MACHINE(domiid.value, &machine);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no domain with matching UUID"));
+        goto cleanup;
+    }
+    if (!(snap = vboxDomainSnapshotGet(data, dom, machine, snapshot->name)))
+        goto cleanup;
+
+    rc = snap->vtbl->GetId(snap, &snapIid.value);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not get snapshot id"));
+        goto cleanup;
+    }
+
+    VBOX_UTF16_TO_UTF8(snapIid.value, &snapshotUuidStr);
+    rc = snap->vtbl->GetMachine(snap, &snapMachine);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get machine"));
+        goto cleanup;
+    }
+    def->ndisks = 0;
+    rc = vboxArrayGet(&mediumAttachments, snapMachine, snapMachine->vtbl->GetMediumAttachments);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no medium attachments"));
+        goto cleanup;
+    }
+    /* get the number of attachments */
+    for (i = 0; i < mediumAttachments.count; i++) {
+        IMediumAttachment *imediumattach = mediumAttachments.items[i];
+        if (imediumattach) {
+            IMedium *medium = NULL;
+
+            rc = imediumattach->vtbl->GetMedium(imediumattach, &medium);
+            if (NS_FAILED(rc)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("cannot get medium"));
+                goto cleanup;
+            }
+            if (medium) {
+                def->ndisks++;
+                VBOX_RELEASE(medium);
+            }
+        }
+    }
+    /* Allocate mem, if fails return error */
+    if (VIR_ALLOC_N(def->disks, def->ndisks) < 0)
+        goto cleanup;
+
+    if (!vboxGetMaxPortSlotValues(data->vboxObj, maxPortPerInst, maxSlotPerPort))
+        goto cleanup;
+
+    /* get the attachment details here */
+    for (i = 0; i < mediumAttachments.count && diskCount < def->ndisks; i++) {
+        IStorageController *storageController = NULL;
+        PRUnichar *storageControllerName = NULL;
+        PRUint32   deviceType     = DeviceType_Null;
+        PRUint32   storageBus     = StorageBus_Null;
+        IMedium   *disk         = NULL;
+        PRUnichar *childLocUtf16 = NULL;
+        char      *childLocUtf8  = NULL;
+        PRUint32   deviceInst     = 0;
+        PRInt32    devicePort     = 0;
+        PRInt32    deviceSlot     = 0;
+        vboxArray children = VBOX_ARRAY_INITIALIZER;
+        vboxArray snapshotIids = VBOX_ARRAY_INITIALIZER;
+        IMediumAttachment *imediumattach = mediumAttachments.items[i];
+        size_t j = 0;
+        size_t k = 0;
+        if (!imediumattach)
+            continue;
+        rc = imediumattach->vtbl->GetMedium(imediumattach, &disk);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get medium"));
+            goto cleanup;
+        }
+        if (!disk)
+            continue;
+        rc = imediumattach->vtbl->GetController(imediumattach, &storageControllerName);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get controller"));
+            goto cleanup;
+        }
+        if (!storageControllerName) {
+            VBOX_RELEASE(disk);
+            continue;
+        }
+        rc = vboxArrayGet(&children, disk, disk->vtbl->GetChildren);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get children disk"));
+            goto cleanup;
+        }
+        rc = vboxArrayGetWithPtrArg(&snapshotIids, disk, disk->vtbl->GetSnapshotIds, domiid.value);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get snapshot ids"));
+            goto cleanup;
+        }
+        for (j = 0; j < children.count; ++j) {
+            IMedium *child = children.items[j];
+            for (k = 0; k < snapshotIids.count; ++k) {
+                PRUnichar *diskSnapId = snapshotIids.items[k];
+                char *diskSnapIdStr = NULL;
+                VBOX_UTF16_TO_UTF8(diskSnapId, &diskSnapIdStr);
+                if (STREQ(diskSnapIdStr, snapshotUuidStr)) {
+                    rc = machine->vtbl->GetStorageControllerByName(machine,
+                                                              storageControllerName,
+                                                              &storageController);
+                    VBOX_UTF16_FREE(storageControllerName);
+                    if (!storageController) {
+                        VBOX_RELEASE(child);
+                        break;
+                    }
+                    rc = child->vtbl->GetLocation(child, &childLocUtf16);
+                    if (NS_FAILED(rc)) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                       _("cannot get disk location"));
+                        goto cleanup;
+                    }
+                    VBOX_UTF16_TO_UTF8(childLocUtf16, &childLocUtf8);
+                    VBOX_UTF16_FREE(childLocUtf16);
+                    if (VIR_STRDUP(def->disks[diskCount].src->path, childLocUtf8) < 0) {
+                        VBOX_RELEASE(child);
+                        VBOX_RELEASE(storageController);
+                        goto cleanup;
+                    }
+                    VBOX_UTF8_FREE(childLocUtf8);
+
+                    rc = storageController->vtbl->GetBus(storageController, &storageBus);
+                    if (NS_FAILED(rc)) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                       _("cannot get storage controller bus"));
+                        goto cleanup;
+                    }
+                    rc = imediumattach->vtbl->GetType(imediumattach, &deviceType);
+                    if (NS_FAILED(rc)) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                       _("cannot get medium attachment type"));
+                        goto cleanup;
+                    }
+                    rc = imediumattach->vtbl->GetPort(imediumattach, &devicePort);
+                    if (NS_FAILED(rc)) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                       _("cannot get medium attachchment type"));
+                        goto cleanup;
+                    }
+                    rc = imediumattach->vtbl->GetDevice(imediumattach, &deviceSlot);
+                    if (NS_FAILED(rc)) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                       _("cannot get medium attachment device"));
+                        goto cleanup;
+                    }
+                    def->disks[diskCount].src->type = VIR_STORAGE_TYPE_FILE;
+                    def->disks[diskCount].name = vboxGenerateMediumName(storageBus,
+                                                                        deviceInst,
+                                                                        devicePort,
+                                                                        deviceSlot,
+                                                                        maxPortPerInst,
+                                                                        maxSlotPerPort);
+                }
+                VBOX_UTF8_FREE(diskSnapIdStr);
+            }
+        }
+        VBOX_RELEASE(storageController);
+        VBOX_RELEASE(disk);
+        diskCount++;
+    }
+    vboxArrayRelease(&mediumAttachments);
+
+    ret = 0;
+ cleanup:
+    if (ret < 0) {
+        for (i = 0; i < def->dom->ndisks; i++)
+            VIR_FREE(def->dom->disks[i]);
+        VIR_FREE(def->dom->disks);
+        def->dom->ndisks = 0;
+        ret = -1;
+    }
+    VBOX_RELEASE(snap);
+    return ret;
+}
+
+static
+int vboxSnapshotGetReadOnlyDisks(virDomainSnapshotPtr snapshot,
+                                    virDomainSnapshotDefPtr def)
+{
+    virDomainPtr dom = snapshot->domain;
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIID domiid = VBOX_IID_INITIALIZER;
+    ISnapshot *snap = NULL;
+    IMachine *machine = NULL;
+    IMachine *snapMachine = NULL;
+    IStorageController *storageController = NULL;
+    IMedium   *disk         = NULL;
+    nsresult rc;
+    vboxIIDFromUUID(&domiid, dom->uuid);
+    vboxArray mediumAttachments         = VBOX_ARRAY_INITIALIZER;
+    size_t i = 0;
+    PRUint32   maxPortPerInst[StorageBus_Floppy + 1] = {};
+    PRUint32   maxSlotPerPort[StorageBus_Floppy + 1] = {};
+    int diskCount = 0;
+
+    rc = VBOX_OBJECT_GET_MACHINE(domiid.value, &machine);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching UUID"));
+        goto cleanup;
+    }
+
+    if (!(snap = vboxDomainSnapshotGet(data, dom, machine, snapshot->name)))
+        goto cleanup;
+
+    rc = snap->vtbl->GetMachine(snap, &snapMachine);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot get machine"));
+        goto cleanup;
+    }
+    /*
+     * Get READ ONLY disks
+     * In the snapshot metadata, these are the disks written inside the <domain> node
+    */
+    rc = vboxArrayGet(&mediumAttachments, snapMachine, snapMachine->vtbl->GetMediumAttachments);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot get medium attachments"));
+        goto cleanup;
+    }
+    /* get the number of attachments */
+    for (i = 0; i < mediumAttachments.count; i++) {
+        IMediumAttachment *imediumattach = mediumAttachments.items[i];
+        if (imediumattach) {
+            IMedium *medium = NULL;
+
+            rc = imediumattach->vtbl->GetMedium(imediumattach, &medium);
+            if (NS_FAILED(rc)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("cannot get medium"));
+                goto cleanup;
+            }
+            if (medium) {
+                def->dom->ndisks++;
+                VBOX_RELEASE(medium);
+            }
+        }
+    }
+
+    /* Allocate mem, if fails return error */
+    if (VIR_ALLOC_N(def->dom->disks, def->dom->ndisks) >= 0) {
+        for (i = 0; i < def->dom->ndisks; i++) {
+            if (VIR_ALLOC(def->dom->disks[i]) < 0)
+                goto cleanup;
+        }
+    } else {
+        goto cleanup;
+    }
+
+    if (!vboxGetMaxPortSlotValues(data->vboxObj, maxPortPerInst, maxSlotPerPort))
+        goto cleanup;
+
+    /* get the attachment details here */
+    for (i = 0; i < mediumAttachments.count && diskCount < def->dom->ndisks; i++) {
+        PRUnichar *storageControllerName = NULL;
+        PRUint32   deviceType     = DeviceType_Null;
+        PRUint32   storageBus     = StorageBus_Null;
+        PRBool     readOnly       = PR_FALSE;
+        PRUnichar *mediumLocUtf16 = NULL;
+        char      *mediumLocUtf8  = NULL;
+        PRUint32   deviceInst     = 0;
+        PRInt32    devicePort     = 0;
+        PRInt32    deviceSlot     = 0;
+        IMediumAttachment *imediumattach = mediumAttachments.items[i];
+        if (!imediumattach)
+            continue;
+        rc = imediumattach->vtbl->GetMedium(imediumattach, &disk);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get medium"));
+            goto cleanup;
+        }
+        if (!disk)
+            continue;
+        rc = imediumattach->vtbl->GetController(imediumattach, &storageControllerName);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get storage controller name"));
+            goto cleanup;
+        }
+        if (!storageControllerName)
+            continue;
+        rc = machine->vtbl->GetStorageControllerByName(machine,
+                                                  storageControllerName,
+                                                  &storageController);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get storage controller"));
+            goto cleanup;
+        }
+        VBOX_UTF16_FREE(storageControllerName);
+        if (!storageController)
+            continue;
+        rc = disk->vtbl->GetLocation(disk, &mediumLocUtf16);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get disk location"));
+            goto cleanup;
+        }
+        VBOX_UTF16_TO_UTF8(mediumLocUtf16, &mediumLocUtf8);
+        VBOX_UTF16_FREE(mediumLocUtf16);
+        if (VIR_STRDUP(def->dom->disks[diskCount]->src->path, mediumLocUtf8) < 0)
+            goto cleanup;
+
+        VBOX_UTF8_FREE(mediumLocUtf8);
+
+        rc = storageController->vtbl->GetBus(storageController, &storageBus);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get storage controller bus"));
+            goto cleanup;
+        }
+        if (storageBus == StorageBus_IDE) {
+            def->dom->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_IDE;
+        } else if (storageBus == StorageBus_SATA) {
+            def->dom->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_SATA;
+        } else if (storageBus == StorageBus_SCSI) {
+            def->dom->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_SCSI;
+        } else if (storageBus == StorageBus_Floppy) {
+            def->dom->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_FDC;
+        }
+
+        rc = imediumattach->vtbl->GetType(imediumattach, &deviceType);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get medium attachment type"));
+            goto cleanup;
+        }
+        if (deviceType == DeviceType_HardDisk)
+            def->dom->disks[diskCount]->device = VIR_DOMAIN_DISK_DEVICE_DISK;
+        else if (deviceType == DeviceType_Floppy)
+            def->dom->disks[diskCount]->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
+        else if (deviceType == DeviceType_DVD)
+            def->dom->disks[diskCount]->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
+
+        rc = imediumattach->vtbl->GetPort(imediumattach, &devicePort);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get medium attachment port"));
+            goto cleanup;
+        }
+        rc = imediumattach->vtbl->GetDevice(imediumattach, &deviceSlot);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get device"));
+            goto cleanup;
+        }
+        rc = disk->vtbl->GetReadOnly(disk, &readOnly);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get read only attribute"));
+            goto cleanup;
+        }
+        if (readOnly == PR_TRUE)
+            def->dom->disks[diskCount]->readonly = true;
+        def->dom->disks[diskCount]->src->type = VIR_STORAGE_TYPE_FILE;
+        def->dom->disks[diskCount]->dst = vboxGenerateMediumName(storageBus,
+                                                                 deviceInst,
+                                                                 devicePort,
+                                                                 deviceSlot,
+                                                                 maxPortPerInst,
+                                                                 maxSlotPerPort);
+        if (!def->dom->disks[diskCount]->dst) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not generate medium name for the disk "
+                             "at: controller instance:%u, port:%d, slot:%d"),
+                           deviceInst, devicePort, deviceSlot);
+            ret = -1;
+            goto cleanup;
+        }
+        diskCount ++;
+    }
+    /* cleanup on error */
+
+    ret = 0;
+ cleanup:
+    if (ret < 0) {
+        for (i = 0; i < def->dom->ndisks; i++)
+            VIR_FREE(def->dom->disks[i]);
+        VIR_FREE(def->dom->disks);
+        def->dom->ndisks = 0;
+    }
+    VBOX_RELEASE(disk);
+    VBOX_RELEASE(storageController);
+    vboxArrayRelease(&mediumAttachments);
+    VBOX_RELEASE(snap);
+    return ret;
+}
+#endif
+
 static char *
 vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
                              unsigned int flags)
@@ -6147,6 +6576,10 @@ vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     PRInt64 timestamp;
     PRBool online = PR_FALSE;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
+#if VBOX_API_VERSION >=4002000
+    PRUint32 memorySize                 = 0;
+    PRUint32 CPUCount                 = 0;
+#endif
 
     virCheckFlags(0, NULL);
 
@@ -6161,10 +6594,40 @@ vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     if (!(snap = vboxDomainSnapshotGet(data, dom, machine, snapshot->name)))
         goto cleanup;
 
-    if (VIR_ALLOC(def) < 0)
+    if (VIR_ALLOC(def) < 0 || VIR_ALLOC(def->dom) < 0)
         goto cleanup;
     if (VIR_STRDUP(def->name, snapshot->name) < 0)
         goto cleanup;
+
+#if VBOX_API_VERSION >=4002000
+    /* Register def->dom properties for them to be saved inside the snapshot XMl
+     * Otherwise, there is a problem while parsing the xml
+     */
+    def->dom->virtType = VIR_DOMAIN_VIRT_VBOX;
+    def->dom->id = dom->id;
+    memcpy(def->dom->uuid, dom->uuid, VIR_UUID_BUFLEN);
+    if (VIR_STRDUP(def->dom->name, dom->name) < 0)
+        goto cleanup;
+    machine->vtbl->GetMemorySize(machine, &memorySize);
+    def->dom->mem.cur_balloon = memorySize * 1024;
+    /* Currently setting memory and maxMemory as same, cause
+     * the notation here seems to be inconsistent while
+     * reading and while dumping xml
+     */
+    def->dom->mem.max_balloon = memorySize * 1024;
+    if (VIR_STRDUP(def->dom->os.type, "hvm") < 0)
+        goto cleanup;
+    def->dom->os.arch = virArchFromHost();
+    machine->vtbl->GetCPUCount(machine, &CPUCount);
+    def->dom->maxvcpus = def->dom->vcpus = CPUCount;
+    if (vboxSnapshotGetReadWriteDisks(def, snapshot) < 0) {
+        VIR_DEBUG("Could not get read write disks for snapshot");
+    }
+
+    if (vboxSnapshotGetReadOnlyDisks(snapshot, def) < 0) {
+        VIR_DEBUG("Could not get Readonly disks for snapshot");
+    }
+#endif /* VBOX_API_VERSION >= 4002000 */
 
     rc = snap->vtbl->GetDescription(snap, &str16);
     if (NS_FAILED(rc)) {
@@ -6230,6 +6693,7 @@ vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         def->state = VIR_DOMAIN_SHUTOFF;
 
     virUUIDFormat(dom->uuid, uuidstr);
+    memcpy(def->dom->uuid, dom->uuid, VIR_UUID_BUFLEN);
     ret = virDomainSnapshotDefFormat(uuidstr, def, flags, 0);
 
  cleanup:
@@ -6936,6 +7400,8 @@ vboxDomainSnapshotDeleteTree(vboxGlobalData *data,
     return ret;
 }
 
+
+
 static int
 vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
                          unsigned int flags)
@@ -6971,8 +7437,9 @@ vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    /* VBOX snapshots do not require any libvirt metadata, making this
-     * flag trivial once we know we have a valid snapshot.  */
+    /* In case we just want to delete the metadata, we will edit the vbox file in order
+     *to remove the node concerning the snapshot
+    */
     if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY) {
         ret = 0;
         goto cleanup;
@@ -8989,7 +9456,6 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
 
             if (machineIdsSize == 0 || machineIdsSize == deregister) {
                 IProgress *progress = NULL;
-
                 rc = hardDisk->vtbl->DeleteStorage(hardDisk, &progress);
 
                 if (NS_SUCCEEDED(rc) && progress) {
