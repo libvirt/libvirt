@@ -598,7 +598,7 @@ virSecurityDACRestoreSecuritySCSILabel(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
 
 static int
 virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
-                                          virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                          virDomainDefPtr def,
                                           virDomainHostdevDefPtr dev,
                                           const char *vroot)
 
