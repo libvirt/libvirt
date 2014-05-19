@@ -16598,7 +16598,7 @@ qemuDomainSetTime(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
-    bool sync = flags & VIR_DOMAIN_TIME_SYNC;
+    bool rtcSync = flags & VIR_DOMAIN_TIME_SYNC;
     int ret = -1;
     int rv;
 
@@ -16625,7 +16625,7 @@ qemuDomainSetTime(virDomainPtr dom,
         goto endjob;
 
     qemuDomainObjEnterAgent(vm);
-    rv = qemuAgentSetTime(priv->agent, seconds, nseconds, sync);
+    rv = qemuAgentSetTime(priv->agent, seconds, nseconds, rtcSync);
     qemuDomainObjExitAgent(vm);
 
     if (rv < 0)

@@ -1400,7 +1400,7 @@ cmdDomTime(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     bool now = vshCommandOptBool(cmd, "now");
     bool pretty = vshCommandOptBool(cmd, "pretty");
-    bool sync = vshCommandOptBool(cmd, "sync");
+    bool rtcSync = vshCommandOptBool(cmd, "sync");
     long long seconds = 0;
     unsigned int nseconds = 0;
     unsigned int flags = 0;
@@ -1426,13 +1426,13 @@ cmdDomTime(vshControl *ctl, const vshCmd *cmd)
         doSet = true;
     }
 
-    if (doSet || now || sync) {
+    if (doSet || now || rtcSync) {
         if (now && ((seconds = time(NULL)) == (time_t) -1)) {
             vshError(ctl, _("Unable to get current time"));
             goto cleanup;
         }
 
-        if (sync)
+        if (rtcSync)
             flags |= VIR_DOMAIN_TIME_SYNC;
 
         if (virDomainSetTime(dom, seconds, nseconds, flags) < 0)
