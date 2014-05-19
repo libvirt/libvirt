@@ -106,6 +106,9 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     ret = qemuMonitorEjectMedia(priv->mon, driveAlias, force);
     qemuDomainObjExitMonitor(driver, vm);
 
+    if (ret < 0)
+        goto audit;
+
     virObjectRef(vm);
     /* we don't want to report errors from media tray_open polling */
     while (retries) {
@@ -121,14 +124,11 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     virObjectUnref(vm);
 
     if (retries <= 0) {
-        if (ret == 0) {
-            /* If ret == -1, EjectMedia already set an error message */
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("Unable to eject media"));
-        }
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Unable to eject media"));
+        ret = -1;
         goto audit;
     }
-    ret = 0;
 
     src = virDomainDiskGetSource(disk);
     if (src) {
