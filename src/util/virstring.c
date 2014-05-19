@@ -187,6 +187,26 @@ void virStringFreeList(char **strings)
 }
 
 
+/**
+ * virStringFreeListCount:
+ * @strings: array of strings to free
+ * @count: number of elements in the array
+ *
+ * Frees a string array of @count length.
+ */
+void
+virStringFreeListCount(char **strings,
+                       size_t count)
+{
+    size_t i;
+
+    for (i = 0; i < count; i++)
+        VIR_FREE(strings[i]);
+
+    VIR_FREE(strings);
+}
+
+
 bool
 virStringArrayHasString(char **strings, const char *needle)
 {

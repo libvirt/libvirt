@@ -497,6 +497,26 @@ testStringToLong(const void *opaque)
 }
 
 
+/* The point of this test is to check whether all members of the array are
+ * freed. The test has to be checked using valgrind. */
+static int
+testVirStringFreeListCount(const void *opaque ATTRIBUTE_UNUSED)
+{
+    char **list;
+
+    if (VIR_ALLOC_N(list, 4) < 0)
+        return -1;
+
+    ignore_value(VIR_STRDUP(list[0], "test1"));
+    ignore_value(VIR_STRDUP(list[2], "test2"));
+    ignore_value(VIR_STRDUP(list[3], "test3"));
+
+    virStringFreeListCount(list, 4);
+
+    return 0;
+}
+
+
 static int
 mymain(void)
 {
@@ -700,6 +720,11 @@ mymain(void)
                 0LL, -1, 1ULL, 0);
     TEST_STRTOL("-18446744073709551616", NULL, 0, -1, 0U, -1,
                 0LL, -1, 0ULL, -1);
+
+    /* test virStringFreeListCount */
+    if (virtTestRun("virStringFreeListCount", testVirStringFreeListCount,
+                    NULL) < 0)
+        ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

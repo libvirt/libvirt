@@ -42,6 +42,7 @@ char *virStringJoin(const char **strings,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 void virStringFreeList(char **strings);
+void virStringFreeListCount(char **strings, size_t count);
 
 bool virStringArrayHasString(char **strings, const char *needle);
 

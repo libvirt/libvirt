@@ -1924,6 +1924,7 @@ virStrcpy;
 virStrdup;
 virStringArrayHasString;
 virStringFreeList;
+virStringFreeListCount;
 virStringJoin;
 virStringListLength;
 virStringReplace;
