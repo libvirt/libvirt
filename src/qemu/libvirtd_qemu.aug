@@ -84,6 +84,7 @@ module Libvirtd_qemu =
    let network_entry = str_entry "migration_address"
                  | int_entry "migration_port_min"
                  | int_entry "migration_port_max"
+                 | str_entry "migration_host"
 
    let log_entry = bool_entry "log_timestamp"
 

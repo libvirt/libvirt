@@ -2640,6 +2640,8 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
     int ret = -1;
     virURIPtr uri = NULL;
     bool well_formed_uri = true;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    const char *migrateHost = cfg->migrateHost;
 
     VIR_DEBUG("driver=%p, dconn=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, uri_in=%s, uri_out=%p, "
@@ -2653,8 +2655,9 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
     /* The URI passed in may be NULL or a string "tcp://somehostname:port".
      *
      * If the URI passed in is NULL then we allocate a port number
-     * from our pool of port numbers and return a URI of
-     * "tcp://ourhostname:port".
+     * from our pool of port numbers, and if the migrateHost is configured,
+     * we return a URI of "tcp://migrateHost:port", otherwise return a URI
+     * of "tcp://ourhostname:port".
      *
      * If the URI passed in is not NULL then we try to parse out the
      * port number and use that (note that the hostname is assumed
@@ -2664,8 +2667,17 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
         if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0)
             goto cleanup;
 
-        if ((hostname = virGetHostname()) == NULL)
-            goto cleanup;
+        if (migrateHost != NULL) {
+            if (virSocketAddrIsNumeric(migrateHost) &&
+                virSocketAddrParse(NULL, migrateHost, AF_UNSPEC) < 0)
+                goto cleanup;
+
+           if (VIR_STRDUP(hostname, migrateHost) < 0)
+                goto cleanup;
+        } else {
+            if ((hostname = virGetHostname()) == NULL)
+                goto cleanup;
+        }
 
         if (STRPREFIX(hostname, "localhost")) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2747,6 +2759,7 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
  cleanup:
     virURIFree(uri);
     VIR_FREE(hostname);
+    virObjectUnref(cfg);
     if (ret != 0) {
         VIR_FREE(*uri_out);
         if (autoPort)

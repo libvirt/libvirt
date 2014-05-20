@@ -576,6 +576,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
 
     GET_VALUE_LONG("seccomp_sandbox", cfg->seccompSandbox);
 
+    GET_VALUE_STR("migration_host", cfg->migrateHost);
     GET_VALUE_STR("migration_address", cfg->migrationAddress);
 
     GET_VALUE_BOOL("log_timestamp", cfg->logTimestamp);
