@@ -22,7 +22,7 @@
 
 #include "testutils.h"
 
-#ifdef WITH_DBUS
+#if defined(WITH_DBUS) && defined(__linux__)
 
 # include <stdlib.h>
 # include <dbus/dbus.h>
@@ -477,7 +477,7 @@ mymain(void)
 
 VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virmockdbus.so")
 
-#else /* ! WITH_DBUS */
+#else /* ! (WITH_DBUS && __linux__) */
 int
 main(void)
 {

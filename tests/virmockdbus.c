@@ -1,7 +1,7 @@
 /*
  * virmockdbus.c: mocking of dbus message send/reply
  *
- * Copyright (C) 2013 Red Hat, Inc.
+ * Copyright (C) 2013-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,7 @@
 
 #include <config.h>
 
-#ifdef WITH_DBUS
+#if defined(WITH_DBUS) && !defined(WIN32)
 # include "virmock.h"
 # include <dbus/dbus.h>
 
@@ -61,4 +61,4 @@ VIR_MOCK_LINK_RET_ARGS(dbus_connection_send_with_reply_and_block,
                        int, timeout_milliseconds,
                        DBusError *, error)
 
-#endif /* WITH_DBUS */
+#endif /* WITH_DBUS && !WIN32 */
