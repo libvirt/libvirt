@@ -1727,11 +1727,6 @@ struct _virDomainClockDef {
         struct {
             long long adjustment;
             int basis;
-
-            /* Store the base date (-rtc base=$date, in seconds
-             * since the Epoch) of guest process, internal only
-             */
-            unsigned long long basedate;
         } variable;
 
         /* Timezone name, when

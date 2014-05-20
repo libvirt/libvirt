@@ -843,19 +843,6 @@ qemuProcessHandleRTCChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
-
-    /* QEMU's RTC_CHANGE event returns the offset from the specified
-     * date instead of the host UTC if a specific date is provided
-     * (-rtc base=$date). We need to convert it to be offset from
-     * host UTC.
-     */
-    if (vm->def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_VARIABLE) {
-        time_t now = time(NULL);
-
-        offset += vm->def->clock.data.variable.basedate -
-                  (unsigned long long)now;
-    }
-
     event = virDomainEventRTCChangeNewFromObj(vm, offset);
 
     if (vm->def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_VARIABLE)
