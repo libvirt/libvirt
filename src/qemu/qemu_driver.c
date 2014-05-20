@@ -12635,7 +12635,7 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
         virDomainSnapshotDiskDefPtr disk = &def->disks[i];
         virDomainDiskDefPtr dom_disk = vm->def->disks[i];
 
-        switch (disk->snapshot) {
+        switch ((virDomainSnapshotLocation) disk->snapshot) {
         case VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL:
             found_internal = true;
 
@@ -12692,7 +12692,7 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
             break;
 
         case VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT:
-        default:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("unexpected code path"));
             goto cleanup;
