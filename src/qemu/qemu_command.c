@@ -5987,18 +5987,29 @@ qemuBuildClockArgStr(virDomainClockDefPtr def)
         time_t now = time(NULL);
         struct tm nowbits;
 
-        switch ((enum virDomainClockBasis) def->data.variable.basis) {
-        case VIR_DOMAIN_CLOCK_BASIS_UTC:
-            now += def->data.variable.adjustment;
-            gmtime_r(&now, &nowbits);
-            break;
-        case VIR_DOMAIN_CLOCK_BASIS_LOCALTIME:
-            now += def->data.variable.adjustment;
-            localtime_r(&now, &nowbits);
-            break;
-        case VIR_DOMAIN_CLOCK_BASIS_LAST:
-            break;
+        if (def->data.variable.basis == VIR_DOMAIN_CLOCK_BASIS_LOCALTIME) {
+            long localOffset;
+
+            /* in the case of basis='localtime', rather than trying to
+             * keep that basis (and associated offset from UTC) in the
+             * status and deal with adding in the difference each time
+             * there is an RTC_CHANGE event, it is simpler and less
+             * error prone to just convert the adjustment an offset
+             * from UTC right now (and change the status to
+             * "basis='utc' to reflect this). This eliminates
+             * potential errors in both RTC_CHANGE events and in
+             * migration (in the case that the status of DST, or the
+             * timezone of the destination host, changed relative to
+             * startup).
+             */
+            if (virTimeLocalOffsetFromUTC(&localOffset) < 0)
+               goto error;
+            def->data.variable.adjustment += localOffset;
+            def->data.variable.basis = VIR_DOMAIN_CLOCK_BASIS_UTC;
         }
+
+        now += def->data.variable.adjustment;
+        gmtime_r(&now, &nowbits);
 
         /* when an RTC_CHANGE event is received from qemu, we need to
          * have the adjustment used at domain start time available to
