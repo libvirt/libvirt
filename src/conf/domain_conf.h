@@ -1727,6 +1727,13 @@ struct _virDomainClockDef {
         struct {
             long long adjustment;
             int basis;
+
+            /* domain start-time adjustment. This is a
+             * private/internal read-only value that only exists when
+             * a domain is running, and only if the clock
+             * offset='variable'
+             */
+            long long adjustment0;
         } variable;
 
         /* Timezone name, when

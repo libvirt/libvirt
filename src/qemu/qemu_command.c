@@ -36,6 +36,7 @@
 #include "virfile.h"
 #include "virnetdev.h"
 #include "virstring.h"
+#include "virtime.h"
 #include "viruuid.h"
 #include "c-ctype.h"
 #include "domain_nwfilter.h"
@@ -5998,6 +5999,14 @@ qemuBuildClockArgStr(virDomainClockDefPtr def)
         case VIR_DOMAIN_CLOCK_BASIS_LAST:
             break;
         }
+
+        /* when an RTC_CHANGE event is received from qemu, we need to
+         * have the adjustment used at domain start time available to
+         * compute the new offset from UTC. As this new value is
+         * itself stored in def->data.variable.adjustment, we need to
+         * save a copy of it now.
+        */
+        def->data.variable.adjustment0 = def->data.variable.adjustment;
 
         virBufferAsprintf(&buf, "base=%d-%02d-%02dT%02d:%02d:%02d",
                           nowbits.tm_year + 1900,

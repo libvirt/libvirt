@@ -99,6 +99,7 @@ typedef enum {
    VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES = (1<<18),
    VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM = (1<<19),
    VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT = (1<<20),
+   VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST = (1<<21),
 } virDomainXMLInternalFlags;
 
 VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
@@ -12023,6 +12024,9 @@ virDomainDefParseXML(xmlDocPtr xml,
         if (virXPathLongLong("number(./clock/@adjustment)", ctxt,
                              &def->clock.data.variable.adjustment) < 0)
             def->clock.data.variable.adjustment = 0;
+        if (virXPathLongLong("number(./clock/@adjustment0)", ctxt,
+                             &def->clock.data.variable.adjustment0) < 0)
+            def->clock.data.variable.adjustment0 = 0;
         tmp = virXPathString("string(./clock/@basis)", ctxt);
         if (tmp) {
             if ((def->clock.data.variable.basis = virDomainClockBasisTypeFromString(tmp)) < 0) {
@@ -17117,7 +17121,8 @@ virDomainResourceDefFormat(virBufferPtr buf,
 
 verify(((VIR_DOMAIN_XML_INTERNAL_STATUS |
          VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
-         VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES)
+         VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES |
+         VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST)
         & DUMPXML_FLAGS) == 0);
 
 /* This internal version can accept VIR_DOMAIN_XML_INTERNAL_*,
@@ -17139,7 +17144,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     virCheckFlags(DUMPXML_FLAGS |
                   VIR_DOMAIN_XML_INTERNAL_STATUS |
                   VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
-                  VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES,
+                  VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES |
+                  VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST,
                   -1);
 
     if (!(type = virDomainVirtTypeToString(def->virtType))) {
@@ -17673,6 +17679,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, " adjustment='%lld' basis='%s'",
                           def->clock.data.variable.adjustment,
                           virDomainClockBasisTypeToString(def->clock.data.variable.basis));
+        if (flags & VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST) {
+            if (def->clock.data.variable.adjustment0)
+                virBufferAsprintf(buf, " adjustment0='%lld'",
+                                  def->clock.data.variable.adjustment0);
+        }
         break;
     case VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE:
         virBufferEscapeString(buf, " timezone='%s'", def->clock.data.timezone);
@@ -18103,7 +18114,8 @@ virDomainSaveStatus(virDomainXMLOptionPtr xmlopt,
     unsigned int flags = (VIR_DOMAIN_XML_SECURE |
                           VIR_DOMAIN_XML_INTERNAL_STATUS |
                           VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
-                          VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES);
+                          VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES |
+                          VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST);
 
     int ret = -1;
     char *xml;
@@ -18191,7 +18203,8 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
     if (!(obj = virDomainObjParseFile(statusFile, caps, xmlopt, expectedVirtTypes,
                                       VIR_DOMAIN_XML_INTERNAL_STATUS |
                                       VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
-                                      VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES)))
+                                      VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES |
+                                      VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST)))
         goto error;
 
     virUUIDFormat(obj->def->uuid, uuidstr);
