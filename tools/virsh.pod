@@ -774,8 +774,9 @@ address of virtual interface (such as I<detach-interface> or
 I<domif-setlink>) will accept the MAC address printed by this command.
 
 =item B<blockcommit> I<domain> I<path> [I<bandwidth>]
-{[I<base>] | [I<--shallow>]} [I<top>] [I<--delete>]
-[I<--wait> [I<--verbose>] [I<--timeout> B<seconds>] [I<--async>]]
+[I<base>] [I<--shallow>] [I<top>] [I<--delete>]
+[I<--wait> [I<--async>] [I<--verbose>]] [I<--timeout> B<seconds>]
+[I<--active>] [{I<--pivot> | I<--keep-overlay>}]
 
 Reduce the length of a backing image chain, by committing changes at the
 top of the chain (snapshot or delta files) into backing images.  By
@@ -785,19 +786,32 @@ operation is constrained to committing just that portion of the chain;
 I<--shallow> can be used instead of I<base> to specify the immediate
 backing file of the resulting top image to be committed.  The files
 being committed are rendered invalid, possibly as soon as the operation
-starts; using the I<--delete> flag will remove these files at the successful
-completion of the commit operation.
+starts; using the I<--delete> flag will attempt to remove these invalidated
+files at the successful completion of the commit operation.
+
+When I<top> is omitted or specified as the active image, it is also
+possible to specify I<--active> to trigger a two-phase active commit. In
+the first phase, I<top> is copied into I<base> and the job can only be
+canceled, with top still containing data not yet in base. In the second
+phase, I<top> and I<base> remain identical until a call to B<blockjob>
+with the I<--abort> flag (keeping top as the active image that tracks
+changes from that point in time) or the I<--pivot> flag (making base
+the new active image and invalidating top).
 
 By default, this command returns as soon as possible, and data for
 the entire disk is committed in the background; the progress of the
 operation can be checked with B<blockjob>.  However, if I<--wait> is
-specified, then this command will block until the operation completes,
-or cancel the operation if the optional I<timeout> in seconds elapses
+specified, then this command will block until the operation completes
+(or for I<--active>, enters the second phase), or until the operation
+is canceled because the optional I<timeout> in seconds elapses
 or SIGINT is sent (usually with C<Ctrl-C>).  Using I<--verbose> along
 with I<--wait> will produce periodic status updates.  If job cancellation
 is triggered, I<--async> will return control to the user as fast as
 possible, otherwise the command may continue to block a little while
-longer until the job is done cleaning up.
+longer until the job is done cleaning up.  Using I<--pivot> is shorthand
+for combining I<--active> I<--wait> with an automatic B<blockjob>
+I<--pivot>; and using I<--keep-overlay> is shorthand for combining
+I<--active> I<--wait> with an automatic B<blockjob> I<--abort>.
 
 I<path> specifies fully-qualified path of the disk; it corresponds
 to a unique target name (<target dev='name'/>) or source file (<source
@@ -924,8 +938,8 @@ also B<domblklist> for listing these names).
 If I<--abort> is specified, the active job on the specified disk will
 be aborted.  If I<--async> is also specified, this command will return
 immediately, rather than waiting for the cancellation to complete.  If
-I<--pivot> is specified, this requests that an active copy job
-be pivoted over to the new copy.
+I<--pivot> is specified, this requests that an active copy or active
+commit job be pivoted over to the new image.
 If I<--info> is specified, the active job information on the specified
 disk will be printed.
 I<bandwidth> can be used to set bandwidth limit for the active job.

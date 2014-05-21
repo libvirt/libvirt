@@ -1492,6 +1492,10 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
             flags |= VIR_DOMAIN_BLOCK_COMMIT_SHALLOW;
         if (vshCommandOptBool(cmd, "delete"))
             flags |= VIR_DOMAIN_BLOCK_COMMIT_DELETE;
+        if (vshCommandOptBool(cmd, "active") ||
+            vshCommandOptBool(cmd, "pivot") ||
+            vshCommandOptBool(cmd, "keep-overlay"))
+            flags |= VIR_DOMAIN_BLOCK_COMMIT_ACTIVE;
         ret = virDomainBlockCommit(dom, path, base, top, bandwidth, flags);
         break;
     case VSH_CMD_BLOCK_JOB_COPY:
@@ -1592,13 +1596,18 @@ static const vshCmdOptDef opts_block_commit[] = {
      .type = VSH_OT_DATA,
      .help = N_("path of top file to commit from (default top of chain)")
     },
+    {.name = "active",
+     .type = VSH_OT_BOOL,
+     .help = N_("trigger two-stage active commit of top file")
+    },
     {.name = "delete",
      .type = VSH_OT_BOOL,
      .help = N_("delete files that were successfully committed")
     },
     {.name = "wait",
      .type = VSH_OT_BOOL,
-     .help = N_("wait for job to complete")
+     .help = N_("wait for job to complete "
+                "(with --active, wait for job to sync)")
     },
     {.name = "verbose",
      .type = VSH_OT_BOOL,
@@ -1606,7 +1615,15 @@ static const vshCmdOptDef opts_block_commit[] = {
     },
     {.name = "timeout",
      .type = VSH_OT_INT,
-     .help = N_("with --wait, abort if copy exceeds timeout (in seconds)")
+     .help = N_("implies --wait, abort if copy exceeds timeout (in seconds)")
+    },
+    {.name = "pivot",
+     .type = VSH_OT_BOOL,
+     .help = N_("implies --active --wait, pivot when commit is synced")
+    },
+    {.name = "keep-overlay",
+     .type = VSH_OT_BOOL,
+     .help = N_("implies --active --wait, quit when commit is synced")
     },
     {.name = "async",
      .type = VSH_OT_BOOL,
@@ -1620,8 +1637,11 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     bool ret = false;
-    bool blocking = vshCommandOptBool(cmd, "wait");
     bool verbose = vshCommandOptBool(cmd, "verbose");
+    bool pivot = vshCommandOptBool(cmd, "pivot");
+    bool finish = vshCommandOptBool(cmd, "keep-overlay");
+    bool active = vshCommandOptBool(cmd, "active") || pivot || finish;
+    bool blocking = vshCommandOptBool(cmd, "wait");
     int timeout = 0;
     struct sigaction sig_action;
     struct sigaction old_sig_action;
@@ -1632,7 +1652,12 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
     bool quit = false;
     int abort_flags = 0;
 
+    blocking |= vshCommandOptBool(cmd, "timeout") || pivot || finish;
     if (blocking) {
+        if (pivot && finish) {
+            vshError(ctl, "%s", _("cannot mix --pivot and --keep-overlay"));
+            return false;
+        }
         if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
             return false;
         if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
@@ -1650,8 +1675,7 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
         sigaction(SIGINT, &sig_action, &old_sig_action);
 
         GETTIMEOFDAY(&start);
-    } else if (verbose || vshCommandOptBool(cmd, "timeout") ||
-               vshCommandOptBool(cmd, "async")) {
+    } else if (verbose || vshCommandOptBool(cmd, "async")) {
         vshError(ctl, "%s", _("missing --wait option"));
         return false;
     }
@@ -1683,6 +1707,8 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
         if (verbose)
             vshPrintJobProgress(_("Block Commit"),
                                 info.end - info.cur, info.end);
+        if (active && info.cur == info.end)
+            break;
 
         GETTIMEOFDAY(&curr);
         if (intCaught || (timeout &&
@@ -1709,7 +1735,25 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
         /* printf [100 %] */
         vshPrintJobProgress(_("Block Commit"), 0, 1);
     }
-    vshPrint(ctl, "\n%s", quit ? _("Commit aborted") : _("Commit complete"));
+    if (!quit && pivot) {
+        abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT;
+        if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
+            vshError(ctl, _("failed to pivot job for disk %s"), path);
+            goto cleanup;
+        }
+    } else if (finish && !quit &&
+               virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
+        vshError(ctl, _("failed to finish job for disk %s"), path);
+        goto cleanup;
+    }
+    if (quit)
+        vshPrint(ctl, "\n%s", _("Commit aborted"));
+    else if (pivot)
+        vshPrint(ctl, "\n%s", _("Successfully pivoted"));
+    else if (!finish)
+        vshPrint(ctl, "\n%s", _("Now in synchronized phase"));
+    else
+        vshPrint(ctl, "\n%s", _("Commit complete"));
 
     ret = true;
  cleanup:
