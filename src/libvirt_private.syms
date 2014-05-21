@@ -207,6 +207,7 @@ virDomainDiskDefAssignAddress;
 virDomainDiskDefForeachPath;
 virDomainDiskDefFree;
 virDomainDiskDefGetSecurityLabelDef;
+virDomainDiskDefNew;
 virDomainDiskDeviceTypeToString;
 virDomainDiskDiscardTypeToString;
 virDomainDiskErrorPolicyTypeFromString;

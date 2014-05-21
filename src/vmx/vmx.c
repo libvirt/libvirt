@@ -1998,7 +1998,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
         return -1;
     }
 
-    if (VIR_ALLOC(*def) < 0)
+    if (!(*def = virDomainDiskDefNew()))
         return -1;
 
     (*def)->device = device;

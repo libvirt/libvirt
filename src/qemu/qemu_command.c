@@ -10997,7 +10997,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                    STRPREFIX(arg, "-fd") ||
                    STREQ(arg, "-cdrom")) {
             WANT_VALUE();
-            if (VIR_ALLOC(disk) < 0)
+            if (!(disk = virDomainDiskDefNew()))
                 goto error;
 
             if (STRPREFIX(val, "/dev/"))
@@ -11297,7 +11297,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                     goto error;
                 }
             } else if (STRPREFIX(val, "disk:")) {
-                if (VIR_ALLOC(disk) < 0)
+                if (!(disk = virDomainDiskDefNew()))
                     goto error;
                 if (VIR_STRDUP(disk->src.path, val + strlen("disk:")) < 0)
                     goto error;

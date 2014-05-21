@@ -407,7 +407,7 @@ parallelsAddHddInfo(virDomainDefPtr def, const char *key, virJSONValuePtr value)
 {
     virDomainDiskDefPtr disk = NULL;
 
-    if (VIR_ALLOC(disk) < 0)
+    if (!(disk = virDomainDiskDefNew()))
         goto error;
 
     if (parallelsGetHddInfo(def, disk, key, value))

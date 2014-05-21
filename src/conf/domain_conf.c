@@ -1181,6 +1181,16 @@ void virDomainLeaseDefFree(virDomainLeaseDefPtr def)
 }
 
 
+virDomainDiskDefPtr
+virDomainDiskDefNew(void)
+{
+    virDomainDiskDefPtr ret;
+
+    ignore_value(VIR_ALLOC(ret));
+    return ret;
+}
+
+
 void
 virDomainDiskDefFree(virDomainDiskDefPtr def)
 {
@@ -5232,7 +5242,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     int expected_secret_usage = -1;
     int auth_secret_usage = -1;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainDiskDefNew()))
         return NULL;
 
     def->geometry.cylinders = 0;

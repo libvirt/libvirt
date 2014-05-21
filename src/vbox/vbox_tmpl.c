@@ -2768,7 +2768,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 
             if ((def->ndisks > 0) && (VIR_ALLOC_N(def->disks, def->ndisks) >= 0)) {
                 for (i = 0; i < def->ndisks; i++) {
-                    if (VIR_ALLOC(def->disks[i]) >= 0) {
+                    if ((def->disks[i] = virDomainDiskDefNew())) {
                         def->disks[i]->device = VIR_DOMAIN_DISK_DEVICE_DISK;
                         def->disks[i]->bus = VIR_DOMAIN_DISK_BUS_IDE;
                         virDomainDiskSetType(def->disks[i],
@@ -3247,7 +3247,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 
                         def->ndisks++;
                         if (VIR_REALLOC_N(def->disks, def->ndisks) >= 0) {
-                            if (VIR_ALLOC(def->disks[def->ndisks - 1]) >= 0) {
+                            if ((def->disks[def->ndisks - 1] = virDomainDiskDefNew())) {
                                 def->disks[def->ndisks - 1]->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
                                 def->disks[def->ndisks - 1]->bus = VIR_DOMAIN_DISK_BUS_IDE;
                                 virDomainDiskSetType(def->disks[def->ndisks - 1],
@@ -3294,7 +3294,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 
                             def->ndisks++;
                             if (VIR_REALLOC_N(def->disks, def->ndisks) >= 0) {
-                                if (VIR_ALLOC(def->disks[def->ndisks - 1]) >= 0) {
+                                if ((def->disks[def->ndisks - 1] = virDomainDiskDefNew())) {
                                     def->disks[def->ndisks - 1]->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
                                     def->disks[def->ndisks - 1]->bus = VIR_DOMAIN_DISK_BUS_FDC;
                                     virDomainDiskSetType(def->disks[def->ndisks - 1],
