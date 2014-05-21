@@ -1033,12 +1033,15 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
              type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT) &&
             status == VIR_DOMAIN_BLOCK_JOB_COMPLETED)
             qemuDomainDetermineDiskChain(driver, vm, disk, true);
-        if (disk->mirror && type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY &&
-            status == VIR_DOMAIN_BLOCK_JOB_READY)
-            disk->mirroring = true;
-        if (disk->mirror && type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY &&
-            status == VIR_DOMAIN_BLOCK_JOB_FAILED)
-            VIR_FREE(disk->mirror);
+        if (disk->mirror && type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
+            if (status == VIR_DOMAIN_BLOCK_JOB_READY) {
+                disk->mirroring = true;
+            } else if (status == VIR_DOMAIN_BLOCK_JOB_FAILED) {
+                virStorageSourceFree(disk->mirror);
+                disk->mirror = NULL;
+                disk->mirroring = false;
+            }
+        }
     }
 
     virObjectUnlock(vm);

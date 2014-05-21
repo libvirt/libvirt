@@ -14864,12 +14864,21 @@ qemuDomainBlockPivot(virConnectPtr conn,
     int ret = -1, rc;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainBlockJobInfo info;
-    const char *format = virStorageFileFormatTypeToString(disk->mirrorFormat);
+    const char *format = NULL;
     bool resume = false;
     char *oldsrc = NULL;
     int oldformat;
     virStorageSourcePtr oldchain = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
+    if (!disk->mirror) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("pivot of disk '%s' requires an active copy job"),
+                       disk->dst);
+        goto cleanup;
+    }
+
+    format = virStorageFileFormatTypeToString(disk->mirror->format);
 
     /* Probe the status, if needed.  */
     if (!disk->mirroring) {
@@ -14928,8 +14937,8 @@ qemuDomainBlockPivot(virConnectPtr conn,
     oldsrc = disk->src->path;
     oldformat = disk->src->format;
     oldchain = disk->src->backingStore;
-    disk->src->path = disk->mirror;
-    disk->src->format = disk->mirrorFormat;
+    disk->src->path = disk->mirror->path;
+    disk->src->format = disk->mirror->format;
     disk->src->backingStore = NULL;
     if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0) {
         disk->src->path = oldsrc;
@@ -14937,7 +14946,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
         disk->src->backingStore = oldchain;
         goto cleanup;
     }
-    if (disk->mirrorFormat && disk->mirrorFormat != VIR_STORAGE_FILE_RAW &&
+    if (disk->mirror->format && disk->mirror->format != VIR_STORAGE_FILE_RAW &&
         (virDomainLockDiskAttach(driver->lockManager, cfg->uri,
                                  vm, disk) < 0 ||
          qemuSetupDiskCgroup(vm, disk) < 0 ||
@@ -14951,7 +14960,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
 
     /* Attempt the pivot.  */
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorDrivePivot(priv->mon, device, disk->mirror, format);
+    ret = qemuMonitorDrivePivot(priv->mon, device, disk->mirror->path, format);
     qemuDomainObjExitMonitor(driver, vm);
 
     if (ret == 0) {
@@ -14964,7 +14973,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
          * for now, we leak the access to the original.  */
         VIR_FREE(oldsrc);
         virStorageSourceFree(oldchain);
-        disk->mirror = NULL;
+        disk->mirror->path = NULL;
     } else {
         /* On failure, qemu abandons the mirror, and reverts back to
          * the source disk (RHEL 6.3 has a bug where the revert could
@@ -14978,9 +14987,9 @@ qemuDomainBlockPivot(virConnectPtr conn,
         disk->src->format = oldformat;
         virStorageSourceFree(disk->src->backingStore);
         disk->src->backingStore = oldchain;
-        VIR_FREE(disk->mirror);
     }
-    disk->mirrorFormat = VIR_STORAGE_FILE_NONE;
+    virStorageSourceFree(disk->mirror);
+    disk->mirror = NULL;
     disk->mirroring = false;
 
  cleanup:
@@ -15106,8 +15115,8 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     if (mode == BLOCK_JOB_ABORT && disk->mirror) {
         /* XXX We should also revoke security labels and disk lease on
          * the mirror, and audit that fact, before dropping things.  */
-        VIR_FREE(disk->mirror);
-        disk->mirrorFormat = VIR_STORAGE_FILE_NONE;
+        virStorageSourceFree(disk->mirror);
+        disk->mirror = NULL;
         disk->mirroring = false;
     }
 
@@ -15242,7 +15251,7 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     int idx;
     struct stat st;
     bool need_unlink = false;
-    char *mirror = NULL;
+    virStorageSourcePtr mirror = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
 
     /* Preliminaries: find the disk we are editing, sanity checks */
@@ -15323,6 +15332,11 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
         goto endjob;
     }
 
+    if (VIR_ALLOC(mirror) < 0)
+        goto endjob;
+    /* XXX Allow non-file mirror destinations */
+    mirror->type = VIR_STORAGE_TYPE_FILE;
+
     if (!(flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)) {
         int fd = qemuOpenFile(driver, vm, dest, O_WRONLY | O_TRUNC | O_CREAT,
                               &need_unlink, NULL);
@@ -15330,10 +15344,10 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
             goto endjob;
         VIR_FORCE_CLOSE(fd);
         if (!format)
-            disk->mirrorFormat = disk->src->format;
+            mirror->format = disk->src->format;
     } else if (format) {
-        disk->mirrorFormat = virStorageFileFormatTypeFromString(format);
-        if (disk->mirrorFormat <= 0) {
+        mirror->format = virStorageFileFormatTypeFromString(format);
+        if (mirror->format <= 0) {
             virReportError(VIR_ERR_INVALID_ARG, _("unrecognized format '%s'"),
                            format);
             goto endjob;
@@ -15343,12 +15357,12 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
          * also passed the RAW flag (and format is non-NULL), or it is
          * safe for us to probe the format from the file that we will
          * be using.  */
-        disk->mirrorFormat = virStorageFileProbeFormat(dest, cfg->user,
-                                                       cfg->group);
+        mirror->format = virStorageFileProbeFormat(dest, cfg->user,
+                                                   cfg->group);
     }
-    if (!format && disk->mirrorFormat > 0)
-        format = virStorageFileFormatTypeToString(disk->mirrorFormat);
-    if (VIR_STRDUP(mirror, dest) < 0)
+    if (!format && mirror->format > 0)
+        format = virStorageFileFormatTypeToString(mirror->format);
+    if (VIR_STRDUP(mirror->path, dest) < 0)
         goto endjob;
 
     if (qemuDomainPrepareDiskChainElementPath(driver, vm, disk, dest,
@@ -15378,9 +15392,11 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
  endjob:
     if (need_unlink && unlink(dest))
         VIR_WARN("unable to unlink just-created %s", dest);
-    if (ret < 0 && disk)
-        disk->mirrorFormat = VIR_STORAGE_FILE_NONE;
-    VIR_FREE(mirror);
+    if (ret < 0 && disk) {
+        virStorageSourceFree(disk->mirror);
+        disk->mirror = NULL;
+    }
+    virStorageSourceFree(mirror);
     if (!qemuDomainObjEndJob(driver, vm))
         vm = NULL;
 
