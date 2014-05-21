@@ -951,9 +951,9 @@ get_files(vahControl * ctl)
         /* XXX - if we knew the qemu user:group here we could send it in
          *        so that the open could be re-tried as that user:group.
          */
-        if (!disk->src.backingStore) {
+        if (!disk->src->backingStore) {
             bool probe = ctl->allowDiskFormatProbing;
-            virStorageFileGetMetadata(&disk->src, -1, -1, probe);
+            virStorageFileGetMetadata(disk->src, -1, -1, probe);
         }
 
         /* XXX passing ignoreOpenFailure = true to get back to the behavior

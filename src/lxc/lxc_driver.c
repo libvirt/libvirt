@@ -3897,14 +3897,14 @@ lxcDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
     switch (data->def->type) {
     case VIR_DOMAIN_DEVICE_DISK: {
         virDomainDiskDefPtr def = data->def->data.disk;
-        char *tmpsrc = def->src.path;
-        def->src.path = data->file;
+        char *tmpsrc = def->src->path;
+        def->src->path = data->file;
         if (virSecurityManagerSetImageLabel(data->driver->securityManager,
                                             data->vm->def, def) < 0) {
-            def->src.path = tmpsrc;
+            def->src->path = tmpsrc;
             goto cleanup;
         }
-        def->src.path = tmpsrc;
+        def->src->path = tmpsrc;
     }   break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV: {

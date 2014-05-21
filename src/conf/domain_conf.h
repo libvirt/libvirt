@@ -598,7 +598,7 @@ typedef virDomainBlockIoTuneInfo *virDomainBlockIoTuneInfoPtr;
 
 /* Stores the virtual disk configuration */
 struct _virDomainDiskDef {
-    virStorageSource src;
+    virStorageSourcePtr src; /* non-NULL.  XXX Allow NULL for empty cdrom? */
 
     int device; /* enum virDomainDiskDevice */
     int bus; /* enum virDomainDiskBus */

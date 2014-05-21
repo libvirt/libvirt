@@ -421,13 +421,13 @@ qemuProcessGetVolumeQcowPassphrase(virConnectPtr conn,
     int ret = -1;
     virStorageEncryptionPtr enc;
 
-    if (!disk->src.encryption) {
+    if (!disk->src->encryption) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("disk %s does not have any encryption information"),
-                       disk->src.path);
+                       disk->src->path);
         return -1;
     }
-    enc = disk->src.encryption;
+    enc = disk->src->encryption;
 
     if (!conn) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2234,7 +2234,7 @@ qemuProcessInitPasswords(virConnectPtr conn,
             size_t secretLen;
             const char *alias;
 
-            if (!vm->def->disks[i]->src.encryption ||
+            if (!vm->def->disks[i]->src->encryption ||
                 !virDomainDiskGetSource(vm->def->disks[i]))
                 continue;
 

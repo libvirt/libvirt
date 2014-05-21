@@ -1542,8 +1542,8 @@ qemuMigrationIsSafe(virDomainDefPtr def)
                     return false;
                 else if (rc == 1)
                     continue;
-            } else if (disk->src.type == VIR_STORAGE_TYPE_NETWORK &&
-                       disk->src.protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
+            } else if (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
+                       disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
                 continue;
             }
 

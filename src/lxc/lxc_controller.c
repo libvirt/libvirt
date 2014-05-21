@@ -1669,7 +1669,7 @@ static int virLXCControllerSetupDisk(virLXCControllerPtr ctrl,
     int ret = -1;
     struct stat sb;
     mode_t mode;
-    char *tmpsrc = def->src.path;
+    char *tmpsrc = def->src->path;
 
     if (virDomainDiskGetType(def) != VIR_STORAGE_TYPE_BLOCK) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -1686,7 +1686,7 @@ static int virLXCControllerSetupDisk(virLXCControllerPtr ctrl,
                     LXC_STATE_DIR, ctrl->def->name, def->dst) < 0)
         goto cleanup;
 
-    if (stat(def->src.path, &sb) < 0) {
+    if (stat(def->src->path, &sb) < 0) {
         virReportSystemError(errno,
                              _("Unable to access %s"), tmpsrc);
         goto cleanup;
@@ -1726,14 +1726,14 @@ static int virLXCControllerSetupDisk(virLXCControllerPtr ctrl,
 
     /* Labelling normally operates on src, but we need
      * to actually label the dst here, so hack the config */
-    def->src.path = dst;
+    def->src->path = dst;
     if (virSecurityManagerSetImageLabel(securityDriver, ctrl->def, def) < 0)
         goto cleanup;
 
     ret = 0;
 
  cleanup:
-    def->src.path = tmpsrc;
+    def->src->path = tmpsrc;
     VIR_FREE(dst);
     return ret;
 }

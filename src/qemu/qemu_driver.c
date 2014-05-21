@@ -6917,18 +6917,18 @@ qemuDomainUpdateDeviceConfig(virQEMUCapsPtr qemuCaps,
          * Update 'orig'
          * We allow updating src/type//driverType/cachemode/
          */
-        VIR_FREE(orig->src.path);
-        orig->src.path = disk->src.path;
-        orig->src.type = disk->src.type;
+        VIR_FREE(orig->src->path);
+        orig->src->path = disk->src->path;
+        orig->src->type = disk->src->type;
         orig->cachemode = disk->cachemode;
-        if (disk->src.driverName) {
-            VIR_FREE(orig->src.driverName);
-            orig->src.driverName = disk->src.driverName;
-            disk->src.driverName = NULL;
+        if (disk->src->driverName) {
+            VIR_FREE(orig->src->driverName);
+            orig->src->driverName = disk->src->driverName;
+            disk->src->driverName = NULL;
         }
-        if (disk->src.format)
-            orig->src.format = disk->src.format;
-        disk->src.path = NULL;
+        if (disk->src->format)
+            orig->src->format = disk->src->format;
+        disk->src->path = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
@@ -9500,8 +9500,8 @@ qemuDomainBlockResize(virDomainPtr dom,
     /* qcow2 and qed must be sized on 512 byte blocks/sectors,
      * so adjust size if necessary to round up.
      */
-    if (disk->src.format == VIR_STORAGE_FILE_QCOW2 ||
-        disk->src.format == VIR_STORAGE_FILE_QED)
+    if (disk->src->format == VIR_STORAGE_FILE_QCOW2 ||
+        disk->src->format == VIR_STORAGE_FILE_QED)
         size = VIR_ROUND_UP(size, 512);
 
     if (virAsprintf(&device, "%s%s", QEMU_DRIVE_HOST_PREFIX,
@@ -12070,25 +12070,27 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
     int ret = -1;
 
     /* XXX Labelling of non-local files isn't currently supported */
-    if (virStorageSourceGetActualType(&disk->src) == VIR_STORAGE_TYPE_NETWORK)
+    if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_NETWORK)
         return 0;
 
     cfg = virQEMUDriverGetConfig(driver);
 
-    /* XXX This would be easier when disk->src will be a pointer */
-    memcpy(&origdisk, &disk->src, sizeof(origdisk));
-    memcpy(&disk->src, elem, sizeof(*elem));
+    /* XXX Need to refactor the security manager and lock daemon to
+     * operate directly on a virStorageSourcePtr plus tidbits rather
+     * than a full virDomainDiskDef.  */
+    memcpy(&origdisk, disk->src, sizeof(origdisk));
+    memcpy(disk->src, elem, sizeof(*elem));
     disk->readonly = mode == VIR_DISK_CHAIN_READ_ONLY;
 
     if (mode == VIR_DISK_CHAIN_NO_ACCESS) {
         if (virSecurityManagerRestoreImageLabel(driver->securityManager,
                                                 vm->def, disk) < 0)
-            VIR_WARN("Unable to restore security label on %s", disk->src.path);
+            VIR_WARN("Unable to restore security label on %s", disk->src->path);
         if (qemuTeardownDiskCgroup(vm, disk) < 0)
             VIR_WARN("Failed to teardown cgroup for disk path %s",
-                     disk->src.path);
+                     disk->src->path);
         if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
-            VIR_WARN("Unable to release lock on %s", disk->src.path);
+            VIR_WARN("Unable to release lock on %s", disk->src->path);
     } else if (virDomainLockDiskAttach(driver->lockManager, cfg->uri,
                                        vm, disk) < 0 ||
                qemuSetupDiskCgroup(vm, disk) < 0 ||
@@ -12100,7 +12102,7 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    memcpy(&disk->src, &origdisk, sizeof(origdisk));
+    memcpy(disk->src, &origdisk, sizeof(origdisk));
     disk->readonly = origreadonly;
     virObjectUnref(cfg);
     return ret;
@@ -12261,22 +12263,22 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
                                          NULL)))
             goto cleanup;
 
-        if (defdisk->src.format > 0) {
+        if (defdisk->src->format > 0) {
             /* adds cmd line arg: backing_file=/path/to/backing/file,backing_fmd=format */
             virCommandAddArgFormat(cmd, "backing_file=%s,backing_fmt=%s",
-                                   defdisk->src.path,
-                                   virStorageFileFormatTypeToString(defdisk->src.format));
+                                   defdisk->src->path,
+                                   virStorageFileFormatTypeToString(defdisk->src->format));
         } else {
             if (!cfg->allowDiskFormatProbing) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unknown image format of '%s' and "
                                  "format probing is disabled"),
-                               defdisk->src.path);
+                               defdisk->src->path);
                 goto cleanup;
             }
 
             /* adds cmd line arg: backing_file=/path/to/backing/file */
-            virCommandAddArgFormat(cmd, "backing_file=%s", defdisk->src.path);
+            virCommandAddArgFormat(cmd, "backing_file=%s", defdisk->src->path);
         }
 
         /* adds cmd line args: /path/to/target/file */
@@ -12299,12 +12301,12 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
         defdisk = vm->def->disks[snapdisk->index];
 
         if (snapdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
-            VIR_FREE(defdisk->src.path);
-            if (VIR_STRDUP(defdisk->src.path, snapdisk->src->path) < 0) {
+            VIR_FREE(defdisk->src->path);
+            if (VIR_STRDUP(defdisk->src->path, snapdisk->src->path) < 0) {
                 /* we cannot rollback here in a sane way */
                 goto cleanup;
             }
-            defdisk->src.format = snapdisk->src->format;
+            defdisk->src->format = snapdisk->src->format;
         }
     }
 
@@ -12419,7 +12421,7 @@ qemuDomainSnapshotCreateActiveInternal(virConnectPtr conn,
 static int
 qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
 {
-    int actualType = virStorageSourceGetActualType(&disk->src);
+    int actualType = virStorageSourceGetActualType(disk->src);
 
     switch ((virStorageType) actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
@@ -12427,7 +12429,7 @@ qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
         return 0;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        switch ((virStorageNetProtocol) disk->src.protocol) {
+        switch ((virStorageNetProtocol) disk->src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_NBD:
         case VIR_STORAGE_NET_PROTOCOL_RBD:
@@ -12443,7 +12445,7 @@ qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("external inactive snapshots are not supported on "
                              "'network' disks using '%s' protocol"),
-                           virStorageNetProtocolTypeToString(disk->src.protocol));
+                           virStorageNetProtocolTypeToString(disk->src->protocol));
             return -1;
         }
         break;
@@ -12465,7 +12467,7 @@ qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
 static int
 qemuDomainSnapshotPrepareDiskExternalBackingActive(virDomainDiskDefPtr disk)
 {
-    int actualType = virStorageSourceGetActualType(&disk->src);
+    int actualType = virStorageSourceGetActualType(disk->src);
 
     if (actualType == VIR_STORAGE_TYPE_BLOCK &&
         disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
@@ -12628,7 +12630,7 @@ qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
     if (qemuTranslateDiskSourcePool(conn, disk) < 0)
         return -1;
 
-    actualType = virStorageSourceGetActualType(&disk->src);
+    actualType = virStorageSourceGetActualType(disk->src);
 
     switch ((virStorageType) actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
@@ -12636,7 +12638,7 @@ qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
         return 0;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        switch ((virStorageNetProtocol) disk->src.protocol) {
+        switch ((virStorageNetProtocol) disk->src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_NBD:
         case VIR_STORAGE_NET_PROTOCOL_RBD:
@@ -12652,7 +12654,7 @@ qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("internal inactive snapshots are not supported on "
                              "'network' disks using '%s' protocol"),
-                           virStorageNetProtocolTypeToString(disk->src.protocol));
+                           virStorageNetProtocolTypeToString(disk->src->protocol));
             return -1;
         }
         break;
@@ -12714,19 +12716,19 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
                                                       active) < 0)
                 goto cleanup;
 
-            if (dom_disk->src.type == VIR_STORAGE_TYPE_NETWORK &&
-                (dom_disk->src.protocol == VIR_STORAGE_NET_PROTOCOL_SHEEPDOG ||
-                 dom_disk->src.protocol == VIR_STORAGE_NET_PROTOCOL_RBD)) {
+            if (dom_disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
+                (dom_disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_SHEEPDOG ||
+                 dom_disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)) {
                 break;
             }
-            if (vm->def->disks[i]->src.format > 0 &&
-                vm->def->disks[i]->src.format != VIR_STORAGE_FILE_QCOW2) {
+            if (vm->def->disks[i]->src->format > 0 &&
+                vm->def->disks[i]->src->format != VIR_STORAGE_FILE_QCOW2) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("internal snapshot for disk %s unsupported "
                                  "for storage type %s"),
                                disk->name,
                                virStorageFileFormatTypeToString(
-                                   vm->def->disks[i]->src.format));
+                                   vm->def->disks[i]->src->format));
                 goto cleanup;
             }
             break;
@@ -12862,7 +12864,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
      * recompute it.  Better would be storing the chain ourselves rather than
      * reprobing, but this requires modifying domain_conf and our XML to fully
      * track the chain across libvirtd restarts.  */
-    virStorageSourceClearBackingStore(&disk->src);
+    virStorageSourceClearBackingStore(disk->src);
 
     if (virStorageFileInit(snap->src) < 0)
         goto cleanup;
@@ -12956,37 +12958,37 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
         }
     }
 
-    virDomainAuditDisk(vm, disk->src.path, source, "snapshot", ret >= 0);
+    virDomainAuditDisk(vm, disk->src->path, source, "snapshot", ret >= 0);
     if (ret < 0)
         goto cleanup;
 
     /* Update vm in place to match changes.  */
     need_unlink = false;
 
-    VIR_FREE(disk->src.path);
-    virStorageNetHostDefFree(disk->src.nhosts, disk->src.hosts);
+    VIR_FREE(disk->src->path);
+    virStorageNetHostDefFree(disk->src->nhosts, disk->src->hosts);
 
-    disk->src.path = newsource;
-    disk->src.format = format;
-    disk->src.type = snap->src->type;
-    disk->src.protocol = snap->src->protocol;
-    disk->src.nhosts = snap->src->nhosts;
-    disk->src.hosts = newhosts;
+    disk->src->path = newsource;
+    disk->src->format = format;
+    disk->src->type = snap->src->type;
+    disk->src->protocol = snap->src->protocol;
+    disk->src->nhosts = snap->src->nhosts;
+    disk->src->hosts = newhosts;
 
     newsource = NULL;
     newhosts = NULL;
 
     if (persistDisk) {
-        VIR_FREE(persistDisk->src.path);
-        virStorageNetHostDefFree(persistDisk->src.nhosts,
-                                 persistDisk->src.hosts);
+        VIR_FREE(persistDisk->src->path);
+        virStorageNetHostDefFree(persistDisk->src->nhosts,
+                                 persistDisk->src->hosts);
 
-        persistDisk->src.path = persistSource;
-        persistDisk->src.format = format;
-        persistDisk->src.type = snap->src->type;
-        persistDisk->src.protocol = snap->src->protocol;
-        persistDisk->src.nhosts = snap->src->nhosts;
-        persistDisk->src.hosts = persistHosts;
+        persistDisk->src->path = persistSource;
+        persistDisk->src->format = format;
+        persistDisk->src->type = snap->src->type;
+        persistDisk->src->protocol = snap->src->protocol;
+        persistDisk->src->nhosts = snap->src->nhosts;
+        persistDisk->src->hosts = persistHosts;
 
         persistSource = NULL;
         persistHosts = NULL;
@@ -13020,46 +13022,46 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
     char *persistSource = NULL;
     struct stat st;
 
-    ignore_value(virStorageFileInit(&disk->src));
+    ignore_value(virStorageFileInit(disk->src));
 
-    if (VIR_STRDUP(source, origdisk->src.path) < 0 ||
+    if (VIR_STRDUP(source, origdisk->src->path) < 0 ||
         (persistDisk && VIR_STRDUP(persistSource, source) < 0))
         goto cleanup;
 
-    qemuDomainPrepareDiskChainElement(driver, vm, disk, &disk->src,
+    qemuDomainPrepareDiskChainElement(driver, vm, disk, disk->src,
                                       VIR_DISK_CHAIN_NO_ACCESS);
     if (need_unlink &&
-        virStorageFileStat(&disk->src, &st) == 0 && S_ISREG(st.st_mode) &&
-        virStorageFileUnlink(&disk->src) < 0)
-        VIR_WARN("Unable to remove just-created %s", disk->src.path);
+        virStorageFileStat(disk->src, &st) == 0 && S_ISREG(st.st_mode) &&
+        virStorageFileUnlink(disk->src) < 0)
+        VIR_WARN("Unable to remove just-created %s", disk->src->path);
 
     /* Update vm in place to match changes.  */
-    VIR_FREE(disk->src.path);
-    disk->src.path = source;
+    VIR_FREE(disk->src->path);
+    disk->src->path = source;
     source = NULL;
-    disk->src.format = origdisk->src.format;
-    disk->src.type = origdisk->src.type;
-    disk->src.protocol = origdisk->src.protocol;
-    virStorageNetHostDefFree(disk->src.nhosts, disk->src.hosts);
-    disk->src.nhosts = origdisk->src.nhosts;
-    disk->src.hosts = virStorageNetHostDefCopy(origdisk->src.nhosts,
-                                               origdisk->src.hosts);
+    disk->src->format = origdisk->src->format;
+    disk->src->type = origdisk->src->type;
+    disk->src->protocol = origdisk->src->protocol;
+    virStorageNetHostDefFree(disk->src->nhosts, disk->src->hosts);
+    disk->src->nhosts = origdisk->src->nhosts;
+    disk->src->hosts = virStorageNetHostDefCopy(origdisk->src->nhosts,
+                                                origdisk->src->hosts);
     if (persistDisk) {
-        VIR_FREE(persistDisk->src.path);
-        persistDisk->src.path = persistSource;
+        VIR_FREE(persistDisk->src->path);
+        persistDisk->src->path = persistSource;
         persistSource = NULL;
-        persistDisk->src.format = origdisk->src.format;
-        persistDisk->src.type = origdisk->src.type;
-        persistDisk->src.protocol = origdisk->src.protocol;
-        virStorageNetHostDefFree(persistDisk->src.nhosts,
-                                 persistDisk->src.hosts);
-        persistDisk->src.nhosts = origdisk->src.nhosts;
-        persistDisk->src.hosts = virStorageNetHostDefCopy(origdisk->src.nhosts,
-                                                          origdisk->src.hosts);
+        persistDisk->src->format = origdisk->src->format;
+        persistDisk->src->type = origdisk->src->type;
+        persistDisk->src->protocol = origdisk->src->protocol;
+        virStorageNetHostDefFree(persistDisk->src->nhosts,
+                                 persistDisk->src->hosts);
+        persistDisk->src->nhosts = origdisk->src->nhosts;
+        persistDisk->src->hosts = virStorageNetHostDefCopy(origdisk->src->nhosts,
+                                                           origdisk->src->hosts);
     }
 
  cleanup:
-    virStorageFileDeinit(&disk->src);
+    virStorageFileDeinit(disk->src);
     VIR_FREE(source);
     VIR_FREE(persistSource);
 }
@@ -14923,16 +14925,16 @@ qemuDomainBlockPivot(virConnectPtr conn,
      * label the entire chain.  This action is safe even if the
      * backing chain has already been labeled; but only necessary when
      * we know for sure that there is a backing chain.  */
-    oldsrc = disk->src.path;
-    oldformat = disk->src.format;
-    oldchain = disk->src.backingStore;
-    disk->src.path = disk->mirror;
-    disk->src.format = disk->mirrorFormat;
-    disk->src.backingStore = NULL;
+    oldsrc = disk->src->path;
+    oldformat = disk->src->format;
+    oldchain = disk->src->backingStore;
+    disk->src->path = disk->mirror;
+    disk->src->format = disk->mirrorFormat;
+    disk->src->backingStore = NULL;
     if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0) {
-        disk->src.path = oldsrc;
-        disk->src.format = oldformat;
-        disk->src.backingStore = oldchain;
+        disk->src->path = oldsrc;
+        disk->src->format = oldformat;
+        disk->src->backingStore = oldchain;
         goto cleanup;
     }
     if (disk->mirrorFormat && disk->mirrorFormat != VIR_STORAGE_FILE_RAW &&
@@ -14941,9 +14943,9 @@ qemuDomainBlockPivot(virConnectPtr conn,
          qemuSetupDiskCgroup(vm, disk) < 0 ||
          virSecurityManagerSetImageLabel(driver->securityManager, vm->def,
                                          disk) < 0)) {
-        disk->src.path = oldsrc;
-        disk->src.format = oldformat;
-        disk->src.backingStore = oldchain;
+        disk->src->path = oldsrc;
+        disk->src->format = oldformat;
+        disk->src->backingStore = oldchain;
         goto cleanup;
     }
 
@@ -14972,10 +14974,10 @@ qemuDomainBlockPivot(virConnectPtr conn,
          * 'query-block', to see what state we really got left in
          * before killing the mirroring job?  And just as on the
          * success case, there's security labeling to worry about.  */
-        disk->src.path = oldsrc;
-        disk->src.format = oldformat;
-        virStorageSourceFree(disk->src.backingStore);
-        disk->src.backingStore = oldchain;
+        disk->src->path = oldsrc;
+        disk->src->format = oldformat;
+        virStorageSourceFree(disk->src->backingStore);
+        disk->src->backingStore = oldchain;
         VIR_FREE(disk->mirror);
     }
     disk->mirrorFormat = VIR_STORAGE_FILE_NONE;
@@ -15081,8 +15083,8 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
 
     if (base &&
         (virStorageFileParseChainIndex(disk->dst, base, &baseIndex) < 0 ||
-         !(baseSource = virStorageFileChainLookup(&disk->src,
-                                                  disk->src.backingStore,
+         !(baseSource = virStorageFileChainLookup(disk->src,
+                                                  disk->src->backingStore,
                                                   base, baseIndex, NULL))))
         goto endjob;
 
@@ -15119,7 +15121,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
         if (!async) {
             int type = VIR_DOMAIN_BLOCK_JOB_TYPE_PULL;
             int status = VIR_DOMAIN_BLOCK_JOB_CANCELED;
-            event = virDomainEventBlockJobNewFromObj(vm, disk->src.path, type,
+            event = virDomainEventBlockJobNewFromObj(vm, disk->src->path, type,
                                                      status);
         } else if (!(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC)) {
             while (1) {
@@ -15292,7 +15294,7 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
 
     if ((flags & VIR_DOMAIN_BLOCK_REBASE_SHALLOW) &&
         STREQ_NULLABLE(format, "raw") &&
-        disk->src.backingStore->path) {
+        disk->src->backingStore->path) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("disk '%s' has backing file, so raw shallow copy "
                          "is not possible"),
@@ -15328,7 +15330,7 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
             goto endjob;
         VIR_FORCE_CLOSE(fd);
         if (!format)
-            disk->mirrorFormat = disk->src.format;
+            disk->mirrorFormat = disk->src->format;
     } else if (format) {
         disk->mirrorFormat = virStorageFileFormatTypeFromString(format);
         if (disk->mirrorFormat <= 0) {
@@ -15492,7 +15494,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
         goto endjob;
     disk = vm->def->disks[idx];
 
-    if (!disk->src.path) {
+    if (!disk->src->path) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("disk %s has no source file to be committed"),
                        disk->dst);
@@ -15502,10 +15504,10 @@ qemuDomainBlockCommit(virDomainPtr dom,
         goto endjob;
 
     if (!top)
-        topSource = &disk->src;
+        topSource = disk->src;
     else if (virStorageFileParseChainIndex(disk->dst, top, &topIndex) < 0 ||
-             !(topSource = virStorageFileChainLookup(&disk->src,
-                                                     disk->src.backingStore,
+             !(topSource = virStorageFileChainLookup(disk->src,
+                                                     disk->src->backingStore,
                                                      top, topIndex,
                                                      &top_parent)))
         goto endjob;
@@ -15513,7 +15515,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     /* FIXME: qemu 2.0 supports active commit, but as a two-stage
      * process; qemu 2.1 is further improving active commit. We need
      * to start supporting it in libvirt. */
-    if (topSource == &disk->src) {
+    if (topSource == disk->src) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("committing the active layer not supported yet"));
         goto endjob;
@@ -15529,7 +15531,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (!base && (flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW))
         baseSource = topSource->backingStore;
     else if (virStorageFileParseChainIndex(disk->dst, base, &baseIndex) < 0 ||
-             !(baseSource = virStorageFileChainLookup(&disk->src, topSource,
+             !(baseSource = virStorageFileChainLookup(disk->src, topSource,
                                                       base, baseIndex, NULL)))
         goto endjob;
 
@@ -15552,7 +15554,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     clean_access = true;
     if (qemuDomainPrepareDiskChainElement(driver, vm, disk, baseSource,
                                           VIR_DISK_CHAIN_READ_WRITE) < 0 ||
-        (top_parent && top_parent != disk->src.path &&
+        (top_parent && top_parent != disk->src->path &&
          qemuDomainPrepareDiskChainElementPath(driver, vm, disk,
                                                top_parent,
                                                VIR_DISK_CHAIN_READ_WRITE) < 0))
@@ -15575,7 +15577,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
         /* Revert access to read-only, if possible.  */
         qemuDomainPrepareDiskChainElement(driver, vm, disk, baseSource,
                                           VIR_DISK_CHAIN_READ_ONLY);
-        if (top_parent && top_parent != disk->src.path)
+        if (top_parent && top_parent != disk->src->path)
             qemuDomainPrepareDiskChainElementPath(driver, vm, disk,
                                                   top_parent,
                                                   VIR_DISK_CHAIN_READ_ONLY);
