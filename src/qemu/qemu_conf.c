@@ -1427,7 +1427,7 @@ int
 qemuTranslateSnapshotDiskSourcePool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                     virDomainSnapshotDiskDefPtr def)
 {
-    if (def->src.type != VIR_STORAGE_TYPE_VOLUME)
+    if (def->src->type != VIR_STORAGE_TYPE_VOLUME)
         return 0;
 
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
