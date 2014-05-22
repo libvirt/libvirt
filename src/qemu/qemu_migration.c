@@ -4704,6 +4704,7 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
     int pipeFD[2] = { -1, -1 };
     unsigned long saveMigBandwidth = priv->migMaxBandwidth;
     char *errbuf = NULL;
+    virErrorPtr orig_err = NULL;
 
     /* Increase migration bandwidth to unlimited since target is a file.
      * Failure to change migration speed is not fatal. */
@@ -4806,8 +4807,17 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
 
     rc = qemuMigrationWaitForCompletion(driver, vm, asyncJob, NULL, false);
 
-    if (rc < 0)
+    if (rc < 0) {
+        if (rc == -2) {
+            orig_err = virSaveLastError();
+            virCommandAbort(cmd);
+            if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
+                qemuMonitorMigrateCancel(priv->mon);
+                qemuDomainObjExitMonitor(driver, vm);
+            }
+        }
         goto cleanup;
+    }
 
     if (cmd && virCommandWait(cmd, NULL) < 0)
         goto cleanup;
@@ -4815,6 +4825,9 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
     ret = 0;
 
  cleanup:
+    if (ret < 0 && !orig_err)
+        orig_err = virSaveLastError();
+
     /* Restore max migration bandwidth */
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
         qemuMonitorSetMigrationSpeed(priv->mon, saveMigBandwidth);
@@ -4840,6 +4853,12 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
                                          VIR_CGROUP_DEVICE_RWM);
         virDomainAuditCgroupPath(vm, priv->cgroup, "deny", path, "rwm", rv == 0);
     }
+
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
+
     return ret;
 }
 
