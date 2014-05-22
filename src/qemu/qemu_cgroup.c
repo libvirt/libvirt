@@ -904,8 +904,7 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
     }
 
     /* We are trying to setup cgroups for CPU pinning, which can also be done
-     * with virProcessInfoSetAffinity, thus the lack of cgroups is not fatal
-     * here.
+     * with virProcessSetAffinity, thus the lack of cgroups is not fatal here.
      */
     if (priv->cgroup == NULL)
         return 0;
