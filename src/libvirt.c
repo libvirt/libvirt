@@ -5723,10 +5723,16 @@ virDomainMigrate3(virDomainPtr domain,
                             __FUNCTION__);
         goto error;
     }
-    if (flags & (VIR_MIGRATE_PEER2PEER | VIR_MIGRATE_TUNNELLED)) {
+    if (flags & VIR_MIGRATE_PEER2PEER) {
         virReportInvalidArg(flags, "%s",
                             _("use virDomainMigrateToURI3 for peer-to-peer "
                               "migration"));
+        goto error;
+    }
+    if (flags & VIR_MIGRATE_TUNNELLED) {
+        virReportInvalidArg(flags, "%s",
+                            _("cannot perform tunnelled migration "
+                              "without using peer2peer flag"));
         goto error;
     }
 
