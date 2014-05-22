@@ -11,8 +11,8 @@
   <cpu>
     <topology sockets='2' cores='4' threads='2'/>
     <numa>
-      <cell cpus='0-7' memory='109550'/>
-      <cell cpus='8-15' memory='109550'/>
+      <cell id='0' cpus='0-7' memory='109550'/>
+      <cell id='1' cpus='8-15' memory='109550'/>
     </numa>
   </cpu>
   <clock offset='utc'/>
@@ -20,6 +20,9 @@
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-      <emulator>/usr/bin/qemu</emulator>
+    <emulator>/usr/bin/qemu</emulator>
+    <controller type='usb' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

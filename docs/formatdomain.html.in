@@ -1030,8 +1030,8 @@
   &lt;cpu&gt;
     ...
     &lt;numa&gt;
-      &lt;cell cpus='0-3' memory='512000'/&gt;
-      &lt;cell cpus='4-7' memory='512000'/&gt;
+      &lt;cell id='0' cpus='0-3' memory='512000'/&gt;
+      &lt;cell id='1' cpus='4-7' memory='512000'/&gt;
     &lt;/numa&gt;
     ...
   &lt;/cpu&gt;
@@ -1039,10 +1039,15 @@
 
     <p>
       Each <code>cell</code> element specifies a NUMA cell or a NUMA node.
-      <code>cpus</code> specifies the CPU or range of CPUs that are part of
-      the node. <code>memory</code> specifies the node memory in kibibytes
-      (i.e. blocks of 1024 bytes). Each cell or node is assigned cellid
-      or nodeid in the increasing order starting from 0.
+      <code>cpus</code> specifies the CPU or range of CPUs that are
+      part of the node. <code>memory</code> specifies the node memory
+      in kibibytes (i.e. blocks of 1024 bytes).
+      <span class="since">Since 1.2.7</span> all cells should
+      have <code>id</code> attribute in case referring to some cell is
+      necessary in the code, otherwise the cells are
+      assigned <code>id</code>s in the increasing order starting from
+      0.  Mixing cells with and without the <code>id</code> attribute
+      is not recommended as it may result in unwanted behaviour.
     </p>
 
     <p>

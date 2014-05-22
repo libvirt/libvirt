@@ -3927,6 +3927,11 @@
 
   <define name="numaCell">
     <element name="cell">
+      <optional>
+        <attribute name="id">
+          <ref name="unsignedInt"/>
+        </attribute>
+      </optional>
       <attribute name="cpus">
         <ref name="cpuset"/>
       </attribute>

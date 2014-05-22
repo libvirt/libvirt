@@ -1178,6 +1178,7 @@ mymain(void)
     DO_TEST("cpu-strict1", NONE);
     DO_TEST("cpu-numa1", NONE);
     DO_TEST("cpu-numa2", QEMU_CAPS_SMP_TOPOLOGY);
+    DO_TEST_PARSE_ERROR("cpu-numa3", NONE);
     DO_TEST("cpu-host-model", NONE);
     skipLegacyCPUs = true;
     DO_TEST("cpu-host-model-fallback", NONE);

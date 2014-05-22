@@ -6400,7 +6400,7 @@ qemuBuildNumaArgStr(const virDomainDef *def, virCommandPtr cmd)
         }
 
         virCommandAddArg(cmd, "-numa");
-        virBufferAsprintf(&buf, "node,nodeid=%d", def->cpu->cells[i].cellid);
+        virBufferAsprintf(&buf, "node,nodeid=%zu", i);
         virBufferAddLit(&buf, ",cpus=");
 
         /* Up through qemu 1.4, -numa does not accept a cpus

@@ -1,7 +1,7 @@
 /*
  * cpu_conf.h: CPU XML handling
  *
- * Copyright (C) 2009-2011, 2013 Red Hat, Inc.
+ * Copyright (C) 2009-2011, 2013, 2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -93,7 +93,6 @@ struct _virCPUFeatureDef {
 typedef struct _virCellDef virCellDef;
 typedef virCellDef *virCellDefPtr;
 struct _virCellDef {
-   int cellid;
    virBitmapPtr cpumask;	/* CPUs that are part of this node */
    char *cpustr;	/* CPUs stored in string form for dumpxml */
    unsigned int mem;	/* Node memory in kB */

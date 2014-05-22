@@ -370,6 +370,9 @@ mymain(void)
 
     DO_TEST("chardev-label");
 
+    DO_TEST_DIFFERENT("cpu-numa1");
+    DO_TEST_DIFFERENT("cpu-numa2");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 
