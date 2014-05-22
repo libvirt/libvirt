@@ -5110,7 +5110,7 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
     }
 
     backingStore->type = virStorageTypeFromString(type);
-    if (backingStore->type < 0) {
+    if (backingStore->type <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown disk backing store type '%s'"), type);
         goto cleanup;
@@ -5123,7 +5123,7 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
     }
 
     backingStore->format = virStorageFileFormatTypeFromString(format);
-    if (backingStore->format < 0) {
+    if (backingStore->format <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown disk backing store format '%s'"), format);
         goto cleanup;
