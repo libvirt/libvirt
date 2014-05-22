@@ -1724,10 +1724,9 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
 
     priv->job.status = status;
 
-    if (ret < 0 || virTimeMillisNow(&priv->job.info.timeElapsed) < 0) {
-        priv->job.info.type = VIR_DOMAIN_JOB_FAILED;
+    if (ret < 0 || virTimeMillisNow(&priv->job.info.timeElapsed) < 0)
         return -1;
-    }
+
     priv->job.info.timeElapsed -= priv->job.start;
 
     ret = -1;
@@ -1784,6 +1783,9 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
 }
 
 
+/* Returns 0 on success, -2 when migration needs to be cancelled, or -1 when
+ * QEMU reports failed migration.
+ */
 static int
 qemuMigrationWaitForCompletion(virQEMUDriverPtr driver, virDomainObjPtr vm,
                                enum qemuDomainAsyncJob asyncJob,
@@ -1814,18 +1816,21 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver, virDomainObjPtr vm,
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
 
         if (qemuMigrationUpdateJobStatus(driver, vm, job, asyncJob) == -1)
-            goto cleanup;
+            break;
 
         /* cancel migration if disk I/O error is emitted while migrating */
         if (abort_on_error &&
             virDomainObjGetState(vm, &pauseReason) == VIR_DOMAIN_PAUSED &&
-            pauseReason == VIR_DOMAIN_PAUSED_IOERROR)
-            goto cancel;
+            pauseReason == VIR_DOMAIN_PAUSED_IOERROR) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("%s: %s"), job, _("failed due to I/O error"));
+            break;
+        }
 
         if (dconn && virConnectIsAlive(dconn) <= 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("Lost connection to destination host"));
-            goto cleanup;
+            break;
         }
 
         virObjectUnlock(vm);
@@ -1835,25 +1840,17 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver, virDomainObjPtr vm,
         virObjectLock(vm);
     }
 
- cleanup:
-    if (priv->job.info.type == VIR_DOMAIN_JOB_COMPLETED)
+    if (priv->job.info.type == VIR_DOMAIN_JOB_COMPLETED) {
         return 0;
-    else
+    } else if (priv->job.info.type == VIR_DOMAIN_JOB_UNBOUNDED) {
+        /* The migration was aborted by us rather than QEMU itself so let's
+         * update the job type and notify the caller to send migrate_cancel.
+         */
+        priv->job.info.type = VIR_DOMAIN_JOB_FAILED;
+        return -2;
+    } else {
         return -1;
-
- cancel:
-    if (virDomainObjIsActive(vm)) {
-        if (qemuDomainObjEnterMonitorAsync(driver, vm,
-                                           priv->job.asyncJob) == 0) {
-            qemuMonitorMigrateCancel(priv->mon);
-            qemuDomainObjExitMonitor(driver, vm);
-        }
     }
-
-    priv->job.info.type = VIR_DOMAIN_JOB_FAILED;
-    virReportError(VIR_ERR_OPERATION_FAILED,
-                   _("%s: %s"), job, _("failed due to I/O error"));
-    return -1;
 }
 
 
@@ -3229,6 +3226,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     virErrorPtr orig_err = NULL;
     unsigned int cookieFlags = 0;
     bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
+    int rc;
 
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, resource=%lu, "
@@ -3385,9 +3383,12 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         !(iothread = qemuMigrationStartTunnel(spec->fwd.stream, fd)))
         goto cancel;
 
-    if (qemuMigrationWaitForCompletion(driver, vm,
-                                       QEMU_ASYNC_JOB_MIGRATION_OUT,
-                                       dconn, abort_on_error) < 0)
+    rc = qemuMigrationWaitForCompletion(driver, vm,
+                                        QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                        dconn, abort_on_error);
+    if (rc == -2)
+        goto cancel;
+    else if (rc == -1)
         goto cleanup;
 
     /* When migration completed, QEMU will have paused the
