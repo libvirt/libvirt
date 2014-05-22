@@ -6104,6 +6104,8 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     char *idx = NULL;
     char *model = NULL;
     char *queues = NULL;
+    char *cmd_per_lun = NULL;
+    char *max_sectors = NULL;
     xmlNodePtr saved = ctxt->node;
     int rc;
 
@@ -6147,6 +6149,8 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         if (cur->type == XML_ELEMENT_NODE) {
             if (xmlStrEqual(cur->name, BAD_CAST "driver"))
                 queues = virXMLPropString(cur, "queues");
+                cmd_per_lun = virXMLPropString(cur, "cmd_per_lun");
+                max_sectors = virXMLPropString(cur, "max_sectors");
         }
         cur = cur->next;
     }
@@ -6155,6 +6159,17 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         virReportError(VIR_ERR_XML_ERROR,
                        _("Malformed 'queues' value '%s'"), queues);
         goto error;
+    }
+
+    if (cmd_per_lun && virStrToLong_ui(cmd_per_lun, NULL, 10, &def->cmd_per_lun) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Malformed 'cmd_per_lun' value '%s'"), cmd_per_lun);
+        goto error;
+    }
+
+    if (max_sectors && virStrToLong_ui(max_sectors, NULL, 10, &def->max_sectors) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Malformed 'max_sectors' value %s'"), max_sectors);
     }
 
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
@@ -6264,6 +6279,8 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     VIR_FREE(idx);
     VIR_FREE(model);
     VIR_FREE(queues);
+    VIR_FREE(cmd_per_lun);
+    VIR_FREE(max_sectors);
 
     return def;
 
@@ -15362,12 +15379,18 @@ virDomainControllerDefFormat(virBufferPtr buf,
         break;
     }
 
-    if (def->queues || virDomainDeviceInfoIsSet(&def->info, flags) ||
-        pcihole64) {
+    if (def->queues || def->cmd_per_lun || def->max_sectors ||
+        virDomainDeviceInfoIsSet(&def->info, flags) || pcihole64) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         if (def->queues)
             virBufferAsprintf(buf, "<driver queues='%u'/>\n", def->queues);
+
+        if (def->cmd_per_lun)
+            virBufferAsprintf(buf, "<driver cmd_per_lun='%u'/>\n", def->cmd_per_lun);
+
+        if (def->max_sectors)
+            virBufferAsprintf(buf, "<driver max_sectors='%u'/>\n", def->max_sectors);
 
         if (virDomainDeviceInfoIsSet(&def->info, flags) &&
             virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)

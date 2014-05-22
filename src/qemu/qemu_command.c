@@ -4099,12 +4099,23 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int model;
 
-    if (def->queues &&
-        !(def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
+    if (!(def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
           def->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("'queues' is only supported by virtio-scsi controller"));
-        return NULL;
+        if (def->queues) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'queues' is only supported by virtio-scsi controller"));
+            return NULL;
+        }
+        if (def->cmd_per_lun) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'cmd_per_lun' is only supported by virtio-scsi controller"));
+            return NULL;
+        }
+        if (def->max_sectors) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'max_sectors' is only supported by virtio-scsi controller"));
+            return NULL;
+        }
     }
 
     switch (def->type) {
@@ -4231,6 +4242,12 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
 
     if (def->queues)
         virBufferAsprintf(&buf, ",num_queues=%u", def->queues);
+
+    if (def->cmd_per_lun)
+        virBufferAsprintf(&buf, ",cmd_per_lun=%u", def->cmd_per_lun);
+
+    if (def->max_sectors)
+        virBufferAsprintf(&buf, ",max_sectors=%u", def->max_sectors);
 
     if (qemuBuildDeviceAddressStr(&buf, domainDef, &def->info, qemuCaps) < 0)
         goto error;

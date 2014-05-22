@@ -1735,6 +1735,16 @@
                 <ref name="unsignedInt"/>
               </attribute>
             </optional>
+            <optional>
+              <attribute name="cmd_per_lun">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="max_sectors">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
           </element>
         </optional>
       </interleave>

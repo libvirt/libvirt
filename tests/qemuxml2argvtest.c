@@ -809,6 +809,12 @@ mymain(void)
     DO_TEST("disk-virtio-scsi-num_queues",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST("disk-virtio-scsi-cmd_per_lun",
+            QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST("disk-virtio-scsi-max_sectors",
+            QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-scsi-megasas",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SCSI_MEGASAS);

@@ -719,6 +719,8 @@ struct _virDomainControllerDef {
     unsigned int idx;
     int model; /* -1 == undef */
     unsigned int queues;
+    unsigned int cmd_per_lun;
+    unsigned int max_sectors;
     union {
         virDomainVirtioSerialOpts vioserial;
         virDomainPCIControllerOpts pciopts;

@@ -2569,11 +2569,32 @@
 
     <p>
       An optional sub-element <code>driver</code> can specify the driver
-      specific options. Currently it only supports attribute <code>queues</code>
-      (<span class="since">1.0.5</span>, QEMU and KVM only), which specifies the
-      number of queues for the controller. For best performance, it's recommended
-      to specify a value matching the number of vCPUs.
+      specific options:
     </p>
+    <dl>
+      <dt><code>queues</code></dt>
+      <dd>
+        The optional <code>queues</code> attribute specifies the number of
+        queues for the controller. For best performance, it's recommended to
+        specify a value matching the number of vCPUs.
+        <span class="since">Since 1.0.5 (QEMU and KVM only)</span>
+      </dd>
+      <dt><code>cmd_per_lun</code></dt>
+      <dd>
+        The optional <code>cmd_per_lun</code> attribute specifies the maximum
+        number of commands that can be queued on devices controlled by the
+        host.
+        <span class="since">Since 1.2.7 (QEMU and KVM only)</span>
+      </dd>
+      <dt><code>max_sectors</code></dt>
+      <dd>
+        The optional <code>max_sectors</code> attribute specifies the maximum
+        amount of data in bytes that will be transferred to or from the device
+        in a single command. The transfer length is measured in sectors, where
+        a sector is 512 bytes.
+        <span class="since">Since 1.2.7 (QEMU and KVM only)</span>
+      </dd>
+    </dl>
     <p>
       USB companion controllers have an optional
       sub-element <code>&lt;master&gt;</code> to specify the exact

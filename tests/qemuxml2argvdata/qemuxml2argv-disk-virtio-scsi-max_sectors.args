@@ -1,0 +1,9 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S -M pc -m 214 -smp 8 -nographic -nodefconfig -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
+-device virtio-scsi-pci,id=scsi0,max_sectors=512,bus=pci.0,addr=0x3 \
+-usb \
+-drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-scsi0-0-0-0 \
+-device scsi-disk,bus=scsi0.0,channel=0,scsi-id=0,lun=0,\
+drive=drive-scsi0-0-0-0,id=scsi0-0-0-0 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4
