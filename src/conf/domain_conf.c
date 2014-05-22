@@ -5239,6 +5239,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *vendor = NULL;
     char *product = NULL;
     char *discard = NULL;
+    char *mirrorFormat = NULL;
+    char *mirrorType = NULL;
     int expected_secret_usage = -1;
     int auth_secret_usage = -1;
 
@@ -5375,18 +5377,34 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                        xmlStrEqual(cur->name, BAD_CAST "mirror") &&
                        !(flags & VIR_DOMAIN_XML_INACTIVE)) {
                 char *ready;
-                char *mirrorFormat;
 
                 if (VIR_ALLOC(def->mirror) < 0)
                     goto error;
-                def->mirror->type = VIR_STORAGE_TYPE_FILE;
-                def->mirror->path = virXMLPropString(cur, "file");
-                if (!def->mirror->path) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("mirror requires file name"));
-                    goto error;
+
+                mirrorType = virXMLPropString(cur, "type");
+                if (mirrorType) {
+                    def->mirror->type = virStorageTypeFromString(mirrorType);
+                    if (def->mirror->type <= 0) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("unknown mirror backing store "
+                                         "type '%s'"), mirrorType);
+                        goto error;
+                    }
+                    mirrorFormat = virXPathString("string(./mirror/format/@type)",
+                                                  ctxt);
+                } else {
+                    /* For back-compat reasons, we handle a file name
+                     * encoded as attributes, even though we prefer
+                     * modern output in the style of backingStore */
+                    def->mirror->type = VIR_STORAGE_TYPE_FILE;
+                    def->mirror->path = virXMLPropString(cur, "file");
+                    if (!def->mirror->path) {
+                        virReportError(VIR_ERR_XML_ERROR, "%s",
+                                       _("mirror requires file name"));
+                        goto error;
+                    }
+                    mirrorFormat = virXMLPropString(cur, "format");
                 }
-                mirrorFormat = virXMLPropString(cur, "format");
                 if (mirrorFormat) {
                     def->mirror->format =
                         virStorageFileFormatTypeFromString(mirrorFormat);
@@ -5394,10 +5412,19 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                        _("unknown mirror format value '%s'"),
                                        mirrorFormat);
-                        VIR_FREE(mirrorFormat);
                         goto error;
                     }
-                    VIR_FREE(mirrorFormat);
+                }
+                if (mirrorType) {
+                    xmlNodePtr mirrorNode;
+
+                    if (!(mirrorNode = virXPathNode("./mirror/source", ctxt))) {
+                        virReportError(VIR_ERR_XML_ERROR, "%s",
+                                       _("mirror requires source element"));
+                        goto error;
+                    }
+                    if (virDomainDiskSourceParse(mirrorNode, def->mirror) < 0)
+                        goto error;
                 }
                 ready = virXMLPropString(cur, "ready");
                 if (ready) {
@@ -5983,6 +6010,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(wwn);
     VIR_FREE(vendor);
     VIR_FREE(product);
+    VIR_FREE(mirrorType);
+    VIR_FREE(mirrorFormat);
 
     ctxt->node = save_ctxt;
     return def;
@@ -15158,15 +15187,23 @@ virDomainDiskDefFormat(virBufferPtr buf,
 
     /* For now, mirroring is currently output-only: we only output it
      * for live domains, therefore we ignore it on input except for
-     * the internal parse on libvirtd restart.  */
+     * the internal parse on libvirtd restart.  We only output the
+     * new style similar to backingStore, even though the parser
+     * code still accepts old style across libvirtd upgrades. */
     if (def->mirror && !(flags & VIR_DOMAIN_XML_INACTIVE)) {
-        virBufferEscapeString(buf, "<mirror file='%s'", def->mirror->path);
-        if (def->mirror->format)
-            virBufferAsprintf(buf, " format='%s'",
-                              virStorageFileFormatTypeToString(def->mirror->format));
+        virBufferAsprintf(buf, "<mirror type='%s'",
+                          virStorageTypeToString(def->mirror->type));
         if (def->mirroring)
             virBufferAddLit(buf, " ready='yes'");
-        virBufferAddLit(buf, "/>\n");
+        virBufferAddLit(buf, ">\n");
+        virBufferAdjustIndent(buf, 2);
+        if (def->mirror->format)
+            virBufferEscapeString(buf, "<format type='%s'/>\n",
+                                  virStorageFileFormatTypeToString(def->mirror->format));
+        if (virDomainDiskSourceFormat(buf, def->mirror, 0, 0) < 0)
+            return -1;
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</mirror>\n");
     }
 
     virBufferAsprintf(buf, "<target dev='%s' bus='%s'",

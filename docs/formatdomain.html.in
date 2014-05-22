@@ -1879,15 +1879,23 @@
       <dt><code>mirror</code></dt>
       <dd>
         This element is present if the hypervisor has started a block
-        copy operation (via the <code>virDomainBlockCopy</code> API),
-        where the mirror location in attribute <code>file</code> will
-        eventually have the same contents as the source, and with the
-        file format in attribute <code>format</code> (which might
-        differ from the format of the source).  If
+        copy operation (via the <code>virDomainBlockRebase</code>
+        API), where the mirror location in the <code>source</code>
+        sub-element will eventually have the same contents as the
+        source, and with the file format in the
+        sub-element <code>format</code> (which might differ from the
+        format of the source).  The details of the <code>source</code>
+        sub-element are determined by the <code>type</code> attribute
+        of the mirror, similar to what is done for the
+        overall <code>disk</code> device element. If
         attribute <code>ready</code> is present, then it is known the
         disk is ready to pivot; otherwise, the disk is probably still
         copying.  For now, this element only valid in output; it is
-        ignored on input.  <span class="since">Since 0.9.12</span>
+        ignored on input.  <span class="since">Since 1.2.6</span>
+        (Older libvirt <span class="since">since 0.9.12</span> allowed
+        only mirroring to a file, with the information reported
+        in <code>file</code> and <code>format</code> attributes
+        of <code>mirror</code> rather than subelements.)
       </dd>
       <dt><code>target</code></dt>
       <dd>The <code>target</code> element controls the bus / device
