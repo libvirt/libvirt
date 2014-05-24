@@ -1,7 +1,7 @@
 /*
  * virtime.h: Time handling functions
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2011, 2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -50,7 +50,6 @@ int virTimeStringNowRaw(char *buf)
 int virTimeStringThenRaw(unsigned long long when, char *buf)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
-
 /* These APIs are *not* async signal safe and return -1,
  * raising a libvirt error on failure
  */
@@ -63,5 +62,7 @@ int virTimeFieldsThen(unsigned long long when, struct tm *fields)
 char *virTimeStringNow(void);
 char *virTimeStringThen(unsigned long long when);
 
+int virTimeLocalOffsetFromUTC(long *offset)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 #endif

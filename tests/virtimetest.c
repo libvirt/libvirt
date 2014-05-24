@@ -72,6 +72,35 @@ static int testTimeFields(const void *args)
 }
 
 
+typedef struct {
+    const char *zone;
+    long offset;
+} testTimeLocalOffsetData;
+
+static int
+testTimeLocalOffset(const void *args)
+{
+    const testTimeLocalOffsetData *data = args;
+    long actual;
+
+    if (setenv("TZ", data->zone, 1) < 0) {
+        perror("setenv");
+        return -1;
+    }
+    tzset();
+
+    if (virTimeLocalOffsetFromUTC(&actual) < 0) {
+        return -1;
+    }
+
+    if (data->offset != actual) {
+        VIR_DEBUG("Expect Offset %ld got %ld\n",
+                  data->offset, actual);
+        return -1;
+    }
+    return 0;
+}
+
 static int
 mymain(void)
 {
@@ -118,6 +147,35 @@ mymain(void)
     TEST_FIELDS(1322611199000ull, 2011, 11, 29, 23, 59, 59);
 
     TEST_FIELDS(2147483648000ull, 2038,  1, 19,  3, 14,  8);
+
+#define TEST_LOCALOFFSET(tz, off)       \
+    do {                                \
+       testTimeLocalOffsetData data = { \
+           .zone =  tz,                 \
+           .offset = off,               \
+        };                              \
+        if (virtTestRun("Test localtime offset for " #tz, \
+                         testTimeLocalOffset, &data) < 0) \
+            ret = -1;                   \
+    } while (0)
+
+    TEST_LOCALOFFSET("VIR00:30", -30 * 60);
+    TEST_LOCALOFFSET("VIR01:30", -90 * 60);
+    TEST_LOCALOFFSET("UTC", 0);
+    TEST_LOCALOFFSET("VIR-00:30", 30 * 60);
+    TEST_LOCALOFFSET("VIR-01:30", 90 * 60);
+#if __TEST_DST
+    /* test DST processing with timezones that always
+     * have DST in effect; what's more, cover a zone with
+     * with an unusual DST different than a usual one hour
+     */
+    /* NB: These tests fail at certain times of the day, so
+     * must be disabled until we figure out why
+     */
+    TEST_LOCALOFFSET("VIR-00:30VID,0,365", 90 * 60);
+    TEST_LOCALOFFSET("VIR-02:30VID,0,365", 210 * 60);
+    TEST_LOCALOFFSET("VIR-02:30VID-04:30,0,365", 270 * 60);
+#endif
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
