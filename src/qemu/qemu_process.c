@@ -1381,7 +1381,8 @@ qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     VIR_DEBUG("Device %s removed from domain %p %s",
               devAlias, vm, vm->def->name);
 
-    qemuDomainSignalDeviceRemoval(vm, devAlias);
+    if (qemuDomainSignalDeviceRemoval(vm, devAlias))
+        goto cleanup;
 
     if (virDomainDefFindDevice(vm->def, devAlias, &dev, true) < 0)
         goto cleanup;
