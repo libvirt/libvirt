@@ -2975,7 +2975,7 @@ virStorageFileReadHeader(virStorageSourcePtr src,
     if (!src->drv->backend->storageFileReadHeader) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("storage file header reading is not supported for "
-                         "storage type %s (protocol: %s)'"),
+                         "storage type %s (protocol: %s)"),
                        virStorageTypeToString(src->type),
                        virStorageNetProtocolTypeToString(src->protocol));
         return -2;
