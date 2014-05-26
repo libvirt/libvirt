@@ -314,6 +314,7 @@ struct testChainData
 
 
 static const char testStorageChainFormat[] =
+    "chain member: %zu\n"
     "store: %s\n"
     "backingStoreRaw: %s\n"
     "capacity: %lld\n"
@@ -385,7 +386,7 @@ testStorageChain(const void *args)
         expRelDir = isAbs ? data->files[i]->relDirAbs
             : data->files[i]->relDirRel;
         if (virAsprintf(&expect,
-                        testStorageChainFormat,
+                        testStorageChainFormat, i,
                         NULLSTR(data->files[i]->expBackingStore),
                         NULLSTR(data->files[i]->expBackingStoreRaw),
                         data->files[i]->expCapacity,
@@ -396,7 +397,7 @@ testStorageChain(const void *args)
                         data->files[i]->type,
                         data->files[i]->format) < 0 ||
             virAsprintf(&actual,
-                        testStorageChainFormat,
+                        testStorageChainFormat, i,
                         NULLSTR(elt->backingStore ? elt->backingStore->path : NULL),
                         NULLSTR(elt->backingStoreRaw),
                         elt->capacity,
@@ -411,7 +412,6 @@ testStorageChain(const void *args)
             goto cleanup;
         }
         if (STRNEQ(expect, actual)) {
-            fprintf(stderr, "chain member %zu", i);
             virtTestDifference(stderr, expect, actual);
             VIR_FREE(expect);
             VIR_FREE(actual);
