@@ -282,7 +282,6 @@ testPrepImages(void)
 typedef struct _testFileData testFileData;
 struct _testFileData
 {
-    const char *expBackingStore;
     const char *expBackingStoreRaw;
     unsigned long long expCapacity;
     bool expEncrypted;
@@ -315,12 +314,11 @@ struct testChainData
 
 static const char testStorageChainFormat[] =
     "chain member: %zu\n"
-    "store: %s\n"
+    "path:%s\n"
     "backingStoreRaw: %s\n"
     "capacity: %lld\n"
     "encryption: %d\n"
     "relPath:%s\n"
-    "path:%s\n"
     "relDir:%s\n"
     "type:%d\n"
     "format:%d\n";
@@ -387,23 +385,21 @@ testStorageChain(const void *args)
             : data->files[i]->relDirRel;
         if (virAsprintf(&expect,
                         testStorageChainFormat, i,
-                        NULLSTR(data->files[i]->expBackingStore),
+                        NULLSTR(data->files[i]->path),
                         NULLSTR(data->files[i]->expBackingStoreRaw),
                         data->files[i]->expCapacity,
                         data->files[i]->expEncrypted,
                         NULLSTR(expPath),
-                        NULLSTR(data->files[i]->path),
                         NULLSTR(expRelDir),
                         data->files[i]->type,
                         data->files[i]->format) < 0 ||
             virAsprintf(&actual,
                         testStorageChainFormat, i,
-                        NULLSTR(elt->backingStore ? elt->backingStore->path : NULL),
+                        NULLSTR(elt->path),
                         NULLSTR(elt->backingStoreRaw),
                         elt->capacity,
                         !!elt->encryption,
                         NULLSTR(elt->relPath),
-                        NULLSTR(elt->path),
                         NULLSTR(elt->relDir),
                         elt->type,
                         elt->format) < 0) {
@@ -766,7 +762,6 @@ mymain(void)
     /* Qcow2 file with relative raw backing, format provided */
     raw.pathAbs = "raw";
     testFileData qcow2 = {
-        .expBackingStore = canonraw,
         .expBackingStoreRaw = "raw",
         .expCapacity = 1024,
         .pathRel = "qcow2",
@@ -822,7 +817,6 @@ mymain(void)
 
     /* Wrapped file access */
     testFileData wrap = {
-        .expBackingStore = canonqcow2,
         .expBackingStoreRaw = absqcow2,
         .expCapacity = 1024,
         .pathRel = "wrap",
@@ -858,7 +852,6 @@ mymain(void)
 
     /* Qcow2 file with raw as absolute backing, backing format omitted */
     testFileData wrap_as_raw = {
-        .expBackingStore = canonqcow2,
         .expBackingStoreRaw = absqcow2,
         .expCapacity = 1024,
         .pathRel = "wrap",
@@ -882,7 +875,6 @@ mymain(void)
                                "qcow2", NULL);
     if (virCommandRun(cmd, NULL) < 0)
         ret = -1;
-    qcow2.expBackingStore = NULL;
     qcow2.expBackingStoreRaw = datadir "/bogus";
     qcow2.pathRel = "qcow2";
     qcow2.relDirRel = ".";
@@ -915,7 +907,6 @@ mymain(void)
                                "qcow2", NULL);
     if (virCommandRun(cmd, NULL) < 0)
         ret = -1;
-    qcow2.expBackingStore = "blah";
     qcow2.expBackingStoreRaw = "nbd:example.org:6000:exportname=blah";
 
     /* Qcow2 file with backing protocol instead of file */
@@ -936,7 +927,6 @@ mymain(void)
 
     /* qed file */
     testFileData qed = {
-        .expBackingStore = canonraw,
         .expBackingStoreRaw = absraw,
         .expCapacity = 1024,
         .pathRel = "qed",
@@ -1001,7 +991,6 @@ mymain(void)
 
     /* Behavior of symlinks to qcow2 with relative backing files */
     testFileData link1 = {
-        .expBackingStore = canonraw,
         .expBackingStoreRaw = "../raw",
         .expCapacity = 1024,
         .pathRel = "../sub/link1",
@@ -1013,7 +1002,6 @@ mymain(void)
         .format = VIR_STORAGE_FILE_QCOW2,
     };
     testFileData link2 = {
-        .expBackingStore = canonqcow2,
         .expBackingStoreRaw = "../sub/link1",
         .expCapacity = 1024,
         .pathRel = "sub/link2",
@@ -1041,7 +1029,6 @@ mymain(void)
                                "-F", "qcow2", "-b", "qcow2", "qcow2", NULL);
     if (virCommandRun(cmd, NULL) < 0)
         ret = -1;
-    qcow2.expBackingStore = NULL;
     qcow2.expBackingStoreRaw = "qcow2";
 
     /* Behavior of an infinite loop chain */
