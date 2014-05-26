@@ -1373,8 +1373,8 @@ qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virDomainDeviceDef dev;
+    struct qemuProcessEvent *processEvent = NULL;
+    char *data;
 
     virObjectLock(vm);
 
@@ -1384,18 +1384,29 @@ qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     if (qemuDomainSignalDeviceRemoval(vm, devAlias))
         goto cleanup;
 
-    if (virDomainDefFindDevice(vm->def, devAlias, &dev, true) < 0)
-        goto cleanup;
+    if (VIR_ALLOC(processEvent) < 0)
+        goto error;
 
-    qemuDomainRemoveDevice(driver, vm, &dev);
+    processEvent->eventType = QEMU_PROCESS_EVENT_DEVICE_DELETED;
+    if (VIR_STRDUP(data, devAlias) < 0)
+        goto error;
+    processEvent->data = data;
+    processEvent->vm = vm;
 
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
-        VIR_WARN("unable to save domain status with balloon change");
+    virObjectRef(vm);
+    if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
+        ignore_value(virObjectUnref(vm));
+        goto error;
+    }
 
  cleanup:
     virObjectUnlock(vm);
-    virObjectUnref(cfg);
     return 0;
+ error:
+    if (processEvent)
+        VIR_FREE(processEvent->data);
+    VIR_FREE(processEvent);
+    goto cleanup;
 }
 
 

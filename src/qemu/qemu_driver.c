@@ -3955,6 +3955,47 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
     virObjectUnref(cfg);
 }
 
+
+static void
+processDeviceDeletedEvent(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm,
+                          char *devAlias)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virDomainDeviceDef dev;
+
+    VIR_DEBUG("Removing device %s from domain %p %s",
+              devAlias, vm, vm->def->name);
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        VIR_DEBUG("Domain is not running");
+        goto endjob;
+    }
+
+    if (virDomainDefFindDevice(vm->def, devAlias, &dev, true) < 0)
+        goto endjob;
+
+    qemuDomainRemoveDevice(driver, vm, &dev);
+
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        VIR_WARN("unable to save domain status after removing device %s",
+                 devAlias);
+
+ endjob:
+    /* We had an extra reference to vm before starting a new job so ending the
+     * job is guaranteed not to remove the last reference.
+     */
+    ignore_value(qemuDomainObjEndJob(driver, vm));
+
+ cleanup:
+    VIR_FREE(devAlias);
+    virObjectUnref(cfg);
+}
+
+
 static void qemuProcessEventHandler(void *data, void *opaque)
 {
     struct qemuProcessEvent *processEvent = data;
@@ -3972,8 +4013,11 @@ static void qemuProcessEventHandler(void *data, void *opaque)
     case QEMU_PROCESS_EVENT_GUESTPANIC:
         processGuestPanicEvent(driver, vm, processEvent->action);
         break;
-    default:
-       break;
+    case QEMU_PROCESS_EVENT_DEVICE_DELETED:
+        processDeviceDeletedEvent(driver, vm, processEvent->data);
+        break;
+    case QEMU_PROCESS_EVENT_LAST:
+        break;
     }
 
     if (virObjectUnref(vm))
