@@ -312,6 +312,18 @@ struct testChainData
     unsigned int flags;
 };
 
+
+static const char testStorageChainFormat[] =
+    "store: %s\n"
+    "backingStoreRaw: %s\n"
+    "capacity: %lld\n"
+    "encryption: %d\n"
+    "relPath:%s\n"
+    "path:%s\n"
+    "relDir:%s\n"
+    "type:%d\n"
+    "format:%d\n";
+
 static int
 testStorageChain(const void *args)
 {
@@ -373,8 +385,7 @@ testStorageChain(const void *args)
         expRelDir = isAbs ? data->files[i]->relDirAbs
             : data->files[i]->relDirRel;
         if (virAsprintf(&expect,
-                        "store:%s\nraw:%s\nother:%lld %d\n"
-                        "relPath:%s\npath:%s\nrelDir:%s\ntype:%d %d\n",
+                        testStorageChainFormat,
                         NULLSTR(data->files[i]->expBackingStore),
                         NULLSTR(data->files[i]->expBackingStoreRaw),
                         data->files[i]->expCapacity,
@@ -385,15 +396,16 @@ testStorageChain(const void *args)
                         data->files[i]->type,
                         data->files[i]->format) < 0 ||
             virAsprintf(&actual,
-                        "store:%s\nraw:%s\nother:%lld %d\n"
-                        "relPath:%s\npath:%s\nrelDir:%s\ntype:%d %d\n",
+                        testStorageChainFormat,
                         NULLSTR(elt->backingStore ? elt->backingStore->path : NULL),
                         NULLSTR(elt->backingStoreRaw),
-                        elt->capacity, !!elt->encryption,
+                        elt->capacity,
+                        !!elt->encryption,
                         NULLSTR(elt->relPath),
                         NULLSTR(elt->path),
                         NULLSTR(elt->relDir),
-                        elt->type, elt->format) < 0) {
+                        elt->type,
+                        elt->format) < 0) {
             VIR_FREE(expect);
             VIR_FREE(actual);
             goto cleanup;
