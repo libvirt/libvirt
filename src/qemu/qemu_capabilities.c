@@ -258,6 +258,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "host-pci-multidomain",
               "msg-timestamp",
               "active-commit",
+              "change-backing-file",
     );
 
 
@@ -1415,6 +1416,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "blockdev-snapshot-sync", QEMU_CAPS_DISK_SNAPSHOT },
     { "add-fd", QEMU_CAPS_ADD_FD },
     { "nbd-server-start", QEMU_CAPS_NBD_SERVER },
+    { "change-backing-file", QEMU_CAPS_CHANGE_BACKING_FILE },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsEvents[] = {
