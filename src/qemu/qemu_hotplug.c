@@ -2643,7 +2643,7 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
     if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         /* this function handles all hostdev and netdev cleanup */
         qemuDomainRemoveHostDevice(driver, vm, virDomainNetGetActualHostdev(net));
-        return;
+        goto cleanup;
     }
 
     VIR_DEBUG("Removing network interface %s from domain %p %s",
@@ -2689,6 +2689,8 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
 
     networkReleaseActualDevice(vm->def, net);
     virDomainNetDefFree(net);
+
+ cleanup:
     virObjectUnref(cfg);
 }
 
