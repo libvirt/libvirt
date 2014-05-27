@@ -2742,15 +2742,28 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
 }
 
 
-static void
+static int
 qemuDomainRemoveChrDevice(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainChrDefPtr chr)
 {
     virObjectEventPtr event;
+    char *charAlias = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = -1;
 
     VIR_DEBUG("Removing character device %s from domain %p %s",
               chr->info.alias, vm, vm->def->name);
+
+    if (virAsprintf(&charAlias, "char%s", chr->info.alias) < 0)
+        goto cleanup;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuMonitorDetachCharDev(priv->mon, charAlias) < 0) {
+        qemuDomainObjExitMonitor(driver, vm);
+        goto cleanup;
+    }
+    qemuDomainObjExitMonitor(driver, vm);
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, chr->info.alias);
     if (event)
@@ -2758,6 +2771,11 @@ qemuDomainRemoveChrDevice(virQEMUDriverPtr driver,
 
     qemuDomainChrRemove(vm->def, chr);
     virDomainChrDefFree(chr);
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(charAlias);
+    return ret;
 }
 
 
@@ -3596,7 +3614,6 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr vmdef = vm->def;
     virDomainChrDefPtr tmpChr;
-    char *charAlias = NULL;
     char *devstr = NULL;
     int rc;
 
@@ -3609,9 +3626,6 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
     if (qemuBuildChrDeviceStr(&devstr, vm->def, chr, priv->qemuCaps) < 0)
         return ret;
 
-    if (virAsprintf(&charAlias, "char%s", tmpChr->info.alias) < 0)
-        goto cleanup;
-
     qemuDomainMarkDeviceForRemoval(vm, &tmpChr->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -3619,21 +3633,16 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
         qemuDomainObjExitMonitor(driver, vm);
         goto cleanup;
     }
-
-    if (qemuMonitorDetachCharDev(priv->mon, charAlias) < 0) {
-        qemuDomainObjExitMonitor(driver, vm);
-        goto cleanup;
-    }
     qemuDomainObjExitMonitor(driver, vm);
 
     rc = qemuDomainWaitForDeviceRemoval(vm);
     if (rc == 0 || rc == 1)
-        qemuDomainRemoveChrDevice(driver, vm, tmpChr);
-    ret = 0;
+        ret = qemuDomainRemoveChrDevice(driver, vm, tmpChr);
+    else
+        ret = 0;
 
  cleanup:
     qemuDomainResetDeviceRemoval(vm);
     VIR_FREE(devstr);
-    VIR_FREE(charAlias);
     return ret;
 }
