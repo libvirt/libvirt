@@ -707,17 +707,12 @@ mymain(void)
 #define VIR_FLATTEN_2(...) __VA_ARGS__
 #define VIR_FLATTEN_1(_1) VIR_FLATTEN_2 _1
 
-#define TEST_CHAIN(id, relstart, absstart, format, chain1, flags1,   \
-                   chain2, flags2, chain3, flags3, chain4, flags4)   \
+#define TEST_CHAIN(id, path, format, chain1, flags1, chain2, flags2) \
     do {                                                             \
-        TEST_ONE_CHAIN(#id "a", relstart, format, flags1,            \
+        TEST_ONE_CHAIN(#id "a", path, format, flags1 | ABS_START,    \
                        VIR_FLATTEN_1(chain1));                       \
-        TEST_ONE_CHAIN(#id "b", relstart, format, flags2,            \
+        TEST_ONE_CHAIN(#id "b", path, format, flags2 | ABS_START,    \
                        VIR_FLATTEN_1(chain2));                       \
-        TEST_ONE_CHAIN(#id "c", absstart, format, flags3 | ABS_START,\
-                       VIR_FLATTEN_1(chain3));                       \
-        TEST_ONE_CHAIN(#id "d", absstart, format, flags4 | ABS_START,\
-                       VIR_FLATTEN_1(chain4));                       \
     } while (0)
 
     /* The actual tests, in several groups. */
@@ -733,14 +728,10 @@ mymain(void)
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_RAW,
     };
-    TEST_CHAIN(1, "raw", absraw, VIR_STORAGE_FILE_RAW,
-               (&raw), EXP_PASS,
-               (&raw), ALLOW_PROBE | EXP_PASS,
+    TEST_CHAIN(1, absraw, VIR_STORAGE_FILE_RAW,
                (&raw), EXP_PASS,
                (&raw), ALLOW_PROBE | EXP_PASS);
-    TEST_CHAIN(2, "raw", absraw, VIR_STORAGE_FILE_AUTO,
-               (&raw), EXP_PASS,
-               (&raw), ALLOW_PROBE | EXP_PASS,
+    TEST_CHAIN(2, absraw, VIR_STORAGE_FILE_AUTO,
                (&raw), EXP_PASS,
                (&raw), ALLOW_PROBE | EXP_PASS);
 
@@ -762,14 +753,10 @@ mymain(void)
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_RAW,
     };
-    TEST_CHAIN(3, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               (&qcow2, &raw), EXP_PASS,
-               (&qcow2, &raw), ALLOW_PROBE | EXP_PASS,
+    TEST_CHAIN(3, absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2, &raw), EXP_PASS,
                (&qcow2, &raw), ALLOW_PROBE | EXP_PASS);
-    TEST_CHAIN(4, "qcow2", absqcow2, VIR_STORAGE_FILE_AUTO,
-               (&qcow2_as_raw), EXP_PASS,
-               (&qcow2, &raw), ALLOW_PROBE | EXP_PASS,
+    TEST_CHAIN(4, absqcow2, VIR_STORAGE_FILE_AUTO,
                (&qcow2_as_raw), EXP_PASS,
                (&qcow2, &raw), ALLOW_PROBE | EXP_PASS);
 
@@ -784,14 +771,10 @@ mymain(void)
     raw.relDirRel = datadir;
 
     /* Qcow2 file with raw as absolute backing, backing format provided */
-    TEST_CHAIN(5, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               (&qcow2, &raw), EXP_PASS,
-               (&qcow2, &raw), ALLOW_PROBE | EXP_PASS,
+    TEST_CHAIN(5, absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2, &raw), EXP_PASS,
                (&qcow2, &raw), ALLOW_PROBE | EXP_PASS);
-    TEST_CHAIN(6, "qcow2", absqcow2, VIR_STORAGE_FILE_AUTO,
-               (&qcow2_as_raw), EXP_PASS,
-               (&qcow2, &raw), ALLOW_PROBE | EXP_PASS,
+    TEST_CHAIN(6, absqcow2, VIR_STORAGE_FILE_AUTO,
                (&qcow2_as_raw), EXP_PASS,
                (&qcow2, &raw), ALLOW_PROBE | EXP_PASS);
 
@@ -806,9 +789,7 @@ mymain(void)
         .format = VIR_STORAGE_FILE_QCOW2,
     };
     qcow2.relDirRel = datadir;
-    TEST_CHAIN(7, "wrap", abswrap, VIR_STORAGE_FILE_QCOW2,
-               (&wrap, &qcow2, &raw), EXP_PASS,
-               (&wrap, &qcow2, &raw), ALLOW_PROBE | EXP_PASS,
+    TEST_CHAIN(7, abswrap, VIR_STORAGE_FILE_QCOW2,
                (&wrap, &qcow2, &raw), EXP_PASS,
                (&wrap, &qcow2, &raw), ALLOW_PROBE | EXP_PASS);
 
@@ -836,9 +817,7 @@ mymain(void)
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_QCOW2,
     };
-    TEST_CHAIN(8, "wrap", abswrap, VIR_STORAGE_FILE_QCOW2,
-               (&wrap_as_raw, &qcow2_as_raw), EXP_PASS,
-               (&wrap, &qcow2, &raw), ALLOW_PROBE | EXP_PASS,
+    TEST_CHAIN(8, abswrap, VIR_STORAGE_FILE_QCOW2,
                (&wrap_as_raw, &qcow2_as_raw), EXP_PASS,
                (&wrap, &qcow2, &raw), ALLOW_PROBE | EXP_PASS);
 
@@ -853,9 +832,7 @@ mymain(void)
     qcow2.relDirRel = ".";
 
     /* Qcow2 file with missing backing file but specified type */
-    TEST_CHAIN(9, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               (&qcow2), EXP_WARN,
-               (&qcow2), ALLOW_PROBE | EXP_WARN,
+    TEST_CHAIN(9, absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2), EXP_WARN,
                (&qcow2), ALLOW_PROBE | EXP_WARN);
 
@@ -867,9 +844,7 @@ mymain(void)
         ret = -1;
 
     /* Qcow2 file with missing backing file and no specified type */
-    TEST_CHAIN(10, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               (&qcow2), EXP_WARN,
-               (&qcow2), ALLOW_PROBE | EXP_WARN,
+    TEST_CHAIN(10, absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2), EXP_WARN,
                (&qcow2), ALLOW_PROBE | EXP_WARN);
 
@@ -890,9 +865,7 @@ mymain(void)
         .relDirRel = ".",
         .relDirAbs = ".",
     };
-    TEST_CHAIN(11, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               (&qcow2, &nbd), EXP_PASS,
-               (&qcow2, &nbd), ALLOW_PROBE | EXP_PASS,
+    TEST_CHAIN(11, absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2, &nbd), EXP_PASS,
                (&qcow2, &nbd), ALLOW_PROBE | EXP_PASS);
 
@@ -913,9 +886,7 @@ mymain(void)
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_RAW,
     };
-    TEST_CHAIN(12, "qed", absqed, VIR_STORAGE_FILE_AUTO,
-               (&qed_as_raw), EXP_PASS,
-               (&qed, &raw), ALLOW_PROBE | EXP_PASS,
+    TEST_CHAIN(12, absqed, VIR_STORAGE_FILE_AUTO,
                (&qed_as_raw), EXP_PASS,
                (&qed, &raw), ALLOW_PROBE | EXP_PASS);
 
@@ -927,14 +898,10 @@ mymain(void)
         .type = VIR_STORAGE_TYPE_DIR,
         .format = VIR_STORAGE_FILE_DIR,
     };
-    TEST_CHAIN(13, "dir", absdir, VIR_STORAGE_FILE_AUTO,
-               (&dir), EXP_PASS,
-               (&dir), ALLOW_PROBE | EXP_PASS,
+    TEST_CHAIN(13, absdir, VIR_STORAGE_FILE_AUTO,
                (&dir), EXP_PASS,
                (&dir), ALLOW_PROBE | EXP_PASS);
-    TEST_CHAIN(14, "dir", absdir, VIR_STORAGE_FILE_DIR,
-               (&dir), EXP_PASS,
-               (&dir), ALLOW_PROBE | EXP_PASS,
+    TEST_CHAIN(14, absdir, VIR_STORAGE_FILE_DIR,
                (&dir), EXP_PASS,
                (&dir), ALLOW_PROBE | EXP_PASS);
 
@@ -977,9 +944,7 @@ mymain(void)
     raw.pathRel = "../raw";
     raw.relDirRel = "sub/../sub/..";
     raw.relDirAbs = datadir "/sub/../sub/..";
-    TEST_CHAIN(15, "sub/link2", abslink2, VIR_STORAGE_FILE_QCOW2,
-               (&link2, &link1, &raw), EXP_PASS,
-               (&link2, &link1, &raw), ALLOW_PROBE | EXP_PASS,
+    TEST_CHAIN(15, abslink2, VIR_STORAGE_FILE_QCOW2,
                (&link2, &link1, &raw), EXP_PASS,
                (&link2, &link1, &raw), ALLOW_PROBE | EXP_PASS);
 #endif
@@ -993,9 +958,7 @@ mymain(void)
     qcow2.expBackingStoreRaw = "qcow2";
 
     /* Behavior of an infinite loop chain */
-    TEST_CHAIN(16, "qcow2", absqcow2, VIR_STORAGE_FILE_QCOW2,
-               (&qcow2), EXP_WARN,
-               (&qcow2), ALLOW_PROBE | EXP_WARN,
+    TEST_CHAIN(16, absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2), EXP_WARN,
                (&qcow2), ALLOW_PROBE | EXP_WARN);
 
@@ -1015,9 +978,7 @@ mymain(void)
     qcow2.relDirRel =  datadir;
 
     /* Behavior of an infinite loop chain */
-    TEST_CHAIN(17, "wrap", abswrap, VIR_STORAGE_FILE_QCOW2,
-               (&wrap, &qcow2), EXP_WARN,
-               (&wrap, &qcow2), ALLOW_PROBE | EXP_WARN,
+    TEST_CHAIN(17, abswrap, VIR_STORAGE_FILE_QCOW2,
                (&wrap, &qcow2), EXP_WARN,
                (&wrap, &qcow2), ALLOW_PROBE | EXP_WARN);
 
