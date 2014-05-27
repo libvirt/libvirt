@@ -1,0 +1,7 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-ppc -S -M ppce500 -m 256 -smp 1 -nographic -nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/test-monitor,server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline -no-acpi -boot c \
+-kernel /media/ram/uImage -initrd /media/ram/ramdisk \
+-append 'root=/dev/ram rw console=ttyS0,115200' \
+-usb -serial pty -device virtio-balloon-pci,id=balloon0,bus=pci,addr=0x2

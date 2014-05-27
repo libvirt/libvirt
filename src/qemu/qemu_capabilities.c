@@ -3466,6 +3466,12 @@ virQEMUCapsSupportsChardev(virDomainDefPtr def,
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
         return false;
 
+    if ((def->os.arch == VIR_ARCH_PPC) || (def->os.arch == VIR_ARCH_PPC64)) {
+        /* only pseries need -device spapr-vty with -chardev */
+        return (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+                chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO);
+    }
+
     if ((def->os.arch != VIR_ARCH_ARMV7L) && (def->os.arch != VIR_ARCH_AARCH64))
         return true;
 
