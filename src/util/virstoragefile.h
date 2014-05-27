@@ -247,8 +247,8 @@ struct _virStorageSource {
     virStorageDriverDataPtr drv;
 
     /* metadata about storage image which need separate fields */
-    /* Name of the current file as spelled by the user (top level) or
-     * metadata of the overlay (if this is a backing store).  */
+    /* Relative name by which this image was opened from its parent, or NULL
+     * if this image was opened by absolute name */
     char *relPath;
     /* Directory to start from if backingStoreRaw is a relative file
      * name.  */

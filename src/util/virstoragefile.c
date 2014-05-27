@@ -764,11 +764,11 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
 {
     int ret = -1;
 
-    VIR_DEBUG("relPath=%s, buf=%p, len=%zu, meta->format=%d",
-              meta->relPath, buf, len, meta->format);
+    VIR_DEBUG("path=%s, buf=%p, len=%zu, meta->format=%d",
+              meta->path, buf, len, meta->format);
 
     if (meta->format == VIR_STORAGE_FILE_AUTO)
-        meta->format = virStorageFileProbeFormatFromBuf(meta->relPath, buf, len);
+        meta->format = virStorageFileProbeFormatFromBuf(meta->path, buf, len);
 
     if (meta->format <= VIR_STORAGE_FILE_NONE ||
         meta->format >= VIR_STORAGE_FILE_LAST) {
@@ -907,9 +907,6 @@ virStorageFileMetadataNew(const char *path,
 
     ret->format = format;
     ret->type = VIR_STORAGE_TYPE_FILE;
-
-    if (VIR_STRDUP(ret->relPath, path) < 0)
-        goto error;
 
     if (VIR_STRDUP(ret->path, path) < 0)
         goto error;
@@ -1378,7 +1375,8 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
             if (idx == i)
                 break;
         } else {
-            if (STREQ_NULLABLE(name, chain->relPath))
+            if (STREQ_NULLABLE(name, chain->relPath) ||
+                STREQ(name, chain->path))
                 break;
             if (nameIsFile && (chain->type == VIR_STORAGE_TYPE_FILE ||
                                chain->type == VIR_STORAGE_TYPE_BLOCK)) {
@@ -1624,6 +1622,10 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
         return NULL;
 
     ret->backingRelative = true;
+
+    /* store relative name */
+    if (VIR_STRDUP(ret->relPath, parent->backingStoreRaw) < 0)
+        goto error;
 
     /* XXX Once we get rid of the need to use canonical names in path, we will be
      * able to use mdir_name on parent->path instead of using parent->relDir */
@@ -1939,11 +1941,6 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent)
         ret = virStorageSourceNewFromBackingAbsolute(parent->backingStoreRaw);
 
     if (ret) {
-        if (VIR_STRDUP(ret->relPath, parent->backingStoreRaw) < 0) {
-            virStorageSourceFree(ret);
-            return NULL;
-        }
-
         /* possibly update local type */
         if (ret->type == VIR_STORAGE_TYPE_FILE) {
             if (stat(ret->path, &st) == 0) {

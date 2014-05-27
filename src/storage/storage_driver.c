@@ -2945,10 +2945,6 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
     if (!(cycle = virHashCreate(5, NULL)))
         return -1;
 
-    if (!src->relPath &&
-        VIR_STRDUP(src->relPath, src->path) < 0)
-        goto cleanup;
-
     if (!src->relDir &&
         !(src->relDir = mdir_name(src->path))) {
         virReportOOMError();
