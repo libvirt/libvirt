@@ -283,7 +283,6 @@ struct _testFileData
     unsigned long long expCapacity;
     bool expEncrypted;
     const char *pathRel;
-    const char *pathAbs;
     const char *path;
     const char *relDirRel;
     const char *relDirAbs;
@@ -734,7 +733,6 @@ mymain(void)
 
     /* Raw image, whether with right format or no specified format */
     testFileData raw = {
-        .pathAbs = canonraw,
         .path = canonraw,
         .relDirRel = ".",
         .relDirAbs = datadir,
@@ -753,12 +751,10 @@ mymain(void)
                (&raw), ALLOW_PROBE | EXP_PASS);
 
     /* Qcow2 file with relative raw backing, format provided */
-    raw.pathAbs = "raw";
     raw.pathRel = "raw";
     testFileData qcow2 = {
         .expBackingStoreRaw = "raw",
         .expCapacity = 1024,
-        .pathAbs = canonqcow2,
         .path = canonqcow2,
         .relDirRel = ".",
         .relDirAbs = datadir,
@@ -766,7 +762,6 @@ mymain(void)
         .format = VIR_STORAGE_FILE_QCOW2,
     };
     testFileData qcow2_as_raw = {
-        .pathAbs = canonqcow2,
         .path = canonqcow2,
         .relDirRel = ".",
         .relDirAbs = datadir,
@@ -792,7 +787,6 @@ mymain(void)
         ret = -1;
     qcow2.expBackingStoreRaw = absraw;
     raw.pathRel = NULL;
-    raw.pathAbs = absraw;
     raw.relDirRel = datadir;
 
     /* Qcow2 file with raw as absolute backing, backing format provided */
@@ -811,7 +805,6 @@ mymain(void)
     testFileData wrap = {
         .expBackingStoreRaw = absqcow2,
         .expCapacity = 1024,
-        .pathAbs = abswrap,
         .path = canonwrap,
         .relDirRel = ".",
         .relDirAbs = datadir,
@@ -843,7 +836,6 @@ mymain(void)
     testFileData wrap_as_raw = {
         .expBackingStoreRaw = absqcow2,
         .expCapacity = 1024,
-        .pathAbs = abswrap,
         .path = canonwrap,
         .relDirRel = ".",
         .relDirAbs = datadir,
@@ -898,7 +890,6 @@ mymain(void)
 
     /* Qcow2 file with backing protocol instead of file */
     testFileData nbd = {
-        .pathAbs = "nbd:example.org:6000:exportname=blah",
         .path = "blah",
         .type = VIR_STORAGE_TYPE_NETWORK,
         .format = VIR_STORAGE_FILE_RAW,
@@ -915,7 +906,6 @@ mymain(void)
     testFileData qed = {
         .expBackingStoreRaw = absraw,
         .expCapacity = 1024,
-        .pathAbs = absqed,
         .path = canonqed,
         .relDirRel = ".",
         .relDirAbs = datadir,
@@ -923,7 +913,6 @@ mymain(void)
         .format = VIR_STORAGE_FILE_QED,
     };
     testFileData qed_as_raw = {
-        .pathAbs = absqed,
         .path = canonqed,
         .relDirRel = ".",
         .relDirAbs = datadir,
@@ -938,7 +927,6 @@ mymain(void)
 
     /* directory */
     testFileData dir = {
-        .pathAbs = absdir,
         .path = canondir,
         .relDirRel = ".",
         .relDirAbs = datadir,
@@ -977,7 +965,6 @@ mymain(void)
         .expBackingStoreRaw = "../raw",
         .expCapacity = 1024,
         .pathRel = "../sub/link1",
-        .pathAbs = "../sub/link1",
         .path = canonqcow2,
         .relDirRel = "sub/../sub",
         .relDirAbs = datadir "/sub/../sub",
@@ -987,7 +974,6 @@ mymain(void)
     testFileData link2 = {
         .expBackingStoreRaw = "../sub/link1",
         .expCapacity = 1024,
-        .pathAbs = abslink2,
         .path = canonwrap,
         .relDirRel = "sub",
         .relDirAbs = datadir "/sub",
@@ -995,7 +981,6 @@ mymain(void)
         .format = VIR_STORAGE_FILE_QCOW2,
     };
     raw.pathRel = "../raw";
-    raw.pathAbs = "../raw";
     raw.relDirRel = "sub/../sub/..";
     raw.relDirAbs = datadir "/sub/../sub/..";
     TEST_CHAIN(15, "sub/link2", abslink2, VIR_STORAGE_FILE_QCOW2,
