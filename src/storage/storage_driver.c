@@ -2837,8 +2837,8 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     virStorageSourcePtr backingStore = NULL;
     int backingFormat;
 
-    VIR_DEBUG("path=%s dir=%s format=%d uid=%d gid=%d probe=%d",
-              src->path, NULLSTR(src->relDir), src->format,
+    VIR_DEBUG("path=%s format=%d uid=%d gid=%d probe=%d",
+              src->path, src->format,
               (int)uid, (int)gid, allow_probe);
 
     /* exit if we can't load information about the current image */
@@ -2945,19 +2945,12 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
     if (!(cycle = virHashCreate(5, NULL)))
         return -1;
 
-    if (!src->relDir &&
-        !(src->relDir = mdir_name(src->path))) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
     if (src->format <= VIR_STORAGE_FILE_NONE)
         src->format = allow_probe ? VIR_STORAGE_FILE_AUTO : VIR_STORAGE_FILE_RAW;
 
     ret = virStorageFileGetMetadataRecurse(src, uid, gid,
                                            allow_probe, cycle);
 
- cleanup:
     VIR_FREE(canonPath);
     virHashFree(cycle);
     return ret;

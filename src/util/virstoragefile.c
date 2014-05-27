@@ -1339,9 +1339,10 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
                           unsigned int idx,
                           const char **parent)
 {
+    virStorageSourcePtr prev = NULL;
     const char *start = chain->path;
     const char *tmp;
-    const char *parentDir = ".";
+    char *parentDir = NULL;
     bool nameIsFile = virStorageIsFile(name);
     size_t i;
 
@@ -1372,8 +1373,20 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
                 break;
             if (nameIsFile && (chain->type == VIR_STORAGE_TYPE_FILE ||
                                chain->type == VIR_STORAGE_TYPE_BLOCK)) {
+                if (prev) {
+                    if (!(parentDir = mdir_name(prev->path))) {
+                        virReportOOMError();
+                        goto error;
+                    }
+                } else {
+                    if (VIR_STRDUP(parentDir, ".") < 0)
+                        goto error;
+                }
+
                 int result = virFileRelLinkPointsTo(parentDir, name,
                                                     chain->path);
+
+                VIR_FREE(parentDir);
                 if (result < 0)
                     goto error;
                 if (result > 0)
@@ -1381,7 +1394,7 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
             }
         }
         *parent = chain->path;
-        parentDir = chain->relDir;
+        prev = chain;
         chain = chain->backingStore;
         i++;
     }
@@ -1551,7 +1564,6 @@ virStorageSourceClearBackingStore(virStorageSourcePtr def)
         return;
 
     VIR_FREE(def->relPath);
-    VIR_FREE(def->relDir);
     VIR_FREE(def->backingStoreRaw);
 
     /* recursively free backing chain */
@@ -1607,7 +1619,6 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
                                        const char *rel)
 {
     char *dirname = NULL;
-    const char *parentdir = "";
     virStorageSourcePtr ret;
 
     if (VIR_ALLOC(ret) < 0)
@@ -1617,23 +1628,20 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
     if (VIR_STRDUP(ret->relPath, parent->backingStoreRaw) < 0)
         goto error;
 
-    /* XXX Once we get rid of the need to use canonical names in path, we will be
-     * able to use mdir_name on parent->path instead of using parent->relDir */
-    if (STRNEQ(parent->relDir, "/"))
-        parentdir = parent->relDir;
-
-    if (virAsprintf(&ret->path, "%s/%s", parentdir, rel) < 0)
+    if (!(dirname = mdir_name(parent->path))) {
+        virReportOOMError();
         goto error;
+    }
 
-    if (virStorageSourceGetActualType(parent) != VIR_STORAGE_TYPE_NETWORK) {
-        ret->type = VIR_STORAGE_TYPE_FILE;
-
-        /* XXX store the relative directory name for test's sake */
-        if (!(ret->relDir = mdir_name(ret->path))) {
-            virReportOOMError();
+    if (STRNEQ(dirname, "/")) {
+        if (virAsprintf(&ret->path, "%s/%s", dirname, rel) < 0)
             goto error;
-        }
     } else {
+        if (virAsprintf(&ret->path, "/%s", rel) < 0)
+            goto error;
+    }
+
+    if (virStorageSourceGetActualType(parent) == VIR_STORAGE_TYPE_NETWORK) {
         ret->type = VIR_STORAGE_TYPE_NETWORK;
 
         /* copy the host network part */
@@ -1644,12 +1652,9 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
 
         if (VIR_STRDUP(ret->volume, parent->volume) < 0)
             goto error;
-
-        /* XXX store the relative directory name for test's sake */
-        if (!(ret->relDir = mdir_name(ret->path))) {
-            virReportOOMError();
-            goto error;
-        }
+    } else {
+        /* set the type to _FILE, the caller shall update it to the actual type */
+        ret->type = VIR_STORAGE_TYPE_FILE;
     }
 
  cleanup:
@@ -1865,12 +1870,6 @@ virStorageSourceNewFromBackingAbsolute(const char *path)
     if (virStorageIsFile(path)) {
         ret->type = VIR_STORAGE_TYPE_FILE;
 
-        /* XXX store the relative directory name for test's sake */
-        if (!(ret->relDir = mdir_name(path))) {
-            virReportOOMError();
-            goto error;
-        }
-
         if (VIR_STRDUP(ret->path, path) < 0)
             goto error;
     } else {
@@ -1882,17 +1881,6 @@ virStorageSourceNewFromBackingAbsolute(const char *path)
                 goto error;
         } else {
             if (virStorageSourceParseBackingColon(ret, path) < 0)
-                goto error;
-        }
-
-        /* XXX fill relative path so that relative names work with network storage too */
-        if (ret->path) {
-            if (!(ret->relDir = mdir_name(ret->path))) {
-                virReportOOMError();
-                goto error;
-            }
-        } else {
-            if (VIR_STRDUP(ret->relDir, "") < 0)
                 goto error;
         }
     }

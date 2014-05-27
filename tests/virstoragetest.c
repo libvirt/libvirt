@@ -116,11 +116,6 @@ testStorageFileGetMetadata(const char *path,
         }
     }
 
-    if (!(ret->relDir = mdir_name(path))) {
-        virReportOOMError();
-        goto error;
-    }
-
     if (VIR_STRDUP(ret->path, path) < 0)
         goto error;
 
@@ -282,7 +277,6 @@ struct _testFileData
     bool expEncrypted;
     const char *pathRel;
     const char *path;
-    const char *relDir;
     int type;
     int format;
 };
@@ -311,7 +305,6 @@ static const char testStorageChainFormat[] =
     "capacity: %lld\n"
     "encryption: %d\n"
     "relPath:%s\n"
-    "relDir:%s\n"
     "type:%d\n"
     "format:%d\n";
 
@@ -375,7 +368,6 @@ testStorageChain(const void *args)
                         data->files[i]->expCapacity,
                         data->files[i]->expEncrypted,
                         NULLSTR(data->files[i]->pathRel),
-                        NULLSTR(data->files[i]->relDir),
                         data->files[i]->type,
                         data->files[i]->format) < 0 ||
             virAsprintf(&actual,
@@ -385,7 +377,6 @@ testStorageChain(const void *args)
                         elt->capacity,
                         !!elt->encryption,
                         NULLSTR(elt->relPath),
-                        NULLSTR(elt->relDir),
                         elt->type,
                         elt->format) < 0) {
             VIR_FREE(expect);
@@ -713,7 +704,6 @@ mymain(void)
     /* Raw image, whether with right format or no specified format */
     testFileData raw = {
         .path = canonraw,
-        .relDir = datadir,
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_RAW,
     };
@@ -730,13 +720,11 @@ mymain(void)
         .expBackingStoreRaw = "raw",
         .expCapacity = 1024,
         .path = canonqcow2,
-        .relDir = datadir,
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_QCOW2,
     };
     testFileData qcow2_as_raw = {
         .path = canonqcow2,
-        .relDir = datadir,
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_RAW,
     };
@@ -769,7 +757,6 @@ mymain(void)
         .expBackingStoreRaw = absqcow2,
         .expCapacity = 1024,
         .path = canonwrap,
-        .relDir = datadir,
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_QCOW2,
     };
@@ -795,7 +782,6 @@ mymain(void)
         .expBackingStoreRaw = absqcow2,
         .expCapacity = 1024,
         .path = canonwrap,
-        .relDir = datadir,
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_QCOW2,
     };
@@ -843,7 +829,6 @@ mymain(void)
         .path = "blah",
         .type = VIR_STORAGE_TYPE_NETWORK,
         .format = VIR_STORAGE_FILE_RAW,
-        .relDir = ".",
     };
     TEST_CHAIN(11, absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2, &nbd), EXP_PASS,
@@ -854,13 +839,11 @@ mymain(void)
         .expBackingStoreRaw = absraw,
         .expCapacity = 1024,
         .path = canonqed,
-        .relDir = datadir,
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_QED,
     };
     testFileData qed_as_raw = {
         .path = canonqed,
-        .relDir = datadir,
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_RAW,
     };
@@ -871,7 +854,6 @@ mymain(void)
     /* directory */
     testFileData dir = {
         .path = canondir,
-        .relDir = datadir,
         .type = VIR_STORAGE_TYPE_DIR,
         .format = VIR_STORAGE_FILE_DIR,
     };
@@ -904,7 +886,6 @@ mymain(void)
         .expCapacity = 1024,
         .pathRel = "../sub/link1",
         .path = datadir "/sub/../sub/link1",
-        .relDir = datadir "/sub/../sub",
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_QCOW2,
     };
@@ -912,14 +893,12 @@ mymain(void)
         .expBackingStoreRaw = "../sub/link1",
         .expCapacity = 1024,
         .path = abslink2,
-        .relDir = datadir "/sub",
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_QCOW2,
     };
 
     raw.path = datadir "/sub/../sub/../raw";
     raw.pathRel = "../raw";
-    raw.relDir = datadir "/sub/../sub/..";
     TEST_CHAIN(15, abslink2, VIR_STORAGE_FILE_QCOW2,
                (&link2, &link1, &raw), EXP_PASS,
                (&link2, &link1, &raw), ALLOW_PROBE | EXP_PASS);
