@@ -91,7 +91,7 @@ static int testQemuAddPPCGuest(virCapsPtr caps)
     static const char *machine[] = { "g3beige",
                                      "mac99",
                                      "prep",
-                                     "ppce500v2" };
+                                     "ppce500" };
     virCapsGuestMachinePtr *machines = NULL;
     virCapsGuestPtr guest;
 

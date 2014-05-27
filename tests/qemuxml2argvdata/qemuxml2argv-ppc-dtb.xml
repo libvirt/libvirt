@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>262144</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='ppc' machine='ppce500v2'>hvm</type>
+    <type arch='ppc' machine='ppce500'>hvm</type>
     <kernel>/media/ram/uImage</kernel>
     <initrd>/media/ram/ramdisk</initrd>
     <cmdline>root=/dev/ram rw console=ttyS0,115200</cmdline>
