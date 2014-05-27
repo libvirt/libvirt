@@ -2630,24 +2630,54 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
 }
 
 
-static void
+static int
 qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainNetDefPtr net)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     virNetDevVPortProfilePtr vport;
     virObjectEventPtr event;
+    char *hostnet_name = NULL;
     size_t i;
+    int ret = -1;
 
     if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         /* this function handles all hostdev and netdev cleanup */
         qemuDomainRemoveHostDevice(driver, vm, virDomainNetGetActualHostdev(net));
+        ret = 0;
         goto cleanup;
     }
 
     VIR_DEBUG("Removing network interface %s from domain %p %s",
               net->info.alias, vm, vm->def->name);
+
+    if (virAsprintf(&hostnet_name, "host%s", net->info.alias) < 0)
+        goto cleanup;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV) &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
+        if (qemuMonitorRemoveNetdev(priv->mon, hostnet_name) < 0) {
+            qemuDomainObjExitMonitor(driver, vm);
+            virDomainAuditNet(vm, net, NULL, "detach", false);
+            goto cleanup;
+        }
+    } else {
+        int vlan;
+        if ((vlan = qemuDomainNetVLAN(net)) < 0 ||
+            qemuMonitorRemoveHostNetwork(priv->mon, vlan, hostnet_name) < 0) {
+            if (vlan < 0) {
+                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                               _("unable to determine original VLAN"));
+            }
+            qemuDomainObjExitMonitor(driver, vm);
+            virDomainAuditNet(vm, net, NULL, "detach", false);
+            goto cleanup;
+        }
+    }
+    qemuDomainObjExitMonitor(driver, vm);
 
     virDomainAuditNet(vm, net, NULL, "detach", true);
 
@@ -2689,9 +2719,12 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
 
     networkReleaseActualDevice(vm->def, net);
     virDomainNetDefFree(net);
+    ret = 0;
 
  cleanup:
     virObjectUnref(cfg);
+    VIR_FREE(hostnet_name);
+    return ret;
 }
 
 
@@ -3379,8 +3412,6 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
     int detachidx, ret = -1;
     virDomainNetDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int vlan;
-    char *hostnet_name = NULL;
     int rc;
 
     if ((detachidx = virDomainNetFindIdx(vm->def, dev->data.net)) < 0)
@@ -3418,15 +3449,6 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
         }
     }
 
-    if ((vlan = qemuDomainNetVLAN(detach)) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("unable to determine original VLAN"));
-        goto cleanup;
-    }
-
-    if (virAsprintf(&hostnet_name, "host%s", detach->info.alias) < 0)
-        goto cleanup;
-
     qemuDomainMarkDeviceForRemoval(vm, &detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -3444,32 +3466,16 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
             goto cleanup;
         }
     }
-
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV) &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuMonitorRemoveNetdev(priv->mon, hostnet_name) < 0) {
-            qemuDomainObjExitMonitor(driver, vm);
-            virDomainAuditNet(vm, detach, NULL, "detach", false);
-            goto cleanup;
-        }
-    } else {
-        if (qemuMonitorRemoveHostNetwork(priv->mon, vlan, hostnet_name) < 0) {
-            qemuDomainObjExitMonitor(driver, vm);
-            virDomainAuditNet(vm, detach, NULL, "detach", false);
-            goto cleanup;
-        }
-    }
     qemuDomainObjExitMonitor(driver, vm);
 
     rc = qemuDomainWaitForDeviceRemoval(vm);
     if (rc == 0 || rc == 1)
-        qemuDomainRemoveNetDevice(driver, vm, detach);
-
-    ret = 0;
+        ret = qemuDomainRemoveNetDevice(driver, vm, detach);
+    else
+        ret = 0;
 
  cleanup:
     qemuDomainResetDeviceRemoval(vm);
-    VIR_FREE(hostnet_name);
     return ret;
 }
 
