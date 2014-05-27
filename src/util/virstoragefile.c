@@ -1621,8 +1621,6 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
     if (VIR_ALLOC(ret) < 0)
         return NULL;
 
-    ret->backingRelative = true;
-
     /* store relative name */
     if (VIR_STRDUP(ret->relPath, parent->backingStoreRaw) < 0)
         goto error;
@@ -2223,7 +2221,7 @@ virStorageFileGetRelativeBackingPath(virStorageSourcePtr top,
     *relpath = NULL;
 
     for (next = top; next; next = next->backingStore) {
-        if (!next->backingRelative || !next->relPath) {
+        if (!next->relPath) {
             ret = 1;
             goto cleanup;
         }

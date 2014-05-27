@@ -256,8 +256,6 @@ struct _virStorageSource {
     /* Name of the child backing store recorded in metadata of the
      * current file.  */
     char *backingStoreRaw;
-    /* is backing store identified as relative */
-    bool backingRelative;
 };
 
 

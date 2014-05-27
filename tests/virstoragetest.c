@@ -591,13 +591,11 @@ testPathRelativePrepare(void)
         else
             backingchain[i].backingStore = NULL;
 
-        backingchain[i].backingRelative = true;
+        backingchain[i].relPath = NULL;
     }
 
     /* normal relative backing chain */
     backingchain[0].path = (char *) "/path/to/some/img";
-    backingchain[0].relPath = (char *) "/path/to/some/img";
-    backingchain[0].backingRelative = false;
 
     backingchain[1].path = (char *) "/path/to/some/asdf";
     backingchain[1].relPath = (char *) "asdf";
@@ -610,8 +608,6 @@ testPathRelativePrepare(void)
 
     /* ovirt's backing chain */
     backingchain[4].path = (char *) "/path/to/volume/image1";
-    backingchain[4].relPath = (char *) "/path/to/volume/image1";
-    backingchain[4].backingRelative = false;
 
     backingchain[5].path = (char *) "/path/to/volume/image2";
     backingchain[5].relPath = (char *) "../volume/image2";
@@ -624,8 +620,6 @@ testPathRelativePrepare(void)
 
     /* some arbitrarily crazy backing chains */
     backingchain[8].path = (char *) "/crazy/base/image";
-    backingchain[8].relPath = (char *) "/crazy/base/image";
-    backingchain[8].backingRelative = false;
 
     backingchain[9].path = (char *) "/crazy/base/directory/stuff/volumes/garbage/image2";
     backingchain[9].relPath = (char *) "directory/stuff/volumes/garbage/image2";
