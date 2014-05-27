@@ -101,6 +101,28 @@ testTimeLocalOffset(const void *args)
     return 0;
 }
 
+
+/* return true if the date is Jan 1 or Dec 31 (localtime) */
+static bool
+isNearYearEnd(void)
+{
+    time_t current = time(NULL);
+    struct tm timeinfo;
+
+    if (current == (time_t)-1) {
+        VIR_DEBUG("time() failed");
+        return false;
+    }
+    if (!localtime_r(&current, &timeinfo)) {
+        VIR_DEBUG("localtime_r() failed");
+        return false;
+    }
+
+    return (timeinfo.tm_mon == 0 && timeinfo.tm_mday == 1) ||
+            (timeinfo.tm_mon == 11 && timeinfo.tm_mday == 31);
+}
+
+
 static int
 mymain(void)
 {
@@ -161,21 +183,44 @@ mymain(void)
 
     TEST_LOCALOFFSET("VIR00:30", -30 * 60);
     TEST_LOCALOFFSET("VIR01:30", -90 * 60);
+    TEST_LOCALOFFSET("VIR05:00", (-5 * 60) * 60);
     TEST_LOCALOFFSET("UTC", 0);
     TEST_LOCALOFFSET("VIR-00:30", 30 * 60);
     TEST_LOCALOFFSET("VIR-01:30", 90 * 60);
-#if __TEST_DST
+
     /* test DST processing with timezones that always
      * have DST in effect; what's more, cover a zone with
      * with an unusual DST different than a usual one hour
      */
-    /* NB: These tests fail at certain times of the day, so
-     * must be disabled until we figure out why
-     */
-    TEST_LOCALOFFSET("VIR-00:30VID,0,365", 90 * 60);
-    TEST_LOCALOFFSET("VIR-02:30VID,0,365", 210 * 60);
-    TEST_LOCALOFFSET("VIR-02:30VID-04:30,0,365", 270 * 60);
-#endif
+    TEST_LOCALOFFSET("VIR-00:30VID,0/00:00:00,366/23:59:59",
+                     ((1 * 60) + 30) * 60);
+    TEST_LOCALOFFSET("VIR-02:30VID,0/00:00:00,366/23:59:59",
+                     ((3 * 60) + 30) * 60);
+    TEST_LOCALOFFSET("VIR-02:30VID-04:30,0/00:00:00,366/23:59:59",
+                     ((4 * 60) + 30) * 60);
+    TEST_LOCALOFFSET("VIR-12:00VID-13:00,0/00:00:00,366/23:59:59",
+                     ((13 * 60) +  0) * 60);
+
+    if (!isNearYearEnd()) {
+        /* experiments have shown that the following tests will fail
+         * during certain hours of Dec 31 or Jan 1 (depending on the
+         * TZ setting in the shell running the test, but in general
+         * for a period that apparently starts at 00:00:00 UTC Jan 1
+         * and continues for 1 - 2 hours). We've determined this is
+         * due to our inability to specify a timezone with DST on/off
+         * settings that make it truly *always* on DST - i.e. it is a
+         * failing of the test data, *not* of the function we are
+         * testing. So to test as much as possible, we still run these
+         * tests, except on Dec 31 and Jan 1.
+         */
+
+        TEST_LOCALOFFSET("VIR02:45VID00:45,0/00:00:00,366/23:59:59",
+                         -45 * 60);
+        TEST_LOCALOFFSET("VIR05:00VID04:00,0/00:00:00,366/23:59:59",
+                         ((-4 * 60) +  0) * 60);
+        TEST_LOCALOFFSET("VIR11:00VID10:00,0/00:00:00,366/23:59:59",
+                         ((-10 * 60) +  0) * 60);
+    }
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

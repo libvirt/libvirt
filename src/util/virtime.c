@@ -349,7 +349,7 @@ char *virTimeStringThen(unsigned long long when)
  * virTimeLocalOffsetFromUTC:
  *
  * This function is threadsafe, but is *not* async signal safe (due to
- * localtime_r()).
+ * gmtime_r() and mktime()).
  *
  * @offset: pointer to time_t that will be set to the difference
  *          between localtime and UTC in seconds (east of UTC is a
@@ -376,6 +376,9 @@ virTimeLocalOffsetFromUTC(long *offset)
                              _("gmtime_r failed"));
         return -1;
     }
+
+    /* tell mktime to figure out itself whether or not DST is in effect */
+    gmtimeinfo.tm_isdst = -1;
 
     /* mktime() also obeys current timezone rules */
     if ((utc = mktime(&gmtimeinfo)) == (time_t)-1) {
