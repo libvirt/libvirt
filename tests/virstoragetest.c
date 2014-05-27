@@ -121,10 +121,8 @@ testStorageFileGetMetadata(const char *path,
         goto error;
     }
 
-    if (!(ret->path = canonicalize_file_name(path))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "failed to resolve '%s'", path);
+    if (VIR_STRDUP(ret->path, path) < 0)
         goto error;
-    }
 
     if (virStorageFileGetMetadata(ret, uid, gid, allow_probe) < 0)
         goto error;
@@ -905,7 +903,7 @@ mymain(void)
         .expBackingStoreRaw = "../raw",
         .expCapacity = 1024,
         .pathRel = "../sub/link1",
-        .path = canonqcow2,
+        .path = datadir "/sub/../sub/link1",
         .relDir = datadir "/sub/../sub",
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_QCOW2,
@@ -913,11 +911,13 @@ mymain(void)
     testFileData link2 = {
         .expBackingStoreRaw = "../sub/link1",
         .expCapacity = 1024,
-        .path = canonwrap,
+        .path = abslink2,
         .relDir = datadir "/sub",
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_QCOW2,
     };
+
+    raw.path = datadir "/sub/../sub/../raw";
     raw.pathRel = "../raw";
     raw.relDir = datadir "/sub/../sub/..";
     TEST_CHAIN(15, abslink2, VIR_STORAGE_FILE_QCOW2,

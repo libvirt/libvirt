@@ -1044,25 +1044,17 @@ virStorageFileGetMetadataFromFD(const char *path,
                                 int *backingFormat)
 
 {
-    virStorageSourcePtr ret = NULL;
-    char *canonPath = NULL;
+    virStorageSourcePtr ret;
 
-    if (!(canonPath = canonicalize_file_name(path))) {
-        virReportSystemError(errno, _("unable to resolve '%s'"), path);
-        goto cleanup;
-    }
-
-    if (!(ret = virStorageFileMetadataNew(canonPath, format)))
-        goto cleanup;
+    if (!(ret = virStorageFileMetadataNew(path, format)))
+        return NULL;
 
 
     if (virStorageFileGetMetadataFromFDInternal(ret, fd, backingFormat) < 0) {
         virStorageSourceFree(ret);
-        ret = NULL;
+        return NULL;
     }
 
- cleanup:
-    VIR_FREE(canonPath);
     return ret;
 }
 
@@ -1641,15 +1633,6 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
             virReportOOMError();
             goto error;
         }
-
-        /* XXX we don't currently need to store the canonical path but the
-         * change would break the test suite. Get rid of this later */
-        char *tmp = ret->path;
-        if (!(ret->path = canonicalize_file_name(tmp))) {
-            ret->path = tmp;
-            tmp = NULL;
-        }
-        VIR_FREE(tmp);
     } else {
         ret->type = VIR_STORAGE_TYPE_NETWORK;
 
@@ -1888,12 +1871,8 @@ virStorageSourceNewFromBackingAbsolute(const char *path)
             goto error;
         }
 
-        /* XXX we don't currently need to store the canonical path but the
-         * change would break the test suite. Get rid of this later */
-        if (!(ret->path = canonicalize_file_name(path))) {
-            if (VIR_STRDUP(ret->path, path) < 0)
-                goto error;
-        }
+        if (VIR_STRDUP(ret->path, path) < 0)
+            goto error;
     } else {
         ret->type = VIR_STORAGE_TYPE_NETWORK;
 
