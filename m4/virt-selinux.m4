@@ -29,19 +29,18 @@ AC_DEFUN([LIBVIRT_CHECK_SELINUX],[
 
   if test "$with_selinux" = "yes"; then
     # libselinux changed signatures between 2.2 and 2.3
-    AC_CACHE_CHECK([for selinux setcon parameter type], [gt_cv_setcon_param],
+    AC_CACHE_CHECK([for selinux setcon parameter type], [lv_cv_setcon_param],
     [AC_COMPILE_IFELSE(
       [AC_LANG_PROGRAM(
          [[
 #include <selinux/selinux.h>
-int setcon(const security_context_t context);
+int setcon(char *context);
          ]])],
-         [gt_cv_setcon_param='security_context_t'],
-         [gt_cv_setcon_param='const char*'])])
-    if test "$gt_cv_setcon_param" = 'const char*'; then
-       AC_DEFINE_UNQUOTED([SELINUX_CTX_CHAR_PTR], 1,
-                          [SELinux uses newer char * for security context])
-    fi
+         [lv_cv_setcon_const=''],
+         [lv_cv_setcon_const='const'])])
+    AC_DEFINE_UNQUOTED([VIR_SELINUX_CTX_CONST], [$lv_cv_setcon_const],
+      [Define to empty or 'const' depending on how SELinux qualifies its
+       security context parameters])
 
     AC_MSG_CHECKING([SELinux mount point])
     if test "$with_selinux_mount" = "check" || test -z "$with_selinux_mount"; then
