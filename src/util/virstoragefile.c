@@ -1091,14 +1091,16 @@ virStorageFileGetMetadataFromFDInternal(virStorageSourcePtr meta,
 virStorageSourcePtr
 virStorageFileGetMetadataFromFD(const char *path,
                                 int fd,
-                                int format)
+                                int format,
+                                int *backingFormat)
+
 {
     virStorageSourcePtr ret = NULL;
 
     if (!(ret = virStorageFileMetadataNew(path, format)))
         goto cleanup;
 
-    if (virStorageFileGetMetadataFromFDInternal(ret, fd, NULL) < 0) {
+    if (virStorageFileGetMetadataFromFDInternal(ret, fd, backingFormat) < 0) {
         virStorageSourceFree(ret);
         ret = NULL;
     }

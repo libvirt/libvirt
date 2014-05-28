@@ -10364,7 +10364,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         }
     }
 
-    if (!(meta = virStorageFileGetMetadataFromFD(path, fd, format)))
+    if (!(meta = virStorageFileGetMetadataFromFD(path, fd, format, NULL)))
         goto cleanup;
 
     /* Get info for normal formats */
