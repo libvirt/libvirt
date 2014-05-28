@@ -4122,17 +4122,6 @@ typedef enum {
 #endif
 } virCPUCompareResult;
 
-/**
- * virConnectCompareCPU:
- *
- * @conn: virConnect connection
- * @xmlDesc: XML description of either guest or host cpu with <cpu> root tag
- * @flags: comparison flags
- *
- * Compares given CPU with host cpu.
- *
- * Returns virCPUCompareResult.
- */
 int virConnectCompareCPU(virConnectPtr conn,
                          const char *xmlDesc,
                          unsigned int flags);
@@ -4151,19 +4140,6 @@ typedef enum {
     VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES  = (1 << 0),  /* show all features */
 } virConnectBaselineCPUFlags;
 
-/**
- * virConnectBaselineCPU:
- *
- * @conn: virConnect connection
- * @ncpus: number of CPUs in xmlCPUs
- * @xmlCPUs: array of XML descriptions of host CPUs
- * @flags: fine-tuning flags
- *
- * Computes the most feature-rich CPU which is compatible with all given
- * host CPUs.
- *
- * Returns XML description of the computed CPU or NULL on error.
- */
 char *virConnectBaselineCPU(virConnectPtr conn,
                             const char **xmlCPUs,
                             unsigned int ncpus,
