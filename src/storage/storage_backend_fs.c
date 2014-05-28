@@ -71,8 +71,6 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
     int ret = -1;
     virStorageSourcePtr meta = NULL;
     struct stat sb;
-    char *header = NULL;
-    ssize_t len = VIR_STORAGE_MAX_HEADER;
 
     *backingStore = NULL;
     *backingStoreFormat = VIR_STORAGE_FILE_AUTO;
@@ -89,22 +87,19 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
         goto error;
     }
 
+    ret = -1;
+
     if (S_ISDIR(sb.st_mode)) {
         target->format = VIR_STORAGE_FILE_DIR;
     } else {
-        if ((len = virFileReadHeaderFD(fd, len, &header)) < 0) {
-            virReportSystemError(errno, _("cannot read header '%s'"),
-                                 target->path);
+        if (!(meta = virStorageFileGetMetadataFromFD(target->path,
+                                                     fd,
+                                                     VIR_STORAGE_FILE_AUTO,
+                                                     backingStoreFormat)))
             goto error;
-        }
 
-        if (!(meta = virStorageFileGetMetadataFromBuf(target->path,
-                                                      header, len,
-                                                      backingStore,
-                                                      backingStoreFormat))) {
-            ret = -1;
+        if (VIR_STRDUP(*backingStore, meta->backingStoreRaw) < 0)
             goto error;
-        }
     }
 
     VIR_FORCE_CLOSE(fd);
@@ -170,7 +165,6 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
 
  cleanup:
     virStorageSourceFree(meta);
-    VIR_FREE(header);
     return ret;
 
 }
