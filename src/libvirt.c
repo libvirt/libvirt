@@ -17245,11 +17245,16 @@ virConnectIsSecure(virConnectPtr conn)
  * virConnectCompareCPU:
  * @conn: virConnect connection
  * @xmlDesc: XML describing the CPU to compare with host CPU
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virConnectCompareCPUFlags
  *
  * Compares the given CPU description with the host CPU
  *
- * Returns comparison result according to enum virCPUCompareResult
+ * Returns comparison result according to enum virCPUCompareResult. If
+ * VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE is used and @xmlDesc CPU is
+ * incompatible with host CPU, this function will return VIR_CPU_COMPARE_ERROR
+ * (instead of VIR_CPU_COMPARE_INCOMPATIBLE) and the error will use the
+ * VIR_ERR_CPU_INCOMPATIBLE code with a message providing more details about
+ * the incompatibility.
  */
 int
 virConnectCompareCPU(virConnectPtr conn,

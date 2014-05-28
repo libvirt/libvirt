@@ -4122,6 +4122,11 @@ typedef enum {
 #endif
 } virCPUCompareResult;
 
+typedef enum {
+    VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE = (1 << 0), /* treat incompatible
+                                                             CPUs as failure */
+} virConnectCompareCPUFlags;
+
 int virConnectCompareCPU(virConnectPtr conn,
                          const char *xmlDesc,
                          unsigned int flags);

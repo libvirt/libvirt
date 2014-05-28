@@ -6214,6 +6214,10 @@ static const vshCmdOptDef opts_cpu_compare[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("file containing an XML CPU description")
     },
+    {.name = "error",
+     .type = VSH_OT_BOOL,
+     .help = N_("report error if CPUs are incompatible")
+    },
     {.name = NULL}
 };
 
@@ -6225,10 +6229,13 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
     char *buffer;
     int result;
     char *snippet = NULL;
-
+    unsigned int flags = 0;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr node;
+
+    if (vshCommandOptBool(cmd, "error"))
+        flags |= VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
@@ -6253,7 +6260,7 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    result = virConnectCompareCPU(ctl->conn, snippet, 0);
+    result = virConnectCompareCPU(ctl->conn, snippet, flags);
 
     switch (result) {
     case VIR_CPU_COMPARE_INCOMPATIBLE:

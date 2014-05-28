@@ -535,14 +535,17 @@ resulting XML description will explicitly include all features that make
 up the CPU, without this option features that are part of the CPU model
 will not be listed in the XML description.
 
-=item B<cpu-compare> I<FILE>
+=item B<cpu-compare> I<FILE> [I<--error>]
 
 Compare CPU definition from XML <file> with host CPU. The XML <file> may
 contain either host or guest CPU definition. The host CPU definition is the
 <cpu> element and its contents as printed by B<capabilities> command. The
 guest CPU definition is the <cpu> element and its contents from domain XML
 definition. For more information on guest CPU definition see:
-L<http://libvirt.org/formatdomain.html#elementsCPU>
+L<http://libvirt.org/formatdomain.html#elementsCPU>. If I<--error> is
+specified, the command will return an error when the given CPU is
+incompatible with host CPU and a message providing more details about the
+incompatibility will be printed out.
 
 =item B<echo> [I<--shell>] [I<--xml>] [I<arg>...]
 
