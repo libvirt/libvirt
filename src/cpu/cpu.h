@@ -46,7 +46,8 @@ struct _virCPUData {
 
 typedef virCPUCompareResult
 (*cpuArchCompare)   (virCPUDefPtr host,
-                     virCPUDefPtr cpu);
+                     virCPUDefPtr cpu,
+                     bool failIncompatible);
 
 typedef int
 (*cpuArchDecode)    (virCPUDefPtr cpu,
@@ -119,12 +120,14 @@ struct cpuArchDriver {
 
 extern virCPUCompareResult
 cpuCompareXML(virCPUDefPtr host,
-              const char *xml)
+              const char *xml,
+              bool failIncompatible)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 extern virCPUCompareResult
 cpuCompare  (virCPUDefPtr host,
-             virCPUDefPtr cpu)
+             virCPUDefPtr cpu,
+             bool failIncompatible)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 extern int

@@ -113,7 +113,8 @@ ArmBaseline(virCPUDefPtr *cpus,
 
 static virCPUCompareResult
 ArmCompare(virCPUDefPtr host ATTRIBUTE_UNUSED,
-           virCPUDefPtr cpu ATTRIBUTE_UNUSED)
+           virCPUDefPtr cpu ATTRIBUTE_UNUSED,
+           bool failMessages ATTRIBUTE_UNUSED)
 {
     return VIR_CPU_COMPARE_IDENTICAL;
 }

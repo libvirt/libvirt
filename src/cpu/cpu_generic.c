@@ -57,17 +57,20 @@ genericHashFeatures(virCPUDefPtr cpu)
 
 static virCPUCompareResult
 genericCompare(virCPUDefPtr host,
-               virCPUDefPtr cpu)
+               virCPUDefPtr cpu,
+               bool failIncompatible)
 {
-    virHashTablePtr hash;
+    virHashTablePtr hash = NULL;
     virCPUCompareResult ret = VIR_CPU_COMPARE_ERROR;
     size_t i;
     unsigned int reqfeatures;
 
     if ((cpu->arch != VIR_ARCH_NONE &&
          host->arch != cpu->arch) ||
-        STRNEQ(host->model, cpu->model))
-        return VIR_CPU_COMPARE_INCOMPATIBLE;
+        STRNEQ(host->model, cpu->model)) {
+        ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+        goto cleanup;
+    }
 
     if ((hash = genericHashFeatures(host)) == NULL)
         goto cleanup;
@@ -102,6 +105,10 @@ genericCompare(virCPUDefPtr host,
 
  cleanup:
     virHashFree(hash);
+    if (failIncompatible && ret == VIR_CPU_COMPARE_INCOMPATIBLE) {
+        ret = VIR_CPU_COMPARE_ERROR;
+        virReportError(VIR_ERR_CPU_INCOMPATIBLE, NULL);
+    }
     return ret;
 }
 

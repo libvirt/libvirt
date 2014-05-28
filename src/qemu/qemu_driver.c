@@ -11528,7 +11528,7 @@ qemuConnectCompareCPU(virConnectPtr conn,
         VIR_WARN("cannot get host CPU capabilities");
         ret = VIR_CPU_COMPARE_INCOMPATIBLE;
     } else {
-        ret = cpuCompareXML(caps->host.cpu, xmlDesc);
+        ret = cpuCompareXML(caps->host.cpu, xmlDesc, false);
     }
 
  cleanup:

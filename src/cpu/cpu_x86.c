@@ -1463,9 +1463,25 @@ x86Compute(virCPUDefPtr host,
 
 static virCPUCompareResult
 x86Compare(virCPUDefPtr host,
-           virCPUDefPtr cpu)
+           virCPUDefPtr cpu,
+           bool failIncomaptible)
 {
-    return x86Compute(host, cpu, NULL, NULL);
+    virCPUCompareResult ret;
+    char *message = NULL;
+
+    ret = x86Compute(host, cpu, NULL, &message);
+
+    if (failIncomaptible && ret == VIR_CPU_COMPARE_INCOMPATIBLE) {
+        ret = VIR_CPU_COMPARE_ERROR;
+        if (message) {
+            virReportError(VIR_ERR_CPU_INCOMPATIBLE, "%s", message);
+        } else {
+            virReportError(VIR_ERR_CPU_INCOMPATIBLE, NULL);
+        }
+    }
+    VIR_FREE(message);
+
+    return ret;
 }
 
 

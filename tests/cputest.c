@@ -228,7 +228,7 @@ cpuTestCompare(const void *arg)
         !(cpu = cpuTestLoadXML(data->arch, data->name)))
         goto cleanup;
 
-    result = cpuCompare(host, cpu);
+    result = cpuCompare(host, cpu, false);
     if (data->result == VIR_CPU_COMPARE_ERROR)
         virResetLastError();
 
@@ -357,7 +357,7 @@ cpuTestBaseline(const void *arg)
     for (i = 0; i < ncpus; i++) {
         virCPUCompareResult cmp;
 
-        cmp = cpuCompare(cpus[i], baseline);
+        cmp = cpuCompare(cpus[i], baseline, false);
         if (cmp != VIR_CPU_COMPARE_SUPERSET &&
             cmp != VIR_CPU_COMPARE_IDENTICAL) {
             if (virTestGetVerbose()) {

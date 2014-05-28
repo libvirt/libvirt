@@ -92,7 +92,8 @@ cpuGetSubDriver(virArch arch)
  */
 virCPUCompareResult
 cpuCompareXML(virCPUDefPtr host,
-              const char *xml)
+              const char *xml,
+              bool failIncompatible)
 {
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
@@ -108,7 +109,7 @@ cpuCompareXML(virCPUDefPtr host,
     if (cpu == NULL)
         goto cleanup;
 
-    ret = cpuCompare(host, cpu);
+    ret = cpuCompare(host, cpu, failIncompatible);
 
  cleanup:
     virCPUDefFree(cpu);
@@ -134,7 +135,8 @@ cpuCompareXML(virCPUDefPtr host,
  */
 virCPUCompareResult
 cpuCompare(virCPUDefPtr host,
-           virCPUDefPtr cpu)
+           virCPUDefPtr cpu,
+           bool failIncompatible)
 {
     struct cpuArchDriver *driver;
 
@@ -156,7 +158,7 @@ cpuCompare(virCPUDefPtr host,
         return VIR_CPU_COMPARE_ERROR;
     }
 
-    return driver->compare(host, cpu);
+    return driver->compare(host, cpu, failIncompatible);
 }
 
 

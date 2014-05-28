@@ -1277,6 +1277,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("error from service: %s");
             break;
+        case VIR_ERR_CPU_INCOMPATIBLE:
+            if (info == NULL)
+                errmsg = _("the CPU is incompatible with host CPU");
+            else
+                errmsg = _("the CPU is incompatible with host CPU: %s");
+            break;
     }
     return errmsg;
 }

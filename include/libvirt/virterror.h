@@ -300,6 +300,8 @@ typedef enum {
                                            was denied */
     VIR_ERR_DBUS_SERVICE = 89,          /* error from a dbus service */
     VIR_ERR_STORAGE_VOL_EXIST = 90,     /* the storage vol already exists */
+    VIR_ERR_CPU_INCOMPATIBLE = 91,      /* given CPU is incompatible with host
+                                           CPU*/
 } virErrorNumber;
 
 /**

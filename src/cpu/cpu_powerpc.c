@@ -440,13 +440,19 @@ ppcCompute(virCPUDefPtr host,
 
 static virCPUCompareResult
 ppcCompare(virCPUDefPtr host,
-           virCPUDefPtr cpu)
+           virCPUDefPtr cpu,
+           bool failIncompatible)
 {
     if ((cpu->arch == VIR_ARCH_NONE || host->arch == cpu->arch) &&
         STREQ(host->model, cpu->model))
         return VIR_CPU_COMPARE_IDENTICAL;
 
-    return VIR_CPU_COMPARE_INCOMPATIBLE;
+    if (failIncompatible) {
+        virReportError(VIR_ERR_CPU_INCOMPATIBLE, NULL);
+        return VIR_CPU_COMPARE_ERROR;
+    } else {
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
+    }
 }
 
 static int

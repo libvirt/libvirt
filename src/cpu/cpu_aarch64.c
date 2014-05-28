@@ -110,7 +110,8 @@ AArch64Baseline(virCPUDefPtr *cpus,
 
 static virCPUCompareResult
 AArch64Compare(virCPUDefPtr host ATTRIBUTE_UNUSED,
-               virCPUDefPtr cpu ATTRIBUTE_UNUSED)
+               virCPUDefPtr cpu ATTRIBUTE_UNUSED,
+               bool failIncompatible ATTRIBUTE_UNUSED)
 {
     return VIR_CPU_COMPARE_IDENTICAL;
 }
