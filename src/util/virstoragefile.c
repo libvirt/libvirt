@@ -952,15 +952,8 @@ virStorageFileMetadataNew(const char *path,
     if (VIR_STRDUP(ret->relPath, path) < 0)
         goto error;
 
-    if (virStorageIsFile(path)) {
-        if (!(ret->path = canonicalize_file_name(path))) {
-            virReportSystemError(errno, _("unable to resolve '%s'"), path);
-            goto error;
-        }
-    } else {
-        if (VIR_STRDUP(ret->path, path) < 0)
-            goto error;
-    }
+    if (VIR_STRDUP(ret->path, path) < 0)
+        goto error;
 
     return ret;
 
@@ -1096,9 +1089,16 @@ virStorageFileGetMetadataFromFD(const char *path,
 
 {
     virStorageSourcePtr ret = NULL;
+    char *canonPath = NULL;
 
-    if (!(ret = virStorageFileMetadataNew(path, format)))
+    if (!(canonPath = canonicalize_file_name(path))) {
+        virReportSystemError(errno, _("unable to resolve '%s'"), path);
         goto cleanup;
+    }
+
+    if (!(ret = virStorageFileMetadataNew(canonPath, format)))
+        goto cleanup;
+
 
     if (virStorageFileGetMetadataFromFDInternal(ret, fd, backingFormat) < 0) {
         virStorageSourceFree(ret);
@@ -1106,6 +1106,7 @@ virStorageFileGetMetadataFromFD(const char *path,
     }
 
  cleanup:
+    VIR_FREE(canonPath);
     return ret;
 }
 
