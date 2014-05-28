@@ -29,7 +29,7 @@ AC_DEFUN([LIBVIRT_CHECK_SELINUX],[
 
   if test "$with_selinux" = "yes"; then
     # libselinux changed signatures between 2.2 and 2.3
-    AC_CACHE_CHECK([for selinux setcon parameter type], [lv_cv_setcon_param],
+    AC_CACHE_CHECK([for selinux setcon parameter type], [lv_cv_setcon_const],
     [AC_COMPILE_IFELSE(
       [AC_LANG_PROGRAM(
          [[
