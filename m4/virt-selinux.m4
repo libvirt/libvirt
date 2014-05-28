@@ -1,6 +1,6 @@
 dnl The libselinux.so library
 dnl
-dnl Copyright (C) 2012-2013 Red Hat, Inc.
+dnl Copyright (C) 2012-2014 Red Hat, Inc.
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,21 @@ AC_DEFUN([LIBVIRT_CHECK_SELINUX],[
     [with_selinux_mount=check])
 
   if test "$with_selinux" = "yes"; then
+    # libselinux changed signatures between 2.2 and 2.3
+    AC_CACHE_CHECK([for selinux setcon parameter type], [gt_cv_setcon_param],
+    [AC_COMPILE_IFELSE(
+      [AC_LANG_PROGRAM(
+         [[
+#include <selinux/selinux.h>
+int setcon(const security_context_t context);
+         ]])],
+         [gt_cv_setcon_param='security_context_t'],
+         [gt_cv_setcon_param='const char*'])])
+    if test "$gt_cv_setcon_param" = 'const char*'; then
+       AC_DEFINE_UNQUOTED([SELINUX_CTX_CHAR_PTR], 1,
+                          [SELinux uses newer char * for security context])
+    fi
+
     AC_MSG_CHECKING([SELinux mount point])
     if test "$with_selinux_mount" = "check" || test -z "$with_selinux_mount"; then
       if test -d /sys/fs/selinux ; then
