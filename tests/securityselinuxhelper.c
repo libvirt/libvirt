@@ -109,18 +109,30 @@ int getpidcon(pid_t pid, security_context_t *context)
     return getpidcon_raw(pid, context);
 }
 
+#ifdef SELINUX_CTX_CHAR_PTR
+int setcon_raw(const char *context)
+#else
 int setcon_raw(security_context_t context)
+#endif
 {
     return setenv("FAKE_CONTEXT", context, 1);
 }
 
+#ifdef SELINUX_CTX_CHAR_PTR
+int setcon(const char *context)
+#else
 int setcon(security_context_t context)
+#endif
 {
     return setcon_raw(context);
 }
 
 
+#ifdef SELINUX_CTX_CHAR_PTR
+int setfilecon_raw(const char *path, const char *con)
+#else
 int setfilecon_raw(const char *path, security_context_t con)
+#endif
 {
     const char *constr = con;
     if (STRPREFIX(path, abs_builddir "/securityselinuxlabeldata/nfs/")) {
@@ -131,7 +143,11 @@ int setfilecon_raw(const char *path, security_context_t con)
                     constr, strlen(constr), 0);
 }
 
+#ifdef SELINUX_CTX_CHAR_PTR
+int setfilecon(const char *path, const char *con)
+#else
 int setfilecon(const char *path, security_context_t con)
+#endif
 {
     return setfilecon_raw(path, con);
 }
