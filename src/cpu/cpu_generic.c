@@ -64,8 +64,8 @@ genericCompare(virCPUDefPtr host,
     size_t i;
     unsigned int reqfeatures;
 
-    if (((cpu->arch != VIR_ARCH_NONE) &&
-         (host->arch != cpu->arch)) ||
+    if ((cpu->arch != VIR_ARCH_NONE &&
+         host->arch != cpu->arch) ||
         STRNEQ(host->model, cpu->model))
         return VIR_CPU_COMPARE_INCOMPATIBLE;
 
@@ -83,13 +83,10 @@ genericCompare(virCPUDefPtr host,
                 goto cleanup;
             }
             reqfeatures++;
-        }
-        else {
-            if (cpu->type == VIR_CPU_TYPE_HOST ||
-                cpu->features[i].policy == VIR_CPU_FEATURE_REQUIRE) {
-                ret = VIR_CPU_COMPARE_INCOMPATIBLE;
-                goto cleanup;
-            }
+        } else if (cpu->type == VIR_CPU_TYPE_HOST ||
+                   cpu->features[i].policy == VIR_CPU_FEATURE_REQUIRE) {
+            ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+            goto cleanup;
         }
     }
 
@@ -99,9 +96,9 @@ genericCompare(virCPUDefPtr host,
             ret = VIR_CPU_COMPARE_INCOMPATIBLE;
         else
             ret = VIR_CPU_COMPARE_SUPERSET;
-    }
-    else
+    } else {
         ret = VIR_CPU_COMPARE_IDENTICAL;
+    }
 
  cleanup:
     virHashFree(hash);
