@@ -10109,14 +10109,14 @@ virDomainGetSecurityLabelList(virDomainPtr domain,
 /**
  * virDomainSetMetadata:
  * @domain: a domain object
- * @type: type of description, from virDomainMetadataType
+ * @type: type of metadata, from virDomainMetadataType
  * @metadata: new metadata text
  * @key: XML namespace key, or NULL
  * @uri: XML namespace URI, or NULL
  * @flags: bitwise-OR of virDomainModificationImpact
  *
  * Sets the appropriate domain element given by @type to the
- * value of @description.  A @type of VIR_DOMAIN_METADATA_DESCRIPTION
+ * value of @metadata.  A @type of VIR_DOMAIN_METADATA_DESCRIPTION
  * is free-form text; VIR_DOMAIN_METADATA_TITLE is free-form, but no
  * newlines are permitted, and should be short (although the length is
  * not enforced). For these two options @key and @uri are irrelevant and
@@ -10202,7 +10202,7 @@ virDomainSetMetadata(virDomainPtr domain,
 /**
  * virDomainGetMetadata:
  * @domain: a domain object
- * @type: type of description, from virDomainMetadataType
+ * @type: type of metadata, from virDomainMetadataType
  * @uri: XML namespace identifier
  * @flags: bitwise-OR of virDomainModificationImpact
  *
