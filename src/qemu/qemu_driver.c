@@ -6080,14 +6080,14 @@ qemuDomainObjStart(virConnectPtr conn,
                     VIR_WARN("Failed to remove the managed state %s", managed_save);
                 else
                     vm->hasManagedSave = false;
-            }
 
-            if (ret > 0) {
-                VIR_WARN("Ignoring incomplete managed state %s", managed_save);
-            } else {
+                goto cleanup;
+            } else if (ret < 0) {
                 VIR_WARN("Unable to restore from managed state %s. "
                          "Maybe the file is corrupted?", managed_save);
                 goto cleanup;
+            } else {
+                VIR_WARN("Ignoring incomplete managed state %s", managed_save);
             }
         }
     }
