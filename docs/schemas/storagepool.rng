@@ -327,6 +327,15 @@
     </element>
   </define>
 
+  <define name='sourceinfonetfsgluster'>
+    <element name='dir'>
+      <attribute name='path'>
+        <ref name='dirPath'/>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
+
   <define name='sourceinfoname'>
     <element name='name'>
       <text/>
@@ -394,7 +403,6 @@
             <value>auto</value>
             <value>nfs</value>
             <value>cifs</value>
-            <value>glusterfs</value>
           </choice>
         </attribute>
       </element>
@@ -468,14 +476,32 @@
 
   <define name='sourcenetfs'>
     <element name='source'>
-      <interleave>
-        <ref name='sourceinfohost'/>
-        <ref name='sourceinfodir'/>
-        <ref name='sourcefmtnetfs'/>
-        <optional>
-          <ref name='sourceinfovendor'/>
-        </optional>
-      </interleave>
+      <choice>
+        <group>
+          <interleave>
+            <ref name='sourceinfohost'/>
+            <ref name='sourceinfodir'/>
+            <ref name='sourcefmtnetfs'/>
+            <optional>
+                <ref name='sourceinfovendor'/>
+            </optional>
+          </interleave>
+        </group>
+        <group>
+          <interleave>
+            <ref name='sourceinfohost'/>
+            <ref name='sourceinfonetfsgluster'/>
+            <element name='format'>
+              <attribute name='type'>
+                <value>glusterfs</value>
+              </attribute>
+            </element>
+            <optional>
+                <ref name='sourceinfovendor'/>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
     </element>
   </define>
 
