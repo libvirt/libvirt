@@ -285,6 +285,9 @@ int vshCommandOptInt(const vshCmd *cmd, const char *name, int *value)
 int vshCommandOptUInt(const vshCmd *cmd, const char *name,
                       unsigned int *value)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
+int vshCommandOptUIntWrap(const vshCmd *cmd, const char *name,
+                          unsigned int *value)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
 int vshCommandOptUL(const vshCmd *cmd, const char *name,
                     unsigned long *value)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;

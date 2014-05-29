@@ -1494,6 +1494,28 @@ vshCommandOptInt(const vshCmd *cmd, const char *name, int *value)
     return 1;
 }
 
+static int
+vshCommandOptUIntInternal(const vshCmd *cmd,
+                          const char *name,
+                          unsigned int *value,
+                          bool wrap)
+{
+    vshCmdOpt *arg;
+    int ret;
+
+    if ((ret = vshCommandOpt(cmd, name, &arg, true)) <= 0)
+        return ret;
+
+    if (wrap) {
+        if (virStrToLong_ui(arg->data, NULL, 10, value) < 0)
+            return -1;
+    } else {
+        if (virStrToLong_uip(arg->data, NULL, 10, value) < 0)
+            return -1;
+    }
+
+    return 1;
+}
 
 /**
  * vshCommandOptUInt:
@@ -1501,22 +1523,28 @@ vshCommandOptInt(const vshCmd *cmd, const char *name, int *value)
  * @name option name
  * @value result
  *
- * Convert option to unsigned int
+ * Convert option to unsigned int, reject negative numbers
  * See vshCommandOptInt()
  */
 int
 vshCommandOptUInt(const vshCmd *cmd, const char *name, unsigned int *value)
 {
-    vshCmdOpt *arg;
-    int ret;
+    return vshCommandOptUIntInternal(cmd, name, value, false);
+}
 
-    ret = vshCommandOpt(cmd, name, &arg, true);
-    if (ret <= 0)
-        return ret;
-
-    if (virStrToLong_ui(arg->data, NULL, 10, value) < 0)
-        return -1;
-    return 1;
+/**
+ * vshCommandOptUIntWrap:
+ * @cmd command reference
+ * @name option name
+ * @value result
+ *
+ * Convert option to unsigned int, wraps negative numbers to positive
+ * See vshCommandOptInt()
+ */
+int
+vshCommandOptUIntWrap(const vshCmd *cmd, const char *name, unsigned int *value)
+{
+    return vshCommandOptUIntInternal(cmd, name, value, true);
 }
 
 
