@@ -226,14 +226,28 @@ int virNetSocketNewListenTCP(const char *nodename,
     struct addrinfo hints;
     int fd = -1;
     size_t i;
-    int addrInUse = false;
+    bool addrInUse = false;
+    bool familyNotSupported = false;
+    virSocketAddr tmp_addr;
 
     *retsocks = NULL;
     *nretsocks = 0;
 
     memset(&hints, 0, sizeof(hints));
-    hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
+    hints.ai_flags = AI_PASSIVE;
     hints.ai_socktype = SOCK_STREAM;
+
+    /* Don't use ADDRCONFIG for binding to the wildcard address.
+     * Just catch the error returned by socket() if the system has
+     * no IPv6 support.
+     *
+     * This allows libvirtd to be started in parallel with the network
+     * startup in most cases.
+     */
+    if (nodename &&
+        !(virSocketAddrParse(&tmp_addr, nodename, AF_UNSPEC) > 0 &&
+          virSocketAddrIsWildcard(&tmp_addr)))
+        hints.ai_flags |= AI_ADDRCONFIG;
 
     int e = getaddrinfo(nodename, service, &hints, &ai);
     if (e != 0) {
@@ -251,6 +265,11 @@ int virNetSocketNewListenTCP(const char *nodename,
 
         if ((fd = socket(runp->ai_family, runp->ai_socktype,
                          runp->ai_protocol)) < 0) {
+            if (errno == EAFNOSUPPORT) {
+                familyNotSupported = true;
+                runp = runp->ai_next;
+                continue;
+            }
             virReportSystemError(errno, "%s", _("Unable to create socket"));
             goto error;
         }
@@ -305,6 +324,11 @@ int virNetSocketNewListenTCP(const char *nodename,
             goto error;
         runp = runp->ai_next;
         fd = -1;
+    }
+
+    if (nsocks == 0 && familyNotSupported) {
+        virReportSystemError(EAFNOSUPPORT, "%s", _("Unable to bind to port"));
+        goto error;
     }
 
     if (nsocks == 0 &&
