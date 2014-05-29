@@ -1591,7 +1591,7 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
             if (idx == i)
                 break;
         } else {
-            if (STREQ(name, chain->relPath))
+            if (STREQ_NULLABLE(name, chain->relPath))
                 break;
             if (nameIsFile && (chain->type == VIR_STORAGE_TYPE_FILE ||
                                chain->type == VIR_STORAGE_TYPE_BLOCK)) {
