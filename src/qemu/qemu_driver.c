@@ -12755,7 +12755,9 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
     /* For now, we don't allow mixing internal and external disks.
      * XXX technically, we could mix internal and external disks for
      * offline snapshots */
-    if (found_internal && external) {
+    if ((found_internal && external) ||
+         (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL && external) ||
+         (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL && found_internal)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("mixing internal and external targets for a snapshot "
                          "is not yet supported"));
