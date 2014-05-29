@@ -13495,6 +13495,15 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
             align_match = false;
         } else {
             def->state = virDomainObjGetState(vm, NULL);
+
+            if (virDomainObjIsActive(vm) &&
+                def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("internal snapshot of a running VM "
+                                 "must include the memory state"));
+                goto cleanup;
+            }
+
             def->memory = (def->state == VIR_DOMAIN_SHUTOFF ?
                            VIR_DOMAIN_SNAPSHOT_LOCATION_NONE :
                            VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL);
