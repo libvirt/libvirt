@@ -34,7 +34,7 @@ fail=0
 $abs_top_builddir/tools/virsh --connect test:///default vcpupin test a 0,1 > out 2>&1
 test $? = 1 || fail=1
 cat <<\EOF > exp || fail=1
-error: vcpupin: Invalid or missing vCPU number.
+error: vcpupin: Invalid vCPU number.
 
 EOF
 compare exp out || fail=1
@@ -43,9 +43,36 @@ compare exp out || fail=1
 $abs_top_builddir/tools/virsh --connect test:///default vcpupin test 100 0,1 > out 2>&1
 test $? = 1 || fail=1
 cat <<\EOF > exp || fail=1
+error: vcpupin: vCPU index out of range.
+
+EOF
+compare exp out || fail=1
+
+# Negative number
+$abs_top_builddir/tools/virsh --connect test:///default vcpupin test -100 0,1 > out 2>&1
+test $? = 1 || fail=1
+cat <<\EOF > exp || fail=1
 error: vcpupin: Invalid vCPU number.
 
 EOF
 compare exp out || fail=1
 
+# missing argument
+$abs_top_builddir/tools/virsh --connect test:///default vcpupin test --cpulist 0,1 > out 2>&1
+test $? = 1 || fail=1
+cat <<\EOF > exp || fail=1
+error: vcpupin: Missing vCPU number in pin mode.
+
+EOF
+compare exp out || fail=1
+
+# without arguments. This should succeed but the backend function in the
+# test driver isn't implemented
+$abs_top_builddir/tools/virsh --connect test:///default vcpupin test > out 2>&1
+test $? = 1 || fail=1
+cat <<\EOF > exp || fail=1
+error: this function is not supported by the connection driver: virDomainGetVcpuPinInfo
+
+EOF
+compare exp out || fail=1
 (exit $fail); exit $fail

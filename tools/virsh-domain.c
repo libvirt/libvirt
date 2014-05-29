@@ -5803,7 +5803,7 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainInfo info;
     virDomainPtr dom;
-    int vcpu = -1;
+    unsigned int vcpu = 0;
     const char *cpulist = NULL;
     bool ret = false;
     unsigned char *cpumap = NULL;
@@ -5815,6 +5815,7 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
     bool query = false; /* Query mode if no cpulist */
+    int got_vcpu;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
@@ -5836,29 +5837,29 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
 
     query = !cpulist;
 
-    /* In query mode, "vcpu" is optional */
-    if (vshCommandOptInt(cmd, "vcpu", &vcpu) < !query) {
-        vshError(ctl, "%s",
-                 _("vcpupin: Invalid or missing vCPU number."));
-        virDomainFree(dom);
-        return false;
+    if ((got_vcpu = vshCommandOptUInt(cmd, "vcpu", &vcpu)) < 0) {
+        vshError(ctl, "%s", _("vcpupin: Invalid vCPU number."));
+        goto cleanup;
     }
 
-    if ((maxcpu = vshNodeGetCPUCount(ctl->conn)) < 0) {
-        virDomainFree(dom);
-        return false;
+    /* In pin mode, "vcpu" is necessary */
+    if (!query && got_vcpu == 0) {
+        vshError(ctl, "%s", _("vcpupin: Missing vCPU number in pin mode."));
+        goto cleanup;
     }
 
     if (virDomainGetInfo(dom, &info) != 0) {
         vshError(ctl, "%s", _("vcpupin: failed to get domain information."));
-        virDomainFree(dom);
-        return false;
+        goto cleanup;
     }
 
     if (vcpu >= info.nrVirtCpu) {
-        vshError(ctl, "%s", _("vcpupin: Invalid vCPU number."));
-        virDomainFree(dom);
-        return false;
+        vshError(ctl, "%s", _("vcpupin: vCPU index out of range."));
+        goto cleanup;
+    }
+
+    if ((maxcpu = vshNodeGetCPUCount(ctl->conn)) < 0) {
+        goto cleanup;
     }
 
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
@@ -5877,7 +5878,7 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
             vshPrintExtra(ctl, "%s %s\n", _("VCPU:"), _("CPU Affinity"));
             vshPrintExtra(ctl, "----------------------------------\n");
             for (i = 0; i < ncpus; i++) {
-               if (vcpu != -1 && i != vcpu)
+               if (got_vcpu && i != vcpu)
                    continue;
 
                vshPrint(ctl, "%4zu: ", i);
@@ -5886,8 +5887,8 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
                if (!ret)
                    break;
             }
-
         }
+
         VIR_FREE(cpumaps);
         goto cleanup;
     }
