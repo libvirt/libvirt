@@ -2046,7 +2046,7 @@ expected.
 =item B<attach-disk> I<domain> I<source> I<target>
 [[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
 [I<--driver driver>] [I<--subdriver subdriver>] [I<--cache cache>]
-[I<--type type>] [I<--mode mode>] [I<--config>] [I<--sourcetype soucetype>]
+[I<--type type>] [I<--mode mode>] [I<--sourcetype sourcetype>]
 [I<--serial serial>] [I<--wwn wwn>] [I<--rawio>]
 [I<--address address>] [I<--multifunction>] [I<--print-xml>]
 
