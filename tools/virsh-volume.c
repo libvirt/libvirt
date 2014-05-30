@@ -104,6 +104,25 @@ vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
                             "might help"), n, pooloptname);
     }
 
+    /* If the pool was specified, then make sure that the returned
+     * volume is from the given pool */
+    if (pool && vol) {
+        virStoragePoolPtr volpool = NULL;
+
+        if ((volpool = virStoragePoolLookupByVolume(vol))) {
+            if (STRNEQ(virStoragePoolGetName(volpool),
+                       virStoragePoolGetName(pool))) {
+                vshResetLibvirtError();
+                vshError(ctl,
+                         _("Requested volume '%s' is not in pool '%s'"),
+                         n, virStoragePoolGetName(pool));
+                virStorageVolFree(vol);
+                vol = NULL;
+            }
+            virStoragePoolFree(volpool);
+        }
+    }
+
     if (pool)
         virStoragePoolFree(pool);
 
