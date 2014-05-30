@@ -160,7 +160,9 @@ libxlMakePCI(virDomainHostdevDefPtr hostdev, libxl_device_pci *pcidev);
 
 int
 libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
-                       virDomainObjPtr vm, libxl_domain_config *d_config);
+                       virDomainDefPtr def,
+                       libxl_ctx *ctx,
+                       libxl_domain_config *d_config);
 
 static inline void
 libxlDriverLock(libxlDriverPrivatePtr driver)

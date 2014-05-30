@@ -567,10 +567,10 @@ libxlMakeChrdevStr(virDomainChrDefPtr def, char **buf)
 }
 
 static int
-libxlMakeDomBuildInfo(virDomainObjPtr vm, libxl_domain_config *d_config)
+libxlMakeDomBuildInfo(virDomainDefPtr def,
+                      libxl_ctx *ctx,
+                      libxl_domain_config *d_config)
 {
-    virDomainDefPtr def = vm->def;
-    libxlDomainObjPrivatePtr priv = vm->privateData;
     libxl_domain_build_info *b_info = &d_config->b_info;
     int hvm = STREQ(def->os.type, "hvm");
     size_t i;
@@ -583,7 +583,7 @@ libxlMakeDomBuildInfo(virDomainObjPtr vm, libxl_domain_config *d_config)
         libxl_domain_build_info_init_type(b_info, LIBXL_DOMAIN_TYPE_PV);
 
     b_info->max_vcpus = def->maxvcpus;
-    if (libxl_cpu_bitmap_alloc(priv->ctx, &b_info->avail_vcpus, def->maxvcpus))
+    if (libxl_cpu_bitmap_alloc(ctx, &b_info->avail_vcpus, def->maxvcpus))
         goto error;
     libxl_bitmap_set_none(&b_info->avail_vcpus);
     for (i = 0; i < def->vcpus; i++)
@@ -1306,17 +1306,16 @@ libxlMakeCapabilities(libxl_ctx *ctx)
 
 int
 libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
-                       virDomainObjPtr vm, libxl_domain_config *d_config)
+                       virDomainDefPtr def,
+                       libxl_ctx *ctx,
+                       libxl_domain_config *d_config)
 {
-    virDomainDefPtr def = vm->def;
-    libxlDomainObjPrivatePtr priv = vm->privateData;
-
     libxl_domain_config_init(d_config);
 
-    if (libxlMakeDomCreateInfo(priv->ctx, def, &d_config->c_info) < 0)
+    if (libxlMakeDomCreateInfo(ctx, def, &d_config->c_info) < 0)
         return -1;
 
-    if (libxlMakeDomBuildInfo(vm, d_config) < 0)
+    if (libxlMakeDomBuildInfo(def, ctx, d_config) < 0)
         return -1;
 
     if (libxlMakeDiskList(def, d_config) < 0)

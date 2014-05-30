@@ -1151,7 +1151,8 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
 
     libxl_domain_config_init(&d_config);
 
-    if (libxlBuildDomainConfig(driver, vm, &d_config) < 0)
+    if (libxlBuildDomainConfig(driver, vm->def,
+                               priv->ctx, &d_config) < 0)
         goto endjob;
 
     if (cfg->autoballoon && libxlDomainFreeMem(priv, &d_config) < 0) {
