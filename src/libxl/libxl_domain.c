@@ -1151,7 +1151,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
 
     libxl_domain_config_init(&d_config);
 
-    if (libxlBuildDomainConfig(driver, vm->def,
+    if (libxlBuildDomainConfig(driver->reservedVNCPorts, vm->def,
                                priv->ctx, &d_config) < 0)
         goto endjob;
 

@@ -152,14 +152,14 @@ libxlMakeNic(virDomainDefPtr def,
              virDomainNetDefPtr l_nic,
              libxl_device_nic *x_nic);
 int
-libxlMakeVfb(libxlDriverPrivatePtr driver,
+libxlMakeVfb(virPortAllocatorPtr graphicsports,
              virDomainGraphicsDefPtr l_vfb, libxl_device_vfb *x_vfb);
 
 int
 libxlMakePCI(virDomainHostdevDefPtr hostdev, libxl_device_pci *pcidev);
 
 int
-libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
+libxlBuildDomainConfig(virPortAllocatorPtr graphicsports,
                        virDomainDefPtr def,
                        libxl_ctx *ctx,
                        libxl_domain_config *d_config);

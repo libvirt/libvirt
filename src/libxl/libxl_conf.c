@@ -959,7 +959,7 @@ libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
 }
 
 int
-libxlMakeVfb(libxlDriverPrivatePtr driver,
+libxlMakeVfb(virPortAllocatorPtr graphicsports,
              virDomainGraphicsDefPtr l_vfb,
              libxl_device_vfb *x_vfb)
 {
@@ -982,7 +982,7 @@ libxlMakeVfb(libxlDriverPrivatePtr driver,
             libxl_defbool_set(&x_vfb->vnc.findunused, 0);
             if (l_vfb->data.vnc.autoport) {
 
-                if (virPortAllocatorAcquire(driver->reservedVNCPorts, &port) < 0)
+                if (virPortAllocatorAcquire(graphicsports, &port) < 0)
                     return -1;
                 l_vfb->data.vnc.port = port;
             }
@@ -1004,7 +1004,7 @@ libxlMakeVfb(libxlDriverPrivatePtr driver,
 }
 
 static int
-libxlMakeVfbList(libxlDriverPrivatePtr driver,
+libxlMakeVfbList(virPortAllocatorPtr graphicsports,
                  virDomainDefPtr def,
                  libxl_domain_config *d_config)
 {
@@ -1027,7 +1027,7 @@ libxlMakeVfbList(libxlDriverPrivatePtr driver,
     for (i = 0; i < nvfbs; i++) {
         libxl_device_vkb_init(&x_vkbs[i]);
 
-        if (libxlMakeVfb(driver, l_vfbs[i], &x_vfbs[i]) < 0)
+        if (libxlMakeVfb(graphicsports, l_vfbs[i], &x_vfbs[i]) < 0)
             goto error;
     }
 
@@ -1305,7 +1305,7 @@ libxlMakeCapabilities(libxl_ctx *ctx)
 }
 
 int
-libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
+libxlBuildDomainConfig(virPortAllocatorPtr graphicsports,
                        virDomainDefPtr def,
                        libxl_ctx *ctx,
                        libxl_domain_config *d_config)
@@ -1324,7 +1324,7 @@ libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
     if (libxlMakeNicList(def, d_config) < 0)
         return -1;
 
-    if (libxlMakeVfbList(driver, def, d_config) < 0)
+    if (libxlMakeVfbList(graphicsports, def, d_config) < 0)
         return -1;
 
     if (libxlMakePCIList(def, d_config) < 0)
