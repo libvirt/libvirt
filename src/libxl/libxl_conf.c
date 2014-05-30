@@ -1336,3 +1336,11 @@ libxlBuildDomainConfig(virPortAllocatorPtr graphicsports,
 
     return 0;
 }
+
+virDomainXMLOptionPtr
+libxlCreateXMLConf(void)
+{
+    return virDomainXMLOptionNew(&libxlDomainDefParserConfig,
+                                 &libxlDomainXMLPrivateDataCallbacks,
+                                 NULL);
+}

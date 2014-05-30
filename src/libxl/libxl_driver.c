@@ -353,9 +353,7 @@ libxlStateInitialize(bool privileged,
         goto error;
     }
 
-    if (!(libxl_driver->xmlopt = virDomainXMLOptionNew(&libxlDomainDefParserConfig,
-                                                       &libxlDomainXMLPrivateDataCallbacks,
-                                                       NULL)))
+    if (!(libxl_driver->xmlopt = libxlCreateXMLConf()))
         goto error;
 
     /* Load running domains first. */

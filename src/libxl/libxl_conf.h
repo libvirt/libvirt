@@ -158,6 +158,9 @@ libxlMakeVfb(virPortAllocatorPtr graphicsports,
 int
 libxlMakePCI(virDomainHostdevDefPtr hostdev, libxl_device_pci *pcidev);
 
+virDomainXMLOptionPtr
+libxlCreateXMLConf(void);
+
 int
 libxlBuildDomainConfig(virPortAllocatorPtr graphicsports,
                        virDomainDefPtr def,
