@@ -220,7 +220,7 @@ int qemuMonitorSetCapabilities(qemuMonitorPtr mon);
 
 int qemuMonitorSetLink(qemuMonitorPtr mon,
                        const char *name,
-                       enum virDomainNetInterfaceLinkState state);
+                       virDomainNetInterfaceLinkState state);
 
 /* These APIs are for use by the internal Text/JSON monitor impl code only */
 char *qemuMonitorNextCommandID(qemuMonitorPtr mon);

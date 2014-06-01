@@ -722,7 +722,7 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
             return -1;
     }
 
-    switch ((enum virDomainChrType) dev_source->type) {
+    switch ((virDomainChrType) dev_source->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
         ret = virSecurityDACSetOwnership(dev_source->data.file.path,
@@ -783,7 +783,7 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     if (chr_seclabel && chr_seclabel->norelabel)
         return 0;
 
-    switch ((enum virDomainChrType) dev_source->type) {
+    switch ((virDomainChrType) dev_source->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
         ret = virSecurityDACRestoreSecurityFileLabel(dev_source->data.file.path);

@@ -291,7 +291,7 @@ int qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
 
 int qemuMonitorJSONSetLink(qemuMonitorPtr mon,
                            const char *name,
-                           enum virDomainNetInterfaceLinkState state);
+                           virDomainNetInterfaceLinkState state);
 
 int qemuMonitorJSONOpenGraphics(qemuMonitorPtr mon,
                                 const char *protocol,

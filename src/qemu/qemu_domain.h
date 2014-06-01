@@ -278,7 +278,7 @@ char *qemuDomainDefFormatLive(virQEMUDriverPtr driver,
 
 void qemuDomainObjTaint(virQEMUDriverPtr driver,
                         virDomainObjPtr obj,
-                        enum virDomainTaintFlags taint,
+                        virDomainTaintFlags taint,
                         int logFD);
 
 void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,

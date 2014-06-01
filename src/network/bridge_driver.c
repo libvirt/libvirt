@@ -3503,7 +3503,7 @@ networkAllocateActualDevice(virDomainDefPtr dom,
                             virDomainNetDefPtr iface)
 {
     virNetworkDriverStatePtr driver = driverState;
-    enum virDomainNetType actualType = iface->type;
+    virDomainNetType actualType = iface->type;
     virNetworkObjPtr network = NULL;
     virNetworkDefPtr netdef = NULL;
     virNetDevBandwidthPtr bandwidth = NULL;
@@ -3902,7 +3902,7 @@ networkNotifyActualDevice(virDomainDefPtr dom,
                           virDomainNetDefPtr iface)
 {
     virNetworkDriverStatePtr driver = driverState;
-    enum virDomainNetType actualType = virDomainNetGetActualType(iface);
+    virDomainNetType actualType = virDomainNetGetActualType(iface);
     virNetworkObjPtr network;
     virNetworkDefPtr netdef;
     virNetworkForwardIfDefPtr dev = NULL;
@@ -4093,7 +4093,7 @@ networkReleaseActualDevice(virDomainDefPtr dom,
                            virDomainNetDefPtr iface)
 {
     virNetworkDriverStatePtr driver = driverState;
-    enum virDomainNetType actualType = virDomainNetGetActualType(iface);
+    virDomainNetType actualType = virDomainNetGetActualType(iface);
     virNetworkObjPtr network;
     virNetworkDefPtr netdef;
     virNetworkForwardIfDefPtr dev = NULL;

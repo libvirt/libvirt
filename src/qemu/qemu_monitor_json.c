@@ -1162,7 +1162,7 @@ int qemuMonitorJSONSystemPowerdown(qemuMonitorPtr mon)
 
 int qemuMonitorJSONSetLink(qemuMonitorPtr mon,
                            const char *name,
-                           enum virDomainNetInterfaceLinkState state)
+                           virDomainNetInterfaceLinkState state)
 {
 
     int ret;
@@ -5365,7 +5365,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
         goto no_memory;
     }
 
-    switch ((enum virDomainChrType) chr->type) {
+    switch ((virDomainChrType) chr->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_VC:
         backend_type = "null";

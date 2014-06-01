@@ -1530,7 +1530,7 @@ int qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
 
 int qemuMonitorSetLink(qemuMonitorPtr mon,
                        const char *name,
-                       enum virDomainNetInterfaceLinkState state)
+                       virDomainNetInterfaceLinkState state)
 {
     int ret;
     VIR_DEBUG("mon=%p, name=%p:%s, state=%u", mon, name, name, state);

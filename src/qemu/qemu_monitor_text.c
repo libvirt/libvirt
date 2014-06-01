@@ -450,7 +450,7 @@ int qemuMonitorTextSystemPowerdown(qemuMonitorPtr mon)
 int
 qemuMonitorTextSetLink(qemuMonitorPtr mon,
                        const char *name,
-                       enum virDomainNetInterfaceLinkState state)
+                       virDomainNetInterfaceLinkState state)
 {
     char *info = NULL;
     char *cmd = NULL;

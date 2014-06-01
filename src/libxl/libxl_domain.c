@@ -526,7 +526,7 @@ libxlDomainShutdownThread(void *opaque)
         dom_event = virDomainEventLifecycleNewFromObj(vm,
                                            VIR_DOMAIN_EVENT_STOPPED,
                                            VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
-        switch ((enum virDomainLifecycleAction) vm->def->onPoweroff) {
+        switch ((virDomainLifecycleAction) vm->def->onPoweroff) {
         case VIR_DOMAIN_LIFECYCLE_DESTROY:
             reason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
             goto destroy;
@@ -541,7 +541,7 @@ libxlDomainShutdownThread(void *opaque)
         dom_event = virDomainEventLifecycleNewFromObj(vm,
                                            VIR_DOMAIN_EVENT_STOPPED,
                                            VIR_DOMAIN_EVENT_STOPPED_CRASHED);
-        switch ((enum virDomainLifecycleCrashAction) vm->def->onCrash) {
+        switch ((virDomainLifecycleCrashAction) vm->def->onCrash) {
         case VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY:
             reason = VIR_DOMAIN_SHUTOFF_CRASHED;
             goto destroy;
@@ -562,7 +562,7 @@ libxlDomainShutdownThread(void *opaque)
         dom_event = virDomainEventLifecycleNewFromObj(vm,
                                            VIR_DOMAIN_EVENT_STOPPED,
                                            VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
-        switch ((enum virDomainLifecycleAction) vm->def->onReboot) {
+        switch ((virDomainLifecycleAction) vm->def->onReboot) {
         case VIR_DOMAIN_LIFECYCLE_DESTROY:
             reason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
             goto destroy;

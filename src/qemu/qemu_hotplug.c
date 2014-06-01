@@ -2298,7 +2298,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        switch ((enum virDomainGraphicsListenType) newlisten->type) {
+        switch ((virDomainGraphicsListenType) newlisten->type) {
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
             if (STRNEQ_NULLABLE(newlisten->address, oldlisten->address)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

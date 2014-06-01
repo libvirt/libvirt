@@ -1073,7 +1073,7 @@ virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,
 
 
 bool virDomainObjTaint(virDomainObjPtr obj,
-                       enum virDomainTaintFlags taint)
+                       virDomainTaintFlags taint)
 {
     unsigned int flag = (1 << taint);
 
@@ -1124,7 +1124,7 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
     if (!def)
         return;
 
-    switch ((enum virDomainGraphicsType)def->type) {
+    switch ((virDomainGraphicsType)def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
         VIR_FREE(def->data.vnc.socket);
         VIR_FREE(def->data.vnc.keymap);
@@ -1505,7 +1505,7 @@ virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
     if (tgt->type != src->type)
         return false;
 
-    switch ((enum virDomainChrType)src->type) {
+    switch ((virDomainChrType)src->type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
@@ -7069,7 +7069,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
 static int
 virDomainChrDefaultTargetType(int devtype)
 {
-    switch ((enum virDomainChrDeviceType) devtype) {
+    switch ((virDomainChrDeviceType) devtype) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
         virReportError(VIR_ERR_XML_ERROR,
                        _("target type must be specified for %s device"),
@@ -7101,7 +7101,7 @@ virDomainChrTargetTypeFromString(virDomainChrDefPtr def,
     if (!targetType)
         return virDomainChrDefaultTargetType(devtype);
 
-    switch ((enum virDomainChrDeviceType) devtype) {
+    switch ((virDomainChrDeviceType) devtype) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
         ret = virDomainChrChannelTargetTypeFromString(targetType);
         break;
@@ -7257,7 +7257,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                 if (!mode)
                     mode = virXMLPropString(cur, "mode");
 
-                switch ((enum virDomainChrType) def->type) {
+                switch ((virDomainChrType) def->type) {
                 case VIR_DOMAIN_CHR_TYPE_PTY:
                 case VIR_DOMAIN_CHR_TYPE_DEV:
                 case VIR_DOMAIN_CHR_TYPE_FILE:
@@ -7338,7 +7338,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         cur = cur->next;
     }
 
-    switch ((enum virDomainChrType) def->type) {
+    switch ((virDomainChrType) def->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_VC:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
@@ -9044,7 +9044,7 @@ virDomainRNGDefParseXML(xmlNodePtr node,
         goto error;
     }
 
-    switch ((enum virDomainRNGBackend) def->backend) {
+    switch ((virDomainRNGBackend) def->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
         def->source.file = virXPathString("string(./backend)", ctxt);
         if (def->source.file &&
@@ -10611,11 +10611,11 @@ virDomainChrEquals(virDomainChrDefPtr src,
         !virDomainChrSourceDefIsEqual(&src->source, &tgt->source))
         return false;
 
-    switch ((enum virDomainChrDeviceType) src->deviceType) {
+    switch ((virDomainChrDeviceType) src->deviceType) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
         if (src->targetType != tgt->targetType)
             return false;
-        switch ((enum virDomainChrChannelTargetType) src->targetType) {
+        switch ((virDomainChrChannelTargetType) src->targetType) {
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
             return STREQ_NULLABLE(src->target.name, tgt->target.name);
             break;
@@ -10671,7 +10671,7 @@ virDomainChrFind(virDomainDefPtr def,
  * chrdefptr of the given type.  */
 static void
 virDomainChrGetDomainPtrsInternal(virDomainDefPtr vmdef,
-                                  enum virDomainChrDeviceType type,
+                                  virDomainChrDeviceType type,
                                   virDomainChrDefPtr ***arrPtr,
                                   size_t **cntPtr)
 {
@@ -10708,7 +10708,7 @@ virDomainChrGetDomainPtrsInternal(virDomainDefPtr vmdef,
  * given type.  */
 void
 virDomainChrGetDomainPtrs(const virDomainDef *vmdef,
-                          enum virDomainChrDeviceType type,
+                          virDomainChrDeviceType type,
                           const virDomainChrDef ***arrPtr,
                           size_t *cntPtr)
 {
@@ -11812,7 +11812,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
         }
 
-        switch ((enum virDomainFeature) val) {
+        switch ((virDomainFeature) val) {
         case VIR_DOMAIN_FEATURE_APIC:
             if ((tmp = virXPathString("string(./features/apic/@eoi)", ctxt))) {
                 int eoi;
@@ -11876,7 +11876,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
             ctxt->node = nodes[i];
 
-            switch ((enum virDomainHyperv) feature) {
+            switch ((virDomainHyperv) feature) {
                 case VIR_DOMAIN_HYPERV_RELAXED:
                 case VIR_DOMAIN_HYPERV_VAPIC:
                     if (!(tmp = virXPathString("string(./@state)", ctxt))) {
@@ -13819,7 +13819,7 @@ virDomainRedirdevDefCheckABIStability(virDomainRedirdevDefPtr src,
         return false;
     }
 
-    switch ((enum virDomainRedirdevBus) src->bus) {
+    switch ((virDomainRedirdevBus) src->bus) {
     case VIR_DOMAIN_REDIRDEV_BUS_USB:
         if (src->source.chr.type != dst->source.chr.type) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -13926,7 +13926,7 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
     /* hyperv */
     if (src->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_DOMAIN_FEATURE_STATE_ON) {
         for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
-            switch ((enum virDomainHyperv) i) {
+            switch ((virDomainHyperv) i) {
             case VIR_DOMAIN_HYPERV_RELAXED:
             case VIR_DOMAIN_HYPERV_VAPIC:
                 if (src->hyperv_features[i] != dst->hyperv_features[i]) {
@@ -15914,7 +15914,7 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
     }
     virBufferAddLit(buf, ">\n");
 
-    switch ((enum virDomainChrType)def->type) {
+    switch ((virDomainChrType)def->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_VC:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
@@ -16397,7 +16397,7 @@ virDomainRNGDefFormat(virBufferPtr buf,
     }
     virBufferAsprintf(buf, "<backend model='%s'", backend);
 
-    switch ((enum virDomainRNGBackend) def->backend) {
+    switch ((virDomainRNGBackend) def->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
         if (def->source.file)
             virBufferEscapeString(buf, ">%s</backend>\n", def->source.file);
@@ -16434,7 +16434,7 @@ virDomainRNGDefFree(virDomainRNGDefPtr def)
     if (!def)
         return;
 
-    switch ((enum virDomainRNGBackend) def->backend) {
+    switch ((virDomainRNGBackend) def->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
         VIR_FREE(def->source.file);
         break;
@@ -17564,13 +17564,13 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 goto error;
             }
 
-            switch ((enum virDomainFeature) i) {
+            switch ((virDomainFeature) i) {
             case VIR_DOMAIN_FEATURE_ACPI:
             case VIR_DOMAIN_FEATURE_PAE:
             case VIR_DOMAIN_FEATURE_HAP:
             case VIR_DOMAIN_FEATURE_VIRIDIAN:
             case VIR_DOMAIN_FEATURE_PRIVNET:
-                switch ((enum virDomainFeatureState) def->features[i]) {
+                switch ((virDomainFeatureState) def->features[i]) {
                 case VIR_DOMAIN_FEATURE_STATE_DEFAULT:
                     break;
 
@@ -17590,7 +17590,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 break;
 
             case VIR_DOMAIN_FEATURE_PVSPINLOCK:
-                switch ((enum virDomainFeatureState) def->features[i]) {
+                switch ((virDomainFeatureState) def->features[i]) {
                 case VIR_DOMAIN_FEATURE_STATE_LAST:
                 case VIR_DOMAIN_FEATURE_STATE_DEFAULT:
                     break;
@@ -17624,7 +17624,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 virBufferAddLit(buf, "<hyperv>\n");
                 virBufferAdjustIndent(buf, 2);
                 for (j = 0; j < VIR_DOMAIN_HYPERV_LAST; j++) {
-                    switch ((enum virDomainHyperv) j) {
+                    switch ((virDomainHyperv) j) {
                     case VIR_DOMAIN_HYPERV_RELAXED:
                     case VIR_DOMAIN_HYPERV_VAPIC:
                         if (def->hyperv_features[j])

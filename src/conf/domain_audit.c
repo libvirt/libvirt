@@ -67,7 +67,7 @@ virDomainAuditChardevPath(virDomainChrSourceDefPtr chr)
     if (!chr)
         return NULL;
 
-    switch ((enum virDomainChrType) chr->type) {
+    switch ((virDomainChrType) chr->type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
@@ -150,7 +150,7 @@ virDomainAuditRNG(virDomainObjPtr vm,
     const char *virt;
 
     if (newDef) {
-        switch ((enum virDomainRNGBackend) newDef->backend) {
+        switch ((virDomainRNGBackend) newDef->backend) {
         case VIR_DOMAIN_RNG_BACKEND_RANDOM:
             if (newDef->source.file)
                 newsrcpath = newDef->source.file;
@@ -168,7 +168,7 @@ virDomainAuditRNG(virDomainObjPtr vm,
     }
 
     if (oldDef) {
-        switch ((enum virDomainRNGBackend) oldDef->backend) {
+        switch ((virDomainRNGBackend) oldDef->backend) {
         case VIR_DOMAIN_RNG_BACKEND_RANDOM:
             if (oldDef->source.file)
                 oldsrcpath = oldDef->source.file;

@@ -933,7 +933,7 @@ qemuAssignDeviceChrAlias(virDomainDefPtr def,
 {
     const char *prefix = NULL;
 
-    switch ((enum virDomainChrDeviceType) chr->deviceType) {
+    switch ((virDomainChrDeviceType) chr->deviceType) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
         prefix = "parallel";
         break;
@@ -4522,7 +4522,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
 {
     bool is_tap = false;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    enum virDomainNetType netType = virDomainNetGetActualType(net);
+    virDomainNetType netType = virDomainNetGetActualType(net);
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     size_t i;
 
@@ -5495,7 +5495,7 @@ qemuBuildChrArgStr(virDomainChrSourceDefPtr dev, const char *prefix)
     if (prefix)
         virBufferAdd(&buf, prefix, strlen(prefix));
 
-    switch ((enum virDomainChrType)dev->type) {
+    switch ((virDomainChrType)dev->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
         virBufferAddLit(&buf, "null");
         break;
@@ -5704,7 +5704,7 @@ qemuBuildRNGBackendArgs(virCommandPtr cmd,
     char *backend = NULL;
     int ret = -1;
 
-    switch ((enum virDomainRNGBackend) dev->backend) {
+    switch ((virDomainRNGBackend) dev->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_RNG_RANDOM)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -6297,7 +6297,7 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
         }
 
         for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
-            switch ((enum virDomainHyperv) i) {
+            switch ((virDomainHyperv) i) {
             case VIR_DOMAIN_HYPERV_RELAXED:
             case VIR_DOMAIN_HYPERV_VAPIC:
                 if (def->hyperv_features[i] == VIR_DOMAIN_FEATURE_STATE_ON)
@@ -6957,7 +6957,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
                              virQEMUCapsPtr qemuCaps,
                              virDomainGraphicsDefPtr graphics)
 {
-    switch ((enum virDomainGraphicsType) graphics->type) {
+    switch ((virDomainGraphicsType) graphics->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_0_10) &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SDL)) {
@@ -7573,7 +7573,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     for (i = 0; i < def->clock.ntimers; i++) {
-        switch ((enum virDomainTimerNameType) def->clock.timers[i]->name) {
+        switch ((virDomainTimerNameType) def->clock.timers[i]->name) {
         case VIR_DOMAIN_TIMER_NAME_PLATFORM:
         case VIR_DOMAIN_TIMER_NAME_TSC:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -9333,7 +9333,7 @@ qemuBuildChannelChrDeviceStr(char **deviceStr,
     char *addr = NULL;
     int port;
 
-    switch ((enum virDomainChrChannelTargetType) chr->targetType) {
+    switch ((virDomainChrChannelTargetType) chr->targetType) {
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
 
         addr = virSocketAddrFormat(chr->target.addr);
@@ -9372,7 +9372,7 @@ qemuBuildConsoleChrDeviceStr(char **deviceStr,
 {
     int ret = -1;
 
-    switch ((enum virDomainChrConsoleTargetType) chr->targetType) {
+    switch ((virDomainChrConsoleTargetType) chr->targetType) {
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLPLM:
         if (!(*deviceStr = qemuBuildSclpDevStr(chr)))
@@ -9407,7 +9407,7 @@ qemuBuildChrDeviceStr(char **deviceStr,
 {
     int ret = -1;
 
-    switch ((enum virDomainChrDeviceType) chr->deviceType) {
+    switch ((virDomainChrDeviceType) chr->deviceType) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
         ret = qemuBuildSerialChrDeviceStr(deviceStr, vmdef, chr, qemuCaps,
                                           vmdef->os.arch,
@@ -10552,7 +10552,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
                 goto cleanup;
             }
 
-            switch ((enum virDomainHyperv) f) {
+            switch ((virDomainHyperv) f) {
             case VIR_DOMAIN_HYPERV_RELAXED:
             case VIR_DOMAIN_HYPERV_VAPIC:
                 if (value) {

@@ -228,7 +228,7 @@ int qemuMonitorTextScreendump(qemuMonitorPtr mon, const char *file);
 
 int qemuMonitorTextSetLink(qemuMonitorPtr mon,
                            const char *name,
-                           enum virDomainNetInterfaceLinkState state);
+                           virDomainNetInterfaceLinkState state);
 
 int qemuMonitorTextOpenGraphics(qemuMonitorPtr mon,
                                 const char *protocol,
