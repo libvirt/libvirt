@@ -4099,7 +4099,7 @@ virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr node,
  */
 static bool
 virDomainDriveAddressIsUsedByDisk(const virDomainDef *def,
-                                  enum virDomainDiskBus type,
+                                  virDomainDiskBus type,
                                   unsigned int controller,
                                   unsigned int unit)
 {
@@ -4128,7 +4128,7 @@ virDomainDriveAddressIsUsedByDisk(const virDomainDef *def,
  */
 static bool
 virDomainDriveAddressIsUsedByHostdev(const virDomainDef *def,
-                                     enum virDomainHostdevSubsysType type,
+                                     virDomainHostdevSubsysType type,
                                      unsigned int controller,
                                      unsigned int unit)
 {

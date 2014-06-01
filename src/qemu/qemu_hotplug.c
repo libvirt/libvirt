@@ -2598,7 +2598,7 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
 
     virDomainAuditHostdev(vm, hostdev, "detach", true);
 
-    switch ((enum virDomainHostdevSubsysType) hostdev->source.subsys.type) {
+    switch ((virDomainHostdevSubsysType) hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         qemuDomainRemovePCIHostDevice(driver, vm, hostdev);
         break;

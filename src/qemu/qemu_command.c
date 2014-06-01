@@ -1144,7 +1144,7 @@ int qemuDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
 
 static void
 qemuDomainPrimeVirtioDeviceAddresses(virDomainDefPtr def,
-                                     enum virDomainDeviceAddressType type)
+                                     virDomainDeviceAddressType type)
 {
     /*
        declare address-less virtio devices to be of address type 'type'
@@ -2596,7 +2596,7 @@ qemuBuildRomStr(virBufferPtr buf,
 
 static int
 qemuBuildIoEventFdStr(virBufferPtr buf,
-                      enum virDomainIoEventFd use,
+                      virDomainIoEventFd use,
                       virQEMUCapsPtr qemuCaps)
 {
     if (use && virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_IOEVENTFD))

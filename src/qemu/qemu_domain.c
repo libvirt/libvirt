@@ -2221,7 +2221,7 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
 
     virUUIDFormat(vm->def->uuid, uuid);
 
-    switch ((enum virDomainStartupPolicy) startupPolicy) {
+    switch ((virDomainStartupPolicy) startupPolicy) {
         case VIR_DOMAIN_STARTUP_POLICY_OPTIONAL:
             break;
 
