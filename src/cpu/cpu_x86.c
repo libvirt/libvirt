@@ -1098,7 +1098,7 @@ x86MapFree(struct x86_map *map)
 
 
 static int
-x86MapLoadCallback(enum cpuMapElement element,
+x86MapLoadCallback(cpuMapElement element,
                    xmlXPathContextPtr ctxt,
                    void *data)
 {

@@ -729,7 +729,7 @@ struct cpuGetModelsData
 };
 
 static int
-cpuGetArchModelsCb(enum cpuMapElement element,
+cpuGetArchModelsCb(cpuMapElement element,
                    xmlXPathContextPtr ctxt,
                    void *cbdata)
 {

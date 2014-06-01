@@ -273,7 +273,7 @@ ppcModelLoad(xmlXPathContextPtr ctxt,
 }
 
 static int
-ppcMapLoadCallback(enum cpuMapElement element,
+ppcMapLoadCallback(cpuMapElement element,
                    xmlXPathContextPtr ctxt,
                    void *data)
 {

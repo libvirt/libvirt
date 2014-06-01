@@ -42,7 +42,7 @@ VIR_ENUM_IMPL(cpuMapElement, CPU_MAP_ELEMENT_LAST,
 
 
 static int load(xmlXPathContextPtr ctxt,
-                enum cpuMapElement element,
+                cpuMapElement element,
                 cpuMapLoadCallback callback,
                 void *data)
 {

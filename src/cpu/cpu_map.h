@@ -27,19 +27,19 @@
 # include "virxml.h"
 
 
-enum cpuMapElement {
+typedef enum {
     CPU_MAP_ELEMENT_VENDOR,
     CPU_MAP_ELEMENT_FEATURE,
     CPU_MAP_ELEMENT_MODEL,
 
     CPU_MAP_ELEMENT_LAST
-};
+} cpuMapElement;
 
 VIR_ENUM_DECL(cpuMapElement)
 
 
 typedef int
-(*cpuMapLoadCallback)  (enum cpuMapElement element,
+(*cpuMapLoadCallback)  (cpuMapElement element,
                         xmlXPathContextPtr ctxt,
                         void *data);
 
