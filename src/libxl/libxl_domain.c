@@ -1100,6 +1100,8 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
 #endif
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
+    libxl_domain_config_init(&d_config);
+
     if (libxlDomainObjPrivateInitCtx(vm) < 0)
         return ret;
 
@@ -1148,8 +1150,6 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         }
         VIR_FREE(managed_save_path);
     }
-
-    libxl_domain_config_init(&d_config);
 
     if (libxlBuildDomainConfig(driver->reservedVNCPorts, vm->def,
                                priv->ctx, &d_config) < 0)
