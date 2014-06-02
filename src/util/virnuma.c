@@ -193,7 +193,7 @@ virNumaIsAvailable(void)
  * Get the highest node number available on the current system.
  * (See the node numbers in /sys/devices/system/node/ ).
  *
- * Returns the highes NUMA node id on success, -1 on error.
+ * Returns the highest NUMA node id on success, -1 on error.
  */
 int
 virNumaGetMaxNode(void)
@@ -217,7 +217,7 @@ virNumaGetMaxNode(void)
 
 
 /**
- * virNumaGetNodeMemorySize:
+ * virNumaGetNodeMemory:
  * @node: identifier of the requested NUMA node
  * @memsize: returns the total size of memory in the NUMA node
  * @memfree: returns the total free memory in a NUMA node
