@@ -162,7 +162,8 @@ cmdNodeDeviceDestroy(vshControl *ctl, const vshCmd *cmd)
     ret = true;
  cleanup:
     virStringFreeList(arr);
-    virNodeDeviceFree(dev);
+    if (dev)
+        virNodeDeviceFree(dev);
     return ret;
 }
 
@@ -571,7 +572,8 @@ cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     virStringFreeList(arr);
     VIR_FREE(xml);
-    virNodeDeviceFree(device);
+    if (device)
+        virNodeDeviceFree(device);
     return ret;
 }
 
