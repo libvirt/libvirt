@@ -1917,6 +1917,7 @@ exit 0
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/autostart
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/network/
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/dnsmasq/
+%attr(0755, root, root) %{_libexecdir}/libvirt_leaseshelper
         %endif
         %if %{with_nwfilter}
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
@@ -1992,6 +1993,7 @@ exit 0
 %ghost %dir %{_localstatedir}/run/libvirt/network/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/network/
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/dnsmasq/
+%attr(0755, root, root) %{_libexecdir}/libvirt_leaseshelper
 %{_libdir}/%{name}/connection-driver/libvirt_driver_network.so
         %endif
 

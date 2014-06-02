@@ -76,6 +76,7 @@ src/libxl/libxl_driver.c
 src/libxl/libxl_conf.c
 src/network/bridge_driver.c
 src/network/bridge_driver_linux.c
+src/network/leaseshelper.c
 src/node_device/node_device_driver.c
 src/node_device/node_device_hal.c
 src/node_device/node_device_linux_sysfs.c

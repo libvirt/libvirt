@@ -211,6 +211,16 @@ networkDnsmasqLeaseFileNameFunc networkDnsmasqLeaseFileName =
     networkDnsmasqLeaseFileNameDefault;
 
 static char *
+networkDnsmasqLeaseFileNameCustom(const char *bridge)
+{
+    char *leasefile;
+
+    ignore_value(virAsprintf(&leasefile, "%s/%s.status",
+                             driverState->dnsmasqStateDir, bridge));
+    return leasefile;
+}
+
+static char *
 networkDnsmasqConfigFileName(const char *netname)
 {
     char *conffile;
@@ -246,6 +256,7 @@ networkRemoveInactive(virNetworkDriverStatePtr driver,
                       virNetworkObjPtr net)
 {
     char *leasefile = NULL;
+    char *customleasefile = NULL;
     char *radvdconfigfile = NULL;
     char *configfile = NULL;
     char *radvdpidbase = NULL;
@@ -264,6 +275,9 @@ networkRemoveInactive(virNetworkDriverStatePtr driver,
     if (!(leasefile = networkDnsmasqLeaseFileName(def->name)))
         goto cleanup;
 
+    if (!(customleasefile = networkDnsmasqLeaseFileNameCustom(def->bridge)))
+        goto cleanup;
+
     if (!(radvdconfigfile = networkRadvdConfigFileName(def->name)))
         goto cleanup;
 
@@ -280,6 +294,7 @@ networkRemoveInactive(virNetworkDriverStatePtr driver,
     /* dnsmasq */
     dnsmasqDelete(dctx);
     unlink(leasefile);
+    unlink(customleasefile);
     unlink(configfile);
 
     /* radvd */
@@ -297,6 +312,7 @@ networkRemoveInactive(virNetworkDriverStatePtr driver,
  cleanup:
     VIR_FREE(leasefile);
     VIR_FREE(configfile);
+    VIR_FREE(customleasefile);
     VIR_FREE(radvdconfigfile);
     VIR_FREE(radvdpidbase);
     VIR_FREE(statusfile);
@@ -1236,6 +1252,7 @@ networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
     int ret = -1;
     char *configfile = NULL;
     char *configstr = NULL;
+    char *leaseshelper_path;
 
     network->dnsmasqPid = -1;
 
@@ -1258,11 +1275,21 @@ networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
 
     cmd = virCommandNew(dnsmasqCapsGetBinaryPath(caps));
     virCommandAddArgFormat(cmd, "--conf-file=%s", configfile);
+
+    /* This helper is used to create custom leases file for libvirt */
+    if (!(leaseshelper_path = virFileFindResource("libvirt_leaseshelper",
+                                                  "src",
+                                                  LIBEXECDIR)))
+        goto cleanup;
+
+    virCommandAddArgFormat(cmd, "--dhcp-script=%s", leaseshelper_path);
+
     *cmdout = cmd;
     ret = 0;
  cleanup:
     VIR_FREE(configfile);
     VIR_FREE(configstr);
+    VIR_FREE(leaseshelper_path);
     return ret;
 }
 

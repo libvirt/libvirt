@@ -860,6 +860,9 @@ STORAGE_HELPER_DISK_SOURCES =					\
 UTIL_IO_HELPER_SOURCES =					\
 		util/iohelper.c
 
+NETWORK_LEASES_HELPER_SOURCES =                                 \
+               network/leaseshelper.c
+
 # Network filters
 NWFILTER_DRIVER_SOURCES =						\
 		nwfilter/nwfilter_driver.h nwfilter/nwfilter_driver.c	\
@@ -2468,6 +2471,25 @@ libvirt_iohelper_CFLAGS = \
 		$(AM_CFLAGS) \
 		$(PIE_CFLAGS) \
 		$(NULL)
+
+if WITH_NETWORK
+libexec_PROGRAMS += libvirt_leaseshelper
+libvirt_leaseshelper_SOURCES = $(NETWORK_LEASES_HELPER_SOURCES)
+libvirt_leaseshelper_LDADD =           \
+               libvirt_util.la         \
+               ../gnulib/lib/libgnu.la
+if WITH_DTRACE_PROBES
+libvirt_leaseshelper_LDADD += libvirt_probes.lo
+endif WITH_DTRACE_PROBES
+
+libvirt_leaseshelper_CFLAGS = \
+	       $(AM_CFLAGS) \
+               $(PIE_CFLAGS) \
+               $(NULL)
+else ! WITH_NETWORK
+EXTRA_DIST += $(NETWORK_LEASES_HELPER_SOURCES)
+endif ! WITH_NETWORK
+
 endif WITH_LIBVIRTD
 
 if WITH_STORAGE_DISK
