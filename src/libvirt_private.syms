@@ -1652,6 +1652,7 @@ virNodeSuspendGetTargetMask;
 virDomainNumatuneMemModeTypeFromString;
 virDomainNumatuneMemModeTypeToString;
 virNumaGetAutoPlacementAdvice;
+virNumaGetDistances;
 virNumaGetMaxNode;
 virNumaGetNodeMemory;
 virNumaIsAvailable;

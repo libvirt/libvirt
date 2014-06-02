@@ -58,6 +58,9 @@ int virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
 
 bool virNumaIsAvailable(void);
 int virNumaGetMaxNode(void);
+int virNumaGetDistances(int node,
+                        int **distances,
+                        int *ndistances);
 int virNumaGetNodeMemory(int node,
                          unsigned long long *memsize,
                          unsigned long long *memfree);

@@ -217,6 +217,61 @@ virNumaGetMaxNode(void)
 
 
 /**
+ * virNumaGetDistances:
+ * @node: identifier of the requested NUMA node
+ * @distances: array of distances to sibling nodes
+ * @ndistances: size of @distances
+ *
+ * Get array of distances to sibling nodes from @node. If a
+ * distances[x] equals to zero, the node x is not enabled or
+ * doesn't exist. As a special case, if @node itself refers to
+ * disabled or nonexistent NUMA node, then @distances and
+ * @ndistances are set to NULL and zero respectively.
+ *
+ * The distances are a bit of magic. For a local node the value
+ * is 10, for remote it's typically 20 meaning that time penalty
+ * for accessing a remote node is two time bigger than when
+ * accessing a local node.
+ *
+ * Returns 0 on success, -1 otherwise.
+ */
+int
+virNumaGetDistances(int node,
+                    int **distances,
+                    int *ndistances)
+{
+    int ret = -1;
+    int max_node;
+    size_t i;
+
+    if (!numa_bitmask_isbitset(numa_nodes_ptr, node)) {
+        VIR_DEBUG("Node %d does not exist", node);
+        *distances = NULL;
+        *ndistances = 0;
+        return 0;
+    }
+
+    if ((max_node = virNumaGetMaxNode()) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(*distances, max_node) < 0)
+        goto cleanup;
+
+    *ndistances = max_node + 1;
+
+    for (i = 0; i<= max_node; i++) {
+        if (!numa_bitmask_isbitset(numa_nodes_ptr, i))
+            continue;
+
+        (*distances)[i] = numa_distance(node, i);
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+/**
  * virNumaGetNodeMemory:
  * @node: identifier of the requested NUMA node
  * @memsize: returns the total size of memory in the NUMA node
