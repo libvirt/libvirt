@@ -2523,7 +2523,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
 }
 
 
-static void
+static int
 qemuDomainRemoveControllerDevice(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virDomainControllerDefPtr controller)
@@ -2547,6 +2547,7 @@ qemuDomainRemoveControllerDevice(virQEMUDriverPtr driver,
 
     qemuDomainReleaseDeviceAddress(vm, &controller->info, NULL);
     virDomainControllerDefFree(controller);
+    return 0;
 }
 
 
@@ -2575,7 +2576,7 @@ qemuDomainRemoveSCSIHostDevice(virQEMUDriverPtr driver,
     qemuDomainReAttachHostSCSIDevices(driver, vm->def->name, &hostdev, 1);
 }
 
-static void
+static int
 qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            virDomainHostdevDefPtr hostdev)
@@ -2641,6 +2642,7 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
         virDomainNetDefFree(net);
     }
     virObjectUnref(cfg);
+    return 0;
 }
 
 
@@ -2659,8 +2661,8 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
 
     if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         /* this function handles all hostdev and netdev cleanup */
-        qemuDomainRemoveHostDevice(driver, vm, virDomainNetGetActualHostdev(net));
-        ret = 0;
+        ret = qemuDomainRemoveHostDevice(driver, vm,
+                                         virDomainNetGetActualHostdev(net));
         goto cleanup;
     }
 
@@ -3189,9 +3191,9 @@ int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
 
     rc = qemuDomainWaitForDeviceRemoval(vm);
     if (rc == 0 || rc == 1)
-        qemuDomainRemoveControllerDevice(driver, vm, detach);
-
-    ret = 0;
+        ret = qemuDomainRemoveControllerDevice(driver, vm, detach);
+    else
+        ret = 0;
 
  cleanup:
     qemuDomainResetDeviceRemoval(vm);
@@ -3345,7 +3347,7 @@ qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
     } else {
         int rc = qemuDomainWaitForDeviceRemoval(vm);
         if (rc == 0 || rc == 1)
-            qemuDomainRemoveHostDevice(driver, vm, detach);
+            ret = qemuDomainRemoveHostDevice(driver, vm, detach);
     }
 
     qemuDomainResetDeviceRemoval(vm);
