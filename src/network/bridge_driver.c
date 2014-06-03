@@ -1273,15 +1273,14 @@ networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
         goto cleanup;
     }
 
-    cmd = virCommandNew(dnsmasqCapsGetBinaryPath(caps));
-    virCommandAddArgFormat(cmd, "--conf-file=%s", configfile);
-
     /* This helper is used to create custom leases file for libvirt */
     if (!(leaseshelper_path = virFileFindResource("libvirt_leaseshelper",
                                                   "src",
                                                   LIBEXECDIR)))
         goto cleanup;
 
+    cmd = virCommandNew(dnsmasqCapsGetBinaryPath(caps));
+    virCommandAddArgFormat(cmd, "--conf-file=%s", configfile);
     virCommandAddArgFormat(cmd, "--dhcp-script=%s", leaseshelper_path);
 
     *cmdout = cmd;
