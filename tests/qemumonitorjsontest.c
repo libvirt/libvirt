@@ -1960,6 +1960,38 @@ testQemuMonitorJSONqemuMonitorJSONSendKey(const void *data)
 }
 
 static int
+testQemuMonitorJSONqemuMonitorJSONSendKeyHoldtime(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    int ret = -1;
+    unsigned int keycodes[] = {43, 26, 46, 32};
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItemParams(test, "send-key",
+                                     "{\"return\":{}}",
+                                     "hold-time", "31337",
+                                     "keys", "[{\"type\":\"number\",\"data\":43},"
+                                              "{\"type\":\"number\",\"data\":26},"
+                                              "{\"type\":\"number\",\"data\":46},"
+                                              "{\"type\":\"number\",\"data\":32}]",
+                                     NULL, NULL) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONSendKey(qemuMonitorTestGetMonitor(test),
+                               31337, keycodes,
+                               ARRAY_CARDINALITY(keycodes)) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+static int
 testQemuMonitorJSONqemuMonitorJSONGetDumpGuestMemoryCapability(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
@@ -2230,6 +2262,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetVirtType);
     DO_TEST(qemuMonitorJSONSendKey);
     DO_TEST(qemuMonitorJSONGetDumpGuestMemoryCapability);
+    DO_TEST(qemuMonitorJSONSendKeyHoldtime);
 
     DO_TEST_CPU_DATA("host");
     DO_TEST_CPU_DATA("full");

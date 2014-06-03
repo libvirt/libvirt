@@ -3610,7 +3610,7 @@ int qemuMonitorJSONSendKey(qemuMonitorPtr mon,
 
     cmd = qemuMonitorJSONMakeCommand("send-key",
                                      "a:keys", keys,
-                                     "P:hold-time", holdtime,
+                                     "p:hold-time", holdtime,
                                      NULL);
     if (!cmd)
         goto cleanup;
