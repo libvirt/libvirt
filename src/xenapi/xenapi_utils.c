@@ -127,7 +127,7 @@ xenapiUtil_ParseQuery(virConnectPtr conn, virURIPtr uri, int *noVerify)
 
 
 enum xen_on_normal_exit
-actionShutdownLibvirt2XenapiEnum(enum virDomainLifecycleAction action)
+actionShutdownLibvirt2XenapiEnum(virDomainLifecycleAction action)
 {
     enum xen_on_normal_exit num = XEN_ON_NORMAL_EXIT_RESTART;
     if (action == VIR_DOMAIN_LIFECYCLE_DESTROY)
@@ -139,7 +139,7 @@ actionShutdownLibvirt2XenapiEnum(enum virDomainLifecycleAction action)
 
 
 enum xen_on_crash_behaviour
-actionCrashLibvirt2XenapiEnum(enum virDomainLifecycleCrashAction action)
+actionCrashLibvirt2XenapiEnum(virDomainLifecycleCrashAction action)
 {
     enum xen_on_crash_behaviour num = XEN_ON_CRASH_BEHAVIOUR_RESTART;
     if (action == VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY)
@@ -180,7 +180,7 @@ createXenAPIBootOrderString(int nboot, int *bootDevs)
 }
 
 /* convert boot order string to libvirt boot order enum */
-enum virDomainBootOrder
+virDomainBootOrder
 map2LibvirtBootOrder(char c)
 {
     switch (c) {
@@ -197,10 +197,10 @@ map2LibvirtBootOrder(char c)
     }
 }
 
-enum virDomainLifecycleAction
+virDomainLifecycleAction
 xenapiNormalExitEnum2virDomainLifecycle(enum xen_on_normal_exit action)
 {
-    enum virDomainLifecycleAction num = VIR_DOMAIN_LIFECYCLE_RESTART;
+    virDomainLifecycleAction num = VIR_DOMAIN_LIFECYCLE_RESTART;
     if (action == XEN_ON_NORMAL_EXIT_DESTROY)
         num = VIR_DOMAIN_LIFECYCLE_DESTROY;
     else if (action == XEN_ON_NORMAL_EXIT_RESTART)
@@ -209,10 +209,10 @@ xenapiNormalExitEnum2virDomainLifecycle(enum xen_on_normal_exit action)
 }
 
 
-enum virDomainLifecycleCrashAction
+virDomainLifecycleCrashAction
 xenapiCrashExitEnum2virDomainLifecycle(enum xen_on_crash_behaviour action)
 {
-    enum virDomainLifecycleCrashAction num = VIR_DOMAIN_LIFECYCLE_CRASH_RESTART;
+    virDomainLifecycleCrashAction num = VIR_DOMAIN_LIFECYCLE_CRASH_RESTART;
     if (action == XEN_ON_CRASH_BEHAVIOUR_DESTROY)
         num = VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY;
     else if (action == XEN_ON_CRASH_BEHAVIOUR_RESTART)

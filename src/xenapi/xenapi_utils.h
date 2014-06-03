@@ -43,20 +43,20 @@ int
 xenapiUtil_ParseQuery(virConnectPtr conn, virURIPtr uri, int *noVerify);
 
 enum xen_on_normal_exit
-actionShutdownLibvirt2XenapiEnum(enum virDomainLifecycleAction action);
+actionShutdownLibvirt2XenapiEnum(virDomainLifecycleAction action);
 
 enum xen_on_crash_behaviour
-actionCrashLibvirt2XenapiEnum(enum virDomainLifecycleCrashAction action);
+actionCrashLibvirt2XenapiEnum(virDomainLifecycleCrashAction action);
 
 char *
 createXenAPIBootOrderString(int nboot, int *bootDevs);
 
-enum virDomainBootOrder map2LibvirtBootOrder(char c);
+virDomainBootOrder map2LibvirtBootOrder(char c);
 
-enum virDomainLifecycleAction
+virDomainLifecycleAction
 xenapiNormalExitEnum2virDomainLifecycle(enum xen_on_normal_exit action);
 
-enum virDomainLifecycleCrashAction
+virDomainLifecycleCrashAction
 xenapiCrashExitEnum2virDomainLifecycle(enum xen_on_crash_behaviour action);
 
 void getCpuBitMapfromString(char *mask, unsigned char *cpumap, int maplen);
