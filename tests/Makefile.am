@@ -162,7 +162,6 @@ test_programs = virshtest sockettest \
 	virstringtest \
 	virportallocatortest \
 	sysinfotest \
-	virstoragetest \
 	virnetdevbandwidthtest \
 	virkmodtest \
 	vircapstest \
@@ -279,7 +278,8 @@ test_programs += nwfilterxml2firewalltest
 endif WITH_NWFILTER
 
 if WITH_STORAGE
-test_programs += storagevolxml2argvtest
+test_programs += storagevolxml2argvtest \
+	virstoragetest
 endif WITH_STORAGE
 
 if WITH_LINUX
