@@ -34,7 +34,7 @@
 
 VIR_LOG_INIT("tests.systemdtest");
 
-VIR_MOCK_IMPL_RET_ARGS(dbus_connection_send_with_reply_and_block,
+VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
                        DBusMessage *,
                        DBusConnection *, connection,
                        DBusMessage *, message,
@@ -45,7 +45,7 @@ VIR_MOCK_IMPL_RET_ARGS(dbus_connection_send_with_reply_and_block,
     const char *service = dbus_message_get_destination(message);
     const char *member = dbus_message_get_member(message);
 
-    VIR_MOCK_IMPL_INIT_REAL(dbus_connection_send_with_reply_and_block);
+    VIR_MOCK_REAL_INIT(dbus_connection_send_with_reply_and_block);
 
     if (STREQ(service, "org.freedesktop.machine1")) {
         if (getenv("FAIL_BAD_SERVICE")) {

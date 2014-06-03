@@ -67,7 +67,7 @@ static bool fwError;
     "target     prot opt source               destination\n"
 
 # if WITH_DBUS
-VIR_MOCK_IMPL_RET_ARGS(dbus_connection_send_with_reply_and_block,
+VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
                        DBusMessage *,
                        DBusConnection *, connection,
                        DBusMessage *, message,
@@ -82,7 +82,7 @@ VIR_MOCK_IMPL_RET_ARGS(dbus_connection_send_with_reply_and_block,
     char **args = NULL;
     char *type = NULL;
 
-    VIR_MOCK_IMPL_INIT_REAL(dbus_connection_send_with_reply_and_block);
+    VIR_MOCK_REAL_INIT(dbus_connection_send_with_reply_and_block);
 
     if (STREQ(service, "org.freedesktop.DBus") &&
         STREQ(member, "ListNames")) {
