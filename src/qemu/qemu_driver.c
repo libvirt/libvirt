@@ -731,19 +731,22 @@ qemuStateInitialize(bool privileged,
     if ((qemu_driver->remotePorts =
          virPortAllocatorNew(_("display"),
                              cfg->remotePortMin,
-                             cfg->remotePortMax)) == NULL)
+                             cfg->remotePortMax,
+                             0)) == NULL)
         goto error;
 
     if ((qemu_driver->webSocketPorts =
          virPortAllocatorNew(_("webSocket"),
                              cfg->webSocketPortMin,
-                             cfg->webSocketPortMax)) == NULL)
+                             cfg->webSocketPortMax,
+                             0)) == NULL)
         goto error;
 
     if ((qemu_driver->migrationPorts =
          virPortAllocatorNew(_("migration"),
                              cfg->migrationPortMin,
-                             cfg->migrationPortMax)) == NULL)
+                             cfg->migrationPortMax,
+                             0)) == NULL)
         goto error;
 
     if (qemuSecurityInit(qemu_driver) < 0)

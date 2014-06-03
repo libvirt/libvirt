@@ -28,9 +28,14 @@
 typedef struct _virPortAllocator virPortAllocator;
 typedef virPortAllocator *virPortAllocatorPtr;
 
+typedef enum {
+    VIR_PORT_ALLOCATOR_SKIP_BIND_CHECK = (1 << 0),
+} virPortAllocatorFlags;
+
 virPortAllocatorPtr virPortAllocatorNew(const char *name,
                                         unsigned short start,
-                                        unsigned short end);
+                                        unsigned short end,
+                                        unsigned int flags);
 
 int virPortAllocatorAcquire(virPortAllocatorPtr pa,
                             unsigned short *port);

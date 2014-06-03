@@ -43,6 +43,8 @@ struct _virPortAllocator {
 
     unsigned short start;
     unsigned short end;
+
+    unsigned int flags;
 };
 
 static virClassPtr virPortAllocatorClass;
@@ -71,7 +73,8 @@ VIR_ONCE_GLOBAL_INIT(virPortAllocator)
 
 virPortAllocatorPtr virPortAllocatorNew(const char *name,
                                         unsigned short start,
-                                        unsigned short end)
+                                        unsigned short end,
+                                        unsigned int flags)
 {
     virPortAllocatorPtr pa;
 
@@ -87,6 +90,7 @@ virPortAllocatorPtr virPortAllocatorNew(const char *name,
     if (!(pa = virObjectLockableNew(virPortAllocatorClass)))
         return NULL;
 
+    pa->flags = flags;
     pa->start = start;
     pa->end = end;
 
@@ -190,9 +194,11 @@ int virPortAllocatorAcquire(virPortAllocatorPtr pa,
         if (used)
             continue;
 
-        if (virPortAllocatorBindToPort(&v6used, i, AF_INET6) < 0 ||
-            virPortAllocatorBindToPort(&used, i, AF_INET) < 0)
-            goto cleanup;
+        if (!(pa->flags & VIR_PORT_ALLOCATOR_SKIP_BIND_CHECK)) {
+            if (virPortAllocatorBindToPort(&v6used, i, AF_INET6) < 0 ||
+                virPortAllocatorBindToPort(&used, i, AF_INET) < 0)
+                goto cleanup;
+        }
 
         if (!used && !v6used) {
             /* Add port to bitmap of reserved ports */

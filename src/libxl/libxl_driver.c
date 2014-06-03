@@ -301,14 +301,15 @@ libxlStateInitialize(bool privileged,
     if (!(libxl_driver->reservedVNCPorts =
           virPortAllocatorNew(_("VNC"),
                               LIBXL_VNC_PORT_MIN,
-                              LIBXL_VNC_PORT_MAX)))
+                              LIBXL_VNC_PORT_MAX,
+                              0)))
         goto error;
 
     /* Allocate bitmap for migration port reservation */
     if (!(libxl_driver->migrationPorts =
           virPortAllocatorNew(_("migration"),
                               LIBXL_MIGRATION_PORT_MIN,
-                              LIBXL_MIGRATION_PORT_MAX)))
+                              LIBXL_MIGRATION_PORT_MAX, 0)))
         goto error;
 
     if (!(libxl_driver->domains = virDomainObjListNew()))
