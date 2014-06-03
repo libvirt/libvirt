@@ -10379,7 +10379,7 @@ virDomainDiskRemoveByName(virDomainDefPtr def, const char *name)
 }
 
 /* Return true if VM has at least one disk involved in a current block
- * copy job (that is, with a <mirror> element in the disk xml).  */
+ * copy/commit job (that is, with a <mirror> element in the disk xml).  */
 bool
 virDomainHasDiskMirror(virDomainObjPtr vm)
 {

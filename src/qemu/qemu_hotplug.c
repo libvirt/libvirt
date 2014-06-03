@@ -2986,7 +2986,7 @@ qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
 
     if (detach->mirror) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
-                       _("disk '%s' is in an active block copy job"),
+                       _("disk '%s' is in an active block job"),
                        detach->dst);
         goto cleanup;
     }

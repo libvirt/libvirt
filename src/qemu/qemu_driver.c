@@ -6261,7 +6261,7 @@ static virDomainPtr qemuDomainDefineXML(virConnectPtr conn, const char *xml)
     def = NULL;
     if (virDomainHasDiskMirror(vm)) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE, "%s",
-                       _("domain has active block copy job"));
+                       _("domain has active block job"));
         virDomainObjAssignDef(vm, NULL, false, NULL);
         goto cleanup;
     }
@@ -13465,7 +13465,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     }
     if (virDomainHasDiskMirror(vm)) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE, "%s",
-                       _("domain has active block copy job"));
+                       _("domain has active block job"));
         goto cleanup;
     }
 
@@ -14075,7 +14075,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
     if (virDomainHasDiskMirror(vm)) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE, "%s",
-                       _("domain has active block copy job"));
+                       _("domain has active block job"));
         goto cleanup;
     }
 
@@ -15075,7 +15075,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
 
     if (mode == BLOCK_JOB_PULL && disk->mirror) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
-                       _("disk '%s' already in active block copy job"),
+                       _("disk '%s' already in active block job"),
                        disk->dst);
         goto endjob;
     }
@@ -15283,7 +15283,7 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     disk = vm->def->disks[idx];
     if (disk->mirror) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
-                       _("disk '%s' already in active block copy job"),
+                       _("disk '%s' already in active block job"),
                        disk->dst);
         goto endjob;
     }
