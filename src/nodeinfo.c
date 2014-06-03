@@ -1644,9 +1644,9 @@ nodeCapsInitNUMAFake(virCapsPtr caps ATTRIBUTE_UNUSED)
     }
 
     if (virCapabilitiesAddHostNUMACell(caps, 0,
-                                       ncpus,
                                        nodeinfo.memory,
-                                       cpus) < 0)
+                                       ncpus, cpus,
+                                       0, NULL) < 0)
         goto error;
 
     return 0;
@@ -1748,6 +1748,53 @@ virNodeCapsFillCPUInfo(int cpu_id ATTRIBUTE_UNUSED,
 #endif
 }
 
+static int
+virNodeCapsGetSiblingInfo(int node,
+                          virCapsHostNUMACellSiblingInfoPtr *siblings,
+                          int *nsiblings)
+{
+    virCapsHostNUMACellSiblingInfoPtr tmp = NULL;
+    int tmp_size = 0;
+    int ret = -1;
+    int *distances = NULL;
+    int ndistances = 0;
+    size_t i;
+
+    if (virNumaGetDistances(node, &distances, &ndistances) < 0)
+        goto cleanup;
+
+    if (!distances) {
+        *siblings = NULL;
+        *nsiblings = 0;
+        return 0;
+    }
+
+    if (VIR_ALLOC_N(tmp, ndistances) < 0)
+        goto cleanup;
+
+    for (i = 0; i < ndistances; i++) {
+        if (!distances[i])
+            continue;
+
+        tmp[tmp_size].node = i;
+        tmp[tmp_size].distance = distances[i];
+        tmp_size++;
+    }
+
+    if (VIR_REALLOC_N(tmp, tmp_size) < 0)
+        goto cleanup;
+
+    *siblings = tmp;
+    *nsiblings = tmp_size;
+    tmp = NULL;
+    tmp_size = 0;
+    ret = 0;
+ cleanup:
+    VIR_FREE(distances);
+    VIR_FREE(tmp);
+    return ret;
+}
+
 int
 nodeCapsInitNUMA(virCapsPtr caps)
 {
@@ -1755,6 +1802,8 @@ nodeCapsInitNUMA(virCapsPtr caps)
     unsigned long long memory;
     virCapsHostNUMACellCPUPtr cpus = NULL;
     virBitmapPtr cpumap = NULL;
+    virCapsHostNUMACellSiblingInfoPtr siblings = NULL;
+    int nsiblings;
     int ret = -1;
     int ncpus = 0;
     int cpu;
@@ -1794,14 +1843,20 @@ nodeCapsInitNUMA(virCapsPtr caps)
             }
         }
 
+        if (virNodeCapsGetSiblingInfo(n, &siblings, &nsiblings) < 0)
+            goto cleanup;
+
         /* Detect the amount of memory in the numa cell in KiB */
         virNumaGetNodeMemory(n, &memory, NULL);
         memory >>= 10;
 
-        if (virCapabilitiesAddHostNUMACell(caps, n, ncpus, memory, cpus) < 0)
+        if (virCapabilitiesAddHostNUMACell(caps, n, memory,
+                                           ncpus, cpus,
+                                           nsiblings, siblings) < 0)
             goto cleanup;
 
         cpus = NULL;
+        siblings = NULL;
     }
 
     ret = 0;
@@ -1812,6 +1867,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
 
     virBitmapFree(cpumap);
     VIR_FREE(cpus);
+    VIR_FREE(siblings);
 
     if (ret < 0)
         VIR_FREE(cpus);

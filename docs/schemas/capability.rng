@@ -189,6 +189,21 @@
       </optional>
 
       <optional>
+        <element name='distances'>
+          <zeroOrMore>
+            <element name='sibling'>
+              <attribute name='id'>
+                <ref name='unsignedInt'/>
+              </attribute>
+              <attribute name='value'>
+                <ref name='unsignedInt'/>
+              </attribute>
+            </element>
+          </zeroOrMore>
+        </element>
+      </optional>
+
+      <optional>
         <element name='cpus'>
           <attribute name='num'>
             <ref name='unsignedInt'/>

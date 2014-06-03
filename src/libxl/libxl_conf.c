@@ -207,9 +207,10 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
         if (numa_info[i].size == LIBXL_NUMAINFO_INVALID_ENTRY)
             continue;
 
-        if (virCapabilitiesAddHostNUMACell(caps, i, nr_cpus_node[i],
+        if (virCapabilitiesAddHostNUMACell(caps, i,
                                            numa_info[i].size / 1024,
-                                           cpus[i]) < 0) {
+                                           nr_cpus_node[i], cpus[i],
+                                           0, NULL) < 0) {
             virCapabilitiesClearHostNUMACellCPUTopology(cpus[i],
                                                         nr_cpus_node[i]);
             goto cleanup;
