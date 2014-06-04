@@ -1699,31 +1699,60 @@ vshCommandOptLongLong(const vshCmd *cmd, const char *name,
     return 1;
 }
 
+static int
+vshCommandOptULongLongInternal(const vshCmd *cmd,
+                               const char *name,
+                               unsigned long long *value,
+                               bool wrap)
+{
+    vshCmdOpt *arg;
+    int ret;
+
+    if ((ret = vshCommandOpt(cmd, name, &arg, true)) <= 0)
+        return ret;
+
+    if (wrap) {
+        if (virStrToLong_ull(arg->data, NULL, 10, value) < 0)
+            return -1;
+    } else {
+        if (virStrToLong_ullp(arg->data, NULL, 10, value) < 0)
+            return -1;
+    }
+
+    return 1;
+}
+
 /**
  * vshCommandOptULongLong:
  * @cmd command reference
  * @name option name
  * @value result
  *
- * Returns option as long long
+ * Returns option as long long, rejects negative numbers
  * See vshCommandOptInt()
  */
 int
 vshCommandOptULongLong(const vshCmd *cmd, const char *name,
                        unsigned long long *value)
 {
-    vshCmdOpt *arg;
-    int ret;
-
-    ret = vshCommandOpt(cmd, name, &arg, true);
-    if (ret <= 0)
-        return ret;
-
-    if (virStrToLong_ull(arg->data, NULL, 10, value) < 0)
-        return -1;
-    return 1;
+    return vshCommandOptULongLongInternal(cmd, name, value, false);
 }
 
+/**
+ * vshCommandOptULongLongWrap:
+ * @cmd command reference
+ * @name option name
+ * @value result
+ *
+ * Returns option as long long, wraps negative numbers to positive
+ * See vshCommandOptInt()
+ */
+int
+vshCommandOptULongLongWrap(const vshCmd *cmd, const char *name,
+                       unsigned long long *value)
+{
+    return vshCommandOptULongLongInternal(cmd, name, value, true);
+}
 
 /**
  * vshCommandOptScaledInt:

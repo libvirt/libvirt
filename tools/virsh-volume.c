@@ -677,12 +677,12 @@ cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     unsigned long long offset = 0, length = 0;
 
-    if (vshCommandOptULongLong(cmd, "offset", &offset) < 0) {
+    if (vshCommandOptULongLongWrap(cmd, "offset", &offset) < 0) {
         vshError(ctl, _("Unable to parse integer"));
         return false;
     }
 
-    if (vshCommandOptULongLong(cmd, "length", &length) < 0) {
+    if (vshCommandOptULongLongWrap(cmd, "length", &length) < 0) {
         vshError(ctl, _("Unable to parse integer"));
         return false;
     }
@@ -787,12 +787,12 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
     unsigned long long offset = 0, length = 0;
     bool created = false;
 
-    if (vshCommandOptULongLong(cmd, "offset", &offset) < 0) {
+    if (vshCommandOptULongLongWrap(cmd, "offset", &offset) < 0) {
         vshError(ctl, _("Unable to parse integer"));
         return false;
     }
 
-    if (vshCommandOptULongLong(cmd, "length", &length) < 0) {
+    if (vshCommandOptULongLongWrap(cmd, "length", &length) < 0) {
         vshError(ctl, _("Unable to parse integer"));
         return false;
     }

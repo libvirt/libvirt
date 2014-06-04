@@ -307,6 +307,9 @@ int vshCommandOptLongLong(const vshCmd *cmd, const char *name,
 int vshCommandOptULongLong(const vshCmd *cmd, const char *name,
                            unsigned long long *value)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
+int vshCommandOptULongLongWrap(const vshCmd *cmd, const char *name,
+                               unsigned long long *value)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
 int vshCommandOptScaledInt(const vshCmd *cmd, const char *name,
                            unsigned long long *value, int scale,
                            unsigned long long max)
