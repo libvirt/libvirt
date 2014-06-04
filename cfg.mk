@@ -929,6 +929,15 @@ sc_prohibit_mixed_case_abbreviations:
 	halt='Use PCI, USB, SCSI, not Pci, Usb, Scsi'	\
 	  $(_sc_search_regexp)
 
+# Require #include <locale.h> in all files that call setlocale()
+sc_require_locale_h:
+	@for i in $$($(VC_LIST_EXCEPT) | grep '\.[chx]$$'); do			\
+		if ! grep -q setlocale\( $$i ; then continue; fi ;		\
+		if ! grep -q '# *include <locale.h>' $$i ; then			\
+			echo '$(ME): missing locale.h include in' $$i 1>&2; exit 1;	\
+		fi;															\
+	done;
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
