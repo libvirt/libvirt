@@ -139,4 +139,9 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
                  bool start_paused,
                  int restore_fd);
 
+bool
+libxlDomainDefCheckABIStability(libxlDriverPrivatePtr driver,
+                                virDomainDefPtr src,
+                                virDomainDefPtr dst);
+
 #endif /* LIBXL_DOMAIN_H */

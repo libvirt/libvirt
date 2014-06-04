@@ -1256,3 +1256,26 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     virObjectUnref(cfg);
     return ret;
 }
+
+bool
+libxlDomainDefCheckABIStability(libxlDriverPrivatePtr driver,
+                                virDomainDefPtr src,
+                                virDomainDefPtr dst)
+{
+    virDomainDefPtr migratableDefSrc = NULL;
+    virDomainDefPtr migratableDefDst = NULL;
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    bool ret = false;
+
+    if (!(migratableDefSrc = virDomainDefCopy(src, cfg->caps, driver->xmlopt, true)) ||
+        !(migratableDefDst = virDomainDefCopy(dst, cfg->caps, driver->xmlopt, true)))
+        goto cleanup;
+
+    ret = virDomainDefCheckABIStability(migratableDefSrc, migratableDefDst);
+
+ cleanup:
+    virDomainDefFree(migratableDefSrc);
+    virDomainDefFree(migratableDefDst);
+    virObjectUnref(cfg);
+    return ret;
+}
