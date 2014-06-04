@@ -443,6 +443,17 @@ virNumaGetNodeCPUs(int node ATTRIBUTE_UNUSED,
                    _("NUMA isn't available on this host"));
     return -1;
 }
+
+int
+virNumaGetDistances(int node ATTRIBUTE_UNUSED,
+                    int **distances,
+                    int *ndistances)
+{
+    *distances = NULL;
+    *ndistances = 0;
+    VIR_DEBUG("NUMA isn't available on this host");
+    return 0;
+}
 #endif
 
 
