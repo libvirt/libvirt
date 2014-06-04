@@ -35,7 +35,7 @@ if test -z "$NOCONFIGURE" ; then
     echo "Running ./configure with $EXTRA_ARGS $@"
   else
     if test -z "$*" && test ! -f "$THEDIR/config.status"; then
-        echo "I am going to run ./configure with no arguments - if you wish "
+        echo "I am going to run ./configure with no arguments - if you wish"
         echo "to pass any to it, please specify them on the $0 command line."
     fi
   fi

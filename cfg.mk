@@ -939,6 +939,7 @@ sc_require_locale_h:
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
+ifneq ($(_gl-Makefile),)
 ifeq (0,$(MAKELEVEL))
   _curr_status = .git-module-status
   # The sed filter accommodates those who check out on a commit from which
@@ -971,6 +972,7 @@ ifeq (0,$(MAKELEVEL))
 maint.mk Makefile: _autogen
   endif
 endif
+endif
 
 # It is necessary to call autogen any time gnulib changes.  Autogen
 # reruns configure, then we regenerate all Makefiles at once.
@@ -980,7 +982,9 @@ _autogen:
 	./config.status
 
 # regenerate HACKING as part of the syntax-check
+ifneq ($(_gl-Makefile),)
 syntax-check: $(top_srcdir)/HACKING bracket-spacing-check
+endif
 
 bracket-spacing-check:
 	$(AM_V_GEN)files=`$(VC_LIST) | grep '\.c$$'`; \
