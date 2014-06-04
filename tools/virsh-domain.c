@@ -1457,7 +1457,7 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
     if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
         goto cleanup;
 
-    if (vshCommandOptUL(cmd, "bandwidth", &bandwidth) < 0) {
+    if (vshCommandOptULWrap(cmd, "bandwidth", &bandwidth) < 0) {
         vshError(ctl, "%s", _("bandwidth must be a number"));
         goto cleanup;
     }
@@ -9229,7 +9229,7 @@ cmdMigrateSetMaxSpeed(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptUL(cmd, "bandwidth", &bandwidth) < 0) {
+    if (vshCommandOptULWrap(cmd, "bandwidth", &bandwidth) < 0) {
         vshError(ctl, "%s", _("migrate: Invalid bandwidth"));
         goto done;
     }
