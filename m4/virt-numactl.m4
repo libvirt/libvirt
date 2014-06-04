@@ -19,6 +19,10 @@ dnl
 
 AC_DEFUN([LIBVIRT_CHECK_NUMACTL],[
   LIBVIRT_CHECK_LIB([NUMACTL], [numa], [numa_available], [numa.h])
+  AC_CHECK_LIB([numa], [numa_bitmask_isbitset], [have_numa_bitmask_isbitset=yes])
+  if test "$have_numa_bitmask_isbitset" = "yes"; then
+    AC_DEFINE_UNQUOTED([HAVE_NUMA_BITMASK_ISBITSET], 1, [whether numa_bitmask_isbitset is available])
+  fi
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_NUMACTL],[
