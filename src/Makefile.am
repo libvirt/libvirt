@@ -1400,7 +1400,7 @@ endif ! WITH_DRIVER_MODULES
 libvirt_driver_interface_la_CFLAGS = \
 		-I$(top_srcdir)/src/access \
 		-I$(top_srcdir)/src/conf \
-		$(AM_CFLAGS)
+		$(AM_CFLAGS) $(LIBNL_CFLAGS)
 libvirt_driver_interface_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_interface_la_LIBADD =
 if WITH_NETCF

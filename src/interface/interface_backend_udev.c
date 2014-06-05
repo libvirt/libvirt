@@ -34,6 +34,7 @@
 #include "viralloc.h"
 #include "virstring.h"
 #include "viraccessapicheck.h"
+#include "virnetdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_INTERFACE
 
@@ -1057,6 +1058,10 @@ udevGetIfaceDef(struct udev *udev, const char *name)
     /* MAC address */
     if (VIR_STRDUP(ifacedef->mac,
                    udev_device_get_sysattr_value(dev, "address")) < 0)
+        goto error;
+
+    /* Link state and speed */
+    if (virNetDevGetLinkInfo(ifacedef->name, &ifacedef->lnk) < 0)
         goto error;
 
     /* MTU */
