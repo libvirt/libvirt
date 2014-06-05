@@ -791,10 +791,8 @@ virCapabilitiesFormatNUMATopology(virBufferPtr buf,
             virBufferAsprintf(buf, "<cpu id='%d'", cells[i]->cpus[j].id);
 
             if (cells[i]->cpus[j].siblings) {
-                if (!(siblings = virBitmapFormat(cells[i]->cpus[j].siblings))) {
-                    virReportOOMError();
+                if (!(siblings = virBitmapFormat(cells[i]->cpus[j].siblings)))
                     return -1;
-                }
 
                 virBufferAsprintf(buf,
                                   " socket_id='%d' core_id='%d' siblings='%s'",

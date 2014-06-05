@@ -2851,7 +2851,7 @@ virNetworkObjFormat(virNetworkObjPtr net,
     size_t i;
 
     if (!class_id)
-        goto no_memory;
+        goto error;
 
     virBufferAddLit(&buf, "<networkstatus>\n");
     virBufferAdjustIndent(&buf, 2);

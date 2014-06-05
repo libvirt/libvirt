@@ -599,11 +599,8 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
         else
             mem_mask = virBitmapFormat(vm->def->numatune.memory.nodemask);
 
-        if (!mem_mask) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to convert memory nodemask"));
+        if (!mem_mask)
             goto cleanup;
-        }
 
         if (virCgroupSetCpusetMems(priv->cgroup, mem_mask) < 0)
             goto cleanup;
@@ -622,11 +619,8 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
             cpu_mask = virBitmapFormat(vm->def->cpumask);
         }
 
-        if (!cpu_mask) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to convert cpu mask"));
+        if (!cpu_mask)
             goto cleanup;
-        }
 
         if (virCgroupSetCpusetCpus(priv->cgroup, cpu_mask) < 0)
             goto cleanup;
@@ -870,12 +864,8 @@ qemuSetupCgroupEmulatorPin(virCgroupPtr cgroup,
     int ret = -1;
     char *new_cpus = NULL;
 
-    new_cpus = virBitmapFormat(cpumask);
-    if (!new_cpus) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to convert cpu mask"));
+    if (!(new_cpus = virBitmapFormat(cpumask)))
         goto cleanup;
-    }
 
     if (virCgroupSetCpusetCpus(cgroup, new_cpus) < 0)
         goto cleanup;

@@ -17363,11 +17363,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, "<vcpupin vcpu='%u' ",
                           def->cputune.vcpupin[i]->vcpuid);
 
-        if (!(cpumask = virBitmapFormat(def->cputune.vcpupin[i]->cpumask))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("failed to format cpuset for vcpupin"));
+        if (!(cpumask = virBitmapFormat(def->cputune.vcpupin[i]->cpumask)))
             goto error;
-        }
 
         virBufferAsprintf(buf, "cpuset='%s'/>\n", cpumask);
         VIR_FREE(cpumask);
@@ -17377,11 +17374,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         char *cpumask;
         virBufferAddLit(buf, "<emulatorpin ");
 
-        if (!(cpumask = virBitmapFormat(def->cputune.emulatorpin->cpumask))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("failed to format cpuset for emulator"));
-                goto error;
-        }
+        if (!(cpumask = virBitmapFormat(def->cputune.emulatorpin->cpumask)))
+            goto error;
 
         virBufferAsprintf(buf, "cpuset='%s'/>\n", cpumask);
         VIR_FREE(cpumask);
@@ -17407,13 +17401,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
         if (def->numatune.memory.placement_mode ==
             VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC) {
-            nodemask = virBitmapFormat(def->numatune.memory.nodemask);
-            if (nodemask == NULL) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("failed to format nodeset for "
-                                 "NUMA memory tuning"));
+            if (!(nodemask = virBitmapFormat(def->numatune.memory.nodemask)))
                 goto error;
-            }
             virBufferAsprintf(buf, "nodeset='%s'/>\n", nodemask);
             VIR_FREE(nodemask);
         } else if (def->numatune.memory.placement_mode) {

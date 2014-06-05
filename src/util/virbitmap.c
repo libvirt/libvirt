@@ -261,6 +261,7 @@ char *virBitmapFormat(virBitmapPtr bitmap)
 
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
+        virReportOOMError();
         return NULL;
     }
 

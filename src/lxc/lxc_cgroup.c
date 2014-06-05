@@ -72,12 +72,8 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
 
     if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO &&
         def->cpumask) {
-        mask = virBitmapFormat(def->cpumask);
-        if (!mask) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to convert cpumask"));
+        if (!(mask = virBitmapFormat(def->cpumask)))
             return -1;
-        }
 
         if (virCgroupSetCpusetCpus(cgroup, mask) < 0)
             goto cleanup;
@@ -93,11 +89,8 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
         else
             mask = virBitmapFormat(def->numatune.memory.nodemask);
 
-        if (!mask) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to convert memory nodemask"));
+        if (!mask)
             return -1;
-        }
 
         if (virCgroupSetCpusetMems(cgroup, mask) < 0)
             goto cleanup;

@@ -8679,22 +8679,16 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
         }
     }
 
-    if (!(nodeset_str = virBitmapFormat(temp_nodeset))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to format nodeset"));
+    if (!(nodeset_str = virBitmapFormat(temp_nodeset)))
         goto cleanup;
-    }
 
     if (virCgroupSetCpusetMems(priv->cgroup, nodeset_str) < 0)
         goto cleanup;
     VIR_FREE(nodeset_str);
 
     /* Ensure the cpuset string is formatted before passing to cgroup */
-    if (!(nodeset_str = virBitmapFormat(nodeset))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to format nodeset"));
+    if (!(nodeset_str = virBitmapFormat(nodeset)))
         goto cleanup;
-    }
 
     for (i = 0; i < priv->nvcpupids; i++) {
         if (virCgroupNewVcpu(priv->cgroup, i, false, &cgroup_temp) < 0 ||
