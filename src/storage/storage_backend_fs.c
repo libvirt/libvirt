@@ -104,6 +104,8 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
     /* Default to success below this point */
     ret = 0;
 
+    target->format = meta->format;
+
     if (*backingStore &&
         *backingStoreFormat == VIR_STORAGE_FILE_AUTO &&
         virStorageIsFile(*backingStore)) {
