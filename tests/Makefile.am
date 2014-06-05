@@ -124,6 +124,7 @@ EXTRA_DIST =		\
 	storagevolxml2xmlout \
 	sysinfodata \
 	test-lib.sh	\
+	vircaps2xmldata \
 	virsh-uriprecedence \
 	virfiledata \
 	virpcitestdata \
@@ -167,6 +168,7 @@ test_programs = virshtest sockettest \
 	vircapstest \
 	domainconftest \
 	virhostdevtest \
+	vircaps2xmltest \
 	$(NULL)
 
 if WITH_REMOTE
@@ -802,6 +804,10 @@ virkmodtest_LDADD = $(LDADDS)
 vircapstest_SOURCES = \
 	vircapstest.c testutils.h testutils.c
 vircapstest_LDADD = $(LDADDS)
+
+vircaps2xmltest_SOURCES = \
+	vircaps2xmltest.c testutils.h testutils.c
+vircaps2xmltest_LDADD = $(LDADDS)
 
 if WITH_LIBVIRTD
 libvirtdconftest_SOURCES = \
