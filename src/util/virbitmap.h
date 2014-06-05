@@ -111,4 +111,8 @@ ssize_t virBitmapNextClearBit(virBitmapPtr bitmap, ssize_t pos)
 size_t virBitmapCountBits(virBitmapPtr bitmap)
     ATTRIBUTE_NONNULL(1);
 
+char *virBitmapDataToString(void *data,
+                            int len)
+    ATTRIBUTE_NONNULL(1);
+
 #endif

@@ -970,6 +970,7 @@ virBitmapClearAll;
 virBitmapClearBit;
 virBitmapCopy;
 virBitmapCountBits;
+virBitmapDataToString;
 virBitmapEqual;
 virBitmapFormat;
 virBitmapFree;

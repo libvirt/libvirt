@@ -707,3 +707,28 @@ virBitmapCountBits(virBitmapPtr bitmap)
 
     return ret;
 }
+
+/**
+ * virBitmapDataToString:
+ * @data: the data
+ * @len: length of @data in bytes
+ *
+ * Convert a chunk of data containing bits information to a human
+ * readable string, e.g.: 0-1,4
+ *
+ * Returns: a string representation of the data, or NULL on error
+ */
+char *
+virBitmapDataToString(void *data,
+                      int len)
+{
+    virBitmapPtr map = NULL;
+    char *ret = NULL;
+
+    if (!(map = virBitmapNewData(data, len)))
+        return NULL;
+
+    ret = virBitmapFormat(map);
+    virBitmapFree(map);
+    return ret;
+}
