@@ -298,6 +298,7 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
                                                   &vol->backingStore.format)))
         goto cleanup;
 
+    vol->target.format = meta->format;
     if (vol->backingStore.path &&
         vol->backingStore.format < 0)
         vol->backingStore.format = VIR_STORAGE_FILE_RAW;

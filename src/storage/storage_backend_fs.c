@@ -100,6 +100,7 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
 
         if (VIR_STRDUP(*backingStore, meta->backingStoreRaw) < 0)
             goto error;
+        target->format = meta->format;
     }
 
     VIR_FORCE_CLOSE(fd);
