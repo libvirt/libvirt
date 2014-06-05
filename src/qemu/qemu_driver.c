@@ -8914,7 +8914,7 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
         case 1: /* fill numa nodeset here */
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 nodeset = virBitmapFormat(persistentDef->numatune.memory.nodemask);
-                if (!nodeset && VIR_STRDUP(nodeset, "") < 0)
+                if (!nodeset)
                     goto cleanup;
             } else {
                 if (virCgroupGetCpusetMems(priv->cgroup, &nodeset) < 0)

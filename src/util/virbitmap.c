@@ -218,6 +218,8 @@ char *virBitmapString(virBitmapPtr bitmap)
  *
  * See virBitmapParse for the format of @str.
  *
+ * If bitmap is NULL or it has no bits set, an empty string is returned.
+ *
  * Returns the string on success or NULL otherwise. Caller should call
  * VIR_FREE to free the string.
  */
@@ -227,11 +229,7 @@ char *virBitmapFormat(virBitmapPtr bitmap)
     bool first = true;
     int start, cur, prev;
 
-    if (!bitmap)
-        return NULL;
-
-    cur = virBitmapNextSetBit(bitmap, -1);
-    if (cur < 0) {
+    if (!bitmap || (cur = virBitmapNextSetBit(bitmap, -1)) < 0) {
         char *ret;
         ignore_value(VIR_STRDUP(ret, ""));
         return ret;

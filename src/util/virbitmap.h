@@ -69,8 +69,7 @@ int virBitmapGetBit(virBitmapPtr bitmap, size_t b, bool *result)
 char *virBitmapString(virBitmapPtr bitmap)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
-char *virBitmapFormat(virBitmapPtr bitmap)
-    ATTRIBUTE_NONNULL(1);
+char *virBitmapFormat(virBitmapPtr bitmap);
 
 int virBitmapParse(const char *str,
                    char sep,
