@@ -51,6 +51,7 @@
 #include "nodeinfo.h"
 #include "c-ctype.h"
 #include "virstring.h"
+#include "cpu/cpu.h"
 
 #include "parallels_driver.h"
 #include "parallels_utils.h"
@@ -2315,6 +2316,18 @@ static int parallelsConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
 }
 
 
+static char *
+parallelsConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
+                            const char **xmlCPUs,
+                            unsigned int ncpus,
+                            unsigned int flags)
+{
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, NULL);
+
+    return cpuBaselineXML(xmlCPUs, ncpus, NULL, 0, flags);
+}
+
+
 static int
 parallelsDomainGetVcpus(virDomainPtr domain,
                         virVcpuInfoPtr info,
@@ -2395,6 +2408,7 @@ static virDriver parallelsDriver = {
     .connectGetHostname = parallelsConnectGetHostname,      /* 0.10.0 */
     .nodeGetInfo = parallelsNodeGetInfo,      /* 0.10.0 */
     .connectGetCapabilities = parallelsConnectGetCapabilities,      /* 0.10.0 */
+    .connectBaselineCPU = parallelsConnectBaselineCPU, /* 1.2.6 */
     .connectListDomains = parallelsConnectListDomains,      /* 0.10.0 */
     .connectNumOfDomains = parallelsConnectNumOfDomains,    /* 0.10.0 */
     .connectListDefinedDomains = parallelsConnectListDefinedDomains,        /* 0.10.0 */
