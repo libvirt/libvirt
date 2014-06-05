@@ -5528,6 +5528,10 @@ static const vshCmdOptDef opts_vcpuinfo[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("domain name, id or uuid")
     },
+    {.name = "pretty",
+     .type = VSH_OT_BOOL,
+     .help = N_("return human readable output")
+    },
     {.name = NULL}
 };
 
@@ -5541,6 +5545,7 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
     int ncpus, maxcpu;
     size_t cpumaplen;
     bool ret = false;
+    bool pretty = vshCommandOptBool(cmd, "pretty");
     int n, m;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
@@ -5589,8 +5594,20 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "%-15s %s\n", _("CPU time"), _("N/A"));
         }
         vshPrint(ctl, "%-15s ", _("CPU Affinity:"));
-        for (m = 0; m < maxcpu; m++) {
-            vshPrint(ctl, "%c", VIR_CPU_USABLE(cpumaps, cpumaplen, n, m) ? 'y' : '-');
+        if (pretty) {
+            char *str;
+
+            str = virBitmapDataToString(VIR_GET_CPUMAP(cpumaps, cpumaplen, n),
+                                        cpumaplen);
+            if (!str)
+                goto cleanup;
+            vshPrint(ctl, _("%s (out of %d)"), str, maxcpu);
+            VIR_FREE(str);
+        } else {
+            for (m = 0; m < maxcpu; m++) {
+                vshPrint(ctl, "%c",
+                         VIR_CPU_USABLE(cpumaps, cpumaplen, n, m) ? 'y' : '-');
+            }
         }
         vshPrint(ctl, "\n");
         if (n < (ncpus - 1))

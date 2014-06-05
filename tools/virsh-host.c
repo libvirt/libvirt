@@ -32,6 +32,7 @@
 #include <libxml/xmlsave.h>
 
 #include "internal.h"
+#include "virbitmap.h"
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virsh-domain.h"
@@ -278,12 +279,21 @@ static const vshCmdInfo info_node_cpumap[] = {
     {.name = NULL}
 };
 
+static const vshCmdOptDef opts_node_cpumap[] = {
+    {.name = "pretty",
+     .type = VSH_OT_BOOL,
+     .help = N_("return human readable output")
+    },
+    {.name = NULL}
+};
+
 static bool
 cmdNodeCpuMap(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     int cpu, cpunum;
     unsigned char *cpumap = NULL;
     unsigned int online;
+    bool pretty = vshCommandOptBool(cmd, "pretty");
     bool ret = false;
 
     cpunum = virNodeGetCPUMap(ctl->conn, &cpumap, &online, 0);
@@ -296,8 +306,17 @@ cmdNodeCpuMap(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     vshPrint(ctl, "%-15s %d\n", _("CPUs online:"), online);
 
     vshPrint(ctl, "%-15s ", _("CPU map:"));
-    for (cpu = 0; cpu < cpunum; cpu++)
-        vshPrint(ctl, "%c", VIR_CPU_USED(cpumap, cpu) ? 'y' : '-');
+    if (pretty) {
+        char *str = virBitmapDataToString(cpumap, cpunum);
+
+        if (!str)
+            goto cleanup;
+        vshPrint(ctl, "%s", str);
+        VIR_FREE(str);
+    } else {
+        for (cpu = 0; cpu < cpunum; cpu++)
+            vshPrint(ctl, "%c", VIR_CPU_USED(cpumap, cpu) ? 'y' : '-');
+    }
     vshPrint(ctl, "\n");
 
     ret = true;
@@ -978,7 +997,7 @@ const vshCmdDef hostAndHypervisorCmds[] = {
     },
     {.name = "nodecpumap",
      .handler = cmdNodeCpuMap,
-     .opts = NULL,
+     .opts = opts_node_cpumap,
      .info = info_node_cpumap,
      .flags = 0
     },

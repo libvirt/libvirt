@@ -290,10 +290,12 @@ and size of the physical memory. The output corresponds to virNodeInfo
 structure. Specifically, the "CPU socket(s)" field means number of CPU
 sockets per NUMA cell.
 
-=item B<nodecpumap>
+=item B<nodecpumap> [I<--pretty>]
 
 Displays the node's total number of CPUs, the number of online CPUs
 and the list of online CPUs.
+
+With I<--pretty> the online CPUs are printed as a range instead of a list.
 
 =item B<nodecpustats> [I<cpu>] [I<--percent>]
 
@@ -1954,10 +1956,12 @@ If I<--guest> is specified, then the count of cpus is reported from
 the perspective of the guest. This flag is usable only for live domains
 and may require guest agent to be configured in the guest.
 
-=item B<vcpuinfo> I<domain>
+=item B<vcpuinfo> I<domain> [I<--pretty>]
 
 Returns basic information about the domain virtual CPUs, like the number of
 vCPUs, the running time, the affinity to physical processors.
+
+With I<--pretty>, cpu affinities are shown as ranges.
 
 =item B<vcpupin> I<domain> [I<vcpu>] [I<cpulist>] [[I<--live>]
 [I<--config>] | [I<--current>]]
