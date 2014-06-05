@@ -84,27 +84,27 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
     fd = rc;
 
     if (virStorageBackendUpdateVolTargetInfoFD(target, fd, &sb, true) < 0)
-        goto error;
+        goto cleanup;
 
     if (S_ISDIR(sb.st_mode)) {
         target->format = VIR_STORAGE_FILE_DIR;
-    } else {
-        if (!(meta = virStorageFileGetMetadataFromFD(target->path,
-                                                     fd,
-                                                     VIR_STORAGE_FILE_AUTO,
-                                                     backingStoreFormat)))
-            goto error;
-
-        if (VIR_STRDUP(*backingStore, meta->backingStoreRaw) < 0)
-            goto error;
+        ret = 0;
+        goto cleanup;
     }
 
-    VIR_FORCE_CLOSE(fd);
+    if (!(meta = virStorageFileGetMetadataFromFD(target->path,
+                                                 fd,
+                                                 VIR_STORAGE_FILE_AUTO,
+                                                 backingStoreFormat)))
+        goto cleanup;
+
+    if (VIR_STRDUP(*backingStore, meta->backingStoreRaw) < 0)
+        goto cleanup;
 
     /* Default to success below this point */
     ret = 0;
 
-    if (meta && *backingStore &&
+    if (*backingStore &&
         *backingStoreFormat == VIR_STORAGE_FILE_AUTO &&
         virStorageIsFile(*backingStore)) {
         if ((rc = virStorageFileProbeFormat(*backingStore, -1, -1)) < 0) {
@@ -120,10 +120,10 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
         }
     }
 
-    if (meta && meta->capacity)
+    if (meta->capacity)
         target->capacity = meta->capacity;
 
-    if (encryption && meta && meta->encryption) {
+    if (encryption && meta->encryption) {
         *encryption = meta->encryption;
         meta->encryption = NULL;
 
@@ -144,23 +144,17 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
     }
 
     virBitmapFree(target->features);
-    if (meta) {
-        target->features = meta->features;
-        meta->features = NULL;
-    }
+    target->features = meta->features;
+    meta->features = NULL;
 
-    if (meta && meta->compat) {
+    if (meta->compat) {
         VIR_FREE(target->compat);
         target->compat = meta->compat;
         meta->compat = NULL;
     }
 
-    goto cleanup;
-
- error:
-    VIR_FORCE_CLOSE(fd);
-
  cleanup:
+    VIR_FORCE_CLOSE(fd);
     virStorageSourceFree(meta);
     return ret;
 
