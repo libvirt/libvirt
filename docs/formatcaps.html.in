@@ -4,19 +4,107 @@
   <body>
     <h1>Driver capabilities XML format</h1>
 
-        <p>As new virtualization engine support gets added to libvirt, and to handle
-cases like QEmu supporting a variety of emulations, a query interface has
-been added in 0.2.1 allowing to list the set of supported virtualization
-capabilities on the host:</p>
-        <pre>    char * virConnectGetCapabilities (virConnectPtr conn);</pre>
-        <p>The value returned is an XML document listing the virtualization
-capabilities of the host and virtualization engine to which
-<code>@conn</code> is connected. One can test it using <code>virsh</code>
-command line tool command '<code>capabilities</code>', it dumps the XML
-associated to the current connection. For example in the case of a 64 bits
-machine with hardware virtualization capabilities enabled in the chip and
-BIOS you will see</p>
-        <pre>&lt;capabilities&gt;
+    <ul id="toc"></ul>
+
+    <h2><a name="elements">Element and attribute overview</a></h2>
+
+    <p>As new virtualization engine support gets added to libvirt, and to
+    handle cases like QEMU supporting a variety of emulations, a query
+    interface has been added in 0.2.1 allowing to list the set of supported
+    virtualization capabilities on the host:</p>
+
+    <pre>    char * virConnectGetCapabilities (virConnectPtr conn);</pre>
+
+    <p>The value returned is an XML document listing the virtualization
+    capabilities of the host and virtualization engine to which
+    <code>@conn</code> is connected. One can test it using <code>virsh</code>
+    command line tool command '<code>capabilities</code>', it dumps the XML
+    associated to the current connection. </p>
+
+    <p>As can be seen seen in the <a href="#elementExamples">example</a>, the
+    capabilities XML consists of the <code>capabilities</code> element which
+    have exactly one <code>host</code> child element to report information on
+    host capabilities, and zero or more <code>guest</code> element to express
+    the set of architectures the host can run at the moment.</p>
+
+
+    <h3><a name="elementHost">Host capabilities</a></h3>
+
+    <p>The <code>&lt;host/&gt;</code> element consists of the following child
+    elements:</p>
+    <dl>
+      <dt><code>uuid</code></dt>
+      <dd>The host UUID.</dd>
+
+      <dt><code>cpu</code></dt>
+      <dd>The host CPU architecture and features.</dd>
+
+      <dt><code>power_management</code></dt>
+      <dd>whether host is capable of memory suspend, disk hibernation, or
+      hybrid suspend.</dd>
+
+      <dt><code>migration</code></dt>
+      <dd>This element exposes information on the hypervisor's migration
+      capabilities, like live migration, supported URI transports, and so
+      on.</dd>
+
+      <dt><code>topology</code></dt>
+      <dd>This element embodies the host internal topology. Management
+      applications may want to learn this information when orchestrating new
+      guests - e.g. due to reduce inter-NUMA node transfers.</dd>
+
+      <dt><code>secmodel</code></dt>
+      <dd>To find out default security labels for different security models you
+      need to parse this element. In contrast with the former elements, this is
+      repeated for each security model the libvirt daemon currently supports.
+      </dd>
+    </dl>
+
+
+    <h3><a name="elementGuest">Guest capabilities</a></h3>
+
+    <p>While the <a href="#elementHost">previous section</a> aims at host
+    capabilities, this one focuses on capabilities available to a guest
+    using a given hypervisor. The <code>&lt;guest/&gt;</code> element will
+    typically wrap up the following elements:</p>
+
+    <dl>
+        <dt><code>os_type</code></dt>
+        <dd>This expresses what kind of operating system the hypervisor
+        is able to run. Possible values are:
+        <dl>
+          <dt>xen</dt>
+          <dd>for XEN</dd>
+
+          <dt>linux</dt>
+          <dd>legacy alias for <code>xen</code></dd>
+
+          <dt>hvm</dt>
+          <dd>Unmodified operating system</dd>
+
+          <dt>exe</dt>
+          <dd>Container based virtualization</dd>
+
+          <dt>uml</dt>
+          <dd>User Mode Linux</dd>
+        </dl>
+        </dd>
+
+        <dt><code>arch</code></dt>
+        <dd>This element brings some information on supported guest architecture.</dd>
+
+        <dt><code>features</code></dt>
+        <dd>This optional element encases possible features that can be used
+        with a guest of described type.</dd>
+    </dl>
+
+    <h3><a name="elementExamples">Examples</a></h3>
+
+    <p>For example, in the case of a 64-bit machine with hardware
+    virtualization capabilities enabled in the chip and
+    BIOS you will see:</p>
+
+    <pre>&lt;capabilities&gt;
   <span style="color: #E50000">&lt;host&gt;
     &lt;cpu&gt;
       &lt;arch&gt;x86_64&lt;/arch&gt;
@@ -67,30 +155,5 @@ BIOS you will see</p>
   &lt;/guest&gt;</span>
   ...
 &lt;/capabilities&gt;</pre>
-        <p>The first block (in red) indicates the host hardware
-          capabilities, such as CPU properties and the power
-          management features of the host platform.  CPU models are
-          shown as additional features relative to the closest base
-          model, within a feature block (the block is similar to what
-          you will find in a Xen fully virtualized domain
-          description). Further, the power management features
-          supported by the host are shown, such as Suspend-to-RAM (S3),
-          Suspend-to-Disk (S4) and Hybrid-Suspend (a combination of S3
-          and S4). In case the host does not support
-          any such feature, then an empty &lt;power_management/&gt;
-          tag will be shown. </p>
-        <p>The second block (in blue) indicates the paravirtualization
-          support of the Xen support, you will see the os_type of xen
-          to indicate a paravirtual kernel, then architecture
-          information and potential features.</p>
-        <p>The third block (in green) gives similar information but
-          when running a 32 bit OS fully virtualized with Xen using
-          the hvm support.</p>
-        <p>This section is likely to be updated and augmented in the
-          future,
-          see <a href="https://www.redhat.com/archives/libvir-list/2007-March/msg00215.html">the
-          discussion</a> which led to the capabilities format in the
-          mailing-list archives.</p>
-
   </body>
 </html>
