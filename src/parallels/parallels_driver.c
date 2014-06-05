@@ -118,8 +118,11 @@ parallelsDomObjFreePrivate(void *p)
 static virCapsPtr
 parallelsBuildCapabilities(void)
 {
-    virCapsPtr caps;
+    virCapsPtr caps = NULL;
+    virCPUDefPtr cpu = NULL;
+    virCPUDataPtr data = NULL;
     virCapsGuestPtr guest;
+    virNodeInfo nodeinfo;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    0, 0)) == NULL)
@@ -148,11 +151,32 @@ parallelsBuildCapabilities(void)
                                       "parallels", NULL, NULL, 0, NULL) == NULL)
         goto error;
 
+    if (VIR_ALLOC(cpu) < 0)
+        goto error;
+
+    if (nodeGetInfo(&nodeinfo))
+        goto error;
+
+    cpu->arch = caps->host.arch;
+    cpu->type = VIR_CPU_TYPE_HOST;
+    cpu->sockets = nodeinfo.sockets;
+    cpu->cores = nodeinfo.cores;
+    cpu->threads = nodeinfo.threads;
+
+    caps->host.cpu = cpu;
+
+    if (!(data = cpuNodeData(cpu->arch))
+        || cpuDecode(cpu, data, NULL, 0, NULL) < 0) {
+        goto cleanup;
+    }
+
+ cleanup:
+    cpuDataFree(data);
     return caps;
 
  error:
     virObjectUnref(caps);
-    return NULL;
+    goto cleanup;
 }
 
 static char *
