@@ -1542,6 +1542,7 @@ virNetDevClearIPv4Address;
 virNetDevExists;
 virNetDevGetIndex;
 virNetDevGetIPv4Address;
+virNetDevGetLinkInfo;
 virNetDevGetMAC;
 virNetDevGetMTU;
 virNetDevGetPhysicalFunction;

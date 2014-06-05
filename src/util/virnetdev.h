@@ -29,6 +29,7 @@
 # include "virnetlink.h"
 # include "virmacaddr.h"
 # include "virpci.h"
+# include "device_conf.h"
 
 # ifdef HAVE_STRUCT_IFREQ
 typedef struct ifreq virIfreq;
@@ -143,6 +144,10 @@ int virNetDevRestoreNetConfig(const char *linkdev, int vf, const char *stateDir)
 
 int virNetDevGetVirtualFunctionInfo(const char *vfname, char **pfname,
                                     int *vf)
+    ATTRIBUTE_NONNULL(1);
+
+int virNetDevGetLinkInfo(const char *ifname,
+                         virInterfaceLinkPtr lnk)
     ATTRIBUTE_NONNULL(1);
 
 #endif /* __VIR_NETDEV_H__ */
