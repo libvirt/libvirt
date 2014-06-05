@@ -442,6 +442,9 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
         case VIR_NODE_DEV_CAP_SCSI_HOST:
             virBufferAsprintf(&buf, "<host>%d</host>\n",
                               data->scsi_host.host);
+            if (data->scsi_host.unique_id != -1)
+                virBufferAsprintf(&buf, "<unique_id>%d</unique_id>\n",
+                                  data->scsi_host.unique_id);
             if (data->scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
                 virBufferAddLit(&buf, "<capability type='fc_host'>\n");
                 virBufferAdjustIndent(&buf, 2);
@@ -826,12 +829,20 @@ virNodeDevCapSCSIHostParseXML(xmlXPathContextPtr ctxt,
     orignode = ctxt->node;
     ctxt->node = node;
 
-    if (create == EXISTING_DEVICE &&
-        virNodeDevCapsDefParseULong("number(./host[1])", ctxt,
-                                    &data->scsi_host.host, def,
-                                    _("no SCSI host ID supplied for '%s'"),
-                                    _("invalid SCSI host ID supplied for '%s'")) < 0) {
-        goto out;
+    if (create == EXISTING_DEVICE) {
+        if (virNodeDevCapsDefParseULong("number(./host[1])", ctxt,
+                                        &data->scsi_host.host, def,
+                                        _("no SCSI host ID supplied for '%s'"),
+                                        _("invalid SCSI host ID supplied for '%s'")) < 0) {
+            goto out;
+        }
+        /* Optional unique_id value */
+        data->scsi_host.unique_id = -1;
+        if (virNodeDevCapsDefParseIntOptional("number(./unique_id[1])", ctxt,
+                                              &data->scsi_host.unique_id, def,
+                                              _("invalid unique_id supplied for '%s'")) < 0) {
+            goto out;
+        }
     }
 
     if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0) {

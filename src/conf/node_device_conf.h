@@ -171,6 +171,7 @@ struct _virNodeDevCapsDef {
         } net;
         struct {
             unsigned int host;
+            int unique_id;
             char *wwnn;
             char *wwpn;
             char *fabric_wwn;

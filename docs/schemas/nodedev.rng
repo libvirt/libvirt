@@ -340,6 +340,12 @@
     </element>
 
     <optional>
+      <element name='unique_id'>
+        <ref name='positiveInteger'/>
+      </element>
+    </optional>
+
+    <optional>
       <zeroOrMore>
         <element name='capability'>
           <choice>

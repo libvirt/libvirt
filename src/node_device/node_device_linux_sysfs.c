@@ -47,6 +47,12 @@ detect_scsi_host_caps(union _virNodeDevCapData *d)
     char *vports = NULL;
     int ret = -1;
 
+    if (virReadSCSIUniqueId(NULL, d->scsi_host.host,
+                            &d->scsi_host.unique_id) < 0) {
+        VIR_DEBUG("Failed to read unique_id for host%d", d->scsi_host.host);
+        d->scsi_host.unique_id = -1;
+    }
+
     VIR_DEBUG("Checking if host%d is an FC HBA", d->scsi_host.host);
 
     if (virIsCapableFCHost(NULL, d->scsi_host.host)) {

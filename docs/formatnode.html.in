@@ -195,6 +195,17 @@
             <dl>
               <dt><code>host</code></dt>
               <dd>The SCSI host number.</dd>
+              <dt><code>unique_id</code></dt>
+              <dd>On input, this optionally provides the value from the
+                'unique_id' file found in the scsi_host's directory. To
+                view the values of all 'unique_id' files, use <code>find -H
+                /sys/class/scsi_host/host{0..9}/unique_id |
+                xargs grep '[0-9]'</code>. On output, if the unique_id
+                file exists, the value from the file will be displayed.
+                This can be used in order to help uniquely identify the
+                scsi_host adapter in a <a href="formatstorage.html">
+                Storage Pool</a>. <span class="since">Since 1.2.7</span>
+              </dd>
               <dt><code>capability</code></dt>
               <dd>Current capabilities include "vports_ops" (indicates
                 vport operations are supported) and "fc_host". "vport_ops"

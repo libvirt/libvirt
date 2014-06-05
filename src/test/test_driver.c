@@ -6087,14 +6087,15 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     if (VIR_STRDUP(def->name, wwpn) < 0)
         goto cleanup;
 
-    /* Fill in a random 'host' value, since this would also come from
-     * the backend */
+    /* Fill in a random 'host' and 'unique_id' value,
+     * since this would also come from the backend */
     caps = def->caps;
     while (caps) {
         if (caps->type != VIR_NODE_DEV_CAP_SCSI_HOST)
             continue;
 
         caps->data.scsi_host.host = virRandomBits(10);
+        caps->data.scsi_host.unique_id = 2;
         caps = caps->next;
     }
 
