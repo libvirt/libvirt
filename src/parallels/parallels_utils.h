@@ -54,6 +54,7 @@ struct parallelsDomObj {
     int id;
     char *uuid;
     char *home;
+    virBitmapPtr cpumask;
 };
 
 typedef struct parallelsDomObj *parallelsDomObjPtr;

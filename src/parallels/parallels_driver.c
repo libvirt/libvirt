@@ -108,6 +108,7 @@ parallelsDomObjFreePrivate(void *p)
     if (!pdom)
         return;
 
+    virBitmapFree(pdom->cpumask);
     VIR_FREE(pdom->uuid);
     VIR_FREE(pdom->home);
     VIR_FREE(p);
@@ -650,8 +651,12 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
     unsigned int x;
     const char *autostart;
     const char *state;
+    int hostcpus;
 
     if (VIR_ALLOC(def) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC(pdom) < 0)
         goto cleanup;
 
     def->virtType = VIR_DOMAIN_VIRT_PARALLELS;
@@ -716,6 +721,19 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
         goto cleanup;
     }
 
+    if ((hostcpus = nodeGetCPUCount()) < 0)
+        goto cleanup;
+
+    if (!(tmp = virJSONValueObjectGetString(jobj3, "mask"))) {
+        /* Absence of this field means that all domains cpus are available */
+        if (!(pdom->cpumask = virBitmapNew(hostcpus)))
+            goto cleanup;
+        virBitmapSetAll(pdom->cpumask);
+    } else {
+        if (virBitmapParse(tmp, 0, &pdom->cpumask, hostcpus) < 0)
+            goto cleanup;
+    }
+
     if (!(jobj3 = virJSONValueObjectGet(jobj2, "memory"))) {
         parallelsParseError();
         goto cleanup;
@@ -756,9 +774,6 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
     }
 
     def->os.arch = VIR_ARCH_X86_64;
-
-    if (VIR_ALLOC(pdom) < 0)
-        goto cleanup;
 
     if (virJSONValueObjectGetNumberUint(jobj, "EnvID", &x) < 0)
         goto cleanup;
@@ -2300,6 +2315,77 @@ static int parallelsConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
 }
 
 
+static int
+parallelsDomainGetVcpus(virDomainPtr domain,
+                        virVcpuInfoPtr info,
+                        int maxinfo,
+                        unsigned char *cpumaps,
+                        int maplen)
+{
+    parallelsConnPtr privconn = domain->conn->privateData;
+    parallelsDomObjPtr privdomdata = NULL;
+    virDomainObjPtr privdom = NULL;
+    size_t i;
+    int v, maxcpu, hostcpus;
+    int ret = -1;
+
+    parallelsDriverLock(privconn);
+    privdom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
+    parallelsDriverUnlock(privconn);
+
+    if (privdom == NULL) {
+        parallelsDomNotFoundError(domain);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(privdom)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s",
+                       _("cannot list vcpu pinning for an inactive domain"));
+        goto cleanup;
+    }
+
+    privdomdata = privdom->privateData;
+    if ((hostcpus = nodeGetCPUCount()) < 0)
+        goto cleanup;
+
+    maxcpu = maplen * 8;
+    if (maxcpu > hostcpus)
+        maxcpu = hostcpus;
+
+    if (maxinfo >= 1) {
+        if (info != NULL) {
+            memset(info, 0, sizeof(*info) * maxinfo);
+            for (i = 0; i < maxinfo; i++) {
+                info[i].number = i;
+                info[i].state = VIR_VCPU_RUNNING;
+            }
+        }
+        if (cpumaps != NULL) {
+            unsigned char *tmpmap = NULL;
+            int tmpmapLen = 0;
+
+            memset(cpumaps, 0, maplen * maxinfo);
+            virBitmapToData(privdomdata->cpumask, &tmpmap, &tmpmapLen);
+            if (tmpmapLen > maplen)
+                tmpmapLen = maplen;
+
+            for (v = 0; v < maxinfo; v++) {
+                unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, v);
+                memcpy(cpumap, tmpmap, tmpmapLen);
+            }
+            VIR_FREE(tmpmap);
+        }
+    }
+    ret = maxinfo;
+
+ cleanup:
+    if (privdom)
+        virObjectUnlock(privdom);
+    return ret;
+}
+
+
 static virDriver parallelsDriver = {
     .no = VIR_DRV_PARALLELS,
     .name = "Parallels",
@@ -2323,6 +2409,7 @@ static virDriver parallelsDriver = {
     .domainGetXMLDesc = parallelsDomainGetXMLDesc,    /* 0.10.0 */
     .domainIsPersistent = parallelsDomainIsPersistent,        /* 0.10.0 */
     .domainGetAutostart = parallelsDomainGetAutostart,        /* 0.10.0 */
+    .domainGetVcpus = parallelsDomainGetVcpus, /* 1.2.6 */
     .domainSuspend = parallelsDomainSuspend,    /* 0.10.0 */
     .domainResume = parallelsDomainResume,    /* 0.10.0 */
     .domainDestroy = parallelsDomainDestroy,  /* 0.10.0 */
