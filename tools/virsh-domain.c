@@ -5558,9 +5558,21 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
 
     if ((ncpus = virDomainGetVcpus(dom,
                                    cpuinfo, info.nrVirtCpu,
-                                   cpumaps, cpumaplen)) >= 0) {
-        for (n = 0; n < ncpus; n++) {
-            vshPrint(ctl, "%-15s %d\n", _("VCPU:"), n);
+                                   cpumaps, cpumaplen)) < 0) {
+        if (info.state != VIR_DOMAIN_SHUTOFF)
+            goto cleanup;
+
+        /* fall back to virDomainGetVcpuPinInfo and free cpuinfo to mark this */
+        VIR_FREE(cpuinfo);
+        if ((ncpus = virDomainGetVcpuPinInfo(dom, info.nrVirtCpu,
+                                             cpumaps, cpumaplen,
+                                             VIR_DOMAIN_AFFECT_CONFIG)) < 0)
+            goto cleanup;
+    }
+
+    for (n = 0; n < ncpus; n++) {
+        vshPrint(ctl, "%-15s %d\n", _("VCPU:"), n);
+        if (cpuinfo) {
             vshPrint(ctl, "%-15s %d\n", _("CPU:"), cpuinfo[n].cpu);
             vshPrint(ctl, "%-15s %s\n", _("State:"),
                      vshDomainVcpuStateToString(cpuinfo[n].state));
@@ -5571,41 +5583,18 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
 
                 vshPrint(ctl, "%-15s %.1lfs\n", _("CPU time:"), cpuUsed);
             }
-            vshPrint(ctl, "%-15s ", _("CPU Affinity:"));
-            for (m = 0; m < maxcpu; m++) {
-                vshPrint(ctl, "%c", VIR_CPU_USABLE(cpumaps, cpumaplen, n, m) ? 'y' : '-');
-            }
-            vshPrint(ctl, "\n");
-            if (n < (ncpus - 1)) {
-                vshPrint(ctl, "\n");
-            }
-        }
-    } else {
-        if (info.state == VIR_DOMAIN_SHUTOFF &&
-            (ncpus = virDomainGetVcpuPinInfo(dom, info.nrVirtCpu,
-                                             cpumaps, cpumaplen,
-                                             VIR_DOMAIN_AFFECT_CONFIG)) >= 0) {
-
-            /* fallback plan to use virDomainGetVcpuPinInfo */
-
-            for (n = 0; n < ncpus; n++) {
-                vshPrint(ctl, "%-15s %d\n", _("VCPU:"), n);
-                vshPrint(ctl, "%-15s %s\n", _("CPU:"), _("N/A"));
-                vshPrint(ctl, "%-15s %s\n", _("State:"), _("N/A"));
-                vshPrint(ctl, "%-15s %s\n", _("CPU time"), _("N/A"));
-                vshPrint(ctl, "%-15s ", _("CPU Affinity:"));
-                for (m = 0; m < maxcpu; m++) {
-                    vshPrint(ctl, "%c",
-                             VIR_CPU_USABLE(cpumaps, cpumaplen, n, m) ? 'y' : '-');
-                }
-                vshPrint(ctl, "\n");
-                if (n < (ncpus - 1)) {
-                    vshPrint(ctl, "\n");
-                }
-            }
         } else {
-            goto cleanup;
+            vshPrint(ctl, "%-15s %s\n", _("CPU:"), _("N/A"));
+            vshPrint(ctl, "%-15s %s\n", _("State:"), _("N/A"));
+            vshPrint(ctl, "%-15s %s\n", _("CPU time"), _("N/A"));
         }
+        vshPrint(ctl, "%-15s ", _("CPU Affinity:"));
+        for (m = 0; m < maxcpu; m++) {
+            vshPrint(ctl, "%c", VIR_CPU_USABLE(cpumaps, cpumaplen, n, m) ? 'y' : '-');
+        }
+        vshPrint(ctl, "\n");
+        if (n < (ncpus - 1))
+            vshPrint(ctl, "\n");
     }
 
     ret = true;
