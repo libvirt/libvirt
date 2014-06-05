@@ -161,6 +161,13 @@
               <dd>The interface name tied to this device.</dd>
               <dt><code>address</code></dt>
               <dd>If present, the MAC address of the device.</dd>
+              <dt><code>link</code></dt>
+              <dd>Optional to reflect the status of the link. It has
+                two optional attributes: <code>speed</code> in Mbits per
+                second and <code>state</code> to tell the state of the
+                link. So far, the whole element is just for output,
+                not setting.
+              </dd>
               <dt><code>capability</code></dt>
               <dd>A network protocol exposed by the device, where the
                 attribute <code>type</code> can be "80203" for IEEE

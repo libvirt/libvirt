@@ -39,6 +39,7 @@
 #include "node_device_driver.h"
 #include "virutil.h"
 #include "viraccessapicheck.h"
+#include "virnetdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
@@ -47,10 +48,13 @@ static int update_caps(virNodeDeviceObjPtr dev)
     virNodeDevCapsDefPtr cap = dev->def->caps;
 
     while (cap) {
-        /* The only caps that currently need updating are FC related. */
         if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST) {
             detect_scsi_host_caps(&dev->def->caps->data);
         }
+        if (cap->type == VIR_NODE_DEV_CAP_NET &&
+            virNetDevGetLinkInfo(cap->data.net.ifname, &cap->data.net.lnk) < 0)
+            return -1;
+
         cap = cap->next;
     }
 
@@ -315,7 +319,8 @@ nodeDeviceGetXMLDesc(virNodeDevicePtr dev,
         goto cleanup;
 
     update_driver_name(obj);
-    update_caps(obj);
+    if (update_caps(obj) < 0)
+        goto cleanup;
 
     ret = virNodeDeviceDefFormat(obj->def);
 

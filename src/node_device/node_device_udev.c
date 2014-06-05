@@ -40,6 +40,7 @@
 #include "virfile.h"
 #include "virpci.h"
 #include "virstring.h"
+#include "virnetdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
@@ -678,6 +679,9 @@ static int udevProcessNetworkInterface(struct udev_device *device,
     if (udevGenerateDeviceName(device, def, data->net.address) != 0) {
         goto out;
     }
+
+    if (virNetDevGetLinkInfo(data->net.ifname, &data->net.lnk) < 0)
+        goto out;
 
     ret = 0;
 

@@ -243,6 +243,7 @@
         <ref name='mac'/>
       </element>
     </optional>
+    <ref name="link-speed-state"/>
 
     <zeroOrMore>
       <ref name='subcapnet'/>

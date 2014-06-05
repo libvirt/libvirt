@@ -29,6 +29,7 @@
 # include "virutil.h"
 # include "virthread.h"
 # include "virpci.h"
+# include "device_conf.h"
 
 # include <libxml/tree.h>
 
@@ -136,6 +137,7 @@ struct _virNodeDevCapsDef {
             char *address;
             unsigned int address_len;
             char *ifname;
+            virInterfaceLink lnk;
             virNodeDevNetCapType subtype;  /* LAST -> no subtype */
         } net;
         struct {

@@ -389,6 +389,7 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
             if (data->net.address)
                 virBufferEscapeString(&buf, "<address>%s</address>\n",
                                   data->net.address);
+            virInterfaceLinkFormat(&buf, &data->net.lnk);
             if (data->net.subtype != VIR_NODE_DEV_CAP_NET_LAST) {
                 const char *subtyp =
                     virNodeDevNetCapTypeToString(data->net.subtype);
@@ -875,7 +876,7 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
                          xmlNodePtr node,
                          union _virNodeDevCapData *data)
 {
-    xmlNodePtr orignode;
+    xmlNodePtr orignode, lnk;
     int ret = -1;
     char *tmp;
 
@@ -906,6 +907,10 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
         }
         data->net.subtype = val;
     }
+
+    lnk = virXPathNode("./link", ctxt);
+    if (lnk && virInterfaceLinkParseXML(lnk, &data->net.lnk) < 0)
+        goto out;
 
     ret = 0;
  out:
