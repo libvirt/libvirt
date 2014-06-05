@@ -5536,25 +5536,21 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainInfo info;
     virDomainPtr dom;
-    virVcpuInfoPtr cpuinfo;
-    unsigned char *cpumaps;
+    virVcpuInfoPtr cpuinfo = NULL;
+    unsigned char *cpumaps = NULL;
     int ncpus, maxcpu;
     size_t cpumaplen;
-    bool ret = true;
+    bool ret = false;
     int n, m;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if ((maxcpu = vshNodeGetCPUCount(ctl->conn)) < 0) {
-        virDomainFree(dom);
-        return false;
-    }
+    if ((maxcpu = vshNodeGetCPUCount(ctl->conn)) < 0)
+        goto cleanup;
 
-    if (virDomainGetInfo(dom, &info) != 0) {
-        virDomainFree(dom);
-        return false;
-    }
+    if (virDomainGetInfo(dom, &info) != 0)
+        goto cleanup;
 
     cpuinfo = vshMalloc(ctl, sizeof(virVcpuInfo)*info.nrVirtCpu);
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
@@ -5608,10 +5604,13 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
                 }
             }
         } else {
-            ret = false;
+            goto cleanup;
         }
     }
 
+    ret = true;
+
+ cleanup:
     VIR_FREE(cpumaps);
     VIR_FREE(cpuinfo);
     virDomainFree(dom);
