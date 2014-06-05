@@ -1255,9 +1255,6 @@ virSecuritySELinuxSetSecurityImageLabel(virSecurityManagerPtr mgr,
     if (!cbdata.secdef || cbdata.secdef->norelabel)
         return 0;
 
-    if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_NETWORK)
-        return 0;
-
     return virDomainDiskDefForeachPath(disk,
                                        true,
                                        virSecuritySELinuxSetSecurityFileLabel,

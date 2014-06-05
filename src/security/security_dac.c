@@ -333,9 +333,6 @@ virSecurityDACSetSecurityImageLabel(virSecurityManagerPtr mgr,
     if (!priv->dynamicOwnership)
         return 0;
 
-    if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_NETWORK)
-        return 0;
-
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
 
     if (secdef && secdef->norelabel)
