@@ -69,6 +69,7 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
 {
     int fd = -1;
     int ret = -1;
+    int rc;
     virStorageSourcePtr meta = NULL;
     struct stat sb;
 
@@ -77,17 +78,13 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
     if (encryption)
         *encryption = NULL;
 
-    if ((ret = virStorageBackendVolOpen(target->path, &sb,
-                                        VIR_STORAGE_VOL_FS_PROBE_FLAGS)) < 0)
-        goto error; /* Take care to propagate ret, it is not always -1 */
-    fd = ret;
+    if ((rc = virStorageBackendVolOpen(target->path, &sb,
+                                       VIR_STORAGE_VOL_FS_PROBE_FLAGS)) < 0)
+        return rc; /* Take care to propagate rc, it is not always -1 */
+    fd = rc;
 
-    if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd,
-                                                      &sb, true)) < 0) {
+    if (virStorageBackendUpdateVolTargetInfoFD(target, fd, &sb, true) < 0)
         goto error;
-    }
-
-    ret = -1;
 
     if (S_ISDIR(sb.st_mode)) {
         target->format = VIR_STORAGE_FILE_DIR;
@@ -104,10 +101,13 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
 
     VIR_FORCE_CLOSE(fd);
 
+    /* Default to success below this point */
+    ret = 0;
+
     if (meta && *backingStore &&
         *backingStoreFormat == VIR_STORAGE_FILE_AUTO &&
         virStorageIsFile(*backingStore)) {
-        if ((ret = virStorageFileProbeFormat(*backingStore, -1, -1)) < 0) {
+        if ((rc = virStorageFileProbeFormat(*backingStore, -1, -1)) < 0) {
             /* If the backing file is currently unavailable, only log an error,
              * but continue. Returning -1 here would disable the whole storage
              * pool, making it unavailable for even maintenance. */
@@ -116,11 +116,8 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
                            *backingStore);
             ret = -3;
         } else {
-            *backingStoreFormat = ret;
-            ret = 0;
+            *backingStoreFormat = rc;
         }
-    } else {
-        ret = 0;
     }
 
     if (meta && meta->capacity)
