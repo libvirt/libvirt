@@ -313,7 +313,7 @@ test5(const void *v ATTRIBUTE_UNUSED)
     if (STRNEQ(str, "0,9,34"))
         goto error;
     VIR_FREE(str);
-    if (!(str = virBitmapDataToString(data2, sizeof(data2))))
+    if (!(str = virBitmapDataToString(data2, len2)))
         goto error;
     if (STRNEQ(str, "0,2,9,15,34"))
         goto error;
