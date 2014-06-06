@@ -28,7 +28,7 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_BHYVE],[
         AC_PATH_PROG([BHYVECTL], [bhyvectl], [], [$PATH:/usr/sbin])
         AC_PATH_PROG([BHYVELOAD], [bhyveload], [], [$PATH:/usr/sbin/])
 
-        if test -z "$BHYVE" || test -z "$BHYVECTL" \
+        if test -z "$BHYVE" || test -z "$BHYVECTL" || \
             test -z "$BHYVELOAD" || test "$with_freebsd" = "no"; then
             if test "$with_bhyve" = "check"; then
                 with_bhyve="no"
