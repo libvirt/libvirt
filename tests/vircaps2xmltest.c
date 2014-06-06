@@ -74,7 +74,8 @@ buildVirCapabilities(int max_cells,
         if (virCapabilitiesAddHostNUMACell(caps, cell_id,
                                            max_mem_in_cell,
                                            max_cpus_in_cell, cell_cpus,
-                                           nsiblings, siblings) < 0)
+                                           nsiblings, siblings,
+                                           0, NULL) < 0)
            goto error;
 
         cell_cpus = NULL;

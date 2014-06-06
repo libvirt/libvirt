@@ -102,6 +102,13 @@ struct _virCapsHostNUMACellSiblingInfo {
     unsigned int distance;  /* distance to the node */
 };
 
+typedef struct _virCapsHostNUMACellPageInfo virCapsHostNUMACellPageInfo;
+typedef virCapsHostNUMACellPageInfo *virCapsHostNUMACellPageInfoPtr;
+struct _virCapsHostNUMACellPageInfo {
+    unsigned int size;      /* page size in kibibytes */
+    size_t avail;           /* the size of pool */
+};
+
 typedef struct _virCapsHostNUMACell virCapsHostNUMACell;
 typedef virCapsHostNUMACell *virCapsHostNUMACellPtr;
 struct _virCapsHostNUMACell {
@@ -111,6 +118,8 @@ struct _virCapsHostNUMACell {
     virCapsHostNUMACellCPUPtr cpus;
     int nsiblings;
     virCapsHostNUMACellSiblingInfoPtr siblings;
+    int npageinfo;
+    virCapsHostNUMACellPageInfoPtr pageinfo;
 };
 
 typedef struct _virCapsHostSecModelLabel virCapsHostSecModelLabel;
@@ -152,6 +161,8 @@ struct _virCapsHost {
     virCapsHostSecModelPtr secModels;
 
     virCPUDefPtr cpu;
+    int nPagesSize;             /* size of pagesSize array */
+    unsigned int *pagesSize;    /* page sizes support on the system */
     unsigned char host_uuid[VIR_UUID_BUFLEN];
 };
 
@@ -206,7 +217,9 @@ virCapabilitiesAddHostNUMACell(virCapsPtr caps,
                                int ncpus,
                                virCapsHostNUMACellCPUPtr cpus,
                                int nsiblings,
-                               virCapsHostNUMACellSiblingInfoPtr siblings);
+                               virCapsHostNUMACellSiblingInfoPtr siblings,
+                               int npageinfo,
+                               virCapsHostNUMACellPageInfoPtr pageinfo);
 
 
 extern int

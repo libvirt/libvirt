@@ -338,7 +338,7 @@ testBuildCapabilities(virConnectPtr conn)
 
         if (virCapabilitiesAddHostNUMACell(caps, i, 0,
                                            privconn->cells[i].numCpus,
-                                           cpu_cells, 0, NULL) < 0)
+                                           cpu_cells, 0, NULL, 0, NULL) < 0)
             goto error;
     }
 

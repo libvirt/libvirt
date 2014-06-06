@@ -118,6 +118,9 @@
         <empty/>
       </element>
     </zeroOrMore>
+    <zeroOrMore>
+      <ref name='pagesElem'/>
+    </zeroOrMore>
   </define>
 
   <define name='power_management'>
@@ -187,6 +190,10 @@
       <optional>
         <ref name='memory'/>
       </optional>
+
+      <zeroOrMore>
+        <ref name='pagesElem'/>
+      </zeroOrMore>
 
       <optional>
         <element name='distances'>
@@ -415,5 +422,19 @@
     <data type='string'>
       <param name='pattern'>[a-zA-Z0-9\-_]+</param>
     </data>
+  </define>
+
+  <define name='pagesElem'>
+    <element name='pages'>
+      <optional>
+        <attribute name='unit'>
+          <ref name='unit'/>
+        </attribute>
+      </optional>
+      <attribute name='size'>
+        <ref name='unsignedInt'/>
+      </attribute>
+      <ref name='unsignedInt'/>
+    </element>
   </define>
 </grammar>

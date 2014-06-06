@@ -66,6 +66,7 @@ buildNUMATopology(int seq)
         if (virCapabilitiesAddHostNUMACell(caps, cell_id + seq,
                                            MAX_MEM_IN_CELL,
                                            MAX_CPUS_IN_CELL, cell_cpus,
+                                           0, NULL,
                                            0, NULL) < 0)
            goto error;
 

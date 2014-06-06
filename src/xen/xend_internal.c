@@ -1102,6 +1102,7 @@ sexpr_to_xend_topology(const struct sexpr *root, virCapsPtr caps)
 
         if (virCapabilitiesAddHostNUMACell(caps, cell, 0,
                                            nb_cpus, cpuInfo,
+                                           0, NULL,
                                            0, NULL) < 0)
             goto error;
         cpuInfo = NULL;

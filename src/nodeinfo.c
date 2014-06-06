@@ -1646,6 +1646,7 @@ nodeCapsInitNUMAFake(virCapsPtr caps ATTRIBUTE_UNUSED)
     if (virCapabilitiesAddHostNUMACell(caps, 0,
                                        nodeinfo.memory,
                                        ncpus, cpus,
+                                       0, NULL,
                                        0, NULL) < 0)
         goto error;
 
@@ -1824,6 +1825,35 @@ virNodeCapsGetSiblingInfo(int node,
     return ret;
 }
 
+static int
+virNodeCapsGetPagesInfo(int node,
+                        virCapsHostNUMACellPageInfoPtr *pageinfo,
+                        int *npageinfo)
+{
+    int ret = -1;
+    unsigned int *pages_size = NULL, *pages_avail = NULL;
+    size_t npages, i;
+
+    if (virNumaGetPages(node, &pages_size, &pages_avail, NULL, &npages) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(*pageinfo, npages) < 0)
+        goto cleanup;
+    *npageinfo = npages;
+
+    for (i = 0; i < npages; i++) {
+        (*pageinfo)[i].size = pages_size[i];
+        (*pageinfo)[i].avail = pages_avail[i];
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(pages_avail);
+    VIR_FREE(pages_size);
+    return ret;
+}
+
 int
 nodeCapsInitNUMA(virCapsPtr caps)
 {
@@ -1833,6 +1863,8 @@ nodeCapsInitNUMA(virCapsPtr caps)
     virBitmapPtr cpumap = NULL;
     virCapsHostNUMACellSiblingInfoPtr siblings = NULL;
     int nsiblings = 0;
+    virCapsHostNUMACellPageInfoPtr pageinfo = NULL;
+    int npageinfo;
     int ret = -1;
     int ncpus = 0;
     int cpu;
@@ -1875,17 +1907,22 @@ nodeCapsInitNUMA(virCapsPtr caps)
         if (virNodeCapsGetSiblingInfo(n, &siblings, &nsiblings) < 0)
             goto cleanup;
 
+        if (virNodeCapsGetPagesInfo(n, &pageinfo, &npageinfo) < 0)
+            goto cleanup;
+
         /* Detect the amount of memory in the numa cell in KiB */
         virNumaGetNodeMemory(n, &memory, NULL);
         memory >>= 10;
 
         if (virCapabilitiesAddHostNUMACell(caps, n, memory,
                                            ncpus, cpus,
-                                           nsiblings, siblings) < 0)
+                                           nsiblings, siblings,
+                                           npageinfo, pageinfo) < 0)
             goto cleanup;
 
         cpus = NULL;
         siblings = NULL;
+        pageinfo = NULL;
     }
 
     ret = 0;
@@ -1897,6 +1934,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
     virBitmapFree(cpumap);
     VIR_FREE(cpus);
     VIR_FREE(siblings);
+    VIR_FREE(pageinfo);
 
     if (ret < 0)
         VIR_FREE(cpus);
