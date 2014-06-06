@@ -606,6 +606,13 @@ virNodeDeviceObjRemove;
 virNodeDeviceObjUnlock;
 
 
+# conf/numatune_conf.h
+virDomainNumatuneMemModeTypeFromString;
+virDomainNumatuneMemModeTypeToString;
+virNumaTuneMemPlacementModeTypeFromString;
+virNumaTuneMemPlacementModeTypeToString;
+
+
 # conf/nwfilter_conf.h
 virNWFilterCallbackDriversLock;
 virNWFilterCallbackDriversUnlock;
@@ -1680,8 +1687,6 @@ virNodeSuspendGetTargetMask;
 
 
 # util/virnuma.h
-virDomainNumatuneMemModeTypeFromString;
-virDomainNumatuneMemModeTypeToString;
 virNumaGetAutoPlacementAdvice;
 virNumaGetDistances;
 virNumaGetMaxNode;
@@ -1691,8 +1696,7 @@ virNumaGetPages;
 virNumaIsAvailable;
 virNumaNodeIsAvailable;
 virNumaSetupMemoryPolicy;
-virNumaTuneMemPlacementModeTypeFromString;
-virNumaTuneMemPlacementModeTypeToString;
+
 
 # util/virobject.h
 virClassForObject;

@@ -1,7 +1,7 @@
 /*
  * virnuma.c: helper APIs for managing numa
  *
- * Copyright (C) 2011-2013 Red Hat, Inc.
+ * Copyright (C) 2011-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -51,17 +51,6 @@
 
 VIR_LOG_INIT("util.numa");
 
-VIR_ENUM_IMPL(virDomainNumatuneMemMode,
-              VIR_DOMAIN_NUMATUNE_MEM_LAST,
-              "strict",
-              "preferred",
-              "interleave");
-
-VIR_ENUM_IMPL(virNumaTuneMemPlacementMode,
-              VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_LAST,
-              "default",
-              "static",
-              "auto");
 
 #if HAVE_NUMAD
 char *

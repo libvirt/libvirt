@@ -36,6 +36,7 @@
 # include "virhash.h"
 # include "virsocketaddr.h"
 # include "nwfilter_params.h"
+# include "numatune_conf.h"
 # include "virnetdevmacvlan.h"
 # include "virsysinfo.h"
 # include "virnetdevvportprofile.h"
@@ -46,7 +47,6 @@
 # include "device_conf.h"
 # include "virbitmap.h"
 # include "virstoragefile.h"
-# include "virnuma.h"
 # include "virseclabel.h"
 
 /* forward declarations of all device types, required by

@@ -1,7 +1,7 @@
 /*
  * virnuma.h: helper APIs for managing numa
  *
- * Copyright (C) 2011-2013 Red Hat, Inc.
+ * Copyright (C) 2011-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,32 +23,10 @@
 # define __VIR_NUMA_H__
 
 # include "internal.h"
+# include "numatune_conf.h"
 # include "virbitmap.h"
 # include "virutil.h"
 
-typedef enum {
-    VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_DEFAULT = 0,
-    VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC,
-    VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO,
-
-    VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_LAST
-} virNumaTuneMemPlacementMode;
-
-VIR_ENUM_DECL(virNumaTuneMemPlacementMode)
-
-VIR_ENUM_DECL(virDomainNumatuneMemMode)
-
-typedef struct _virNumaTuneDef virNumaTuneDef;
-typedef virNumaTuneDef *virNumaTuneDefPtr;
-struct _virNumaTuneDef {
-    struct {
-        virBitmapPtr nodemask;
-        int mode;
-        int placement_mode; /* enum virNumaTuneMemPlacementMode */
-    } memory;
-
-    /* Future NUMA tuning related stuff should go here. */
-};
 
 char *virNumaGetAutoPlacementAdvice(unsigned short vcups,
                                     unsigned long long balloon);

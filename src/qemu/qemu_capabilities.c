@@ -37,6 +37,7 @@
 #include "vircommand.h"
 #include "virbitmap.h"
 #include "virnodesuspend.h"
+#include "virnuma.h"
 #include "qemu_monitor.h"
 #include "virstring.h"
 #include "qemu_hostdev.h"
