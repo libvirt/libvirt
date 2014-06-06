@@ -34,13 +34,18 @@ static int blankProblemElements(char *data)
     return 0;
 }
 
+typedef enum {
+    FLAG_EXPECT_WARNING     = 1 << 0,
+} virQemuXML2ArgvTestFlags;
+
 static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdfile,
-                                     bool expect_warning)
+                                     virQemuXML2ArgvTestFlags flags)
 {
     char *expectxml = NULL;
     char *actualxml = NULL;
     char *cmd = NULL;
+    char *log = NULL;
     int ret = -1;
     virDomainDefPtr vmdef = NULL;
 
@@ -54,14 +59,31 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto fail;
 
     if (!virtTestOOMActive()) {
-        char *log;
         if ((log = virtTestLogContentAndReset()) == NULL)
             goto fail;
-        if ((*log != '\0') != expect_warning) {
-            VIR_FREE(log);
-            goto fail;
+        if (flags & FLAG_EXPECT_WARNING) {
+            if (*log) {
+                if (virTestGetDebug() > 1)
+                    fprintf(stderr,
+                            "Got expected warning from "
+                            "qemuParseCommandLineString:\n%s",
+                            log);
+            } else {
+                if (virTestGetDebug())
+                    fprintf(stderr, "qemuParseCommandLineString "
+                            "should have logged a warning\n");
+                goto fail;
+            }
+        } else { /* didn't expect a warning */
+            if (*log) {
+                if (virTestGetDebug())
+                    fprintf(stderr,
+                            "Got unexpected warning from "
+                            "qemuParseCommandLineString:\n%s",
+                            log);
+                goto fail;
+            }
         }
-        VIR_FREE(log);
     }
 
     if (!virDomainDefCheckABIStability(vmdef, vmdef)) {
@@ -87,6 +109,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     VIR_FREE(expectxml);
     VIR_FREE(actualxml);
     VIR_FREE(cmd);
+    VIR_FREE(log);
     virDomainDefFree(vmdef);
     return ret;
 }
@@ -94,7 +117,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
 struct testInfo {
     const char *name;
-    unsigned long long extraFlags;
+    unsigned int flags;
 };
 
 static int
@@ -111,7 +134,7 @@ testCompareXMLToArgvHelper(const void *data)
                     abs_srcdir, info->name) < 0)
         goto cleanup;
 
-    result = testCompareXMLToArgvFiles(xml, args, !!info->extraFlags);
+    result = testCompareXMLToArgvFiles(xml, args, info->flags);
 
  cleanup:
     VIR_FREE(xml);
@@ -136,9 +159,9 @@ mymain(void)
     if (!(driver.xmlopt = virQEMUDriverCreateXMLConf(&driver)))
         return EXIT_FAILURE;
 
-# define DO_TEST_FULL(name, extraFlags)                                 \
+# define DO_TEST_FULL(name, flags)                                      \
     do {                                                                \
-        const struct testInfo info = { name, extraFlags };              \
+        const struct testInfo info = { name, (flags) };                 \
         if (virtTestRun("QEMU ARGV-2-XML " name,                        \
                         testCompareXMLToArgvHelper, &info) < 0)         \
             ret = -1;                                                   \
@@ -267,7 +290,7 @@ mymain(void)
     DO_TEST("restore-v2");
     DO_TEST("migrate");
 
-    DO_TEST_FULL("qemu-ns-no-env", 1);
+    DO_TEST_FULL("qemu-ns-no-env", FLAG_EXPECT_WARNING);
 
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
