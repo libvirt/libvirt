@@ -256,6 +256,18 @@
             __FILE__, __LINE__);
 
 /**
+ * SWAP:
+ *
+ * In place exchange of two values
+ */
+# define SWAP(a, b)         \
+    do {                    \
+        (a) = (a) ^ (b);    \
+        (b) = (a) ^ (b);    \
+        (a) = (a) ^ (b);    \
+    } while (0)
+
+/**
  * virCheckFlags:
  * @supported: an OR'ed set of supported flags
  * @retval: return value in case unsupported flags were passed

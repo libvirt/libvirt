@@ -34,12 +34,18 @@
 
 #endif /* WITH_NUMACTL */
 
+#include <sys/types.h>
+#include <dirent.h>
+
 #include "virnuma.h"
 #include "vircommand.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "viralloc.h"
 #include "virbitmap.h"
+#include "virstring.h"
+#include "virfile.h"
+#include "nodeinfo.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -504,3 +510,333 @@ virNumaGetDistances(int node ATTRIBUTE_UNUSED,
     return 0;
 }
 #endif
+
+
+#define HUGEPAGES_NUMA_PREFIX "/sys/devices/system/node/"
+#define HUGEPAGES_SYSTEM_PREFIX "/sys/kernel/mm/hugepages/"
+#define HUGEPAGES_PREFIX "hugepages-"
+
+static int
+virNumaGetHugePageInfoPath(char **path,
+                           int node,
+                           unsigned int page_size,
+                           const char *suffix)
+{
+
+    int ret = -1;
+
+    if (node == -1) {
+        /* We are aiming at overall system info */
+        if (page_size) {
+            /* And even on specific huge page size */
+            if (virAsprintf(path,
+                            HUGEPAGES_SYSTEM_PREFIX HUGEPAGES_PREFIX "%ukB/%s",
+                            page_size, suffix ? suffix : "") < 0)
+                goto cleanup;
+        } else {
+            if (VIR_STRDUP(*path, HUGEPAGES_SYSTEM_PREFIX) < 0)
+                goto cleanup;
+        }
+
+    } else {
+        /* We are aiming on specific NUMA node */
+        if (page_size) {
+            /* And even on specific huge page size */
+            if (virAsprintf(path,
+                            HUGEPAGES_NUMA_PREFIX "node%d/hugepages/"
+                            HUGEPAGES_PREFIX "%ukB/%s",
+                            node, page_size, suffix ? suffix : "") < 0)
+                goto cleanup;
+        } else {
+            if (virAsprintf(path,
+                            HUGEPAGES_NUMA_PREFIX "node%d/hugepages/",
+                            node) < 0)
+                goto cleanup;
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
+/**
+ * virNumaGetHugePageInfo:
+ * @node: NUMA node id
+ * @page_size: which huge page are we interested in
+ * @page_avail: total number of huge pages in the pool
+ * @page_free: the number of free huge pages in the pool
+ *
+ * For given NUMA node and huge page size fetch information on
+ * total number of huge pages in the pool (both free and taken)
+ * and count for free huge pages in the pool.
+ *
+ * If you're interested in just one bit, pass NULL to the other one.
+ *
+ * As a special case, if @node == -1, overall info is fetched
+ * from the system.
+ *
+ * Returns 0 on success, -1 otherwise (with error reported).
+ */
+static int
+virNumaGetHugePageInfo(int node,
+                       unsigned int page_size,
+                       unsigned int *page_avail,
+                       unsigned int *page_free)
+{
+    int ret = -1;
+    char *path = NULL;
+    char *buf = NULL;
+    char *end;
+
+    if (page_avail) {
+        if (virNumaGetHugePageInfoPath(&path, node,
+                                       page_size, "nr_hugepages") < 0)
+            goto cleanup;
+
+        if (virFileReadAll(path, 1024, &buf) < 0)
+            goto cleanup;
+
+        if (virStrToLong_ui(buf, &end, 10, page_avail) < 0 ||
+            *end != '\n') {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unable to parse: %s"),
+                           buf);
+            goto cleanup;
+        }
+        VIR_FREE(buf);
+        VIR_FREE(path);
+    }
+
+    if (page_free) {
+        if (virNumaGetHugePageInfoPath(&path, node,
+                                       page_size, "free_hugepages") < 0)
+            goto cleanup;
+
+        if (virFileReadAll(path, 1024, &buf) < 0)
+            goto cleanup;
+
+        if (virStrToLong_ui(buf, &end, 10, page_free) < 0 ||
+            *end != '\n') {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unable to parse: %s"),
+                           buf);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(buf);
+    VIR_FREE(path);
+    return ret;
+}
+
+/**
+ * virNumaGetPageInfo:
+ * @node: NUMA node id
+ * @page_size: which huge page are we interested in (in KiB)
+ * @page_avail: total number of huge pages in the pool
+ * @page_free: the number of free huge pages in the pool
+ *
+ * For given NUMA node and page size fetch information on
+ * total number of pages in the pool (both free and taken)
+ * and count for free pages in the pool.
+ *
+ * If you're interested in just one bit, pass NULL to the other one.
+ *
+ * As a special case, if @node == -1, overall info is fetched
+ * from the system.
+ *
+ * Returns 0 on success, -1 otherwise (with error reported).
+ */
+int
+virNumaGetPageInfo(int node,
+                   unsigned int page_size,
+                   unsigned int *page_avail,
+                   unsigned int *page_free)
+{
+    int ret = -1;
+    long system_page_size = sysconf(_SC_PAGESIZE);
+
+    /* sysconf() returns page size in bytes,
+     * the @page_size is however in kibibytes */
+    if (page_size == system_page_size / 1024) {
+#if 0
+        unsigned long long memsize, memfree;
+
+        /* TODO: come up with better algorithm that takes huge pages into
+         * account. The problem is huge pages cut off regular memory. */
+        if (node == -1) {
+            if (nodeGetMemory(&memsize, &memfree) < 0)
+                goto cleanup;
+        } else {
+            if (virNumaGetNodeMemory(node, &memsize, &memfree) < 0)
+                goto cleanup;
+        }
+
+        if (page_avail)
+            *page_avail = memsize / system_page_size;
+
+        if (page_free)
+            *page_free = memfree / system_page_size;
+#else
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("system page size are not supported yet"));
+        goto cleanup;
+#endif /* 0 */
+    } else {
+        if (virNumaGetHugePageInfo(node, page_size, page_avail, page_free) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
+/**
+ * virNumaGetPages:
+ * @node: NUMA node id
+ * @pages_size: list of pages supported on @node
+ * @pages_avail: list of the pool sizes on @node
+ * @pages_free: list of free pages on @node
+ * @npages: the lists size
+ *
+ * For given NUMA node fetch info on pages. The size of pages
+ * (e.g.  4K, 2M, 1G) is stored into @pages_size, the size of the
+ * pool is then stored into @pages_avail and the number of free
+ * pages in the pool is stored into @pages_free.
+ *
+ * If you're interested only in some lists, pass NULL to the
+ * other ones.
+ *
+ * As a special case, if @node == -1, overall info is fetched
+ * from the system.
+ *
+ * Returns 0 on success, -1 otherwise.
+ */
+int
+virNumaGetPages(int node,
+                unsigned int **pages_size,
+                unsigned int **pages_avail,
+                unsigned int **pages_free,
+                size_t *npages)
+{
+    int ret = -1;
+    char *path = NULL;
+    DIR *dir = NULL;
+    struct dirent *entry;
+    unsigned int *tmp_size = NULL, *tmp_avail = NULL, *tmp_free = NULL;
+    unsigned int ntmp = 0;
+    size_t i;
+    bool exchange;
+
+#if 0
+    /* This has to be disabled until the time the issue in
+     * virNumaGetPageInfo is resolved. Sorry. */
+    long system_page_size;
+
+    /* sysconf() returns page size in bytes,
+     * but we are storing the page size in kibibytes. */
+    system_page_size = sysconf(_SC_PAGESIZE) / 1024;
+
+    /* We know that ordinary system pages are supported
+     * if nothing else is. */
+    if (VIR_REALLOC_N(tmp_size, 1) < 0 ||
+        VIR_REALLOC_N(tmp_avail, 1) < 0 ||
+        VIR_REALLOC_N(tmp_free, 1) < 0)
+        goto cleanup;
+
+    if (virNumaGetPageInfo(node, system_page_size,
+                           &tmp_avail[ntmp], &tmp_free[ntmp]) < 0)
+        goto cleanup;
+    tmp_size[ntmp] = system_page_size;
+    ntmp++;
+#endif /* 0 */
+
+    /* Now that we got ordinary system pages, lets get info on huge pages */
+    if (virNumaGetHugePageInfoPath(&path, node, 0, NULL) < 0)
+        goto cleanup;
+
+    if (!(dir = opendir(path))) {
+        virReportSystemError(errno,
+                             _("unable to open path: %s"),
+                             path);
+        goto cleanup;
+    }
+
+    while (virDirRead(dir, &entry, path) > 0) {
+        const char *page_name = entry->d_name;
+        unsigned int page_size, page_avail = 0, page_free = 0;
+        char *end;
+
+        /* Just to give you a hint, we're dealing with this:
+         * hugepages-2048kB/  or   hugepages-1048576kB/ */
+        if (!STRPREFIX(entry->d_name, HUGEPAGES_PREFIX))
+            continue;
+
+        page_name += strlen(HUGEPAGES_PREFIX);
+
+        if (virStrToLong_ui(page_name, &end, 10, &page_size) < 0 ||
+            STRCASENEQ(end, "kB")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unable to parse %s"),
+                           entry->d_name);
+            goto cleanup;
+        }
+
+        /* Querying more detailed info makes sense only sometimes */
+        if ((pages_avail || pages_free) &&
+            virNumaGetHugePageInfo(node, page_size,
+                                   &page_avail, &page_free) < 0)
+            goto cleanup;
+
+        if (VIR_REALLOC_N(tmp_size, ntmp + 1) < 0 ||
+            VIR_REALLOC_N(tmp_avail, ntmp + 1) < 0 ||
+            VIR_REALLOC_N(tmp_free, ntmp + 1) < 0)
+            goto cleanup;
+
+        tmp_size[ntmp] = page_size;
+        tmp_avail[ntmp] = page_avail;
+        tmp_free[ntmp] = page_free;
+        ntmp++;
+    }
+
+    /* Just to produce nice output, sort the arrays by increasing page size */
+    do {
+        exchange = false;
+        for (i = 0; i < ntmp -1; i++) {
+            if (tmp_size[i] > tmp_size[i + 1]) {
+                exchange = true;
+                SWAP(tmp_size[i], tmp_size[i + 1]);
+                SWAP(tmp_avail[i], tmp_avail[i + 1]);
+                SWAP(tmp_free[i], tmp_free[i + 1]);
+            }
+        }
+    } while (exchange);
+
+    if (pages_size) {
+        *pages_size = tmp_size;
+        tmp_size = NULL;
+    }
+    if (pages_avail) {
+        *pages_avail = tmp_avail;
+        tmp_avail = NULL;
+    }
+    if (pages_free) {
+        *pages_free = tmp_free;
+        tmp_free = NULL;
+    }
+    *npages = ntmp;
+    ret = 0;
+ cleanup:
+    VIR_FREE(tmp_free);
+    VIR_FREE(tmp_avail);
+    VIR_FREE(tmp_size);
+    closedir(dir);
+    VIR_FREE(path);
+    return ret;
+}

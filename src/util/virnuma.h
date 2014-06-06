@@ -70,4 +70,14 @@ unsigned int virNumaGetMaxCPUs(void);
 
 int virNumaGetNodeCPUs(int node, virBitmapPtr *cpus);
 
+int virNumaGetPageInfo(int node,
+                       unsigned int page_size,
+                       unsigned int *page_avail,
+                       unsigned int *page_free);
+int virNumaGetPages(int node,
+                    unsigned int **pages_size,
+                    unsigned int **pages_avail,
+                    unsigned int **pages_free,
+                    size_t *npages)
+    ATTRIBUTE_NONNULL(5);
 #endif /* __VIR_NUMA_H__ */
