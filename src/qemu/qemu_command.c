@@ -11515,7 +11515,9 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                                _("cannot parse nvram's address '%s'"), val);
                 goto error;
             }
-        } else if (STREQ(arg, "-S")) {
+        } else if (STREQ(arg, "-S") ||
+                   STREQ(arg, "-nodefaults") ||
+                   STREQ(arg, "-nodefconfig")) {
             /* ignore, always added by libvirt */
         } else {
             char *tmp = NULL;
