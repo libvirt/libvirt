@@ -1897,7 +1897,7 @@ struct _virDomainDef {
         virDomainVcpuPinDefPtr emulatorpin;
     } cputune;
 
-    virNumaTuneDef numatune;
+    virDomainNumatune numatune;
     virDomainResourceDefPtr resource;
     virDomainIdMapDef idmap;
 

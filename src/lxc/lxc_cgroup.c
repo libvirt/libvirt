@@ -81,10 +81,10 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
 
     if ((def->numatune.memory.nodemask ||
          (def->numatune.memory.placement_mode ==
-          VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)) &&
+          VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO)) &&
           def->numatune.memory.mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
         if (def->numatune.memory.placement_mode ==
-            VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)
+            VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO)
             mask = virBitmapFormat(nodemask);
         else
             mask = virBitmapFormat(def->numatune.memory.nodemask);

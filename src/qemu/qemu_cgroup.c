@@ -603,11 +603,11 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
 
     if ((vm->def->numatune.memory.nodemask ||
          (vm->def->numatune.memory.placement_mode ==
-          VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)) &&
+          VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO)) &&
         vm->def->numatune.memory.mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
 
         if (vm->def->numatune.memory.placement_mode ==
-            VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)
+            VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO)
             mem_mask = virBitmapFormat(nodemask);
         else
             mem_mask = virBitmapFormat(vm->def->numatune.memory.nodemask);

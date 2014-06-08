@@ -656,7 +656,7 @@ static int virLXCControllerGetNumadAdvice(virLXCControllerPtr ctrl,
     if ((ctrl->def->placement_mode ==
          VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) ||
         (ctrl->def->numatune.memory.placement_mode ==
-         VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)) {
+         VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO)) {
         nodeset = virNumaGetAutoPlacementAdvice(ctrl->def->vcpus,
                                                 ctrl->def->mem.cur_balloon);
         if (!nodeset)

@@ -30,8 +30,8 @@ VIR_ENUM_IMPL(virDomainNumatuneMemMode,
               "preferred",
               "interleave");
 
-VIR_ENUM_IMPL(virNumaTuneMemPlacementMode,
-              VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_LAST,
+VIR_ENUM_IMPL(virDomainNumatunePlacement,
+              VIR_DOMAIN_NUMATUNE_PLACEMENT_LAST,
               "default",
               "static",
               "auto");

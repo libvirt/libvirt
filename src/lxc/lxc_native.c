@@ -720,7 +720,7 @@ lxcSetCpusetTune(virDomainDefPtr def, virConfPtr properties)
 
     if ((value = virConfGetValue(properties, "lxc.cgroup.cpuset.mems")) &&
             value->str) {
-        def->numatune.memory.placement_mode = VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC;
+        def->numatune.memory.placement_mode = VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC;
         def->numatune.memory.mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
         if (virBitmapParse(value->str, 0, &def->numatune.memory.nodemask,
                            VIR_DOMAIN_CPUMASK_LEN) < 0)

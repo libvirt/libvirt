@@ -87,7 +87,7 @@ virNumaGetAutoPlacementAdvice(unsigned short vcpus ATTRIBUTE_UNUSED,
 
 #if WITH_NUMACTL
 int
-virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
+virNumaSetupMemoryPolicy(virDomainNumatune numatune,
                          virBitmapPtr nodemask)
 {
     nodemask_t mask;
@@ -100,13 +100,13 @@ virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
     virBitmapPtr tmp_nodemask = NULL;
 
     if (numatune.memory.placement_mode ==
-        VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC) {
+        VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC) {
         if (!numatune.memory.nodemask)
             return 0;
         VIR_DEBUG("Set NUMA memory policy with specified nodeset");
         tmp_nodemask = numatune.memory.nodemask;
     } else if (numatune.memory.placement_mode ==
-               VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO) {
+               VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO) {
         VIR_DEBUG("Set NUMA memory policy with advisory nodeset from numad");
         tmp_nodemask = nodemask;
     } else {
@@ -327,7 +327,7 @@ virNumaGetNodeCPUs(int node,
 
 #else
 int
-virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
+virNumaSetupMemoryPolicy(virDomainNumatune numatune,
                          virBitmapPtr nodemask ATTRIBUTE_UNUSED)
 {
     if (numatune.memory.nodemask) {

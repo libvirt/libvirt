@@ -28,24 +28,24 @@
 # include "virbitmap.h"
 
 typedef enum {
-    VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_DEFAULT = 0,
-    VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC,
-    VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO,
+    VIR_DOMAIN_NUMATUNE_PLACEMENT_DEFAULT = 0,
+    VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC,
+    VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO,
 
-    VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_LAST
-} virDomainNumaTuneMemPlacementMode;
+    VIR_DOMAIN_NUMATUNE_PLACEMENT_LAST
+} virDomainNumatunePlacement;
 
-VIR_ENUM_DECL(virNumaTuneMemPlacementMode)
+VIR_ENUM_DECL(virDomainNumatunePlacement)
 
 VIR_ENUM_DECL(virDomainNumatuneMemMode)
 
-typedef struct _virNumaTuneDef virNumaTuneDef;
-typedef virNumaTuneDef *virNumaTuneDefPtr;
-struct _virNumaTuneDef {
+typedef struct _virDomainNumatune virDomainNumatune;
+typedef virDomainNumatune *virDomainNumatunePtr;
+struct _virDomainNumatune {
     struct {
         virBitmapPtr nodemask;
         int mode;           /* enum virDomainNumatuneMemMode */
-        int placement_mode; /* enum virNumaTuneMemPlacementMode */
+        int placement_mode; /* enum virDomainNumatunePlacement */
     } memory;               /* pinning for all the memory */
 
     /* Future NUMA tuning related stuff should go here. */

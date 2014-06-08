@@ -11849,7 +11849,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                     int placement_mode = 0;
                     if (placement) {
                         if ((placement_mode =
-                             virNumaTuneMemPlacementModeTypeFromString(placement)) < 0) {
+                             virDomainNumatunePlacementTypeFromString(placement)) < 0) {
                             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                            _("Unsupported memory placement "
                                              "mode '%s'"), placement);
@@ -11859,18 +11859,18 @@ virDomainDefParseXML(xmlDocPtr xml,
                         VIR_FREE(placement);
                     } else if (def->numatune.memory.nodemask) {
                         /* Defaults to "static" if nodeset is specified. */
-                        placement_mode = VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC;
+                        placement_mode = VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC;
                     } else {
                         /* Defaults to "placement" of <vcpu> if nodeset is
                          * not specified.
                          */
                         if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC)
-                            placement_mode = VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC;
+                            placement_mode = VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC;
                         else
-                            placement_mode = VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO;
+                            placement_mode = VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO;
                     }
 
-                    if (placement_mode == VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC &&
+                    if (placement_mode == VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC &&
                         !def->numatune.memory.nodemask) {
                         virReportError(VIR_ERR_XML_ERROR, "%s",
                                        _("nodeset for NUMA memory tuning must be set "
@@ -11879,7 +11879,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                     }
 
                     /* Ignore 'nodeset' if 'placement' is 'auto' finally */
-                    if (placement_mode == VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO) {
+                    if (placement_mode == VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO) {
                         virBitmapFree(def->numatune.memory.nodemask);
                         def->numatune.memory.nodemask = NULL;
                     }
@@ -11887,7 +11887,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                     /* Copy 'placement' of <numatune> to <vcpu> if its 'placement'
                      * is not specified and 'placement' of <numatune> is specified.
                      */
-                    if (placement_mode == VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO &&
+                    if (placement_mode == VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO &&
                         !def->cpumask)
                         def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO;
 
@@ -11906,7 +11906,7 @@ virDomainDefParseXML(xmlDocPtr xml,
          * and 'placement' of <vcpu> is 'auto'.
          */
         if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
-            def->numatune.memory.placement_mode = VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO;
+            def->numatune.memory.placement_mode = VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO;
             def->numatune.memory.mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
         }
     }
@@ -17539,13 +17539,13 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, "<memory mode='%s' ", mode);
 
         if (def->numatune.memory.placement_mode ==
-            VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC) {
+            VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC) {
             if (!(nodemask = virBitmapFormat(def->numatune.memory.nodemask)))
                 goto error;
             virBufferAsprintf(buf, "nodeset='%s'/>\n", nodemask);
             VIR_FREE(nodemask);
         } else if (def->numatune.memory.placement_mode) {
-            placement = virNumaTuneMemPlacementModeTypeToString(def->numatune.memory.placement_mode);
+            placement = virDomainNumatunePlacementTypeToString(def->numatune.memory.placement_mode);
             virBufferAsprintf(buf, "placement='%s'/>\n", placement);
         }
         virBufferAdjustIndent(buf, -2);

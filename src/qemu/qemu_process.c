@@ -3901,7 +3901,7 @@ int qemuProcessStart(virConnectPtr conn,
     if ((vm->def->placement_mode ==
          VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) ||
         (vm->def->numatune.memory.placement_mode ==
-         VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)) {
+         VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO)) {
         nodeset = virNumaGetAutoPlacementAdvice(vm->def->vcpus,
                                                 vm->def->mem.max_balloon);
         if (!nodeset)

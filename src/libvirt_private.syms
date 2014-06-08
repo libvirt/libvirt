@@ -609,8 +609,8 @@ virNodeDeviceObjUnlock;
 # conf/numatune_conf.h
 virDomainNumatuneMemModeTypeFromString;
 virDomainNumatuneMemModeTypeToString;
-virNumaTuneMemPlacementModeTypeFromString;
-virNumaTuneMemPlacementModeTypeToString;
+virDomainNumatunePlacementTypeFromString;
+virDomainNumatunePlacementTypeToString;
 
 
 # conf/nwfilter_conf.h
