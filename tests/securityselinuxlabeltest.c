@@ -28,6 +28,7 @@
 
 #include <selinux/selinux.h>
 #include <selinux/context.h>
+#include <attr/xattr.h>
 
 #include "internal.h"
 #include "testutils.h"
@@ -56,6 +57,35 @@ struct testSELinuxFile {
     char *context;
 };
 
+static int
+testUserXattrEnabled(void)
+{
+    int ret = -1;
+    ssize_t len;
+    const char *con_value = "system_u:object_r:svirt_image_t:s0:c41,c264";
+    char *path = NULL;
+    if (virAsprintf(&path, "%s/securityselinuxlabeldata/testxattr",
+                    abs_srcdir) < 0)
+        goto cleanup;
+
+    if (virFileTouch(path, 0600) < 0)
+        goto cleanup;
+
+    len = setxattr(path, "user.libvirt.selinux", con_value,
+                   strlen(con_value), 0);
+    if (len < 0) {
+        if (errno == EOPNOTSUPP)
+            ret = 0;
+        goto cleanup;
+    }
+
+    ret = 1;
+
+ cleanup:
+    unlink(path);
+    VIR_FREE(path);
+    return ret;
+}
 
 static int
 testSELinuxMungePath(char **path)
@@ -321,6 +351,12 @@ static int
 mymain(void)
 {
     int ret = 0;
+    int rc = testUserXattrEnabled();
+
+    if (rc < 0)
+        return EXIT_FAILURE;
+    if (!rc)
+        return EXIT_AM_SKIP;
 
     if (!(mgr = virSecurityManagerNew("selinux", "QEMU", false, true, false))) {
         virErrorPtr err = virGetLastError();
