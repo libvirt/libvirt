@@ -1209,8 +1209,6 @@ unsafe unless the disk images are stored on coherent clustered filesystem,
 such as GFS2 or GPFS. If you are sure the migration is safe or you just do not
 care, use I<--unsafe> to force the migration.
 
-The I<desturi> is the connection URI of the destination host, and
-I<migrateuri> is the migration URI, which usually can be omitted (see below).
 I<dname> is used for renaming the domain to new name during migration, which
 also usually can be omitted.  Likewise, I<--xml> B<file> is usually
 omitted, but can be used to supply an alternative XML file for use on
@@ -1224,6 +1222,12 @@ then the migration will complete offline. It can only be used with I<--live>.
 
 Running migration can be canceled by interrupting virsh (usually using
 C<Ctrl-C>) or by B<domjobabort> command sent from another virsh instance.
+
+The I<desturi> and I<migrateuri> parameters can be used to control which
+destination the migration uses.  I<desturi> is important for managed
+migration, but unused for direct migration; I<migrateuri> is required
+for direct migration, but can usually be automatically determined for
+managed migration.
 
 B<Note>: The I<desturi> parameter for normal migration and peer2peer migration
 has different semantics:
@@ -1239,7 +1243,11 @@ seen from the source machine.
 =back
 
 When I<migrateuri> is not specified, libvirt will automatically determine the
-hypervisor specific URI, by looking up the target host's configured hostname.
+hypervisor specific URI.  Some hypervisors, including QEMU, have an optional
+"migration_host" configuration parameter (useful when the host has multiple
+network interfaces).  If this is unspecified, libvirt determines a name
+by looking up the target host's configured hostname.
+
 There are a few scenarios where specifying I<migrateuri> may help:
 
 =over 4
@@ -1263,6 +1271,9 @@ might be specified to choose a specific port number outside the default range in
 order to comply with local firewall policies.
 
 =back
+
+See L<http://libvirt.org/migration.html#uris> for more details on
+migration URIs.
 
 Optional I<graphicsuri> overrides connection parameters used for automatically
 reconnecting a graphical clients at the end of migration. If omitted, libvirt
