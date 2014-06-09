@@ -151,10 +151,10 @@ parallelsBuildCapabilities(void)
                                       "parallels", NULL, NULL, 0, NULL) == NULL)
         goto error;
 
-    if (VIR_ALLOC(cpu) < 0)
+    if (nodeGetInfo(&nodeinfo))
         goto error;
 
-    if (nodeGetInfo(&nodeinfo))
+    if (VIR_ALLOC(cpu) < 0)
         goto error;
 
     cpu->arch = caps->host.arch;
