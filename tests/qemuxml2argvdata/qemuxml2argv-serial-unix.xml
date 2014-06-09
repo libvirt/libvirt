@@ -31,6 +31,6 @@
       <source mode='connect' path='/tmp/serial.sock'/>
       <target type='serial' port='0'/>
     </console>
-    <memballoon model='virtio'/>
+    <memballoon model='none'/>
   </devices>
 </domain>

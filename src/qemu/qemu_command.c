@@ -10687,6 +10687,8 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
     /* Now the real processing loop */
     for (i = 1; progargv[i]; i++) {
         const char *arg = progargv[i];
+        bool argRecognized = true;
+
         /* Make sure we have a single - for all options to
            simplify next logic */
         if (STRPREFIX(arg, "--"))
@@ -11363,7 +11365,29 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                    STREQ(arg, "-nodefaults") ||
                    STREQ(arg, "-nodefconfig")) {
             /* ignore, always added by libvirt */
+        } else if (STREQ(arg, "-device") && progargv[1 + 1]) {
+            const char *opts = progargv[i + 1];
+
+            /* NB: we can't do WANT_VALUE until we're sure that we
+             * recognize the device, otherwise the !argRecognized
+             * logic below will be messed up
+             */
+
+            if (STRPREFIX(opts, "virtio-balloon")) {
+                WANT_VALUE();
+                if (VIR_ALLOC(def->memballoon) < 0)
+                    goto error;
+                def->memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO;
+            } else {
+                /* add in new -device's here */
+
+                argRecognized = false;
+            }
         } else {
+            argRecognized = false;
+        }
+
+        if (!argRecognized) {
             char *tmp = NULL;
             /* something we can't yet parse.  Add it to the qemu namespace
              * cmdline/environment advanced options and hope for the best
@@ -11501,7 +11525,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
         virDomainMemballoonDefPtr memballoon;
         if (VIR_ALLOC(memballoon) < 0)
             goto error;
-        memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO;
+        memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_NONE;
 
         def->memballoon = memballoon;
     }

@@ -37,6 +37,6 @@
       <source mode='connect' host='127.0.0.1' service='9998'/>
       <target type='serial' port='0'/>
     </console>
-    <memballoon model='virtio'/>
+    <memballoon model='none'/>
   </devices>
 </domain>

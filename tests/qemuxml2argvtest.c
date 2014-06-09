@@ -632,7 +632,7 @@ mymain(void)
     DO_TEST_FAILURE("reboot-timeout-enabled", NONE);
 
     DO_TEST("bios", QEMU_CAPS_DEVICE, QEMU_CAPS_SGA);
-    DO_TEST("clock-utc", NONE);
+    DO_TEST("clock-utc", QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE);
     DO_TEST("clock-localtime", NONE);
     DO_TEST("clock-localtime-basis-localtime", QEMU_CAPS_RTC);
     DO_TEST("clock-variable", QEMU_CAPS_RTC);

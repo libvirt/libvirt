@@ -28,6 +28,6 @@
       <script path='/etc/qemu-ifup'/>
       <model type='rtl8139'/>
     </interface>
-    <memballoon model='virtio'/>
+    <memballoon model='none'/>
   </devices>
 </domain>

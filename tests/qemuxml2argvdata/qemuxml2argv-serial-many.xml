@@ -33,6 +33,6 @@
     <console type='pty'>
       <target type='serial' port='0'/>
     </console>
-    <memballoon model='virtio'/>
+    <memballoon model='none'/>
   </devices>
 </domain>

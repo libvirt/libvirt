@@ -31,6 +31,6 @@
       <source path='/dev/ttyS2'/>
       <target type='serial' port='0'/>
     </console>
-    <memballoon model='virtio'/>
+    <memballoon model='none'/>
   </devices>
 </domain>
