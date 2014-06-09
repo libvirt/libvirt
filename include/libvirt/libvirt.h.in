@@ -5327,6 +5327,13 @@ int virDomainSetTime(virDomainPtr dom,
                      unsigned int nseconds,
                      unsigned int flags);
 
+int virNodeGetFreePages(virConnectPtr conn,
+                        unsigned int npages,
+                        unsigned int *pages,
+                        int startcell,
+                        unsigned int cellcount,
+                        unsigned long long *counts,
+                        unsigned int flags);
 /**
  * virSchedParameterType:
  *

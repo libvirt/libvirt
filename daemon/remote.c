@@ -6154,6 +6154,58 @@ remoteDispatchDomainGetTime(virNetServerPtr server ATTRIBUTE_UNUSED,
     return rv;
 }
 
+
+static int
+remoteDispatchNodeGetFreePages(virNetServerPtr server ATTRIBUTE_UNUSED,
+                               virNetServerClientPtr client,
+                               virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                               virNetMessageErrorPtr rerr,
+                               remote_node_get_free_pages_args *args,
+                               remote_node_get_free_pages_ret *ret)
+{
+    int rv = -1;
+    int len;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->pages.pages_len * args->cellCount > REMOTE_NODE_MAX_CELLS) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("the result won't fit into REMOTE_NODE_MAX_CELLS"));
+        goto cleanup;
+    }
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->counts.counts_val,
+                    args->pages.pages_len * args->cellCount) < 0)
+        goto cleanup;
+
+    if ((len = virNodeGetFreePages(priv->conn,
+                                   args->pages.pages_len,
+                                   args->pages.pages_val,
+                                   args->startCell,
+                                   args->cellCount,
+                                   (unsigned long long *) ret->counts.counts_val,
+                                   args->flags)) <= 0)
+        goto cleanup;
+
+    ret->counts.counts_len = len;
+    rv = 0;
+
+ cleanup:
+    if (rv < 0) {
+        virNetMessageSaveError(rerr);
+        VIR_FREE(ret->counts.counts_val);
+    }
+    return rv;
+
+}
+
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire

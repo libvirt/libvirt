@@ -2470,6 +2470,21 @@ struct remote_domain_fsthaw_args {
 struct remote_domain_fsthaw_ret {
         int                        filesystems;
 };
+struct remote_node_get_free_pages_args {
+        struct {
+                u_int              pages_len;
+                u_int *            pages_val;
+        } pages;
+        int                        startCell;
+        u_int                      cellCount;
+        u_int                      flags;
+};
+struct remote_node_get_free_pages_ret {
+        struct {
+                u_int              counts_len;
+                uint64_t *         counts_val;
+        } counts;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -2810,4 +2825,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_GET_TIME = 337,
         REMOTE_PROC_DOMAIN_SET_TIME = 338,
         REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB_2 = 339,
+        REMOTE_PROC_NODE_GET_FREE_PAGES = 340,
 };

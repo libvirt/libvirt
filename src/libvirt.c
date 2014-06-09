@@ -20910,3 +20910,98 @@ virDomainSetTime(virDomainPtr dom,
     virDispatchError(dom->conn);
     return -1;
 }
+
+
+/**
+ * virNodeGetFreePages:
+ * @conn: pointer to the hypervisor connection
+ * @npages: number of items in the @pages array
+ * @pages: page sizes to query
+ * @startCell: index of first cell to return free pages info on.
+ * @cellCount: maximum number of cells for which free pages
+ *             information can be returned.
+ * @counts: returned counts of free pages
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * This calls queries the host system on free pages of
+ * specified size. Ont the input, @pages is expected to be
+ * filled with pages that caller is interested in (the size
+ * unit is kibibytes, so e.g. pass 2048 for 2MB), then @startcell
+ * refers to the first NUMA node that info should be collected
+ * from, and @cellcount tells how many consecutive nodes should
+ * be queried. On the function output, @counts is filled with
+ * desired information, where items are grouped by NUMA node.
+ * So from @counts[0] till @counts[@npages - 1] you'll find count
+ * for the first node (@startcell), then from @counts[@npages]
+ * till @count[2 * @npages - 1] you'll find info for the
+ * (@startcell + 1) node, and so on. It's callers responsibility
+ * to allocate the @counts array.
+ *
+ * Example how to use this API:
+ *
+ *   unsigned int pages[] = { 4, 2048, 1048576}
+ *   unsigned int npages = ARRAY_CARDINALITY(pages);
+ *   int startcell = 0;
+ *   unsigned int cellcount = 2;
+ *
+ *   unsigned long long counts = malloc(sizeof(long long) * npages * cellcount);
+ *
+ *   virNodeGetFreePages(conn, pages, npages,
+ *                       startcell, cellcount, counts, 0);
+ *
+ *   for (i = 0 ; i < cellcount ; i++) {
+ *       fprintf(stdout, "Cell %d\n", startcell + i);
+ *       for (j = 0 ; j < npages ; j++) {
+ *          fprintf(stdout, "  Page size=%d count=%d bytes=%llu\n",
+ *                  pages[j], counts[(i * npages) +  j],
+ *                  pages[j] * counts[(i * npages) +  j]);
+ *       }
+ *   }
+ *
+ *   This little code snippet will produce something like this:
+ * Cell 0
+ *    Page size=4096 count=300 bytes=1228800
+ *    Page size=2097152 count=0 bytes=0
+ *    Page size=1073741824 count=1 bytes=1073741824
+ * Cell 1
+ *    Page size=4096 count=0 bytes=0
+ *    Page size=2097152 count=20 bytes=41943040
+ *    Page size=1073741824 count=0 bytes=0
+ *
+ * Returns: the number of entries filled in @counts or -1 in case of error.
+ */
+int
+virNodeGetFreePages(virConnectPtr conn,
+                    unsigned int npages,
+                    unsigned int *pages,
+                    int startCell,
+                    unsigned int cellCount,
+                    unsigned long long *counts,
+                    unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, npages=%u, pages=%p, startCell=%u, "
+              "cellCount=%u, counts=%p, flags=%x",
+              conn, npages, pages, startCell, cellCount, counts, flags);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, -1);
+    virCheckNonZeroArgGoto(npages, error);
+    virCheckNonNullArgGoto(pages, error);
+    virCheckNonZeroArgGoto(cellCount, error);
+    virCheckNonNullArgGoto(counts, error);
+
+    if (conn->driver->nodeGetFreePages) {
+        int ret;
+        ret = conn->driver->nodeGetFreePages(conn, npages, pages, startCell,
+                                             cellCount, counts, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+ error:
+    virDispatchError(conn);
+    return -1;
+}

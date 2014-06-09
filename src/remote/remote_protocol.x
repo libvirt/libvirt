@@ -3007,6 +3007,17 @@ struct remote_domain_fsthaw_ret {
     int filesystems;
 };
 
+struct remote_node_get_free_pages_args {
+    unsigned int pages<REMOTE_NODE_MAX_CELLS>;
+    int startCell;
+    unsigned int cellCount;
+    unsigned int flags;
+};
+
+struct remote_node_get_free_pages_ret {
+    unsigned hyper counts<REMOTE_NODE_MAX_CELLS>;
+};
+
 
 /*----- Protocol. -----*/
 
@@ -5352,5 +5363,12 @@ enum remote_procedure {
      * @generate: none
      * @acl: none
      */
-    REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB_2 = 339
+    REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB_2 = 339,
+
+    /**
+     * @generate: none
+     * @priority: high
+     * @acl: connect:read
+     */
+    REMOTE_PROC_NODE_GET_FREE_PAGES = 340
 };

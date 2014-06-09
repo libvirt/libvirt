@@ -7500,6 +7500,55 @@ remoteDomainGetTime(virDomainPtr dom,
 }
 
 
+static int
+remoteNodeGetFreePages(virConnectPtr conn,
+                       unsigned int npages,
+                       unsigned int *pages,
+                       int startCell,
+                       unsigned int cellCount,
+                       unsigned long long *counts,
+                       unsigned int flags)
+{
+    int rv = -1;
+    remote_node_get_free_pages_args args;
+    remote_node_get_free_pages_ret ret;
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    if (npages * cellCount > REMOTE_NODE_MAX_CELLS) {
+        virReportError(VIR_ERR_RPC,
+                       _("too many NUMA cells: %d > %d"),
+                       npages * cellCount, REMOTE_NODE_MAX_CELLS);
+        goto done;
+    }
+
+    if (VIR_ALLOC_N(args.pages.pages_val, npages) < 0)
+        goto done;
+    memcpy(args.pages.pages_val, pages, npages * sizeof(*pages));
+    args.pages.pages_len = npages;
+    args.startCell = startCell;
+    args.cellCount = cellCount;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+    if (call(conn, priv, 0, REMOTE_PROC_NODE_GET_FREE_PAGES,
+             (xdrproc_t) xdr_remote_node_get_free_pages_args, (char *)&args,
+             (xdrproc_t) xdr_remote_node_get_free_pages_ret, (char *)&ret) == -1)
+        goto done;
+
+    memcpy(counts, ret.counts.counts_val, ret.counts.counts_len * sizeof(*counts));
+
+    xdr_free((xdrproc_t) xdr_remote_node_get_free_pages_ret, (char *) &ret);
+
+    rv = ret.counts.counts_len;
+
+ done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
  * (name, uuid) pair into virDomainPtr or virNetworkPtr object.
  * These can return NULL if underlying memory allocations fail,
@@ -7836,6 +7885,7 @@ static virDriver remote_driver = {
     .domainFSThaw = remoteDomainFSThaw, /* 1.2.5 */
     .domainGetTime = remoteDomainGetTime, /* 1.2.5 */
     .domainSetTime = remoteDomainSetTime, /* 1.2.5 */
+    .nodeGetFreePages = remoteNodeGetFreePages, /* 1.2.6 */
 };
 
 static virNetworkDriver network_driver = {
