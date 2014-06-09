@@ -516,6 +516,14 @@ cell and the total free memory on the machine.  Finally, with a
 numeric argument or with --cellno plus a cell number it will display
 the free memory for the specified cell only.
 
+=item B<freepages> [{ [I<--cellno>] I<cellno> [I<--pagesize>] I<pagesize> |
+    I<--all> }]
+
+Prints the available amount of pages within a NUMA cell. I<cellno> refers
+to the NUMA cell you're interested in. I<pagesize> is a scaled integer (see
+B<NOTES> above).  Alternatively, if I<--all> is used, info on each possible
+combination of NUMA cell and page size is printed out.
+
 =item B<cpu-baseline> I<FILE> [I<--features>]
 
 Compute baseline CPU which will be supported by all host CPUs given in <file>.

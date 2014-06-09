@@ -193,6 +193,167 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+
+/*
+ * "freepages" command
+ */
+static const vshCmdInfo info_freepages[] = {
+    {.name = "help",
+     .data = N_("NUMA free memory")
+    },
+    {.name = "desc",
+     .data = N_("display available free memory for the NUMA cell.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_freepages[] = {
+    {.name = "cellno",
+     .type = VSH_OT_INT,
+     .help = N_("NUMA cell number")
+    },
+    {.name = "pagesize",
+     .type = VSH_OT_INT,
+     .help = N_("page size (in kibibites)")
+    },
+    {.name = "all",
+     .type = VSH_OT_BOOL,
+     .help = N_("show free pages for all NUMA cells")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdFreepages(vshControl *ctl, const vshCmd *cmd)
+{
+    bool ret = false;
+    unsigned int npages;
+    unsigned int *pagesize = NULL;
+    int cell;
+    unsigned long long *counts = NULL;
+    size_t i, j;
+    xmlNodePtr *nodes = NULL;
+    int nodes_cnt;
+    char *cap_xml = NULL;
+    xmlDocPtr doc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    bool all = vshCommandOptBool(cmd, "all");
+    bool cellno = vshCommandOptBool(cmd, "cellno");
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(all, cellno);
+
+    if (all) {
+        if (!(cap_xml = virConnectGetCapabilities(ctl->conn))) {
+            vshError(ctl, "%s", _("unable to get node capabilities"));
+            goto cleanup;
+        }
+
+        if (!(doc = virXMLParseStringCtxt(cap_xml, _("capabilities"), &ctxt))) {
+            vshError(ctl, "%s", _("unable to parse node capabilities"));
+            goto cleanup;
+        }
+
+        nodes_cnt = virXPathNodeSet("/capabilities/host/cpu/pages", ctxt, &nodes);
+
+        if (nodes_cnt <= 0) {
+            vshError(ctl, "%s", _("could not get information about "
+                                  "supported page sizes"));
+            goto cleanup;
+        }
+
+        pagesize = vshMalloc(ctl, nodes_cnt * sizeof(*pagesize));
+
+        for (i = 0; i < nodes_cnt; i++) {
+            char *val = virXMLPropString(nodes[i], "size");
+
+            if (virStrToLong_ui(val, NULL, 10, &pagesize[i]) < 0) {
+                vshError(ctl, _("unable to parse page size: %s"), val);
+                VIR_FREE(val);
+                goto cleanup;
+            }
+
+            VIR_FREE(val);
+        }
+
+        npages = nodes_cnt;
+        VIR_FREE(nodes);
+
+        counts = vshMalloc(ctl, npages * sizeof(*counts));
+
+        nodes_cnt = virXPathNodeSet("/capabilities/host/topology/cells/cell",
+                                    ctxt, &nodes);
+        for (i = 0; i < nodes_cnt; i++) {
+            char *val = virXMLPropString(nodes[i], "id");
+
+            if (virStrToLong_i(val, NULL, 10, &cell) < 0) {
+                vshError(ctl, _("unable to parse numa node id: %s"), val);
+                VIR_FREE(val);
+                goto cleanup;
+            }
+            VIR_FREE(val);
+
+            if (virNodeGetFreePages(ctl->conn, npages, pagesize,
+                                    cell, 1, counts, 0) < 0)
+                goto cleanup;
+
+            vshPrint(ctl, _("Node %d:\n"), cell);
+            for (j = 0; j < npages; j++) {
+                vshPrint(ctl, "%uKiB: %lld\n", pagesize[j], counts[j]);
+            }
+            vshPrint(ctl, "%c", '\n');
+        }
+
+    } else {
+        if (!cellno) {
+            vshError(ctl, "%s", _("missing cellno argument"));
+            goto cleanup;
+        }
+
+        if (vshCommandOptInt(cmd, "cellno", &cell) < 0) {
+            vshError(ctl, "%s", _("Invalid cellno argument"));
+            goto cleanup;
+        }
+
+        if (cell < -1) {
+            vshError(ctl, "%s", _("cell number must be non-negative integer or -1"));
+            goto cleanup;
+        }
+
+        pagesize = vshMalloc(ctl, sizeof(*pagesize));
+        if (vshCommandOptScaledInt(cmd, "pagesize", (unsigned long long *) pagesize,
+                                   1, UINT_MAX) < 0) {
+            vshError(ctl, "%s", _("page size has to be a number"));
+            goto cleanup;
+        }
+
+        /* page size is expected in kibibytes */
+        pagesize[0] /= 1024;
+
+        if (!pagesize[0]) {
+            vshError(ctl, "%s", _("page size must be at least 1KiB"));
+            goto cleanup;
+        }
+
+        counts = vshMalloc(ctl, sizeof(*counts));
+
+        if (virNodeGetFreePages(ctl->conn, 1, pagesize, cell, 1, counts, 0) < 0)
+            goto cleanup;
+
+        vshPrint(ctl, "%uKiB: %lld\n", *pagesize, counts[0]);
+    }
+
+    ret = true;
+ cleanup:
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(doc);
+    VIR_FREE(cap_xml);
+    VIR_FREE(nodes);
+    VIR_FREE(counts);
+    VIR_FREE(pagesize);
+    return ret;
+}
+
+
 /*
  * "maxvcpus" command
  */
@@ -975,6 +1136,12 @@ const vshCmdDef hostAndHypervisorCmds[] = {
      .handler = cmdFreecell,
      .opts = opts_freecell,
      .info = info_freecell,
+     .flags = 0
+    },
+    {.name = "freepages",
+     .handler = cmdFreepages,
+     .opts = opts_freepages,
+     .info = info_freepages,
      .flags = 0
     },
     {.name = "hostname",
