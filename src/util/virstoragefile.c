@@ -805,7 +805,8 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
 
         crypt_format = virReadBufInt32BE(buf +
                                          fileTypeInfo[meta->format].qcowCryptOffset);
-        if (crypt_format && VIR_ALLOC(meta->encryption) < 0)
+        if (crypt_format && !meta->encryption &&
+            VIR_ALLOC(meta->encryption) < 0)
             goto cleanup;
     }
 
