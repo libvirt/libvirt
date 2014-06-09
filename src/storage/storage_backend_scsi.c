@@ -475,7 +475,8 @@ virStorageBackendSCSITriggerRescan(uint32_t host)
 
     VIR_DEBUG("Triggering rescan of host %d", host);
 
-    if (virAsprintf(&path, "/sys/class/scsi_host/host%u/scan", host) < 0) {
+    if (virAsprintf(&path, "%s/host%u/scan",
+                    LINUX_SYSFS_SCSI_HOST_PREFIX, host) < 0) {
         retval = -1;
         goto out;
     }
@@ -663,7 +664,8 @@ virStorageBackendSCSICheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (getHostNumber(name, &host) < 0)
         goto cleanup;
 
-    if (virAsprintf(&path, "/sys/class/scsi_host/host%d", host) < 0)
+    if (virAsprintf(&path, "%s/host%d",
+                    LINUX_SYSFS_SCSI_HOST_PREFIX, host) < 0)
         goto cleanup;
 
     *isActive = virFileExists(path);
