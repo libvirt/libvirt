@@ -2102,7 +2102,7 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virDomainVcpuPinDefFree(def->cputune.emulatorpin);
 
-    virBitmapFree(def->numatune.memory.nodemask);
+    virDomainNumatuneFree(def->numatune);
 
     virSysinfoDefFree(def->sysinfo);
 
@@ -11332,7 +11332,6 @@ virDomainDefParseXML(xmlDocPtr xml,
     unsigned long count;
     bool uuid_generated = false;
     virHashTablePtr bootHash = NULL;
-    xmlNodePtr cur;
     bool usb_none = false;
     bool usb_other = false;
     bool usb_master = false;
@@ -11794,123 +11793,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         }
     }
 
-    /* Extract numatune if exists. */
-    if ((n = virXPathNodeSet("./numatune", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot extract numatune nodes"));
+    if (virDomainNumatuneParseXML(def, ctxt) < 0)
         goto error;
-    }
-
-    if (n > 1) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("only one numatune is supported"));
-        VIR_FREE(nodes);
-        goto error;
-    }
-
-    if (n) {
-        cur = nodes[0]->children;
-        while (cur != NULL) {
-            if (cur->type == XML_ELEMENT_NODE) {
-                if (xmlStrEqual(cur->name, BAD_CAST "memory")) {
-                    char *mode = NULL;
-                    char *placement = NULL;
-                    char *nodeset = NULL;
-
-                    mode = virXMLPropString(cur, "mode");
-                    if (mode) {
-                        if ((def->numatune.memory.mode =
-                             virDomainNumatuneMemModeTypeFromString(mode)) < 0) {
-                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                           _("Unsupported NUMA memory "
-                                             "tuning mode '%s'"),
-                                           mode);
-                            VIR_FREE(mode);
-                            goto error;
-                        }
-                        VIR_FREE(mode);
-                    } else {
-                        def->numatune.memory.mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
-                    }
-
-                    nodeset = virXMLPropString(cur, "nodeset");
-                    if (nodeset) {
-                        if (virBitmapParse(nodeset,
-                                           0,
-                                           &def->numatune.memory.nodemask,
-                                           VIR_DOMAIN_CPUMASK_LEN) < 0) {
-                            VIR_FREE(nodeset);
-                            goto error;
-                        }
-                        VIR_FREE(nodeset);
-                    }
-
-                    placement = virXMLPropString(cur, "placement");
-                    int placement_mode = 0;
-                    if (placement) {
-                        if ((placement_mode =
-                             virDomainNumatunePlacementTypeFromString(placement)) < 0) {
-                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                           _("Unsupported memory placement "
-                                             "mode '%s'"), placement);
-                            VIR_FREE(placement);
-                            goto error;
-                        }
-                        VIR_FREE(placement);
-                    } else if (def->numatune.memory.nodemask) {
-                        /* Defaults to "static" if nodeset is specified. */
-                        placement_mode = VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC;
-                    } else {
-                        /* Defaults to "placement" of <vcpu> if nodeset is
-                         * not specified.
-                         */
-                        if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC)
-                            placement_mode = VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC;
-                        else
-                            placement_mode = VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO;
-                    }
-
-                    if (placement_mode == VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC &&
-                        !def->numatune.memory.nodemask) {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("nodeset for NUMA memory tuning must be set "
-                                         "if 'placement' is 'static'"));
-                        goto error;
-                    }
-
-                    /* Ignore 'nodeset' if 'placement' is 'auto' finally */
-                    if (placement_mode == VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO) {
-                        virBitmapFree(def->numatune.memory.nodemask);
-                        def->numatune.memory.nodemask = NULL;
-                    }
-
-                    /* Copy 'placement' of <numatune> to <vcpu> if its 'placement'
-                     * is not specified and 'placement' of <numatune> is specified.
-                     */
-                    if (placement_mode == VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO &&
-                        !def->cpumask)
-                        def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO;
-
-                    def->numatune.memory.placement_mode = placement_mode;
-                } else {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("unsupported XML element %s"),
-                                   (const char *)cur->name);
-                    goto error;
-                }
-            }
-            cur = cur->next;
-        }
-    } else {
-        /* Defaults NUMA memory placement mode to 'auto' if no <numatune>
-         * and 'placement' of <vcpu> is 'auto'.
-         */
-        if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
-            def->numatune.memory.placement_mode = VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO;
-            def->numatune.memory.mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
-        }
-    }
-    VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./resource", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -17527,30 +17411,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         def->cputune.emulator_period || def->cputune.emulator_quota)
         virBufferAddLit(buf, "</cputune>\n");
 
-    if (def->numatune.memory.nodemask ||
-        def->numatune.memory.placement_mode) {
-        const char *mode;
-        char *nodemask = NULL;
-        const char *placement;
-
-        virBufferAddLit(buf, "<numatune>\n");
-        virBufferAdjustIndent(buf, 2);
-        mode = virDomainNumatuneMemModeTypeToString(def->numatune.memory.mode);
-        virBufferAsprintf(buf, "<memory mode='%s' ", mode);
-
-        if (def->numatune.memory.placement_mode ==
-            VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC) {
-            if (!(nodemask = virBitmapFormat(def->numatune.memory.nodemask)))
-                goto error;
-            virBufferAsprintf(buf, "nodeset='%s'/>\n", nodemask);
-            VIR_FREE(nodemask);
-        } else if (def->numatune.memory.placement_mode) {
-            placement = virDomainNumatunePlacementTypeToString(def->numatune.memory.placement_mode);
-            virBufferAsprintf(buf, "placement='%s'/>\n", placement);
-        }
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</numatune>\n");
-    }
+    if (virDomainNumatuneFormatXML(buf, def->numatune) < 0)
+        goto error;
 
     if (def->resource)
         virDomainResourceDefFormat(buf, def->resource);
@@ -19846,4 +19708,17 @@ virDomainObjSetMetadata(virDomainObjPtr vm,
     }
 
     return 0;
+}
+
+
+bool
+virDomainDefNeedsPlacementAdvice(virDomainDefPtr def)
+{
+    if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
+        return true;
+
+    if (virDomainNumatuneHasPlacementAuto(def->numatune))
+        return true;
+
+    return false;
 }

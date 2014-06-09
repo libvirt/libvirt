@@ -79,22 +79,11 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
             goto cleanup;
     }
 
-    if ((def->numatune.memory.nodemask ||
-         (def->numatune.memory.placement_mode ==
-          VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO)) &&
-          def->numatune.memory.mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
-        if (def->numatune.memory.placement_mode ==
-            VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO)
-            mask = virBitmapFormat(nodemask);
-        else
-            mask = virBitmapFormat(def->numatune.memory.nodemask);
+    if (virDomainNumatuneMaybeFormatNodeset(def->numatune, nodemask, &mask) < 0)
+        goto cleanup;
 
-        if (!mask)
-            return -1;
-
-        if (virCgroupSetCpusetMems(cgroup, mask) < 0)
-            goto cleanup;
-    }
+    if (mask && virCgroupSetCpusetMems(cgroup, mask) < 0)
+        goto cleanup;
 
     ret = 0;
  cleanup:

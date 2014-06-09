@@ -3898,10 +3898,7 @@ int qemuProcessStart(virConnectPtr conn,
     /* Get the advisory nodeset from numad if 'placement' of
      * either <vcpu> or <numatune> is 'auto'.
      */
-    if ((vm->def->placement_mode ==
-         VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) ||
-        (vm->def->numatune.memory.placement_mode ==
-         VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO)) {
+    if (virDomainDefNeedsPlacementAdvice(vm->def)) {
         nodeset = virNumaGetAutoPlacementAdvice(vm->def->vcpus,
                                                 vm->def->mem.max_balloon);
         if (!nodeset)
@@ -3909,8 +3906,7 @@ int qemuProcessStart(virConnectPtr conn,
 
         VIR_DEBUG("Nodeset returned from numad: %s", nodeset);
 
-        if (virBitmapParse(nodeset, 0, &nodemask,
-                           VIR_DOMAIN_CPUMASK_LEN) < 0)
+        if (virBitmapParse(nodeset, 0, &nodemask, VIR_DOMAIN_CPUMASK_LEN) < 0)
             goto cleanup;
     }
     hookData.nodemask = nodemask;

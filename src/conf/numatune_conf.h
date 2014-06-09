@@ -23,9 +23,25 @@
 #ifndef __NUMATUNE_CONF_H__
 # define __NUMATUNE_CONF_H__
 
+# include <libxml/xpath.h>
+
 # include "internal.h"
 # include "virutil.h"
 # include "virbitmap.h"
+# include "virbuffer.h"
+
+/*
+ * Since numatune configuration is closely bound to the whole config,
+ * and because we don't have separate domain_conf headers for
+ * typedefs, structs and functions, we need to have a forward
+ * declaration here for virDomainDef due to circular dependencies.
+ */
+typedef struct _virDomainDef virDomainDef;
+typedef virDomainDef *virDomainDefPtr;
+
+
+typedef struct _virDomainNumatune virDomainNumatune;
+typedef virDomainNumatune *virDomainNumatunePtr;
 
 typedef enum {
     VIR_DOMAIN_NUMATUNE_PLACEMENT_DEFAULT = 0,
@@ -36,19 +52,51 @@ typedef enum {
 } virDomainNumatunePlacement;
 
 VIR_ENUM_DECL(virDomainNumatunePlacement)
-
 VIR_ENUM_DECL(virDomainNumatuneMemMode)
 
-typedef struct _virDomainNumatune virDomainNumatune;
-typedef virDomainNumatune *virDomainNumatunePtr;
-struct _virDomainNumatune {
-    struct {
-        virBitmapPtr nodemask;
-        int mode;           /* enum virDomainNumatuneMemMode */
-        int placement_mode; /* enum virDomainNumatunePlacement */
-    } memory;               /* pinning for all the memory */
 
-    /* Future NUMA tuning related stuff should go here. */
-};
+void virDomainNumatuneFree(virDomainNumatunePtr numatune);
+
+/*
+ * XML Parse/Format functions
+ */
+int virDomainNumatuneParseXML(virDomainDefPtr def, xmlXPathContextPtr ctxt)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int virDomainNumatuneFormatXML(virBufferPtr buf, virDomainNumatunePtr numatune)
+    ATTRIBUTE_NONNULL(1);
+
+/*
+ * Getters
+ */
+virDomainNumatuneMemMode virDomainNumatuneGetMode(virDomainNumatunePtr numatune);
+
+virBitmapPtr virDomainNumatuneGetNodeset(virDomainNumatunePtr numatune,
+                                         virBitmapPtr auto_nodeset);
+
+/*
+ * Formatters
+ */
+char *virDomainNumatuneFormatNodeset(virDomainNumatunePtr numatune,
+                                     virBitmapPtr auto_nodeset);
+
+int virDomainNumatuneMaybeFormatNodeset(virDomainNumatunePtr numatune,
+                                        virBitmapPtr auto_nodeset,
+                                        char **mask);
+
+/*
+ * Setters
+ */
+int virDomainNumatuneSet(virDomainDefPtr def, int placement,
+                         int mode, virBitmapPtr nodeset)
+    ATTRIBUTE_NONNULL(1);
+
+/*
+ * Other accessors
+ */
+bool virDomainNumatuneEquals(virDomainNumatunePtr n1,
+                             virDomainNumatunePtr n2);
+
+bool virDomainNumatuneHasPlacementAuto(virDomainNumatunePtr numatune);
 
 #endif /* __NUMATUNE_CONF_H__ */

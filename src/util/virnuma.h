@@ -31,7 +31,7 @@
 char *virNumaGetAutoPlacementAdvice(unsigned short vcups,
                                     unsigned long long balloon);
 
-int virNumaSetupMemoryPolicy(virDomainNumatune numatune,
+int virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
                              virBitmapPtr nodemask);
 
 bool virNumaIsAvailable(void);

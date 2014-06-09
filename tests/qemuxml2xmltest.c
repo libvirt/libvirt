@@ -373,6 +373,8 @@ mymain(void)
     DO_TEST_DIFFERENT("cpu-numa1");
     DO_TEST_DIFFERENT("cpu-numa2");
 
+    DO_TEST_DIFFERENT("numatune-auto-prefer");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 

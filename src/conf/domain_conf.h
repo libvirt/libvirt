@@ -67,6 +67,9 @@ typedef virDomainFSDef *virDomainFSDefPtr;
 typedef struct _virDomainNetDef virDomainNetDef;
 typedef virDomainNetDef *virDomainNetDefPtr;
 
+typedef struct _virDomainNumatune virDomainNumatune;
+typedef virDomainNumatune *virDomainNumatunePtr;
+
 typedef struct _virDomainInputDef virDomainInputDef;
 typedef virDomainInputDef *virDomainInputDefPtr;
 
@@ -1897,7 +1900,7 @@ struct _virDomainDef {
         virDomainVcpuPinDefPtr emulatorpin;
     } cputune;
 
-    virDomainNumatune numatune;
+    virDomainNumatunePtr numatune;
     virDomainResourceDefPtr resource;
     virDomainIdMapDef idmap;
 
@@ -2716,5 +2719,8 @@ int virDomainObjSetMetadata(virDomainObjPtr vm,
                             virDomainXMLOptionPtr xmlopt,
                             const char *configDir,
                             unsigned int flags);
+
+bool virDomainDefNeedsPlacementAdvice(virDomainDefPtr def)
+    ATTRIBUTE_NONNULL(1);
 
 #endif /* __DOMAIN_CONF_H */

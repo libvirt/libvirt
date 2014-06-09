@@ -87,11 +87,10 @@ virNumaGetAutoPlacementAdvice(unsigned short vcpus ATTRIBUTE_UNUSED,
 
 #if WITH_NUMACTL
 int
-virNumaSetupMemoryPolicy(virDomainNumatune numatune,
+virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
                          virBitmapPtr nodemask)
 {
     nodemask_t mask;
-    int mode = -1;
     int node = -1;
     int ret = -1;
     int bit = 0;
@@ -99,19 +98,9 @@ virNumaSetupMemoryPolicy(virDomainNumatune numatune,
     int maxnode = 0;
     virBitmapPtr tmp_nodemask = NULL;
 
-    if (numatune.memory.placement_mode ==
-        VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC) {
-        if (!numatune.memory.nodemask)
-            return 0;
-        VIR_DEBUG("Set NUMA memory policy with specified nodeset");
-        tmp_nodemask = numatune.memory.nodemask;
-    } else if (numatune.memory.placement_mode ==
-               VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO) {
-        VIR_DEBUG("Set NUMA memory policy with advisory nodeset from numad");
-        tmp_nodemask = nodemask;
-    } else {
+    tmp_nodemask = virDomainNumatuneGetNodeset(numatune, nodemask);
+    if (!tmp_nodemask)
         return 0;
-    }
 
     if (numa_available() < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -134,13 +123,15 @@ virNumaSetupMemoryPolicy(virDomainNumatune numatune,
         nodemask_set(&mask, bit);
     }
 
-    mode = numatune.memory.mode;
-
-    if (mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
+    switch (virDomainNumatuneGetMode(numatune)) {
+    case VIR_DOMAIN_NUMATUNE_MEM_STRICT:
         numa_set_bind_policy(1);
         numa_set_membind(&mask);
         numa_set_bind_policy(0);
-    } else if (mode == VIR_DOMAIN_NUMATUNE_MEM_PREFERRED) {
+        break;
+
+    case VIR_DOMAIN_NUMATUNE_MEM_PREFERRED:
+    {
         int nnodes = 0;
         for (i = 0; i < NUMA_NUM_NODES; i++) {
             if (nodemask_isset(&mask, i)) {
@@ -158,17 +149,16 @@ virNumaSetupMemoryPolicy(virDomainNumatune numatune,
 
         numa_set_bind_policy(0);
         numa_set_preferred(node);
-    } else if (mode == VIR_DOMAIN_NUMATUNE_MEM_INTERLEAVE) {
-        numa_set_interleave_mask(&mask);
-    } else {
-        /* XXX: Shouldn't go here, as we already do checking when
-         * parsing domain XML.
-         */
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("Invalid mode for memory NUMA tuning."));
-        goto cleanup;
     }
+    break;
 
+    case VIR_DOMAIN_NUMATUNE_MEM_INTERLEAVE:
+        numa_set_interleave_mask(&mask);
+        break;
+
+    case VIR_DOMAIN_NUMATUNE_MEM_LAST:
+        break;
+    }
     ret = 0;
 
  cleanup:
@@ -327,10 +317,10 @@ virNumaGetNodeCPUs(int node,
 
 #else
 int
-virNumaSetupMemoryPolicy(virDomainNumatune numatune,
+virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
                          virBitmapPtr nodemask ATTRIBUTE_UNUSED)
 {
-    if (numatune.memory.nodemask) {
+    if (virDomainNumatuneGetNodeset(numatune, NULL)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("libvirt is compiled without NUMA tuning support"));
 

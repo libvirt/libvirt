@@ -8637,7 +8637,8 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
     size_t i = 0;
     int ret = -1;
 
-    if (vm->def->numatune.memory.mode != VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
+    if (virDomainNumatuneGetMode(vm->def->numatune) !=
+        VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("change of nodeset for running domain "
                          "requires strict numa mode"));
@@ -8712,6 +8713,8 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
+    virBitmapPtr nodeset = NULL;
+    int mode = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -8752,65 +8755,47 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
         virTypedParameterPtr param = &params[i];
 
         if (STREQ(param->field, VIR_DOMAIN_NUMA_MODE)) {
-            int mode = param->value.i;
+            mode = param->value.i;
 
-            if (mode >= VIR_DOMAIN_NUMATUNE_PLACEMENT_LAST ||
-                mode < VIR_DOMAIN_NUMATUNE_PLACEMENT_DEFAULT)
-            {
+            if (mode < 0 || mode >= VIR_DOMAIN_NUMATUNE_MEM_LAST) {
                 virReportError(VIR_ERR_INVALID_ARG,
-                               _("unsupported numa_mode: '%d'"), mode);
+                               _("unsupported numatune mode: '%d'"), mode);
                 goto cleanup;
             }
-
-            if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
-                vm->def->numatune.memory.mode != mode) {
-                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                               _("can't change numa mode for running domain"));
-                goto cleanup;
-            }
-
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-                persistentDef->numatune.memory.mode = mode;
 
         } else if (STREQ(param->field, VIR_DOMAIN_NUMA_NODESET)) {
-            virBitmapPtr nodeset = NULL;
-
             if (virBitmapParse(param->value.s, 0, &nodeset,
-                               VIR_DOMAIN_CPUMASK_LEN) < 0) {
+                               VIR_DOMAIN_CPUMASK_LEN) < 0)
+                goto cleanup;
+
+            if (virBitmapIsAllClear(nodeset)) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("Invalid nodeset for numatune"));
                 goto cleanup;
             }
-
-            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-                if (qemuDomainSetNumaParamsLive(vm, caps, nodeset) < 0) {
-                    virBitmapFree(nodeset);
-                    goto cleanup;
-                }
-
-                /* update vm->def here so that dumpxml can read the new
-                 * values from vm->def. */
-                virBitmapFree(vm->def->numatune.memory.nodemask);
-
-                vm->def->numatune.memory.placement_mode =
-                    VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC;
-                vm->def->numatune.memory.nodemask = virBitmapNewCopy(nodeset);
-            }
-
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                virBitmapFree(persistentDef->numatune.memory.nodemask);
-
-                persistentDef->numatune.memory.nodemask = nodeset;
-                persistentDef->numatune.memory.placement_mode =
-                    VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC;
-                nodeset = NULL;
-            }
-            virBitmapFree(nodeset);
         }
     }
 
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (mode != -1 &&
+            virDomainNumatuneGetMode(vm->def->numatune) != mode) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("can't change numatune mode for running domain"));
+            goto cleanup;
+        }
+
+        if (nodeset &&
+            qemuDomainSetNumaParamsLive(vm, caps, nodeset) < 0)
+            goto cleanup;
+
+        if (virDomainNumatuneSet(vm->def, -1, mode, nodeset) < 0)
+            goto cleanup;
+    }
+
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (!persistentDef->numatune.memory.placement_mode)
-            persistentDef->numatune.memory.placement_mode =
-                VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO;
+        if (virDomainNumatuneSet(persistentDef, -1, mode, nodeset) < 0)
+            goto cleanup;
+
         if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
             goto cleanup;
     }
@@ -8818,6 +8803,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
     ret = 0;
 
  cleanup:
+    virBitmapFree(nodeset);
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(caps);
@@ -8886,15 +8872,17 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
             if (virTypedParameterAssign(param, VIR_DOMAIN_NUMA_MODE,
                                         VIR_TYPED_PARAM_INT, 0) < 0)
                 goto cleanup;
+
             if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-                param->value.i = persistentDef->numatune.memory.mode;
+                param->value.i = virDomainNumatuneGetMode(persistentDef->numatune);
             else
-                param->value.i = vm->def->numatune.memory.mode;
+                param->value.i = virDomainNumatuneGetMode(vm->def->numatune);
             break;
 
         case 1: /* fill numa nodeset here */
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                nodeset = virBitmapFormat(persistentDef->numatune.memory.nodemask);
+                nodeset = virDomainNumatuneFormatNodeset(persistentDef->numatune,
+                                                         NULL);
                 if (!nodeset)
                     goto cleanup;
             } else {

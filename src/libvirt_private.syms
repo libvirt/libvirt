@@ -200,6 +200,7 @@ virDomainDefGetDefaultEmulator;
 virDomainDefGetSecurityLabelDef;
 virDomainDefMaybeAddController;
 virDomainDefMaybeAddInput;
+virDomainDefNeedsPlacementAdvice;
 virDomainDefNew;
 virDomainDefParseFile;
 virDomainDefParseNode;
@@ -607,10 +608,20 @@ virNodeDeviceObjUnlock;
 
 
 # conf/numatune_conf.h
+virDomainNumatuneEquals;
+virDomainNumatuneFormatNodeset;
+virDomainNumatuneFormatXML;
+virDomainNumatuneFree;
+virDomainNumatuneGetMode;
+virDomainNumatuneGetNodeset;
+virDomainNumatuneHasPlacementAuto;
+virDomainNumatuneMaybeFormatNodeset;
 virDomainNumatuneMemModeTypeFromString;
 virDomainNumatuneMemModeTypeToString;
+virDomainNumatuneParseXML;
 virDomainNumatunePlacementTypeFromString;
 virDomainNumatunePlacementTypeToString;
+virDomainNumatuneSet;
 
 
 # conf/nwfilter_conf.h

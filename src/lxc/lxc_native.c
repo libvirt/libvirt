@@ -1,6 +1,7 @@
 /*
  * lxc_native.c: LXC native configuration import
  *
+ * Copyright (c) 2014 Red Hat, Inc.
  * Copyright (c) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
  * This library is free software; you can redistribute it and/or
@@ -708,6 +709,7 @@ static int
 lxcSetCpusetTune(virDomainDefPtr def, virConfPtr properties)
 {
     virConfValuePtr value;
+    virBitmapPtr nodeset = NULL;
 
     if ((value = virConfGetValue(properties, "lxc.cgroup.cpuset.cpus")) &&
             value->str) {
@@ -719,12 +721,15 @@ lxcSetCpusetTune(virDomainDefPtr def, virConfPtr properties)
     }
 
     if ((value = virConfGetValue(properties, "lxc.cgroup.cpuset.mems")) &&
-            value->str) {
-        def->numatune.memory.placement_mode = VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC;
-        def->numatune.memory.mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
-        if (virBitmapParse(value->str, 0, &def->numatune.memory.nodemask,
-                           VIR_DOMAIN_CPUMASK_LEN) < 0)
+        value->str) {
+        if (virBitmapParse(value->str, 0, &nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
             return -1;
+        if (virDomainNumatuneSet(def, VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC,
+                                 VIR_DOMAIN_NUMATUNE_MEM_STRICT, nodeset) < 0) {
+            virBitmapFree(nodeset);
+            return -1;
+        }
+        virBitmapFree(nodeset);
     }
 
     return 0;

@@ -2078,12 +2078,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
         return -1;
     }
 
-    if (old->numatune.memory.mode != new->numatune.memory.mode ||
-        old->numatune.memory.placement_mode != new->numatune.memory.placement_mode ||
-        ((old->numatune.memory.nodemask != NULL || new->numatune.memory.nodemask != NULL) &&
-         (old->numatune.memory.nodemask == NULL || new->numatune.memory.nodemask == NULL ||
-        !virBitmapEqual(old->numatune.memory.nodemask, new->numatune.memory.nodemask)))){
-
+    if (!virDomainNumatuneEquals(old->numatune, new->numatune)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                         _("numa parameters are not supported "
                           "by parallels driver"));

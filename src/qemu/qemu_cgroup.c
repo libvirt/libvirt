@@ -601,23 +601,14 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
         return 0;
 
-    if ((vm->def->numatune.memory.nodemask ||
-         (vm->def->numatune.memory.placement_mode ==
-          VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO)) &&
-        vm->def->numatune.memory.mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
+    if (virDomainNumatuneMaybeFormatNodeset(vm->def->numatune,
+                                            nodemask,
+                                            &mem_mask) < 0)
+        goto cleanup;
 
-        if (vm->def->numatune.memory.placement_mode ==
-            VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO)
-            mem_mask = virBitmapFormat(nodemask);
-        else
-            mem_mask = virBitmapFormat(vm->def->numatune.memory.nodemask);
-
-        if (!mem_mask)
-            goto cleanup;
-
-        if (virCgroupSetCpusetMems(priv->cgroup, mem_mask) < 0)
-            goto cleanup;
-    }
+    if (mem_mask &&
+        virCgroupSetCpusetMems(priv->cgroup, mem_mask) < 0)
+        goto cleanup;
 
     if (vm->def->cpumask ||
         (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)) {
