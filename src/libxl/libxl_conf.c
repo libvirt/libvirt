@@ -875,6 +875,7 @@ libxlMakeNic(virDomainDefPtr def,
              libxl_device_nic *x_nic)
 {
     bool ioemu_nic = STREQ(def->os.type, "hvm");
+    virDomainNetType actual_type = virDomainNetGetActualType(l_nic);
 
     /* TODO: Where is mtu stored?
      *
@@ -900,16 +901,60 @@ libxlMakeNic(virDomainDefPtr def,
     if (VIR_STRDUP(x_nic->ifname, l_nic->ifname) < 0)
         return -1;
 
-    switch (l_nic->type) {
+    switch (actual_type) {
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
-            if (VIR_STRDUP(x_nic->bridge, l_nic->data.bridge.brname) < 0)
+            if (VIR_STRDUP(x_nic->bridge,
+                           virDomainNetGetActualBridgeName(l_nic)) < 0)
                 return -1;
             /* fallthrough */
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
             if (VIR_STRDUP(x_nic->script, l_nic->script) < 0)
                 return -1;
             break;
-        default:
+        case VIR_DOMAIN_NET_TYPE_NETWORK:
+        {
+            bool fail = false;
+            char *brname = NULL;
+            virNetworkPtr network;
+            virConnectPtr conn;
+            virErrorPtr errobj;
+
+            if (!(conn = virConnectOpen("xen:///system")))
+                return -1;
+
+            if (!(network =
+                  virNetworkLookupByName(conn, l_nic->data.network.name))) {
+                virObjectUnref(conn);
+                return -1;
+            }
+
+            if ((brname = virNetworkGetBridgeName(network))) {
+                if (VIR_STRDUP(x_nic->bridge, brname) < 0)
+                    fail = true;
+            } else {
+                fail = true;
+            }
+
+            VIR_FREE(brname);
+
+            /* Preserve any previous failure */
+            errobj = virSaveLastError();
+            virNetworkFree(network);
+            virSetError(errobj);
+            virFreeError(errobj);
+            virObjectUnref(conn);
+            if (fail)
+                return -1;
+            break;
+        }
+        case VIR_DOMAIN_NET_TYPE_USER:
+        case VIR_DOMAIN_NET_TYPE_SERVER:
+        case VIR_DOMAIN_NET_TYPE_CLIENT:
+        case VIR_DOMAIN_NET_TYPE_MCAST:
+        case VIR_DOMAIN_NET_TYPE_INTERNAL:
+        case VIR_DOMAIN_NET_TYPE_DIRECT:
+        case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+        case VIR_DOMAIN_NET_TYPE_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                     _("libxenlight does not support network device type %s"),
                     virDomainNetTypeToString(l_nic->type));
