@@ -3233,6 +3233,9 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #ifdef WITH_XENAPI
     vshPrint(ctl, " XenAPI");
 #endif
+#ifdef WITH_BHYVE
+    vshPrint(ctl, " Bhyve");
+#endif
 #ifdef WITH_TEST
     vshPrint(ctl, " Test");
 #endif
