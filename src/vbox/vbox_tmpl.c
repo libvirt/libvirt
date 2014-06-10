@@ -11483,6 +11483,21 @@ vboxNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
 }
 
 
+static int
+vboxNodeGetFreePages(virConnectPtr conn ATTRIBUTE_UNUSED,
+                     unsigned int npages,
+                     unsigned int *pages,
+                     int startCell,
+                     unsigned int cellCount,
+                     unsigned long long *counts,
+                     unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
+    return nodeGetFreePages(npages, pages, startCell, cellCount, counts);
+}
+
+
 /**
  * Function Tables
  */
@@ -11564,6 +11579,7 @@ virDriver NAME(Driver) = {
     .domainRevertToSnapshot = vboxDomainRevertToSnapshot, /* 0.8.0 */
     .domainSnapshotDelete = vboxDomainSnapshotDelete, /* 0.8.0 */
     .connectIsAlive = vboxConnectIsAlive, /* 0.9.8 */
+    .nodeGetFreePages = vboxNodeGetFreePages, /* 1.2.6 */
 };
 
 virNetworkDriver NAME(NetworkDriver) = {

@@ -5656,6 +5656,24 @@ lxcDomainGetCPUStats(virDomainPtr dom,
 }
 
 
+static int
+lxcNodeGetFreePages(virConnectPtr conn,
+                    unsigned int npages,
+                    unsigned int *pages,
+                    int startCell,
+                    unsigned int cellCount,
+                    unsigned long long *counts,
+                    unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
+    if (virNodeGetFreePagesEnsureACL(conn) < 0)
+        return -1;
+
+    return nodeGetFreePages(npages, pages, startCell, cellCount, counts);
+}
+
+
 /* Function Tables */
 static virDriver lxcDriver = {
     .no = VIR_DRV_LXC,
@@ -5745,6 +5763,7 @@ static virDriver lxcDriver = {
     .domainShutdownFlags = lxcDomainShutdownFlags, /* 1.0.1 */
     .domainReboot = lxcDomainReboot, /* 1.0.1 */
     .domainLxcOpenNamespace = lxcDomainLxcOpenNamespace, /* 1.0.2 */
+    .nodeGetFreePages = lxcNodeGetFreePages, /* 1.2.6 */
 };
 
 static virStateDriver lxcStateDriver = {

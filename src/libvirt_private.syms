@@ -877,6 +877,7 @@ nodeGetCPUBitmap;
 nodeGetCPUCount;
 nodeGetCPUMap;
 nodeGetCPUStats;
+nodeGetFreePages;
 nodeGetInfo;
 nodeGetMemory;
 nodeGetMemoryParameters;

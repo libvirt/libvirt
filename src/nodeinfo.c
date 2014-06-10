@@ -2018,3 +2018,37 @@ nodeGetMemory(unsigned long long *mem,
 
     return 0;
 }
+
+int
+nodeGetFreePages(unsigned int npages,
+                 unsigned int *pages,
+                 int startCell,
+                 unsigned int cellCount,
+                 unsigned long long *counts)
+{
+    int ret = -1;
+    int cell;
+    size_t i, ncounts = 0;
+
+    for (cell = startCell; cell < (int) (startCell + cellCount); cell++) {
+        for (i = 0; i < npages; i++) {
+            unsigned int page_size = pages[i];
+            unsigned int page_free;
+
+            if (virNumaGetPageInfo(cell, page_size, NULL, &page_free) < 0)
+                goto cleanup;
+
+            counts[ncounts++] = page_free;
+        }
+    }
+
+    if (!ncounts) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no suitable info found"));
+        goto cleanup;
+    }
+
+    ret = ncounts;
+ cleanup:
+    return ret;
+}

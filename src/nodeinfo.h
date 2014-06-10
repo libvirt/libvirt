@@ -58,4 +58,9 @@ int nodeGetCPUMap(unsigned char **cpumap,
                   unsigned int *online,
                   unsigned int flags);
 
+int nodeGetFreePages(unsigned int npages,
+                     unsigned int *pages,
+                     int startCell,
+                     unsigned int cellCount,
+                     unsigned long long *counts);
 #endif /* __VIR_NODEINFO_H__*/

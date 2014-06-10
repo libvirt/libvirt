@@ -16879,6 +16879,24 @@ qemuDomainFSThaw(virDomainPtr dom,
 }
 
 
+static int
+qemuNodeGetFreePages(virConnectPtr conn,
+                     unsigned int npages,
+                     unsigned int *pages,
+                     int startCell,
+                     unsigned int cellCount,
+                     unsigned long long *counts,
+                     unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
+    if (virNodeGetFreePagesEnsureACL(conn) < 0)
+        return -1;
+
+    return nodeGetFreePages(npages, pages, startCell, cellCount, counts);
+}
+
+
 static virDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
     .name = QEMU_DRIVER_NAME,
@@ -17073,6 +17091,7 @@ static virDriver qemuDriver = {
     .domainFSThaw = qemuDomainFSThaw, /* 1.2.5 */
     .domainGetTime = qemuDomainGetTime, /* 1.2.5 */
     .domainSetTime = qemuDomainSetTime, /* 1.2.5 */
+    .nodeGetFreePages = qemuNodeGetFreePages, /* 1.2.6 */
 };
 
 
