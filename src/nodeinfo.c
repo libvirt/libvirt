@@ -1803,7 +1803,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
     virCapsHostNUMACellCPUPtr cpus = NULL;
     virBitmapPtr cpumap = NULL;
     virCapsHostNUMACellSiblingInfoPtr siblings = NULL;
-    int nsiblings;
+    int nsiblings = 0;
     int ret = -1;
     int ncpus = 0;
     int cpu;
