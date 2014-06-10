@@ -226,7 +226,10 @@
                 For a PCI address of "0000:00:1f:2", the unique identifer files
                 can be found using the command
                 <code>find -H /sys/class/scsi_host/host*/unique_id |
-                xargs grep '[0-9]'</code>.
+                xargs grep '[0-9]'</code>. Optionally, the
+                <code>virsh nodedev-dumpxml scsi_hostN</code>' of a
+                specific scsi_hostN list entry will list the
+                <code>unique_id</code> value.
               </dd>
             </dl>
           </dd>

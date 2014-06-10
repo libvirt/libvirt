@@ -1729,6 +1729,98 @@ virReadSCSIUniqueId(const char *sysfs_prefix,
     return ret;
 }
 
+/* virFindSCSIHostByPCI:
+ * @sysfs_prefix: "scsi_host" sysfs path, defaults to SYSFS_SCSI_HOST_PATH
+ * @parentaddr: string of the PCI address "scsi_host" device to be found
+ * @unique_id: unique_id value of the to be found "scsi_host" device
+ * @result: Return the host# of the matching "scsi_host" device
+ *
+ * Iterate over the SYSFS_SCSI_HOST_PATH entries looking for a matching
+ * PCI Address in the expected format (dddd:bb:ss.f, where 'dddd' is the
+ * 'domain' value, 'bb' is the 'bus' value, 'ss' is the 'slot' value, and
+ * 'f' is the 'function' value from the PCI address) with a unique_id file
+ * entry having the value expected. Unlike virReadSCSIUniqueId() we don't
+ * have a host number yet and that's what we're looking for.
+ *
+ * Returns the host name of the "scsi_host" which must be freed by the caller,
+ * or NULL on failure
+ */
+char *
+virFindSCSIHostByPCI(const char *sysfs_prefix,
+                     const char *parentaddr,
+                     unsigned int unique_id)
+{
+    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_HOST_PATH;
+    struct dirent *entry = NULL;
+    DIR *dir = NULL;
+    char *host_link = NULL;
+    char *host_path = NULL;
+    char *p = NULL;
+    char *ret = NULL;
+    char *buf = NULL;
+    char *unique_path = NULL;
+    unsigned int read_unique_id;
+
+    if (!(dir = opendir(prefix))) {
+        virReportSystemError(errno,
+                             _("Failed to opendir path '%s'"),
+                             prefix);
+        goto cleanup;
+    }
+
+    while (virDirRead(dir, &entry, prefix) > 0) {
+        if (entry->d_name[0] == '.' || !virFileIsLink(entry->d_name))
+            continue;
+
+        if (virAsprintf(&host_link, "%s/%s", prefix, entry->d_name) < 0)
+            goto cleanup;
+
+        if (virFileResolveLink(host_link, &host_path) < 0)
+            goto cleanup;
+
+        if (!strstr(host_path, parentaddr)) {
+            VIR_FREE(host_link);
+            VIR_FREE(host_path);
+            continue;
+        }
+        VIR_FREE(host_link);
+        VIR_FREE(host_path);
+
+        if (virAsprintf(&unique_path, "%s/%s/unique_id", prefix,
+                        entry->d_name) < 0)
+            goto cleanup;
+
+        if (!virFileExists(unique_path)) {
+            VIR_FREE(unique_path);
+            continue;
+        }
+
+        if (virFileReadAll(unique_path, 1024, &buf) < 0)
+            goto cleanup;
+
+        if ((p = strchr(buf, '\n')))
+            *p = '\0';
+
+        if (virStrToLong_ui(buf, NULL, 10, &read_unique_id) < 0)
+            goto cleanup;
+
+        if (read_unique_id != unique_id) {
+            VIR_FREE(unique_path);
+            continue;
+        }
+
+        ignore_value(VIR_STRDUP(ret, entry->d_name));
+        break;
+    }
+
+ cleanup:
+    closedir(dir);
+    VIR_FREE(unique_path);
+    VIR_FREE(host_link);
+    VIR_FREE(host_path);
+    return ret;
+}
+
 /* virReadFCHost:
  * @sysfs_prefix: "fc_host" sysfs path, defaults to SYSFS_FC_HOST_PATH
  * @host: Host number, E.g. 5 of "fc_host/host5"
@@ -2085,6 +2177,15 @@ int
 virReadSCSIUniqueId(const char *sysfs_prefix ATTRIBUTE_UNUSED,
                     int host ATTRIBUTE_UNUSED,
                     unsigned int *result ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+    return -1;
+}
+
+char *
+virFindSCSIHostByPCI(const char *sysfs_prefix ATTRIBUTE_UNUSED,
+                     const char *parentaddr ATTRIBUTE_UNUSED,
+                     unsigned int unique_id ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;

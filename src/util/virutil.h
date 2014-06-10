@@ -168,6 +168,10 @@ int virReadSCSIUniqueId(const char *sysfs_prefix,
                         int host,
                         int *result)
     ATTRIBUTE_NONNULL(3);
+char *
+virFindSCSIHostByPCI(const char *sysfs_prefix,
+                     const char *parentaddr,
+                     unsigned int unique_id);
 int virReadFCHost(const char *sysfs_prefix,
                   int host,
                   const char *entry,

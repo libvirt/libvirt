@@ -196,6 +196,54 @@ testVirReadSCSIUniqueId(const void *data ATTRIBUTE_UNUSED)
     return 0;
 }
 
+/* Test virFindSCSIHostByPCI */
+static int
+testVirFindSCSIHostByPCI(const void *data ATTRIBUTE_UNUSED)
+{
+    unsigned int unique_id1 = 1;
+    unsigned int unique_id2 = 2;
+    const char *pci_addr1 = "0000:00:1f.1";
+    const char *pci_addr2 = "0000:00:1f.2";
+    char *path_addr = NULL;
+    char *ret_host = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&path_addr, "%s/%s", abs_srcdir,
+                    "sysfs/class/scsi_host") < 0)
+        goto cleanup;
+
+    if (!(ret_host = virFindSCSIHostByPCI(TEST_SCSIHOST_CLASS_PATH,
+                                          pci_addr1, unique_id1)) ||
+        STRNEQ(ret_host, "host0"))
+        goto cleanup;
+    VIR_FREE(ret_host);
+
+    if (!(ret_host = virFindSCSIHostByPCI(TEST_SCSIHOST_CLASS_PATH,
+                                          pci_addr1, unique_id2)) ||
+        STRNEQ(ret_host, "host1"))
+        goto cleanup;
+    VIR_FREE(ret_host);
+
+    if (!(ret_host = virFindSCSIHostByPCI(TEST_SCSIHOST_CLASS_PATH,
+                                          pci_addr2, unique_id1)) ||
+        STRNEQ(ret_host, "host2"))
+        goto cleanup;
+    VIR_FREE(ret_host);
+
+    if (!(ret_host = virFindSCSIHostByPCI(TEST_SCSIHOST_CLASS_PATH,
+                                          pci_addr2, unique_id2)) ||
+        STRNEQ(ret_host, "host3"))
+        goto cleanup;
+    VIR_FREE(ret_host);
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(ret_host);
+    VIR_FREE(path_addr);
+    return ret;
+}
+
 # define FAKESYSFSDIRTEMPLATE abs_builddir "/fakesysfsdir-XXXXXX"
 
 static int
@@ -230,6 +278,12 @@ mymain(void)
 
     if (virtTestRun("testVirReadSCSIUniqueId",
                     testVirReadSCSIUniqueId, NULL) < 0) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    if (virtTestRun("testVirFindSCSIHostByPCI",
+                    testVirFindSCSIHostByPCI, NULL) < 0) {
         ret = -1;
         goto cleanup;
     }

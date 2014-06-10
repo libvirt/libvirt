@@ -2113,6 +2113,7 @@ virDoubleToStr;
 virEnumFromString;
 virEnumToString;
 virFindFCHostCapableVport;
+virFindSCSIHostByPCI;
 virFormatIntDecimal;
 virGetDeviceID;
 virGetDeviceUnprivSGIO;
