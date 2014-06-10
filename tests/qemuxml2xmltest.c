@@ -304,6 +304,7 @@ mymain(void)
     DO_TEST("seclabel-static");
     DO_TEST_FULL("seclabel-static-labelskip", false, WHEN_ACTIVE);
     DO_TEST("seclabel-none");
+    DO_TEST("seclabel-dac-none");
     DO_TEST("numad-static-vcpu-no-numatune");
     DO_TEST("disk-scsi-lun-passthrough-sgio");
 

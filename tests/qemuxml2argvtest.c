@@ -1216,6 +1216,7 @@ mymain(void)
     DO_TEST("seclabel-static-relabel", QEMU_CAPS_NAME);
     DO_TEST("seclabel-static-labelskip", QEMU_CAPS_NAME);
     DO_TEST("seclabel-none", QEMU_CAPS_NAME);
+    DO_TEST("seclabel-dac-none", QEMU_CAPS_NAME);
 
     DO_TEST("pseries-basic",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
