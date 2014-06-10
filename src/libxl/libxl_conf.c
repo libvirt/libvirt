@@ -882,6 +882,14 @@ libxlMakeNic(virDomainDefPtr def,
      * x_nics[i].mtu = 1492;
      */
 
+    if (l_nic->script && !(actual_type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+                           actual_type == VIR_DOMAIN_NET_TYPE_ETHERNET)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("specifying a script is only supported with "
+                         "interface types bridge and ethernet"));
+        return -1;
+    }
+
     libxl_device_nic_init(x_nic);
 
     virMacAddrGetRaw(&l_nic->mac, x_nic->mac);
@@ -955,8 +963,8 @@ libxlMakeNic(virDomainDefPtr def,
         case VIR_DOMAIN_NET_TYPE_DIRECT:
         case VIR_DOMAIN_NET_TYPE_HOSTDEV:
         case VIR_DOMAIN_NET_TYPE_LAST:
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                    _("libxenlight does not support network device type %s"),
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                    _("unsupported interface type %s"),
                     virDomainNetTypeToString(l_nic->type));
             return -1;
     }
