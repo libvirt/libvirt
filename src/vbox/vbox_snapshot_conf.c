@@ -1336,7 +1336,7 @@ virVBoxSnapshotConfGetRODisksPathsFromLibvirtXML(const char *filePath,
 {
     int result = -1;
     size_t i = 0;
-    char **ret;
+    char **ret = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr xPathContext = NULL;
     xmlNodePtr *nodes = NULL;
