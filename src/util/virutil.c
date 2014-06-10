@@ -1681,6 +1681,54 @@ virGetDeviceUnprivSGIO(const char *path,
 # define SYSFS_FC_HOST_PATH "/sys/class/fc_host/"
 # define SYSFS_SCSI_HOST_PATH "/sys/class/scsi_host/"
 
+/* virReadSCSIUniqueId:
+ * @sysfs_prefix: "scsi_host" sysfs path, defaults to SYSFS_SCSI_HOST_PATH
+ * @host: Host number, E.g. 5 of "scsi_host/host5"
+ * @result: Return the entry value as an unsigned int
+ *
+ * Read the value of the "scsi_host" unique_id file.
+ *
+ * Returns 0 on success, and @result is filled with the unique_id value
+ * Otherwise returns -1
+ */
+int
+virReadSCSIUniqueId(const char *sysfs_prefix,
+                    int host,
+                    int *result)
+{
+    char *sysfs_path = NULL;
+    char *p = NULL;
+    int ret = -1;
+    char *buf = NULL;
+    int unique_id;
+
+    if (virAsprintf(&sysfs_path, "%s/host%d/unique_id",
+                    sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_HOST_PATH,
+                    host) < 0)
+        goto cleanup;
+
+    if (virFileReadAll(sysfs_path, 1024, &buf) < 0)
+        goto cleanup;
+
+    if ((p = strchr(buf, '\n')))
+        *p = '\0';
+
+    if (virStrToLong_i(buf, NULL, 10, &unique_id) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unable to parse unique_id: %s"), buf);
+
+        goto cleanup;
+    }
+
+    *result = unique_id;
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(sysfs_path);
+    VIR_FREE(buf);
+    return ret;
+}
+
 /* virReadFCHost:
  * @sysfs_prefix: "fc_host" sysfs path, defaults to SYSFS_FC_HOST_PATH
  * @host: Host number, E.g. 5 of "fc_host/host5"
@@ -2033,6 +2081,15 @@ virFindFCHostCapableVport(const char *sysfs_prefix)
     return ret;
 }
 #else
+int
+virReadSCSIUniqueId(const char *sysfs_prefix ATTRIBUTE_UNUSED,
+                    int host ATTRIBUTE_UNUSED,
+                    unsigned int *result ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+    return -1;
+}
+
 int
 virReadFCHost(const char *sysfs_prefix ATTRIBUTE_UNUSED,
               int host ATTRIBUTE_UNUSED,

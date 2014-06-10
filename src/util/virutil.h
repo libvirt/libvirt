@@ -164,6 +164,10 @@ int virGetDeviceUnprivSGIO(const char *path,
                            int *unpriv_sgio);
 char *virGetUnprivSGIOSysfsPath(const char *path,
                                 const char *sysfs_dir);
+int virReadSCSIUniqueId(const char *sysfs_prefix,
+                        int host,
+                        int *result)
+    ATTRIBUTE_NONNULL(3);
 int virReadFCHost(const char *sysfs_prefix,
                   int host,
                   const char *entry,

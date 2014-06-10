@@ -83,6 +83,7 @@ EXTRA_DIST =		\
 	domainsnapshotxml2xmlin \
 	domainsnapshotxml2xmlout \
 	fchostdata \
+	scsihostdata \
 	interfaceschemadata \
 	lxcconf2xmldata \
 	lxcxml2xmldata \
@@ -188,6 +189,7 @@ endif WITH_REMOTE
 
 if WITH_LINUX
 test_programs += fchosttest
+test_programs += scsihosttest
 endif WITH_LINUX
 
 if WITH_LIBVIRTD
@@ -1146,8 +1148,13 @@ fchosttest_SOURCES = \
        fchosttest.c testutils.h testutils.c
 fchosttest_LDADD = $(LDADDS)
 
+scsihosttest_SOURCES = \
+       scsihosttest.c testutils.h testutils.c
+scsihosttest_LDADD = $(LDADDS)
+
 else ! WITH_LINUX
 EXTRA_DIST += fchosttest.c
+EXTRA_DIST += scsihosttest.c
 endif  ! WITH_LINUX
 
 if WITH_LINUX
