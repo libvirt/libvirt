@@ -15094,8 +15094,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
 
     if (base &&
         (virStorageFileParseChainIndex(disk->dst, base, &baseIndex) < 0 ||
-         !(baseSource = virStorageFileChainLookup(disk->src,
-                                                  disk->src->backingStore,
+         !(baseSource = virStorageFileChainLookup(disk->src, disk->src,
                                                   base, baseIndex, NULL))))
         goto endjob;
 

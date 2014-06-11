@@ -1331,15 +1331,16 @@ virStorageFileParseChainIndex(const char *diskTarget,
     return ret;
 }
 
-/* Given a @chain, look for the backing store @name within the chain starting
- * from @startFrom or @chain if @startFrom is NULL and return that location
- * within the chain.  @chain must always point to the top of the chain.  Pass
- * NULL for @name and 0 for @idx to find the base of the chain.  Pass nonzero
- * @idx to find the backing source according to its position in the backing
- * chain.  If @parent is not NULL, set *@parent to the preferred name of the
- * parent (or to NULL if @name matches the start of the chain).  Since the
- * results point within @chain, they must not be independently freed.
- * Reports an error and returns NULL if @name is not found.
+/* Given a @chain, look for the backing store @name that is a backing file
+ * of @startFrom (or any member of @chain if @startFrom is NULL) and return
+ * that location within the chain.  @chain must always point to the top of
+ * the chain.  Pass NULL for @name and 0 for @idx to find the base of the
+ * chain.  Pass nonzero @idx to find the backing source according to its
+ * position in the backing chain.  If @parent is not NULL, set *@parent to
+ * the preferred name of the parent (or to NULL if @name matches the start
+ * of the chain).  Since the results point within @chain, they must not be
+ * independently freed. Reports an error and returns NULL if @name is not
+ * found.
  */
 virStorageSourcePtr
 virStorageFileChainLookup(virStorageSourcePtr chain,
@@ -1360,10 +1361,11 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
 
     i = 0;
     if (startFrom) {
-        while (chain && chain != startFrom) {
+        while (chain && chain != startFrom->backingStore) {
             chain = chain->backingStore;
             i++;
         }
+        *parent = startFrom->path;
     }
 
     while (chain) {
@@ -1403,9 +1405,14 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
                        _("could not find backing store %u in chain for '%s'"),
                        idx, start);
     } else if (name) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("could not find image '%s' in chain for '%s'"),
-                       name, start);
+        if (startFrom)
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("could not find image '%s' beneath '%s' in "
+                             "chain for '%s'"), name, startFrom->path, start);
+        else
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("could not find image '%s' in chain for '%s'"),
+                           name, start);
     } else {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("could not find base image in chain for '%s'"),
