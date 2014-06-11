@@ -98,8 +98,7 @@ libxlDoMigrateReceive(virNetSocketPtr sock,
     size_t i;
     int ret;
 
-    virNetSocketAccept(sock, &client_sock);
-    if (client_sock == NULL) {
+    if (virNetSocketAccept(sock, &client_sock) < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Fail to accept migration connection"));
         goto cleanup;
@@ -526,8 +525,7 @@ libxlDomainMigrationFinish(virConnectPtr dconn,
  cleanup:
     if (event)
         libxlDomainEventQueue(driver, event);
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     virObjectUnref(cfg);
     return dom;
 }
