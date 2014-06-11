@@ -1614,9 +1614,9 @@ int virNetDevValidateConfig(const char *ifname ATTRIBUTE_UNUSED,
 #ifdef __linux__
 # define NET_SYSFS "/sys/class/net/"
 
-static int
+int
 virNetDevSysfsFile(char **pf_sysfs_device_link, const char *ifname,
-               const char *file)
+                   const char *file)
 {
 
     if (virAsprintf(pf_sysfs_device_link, NET_SYSFS "%s/%s", ifname, file) < 0)

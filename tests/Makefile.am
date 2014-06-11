@@ -176,6 +176,7 @@ test_programs = virshtest sockettest \
 	domainconftest \
 	virhostdevtest \
 	vircaps2xmltest \
+	virnetdevtest \
 	$(NULL)
 
 if WITH_REMOTE
@@ -402,6 +403,7 @@ test_libraries = libshunload.la \
 		virnetserverclientmock.la \
 		vircgroupmock.la \
 		virpcimock.la \
+		virnetdevmock.la \
 		$(NULL)
 if WITH_QEMU
 test_libraries += libqemumonitortestutils.la \
@@ -1027,6 +1029,19 @@ virpcimock_la_CFLAGS = $(AM_CFLAGS)
 virpcimock_la_LIBADD = $(GNULIB_LIBS) \
 					   ../src/libvirt.la
 virpcimock_la_LDFLAGS = -module -avoid-version \
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+
+virnetdevtest_SOURCES = \
+	virnetdevtest.c testutils.h testutils.c
+virnetdevtest_CFLAGS = $(AM_CFLAGS) $(LIBNL_CFLAGS)
+virnetdevtest_LDADD = $(LDADDS)
+
+virnetdevmock_la_SOURCES = \
+	virnetdevmock.c
+virnetdevmock_la_CFLAGS = $(AM_CFLAGS) $(LIBNL_CFLAGS)
+virnetdevmock_la_LIBADD = $(GNULIB_LIBS) \
+					   ../src/libvirt.la
+virnetdevmock_la_LDFLAGS = -module -avoid-version \
         -rpath /evil/libtool/hack/to/force/shared/lib/creation
 
 if WITH_LINUX

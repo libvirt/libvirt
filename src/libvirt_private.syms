@@ -1742,6 +1742,7 @@ virNetDevSetPromiscuous;
 virNetDevSetRcvAllMulti;
 virNetDevSetRcvMulti;
 virNetDevSetupControl;
+virNetDevSysfsFile;
 virNetDevValidateConfig;
 
 

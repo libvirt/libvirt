@@ -219,4 +219,9 @@ int virNetDevSetRcvAllMulti(const char *ifname, bool receive)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 int virNetDevGetRcvAllMulti(const char *ifname, bool *receive)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+int virNetDevSysfsFile(char **pf_sysfs_device_link,
+                       const char *ifname,
+                       const char *file)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_RETURN_CHECK;
 #endif /* __VIR_NETDEV_H__ */
