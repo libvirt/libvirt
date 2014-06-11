@@ -166,16 +166,11 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
        *-*-linux*)
        dnl Fedora only uses -fstack-protector, but doesn't seem to
        dnl be great overhead in adding -fstack-protector-all instead
-       dnl wantwarn="$wantwarn -fstack-protector"
+       dnl
+       dnl We also don't need ssp-buffer-size with -all,
+       dnl since functions are protected regardless of buffer size.
+       dnl wantwarn="$wantwarn --param=ssp-buffer-size=4"
        wantwarn="$wantwarn -fstack-protector-all"
-       wantwarn="$wantwarn --param=ssp-buffer-size=4"
-       dnl Even though it supports it, clang complains about
-       dnl use of --param=ssp-buffer-size=4 unless used with
-       dnl the -c arg. It doesn't like it when used with args
-       dnl that just link together .o files. Unfortunately
-       dnl we can't avoid that with automake, so we must turn
-       dnl off the following clang specific warning
-       wantwarn="$wantwarn -Wno-unused-command-line-argument"
        ;;
        *-*-freebsd*)
        dnl FreeBSD ships old gcc 4.2.1 which doesn't handle
