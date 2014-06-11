@@ -6267,6 +6267,11 @@ vboxSnapshotRedefine(virDomainPtr dom,
              */
             parentUuid = virVBoxSnapshotConfHardDiskUuidByLocation(snapshotMachineDesc,
                                                       realReadOnlyDisksPath[it]);
+            if (parentUuid == NULL) {
+                VIR_FREE(readWriteDisk);
+                goto cleanup;
+            }
+
             if (virVBoxSnapshotConfAddHardDiskToMediaRegistry(readWriteDisk,
                                            snapshotMachineDesc->mediaRegistry,
                                            parentUuid) < 0) {
@@ -8576,14 +8581,17 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("Unable to get medium uuid, rc=%08x"),
                                    (unsigned)rc);
+                    VIR_FREE(disk);
                     goto cleanup;
                 }
                 VBOX_UTF16_TO_UTF8(uuidUtf16, &uuid);
                 disk->uuid = uuid;
                 VBOX_UTF16_FREE(uuidUtf16);
 
-                if (VIR_STRDUP(disk->location, newLocationUtf8) < 0)
+                if (VIR_STRDUP(disk->location, newLocationUtf8) < 0) {
+                    VIR_FREE(disk);
                     goto cleanup;
+                }
 
                 rc = newMedium->vtbl->GetFormat(newMedium, &formatUtf16);
                 VBOX_UTF16_TO_UTF8(formatUtf16, &format);
