@@ -2966,6 +2966,9 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
     if (fd < 0)
         goto cleanup;
 
+    if (virSecurityManagerSetImageFDLabel(driver->securityManager, vm->def, fd) < 0)
+        goto cleanup;
+
     if (!(wrapperFd = virFileWrapperFdNew(&fd, path, wrapperFlags)))
         goto cleanup;
 
