@@ -164,13 +164,14 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
        dnl "error: -fstack-protector not supported for this target [-Werror]"
        ;;
        *-*-linux*)
-       dnl Fedora only uses -fstack-protector, but doesn't seem to
-       dnl be great overhead in adding -fstack-protector-all instead
+       dnl Prefer -fstack-protector-strong if it's available.
+       dnl There doesn't seem to be great overhead in adding
+       dnl -fstack-protector-all instead of -fstack-protector.
        dnl
-       dnl We also don't need ssp-buffer-size with -all,
+       dnl We also don't need ssp-buffer-size with -all or -strong,
        dnl since functions are protected regardless of buffer size.
        dnl wantwarn="$wantwarn --param=ssp-buffer-size=4"
-       wantwarn="$wantwarn -fstack-protector-all"
+       wantwarn="$wantwarn -fstack-protector-strong"
        ;;
        *-*-freebsd*)
        dnl FreeBSD ships old gcc 4.2.1 which doesn't handle
@@ -200,6 +201,19 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     for w in $wantwarn; do
       gl_WARN_ADD([$w])
     done
+
+    case $host in
+        *-*-linux*)
+        dnl Fall back to -fstack-protector-all if -strong is not available
+        case $WARN_CFLAGS in
+        *-fstack-protector-strong*)
+        ;;
+        *)
+            gl_WARN_ADD(["-fstack-protector-all"])
+        ;;
+        esac
+        ;;
+    esac
 
     # Silence certain warnings in gnulib, and use improved glibc headers
     AC_DEFINE([lint], [1],
