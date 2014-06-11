@@ -15529,8 +15529,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (!top)
         topSource = disk->src;
     else if (virStorageFileParseChainIndex(disk->dst, top, &topIndex) < 0 ||
-             !(topSource = virStorageFileChainLookup(disk->src,
-                                                     disk->src->backingStore,
+             !(topSource = virStorageFileChainLookup(disk->src, NULL,
                                                      top, topIndex,
                                                      &top_parent)))
         goto endjob;
