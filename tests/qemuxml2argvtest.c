@@ -51,7 +51,9 @@ fakeSecretLookupByUsage(virConnectPtr conn,
     if (STRNEQ(usageID, "mycluster_myname"))
         return NULL;
 
-    virUUIDGenerate(uuid);
+    if (virUUIDGenerate(uuid) < 0)
+        return NULL;
+
     return virGetSecret(conn, uuid, usageType, usageID);
 }
 
