@@ -1257,6 +1257,11 @@ virVBoxSnapshotConfIsCurrentSnapshot(virVBoxSnapshotConfMachinePtr machine,
         goto cleanup;
     }
     snapshot = virVBoxSnapshotConfSnapshotByName(machine->snapshot, snapshotName);
+    if (snapshot == NULL) {
+        virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
+                       _("Unable to find the snapshot %s"), snapshotName);
+        goto cleanup;
+    }
     return STREQ(snapshot->uuid, machine->currentSnapshot);
 
  cleanup:
@@ -1274,7 +1279,7 @@ virVBoxSnapshotConfGetRWDisksPathsFromLibvirtXML(const char *filePath,
 {
     int result = -1;
     size_t i = 0;
-    char **ret;
+    char **ret = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr xPathContext = NULL;
     xmlNodePtr *nodes = NULL;
@@ -1296,7 +1301,9 @@ virVBoxSnapshotConfGetRWDisksPathsFromLibvirtXML(const char *filePath,
         goto cleanup;
     }
     xPathContext->node = xmlDocGetRootElement(xml);
-    nodeSize = virXPathNodeSet("/domainsnapshot/disks/disk", xPathContext, &nodes);
+    if ((nodeSize = virXPathNodeSet("/domainsnapshot/disks/disk",
+                                    xPathContext, &nodes)) < 0)
+        goto cleanup;
 
     if (VIR_ALLOC_N(ret, nodeSize) < 0)
         goto cleanup;
@@ -1315,13 +1322,12 @@ virVBoxSnapshotConfGetRWDisksPathsFromLibvirtXML(const char *filePath,
     xmlFreeDoc(xml);
     xmlXPathFreeContext(xPathContext);
     if (result < 0) {
-        for (i = 0; i < nodeSize; i++)
-            VIR_FREE(ret[i]);
-        VIR_FREE(ret);
+        virStringFreeList(ret);
         nodeSize = -1;
     } else {
         *rwDisksPath = ret;
     }
+    VIR_FREE(nodes);
     return nodeSize;
 }
 
@@ -1357,9 +1363,10 @@ virVBoxSnapshotConfGetRODisksPathsFromLibvirtXML(const char *filePath,
         goto cleanup;
     }
     xPathContext->node = xmlDocGetRootElement(xml);
-    nodeSize = virXPathNodeSet("/domainsnapshot/domain/devices/disk",
-                               xPathContext,
-                               &nodes);
+    if ((nodeSize = virXPathNodeSet("/domainsnapshot/domain/devices/disk",
+                                    xPathContext,
+                                    &nodes)) < 0)
+        goto cleanup;
     if (VIR_ALLOC_N(ret, nodeSize) < 0)
         goto cleanup;
 
@@ -1379,8 +1386,10 @@ virVBoxSnapshotConfGetRODisksPathsFromLibvirtXML(const char *filePath,
     if (result < 0) {
         virStringFreeList(ret);
         nodeSize = -1;
+    } else {
+        *roDisksPath = ret;
     }
-    *roDisksPath = ret;
+    VIR_FREE(nodes);
     return nodeSize;
 }
 
