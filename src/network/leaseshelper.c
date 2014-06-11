@@ -351,7 +351,7 @@ main(int argc, char **argv)
         virPidFileReleasePath(pid_file, pid_file_fd);
 
     VIR_FREE(pid_file);
-    VIR_FREE(exptime_tmp);
+    VIR_FREE(exptime);
     VIR_FREE(custom_lease_file);
     virJSONValueFree(lease_new);
     virJSONValueFree(leases_array);
