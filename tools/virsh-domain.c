@@ -1775,15 +1775,15 @@ static const vshCmdOptDef opts_block_copy[] = {
     },
     {.name = "timeout",
      .type = VSH_OT_INT,
-     .help = N_("with --wait, abort if copy exceeds timeout (in seconds)")
+     .help = N_("implies --wait, abort if copy exceeds timeout (in seconds)")
     },
     {.name = "pivot",
      .type = VSH_OT_BOOL,
-     .help = N_("with --wait, pivot when mirroring starts")
+     .help = N_("implies --wait, pivot when mirroring starts")
     },
     {.name = "finish",
      .type = VSH_OT_BOOL,
-     .help = N_("with --wait, quit when mirroring starts")
+     .help = N_("implies --wait, quit when mirroring starts")
     },
     {.name = "async",
      .type = VSH_OT_BOOL,
@@ -1811,6 +1811,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
     bool quit = false;
     int abort_flags = 0;
 
+    blocking |= vshCommandOptBool(cmd, "timeout") || pivot || finish;
     if (blocking) {
         if (pivot && finish) {
             vshError(ctl, "%s", _("cannot mix --pivot and --finish"));
@@ -1833,8 +1834,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         sigaction(SIGINT, &sig_action, &old_sig_action);
 
         GETTIMEOFDAY(&start);
-    } else if (verbose || vshCommandOptBool(cmd, "timeout") ||
-               vshCommandOptBool(cmd, "async") || pivot || finish) {
+    } else if (verbose || vshCommandOptBool(cmd, "async")) {
         vshError(ctl, "%s", _("missing --wait option"));
         return false;
     }
@@ -1900,11 +1900,14 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, _("failed to finish job for disk %s"), path);
         goto cleanup;
     }
-    vshPrint(ctl, "\n%s",
-             quit ? _("Copy aborted") :
-             pivot ? _("Successfully pivoted") :
-             finish ? _("Successfully copied") :
-             _("Now in mirroring phase"));
+    if (quit)
+        vshPrint(ctl, "\n%s", _("Copy aborted"));
+    else if (pivot)
+        vshPrint(ctl, "\n%s", _("Successfully pivoted"));
+    else if (finish)
+        vshPrint(ctl, "\n%s", _("Successfully copied"));
+    else
+        vshPrint(ctl, "\n%s", _("Now in mirroring phase"));
 
     ret = true;
  cleanup:

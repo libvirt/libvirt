@@ -802,8 +802,8 @@ I<bandwidth> specifies copying bandwidth limit in MiB/s, although for
 qemu, it may be non-zero only for an online domain.
 
 =item B<blockcopy> I<domain> I<path> I<dest> [I<bandwidth>] [I<--shallow>]
-[I<--reuse-external>] [I<--raw>] [I<--wait> [I<--verbose>]
-[{I<--pivot> | I<--finish>}] [I<--timeout> B<seconds>] [I<--async>]]
+[I<--reuse-external>] [I<--raw>] [I<--wait> [I<--async>] [I<--verbose>]]
+[{I<--pivot> | I<--finish>}] [I<--timeout> B<seconds>]
 
 Copy a disk backing image chain to I<dest>. By default, this command
 flattens the entire chain; but if I<--shallow> is specified, the copy
@@ -832,12 +832,13 @@ faithful copy of that point in time.  However, if I<--wait> is specified,
 then this command will block until the mirroring phase begins, or cancel
 the operation if the optional I<timeout> in seconds elapses or SIGINT is
 sent (usually with C<Ctrl-C>).  Using I<--verbose> along with I<--wait>
-will produce periodic status updates.  Using I<--pivot> or I<--finish>
-along with I<--wait> will additionally end the job cleanly rather than
-leaving things in the mirroring phase.  If job cancellation is triggered,
-I<--async> will return control to the user as fast as possible, otherwise
-the command may continue to block a little while longer until the job
-is done cleaning up.
+will produce periodic status updates.  Using I<--pivot> (similar to
+B<blockjob> I<--pivot>) or I<--finish> (similar to B<blockjob> I<--abort>)
+implies I<--wait>, and will additionally end the job cleanly rather than
+leaving things in the mirroring phase.  If job cancellation is triggered
+by timeout or by I<--finish>, I<--async> will return control to the user
+as fast as possible, otherwise the command may continue to block a little
+while longer until the job has actually cancelled.
 
 I<path> specifies fully-qualified path of the disk.
 I<bandwidth> specifies copying bandwidth limit in MiB/s.
