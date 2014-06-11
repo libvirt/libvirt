@@ -1921,7 +1921,8 @@ virNetDevGetLinkInfo(const char *ifname,
                      virInterfaceLinkPtr lnk)
 {
     /* Port me */
-    VIR_DEBUG("Getting link info on %s is not implemented on this platform");
+    VIR_DEBUG("Getting link info on %s is not implemented on this platform",
+              ifname);
     lnk->speed = lnk->state = 0;
     return 0;
 }
