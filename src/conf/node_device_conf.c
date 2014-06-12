@@ -1145,6 +1145,8 @@ virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
         }
     }
 
+    /* The default value is -1 since zero is valid NUMA node number */
+    data->pci_dev.numa_node = -1;
     if (virNodeDevCapsDefParseIntOptional("number(./numa[1]/@node)", ctxt,
                                           &data->pci_dev.numa_node, def,
                                           _("invalid NUMA node ID supplied for '%s'")) < 0)
