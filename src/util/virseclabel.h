@@ -45,7 +45,7 @@ struct _virSecurityLabelDef {
 };
 
 
-/* Security configuration for domain */
+/* Security configuration for device */
 typedef struct _virSecurityDeviceLabelDef virSecurityDeviceLabelDef;
 typedef virSecurityDeviceLabelDef *virSecurityDeviceLabelDefPtr;
 struct _virSecurityDeviceLabelDef {
@@ -60,6 +60,10 @@ virSecurityLabelDefNew(const char *model);
 
 virSecurityDeviceLabelDefPtr
 virSecurityDeviceLabelDefNew(const char *model);
+
+virSecurityDeviceLabelDefPtr
+virSecurityDeviceLabelDefCopy(const virSecurityDeviceLabelDef *src)
+    ATTRIBUTE_NONNULL(1);
 
 void virSecurityLabelDefFree(virSecurityLabelDefPtr def);
 void virSecurityDeviceLabelDefFree(virSecurityDeviceLabelDefPtr def);

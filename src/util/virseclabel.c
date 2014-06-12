@@ -80,3 +80,26 @@ virSecurityDeviceLabelDefNew(const char *model)
 
     return seclabel;
 }
+
+
+virSecurityDeviceLabelDefPtr
+virSecurityDeviceLabelDefCopy(const virSecurityDeviceLabelDef *src)
+{
+    virSecurityDeviceLabelDefPtr ret;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    ret->norelabel = src->norelabel;
+    ret->labelskip = src->labelskip;
+
+    if (VIR_STRDUP(ret->model, src->model) < 0 ||
+        VIR_STRDUP(ret->label, src->label) < 0)
+        goto error;
+
+    return ret;
+
+ error:
+    virSecurityDeviceLabelDefFree(ret);
+    return NULL;
+}
