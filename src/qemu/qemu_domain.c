@@ -2409,7 +2409,8 @@ qemuDomainGetImageIds(virQEMUDriverConfigPtr cfg,
             *gid = cfg->group;
     }
 
-    if (vm && (vmlabel = virDomainDefGetSecurityLabelDef(vm->def, "dac")))
+    if (vm && (vmlabel = virDomainDefGetSecurityLabelDef(vm->def, "dac")) &&
+        vmlabel->label)
         virParseOwnershipIds(vmlabel->label, uid, gid);
 
     if ((disklabel = virDomainDiskDefGetSecurityLabelDef(disk, "dac")) &&

@@ -2771,6 +2771,7 @@ qemuOpenFile(virQEMUDriverPtr driver,
     /* TODO: Take imagelabel into account? */
     if (vm &&
         (seclabel = virDomainDefGetSecurityLabelDef(vm->def, "dac")) != NULL &&
+        seclabel->label != NULL &&
         (virParseOwnershipIds(seclabel->label, &user, &group) < 0))
         goto cleanup;
 
