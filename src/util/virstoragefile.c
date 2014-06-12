@@ -1451,6 +1451,17 @@ virStorageNetHostDefFree(size_t nhosts,
 }
 
 
+static void
+virStoragePermsFree(virStoragePermsPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def->label);
+    VIR_FREE(def);
+}
+
+
 virStorageNetHostDefPtr
 virStorageNetHostDefCopy(size_t nhosts,
                          virStorageNetHostDefPtr hosts)
@@ -1564,10 +1575,7 @@ virStorageSourceClear(virStorageSourcePtr def)
             virSecurityDeviceLabelDefFree(def->seclabels[i]);
         VIR_FREE(def->seclabels);
     }
-    if (def->perms) {
-        VIR_FREE(def->perms->label);
-        VIR_FREE(def->perms);
-    }
+    virStoragePermsFree(def->perms);
     VIR_FREE(def->timestamps);
 
     virStorageNetHostDefFree(def->nhosts, def->hosts);
