@@ -289,8 +289,7 @@ storagePoolLookupByUUID(virConnectPtr conn,
                             NULL, NULL);
 
  cleanup:
-    if (pool)
-        virStoragePoolObjUnlock(pool);
+    virStoragePoolObjUnlock(pool);
     return ret;
 }
 
@@ -309,7 +308,7 @@ storagePoolLookupByName(virConnectPtr conn,
     if (!pool) {
         virReportError(VIR_ERR_NO_STORAGE_POOL,
                        _("no storage pool with matching name '%s'"), name);
-        goto cleanup;
+        return NULL;
     }
 
     if (virStoragePoolLookupByNameEnsureACL(conn, pool->def) < 0)
@@ -319,8 +318,7 @@ storagePoolLookupByName(virConnectPtr conn,
                             NULL, NULL);
 
  cleanup:
-    if (pool)
-        virStoragePoolObjUnlock(pool);
+    virStoragePoolObjUnlock(pool);
     return ret;
 }
 
@@ -338,7 +336,7 @@ storagePoolLookupByVolume(virStorageVolPtr vol)
     if (!pool) {
         virReportError(VIR_ERR_NO_STORAGE_POOL,
                        _("no storage pool with matching name '%s'"), vol->pool);
-        goto cleanup;
+        return NULL;
     }
 
     if (virStoragePoolLookupByVolumeEnsureACL(vol->conn, pool->def) < 0)
@@ -348,8 +346,7 @@ storagePoolLookupByVolume(virStorageVolPtr vol)
                             NULL, NULL);
 
  cleanup:
-    if (pool)
-        virStoragePoolObjUnlock(pool);
+    virStoragePoolObjUnlock(pool);
     return ret;
 }
 
@@ -571,8 +568,7 @@ static int storagePoolIsActive(virStoragePoolPtr pool)
     ret = virStoragePoolObjIsActive(obj);
 
  cleanup:
-    if (obj)
-        virStoragePoolObjUnlock(obj);
+    virStoragePoolObjUnlock(obj);
     return ret;
 }
 
@@ -590,8 +586,7 @@ static int storagePoolIsPersistent(virStoragePoolPtr pool)
     ret = obj->configFile ? 1 : 0;
 
  cleanup:
-    if (obj)
-        virStoragePoolObjUnlock(obj);
+    virStoragePoolObjUnlock(obj);
     return ret;
 }
 
@@ -805,8 +800,7 @@ storagePoolCreate(virStoragePoolPtr obj,
     ret = 0;
 
  cleanup:
-    if (pool)
-        virStoragePoolObjUnlock(pool);
+    virStoragePoolObjUnlock(pool);
     return ret;
 }
 
@@ -840,8 +834,7 @@ storagePoolBuild(virStoragePoolPtr obj,
     ret = 0;
 
  cleanup:
-    if (pool)
-        virStoragePoolObjUnlock(pool);
+    virStoragePoolObjUnlock(pool);
     return ret;
 }
 
@@ -951,8 +944,7 @@ storagePoolDelete(virStoragePoolPtr obj,
     ret = 0;
 
  cleanup:
-    if (pool)
-        virStoragePoolObjUnlock(pool);
+    virStoragePoolObjUnlock(pool);
     return ret;
 }
 
@@ -1047,8 +1039,7 @@ storagePoolGetInfo(virStoragePoolPtr obj,
     ret = 0;
 
  cleanup:
-    if (pool)
-        virStoragePoolObjUnlock(pool);
+    virStoragePoolObjUnlock(pool);
     return ret;
 }
 
@@ -1076,8 +1067,7 @@ storagePoolGetXMLDesc(virStoragePoolPtr obj,
     ret = virStoragePoolDefFormat(def);
 
  cleanup:
-    if (pool)
-        virStoragePoolObjUnlock(pool);
+    virStoragePoolObjUnlock(pool);
     return ret;
 }
 
@@ -1102,8 +1092,7 @@ storagePoolGetAutostart(virStoragePoolPtr obj,
     ret = 0;
 
  cleanup:
-    if (pool)
-        virStoragePoolObjUnlock(pool);
+    virStoragePoolObjUnlock(pool);
     return ret;
 }
 
@@ -1200,8 +1189,7 @@ storagePoolNumOfVolumes(virStoragePoolPtr obj)
     }
 
  cleanup:
-    if (pool)
-        virStoragePoolObjUnlock(pool);
+    virStoragePoolObjUnlock(pool);
     return ret;
 }
 
@@ -1240,8 +1228,7 @@ storagePoolListVolumes(virStoragePoolPtr obj,
     return n;
 
  cleanup:
-    if (pool)
-        virStoragePoolObjUnlock(pool);
+    virStoragePoolObjUnlock(pool);
     for (n = 0; n < maxnames; n++)
         VIR_FREE(names[n]);
 
@@ -1309,8 +1296,7 @@ storagePoolListAllVolumes(virStoragePoolPtr pool,
         VIR_FREE(tmp_vols);
     }
 
-    if (obj)
-        virStoragePoolObjUnlock(obj);
+    virStoragePoolObjUnlock(obj);
 
     return ret;
 }
@@ -1348,8 +1334,7 @@ storageVolLookupByName(virStoragePoolPtr obj,
                            NULL, NULL);
 
  cleanup:
-    if (pool)
-        virStoragePoolObjUnlock(pool);
+    virStoragePoolObjUnlock(pool);
     return ret;
 }
 
