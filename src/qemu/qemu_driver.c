@@ -12836,14 +12836,11 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
                                          qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virStorageSourcePtr newDiskSrc = NULL;
+    virStorageSourcePtr persistDiskSrc = NULL;
     char *device = NULL;
     char *source = NULL;
-    char *newsource = NULL;
-    virStorageNetHostDefPtr newhosts = NULL;
-    virStorageNetHostDefPtr persistHosts = NULL;
-    int format = snap->src->format;
     const char *formatStr = NULL;
-    char *persistSource = NULL;
     int ret = -1;
     int fd = -1;
     bool need_unlink = false;
@@ -12857,25 +12854,26 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     if (virAsprintf(&device, "drive-%s", disk->info.alias) < 0)
         goto cleanup;
 
-    /* XXX Here, we know we are about to alter disk->src->backingStore if
-     * successful, so we nuke the existing chain so that future commands will
-     * recompute it.  Better would be storing the chain ourselves rather than
-     * reprobing, but this requires modifying domain_conf and our XML to fully
-     * track the chain across libvirtd restarts.  */
-    virStorageSourceBackingStoreClear(disk->src);
-
     if (virStorageFileInit(snap->src) < 0)
         goto cleanup;
 
     if (qemuGetDriveSourceString(snap->src, NULL, &source) < 0)
         goto cleanup;
 
-    if (VIR_STRDUP(newsource, snap->src->path) < 0)
+    if (!(newDiskSrc = virStorageSourceCopy(snap->src, false)))
         goto cleanup;
 
-    if (persistDisk &&
-        VIR_STRDUP(persistSource, snap->src->path) < 0)
+    if (virStorageSourceInitChainElement(newDiskSrc, disk->src, false) < 0)
         goto cleanup;
+
+    if (persistDisk) {
+        if (!(persistDiskSrc = virStorageSourceCopy(snap->src, false)))
+            goto cleanup;
+
+        if (virStorageSourceInitChainElement(persistDiskSrc, persistDisk->src,
+                                             false) < 0)
+            goto cleanup;
+    }
 
     switch ((virStorageType)snap->src->type) {
     case VIR_STORAGE_TYPE_BLOCK:
@@ -12902,15 +12900,6 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     case VIR_STORAGE_TYPE_NETWORK:
         switch (snap->src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
-            if (!(newhosts = virStorageNetHostDefCopy(snap->src->nhosts,
-                                                      snap->src->hosts)))
-                goto cleanup;
-
-            if (persistDisk &&
-                !(persistHosts = virStorageNetHostDefCopy(snap->src->nhosts,
-                                                          snap->src->hosts)))
-                goto cleanup;
-
             break;
 
         default:
@@ -12961,45 +12950,24 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     /* Update vm in place to match changes.  */
     need_unlink = false;
 
-    VIR_FREE(disk->src->path);
-    virStorageNetHostDefFree(disk->src->nhosts, disk->src->hosts);
-
-    disk->src->path = newsource;
-    disk->src->format = format;
-    disk->src->type = snap->src->type;
-    disk->src->protocol = snap->src->protocol;
-    disk->src->nhosts = snap->src->nhosts;
-    disk->src->hosts = newhosts;
-
-    newsource = NULL;
-    newhosts = NULL;
+    newDiskSrc->backingStore = disk->src;
+    disk->src = newDiskSrc;
+    newDiskSrc = NULL;
 
     if (persistDisk) {
-        VIR_FREE(persistDisk->src->path);
-        virStorageNetHostDefFree(persistDisk->src->nhosts,
-                                 persistDisk->src->hosts);
-
-        persistDisk->src->path = persistSource;
-        persistDisk->src->format = format;
-        persistDisk->src->type = snap->src->type;
-        persistDisk->src->protocol = snap->src->protocol;
-        persistDisk->src->nhosts = snap->src->nhosts;
-        persistDisk->src->hosts = persistHosts;
-
-        persistSource = NULL;
-        persistHosts = NULL;
+        persistDiskSrc->backingStore = persistDisk->src;
+        persistDisk->src = persistDiskSrc;
+        persistDiskSrc = NULL;
     }
 
  cleanup:
     if (need_unlink && virStorageFileUnlink(snap->src))
         VIR_WARN("unable to unlink just-created %s", source);
     virStorageFileDeinit(snap->src);
+    virStorageSourceFree(newDiskSrc);
+    virStorageSourceFree(persistDiskSrc);
     VIR_FREE(device);
     VIR_FREE(source);
-    VIR_FREE(newsource);
-    VIR_FREE(persistSource);
-    virStorageNetHostDefFree(snap->src->nhosts, newhosts);
-    virStorageNetHostDefFree(snap->src->nhosts, persistHosts);
     return ret;
 }
 
@@ -13009,20 +12977,14 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
 static void
 qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
                                        virDomainObjPtr vm,
-                                       virDomainDiskDefPtr origdisk,
                                        virDomainDiskDefPtr disk,
                                        virDomainDiskDefPtr persistDisk,
                                        bool need_unlink)
 {
-    char *source = NULL;
-    char *persistSource = NULL;
+    virStorageSourcePtr tmp;
     struct stat st;
 
     ignore_value(virStorageFileInit(disk->src));
-
-    if (VIR_STRDUP(source, origdisk->src->path) < 0 ||
-        (persistDisk && VIR_STRDUP(persistSource, source) < 0))
-        goto cleanup;
 
     qemuDomainPrepareDiskChainElement(driver, vm, disk, disk->src,
                                       VIR_DISK_CHAIN_NO_ACCESS);
@@ -13031,35 +12993,20 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
         virStorageFileUnlink(disk->src) < 0)
         VIR_WARN("Unable to remove just-created %s", disk->src->path);
 
-    /* Update vm in place to match changes.  */
-    VIR_FREE(disk->src->path);
-    disk->src->path = source;
-    source = NULL;
-    disk->src->format = origdisk->src->format;
-    disk->src->type = origdisk->src->type;
-    disk->src->protocol = origdisk->src->protocol;
-    virStorageNetHostDefFree(disk->src->nhosts, disk->src->hosts);
-    disk->src->nhosts = origdisk->src->nhosts;
-    disk->src->hosts = virStorageNetHostDefCopy(origdisk->src->nhosts,
-                                                origdisk->src->hosts);
-    if (persistDisk) {
-        VIR_FREE(persistDisk->src->path);
-        persistDisk->src->path = persistSource;
-        persistSource = NULL;
-        persistDisk->src->format = origdisk->src->format;
-        persistDisk->src->type = origdisk->src->type;
-        persistDisk->src->protocol = origdisk->src->protocol;
-        virStorageNetHostDefFree(persistDisk->src->nhosts,
-                                 persistDisk->src->hosts);
-        persistDisk->src->nhosts = origdisk->src->nhosts;
-        persistDisk->src->hosts = virStorageNetHostDefCopy(origdisk->src->nhosts,
-                                                           origdisk->src->hosts);
-    }
-
- cleanup:
     virStorageFileDeinit(disk->src);
-    VIR_FREE(source);
-    VIR_FREE(persistSource);
+
+    /* Update vm in place to match changes. */
+    tmp = disk->src;
+    disk->src = tmp->backingStore;
+    tmp->backingStore = NULL;
+    virStorageSourceFree(tmp);
+
+    if (persistDisk) {
+        tmp = persistDisk->src;
+        persistDisk->src = tmp->backingStore;
+        tmp->backingStore = NULL;
+        virStorageSourceFree(tmp);
+    }
 }
 
 /* The domain is expected to be locked and active. */
@@ -13163,7 +13110,6 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                 }
 
                 qemuDomainSnapshotUndoSingleDiskActive(driver, vm,
-                                                       snap->def->dom->disks[i],
                                                        vm->def->disks[i],
                                                        persistDisk,
                                                        need_unlink);
