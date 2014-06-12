@@ -67,6 +67,46 @@ virStorageEncryptionFree(virStorageEncryptionPtr enc)
 }
 
 static virStorageEncryptionSecretPtr
+virStorageEncryptionSecretCopy(const virStorageEncryptionSecret *src)
+{
+    virStorageEncryptionSecretPtr ret;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    memcpy(ret, src, sizeof(*src));
+
+    return ret;
+}
+
+virStorageEncryptionPtr
+virStorageEncryptionCopy(const virStorageEncryption *src)
+{
+    virStorageEncryptionPtr ret;
+    size_t i;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    if (VIR_ALLOC_N(ret->secrets, src->nsecrets) < 0)
+        goto error;
+
+    ret->nsecrets = src->nsecrets;
+    ret->format = src->format;
+
+    for (i = 0; i < src->nsecrets; i++) {
+        if (!(ret->secrets[i] = virStorageEncryptionSecretCopy(src->secrets[i])))
+            goto error;
+    }
+
+    return ret;
+
+ error:
+    virStorageEncryptionFree(ret);
+    return NULL;
+}
+
+static virStorageEncryptionSecretPtr
 virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
                                 xmlNodePtr node)
 {

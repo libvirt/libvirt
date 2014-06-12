@@ -61,6 +61,9 @@ struct _virStorageEncryption {
     virStorageEncryptionSecretPtr *secrets;
 };
 
+virStorageEncryptionPtr virStorageEncryptionCopy(const virStorageEncryption *src)
+    ATTRIBUTE_NONNULL(1);
+
 void virStorageEncryptionFree(virStorageEncryptionPtr enc);
 
 virStorageEncryptionPtr virStorageEncryptionParseNode(xmlDocPtr xml,
