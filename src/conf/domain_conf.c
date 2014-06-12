@@ -11768,6 +11768,32 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
+    /* analysis of cpu handling */
+    if ((node = virXPathNode("./cpu[1]", ctxt)) != NULL) {
+        xmlNodePtr oldnode = ctxt->node;
+        ctxt->node = node;
+        def->cpu = virCPUDefParseXML(node, ctxt, VIR_CPU_TYPE_GUEST);
+        ctxt->node = oldnode;
+
+        if (def->cpu == NULL)
+            goto error;
+
+        if (def->cpu->sockets &&
+            def->maxvcpus >
+            def->cpu->sockets * def->cpu->cores * def->cpu->threads) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("Maximum CPUs greater than topology limit"));
+            goto error;
+        }
+
+        if (def->cpu->cells_cpus > def->maxvcpus) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Number of CPUs in <numa> exceeds the"
+                             " <vcpu> count"));
+            goto error;
+        }
+    }
+
     /* Extract numatune if exists. */
     if ((n = virXPathNodeSet("./numatune", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -12963,32 +12989,6 @@ virDomainDefParseXML(xmlDocPtr xml,
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("uid and gid should be mapped both"));
             goto error;
-    }
-
-    /* analysis of cpu handling */
-    if ((node = virXPathNode("./cpu[1]", ctxt)) != NULL) {
-        xmlNodePtr oldnode = ctxt->node;
-        ctxt->node = node;
-        def->cpu = virCPUDefParseXML(node, ctxt, VIR_CPU_TYPE_GUEST);
-        ctxt->node = oldnode;
-
-        if (def->cpu == NULL)
-            goto error;
-
-        if (def->cpu->sockets &&
-            def->maxvcpus >
-            def->cpu->sockets * def->cpu->cores * def->cpu->threads) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("Maximum CPUs greater than topology limit"));
-            goto error;
-        }
-
-        if (def->cpu->cells_cpus > def->maxvcpus) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Number of CPUs in <numa> exceeds the"
-                             " <vcpu> count"));
-            goto error;
-        }
     }
 
     if ((node = virXPathNode("./sysinfo[1]", ctxt)) != NULL) {
