@@ -189,12 +189,13 @@ virBhyveProcessStart(virConnectPtr conn,
 
  cleanup:
     if (ret < 0) {
+        int exitstatus; /* Needed to avoid logging non-zero status */
         virCommandPtr destroy_cmd;
         if ((destroy_cmd = virBhyveProcessBuildDestroyCmd(driver,
                                                           vm->def)) != NULL) {
             virCommandSetOutputFD(load_cmd, &logfd);
             virCommandSetErrorFD(load_cmd, &logfd);
-            ignore_value(virCommandRun(destroy_cmd, NULL));
+            ignore_value(virCommandRun(destroy_cmd, &exitstatus));
             virCommandFree(destroy_cmd);
         }
 
