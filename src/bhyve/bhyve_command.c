@@ -46,7 +46,6 @@ bhyveBuildNetArgStr(const virDomainDef *def,
 {
     char macaddr[VIR_MAC_STRING_BUFLEN];
     char *realifname = NULL;
-    int *tapfd = NULL;
     char *brname = NULL;
     int actualType = virDomainNetGetActualType(net);
 
@@ -72,7 +71,7 @@ bhyveBuildNetArgStr(const virDomainDef *def,
 
     if (!dryRun) {
         if (virNetDevTapCreateInBridgePort(brname, &net->ifname, &net->mac,
-                                           def->uuid, tapfd, 1,
+                                           def->uuid, NULL, 0,
                                            virDomainNetGetActualVirtPortProfile(net),
                                            virDomainNetGetActualVlan(net),
                                            VIR_NETDEV_TAP_CREATE_IFUP | VIR_NETDEV_TAP_CREATE_PERSIST) < 0) {
