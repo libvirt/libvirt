@@ -924,7 +924,8 @@ mymain(void)
     chain2 = chain->backingStore;
     chain3 = chain2->backingStore;
 
-#define TEST_LOOKUP_TARGET(id, target, name, index, result, meta, parent)   \
+#define TEST_LOOKUP_TARGET(id, target, ignored, name, index, result,    \
+                           meta, parent)                                \
     do {                                                                    \
         struct testLookupData data2 = { chain, target, name, index,         \
                                         result, meta, parent, };            \
@@ -932,17 +933,17 @@ mymain(void)
                         testStorageLookup, &data2) < 0)                     \
             ret = -1;                                                       \
     } while (0)
-#define TEST_LOOKUP(id, name, result, meta, parent)                         \
-    TEST_LOOKUP_TARGET(id, NULL, name, 0, result, meta, parent)
+#define TEST_LOOKUP(id, from, name, result, meta, parent)               \
+    TEST_LOOKUP_TARGET(id, NULL, from, name, 0, result, meta, parent)
 
-    TEST_LOOKUP(0, "bogus", NULL, NULL, NULL);
-    TEST_LOOKUP(1, "wrap", chain->path, chain, NULL);
-    TEST_LOOKUP(2, abswrap, chain->path, chain, NULL);
-    TEST_LOOKUP(3, "qcow2", chain2->path, chain2, chain->path);
-    TEST_LOOKUP(4, absqcow2, chain2->path, chain2, chain->path);
-    TEST_LOOKUP(5, "raw", chain3->path, chain3, chain2->path);
-    TEST_LOOKUP(6, absraw, chain3->path, chain3, chain2->path);
-    TEST_LOOKUP(7, NULL, chain3->path, chain3, chain2->path);
+    TEST_LOOKUP(0, NULL, "bogus", NULL, NULL, NULL);
+    TEST_LOOKUP(2, NULL, "wrap", chain->path, chain, NULL);
+    TEST_LOOKUP(5, NULL, abswrap, chain->path, chain, NULL);
+    TEST_LOOKUP(8, NULL, "qcow2", chain2->path, chain2, chain->path);
+    TEST_LOOKUP(12, NULL, absqcow2, chain2->path, chain2, chain->path);
+    TEST_LOOKUP(16, NULL, "raw", chain3->path, chain3, chain2->path);
+    TEST_LOOKUP(20, NULL, absraw, chain3->path, chain3, chain2->path);
+    TEST_LOOKUP(24, NULL, NULL, chain3->path, chain3, chain2->path);
 
     /* Rewrite wrap and qcow2 back to 3-deep chain, relative backing */
     virCommandFree(cmd);
@@ -968,14 +969,14 @@ mymain(void)
     chain2 = chain->backingStore;
     chain3 = chain2->backingStore;
 
-    TEST_LOOKUP(8, "bogus", NULL, NULL, NULL);
-    TEST_LOOKUP(9, "wrap", chain->path, chain, NULL);
-    TEST_LOOKUP(10, abswrap, chain->path, chain, NULL);
-    TEST_LOOKUP(11, "qcow2", chain2->path, chain2, chain->path);
-    TEST_LOOKUP(12, absqcow2, chain2->path, chain2, chain->path);
-    TEST_LOOKUP(13, "raw", chain3->path, chain3, chain2->path);
-    TEST_LOOKUP(14, absraw, chain3->path, chain3, chain2->path);
-    TEST_LOOKUP(15, NULL, chain3->path, chain3, chain2->path);
+    TEST_LOOKUP(28, NULL, "bogus", NULL, NULL, NULL);
+    TEST_LOOKUP(30, NULL, "wrap", chain->path, chain, NULL);
+    TEST_LOOKUP(33, NULL, abswrap, chain->path, chain, NULL);
+    TEST_LOOKUP(36, NULL, "qcow2", chain2->path, chain2, chain->path);
+    TEST_LOOKUP(40, NULL, absqcow2, chain2->path, chain2, chain->path);
+    TEST_LOOKUP(44, NULL, "raw", chain3->path, chain3, chain2->path);
+    TEST_LOOKUP(48, NULL, absraw, chain3->path, chain3, chain2->path);
+    TEST_LOOKUP(52, NULL, NULL, chain3->path, chain3, chain2->path);
 
     /* Use link to wrap with cross-directory relative backing */
     virCommandFree(cmd);
@@ -995,27 +996,27 @@ mymain(void)
     chain2 = chain->backingStore;
     chain3 = chain2->backingStore;
 
-    TEST_LOOKUP(16, "bogus", NULL, NULL, NULL);
-    TEST_LOOKUP(17, "sub/link2", chain->path, chain, NULL);
-    TEST_LOOKUP(18, "wrap", chain->path, chain, NULL);
-    TEST_LOOKUP(19, abswrap, chain->path, chain, NULL);
-    TEST_LOOKUP(20, "../qcow2", chain2->path, chain2, chain->path);
-    TEST_LOOKUP(21, "qcow2", NULL, NULL, NULL);
-    TEST_LOOKUP(22, absqcow2, chain2->path, chain2, chain->path);
-    TEST_LOOKUP(23, "raw", chain3->path, chain3, chain2->path);
-    TEST_LOOKUP(24, absraw, chain3->path, chain3, chain2->path);
-    TEST_LOOKUP(25, NULL, chain3->path, chain3, chain2->path);
+    TEST_LOOKUP(56, NULL, "bogus", NULL, NULL, NULL);
+    TEST_LOOKUP(57, NULL, "sub/link2", chain->path, chain, NULL);
+    TEST_LOOKUP(58, NULL, "wrap", chain->path, chain, NULL);
+    TEST_LOOKUP(59, NULL, abswrap, chain->path, chain, NULL);
+    TEST_LOOKUP(60, NULL, "../qcow2", chain2->path, chain2, chain->path);
+    TEST_LOOKUP(61, NULL, "qcow2", NULL, NULL, NULL);
+    TEST_LOOKUP(62, NULL, absqcow2, chain2->path, chain2, chain->path);
+    TEST_LOOKUP(63, NULL, "raw", chain3->path, chain3, chain2->path);
+    TEST_LOOKUP(64, NULL, absraw, chain3->path, chain3, chain2->path);
+    TEST_LOOKUP(65, NULL, NULL, chain3->path, chain3, chain2->path);
 
-    TEST_LOOKUP_TARGET(26, "vda", "bogus[1]", 0, NULL, NULL, NULL);
-    TEST_LOOKUP_TARGET(27, "vda", "vda[-1]", 0, NULL, NULL, NULL);
-    TEST_LOOKUP_TARGET(28, "vda", "vda[1][1]", 0, NULL, NULL, NULL);
-    TEST_LOOKUP_TARGET(29, "vda", "wrap", 0, chain->path, chain, NULL);
-    TEST_LOOKUP_TARGET(30, "vda", "vda[0]", 0, NULL, NULL, NULL);
-    TEST_LOOKUP_TARGET(31, "vda", "vda[1]", 1, chain2->path, chain2,
+    TEST_LOOKUP_TARGET(66, "vda", NULL, "bogus[1]", 0, NULL, NULL, NULL);
+    TEST_LOOKUP_TARGET(67, "vda", NULL, "vda[-1]", 0, NULL, NULL, NULL);
+    TEST_LOOKUP_TARGET(68, "vda", NULL, "vda[1][1]", 0, NULL, NULL, NULL);
+    TEST_LOOKUP_TARGET(69, "vda", NULL, "wrap", 0, chain->path, chain, NULL);
+    TEST_LOOKUP_TARGET(72, "vda", NULL, "vda[0]", 0, NULL, NULL, NULL);
+    TEST_LOOKUP_TARGET(73, "vda", NULL, "vda[1]", 1, chain2->path, chain2,
                        chain->path);
-    TEST_LOOKUP_TARGET(32, "vda", "vda[2]", 2, chain3->path, chain3,
+    TEST_LOOKUP_TARGET(77, "vda", NULL, "vda[2]", 2, chain3->path, chain3,
                        chain2->path);
-    TEST_LOOKUP_TARGET(33, "vda", "vda[3]", 3, NULL, NULL, NULL);
+    TEST_LOOKUP_TARGET(81, "vda", NULL, "vda[3]", 3, NULL, NULL, NULL);
 
  cleanup:
     /* Final cleanup */
