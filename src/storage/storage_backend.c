@@ -1305,9 +1305,15 @@ virStorageBackendVolOpen(const char *path, struct stat *sb,
     bool noerror = (flags & VIR_STORAGE_VOL_OPEN_NOERROR);
 
     if (lstat(path, sb) < 0) {
-        if (errno == ENOENT && noerror) {
-            VIR_WARN("ignoring missing file '%s'", path);
-            return -2;
+        if (errno == ENOENT) {
+            if (noerror) {
+                VIR_WARN("ignoring missing file '%s'", path);
+                return -2;
+            }
+            virReportError(VIR_ERR_NO_STORAGE_VOL,
+                           _("no storage vol with matching path '%s'"),
+                           path);
+            return -1;
         }
         virReportSystemError(errno,
                              _("cannot stat file '%s'"),
