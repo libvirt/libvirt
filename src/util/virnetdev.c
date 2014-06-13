@@ -1875,6 +1875,16 @@ virNetDevGetLinkInfo(const char *ifname,
 
     lnk->state = tmp_state;
 
+    /* Shortcut to avoid some kernel issues. If link is not up several drivers
+     * report several misleading values. While igb reports 65535, realtek goes
+     * with 10. To avoid muddying XML with insane values, don't report link
+     * speed if that's the case. */
+    if (lnk->state != VIR_INTERFACE_STATE_UP) {
+        lnk->speed = 0;
+        ret = 0;
+        goto cleanup;
+    }
+
     VIR_FREE(path);
     VIR_FREE(buf);
 
@@ -1901,11 +1911,7 @@ virNetDevGetLinkInfo(const char *ifname,
         goto cleanup;
     }
 
-    /* Workaround broken kernel API. If the link is unplugged then
-     * depending on the NIC driver, link speed can be reported as -1.
-     * However, the value is printed out as unsigned integer instead of
-     * signed one. Terrifying but true. */
-    lnk->speed = (int) tmp_speed == -1 ? 0 : tmp_speed;
+    lnk->speed = tmp_speed;
 
     ret = 0;
  cleanup:
