@@ -1,5 +1,6 @@
 <interface type='vlan' name='eth0.42'>
   <start mode='onboot'/>
+  <link state='lowerlayerdown'/>
   <protocol family='ipv4'>
     <dhcp peerdns='no'/>
   </protocol>

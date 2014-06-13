@@ -1,5 +1,6 @@
 <interface type='bond' name='bond0'>
   <start mode='none'/>
+  <link speed='1000' state='up'/>
   <protocol family='ipv4'>
     <ip address='192.168.50.7' prefix='24'/>
     <route gateway='192.168.50.1'/>

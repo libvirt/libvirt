@@ -669,6 +669,8 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType)
     int type;
     char *tmp;
     xmlNodePtr cur = ctxt->node;
+    xmlNodePtr lnk;
+
 
     /* check @type */
     tmp = virXPathString("string(./@type)", ctxt);
@@ -704,19 +706,21 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType)
         goto error;
     }
     def->type = type;
+
+    if (type != VIR_INTERFACE_TYPE_BRIDGE) {
+        /* link status makes no sense for a bridge */
+        lnk = virXPathNode("./link", ctxt);
+        if (lnk && virInterfaceLinkParseXML(lnk, &def->lnk) < 0)
+            goto error;
+    }
+
     switch (type) {
         case VIR_INTERFACE_TYPE_ETHERNET: {
-            xmlNodePtr lnk;
-
             if (virInterfaceDefParseName(def, ctxt) < 0)
                 goto error;
             tmp = virXPathString("string(./mac/@address)", ctxt);
             if (tmp != NULL)
                 def->mac = tmp;
-
-            lnk = virXPathNode("./link", ctxt);
-            if (lnk && virInterfaceLinkParseXML(lnk, &def->lnk) < 0)
-                goto error;
 
             if (parentIfType == VIR_INTERFACE_TYPE_LAST) {
                 /* only recognize these in toplevel bond interfaces */
@@ -1110,6 +1114,7 @@ virInterfaceDefDevFormat(virBufferPtr buf, const virInterfaceDef *def)
             break;
         case VIR_INTERFACE_TYPE_BOND:
             virInterfaceStartmodeDefFormat(buf, def->startmode);
+            virInterfaceLinkFormat(buf, &def->lnk);
             if (def->mtu != 0)
                 virBufferAsprintf(buf, "<mtu size='%d'/>\n", def->mtu);
             virInterfaceProtocolDefFormat(buf, def);
@@ -1119,6 +1124,7 @@ virInterfaceDefDevFormat(virBufferPtr buf, const virInterfaceDef *def)
             virInterfaceStartmodeDefFormat(buf, def->startmode);
             if (def->mac != NULL)
                 virBufferAsprintf(buf, "<mac address='%s'/>\n", def->mac);
+            virInterfaceLinkFormat(buf, &def->lnk);
             if (def->mtu != 0)
                 virBufferAsprintf(buf, "<mtu size='%d'/>\n", def->mtu);
             virInterfaceProtocolDefFormat(buf, def);

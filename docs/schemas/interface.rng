@@ -78,6 +78,7 @@
          of the form DEVICE.VLAN
     -->
     <optional><ref name="name-attr"/></optional>
+    <ref name="link-speed-state"/>
   </define>
 
   <define name="vlan-device">
@@ -156,6 +157,7 @@
       <value>bond</value>
     </attribute>
     <ref name="name-attr"/>
+    <ref name="link-speed-state"/>
   </define>
 
   <define name="bond-element">
