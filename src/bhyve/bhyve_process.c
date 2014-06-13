@@ -78,10 +78,12 @@ bhyveNetCleanup(virDomainObjPtr vm)
         int actualType = virDomainNetGetActualType(net);
 
         if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-            ignore_value(virNetDevBridgeRemovePort(
-                            virDomainNetGetActualBridgeName(net),
-                            net->ifname));
-            ignore_value(virNetDevTapDelete(net->ifname));
+            if (net->ifname) {
+                ignore_value(virNetDevBridgeRemovePort(
+                                virDomainNetGetActualBridgeName(net),
+                                net->ifname));
+                ignore_value(virNetDevTapDelete(net->ifname));
+            }
         }
     }
 }
