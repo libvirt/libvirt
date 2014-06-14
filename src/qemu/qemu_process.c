@@ -1013,6 +1013,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 {
     virQEMUDriverPtr driver = opaque;
     virObjectEventPtr event = NULL;
+    virObjectEventPtr event2 = NULL;
     const char *path;
     virDomainDiskDefPtr disk;
 
@@ -1020,8 +1021,12 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     disk = qemuProcessFindDomainDiskByAlias(vm, diskAlias);
 
     if (disk) {
+        /* Have to generate two variants of the event for old vs. new
+         * client callbacks */
         path = virDomainDiskGetSource(disk);
         event = virDomainEventBlockJobNewFromObj(vm, path, type, status);
+        event2 = virDomainEventBlockJob2NewFromObj(vm, disk->dst, type,
+                                                   status);
         /* XXX If we completed a block pull or commit, then recompute
          * the cached backing chain to match.  Better would be storing
          * the chain ourselves rather than reprobing, but this
@@ -1048,6 +1053,8 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     if (event)
         qemuDomainEventQueue(driver, event);
+    if (event2)
+        qemuDomainEventQueue(driver, event2);
 
     return 0;
 }

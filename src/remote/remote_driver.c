@@ -321,6 +321,11 @@ remoteDomainBuildEventCallbackDeviceRemoved(virNetClientProgramPtr prog,
                                             void *evdata, void *opaque);
 
 static void
+remoteDomainBuildEventBlockJob2(virNetClientProgramPtr prog,
+                                virNetClientPtr client,
+                                void *evdata, void *opaque);
+
+static void
 remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                  virNetClientPtr client ATTRIBUTE_UNUSED,
                                  void *evdata, void *opaque);
@@ -467,6 +472,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteDomainBuildEventCallbackDeviceRemoved,
       sizeof(remote_domain_event_callback_device_removed_msg),
       (xdrproc_t)xdr_remote_domain_event_callback_device_removed_msg },
+    { REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB_2,
+      remoteDomainBuildEventBlockJob2,
+      sizeof(remote_domain_event_block_job_2_msg),
+      (xdrproc_t)xdr_remote_domain_event_block_job_2_msg },
 };
 
 
@@ -5047,6 +5056,28 @@ remoteDomainBuildEventCallbackBlockJob(virNetClientProgramPtr prog ATTRIBUTE_UNU
     virConnectPtr conn = opaque;
     remote_domain_event_callback_block_job_msg *msg = evdata;
     remoteDomainBuildEventBlockJobHelper(conn, &msg->msg, msg->callbackID);
+}
+static void
+remoteDomainBuildEventBlockJob2(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                virNetClientPtr client ATTRIBUTE_UNUSED,
+                                void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    remote_domain_event_block_job_2_msg *msg = evdata;
+    struct private_data *priv = conn->privateData;
+    virDomainPtr dom;
+    virObjectEventPtr event = NULL;
+
+    dom = get_nonnull_domain(conn, msg->dom);
+    if (!dom)
+        return;
+
+    event = virDomainEventBlockJob2NewFromDom(dom, msg->dst, msg->type,
+                                              msg->status);
+
+    virDomainFree(dom);
+
+    remoteEventQueue(priv, event, msg->callbackID);
 }
 
 static void

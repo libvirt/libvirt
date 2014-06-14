@@ -15027,6 +15027,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     int ret = -1;
     bool async = false;
     virObjectEventPtr event = NULL;
+    virObjectEventPtr event2 = NULL;
     int idx;
     virDomainDiskDefPtr disk;
     virStorageSourcePtr baseSource = NULL;
@@ -15130,11 +15131,14 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     if (mode == BLOCK_JOB_ABORT) {
         if (!async) {
             /* Older qemu that lacked async reporting also lacked
-             * active commit, so we can hardcode the event to pull */
+             * active commit, so we can hardcode the event to pull.
+             * We have to generate two variants of the event. */
             int type = VIR_DOMAIN_BLOCK_JOB_TYPE_PULL;
             int status = VIR_DOMAIN_BLOCK_JOB_CANCELED;
             event = virDomainEventBlockJobNewFromObj(vm, disk->src->path, type,
                                                      status);
+            event2 = virDomainEventBlockJob2NewFromObj(vm, disk->dst, type,
+                                                       status);
         } else if (!(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC)) {
             while (1) {
                 /* Poll every 50ms */
@@ -15178,6 +15182,8 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
         virObjectUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
+    if (event2)
+        qemuDomainEventQueue(driver, event2);
     return ret;
 }
 

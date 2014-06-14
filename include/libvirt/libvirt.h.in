@@ -4852,13 +4852,25 @@ typedef enum {
  * virConnectDomainEventBlockJobCallback:
  * @conn: connection object
  * @dom: domain on which the event occurred
- * @disk: fully-qualified filename of the affected disk
+ * @disk: name associated with the affected disk (filename or target
+ *        device, depending on how the callback was registered)
  * @type: type of block job (virDomainBlockJobType)
  * @status: status of the operation (virConnectDomainEventBlockJobStatus)
  * @opaque: application specified data
  *
- * The callback signature to use when registering for an event of type
- * VIR_DOMAIN_EVENT_ID_BLOCK_JOB with virConnectDomainEventRegisterAny()
+ * The string returned for @disk can be used in any of the libvirt API
+ * that operate on a particular disk of the domain, and depends on what
+ * event type was registered with virConnectDomainEventRegisterAny().
+ * If the callback was registered using the older type of
+ * VIR_DOMAIN_EVENT_ID_BLOCK_JOB, then @disk contains the absolute file
+ * name of the host resource for the active layer of the disk; however,
+ * this name is unstable (pivoting via block copy or active block commit
+ * will change which file is active, giving a different name for the two
+ * events associated with the same job) and cannot be relied on if the
+ * active layer is associated with a network resource.  If the callback
+ * was registered using the newer type of VIR_DOMAIN_EVENT_ID_BLOCK_JOB_2,
+ * then @disk will contain the device target shorthand (the <target
+ * dev='...'/> sub-element, such as "vda").
  */
 typedef void (*virConnectDomainEventBlockJobCallback)(virConnectPtr conn,
                                                       virDomainPtr dom,
@@ -5062,6 +5074,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE = 13, /* virConnectDomainEventBalloonChangeCallback */
     VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK = 14, /* virConnectDomainEventPMSuspendDiskCallback */
     VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED = 15, /* virConnectDomainEventDeviceRemovedCallback */
+    VIR_DOMAIN_EVENT_ID_BLOCK_JOB_2 = 16,    /* virConnectDomainEventBlockJobCallback */
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_ID_LAST

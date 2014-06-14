@@ -10921,8 +10921,9 @@ vshEventBlockJobPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (!data->loop && *data->count)
         return;
-    vshPrint(data->ctl, _("event 'block-job' for domain %s: %s for %s %s\n"),
-             virDomainGetName(dom), vshDomainBlockJobToString(type),
+    vshPrint(data->ctl, _("event '%s' for domain %s: %s for %s %s\n"),
+             data->cb->name, virDomainGetName(dom),
+             vshDomainBlockJobToString(type),
              disk, vshDomainBlockJobStatusToString(status));
     (*data->count)++;
     if (!data->loop)
@@ -11049,6 +11050,8 @@ static vshEventCallback vshEventCallbacks[] = {
       VIR_DOMAIN_EVENT_CALLBACK(vshEventPMChangePrint), },
     { "device-removed",
       VIR_DOMAIN_EVENT_CALLBACK(vshEventDeviceRemovedPrint), },
+    { "block-job-2",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventBlockJobPrint), },
 };
 verify(VIR_DOMAIN_EVENT_ID_LAST == ARRAY_CARDINALITY(vshEventCallbacks));
 
