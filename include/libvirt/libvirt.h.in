@@ -2544,7 +2544,7 @@ typedef unsigned long long virDomainBlockJobCursor;
 
 typedef struct _virDomainBlockJobInfo virDomainBlockJobInfo;
 struct _virDomainBlockJobInfo {
-    virDomainBlockJobType type;
+    int type; /* virDomainBlockJobType */
     unsigned long bandwidth;
     /*
      * The following fields provide an indication of block job progress.  @cur
