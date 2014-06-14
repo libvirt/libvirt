@@ -2501,19 +2501,26 @@ int virDomainUpdateDeviceFlags(virDomainPtr domain,
 /**
  * virDomainBlockJobType:
  *
- * VIR_DOMAIN_BLOCK_JOB_TYPE_PULL: Block Pull (virDomainBlockPull, or
- * virDomainBlockRebase without flags), job ends on completion
- * VIR_DOMAIN_BLOCK_JOB_TYPE_COPY: Block Copy (virDomainBlockRebase with
- * flags), job exists as long as mirroring is active
- * VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT: Block Commit (virDomainBlockCommit),
- * job ends on completion
+ * Describes various possible block jobs.
  */
 typedef enum {
-    VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN = 0,
+    VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN = 0, /* Placeholder */
+
     VIR_DOMAIN_BLOCK_JOB_TYPE_PULL = 1,
+    /* Block Pull (virDomainBlockPull, or virDomainBlockRebase without
+     * flags), job ends on completion */
+
     VIR_DOMAIN_BLOCK_JOB_TYPE_COPY = 2,
+    /* Block Copy (virDomainBlockRebase with flags), job exists as
+     * long as mirroring is active */
+
     VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT = 3,
+    /* Block Commit (virDomainBlockCommit without flags), job ends on
+     * completion */
+
     VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT = 4,
+    /* Active Block Commit (virDomainBlockCommit with flags), job
+     * exists as long as sync is active */
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_BLOCK_JOB_TYPE_LAST
