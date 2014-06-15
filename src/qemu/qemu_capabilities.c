@@ -1913,7 +1913,7 @@ void virQEMUCapsDispose(void *obj)
 
 void
 virQEMUCapsSet(virQEMUCapsPtr qemuCaps,
-               enum virQEMUCapsFlags flag)
+               virQEMUCapsFlags flag)
 {
     ignore_value(virBitmapSetBit(qemuCaps->flags, flag));
 }
@@ -1934,7 +1934,7 @@ virQEMUCapsSetList(virQEMUCapsPtr qemuCaps, ...)
 
 void
 virQEMUCapsClear(virQEMUCapsPtr qemuCaps,
-                 enum virQEMUCapsFlags flag)
+                 virQEMUCapsFlags flag)
 {
     ignore_value(virBitmapClearBit(qemuCaps->flags, flag));
 }
@@ -1948,7 +1948,7 @@ char *virQEMUCapsFlagsString(virQEMUCapsPtr qemuCaps)
 
 bool
 virQEMUCapsGet(virQEMUCapsPtr qemuCaps,
-               enum virQEMUCapsFlags flag)
+               virQEMUCapsFlags flag)
 {
     bool b;
 
@@ -2306,7 +2306,7 @@ virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
 
 struct tpmTypeToCaps {
     int type;
-    enum virQEMUCapsFlags caps;
+    virQEMUCapsFlags caps;
 };
 
 static const struct tpmTypeToCaps virQEMUCapsTPMTypesToCaps[] = {

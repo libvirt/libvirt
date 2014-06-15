@@ -2769,7 +2769,7 @@ qemuProcessPrepareMonitorChr(virQEMUDriverConfigPtr cfg,
 int
 qemuProcessStartCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
                      virConnectPtr conn, virDomainRunningReason reason,
-                     enum qemuDomainAsyncJob asyncJob)
+                     qemuDomainAsyncJob asyncJob)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -2811,7 +2811,7 @@ qemuProcessStartCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
 
 int qemuProcessStopCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
                         virDomainPausedReason reason,
-                        enum qemuDomainAsyncJob asyncJob)
+                        qemuDomainAsyncJob asyncJob)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -2935,8 +2935,8 @@ static int
 qemuProcessRecoverMigration(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             virConnectPtr conn,
-                            enum qemuDomainAsyncJob job,
-                            enum qemuMigrationJobPhase phase,
+                            qemuDomainAsyncJob job,
+                            qemuMigrationJobPhase phase,
                             virDomainState state,
                             int reason)
 {

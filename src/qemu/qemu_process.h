@@ -33,11 +33,11 @@ int qemuProcessStartCPUs(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          virConnectPtr conn,
                          virDomainRunningReason reason,
-                         enum qemuDomainAsyncJob asyncJob);
+                         qemuDomainAsyncJob asyncJob);
 int qemuProcessStopCPUs(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
                         virDomainPausedReason reason,
-                        enum qemuDomainAsyncJob asyncJob);
+                        qemuDomainAsyncJob asyncJob);
 
 void qemuProcessAutostartAll(virQEMUDriverPtr driver);
 void qemuProcessReconnectAll(virConnectPtr conn, virQEMUDriverPtr driver);

@@ -53,7 +53,7 @@
     NULL
 
 
-enum qemuMigrationJobPhase {
+typedef enum {
     QEMU_MIGRATION_PHASE_NONE = 0,
     QEMU_MIGRATION_PHASE_PERFORM2,
     QEMU_MIGRATION_PHASE_BEGIN3,
@@ -66,25 +66,25 @@ enum qemuMigrationJobPhase {
     QEMU_MIGRATION_PHASE_FINISH3,
 
     QEMU_MIGRATION_PHASE_LAST
-};
+} qemuMigrationJobPhase;
 VIR_ENUM_DECL(qemuMigrationJobPhase)
 
 int qemuMigrationJobStart(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
-                          enum qemuDomainAsyncJob job)
+                          qemuDomainAsyncJob job)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 void qemuMigrationJobSetPhase(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
-                              enum qemuMigrationJobPhase phase)
+                              qemuMigrationJobPhase phase)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 void qemuMigrationJobStartPhase(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
-                                enum qemuMigrationJobPhase phase)
+                                qemuMigrationJobPhase phase)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 bool qemuMigrationJobContinue(virDomainObjPtr obj)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 bool qemuMigrationJobIsActive(virDomainObjPtr vm,
-                              enum qemuDomainAsyncJob job)
+                              qemuDomainAsyncJob job)
     ATTRIBUTE_NONNULL(1);
 bool qemuMigrationJobFinish(virQEMUDriverPtr driver, virDomainObjPtr obj)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
@@ -172,7 +172,7 @@ int qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
                         int fd, off_t offset, const char *path,
                         const char *compressor,
                         bool bypassSecurityDriver,
-                        enum qemuDomainAsyncJob asyncJob)
+                        qemuDomainAsyncJob asyncJob)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5)
     ATTRIBUTE_RETURN_CHECK;
 

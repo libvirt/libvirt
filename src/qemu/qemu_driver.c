@@ -2908,7 +2908,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
                      int compressed,
                      bool was_running,
                      unsigned int flags,
-                     enum qemuDomainAsyncJob asyncJob)
+                     qemuDomainAsyncJob asyncJob)
 {
     virQEMUSaveHeader header;
     bool bypassSecurityDriver = false;
@@ -3387,7 +3387,7 @@ qemuDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 }
 
 static int qemuDumpToFd(virQEMUDriverPtr driver, virDomainObjPtr vm,
-                        int fd, enum qemuDomainAsyncJob asyncJob,
+                        int fd, qemuDomainAsyncJob asyncJob,
                         const char *dumpformat)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -12839,7 +12839,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
                                          virDomainDiskDefPtr persistDisk,
                                          virJSONValuePtr actions,
                                          bool reuse,
-                                         enum qemuDomainAsyncJob asyncJob)
+                                         qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *device = NULL;
@@ -13074,7 +13074,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainSnapshotObjPtr snap,
                                    unsigned int flags,
-                                   enum qemuDomainAsyncJob asyncJob)
+                                   qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virJSONValuePtr actions = NULL;

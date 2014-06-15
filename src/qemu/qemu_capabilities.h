@@ -30,7 +30,7 @@
 # include "qemu_monitor.h"
 
 /* Internal flags to keep track of qemu command line capabilities */
-enum virQEMUCapsFlags {
+typedef enum {
     QEMU_CAPS_KQEMU              =  0, /* Whether KQEMU is compiled in */
     QEMU_CAPS_VNC_COLON          =  1, /* VNC takes or address + display */
     QEMU_CAPS_NO_REBOOT          =  2, /* Is the -no-reboot flag available */
@@ -208,7 +208,7 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_MSG_TIMESTAMP      = 167, /* -msg timestamp */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
-};
+} virQEMUCapsFlags;
 
 typedef struct _virQEMUCaps virQEMUCaps;
 typedef virQEMUCaps *virQEMUCapsPtr;
@@ -231,15 +231,15 @@ int virQEMUCapsProbeQMP(virQEMUCapsPtr qemuCaps,
                         qemuMonitorPtr mon);
 
 void virQEMUCapsSet(virQEMUCapsPtr qemuCaps,
-                    enum virQEMUCapsFlags flag) ATTRIBUTE_NONNULL(1);
+                    virQEMUCapsFlags flag) ATTRIBUTE_NONNULL(1);
 
 void virQEMUCapsSetList(virQEMUCapsPtr qemuCaps, ...) ATTRIBUTE_NONNULL(1);
 
 void virQEMUCapsClear(virQEMUCapsPtr qemuCaps,
-                      enum virQEMUCapsFlags flag) ATTRIBUTE_NONNULL(1);
+                      virQEMUCapsFlags flag) ATTRIBUTE_NONNULL(1);
 
 bool virQEMUCapsGet(virQEMUCapsPtr qemuCaps,
-                    enum virQEMUCapsFlags flag);
+                    virQEMUCapsFlags flag);
 
 bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
                                virDomainDefPtr def);

@@ -1585,7 +1585,7 @@ qemuMigrationSetOffline(virQEMUDriverPtr driver,
 static int
 qemuMigrationSetCompression(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
-                            enum qemuDomainAsyncJob job)
+                            qemuDomainAsyncJob job)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
@@ -1625,7 +1625,7 @@ qemuMigrationSetCompression(virQEMUDriverPtr driver,
 static int
 qemuMigrationSetAutoConverge(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
-                             enum qemuDomainAsyncJob job)
+                             qemuDomainAsyncJob job)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
@@ -1704,7 +1704,7 @@ static int
 qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              const char *job,
-                             enum qemuDomainAsyncJob asyncJob)
+                             qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
@@ -1788,7 +1788,7 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
  */
 static int
 qemuMigrationWaitForCompletion(virQEMUDriverPtr driver, virDomainObjPtr vm,
-                               enum qemuDomainAsyncJob asyncJob,
+                               qemuDomainAsyncJob asyncJob,
                                virConnectPtr dconn, bool abort_on_error)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -2006,7 +2006,7 @@ qemuMigrationCleanup(virDomainObjPtr vm,
               " was closed; canceling the migration",
               vm->def->name);
 
-    switch ((enum qemuMigrationJobPhase) priv->job.phase) {
+    switch ((qemuMigrationJobPhase) priv->job.phase) {
     case QEMU_MIGRATION_PHASE_BEGIN3:
         /* just forget we were about to migrate */
         qemuDomainObjDiscardAsyncJob(driver, vm);
@@ -2154,7 +2154,7 @@ qemuMigrationBegin(virConnectPtr conn,
 {
     virQEMUDriverPtr driver = conn->privateData;
     char *xml = NULL;
-    enum qemuDomainAsyncJob asyncJob;
+    qemuDomainAsyncJob asyncJob;
 
     if ((flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
         if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
@@ -2892,7 +2892,7 @@ qemuMigrationConfirm(virConnectPtr conn,
                      int cancelled)
 {
     virQEMUDriverPtr driver = conn->privateData;
-    enum qemuMigrationJobPhase phase;
+    qemuMigrationJobPhase phase;
     virQEMUDriverConfigPtr cfg = NULL;
     int ret = -1;
 
@@ -4694,7 +4694,7 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
                     int fd, off_t offset, const char *path,
                     const char *compressor,
                     bool bypassSecurityDriver,
-                    enum qemuDomainAsyncJob asyncJob)
+                    qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int rc;
@@ -4865,7 +4865,7 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
 int
 qemuMigrationJobStart(virQEMUDriverPtr driver,
                       virDomainObjPtr vm,
-                      enum qemuDomainAsyncJob job)
+                      qemuDomainAsyncJob job)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
@@ -4888,7 +4888,7 @@ qemuMigrationJobStart(virQEMUDriverPtr driver,
 void
 qemuMigrationJobSetPhase(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
-                         enum qemuMigrationJobPhase phase)
+                         qemuMigrationJobPhase phase)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
@@ -4905,7 +4905,7 @@ qemuMigrationJobSetPhase(virQEMUDriverPtr driver,
 void
 qemuMigrationJobStartPhase(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
-                           enum qemuMigrationJobPhase phase)
+                           qemuMigrationJobPhase phase)
 {
     virObjectRef(vm);
     qemuMigrationJobSetPhase(driver, vm, phase);
@@ -4920,7 +4920,7 @@ qemuMigrationJobContinue(virDomainObjPtr vm)
 
 bool
 qemuMigrationJobIsActive(virDomainObjPtr vm,
-                         enum qemuDomainAsyncJob job)
+                         qemuDomainAsyncJob job)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 

@@ -76,7 +76,7 @@ VIR_ENUM_IMPL(qemuDomainAsyncJob, QEMU_ASYNC_JOB_LAST,
 
 
 const char *
-qemuDomainAsyncJobPhaseToString(enum qemuDomainAsyncJob job,
+qemuDomainAsyncJobPhaseToString(qemuDomainAsyncJob job,
                                 int phase ATTRIBUTE_UNUSED)
 {
     switch (job) {
@@ -96,7 +96,7 @@ qemuDomainAsyncJobPhaseToString(enum qemuDomainAsyncJob job,
 }
 
 int
-qemuDomainAsyncJobPhaseFromString(enum qemuDomainAsyncJob job,
+qemuDomainAsyncJobPhaseFromString(qemuDomainAsyncJob job,
                                   const char *phase)
 {
     if (!phase)
@@ -205,7 +205,7 @@ qemuDomainObjFreeJob(qemuDomainObjPrivatePtr priv)
 }
 
 static bool
-qemuDomainTrackJob(enum qemuDomainJob job)
+qemuDomainTrackJob(qemuDomainJob job)
 {
     return (QEMU_DOMAIN_TRACK_JOBS & JOB_MASK(job)) != 0;
 }
@@ -278,7 +278,7 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
 {
     qemuDomainObjPrivatePtr priv = data;
     const char *monitorpath;
-    enum qemuDomainJob job;
+    qemuDomainJob job;
 
     /* priv->monitor_chr is set only for qemu */
     if (priv->monConfig) {
@@ -1033,13 +1033,13 @@ qemuDomainObjReleaseAsyncJob(virDomainObjPtr obj)
 }
 
 static bool
-qemuDomainNestedJobAllowed(qemuDomainObjPrivatePtr priv, enum qemuDomainJob job)
+qemuDomainNestedJobAllowed(qemuDomainObjPrivatePtr priv, qemuDomainJob job)
 {
     return !priv->job.asyncJob || (priv->job.mask & JOB_MASK(job)) != 0;
 }
 
 bool
-qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv, enum qemuDomainJob job)
+qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv, qemuDomainJob job)
 {
     return !priv->job.active && qemuDomainNestedJobAllowed(priv, job);
 }
@@ -1053,8 +1053,8 @@ qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv, enum qemuDomainJob job)
 static int ATTRIBUTE_NONNULL(1)
 qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
                               virDomainObjPtr obj,
-                              enum qemuDomainJob job,
-                              enum qemuDomainAsyncJob asyncJob)
+                              qemuDomainJob job,
+                              qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
     unsigned long long now;
@@ -1170,7 +1170,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
  */
 int qemuDomainObjBeginJob(virQEMUDriverPtr driver,
                           virDomainObjPtr obj,
-                          enum qemuDomainJob job)
+                          qemuDomainJob job)
 {
     if (qemuDomainObjBeginJobInternal(driver, obj, job,
                                       QEMU_ASYNC_JOB_NONE) < 0)
@@ -1181,7 +1181,7 @@ int qemuDomainObjBeginJob(virQEMUDriverPtr driver,
 
 int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
                                virDomainObjPtr obj,
-                               enum qemuDomainAsyncJob asyncJob)
+                               qemuDomainAsyncJob asyncJob)
 {
     if (qemuDomainObjBeginJobInternal(driver, obj, QEMU_JOB_ASYNC,
                                       asyncJob) < 0)
@@ -1193,7 +1193,7 @@ int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
 static int ATTRIBUTE_RETURN_CHECK
 qemuDomainObjBeginNestedJob(virQEMUDriverPtr driver,
                             virDomainObjPtr obj,
-                            enum qemuDomainAsyncJob asyncJob)
+                            qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
@@ -1226,7 +1226,7 @@ qemuDomainObjBeginNestedJob(virQEMUDriverPtr driver,
 bool qemuDomainObjEndJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
-    enum qemuDomainJob job = priv->job.active;
+    qemuDomainJob job = priv->job.active;
 
     priv->jobs_queued--;
 
@@ -1285,7 +1285,7 @@ qemuDomainObjAbortAsyncJob(virDomainObjPtr obj)
 static int
 qemuDomainObjEnterMonitorInternal(virQEMUDriverPtr driver,
                                   virDomainObjPtr obj,
-                                  enum qemuDomainAsyncJob asyncJob)
+                                  qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
@@ -1378,7 +1378,7 @@ void qemuDomainObjExitMonitor(virQEMUDriverPtr driver,
 int
 qemuDomainObjEnterMonitorAsync(virQEMUDriverPtr driver,
                                virDomainObjPtr obj,
-                               enum qemuDomainAsyncJob asyncJob)
+                               qemuDomainAsyncJob asyncJob)
 {
     return qemuDomainObjEnterMonitorInternal(driver, obj, asyncJob);
 }

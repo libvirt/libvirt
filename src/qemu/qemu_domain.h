@@ -67,7 +67,7 @@
 /* Only 1 job is allowed at any time
  * A job includes *all* monitor commands, even those just querying
  * information, not merely actions */
-enum qemuDomainJob {
+typedef enum {
     QEMU_JOB_NONE = 0,  /* Always set to 0 for easy if (jobActive) conditions */
     QEMU_JOB_QUERY,         /* Doesn't change any state */
     QEMU_JOB_DESTROY,       /* Destroys the domain (cannot be masked out) */
@@ -81,14 +81,14 @@ enum qemuDomainJob {
     QEMU_JOB_ASYNC_NESTED,  /* Normal job within an async job */
 
     QEMU_JOB_LAST
-};
+} qemuDomainJob;
 VIR_ENUM_DECL(qemuDomainJob)
 
 /* Async job consists of a series of jobs that may change state. Independent
  * jobs that do not change state (and possibly others if explicitly allowed by
  * current async job) are allowed to be run even if async job is active.
  */
-enum qemuDomainAsyncJob {
+typedef enum {
     QEMU_ASYNC_JOB_NONE = 0,
     QEMU_ASYNC_JOB_MIGRATION_OUT,
     QEMU_ASYNC_JOB_MIGRATION_IN,
@@ -97,16 +97,16 @@ enum qemuDomainAsyncJob {
     QEMU_ASYNC_JOB_SNAPSHOT,
 
     QEMU_ASYNC_JOB_LAST
-};
+} qemuDomainAsyncJob;
 VIR_ENUM_DECL(qemuDomainAsyncJob)
 
 struct qemuDomainJobObj {
     virCond cond;                       /* Use to coordinate jobs */
-    enum qemuDomainJob active;          /* Currently running job */
+    qemuDomainJob active;               /* Currently running job */
     unsigned long long owner;           /* Thread id which set current job */
 
     virCond asyncCond;                  /* Use to coordinate with async jobs */
-    enum qemuDomainAsyncJob asyncJob;   /* Currently active async job */
+    qemuDomainAsyncJob asyncJob;        /* Currently active async job */
     unsigned long long asyncOwner;      /* Thread which set current async job */
     int phase;                          /* Job phase (mainly for migrations) */
     unsigned long long mask;            /* Jobs allowed during async job */
@@ -191,9 +191,9 @@ struct qemuProcessEvent {
     void *data;
 };
 
-const char *qemuDomainAsyncJobPhaseToString(enum qemuDomainAsyncJob job,
+const char *qemuDomainAsyncJobPhaseToString(qemuDomainAsyncJob job,
                                             int phase);
-int qemuDomainAsyncJobPhaseFromString(enum qemuDomainAsyncJob job,
+int qemuDomainAsyncJobPhaseFromString(qemuDomainAsyncJob job,
                                       const char *phase);
 
 void qemuDomainEventFlush(int timer, void *opaque);
@@ -203,11 +203,11 @@ void qemuDomainEventQueue(virQEMUDriverPtr driver,
 
 int qemuDomainObjBeginJob(virQEMUDriverPtr driver,
                           virDomainObjPtr obj,
-                          enum qemuDomainJob job)
+                          qemuDomainJob job)
     ATTRIBUTE_RETURN_CHECK;
 int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
                                virDomainObjPtr obj,
-                               enum qemuDomainAsyncJob asyncJob)
+                               qemuDomainAsyncJob asyncJob)
     ATTRIBUTE_RETURN_CHECK;
 
 bool qemuDomainObjEndJob(virQEMUDriverPtr driver,
@@ -237,7 +237,7 @@ void qemuDomainObjExitMonitor(virQEMUDriverPtr driver,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int qemuDomainObjEnterMonitorAsync(virQEMUDriverPtr driver,
                                    virDomainObjPtr obj,
-                                   enum qemuDomainAsyncJob asyncJob)
+                                   qemuDomainAsyncJob asyncJob)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 
@@ -342,7 +342,7 @@ void qemuDomainSetFakeReboot(virQEMUDriverPtr driver,
                              bool value);
 
 bool qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv,
-                          enum qemuDomainJob job);
+                          qemuDomainJob job);
 
 int qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
