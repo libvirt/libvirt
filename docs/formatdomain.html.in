@@ -1891,11 +1891,13 @@
         attribute <code>ready</code> is present, then it is known the
         disk is ready to pivot; otherwise, the disk is probably still
         copying.  For now, this element only valid in output; it is
-        ignored on input.  <span class="since">Since 1.2.6</span>
-        (Older libvirt <span class="since">since 0.9.12</span> allowed
-        only mirroring to a file, with the information reported
-        in <code>file</code> and <code>format</code> attributes
-        of <code>mirror</code> rather than subelements.)
+        ignored on input.  The <code>source</code> sub-element exists
+        for all two-phase jobs <span class="since">since 1.2.6</span>.
+        Older libvirt supported only block copy to a
+        file, <span class="since">since 0.9.12</span>; for
+        compatibility with older clients, such jobs include redundant
+        information in the attributes <code>file</code>
+        and <code>format</code> in the <code>mirror</code> element.
       </dd>
       <dt><code>target</code></dt>
       <dd>The <code>target</code> element controls the bus / device

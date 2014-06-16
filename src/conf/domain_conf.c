@@ -15187,19 +15187,26 @@ virDomainDiskDefFormat(virBufferPtr buf,
 
     /* For now, mirroring is currently output-only: we only output it
      * for live domains, therefore we ignore it on input except for
-     * the internal parse on libvirtd restart.  We only output the
-     * new style similar to backingStore, even though the parser
-     * code still accepts old style across libvirtd upgrades. */
+     * the internal parse on libvirtd restart.  We prefer to output
+     * the new style similar to backingStore, but for back-compat on
+     * blockcopy files we also have to output old style attributes.
+     * The parser accepts either style across libvirtd upgrades. */
     if (def->mirror && !(flags & VIR_DOMAIN_XML_INACTIVE)) {
+        const char *formatStr = NULL;
+
+        if (def->mirror->format)
+            formatStr = virStorageFileFormatTypeToString(def->mirror->format);
         virBufferAsprintf(buf, "<mirror type='%s'",
                           virStorageTypeToString(def->mirror->type));
+        if (def->mirror->type == VIR_STORAGE_TYPE_FILE) {
+            virBufferEscapeString(buf, " file='%s'", def->mirror->path);
+            virBufferEscapeString(buf, " format='%s'", formatStr);
+        }
         if (def->mirroring)
             virBufferAddLit(buf, " ready='yes'");
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
-        if (def->mirror->format)
-            virBufferEscapeString(buf, "<format type='%s'/>\n",
-                                  virStorageFileFormatTypeToString(def->mirror->format));
+        virBufferEscapeString(buf, "<format type='%s'/>\n", formatStr);
         if (virDomainDiskSourceFormat(buf, def->mirror, 0, 0) < 0)
             return -1;
         virBufferAdjustIndent(buf, -2);
