@@ -564,6 +564,13 @@ virJSONValueObjectGetValue(virJSONValuePtr object,
 }
 
 
+bool
+virJSONValueIsArray(virJSONValuePtr array)
+{
+    return array->type == VIR_JSON_TYPE_ARRAY;
+}
+
+
 int
 virJSONValueArraySize(virJSONValuePtr array)
 {
@@ -585,6 +592,28 @@ virJSONValueArrayGet(virJSONValuePtr array,
         return NULL;
 
     return array->data.array.values[element];
+}
+
+
+virJSONValuePtr
+virJSONValueArraySteal(virJSONValuePtr array,
+                       unsigned int element)
+{
+    virJSONValuePtr ret = NULL;
+
+    if (array->type != VIR_JSON_TYPE_ARRAY)
+        return NULL;
+
+    if (element >= array->data.array.nvalues)
+        return NULL;
+
+    ret = array->data.array.values[element];
+
+    VIR_DELETE_ELEMENT(array->data.array.values,
+                       element,
+                       array->data.array.nvalues);
+
+    return ret;
 }
 
 

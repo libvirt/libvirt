@@ -97,8 +97,10 @@ int virJSONValueArrayAppend(virJSONValuePtr object, virJSONValuePtr value);
 int virJSONValueObjectHasKey(virJSONValuePtr object, const char *key);
 virJSONValuePtr virJSONValueObjectGet(virJSONValuePtr object, const char *key);
 
+bool virJSONValueIsArray(virJSONValuePtr array);
 int virJSONValueArraySize(virJSONValuePtr object);
 virJSONValuePtr virJSONValueArrayGet(virJSONValuePtr object, unsigned int element);
+virJSONValuePtr virJSONValueArraySteal(virJSONValuePtr object, unsigned int element);
 
 int virJSONValueObjectKeysNumber(virJSONValuePtr object);
 const char *virJSONValueObjectGetKey(virJSONValuePtr object, unsigned int n);
