@@ -274,14 +274,14 @@ main(int argc, char **argv)
     if (custom_lease_file_len) {
         if (!(leases_array = virJSONValueFromString(lease_entries))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("invalid json in file: %s"), custom_lease_file);
-            goto cleanup;
-        }
-
-        if ((size = virJSONValueArraySize(leases_array)) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("couldn't fetch array of leases"));
-            goto cleanup;
+                           _("invalid json in file: %s, rewriting it"),
+                           custom_lease_file);
+        } else {
+            if ((size = virJSONValueArraySize(leases_array)) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("couldn't fetch array of leases"));
+                goto cleanup;
+            }
         }
     }
 
