@@ -12885,13 +12885,11 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
 
     switch ((virStorageType)snap->src->type) {
     case VIR_STORAGE_TYPE_BLOCK:
-        reuse = true;
-        /* fallthrough */
     case VIR_STORAGE_TYPE_FILE:
 
         /* create the stub file and set selinux labels; manipulate disk in
          * place, in a way that can be reverted on failure. */
-        if (!reuse) {
+        if (!reuse && snap->src->type != VIR_STORAGE_TYPE_BLOCK) {
             fd = qemuOpenFile(driver, vm, source, O_WRONLY | O_TRUNC | O_CREAT,
                               &need_unlink, NULL);
             if (fd < 0)
