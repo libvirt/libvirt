@@ -331,6 +331,7 @@ main(int argc, char **argv)
                            _("failed to create json"));
             goto cleanup;
         }
+        lease_new = NULL;
     }
 
     if (!(leases_str = virJSONValueToString(leases_array_new, true))) {
