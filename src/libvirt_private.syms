@@ -1665,6 +1665,7 @@ virNumaGetDistances;
 virNumaGetMaxNode;
 virNumaGetNodeMemory;
 virNumaIsAvailable;
+virNumaNodeIsAvailable;
 virNumaSetupMemoryPolicy;
 virNumaTuneMemPlacementModeTypeFromString;
 virNumaTuneMemPlacementModeTypeToString;

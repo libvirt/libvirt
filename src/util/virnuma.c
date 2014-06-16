@@ -407,6 +407,23 @@ virNumaGetMaxCPUs(void)
 
 #ifdef HAVE_NUMA_BITMASK_ISBITSET
 /**
+ * virNumaNodeIsAvailable:
+ * @node: node to check
+ *
+ * On some hosts the set of NUMA nodes isn't continuous.
+ * Use this function to test if the @node is available.
+ *
+ * Returns: true if @node is available,
+ *          false if @node doesn't exist
+ */
+bool
+virNumaNodeIsAvailable(int node)
+{
+    return numa_bitmask_isbitset(numa_nodes_ptr, node);
+}
+
+
+/**
  * virNumaGetDistances:
  * @node: identifier of the requested NUMA node
  * @distances: array of distances to sibling nodes
@@ -434,7 +451,7 @@ virNumaGetDistances(int node,
     int max_node;
     size_t i;
 
-    if (!numa_bitmask_isbitset(numa_nodes_ptr, node)) {
+    if (!virNumaNodeIsAvailable(node)) {
         VIR_DEBUG("Node %d does not exist", node);
         *distances = NULL;
         *ndistances = 0;
@@ -450,7 +467,7 @@ virNumaGetDistances(int node,
     *ndistances = max_node + 1;
 
     for (i = 0; i<= max_node; i++) {
-        if (!numa_bitmask_isbitset(numa_nodes_ptr, i))
+        if (!virNumaNodeIsAvailable(node))
             continue;
 
         (*distances)[i] = numa_distance(node, i);
@@ -460,7 +477,22 @@ virNumaGetDistances(int node,
  cleanup:
     return ret;
 }
+
+
 #else
+bool
+virNumaNodeIsAvailable(int node)
+{
+    int max_node = virNumaGetMaxNode();
+
+    if (max_node < 0)
+        return false;
+
+    /* Do we have anything better? */
+    return (node >= 0) && (node < max_node);
+}
+
+
 int
 virNumaGetDistances(int node ATTRIBUTE_UNUSED,
                     int **distances,
