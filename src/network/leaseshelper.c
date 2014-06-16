@@ -116,7 +116,6 @@ main(int argc, char **argv)
     long long currtime = 0;
     long long expirytime = 0;
     size_t i = 0;
-    int size = 0;
     int action = -1;
     int pid_file_fd = -1;
     int rv = EXIT_FAILURE;
@@ -270,20 +269,6 @@ main(int argc, char **argv)
                 virLeaseActionTypeToString(action));
         exit(EXIT_FAILURE);
     }
-    /* Check for previous leases */
-    if (custom_lease_file_len) {
-        if (!(leases_array = virJSONValueFromString(lease_entries))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("invalid json in file: %s, rewriting it"),
-                           custom_lease_file);
-        } else {
-            if ((size = virJSONValueArraySize(leases_array)) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("couldn't fetch array of leases"));
-                goto cleanup;
-            }
-        }
-    }
 
     if (!(leases_array_new = virJSONValueNewArray())) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -293,36 +278,58 @@ main(int argc, char **argv)
 
     currtime = (long long) time(NULL);
 
-    for (i = 0; i < size; i++) {
-        const char *ip_tmp = NULL;
-        long long expirytime_tmp = -1;
+    /* Check for previous leases */
+    if (custom_lease_file_len) {
+        if (!(leases_array = virJSONValueFromString(lease_entries))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("invalid json in file: %s, rewriting it"),
+                           custom_lease_file);
+        } else {
+            if (!virJSONValueIsArray(leases_array)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("couldn't fetch array of leases"));
+                goto cleanup;
+            }
 
-        if (!(lease_tmp = virJSONValueArrayGet(leases_array, i))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to parse json"));
-            goto cleanup;
-        }
+            i = 0;
+            while (i < virJSONValueArraySize(leases_array)) {
+                const char *ip_tmp = NULL;
+                long long expirytime_tmp = -1;
 
-        if (!(ip_tmp = virJSONValueObjectGetString(lease_tmp, "ip-address")) ||
-            (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time", &expirytime_tmp) < 0)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to parse json"));
-            goto cleanup;
-        }
+                if (!(lease_tmp = virJSONValueArrayGet(leases_array, i))) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("failed to parse json"));
+                    goto cleanup;
+                }
 
-        /* Check whether lease has expired or not */
-        if (expirytime_tmp < currtime)
-            continue;
+                if (!(ip_tmp = virJSONValueObjectGetString(lease_tmp, "ip-address")) ||
+                    (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time", &expirytime_tmp) < 0)) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("failed to parse json"));
+                    goto cleanup;
+                }
 
-        /* Check whether lease has to be included or not */
-        if (delete && STREQ(ip_tmp, ip))
-            continue;
+                /* Check whether lease has expired or not */
+                if (expirytime_tmp < currtime) {
+                    i++;
+                    continue;
+                }
 
-        /* Add old lease to new array */
-        if (virJSONValueArrayAppend(leases_array_new, lease_tmp) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to create json"));
-            goto cleanup;
+                /* Check whether lease has to be included or not */
+                if (delete && STREQ(ip_tmp, ip)) {
+                    i++;
+                    continue;
+                }
+
+                /* Move old lease to new array */
+                if (virJSONValueArrayAppend(leases_array_new, lease_tmp) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("failed to create json"));
+                    goto cleanup;
+                }
+
+                ignore_value(virJSONValueArraySteal(leases_array, i));
+            }
         }
     }
 
