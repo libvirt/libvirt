@@ -2180,7 +2180,10 @@ openvzNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
 static unsigned long long
 openvzNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    return nodeGetFreeMemory();
+    unsigned long long freeMem;
+    if (nodeGetMemory(NULL, &freeMem) < 0)
+        return 0;
+    return freeMem;
 }
 
 

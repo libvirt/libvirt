@@ -1244,10 +1244,15 @@ bhyveConnectGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED,
 static unsigned long long
 bhyveNodeGetFreeMemory(virConnectPtr conn)
 {
+    unsigned long long freeMem;
+
     if (virNodeGetFreeMemoryEnsureACL(conn) < 0)
         return 0;
 
-    return nodeGetFreeMemory();
+    if (nodeGetMemory(NULL, &freeMem) < 0)
+        return 0;
+
+    return freeMem;
 }
 
 static int

@@ -40,7 +40,8 @@ int nodeGetMemoryStats(int cellNum,
 int nodeGetCellsFreeMemory(unsigned long long *freeMems,
                            int startCell,
                            int maxCells);
-unsigned long long nodeGetFreeMemory(void);
+int nodeGetMemory(unsigned long long *mem,
+                  unsigned long long *freeMem);
 
 virBitmapPtr nodeGetCPUBitmap(int *max_id);
 int nodeGetCPUCount(void);

@@ -1683,37 +1683,66 @@ nodeGetCellsFreeMemoryFake(unsigned long long *freeMems,
     return 1;
 }
 
-static unsigned long long
-nodeGetFreeMemoryFake(void)
+static int
+nodeGetMemoryFake(unsigned long long *mem,
+                  unsigned long long *freeMem)
 {
+    int ret = -1;
+
 #if defined(__FreeBSD__)
     unsigned long pagesize = getpagesize();
     u_int value;
     size_t value_size = sizeof(value);
-    unsigned long long freemem;
 
-    if (sysctlbyname("vm.stats.vm.v_free_count", &value,
-                     &value_size, NULL, 0) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("sysctl failed for vm.stats.vm.v_free_count"));
-        return 0;
+    if (mem) {
+        if (sysctlbyname("vm.stats.vm.v_page_count", &value,
+                         &value_size, NULL, 0) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("sysctl failed for vm.stats.vm.v_page_count"));
+            goto cleanup;
+        }
+        *mem = value * (unsigned long long)pagesize;
     }
 
-    freemem = value * (unsigned long long)pagesize;
+    if (freeMem) {
+        if (sysctlbyname("vm.stats.vm.v_free_count", &value,
+                         &value_size, NULL, 0) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("sysctl failed for vm.stats.vm.v_free_count"));
+            goto cleanup;
+        }
 
-    return freemem;
+        *freeMem = value * (unsigned long long)pagesize;
+    }
+
 #else
-    double avail = physmem_available();
-    unsigned long long ret;
+    if (mem) {
+        double total = physmem_total();
+        if (!total) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cannot determine free memory"));
+            goto cleanup;
+        }
 
-    if (!(ret = (unsigned long long)avail)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot determine free memory"));
-        return 0;
+        *mem = (unsigned long long) total;
     }
 
-    return ret;
+    if (freeMem) {
+        double avail = physmem_available();
+
+        if (!avail) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cannot determine free memory"));
+            goto cleanup;
+        }
+
+        *freeMem = (unsigned long long) avail;
+    }
 #endif
+
+    ret = 0;
+ cleanup:
+    return ret;
 }
 
 /* returns 1 on success, 0 if the detection failed and -1 on hard error */
@@ -1914,25 +1943,40 @@ nodeGetCellsFreeMemory(unsigned long long *freeMems,
     return ret;
 }
 
-unsigned long long
-nodeGetFreeMemory(void)
+int
+nodeGetMemory(unsigned long long *mem,
+              unsigned long long *freeMem)
 {
-    unsigned long long mem;
-    unsigned long long freeMem = 0;
     int max_node;
     int n;
 
+    if (mem)
+        *mem = 0;
+
+    if (freeMem)
+        *freeMem = 0;
+
     if (!virNumaIsAvailable())
-        return nodeGetFreeMemoryFake();
+        return nodeGetMemoryFake(mem, freeMem);
 
     if ((max_node = virNumaGetMaxNode()) < 0)
-        return 0;
+        return -1;
 
     for (n = 0; n <= max_node; n++) {
-        virNumaGetNodeMemory(n, NULL, &mem);
+        unsigned long long tmp_mem = 0, tmp_freeMem = 0;
 
-        freeMem += mem;
+        if (!virNumaNodeIsAvailable(n))
+            continue;
+
+        if (virNumaGetNodeMemory(n, &tmp_mem, &tmp_freeMem) < 0)
+            return -1;
+
+        if (mem)
+            *mem += tmp_mem;
+
+        if (freeMem)
+            *freeMem += tmp_freeMem;
     }
 
-    return freeMem;
+    return 0;
 }

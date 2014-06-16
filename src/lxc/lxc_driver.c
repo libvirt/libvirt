@@ -5477,10 +5477,15 @@ lxcNodeGetCellsFreeMemory(virConnectPtr conn,
 static unsigned long long
 lxcNodeGetFreeMemory(virConnectPtr conn)
 {
+    unsigned long long freeMem;
+
     if (virNodeGetFreeMemoryEnsureACL(conn) < 0)
         return 0;
 
-    return nodeGetFreeMemory();
+    if (nodeGetMemory(NULL, &freeMem) < 0)
+        return 0;
+
+    return freeMem;
 }
 
 

@@ -11476,7 +11476,10 @@ vboxNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
 static unsigned long long
 vboxNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    return nodeGetFreeMemory();
+    unsigned long long freeMem;
+    if (nodeGetMemory(NULL, &freeMem) < 0)
+        return 0;
+    return freeMem;
 }
 
 
