@@ -352,6 +352,9 @@ bool virStorageSourceIsLocalStorage(virStorageSourcePtr src);
 void virStorageSourceFree(virStorageSourcePtr def);
 void virStorageSourceBackingStoreClear(virStorageSourcePtr def);
 virStorageSourcePtr virStorageSourceNewFromBacking(virStorageSourcePtr parent);
+virStorageSourcePtr virStorageSourceCopy(const virStorageSource *src,
+                                         bool backingChain)
+    ATTRIBUTE_NONNULL(1);
 
 typedef int
 (*virStorageFileSimplifyPathReadlinkCallback)(const char *path,

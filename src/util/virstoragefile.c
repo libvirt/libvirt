@@ -1702,6 +1702,189 @@ virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,
 }
 
 
+static void
+virStorageSourceSeclabelsClear(virStorageSourcePtr def)
+{
+    size_t i;
+
+    if (def->seclabels) {
+        for (i = 0; i < def->nseclabels; i++)
+            virSecurityDeviceLabelDefFree(def->seclabels[i]);
+        VIR_FREE(def->seclabels);
+    }
+}
+
+
+static int
+virStorageSourceSeclabelsCopy(virStorageSourcePtr to,
+                              const virStorageSource *from)
+{
+    size_t i;
+
+    if (from->nseclabels == 0)
+        return 0;
+
+    if (VIR_ALLOC_N(to->seclabels, from->nseclabels) < 0)
+        return -1;
+    to->nseclabels = from->nseclabels;
+
+    for (i = 0; i < to->nseclabels; i++) {
+        if (!(to->seclabels[i] = virSecurityDeviceLabelDefCopy(from->seclabels[i])))
+            goto error;
+    }
+
+    return 0;
+
+ error:
+    virStorageSourceSeclabelsClear(to);
+    return -1;
+}
+
+
+static virStorageTimestampsPtr
+virStorageTimestampsCopy(const virStorageTimestamps *src)
+{
+    virStorageTimestampsPtr ret;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    memcpy(ret, src, sizeof(*src));
+
+    return ret;
+}
+
+
+static virStoragePermsPtr
+virStoragePermsCopy(const virStoragePerms *src)
+{
+    virStoragePermsPtr ret;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    ret->mode = src->mode;
+    ret->uid = src->uid;
+    ret->gid = src->gid;
+
+    if (VIR_STRDUP(ret->label, src->label))
+        goto error;
+
+    return ret;
+
+ error:
+    virStoragePermsFree(ret);
+    return NULL;
+}
+
+
+static virStorageSourcePoolDefPtr
+virStorageSourcePoolDefCopy(const virStorageSourcePoolDef *src)
+{
+    virStorageSourcePoolDefPtr ret;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    ret->voltype = src->voltype;
+    ret->pooltype = src->pooltype;
+    ret->actualtype = src->actualtype;
+    ret->mode = src->mode;
+
+    if (VIR_STRDUP(ret->pool, src->pool) < 0 ||
+        VIR_STRDUP(ret->volume, src->volume) < 0)
+        goto error;
+
+    return ret;
+
+ error:
+    virStorageSourcePoolDefFree(ret);
+    return NULL;
+}
+
+
+/**
+ * virStorageSourcePtr:
+ *
+ * Deep-copies a virStorageSource structure. If @backing chain is true
+ * then also copies the backing chain recursively, otherwise just
+ * the top element is copied. This function doesn't copy the
+ * storage driver access structure and thus the struct needs to be initialized
+ * separately.
+ */
+virStorageSourcePtr
+virStorageSourceCopy(const virStorageSource *src,
+                     bool backingChain)
+{
+    virStorageSourcePtr ret = NULL;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    ret->type = src->type;
+    ret->protocol = src->protocol;
+    ret->format = src->format;
+    ret->allocation = src->allocation;
+    ret->capacity = src->capacity;
+    ret->readonly = src->readonly;
+    ret->shared = src->shared;
+
+    /* storage driver metadata are not copied */
+    ret->drv = NULL;
+
+    if (VIR_STRDUP(ret->path, src->path) < 0 ||
+        VIR_STRDUP(ret->volume, src->volume) < 0 ||
+        VIR_STRDUP(ret->driverName, src->driverName) < 0 ||
+        VIR_STRDUP(ret->relPath, src->relPath) < 0 ||
+        VIR_STRDUP(ret->backingStoreRaw, src->backingStoreRaw) < 0 ||
+        VIR_STRDUP(ret->compat, src->compat) < 0)
+        goto error;
+
+    if (!(ret->hosts = virStorageNetHostDefCopy(src->nhosts, src->hosts)))
+        goto error;
+    ret->nhosts = src->nhosts;
+
+    if (src->srcpool &&
+        !(ret->srcpool = virStorageSourcePoolDefCopy(src->srcpool)))
+        goto error;
+
+    if (src->features &&
+        !(ret->features = virBitmapNewCopy(src->features)))
+        goto error;
+
+    if (src->encryption &&
+        !(ret->encryption = virStorageEncryptionCopy(src->encryption)))
+        goto error;
+
+    if (src->perms &&
+        !(ret->perms = virStoragePermsCopy(src->perms)))
+        goto error;
+
+    if (src->timestamps &&
+        !(ret->timestamps = virStorageTimestampsCopy(src->timestamps)))
+        goto error;
+
+    if (virStorageSourceSeclabelsCopy(ret, src) < 0)
+        goto error;
+
+    if (src->auth &&
+        !(ret->auth = virStorageAuthDefCopy(src->auth)))
+        goto error;
+
+    if (backingChain && src->backingStore) {
+        if (!(ret->backingStore = virStorageSourceCopy(src->backingStore,
+                                                       true)))
+            goto error;
+    }
+
+    return ret;
+
+ error:
+    virStorageSourceFree(ret);
+    return NULL;
+}
+
+
 void
 virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def)
 {
@@ -1757,8 +1940,6 @@ virStorageSourceBackingStoreClear(virStorageSourcePtr def)
 void
 virStorageSourceClear(virStorageSourcePtr def)
 {
-    size_t i;
-
     if (!def)
         return;
 
@@ -1769,12 +1950,7 @@ virStorageSourceClear(virStorageSourcePtr def)
     virBitmapFree(def->features);
     VIR_FREE(def->compat);
     virStorageEncryptionFree(def->encryption);
-
-    if (def->seclabels) {
-        for (i = 0; i < def->nseclabels; i++)
-            virSecurityDeviceLabelDefFree(def->seclabels[i]);
-        VIR_FREE(def->seclabels);
-    }
+    virStorageSourceSeclabelsClear(def);
     virStoragePermsFree(def->perms);
     VIR_FREE(def->timestamps);
 
