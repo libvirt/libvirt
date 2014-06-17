@@ -4504,7 +4504,8 @@ int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
 int
 qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
                                               const char *option,
-                                              char ***params)
+                                              char ***params,
+                                              bool *found)
 {
     int ret;
     virJSONValuePtr cmd = NULL;
@@ -4516,6 +4517,8 @@ qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
     size_t i;
 
     *params = NULL;
+    if (found)
+        *found = false;
 
     /* query-command-line-options has fixed output for a given qemu
      * binary; but since callers want to query parameters for one
@@ -4575,6 +4578,9 @@ qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
         ret = 0;
         goto cleanup;
     }
+
+    if (found)
+        *found = true;
 
     if ((n = virJSONValueArraySize(data)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

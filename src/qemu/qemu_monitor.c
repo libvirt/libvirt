@@ -3659,7 +3659,8 @@ int qemuMonitorGetEvents(qemuMonitorPtr mon,
 int
 qemuMonitorGetCommandLineOptionParameters(qemuMonitorPtr mon,
                                           const char *option,
-                                          char ***params)
+                                          char ***params,
+                                          bool *found)
 {
     VIR_DEBUG("mon=%p option=%s params=%p", mon, option, params);
 
@@ -3675,7 +3676,8 @@ qemuMonitorGetCommandLineOptionParameters(qemuMonitorPtr mon,
         return -1;
     }
 
-    return qemuMonitorJSONGetCommandLineOptionParameters(mon, option, params);
+    return qemuMonitorJSONGetCommandLineOptionParameters(mon, option,
+                                                         params, found);
 }
 
 

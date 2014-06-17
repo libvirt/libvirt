@@ -2429,6 +2429,7 @@ static int
 virQEMUCapsProbeQMPCommandLine(virQEMUCapsPtr qemuCaps,
                                qemuMonitorPtr mon)
 {
+    bool found = false;
     int nvalues;
     char **values;
     size_t i, j;
@@ -2436,10 +2437,15 @@ virQEMUCapsProbeQMPCommandLine(virQEMUCapsPtr qemuCaps,
     for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsCommandLine); i++) {
         if ((nvalues = qemuMonitorGetCommandLineOptionParameters(mon,
                                                                  virQEMUCapsCommandLine[i].option,
-                                                                 &values)) < 0)
+                                                                 &values,
+                                                                 &found)) < 0)
             return -1;
+
+        if (found && !virQEMUCapsCommandLine[i].param)
+            virQEMUCapsSet(qemuCaps, virQEMUCapsCommandLine[i].flag);
+
         for (j = 0; j < nvalues; j++) {
-            if (STREQ(virQEMUCapsCommandLine[i].param, values[j])) {
+            if (STREQ_NULLABLE(virQEMUCapsCommandLine[i].param, values[j])) {
                 virQEMUCapsSet(qemuCaps, virQEMUCapsCommandLine[i].flag);
                 break;
             }

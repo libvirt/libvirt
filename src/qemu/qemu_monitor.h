@@ -748,7 +748,8 @@ int qemuMonitorGetEvents(qemuMonitorPtr mon,
                          char ***events);
 int qemuMonitorGetCommandLineOptionParameters(qemuMonitorPtr mon,
                                               const char *option,
-                                              char ***params);
+                                              char ***params,
+                                              bool *found);
 
 int qemuMonitorGetKVMState(qemuMonitorPtr mon,
                            bool *enabled,

@@ -583,6 +583,7 @@ testQemuMonitorJSONGetCommandLineOptionParameters(const void *data)
     int ret = -1;
     char **params = NULL;
     int nparams = 0;
+    bool found = false;
 
     if (!test)
         return -1;
@@ -604,7 +605,8 @@ testQemuMonitorJSONGetCommandLineOptionParameters(const void *data)
     /* present with params */
     if ((nparams = qemuMonitorGetCommandLineOptionParameters(qemuMonitorTestGetMonitor(test),
                                                              "option-rom",
-                                                             &params)) < 0)
+                                                             &params,
+                                                             NULL)) < 0)
         goto cleanup;
 
     if (nparams != 2) {
@@ -634,12 +636,18 @@ testQemuMonitorJSONGetCommandLineOptionParameters(const void *data)
     /* present but empty */
     if ((nparams = qemuMonitorGetCommandLineOptionParameters(qemuMonitorTestGetMonitor(test),
                                                              "acpi",
-                                                             &params)) < 0)
+                                                             &params,
+                                                             &found)) < 0)
         goto cleanup;
 
     if (nparams != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "nparams was %d, expected 0", nparams);
+        goto cleanup;
+    }
+    if (!found) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "found was false, expected true");
         goto cleanup;
     }
     if (params && params[0]) {
@@ -654,12 +662,18 @@ testQemuMonitorJSONGetCommandLineOptionParameters(const void *data)
     /* no such option */
     if ((nparams = qemuMonitorGetCommandLineOptionParameters(qemuMonitorTestGetMonitor(test),
                                                              "foobar",
-                                                             &params)) < 0)
+                                                             &params,
+                                                             &found)) < 0)
         goto cleanup;
 
     if (nparams != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "nparams was %d, expected 0", nparams);
+        goto cleanup;
+    }
+    if (found) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "found was true, expected false");
         goto cleanup;
     }
     if (params && params[0]) {
