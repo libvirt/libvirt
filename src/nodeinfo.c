@@ -395,8 +395,8 @@ virNodeParseSocket(const char *dir,
 {
     int ret = virNodeGetCpuValue(dir, cpu, "topology/physical_package_id", 0);
 
-    if (ARCH_IS_PPC(arch) || ARCH_IS_S390(arch)) {
-        /* ppc and s390(x) has -1 */
+    if (ARCH_IS_ARM(arch) || ARCH_IS_PPC(arch) || ARCH_IS_S390(arch)) {
+        /* arm, ppc and s390(x) has -1 */
         if (ret < 0)
             ret = 0;
     }

@@ -245,6 +245,7 @@ mymain(void)
         {"test6", VIR_ARCH_X86_64},
         {"test7", VIR_ARCH_X86_64},
         {"test8", VIR_ARCH_X86_64},
+        {"raspberrypi", VIR_ARCH_ARMV6L},
     };
 
     if (virInitialize() < 0)
