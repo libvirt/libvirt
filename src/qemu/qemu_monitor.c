@@ -3258,6 +3258,18 @@ qemuMonitorBlockCommit(qemuMonitorPtr mon, const char *device,
     return ret;
 }
 
+
+/* Probe whether active commits are supported by a given qemu binary. */
+bool
+qemuMonitorSupportsActiveCommit(qemuMonitorPtr mon)
+{
+    if (!mon->json)
+        return false;
+
+    return qemuMonitorJSONBlockCommit(mon, "bogus", NULL, NULL, 0) == -2;
+}
+
+
 /* Use the block-job-complete monitor command to pivot a block copy
  * job.  */
 int
