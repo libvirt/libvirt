@@ -2872,10 +2872,12 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
             /* Allocate mem, if fails return error */
             if (VIR_ALLOC_N(def->disks, def->ndisks) >= 0) {
                 for (i = 0; i < def->ndisks; i++) {
-                    if (VIR_ALLOC(def->disks[i]) < 0) {
+                    virDomainDiskDefPtr disk = virDomainDiskDefNew();
+                    if (!disk) {
                         error = true;
                         break;
                     }
+                    def->disks[i] = disk;
                 }
             } else {
                 error = true;
@@ -7175,6 +7177,10 @@ int vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
     /* Allocate mem, if fails return error */
     if (VIR_ALLOC_N(def->disks, def->ndisks) < 0)
         goto cleanup;
+    for (i = 0; i < def->ndisks; i++) {
+        if (VIR_ALLOC(def->disks[i].src) < 0)
+            goto cleanup;
+    }
 
     if (!vboxGetMaxPortSlotValues(data->vboxObj, maxPortPerInst, maxSlotPerPort))
         goto cleanup;
@@ -7302,11 +7308,11 @@ int vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
     ret = 0;
  cleanup:
     if (ret < 0) {
-        for (i = 0; i < def->dom->ndisks; i++)
-            VIR_FREE(def->dom->disks[i]);
-        VIR_FREE(def->dom->disks);
-        def->dom->ndisks = 0;
-        ret = -1;
+        for (i = 0; i < def->ndisks; i++) {
+            VIR_FREE(def->disks[i].src);
+        }
+        VIR_FREE(def->disks);
+        def->ndisks = 0;
     }
     VBOX_RELEASE(snap);
     return ret;
@@ -7380,8 +7386,10 @@ int vboxSnapshotGetReadOnlyDisks(virDomainSnapshotPtr snapshot,
     /* Allocate mem, if fails return error */
     if (VIR_ALLOC_N(def->dom->disks, def->dom->ndisks) >= 0) {
         for (i = 0; i < def->dom->ndisks; i++) {
-            if (VIR_ALLOC(def->dom->disks[i]) < 0)
+            virDomainDiskDefPtr diskDef = virDomainDiskDefNew();
+            if (!diskDef)
                 goto cleanup;
+            def->dom->disks[i] = diskDef;
         }
     } else {
         goto cleanup;
@@ -7516,7 +7524,7 @@ int vboxSnapshotGetReadOnlyDisks(virDomainSnapshotPtr snapshot,
  cleanup:
     if (ret < 0) {
         for (i = 0; i < def->dom->ndisks; i++)
-            VIR_FREE(def->dom->disks[i]);
+            virDomainDiskDefFree(def->dom->disks[i]);
         VIR_FREE(def->dom->disks);
         def->dom->ndisks = 0;
     }
