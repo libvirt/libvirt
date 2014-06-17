@@ -389,19 +389,18 @@ virNodeCountThreadSiblings(const char *dir, unsigned int cpu)
 }
 
 static int
-virNodeParseSocket(const char *dir, unsigned int cpu)
+virNodeParseSocket(const char *dir,
+                   virArch arch,
+                   unsigned int cpu)
 {
-    int ret = virNodeGetCpuValue(dir, cpu, "topology/physical_package_id",
-                                 0);
-# if defined(__powerpc__) || \
-    defined(__powerpc64__) || \
-    defined(__s390__) || \
-    defined(__s390x__) || \
-    defined(__aarch64__)
-    /* ppc and s390(x) has -1 */
-    if (ret < 0)
-        ret = 0;
-# endif
+    int ret = virNodeGetCpuValue(dir, cpu, "topology/physical_package_id", 0);
+
+    if (ARCH_IS_PPC(arch) || ARCH_IS_S390(arch)) {
+        /* ppc and s390(x) has -1 */
+        if (ret < 0)
+            ret = 0;
+    }
+
     return ret;
 }
 
@@ -421,10 +420,11 @@ CPU_COUNT(cpu_set_t *set)
 /* parses a node entry, returning number of processors in the node and
  * filling arguments */
 static int
-ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
-ATTRIBUTE_NONNULL(5)
+ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3)
+ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5)
+ATTRIBUTE_NONNULL(6)
 virNodeParseNode(const char *node,
+                 virArch arch,
                  int *sockets,
                  int *cores,
                  int *threads,
@@ -467,7 +467,7 @@ virNodeParseNode(const char *node,
             continue;
 
         /* Parse socket */
-        if ((sock = virNodeParseSocket(node, cpu)) < 0)
+        if ((sock = virNodeParseSocket(node, arch, cpu)) < 0)
             goto cleanup;
         CPU_SET(sock, &sock_map);
 
@@ -504,7 +504,7 @@ virNodeParseNode(const char *node,
         processors++;
 
         /* Parse socket */
-        if ((sock = virNodeParseSocket(node, cpu)) < 0)
+        if ((sock = virNodeParseSocket(node, arch, cpu)) < 0)
             goto cleanup;
         if (!CPU_ISSET(sock, &sock_map)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -513,13 +513,12 @@ virNodeParseNode(const char *node,
         }
 
         /* Parse core */
-# if defined(__s390__) || \
-    defined(__s390x__)
-        /* logical cpu is equivalent to a core on s390 */
-        core = cpu;
-# else
-        core = virNodeGetCpuValue(node, cpu, "topology/core_id", 0);
-# endif
+        if (ARCH_IS_S390(arch)) {
+            /* logical cpu is equivalent to a core on s390 */
+            core = cpu;
+        } else {
+            core = virNodeGetCpuValue(node, cpu, "topology/core_id", 0);
+        }
 
         CPU_SET(core, &core_maps[sock]);
 
@@ -675,7 +674,8 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                         sysfs_dir, nodedirent->d_name) < 0)
             goto cleanup;
 
-        if ((cpus = virNodeParseNode(sysfs_cpudir, &socks, &cores,
+        if ((cpus = virNodeParseNode(sysfs_cpudir, arch,
+                                     &socks, &cores,
                                      &threads, &offline)) < 0)
             goto cleanup;
 
@@ -705,7 +705,8 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
     if (virAsprintf(&sysfs_cpudir, "%s/cpu", sysfs_dir) < 0)
         goto cleanup;
 
-    if ((cpus = virNodeParseNode(sysfs_cpudir, &socks, &cores,
+    if ((cpus = virNodeParseNode(sysfs_cpudir, arch,
+                                 &socks, &cores,
                                  &threads, &offline)) < 0)
         goto cleanup;
 
