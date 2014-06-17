@@ -30,7 +30,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
-static const virArch archs[] = { VIR_ARCH_ARMV7L };
+static const virArch archs[] = {VIR_ARCH_ARMV6L,
+                                VIR_ARCH_ARMV7B,
+                                VIR_ARCH_ARMV7L};
 
 static virCPUDataPtr
 ArmNodeData(virArch arch)
