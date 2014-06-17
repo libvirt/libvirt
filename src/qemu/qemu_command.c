@@ -6376,11 +6376,13 @@ qemuBuildSmpArgStr(const virDomainDef *def,
 }
 
 static int
-qemuBuildNumaArgStr(const virDomainDef *def, virCommandPtr cmd)
+qemuBuildNumaArgStr(const virDomainDef *def,
+                    virCommandPtr cmd,
+                    virQEMUCapsPtr qemuCaps)
 {
     size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *cpumask = NULL;
+    char *cpumask = NULL, *tmpmask = NULL, *next = NULL;
     int ret = -1;
 
     for (i = 0; i < def->cpu->ncells; i++) {
@@ -6392,7 +6394,8 @@ qemuBuildNumaArgStr(const virDomainDef *def, virCommandPtr cmd)
         if (!(cpumask = virBitmapFormat(def->cpu->cells[i].cpumask)))
             goto cleanup;
 
-        if (strchr(cpumask, ',')) {
+        if (strchr(cpumask, ',') &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("disjoint NUMA cpu ranges are not supported "
                              "with this QEMU"));
@@ -6401,15 +6404,14 @@ qemuBuildNumaArgStr(const virDomainDef *def, virCommandPtr cmd)
 
         virCommandAddArg(cmd, "-numa");
         virBufferAsprintf(&buf, "node,nodeid=%zu", i);
-        virBufferAddLit(&buf, ",cpus=");
 
-        /* Up through qemu 1.4, -numa does not accept a cpus
-         * argument any more complex than start-stop.
-         *
-         * XXX For qemu 1.5, the syntax has not yet been decided;
-         * but when it is, we need a capability bit and
-         * translation of our cpumask into the qemu syntax.  */
-        virBufferAdd(&buf, cpumask, -1);
+        for (tmpmask = cpumask; tmpmask; tmpmask = next) {
+            if ((next = strchr(tmpmask, ',')))
+                *(next++) = '\0';
+            virBufferAddLit(&buf, ",cpus=");
+            virBufferAdd(&buf, tmpmask, -1);
+        }
+
         virBufferAsprintf(&buf, ",mem=%d", cellmem);
 
         virCommandAddArgBuffer(cmd, &buf);
@@ -7313,7 +7315,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     VIR_FREE(smp);
 
     if (def->cpu && def->cpu->ncells)
-        if (qemuBuildNumaArgStr(def, cmd) < 0)
+        if (qemuBuildNumaArgStr(def, cmd, qemuCaps) < 0)
             goto error;
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_UUID))
