@@ -2742,6 +2742,7 @@ AC_CONFIG_FILES([\
         examples/hellolibvirt/Makefile \
         examples/systemtap/Makefile \
         examples/xml/nwfilter/Makefile \
+        examples/lxcconvert/Makefile \
         tools/wireshark/Makefile \
         tools/wireshark/src/Makefile])
 AC_OUTPUT
