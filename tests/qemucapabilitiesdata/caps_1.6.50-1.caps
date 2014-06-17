@@ -142,4 +142,5 @@
     <flag name='usb-kbd'/>
     <flag name='host-pci-multidomain'/>
     <flag name='msg-timestamp'/>
+    <flag name='numa'/>
   </qemuCaps>

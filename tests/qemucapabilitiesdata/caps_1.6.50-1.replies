@@ -2389,6 +2389,11 @@
         {
             "parameters": [
             ],
+            "option": "numa"
+        },
+        {
+            "parameters": [
+            ],
             "option": "device"
         },
         {

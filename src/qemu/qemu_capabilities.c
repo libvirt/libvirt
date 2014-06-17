@@ -262,6 +262,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "change-backing-file",
 
               "memory-backend-ram", /* 170 */
+              "numa",
     );
 
 
@@ -2426,6 +2427,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "boot-opts", "reboot-timeout", QEMU_CAPS_REBOOT_TIMEOUT },
     { "spice", "disable-agent-file-xfer", QEMU_CAPS_SPICE_FILE_XFER_DISABLE },
     { "msg", "timestamp", QEMU_CAPS_MSG_TIMESTAMP },
+    { "numa", NULL, QEMU_CAPS_NUMA },
 };
 
 static int
