@@ -1252,7 +1252,7 @@ networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
     int ret = -1;
     char *configfile = NULL;
     char *configstr = NULL;
-    char *leaseshelper_path;
+    char *leaseshelper_path = NULL;
 
     network->dnsmasqPid = -1;
 
