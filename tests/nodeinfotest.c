@@ -13,11 +13,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#if ! (defined __linux__  &&  (defined(__x86_64__) || \
-                               defined(__amd64__)  || \
-                               defined(__i386__)  || \
-                               defined(__powerpc__)  || \
-                               defined(__powerpc64__)))
+#if !(defined __linux__)
 
 int
 main(void)
@@ -30,6 +26,7 @@ main(void)
 static int
 linuxTestCompareFiles(const char *cpuinfofile,
                       char *sysfs_dir,
+                      virArch arch,
                       const char *outputfile)
 {
     int ret = -1;
@@ -46,7 +43,7 @@ linuxTestCompareFiles(const char *cpuinfofile,
         goto fail;
 
     memset(&nodeinfo, 0, sizeof(nodeinfo));
-    if (linuxNodeInfoCPUPopulate(cpuinfo, sysfs_dir, &nodeinfo) < 0) {
+    if (linuxNodeInfoCPUPopulate(cpuinfo, sysfs_dir, arch, &nodeinfo) < 0) {
         if (virTestGetDebug()) {
             virErrorPtr error = virSaveLastError();
             if (error && error->code != VIR_ERR_OK)
@@ -167,31 +164,31 @@ linuxCPUStatsCompareFiles(const char *cpustatfile,
 }
 
 
+struct linuxTestNodeInfoData {
+    const char *testName;
+    virArch arch;
+};
+
 static int
-linuxTestNodeInfo(const void *data)
+linuxTestNodeInfo(const void *opaque)
 {
     int result = -1;
     char *cpuinfo = NULL;
     char *sysfs_dir = NULL;
     char *output = NULL;
-    const char *test = data;
-    const char *arch = "x86";
-
-# if defined(__powerpc__) || \
-     defined(__powerpc64__)
-    arch = "ppc";
-# endif
+    struct linuxTestNodeInfoData *data = (struct linuxTestNodeInfoData *) opaque;
+    const char *archStr = virArchToString(data->arch);
 
     if (virAsprintf(&sysfs_dir, "%s/nodeinfodata/linux-%s",
-                    abs_srcdir, test) < 0 ||
+                    abs_srcdir, data->testName) < 0 ||
         virAsprintf(&cpuinfo, "%s/nodeinfodata/linux-%s-%s.cpuinfo",
-                    abs_srcdir, arch, test) < 0 ||
+                    abs_srcdir, archStr, data->testName) < 0 ||
         virAsprintf(&output, "%s/nodeinfodata/linux-%s-%s.expected",
-                    abs_srcdir, arch, test) < 0) {
+                    abs_srcdir, archStr, data->testName) < 0) {
         goto cleanup;
     }
 
-    result = linuxTestCompareFiles(cpuinfo, sysfs_dir, output);
+    result = linuxTestCompareFiles(cpuinfo, sysfs_dir, data->arch, output);
 
  cleanup:
     VIR_FREE(cpuinfo);
@@ -235,25 +232,23 @@ mymain(void)
 {
     int ret = 0;
     size_t i;
-    const char *nodeData[] = {
-        "test1",
-# if !(defined(__powerpc__) ||                  \
-       defined(__powerpc64__))
-        "test2",
-        "test3",
-        "test4",
-        "test5",
-        "test6",
-        "test7",
-        "test8",
-# endif
+    const struct linuxTestNodeInfoData nodeData[] = {
+        {"test1", VIR_ARCH_X86_64},
+        {"test1", VIR_ARCH_PPC},
+        {"test2", VIR_ARCH_X86_64},
+        {"test3", VIR_ARCH_X86_64},
+        {"test4", VIR_ARCH_X86_64},
+        {"test5", VIR_ARCH_X86_64},
+        {"test6", VIR_ARCH_X86_64},
+        {"test7", VIR_ARCH_X86_64},
+        {"test8", VIR_ARCH_X86_64},
     };
 
     if (virInitialize() < 0)
         return EXIT_FAILURE;
 
     for (i = 0; i < ARRAY_CARDINALITY(nodeData); i++)
-      if (virtTestRun(nodeData[i], linuxTestNodeInfo, nodeData[i]) != 0)
+      if (virtTestRun(nodeData[i].testName, linuxTestNodeInfo, &nodeData[i]) != 0)
         ret = -1;
 
 # define DO_TEST_CPU_STATS(name, ncpus) \

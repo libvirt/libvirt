@@ -27,6 +27,7 @@
 # ifdef __linux__
 int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                              const char *sysfs_dir,
+                             virArch arch,
                              virNodeInfoPtr nodeinfo);
 
 int linuxNodeGetCPUStats(FILE *procstat,

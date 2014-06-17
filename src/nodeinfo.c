@@ -52,8 +52,11 @@
 #include "virtypedparam.h"
 #include "virstring.h"
 #include "virnuma.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
+
+VIR_LOG_INIT("nodeinfo");
 
 #if defined(__FreeBSD__) || defined(__APPLE__)
 static int
@@ -557,6 +560,7 @@ virNodeParseNode(const char *node,
 
 int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                              const char *sysfs_dir,
+                             virArch arch,
                              virNodeInfoPtr nodeinfo)
 {
     char line[1024];
@@ -571,86 +575,83 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
 
     /* Start with parsing CPU clock speed from /proc/cpuinfo */
     while (fgets(line, sizeof(line), cpuinfo) != NULL) {
-# if defined(__x86_64__) || \
-    defined(__amd64__)  || \
-    defined(__i386__)
-        char *buf = line;
-        if (STRPREFIX(buf, "cpu MHz")) {
-            char *p;
-            unsigned int ui;
+        if (ARCH_IS_X86(arch)) {
+            char *buf = line;
+            if (STRPREFIX(buf, "cpu MHz")) {
+                char *p;
+                unsigned int ui;
 
-            buf += 7;
-            while (*buf && c_isspace(*buf))
-                buf++;
+                buf += 7;
+                while (*buf && c_isspace(*buf))
+                    buf++;
 
-            if (*buf != ':' || !buf[1]) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("parsing cpu MHz from cpuinfo"));
-                goto cleanup;
+                if (*buf != ':' || !buf[1]) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("parsing cpu MHz from cpuinfo"));
+                    goto cleanup;
+                }
+
+                if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0 &&
+                    /* Accept trailing fractional part.  */
+                    (*p == '\0' || *p == '.' || c_isspace(*p)))
+                    nodeinfo->mhz = ui;
             }
 
-            if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0 &&
-                /* Accept trailing fractional part.  */
-                (*p == '\0' || *p == '.' || c_isspace(*p)))
-                nodeinfo->mhz = ui;
-        }
+        } else if (ARCH_IS_PPC(arch)) {
+            char *buf = line;
+            if (STRPREFIX(buf, "clock")) {
+                char *p;
+                unsigned int ui;
 
-# elif defined(__powerpc__) || \
-      defined(__powerpc64__)
-        char *buf = line;
-        if (STRPREFIX(buf, "clock")) {
-            char *p;
-            unsigned int ui;
+                buf += 5;
+                while (*buf && c_isspace(*buf))
+                    buf++;
 
-            buf += 5;
-            while (*buf && c_isspace(*buf))
-                buf++;
+                if (*buf != ':' || !buf[1]) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("parsing cpu MHz from cpuinfo"));
+                    goto cleanup;
+                }
 
-            if (*buf != ':' || !buf[1]) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("parsing cpu MHz from cpuinfo"));
-                goto cleanup;
+                if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0 &&
+                    /* Accept trailing fractional part.  */
+                    (*p == '\0' || *p == '.' || c_isspace(*p)))
+                    nodeinfo->mhz = ui;
+                /* No other interesting infos are available in /proc/cpuinfo.
+                 * However, there is a line identifying processor's version,
+                 * identification and machine, but we don't want it to be caught
+                 * and parsed in next iteration, because it is not in expected
+                 * format and thus lead to error. */
             }
+        } else if (ARCH_IS_ARM(arch)) {
+            char *buf = line;
+            if (STRPREFIX(buf, "BogoMIPS")) {
+                char *p;
+                unsigned int ui;
 
-            if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0 &&
-                /* Accept trailing fractional part.  */
-                (*p == '\0' || *p == '.' || c_isspace(*p)))
-                nodeinfo->mhz = ui;
-            /* No other interesting infos are available in /proc/cpuinfo.
-             * However, there is a line identifying processor's version,
-             * identification and machine, but we don't want it to be caught
-             * and parsed in next iteration, because it is not in expected
-             * format and thus lead to error. */
-        }
-# elif defined(__arm__) || defined(__aarch64__)
-        char *buf = line;
-        if (STRPREFIX(buf, "BogoMIPS")) {
-            char *p;
-            unsigned int ui;
+                buf += 8;
+                while (*buf && c_isspace(*buf))
+                    buf++;
 
-            buf += 8;
-            while (*buf && c_isspace(*buf))
-                buf++;
+                if (*buf != ':' || !buf[1]) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   "%s", _("parsing cpu MHz from cpuinfo"));
+                    goto cleanup;
+                }
 
-            if (*buf != ':' || !buf[1]) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("parsing cpu MHz from cpuinfo"));
-                goto cleanup;
+                if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0
+                    /* Accept trailing fractional part.  */
+                    && (*p == '\0' || *p == '.' || c_isspace(*p)))
+                    nodeinfo->mhz = ui;
             }
-
-            if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0
-                /* Accept trailing fractional part.  */
-                && (*p == '\0' || *p == '.' || c_isspace(*p)))
-                nodeinfo->mhz = ui;
+        } else if (ARCH_IS_S390(arch)) {
+            /* s390x has no realistic value for CPU speed,
+             * assign a value of zero to signify this */
+            nodeinfo->mhz = 0;
+        } else {
+            VIR_WARN("Parser for /proc/cpuinfo needs to be adapted for your architecture");
+            break;
         }
-# elif defined(__s390__) || \
-      defined(__s390x__)
-        /* s390x has no realistic value for CPU speed,
-         * assign a value of zero to signify this */
-        nodeinfo->mhz = 0;
-# else
-#  warning Parser for /proc/cpuinfo needs to be adapted for your architecture
-# endif
     }
 
     /* OK, we've parsed clock speed out of /proc/cpuinfo. Get the
@@ -1057,7 +1058,8 @@ int nodeGetInfo(virNodeInfoPtr nodeinfo)
         return -1;
     }
 
-    ret = linuxNodeInfoCPUPopulate(cpuinfo, SYSFS_SYSTEM_PATH, nodeinfo);
+    ret = linuxNodeInfoCPUPopulate(cpuinfo, SYSFS_SYSTEM_PATH,
+                                   hostarch, nodeinfo);
     if (ret < 0)
         goto cleanup;
 
