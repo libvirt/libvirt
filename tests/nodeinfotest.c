@@ -39,8 +39,11 @@ linuxTestCompareFiles(const char *cpuinfofile,
         goto fail;
 
     cpuinfo = fopen(cpuinfofile, "r");
-    if (!cpuinfo)
+    if (!cpuinfo) {
+        fprintf(stderr, "unable to open: %s : %s\n",
+                cpuinfofile, strerror(errno));
         goto fail;
+    }
 
     memset(&nodeinfo, 0, sizeof(nodeinfo));
     if (linuxNodeInfoCPUPopulate(cpuinfo, sysfs_dir, arch, &nodeinfo) < 0) {
