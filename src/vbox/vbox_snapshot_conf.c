@@ -477,24 +477,32 @@ virVBoxSnapshotConfAllChildren(virVBoxSnapshotConfHardDiskPtr disk,
     virVBoxSnapshotConfHardDiskPtr *tempList = NULL;
     size_t i = 0;
     size_t j = 0;
+
     if (VIR_ALLOC_N(ret, 0) < 0)
         return 0;
 
     for (i = 0; i < disk->nchildren; i++) {
         tempSize = virVBoxSnapshotConfAllChildren(disk->children[i], &tempList);
         if (VIR_EXPAND_N(ret, returnSize, tempSize) < 0)
-            return 0;
+            goto error;
 
-        for (j = 0; j < tempSize; j++) {
+        for (j = 0; j < tempSize; j++)
             ret[returnSize - tempSize + j] = tempList[j];
-        }
+
+        VIR_FREE(tempList);
     }
+
     if (VIR_EXPAND_N(ret, returnSize, 1) < 0)
-        return 0;
+        goto error;
 
     ret[returnSize - 1] = disk;
     *list = ret;
     return returnSize;
+
+ error:
+    VIR_FREE(tempList);
+    VIR_FREE(ret);
+    return 0;
 }
 
 void
