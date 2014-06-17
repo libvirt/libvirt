@@ -1473,28 +1473,38 @@ virVBoxSnapshotConfRemoveFakeDisks(virVBoxSnapshotConfMachinePtr machine)
     size_t diskSize = 0;
     virVBoxSnapshotConfHardDiskPtr *tempList = NULL;
     virVBoxSnapshotConfHardDiskPtr *diskList = NULL;
+
     if (VIR_ALLOC_N(diskList, 0) < 0)
-        return ret;
+        return -1;
 
     for (i = 0; i < machine->mediaRegistry->ndisks; i++) {
         tempSize = virVBoxSnapshotConfAllChildren(machine->mediaRegistry->disks[i], &tempList);
         if (VIR_EXPAND_N(diskList, diskSize, tempSize) < 0)
-            return ret;
-        for (j = 0; j < tempSize; j++) {
+            goto cleanup;
+
+        for (j = 0; j < tempSize; j++)
             diskList[diskSize - tempSize + j] = tempList[j];
-        }
+
+        VIR_FREE(tempList);
     }
+
     for (i = 0; i < diskSize; i++) {
         if (strstr(diskList[i]->location, "fake") != NULL) {
             if (virVBoxSnapshotConfRemoveHardDisk(machine->mediaRegistry, diskList[i]->uuid) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unable to remove hard disk %s from media registry"),
                                diskList[i]->location);
-                return ret;
+                goto cleanup;
             }
         }
     }
+
     ret = 0;
+
+ cleanup:
+    VIR_FREE(diskList);
+    VIR_FREE(tempList);
+
     return ret;
 }
 
@@ -1515,24 +1525,34 @@ virVBoxSnapshotConfDiskIsInMediaRegistry(virVBoxSnapshotConfMachinePtr machine,
     size_t diskSize = 0;
     virVBoxSnapshotConfHardDiskPtr *tempList = NULL;
     virVBoxSnapshotConfHardDiskPtr *diskList = NULL;
+
     if (VIR_ALLOC_N(diskList, 0) < 0)
-        return ret;
+        return -1;
 
     for (i = 0; i < machine->mediaRegistry->ndisks; i++) {
         tempSize = virVBoxSnapshotConfAllChildren(machine->mediaRegistry->disks[i], &tempList);
         if (VIR_EXPAND_N(diskList, diskSize, tempSize) < 0)
-            return ret;
-        for (j = 0; j < tempSize; j++) {
+            goto cleanup;
+
+        for (j = 0; j < tempSize; j++)
             diskList[diskSize - tempSize + j] = tempList[j];
-        }
+
+        VIR_FREE(tempList);
     }
+
     for (i = 0; i < diskSize; i++) {
         if (STREQ(diskList[i]->location, location)) {
             ret = 1;
-            return ret;
+            goto cleanup;
         }
     }
+
     ret = 0;
+
+ cleanup:
+    VIR_FREE(diskList);
+    VIR_FREE(tempList);
+
     return ret;
 }
 
