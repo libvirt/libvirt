@@ -564,3 +564,156 @@ virDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
     addrs->lastFlags = flags;
     return 0;
 }
+
+
+static char*
+virDomainCCWAddressAsString(virDomainDeviceCCWAddressPtr addr)
+{
+    char *addrstr = NULL;
+
+    ignore_value(virAsprintf(&addrstr, "%x.%x.%04x",
+                             addr->cssid,
+                             addr->ssid,
+                             addr->devno));
+    return addrstr;
+}
+
+static int
+virDomainCCWAddressIncrement(virDomainDeviceCCWAddressPtr addr)
+{
+    virDomainDeviceCCWAddress ccwaddr = *addr;
+
+    /* We are not touching subchannel sets and channel subsystems */
+    if (++ccwaddr.devno > VIR_DOMAIN_DEVICE_CCW_MAX_DEVNO)
+        return -1;
+
+    *addr = ccwaddr;
+    return 0;
+}
+
+
+int
+virDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
+                          virDomainCCWAddressSetPtr addrs,
+                          bool autoassign)
+{
+    int ret = -1;
+    char *addr = NULL;
+
+    if (dev->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)
+        return 0;
+
+    if (!autoassign && dev->addr.ccw.assigned) {
+        if (!(addr = virDomainCCWAddressAsString(&dev->addr.ccw)))
+            goto cleanup;
+
+        if (virHashLookup(addrs->defined, addr)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("The CCW devno '%s' is in use already "),
+                           addr);
+            goto cleanup;
+        }
+    } else if (autoassign && !dev->addr.ccw.assigned) {
+        if (!(addr = virDomainCCWAddressAsString(&addrs->next)) < 0)
+            goto cleanup;
+
+        while (virHashLookup(addrs->defined, addr)) {
+            if (virDomainCCWAddressIncrement(&addrs->next) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("There are no more free CCW devnos."));
+                goto cleanup;
+            }
+            VIR_FREE(addr);
+            addr = virDomainCCWAddressAsString(&addrs->next);
+        }
+        dev->addr.ccw = addrs->next;
+        dev->addr.ccw.assigned = true;
+    } else {
+        return 0;
+    }
+
+    if (virHashAddEntry(addrs->defined, addr, addr) < 0)
+        goto cleanup;
+    else
+        addr = NULL; /* memory will be freed by hash table */
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(addr);
+    return ret;
+}
+
+int
+virDomainCCWAddressAllocate(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                            virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+                            virDomainDeviceInfoPtr info,
+                            void *data)
+{
+    return virDomainCCWAddressAssign(info, data, true);
+}
+
+int
+virDomainCCWAddressValidate(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                            virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+                            virDomainDeviceInfoPtr info,
+                            void *data)
+{
+    return virDomainCCWAddressAssign(info, data, false);
+}
+
+int
+virDomainCCWAddressReleaseAddr(virDomainCCWAddressSetPtr addrs,
+                               virDomainDeviceInfoPtr dev)
+{
+    char *addr;
+    int ret;
+
+    addr = virDomainCCWAddressAsString(&(dev->addr.ccw));
+    if (!addr)
+        return -1;
+
+    if ((ret = virHashRemoveEntry(addrs->defined, addr)) == 0 &&
+        dev->addr.ccw.cssid == addrs->next.cssid &&
+        dev->addr.ccw.ssid == addrs->next.ssid &&
+        dev->addr.ccw.devno < addrs->next.devno) {
+        addrs->next.devno = dev->addr.ccw.devno;
+        addrs->next.assigned = false;
+    }
+
+    VIR_FREE(addr);
+
+    return ret;
+}
+
+void virDomainCCWAddressSetFree(virDomainCCWAddressSetPtr addrs)
+{
+    if (!addrs)
+        return;
+
+    virHashFree(addrs->defined);
+    VIR_FREE(addrs);
+}
+
+virDomainCCWAddressSetPtr
+virDomainCCWAddressSetCreate(void)
+{
+    virDomainCCWAddressSetPtr addrs = NULL;
+
+    if (VIR_ALLOC(addrs) < 0)
+        goto error;
+
+    if (!(addrs->defined = virHashCreate(10, virHashValueFree)))
+        goto error;
+
+    /* must use cssid = 0xfe (254) for virtio-ccw devices */
+    addrs->next.cssid = 254;
+    addrs->next.ssid = 0;
+    addrs->next.devno = 0;
+    addrs->next.assigned = 0;
+    return addrs;
+
+ error:
+    virDomainCCWAddressSetFree(addrs);
+    return NULL;
+}

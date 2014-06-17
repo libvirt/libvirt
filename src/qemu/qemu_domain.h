@@ -119,8 +119,6 @@ struct qemuDomainJobObj {
 
 typedef void (*qemuDomainCleanupCallback)(virQEMUDriverPtr driver,
                                           virDomainObjPtr vm);
-typedef struct _qemuDomainCCWAddressSet qemuDomainCCWAddressSet;
-typedef qemuDomainCCWAddressSet *qemuDomainCCWAddressSetPtr;
 
 typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;
 typedef qemuDomainObjPrivate *qemuDomainObjPrivatePtr;
@@ -145,7 +143,7 @@ struct _qemuDomainObjPrivate {
     int *vcpupids;
 
     virDomainPCIAddressSetPtr pciaddrs;
-    qemuDomainCCWAddressSetPtr ccwaddrs;
+    virDomainCCWAddressSetPtr ccwaddrs;
     int persistentAddrs;
 
     virQEMUCapsPtr qemuCaps;

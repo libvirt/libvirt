@@ -1058,89 +1058,6 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
     return 0;
 }
 
-/* S390 ccw bus support */
-
-struct _qemuDomainCCWAddressSet {
-    virHashTablePtr defined;
-    virDomainDeviceCCWAddress next;
-};
-
-static char*
-qemuCCWAddressAsString(virDomainDeviceCCWAddressPtr addr)
-{
-    char *addrstr = NULL;
-
-    ignore_value(virAsprintf(&addrstr, "%x.%x.%04x",
-                             addr->cssid,
-                             addr->ssid,
-                             addr->devno));
-    return addrstr;
-}
-
-static int
-qemuCCWAdressIncrement(virDomainDeviceCCWAddressPtr addr)
-{
-    virDomainDeviceCCWAddress ccwaddr = *addr;
-
-    /* We are not touching subchannel sets and channel subsystems */
-    if (++ccwaddr.devno > VIR_DOMAIN_DEVICE_CCW_MAX_DEVNO)
-        return -1;
-
-    *addr = ccwaddr;
-    return 0;
-}
-
-
-int qemuDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
-                               qemuDomainCCWAddressSetPtr addrs,
-                               bool autoassign)
-{
-    int ret = -1;
-    char *addr = NULL;
-
-    if (dev->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)
-        return 0;
-
-    if (!autoassign && dev->addr.ccw.assigned) {
-        if (!(addr = qemuCCWAddressAsString(&dev->addr.ccw)))
-            goto cleanup;
-
-        if (virHashLookup(addrs->defined, addr)) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("The CCW devno '%s' is in use already "),
-                           addr);
-            goto cleanup;
-        }
-    } else if (autoassign && !dev->addr.ccw.assigned) {
-        if (!(addr = qemuCCWAddressAsString(&addrs->next)) < 0)
-            goto cleanup;
-
-        while (virHashLookup(addrs->defined, addr)) {
-            if (qemuCCWAdressIncrement(&addrs->next) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("There are no more free CCW devnos."));
-                goto cleanup;
-            }
-            VIR_FREE(addr);
-            addr = qemuCCWAddressAsString(&addrs->next);
-        }
-        dev->addr.ccw = addrs->next;
-        dev->addr.ccw.assigned = true;
-    } else {
-        return 0;
-    }
-
-    if (virHashAddEntry(addrs->defined, addr, addr) < 0)
-        goto cleanup;
-    else
-        addr = NULL; /* memory will be freed by hash table */
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(addr);
-    return ret;
-}
 
 static void
 qemuDomainPrimeVirtioDeviceAddresses(virDomainDefPtr def,
@@ -1187,79 +1104,6 @@ qemuDomainPrimeVirtioDeviceAddresses(virDomainDefPtr def,
         def->rng->info.type = type;
 }
 
-static int
-qemuDomainCCWAddressAllocate(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                             virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
-                             virDomainDeviceInfoPtr info,
-                             void *data)
-{
-    return qemuDomainCCWAddressAssign(info, data, true);
-}
-
-static int
-qemuDomainCCWAddressValidate(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                             virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
-                             virDomainDeviceInfoPtr info,
-                             void *data)
-{
-    return qemuDomainCCWAddressAssign(info, data, false);
-}
-
-static int
-qemuDomainCCWAddressReleaseAddr(qemuDomainCCWAddressSetPtr addrs,
-                                virDomainDeviceInfoPtr dev)
-{
-    char *addr;
-    int ret;
-
-    addr = qemuCCWAddressAsString(&(dev->addr.ccw));
-    if (!addr)
-        return -1;
-
-    if ((ret = virHashRemoveEntry(addrs->defined, addr)) == 0 &&
-        dev->addr.ccw.cssid == addrs->next.cssid &&
-        dev->addr.ccw.ssid == addrs->next.ssid &&
-        dev->addr.ccw.devno < addrs->next.devno) {
-        addrs->next.devno = dev->addr.ccw.devno;
-        addrs->next.assigned = false;
-    }
-
-    VIR_FREE(addr);
-
-    return ret;
-}
-
-void qemuDomainCCWAddressSetFree(qemuDomainCCWAddressSetPtr addrs)
-{
-    if (!addrs)
-        return;
-
-    virHashFree(addrs->defined);
-    VIR_FREE(addrs);
-}
-
-static qemuDomainCCWAddressSetPtr
-qemuDomainCCWAddressSetCreate(void)
-{
-     qemuDomainCCWAddressSetPtr addrs = NULL;
-
-    if (VIR_ALLOC(addrs) < 0)
-        goto error;
-
-    if (!(addrs->defined = virHashCreate(10, virHashValueFree)))
-        goto error;
-
-    /* must use cssid = 0xfe (254) for virtio-ccw devices */
-    addrs->next.cssid = 254;
-    addrs->next.ssid = 0;
-    addrs->next.devno = 0;
-    addrs->next.assigned = 0;
-    return addrs;
-
- error:
-    qemuDomainCCWAddressSetFree(addrs);
-    return NULL;
-}
 
 /*
  * Three steps populating CCW devnos
@@ -1273,7 +1117,7 @@ qemuDomainAssignS390Addresses(virDomainDefPtr def,
                               virDomainObjPtr obj)
 {
     int ret = -1;
-    qemuDomainCCWAddressSetPtr addrs = NULL;
+    virDomainCCWAddressSetPtr addrs = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
 
     if (STREQLEN(def->os.machine, "s390-ccw", 8) &&
@@ -1281,14 +1125,14 @@ qemuDomainAssignS390Addresses(virDomainDefPtr def,
         qemuDomainPrimeVirtioDeviceAddresses(
             def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW);
 
-        if (!(addrs = qemuDomainCCWAddressSetCreate()))
+        if (!(addrs = virDomainCCWAddressSetCreate()))
             goto cleanup;
 
-        if (virDomainDeviceInfoIterate(def, qemuDomainCCWAddressValidate,
+        if (virDomainDeviceInfoIterate(def, virDomainCCWAddressValidate,
                                        addrs) < 0)
             goto cleanup;
 
-        if (virDomainDeviceInfoIterate(def, qemuDomainCCWAddressAllocate,
+        if (virDomainDeviceInfoIterate(def, virDomainCCWAddressAllocate,
                                        addrs) < 0)
             goto cleanup;
     } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390)) {
@@ -1301,7 +1145,7 @@ qemuDomainAssignS390Addresses(virDomainDefPtr def,
         priv = obj->privateData;
         if (addrs) {
             /* if this is the live domain object, we persist the CCW addresses*/
-            qemuDomainCCWAddressSetFree(priv->ccwaddrs);
+            virDomainCCWAddressSetFree(priv->ccwaddrs);
             priv->persistentAddrs = 1;
             priv->ccwaddrs = addrs;
             addrs = NULL;
@@ -1312,7 +1156,7 @@ qemuDomainAssignS390Addresses(virDomainDefPtr def,
     ret = 0;
 
  cleanup:
-    qemuDomainCCWAddressSetFree(addrs);
+    virDomainCCWAddressSetFree(addrs);
 
     return ret;
 }
@@ -1796,7 +1640,7 @@ qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
         STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW) &&
-        qemuDomainCCWAddressReleaseAddr(priv->ccwaddrs, info) < 0)
+        virDomainCCWAddressReleaseAddr(priv->ccwaddrs, info) < 0)
         VIR_WARN("Unable to release CCW address on %s",
                  NULLSTR(devstr));
     else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&

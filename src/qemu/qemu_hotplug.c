@@ -279,8 +279,8 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-            if (qemuDomainCCWAddressAssign(&disk->info, priv->ccwaddrs,
-                                           !disk->info.addr.ccw.assigned) < 0)
+            if (virDomainCCWAddressAssign(&disk->info, priv->ccwaddrs,
+                                          !disk->info.addr.ccw.assigned) < 0)
                 goto error;
         } else if (!disk->info.type ||
                     disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
@@ -389,8 +389,8 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
             if (virDomainPCIAddressEnsureAddr(priv->pciaddrs, &controller->info) < 0)
                 goto cleanup;
         } else if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-            if (qemuDomainCCWAddressAssign(&controller->info, priv->ccwaddrs,
-                                           !controller->info.addr.ccw.assigned) < 0)
+            if (virDomainCCWAddressAssign(&controller->info, priv->ccwaddrs,
+                                          !controller->info.addr.ccw.assigned) < 0)
                 goto cleanup;
         }
         releaseaddr = true;
@@ -933,8 +933,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     if (STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
         net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
-        if (qemuDomainCCWAddressAssign(&net->info, priv->ccwaddrs,
-                                       !net->info.addr.ccw.assigned) < 0)
+        if (virDomainCCWAddressAssign(&net->info, priv->ccwaddrs,
+                                      !net->info.addr.ccw.assigned) < 0)
             goto cleanup;
     } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390))
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

@@ -146,4 +146,31 @@ int virDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
                                        virDomainPCIConnectFlags flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+struct _virDomainCCWAddressSet {
+    virHashTablePtr defined;
+    virDomainDeviceCCWAddress next;
+};
+typedef struct _virDomainCCWAddressSet virDomainCCWAddressSet;
+typedef virDomainCCWAddressSet *virDomainCCWAddressSetPtr;
+
+int virDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
+                              virDomainCCWAddressSetPtr addrs,
+                              bool autoassign)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+void virDomainCCWAddressSetFree(virDomainCCWAddressSetPtr addrs);
+int virDomainCCWAddressAllocate(virDomainDefPtr def,
+                                virDomainDeviceDefPtr dev,
+                                virDomainDeviceInfoPtr info,
+                                void *data)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
+int virDomainCCWAddressValidate(virDomainDefPtr def,
+                                virDomainDeviceDefPtr dev,
+                                virDomainDeviceInfoPtr info,
+                                void *data)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
+
+int virDomainCCWAddressReleaseAddr(virDomainCCWAddressSetPtr addrs,
+                                   virDomainDeviceInfoPtr dev)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+virDomainCCWAddressSetPtr virDomainCCWAddressSetCreate(void);
 #endif /* __DOMAIN_ADDR_H__ */

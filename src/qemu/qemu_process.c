@@ -4448,7 +4448,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         virDomainPCIAddressSetFree(priv->pciaddrs);
         priv->pciaddrs = NULL;
         virDomainDefClearCCWAddresses(vm->def);
-        qemuDomainCCWAddressSetFree(priv->ccwaddrs);
+        virDomainCCWAddressSetFree(priv->ccwaddrs);
         priv->ccwaddrs = NULL;
     }
 
