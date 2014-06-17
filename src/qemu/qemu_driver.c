@@ -15498,7 +15498,10 @@ qemuDomainBlockCommit(virDomainPtr dom,
                        "%s", _("domain is not running"));
         goto endjob;
     }
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCK_COMMIT)) {
+    /* Ensure that no one backports commit to RHEL 6.2, where cancel
+     * behaved differently */
+    if (!(virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCK_COMMIT) &&
+          virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("online commit not supported with this QEMU binary"));
         goto endjob;
@@ -15530,10 +15533,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
      * process; qemu 2.1 is further improving active commit. We need
      * to start supporting it in libvirt. */
     if (topSource == disk->src) {
-        /* We assume that no one will backport qemu 2.0 active commit
-         * to an earlier qemu without also backporting the block job
-         * ready event; but this makes sure of that fact */
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC)) {
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ACTIVE_COMMIT)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("active commit not supported with this QEMU binary"));
             goto endjob;

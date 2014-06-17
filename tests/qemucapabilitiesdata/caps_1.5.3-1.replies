@@ -335,6 +335,14 @@
 }
 
 {
+    "id": "libvirt-6",
+    "error": {
+        "class": "GenericError",
+        "desc": "Parameter 'top' is missing"
+    }
+}
+
+{
     "return": [
         {
             "name": "GUEST_PANICKED"
@@ -415,7 +423,7 @@
             "name": "SHUTDOWN"
         }
     ],
-    "id": "libvirt-6"
+    "id": "libvirt-7"
 }
 
 {
@@ -976,7 +984,7 @@
             "name": "VGA"
         }
     ],
-    "id": "libvirt-7"
+    "id": "libvirt-8"
 }
 
 {
@@ -1078,7 +1086,7 @@
             "type": "hex32"
         }
     ],
-    "id": "libvirt-8"
+    "id": "libvirt-9"
 }
 
 {
@@ -1224,11 +1232,11 @@
             "type": "on/off"
         }
     ],
-    "id": "libvirt-9"
+    "id": "libvirt-10"
 }
 
 {
-    "id": "libvirt-10",
+    "id": "libvirt-11",
     "error": {
         "class": "DeviceNotFound",
         "desc": "Device 'virtio-blk-ccw' not found"
@@ -1236,7 +1244,7 @@
 }
 
 {
-    "id": "libvirt-11",
+    "id": "libvirt-12",
     "error": {
         "class": "DeviceNotFound",
         "desc": "Device 'virtio-net-ccw' not found"
@@ -1244,7 +1252,7 @@
 }
 
 {
-    "id": "libvirt-12",
+    "id": "libvirt-13",
     "error": {
         "class": "DeviceNotFound",
         "desc": "Device 'virtio-blk-s390' not found"
@@ -1252,7 +1260,7 @@
 }
 
 {
-    "id": "libvirt-13",
+    "id": "libvirt-14",
     "error": {
         "class": "DeviceNotFound",
         "desc": "Device 'virtio-net-s390' not found"
@@ -1260,7 +1268,7 @@
 }
 
 {
-    "id": "libvirt-14",
+    "id": "libvirt-15",
     "error": {
         "class": "DeviceNotFound",
         "desc": "Device 'pci-assign' not found"
@@ -1310,7 +1318,7 @@
             "type": "pci-host-devaddr"
         }
     ],
-    "id": "libvirt-15"
+    "id": "libvirt-16"
 }
 
 {
@@ -1352,7 +1360,7 @@
             "type": "pci-host-devaddr"
         }
     ],
-    "id": "libvirt-16"
+    "id": "libvirt-17"
 }
 
 {
@@ -1426,7 +1434,7 @@
             "type": "drive"
         }
     ],
-    "id": "libvirt-17"
+    "id": "libvirt-18"
 }
 
 {
@@ -1480,7 +1488,7 @@
             "type": "drive"
         }
     ],
-    "id": "libvirt-18"
+    "id": "libvirt-19"
 }
 
 {
@@ -1522,11 +1530,11 @@
             "type": "uint32"
         }
     ],
-    "id": "libvirt-19"
+    "id": "libvirt-20"
 }
 
 {
-    "id": "libvirt-20",
+    "id": "libvirt-21",
     "error": {
         "class": "DeviceNotFound",
         "desc": "Device 'usb-redir' not found"
@@ -1576,7 +1584,7 @@
             "type": "uint32"
         }
     ],
-    "id": "libvirt-21"
+    "id": "libvirt-22"
 }
 
 {
@@ -1602,13 +1610,13 @@
             "type": "drive"
         }
     ],
-    "id": "libvirt-22"
+    "id": "libvirt-23"
 }
 
 {
     "return": [
     ],
-    "id": "libvirt-23"
+    "id": "libvirt-24"
 }
 
 {
@@ -1618,7 +1626,7 @@
             "type": "uint64"
         }
     ],
-    "id": "libvirt-24"
+    "id": "libvirt-25"
 }
 
 {
@@ -1668,7 +1676,7 @@
             "type": "drive"
         }
     ],
-    "id": "libvirt-25"
+    "id": "libvirt-26"
 }
 
 {
@@ -1682,7 +1690,7 @@
             "type": "hex32"
         }
     ],
-    "id": "libvirt-26"
+    "id": "libvirt-27"
 }
 
 {
@@ -1755,7 +1763,7 @@
             "cpu-max": 1
         }
     ],
-    "id": "libvirt-26"
+    "id": "libvirt-28"
 }
 
 {
@@ -1833,7 +1841,7 @@
             "name": "qemu64"
         }
     ],
-    "id": "libvirt-27"
+    "id": "libvirt-29"
 }
 
 {
@@ -1841,19 +1849,19 @@
         "enabled": false,
         "present": true
     },
-    "id": "libvirt-28"
-}
-
-{
-    "return": [
-    ],
-    "id": "libvirt-29"
-}
-
-{
-    "return": [
-    ],
     "id": "libvirt-30"
+}
+
+{
+    "return": [
+    ],
+    "id": "libvirt-31"
+}
+
+{
+    "return": [
+    ],
+    "id": "libvirt-32"
 }
 
 {
@@ -2529,5 +2537,5 @@
             "option": "drive"
         }
     ],
-    "id": "libvirt-31"
+    "id": "libvirt-33"
 }

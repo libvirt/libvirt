@@ -257,6 +257,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "usb-kbd", /* 165 */
               "host-pci-multidomain",
               "msg-timestamp",
+              "active-commit",
     );
 
 
@@ -2180,6 +2181,12 @@ virQEMUCapsProbeQMPCommands(virQEMUCapsPtr qemuCaps,
             virQEMUCapsClear(qemuCaps, QEMU_CAPS_ADD_FD);
         VIR_FORCE_CLOSE(fd);
     }
+
+    /* Probe for active commit of qemu 2.1 (for now, we are choosing
+     * to ignore the fact that qemu 2.0 can also do active commit) */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCK_COMMIT) &&
+        qemuMonitorSupportsActiveCommit(mon))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_ACTIVE_COMMIT);
 
     return 0;
 }
