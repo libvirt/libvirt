@@ -91,8 +91,8 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                                 vm, disk) < 0)
         goto cleanup;
 
-    if (virSecurityManagerSetImageLabel(driver->securityManager,
-                                        vm->def, disk) < 0) {
+    if (virSecurityManagerSetDiskLabel(driver->securityManager,
+                                       vm->def, disk) < 0) {
         if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
             VIR_WARN("Unable to release lock on %s",
                      virDomainDiskGetSource(disk));
@@ -270,8 +270,8 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
                                 vm, disk) < 0)
         goto cleanup;
 
-    if (virSecurityManagerSetImageLabel(driver->securityManager,
-                                        vm->def, disk) < 0) {
+    if (virSecurityManagerSetDiskLabel(driver->securityManager,
+                                       vm->def, disk) < 0) {
         if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
             VIR_WARN("Unable to release lock on %s", src);
         goto cleanup;
@@ -509,8 +509,8 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
                                 vm, disk) < 0)
         goto cleanup;
 
-    if (virSecurityManagerSetImageLabel(driver->securityManager,
-                                        vm->def, disk) < 0) {
+    if (virSecurityManagerSetDiskLabel(driver->securityManager,
+                                       vm->def, disk) < 0) {
         if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
             VIR_WARN("Unable to release lock on %s", src);
         goto cleanup;
@@ -634,8 +634,8 @@ qemuDomainAttachUSBMassstorageDevice(virConnectPtr conn,
                                 vm, disk) < 0)
         goto cleanup;
 
-    if (virSecurityManagerSetImageLabel(driver->securityManager,
-                                        vm->def, disk) < 0) {
+    if (virSecurityManagerSetDiskLabel(driver->securityManager,
+                                       vm->def, disk) < 0) {
         if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
             VIR_WARN("Unable to release lock on %s", src);
         goto cleanup;

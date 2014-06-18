@@ -321,9 +321,9 @@ virSecurityDACSetSecurityFileLabel(virDomainDiskDefPtr disk,
 
 
 static int
-virSecurityDACSetSecurityImageLabel(virSecurityManagerPtr mgr,
-                                    virDomainDefPtr def,
-                                    virDomainDiskDefPtr disk)
+virSecurityDACSetSecurityDiskLabel(virSecurityManagerPtr mgr,
+                                   virDomainDefPtr def,
+                                   virDomainDiskDefPtr disk)
 
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
@@ -967,9 +967,9 @@ virSecurityDACSetSecurityAllLabel(virSecurityManagerPtr mgr,
         /* XXX fixme - we need to recursively label the entire tree :-( */
         if (virDomainDiskGetType(def->disks[i]) == VIR_STORAGE_TYPE_DIR)
             continue;
-        if (virSecurityDACSetSecurityImageLabel(mgr,
-                                                def,
-                                                def->disks[i]) < 0)
+        if (virSecurityDACSetSecurityDiskLabel(mgr,
+                                               def,
+                                               def->disks[i]) < 0)
             return -1;
     }
     for (i = 0; i < def->nhostdevs; i++) {
@@ -1273,7 +1273,7 @@ virSecurityDriver virSecurityDriverDAC = {
 
     .domainSecurityVerify               = virSecurityDACVerify,
 
-    .domainSetSecurityImageLabel        = virSecurityDACSetSecurityImageLabel,
+    .domainSetSecurityDiskLabel         = virSecurityDACSetSecurityDiskLabel,
     .domainRestoreSecurityImageLabel    = virSecurityDACRestoreSecurityImageLabel,
 
     .domainSetSecurityDaemonSocketLabel = virSecurityDACSetDaemonSocketLabel,

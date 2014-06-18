@@ -70,9 +70,9 @@ int virSecurityManagerSetSocketLabel(virSecurityManagerPtr mgr,
                                      virDomainDefPtr def);
 int virSecurityManagerClearSocketLabel(virSecurityManagerPtr mgr,
                                        virDomainDefPtr def);
-int virSecurityManagerSetImageLabel(virSecurityManagerPtr mgr,
-                                    virDomainDefPtr def,
-                                    virDomainDiskDefPtr disk);
+int virSecurityManagerSetDiskLabel(virSecurityManagerPtr mgr,
+                                   virDomainDefPtr def,
+                                   virDomainDiskDefPtr disk);
 int virSecurityManagerRestoreHostdevLabel(virSecurityManagerPtr mgr,
                                           virDomainDefPtr def,
                                           virDomainHostdevDefPtr dev,

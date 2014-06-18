@@ -696,8 +696,8 @@ AppArmorRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
 
 /* Called when hotplugging */
 static int
-AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
-                              virDomainDefPtr def, virDomainDiskDefPtr disk)
+AppArmorSetSecurityDiskLabel(virSecurityManagerPtr mgr,
+                             virDomainDefPtr def, virDomainDiskDefPtr disk)
 {
     int rc = -1;
     char *profile_name = NULL;
@@ -972,7 +972,7 @@ virSecurityDriver virAppArmorSecurityDriver = {
 
     .domainSecurityVerify               = AppArmorSecurityVerify,
 
-    .domainSetSecurityImageLabel        = AppArmorSetSecurityImageLabel,
+    .domainSetSecurityDiskLabel         = AppArmorSetSecurityDiskLabel,
     .domainRestoreSecurityImageLabel    = AppArmorRestoreSecurityImageLabel,
 
     .domainSetSecurityDaemonSocketLabel = AppArmorSetSecurityDaemonSocketLabel,

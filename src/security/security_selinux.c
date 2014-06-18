@@ -1243,9 +1243,9 @@ virSecuritySELinuxSetSecurityFileLabel(virDomainDiskDefPtr disk,
 }
 
 static int
-virSecuritySELinuxSetSecurityImageLabel(virSecurityManagerPtr mgr,
-                                        virDomainDefPtr def,
-                                        virDomainDiskDefPtr disk)
+virSecuritySELinuxSetSecurityDiskLabel(virSecurityManagerPtr mgr,
+                                       virDomainDefPtr def,
+                                       virDomainDiskDefPtr disk)
 
 {
     virSecuritySELinuxCallbackData cbdata;
@@ -2240,7 +2240,7 @@ virSecuritySELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
                      def->disks[i]->dst);
             continue;
         }
-        if (virSecuritySELinuxSetSecurityImageLabel(mgr,
+        if (virSecuritySELinuxSetSecurityDiskLabel(mgr,
                                          def, def->disks[i]) < 0)
             return -1;
     }
@@ -2426,7 +2426,7 @@ virSecurityDriver virSecurityDriverSELinux = {
 
     .domainSecurityVerify               = virSecuritySELinuxSecurityVerify,
 
-    .domainSetSecurityImageLabel        = virSecuritySELinuxSetSecurityImageLabel,
+    .domainSetSecurityDiskLabel         = virSecuritySELinuxSetSecurityDiskLabel,
     .domainRestoreSecurityImageLabel    = virSecuritySELinuxRestoreSecurityImageLabel,
 
     .domainSetSecurityDaemonSocketLabel = virSecuritySELinuxSetSecurityDaemonSocketLabel,

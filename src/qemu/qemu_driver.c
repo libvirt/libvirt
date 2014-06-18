@@ -12098,8 +12098,8 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
     } else if (virDomainLockDiskAttach(driver->lockManager, cfg->uri,
                                        vm, disk) < 0 ||
                qemuSetupDiskCgroup(vm, disk) < 0 ||
-               virSecurityManagerSetImageLabel(driver->securityManager,
-                                               vm->def, disk) < 0) {
+               virSecurityManagerSetDiskLabel(driver->securityManager,
+                                              vm->def, disk) < 0) {
         goto cleanup;
     }
 
@@ -14952,8 +14952,8 @@ qemuDomainBlockPivot(virConnectPtr conn,
         (virDomainLockDiskAttach(driver->lockManager, cfg->uri,
                                  vm, disk) < 0 ||
          qemuSetupDiskCgroup(vm, disk) < 0 ||
-         virSecurityManagerSetImageLabel(driver->securityManager, vm->def,
-                                         disk) < 0)) {
+         virSecurityManagerSetDiskLabel(driver->securityManager, vm->def,
+                                        disk) < 0)) {
         disk->src->path = oldsrc;
         disk->src->format = oldformat;
         disk->src->backingStore = oldchain;

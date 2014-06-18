@@ -3899,8 +3899,8 @@ lxcDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
         virDomainDiskDefPtr def = data->def->data.disk;
         char *tmpsrc = def->src->path;
         def->src->path = data->file;
-        if (virSecurityManagerSetImageLabel(data->driver->securityManager,
-                                            data->vm->def, def) < 0) {
+        if (virSecurityManagerSetDiskLabel(data->driver->securityManager,
+                                           data->vm->def, def) < 0) {
             def->src->path = tmpsrc;
             goto cleanup;
         }

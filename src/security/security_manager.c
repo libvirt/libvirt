@@ -367,14 +367,14 @@ int virSecurityManagerClearSocketLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerSetImageLabel(virSecurityManagerPtr mgr,
-                                    virDomainDefPtr vm,
-                                    virDomainDiskDefPtr disk)
+int virSecurityManagerSetDiskLabel(virSecurityManagerPtr mgr,
+                                   virDomainDefPtr vm,
+                                   virDomainDiskDefPtr disk)
 {
-    if (mgr->drv->domainSetSecurityImageLabel) {
+    if (mgr->drv->domainSetSecurityDiskLabel) {
         int ret;
         virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityImageLabel(mgr, vm, disk);
+        ret = mgr->drv->domainSetSecurityDiskLabel(mgr, vm, disk);
         virObjectUnlock(mgr);
         return ret;
     }
