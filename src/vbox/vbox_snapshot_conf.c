@@ -1211,7 +1211,7 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachinePtr machine,
         }
     }
 
-    if (xmlSaveFormatFileEnc(filePath, xml, "ISO-8859-1", -1) < 0) {
+    if (xmlSaveFormatFileEnc(filePath, xml, "ISO-8859-1", 1) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Unable to save the xml"));
         goto cleanup;
