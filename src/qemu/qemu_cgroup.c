@@ -49,30 +49,55 @@ static const char *const defaultDeviceACL[] = {
 #define DEVICE_PTY_MAJOR 136
 #define DEVICE_SND_MAJOR 116
 
-static int
-qemuSetupDiskPathAllow(virDomainDiskDefPtr disk,
-                       const char *path,
-                       size_t depth ATTRIBUTE_UNUSED,
-                       void *opaque)
+int
+qemuSetImageCgroup(virDomainObjPtr vm,
+                   virStorageSourcePtr src,
+                   bool deny)
 {
-    virDomainObjPtr vm = opaque;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    int perms = VIR_CGROUP_DEVICE_READ;
     int ret;
 
-    VIR_DEBUG("Process path %s for disk", path);
-    ret = virCgroupAllowDevicePath(priv->cgroup, path,
-                                   (disk->src->readonly ? VIR_CGROUP_DEVICE_READ
-                                    : VIR_CGROUP_DEVICE_RW));
-    virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
-                             disk->src->readonly ? "r" : "rw", ret == 0);
+    if (!virCgroupHasController(priv->cgroup,
+                                VIR_CGROUP_CONTROLLER_DEVICES))
+        return 0;
+
+    if (!src->path || !virStorageSourceIsLocalStorage(src)) {
+        VIR_DEBUG("Not updating cgroups for disk path '%s', type: %s",
+                  NULLSTR(src->path), virStorageTypeToString(src->type));
+        return 0;
+    }
+
+    if (deny) {
+        perms |= VIR_CGROUP_DEVICE_WRITE | VIR_CGROUP_DEVICE_MKNOD;
+
+        VIR_DEBUG("Deny path %s", src->path);
+
+        ret = virCgroupDenyDevicePath(priv->cgroup, src->path, perms);
+    } else {
+        if (!src->readonly)
+            perms |= VIR_CGROUP_DEVICE_WRITE;
+
+        VIR_DEBUG("Allow path %s, perms: %s",
+                  src->path, virCgroupGetDevicePermsString(perms));
+
+        ret = virCgroupAllowDevicePath(priv->cgroup, src->path, perms);
+    }
+
+    virDomainAuditCgroupPath(vm, priv->cgroup,
+                             deny ? "deny" : "allow",
+                             src->path,
+                             virCgroupGetDevicePermsString(perms),
+                             ret == 0);
 
     /* Get this for root squash NFS */
     if (ret < 0 &&
         virLastErrorIsSystemErrno(EACCES)) {
-        VIR_DEBUG("Ignoring EACCES for %s", path);
+        VIR_DEBUG("Ignoring EACCES for %s", src->path);
         virResetLastError();
         ret = 0;
     }
+
     return ret;
 }
 
@@ -81,39 +106,14 @@ int
 qemuSetupDiskCgroup(virDomainObjPtr vm,
                     virDomainDiskDefPtr disk)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virStorageSourcePtr next;
 
-    if (!virCgroupHasController(priv->cgroup,
-                                VIR_CGROUP_CONTROLLER_DEVICES))
-        return 0;
-
-    return virDomainDiskDefForeachPath(disk, true, qemuSetupDiskPathAllow, vm);
-}
-
-
-static int
-qemuTeardownDiskPathDeny(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
-                         const char *path,
-                         size_t depth ATTRIBUTE_UNUSED,
-                         void *opaque)
-{
-    virDomainObjPtr vm = opaque;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret;
-
-    VIR_DEBUG("Process path %s for disk", path);
-    ret = virCgroupDenyDevicePath(priv->cgroup, path,
-                                  VIR_CGROUP_DEVICE_RWM);
-    virDomainAuditCgroupPath(vm, priv->cgroup, "deny", path, "rwm", ret == 0);
-
-    /* Get this for root squash NFS */
-    if (ret < 0 &&
-        virLastErrorIsSystemErrno(EACCES)) {
-        VIR_DEBUG("Ignoring EACCES for %s", path);
-        virResetLastError();
-        ret = 0;
+    for (next = disk->src; next; next = next->backingStore) {
+        if (qemuSetImageCgroup(vm, next, false) < 0)
+            return -1;
     }
-    return ret;
+
+    return 0;
 }
 
 
@@ -121,17 +121,16 @@ int
 qemuTeardownDiskCgroup(virDomainObjPtr vm,
                        virDomainDiskDefPtr disk)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virStorageSourcePtr next;
 
-    if (!virCgroupHasController(priv->cgroup,
-                                VIR_CGROUP_CONTROLLER_DEVICES))
-        return 0;
+    for (next = disk->src; next; next = next->backingStore) {
+        if (qemuSetImageCgroup(vm, next, true) < 0)
+            return -1;
+    }
 
-    return virDomainDiskDefForeachPath(disk,
-                                       true,
-                                       qemuTeardownDiskPathDeny,
-                                       vm);
+    return 0;
 }
+
 
 static int
 qemuSetupChrSourceCgroup(virDomainDefPtr def ATTRIBUTE_UNUSED,
