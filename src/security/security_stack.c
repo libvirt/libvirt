@@ -323,7 +323,7 @@ virSecurityStackSetSecurityAllLabel(virSecurityManagerPtr mgr,
 static int
 virSecurityStackRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
                                         virDomainDefPtr vm,
-                                        int migrated)
+                                        bool migrated)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;

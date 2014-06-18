@@ -99,7 +99,7 @@ int virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
                                   const char *stdin_path);
 int virSecurityManagerRestoreAllLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,
-                                      int migrated);
+                                      bool migrated);
 int virSecurityManagerGetProcessLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,
                                       pid_t pid,

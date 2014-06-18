@@ -593,7 +593,7 @@ int virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
 
 int virSecurityManagerRestoreAllLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr vm,
-                                      int migrated)
+                                      bool migrated)
 {
     if (mgr->drv->domainRestoreSecurityAllLabel) {
         int ret;

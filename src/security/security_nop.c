@@ -139,7 +139,7 @@ static int virSecurityDomainSetAllLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_U
 
 static int virSecurityDomainRestoreAllLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                                virDomainDefPtr vm ATTRIBUTE_UNUSED,
-                                               int migrated ATTRIBUTE_UNUSED)
+                                               bool migrated ATTRIBUTE_UNUSED)
 {
     return 0;
 }

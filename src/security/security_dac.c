@@ -351,7 +351,7 @@ static int
 virSecurityDACRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
                                            virDomainDefPtr def,
                                            virDomainDiskDefPtr disk,
-                                           int migrated)
+                                           bool migrated)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDefPtr secdef;
@@ -414,7 +414,7 @@ virSecurityDACRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
                                         virDomainDefPtr def,
                                         virDomainDiskDefPtr disk)
 {
-    return virSecurityDACRestoreSecurityImageLabelInt(mgr, def, disk, 0);
+    return virSecurityDACRestoreSecurityImageLabelInt(mgr, def, disk, false);
 }
 
 
@@ -877,7 +877,7 @@ virSecurityDACRestoreSecurityTPMFileLabel(virSecurityManagerPtr mgr,
 static int
 virSecurityDACRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,
-                                      int migrated)
+                                      bool migrated)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDefPtr secdef;

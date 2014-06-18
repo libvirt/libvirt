@@ -4419,7 +4419,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     if (!(flags & VIR_QEMU_PROCESS_STOP_NO_RELABEL))
         virSecurityManagerRestoreAllLabel(driver->securityManager,
                                           vm->def,
-                                          flags & VIR_QEMU_PROCESS_STOP_MIGRATED);
+                                          !!(flags & VIR_QEMU_PROCESS_STOP_MIGRATED));
     virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
 
     for (i = 0; i < vm->def->ndisks; i++) {

@@ -1124,7 +1124,7 @@ static int
 virSecuritySELinuxRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
                                                virDomainDefPtr def,
                                                virDomainDiskDefPtr disk,
-                                               int migrated)
+                                               bool migrated)
 {
     virSecurityLabelDefPtr seclabel;
     virSecurityDeviceLabelDefPtr disk_seclabel;
@@ -1186,7 +1186,7 @@ virSecuritySELinuxRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
                                             virDomainDefPtr def,
                                             virDomainDiskDefPtr disk)
 {
-    return virSecuritySELinuxRestoreSecurityImageLabelInt(mgr, def, disk, 0);
+    return virSecuritySELinuxRestoreSecurityImageLabelInt(mgr, def, disk, false);
 }
 
 
@@ -1837,7 +1837,7 @@ virSecuritySELinuxGetBaseLabel(virSecurityManagerPtr mgr, int virtType)
 static int
 virSecuritySELinuxRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
                                           virDomainDefPtr def,
-                                          int migrated ATTRIBUTE_UNUSED)
+                                          bool migrated)
 {
     virSecurityLabelDefPtr secdef;
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);

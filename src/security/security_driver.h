@@ -89,7 +89,7 @@ typedef int (*virSecurityDomainSetAllLabel) (virSecurityManagerPtr mgr,
                                              const char *stdin_path);
 typedef int (*virSecurityDomainRestoreAllLabel) (virSecurityManagerPtr mgr,
                                                  virDomainDefPtr def,
-                                                 int migrated);
+                                                 bool migrated);
 typedef int (*virSecurityDomainGetProcessLabel) (virSecurityManagerPtr mgr,
                                                  virDomainDefPtr def,
                                                  pid_t pid,
