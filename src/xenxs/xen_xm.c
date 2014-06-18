@@ -339,6 +339,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             def->os.nBootDevs++;
         }
     } else {
+        const char *extra, *root;
+
         if (xenXMConfigCopyStringOpt(conf, "bootloader", &def->os.bootloader) < 0)
             goto cleanup;
         if (xenXMConfigCopyStringOpt(conf, "bootargs", &def->os.bootloaderArgs) < 0)
@@ -348,8 +350,18 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             goto cleanup;
         if (xenXMConfigCopyStringOpt(conf, "ramdisk", &def->os.initrd) < 0)
             goto cleanup;
-        if (xenXMConfigCopyStringOpt(conf, "extra", &def->os.cmdline) < 0)
+        if (xenXMConfigGetString(conf, "extra", &extra, "") < 0)
             goto cleanup;
+        if (xenXMConfigGetString(conf, "root", &root, NULL) < 0)
+            goto cleanup;
+
+        if (root) {
+            if (virAsprintf(&def->os.cmdline, "root=%s %s", root, extra) < 0)
+                goto cleanup;
+        } else {
+            if (VIR_STRDUP(def->os.cmdline, extra) < 0)
+                goto cleanup;
+        }
     }
 
     if (xenXMConfigGetULongLong(conf, "memory", &def->mem.cur_balloon,
