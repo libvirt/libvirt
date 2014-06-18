@@ -410,9 +410,9 @@ virSecurityDACRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityDACRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
-                                        virDomainDefPtr def,
-                                        virDomainDiskDefPtr disk)
+virSecurityDACRestoreSecurityDiskLabel(virSecurityManagerPtr mgr,
+                                       virDomainDefPtr def,
+                                       virDomainDiskDefPtr disk)
 {
     return virSecurityDACRestoreSecurityImageLabelInt(mgr, def, disk, false);
 }
@@ -1274,7 +1274,7 @@ virSecurityDriver virSecurityDriverDAC = {
     .domainSecurityVerify               = virSecurityDACVerify,
 
     .domainSetSecurityDiskLabel         = virSecurityDACSetSecurityDiskLabel,
-    .domainRestoreSecurityImageLabel    = virSecurityDACRestoreSecurityImageLabel,
+    .domainRestoreSecurityDiskLabel     = virSecurityDACRestoreSecurityDiskLabel,
 
     .domainSetSecurityDaemonSocketLabel = virSecurityDACSetDaemonSocketLabel,
     .domainSetSecuritySocketLabel       = virSecurityDACSetSocketLabel,

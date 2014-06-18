@@ -161,8 +161,8 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     if (ret < 0)
         goto error;
 
-    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
-                                            vm->def, origdisk) < 0)
+    if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
+                                           vm->def, origdisk) < 0)
         VIR_WARN("Unable to restore security label on ejected image %s",
                  virDomainDiskGetSource(origdisk));
 
@@ -182,8 +182,8 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     return ret;
 
  error:
-    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
-                                            vm->def, disk) < 0)
+    if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
+                                           vm->def, disk) < 0)
         VIR_WARN("Unable to restore security label on new media %s", src);
 
     if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
@@ -347,8 +347,8 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     if (releaseaddr)
         qemuDomainReleaseDeviceAddress(vm, &disk->info, src);
 
-    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
-                                            vm->def, disk) < 0)
+    if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
+                                           vm->def, disk) < 0)
         VIR_WARN("Unable to restore security label on %s", src);
 
     if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
@@ -597,8 +597,8 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     return ret;
 
  error:
-    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
-                                            vm->def, disk) < 0)
+    if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
+                                           vm->def, disk) < 0)
         VIR_WARN("Unable to restore security label on %s", src);
 
     if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
@@ -691,8 +691,8 @@ qemuDomainAttachUSBMassstorageDevice(virConnectPtr conn,
     return ret;
 
  error:
-    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
-                                            vm->def, disk) < 0)
+    if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
+                                           vm->def, disk) < 0)
         VIR_WARN("Unable to restore security label on %s", src);
 
     if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
@@ -2504,8 +2504,8 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
 
     qemuDomainReleaseDeviceAddress(vm, &disk->info, src);
 
-    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
-                                            vm->def, disk) < 0)
+    if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
+                                           vm->def, disk) < 0)
         VIR_WARN("Unable to restore security label on %s", src);
 
     if (qemuTeardownDiskCgroup(vm, disk) < 0)

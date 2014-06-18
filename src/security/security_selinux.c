@@ -1182,9 +1182,9 @@ virSecuritySELinuxRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
 
 
 static int
-virSecuritySELinuxRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
-                                            virDomainDefPtr def,
-                                            virDomainDiskDefPtr disk)
+virSecuritySELinuxRestoreSecurityDiskLabel(virSecurityManagerPtr mgr,
+                                           virDomainDefPtr def,
+                                           virDomainDiskDefPtr disk)
 {
     return virSecuritySELinuxRestoreSecurityImageLabelInt(mgr, def, disk, false);
 }
@@ -2427,7 +2427,7 @@ virSecurityDriver virSecurityDriverSELinux = {
     .domainSecurityVerify               = virSecuritySELinuxSecurityVerify,
 
     .domainSetSecurityDiskLabel         = virSecuritySELinuxSetSecurityDiskLabel,
-    .domainRestoreSecurityImageLabel    = virSecuritySELinuxRestoreSecurityImageLabel,
+    .domainRestoreSecurityDiskLabel     = virSecuritySELinuxRestoreSecurityDiskLabel,
 
     .domainSetSecurityDaemonSocketLabel = virSecuritySELinuxSetSecurityDaemonSocketLabel,
     .domainSetSecuritySocketLabel       = virSecuritySELinuxSetSecuritySocketLabel,

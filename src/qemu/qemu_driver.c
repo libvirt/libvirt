@@ -12096,8 +12096,8 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
     disk->readonly = mode == VIR_DISK_CHAIN_READ_ONLY;
 
     if (mode == VIR_DISK_CHAIN_NO_ACCESS) {
-        if (virSecurityManagerRestoreImageLabel(driver->securityManager,
-                                                vm->def, disk) < 0)
+        if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
+                                               vm->def, disk) < 0)
             VIR_WARN("Unable to restore security label on %s", disk->src->path);
         if (qemuTeardownDiskCgroup(vm, disk) < 0)
             VIR_WARN("Failed to teardown cgroup for disk path %s",

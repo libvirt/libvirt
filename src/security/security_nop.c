@@ -50,9 +50,9 @@ static const char * virSecurityDriverGetDOINop(virSecurityManagerPtr mgr ATTRIBU
     return "0";
 }
 
-static int virSecurityDomainRestoreImageLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                                 virDomainDefPtr vm ATTRIBUTE_UNUSED,
-                                                 virDomainDiskDefPtr disk ATTRIBUTE_UNUSED)
+static int virSecurityDomainRestoreDiskLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                                virDomainDefPtr vm ATTRIBUTE_UNUSED,
+                                                virDomainDiskDefPtr disk ATTRIBUTE_UNUSED)
 {
     return 0;
 }
@@ -207,7 +207,7 @@ virSecurityDriver virSecurityDriverNop = {
     .domainSecurityVerify               = virSecurityDomainVerifyNop,
 
     .domainSetSecurityDiskLabel         = virSecurityDomainSetDiskLabelNop,
-    .domainRestoreSecurityImageLabel    = virSecurityDomainRestoreImageLabelNop,
+    .domainRestoreSecurityDiskLabel     = virSecurityDomainRestoreDiskLabelNop,
 
     .domainSetSecurityDaemonSocketLabel = virSecurityDomainSetDaemonSocketLabelNop,
     .domainSetSecuritySocketLabel       = virSecurityDomainSetSocketLabelNop,

@@ -306,14 +306,14 @@ bool virSecurityManagerGetRequireConfined(virSecurityManagerPtr mgr)
     return mgr->requireConfined;
 }
 
-int virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
-                                        virDomainDefPtr vm,
-                                        virDomainDiskDefPtr disk)
+int virSecurityManagerRestoreDiskLabel(virSecurityManagerPtr mgr,
+                                       virDomainDefPtr vm,
+                                       virDomainDiskDefPtr disk)
 {
-    if (mgr->drv->domainRestoreSecurityImageLabel) {
+    if (mgr->drv->domainRestoreSecurityDiskLabel) {
         int ret;
         virObjectLock(mgr);
-        ret = mgr->drv->domainRestoreSecurityImageLabel(mgr, vm, disk);
+        ret = mgr->drv->domainRestoreSecurityDiskLabel(mgr, vm, disk);
         virObjectUnlock(mgr);
         return ret;
     }

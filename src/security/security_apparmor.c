@@ -684,9 +684,9 @@ AppArmorClearSecuritySocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 
 /* Called when hotplugging */
 static int
-AppArmorRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
-                                  virDomainDefPtr def,
-                                  virDomainDiskDefPtr disk)
+AppArmorRestoreSecurityDiskLabel(virSecurityManagerPtr mgr,
+                                 virDomainDefPtr def,
+                                 virDomainDiskDefPtr disk)
 {
     if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_NETWORK)
         return 0;
@@ -973,7 +973,7 @@ virSecurityDriver virAppArmorSecurityDriver = {
     .domainSecurityVerify               = AppArmorSecurityVerify,
 
     .domainSetSecurityDiskLabel         = AppArmorSetSecurityDiskLabel,
-    .domainRestoreSecurityImageLabel    = AppArmorRestoreSecurityImageLabel,
+    .domainRestoreSecurityDiskLabel     = AppArmorRestoreSecurityDiskLabel,
 
     .domainSetSecurityDaemonSocketLabel = AppArmorSetSecurityDaemonSocketLabel,
     .domainSetSecuritySocketLabel       = AppArmorSetSecuritySocketLabel,
