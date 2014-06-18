@@ -511,6 +511,14 @@
       <feature name='rtm'/>
     </model>
 
+    <model name='Broadwell'>
+      <model name='Haswell'/>
+      <feature name='3dnowprefetch'/>
+      <feature name='rdseed'/>
+      <feature name='adx'/>
+      <feature name='smap'/>
+    </model>
+
     <!-- AMD CPUs -->
     <model name='athlon'>
       <model name='pentiumpro'/>
