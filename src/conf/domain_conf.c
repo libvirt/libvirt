@@ -19489,20 +19489,6 @@ virDomainDefGetSecurityLabelDef(virDomainDefPtr def, const char *model)
     return seclabel;
 }
 
-virSecurityDeviceLabelDefPtr
-virDomainDiskDefGetSecurityLabelDef(virDomainDiskDefPtr def, const char *model)
-{
-    size_t i;
-
-    if (def == NULL)
-        return NULL;
-
-    for (i = 0; i < def->src->nseclabels; i++) {
-        if (STREQ_NULLABLE(def->src->seclabels[i]->model, model))
-            return def->src->seclabels[i];
-    }
-    return NULL;
-}
 
 virSecurityDeviceLabelDefPtr
 virDomainChrDefGetSecurityLabelDef(virDomainChrDefPtr def, const char *model)

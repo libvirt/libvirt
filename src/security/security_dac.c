@@ -302,7 +302,7 @@ virSecurityDACSetSecurityFileLabel(virDomainDiskDefPtr disk,
     uid_t user;
     gid_t group;
 
-    disk_seclabel = virDomainDiskDefGetSecurityLabelDef(disk,
+    disk_seclabel = virStorageSourceGetSecurityLabelDef(disk->src,
                                                         SECURITY_DAC_NAME);
 
     if (disk_seclabel && disk_seclabel->norelabel)
@@ -369,7 +369,7 @@ virSecurityDACRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
     if (secdef && secdef->norelabel)
         return 0;
 
-    disk_seclabel = virDomainDiskDefGetSecurityLabelDef(disk,
+    disk_seclabel = virStorageSourceGetSecurityLabelDef(disk->src,
                                                         SECURITY_DAC_NAME);
 
     if (disk_seclabel && disk_seclabel->norelabel)

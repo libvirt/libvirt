@@ -1134,7 +1134,7 @@ virSecuritySELinuxRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
     if (seclabel == NULL)
         return 0;
 
-    disk_seclabel = virDomainDiskDefGetSecurityLabelDef(disk,
+    disk_seclabel = virStorageSourceGetSecurityLabelDef(disk->src,
                                                         SECURITY_SELINUX_NAME);
     if (seclabel->norelabel || (disk_seclabel && disk_seclabel->norelabel))
         return 0;
@@ -1202,7 +1202,7 @@ virSecuritySELinuxSetSecurityFileLabel(virDomainDiskDefPtr disk,
     virSecurityLabelDefPtr secdef = cbdata->secdef;
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(cbdata->manager);
 
-    disk_seclabel = virDomainDiskDefGetSecurityLabelDef(disk,
+    disk_seclabel = virStorageSourceGetSecurityLabelDef(disk->src,
                                                         SECURITY_SELINUX_NAME);
 
     if (disk_seclabel && disk_seclabel->norelabel)

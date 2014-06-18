@@ -312,6 +312,10 @@ int virStorageFileGetLVMKey(const char *path,
 int virStorageFileGetSCSIKey(const char *path,
                              char **key);
 
+virSecurityDeviceLabelDefPtr
+virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,
+                                    const char *model);
+
 void virStorageNetHostDefClear(virStorageNetHostDefPtr def);
 void virStorageNetHostDefFree(size_t nhosts, virStorageNetHostDefPtr hosts);
 virStorageNetHostDefPtr virStorageNetHostDefCopy(size_t nhosts,

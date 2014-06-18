@@ -1496,6 +1496,21 @@ virStorageNetHostDefCopy(size_t nhosts,
 }
 
 
+virSecurityDeviceLabelDefPtr
+virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,
+                                    const char *model)
+{
+    size_t i;
+
+    for (i = 0; i < src->nseclabels; i++) {
+        if (STREQ_NULLABLE(src->seclabels[i]->model, model))
+            return src->seclabels[i];
+    }
+
+    return NULL;
+}
+
+
 void
 virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def)
 {
