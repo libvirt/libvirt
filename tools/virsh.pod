@@ -19,7 +19,7 @@ under the GNU Lesser General Public License. Virtualization of the
 Linux Operating System means the ability to run multiple instances of
 Operating Systems concurrently on a single hardware system where the
 basic resources are driven by a Linux instance. The library aims at
-providing a long term stable C API.  It currently supports Xen, QEmu,
+providing a long term stable C API.  It currently supports Xen, QEMU,
 KVM, LXC, OpenVZ, VirtualBox and VMware ESX.
 
 The basic structure of most virsh usage is:
@@ -260,11 +260,11 @@ this is used to connect to the local Xen hypervisor
 
 =item qemu:///system
 
-connect locally as root to the daemon supervising QEmu and KVM domains
+connect locally as root to the daemon supervising QEMU and KVM domains
 
 =item qemu:///session
 
-connect locally as a normal user to his own set of QEmu and KVM domains
+connect locally as a normal user to his own set of QEMU and KVM domains
 
 =item lxc:///
 
