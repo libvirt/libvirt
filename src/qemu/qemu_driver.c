@@ -15512,9 +15512,11 @@ qemuDomainBlockCommit(virDomainPtr dom,
     char *topPath = NULL;
     char *basePath = NULL;
     char *backingPath = NULL;
+    virStorageSourcePtr mirror = NULL;
 
-    /* XXX Add support for COMMIT_ACTIVE, COMMIT_DELETE */
+    /* XXX Add support for COMMIT_DELETE */
     virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW |
+                  VIR_DOMAIN_BLOCK_COMMIT_ACTIVE |
                   VIR_DOMAIN_BLOCK_COMMIT_RELATIVE, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -15563,9 +15565,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
                                                      &top_parent)))
         goto endjob;
 
-    /* FIXME: qemu 2.0 supports active commit, but as a two-stage
-     * process; qemu 2.1 is further improving active commit. We need
-     * to start supporting it in libvirt. */
     if (topSource == disk->src) {
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ACTIVE_COMMIT)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -15576,6 +15575,12 @@ qemuDomainBlockCommit(virDomainPtr dom,
         if (!(flags & VIR_DOMAIN_BLOCK_COMMIT_ACTIVE)) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("commit of '%s' active layer requires active flag"),
+                           disk->dst);
+            goto endjob;
+        }
+        if (disk->mirror) {
+            virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
+                           _("disk '%s' already in active block job"),
                            disk->dst);
             goto endjob;
         }
@@ -15607,6 +15612,16 @@ qemuDomainBlockCommit(virDomainPtr dom,
                          "for '%s'"),
                        base, topSource->path, path);
         goto endjob;
+    }
+
+    /* For an active commit, clone enough of the base to act as the mirror */
+    if (topSource == disk->src) {
+        if (!(mirror = virStorageSourceCopy(baseSource, false)))
+            goto endjob;
+        if (virStorageSourceInitChainElement(mirror,
+                                             disk->src,
+                                             false) < 0)
+            goto endjob;
     }
 
     /* For the commit to succeed, we must allow qemu to open both the
@@ -15653,12 +15668,32 @@ qemuDomainBlockCommit(virDomainPtr dom,
      * if any, through to qemu, since qemu may behave differently
      * depending on whether the input was specified as relative or
      * absolute (that is, our absolute top_canon may do the wrong
-     * thing if the user specified a relative name). */
+     * thing if the user specified a relative name).  Be prepared for
+     * a ready event to occur while locks are dropped.  */
+    if (mirror) {
+        disk->mirror = mirror;
+        disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT;
+    }
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorBlockCommit(priv->mon, device,
                                  topPath, basePath, backingPath,
                                  bandwidth);
     qemuDomainObjExitMonitor(driver, vm);
+
+    if (mirror) {
+        if (ret == 0) {
+            virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
+            mirror = NULL;
+            if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+                VIR_WARN("Unable to save status on vm %s after block job",
+                         vm->def->name);
+            virObjectUnref(cfg);
+        } else {
+            disk->mirror = NULL;
+            disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
+        }
+    }
 
  endjob:
     if (ret < 0 && clean_access) {
@@ -15669,6 +15704,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
             qemuDomainPrepareDiskChainElement(driver, vm, top_parent,
                                               VIR_DISK_CHAIN_READ_ONLY);
     }
+    virStorageSourceFree(mirror);
     if (!qemuDomainObjEndJob(driver, vm))
         vm = NULL;
 
