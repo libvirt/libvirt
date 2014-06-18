@@ -206,23 +206,28 @@ option instead.  For example:
 
 quit this interactive terminal
 
-=item B<version>
+=item B<version> [I<--daemon>]
 
 Will print out the major version info about what this built from.
+If I<--daemon> is specified then the version of the libvirt daemon
+is included in the output.
 
 =over 4
 
 B<Example>
 
-B<virsh> version
+ $ virsh version
+ Compiled against library: libvirt 1.2.3
+ Using library: libvirt 1.2.3
+ Using API: QEMU 1.2.3
+ Running hypervisor: QEMU 2.0.50
 
-Compiled against library: libvir 0.0.6
-
-Using library: libvir 0.0.6
-
-Using API: Xen 3.0.0
-
-Running hypervisor: Xen 3.0.0
+ $ virsh version --daemon
+ Compiled against library: libvirt 1.2.3
+ Using library: libvirt 1.2.3
+ Using API: QEMU 1.2.3
+ Running hypervisor: QEMU 2.0.50
+ Running against daemon: 1.2.6
 
 =back
 
