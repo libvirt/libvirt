@@ -19,9 +19,7 @@
  *
  * Author: Daniel P. Berrange <berrange@redhat.com>
  */
-
 #include <config.h>
-
 
 #include "security_driver.h"
 #include "security_stack.h"
@@ -60,7 +58,8 @@ void virSecurityManagerDispose(void *obj)
 }
 
 
-static int virSecurityManagerOnceInit(void)
+static int
+virSecurityManagerOnceInit(void)
 {
     if (!(virSecurityManagerClass = virClassNew(virClassForObjectLockable(),
                                                 "virSecurityManagerClass",
@@ -73,11 +72,13 @@ static int virSecurityManagerOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virSecurityManager);
 
-static virSecurityManagerPtr virSecurityManagerNewDriver(virSecurityDriverPtr drv,
-                                                         const char *virtDriver,
-                                                         bool allowDiskFormatProbing,
-                                                         bool defaultConfined,
-                                                         bool requireConfined)
+
+static virSecurityManagerPtr
+virSecurityManagerNewDriver(virSecurityDriverPtr drv,
+                            const char *virtDriver,
+                            bool allowDiskFormatProbing,
+                            bool defaultConfined,
+                            bool requireConfined)
 {
     virSecurityManagerPtr mgr;
     char *privateData;
@@ -114,7 +115,9 @@ static virSecurityManagerPtr virSecurityManagerNewDriver(virSecurityDriverPtr dr
     return mgr;
 }
 
-virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary)
+
+virSecurityManagerPtr
+virSecurityManagerNewStack(virSecurityManagerPtr primary)
 {
     virSecurityManagerPtr mgr =
         virSecurityManagerNewDriver(&virSecurityDriverStack,
@@ -131,21 +134,25 @@ virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary)
     return mgr;
 }
 
-int virSecurityManagerStackAddNested(virSecurityManagerPtr stack,
-                                     virSecurityManagerPtr nested)
+
+int
+virSecurityManagerStackAddNested(virSecurityManagerPtr stack,
+                                 virSecurityManagerPtr nested)
 {
     if (!STREQ("stack", stack->drv->name))
         return -1;
     return virSecurityStackAddNested(stack, nested);
 }
 
-virSecurityManagerPtr virSecurityManagerNewDAC(const char *virtDriver,
-                                               uid_t user,
-                                               gid_t group,
-                                               bool allowDiskFormatProbing,
-                                               bool defaultConfined,
-                                               bool requireConfined,
-                                               bool dynamicOwnership)
+
+virSecurityManagerPtr
+virSecurityManagerNewDAC(const char *virtDriver,
+                         uid_t user,
+                         gid_t group,
+                         bool allowDiskFormatProbing,
+                         bool defaultConfined,
+                         bool requireConfined,
+                         bool dynamicOwnership)
 {
     virSecurityManagerPtr mgr =
         virSecurityManagerNewDriver(&virSecurityDriverDAC,
@@ -161,16 +168,19 @@ virSecurityManagerPtr virSecurityManagerNewDAC(const char *virtDriver,
         virSecurityManagerDispose(mgr);
         return NULL;
     }
+
     virSecurityDACSetDynamicOwnership(mgr, dynamicOwnership);
 
     return mgr;
 }
 
-virSecurityManagerPtr virSecurityManagerNew(const char *name,
-                                            const char *virtDriver,
-                                            bool allowDiskFormatProbing,
-                                            bool defaultConfined,
-                                            bool requireConfined)
+
+virSecurityManagerPtr
+virSecurityManagerNew(const char *name,
+                      const char *virtDriver,
+                      bool allowDiskFormatProbing,
+                      bool defaultConfined,
+                      bool requireConfined)
 {
     virSecurityDriverPtr drv = virSecurityDriverLookup(name, virtDriver);
     if (!drv)
@@ -211,7 +221,8 @@ virSecurityManagerPtr virSecurityManagerNew(const char *name,
  * followed by a call to virSecurityManagerPostFork() in both
  * parent and child.
  */
-int virSecurityManagerPreFork(virSecurityManagerPtr mgr)
+int
+virSecurityManagerPreFork(virSecurityManagerPtr mgr)
 {
     int ret = 0;
 
@@ -230,12 +241,14 @@ int virSecurityManagerPreFork(virSecurityManagerPtr mgr)
  * Must be called after fork()'ing in both parent and child
  * to ensure mutex state is sane for the child to use
  */
-void virSecurityManagerPostFork(virSecurityManagerPtr mgr)
+void
+virSecurityManagerPostFork(virSecurityManagerPtr mgr)
 {
     virObjectUnlock(mgr);
 }
 
-void *virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr)
+void *
+virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr)
 {
     return mgr->privateData;
 }
@@ -246,6 +259,7 @@ virSecurityManagerGetDriver(virSecurityManagerPtr mgr)
 {
     return mgr->virtDriver;
 }
+
 
 const char *
 virSecurityManagerGetDOI(virSecurityManagerPtr mgr)
@@ -262,6 +276,7 @@ virSecurityManagerGetDOI(virSecurityManagerPtr mgr)
     return NULL;
 }
 
+
 const char *
 virSecurityManagerGetModel(virSecurityManagerPtr mgr)
 {
@@ -277,9 +292,11 @@ virSecurityManagerGetModel(virSecurityManagerPtr mgr)
     return NULL;
 }
 
+
 /* return NULL if a base label is not present */
 const char *
-virSecurityManagerGetBaseLabel(virSecurityManagerPtr mgr, int virtType)
+virSecurityManagerGetBaseLabel(virSecurityManagerPtr mgr,
+                               int virtType)
 {
     if (mgr->drv->getBaseLabel) {
         const char *ret;
@@ -292,24 +309,32 @@ virSecurityManagerGetBaseLabel(virSecurityManagerPtr mgr, int virtType)
     return NULL;
 }
 
-bool virSecurityManagerGetAllowDiskFormatProbing(virSecurityManagerPtr mgr)
+
+bool
+virSecurityManagerGetAllowDiskFormatProbing(virSecurityManagerPtr mgr)
 {
     return mgr->allowDiskFormatProbing;
 }
 
-bool virSecurityManagerGetDefaultConfined(virSecurityManagerPtr mgr)
+
+bool
+virSecurityManagerGetDefaultConfined(virSecurityManagerPtr mgr)
 {
     return mgr->defaultConfined;
 }
 
-bool virSecurityManagerGetRequireConfined(virSecurityManagerPtr mgr)
+
+bool
+virSecurityManagerGetRequireConfined(virSecurityManagerPtr mgr)
 {
     return mgr->requireConfined;
 }
 
-int virSecurityManagerRestoreDiskLabel(virSecurityManagerPtr mgr,
-                                       virDomainDefPtr vm,
-                                       virDomainDiskDefPtr disk)
+
+int
+virSecurityManagerRestoreDiskLabel(virSecurityManagerPtr mgr,
+                                   virDomainDefPtr vm,
+                                   virDomainDiskDefPtr disk)
 {
     if (mgr->drv->domainRestoreSecurityDiskLabel) {
         int ret;
@@ -323,8 +348,10 @@ int virSecurityManagerRestoreDiskLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerSetDaemonSocketLabel(virSecurityManagerPtr mgr,
-                                           virDomainDefPtr vm)
+
+int
+virSecurityManagerSetDaemonSocketLabel(virSecurityManagerPtr mgr,
+                                       virDomainDefPtr vm)
 {
     if (mgr->drv->domainSetSecurityDaemonSocketLabel) {
         int ret;
@@ -338,8 +365,10 @@ int virSecurityManagerSetDaemonSocketLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerSetSocketLabel(virSecurityManagerPtr mgr,
-                                     virDomainDefPtr vm)
+
+int
+virSecurityManagerSetSocketLabel(virSecurityManagerPtr mgr,
+                                 virDomainDefPtr vm)
 {
     if (mgr->drv->domainSetSecuritySocketLabel) {
         int ret;
@@ -353,8 +382,10 @@ int virSecurityManagerSetSocketLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerClearSocketLabel(virSecurityManagerPtr mgr,
-                                       virDomainDefPtr vm)
+
+int
+virSecurityManagerClearSocketLabel(virSecurityManagerPtr mgr,
+                                   virDomainDefPtr vm)
 {
     if (mgr->drv->domainClearSecuritySocketLabel) {
         int ret;
@@ -368,9 +399,11 @@ int virSecurityManagerClearSocketLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerSetDiskLabel(virSecurityManagerPtr mgr,
-                                   virDomainDefPtr vm,
-                                   virDomainDiskDefPtr disk)
+
+int
+virSecurityManagerSetDiskLabel(virSecurityManagerPtr mgr,
+                               virDomainDefPtr vm,
+                               virDomainDiskDefPtr disk)
 {
     if (mgr->drv->domainSetSecurityDiskLabel) {
         int ret;
@@ -384,10 +417,12 @@ int virSecurityManagerSetDiskLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerRestoreHostdevLabel(virSecurityManagerPtr mgr,
-                                          virDomainDefPtr vm,
-                                          virDomainHostdevDefPtr dev,
-                                          const char *vroot)
+
+int
+virSecurityManagerRestoreHostdevLabel(virSecurityManagerPtr mgr,
+                                      virDomainDefPtr vm,
+                                      virDomainHostdevDefPtr dev,
+                                      const char *vroot)
 {
     if (mgr->drv->domainRestoreSecurityHostdevLabel) {
         int ret;
@@ -401,10 +436,12 @@ int virSecurityManagerRestoreHostdevLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerSetHostdevLabel(virSecurityManagerPtr mgr,
-                                      virDomainDefPtr vm,
-                                      virDomainHostdevDefPtr dev,
-                                      const char *vroot)
+
+int
+virSecurityManagerSetHostdevLabel(virSecurityManagerPtr mgr,
+                                  virDomainDefPtr vm,
+                                  virDomainHostdevDefPtr dev,
+                                  const char *vroot)
 {
     if (mgr->drv->domainSetSecurityHostdevLabel) {
         int ret;
@@ -418,9 +455,11 @@ int virSecurityManagerSetHostdevLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerSetSavedStateLabel(virSecurityManagerPtr mgr,
-                                         virDomainDefPtr vm,
-                                         const char *savefile)
+
+int
+virSecurityManagerSetSavedStateLabel(virSecurityManagerPtr mgr,
+                                     virDomainDefPtr vm,
+                                     const char *savefile)
 {
     if (mgr->drv->domainSetSavedStateLabel) {
         int ret;
@@ -434,9 +473,10 @@ int virSecurityManagerSetSavedStateLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerRestoreSavedStateLabel(virSecurityManagerPtr mgr,
-                                             virDomainDefPtr vm,
-                                             const char *savefile)
+int
+virSecurityManagerRestoreSavedStateLabel(virSecurityManagerPtr mgr,
+                                         virDomainDefPtr vm,
+                                         const char *savefile)
 {
     if (mgr->drv->domainRestoreSavedStateLabel) {
         int ret;
@@ -450,8 +490,10 @@ int virSecurityManagerRestoreSavedStateLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
-                               virDomainDefPtr vm)
+
+int
+virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
+                           virDomainDefPtr vm)
 {
     int ret = -1;
     size_t i, j;
@@ -545,9 +587,11 @@ int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
     return ret;
 }
 
-int virSecurityManagerReserveLabel(virSecurityManagerPtr mgr,
-                                   virDomainDefPtr vm,
-                                   pid_t pid)
+
+int
+virSecurityManagerReserveLabel(virSecurityManagerPtr mgr,
+                               virDomainDefPtr vm,
+                               pid_t pid)
 {
     if (mgr->drv->domainReserveSecurityLabel) {
         int ret;
@@ -561,8 +605,10 @@ int virSecurityManagerReserveLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerReleaseLabel(virSecurityManagerPtr mgr,
-                                   virDomainDefPtr vm)
+
+int
+virSecurityManagerReleaseLabel(virSecurityManagerPtr mgr,
+                               virDomainDefPtr vm)
 {
     if (mgr->drv->domainReleaseSecurityLabel) {
         int ret;
@@ -576,9 +622,11 @@ int virSecurityManagerReleaseLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
-                                  virDomainDefPtr vm,
-                                  const char *stdin_path)
+
+int
+virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
+                              virDomainDefPtr vm,
+                              const char *stdin_path)
 {
     if (mgr->drv->domainSetSecurityAllLabel) {
         int ret;
@@ -592,9 +640,11 @@ int virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerRestoreAllLabel(virSecurityManagerPtr mgr,
-                                      virDomainDefPtr vm,
-                                      bool migrated)
+
+int
+virSecurityManagerRestoreAllLabel(virSecurityManagerPtr mgr,
+                                  virDomainDefPtr vm,
+                                  bool migrated)
 {
     if (mgr->drv->domainRestoreSecurityAllLabel) {
         int ret;
@@ -608,10 +658,11 @@ int virSecurityManagerRestoreAllLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerGetProcessLabel(virSecurityManagerPtr mgr,
-                                      virDomainDefPtr vm,
-                                      pid_t pid,
-                                      virSecurityLabelPtr sec)
+int
+virSecurityManagerGetProcessLabel(virSecurityManagerPtr mgr,
+                                  virDomainDefPtr vm,
+                                  pid_t pid,
+                                  virSecurityLabelPtr sec)
 {
     if (mgr->drv->domainGetSecurityProcessLabel) {
         int ret;
@@ -625,8 +676,10 @@ int virSecurityManagerGetProcessLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerSetProcessLabel(virSecurityManagerPtr mgr,
-                                      virDomainDefPtr vm)
+
+int
+virSecurityManagerSetProcessLabel(virSecurityManagerPtr mgr,
+                                  virDomainDefPtr vm)
 {
     if (mgr->drv->domainSetSecurityProcessLabel) {
         int ret;
@@ -640,9 +693,11 @@ int virSecurityManagerSetProcessLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerSetChildProcessLabel(virSecurityManagerPtr mgr,
-                                           virDomainDefPtr vm,
-                                           virCommandPtr cmd)
+
+int
+virSecurityManagerSetChildProcessLabel(virSecurityManagerPtr mgr,
+                                       virDomainDefPtr vm,
+                                       virCommandPtr cmd)
 {
     if (mgr->drv->domainSetSecurityChildProcessLabel)
        return mgr->drv->domainSetSecurityChildProcessLabel(mgr, vm, cmd);
@@ -651,8 +706,10 @@ int virSecurityManagerSetChildProcessLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerVerify(virSecurityManagerPtr mgr,
-                             virDomainDefPtr def)
+
+int
+virSecurityManagerVerify(virSecurityManagerPtr mgr,
+                         virDomainDefPtr def)
 {
     virSecurityLabelDefPtr secdef;
 
@@ -679,9 +736,11 @@ int virSecurityManagerVerify(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerSetImageFDLabel(virSecurityManagerPtr mgr,
-                                      virDomainDefPtr vm,
-                                      int fd)
+
+int
+virSecurityManagerSetImageFDLabel(virSecurityManagerPtr mgr,
+                                  virDomainDefPtr vm,
+                                  int fd)
 {
     if (mgr->drv->domainSetSecurityImageFDLabel) {
         int ret;
@@ -695,9 +754,11 @@ int virSecurityManagerSetImageFDLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-int virSecurityManagerSetTapFDLabel(virSecurityManagerPtr mgr,
-                                    virDomainDefPtr vm,
-                                    int fd)
+
+int
+virSecurityManagerSetTapFDLabel(virSecurityManagerPtr mgr,
+                                virDomainDefPtr vm,
+                                int fd)
 {
     if (mgr->drv->domainSetSecurityTapFDLabel) {
         int ret;
@@ -711,8 +772,10 @@ int virSecurityManagerSetTapFDLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
-char *virSecurityManagerGetMountOptions(virSecurityManagerPtr mgr,
-                                        virDomainDefPtr vm)
+
+char *
+virSecurityManagerGetMountOptions(virSecurityManagerPtr mgr,
+                                  virDomainDefPtr vm)
 {
     if (mgr->drv->domainGetSecurityMountOptions) {
         char *ret;
@@ -725,6 +788,7 @@ char *virSecurityManagerGetMountOptions(virSecurityManagerPtr mgr,
     virReportUnsupportedError();
     return NULL;
 }
+
 
 virSecurityManagerPtr*
 virSecurityManagerGetNested(virSecurityManagerPtr mgr)
@@ -743,9 +807,11 @@ virSecurityManagerGetNested(virSecurityManagerPtr mgr)
     return list;
 }
 
-int virSecurityManagerSetHugepages(virSecurityManagerPtr mgr,
-                                    virDomainDefPtr vm,
-                                    const char *path)
+
+int
+virSecurityManagerSetHugepages(virSecurityManagerPtr mgr,
+                               virDomainDefPtr vm,
+                               const char *path)
 {
     if (mgr->drv->domainSetSecurityHugepages) {
         int ret;
