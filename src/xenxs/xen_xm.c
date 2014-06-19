@@ -350,7 +350,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             goto cleanup;
         if (xenXMConfigCopyStringOpt(conf, "ramdisk", &def->os.initrd) < 0)
             goto cleanup;
-        if (xenXMConfigGetString(conf, "extra", &extra, "") < 0)
+        if (xenXMConfigGetString(conf, "extra", &extra, NULL) < 0)
             goto cleanup;
         if (xenXMConfigGetString(conf, "root", &root, NULL) < 0)
             goto cleanup;
