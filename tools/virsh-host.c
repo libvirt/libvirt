@@ -1,7 +1,7 @@
 /*
  * virsh-host.c: Commands in "Host and Hypervisor" group.
  *
- * Copyright (C) 2005, 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -214,7 +214,7 @@ static const vshCmdOptDef opts_freepages[] = {
     },
     {.name = "pagesize",
      .type = VSH_OT_INT,
-     .help = N_("page size (in kibibites)")
+     .help = N_("page size (in kibibytes)")
     },
     {.name = "all",
      .type = VSH_OT_BOOL,
@@ -229,6 +229,7 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     unsigned int npages;
     unsigned int *pagesize = NULL;
+    unsigned long long tmp;
     int cell;
     unsigned long long *counts = NULL;
     size_t i, j;
@@ -261,7 +262,7 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         }
 
-        pagesize = vshMalloc(ctl, nodes_cnt * sizeof(*pagesize));
+        pagesize = vshCalloc(ctl, nodes_cnt, sizeof(*pagesize));
 
         for (i = 0; i < nodes_cnt; i++) {
             char *val = virXMLPropString(nodes[i], "size");
@@ -278,7 +279,7 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
         npages = nodes_cnt;
         VIR_FREE(nodes);
 
-        counts = vshMalloc(ctl, npages * sizeof(*counts));
+        counts = vshCalloc(ctl, npages, sizeof(*counts));
 
         nodes_cnt = virXPathNodeSet("/capabilities/host/topology/cells/cell",
                                     ctxt, &nodes);
@@ -319,15 +320,13 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         }
 
-        pagesize = vshMalloc(ctl, sizeof(*pagesize));
-        if (vshCommandOptScaledInt(cmd, "pagesize", (unsigned long long *) pagesize,
-                                   1, UINT_MAX) < 0) {
+        if (vshCommandOptScaledInt(cmd, "pagesize", &tmp, 1, UINT_MAX) < 0) {
             vshError(ctl, "%s", _("page size has to be a number"));
             goto cleanup;
         }
-
         /* page size is expected in kibibytes */
-        pagesize[0] /= 1024;
+        pagesize = vshMalloc(ctl, sizeof(*pagesize));
+        *pagesize = tmp / 1024;
 
         if (!pagesize[0]) {
             vshError(ctl, "%s", _("page size must be at least 1KiB"));
