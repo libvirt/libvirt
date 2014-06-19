@@ -331,6 +331,17 @@ virSecurityManagerGetRequireConfined(virSecurityManagerPtr mgr)
 }
 
 
+/**
+ * virSecurityManagerRestoreDiskLabel:
+ * @mgr: security manager object
+ * @vm: domain definition object
+ * @disk: disk definition to operate on
+ *
+ * Removes security label from the source image of the disk. Note that this
+ * function doesn't restore labels on backing chain elements of @disk.
+ *
+ * Returns: 0 on success, -1 on error.
+ */
 int
 virSecurityManagerRestoreDiskLabel(virSecurityManagerPtr mgr,
                                    virDomainDefPtr vm,
@@ -400,6 +411,17 @@ virSecurityManagerClearSocketLabel(virSecurityManagerPtr mgr,
 }
 
 
+/**
+ * virSecurityManagerSetDiskLabel:
+ * @mgr: security manager object
+ * @vm: domain definition object
+ * @disk: disk definition to operate on
+ *
+ * Labels the disk image and all images in the backing chain with the configured
+ * security label.
+ *
+ * Returns: 0 on success, -1 on error.
+ */
 int
 virSecurityManagerSetDiskLabel(virSecurityManagerPtr mgr,
                                virDomainDefPtr vm,
