@@ -48,7 +48,17 @@ struct _virSecurityManager {
 
 static virClassPtr virSecurityManagerClass;
 
-static void virSecurityManagerDispose(void *obj);
+
+static
+void virSecurityManagerDispose(void *obj)
+{
+    virSecurityManagerPtr mgr = obj;
+
+    if (mgr->drv->close)
+        mgr->drv->close(mgr);
+    VIR_FREE(mgr->privateData);
+}
+
 
 static int virSecurityManagerOnceInit(void)
 {
@@ -230,15 +240,6 @@ void *virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr)
     return mgr->privateData;
 }
 
-
-static void virSecurityManagerDispose(void *obj)
-{
-    virSecurityManagerPtr mgr = obj;
-
-    if (mgr->drv->close)
-        mgr->drv->close(mgr);
-    VIR_FREE(mgr->privateData);
-}
 
 const char *
 virSecurityManagerGetDriver(virSecurityManagerPtr mgr)
