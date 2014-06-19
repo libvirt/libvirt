@@ -6,8 +6,8 @@
   </protocol>
   <bridge stp='off' delay='0.01'>
     <interface type='ethernet' name='eth0'>
-      <mac address='ab:bb:cc:dd:ee:ff'/>
       <link speed='10'/>
+      <mac address='ab:bb:cc:dd:ee:ff'/>
     </interface>
     <interface type='ethernet' name='eth1'>
     </interface>

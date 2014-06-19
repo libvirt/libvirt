@@ -3,8 +3,8 @@
   <mtu size='1500'/>
   <bridge stp='off'>
     <interface type='ethernet' name='eth0'>
-      <mac address='ab:bb:cc:dd:ee:ff'/>
       <link speed='1000' state='up'/>
+      <mac address='ab:bb:cc:dd:ee:ff'/>
     </interface>
     <interface type='ethernet' name='eth1'>
     </interface>

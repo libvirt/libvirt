@@ -41,7 +41,8 @@ VIR_ENUM_IMPL(virInterface,
 static virInterfaceDefPtr
 virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType);
 static int
-virInterfaceDefDevFormat(virBufferPtr buf, const virInterfaceDef *def);
+virInterfaceDefDevFormat(virBufferPtr buf, const virInterfaceDef *def,
+                         virInterfaceType parentIfType);
 
 static
 void virInterfaceIpDefFree(virInterfaceIpDefPtr def)
@@ -870,7 +871,8 @@ virInterfaceBridgeDefFormat(virBufferPtr buf, const virInterfaceDef *def)
     virBufferAdjustIndent(buf, 2);
 
     for (i = 0; i < def->data.bridge.nbItf; i++) {
-        if (virInterfaceDefDevFormat(buf, def->data.bridge.itf[i]) < 0)
+        if (virInterfaceDefDevFormat(buf, def->data.bridge.itf[i],
+                                     VIR_INTERFACE_TYPE_BRIDGE) < 0)
             ret = -1;
     }
 
@@ -932,7 +934,8 @@ virInterfaceBondDefFormat(virBufferPtr buf, const virInterfaceDef *def)
         virBufferAddLit(buf, "/>\n");
     }
     for (i = 0; i < def->data.bond.nbItf; i++) {
-        if (virInterfaceDefDevFormat(buf, def->data.bond.itf[i]) < 0)
+        if (virInterfaceDefDevFormat(buf, def->data.bond.itf[i],
+                                     VIR_INTERFACE_TYPE_BOND) < 0)
             ret = -1;
     }
 
@@ -1035,7 +1038,8 @@ virInterfaceStartmodeDefFormat(virBufferPtr buf,
 }
 
 static int
-virInterfaceDefDevFormat(virBufferPtr buf, const virInterfaceDef *def)
+virInterfaceDefDevFormat(virBufferPtr buf, const virInterfaceDef *def,
+                         virInterfaceType parentIfType)
 {
     const char *type = NULL;
 
@@ -1063,39 +1067,33 @@ virInterfaceDefDevFormat(virBufferPtr buf, const virInterfaceDef *def)
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
 
+    if (parentIfType == VIR_INTERFACE_TYPE_LAST) {
+        /* these elements are only valid on top-level interfaces - IP
+         * address info ("protocol") only makes sense for the
+         * top-level, and subordinate interfaces inherit the toplevel
+         * setting for mtu and start mode, which cannot be overridden.
+         */
+        virInterfaceStartmodeDefFormat(buf, def->startmode);
+        if (def->mtu)
+            virBufferAsprintf(buf, "<mtu size='%d'/>\n", def->mtu);
+        virInterfaceProtocolDefFormat(buf, def);
+    }
+
+    if (def->type != VIR_INTERFACE_TYPE_BRIDGE) {
+        virInterfaceLinkFormat(buf, &def->lnk);
+    }
     switch (def->type) {
         case VIR_INTERFACE_TYPE_ETHERNET:
-            virInterfaceStartmodeDefFormat(buf, def->startmode);
-            if (def->mac != NULL)
+            if (def->mac)
                 virBufferAsprintf(buf, "<mac address='%s'/>\n", def->mac);
-            virInterfaceLinkFormat(buf, &def->lnk);
-            if (def->mtu != 0)
-                virBufferAsprintf(buf, "<mtu size='%d'/>\n", def->mtu);
-            virInterfaceProtocolDefFormat(buf, def);
             break;
         case VIR_INTERFACE_TYPE_BRIDGE:
-            virInterfaceStartmodeDefFormat(buf, def->startmode);
-            if (def->mtu != 0)
-                virBufferAsprintf(buf, "<mtu size='%d'/>\n", def->mtu);
-            virInterfaceProtocolDefFormat(buf, def);
             virInterfaceBridgeDefFormat(buf, def);
             break;
         case VIR_INTERFACE_TYPE_BOND:
-            virInterfaceStartmodeDefFormat(buf, def->startmode);
-            virInterfaceLinkFormat(buf, &def->lnk);
-            if (def->mtu != 0)
-                virBufferAsprintf(buf, "<mtu size='%d'/>\n", def->mtu);
-            virInterfaceProtocolDefFormat(buf, def);
             virInterfaceBondDefFormat(buf, def);
             break;
         case VIR_INTERFACE_TYPE_VLAN:
-            virInterfaceStartmodeDefFormat(buf, def->startmode);
-            if (def->mac != NULL)
-                virBufferAsprintf(buf, "<mac address='%s'/>\n", def->mac);
-            virInterfaceLinkFormat(buf, &def->lnk);
-            if (def->mtu != 0)
-                virBufferAsprintf(buf, "<mtu size='%d'/>\n", def->mtu);
-            virInterfaceProtocolDefFormat(buf, def);
             virInterfaceVlanDefFormat(buf, def);
             break;
     }
@@ -1116,7 +1114,7 @@ char *virInterfaceDefFormat(const virInterfaceDef *def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (virInterfaceDefDevFormat(&buf, def) < 0) {
+    if (virInterfaceDefDevFormat(&buf, def, VIR_INTERFACE_TYPE_LAST) < 0) {
         virBufferFreeAndReset(&buf);
         return NULL;
     }

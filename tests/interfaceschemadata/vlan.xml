@@ -1,9 +1,9 @@
 <interface type='vlan' name='eth0.42'>
   <start mode='onboot'/>
-  <link state='lowerlayerdown'/>
   <protocol family='ipv4'>
     <dhcp peerdns='no'/>
   </protocol>
+  <link state='lowerlayerdown'/>
   <vlan tag='42'>
     <interface name='eth0'/>
   </vlan>

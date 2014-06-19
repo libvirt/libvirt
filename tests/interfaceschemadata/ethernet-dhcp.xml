@@ -1,9 +1,9 @@
 <interface type='ethernet' name='eth0'>
   <start mode='none'/>
-  <mac address='aa:bb:cc:dd:ee:ff'/>
-  <link state='down'/>
   <mtu size='1492'/>
   <protocol family='ipv4'>
     <dhcp peerdns='no'/>
   </protocol>
+  <link state='down'/>
+  <mac address='aa:bb:cc:dd:ee:ff'/>
 </interface>
