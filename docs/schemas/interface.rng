@@ -29,35 +29,41 @@
        Ethernet adapter
   -->
   <define name="basic-ethernet-content">
-    <attribute name="type">
-      <value>ethernet</value>
-    </attribute>
-    <ref name="name-attr"/>
-    <!-- If no MAC is given when the interface is defined, it is determined
-         by using the device name.
-         FIXME: What if device name and MAC don't specify the same NIC ? -->
-    <optional>
-      <element name="mac">
-        <attribute name="address"><ref name="macAddr"/></attribute>
-      </element>
-    </optional>
-    <ref name="link-speed-state"/>
-    <!-- FIXME: Allow (some) ethtool options -->
+    <interleave>
+      <attribute name="type">
+        <value>ethernet</value>
+      </attribute>
+      <ref name="name-attr"/>
+      <!-- If no MAC is given when the interface is defined, it is determined
+           by using the device name.
+           FIXME: What if device name and MAC don't specify the same NIC ? -->
+      <optional>
+        <element name="mac">
+          <attribute name="address"><ref name="macAddr"/></attribute>
+        </element>
+      </optional>
+      <ref name="link-speed-state"/>
+      <!-- FIXME: Allow (some) ethtool options -->
+    </interleave>
   </define>
 
   <!-- Ethernet adapter without IP addressing, e.g. for a bridge -->
   <define name="bare-ethernet-interface">
     <element name="interface">
-      <ref name="basic-ethernet-content"/>
+      <interleave>
+        <ref name="basic-ethernet-content"/>
+      </interleave>
     </element>
   </define>
 
   <define name="ethernet-interface">
     <element name="interface">
-      <ref name="startmode"/>
-      <ref name="basic-ethernet-content"/>
-      <ref name="mtu"/>
-      <ref name="interface-addressing"/>
+      <interleave>
+        <ref name="startmode"/>
+        <ref name="basic-ethernet-content"/>
+        <ref name="mtu"/>
+        <ref name="interface-addressing"/>
+      </interleave>
     </element>
   </define>
 
@@ -85,18 +91,22 @@
 
   <define name="bare-vlan-interface">
     <element name="interface">
-      <ref name="vlan-interface-common"/>
-      <ref name="vlan-device"/>
+      <interleave>
+        <ref name="vlan-interface-common"/>
+        <ref name="vlan-device"/>
+      </interleave>
     </element>
   </define>
 
   <define name="vlan-interface">
     <element name="interface">
-      <ref name="vlan-interface-common"/>
-      <ref name="startmode"/>
-      <ref name="mtu"/>
-      <ref name="interface-addressing"/>
-      <ref name="vlan-device"/>
+      <interleave>
+        <ref name="vlan-interface-common"/>
+        <ref name="startmode"/>
+        <ref name="mtu"/>
+        <ref name="interface-addressing"/>
+        <ref name="vlan-device"/>
+      </interleave>
     </element>
   </define>
 
@@ -105,31 +115,33 @@
   -->
   <define name="bridge-interface">
     <element name="interface">
-      <attribute name="type">
-        <value>bridge</value>
-      </attribute>
-      <ref name="name-attr"/>
-      <ref name="startmode"/>
-      <ref name="mtu"/>
-      <ref name="interface-addressing"/>
-      <element name="bridge">
-        <optional>
-          <attribute name="stp">
-            <ref name="on-or-off"/>
-          </attribute>
-        </optional>
-        <!-- Bridge forward delay (see 'brctl setfd') -->
-        <optional v:since="2">
-          <attribute name="delay"><ref name="timeval"/></attribute>
-        </optional>
-        <zeroOrMore>
-          <choice>
-            <ref name="bare-ethernet-interface"/>
-            <ref name="bare-vlan-interface"/>
-            <ref v:since="2" name="bare-bond-interface"/>
-          </choice>
-        </zeroOrMore>
-      </element>
+      <interleave>
+        <attribute name="type">
+          <value>bridge</value>
+        </attribute>
+        <ref name="name-attr"/>
+        <ref name="startmode"/>
+        <ref name="mtu"/>
+        <ref name="interface-addressing"/>
+        <element name="bridge">
+          <optional>
+            <attribute name="stp">
+              <ref name="on-or-off"/>
+            </attribute>
+          </optional>
+          <!-- Bridge forward delay (see 'brctl setfd') -->
+          <optional v:since="2">
+            <attribute name="delay"><ref name="timeval"/></attribute>
+          </optional>
+          <zeroOrMore>
+            <choice>
+              <ref name="bare-ethernet-interface"/>
+              <ref name="bare-vlan-interface"/>
+              <ref v:since="2" name="bare-bond-interface"/>
+            </choice>
+          </zeroOrMore>
+        </element>
+      </interleave>
     </element>
   </define>
   <!-- Jim Fehlig would like support for other bridge attributes, in
@@ -180,67 +192,73 @@
              xmit_hash_policy       (since 2.6.3/3.2.2)
       -->
 
-      <optional>
-        <choice>
-          <element name="miimon">
-            <!-- miimon frequency in ms -->
-            <attribute name="freq"><ref name="unsignedInt"/></attribute>
-            <optional>
-              <attribute name="downdelay"><ref name="unsignedInt"/></attribute>
-            </optional>
-            <optional>
-              <attribute name="updelay"><ref name="unsignedInt"/></attribute>
-            </optional>
-            <optional>
-              <!-- use_carrier -->
-              <attribute name="carrier">
-                <choice>
-                  <!-- use MII/ETHTOOL ioctl -->
-                  <value>ioctl</value>
-                  <!-- use netif_carrier_ok() -->
-                  <value>netif</value>
-                </choice>
-              </attribute>
-            </optional>
-          </element>
-          <element name="arpmon">
-            <attribute name="interval"><ref name="unsignedInt"/></attribute>
-            <attribute name="target"><ref name="ipv4Addr"/></attribute>
-            <optional>
-              <attribute name="validate">
-                <choice>
-                  <value>none</value>
-                  <value>active</value>
-                  <value>backup</value>
-                  <value>all</value>
-                </choice>
-              </attribute>
-            </optional>
-          </element>
-        </choice>
-      </optional>
+      <interleave>
+        <optional>
+          <choice>
+            <element name="miimon">
+              <!-- miimon frequency in ms -->
+              <attribute name="freq"><ref name="unsignedInt"/></attribute>
+              <optional>
+                <attribute name="downdelay"><ref name="unsignedInt"/></attribute>
+              </optional>
+              <optional>
+                <attribute name="updelay"><ref name="unsignedInt"/></attribute>
+              </optional>
+              <optional>
+                <!-- use_carrier -->
+                <attribute name="carrier">
+                  <choice>
+                    <!-- use MII/ETHTOOL ioctl -->
+                    <value>ioctl</value>
+                    <!-- use netif_carrier_ok() -->
+                    <value>netif</value>
+                  </choice>
+                </attribute>
+              </optional>
+            </element>
+            <element name="arpmon">
+              <attribute name="interval"><ref name="unsignedInt"/></attribute>
+              <attribute name="target"><ref name="ipv4Addr"/></attribute>
+              <optional>
+                <attribute name="validate">
+                  <choice>
+                    <value>none</value>
+                    <value>active</value>
+                    <value>backup</value>
+                    <value>all</value>
+                  </choice>
+                </attribute>
+              </optional>
+            </element>
+          </choice>
+        </optional>
 
-      <oneOrMore>
-        <!-- The slave interfaces -->
-        <ref name="bare-ethernet-interface"/>
-      </oneOrMore>
+        <oneOrMore>
+          <!-- The slave interfaces -->
+          <ref name="bare-ethernet-interface"/>
+        </oneOrMore>
+      </interleave>
     </element>
   </define>
 
   <define name="bare-bond-interface">
     <element name="interface">
-      <ref name="bond-interface-common"/>
-      <ref name="bond-element"/>
+      <interleave>
+        <ref name="bond-interface-common"/>
+        <ref name="bond-element"/>
+      </interleave>
     </element>
   </define>
 
   <define name="bond-interface">
     <element name="interface">
-      <ref name="bond-interface-common"/>
-      <ref name="startmode"/>
-      <ref name="mtu"/>
-      <ref name="interface-addressing"/>
-      <ref name="bond-element"/>
+      <interleave>
+        <ref name="bond-interface-common"/>
+        <ref name="startmode"/>
+        <ref name="mtu"/>
+        <ref name="interface-addressing"/>
+        <ref name="bond-element"/>
+      </interleave>
     </element>
   </define>
 
@@ -302,22 +320,24 @@
       <attribute name="family">
         <value>ipv4</value>
       </attribute>
-      <choice>
-        <ref name="dhcp-element"/>
-        <group>
-          <element name="ip">
-            <attribute name="address"><ref name="ipv4Addr"/></attribute>
-            <optional>
-              <attribute name="prefix"><ref name="ipv4Prefix"/></attribute>
-            </optional>
-          </element>
-          <optional>
-            <element name="route">
-              <attribute name="gateway"><ref name="ipv4Addr"/></attribute>
+      <interleave>
+        <choice>
+          <ref name="dhcp-element"/>
+          <group>
+            <element name="ip">
+              <attribute name="address"><ref name="ipv4Addr"/></attribute>
+              <optional>
+                <attribute name="prefix"><ref name="ipv4Prefix"/></attribute>
+              </optional>
             </element>
-          </optional>
-        </group>
-      </choice>
+            <optional>
+              <element name="route">
+                <attribute name="gateway"><ref name="ipv4Addr"/></attribute>
+              </element>
+            </optional>
+          </group>
+        </choice>
+      </interleave>
     </element>
   </define>
 
@@ -326,25 +346,27 @@
       <attribute name="family">
         <value>ipv6</value>
       </attribute>
-      <optional>
-        <element name="autoconf"><empty/></element>
-      </optional>
-      <optional>
-        <ref name="dhcp-element"/>
-      </optional>
-      <zeroOrMore>
-        <element name="ip">
-          <attribute name="address"><ref name="ipv6Addr"/></attribute>
-          <optional>
-            <attribute name="prefix"><ref name="ipv6Prefix"/></attribute>
-          </optional>
-        </element>
-      </zeroOrMore>
-      <optional>
-        <element name="route">
-          <attribute name="gateway"><ref name="ipv6Addr"/></attribute>
-        </element>
-      </optional>
+      <interleave>
+        <optional>
+          <element name="autoconf"><empty/></element>
+        </optional>
+        <optional>
+          <ref name="dhcp-element"/>
+        </optional>
+        <zeroOrMore>
+          <element name="ip">
+            <attribute name="address"><ref name="ipv6Addr"/></attribute>
+            <optional>
+              <attribute name="prefix"><ref name="ipv6Prefix"/></attribute>
+            </optional>
+          </element>
+        </zeroOrMore>
+        <optional>
+          <element name="route">
+            <attribute name="gateway"><ref name="ipv6Addr"/></attribute>
+          </element>
+        </optional>
+      </interleave>
     </element>
   </define>
 
