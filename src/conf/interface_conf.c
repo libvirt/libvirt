@@ -724,6 +724,19 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType)
     }
     def->type = type;
 
+    if (virInterfaceDefParseName(def, ctxt) < 0)
+       goto error;
+
+    if (parentIfType == VIR_INTERFACE_TYPE_LAST) {
+        /* only recognize these in toplevel bond interfaces */
+        if (virInterfaceDefParseStartMode(def, ctxt) < 0)
+            goto error;
+        if (virInterfaceDefParseMtu(def, ctxt) < 0)
+            goto error;
+        if (virInterfaceDefParseIfAdressing(def, ctxt) < 0)
+            goto error;
+    }
+
     if (type != VIR_INTERFACE_TYPE_BRIDGE) {
         /* link status makes no sense for a bridge */
         lnk = virXPathNode("./link", ctxt);
@@ -732,38 +745,14 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType)
     }
 
     switch (type) {
-        case VIR_INTERFACE_TYPE_ETHERNET: {
-            if (virInterfaceDefParseName(def, ctxt) < 0)
-                goto error;
-            tmp = virXPathString("string(./mac/@address)", ctxt);
-            if (tmp != NULL)
+        case VIR_INTERFACE_TYPE_ETHERNET:
+            if ((tmp = virXPathString("string(./mac/@address)", ctxt)))
                 def->mac = tmp;
-
-            if (parentIfType == VIR_INTERFACE_TYPE_LAST) {
-                /* only recognize these in toplevel bond interfaces */
-                if (virInterfaceDefParseStartMode(def, ctxt) < 0)
-                    goto error;
-                if (virInterfaceDefParseMtu(def, ctxt) < 0)
-                    goto error;
-                if (virInterfaceDefParseIfAdressing(def, ctxt) < 0)
-                    goto error;
-            }
             break;
-        }
         case VIR_INTERFACE_TYPE_BRIDGE: {
             xmlNodePtr bridge;
 
-            if (virInterfaceDefParseName(def, ctxt) < 0)
-                goto error;
-            if (virInterfaceDefParseStartMode(def, ctxt) < 0)
-                goto error;
-            if (virInterfaceDefParseMtu(def, ctxt) < 0)
-                goto error;
-            if (virInterfaceDefParseIfAdressing(def, ctxt) < 0)
-                goto error;
-
-            bridge = virXPathNode("./bridge[1]", ctxt);
-            if (bridge == NULL) {
+            if (!(bridge = virXPathNode("./bridge[1]", ctxt))) {
                 virReportError(VIR_ERR_XML_ERROR,
                                "%s", _("bridge interface misses the bridge element"));
                 goto error;
@@ -776,20 +765,7 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType)
         case VIR_INTERFACE_TYPE_BOND: {
             xmlNodePtr bond;
 
-            if (virInterfaceDefParseName(def, ctxt) < 0)
-                goto error;
-            if (parentIfType == VIR_INTERFACE_TYPE_LAST) {
-                /* only recognize these in toplevel bond interfaces */
-                if (virInterfaceDefParseStartMode(def, ctxt) < 0)
-                    goto error;
-                if (virInterfaceDefParseMtu(def, ctxt) < 0)
-                    goto error;
-                if (virInterfaceDefParseIfAdressing(def, ctxt) < 0)
-                    goto error;
-            }
-
-            bond = virXPathNode("./bond[1]", ctxt);
-            if (bond == NULL) {
+            if (!(bond = virXPathNode("./bond[1]", ctxt))) {
                 virReportError(VIR_ERR_XML_ERROR,
                                "%s", _("bond interface misses the bond element"));
                 goto error;
@@ -802,15 +778,7 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType)
         case VIR_INTERFACE_TYPE_VLAN: {
             xmlNodePtr vlan;
 
-            tmp = virXPathString("string(./@name)", ctxt);
-            if (tmp != NULL)
-                def->name = tmp;
-            if (virInterfaceDefParseStartMode(def, ctxt) < 0)
-                goto error;
-            if (virInterfaceDefParseIfAdressing(def, ctxt) < 0)
-                goto error;
-            vlan = virXPathNode("./vlan[1]", ctxt);
-            if (vlan == NULL) {
+            if (!(vlan = virXPathNode("./vlan[1]", ctxt))) {
                 virReportError(VIR_ERR_XML_ERROR,
                                "%s", _("vlan interface misses the vlan element"));
                 goto error;
