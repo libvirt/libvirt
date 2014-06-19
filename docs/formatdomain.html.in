@@ -2932,8 +2932,8 @@
       <dt><code>hostdev</code></dt>
       <dd>The <code>hostdev</code> element is the main container for describing
         host devices. For block/character device passthrough <code>mode</code> is
-        always "capabilities" and <code>type</code> is "block" for a block
-        device, "char" for a character device and "net" for a host network
+        always "capabilities" and <code>type</code> is "storage" for a block
+        device, "misc" for a character device and "net" for a host network
         interface.
       </dd>
       <dt><code>source</code></dt>
