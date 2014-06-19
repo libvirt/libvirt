@@ -487,11 +487,27 @@ virInterfaceDefParseBridge(virInterfaceDefPtr def,
     xmlNodePtr *interfaces = NULL;
     xmlNodePtr bridge;
     virInterfaceDefPtr itf;
+    char *tmp = NULL;
     int nbItf;
     size_t i;
     int ret = 0;
 
     bridge = ctxt->node;
+    def->data.bridge.stp = -1;
+    if ((tmp = virXMLPropString(bridge, "stp"))) {
+        if (STREQ(tmp, "on")) {
+            def->data.bridge.stp = 1;
+        } else if (STREQ(tmp, "off")) {
+            def->data.bridge.stp = 0;
+        } else {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("bridge interface stp should be on or off got %s"),
+                           tmp);
+            goto error;
+        }
+    }
+    def->data.bridge.delay = virXMLPropString(bridge, "delay");
+
     nbItf = virXPathNodeSet("./interface", ctxt, &interfaces);
     if (nbItf < 0) {
         ret = -1;
@@ -517,6 +533,7 @@ virInterfaceDefParseBridge(virInterfaceDefPtr def,
     }
 
  error:
+    VIR_FREE(tmp);
     VIR_FREE(interfaces);
     ctxt->node = bridge;
     return ret;
@@ -751,23 +768,6 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType)
                                "%s", _("bridge interface misses the bridge element"));
                 goto error;
             }
-            tmp = virXMLPropString(bridge, "stp");
-            def->data.bridge.stp = -1;
-            if (tmp != NULL) {
-                if (STREQ(tmp, "on")) {
-                    def->data.bridge.stp = 1;
-                } else if (STREQ(tmp, "off")) {
-                    def->data.bridge.stp = 0;
-                } else {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("bridge interface stp should be on or off got %s"),
-                                   tmp);
-                    VIR_FREE(tmp);
-                    goto error;
-                }
-                VIR_FREE(tmp);
-            }
-            def->data.bridge.delay = virXMLPropString(bridge, "delay");
             ctxt->node = bridge;
             if (virInterfaceDefParseBridge(def, ctxt) < 0)
                 goto error;
