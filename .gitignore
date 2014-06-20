@@ -98,6 +98,7 @@
 /run
 /sc_*
 /src/.*.stamp
+/src/*.pc
 /src/access/org.libvirt.api.policy
 /src/access/viraccessapicheck.c
 /src/access/viraccessapicheck.h

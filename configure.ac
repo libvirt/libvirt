@@ -2730,6 +2730,9 @@ AC_CONFIG_FILES([\
         libvirt.pc \
         libvirt-qemu.pc \
         libvirt-lxc.pc \
+        src/libvirt.pc \
+        src/libvirt-qemu.pc \
+        src/libvirt-lxc.pc \
         libvirt.spec mingw-libvirt.spec \
         po/Makefile.in \
         include/libvirt/Makefile include/libvirt/libvirt.h \

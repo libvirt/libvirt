@@ -1,0 +1,18 @@
+# Dummy pkg-config file to allow lang bindings
+# to build against a libvirt source tree eg
+# export PKG_CONFIG_PATH=/path/to/libvirt/git/src
+
+prefix=@abs_top_builddir@
+exec_prefix=@abs_top_builddir@
+libdir=@abs_top_builddir@/src
+includedir=@abs_top_builddir@/include
+datarootdir=@abs_top_builddir@
+
+libvirt_lxc_api=@datadir@/docs/libvirt-lxc-api.xml
+
+Name: libvirt
+Version: @VERSION@
+Description: libvirt LXC library
+Requires:
+Libs: -L${libdir} -lvirt-lxc
+Cflags: -I${includedir}
