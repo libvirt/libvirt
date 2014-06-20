@@ -1,0 +1,14 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+datarootdir=@datarootdir@
+
+libvirt_lxc_api=@datadir@/libvirt/api/libvirt-lxc-api.xml
+
+Name: libvirt-lxc
+Version: @VERSION@
+Description: libvirt LXC library
+Requires: libvirt
+Libs: -L${libdir} -lvirt-lxc
+Cflags: -I${includedir}

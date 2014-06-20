@@ -38,6 +38,8 @@ EXTRA_DIST = \
   libvirt.spec libvirt.spec.in \
   mingw-libvirt.spec.in \
   libvirt.pc.in \
+  libvirt-qemu.pc.in \
+  libvirt-lxc.pc.in \
   autobuild.sh \
   Makefile.nonreentrant \
   autogen.sh \
@@ -47,7 +49,7 @@ EXTRA_DIST = \
   $(XML_EXAMPLES)
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libvirt.pc
+pkgconfig_DATA = libvirt.pc libvirt-qemu.pc libvirt-lxc.pc
 
 NEWS: $(top_srcdir)/docs/news.xsl $(top_srcdir)/docs/news.html.in
 	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then			\

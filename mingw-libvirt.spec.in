@@ -195,6 +195,8 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 
 %{mingw32_libdir}/libvirt.dll.a
 %{mingw32_libdir}/pkgconfig/libvirt.pc
+%{mingw32_libdir}/pkgconfig/libvirt-qemu.pc
+%{mingw32_libdir}/pkgconfig/libvirt-lxc.pc
 %{mingw32_libdir}/libvirt-lxc.dll.a
 %{mingw32_libdir}/libvirt-qemu.dll.a
 

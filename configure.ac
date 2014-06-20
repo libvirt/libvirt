@@ -2727,7 +2727,10 @@ AC_CONFIG_FILES([\
         docs/schemas/Makefile \
         gnulib/lib/Makefile \
         gnulib/tests/Makefile \
-        libvirt.pc libvirt.spec mingw-libvirt.spec \
+        libvirt.pc \
+        libvirt-qemu.pc \
+        libvirt-lxc.pc \
+        libvirt.spec mingw-libvirt.spec \
         po/Makefile.in \
         include/libvirt/Makefile include/libvirt/libvirt.h \
         daemon/Makefile \

@@ -5,6 +5,9 @@ includedir=@includedir@
 datarootdir=@datarootdir@
 
 libvirt_api=@datadir@/libvirt/api/libvirt-api.xml
+
+# For compat with older versions - also present
+# in libvirt-qemu.pc / libvirt-lxc.pc
 libvirt_qemu_api=@datadir@/libvirt/api/libvirt-qemu-api.xml
 libvirt_lxc_api=@datadir@/libvirt/api/libvirt-lxc-api.xml
 
