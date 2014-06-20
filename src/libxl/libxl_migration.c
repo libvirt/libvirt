@@ -147,7 +147,7 @@ libxlDoMigrateSend(libxlDriverPrivatePtr driver,
                                xl_flags, NULL);
     if (ret != 0) {
         /* attempt to resume the domain on failure */
-        if (libxl_domain_resume(priv->ctx, vm->def->id, 0, 0) != 0) {
+        if (libxl_domain_resume(priv->ctx, vm->def->id, 1, 0) != 0) {
             VIR_DEBUG("Failed to resume domain following failed migration");
             virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
                                  VIR_DOMAIN_PAUSED_MIGRATION);
