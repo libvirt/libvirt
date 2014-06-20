@@ -1574,10 +1574,11 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriverPtr driver,
     if (qemuPrepareHostdevSCSIDevices(driver, vm->def->name,
                                       &hostdev, 1)) {
         virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+        virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to prepare scsi hostdev: %s:%d:%d:%d"),
-                       scsisrc->adapter, scsisrc->bus,
-                       scsisrc->target, scsisrc->unit);
+                       scsihostsrc->adapter, scsihostsrc->bus,
+                       scsihostsrc->target, scsihostsrc->unit);
         return -1;
     }
 
@@ -3393,12 +3394,14 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
                                usbsrc->vendor, usbsrc->product);
             }
             break;
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI: {
+            virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("host scsi device %s:%d:%d.%d not found"),
-                           scsisrc->adapter, scsisrc->bus,
-                           scsisrc->target, scsisrc->unit);
+                           scsihostsrc->adapter, scsihostsrc->bus,
+                           scsihostsrc->target, scsihostsrc->unit);
             break;
+        }
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected hostdev type %d"), subsys->type);

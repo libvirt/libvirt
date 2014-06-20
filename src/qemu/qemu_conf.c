@@ -928,11 +928,12 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
             goto cleanup;
     } else {
         virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+        virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
         if (!(dev_name = virSCSIDeviceGetDevName(NULL,
-                                                 scsisrc->adapter,
-                                                 scsisrc->bus,
-                                                 scsisrc->target,
-                                                 scsisrc->unit)))
+                                                 scsihostsrc->adapter,
+                                                 scsihostsrc->bus,
+                                                 scsihostsrc->target,
+                                                 scsihostsrc->unit)))
             goto cleanup;
 
         if (virAsprintf(&dev_path, "/dev/%s", dev_name) < 0)
@@ -1034,11 +1035,12 @@ qemuRemoveSharedDevice(virQEMUDriverPtr driver,
             goto cleanup;
     } else {
         virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+        virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
         if (!(dev_name = virSCSIDeviceGetDevName(NULL,
-                                                 scsisrc->adapter,
-                                                 scsisrc->bus,
-                                                 scsisrc->target,
-                                                 scsisrc->unit)))
+                                                 scsihostsrc->adapter,
+                                                 scsihostsrc->bus,
+                                                 scsihostsrc->target,
+                                                 scsihostsrc->unit)))
             goto cleanup;
 
         if (virAsprintf(&dev_path, "/dev/%s", dev_name) < 0)

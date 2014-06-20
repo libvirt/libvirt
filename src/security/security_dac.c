@@ -571,10 +571,11 @@ virSecurityDACSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI: {
+        virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
         virSCSIDevicePtr scsi =
             virSCSIDeviceNew(NULL,
-                             scsisrc->adapter, scsisrc->bus,
-                             scsisrc->target, scsisrc->unit,
+                             scsihostsrc->adapter, scsihostsrc->bus,
+                             scsihostsrc->target, scsihostsrc->unit,
                              dev->readonly, dev->shareable);
 
         if (!scsi)
@@ -688,10 +689,11 @@ virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI: {
+        virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
         virSCSIDevicePtr scsi =
             virSCSIDeviceNew(NULL,
-                             scsisrc->adapter, scsisrc->bus,
-                             scsisrc->target, scsisrc->unit,
+                             scsihostsrc->adapter, scsihostsrc->bus,
+                             scsihostsrc->target, scsihostsrc->unit,
                              dev->readonly, dev->shareable);
 
         if (!scsi)

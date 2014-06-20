@@ -1726,7 +1726,7 @@ void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
         break;
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
         if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
-            VIR_FREE(def->source.subsys.u.scsi.adapter);
+            VIR_FREE(def->source.subsys.u.scsi.u.host.adapter);
         break;
     }
 }
@@ -4011,16 +4011,16 @@ virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
 }
 
 static int
-virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr node,
-                                      virDomainHostdevDefPtr def)
+virDomainHostdevSubsysSCSIHostDefParseXML(xmlNodePtr sourcenode,
+                                          virDomainHostdevSubsysSCSIPtr scsisrc)
 {
     int ret = -1;
     bool got_address = false, got_adapter = false;
     xmlNodePtr cur;
     char *bus = NULL, *target = NULL, *unit = NULL;
-    virDomainHostdevSubsysSCSIPtr scsisrc = &def->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
 
-    cur = node->children;
+    cur = sourcenode->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
             if (xmlStrEqual(cur->name, BAD_CAST "address")) {
@@ -4040,19 +4040,20 @@ virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr node,
                     goto cleanup;
                 }
 
-                if (virStrToLong_ui(bus, NULL, 0, &scsisrc->bus) < 0) {
+                if (virStrToLong_ui(bus, NULL, 0, &scsihostsrc->bus) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("cannot parse bus '%s'"), bus);
                     goto cleanup;
                 }
 
-                if (virStrToLong_ui(target, NULL, 0, &scsisrc->target) < 0) {
+                if (virStrToLong_ui(target, NULL, 0,
+                                    &scsihostsrc->target) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("cannot parse target '%s'"), target);
                     goto cleanup;
                 }
 
-                if (virStrToLong_ui(unit, NULL, 0, &scsisrc->unit) < 0) {
+                if (virStrToLong_ui(unit, NULL, 0, &scsihostsrc->unit) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("cannot parse unit '%s'"), unit);
                     goto cleanup;
@@ -4066,7 +4067,7 @@ virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr node,
                                      "for scsi hostdev source"));
                     goto cleanup;
                 }
-                if (!(scsisrc->adapter = virXMLPropString(cur, "name"))) {
+                if (!(scsihostsrc->adapter = virXMLPropString(cur, "name"))) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("'adapter' must be specified for scsi hostdev source"));
                     goto cleanup;
@@ -4096,6 +4097,13 @@ virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr node,
     VIR_FREE(target);
     VIR_FREE(unit);
     return ret;
+}
+
+static int
+virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr sourcenode,
+                                      virDomainHostdevSubsysSCSIPtr scsisrc)
+{
+    return virDomainHostdevSubsysSCSIHostDefParseXML(sourcenode, scsisrc);
 }
 
 /* Check if a drive type address $controller:0:0:$unit is already
@@ -4336,7 +4344,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
         break;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-        if (virDomainHostdevSubsysSCSIDefParseXML(sourcenode, def) < 0)
+        if (virDomainHostdevSubsysSCSIDefParseXML(sourcenode, scsisrc) < 0)
             goto error;
         break;
 
@@ -10231,17 +10239,18 @@ virDomainHostdevMatchSubsysPCI(virDomainHostdevDefPtr first,
 }
 
 static int
-virDomainHostdevMatchSubsysSCSI(virDomainHostdevDefPtr first,
-                                virDomainHostdevDefPtr second)
+virDomainHostdevMatchSubsysSCSIHost(virDomainHostdevDefPtr first,
+                                    virDomainHostdevDefPtr second)
 {
-    virDomainHostdevSubsysSCSIPtr first_scsisrc = &first->source.subsys.u.scsi;
-    virDomainHostdevSubsysSCSIPtr second_scsisrc =
-        &second->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIHostPtr first_scsihostsrc =
+        &first->source.subsys.u.scsi.u.host;
+    virDomainHostdevSubsysSCSIHostPtr second_scsihostsrc =
+        &second->source.subsys.u.scsi.u.host;
 
-    if (STREQ(first_scsisrc->adapter, second_scsisrc->adapter) &&
-        first_scsisrc->bus == second_scsisrc->bus &&
-        first_scsisrc->target == second_scsisrc->target &&
-        first_scsisrc->unit == second_scsisrc->unit)
+    if (STREQ(first_scsihostsrc->adapter, second_scsihostsrc->adapter) &&
+        first_scsihostsrc->bus == second_scsihostsrc->bus &&
+        first_scsihostsrc->target == second_scsihostsrc->target &&
+        first_scsihostsrc->unit == second_scsihostsrc->unit)
         return 1;
     return 0;
 }
@@ -10259,7 +10268,7 @@ virDomainHostdevMatchSubsys(virDomainHostdevDefPtr a,
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         return virDomainHostdevMatchSubsysUSB(a, b);
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-        return virDomainHostdevMatchSubsysSCSI(a, b);
+        return virDomainHostdevMatchSubsysSCSIHost(a, b);
     }
     return 0;
 }
@@ -15526,6 +15535,7 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
     virDomainHostdevSubsysUSBPtr usbsrc = &def->source.subsys.u.usb;
     virDomainHostdevSubsysPCIPtr pcisrc = &def->source.subsys.u.pci;
     virDomainHostdevSubsysSCSIPtr scsisrc = &def->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
 
     if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
         pcisrc->backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
@@ -15594,10 +15604,11 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
         virBufferAsprintf(buf, "<adapter name='%s'/>\n",
-                          scsisrc->adapter);
+                          scsihostsrc->adapter);
         virBufferAsprintf(buf, "<address %sbus='%d' target='%d' unit='%d'/>\n",
                           includeTypeInAddr ? "type='scsi' " : "",
-                          scsisrc->bus, scsisrc->target, scsisrc->unit);
+                          scsihostsrc->bus, scsihostsrc->target,
+                          scsihostsrc->unit);
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
