@@ -1551,14 +1551,14 @@ virStorageSourceGetActualType(virStorageSourcePtr def)
 
 
 /**
- * virStorageSourceClearBackingStore:
+ * virStorageSourceBackingStoreClear:
  *
  * @src: disk source to clear
  *
  * Clears information about backing store of the current storage file.
  */
 void
-virStorageSourceClearBackingStore(virStorageSourcePtr def)
+virStorageSourceBackingStoreClear(virStorageSourcePtr def)
 {
     if (!def)
         return;
@@ -1599,7 +1599,7 @@ virStorageSourceClear(virStorageSourcePtr def)
     virStorageNetHostDefFree(def->nhosts, def->hosts);
     virStorageSourceAuthClear(def);
 
-    virStorageSourceClearBackingStore(def);
+    virStorageSourceBackingStoreClear(def);
 }
 
 

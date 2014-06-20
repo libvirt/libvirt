@@ -321,7 +321,7 @@ void virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def);
 void virStorageSourceClear(virStorageSourcePtr def);
 int virStorageSourceGetActualType(virStorageSourcePtr def);
 void virStorageSourceFree(virStorageSourcePtr def);
-void virStorageSourceClearBackingStore(virStorageSourcePtr def);
+void virStorageSourceBackingStoreClear(virStorageSourcePtr def);
 virStorageSourcePtr virStorageSourceNewFromBacking(virStorageSourcePtr parent);
 
 typedef int
