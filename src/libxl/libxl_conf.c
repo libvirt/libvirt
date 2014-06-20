@@ -796,7 +796,7 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
                 return -1;
             }
             x_disk->format = LIBXL_DISK_FORMAT_RAW;
-            x_disk->backend = LIBXL_DISK_BACKEND_TAP;
+            x_disk->backend = LIBXL_DISK_BACKEND_QDISK;
         } else if (STREQ(driver, "phy")) {
             if (format != VIR_STORAGE_FILE_NONE &&
                 format != VIR_STORAGE_FILE_RAW) {
