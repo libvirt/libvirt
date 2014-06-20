@@ -12,5 +12,5 @@ Name: libvirt
 Version: @VERSION@
 Description: libvirt library
 Requires:
-Libs: -L${libdir} -lvirt @LIBS@
+Libs: -L${libdir} -lvirt
 Cflags: -I${includedir}
