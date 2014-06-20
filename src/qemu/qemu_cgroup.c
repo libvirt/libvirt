@@ -49,10 +49,11 @@ static const char *const defaultDeviceACL[] = {
 #define DEVICE_PTY_MAJOR 136
 #define DEVICE_SND_MAJOR 116
 
-int
-qemuSetImageCgroup(virDomainObjPtr vm,
-                   virStorageSourcePtr src,
-                   bool deny)
+static int
+qemuSetImageCgroupInternal(virDomainObjPtr vm,
+                           virStorageSourcePtr src,
+                           bool deny,
+                           bool forceReadonly)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int perms = VIR_CGROUP_DEVICE_READ;
@@ -75,7 +76,7 @@ qemuSetImageCgroup(virDomainObjPtr vm,
 
         ret = virCgroupDenyDevicePath(priv->cgroup, src->path, perms);
     } else {
-        if (!src->readonly)
+        if (!src->readonly && !forceReadonly)
             perms |= VIR_CGROUP_DEVICE_WRITE;
 
         VIR_DEBUG("Allow path %s, perms: %s",
@@ -103,14 +104,27 @@ qemuSetImageCgroup(virDomainObjPtr vm,
 
 
 int
+qemuSetImageCgroup(virDomainObjPtr vm,
+                   virStorageSourcePtr src,
+                   bool deny)
+{
+    return qemuSetImageCgroupInternal(vm, src, deny, false);
+}
+
+
+int
 qemuSetupDiskCgroup(virDomainObjPtr vm,
                     virDomainDiskDefPtr disk)
 {
     virStorageSourcePtr next;
+    bool forceReadonly = false;
 
     for (next = disk->src; next; next = next->backingStore) {
-        if (qemuSetImageCgroup(vm, next, false) < 0)
+        if (qemuSetImageCgroupInternal(vm, next, false, forceReadonly) < 0)
             return -1;
+
+        /* setup only the top level image for read-write */
+        forceReadonly = true;
     }
 
     return 0;
