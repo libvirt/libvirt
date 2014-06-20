@@ -2624,6 +2624,44 @@ virCgroupDenyAllDevices(virCgroupPtr group)
 
 
 /**
+ * virCgroupGetDevicePermsString:
+ *
+ * @perms: Bitwise or of VIR_CGROUP_DEVICE permission bits
+ *
+ * Returns string corresponding to the appropriate bits set.
+ */
+const char *
+virCgroupGetDevicePermsString(int perms)
+{
+    if (perms & VIR_CGROUP_DEVICE_READ) {
+        if (perms & VIR_CGROUP_DEVICE_WRITE) {
+            if (perms & VIR_CGROUP_DEVICE_MKNOD)
+                return "rwm";
+            else
+                return "rw";
+        } else {
+            if (perms & VIR_CGROUP_DEVICE_MKNOD)
+                return "rm";
+            else
+                return "r";
+        }
+    } else {
+        if (perms & VIR_CGROUP_DEVICE_WRITE) {
+            if (perms & VIR_CGROUP_DEVICE_MKNOD)
+                return "wm";
+            else
+                return "w";
+        } else {
+            if (perms & VIR_CGROUP_DEVICE_MKNOD)
+                return "m";
+            else
+                return "";
+        }
+    }
+}
+
+
+/**
  * virCgroupAllowDevice:
  *
  * @group: The cgroup to allow a device for
@@ -2641,10 +2679,8 @@ virCgroupAllowDevice(virCgroupPtr group, char type, int major, int minor,
     int ret = -1;
     char *devstr = NULL;
 
-    if (virAsprintf(&devstr, "%c %i:%i %s%s%s", type, major, minor,
-                    perms & VIR_CGROUP_DEVICE_READ ? "r" : "",
-                    perms & VIR_CGROUP_DEVICE_WRITE ? "w" : "",
-                    perms & VIR_CGROUP_DEVICE_MKNOD ? "m" : "") < 0)
+    if (virAsprintf(&devstr, "%c %i:%i %s", type, major, minor,
+                    virCgroupGetDevicePermsString(perms)) < 0)
         goto cleanup;
 
     if (virCgroupSetValueStr(group,
@@ -2678,10 +2714,8 @@ virCgroupAllowDeviceMajor(virCgroupPtr group, char type, int major,
     int ret = -1;
     char *devstr = NULL;
 
-    if (virAsprintf(&devstr, "%c %i:* %s%s%s", type, major,
-                    perms & VIR_CGROUP_DEVICE_READ ? "r" : "",
-                    perms & VIR_CGROUP_DEVICE_WRITE ? "w" : "",
-                    perms & VIR_CGROUP_DEVICE_MKNOD ? "m" : "") < 0)
+    if (virAsprintf(&devstr, "%c %i:* %s", type, major,
+                    virCgroupGetDevicePermsString(perms)) < 0)
         goto cleanup;
 
     if (virCgroupSetValueStr(group,
@@ -2752,10 +2786,8 @@ virCgroupDenyDevice(virCgroupPtr group, char type, int major, int minor,
     int ret = -1;
     char *devstr = NULL;
 
-    if (virAsprintf(&devstr, "%c %i:%i %s%s%s", type, major, minor,
-                    perms & VIR_CGROUP_DEVICE_READ ? "r" : "",
-                    perms & VIR_CGROUP_DEVICE_WRITE ? "w" : "",
-                    perms & VIR_CGROUP_DEVICE_MKNOD ? "m" : "") < 0)
+    if (virAsprintf(&devstr, "%c %i:%i %s", type, major, minor,
+                    virCgroupGetDevicePermsString(perms)) < 0)
         goto cleanup;
 
     if (virCgroupSetValueStr(group,
@@ -2789,10 +2821,8 @@ virCgroupDenyDeviceMajor(virCgroupPtr group, char type, int major,
     int ret = -1;
     char *devstr = NULL;
 
-    if (virAsprintf(&devstr, "%c %i:* %s%s%s", type, major,
-                    perms & VIR_CGROUP_DEVICE_READ ? "r" : "",
-                    perms & VIR_CGROUP_DEVICE_WRITE ? "w" : "",
-                    perms & VIR_CGROUP_DEVICE_MKNOD ? "m" : "") < 0)
+    if (virAsprintf(&devstr, "%c %i:* %s", type, major,
+                    virCgroupGetDevicePermsString(perms)) < 0)
         goto cleanup;
 
     if (virCgroupSetValueStr(group,
