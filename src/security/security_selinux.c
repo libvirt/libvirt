@@ -1123,18 +1123,20 @@ virSecuritySELinuxRestoreSecurityTPMFileLabelInt(virSecurityManagerPtr mgr,
 static int
 virSecuritySELinuxRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
                                                virDomainDefPtr def,
-                                               virDomainDiskDefPtr disk,
+                                               virStorageSourcePtr src,
                                                bool migrated)
 {
     virSecurityLabelDefPtr seclabel;
     virSecurityDeviceLabelDefPtr disk_seclabel;
-    const char *src = virDomainDiskGetSource(disk);
+
+    if (!src->path || !virStorageSourceIsLocalStorage(src))
+        return 0;
 
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
     if (seclabel == NULL)
         return 0;
 
-    disk_seclabel = virStorageSourceGetSecurityLabelDef(disk->src,
+    disk_seclabel = virStorageSourceGetSecurityLabelDef(src,
                                                         SECURITY_SELINUX_NAME);
     if (seclabel->norelabel || (disk_seclabel && disk_seclabel->norelabel))
         return 0;
@@ -1142,42 +1144,35 @@ virSecuritySELinuxRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
     /* If labelskip is true and there are no backing files, then we
      * know it is safe to skip the restore.  FIXME - backing files should
      * be tracked in domain XML, at which point labelskip should be a
-     * per-file attribute instead of a disk attribute.  */
+     * per-file attribute instead of a disk attribute. */
     if (disk_seclabel && disk_seclabel->labelskip &&
-        !disk->src->backingStore)
+        !src->backingStore)
         return 0;
 
-    /* Don't restore labels on readoly/shared disks, because
-     * other VMs may still be accessing these
-     * Alternatively we could iterate over all running
-     * domains and try to figure out if it is in use, but
-     * this would not work for clustered filesystems, since
-     * we can't see running VMs using the file on other nodes
-     * Safest bet is thus to skip the restore step.
-     */
-    if (disk->src->readonly || disk->src->shared)
+    /* Don't restore labels on readoly/shared disks, because other VMs may
+     * still be accessing these. Alternatively we could iterate over all
+     * running domains and try to figure out if it is in use, but this would
+     * not work for clustered filesystems, since we can't see running VMs using
+     * the file on other nodes. Safest bet is thus to skip the restore step. */
+    if (src->readonly || src->shared)
         return 0;
 
-    if (!src || virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_NETWORK)
-        return 0;
 
-    /* If we have a shared FS & doing migrated, we must not
-     * change ownership, because that kills access on the
-     * destination host which is sub-optimal for the guest
-     * VM's I/O attempts :-)
-     */
+    /* If we have a shared FS and are doing migration, we must not change
+     * ownership, because that kills access on the destination host which is
+     * sub-optimal for the guest VM's I/O attempts :-) */
     if (migrated) {
-        int rc = virFileIsSharedFS(src);
+        int rc = virFileIsSharedFS(src->path);
         if (rc < 0)
             return -1;
         if (rc == 1) {
             VIR_DEBUG("Skipping image label restore on %s because FS is shared",
-                      src);
+                      src->path);
             return 0;
         }
     }
 
-    return virSecuritySELinuxRestoreSecurityFileLabel(mgr, src);
+    return virSecuritySELinuxRestoreSecurityFileLabel(mgr, src->path);
 }
 
 
@@ -1186,7 +1181,17 @@ virSecuritySELinuxRestoreSecurityDiskLabel(virSecurityManagerPtr mgr,
                                            virDomainDefPtr def,
                                            virDomainDiskDefPtr disk)
 {
-    return virSecuritySELinuxRestoreSecurityImageLabelInt(mgr, def, disk, false);
+    return virSecuritySELinuxRestoreSecurityImageLabelInt(mgr, def, disk->src,
+                                                          false);
+}
+
+
+static int
+virSecuritySELinuxRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
+                                            virDomainDefPtr def,
+                                            virStorageSourcePtr src)
+{
+    return virSecuritySELinuxRestoreSecurityImageLabelInt(mgr, def, src, false);
 }
 
 
@@ -1867,9 +1872,9 @@ virSecuritySELinuxRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
             rc = -1;
     }
     for (i = 0; i < def->ndisks; i++) {
-        if (virSecuritySELinuxRestoreSecurityImageLabelInt(mgr,
-                                                           def,
-                                                           def->disks[i],
+        virDomainDiskDefPtr disk = def->disks[i];
+
+        if (virSecuritySELinuxRestoreSecurityImageLabelInt(mgr, def, disk->src,
                                                            migrated) < 0)
             rc = -1;
     }
@@ -2428,6 +2433,8 @@ virSecurityDriver virSecurityDriverSELinux = {
 
     .domainSetSecurityDiskLabel         = virSecuritySELinuxSetSecurityDiskLabel,
     .domainRestoreSecurityDiskLabel     = virSecuritySELinuxRestoreSecurityDiskLabel,
+
+    .domainRestoreSecurityImageLabel    = virSecuritySELinuxRestoreSecurityImageLabel,
 
     .domainSetSecurityDaemonSocketLabel = virSecuritySELinuxSetSecurityDaemonSocketLabel,
     .domainSetSecuritySocketLabel       = virSecuritySELinuxSetSecuritySocketLabel,
