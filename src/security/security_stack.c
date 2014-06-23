@@ -564,6 +564,41 @@ virSecurityStackGetBaseLabel(virSecurityManagerPtr mgr, int virtType)
                                           virtType);
 }
 
+static int
+virSecurityStackSetSecurityImageLabel(virSecurityManagerPtr mgr,
+                                      virDomainDefPtr vm,
+                                      virStorageSourcePtr src)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
+    int rc = 0;
+
+    for (; item; item = item->next) {
+        if (virSecurityManagerSetImageLabel(item->securityManager, vm, src) < 0)
+            rc = -1;
+    }
+
+    return rc;
+}
+
+static int
+virSecurityStackRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
+                                          virDomainDefPtr vm,
+                                          virStorageSourcePtr src)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
+    int rc = 0;
+
+    for (; item; item = item->next) {
+        if (virSecurityManagerRestoreImageLabel(item->securityManager,
+                                                vm, src) < 0)
+            rc = -1;
+    }
+
+    return rc;
+}
+
 virSecurityDriver virSecurityDriverStack = {
     .privateDataLen                     = sizeof(virSecurityStackData),
     .name                               = "stack",
@@ -580,6 +615,9 @@ virSecurityDriver virSecurityDriverStack = {
 
     .domainSetSecurityDiskLabel         = virSecurityStackSetSecurityDiskLabel,
     .domainRestoreSecurityDiskLabel     = virSecurityStackRestoreSecurityDiskLabel,
+
+    .domainSetSecurityImageLabel        = virSecurityStackSetSecurityImageLabel,
+    .domainRestoreSecurityImageLabel    = virSecurityStackRestoreSecurityImageLabel,
 
     .domainSetSecurityDaemonSocketLabel = virSecurityStackSetDaemonSocketLabel,
     .domainSetSecuritySocketLabel       = virSecurityStackSetSocketLabel,

@@ -112,6 +112,13 @@ typedef char *(*virSecurityDomainGetMountOptions) (virSecurityManagerPtr mgr,
 typedef int (*virSecurityDomainSetHugepages) (virSecurityManagerPtr mgr,
                                               virDomainDefPtr def,
                                               const char *path);
+typedef int (*virSecurityDomainSetImageLabel) (virSecurityManagerPtr mgr,
+                                               virDomainDefPtr def,
+                                               virStorageSourcePtr src);
+typedef int (*virSecurityDomainRestoreImageLabel) (virSecurityManagerPtr mgr,
+                                                   virDomainDefPtr def,
+                                                   virStorageSourcePtr src);
+
 
 struct _virSecurityDriver {
     size_t privateDataLen;
@@ -129,6 +136,9 @@ struct _virSecurityDriver {
 
     virSecurityDomainSetDiskLabel domainSetSecurityDiskLabel;
     virSecurityDomainRestoreDiskLabel domainRestoreSecurityDiskLabel;
+
+    virSecurityDomainSetImageLabel domainSetSecurityImageLabel;
+    virSecurityDomainRestoreImageLabel domainRestoreSecurityImageLabel;
 
     virSecurityDomainSetDaemonSocketLabel domainSetSecurityDaemonSocketLabel;
     virSecurityDomainSetSocketLabel domainSetSecuritySocketLabel;

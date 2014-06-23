@@ -124,4 +124,11 @@ int virSecurityManagerSetHugepages(virSecurityManagerPtr mgr,
                                    virDomainDefPtr sec,
                                    const char *hugepages_path);
 
+int virSecurityManagerSetImageLabel(virSecurityManagerPtr mgr,
+                                    virDomainDefPtr vm,
+                                    virStorageSourcePtr src);
+int virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
+                                        virDomainDefPtr vm,
+                                        virStorageSourcePtr src);
+
 #endif /* VIR_SECURITY_MANAGER_H__ */

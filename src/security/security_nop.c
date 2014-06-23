@@ -220,6 +220,22 @@ virSecurityGetBaseLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     return NULL;
 }
 
+static int
+virSecurityDomainRestoreImageLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                      virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                      virStorageSourcePtr src ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+static int
+virSecurityDomainSetImageLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                  virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                  virStorageSourcePtr src ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
 
 virSecurityDriver virSecurityDriverNop = {
     .privateDataLen                     = 0,
@@ -235,6 +251,9 @@ virSecurityDriver virSecurityDriverNop = {
 
     .domainSetSecurityDiskLabel         = virSecurityDomainSetDiskLabelNop,
     .domainRestoreSecurityDiskLabel     = virSecurityDomainRestoreDiskLabelNop,
+
+    .domainSetSecurityImageLabel        = virSecurityDomainSetImageLabelNop,
+    .domainRestoreSecurityImageLabel    = virSecurityDomainRestoreImageLabelNop,
 
     .domainSetSecurityDaemonSocketLabel = virSecurityDomainSetDaemonSocketLabelNop,
     .domainSetSecuritySocketLabel       = virSecurityDomainSetSocketLabelNop,
