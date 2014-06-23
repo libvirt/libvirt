@@ -340,7 +340,7 @@ static int parallelsFindVmVolumes(virStoragePoolObjPtr pool,
         virReportSystemError(errno,
                              _("cannot open path '%s'"),
                              pdom->home);
-        goto cleanup;
+        return ret;
     }
 
     while ((direrr = virDirRead(dir, &ent, pdom->home)) > 0) {
