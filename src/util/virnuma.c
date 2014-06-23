@@ -738,7 +738,7 @@ virNumaGetPages(int node,
     int ret = -1;
     char *path = NULL;
     DIR *dir = NULL;
-    int direrr;
+    int direrr = 0;
     struct dirent *entry;
     unsigned int *tmp_size = NULL, *tmp_avail = NULL, *tmp_free = NULL;
     unsigned int ntmp = 0;
@@ -760,13 +760,17 @@ virNumaGetPages(int node,
         goto cleanup;
 
     if (!(dir = opendir(path))) {
-        virReportSystemError(errno,
-                             _("unable to open path: %s"),
-                             path);
-        goto cleanup;
+        /* It's okay if the @path doesn't exist. Maybe we are running on
+         * system without huge pages support where the path may not exist. */
+        if (errno != ENOENT) {
+            virReportSystemError(errno,
+                                 _("unable to open path: %s"),
+                                 path);
+            goto cleanup;
+        }
     }
 
-    while ((direrr = virDirRead(dir, &entry, path)) > 0) {
+    while (dir && (direrr = virDirRead(dir, &entry, path)) > 0) {
         const char *page_name = entry->d_name;
         unsigned int page_size, page_avail = 0, page_free = 0;
         char *end;
