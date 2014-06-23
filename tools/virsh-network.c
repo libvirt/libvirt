@@ -1285,6 +1285,119 @@ cmdNetworkEvent(vshControl *ctl, const vshCmd *cmd)
 }
 
 
+/*
+ * "net-dhcp-leases" command
+ */
+static const vshCmdInfo info_network_dhcp_leases[] = {
+    {.name = "help",
+     .data = N_("print lease info for a given network")
+    },
+    {.name = "desc",
+     .data = N_("Print lease info for a given network")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_network_dhcp_leases[] = {
+    {.name = "network",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("network name or uuid")
+    },
+    {.name = "mac",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_NONE,
+     .help = N_("MAC address")
+    },
+    {.name = NULL}
+};
+
+static int
+vshNetworkDHCPLeaseSorter(const void *a, const void *b)
+{
+    int rv = -1;
+
+    virNetworkDHCPLeasePtr *lease1 = (virNetworkDHCPLeasePtr *) a;
+    virNetworkDHCPLeasePtr *lease2 = (virNetworkDHCPLeasePtr *) b;
+
+    if (*lease1 && !*lease2)
+        return -1;
+
+    if (!*lease1)
+        return *lease2 != NULL;
+
+    rv = vshStrcasecmp((*lease1)->mac, (*lease2)->mac);
+    return rv;
+}
+
+static bool
+cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
+{
+    const char *name = NULL;
+    const char *mac = NULL;
+    virNetworkDHCPLeasePtr *leases = NULL;
+    int nleases = 0;
+    bool ret = false;
+    size_t i;
+    unsigned int flags = 0;
+    virNetworkPtr network = NULL;
+
+    if (vshCommandOptString(cmd, "mac", &mac) < 0)
+        return false;
+
+    if (!(network = vshCommandOptNetwork(ctl, cmd, &name)))
+        return false;
+
+    nleases = mac ? virNetworkGetDHCPLeasesForMAC(network, mac, &leases, flags)
+        : virNetworkGetDHCPLeases(network, &leases, flags);
+
+    if (nleases < 0) {
+        vshError(ctl, _("Failed to get leases info for %s"), name);
+        goto cleanup;
+    }
+
+    /* Sort the list according to MAC Address/IAID */
+    qsort(leases, nleases, sizeof(*leases), vshNetworkDHCPLeaseSorter);
+
+    vshPrintExtra(ctl, " %-20s %-18s %-9s %-25s %-15s %s\n%s%s\n",
+                  _("Expiry Time"), _("MAC address"), _("Protocol"),
+                  _("IP address"), _("Hostname"), _("Client ID or DUID"),
+                  "----------------------------------------------------------",
+                  "---------------------------------------------------------");
+
+    for (i = 0; i < nleases; i++) {
+        const char *type = NULL;
+        char *cidr_format = NULL;
+        virNetworkDHCPLeasePtr lease = leases[i];
+        time_t expirytime_tmp = lease->expirytime;
+        struct tm ts;
+        char expirytime[32];
+        ts = *localtime_r(&expirytime_tmp, &ts);
+        strftime(expirytime, sizeof(expirytime), "%Y-%m-%d %H:%M:%S", &ts);
+
+        type = (lease->type == VIR_IP_ADDR_TYPE_IPV4) ? "ipv4" :
+            (lease->type == VIR_IP_ADDR_TYPE_IPV6) ? "ipv6" : "";
+
+        ignore_value(virAsprintf(&cidr_format, "%s/%d",
+                                 lease->ipaddr, lease->prefix));
+
+        vshPrintExtra(ctl, " %-20s %-18s %-9s %-25s %-15s %s\n",
+                      expirytime, EMPTYSTR(lease->mac), EMPTYSTR(type), cidr_format,
+                      EMPTYSTR(lease->hostname), EMPTYSTR(lease->clientid));
+    }
+
+    ret = true;
+
+ cleanup:
+    if (leases) {
+        for (i = 0; i < nleases; i++)
+            virNetworkDHCPLeaseFree(leases[i]);
+        VIR_FREE(leases);
+    }
+    virNetworkFree(network);
+    return ret;
+}
+
 const vshCmdDef networkCmds[] = {
     {.name = "net-autostart",
      .handler = cmdNetworkAutostart,
@@ -1309,6 +1422,12 @@ const vshCmdDef networkCmds[] = {
      .opts = opts_network_destroy,
      .info = info_network_destroy,
      .flags = 0
+    },
+    {.name = "net-dhcp-leases",
+     .handler = cmdNetworkDHCPLeases,
+     .opts = opts_network_dhcp_leases,
+     .info = info_network_dhcp_leases,
+     .flags = 0,
     },
     {.name = "net-dumpxml",
      .handler = cmdNetworkDumpXML,

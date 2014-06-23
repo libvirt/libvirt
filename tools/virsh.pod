@@ -2525,6 +2525,12 @@ If I<--current> is specified, affect the current network state.
 Both I<--live> and I<--config> flags may be given, but I<--current> is
 exclusive. Not specifying any flag is the same as specifying I<--current>.
 
+=item B<net-dhcp-leases> I<network> [I<mac>]
+
+Get a list of dhcp leases for all network interfaces connected to the given
+virtual I<network> or limited output just for one interface if I<mac> is
+specified.
+
 =back
 
 =head1 INTERFACE COMMANDS
