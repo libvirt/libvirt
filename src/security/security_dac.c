@@ -350,62 +350,60 @@ virSecurityDACSetSecurityDiskLabel(virSecurityManagerPtr mgr,
 static int
 virSecurityDACRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
                                            virDomainDefPtr def,
-                                           virDomainDiskDefPtr disk,
+                                           virStorageSourcePtr src,
                                            bool migrated)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDefPtr secdef;
     virSecurityDeviceLabelDefPtr disk_seclabel;
-    const char *src = virDomainDiskGetSource(disk);
 
     if (!priv->dynamicOwnership)
         return 0;
 
-    if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_NETWORK)
+    if (!src->path || !virStorageSourceIsLocalStorage(src))
+        return 0;
+
+    /* Don't restore labels on readoly/shared disks, because other VMs may
+     * still be accessing these. Alternatively we could iterate over all
+     * running domains and try to figure out if it is in use, but this would
+     * not work for clustered filesystems, since we can't see running VMs using
+     * the file on other nodes. Safest bet is thus to skip the restore step. */
+    if (src->readonly || src->shared)
         return 0;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
-
     if (secdef && secdef->norelabel)
         return 0;
 
-    disk_seclabel = virStorageSourceGetSecurityLabelDef(disk->src,
+    disk_seclabel = virStorageSourceGetSecurityLabelDef(src,
                                                         SECURITY_DAC_NAME);
-
     if (disk_seclabel && disk_seclabel->norelabel)
         return 0;
 
-    /* Don't restore labels on readoly/shared disks, because
-     * other VMs may still be accessing these
-     * Alternatively we could iterate over all running
-     * domains and try to figure out if it is in use, but
-     * this would not work for clustered filesystems, since
-     * we can't see running VMs using the file on other nodes
-     * Safest bet is thus to skip the restore step.
-     */
-    if (disk->src->readonly || disk->src->shared)
-        return 0;
-
-    if (!src)
-        return 0;
-
-    /* If we have a shared FS & doing migrated, we must not
-     * change ownership, because that kills access on the
-     * destination host which is sub-optimal for the guest
-     * VM's I/O attempts :-)
-     */
+    /* If we have a shared FS and are doing migration, we must not change
+     * ownership, because that kills access on the destination host which is
+     * sub-optimal for the guest VM's I/O attempts :-) */
     if (migrated) {
-        int rc = virFileIsSharedFS(src);
+        int rc = virFileIsSharedFS(src->path);
         if (rc < 0)
             return -1;
         if (rc == 1) {
             VIR_DEBUG("Skipping image label restore on %s because FS is shared",
-                      src);
+                      src->path);
             return 0;
         }
     }
 
-    return virSecurityDACRestoreSecurityFileLabel(src);
+    return virSecurityDACRestoreSecurityFileLabel(src->path);
+}
+
+
+static int
+virSecurityDACRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
+                                        virDomainDefPtr def,
+                                        virStorageSourcePtr src)
+{
+    return virSecurityDACRestoreSecurityImageLabelInt(mgr, def, src, false);
 }
 
 
@@ -414,7 +412,7 @@ virSecurityDACRestoreSecurityDiskLabel(virSecurityManagerPtr mgr,
                                        virDomainDefPtr def,
                                        virDomainDiskDefPtr disk)
 {
-    return virSecurityDACRestoreSecurityImageLabelInt(mgr, def, disk, false);
+    return virSecurityDACRestoreSecurityImageLabelInt(mgr, def, disk->src, false);
 }
 
 
@@ -902,7 +900,7 @@ virSecurityDACRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
     for (i = 0; i < def->ndisks; i++) {
         if (virSecurityDACRestoreSecurityImageLabelInt(mgr,
                                                        def,
-                                                       def->disks[i],
+                                                       def->disks[i]->src,
                                                        migrated) < 0)
             rc = -1;
     }
@@ -1275,6 +1273,8 @@ virSecurityDriver virSecurityDriverDAC = {
 
     .domainSetSecurityDiskLabel         = virSecurityDACSetSecurityDiskLabel,
     .domainRestoreSecurityDiskLabel     = virSecurityDACRestoreSecurityDiskLabel,
+
+    .domainRestoreSecurityImageLabel    = virSecurityDACRestoreSecurityImageLabel,
 
     .domainSetSecurityDaemonSocketLabel = virSecurityDACSetDaemonSocketLabel,
     .domainSetSecuritySocketLabel       = virSecurityDACSetSocketLabel,
