@@ -2038,7 +2038,7 @@ nodeGetFreePages(unsigned int npages,
             unsigned int page_size = pages[i];
             unsigned int page_free;
 
-            if (virNumaGetPageInfo(cell, page_size, NULL, &page_free) < 0)
+            if (virNumaGetPageInfo(cell, page_size, 0, NULL, &page_free) < 0)
                 goto cleanup;
 
             counts[ncounts++] = page_free;

@@ -72,6 +72,7 @@ int virNumaGetNodeCPUs(int node, virBitmapPtr *cpus);
 
 int virNumaGetPageInfo(int node,
                        unsigned int page_size,
+                       unsigned long long huge_page_sum,
                        unsigned int *page_avail,
                        unsigned int *page_free);
 int virNumaGetPages(int node,

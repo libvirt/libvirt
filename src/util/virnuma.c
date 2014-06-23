@@ -640,12 +640,21 @@ virNumaGetHugePageInfo(int node,
  * virNumaGetPageInfo:
  * @node: NUMA node id
  * @page_size: which huge page are we interested in (in KiB)
+ * @huge_page_sum: the sum of memory taken by huge pages (in
+ * bytes)
  * @page_avail: total number of huge pages in the pool
  * @page_free: the number of free huge pages in the pool
  *
  * For given NUMA node and page size fetch information on
  * total number of pages in the pool (both free and taken)
  * and count for free pages in the pool.
+ *
+ * The @huge_page_sum parameter exists due to the Linux kernel
+ * limitation. The problem is, if there are some huge pages
+ * allocated, they are accounted under the 'MemUsed' field in the
+ * meminfo file instead of being subtracted from the 'MemTotal'.
+ * We must do the subtraction ourselves.
+ * If unsure, pass 0.
  *
  * If you're interested in just one bit, pass NULL to the other one.
  *
@@ -657,6 +666,7 @@ virNumaGetHugePageInfo(int node,
 int
 virNumaGetPageInfo(int node,
                    unsigned int page_size,
+                   unsigned long long huge_page_sum,
                    unsigned int *page_avail,
                    unsigned int *page_free)
 {
@@ -666,7 +676,6 @@ virNumaGetPageInfo(int node,
     /* sysconf() returns page size in bytes,
      * the @page_size is however in kibibytes */
     if (page_size == system_page_size / 1024) {
-# if 0
         unsigned long long memsize, memfree;
 
         /* TODO: come up with better algorithm that takes huge pages into
@@ -679,16 +688,14 @@ virNumaGetPageInfo(int node,
                 goto cleanup;
         }
 
+        /* see description above */
+        memsize -= huge_page_sum;
+
         if (page_avail)
             *page_avail = memsize / system_page_size;
 
         if (page_free)
             *page_free = memfree / system_page_size;
-# else
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("system page size are not supported yet"));
-        goto cleanup;
-# endif /* 0 */
     } else {
         if (virNumaGetHugePageInfo(node, page_size, page_avail, page_free) < 0)
             goto cleanup;
@@ -737,31 +744,18 @@ virNumaGetPages(int node,
     unsigned int ntmp = 0;
     size_t i;
     bool exchange;
-
-# if 0
-    /* This has to be disabled until the time the issue in
-     * virNumaGetPageInfo is resolved. Sorry. */
     long system_page_size;
+    unsigned long long huge_page_sum = 0;
 
     /* sysconf() returns page size in bytes,
      * but we are storing the page size in kibibytes. */
     system_page_size = sysconf(_SC_PAGESIZE) / 1024;
 
-    /* We know that ordinary system pages are supported
-     * if nothing else is. */
-    if (VIR_REALLOC_N(tmp_size, 1) < 0 ||
-        VIR_REALLOC_N(tmp_avail, 1) < 0 ||
-        VIR_REALLOC_N(tmp_free, 1) < 0)
-        goto cleanup;
-
-    if (virNumaGetPageInfo(node, system_page_size,
-                           &tmp_avail[ntmp], &tmp_free[ntmp]) < 0)
-        goto cleanup;
-    tmp_size[ntmp] = system_page_size;
-    ntmp++;
-# endif /* 0 */
-
-    /* Now that we got ordinary system pages, lets get info on huge pages */
+    /* Query huge pages at first.
+     * On Linux systems, the huge pages pool cuts off the available memory and
+     * is always shown as used memory. Here, however, we want to report
+     * slightly different information. So we take the total memory on a node
+     * and subtract memory taken by the huge pages. */
     if (virNumaGetHugePageInfoPath(&path, node, 0, NULL) < 0)
         goto cleanup;
 
@@ -792,9 +786,7 @@ virNumaGetPages(int node,
             goto cleanup;
         }
 
-        /* Querying more detailed info makes sense only sometimes */
-        if ((pages_avail || pages_free) &&
-            virNumaGetHugePageInfo(node, page_size,
+        if (virNumaGetHugePageInfo(node, page_size,
                                    &page_avail, &page_free) < 0)
             goto cleanup;
 
@@ -807,10 +799,26 @@ virNumaGetPages(int node,
         tmp_avail[ntmp] = page_avail;
         tmp_free[ntmp] = page_free;
         ntmp++;
+
+        /* page_size is in kibibytes while we want huge_page_sum
+         * in just bytes. */
+        huge_page_sum += 1024 * page_size * page_avail;
     }
 
     if (direrr < 0)
         goto cleanup;
+
+    /* Now append the ordinary system pages */
+    if (VIR_REALLOC_N(tmp_size, ntmp + 1) < 0 ||
+        VIR_REALLOC_N(tmp_avail, ntmp + 1) < 0 ||
+        VIR_REALLOC_N(tmp_free, ntmp + 1) < 0)
+        goto cleanup;
+
+    if (virNumaGetPageInfo(node, system_page_size, huge_page_sum,
+                           &tmp_avail[ntmp], &tmp_free[ntmp]) < 0)
+        goto cleanup;
+    tmp_size[ntmp] = system_page_size;
+    ntmp++;
 
     /* Just to produce nice output, sort the arrays by increasing page size */
     do {
@@ -854,6 +862,7 @@ virNumaGetPages(int node,
 int
 virNumaGetPageInfo(int node ATTRIBUTE_UNUSED,
                    unsigned int page_size ATTRIBUTE_UNUSED,
+                   unsigned long long huge_page_sum ATTRIBUTE_UNUSED,
                    unsigned int *page_avail ATTRIBUTE_UNUSED,
                    unsigned int *page_free ATTRIBUTE_UNUSED)
 {
