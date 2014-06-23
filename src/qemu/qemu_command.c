@@ -1130,7 +1130,7 @@ int qemuDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
             goto cleanup;
         }
     } else if (autoassign && !dev->addr.ccw.assigned) {
-        if (!(addr = qemuCCWAddressAsString(&addrs->next)) < 0)
+        if (!(addr = qemuCCWAddressAsString(&addrs->next)))
             goto cleanup;
 
         while (virHashLookup(addrs->defined, addr)) {
@@ -1140,7 +1140,8 @@ int qemuDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
                 goto cleanup;
             }
             VIR_FREE(addr);
-            addr = qemuCCWAddressAsString(&addrs->next);
+            if (!(addr = qemuCCWAddressAsString(&addrs->next)))
+                goto cleanup;
         }
         dev->addr.ccw = addrs->next;
         dev->addr.ccw.assigned = true;
