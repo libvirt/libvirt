@@ -229,7 +229,7 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     unsigned int npages;
     unsigned int *pagesize = NULL;
-    unsigned long long tmp;
+    unsigned long long tmp = 0;
     int cell;
     unsigned long long *counts = NULL;
     size_t i, j;
