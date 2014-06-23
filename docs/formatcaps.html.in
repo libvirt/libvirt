@@ -95,7 +95,47 @@
 
         <dt><code>features</code></dt>
         <dd>This optional element encases possible features that can be used
-        with a guest of described type.</dd>
+          with a guest of described type.  Possible subelements are:
+          <dl>
+            <dt>pae</dt><dd>If present, 32-bit guests can use PAE
+              address space extensions, <span class="since">since
+              0.4.1</span></dd>
+            <dt>nonpae</dt><dd>If present, 32-bit guests can be run
+              without requiring PAE, <span class="since">since
+              0.4.1</span></dd>
+            <dt>ia64_be</dt><dd>If present, IA64 guests can be run in
+              big-endian mode, <span class="since">since 0.4.1</span></dd>
+            <dt>acpi</dt><dd>If this element is present,
+              the <code>default</code> attribute describes whether the
+              hypervisor exposes ACPI to the guest by default, and
+              the <code>toggle</code> attribute describes whether the
+              user can override this
+              default. <span class="since">Since 0.4.1</span></dd>
+            <dt>apic</dt><dd>If this element is present,
+              the <code>default</code> attribute describes whether the
+              hypervisor exposes APIC to the guest by default, and
+              the <code>toggle</code> attribute describes whether the
+              user can override this
+              default. <span class="since">Since 0.4.1</span></dd>
+            <dt>cpuselection</dt><dd>If this element is present, the
+              hypervisor supports the <code>&lt;cpu&gt;</code> element
+              within a domain definition for fine-grained control over
+              the CPU presented to the
+              guest. <span class="since">Since 0.7.5</span></dd>
+            <dt>deviceboot</dt><dd>If this element is present,
+              the <code>&lt;boot order='...'/&gt;</code> element can
+              be used inside devices, rather than the older boot
+              specification by category. <span class="since">Since
+              0.8.8</span></dd>
+            <dt>disksnapshot</dt><dd>If this element is present,
+              the <code>default</code> attribute describes whether
+              external disk snapshots are supported.  If absent,
+              external snapshots may still be supported, but it
+              requires attempting the API and checking for an error to
+              find out for sure. <span class="since">Since
+              1.2.3</span></dd>
+          </dl>
+        </dd>
     </dl>
 
     <h3><a name="elementExamples">Examples</a></h3>
