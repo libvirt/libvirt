@@ -728,6 +728,7 @@ virNumaGetPages(int node,
     int ret = -1;
     char *path = NULL;
     DIR *dir = NULL;
+    int direrr;
     struct dirent *entry;
     unsigned int *tmp_size = NULL, *tmp_avail = NULL, *tmp_free = NULL;
     unsigned int ntmp = 0;
@@ -768,7 +769,7 @@ virNumaGetPages(int node,
         goto cleanup;
     }
 
-    while (virDirRead(dir, &entry, path) > 0) {
+    while ((direrr = virDirRead(dir, &entry, path)) > 0) {
         const char *page_name = entry->d_name;
         unsigned int page_size, page_avail = 0, page_free = 0;
         char *end;
@@ -804,6 +805,9 @@ virNumaGetPages(int node,
         tmp_free[ntmp] = page_free;
         ntmp++;
     }
+
+    if (direrr < 0)
+        goto cleanup;
 
     /* Just to produce nice output, sort the arrays by increasing page size */
     do {
