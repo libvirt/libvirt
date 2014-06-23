@@ -285,9 +285,12 @@ test_programs += nwfilterxml2firewalltest
 endif WITH_NWFILTER
 
 if WITH_STORAGE
-test_programs += storagevolxml2argvtest \
-	virstoragetest
+test_programs += storagevolxml2argvtest
 endif WITH_STORAGE
+
+if WITH_STORAGE_FS
+test_programs += virstoragetest
+endif
 
 if WITH_LINUX
 test_programs += virscsitest
