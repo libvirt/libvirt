@@ -661,6 +661,9 @@ LIBVIRT_1.2.5 {
 LIBVIRT_1.2.6 {
     global:
         virNodeGetFreePages;
+        virNetworkDHCPLeaseFree;
+        virNetworkGetDHCPLeases;
+        virNetworkGetDHCPLeasesForMAC;
 } LIBVIRT_1.2.5;
 
 # .... define new API here using predicted next version number ....

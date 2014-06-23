@@ -5162,6 +5162,40 @@ typedef enum {
 #endif
 } virNetworkEventID;
 
+typedef enum {
+    VIR_IP_ADDR_TYPE_IPV4,
+    VIR_IP_ADDR_TYPE_IPV6,
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_IP_ADDR_TYPE_LAST
+#endif
+} virIPAddrType;
+
+typedef struct _virNetworkDHCPLease virNetworkDHCPLease;
+typedef virNetworkDHCPLease *virNetworkDHCPLeasePtr;
+struct _virNetworkDHCPLease {
+    char *interface;            /* Network interface name */
+    long long expirytime;       /* Seconds since epoch */
+    int type;                   /* virIPAddrType */
+    char *mac;                  /* MAC address */
+    char *iaid;                 /* IAID */
+    char *ipaddr;               /* IP address */
+    unsigned int prefix;        /* IP address prefix */
+    char *hostname;             /* Hostname */
+    char *clientid;             /* Client ID or DUID */
+};
+
+void virNetworkDHCPLeaseFree(virNetworkDHCPLeasePtr lease);
+
+int virNetworkGetDHCPLeases(virNetworkPtr network,
+                            virNetworkDHCPLeasePtr **leases,
+                            unsigned int flags);
+
+int virNetworkGetDHCPLeasesForMAC(virNetworkPtr network,
+                                  const char *mac,
+                                  virNetworkDHCPLeasePtr **leases,
+                                  unsigned int flags);
+
 /**
  * virConnectNetworkEventGenericCallback:
  * @conn: the connection pointer
