@@ -614,7 +614,7 @@ virDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
             goto cleanup;
         }
     } else if (autoassign && !dev->addr.ccw.assigned) {
-        if (!(addr = virDomainCCWAddressAsString(&addrs->next)) < 0)
+        if (!(addr = virDomainCCWAddressAsString(&addrs->next)))
             goto cleanup;
 
         while (virHashLookup(addrs->defined, addr)) {
@@ -624,7 +624,8 @@ virDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
                 goto cleanup;
             }
             VIR_FREE(addr);
-            addr = virDomainCCWAddressAsString(&addrs->next);
+            if (!(addr = virDomainCCWAddressAsString(&addrs->next)))
+                goto cleanup;
         }
         dev->addr.ccw = addrs->next;
         dev->addr.ccw.assigned = true;
