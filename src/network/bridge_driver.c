@@ -73,8 +73,16 @@
 #include "viraccessapicheck.h"
 #include "network_event.h"
 #include "virhook.h"
+#include "virjson.h"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
+
+/**
+ * VIR_NETWORK_DHCP_LEASE_FILE_SIZE_MAX:
+ *
+ * Macro providing the upper limit on the size of leases file
+ */
+#define VIR_NETWORK_DHCP_LEASE_FILE_SIZE_MAX (32 * 1024 * 1024)
 
 VIR_LOG_INIT("network.bridge_driver");
 
@@ -3360,6 +3368,228 @@ static int networkSetAutostart(virNetworkPtr net,
     return ret;
 }
 
+static int
+networkGetDHCPLeasesHelper(virNetworkObjPtr obj,
+                           const char *mac,
+                           virNetworkDHCPLeasePtr **leases)
+{
+    size_t i, j;
+    size_t nleases = 0;
+    int rv = -1;
+    int size = 0;
+    int custom_lease_file_len = 0;
+    bool need_results = !!leases;
+    long long currtime = 0;
+    long long expirytime_tmp = -1;
+    bool ipv6 = false;
+    char *lease_entries = NULL;
+    char *custom_lease_file = NULL;
+    const char *ip_tmp = NULL;
+    const char *mac_tmp = NULL;
+    virJSONValuePtr lease_tmp = NULL;
+    virJSONValuePtr leases_array = NULL;
+    virNetworkIpDefPtr ipdef_tmp = NULL;
+    virNetworkDHCPLeasePtr lease = NULL;
+    virNetworkDHCPLeasePtr *leases_ret = NULL;
+
+    /* Retrieve custom leases file location */
+    custom_lease_file = networkDnsmasqLeaseFileNameCustom(obj->def->bridge);
+
+    /* Read entire contents */
+    if ((custom_lease_file_len = virFileReadAll(custom_lease_file,
+                                                VIR_NETWORK_DHCP_LEASE_FILE_SIZE_MAX,
+                                                &lease_entries)) < 0) {
+        /* Even though src/network/leaseshelper.c guarantees the existence of
+         * leases file (even if no leases are present), and the control reaches
+         * here, instead of reporting error, return 0 leases */
+        rv = 0;
+        goto error;
+    }
+
+    if (custom_lease_file_len) {
+        if (!(leases_array = virJSONValueFromString(lease_entries))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("invalid json in file: %s"), custom_lease_file);
+            goto error;
+        }
+
+        if ((size = virJSONValueArraySize(leases_array)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("couldn't fetch array of leases"));
+            goto error;
+        }
+    }
+
+    currtime = (long long) time(NULL);
+
+    for (i = 0; i < size; i++) {
+        if (!(lease_tmp = virJSONValueArrayGet(leases_array, i))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to parse json"));
+            goto error;
+        }
+
+        if (!(mac_tmp = virJSONValueObjectGetString(lease_tmp, "mac-address"))) {
+            /* leaseshelper program guarantees that lease will be stored only if
+             * mac-address is known otherwise not */
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("found lease without mac-address"));
+            goto error;
+        }
+
+        if (mac && virMacAddrCompare(mac, mac_tmp)) {
+            virJSONValueFree(lease_tmp);
+            continue;
+        }
+
+        if (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time", &expirytime_tmp) < 0) {
+            /* A lease cannot be present without expiry-time */
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("found lease without expiry-time"));
+            goto error;
+        }
+
+        /* Do not report expired lease */
+        if (expirytime_tmp < currtime)
+            continue;
+
+        if (need_results) {
+            if (VIR_ALLOC(lease) < 0)
+                goto error;
+
+            lease->expirytime = expirytime_tmp;
+
+            if (!(ip_tmp = virJSONValueObjectGetString(lease_tmp, "ip-address"))) {
+                /* A lease without ip-address makes no sense */
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("found lease without ip-address"));
+                goto error;
+            }
+
+            /* Unlike IPv4, IPv6 uses ':' instead of '.' as separator */
+            ipv6 = strchr(ip_tmp, ':') ? true : false;
+            lease->type = ipv6 ? VIR_IP_ADDR_TYPE_IPV6 : VIR_IP_ADDR_TYPE_IPV4;
+
+            /* Obtain prefix */
+            for (j = 0; j < obj->def->nips; j++) {
+                ipdef_tmp = &obj->def->ips[j];
+
+                if (ipv6 && VIR_SOCKET_ADDR_IS_FAMILY(&ipdef_tmp->address,
+                                                      AF_INET6)) {
+                    lease->prefix = ipdef_tmp->prefix;
+                    break;
+                }
+                if (!ipv6 && VIR_SOCKET_ADDR_IS_FAMILY(&ipdef_tmp->address,
+                                                      AF_INET)) {
+                    lease->prefix = virSocketAddrGetIpPrefix(&ipdef_tmp->address,
+                                                             &ipdef_tmp->netmask,
+                                                             ipdef_tmp->prefix);
+                    break;
+                }
+            }
+
+            if ((VIR_STRDUP(lease->mac, mac_tmp) < 0) ||
+                (VIR_STRDUP(lease->ipaddr, ip_tmp) < 0) ||
+                (VIR_STRDUP(lease->interface, obj->def->bridge) < 0))
+                goto error;
+
+            /* Fields that can be NULL */
+            if ((VIR_STRDUP(lease->iaid,
+                            virJSONValueObjectGetString(lease_tmp, "iaid")) < 0) ||
+                (VIR_STRDUP(lease->clientid,
+                            virJSONValueObjectGetString(lease_tmp, "client-id")) < 0) ||
+                (VIR_STRDUP(lease->hostname,
+                            virJSONValueObjectGetString(lease_tmp, "hostname")) < 0))
+                goto error;
+
+            if (VIR_INSERT_ELEMENT(leases_ret, nleases, nleases, lease) < 0)
+                goto error;
+
+        } else {
+            nleases++;
+        }
+
+        VIR_FREE(lease);
+    }
+
+    if (need_results && mac && !leases_ret) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("no lease with matching MAC address: %s"), mac);
+        goto error;
+    }
+
+    if (leases_ret) {
+        /* NULL terminated array */
+        ignore_value(VIR_REALLOC_N(leases_ret, nleases + 1));
+        *leases = leases_ret;
+        leases_ret = NULL;
+    }
+
+    rv = nleases;
+
+ cleanup:
+    VIR_FREE(lease);
+    VIR_FREE(custom_lease_file);
+    virJSONValueFree(leases_array);
+    return rv;
+
+ error:
+    if (leases_ret) {
+        for (i = 0; i < nleases; i++)
+            virNetworkDHCPLeaseFree(leases_ret[i]);
+        VIR_FREE(leases_ret);
+    }
+    goto cleanup;
+}
+
+static int
+networkGetDHCPLeases(virNetworkPtr network,
+                     virNetworkDHCPLeasePtr **leases,
+                     unsigned int flags)
+{
+    int rv = -1;
+    virNetworkObjPtr obj;
+
+    virCheckFlags(0, -1);
+
+    if (!(obj = networkObjFromNetwork(network)))
+        return rv;
+
+    if (virNetworkGetDHCPLeasesEnsureACL(network->conn, obj->def) < 0)
+        goto cleanup;
+
+    rv = networkGetDHCPLeasesHelper(obj, NULL, leases);
+
+ cleanup:
+    if (obj)
+        virNetworkObjUnlock(obj);
+    return rv;
+}
+
+static int
+networkGetDHCPLeasesForMAC(virNetworkPtr network,
+                           const char *mac,
+                           virNetworkDHCPLeasePtr **leases,
+                           unsigned int flags)
+{
+    int rv = -1;
+    virNetworkObjPtr obj;
+
+    virCheckFlags(0, -1);
+
+    if (!(obj = networkObjFromNetwork(network)))
+        return rv;
+
+    if (virNetworkGetDHCPLeasesForMACEnsureACL(network->conn, obj->def) < 0)
+        goto cleanup;
+
+    rv = networkGetDHCPLeasesHelper(obj, mac, leases);
+
+ cleanup:
+    if (obj)
+        virNetworkObjUnlock(obj);
+    return rv;
+}
 
 static virNetworkDriver networkDriver = {
     "Network",
@@ -3386,6 +3616,8 @@ static virNetworkDriver networkDriver = {
     .networkSetAutostart = networkSetAutostart, /* 0.2.1 */
     .networkIsActive = networkIsActive, /* 0.7.3 */
     .networkIsPersistent = networkIsPersistent, /* 0.7.3 */
+    .networkGetDHCPLeases = networkGetDHCPLeases, /* 1.2.6 */
+    .networkGetDHCPLeasesForMAC = networkGetDHCPLeasesForMAC, /* 1.2.6 */
 };
 
 static virStateDriver networkStateDriver = {
