@@ -290,7 +290,7 @@ endif WITH_STORAGE
 
 if WITH_STORAGE_FS
 test_programs += virstoragetest
-endif
+endif WITH_STORAGE_FS
 
 if WITH_LINUX
 test_programs += virscsitest
