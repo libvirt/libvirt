@@ -513,8 +513,8 @@ virSecurityStackSetTapFDLabel(virSecurityManagerPtr mgr,
 
 static int
 virSecurityStackSetHugepages(virSecurityManagerPtr mgr,
-                              virDomainDefPtr vm,
-                              const char *path)
+                             virDomainDefPtr vm,
+                             const char *path)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
