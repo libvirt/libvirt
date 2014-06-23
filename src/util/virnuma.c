@@ -467,7 +467,7 @@ virNumaGetDistances(int node,
     if ((max_node = virNumaGetMaxNode()) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(*distances, max_node) < 0)
+    if (VIR_ALLOC_N(*distances, max_node + 1) < 0)
         goto cleanup;
 
     *ndistances = max_node + 1;
