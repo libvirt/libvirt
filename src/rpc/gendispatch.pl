@@ -68,6 +68,7 @@ sub fixup_name {
     $name =~ s/Fsthaw$/FSThaw/;
     $name =~ s/Scsi/SCSI/;
     $name =~ s/Wwn$/WWN/;
+    $name =~ s/Dhcp$/DHCP/;
 
     return $name;
 }

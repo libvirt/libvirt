@@ -2485,6 +2485,42 @@ struct remote_node_get_free_pages_ret {
                 uint64_t *         counts_val;
         } counts;
 };
+struct remote_network_dhcp_lease {
+        remote_nonnull_string      interface;
+        int64_t                    expirytime;
+        int                        type;
+        remote_string              mac;
+        remote_string              iaid;
+        remote_nonnull_string      ipaddr;
+        u_int                      prefix;
+        remote_string              hostname;
+        remote_string              clientid;
+};
+struct remote_network_get_dhcp_leases_args {
+        remote_nonnull_network     net;
+        int                        need_results;
+        u_int                      flags;
+};
+struct remote_network_get_dhcp_leases_ret {
+        struct {
+                u_int              leases_len;
+                remote_network_dhcp_lease * leases_val;
+        } leases;
+        u_int                      ret;
+};
+struct remote_network_get_dhcp_leases_for_mac_args {
+        remote_nonnull_network     net;
+        remote_nonnull_string      mac;
+        int                        need_results;
+        u_int                      flags;
+};
+struct remote_network_get_dhcp_leases_for_mac_ret {
+        struct {
+                u_int              leases_len;
+                remote_network_dhcp_lease * leases_val;
+        } leases;
+        u_int                      ret;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -2826,4 +2862,6 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_SET_TIME = 338,
         REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB_2 = 339,
         REMOTE_PROC_NODE_GET_FREE_PAGES = 340,
+        REMOTE_PROC_NETWORK_GET_DHCP_LEASES = 341,
+        REMOTE_PROC_NETWORK_GET_DHCP_LEASES_FOR_MAC = 342,
 };

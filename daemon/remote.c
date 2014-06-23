@@ -6202,7 +6202,190 @@ remoteDispatchNodeGetFreePages(virNetServerPtr server ATTRIBUTE_UNUSED,
         VIR_FREE(ret->counts.counts_val);
     }
     return rv;
+}
 
+/* Copy contents of virNetworkDHCPLeasePtr to remote_network_dhcp_lease */
+static int
+remoteSerializeDHCPLease(remote_network_dhcp_lease *lease_dst, virNetworkDHCPLeasePtr lease_src)
+{
+    char **mac_tmp = NULL;
+    char **iaid_tmp = NULL;
+    char **hostname_tmp = NULL;
+    char **clientid_tmp = NULL;
+
+    if (VIR_ALLOC(mac_tmp) < 0 ||
+        VIR_ALLOC(iaid_tmp) < 0 ||
+        VIR_ALLOC(hostname_tmp) < 0 ||
+        VIR_ALLOC(clientid_tmp) < 0)
+        goto error;
+
+    lease_dst->expirytime = lease_src->expirytime;
+    lease_dst->type = lease_src->type;
+    lease_dst->prefix = lease_src->prefix;
+
+    if (VIR_STRDUP(lease_dst->interface, lease_src->interface) < 0 ||
+        VIR_STRDUP(lease_dst->ipaddr, lease_src->ipaddr) < 0 ||
+        VIR_STRDUP(*mac_tmp, lease_src->mac) < 0 ||
+        VIR_STRDUP(*iaid_tmp, lease_src->iaid) < 0 ||
+        VIR_STRDUP(*hostname_tmp, lease_src->hostname) < 0 ||
+        VIR_STRDUP(*clientid_tmp, lease_src->clientid) < 0)
+        goto error;
+
+    lease_dst->mac = *mac_tmp ? mac_tmp : NULL;
+    lease_dst->iaid = *iaid_tmp ? iaid_tmp : NULL;
+    lease_dst->hostname = *hostname_tmp ? hostname_tmp : NULL;
+    lease_dst->clientid = *clientid_tmp ? clientid_tmp : NULL;
+
+    return 0;
+
+ error:
+    VIR_FREE(*mac_tmp);
+    VIR_FREE(*iaid_tmp);
+    VIR_FREE(*hostname_tmp);
+    VIR_FREE(*clientid_tmp);
+    VIR_FREE(mac_tmp);
+    VIR_FREE(iaid_tmp);
+    VIR_FREE(hostname_tmp);
+    VIR_FREE(clientid_tmp);
+    VIR_FREE(lease_dst->ipaddr);
+    VIR_FREE(lease_dst->interface);
+    return -1;
+}
+
+
+static int
+remoteDispatchNetworkGetDHCPLeases(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                   virNetServerClientPtr client,
+                                   virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                   virNetMessageErrorPtr rerr,
+                                   remote_network_get_dhcp_leases_args *args,
+                                   remote_network_get_dhcp_leases_ret *ret)
+{
+    int rv = -1;
+    size_t i;
+    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
+    virNetworkDHCPLeasePtr *leases = NULL;
+    virNetworkPtr net = NULL;
+    int nleases = 0;
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(net = get_nonnull_network(priv->conn, args->net)))
+        goto cleanup;
+
+    if ((nleases = virNetworkGetDHCPLeases(net,
+                                           args->need_results ? &leases : NULL,
+                                           args->flags)) < 0)
+        goto cleanup;
+
+    if (nleases > REMOTE_NETWORK_DHCP_LEASES_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Number of leases is %d, which exceeds max limit: %d"),
+                       nleases, REMOTE_NETWORK_DHCP_LEASES_MAX);
+        goto cleanup;
+    }
+
+    if (leases && nleases) {
+        if (VIR_ALLOC_N(ret->leases.leases_val, nleases) < 0)
+            goto cleanup;
+
+        ret->leases.leases_len = nleases;
+
+        for (i = 0; i < nleases; i++) {
+            if (remoteSerializeDHCPLease(ret->leases.leases_val + i, leases[i]) < 0)
+                goto cleanup;
+        }
+
+    } else {
+        ret->leases.leases_len = 0;
+        ret->leases.leases_val = NULL;
+    }
+
+    ret->ret = nleases;
+
+    rv = 0;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (leases) {
+        for (i = 0; i < nleases; i++)
+            virNetworkDHCPLeaseFree(leases[i]);
+        VIR_FREE(leases);
+    }
+    virNetworkFree(net);
+    return rv;
+}
+
+
+static int
+remoteDispatchNetworkGetDHCPLeasesForMAC(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                         virNetServerClientPtr client,
+                                         virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                         virNetMessageErrorPtr rerr,
+                                         remote_network_get_dhcp_leases_for_mac_args *args,
+                                         remote_network_get_dhcp_leases_for_mac_ret *ret)
+{
+    int rv = -1;
+    size_t i;
+    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
+    virNetworkDHCPLeasePtr *leases = NULL;
+    virNetworkPtr net = NULL;
+    int nleases = 0;
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(net = get_nonnull_network(priv->conn, args->net)))
+        goto cleanup;
+
+    if ((nleases = virNetworkGetDHCPLeasesForMAC(net, args->mac,
+                                                 args->need_results ? &leases : NULL,
+                                                 args->flags)) < 0)
+        goto cleanup;
+
+    if (nleases > REMOTE_NETWORK_DHCP_LEASES_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Number of leases is %d, which exceeds max limit: %d"),
+                       nleases, REMOTE_NETWORK_DHCP_LEASES_MAX);
+        return -1;
+    }
+
+    if (leases && nleases) {
+        if (VIR_ALLOC_N(ret->leases.leases_val, nleases) < 0)
+            goto cleanup;
+
+        ret->leases.leases_len = nleases;
+
+        for (i = 0; i < nleases; i++) {
+            if (remoteSerializeDHCPLease(ret->leases.leases_val + i, leases[i]) < 0)
+                goto cleanup;
+        }
+
+    } else {
+        ret->leases.leases_len = 0;
+        ret->leases.leases_val = NULL;
+    }
+
+    ret->ret = nleases;
+
+    rv = 0;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (leases) {
+        for (i = 0; i < nleases; i++)
+            virNetworkDHCPLeaseFree(leases[i]);
+        VIR_FREE(leases);
+    }
+    virNetworkFree(net);
+    return rv;
 }
 
 

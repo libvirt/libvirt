@@ -7549,6 +7549,190 @@ remoteNodeGetFreePages(virConnectPtr conn,
 }
 
 
+/* Copy contents of remote_network_dhcp_lease to virNetworkDHCPLeasePtr */
+static int
+remoteSerializeDHCPLease(virNetworkDHCPLeasePtr lease_dst, remote_network_dhcp_lease *lease_src)
+{
+    lease_dst->expirytime = lease_src->expirytime;
+    lease_dst->type = lease_src->type;
+    lease_dst->prefix = lease_src->prefix;
+
+    if (VIR_STRDUP(lease_dst->interface, lease_src->interface) < 0)
+        goto error;
+
+    if (VIR_STRDUP(lease_dst->ipaddr, lease_src->ipaddr) < 0)
+        goto error;
+
+    if (lease_src->mac) {
+        if (VIR_STRDUP(lease_dst->mac, *lease_src->mac) < 0)
+            goto error;
+    } else {
+        lease_src->mac = NULL;
+    }
+
+    if (lease_src->iaid) {
+        if (VIR_STRDUP(lease_dst->iaid, *lease_src->iaid) < 0)
+            goto error;
+    } else {
+        lease_src->iaid = NULL;
+    }
+
+    if (lease_src->hostname) {
+        if (VIR_STRDUP(lease_dst->hostname, *lease_src->hostname) < 0)
+            goto error;
+    } else {
+        lease_src->hostname = NULL;
+    }
+
+    if (lease_src->clientid) {
+        if (VIR_STRDUP(lease_dst->clientid, *lease_src->clientid) < 0)
+            goto error;
+    } else {
+        lease_src->clientid = NULL;
+    }
+
+    return 0;
+
+ error:
+    virNetworkDHCPLeaseFree(lease_dst);
+    return -1;
+}
+
+
+static int
+remoteNetworkGetDHCPLeases(virNetworkPtr net,
+                           virNetworkDHCPLeasePtr **leases,
+                           unsigned int flags)
+{
+    int rv = -1;
+    size_t i;
+    struct private_data *priv = net->conn->networkPrivateData;
+    remote_network_get_dhcp_leases_args args;
+    remote_network_get_dhcp_leases_ret ret;
+
+    virNetworkDHCPLeasePtr *leases_ret = NULL;
+    remoteDriverLock(priv);
+
+    make_nonnull_network(&args.net, net);
+    args.flags = flags;
+    args.need_results = !!leases;
+
+    memset(&ret, 0, sizeof(ret));
+
+    if (call(net->conn, priv, 0, REMOTE_PROC_NETWORK_GET_DHCP_LEASES,
+             (xdrproc_t)xdr_remote_network_get_dhcp_leases_args, (char *)&args,
+             (xdrproc_t)xdr_remote_network_get_dhcp_leases_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (ret.leases.leases_len > REMOTE_NETWORK_DHCP_LEASES_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Number of leases is %d, which exceeds max limit: %d"),
+                       ret.leases.leases_len, REMOTE_NETWORK_DHCP_LEASES_MAX);
+        goto cleanup;
+    }
+
+    if (leases) {
+        if (ret.leases.leases_len &&
+            VIR_ALLOC_N(leases_ret, ret.leases.leases_len + 1) < 0)
+            goto cleanup;
+
+        for (i = 0; i < ret.leases.leases_len; i++) {
+            if (VIR_ALLOC(leases_ret[i]) < 0)
+                goto cleanup;
+
+            if (remoteSerializeDHCPLease(leases_ret[i], &ret.leases.leases_val[i]) < 0)
+                goto cleanup;
+        }
+
+        *leases = leases_ret;
+        leases_ret = NULL;
+    }
+
+    rv = ret.ret;
+
+ cleanup:
+    if (leases_ret) {
+        for (i = 0; i < ret.leases.leases_len; i++)
+            virNetworkDHCPLeaseFree(leases_ret[i]);
+        VIR_FREE(leases_ret);
+    }
+    xdr_free((xdrproc_t)xdr_remote_network_get_dhcp_leases_ret,
+             (char *) &ret);
+
+ done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
+remoteNetworkGetDHCPLeasesForMAC(virNetworkPtr net,
+                                 const char *mac,
+                                 virNetworkDHCPLeasePtr **leases,
+                                 unsigned int flags)
+{
+    int rv = -1;
+    size_t i;
+    struct private_data *priv = net->conn->networkPrivateData;
+    remote_network_get_dhcp_leases_for_mac_args args;
+    remote_network_get_dhcp_leases_for_mac_ret ret;
+
+    virNetworkDHCPLeasePtr *leases_ret = NULL;
+    remoteDriverLock(priv);
+
+    make_nonnull_network(&args.net, net);
+    args.mac = (char *) mac;
+    args.flags = flags;
+    args.need_results = !!leases;
+
+    memset(&ret, 0, sizeof(ret));
+
+    if (call(net->conn, priv, 0, REMOTE_PROC_NETWORK_GET_DHCP_LEASES_FOR_MAC,
+             (xdrproc_t)xdr_remote_network_get_dhcp_leases_for_mac_args, (char *)&args,
+             (xdrproc_t)xdr_remote_network_get_dhcp_leases_for_mac_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (ret.leases.leases_len > REMOTE_NETWORK_DHCP_LEASES_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Number of leases is %d, which exceeds max limit: %d"),
+                       ret.leases.leases_len, REMOTE_NETWORK_DHCP_LEASES_MAX);
+        goto cleanup;
+    }
+
+    if (leases) {
+        if (ret.leases.leases_len &&
+            VIR_ALLOC_N(leases_ret, ret.leases.leases_len + 1) < 0)
+            goto cleanup;
+
+        for (i = 0; i < ret.leases.leases_len; i++) {
+            if (VIR_ALLOC(leases_ret[i]) < 0)
+                goto cleanup;
+
+            if (remoteSerializeDHCPLease(leases_ret[i], &ret.leases.leases_val[i]) < 0)
+                goto cleanup;
+        }
+
+        *leases = leases_ret;
+        leases_ret = NULL;
+    }
+
+    rv = ret.ret;
+
+ cleanup:
+    if (leases_ret) {
+        for (i = 0; i < ret.leases.leases_len; i++)
+            virNetworkDHCPLeaseFree(leases_ret[i]);
+        VIR_FREE(leases_ret);
+    }
+    xdr_free((xdrproc_t)xdr_remote_network_get_dhcp_leases_for_mac_ret,
+             (char *) &ret);
+
+ done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
  * (name, uuid) pair into virDomainPtr or virNetworkPtr object.
  * These can return NULL if underlying memory allocations fail,
@@ -7913,6 +8097,8 @@ static virNetworkDriver network_driver = {
     .networkSetAutostart = remoteNetworkSetAutostart, /* 0.3.0 */
     .networkIsActive = remoteNetworkIsActive, /* 0.7.3 */
     .networkIsPersistent = remoteNetworkIsPersistent, /* 0.7.3 */
+    .networkGetDHCPLeases = remoteNetworkGetDHCPLeases, /* 1.2.6 */
+    .networkGetDHCPLeasesForMAC = remoteNetworkGetDHCPLeasesForMAC, /* 1.2.6 */
 };
 
 static virInterfaceDriver interface_driver = {

@@ -238,6 +238,9 @@ const REMOTE_CONNECT_CPU_MODELS_MAX = 8192;
 /* Upper limit on number of mountpoints to frozen */
 const REMOTE_DOMAIN_FSFREEZE_MOUNTPOINTS_MAX = 256;
 
+/* Upper limit on the maximum number of leases in one lease file */
+const REMOTE_NETWORK_DHCP_LEASES_MAX = 65536;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -3018,6 +3021,40 @@ struct remote_node_get_free_pages_ret {
     unsigned hyper counts<REMOTE_NODE_MAX_CELLS>;
 };
 
+struct remote_network_dhcp_lease {
+    remote_nonnull_string interface;
+    hyper expirytime;
+    int type;
+    remote_string mac;
+    remote_string iaid;
+    remote_nonnull_string ipaddr;
+    unsigned int prefix;
+    remote_string hostname;
+    remote_string clientid;
+};
+
+struct remote_network_get_dhcp_leases_args {
+    remote_nonnull_network net;
+    int need_results;
+    unsigned int flags;
+};
+
+struct remote_network_get_dhcp_leases_ret {
+    remote_network_dhcp_lease leases<REMOTE_NETWORK_DHCP_LEASES_MAX>;
+    unsigned int ret;
+};
+
+struct remote_network_get_dhcp_leases_for_mac_args {
+    remote_nonnull_network net;
+    remote_nonnull_string mac;
+    int need_results;
+    unsigned int flags;
+};
+
+struct remote_network_get_dhcp_leases_for_mac_ret {
+    remote_network_dhcp_lease leases<REMOTE_NETWORK_DHCP_LEASES_MAX>;
+    unsigned int ret;
+};
 
 /*----- Protocol. -----*/
 
@@ -5370,5 +5407,17 @@ enum remote_procedure {
      * @priority: high
      * @acl: connect:read
      */
-    REMOTE_PROC_NODE_GET_FREE_PAGES = 340
+    REMOTE_PROC_NODE_GET_FREE_PAGES = 340,
+
+    /**
+     * @generate: none
+     * @acl: network:read
+     */
+    REMOTE_PROC_NETWORK_GET_DHCP_LEASES = 341,
+
+    /**
+     * @generate: none
+     * @acl: network:read
+     */
+    REMOTE_PROC_NETWORK_GET_DHCP_LEASES_FOR_MAC = 342
 };
