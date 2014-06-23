@@ -50,6 +50,14 @@ int virDomainLockDiskDetach(virLockManagerPluginPtr plugin,
                             virDomainObjPtr dom,
                             virDomainDiskDefPtr disk);
 
+int virDomainLockImageAttach(virLockManagerPluginPtr plugin,
+                             const char *uri,
+                             virDomainObjPtr dom,
+                             virStorageSourcePtr src);
+int virDomainLockImageDetach(virLockManagerPluginPtr plugin,
+                             virDomainObjPtr dom,
+                             virStorageSourcePtr src);
+
 int virDomainLockLeaseAttach(virLockManagerPluginPtr plugin,
                              const char *uri,
                              virDomainObjPtr dom,

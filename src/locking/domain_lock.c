@@ -68,14 +68,13 @@ static int virDomainLockManagerAddLease(virLockManagerPtr lock,
 }
 
 
-static int virDomainLockManagerAddDisk(virLockManagerPtr lock,
-                                       virDomainDiskDefPtr disk)
+static int virDomainLockManagerAddImage(virLockManagerPtr lock,
+                                        virStorageSourcePtr src)
 {
     unsigned int diskFlags = 0;
-    const char *src = virDomainDiskGetSource(disk);
-    int type = virDomainDiskGetType(disk);
+    int type = virStorageSourceGetActualType(src);
 
-    if (!src)
+    if (!src->path)
         return 0;
 
     if (!(type == VIR_STORAGE_TYPE_BLOCK ||
@@ -83,23 +82,24 @@ static int virDomainLockManagerAddDisk(virLockManagerPtr lock,
           type == VIR_STORAGE_TYPE_DIR))
         return 0;
 
-    if (disk->src->readonly)
+    if (src->readonly)
         diskFlags |= VIR_LOCK_MANAGER_RESOURCE_READONLY;
-    if (disk->src->shared)
+    if (src->shared)
         diskFlags |= VIR_LOCK_MANAGER_RESOURCE_SHARED;
 
-    VIR_DEBUG("Add disk %s", src);
+    VIR_DEBUG("Add disk %s", src->path);
     if (virLockManagerAddResource(lock,
                                   VIR_LOCK_MANAGER_RESOURCE_TYPE_DISK,
-                                  src,
+                                  src->path,
                                   0,
                                   NULL,
                                   diskFlags) < 0) {
-        VIR_DEBUG("Failed add disk %s", src);
+        VIR_DEBUG("Failed add disk %s", src->path);
         return -1;
     }
     return 0;
 }
+
 
 static virLockManagerPtr virDomainLockManagerNew(virLockManagerPluginPtr plugin,
                                                  const char *uri,
@@ -148,9 +148,12 @@ static virLockManagerPtr virDomainLockManagerNew(virLockManagerPluginPtr plugin,
                 goto error;
 
         VIR_DEBUG("Adding disks");
-        for (i = 0; i < dom->def->ndisks; i++)
-            if (virDomainLockManagerAddDisk(lock, dom->def->disks[i]) < 0)
+        for (i = 0; i < dom->def->ndisks; i++) {
+            virDomainDiskDefPtr disk = dom->def->disks[i];
+
+            if (virDomainLockManagerAddImage(lock, disk->src) < 0)
                 goto error;
+        }
     }
 
     return lock;
@@ -247,21 +250,20 @@ int virDomainLockProcessInquire(virLockManagerPluginPtr plugin,
 }
 
 
-int virDomainLockDiskAttach(virLockManagerPluginPtr plugin,
-                            const char *uri,
-                            virDomainObjPtr dom,
-                            virDomainDiskDefPtr disk)
+int virDomainLockImageAttach(virLockManagerPluginPtr plugin,
+                             const char *uri,
+                             virDomainObjPtr dom,
+                             virStorageSourcePtr src)
 {
     virLockManagerPtr lock;
     int ret = -1;
 
-    VIR_DEBUG("plugin=%p dom=%p disk=%p",
-              plugin, dom, disk);
+    VIR_DEBUG("plugin=%p dom=%p src=%p", plugin, dom, src);
 
     if (!(lock = virDomainLockManagerNew(plugin, uri, dom, false)))
         return -1;
 
-    if (virDomainLockManagerAddDisk(lock, disk) < 0)
+    if (virDomainLockManagerAddImage(lock, src) < 0)
         goto cleanup;
 
     if (virLockManagerAcquire(lock, NULL, 0,
@@ -276,20 +278,29 @@ int virDomainLockDiskAttach(virLockManagerPluginPtr plugin,
     return ret;
 }
 
-int virDomainLockDiskDetach(virLockManagerPluginPtr plugin,
+
+int virDomainLockDiskAttach(virLockManagerPluginPtr plugin,
+                            const char *uri,
                             virDomainObjPtr dom,
                             virDomainDiskDefPtr disk)
+{
+    return virDomainLockImageAttach(plugin, uri, dom, disk->src);
+}
+
+
+int virDomainLockImageDetach(virLockManagerPluginPtr plugin,
+                             virDomainObjPtr dom,
+                             virStorageSourcePtr src)
 {
     virLockManagerPtr lock;
     int ret = -1;
 
-    VIR_DEBUG("plugin=%p dom=%p disk=%p",
-              plugin, dom, disk);
+    VIR_DEBUG("plugin=%p dom=%p src=%p", plugin, dom, src);
 
     if (!(lock = virDomainLockManagerNew(plugin, NULL, dom, false)))
         return -1;
 
-    if (virDomainLockManagerAddDisk(lock, disk) < 0)
+    if (virDomainLockManagerAddImage(lock, src) < 0)
         goto cleanup;
 
     if (virLockManagerRelease(lock, NULL, 0) < 0)
@@ -301,6 +312,14 @@ int virDomainLockDiskDetach(virLockManagerPluginPtr plugin,
     virLockManagerFree(lock);
 
     return ret;
+}
+
+
+int virDomainLockDiskDetach(virLockManagerPluginPtr plugin,
+                            virDomainObjPtr dom,
+                            virDomainDiskDefPtr disk)
+{
+    return virDomainLockImageDetach(plugin, dom, disk->src);
 }
 
 
