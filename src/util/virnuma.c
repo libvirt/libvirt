@@ -512,9 +512,12 @@ virNumaGetDistances(int node ATTRIBUTE_UNUSED,
 #endif
 
 
-#define HUGEPAGES_NUMA_PREFIX "/sys/devices/system/node/"
-#define HUGEPAGES_SYSTEM_PREFIX "/sys/kernel/mm/hugepages/"
-#define HUGEPAGES_PREFIX "hugepages-"
+/* currently all the hugepage stuff below is linux only */
+#if WITH_LINUX
+
+# define HUGEPAGES_NUMA_PREFIX "/sys/devices/system/node/"
+# define HUGEPAGES_SYSTEM_PREFIX "/sys/kernel/mm/hugepages/"
+# define HUGEPAGES_PREFIX "hugepages-"
 
 static int
 virNumaGetHugePageInfoPath(char **path,
@@ -663,7 +666,7 @@ virNumaGetPageInfo(int node,
     /* sysconf() returns page size in bytes,
      * the @page_size is however in kibibytes */
     if (page_size == system_page_size / 1024) {
-#if 0
+# if 0
         unsigned long long memsize, memfree;
 
         /* TODO: come up with better algorithm that takes huge pages into
@@ -681,11 +684,11 @@ virNumaGetPageInfo(int node,
 
         if (page_free)
             *page_free = memfree / system_page_size;
-#else
+# else
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("system page size are not supported yet"));
         goto cleanup;
-#endif /* 0 */
+# endif /* 0 */
     } else {
         if (virNumaGetHugePageInfo(node, page_size, page_avail, page_free) < 0)
             goto cleanup;
@@ -735,7 +738,7 @@ virNumaGetPages(int node,
     size_t i;
     bool exchange;
 
-#if 0
+# if 0
     /* This has to be disabled until the time the issue in
      * virNumaGetPageInfo is resolved. Sorry. */
     long system_page_size;
@@ -756,7 +759,7 @@ virNumaGetPages(int node,
         goto cleanup;
     tmp_size[ntmp] = system_page_size;
     ntmp++;
-#endif /* 0 */
+# endif /* 0 */
 
     /* Now that we got ordinary system pages, lets get info on huge pages */
     if (virNumaGetHugePageInfoPath(&path, node, 0, NULL) < 0)
@@ -844,3 +847,30 @@ virNumaGetPages(int node,
     VIR_FREE(path);
     return ret;
 }
+
+
+#else /* #if WITH_LINUX */
+int
+virNumaGetPageInfo(int node ATTRIBUTE_UNUSED,
+                   unsigned int page_size ATTRIBUTE_UNUSED,
+                   unsigned int *page_avail ATTRIBUTE_UNUSED,
+                   unsigned int *page_free ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                   _("page info is not supported on this platform"));
+    return -1;
+}
+
+
+int
+virNumaGetPages(int node ATTRIBUTE_UNUSED,
+                unsigned int **pages_size ATTRIBUTE_UNUSED,
+                unsigned int **pages_avail ATTRIBUTE_UNUSED,
+                unsigned int **pages_free ATTRIBUTE_UNUSED,
+                size_t *npages ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                   _("page info is not supported on this platform"));
+    return -1;
+}
+#endif /* #if WITH_LINUX */
