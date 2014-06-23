@@ -512,8 +512,8 @@ virNumaGetDistances(int node ATTRIBUTE_UNUSED,
 #endif
 
 
-/* currently all the hugepage stuff below is linux only */
-#if WITH_LINUX
+/* currently all the huge page stuff below is linux only */
+#ifdef __linux__
 
 # define HUGEPAGES_NUMA_PREFIX "/sys/devices/system/node/"
 # define HUGEPAGES_SYSTEM_PREFIX "/sys/kernel/mm/hugepages/"
@@ -849,7 +849,7 @@ virNumaGetPages(int node,
 }
 
 
-#else /* #if WITH_LINUX */
+#else /* #ifdef __linux__ */
 int
 virNumaGetPageInfo(int node ATTRIBUTE_UNUSED,
                    unsigned int page_size ATTRIBUTE_UNUSED,
@@ -873,4 +873,4 @@ virNumaGetPages(int node ATTRIBUTE_UNUSED,
                    _("page info is not supported on this platform"));
     return -1;
 }
-#endif /* #if WITH_LINUX */
+#endif /* #ifdef __linux__ */
