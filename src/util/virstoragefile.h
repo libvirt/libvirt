@@ -193,12 +193,34 @@ typedef virStorageSourcePoolDef *virStorageSourcePoolDefPtr;
 
 
 typedef enum {
+    VIR_STORAGE_AUTH_TYPE_NONE,
+    VIR_STORAGE_AUTH_TYPE_CHAP,
+    VIR_STORAGE_AUTH_TYPE_CEPHX,
+
+    VIR_STORAGE_AUTH_TYPE_LAST,
+} virStorageAuthType;
+VIR_ENUM_DECL(virStorageAuth)
+
+typedef enum {
     VIR_STORAGE_SECRET_TYPE_NONE,
     VIR_STORAGE_SECRET_TYPE_UUID,
     VIR_STORAGE_SECRET_TYPE_USAGE,
 
     VIR_STORAGE_SECRET_TYPE_LAST
 } virStorageSecretType;
+
+typedef struct _virStorageAuthDef virStorageAuthDef;
+typedef virStorageAuthDef *virStorageAuthDefPtr;
+struct _virStorageAuthDef {
+    char *username;
+    char *secrettype; /* <secret type='%s' for disk source */
+    int authType;     /* virStorageAuthType */
+    int secretType;   /* virStorageSecretType */
+    union {
+        unsigned char uuid[VIR_UUID_BUFLEN];
+        char *usage;
+    } secret;
+};
 
 typedef struct _virStorageDriverData virStorageDriverData;
 typedef virStorageDriverData *virStorageDriverDataPtr;
@@ -306,6 +328,11 @@ int virStorageFileGetLVMKey(const char *path,
                             char **key);
 int virStorageFileGetSCSIKey(const char *path,
                              char **key);
+
+void virStorageAuthDefFree(virStorageAuthDefPtr def);
+virStorageAuthDefPtr virStorageAuthDefCopy(const virStorageAuthDef *src);
+virStorageAuthDefPtr virStorageAuthDefParse(xmlDocPtr xml, xmlNodePtr root);
+int virStorageAuthDefFormat(virBufferPtr buf, virStorageAuthDefPtr authdef);
 
 virSecurityDeviceLabelDefPtr
 virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,

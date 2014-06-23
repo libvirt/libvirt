@@ -1889,6 +1889,10 @@ virStorageGenerateQcowPassphrase;
 
 
 # util/virstoragefile.h
+virStorageAuthDefCopy;
+virStorageAuthDefFormat;
+virStorageAuthDefFree;
+virStorageAuthDefParse;
 virStorageFileCanonicalizePath;
 virStorageFileChainGetBroken;
 virStorageFileChainLookup;

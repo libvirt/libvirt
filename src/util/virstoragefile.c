@@ -29,6 +29,8 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include "viralloc.h"
+#include "virxml.h"
+#include "viruuid.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virfile.h"
@@ -96,6 +98,10 @@ VIR_ENUM_IMPL(virStorageSourcePoolMode,
               "default",
               "host",
               "direct")
+
+VIR_ENUM_IMPL(virStorageAuth,
+              VIR_STORAGE_AUTH_TYPE_LAST,
+              "none", "chap", "ceph")
 
 enum lv_endian {
     LV_LITTLE_ENDIAN = 1, /* 1234 */
@@ -1497,6 +1503,204 @@ virStorageNetHostDefCopy(size_t nhosts,
  error:
     virStorageNetHostDefFree(nhosts, ret);
     return NULL;
+}
+
+
+void
+virStorageAuthDefFree(virStorageAuthDefPtr authdef)
+{
+    if (!authdef)
+        return;
+
+    VIR_FREE(authdef->username);
+    VIR_FREE(authdef->secrettype);
+    if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_USAGE)
+        VIR_FREE(authdef->secret.usage);
+    VIR_FREE(authdef);
+}
+
+
+virStorageAuthDefPtr
+virStorageAuthDefCopy(const virStorageAuthDef *src)
+{
+    virStorageAuthDefPtr ret;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    if (VIR_STRDUP(ret->username, src->username) < 0)
+        goto error;
+    /* Not present for storage pool, but used for disk source */
+    if (VIR_STRDUP(ret->secrettype, src->secrettype) < 0)
+        goto error;
+    ret->authType = src->authType;
+    ret->secretType = src->secretType;
+    if (ret->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
+        memcpy(ret->secret.uuid, src->secret.uuid, sizeof(ret->secret.uuid));
+    } else if (ret->secretType == VIR_STORAGE_SECRET_TYPE_USAGE) {
+        if (VIR_STRDUP(ret->secret.usage, src->secret.usage) < 0)
+            goto error;
+    }
+    return ret;
+
+ error:
+    virStorageAuthDefFree(ret);
+    return NULL;
+}
+
+
+static int
+virStorageAuthDefParseSecret(xmlXPathContextPtr ctxt,
+                             virStorageAuthDefPtr authdef)
+{
+    char *uuid;
+    char *usage;
+    int ret = -1;
+
+    /* Used by the domain disk xml parsing in order to ensure the
+     * <secret type='%s' value matches the expected secret type for
+     * the style of disk (iscsi is chap, nbd is ceph). For some reason
+     * the virSecretUsageType{From|To}String() cannot be linked here
+     * and because only the domain parsing code cares - just keep
+     * it as a string.
+     */
+    authdef->secrettype = virXPathString("string(./secret/@type)", ctxt);
+
+    uuid = virXPathString("string(./secret/@uuid)", ctxt);
+    usage = virXPathString("string(./secret/@usage)", ctxt);
+    if (uuid == NULL && usage == NULL) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing auth secret uuid or usage attribute"));
+        goto cleanup;
+    }
+
+    if (uuid && usage) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("either auth secret uuid or usage expected"));
+        goto cleanup;
+    }
+
+    if (uuid) {
+        if (virUUIDParse(uuid, authdef->secret.uuid) < 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                            _("invalid auth secret uuid"));
+            goto cleanup;
+        }
+        authdef->secretType = VIR_STORAGE_SECRET_TYPE_UUID;
+    } else {
+        authdef->secret.usage = usage;
+        usage = NULL;
+        authdef->secretType = VIR_STORAGE_SECRET_TYPE_USAGE;
+    }
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(uuid);
+    VIR_FREE(usage);
+    return ret;
+}
+
+
+static virStorageAuthDefPtr
+virStorageAuthDefParseXML(xmlXPathContextPtr ctxt)
+{
+    virStorageAuthDefPtr authdef = NULL;
+    char *username = NULL;
+    char *authtype = NULL;
+
+    if (VIR_ALLOC(authdef) < 0)
+        return NULL;
+
+    if (!(username = virXPathString("string(./@username)", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing username for auth"));
+        goto error;
+    }
+    authdef->username = username;
+    username = NULL;
+
+    authdef->authType = VIR_STORAGE_AUTH_TYPE_NONE;
+    authtype = virXPathString("string(./@type)", ctxt);
+    if (authtype) {
+        /* Used by the storage pool instead of the secret type field
+         * to define whether chap or ceph being used
+         */
+        if ((authdef->authType = virStorageAuthTypeFromString(authtype)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown auth type '%s'"), authtype);
+            goto error;
+        }
+        VIR_FREE(authtype);
+    }
+
+    authdef->secretType = VIR_STORAGE_SECRET_TYPE_NONE;
+    if (virStorageAuthDefParseSecret(ctxt, authdef) < 0)
+        goto error;
+
+    return authdef;
+
+ error:
+    VIR_FREE(authtype);
+    VIR_FREE(username);
+    virStorageAuthDefFree(authdef);
+    return NULL;
+}
+
+
+virStorageAuthDefPtr
+virStorageAuthDefParse(xmlDocPtr xml, xmlNodePtr root)
+{
+    xmlXPathContextPtr ctxt = NULL;
+    virStorageAuthDefPtr authdef = NULL;
+
+    ctxt = xmlXPathNewContext(xml);
+    if (ctxt == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ctxt->node = root;
+    authdef = virStorageAuthDefParseXML(ctxt);
+
+ cleanup:
+    xmlXPathFreeContext(ctxt);
+    return authdef;
+}
+
+
+int
+virStorageAuthDefFormat(virBufferPtr buf,
+                        virStorageAuthDefPtr authdef)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    if (authdef->authType == VIR_STORAGE_AUTH_TYPE_NONE) {
+        virBufferEscapeString(buf, "<auth username='%s'>\n", authdef->username);
+    } else {
+        virBufferAsprintf(buf, "<auth type='%s' ",
+                          virStorageAuthTypeToString(authdef->authType));
+        virBufferEscapeString(buf, "username='%s'>\n", authdef->username);
+    }
+
+    virBufferAdjustIndent(buf, 2);
+    if (authdef->secrettype)
+        virBufferAsprintf(buf, "<secret type='%s'", authdef->secrettype);
+    else
+        virBufferAddLit(buf, "<secret");
+
+    if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
+        virUUIDFormat(authdef->secret.uuid, uuidstr);
+        virBufferAsprintf(buf, " uuid='%s'/>\n", uuidstr);
+    } else if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_USAGE) {
+        virBufferEscapeString(buf, " usage='%s'/>\n",
+                              authdef->secret.usage);
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</auth>\n");
+
+    return 0;
 }
 
 
