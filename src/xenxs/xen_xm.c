@@ -625,10 +625,10 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
 
             if (STREQ(head, "r") ||
                 STREQ(head, "ro"))
-                disk->readonly = true;
+                disk->src->readonly = true;
             else if ((STREQ(head, "w!")) ||
                      (STREQ(head, "!")))
-                disk->shared = true;
+                disk->src->shared = true;
 
             /* Maintain list in sorted order according to target device name */
             if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
@@ -656,7 +656,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             if (VIR_STRDUP(disk->dst, "hdc") < 0)
                 goto cleanup;
             disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
-            disk->readonly = true;
+            disk->src->readonly = true;
 
             if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
                 goto cleanup;
@@ -1249,9 +1249,9 @@ xenFormatXMDisk(virConfValuePtr list,
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
         virBufferAddLit(&buf, ":cdrom");
 
-    if (disk->readonly)
+    if (disk->src->readonly)
         virBufferAddLit(&buf, ",r");
-    else if (disk->shared)
+    else if (disk->src->shared)
         virBufferAddLit(&buf, ",!");
     else
         virBufferAddLit(&buf, ",w");

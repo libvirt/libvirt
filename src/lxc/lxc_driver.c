@@ -4057,7 +4057,7 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
-    perms = (def->readonly ?
+    perms = (def->src->readonly ?
              VIR_CGROUP_DEVICE_READ :
              VIR_CGROUP_DEVICE_RW) |
         VIR_CGROUP_DEVICE_MKNOD;

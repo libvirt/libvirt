@@ -455,7 +455,7 @@ static int virLXCControllerSetupNBDDeviceDisk(virDomainDiskDefPtr disk)
 
     if (virFileNBDDeviceAssociate(src,
                                   format,
-                                  disk->readonly,
+                                  disk->src->readonly,
                                   &dev) < 0)
         return -1;
 

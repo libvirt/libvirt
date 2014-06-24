@@ -1155,7 +1155,7 @@ virSecuritySELinuxRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
      * we can't see running VMs using the file on other nodes
      * Safest bet is thus to skip the restore step.
      */
-    if (disk->readonly || disk->shared)
+    if (disk->src->readonly || disk->src->shared)
         return 0;
 
     if (!src || virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_NETWORK)
@@ -1213,9 +1213,9 @@ virSecuritySELinuxSetSecurityFileLabel(virDomainDiskDefPtr disk,
         ret = virSecuritySELinuxSetFilecon(path, disk_seclabel->label);
     } else if (depth == 0) {
 
-        if (disk->shared) {
+        if (disk->src->shared) {
             ret = virSecuritySELinuxSetFileconOptional(path, data->file_context);
-        } else if (disk->readonly) {
+        } else if (disk->src->readonly) {
             ret = virSecuritySELinuxSetFileconOptional(path, data->content_context);
         } else if (secdef->imagelabel) {
             ret = virSecuritySELinuxSetFileconOptional(path, secdef->imagelabel);

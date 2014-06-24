@@ -255,6 +255,12 @@ struct _virStorageSource {
     size_t nseclabels;
     virSecurityDeviceLabelDefPtr *seclabels;
 
+    /* Don't ever write to the image */
+    bool readonly;
+
+    /* image is shared across hosts */
+    bool shared;
+
     /* backing chain of the storage source */
     virStorageSourcePtr backingStore;
 

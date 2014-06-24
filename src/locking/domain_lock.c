@@ -83,9 +83,9 @@ static int virDomainLockManagerAddDisk(virLockManagerPtr lock,
           type == VIR_STORAGE_TYPE_DIR))
         return 0;
 
-    if (disk->readonly)
+    if (disk->src->readonly)
         diskFlags |= VIR_LOCK_MANAGER_RESOURCE_READONLY;
-    if (disk->shared)
+    if (disk->src->shared)
         diskFlags |= VIR_LOCK_MANAGER_RESOURCE_SHARED;
 
     VIR_DEBUG("Add disk %s", src);

@@ -906,7 +906,7 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
         disk = dev->data.disk;
 
-        if (!disk->shared || !virDomainDiskSourceIsBlockType(disk))
+        if (!disk->src->shared || !virDomainDiskSourceIsBlockType(disk))
             return 0;
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
         hostdev = dev->data.hostdev;
@@ -1013,7 +1013,7 @@ qemuRemoveSharedDevice(virQEMUDriverPtr driver,
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
         disk = dev->data.disk;
 
-        if (!disk->shared || !virDomainDiskSourceIsBlockType(disk))
+        if (!disk->src->shared || !virDomainDiskSourceIsBlockType(disk))
             return 0;
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
         hostdev = dev->data.hostdev;

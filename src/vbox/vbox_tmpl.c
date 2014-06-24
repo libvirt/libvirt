@@ -2791,7 +2791,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                 hardDiskPM->vtbl->GetType(hardDiskPM, &hddType);
 
                 if (hddType == HardDiskType_Immutable)
-                    def->disks[hddNum]->readonly = true;
+                    def->disks[hddNum]->src->readonly = true;
                 ignore_value(virDomainDiskSetSource(def->disks[hddNum],
                                                     hddlocation));
                 ignore_value(VIR_STRDUP(def->disks[hddNum]->dst, "hda"));
@@ -2813,7 +2813,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                 hardDiskPS->vtbl->GetType(hardDiskPS, &hddType);
 
                 if (hddType == HardDiskType_Immutable)
-                    def->disks[hddNum]->readonly = true;
+                    def->disks[hddNum]->src->readonly = true;
                 ignore_value(virDomainDiskSetSource(def->disks[hddNum],
                                                     hddlocation));
                 ignore_value(VIR_STRDUP(def->disks[hddNum]->dst, "hdb"));
@@ -2835,7 +2835,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                 hardDiskSS->vtbl->GetType(hardDiskSS, &hddType);
 
                 if (hddType == HardDiskType_Immutable)
-                    def->disks[hddNum]->readonly = true;
+                    def->disks[hddNum]->src->readonly = true;
                 ignore_value(virDomainDiskSetSource(def->disks[hddNum],
                                                     hddlocation));
                 ignore_value(VIR_STRDUP(def->disks[hddNum]->dst, "hdd"));
@@ -2977,7 +2977,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 
                 medium->vtbl->GetReadOnly(medium, &readOnly);
                 if (readOnly == PR_TRUE)
-                    def->disks[diskCount]->readonly = true;
+                    def->disks[diskCount]->src->readonly = true;
 
                 virDomainDiskSetType(def->disks[diskCount],
                                      VIR_STORAGE_TYPE_FILE);
@@ -3257,7 +3257,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                                 def->disks[def->ndisks - 1]->bus = VIR_DOMAIN_DISK_BUS_IDE;
                                 virDomainDiskSetType(def->disks[def->ndisks - 1],
                                                      VIR_STORAGE_TYPE_FILE);
-                                def->disks[def->ndisks - 1]->readonly = true;
+                                def->disks[def->ndisks - 1]->src->readonly = true;
                                 ignore_value(virDomainDiskSetSource(def->disks[def->ndisks - 1], location));
                                 ignore_value(VIR_STRDUP(def->disks[def->ndisks - 1]->dst, "hdc"));
                                 def->ndisks--;
@@ -3304,7 +3304,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                                     def->disks[def->ndisks - 1]->bus = VIR_DOMAIN_DISK_BUS_FDC;
                                     virDomainDiskSetType(def->disks[def->ndisks - 1],
                                                          VIR_STORAGE_TYPE_FILE);
-                                    def->disks[def->ndisks - 1]->readonly = false;
+                                    def->disks[def->ndisks - 1]->src->readonly = false;
                                     ignore_value(virDomainDiskSetSource(def->disks[def->ndisks - 1], location));
                                     ignore_value(VIR_STRDUP(def->disks[def->ndisks - 1]->dst, "fda"));
                                     def->ndisks--;
@@ -3910,9 +3910,9 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         VIR_DEBUG("disk(%zu) driverType: %s", i,
                   virStorageFileFormatTypeToString(format));
         VIR_DEBUG("disk(%zu) cachemode:  %d", i, def->disks[i]->cachemode);
-        VIR_DEBUG("disk(%zu) readonly:   %s", i, (def->disks[i]->readonly
+        VIR_DEBUG("disk(%zu) readonly:   %s", i, (def->disks[i]->src->readonly
                                              ? "True" : "False"));
-        VIR_DEBUG("disk(%zu) shared:     %s", i, (def->disks[i]->shared
+        VIR_DEBUG("disk(%zu) shared:     %s", i, (def->disks[i]->src->shared
                                              ? "True" : "False"));
 
         if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
@@ -4014,11 +4014,11 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                                          "attached as harddisk: %s, rc=%08x"),
                                        src, (unsigned)rc);
                     } else {
-                        if (def->disks[i]->readonly) {
+                        if (def->disks[i]->src->readonly) {
                             hardDisk->vtbl->SetType(hardDisk,
                                                     HardDiskType_Immutable);
                             VIR_DEBUG("setting harddisk to readonly");
-                        } else if (!def->disks[i]->readonly) {
+                        } else if (!def->disks[i]->src->readonly) {
                             hardDisk->vtbl->SetType(hardDisk,
                                                     HardDiskType_Normal);
                             VIR_DEBUG("setting harddisk type to normal");
@@ -4193,9 +4193,9 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         VIR_DEBUG("disk(%zu) driverType: %s", i,
                   virStorageFileFormatTypeToString(format));
         VIR_DEBUG("disk(%zu) cachemode:  %d", i, def->disks[i]->cachemode);
-        VIR_DEBUG("disk(%zu) readonly:   %s", i, (def->disks[i]->readonly
+        VIR_DEBUG("disk(%zu) readonly:   %s", i, (def->disks[i]->src->readonly
                                              ? "True" : "False"));
-        VIR_DEBUG("disk(%zu) shared:     %s", i, (def->disks[i]->shared
+        VIR_DEBUG("disk(%zu) shared:     %s", i, (def->disks[i]->src->shared
                                              ? "True" : "False"));
 
         if (type == VIR_STORAGE_TYPE_FILE && src) {
@@ -4317,10 +4317,10 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             }
 
             if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-                if (def->disks[i]->readonly) {
+                if (def->disks[i]->src->readonly) {
                     medium->vtbl->SetType(medium, MediumType_Immutable);
                     VIR_DEBUG("setting harddisk to immutable");
-                } else if (!def->disks[i]->readonly) {
+                } else if (!def->disks[i]->src->readonly) {
                     medium->vtbl->SetType(medium, MediumType_Normal);
                     VIR_DEBUG("setting harddisk type to normal");
                 }
@@ -7500,7 +7500,7 @@ int vboxSnapshotGetReadOnlyDisks(virDomainSnapshotPtr snapshot,
             goto cleanup;
         }
         if (readOnly == PR_TRUE)
-            def->dom->disks[diskCount]->readonly = true;
+            def->dom->disks[diskCount]->src->readonly = true;
         def->dom->disks[diskCount]->src->type = VIR_STORAGE_TYPE_FILE;
         def->dom->disks[diskCount]->dst = vboxGenerateMediumName(storageBus,
                                                                  deviceInst,

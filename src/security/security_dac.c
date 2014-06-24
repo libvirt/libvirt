@@ -383,7 +383,7 @@ virSecurityDACRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
      * we can't see running VMs using the file on other nodes
      * Safest bet is thus to skip the restore step.
      */
-    if (disk->readonly || disk->shared)
+    if (disk->src->readonly || disk->src->shared)
         return 0;
 
     if (!src)

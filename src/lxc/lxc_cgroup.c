@@ -380,7 +380,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
 
         if (virCgroupAllowDevicePath(cgroup,
                                      virDomainDiskGetSource(def->disks[i]),
-                                     (def->disks[i]->readonly ?
+                                     (def->disks[i]->src->readonly ?
                                       VIR_CGROUP_DEVICE_READ :
                                       VIR_CGROUP_DEVICE_RW) |
                                      VIR_CGROUP_DEVICE_MKNOD) < 0)

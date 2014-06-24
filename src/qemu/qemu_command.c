@@ -3344,7 +3344,7 @@ qemuBuildDriveStr(virConnectPtr conn,
                 goto error;
             }
 
-            if (!disk->readonly) {
+            if (!disk->src->readonly) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("cannot create virtual FAT disks in read-write mode"));
                 goto error;
@@ -3412,7 +3412,7 @@ qemuBuildDriveStr(virConnectPtr conn,
          disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) &&
         disk->bus != VIR_DOMAIN_DISK_BUS_IDE)
         virBufferAddLit(&opt, ",boot=on");
-    if (disk->readonly &&
+    if (disk->src->readonly &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_READONLY)) {
         if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE &&
             disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
@@ -3478,7 +3478,7 @@ qemuBuildDriveStr(virConnectPtr conn,
         }
 
         virBufferAsprintf(&opt, ",cache=%s", mode);
-    } else if (disk->shared && !disk->readonly) {
+    } else if (disk->src->shared && !disk->src->readonly) {
         virBufferAddLit(&opt, ",cache=off");
     }
 
@@ -8005,7 +8005,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                                    virStorageFileFormatTypeToString(disk->src->format));
                     goto error;
                 }
-                if (!disk->readonly) {
+                if (!disk->src->readonly) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("cannot create virtual FAT disks in read-write mode"));
                     goto error;
@@ -9629,7 +9629,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
         } else if (STREQ(keywords[i], "media")) {
             if (STREQ(values[i], "cdrom")) {
                 def->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
-                def->readonly = true;
+                def->src->readonly = true;
             } else if (STREQ(values[i], "floppy"))
                 def->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
         } else if (STREQ(keywords[i], "format")) {
@@ -9685,7 +9685,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
             }
         } else if (STREQ(keywords[i], "readonly")) {
             if ((values[i] == NULL) || STREQ(values[i], "on"))
-                def->readonly = true;
+                def->src->readonly = true;
         } else if (STREQ(keywords[i], "aio")) {
             if ((def->iomode = virDomainDiskIoTypeFromString(values[i])) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -10853,7 +10853,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                     disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
                 if (VIR_STRDUP(disk->dst, "hdc") < 0)
                     goto error;
-                disk->readonly = true;
+                disk->src->readonly = true;
             } else {
                 if (STRPREFIX(arg, "-fd")) {
                     disk->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;

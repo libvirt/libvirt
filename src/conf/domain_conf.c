@@ -5495,9 +5495,9 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                     goto error;
                 }
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
-                def->readonly = true;
+                def->src->readonly = true;
             } else if (xmlStrEqual(cur->name, BAD_CAST "shareable")) {
-                def->shared = true;
+                def->src->shared = true;
             } else if (xmlStrEqual(cur->name, BAD_CAST "transient")) {
                 def->transient = true;
             } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
@@ -5624,7 +5624,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     /* Force CDROM to be listed as read only */
     if (def->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-        def->readonly = true;
+        def->src->readonly = true;
 
     if ((def->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
          def->device == VIR_DOMAIN_DISK_DEVICE_LUN) &&
@@ -5646,7 +5646,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                            snapshot);
             goto error;
         }
-    } else if (def->readonly) {
+    } else if (def->src->readonly) {
         def->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
     }
 
@@ -13349,7 +13349,8 @@ virDomainDiskDefCheckABIStability(virDomainDiskDefPtr src,
         return false;
     }
 
-    if (src->readonly != dst->readonly || src->shared != dst->shared) {
+    if (src->src->readonly != dst->src->readonly ||
+        src->src->shared != dst->src->shared) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Target disk access mode does not match source"));
         return false;
@@ -15096,7 +15097,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " sgio='%s'", sgio);
 
     if (def->snapshot &&
-        !(def->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE && def->readonly))
+        !(def->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE &&
+          def->src->readonly))
         virBufferAsprintf(buf, " snapshot='%s'",
                           virDomainSnapshotLocationTypeToString(def->snapshot));
     virBufferAddLit(buf, ">\n");
@@ -15235,9 +15237,9 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "</iotune>\n");
     }
 
-    if (def->readonly)
+    if (def->src->readonly)
         virBufferAddLit(buf, "<readonly/>\n");
-    if (def->shared)
+    if (def->src->shared)
         virBufferAddLit(buf, "<shareable/>\n");
     if (def->transient)
         virBufferAddLit(buf, "<transient/>\n");

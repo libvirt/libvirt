@@ -636,8 +636,6 @@ struct _virDomainDiskDef {
     int copy_on_read; /* enum virDomainDiskCopyOnRead */
     int snapshot; /* virDomainSnapshotLocation, snapshot_conf.h */
     int startupPolicy; /* enum virDomainStartupPolicy */
-    bool readonly;
-    bool shared;
     bool transient;
     virDomainDeviceInfo info;
     bool rawio_specified;

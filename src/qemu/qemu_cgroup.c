@@ -61,10 +61,10 @@ qemuSetupDiskPathAllow(virDomainDiskDefPtr disk,
 
     VIR_DEBUG("Process path %s for disk", path);
     ret = virCgroupAllowDevicePath(priv->cgroup, path,
-                                   (disk->readonly ? VIR_CGROUP_DEVICE_READ
+                                   (disk->src->readonly ? VIR_CGROUP_DEVICE_READ
                                     : VIR_CGROUP_DEVICE_RW));
     virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
-                             disk->readonly ? "r" : "rw", ret == 0);
+                             disk->src->readonly ? "r" : "rw", ret == 0);
 
     /* Get this for root squash NFS */
     if (ret < 0 &&

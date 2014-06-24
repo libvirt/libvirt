@@ -1156,7 +1156,8 @@ qemuMigrationStartNBDServer(virQEMUDriverPtr driver,
         virDomainDiskDefPtr disk = vm->def->disks[i];
 
         /* skip shared, RO and source-less disks */
-        if (disk->shared || disk->readonly || !virDomainDiskGetSource(disk))
+        if (disk->src->shared || disk->src->readonly ||
+            !virDomainDiskGetSource(disk))
             continue;
 
         VIR_FREE(diskAlias);
@@ -1262,7 +1263,8 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
         virDomainBlockJobInfo info;
 
         /* skip shared, RO and source-less disks */
-        if (disk->shared || disk->readonly || !virDomainDiskGetSource(disk))
+        if (disk->src->shared || disk->src->readonly ||
+            !virDomainDiskGetSource(disk))
             continue;
 
         VIR_FREE(diskAlias);
@@ -1348,7 +1350,8 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
         virDomainDiskDefPtr disk = vm->def->disks[--lastGood];
 
         /* skip shared, RO disks */
-        if (disk->shared || disk->readonly || !virDomainDiskGetSource(disk))
+        if (disk->src->shared || disk->src->readonly ||
+            !virDomainDiskGetSource(disk))
             continue;
 
         VIR_FREE(diskAlias);
@@ -1411,7 +1414,8 @@ qemuMigrationCancelDriveMirror(qemuMigrationCookiePtr mig,
         virDomainDiskDefPtr disk = vm->def->disks[i];
 
         /* skip shared, RO and source-less disks */
-        if (disk->shared || disk->readonly || !virDomainDiskGetSource(disk))
+        if (disk->src->shared || disk->src->readonly ||
+            !virDomainDiskGetSource(disk))
             continue;
 
         VIR_FREE(diskAlias);
@@ -1540,8 +1544,8 @@ qemuMigrationIsSafe(virDomainDefPtr def)
         /* Our code elsewhere guarantees shared disks are either readonly (in
          * which case cache mode doesn't matter) or used with cache=none */
         if (src &&
-            !disk->shared &&
-            !disk->readonly &&
+            !disk->src->shared &&
+            !disk->src->readonly &&
             disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
             int rc;
 

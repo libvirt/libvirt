@@ -12082,7 +12082,7 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
      * permissions it would have as if part of the disk chain is to
      * temporarily modify the disk in place.  */
     virStorageSource origdisk;
-    bool origreadonly = disk->readonly;
+    bool origreadonly = disk->src->readonly;
     virQEMUDriverConfigPtr cfg = NULL;
     int ret = -1;
 
@@ -12097,7 +12097,7 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
      * than a full virDomainDiskDef.  */
     memcpy(&origdisk, disk->src, sizeof(origdisk));
     memcpy(disk->src, elem, sizeof(*elem));
-    disk->readonly = mode == VIR_DISK_CHAIN_READ_ONLY;
+    disk->src->readonly = mode == VIR_DISK_CHAIN_READ_ONLY;
 
     if (mode == VIR_DISK_CHAIN_NO_ACCESS) {
         if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
@@ -12120,7 +12120,7 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
 
  cleanup:
     memcpy(disk->src, &origdisk, sizeof(origdisk));
-    disk->readonly = origreadonly;
+    disk->src->readonly = origreadonly;
     virObjectUnref(cfg);
     return ret;
 }
@@ -12772,7 +12772,7 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
 
         case VIR_DOMAIN_SNAPSHOT_LOCATION_NONE:
             /* Remember seeing a disk that has snapshot disabled */
-            if (!dom_disk->readonly)
+            if (!dom_disk->src->readonly)
                 forbid_internal = true;
             break;
 

@@ -495,10 +495,10 @@ xenParseSxprDisks(virDomainDefPtr def,
 
             if (mode &&
                 strchr(mode, 'r'))
-                disk->readonly = true;
+                disk->src->readonly = true;
             if (mode &&
                 strchr(mode, '!'))
-                disk->shared = true;
+                disk->src->shared = true;
 
             if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
                 goto error;
@@ -1321,7 +1321,7 @@ xenParseSxpr(const struct sexpr *root,
                 goto error;
             }
             disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
-            disk->readonly = true;
+            disk->src->readonly = true;
 
             if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0) {
                 virDomainDiskDefFree(disk);
@@ -1816,9 +1816,9 @@ xenFormatSxprDisk(virDomainDiskDefPtr def,
         }
     }
 
-    if (def->readonly)
+    if (def->src->readonly)
         virBufferAddLit(buf, "(mode 'r')");
-    else if (def->shared)
+    else if (def->src->shared)
         virBufferAddLit(buf, "(mode 'w!')");
     else
         virBufferAddLit(buf, "(mode 'w')");

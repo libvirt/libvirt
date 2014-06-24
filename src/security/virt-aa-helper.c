@@ -907,7 +907,7 @@ add_file_path(virDomainDiskDefPtr disk,
     int ret;
 
     if (depth == 0) {
-        if (disk->readonly)
+        if (disk->src->readonly)
             ret = vah_add_file(buf, path, "r");
         else
             ret = vah_add_file(buf, path, "rw");
