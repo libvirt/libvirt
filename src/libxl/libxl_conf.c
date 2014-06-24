@@ -1340,7 +1340,11 @@ libxlMakeCapabilities(libxl_ctx *ctx)
 {
     virCapsPtr caps;
 
+#ifdef LIBXL_HAVE_NO_SUSPEND_RESUME
+    if ((caps = virCapabilitiesNew(virArchFromHost(), 0, 0)) == NULL)
+#else
     if ((caps = virCapabilitiesNew(virArchFromHost(), 1, 1)) == NULL)
+#endif
         return NULL;
 
     if (libxlCapsInitHost(ctx, caps) < 0)

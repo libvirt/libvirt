@@ -1379,6 +1379,11 @@ libxlDomainSaveFlags(virDomainPtr dom, const char *to, const char *dxml,
     int ret = -1;
     bool remove_dom = false;
 
+#ifdef LIBXL_HAVE_NO_SUSPEND_RESUME
+    virReportUnsupportedError();
+    return -1;
+#endif
+
     virCheckFlags(0, -1);
     if (dxml) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
@@ -1439,6 +1444,11 @@ libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
     libxlSavefileHeader hdr;
     int fd = -1;
     int ret = -1;
+
+#ifdef LIBXL_HAVE_NO_SUSPEND_RESUME
+    virReportUnsupportedError();
+    return -1;
+#endif
 
     virCheckFlags(VIR_DOMAIN_SAVE_PAUSED, -1);
     if (dxml) {
@@ -4351,6 +4361,11 @@ libxlDomainMigrateBegin3Params(virDomainPtr domain,
     const char *xmlin = NULL;
     virDomainObjPtr vm = NULL;
 
+#ifdef LIBXL_HAVE_NO_SUSPEND_RESUME
+    virReportUnsupportedError();
+    return NULL;
+#endif
+
     virCheckFlags(LIBXL_MIGRATION_FLAGS, NULL);
     if (virTypedParamsValidate(params, nparams, LIBXL_MIGRATION_PARAMETERS) < 0)
         return NULL;
@@ -4394,6 +4409,11 @@ libxlDomainMigratePrepare3Params(virConnectPtr dconn,
     const char *dom_xml = NULL;
     const char *dname = NULL;
     const char *uri_in = NULL;
+
+#ifdef LIBXL_HAVE_NO_SUSPEND_RESUME
+    virReportUnsupportedError();
+    return -1;
+#endif
 
     virCheckFlags(LIBXL_MIGRATION_FLAGS, -1);
     if (virTypedParamsValidate(params, nparams, LIBXL_MIGRATION_PARAMETERS) < 0)
@@ -4444,6 +4464,11 @@ libxlDomainMigratePerform3Params(virDomainPtr dom,
     const char *dname = NULL;
     const char *uri = NULL;
     int ret = -1;
+
+#ifdef LIBXL_HAVE_NO_SUSPEND_RESUME
+    virReportUnsupportedError();
+    return -1;
+#endif
 
     virCheckFlags(LIBXL_MIGRATION_FLAGS, -1);
     if (virTypedParamsValidate(params, nparams, LIBXL_MIGRATION_PARAMETERS) < 0)
@@ -4497,6 +4522,11 @@ libxlDomainMigrateFinish3Params(virConnectPtr dconn,
     virDomainObjPtr vm = NULL;
     const char *dname = NULL;
 
+#ifdef LIBXL_HAVE_NO_SUSPEND_RESUME
+    virReportUnsupportedError();
+    return NULL;
+#endif
+
     virCheckFlags(LIBXL_MIGRATION_FLAGS, NULL);
     if (virTypedParamsValidate(params, nparams, LIBXL_MIGRATION_PARAMETERS) < 0)
         return NULL;
@@ -4544,6 +4574,11 @@ libxlDomainMigrateConfirm3Params(virDomainPtr domain,
 {
     libxlDriverPrivatePtr driver = domain->conn->privateData;
     virDomainObjPtr vm = NULL;
+
+#ifdef LIBXL_HAVE_NO_SUSPEND_RESUME
+    virReportUnsupportedError();
+    return -1;
+#endif
 
     virCheckFlags(LIBXL_MIGRATION_FLAGS, -1);
     if (virTypedParamsValidate(params, nparams, LIBXL_MIGRATION_PARAMETERS) < 0)
