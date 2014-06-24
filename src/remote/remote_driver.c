@@ -7557,7 +7557,7 @@ remoteSerializeDHCPLease(virNetworkDHCPLeasePtr lease_dst, remote_network_dhcp_l
     lease_dst->type = lease_src->type;
     lease_dst->prefix = lease_src->prefix;
 
-    if (VIR_STRDUP(lease_dst->interface, lease_src->interface) < 0)
+    if (VIR_STRDUP(lease_dst->iface, lease_src->iface) < 0)
         goto error;
 
     if (VIR_STRDUP(lease_dst->ipaddr, lease_src->ipaddr) < 0)

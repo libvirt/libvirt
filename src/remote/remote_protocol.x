@@ -3022,7 +3022,7 @@ struct remote_node_get_free_pages_ret {
 };
 
 struct remote_network_dhcp_lease {
-    remote_nonnull_string interface;
+    remote_nonnull_string iface;
     hyper expirytime;
     int type;
     remote_string mac;

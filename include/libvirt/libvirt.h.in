@@ -5174,7 +5174,7 @@ typedef enum {
 typedef struct _virNetworkDHCPLease virNetworkDHCPLease;
 typedef virNetworkDHCPLease *virNetworkDHCPLeasePtr;
 struct _virNetworkDHCPLease {
-    char *interface;            /* Network interface name */
+    char *iface;                /* Network interface name */
     long long expirytime;       /* Seconds since epoch */
     int type;                   /* virIPAddrType */
     char *mac;                  /* MAC address */

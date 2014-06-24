@@ -3490,7 +3490,7 @@ networkGetDHCPLeasesHelper(virNetworkObjPtr obj,
 
             if ((VIR_STRDUP(lease->mac, mac_tmp) < 0) ||
                 (VIR_STRDUP(lease->ipaddr, ip_tmp) < 0) ||
-                (VIR_STRDUP(lease->interface, obj->def->bridge) < 0))
+                (VIR_STRDUP(lease->iface, obj->def->bridge) < 0))
                 goto error;
 
             /* Fields that can be NULL */

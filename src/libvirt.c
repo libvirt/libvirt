@@ -21176,7 +21176,7 @@ virNetworkDHCPLeaseFree(virNetworkDHCPLeasePtr lease)
 {
     if (!lease)
         return;
-    VIR_FREE(lease->interface);
+    VIR_FREE(lease->iface);
     VIR_FREE(lease->mac);
     VIR_FREE(lease->iaid);
     VIR_FREE(lease->ipaddr);

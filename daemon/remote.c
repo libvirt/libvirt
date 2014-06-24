@@ -6223,7 +6223,7 @@ remoteSerializeDHCPLease(remote_network_dhcp_lease *lease_dst, virNetworkDHCPLea
     lease_dst->type = lease_src->type;
     lease_dst->prefix = lease_src->prefix;
 
-    if (VIR_STRDUP(lease_dst->interface, lease_src->interface) < 0 ||
+    if (VIR_STRDUP(lease_dst->iface, lease_src->iface) < 0 ||
         VIR_STRDUP(lease_dst->ipaddr, lease_src->ipaddr) < 0 ||
         VIR_STRDUP(*mac_tmp, lease_src->mac) < 0 ||
         VIR_STRDUP(*iaid_tmp, lease_src->iaid) < 0 ||
@@ -6248,7 +6248,7 @@ remoteSerializeDHCPLease(remote_network_dhcp_lease *lease_dst, virNetworkDHCPLea
     VIR_FREE(hostname_tmp);
     VIR_FREE(clientid_tmp);
     VIR_FREE(lease_dst->ipaddr);
-    VIR_FREE(lease_dst->interface);
+    VIR_FREE(lease_dst->iface);
     return -1;
 }
 

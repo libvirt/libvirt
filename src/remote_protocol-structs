@@ -2486,7 +2486,7 @@ struct remote_node_get_free_pages_ret {
         } counts;
 };
 struct remote_network_dhcp_lease {
-        remote_nonnull_string      interface;
+        remote_nonnull_string      iface;
         int64_t                    expirytime;
         int                        type;
         remote_string              mac;
