@@ -3437,10 +3437,8 @@ networkGetDHCPLeasesHelper(virNetworkObjPtr obj,
             goto error;
         }
 
-        if (mac && virMacAddrCompare(mac, mac_tmp)) {
-            virJSONValueFree(lease_tmp);
+        if (mac && virMacAddrCompare(mac, mac_tmp))
             continue;
-        }
 
         if (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time", &expirytime_tmp) < 0) {
             /* A lease cannot be present without expiry-time */
