@@ -289,22 +289,29 @@ virSecurityDACRestoreSecurityFileLabel(const char *path)
 
 
 static int
-virSecurityDACSetSecurityFileLabel(virDomainDiskDefPtr disk,
-                                   const char *path,
-                                   size_t depth ATTRIBUTE_UNUSED,
-                                   void *opaque)
+virSecurityDACSetSecurityImageLabel(virSecurityManagerPtr mgr,
+                                    virDomainDefPtr def,
+                                    virStorageSourcePtr src)
 {
-    virSecurityDACCallbackDataPtr cbdata = opaque;
-    virSecurityManagerPtr mgr = cbdata->manager;
-    virSecurityLabelDefPtr secdef = cbdata->secdef;
-    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityLabelDefPtr secdef;
     virSecurityDeviceLabelDefPtr disk_seclabel;
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     uid_t user;
     gid_t group;
 
-    disk_seclabel = virStorageSourceGetSecurityLabelDef(disk->src,
-                                                        SECURITY_DAC_NAME);
+    if (!priv->dynamicOwnership)
+        return 0;
 
+    /* XXX: Add support for gluster DAC permissions */
+    if (!src->path || !virStorageSourceIsLocalStorage(src))
+        return 0;
+
+    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
+    if (secdef && secdef->norelabel)
+        return 0;
+
+    disk_seclabel = virStorageSourceGetSecurityLabelDef(src,
+                                                        SECURITY_DAC_NAME);
     if (disk_seclabel && disk_seclabel->norelabel)
         return 0;
 
@@ -316,7 +323,7 @@ virSecurityDACSetSecurityFileLabel(virDomainDiskDefPtr disk,
             return -1;
     }
 
-    return virSecurityDACSetOwnership(path, user, group);
+    return virSecurityDACSetOwnership(src->path, user, group);
 }
 
 
@@ -326,24 +333,14 @@ virSecurityDACSetSecurityDiskLabel(virSecurityManagerPtr mgr,
                                    virDomainDiskDefPtr disk)
 
 {
-    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
-    virSecurityDACCallbackData cbdata;
-    virSecurityLabelDefPtr secdef;
+    virStorageSourcePtr next;
 
-    if (!priv->dynamicOwnership)
-        return 0;
+    for (next = disk->src; next; next = next->backingStore) {
+        if (virSecurityDACSetSecurityImageLabel(mgr, def, next) < 0)
+            return -1;
+    }
 
-    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
-
-    if (secdef && secdef->norelabel)
-        return 0;
-
-    cbdata.manager = mgr;
-    cbdata.secdef = secdef;
-    return virDomainDiskDefForeachPath(disk,
-                                       false,
-                                       virSecurityDACSetSecurityFileLabel,
-                                       &cbdata);
+    return 0;
 }
 
 
@@ -1274,6 +1271,7 @@ virSecurityDriver virSecurityDriverDAC = {
     .domainSetSecurityDiskLabel         = virSecurityDACSetSecurityDiskLabel,
     .domainRestoreSecurityDiskLabel     = virSecurityDACRestoreSecurityDiskLabel,
 
+    .domainSetSecurityImageLabel        = virSecurityDACSetSecurityImageLabel,
     .domainRestoreSecurityImageLabel    = virSecurityDACRestoreSecurityImageLabel,
 
     .domainSetSecurityDaemonSocketLabel = virSecurityDACSetDaemonSocketLabel,
