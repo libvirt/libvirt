@@ -56,9 +56,6 @@ VIR_LOG_INIT("security.security_selinux");
 typedef struct _virSecuritySELinuxData virSecuritySELinuxData;
 typedef virSecuritySELinuxData *virSecuritySELinuxDataPtr;
 
-typedef struct _virSecuritySELinuxCallbackData virSecuritySELinuxCallbackData;
-typedef virSecuritySELinuxCallbackData *virSecuritySELinuxCallbackDataPtr;
-
 struct _virSecuritySELinuxData {
     char *domain_context;
     char *alt_domain_context;
@@ -69,11 +66,6 @@ struct _virSecuritySELinuxData {
 #if HAVE_SELINUX_LABEL_H
     struct selabel_handle *label_handle;
 #endif
-};
-
-struct _virSecuritySELinuxCallbackData {
-    virSecurityManagerPtr manager;
-    virSecurityLabelDefPtr secdef;
 };
 
 #define SECURITY_SELINUX_VOID_DOI       "0"
@@ -1196,40 +1188,49 @@ virSecuritySELinuxRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecuritySELinuxSetSecurityFileLabel(virDomainDiskDefPtr disk,
-                                       const char *path,
-                                       size_t depth,
-                                       void *opaque)
+virSecuritySELinuxSetSecurityImageLabelInternal(virSecurityManagerPtr mgr,
+                                                virDomainDefPtr def,
+                                                virStorageSourcePtr src,
+                                                bool first)
 {
-    int ret;
+    virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
+    virSecurityLabelDefPtr secdef;
     virSecurityDeviceLabelDefPtr disk_seclabel;
-    virSecuritySELinuxCallbackDataPtr cbdata = opaque;
-    virSecurityLabelDefPtr secdef = cbdata->secdef;
-    virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(cbdata->manager);
+    int ret;
 
-    disk_seclabel = virStorageSourceGetSecurityLabelDef(disk->src,
+    if (!src->path || !virStorageSourceIsLocalStorage(src))
+        return 0;
+
+    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (!secdef || secdef->norelabel)
+        return 0;
+
+    disk_seclabel = virStorageSourceGetSecurityLabelDef(src,
                                                         SECURITY_SELINUX_NAME);
 
     if (disk_seclabel && disk_seclabel->norelabel)
         return 0;
 
-    if (disk_seclabel && !disk_seclabel->norelabel &&
-        disk_seclabel->label) {
-        ret = virSecuritySELinuxSetFilecon(path, disk_seclabel->label);
-    } else if (depth == 0) {
-
-        if (disk->src->shared) {
-            ret = virSecuritySELinuxSetFileconOptional(path, data->file_context);
-        } else if (disk->src->readonly) {
-            ret = virSecuritySELinuxSetFileconOptional(path, data->content_context);
+    if (disk_seclabel && !disk_seclabel->norelabel && disk_seclabel->label) {
+        ret = virSecuritySELinuxSetFilecon(src->path, disk_seclabel->label);
+    } else if (first) {
+        if (src->shared) {
+            ret = virSecuritySELinuxSetFileconOptional(src->path,
+                                                       data->file_context);
+        } else if (src->readonly) {
+            ret = virSecuritySELinuxSetFileconOptional(src->path,
+                                                       data->content_context);
         } else if (secdef->imagelabel) {
-            ret = virSecuritySELinuxSetFileconOptional(path, secdef->imagelabel);
+            ret = virSecuritySELinuxSetFileconOptional(src->path,
+                                                       secdef->imagelabel);
         } else {
             ret = 0;
         }
     } else {
-        ret = virSecuritySELinuxSetFileconOptional(path, data->content_context);
+        ret = virSecuritySELinuxSetFileconOptional(src->path,
+                                                   data->content_context);
     }
+
     if (ret == 1 && !disk_seclabel) {
         /* If we failed to set a label, but virt_use_nfs let us
          * proceed anyway, then we don't need to relabel later.  */
@@ -1237,15 +1238,26 @@ virSecuritySELinuxSetSecurityFileLabel(virDomainDiskDefPtr disk,
         if (!disk_seclabel)
             return -1;
         disk_seclabel->labelskip = true;
-        if (VIR_APPEND_ELEMENT(disk->src->seclabels, disk->src->nseclabels,
+        if (VIR_APPEND_ELEMENT(src->seclabels, src->nseclabels,
                                disk_seclabel) < 0) {
             virSecurityDeviceLabelDefFree(disk_seclabel);
             return -1;
         }
         ret = 0;
     }
+
     return ret;
 }
+
+
+static int
+virSecuritySELinuxSetSecurityImageLabel(virSecurityManagerPtr mgr,
+                                        virDomainDefPtr def,
+                                        virStorageSourcePtr src)
+{
+    return virSecuritySELinuxSetSecurityImageLabelInternal(mgr, def, src, true);
+}
+
 
 static int
 virSecuritySELinuxSetSecurityDiskLabel(virSecurityManagerPtr mgr,
@@ -1253,18 +1265,20 @@ virSecuritySELinuxSetSecurityDiskLabel(virSecurityManagerPtr mgr,
                                        virDomainDiskDefPtr disk)
 
 {
-    virSecuritySELinuxCallbackData cbdata;
-    cbdata.manager = mgr;
-    cbdata.secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    bool first = true;
+    virStorageSourcePtr next;
 
-    if (!cbdata.secdef || cbdata.secdef->norelabel)
-        return 0;
+    for (next = disk->src; next; next = next->backingStore) {
+        if (virSecuritySELinuxSetSecurityImageLabelInternal(mgr, def, next,
+                                                            first) < 0)
+            return -1;
 
-    return virDomainDiskDefForeachPath(disk,
-                                       true,
-                                       virSecuritySELinuxSetSecurityFileLabel,
-                                       &cbdata);
+        first = false;
+    }
+
+    return 0;
 }
+
 
 static int
 virSecuritySELinuxSetSecurityHostdevLabelHelper(const char *file, void *opaque)
@@ -2434,6 +2448,7 @@ virSecurityDriver virSecurityDriverSELinux = {
     .domainSetSecurityDiskLabel         = virSecuritySELinuxSetSecurityDiskLabel,
     .domainRestoreSecurityDiskLabel     = virSecuritySELinuxRestoreSecurityDiskLabel,
 
+    .domainSetSecurityImageLabel        = virSecuritySELinuxSetSecurityImageLabel,
     .domainRestoreSecurityImageLabel    = virSecuritySELinuxRestoreSecurityImageLabel,
 
     .domainSetSecurityDaemonSocketLabel = virSecuritySELinuxSetSecurityDaemonSocketLabel,
