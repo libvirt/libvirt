@@ -6213,36 +6213,51 @@ remoteSerializeDHCPLease(remote_network_dhcp_lease *lease_dst, virNetworkDHCPLea
     char **hostname_tmp = NULL;
     char **clientid_tmp = NULL;
 
-    if (VIR_ALLOC(mac_tmp) < 0 ||
-        VIR_ALLOC(iaid_tmp) < 0 ||
-        VIR_ALLOC(hostname_tmp) < 0 ||
-        VIR_ALLOC(clientid_tmp) < 0)
-        goto error;
-
     lease_dst->expirytime = lease_src->expirytime;
     lease_dst->type = lease_src->type;
     lease_dst->prefix = lease_src->prefix;
 
     if (VIR_STRDUP(lease_dst->iface, lease_src->iface) < 0 ||
-        VIR_STRDUP(lease_dst->ipaddr, lease_src->ipaddr) < 0 ||
-        VIR_STRDUP(*mac_tmp, lease_src->mac) < 0 ||
-        VIR_STRDUP(*iaid_tmp, lease_src->iaid) < 0 ||
-        VIR_STRDUP(*hostname_tmp, lease_src->hostname) < 0 ||
-        VIR_STRDUP(*clientid_tmp, lease_src->clientid) < 0)
+        VIR_STRDUP(lease_dst->ipaddr, lease_src->ipaddr) < 0)
         goto error;
 
-    lease_dst->mac = *mac_tmp ? mac_tmp : NULL;
-    lease_dst->iaid = *iaid_tmp ? iaid_tmp : NULL;
-    lease_dst->hostname = *hostname_tmp ? hostname_tmp : NULL;
-    lease_dst->clientid = *clientid_tmp ? clientid_tmp : NULL;
+    if (lease_src->mac) {
+        if (VIR_ALLOC(mac_tmp) < 0 ||
+            VIR_STRDUP(*mac_tmp, lease_src->mac) < 0)
+            goto error;
+    }
+    if (lease_src->iaid) {
+        if (VIR_ALLOC(iaid_tmp) < 0 ||
+            VIR_STRDUP(*iaid_tmp, lease_src->iaid) < 0)
+            goto error;
+    }
+    if (lease_src->hostname) {
+        if (VIR_ALLOC(hostname_tmp) < 0 ||
+            VIR_STRDUP(*hostname_tmp, lease_src->hostname) < 0)
+            goto error;
+    }
+    if (lease_src->clientid) {
+        if (VIR_ALLOC(clientid_tmp) < 0 ||
+            VIR_STRDUP(*clientid_tmp, lease_src->clientid) < 0)
+            goto error;
+    }
+
+    lease_dst->mac = mac_tmp;
+    lease_dst->iaid = iaid_tmp;
+    lease_dst->hostname = hostname_tmp;
+    lease_dst->clientid = clientid_tmp;
 
     return 0;
 
  error:
-    VIR_FREE(*mac_tmp);
-    VIR_FREE(*iaid_tmp);
-    VIR_FREE(*hostname_tmp);
-    VIR_FREE(*clientid_tmp);
+    if (mac_tmp)
+        VIR_FREE(*mac_tmp);
+    if (iaid_tmp)
+        VIR_FREE(*iaid_tmp);
+    if (hostname_tmp)
+        VIR_FREE(*hostname_tmp);
+    if (clientid_tmp)
+        VIR_FREE(*clientid_tmp);
     VIR_FREE(mac_tmp);
     VIR_FREE(iaid_tmp);
     VIR_FREE(hostname_tmp);
