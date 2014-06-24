@@ -1385,6 +1385,7 @@ struct _virDomainGraphicsDef {
     union {
         struct {
             int port;
+            bool portReserved;
             int websocket;
             bool autoport;
             char *keymap;
@@ -1410,6 +1411,8 @@ struct _virDomainGraphicsDef {
         struct {
             int port;
             int tlsPort;
+            bool portReserved;
+            bool tlsPortReserved;
             int mousemode;
             char *keymap;
             virDomainGraphicsAuthDef auth;
