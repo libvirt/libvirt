@@ -2794,29 +2794,9 @@ vshInit(vshControl *ctl)
 void
 vshOpenLogFile(vshControl *ctl)
 {
-    struct stat st;
-
     if (ctl->logfile == NULL)
         return;
 
-    /* check log file */
-    if (stat(ctl->logfile, &st) == -1) {
-        switch (errno) {
-            case ENOENT:
-                break;
-            default:
-                vshError(ctl, "%s",
-                         _("failed to get the log file information"));
-                exit(EXIT_FAILURE);
-        }
-    } else {
-        if (!S_ISREG(st.st_mode)) {
-            vshError(ctl, "%s", _("the log path is not a file"));
-            exit(EXIT_FAILURE);
-        }
-    }
-
-    /* log file open */
     if ((ctl->log_fd = open(ctl->logfile, LOGFILE_FLAGS, FILE_MODE)) < 0) {
         vshError(ctl, "%s",
                  _("failed to open the log file. check the log file path"));
