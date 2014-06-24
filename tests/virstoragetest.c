@@ -542,16 +542,16 @@ static const char *testPathCanonicalizeSymlinks[][2] =
 
 static int
 testPathCanonicalizeReadlink(const char *path,
-                             char **link,
+                             char **linkpath,
                              void *data ATTRIBUTE_UNUSED)
 {
     size_t i;
 
-    *link = NULL;
+    *linkpath = NULL;
 
     for (i = 0; i < ARRAY_CARDINALITY(testPathCanonicalizeSymlinks); i++) {
         if (STREQ(path, testPathCanonicalizeSymlinks[i][0])) {
-            if (VIR_STRDUP(*link, testPathCanonicalizeSymlinks[i][1]) < 0)
+            if (VIR_STRDUP(*linkpath, testPathCanonicalizeSymlinks[i][1]) < 0)
                 return -1;
 
             return 0;
