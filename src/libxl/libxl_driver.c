@@ -4650,11 +4650,11 @@ static virDriver libxlDriver = {
     .nodeDeviceDetachFlags = libxlNodeDeviceDetachFlags, /* 1.2.3 */
     .nodeDeviceReAttach = libxlNodeDeviceReAttach, /* 1.2.3 */
     .nodeDeviceReset = libxlNodeDeviceReset, /* 1.2.3 */
-    .domainMigrateBegin3Params = libxlDomainMigrateBegin3Params, /* 1.2.3 */
-    .domainMigratePrepare3Params = libxlDomainMigratePrepare3Params, /* 1.2.3 */
-    .domainMigratePerform3Params = libxlDomainMigratePerform3Params, /* 1.2.3 */
-    .domainMigrateFinish3Params = libxlDomainMigrateFinish3Params, /* 1.2.3 */
-    .domainMigrateConfirm3Params = libxlDomainMigrateConfirm3Params, /* 1.2.3 */
+    .domainMigrateBegin3Params = libxlDomainMigrateBegin3Params, /* 1.2.6 */
+    .domainMigratePrepare3Params = libxlDomainMigratePrepare3Params, /* 1.2.6 */
+    .domainMigratePerform3Params = libxlDomainMigratePerform3Params, /* 1.2.6 */
+    .domainMigrateFinish3Params = libxlDomainMigrateFinish3Params, /* 1.2.6 */
+    .domainMigrateConfirm3Params = libxlDomainMigrateConfirm3Params, /* 1.2.6 */
 };
 
 static virStateDriver libxlStateDriver = {
