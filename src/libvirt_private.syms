@@ -1770,6 +1770,7 @@ virPidFileWritePath;
 virPortAllocatorAcquire;
 virPortAllocatorNew;
 virPortAllocatorRelease;
+virPortAllocatorSetUsed;
 
 
 # util/virprocess.h

@@ -1,7 +1,7 @@
 /*
  * virportallocator.c: Allocate & track TCP port allocations
  *
- * Copyright (C) 2013 Red Hat, Inc.
+ * Copyright (C) 2013-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -243,6 +243,47 @@ int virPortAllocatorRelease(virPortAllocatorPtr pa,
                        _("Failed to release port %d"),
                        port);
         goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virObjectUnlock(pa);
+    return ret;
+}
+
+int virPortAllocatorSetUsed(virPortAllocatorPtr pa,
+                            unsigned short port,
+                            bool value)
+{
+    int ret = -1;
+
+    virObjectLock(pa);
+
+    if (port < pa->start ||
+        port > pa->end) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (value) {
+        bool used = false;
+        if (virBitmapGetBit(pa->bitmap, port - pa->start, &used) < 0)
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to query port %d"), port);
+
+        if (used || virBitmapSetBit(pa->bitmap, port - pa->start) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to reserve port %d"), port);
+            goto cleanup;
+        }
+    } else {
+        if (virBitmapClearBit(pa->bitmap,
+                              port - pa->start) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to release port %d"),
+                           port);
+            goto cleanup;
+        }
     }
 
     ret = 0;
