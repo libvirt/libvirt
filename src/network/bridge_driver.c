@@ -3529,6 +3529,7 @@ networkGetDHCPLeasesHelper(virNetworkObjPtr obj,
 
  cleanup:
     VIR_FREE(lease);
+    VIR_FREE(lease_entries);
     VIR_FREE(custom_lease_file);
     virJSONValueFree(leases_array);
     return rv;
