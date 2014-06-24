@@ -704,41 +704,39 @@ AppArmorRestoreSecurityDiskLabel(virSecurityManagerPtr mgr,
 
 /* Called when hotplugging */
 static int
-AppArmorSetSecurityDiskLabel(virSecurityManagerPtr mgr,
-                             virDomainDefPtr def, virDomainDiskDefPtr disk)
+AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
+                              virDomainDefPtr def,
+                              virStorageSourcePtr src)
 {
     int rc = -1;
     char *profile_name = NULL;
-    virSecurityLabelDefPtr secdef =
-        virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
+    virSecurityLabelDefPtr secdef;
 
-    if (!secdef)
+    if (!src->path || !virStorageSourceIsLocalStorage(src))
+        return 0;
+
+    if (!(secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME)))
         return -1;
 
     if (secdef->norelabel)
         return 0;
 
-    if (!virDomainDiskGetSource(disk) ||
-        virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_NETWORK)
-        return 0;
-
     if (secdef->imagelabel) {
         /* if the device doesn't exist, error out */
-        if (!virFileExists(virDomainDiskGetSource(disk))) {
+        if (!virFileExists(src->path)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("\'%s\' does not exist"),
-                           virDomainDiskGetSource(disk));
-            return rc;
+                           src->path);
+            return -1;
         }
 
         if ((profile_name = get_profile_name(def)) == NULL)
-            return rc;
+            return -1;
 
         /* update the profile only if it is loaded */
         if (profile_loaded(secdef->imagelabel) >= 0) {
             if (load_profile(mgr, secdef->imagelabel, def,
-                             virDomainDiskGetSource(disk),
-                             false) < 0) {
+                             src->path, false) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot update AppArmor profile "
                                  "\'%s\'"),
@@ -753,6 +751,14 @@ AppArmorSetSecurityDiskLabel(virSecurityManagerPtr mgr,
     VIR_FREE(profile_name);
 
     return rc;
+}
+
+static int
+AppArmorSetSecurityDiskLabel(virSecurityManagerPtr mgr,
+                             virDomainDefPtr def,
+                             virDomainDiskDefPtr disk)
+{
+    return AppArmorSetSecurityImageLabel(mgr, def, disk->src);
 }
 
 static int
@@ -983,6 +989,7 @@ virSecurityDriver virAppArmorSecurityDriver = {
     .domainSetSecurityDiskLabel         = AppArmorSetSecurityDiskLabel,
     .domainRestoreSecurityDiskLabel     = AppArmorRestoreSecurityDiskLabel,
 
+    .domainSetSecurityImageLabel        = AppArmorSetSecurityImageLabel,
     .domainRestoreSecurityImageLabel    = AppArmorRestoreSecurityImageLabel,
 
     .domainSetSecurityDaemonSocketLabel = AppArmorSetSecurityDaemonSocketLabel,
