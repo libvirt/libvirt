@@ -717,7 +717,7 @@ virStorageFileBackendGlusterAccess(virStorageSourcePtr src,
 
 static int
 virStorageFileBackendGlusterReadlinkCallback(const char *path,
-                                             char **link,
+                                             char **linkpath,
                                              void *data)
 {
     virStorageFileBackendGlusterPrivPtr priv = data;
@@ -726,7 +726,7 @@ virStorageFileBackendGlusterReadlinkCallback(const char *path,
     ssize_t ret;
     struct stat st;
 
-    *link = NULL;
+    *linkpath = NULL;
 
     if (glfs_stat(priv->vol, path, &st) < 0) {
         virReportSystemError(errno,
@@ -754,7 +754,7 @@ virStorageFileBackendGlusterReadlinkCallback(const char *path,
 
     buf[ret] = '\0';
 
-    *link = buf;
+    *linkpath = buf;
 
     return 0;
 
