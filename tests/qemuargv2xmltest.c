@@ -27,7 +27,6 @@ static int blankProblemElements(char *data)
         virtTestClearLineRegex("<uuid>([[:alnum:]]|-)+</uuid>", data) < 0 ||
         virtTestClearLineRegex("<memory.*>[[:digit:]]+</memory>", data) < 0 ||
         virtTestClearLineRegex("<secret.*>", data) < 0 ||
-        virtTestClearLineRegex("</auth.*>", data) < 0 ||
         virtTestClearLineRegex("<currentMemory.*>[[:digit:]]+</currentMemory>",
                                data) < 0 ||
         virtTestClearLineRegex("<readonly/>", data) < 0 ||

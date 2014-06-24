@@ -45,6 +45,7 @@
 #include "domain_conf.h"
 #include "snapshot_conf.h"
 #include "storage_conf.h"
+#include "secret_conf.h"
 #include "network/bridge_driver.h"
 #include "virnetdevtap.h"
 #include "base64.h"
@@ -2469,9 +2470,7 @@ static char *
 qemuGetSecretString(virConnectPtr conn,
                     const char *scheme,
                     bool encoded,
-                    int diskSecretType,
-                    char *username,
-                    unsigned char *uuid, char *usage,
+                    virStorageAuthDefPtr authdef,
                     virSecretUsageType secretUsageType)
 {
     size_t secret_size;
@@ -2480,25 +2479,26 @@ qemuGetSecretString(virConnectPtr conn,
     char uuidStr[VIR_UUID_STRING_BUFLEN];
 
     /* look up secret */
-    switch (diskSecretType) {
+    switch (authdef->secretType) {
     case VIR_STORAGE_SECRET_TYPE_UUID:
-        sec = virSecretLookupByUUID(conn, uuid);
-        virUUIDFormat(uuid, uuidStr);
+        sec = virSecretLookupByUUID(conn, authdef->secret.uuid);
+        virUUIDFormat(authdef->secret.uuid, uuidStr);
         break;
     case VIR_STORAGE_SECRET_TYPE_USAGE:
-        sec = virSecretLookupByUsage(conn, secretUsageType, usage);
+        sec = virSecretLookupByUsage(conn, secretUsageType,
+                                     authdef->secret.usage);
         break;
     }
 
     if (!sec) {
-        if (diskSecretType == VIR_STORAGE_SECRET_TYPE_UUID) {
+        if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
             virReportError(VIR_ERR_NO_SECRET,
                            _("%s no secret matches uuid '%s'"),
                            scheme, uuidStr);
         } else {
             virReportError(VIR_ERR_NO_SECRET,
                            _("%s no secret matches usage value '%s'"),
-                           scheme, usage);
+                           scheme, authdef->secret.usage);
         }
         goto cleanup;
     }
@@ -2506,16 +2506,16 @@ qemuGetSecretString(virConnectPtr conn,
     secret = (char *)conn->secretDriver->secretGetValue(sec, &secret_size, 0,
                                                         VIR_SECRET_GET_VALUE_INTERNAL_CALL);
     if (!secret) {
-        if (diskSecretType == VIR_STORAGE_SECRET_TYPE_UUID) {
+        if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("could not get value of the secret for "
                              "username '%s' using uuid '%s'"),
-                           username, uuidStr);
+                           authdef->username, uuidStr);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("could not get value of the secret for "
                              "username '%s' using usage value '%s'"),
-                           username, usage);
+                           authdef->username, authdef->secret.usage);
         }
         goto cleanup;
     }
@@ -2590,6 +2590,7 @@ static int qemuParseRBDString(virDomainDiskDefPtr disk)
 {
     char *options = NULL;
     char *p, *e, *next;
+    virStorageAuthDefPtr authdef = NULL;
 
     p = strchr(disk->src->path, ':');
     if (p) {
@@ -2619,9 +2620,24 @@ static int qemuParseRBDString(virDomainDiskDefPtr disk)
             *e = '\0';
         }
 
-        if (STRPREFIX(p, "id=") &&
-            VIR_STRDUP(disk->src->auth.username, p + strlen("id=")) < 0)
-            goto error;
+        if (STRPREFIX(p, "id=")) {
+            const char *secrettype;
+            /* formulate authdef for disk->src->auth */
+            if (VIR_ALLOC(authdef) < 0)
+                goto error;
+
+            if (VIR_STRDUP(authdef->username, p + strlen("id=")) < 0)
+                goto error;
+            secrettype = virSecretUsageTypeToString(VIR_SECRET_USAGE_TYPE_CEPH);
+            if (VIR_STRDUP(authdef->secrettype, secrettype) < 0)
+                goto error;
+            disk->src->auth = authdef;
+            authdef = NULL;
+
+            /* Cannot formulate a secretType (eg, usage or uuid) given
+             * what is provided.
+             */
+        }
         if (STRPREFIX(p, "mon_host=")) {
             char *h, *sep;
 
@@ -2650,6 +2666,7 @@ static int qemuParseRBDString(virDomainDiskDefPtr disk)
 
  error:
     VIR_FREE(options);
+    virStorageAuthDefFree(authdef);
     return -1;
 }
 
@@ -2662,6 +2679,7 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
     char *sock = NULL;
     char *volimg = NULL;
     char *secret = NULL;
+    virStorageAuthDefPtr authdef = NULL;
 
     if (VIR_ALLOC(def->src->hosts) < 0)
         goto error;
@@ -2719,12 +2737,29 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
     }
 
     if (uri->user) {
+        const char *secrettype;
+        /* formulate authdef for disk->src->auth */
+        if (VIR_ALLOC(authdef) < 0)
+            goto error;
+
         secret = strchr(uri->user, ':');
         if (secret)
             *secret = '\0';
 
-        if (VIR_STRDUP(def->src->auth.username, uri->user) < 0)
+        if (VIR_STRDUP(authdef->username, uri->user) < 0)
             goto error;
+        if (STREQ(scheme, "iscsi")) {
+            secrettype =
+                virSecretUsageTypeToString(VIR_SECRET_USAGE_TYPE_ISCSI);
+            if (VIR_STRDUP(authdef->secrettype, secrettype) < 0)
+                goto error;
+        }
+        def->src->auth = authdef;
+        authdef = NULL;
+
+        /* Cannot formulate a secretType (eg, usage or uuid) given
+         * what is provided.
+         */
     }
 
     def->src->nhosts = 1;
@@ -2738,6 +2773,7 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
  error:
     virStorageNetHostDefClear(def->src->hosts);
     VIR_FREE(def->src->hosts);
+    virStorageAuthDefFree(authdef);
     goto cleanup;
 }
 
@@ -3130,14 +3166,13 @@ qemuGetDriveSourceString(virStorageSourcePtr src,
 
     if (conn) {
         if (actualType == VIR_STORAGE_TYPE_NETWORK &&
-            src->auth.username &&
+            src->auth &&
             (src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI ||
              src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)) {
             bool encode = false;
             int secretType = VIR_SECRET_USAGE_TYPE_ISCSI;
             const char *protocol = virStorageNetProtocolTypeToString(src->protocol);
-
-            username = src->auth.username;
+            username = src->auth->username;
 
             if (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
                 /* qemu requires the secret to be encoded for RBD */
@@ -3148,10 +3183,7 @@ qemuGetDriveSourceString(virStorageSourcePtr src,
             if (!(secret = qemuGetSecretString(conn,
                                                protocol,
                                                encode,
-                                               src->auth.secretType,
-                                               username,
-                                               src->auth.secret.uuid,
-                                               src->auth.secret.usage,
+                                               src->auth,
                                                secretType)))
                 goto cleanup;
         }

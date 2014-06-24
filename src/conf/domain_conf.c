@@ -5203,7 +5203,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
 {
     virDomainDiskDefPtr def;
     xmlNodePtr sourceNode = NULL;
-    xmlNodePtr cur, child;
+    xmlNodePtr cur;
     xmlNodePtr save_ctxt = ctxt->node;
     char *type = NULL;
     char *device = NULL;
@@ -5227,10 +5227,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     virStorageEncryptionPtr encryption = NULL;
     char *serial = NULL;
     char *startupPolicy = NULL;
-    char *authUsername = NULL;
-    char *authUsage = NULL;
-    char *authUUID = NULL;
-    char *usageType = NULL;
+    virStorageAuthDefPtr authdef = NULL;
     char *tray = NULL;
     char *removable = NULL;
     char *logical_block_size = NULL;
@@ -5432,65 +5429,14 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                     VIR_FREE(ready);
                 }
             } else if (xmlStrEqual(cur->name, BAD_CAST "auth")) {
-                authUsername = virXMLPropString(cur, "username");
-                if (authUsername == NULL) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("missing username for auth"));
+                if (!(authdef = virStorageAuthDefParse(node->doc, cur)))
                     goto error;
-                }
-
-                def->src->auth.secretType = VIR_STORAGE_SECRET_TYPE_NONE;
-                child = cur->children;
-                while (child != NULL) {
-                    if (child->type == XML_ELEMENT_NODE &&
-                        xmlStrEqual(child->name, BAD_CAST "secret")) {
-                        usageType = virXMLPropString(child, "type");
-                        if (usageType == NULL) {
-                            virReportError(VIR_ERR_XML_ERROR, "%s",
-                                           _("missing type for secret"));
-                            goto error;
-                        }
-                        auth_secret_usage =
-                            virSecretUsageTypeFromString(usageType);
-                        if (auth_secret_usage < 0) {
-                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                           _("invalid secret type %s"),
-                                           usageType);
-                            goto error;
-                        }
-
-                        authUUID = virXMLPropString(child, "uuid");
-                        authUsage = virXMLPropString(child, "usage");
-
-                        if (authUUID != NULL && authUsage != NULL) {
-                            virReportError(VIR_ERR_XML_ERROR, "%s",
-                                           _("only one of uuid and usage can be specified"));
-                            goto error;
-                        }
-
-                        if (!authUUID && !authUsage) {
-                            virReportError(VIR_ERR_XML_ERROR, "%s",
-                                           _("either uuid or usage should be "
-                                             "specified for a secret"));
-                            goto error;
-                        }
-
-                        if (authUUID != NULL) {
-                            def->src->auth.secretType = VIR_STORAGE_SECRET_TYPE_UUID;
-                            if (virUUIDParse(authUUID,
-                                             def->src->auth.secret.uuid) < 0) {
-                                virReportError(VIR_ERR_XML_ERROR,
-                                               _("malformed uuid %s"),
-                                               authUUID);
-                                goto error;
-                            }
-                        } else if (authUsage != NULL) {
-                            def->src->auth.secretType = VIR_STORAGE_SECRET_TYPE_USAGE;
-                            def->src->auth.secret.usage = authUsage;
-                            authUsage = NULL;
-                        }
-                    }
-                    child = child->next;
+                if ((auth_secret_usage =
+                     virSecretUsageTypeFromString(authdef->secrettype)) < 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("invalid secret type %s"),
+                                   authdef->secrettype);
+                    goto error;
                 }
             } else if (xmlStrEqual(cur->name, BAD_CAST "iotune")) {
                 if (virXPathULongLong("string(./iotune/total_bytes_sec)",
@@ -5944,8 +5890,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     def->dst = target;
     target = NULL;
-    def->src->auth.username = authUsername;
-    authUsername = NULL;
+    def->src->auth = authdef;
+    authdef = NULL;
     def->src->driverName = driverName;
     driverName = NULL;
     def->src->encryption = encryption;
@@ -5987,10 +5933,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(removable);
     VIR_FREE(trans);
     VIR_FREE(device);
-    VIR_FREE(authUsername);
-    VIR_FREE(usageType);
-    VIR_FREE(authUUID);
-    VIR_FREE(authUsage);
+    virStorageAuthDefFree(authdef);
     VIR_FREE(driverType);
     VIR_FREE(driverName);
     VIR_FREE(cachetag);
@@ -15082,8 +15025,6 @@ virDomainDiskDefFormat(virBufferPtr buf,
     const char *sgio = virDomainDeviceSGIOTypeToString(def->sgio);
     const char *discard = virDomainDiskDiscardTypeToString(def->discard);
 
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-
     if (!type || !def->src->type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected disk type %d"), def->src->type);
@@ -15165,26 +15106,9 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    if (def->src->auth.username) {
-        virBufferEscapeString(buf, "<auth username='%s'>\n",
-                              def->src->auth.username);
-        virBufferAdjustIndent(buf, 2);
-        if (def->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI) {
-            virBufferAddLit(buf, "<secret type='iscsi'");
-        } else if (def->src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
-            virBufferAddLit(buf, "<secret type='ceph'");
-        }
-
-        if (def->src->auth.secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
-            virUUIDFormat(def->src->auth.secret.uuid, uuidstr);
-            virBufferAsprintf(buf, " uuid='%s'/>\n", uuidstr);
-        }
-        if (def->src->auth.secretType == VIR_STORAGE_SECRET_TYPE_USAGE) {
-            virBufferEscapeString(buf, " usage='%s'/>\n",
-                                  def->src->auth.secret.usage);
-        }
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</auth>\n");
+    if (def->src->auth) {
+        if (virStorageAuthDefFormat(buf, def->src->auth) < 0)
+            return -1;
     }
 
     if (virDomainDiskSourceFormat(buf, def->src, def->startupPolicy,

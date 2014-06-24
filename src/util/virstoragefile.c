@@ -1732,18 +1732,6 @@ virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def)
 }
 
 
-void
-virStorageSourceAuthClear(virStorageSourcePtr def)
-{
-    VIR_FREE(def->auth.username);
-
-    if (def->auth.secretType == VIR_STORAGE_SECRET_TYPE_USAGE)
-        VIR_FREE(def->auth.secret.usage);
-
-    def->auth.secretType = VIR_STORAGE_SECRET_TYPE_NONE;
-}
-
-
 int
 virStorageSourceGetActualType(virStorageSourcePtr def)
 {
@@ -1801,7 +1789,7 @@ virStorageSourceClear(virStorageSourcePtr def)
     VIR_FREE(def->timestamps);
 
     virStorageNetHostDefFree(def->nhosts, def->hosts);
-    virStorageSourceAuthClear(def);
+    virStorageAuthDefFree(def->auth);
 
     virStorageSourceBackingStoreClear(def);
 }

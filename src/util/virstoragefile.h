@@ -239,14 +239,7 @@ struct _virStorageSource {
     size_t nhosts;
     virStorageNetHostDefPtr hosts;
     virStorageSourcePoolDefPtr srcpool;
-    struct {
-        char *username;
-        int secretType; /* virStorageSecretType */
-        union {
-            unsigned char uuid[VIR_UUID_BUFLEN];
-            char *usage;
-        } secret;
-    } auth;
+    virStorageAuthDefPtr auth;
     virStorageEncryptionPtr encryption;
 
     char *driverName;
@@ -343,7 +336,6 @@ void virStorageNetHostDefFree(size_t nhosts, virStorageNetHostDefPtr hosts);
 virStorageNetHostDefPtr virStorageNetHostDefCopy(size_t nhosts,
                                                  virStorageNetHostDefPtr hosts);
 
-void virStorageSourceAuthClear(virStorageSourcePtr def);
 void virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def);
 void virStorageSourceClear(virStorageSourcePtr def);
 int virStorageSourceGetActualType(virStorageSourcePtr def);
