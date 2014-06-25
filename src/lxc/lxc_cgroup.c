@@ -288,8 +288,11 @@ int virLXCCgroupGetMeminfo(virLXCMeminfoPtr meminfo)
     if (virLXCCgroupGetMemUsage(cgroup, meminfo) < 0)
         goto cleanup;
 
-    virLXCCgroupGetMemSwapTotal(cgroup, meminfo);
-    virLXCCgroupGetMemSwapUsage(cgroup, meminfo);
+    if (virLXCCgroupGetMemSwapTotal(cgroup, meminfo) < 0)
+        goto cleanup;
+
+    if (virLXCCgroupGetMemSwapUsage(cgroup, meminfo) < 0)
+        goto cleanup;
 
     ret = 0;
  cleanup:
