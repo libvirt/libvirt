@@ -15410,10 +15410,6 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
  endjob:
     if (need_unlink && unlink(dest))
         VIR_WARN("unable to unlink just-created %s", dest);
-    if (ret < 0 && disk) {
-        virStorageSourceFree(disk->mirror);
-        disk->mirror = NULL;
-    }
     virStorageSourceFree(mirror);
     if (!qemuDomainObjEndJob(driver, vm))
         vm = NULL;
