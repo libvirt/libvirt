@@ -175,6 +175,10 @@
                 <span>The driver capabilities XML format</span>
               </li>
               <li>
+                <a href="formatdomaincaps.html">Domain capabilities</a>
+                <span>The domain capabilities XML format</span>
+              </li>
+              <li>
                 <a href="formatnode.html">Node Devices</a>
                 <span>The host device XML format</span>
               </li>

@@ -74,6 +74,8 @@ EXTRA_DIST =		\
 	commanddata \
 	confdata \
 	cputestdata \
+	domaincapsschemadata \
+	domaincapsschematest \
 	domainconfdata \
 	domainschemadata \
 	domainschematest \
@@ -167,6 +169,7 @@ test_programs = virshtest sockettest \
 	virnetdevbandwidthtest \
 	virkmodtest \
 	vircapstest \
+	domaincapstest \
 	domainconftest \
 	virhostdevtest \
 	vircaps2xmltest \
@@ -318,6 +321,7 @@ test_scripts = \
 	networkschematest \
 	storagepoolschematest \
 	storagevolschematest \
+	domaincapsschematest \
 	domainschematest \
 	nodedevschematest \
 	nwfilterschematest \
@@ -826,6 +830,10 @@ vircapstest_LDADD = $(LDADDS)
 vircaps2xmltest_SOURCES = \
 	vircaps2xmltest.c testutils.h testutils.c
 vircaps2xmltest_LDADD = $(LDADDS)
+
+domaincapstest_SOURCES = \
+	domaincapstest.c testutils.h testutils.c
+domaincapstest_LDADD = $(LDADDS)
 
 if WITH_LIBVIRTD
 libvirtdconftest_SOURCES = \

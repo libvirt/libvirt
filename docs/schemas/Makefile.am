@@ -19,6 +19,7 @@ schema_DATA = \
 	basictypes.rng \
 	capability.rng \
 	domain.rng \
+	domaincaps.rng \
 	domaincommon.rng \
 	domainsnapshot.rng \
 	interface.rng \

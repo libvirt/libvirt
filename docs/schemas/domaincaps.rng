@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<!-- A Relax NG schema for the libvirt domain capabilities XML format -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <include href='basictypes.rng'/>
+  <start>
+    <ref name='domainCapabilities'/>
+  </start>
+
+
+  <define name='domainCapabilities'>
+    <element name='domainCapabilities'>
+      <interleave>
+        <element name='path'>
+          <ref name="absFilePath"/>
+        </element>
+        <element name='domain'>
+          <text/>
+        </element>
+        <element name='machine'>
+          <text/>
+        </element>
+        <element name='arch'>
+          <text/>
+        </element>
+        <optional>
+          <ref name='vcpu'/>
+        </optional>
+        <optional>
+          <ref name='devices'/>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
+  <define name='vcpu'>
+    <element name='vcpu'>
+      <attribute name='max'>
+        <ref name='unsignedInt'/>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
+
+  <define name='devices'>
+    <element name='devices'>
+      <interleave>
+        <ref name='disk'/>
+        <ref name='hostdev'/>
+      </interleave>
+    </element>
+  </define>
+
+  <define name='disk'>
+    <element name='disk'>
+      <ref name='supported'/>
+      <ref name='enum'/>
+    </element>
+  </define>
+
+  <define name='hostdev'>
+    <element name='hostdev'>
+      <ref name='supported'/>
+      <ref name='enum'/>
+    </element>
+  </define>
+
+  <define name='supported'>
+    <attribute name='supported'>
+      <choice>
+        <value>yes</value>
+        <value>no</value>
+      </choice>
+    </attribute>
+  </define>
+
+  <define name='enum'>
+    <zeroOrMore>
+      <element name='enum'>
+        <attribute name='name'>
+          <text/>
+        </attribute>
+        <zeroOrMore>
+          <element name='value'>
+            <text/>
+          </element>
+        </zeroOrMore>
+      </element>
+    </zeroOrMore>
+  </define>
+</grammar>

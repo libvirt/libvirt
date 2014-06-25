@@ -130,6 +130,13 @@ virDomainAuditStop;
 virDomainAuditVcpu;
 
 
+# conf/domain_capabilities.h
+virDomainCapsEnumClear;
+virDomainCapsEnumSet;
+virDomainCapsFormat;
+virDomainCapsNew;
+
+
 # conf/domain_conf.h
 virBlkioDeviceArrayClear;
 virDiskNameToBusDeviceIndex;

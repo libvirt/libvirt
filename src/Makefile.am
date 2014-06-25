@@ -248,6 +248,7 @@ NETDEV_CONF_SOURCES =						\
 DOMAIN_CONF_SOURCES =						\
 		conf/capabilities.c conf/capabilities.h		\
 		conf/domain_addr.c conf/domain_addr.h		\
+		conf/domain_capabilities.c conf/domain_capabilities.h	\
 		conf/domain_conf.c conf/domain_conf.h		\
 		conf/domain_audit.c conf/domain_audit.h		\
 		conf/domain_nwfilter.c conf/domain_nwfilter.h	\

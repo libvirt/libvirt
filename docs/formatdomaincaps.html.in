@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body>
+    <h1>Domain capabilities XML format</h1>
+
+    <ul id="toc"></ul>
+
+    <h2><a name="Overview">Overview</a></h2>
+
+    <p>Sometimes, when a new domain is to be created it may come handy to know
+    the capabilities of the hypervisor so the correct combination of devices and
+    drivers is used. For example, when management application is considering the
+    mode for a host device's passthrough there are several options depending not
+    only on host, but on hypervisor in question too. If the hypervisor is qemu
+    then it needs to be more recent to support VFIO, while legacy KVM is
+    achievable just fine with older qemus.</p>
+
+    <p>The main difference between <code
+        class="docref">virConnectGetCapabilities</code> and the emulator
+    capabilities API is, the former one aims more on the host capabilities
+    (e.g.  NUMA topology, security models in effect, etc.) while the latter one
+    specializes on the hypervisor capabilities.</p>
+
+    <p>While the <a href="formatcaps.html">Driver Capabilities</a> provides the
+    host capabilities (e.g NUMA topology, security models in effect, etc.), the
+    Domain Capabilities provides the hypervisor specific capabilities for
+    Management Applications to query and make decisions regarding what to
+    utilize.</p>
+
+    <p>The Domain Capabilities can provide information such as the correct
+    combination of devices and drivers that are supported. Knowing which host
+    and hypervisor specific options are available or supported would allow the
+    management application to choose an appropriate mode for a pass-through
+    host device as well as which adapter to utilize.</p>
+
+    <h2><a name="elements">Element and attribute overview</a></h2>
+
+    <p> A new query interface was added to the virConnect API's to retrieve the
+    XML listing of the set of domain capabilities (<span class="since">Since
+    1.2.7</span>):</p>
+
+<pre>
+    <code class="docref">virConnectGetDomainCapabilities</code>
+</pre>
+
+    <p>The root element that emulator capability XML document starts with has
+    name <code>domainCapabilities</code>. It contains at least four direct
+    child elements:</p>
+
+<pre>
+&lt;domainCapabilities&gt;
+  &lt;path&gt;/usr/bin/qemu-system-x86_64&lt;/path&gt;
+  &lt;domain&gt;kvm&lt;/domain&gt;
+  &lt;machine&gt;pc-i440fx-2.1&lt;/machine&gt;
+  &lt;arch&gt;x86_64&lt;/arch&gt;
+  ...
+&lt;/domainCapabilities&gt;
+</pre>
+    <dl>
+      <dt>path</dt>
+      <dd>The full path to the emulator binary.</dd>
+
+      <dt>domain</dt>
+      <dd>Describes the <a href="formatdomain.html#elements">virtualization
+          type</a> (or so called domain type).</dd>
+
+      <dt>machine</dt>
+      <dd>The domain's <a href="formatdomain.html#elementsOSBIOS">machine
+          type</a>.</dd>
+
+      <dt>arch</dt>
+      <dd>The domain's <a href="formatdomain.html#elementsOSBIOS">
+          architecture</a>.</dd>
+
+    </dl>
+
+    <h3><a name="elementsCPUAllocation">CPU Allocation</a></h3>
+
+    <p>Before any devices capability occurs, there might be a info on domain
+    wide capabilities, e.g. virtual CPUs:</p>
+
+<pre>
+&lt;domainCapabilities&gt;
+  ...
+  &lt;vcpu max='255'/&gt;
+  ...
+&lt;/domainCapabilities&gt;
+</pre>
+
+    <dl>
+      <dt>vcpu</dt>
+      <dd>The maximum number of supported virtual CPUs</dd>
+    </dl>
+
+    <h3><a name="elementsDevices">Devices</a></h3>
+
+    <p>
+      The final set of XML elements describe the supported devices and their
+      capabilities. All devices occur as children of the main
+      <code>devices</code> element.
+    </p>
+
+<pre>
+&lt;domainCapabilities&gt;
+  ...
+  &lt;devices&gt;
+    &lt;disk supported='yes'&gt;
+      &lt;enum name='diskDevice'&gt;
+        &lt;value&gt;disk&lt;/value&gt;
+        &lt;value&gt;cdrom&lt;/value&gt;
+        &lt;value&gt;floppy&lt;/value&gt;
+        &lt;value&gt;lun&lt;/value&gt;
+      &lt;/enum&gt;
+      ...
+    &lt;/disk&gt;
+    &lt;hostdev supported='no'/&gt;
+  &lt;/devices&gt;
+&lt;/domainCapabilities&gt;
+</pre>
+
+    <p>Reported capabilities are expressed as an enumerated list of available
+    options for each of the element or attribute.  For example, the
+    &lt;disk/&gt; element has an attribute <code>device</code> which can
+    support the values <code>disk</code>, <code>cdrom</code>,
+    <code>floppy</code>, or <code>lun</code>.</p>
+
+    <h4><a name="elementsDisks">Hard drives, floppy disks, CDROMs</a></h4>
+    <p>Disk capabilities are exposed under <code>disk</code> element. For
+    instance:</p>
+
+<pre>
+&lt;domainCapabilities&gt;
+  ...
+  &lt;devices&gt;
+    &lt;disk supported='yes'&gt;
+      &lt;enum name='diskDevice'&gt;
+        &lt;value&gt;disk&lt;/value&gt;
+        &lt;value&gt;cdrom&lt;/value&gt;
+        &lt;value&gt;floppy&lt;/value&gt;
+        &lt;value&gt;lun&lt;/value&gt;
+      &lt;/enum&gt;
+      &lt;enum name='bus'&gt;
+        &lt;value&gt;ide&lt;/value&gt;
+        &lt;value&gt;fdc&lt;/value&gt;
+        &lt;value&gt;scsi&lt;/value&gt;
+        &lt;value&gt;virtio&lt;/value&gt;
+        &lt;value&gt;xen&lt;/value&gt;
+        &lt;value&gt;usb&lt;/value&gt;
+        &lt;value&gt;uml&lt;/value&gt;
+        &lt;value&gt;sata&lt;/value&gt;
+        &lt;value&gt;sd&lt;/value&gt;
+      &lt;/enum&gt;
+    &lt;/disk&gt;
+    ...
+  &lt;/devices&gt;
+&lt;/domainCapabilities&gt;
+</pre>
+
+    <dl>
+      <dt>diskDevice</dt>
+      <dd>Options for the <code>device</code> attribute of the &lt;disk/&gt;
+      element.</dd>
+
+      <dt>bus</dt>
+      <dd>Options for the <code>bus</code> attribute of the &lt;target/&gt;
+      element for a &lt;disk/&gt;.</dd>
+    </dl>
+
+    <h4><a name="elementsHostDev">Host device assignment</a></h4>
+    <p>Some host devices can be passed through to a guest (e.g. USB, PCI and
+    SCSI). Well, only if the following is enabled:</p>
+
+<pre>
+&lt;domainCapabilities&gt;
+  ...
+  &lt;devices&gt;
+    &lt;hostdev supported='yes'&gt;
+      &lt;enum name='mode'&gt;
+        &lt;value&gt;subsystem&lt;/value&gt;
+        &lt;value&gt;capabilities&lt;/value&gt;
+      &lt;/enum&gt;
+      &lt;enum name='startupPolicy'&gt;
+        &lt;value&gt;default&lt;/value&gt;
+        &lt;value&gt;mandatory&lt;/value&gt;
+        &lt;value&gt;requisite&lt;/value&gt;
+        &lt;value&gt;optional&lt;/value&gt;
+      &lt;/enum&gt;
+      &lt;enum name='subsysType'&gt;
+        &lt;value&gt;usb&lt;/value&gt;
+        &lt;value&gt;pci&lt;/value&gt;
+        &lt;value&gt;scsi&lt;/value&gt;
+      &lt;/enum&gt;
+      &lt;enum name='capsType'&gt;
+        &lt;value&gt;storage&lt;/value&gt;
+        &lt;value&gt;misc&lt;/value&gt;
+        &lt;value&gt;net&lt;/value&gt;
+      &lt;/enum&gt;
+      &lt;enum name='pciBackend'&gt;
+        &lt;value&gt;default&lt;/value&gt;
+        &lt;value&gt;kvm&lt;/value&gt;
+        &lt;value&gt;vfio&lt;/value&gt;
+        &lt;value&gt;xen&lt;/value&gt;
+      &lt;/enum&gt;
+    &lt;/hostdev&gt;
+  &lt;/devices&gt;
+&lt;/domainCapabilities&gt;
+</pre>
+
+    <dl>
+      <dt>mode</dt>
+      <dd>Options for the <code>mode</code> attribute of the &lt;hostdev/&gt;
+      element.</dd>
+
+      <dt>startupPolicy</dt>
+      <dd>Options for the <code>startupPolicy</code> attribute of the
+      &lt;hostdev/&gt; element.</dd>
+
+      <dt>subsysType</dt>
+      <dd>Options for the <code>type</code> attribute of the &lt;hostdev/&gt;
+      element in case of <code>mode="subsystem"</code>.</dd>
+
+      <dt>capsType</dt>
+      <dd>Options for the <code>type</code> attribute of the &lt;hostdev/&gt;
+      element in case of <code>mode="capabilities"</code>.</dd>
+
+      <dt>pciBackend</dt>
+      <dd>Options for the <code>name</code> attribute of the &lt;driver/&gt;
+      element.</dd>
+    </dl>
+  </body>
+</html>

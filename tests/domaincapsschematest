@@ -1,0 +1,11 @@
+#!/bin/sh
+
+: ${srcdir=.}
+. $srcdir/test-lib.sh
+. $abs_srcdir/schematestutils.sh
+
+DIRS=""
+DIRS="$DIRS domaincapsschemadata"
+SCHEMA="domaincaps.rng"
+
+check_schema "$DIRS" "$SCHEMA"

@@ -16,6 +16,7 @@ src/conf/capabilities.c
 src/conf/cpu_conf.c
 src/conf/device_conf.c
 src/conf/domain_addr.c
+src/conf/domain_capabilities.c
 src/conf/domain_conf.c
 src/conf/domain_event.c
 src/conf/interface_conf.c
