@@ -39,6 +39,7 @@
 #include "virnodesuspend.h"
 #include "qemu_monitor.h"
 #include "virstring.h"
+#include "qemu_hostdev.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -3564,4 +3565,93 @@ virQEMUCapsGetDefaultMachine(virQEMUCapsPtr qemuCaps)
     if (!qemuCaps->nmachineTypes)
         return NULL;
     return qemuCaps->machineTypes[0];
+}
+
+
+static void
+virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCapsPtr qemuCaps,
+                                    virDomainCapsDeviceDiskPtr disk)
+{
+    disk->device.supported = true;
+    /* QEMU supports all of these */
+    VIR_DOMAIN_CAPS_ENUM_SET(disk->diskDevice,
+                             VIR_DOMAIN_DISK_DEVICE_DISK,
+                             VIR_DOMAIN_DISK_DEVICE_CDROM,
+                             VIR_DOMAIN_DISK_DEVICE_FLOPPY);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SG_IO))
+        VIR_DOMAIN_CAPS_ENUM_SET(disk->diskDevice, VIR_DOMAIN_DISK_DEVICE_LUN);
+
+    VIR_DOMAIN_CAPS_ENUM_SET(disk->bus,
+                             VIR_DOMAIN_DISK_BUS_IDE,
+                             VIR_DOMAIN_DISK_BUS_FDC,
+                             VIR_DOMAIN_DISK_BUS_SCSI,
+                             VIR_DOMAIN_DISK_BUS_VIRTIO,
+                             /* VIR_DOMAIN_DISK_BUS_SD */);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE))
+        VIR_DOMAIN_CAPS_ENUM_SET(disk->bus, VIR_DOMAIN_DISK_BUS_USB);
+}
+
+
+static void
+virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
+                                       virDomainCapsDeviceHostdevPtr hostdev)
+{
+    bool supportsPassthroughKVM = qemuHostdevHostSupportsPassthroughLegacy();
+    bool supportsPassthroughVFIO = qemuHostdevHostSupportsPassthroughVFIO();
+
+    hostdev->device.supported = true;
+    /* VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES is for containers only */
+    VIR_DOMAIN_CAPS_ENUM_SET(hostdev->mode,
+                             VIR_DOMAIN_HOSTDEV_MODE_SUBSYS);
+
+    VIR_DOMAIN_CAPS_ENUM_SET(hostdev->startupPolicy,
+                             VIR_DOMAIN_STARTUP_POLICY_DEFAULT,
+                             VIR_DOMAIN_STARTUP_POLICY_MANDATORY,
+                             VIR_DOMAIN_STARTUP_POLICY_REQUISITE,
+                             VIR_DOMAIN_STARTUP_POLICY_OPTIONAL);
+
+    VIR_DOMAIN_CAPS_ENUM_SET(hostdev->subsysType,
+                             VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB,
+                             VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI);
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC))
+        VIR_DOMAIN_CAPS_ENUM_SET(hostdev->subsysType,
+                                 VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI);
+
+    /* No virDomainHostdevCapsType for QEMU */
+    virDomainCapsEnumClear(&hostdev->capsType);
+
+    virDomainCapsEnumClear(&hostdev->pciBackend);
+    if (supportsPassthroughVFIO &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
+        VIR_DOMAIN_CAPS_ENUM_SET(hostdev->pciBackend,
+                                 VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT,
+                                 VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO);
+    }
+
+    if (supportsPassthroughKVM &&
+        (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCIDEVICE) ||
+         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))) {
+        VIR_DOMAIN_CAPS_ENUM_SET(hostdev->pciBackend,
+                                 VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT,
+                                 VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM);
+    }
+}
+
+
+void
+virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
+                          virQEMUCapsPtr qemuCaps)
+{
+    virDomainCapsDeviceDiskPtr disk = &domCaps->disk;
+    virDomainCapsDeviceHostdevPtr hostdev = &domCaps->hostdev;
+    int maxvcpus = virQEMUCapsGetMachineMaxCpus(qemuCaps, domCaps->machine);
+
+    domCaps->maxvcpus = maxvcpus;
+
+    virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps, disk);
+    virQEMUCapsFillDomainDeviceHostdevCaps(qemuCaps, hostdev);
 }

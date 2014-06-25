@@ -28,6 +28,7 @@
 # include "capabilities.h"
 # include "vircommand.h"
 # include "qemu_monitor.h"
+# include "domain_capabilities.h"
 
 /* Internal flags to keep track of qemu command line capabilities */
 typedef enum {
@@ -313,5 +314,8 @@ int virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
                                    const char *kvmbin,
                                    virQEMUCapsPtr kvmbinCaps,
                                    virArch guestarch);
+
+void virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
+                               virQEMUCapsPtr qemuCaps);
 
 #endif /* __QEMU_CAPABILITIES_H__*/

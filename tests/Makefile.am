@@ -835,6 +835,11 @@ domaincapstest_SOURCES = \
 	domaincapstest.c testutils.h testutils.c
 domaincapstest_LDADD = $(LDADDS)
 
+if WITH_QEMU
+domaincapstest_SOURCES += testutilsqemu.c testutilsqemu.h
+domaincapstest_LDADD += $(qemu_LDADDS)
+endif WITH_QEMU
+
 if WITH_LIBVIRTD
 libvirtdconftest_SOURCES = \
 	libvirtdconftest.c testutils.h testutils.c \

@@ -95,6 +95,7 @@
 #include "viraccessapicheckqemu.h"
 #include "storage/storage_driver.h"
 #include "virhostdev.h"
+#include "domain_capabilities.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -16885,6 +16886,105 @@ qemuNodeGetFreePages(virConnectPtr conn,
 }
 
 
+static char *
+qemuConnectGetDomainCapabilities(virConnectPtr conn,
+                                 const char *emulatorbin,
+                                 const char *arch_str,
+                                 const char *machine,
+                                 const char *virttype_str,
+                                 unsigned int flags)
+{
+    char *ret = NULL;
+    virQEMUDriverPtr driver = conn->privateData;
+    virQEMUCapsPtr qemuCaps = NULL;
+    int virttype; /* virDomainVirtType */
+    virDomainCapsPtr domCaps = NULL;
+    int arch = VIR_ARCH_NONE; /* virArch */
+
+    virCheckFlags(0, ret);
+    virCheckNonNullArgReturn(virttype_str, ret);
+
+    if (virConnectGetDomainCapabilitiesEnsureACL(conn) < 0)
+        return ret;
+
+    if ((virttype = virDomainVirtTypeFromString(virttype_str)) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown virttype: %s"),
+                       virttype_str);
+        goto cleanup;
+    }
+
+    if (arch_str && (arch = virArchFromString(arch_str)) == VIR_ARCH_NONE) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown architecture: %s"),
+                       arch_str);
+        goto cleanup;
+    }
+
+    if (emulatorbin) {
+        virArch arch_from_caps;
+
+        if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
+                                                emulatorbin)))
+            goto cleanup;
+
+        arch_from_caps = virQEMUCapsGetArch(qemuCaps);
+
+        if (arch == VIR_ARCH_NONE)
+            arch = arch_from_caps;
+
+        if (arch_from_caps != arch) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("architecture from emulator '%s' doesn't "
+                             "match given architecture '%s'"),
+                           virArchToString(arch_from_caps),
+                           virArchToString(arch));
+            goto cleanup;
+        }
+    } else if (arch_str) {
+        if (!(qemuCaps = virQEMUCapsCacheLookupByArch(driver->qemuCapsCache,
+                                                      arch)))
+            goto cleanup;
+
+        if (!emulatorbin)
+            emulatorbin = virQEMUCapsGetBinary(qemuCaps);
+        /* Deliberately not checking if provided @emulatorbin matches @arch,
+         * since if @emulatorbin was specified the match has been checked a few
+         * lines above. */
+    } else {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("at least one of emulatorbin or "
+                         "architecture fields must be present"));
+        goto cleanup;
+    }
+
+    if (machine) {
+        /* Turn @machine into canonical name */
+        machine = virQEMUCapsGetCanonicalMachine(qemuCaps, machine);
+
+        if (!virQEMUCapsIsMachineSupported(qemuCaps, machine)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("the machine '%s' is not supported by emulator '%s'"),
+                           machine, emulatorbin);
+            goto cleanup;
+        }
+    } else {
+        machine = virQEMUCapsGetDefaultMachine(qemuCaps);
+    }
+
+    if (!(domCaps = virDomainCapsNew(emulatorbin, machine, arch, virttype)))
+        goto cleanup;
+
+    virQEMUCapsFillDomainCaps(domCaps, qemuCaps);
+
+    ret = virDomainCapsFormat(domCaps);
+ cleanup:
+    virObjectUnref(domCaps);
+    virObjectUnref(qemuCaps);
+    return ret;
+}
+
+
 static virDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
     .name = QEMU_DRIVER_NAME,
@@ -17080,6 +17180,7 @@ static virDriver qemuDriver = {
     .domainGetTime = qemuDomainGetTime, /* 1.2.5 */
     .domainSetTime = qemuDomainSetTime, /* 1.2.5 */
     .nodeGetFreePages = qemuNodeGetFreePages, /* 1.2.6 */
+    .connectGetDomainCapabilities = qemuConnectGetDomainCapabilities, /* 1.2.7 */
 };
 
 

@@ -54,6 +54,30 @@ fillAll(virDomainCapsPtr domCaps,
     SET_ALL_BITS(hostdev->pciBackend);
 }
 
+
+#ifdef WITH_QEMU
+# include "testutilsqemu.h"
+static void
+fillQemuCaps(virDomainCapsPtr domCaps,
+             void *opaque)
+{
+    virQEMUCapsPtr qemuCaps = (virQEMUCapsPtr) opaque;
+
+    virQEMUCapsFillDomainCaps(domCaps, qemuCaps);
+
+    /* The function above tries to query host's KVM & VFIO capabilities by
+     * calling qemuHostdevHostSupportsPassthroughLegacy() and
+     * qemuHostdevHostSupportsPassthroughVFIO() which, however, can't be
+     * successfully mocked as they are not exposed as internal APIs. Therefore,
+     * instead of mocking set the expected values here by hand. */
+    VIR_DOMAIN_CAPS_ENUM_SET(domCaps->hostdev.pciBackend,
+                             VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT,
+                             VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM,
+                             VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO);
+}
+#endif /* WITH_QEMU */
+
+
 static virDomainCapsPtr
 buildVirDomainCaps(const char *emulatorbin,
                    const char *machine,
@@ -142,6 +166,27 @@ mymain(void)
             VIR_ARCH_X86_64, VIR_DOMAIN_VIRT_UML);
     DO_TEST("full", "/bin/emulatorbin", "my-machine-type",
             VIR_ARCH_X86_64, VIR_DOMAIN_VIRT_KVM, .fillFunc = fillAll);
+
+#ifdef WITH_QEMU
+
+# define DO_TEST_QEMU(Filename, QemuCapsFile, Emulatorbin, Machine, Arch, Type, ...)    \
+    do {                                                                                \
+        const char *capsPath = abs_srcdir "/qemucapabilitiesdata/" QemuCapsFile ".caps";    \
+        virQEMUCapsPtr qemuCaps = qemuTestParseCapabilities(capsPath);                  \
+        struct test_virDomainCapsFormatData data = {.filename = Filename,               \
+            .emulatorbin = Emulatorbin, .machine = Machine, .arch = Arch,               \
+            .type = Type, .fillFunc = fillQemuCaps, .opaque = qemuCaps};                \
+        if (!qemuCaps) {                                                                \
+            fprintf(stderr, "Unable to build qemu caps from %s\n", capsPath);           \
+            ret = -1;                                                                   \
+        } else if (virtTestRun(Filename, test_virDomainCapsFormat, &data) < 0)          \
+            ret = -1;                                                                   \
+    } while (0)
+
+    DO_TEST_QEMU("qemu_1.6.50-1", "caps_1.6.50-1", "/usr/bin/qemu-system-x86_64",
+                 "pc-1.2",  VIR_ARCH_X86_64, VIR_DOMAIN_VIRT_KVM);
+
+#endif /* WITH_QEMU */
 
     return ret;
 }

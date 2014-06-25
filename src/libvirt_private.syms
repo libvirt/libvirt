@@ -439,6 +439,7 @@ virDomainVideoTypeFromString;
 virDomainVideoTypeToString;
 virDomainVirtioEventIdxTypeFromString;
 virDomainVirtioEventIdxTypeToString;
+virDomainVirtTypeFromString;
 virDomainVirtTypeToString;
 virDomainWatchdogActionTypeFromString;
 virDomainWatchdogActionTypeToString;
