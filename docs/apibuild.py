@@ -1303,7 +1303,7 @@ class CParser:
         name = None
         self.comment = None
         comment = ""
-        value = "0"
+        value = "-1"
         while token != None:
             if token[0] == "sep" and token[1] == "{":
                 token = self.token()
