@@ -1333,13 +1333,12 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
     const char *tmp;
     char *parentDir = NULL;
     bool nameIsFile = virStorageIsFile(name);
-    size_t i;
+    size_t i = 0;
 
     if (!parent)
         parent = &tmp;
     *parent = NULL;
 
-    i = 0;
     if (startFrom) {
         while (chain && chain != startFrom->backingStore) {
             chain = chain->backingStore;
@@ -1360,24 +1359,26 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
             if (STREQ_NULLABLE(name, chain->relPath) ||
                 STREQ(name, chain->path))
                 break;
-            if (nameIsFile && (chain->type == VIR_STORAGE_TYPE_FILE ||
-                               chain->type == VIR_STORAGE_TYPE_BLOCK)) {
-                if (prev) {
-                    if (!(parentDir = mdir_name(prev->path))) {
-                        virReportOOMError();
-                        goto error;
-                    }
-                } else {
-                    if (VIR_STRDUP(parentDir, ".") < 0)
-                        goto error;
+
+            if (nameIsFile && virStorageSourceIsLocalStorage(chain)) {
+                if (prev && virStorageSourceIsLocalStorage(prev))
+                    parentDir = mdir_name(prev->path);
+                else
+                    ignore_value(VIR_STRDUP_QUIET(parentDir, "."));
+
+                if (!parentDir) {
+                    virReportOOMError();
+                    goto error;
                 }
 
                 int result = virFileRelLinkPointsTo(parentDir, name,
                                                     chain->path);
 
                 VIR_FREE(parentDir);
+
                 if (result < 0)
                     goto error;
+
                 if (result > 0)
                     break;
             }
@@ -1390,6 +1391,7 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
 
     if (!chain)
         goto error;
+
     return chain;
 
  error:
