@@ -1594,18 +1594,17 @@
         &lt;host name='example.com' port='3260'/&gt;
       &lt;/source&gt;
       &lt;auth username='myuser'&gt;
-        &lt;secret type='chap' usage='libvirtiscsi'/&gt;
+        &lt;secret type='iscsi' usage='libvirtiscsi'/&gt;
       &lt;/auth&gt;
       &lt;target dev='vda' bus='virtio'/&gt;
     &lt;/disk&gt;
     &lt;disk type='network' device='lun'&gt;
       &lt;driver name='qemu' type='raw'/&gt;
       &lt;source protocol='iscsi' name='iqn.2013-07.com.example:iscsi-nopool/1'&gt;
-       iqn.2013-07.com.example:iscsi-pool
         &lt;host name='example.com' port='3260'/&gt;
       &lt;/source&gt;
       &lt;auth username='myuser'&gt;
-        &lt;secret type='chap' usage='libvirtiscsi'/&gt;
+        &lt;secret type='iscsi' usage='libvirtiscsi'/&gt;
       &lt;/auth&gt;
       &lt;target dev='sda' bus='scsi'/&gt;
     &lt;/disk&gt;
@@ -1613,7 +1612,7 @@
       &lt;driver name='qemu' type='raw'/&gt;
       &lt;source pool='iscsi-pool' volume='unit:0:0:1' mode='host'/&gt;
       &lt;auth username='myuser'&gt;
-        &lt;secret type='chap' usage='libvirtiscsi'/&gt;
+        &lt;secret type='iscsi' usage='libvirtiscsi'/&gt;
       &lt;/auth&gt;
       &lt;target dev='vda' bus='virtio'/&gt;
     &lt;/disk&gt;
@@ -1621,7 +1620,7 @@
       &lt;driver name='qemu' type='raw'/&gt;
       &lt;source pool='iscsi-pool' volume='unit:0:0:2' mode='direct'/&gt;
       &lt;auth username='myuser'&gt;
-        &lt;secret type='chap' usage='libvirtiscsi'/&gt;
+        &lt;secret type='iscsi' usage='libvirtiscsi'/&gt;
       &lt;/auth&gt;
       &lt;target dev='vda' bus='virtio'/&gt;
     &lt;/disk&gt;
@@ -2180,7 +2179,10 @@
         are available, each defaulting to 0.
       </dd>
       <dt><code>auth</code></dt>
-      <dd>If present, the <code>auth</code> element provides the
+      <dd>The <code>auth</code> element is supported for a disk
+        <code>type</code> "network" that is using a <code>source</code>
+        element with the <code>protocol</code> attributes "rbd" or "iscsi".
+        If present, the <code>auth</code> element provides the
         authentication credentials needed to access the source.  It
         includes a mandatory attribute <code>username</code>, which
         identifies the username to use during authentication, as well
@@ -2189,11 +2191,11 @@
         a <a href="formatsecret.html">libvirt secret object</a> that
         holds the actual password or other credentials (the domain XML
         intentionally does not expose the password, only the reference
-        to the object that does manage the password).  For now, the
-        known secret <code>type</code>s are "ceph", for Ceph RBD
-        network sources, and "iscsi", for CHAP authentication of iSCSI
-        targets.  Both require either a <code>uuid</code> attribute
-        with the UUID of the secret object, or a <code>usage</code>
+        to the object that does manage the password).
+        Known secret types are "ceph" for Ceph RBD network sources and
+        "iscsi" for CHAP authentication of iSCSI targets.
+        Both will require either a <code>uuid</code> attribute
+        with the UUID of the secret object or a <code>usage</code>
         attribute matching the key that was specified in the
         secret object.  <span class="since">libvirt 0.9.7</span>
       </dd>
