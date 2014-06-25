@@ -485,6 +485,15 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
         virDomainHostdevDefPtr hostdev = dev->data.hostdev;
 
+        /* forbid capabilities mode hostdev in this kind of hypervisor */
+        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("hostdev mode 'capabilities' is not "
+                             "supported in %s"),
+                           virDomainVirtTypeToString(def->virtType));
+            return -1;
+        }
+
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
             hostdev->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT)
