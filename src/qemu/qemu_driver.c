@@ -13204,6 +13204,7 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *path,
     struct stat st;
     bool need_unlink = false;
     char *mirror = NULL;
+    int mirrorFormat;
     virQEMUDriverConfigPtr cfg = NULL;
 
     /* Preliminaries: find the disk we are editing, sanity checks */
@@ -13293,10 +13294,10 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *path,
             goto endjob;
         VIR_FORCE_CLOSE(fd);
         if (!format)
-            disk->mirrorFormat = disk->format;
+            mirrorFormat = disk->format;
     } else if (format) {
-        disk->mirrorFormat = virStorageFileFormatTypeFromString(format);
-        if (disk->mirrorFormat <= 0) {
+        mirrorFormat = virStorageFileFormatTypeFromString(format);
+        if (mirrorFormat <= 0) {
             virReportError(VIR_ERR_INVALID_ARG, _("unrecognized format '%s'"),
                            format);
             goto endjob;
@@ -13306,11 +13307,11 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *path,
          * also passed the RAW flag (and format is non-NULL), or it is
          * safe for us to probe the format from the file that we will
          * be using.  */
-        disk->mirrorFormat = virStorageFileProbeFormat(dest, cfg->user,
-                                                       cfg->group);
+        mirrorFormat = virStorageFileProbeFormat(dest, cfg->user,
+                                                 cfg->group);
     }
-    if (!format && disk->mirrorFormat > 0)
-        format = virStorageFileFormatTypeToString(disk->mirrorFormat);
+    if (!format && mirrorFormat > 0)
+        format = virStorageFileFormatTypeToString(mirrorFormat);
     if (!(mirror = strdup(dest))) {
         virReportOOMError();
         goto endjob;
@@ -13338,13 +13339,12 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *path,
     /* Update vm in place to match changes.  */
     need_unlink = false;
     disk->mirror = mirror;
+    disk->mirrorFormat = mirrorFormat;
     mirror = NULL;
 
 endjob:
     if (need_unlink && unlink(dest))
         VIR_WARN("unable to unlink just-created %s", dest);
-    if (ret < 0 && disk)
-        disk->mirrorFormat = VIR_STORAGE_FILE_NONE;
     VIR_FREE(mirror);
     if (qemuDomainObjEndJob(driver, vm) == 0) {
         vm = NULL;
