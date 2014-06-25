@@ -12130,25 +12130,6 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
  * is sent but failed, and number of frozen filesystems on success. If -2 is
  * returned, FSThaw should be called revert the quiesced status. */
 static int
-qemuDomainPrepareDiskChainElementPath(virQEMUDriverPtr driver,
-                                      virDomainObjPtr vm,
-                                      virDomainDiskDefPtr disk,
-                                      const char *file,
-                                      qemuDomainDiskChainMode mode)
-{
-    virStorageSource src;
-
-    memset(&src, 0, sizeof(src));
-
-    src.type = VIR_STORAGE_TYPE_FILE;
-    src.format = VIR_STORAGE_FILE_RAW;
-    src.path = (char *) file; /* casting away const is safe here */
-
-    return qemuDomainPrepareDiskChainElement(driver, vm, disk, &src, mode);
-}
-
-
-static int
 qemuDomainSnapshotFSFreeze(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            const char **mountpoints,
@@ -15429,10 +15410,10 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     if (VIR_STRDUP(mirror->path, dest) < 0)
         goto endjob;
 
-    if (qemuDomainPrepareDiskChainElementPath(driver, vm, disk, dest,
-                                              VIR_DISK_CHAIN_READ_WRITE) < 0) {
-        qemuDomainPrepareDiskChainElementPath(driver, vm, disk, dest,
-                                              VIR_DISK_CHAIN_NO_ACCESS);
+    if (qemuDomainPrepareDiskChainElement(driver, vm, disk, mirror,
+                                          VIR_DISK_CHAIN_READ_WRITE) < 0) {
+        qemuDomainPrepareDiskChainElement(driver, vm, disk, mirror,
+                                          VIR_DISK_CHAIN_NO_ACCESS);
         goto endjob;
     }
 
@@ -15443,8 +15424,8 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     virDomainAuditDisk(vm, NULL, mirror, "mirror", ret >= 0);
     qemuDomainObjExitMonitor(driver, vm);
     if (ret < 0) {
-        qemuDomainPrepareDiskChainElementPath(driver, vm, disk, dest,
-                                              VIR_DISK_CHAIN_NO_ACCESS);
+        qemuDomainPrepareDiskChainElement(driver, vm, disk, mirror,
+                                          VIR_DISK_CHAIN_NO_ACCESS);
         goto endjob;
     }
 
