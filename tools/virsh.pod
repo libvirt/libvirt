@@ -350,6 +350,41 @@ description see:
   L<http://libvirt.org/formatcaps.html>
 The XML also show the NUMA topology information if available.
 
+=item B<domcapabilities> [I<virttype>] [I<emulatorbin>]
+[I<arch>] [I<machine>]
+
+Print an XML document describing the domain capabilities for the
+hypervisor we are connected to using information either sourced from an
+existing domain or taken from the B<virsh capabilities> output. This may
+be useful if you intend to create a new domain and are curious if for
+instance it could make use of VFIO by creating a domain for the
+hypervisor with a specific emulator and architecture.
+
+Each hypervisor will have different requirements regarding which options
+are required and which are optional. A hypervisor can support providing
+a default value for any of the options.
+
+The I<virttype> option specifies the virtualization type used. The value
+to be used is either from the 'type' attribute of the <domain/> top
+level element from the domain XML or the 'type' attribute found within
+each <guest/> element from the B<virsh capabilities> output.  The
+I<emulatorbin> option specifies the path to the emulator. The value to
+be used is either the <emulator> element in the domain XML or the
+B<virsh capabilities> output. The I<arch> option specifies the
+architecture to be used for the domain. The value to be used is either
+the "arch" attribute from the domain's XML <os/> element and <type/>
+subelement or the "name" attribute of an <arch/> element from the
+B<virsh capabililites> output. The I<machine> specifies the machine type
+for the emulator. The value to be used is either the "machine" attribute
+from the domain's XML <os/> element and <type/> subelement or one from a
+list of machines from the B<virsh capabilities> output for a specific
+architecture and domain type.
+
+For the qemu hypervisor, a I<virttype> of either 'qemu' or 'kvm' must be
+supplied along with either the I<emulatorbin> or I<arch> in order to
+generate output for the default I<machine>.  Supplying a I<machine>
+value will generate output for the specific machine.
+
 =item B<inject-nmi> I<domain>
 
 Inject NMI to the guest.

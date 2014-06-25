@@ -69,6 +69,70 @@ cmdCapabilities(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 }
 
 /*
+ * "domcapabilities" command
+ */
+static const vshCmdInfo info_domcapabilities[] = {
+    {.name = "help",
+     .data = N_("domain capabilities")
+    },
+    {.name = "desc",
+     .data = N_("Returns capabilities of emulator with respect to host and libvirt.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_domcapabilities[] = {
+    {.name = "virttype",
+     .type = VSH_OT_STRING,
+     .help = N_("virtualization type (/domain/@type)"),
+    },
+    {.name = "emulatorbin",
+     .type = VSH_OT_STRING,
+     .help = N_("path to emulator binary (/domain/devices/emulator)"),
+    },
+    {.name = "arch",
+     .type = VSH_OT_STRING,
+     .help = N_("domain architecture (/domain/os/type/@arch)"),
+    },
+    {.name = "machine",
+     .type = VSH_OT_STRING,
+     .help = N_("machine type (/domain/os/type/@machine)"),
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdDomCapabilities(vshControl *ctl, const vshCmd *cmd)
+{
+    bool ret = false;
+    char *caps = NULL;
+    const char *virttype = NULL;
+    const char *emulatorbin = NULL;
+    const char *arch = NULL;
+    const char *machine = NULL;
+    const unsigned int flags = 0; /* No flags so far */
+
+    if (vshCommandOptStringReq(ctl, cmd, "virttype", &virttype) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "emulatorbin", &emulatorbin) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "arch", &arch) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "machine", &machine) < 0)
+        return ret;
+
+    caps = virConnectGetDomainCapabilities(ctl->conn, emulatorbin,
+                                           arch, machine, virttype, flags);
+    if (!caps) {
+        vshError(ctl, "%s", _("failed to get emulator capabilities"));
+        goto cleanup;
+    }
+
+    vshPrint(ctl, "%s\n", caps);
+    ret = true;
+ cleanup:
+    VIR_FREE(caps);
+    return ret;
+}
+
+/*
  * "freecell" command
  */
 static const vshCmdInfo info_freecell[] = {
@@ -1129,6 +1193,12 @@ const vshCmdDef hostAndHypervisorCmds[] = {
      .handler = cmdCPUModelNames,
      .opts = opts_cpu_models,
      .info = info_cpu_models,
+     .flags = 0
+    },
+    {.name = "domcapabilities",
+     .handler = cmdDomCapabilities,
+     .opts = opts_domcapabilities,
+     .info = info_domcapabilities,
      .flags = 0
     },
     {.name = "freecell",
