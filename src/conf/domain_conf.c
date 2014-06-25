@@ -4261,7 +4261,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
      * element that might be (pure hostdev, or higher level device
      * (e.g. <interface>) with type='hostdev')
      */
-    if ((managed = virXMLPropString(node, "managed"))!= NULL) {
+    if ((managed = virXMLPropString(node, "managed")) != NULL) {
         if (STREQ(managed, "yes"))
             def->managed = true;
     }
