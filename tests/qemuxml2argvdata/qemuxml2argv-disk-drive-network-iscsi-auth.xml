@@ -20,13 +20,19 @@
         <secret type='iscsi' usage='mycluster_myname'/>
       </auth>
       <source protocol='iscsi' name='iqn.1992-01.com.example'>
-        <host name='example.org'/>
+        <host name='example.org' port='6000'/>
       </source>
       <target dev='vda' bus='virtio'/>
     </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='iscsi' name='iqn.1992-01.com.example/1'>
+        <host name='example.org' port='6000'/>
+      </source>
+      <target dev='vdb' bus='virtio'/>
+    </disk>
     <controller type='usb' index='0'/>
-    <controller type='ide' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
-    <memballoon model='virtio'/>
+    <memballoon model='none'/>
   </devices>
 </domain>

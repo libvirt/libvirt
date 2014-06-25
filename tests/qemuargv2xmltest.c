@@ -26,6 +26,8 @@ static int blankProblemElements(char *data)
     if (virtTestClearLineRegex("<name>[[:alnum:]]+</name>", data) < 0 ||
         virtTestClearLineRegex("<uuid>([[:alnum:]]|-)+</uuid>", data) < 0 ||
         virtTestClearLineRegex("<memory.*>[[:digit:]]+</memory>", data) < 0 ||
+        virtTestClearLineRegex("<secret.*>", data) < 0 ||
+        virtTestClearLineRegex("</auth.*>", data) < 0 ||
         virtTestClearLineRegex("<currentMemory.*>[[:digit:]]+</currentMemory>",
                                data) < 0 ||
         virtTestClearLineRegex("<readonly/>", data) < 0 ||
@@ -226,8 +228,10 @@ mymain(void)
     DO_TEST("disk-drive-network-nbd-ipv6-export");
     DO_TEST("disk-drive-network-nbd-unix");
     DO_TEST("disk-drive-network-iscsi");
+    DO_TEST("disk-drive-network-iscsi-auth");
     DO_TEST("disk-drive-network-gluster");
     DO_TEST("disk-drive-network-rbd");
+    DO_TEST("disk-drive-network-rbd-auth");
     DO_TEST("disk-drive-network-rbd-ipv6");
     /* older format using CEPH_ARGS env var */
     DO_TEST("disk-drive-network-rbd-ceph-env");

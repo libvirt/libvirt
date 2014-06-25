@@ -3,5 +3,7 @@ LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
 -M pc -m 214 -smp 1 -nographic -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi -boot c -usb \
 -drive file=iscsi://myname:AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A@example.org\
-/iqn.1992-01.com.example,if=virtio,format=raw \
+:6000/iqn.1992-01.com.example,if=virtio,format=raw \
+-drive file=iscsi://example.org:6000/iqn.1992-01.com.example/1,if=virtio,\
+format=raw \
 -net none -serial none -parallel none
