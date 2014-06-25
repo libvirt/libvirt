@@ -1126,14 +1126,16 @@ static int lxcDomainCreateWithFlags(virDomainPtr dom,
 }
 
 /**
- * lxcDomainCreateXML:
+ * lxcDomainCreateXMLWithFiles:
  * @conn: pointer to connection
  * @xml: XML definition of domain
- * @flags: Must be 0 for now
+ * @nfiles: number of file descriptors passed
+ * @files: list of file descriptors passed
+ * @flags: bitwise-OR of supported virDomainCreateFlags
  *
  * Creates a domain based on xml and starts it
  *
- * Returns 0 on success or -1 in case of error
+ * Returns a new domain object or NULL in case of failure.
  */
 static virDomainPtr
 lxcDomainCreateXMLWithFiles(virConnectPtr conn,
@@ -1213,7 +1215,16 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
     return dom;
 }
 
-
+/**
+ * lxcDomainCreateXML:
+ * @conn: pointer to connection
+ * @xml: XML definition of domain
+ * @flags: bitwise-OR of supported virDomainCreateFlags
+ *
+ * Creates a domain based on xml and starts it
+ *
+ * Returns a new domain object or NULL in case of failure.
+ */
 static virDomainPtr
 lxcDomainCreateXML(virConnectPtr conn,
                    const char *xml,
