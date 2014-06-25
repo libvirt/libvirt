@@ -15540,7 +15540,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     unsigned int topIndex = 0;
     virStorageSourcePtr baseSource;
     unsigned int baseIndex = 0;
-    const char *top_parent = NULL;
+    virStorageSourcePtr top_parent = NULL;
     bool clean_access = false;
     char *topPath = NULL;
     char *basePath = NULL;
@@ -15652,10 +15652,9 @@ qemuDomainBlockCommit(virDomainPtr dom,
     clean_access = true;
     if (qemuDomainPrepareDiskChainElement(driver, vm, disk, baseSource,
                                           VIR_DISK_CHAIN_READ_WRITE) < 0 ||
-        (top_parent && top_parent != disk->src->path &&
-         qemuDomainPrepareDiskChainElementPath(driver, vm, disk,
-                                               top_parent,
-                                               VIR_DISK_CHAIN_READ_WRITE) < 0))
+        (top_parent && top_parent != disk->src &&
+         qemuDomainPrepareDiskChainElement(driver, vm, disk, top_parent,
+                                           VIR_DISK_CHAIN_READ_WRITE) < 0))
         goto endjob;
 
     if (qemuGetDriveSourceString(topSource, NULL, &topPath) < 0)
@@ -15699,10 +15698,9 @@ qemuDomainBlockCommit(virDomainPtr dom,
         /* Revert access to read-only, if possible.  */
         qemuDomainPrepareDiskChainElement(driver, vm, disk, baseSource,
                                           VIR_DISK_CHAIN_READ_ONLY);
-        if (top_parent && top_parent != disk->src->path)
-            qemuDomainPrepareDiskChainElementPath(driver, vm, disk,
-                                                  top_parent,
-                                                  VIR_DISK_CHAIN_READ_ONLY);
+        if (top_parent && top_parent != disk->src)
+            qemuDomainPrepareDiskChainElement(driver, vm, disk, top_parent,
+                                              VIR_DISK_CHAIN_READ_ONLY);
     }
     if (!qemuDomainObjEndJob(driver, vm))
         vm = NULL;

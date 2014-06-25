@@ -1326,17 +1326,16 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
                           virStorageSourcePtr startFrom,
                           const char *name,
                           unsigned int idx,
-                          const char **parent)
+                          virStorageSourcePtr *parent)
 {
-    virStorageSourcePtr prev = NULL;
+    virStorageSourcePtr prev;
     const char *start = chain->path;
-    const char *tmp;
     char *parentDir = NULL;
     bool nameIsFile = virStorageIsFile(name);
     size_t i = 0;
 
     if (!parent)
-        parent = &tmp;
+        parent = &prev;
     *parent = NULL;
 
     if (startFrom) {
@@ -1344,7 +1343,7 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
             chain = chain->backingStore;
             i++;
         }
-        *parent = startFrom->path;
+        *parent = startFrom;
     }
 
     while (chain) {
@@ -1361,8 +1360,8 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
                 break;
 
             if (nameIsFile && virStorageSourceIsLocalStorage(chain)) {
-                if (prev && virStorageSourceIsLocalStorage(prev))
-                    parentDir = mdir_name(prev->path);
+                if (*parent && virStorageSourceIsLocalStorage(*parent))
+                    parentDir = mdir_name((*parent)->path);
                 else
                     ignore_value(VIR_STRDUP_QUIET(parentDir, "."));
 
@@ -1383,8 +1382,7 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
                     break;
             }
         }
-        *parent = chain->path;
-        prev = chain;
+        *parent = chain;
         chain = chain->backingStore;
         i++;
     }

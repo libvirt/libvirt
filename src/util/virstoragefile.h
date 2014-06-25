@@ -315,7 +315,7 @@ virStorageSourcePtr virStorageFileChainLookup(virStorageSourcePtr chain,
                                               virStorageSourcePtr startFrom,
                                               const char *name,
                                               unsigned int idx,
-                                              const char **parent)
+                                              virStorageSourcePtr *parent)
     ATTRIBUTE_NONNULL(1);
 
 int virStorageFileResize(const char *path,
