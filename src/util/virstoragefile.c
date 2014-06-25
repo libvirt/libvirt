@@ -1742,6 +1742,13 @@ virStorageSourceGetActualType(virStorageSourcePtr def)
 }
 
 
+bool
+virStorageSourceIsLocalStorage(virStorageSourcePtr src)
+{
+    return virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_NETWORK;
+}
+
+
 /**
  * virStorageSourceBackingStoreClear:
  *

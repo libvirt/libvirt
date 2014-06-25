@@ -339,6 +339,7 @@ virStorageNetHostDefPtr virStorageNetHostDefCopy(size_t nhosts,
 void virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def);
 void virStorageSourceClear(virStorageSourcePtr def);
 int virStorageSourceGetActualType(virStorageSourcePtr def);
+bool virStorageSourceIsLocalStorage(virStorageSourcePtr src);
 void virStorageSourceFree(virStorageSourcePtr def);
 void virStorageSourceBackingStoreClear(virStorageSourcePtr def);
 virStorageSourcePtr virStorageSourceNewFromBacking(virStorageSourcePtr parent);

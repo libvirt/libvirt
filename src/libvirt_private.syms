@@ -1922,6 +1922,7 @@ virStorageSourceClear;
 virStorageSourceFree;
 virStorageSourceGetActualType;
 virStorageSourceGetSecurityLabelDef;
+virStorageSourceIsLocalStorage;
 virStorageSourceNewFromBacking;
 virStorageSourcePoolDefFree;
 virStorageSourcePoolModeTypeFromString;
