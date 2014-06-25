@@ -12066,61 +12066,52 @@ typedef enum {
     VIR_DISK_CHAIN_READ_WRITE,
 } qemuDomainDiskChainMode;
 
-/* Several operations end up adding or removing a single element of a
- * disk backing file chain; this helper function ensures that the lock
- * manager, cgroup device controller, and security manager labelling
- * are all aware of each new file before it is added to a chain, and
- * can revoke access to a file no longer needed in a chain.  */
+/* Several operations end up adding or removing a single element of a disk
+ * backing file chain; this helper function ensures that the lock manager,
+ * cgroup device controller, and security manager labelling are all aware of
+ * each new file before it is added to a chain, and can revoke access to a file
+ * no longer needed in a chain.  */
 static int
 qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
-                                  virDomainDiskDefPtr disk,
                                   virStorageSourcePtr elem,
                                   qemuDomainDiskChainMode mode)
 {
-    /* The easiest way to label a single file with the same
-     * permissions it would have as if part of the disk chain is to
-     * temporarily modify the disk in place.  */
-    virStorageSource origdisk;
-    bool origreadonly = disk->src->readonly;
+    bool readonly = elem->readonly;
     virQEMUDriverConfigPtr cfg = NULL;
     int ret = -1;
 
-    /* XXX Labelling of non-local files isn't currently supported */
-    if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_NETWORK)
-        return 0;
-
     cfg = virQEMUDriverGetConfig(driver);
 
-    /* XXX Need to refactor the security manager and lock daemon to
-     * operate directly on a virStorageSourcePtr plus tidbits rather
-     * than a full virDomainDiskDef.  */
-    memcpy(&origdisk, disk->src, sizeof(origdisk));
-    memcpy(disk->src, elem, sizeof(*elem));
-    disk->src->readonly = mode == VIR_DISK_CHAIN_READ_ONLY;
+    elem->readonly = mode == VIR_DISK_CHAIN_READ_ONLY;
 
     if (mode == VIR_DISK_CHAIN_NO_ACCESS) {
-        if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
-                                               vm->def, disk) < 0)
-            VIR_WARN("Unable to restore security label on %s", disk->src->path);
-        if (qemuTeardownDiskCgroup(vm, disk) < 0)
-            VIR_WARN("Failed to teardown cgroup for disk path %s",
-                     disk->src->path);
-        if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
-            VIR_WARN("Unable to release lock on %s", disk->src->path);
-    } else if (virDomainLockDiskAttach(driver->lockManager, cfg->uri,
-                                       vm, disk) < 0 ||
-               qemuSetupDiskCgroup(vm, disk) < 0 ||
-               virSecurityManagerSetDiskLabel(driver->securityManager,
-                                              vm->def, disk) < 0) {
-        goto cleanup;
+        if (virSecurityManagerRestoreImageLabel(driver->securityManager,
+                                                vm->def, elem) < 0)
+            VIR_WARN("Unable to restore security label on %s", elem->path);
+
+        if (qemuSetImageCgroup(vm, elem, true) < 0)
+            VIR_WARN("Failed to teardown cgroup for disk path %s", elem->path);
+
+        if (virDomainLockImageDetach(driver->lockManager, vm, elem) < 0)
+            VIR_WARN("Unable to release lock on %s", elem->path);
+    } else {
+        if (virDomainLockImageAttach(driver->lockManager, cfg->uri,
+                                     vm, elem) < 0)
+            goto cleanup;
+
+        if (qemuSetImageCgroup(vm, elem, false) < 0)
+            goto cleanup;
+
+        if (virSecurityManagerSetImageLabel(driver->securityManager,
+                                            vm->def, elem) < 0)
+            goto cleanup;
     }
 
     ret = 0;
 
  cleanup:
-    memcpy(disk->src, &origdisk, sizeof(origdisk));
-    disk->src->readonly = origreadonly;
+    elem->readonly = readonly;
     virObjectUnref(cfg);
     return ret;
 }
@@ -12889,9 +12880,9 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
             VIR_FORCE_CLOSE(fd);
         }
 
-        if (qemuDomainPrepareDiskChainElement(driver, vm, disk, snap->src,
+        if (qemuDomainPrepareDiskChainElement(driver, vm, snap->src,
                                               VIR_DISK_CHAIN_READ_WRITE) < 0) {
-            qemuDomainPrepareDiskChainElement(driver, vm, disk, snap->src,
+            qemuDomainPrepareDiskChainElement(driver, vm, snap->src,
                                               VIR_DISK_CHAIN_NO_ACCESS);
             goto cleanup;
         }
@@ -12986,7 +12977,7 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
 
     ignore_value(virStorageFileInit(disk->src));
 
-    qemuDomainPrepareDiskChainElement(driver, vm, disk, disk->src,
+    qemuDomainPrepareDiskChainElement(driver, vm, disk->src,
                                       VIR_DISK_CHAIN_NO_ACCESS);
     if (need_unlink &&
         virStorageFileStat(disk->src, &st) == 0 && S_ISREG(st.st_mode) &&
@@ -15345,9 +15336,9 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     if (virStorageSourceInitChainElement(disk->mirror, disk->src, false) < 0)
         goto endjob;
 
-    if (qemuDomainPrepareDiskChainElement(driver, vm, disk, mirror,
+    if (qemuDomainPrepareDiskChainElement(driver, vm, mirror,
                                           VIR_DISK_CHAIN_READ_WRITE) < 0) {
-        qemuDomainPrepareDiskChainElement(driver, vm, disk, mirror,
+        qemuDomainPrepareDiskChainElement(driver, vm, mirror,
                                           VIR_DISK_CHAIN_NO_ACCESS);
         goto endjob;
     }
@@ -15359,7 +15350,7 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     virDomainAuditDisk(vm, NULL, mirror, "mirror", ret >= 0);
     qemuDomainObjExitMonitor(driver, vm);
     if (ret < 0) {
-        qemuDomainPrepareDiskChainElement(driver, vm, disk, mirror,
+        qemuDomainPrepareDiskChainElement(driver, vm, mirror,
                                           VIR_DISK_CHAIN_NO_ACCESS);
         goto endjob;
     }
@@ -15566,10 +15557,10 @@ qemuDomainBlockCommit(virDomainPtr dom,
      * operation succeeds, but doing that requires tracking the
      * operation in XML across libvirtd restarts.  */
     clean_access = true;
-    if (qemuDomainPrepareDiskChainElement(driver, vm, disk, baseSource,
+    if (qemuDomainPrepareDiskChainElement(driver, vm, baseSource,
                                           VIR_DISK_CHAIN_READ_WRITE) < 0 ||
         (top_parent && top_parent != disk->src &&
-         qemuDomainPrepareDiskChainElement(driver, vm, disk, top_parent,
+         qemuDomainPrepareDiskChainElement(driver, vm, top_parent,
                                            VIR_DISK_CHAIN_READ_WRITE) < 0))
         goto endjob;
 
@@ -15612,10 +15603,10 @@ qemuDomainBlockCommit(virDomainPtr dom,
  endjob:
     if (ret < 0 && clean_access) {
         /* Revert access to read-only, if possible.  */
-        qemuDomainPrepareDiskChainElement(driver, vm, disk, baseSource,
+        qemuDomainPrepareDiskChainElement(driver, vm, baseSource,
                                           VIR_DISK_CHAIN_READ_ONLY);
         if (top_parent && top_parent != disk->src)
-            qemuDomainPrepareDiskChainElement(driver, vm, disk, top_parent,
+            qemuDomainPrepareDiskChainElement(driver, vm, top_parent,
                                               VIR_DISK_CHAIN_READ_ONLY);
     }
     if (!qemuDomainObjEndJob(driver, vm))
