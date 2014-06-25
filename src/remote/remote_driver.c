@@ -8004,6 +8004,7 @@ static virDriver remote_driver = {
     .domainGetTime = remoteDomainGetTime, /* 1.2.5 */
     .domainSetTime = remoteDomainSetTime, /* 1.2.5 */
     .nodeGetFreePages = remoteNodeGetFreePages, /* 1.2.6 */
+    .connectGetDomainCapabilities = remoteConnectGetDomainCapabilities, /* 1.2.7 */
 };
 
 static virNetworkDriver network_driver = {

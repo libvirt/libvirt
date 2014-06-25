@@ -21137,3 +21137,56 @@ virNetworkDHCPLeaseFree(virNetworkDHCPLeasePtr lease)
     VIR_FREE(lease->clientid);
     VIR_FREE(lease);
 }
+
+/**
+ * virConnectGetDomainCapabilities:
+ * @conn: pointer to the hypervisor connection
+ * @emulatorbin: path to emulator
+ * @arch: domain architecture
+ * @machine: machine type
+ * @virttype: virtualization type
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Prior creating a domain (for instance via virDomainCreateXML
+ * or virDomainDefineXML) it may be suitable to know what the
+ * underlying emulator and/or libvirt is capable of. For
+ * instance, if host, libvirt and qemu is capable of VFIO
+ * passthrough and so on.
+ *
+ * Returns NULL in case of error or an XML string
+ * defining the capabilities.
+ */
+char *
+virConnectGetDomainCapabilities(virConnectPtr conn,
+                                const char *emulatorbin,
+                                const char *arch,
+                                const char *machine,
+                                const char *virttype,
+                                unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, emulatorbin=%s, arch=%s, "
+              "machine=%s, virttype=%s, flags=%x",
+              conn, NULLSTR(emulatorbin), NULLSTR(arch),
+              NULLSTR(machine), NULLSTR(virttype), flags);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, NULL);
+
+    if (conn->driver->connectGetDomainCapabilities) {
+        char *ret;
+        ret = conn->driver->connectGetDomainCapabilities(conn, emulatorbin,
+                                                         arch, machine,
+                                                         virttype, flags);
+        if (!ret)
+            goto error;
+        VIR_DEBUG("conn=%p, ret=%s", conn, ret);
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return NULL;
+}

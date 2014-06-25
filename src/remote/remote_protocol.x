@@ -478,6 +478,18 @@ struct remote_connect_get_capabilities_ret {
     remote_nonnull_string capabilities;
 };
 
+struct remote_connect_get_domain_capabilities_args {
+    remote_string emulatorbin;
+    remote_string arch;
+    remote_string machine;
+    remote_string virttype;
+    unsigned int flags;
+};
+
+struct remote_connect_get_domain_capabilities_ret {
+    remote_nonnull_string capabilities;
+};
+
 struct remote_node_get_cpu_stats_args {
     int cpuNum;
     int nparams;
@@ -5402,6 +5414,11 @@ enum remote_procedure {
      * @generate: none
      * @acl: network:read
      */
-    REMOTE_PROC_NETWORK_GET_DHCP_LEASES = 341
+    REMOTE_PROC_NETWORK_GET_DHCP_LEASES = 341,
 
+    /**
+     * @generate: both
+     * @acl: connect:write
+     */
+    REMOTE_PROC_CONNECT_GET_DOMAIN_CAPABILITIES = 342
 };

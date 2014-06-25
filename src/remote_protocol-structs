@@ -148,6 +148,16 @@ struct remote_node_get_info_ret {
 struct remote_connect_get_capabilities_ret {
         remote_nonnull_string      capabilities;
 };
+struct remote_connect_get_domain_capabilities_args {
+        remote_string              emulatorbin;
+        remote_string              arch;
+        remote_string              machine;
+        remote_string              virttype;
+        u_int                      flags;
+};
+struct remote_connect_get_domain_capabilities_ret {
+        remote_nonnull_string      capabilities;
+};
 struct remote_node_get_cpu_stats_args {
         int                        cpuNum;
         int                        nparams;
@@ -2851,4 +2861,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB_2 = 339,
         REMOTE_PROC_NODE_GET_FREE_PAGES = 340,
         REMOTE_PROC_NETWORK_GET_DHCP_LEASES = 341,
+        REMOTE_PROC_CONNECT_GET_DOMAIN_CAPABILITIES = 342,
 };

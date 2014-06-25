@@ -126,6 +126,14 @@ typedef int
 typedef char *
 (*virDrvConnectGetCapabilities)(virConnectPtr conn);
 
+typedef char *
+(*virDrvConnectGetDomainCapabilities)(virConnectPtr conn,
+                                      const char *emulatorbin,
+                                      const char *arch,
+                                      const char *machine,
+                                      const char *virttype,
+                                      unsigned int flags);
+
 typedef int
 (*virDrvConnectListDomains)(virConnectPtr conn,
                             int *ids,
@@ -1407,6 +1415,7 @@ struct _virDriver {
     virDrvDomainGetTime domainGetTime;
     virDrvDomainSetTime domainSetTime;
     virDrvNodeGetFreePages nodeGetFreePages;
+    virDrvConnectGetDomainCapabilities connectGetDomainCapabilities;
 };
 
 

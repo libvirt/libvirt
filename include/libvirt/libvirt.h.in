@@ -1585,6 +1585,13 @@ int                     virNodeGetInfo          (virConnectPtr conn,
                                                  virNodeInfoPtr info);
 char *                  virConnectGetCapabilities (virConnectPtr conn);
 
+char * virConnectGetDomainCapabilities(virConnectPtr conn,
+                                       const char *emulatorbin,
+                                       const char *arch,
+                                       const char *machine,
+                                       const char *virttype,
+                                       unsigned int flags);
+
 int                     virNodeGetCPUStats (virConnectPtr conn,
                                             int cpuNum,
                                             virNodeCPUStatsPtr params,
