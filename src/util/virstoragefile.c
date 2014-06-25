@@ -1885,6 +1885,46 @@ virStorageSourceCopy(const virStorageSource *src,
 }
 
 
+/**
+ * virStorageSourceInitChainElement:
+ * @newelem: New backing chain element disk source
+ * @old: Existing top level disk source
+ * @force: Force-copy the information
+ *
+ * Transfers relevant information from the existing disk source to the new
+ * backing chain element if they weren't supplied so that labelling info
+ * and possibly other stuff is correct.
+ *
+ * If @force is true, user-supplied information for the new backing store
+ * element is overwritten from @old instead of keeping it.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+virStorageSourceInitChainElement(virStorageSourcePtr newelem,
+                                 virStorageSourcePtr old,
+                                 bool force)
+{
+    int ret = -1;
+
+    if (force) {
+        virStorageSourceSeclabelsClear(newelem);
+    }
+
+    if (!newelem->seclabels &&
+        virStorageSourceSeclabelsCopy(newelem, old) < 0)
+        goto cleanup;
+
+    newelem->shared = old->shared;
+    newelem->readonly = old->readonly;
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
 void
 virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def)
 {

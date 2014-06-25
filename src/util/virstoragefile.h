@@ -345,6 +345,9 @@ void virStorageNetHostDefFree(size_t nhosts, virStorageNetHostDefPtr hosts);
 virStorageNetHostDefPtr virStorageNetHostDefCopy(size_t nhosts,
                                                  virStorageNetHostDefPtr hosts);
 
+int virStorageSourceInitChainElement(virStorageSourcePtr newelem,
+                                     virStorageSourcePtr old,
+                                     bool force);
 void virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def);
 void virStorageSourceClear(virStorageSourcePtr def);
 int virStorageSourceGetActualType(virStorageSourcePtr def);
