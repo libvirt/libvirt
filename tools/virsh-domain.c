@@ -2686,6 +2686,14 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, _("inbound format is incorrect"));
             goto cleanup;
         }
+        /* we parse the rate as unsigned long long, but the API
+         * only accepts UINT */
+        if (inbound.average > UINT_MAX || inbound.peak > UINT_MAX ||
+            inbound.burst > UINT_MAX) {
+            vshError(ctl, _("inbound rate larger than maximum %u"),
+                     UINT_MAX);
+            goto cleanup;
+        }
         if (inbound.average == 0 && (inbound.burst || inbound.peak)) {
             vshError(ctl, _("inbound average is mandatory"));
             goto cleanup;
@@ -2712,6 +2720,12 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
     if (outboundStr) {
         if (parseRateStr(outboundStr, &outbound) < 0) {
             vshError(ctl, _("outbound format is incorrect"));
+            goto cleanup;
+        }
+        if (outbound.average > UINT_MAX || outbound.peak > UINT_MAX ||
+            outbound.burst > UINT_MAX) {
+            vshError(ctl, _("outbound rate larger than maximum %u"),
+                     UINT_MAX);
             goto cleanup;
         }
         if (outbound.average == 0 && (outbound.burst || outbound.peak)) {
