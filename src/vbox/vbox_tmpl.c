@@ -7279,7 +7279,7 @@ int vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
                     rc = imediumattach->vtbl->GetPort(imediumattach, &devicePort);
                     if (NS_FAILED(rc)) {
                         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                       _("cannot get medium attachchment type"));
+                                       _("cannot get medium attachment type"));
                         goto cleanup;
                     }
                     rc = imediumattach->vtbl->GetDevice(imediumattach, &deviceSlot);
