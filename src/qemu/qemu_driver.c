@@ -8637,7 +8637,7 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
     size_t i = 0;
     int ret = -1;
 
-    if (virDomainNumatuneGetMode(vm->def->numatune) !=
+    if (virDomainNumatuneGetMode(vm->def->numatune, -1) !=
         VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("change of nodeset for running domain "
@@ -8778,7 +8778,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (mode != -1 &&
-            virDomainNumatuneGetMode(vm->def->numatune) != mode) {
+            virDomainNumatuneGetMode(vm->def->numatune, -1) != mode) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("can't change numatune mode for running domain"));
             goto cleanup;
@@ -8874,15 +8874,15 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
                 goto cleanup;
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-                param->value.i = virDomainNumatuneGetMode(persistentDef->numatune);
+                param->value.i = virDomainNumatuneGetMode(persistentDef->numatune, -1);
             else
-                param->value.i = virDomainNumatuneGetMode(vm->def->numatune);
+                param->value.i = virDomainNumatuneGetMode(vm->def->numatune, -1);
             break;
 
         case 1: /* fill numa nodeset here */
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 nodeset = virDomainNumatuneFormatNodeset(persistentDef->numatune,
-                                                         NULL);
+                                                         NULL, -1);
                 if (!nodeset)
                     goto cleanup;
             } else {

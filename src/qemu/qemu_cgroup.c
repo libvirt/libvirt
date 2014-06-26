@@ -603,7 +603,7 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
 
     if (virDomainNumatuneMaybeFormatNodeset(vm->def->numatune,
                                             nodemask,
-                                            &mem_mask) < 0)
+                                            &mem_mask, -1) < 0)
         goto cleanup;
 
     if (mem_mask &&

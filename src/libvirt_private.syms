@@ -614,6 +614,7 @@ virDomainNumatuneFormatXML;
 virDomainNumatuneFree;
 virDomainNumatuneGetMode;
 virDomainNumatuneGetNodeset;
+virDomainNumatuneHasPerNodeBinding;
 virDomainNumatuneHasPlacementAuto;
 virDomainNumatuneMaybeFormatNodeset;
 virDomainNumatuneMemModeTypeFromString;

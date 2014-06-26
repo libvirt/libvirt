@@ -69,20 +69,24 @@ int virDomainNumatuneFormatXML(virBufferPtr buf, virDomainNumatunePtr numatune)
 /*
  * Getters
  */
-virDomainNumatuneMemMode virDomainNumatuneGetMode(virDomainNumatunePtr numatune);
+virDomainNumatuneMemMode virDomainNumatuneGetMode(virDomainNumatunePtr numatune,
+                                                  int cellid);
 
 virBitmapPtr virDomainNumatuneGetNodeset(virDomainNumatunePtr numatune,
-                                         virBitmapPtr auto_nodeset);
+                                         virBitmapPtr auto_nodeset,
+                                         int cellid);
 
 /*
  * Formatters
  */
 char *virDomainNumatuneFormatNodeset(virDomainNumatunePtr numatune,
-                                     virBitmapPtr auto_nodeset);
+                                     virBitmapPtr auto_nodeset,
+                                     int cellid);
 
 int virDomainNumatuneMaybeFormatNodeset(virDomainNumatunePtr numatune,
                                         virBitmapPtr auto_nodeset,
-                                        char **mask);
+                                        char **mask,
+                                        int cellid);
 
 /*
  * Setters
@@ -98,5 +102,7 @@ bool virDomainNumatuneEquals(virDomainNumatunePtr n1,
                              virDomainNumatunePtr n2);
 
 bool virDomainNumatuneHasPlacementAuto(virDomainNumatunePtr numatune);
+
+bool virDomainNumatuneHasPerNodeBinding(virDomainNumatunePtr numatune);
 
 #endif /* __NUMATUNE_CONF_H__ */

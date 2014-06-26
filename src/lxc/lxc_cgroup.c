@@ -79,7 +79,8 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
             goto cleanup;
     }
 
-    if (virDomainNumatuneMaybeFormatNodeset(def->numatune, nodemask, &mask) < 0)
+    if (virDomainNumatuneMaybeFormatNodeset(def->numatune, nodemask,
+                                            &mask, -1) < 0)
         goto cleanup;
 
     if (mask && virCgroupSetCpusetMems(cgroup, mask) < 0)

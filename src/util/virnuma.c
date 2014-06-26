@@ -98,7 +98,7 @@ virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
     int maxnode = 0;
     virBitmapPtr tmp_nodemask = NULL;
 
-    tmp_nodemask = virDomainNumatuneGetNodeset(numatune, nodemask);
+    tmp_nodemask = virDomainNumatuneGetNodeset(numatune, nodemask, -1);
     if (!tmp_nodemask)
         return 0;
 
@@ -123,7 +123,7 @@ virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
         nodemask_set(&mask, bit);
     }
 
-    switch (virDomainNumatuneGetMode(numatune)) {
+    switch (virDomainNumatuneGetMode(numatune, -1)) {
     case VIR_DOMAIN_NUMATUNE_MEM_STRICT:
         numa_set_bind_policy(1);
         numa_set_membind(&mask);
@@ -320,7 +320,7 @@ int
 virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
                          virBitmapPtr nodemask ATTRIBUTE_UNUSED)
 {
-    if (virDomainNumatuneGetNodeset(numatune, NULL)) {
+    if (virDomainNumatuneGetNodeset(numatune, NULL, -1)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("libvirt is compiled without NUMA tuning support"));
 
