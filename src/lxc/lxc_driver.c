@@ -692,9 +692,14 @@ static int lxcDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax)
         goto cleanup;
 
     if (newmax < vm->def->mem.cur_balloon) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       "%s", _("Cannot set max memory lower than current memory"));
-        goto cleanup;
+        if (!virDomainObjIsActive(vm)) {
+            vm->def->mem.cur_balloon = newmax;
+        } else {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("Cannot set max memory lower than current"
+                             " memory for an active domain"));
+            goto cleanup;
+        }
     }
 
     vm->def->mem.max_balloon = newmax;
