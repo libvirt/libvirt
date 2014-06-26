@@ -106,37 +106,6 @@ typedef enum {
 } virStoragePoolDeviceType;
 
 
-typedef enum {
-    VIR_STORAGE_POOL_AUTH_NONE,
-    VIR_STORAGE_POOL_AUTH_CHAP,
-    VIR_STORAGE_POOL_AUTH_CEPHX,
-
-    VIR_STORAGE_POOL_AUTH_LAST,
-} virStoragePoolAuthType;
-VIR_ENUM_DECL(virStoragePoolAuth)
-
-typedef struct _virStoragePoolAuthSecret virStoragePoolAuthSecret;
-typedef virStoragePoolAuthSecret *virStoragePoolAuthSecretPtr;
-struct _virStoragePoolAuthSecret {
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    char *usage;
-    bool uuidUsable;
-};
-
-typedef struct _virStoragePoolAuthChap virStoragePoolAuthChap;
-typedef virStoragePoolAuthChap *virStoragePoolAuthChapPtr;
-struct _virStoragePoolAuthChap {
-    char *username;
-    virStoragePoolAuthSecret secret;
-};
-
-typedef struct _virStoragePoolAuthCephx virStoragePoolAuthCephx;
-typedef virStoragePoolAuthCephx *virStoragePoolAuthCephxPtr;
-struct _virStoragePoolAuthCephx {
-    char *username;
-    virStoragePoolAuthSecret secret;
-};
-
 /*
  * For remote pools, info on how to reach the host
  */
@@ -243,11 +212,8 @@ struct _virStoragePoolSource {
     /* Initiator IQN */
     virStoragePoolSourceInitiatorAttr initiator;
 
-    int authType;       /* virStoragePoolAuthType */
-    union {
-        virStoragePoolAuthChap chap;
-        virStoragePoolAuthCephx cephx;
-    } auth;
+    /* Authentication information */
+    virStorageAuthDefPtr auth;
 
     /* Vendor of the source */
     char *vendor;

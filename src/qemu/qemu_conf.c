@@ -1211,54 +1211,18 @@ qemuAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
 
 static int
 qemuTranslateDiskSourcePoolAuth(virDomainDiskDefPtr def,
-                                virStoragePoolDefPtr pooldef)
+                                virStoragePoolSourcePtr source)
 {
     int ret = -1;
-    virStorageAuthDefPtr authdef;
 
     /* Only necessary when authentication set */
-    if (pooldef->source.authType == VIR_STORAGE_POOL_AUTH_NONE) {
+    if (!source->auth) {
         ret = 0;
         goto cleanup;
     }
-    if (VIR_ALLOC(def->src->auth) < 0)
+    def->src->auth = virStorageAuthDefCopy(source->auth);
+    if (!def->src->auth)
         goto cleanup;
-    authdef = def->src->auth;
-
-    /* Copy the authentication information from the storage pool
-     * into the virDomainDiskDef
-     */
-    if (pooldef->source.authType == VIR_STORAGE_POOL_AUTH_CHAP) {
-        if (VIR_STRDUP(authdef->username,
-                       pooldef->source.auth.chap.username) < 0)
-            goto cleanup;
-        if (pooldef->source.auth.chap.secret.uuidUsable) {
-            authdef->secretType = VIR_STORAGE_SECRET_TYPE_UUID;
-            memcpy(authdef->secret.uuid,
-                   pooldef->source.auth.chap.secret.uuid,
-                   VIR_UUID_BUFLEN);
-        } else {
-            if (VIR_STRDUP(authdef->secret.usage,
-                           pooldef->source.auth.chap.secret.usage) < 0)
-                goto cleanup;
-            authdef->secretType = VIR_STORAGE_SECRET_TYPE_USAGE;
-        }
-    } else if (pooldef->source.authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
-        if (VIR_STRDUP(authdef->username,
-                       pooldef->source.auth.cephx.username) < 0)
-            goto cleanup;
-        if (pooldef->source.auth.cephx.secret.uuidUsable) {
-            authdef->secretType = VIR_STORAGE_SECRET_TYPE_UUID;
-            memcpy(authdef->secret.uuid,
-                   pooldef->source.auth.cephx.secret.uuid,
-                   VIR_UUID_BUFLEN);
-        } else {
-            if (VIR_STRDUP(authdef->secret.usage,
-                           pooldef->source.auth.cephx.secret.usage) < 0)
-                goto cleanup;
-            authdef->secretType = VIR_STORAGE_SECRET_TYPE_USAGE;
-        }
-    }
     ret = 0;
 
  cleanup:
@@ -1387,7 +1351,7 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
            def->src->srcpool->actualtype = VIR_STORAGE_TYPE_NETWORK;
            def->src->protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
 
-           if (qemuTranslateDiskSourcePoolAuth(def, pooldef) < 0)
+           if (qemuTranslateDiskSourcePoolAuth(def, &pooldef->source) < 0)
                goto cleanup;
 
            if (qemuAddISCSIPoolSourceHost(def, pooldef) < 0)

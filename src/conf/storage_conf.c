@@ -44,8 +44,11 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "virstring.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
+
+VIR_LOG_INIT("conf.storage_conf");
 
 #define DEFAULT_POOL_PERM_MODE 0755
 #define DEFAULT_VOL_PERM_MODE  0600
@@ -97,10 +100,6 @@ VIR_ENUM_IMPL(virStoragePartedFs,
 VIR_ENUM_IMPL(virStoragePoolSourceAdapter,
               VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_LAST,
               "default", "scsi_host", "fc_host")
-
-VIR_ENUM_IMPL(virStoragePoolAuth,
-              VIR_STORAGE_POOL_AUTH_LAST,
-              "none", "chap", "ceph")
 
 typedef const char *(*virStorageVolFormatToString)(int format);
 typedef int (*virStorageVolFormatFromString)(const char *format);
@@ -376,18 +375,9 @@ virStoragePoolSourceClear(virStoragePoolSourcePtr source)
     VIR_FREE(source->name);
     virStoragePoolSourceAdapterClear(source->adapter);
     VIR_FREE(source->initiator.iqn);
+    virStorageAuthDefFree(source->auth);
     VIR_FREE(source->vendor);
     VIR_FREE(source->product);
-
-    if (source->authType == VIR_STORAGE_POOL_AUTH_CHAP) {
-        VIR_FREE(source->auth.chap.username);
-        VIR_FREE(source->auth.chap.secret.usage);
-    }
-
-    if (source->authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
-        VIR_FREE(source->auth.cephx.username);
-        VIR_FREE(source->auth.cephx.secret.usage);
-    }
 }
 
 void
@@ -464,106 +454,17 @@ virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
 }
 
 static int
-virStoragePoolDefParseAuthSecret(xmlXPathContextPtr ctxt,
-                                 virStoragePoolAuthSecretPtr secret)
-{
-    char *uuid = NULL;
-    int ret = -1;
-
-    uuid = virXPathString("string(./auth/secret/@uuid)", ctxt);
-    secret->usage = virXPathString("string(./auth/secret/@usage)", ctxt);
-    if (uuid == NULL && secret->usage == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing auth secret uuid or usage attribute"));
-        return -1;
-    }
-
-    if (uuid != NULL) {
-        if (secret->usage != NULL) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("either auth secret uuid or usage expected"));
-            goto cleanup;
-        }
-        if (virUUIDParse(uuid, secret->uuid) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("invalid auth secret uuid"));
-            goto cleanup;
-        }
-        secret->uuidUsable = true;
-    } else {
-        secret->uuidUsable = false;
-    }
-
-    ret = 0;
- cleanup:
-    VIR_FREE(uuid);
-    return ret;
-}
-
-static int
-virStoragePoolDefParseAuth(xmlXPathContextPtr ctxt,
-                           virStoragePoolSourcePtr source)
-{
-    int ret = -1;
-    char *authType = NULL;
-    char *username = NULL;
-
-    authType = virXPathString("string(./auth/@type)", ctxt);
-    if (authType == NULL) {
-        source->authType = VIR_STORAGE_POOL_AUTH_NONE;
-        ret = 0;
-        goto cleanup;
-    }
-
-    if ((source->authType =
-         virStoragePoolAuthTypeFromString(authType)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown auth type '%s'"),
-                       authType);
-        goto cleanup;
-    }
-
-    username = virXPathString("string(./auth/@username)", ctxt);
-    if (username == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing auth username attribute"));
-        goto cleanup;
-    }
-
-    if (source->authType == VIR_STORAGE_POOL_AUTH_CHAP) {
-        source->auth.chap.username = username;
-        username = NULL;
-        if (virStoragePoolDefParseAuthSecret(ctxt,
-                                             &source->auth.chap.secret) < 0)
-            goto cleanup;
-    }
-    else if (source->authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
-        source->auth.cephx.username = username;
-        username = NULL;
-        if (virStoragePoolDefParseAuthSecret(ctxt,
-                                             &source->auth.cephx.secret) < 0)
-            goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(authType);
-    VIR_FREE(username);
-    return ret;
-}
-
-static int
 virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
                              virStoragePoolSourcePtr source,
                              int pool_type,
                              xmlNodePtr node)
 {
     int ret = -1;
-    xmlNodePtr relnode, *nodeset = NULL;
+    xmlNodePtr relnode, authnode, *nodeset = NULL;
     int nsource;
     size_t i;
     virStoragePoolOptionsPtr options;
+    virStorageAuthDefPtr authdef = NULL;
     char *name = NULL;
     char *port = NULL;
     char *adapter_type = NULL;
@@ -707,8 +608,18 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
                 VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST;
     }
 
-    if (virStoragePoolDefParseAuth(ctxt, source) < 0)
-        goto cleanup;
+    if ((authnode = virXPathNode("./auth", ctxt))) {
+        if (!(authdef = virStorageAuthDefParse(node->doc, authnode)))
+            goto cleanup;
+
+        if (authdef->authType == VIR_STORAGE_AUTH_TYPE_NONE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("storage pool missing auth type"));
+            goto cleanup;
+        }
+
+        source->auth = authdef;
+    }
 
     source->vendor = virXPathString("string(./vendor/@name)", ctxt);
     source->product = virXPathString("string(./product/@name)", ctxt);
@@ -1059,7 +970,6 @@ virStoragePoolSourceFormat(virBufferPtr buf,
                            virStoragePoolSourcePtr src)
 {
     size_t i, j;
-    char uuid[VIR_UUID_STRING_BUFLEN];
 
     virBufferAddLit(buf, "<source>\n");
     virBufferAdjustIndent(buf, 2);
@@ -1140,29 +1050,9 @@ virStoragePoolSourceFormat(virBufferPtr buf,
         virBufferAsprintf(buf, "<format type='%s'/>\n", format);
     }
 
-    if (src->authType == VIR_STORAGE_POOL_AUTH_CHAP ||
-        src->authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
-        virBufferAsprintf(buf, "<auth type='%s' ",
-                          virStoragePoolAuthTypeToString(src->authType));
-        virBufferEscapeString(buf, "username='%s'>\n",
-                              (src->authType == VIR_STORAGE_POOL_AUTH_CHAP ?
-                               src->auth.chap.username :
-                               src->auth.cephx.username));
-        virBufferAdjustIndent(buf, 2);
-
-        virBufferAddLit(buf, "<secret");
-        if (src->auth.cephx.secret.uuidUsable) {
-            virUUIDFormat(src->auth.cephx.secret.uuid, uuid);
-            virBufferAsprintf(buf, " uuid='%s'", uuid);
-        }
-
-        if (src->auth.cephx.secret.usage != NULL) {
-            virBufferAsprintf(buf, " usage='%s'", src->auth.cephx.secret.usage);
-        }
-        virBufferAddLit(buf, "/>\n");
-
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</auth>\n");
+    if (src->auth) {
+        if (virStorageAuthDefFormat(buf, src->auth) < 0)
+            return -1;
     }
 
     virBufferEscapeString(buf, "<vendor name='%s'/>\n", src->vendor);

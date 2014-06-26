@@ -278,18 +278,20 @@ virStorageBackendISCSICheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 static int
 virStorageBackendISCSISetAuth(const char *portal,
                               virConnectPtr conn,
-                              virStoragePoolDefPtr def)
+                              virStoragePoolSourcePtr source)
 {
     virSecretPtr secret = NULL;
     unsigned char *secret_value = NULL;
-    virStoragePoolAuthChap chap;
+    virStorageAuthDefPtr authdef = source->auth;
     int ret = -1;
     char uuidStr[VIR_UUID_STRING_BUFLEN];
 
-    if (def->source.authType == VIR_STORAGE_POOL_AUTH_NONE)
+    if (!authdef || authdef->authType == VIR_STORAGE_AUTH_TYPE_NONE)
         return 0;
 
-    if (def->source.authType != VIR_STORAGE_POOL_AUTH_CHAP) {
+    VIR_DEBUG("username='%s' authType=%d secretType=%d",
+              authdef->username, authdef->authType, authdef->secretType);
+    if (authdef->authType != VIR_STORAGE_AUTH_TYPE_CHAP) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("iscsi pool only supports 'chap' auth type"));
         return -1;
@@ -302,12 +304,11 @@ virStorageBackendISCSISetAuth(const char *portal,
         return -1;
     }
 
-    chap = def->source.auth.chap;
-    if (chap.secret.uuidUsable)
-        secret = virSecretLookupByUUID(conn, chap.secret.uuid);
+    if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID)
+        secret = virSecretLookupByUUID(conn, authdef->secret.uuid);
     else
         secret = virSecretLookupByUsage(conn, VIR_SECRET_USAGE_TYPE_ISCSI,
-                                        chap.secret.usage);
+                                        authdef->secret.usage);
 
     if (secret) {
         size_t secret_size;
@@ -315,44 +316,44 @@ virStorageBackendISCSISetAuth(const char *portal,
             conn->secretDriver->secretGetValue(secret, &secret_size, 0,
                                                VIR_SECRET_GET_VALUE_INTERNAL_CALL);
         if (!secret_value) {
-            if (chap.secret.uuidUsable) {
-                virUUIDFormat(chap.secret.uuid, uuidStr);
+            if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
+                virUUIDFormat(authdef->secret.uuid, uuidStr);
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("could not get the value of the secret "
                                  "for username %s using uuid '%s'"),
-                               chap.username, uuidStr);
+                               authdef->username, uuidStr);
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("could not get the value of the secret "
                                  "for username %s using usage value '%s'"),
-                               chap.username, chap.secret.usage);
+                               authdef->username, authdef->secret.usage);
             }
             goto cleanup;
         }
     } else {
-        if (chap.secret.uuidUsable) {
-            virUUIDFormat(chap.secret.uuid, uuidStr);
+        if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
+            virUUIDFormat(authdef->secret.uuid, uuidStr);
             virReportError(VIR_ERR_NO_SECRET,
                            _("no secret matches uuid '%s'"),
                            uuidStr);
         } else {
             virReportError(VIR_ERR_NO_SECRET,
                            _("no secret matches usage value '%s'"),
-                           chap.secret.usage);
+                           authdef->secret.usage);
         }
         goto cleanup;
     }
 
     if (virISCSINodeUpdate(portal,
-                           def->source.devices[0].path,
+                           source->devices[0].path,
                            "node.session.auth.authmethod",
                            "CHAP") < 0 ||
         virISCSINodeUpdate(portal,
-                           def->source.devices[0].path,
+                           source->devices[0].path,
                            "node.session.auth.username",
-                           chap.username) < 0 ||
+                           authdef->username) < 0 ||
         virISCSINodeUpdate(portal,
-                           def->source.devices[0].path,
+                           source->devices[0].path,
                            "node.session.auth.password",
                            (const char *)secret_value) < 0)
         goto cleanup;
@@ -404,7 +405,7 @@ virStorageBackendISCSIStartPool(virConnectPtr conn,
                                 NULL, NULL) < 0)
             goto cleanup;
 
-        if (virStorageBackendISCSISetAuth(portal, conn, pool->def) < 0)
+        if (virStorageBackendISCSISetAuth(portal, conn, &pool->def->source) < 0)
             goto cleanup;
 
         if (virISCSIConnectionLogin(portal,

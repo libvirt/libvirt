@@ -50,10 +50,11 @@ typedef virStorageBackendRBDState *virStorageBackendRBDStatePtr;
 
 static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
                                              virConnectPtr conn,
-                                             virStoragePoolObjPtr pool)
+                                             virStoragePoolSourcePtr source)
 {
     int ret = -1;
     int r = 0;
+    virStorageAuthDefPtr authdef = source->auth;
     unsigned char *secret_value = NULL;
     size_t secret_value_size;
     char *rados_key = NULL;
@@ -66,12 +67,9 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     const char *mon_op_timeout = "30";
     const char *osd_op_timeout = "30";
 
-    VIR_DEBUG("Found Cephx username: %s",
-              pool->def->source.auth.cephx.username);
-
-    if (pool->def->source.auth.cephx.username != NULL) {
-        VIR_DEBUG("Using cephx authorization");
-        r = rados_create(&ptr->cluster, pool->def->source.auth.cephx.username);
+    if (authdef) {
+        VIR_DEBUG("Using cephx authorization, username: %s", authdef->username);
+        r = rados_create(&ptr->cluster, authdef->username);
         if (r < 0) {
             virReportSystemError(-r, "%s", _("failed to initialize RADOS"));
             goto cleanup;
@@ -84,46 +82,45 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
             return -1;
         }
 
-        if (pool->def->source.auth.cephx.secret.uuidUsable) {
-            virUUIDFormat(pool->def->source.auth.cephx.secret.uuid, secretUuid);
+        if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
+            virUUIDFormat(authdef->secret.uuid, secretUuid);
             VIR_DEBUG("Looking up secret by UUID: %s", secretUuid);
             secret = virSecretLookupByUUIDString(conn, secretUuid);
-        } else if (pool->def->source.auth.cephx.secret.usage != NULL) {
+        } else if (authdef->secret.usage != NULL) {
             VIR_DEBUG("Looking up secret by usage: %s",
-                      pool->def->source.auth.cephx.secret.usage);
+                      authdef->secret.usage);
             secret = virSecretLookupByUsage(conn, VIR_SECRET_USAGE_TYPE_CEPH,
-                                            pool->def->source.auth.cephx.secret.usage);
+                                            authdef->secret.usage);
         }
 
         if (secret == NULL) {
-            if (pool->def->source.auth.cephx.secret.uuidUsable) {
+            if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
                 virReportError(VIR_ERR_NO_SECRET,
                                _("no secret matches uuid '%s'"),
                                  secretUuid);
             } else {
                 virReportError(VIR_ERR_NO_SECRET,
                                _("no secret matches usage value '%s'"),
-                                 pool->def->source.auth.cephx.secret.usage);
+                                 authdef->secret.usage);
             }
             goto cleanup;
         }
 
-        secret_value = conn->secretDriver->secretGetValue(secret, &secret_value_size, 0,
+        secret_value = conn->secretDriver->secretGetValue(secret,
+                                                          &secret_value_size, 0,
                                                           VIR_SECRET_GET_VALUE_INTERNAL_CALL);
 
         if (!secret_value) {
-            if (pool->def->source.auth.cephx.secret.uuidUsable) {
+            if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("could not get the value of the secret "
                                  "for username '%s' using uuid '%s'"),
-                               pool->def->source.auth.cephx.username,
-                               secretUuid);
+                               authdef->username, secretUuid);
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("could not get the value of the secret "
                                  "for username '%s' using usage value '%s'"),
-                               pool->def->source.auth.cephx.username,
-                               pool->def->source.auth.cephx.secret.usage);
+                               authdef->username, authdef->secret.usage);
             }
             goto cleanup;
         }
@@ -170,18 +167,18 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     }
 
     VIR_DEBUG("Found %zu RADOS cluster monitors in the pool configuration",
-              pool->def->source.nhost);
+              source->nhost);
 
-    for (i = 0; i < pool->def->source.nhost; i++) {
-        if (pool->def->source.hosts[i].name != NULL &&
-            !pool->def->source.hosts[i].port) {
+    for (i = 0; i < source->nhost; i++) {
+        if (source->hosts[i].name != NULL &&
+            !source->hosts[i].port) {
             virBufferAsprintf(&mon_host, "%s:6789,",
-                              pool->def->source.hosts[i].name);
-        } else if (pool->def->source.hosts[i].name != NULL &&
-            pool->def->source.hosts[i].port) {
+                              source->hosts[i].name);
+        } else if (source->hosts[i].name != NULL &&
+            source->hosts[i].port) {
             virBufferAsprintf(&mon_host, "%s:%d,",
-                              pool->def->source.hosts[i].name,
-                              pool->def->source.hosts[i].port);
+                              source->hosts[i].name,
+                              source->hosts[i].port);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("received malformed monitor, check the XML definition"));
@@ -333,7 +330,7 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn,
     ptr.cluster = NULL;
     ptr.ioctx = NULL;
 
-    if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, pool) < 0) {
+    if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, &pool->def->source) < 0) {
         goto cleanup;
     }
 
@@ -435,7 +432,7 @@ static int virStorageBackendRBDDeleteVol(virConnectPtr conn,
         VIR_WARN("%s", _("This storage backend does not supported zeroed removal of volumes"));
     }
 
-    if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, pool) < 0) {
+    if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, &pool->def->source) < 0) {
         goto cleanup;
     }
 
@@ -518,7 +515,7 @@ virStorageBackendRBDBuildVol(virConnectPtr conn,
 
     virCheckFlags(0, -1);
 
-    if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, pool) < 0)
+    if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, &pool->def->source) < 0)
         goto cleanup;
 
     if (virStorageBackendRBDOpenIoCTX(&ptr, pool) < 0)
@@ -558,7 +555,7 @@ static int virStorageBackendRBDRefreshVol(virConnectPtr conn,
     ptr.ioctx = NULL;
     int ret = -1;
 
-    if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, pool) < 0) {
+    if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, &pool->def->source) < 0) {
         goto cleanup;
     }
 
@@ -592,7 +589,7 @@ static int virStorageBackendRBDResizeVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     virCheckFlags(0, -1);
 
-    if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, pool) < 0) {
+    if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, &pool->def->source) < 0) {
         goto cleanup;
     }
 
