@@ -6292,6 +6292,7 @@ remoteDispatchNetworkGetDHCPLeases(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
 
     if ((nleases = virNetworkGetDHCPLeases(net,
+                                           args->mac ? *args->mac : NULL,
                                            args->need_results ? &leases : NULL,
                                            args->flags)) < 0)
         goto cleanup;
@@ -6301,74 +6302,6 @@ remoteDispatchNetworkGetDHCPLeases(virNetServerPtr server ATTRIBUTE_UNUSED,
                        _("Number of leases is %d, which exceeds max limit: %d"),
                        nleases, REMOTE_NETWORK_DHCP_LEASES_MAX);
         goto cleanup;
-    }
-
-    if (leases && nleases) {
-        if (VIR_ALLOC_N(ret->leases.leases_val, nleases) < 0)
-            goto cleanup;
-
-        ret->leases.leases_len = nleases;
-
-        for (i = 0; i < nleases; i++) {
-            if (remoteSerializeDHCPLease(ret->leases.leases_val + i, leases[i]) < 0)
-                goto cleanup;
-        }
-
-    } else {
-        ret->leases.leases_len = 0;
-        ret->leases.leases_val = NULL;
-    }
-
-    ret->ret = nleases;
-
-    rv = 0;
-
- cleanup:
-    if (rv < 0)
-        virNetMessageSaveError(rerr);
-    if (leases) {
-        for (i = 0; i < nleases; i++)
-            virNetworkDHCPLeaseFree(leases[i]);
-        VIR_FREE(leases);
-    }
-    virNetworkFree(net);
-    return rv;
-}
-
-
-static int
-remoteDispatchNetworkGetDHCPLeasesForMAC(virNetServerPtr server ATTRIBUTE_UNUSED,
-                                         virNetServerClientPtr client,
-                                         virNetMessagePtr msg ATTRIBUTE_UNUSED,
-                                         virNetMessageErrorPtr rerr,
-                                         remote_network_get_dhcp_leases_for_mac_args *args,
-                                         remote_network_get_dhcp_leases_for_mac_ret *ret)
-{
-    int rv = -1;
-    size_t i;
-    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
-    virNetworkDHCPLeasePtr *leases = NULL;
-    virNetworkPtr net = NULL;
-    int nleases = 0;
-
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
-        goto cleanup;
-    }
-
-    if (!(net = get_nonnull_network(priv->conn, args->net)))
-        goto cleanup;
-
-    if ((nleases = virNetworkGetDHCPLeasesForMAC(net, args->mac,
-                                                 args->need_results ? &leases : NULL,
-                                                 args->flags)) < 0)
-        goto cleanup;
-
-    if (nleases > REMOTE_NETWORK_DHCP_LEASES_MAX) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Number of leases is %d, which exceeds max limit: %d"),
-                       nleases, REMOTE_NETWORK_DHCP_LEASES_MAX);
-        return -1;
     }
 
     if (leases && nleases) {

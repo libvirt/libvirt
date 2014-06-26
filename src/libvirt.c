@@ -21014,6 +21014,7 @@ virNodeGetFreePages(virConnectPtr conn,
 /**
  * virNetworkGetDHCPLeases:
  * @network: Pointer to network object
+ * @mac: Optional ASCII formatted MAC address of an interface
  * @leases: Pointer to a variable to store the array containing details on
  *          obtained leases, or NULL if the list is not required (just returns
  *          number of leases).
@@ -21040,6 +21041,11 @@ virNodeGetFreePages(virConnectPtr conn,
  * Note: @mac, @iaid, @ipaddr, @clientid are in ASCII form, not raw bytes.
  * Note: @expirytime can 0, in case the lease is for infinite time.
  *
+ * The API fetches leases info of guests in the specified network. If the
+ * optional parameter @mac is specified, the returned list will contain only
+ * lease info about a specific guest interface with @mac. There can be
+ * multiple leases for a single @mac because this API supports DHCPv6 too.
+ *
  * Returns the number of leases found or -1 and sets @leases to NULL in
  * case of error. On success, the array stored into @leases is guaranteed to
  * have an extra allocated element set to NULL but not included in the return
@@ -21057,7 +21063,7 @@ virNodeGetFreePages(virConnectPtr conn,
  * int nleases;
  * unsigned int flags = 0;
  *
- * nleases = virNetworkGetDHCPLeases(network, &leases, flags);
+ * nleases = virNetworkGetDHCPLeases(network, NULL, &leases, flags);
  * if (nleases < 0)
  *     error();
  *
@@ -21079,12 +21085,13 @@ virNodeGetFreePages(virConnectPtr conn,
  */
 int
 virNetworkGetDHCPLeases(virNetworkPtr network,
+                        const char *mac,
                         virNetworkDHCPLeasePtr **leases,
                         unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("network=%p, leases=%p, flags=%x",
-               network, leases, flags);
+    VIR_DEBUG("network=%p, mac='%s' leases=%p, flags=%x",
+               network, NULLSTR(mac), leases, flags);
 
     virResetLastError();
 
@@ -21097,7 +21104,7 @@ virNetworkGetDHCPLeases(virNetworkPtr network,
 
     if (conn->networkDriver && conn->networkDriver->networkGetDHCPLeases) {
         int ret;
-        ret = conn->networkDriver->networkGetDHCPLeases(network, leases, flags);
+        ret = conn->networkDriver->networkGetDHCPLeases(network, mac, leases, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -21110,65 +21117,6 @@ virNetworkGetDHCPLeases(virNetworkPtr network,
     return -1;
 }
 
-/**
- * virNetworkGetDHCPLeasesForMAC:
- * @network: Pointer to network object
- * @mac: ASCII formatted MAC address of an interface
- * @leases: Pointer to a variable to store the array containing details on
- *          obtained leases, or NULL if the list is not required (just returns
- *          number of leases).
- * @flags: extra flags, not used yet, so callers should always pass 0
- *
- * The API fetches leases info of the interface which matches with the
- * given @mac. There can be multiple leases for a single @mac because this
- * API supports DHCPv6 too.
- *
- * Returns the number of leases found or -1 and sets @leases to NULL in case of
- * error. On success, the array stored into @leases is guaranteed to have an
- * extra allocated element set to NULL but not included in the return count,
- * to make iteration easier. The caller is responsible for calling
- * virNetworkDHCPLeaseFree() on each array element, then calling free() on @leases.
- *
- * See virNetworkGetDHCPLeases() for more details on list contents.
- */
-int
-virNetworkGetDHCPLeasesForMAC(virNetworkPtr network,
-                              const char *mac,
-                              virNetworkDHCPLeasePtr **leases,
-                              unsigned int flags)
-{
-    virConnectPtr conn;
-
-    VIR_DEBUG("network=%p, mac=%s, leases=%p, flags=%x",
-               network, mac, leases, flags);
-
-    virResetLastError();
-
-    if (leases)
-        *leases = NULL;
-
-    virCheckNonNullArgGoto(mac, error);
-
-    virCheckNetworkReturn(network, -1);
-
-    conn = network->conn;
-
-    if (conn->networkDriver &&
-        conn->networkDriver->networkGetDHCPLeasesForMAC) {
-        int ret;
-        ret = conn->networkDriver->networkGetDHCPLeasesForMAC(network, mac,
-                                                              leases, flags);
-        if (ret < 0)
-            goto error;
-        return ret;
-    }
-
-    virReportUnsupportedError();
-
- error:
-    virDispatchError(network->conn);
-    return -1;
-}
 
 /**
  * virNetworkDHCPLeaseFree:

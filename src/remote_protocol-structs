@@ -2498,23 +2498,11 @@ struct remote_network_dhcp_lease {
 };
 struct remote_network_get_dhcp_leases_args {
         remote_nonnull_network     net;
+        remote_string              mac;
         int                        need_results;
         u_int                      flags;
 };
 struct remote_network_get_dhcp_leases_ret {
-        struct {
-                u_int              leases_len;
-                remote_network_dhcp_lease * leases_val;
-        } leases;
-        u_int                      ret;
-};
-struct remote_network_get_dhcp_leases_for_mac_args {
-        remote_nonnull_network     net;
-        remote_nonnull_string      mac;
-        int                        need_results;
-        u_int                      flags;
-};
-struct remote_network_get_dhcp_leases_for_mac_ret {
         struct {
                 u_int              leases_len;
                 remote_network_dhcp_lease * leases_val;
@@ -2863,5 +2851,4 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB_2 = 339,
         REMOTE_PROC_NODE_GET_FREE_PAGES = 340,
         REMOTE_PROC_NETWORK_GET_DHCP_LEASES = 341,
-        REMOTE_PROC_NETWORK_GET_DHCP_LEASES_FOR_MAC = 342,
 };

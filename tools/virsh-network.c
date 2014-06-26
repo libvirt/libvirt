@@ -1348,10 +1348,7 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
     if (!(network = vshCommandOptNetwork(ctl, cmd, &name)))
         return false;
 
-    nleases = mac ? virNetworkGetDHCPLeasesForMAC(network, mac, &leases, flags)
-        : virNetworkGetDHCPLeases(network, &leases, flags);
-
-    if (nleases < 0) {
+    if ((nleases = virNetworkGetDHCPLeases(network, mac, &leases, flags)) < 0) {
         vshError(ctl, _("Failed to get leases info for %s"), name);
         goto cleanup;
     }

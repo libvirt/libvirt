@@ -663,7 +663,6 @@ LIBVIRT_1.2.6 {
         virNodeGetFreePages;
         virNetworkDHCPLeaseFree;
         virNetworkGetDHCPLeases;
-        virNetworkGetDHCPLeasesForMAC;
 } LIBVIRT_1.2.5;
 
 # .... define new API here using predicted next version number ....

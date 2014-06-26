@@ -3369,9 +3369,10 @@ static int networkSetAutostart(virNetworkPtr net,
 }
 
 static int
-networkGetDHCPLeasesHelper(virNetworkObjPtr obj,
-                           const char *mac,
-                           virNetworkDHCPLeasePtr **leases)
+networkGetDHCPLeases(virNetworkPtr network,
+                     const char *mac,
+                     virNetworkDHCPLeasePtr **leases,
+                     unsigned int flags)
 {
     size_t i, j;
     size_t nleases = 0;
@@ -3391,6 +3392,15 @@ networkGetDHCPLeasesHelper(virNetworkObjPtr obj,
     virNetworkIpDefPtr ipdef_tmp = NULL;
     virNetworkDHCPLeasePtr lease = NULL;
     virNetworkDHCPLeasePtr *leases_ret = NULL;
+    virNetworkObjPtr obj;
+
+    virCheckFlags(0, -1);
+
+    if (!(obj = networkObjFromNetwork(network)))
+        return -1;
+
+    if (virNetworkGetDHCPLeasesEnsureACL(network->conn, obj->def) < 0)
+        goto cleanup;
 
     /* Retrieve custom leases file location */
     custom_lease_file = networkDnsmasqLeaseFileNameCustom(obj->def->bridge);
@@ -3530,6 +3540,10 @@ networkGetDHCPLeasesHelper(virNetworkObjPtr obj,
     VIR_FREE(lease_entries);
     VIR_FREE(custom_lease_file);
     virJSONValueFree(leases_array);
+
+    if (obj)
+        virNetworkObjUnlock(obj);
+
     return rv;
 
  error:
@@ -3541,54 +3555,6 @@ networkGetDHCPLeasesHelper(virNetworkObjPtr obj,
     goto cleanup;
 }
 
-static int
-networkGetDHCPLeases(virNetworkPtr network,
-                     virNetworkDHCPLeasePtr **leases,
-                     unsigned int flags)
-{
-    int rv = -1;
-    virNetworkObjPtr obj;
-
-    virCheckFlags(0, -1);
-
-    if (!(obj = networkObjFromNetwork(network)))
-        return rv;
-
-    if (virNetworkGetDHCPLeasesEnsureACL(network->conn, obj->def) < 0)
-        goto cleanup;
-
-    rv = networkGetDHCPLeasesHelper(obj, NULL, leases);
-
- cleanup:
-    if (obj)
-        virNetworkObjUnlock(obj);
-    return rv;
-}
-
-static int
-networkGetDHCPLeasesForMAC(virNetworkPtr network,
-                           const char *mac,
-                           virNetworkDHCPLeasePtr **leases,
-                           unsigned int flags)
-{
-    int rv = -1;
-    virNetworkObjPtr obj;
-
-    virCheckFlags(0, -1);
-
-    if (!(obj = networkObjFromNetwork(network)))
-        return rv;
-
-    if (virNetworkGetDHCPLeasesForMACEnsureACL(network->conn, obj->def) < 0)
-        goto cleanup;
-
-    rv = networkGetDHCPLeasesHelper(obj, mac, leases);
-
- cleanup:
-    if (obj)
-        virNetworkObjUnlock(obj);
-    return rv;
-}
 
 static virNetworkDriver networkDriver = {
     "Network",
@@ -3616,7 +3582,6 @@ static virNetworkDriver networkDriver = {
     .networkIsActive = networkIsActive, /* 0.7.3 */
     .networkIsPersistent = networkIsPersistent, /* 0.7.3 */
     .networkGetDHCPLeases = networkGetDHCPLeases, /* 1.2.6 */
-    .networkGetDHCPLeasesForMAC = networkGetDHCPLeasesForMAC, /* 1.2.6 */
 };
 
 static virStateDriver networkStateDriver = {

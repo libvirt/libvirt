@@ -3035,23 +3035,12 @@ struct remote_network_dhcp_lease {
 
 struct remote_network_get_dhcp_leases_args {
     remote_nonnull_network net;
+    remote_string mac;
     int need_results;
     unsigned int flags;
 };
 
 struct remote_network_get_dhcp_leases_ret {
-    remote_network_dhcp_lease leases<REMOTE_NETWORK_DHCP_LEASES_MAX>;
-    unsigned int ret;
-};
-
-struct remote_network_get_dhcp_leases_for_mac_args {
-    remote_nonnull_network net;
-    remote_nonnull_string mac;
-    int need_results;
-    unsigned int flags;
-};
-
-struct remote_network_get_dhcp_leases_for_mac_ret {
     remote_network_dhcp_lease leases<REMOTE_NETWORK_DHCP_LEASES_MAX>;
     unsigned int ret;
 };
@@ -5413,11 +5402,6 @@ enum remote_procedure {
      * @generate: none
      * @acl: network:read
      */
-    REMOTE_PROC_NETWORK_GET_DHCP_LEASES = 341,
+    REMOTE_PROC_NETWORK_GET_DHCP_LEASES = 341
 
-    /**
-     * @generate: none
-     * @acl: network:read
-     */
-    REMOTE_PROC_NETWORK_GET_DHCP_LEASES_FOR_MAC = 342
 };

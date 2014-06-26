@@ -5169,13 +5169,9 @@ struct _virNetworkDHCPLease {
 void virNetworkDHCPLeaseFree(virNetworkDHCPLeasePtr lease);
 
 int virNetworkGetDHCPLeases(virNetworkPtr network,
+                            const char *mac,
                             virNetworkDHCPLeasePtr **leases,
                             unsigned int flags);
-
-int virNetworkGetDHCPLeasesForMAC(virNetworkPtr network,
-                                  const char *mac,
-                                  virNetworkDHCPLeasePtr **leases,
-                                  unsigned int flags);
 
 /**
  * virConnectNetworkEventGenericCallback:
