@@ -9186,7 +9186,7 @@ qemuBuildChannelChrDeviceStr(char **deviceStr,
         port = virSocketAddrGetPort(chr->target.addr);
 
         if (virAsprintf(deviceStr,
-                        "user,guestfwd=tcp:%s:%i,chardev=char%s,id=user-%s",
+                        "user,guestfwd=tcp:%s:%i-chardev:char%s,id=user-%s",
                         addr, port, chr->info.alias, chr->info.alias) < 0) {
             virReportOOMError();
             goto cleanup;
