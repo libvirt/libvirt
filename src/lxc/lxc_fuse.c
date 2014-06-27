@@ -208,8 +208,10 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
                 virBufferAdd(new_meminfo, line, -1);
             }
 
-            if (virBufferError(new_meminfo))
+            if (virBufferCheckError(new_meminfo) < 0) {
+                res = -errno;
                 goto cleanup;
+            }
 
             copied += strlen(line);
             if (copied > size)
