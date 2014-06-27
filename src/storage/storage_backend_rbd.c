@@ -196,9 +196,9 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     mon_buff = virBufferContentAndReset(&mon_host);
     VIR_DEBUG("RADOS mon_host has been set to: %s", mon_buff);
     if (rados_conf_set(ptr->cluster, "mon_host", mon_buff) < 0) {
-       virReportError(VIR_ERR_INTERNAL_ERROR,
-                      _("failed to set RADOS option: %s"),
-                      "mon_host");
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to set RADOS option: %s"),
+                       "mon_host");
         goto cleanup;
     }
 

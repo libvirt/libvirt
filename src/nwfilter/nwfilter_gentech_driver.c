@@ -105,12 +105,12 @@ virNWFilterTechDriverForName(const char *name)
 {
     size_t i = 0;
     while (filter_tech_drivers[i]) {
-       if (STREQ(filter_tech_drivers[i]->name, name)) {
-           if ((filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED) == 0)
-               break;
-           return filter_tech_drivers[i];
-       }
-       i++;
+        if (STREQ(filter_tech_drivers[i]->name, name)) {
+            if ((filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED) == 0)
+                break;
+            return filter_tech_drivers[i];
+        }
+        i++;
     }
     return NULL;
 }
@@ -212,10 +212,10 @@ virNWFilterCreateVarHashmap(char *macaddr,
  */
 struct printString
 {
-     virBuffer buf;
-     const char *separator;
-     bool reportMAC;
-     bool reportIP;
+    virBuffer buf;
+    const char *separator;
+    bool reportMAC;
+    bool reportIP;
 };
 
 
@@ -250,21 +250,21 @@ virNWFilterPrintVars(virHashTablePtr vars,
                      bool reportMAC,
                      bool reportIP)
 {
-     struct printString ps = {
-         .buf       = VIR_BUFFER_INITIALIZER,
-         .separator = separator,
-         .reportMAC = reportMAC,
-         .reportIP  = reportIP,
-     };
+    struct printString ps = {
+        .buf       = VIR_BUFFER_INITIALIZER,
+        .separator = separator,
+        .reportMAC = reportMAC,
+        .reportIP  = reportIP,
+    };
 
-     virHashForEach(vars, printString, &ps);
+    virHashForEach(vars, printString, &ps);
 
-     if (virBufferError(&ps.buf)) {
-         virBufferFreeAndReset(&ps.buf);
-         virReportOOMError();
-         return NULL;
-     }
-     return virBufferContentAndReset(&ps.buf);
+    if (virBufferError(&ps.buf)) {
+        virBufferFreeAndReset(&ps.buf);
+        virReportOOMError();
+        return NULL;
+    }
+    return virBufferContentAndReset(&ps.buf);
 }
 
 
@@ -573,9 +573,9 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
                     if (obj->newDef) {
                         next_filter = obj->newDef;
                     }
-                break;
+                    break;
                 case INSTANTIATE_ALWAYS:
-                break;
+                    break;
                 }
 
                 rc = virNWFilterDetermineMissingVarsRec(next_filter,
@@ -703,7 +703,7 @@ virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
                 goto err_exit;
             }
         } else
-             goto err_unresolvable_vars;
+            goto err_unresolvable_vars;
     } else if (virHashSize(missing_vars->hashTable) > 1) {
         goto err_unresolvable_vars;
     } else if (!forceWithPendingReq &&
@@ -723,10 +723,10 @@ virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
     switch (useNewFilter) {
     case INSTANTIATE_FOLLOW_NEWFILTER:
         instantiate = *foundNewFilter;
-    break;
+        break;
     case INSTANTIATE_ALWAYS:
         instantiate = true;
-    break;
+        break;
     }
 
     if (instantiate) {
@@ -857,10 +857,10 @@ __virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
             filter = obj->newDef;
             *foundNewFilter = true;
         }
-    break;
+        break;
 
     case INSTANTIATE_ALWAYS:
-    break;
+        break;
     }
 
     rc = virNWFilterInstantiate(vmuuid,
@@ -1087,7 +1087,7 @@ _virNWFilterTeardownFilter(const char *ifname)
     virNWFilterTerminateLearnReq(ifname);
 
     if (virNWFilterLockIface(ifname) < 0)
-       return -1;
+        return -1;
 
     techdriver->allTeardown(ifname);
 
