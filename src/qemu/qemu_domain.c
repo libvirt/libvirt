@@ -2230,11 +2230,19 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
 {
     char uuid[VIR_UUID_STRING_BUFLEN];
     int startupPolicy = vm->def->disks[diskIndex]->startupPolicy;
+    int device = vm->def->disks[diskIndex]->device;
 
     virUUIDFormat(vm->def->uuid, uuid);
 
     switch ((virDomainStartupPolicy) startupPolicy) {
         case VIR_DOMAIN_STARTUP_POLICY_OPTIONAL:
+            /* Once started with an optional disk, qemu saves its section
+             * in the migration stream, so later, when restoring from it
+             * we must make sure the sections match. */
+            if (!cold_boot &&
+                device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+                device != VIR_DOMAIN_DISK_DEVICE_CDROM)
+                goto error;
             break;
 
         case VIR_DOMAIN_STARTUP_POLICY_MANDATORY:
