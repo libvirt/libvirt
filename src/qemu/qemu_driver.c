@@ -6015,7 +6015,8 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
                             break;
 
                         case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
-                            needTLSPort = true;
+                            if (cfg->spiceTLS)
+                                needTLSPort = true;
                             needPort = true;
                             break;
                         }
