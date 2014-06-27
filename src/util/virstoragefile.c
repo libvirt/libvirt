@@ -2315,9 +2315,17 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent)
                 }
             }
         }
+
+        /* copy parent's labelling and other top level stuff */
+        if (virStorageSourceInitChainElement(ret, parent, false) < 0)
+            goto error;
     }
 
     return ret;
+
+ error:
+    virStorageSourceFree(ret);
+    return NULL;
 }
 
 
