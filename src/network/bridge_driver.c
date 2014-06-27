@@ -1535,19 +1535,14 @@ networkRadvdConfContents(virNetworkObjPtr network, char **configstr)
         VIR_FREE(netaddr);
     }
 
-    /* only create the string if we found at least one IPv6 address */
-    if (v6present) {
-        virBufferAddLit(&configbuf, "};\n");
+    virBufferAddLit(&configbuf, "};\n");
 
-        if (virBufferError(&configbuf)) {
-            virReportOOMError();
-            goto cleanup;
-        }
-        if (!(*configstr = virBufferContentAndReset(&configbuf))) {
-            virReportOOMError();
-            goto cleanup;
-        }
+    if (virBufferError(&configbuf)) {
+        virReportOOMError();
+        goto cleanup;
     }
+
+    *configstr = virBufferContentAndReset(&configbuf);
 
     ret = 0;
  cleanup:
