@@ -1025,10 +1025,8 @@ virCapabilitiesFormatXML(virCapsPtr caps)
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</capabilities>\n");
 
-    if (virBufferError(&buf)) {
-        virBufferFreeAndReset(&buf);
+    if (virBufferCheckError(&buf) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buf);
 }

@@ -1677,8 +1677,7 @@ static char *testConnectGetCapabilities(virConnectPtr conn)
     testConnPtr privconn = conn->privateData;
     char *xml;
     testDriverLock(privconn);
-    if ((xml = virCapabilitiesFormatXML(privconn->caps)) == NULL)
-        virReportOOMError();
+    xml = virCapabilitiesFormatXML(privconn->caps);
     testDriverUnlock(privconn);
     return xml;
 }

@@ -445,12 +445,8 @@ xenapiConnectGetCapabilities(virConnectPtr conn)
 {
 
     virCapsPtr caps = ((struct _xenapiPrivate *)(conn->privateData))->caps;
-    if (caps) {
-        char *xml = virCapabilitiesFormatXML(caps);
-        if (!xml)
-            goto cleanup;
-        return xml;
-    }
+    if (caps)
+        return virCapabilitiesFormatXML(caps);
  cleanup:
     xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
                               _("Capabilities not available"));

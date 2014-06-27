@@ -150,10 +150,8 @@ bhyveConnectGetCapabilities(virConnectPtr conn)
         goto cleanup;
     }
 
-    if (!(xml = virCapabilitiesFormatXML(caps))) {
-        virReportOOMError();
+    if (!(xml = virCapabilitiesFormatXML(caps)))
         goto cleanup;
-    }
 
  cleanup:
     virObjectUnref(caps);

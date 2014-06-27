@@ -1420,14 +1420,8 @@ static char *
 esxConnectGetCapabilities(virConnectPtr conn)
 {
     esxPrivate *priv = conn->privateData;
-    char *xml = virCapabilitiesFormatXML(priv->caps);
 
-    if (!xml) {
-        virReportOOMError();
-        return NULL;
-    }
-
-    return xml;
+    return virCapabilitiesFormatXML(priv->caps);
 }
 
 

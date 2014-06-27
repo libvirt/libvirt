@@ -186,8 +186,7 @@ parallelsConnectGetCapabilities(virConnectPtr conn)
     char *xml;
 
     parallelsDriverLock(privconn);
-    if ((xml = virCapabilitiesFormatXML(privconn->caps)) == NULL)
-        virReportOOMError();
+    xml = virCapabilitiesFormatXML(privconn->caps);
     parallelsDriverUnlock(privconn);
     return xml;
 }

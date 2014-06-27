@@ -232,8 +232,7 @@ static char *lxcConnectGetCapabilities(virConnectPtr conn) {
     if (!(caps = virLXCDriverGetCapabilities(driver, false)))
         return NULL;
 
-    if ((xml = virCapabilitiesFormatXML(caps)) == NULL)
-        virReportOOMError();
+    xml = virCapabilitiesFormatXML(caps);
 
     virObjectUnref(caps);
     return xml;

@@ -594,8 +594,7 @@ libxlConnectGetCapabilities(virConnectPtr conn)
         return NULL;
 
     cfg = libxlDriverConfigGet(driver);
-    if ((xml = virCapabilitiesFormatXML(cfg->caps)) == NULL)
-        virReportOOMError();
+    xml = virCapabilitiesFormatXML(cfg->caps);
 
     virObjectUnref(cfg);
     return xml;

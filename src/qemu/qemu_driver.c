@@ -1245,8 +1245,7 @@ static char *qemuConnectGetCapabilities(virConnectPtr conn) {
     if (!(caps = virQEMUDriverGetCapabilities(driver, true)))
         goto cleanup;
 
-    if ((xml = virCapabilitiesFormatXML(caps)) == NULL)
-        virReportOOMError();
+    xml = virCapabilitiesFormatXML(caps);
     virObjectUnref(caps);
 
  cleanup:

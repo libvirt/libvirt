@@ -3582,12 +3582,8 @@ static char *
 phypConnectGetCapabilities(virConnectPtr conn)
 {
     phyp_driverPtr phyp_driver = conn->privateData;
-    char *xml;
 
-    if ((xml = virCapabilitiesFormatXML(phyp_driver->caps)) == NULL)
-        virReportOOMError();
-
-    return xml;
+    return virCapabilitiesFormatXML(phyp_driver->caps);
 }
 
 static int
