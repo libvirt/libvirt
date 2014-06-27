@@ -145,11 +145,6 @@ VIR_ENUM_IMPL(virDomainFeature, VIR_DOMAIN_FEATURE_LAST,
               "pvspinlock",
               "capabilities")
 
-VIR_ENUM_IMPL(virDomainFeatureState, VIR_DOMAIN_FEATURE_STATE_LAST,
-              "default",
-              "on",
-              "off")
-
 VIR_ENUM_IMPL(virDomainCapabilitiesPolicy, VIR_DOMAIN_CAPABILITIES_POLICY_LAST,
               "default",
               "allow",
@@ -301,21 +296,6 @@ VIR_ENUM_IMPL(virDomainDeviceSGIO, VIR_DOMAIN_DEVICE_SGIO_LAST,
               "default",
               "filtered",
               "unfiltered")
-
-VIR_ENUM_IMPL(virDomainIoEventFd, VIR_DOMAIN_IO_EVENT_FD_LAST,
-              "default",
-              "on",
-              "off")
-
-VIR_ENUM_IMPL(virDomainVirtioEventIdx, VIR_DOMAIN_VIRTIO_EVENT_IDX_LAST,
-              "default",
-              "on",
-              "off")
-
-VIR_ENUM_IMPL(virDomainDiskCopyOnRead, VIR_DOMAIN_DISK_COPY_ON_READ_LAST,
-              "default",
-              "on",
-              "off")
 
 VIR_ENUM_IMPL(virDomainController, VIR_DOMAIN_CONTROLLER_TYPE_LAST,
               "ide",
@@ -480,11 +460,6 @@ VIR_ENUM_IMPL(virDomainSoundModel, VIR_DOMAIN_SOUND_MODEL_LAST,
               "ich6",
               "ich9")
 
-VIR_ENUM_IMPL(virDomainMemDump, VIR_DOMAIN_MEM_DUMP_LAST,
-              "default",
-              "on",
-              "off")
-
 VIR_ENUM_IMPL(virDomainMemballoonModel, VIR_DOMAIN_MEMBALLOON_MODEL_LAST,
               "virtio",
               "xen",
@@ -593,12 +568,6 @@ VIR_ENUM_IMPL(virDomainGraphicsSpiceZlibCompression,
               "never",
               "always");
 
-VIR_ENUM_IMPL(virDomainGraphicsSpicePlaybackCompression,
-              VIR_DOMAIN_GRAPHICS_SPICE_PLAYBACK_COMPRESSION_LAST,
-              "default",
-              "on",
-              "off");
-
 VIR_ENUM_IMPL(virDomainGraphicsSpiceMouseMode,
               VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_LAST,
               "default",
@@ -632,12 +601,6 @@ VIR_ENUM_IMPL(virDomainHostdevCaps, VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST,
               "storage",
               "misc",
               "net")
-
-VIR_ENUM_IMPL(virDomainPCIRombarMode,
-              VIR_DOMAIN_PCI_ROMBAR_LAST,
-              "default",
-              "on",
-              "off")
 
 VIR_ENUM_IMPL(virDomainHub, VIR_DOMAIN_HUB_TYPE_LAST,
               "usb")
@@ -2589,7 +2552,7 @@ virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info, unsigned int flags)
         return true;
     if (info->mastertype != VIR_DOMAIN_CONTROLLER_MASTER_NONE)
         return true;
-    if ((info->rombar != VIR_DOMAIN_PCI_ROMBAR_DEFAULT) ||
+    if ((info->rombar != VIR_TRISTATE_SWITCH_ABSENT) ||
         info->romfile)
         return true;
     if (info->bootIndex)
@@ -3196,7 +3159,7 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         virBufferAddLit(buf, "<rom");
         if (info->rombar) {
 
-            const char *rombar = virDomainPCIRombarModeTypeToString(info->rombar);
+            const char *rombar = virTristateSwitchTypeToString(info->rombar);
 
             if (!rombar) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3228,7 +3191,7 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                           info->addr.pci.function);
         if (info->addr.pci.multi) {
            virBufferAsprintf(buf, " multifunction='%s'",
-                             virDeviceAddressPCIMultiTypeToString(info->addr.pci.multi));
+                             virTristateSwitchTypeToString(info->addr.pci.multi));
         }
         break;
 
@@ -3713,7 +3676,7 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
     if (rom) {
         char *rombar = virXMLPropString(rom, "bar");
         if (rombar &&
-            ((info->rombar = virDomainPCIRombarModeTypeFromString(rombar)) <= 0)) {
+            ((info->rombar = virTristateSwitchTypeFromString(rombar)) <= 0)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown rom bar value '%s'"), rombar);
             VIR_FREE(rombar);
@@ -5780,7 +5743,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
 
     if (removable) {
-        if ((def->removable = virDomainFeatureStateTypeFromString(removable)) < 0) {
+        if ((def->removable = virTristateSwitchTypeFromString(removable)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk removable status '%s'"), removable);
             goto error;
@@ -5793,7 +5756,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
     } else {
         if (def->bus == VIR_DOMAIN_DISK_BUS_USB) {
-            def->removable = VIR_DOMAIN_FEATURE_STATE_DEFAULT;
+            def->removable = VIR_TRISTATE_SWITCH_ABSENT;
         }
     }
 
@@ -5853,7 +5816,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
         }
 
-        if ((val = virDomainIoEventFdTypeFromString(ioeventfd)) <= 0) {
+        if ((val = virTristateSwitchTypeFromString(ioeventfd)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk ioeventfd mode '%s'"),
                            ioeventfd);
@@ -5871,7 +5834,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
 
         int idx;
-        if ((idx = virDomainVirtioEventIdxTypeFromString(event_idx)) <= 0) {
+        if ((idx = virTristateSwitchTypeFromString(event_idx)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk event_idx mode '%s'"),
                            event_idx);
@@ -5882,7 +5845,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     if (copy_on_read) {
         int cor;
-        if ((cor = virDomainDiskCopyOnReadTypeFromString(copy_on_read)) <= 0) {
+        if ((cor = virTristateSwitchTypeFromString(copy_on_read)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk copy_on_read mode '%s'"),
                            copy_on_read);
@@ -7106,7 +7069,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
         if (ioeventfd) {
             int val;
-            if ((val = virDomainIoEventFdTypeFromString(ioeventfd)) <= 0) {
+            if ((val = virTristateSwitchTypeFromString(ioeventfd)) <= 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unknown interface ioeventfd mode '%s'"),
                                ioeventfd);
@@ -7116,7 +7079,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
         if (event_idx) {
             int idx;
-            if ((idx = virDomainVirtioEventIdxTypeFromString(event_idx)) <= 0) {
+            if ((idx = virTristateSwitchTypeFromString(event_idx)) <= 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unknown interface event_idx mode '%s'"),
                                event_idx);
@@ -8863,7 +8826,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
                     }
 
                     if ((compressionVal =
-                         virDomainGraphicsSpicePlaybackCompressionTypeFromString(compression)) <= 0) {
+                         virTristateSwitchTypeFromString(compression)) <= 0) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                        _("unknown spice playback compression"));
                         VIR_FREE(compression);
@@ -11487,7 +11450,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     /* and info about it */
     if ((tmp = virXPathString("string(./memory[1]/@dumpCore)", ctxt)) &&
-        (def->mem.dump_core = virDomainMemDumpTypeFromString(tmp)) <= 0) {
+        (def->mem.dump_core = virTristateSwitchTypeFromString(tmp)) <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Invalid memory core dump attribute value '%s'"), tmp);
         goto error;
@@ -11867,7 +11830,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         case VIR_DOMAIN_FEATURE_APIC:
             if ((tmp = virXPathString("string(./features/apic/@eoi)", ctxt))) {
                 int eoi;
-                if ((eoi = virDomainFeatureStateTypeFromString(tmp)) <= 0) {
+                if ((eoi = virTristateSwitchTypeFromString(tmp)) <= 0) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("unknown value for attribute eoi: '%s'"),
                                    tmp);
@@ -11883,7 +11846,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         case VIR_DOMAIN_FEATURE_VIRIDIAN:
         case VIR_DOMAIN_FEATURE_PRIVNET:
         case VIR_DOMAIN_FEATURE_HYPERV:
-            def->features[val] = VIR_DOMAIN_FEATURE_STATE_ON;
+            def->features[val] = VIR_TRISTATE_SWITCH_ON;
             break;
 
         case VIR_DOMAIN_FEATURE_CAPABILITIES:
@@ -11898,7 +11861,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                 }
                 VIR_FREE(tmp);
             } else {
-                def->features[val] = VIR_DOMAIN_FEATURE_STATE_DEFAULT;
+                def->features[val] = VIR_TRISTATE_SWITCH_ABSENT;
             }
             ctxt->node = node;
             break;
@@ -11906,7 +11869,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             node = ctxt->node;
             ctxt->node = nodes[i];
             if ((tmp = virXPathString("string(./@state)", ctxt))) {
-                if ((def->features[val] = virDomainFeatureStateTypeFromString(tmp)) == -1) {
+                if ((def->features[val] = virTristateSwitchTypeFromString(tmp)) == -1) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("unknown state attribute '%s' of feature '%s'"),
                                    tmp, virDomainFeatureTypeToString(val));
@@ -11914,7 +11877,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                 }
                 VIR_FREE(tmp);
             } else {
-                def->features[val] = VIR_DOMAIN_FEATURE_STATE_ON;
+                def->features[val] = VIR_TRISTATE_SWITCH_ON;
             }
             ctxt->node = node;
             break;
@@ -11925,7 +11888,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
-    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_DOMAIN_FEATURE_STATE_ON) {
+    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_TRISTATE_SWITCH_ON) {
         int feature;
         int value;
         node = ctxt->node;
@@ -11954,7 +11917,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                         goto error;
                     }
 
-                    if ((value = virDomainFeatureStateTypeFromString(tmp)) < 0) {
+                    if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                        _("invalid value of state argument "
                                          "for HyperV Enlightenment feature '%s'"),
@@ -11975,7 +11938,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                         goto error;
                     }
 
-                    if ((value = virDomainFeatureStateTypeFromString(tmp)) < 0) {
+                    if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                        _("invalid value of state argument "
                                          "for HyperV Enlightenment feature '%s'"),
@@ -11984,7 +11947,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                     }
 
                     VIR_FREE(tmp);
-                    if (value == VIR_DOMAIN_FEATURE_STATE_ON) {
+                    if (value == VIR_TRISTATE_SWITCH_ON) {
                         if (virXPathUInt("string(./@retries)", ctxt,
                                      &def->hyperv_spinlocks) < 0) {
                             virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -12026,7 +11989,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             ctxt->node = nodes[i];
 
             if ((tmp = virXPathString("string(./@state)", ctxt))) {
-                if ((def->caps_features[val] = virDomainFeatureStateTypeFromString(tmp)) == -1) {
+                if ((def->caps_features[val] = virTristateSwitchTypeFromString(tmp)) == -1) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("unknown state attribute '%s' of feature capability '%s'"),
                                    tmp, virDomainFeatureTypeToString(val));
@@ -12034,7 +11997,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                 }
                 VIR_FREE(tmp);
             } else {
-                def->caps_features[val] = VIR_DOMAIN_FEATURE_STATE_ON;
+                def->caps_features[val] = VIR_TRISTATE_SWITCH_ON;
             }
             ctxt->node = node;
         }
@@ -13980,8 +13943,8 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
                            _("State of feature '%s' differs: "
                              "source: '%s', destination: '%s'"),
                            virDomainFeatureTypeToString(i),
-                           virDomainFeatureStateTypeToString(src->features[i]),
-                           virDomainFeatureStateTypeToString(dst->features[i]));
+                           virTristateSwitchTypeToString(src->features[i]),
+                           virTristateSwitchTypeToString(dst->features[i]));
             return false;
         }
     }
@@ -13991,13 +13954,13 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("State of APIC EOI differs: "
                          "source: '%s', destination: '%s'"),
-                       virDomainFeatureStateTypeToString(src->apic_eoi),
-                       virDomainFeatureStateTypeToString(dst->apic_eoi));
+                       virTristateSwitchTypeToString(src->apic_eoi),
+                       virTristateSwitchTypeToString(dst->apic_eoi));
         return false;
     }
 
     /* hyperv */
-    if (src->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_DOMAIN_FEATURE_STATE_ON) {
+    if (src->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_TRISTATE_SWITCH_ON) {
         for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
             switch ((virDomainHyperv) i) {
             case VIR_DOMAIN_HYPERV_RELAXED:
@@ -14008,8 +13971,8 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
                                      "feature '%s' differs: "
                                      "source: '%s', destination: '%s'"),
                                    virDomainHypervTypeToString(i),
-                                   virDomainFeatureStateTypeToString(src->hyperv_features[i]),
-                                   virDomainFeatureStateTypeToString(dst->hyperv_features[i]));
+                                   virTristateSwitchTypeToString(src->hyperv_features[i]),
+                                   virTristateSwitchTypeToString(dst->hyperv_features[i]));
                     return false;
                 }
 
@@ -15113,9 +15076,9 @@ virDomainDiskDefFormat(virBufferPtr buf,
     const char *error_policy = virDomainDiskErrorPolicyTypeToString(def->error_policy);
     const char *rerror_policy = virDomainDiskErrorPolicyTypeToString(def->rerror_policy);
     const char *iomode = virDomainDiskIoTypeToString(def->iomode);
-    const char *ioeventfd = virDomainIoEventFdTypeToString(def->ioeventfd);
-    const char *event_idx = virDomainVirtioEventIdxTypeToString(def->event_idx);
-    const char *copy_on_read = virDomainDiskCopyOnReadTypeToString(def->copy_on_read);
+    const char *ioeventfd = virTristateSwitchTypeToString(def->ioeventfd);
+    const char *event_idx = virTristateSwitchTypeToString(def->event_idx);
+    const char *copy_on_read = virTristateSwitchTypeToString(def->copy_on_read);
     const char *sgio = virDomainDeviceSGIOTypeToString(def->sgio);
     const char *discard = virDomainDiskDiscardTypeToString(def->discard);
 
@@ -15256,9 +15219,9 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " tray='%s'",
                           virDomainDiskTrayTypeToString(def->tray_status));
     if (def->bus == VIR_DOMAIN_DISK_BUS_USB &&
-        def->removable != VIR_DOMAIN_FEATURE_STATE_DEFAULT) {
+        def->removable != VIR_TRISTATE_SWITCH_ABSENT) {
         virBufferAsprintf(buf, " removable='%s'",
-                          virDomainFeatureStateTypeToString(def->removable));
+                          virTristateSwitchTypeToString(def->removable));
     }
     virBufferAddLit(buf, "/>\n");
 
@@ -15962,11 +15925,11 @@ virDomainNetDefFormat(virBufferPtr buf,
             }
             if (def->driver.virtio.ioeventfd) {
                 virBufferAsprintf(buf, " ioeventfd='%s'",
-                                  virDomainIoEventFdTypeToString(def->driver.virtio.ioeventfd));
+                                  virTristateSwitchTypeToString(def->driver.virtio.ioeventfd));
             }
             if (def->driver.virtio.event_idx) {
                 virBufferAsprintf(buf, " event_idx='%s'",
-                                  virDomainVirtioEventIdxTypeToString(def->driver.virtio.event_idx));
+                                  virTristateSwitchTypeToString(def->driver.virtio.event_idx));
             }
             if (def->driver.virtio.queues)
                 virBufferAsprintf(buf, " queues='%u'", def->driver.virtio.queues);
@@ -17002,7 +16965,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
                               virDomainGraphicsSpiceZlibCompressionTypeToString(def->data.spice.zlib));
         if (def->data.spice.playback)
             virBufferAsprintf(buf, "<playback compression='%s'/>\n",
-                              virDomainGraphicsSpicePlaybackCompressionTypeToString(def->data.spice.playback));
+                              virTristateSwitchTypeToString(def->data.spice.playback));
         if (def->data.spice.streaming)
             virBufferAsprintf(buf, "<streaming mode='%s'/>\n",
                               virDomainGraphicsSpiceStreamingModeTypeToString(def->data.spice.streaming));
@@ -17251,7 +17214,7 @@ virDomainDefHasCapabilitiesFeatures(virDomainDefPtr def)
     size_t i;
 
     for (i = 0; i < VIR_DOMAIN_CAPS_FEATURE_LAST; i++) {
-        if (def->caps_features[i] != VIR_DOMAIN_FEATURE_STATE_DEFAULT)
+        if (def->caps_features[i] != VIR_TRISTATE_SWITCH_ABSENT)
             return true;
     }
 
@@ -17335,7 +17298,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     virBufferAddLit(buf, "<memory");
     if (def->mem.dump_core)
         virBufferAsprintf(buf, " dumpCore='%s'",
-                          virDomainMemDumpTypeToString(def->mem.dump_core));
+                          virTristateSwitchTypeToString(def->mem.dump_core));
     virBufferAsprintf(buf, " unit='KiB'>%llu</memory>\n",
                       def->mem.max_balloon);
 
@@ -17641,7 +17604,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     }
 
     for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
-        if (def->features[i] != VIR_DOMAIN_FEATURE_STATE_DEFAULT)
+        if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT)
             break;
     }
 
@@ -17665,16 +17628,16 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             case VIR_DOMAIN_FEATURE_HAP:
             case VIR_DOMAIN_FEATURE_VIRIDIAN:
             case VIR_DOMAIN_FEATURE_PRIVNET:
-                switch ((virDomainFeatureState) def->features[i]) {
-                case VIR_DOMAIN_FEATURE_STATE_DEFAULT:
+                switch ((virTristateSwitch) def->features[i]) {
+                case VIR_TRISTATE_SWITCH_ABSENT:
                     break;
 
-                case VIR_DOMAIN_FEATURE_STATE_ON:
+                case VIR_TRISTATE_SWITCH_ON:
                    virBufferAsprintf(buf, "<%s/>\n", name);
                    break;
 
-                case VIR_DOMAIN_FEATURE_STATE_LAST:
-                case VIR_DOMAIN_FEATURE_STATE_OFF:
+                case VIR_TRISTATE_SWITCH_LAST:
+                case VIR_TRISTATE_SWITCH_OFF:
                    virReportError(VIR_ERR_INTERNAL_ERROR,
                                  _("Unexpected state of feature '%s'"), name);
 
@@ -17685,16 +17648,16 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 break;
 
             case VIR_DOMAIN_FEATURE_PVSPINLOCK:
-                switch ((virDomainFeatureState) def->features[i]) {
-                case VIR_DOMAIN_FEATURE_STATE_LAST:
-                case VIR_DOMAIN_FEATURE_STATE_DEFAULT:
+                switch ((virTristateSwitch) def->features[i]) {
+                case VIR_TRISTATE_SWITCH_LAST:
+                case VIR_TRISTATE_SWITCH_ABSENT:
                     break;
 
-                case VIR_DOMAIN_FEATURE_STATE_ON:
+                case VIR_TRISTATE_SWITCH_ON:
                    virBufferAsprintf(buf, "<%s state='on'/>\n", name);
                    break;
 
-                case VIR_DOMAIN_FEATURE_STATE_OFF:
+                case VIR_TRISTATE_SWITCH_OFF:
                    virBufferAsprintf(buf, "<%s state='off'/>\n", name);
                    break;
                 }
@@ -17702,18 +17665,18 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 break;
 
             case VIR_DOMAIN_FEATURE_APIC:
-                if (def->features[i] == VIR_DOMAIN_FEATURE_STATE_ON) {
+                if (def->features[i] == VIR_TRISTATE_SWITCH_ON) {
                     virBufferAddLit(buf, "<apic");
                     if (def->apic_eoi) {
                         virBufferAsprintf(buf, " eoi='%s'",
-                                          virDomainFeatureStateTypeToString(def->apic_eoi));
+                                          virTristateSwitchTypeToString(def->apic_eoi));
                     }
                     virBufferAddLit(buf, "/>\n");
                 }
                 break;
 
             case VIR_DOMAIN_FEATURE_HYPERV:
-                if (def->features[i] != VIR_DOMAIN_FEATURE_STATE_ON)
+                if (def->features[i] != VIR_TRISTATE_SWITCH_ON)
                     break;
 
                 virBufferAddLit(buf, "<hyperv>\n");
@@ -17725,7 +17688,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                         if (def->hyperv_features[j])
                             virBufferAsprintf(buf, "<%s state='%s'/>\n",
                                               virDomainHypervTypeToString(j),
-                                              virDomainFeatureStateTypeToString(
+                                              virTristateSwitchTypeToString(
                                                   def->hyperv_features[j]));
                         break;
 
@@ -17734,9 +17697,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                             break;
 
                         virBufferAsprintf(buf, "<spinlocks state='%s'",
-                                          virDomainFeatureStateTypeToString(
+                                          virTristateSwitchTypeToString(
                                               def->hyperv_features[j]));
-                        if (def->hyperv_features[j] == VIR_DOMAIN_FEATURE_STATE_ON)
+                        if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ON)
                             virBufferAsprintf(buf, " retries='%d'",
                                               def->hyperv_spinlocks);
                         virBufferAddLit(buf, "/>\n");
@@ -17759,10 +17722,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                                   virDomainCapabilitiesPolicyTypeToString(def->features[i]));
                 virBufferAdjustIndent(buf, 2);
                 for (j = 0; j < VIR_DOMAIN_CAPS_FEATURE_LAST; j++) {
-                    if (def->caps_features[j] != VIR_DOMAIN_FEATURE_STATE_DEFAULT)
+                    if (def->caps_features[j] != VIR_TRISTATE_SWITCH_ABSENT)
                         virBufferAsprintf(buf, "<%s state='%s'/>\n",
                                           virDomainCapsFeatureTypeToString(j),
-                                          virDomainFeatureStateTypeToString(
+                                          virTristateSwitchTypeToString(
                                               def->caps_features[j]));
                 }
                 virBufferAdjustIndent(buf, -2);

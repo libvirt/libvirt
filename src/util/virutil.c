@@ -97,6 +97,12 @@ VIR_ENUM_IMPL(virTristateBool, VIR_TRISTATE_BOOL_LAST,
               "yes",
               "no")
 
+VIR_ENUM_IMPL(virTristateSwitch, VIR_TRISTATE_SWITCH_LAST,
+              "default",
+              "on",
+              "off")
+
+
 #ifndef WIN32
 
 int virSetInherit(int fd, bool inherit)

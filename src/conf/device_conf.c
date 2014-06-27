@@ -32,12 +32,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_DEVICE
 
-VIR_ENUM_IMPL(virDeviceAddressPCIMulti,
-              VIR_DEVICE_ADDRESS_PCI_MULTI_LAST,
-              "default",
-              "on",
-              "off")
-
 VIR_ENUM_IMPL(virInterfaceState,
               VIR_INTERFACE_STATE_LAST,
               "" /* value of zero means no state */,
@@ -98,7 +92,7 @@ virDevicePCIAddressParseXML(xmlNodePtr node,
     }
 
     if (multi &&
-        ((addr->multi = virDeviceAddressPCIMultiTypeFromString(multi)) <= 0)) {
+        ((addr->multi = virTristateSwitchTypeFromString(multi)) <= 0)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unknown value '%s' for <address> 'multifunction' attribute"),
                        multi);

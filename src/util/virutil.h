@@ -220,6 +220,16 @@ typedef enum {
     VIR_TRISTATE_BOOL_LAST
 } virTristateBool;
 
+typedef enum {
+    VIR_TRISTATE_SWITCH_ABSENT = 0,
+    VIR_TRISTATE_SWITCH_ON,
+    VIR_TRISTATE_SWITCH_OFF,
+
+    VIR_TRISTATE_SWITCH_LAST
+} virTristateSwitch;
+
+
 VIR_ENUM_DECL(virTristateBool)
+VIR_ENUM_DECL(virTristateSwitch)
 
 #endif /* __VIR_UTIL_H__ */

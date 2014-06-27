@@ -1439,7 +1439,7 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
     }
 
     entireSlot = (addr->function == 0 &&
-                  addr->multi != VIR_DEVICE_ADDRESS_PCI_MULTI_ON);
+                  addr->multi != VIR_TRISTATE_SWITCH_ON);
 
     if (virDomainPCIAddressReserveAddr(addrs, addr, flags,
                                        entireSlot, true) < 0)
@@ -2146,7 +2146,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1:
                 addr.function = 0;
-                addr.multi = VIR_DEVICE_ADDRESS_PCI_MULTI_ON;
+                addr.multi = VIR_TRISTATE_SWITCH_ON;
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2:
                 addr.function = 1;
@@ -2351,7 +2351,7 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
                                  "are supported with this QEMU binary"));
                 goto cleanup;
             }
-            if (info->addr.pci.multi == VIR_DEVICE_ADDRESS_PCI_MULTI_ON) {
+            if (info->addr.pci.multi == VIR_TRISTATE_SWITCH_ON) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("'multifunction=on' is not supported with "
                                  "this QEMU binary"));
@@ -2383,9 +2383,9 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
                 virBufferAddLit(buf, ",bus=pci");
             }
         }
-        if (info->addr.pci.multi == VIR_DEVICE_ADDRESS_PCI_MULTI_ON)
+        if (info->addr.pci.multi == VIR_TRISTATE_SWITCH_ON)
             virBufferAddLit(buf, ",multifunction=on");
-        else if (info->addr.pci.multi == VIR_DEVICE_ADDRESS_PCI_MULTI_OFF)
+        else if (info->addr.pci.multi == VIR_TRISTATE_SWITCH_OFF)
             virBufferAddLit(buf, ",multifunction=off");
         virBufferAsprintf(buf, ",addr=0x%x", info->addr.pci.slot);
         if (info->addr.pci.function != 0)
@@ -2429,10 +2429,10 @@ qemuBuildRomStr(virBufferPtr buf,
         }
 
         switch (info->rombar) {
-        case VIR_DOMAIN_PCI_ROMBAR_OFF:
+        case VIR_TRISTATE_SWITCH_OFF:
             virBufferAddLit(buf, ",rombar=0");
             break;
-        case VIR_DOMAIN_PCI_ROMBAR_ON:
+        case VIR_TRISTATE_SWITCH_ON:
             virBufferAddLit(buf, ",rombar=1");
             break;
         default:
@@ -2446,12 +2446,12 @@ qemuBuildRomStr(virBufferPtr buf,
 
 static int
 qemuBuildIoEventFdStr(virBufferPtr buf,
-                      virDomainIoEventFd use,
+                      virTristateSwitch use,
                       virQEMUCapsPtr qemuCaps)
 {
     if (use && virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_IOEVENTFD))
         virBufferAsprintf(buf, ",ioeventfd=%s",
-                          virDomainIoEventFdTypeToString(use));
+                          virTristateSwitchTypeToString(use));
     return 0;
 }
 
@@ -3500,7 +3500,7 @@ qemuBuildDriveStr(virConnectPtr conn,
     if (disk->copy_on_read) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_COPY_ON_READ)) {
             virBufferAsprintf(&opt, ",copy-on-read=%s",
-                              virDomainDiskCopyOnReadTypeToString(disk->copy_on_read));
+                              virTristateSwitchTypeToString(disk->copy_on_read));
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("copy_on_read is not supported by this QEMU binary"));
@@ -3867,7 +3867,7 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
         if (disk->event_idx &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_EVENT_IDX)) {
             virBufferAsprintf(&opt, ",event_idx=%s",
-                              virDomainVirtioEventIdxTypeToString(disk->event_idx));
+                              virTristateSwitchTypeToString(disk->event_idx));
         }
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SCSI)) {
             /* if sg_io is true but the scsi option isn't supported,
@@ -3926,12 +3926,12 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
 
     if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_STORAGE_REMOVABLE)) {
-            if (disk->removable == VIR_DOMAIN_FEATURE_STATE_ON)
+            if (disk->removable == VIR_TRISTATE_SWITCH_ON)
                 virBufferAddLit(&opt, ",removable=on");
             else
                 virBufferAddLit(&opt, ",removable=off");
         } else {
-            if (disk->removable != VIR_DOMAIN_FEATURE_STATE_DEFAULT) {
+            if (disk->removable != VIR_TRISTATE_SWITCH_ABSENT) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("This QEMU doesn't support setting the "
                                  "removable flag of USB storage devices"));
@@ -4376,7 +4376,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
         if (net->driver.virtio.event_idx &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_EVENT_IDX)) {
             virBufferAsprintf(&buf, ",event_idx=%s",
-                              virDomainVirtioEventIdxTypeToString(net->driver.virtio.event_idx));
+                              virTristateSwitchTypeToString(net->driver.virtio.event_idx));
         }
     }
     if (usingVirtio && vhostfdSize > 1) {
@@ -6120,7 +6120,7 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
 
     if (def->apic_eoi) {
         char sign;
-        if (def->apic_eoi == VIR_DOMAIN_FEATURE_STATE_ON)
+        if (def->apic_eoi == VIR_TRISTATE_SWITCH_ON)
             sign = '+';
         else
             sign = '-';
@@ -6133,7 +6133,7 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
 
     if (def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK]) {
         char sign;
-        if (def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK] == VIR_DOMAIN_FEATURE_STATE_ON)
+        if (def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK] == VIR_TRISTATE_SWITCH_ON)
             sign = '+';
         else
             sign = '-';
@@ -6144,7 +6144,7 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
         have_cpu = true;
     }
 
-    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_DOMAIN_FEATURE_STATE_ON) {
+    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_TRISTATE_SWITCH_ON) {
         if (!have_cpu) {
             virBufferAdd(&buf, default_model, -1);
             have_cpu = true;
@@ -6154,13 +6154,13 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
             switch ((virDomainHyperv) i) {
             case VIR_DOMAIN_HYPERV_RELAXED:
             case VIR_DOMAIN_HYPERV_VAPIC:
-                if (def->hyperv_features[i] == VIR_DOMAIN_FEATURE_STATE_ON)
+                if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
                     virBufferAsprintf(&buf, ",hv_%s",
                                       virDomainHypervTypeToString(i));
                 break;
 
             case VIR_DOMAIN_HYPERV_SPINLOCKS:
-                if (def->hyperv_features[i] == VIR_DOMAIN_FEATURE_STATE_ON)
+                if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
                     virBufferAsprintf(&buf, ",hv_spinlocks=0x%x",
                                       def->hyperv_spinlocks);
                 break;
@@ -6317,7 +6317,7 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
             }
 
             virBufferAsprintf(&buf, ",dump-guest-core=%s",
-                              virDomainMemDumpTypeToString(def->mem.dump_core));
+                              virTristateSwitchTypeToString(def->mem.dump_core));
         }
 
         if (def->mem.nosharepages) {
@@ -6810,7 +6810,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
                           virDomainGraphicsSpiceZlibCompressionTypeToString(graphics->data.spice.zlib));
     if (graphics->data.spice.playback)
         virBufferAsprintf(&opt, ",playback-compression=%s",
-                          virDomainGraphicsSpicePlaybackCompressionTypeToString(graphics->data.spice.playback));
+                          virTristateSwitchTypeToString(graphics->data.spice.playback));
     if (graphics->data.spice.streaming)
         virBufferAsprintf(&opt, ",streaming-video=%s",
                           virDomainGraphicsSpiceStreamingModeTypeToString(graphics->data.spice.streaming));
@@ -7676,7 +7676,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_ACPI)) {
-        if (def->features[VIR_DOMAIN_FEATURE_ACPI] != VIR_DOMAIN_FEATURE_STATE_ON)
+        if (def->features[VIR_DOMAIN_FEATURE_ACPI] != VIR_TRISTATE_SWITCH_ON)
             virCommandAddArg(cmd, "-no-acpi");
     }
 
@@ -10480,9 +10480,9 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
                 }
             } else if (STREQ(feature, "kvm_pv_eoi")) {
                 if (policy == VIR_CPU_FEATURE_REQUIRE)
-                    dom->apic_eoi = VIR_DOMAIN_FEATURE_STATE_ON;
+                    dom->apic_eoi = VIR_TRISTATE_SWITCH_ON;
                 else
-                    dom->apic_eoi = VIR_DOMAIN_FEATURE_STATE_OFF;
+                    dom->apic_eoi = VIR_TRISTATE_SWITCH_OFF;
             } else {
                 if (!cpu) {
                     if (!(cpu = qemuInitGuestCPU(dom)))
@@ -10512,7 +10512,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             if (*feature == '\0')
                 goto syntax;
 
-            dom->features[VIR_DOMAIN_FEATURE_HYPERV] = VIR_DOMAIN_FEATURE_STATE_ON;
+            dom->features[VIR_DOMAIN_FEATURE_HYPERV] = VIR_TRISTATE_SWITCH_ON;
 
             if ((f = virDomainHypervTypeFromString(feature)) < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -10530,11 +10530,11 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
                                      "have a value"), feature);
                     goto cleanup;
                 }
-                dom->hyperv_features[f] = VIR_DOMAIN_FEATURE_STATE_ON;
+                dom->hyperv_features[f] = VIR_TRISTATE_SWITCH_ON;
                 break;
 
             case VIR_DOMAIN_HYPERV_SPINLOCKS:
-                dom->hyperv_features[f] = VIR_DOMAIN_FEATURE_STATE_ON;
+                dom->hyperv_features[f] = VIR_TRISTATE_SWITCH_ON;
                 if (!value) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("missing HyperV spinlock retry count"));
@@ -10767,7 +10767,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             goto error;
         if (strstr(path, "kvm")) {
             def->virtType = VIR_DOMAIN_VIRT_KVM;
-            def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_DOMAIN_FEATURE_STATE_ON;
+            def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_TRISTATE_SWITCH_ON;
         }
     }
 
@@ -10780,7 +10780,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
 
     if ((def->os.arch == VIR_ARCH_I686) ||
         (def->os.arch == VIR_ARCH_X86_64))
-        def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_DOMAIN_FEATURE_STATE_ON;
+        def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_TRISTATE_SWITCH_ON;
 
 #define WANT_VALUE()                                                   \
     const char *val = progargv[++i];                                   \
@@ -11086,7 +11086,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
                 goto error;
         } else if (STREQ(arg, "-no-acpi")) {
-            def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_DOMAIN_FEATURE_STATE_DEFAULT;
+            def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_TRISTATE_SWITCH_ABSENT;
         } else if (STREQ(arg, "-no-reboot")) {
             def->onReboot = VIR_DOMAIN_LIFECYCLE_DESTROY;
         } else if (STREQ(arg, "-no-kvm")) {
@@ -11198,14 +11198,14 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             while ((param = list[j++])) {
                 if (STRPREFIX(param, "dump-guest-core=")) {
                     param += strlen("dump-guest-core=");
-                    def->mem.dump_core = virDomainMemDumpTypeFromString(param);
+                    def->mem.dump_core = virTristateSwitchTypeFromString(param);
                     if (def->mem.dump_core <= 0)
-                        def->mem.dump_core = VIR_DOMAIN_MEM_DUMP_DEFAULT;
+                        def->mem.dump_core = VIR_TRISTATE_SWITCH_ABSENT;
                 } else if (STRPREFIX(param, "mem-merge=off")) {
                     def->mem.nosharepages = true;
                 } else if (STRPREFIX(param, "accel=kvm")) {
                     def->virtType = VIR_DOMAIN_VIRT_KVM;
-                    def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_DOMAIN_FEATURE_STATE_ON;
+                    def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_TRISTATE_SWITCH_ON;
                 }
             }
             virStringFreeList(list);
@@ -11278,7 +11278,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                     disk->src->type = VIR_STORAGE_TYPE_FILE;
                 disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;
                 disk->bus = VIR_DOMAIN_DISK_BUS_USB;
-                disk->removable = VIR_DOMAIN_FEATURE_STATE_DEFAULT;
+                disk->removable = VIR_TRISTATE_SWITCH_ABSENT;
                 if (VIR_STRDUP(disk->dst, "sda") < 0)
                     goto error;
                 if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)

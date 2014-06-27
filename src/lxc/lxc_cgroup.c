@@ -355,7 +355,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
         goto cleanup;
 
     /* white list mknod if CAP_MKNOD has to be kept */
-    if (capMknod == VIR_DOMAIN_FEATURE_STATE_ON) {
+    if (capMknod == VIR_TRISTATE_SWITCH_ON) {
         if (virCgroupAllowAllDevices(cgroup,
                                     VIR_CGROUP_DEVICE_MKNOD) < 0)
             goto cleanup;

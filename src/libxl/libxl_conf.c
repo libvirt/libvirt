@@ -612,13 +612,13 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
 
         libxl_defbool_set(&b_info->u.hvm.pae,
                           def->features[VIR_DOMAIN_FEATURE_PAE] ==
-                          VIR_DOMAIN_FEATURE_STATE_ON);
+                          VIR_TRISTATE_SWITCH_ON);
         libxl_defbool_set(&b_info->u.hvm.apic,
                           def->features[VIR_DOMAIN_FEATURE_APIC] ==
-                          VIR_DOMAIN_FEATURE_STATE_ON);
+                          VIR_TRISTATE_SWITCH_ON);
         libxl_defbool_set(&b_info->u.hvm.acpi,
                           def->features[VIR_DOMAIN_FEATURE_ACPI] ==
-                          VIR_DOMAIN_FEATURE_STATE_ON);
+                          VIR_TRISTATE_SWITCH_ON);
         for (i = 0; i < def->clock.ntimers; i++) {
             if (def->clock.timers[i]->name == VIR_DOMAIN_TIMER_NAME_HPET &&
                 def->clock.timers[i]->present == 1) {

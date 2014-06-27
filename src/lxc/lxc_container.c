@@ -499,7 +499,7 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
     char *newname = NULL;
     virDomainNetDefPtr netDef;
     bool privNet = vmDef->features[VIR_DOMAIN_FEATURE_PRIVNET] ==
-                   VIR_DOMAIN_FEATURE_STATE_ON;
+                   VIR_TRISTATE_SWITCH_ON;
 
     for (i = 0; i < nveths; i++) {
         if (!(netDef = lxcContainerGetNetDef(vmDef, veths[i])))
@@ -1954,7 +1954,7 @@ static int lxcContainerDropCapabilities(virDomainDefPtr def,
         switch ((virDomainCapabilitiesPolicy) policy) {
 
         case VIR_DOMAIN_CAPABILITIES_POLICY_DENY:
-            if (state == VIR_DOMAIN_FEATURE_STATE_ON &&
+            if (state == VIR_TRISTATE_SWITCH_ON &&
                     (ret = capng_update(CAPNG_ADD,
                                         CAPNG_EFFECTIVE | CAPNG_PERMITTED |
                                         CAPNG_INHERITABLE | CAPNG_BOUNDING_SET,
@@ -1969,23 +1969,23 @@ static int lxcContainerDropCapabilities(virDomainDefPtr def,
         case VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT:
             switch ((virDomainCapsFeature) i) {
             case VIR_DOMAIN_CAPS_FEATURE_SYS_BOOT: /* No use of reboot */
-                toDrop = !keepReboot && (state != VIR_DOMAIN_FEATURE_STATE_ON);
+                toDrop = !keepReboot && (state != VIR_TRISTATE_SWITCH_ON);
                 break;
             case VIR_DOMAIN_CAPS_FEATURE_SYS_MODULE: /* No kernel module loading */
             case VIR_DOMAIN_CAPS_FEATURE_SYS_TIME: /* No changing the clock */
             case VIR_DOMAIN_CAPS_FEATURE_MKNOD: /* No creating device nodes */
             case VIR_DOMAIN_CAPS_FEATURE_AUDIT_CONTROL: /* No messing with auditing status */
             case VIR_DOMAIN_CAPS_FEATURE_MAC_ADMIN: /* No messing with LSM config */
-                toDrop = (state != VIR_DOMAIN_FEATURE_STATE_ON);
+                toDrop = (state != VIR_TRISTATE_SWITCH_ON);
                 break;
             default: /* User specified capabilities to drop */
-                toDrop = (state == VIR_DOMAIN_FEATURE_STATE_OFF);
+                toDrop = (state == VIR_TRISTATE_SWITCH_OFF);
             }
             /* Fallthrough */
 
         case VIR_DOMAIN_CAPABILITIES_POLICY_ALLOW:
             if (policy == VIR_DOMAIN_CAPABILITIES_POLICY_ALLOW)
-                toDrop = state == VIR_DOMAIN_FEATURE_STATE_OFF;
+                toDrop = state == VIR_TRISTATE_SWITCH_OFF;
 
             if (toDrop && (ret = capng_update(CAPNG_DROP,
                                               CAPNG_EFFECTIVE | CAPNG_PERMITTED |
@@ -2209,7 +2209,7 @@ lxcNeedNetworkNamespace(virDomainDefPtr def)
     size_t i;
     if (def->nets != NULL)
         return true;
-    if (def->features[VIR_DOMAIN_FEATURE_PRIVNET] == VIR_DOMAIN_FEATURE_STATE_ON)
+    if (def->features[VIR_DOMAIN_FEATURE_PRIVNET] == VIR_TRISTATE_SWITCH_ON)
         return true;
     for (i = 0; i < def->nhostdevs; i++) {
         if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES &&

@@ -564,7 +564,7 @@ lxcConvertNetworkSettings(virDomainDefPtr def, virConfPtr properties)
 
     if (data.networks == 0 && data.privnet) {
         /* When no network type is provided LXC only adds loopback */
-        def->features[VIR_DOMAIN_FEATURE_PRIVNET] = VIR_DOMAIN_FEATURE_STATE_ON;
+        def->features[VIR_DOMAIN_FEATURE_PRIVNET] = VIR_TRISTATE_SWITCH_ON;
     }
 
     return 0;
@@ -867,7 +867,7 @@ lxcSetCapDrop(virDomainDefPtr def, virConfPtr properties)
     for (i = 0; i < VIR_DOMAIN_CAPS_FEATURE_LAST; i++) {
         capString = virDomainCapsFeatureTypeToString(i);
         if (toDrop != NULL && virStringArrayHasString(toDrop, capString))
-            def->caps_features[i] = VIR_DOMAIN_FEATURE_STATE_OFF;
+            def->caps_features[i] = VIR_TRISTATE_SWITCH_OFF;
     }
 
     def->features[VIR_DOMAIN_FEATURE_CAPABILITIES] = VIR_DOMAIN_CAPABILITIES_POLICY_ALLOW;
