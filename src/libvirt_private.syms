@@ -1008,6 +1008,7 @@ virBufferAdd;
 virBufferAddChar;
 virBufferAdjustIndent;
 virBufferAsprintf;
+virBufferCheckErrorInternal;
 virBufferContentAndReset;
 virBufferCurrentContent;
 virBufferError;

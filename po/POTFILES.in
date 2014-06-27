@@ -156,6 +156,7 @@ src/util/viraudit.c
 src/util/virauth.c
 src/util/virauthconfig.c
 src/util/virbitmap.c
+src/util/virbuffer.c
 src/util/vircgroup.c
 src/util/virclosecallbacks.c
 src/util/vircommand.c

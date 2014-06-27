@@ -948,7 +948,7 @@
     <p>
       If there is a need for complex string concatenations, avoid using
       the usual sequence of malloc/strcpy/strcat/snprintf functions and
-      make use of the virBuffer API described in buf.h
+      make use of the virBuffer API described in virbuffer.h
     </p>
 
     <p>Typical usage is as follows:</p>
@@ -968,11 +968,8 @@
 
      ...
 
-     if (virBufferError(&amp;buf)) {
-         virBufferFreeAndReset(&amp;buf);
-         virReportOOMError();
+     if (virBufferCheckError(&amp;buf) &lt; 0)
          return NULL;
-     }
 
      return virBufferContentAndReset(&amp;buf);
   }

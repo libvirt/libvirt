@@ -776,7 +776,7 @@ Variable length string buffer
 =============================
 If there is a need for complex string concatenations, avoid using the usual
 sequence of malloc/strcpy/strcat/snprintf functions and make use of the
-virBuffer API described in buf.h
+virBuffer API described in virbuffer.h
 
 Typical usage is as follows:
 
@@ -794,11 +794,8 @@ Typical usage is as follows:
 
      ...
 
-     if (virBufferError(&buf)) {
-         virBufferFreeAndReset(&buf);
-         virReportOOMError();
+     if (virBufferCheckError(&buf) < 0)
          return NULL;
-     }
 
      return virBufferContentAndReset(&buf);
   }

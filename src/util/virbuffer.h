@@ -53,6 +53,23 @@ const char *virBufferCurrentContent(virBufferPtr buf);
 char *virBufferContentAndReset(virBufferPtr buf);
 void virBufferFreeAndReset(virBufferPtr buf);
 int virBufferError(const virBuffer *buf);
+int virBufferCheckErrorInternal(const virBuffer *buf,
+                                int domcode,
+                                const char *filename,
+                                const char *funcname,
+                                size_t linenr)
+    ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1);
+/**
+ * virBufferCheckError
+ *
+ * Checks if the buffer is in error state and reports an error.
+ *
+ * Returns 0 if no error has occured, otherwise an error is reported
+ * and -1 is returned.
+ */
+# define virBufferCheckError(buf) \
+    virBufferCheckErrorInternal(buf, VIR_FROM_THIS, __FILE__, __FUNCTION__, \
+    __LINE__)
 unsigned int virBufferUse(const virBuffer *buf);
 void virBufferAdd(virBufferPtr buf, const char *str, int len);
 void virBufferAddChar(virBufferPtr buf, char c);

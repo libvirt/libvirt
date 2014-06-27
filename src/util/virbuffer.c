@@ -32,6 +32,7 @@
 
 #include "virbuffer.h"
 #include "viralloc.h"
+#include "virerror.h"
 
 
 /* If adding more fields, ensure to edit buf.h to match
@@ -261,6 +262,36 @@ virBufferError(const virBuffer *buf)
         return -1;
 
     return buf->error;
+}
+
+/**
+ * virBufferCheckErrorInternal:
+ * @buf: the buffer
+ *
+ * Report an error if the buffer is in an error state.
+ *
+ * Return -1 if an error has been reported, 0 otherwise.
+ */
+int
+virBufferCheckErrorInternal(const virBuffer *buf,
+                            int domcode,
+                            const char *filename,
+                            const char *funcname,
+                            size_t linenr)
+{
+    if (buf->error == 0)
+        return 0;
+
+    if (buf->error == ENOMEM) {
+        virReportOOMErrorFull(domcode, filename, funcname, linenr);
+        errno = ENOMEM;
+    } else {
+        virReportErrorHelper(domcode, VIR_ERR_INTERNAL_ERROR, filename,
+                             funcname, linenr, "%s",
+                             _("Invalid buffer API usage"));
+        errno = EINVAL;
+    }
+    return -1;
 }
 
 /**
