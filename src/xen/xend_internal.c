@@ -505,11 +505,8 @@ xend_op_ext(virConnectPtr xend, const char *path, const char *key, va_list ap)
             virBufferAddChar(&buf, '&');
     }
 
-    if (virBufferError(&buf)) {
-        virBufferFreeAndReset(&buf);
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         return -1;
-    }
 
     content = virBufferContentAndReset(&buf);
     VIR_DEBUG("xend op: %s\n", content);
@@ -2611,10 +2608,8 @@ xenDaemonDomainSetAutostart(virConnectPtr conn,
             goto error;
         }
 
-        if (virBufferError(&buffer)) {
-            virReportOOMError();
+        if (virBufferCheckError(&buffer) < 0)
             goto error;
-        }
 
         content = virBufferContentAndReset(&buffer);
 

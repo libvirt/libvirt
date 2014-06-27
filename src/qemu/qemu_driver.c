@@ -1203,10 +1203,8 @@ qemuConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 
     if (virSysinfoFormat(&buf, driver->hostsysinfo) < 0)
         return NULL;
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         return NULL;
-    }
     return virBufferContentAndReset(&buf);
 }
 
@@ -8005,10 +8003,8 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
                                           vm->def->blkio.devices[j].path,
                                           vm->def->blkio.devices[j].weight);
                     }
-                    if (virBufferError(&buf)) {
-                        virReportOOMError();
+                    if (virBufferCheckError(&buf) < 0)
                         goto cleanup;
-                    }
                     param->value.s = virBufferContentAndReset(&buf);
                 }
                 if (virTypedParameterAssign(param,
@@ -8034,10 +8030,8 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
                                           vm->def->blkio.devices[j].path,
                                           vm->def->blkio.devices[j].riops);
                     }
-                    if (virBufferError(&buf)) {
-                        virReportOOMError();
+                    if (virBufferCheckError(&buf) < 0)
                         goto cleanup;
-                    }
                     param->value.s = virBufferContentAndReset(&buf);
                 }
                 if (virTypedParameterAssign(param,
@@ -8063,10 +8057,8 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
                                           vm->def->blkio.devices[j].path,
                                           vm->def->blkio.devices[j].wiops);
                     }
-                    if (virBufferError(&buf)) {
-                        virReportOOMError();
+                    if (virBufferCheckError(&buf) < 0)
                         goto cleanup;
-                    }
                     param->value.s = virBufferContentAndReset(&buf);
                 }
                 if (virTypedParameterAssign(param,
@@ -8092,10 +8084,8 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
                                           vm->def->blkio.devices[j].path,
                                           vm->def->blkio.devices[j].rbps);
                     }
-                    if (virBufferError(&buf)) {
-                        virReportOOMError();
+                    if (virBufferCheckError(&buf) < 0)
                         goto cleanup;
-                    }
                     param->value.s = virBufferContentAndReset(&buf);
                 }
                 if (virTypedParameterAssign(param,
@@ -8121,10 +8111,8 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
                                           vm->def->blkio.devices[j].path,
                                           vm->def->blkio.devices[j].wbps);
                     }
-                    if (virBufferError(&buf)) {
-                        virReportOOMError();
+                    if (virBufferCheckError(&buf) < 0)
                         goto cleanup;
-                    }
                     param->value.s = virBufferContentAndReset(&buf);
                 }
                 if (virTypedParameterAssign(param,
@@ -8173,10 +8161,8 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
                                           persistentDef->blkio.devices[j].path,
                                           persistentDef->blkio.devices[j].weight);
                     }
-                    if (virBufferError(&buf)) {
-                        virReportOOMError();
+                    if (virBufferCheckError(&buf) < 0)
                         goto cleanup;
-                    }
                     param->value.s = virBufferContentAndReset(&buf);
                 }
                 if (!param->value.s && VIR_STRDUP(param->value.s, "") < 0)
@@ -8207,10 +8193,8 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
                                           persistentDef->blkio.devices[j].path,
                                           persistentDef->blkio.devices[j].riops);
                     }
-                    if (virBufferError(&buf)) {
-                        virReportOOMError();
+                    if (virBufferCheckError(&buf) < 0)
                         goto cleanup;
-                    }
                     param->value.s = virBufferContentAndReset(&buf);
                 }
                 if (!param->value.s && VIR_STRDUP(param->value.s, "") < 0)
@@ -8240,10 +8224,8 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
                                           persistentDef->blkio.devices[j].path,
                                           persistentDef->blkio.devices[j].wiops);
                     }
-                    if (virBufferError(&buf)) {
-                        virReportOOMError();
+                    if (virBufferCheckError(&buf) < 0)
                         goto cleanup;
-                    }
                     param->value.s = virBufferContentAndReset(&buf);
                 }
                 if (!param->value.s && VIR_STRDUP(param->value.s, "") < 0)
@@ -8273,10 +8255,8 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
                                           persistentDef->blkio.devices[j].path,
                                           persistentDef->blkio.devices[j].rbps);
                     }
-                    if (virBufferError(&buf)) {
-                        virReportOOMError();
+                    if (virBufferCheckError(&buf) < 0)
                         goto cleanup;
-                    }
                     param->value.s = virBufferContentAndReset(&buf);
                 }
                 if (!param->value.s && VIR_STRDUP(param->value.s, "") < 0)
@@ -8307,10 +8287,8 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
                                           persistentDef->blkio.devices[j].path,
                                           persistentDef->blkio.devices[j].wbps);
                     }
-                    if (virBufferError(&buf)) {
-                        virReportOOMError();
+                    if (virBufferCheckError(&buf) < 0)
                         goto cleanup;
-                    }
                     param->value.s = virBufferContentAndReset(&buf);
                 }
                 if (!param->value.s && VIR_STRDUP(param->value.s, "") < 0)

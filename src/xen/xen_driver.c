@@ -659,10 +659,8 @@ xenUnifiedConnectGetSysinfo(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (virSysinfoFormat(&buf, hostsysinfo) < 0)
         return NULL;
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         return NULL;
-    }
     return virBufferContentAndReset(&buf);
 }
 

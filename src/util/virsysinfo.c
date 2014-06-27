@@ -1064,10 +1064,8 @@ virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</sysinfo>\n");
 
-    if (virBufferError(buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(buf) < 0)
         return -1;
-    }
 
     return 0;
 }

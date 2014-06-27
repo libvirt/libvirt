@@ -126,10 +126,8 @@
         virBufferAddLit(&buffer, "</"#_name">");                              \
         virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);               \
                                                                               \
-        if (virBufferError(&buffer)) {                                        \
-            virReportOOMError();                                              \
+        if (virBufferCheckError(&buffer) < 0)                                 \
             goto cleanup;                                                     \
-        }                                                                     \
                                                                               \
         request = virBufferContentAndReset(&buffer);                          \
                                                                               \

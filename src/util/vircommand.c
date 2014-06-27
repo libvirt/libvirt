@@ -1843,11 +1843,8 @@ virCommandToString(virCommandPtr cmd)
         virBufferEscapeShell(&buf, cmd->args[i]);
     }
 
-    if (virBufferError(&buf)) {
-        virBufferFreeAndReset(&buf);
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buf);
 }

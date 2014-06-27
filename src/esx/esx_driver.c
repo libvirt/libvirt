@@ -340,10 +340,8 @@ esxFormatVMXFileName(const char *fileName, void *opaque)
         virBufferAddChar(&buffer, separator);
         virBufferAdd(&buffer, directoryAndFileName, -1);
 
-        if (virBufferError(&buffer)) {
-            virReportOOMError();
+        if (virBufferCheckError(&buffer) < 0)
             goto cleanup;
-        }
 
         result = virBufferContentAndReset(&buffer);
     } else if (*fileName == '/') {
@@ -2701,10 +2699,8 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     virBufferAddLit(&buffer, "&dsName=");
     virBufferURIEncodeString(&buffer, datastoreName);
 
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buffer) < 0)
         goto cleanup;
-    }
 
     url = virBufferContentAndReset(&buffer);
 
@@ -3169,10 +3165,8 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
     virBufferAddLit(&buffer, "&dsName=");
     virBufferURIEncodeString(&buffer, datastoreName);
 
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buffer) < 0)
         goto cleanup;
-    }
 
     url = virBufferContentAndReset(&buffer);
 

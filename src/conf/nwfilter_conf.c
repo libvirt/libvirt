@@ -967,10 +967,8 @@ virNWFilterPrintTCPFlags(uint8_t flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     printTCPFlags(&buf, flags);
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         return NULL;
-    }
     return virBufferContentAndReset(&buf);
 }
 
@@ -2548,11 +2546,8 @@ virNWFilterIsAllowedChain(const char *chainname)
         printed = true;
     }
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
-        virBufferFreeAndReset(&buf);
+    if (virBufferCheckError(&buf) < 0)
         goto err_exit;
-    }
 
     msg = virBufferContentAndReset(&buf);
 
@@ -3484,13 +3479,10 @@ virNWFilterDefFormat(const virNWFilterDef *def)
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</filter>\n");
 
-    if (virBufferError(&buf))
-        goto no_memory;
+    if (virBufferCheckError(&buf) < 0)
+        goto err_exit;
 
     return virBufferContentAndReset(&buf);
-
- no_memory:
-    virReportOOMError();
 
  err_exit:
     virBufferFreeAndReset(&buf);

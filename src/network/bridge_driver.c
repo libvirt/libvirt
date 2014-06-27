@@ -180,10 +180,10 @@ networkRunHook(virNetworkObjPtr network,
         virBufferAdjustIndent(&buf, -2);
         virBufferAddLit(&buf, "</hookData>");
 
-        if (virBufferError(&buf) ||
-            !(xml = virBufferContentAndReset(&buf)))
+        if (virBufferCheckError(&buf) < 0)
             goto cleanup;
 
+        xml = virBufferContentAndReset(&buf);
         hookret = virHookCall(VIR_HOOK_DRIVER_NETWORK, network->def->name,
                               op, sub_op, NULL, xml, NULL);
 
@@ -1537,10 +1537,8 @@ networkRadvdConfContents(virNetworkObjPtr network, char **configstr)
 
     virBufferAddLit(&configbuf, "};\n");
 
-    if (virBufferError(&configbuf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&configbuf) < 0)
         goto cleanup;
-    }
 
     *configstr = virBufferContentAndReset(&configbuf);
 

@@ -494,13 +494,11 @@ virCPUDefFormat(virCPUDefPtr def,
     if (virCPUDefFormatBufFull(&buf, def, flags) < 0)
         goto cleanup;
 
-    if (virBufferError(&buf))
-        goto no_memory;
+    if (virBufferCheckError(&buf) < 0)
+        goto cleanup;
 
     return virBufferContentAndReset(&buf);
 
- no_memory:
-    virReportOOMError();
  cleanup:
     virBufferFreeAndReset(&buf);
     return NULL;

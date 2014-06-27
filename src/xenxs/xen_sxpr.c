@@ -1693,10 +1693,8 @@ xenFormatSxprChr(virDomainChrDefPtr def,
         return -1;
     }
 
-    if (virBufferError(buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(buf) < 0)
         return -1;
-    }
 
     return 0;
 }
@@ -2118,10 +2116,8 @@ xenFormatSxprSound(virDomainDefPtr def,
         virBufferEscapeSexpr(buf, "%s", str);
     }
 
-    if (virBufferError(buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(buf) < 0)
         return -1;
-    }
 
     return 0;
 }
@@ -2551,10 +2547,8 @@ xenFormatSxpr(virConnectPtr conn,
 
     virBufferAddLit(&buf, ")"); /* closes (vm */
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     bufout = virBufferContentAndReset(&buf);
     VIR_DEBUG("Formatted sexpr: \n%s", bufout);

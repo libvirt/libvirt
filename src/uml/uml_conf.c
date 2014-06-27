@@ -266,10 +266,8 @@ umlBuildCommandLineNet(virConnectPtr conn,
                           def->data.socket.port);
     }
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buf);
 

@@ -158,10 +158,8 @@ char *virStringJoin(const char **strings,
             virBufferAdd(&buf, delim, -1);
         strings++;
     }
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         return NULL;
-    }
     ret = virBufferContentAndReset(&buf);
     if (!ret)
         ignore_value(VIR_STRDUP(ret, ""));
@@ -909,10 +907,8 @@ virStringReplace(const char *haystack,
         tmp1 = tmp2;
     }
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buf);
 }

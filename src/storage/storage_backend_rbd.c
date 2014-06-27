@@ -188,10 +188,8 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
         }
     }
 
-    if (virBufferError(&mon_host)) {
-       virReportOOMError();
-       goto cleanup;
-    }
+    if (virBufferCheckError(&mon_host) < 0)
+        goto cleanup;
 
     mon_buff = virBufferContentAndReset(&mon_host);
     VIR_DEBUG("RADOS mon_host has been set to: %s", mon_buff);

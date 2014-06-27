@@ -426,10 +426,8 @@ esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content,
         goto cleanup;
     }
 
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buffer) < 0)
         goto cleanup;
-    }
 
     if (length) {
         *length = virBufferUse(&buffer);
@@ -1046,10 +1044,8 @@ esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
         goto cleanup;
     }
 
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buffer) < 0)
         goto cleanup;
-    }
 
     ctx->datacenterPath = virBufferContentAndReset(&buffer);
 
@@ -1116,10 +1112,8 @@ esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
         goto cleanup;
     }
 
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buffer) < 0)
         goto cleanup;
-    }
 
     ctx->computeResourcePath = virBufferContentAndReset(&buffer);
 
@@ -1259,10 +1253,8 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
         goto cleanup;
     }
 
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buffer) < 0)
         goto cleanup;
-    }
 
     (*response)->content = virBufferContentAndReset(&buffer);
 
@@ -4243,10 +4235,8 @@ esxVI_HandleVirtualMachineQuestion
             ++answerIndex;
         }
 
-        if (virBufferError(&buffer)) {
-            virReportOOMError();
+        if (virBufferCheckError(&buffer) < 0)
             goto cleanup;
-        }
 
         possibleAnswers = virBufferContentAndReset(&buffer);
     }

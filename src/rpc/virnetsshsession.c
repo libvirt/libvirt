@@ -372,10 +372,8 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
                 virBufferAsprintf(&buff, "%02hhX:", keyhash[i]);
             virBufferTrim(&buff, ":", 1);
 
-            if (virBufferError(&buff) != 0) {
-                virReportOOMError();
+            if (virBufferCheckError(&buff) < 0)
                 return -1;
-            }
 
             keyhashstr = virBufferContentAndReset(&buff);
 
@@ -439,10 +437,8 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
          * to port number */
         virBufferAsprintf(&buff, "[%s]:%d", sess->hostname, sess->port);
 
-        if (virBufferError(&buff) != 0) {
-            virReportOOMError();
+        if (virBufferCheckError(&buff) < 0)
             return -1;
-        }
 
         hostnameStr = virBufferContentAndReset(&buff);
 

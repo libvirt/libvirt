@@ -1946,10 +1946,8 @@ virStorageFileCanonicalizeFormatPath(char **components,
         virBufferAdd(&buf, components[i], -1);
     }
 
-    if (virBufferError(&buf) != 0) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         return NULL;
-    }
 
     /* if the output string is empty just return an empty string */
     if (!(ret = virBufferContentAndReset(&buf)))

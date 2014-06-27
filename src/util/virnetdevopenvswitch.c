@@ -119,10 +119,8 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                 virBufferAsprintf(&buf, "%d", virtVlan->tag[i]);
             }
 
-            if (virBufferError(&buf)) {
-                virReportOOMError();
+            if (virBufferCheckError(&buf) < 0)
                 goto cleanup;
-            }
             virCommandAddArg(cmd, virBufferCurrentContent(&buf));
         } else if (virtVlan->nTags) {
             virCommandAddArgFormat(cmd, "tag=%d", virtVlan->tag[0]);

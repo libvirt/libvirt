@@ -1181,8 +1181,8 @@ virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
         virBufferAsprintf(&map_value, "%u %u %u\n",
                           map[i].start, map[i].target, map[i].count);
 
-    if (virBufferError(&map_value))
-        goto no_memory;
+    if (virBufferCheckError(&map_value) < 0)
+        goto cleanup;
 
     VIR_DEBUG("Set '%s' to '%s'", path, virBufferCurrentContent(&map_value));
 
@@ -1195,10 +1195,6 @@ virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
  cleanup:
     virBufferFreeAndReset(&map_value);
     return ret;
-
- no_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 
 /**

@@ -425,12 +425,8 @@ esxUtil_EscapeBase64(const char *string)
         }
     }
 
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        virBufferFreeAndReset(&buffer);
-
+    if (virBufferCheckError(&buffer) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buffer);
 }
@@ -498,12 +494,8 @@ esxUtil_EscapeForXml(const char *string)
 
     virBufferEscapeString(&buffer, "%s", string);
 
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        virBufferFreeAndReset(&buffer);
-
+    if (virBufferCheckError(&buffer) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buffer);
 }

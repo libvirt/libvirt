@@ -2962,10 +2962,8 @@ qemuBuildNetworkDriveURI(int protocol,
                 if (src)
                     virBufferAsprintf(&buf, ":exportname=%s", src);
 
-                if (virBufferError(&buf) < 0) {
-                    virReportOOMError();
+                if (virBufferCheckError(&buf) < 0)
                     goto cleanup;
-                }
 
                 ret = virBufferContentAndReset(&buf);
                 goto cleanup;
@@ -3098,10 +3096,8 @@ qemuBuildNetworkDriveURI(int protocol,
                 }
             }
 
-            if (virBufferError(&buf) < 0) {
-                virReportOOMError();
+            if (virBufferCheckError(&buf) < 0)
                 goto cleanup;
-            }
 
             ret = virBufferContentAndReset(&buf);
             break;
@@ -3557,10 +3553,8 @@ qemuBuildDriveStr(virConnectPtr conn,
                           disk->blkdeviotune.write_iops_sec);
     }
 
-    if (virBufferError(&opt)) {
-        virReportOOMError();
+    if (virBufferCheckError(&opt) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&opt);
 
@@ -3899,10 +3893,8 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
         }
     }
 
-    if (virBufferError(&opt)) {
-        virReportOOMError();
+    if (virBufferCheckError(&opt) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&opt);
 
@@ -3975,10 +3967,8 @@ char *qemuBuildFSStr(virDomainFSDefPtr fs,
         }
     }
 
-    if (virBufferError(&opt)) {
-        virReportOOMError();
+    if (virBufferCheckError(&opt) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&opt);
 
@@ -4009,10 +3999,8 @@ qemuBuildFSDevStr(virDomainDefPtr def,
     if (qemuBuildDeviceAddressStr(&opt, def, &fs->info, qemuCaps) < 0)
         goto error;
 
-    if (virBufferError(&opt)) {
-        virReportOOMError();
+    if (virBufferCheckError(&opt) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&opt);
 
@@ -4252,10 +4240,8 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
     if (qemuBuildDeviceAddressStr(&buf, domainDef, &def->info, qemuCaps) < 0)
         goto error;
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -4365,10 +4351,8 @@ qemuBuildNicDevStr(virDomainDefPtr def,
     if (bootindex && virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX))
         virBufferAsprintf(&buf, ",bootindex=%d", bootindex);
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -4502,11 +4486,8 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
 
     virObjectUnref(cfg);
 
-    if (virBufferError(&buf)) {
-        virBufferFreeAndReset(&buf);
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buf);
 }
@@ -4530,10 +4511,8 @@ qemuBuildWatchdogDevStr(virDomainDefPtr def,
     if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
         goto error;
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -4571,10 +4550,8 @@ qemuBuildMemballoonDevStr(virDomainDefPtr def,
     if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
         goto error;
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -4598,10 +4575,8 @@ qemuBuildNVRAMDevStr(virDomainNVRAMDefPtr dev)
         goto error;
     }
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -4634,10 +4609,8 @@ qemuBuildUSBInputDevStr(virDomainDefPtr def,
     if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
         goto error;
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -4687,10 +4660,8 @@ qemuBuildSoundDevStr(virDomainDefPtr def,
     if (qemuBuildDeviceAddressStr(&buf, def, &sound->info, qemuCaps) < 0)
         goto error;
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -4802,10 +4773,8 @@ qemuBuildDeviceVideoStr(virDomainDefPtr def,
     if (qemuBuildDeviceAddressStr(&buf, def, &video->info, qemuCaps) < 0)
         goto error;
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -4889,10 +4858,8 @@ qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
     if (qemuBuildRomStr(&buf, dev->info, qemuCaps) < 0)
        goto error;
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -5010,10 +4977,8 @@ qemuBuildRedirdevDevStr(virDomainDefPtr def,
     if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
         goto error;
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -5050,10 +5015,8 @@ qemuBuildUSBHostdevDevStr(virDomainDefPtr def,
     if (qemuBuildDeviceAddressStr(&buf, def, dev->info, qemuCaps) < 0)
         goto error;
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -5088,10 +5051,8 @@ qemuBuildHubDevStr(virDomainDefPtr def,
     if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
         goto error;
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -5157,10 +5118,8 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
         }
     }
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     VIR_FREE(sg);
     return virBufferContentAndReset(&buf);
@@ -5222,10 +5181,8 @@ qemuBuildSCSIHostdevDevStr(virDomainDefPtr def,
     if (dev->info->bootIndex)
         virBufferAsprintf(&buf, ",bootindex=%d", dev->info->bootIndex);
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
  error:
@@ -5342,10 +5299,8 @@ qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias,
         goto error;
     }
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -5438,10 +5393,8 @@ qemuBuildChrArgStr(virDomainChrSourceDefPtr dev, const char *prefix)
         break;
     }
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -5518,10 +5471,8 @@ qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev,
     } else {
         virBufferAsprintf(&buf, ",id=%s", dev->info.alias);
     }
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -5550,10 +5501,8 @@ qemuBuildSclpDevStr(virDomainChrDefPtr dev)
     }
     virBufferAsprintf(&buf, ",chardev=char%s,id=%s",
                       dev->info.alias, dev->info.alias);
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -5703,10 +5652,8 @@ static char *qemuBuildTPMBackendStr(const virDomainDef *def,
         goto error;
     }
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -5741,10 +5688,8 @@ static char *qemuBuildTPMDevStr(const virDomainDef *def,
     virBufferAsprintf(&buf, "%s,tpmdev=tpm-%s,id=%s",
                       model, tpm->info.alias, tpm->info.alias);
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -5777,10 +5722,8 @@ static char *qemuBuildSmbiosBiosStr(virSysinfoDefPtr def)
     if (def->bios_release)
         virBufferAsprintf(&buf, ",release=%s", def->bios_release);
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -5824,10 +5767,8 @@ static char *qemuBuildSmbiosSystemStr(virSysinfoDefPtr def, bool skip_uuid)
     if (def->system_family)
         virBufferAsprintf(&buf, ",family=%s", def->system_family);
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -5944,10 +5885,8 @@ qemuBuildClockArgStr(virDomainClockDefPtr def)
         }
     }
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto error;
-    }
 
     return virBufferContentAndReset(&buf);
 
@@ -6185,10 +6124,8 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
         }
     }
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto cleanup;
-    }
 
     *opt = virBufferContentAndReset(&buf);
 
@@ -6390,11 +6327,8 @@ qemuBuildSmpArgStr(const virDomainDef *def,
         return NULL;
     }
 
-    if (virBufferError(&buf)) {
-        virBufferFreeAndReset(&buf);
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buf);
 }
@@ -6432,10 +6366,8 @@ qemuBuildNumaArgStr(const virDomainDef *def, virCommandPtr cmd)
                                             1024) * 1024;
         virBufferAsprintf(&buf, ",mem=%d", def->cpu->cells[i].mem / 1024);
 
-        if (virBufferError(&buf)) {
-            virReportOOMError();
+        if (virBufferCheckError(&buf) < 0)
             goto cleanup;
-        }
 
         virCommandAddArgBuffer(cmd, &buf);
     }
@@ -7690,10 +7622,8 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (boot_nparams > 0) {
             virCommandAddArg(cmd, "-boot");
 
-            if (virBufferError(&boot_buf)) {
-                virReportOOMError();
+            if (virBufferCheckError(&boot_buf) < 0)
                 goto error;
-            }
 
             if (boot_nparams < 2 || emitBootindex) {
                 virCommandAddArgBuffer(cmd, &boot_buf);
@@ -9167,10 +9097,8 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
         }
     }
 
-    if (virBufferError(&cmd)) {
-        virReportOOMError();
+    if (virBufferCheckError(&cmd) < 0)
         goto error;
-    }
 
     *deviceStr = virBufferContentAndReset(&cmd);
     return 0;

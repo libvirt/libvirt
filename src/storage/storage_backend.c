@@ -760,14 +760,12 @@ virStorageBackendCreateQemuImgOpts(char **opts,
 
     virBufferTrim(&buf, ",", -1);
 
-    if (virBufferError(&buf))
-        goto no_memory;
+    if (virBufferCheckError(&buf) < 0)
+        goto error;
 
     *opts = virBufferContentAndReset(&buf);
     return 0;
 
- no_memory:
-    virReportOOMError();
  error:
     virBufferFreeAndReset(&buf);
     return -1;

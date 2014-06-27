@@ -128,10 +128,8 @@ hypervEnumAndPull(hypervPrivate *priv, virBufferPtr query, const char *root,
         return -1;
     }
 
-    if (virBufferError(query)) {
-        virReportOOMError();
+    if (virBufferCheckError(query) < 0)
         return -1;
-    }
 
     serializerContext = wsmc_get_serialization_context(priv->client);
 

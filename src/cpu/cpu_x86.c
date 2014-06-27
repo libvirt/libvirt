@@ -1221,11 +1221,8 @@ x86CPUDataFormat(const virCPUData *data)
     }
     virBufferAddLit(&buf, "</cpudata>\n");
 
-    if (virBufferError(&buf)) {
-        virBufferFreeAndReset(&buf);
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buf);
 }

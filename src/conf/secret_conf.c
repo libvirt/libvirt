@@ -318,13 +318,11 @@ virSecretDefFormat(const virSecretDef *def)
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</secret>\n");
 
-    if (virBufferError(&buf))
-        goto no_memory;
+    if (virBufferCheckError(&buf) < 0)
+        goto error;
 
     return virBufferContentAndReset(&buf);
 
- no_memory:
-    virReportOOMError();
  error:
     virBufferFreeAndReset(&buf);
     return NULL;

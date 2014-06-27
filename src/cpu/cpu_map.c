@@ -112,12 +112,14 @@ int cpuMapLoad(const char *arch,
         goto cleanup;
     }
 
-    if ((ctxt = xmlXPathNewContext(xml)) == NULL)
-        goto no_memory;
+    if ((ctxt = xmlXPathNewContext(xml)) == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    }
 
     virBufferAsprintf(&buf, "./arch[@name='%s']", arch);
-    if (virBufferError(&buf))
-        goto no_memory;
+    if (virBufferCheckError(&buf) < 0)
+        goto cleanup;
 
     xpath = virBufferContentAndReset(&buf);
 
@@ -146,8 +148,4 @@ int cpuMapLoad(const char *arch,
     VIR_FREE(mapfile);
 
     return ret;
-
- no_memory:
-    virReportOOMError();
-    goto cleanup;
 }

@@ -284,11 +284,8 @@ mapDomainPinVcpu(unsigned char *cpumap, int maplen)
             }
         }
     }
-    if (virBufferError(&buf)) {
-        virReportOOMError();
-        virBufferFreeAndReset(&buf);
+    if (virBufferCheckError(&buf) < 0)
         return NULL;
-    }
     ret = virBufferContentAndReset(&buf);
     len = strlen(ret);
     if (len > 0 && ret[len - 1] == ',')

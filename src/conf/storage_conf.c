@@ -1239,13 +1239,11 @@ virStoragePoolDefFormat(virStoragePoolDefPtr def)
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</pool>\n");
 
-    if (virBufferError(&buf))
-        goto no_memory;
+    if (virBufferCheckError(&buf) < 0)
+        goto cleanup;
 
     return virBufferContentAndReset(&buf);
 
- no_memory:
-    virReportOOMError();
  cleanup:
     virBufferFreeAndReset(&buf);
     return NULL;
@@ -1662,13 +1660,11 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</volume>\n");
 
-    if (virBufferError(&buf))
-        goto no_memory;
+    if (virBufferCheckError(&buf) < 0)
+        goto cleanup;
 
     return virBufferContentAndReset(&buf);
 
- no_memory:
-    virReportOOMError();
  cleanup:
     virBufferFreeAndReset(&buf);
     return NULL;
@@ -2013,13 +2009,11 @@ virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def)
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</sources>\n");
 
-    if (virBufferError(&buf))
-        goto no_memory;
+    if (virBufferCheckError(&buf) < 0)
+        goto cleanup;
 
     return virBufferContentAndReset(&buf);
 
- no_memory:
-    virReportOOMError();
  cleanup:
     virBufferFreeAndReset(&buf);
     return NULL;

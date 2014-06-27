@@ -728,10 +728,8 @@ int virNetSocketNewConnectSSH(const char *nodename,
     virCommandAddArgList(cmd, nodename, "sh", "-c", NULL);
 
     virBufferEscapeShell(&buf, netcat);
-    if (virBufferError(&buf)) {
+    if (virBufferCheckError(&buf) < 0) {
         virCommandFree(cmd);
-        virBufferFreeAndReset(&buf);
-        virReportOOMError();
         return -1;
     }
     quoted = virBufferContentAndReset(&buf);

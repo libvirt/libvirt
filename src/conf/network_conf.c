@@ -2830,13 +2830,11 @@ virNetworkDefFormat(const virNetworkDef *def,
     if (virNetworkDefFormatBuf(&buf, def, flags) < 0)
         goto error;
 
-    if (virBufferError(&buf))
-        goto no_memory;
+    if (virBufferCheckError(&buf) < 0)
+        goto error;
 
     return virBufferContentAndReset(&buf);
 
- no_memory:
-    virReportOOMError();
  error:
     virBufferFreeAndReset(&buf);
     return NULL;
@@ -2871,13 +2869,11 @@ virNetworkObjFormat(virNetworkObjPtr net,
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</networkstatus>");
 
-    if (virBufferError(&buf))
-        goto no_memory;
+    if (virBufferCheckError(&buf) < 0)
+        goto error;
 
     return virBufferContentAndReset(&buf);
 
- no_memory:
-    virReportOOMError();
  error:
     virBufferFreeAndReset(&buf);
     return NULL;

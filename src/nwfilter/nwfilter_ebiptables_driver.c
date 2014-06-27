@@ -306,11 +306,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
             }
         }
 
-        if (virBufferError(&vb)) {
-            virReportOOMError();
-            virBufferFreeAndReset(&vb);
+        if (virBufferCheckError(&vb) < 0)
             return -1;
-        }
 
         flags = virBufferContentAndReset(&vb);
 
@@ -1560,11 +1557,8 @@ printStateMatchFlags(int32_t flags, char **bufptr)
                                     "",
                                     flags,
                                     false);
-    if (virBufferError(&buf)) {
-        virBufferFreeAndReset(&buf);
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         return -1;
-    }
     *bufptr = virBufferContentAndReset(&buf);
     return 0;
 }

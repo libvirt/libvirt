@@ -11335,11 +11335,8 @@ virDomainDefParseXML(xmlDocPtr xml,
                 }
             }
 
-            if (virBufferError(&buffer)) {
-                virReportOOMError();
-                virBufferFreeAndReset(&buffer);
+            if (virBufferCheckError(&buffer) < 0)
                 goto error;
-            }
 
             string = virBufferContentAndReset(&buffer);
 
@@ -17972,13 +17969,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</domain>\n");
 
-    if (virBufferError(buf))
-        goto no_memory;
+    if (virBufferCheckError(buf) < 0)
+        goto error;
 
     return 0;
 
- no_memory:
-    virReportOOMError();
  error:
     virBufferFreeAndReset(buf);
     return -1;
@@ -18030,13 +18025,11 @@ virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</domstatus>\n");
 
-    if (virBufferError(&buf))
-        goto no_memory;
+    if (virBufferCheckError(&buf) < 0)
+        goto error;
 
     return virBufferContentAndReset(&buf);
 
- no_memory:
-    virReportOOMError();
  error:
     virBufferFreeAndReset(&buf);
     return NULL;

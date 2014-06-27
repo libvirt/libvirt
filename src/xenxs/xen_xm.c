@@ -1261,10 +1261,8 @@ xenFormatXMDisk(virConfValuePtr list,
         return -1;
     }
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto cleanup;
-    }
 
     if (VIR_ALLOC(val) < 0)
         goto cleanup;
@@ -1300,10 +1298,8 @@ static int xenFormatXMSerial(virConfValuePtr list,
     } else {
         virBufferAddLit(&buf, "none");
     }
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto cleanup;
-    }
 
     if (VIR_ALLOC(val) < 0)
         goto cleanup;
@@ -1406,10 +1402,8 @@ static int xenFormatXMNet(virConnectPtr conn,
         virBufferAsprintf(&buf, ",vifname=%s",
                           net->ifname);
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         goto cleanup;
-    }
 
     if (VIR_ALLOC(val) < 0)
         goto cleanup;
@@ -1861,11 +1855,8 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                     virBufferAsprintf(&buf, ",keymap=%s",
                                       def->graphics[0]->data.vnc.keymap);
             }
-            if (virBufferError(&buf)) {
-                virBufferFreeAndReset(&buf);
-                virReportOOMError();
+            if (virBufferCheckError(&buf) < 0)
                 goto cleanup;
-            }
 
             vfbstr = virBufferContentAndReset(&buf);
 

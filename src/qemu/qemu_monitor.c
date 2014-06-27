@@ -2297,11 +2297,8 @@ int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
 
     /* Migrate to file */
     virBufferEscapeShell(&buf, target);
-    if (virBufferError(&buf)) {
-        virReportOOMError();
-        virBufferFreeAndReset(&buf);
+    if (virBufferCheckError(&buf) < 0)
         goto cleanup;
-    }
     safe_target = virBufferContentAndReset(&buf);
 
     /* Two dd processes, sharing the same stdout, are necessary to

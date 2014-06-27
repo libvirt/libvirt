@@ -666,11 +666,8 @@ static char *qemuMigrationCookieXMLFormatStr(virQEMUDriverPtr driver,
         return NULL;
     }
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
-        virBufferFreeAndReset(&buf);
+    if (virBufferCheckError(&buf) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buf);
 }

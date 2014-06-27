@@ -1576,11 +1576,8 @@ int qemuMonitorTextMigrate(qemuMonitorPtr mon,
         virBufferAddLit(&extra, " -b");
     if (flags & QEMU_MONITOR_MIGRATE_NON_SHARED_INC)
         virBufferAddLit(&extra, " -i");
-    if (virBufferError(&extra)) {
-        virBufferFreeAndReset(&extra);
-        virReportOOMError();
+    if (virBufferCheckError(&extra) < 0)
         goto cleanup;
-    }
 
     extrastr = virBufferContentAndReset(&extra);
     if (virAsprintf(&cmd, "migrate %s\"%s\"", extrastr ? extrastr : "",
@@ -2911,10 +2908,8 @@ int qemuMonitorTextSendKey(qemuMonitorPtr mon,
     if (holdtime)
         virBufferAsprintf(&buf, " %u", holdtime);
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (virBufferCheckError(&buf) < 0)
         return -1;
-    }
 
     cmd = virBufferContentAndReset(&buf);
     if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)

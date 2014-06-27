@@ -259,11 +259,8 @@ virNWFilterPrintVars(virHashTablePtr vars,
 
     virHashForEach(vars, printString, &ps);
 
-    if (virBufferError(&ps.buf)) {
-        virBufferFreeAndReset(&ps.buf);
-        virReportOOMError();
+    if (virBufferCheckError(&ps.buf) < 0)
         return NULL;
-    }
     return virBufferContentAndReset(&ps.buf);
 }
 
