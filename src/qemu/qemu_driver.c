@@ -14863,9 +14863,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
     virDomainBlockJobInfo info;
     const char *format = NULL;
     bool resume = false;
-    char *oldsrc = NULL;
-    int oldformat;
-    virStorageSourcePtr oldchain = NULL;
+    virStorageSourcePtr oldsrc = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (!disk->mirror) {
@@ -14931,29 +14929,17 @@ qemuDomainBlockPivot(virConnectPtr conn,
      * label the entire chain.  This action is safe even if the
      * backing chain has already been labeled; but only necessary when
      * we know for sure that there is a backing chain.  */
-    oldsrc = disk->src->path;
-    oldformat = disk->src->format;
-    oldchain = disk->src->backingStore;
-    disk->src->path = disk->mirror->path;
-    disk->src->format = disk->mirror->format;
-    disk->src->backingStore = NULL;
-    if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0) {
-        disk->src->path = oldsrc;
-        disk->src->format = oldformat;
-        disk->src->backingStore = oldchain;
+    oldsrc = disk->src;
+    disk->src = disk->mirror;
+
+    if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0)
         goto cleanup;
-    }
+
     if (disk->mirror->format && disk->mirror->format != VIR_STORAGE_FILE_RAW &&
-        (virDomainLockDiskAttach(driver->lockManager, cfg->uri,
-                                 vm, disk) < 0 ||
+        (virDomainLockDiskAttach(driver->lockManager, cfg->uri, vm, disk) < 0 ||
          qemuSetupDiskCgroup(vm, disk) < 0 ||
-         virSecurityManagerSetDiskLabel(driver->securityManager, vm->def,
-                                        disk) < 0)) {
-        disk->src->path = oldsrc;
-        disk->src->format = oldformat;
-        disk->src->backingStore = oldchain;
+         virSecurityManagerSetDiskLabel(driver->securityManager, vm->def, disk) < 0))
         goto cleanup;
-    }
 
     /* Attempt the pivot.  */
     qemuDomainObjEnterMonitor(driver, vm);
@@ -14968,9 +14954,8 @@ qemuDomainBlockPivot(virConnectPtr conn,
          * portion of the chain, and is made more difficult by the
          * fact that we aren't tracking the full chain ourselves; so
          * for now, we leak the access to the original.  */
-        VIR_FREE(oldsrc);
-        virStorageSourceFree(oldchain);
-        disk->mirror->path = NULL;
+        virStorageSourceFree(oldsrc);
+        oldsrc = NULL;
     } else {
         /* On failure, qemu abandons the mirror, and reverts back to
          * the source disk (RHEL 6.3 has a bug where the revert could
@@ -14980,16 +14965,17 @@ qemuDomainBlockPivot(virConnectPtr conn,
          * 'query-block', to see what state we really got left in
          * before killing the mirroring job?  And just as on the
          * success case, there's security labeling to worry about.  */
-        disk->src->path = oldsrc;
-        disk->src->format = oldformat;
-        virStorageSourceFree(disk->src->backingStore);
-        disk->src->backingStore = oldchain;
+        virStorageSourceFree(disk->mirror);
     }
-    virStorageSourceFree(disk->mirror);
+
     disk->mirror = NULL;
     disk->mirroring = false;
 
  cleanup:
+    /* revert to original disk def on failure */
+    if (oldsrc)
+        disk->src = oldsrc;
+
     if (resume && virDomainObjIsActive(vm) &&
         qemuProcessStartCPUs(driver, vm, conn,
                              VIR_DOMAIN_RUNNING_UNPAUSED,
@@ -15408,6 +15394,9 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     if (!format && mirror->format > 0)
         format = virStorageFileFormatTypeToString(mirror->format);
     if (VIR_STRDUP(mirror->path, dest) < 0)
+        goto endjob;
+
+    if (virStorageSourceInitChainElement(disk->mirror, disk->src, false) < 0)
         goto endjob;
 
     if (qemuDomainPrepareDiskChainElement(driver, vm, disk, mirror,
