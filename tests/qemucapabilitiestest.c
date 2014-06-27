@@ -85,55 +85,6 @@ testQemuFeedMonitor(char *replies,
     return NULL;
 }
 
-static virQEMUCapsPtr
-testQemuGetCaps(char *caps)
-{
-    virQEMUCapsPtr qemuCaps = NULL;
-    xmlDocPtr xml;
-    xmlXPathContextPtr ctxt = NULL;
-    ssize_t i, n;
-    xmlNodePtr *nodes = NULL;
-
-    if (!(xml = virXMLParseStringCtxt(caps, "(test caps)", &ctxt)))
-        goto error;
-
-    if ((n = virXPathNodeSet("/qemuCaps/flag", ctxt, &nodes)) < 0) {
-        fprintf(stderr, "failed to parse qemu capabilities flags");
-        goto error;
-    }
-
-    if (n > 0) {
-        if (!(qemuCaps = virQEMUCapsNew()))
-            goto error;
-
-        for (i = 0; i < n; i++) {
-            char *str = virXMLPropString(nodes[i], "name");
-            if (str) {
-                int flag = virQEMUCapsTypeFromString(str);
-                if (flag < 0) {
-                    fprintf(stderr, "Unknown qemu capabilities flag %s", str);
-                    VIR_FREE(str);
-                    goto error;
-                }
-                VIR_FREE(str);
-                virQEMUCapsSet(qemuCaps, flag);
-            }
-        }
-    }
-
-    VIR_FREE(nodes);
-    xmlFreeDoc(xml);
-    xmlXPathFreeContext(ctxt);
-    return qemuCaps;
-
- error:
-    VIR_FREE(nodes);
-    virObjectUnref(qemuCaps);
-    xmlFreeDoc(xml);
-    xmlXPathFreeContext(ctxt);
-    return NULL;
-}
-
 static int
 testQemuCapsCompare(virQEMUCapsPtr capsProvided,
                     virQEMUCapsPtr capsComputed)
@@ -166,7 +117,7 @@ testQemuCaps(const void *opaque)
     int ret = -1;
     const testQemuData *data = opaque;
     char *repliesFile = NULL, *capsFile = NULL;
-    char *replies = NULL, *caps = NULL;
+    char *replies = NULL;
     qemuMonitorTestPtr mon = NULL;
     virQEMUCapsPtr capsProvided = NULL, capsComputed = NULL;
 
@@ -176,14 +127,13 @@ testQemuCaps(const void *opaque)
                     abs_srcdir, data->base) < 0)
         goto cleanup;
 
-    if (virtTestLoadFile(repliesFile, &replies) < 0 ||
-        virtTestLoadFile(capsFile, &caps) < 0)
+    if (virtTestLoadFile(repliesFile, &replies) < 0)
         goto cleanup;
 
     if (!(mon = testQemuFeedMonitor(replies, data->xmlopt)))
         goto cleanup;
 
-    if (!(capsProvided = testQemuGetCaps(caps)))
+    if (!(capsProvided = qemuTestParseCapabilities(capsFile)))
         goto cleanup;
 
     if (!(capsComputed = virQEMUCapsNew()))
@@ -207,7 +157,6 @@ testQemuCaps(const void *opaque)
     VIR_FREE(repliesFile);
     VIR_FREE(capsFile);
     VIR_FREE(replies);
-    VIR_FREE(caps);
     qemuMonitorTestFree(mon);
     virObjectUnref(capsProvided);
     virObjectUnref(capsComputed);
