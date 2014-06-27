@@ -134,11 +134,6 @@ VIR_ENUM_IMPL(virDomainBoot, VIR_DOMAIN_BOOT_LAST,
               "hd",
               "network")
 
-VIR_ENUM_IMPL(virDomainBootMenu, VIR_DOMAIN_BOOT_MENU_LAST,
-              "default",
-              "yes",
-              "no")
-
 VIR_ENUM_IMPL(virDomainFeature, VIR_DOMAIN_FEATURE_LAST,
               "acpi",
               "apic",
@@ -224,11 +219,6 @@ VIR_ENUM_IMPL(virDomainLockFailure, VIR_DOMAIN_LOCK_FAILURE_LAST,
               "restart",
               "pause",
               "ignore")
-
-VIR_ENUM_IMPL(virDomainPMState, VIR_DOMAIN_PM_STATE_LAST,
-              "default",
-              "yes",
-              "no")
 
 VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "none",
@@ -621,18 +611,6 @@ VIR_ENUM_IMPL(virDomainGraphicsSpiceStreamingMode,
               "filter",
               "all",
               "off");
-
-VIR_ENUM_IMPL(virDomainGraphicsSpiceClipboardCopypaste,
-              VIR_DOMAIN_GRAPHICS_SPICE_CLIPBOARD_COPYPASTE_LAST,
-              "default",
-              "yes",
-              "no");
-
-VIR_ENUM_IMPL(virDomainGraphicsSpiceAgentFileTransfer,
-              VIR_DOMAIN_GRAPHICS_SPICE_AGENT_FILE_TRANSFER_LAST,
-              "default",
-              "yes",
-              "no");
 
 VIR_ENUM_IMPL(virDomainHostdevMode, VIR_DOMAIN_HOSTDEV_MODE_LAST,
               "subsystem",
@@ -8926,7 +8904,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
                     }
 
                     if ((copypasteVal =
-                         virDomainGraphicsSpiceClipboardCopypasteTypeFromString(copypaste)) <= 0) {
+                         virTristateBoolTypeFromString(copypaste)) <= 0) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                        _("unknown copypaste value '%s'"), copypaste);
                         VIR_FREE(copypaste);
@@ -8946,7 +8924,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
                     }
 
                     if ((enableVal =
-                         virDomainGraphicsSpiceAgentFileTransferTypeFromString(enable)) <= 0) {
+                         virTristateBoolTypeFromString(enable)) <= 0) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                        _("unknown enable value '%s'"), enable);
                         VIR_FREE(enable);
@@ -10053,7 +10031,7 @@ virDomainPMStateParseXML(xmlXPathContextPtr ctxt,
     int ret = -1;
     char *tmp = virXPathString(xpath, ctxt);
     if (tmp) {
-        *val = virDomainPMStateTypeFromString(tmp);
+        *val = virTristateBoolTypeFromString(tmp);
         if (*val < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown PM state value %s"), tmp);
@@ -11016,14 +10994,14 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
 
     tmp = virXPathString("string(./os/bootmenu[1]/@enable)", ctxt);
     if (tmp) {
-        def->os.bootmenu = virDomainBootMenuTypeFromString(tmp);
+        def->os.bootmenu = virTristateBoolTypeFromString(tmp);
         if (def->os.bootmenu <= 0) {
             /* In order not to break misconfigured machines, this
              * should not emit an error, but rather set the bootmenu
              * to disabled */
             VIR_WARN("disabling bootmenu due to unknown option '%s'",
                      tmp);
-            def->os.bootmenu = VIR_DOMAIN_BOOT_MENU_DISABLED;
+            def->os.bootmenu = VIR_TRISTATE_BOOL_NO;
         }
         VIR_FREE(tmp);
     }
@@ -11038,9 +11016,9 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
                                  "for useserial"));
                 goto cleanup;
             }
-            def->os.bios.useserial = VIR_DOMAIN_BIOS_USESERIAL_YES;
+            def->os.bios.useserial = VIR_TRISTATE_BOOL_YES;
         } else {
-            def->os.bios.useserial = VIR_DOMAIN_BIOS_USESERIAL_NO;
+            def->os.bios.useserial = VIR_TRISTATE_BOOL_NO;
         }
         VIR_FREE(tmp);
     }
@@ -17033,10 +17011,10 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
                               virDomainGraphicsSpiceMouseModeTypeToString(def->data.spice.mousemode));
         if (def->data.spice.copypaste)
             virBufferAsprintf(buf, "<clipboard copypaste='%s'/>\n",
-                              virDomainGraphicsSpiceClipboardCopypasteTypeToString(def->data.spice.copypaste));
+                              virTristateBoolTypeToString(def->data.spice.copypaste));
         if (def->data.spice.filetransfer)
             virBufferAsprintf(buf, "<filetransfer enable='%s'/>\n",
-                              virDomainGraphicsSpiceAgentFileTransferTypeToString(def->data.spice.filetransfer));
+                              virTristateBoolTypeToString(def->data.spice.filetransfer));
     }
 
     if (children) {
@@ -17609,20 +17587,15 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             virBufferAsprintf(buf, "<boot dev='%s'/>\n", boottype);
         }
 
-        if (def->os.bootmenu != VIR_DOMAIN_BOOT_MENU_DEFAULT) {
-            const char *enabled = (def->os.bootmenu ==
-                                   VIR_DOMAIN_BOOT_MENU_ENABLED ? "yes"
-                                                                : "no");
-            virBufferAsprintf(buf, "<bootmenu enable='%s'/>\n", enabled);
-        }
+        if (def->os.bootmenu)
+            virBufferAsprintf(buf, "<bootmenu enable='%s'/>\n",
+                              virTristateBoolTypeToString(def->os.bootmenu));
 
         if (def->os.bios.useserial || def->os.bios.rt_set) {
             virBufferAddLit(buf, "<bios");
             if (def->os.bios.useserial)
                 virBufferAsprintf(buf, " useserial='%s'",
-                                  (def->os.bios.useserial ==
-                                   VIR_DOMAIN_BIOS_USESERIAL_YES ? "yes"
-                                                                   : "no"));
+                                  virTristateBoolTypeToString(def->os.bios.useserial));
             if (def->os.bios.rt_set)
                 virBufferAsprintf(buf, " rebootTimeout='%d'", def->os.bios.rt_delay);
 
@@ -17866,11 +17839,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAdjustIndent(buf, 2);
         if (def->pm.s3) {
             virBufferAsprintf(buf, "<suspend-to-mem enabled='%s'/>\n",
-                              virDomainPMStateTypeToString(def->pm.s3));
+                              virTristateBoolTypeToString(def->pm.s3));
         }
         if (def->pm.s4) {
             virBufferAsprintf(buf, "<suspend-to-disk enabled='%s'/>\n",
-                              virDomainPMStateTypeToString(def->pm.s4));
+                              virTristateBoolTypeToString(def->pm.s4));
         }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</pm>\n");

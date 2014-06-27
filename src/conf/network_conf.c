@@ -66,12 +66,6 @@ VIR_ENUM_IMPL(virNetworkForwardDriverName,
               "kvm",
               "vfio")
 
-VIR_ENUM_IMPL(virNetworkDNSForwardPlainNames,
-              VIR_NETWORK_DNS_FORWARD_PLAIN_NAMES_LAST,
-              "default",
-              "yes",
-              "no")
-
 VIR_ENUM_IMPL(virNetworkTaint, VIR_NETWORK_TAINT_LAST,
               "hook-script");
 
@@ -1123,8 +1117,7 @@ virNetworkDNSDefParseXML(const char *networkName,
 
     forwardPlainNames = virXPathString("string(./@forwardPlainNames)", ctxt);
     if (forwardPlainNames) {
-        def->forwardPlainNames
-            = virNetworkDNSForwardPlainNamesTypeFromString(forwardPlainNames);
+        def->forwardPlainNames = virTristateBoolTypeFromString(forwardPlainNames);
         if (def->forwardPlainNames <= 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Invalid dns forwardPlainNames setting '%s' "
@@ -2372,8 +2365,9 @@ virNetworkDNSDefFormat(virBufferPtr buf,
         return 0;
 
     virBufferAddLit(buf, "<dns");
+    /* default to "yes", but don't format it in the XML */
     if (def->forwardPlainNames) {
-        const char *fwd = virNetworkDNSForwardPlainNamesTypeToString(def->forwardPlainNames);
+        const char *fwd = virTristateBoolTypeToString(def->forwardPlainNames);
 
         if (!fwd) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

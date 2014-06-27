@@ -112,23 +112,10 @@ struct _virNetworkDNSHostDef {
     char **names;
 };
 
-/* If forwardPlainNames is 0 (default), that is equivalent to "yes",
- * but won't be encoded in newly formatted XML.
- */
-typedef enum {
-    VIR_NETWORK_DNS_FORWARD_PLAIN_NAMES_DEFAULT = 0, /* silent "yes" */
-    VIR_NETWORK_DNS_FORWARD_PLAIN_NAMES_YES,
-    VIR_NETWORK_DNS_FORWARD_PLAIN_NAMES_NO,
-
-    VIR_NETWORK_DNS_FORWARD_PLAIN_NAMES_LAST,
-} virNetworkDNSForwardPlainNamesType;
-
-VIR_ENUM_DECL(virNetworkDNSForwardPlainNames)
-
 typedef struct _virNetworkDNSDef virNetworkDNSDef;
 typedef virNetworkDNSDef *virNetworkDNSDefPtr;
 struct _virNetworkDNSDef {
-    int forwardPlainNames; /* enum virNetworkDNSForwardPlainNamesType */
+    int forwardPlainNames; /* enum virTristateBool */
     size_t ntxts;
     virNetworkDNSTxtDefPtr txts;
     size_t nhosts;

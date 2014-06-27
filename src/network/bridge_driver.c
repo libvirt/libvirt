@@ -927,8 +927,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                           network->def->domain);
     }
 
-    if (network->def->dns.forwardPlainNames
-        == VIR_NETWORK_DNS_FORWARD_PLAIN_NAMES_NO) {
+    if (network->def->dns.forwardPlainNames == VIR_TRISTATE_BOOL_NO) {
         virBufferAddLit(&configbuf, "domain-needed\n");
         /* need to specify local=// whether or not a domain is
          * specified, unless the config says we should forward "plain"

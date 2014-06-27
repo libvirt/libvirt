@@ -16256,7 +16256,7 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
     }
 
     if (vm->def->pm.s3 || vm->def->pm.s4) {
-        if (vm->def->pm.s3 == VIR_DOMAIN_PM_STATE_DISABLED &&
+        if (vm->def->pm.s3 == VIR_TRISTATE_BOOL_NO &&
             (target == VIR_NODE_SUSPEND_TARGET_MEM ||
              target == VIR_NODE_SUSPEND_TARGET_HYBRID)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -16264,7 +16264,7 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
             goto cleanup;
         }
 
-        if (vm->def->pm.s4 == VIR_DOMAIN_PM_STATE_DISABLED &&
+        if (vm->def->pm.s4 == VIR_TRISTATE_BOOL_NO &&
             target == VIR_NODE_SUSPEND_TARGET_DISK) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("S4 state is disabled for this domain"));

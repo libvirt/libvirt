@@ -6814,9 +6814,9 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     if (graphics->data.spice.streaming)
         virBufferAsprintf(&opt, ",streaming-video=%s",
                           virDomainGraphicsSpiceStreamingModeTypeToString(graphics->data.spice.streaming));
-    if (graphics->data.spice.copypaste == VIR_DOMAIN_GRAPHICS_SPICE_CLIPBOARD_COPYPASTE_NO)
+    if (graphics->data.spice.copypaste == VIR_TRISTATE_BOOL_NO)
         virBufferAddLit(&opt, ",disable-copy-paste");
-    if (graphics->data.spice.filetransfer == VIR_DOMAIN_GRAPHICS_SPICE_AGENT_FILE_TRANSFER_NO) {
+    if (graphics->data.spice.filetransfer == VIR_TRISTATE_BOOL_NO) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_FILE_XFER_DISABLE)) {
            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                           _("This QEMU can't disable file transfers through spice"));
@@ -7469,7 +7469,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     /* Serial graphics adapter */
-    if (def->os.bios.useserial == VIR_DOMAIN_BIOS_USESERIAL_YES) {
+    if (def->os.bios.useserial == VIR_TRISTATE_BOOL_YES) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("qemu does not support -device"));
@@ -7688,7 +7688,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
         virCommandAddArg(cmd, "-global");
         virCommandAddArgFormat(cmd, "PIIX4_PM.disable_s3=%d",
-                               def->pm.s3 == VIR_DOMAIN_PM_STATE_DISABLED);
+                               def->pm.s3 == VIR_TRISTATE_BOOL_NO);
     }
 
     if (def->pm.s4) {
@@ -7699,7 +7699,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
         virCommandAddArg(cmd, "-global");
         virCommandAddArgFormat(cmd, "PIIX4_PM.disable_s4=%d",
-                               def->pm.s4 == VIR_DOMAIN_PM_STATE_DISABLED);
+                               def->pm.s4 == VIR_TRISTATE_BOOL_NO);
     }
 
     if (!def->os.bootloader) {
@@ -7721,7 +7721,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             }
             emitBootindex = true;
         } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX) &&
-                   (def->os.bootmenu != VIR_DOMAIN_BOOT_MENU_ENABLED ||
+                   (def->os.bootmenu != VIR_TRISTATE_BOOL_YES ||
                     !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOT_MENU))) {
             emitBootindex = true;
         }
@@ -7759,7 +7759,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                 if (boot_nparams++)
                     virBufferAddChar(&boot_buf, ',');
 
-                if (def->os.bootmenu == VIR_DOMAIN_BOOT_MENU_ENABLED)
+                if (def->os.bootmenu == VIR_TRISTATE_BOOL_YES)
                     virBufferAddLit(&boot_buf, "menu=on");
                 else
                     virBufferAddLit(&boot_buf, "menu=off");
@@ -11440,9 +11440,9 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
 
             val += strlen("PIIX4_PM.disable_s3=");
             if (STREQ(val, "0"))
-                def->pm.s3 = VIR_DOMAIN_PM_STATE_ENABLED;
+                def->pm.s3 = VIR_TRISTATE_BOOL_YES;
             else if (STREQ(val, "1"))
-                def->pm.s3 = VIR_DOMAIN_PM_STATE_DISABLED;
+                def->pm.s3 = VIR_TRISTATE_BOOL_NO;
             else {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("invalid value for disable_s3 parameter: "
@@ -11457,9 +11457,9 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
 
             val += strlen("PIIX4_PM.disable_s4=");
             if (STREQ(val, "0"))
-                def->pm.s4 = VIR_DOMAIN_PM_STATE_ENABLED;
+                def->pm.s4 = VIR_TRISTATE_BOOL_YES;
             else if (STREQ(val, "1"))
-                def->pm.s4 = VIR_DOMAIN_PM_STATE_DISABLED;
+                def->pm.s4 = VIR_TRISTATE_BOOL_NO;
             else {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("invalid value for disable_s4 parameter: "

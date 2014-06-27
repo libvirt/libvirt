@@ -1345,22 +1345,6 @@ typedef enum {
 } virDomainGraphicsSpiceStreamingMode;
 
 typedef enum {
-    VIR_DOMAIN_GRAPHICS_SPICE_CLIPBOARD_COPYPASTE_DEFAULT = 0,
-    VIR_DOMAIN_GRAPHICS_SPICE_CLIPBOARD_COPYPASTE_YES,
-    VIR_DOMAIN_GRAPHICS_SPICE_CLIPBOARD_COPYPASTE_NO,
-
-    VIR_DOMAIN_GRAPHICS_SPICE_CLIPBOARD_COPYPASTE_LAST
-} virDomainGraphicsSpiceClipboardCopypaste;
-
-typedef enum {
-    VIR_DOMAIN_GRAPHICS_SPICE_AGENT_FILE_TRANSFER_DEFAULT = 0,
-    VIR_DOMAIN_GRAPHICS_SPICE_AGENT_FILE_TRANSFER_YES,
-    VIR_DOMAIN_GRAPHICS_SPICE_AGENT_FILE_TRANSFER_NO,
-
-    VIR_DOMAIN_GRAPHICS_SPICE_AGENT_FILE_TRANSFER_LAST
-} virDomainGraphicsSpiceAgentFileTransfer;
-
-typedef enum {
     VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE = 0,
     VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS,
     VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK,
@@ -1432,8 +1416,8 @@ struct _virDomainGraphicsDef {
             int zlib;
             int playback;
             int streaming;
-            int copypaste;
-            int filetransfer;
+            int copypaste; /* enum virTristateBool */
+            int filetransfer; /* enum virTristateBool */
         } spice;
     } data;
     /* nListens, listens, and *port are only useful if type is vnc,
@@ -1518,14 +1502,6 @@ typedef enum {
 
     VIR_DOMAIN_BOOT_LAST
 } virDomainBootOrder;
-
-typedef enum {
-    VIR_DOMAIN_BOOT_MENU_DEFAULT = 0,
-    VIR_DOMAIN_BOOT_MENU_ENABLED,
-    VIR_DOMAIN_BOOT_MENU_DISABLED,
-
-    VIR_DOMAIN_BOOT_MENU_LAST
-} virDomainBootMenu;
 
 typedef enum {
     VIR_DOMAIN_FEATURE_ACPI,
@@ -1639,24 +1615,10 @@ typedef enum {
 
 VIR_ENUM_DECL(virDomainLockFailure)
 
-typedef enum {
-    VIR_DOMAIN_PM_STATE_DEFAULT = 0,
-    VIR_DOMAIN_PM_STATE_ENABLED,
-    VIR_DOMAIN_PM_STATE_DISABLED,
-
-    VIR_DOMAIN_PM_STATE_LAST
-} virDomainPMState;
-
-typedef enum {
-    VIR_DOMAIN_BIOS_USESERIAL_DEFAULT = 0,
-    VIR_DOMAIN_BIOS_USESERIAL_YES,
-    VIR_DOMAIN_BIOS_USESERIAL_NO
-} virDomainBIOSUseserial;
-
 typedef struct _virDomainBIOSDef virDomainBIOSDef;
 typedef virDomainBIOSDef *virDomainBIOSDefPtr;
 struct _virDomainBIOSDef {
-    int useserial;
+    int useserial; /* enum virTristateBool */
     /* reboot-timeout parameters */
     bool rt_set;
     int rt_delay;
@@ -1671,8 +1633,7 @@ struct _virDomainOSDef {
     char *machine;
     size_t nBootDevs;
     int bootDevs[VIR_DOMAIN_BOOT_LAST];
-    /* enum virDomainBootMenu */
-    int bootmenu;
+    int bootmenu; /* enum virTristateBool */
     char *init;
     char **initargv;
     char *kernel;
@@ -1960,7 +1921,7 @@ struct _virDomainDef {
     int onLockFailure; /* enum virDomainLockFailureAction */
 
     struct {
-        /* These options are actually type of enum virDomainPMState */
+        /* These options are of type enum virTristateBool */
         int s3;
         int s4;
     } pm;
@@ -2588,17 +2549,14 @@ typedef const char* (*virEventActionToStringFunc)(int type);
 typedef int (*virEventActionFromStringFunc)(const char *type);
 
 VIR_ENUM_DECL(virDomainTaint)
-
 VIR_ENUM_DECL(virDomainVirt)
 VIR_ENUM_DECL(virDomainBoot)
-VIR_ENUM_DECL(virDomainBootMenu)
 VIR_ENUM_DECL(virDomainFeature)
 VIR_ENUM_DECL(virDomainFeatureState)
 VIR_ENUM_DECL(virDomainCapabilitiesPolicy)
 VIR_ENUM_DECL(virDomainCapsFeature)
 VIR_ENUM_DECL(virDomainLifecycle)
 VIR_ENUM_DECL(virDomainLifecycleCrash)
-VIR_ENUM_DECL(virDomainPMState)
 VIR_ENUM_DECL(virDomainDevice)
 VIR_ENUM_DECL(virDomainDeviceAddress)
 VIR_ENUM_DECL(virDomainDiskDevice)
@@ -2652,7 +2610,6 @@ VIR_ENUM_DECL(virDomainInputBus)
 VIR_ENUM_DECL(virDomainGraphics)
 VIR_ENUM_DECL(virDomainGraphicsListen)
 VIR_ENUM_DECL(virDomainGraphicsAuthConnected)
-VIR_ENUM_DECL(virDomainGraphicsSpiceAgentFileTransfer)
 VIR_ENUM_DECL(virDomainGraphicsSpiceChannelName)
 VIR_ENUM_DECL(virDomainGraphicsSpiceChannelMode)
 VIR_ENUM_DECL(virDomainGraphicsSpiceImageCompression)
@@ -2660,7 +2617,6 @@ VIR_ENUM_DECL(virDomainGraphicsSpiceJpegCompression)
 VIR_ENUM_DECL(virDomainGraphicsSpiceZlibCompression)
 VIR_ENUM_DECL(virDomainGraphicsSpicePlaybackCompression)
 VIR_ENUM_DECL(virDomainGraphicsSpiceStreamingMode)
-VIR_ENUM_DECL(virDomainGraphicsSpiceClipboardCopypaste)
 VIR_ENUM_DECL(virDomainGraphicsSpiceMouseMode)
 VIR_ENUM_DECL(virDomainGraphicsVNCSharePolicy)
 VIR_ENUM_DECL(virDomainHyperv)

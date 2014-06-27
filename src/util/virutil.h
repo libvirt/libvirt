@@ -38,6 +38,7 @@
 #  define MAX(a, b) ((a) > (b) ? (a) : (b))
 # endif
 
+
 int virSetBlocking(int fd, bool blocking) ATTRIBUTE_RETURN_CHECK;
 int virSetNonBlock(int fd) ATTRIBUTE_RETURN_CHECK;
 int virSetInherit(int fd, bool inherit) ATTRIBUTE_RETURN_CHECK;
@@ -210,5 +211,15 @@ bool virIsSUID(void);
 
 time_t virGetSelfLastChanged(void);
 void virUpdateSelfLastChanged(const char *path);
+
+typedef enum {
+    VIR_TRISTATE_BOOL_ABSENT = 0,
+    VIR_TRISTATE_BOOL_YES,
+    VIR_TRISTATE_BOOL_NO,
+
+    VIR_TRISTATE_BOOL_LAST
+} virTristateBool;
+
+VIR_ENUM_DECL(virTristateBool)
 
 #endif /* __VIR_UTIL_H__ */
