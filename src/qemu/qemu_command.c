@@ -9113,10 +9113,8 @@ qemuBuildParallelChrDeviceStr(char **deviceStr,
                               virDomainChrDefPtr chr)
 {
     if (virAsprintf(deviceStr, "isa-parallel,chardev=char%s,id=%s",
-                    chr->info.alias, chr->info.alias) < 0) {
-        virReportOOMError();
+                    chr->info.alias, chr->info.alias) < 0)
         return -1;
-    }
     return 0;
 }
 
@@ -9139,10 +9137,8 @@ qemuBuildChannelChrDeviceStr(char **deviceStr,
 
         if (virAsprintf(deviceStr,
                         "user,guestfwd=tcp:%s:%i-chardev:char%s,id=user-%s",
-                        addr, port, chr->info.alias, chr->info.alias) < 0) {
-            virReportOOMError();
+                        addr, port, chr->info.alias, chr->info.alias) < 0)
             goto cleanup;
-        }
         break;
 
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:

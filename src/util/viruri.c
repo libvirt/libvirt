@@ -120,7 +120,7 @@ virURIParseParams(virURIPtr uri)
         if (virURIParamAppend(uri, name, value ? value : "") < 0) {
             VIR_FREE(name);
             VIR_FREE(value);
-            goto no_memory;
+            return -1;
         }
         VIR_FREE(name);
         VIR_FREE(value);

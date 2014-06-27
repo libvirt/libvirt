@@ -3983,11 +3983,12 @@ libxlDomainGetNumaParameters(virDomainPtr dom,
             if (numnodes <= 0)
                 goto cleanup;
 
-            if (libxl_node_bitmap_alloc(priv->ctx, &nodemap, 0) ||
-                !(nodes = virBitmapNew(numnodes))) {
+            if (libxl_node_bitmap_alloc(priv->ctx, &nodemap, 0)) {
                 virReportOOMError();
                 goto cleanup;
             }
+            if (!(nodes = virBitmapNew(numnodes)))
+                goto cleanup;
 
             rc = libxl_domain_get_nodeaffinity(priv->ctx,
                                                vm->def->id,

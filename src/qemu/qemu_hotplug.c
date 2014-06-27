@@ -1450,10 +1450,8 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     if (qemuBuildChrDeviceStr(&devstr, vm->def, chr, priv->qemuCaps) < 0)
         return ret;
 
-    if (virAsprintf(&charAlias, "char%s", chr->info.alias) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&charAlias, "char%s", chr->info.alias) < 0)
         goto cleanup;
-    }
 
     if (qemuDomainChrInsert(vmdef, chr) < 0)
         goto cleanup;
