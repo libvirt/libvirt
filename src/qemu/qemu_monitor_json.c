@@ -5220,7 +5220,6 @@ qemuMonitorJSONBuildUnixSocketAddress(const char *path)
 
     return addr;
  error:
-    virReportOOMError();
     virJSONValueFree(data);
     virJSONValueFree(addr);
     return NULL;
@@ -5415,7 +5414,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
 
     if (!(backend = virJSONValueNewObject()) ||
         !(data = virJSONValueNewObject())) {
-        goto no_memory;
+        goto error;
     }
 
     switch ((virDomainChrType) chr->type) {
@@ -5431,14 +5430,14 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
     case VIR_DOMAIN_CHR_TYPE_FILE:
         backend_type = "file";
         if (virJSONValueObjectAppendString(data, "out", chr->data.file.path) < 0)
-            goto no_memory;
+            goto error;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
         backend_type = STRPREFIX(chrID, "parallel") ? "parallel" : "serial";
         if (virJSONValueObjectAppendString(data, "device",
                                            chr->data.file.path) < 0)
-            goto no_memory;
+            goto error;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
@@ -5447,7 +5446,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
                                                      chr->data.tcp.service);
         if (!addr ||
             virJSONValueObjectAppend(data, "addr", addr) < 0)
-            goto no_memory;
+            goto error;
         addr = NULL;
 
         telnet = chr->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
@@ -5455,7 +5454,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
         if (virJSONValueObjectAppendBoolean(data, "wait", false) < 0 ||
             virJSONValueObjectAppendBoolean(data, "telnet", telnet) < 0 ||
             virJSONValueObjectAppendBoolean(data, "server", chr->data.tcp.listen) < 0)
-            goto no_memory;
+            goto error;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
@@ -5464,7 +5463,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
                                                      chr->data.udp.connectService);
         if (!addr ||
             virJSONValueObjectAppend(data, "addr", addr) < 0)
-            goto no_memory;
+            goto error;
         addr = NULL;
         break;
 
@@ -5474,12 +5473,12 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
 
         if (!addr ||
             virJSONValueObjectAppend(data, "addr", addr) < 0)
-            goto no_memory;
+            goto error;
         addr = NULL;
 
         if (virJSONValueObjectAppendBoolean(data, "wait", false) < 0 ||
             virJSONValueObjectAppendBoolean(data, "server", chr->data.nix.listen) < 0)
-            goto no_memory;
+            goto error;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
@@ -5496,7 +5495,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
 
     if (virJSONValueObjectAppendString(backend, "type", backend_type) < 0 ||
         virJSONValueObjectAppend(backend, "data", data) < 0)
-        goto no_memory;
+        goto error;
     data = NULL;
 
     if (!(ret = qemuMonitorJSONMakeCommand("chardev-add",
@@ -5507,8 +5506,6 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
 
     return ret;
 
- no_memory:
-    virReportOOMError();
  error:
     virJSONValueFree(addr);
     virJSONValueFree(data);
