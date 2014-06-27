@@ -464,6 +464,21 @@ static int lxcContainerSetID(virDomainDefPtr def)
 }
 
 
+static virDomainNetDefPtr
+lxcContainerGetNetDef(virDomainDefPtr vmDef, const char *devName)
+{
+    size_t i;
+    virDomainNetDefPtr netDef;
+
+    for (i = 0; i < vmDef->nnets; i++) {
+        netDef = vmDef->nets[i];
+        if (STREQ(netDef->ifname_guest_actual, devName))
+            return netDef;
+    }
+
+    return NULL;
+}
+
 /**
  * lxcContainerRenameAndEnableInterfaces:
  * @nveths: number of interfaces
@@ -475,16 +490,23 @@ static int lxcContainerSetID(virDomainDefPtr def)
  *
  * Returns 0 on success or nonzero in case of error
  */
-static int lxcContainerRenameAndEnableInterfaces(bool privNet,
+static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
                                                  size_t nveths,
                                                  char **veths)
 {
     int rc = 0;
     size_t i;
     char *newname = NULL;
+    virDomainNetDefPtr netDef;
+    bool privNet = vmDef->features[VIR_DOMAIN_FEATURE_PRIVNET] ==
+                   VIR_DOMAIN_FEATURE_STATE_ON;
 
     for (i = 0; i < nveths; i++) {
-        if (virAsprintf(&newname, "eth%zu", i) < 0) {
+        if (!(netDef = lxcContainerGetNetDef(vmDef, veths[i])))
+            return -1;
+
+        newname = netDef->ifname_guest;
+        if (!newname) {
             rc = -1;
             goto error_out;
         }
@@ -1866,8 +1888,7 @@ static int lxcContainerChild(void *data)
     }
 
     /* rename and enable interfaces */
-    if (lxcContainerRenameAndEnableInterfaces(vmDef->features[VIR_DOMAIN_FEATURE_PRIVNET] ==
-                                              VIR_DOMAIN_FEATURE_STATE_ON,
+    if (lxcContainerRenameAndEnableInterfaces(vmDef,
                                               argv->nveths,
                                               argv->veths) < 0) {
         goto cleanup;

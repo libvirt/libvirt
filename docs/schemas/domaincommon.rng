@@ -2219,6 +2219,23 @@
         </element>
       </optional>
       <optional>
+        <element name="guest">
+          <interleave>
+            <optional>
+              <attribute name="dev">
+                <ref name="deviceName"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="actual">
+                <ref name="deviceName"/>
+              </attribute>
+            </optional>
+          </interleave>
+          <empty/>
+        </element>
+      </optional>
+      <optional>
         <element name="mac">
           <attribute name="address">
             <ref name="uniMacAddr"/>

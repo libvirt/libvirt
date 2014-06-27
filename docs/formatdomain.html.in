@@ -3810,6 +3810,23 @@ qemu-kvm -net nic,model=? /dev/null
       targets using these prefixes will be ignored.
     </p>
 
+    <p>
+      Note that for LXC containers, this defines the name of the interface
+      on the host side. <span class="since">Since 1.2.7</span>, to define
+      the name of the device on the guest side, the <code>guest</code>
+      element should be used, as in the following snippet:
+    </p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='network'&gt;
+      &lt;source network='default'/&gt;
+      <b>&lt;guest dev='myeth'/&gt;</b>
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
     <h5><a name="elementsNICSBoot">Specifying boot order</a></h5>
 
 <pre>

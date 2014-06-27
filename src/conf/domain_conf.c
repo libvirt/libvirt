@@ -1388,6 +1388,8 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     VIR_FREE(def->virtPortProfile);
     VIR_FREE(def->script);
     VIR_FREE(def->ifname);
+    VIR_FREE(def->ifname_guest);
+    VIR_FREE(def->ifname_guest_actual);
 
     virDomainDeviceInfoClear(&def->info);
 
@@ -6608,6 +6610,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *bridge = NULL;
     char *dev = NULL;
     char *ifname = NULL;
+    char *ifname_guest = NULL;
+    char *ifname_guest_actual = NULL;
     char *script = NULL;
     char *address = NULL;
     char *port = NULL;
@@ -6722,6 +6726,10 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                     /* An auto-generated target name, blank it out */
                     VIR_FREE(ifname);
                 }
+            } else if ((!ifname_guest || !ifname_guest_actual) &&
+                       xmlStrEqual(cur->name, BAD_CAST "guest")) {
+                ifname_guest = virXMLPropString(cur, "dev");
+                ifname_guest_actual = virXMLPropString(cur, "actual");
             } else if (!linkstate &&
                        xmlStrEqual(cur->name, BAD_CAST "link")) {
                 linkstate = virXMLPropString(cur, "state");
@@ -7021,6 +7029,14 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (ifname != NULL) {
         def->ifname = ifname;
         ifname = NULL;
+    }
+    if (ifname_guest != NULL) {
+        def->ifname_guest = ifname_guest;
+        ifname_guest = NULL;
+    }
+    if (ifname_guest_actual != NULL) {
+        def->ifname_guest_actual = ifname_guest_actual;
+        ifname_guest_actual = NULL;
     }
 
     /* NIC model (see -net nic,model=?).  We only check that it looks
@@ -15848,6 +15864,17 @@ virDomainNetDefFormat(virBufferPtr buf,
           (STRPREFIX(def->ifname, VIR_NET_GENERATED_PREFIX)))) {
         /* Skip auto-generated target names for inactive config. */
         virBufferEscapeString(buf, "<target dev='%s'/>\n", def->ifname);
+    }
+    if (def->ifname_guest || def->ifname_guest_actual) {
+        virBufferAddLit(buf, "<guest");
+        /* Skip auto-generated target names for inactive config. */
+        if (def->ifname_guest)
+            virBufferEscapeString(buf, " dev='%s'", def->ifname_guest);
+
+        /* Only set if the host is running, so shouldn't pollute output */
+        if (def->ifname_guest_actual)
+            virBufferEscapeString(buf, " actual='%s'", def->ifname_guest_actual);
+        virBufferAddLit(buf, "/>\n");
     }
     if (def->model) {
         virBufferEscapeString(buf, "<model type='%s'/>\n",

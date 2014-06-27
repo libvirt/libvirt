@@ -29,6 +29,7 @@
       <mac address='00:16:3e:0f:ef:8a'/>
       <source bridge='bri0'/>
       <target dev='veth0'/>
+      <guest dev='eth2'/>
     </interface>
     <console type='pty'>
       <target type='lxc' port='0'/>

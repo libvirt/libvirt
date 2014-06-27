@@ -259,6 +259,8 @@ char *virLXCProcessSetupInterfaceBridged(virConnectPtr conn,
 
     if (virNetDevSetMAC(containerVeth, &net->mac) < 0)
         goto cleanup;
+    if (VIR_STRDUP(net->ifname_guest_actual, containerVeth) < 0)
+        goto cleanup;
 
     if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
         if (virNetDevOpenvswitchAddPort(brname, parentVeth, &net->mac,
@@ -369,6 +371,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
 {
     int ret = -1;
     size_t i;
+    size_t niface = 0;
 
     for (i = 0; i < def->nnets; i++) {
         char *veth = NULL;
@@ -452,6 +455,13 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
         }
 
         (*veths)[(*nveths)-1] = veth;
+
+        /* Make sure all net definitions will have a name in the container */
+        if (!def->nets[i]->ifname_guest) {
+            if (virAsprintf(&def->nets[i]->ifname_guest, "eth%zu", niface) < 0)
+                return -1;
+            niface++;
+        }
     }
 
     ret = 0;
@@ -469,6 +479,17 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
         }
     }
     return ret;
+}
+
+static void
+virLXCProcessCleanInterfaces(virDomainDefPtr def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nnets; i++) {
+        VIR_FREE(def->nets[i]->ifname_guest_actual);
+        VIR_DEBUG("Cleared net names: %s", def->nets[i]->ifname_guest);
+    }
 }
 
 
@@ -1306,6 +1327,9 @@ int virLXCProcessStart(virConnectPtr conn,
     if (virDomainObjSetDefTransient(caps, driver->xmlopt,
                                     vm, false) < 0)
         goto error;
+
+    /* We don't need the temporary NIC names anymore, clear them */
+    virLXCProcessCleanInterfaces(vm->def);
 
     /* Write domain status to disk.
      *

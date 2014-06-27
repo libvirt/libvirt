@@ -923,6 +923,8 @@ struct _virDomainNetDef {
     } tune;
     char *script;
     char *ifname;
+    char *ifname_guest;
+    char *ifname_guest_actual;
     virDomainDeviceInfo info;
     char *filter;
     virNWFilterHashTablePtr filterparams;
