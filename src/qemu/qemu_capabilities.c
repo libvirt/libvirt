@@ -2686,7 +2686,7 @@ virQEMUCapsSaveCache(virQEMUCapsPtr qemuCaps, const char *filename)
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</qemuCaps>\n");
 
-    if (virBufferError(&buf))
+    if (virBufferCheckError(&buf) < 0)
         goto cleanup;
 
     xml = virBufferContentAndReset(&buf);

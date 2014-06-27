@@ -223,7 +223,7 @@ static virCommandPtr lxcContainerBuildInitCmd(virDomainDefPtr vmDef,
     }
     virBufferTrim(&buf, NULL, 1);
 
-    if (virBufferError(&buf))
+    if (virBufferCheckError(&buf) < 0)
         return NULL;
 
     virUUIDFormat(vmDef->uuid, uuidstr);
