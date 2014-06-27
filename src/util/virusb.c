@@ -45,7 +45,6 @@
 #define USB_ID_LEN 10 /* "1234 5678" */
 #define USB_ADDR_LEN 8 /* "123:456" */
 
-/* For virReportOOMError()  and virReportSystemError() */
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("util.usb");
