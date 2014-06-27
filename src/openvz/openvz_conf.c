@@ -343,40 +343,6 @@ openvzReadNetworkConf(virDomainDefPtr def,
 }
 
 
-/* utility function to replace 'from' by 'to' in 'str' */
-static char*
-openvz_replace(const char* str,
-               const char* from,
-               const char* to) {
-    const char* offset = NULL;
-    const char* str_start = str;
-    int to_len;
-    int from_len;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-
-    if ((!from) || (!to))
-        return NULL;
-    from_len = strlen(from);
-    to_len = strlen(to);
-
-    while ((offset = strstr(str_start, from)))
-    {
-        virBufferAdd(&buf, str_start, offset-str_start);
-        virBufferAdd(&buf, to, to_len);
-        str_start = offset + from_len;
-    }
-
-    virBufferAdd(&buf, str_start, -1);
-
-    if (virBufferError(&buf)) {
-        virBufferFreeAndReset(&buf);
-        return NULL;
-    }
-
-    return virBufferContentAndReset(&buf);
-}
-
-
 static int
 openvzReadFSConf(virDomainDefPtr def,
                  int veid)
@@ -418,8 +384,8 @@ openvzReadFSConf(virDomainDefPtr def,
             goto error;
 
         fs->type = VIR_DOMAIN_FS_TYPE_MOUNT;
-        if (!(fs->src = openvz_replace(temp, "$VEID", veid_str)))
-            goto no_memory;
+        if (!(fs->src = virStringReplace(temp, "$VEID", veid_str)))
+            goto error;
 
         VIR_FREE(veid_str);
     }
@@ -454,8 +420,6 @@ openvzReadFSConf(virDomainDefPtr def,
     VIR_FREE(temp);
 
     return 0;
- no_memory:
-    virReportOOMError();
  error:
     VIR_FREE(temp);
     virDomainFSDefFree(fs);
