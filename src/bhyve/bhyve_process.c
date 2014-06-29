@@ -185,6 +185,11 @@ virBhyveProcessStart(virConnectPtr conn,
     vm->def->id = vm->pid;
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
 
+    if (virDomainSaveStatus(driver->xmlopt,
+                            BHYVE_STATE_DIR,
+                            vm) < 0)
+        goto cleanup;
+
     ret = 0;
 
  cleanup:
@@ -257,6 +262,10 @@ virBhyveProcessStop(bhyveConnPtr driver,
 
  cleanup:
     virCommandFree(cmd);
+
+    virPidFileDelete(BHYVE_STATE_DIR, vm->def->name);
+    virDomainDeleteConfig(BHYVE_STATE_DIR, NULL, vm);
+
     return ret;
 }
 
@@ -294,4 +303,83 @@ virBhyveGetDomainTotalCpuStats(virDomainObjPtr vm,
     kvm_close(kd);
 
     return ret;
+}
+
+struct bhyveProcessReconnectData {
+    bhyveConnPtr driver;
+    kvm_t *kd;
+};
+
+static int
+virBhyveProcessReconnect(virDomainObjPtr vm,
+                         void *opaque)
+{
+    struct bhyveProcessReconnectData *data = opaque;
+    struct kinfo_proc *kp;
+    int nprocs;
+    char **proc_argv;
+    char *expected_proctitle = NULL;
+    int ret = -1;
+
+    if (!virDomainObjIsActive(vm))
+        return 0;
+
+    if (!vm->pid)
+        return 0;
+
+    virObjectLock(vm);
+
+    kp = kvm_getprocs(data->kd, KERN_PROC_PID, vm->pid, &nprocs);
+    if (kp == NULL || nprocs != 1)
+        goto cleanup;
+
+    if (virAsprintf(&expected_proctitle, "bhyve: %s", vm->def->name) < 0)
+        goto cleanup;
+
+    proc_argv = kvm_getargv(data->kd, kp, 0);
+    if (proc_argv && proc_argv[0])
+         if (STREQ(expected_proctitle, proc_argv[0]))
+             ret = 0;
+
+ cleanup:
+    if (ret < 0) {
+        /* If VM is reported to be in active state, but we cannot find
+         * its PID, then we clear information about the PID and
+         * set state to 'shutdown' */
+        vm->pid = 0;
+        vm->def->id = -1;
+        virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF,
+                             VIR_DOMAIN_SHUTOFF_UNKNOWN);
+        ignore_value(virDomainSaveStatus(data->driver->xmlopt,
+                                         BHYVE_STATE_DIR,
+                                         vm));
+    }
+
+    virObjectUnlock(vm);
+    VIR_FREE(expected_proctitle);
+
+    return ret;
+}
+
+void
+virBhyveProcessReconnectAll(bhyveConnPtr driver)
+{
+    kvm_t *kd;
+    struct bhyveProcessReconnectData data;
+    char errbuf[_POSIX2_LINE_MAX];
+
+    if ((kd = kvm_openfiles(NULL, NULL, NULL, O_RDONLY, errbuf)) == NULL) {
+        virReportError(VIR_ERR_SYSTEM_ERROR,
+                       _("Unable to get kvm descriptor: %s"),
+                       errbuf);
+        return;
+
+    }
+
+    data.driver = driver;
+    data.kd = kd;
+
+    virDomainObjListForEach(driver->domains, virBhyveProcessReconnect, &data);
+
+    kvm_close(kd);
 }

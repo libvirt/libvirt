@@ -1145,6 +1145,8 @@ bhyveStateInitialize(bool priveleged ATTRIBUTE_UNUSED,
                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
                      void *opaque ATTRIBUTE_UNUSED)
 {
+    virConnectPtr conn = NULL;
+
     if (!priveleged) {
         VIR_INFO("Not running priveleged, disabling driver");
         return 0;
@@ -1193,6 +1195,15 @@ bhyveStateInitialize(bool priveleged ATTRIBUTE_UNUSED,
     }
 
     if (virDomainObjListLoadAllConfigs(bhyve_driver->domains,
+                                       BHYVE_STATE_DIR,
+                                       NULL, 1,
+                                       bhyve_driver->caps,
+                                       bhyve_driver->xmlopt,
+                                       1 << VIR_DOMAIN_VIRT_BHYVE,
+                                       NULL, NULL) < 0)
+        goto cleanup;
+
+    if (virDomainObjListLoadAllConfigs(bhyve_driver->domains,
                                        BHYVE_CONFIG_DIR,
                                        BHYVE_AUTOSTART_DIR, 0,
                                        bhyve_driver->caps,
@@ -1201,9 +1212,14 @@ bhyveStateInitialize(bool priveleged ATTRIBUTE_UNUSED,
                                        NULL, NULL) < 0)
         goto cleanup;
 
+    virBhyveProcessReconnectAll(bhyve_driver);
+
+    virObjectUnref(conn);
+
     return 0;
 
  cleanup:
+    virObjectUnref(conn);
     bhyveStateCleanup();
     return -1;
 }
