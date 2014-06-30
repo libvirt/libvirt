@@ -12861,7 +12861,6 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     char *source = NULL;
     const char *formatStr = NULL;
     int ret = -1;
-    int fd = -1;
     bool need_unlink = false;
 
     if (snap->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
@@ -12879,7 +12878,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     if (virStorageSourceInitChainElement(newDiskSrc, disk->src, false) < 0)
         goto cleanup;
 
-    if (virStorageFileInit(newDiskSrc) < 0)
+    if (qemuDomainStorageFileInit(driver, vm, newDiskSrc) < 0)
         goto cleanup;
 
     if (qemuGetDriveSourceString(newDiskSrc, NULL, &source) < 0)
@@ -12895,15 +12894,13 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     }
 
     /* pre-create the image file so that we can label it before handing it to qemu */
-    /* XXX we should switch to storage driver based pre-creation of the image */
-    if (virStorageSourceIsLocalStorage(newDiskSrc)) {
-        if (!reuse && newDiskSrc->type != VIR_STORAGE_TYPE_BLOCK) {
-            fd = qemuOpenFile(driver, vm, source, O_WRONLY | O_TRUNC | O_CREAT,
-                              &need_unlink, NULL);
-            if (fd < 0)
-                goto cleanup;
-            VIR_FORCE_CLOSE(fd);
+    if (!reuse && newDiskSrc->type != VIR_STORAGE_TYPE_BLOCK) {
+        if (virStorageFileCreate(newDiskSrc) < 0) {
+            virReportSystemError(errno, _("failed to create image file '%s'"),
+                                 source);
+            goto cleanup;
         }
+        need_unlink = true;
     }
 
     /* set correct security, cgroup and locking options on the new image */
