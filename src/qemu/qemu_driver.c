@@ -12845,16 +12845,16 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     if (virAsprintf(&device, "drive-%s", disk->info.alias) < 0)
         goto cleanup;
 
-    if (virStorageFileInit(snap->src) < 0)
-        goto cleanup;
-
-    if (qemuGetDriveSourceString(snap->src, NULL, &source) < 0)
-        goto cleanup;
-
     if (!(newDiskSrc = virStorageSourceCopy(snap->src, false)))
         goto cleanup;
 
     if (virStorageSourceInitChainElement(newDiskSrc, disk->src, false) < 0)
+        goto cleanup;
+
+    if (virStorageFileInit(newDiskSrc) < 0)
+        goto cleanup;
+
+    if (qemuGetDriveSourceString(newDiskSrc, NULL, &source) < 0)
         goto cleanup;
 
     if (persistDisk) {
@@ -12866,55 +12866,29 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    switch ((virStorageType)snap->src->type) {
-    case VIR_STORAGE_TYPE_BLOCK:
-    case VIR_STORAGE_TYPE_FILE:
-
-        /* create the stub file and set selinux labels; manipulate disk in
-         * place, in a way that can be reverted on failure. */
-        if (!reuse && snap->src->type != VIR_STORAGE_TYPE_BLOCK) {
+    /* pre-create the image file so that we can label it before handing it to qemu */
+    /* XXX we should switch to storage driver based pre-creation of the image */
+    if (virStorageSourceIsLocalStorage(newDiskSrc)) {
+        if (!reuse && newDiskSrc->type != VIR_STORAGE_TYPE_BLOCK) {
             fd = qemuOpenFile(driver, vm, source, O_WRONLY | O_TRUNC | O_CREAT,
                               &need_unlink, NULL);
             if (fd < 0)
                 goto cleanup;
             VIR_FORCE_CLOSE(fd);
         }
+    }
 
-        if (qemuDomainPrepareDiskChainElement(driver, vm, snap->src,
-                                              VIR_DISK_CHAIN_READ_WRITE) < 0) {
-            qemuDomainPrepareDiskChainElement(driver, vm, snap->src,
-                                              VIR_DISK_CHAIN_NO_ACCESS);
-            goto cleanup;
-        }
-        break;
-
-    case VIR_STORAGE_TYPE_NETWORK:
-        switch (snap->src->protocol) {
-        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
-            break;
-
-        default:
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                           _("snapshots on volumes using '%s' protocol "
-                             "are not supported"),
-                           virStorageNetProtocolTypeToString(snap->src->protocol));
-            goto cleanup;
-        }
-        break;
-
-    case VIR_STORAGE_TYPE_DIR:
-    case VIR_STORAGE_TYPE_VOLUME:
-    case VIR_STORAGE_TYPE_NONE:
-    case VIR_STORAGE_TYPE_LAST:
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("snapshots are not supported on '%s' volumes"),
-                       virStorageTypeToString(snap->src->type));
+    /* set correct security, cgroup and locking options on the new image */
+    if (qemuDomainPrepareDiskChainElement(driver, vm, newDiskSrc,
+                                          VIR_DISK_CHAIN_READ_WRITE) < 0) {
+        qemuDomainPrepareDiskChainElement(driver, vm, newDiskSrc,
+                                          VIR_DISK_CHAIN_NO_ACCESS);
         goto cleanup;
     }
 
     /* create the actual snapshot */
-    if (snap->src->format)
-        formatStr = virStorageFileFormatTypeToString(snap->src->format);
+    if (newDiskSrc->format)
+        formatStr = virStorageFileFormatTypeToString(newDiskSrc->format);
 
     /* The monitor is only accessed if qemu doesn't support transactions.
      * Otherwise the following monitor command only constructs the command.
@@ -12952,9 +12926,9 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     }
 
  cleanup:
-    if (need_unlink && virStorageFileUnlink(snap->src))
+    if (need_unlink && virStorageFileUnlink(newDiskSrc))
         VIR_WARN("unable to unlink just-created %s", source);
-    virStorageFileDeinit(snap->src);
+    virStorageFileDeinit(newDiskSrc);
     virStorageSourceFree(newDiskSrc);
     virStorageSourceFree(persistDiskSrc);
     VIR_FREE(device);
