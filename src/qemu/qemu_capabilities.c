@@ -3556,3 +3556,12 @@ virQEMUCapsIsMachineSupported(virQEMUCapsPtr qemuCaps,
     }
     return false;
 }
+
+
+const char *
+virQEMUCapsGetDefaultMachine(virQEMUCapsPtr qemuCaps)
+{
+    if (!qemuCaps->nmachineTypes)
+        return NULL;
+    return qemuCaps->machineTypes[0];
+}
