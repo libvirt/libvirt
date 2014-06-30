@@ -3385,8 +3385,15 @@ qemuBuildDriveStr(virConnectPtr conn,
         disk->bus != VIR_DOMAIN_DISK_BUS_IDE)
         virBufferAddLit(&opt, ",boot=on");
     if (disk->readonly &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_READONLY))
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_READONLY)) {
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE &&
+            disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("readonly ide disks are not supported"));
+            goto error;
+        }
         virBufferAddLit(&opt, ",readonly=on");
+    }
     if (disk->transient) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("transient disks not supported yet"));
