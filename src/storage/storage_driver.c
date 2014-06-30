@@ -2540,7 +2540,7 @@ int storageRegister(void)
 static bool
 virStorageFileIsInitialized(virStorageSourcePtr src)
 {
-    return !!src->drv;
+    return src && src->drv;
 }
 
 
