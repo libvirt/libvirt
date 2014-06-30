@@ -53,6 +53,7 @@ VIR_LOG_INIT("node_device.node_device_udev");
 struct _udevPrivate {
     struct udev_monitor *udev_monitor;
     int watch;
+    bool privileged;
 };
 
 static virNodeDeviceDriverStatePtr driverState = NULL;
@@ -1712,7 +1713,7 @@ static int udevSetupSystemDev(void)
     return ret;
 }
 
-static int nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
+static int nodeStateInitialize(bool privileged,
                                virStateInhibitCallback callback ATTRIBUTE_UNUSED,
                                void *opaque ATTRIBUTE_UNUSED)
 {
@@ -1746,6 +1747,7 @@ static int nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
     }
 
     priv->watch = -1;
+    priv->privileged = privileged;
 
     if (VIR_ALLOC(driverState) < 0) {
         VIR_FREE(priv);
