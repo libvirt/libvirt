@@ -10983,6 +10983,8 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
         if (virXPathUInt("string(./@start)", ctxt, &idmap[i].start) < 0 ||
             virXPathUInt("string(./@target)", ctxt, &idmap[i].target) < 0 ||
             virXPathUInt("string(./@count)", ctxt, &idmap[i].count) < 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("invalid idmap start/target/count settings"));
             VIR_FREE(idmap);
             goto cleanup;
         }
