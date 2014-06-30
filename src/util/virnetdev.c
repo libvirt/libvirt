@@ -1891,7 +1891,7 @@ virNetDevGetLinkInfo(const char *ifname,
     if (virNetDevSysfsFile(&path, ifname, "speed") < 0)
         goto cleanup;
 
-    if (virFileReadAll(path, 1024, &buf) < 0) {
+    if (virFileReadAllQuiet(path, 1024, &buf) < 0) {
         /* Some devices doesn't report speed, in which case we get EINVAL */
         if (errno == EINVAL) {
             ret = 0;
