@@ -1288,6 +1288,7 @@ virFileOpenAs;
 virFileOpenTty;
 virFilePrintf;
 virFileReadAll;
+virFileReadAllQuiet;
 virFileReadHeaderFD;
 virFileReadLimFD;
 virFileRelLinkPointsTo;

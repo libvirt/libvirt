@@ -1301,6 +1301,21 @@ virFileReadAll(const char *path, int maxlen, char **buf)
     return len;
 }
 
+int
+virFileReadAllQuiet(const char *path, int maxlen, char **buf)
+{
+    int fd = open(path, O_RDONLY);
+    if (fd < 0)
+        return -errno;
+
+    int len = virFileReadLimFD(fd, maxlen, buf);
+    VIR_FORCE_CLOSE(fd);
+    if (len < 0)
+        return -errno;
+
+    return len;
+}
+
 /* Truncate @path and write @str to it.  If @mode is 0, ensure that
    @path exists; otherwise, use @mode if @path must be created.
    Return 0 for success, nonzero for failure.
