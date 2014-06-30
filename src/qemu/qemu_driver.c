@@ -13126,8 +13126,10 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
             int indx = virDomainDiskIndexByName(vm->newDef,
                                                 vm->def->disks[i]->dst,
                                                 false);
-            if (indx >= 0)
+            if (indx >= 0) {
                 persistDisk = vm->newDef->disks[indx];
+                persist = true;
+            }
         }
 
         ret = qemuDomainSnapshotCreateSingleDiskActive(driver, vm,
@@ -13173,7 +13175,6 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                         persistDisk = vm->newDef->disks[indx];
                         persist = true;
                     }
-
                 }
 
                 qemuDomainSnapshotUndoSingleDiskActive(driver, vm,
