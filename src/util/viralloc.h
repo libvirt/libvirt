@@ -1,7 +1,7 @@
 /*
  * viralloc.h: safer memory allocation
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright (C) 2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -279,7 +279,7 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
 # define VIR_SHRINK_N(ptr, count, remove) \
     virShrinkN(&(ptr), sizeof(*(ptr)), &(count), remove)
 
-/*
+/**
  * VIR_TYPEMATCH:
  *
  * The following macro seems a bit cryptic, so it needs a thorough
@@ -481,7 +481,7 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
 # define VIR_DELETE_ELEMENT_INPLACE(ptr, at, count) \
     virDeleteElementsN(&(ptr), sizeof(*(ptr)), at, &(count), 1, true)
 
-/*
+/**
  * VIR_ALLOC_VAR_OVERSIZED:
  * @M: size of base structure
  * @N: number of array elements in trailing array
