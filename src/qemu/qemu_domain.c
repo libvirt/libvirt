@@ -2438,6 +2438,29 @@ qemuDomainGetImageIds(virQEMUDriverConfigPtr cfg,
 
 
 int
+qemuDomainStorageFileInit(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm,
+                          virStorageSourcePtr src)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    uid_t uid;
+    gid_t gid;
+    int ret = -1;
+
+    qemuDomainGetImageIds(cfg, vm, src, &uid, &gid);
+
+    if (virStorageFileInitAs(src, uid, gid) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
+int
 qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              virDomainDiskDefPtr disk,
