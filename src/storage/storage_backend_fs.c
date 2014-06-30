@@ -1387,6 +1387,22 @@ virStorageFileBackendFileInit(virStorageSourcePtr src)
 
 
 static int
+virStorageFileBackendFileCreate(virStorageSourcePtr src)
+{
+    int fd = -1;
+
+    if ((fd = virFileOpenAs(src->path, O_WRONLY | O_TRUNC | O_CREAT, 0,
+                            src->drv->uid, src->drv->gid, 0)) < 0) {
+        errno = -fd;
+        return -1;
+    }
+
+    VIR_FORCE_CLOSE(fd);
+    return 0;
+}
+
+
+static int
 virStorageFileBackendFileUnlink(virStorageSourcePtr src)
 {
     return unlink(src->path);
@@ -1470,6 +1486,7 @@ virStorageFileBackend virStorageFileBackendFile = {
     .backendInit = virStorageFileBackendFileInit,
     .backendDeinit = virStorageFileBackendFileDeinit,
 
+    .storageFileCreate = virStorageFileBackendFileCreate,
     .storageFileUnlink = virStorageFileBackendFileUnlink,
     .storageFileStat = virStorageFileBackendFileStat,
     .storageFileReadHeader = virStorageFileBackendFileReadHeader,

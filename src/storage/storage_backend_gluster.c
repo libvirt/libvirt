@@ -634,6 +634,20 @@ virStorageFileBackendGlusterInit(virStorageSourcePtr src)
 
 
 static int
+virStorageFileBackendGlusterCreate(virStorageSourcePtr src)
+{
+    virStorageFileBackendGlusterPrivPtr priv = src->drv->priv;
+    glfs_fd_t *fd = NULL;
+
+    if (!(fd = glfs_open(priv->vol, src->path, O_CREAT | O_TRUNC | O_WRONLY)))
+        return -1;
+
+    ignore_value(glfs_close(fd));
+    return 0;
+}
+
+
+static int
 virStorageFileBackendGlusterUnlink(virStorageSourcePtr src)
 {
     virStorageFileBackendGlusterPrivPtr priv = src->drv->priv;
@@ -780,6 +794,7 @@ virStorageFileBackend virStorageFileBackendGluster = {
     .backendInit = virStorageFileBackendGlusterInit,
     .backendDeinit = virStorageFileBackendGlusterDeinit,
 
+    .storageFileCreate = virStorageFileBackendGlusterCreate,
     .storageFileUnlink = virStorageFileBackendGlusterUnlink,
     .storageFileStat = virStorageFileBackendGlusterStat,
     .storageFileReadHeader = virStorageFileBackendGlusterReadHeader,
