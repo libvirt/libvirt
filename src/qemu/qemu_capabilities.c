@@ -3542,3 +3542,17 @@ virQEMUCapsSupportsChardev(virDomainDefPtr def,
             (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
              chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO));
 }
+
+
+bool
+virQEMUCapsIsMachineSupported(virQEMUCapsPtr qemuCaps,
+                              const char *canonical_machine)
+{
+    size_t i;
+
+    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
+        if (STREQ(canonical_machine, qemuCaps->machineTypes[i]))
+            return true;
+    }
+    return false;
+}

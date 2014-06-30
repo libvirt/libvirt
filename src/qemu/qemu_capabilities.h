@@ -302,6 +302,9 @@ bool virQEMUCapsSupportsChardev(virDomainDefPtr def,
                                 virQEMUCapsPtr qemuCaps,
                                 virDomainChrDefPtr chr);
 
+bool virQEMUCapsIsMachineSupported(virQEMUCapsPtr qemuCaps,
+                                   const char *canonical_machine);
+
 int virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
                                    const char *binary,
                                    virQEMUCapsPtr qemubinCaps,
