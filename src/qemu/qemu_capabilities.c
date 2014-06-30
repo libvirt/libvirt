@@ -299,6 +299,10 @@ struct _virQEMUCapsCache {
     gid_t runGid;
 };
 
+struct virQEMUCapsSearchData {
+    virArch arch;
+};
+
 
 static virClassPtr virQEMUCapsClass;
 static void virQEMUCapsDispose(void *obj);
@@ -3461,6 +3465,35 @@ virQEMUCapsCacheLookupCopy(virQEMUCapsCachePtr cache, const char *binary)
 
     ret = virQEMUCapsNewCopy(qemuCaps);
     virObjectUnref(qemuCaps);
+    return ret;
+}
+
+
+static int
+virQEMUCapsCompareArch(const void *payload,
+                       const void *name ATTRIBUTE_UNUSED,
+                       const void *opaque)
+{
+    struct virQEMUCapsSearchData *data = (struct virQEMUCapsSearchData *) opaque;
+    const virQEMUCaps *qemuCaps = payload;
+
+    return qemuCaps->arch == data->arch;
+}
+
+
+virQEMUCapsPtr
+virQEMUCapsCacheLookupByArch(virQEMUCapsCachePtr cache,
+                             virArch arch)
+{
+    virQEMUCapsPtr ret = NULL;
+    struct virQEMUCapsSearchData data = { .arch = arch };
+
+    virMutexLock(&cache->lock);
+    ret = virHashSearch(cache->binaries, virQEMUCapsCompareArch, &data);
+    VIR_DEBUG("Returning caps %p for arch %s", ret, virArchToString(arch));
+    virObjectRef(ret);
+    virMutexUnlock(&cache->lock);
+
     return ret;
 }
 
