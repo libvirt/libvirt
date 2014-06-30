@@ -429,6 +429,7 @@ static int udevProcessPCI(struct udev_device *device,
     virPCIDeviceAddress addr;
     virPCIEDeviceInfoPtr pci_express = NULL;
     virPCIDevicePtr pciDev = NULL;
+    udevPrivate *priv = driverState->privateData;
     int tmpGroup, ret = -1;
     char *p;
     int rc;
@@ -544,7 +545,8 @@ static int udevProcessPCI(struct udev_device *device,
                                    data->pci_dev.function)))
         goto out;
 
-    if (virPCIDeviceIsPCIExpress(pciDev) > 0) {
+    /* We need to be root to read PCI device configs */
+    if (priv->privileged && virPCIDeviceIsPCIExpress(pciDev) > 0) {
         if (VIR_ALLOC(pci_express) < 0)
             goto out;
 
