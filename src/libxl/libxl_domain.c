@@ -503,9 +503,38 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     return 0;
 }
 
+static int
+libxlDomainDefPostParse(virDomainDefPtr def,
+                        virCapsPtr caps ATTRIBUTE_UNUSED,
+                        void *opaque ATTRIBUTE_UNUSED)
+{
+    if (STREQ(def->os.type, "hvm"))
+        return 0;
+
+    if (def->nconsoles == 0) {
+        virDomainChrDefPtr chrdef;
+
+        if (!(chrdef = virDomainChrDefNew()))
+            return -1;
+
+        chrdef->source.type = VIR_DOMAIN_CHR_TYPE_PTY;
+        chrdef->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
+        chrdef->target.port = 0;
+        chrdef->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
+
+        if (VIR_ALLOC_N(def->consoles, 1) < 0)
+            return -1;
+
+        def->nconsoles = 1;
+        def->consoles[0] = chrdef;
+    }
+    return 0;
+}
+
 virDomainDefParserConfig libxlDomainDefParserConfig = {
     .macPrefix = { 0x00, 0x16, 0x3e },
     .devicesPostParseCallback = libxlDomainDeviceDefPostParse,
+    .domainPostParseCallback = libxlDomainDefPostParse,
 };
 
 
