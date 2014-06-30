@@ -14830,14 +14830,15 @@ virDomainDiskBlockIoDefFormat(virBufferPtr buf,
  * possible seclabels.
  */
 static void
-virDomainSourceDefFormatSeclabel(virBufferPtr buf,
-                                 size_t nseclabels,
-                                 virSecurityDeviceLabelDefPtr *seclabels,
-                                 unsigned int flags)
+virDomainDiskSourceDefFormatSeclabel(virBufferPtr buf,
+                                     size_t nseclabels,
+                                     virSecurityDeviceLabelDefPtr *seclabels,
+                                     unsigned int flags,
+                                     bool skipSeclables)
 {
     size_t n;
 
-    if (nseclabels) {
+    if (nseclabels && !skipSeclables) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         for (n = 0; n < nseclabels; n++)
@@ -14849,11 +14850,21 @@ virDomainSourceDefFormatSeclabel(virBufferPtr buf,
     }
 }
 
-int
-virDomainDiskSourceFormat(virBufferPtr buf,
-                          virStorageSourcePtr src,
-                          int policy,
-                          unsigned int flags)
+static void
+virDomainSourceDefFormatSeclabel(virBufferPtr buf,
+                                 size_t nseclabels,
+                                 virSecurityDeviceLabelDefPtr *seclabels,
+                                 unsigned int flags)
+{
+    virDomainDiskSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags, false);
+}
+
+static int
+virDomainDiskSourceFormatInternal(virBufferPtr buf,
+                                  virStorageSourcePtr src,
+                                  int policy,
+                                  unsigned int flags,
+                                  bool skipSeclabels)
 {
     size_t n;
     char *path = NULL;
@@ -14869,8 +14880,9 @@ virDomainDiskSourceFormat(virBufferPtr buf,
             virBufferEscapeString(buf, " file='%s'", src->path);
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 
-            virDomainSourceDefFormatSeclabel(buf, src->nseclabels,
-                                             src->seclabels, flags);
+            virDomainDiskSourceDefFormatSeclabel(buf, src->nseclabels,
+                                                 src->seclabels, flags,
+                                                 skipSeclabels);
             break;
 
         case VIR_STORAGE_TYPE_BLOCK:
@@ -14878,8 +14890,9 @@ virDomainDiskSourceFormat(virBufferPtr buf,
             virBufferEscapeString(buf, " dev='%s'", src->path);
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 
-            virDomainSourceDefFormatSeclabel(buf, src->nseclabels,
-                                             src->seclabels, flags);
+            virDomainDiskSourceDefFormatSeclabel(buf, src->nseclabels,
+                                                 src->seclabels, flags,
+                                                 skipSeclabels);
             break;
 
         case VIR_STORAGE_TYPE_DIR:
@@ -14942,8 +14955,9 @@ virDomainDiskSourceFormat(virBufferPtr buf,
             }
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 
-            virDomainSourceDefFormatSeclabel(buf, src->nseclabels,
-                                             src->seclabels, flags);
+            virDomainDiskSourceDefFormatSeclabel(buf, src->nseclabels,
+                                                 src->seclabels, flags,
+                                                 skipSeclabels);
             break;
 
         case VIR_STORAGE_TYPE_NONE:
@@ -14955,6 +14969,16 @@ virDomainDiskSourceFormat(virBufferPtr buf,
     }
 
     return 0;
+}
+
+
+int
+virDomainDiskSourceFormat(virBufferPtr buf,
+                          virStorageSourcePtr src,
+                          int policy,
+                          unsigned int flags)
+{
+    return virDomainDiskSourceFormatInternal(buf, src, policy, flags, false);
 }
 
 
@@ -14994,7 +15018,8 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, 2);
 
     virBufferAsprintf(buf, "<format type='%s'/>\n", format);
-    if (virDomainDiskSourceFormat(buf, backingStore, 0, 0) < 0 ||
+    /* We currently don't output seclabels for backing chain element */
+    if (virDomainDiskSourceFormatInternal(buf, backingStore, 0, 0, true) < 0 ||
         virDomainDiskBackingStoreFormat(buf,
                                         backingStore->backingStore,
                                         backingStore->backingStoreRaw,
