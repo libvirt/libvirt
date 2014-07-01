@@ -173,7 +173,7 @@ virStorageBackendGlusterReadHeader(glfs_fd_t *fd,
         }
         if (r == 0)
             return nread;
-        buf += r;
+        s += r;
         maxlen -= r;
         nread += r;
     }
