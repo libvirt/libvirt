@@ -258,6 +258,8 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
          .defaultFormat = VIR_STORAGE_FILE_RAW,
          .formatToString = virStorageFileFormatTypeToString,
          .formatFromString = virStorageVolumeFormatFromString,
+         .featureFromString = virStorageFileFeatureTypeFromString,
+         .featureToString = virStorageFileFeatureTypeToString,
      }
     },
     {.poolType = VIR_STORAGE_POOL_MPATH,
