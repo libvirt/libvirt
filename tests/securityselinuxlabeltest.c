@@ -65,10 +65,11 @@ testUserXattrEnabled(void)
     const char *con_value = "system_u:object_r:svirt_image_t:s0:c41,c264";
     char *path = NULL;
     if (virAsprintf(&path, "%s/securityselinuxlabeldata/testxattr",
-                    abs_srcdir) < 0)
+                    abs_builddir) < 0)
         goto cleanup;
 
-    if (virFileTouch(path, 0600) < 0)
+    if (virFileMakePath(abs_builddir "/securityselinuxlabeldata") < 0 ||
+        virFileTouch(path, 0600) < 0)
         goto cleanup;
 
     len = setxattr(path, "user.libvirt.selinux", con_value,
@@ -83,6 +84,7 @@ testUserXattrEnabled(void)
 
  cleanup:
     unlink(path);
+    rmdir(abs_builddir "/securityselinuxlabeldata");
     VIR_FREE(path);
     return ret;
 }
