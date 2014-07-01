@@ -510,6 +510,28 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
             pcisrc->backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN;
     }
 
+    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO && STREQ(def->os.type, "hvm")) {
+        int dm_type = libxlDomainGetEmulatorType(def);
+
+        switch (dev->data.video->type) {
+        case VIR_DOMAIN_VIDEO_TYPE_VGA:
+        case VIR_DOMAIN_VIDEO_TYPE_XEN:
+            if (dev->data.video->vram == 0) {
+                if (dm_type == LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN)
+                    dev->data.video->vram = 16 * 1024;
+                else
+                    dev->data.video->vram = 8 * 1024;
+                }
+        case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
+            if (dev->data.video->vram == 0) {
+                if (dm_type == LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN)
+                    dev->data.video->vram = 8 * 1024;
+                else
+                    dev->data.video->vram = 4 * 1024;
+            }
+        }
+    }
+
     return 0;
 }
 

@@ -1433,6 +1433,72 @@ libxlMakePCIList(virDomainDefPtr def, libxl_domain_config *d_config)
     return -1;
 }
 
+static int
+libxlMakeVideo(virDomainDefPtr def, libxl_domain_config *d_config)
+
+{
+    libxl_domain_build_info *b_info = &d_config->b_info;
+    int dm_type = libxlDomainGetEmulatorType(def);
+
+    if (d_config->c_info.type != LIBXL_DOMAIN_TYPE_HVM)
+        return 0;
+
+    /*
+     * Take the first defined video device (graphics card) to display
+     * on the first graphics device (display).
+     */
+    if (def->nvideos) {
+        switch (def->videos[0]->type) {
+        case VIR_DOMAIN_VIDEO_TYPE_VGA:
+        case VIR_DOMAIN_VIDEO_TYPE_XEN:
+            b_info->u.hvm.vga.kind = LIBXL_VGA_INTERFACE_TYPE_STD;
+            if (dm_type == LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN) {
+                if (def->videos[0]->vram < 16 * 1024) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("videoram must be at least 16MB for VGA"));
+                    return -1;
+                }
+            } else {
+                if (def->videos[0]->vram < 8 * 1024) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("videoram must be at least 8MB for VGA"));
+                    return -1;
+                }
+            }
+            break;
+
+        case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
+            b_info->u.hvm.vga.kind = LIBXL_VGA_INTERFACE_TYPE_CIRRUS;
+            if (dm_type == LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN) {
+                if (def->videos[0]->vram < 8 * 1024) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("videoram must be at least 8MB for CIRRUS"));
+                    return -1;
+                }
+            } else {
+                if (def->videos[0]->vram < 4 * 1024) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("videoram must be at least 4MB for CIRRUS"));
+                    return -1;
+                }
+            }
+            break;
+
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("video type %s is not supported by libxl"),
+                           virDomainVideoTypeToString(def->videos[0]->type));
+            return -1;
+        }
+        /* vram validated for each video type, now set it */
+        b_info->video_memkb = def->videos[0]->vram;
+    } else {
+        libxl_defbool_set(&b_info->u.hvm.nographic, 1);
+    }
+
+    return 0;
+}
+
 int
 libxlDriverNodeGetInfo(libxlDriverPrivatePtr driver, virNodeInfoPtr info)
 {
@@ -1521,6 +1587,14 @@ libxlBuildDomainConfig(virPortAllocatorPtr graphicsports,
         return -1;
 
     if (libxlMakePCIList(def, d_config) < 0)
+        return -1;
+
+    /*
+     * Now that any potential VFBs are defined, update the build info with
+     * the data of the primary display. Some day libxl might implicitely do
+     * so but as it does not right now, better be explicit.
+     */
+    if (libxlMakeVideo(def, d_config) < 0)
         return -1;
 
     d_config->on_reboot = libxlActionFromVirLifecycle(def->onReboot);
