@@ -15356,29 +15356,34 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     /* XXX Allow non-file mirror destinations */
     mirror->type = VIR_STORAGE_TYPE_FILE;
 
+    if (format) {
+        if ((mirror->format = virStorageFileFormatTypeFromString(format)) <= 0) {
+            virReportError(VIR_ERR_INVALID_ARG, _("unrecognized format '%s'"),
+                           format);
+            goto endjob;
+        }
+    } else {
+        if (!(flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)) {
+            mirror->format = disk->src->format;
+        } else {
+            /* If the user passed the REUSE_EXT flag, then either they
+             * also passed the RAW flag (and format is non-NULL), or it is
+             * safe for us to probe the format from the file that we will
+             * be using.  */
+            mirror->format = virStorageFileProbeFormat(dest, cfg->user,
+                                                       cfg->group);
+        }
+    }
+
+    /* pre-create the image file */
     if (!(flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)) {
         int fd = qemuOpenFile(driver, vm, dest, O_WRONLY | O_TRUNC | O_CREAT,
                               &need_unlink, NULL);
         if (fd < 0)
             goto endjob;
         VIR_FORCE_CLOSE(fd);
-        if (!format)
-            mirror->format = disk->src->format;
-    } else if (format) {
-        mirror->format = virStorageFileFormatTypeFromString(format);
-        if (mirror->format <= 0) {
-            virReportError(VIR_ERR_INVALID_ARG, _("unrecognized format '%s'"),
-                           format);
-            goto endjob;
-        }
-    } else {
-        /* If the user passed the REUSE_EXT flag, then either they
-         * also passed the RAW flag (and format is non-NULL), or it is
-         * safe for us to probe the format from the file that we will
-         * be using.  */
-        mirror->format = virStorageFileProbeFormat(dest, cfg->user,
-                                                   cfg->group);
     }
+
     if (!format && mirror->format > 0)
         format = virStorageFileFormatTypeToString(mirror->format);
     if (VIR_STRDUP(mirror->path, dest) < 0)
