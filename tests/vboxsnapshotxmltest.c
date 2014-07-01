@@ -59,38 +59,41 @@ testCompareXMLtoXMLFiles(const char *xml)
     char *pathResult = NULL;
     int ret = -1;
     virVBoxSnapshotConfMachinePtr machine = NULL;
-    if (virAsprintf(&pathResult, "%s/vboxsnapshotxmldata/testResult.vbox",
-                    abs_srcdir) < 0)
+
+    if (VIR_STRDUP(pathResult,
+                   abs_builddir "/vboxsnapshotxmldata/testResult.vbox") < 0)
         return -1;
 
+    if (virFileMakePath(abs_builddir "/vboxsnapshotxmldata") < 0)
+        goto cleanup;
+
     if (virtTestLoadFile(xml, &xmlData) < 0)
-        goto fail;
+        goto cleanup;
 
     if (!(machine = virVBoxSnapshotConfLoadVboxFile(xml, (char*)"")))
-        goto fail;
+        goto cleanup;
 
     if (virVBoxSnapshotConfSaveVboxFile(machine, pathResult) < 0)
-        goto fail;
+        goto cleanup;
 
     if (virtTestLoadFile(pathResult, &actual) < 0)
-        goto fail;
-
-    if (unlink(pathResult) < 0)
-        goto fail;
+        goto cleanup;
 
     if (!(actual = testFilterXML(actual)))
-        goto fail;
+        goto cleanup;
     if (!(xmlData = testFilterXML(xmlData)))
-        goto fail;
+        goto cleanup;
 
     if (STRNEQ(actual, xmlData)) {
         virtTestDifference(stderr, xmlData, actual);
-        goto fail;
+        goto cleanup;
     }
 
     ret = 0;
 
- fail:
+ cleanup:
+    unlink(pathResult);
+    rmdir(abs_builddir "/vboxsnapshotxmldata");
     VIR_FREE(xmlData);
     VIR_FREE(actual);
     virVBoxSnapshotConfMachineFree(machine);
