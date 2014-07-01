@@ -13516,29 +13516,34 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *path,
         goto endjob;
     }
 
+    if (format) {
+        if ((mirrorFormat = virStorageFileFormatTypeFromString(format)) <= 0) {
+            virReportError(VIR_ERR_INVALID_ARG, _("unrecognized format '%s'"),
+                           format);
+            goto endjob;
+        }
+    } else {
+        if (!(flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)) {
+            mirrorFormat = disk->format;
+        } else {
+            /* If the user passed the REUSE_EXT flag, then either they
+             * also passed the RAW flag (and format is non-NULL), or it is
+             * safe for us to probe the format from the file that we will
+             * be using.  */
+            mirrorFormat = virStorageFileProbeFormat(dest, cfg->user,
+                                                     cfg->group);
+        }
+    }
+
+    /* pre-create the image file */
     if (!(flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)) {
         int fd = qemuOpenFile(driver, dest, O_WRONLY | O_TRUNC | O_CREAT,
                               &need_unlink, NULL);
         if (fd < 0)
             goto endjob;
         VIR_FORCE_CLOSE(fd);
-        if (!format)
-            mirrorFormat = disk->format;
-    } else if (format) {
-        mirrorFormat = virStorageFileFormatTypeFromString(format);
-        if (mirrorFormat <= 0) {
-            virReportError(VIR_ERR_INVALID_ARG, _("unrecognized format '%s'"),
-                           format);
-            goto endjob;
-        }
-    } else {
-        /* If the user passed the REUSE_EXT flag, then either they
-         * also passed the RAW flag (and format is non-NULL), or it is
-         * safe for us to probe the format from the file that we will
-         * be using.  */
-        mirrorFormat = virStorageFileProbeFormat(dest, cfg->user,
-                                                 cfg->group);
     }
+
     if (!format && mirrorFormat > 0)
         format = virStorageFileFormatTypeToString(mirrorFormat);
     if (!(mirror = strdup(dest))) {
