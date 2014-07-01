@@ -991,6 +991,7 @@ libvirt_la_BUILT_LIBADD += libvirt_conf.la
 libvirt_conf_la_SOURCES = $(CONF_SOURCES)
 libvirt_conf_la_CFLAGS = $(AM_CFLAGS)
 libvirt_conf_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_conf_la_LIBADD = $(LIBXML_LIBS)
 
 noinst_LTLIBRARIES += libvirt_cpu.la
 libvirt_la_BUILT_LIBADD += libvirt_cpu.la
@@ -1452,7 +1453,7 @@ libvirt_driver_storage_impl_la_CFLAGS = \
 		$(AM_CFLAGS)
 libvirt_driver_storage_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_storage_impl_la_LIBADD =
-libvirt_driver_storage_impl_la_LIBADD += $(SECDRIVER_LIBS)
+libvirt_driver_storage_impl_la_LIBADD += $(SECDRIVER_LIBS) $(LIBXML_LIBS)
 if WITH_BLKID
 libvirt_driver_storage_impl_la_CFLAGS += $(BLKID_CFLAGS)
 libvirt_driver_storage_impl_la_LIBADD += $(BLKID_LIBS)
