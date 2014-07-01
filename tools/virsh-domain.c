@@ -277,6 +277,10 @@ static const vshCmdOptDef opts_attach_disk[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("target of disk device")
     },
+    {.name = "targetbus",
+     .type = VSH_OT_STRING,
+     .help = N_("target bus of disk device")
+    },
     {.name = "driver",
      .type = VSH_OT_STRING,
      .help = N_("driver of disk device")
@@ -502,7 +506,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     const char *source = NULL, *target = NULL, *driver = NULL,
                 *subdriver = NULL, *type = NULL, *mode = NULL,
                 *cache = NULL, *serial = NULL, *straddr = NULL,
-                *wwn = NULL;
+                *wwn = NULL, *targetbus = NULL;
     struct DiskAddress diskAddr;
     bool isFile = false, functionReturn = false;
     int ret;
@@ -536,6 +540,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptStringReq(ctl, cmd, "serial", &serial) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "wwn", &wwn) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "address", &straddr) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "targetbus", &targetbus) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "sourcetype", &stype) < 0)
         goto cleanup;
 
@@ -590,7 +595,11 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     if (source)
         virBufferAsprintf(&buf, "<source %s='%s'/>\n",
                           isFile ? "file" : "dev", source);
-    virBufferAsprintf(&buf, "<target dev='%s'/>\n", target);
+    virBufferAsprintf(&buf, "<target dev='%s'", target);
+    if (targetbus)
+        virBufferAsprintf(&buf, " bus='%s'", targetbus);
+    virBufferAddLit(&buf, "/>\n");
+
     if (mode)
         virBufferAsprintf(&buf, "<%s/>\n", mode);
 
