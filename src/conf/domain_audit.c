@@ -138,7 +138,7 @@ virDomainAuditDisk(virDomainObjPtr vm,
 
 static void
 virDomainAuditRNG(virDomainObjPtr vm,
-                  virDomainRNGDefPtr newDef, virDomainRNGDefPtr oldDef,
+                  virDomainRNGDefPtr oldDef, virDomainRNGDefPtr newDef,
                   const char *reason, bool success)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -827,7 +827,7 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
     }
 
     if (vm->def->rng)
-        virDomainAuditRNG(vm, vm->def->rng, NULL, "start", true);
+        virDomainAuditRNG(vm, NULL, vm->def->rng, "start", true);
 
     if (vm->def->tpm)
         virDomainAuditTPM(vm, vm->def->tpm, "start", true);
