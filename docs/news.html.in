@@ -9,6 +9,303 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
+    <h3>1.2.6: Jul 2 2014</h3>
+    <ul>
+      <li> Features:<br/>
+      libxl: add migration support and fixes (Jim Fehlig),<br/>
+      various improvements and fixes for NUMA (Michal Privoznik)<br/>
+      </li>
+
+      <li> Documentation:<br/>
+      security: manager: Document behavior of disk label manipulation funcs (Peter Krempa),<br/>
+      fix some typos in formatdomain.html (Jincheng Miao),<br/>
+      virsh: man: Correctly spell QEMU (Peter Krempa),<br/>
+      virsh: man: Fix examples and docs for virsh version (Peter Krempa),<br/>
+      Added example script on how to convert LXC container config (Cédric Bosdonnat),<br/>
+      blockjob: document recent job addition (Eric Blake),<br/>
+      virsh: Add details about specified migration host (Chen Fan),<br/>
+      blockcommit: document semantics of committing active layer (Eric Blake),<br/>
+      fix a typo in hacking.html.in (Wangrui (K)),<br/>
+      formatcaps: Rework and add stubs to document (Michal Privoznik)<br/>
+      </li>
+
+      <li> Portability:<br/>
+      build: link libvirt_conf with libxml (Martin Kletzander),<br/>
+      vbox: fix linker error (Jim Fehlig),<br/>
+      libxl: don't break the build on Xen&gt;=4.5 because of libxl_vcpu_setaffinity() (Dario Faggioli),<br/>
+      Add PKG_CONFIG_PATH to run.in script. (Daniel P. Berrange),<br/>
+      Change 'interface' to 'iface' in virNetworkDHCPLease (Daniel P. Berrange),<br/>
+      Fix shadowed variable with older gcc (Ján Tomko),<br/>
+      Add pkg-config files to allow deps to build against source tree (Daniel P. Berrange),<br/>
+      Add pkg-config files for libvirt-qemu &amp; libvirt-lxc (Daniel P. Berrange),<br/>
+      blockjob: avoid compiler uncertainty in info sizing (Eric Blake),<br/>
+      build: prefer -fstack-protector-strong to -all (Ján Tomko),<br/>
+      build: remove ssp-buffer-size (Ján Tomko),<br/>
+      build: remove duplicit warning suppression (Ján Tomko),<br/>
+      virnetdev: Use ifname in virNetDevGetLinkInfo (Michal Privoznik),<br/>
+      Fix virbitmaptest on 32-bit (Ján Tomko),<br/>
+      translations: Don't leave default template fields in .po files (Martin Kletzander),<br/>
+      tests: Build virstoragetest only when storage driver is compiled too (Peter Krempa),<br/>
+      Fix build on freebsd (Pavel Hrdina)<br/>
+      </li>
+
+      <li> Bug Fixes:<br/>
+      qemu: copy: Accept 'format' parameter when copying to a non-existing img (Peter Krempa),<br/>
+      storage: gluster: Fix header reader function (Peter Krempa),<br/>
+      conf: storage: Add volume feature formatter for gluster pools (Peter Krempa),<br/>
+      vboxsnapshotxmltest: Don't write to a file in abs_srcdir (Michal Privoznik),<br/>
+      securityselinuxlabeltest: Don't create dummy file in the srcdir (Michal Privoznik),<br/>
+      Report one error less when getting net dev speed (Ján Tomko),<br/>
+      Only detect PCI Express devices as root in udev nodedev driver (Ján Tomko),<br/>
+      libxl: add PV console if not explicitly specified (Jim Fehlig),<br/>
+      qemu: snapshot: Save persistent domain config when taking external snapshot (Peter Krempa),<br/>
+      bhyve: fix build by fixing typo in variable name (Roman Bogorodskiy),<br/>
+      docs: publish correct enum values (Eric Blake),<br/>
+      qemu: fix guestfwd chardev option back how it was (Martin Kletzander),<br/>
+      Fix typo s/SASL_CONF_DIR/SASL_CONF_PATH/ in QEMU VNC code (Daniel P. Berrange),<br/>
+      qemu: blockcopy: Don't remove existing disk mirror info (Peter Krempa),<br/>
+      bridge: leases: Fix potential crash caused by use after free (Peter Krempa),<br/>
+      Free DHCP leases file in networkGetDHCPLeasesHelper (Ján Tomko),<br/>
+      Rework remoteSerializeDHCPLease (Ján Tomko),<br/>
+      Free file header in virStorageFileGetMetadataRecurse (Ján Tomko),<br/>
+      graphics: remember graphics not auto allocated ports (Giuseppe Scrivano),<br/>
+      LXC: trivially support flag VIR_DRV_FEATURE_TYPED_PARAM_STRING (Chen Hanxiao),<br/>
+      cmdFreepages: initialize @tmp (Michal Privoznik),<br/>
+      Fix closedir usage in virNumaGetPages (Roman Bogorodskiy),<br/>
+      Don't include @LIBS@ in libvirt.pc.in file (Daniel P. Berrange),<br/>
+      virnuma: Actually build huge page code (Michal Privoznik),<br/>
+      Do not call closedir with NULL argument (Ján Tomko),<br/>
+      Fix invalid write in virNumaGetDistances (Ján Tomko),<br/>
+      Properly check the return value of CCWAddressAsString (Ján Tomko),<br/>
+      virsh: fix broken code in freepages (Eric Blake),<br/>
+      Fix xmconfigtest (Jim Fehlig),<br/>
+      vbox_snapshot_conf: fix wrong use of 'xmlSaveFormatFileEnc' (Pavel Hrdina),<br/>
+      tests: fix vbox snapshot xmls (Pavel Hrdina),<br/>
+      vbox: fix a segfault when taking a snapshot (Yohan BELLEGUIC),<br/>
+      vbox: snapshot: Avoid memleaks in functions dealing with disk arrays (Peter Krempa),<br/>
+      vbox: snapshot: Avoid memleak in virVBoxSnapshotConfAllChildren (Peter Krempa),<br/>
+      uuid: Fix coverity warning of unchecked return value (Peter Krempa),<br/>
+      network: bridge: Avoid freeing uninitialized pointer on cleanup path (Peter Krempa),<br/>
+      net: leaseshelper: Refactor copying of old entries to avoid double free (Peter Krempa),<br/>
+      net: leaseshelper: Ignore corrupted lease file and rewrite it (Peter Krempa),<br/>
+      net: leaseshelper: Don't crash if DNSMASQ doesn't provide lease expiry (Peter Krempa),<br/>
+      blockjob: don't remove older-style mirror XML (Eric Blake),<br/>
+      blockcommit: require base below top (Eric Blake),<br/>
+      leaseshelper: fix another crash (Pavel Hrdina),<br/>
+      bhyve: do not cleanup unallocated networks on fail (Roman Bogorodskiy),<br/>
+      bhyve: fix crash in bhyveBuildNetArgStr (Roman Bogorodskiy),<br/>
+      storage: report VIR_ERR_NO_STORAGE_VOL when the file doesn't exist (Giuseppe Scrivano),<br/>
+      blockcommit: fix regression with explicit top argument (Eric Blake),<br/>
+      virsh: forbid negative vcpu argument to vcpupin (Jincheng Miao),<br/>
+      Fix crash when saving a domain with type none dac label (Ján Tomko),<br/>
+      vbox_snapshot_conf: Resolve Coverity warnings (John Ferlan),<br/>
+      vbox_temp: Resolve Coverity warnings (John Ferlan),<br/>
+      libxl: Resolve Coverity warnings (John Ferlan),<br/>
+      leaseshelper: fix crash (Pavel Hrdina),<br/>
+      qemu: Properly label FDs when restoring domain with static label (Shivaprasad G Bhat),<br/>
+      nodeinfo: avoid uninitialized variable on error (Eric Blake),<br/>
+      storage: fix memory leak with encrypted images (Eric Blake),<br/>
+      vbox: fix compilation error (Roman Bogorodskiy),<br/>
+      SELinux: don't fail silently when no label is present (Ján Tomko),<br/>
+      parallels: Avoid possible leak of "cpu" from parallelsBuildCapabilities (Peter Krempa),<br/>
+      Fix storage format probing (Ján Tomko),<br/>
+      network: bridge: Avoid memory leak from networkBuildDhcpDaemonCommandLine (Peter Krempa),<br/>
+      qemu: monitor: Fix type of holdtime argument in qemuMonitorJSONSendKey (Peter Krempa),<br/>
+      libxl: Avoid possible use of uninitialized mem in libxlDomainStart (Daniel P. Berrange),<br/>
+      qemu: Remove character device backend only after frontend is gone (Jiri Denemark),<br/>
+      qemu: Remove disk backend only after frontend is gone (Jiri Denemark),<br/>
+      qemu: Remove interface backend only after frontend is gone (Jiri Denemark),<br/>
+      Don't use AI_ADDRCONFIG when binding to wildcard addresses (Ján Tomko),<br/>
+      qemu: Unref cfg when detaching hostdev interface (Jiri Denemark),<br/>
+      virsh: Check whether found volume is member of the specified storage pool (Peter Krempa)<br/>
+      </li>
+
+      <li> Improvements:<br/>
+      Introduce virFileReadAllQuiet (Ján Tomko),<br/>
+      Track privileged state in udev nodedev driver (Ján Tomko),<br/>
+      build: fix 'make syntax-check' after commit c6cf5df3 (Jim Fehlig),<br/>
+      LXC: throw an error if we failed to get Idmap elements (Chen Hanxiao),<br/>
+      cpu: Add new Broadwell CPU model (Jiri Denemark),<br/>
+      net: merge virNetworkGetDHCPLeases and virNetworkGetDHCPLeasesForMAC (Peter Krempa),<br/>
+      Add test for type none model dac seclabel (Ján Tomko),<br/>
+      test: add user_xattr check for securityselinuxlabeltest (Jincheng Miao),<br/>
+      libxl: detect support for save and restore (Jim Fehlig),<br/>
+      security: nop: Avoid very long lines (Peter Krempa),<br/>
+      security: Fix header formatting of a few functions (Peter Krempa),<br/>
+      security: manager: Unify function header format (Peter Krempa),<br/>
+      security: manager: Avoid forward decl of virSecurityManagerDispose (Peter Krempa),<br/>
+      security: Rename virSecurityManagerRestoreImageLabel to *Disk* (Peter Krempa),<br/>
+      util: s/virStorageSourceClearBackingStore/virStorageSourceBackingStoreClear (Peter Krempa),<br/>
+      Fix a typo in a localized string (Daniel Veillard),<br/>
+      virConnectCompareCPU: Introduce FAIL_INCOMPATIBLE flag (Jiri Denemark),<br/>
+      cpuCompare*: Add support for reporting failure on incompatible CPUs (Jiri Denemark),<br/>
+      cpu: Cleanup coding style in generic CPU driver (Jiri Denemark),<br/>
+      virsh: Remove bogus stat on log file (Jiri Denemark),<br/>
+      enhance hostdev mode 'capabilities' process (Jincheng Miao),<br/>
+      storage: Don't store parent directory of an image explicitly (Peter Krempa),<br/>
+      storage: Don't canonicalize paths unnecessarily (Peter Krempa),<br/>
+      tests: virstoragetest: Remove unneeded relative test plumbing (Peter Krempa),<br/>
+      tests: virstoragetest: Don't test relative start of backing chains (Peter Krempa),<br/>
+      util: storage: Remove now redundant backingRelative from virStorageSource (Peter Krempa),<br/>
+      tests: virstoragetest: Remove now unused pathAbs (Peter Krempa),<br/>
+      storage: Store relative path only for relatively backed storage (Peter Krempa),<br/>
+      tests: virstoragetest: Remove "expBackingStore" field (Peter Krempa),<br/>
+      util: storage: Add helper to resolve relative path difference (Peter Krempa),<br/>
+      LXC: check whether we get MemSwap[Total|Usage] (Chen Hanxiao),<br/>
+      qemu: enum cleanups in "src/qemu/*" (Julio Faracco),<br/>
+      libxl: fix version annotation of migration functions (Jim Fehlig),<br/>
+      virtportallocator: new function "virPortAllocatorSetUsed" (Giuseppe Scrivano),<br/>
+      net-dhcp-leases: Add virsh support (Nehal J Wani),<br/>
+      net-dhcp-leases: Private implementation inside network (Nehal J Wani),<br/>
+      net-dhcp-leases: Implement the remote protocol (Nehal J Wani),<br/>
+      net-dhcp-leases: Implement the public APIs (Nehal J Wani),<br/>
+      virNumaGetPages: Don't fail on huge page-less systems (Michal Privoznik),<br/>
+      virNumaGetPageInfo: Take huge pages into account (Michal Privoznik),<br/>
+      storage: gluster: Avoid name shadow on older compilers (Peter Krempa),<br/>
+      storage: gluster: Add backend to return unique storage file path (Peter Krempa),<br/>
+      util: storagefile: Introduce universal function to canonicalize paths (Peter Krempa),<br/>
+      util: string: Add helper to free non-NULL terminated string arrays (Peter Krempa),<br/>
+      libxl: prefer qdisk for &lt;driver name='file'&gt; (Jim Fehlig),<br/>
+      qemu: parse -device virtio-balloon (Laine Stump),<br/>
+      Report correct error in virNetDevTapCreate (Ján Tomko),<br/>
+      util: numa: Stub out hugepage code on non-Linux platforms (Peter Krempa),<br/>
+      util: numa: Catch readdir errors in virNumaGetPages (Peter Krempa),<br/>
+      tests: Fix syntax-check after cdd11151791bc9e61538988438980f41c0185681 (Peter Krempa),<br/>
+      test: Disable storage test when FS backend isn't compiled in (Peter Krempa),<br/>
+      Split out CCW address allocation (Ján Tomko),<br/>
+      libxl: Use cooperative resume for migration (Jason Andryuk),<br/>
+      cpu_arm: Support all ARM processors we know about (Michal Privoznik),<br/>
+      virNodeParseSocket: Take ARM into account (Michal Privoznik),<br/>
+      nodeinfotest: Print error if cpuinfo file can't be opened (Michal Privoznik),<br/>
+      virNodeParseNode: Propagate host architecture (Michal Privoznik),<br/>
+      nodeinfo: Introduce @arch to linuxNodeInfoCPUPopulate (Michal Privoznik),<br/>
+      interface: clean up virInterfaceDefDevFormat (Laine Stump),<br/>
+      interface: clean up virInterfaceDefParseXML (Laine Stump),<br/>
+      interface: move parsing of bridge attributes into appropriate function (Laine Stump),<br/>
+      interface: report link state for bonds and vlans too (Laine Stump),<br/>
+      security: Rename virSecurityManagerSetImageLabel to *Disk* (Peter Krempa),<br/>
+      security: Sanitize type of @migrated in virSecurityManagerRestoreAllLabel (Peter Krempa),<br/>
+      util: Don't require full disk definition when getting imagelabels (Peter Krempa),<br/>
+      util: storagefile: Introduce helper to free storage source perms (Peter Krempa),<br/>
+      util: seclabel: Add deep copy function for device labels (Peter Krempa),<br/>
+      storage: encryption: Add deep copy function for storage encryption (Peter Krempa),<br/>
+      libxl: limit support for specifying an interface script (Jim Fehlig),<br/>
+      libxl: support interface type=network (Jim Fehlig),<br/>
+      interface: allow reordering of elements in xml (Laine Stump),<br/>
+      nodeinfo: Implement nodeGetFreePages (Michal Privoznik),<br/>
+      virsh: Expose virNodeGetFreePages (Michal Privoznik),<br/>
+      Introduce virNodeGetFreePages (Michal Privoznik),<br/>
+      virCaps: expose pages info (Michal Privoznik),<br/>
+      virnuma: Introduce pages helpers (Michal Privoznik),<br/>
+      nodeinfo: Rename nodeGetFreeMemory to nodeGetMemory (Michal Privoznik),<br/>
+      virnuma: Introduce virNumaNodeIsAvailable (Michal Privoznik),<br/>
+      virsh: expose new active commit controls (Eric Blake),<br/>
+      blockjob: use stable disk string in job event (Eric Blake),<br/>
+      xen: handle root= in xen-xm configuration files. (Ian Campbell),<br/>
+      virt-aa-helper: allow access to /dev/vhost-net if needed (Serge Hallyn),<br/>
+      util: json: Add helpers for manipulating json arrays (Peter Krempa),<br/>
+      util: json: Unify function header formatting (Peter Krempa),<br/>
+      Increase the size of REMOTE_MIGRATE_COOKIE_MAX to REMOTE_STRING_MAX (Shivaprasad G Bhat),<br/>
+      nodedev: Introduce &lt;pci-express/&gt; to PCI devices (Michal Privoznik),<br/>
+      virpci: Introduce virPCIDeviceIsPCIExpress and friends (Michal Privoznik),<br/>
+      storage: better tests of lookup (Eric Blake),<br/>
+      storage: renumber lookup tests (Eric Blake),<br/>
+      storage: add alias for less typing (Eric Blake),<br/>
+      qemu: snapshot: Don't mark all block disks for metadata reuse (Peter Krempa),<br/>
+      bhyve: silent destroy command errors on cleanup (Roman Bogorodskiy),<br/>
+      bhyve: implement PCI address allocation (Roman Bogorodskiy),<br/>
+      virNetDevGetLinkInfo: Don't report link speed if NIC's not up (Michal Privoznik),<br/>
+      tests: virstoragetest: Fix output when hitting errors (Peter Krempa),<br/>
+      blockcommit: update error messages related to block jobs (Eric Blake),<br/>
+      virsh: improve blockcopy UI (Eric Blake),<br/>
+      virNodeDevCapPCIDevParseXML: Initialize numa_node variable (Michal Privoznik),<br/>
+      virsh: Reject negative numbers in vshCommandOptULongLong (Peter Krempa),<br/>
+      virsh: Reject negative numbers in vshCommandOptUL (Peter Krempa),<br/>
+      virsh: Reject negative numbers in vshCommandOptUInt (Peter Krempa),<br/>
+      security: Don't skip labelling for network disks (Peter Krempa),<br/>
+      storage: volume: Rework lookup of volume objects (Peter Krempa),<br/>
+      storage: Clean up unlocking of storage pool objects (Peter Krempa),<br/>
+      storage: pool: Fix handling of errors on pool lookup failure (Peter Krempa),<br/>
+      virsh: include bhyve in virsh -V output (Roman Bogorodskiy),<br/>
+      maint: exempt graphic binaries from syntax check (Eric Blake),<br/>
+      vmware: make version parsing more robust (Jean-Baptiste Rouault),<br/>
+      node_device: Expose link state &amp; speed (Michal Privoznik),<br/>
+      interface_backend_udev: Implement link speed &amp; state (Michal Privoznik),<br/>
+      virnetdev: Introduce virNetDevGetLinkInfo (Michal Privoznik),<br/>
+      virInterface: Expose link state &amp; speed (Michal Privoznik),<br/>
+      vbox_tmpl.c: Add function for undefining snapshot (Yohan BELLEGUIC),<br/>
+      vbox_tmpl.c: Patch for redefining snapshots (Yohan BELLEGUIC),<br/>
+      Add vbox_snapshot_conf struct (Yohan BELLEGUIC),<br/>
+      vbox_tmpl.c: Better XML description for snapshots (Manuel VIVES),<br/>
+      qemu: ignore -nodefconfig and -nodefaults when parsing commandline (Laine Stump),<br/>
+      test: display qemuParseCommandline warnings when VIR_TEST_DEBUG &gt; 0 (Laine Stump),<br/>
+      m4: bhyve: Fix check for the required bhyve programs (Peter Krempa),<br/>
+      vmx: Relax virtualHW.version check (Matthias Bolte),<br/>
+      conf: alter disk mirror xml output (Eric Blake),<br/>
+      conf: store mirroring information in virStorageSource (Eric Blake),<br/>
+      conf: store disk source as pointer, for easier manipulation (Eric Blake),<br/>
+      conf: consolidate disk def allocation (Eric Blake),<br/>
+      conf: store snapshot source as pointer, for easier manipulation (Eric Blake),<br/>
+      nodedev: Export NUMA node locality for PCI devices (Michal Privoznik),<br/>
+      Implement pretty flag for vcpuinfo and nodecpumap (Ján Tomko),<br/>
+      Introduce virBitmapDataToString (Ján Tomko),<br/>
+      Always report an error if virBitmapFormat fails (Ján Tomko),<br/>
+      Format NULL bitmap as an empty string (Ján Tomko),<br/>
+      virsh: Separate API calls and result printing in cmdVcpuinfo (Ján Tomko),<br/>
+      virsh: Invert logic in cmdVcpuinfo (Ján Tomko),<br/>
+      Parallels: Include CPU info in the capabilities XML (Alexander Burluka),<br/>
+      Parallels: add connectBaselineCPU() (Alexander Burluka),<br/>
+      Parallels: add domainGetVcpus() (Alexander Burluka),<br/>
+      maint: prohibit empty first lines (Martin Kletzander),<br/>
+      Remove unnecessary empty first lines (Martin Kletzander),<br/>
+      Simplify conditions in virStorageBackendProbeTarget (Ján Tomko),<br/>
+      Don't reuse 'ret' variable in virStorageBackendProbeTarget (Ján Tomko),<br/>
+      vircaps2xmltest: Introduce basic testing (Michal Privoznik),<br/>
+      libxl: introduce libxlDomainDefCheckABIStability (Jim Fehlig),<br/>
+      maint: detect VPATH builds when checking for gnulib update (Eric Blake),<br/>
+      maint: optimize locale.h syntax check (Eric Blake),<br/>
+      virnuma: Check for numa_bitmask_isbitset presence (Michal Privoznik),<br/>
+      cfg.mk: Introduce rule for setlocale() (Michal Privoznik),<br/>
+      virnuma: Implement virNumaGetDistances stub for non-NUMA (Michal Privoznik),<br/>
+      virCaps: Expose distance between host NUMA nodes (Michal Privoznik),<br/>
+      virnuma: Introduce virNumaGetDistances (Michal Privoznik),<br/>
+      tests: monitor: json: Fix error message when returning json in json (Peter Krempa),<br/>
+      libxl: Move virDomainXMLOptionNew into libxlCreateXMLConf (Daniel P. Berrange),<br/>
+      libxl: Don't pass libxlDriverPrivatePtr into libxlBuildDomainConfig (Daniel P. Berrange),<br/>
+      libxl: Don't pass virDomainObjPtr to libxlBuildDomainConfig (Daniel P. Berrange),<br/>
+      qemu: Return in from qemuDomainRemove*Device (Jiri Denemark),<br/>
+      tests: storagetest: Unify and reformat storage chain format string (Peter Krempa),<br/>
+      qemu: json: Add format strings for optional command arguments (Peter Krempa),<br/>
+      util: string: Return element count from virStringSplit (Peter Krempa),<br/>
+      storage: Traverse backing chains of network disks (Peter Krempa),<br/>
+      storage: Change to new backing store parser (Peter Krempa),<br/>
+      storage: Add infrastructure to parse remote network backing names (Peter Krempa),<br/>
+      storage: Switch metadata crawler to use storage driver file access check (Peter Krempa),<br/>
+      storage: Switch metadata crawler to use storage driver to read headers (Peter Krempa),<br/>
+      storage: Switch metadata crawler to use storage driver to get unique path (Peter Krempa),<br/>
+      storage: backend: Add possibility to suppress errors from backend lookup (Peter Krempa),<br/>
+      test: storage: Initialize storage source to correct type (Peter Krempa),<br/>
+      storage: Determine the local storage type right away (Peter Krempa),<br/>
+      storage: Move virStorageFileGetMetadata to the storage driver (Peter Krempa),<br/>
+      storage: Add API to check accessibility of storage volumes (Peter Krempa),<br/>
+      storage: backend: Add unique id retrieval API (Peter Krempa),<br/>
+      xenapi_utils: Adapt to enum cleanups (Michal Privoznik),<br/>
+      virnuma.c: Fix some comments (Michal Privoznik),<br/>
+      conf: more enum cleanups in "src/conf/domain_conf.h" (Julio Faracco),<br/>
+      conf: enum cleanups in "src/conf/domain_conf.h" (Julio Faracco),<br/>
+      cpu: use typedefs for enums in "src/cpu/cpu_map.h" (Julio Faracco),<br/>
+      virsh-nodedev: Avoid spurious errors (Michal Privoznik),<br/>
+      qemu: Process DEVICE_DELETED event in a separate thread (Jiri Denemark),<br/>
+      qemu: Finish device removal in the original thread (Jiri Denemark),<br/>
+      Add helper program to create custom leases (Nehal J Wani)<br/>
+      </li>
+
+      <li> Cleanups:<br/>
+      Remove redundant docs from libvirt.h (Jiri Denemark),<br/>
+      conf: whitespace tweak (Chen Fan)<br/>
+      </li>
+    </ul>
+
     <h3>1.2.5: Jun 2 2014</h3>
     <ul>
       <li> Security:<br/>

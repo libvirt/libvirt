@@ -2236,6 +2236,11 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Wed Jul  2 2014 Daniel Veillard <veillard@redhat.com> - 1.2.6-1
+- libxl: add migration support and fixes
+- various improvements and fixes for NUMA
+- many improvements and bug fixes
+
 * Mon Jun  2 2014 Daniel Veillard <veillard@redhat.com> - 1.2.5-1
 - LSN-2014-0003: Don't expand entities when parsing XML (security)
 - Introduce virDomain{Get,Set}Time APIs
