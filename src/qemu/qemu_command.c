@@ -150,6 +150,11 @@ VIR_ENUM_IMPL(qemuDomainFSDriver, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
               NULL,
               NULL);
 
+VIR_ENUM_DECL(qemuNumaPolicy)
+VIR_ENUM_IMPL(qemuNumaPolicy, VIR_DOMAIN_NUMATUNE_MEM_LAST,
+              "bind",
+              "preferred",
+              "interleave");
 
 /**
  * qemuPhysIfaceConnect:
@@ -6383,13 +6388,23 @@ qemuBuildNumaArgStr(const virDomainDef *def,
     size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *cpumask = NULL, *tmpmask = NULL, *next = NULL;
+    char *nodemask = NULL;
     int ret = -1;
+
+    if (virDomainNumatuneHasPerNodeBinding(def->numatune) &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Per-node memory binding is not supported "
+                         "with this QEMU"));
+        goto cleanup;
+    }
 
     for (i = 0; i < def->cpu->ncells; i++) {
         int cellmem = VIR_DIV_UP(def->cpu->cells[i].mem, 1024);
         def->cpu->cells[i].mem = cellmem * 1024;
 
         VIR_FREE(cpumask);
+        VIR_FREE(nodemask);
 
         if (!(cpumask = virBitmapFormat(def->cpu->cells[i].cpumask)))
             goto cleanup;
@@ -6402,6 +6417,43 @@ qemuBuildNumaArgStr(const virDomainDef *def,
             goto cleanup;
         }
 
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
+            virDomainNumatuneMemMode mode;
+            const char *policy = NULL;
+
+            mode = virDomainNumatuneGetMode(def->numatune, i);
+            policy = qemuNumaPolicyTypeToString(mode);
+
+            virBufferAsprintf(&buf, "memory-backend-ram,size=%dM,id=ram-node%zu",
+                              cellmem, i);
+
+            if (virDomainNumatuneMaybeFormatNodeset(def->numatune, NULL,
+                                                    &nodemask, i) < 0)
+                goto cleanup;
+
+            if (nodemask) {
+                if (strchr(nodemask, ',') &&
+                    !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("disjoint NUMA node ranges are not supported "
+                                     "with this QEMU"));
+                    goto cleanup;
+                }
+
+                for (tmpmask = nodemask; tmpmask; tmpmask = next) {
+                    if ((next = strchr(tmpmask, ',')))
+                        *(next++) = '\0';
+                    virBufferAddLit(&buf, ",host-nodes=");
+                    virBufferAdd(&buf, tmpmask, -1);
+                }
+
+                virBufferAsprintf(&buf, ",policy=%s", policy);
+            }
+
+            virCommandAddArg(cmd, "-object");
+            virCommandAddArgBuffer(cmd, &buf);
+        }
+
         virCommandAddArg(cmd, "-numa");
         virBufferAsprintf(&buf, "node,nodeid=%zu", i);
 
@@ -6412,7 +6464,11 @@ qemuBuildNumaArgStr(const virDomainDef *def,
             virBufferAdd(&buf, tmpmask, -1);
         }
 
-        virBufferAsprintf(&buf, ",mem=%d", cellmem);
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
+            virBufferAsprintf(&buf, ",memdev=ram-node%zu", i);
+        } else {
+            virBufferAsprintf(&buf, ",mem=%d", cellmem);
+        }
 
         virCommandAddArgBuffer(cmd, &buf);
     }
@@ -6420,6 +6476,7 @@ qemuBuildNumaArgStr(const virDomainDef *def,
 
  cleanup:
     VIR_FREE(cpumask);
+    VIR_FREE(nodemask);
     virBufferFreeAndReset(&buf);
     return ret;
 }

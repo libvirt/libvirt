@@ -1197,7 +1197,14 @@ mymain(void)
     DO_TEST("blkiotune-device", QEMU_CAPS_NAME);
     DO_TEST("cputune", QEMU_CAPS_NAME);
     DO_TEST("cputune-zero-shares", QEMU_CAPS_NAME);
+
     DO_TEST("numatune-memory", NONE);
+    DO_TEST("numatune-memnode", QEMU_CAPS_NUMA, QEMU_CAPS_OBJECT_MEMORY_RAM);
+    DO_TEST_FAILURE("numatune-memnode", NONE);
+
+    DO_TEST("numatune-memnode-no-memory", QEMU_CAPS_NUMA, QEMU_CAPS_OBJECT_MEMORY_RAM);
+    DO_TEST_FAILURE("numatune-memnode-no-memory", NONE);
+
     DO_TEST("numatune-auto-nodeset-invalid", NONE);
     DO_TEST_PARSE_ERROR("numatune-memnode-nocpu", NONE);
     DO_TEST_PARSE_ERROR("numatune-memnodes-problematic", NONE);
