@@ -1513,7 +1513,7 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
         return false;
     }
 
-    for (i = 0; i < def->cpu->nfeatures; i++) {
+    for (i = 0; def->cpu && i < def->cpu->nfeatures; i++) {
         virCPUFeatureDefPtr feature = &def->cpu->features[i];
 
         if (feature->policy != VIR_CPU_FEATURE_REQUIRE)
