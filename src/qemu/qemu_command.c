@@ -6412,9 +6412,6 @@ qemuBuildNumaArgStr(const virDomainDef *def, virCommandPtr cmd)
         virBufferAdd(&buf, cpumask, -1);
         virBufferAsprintf(&buf, ",mem=%d", cellmem);
 
-        if (virBufferCheckError(&buf) < 0)
-            goto cleanup;
-
         virCommandAddArgBuffer(cmd, &buf);
     }
     ret = 0;
