@@ -93,46 +93,73 @@ virDomainAuditChardevPath(virDomainChrSourceDefPtr chr)
 }
 
 
+static void
+virDomainAuditGenericDev(virDomainObjPtr vm,
+                         const char *type,
+                         const char *oldsrcpath,
+                         const char *newsrcpath,
+                         const char *reason,
+                         bool success)
+{
+    char *newdev = NULL;
+    char *olddev = NULL;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *vmname = NULL;
+    char *oldsrc = NULL;
+    char *newsrc = NULL;
+    const char *virt;
+
+    /* if both new and old source aren't provided don't log anything */
+    if (!newsrcpath && !oldsrcpath)
+        return;
+
+    if (virAsprintfQuiet(&newdev, "new-%s", type) < 0)
+        goto no_memory;
+
+    if (virAsprintfQuiet(&olddev, "old-%s", type) < 0)
+        goto no_memory;
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+
+    if (!(vmname = virAuditEncode("vm", vm->def->name)))
+        goto no_memory;
+
+    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
+        VIR_WARN("Unexpected virt type %d while encoding audit message",
+                 vm->def->virtType);
+        virt = "?";
+    }
+
+    if (!(newsrc = virAuditEncode(newdev, VIR_AUDIT_STR(newsrcpath))))
+        goto no_memory;
+
+    if (!(oldsrc = virAuditEncode(olddev, VIR_AUDIT_STR(oldsrcpath))))
+        goto no_memory;
+
+    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+              "virt=%s resrc=%s reason=%s %s uuid=%s %s %s",
+              virt, type, reason, vmname, uuidstr, oldsrc, newsrc);
+
+ cleanup:
+    VIR_FREE(newdev);
+    VIR_FREE(olddev);
+    VIR_FREE(vmname);
+    VIR_FREE(oldsrc);
+    VIR_FREE(newsrc);
+    return;
+
+ no_memory:
+    VIR_WARN("OOM while encoding audit message");
+    goto cleanup;
+}
+
+
 void
 virDomainAuditDisk(virDomainObjPtr vm,
                    const char *oldDef, const char *newDef,
                    const char *reason, bool success)
 {
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *vmname;
-    char *oldsrc = NULL;
-    char *newsrc = NULL;
-    const char *virt;
-
-    virUUIDFormat(vm->def->uuid, uuidstr);
-    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
-        VIR_WARN("OOM while encoding audit message");
-        return;
-    }
-
-    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
-        VIR_WARN("Unexpected virt type %d while encoding audit message", vm->def->virtType);
-        virt = "?";
-    }
-
-    if (!(oldsrc = virAuditEncode("old-disk", VIR_AUDIT_STR(oldDef)))) {
-        VIR_WARN("OOM while encoding audit message");
-        goto cleanup;
-    }
-    if (!(newsrc = virAuditEncode("new-disk", VIR_AUDIT_STR(newDef)))) {
-        VIR_WARN("OOM while encoding audit message");
-        goto cleanup;
-    }
-
-    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
-              "virt=%s resrc=disk reason=%s %s uuid=%s %s %s",
-              virt, reason, vmname, uuidstr,
-              oldsrc, newsrc);
-
- cleanup:
-    VIR_FREE(vmname);
-    VIR_FREE(oldsrc);
-    VIR_FREE(newsrc);
+    virDomainAuditGenericDev(vm, "disk", oldDef, newDef, reason, success);
 }
 
 
@@ -141,13 +168,8 @@ virDomainAuditRNG(virDomainObjPtr vm,
                   virDomainRNGDefPtr oldDef, virDomainRNGDefPtr newDef,
                   const char *reason, bool success)
 {
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *vmname;
     const char *newsrcpath = NULL;
     const char *oldsrcpath = NULL;
-    char *oldsrc = NULL;
-    char *newsrc = NULL;
-    const char *virt;
 
     if (newDef) {
         switch ((virDomainRNGBackend) newDef->backend) {
@@ -185,40 +207,7 @@ virDomainAuditRNG(virDomainObjPtr vm,
         }
     }
 
-    /* don't audit the RNG device if it doesn't use local resources */
-    if (!oldsrcpath && !newsrcpath)
-        return;
-
-    virUUIDFormat(vm->def->uuid, uuidstr);
-    if (!(vmname = virAuditEncode("vm", vm->def->name)))
-        goto no_memory;
-
-    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
-        VIR_WARN("Unexpected virt type %d while encoding audit message",
-                 vm->def->virtType);
-        virt = "?";
-    }
-
-    if (!(newsrc = virAuditEncode("new-rng", VIR_AUDIT_STR(newsrcpath))))
-        goto no_memory;
-
-    if (!(oldsrc = virAuditEncode("old-rng", VIR_AUDIT_STR(oldsrcpath))))
-        goto no_memory;
-
-    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
-              "virt=%s resrc=rng reason=%s %s uuid=%s %s %s",
-              virt, reason, vmname, uuidstr,
-              oldsrc, newsrc);
-
- cleanup:
-    VIR_FREE(vmname);
-    VIR_FREE(oldsrc);
-    VIR_FREE(newsrc);
-    return;
-
- no_memory:
-    VIR_WARN("OOM while encoding audit message");
-    goto cleanup;
+    virDomainAuditGenericDev(vm, "rng", oldsrcpath, newsrcpath, reason, success);
 }
 
 
@@ -227,45 +216,10 @@ virDomainAuditFS(virDomainObjPtr vm,
                  virDomainFSDefPtr oldDef, virDomainFSDefPtr newDef,
                  const char *reason, bool success)
 {
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *vmname;
-    char *oldsrc = NULL;
-    char *newsrc = NULL;
-    const char *virt;
-
-    virUUIDFormat(vm->def->uuid, uuidstr);
-    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
-        VIR_WARN("OOM while encoding audit message");
-        return;
-    }
-
-    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
-        VIR_WARN("Unexpected virt type %d while encoding audit message", vm->def->virtType);
-        virt = "?";
-    }
-
-    if (!(oldsrc = virAuditEncode("old-fs",
-                                  oldDef && oldDef->src ?
-                                  oldDef->src : "?"))) {
-        VIR_WARN("OOM while encoding audit message");
-        goto cleanup;
-    }
-    if (!(newsrc = virAuditEncode("new-fs",
-                                  newDef && newDef->src ?
-                                  newDef->src : "?"))) {
-        VIR_WARN("OOM while encoding audit message");
-        goto cleanup;
-    }
-
-    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
-              "virt=%s resrc=fs reason=%s %s uuid=%s %s %s",
-              virt, reason, vmname, uuidstr,
-              oldsrc, newsrc);
-
- cleanup:
-    VIR_FREE(vmname);
-    VIR_FREE(oldsrc);
-    VIR_FREE(newsrc);
+    virDomainAuditGenericDev(vm, "fs",
+                             oldDef ? oldDef->src : NULL,
+                             newDef ? newDef->src : NULL,
+                             reason, success);
 }
 
 
@@ -274,34 +228,19 @@ virDomainAuditNet(virDomainObjPtr vm,
                   virDomainNetDefPtr oldDef, virDomainNetDefPtr newDef,
                   const char *reason, bool success)
 {
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
     char newMacstr[VIR_MAC_STRING_BUFLEN];
     char oldMacstr[VIR_MAC_STRING_BUFLEN];
-    char *vmname;
-    const char *virt;
 
-    virUUIDFormat(vm->def->uuid, uuidstr);
     if (oldDef)
         virMacAddrFormat(&oldDef->mac, oldMacstr);
+
     if (newDef)
         virMacAddrFormat(&newDef->mac, newMacstr);
-    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
-        VIR_WARN("OOM while encoding audit message");
-        return;
-    }
 
-    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
-        VIR_WARN("Unexpected virt type %d while encoding audit message", vm->def->virtType);
-        virt = "?";
-    }
-
-    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
-              "virt=%s resrc=net reason=%s %s uuid=%s old-net=%s new-net=%s",
-              virt, reason, vmname, uuidstr,
-              oldDef ? oldMacstr : "?",
-              newDef ? newMacstr : "?");
-
-    VIR_FREE(vmname);
+    virDomainAuditGenericDev(vm, "net",
+                             oldDef ? oldMacstr : NULL,
+                             newDef ? newMacstr : NULL,
+                             reason, success);
 }
 
 /**
