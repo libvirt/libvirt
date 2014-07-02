@@ -29,6 +29,7 @@
     <interface type='bridge'>
       <mac address='02:00:15:8f:05:c1'/>
       <source bridge='virbr0'/>
+      <guest dev='eth0'/>
       <link state='up'/>
     </interface>
     <console type='pty'>
