@@ -12947,7 +12947,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
         }
     }
 
-    virDomainAuditDisk(vm, disk->src->path, source, "snapshot", ret >= 0);
+    virDomainAuditDisk(vm, disk->src, snap->src, "snapshot", ret >= 0);
     if (ret < 0)
         goto cleanup;
 
@@ -15378,7 +15378,7 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorDriveMirror(priv->mon, device, dest, format, bandwidth,
                                  flags);
-    virDomainAuditDisk(vm, NULL, dest, "mirror", ret >= 0);
+    virDomainAuditDisk(vm, NULL, mirror, "mirror", ret >= 0);
     qemuDomainObjExitMonitor(driver, vm);
     if (ret < 0) {
         qemuDomainPrepareDiskChainElementPath(driver, vm, disk, dest,

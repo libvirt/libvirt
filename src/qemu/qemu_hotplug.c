@@ -154,9 +154,7 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         qemuDomainObjExitMonitor(driver, vm);
     }
  audit:
-    if (src)
-        virDomainAuditDisk(vm, virDomainDiskGetSource(origdisk),
-                           src, "update", ret >= 0);
+    virDomainAuditDisk(vm, origdisk->src, disk->src, "update", ret >= 0);
 
     if (ret < 0)
         goto error;
@@ -330,7 +328,7 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     }
     qemuDomainObjExitMonitor(driver, vm);
 
-    virDomainAuditDisk(vm, NULL, src, "attach", ret >= 0);
+    virDomainAuditDisk(vm, NULL, disk->src, "attach", ret >= 0);
 
     if (ret < 0)
         goto error;
@@ -583,7 +581,7 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     }
     qemuDomainObjExitMonitor(driver, vm);
 
-    virDomainAuditDisk(vm, NULL, src, "attach", ret >= 0);
+    virDomainAuditDisk(vm, NULL, disk->src, "attach", ret >= 0);
 
     if (ret < 0)
         goto error;
@@ -677,7 +675,7 @@ qemuDomainAttachUSBMassstorageDevice(virConnectPtr conn,
     }
     qemuDomainObjExitMonitor(driver, vm);
 
-    virDomainAuditDisk(vm, NULL, src, "attach", ret >= 0);
+    virDomainAuditDisk(vm, NULL, disk->src, "attach", ret >= 0);
 
     if (ret < 0)
         goto error;
@@ -2487,7 +2485,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     qemuDomainObjExitMonitor(driver, vm);
     VIR_FREE(drivestr);
 
-    virDomainAuditDisk(vm, src, NULL, "detach", true);
+    virDomainAuditDisk(vm, disk->src, NULL, "detach", true);
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, disk->info.alias);
     if (event)
@@ -2940,16 +2938,14 @@ qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
             qemuDomainObjExitMonitor(driver, vm);
-            virDomainAuditDisk(vm, virDomainDiskGetSource(detach),
-                               NULL, "detach", false);
+            virDomainAuditDisk(vm, detach->src, NULL, "detach", false);
             goto cleanup;
         }
     } else {
         if (qemuMonitorRemovePCIDevice(priv->mon,
                                        &detach->info.addr.pci) < 0) {
             qemuDomainObjExitMonitor(driver, vm);
-            virDomainAuditDisk(vm, virDomainDiskGetSource(detach),
-                               NULL, "detach", false);
+            virDomainAuditDisk(vm, detach->src, NULL, "detach", false);
             goto cleanup;
         }
     }
@@ -2994,8 +2990,7 @@ qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
         qemuDomainObjExitMonitor(driver, vm);
-        virDomainAuditDisk(vm, virDomainDiskGetSource(detach),
-                           NULL, "detach", false);
+        virDomainAuditDisk(vm, detach->src, NULL, "detach", false);
         goto cleanup;
     }
     qemuDomainObjExitMonitor(driver, vm);

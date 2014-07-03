@@ -4099,7 +4099,7 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
 
  cleanup:
     if (src)
-        virDomainAuditDisk(vm, NULL, src, "attach", ret == 0);
+        virDomainAuditDisk(vm, NULL, def->src, "attach", ret == 0);
     VIR_FREE(file);
     return ret;
 }
@@ -4587,10 +4587,10 @@ lxcDomainDetachDeviceDiskLive(virDomainObjPtr vm,
     }
 
     if (lxcDomainAttachDeviceUnlink(vm, dst) < 0) {
-        virDomainAuditDisk(vm, src, NULL, "detach", false);
+        virDomainAuditDisk(vm, def->src, NULL, "detach", false);
         goto cleanup;
     }
-    virDomainAuditDisk(vm, src, NULL, "detach", true);
+    virDomainAuditDisk(vm, def->src, NULL, "detach", true);
 
     if (virCgroupDenyDevicePath(priv->cgroup, src, VIR_CGROUP_DEVICE_RWM) != 0)
         VIR_WARN("cannot deny device %s for domain %s",

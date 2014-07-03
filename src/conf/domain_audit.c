@@ -156,10 +156,21 @@ virDomainAuditGenericDev(virDomainObjPtr vm,
 
 void
 virDomainAuditDisk(virDomainObjPtr vm,
-                   const char *oldDef, const char *newDef,
-                   const char *reason, bool success)
+                   virStorageSourcePtr oldDef,
+                   virStorageSourcePtr newDef,
+                   const char *reason,
+                   bool success)
 {
-    virDomainAuditGenericDev(vm, "disk", oldDef, newDef, reason, success);
+    const char *oldsrc = NULL;
+    const char *newsrc = NULL;
+
+    if (oldDef && virStorageSourceIsLocalStorage(oldDef))
+        oldsrc = oldDef->path;
+
+    if (newDef && virStorageSourceIsLocalStorage(newDef))
+        newsrc = newDef->path;
+
+    virDomainAuditGenericDev(vm, "disk", oldsrc, newsrc, reason, success);
 }
 
 
@@ -738,12 +749,8 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
 {
     size_t i;
 
-    for (i = 0; i < vm->def->ndisks; i++) {
-        const char *src = virDomainDiskGetSource(vm->def->disks[i]);
-
-        if (src) /* Skips CDROM without media initially inserted */
-            virDomainAuditDisk(vm, NULL, src, "start", true);
-    }
+    for (i = 0; i < vm->def->ndisks; i++)
+        virDomainAuditDisk(vm, NULL, vm->def->disks[i]->src, "start", true);
 
     for (i = 0; i < vm->def->nfss; i++) {
         virDomainFSDefPtr fs = vm->def->fss[i];
