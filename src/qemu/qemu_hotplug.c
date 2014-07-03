@@ -1458,18 +1458,20 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorAttachCharDev(priv->mon, charAlias, &chr->source) < 0) {
         qemuDomainObjExitMonitor(driver, vm);
-        goto cleanup;
+        goto audit;
     }
 
     if (devstr && qemuMonitorAddDevice(priv->mon, devstr) < 0) {
         /* detach associated chardev on error */
         qemuMonitorDetachCharDev(priv->mon, charAlias);
         qemuDomainObjExitMonitor(driver, vm);
-        goto cleanup;
+        goto audit;
     }
     qemuDomainObjExitMonitor(driver, vm);
 
     ret = 0;
+ audit:
+    virDomainAuditChardev(vm, NULL, chr, "attach", ret == 0);
  cleanup:
     if (ret < 0 && need_remove)
         qemuDomainChrRemove(vmdef, chr);
@@ -2749,6 +2751,7 @@ qemuDomainRemoveChrDevice(virQEMUDriverPtr driver,
     char *charAlias = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
+    int rc;
 
     VIR_DEBUG("Removing character device %s from domain %p %s",
               chr->info.alias, vm, vm->def->name);
@@ -2757,11 +2760,13 @@ qemuDomainRemoveChrDevice(virQEMUDriverPtr driver,
         goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
-    if (qemuMonitorDetachCharDev(priv->mon, charAlias) < 0) {
-        qemuDomainObjExitMonitor(driver, vm);
-        goto cleanup;
-    }
+    rc = qemuMonitorDetachCharDev(priv->mon, charAlias);
     qemuDomainObjExitMonitor(driver, vm);
+
+    virDomainAuditChardev(vm, chr, NULL, "detach", rc == 0);
+
+    if (rc < 0)
+        goto cleanup;
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, chr->info.alias);
     if (event)

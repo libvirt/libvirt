@@ -155,6 +155,29 @@ virDomainAuditGenericDev(virDomainObjPtr vm,
 
 
 void
+virDomainAuditChardev(virDomainObjPtr vm,
+                      virDomainChrDefPtr oldDef,
+                      virDomainChrDefPtr newDef,
+                      const char *reason,
+                      bool success)
+{
+    virDomainChrSourceDefPtr oldsrc = NULL;
+    virDomainChrSourceDefPtr newsrc = NULL;
+
+    if (oldDef)
+        oldsrc = &oldDef->source;
+
+    if (newDef)
+        newsrc = &newDef->source;
+
+    virDomainAuditGenericDev(vm, "chardev",
+                             virDomainAuditChardevPath(oldsrc),
+                             virDomainAuditChardevPath(newsrc),
+                             reason, success);
+}
+
+
+void
 virDomainAuditDisk(virDomainObjPtr vm,
                    virStorageSourcePtr oldDef,
                    virStorageSourcePtr newDef,
@@ -770,6 +793,25 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
     for (i = 0; i < vm->def->nredirdevs; i++) {
         virDomainRedirdevDefPtr redirdev = vm->def->redirdevs[i];
         virDomainAuditRedirdev(vm, redirdev, "start", true);
+    }
+
+    for (i = 0; i < vm->def->nserials; i++)
+        virDomainAuditChardev(vm, NULL, vm->def->serials[i], "start", true);
+
+    for (i = 0; i < vm->def->nparallels; i++)
+        virDomainAuditChardev(vm, NULL, vm->def->parallels[i], "start", true);
+
+    for (i = 0; i < vm->def->nchannels; i++)
+        virDomainAuditChardev(vm, NULL, vm->def->channels[i], "start", true);
+
+    for (i = 0; i < vm->def->nconsoles; i++) {
+        if (i == 0 &&
+            (vm->def->consoles[i]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ||
+             vm->def->consoles[i]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE) &&
+             STREQ_NULLABLE(vm->def->os.type, "hvm"))
+            continue;
+
+        virDomainAuditChardev(vm, NULL, vm->def->consoles[i], "start", true);
     }
 
     if (vm->def->rng)

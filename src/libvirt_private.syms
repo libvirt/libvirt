@@ -116,6 +116,7 @@ virDomainPCIAddressValidate;
 virDomainAuditCgroup;
 virDomainAuditCgroupMajor;
 virDomainAuditCgroupPath;
+virDomainAuditChardev;
 virDomainAuditDisk;
 virDomainAuditFS;
 virDomainAuditHostdev;
