@@ -301,6 +301,26 @@
       <dd>Updated path of the backing character device for given emulated device</dd>
     </dl>
 
+    <h4><a name="typeresourcesmartcard">smartcard</a></h4>
+    <p>
+      The <code>msg</code> field will include the following sub-fields
+    </p>
+
+    <dl>
+      <dt>reason</dt>
+      <dd>The reason which caused the resource to be assigned to happen</dd>
+      <dt>resrc</dt>
+      <dd>The type of resource assigned. Set to <code>smartcard</code></dd>
+      <dt>old-smartcard</dt>
+      <dd>Original path of the backing character device, certificate store or
+          "nss-smartcard-device" for host smartcard passthrough.
+      </dd>
+      <dt>new-smartcard</dt>
+      <dd>Updated path of the backing character device, certificate store or
+          "nss-smartcard-device" for host smartcard passthrough.
+      </dd>
+    </dl>
+
     <h4><a name="typeresourceredir">Redirected device</a></h4>
     <p>
       The <code>msg</code> field will include the following sub-fields

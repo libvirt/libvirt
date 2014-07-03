@@ -177,6 +177,51 @@ virDomainAuditChardev(virDomainObjPtr vm,
 }
 
 
+static void
+virDomainAuditSmartcard(virDomainObjPtr vm,
+                        virDomainSmartcardDefPtr def,
+                        const char *reason,
+                        bool success)
+{
+    const char *database = VIR_DOMAIN_SMARTCARD_DEFAULT_DATABASE;
+    size_t i;
+
+    if (def) {
+        switch ((virDomainSmartcardType) def->type) {
+        case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
+            virDomainAuditGenericDev(vm, "smartcard",
+                                     NULL, "nss-smartcard-device",
+                                     reason, success);
+            break;
+
+        case VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES:
+            for (i = 0; i < VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES; i++) {
+                virDomainAuditGenericDev(vm, "smartcard", NULL,
+                                         def->data.cert.file[i],
+                                         reason, success);
+            }
+
+            if (def->data.cert.database)
+                database = def->data.cert.database;
+
+            virDomainAuditGenericDev(vm, "smartcard",
+                                     NULL, database,
+                                     reason, success);
+            break;
+
+        case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
+            virDomainAuditGenericDev(vm, "smartcard", NULL,
+                                     virDomainAuditChardevPath(&def->data.passthru),
+                                     reason, success);
+            break;
+
+        case VIR_DOMAIN_SMARTCARD_TYPE_LAST:
+            break;
+        }
+    }
+}
+
+
 void
 virDomainAuditDisk(virDomainObjPtr vm,
                    virStorageSourcePtr oldDef,
@@ -813,6 +858,9 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
 
         virDomainAuditChardev(vm, NULL, vm->def->consoles[i], "start", true);
     }
+
+    for (i = 0; i < vm->def->nsmartcards; i++)
+        virDomainAuditSmartcard(vm, vm->def->smartcards[i], "start", true);
 
     if (vm->def->rng)
         virDomainAuditRNG(vm, NULL, vm->def->rng, "start", true);
