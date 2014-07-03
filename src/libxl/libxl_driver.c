@@ -2627,6 +2627,7 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivatePtr driver,
     libxl_device_pci pcidev;
     virDomainHostdevDefPtr found;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
 
     if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
         return -1;
@@ -2634,10 +2635,8 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivatePtr driver,
     if (virDomainHostdevFind(vm->def, hostdev, &found) >= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("target pci device %.4x:%.2x:%.2x.%.1x already exists"),
-                       hostdev->source.subsys.u.pci.addr.domain,
-                       hostdev->source.subsys.u.pci.addr.bus,
-                       hostdev->source.subsys.u.pci.addr.slot,
-                       hostdev->source.subsys.u.pci.addr.function);
+                       pcisrc->addr.domain, pcisrc->addr.bus,
+                       pcisrc->addr.slot, pcisrc->addr.function);
         return -1;
     }
 
@@ -2655,10 +2654,8 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivatePtr driver,
     if (libxl_device_pci_add(priv->ctx, vm->def->id, &pcidev, 0) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("libxenlight failed to attach pci device %.4x:%.2x:%.2x.%.1x"),
-                       hostdev->source.subsys.u.pci.addr.domain,
-                       hostdev->source.subsys.u.pci.addr.bus,
-                       hostdev->source.subsys.u.pci.addr.slot,
-                       hostdev->source.subsys.u.pci.addr.function);
+                       pcisrc->addr.domain, pcisrc->addr.bus,
+                       pcisrc->addr.slot, pcisrc->addr.function);
         goto error;
     }
 
@@ -2854,6 +2851,7 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
     virDomainNetDefPtr net;
     virDomainHostdevDefPtr hostdev;
     virDomainHostdevDefPtr found;
+    virDomainHostdevSubsysPCIPtr pcisrc;
 
     switch (dev->type) {
         case VIR_DOMAIN_DEVICE_DISK:
@@ -2883,13 +2881,12 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
                 return -1;
 
             if (virDomainHostdevFind(vmdef, hostdev, &found) >= 0) {
+                pcisrc = &hostdev->source.subsys.u.pci;
                 virReportError(VIR_ERR_OPERATION_FAILED,
                                _("target pci device %.4x:%.2x:%.2x.%.1x\
                                   already exists"),
-                               hostdev->source.subsys.u.pci.addr.domain,
-                               hostdev->source.subsys.u.pci.addr.bus,
-                               hostdev->source.subsys.u.pci.addr.slot,
-                               hostdev->source.subsys.u.pci.addr.function);
+                               pcisrc->addr.domain, pcisrc->addr.bus,
+                               pcisrc->addr.slot, pcisrc->addr.function);
                 return -1;
             }
 
@@ -2940,6 +2937,7 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
                                virDomainHostdevDefPtr hostdev)
 {
     virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
+    virDomainHostdevSubsysPCIPtr pcisrc = &subsys->u.pci;
     libxl_device_pci pcidev;
     virDomainHostdevDefPtr detach;
     int idx;
@@ -2952,16 +2950,16 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
     if (idx < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("host pci device %.4x:%.2x:%.2x.%.1x not found"),
-                       subsys->u.pci.addr.domain, subsys->u.pci.addr.bus,
-                       subsys->u.pci.addr.slot, subsys->u.pci.addr.function);
+                       pcisrc->addr.domain, pcisrc->addr.bus,
+                       pcisrc->addr.slot, pcisrc->addr.function);
         return -1;
     }
 
     if (libxlIsMultiFunctionDevice(vm->def, detach->info)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"),
-                       subsys->u.pci.addr.domain, subsys->u.pci.addr.bus,
-                       subsys->u.pci.addr.slot, subsys->u.pci.addr.function);
+                       pcisrc->addr.domain, pcisrc->addr.bus,
+                       pcisrc->addr.slot, pcisrc->addr.function);
         goto error;
     }
 
@@ -2975,8 +2973,8 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("libxenlight failed to detach pci device\
                           %.4x:%.2x:%.2x.%.1x"),
-                       subsys->u.pci.addr.domain, subsys->u.pci.addr.bus,
-                       subsys->u.pci.addr.slot, subsys->u.pci.addr.function);
+                       pcisrc->addr.domain, pcisrc->addr.bus,
+                       pcisrc->addr.slot, pcisrc->addr.function);
         goto error;
     }
 

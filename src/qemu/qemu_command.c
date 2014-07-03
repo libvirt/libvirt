@@ -554,18 +554,16 @@ qemuNetworkPrepareDevices(virDomainDefPtr def)
              * separately.
              */
             virDomainHostdevDefPtr hostdev = virDomainNetGetActualHostdev(net);
+            virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
 
             if (virDomainHostdevFind(def, hostdev, NULL) >= 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("PCI device %04x:%02x:%02x.%x "
                                  "allocated from network %s is already "
                                  "in use by domain %s"),
-                               hostdev->source.subsys.u.pci.addr.domain,
-                               hostdev->source.subsys.u.pci.addr.bus,
-                               hostdev->source.subsys.u.pci.addr.slot,
-                               hostdev->source.subsys.u.pci.addr.function,
-                               net->data.network.name,
-                               def->name);
+                               pcisrc->addr.domain, pcisrc->addr.bus,
+                               pcisrc->addr.slot, pcisrc->addr.function,
+                               net->data.network.name, def->name);
                 goto cleanup;
             }
             if (virDomainHostdevInsert(def, hostdev) < 0)
@@ -4834,14 +4832,13 @@ qemuBuildDeviceVideoStr(virDomainDefPtr def,
 int
 qemuOpenPCIConfig(virDomainHostdevDefPtr dev)
 {
+    virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
     char *path = NULL;
     int configfd = -1;
 
     if (virAsprintf(&path, "/sys/bus/pci/devices/%04x:%02x:%02x.%01x/config",
-                    dev->source.subsys.u.pci.addr.domain,
-                    dev->source.subsys.u.pci.addr.bus,
-                    dev->source.subsys.u.pci.addr.slot,
-                    dev->source.subsys.u.pci.addr.function) < 0)
+                    pcisrc->addr.domain, pcisrc->addr.bus,
+                    pcisrc->addr.slot, pcisrc->addr.function) < 0)
         return -1;
 
     configfd = open(path, O_RDWR, 0);
@@ -4861,7 +4858,8 @@ qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
                           virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    int backend = dev->source.subsys.u.pci.backend;
+    virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
+    int backend = pcisrc->backend;
 
     /* caller has to assign proper passthrough backend type */
     switch ((virDomainHostdevSubsysPCIBackendType) backend) {
@@ -4883,20 +4881,19 @@ qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
     }
 
     virBufferAddLit(&buf, ",host=");
-    if (dev->source.subsys.u.pci.addr.domain) {
+    if (pcisrc->addr.domain) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_HOST_PCI_MULTIDOMAIN)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("non-zero domain='%.4x' in host device PCI address "
                              "not supported in this QEMU binary"),
-                           dev->source.subsys.u.pci.addr.domain);
+                           pcisrc->addr.domain);
             goto error;
         }
-        virBufferAsprintf(&buf, "%.4x:", dev->source.subsys.u.pci.addr.domain);
+        virBufferAsprintf(&buf, "%.4x:", pcisrc->addr.domain);
     }
     virBufferAsprintf(&buf, "%.2x:%.2x.%.1x",
-                      dev->source.subsys.u.pci.addr.bus,
-                      dev->source.subsys.u.pci.addr.slot,
-                      dev->source.subsys.u.pci.addr.function);
+                      pcisrc->addr.bus, pcisrc->addr.slot,
+                      pcisrc->addr.function);
     virBufferAsprintf(&buf, ",id=%s", dev->info->alias);
     if (dev->info->bootIndex)
         virBufferAsprintf(&buf, ",bootindex=%d", dev->info->bootIndex);
@@ -4921,25 +4918,23 @@ qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev,
                              virQEMUCapsPtr qemuCaps)
 {
     char *ret = NULL;
+    virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
 
-    if (dev->source.subsys.u.pci.addr.domain) {
+    if (pcisrc->addr.domain) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_HOST_PCI_MULTIDOMAIN)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("non-zero domain='%.4x' in host device PCI address "
                              "not supported in this QEMU binary"),
-                           dev->source.subsys.u.pci.addr.domain);
+                           pcisrc->addr.domain);
             goto cleanup;
         }
         ignore_value(virAsprintf(&ret, "host=%.4x:%.2x:%.2x.%.1x",
-                                 dev->source.subsys.u.pci.addr.domain,
-                                 dev->source.subsys.u.pci.addr.bus,
-                                 dev->source.subsys.u.pci.addr.slot,
-                                 dev->source.subsys.u.pci.addr.function));
+                                 pcisrc->addr.domain, pcisrc->addr.bus,
+                                 pcisrc->addr.slot, pcisrc->addr.function));
     } else {
         ignore_value(virAsprintf(&ret, "host=%.2x:%.2x.%.1x",
-                                 dev->source.subsys.u.pci.addr.bus,
-                                 dev->source.subsys.u.pci.addr.slot,
-                                 dev->source.subsys.u.pci.addr.function));
+                                 pcisrc->addr.bus, pcisrc->addr.slot,
+                                 pcisrc->addr.function));
     }
  cleanup:
     return ret;

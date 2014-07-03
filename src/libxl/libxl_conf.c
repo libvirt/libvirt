@@ -1274,15 +1274,16 @@ libxlDriverConfigGet(libxlDriverPrivatePtr driver)
 int
 libxlMakePCI(virDomainHostdevDefPtr hostdev, libxl_device_pci *pcidev)
 {
+    virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
         return -1;
     if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
         return -1;
 
-    pcidev->domain = hostdev->source.subsys.u.pci.addr.domain;
-    pcidev->bus = hostdev->source.subsys.u.pci.addr.bus;
-    pcidev->dev = hostdev->source.subsys.u.pci.addr.slot;
-    pcidev->func = hostdev->source.subsys.u.pci.addr.function;
+    pcidev->domain = pcisrc->addr.domain;
+    pcidev->bus = pcisrc->addr.bus;
+    pcidev->dev = pcisrc->addr.slot;
+    pcidev->func = pcisrc->addr.function;
 
     return 0;
 }

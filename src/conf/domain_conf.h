@@ -400,16 +400,20 @@ struct _virDomainHostdevSubsysUSB {
     unsigned product;
 };
 
+typedef struct _virDomainHostdevSubsysPCI virDomainHostdevSubsysPCI;
+typedef virDomainHostdevSubsysPCI *virDomainHostdevSubsysPCIPtr;
+struct _virDomainHostdevSubsysPCI {
+    virDevicePCIAddress addr; /* host address */
+    int backend; /* enum virDomainHostdevSubsysPCIBackendType */
+};
+
 typedef struct _virDomainHostdevSubsys virDomainHostdevSubsys;
 typedef virDomainHostdevSubsys *virDomainHostdevSubsysPtr;
 struct _virDomainHostdevSubsys {
     int type; /* enum virDomainHostdevSubsysType */
     union {
         virDomainHostdevSubsysUSB usb;
-        struct {
-            virDevicePCIAddress addr; /* host address */
-            int backend; /* enum virDomainHostdevSubsysPCIBackendType */
-        } pci;
+        virDomainHostdevSubsysPCI pci;
         struct {
             char *adapter;
             unsigned bus;

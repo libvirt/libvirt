@@ -4246,6 +4246,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     char *backendStr = NULL;
     int backend;
     int ret = -1;
+    virDomainHostdevSubsysPCIPtr pcisrc = &def->source.subsys.u.pci;
 
     /* @managed can be read from the xml document - it is always an
      * attribute of the toplevel element, no matter what type of
@@ -4325,7 +4326,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
                              "has been specified"), backendStr);
             goto error;
         }
-        def->source.subsys.u.pci.backend = backend;
+        pcisrc->backend = backend;
 
         break;
 
@@ -10215,13 +10216,16 @@ virDomainHostdevMatchSubsysUSB(virDomainHostdevDefPtr first,
 }
 
 static int
-virDomainHostdevMatchSubsysPCI(virDomainHostdevDefPtr a,
-                               virDomainHostdevDefPtr b)
+virDomainHostdevMatchSubsysPCI(virDomainHostdevDefPtr first,
+                               virDomainHostdevDefPtr second)
 {
-    if (a->source.subsys.u.pci.addr.domain == b->source.subsys.u.pci.addr.domain &&
-        a->source.subsys.u.pci.addr.bus == b->source.subsys.u.pci.addr.bus &&
-        a->source.subsys.u.pci.addr.slot == b->source.subsys.u.pci.addr.slot &&
-        a->source.subsys.u.pci.addr.function == b->source.subsys.u.pci.addr.function)
+    virDomainHostdevSubsysPCIPtr first_pcisrc = &first->source.subsys.u.pci;
+    virDomainHostdevSubsysPCIPtr second_pcisrc = &second->source.subsys.u.pci;
+
+    if (first_pcisrc->addr.domain == second_pcisrc->addr.domain &&
+        first_pcisrc->addr.bus == second_pcisrc->addr.bus &&
+        first_pcisrc->addr.slot == second_pcisrc->addr.slot &&
+        first_pcisrc->addr.function == second_pcisrc->addr.function)
         return 1;
     return 0;
 }
@@ -15516,15 +15520,17 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
                                 bool includeTypeInAddr)
 {
     virDomainHostdevSubsysUSBPtr usbsrc = &def->source.subsys.u.usb;
+    virDomainHostdevSubsysPCIPtr pcisrc = &def->source.subsys.u.pci;
 
     if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-        def->source.subsys.u.pci.backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
-        const char *backend = virDomainHostdevSubsysPCIBackendTypeToString(def->source.subsys.u.pci.backend);
+        pcisrc->backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
+        const char *backend =
+            virDomainHostdevSubsysPCIBackendTypeToString(pcisrc->backend);
 
         if (!backend) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected pci hostdev driver name type %d"),
-                           def->source.subsys.u.pci.backend);
+                           pcisrc->backend);
             return -1;
         }
         virBufferAsprintf(buf, "<driver name='%s'/>\n", backend);
@@ -15560,8 +15566,7 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
         }
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        if (virDevicePCIAddressFormat(buf,
-                                      def->source.subsys.u.pci.addr,
+        if (virDevicePCIAddressFormat(buf, pcisrc->addr,
                                       includeTypeInAddr) != 0)
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("PCI address Formatting failed"));

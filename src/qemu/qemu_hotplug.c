@@ -3204,14 +3204,14 @@ qemuDomainDetachHostPCIDevice(virQEMUDriverPtr driver,
                               virDomainHostdevDefPtr detach)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainHostdevSubsysPtr subsys = &detach->source.subsys;
+    virDomainHostdevSubsysPCIPtr pcisrc = &detach->source.subsys.u.pci;
     int ret;
 
     if (qemuIsMultiFunctionDevice(vm->def, detach->info)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"),
-                       subsys->u.pci.addr.domain, subsys->u.pci.addr.bus,
-                       subsys->u.pci.addr.slot, subsys->u.pci.addr.function);
+                       pcisrc->addr.domain, pcisrc->addr.bus,
+                       pcisrc->addr.slot, pcisrc->addr.function);
         return -1;
     }
 
@@ -3361,6 +3361,7 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
     virDomainHostdevDefPtr hostdev = dev->data.hostdev;
     virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
     virDomainHostdevSubsysUSBPtr usbsrc = &subsys->u.usb;
+    virDomainHostdevSubsysPCIPtr pcisrc = &subsys->u.pci;
     virDomainHostdevDefPtr detach = NULL;
     int idx;
 
@@ -3378,8 +3379,8 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("host pci device %.4x:%.2x:%.2x.%.1x not found"),
-                           subsys->u.pci.addr.domain, subsys->u.pci.addr.bus,
-                           subsys->u.pci.addr.slot, subsys->u.pci.addr.function);
+                           pcisrc->addr.domain, pcisrc->addr.bus,
+                           pcisrc->addr.slot, pcisrc->addr.function);
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
             if (usbsrc->bus && usbsrc->device) {

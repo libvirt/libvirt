@@ -168,6 +168,7 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
 
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
+        virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
         virPCIDevicePtr dev;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -175,10 +176,8 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        dev = virPCIDeviceNew(hostdev->source.subsys.u.pci.addr.domain,
-                              hostdev->source.subsys.u.pci.addr.bus,
-                              hostdev->source.subsys.u.pci.addr.slot,
-                              hostdev->source.subsys.u.pci.addr.function);
+        dev = virPCIDeviceNew(pcisrc->addr.domain, pcisrc->addr.bus,
+                              pcisrc->addr.slot, pcisrc->addr.function);
         if (!dev) {
             virObjectUnref(list);
             return NULL;
@@ -191,14 +190,12 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
         }
 
         virPCIDeviceSetManaged(dev, hostdev->managed);
-        if (hostdev->source.subsys.u.pci.backend
-            == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
+        if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
             if (virPCIDeviceSetStubDriver(dev, "vfio-pci") < 0) {
                 virObjectUnref(list);
                 return NULL;
             }
-        } else if (hostdev->source.subsys.u.pci.backend
-                   == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN) {
+        } else if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN) {
             if (virPCIDeviceSetStubDriver(dev, "pciback") < 0) {
                 virObjectUnref(list);
                 return NULL;
@@ -619,16 +616,15 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
         virPCIDevicePtr dev;
         virPCIDevicePtr pcidev;
         virDomainHostdevDefPtr hostdev = hostdevs[i];
+        virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
             continue;
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        dev = virPCIDeviceNew(hostdev->source.subsys.u.pci.addr.domain,
-                              hostdev->source.subsys.u.pci.addr.bus,
-                              hostdev->source.subsys.u.pci.addr.slot,
-                              hostdev->source.subsys.u.pci.addr.function);
+        dev = virPCIDeviceNew(pcisrc->addr.domain, pcisrc->addr.bus,
+                              pcisrc->addr.slot, pcisrc->addr.function);
 
         /* original states "unbind_from_stub", "remove_slot",
          * "reprobe" were already set by pciDettachDevice in
@@ -832,28 +828,26 @@ virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
     virObjectLock(mgr->inactivePCIHostdevs);
 
     for (i = 0; i < nhostdevs; i++) {
+        virDomainHostdevSubsysPCIPtr pcisrc;
         hostdev = hostdevs[i];
+        pcisrc = &hostdev->source.subsys.u.pci;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
             continue;
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        dev = virPCIDeviceNew(hostdev->source.subsys.u.pci.addr.domain,
-                              hostdev->source.subsys.u.pci.addr.bus,
-                              hostdev->source.subsys.u.pci.addr.slot,
-                              hostdev->source.subsys.u.pci.addr.function);
+        dev = virPCIDeviceNew(pcisrc->addr.domain, pcisrc->addr.bus,
+                              pcisrc->addr.slot, pcisrc->addr.function);
 
         if (!dev)
             goto cleanup;
 
         virPCIDeviceSetManaged(dev, hostdev->managed);
-        if (hostdev->source.subsys.u.pci.backend
-            == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
+        if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
             if (virPCIDeviceSetStubDriver(dev, "vfio-pci") < 0)
                 goto cleanup;
-        } else if (hostdev->source.subsys.u.pci.backend
-                   == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN) {
+        } else if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN) {
             if (virPCIDeviceSetStubDriver(dev, "pciback") < 0)
                 goto cleanup;
         } else {
