@@ -3360,6 +3360,7 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
 {
     virDomainHostdevDefPtr hostdev = dev->data.hostdev;
     virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
+    virDomainHostdevSubsysUSBPtr usbsrc = &subsys->u.usb;
     virDomainHostdevDefPtr detach = NULL;
     int idx;
 
@@ -3381,14 +3382,14 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
                            subsys->u.pci.addr.slot, subsys->u.pci.addr.function);
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-            if (subsys->u.usb.bus && subsys->u.usb.device) {
+            if (usbsrc->bus && usbsrc->device) {
                 virReportError(VIR_ERR_OPERATION_FAILED,
                                _("host usb device %03d.%03d not found"),
-                               subsys->u.usb.bus, subsys->u.usb.device);
+                               usbsrc->bus, usbsrc->device);
             } else {
                 virReportError(VIR_ERR_OPERATION_FAILED,
                                _("host usb device vendor=0x%.4x product=0x%.4x not found"),
-                               subsys->u.usb.vendor, subsys->u.usb.product);
+                               usbsrc->vendor, usbsrc->product);
             }
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:

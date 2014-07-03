@@ -3793,6 +3793,7 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
     xmlNodePtr cur;
     char *startupPolicy = NULL;
     char *autoAddress;
+    virDomainHostdevSubsysUSBPtr usbsrc = &def->source.subsys.u.usb;
 
     if ((startupPolicy = virXMLPropString(node, "startupPolicy"))) {
         def->startupPolicy =
@@ -3809,7 +3810,7 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
 
     if ((autoAddress = virXMLPropString(node, "autoAddress"))) {
         if (STREQ(autoAddress, "yes"))
-            def->source.subsys.u.usb.autoAddress = true;
+            usbsrc->autoAddress = true;
         VIR_FREE(autoAddress);
     }
 
@@ -3826,8 +3827,7 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
 
                 if (vendor) {
                     got_vendor = true;
-                    if (virStrToLong_ui(vendor, NULL, 0,
-                                    &def->source.subsys.u.usb.vendor) < 0) {
+                    if (virStrToLong_ui(vendor, NULL, 0, &usbsrc->vendor) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("cannot parse vendor id %s"), vendor);
                         VIR_FREE(vendor);
@@ -3845,7 +3845,7 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
                 if (product) {
                     got_product = true;
                     if (virStrToLong_ui(product, NULL, 0,
-                                        &def->source.subsys.u.usb.product) < 0) {
+                                        &usbsrc->product) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("cannot parse product %s"),
                                        product);
@@ -3863,8 +3863,7 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
 
                 bus = virXMLPropString(cur, "bus");
                 if (bus) {
-                    if (virStrToLong_ui(bus, NULL, 0,
-                                        &def->source.subsys.u.usb.bus) < 0) {
+                    if (virStrToLong_ui(bus, NULL, 0, &usbsrc->bus) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("cannot parse bus %s"), bus);
                         VIR_FREE(bus);
@@ -3879,8 +3878,7 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
 
                 device = virXMLPropString(cur, "device");
                 if (device) {
-                    if (virStrToLong_ui(device, NULL, 0,
-                                        &def->source.subsys.u.usb.device) < 0)  {
+                    if (virStrToLong_ui(device, NULL, 0, &usbsrc->device) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("cannot parse device %s"),
                                        device);
@@ -3903,7 +3901,7 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
         cur = cur->next;
     }
 
-    if (got_vendor && def->source.subsys.u.usb.vendor == 0) {
+    if (got_vendor && usbsrc->vendor == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("vendor cannot be 0."));
         goto out;
@@ -10196,18 +10194,21 @@ virDomainHostdevRemove(virDomainDefPtr def, size_t i)
 
 
 static int
-virDomainHostdevMatchSubsysUSB(virDomainHostdevDefPtr a,
-                               virDomainHostdevDefPtr b)
+virDomainHostdevMatchSubsysUSB(virDomainHostdevDefPtr first,
+                               virDomainHostdevDefPtr second)
 {
-    if (a->source.subsys.u.usb.bus && a->source.subsys.u.usb.device) {
+    virDomainHostdevSubsysUSBPtr first_usbsrc = &first->source.subsys.u.usb;
+    virDomainHostdevSubsysUSBPtr second_usbsrc = &second->source.subsys.u.usb;
+
+    if (first_usbsrc->bus && first_usbsrc->device) {
         /* specified by bus location on host */
-        if (a->source.subsys.u.usb.bus == b->source.subsys.u.usb.bus &&
-            a->source.subsys.u.usb.device == b->source.subsys.u.usb.device)
+        if (first_usbsrc->bus == second_usbsrc->bus &&
+            first_usbsrc->device == second_usbsrc->device)
             return 1;
     } else {
         /* specified by product & vendor id */
-        if (a->source.subsys.u.usb.product == b->source.subsys.u.usb.product &&
-            a->source.subsys.u.usb.vendor == b->source.subsys.u.usb.vendor)
+        if (first_usbsrc->product == second_usbsrc->product &&
+            first_usbsrc->vendor == second_usbsrc->vendor)
             return 1;
     }
     return 0;
@@ -15514,6 +15515,8 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
                                 unsigned int flags,
                                 bool includeTypeInAddr)
 {
+    virDomainHostdevSubsysUSBPtr usbsrc = &def->source.subsys.u.usb;
+
     if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
         def->source.subsys.u.pci.backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
         const char *backend = virDomainHostdevSubsysPCIBackendTypeToString(def->source.subsys.u.pci.backend);
@@ -15533,8 +15536,7 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
         policy = virDomainStartupPolicyTypeToString(def->startupPolicy);
         virBufferAsprintf(buf, " startupPolicy='%s'", policy);
     }
-    if (def->source.subsys.u.usb.autoAddress &&
-        (flags & VIR_DOMAIN_XML_MIGRATABLE))
+    if (usbsrc->autoAddress && (flags & VIR_DOMAIN_XML_MIGRATABLE))
         virBufferAddLit(buf, " autoAddress='yes'");
 
     if (def->missing &&
@@ -15547,18 +15549,14 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
     switch (def->source.subsys.type)
     {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-        if (def->source.subsys.u.usb.vendor) {
-            virBufferAsprintf(buf, "<vendor id='0x%.4x'/>\n",
-                              def->source.subsys.u.usb.vendor);
-            virBufferAsprintf(buf, "<product id='0x%.4x'/>\n",
-                              def->source.subsys.u.usb.product);
+        if (usbsrc->vendor) {
+            virBufferAsprintf(buf, "<vendor id='0x%.4x'/>\n", usbsrc->vendor);
+            virBufferAsprintf(buf, "<product id='0x%.4x'/>\n", usbsrc->product);
         }
-        if (def->source.subsys.u.usb.bus ||
-            def->source.subsys.u.usb.device) {
+        if (usbsrc->bus || usbsrc->device) {
             virBufferAsprintf(buf, "<address %sbus='%d' device='%d'/>\n",
                               includeTypeInAddr ? "type='usb' " : "",
-                              def->source.subsys.u.usb.bus,
-                              def->source.subsys.u.usb.device);
+                              usbsrc->bus, usbsrc->device);
         }
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:

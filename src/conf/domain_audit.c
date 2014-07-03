@@ -388,6 +388,7 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
     char *address = NULL;
     char *device = NULL;
     const char *virt;
+    virDomainHostdevSubsysUSBPtr usbsrc = &hostdev->source.subsys.u.usb;
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
@@ -415,8 +416,7 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
             if (virAsprintfQuiet(&address, "%.3d.%.3d",
-                                 hostdev->source.subsys.u.usb.bus,
-                                 hostdev->source.subsys.u.usb.device) < 0) {
+                                 usbsrc->bus, usbsrc->device) < 0) {
                 VIR_WARN("OOM while encoding audit message");
                 goto cleanup;
             }

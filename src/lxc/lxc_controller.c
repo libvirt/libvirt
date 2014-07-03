@@ -1347,22 +1347,20 @@ virLXCControllerSetupHostdevSubsysUSB(virDomainDefPtr vmDef,
     char *vroot = NULL;
     struct stat sb;
     mode_t mode;
+    virDomainHostdevSubsysUSBPtr usbsrc = &def->source.subsys.u.usb;
 
     if (virAsprintf(&src, USB_DEVFS "/%03d/%03d",
-                    def->source.subsys.u.usb.bus,
-                    def->source.subsys.u.usb.device) < 0)
+                    usbsrc->bus, usbsrc->device) < 0)
         goto cleanup;
 
     if (virAsprintf(&vroot, "/%s/%s.dev/bus/usb/",
                     LXC_STATE_DIR, vmDef->name) < 0)
         goto cleanup;
 
-    if (virAsprintf(&dstdir, "%s/%03d/", vroot,
-                    def->source.subsys.u.usb.bus) < 0)
+    if (virAsprintf(&dstdir, "%s/%03d/", vroot, usbsrc->bus) < 0)
         goto cleanup;
 
-    if (virAsprintf(&dstfile, "%s/%03d", dstdir,
-                    def->source.subsys.u.usb.device) < 0)
+    if (virAsprintf(&dstfile, "%s/%03d", dstdir, usbsrc->device) < 0)
         goto cleanup;
 
     if (stat(src, &sb) < 0) {

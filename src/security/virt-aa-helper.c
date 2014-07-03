@@ -1026,12 +1026,11 @@ get_files(vahControl * ctl)
     for (i = 0; i < ctl->def->nhostdevs; i++)
         if (ctl->def->hostdevs[i]) {
             virDomainHostdevDefPtr dev = ctl->def->hostdevs[i];
+            virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
             switch (dev->source.subsys.type) {
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
                 virUSBDevicePtr usb =
-                    virUSBDeviceNew(dev->source.subsys.u.usb.bus,
-                                    dev->source.subsys.u.usb.device,
-                                    NULL);
+                    virUSBDeviceNew(usbsrc->bus, usbsrc->device, NULL);
 
                 if (usb == NULL)
                     continue;

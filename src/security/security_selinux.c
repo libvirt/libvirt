@@ -1319,6 +1319,7 @@ virSecuritySELinuxSetSecurityHostdevSubsysLabel(virDomainDefPtr def,
                                                 const char *vroot)
 
 {
+    virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
     int ret = -1;
 
     switch (dev->source.subsys.type) {
@@ -1328,8 +1329,8 @@ virSecuritySELinuxSetSecurityHostdevSubsysLabel(virDomainDefPtr def,
         if (dev->missing)
             return 0;
 
-        usb = virUSBDeviceNew(dev->source.subsys.u.usb.bus,
-                              dev->source.subsys.u.usb.device,
+        usb = virUSBDeviceNew(usbsrc->bus,
+                              usbsrc->device,
                               vroot);
         if (!usb)
             goto done;
@@ -1508,6 +1509,7 @@ virSecuritySELinuxRestoreSecurityHostdevSubsysLabel(virSecurityManagerPtr mgr,
                                                     const char *vroot)
 
 {
+    virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
     int ret = -1;
 
     switch (dev->source.subsys.type) {
@@ -1517,8 +1519,8 @@ virSecuritySELinuxRestoreSecurityHostdevSubsysLabel(virSecurityManagerPtr mgr,
         if (dev->missing)
             return 0;
 
-        usb = virUSBDeviceNew(dev->source.subsys.u.usb.bus,
-                              dev->source.subsys.u.usb.device,
+        usb = virUSBDeviceNew(usbsrc->bus,
+                              usbsrc->device,
                               vroot);
         if (!usb)
             goto done;

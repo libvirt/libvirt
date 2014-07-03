@@ -4264,6 +4264,7 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
     char *src = NULL;
     struct stat sb;
     virUSBDevicePtr usb = NULL;
+    virDomainHostdevSubsysUSBPtr usbsrc;
 
     if (virDomainHostdevFind(vm->def, def, NULL) >= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -4271,13 +4272,12 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
         return -1;
     }
 
+    usbsrc = &def->source.subsys.u.usb;
     if (virAsprintf(&src, "/dev/bus/usb/%03d/%03d",
-                    def->source.subsys.u.usb.bus,
-                    def->source.subsys.u.usb.device) < 0)
+                    usbsrc->bus, usbsrc->device) < 0)
         goto cleanup;
 
-    if (!(usb = virUSBDeviceNew(def->source.subsys.u.usb.bus,
-                                def->source.subsys.u.usb.device, NULL)))
+    if (!(usb = virUSBDeviceNew(usbsrc->bus, usbsrc->device, NULL)))
         goto cleanup;
 
     if (stat(src, &sb) < 0) {
@@ -4708,6 +4708,7 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
     char *dst = NULL;
     virUSBDevicePtr usb = NULL;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    virDomainHostdevSubsysUSBPtr usbsrc;
 
     if ((idx = virDomainHostdevFind(vm->def,
                                     dev->data.hostdev,
@@ -4717,9 +4718,9 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
+    usbsrc = &def->source.subsys.u.usb;
     if (virAsprintf(&dst, "/dev/bus/usb/%03d/%03d",
-                    def->source.subsys.u.usb.bus,
-                    def->source.subsys.u.usb.device) < 0)
+                    usbsrc->bus, usbsrc->device) < 0)
         goto cleanup;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
@@ -4728,8 +4729,7 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
-    if (!(usb = virUSBDeviceNew(def->source.subsys.u.usb.bus,
-                                def->source.subsys.u.usb.device, NULL)))
+    if (!(usb = virUSBDeviceNew(usbsrc->bus, usbsrc->device, NULL)))
         goto cleanup;
 
     if (lxcDomainAttachDeviceUnlink(vm, dst) < 0) {

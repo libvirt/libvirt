@@ -509,6 +509,7 @@ virSecurityDACSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityDACCallbackData cbdata;
+    virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
     int ret = -1;
 
     if (!priv->dynamicOwnership)
@@ -530,10 +531,7 @@ virSecurityDACSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
         if (dev->missing)
             return 0;
 
-        usb = virUSBDeviceNew(dev->source.subsys.u.usb.bus,
-                              dev->source.subsys.u.usb.device,
-                              vroot);
-        if (!usb)
+        if (!(usb = virUSBDeviceNew(usbsrc->bus, usbsrc->device, vroot)))
             goto done;
 
         ret = virUSBDeviceFileIterate(usb,
@@ -640,6 +638,7 @@ virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDefPtr secdef;
+    virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
     int ret = -1;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
@@ -657,10 +656,7 @@ virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
         if (dev->missing)
             return 0;
 
-        usb = virUSBDeviceNew(dev->source.subsys.u.usb.bus,
-                              dev->source.subsys.u.usb.device,
-                              vroot);
-        if (!usb)
+        if (!(usb = virUSBDeviceNew(usbsrc->bus, usbsrc->device, vroot)))
             goto done;
 
         ret = virUSBDeviceFileIterate(usb, virSecurityDACRestoreSecurityUSBLabel, mgr);

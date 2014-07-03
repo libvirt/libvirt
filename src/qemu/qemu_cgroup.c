@@ -242,6 +242,7 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
     virPCIDevicePtr pci = NULL;
     virUSBDevicePtr usb = NULL;
     virSCSIDevicePtr scsi = NULL;
@@ -290,8 +291,7 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
              */
             if (dev->missing)
                 break;
-            if ((usb = virUSBDeviceNew(dev->source.subsys.u.usb.bus,
-                                       dev->source.subsys.u.usb.device,
+            if ((usb = virUSBDeviceNew(usbsrc->bus, usbsrc->device,
                                        NULL)) == NULL) {
                 goto cleanup;
             }

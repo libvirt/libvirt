@@ -5040,10 +5040,9 @@ qemuBuildUSBHostdevDevStr(virDomainDefPtr def,
                           virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
 
-    if (!dev->missing &&
-        !dev->source.subsys.u.usb.bus &&
-        !dev->source.subsys.u.usb.device) {
+    if (!dev->missing && !usbsrc->bus && !usbsrc->device) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("USB host device is missing bus/device information"));
         return NULL;
@@ -5052,8 +5051,7 @@ qemuBuildUSBHostdevDevStr(virDomainDefPtr def,
     virBufferAddLit(&buf, "usb-host");
     if (!dev->missing) {
         virBufferAsprintf(&buf, ",hostbus=%d,hostaddr=%d",
-                          dev->source.subsys.u.usb.bus,
-                          dev->source.subsys.u.usb.device);
+                          usbsrc->bus, usbsrc->device);
     }
     virBufferAsprintf(&buf, ",id=%s", dev->info->alias);
     if (dev->info->bootIndex)
@@ -5113,6 +5111,7 @@ char *
 qemuBuildUSBHostdevUSBDevStr(virDomainHostdevDefPtr dev)
 {
     char *ret = NULL;
+    virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
 
     if (dev->missing) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -5120,16 +5119,13 @@ qemuBuildUSBHostdevUSBDevStr(virDomainHostdevDefPtr dev)
         return NULL;
     }
 
-    if (!dev->source.subsys.u.usb.bus &&
-        !dev->source.subsys.u.usb.device) {
+    if (!usbsrc->bus && !usbsrc->device) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("USB host device is missing bus/device information"));
         return NULL;
     }
 
-    ignore_value(virAsprintf(&ret, "host:%d.%d",
-                             dev->source.subsys.u.usb.bus,
-                             dev->source.subsys.u.usb.device));
+    ignore_value(virAsprintf(&ret, "host:%d.%d", usbsrc->bus, usbsrc->device));
     return ret;
 }
 
@@ -10216,12 +10212,14 @@ static virDomainHostdevDefPtr
 qemuParseCommandLineUSB(const char *val)
 {
     virDomainHostdevDefPtr def = virDomainHostdevDefAlloc();
+    virDomainHostdevSubsysUSBPtr usbsrc;
     int first = 0, second = 0;
     const char *start;
     char *end;
 
     if (!def)
        goto error;
+    usbsrc = &def->source.subsys.u.usb;
 
     if (!STRPREFIX(val, "host:")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -10260,11 +10258,11 @@ qemuParseCommandLineUSB(const char *val)
     def->managed = false;
     def->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB;
     if (*end == '.') {
-        def->source.subsys.u.usb.bus = first;
-        def->source.subsys.u.usb.device = second;
+        usbsrc->bus = first;
+        usbsrc->device = second;
     } else {
-        def->source.subsys.u.usb.vendor = first;
-        def->source.subsys.u.usb.product = second;
+        usbsrc->vendor = first;
+        usbsrc->product = second;
     }
     return def;
 

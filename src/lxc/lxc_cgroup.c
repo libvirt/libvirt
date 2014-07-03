@@ -401,6 +401,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
     VIR_DEBUG("Allowing any hostdev block devs");
     for (i = 0; i < def->nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+        virDomainHostdevSubsysUSBPtr usbsrc = &hostdev->source.subsys.u.usb;
         virUSBDevicePtr usb;
 
         switch (hostdev->mode) {
@@ -410,8 +411,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
             if (hostdev->missing)
                 continue;
 
-            if ((usb = virUSBDeviceNew(hostdev->source.subsys.u.usb.bus,
-                                       hostdev->source.subsys.u.usb.device,
+            if ((usb = virUSBDeviceNew(usbsrc->bus, usbsrc->device,
                                        NULL)) == NULL)
                 goto cleanup;
 

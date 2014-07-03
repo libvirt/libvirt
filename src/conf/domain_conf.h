@@ -388,20 +388,24 @@ typedef enum {
 
 VIR_ENUM_DECL(virDomainHostdevSubsysPCIBackend)
 
+typedef struct _virDomainHostdevSubsysUSB virDomainHostdevSubsysUSB;
+typedef virDomainHostdevSubsysUSB *virDomainHostdevSubsysUSBPtr;
+struct _virDomainHostdevSubsysUSB {
+    bool autoAddress; /* bus/device were filled automatically based
+                         on vendor/product */
+    unsigned bus;
+    unsigned device;
+
+    unsigned vendor;
+    unsigned product;
+};
+
 typedef struct _virDomainHostdevSubsys virDomainHostdevSubsys;
 typedef virDomainHostdevSubsys *virDomainHostdevSubsysPtr;
 struct _virDomainHostdevSubsys {
     int type; /* enum virDomainHostdevSubsysType */
     union {
-        struct {
-            bool autoAddress; /* bus/device were filled automatically based
-                                 on vedor/product */
-            unsigned bus;
-            unsigned device;
-
-            unsigned vendor;
-            unsigned product;
-        } usb;
+        virDomainHostdevSubsysUSB usb;
         struct {
             virDevicePCIAddress addr; /* host address */
             int backend; /* enum virDomainHostdevSubsysPCIBackendType */

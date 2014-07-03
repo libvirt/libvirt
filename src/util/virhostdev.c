@@ -897,22 +897,19 @@ virHostdevUpdateActiveUSBDevices(virHostdevManagerPtr mgr,
 
     virObjectLock(mgr->activeUSBHostdevs);
     for (i = 0; i < nhostdevs; i++) {
+        virDomainHostdevSubsysUSBPtr usbsrc;
         virUSBDevicePtr usb = NULL;
         hostdev = hostdevs[i];
+        usbsrc = &hostdev->source.subsys.u.usb;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
             continue;
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
             continue;
 
-        usb = virUSBDeviceNew(hostdev->source.subsys.u.usb.bus,
-                              hostdev->source.subsys.u.usb.device,
-                              NULL);
-        if (!usb) {
+        if (!(usb = virUSBDeviceNew(usbsrc->bus, usbsrc->device, NULL))) {
             VIR_WARN("Unable to reattach USB device %03d.%03d on domain %s",
-                     hostdev->source.subsys.u.usb.bus,
-                     hostdev->source.subsys.u.usb.device,
-                     dom_name);
+                     usbsrc->bus, usbsrc->device, dom_name);
             continue;
         }
 
@@ -1047,11 +1044,12 @@ virHostdevFindUSBDevice(virDomainHostdevDefPtr hostdev,
                         bool mandatory,
                         virUSBDevicePtr *usb)
 {
-    unsigned vendor = hostdev->source.subsys.u.usb.vendor;
-    unsigned product = hostdev->source.subsys.u.usb.product;
-    unsigned bus = hostdev->source.subsys.u.usb.bus;
-    unsigned device = hostdev->source.subsys.u.usb.device;
-    bool autoAddress = hostdev->source.subsys.u.usb.autoAddress;
+    virDomainHostdevSubsysUSBPtr usbsrc = &hostdev->source.subsys.u.usb;
+    unsigned vendor = usbsrc->vendor;
+    unsigned product = usbsrc->product;
+    unsigned bus = usbsrc->bus;
+    unsigned device = usbsrc->device;
+    bool autoAddress = usbsrc->autoAddress;
     int rc;
 
     *usb = NULL;
@@ -1106,16 +1104,15 @@ virHostdevFindUSBDevice(virDomainHostdevDefPtr hostdev,
             return -1;
         }
 
-        hostdev->source.subsys.u.usb.bus = virUSBDeviceGetBus(*usb);
-        hostdev->source.subsys.u.usb.device = virUSBDeviceGetDevno(*usb);
-        hostdev->source.subsys.u.usb.autoAddress = true;
+        usbsrc->bus = virUSBDeviceGetBus(*usb);
+        usbsrc->device = virUSBDeviceGetDevno(*usb);
+        usbsrc->autoAddress = true;
 
         if (autoAddress) {
             VIR_INFO("USB device %x:%x found at bus:%u device:%u (moved"
                      " from bus:%u device:%u)",
                      vendor, product,
-                     hostdev->source.subsys.u.usb.bus,
-                     hostdev->source.subsys.u.usb.device,
+                     usbsrc->bus, usbsrc->device,
                      bus, device);
         }
     } else if (!vendor && bus) {
@@ -1332,6 +1329,7 @@ virHostdevReAttachUSBDevices(virHostdevManagerPtr hostdev_mgr,
     virObjectLock(hostdev_mgr->activeUSBHostdevs);
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
+        virDomainHostdevSubsysUSBPtr usbsrc = &hostdev->source.subsys.u.usb;
         virUSBDevicePtr usb, tmp;
         const char *usedby_drvname;
         const char *usedby_domname;
@@ -1343,15 +1341,9 @@ virHostdevReAttachUSBDevices(virHostdevManagerPtr hostdev_mgr,
         if (hostdev->missing)
             continue;
 
-        usb = virUSBDeviceNew(hostdev->source.subsys.u.usb.bus,
-                              hostdev->source.subsys.u.usb.device,
-                              NULL);
-
-        if (!usb) {
+        if (!(usb = virUSBDeviceNew(usbsrc->bus, usbsrc->device, NULL))) {
             VIR_WARN("Unable to reattach USB device %03d.%03d on domain %s",
-                     hostdev->source.subsys.u.usb.bus,
-                     hostdev->source.subsys.u.usb.device,
-                     dom_name);
+                     usbsrc->bus, usbsrc->device, dom_name);
             continue;
         }
 
@@ -1367,8 +1359,7 @@ virHostdevReAttachUSBDevices(virHostdevManagerPtr hostdev_mgr,
         if (!tmp) {
             VIR_WARN("Unable to find device %03d.%03d "
                      "in list of active USB devices",
-                     hostdev->source.subsys.u.usb.bus,
-                     hostdev->source.subsys.u.usb.device);
+                     usbsrc->bus, usbsrc->device);
             continue;
         }
 
@@ -1376,10 +1367,7 @@ virHostdevReAttachUSBDevices(virHostdevManagerPtr hostdev_mgr,
         if (STREQ_NULLABLE(drv_name, usedby_drvname) &&
             STREQ_NULLABLE(dom_name, usedby_domname)) {
             VIR_DEBUG("Removing %03d.%03d dom=%s from activeUSBHostdevs",
-                      hostdev->source.subsys.u.usb.bus,
-                      hostdev->source.subsys.u.usb.device,
-                      dom_name);
-
+                      usbsrc->bus, usbsrc->device, dom_name);
             virUSBDeviceListDel(hostdev_mgr->activeUSBHostdevs, tmp);
         }
     }

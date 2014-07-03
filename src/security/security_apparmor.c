@@ -812,6 +812,7 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     int ret = -1;
     virSecurityLabelDefPtr secdef =
         virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
+    virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
 
     if (!secdef)
         return -1;
@@ -833,10 +834,7 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
         virUSBDevicePtr usb =
-            virUSBDeviceNew(dev->source.subsys.u.usb.bus,
-                            dev->source.subsys.u.usb.device,
-                            vroot);
-
+            virUSBDeviceNew(usbsrc->bus, usbsrc->device, vroot);
         if (!usb)
             goto done;
 
