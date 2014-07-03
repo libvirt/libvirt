@@ -938,19 +938,18 @@ virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
 
     virObjectLock(mgr->activeSCSIHostdevs);
     for (i = 0; i < nhostdevs; i++) {
+        virDomainHostdevSubsysSCSIPtr scsisrc;
         hostdev = hostdevs[i];
+        scsisrc = &hostdev->source.subsys.u.scsi;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
             hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
             continue;
 
         if (!(scsi = virSCSIDeviceNew(NULL,
-                                      hostdev->source.subsys.u.scsi.adapter,
-                                      hostdev->source.subsys.u.scsi.bus,
-                                      hostdev->source.subsys.u.scsi.target,
-                                      hostdev->source.subsys.u.scsi.unit,
-                                      hostdev->readonly,
-                                      hostdev->shareable)))
+                                      scsisrc->adapter, scsisrc->bus,
+                                      scsisrc->target, scsisrc->unit,
+                                      hostdev->readonly, hostdev->shareable)))
             goto cleanup;
 
         if ((tmp = virSCSIDeviceListFind(mgr->activeSCSIHostdevs, scsi))) {
@@ -1220,6 +1219,8 @@ virHostdevPrepareSCSIDevices(virHostdevManagerPtr hostdev_mgr,
     /* Loop 1: build temporary list */
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
+        virDomainHostdevSubsysSCSIPtr scsisrc =
+            &hostdev->source.subsys.u.scsi;
         virSCSIDevicePtr scsi;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
@@ -1233,12 +1234,9 @@ virHostdevPrepareSCSIDevices(virHostdevManagerPtr hostdev_mgr,
         }
 
         if (!(scsi = virSCSIDeviceNew(NULL,
-                                      hostdev->source.subsys.u.scsi.adapter,
-                                      hostdev->source.subsys.u.scsi.bus,
-                                      hostdev->source.subsys.u.scsi.target,
-                                      hostdev->source.subsys.u.scsi.unit,
-                                      hostdev->readonly,
-                                      hostdev->shareable)))
+                                      scsisrc->adapter, scsisrc->bus,
+                                      scsisrc->target, scsisrc->unit,
+                                      hostdev->readonly, hostdev->shareable)))
             goto cleanup;
 
         if (scsi && virSCSIDeviceListAdd(list, scsi) < 0) {
@@ -1383,6 +1381,8 @@ virHostdevReAttachSCSIDevices(virHostdevManagerPtr hostdev_mgr,
     virObjectLock(hostdev_mgr->activeSCSIHostdevs);
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
+        virDomainHostdevSubsysSCSIPtr scsisrc =
+            &hostdev->source.subsys.u.scsi;
         virSCSIDevicePtr scsi;
         virSCSIDevicePtr tmp;
 
@@ -1391,18 +1391,12 @@ virHostdevReAttachSCSIDevices(virHostdevManagerPtr hostdev_mgr,
             continue;
 
         if (!(scsi = virSCSIDeviceNew(NULL,
-                                      hostdev->source.subsys.u.scsi.adapter,
-                                      hostdev->source.subsys.u.scsi.bus,
-                                      hostdev->source.subsys.u.scsi.target,
-                                      hostdev->source.subsys.u.scsi.unit,
-                                      hostdev->readonly,
-                                      hostdev->shareable))) {
+                                      scsisrc->adapter, scsisrc->bus,
+                                      scsisrc->target, scsisrc->unit,
+                                      hostdev->readonly, hostdev->shareable))) {
             VIR_WARN("Unable to reattach SCSI device %s:%d:%d:%d on domain %s",
-                     hostdev->source.subsys.u.scsi.adapter,
-                     hostdev->source.subsys.u.scsi.bus,
-                     hostdev->source.subsys.u.scsi.target,
-                     hostdev->source.subsys.u.scsi.unit,
-                     dom_name);
+                     scsisrc->adapter, scsisrc->bus, scsisrc->target,
+                     scsisrc->unit, dom_name);
             continue;
         }
 
@@ -1412,20 +1406,15 @@ virHostdevReAttachSCSIDevices(virHostdevManagerPtr hostdev_mgr,
         if (!(tmp = virSCSIDeviceListFind(hostdev_mgr->activeSCSIHostdevs, scsi))) {
             VIR_WARN("Unable to find device %s:%d:%d:%d "
                      "in list of active SCSI devices",
-                     hostdev->source.subsys.u.scsi.adapter,
-                     hostdev->source.subsys.u.scsi.bus,
-                     hostdev->source.subsys.u.scsi.target,
-                     hostdev->source.subsys.u.scsi.unit);
+                     scsisrc->adapter, scsisrc->bus,
+                     scsisrc->target, scsisrc->unit);
             virSCSIDeviceFree(scsi);
             continue;
         }
 
         VIR_DEBUG("Removing %s:%d:%d:%d dom=%s from activeSCSIHostdevs",
-                   hostdev->source.subsys.u.scsi.adapter,
-                   hostdev->source.subsys.u.scsi.bus,
-                   hostdev->source.subsys.u.scsi.target,
-                   hostdev->source.subsys.u.scsi.unit,
-                   dom_name);
+                   scsisrc->adapter, scsisrc->bus, scsisrc->target,
+                   scsisrc->unit, dom_name);
 
         virSCSIDeviceListDel(hostdev_mgr->activeSCSIHostdevs, tmp,
                              drv_name, dom_name);

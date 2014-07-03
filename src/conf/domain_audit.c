@@ -390,6 +390,7 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
     const char *virt;
     virDomainHostdevSubsysUSBPtr usbsrc = &hostdev->source.subsys.u.usb;
     virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
+    virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
@@ -424,10 +425,8 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
             if (virAsprintfQuiet(&address, "%s:%d:%d:%d",
-                                 hostdev->source.subsys.u.scsi.adapter,
-                                 hostdev->source.subsys.u.scsi.bus,
-                                 hostdev->source.subsys.u.scsi.target,
-                                 hostdev->source.subsys.u.scsi.unit) < 0) {
+                                 scsisrc->adapter, scsisrc->bus,
+                                 scsisrc->target, scsisrc->unit) < 0) {
                 VIR_WARN("OOM while encoding audit message");
                 goto cleanup;
             }

@@ -4018,6 +4018,7 @@ virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr node,
     bool got_address = false, got_adapter = false;
     xmlNodePtr cur;
     char *bus = NULL, *target = NULL, *unit = NULL;
+    virDomainHostdevSubsysSCSIPtr scsisrc = &def->source.subsys.u.scsi;
 
     cur = node->children;
     while (cur != NULL) {
@@ -4039,19 +4040,19 @@ virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr node,
                     goto cleanup;
                 }
 
-                if (virStrToLong_ui(bus, NULL, 0, &def->source.subsys.u.scsi.bus) < 0) {
+                if (virStrToLong_ui(bus, NULL, 0, &scsisrc->bus) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("cannot parse bus '%s'"), bus);
                     goto cleanup;
                 }
 
-                if (virStrToLong_ui(target, NULL, 0, &def->source.subsys.u.scsi.target) < 0) {
+                if (virStrToLong_ui(target, NULL, 0, &scsisrc->target) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("cannot parse target '%s'"), target);
                     goto cleanup;
                 }
 
-                if (virStrToLong_ui(unit, NULL, 0, &def->source.subsys.u.scsi.unit) < 0) {
+                if (virStrToLong_ui(unit, NULL, 0, &scsisrc->unit) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("cannot parse unit '%s'"), unit);
                     goto cleanup;
@@ -4065,8 +4066,7 @@ virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr node,
                                      "for scsi hostdev source"));
                     goto cleanup;
                 }
-                if (!(def->source.subsys.u.scsi.adapter =
-                      virXMLPropString(cur, "name"))) {
+                if (!(scsisrc->adapter = virXMLPropString(cur, "name"))) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("'adapter' must be specified for scsi hostdev source"));
                     goto cleanup;
@@ -4247,6 +4247,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     int backend;
     int ret = -1;
     virDomainHostdevSubsysPCIPtr pcisrc = &def->source.subsys.u.pci;
+    virDomainHostdevSubsysSCSIPtr scsisrc = &def->source.subsys.u.scsi;
 
     /* @managed can be read from the xml document - it is always an
      * attribute of the toplevel element, no matter what type of
@@ -4304,8 +4305,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
             goto error;
         }
 
-        if ((def->source.subsys.u.scsi.sgio =
-             virDomainDeviceSGIOTypeFromString(sgio)) <= 0) {
+        if ((scsisrc->sgio = virDomainDeviceSGIOTypeFromString(sgio)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown sgio mode '%s'"), sgio);
             goto error;
@@ -10231,13 +10231,17 @@ virDomainHostdevMatchSubsysPCI(virDomainHostdevDefPtr first,
 }
 
 static int
-virDomainHostdevMatchSubsysSCSI(virDomainHostdevDefPtr a,
-                                virDomainHostdevDefPtr b)
+virDomainHostdevMatchSubsysSCSI(virDomainHostdevDefPtr first,
+                                virDomainHostdevDefPtr second)
 {
-    if (STREQ(a->source.subsys.u.scsi.adapter, b->source.subsys.u.scsi.adapter) &&
-        a->source.subsys.u.scsi.bus == b->source.subsys.u.scsi.bus &&
-        a->source.subsys.u.scsi.target == b->source.subsys.u.scsi.target &&
-        a->source.subsys.u.scsi.unit == b->source.subsys.u.scsi.unit)
+    virDomainHostdevSubsysSCSIPtr first_scsisrc = &first->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIPtr second_scsisrc =
+        &second->source.subsys.u.scsi;
+
+    if (STREQ(first_scsisrc->adapter, second_scsisrc->adapter) &&
+        first_scsisrc->bus == second_scsisrc->bus &&
+        first_scsisrc->target == second_scsisrc->target &&
+        first_scsisrc->unit == second_scsisrc->unit)
         return 1;
     return 0;
 }
@@ -15521,6 +15525,7 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
 {
     virDomainHostdevSubsysUSBPtr usbsrc = &def->source.subsys.u.usb;
     virDomainHostdevSubsysPCIPtr pcisrc = &def->source.subsys.u.pci;
+    virDomainHostdevSubsysSCSIPtr scsisrc = &def->source.subsys.u.scsi;
 
     if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
         pcisrc->backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
@@ -15589,12 +15594,10 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
         virBufferAsprintf(buf, "<adapter name='%s'/>\n",
-                          def->source.subsys.u.scsi.adapter);
+                          scsisrc->adapter);
         virBufferAsprintf(buf, "<address %sbus='%d' target='%d' unit='%d'/>\n",
                           includeTypeInAddr ? "type='scsi' " : "",
-                          def->source.subsys.u.scsi.bus,
-                          def->source.subsys.u.scsi.target,
-                          def->source.subsys.u.scsi.unit);
+                          scsisrc->bus, scsisrc->target, scsisrc->unit);
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -17012,6 +17015,7 @@ virDomainHostdevDefFormat(virBufferPtr buf,
                           unsigned int flags)
 {
     const char *mode = virDomainHostdevModeTypeToString(def->mode);
+    virDomainHostdevSubsysSCSIPtr scsisrc = &def->source.subsys.u.scsi;
     const char *type;
 
     if (!mode) {
@@ -17051,11 +17055,10 @@ virDomainHostdevDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " managed='%s'",
                           def->managed ? "yes" : "no");
 
-        if (def->source.subsys.type ==
-            VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
-            def->source.subsys.u.scsi.sgio)
+        if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
+            scsisrc->sgio)
             virBufferAsprintf(buf, " sgio='%s'",
-                              virDomainDeviceSGIOTypeToString(def->source.subsys.u.scsi.sgio));
+                              virDomainDeviceSGIOTypeToString(scsisrc->sgio));
     }
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);

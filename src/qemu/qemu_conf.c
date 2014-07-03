@@ -927,11 +927,12 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
         if (!(key = qemuGetSharedDeviceKey(virDomainDiskGetSource(disk))))
             goto cleanup;
     } else {
+        virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
         if (!(dev_name = virSCSIDeviceGetDevName(NULL,
-                                                 hostdev->source.subsys.u.scsi.adapter,
-                                                 hostdev->source.subsys.u.scsi.bus,
-                                                 hostdev->source.subsys.u.scsi.target,
-                                                 hostdev->source.subsys.u.scsi.unit)))
+                                                 scsisrc->adapter,
+                                                 scsisrc->bus,
+                                                 scsisrc->target,
+                                                 scsisrc->unit)))
             goto cleanup;
 
         if (virAsprintf(&dev_path, "/dev/%s", dev_name) < 0)
@@ -1032,11 +1033,12 @@ qemuRemoveSharedDevice(virQEMUDriverPtr driver,
         if (!(key = qemuGetSharedDeviceKey(virDomainDiskGetSource(disk))))
             goto cleanup;
     } else {
+        virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
         if (!(dev_name = virSCSIDeviceGetDevName(NULL,
-                                                 hostdev->source.subsys.u.scsi.adapter,
-                                                 hostdev->source.subsys.u.scsi.bus,
-                                                 hostdev->source.subsys.u.scsi.target,
-                                                 hostdev->source.subsys.u.scsi.unit)))
+                                                 scsisrc->adapter,
+                                                 scsisrc->bus,
+                                                 scsisrc->target,
+                                                 scsisrc->unit)))
             goto cleanup;
 
         if (virAsprintf(&dev_path, "/dev/%s", dev_name) < 0)

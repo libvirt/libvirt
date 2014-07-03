@@ -511,6 +511,7 @@ virSecurityDACSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     virSecurityDACCallbackData cbdata;
     virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
     virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
+    virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     int ret = -1;
 
     if (!priv->dynamicOwnership)
@@ -572,12 +573,9 @@ virSecurityDACSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI: {
         virSCSIDevicePtr scsi =
             virSCSIDeviceNew(NULL,
-                             dev->source.subsys.u.scsi.adapter,
-                             dev->source.subsys.u.scsi.bus,
-                             dev->source.subsys.u.scsi.target,
-                             dev->source.subsys.u.scsi.unit,
-                             dev->readonly,
-                             dev->shareable);
+                             scsisrc->adapter, scsisrc->bus,
+                             scsisrc->target, scsisrc->unit,
+                             dev->readonly, dev->shareable);
 
         if (!scsi)
             goto done;
@@ -638,6 +636,7 @@ virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
     virSecurityLabelDefPtr secdef;
     virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
     virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
+    virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     int ret = -1;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
@@ -691,12 +690,9 @@ virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI: {
         virSCSIDevicePtr scsi =
             virSCSIDeviceNew(NULL,
-                             dev->source.subsys.u.scsi.adapter,
-                             dev->source.subsys.u.scsi.bus,
-                             dev->source.subsys.u.scsi.target,
-                             dev->source.subsys.u.scsi.unit,
-                             dev->readonly,
-                             dev->shareable);
+                             scsisrc->adapter, scsisrc->bus,
+                             scsisrc->target, scsisrc->unit,
+                             dev->readonly, dev->shareable);
 
         if (!scsi)
             goto done;

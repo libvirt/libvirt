@@ -5130,13 +5130,12 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
                            qemuBuildCommandLineCallbacksPtr callbacks)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     char *sg = NULL;
 
     sg = (callbacks->qemuGetSCSIDeviceSgName)(NULL,
-                                              dev->source.subsys.u.scsi.adapter,
-                                              dev->source.subsys.u.scsi.bus,
-                                              dev->source.subsys.u.scsi.target,
-                                              dev->source.subsys.u.scsi.unit);
+                                              scsisrc->adapter, scsisrc->bus,
+                                              scsisrc->target, scsisrc->unit);
     if (!sg)
         goto error;
 

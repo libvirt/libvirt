@@ -244,6 +244,7 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
     virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
+    virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     virPCIDevicePtr pci = NULL;
     virUSBDevicePtr usb = NULL;
     virSCSIDevicePtr scsi = NULL;
@@ -307,10 +308,8 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
 
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
             if ((scsi = virSCSIDeviceNew(NULL,
-                                         dev->source.subsys.u.scsi.adapter,
-                                         dev->source.subsys.u.scsi.bus,
-                                         dev->source.subsys.u.scsi.target,
-                                         dev->source.subsys.u.scsi.unit,
+                                         scsisrc->adapter, scsisrc->bus,
+                                         scsisrc->target, scsisrc->unit,
                                          dev->readonly,
                                          dev->shareable)) == NULL)
                 goto cleanup;
