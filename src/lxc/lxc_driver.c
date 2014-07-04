@@ -1425,7 +1425,7 @@ lxcConnectDomainEventDeregisterAny(virConnectPtr conn,
 /**
  * lxcDomainDestroyFlags:
  * @dom: pointer to domain to destroy
- * @flags: an OR'ed set of virDomainDestroyFlags
+ * @flags: extra flags; not used yet.
  *
  * Sends SIGKILL to container root process to terminate the container
  *
