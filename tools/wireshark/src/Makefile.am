@@ -18,7 +18,7 @@
 #
 # Author: Yuto KAWAMURA(kawamuray)
 
-INCLUDES = -I$(top_srcdir)
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_srcdir)/gnulib/lib
 
 ws_plugin_LTLIBRARIES     = libvirt.la
 libvirt_la_SOURCES        = packet-libvirt.h packet-libvirt.c plugin.c

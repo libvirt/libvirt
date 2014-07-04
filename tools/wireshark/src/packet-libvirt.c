@@ -34,6 +34,7 @@
 #endif
 #include <rpc/xdr.h>
 #include "packet-libvirt.h"
+#include "internal.h"
 
 static int proto_libvirt = -1;
 static int hf_libvirt_length = -1;
@@ -413,7 +414,7 @@ dissect_libvirt_message(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree)
 }
 
 static guint32
-get_message_len(packet_info *pinfo __attribute__((unused)), tvbuff_t *tvb, int offset)
+get_message_len(packet_info *pinfo ATTRIBUTE_UNUSED, tvbuff_t *tvb, int offset)
 {
     return tvb_get_ntohl(tvb, offset);
 }
