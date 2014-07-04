@@ -36,6 +36,16 @@
 #include "packet-libvirt.h"
 #include "internal.h"
 
+#define WIRESHARK_VERSION               \
+    ((VERSION_MAJOR * 1000 * 1000) +    \
+     (VERSION_MINOR * 1000) +           \
+     (VERSION_MICRO))
+
+/* Wireshark 1.12 brings API change */
+#if WIRESHARK_VERSION < 1012000
+# define WIRESHARK_COMPAT
+#endif
+
 static int proto_libvirt = -1;
 static int hf_libvirt_length = -1;
 static int hf_libvirt_program = -1;
@@ -307,7 +317,11 @@ dissect_libvirt_payload_xdr_data(tvbuff_t *tvb, proto_tree *tree, gint payload_l
     }
 
     payload_tvb = tvb_new_subset(tvb, start, -1, payload_length);
+#ifdef WIRESHARK_COMPAT
     payload_data = (caddr_t)tvb_memdup(payload_tvb, 0, payload_length);
+#else
+    payload_data = (caddr_t)tvb_memdup(NULL, payload_tvb, 0, payload_length);
+#endif
     xdrmem_create(&xdrs, payload_data, payload_length, XDR_DECODE);
 
     dissect(payload_tvb, tree, &xdrs, -1);
@@ -350,8 +364,14 @@ dissect_libvirt_payload(tvbuff_t *tvb, proto_tree *tree,
     proto_tree_add_item(tree, hf_libvirt_unknown, tvb, VIR_HEADER_LEN, -1, ENC_NA);
 }
 
+#ifdef WIRESHARK_COMPAT
 static void
 dissect_libvirt_message(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree)
+#else
+static int
+dissect_libvirt_message(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree,
+                        void *opaque ATTRIBUTE_UNUSED)
+#endif
 {
     goffset offset;
     guint32 prog, proc, type, serial, status;
@@ -411,6 +431,10 @@ dissect_libvirt_message(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree)
         /* Dissect payload remaining */
         dissect_libvirt_payload(tvb, libvirt_tree, prog, proc, type, status);
     }
+
+#ifndef WIRESHARK_COMPAT
+    return 0;
+#endif
 }
 
 static guint32
@@ -424,7 +448,13 @@ dissect_libvirt(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree)
 {
     /* Another magic const - 4; simply, how much bytes
      * is needed to tell the length of libvirt packet. */
-    tcp_dissect_pdus(tvb, pinfo, tree, TRUE, 4, get_message_len, dissect_libvirt_message);
+#ifdef WIRESHARK_COMPAT
+    tcp_dissect_pdus(tvb, pinfo, tree, TRUE, 4,
+                     get_message_len, dissect_libvirt_message);
+#else
+    tcp_dissect_pdus(tvb, pinfo, tree, TRUE, 4,
+                     get_message_len, dissect_libvirt_message, NULL);
+#endif
 }
 
 void
