@@ -64,7 +64,7 @@ if test -r "$fstab"; then
     sed 's/^\([^#]\)/lxc.mount.entry = \1/' "$fstab" >>"${conf_new}"
 fi
 
-memory=$(free | sed -n '/Mem:/s/ \+/ /gp' | cut -f 2 -d ' ')
+memory=$(free -b | sed -n '/Mem:/s/ \+/ /gp' | cut -f 2 -d ' ')
 default_tmpfs="size=$((memory/2))"
 
 # Do we have tmpfs without size param?
