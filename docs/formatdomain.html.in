@@ -3856,7 +3856,7 @@ qemu-kvm -net nic,model=? /dev/null
         &lt;outbound average='128' peak='256' burst='256'/&gt;
       &lt;/bandwidth&gt;</b>
     &lt;/interface&gt;
-  &lt;devices&gt;
+  &lt;/devices&gt;
   ...</pre>
 
     <p>
@@ -3888,7 +3888,7 @@ qemu-kvm -net nic,model=? /dev/null
       <b>&lt;/vlan&gt;</b>
       ...
     &lt;/interface&gt;
-  &lt;devices&gt;
+  &lt;/devices&gt;
   ...</pre>
 
     <p>
@@ -3932,7 +3932,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;target dev='vnet0'/&gt;
       <b>&lt;link state='down'/&gt;</b>
     &lt;/interface&gt;
-  &lt;devices&gt;
+  &lt;/devices&gt;
   ...</pre>
 
     <p>
@@ -4905,7 +4905,7 @@ qemu-kvm -net nic,model=? /dev/null
   &lt;devices&gt;
     &lt;sound model='ich6'&gt;
       &lt;codec type='micro'/&gt;
-    &lt;sound/&gt;
+    &lt;/sound&gt;
   &lt;/devices&gt;
   ...</pre>
 
