@@ -1,5 +1,5 @@
 /*
- * virstatslinux.c: Linux block and network stats.
+ * virstats.c: Block and network stats.
  *
  * Copyright (C) 2007-2010 Red Hat, Inc.
  *
@@ -22,23 +22,20 @@
 
 #include <config.h>
 
-/* This file only applies on Linux. */
-#ifdef __linux__
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <string.h>
+#include <unistd.h>
+#include <regex.h>
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <fcntl.h>
-# include <string.h>
-# include <unistd.h>
-# include <regex.h>
+#include "virerror.h"
+#include "datatypes.h"
+#include "virstats.h"
+#include "viralloc.h"
+#include "virfile.h"
 
-# include "virerror.h"
-# include "datatypes.h"
-# include "virstatslinux.h"
-# include "viralloc.h"
-# include "virfile.h"
-
-# define VIR_FROM_THIS VIR_FROM_STATS_LINUX
+#define VIR_FROM_THIS VIR_FROM_STATS_LINUX
 
 
 /*-------------------- interface stats --------------------*/
@@ -46,10 +43,10 @@
  * NB. Caller must check that libvirt user is trying to query
  * the interface of a domain they own.  We do no such checking.
  */
-
+#ifdef __linux__
 int
-linuxDomainInterfaceStats(const char *path,
-                          struct _virDomainInterfaceStats *stats)
+virNetInterfaceStats(const char *path,
+                     struct _virDomainInterfaceStats *stats)
 {
     int path_len;
     FILE *fp;
@@ -115,6 +112,15 @@ linuxDomainInterfaceStats(const char *path,
 
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("/proc/net/dev: Interface not found"));
+    return -1;
+}
+#else
+int
+virNetInterfaceStats(const char *path ATTRIBUTE_UNUSED,
+                     struct _virDomainInterfaceStats *stats ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                   _("interface stats not implemented on this platform"));
     return -1;
 }
 

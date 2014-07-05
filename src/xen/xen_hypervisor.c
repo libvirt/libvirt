@@ -68,7 +68,7 @@
 #include "xen_driver.h"
 #include "xen_hypervisor.h"
 #include "xs_internal.h"
-#include "virstatslinux.h"
+#include "virstats.h"
 #include "block_stats.h"
 #include "xend_internal.h"
 #include "virbuffer.h"
@@ -1470,7 +1470,7 @@ xenHypervisorDomainInterfaceStats(virDomainDefPtr def,
         return -1;
     }
 
-    return linuxDomainInterfaceStats(path, stats);
+    return virNetInterfaceStats(path, stats);
 #else
     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                    _("/proc/net/dev: Interface not found"));

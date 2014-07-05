@@ -51,7 +51,7 @@
 #include "virnetdevveth.h"
 #include "nodeinfo.h"
 #include "viruuid.h"
-#include "virstatslinux.h"
+#include "virstats.h"
 #include "virhook.h"
 #include "virfile.h"
 #include "virpidfile.h"
@@ -3132,7 +3132,7 @@ lxcDomainInterfaceStats(virDomainPtr dom,
     }
 
     if (ret == 0)
-        ret = linuxDomainInterfaceStats(path, stats);
+        ret = virNetInterfaceStats(path, stats);
     else
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Invalid path, '%s' is not a known interface"), path);

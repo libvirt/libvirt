@@ -198,7 +198,7 @@ src/util/virrandom.c
 src/util/virsexpr.c
 src/util/virscsi.c
 src/util/virsocketaddr.c
-src/util/virstatslinux.c
+src/util/virstats.c
 src/util/virstorageencryption.c
 src/util/virstoragefile.c
 src/util/virstring.c

@@ -61,7 +61,7 @@
 #include "datatypes.h"
 #include "virbuffer.h"
 #include "nodeinfo.h"
-#include "virstatslinux.h"
+#include "virstats.h"
 #include "capabilities.h"
 #include "viralloc.h"
 #include "viruuid.h"
@@ -9765,7 +9765,6 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     return ret;
 }
 
-#ifdef __linux__
 static int
 qemuDomainInterfaceStats(virDomainPtr dom,
                          const char *path,
@@ -9797,7 +9796,7 @@ qemuDomainInterfaceStats(virDomainPtr dom,
     }
 
     if (ret == 0)
-        ret = linuxDomainInterfaceStats(path, stats);
+        ret = virNetInterfaceStats(path, stats);
     else
         virReportError(VIR_ERR_INVALID_ARG,
                        _("invalid path, '%s' is not a known interface"), path);
@@ -9807,17 +9806,6 @@ qemuDomainInterfaceStats(virDomainPtr dom,
         virObjectUnlock(vm);
     return ret;
 }
-#else
-static int
-qemuDomainInterfaceStats(virDomainPtr dom ATTRIBUTE_UNUSED,
-                         const char *path ATTRIBUTE_UNUSED,
-                         struct _virDomainInterfaceStats *stats ATTRIBUTE_UNUSED)
-{
-    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                   _("interface stats not implemented on this platform"));
-    return -1;
-}
-#endif
 
 static int
 qemuDomainSetInterfaceParameters(virDomainPtr dom,

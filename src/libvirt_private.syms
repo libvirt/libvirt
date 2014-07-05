@@ -1886,6 +1886,8 @@ virSocketAddrPrefixToNetmask;
 virSocketAddrSetIPv4Addr;
 virSocketAddrSetPort;
 
+# util/virstats.h
+virNetInterfaceStats;
 
 # util/virstorageencryption.h
 virStorageEncryptionFormat;

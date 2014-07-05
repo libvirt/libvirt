@@ -47,7 +47,7 @@
 #include "uml_conf.h"
 #include "virbuffer.h"
 #include "nodeinfo.h"
-#include "virstatslinux.h"
+#include "virstats.h"
 #include "capabilities.h"
 #include "viralloc.h"
 #include "viruuid.h"
