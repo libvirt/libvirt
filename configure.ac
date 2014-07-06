@@ -275,7 +275,7 @@ dnl and various less common threadsafe functions
 AC_CHECK_FUNCS_ONCE([cfmakeraw fallocate geteuid getgid getgrnam_r \
   getmntent_r getpwuid_r getuid kill mmap newlocale posix_fallocate \
   posix_memalign prlimit regexec sched_getaffinity setgroups setns \
-  setrlimit symlink sysctlbyname])
+  setrlimit symlink sysctlbyname getifaddrs])
 
 dnl Availability of pthread functions. Because of $LIB_PTHREAD, we
 dnl cannot use AC_CHECK_FUNCS_ONCE. LIB_PTHREAD and LIBMULTITHREAD
@@ -2690,6 +2690,17 @@ if test $with_freebsd = yes; then
                   [AC_MSG_ERROR([BSD kernel memory interface library is required to build on FreeBSD])]
                  )
 fi
+
+# FreeBSD 10-STABLE requires _IFI_OQDROPS to be defined for if_data.ifi_oqdrops
+# field be available
+old_CFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS -D_IFI_OQDROPS"
+
+AC_CHECK_MEMBERS([struct if_data.ifi_oqdrops],
+		 [],
+		 [CFLAGS="$old_CFLAGS"],
+		 [#include <net/if.h>
+		 ])
 
 # Check if we need to look for ifconfig
 if test "$want_ifconfig" = "yes"; then

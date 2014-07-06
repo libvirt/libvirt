@@ -29,6 +29,11 @@
 #include <unistd.h>
 #include <regex.h>
 
+#ifdef HAVE_GETIFADDRS
+# include <net/if.h>
+# include <ifaddrs.h>
+#endif
+
 #include "virerror.h"
 #include "datatypes.h"
 #include "virstats.h"
@@ -113,6 +118,52 @@ virNetInterfaceStats(const char *path,
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("/proc/net/dev: Interface not found"));
     return -1;
+}
+#elif defined(HAVE_GETIFADDRS)
+int
+virNetInterfaceStats(const char *path,
+                     struct _virDomainInterfaceStats *stats)
+{
+    struct ifaddrs *ifap, *ifa;
+    struct if_data *ifd;
+    int ret = -1;
+
+    if (getifaddrs(&ifap) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Could not get interface list"));
+        return -1;
+    }
+
+    for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
+        if (ifa->ifa_addr->sa_family != AF_LINK)
+            continue;
+
+        if (STREQ(ifa->ifa_name, path)) {
+            ifd = (struct if_data *)ifa->ifa_data;
+            stats->tx_bytes = ifd->ifi_ibytes;
+            stats->tx_packets = ifd->ifi_ipackets;
+            stats->tx_errs = ifd->ifi_ierrors;
+            stats->tx_drop = ifd->ifi_iqdrops;
+            stats->rx_bytes = ifd->ifi_obytes;
+            stats->rx_packets = ifd->ifi_opackets;
+            stats->rx_errs = ifd->ifi_oerrors;
+# ifdef HAVE_STRUCT_IF_DATA_IFI_OQDROPS
+            stats->rx_drop = ifd->ifi_oqdrops;
+# else
+            stats->rx_drop = 0;
+# endif
+
+            ret = 0;
+            break;
+        }
+    }
+
+    if (ret < 0)
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Interface not found"));
+
+    freeifaddrs(ifap);
+    return ret;
 }
 #else
 int
