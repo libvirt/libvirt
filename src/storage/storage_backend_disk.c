@@ -794,4 +794,5 @@ virStorageBackend virStorageBackendDisk = {
     .buildVolFrom = virStorageBackendDiskBuildVolFrom,
     .uploadVol = virStorageBackendVolUploadLocal,
     .downloadVol = virStorageBackendVolDownloadLocal,
+    .wipeVol = virStorageBackendVolWipeLocal,
 };

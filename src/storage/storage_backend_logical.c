@@ -846,4 +846,5 @@ virStorageBackend virStorageBackendLogical = {
     .deleteVol = virStorageBackendLogicalDeleteVol,
     .uploadVol = virStorageBackendVolUploadLocal,
     .downloadVol = virStorageBackendVolDownloadLocal,
+    .wipeVol = virStorageBackendVolWipeLocal,
 };

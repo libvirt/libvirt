@@ -2100,6 +2100,7 @@ storageVolWipePattern(virStorageVolPtr obj,
                       unsigned int algorithm,
                       unsigned int flags)
 {
+    virStorageBackendPtr backend;
     virStoragePoolObjPtr pool = NULL;
     virStorageVolDefPtr vol = NULL;
     int ret = -1;
@@ -2113,7 +2114,7 @@ storageVolWipePattern(virStorageVolPtr obj,
         return -1;
     }
 
-    if (!(vol = virStorageVolDefFromVol(obj, &pool, NULL)))
+    if (!(vol = virStorageVolDefFromVol(obj, &pool, &backend)))
         return -1;
 
 
@@ -2134,10 +2135,13 @@ storageVolWipePattern(virStorageVolPtr obj,
         goto cleanup;
     }
 
-    if (virStorageBackendVolWipeLocal(obj->conn, pool, vol, algorithm, flags) < 0)
+    if (!backend->wipeVol) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("storage pool doesn't support volume wiping"));
         goto cleanup;
+    }
 
-    ret = 0;
+    ret = backend->wipeVol(obj->conn, pool, vol, algorithm, flags);
 
  cleanup:
     virStoragePoolObjUnlock(pool);

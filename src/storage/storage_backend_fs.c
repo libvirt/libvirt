@@ -1301,6 +1301,7 @@ virStorageBackend virStorageBackendDirectory = {
     .resizeVol = virStorageBackendFileSystemVolResize,
     .uploadVol = virStorageBackendVolUploadLocal,
     .downloadVol = virStorageBackendVolDownloadLocal,
+    .wipeVol = virStorageBackendVolWipeLocal,
 };
 
 #if WITH_STORAGE_FS
@@ -1321,6 +1322,7 @@ virStorageBackend virStorageBackendFileSystem = {
     .resizeVol = virStorageBackendFileSystemVolResize,
     .uploadVol = virStorageBackendVolUploadLocal,
     .downloadVol = virStorageBackendVolDownloadLocal,
+    .wipeVol = virStorageBackendVolWipeLocal,
 };
 virStorageBackend virStorageBackendNetFileSystem = {
     .type = VIR_STORAGE_POOL_NETFS,
@@ -1340,6 +1342,7 @@ virStorageBackend virStorageBackendNetFileSystem = {
     .resizeVol = virStorageBackendFileSystemVolResize,
     .uploadVol = virStorageBackendVolUploadLocal,
     .downloadVol = virStorageBackendVolDownloadLocal,
+    .wipeVol = virStorageBackendVolWipeLocal,
 };
 
 

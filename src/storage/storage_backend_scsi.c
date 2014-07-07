@@ -730,4 +730,5 @@ virStorageBackend virStorageBackendSCSI = {
     .stopPool = virStorageBackendSCSIStopPool,
     .uploadVol = virStorageBackendVolUploadLocal,
     .downloadVol = virStorageBackendVolDownloadLocal,
+    .wipeVol = virStorageBackendVolWipeLocal,
 };
