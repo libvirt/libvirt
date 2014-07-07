@@ -1724,6 +1724,209 @@ virStorageBackendVolDownloadLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
     return virFDStreamOpenFile(stream, vol->target.path, offset, len, O_RDONLY);
 }
 
+
+/* If the volume we're wiping is already a sparse file, we simply
+ * truncate and extend it to its original size, filling it with
+ * zeroes.  This behavior is guaranteed by POSIX:
+ *
+ * http://www.opengroup.org/onlinepubs/9699919799/functions/ftruncate.html
+ *
+ * If fildes refers to a regular file, the ftruncate() function shall
+ * cause the size of the file to be truncated to length. If the size
+ * of the file previously exceeded length, the extra data shall no
+ * longer be available to reads on the file. If the file previously
+ * was smaller than this size, ftruncate() shall increase the size of
+ * the file. If the file size is increased, the extended area shall
+ * appear as if it were zero-filled.
+ */
+static int
+virStorageBackendVolZeroSparseFileLocal(virStorageVolDefPtr vol,
+                                        off_t size,
+                                        int fd)
+{
+    int ret = -1;
+
+    ret = ftruncate(fd, 0);
+    if (ret == -1) {
+        virReportSystemError(errno,
+                             _("Failed to truncate volume with "
+                               "path '%s' to 0 bytes"),
+                             vol->target.path);
+        return ret;
+    }
+
+    ret = ftruncate(fd, size);
+    if (ret == -1) {
+        virReportSystemError(errno,
+                             _("Failed to truncate volume with "
+                               "path '%s' to %ju bytes"),
+                             vol->target.path, (uintmax_t)size);
+    }
+
+    return ret;
+}
+
+
+static int
+virStorageBackendWipeExtentLocal(virStorageVolDefPtr vol,
+                                 int fd,
+                                 off_t extent_start,
+                                 off_t extent_length,
+                                 char *writebuf,
+                                 size_t writebuf_length,
+                                 size_t *bytes_wiped)
+{
+    int ret = -1, written = 0;
+    off_t remaining = 0;
+    size_t write_size = 0;
+
+    VIR_DEBUG("extent logical start: %ju len: %ju",
+              (uintmax_t)extent_start, (uintmax_t)extent_length);
+
+    if ((ret = lseek(fd, extent_start, SEEK_SET)) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to seek to position %ju in volume "
+                               "with path '%s'"),
+                             (uintmax_t)extent_start, vol->target.path);
+        goto cleanup;
+    }
+
+    remaining = extent_length;
+    while (remaining > 0) {
+
+        write_size = (writebuf_length < remaining) ? writebuf_length : remaining;
+        written = safewrite(fd, writebuf, write_size);
+        if (written < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to write %zu bytes to "
+                                   "storage volume with path '%s'"),
+                                 write_size, vol->target.path);
+
+            goto cleanup;
+        }
+
+        *bytes_wiped += written;
+        remaining -= written;
+    }
+
+    if (fdatasync(fd) < 0) {
+        ret = -errno;
+        virReportSystemError(errno,
+                             _("cannot sync data to volume with path '%s'"),
+                             vol->target.path);
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Wrote %zu bytes to volume with path '%s'",
+              *bytes_wiped, vol->target.path);
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
+int
+virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
+                              virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+                              virStorageVolDefPtr vol,
+                              unsigned int algorithm,
+                              unsigned int flags)
+{
+    int ret = -1, fd = -1;
+    struct stat st;
+    char *writebuf = NULL;
+    size_t bytes_wiped = 0;
+    virCommandPtr cmd = NULL;
+
+    virCheckFlags(0, -1);
+
+    VIR_DEBUG("Wiping volume with path '%s' and algorithm %u",
+              vol->target.path, algorithm);
+
+    fd = open(vol->target.path, O_RDWR);
+    if (fd == -1) {
+        virReportSystemError(errno,
+                             _("Failed to open storage volume with path '%s'"),
+                             vol->target.path);
+        goto cleanup;
+    }
+
+    if (fstat(fd, &st) == -1) {
+        virReportSystemError(errno,
+                             _("Failed to stat storage volume with path '%s'"),
+                             vol->target.path);
+        goto cleanup;
+    }
+
+    if (algorithm != VIR_STORAGE_VOL_WIPE_ALG_ZERO) {
+        const char *alg_char ATTRIBUTE_UNUSED = NULL;
+        switch (algorithm) {
+        case VIR_STORAGE_VOL_WIPE_ALG_NNSA:
+            alg_char = "nnsa";
+            break;
+        case VIR_STORAGE_VOL_WIPE_ALG_DOD:
+            alg_char = "dod";
+            break;
+        case VIR_STORAGE_VOL_WIPE_ALG_BSI:
+            alg_char = "bsi";
+            break;
+        case VIR_STORAGE_VOL_WIPE_ALG_GUTMANN:
+            alg_char = "gutmann";
+            break;
+        case VIR_STORAGE_VOL_WIPE_ALG_SCHNEIER:
+            alg_char = "schneier";
+            break;
+        case VIR_STORAGE_VOL_WIPE_ALG_PFITZNER7:
+            alg_char = "pfitzner7";
+            break;
+        case VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33:
+            alg_char = "pfitzner33";
+            break;
+        case VIR_STORAGE_VOL_WIPE_ALG_RANDOM:
+            alg_char = "random";
+            break;
+        default:
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("unsupported algorithm %d"),
+                           algorithm);
+        }
+        cmd = virCommandNew(SCRUB);
+        virCommandAddArgList(cmd, "-f", "-p", alg_char,
+                             vol->target.path, NULL);
+
+        if (virCommandRun(cmd, NULL) < 0)
+            goto cleanup;
+
+        ret = 0;
+        goto cleanup;
+    } else {
+        if (S_ISREG(st.st_mode) && st.st_blocks < (st.st_size / DEV_BSIZE)) {
+            ret = virStorageBackendVolZeroSparseFileLocal(vol, st.st_size, fd);
+        } else {
+
+            if (VIR_ALLOC_N(writebuf, st.st_blksize) < 0)
+                goto cleanup;
+
+            ret = virStorageBackendWipeExtentLocal(vol,
+                                                   fd,
+                                                   0,
+                                                   vol->target.allocation,
+                                                   writebuf,
+                                                   st.st_blksize,
+                                                   &bytes_wiped);
+        }
+    }
+
+ cleanup:
+    virCommandFree(cmd);
+    VIR_FREE(writebuf);
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
+
 #ifdef GLUSTER_CLI
 int
 virStorageBackendFindGlusterPoolSources(const char *host,

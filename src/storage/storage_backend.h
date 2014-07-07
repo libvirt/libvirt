@@ -120,6 +120,12 @@ int virStorageBackendVolDownloadLocal(virConnectPtr conn,
                                       unsigned long long len,
                                       unsigned int flags);
 
+int virStorageBackendVolWipeLocal(virConnectPtr conn,
+                                  virStoragePoolObjPtr pool,
+                                  virStorageVolDefPtr vol,
+                                  unsigned int algorithm,
+                                  unsigned int flags);
+
 typedef struct _virStorageBackend virStorageBackend;
 typedef virStorageBackend *virStorageBackendPtr;
 
