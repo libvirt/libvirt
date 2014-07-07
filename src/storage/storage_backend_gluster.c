@@ -294,9 +294,12 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
         goto cleanup;
 
     if (!(meta = virStorageFileGetMetadataFromBuf(name, header, len,
-                                                  &vol->backingStore.path,
+                                                  VIR_STORAGE_FILE_AUTO,
                                                   &vol->backingStore.format)))
         goto cleanup;
+
+    vol->backingStore.path = meta->backingStoreRaw;
+    meta->backingStoreRaw = NULL;
 
     vol->target.format = meta->format;
     if (vol->backingStore.path &&

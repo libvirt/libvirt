@@ -290,7 +290,7 @@ virStorageSourcePtr virStorageFileGetMetadataFromFD(const char *path,
 virStorageSourcePtr virStorageFileGetMetadataFromBuf(const char *path,
                                                      char *buf,
                                                      size_t len,
-                                                     char **backing,
+                                                     int format,
                                                      int *backingFormat)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
     ATTRIBUTE_NONNULL(5);

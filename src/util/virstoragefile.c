@@ -930,19 +930,20 @@ virStorageFileMetadataNew(const char *path,
  * @path: name of file, for error messages
  * @buf: header bytes from @path
  * @len: length of @buf
- * @backing: output malloc'd name of backing image, if any
+ * @format: format of the storage file
  * @backingFormat: format of @backing
  *
- * Extract metadata about the storage volume, including probing its
- * format.  Does not recurse.  Callers are advised not to trust the
- * learned format if a guest has ever used the volume when it was
- * raw, since a malicious guest can turn a raw file into any
- * other non-raw format at will.
+ * Extract metadata about the storage volume with the specified image format.
+ * If image format is VIR_STORAGE_FILE_AUTO, it will probe to automatically
+ * identify the format.  Does not recurse.
  *
- * If the returned @backingFormat is VIR_STORAGE_FILE_AUTO
- * it indicates the image didn't specify an explicit format for its
- * backing store. Callers are advised against probing for the
- * backing store format in this case.
+ * Callers are advised never to use VIR_STORAGE_FILE_AUTO as a format on a file
+ * that might be raw if that file will then be passed to a guest, since a
+ * malicious guest can turn a raw file into any other non-raw format at will.
+ *
+ * If the returned @backingFormat is VIR_STORAGE_FILE_AUTO it indicates the
+ * image didn't specify an explicit format for its backing store. Callers are
+ * advised against probing for the backing store format in this case.
  *
  * Caller MUST free the result after use via virStorageSourceFree.
  */
@@ -950,25 +951,20 @@ virStorageSourcePtr
 virStorageFileGetMetadataFromBuf(const char *path,
                                  char *buf,
                                  size_t len,
-                                 char **backing,
+                                 int format,
                                  int *backingFormat)
 {
     virStorageSourcePtr ret = NULL;
-    virStorageSourcePtr meta = NULL;
 
-    if (!(meta = virStorageFileMetadataNew(path, VIR_STORAGE_FILE_AUTO)))
+    if (!(ret = virStorageFileMetadataNew(path, format)))
         return NULL;
 
-    if (virStorageFileGetMetadataInternal(meta, buf, len,
-                                          backingFormat) < 0)
-        goto cleanup;
-    if (VIR_STRDUP(*backing, meta->backingStoreRaw) < 0)
-        goto cleanup;
+    if (virStorageFileGetMetadataInternal(ret, buf, len,
+                                          backingFormat) < 0) {
+        virStorageSourceFree(ret);
+        return NULL;
+    }
 
-    ret = meta;
-    meta = NULL;
- cleanup:
-    virStorageSourceFree(meta);
     return ret;
 }
 
