@@ -18394,10 +18394,12 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
  * destination files already exist as a non-empty regular file, the
  * snapshot is rejected to avoid losing contents of those files.
  * However, if @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT,
- * then the destination files must already exist and contain content
- * identical to the source files (this allows a management app to
- * pre-create files with relative backing file names, rather than the
- * default of creating with absolute backing file names).
+ * then the destination files must be pre-created manually with
+ * the correct image format and metadata including backing store path
+ * (this allows a management app to pre-create files with relative backing
+ * file names, rather than the default of creating with absolute backing
+ * file names). Note that setting incorrect metadata in the pre-created
+ * image may lead to the VM being unable to start.
  *
  * Be aware that although libvirt prefers to report errors up front with
  * no other effect, some hypervisors have certain types of failures where
@@ -19864,11 +19866,14 @@ virDomainBlockPull(virDomainPtr dom, const char *disk,
  * by adding VIR_DOMAIN_BLOCK_REBASE_COPY_RAW to force the copy to be raw
  * (does not make sense with the shallow flag unless the source is also raw),
  * or by using VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT to reuse an existing file
- * with initial contents identical to the backing file of the source (this
- * allows a management app to pre-create files with relative backing file
- * names, rather than the default of absolute backing file names; as a
- * security precaution, you should generally only use reuse_ext with the
- * shallow flag and a non-raw destination file).
+ * which was pre-created with the correct format and metadata and sufficient
+ * size to hold the copy. In case the VIR_DOMAIN_BLOCK_REBASE_SHALLOW flag
+ * is used the pre-created file has to exhibit the same guest visible contents
+ * as the backing file of the original image. This allows a management app to
+ * pre-create files with relative backing file names, rather than the default
+ * of absolute backing file names; as a security precaution, you should
+ * generally only use reuse_ext with the shallow flag and a non-raw
+ * destination file.
  *
  * A copy job has two parts; in the first phase, the @bandwidth parameter
  * affects how fast the source is pulled into the destination, and the job

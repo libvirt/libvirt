@@ -876,10 +876,11 @@ flattens the entire chain; but if I<--shallow> is specified, the copy
 shares the backing chain.
 
 If I<--reuse-external> is specified, then I<dest> must exist and have
-contents identical to the resulting backing file (that is, it must
-start with contents matching the backing file I<disk> if I<--shallow>
-is used, otherwise it must start empty); this option is typically used
-to set up a relative backing file name in the destination.
+sufficient space to hold the copy. If I<--shallow> is used in
+conjunction with I<--reuse-external> then the pre-created image must have
+guest visible contents identical to guest visible contents of the backing
+file of the original image. This may be used to modify the backing file
+names on the destination.
 
 The format of the destination is determined by the first match in the
 following list: if I<--raw> is specified, it will be raw; if
@@ -3172,7 +3173,8 @@ metadata again).
 
 If I<--reuse-external> is specified, and the snapshot XML requests an
 external snapshot with a destination of an existing file, then the
-destination must exist, and is reused; otherwise, a snapshot is refused
+destination must exist and be pre-created with correct format and
+metadata. The file is then reused; otherwise, a snapshot is refused
 to avoid losing contents of the existing files.
 
 If I<--quiesce> is specified, libvirt will try to use guest agent
@@ -3233,8 +3235,9 @@ results in the following XML:
 
 If I<--reuse-external> is specified, and the domain XML or I<diskspec>
 option requests an external snapshot with a destination of an existing
-file, then the destination must exist, and is reused; otherwise, a
-snapshot is refused to avoid losing contents of the existing files.
+file, then the destination must exist and be pre-created with correct
+format and metadata. The file is then reused; otherwise, a snapshot
+is refused to avoid losing contents of the existing files.
 
 If I<--quiesce> is specified, libvirt will try to use guest agent
 to freeze and unfreeze domain's mounted file systems. However,
