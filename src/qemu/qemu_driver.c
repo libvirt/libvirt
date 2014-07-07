@@ -3481,6 +3481,10 @@ doCoreDump(virQEMUDriverPtr driver,
                              "memory-only dump"));
             goto cleanup;
         }
+
+        if (!qemuMigrationIsAllowed(driver, vm, vm->def, false, false))
+            goto cleanup;
+
         ret = qemuMigrationToFile(driver, vm, fd, 0, path,
                                   qemuCompressProgramName(compress), false,
                                   QEMU_ASYNC_JOB_DUMP);
