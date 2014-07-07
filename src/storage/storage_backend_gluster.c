@@ -651,9 +651,6 @@ virStorageFileBackendGlusterReadHeader(virStorageSourcePtr src,
 {
     virStorageFileBackendGlusterPrivPtr priv = src->drv->priv;
     glfs_fd_t *fd = NULL;
-    size_t alloc = 0;
-    size_t size = 0;
-    int save_errno;
     ssize_t ret = -1;
 
     *buf = NULL;
@@ -661,47 +658,11 @@ virStorageFileBackendGlusterReadHeader(virStorageSourcePtr src,
     if (!(fd = glfs_open(priv->vol, src->path, O_RDONLY))) {
         virReportSystemError(errno, _("Failed to open file '%s'"),
                              src->path);
-        goto cleanup;
+        return -1;
     }
 
-    /* code below is shamelessly stolen from saferead_lim */
-    for (;;) {
-        int count;
-        int requested;
+    ret = virStorageBackendGlusterReadHeader(fd, src->path, max_len, buf);
 
-        if (size + BUFSIZ + 1 > alloc) {
-            alloc += alloc / 2;
-            if (alloc < size + BUFSIZ + 1)
-                alloc = size + BUFSIZ + 1;
-
-            if (VIR_REALLOC_N(*buf, alloc) < 0) {
-                save_errno = errno;
-                break;
-            }
-        }
-
-        /* Ensure that (size + requested <= max_len); */
-        requested = MIN(size < max_len ? max_len - size : 0,
-                        alloc - size - 1);
-        count = glfs_read(fd, *buf + size, requested, 0);
-        size += count;
-
-        if (count != requested || requested == 0) {
-            save_errno = errno;
-            if (count < 0) {
-                virReportSystemError(errno,
-                                     _("cannot read header '%s'"), src->path);
-                break;
-            }
-            ret = size;
-            goto cleanup;
-        }
-    }
-
-    VIR_FREE(*buf);
-    errno = save_errno;
-
- cleanup:
     if (fd)
         glfs_close(fd);
 
