@@ -3058,6 +3058,17 @@ virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
             return NULL;
         }
         virNWFilterObjUnlock(nwfilter);
+    } else {
+        nwfilter = virNWFilterObjFindByName(nwfilters, def->name);
+        if (nwfilter) {
+            char uuidstr[VIR_UUID_STRING_BUFLEN];
+            virUUIDFormat(nwfilter->def->uuid, uuidstr);
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("filter '%s' already exists with uuid %s"),
+                           def->name, uuidstr);
+            virNWFilterObjUnlock(nwfilter);
+            return NULL;
+        }
     }
 
     if (virNWFilterDefLoopDetect(nwfilters, def) < 0) {
