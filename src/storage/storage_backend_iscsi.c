@@ -474,4 +474,6 @@ virStorageBackend virStorageBackendISCSI = {
     .refreshPool = virStorageBackendISCSIRefreshPool,
     .stopPool = virStorageBackendISCSIStopPool,
     .findPoolSources = virStorageBackendISCSIFindPoolSources,
+    .uploadVol = virStorageBackendVolUploadLocal,
+    .downloadVol = virStorageBackendVolDownloadLocal,
 };

@@ -728,4 +728,6 @@ virStorageBackend virStorageBackendSCSI = {
     .refreshPool = virStorageBackendSCSIRefreshPool,
     .startPool = virStorageBackendSCSIStartPool,
     .stopPool = virStorageBackendSCSIStopPool,
+    .uploadVol = virStorageBackendVolUploadLocal,
+    .downloadVol = virStorageBackendVolDownloadLocal,
 };

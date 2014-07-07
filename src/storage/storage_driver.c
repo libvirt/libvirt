@@ -1920,13 +1920,14 @@ storageVolDownload(virStorageVolPtr obj,
                    unsigned long long length,
                    unsigned int flags)
 {
+    virStorageBackendPtr backend;
     virStoragePoolObjPtr pool = NULL;
     virStorageVolDefPtr vol = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
 
-    if (!(vol = virStorageVolDefFromVol(obj, &pool, NULL)))
+    if (!(vol = virStorageVolDefFromVol(obj, &pool, &backend)))
         return -1;
 
     if (virStorageVolDownloadEnsureACL(obj->conn, pool->def, vol) < 0)
@@ -1939,13 +1940,14 @@ storageVolDownload(virStorageVolPtr obj,
         goto cleanup;
     }
 
-    if (virFDStreamOpenFile(stream,
-                            vol->target.path,
-                            offset, length,
-                            O_RDONLY) < 0)
+    if (!backend->downloadVol) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("storage pool doesn't support volume download"));
         goto cleanup;
+    }
 
-    ret = 0;
+    ret = backend->downloadVol(obj->conn, pool, vol, stream,
+                               offset, length, flags);
 
  cleanup:
     virStoragePoolObjUnlock(pool);
@@ -1961,13 +1963,14 @@ storageVolUpload(virStorageVolPtr obj,
                  unsigned long long length,
                  unsigned int flags)
 {
+    virStorageBackendPtr backend;
     virStoragePoolObjPtr pool = NULL;
     virStorageVolDefPtr vol = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
 
-    if (!(vol = virStorageVolDefFromVol(obj, &pool, NULL)))
+    if (!(vol = virStorageVolDefFromVol(obj, &pool, &backend)))
         return -1;
 
     if (virStorageVolUploadEnsureACL(obj->conn, pool->def, vol) < 0)
@@ -1987,34 +1990,14 @@ storageVolUpload(virStorageVolPtr obj,
         goto cleanup;
     }
 
-    switch ((virStoragePoolType) pool->def->type) {
-    case VIR_STORAGE_POOL_DIR:
-    case VIR_STORAGE_POOL_FS:
-    case VIR_STORAGE_POOL_NETFS:
-    case VIR_STORAGE_POOL_LOGICAL:
-    case VIR_STORAGE_POOL_DISK:
-    case VIR_STORAGE_POOL_ISCSI:
-    case VIR_STORAGE_POOL_SCSI:
-    case VIR_STORAGE_POOL_MPATH:
-        /* Not using O_CREAT because the file is required to already exist at
-         * this point */
-        if (virFDStreamOpenFile(stream, vol->target.path,
-                                offset, length, O_WRONLY) < 0)
-            goto cleanup;
-
-        break;
-
-    case VIR_STORAGE_POOL_SHEEPDOG:
-    case VIR_STORAGE_POOL_RBD:
-    case VIR_STORAGE_POOL_GLUSTER:
-    case VIR_STORAGE_POOL_LAST:
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("volume upload is not supported with pools of type %s"),
-                       virStoragePoolTypeToString(pool->def->type));
+    if (!backend->uploadVol) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("storage pool doesn't support volume upload"));
         goto cleanup;
     }
 
-    ret = 0;
+    ret = backend->uploadVol(obj->conn, pool, vol, stream,
+                             offset, length, flags);
 
  cleanup:
     virStoragePoolObjUnlock(pool);

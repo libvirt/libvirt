@@ -1275,6 +1275,7 @@ virStorageBackendFileSystemVolResize(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 }
 
+
 virStorageBackend virStorageBackendDirectory = {
     .type = VIR_STORAGE_POOL_DIR,
 
@@ -1288,6 +1289,8 @@ virStorageBackend virStorageBackendDirectory = {
     .refreshVol = virStorageBackendFileSystemVolRefresh,
     .deleteVol = virStorageBackendFileSystemVolDelete,
     .resizeVol = virStorageBackendFileSystemVolResize,
+    .uploadVol = virStorageBackendVolUploadLocal,
+    .downloadVol = virStorageBackendVolDownloadLocal,
 };
 
 #if WITH_STORAGE_FS
@@ -1306,6 +1309,8 @@ virStorageBackend virStorageBackendFileSystem = {
     .refreshVol = virStorageBackendFileSystemVolRefresh,
     .deleteVol = virStorageBackendFileSystemVolDelete,
     .resizeVol = virStorageBackendFileSystemVolResize,
+    .uploadVol = virStorageBackendVolUploadLocal,
+    .downloadVol = virStorageBackendVolDownloadLocal,
 };
 virStorageBackend virStorageBackendNetFileSystem = {
     .type = VIR_STORAGE_POOL_NETFS,
@@ -1323,6 +1328,8 @@ virStorageBackend virStorageBackendNetFileSystem = {
     .refreshVol = virStorageBackendFileSystemVolRefresh,
     .deleteVol = virStorageBackendFileSystemVolDelete,
     .resizeVol = virStorageBackendFileSystemVolResize,
+    .uploadVol = virStorageBackendVolUploadLocal,
+    .downloadVol = virStorageBackendVolDownloadLocal,
 };
 
 

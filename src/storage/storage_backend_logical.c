@@ -841,4 +841,6 @@ virStorageBackend virStorageBackendLogical = {
     .buildVolFrom = virStorageBackendLogicalBuildVolFrom,
     .createVol = virStorageBackendLogicalCreateVol,
     .deleteVol = virStorageBackendLogicalDeleteVol,
+    .uploadVol = virStorageBackendVolUploadLocal,
+    .downloadVol = virStorageBackendVolDownloadLocal,
 };

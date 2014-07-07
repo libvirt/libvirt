@@ -56,6 +56,7 @@
 #include "stat-time.h"
 #include "virstring.h"
 #include "virxml.h"
+#include "fdstream.h"
 
 #if WITH_STORAGE_LVM
 # include "storage_backend_logical.h"
@@ -1667,6 +1668,36 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
     ignore_value(VIR_STRDUP(stablepath, devpath));
 
     return stablepath;
+}
+
+int
+virStorageBackendVolUploadLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+                                virStorageVolDefPtr vol,
+                                virStreamPtr stream,
+                                unsigned long long offset,
+                                unsigned long long len,
+                                unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
+    /* Not using O_CREAT because the file is required to already exist at
+     * this point */
+    return virFDStreamOpenFile(stream, vol->target.path, offset, len, O_WRONLY);
+}
+
+int
+virStorageBackendVolDownloadLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                  virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+                                  virStorageVolDefPtr vol,
+                                  virStreamPtr stream,
+                                  unsigned long long offset,
+                                  unsigned long long len,
+                                  unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
+    return virFDStreamOpenFile(stream, vol->target.path, offset, len, O_RDONLY);
 }
 
 #ifdef GLUSTER_CLI
