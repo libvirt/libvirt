@@ -4052,12 +4052,6 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
-    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("devices cgroup isn't mounted"));
-        goto cleanup;
-    }
-
     perms = (def->readonly ?
              VIR_CGROUP_DEVICE_READ :
              VIR_CGROUP_DEVICE_RW) |
