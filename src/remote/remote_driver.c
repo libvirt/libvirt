@@ -1068,6 +1068,9 @@ doRemoteOpen(virConnectPtr conn,
     VIR_FREE(pkipath);
     VIR_FREE(knownHostsVerify);
     VIR_FREE(knownHosts);
+#ifndef WIN32
+    VIR_FREE(daemonPath);
+#endif
 
     return retcode;
 
