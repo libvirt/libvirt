@@ -973,63 +973,6 @@ virStorageFileGetMetadataFromBuf(const char *path,
 }
 
 
-/* Internal version that also supports a containing directory name.  */
-static int
-virStorageFileGetMetadataFromFDInternal(virStorageSourcePtr meta,
-                                        int fd,
-                                        int *backingFormat)
-{
-    char *buf = NULL;
-    ssize_t len = VIR_STORAGE_MAX_HEADER;
-    struct stat sb;
-    int ret = -1;
-    int dummy;
-
-    if (!backingFormat)
-        backingFormat = &dummy;
-
-    *backingFormat = VIR_STORAGE_FILE_NONE;
-
-    if (fstat(fd, &sb) < 0) {
-        virReportSystemError(errno,
-                             _("cannot stat file '%s'"),
-                             meta->relPath);
-        return -1;
-    }
-
-    if (S_ISDIR(sb.st_mode)) {
-        /* No header to probe for directories, but also no backing file. Just
-         * update the metadata.*/
-        meta->type = VIR_STORAGE_TYPE_DIR;
-        meta->format = VIR_STORAGE_FILE_DIR;
-        ret = 0;
-        goto cleanup;
-    }
-
-    if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
-        virReportSystemError(errno, _("cannot seek to start of '%s'"), meta->relPath);
-        goto cleanup;
-    }
-
-    if ((len = virFileReadHeaderFD(fd, len, &buf)) < 0) {
-        virReportSystemError(errno, _("cannot read header '%s'"), meta->relPath);
-        goto cleanup;
-    }
-
-    ret = virStorageFileGetMetadataInternal(meta, buf, len, backingFormat);
-
-    if (ret == 0) {
-        if (S_ISREG(sb.st_mode))
-            meta->type = VIR_STORAGE_TYPE_FILE;
-        else if (S_ISBLK(sb.st_mode))
-            meta->type = VIR_STORAGE_TYPE_BLOCK;
-    }
- cleanup:
-    VIR_FREE(buf);
-    return ret;
-}
-
-
 /**
  * virStorageFileGetMetadataFromFD:
  *
@@ -1050,17 +993,61 @@ virStorageFileGetMetadataFromFD(const char *path,
                                 int *backingFormat)
 
 {
-    virStorageSourcePtr ret;
+    virStorageSourcePtr ret = NULL;
+    virStorageSourcePtr meta = NULL;
+    char *buf = NULL;
+    ssize_t len = VIR_STORAGE_MAX_HEADER;
+    struct stat sb;
+    int dummy;
 
-    if (!(ret = virStorageFileMetadataNew(path, format)))
-        return NULL;
+    if (!backingFormat)
+        backingFormat = &dummy;
 
+    *backingFormat = VIR_STORAGE_FILE_NONE;
 
-    if (virStorageFileGetMetadataFromFDInternal(ret, fd, backingFormat) < 0) {
-        virStorageSourceFree(ret);
+    if (fstat(fd, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("cannot stat file '%s'"), path);
         return NULL;
     }
 
+    if (!(meta = virStorageFileMetadataNew(path, format)))
+        return NULL;
+
+    if (S_ISDIR(sb.st_mode)) {
+        /* No header to probe for directories, but also no backing file. Just
+         * update the metadata.*/
+        meta->type = VIR_STORAGE_TYPE_DIR;
+        meta->format = VIR_STORAGE_FILE_DIR;
+        ret = meta;
+        meta = NULL;
+        goto cleanup;
+    }
+
+    if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
+        virReportSystemError(errno, _("cannot seek to start of '%s'"), meta->relPath);
+        goto cleanup;
+    }
+
+    if ((len = virFileReadHeaderFD(fd, len, &buf)) < 0) {
+        virReportSystemError(errno, _("cannot read header '%s'"), meta->relPath);
+        goto cleanup;
+    }
+
+    if (virStorageFileGetMetadataInternal(meta, buf, len, backingFormat) < 0)
+        goto cleanup;
+
+    if (S_ISREG(sb.st_mode))
+        meta->type = VIR_STORAGE_TYPE_FILE;
+    else if (S_ISBLK(sb.st_mode))
+        meta->type = VIR_STORAGE_TYPE_BLOCK;
+
+    ret = meta;
+    meta = NULL;
+
+ cleanup:
+    virStorageSourceFree(meta);
+    VIR_FREE(buf);
     return ret;
 }
 
