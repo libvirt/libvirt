@@ -682,7 +682,7 @@ virStorageIsRelative(const char *backing)
 }
 
 
-static int
+int
 virStorageFileProbeFormatFromBuf(const char *path,
                                  char *buf,
                                  size_t buflen)

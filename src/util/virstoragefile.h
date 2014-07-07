@@ -276,6 +276,9 @@ struct _virStorageSource {
 # endif
 
 int virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid);
+int virStorageFileProbeFormatFromBuf(const char *path,
+                                     char *buf,
+                                     size_t buflen);
 
 int virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
                                       char *buf,

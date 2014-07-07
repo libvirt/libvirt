@@ -1910,6 +1910,7 @@ virStorageFileGetSCSIKey;
 virStorageFileIsClusterFS;
 virStorageFileParseChainIndex;
 virStorageFileProbeFormat;
+virStorageFileProbeFormatFromBuf;
 virStorageFileResize;
 virStorageIsFile;
 virStorageNetHostDefClear;

@@ -10334,11 +10334,13 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     int activeFail = false;
     virQEMUDriverConfigPtr cfg = NULL;
     char *alias = NULL;
+    char *buf = NULL;
+    ssize_t len;
 
     virCheckFlags(0, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
-        goto cleanup;
+        return -1;
 
     cfg = virQEMUDriverGetConfig(driver);
 
@@ -10346,8 +10348,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         goto cleanup;
 
     if (!path || path[0] == '\0') {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       "%s", _("NULL or empty path"));
+        virReportError(VIR_ERR_INVALID_ARG, "%s", _("NULL or empty path"));
         goto cleanup;
     }
 
@@ -10357,48 +10358,68 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
                        _("invalid path %s not assigned to domain"), path);
         goto cleanup;
     }
-    disk = vm->def->disks[idx];
-    path = virDomainDiskGetSource(disk);
-    if (!path) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("disk %s does not currently have a source assigned"),
-                       path);
-        goto cleanup;
-    }
 
-    /* The path is correct, now try to open it and get its size. */
-    fd = qemuOpenFile(driver, vm, path, O_RDONLY, NULL, NULL);
-    if (fd == -1)
-        goto cleanup;
+    disk = vm->def->disks[idx];
+
+    if (virStorageSourceIsLocalStorage(disk->src)) {
+        if (!disk->src->path) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("disk '%s' does not currently have a source assigned"),
+                           path);
+            goto cleanup;
+        }
+
+        if ((fd = qemuOpenFile(driver, vm, path, O_RDONLY, NULL, NULL)) == -1)
+            goto cleanup;
+
+        if (fstat(fd, &sb) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot stat file '%s'"), disk->src->path);
+            goto cleanup;
+        }
+
+        if ((len = virFileReadHeaderFD(fd, VIR_STORAGE_MAX_HEADER, &buf)) < 0) {
+            virReportSystemError(errno, _("cannot read header '%s'"),
+                                 disk->src->path);
+            goto cleanup;
+        }
+    } else {
+        if (virStorageFileInitAs(disk->src, cfg->user, cfg->group) < 0)
+            goto cleanup;
+
+        if ((len = virStorageFileReadHeader(disk->src, VIR_STORAGE_MAX_HEADER,
+                                            &buf)) < 0)
+            goto cleanup;
+
+        if (virStorageFileStat(disk->src, &sb) < 0) {
+            virReportSystemError(errno, _("failed to stat remote file '%s'"),
+                                 NULLSTR(disk->src->path));
+            goto cleanup;
+        }
+    }
 
     /* Probe for magic formats */
     if (virDomainDiskGetFormat(disk)) {
         format = virDomainDiskGetFormat(disk);
     } else {
-        if (cfg->allowDiskFormatProbing) {
-            if ((format = virStorageFileProbeFormat(path,
-                                                    cfg->user,
-                                                    cfg->group)) < 0)
-                goto cleanup;
-        } else {
+        if (!cfg->allowDiskFormatProbing) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("no disk format for %s and probing is disabled"),
                            path);
             goto cleanup;
         }
+
+        if ((format = virStorageFileProbeFormatFromBuf(disk->src->path,
+                                                       buf, len)) < 0)
+            goto cleanup;
     }
 
-    if (!(meta = virStorageFileGetMetadataFromFD(path, fd, format, NULL)))
+    if (!(meta = virStorageFileGetMetadataFromBuf(disk->src->path, buf, len,
+                                                  format, NULL)))
         goto cleanup;
 
     /* Get info for normal formats */
-    if (fstat(fd, &sb) < 0) {
-        virReportSystemError(errno,
-                             _("cannot stat file '%s'"), path);
-        goto cleanup;
-    }
-
-    if (S_ISREG(sb.st_mode)) {
+    if (S_ISREG(sb.st_mode) || fd == -1) {
 #ifndef WIN32
         info->physical = (unsigned long long)sb.st_blocks *
             (unsigned long long)DEV_BSIZE;
@@ -10434,7 +10455,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     /* ..but if guest is not using raw disk format and on a block device,
      * then query highest allocated extent from QEMU
      */
-    if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK &&
+    if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_BLOCK &&
         format != VIR_STORAGE_FILE_RAW &&
         S_ISBLK(sb.st_mode)) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -10475,6 +10496,8 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     VIR_FREE(alias);
     virStorageSourceFree(meta);
     VIR_FORCE_CLOSE(fd);
+    if (disk)
+        virStorageFileDeinit(disk->src);
 
     /* If we failed to get data from a domain because it's inactive and
      * it's not a persistent domain, then force failure.
@@ -10484,8 +10507,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
                        _("domain is not running"));
         ret = -1;
     }
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     virObjectUnref(cfg);
     return ret;
 }
