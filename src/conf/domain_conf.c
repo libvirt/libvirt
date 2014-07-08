@@ -4664,9 +4664,9 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
 
 static int
 virSecurityLabelDefsParseXML(virDomainDefPtr def,
-                            xmlXPathContextPtr ctxt,
-                            virCapsPtr caps,
-                            unsigned int flags)
+                             xmlXPathContextPtr ctxt,
+                             virCapsPtr caps,
+                             unsigned int flags)
 {
     size_t i = 0;
     int n;
