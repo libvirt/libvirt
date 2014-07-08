@@ -589,13 +589,11 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
 
 
 static int
-qemuSetupCpusetCgroup(virDomainObjPtr vm,
-                      virBitmapPtr nodemask,
-                      virCapsPtr caps)
+qemuSetupCpusetMems(virDomainObjPtr vm,
+                    virBitmapPtr nodemask)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *mem_mask = NULL;
-    char *cpu_mask = NULL;
     int ret = -1;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
@@ -608,6 +606,28 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
 
     if (mem_mask &&
         virCgroupSetCpusetMems(priv->cgroup, mem_mask) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(mem_mask);
+    return ret;
+}
+
+
+static int
+qemuSetupCpusetCgroup(virDomainObjPtr vm,
+                      virBitmapPtr nodemask,
+                      virCapsPtr caps)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *cpu_mask = NULL;
+    int ret = -1;
+
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
+        return 0;
+
+    if (qemuSetupCpusetMems(vm, nodemask) < 0)
         goto cleanup;
 
     if (vm->def->cpumask ||
@@ -632,7 +652,6 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
 
     ret = 0;
  cleanup:
-    VIR_FREE(mem_mask);
     VIR_FREE(cpu_mask);
     return ret;
 }
