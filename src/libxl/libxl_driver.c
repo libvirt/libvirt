@@ -4435,7 +4435,7 @@ libxlDomainMigratePrepare3Params(virConnectPtr dconn,
     if (virDomainMigratePrepare3ParamsEnsureACL(dconn, def) < 0)
         goto error;
 
-    if (libxlDomainMigrationPrepare(dconn, def, uri_in, uri_out, flags) < 0)
+    if (libxlDomainMigrationPrepare(dconn, &def, uri_in, uri_out, flags) < 0)
         goto error;
 
     return 0;

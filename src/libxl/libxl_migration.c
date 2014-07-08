@@ -265,7 +265,7 @@ libxlDomainMigrationPrepareDef(libxlDriverPrivatePtr driver,
 
 int
 libxlDomainMigrationPrepare(virConnectPtr dconn,
-                            virDomainDefPtr def,
+                            virDomainDefPtr *def,
                             const char *uri_in,
                             char **uri_out,
                             unsigned int flags)
@@ -283,12 +283,13 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
     size_t i;
     int ret = -1;
 
-    if (!(vm = virDomainObjListAdd(driver->domains, def,
+    if (!(vm = virDomainObjListAdd(driver->domains, *def,
                                    driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto error;
+    *def = NULL;
 
     /* Create socket connection to receive migration data */
     if (!uri_in) {
@@ -404,6 +405,11 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
     for (i = 0; i < nsocks; i++) {
         virNetSocketClose(socks[i]);
         virObjectUnref(socks[i]);
+    }
+    /* Remove virDomainObj from domain list */
+    if (vm) {
+        virDomainObjListRemove(driver->domains, vm);
+        vm = NULL;
     }
 
  done:

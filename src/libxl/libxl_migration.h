@@ -50,7 +50,7 @@ libxlDomainMigrationPrepareDef(libxlDriverPrivatePtr driver,
 
 int
 libxlDomainMigrationPrepare(virConnectPtr dconn,
-                            virDomainDefPtr def,
+                            virDomainDefPtr *def,
                             const char *uri_in,
                             char **uri_out,
                             unsigned int flags);
