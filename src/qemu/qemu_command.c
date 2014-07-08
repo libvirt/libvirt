@@ -3477,6 +3477,16 @@ qemuBuildDriveStr(virConnectPtr conn,
             mode = qemuDiskCacheV1TypeToString(disk->cachemode);
         }
 
+        if (disk->iomode == VIR_DOMAIN_DISK_IO_NATIVE &&
+            disk->cachemode != VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
+            disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("native I/O needs either no disk cache "
+                             "or directsync cache mode, QEMU will fallback "
+                             "to aio=threads"));
+            goto error;
+        }
+
         virBufferAsprintf(&opt, ",cache=%s", mode);
     } else if (disk->src->shared && !disk->src->readonly) {
         virBufferAddLit(&opt, ",cache=off");
