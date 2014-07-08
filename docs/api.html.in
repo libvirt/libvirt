@@ -159,6 +159,10 @@
         </ul>
       </li>
     </ul>
+    <p>Note: functions returning vir*Ptr (like the virDomainLookup functions)
+    allocate memory which needs to be freed by the caller by the corresponding
+    vir*Free function (e.g. virDomainFree for a virDomainPtr object).
+    </p>
     <p> For more in-depth details of the storage related APIs see
       <a href="storage.html">the storage management page</a>.
     </p>
