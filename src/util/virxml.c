@@ -935,11 +935,6 @@ typedef int (*virXMLForeachCallback)(xmlNodePtr node,
 static int
 virXMLForeachNode(xmlNodePtr root,
                   virXMLForeachCallback cb,
-                  void *opaque);
-
-static int
-virXMLForeachNode(xmlNodePtr root,
-                  virXMLForeachCallback cb,
                   void *opaque)
 {
     xmlNodePtr next;
