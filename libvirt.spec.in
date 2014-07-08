@@ -768,9 +768,9 @@ Requires: libvirt-daemon = %{version}-%{release}
 Requires: dnsmasq >= 2.41
 Requires: radvd
 Requires: iptables
-    %if (0%{?fedora} && 0%{?fedora} < 17) || (0%{?rhel} && 0{?rhel} < 7)
+            %if (0%{?fedora} && 0%{?fedora} < 17) || (0%{?rhel} && 0{?rhel} < 7)
 Requires: iptables-ipv6
-    %endif
+            %endif
 
 %description daemon-driver-network
 The network driver plugin for the libvirtd daemon, providing
@@ -785,9 +785,9 @@ Summary: Nwfilter driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: iptables
-    %if (0%{?fedora} && 0%{?fedora} < 17) || (0%{?rhel} && 0{?rhel} < 7)
+            %if (0%{?fedora} && 0%{?fedora} < 17) || (0%{?rhel} && 0{?rhel} < 7)
 Requires: iptables-ipv6
-    %endif
+            %endif
 Requires: ebtables
 
 %description daemon-driver-nwfilter
