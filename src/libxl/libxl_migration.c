@@ -566,8 +566,10 @@ libxlDomainMigrationConfirm(libxlDriverPrivatePtr driver,
     if (flags & VIR_MIGRATE_UNDEFINE_SOURCE)
         virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm);
 
-    if (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE))
+    if (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE)) {
         virDomainObjListRemove(driver->domains, vm);
+        vm = NULL;
+    }
 
     ret = 0;
 
