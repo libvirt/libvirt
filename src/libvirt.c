@@ -1299,6 +1299,9 @@ do_open(const char *name,
  *
  * URIs are documented at http://libvirt.org/uri.html
  *
+ * virConnectClose should be used to release the resources after the connection
+ * is no longer needed.
+ *
  * Returns a pointer to the hypervisor connection or NULL in case of error
  */
 virConnectPtr
@@ -1331,7 +1334,7 @@ virConnectOpen(const char *name)
  * on the available methods to control the domains.
  *
  * See virConnectOpen for notes about environment variables which can
- * have an effect on opening drivers
+ * have an effect on opening drivers and freeing the connection resources
  *
  * URIs are documented at http://libvirt.org/uri.html
  *
@@ -1369,7 +1372,7 @@ virConnectOpenReadOnly(const char *name)
  * credentials via the callback
  *
  * See virConnectOpen for notes about environment variables which can
- * have an effect on opening drivers
+ * have an effect on opening drivers and freeing the connection resources
  *
  * URIs are documented at http://libvirt.org/uri.html
  *
@@ -1875,6 +1878,9 @@ virDomainGetConnect(virDomainPtr dom)
  * libvirtd daemon. Any domains marked for auto destroy will
  * block attempts at migration, save-to-file, or snapshots.
  *
+ * virDomainFree should be used to free the resources after the
+ * domain object is no longer needed.
+ *
  * Returns a new domain object or NULL in case of failure
  */
 virDomainPtr
@@ -1936,6 +1942,9 @@ virDomainCreateXML(virConnectPtr conn, const char *xmlDesc,
  * client application crashes / loses its connection to the
  * libvirtd daemon. Any domains marked for auto destroy will
  * block attempts at migration, save-to-file, or snapshots.
+ *
+ * virDomainFree should be used to free the resources after the
+ * domain object is no longer needed.
  *
  * Returns a new domain object or NULL in case of failure
  */
@@ -2000,6 +2009,9 @@ virDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
  * Note that this won't work for inactive domains which have an ID of -1,
  * in that case a lookup based on the Name or UUId need to be done instead.
  *
+ * virDomainFree should be used to free the resources after the
+ * domain object is no longer needed.
+ *
  * Returns a new domain object or NULL in case of failure.  If the
  * domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.
  */
@@ -2035,6 +2047,9 @@ virDomainLookupByID(virConnectPtr conn, int id)
  * @uuid: the raw UUID for the domain
  *
  * Try to lookup a domain on the given hypervisor based on its UUID.
+ *
+ * virDomainFree should be used to free the resources after the
+ * domain object is no longer needed.
  *
  * Returns a new domain object or NULL in case of failure.  If the
  * domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.
@@ -2072,6 +2087,9 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  *
  * Try to lookup a domain on the given hypervisor based on its UUID.
  *
+ * virDomainFree should be used to free the resources after the
+ * domain object is no longer needed.
+ *
  * Returns a new domain object or NULL in case of failure.  If the
  * domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.
  */
@@ -2107,6 +2125,9 @@ virDomainLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
  * @name: name for the domain
  *
  * Try to lookup a domain on the given hypervisor based on its name.
+ *
+ * virDomainFree should be used to free the resources after the
+ * domain object is no longer needed.
  *
  * Returns a new domain object or NULL in case of failure.  If the
  * domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.
@@ -5284,6 +5305,9 @@ virDomainMigrateDirect(virDomainPtr domain,
  * different processors even with the same architecture, or between
  * different types of hypervisor.
  *
+ * virDomainFree should be used to free the resources after the
+ * returned domain object is no longer needed.
+ *
  * Returns the new domain object if the migration was successful,
  *   or NULL in case of error.  Note that the new domain object
  *   exists in the scope of the destination connection (dconn).
@@ -5509,6 +5533,9 @@ virDomainMigrate(virDomainPtr domain,
  * @dname for that purpose).  Domain name in @dxml must match the
  * original domain name.
  *
+ * virDomainFree should be used to free the resources after the
+ * returned domain object is no longer needed.
+ *
  * Returns the new domain object if the migration was successful,
  *   or NULL in case of error.  Note that the new domain object
  *   exists in the scope of the destination connection (dconn).
@@ -5679,6 +5706,9 @@ virDomainMigrate2(virDomainPtr domain,
  * technology - for example it may not be possible to migrate between
  * different processors even with the same architecture, or between
  * different types of hypervisor.
+ *
+ * virDomainFree should be used to free the resources after the
+ * returned domain object is no longer needed.
  *
  * Returns the new domain object if the migration was successful,
  *   or NULL in case of error.  Note that the new domain object
@@ -7916,7 +7946,7 @@ virDomainBlockStats(virDomainPtr dom, const char *disk,
  * @dom: pointer to domain object
  * @disk: path to the block device, or device shorthand
  * @params: pointer to block stats parameter object
- *          (return value)
+ *          (return value, allocated by the caller)
  * @nparams: pointer to number of block stats; input and output
  * @flags: bitwise-OR of virTypedParameterFlags
  *
@@ -8630,6 +8660,9 @@ virDomainGetBlockInfo(virDomainPtr domain, const char *disk,
  * block copy operation on a transient domain with the same id as the
  * domain being defined; in that case, use virDomainBlockJobAbort() to
  * stop the block copy first.
+ *
+ * virDomainFree should be used to free the resources after the
+ * domain object is no longer needed.
  *
  * Returns NULL in case of error, a pointer to the domain otherwise
  */
@@ -10899,6 +10932,9 @@ virConnectListDefinedNetworks(virConnectPtr conn, char **const names,
  *
  * Try to lookup a network on the given hypervisor based on its name.
  *
+ * virNetworkFree should be used to free the resources after the
+ * network object is no longer needed.
+ *
  * Returns a new network object or NULL in case of failure.  If the
  * network cannot be found, then VIR_ERR_NO_NETWORK error is raised.
  */
@@ -10934,6 +10970,9 @@ virNetworkLookupByName(virConnectPtr conn, const char *name)
  * @uuid: the raw UUID for the network
  *
  * Try to lookup a network on the given hypervisor based on its UUID.
+ *
+ * virNetworkFree should be used to free the resources after the
+ * network object is no longer needed.
  *
  * Returns a new network object or NULL in case of failure.  If the
  * network cannot be found, then VIR_ERR_NO_NETWORK error is raised.
@@ -11008,6 +11047,9 @@ virNetworkLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
  * Create and start a new virtual network, based on an XML description
  * similar to the one returned by virNetworkGetXMLDesc()
  *
+ * virNetworkFree should be used to free the resources after the
+ * network object is no longer needed.
+ *
  * Returns a new network object or NULL in case of failure
  */
 virNetworkPtr
@@ -11043,6 +11085,9 @@ virNetworkCreateXML(virConnectPtr conn, const char *xmlDesc)
  * @xml: the XML description for the network, preferably in UTF-8
  *
  * Define a network, but does not create it
+ *
+ * virNetworkFree should be used to free the resources after the
+ * network object is no longer needed.
  *
  * Returns NULL in case of error, a pointer to the network otherwise
  */
@@ -11788,6 +11833,9 @@ virConnectListDefinedInterfaces(virConnectPtr conn,
  *
  * Try to lookup an interface on the given hypervisor based on its name.
  *
+ * virInterfaceFree should be used to free the resources after the
+ * interface object is no longer needed.
+ *
  * Returns a new interface object or NULL in case of failure.  If the
  * interface cannot be found, then VIR_ERR_NO_INTERFACE error is raised.
  */
@@ -11823,6 +11871,9 @@ virInterfaceLookupByName(virConnectPtr conn, const char *name)
  * @macstr: the MAC for the interface (null-terminated ASCII format)
  *
  * Try to lookup an interface on the given hypervisor based on its MAC.
+ *
+ * virInterfaceFree should be used to free the resources after the
+ * interface object is no longer needed.
  *
  * Returns a new interface object or NULL in case of failure.  If the
  * interface cannot be found, then VIR_ERR_NO_INTERFACE error is raised.
@@ -11961,6 +12012,9 @@ virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
  * explicitly removed using virInterfaceChangeRollback(), or will be
  * automatically removed during the next reboot of the system running
  * libvirtd.
+ *
+ * virInterfaceFree should be used to free the resources after the
+ * interface object is no longer needed.
  *
  * Returns NULL in case of error, a pointer to the interface otherwise
  */
@@ -12634,6 +12688,9 @@ virConnectFindStoragePoolSources(virConnectPtr conn,
  *
  * Fetch a storage pool based on its unique name
  *
+ * virStoragePoolFree should be used to free the resources after the
+ * storage pool object is no longer needed.
+ *
  * Returns a virStoragePoolPtr object, or NULL if no matching pool is found
  */
 virStoragePoolPtr
@@ -12669,6 +12726,9 @@ virStoragePoolLookupByName(virConnectPtr conn,
  * @uuid: globally unique id of pool to fetch
  *
  * Fetch a storage pool based on its globally unique id
+ *
+ * virStoragePoolFree should be used to free the resources after the
+ * storage pool object is no longer needed.
  *
  * Returns a virStoragePoolPtr object, or NULL if no matching pool is found
  */
@@ -12706,6 +12766,9 @@ virStoragePoolLookupByUUID(virConnectPtr conn,
  *
  * Fetch a storage pool based on its globally unique id
  *
+ * virStoragePoolFree should be used to free the resources after the
+ * storage pool object is no longer needed.
+ *
  * Returns a virStoragePoolPtr object, or NULL if no matching pool is found
  */
 virStoragePoolPtr
@@ -12740,6 +12803,9 @@ virStoragePoolLookupByUUIDString(virConnectPtr conn,
  * @vol: pointer to storage volume
  *
  * Fetch a storage pool which contains a particular volume
+ *
+ * virStoragePoolFree should be used to free the resources after the
+ * storage pool object is no longer needed.
  *
  * Returns a virStoragePoolPtr object, or NULL if no matching pool is found
  */
@@ -12777,6 +12843,9 @@ virStoragePoolLookupByVolume(virStorageVolPtr vol)
  * Create a new storage based on its XML description. The
  * pool is not persistent, so its definition will disappear
  * when it is destroyed, or if the host is restarted
+ *
+ * virStoragePoolFree should be used to free the resources after the
+ * storage pool object is no longer needed.
  *
  * Returns a virStoragePoolPtr object, or NULL if creation failed
  */
@@ -12817,6 +12886,9 @@ virStoragePoolCreateXML(virConnectPtr conn,
  *
  * Define a new inactive storage pool based on its XML description. The
  * pool is persistent, until explicitly undefined.
+ *
+ * virStoragePoolFree should be used to free the resources after the
+ * storage pool object is no longer needed.
  *
  * Returns a virStoragePoolPtr object, or NULL if creation failed
  */
@@ -13277,7 +13349,7 @@ virStoragePoolGetInfo(virStoragePoolPtr pool,
  * storage pool. This is suitable for later feeding back
  * into the virStoragePoolCreateXML method.
  *
- * Returns a XML document, or NULL on error
+ * Returns a XML document (caller frees), or NULL on error
  */
 char *
 virStoragePoolGetXMLDesc(virStoragePoolPtr pool,
@@ -13542,6 +13614,9 @@ virStorageVolGetConnect(virStorageVolPtr vol)
  * Fetch a pointer to a storage volume based on its name
  * within a pool
  *
+ * virStorageVolFree should be used to free the resources after the
+ * storage volume object is no longer needed.
+ *
  * Returns a storage volume, or NULL if not found / error
  */
 virStorageVolPtr
@@ -13579,6 +13654,9 @@ virStorageVolLookupByName(virStoragePoolPtr pool,
  * Fetch a pointer to a storage volume based on its
  * globally unique key
  *
+ * virStorageVolFree should be used to free the resources after the
+ * storage volume object is no longer needed.
+ *
  * Returns a storage volume, or NULL if not found / error
  */
 virStorageVolPtr
@@ -13615,6 +13693,9 @@ virStorageVolLookupByKey(virConnectPtr conn,
  *
  * Fetch a pointer to a storage volume based on its
  * locally (host) unique path
+ *
+ * virStorageVolFree should be used to free the resources after the
+ * storage volume object is no longer needed.
  *
  * Returns a storage volume, or NULL if not found / error
  */
@@ -13705,6 +13786,9 @@ virStorageVolGetKey(virStorageVolPtr vol)
  * qcow2 image files which don't support full preallocation,
  * by creating a sparse image file with metadata.
  *
+ * virStorageVolFree should be used to free the resources after the
+ * storage volume object is no longer needed.
+ *
  * Returns the storage volume, or NULL on error
  */
 virStorageVolPtr
@@ -13752,6 +13836,9 @@ virStorageVolCreateXML(virStoragePoolPtr pool,
  * in flags can be used to get higher performance with
  * qcow2 image files which don't support full preallocation,
  * by creating a sparse image file with metadata.
+ *
+ * virStorageVolFree should be used to free the resources after the
+ * storage volume object is no longer needed.
  *
  * Returns the storage volume, or NULL on error
  */
@@ -14454,6 +14541,9 @@ virNodeListDevices(virConnectPtr conn,
  *
  * Lookup a node device by its name.
  *
+ * virNodeDeviceFree should be used to free the resources after the
+ * node device object is no longer needed.
+ *
  * Returns a virNodeDevicePtr if found, NULL otherwise.
  */
 virNodeDevicePtr
@@ -14490,6 +14580,9 @@ virNodeDeviceLookupByName(virConnectPtr conn, const char *name)
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
  * Lookup SCSI Host which is capable with 'fc_host' by its WWNN and WWPN.
+ *
+ * virNodeDeviceFree should be used to free the resources after the
+ * node device object is no longer needed.
  *
  * Returns a virNodeDevicePtr if found, NULL otherwise.
  */
@@ -14941,6 +15034,9 @@ virNodeDeviceReset(virNodeDevicePtr dev)
  * Create a new device on the VM host machine, for example, virtual
  * HBAs created using vport_create.
  *
+ * virNodeDeviceFree should be used to free the resources after the
+ * node device object is no longer needed.
+ *
  * Returns a node device object if successful, NULL in case of failure
  */
 virNodeDevicePtr
@@ -15280,6 +15376,9 @@ virConnectListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
  * Try to lookup a secret on the given hypervisor based on its UUID.
  * Uses the 16 bytes of raw data to describe the UUID
  *
+ * virSecretFree should be used to free the resources after the
+ * secret object is no longer needed.
+ *
  * Returns a new secret object or NULL in case of failure.  If the
  * secret cannot be found, then VIR_ERR_NO_SECRET error is raised.
  */
@@ -15317,6 +15416,9 @@ virSecretLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  *
  * Try to lookup a secret on the given hypervisor based on its UUID.
  * Uses the printable string value to describe the UUID
+ *
+ * virSecretFree should be used to free the resources after the
+ * secret object is no longer needed.
  *
  * Returns a new secret object or NULL in case of failure.  If the
  * secret cannot be found, then VIR_ERR_NO_SECRET error is raised.
@@ -15356,6 +15458,9 @@ virSecretLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
  * Try to lookup a secret on the given hypervisor based on its usage
  * The usageID is unique within the set of secrets sharing the
  * same usageType value.
+ *
+ * virSecretFree should be used to free the resources after the
+ * secret object is no longer needed.
  *
  * Returns a new secret object or NULL in case of failure.  If the
  * secret cannot be found, then VIR_ERR_NO_SECRET error is raised.
@@ -15401,6 +15506,9 @@ virSecretLookupByUsage(virConnectPtr conn,
  *
  * Otherwise, creates a new secret with an automatically chosen UUID, and
  * initializes its attributes from xml.
+ *
+ * virSecretFree should be used to free the resources after the
+ * secret object is no longer needed.
  *
  * Returns a secret on success, NULL on failure.
  */
@@ -16793,6 +16901,9 @@ virConnectListNWFilters(virConnectPtr conn, char **const names, int maxnames)
  *
  * Try to lookup a network filter on the given hypervisor based on its name.
  *
+ * virNWFilterFree should be used to free the resources after the
+ * nwfilter object is no longer needed.
+ *
  * Returns a new nwfilter object or NULL in case of failure.  If the
  * network filter cannot be found, then VIR_ERR_NO_NWFILTER error is raised.
  */
@@ -16829,6 +16940,9 @@ virNWFilterLookupByName(virConnectPtr conn, const char *name)
  *
  * Try to lookup a network filter on the given hypervisor based on its UUID.
  *
+ * virNWFilterFree should be used to free the resources after the
+ * nwfilter object is no longer needed.
+ *
  * Returns a new nwfilter object or NULL in case of failure.  If the
  * nwfdilter cannot be found, then VIR_ERR_NO_NWFILTER error is raised.
  */
@@ -16864,6 +16978,9 @@ virNWFilterLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  * @uuidstr: the string UUID for the nwfilter
  *
  * Try to lookup an nwfilter on the given hypervisor based on its UUID.
+ *
+ * virNWFilterFree should be used to free the resources after the
+ * nwfilter object is no longer needed.
  *
  * Returns a new nwfilter object or NULL in case of failure.  If the
  * nwfilter cannot be found, then VIR_ERR_NO_NWFILTER error is raised.
@@ -17004,6 +17121,9 @@ virNWFilterGetUUIDString(virNWFilterPtr nwfilter, char *buf)
  *
  * Define a new network filter, based on an XML description
  * similar to the one returned by virNWFilterGetXMLDesc()
+ *
+ * virNWFilterFree should be used to free the resources after the
+ * nwfilter object is no longer needed.
  *
  * Returns a new nwfilter object or NULL in case of failure
  */
@@ -17348,7 +17468,7 @@ virConnectGetCPUModelNames(virConnectPtr conn, const char *arch, char ***models,
  * without this flag features that are part of the CPU model will not be
  * listed.
  *
- * Returns XML description of the computed CPU or NULL on error.
+ * Returns XML description of the computed CPU (caller frees) or NULL on error.
  */
 char *
 virConnectBaselineCPU(virConnectPtr conn,
@@ -18297,6 +18417,9 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
  * block copy operation; in that case, use virDomainBlockJobAbort()
  * to stop the block copy first.
  *
+ * virDomainSnapshotFree should be used to free the resources after the
+ * snapshot object is no longer needed.
+ *
  * Returns an (opaque) virDomainSnapshotPtr on success, NULL on failure.
  */
 virDomainSnapshotPtr
@@ -18966,6 +19089,9 @@ virDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
  *
  * Get the current snapshot for a domain, if any.
  *
+ * virDomainSnapshotFree should be used to free the resources after the
+ * snapshot object is no longer needed.
+ *
  * Returns a domain snapshot object or NULL in case of failure.  If the
  * current domain snapshot cannot be found, then the VIR_ERR_NO_DOMAIN_SNAPSHOT
  * error is raised.
@@ -19004,6 +19130,9 @@ virDomainSnapshotCurrent(virDomainPtr domain,
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
  * Get the parent snapshot for @snapshot, if any.
+ *
+ * virDomainSnapshotFree should be used to free the resources after the
+ * snapshot object is no longer needed.
  *
  * Returns a domain snapshot object or NULL in case of failure.  If the
  * given snapshot is a root (no parent), then the VIR_ERR_NO_DOMAIN_SNAPSHOT
