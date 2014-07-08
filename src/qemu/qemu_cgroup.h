@@ -1,7 +1,7 @@
 /*
  * qemu_cgroup.h: QEMU cgroup management
  *
- * Copyright (C) 2006-2007, 2009-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -47,6 +47,8 @@ int qemuConnectCgroup(virQEMUDriverPtr driver,
 int qemuSetupCgroup(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
                     virBitmapPtr nodemask);
+int qemuSetupCgroupPostInit(virDomainObjPtr vm,
+                            virBitmapPtr nodemask);
 int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
                           unsigned long long period,
                           long long quota);

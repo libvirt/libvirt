@@ -4155,6 +4155,10 @@ int qemuProcessStart(virConnectPtr conn,
     if (!qemuProcessVerifyGuestCPU(driver, vm))
         goto cleanup;
 
+    VIR_DEBUG("Setting up post-init cgroup restrictions");
+    if (qemuSetupCgroupPostInit(vm, nodemask) < 0)
+        goto cleanup;
+
     VIR_DEBUG("Detecting VCPU PIDs");
     if (qemuProcessDetectVcpuPIDs(driver, vm) < 0)
         goto cleanup;

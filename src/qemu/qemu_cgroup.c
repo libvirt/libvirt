@@ -627,9 +627,6 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
         return 0;
 
-    if (qemuSetupCpusetMems(vm, nodemask) < 0)
-        goto cleanup;
-
     if (vm->def->cpumask ||
         (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)) {
 
@@ -823,6 +820,13 @@ qemuSetupCgroup(virQEMUDriverPtr driver,
  cleanup:
     virObjectUnref(caps);
     return ret;
+}
+
+int
+qemuSetupCgroupPostInit(virDomainObjPtr vm,
+                        virBitmapPtr nodemask)
+{
+    return qemuSetupCpusetMems(vm, nodemask);
 }
 
 int
