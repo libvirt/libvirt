@@ -3480,11 +3480,13 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
 
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
 
-        /* search for the entry with this (mac|name),
+        /* search for the entry with this (ip|mac|name),
          * and update the IP+(mac|name) */
         for (i = 0; i < ipdef->nhosts; i++) {
             if ((host.mac &&
                  !virMacAddrCompare(host.mac, ipdef->hosts[i].mac)) ||
+                (VIR_SOCKET_ADDR_VALID(&host.ip) &&
+                 virSocketAddrEqual(&host.ip, &ipdef->hosts[i].ip)) ||
                 (host.name &&
                  STREQ_NULLABLE(host.name, ipdef->hosts[i].name))) {
                 break;
@@ -3492,10 +3494,14 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
         }
 
         if (i == ipdef->nhosts) {
+            char *ip = virSocketAddrFormat(&host.ip);
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("couldn't locate an existing dhcp host entry with "
-                             "\"mac='%s'\" in network '%s'"),
-                           host.mac, def->name);
+                             "\"mac='%s'\" \"name='%s'\" \"ip='%s'\" in"
+                             " network '%s'"),
+                           host.mac ? host.mac : _("unknown"), host.name,
+                           ip ? ip : _("unknown"), def->name);
+            VIR_FREE(ip);
             goto cleanup;
         }
 
@@ -3524,8 +3530,8 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
                                _("there is an existing dhcp host entry in "
                                  "network '%s' that matches "
                                  "\"<host mac='%s' name='%s' ip='%s'/>\""),
-                               def->name, host.mac, host.name,
-                               ip ? ip : "unknown");
+                               def->name, host.mac ? host.mac : _("unknown"),
+                               host.name, ip ? ip : _("unknown"));
                 VIR_FREE(ip);
                 goto cleanup;
             }
