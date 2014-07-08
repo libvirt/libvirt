@@ -19575,6 +19575,12 @@ virDomainObjGetMetadata(virDomainObjPtr vm,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, NULL);
 
+    if (type >= VIR_DOMAIN_METADATA_LAST) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown metadata type '%d'"), type);
+        goto cleanup;
+    }
+
     if (virDomainLiveConfigHelperMethod(caps, xmlopt, vm, &flags, &def) < 0)
         goto cleanup;
 
@@ -19601,10 +19607,7 @@ virDomainObjGetMetadata(virDomainObjPtr vm,
             goto cleanup;
         break;
 
-    default:
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("unknown metadata type"));
-        goto cleanup;
+    case VIR_DOMAIN_METADATA_LAST:
         break;
     }
 
@@ -19629,6 +19632,12 @@ virDomainDefSetMetadata(virDomainDefPtr def,
     xmlNodePtr new = NULL;
     char *tmp;
     int ret = -1;
+
+    if (type >= VIR_DOMAIN_METADATA_LAST) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown metadata type '%d'"), type);
+        goto cleanup;
+    }
 
     switch ((virDomainMetadataType) type) {
     case VIR_DOMAIN_METADATA_DESCRIPTION:
@@ -19683,10 +19692,7 @@ virDomainDefSetMetadata(virDomainDefPtr def,
         }
         break;
 
-    default:
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("unknown metadata type"));
-        goto cleanup;
+    case VIR_DOMAIN_METADATA_LAST:
         break;
     }
 
