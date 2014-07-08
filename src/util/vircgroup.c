@@ -83,6 +83,44 @@ typedef enum {
 } virCgroupFlags;
 
 
+/**
+ * virCgroupGetDevicePermsString:
+ *
+ * @perms: Bitwise or of VIR_CGROUP_DEVICE permission bits
+ *
+ * Returns string corresponding to the appropriate bits set.
+ */
+const char *
+virCgroupGetDevicePermsString(int perms)
+{
+    if (perms & VIR_CGROUP_DEVICE_READ) {
+        if (perms & VIR_CGROUP_DEVICE_WRITE) {
+            if (perms & VIR_CGROUP_DEVICE_MKNOD)
+                return "rwm";
+            else
+                return "rw";
+        } else {
+            if (perms & VIR_CGROUP_DEVICE_MKNOD)
+                return "rm";
+            else
+                return "r";
+        }
+    } else {
+        if (perms & VIR_CGROUP_DEVICE_WRITE) {
+            if (perms & VIR_CGROUP_DEVICE_MKNOD)
+                return "wm";
+            else
+                return "w";
+        } else {
+            if (perms & VIR_CGROUP_DEVICE_MKNOD)
+                return "m";
+            else
+                return "";
+        }
+    }
+}
+
+
 #ifdef VIR_CGROUP_SUPPORTED
 bool
 virCgroupAvailable(void)
@@ -2620,44 +2658,6 @@ virCgroupDenyAllDevices(virCgroupPtr group)
                                 VIR_CGROUP_CONTROLLER_DEVICES,
                                 "devices.deny",
                                 "a");
-}
-
-
-/**
- * virCgroupGetDevicePermsString:
- *
- * @perms: Bitwise or of VIR_CGROUP_DEVICE permission bits
- *
- * Returns string corresponding to the appropriate bits set.
- */
-const char *
-virCgroupGetDevicePermsString(int perms)
-{
-    if (perms & VIR_CGROUP_DEVICE_READ) {
-        if (perms & VIR_CGROUP_DEVICE_WRITE) {
-            if (perms & VIR_CGROUP_DEVICE_MKNOD)
-                return "rwm";
-            else
-                return "rw";
-        } else {
-            if (perms & VIR_CGROUP_DEVICE_MKNOD)
-                return "rm";
-            else
-                return "r";
-        }
-    } else {
-        if (perms & VIR_CGROUP_DEVICE_WRITE) {
-            if (perms & VIR_CGROUP_DEVICE_MKNOD)
-                return "wm";
-            else
-                return "w";
-        } else {
-            if (perms & VIR_CGROUP_DEVICE_MKNOD)
-                return "m";
-            else
-                return "";
-        }
-    }
 }
 
 
