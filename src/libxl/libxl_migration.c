@@ -215,6 +215,10 @@ libxlDomainMigrationBegin(virConnectPtr conn,
 
     xml = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE);
 
+ endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
+
  cleanup:
     if (vm)
         virObjectUnlock(vm);
@@ -222,11 +226,6 @@ libxlDomainMigrationBegin(virConnectPtr conn,
     virDomainDefFree(tmpdef);
     virObjectUnref(cfg);
     return xml;
-
- endjob:
-    if (!libxlDomainObjEndJob(driver, vm))
-        vm = NULL;
-    goto cleanup;
 }
 
 virDomainDefPtr
@@ -468,11 +467,6 @@ libxlDomainMigrationPerform(libxlDriverPrivatePtr driver,
     virObjectLock(vm);
 
  cleanup:
-    /* If failure, terminate the job started in MigrationBegin */
-    if (ret == -1) {
-        if (libxlDomainObjEndJob(driver, vm))
-            virObjectUnlock(vm);
-    }
     VIR_FORCE_CLOSE(sockfd);
     virURIFree(uri);
     return ret;
@@ -578,8 +572,6 @@ libxlDomainMigrationConfirm(libxlDriverPrivatePtr driver,
     ret = 0;
 
  cleanup:
-    if (!libxlDomainObjEndJob(driver, vm))
-        vm = NULL;
     if (event)
         libxlDomainEventQueue(driver, event);
     if (vm)

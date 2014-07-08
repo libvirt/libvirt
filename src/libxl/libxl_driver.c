@@ -4491,11 +4491,8 @@ libxlDomainMigratePerform3Params(virDomainPtr dom,
         goto cleanup;
 
     if (libxlDomainMigrationPerform(driver, vm, dom_xml, dconnuri,
-                                    uri, dname, flags) < 0) {
-        /* Job terminated and vm unlocked if MigrationPerform failed */
-        vm = NULL;
+                                    uri, dname, flags) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 
