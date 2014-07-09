@@ -1342,7 +1342,8 @@ main(int argc, char **argv)
             vah_info(include_file);
             vah_info(included_files);
             rc = 0;
-        } else if ((rc = update_include_file(include_file,
+        } else if (ctl->def->virtType != VIR_DOMAIN_VIRT_LXC &&
+                   (rc = update_include_file(include_file,
                                              included_files,
                                              ctl->append)) != 0)
             goto cleanup;
