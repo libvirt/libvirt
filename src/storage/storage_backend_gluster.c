@@ -762,6 +762,17 @@ virStorageFileBackendGlusterGetUniqueIdentifier(virStorageSourcePtr src)
 }
 
 
+static int
+virStorageFileBackendGlusterChown(virStorageSourcePtr src,
+                                  uid_t uid,
+                                  gid_t gid)
+{
+    virStorageFileBackendGlusterPrivPtr priv = src->drv->priv;
+
+    return glfs_chown(priv->vol, src->path, uid, gid);
+}
+
+
 virStorageFileBackend virStorageFileBackendGluster = {
     .type = VIR_STORAGE_TYPE_NETWORK,
     .protocol = VIR_STORAGE_NET_PROTOCOL_GLUSTER,
@@ -773,6 +784,7 @@ virStorageFileBackend virStorageFileBackendGluster = {
     .storageFileStat = virStorageFileBackendGlusterStat,
     .storageFileReadHeader = virStorageFileBackendGlusterReadHeader,
     .storageFileAccess = virStorageFileBackendGlusterAccess,
+    .storageFileChown = virStorageFileBackendGlusterChown,
 
     .storageFileGetUniqueIdentifier = virStorageFileBackendGlusterGetUniqueIdentifier,
 

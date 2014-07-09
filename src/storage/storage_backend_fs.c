@@ -1455,6 +1455,15 @@ virStorageFileBackendFileAccess(virStorageSourcePtr src,
 }
 
 
+static int
+virStorageFileBackendFileChown(virStorageSourcePtr src,
+                               uid_t uid,
+                               gid_t gid)
+{
+    return chown(src->path, uid, gid);
+}
+
+
 virStorageFileBackend virStorageFileBackendFile = {
     .type = VIR_STORAGE_TYPE_FILE,
 
@@ -1465,6 +1474,7 @@ virStorageFileBackend virStorageFileBackendFile = {
     .storageFileStat = virStorageFileBackendFileStat,
     .storageFileReadHeader = virStorageFileBackendFileReadHeader,
     .storageFileAccess = virStorageFileBackendFileAccess,
+    .storageFileChown = virStorageFileBackendFileChown,
 
     .storageFileGetUniqueIdentifier = virStorageFileBackendFileGetUniqueIdentifier,
 };
@@ -1479,6 +1489,7 @@ virStorageFileBackend virStorageFileBackendBlock = {
     .storageFileStat = virStorageFileBackendFileStat,
     .storageFileReadHeader = virStorageFileBackendFileReadHeader,
     .storageFileAccess = virStorageFileBackendFileAccess,
+    .storageFileChown = virStorageFileBackendFileChown,
 
     .storageFileGetUniqueIdentifier = virStorageFileBackendFileGetUniqueIdentifier,
 };
@@ -1491,6 +1502,7 @@ virStorageFileBackend virStorageFileBackendDir = {
     .backendDeinit = virStorageFileBackendFileDeinit,
 
     .storageFileAccess = virStorageFileBackendFileAccess,
+    .storageFileChown = virStorageFileBackendFileChown,
 
     .storageFileGetUniqueIdentifier = virStorageFileBackendFileGetUniqueIdentifier,
 };

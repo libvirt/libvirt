@@ -244,6 +244,11 @@ typedef int
 (*virStorageFileBackendAccess)(virStorageSourcePtr src,
                                int mode);
 
+typedef int
+(*virStorageFileBackendChown)(virStorageSourcePtr src,
+                              uid_t uid,
+                              gid_t gid);
+
 virStorageFileBackendPtr virStorageFileBackendForType(int type, int protocol);
 virStorageFileBackendPtr virStorageFileBackendForTypeInternal(int type,
                                                               int protocol,
@@ -269,6 +274,7 @@ struct _virStorageFileBackend {
     virStorageFileBackendUnlink storageFileUnlink;
     virStorageFileBackendStat   storageFileStat;
     virStorageFileBackendAccess storageFileAccess;
+    virStorageFileBackendChown  storageFileChown;
 };
 
 #endif /* __VIR_STORAGE_BACKEND_H__ */

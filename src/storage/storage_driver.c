@@ -2613,6 +2613,34 @@ virStorageFileAccess(virStorageSourcePtr src,
 }
 
 
+/**
+ * virStorageFileChown: Change owner of a storage file
+ *
+ * @src: storage file to change owner of
+ * @uid: new owner id
+ * @gid: new group id
+ *
+ * Returns 0 on success, -1 on error and sets errno. No libvirt
+ * error is reported. Returns -2 if the operation isn't supported
+ * by libvirt storage backend.
+ */
+int
+virStorageFileChown(virStorageSourcePtr src,
+                    uid_t uid,
+                    gid_t gid)
+{
+    if (!virStorageFileIsInitialized(src) ||
+        !src->drv->backend->storageFileChown) {
+        errno = ENOSYS;
+        return -2;
+    }
+
+    VIR_DEBUG("chown of storage file %p to %d:%d", src, uid, gid);
+
+    return src->drv->backend->storageFileChown(src, uid, gid);
+}
+
+
 /* Recursive workhorse for virStorageFileGetMetadata.  */
 static int
 virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
