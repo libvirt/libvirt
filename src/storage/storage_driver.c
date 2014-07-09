@@ -2357,6 +2357,37 @@ virStorageFileSupportsBackingChainTraversal(virStorageSourcePtr src)
            backend->storageFileAccess;
 }
 
+
+/**
+ * virStorageFileSupportsSecurityDriver:
+ *
+ * @src: a storage file structure
+ *
+ * Check if a storage file supports operations needed by the security
+ * driver to perform labelling
+ */
+bool
+virStorageFileSupportsSecurityDriver(virStorageSourcePtr src)
+{
+    int actualType = virStorageSourceGetActualType(src);
+    virStorageFileBackendPtr backend;
+
+    if (!src)
+        return false;
+
+    if (src->drv) {
+        backend = src->drv->backend;
+    } else {
+        if (!(backend = virStorageFileBackendForTypeInternal(actualType,
+                                                             src->protocol,
+                                                             false)))
+            return false;
+    }
+
+    return !!backend->storageFileChown;
+}
+
+
 void
 virStorageFileDeinit(virStorageSourcePtr src)
 {
