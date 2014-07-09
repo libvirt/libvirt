@@ -4668,7 +4668,7 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
                              virCapsPtr caps,
                              unsigned int flags)
 {
-    size_t i = 0;
+    size_t i = 0, j;
     int n;
     xmlNodePtr *list = NULL, saved_node;
     virCapsHostPtr host = &caps->host;
@@ -4689,10 +4689,23 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
 
     /* Parse each "seclabel" tag */
     for (i = 0; i < n; i++) {
+        virSecurityLabelDefPtr seclabel;
+
         ctxt->node = list[i];
-        def->seclabels[i] = virSecurityLabelDefParseXML(ctxt, flags);
-        if (def->seclabels[i] == NULL)
+        if (!(seclabel = virSecurityLabelDefParseXML(ctxt, flags)))
             goto error;
+
+        for (j = 0; j < i; j++) {
+            if (STREQ_NULLABLE(seclabel->model, def->seclabels[j]->model)) {
+                virReportError(VIR_ERR_XML_DETAIL,
+                               _("seclablel for model %s is already provided"),
+                               seclabel->model);
+                virSecurityLabelDefFree(seclabel);
+                goto error;
+            }
+        }
+
+        def->seclabels[i] = seclabel;
     }
     def->nseclabels = n;
     ctxt->node = saved_node;
