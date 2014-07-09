@@ -1130,7 +1130,7 @@ virSecuritySELinuxRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
 
     disk_seclabel = virStorageSourceGetSecurityLabelDef(src,
                                                         SECURITY_SELINUX_NAME);
-    if (!seclabel->relabel || (disk_seclabel && disk_seclabel->norelabel))
+    if (!seclabel->relabel || (disk_seclabel && !disk_seclabel->relabel))
         return 0;
 
     /* If labelskip is true and there are no backing files, then we
@@ -1208,10 +1208,10 @@ virSecuritySELinuxSetSecurityImageLabelInternal(virSecurityManagerPtr mgr,
     disk_seclabel = virStorageSourceGetSecurityLabelDef(src,
                                                         SECURITY_SELINUX_NAME);
 
-    if (disk_seclabel && disk_seclabel->norelabel)
+    if (disk_seclabel && !disk_seclabel->relabel)
         return 0;
 
-    if (disk_seclabel && !disk_seclabel->norelabel && disk_seclabel->label) {
+    if (disk_seclabel && disk_seclabel->relabel && disk_seclabel->label) {
         ret = virSecuritySELinuxSetFilecon(src->path, disk_seclabel->label);
     } else if (first) {
         if (src->shared) {
@@ -1677,7 +1677,7 @@ virSecuritySELinuxSetSecurityChardevLabel(virDomainDefPtr def,
         chr_seclabel = virDomainChrDefGetSecurityLabelDef(dev,
                                                           SECURITY_SELINUX_NAME);
 
-    if (chr_seclabel && chr_seclabel->norelabel)
+    if (chr_seclabel && !chr_seclabel->relabel)
         return 0;
 
     if (chr_seclabel)
@@ -1747,7 +1747,7 @@ virSecuritySELinuxRestoreSecurityChardevLabel(virSecurityManagerPtr mgr,
     if (dev)
         chr_seclabel = virDomainChrDefGetSecurityLabelDef(dev,
                                                           SECURITY_SELINUX_NAME);
-    if (chr_seclabel && chr_seclabel->norelabel)
+    if (chr_seclabel && !chr_seclabel->relabel)
         return 0;
 
     switch (dev_source->type) {

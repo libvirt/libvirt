@@ -312,7 +312,7 @@ virSecurityDACSetSecurityImageLabel(virSecurityManagerPtr mgr,
 
     disk_seclabel = virStorageSourceGetSecurityLabelDef(src,
                                                         SECURITY_DAC_NAME);
-    if (disk_seclabel && disk_seclabel->norelabel)
+    if (disk_seclabel && !disk_seclabel->relabel)
         return 0;
 
     if (disk_seclabel && disk_seclabel->label) {
@@ -374,7 +374,7 @@ virSecurityDACRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
 
     disk_seclabel = virStorageSourceGetSecurityLabelDef(src,
                                                         SECURITY_DAC_NAME);
-    if (disk_seclabel && disk_seclabel->norelabel)
+    if (disk_seclabel && !disk_seclabel->relabel)
         return 0;
 
     /* If we have a shared FS and are doing migration, we must not change
@@ -703,7 +703,7 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
         chr_seclabel = virDomainChrDefGetSecurityLabelDef(dev,
                                                           SECURITY_DAC_NAME);
 
-    if (chr_seclabel && chr_seclabel->norelabel)
+    if (chr_seclabel && !chr_seclabel->relabel)
         return 0;
 
     if (chr_seclabel && chr_seclabel->label) {
@@ -772,7 +772,7 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
         chr_seclabel = virDomainChrDefGetSecurityLabelDef(dev,
                                                           SECURITY_DAC_NAME);
 
-    if (chr_seclabel && chr_seclabel->norelabel)
+    if (chr_seclabel && !chr_seclabel->relabel)
         return 0;
 
     switch ((virDomainChrType) dev_source->type) {

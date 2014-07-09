@@ -92,7 +92,7 @@ virSecurityDeviceLabelDefCopy(const virSecurityDeviceLabelDef *src)
     if (VIR_ALLOC(ret) < 0)
         return NULL;
 
-    ret->norelabel = src->norelabel;
+    ret->relabel = src->relabel;
     ret->labelskip = src->labelskip;
 
     if (VIR_STRDUP(ret->model, src->model) < 0 ||

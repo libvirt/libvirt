@@ -4803,9 +4803,9 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
         relabel = virXMLPropString(list[i], "relabel");
         if (relabel != NULL) {
             if (STREQ(relabel, "yes")) {
-                seclabels[i]->norelabel = false;
+                seclabels[i]->relabel = true;
             } else if (STREQ(relabel, "no")) {
-                seclabels[i]->norelabel = true;
+                seclabels[i]->relabel = false;
             } else {
                 virReportError(VIR_ERR_XML_ERROR,
                                _("invalid security relabel value %s"),
@@ -4815,7 +4815,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
             }
             VIR_FREE(relabel);
         } else {
-            seclabels[i]->norelabel = false;
+            seclabels[i]->relabel = true;
         }
 
         /* labelskip is only parsed on live images */
@@ -4830,7 +4830,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
                                     VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
         seclabels[i]->label = label;
 
-        if (label && seclabels[i]->norelabel) {
+        if (label && !seclabels[i]->relabel) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Cannot specify a label if relabelling is "
                              "turned off. model=%s"),
@@ -14736,7 +14736,7 @@ virSecurityDeviceLabelDefFormat(virBufferPtr buf,
 {
     /* For offline output, skip elements that allow labels but have no
      * label specified (possible if labelskip was ignored on input).  */
-    if ((flags & VIR_DOMAIN_XML_INACTIVE) && !def->label && !def->norelabel)
+    if ((flags & VIR_DOMAIN_XML_INACTIVE) && !def->label && def->relabel)
         return;
 
     virBufferAddLit(buf, "<seclabel");
@@ -14747,7 +14747,7 @@ virSecurityDeviceLabelDefFormat(virBufferPtr buf,
     if (def->labelskip)
         virBufferAddLit(buf, " labelskip='yes'");
     else
-        virBufferAsprintf(buf, " relabel='%s'", def->norelabel ? "no" : "yes");
+        virBufferAsprintf(buf, " relabel='%s'", def->relabel ? "yes" : "no");
 
     if (def->label) {
         virBufferAddLit(buf, ">\n");
