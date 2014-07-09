@@ -3534,7 +3534,8 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
                     break;
 
                 case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
-                    needTLSPort = true;
+                    if (cfg->spiceTLS)
+                        needTLSPort = true;
                     needPort = true;
                     break;
                 }
@@ -3552,28 +3553,16 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
 
     if (needTLSPort || graphics->data.spice.tlsPort == -1) {
         if (!cfg->spiceTLS) {
-            /* log an error and fail if tls was specifically
-             * requested, or simply ignore (don't allocate a port)
-             * if we're here due to "defaultMode='any'"
-             * (aka unspecified).
-             */
-            if ((graphics->data.spice.tlsPort == -1) ||
-                (graphics->data.spice.defaultMode
-                 == VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Auto allocation of spice TLS port requested "
-                                 "but spice TLS is disabled in qemu.conf"));
-                goto error;
-            }
-        } else {
-            /* cfg->spiceTLS *is* in place, so it makes sense to
-             * allocate a port.
-             */
-            if (virPortAllocatorAcquire(driver->remotePorts, &tlsPort) < 0)
-                goto error;
-
-            graphics->data.spice.tlsPort = tlsPort;
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Auto allocation of spice TLS port requested "
+                             "but spice TLS is disabled in qemu.conf"));
+            goto error;
         }
+
+        if (virPortAllocatorAcquire(driver->remotePorts, &tlsPort) < 0)
+            goto error;
+
+        graphics->data.spice.tlsPort = tlsPort;
     }
 
     return 0;
