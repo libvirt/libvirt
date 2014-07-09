@@ -64,6 +64,8 @@ virSecurityLabelDefNew(const char *model)
         seclabel = NULL;
     }
 
+    seclabel->relabel = true;
+
     return seclabel;
 }
 

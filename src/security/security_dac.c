@@ -307,7 +307,7 @@ virSecurityDACSetSecurityImageLabel(virSecurityManagerPtr mgr,
         return 0;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
-    if (secdef && secdef->norelabel)
+    if (secdef && !secdef->relabel)
         return 0;
 
     disk_seclabel = virStorageSourceGetSecurityLabelDef(src,
@@ -369,7 +369,7 @@ virSecurityDACRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
         return 0;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
-    if (secdef && secdef->norelabel)
+    if (secdef && !secdef->relabel)
         return 0;
 
     disk_seclabel = virStorageSourceGetSecurityLabelDef(src,
@@ -477,7 +477,7 @@ virSecurityDACSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     cbdata.manager = mgr;
     cbdata.secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
 
-    if (cbdata.secdef && cbdata.secdef->norelabel)
+    if (cbdata.secdef && !cbdata.secdef->relabel)
         return 0;
 
     switch ((virDomainHostdevSubsysType) dev->source.subsys.type) {
@@ -601,7 +601,7 @@ virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
 
-    if (!priv->dynamicOwnership || (secdef && secdef->norelabel))
+    if (!priv->dynamicOwnership || (secdef && !secdef->relabel))
         return 0;
 
     if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -881,7 +881,7 @@ virSecurityDACRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
 
-    if (!priv->dynamicOwnership || (secdef && secdef->norelabel))
+    if (!priv->dynamicOwnership || (secdef && !secdef->relabel))
         return 0;
 
     VIR_DEBUG("Restoring security label on %s migrated=%d",
@@ -955,7 +955,7 @@ virSecurityDACSetSecurityAllLabel(virSecurityManagerPtr mgr,
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
 
-    if (!priv->dynamicOwnership || (secdef && secdef->norelabel))
+    if (!priv->dynamicOwnership || (secdef && !secdef->relabel))
         return 0;
 
     for (i = 0; i < def->ndisks; i++) {
@@ -1157,7 +1157,7 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
         return rc;
     }
 
-    if (!seclabel->norelabel && !seclabel->imagelabel &&
+    if (seclabel->relabel && !seclabel->imagelabel &&
         VIR_STRDUP(seclabel->imagelabel, seclabel->label) < 0) {
         VIR_FREE(seclabel->label);
         return rc;

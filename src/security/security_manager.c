@@ -616,7 +616,7 @@ virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
                 seclabel->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
             } else {
                 seclabel->type = VIR_DOMAIN_SECLABEL_NONE;
-                seclabel->norelabel = true;
+                seclabel->relabel = false;
             }
         }
 

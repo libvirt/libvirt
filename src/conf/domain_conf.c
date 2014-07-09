@@ -4576,9 +4576,9 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
                             VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
     if (p != NULL) {
         if (STREQ(p, "yes")) {
-            def->norelabel = false;
+            def->relabel = true;
         } else if (STREQ(p, "no")) {
-            def->norelabel = true;
+            def->relabel = false;
         } else {
             virReportError(VIR_ERR_XML_ERROR,
                            _("invalid security relabel value %s"), p);
@@ -4587,13 +4587,13 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
         }
         VIR_FREE(p);
         if (def->type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
-            def->norelabel) {
+            !def->relabel) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("dynamic label type must use resource relabeling"));
             goto error;
         }
         if (def->type == VIR_DOMAIN_SECLABEL_NONE &&
-            !def->norelabel) {
+            def->relabel) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("resource relabeling is not compatible with 'none' label type"));
             goto error;
@@ -4601,9 +4601,9 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
     } else {
         if (def->type == VIR_DOMAIN_SECLABEL_STATIC ||
             def->type == VIR_DOMAIN_SECLABEL_NONE)
-            def->norelabel = true;
+            def->relabel = false;
         else
-            def->norelabel = false;
+            def->relabel = true;
     }
 
     /* Always parse model */
@@ -4635,7 +4635,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
     }
 
     /* Only parse imagelabel, if requested live XML with relabeling */
-    if (!def->norelabel &&
+    if (def->relabel &&
         (!(flags & VIR_DOMAIN_XML_INACTIVE) &&
          def->type != VIR_DOMAIN_SECLABEL_NONE)) {
         p = virXPathStringLimit("string(./imagelabel[1])",
@@ -4793,7 +4793,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
         }
 
         /* Can't use overrides if top-level doesn't allow relabeling.  */
-        if (vmDef && vmDef->norelabel) {
+        if (vmDef && !vmDef->relabel) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("label overrides require relabeling to be "
                              "enabled at the domain level"));
@@ -14708,14 +14708,14 @@ virSecurityLabelDefFormat(virBufferPtr buf,
     }
 
     virBufferAsprintf(buf, " relabel='%s'",
-                      def->norelabel ? "no" : "yes");
+                      def->relabel ? "yes" : "no");
 
     if (def->label || def->imagelabel || def->baselabel) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         virBufferEscapeString(buf, "<label>%s</label>\n",
                               def->label);
-        if (!def->norelabel)
+        if (def->relabel)
             virBufferEscapeString(buf, "<imagelabel>%s</imagelabel>\n",
                                   def->imagelabel);
         if (def->type == VIR_DOMAIN_SECLABEL_DYNAMIC)

@@ -281,7 +281,7 @@ reload_profile(virSecurityManagerPtr mgr,
     if (!secdef)
         return rc;
 
-    if (secdef->norelabel)
+    if (!secdef->relabel)
         return 0;
 
     if ((profile_name = get_profile_name(def)) == NULL)
@@ -481,7 +481,7 @@ AppArmorSetSecurityAllLabel(virSecurityManagerPtr mgr,
     if (!secdef)
         return -1;
 
-    if (secdef->norelabel)
+    if (!secdef->relabel)
         return 0;
 
     /* Reload the profile if stdin_path is specified. Note that
@@ -718,7 +718,7 @@ AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
     if (!(secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME)))
         return -1;
 
-    if (secdef->norelabel)
+    if (!secdef->relabel)
         return 0;
 
     if (secdef->imagelabel) {
@@ -805,7 +805,7 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     if (!secdef)
         return -1;
 
-    if (secdef->norelabel)
+    if (!secdef->relabel)
         return 0;
 
     if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -904,7 +904,7 @@ AppArmorRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
     if (!secdef)
         return -1;
 
-    if (secdef->norelabel)
+    if (!secdef->relabel)
         return 0;
 
     return reload_profile(mgr, def, NULL, false);
