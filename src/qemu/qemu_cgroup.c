@@ -906,6 +906,15 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
         return -1;
     }
 
+    /*
+     * If CPU cgroup controller is not initialized here, then we need
+     * neither period nor quota settings.  And if CPUSET controller is
+     * not initialized either, then there's nothing to do anyway.
+     */
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU) &&
+        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
+        return 0;
+
     /* We are trying to setup cgroups for CPU pinning, which can also be done
      * with virProcessSetAffinity, thus the lack of cgroups is not fatal here.
      */
@@ -984,6 +993,15 @@ qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
                        _("cgroup cpu is required for scheduler tuning"));
         return -1;
     }
+
+    /*
+     * If CPU cgroup controller is not initialized here, then we need
+     * neither period nor quota settings.  And if CPUSET controller is
+     * not initialized either, then there's nothing to do anyway.
+     */
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU) &&
+        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
+        return 0;
 
     if (priv->cgroup == NULL)
         return 0; /* Not supported, so claim success */
