@@ -361,6 +361,11 @@ mymain(void)
 
     DO_TEST_DIFFERENT("hostdev-scsi-autogen-address");
 
+    DO_TEST("hostdev-scsi-lsi-iscsi");
+    DO_TEST("hostdev-scsi-lsi-iscsi-auth");
+    DO_TEST("hostdev-scsi-virtio-iscsi");
+    DO_TEST("hostdev-scsi-virtio-iscsi-auth");
+
     DO_TEST_DIFFERENT("s390-defaultconsole");
 
     DO_TEST("pcihole64");

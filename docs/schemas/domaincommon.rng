@@ -3589,12 +3589,51 @@
       </attribute>
     </optional>
     <element name="source">
-      <interleave>
-        <ref name="sourceinfoadapter"/>
-        <element name="address">
-          <ref name="scsiaddress"/>
-        </element>
-      </interleave>
+      <choice>
+        <group>  <!-- scsi_host adapter -->
+          <optional>
+            <attribute name="protocol">
+              <choice>
+                <value>adapter</value>   <!-- scsi_host, default, optional -->
+              </choice>
+            </attribute>
+          </optional>
+          <interleave>
+            <ref name="sourceinfoadapter"/>
+            <element name="address">
+              <ref name="scsiaddress"/>
+            </element>
+          </interleave>
+        </group>
+        <group>  <!-- iscsi adapter -->
+          <attribute name="protocol">
+            <choice>
+              <value>iscsi</value>     <!-- iscsi, required -->
+            </choice>
+          </attribute>
+          <attribute name="name">
+            <text/>
+          </attribute>
+          <interleave>
+            <oneOrMore>
+              <element name='host'>
+                <attribute name='name'>
+                  <text/>
+                </attribute>
+                <optional>
+                  <attribute name='port'>
+                    <ref name="PortNumber"/>
+                  </attribute>
+                </optional>
+                <empty/>
+              </element>
+            </oneOrMore>
+            <optional>
+              <ref name='diskAuth'/>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
     </element>
   </define>
 

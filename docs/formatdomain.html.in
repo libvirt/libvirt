@@ -2824,57 +2824,107 @@
   &lt;/devices&gt;
   ...</pre>
 
+
+    <p>or:</p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;hostdev mode='subsystem' type='scsi'&gt;
+      &lt;source protocol='iscsi' name='iqn.2014-08.com.example:iscsi-nopool/1'&gt;
+        &lt;host name='example.com' port='3260'/&gt;
+        &lt;auth username='myuser'&gt;
+          &lt;secret type='iscsi' usage='libvirtiscsi'/&gt;
+        &lt;/auth&gt;
+      &lt;/source&gt;
+      &lt;address type='drive' controller='0' bus='0' target='0' unit='0'/&gt;
+    &lt;/hostdev&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
     <dl>
       <dt><code>hostdev</code></dt>
       <dd>The <code>hostdev</code> element is the main container for describing
-        host devices. For usb device passthrough <code>mode</code> is always
-        "subsystem" and <code>type</code> is "usb" for a USB device, "pci"
-        for a PCI device and "scsi" for a SCSI device. When
-        <code>managed</code> is "yes" for a PCI
-        device, it is detached from the host before being passed on to
-        the guest, and reattached to the host after the guest exits.
-        If <code>managed</code> is omitted or "no", and for USB
-        devices, the user is responsible to
-        call <code>virNodeDeviceDettach</code> (or <code>virsh
-        nodedev-dettach</code>) before starting the guest or
-        hot-plugging the device,
-        and <code>virNodeDeviceReAttach</code> (or <code>virsh
-        nodedev-reattach</code>) after hot-unplug or stopping the
-        guest. For SCSI device, user is responsible to make sure the device
-        is not used by host.
-        The optional <code>sgio</code> (<span class="since">since 1.0.6</span>)
-        attribute indicates whether the kernel will filter unprivileged
-        SG_IO commands for the disk, valid settings are "filtered" or
-        "unfiltered". Defaults to "filtered".
+        host devices. For each device, the <code>mode</code> is always
+        "subsystem" and the <code>type</code> is one of the following values
+        with additional attributes noted.
+        <dl>
+          <dt>usb</dt>
+          <dd>For USB devices, the user is responsible to call
+            <code>virNodeDeviceDettach</code> (or
+            <code>virsh nodedev-detach</code>) before starting the guest
+            or hot-plugging the device and <code>virNodeDeviceReAttach</code>
+            (or <code>virsh nodedev-reattach</code>) after hot-unplug or
+            stopping the guest.
+          </dd>
+          <dt>pci</dt>
+          <dd>For PCI devices, when <code>managed</code> is "yes" it is
+            detached from the host before being passed on to the guest
+            and reattached to the host after the guest exits. If
+            <code>managed</code> is omitted or "no", follow the steps
+            described for a USB device to detach before starting the
+            guest or hot-plugging and reattach after stopping the guest
+            or hot-unplug.
+          </dd>
+          <dt>scsi</dt>
+          <dd>For SCSI devices, user is responsible to make sure the device
+            is not used by host. The optional <code>sgio</code>
+            (<span class="since">since 1.0.6</span>) attribute indicates
+            whether the kernel will filter unprivileged SG_IO commands for
+            the disk, valid settings are "filtered" or "unfiltered".
+            The default is "filtered".
+          </dd>
+        </dl>
       </dd>
       <dt><code>source</code></dt>
-      <dd>The source element describes the device as seen from the host.
-      The USB device can either be addressed by vendor / product id using the
-      <code>vendor</code> and <code>product</code> elements or by the device's
-      address on the hosts using the <code>address</code> element. PCI devices
-      on the other hand can only be described by their <code>address</code>.
-      SCSI devices are described by both the <code>adapter</code> and
-      <code>address</code> elements.
-
-      <span class="since">Since 1.0.0</span>, the <code>source</code> element
-      of USB devices may contain <code>startupPolicy</code> attribute which can
-      be used to define policy what to do if the specified host USB device is
-      not found. The attribute accepts the following values:
-        <table class="top_table">
-          <tr>
-            <td> mandatory </td>
-            <td> fail if missing for any reason (the default) </td>
-          </tr>
-          <tr>
-            <td> requisite </td>
-            <td> fail if missing on boot up,
-                 drop if missing on migrate/restore/revert </td>
-          </tr>
-          <tr>
-            <td> optional </td>
-            <td> drop if missing at any start attempt </td>
-          </tr>
-        </table>
+      <dd>The source element describes the device as seen from the host using
+        the following mechanism to describe:
+        <dl>
+          <dt>usb</dt>
+          <dd>The USB device can either be addressed by vendor / product id
+            using the <code>vendor</code> and <code>product</code> elements
+            or by the device's address on the host using the
+            <code>address</code> element.
+            <p>
+            <span class="since">Since 1.0.0</span>, the <code>source</code>
+            element of USB devices may contain <code>startupPolicy</code>
+            attribute which can be used to define policy what to do if the
+            specified host USB device is not found. The attribute accepts
+            the following values:
+            </p>
+            <table class="top_table">
+              <tr>
+                <td> mandatory </td>
+                <td> fail if missing for any reason (the default) </td>
+              </tr>
+              <tr>
+                <td> requisite </td>
+                <td> fail if missing on boot up,
+                     drop if missing on migrate/restore/revert </td>
+              </tr>
+              <tr>
+                <td> optional </td>
+                <td> drop if missing at any start attempt </td>
+              </tr>
+            </table>
+          </dd>
+          <dt>pci</dt>
+          <dd>PCI devices can only be described by their <code>address</code>.
+          </dd>
+          <dt>scsi</dt>
+          <dd>SCSI devices are described by both the <code>adapter</code>
+            and <code>address</code> elements.
+            <p>
+            <span class="since">Since 1.2.8</span>, the <code>source</code>
+            element of a SCSI device may contain the <code>protocol</code>
+            attribute. When the attribute is set to "iscsi", the host
+            device XML follows the network <a href="#elementsDisks">disk</a>
+            device using the same <code>name</code> attribute and optionally
+            using the <code>auth</code> element to provide the authentication
+            credentials to the iSCSI server.
+            </p>
+          </dd>
+        </dl>
       </dd>
       <dt><code>vendor</code>, <code>product</code></dt>
       <dd>The <code>vendor</code> and <code>product</code> elements each have an
@@ -3589,7 +3639,7 @@
       before being passed on to the guest, and reattached to the host
       after the guest exits. If <code>managed</code> is omitted or "no",
       the user is responsible to call <code>virNodeDeviceDettach</code>
-      (or <code>virsh nodedev-dettach</code>) before starting the guest
+      (or <code>virsh nodedev-detach</code>) before starting the guest
       or hot-plugging the device, and <code>virNodeDeviceReAttach</code>
       (or <code>virsh nodedev-reattach</code>) after hot-unplug or
       stopping the guest.
