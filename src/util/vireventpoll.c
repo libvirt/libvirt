@@ -483,9 +483,9 @@ static int virEventPollDispatchHandles(int nfds, struct pollfd *fds)
      * fds might be added on end of list, and they're not
      * in the fds array we've got */
     for (i = 0, n = 0; n < nfds && i < eventLoop.handlesCount; n++) {
-        while ((eventLoop.handles[i].fd != fds[n].fd ||
-                eventLoop.handles[i].events == 0) &&
-               i < eventLoop.handlesCount) {
+        while (i < eventLoop.handlesCount &&
+               (eventLoop.handles[i].fd != fds[n].fd ||
+                eventLoop.handles[i].events == 0)) {
             i++;
         }
         if (i == eventLoop.handlesCount)
