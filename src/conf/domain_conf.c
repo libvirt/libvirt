@@ -1695,6 +1695,17 @@ virDomainHostdevDefPtr virDomainHostdevDefAlloc(void)
     return def;
 }
 
+static void
+virDomainHostdevSubsysSCSIiSCSIClear(virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc)
+{
+    if (!iscsisrc)
+        return;
+    VIR_FREE(iscsisrc->path);
+    virStorageNetHostDefFree(iscsisrc->nhosts, iscsisrc->hosts);
+    virStorageAuthDefFree(iscsisrc->auth);
+    iscsisrc->auth = NULL;
+}
+
 void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
 {
     if (!def)
@@ -1725,8 +1736,15 @@ void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
         }
         break;
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
-        if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
-            VIR_FREE(def->source.subsys.u.scsi.u.host.adapter);
+        if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
+            virDomainHostdevSubsysSCSIPtr scsisrc = &def->source.subsys.u.scsi;
+            if (scsisrc->protocol ==
+                VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+                virDomainHostdevSubsysSCSIiSCSIClear(&scsisrc->u.iscsi);
+            } else {
+                VIR_FREE(scsisrc->u.host.adapter);
+            }
+        }
         break;
     }
 }
@@ -4306,8 +4324,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     }
 
     if (sgio) {
-        if (def->source.subsys.type !=
-            VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
+        if (def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("sgio is only supported for scsi host device"));
             goto error;
@@ -10256,6 +10273,22 @@ virDomainHostdevMatchSubsysSCSIHost(virDomainHostdevDefPtr first,
 }
 
 static int
+virDomainHostdevMatchSubsysSCSIiSCSI(virDomainHostdevDefPtr first,
+                                     virDomainHostdevDefPtr second)
+{
+    virDomainHostdevSubsysSCSIiSCSIPtr first_iscsisrc =
+        &first->source.subsys.u.scsi.u.iscsi;
+    virDomainHostdevSubsysSCSIiSCSIPtr second_iscsisrc =
+        &second->source.subsys.u.scsi.u.iscsi;
+
+    if (STREQ(first_iscsisrc->hosts[0].name, second_iscsisrc->hosts[0].name) &&
+        STREQ(first_iscsisrc->hosts[0].port, second_iscsisrc->hosts[0].port) &&
+        STREQ(first_iscsisrc->path, second_iscsisrc->path))
+        return 1;
+    return 0;
+}
+
+static int
 virDomainHostdevMatchSubsys(virDomainHostdevDefPtr a,
                             virDomainHostdevDefPtr b)
 {
@@ -10268,7 +10301,11 @@ virDomainHostdevMatchSubsys(virDomainHostdevDefPtr a,
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         return virDomainHostdevMatchSubsysUSB(a, b);
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-        return virDomainHostdevMatchSubsysSCSIHost(a, b);
+        if (a->source.subsys.u.scsi.protocol ==
+            VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
+            return virDomainHostdevMatchSubsysSCSIiSCSI(a, b);
+        else
+            return virDomainHostdevMatchSubsysSCSIHost(a, b);
     }
     return 0;
 }

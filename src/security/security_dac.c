@@ -520,6 +520,12 @@ virSecurityDACSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
         return 0;
 
+    /* Like virSecurityDACSetSecurityImageLabel() for a networked disk,
+     * do nothing for an iSCSI hostdev
+     */
+    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
+        return 0;
+
     cbdata.manager = mgr;
     cbdata.secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
 
@@ -646,6 +652,12 @@ virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
         return 0;
 
     if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+        return 0;
+
+    /* Like virSecurityDACRestoreSecurityImageLabelInt() for a networked disk,
+     * do nothing for an iSCSI hostdev
+     */
+    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
         return 0;
 
     switch ((virDomainHostdevSubsysType) dev->source.subsys.type) {

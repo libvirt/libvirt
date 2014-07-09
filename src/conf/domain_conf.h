@@ -388,6 +388,15 @@ typedef enum {
 
 VIR_ENUM_DECL(virDomainHostdevSubsysPCIBackend)
 
+typedef enum {
+    VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE,
+    VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI,
+
+    VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_LAST,
+} virDomainHostdevSCSIProtocolType;
+
+VIR_ENUM_DECL(virDomainHostdevSubsysSCSIProtocol)
+
 typedef struct _virDomainHostdevSubsysUSB virDomainHostdevSubsysUSB;
 typedef virDomainHostdevSubsysUSB *virDomainHostdevSubsysUSBPtr;
 struct _virDomainHostdevSubsysUSB {
@@ -416,12 +425,23 @@ struct _virDomainHostdevSubsysSCSIHost {
     unsigned unit;
 };
 
+typedef struct _virDomainHostdevSubsysSCSIiSCSI virDomainHostdevSubsysSCSIiSCSI;
+typedef virDomainHostdevSubsysSCSIiSCSI *virDomainHostdevSubsysSCSIiSCSIPtr;
+struct _virDomainHostdevSubsysSCSIiSCSI {
+    char *path;
+    size_t nhosts;
+    virStorageNetHostDefPtr hosts;
+    virStorageAuthDefPtr auth;
+};
+
 typedef struct _virDomainHostdevSubsysSCSI virDomainHostdevSubsysSCSI;
 typedef virDomainHostdevSubsysSCSI *virDomainHostdevSubsysSCSIPtr;
 struct _virDomainHostdevSubsysSCSI {
+    int protocol; /* enum virDomainHostdevSCSIProtocolType */
     int sgio; /* enum virDomainDeviceSGIO */
     union {
         virDomainHostdevSubsysSCSIHost host;
+        virDomainHostdevSubsysSCSIiSCSI iscsi;
     } u;
 };
 

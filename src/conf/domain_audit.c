@@ -424,12 +424,22 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
             }
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI: {
-            virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
-            if (virAsprintfQuiet(&address, "%s:%d:%d:%d",
-                                 scsihostsrc->adapter, scsihostsrc->bus,
-                                 scsihostsrc->target, scsihostsrc->unit) < 0) {
-                VIR_WARN("OOM while encoding audit message");
+            if (scsisrc->protocol ==
+                VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+                /* Follow virDomainAuditDisk && virDomainAuditGenericDev
+                 * and don't audit the networked device.
+                 */
                 goto cleanup;
+            } else {
+                virDomainHostdevSubsysSCSIHostPtr scsihostsrc =
+                    &scsisrc->u.host;
+                if (virAsprintfQuiet(&address, "%s:%d:%d:%d",
+                                     scsihostsrc->adapter, scsihostsrc->bus,
+                                     scsihostsrc->target,
+                                     scsihostsrc->unit) < 0) {
+                    VIR_WARN("OOM while encoding audit message");
+                    goto cleanup;
+                }
             }
             break;
         }

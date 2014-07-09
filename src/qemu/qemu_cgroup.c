@@ -307,18 +307,31 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
             break;
 
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI: {
-            virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
-            if ((scsi = virSCSIDeviceNew(NULL,
-                                         scsihostsrc->adapter, scsihostsrc->bus,
-                                         scsihostsrc->target, scsihostsrc->unit,
-                                         dev->readonly,
-                                         dev->shareable)) == NULL)
-                goto cleanup;
+            if (scsisrc->protocol ==
+                VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+                virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
+                /* Follow qemuSetupDiskCgroup() and qemuSetImageCgroupInternal()
+                 * which does nothing for non local storage
+                 */
+                VIR_DEBUG("Not updating cgroups for hostdev iSCSI path '%s'",
+                          iscsisrc->path);
+            } else {
+                virDomainHostdevSubsysSCSIHostPtr scsihostsrc =
+                    &scsisrc->u.host;
+                if ((scsi = virSCSIDeviceNew(NULL,
+                                             scsihostsrc->adapter,
+                                             scsihostsrc->bus,
+                                             scsihostsrc->target,
+                                             scsihostsrc->unit,
+                                             dev->readonly,
+                                             dev->shareable)) == NULL)
+                    goto cleanup;
 
-            if (virSCSIDeviceFileIterate(scsi,
-                                         qemuSetupHostSCSIDeviceCgroup,
-                                         vm) < 0)
-                goto cleanup;
+                if (virSCSIDeviceFileIterate(scsi,
+                                             qemuSetupHostSCSIDeviceCgroup,
+                                             vm) < 0)
+                    goto cleanup;
+            }
             break;
         }
 

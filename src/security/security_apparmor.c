@@ -825,6 +825,12 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
         return 0;
 
+    /* Like AppArmorRestoreSecurityImageLabel() for a networked disk,
+     * do nothing for an iSCSI hostdev
+     */
+    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
+        return 0;
+
     if (profile_loaded(secdef->imagelabel) < 0)
         return 0;
 

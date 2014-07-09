@@ -5124,13 +5124,11 @@ qemuBuildUSBHostdevUSBDevStr(virDomainHostdevDefPtr dev)
     return ret;
 }
 
-char *
-qemuBuildSCSIHostdevDrvStr(virConnectPtr conn ATTRIBUTE_UNUSED,
-                           virDomainHostdevDefPtr dev,
-                           virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
-                           qemuBuildCommandLineCallbacksPtr callbacks)
+static char *
+qemuBuildSCSIHostHostdevDrvStr(virDomainHostdevDefPtr dev,
+                               virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
+                               qemuBuildCommandLineCallbacksPtr callbacks)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
     char *sg = NULL;
@@ -5140,10 +5138,64 @@ qemuBuildSCSIHostdevDrvStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                                               scsihostsrc->bus,
                                               scsihostsrc->target,
                                               scsihostsrc->unit);
-    if (!sg)
-        goto error;
+    return sg;
+}
 
-    virBufferAsprintf(&buf, "file=/dev/%s,if=none", sg);
+static char *
+qemuBuildSCSIiSCSIHostdevDrvStr(virConnectPtr conn,
+                                virDomainHostdevDefPtr dev)
+{
+    char *source = NULL;
+    char *secret = NULL;
+    char *username = NULL;
+    virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
+
+    if (conn && iscsisrc->auth) {
+        const char *protocol =
+            virStorageNetProtocolTypeToString(VIR_STORAGE_NET_PROTOCOL_ISCSI);
+        bool encode = false;
+        int secretType = VIR_SECRET_USAGE_TYPE_ISCSI;
+
+        username = iscsisrc->auth->username;
+        if (!(secret = qemuGetSecretString(conn, protocol, encode,
+                                           iscsisrc->auth, secretType)))
+            goto cleanup;
+    }
+
+    /* Rather than pull what we think we want - use the network disk code */
+    source = qemuBuildNetworkDriveURI(VIR_STORAGE_NET_PROTOCOL_ISCSI,
+                                      iscsisrc->path,
+                                      NULL, /* volume */
+                                      iscsisrc->nhosts,
+                                      iscsisrc->hosts,
+                                      username, secret);
+
+ cleanup:
+    VIR_FREE(secret);
+    return source;
+}
+
+char *
+qemuBuildSCSIHostdevDrvStr(virConnectPtr conn,
+                           virDomainHostdevDefPtr dev,
+                           virQEMUCapsPtr qemuCaps,
+                           qemuBuildCommandLineCallbacksPtr callbacks)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *source = NULL;
+    virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
+
+    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+        if (!(source = qemuBuildSCSIiSCSIHostdevDrvStr(conn, dev)))
+            goto error;
+        virBufferAsprintf(&buf, "file=%s,if=none,format=raw", source);
+    } else {
+        if (!(source = qemuBuildSCSIHostHostdevDrvStr(dev, qemuCaps,
+                                                      callbacks)))
+            goto error;
+        virBufferAsprintf(&buf, "file=/dev/%s,if=none", source);
+    }
     virBufferAsprintf(&buf, ",id=%s-%s",
                       virDomainDeviceAddressTypeToString(dev->info->type),
                       dev->info->alias);
@@ -5162,10 +5214,10 @@ qemuBuildSCSIHostdevDrvStr(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (virBufferCheckError(&buf) < 0)
         goto error;
 
-    VIR_FREE(sg);
+    VIR_FREE(source);
     return virBufferContentAndReset(&buf);
  error:
-    VIR_FREE(sg);
+    VIR_FREE(source);
     virBufferFreeAndReset(&buf);
     return NULL;
 }

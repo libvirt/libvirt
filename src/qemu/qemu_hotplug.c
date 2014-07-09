@@ -1575,11 +1575,18 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     if (qemuPrepareHostdevSCSIDevices(driver, vm->def->name,
                                       &hostdev, 1)) {
         virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
-        virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to prepare scsi hostdev: %s:%d:%d:%d"),
-                       scsihostsrc->adapter, scsihostsrc->bus,
-                       scsihostsrc->target, scsihostsrc->unit);
+        if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+            virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to prepare scsi hostdev for iSCSI: %s"),
+                           iscsisrc->path);
+        } else {
+            virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to prepare scsi hostdev: %s:%d:%d:%d"),
+                           scsihostsrc->adapter, scsihostsrc->bus,
+                           scsihostsrc->target, scsihostsrc->unit);
+        }
         return -1;
     }
 
@@ -3400,11 +3407,20 @@ int qemuDomainDetachHostDevice(virConnectPtr conn,
             }
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI: {
-            virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("host scsi device %s:%d:%d.%d not found"),
-                           scsihostsrc->adapter, scsihostsrc->bus,
-                           scsihostsrc->target, scsihostsrc->unit);
+            if (scsisrc->protocol ==
+                VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+                virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("host scsi iSCSI path %s not found"),
+                               iscsisrc->path);
+            } else {
+                 virDomainHostdevSubsysSCSIHostPtr scsihostsrc =
+                     &scsisrc->u.host;
+                 virReportError(VIR_ERR_OPERATION_FAILED,
+                                _("host scsi device %s:%d:%d.%d not found"),
+                                scsihostsrc->adapter, scsihostsrc->bus,
+                                scsihostsrc->target, scsihostsrc->unit);
+            }
             break;
         }
         default:
