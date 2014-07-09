@@ -301,8 +301,7 @@ virStorageSourcePtr virStorageFileGetMetadataFromBuf(const char *path,
                                                      size_t len,
                                                      int format,
                                                      int *backingFormat)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
-    ATTRIBUTE_NONNULL(5);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int virStorageFileChainGetBroken(virStorageSourcePtr chain,
                                  char **broken_file);
 

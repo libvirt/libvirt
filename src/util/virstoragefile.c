@@ -955,6 +955,10 @@ virStorageFileGetMetadataFromBuf(const char *path,
                                  int *backingFormat)
 {
     virStorageSourcePtr ret = NULL;
+    int dummy;
+
+    if (!backingFormat)
+        backingFormat = &dummy;
 
     if (!(ret = virStorageFileMetadataNew(path, format)))
         return NULL;
