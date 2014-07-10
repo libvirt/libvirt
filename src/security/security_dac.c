@@ -264,27 +264,10 @@ virSecurityDACSetOwnership(const char *path, uid_t uid, gid_t gid)
 static int
 virSecurityDACRestoreSecurityFileLabel(const char *path)
 {
-    struct stat buf;
-    int rc = -1;
-    char *newpath = NULL;
-
     VIR_INFO("Restoring DAC user and group on '%s'", path);
 
-    if (virFileResolveLink(path, &newpath) < 0) {
-        virReportSystemError(errno,
-                             _("cannot resolve symlink %s"), path);
-        goto err;
-    }
-
-    if (stat(newpath, &buf) != 0)
-        goto err;
-
     /* XXX record previous ownership */
-    rc = virSecurityDACSetOwnership(newpath, 0, 0);
-
- err:
-    VIR_FREE(newpath);
-    return rc;
+    return virSecurityDACSetOwnership(path, 0, 0);
 }
 
 
