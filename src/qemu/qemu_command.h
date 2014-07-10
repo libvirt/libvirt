@@ -170,10 +170,11 @@ char * qemuBuildUSBHostdevDevStr(virDomainDefPtr def,
                                  virDomainHostdevDefPtr dev,
                                  virQEMUCapsPtr qemuCaps);
 
-char * qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
+char * qemuBuildSCSIHostdevDrvStr(virConnectPtr conn,
+                                  virDomainHostdevDefPtr dev,
                                   virQEMUCapsPtr qemuCaps,
                                   qemuBuildCommandLineCallbacksPtr callbacks)
-    ATTRIBUTE_NONNULL(3);
+    ATTRIBUTE_NONNULL(4);
 char * qemuBuildSCSIHostdevDevStr(virDomainDefPtr def,
                                   virDomainHostdevDefPtr dev,
                                   virQEMUCapsPtr qemuCaps);

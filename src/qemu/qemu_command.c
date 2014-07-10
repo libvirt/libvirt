@@ -5125,7 +5125,8 @@ qemuBuildUSBHostdevUSBDevStr(virDomainHostdevDefPtr dev)
 }
 
 char *
-qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
+qemuBuildSCSIHostdevDrvStr(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           virDomainHostdevDefPtr dev,
                            virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
                            qemuBuildCommandLineCallbacksPtr callbacks)
 {
@@ -8999,7 +9000,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                 char *drvstr;
 
                 virCommandAddArg(cmd, "-drive");
-                if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, qemuCaps, callbacks)))
+                if (!(drvstr = qemuBuildSCSIHostdevDrvStr(conn, hostdev, qemuCaps, callbacks)))
                     goto error;
                 virCommandAddArg(cmd, drvstr);
                 VIR_FREE(drvstr);
