@@ -327,6 +327,52 @@ qemuAutostartDomains(virQEMUDriverPtr driver)
     virObjectUnref(cfg);
 }
 
+
+static int
+qemuSecurityChownCallback(virStorageSourcePtr src,
+                          uid_t uid,
+                          gid_t gid)
+{
+    struct stat sb;
+    int save_errno = 0;
+    int ret = -1;
+
+    if (!virStorageFileSupportsSecurityDriver(src))
+        return 0;
+
+    if (virStorageSourceIsLocalStorage(src)) {
+        /* use direct chmod for local files so that the file doesn't
+         * need to be initialized */
+        if (stat(src->path, &sb) >= 0) {
+            if (sb.st_uid == uid &&
+                sb.st_gid == gid) {
+                /* It's alright, there's nothing to change anyway. */
+                return 0;
+            }
+        }
+
+        return chown(src->path, uid, gid);
+    }
+
+    /* storage file init reports errors, return -2 on failure */
+    if (virStorageFileInit(src) < 0)
+        return -2;
+
+    if (virStorageFileChown(src, uid, gid) < 0) {
+        save_errno = errno;
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virStorageFileDeinit(src);
+    errno = save_errno;
+
+    return ret;
+}
+
+
 static int
 qemuSecurityInit(virQEMUDriverPtr driver)
 {
@@ -375,7 +421,7 @@ qemuSecurityInit(virQEMUDriverPtr driver)
                                              cfg->securityDefaultConfined,
                                              cfg->securityRequireConfined,
                                              cfg->dynamicOwnership,
-                                             NULL)))
+                                             qemuSecurityChownCallback)))
             goto error;
         if (!stack) {
             if (!(stack = virSecurityManagerNewStack(mgr)))
