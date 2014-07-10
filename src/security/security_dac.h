@@ -32,4 +32,7 @@ int virSecurityDACSetUserAndGroup(virSecurityManagerPtr mgr,
 void virSecurityDACSetDynamicOwnership(virSecurityManagerPtr mgr,
                                        bool dynamic);
 
+void virSecurityDACSetChownCallback(virSecurityManagerPtr mgr,
+                                    virSecurityManagerDACChownCallback chownCallback);
+
 #endif /* __VIR_SECURITY_DAC */

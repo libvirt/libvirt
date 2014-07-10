@@ -374,7 +374,8 @@ qemuSecurityInit(virQEMUDriverPtr driver)
                                              cfg->allowDiskFormatProbing,
                                              cfg->securityDefaultConfined,
                                              cfg->securityRequireConfined,
-                                             cfg->dynamicOwnership)))
+                                             cfg->dynamicOwnership,
+                                             NULL)))
             goto error;
         if (!stack) {
             if (!(stack = virSecurityManagerNewStack(mgr)))

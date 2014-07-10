@@ -51,6 +51,7 @@ struct _virSecurityDACData {
     int ngroups;
     bool dynamicOwnership;
     char *baselabel;
+    virSecurityManagerDACChownCallback chownCallback;
 };
 
 typedef struct _virSecurityDACCallbackData virSecurityDACCallbackData;
@@ -85,6 +86,14 @@ virSecurityDACSetDynamicOwnership(virSecurityManagerPtr mgr,
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     priv->dynamicOwnership = dynamicOwnership;
+}
+
+void
+virSecurityDACSetChownCallback(virSecurityManagerPtr mgr,
+                               virSecurityManagerDACChownCallback chownCallback)
+{
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    priv->chownCallback = chownCallback;
 }
 
 /* returns 1 if label isn't found, 0 on success, -1 on error */

@@ -152,7 +152,8 @@ virSecurityManagerNewDAC(const char *virtDriver,
                          bool allowDiskFormatProbing,
                          bool defaultConfined,
                          bool requireConfined,
-                         bool dynamicOwnership)
+                         bool dynamicOwnership,
+                         virSecurityManagerDACChownCallback chownCallback)
 {
     virSecurityManagerPtr mgr =
         virSecurityManagerNewDriver(&virSecurityDriverDAC,
@@ -170,6 +171,7 @@ virSecurityManagerNewDAC(const char *virtDriver,
     }
 
     virSecurityDACSetDynamicOwnership(mgr, dynamicOwnership);
+    virSecurityDACSetChownCallback(mgr, chownCallback);
 
     return mgr;
 }

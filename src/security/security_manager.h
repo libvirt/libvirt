@@ -25,6 +25,7 @@
 
 # include "domain_conf.h"
 # include "vircommand.h"
+# include "virstoragefile.h"
 
 typedef struct _virSecurityManager virSecurityManager;
 typedef virSecurityManager *virSecurityManagerPtr;
@@ -39,13 +40,29 @@ virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary);
 int virSecurityManagerStackAddNested(virSecurityManagerPtr stack,
                                      virSecurityManagerPtr nested);
 
+/**
+ * virSecurityManagerDACChownCallback:
+ * @src: Storage file to chown
+ * @uid: target uid
+ * @gid: target gid
+ *
+ * A function callback to chown image files described by the disk source struct
+ * @src. The callback shall return 0 on success, -1 on error and errno set (no
+ * libvirt error reported) OR -2 and a libvirt error reported. */
+typedef int
+(*virSecurityManagerDACChownCallback)(virStorageSourcePtr src,
+                                      uid_t uid,
+                                      gid_t gid);
+
+
 virSecurityManagerPtr virSecurityManagerNewDAC(const char *virtDriver,
                                                uid_t user,
                                                gid_t group,
                                                bool allowDiskFormatProbing,
                                                bool defaultConfined,
                                                bool requireConfined,
-                                               bool dynamicOwnership);
+                                               bool dynamicOwnership,
+                                               virSecurityManagerDACChownCallback chownCallback);
 
 int virSecurityManagerPreFork(virSecurityManagerPtr mgr);
 void virSecurityManagerPostFork(virSecurityManagerPtr mgr);
