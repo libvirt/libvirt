@@ -230,23 +230,56 @@ virSecurityDACPreFork(virSecurityManagerPtr mgr)
 }
 
 static int
-virSecurityDACSetOwnership(const char *path, uid_t uid, gid_t gid)
+virSecurityDACSetOwnershipInternal(virSecurityDACDataPtr priv,
+                                   virStorageSourcePtr src,
+                                   const char *path,
+                                   uid_t uid,
+                                   gid_t gid)
 {
+    int rc;
+    int chown_errno;
+
     VIR_INFO("Setting DAC user and group on '%s' to '%ld:%ld'",
-             path, (long) uid, (long) gid);
+             NULLSTR(src ? src->path : path), (long) uid, (long) gid);
 
-    if (chown(path, uid, gid) < 0) {
+    if (priv && src && priv->chownCallback) {
+        rc = priv->chownCallback(src, uid, gid);
+        /* here path is used only for error messages */
+        path = NULLSTR(src->path);
+
+        /* on -2 returned an error was already reported */
+        if (rc == -2)
+            return -1;
+
+        /* on -1 only errno was set */
+        chown_errno = errno;
+    } else {
         struct stat sb;
-        int chown_errno = errno;
 
-        if (stat(path, &sb) >= 0) {
+        if (!path) {
+            if (!src || !src->path)
+                return 0;
+
+            if (!virStorageSourceIsLocalStorage(src))
+                return 0;
+
+            path = src->path;
+        }
+
+        rc = chown(path, uid, gid);
+        chown_errno = errno;
+
+        if (rc < 0 &&
+            stat(path, &sb) >= 0) {
             if (sb.st_uid == uid &&
                 sb.st_gid == gid) {
                 /* It's alright, there's nothing to change anyway. */
                 return 0;
             }
         }
+    }
 
+    if (rc < 0) {
         if (chown_errno == EOPNOTSUPP || chown_errno == EINVAL) {
             VIR_INFO("Setting user and group to '%ld:%ld' on '%s' not "
                      "supported by filesystem",
@@ -270,13 +303,31 @@ virSecurityDACSetOwnership(const char *path, uid_t uid, gid_t gid)
     return 0;
 }
 
+
+static int
+virSecurityDACSetOwnership(const char *path, uid_t uid, gid_t gid)
+{
+    return virSecurityDACSetOwnershipInternal(NULL, NULL, path, uid, gid);
+}
+
+
+static int
+virSecurityDACRestoreSecurityFileLabelInternal(virSecurityDACDataPtr priv,
+                                               virStorageSourcePtr src,
+                                               const char *path)
+{
+    VIR_INFO("Restoring DAC user and group on '%s'",
+             NULLSTR(src ? src->path : path));
+
+    /* XXX record previous ownership */
+    return virSecurityDACSetOwnershipInternal(priv, src, path, 0, 0);
+}
+
+
 static int
 virSecurityDACRestoreSecurityFileLabel(const char *path)
 {
-    VIR_INFO("Restoring DAC user and group on '%s'", path);
-
-    /* XXX record previous ownership */
-    return virSecurityDACSetOwnership(path, 0, 0);
+    return virSecurityDACRestoreSecurityFileLabelInternal(NULL, NULL, path);
 }
 
 
@@ -292,10 +343,6 @@ virSecurityDACSetSecurityImageLabel(virSecurityManagerPtr mgr,
     gid_t group;
 
     if (!priv->dynamicOwnership)
-        return 0;
-
-    /* XXX: Add support for gluster DAC permissions */
-    if (!src->path || !virStorageSourceIsLocalStorage(src))
         return 0;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
@@ -315,7 +362,7 @@ virSecurityDACSetSecurityImageLabel(virSecurityManagerPtr mgr,
             return -1;
     }
 
-    return virSecurityDACSetOwnership(src->path, user, group);
+    return virSecurityDACSetOwnershipInternal(priv, src, NULL, user, group);
 }
 
 
@@ -349,9 +396,6 @@ virSecurityDACRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
     if (!priv->dynamicOwnership)
         return 0;
 
-    if (!src->path || !virStorageSourceIsLocalStorage(src))
-        return 0;
-
     /* Don't restore labels on readoly/shared disks, because other VMs may
      * still be accessing these. Alternatively we could iterate over all
      * running domains and try to figure out if it is in use, but this would
@@ -373,9 +417,16 @@ virSecurityDACRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
      * ownership, because that kills access on the destination host which is
      * sub-optimal for the guest VM's I/O attempts :-) */
     if (migrated) {
-        int rc = virFileIsSharedFS(src->path);
-        if (rc < 0)
-            return -1;
+        int rc = 1;
+
+        if (virStorageSourceIsLocalStorage(src)) {
+            if (!src->path)
+                return 0;
+
+            if ((rc = virFileIsSharedFS(src->path)) < 0)
+                return -1;
+        }
+
         if (rc == 1) {
             VIR_DEBUG("Skipping image label restore on %s because FS is shared",
                       src->path);
@@ -383,7 +434,7 @@ virSecurityDACRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
         }
     }
 
-    return virSecurityDACRestoreSecurityFileLabel(src->path);
+    return virSecurityDACRestoreSecurityFileLabelInternal(priv, src, NULL);
 }
 
 
