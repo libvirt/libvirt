@@ -4553,91 +4553,87 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
                             unsigned int flags)
 {
     char *p;
-    virSecurityLabelDefPtr def = NULL;
+    virSecurityLabelDefPtr seclabel = NULL;
 
-    if (VIR_ALLOC(def) < 0)
+    p = virXPathStringLimit("string(./@model)",
+                            VIR_SECURITY_MODEL_BUFLEN - 1, ctxt);
+
+    if (!(seclabel = virSecurityLabelDefNew(p)))
         goto error;
 
+    /* set default value */
+    seclabel->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
+
     p = virXPathStringLimit("string(./@type)",
-                            VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-    if (p == NULL) {
-        def->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
-    } else {
-        def->type = virDomainSeclabelTypeFromString(p);
-        VIR_FREE(p);
-        if (def->type <= 0) {
+                            VIR_SECURITY_LABEL_BUFLEN - 1, ctxt);
+    if (p) {
+        seclabel->type = virDomainSeclabelTypeFromString(p);
+        if (seclabel->type <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("invalid security type"));
+                           _("invalid security type '%s'"), p);
             goto error;
         }
     }
 
+    if (seclabel->type == VIR_DOMAIN_SECLABEL_STATIC ||
+        seclabel->type == VIR_DOMAIN_SECLABEL_NONE)
+        seclabel->relabel = false;
+
+    VIR_FREE(p);
     p = virXPathStringLimit("string(./@relabel)",
                             VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-    if (p != NULL) {
+    if (p) {
         if (STREQ(p, "yes")) {
-            def->relabel = true;
+            seclabel->relabel = true;
         } else if (STREQ(p, "no")) {
-            def->relabel = false;
+            seclabel->relabel = false;
         } else {
             virReportError(VIR_ERR_XML_ERROR,
                            _("invalid security relabel value %s"), p);
-            VIR_FREE(p);
             goto error;
         }
-        VIR_FREE(p);
-        if (def->type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
-            !def->relabel) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("dynamic label type must use resource relabeling"));
-            goto error;
-        }
-        if (def->type == VIR_DOMAIN_SECLABEL_NONE &&
-            def->relabel) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("resource relabeling is not compatible with 'none' label type"));
-            goto error;
-        }
-    } else {
-        if (def->type == VIR_DOMAIN_SECLABEL_STATIC ||
-            def->type == VIR_DOMAIN_SECLABEL_NONE)
-            def->relabel = false;
-        else
-            def->relabel = true;
     }
 
-    /* Always parse model */
-    p = virXPathStringLimit("string(./@model)",
-                            VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
-    def->model = p;
+    if (seclabel->type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
+        !seclabel->relabel) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       "%s", _("dynamic label type must use resource relabeling"));
+        goto error;
+    }
+    if (seclabel->type == VIR_DOMAIN_SECLABEL_NONE &&
+        seclabel->relabel) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       "%s", _("resource relabeling is not compatible with 'none' label type"));
+        goto error;
+    }
 
     /* For the model 'none' none of the following labels is going to be
      * present. Hence, return now. */
 
-    if (STREQ_NULLABLE(def->model, "none")) {
+    if (STREQ_NULLABLE(seclabel->model, "none")) {
         if (flags & VIR_DOMAIN_XML_INACTIVE) {
             /* Fix older configurations */
-            def->type = VIR_DOMAIN_SECLABEL_NONE;
-            def->relabel = false;
+            seclabel->type = VIR_DOMAIN_SECLABEL_NONE;
+            seclabel->relabel = false;
         } else {
-            if (def->type != VIR_DOMAIN_SECLABEL_NONE) {
+            if (seclabel->type != VIR_DOMAIN_SECLABEL_NONE) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unsupported type='%s' to model 'none'"),
-                               virDomainSeclabelTypeToString(def->type));
+                               virDomainSeclabelTypeToString(seclabel->type));
                 goto error;
             }
             /* combination of relabel='yes' and type='static'
              * is checked a few lines above. */
         }
-        return def;
+        return seclabel;
     }
 
     /* Only parse label, if using static labels, or
      * if the 'live' VM XML is requested
      */
-    if (def->type == VIR_DOMAIN_SECLABEL_STATIC ||
+    if (seclabel->type == VIR_DOMAIN_SECLABEL_STATIC ||
         (!(flags & VIR_DOMAIN_XML_INACTIVE) &&
-         def->type != VIR_DOMAIN_SECLABEL_NONE)) {
+         seclabel->type != VIR_DOMAIN_SECLABEL_NONE)) {
         p = virXPathStringLimit("string(./label[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
         if (p == NULL) {
@@ -4646,13 +4642,13 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
             goto error;
         }
 
-        def->label = p;
+        seclabel->label = p;
     }
 
     /* Only parse imagelabel, if requested live XML with relabeling */
-    if (def->relabel &&
+    if (seclabel->relabel &&
         (!(flags & VIR_DOMAIN_XML_INACTIVE) &&
-         def->type != VIR_DOMAIN_SECLABEL_NONE)) {
+         seclabel->type != VIR_DOMAIN_SECLABEL_NONE)) {
         p = virXPathStringLimit("string(./imagelabel[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
         if (p == NULL) {
@@ -4660,20 +4656,21 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
                            "%s", _("security imagelabel is missing"));
             goto error;
         }
-        def->imagelabel = p;
+        seclabel->imagelabel = p;
     }
 
     /* Only parse baselabel for dynamic label type */
-    if (def->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
+    if (seclabel->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
         p = virXPathStringLimit("string(./baselabel[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-        def->baselabel = p;
+        seclabel->baselabel = p;
     }
 
-    return def;
+    return seclabel;
 
  error:
-    virSecurityLabelDefFree(def);
+    VIR_FREE(p);
+    virSecurityLabelDefFree(seclabel);
     return NULL;
 }
 
