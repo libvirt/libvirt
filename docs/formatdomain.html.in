@@ -3944,6 +3944,37 @@ qemu-kvm -net nic,model=? /dev/null
       <span class="since">Since 0.9.5</span>
     </p>
 
+    <h5><a name="elementVhostuser">vhost-user interface</a></h5>
+
+    <p>
+    <span class="since">Since 1.2.7</span> the vhost-user enables the
+    communication between a QEMU virtual machine and other userspace process
+    using the Virtio transport protocol.  A char dev (e.g. Unix socket) is used
+    for the control plane, while the data plane is based on shared memory.
+    </p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='vhostuser'&gt;
+      &lt;mac address='52:54:00:3b:83:1a'/&gt;
+      &lt;source type='unix' path='/tmp/vhost.sock' mode='server'/&gt;
+      &lt;model type='virtio'/&gt;
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
+    <p>
+      The <code>&lt;source&gt;</code> element has to be specified
+      along with the type of char device.
+      Currently, only type='unix' is supported, where the path (the
+      directory path of the socket) and mode attributes are required.
+      Both <code>mode='server'</code> and <code>mode='client'</code>
+      are supported.
+      vhost-user requires the virtio model type, thus the
+      <code>&lt;model&gt;</code> element is mandatory.
+    </p>
+
     <h4><a name="elementsInput">Input devices</a></h4>
 
     <p>

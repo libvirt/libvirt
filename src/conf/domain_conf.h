@@ -130,6 +130,12 @@ typedef virDomainIdMapDef *virDomainIdMapDefPtr;
 typedef struct _virDomainPanicDef virDomainPanicDef;
 typedef virDomainPanicDef *virDomainPanicDefPtr;
 
+/* forward declarations virDomainChrSourceDef, required by
+ * virDomainNetDef
+ */
+typedef struct _virDomainChrSourceDef virDomainChrSourceDef;
+typedef virDomainChrSourceDef *virDomainChrSourceDefPtr;
+
 /* Flags for the 'type' field in virDomainDeviceDef */
 typedef enum {
     VIR_DOMAIN_DEVICE_NONE = 0,
@@ -790,6 +796,7 @@ struct _virDomainFSDef {
 typedef enum {
     VIR_DOMAIN_NET_TYPE_USER,
     VIR_DOMAIN_NET_TYPE_ETHERNET,
+    VIR_DOMAIN_NET_TYPE_VHOSTUSER,
     VIR_DOMAIN_NET_TYPE_SERVER,
     VIR_DOMAIN_NET_TYPE_CLIENT,
     VIR_DOMAIN_NET_TYPE_MCAST,
@@ -875,6 +882,7 @@ struct _virDomainNetDef {
             char *dev;
             char *ipaddr;
         } ethernet;
+        virDomainChrSourceDefPtr vhostuser;
         struct {
             char *address;
             int port;
@@ -1001,8 +1009,6 @@ typedef enum {
 } virDomainChrSpicevmcName;
 
 /* The host side information for a character device.  */
-typedef struct _virDomainChrSourceDef virDomainChrSourceDef;
-typedef virDomainChrSourceDef *virDomainChrSourceDefPtr;
 struct _virDomainChrSourceDef {
     int type; /* virDomainChrType */
     union {

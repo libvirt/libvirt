@@ -1978,6 +1978,31 @@
         </group>
         <group>
           <attribute name="type">
+            <value>vhostuser</value>
+          </attribute>
+          <interleave>
+              <element name="source">
+                <attribute name="type">
+                  <choice>
+                    <value>unix</value>
+                  </choice>
+                </attribute>
+                <attribute name="path">
+                  <ref name="absFilePath"/>
+                </attribute>
+                <attribute name="mode">
+                  <choice>
+                    <value>server</value>
+                    <value>client</value>
+                  </choice>
+                </attribute>
+                <empty/>
+              </element>
+            <ref name="interface-options"/>
+          </interleave>
+        </group>
+        <group>
+          <attribute name="type">
             <value>network</value>
           </attribute>
           <interleave>

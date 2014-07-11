@@ -6849,6 +6849,76 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
 }
 
 static int
+qemuBuildVhostuserCommandLine(virCommandPtr cmd,
+                              virDomainDefPtr def,
+                              virDomainNetDefPtr net,
+                              virQEMUCapsPtr qemuCaps)
+{
+    virBuffer chardev_buf = VIR_BUFFER_INITIALIZER;
+    virBuffer netdev_buf = VIR_BUFFER_INITIALIZER;
+    char *nic = NULL;
+
+    if (!qemuDomainSupportsNetdev(def, qemuCaps, net)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("Netdev support unavailable"));
+        goto error;
+    }
+
+    switch ((virDomainChrType) net->data.vhostuser->type) {
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        virBufferAsprintf(&chardev_buf, "socket,id=char%s,path=%s%s",
+                          net->info.alias, net->data.vhostuser->data.nix.path,
+                          net->data.vhostuser->data.nix.listen ? ",server" : "");
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_NULL:
+    case VIR_DOMAIN_CHR_TYPE_VC:
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+    case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_UDP:
+    case VIR_DOMAIN_CHR_TYPE_TCP:
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("vhost-user type '%s' not supported"),
+                        virDomainChrTypeToString(net->data.vhostuser->type));
+        goto error;
+    }
+
+    virBufferAsprintf(&netdev_buf, "type=vhost-user,id=host%s,chardev=char%s",
+                      net->info.alias, net->info.alias);
+
+    virCommandAddArg(cmd, "-chardev");
+    virCommandAddArgBuffer(cmd, &chardev_buf);
+
+    virCommandAddArg(cmd, "-netdev");
+    virCommandAddArgBuffer(cmd, &netdev_buf);
+
+    if (!(nic = qemuBuildNicDevStr(def, net, -1, 0, 0, qemuCaps))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("Error generating NIC -device string"));
+        goto error;
+    }
+
+    virCommandAddArgList(cmd, "-device", nic, NULL);
+    VIR_FREE(nic);
+
+    return 0;
+
+ error:
+    virBufferFreeAndReset(&chardev_buf);
+    virBufferFreeAndReset(&netdev_buf);
+    VIR_FREE(nic);
+
+    return -1;
+}
+
+static int
 qemuBuildInterfaceCommandLine(virCommandPtr cmd,
                               virQEMUDriverPtr driver,
                               virConnectPtr conn,
@@ -6870,6 +6940,9 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     char **vhostfdName = NULL;
     int actualType = virDomainNetGetActualType(net);
     size_t i;
+
+    if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER)
+        return qemuBuildVhostuserCommandLine(cmd, def, net, qemuCaps);
 
     if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         /* NET_TYPE_HOSTDEV devices are really hostdev devices, so

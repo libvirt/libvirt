@@ -986,6 +986,7 @@ libxlMakeNic(virDomainDefPtr def,
                 return -1;
             break;
         }
+        case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
         case VIR_DOMAIN_NET_TYPE_USER:
         case VIR_DOMAIN_NET_TYPE_SERVER:
         case VIR_DOMAIN_NET_TYPE_CLIENT:

@@ -182,6 +182,11 @@ umlBuildCommandLineNet(virConnectPtr conn,
         }
         break;
 
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("vhostuser networking type not supported"));
+        goto error;
+
     case VIR_DOMAIN_NET_TYPE_SERVER:
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("TCP server networking type not supported"));

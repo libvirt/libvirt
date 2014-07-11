@@ -247,6 +247,7 @@ mymain(void)
     DO_TEST("misc-disable-suspends");
     DO_TEST("misc-enable-s4");
     DO_TEST("misc-no-reboot");
+    DO_TEST("net-vhostuser");
     DO_TEST("net-user");
     DO_TEST("net-virtio");
     DO_TEST("net-virtio-device");

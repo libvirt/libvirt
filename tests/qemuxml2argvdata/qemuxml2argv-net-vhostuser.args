@@ -1,0 +1,7 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S -M \
+pc -m 214 -smp 1 -nographic -nodefaults -monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi -boot c -usb -hda /dev/HostVG/QEMUGuest1 \
+-chardev socket,id=charnet0,path=/tmp/vhost.sock,server \
+-netdev type=vhost-user,id=hostnet0,chardev=charnet0 \
+-device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:ee:96:6b,bus=pci.0,addr=0x3

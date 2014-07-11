@@ -348,6 +348,7 @@ VIR_ENUM_IMPL(virDomainFSWrpolicy, VIR_DOMAIN_FS_WRPOLICY_LAST,
 VIR_ENUM_IMPL(virDomainNet, VIR_DOMAIN_NET_TYPE_LAST,
               "user",
               "ethernet",
+              "vhostuser",
               "server",
               "client",
               "mcast",
@@ -1344,6 +1345,10 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
         VIR_FREE(def->data.ethernet.dev);
         VIR_FREE(def->data.ethernet.ipaddr);
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        virDomainChrSourceDefFree(def->data.vhostuser);
         break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:
@@ -6618,6 +6623,9 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *mode = NULL;
     char *linkstate = NULL;
     char *addrtype = NULL;
+    char *vhostuser_mode = NULL;
+    char *vhostuser_path = NULL;
+    char *vhostuser_type = NULL;
     virNWFilterHashTablePtr filterparams = NULL;
     virDomainActualNetDefPtr actual = NULL;
     xmlNodePtr oldnode = ctxt->node;
@@ -6663,6 +6671,12 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                        xmlStrEqual(cur->name, BAD_CAST "source")) {
                 dev  = virXMLPropString(cur, "dev");
                 mode = virXMLPropString(cur, "mode");
+            } else if (!vhostuser_path && !vhostuser_mode && !vhostuser_type
+                       && def->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
+                       xmlStrEqual(cur->name, BAD_CAST "source")) {
+                vhostuser_type = virXMLPropString(cur, "type");
+                vhostuser_path = virXMLPropString(cur, "path");
+                vhostuser_mode = virXMLPropString(cur, "mode");
             } else if (!def->virtPortProfile
                        && xmlStrEqual(cur->name, BAD_CAST "virtualport")) {
                 if (def->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
@@ -6818,6 +6832,65 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         portgroup = NULL;
         def->data.network.actual = actual;
         actual = NULL;
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        if (STRNEQ_NULLABLE(model, "virtio")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Wrong or no <model> 'type' attribute "
+                             "specified with <interface type='vhostuser'/>. "
+                             "vhostuser requires the virtio-net* frontend"));
+            goto error;
+        }
+
+        if (STRNEQ_NULLABLE(vhostuser_type, "unix")) {
+            if (vhostuser_type)
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Type='%s' unsupported for"
+                                 " <interface type='vhostuser'>"),
+                               vhostuser_type);
+            else
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("No <source> 'type' attribute "
+                                 "specified for <interface "
+                                 "type='vhostuser'>"));
+            goto error;
+        }
+
+        if (vhostuser_path == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("No <source> 'path' attribute "
+                             "specified with <interface "
+                             "type='vhostuser'/>"));
+            goto error;
+        }
+
+        if (vhostuser_mode == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("No <source> 'mode' attribute "
+                             "specified with <interface "
+                             "type='vhostuser'/>"));
+            goto error;
+        }
+
+        if (VIR_ALLOC(def->data.vhostuser) < 0)
+            goto error;
+
+        def->data.vhostuser->type = VIR_DOMAIN_CHR_TYPE_UNIX;
+        def->data.vhostuser->data.nix.path = vhostuser_path;
+        vhostuser_path = NULL;
+
+        if (STREQ(vhostuser_mode, "server"))
+            def->data.vhostuser->data.nix.listen = true;
+        else if (STREQ(vhostuser_mode, "client"))
+            def->data.vhostuser->data.nix.listen = false;
+        else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Wrong <source> 'mode' attribute "
+                             "specified with <interface "
+                             "type='vhostuser'/>"));
+            goto error;
+        }
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -7065,6 +7138,9 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(portgroup);
     VIR_FREE(address);
     VIR_FREE(port);
+    VIR_FREE(vhostuser_type);
+    VIR_FREE(vhostuser_path);
+    VIR_FREE(vhostuser_mode);
     VIR_FREE(ifname);
     VIR_FREE(dev);
     virDomainActualNetDefFree(actual);
@@ -15814,6 +15890,17 @@ virDomainNetDefFormat(virBufferPtr buf,
             if (def->data.ethernet.ipaddr)
                 virBufferAsprintf(buf, "<ip address='%s'/>\n",
                                   def->data.ethernet.ipaddr);
+            break;
+
+        case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+            if (def->data.vhostuser->type == VIR_DOMAIN_CHR_TYPE_UNIX) {
+                virBufferAddLit(buf, "<source type='unix'");
+                virBufferEscapeString(buf, " path='%s'",
+                                      def->data.vhostuser->data.nix.path);
+                if (def->data.vhostuser->data.nix.listen)
+                    virBufferAddLit(buf, " mode='server'");
+                virBufferAddLit(buf, "/>\n");
+            }
             break;
 
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
