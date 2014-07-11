@@ -721,7 +721,7 @@ libxlDiskSetDiscard(libxl_device_disk *x_disk, int discard)
     if (!x_disk->readwrite)
         return 0;
 #if defined(LIBXL_HAVE_LIBXL_DEVICE_DISK_DISCARD_ENABLE)
-    switch ((enum virDomainDiskDiscard)discard) {
+    switch ((virDomainDiskDiscard)discard) {
     case VIR_DOMAIN_DISK_DISCARD_DEFAULT:
     case VIR_DOMAIN_DISK_DISCARD_LAST:
         break;
