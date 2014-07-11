@@ -3219,7 +3219,9 @@ The I<--diskspec> option can be used to control how I<--disk-only> and
 external checkpoints create external files.  This option can occur
 multiple times, according to the number of <disk> elements in the domain
 xml.  Each <diskspec> is in the
-form B<disk[,snapshot=type][,driver=type][,file=name]>.  To include a
+form B<disk[,snapshot=type][,driver=type][,file=name]>.  A I<diskspec>
+must be provided for disks backed by block devices as libvirt doesn't
+auto-generate file names for those.  To include a
 literal comma in B<disk> or in B<file=name>, escape it with a second
 comma.  A literal I<--diskspec> must precede each B<diskspec> unless
 all three of I<domain>, I<name>, and I<description> are also present.

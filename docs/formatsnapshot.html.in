@@ -164,9 +164,11 @@
             attribute <code>type</code> giving the driver type (such
             as qcow2), of the new file created by the external
             snapshot of the new file.  If <code>source</code> is not
-            given, a file name is generated that consists of the
-            existing file name with anything after the trailing dot
-            replaced by the snapshot name.  Remember that with external
+            given and the disk is backed by a local image file (not
+            a block device or remote storage), a file name is
+            generated that consists of the existing file name
+            with anything after the trailing dot replaced by the
+            snapshot name.  Remember that with external
             snapshots, the original file name becomes the read-only
             snapshot, and the new file name contains the read-write
             delta of all disk changes since the snapshot.
