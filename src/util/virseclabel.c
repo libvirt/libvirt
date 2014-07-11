@@ -61,7 +61,7 @@ virSecurityLabelDefNew(const char *model)
     if (VIR_ALLOC(seclabel) < 0 ||
         VIR_STRDUP(seclabel->model, model) < 0) {
         virSecurityLabelDefFree(seclabel);
-        seclabel = NULL;
+        return NULL;
     }
 
     seclabel->relabel = true;
