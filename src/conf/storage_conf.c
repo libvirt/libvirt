@@ -1423,22 +1423,24 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
         virBufferAsprintf(buf, "<format type='%s'/>\n", format);
     }
 
-    virBufferAddLit(buf, "<permissions>\n");
-    virBufferAdjustIndent(buf, 2);
+    if (def->perms) {
+        virBufferAddLit(buf, "<permissions>\n");
+        virBufferAdjustIndent(buf, 2);
 
-    virBufferAsprintf(buf, "<mode>0%o</mode>\n",
-                      def->perms->mode);
-    virBufferAsprintf(buf, "<owner>%u</owner>\n",
-                      (unsigned int) def->perms->uid);
-    virBufferAsprintf(buf, "<group>%u</group>\n",
-                      (unsigned int) def->perms->gid);
+        virBufferAsprintf(buf, "<mode>0%o</mode>\n",
+                          def->perms->mode);
+        virBufferAsprintf(buf, "<owner>%u</owner>\n",
+                          (unsigned int) def->perms->uid);
+        virBufferAsprintf(buf, "<group>%u</group>\n",
+                          (unsigned int) def->perms->gid);
 
 
-    virBufferEscapeString(buf, "<label>%s</label>\n",
-                          def->perms->label);
+        virBufferEscapeString(buf, "<label>%s</label>\n",
+                              def->perms->label);
 
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</permissions>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</permissions>\n");
+    }
 
     if (def->timestamps) {
         virBufferAddLit(buf, "<timestamps>\n");
