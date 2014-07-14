@@ -41,7 +41,7 @@ buildVirCapabilities(int max_cells,
     int id;
     size_t i;
 
-    if ((caps = virCapabilitiesNew(VIR_ARCH_X86_64, 0, 0)) == NULL)
+    if ((caps = virCapabilitiesNew(VIR_ARCH_X86_64, false, false)) == NULL)
         goto error;
 
     id = 0;

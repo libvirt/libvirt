@@ -885,7 +885,7 @@ static virCapsPtr vboxCapsInit(void)
     virCapsGuestPtr guest;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
-                                   0, 0)) == NULL)
+                                   false, false)) == NULL)
         goto no_memory;
 
     if (nodeCapsInitNUMA(caps) < 0)

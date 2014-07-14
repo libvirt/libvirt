@@ -65,7 +65,7 @@ vmwareCapsInit(void)
     virCPUDataPtr data = NULL;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
-                                   0, 0)) == NULL)
+                                   false, false)) == NULL)
         goto error;
 
     if (nodeCapsInitNUMA(caps) < 0)

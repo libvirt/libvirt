@@ -318,7 +318,7 @@ testBuildCapabilities(virConnectPtr conn)
     const char *const guest_types[] = { "hvm", "xen" };
     size_t i;
 
-    if ((caps = virCapabilitiesNew(VIR_ARCH_I686, 0, 0)) == NULL)
+    if ((caps = virCapabilitiesNew(VIR_ARCH_I686, false, false)) == NULL)
         goto error;
 
     if (virCapabilitiesAddHostFeature(caps, "pae") < 0)
@@ -360,9 +360,9 @@ testBuildCapabilities(virConnectPtr conn)
                                           NULL) == NULL)
             goto error;
 
-        if (virCapabilitiesAddGuestFeature(guest, "pae", 1, 1) == NULL)
+        if (virCapabilitiesAddGuestFeature(guest, "pae", true, true) == NULL)
             goto error;
-        if (virCapabilitiesAddGuestFeature(guest, "nonpae", 1, 1) == NULL)
+        if (virCapabilitiesAddGuestFeature(guest, "nonpae", true, true) == NULL)
             goto error;
     }
 

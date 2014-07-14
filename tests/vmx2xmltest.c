@@ -25,7 +25,7 @@ testCapsInit(void)
 {
     virCapsGuestPtr guest = NULL;
 
-    caps = virCapabilitiesNew(VIR_ARCH_I686, 1, 1);
+    caps = virCapabilitiesNew(VIR_ARCH_I686, true, true);
 
     if (caps == NULL) {
         return;

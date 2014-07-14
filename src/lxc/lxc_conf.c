@@ -70,11 +70,11 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
     char *lxc_path = NULL;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
-                                   0, 0)) == NULL)
+                                   false, false)) == NULL)
         goto error;
 
     /* Some machines have problematic NUMA toplogy causing
-     * unexpected failures. We don't want to break the QEMU
+     * unexpected failures. We don't want to break the lxc
      * driver in this scenario, so log errors & carry on
      */
     if (nodeCapsInitNUMA(caps) < 0) {

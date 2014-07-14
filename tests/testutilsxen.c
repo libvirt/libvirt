@@ -23,7 +23,7 @@ virCapsPtr testXenCapsInit(void)
 
     uname(&utsname);
     if ((caps = virCapabilitiesNew(VIR_ARCH_I686,
-                                   0, 0)) == NULL)
+                                   false, false)) == NULL)
         return NULL;
 
     nmachines = ARRAY_CARDINALITY(x86_machines);

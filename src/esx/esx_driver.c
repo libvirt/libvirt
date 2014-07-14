@@ -575,9 +575,9 @@ esxCapsInit(esxPrivate *priv)
     }
 
     if (supportsLongMode == esxVI_Boolean_True) {
-        caps = virCapabilitiesNew(VIR_ARCH_X86_64, 1, 1);
+        caps = virCapabilitiesNew(VIR_ARCH_X86_64, true, true);
     } else {
-        caps = virCapabilitiesNew(VIR_ARCH_I686, 1, 1);
+        caps = virCapabilitiesNew(VIR_ARCH_I686, true, true);
     }
 
     if (!caps)

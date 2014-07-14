@@ -58,7 +58,7 @@ virCapsPtr umlCapsInit(void)
     virCapsGuestPtr guest;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
-                                   0, 0)) == NULL)
+                                   false, false)) == NULL)
         goto error;
 
     /* Some machines have problematic NUMA toplogy causing

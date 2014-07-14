@@ -14,7 +14,7 @@ virCapsPtr testLXCCapsInit(void)
     virCapsGuestPtr guest;
 
     if ((caps = virCapabilitiesNew(VIR_ARCH_X86_64,
-                                   0, 0)) == NULL)
+                                   false, false)) == NULL)
         return NULL;
 
     if ((guest = virCapabilitiesAddGuest(caps, "exe", VIR_ARCH_I686,

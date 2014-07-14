@@ -1,7 +1,7 @@
 /*
  * capabilities.h: hypervisor capabilities
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -37,8 +37,8 @@ typedef struct _virCapsGuestFeature virCapsGuestFeature;
 typedef virCapsGuestFeature *virCapsGuestFeaturePtr;
 struct _virCapsGuestFeature {
     char *name;
-    int defaultOn;
-    int toggle;
+    bool defaultOn;
+    bool toggle;
 };
 
 typedef struct _virCapsGuestMachine virCapsGuestMachine;
@@ -148,8 +148,8 @@ struct _virCapsHost {
     unsigned int powerMgmt;    /* Bitmask of the PM capabilities.
                                 * See enum virHostPMCapability.
                                 */
-    int offlineMigrate;
-    int liveMigrate;
+    bool offlineMigrate;
+    bool liveMigrate;
     size_t nmigrateTrans;
     size_t nmigrateTrans_max;
     char **migrateTrans;
@@ -195,8 +195,8 @@ struct _virCaps {
 
 extern virCapsPtr
 virCapabilitiesNew(virArch hostarch,
-                   int offlineMigrate,
-                   int liveMigrate);
+                   bool offlineMigrate,
+                   bool liveMigrate);
 
 extern void
 virCapabilitiesFreeNUMAInfo(virCapsPtr caps);
@@ -254,8 +254,8 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
 extern virCapsGuestFeaturePtr
 virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
                                const char *name,
-                               int defaultOn,
-                               int toggle);
+                               bool defaultOn,
+                               bool toggle);
 
 extern int
 virCapabilitiesHostSecModelAddBaseLabel(virCapsHostSecModelPtr secmodel,

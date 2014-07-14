@@ -286,7 +286,7 @@ phypCapsInit(void)
     virCapsGuestPtr guest;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
-                                   0, 0)) == NULL)
+                                   false, false)) == NULL)
         goto no_memory;
 
     /* Some machines have problematic NUMA toplogy causing

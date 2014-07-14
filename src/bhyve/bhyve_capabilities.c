@@ -82,7 +82,7 @@ virBhyveCapsBuild(void)
     virCapsGuestPtr guest;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
-                                   0, 0)) == NULL)
+                                   false, false)) == NULL)
         return NULL;
 
     if ((guest = virCapabilitiesAddGuest(caps, "hvm",

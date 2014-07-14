@@ -727,7 +727,7 @@ get_definition(vahControl * ctl, const char *xmlStr)
     if (caps_mockup(ctl, xmlStr) != 0)
         goto exit;
 
-    if ((ctl->caps = virCapabilitiesNew(ctl->arch, 1, 1)) == NULL) {
+    if ((ctl->caps = virCapabilitiesNew(ctl->arch, true, true)) == NULL) {
         vah_error(ctl, 0, _("could not allocate memory"));
         goto exit;
     }

@@ -815,17 +815,18 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
     if (caps->host.cpu &&
         caps->host.cpu->model &&
         virQEMUCapsGetCPUDefinitions(qemubinCaps, NULL) > 0 &&
-        !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
+        !virCapabilitiesAddGuestFeature(guest, "cpuselection", true, false))
         goto cleanup;
 
     if (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_BOOTINDEX) &&
-        !virCapabilitiesAddGuestFeature(guest, "deviceboot", 1, 0))
+        !virCapabilitiesAddGuestFeature(guest, "deviceboot", true, false))
         goto cleanup;
 
     if (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_DISK_SNAPSHOT))
         hasdisksnapshot = true;
 
-    if (!virCapabilitiesAddGuestFeature(guest, "disksnapshot", hasdisksnapshot, 0))
+    if (!virCapabilitiesAddGuestFeature(guest, "disksnapshot", hasdisksnapshot,
+                                        false))
         goto cleanup;
 
     if (virCapabilitiesAddGuestDomain(guest,
@@ -868,13 +869,13 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
 
     if (((guestarch == VIR_ARCH_I686) ||
          (guestarch == VIR_ARCH_X86_64)) &&
-        (virCapabilitiesAddGuestFeature(guest, "acpi", 1, 1) == NULL ||
-         virCapabilitiesAddGuestFeature(guest, "apic", 1, 0) == NULL))
+        (virCapabilitiesAddGuestFeature(guest, "acpi", true, true) == NULL ||
+         virCapabilitiesAddGuestFeature(guest, "apic", true, false) == NULL))
         goto cleanup;
 
     if ((guestarch == VIR_ARCH_I686) &&
-        (virCapabilitiesAddGuestFeature(guest, "pae", 1, 0) == NULL ||
-         virCapabilitiesAddGuestFeature(guest, "nonpae", 1, 0) == NULL))
+        (virCapabilitiesAddGuestFeature(guest, "pae", true, false) == NULL ||
+         virCapabilitiesAddGuestFeature(guest, "nonpae", true, false) == NULL))
         goto cleanup;
 
     ret = 0;
@@ -957,7 +958,7 @@ virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
     virArch hostarch = virArchFromHost();
 
     if ((caps = virCapabilitiesNew(hostarch,
-                                   1, 1)) == NULL)
+                                   true, true)) == NULL)
         goto error;
 
     /* Some machines have problematic NUMA toplogy causing

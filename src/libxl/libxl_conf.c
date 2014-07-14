@@ -1372,9 +1372,9 @@ libxlMakeCapabilities(libxl_ctx *ctx)
     virCapsPtr caps;
 
 #ifdef LIBXL_HAVE_NO_SUSPEND_RESUME
-    if ((caps = virCapabilitiesNew(virArchFromHost(), 0, 0)) == NULL)
+    if ((caps = virCapabilitiesNew(virArchFromHost(), false, false)) == NULL)
 #else
-    if ((caps = virCapabilitiesNew(virArchFromHost(), 1, 1)) == NULL)
+    if ((caps = virCapabilitiesNew(virArchFromHost(), true, true)) == NULL)
 #endif
         return NULL;
 

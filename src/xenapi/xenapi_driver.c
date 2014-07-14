@@ -85,7 +85,7 @@ getCapsObject(void)
 {
     virCapsGuestPtr guest1, guest2;
     virCapsGuestDomainPtr domain1, domain2;
-    virCapsPtr caps = virCapabilitiesNew(virArchFromHost(), 0, 0);
+    virCapsPtr caps = virCapabilitiesNew(virArchFromHost(), false, false);
 
     if (!caps)
         return NULL;

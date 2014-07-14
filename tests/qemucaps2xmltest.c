@@ -110,7 +110,7 @@ testGetCaps(char *capsData, const testQemuData *data)
         goto error;
     }
 
-    if ((caps = virCapabilitiesNew(data->guestarch, 0, 0)) == NULL) {
+    if ((caps = virCapabilitiesNew(data->guestarch, false, false)) == NULL) {
         fprintf(stderr, "failed to create the fake capabilities");
         goto error;
     }

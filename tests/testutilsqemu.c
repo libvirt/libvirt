@@ -249,7 +249,7 @@ virCapsPtr testQemuCapsInit(void)
     };
 
     if ((caps = virCapabilitiesNew(host_cpu.arch,
-                                   0, 0)) == NULL)
+                                   false, false)) == NULL)
         return NULL;
 
     if ((caps->host.cpu = virCPUDefCopy(&host_cpu)) == NULL ||
@@ -259,7 +259,7 @@ virCapsPtr testQemuCapsInit(void)
     if ((guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_I686,
                                          "/usr/bin/qemu", NULL,
                                          nmachines, machines)) == NULL ||
-        !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
+        !virCapabilitiesAddGuestFeature(guest, "cpuselection", true, false))
         goto cleanup;
     machines = NULL;
 
@@ -277,7 +277,7 @@ virCapsPtr testQemuCapsInit(void)
     if ((guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_X86_64,
                                          "/usr/bin/qemu-system-x86_64", NULL,
                                          nmachines, machines)) == NULL ||
-        !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
+        !virCapabilitiesAddGuestFeature(guest, "cpuselection", true, false))
         goto cleanup;
     machines = NULL;
 

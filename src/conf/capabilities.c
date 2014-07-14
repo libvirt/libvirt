@@ -58,15 +58,15 @@ VIR_ONCE_GLOBAL_INIT(virCapabilities)
 /**
  * virCapabilitiesNew:
  * @hostarch: host machine architecture
- * @offlineMigrate: non-zero if offline migration is available
- * @liveMigrate: non-zero if live migration is available
+ * @offlineMigrate: true if offline migration is available
+ * @liveMigrate: true if live migration is available
  *
  * Allocate a new capabilities object
  */
 virCapsPtr
 virCapabilitiesNew(virArch hostarch,
-                   int offlineMigrate,
-                   int liveMigrate)
+                   bool offlineMigrate,
+                   bool liveMigrate)
 {
     virCapsPtr caps;
 
@@ -502,16 +502,16 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
  * virCapabilitiesAddGuestFeature:
  * @guest: guest to associate feature with
  * @name: name of feature ('pae', 'acpi', 'apic')
- * @defaultOn: non-zero if it defaults to on
- * @toggle: non-zero if its state can be toggled
+ * @defaultOn: true if it defaults to on
+ * @toggle: true if its state can be toggled
  *
- * Registers a feature for a guest domain
+ * Registers a feature for a guest domain.
  */
 virCapsGuestFeaturePtr
 virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
                                const char *name,
-                               int defaultOn,
-                               int toggle)
+                               bool defaultOn,
+                               bool toggle)
 {
     virCapsGuestFeaturePtr feature;
 

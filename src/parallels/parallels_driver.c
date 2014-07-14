@@ -125,7 +125,7 @@ parallelsBuildCapabilities(void)
     virNodeInfo nodeinfo;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
-                                   0, 0)) == NULL)
+                                   false, false)) == NULL)
         return NULL;
 
     if (nodeCapsInitNUMA(caps) < 0)
