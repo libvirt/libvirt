@@ -1455,16 +1455,16 @@ virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
     int ret;
 
     if ((ret = virStorageBackendUpdateVolTargetInfo(&vol->target,
-                                    updateCapacity,
-                                    withBlockVolFormat,
-                                    openflags)) < 0)
+                                                    updateCapacity,
+                                                    withBlockVolFormat,
+                                                    openflags)) < 0)
         return ret;
 
     if (vol->backingStore.path &&
         (ret = virStorageBackendUpdateVolTargetInfo(&vol->backingStore,
-                                            updateCapacity,
-                                            withBlockVolFormat,
-                                            VIR_STORAGE_VOL_OPEN_DEFAULT)) < 0)
+                                                    updateCapacity,
+                                                    withBlockVolFormat,
+                                                    VIR_STORAGE_VOL_OPEN_DEFAULT)) < 0)
         return ret;
 
     return 0;

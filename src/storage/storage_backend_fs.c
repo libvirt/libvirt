@@ -893,9 +893,9 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
             vol->backingStore.path = backingStore;
             vol->backingStore.format = backingStoreFormat;
 
-            ignore_value(virStorageBackendUpdateVolTargetInfo(
-                                               &vol->backingStore, true, false,
-                                               VIR_STORAGE_VOL_OPEN_DEFAULT));
+            ignore_value(virStorageBackendUpdateVolTargetInfo(&vol->backingStore,
+                                                              true, false,
+                                                              VIR_STORAGE_VOL_OPEN_DEFAULT));
             /* If this failed, the backing file is currently unavailable,
              * the capacity, allocation, owner, group and mode are unknown.
              * An error message was raised, but we just continue. */
