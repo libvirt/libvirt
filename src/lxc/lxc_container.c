@@ -837,10 +837,13 @@ static int lxcContainerSetReadOnly(void)
 }
 
 
-static int lxcContainerMountBasicFS(bool userns_enabled)
+static int lxcContainerMountBasicFS(bool userns_enabled,
+                                    bool netns_disabled)
 {
     size_t i;
     int rc = -1;
+    char* mnt_src = NULL;
+    int mnt_mflags;
 
     VIR_DEBUG("Mounting basic filesystems");
 
@@ -848,8 +851,25 @@ static int lxcContainerMountBasicFS(bool userns_enabled)
         bool bindOverReadonly;
         virLXCBasicMountInfo const *mnt = &lxcBasicMounts[i];
 
+        /* When enable userns but disable netns, kernel will
+         * forbid us doing a new fresh mount for sysfs.
+         * So we had to do a bind mount for sysfs instead.
+         */
+        if (userns_enabled && netns_disabled &&
+            STREQ(mnt->src, "sysfs")) {
+            if (VIR_STRDUP(mnt_src, "/sys") < 0) {
+                goto cleanup;
+            }
+            mnt_mflags = MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY|MS_BIND;
+        } else {
+            if (VIR_STRDUP(mnt_src, mnt->src) < 0) {
+                goto cleanup;
+            }
+            mnt_mflags = mnt->mflags;
+        }
+
         VIR_DEBUG("Processing %s -> %s",
-                  mnt->src, mnt->dst);
+                  mnt_src, mnt->dst);
 
         if (mnt->skipUnmounted) {
             char *hostdir;
@@ -878,7 +898,7 @@ static int lxcContainerMountBasicFS(bool userns_enabled)
         if (virFileMakePath(mnt->dst) < 0) {
             virReportSystemError(errno,
                                  _("Failed to mkdir %s"),
-                                 mnt->src);
+                                 mnt_src);
             goto cleanup;
         }
 
@@ -889,24 +909,24 @@ static int lxcContainerMountBasicFS(bool userns_enabled)
          * we mount the filesystem in read-write mode initially, and then do a
          * separate read-only bind mount on top of that.
          */
-        bindOverReadonly = !!(mnt->mflags & MS_RDONLY);
+        bindOverReadonly = !!(mnt_mflags & MS_RDONLY);
 
         VIR_DEBUG("Mount %s on %s type=%s flags=%x",
-                  mnt->src, mnt->dst, mnt->type, mnt->mflags & ~MS_RDONLY);
-        if (mount(mnt->src, mnt->dst, mnt->type, mnt->mflags & ~MS_RDONLY, NULL) < 0) {
+                  mnt_src, mnt->dst, mnt->type, mnt_mflags & ~MS_RDONLY);
+        if (mount(mnt_src, mnt->dst, mnt->type, mnt_mflags & ~MS_RDONLY, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to mount %s on %s type %s flags=%x"),
-                                 mnt->src, mnt->dst, NULLSTR(mnt->type),
-                                 mnt->mflags & ~MS_RDONLY);
+                                 mnt_src, mnt->dst, NULLSTR(mnt->type),
+                                 mnt_mflags & ~MS_RDONLY);
             goto cleanup;
         }
 
         if (bindOverReadonly &&
-            mount(mnt->src, mnt->dst, NULL,
+            mount(mnt_src, mnt->dst, NULL,
                   MS_BIND|MS_REMOUNT|MS_RDONLY, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to re-mount %s on %s flags=%x"),
-                                 mnt->src, mnt->dst,
+                                 mnt_src, mnt->dst,
                                  MS_BIND|MS_REMOUNT|MS_RDONLY);
             goto cleanup;
         }
@@ -915,6 +935,7 @@ static int lxcContainerMountBasicFS(bool userns_enabled)
     rc = 0;
 
  cleanup:
+    VIR_FREE(mnt_src);
     VIR_DEBUG("rc=%d", rc);
     return rc;
 }
@@ -1665,7 +1686,8 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         goto cleanup;
 
     /* Mounts the core /proc, /sys, etc filesystems */
-    if (lxcContainerMountBasicFS(vmDef->idmap.nuidmap) < 0)
+    if (lxcContainerMountBasicFS(vmDef->idmap.nuidmap,
+                                 !vmDef->nnets) < 0)
         goto cleanup;
 
     /* Ensure entire root filesystem (except /.oldroot) is readonly */
