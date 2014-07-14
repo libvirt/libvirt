@@ -14981,7 +14981,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     if (disk->mirror && mode == BLOCK_JOB_ABORT &&
         (flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT)) {
         ret = qemuDomainBlockPivot(conn, driver, vm, device, disk);
-        goto endjob;
+        goto waitjob;
     }
 
     if (base &&
@@ -15038,6 +15038,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
         disk->mirroring = false;
     }
 
+ waitjob:
     /* With synchronous block cancel, we must synthesize an event, and
      * we silently ignore the ABORT_ASYNC flag.  With asynchronous
      * block cancel, the event will come from qemu, but without the
