@@ -840,7 +840,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
         virReportSystemError(errno,
                              _("cannot open path '%s'"),
                              pool->def->target.path);
-        goto cleanup;
+        goto error;
     }
 
     while ((direrr = virDirRead(dir, &ent, pool->def->target.path)) > 0) {
@@ -849,20 +849,20 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
         int backingStoreFormat;
 
         if (VIR_ALLOC(vol) < 0)
-            goto cleanup;
+            goto error;
 
         if (VIR_STRDUP(vol->name, ent->d_name) < 0)
-            goto cleanup;
+            goto error;
 
         vol->type = VIR_STORAGE_VOL_FILE;
         vol->target.format = VIR_STORAGE_FILE_RAW; /* Real value is filled in during probe */
         if (virAsprintf(&vol->target.path, "%s/%s",
                         pool->def->target.path,
                         vol->name) == -1)
-            goto cleanup;
+            goto error;
 
         if (VIR_STRDUP(vol->key, vol->target.path) < 0)
-            goto cleanup;
+            goto error;
 
         if ((ret = virStorageBackendProbeTarget(&vol->target,
                                                 &backingStore,
@@ -881,8 +881,9 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
                  * break virStorageVolTargetDefFormat() generating the line
                  * <format type='...'/>. */
                 backingStoreFormat = VIR_STORAGE_FILE_RAW;
-            } else
-                goto cleanup;
+            } else {
+                goto error;
+            }
         }
 
         /* directory based volume */
@@ -891,7 +892,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
 
         if (backingStore != NULL) {
             if (VIR_ALLOC(vol->target.backingStore) < 0)
-                goto cleanup;
+                goto error;
 
             vol->target.backingStore->path = backingStore;
             vol->target.backingStore->format = backingStoreFormat;
@@ -906,10 +907,10 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
         if (VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count, vol) < 0)
-            goto cleanup;
+            goto error;
     }
     if (direrr < 0)
-        goto cleanup;
+        goto error;
     closedir(dir);
 
     if (statvfs(pool->def->target.path, &sb) < 0) {
@@ -926,7 +927,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     return 0;
 
- cleanup:
+ error:
     if (dir)
         closedir(dir);
     virStorageVolDefFree(vol);
