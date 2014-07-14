@@ -139,11 +139,14 @@ virStorageBackendLogicalMakeVol(char **const groups,
      *  lv is created with "--virtualsize").
      */
     if (groups[1] && !STREQ(groups[1], "") && (groups[1][0] != '[')) {
-        if (virAsprintf(&vol->backingStore.path, "%s/%s",
+        if (VIR_ALLOC(vol->target.backingStore) < 0)
+            goto cleanup;
+
+        if (virAsprintf(&vol->target.backingStore->path, "%s/%s",
                         pool->def->target.path, groups[1]) < 0)
             goto cleanup;
 
-        vol->backingStore.format = VIR_STORAGE_POOL_LOGICAL_LVM2;
+        vol->target.backingStore->format = VIR_STORAGE_POOL_LOGICAL_LVM2;
     }
 
     if (!vol->key && VIR_STRDUP(vol->key, groups[2]) < 0)
@@ -752,8 +755,8 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     }
     virCommandAddArgFormat(cmd, "%lluK", VIR_DIV_UP(vol->target.capacity,
                                                     1024));
-    if (vol->backingStore.path)
-        virCommandAddArgList(cmd, "-s", vol->backingStore.path, NULL);
+    if (vol->target.backingStore)
+        virCommandAddArgList(cmd, "-s", vol->target.backingStore->path, NULL);
     else
         virCommandAddArg(cmd, pool->def->source.name);
 

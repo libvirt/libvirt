@@ -890,10 +890,13 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
             vol->type = VIR_STORAGE_VOL_DIR;
 
         if (backingStore != NULL) {
-            vol->backingStore.path = backingStore;
-            vol->backingStore.format = backingStoreFormat;
+            if (VIR_ALLOC(vol->target.backingStore) < 0)
+                goto cleanup;
 
-            ignore_value(virStorageBackendUpdateVolTargetInfo(&vol->backingStore,
+            vol->target.backingStore->path = backingStore;
+            vol->target.backingStore->format = backingStoreFormat;
+
+            ignore_value(virStorageBackendUpdateVolTargetInfo(vol->target.backingStore,
                                                               true, false,
                                                               VIR_STORAGE_VOL_OPEN_DEFAULT));
             /* If this failed, the backing file is currently unavailable,

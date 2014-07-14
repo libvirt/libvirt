@@ -331,7 +331,6 @@ virStorageVolDefFree(virStorageVolDefPtr def)
     VIR_FREE(def->source.extents);
 
     virStorageSourceClear(&def->target);
-    virStorageSourceClear(&def->backingStore);
     VIR_FREE(def);
 }
 
@@ -1168,6 +1167,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     char *allocation = NULL;
     char *capacity = NULL;
     char *unit = NULL;
+    char *backingStore = NULL;
     xmlNodePtr node;
     xmlNodePtr *nodes = NULL;
     size_t i;
@@ -1252,21 +1252,35 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
             goto error;
     }
 
-    ret->backingStore.path = virXPathString("string(./backingStore/path)", ctxt);
-    if (options->formatFromString) {
-        char *format = virXPathString("string(./backingStore/format/@type)", ctxt);
-        if (format == NULL)
-            ret->backingStore.format = options->defaultFormat;
-        else
-            ret->backingStore.format = (options->formatFromString)(format);
-
-        if (ret->backingStore.format < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown volume format type %s"), format);
-            VIR_FREE(format);
+    if ((backingStore = virXPathString("string(./backingStore/path)", ctxt))) {
+        if (VIR_ALLOC(ret->target.backingStore) < 0)
             goto error;
+
+        ret->target.backingStore->path = backingStore;
+        backingStore = NULL;
+
+        if (options->formatFromString) {
+            char *format = virXPathString("string(./backingStore/format/@type)", ctxt);
+            if (format == NULL)
+                ret->target.backingStore->format = options->defaultFormat;
+            else
+                ret->target.backingStore->format = (options->formatFromString)(format);
+
+            if (ret->target.backingStore->format < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown volume format type %s"), format);
+                VIR_FREE(format);
+                goto error;
+            }
+            VIR_FREE(format);
         }
-        VIR_FREE(format);
+
+        if (VIR_ALLOC(ret->target.backingStore->perms) < 0)
+            goto error;
+        if (virStorageDefParsePerms(ctxt, ret->target.backingStore->perms,
+                                    "./backingStore/permissions",
+                                    DEFAULT_VOL_PERM_MODE) < 0)
+            goto error;
     }
 
     ret->target.compat = virXPathString("string(./target/compat)", ctxt);
@@ -1308,19 +1322,13 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
         VIR_FREE(nodes);
     }
 
-    if (VIR_ALLOC(ret->backingStore.perms) < 0)
-        goto error;
-    if (virStorageDefParsePerms(ctxt, ret->backingStore.perms,
-                                "./backingStore/permissions",
-                                DEFAULT_VOL_PERM_MODE) < 0)
-        goto error;
-
  cleanup:
     VIR_FREE(nodes);
     VIR_FREE(allocation);
     VIR_FREE(capacity);
     VIR_FREE(unit);
     VIR_FREE(type);
+    VIR_FREE(backingStore);
     return ret;
 
  error:
@@ -1544,9 +1552,10 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
                                      &def->target, "target") < 0)
         goto cleanup;
 
-    if (def->backingStore.path &&
+    if (def->target.backingStore &&
         virStorageVolTargetDefFormat(options, &buf,
-                                     &def->backingStore, "backingStore") < 0)
+                                     def->target.backingStore,
+                                     "backingStore") < 0)
         goto cleanup;
 
     virBufferAdjustIndent(&buf, -2);
