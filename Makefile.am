@@ -24,7 +24,7 @@ SUBDIRS = . gnulib/lib include src daemon tools docs gnulib/tests \
   examples/dominfo examples/domsuspend examples/apparmor \
   examples/xml/nwfilter examples/openauth examples/systemtap \
   tools/wireshark examples/dommigrate \
-  examples/lxcconvert
+  examples/lxcconvert examples/domtop
 
 ACLOCAL_AMFLAGS = -I m4
 

@@ -2755,6 +2755,7 @@ AC_CONFIG_FILES([\
         examples/domsuspend/Makefile \
         examples/dominfo/Makefile \
         examples/dommigrate/Makefile \
+        examples/domtop/Makefile \
         examples/openauth/Makefile \
         examples/hellolibvirt/Makefile \
         examples/systemtap/Makefile \
