@@ -10370,7 +10370,8 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
             goto cleanup;
         }
 
-        if ((fd = qemuOpenFile(driver, vm, path, O_RDONLY, NULL, NULL)) == -1)
+        if ((fd = qemuOpenFile(driver, vm, disk->src->path, O_RDONLY,
+                               NULL, NULL)) == -1)
             goto cleanup;
 
         if (fstat(fd, &sb) < 0) {
