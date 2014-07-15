@@ -15309,7 +15309,7 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     if (VIR_STRDUP(mirror->path, dest) < 0)
         goto endjob;
 
-    if (virStorageSourceInitChainElement(disk->mirror, disk->src, false) < 0)
+    if (virStorageSourceInitChainElement(mirror, disk->src, false) < 0)
         goto endjob;
 
     if (qemuDomainPrepareDiskChainElement(driver, vm, mirror,
