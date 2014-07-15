@@ -1465,7 +1465,8 @@ virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
         (ret = virStorageBackendUpdateVolTargetInfo(vol->target.backingStore,
                                                     updateCapacity,
                                                     withBlockVolFormat,
-                                                    VIR_STORAGE_VOL_OPEN_DEFAULT)) < 0)
+                                                    VIR_STORAGE_VOL_OPEN_DEFAULT |
+                                                    VIR_STORAGE_VOL_OPEN_NOERROR) < 0))
         return ret;
 
     return 0;
