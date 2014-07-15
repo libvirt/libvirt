@@ -105,9 +105,9 @@ static gboolean dissect_xdr_bytes(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, in
 static gboolean dissect_xdr_pointer(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf,
                                     vir_xdr_dissector_t dp);
 static gboolean dissect_xdr_vector(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf, gint ett,
-                                   int rhf, gchar *rtype, guint32 size, vir_xdr_dissector_t dp);
+                                   int rhf, const gchar *rtype, guint32 size, vir_xdr_dissector_t dp);
 static gboolean dissect_xdr_array(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf, gint ett,
-                                  int rhf, gchar *rtype, guint32 maxlen, vir_xdr_dissector_t dp);
+                                  int rhf, const gchar *rtype, guint32 maxlen, vir_xdr_dissector_t dp);
 
 # include "libvirt/protocol.h"
 

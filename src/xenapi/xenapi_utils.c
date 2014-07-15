@@ -49,6 +49,7 @@ xenSessionFree(xen_session *session)
             VIR_FREE(session->error_description[i]);
         VIR_FREE(session->error_description);
     }
+    /* The session_id member is type of 'const char *'. Sigh. */
     VIR_FREE(session->session_id);
     VIR_FREE(session);
 }

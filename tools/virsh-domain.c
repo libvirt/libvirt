@@ -10349,8 +10349,8 @@ vshPrepareDiskXML(xmlNodePtr disk_node,
                   int type)
 {
     xmlNodePtr cur = NULL;
-    const char *disk_type = NULL;
-    const char *device_type = NULL;
+    char *disk_type = NULL;
+    char *device_type = NULL;
     xmlNodePtr new_node = NULL;
     char *ret = NULL;
 

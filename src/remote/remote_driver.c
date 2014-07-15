@@ -582,7 +582,7 @@ doRemoteOpen(virConnectPtr conn,
         trans_tcp,
     } transport;
 #ifndef WIN32
-    const char *daemonPath = NULL;
+    char *daemonPath = NULL;
 #endif
 
     /* We handle *ALL* URIs here. The caller has rejected any

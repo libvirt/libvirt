@@ -105,7 +105,7 @@ dissect_xdr_string(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf,
     }
 }
 
-static gchar *
+static const gchar *
 format_xdr_bytes(guint8 *bytes, guint32 length)
 {
     gchar *buf;
@@ -206,7 +206,7 @@ dissect_xdr_iterable(tvbuff_t *tvb, proto_item *ti, XDR *xdrs, gint ett, int rhf
 
 static gboolean
 dissect_xdr_vector(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf, gint ett,
-                   int rhf, gchar *rtype, guint32 size, vir_xdr_dissector_t dissect)
+                   int rhf, const gchar *rtype, guint32 size, vir_xdr_dissector_t dissect)
 {
     goffset start;
     proto_item *ti;
@@ -219,7 +219,7 @@ dissect_xdr_vector(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf, gint ett,
 
 static gboolean
 dissect_xdr_array(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf, gint ett,
-                  int rhf, gchar *rtype, guint32 maxlen, vir_xdr_dissector_t dissect)
+                  int rhf, const gchar *rtype, guint32 maxlen, vir_xdr_dissector_t dissect)
 {
     goffset start;
     proto_item *ti;

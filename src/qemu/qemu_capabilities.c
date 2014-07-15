@@ -2652,7 +2652,7 @@ static int
 virQEMUCapsSaveCache(virQEMUCapsPtr qemuCaps, const char *filename)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    const char *xml = NULL;
+    char *xml = NULL;
     int ret = -1;
     size_t i;
 
