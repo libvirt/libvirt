@@ -2396,3 +2396,65 @@ void virUpdateSelfLastChanged(const char *path)
         selfLastChanged = sb.st_ctime;
     }
 }
+
+/**
+ * virGetListenFDs:
+ *
+ * Parse LISTEN_PID and LISTEN_FDS passed from caller.
+ *
+ * Returns number of passed FDs.
+ */
+unsigned int
+virGetListenFDs(void)
+{
+    const char *pidstr;
+    const char *fdstr;
+    size_t i = 0;
+    unsigned long long procid;
+    unsigned int nfds;
+
+    VIR_DEBUG("Setting up networking from caller");
+
+    if (!(pidstr = virGetEnvAllowSUID("LISTEN_PID"))) {
+        VIR_DEBUG("No LISTEN_PID from caller");
+        return 0;
+    }
+
+    if (virStrToLong_ull(pidstr, NULL, 10, &procid) < 0) {
+        VIR_DEBUG("Malformed LISTEN_PID from caller %s", pidstr);
+        return 0;
+    }
+
+    if ((pid_t)procid != getpid()) {
+        VIR_DEBUG("LISTEN_PID %s is not for us %llu",
+                  pidstr, (unsigned long long)getpid());
+        return 0;
+    }
+
+    if (!(fdstr = virGetEnvAllowSUID("LISTEN_FDS"))) {
+        VIR_DEBUG("No LISTEN_FDS from caller");
+        return 0;
+    }
+
+    if (virStrToLong_ui(fdstr, NULL, 10, &nfds) < 0) {
+        VIR_DEBUG("Malformed LISTEN_FDS from caller %s", fdstr);
+        return 0;
+    }
+
+    unsetenv("LISTEN_PID");
+    unsetenv("LISTEN_FDS");
+
+    VIR_DEBUG("Got %u file descriptors", nfds);
+
+    for (i = 0; i < nfds; i++) {
+        int fd = STDERR_FILENO + i + 1;
+
+        VIR_DEBUG("Disabling inheritance of passed FD %d", fd);
+
+        if (virSetInherit(fd, false) < 0) {
+            VIR_WARN("Couldn't disable inheritance of passed FD %d", fd);
+        }
+    }
+
+    return nfds;
+}

@@ -232,4 +232,6 @@ typedef enum {
 VIR_ENUM_DECL(virTristateBool)
 VIR_ENUM_DECL(virTristateSwitch)
 
+unsigned int virGetListenFDs(void);
+
 #endif /* __VIR_UTIL_H__ */

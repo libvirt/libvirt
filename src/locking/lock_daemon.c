@@ -600,50 +600,13 @@ static int
 virLockDaemonSetupNetworkingSystemD(virNetServerPtr srv)
 {
     virNetServerServicePtr svc;
-    const char *pidstr;
-    const char *fdstr;
-    unsigned long long procid;
     unsigned int nfds;
 
-    VIR_DEBUG("Setting up networking from systemd");
-
-    if (!(pidstr = virGetEnvAllowSUID("LISTEN_PID"))) {
-        VIR_DEBUG("No LISTEN_FDS from systemd");
+    if ((nfds = virGetListenFDs()) == 0)
         return 0;
-    }
-
-    if (virStrToLong_ull(pidstr, NULL, 10, &procid) < 0) {
-        VIR_DEBUG("Malformed LISTEN_PID from systemd %s", pidstr);
-        return 0;
-    }
-
-    if ((pid_t)procid != getpid()) {
-        VIR_DEBUG("LISTEN_PID %s is not for us %llu",
-                  pidstr, (unsigned long long)getpid());
-        return 0;
-    }
-
-    if (!(fdstr = virGetEnvAllowSUID("LISTEN_FDS"))) {
-        VIR_DEBUG("No LISTEN_FDS from systemd");
-        return 0;
-    }
-
-    if (virStrToLong_ui(fdstr, NULL, 10, &nfds) < 0) {
-        VIR_DEBUG("Malformed LISTEN_FDS from systemd %s", fdstr);
-        return 0;
-    }
-
-    if (nfds > 1) {
-        VIR_DEBUG("Too many (%d) file descriptors from systemd",
-                  nfds);
-        nfds = 1;
-    }
-
-    unsetenv("LISTEN_PID");
-    unsetenv("LISTEN_FDS");
-
-    if (nfds == 0)
-        return 0;
+    if (nfds > 1)
+        VIR_DEBUG("Too many (%d) file descriptors from systemd", nfds);
+    nfds = 1;
 
     /* Systemd passes FDs, starting immediately after stderr,
      * so the first FD we'll get is '3'. */
