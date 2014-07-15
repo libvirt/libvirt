@@ -96,16 +96,28 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
         goto cleanup;
 
     if (meta->backingStoreRaw) {
-        if (VIR_ALLOC(target->backingStore) < 0)
+        if (!(target->backingStore = virStorageSourceNewFromBacking(meta)))
             goto cleanup;
 
-        target->backingStore->path = meta->backingStoreRaw;
-        meta->backingStoreRaw = NULL;
         target->backingStore->format = backingStoreFormat;
 
+        /* XXX: Remote storage doesn't play nicely with volumes backed by
+         * remote storage. To avoid trouble, just fake the backing store is RAW
+         * and put the string from the metadata as the path of the target. */
+        if (!virStorageSourceIsLocalStorage(target->backingStore)) {
+            virStorageSourceFree(target->backingStore);
+
+            if (VIR_ALLOC(target->backingStore) < 0)
+                goto cleanup;
+
+            target->backingStore->type = VIR_STORAGE_TYPE_NETWORK;
+            target->backingStore->path = meta->backingStoreRaw;
+            meta->backingStoreRaw = NULL;
+            target->backingStore->format = VIR_STORAGE_FILE_RAW;
+        }
+
         if (target->backingStore->format == VIR_STORAGE_FILE_AUTO) {
-            if (!virStorageIsFile(target->backingStore->path) ||
-                (rc = virStorageFileProbeFormat(target->backingStore->path,
+            if ((rc = virStorageFileProbeFormat(target->backingStore->path,
                                                 -1, -1)) < 0) {
                 /* If the backing file is currently unavailable or is
                  * accessed via remote protocol only log an error, fake the
