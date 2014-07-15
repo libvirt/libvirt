@@ -44,13 +44,15 @@ void
 xenSessionFree(xen_session *session)
 {
     size_t i;
+    char *tmp;
     if (session->error_description != NULL) {
         for (i = 0; i < session->error_description_count; i++)
             VIR_FREE(session->error_description[i]);
         VIR_FREE(session->error_description);
     }
     /* The session_id member is type of 'const char *'. Sigh. */
-    VIR_FREE(session->session_id);
+    tmp = (char *)session->session_id;
+    VIR_FREE(tmp);
     VIR_FREE(session);
 }
 
