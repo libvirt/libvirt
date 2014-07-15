@@ -56,6 +56,7 @@
 #include "virstring.h"
 #include "locking/lock_manager.h"
 #include "viraccessmanager.h"
+#include "virutil.h"
 
 #ifdef WITH_DRIVER_MODULES
 # include "driver.h"
@@ -481,9 +482,17 @@ static int daemonSetupNetworking(virNetServerPtr srv,
     int unix_sock_ro_mask = 0;
     int unix_sock_rw_mask = 0;
 
+    unsigned int cur_fd = STDERR_FILENO + 1;
+    unsigned int nfds = virGetListenFDs();
+
     if (config->unix_sock_group) {
         if (virGetGroupID(config->unix_sock_group, &unix_sock_gid) < 0)
             return -1;
+    }
+
+    if (nfds && nfds > ((int)!!sock_path + (int)!!sock_path_ro)) {
+        VIR_ERROR(_("Too many (%u) FDs passed from caller"), nfds);
+        return -1;
     }
 
     if (virStrToLong_i(config->unix_sock_ro_perms, NULL, 8, &unix_sock_ro_mask) != 0) {
@@ -496,30 +505,30 @@ static int daemonSetupNetworking(virNetServerPtr srv,
         goto error;
     }
 
-    VIR_DEBUG("Registering unix socket %s", sock_path);
-    if (!(svc = virNetServerServiceNewUNIX(sock_path,
-                                           unix_sock_rw_mask,
-                                           unix_sock_gid,
-                                           config->auth_unix_rw,
+    if (!(svc = virNetServerServiceNewFDOrUNIX(sock_path,
+                                               unix_sock_rw_mask,
+                                               unix_sock_gid,
+                                               config->auth_unix_rw,
 #if WITH_GNUTLS
-                                           NULL,
+                                               NULL,
 #endif
-                                           false,
-                                           config->max_queued_clients,
-                                           config->max_client_requests)))
+                                               false,
+                                               config->max_queued_clients,
+                                               config->max_client_requests,
+                                               nfds, &cur_fd)))
         goto error;
     if (sock_path_ro) {
-        VIR_DEBUG("Registering unix socket %s", sock_path_ro);
-        if (!(svcRO = virNetServerServiceNewUNIX(sock_path_ro,
-                                                 unix_sock_ro_mask,
-                                                 unix_sock_gid,
-                                                 config->auth_unix_ro,
+        if (!(svcRO = virNetServerServiceNewFDOrUNIX(sock_path_ro,
+                                                     unix_sock_ro_mask,
+                                                     unix_sock_gid,
+                                                     config->auth_unix_ro,
 #if WITH_GNUTLS
-                                                 NULL,
+                                                     NULL,
 #endif
-                                                 true,
-                                                 config->max_queued_clients,
-                                                 config->max_client_requests)))
+                                                     true,
+                                                     config->max_queued_clients,
+                                                     config->max_client_requests,
+                                                     nfds, &cur_fd)))
             goto error;
     }
 
