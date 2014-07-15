@@ -3285,10 +3285,8 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
                                                     driver->xmlopt)))
             goto endjob;
 
-        if ((ret = libxlDomainAttachDeviceConfig(vmdef, dev)) < 0)
+        if (libxlDomainAttachDeviceConfig(vmdef, dev) < 0)
             goto endjob;
-    } else {
-        ret = 0;
     }
 
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
@@ -3299,7 +3297,7 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto endjob;
 
-        if ((ret = libxlDomainAttachDeviceLive(driver, priv, vm, dev)) < 0)
+        if (libxlDomainAttachDeviceLive(driver, priv, vm, dev) < 0)
             goto endjob;
 
         /*
@@ -3307,11 +3305,13 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
          * changed even if we attach the device failed.
          */
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
-            ret = -1;
+            goto endjob;
     }
 
+    ret = 0;
+
     /* Finally, if no error until here, we can save config. */
-    if (!ret && (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
+    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
         ret = virDomainSaveConfig(cfg->configDir, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
@@ -3396,10 +3396,8 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
                                                     driver->xmlopt)))
             goto endjob;
 
-        if ((ret = libxlDomainDetachDeviceConfig(vmdef, dev)) < 0)
+        if (libxlDomainDetachDeviceConfig(vmdef, dev) < 0)
             goto endjob;
-    } else {
-        ret = 0;
     }
 
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
@@ -3410,7 +3408,7 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto endjob;
 
-        if ((ret = libxlDomainDetachDeviceLive(driver, priv, vm, dev)) < 0)
+        if (libxlDomainDetachDeviceLive(driver, priv, vm, dev) < 0)
             goto endjob;
 
         /*
@@ -3418,11 +3416,13 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
          * changed even if we attach the device failed.
          */
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
-            ret = -1;
+            goto endjob;
     }
 
+    ret = 0;
+
     /* Finally, if no error until here, we can save config. */
-    if (!ret && (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
+    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
         ret = virDomainSaveConfig(cfg->configDir, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
