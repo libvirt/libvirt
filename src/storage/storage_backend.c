@@ -37,6 +37,9 @@
 #ifdef __linux__
 # include <sys/ioctl.h>
 # include <linux/fs.h>
+# ifndef FS_NOCOW_FL
+#  define FS_NOCOW_FL                     0x00800000 /* Do not cow file */
+# endif
 #endif
 
 #if WITH_SELINUX
@@ -453,6 +456,21 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
+    if (vol->target.nocow) {
+#ifdef __linux__
+        int attr;
+
+        /* Set NOCOW flag. This is an optimisation for btrfs.
+         * The FS_IOC_SETFLAGS ioctl return value will be ignored since any
+         * failure of this operation should not block the left work.
+         */
+        if (ioctl(fd, FS_IOC_GETFLAGS, &attr) == 0) {
+            attr |= FS_NOCOW_FL;
+            ioctl(fd, FS_IOC_SETFLAGS, &attr);
+        }
+#endif
+    }
+
     if ((ret = createRawFile(fd, vol, inputvol)) < 0)
         /* createRawFile already reported the exact error. */
         ret = -1;
@@ -718,6 +736,7 @@ virStorageBackendCreateQemuImgOpts(char **opts,
                                    bool preallocate,
                                    int format,
                                    const char *compat,
+                                   bool nocow,
                                    virBitmapPtr features)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -730,6 +749,8 @@ virStorageBackendCreateQemuImgOpts(char **opts,
         virBufferAddLit(&buf, "encryption=on,");
     if (preallocate)
         virBufferAddLit(&buf, "preallocation=metadata,");
+    if (nocow)
+        virBufferAddLit(&buf, "nocow=on,");
 
     if (compat)
         virBufferAsprintf(&buf, "compat=%s,", compat);
@@ -950,6 +971,7 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
                                                do_encryption, preallocate,
                                                vol->target.format,
                                                compat,
+                                               vol->target.nocow,
                                                vol->target.features) < 0) {
             virCommandFree(cmd);
             return NULL;

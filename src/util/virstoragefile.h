@@ -247,6 +247,7 @@ struct _virStorageSource {
                  * pool-specific enum for storage volumes */
     virBitmapPtr features;
     char *compat;
+    bool nocow;
 
     virStoragePermsPtr perms;
     virStorageTimestampsPtr timestamps;

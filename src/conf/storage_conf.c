@@ -1299,6 +1299,9 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
         virStringFreeList(version);
     }
 
+    if (virXPathNode("./target/nocow", ctxt))
+        ret->target.nocow = true;
+
     if (options->featureFromString && virXPathNode("./target/features", ctxt)) {
         if ((n = virXPathNodeSet("./target/features/*", ctxt, &nodes)) < 0)
             goto error;

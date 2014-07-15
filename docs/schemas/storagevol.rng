@@ -138,6 +138,11 @@
           <ref name='compat'/>
         </optional>
         <optional>
+          <element name='nocow'>
+            <empty/>
+          </element>
+        </optional>
+        <optional>
           <ref name='fileFormatFeatures'/>
         </optional>
       </interleave>
