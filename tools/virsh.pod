@@ -865,7 +865,10 @@ to a unique target name (<target dev='name'/>) or source file (<source
 file='name'/>) for one of the disk devices attached to I<domain> (see
 also B<domblklist> for listing these names).
 I<bandwidth> specifies copying bandwidth limit in MiB/s, although for
-qemu, it may be non-zero only for an online domain.
+qemu, it may be non-zero only for an online domain. Specifying a negative
+value is interpreted as an unsigned long long value or essentially
+unlimited. The hypervisor can choose whether to reject the value or
+convert it to the maximum value allowed.
 
 =item B<blockcopy> I<domain> I<path> I<dest> [I<bandwidth>] [I<--shallow>]
 [I<--reuse-external>] [I<--raw>] [I<--wait> [I<--async>] [I<--verbose>]]
@@ -908,7 +911,10 @@ as fast as possible, otherwise the command may continue to block a little
 while longer until the job has actually cancelled.
 
 I<path> specifies fully-qualified path of the disk.
-I<bandwidth> specifies copying bandwidth limit in MiB/s.
+I<bandwidth> specifies copying bandwidth limit in MiB/s. Specifying a negative
+value is interpreted as an unsigned long long value or essentially
+unlimited. The hypervisor can choose whether to reject the value or
+convert it to the maximum value allowed.
 
 =item B<blockpull> I<domain> I<path> [I<bandwidth>] [I<base>]
 [I<--wait> [I<--verbose>] [I<--timeout> B<seconds>] [I<--async>]]
@@ -939,7 +945,10 @@ I<path> specifies fully-qualified path of the disk; it corresponds
 to a unique target name (<target dev='name'/>) or source file (<source
 file='name'/>) for one of the disk devices attached to I<domain> (see
 also B<domblklist> for listing these names).
-I<bandwidth> specifies copying bandwidth limit in MiB/s.
+I<bandwidth> specifies copying bandwidth limit in MiB/s. Specifying a negative
+value is interpreted as an unsigned long long value or essentially
+unlimited. The hypervisor can choose whether to reject the value or
+convert it to the maximum value allowed.
 
 =item B<blkdeviotune> I<domain> I<device>
 [[I<--config>] [I<--live>] | [I<--current>]]
@@ -995,6 +1004,9 @@ commit job be pivoted over to the new image.
 If I<--info> is specified, the active job information on the specified
 disk will be printed.
 I<bandwidth> can be used to set bandwidth limit for the active job.
+Specifying a negative value is interpreted as an unsigned long long
+value or essentially unlimited. The hypervisor can choose whether to
+reject the value or convert it to the maximum value allowed.
 
 =item B<blockresize> I<domain> I<path> I<size>
 
@@ -1390,7 +1402,10 @@ obtained from domjobinfo.
 =item B<migrate-setspeed> I<domain> I<bandwidth>
 
 Set the maximum migration bandwidth (in MiB/s) for a domain which is being
-migrated to another host.
+migrated to another host. I<bandwidth> is interpreted as an unsigned long
+long value. Specifying a negative value results in an essentially unlimited
+value being provided to the hypervisor. The hypervisor can choose whether to
+reject the value or convert it to the maximum value allowed.
 
 =item B<migrate-getspeed> I<domain>
 
