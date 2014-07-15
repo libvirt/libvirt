@@ -55,6 +55,7 @@
 #include "viraccessapicheck.h"
 #include "viratomic.h"
 #include "virhostdev.h"
+#include "network/bridge_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -2674,10 +2675,8 @@ static int
 libxlDomainAttachHostDevice(libxlDriverPrivatePtr driver,
                             libxlDomainObjPrivatePtr priv,
                             virDomainObjPtr vm,
-                            virDomainDeviceDefPtr dev)
+                            virDomainHostdevDefPtr hostdev)
 {
-    virDomainHostdevDefPtr hostdev = dev->data.hostdev;
-
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("hostdev mode '%s' not supported"),
@@ -2756,6 +2755,60 @@ libxlDomainDetachDeviceDiskLive(libxlDomainObjPrivatePtr priv,
 }
 
 static int
+libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
+                           libxlDomainObjPrivatePtr priv,
+                           virDomainObjPtr vm,
+                           virDomainNetDefPtr net)
+{
+    int actualType;
+    libxl_device_nic nic;
+    int ret = -1;
+
+    /* preallocate new slot for device */
+    if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets + 1) < 0)
+        return -1;
+
+    /* If appropriate, grab a physical device from the configured
+     * network's pool of devices, or resolve bridge device name
+     * to the one defined in the network definition.
+     */
+    if (networkAllocateActualDevice(vm->def, net) < 0)
+        return -1;
+
+    actualType = virDomainNetGetActualType(net);
+
+    if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        /* This is really a "smart hostdev", so it should be attached
+         * as a hostdev (the hostdev code will reach over into the
+         * netdev-specific code as appropriate), then also added to
+         * the nets list (see out:) if successful.
+         */
+        ret = libxlDomainAttachHostDevice(driver, priv, vm,
+                                          virDomainNetGetActualHostdev(net));
+        goto out;
+    }
+
+    libxl_device_nic_init(&nic);
+    if (libxlMakeNic(vm->def, net, &nic) < 0)
+        goto cleanup;
+
+    if (libxl_device_nic_add(priv->ctx, vm->def->id, &nic, 0)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("libxenlight failed to attach network device"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    libxl_device_nic_dispose(&nic);
+ out:
+    if (!ret)
+        vm->def->nets[vm->def->nnets++] = net;
+    return ret;
+}
+
+static int
 libxlDomainAttachDeviceLive(libxlDriverPrivatePtr driver,
                             libxlDomainObjPrivatePtr priv,
                             virDomainObjPtr vm,
@@ -2770,8 +2823,16 @@ libxlDomainAttachDeviceLive(libxlDriverPrivatePtr driver,
                 dev->data.disk = NULL;
             break;
 
+        case VIR_DOMAIN_DEVICE_NET:
+            ret = libxlDomainAttachNetDevice(driver, priv, vm,
+                                             dev->data.net);
+            if (!ret)
+                dev->data.net = NULL;
+            break;
+
         case VIR_DOMAIN_DEVICE_HOSTDEV:
-            ret = libxlDomainAttachHostDevice(driver, priv, vm, dev);
+            ret = libxlDomainAttachHostDevice(driver, priv, vm,
+                                              dev->data.hostdev);
             if (!ret)
                 dev->data.hostdev = NULL;
             break;
@@ -2790,6 +2851,7 @@ static int
 libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
 {
     virDomainDiskDefPtr disk;
+    virDomainNetDefPtr net;
     virDomainHostdevDefPtr hostdev;
     virDomainHostdevDefPtr found;
 
@@ -2806,6 +2868,14 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
             /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
             dev->data.disk = NULL;
             break;
+
+        case VIR_DOMAIN_DEVICE_NET:
+            net = dev->data.net;
+            if (virDomainNetInsert(vmdef, net))
+                return -1;
+            dev->data.net = NULL;
+            break;
+
         case VIR_DOMAIN_DEVICE_HOSTDEV:
             hostdev = dev->data.hostdev;
 
@@ -2928,9 +2998,8 @@ static int
 libxlDomainDetachHostDevice(libxlDriverPrivatePtr driver,
                             libxlDomainObjPrivatePtr priv,
                             virDomainObjPtr vm,
-                            virDomainDeviceDefPtr dev)
+                            virDomainHostdevDefPtr hostdev)
 {
-    virDomainHostdevDefPtr hostdev = dev->data.hostdev;
     virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
 
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
@@ -2954,6 +3023,53 @@ libxlDomainDetachHostDevice(libxlDriverPrivatePtr driver,
 }
 
 static int
+libxlDomainDetachNetDevice(libxlDriverPrivatePtr driver,
+                           libxlDomainObjPrivatePtr priv,
+                           virDomainObjPtr vm,
+                           virDomainNetDefPtr net)
+{
+    int detachidx;
+    virDomainNetDefPtr detach = NULL;
+    libxl_device_nic nic;
+    char mac[VIR_MAC_STRING_BUFLEN];
+    int ret = -1;
+
+    if ((detachidx = virDomainNetFindIdx(vm->def, net)) < 0)
+        return -1;
+
+    detach = vm->def->nets[detachidx];
+
+    if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        /* This is really a "smart hostdev", so it should be attached as a
+         * hostdev, then also removed from nets list (see out:) if successful.
+         */
+        ret = libxlDomainDetachHostDevice(driver, priv, vm,
+                                          virDomainNetGetActualHostdev(detach));
+        goto out;
+    }
+
+    libxl_device_nic_init(&nic);
+    if (libxl_mac_to_device_nic(priv->ctx, vm->def->id,
+                                virMacAddrFormat(&detach->mac, mac), &nic))
+        goto cleanup;
+
+    if (libxl_device_nic_remove(priv->ctx, vm->def->id, &nic, 0)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("libxenlight failed to detach network device"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    libxl_device_nic_dispose(&nic);
+ out:
+    if (!ret)
+        virDomainNetRemove(vm->def, detachidx);
+    return ret;
+}
+
+static int
 libxlDomainDetachDeviceLive(libxlDriverPrivatePtr driver,
                             libxlDomainObjPrivatePtr priv,
                             virDomainObjPtr vm,
@@ -2966,8 +3082,14 @@ libxlDomainDetachDeviceLive(libxlDriverPrivatePtr driver,
             ret = libxlDomainDetachDeviceDiskLive(priv, vm, dev);
             break;
 
+        case VIR_DOMAIN_DEVICE_NET:
+            ret = libxlDomainDetachNetDevice(driver, priv, vm,
+                                             dev->data.net);
+            break;
+
         case VIR_DOMAIN_DEVICE_HOSTDEV:
-            ret = libxlDomainDetachHostDevice(driver, priv, vm, dev);
+            ret = libxlDomainDetachHostDevice(driver, priv, vm,
+                                              dev->data.hostdev);
             break;
 
         default:
@@ -2986,6 +3108,7 @@ libxlDomainDetachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
 {
     virDomainDiskDefPtr disk, detach;
     virDomainHostdevDefPtr hostdev, det_hostdev;
+    virDomainNetDefPtr net;
     int idx;
 
     switch (dev->type) {
@@ -2997,6 +3120,15 @@ libxlDomainDetachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
                 return -1;
             }
             virDomainDiskDefFree(detach);
+            break;
+
+        case VIR_DOMAIN_DEVICE_NET:
+            net = dev->data.net;
+            if ((idx = virDomainNetFindIdx(vmdef, net)) < 0)
+                return -1;
+
+            /* this is guaranteed to succeed */
+            virDomainNetDefFree(virDomainNetRemove(vmdef, idx));
             break;
 
         case VIR_DOMAIN_DEVICE_HOSTDEV: {
