@@ -537,10 +537,12 @@ BuildRequires: cyrus-sasl-devel
 %if %{with_polkit}
     %if 0%{?fedora} >= 20 || 0%{?rhel} >= 7
 BuildRequires: polkit-devel >= 0.112
-    %elif 0%{?fedora} >= 12 || 0%{?rhel} >= 6
-BuildRequires: polkit-devel >= 0.93
     %else
+        %if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
+BuildRequires: polkit-devel >= 0.93
+        %else
 BuildRequires: PolicyKit-devel >= 0.6
+        %endif
     %endif
 %endif
 %if %{with_storage_fs}
@@ -702,10 +704,12 @@ Requires: avahi-libs
     %if %{with_polkit}
         %if 0%{?fedora} >= 20 || 0%{?rhel} >= 7
 Requires: polkit >= 0.112
-        %elif 0%{?fedora} >= 12 || 0%{?rhel} >=6
-Requires: polkit >= 0.93
         %else
+            %if 0%{?fedora} >= 12 || 0%{?rhel} >=6
+Requires: polkit >= 0.93
+            %else
 Requires: PolicyKit >= 0.6
+            %endif
         %endif
     %endif
     %if %{with_cgconfig}
