@@ -336,24 +336,20 @@ create_profile(const char *profile, const char *profile_name,
     char *pcontent = NULL;
     char *replace_name = NULL;
     char *replace_files = NULL;
-    char *replace_driver = NULL;
     const char *template_name = "\nprofile LIBVIRT_TEMPLATE";
     const char *template_end = "\n}";
-    const char *template_driver = "libvirt-driver";
     int tlen, plen;
     int fd;
     int rc = -1;
-    const char *driver_name = "qemu";
-
-    if (virtType == VIR_DOMAIN_VIRT_LXC)
-        driver_name = "lxc";
 
     if (virFileExists(profile)) {
         vah_error(NULL, 0, _("profile exists"));
         goto end;
     }
 
-    if (virAsprintfQuiet(&template, "%s/TEMPLATE", APPARMOR_DIR "/libvirt") < 0) {
+
+    if (virAsprintfQuiet(&template, "%s/TEMPLATE.%s", APPARMOR_DIR "/libvirt",
+                         virDomainVirtTypeToString(virtType)) < 0) {
         vah_error(NULL, 0, _("template name exceeds maximum length"));
         goto end;
     }
@@ -378,11 +374,6 @@ create_profile(const char *profile, const char *profile_name,
         goto clean_tcontent;
     }
 
-    if (strstr(tcontent, template_driver) == NULL) {
-        vah_error(NULL, 0, _("no replacement string in template"));
-        goto clean_tcontent;
-    }
-
     /* '\nprofile <profile_name>\0' */
     if (virAsprintfQuiet(&replace_name, "\nprofile %s", profile_name) == -1) {
         vah_error(NULL, 0, _("could not allocate memory for profile name"));
@@ -397,15 +388,7 @@ create_profile(const char *profile, const char *profile_name,
         goto clean_tcontent;
     }
 
-    /* 'libvirt-<driver_name>\0' */
-    if (virAsprintfQuiet(&replace_driver, "libvirt-%s", driver_name) == -1) {
-        vah_error(NULL, 0, _("could not allocate memory for profile driver"));
-        VIR_FREE(replace_driver);
-        goto clean_tcontent;
-    }
-
-    plen = tlen + strlen(replace_name) - strlen(template_name) +
-           strlen(replace_driver) - strlen(template_driver) + 1;
+    plen = tlen + strlen(replace_name) - strlen(template_name) + 1;
 
     if (virtType != VIR_DOMAIN_VIRT_LXC)
         plen += strlen(replace_files) - strlen(template_end);
@@ -421,9 +404,6 @@ create_profile(const char *profile, const char *profile_name,
     }
     pcontent[0] = '\0';
     strcpy(pcontent, tcontent);
-
-    if (replace_string(pcontent, plen, template_driver, replace_driver) < 0)
-        goto clean_all;
 
     if (replace_string(pcontent, plen, template_name, replace_name) < 0)
         goto clean_all;
@@ -455,7 +435,6 @@ create_profile(const char *profile, const char *profile_name,
  clean_replace:
     VIR_FREE(replace_name);
     VIR_FREE(replace_files);
-    VIR_FREE(replace_driver);
  clean_tcontent:
     VIR_FREE(tcontent);
  end:

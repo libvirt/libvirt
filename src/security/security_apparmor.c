@@ -351,26 +351,37 @@ AppArmorSetSecuritySCSILabel(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
 static int
 AppArmorSecurityManagerProbe(const char *virtDriver ATTRIBUTE_UNUSED)
 {
-    char *template = NULL;
+    char *template_qemu = NULL;
+    char *template_lxc = NULL;
     int rc = SECURITY_DRIVER_DISABLE;
 
     if (use_apparmor() < 0)
         return rc;
 
     /* see if template file exists */
-    if (virAsprintf(&template, "%s/TEMPLATE",
+    if (virAsprintf(&template_qemu, "%s/TEMPLATE.qemu",
                                APPARMOR_DIR "/libvirt") == -1)
         return rc;
 
-    if (!virFileExists(template)) {
+    if (virAsprintf(&template_lxc, "%s/TEMPLATE.lxc",
+                               APPARMOR_DIR "/libvirt") == -1)
+        goto cleanup;
+
+    if (!virFileExists(template_qemu)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("template \'%s\' does not exist"), template);
+                       _("template \'%s\' does not exist"), template_qemu);
+        goto cleanup;
+    }
+    if (!virFileExists(template_lxc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("template \'%s\' does not exist"), template_lxc);
         goto cleanup;
     }
     rc = SECURITY_DRIVER_ENABLE;
 
  cleanup:
-    VIR_FREE(template);
+    VIR_FREE(template_qemu);
+    VIR_FREE(template_lxc);
 
     return rc;
 }

@@ -1,0 +1,15 @@
+#
+# This profile is for the domain whose UUID matches this file.
+#
+
+#include <tunables/global>
+
+profile LIBVIRT_TEMPLATE {
+  #include <abstractions/libvirt-lxc>
+
+  # Globally allows everything to run under this profile
+  # These can be narrowed depending on the container's use.
+  file,
+  capability,
+  network,
+}
