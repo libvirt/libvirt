@@ -374,6 +374,8 @@ mymain(void)
     DO_TEST_DIFFERENT("cpu-numa2");
 
     DO_TEST_DIFFERENT("numatune-auto-prefer");
+    DO_TEST_DIFFERENT("numatune-memnode");
+    DO_TEST("numatune-memnode-no-memory");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

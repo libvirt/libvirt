@@ -709,6 +709,8 @@
   ...
   &lt;numatune&gt;
     &lt;memory mode="strict" nodeset="1-4,^3"/&gt;
+    &lt;memnode cellid="0" mode="strict" nodeset="1"/&gt;
+    &lt;memnode cellid="2" mode="preferred" nodeset="2"/&gt;
   &lt;/numatune&gt;
   ...
 &lt;/domain&gt;
@@ -744,6 +746,19 @@
         be added implicitly.
 
         <span class='since'>Since 0.9.3</span>
+      </dd>
+      <dt><code>memnode</code></dt>
+      <dd>
+        Optional <code>memnode</code> elements can specify memory allocation
+        policies per each guest NUMA node.  For those nodes having no
+        corresponding <code>memnode</code> element, the default from
+        element <code>memory</code> will be used.  Attribute <code>cellid</code>
+        addresses guest NUMA node for which the settings are applied.
+        Attributes <code>mode</code> and <code>nodeset</code> have the same
+        meaning and syntax as in <code>memory</code> element.
+
+        This setting is not compatible with automatic placement.
+        <span class='since'>QEMU Since 1.2.7</span>
       </dd>
     </dl>
 

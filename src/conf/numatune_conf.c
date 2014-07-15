@@ -42,16 +42,139 @@ VIR_ENUM_IMPL(virDomainNumatunePlacement,
               "static",
               "auto");
 
+typedef struct _virDomainNumatuneNode virDomainNumatuneNode;
+typedef virDomainNumatuneNode *virDomainNumatuneNodePtr;
+
 struct _virDomainNumatune {
     struct {
+        bool specified;
         virBitmapPtr nodeset;
         virDomainNumatuneMemMode mode;
         virDomainNumatunePlacement placement;
     } memory;               /* pinning for all the memory */
 
+    struct _virDomainNumatuneNode {
+        virBitmapPtr nodeset;
+        virDomainNumatuneMemMode mode;
+    } *mem_nodes;           /* fine tuning per guest node */
+    size_t nmem_nodes;
+
     /* Future NUMA tuning related stuff should go here. */
 };
 
+
+static int
+virDomainNumatuneNodeParseXML(virDomainDefPtr def,
+                              xmlXPathContextPtr ctxt)
+{
+    char *tmp = NULL;
+    int n = 0;;
+    int ret = -1;
+    size_t i = 0;
+    xmlNodePtr *nodes = NULL;
+
+    if ((n = virXPathNodeSet("./numatune/memnode", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot extract memnode nodes"));
+        goto cleanup;
+    }
+
+    if (!n)
+        return 0;
+
+    if (def->numatune && def->numatune->memory.specified &&
+        def->numatune->memory.placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Per-node binding is not compatible with "
+                         "automatic NUMA placement."));
+        goto cleanup;
+    }
+
+    if (!def->cpu || !def->cpu->ncells) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Element 'memnode' is invalid without "
+                         "any guest NUMA cells"));
+        goto cleanup;
+    }
+
+    if (!def->numatune && VIR_ALLOC(def->numatune) < 0)
+        goto cleanup;
+
+    VIR_FREE(def->numatune->mem_nodes);
+    if (VIR_ALLOC_N(def->numatune->mem_nodes, def->cpu->ncells) < 0)
+        goto cleanup;
+
+    def->numatune->nmem_nodes = def->cpu->ncells;
+
+    for (i = 0; i < n; i++) {
+        int mode = 0;
+        unsigned int cellid = 0;
+        virDomainNumatuneNodePtr mem_node = NULL;
+        xmlNodePtr cur_node = nodes[i];
+
+        tmp = virXMLPropString(cur_node, "cellid");
+        if (!tmp) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Missing required cellid attribute "
+                             "in memnode element"));
+            goto cleanup;
+        }
+        if (virStrToLong_uip(tmp, NULL, 10, &cellid) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid cellid attribute in memnode element: %s"),
+                           tmp);
+            goto cleanup;
+        }
+        VIR_FREE(tmp);
+
+        if (cellid >= def->numatune->nmem_nodes) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Argument 'cellid' in memnode element must "
+                             "correspond to existing guest's NUMA cell"));
+            goto cleanup;
+        }
+
+        mem_node = &def->numatune->mem_nodes[cellid];
+
+        if (mem_node->nodeset) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Multiple memnode elements with cellid %u"),
+                           cellid);
+            goto cleanup;
+        }
+
+        tmp = virXMLPropString(cur_node, "mode");
+        if (!tmp) {
+            mem_node->mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
+        } else {
+            if ((mode = virDomainNumatuneMemModeTypeFromString(tmp)) < 0) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Invalid mode attribute in memnode element"));
+                goto cleanup;
+            }
+            VIR_FREE(tmp);
+            mem_node->mode = mode;
+        }
+
+        tmp = virXMLPropString(cur_node, "nodeset");
+        if (!tmp) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Missing required nodeset attribute "
+                             "in memnode element"));
+            goto cleanup;
+        }
+        if (virBitmapParse(tmp, 0, &mem_node->nodeset,
+                           VIR_DOMAIN_CPUMASK_LEN) < 0)
+            goto cleanup;
+        VIR_FREE(tmp);
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(nodes);
+    VIR_FREE(tmp);
+    return ret;
+}
 
 int
 virDomainNumatuneParseXML(virDomainDefPtr def,
@@ -82,8 +205,11 @@ virDomainNumatuneParseXML(virDomainDefPtr def,
         def->numatune = NULL;
     }
 
-    if (!node && def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
+    if (!node && def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
+        if (virDomainNumatuneNodeParseXML(def, ctxt) < 0)
+            goto cleanup;
         return 0;
+    }
 
     if (!node) {
         /* We know that def->placement_mode is "auto" if we're here */
@@ -125,10 +251,9 @@ virDomainNumatuneParseXML(virDomainDefPtr def,
     if (virDomainNumatuneSet(def, placement, mode, nodeset) < 0)
         goto cleanup;
 
-    if (!n) {
-        ret = 0;
+    if (virDomainNumatuneNodeParseXML(def, ctxt) < 0)
         goto cleanup;
-    }
+
 
     ret = 0;
  cleanup:
@@ -143,6 +268,7 @@ virDomainNumatuneFormatXML(virBufferPtr buf,
 {
     const char *tmp = NULL;
     char *nodeset = NULL;
+    size_t i = 0;
 
     if (!numatune)
         return 0;
@@ -150,17 +276,36 @@ virDomainNumatuneFormatXML(virBufferPtr buf,
     virBufferAddLit(buf, "<numatune>\n");
     virBufferAdjustIndent(buf, 2);
 
-    tmp = virDomainNumatuneMemModeTypeToString(numatune->memory.mode);
-    virBufferAsprintf(buf, "<memory mode='%s' ", tmp);
+    if (numatune->memory.specified) {
+        tmp = virDomainNumatuneMemModeTypeToString(numatune->memory.mode);
+        virBufferAsprintf(buf, "<memory mode='%s' ", tmp);
 
-    if (numatune->memory.placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC) {
-        if (!(nodeset = virBitmapFormat(numatune->memory.nodeset)))
+        if (numatune->memory.placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC) {
+            if (!(nodeset = virBitmapFormat(numatune->memory.nodeset)))
+                return -1;
+            virBufferAsprintf(buf, "nodeset='%s'/>\n", nodeset);
+            VIR_FREE(nodeset);
+        } else if (numatune->memory.placement) {
+            tmp = virDomainNumatunePlacementTypeToString(numatune->memory.placement);
+            virBufferAsprintf(buf, "placement='%s'/>\n", tmp);
+        }
+    }
+
+    for (i = 0; i < numatune->nmem_nodes; i++) {
+        virDomainNumatuneNodePtr mem_node = &numatune->mem_nodes[i];
+
+        if (!mem_node->nodeset)
+            continue;
+
+        if (!(nodeset = virBitmapFormat(mem_node->nodeset)))
             return -1;
-        virBufferAsprintf(buf, "nodeset='%s'/>\n", nodeset);
+
+        virBufferAsprintf(buf,
+                          "<memnode cellid='%zu' mode='%s' nodeset='%s'/>\n",
+                          i,
+                          virDomainNumatuneMemModeTypeToString(mem_node->mode),
+                          nodeset);
         VIR_FREE(nodeset);
-    } else if (numatune->memory.placement) {
-        tmp = virDomainNumatunePlacementTypeToString(numatune->memory.placement);
-        virBufferAsprintf(buf, "placement='%s'/>\n", tmp);
     }
 
     virBufferAdjustIndent(buf, -2);
@@ -171,10 +316,15 @@ virDomainNumatuneFormatXML(virBufferPtr buf,
 void
 virDomainNumatuneFree(virDomainNumatunePtr numatune)
 {
+    size_t i = 0;
+
     if (!numatune)
         return;
 
     virBitmapFree(numatune->memory.nodeset);
+    for (i = 0; i < numatune->nmem_nodes; i++)
+        virBitmapFree(numatune->mem_nodes[i].nodeset);
+    VIR_FREE(numatune->mem_nodes);
 
     VIR_FREE(numatune);
 }
@@ -182,7 +332,7 @@ virDomainNumatuneFree(virDomainNumatunePtr numatune)
 virDomainNumatuneMemMode
 virDomainNumatuneGetMode(virDomainNumatunePtr numatune)
 {
-    return numatune ? numatune->memory.mode : 0;
+    return (numatune && numatune->memory.specified) ? numatune->memory.mode : 0;
 }
 
 virBitmapPtr
@@ -318,6 +468,8 @@ virDomainNumatuneSet(virDomainDefPtr def,
     if (placement != -1)
         numatune->memory.placement = placement;
 
+    numatune->memory.specified = true;
+
     ret = 0;
  cleanup:
     return ret;
@@ -333,6 +485,12 @@ virDomainNumatuneEquals(virDomainNumatunePtr n1,
     if (!n1 || !n2)
         return false;
 
+    if (!n1->memory.specified && !n2->memory.specified)
+        return true;
+
+    if (!n1->memory.specified || !n2->memory.specified)
+        return false;
+
     if (n1->memory.mode != n2->memory.mode)
         return false;
 
@@ -346,6 +504,9 @@ bool
 virDomainNumatuneHasPlacementAuto(virDomainNumatunePtr numatune)
 {
     if (!numatune)
+        return false;
+
+    if (!numatune->memory.specified)
         return false;
 
     if (numatune->memory.placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO)

@@ -1197,6 +1197,8 @@ mymain(void)
     DO_TEST("cputune-zero-shares", QEMU_CAPS_NAME);
     DO_TEST("numatune-memory", NONE);
     DO_TEST("numatune-auto-nodeset-invalid", NONE);
+    DO_TEST_PARSE_ERROR("numatune-memnode-nocpu", NONE);
+    DO_TEST_PARSE_ERROR("numatune-memnodes-problematic", NONE);
     DO_TEST("numad", NONE);
     DO_TEST("numad-auto-vcpu-static-numatune", NONE);
     DO_TEST("numad-auto-memory-vcpu-cpuset", NONE);
