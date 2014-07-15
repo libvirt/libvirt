@@ -159,6 +159,7 @@ virNetServerServiceGetMaxRequests;
 virNetServerServiceGetPort;
 virNetServerServiceIsReadonly;
 virNetServerServiceNewFD;
+virNetServerServiceNewFDOrUNIX;
 virNetServerServiceNewPostExecRestart;
 virNetServerServiceNewTCP;
 virNetServerServiceNewUNIX;

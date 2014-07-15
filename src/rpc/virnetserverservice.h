@@ -1,7 +1,7 @@
 /*
  * virnetserverservice.h: generic network RPC server service
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2011, 2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -37,6 +37,18 @@ typedef int (*virNetServerServiceDispatchFunc)(virNetServerServicePtr svc,
                                                virNetSocketPtr sock,
                                                void *opaque);
 
+virNetServerServicePtr virNetServerServiceNewFDOrUNIX(const char *path,
+                                                      mode_t mask,
+                                                      gid_t grp,
+                                                      int auth,
+# if WITH_GNUTLS
+                                                      virNetTLSContextPtr tls,
+# endif
+                                                      bool readonly,
+                                                      size_t max_queued_clients,
+                                                      size_t nrequests_client_max,
+                                                      unsigned int nfds,
+                                                      unsigned int *cur_fd);
 virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
                                                  const char *service,
                                                  int auth,
