@@ -1,7 +1,7 @@
 /*
  * vircommand.h: Child command execution
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -59,6 +59,8 @@ enum {
 void virCommandPassFD(virCommandPtr cmd,
                       int fd,
                       unsigned int flags);
+
+void virCommandPassListenFDs(virCommandPtr cmd);
 
 void virCommandSetPidFile(virCommandPtr cmd,
                           const char *pidfile) ATTRIBUTE_NONNULL(2);
