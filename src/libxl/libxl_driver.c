@@ -2985,7 +2985,8 @@ static int
 libxlDomainDetachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
 {
     virDomainDiskDefPtr disk, detach;
-    int ret = -1;
+    virDomainHostdevDefPtr hostdev, det_hostdev;
+    int idx;
 
     switch (dev->type) {
         case VIR_DOMAIN_DEVICE_DISK:
@@ -2993,18 +2994,30 @@ libxlDomainDetachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
             if (!(detach = virDomainDiskRemoveByName(vmdef, disk->dst))) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("no target device %s"), disk->dst);
-                break;
+                return -1;
             }
             virDomainDiskDefFree(detach);
-            ret = 0;
             break;
+
+        case VIR_DOMAIN_DEVICE_HOSTDEV: {
+            hostdev = dev->data.hostdev;
+            if ((idx = virDomainHostdevFind(vmdef, hostdev, &det_hostdev)) < 0) {
+                virReportError(VIR_ERR_INVALID_ARG, "%s",
+                               _("device not present in domain configuration"));
+                return -1;
+            }
+            virDomainHostdevRemove(vmdef, idx);
+            virDomainHostdevDefFree(det_hostdev);
+            break;
+        }
+
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("persistent detach of device is not supported"));
-            break;
+            return -1;
     }
 
-    return ret;
+    return 0;
 }
 
 static int
