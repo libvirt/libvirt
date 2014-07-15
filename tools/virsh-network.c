@@ -1238,7 +1238,7 @@ cmdNetworkEvent(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, "%s", _("either --list or event type is required"));
         return false;
     }
-    if ((event = vshNetworkEventIdTypeFromString(eventName) < 0)) {
+    if ((event = vshNetworkEventIdTypeFromString(eventName)) < 0) {
         vshError(ctl, _("unknown event type %s"), eventName);
         return false;
     }

@@ -383,7 +383,7 @@ testTLSGenerateCert(struct testTLSCertReq *req,
      * If no 'ca' is set then we are self signing
      * the cert. This is done for the root CA certs
      */
-    if ((err = gnutls_x509_crt_sign(crt, ca ? ca : crt, privkey) < 0)) {
+    if ((err = gnutls_x509_crt_sign(crt, ca ? ca : crt, privkey)) < 0) {
         VIR_WARN("Failed to sign certificate %s", gnutls_strerror(err));
         abort();
     }
@@ -391,7 +391,7 @@ testTLSGenerateCert(struct testTLSCertReq *req,
     /*
      * Finally write the new cert out to disk
      */
-    if ((err = gnutls_x509_crt_export(crt, GNUTLS_X509_FMT_PEM, buffer, &size) < 0)) {
+    if ((err = gnutls_x509_crt_export(crt, GNUTLS_X509_FMT_PEM, buffer, &size)) < 0) {
         VIR_WARN("Failed to export certificate %s", gnutls_strerror(err));
         abort();
     }
