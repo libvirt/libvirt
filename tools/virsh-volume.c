@@ -787,13 +787,13 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
     unsigned long long offset = 0, length = 0;
     bool created = false;
 
-    if (vshCommandOptULongLongWrap(cmd, "offset", &offset) < 0) {
-        vshError(ctl, _("Unable to parse integer"));
+    if (vshCommandOptULongLong(cmd, "offset", &offset) < 0) {
+        vshError(ctl, _("Unable to parse offset value"));
         return false;
     }
 
     if (vshCommandOptULongLongWrap(cmd, "length", &length) < 0) {
-        vshError(ctl, _("Unable to parse integer"));
+        vshError(ctl, _("Unable to parse length value"));
         return false;
     }
 
