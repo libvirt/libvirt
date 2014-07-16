@@ -1,7 +1,7 @@
 /*
  * virnetsocket.c: generic network socket handling
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -121,7 +121,7 @@ VIR_ONCE_GLOBAL_INIT(virNetSocket)
 
 
 #ifndef WIN32
-static int virNetSocketForkDaemon(const char *binary)
+static int virNetSocketForkDaemon(const char *binary, int passfd)
 {
     int ret;
     virCommandPtr cmd = virCommandNewArgList(binary,
@@ -134,6 +134,10 @@ static int virNetSocketForkDaemon(const char *binary)
     virCommandAddEnvPassBlockSUID(cmd, "XDG_RUNTIME_DIR", NULL);
     virCommandClearCaps(cmd);
     virCommandDaemonize(cmd);
+    if (passfd) {
+        virCommandPassFD(cmd, passfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+        virCommandPassListenFDs(cmd);
+    }
     ret = virCommandRun(cmd, NULL);
     virCommandFree(cmd);
     return ret;
@@ -540,10 +544,10 @@ int virNetSocketNewConnectUNIX(const char *path,
                                const char *binary,
                                virNetSocketPtr *retsock)
 {
+    char *buf = NULL;
+    int fd, passfd;
     virSocketAddr localAddr;
     virSocketAddr remoteAddr;
-    int fd;
-    int retries = 0;
 
     memset(&localAddr, 0, sizeof(localAddr));
     memset(&remoteAddr, 0, sizeof(remoteAddr));
@@ -570,25 +574,65 @@ int virNetSocketNewConnectUNIX(const char *path,
         remoteAddr.data.un.sun_path[0] = '\0';
 
  retry:
-    if (connect(fd, &remoteAddr.data.sa, remoteAddr.len) < 0) {
-        if ((errno == ECONNREFUSED ||
-             errno == ENOENT) &&
-            spawnDaemon && retries < 20) {
-            VIR_DEBUG("Connection refused for %s, trying to spawn %s",
-                      path, binary);
-            if (retries == 0 &&
-                virNetSocketForkDaemon(binary) < 0)
-                goto error;
+    if (connect(fd, &remoteAddr.data.sa, remoteAddr.len) < 0 && !spawnDaemon) {
+        virReportSystemError(errno, _("Failed to connect socket to '%s'"),
+                             path);
+        goto error;
+    } else if (spawnDaemon) {
+        int status = 0;
+        pid_t pid = 0;
 
-            retries++;
-            usleep(1000 * 100 * retries);
+        if ((passfd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
+            virReportSystemError(errno, "%s", _("Failed to create socket"));
+            goto error;
+        }
+
+        /*
+         * We have to fork() here, because umask() is set
+         * per-process, chmod() is racy and fchmod() has undefined
+         * behaviour on sockets according to POSIX, so it doesn't
+         * work outside Linux.
+         */
+        if ((pid = virFork()) < 0)
+            goto error;
+
+        if (pid == 0) {
+            umask(0077);
+            if (bind(passfd, &remoteAddr.data.sa, remoteAddr.len) < 0)
+                _exit(EXIT_FAILURE);
+
+            _exit(EXIT_SUCCESS);
+        }
+
+        if (virProcessWait(pid, &status, false) < 0)
+            goto error;
+
+        if (status != EXIT_SUCCESS) {
+            /*
+             * OK, so the subprocces failed to bind() the socket.  This may mean
+             * that another daemon was starting at the same time and succeeded
+             * with its bind().  So we'll try connecting again, but this time
+             * without spawning the daemon.
+             */
+            spawnDaemon = false;
             goto retry;
         }
 
-        virReportSystemError(errno,
-                             _("Failed to connect socket to '%s'"),
-                             path);
-        goto error;
+        if (listen(passfd, 0) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Failed to listen on socket that's about "
+                                   "to be passed to the daemon"));
+            goto error;
+        }
+
+        if (connect(fd, &remoteAddr.data.sa, remoteAddr.len) < 0) {
+            virReportSystemError(errno, _("Failed to connect socket to '%s'"),
+                                 path);
+            goto error;
+        }
+
+        if (virNetSocketForkDaemon(binary, passfd) < 0)
+            goto error;
     }
 
     localAddr.len = sizeof(localAddr.data);
@@ -603,7 +647,10 @@ int virNetSocketNewConnectUNIX(const char *path,
     return 0;
 
  error:
+    VIR_FREE(buf);
     VIR_FORCE_CLOSE(fd);
+    if (spawnDaemon)
+        unlink(path);
     return -1;
 }
 #else
