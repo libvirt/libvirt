@@ -5,8 +5,8 @@
   <currentMemory unit='KiB'>24682468</currentMemory>
   <vcpu placement='static'>32</vcpu>
   <numatune>
-    <memory mode='strict' nodeset='0-7'/>
     <memnode cellid='0' mode='preferred' nodeset='3'/>
+    <memory mode='strict' nodeset='0-7'/>
     <memnode cellid='2' mode='strict' nodeset='1-2,5-7,^6'/>
   </numatune>
   <os>

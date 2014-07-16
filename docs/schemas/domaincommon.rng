@@ -759,38 +759,38 @@
   <!-- All the NUMA related tunables would go in the numatune -->
   <define name="numatune">
     <element name="numatune">
-      <optional>
-        <element name="memory">
-          <optional>
-            <attribute name="mode">
-              <choice>
-                <value>strict</value>
-                <value>preferred</value>
-                <value>interleave</value>
-              </choice>
-            </attribute>
-          </optional>
-          <choice>
-            <group>
-              <optional>
-                <attribute name='placement'>
-                  <value>static</value>
-                </attribute>
-              </optional>
-              <optional>
-                <attribute name='nodeset'>
-                  <ref name='cpuset'/>
-                </attribute>
-              </optional>
-            </group>
-            <attribute name='placement'>
-              <value>auto</value>
-            </attribute>
-              </choice>
-        </element>
-      </optional>
-      <zeroOrMore>
-        <interleave>
+      <interleave>
+        <optional>
+          <element name="memory">
+            <optional>
+              <attribute name="mode">
+                <choice>
+                  <value>strict</value>
+                  <value>preferred</value>
+                  <value>interleave</value>
+                </choice>
+              </attribute>
+            </optional>
+            <choice>
+              <group>
+                <optional>
+                  <attribute name='placement'>
+                    <value>static</value>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name='nodeset'>
+                    <ref name='cpuset'/>
+                  </attribute>
+                </optional>
+              </group>
+              <attribute name='placement'>
+                <value>auto</value>
+              </attribute>
+            </choice>
+          </element>
+        </optional>
+        <zeroOrMore>
           <element name="memnode">
             <attribute name="cellid">
               <ref name="unsignedInt"/>
@@ -806,8 +806,8 @@
               <ref name='cpuset'/>
             </attribute>
           </element>
-        </interleave>
-      </zeroOrMore>
+        </zeroOrMore>
+      </interleave>
     </element>
   </define>
 
