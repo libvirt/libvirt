@@ -133,6 +133,7 @@ virNetServerServiceNewFDOrUNIX(const char *path,
                                         tls,
 #endif
                                         readonly,
+                                        max_queued_clients,
                                         nrequests_client_max);
     }
 }
@@ -265,6 +266,7 @@ virNetServerServicePtr virNetServerServiceNewFD(int fd,
                                                 virNetTLSContextPtr tls,
 #endif
                                                 bool readonly,
+                                                size_t max_queued_clients,
                                                 size_t nrequests_client_max)
 {
     virNetServerServicePtr svc;
@@ -292,6 +294,9 @@ virNetServerServicePtr virNetServerServiceNewFD(int fd,
         goto error;
 
     for (i = 0; i < svc->nsocks; i++) {
+        if (virNetSocketListen(svc->socks[i], max_queued_clients) < 0)
+            goto error;
+
         /* IO callback is initially disabled, until we're ready
          * to deal with incoming clients */
         if (virNetSocketAddIOCallback(svc->socks[i],

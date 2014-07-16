@@ -614,7 +614,7 @@ virLockDaemonSetupNetworkingSystemD(virNetServerPtr srv)
 #if WITH_GNUTLS
                                          NULL,
 #endif
-                                         false, 1)))
+                                         false, 0, 1)))
         return -1;
 
     if (virNetServerAddService(srv, svc, NULL) < 0) {

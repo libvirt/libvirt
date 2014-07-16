@@ -74,6 +74,7 @@ virNetServerServicePtr virNetServerServiceNewFD(int fd,
                                                 virNetTLSContextPtr tls,
 # endif
                                                 bool readonly,
+                                                size_t max_queued_clients,
                                                 size_t nrequests_client_max);
 
 virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr object);
