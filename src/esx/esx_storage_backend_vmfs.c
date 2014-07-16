@@ -488,6 +488,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
         if (VIR_ALLOC_N(def.source.hosts, 1) < 0)
             goto cleanup;
         def.type = VIR_STORAGE_POOL_NETFS;
+        def.source.nhost = 1;
         def.source.hosts[0].name = nasInfo->nas->remoteHost;
         def.source.dir = nasInfo->nas->remotePath;
 
