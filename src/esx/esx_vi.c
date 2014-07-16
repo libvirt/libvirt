@@ -4556,12 +4556,14 @@ esxVI_ProductVersionToDefaultVirtualHWVersion(esxVI_ProductVersion productVersio
     /*
      * virtualHW.version compatibility matrix:
      *
-     *              4 7 8   API
-     *   ESX 3.5    +       2.5
-     *   ESX 4.0    + +     4.0
-     *   ESX 4.1    + +     4.1
-     *   ESX 5.0    + + +   5.0
-     *   GSX 2.0    + +     2.5
+     *              4 7 8 9 10   API
+     *   ESX 3.5    +            2.5
+     *   ESX 4.0    + +          4.0
+     *   ESX 4.1    + +          4.1
+     *   ESX 5.0    + + +        5.0
+     *   ESX 5.1    + + + +      5.1
+     *   ESX 5.5    + + + + +    5.5
+     *   GSX 2.0    + +          2.5
      */
     switch (productVersion) {
       case esxVI_ProductVersion_ESX35:
