@@ -790,21 +790,23 @@
         </element>
       </optional>
       <zeroOrMore>
-        <element name="memnode">
-          <attribute name="cellid">
-            <ref name="unsignedInt"/>
-          </attribute>
-          <attribute name="mode">
-            <choice>
-              <value>strict</value>
-              <value>preferred</value>
-              <value>interleave</value>
-            </choice>
-          </attribute>
-          <attribute name='nodeset'>
-            <ref name='cpuset'/>
-          </attribute>
-        </element>
+        <interleave>
+          <element name="memnode">
+            <attribute name="cellid">
+              <ref name="unsignedInt"/>
+            </attribute>
+            <attribute name="mode">
+              <choice>
+                <value>strict</value>
+                <value>preferred</value>
+                <value>interleave</value>
+              </choice>
+            </attribute>
+            <attribute name='nodeset'>
+              <ref name='cpuset'/>
+            </attribute>
+          </element>
+        </interleave>
       </zeroOrMore>
     </element>
   </define>
