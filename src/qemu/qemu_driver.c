@@ -16900,15 +16900,20 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
     virQEMUCapsPtr qemuCaps = NULL;
     int virttype; /* virDomainVirtType */
     virDomainCapsPtr domCaps = NULL;
-    int arch = VIR_ARCH_NONE; /* virArch */
+    int arch = virArchFromHost(); /* virArch */
 
     virCheckFlags(0, ret);
-    virCheckNonNullArgReturn(virttype_str, ret);
 
     if (virConnectGetDomainCapabilitiesEnsureACL(conn) < 0)
         return ret;
 
-    if ((virttype = virDomainVirtTypeFromString(virttype_str)) < 0) {
+    if (qemuHostdevHostSupportsPassthroughLegacy())
+        virttype = VIR_DOMAIN_VIRT_KVM;
+    else
+        virttype = VIR_DOMAIN_VIRT_QEMU;
+
+    if (virttype_str &&
+        (virttype = virDomainVirtTypeFromString(virttype_str)) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unknown virttype: %s"),
                        virttype_str);
@@ -16931,9 +16936,6 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
 
         arch_from_caps = virQEMUCapsGetArch(qemuCaps);
 
-        if (arch == VIR_ARCH_NONE)
-            arch = arch_from_caps;
-
         if (arch_from_caps != arch) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("architecture from emulator '%s' doesn't "
@@ -16942,21 +16944,12 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
                            virArchToString(arch));
             goto cleanup;
         }
-    } else if (arch_str) {
+    } else {
         if (!(qemuCaps = virQEMUCapsCacheLookupByArch(driver->qemuCapsCache,
                                                       arch)))
             goto cleanup;
 
-        if (!emulatorbin)
-            emulatorbin = virQEMUCapsGetBinary(qemuCaps);
-        /* Deliberately not checking if provided @emulatorbin matches @arch,
-         * since if @emulatorbin was specified the match has been checked a few
-         * lines above. */
-    } else {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("at least one of emulatorbin or "
-                         "architecture fields must be present"));
-        goto cleanup;
+        emulatorbin = virQEMUCapsGetBinary(qemuCaps);
     }
 
     if (machine) {
