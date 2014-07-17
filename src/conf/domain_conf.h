@@ -67,9 +67,6 @@ typedef virDomainFSDef *virDomainFSDefPtr;
 typedef struct _virDomainNetDef virDomainNetDef;
 typedef virDomainNetDef *virDomainNetDefPtr;
 
-typedef struct _virDomainNumatune virDomainNumatune;
-typedef virDomainNumatune *virDomainNumatunePtr;
-
 typedef struct _virDomainInputDef virDomainInputDef;
 typedef virDomainInputDef *virDomainInputDefPtr;
 
@@ -1854,8 +1851,6 @@ struct _virDomainResourceDef {
  * NB: if adding to this struct, virDomainDefCheckABIStability
  * may well need an update
  */
-typedef struct _virDomainDef virDomainDef;
-typedef virDomainDef *virDomainDefPtr;
 struct _virDomainDef {
     int virtType;
     int id;
