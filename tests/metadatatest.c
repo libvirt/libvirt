@@ -167,6 +167,10 @@ verifyMetadata(virDomainPtr dom,
 struct metadataTest {
     virConnectPtr conn;
     virDomainPtr dom;
+
+    const char *data;
+    int type;
+    bool fail;
 };
 
 
@@ -216,6 +220,52 @@ testEraseMetadata(const void *data)
 }
 
 static int
+testTextMetadata(const void *data)
+{
+    const struct metadataTest *test = data;
+    char *actual = NULL;
+    int ret = -1;
+
+    if (virDomainSetMetadata(test->dom, test->type, test->data, NULL, NULL, 0) < 0) {
+        if (test->fail)
+            return 0;
+        return -1;
+    }
+
+    actual = virDomainGetMetadata(test->dom, test->type, NULL, 0);
+
+    if (STRNEQ_NULLABLE(test->data, actual)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "expected metadata doesn't match actual: "
+                       "expected:'%s'\ngot: '%s'",
+                       NULLSTR(test->data), NULLSTR(actual));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(actual);
+
+    return ret;
+}
+
+#define TEST_TEXT_METADATA(INDEX, TYPE, DATA, FAIL)                         \
+    do {                                                                    \
+        test.type = VIR_DOMAIN_METADATA_ ## TYPE;                           \
+        test.data = DATA;                                                   \
+        test.fail = FAIL;                                                   \
+                                                                            \
+        if (virtTestRun("text metadata: " #TYPE " " INDEX " ",              \
+                        testTextMetadata, &test) < 0)                       \
+            ret = EXIT_FAILURE;                                             \
+    } while (0)
+
+#define TEST_TITLE(INDEX, DATA) TEST_TEXT_METADATA(INDEX, TITLE, DATA, false)
+#define TEST_TITLE_FAIL(INDEX, DATA) TEST_TEXT_METADATA(INDEX, TITLE, DATA, true)
+#define TEST_DESCR(INDEX, DATA) TEST_TEXT_METADATA(INDEX, DESCRIPTION, DATA, false)
+
+static int
 mymain(void)
 {
     struct metadataTest test;
@@ -237,6 +287,20 @@ mymain(void)
         ret = EXIT_FAILURE;
     if (virtTestRun("Erase metadata ", testEraseMetadata, &test) < 0)
         ret = EXIT_FAILURE;
+
+    TEST_TITLE("1", "qwert");
+    TEST_TITLE("2", NULL);
+    TEST_TITLE("3", "blah");
+    TEST_TITLE_FAIL("4", "qwe\nrt");
+    TEST_TITLE("5", "");
+    TEST_TITLE_FAIL("6", "qwert\n");
+    TEST_TITLE_FAIL("7", "\n");
+
+    TEST_DESCR("1", "qwert\nqwert");
+    TEST_DESCR("2", NULL);
+    TEST_DESCR("3", "qwert");
+    TEST_DESCR("4", "\n");
+    TEST_DESCR("5", "");
 
     virDomainFree(test.dom);
     virConnectClose(test.conn);
