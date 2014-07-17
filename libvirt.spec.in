@@ -54,21 +54,37 @@
 %define with_vbox          0%{!?_without_vbox:%{server_drivers}}
 
 %define with_qemu_tcg      %{with_qemu}
-# Change if we ever provide qemu-kvm binaries on non-x86 hosts
-%if 0%{?fedora} >= 18
-    %if 0%{?fedora} >= 20
-        %define qemu_kvm_arches    %{ix86} x86_64 ppc64 s390x %{arm}
-    %else
-        %define qemu_kvm_arches    %{ix86} x86_64 ppc64 s390x
+
+%define qemu_kvm_arches %{ix86} x86_64
+
+%if 0%{?fedora}
+    %if 0%{?fedora} < 16
+        # Fedora doesn't have any QEMU on ppc64 until FC16 - only ppc
+        %ifarch ppc64
+            %define with_qemu_tcg 0
+        %endif
     %endif
-%else
-    %define qemu_kvm_arches    %{ix86} x86_64
+    %if 0%{?fedora} >= 18
+        %define qemu_kvm_arches %{ix86} x86_64 ppc64 s390x
+    %endif
+    %if 0%{?fedora} >= 20
+        %define qemu_kvm_arches %{ix86} x86_64 ppc64 s390x %{arm}
+    %endif
+%endif
+
+%if 0%{?rhel}
+    %define with_qemu_tcg 0
+    %define qemu_kvm_arches x86_64
 %endif
 
 %ifarch %{qemu_kvm_arches}
     %define with_qemu_kvm      %{with_qemu}
 %else
     %define with_qemu_kvm      0
+%endif
+
+%if ! %{with_qemu_tcg} && ! %{with_qemu_kvm}
+    %define with_qemu 0
 %endif
 
 # Then the hypervisor drivers that run outside libvirtd, in libvirt.so
@@ -191,32 +207,14 @@
     %define with_firewalld 1
 %endif
 
-# RHEL-5 has restricted QEMU to x86_64 only and is too old for LXC
+# RHEL-5 is too old for LXC
 %if 0%{?rhel} == 5
-    %define with_qemu_tcg 0
-    %ifnarch x86_64
-        %define with_qemu 0
-        %define with_qemu_kvm 0
-    %endif
     %define with_lxc 0
 %endif
 
-# RHEL-6 has restricted QEMU to x86_64 only, stopped including Xen
-# on all archs. Other archs all have LXC available though
+# RHEL-6 stopped including Xen on all archs.
 %if 0%{?rhel} >= 6
-    %define with_qemu_tcg 0
-    %ifnarch x86_64
-        %define with_qemu 0
-        %define with_qemu_kvm 0
-    %endif
     %define with_xen 0
-%endif
-
-# Fedora doesn't have any QEMU on ppc64 until FC16 - only ppc
-%if 0%{?fedora} && 0%{?fedora} < 16
-    %ifarch ppc64
-        %define with_qemu 0
-    %endif
 %endif
 
 # Fedora doesn't have new enough Xen for libxl until F18
