@@ -63,7 +63,7 @@ struct _virStorageVolDef {
     char *key;
     int type; /* virStorageVolType */
 
-    unsigned int building;
+    bool building;
     unsigned int in_use;
 
     virStorageVolSource source;

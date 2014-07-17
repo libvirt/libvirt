@@ -1691,7 +1691,7 @@ storageVolCreateXML(virStoragePoolPtr obj,
 
         /* Drop the pool lock during volume allocation */
         pool->asyncjobs++;
-        voldef->building = 1;
+        voldef->building = true;
         virStoragePoolObjUnlock(pool);
 
         buildret = backend->buildVol(obj->conn, pool, buildvoldef, flags);
@@ -1700,7 +1700,7 @@ storageVolCreateXML(virStoragePoolPtr obj,
         virStoragePoolObjLock(pool);
         storageDriverUnlock(driver);
 
-        voldef->building = 0;
+        voldef->building = false;
         pool->asyncjobs--;
 
         if (buildret < 0) {
@@ -1858,7 +1858,7 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
 
     /* Drop the pool lock during volume allocation */
     pool->asyncjobs++;
-    newvol->building = 1;
+    newvol->building = true;
     origvol->in_use++;
     virStoragePoolObjUnlock(pool);
 
@@ -1876,7 +1876,7 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
     storageDriverUnlock(driver);
 
     origvol->in_use--;
-    newvol->building = 0;
+    newvol->building = false;
     allocation = newvol->target.allocation;
     pool->asyncjobs--;
 
