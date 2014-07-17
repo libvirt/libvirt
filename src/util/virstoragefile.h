@@ -248,6 +248,7 @@ struct _virStorageSource {
     virBitmapPtr features;
     char *compat;
     bool nocow;
+    bool sparse;
 
     virStoragePermsPtr perms;
     virStorageTimestampsPtr timestamps;
