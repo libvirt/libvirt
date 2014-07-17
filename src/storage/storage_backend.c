@@ -462,11 +462,16 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
 
         /* Set NOCOW flag. This is an optimisation for btrfs.
          * The FS_IOC_SETFLAGS ioctl return value will be ignored since any
-         * failure of this operation should not block the left work.
+         * failure of this operation should not block the volume creation.
          */
-        if (ioctl(fd, FS_IOC_GETFLAGS, &attr) == 0) {
+        if (ioctl(fd, FS_IOC_GETFLAGS, &attr) < 0) {
+            virReportSystemError(errno, "%s", _("Failed to get fs flags"));
+        } else {
             attr |= FS_NOCOW_FL;
-            ioctl(fd, FS_IOC_SETFLAGS, &attr);
+            if (ioctl(fd, FS_IOC_SETFLAGS, &attr) < 0) {
+                virReportSystemError(errno, "%s",
+                                     _("Failed to set NOCOW flag"));
+            }
         }
 #endif
     }
