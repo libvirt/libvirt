@@ -12434,10 +12434,7 @@ qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
 static int
 qemuDomainSnapshotPrepareDiskExternalBackingActive(virDomainDiskDefPtr disk)
 {
-    int actualType = virStorageSourceGetActualType(disk->src);
-
-    if (actualType == VIR_STORAGE_TYPE_BLOCK &&
-        disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("external active snapshots are not supported on scsi "
                          "passthrough devices"));
