@@ -147,17 +147,62 @@ VIR_ENUM_IMPL(virDomainFeature, VIR_DOMAIN_FEATURE_LAST,
               "viridian",
               "privnet",
               "hyperv",
-              "pvspinlock")
+              "pvspinlock",
+              "capabilities")
 
 VIR_ENUM_IMPL(virDomainFeatureState, VIR_DOMAIN_FEATURE_STATE_LAST,
               "default",
               "on",
               "off")
 
+VIR_ENUM_IMPL(virDomainCapabilitiesPolicy, VIR_DOMAIN_CAPABILITIES_POLICY_LAST,
+              "default",
+              "allow",
+              "deny")
+
 VIR_ENUM_IMPL(virDomainHyperv, VIR_DOMAIN_HYPERV_LAST,
               "relaxed",
               "vapic",
               "spinlocks")
+
+VIR_ENUM_IMPL(virDomainCapsFeature, VIR_DOMAIN_CAPS_FEATURE_LAST,
+              "audit_control",
+              "audit_write",
+              "block_suspend",
+              "chown",
+              "dac_override",
+              "dac_read_search",
+              "fowner",
+              "fsetid",
+              "ipc_lock",
+              "ipc_owner",
+              "kill",
+              "lease",
+              "linux_immutable",
+              "mac_admin",
+              "mac_override",
+              "mknod",
+              "net_admin",
+              "net_bind_service",
+              "net_broadcast",
+              "net_raw",
+              "setgid",
+              "setfcap",
+              "setpcap",
+              "setuid",
+              "sys_admin",
+              "sys_boot",
+              "sys_chroot",
+              "sys_module",
+              "sys_nice",
+              "sys_pacct",
+              "sys_ptrace",
+              "sys_rawio",
+              "sys_resource",
+              "sys_time",
+              "sys_tty_config",
+              "syslog",
+              "wake_alarm")
 
 VIR_ENUM_IMPL(virDomainLifecycle, VIR_DOMAIN_LIFECYCLE_LAST,
               "destroy",
@@ -11863,6 +11908,22 @@ virDomainDefParseXML(xmlDocPtr xml,
             def->features[val] = VIR_DOMAIN_FEATURE_STATE_ON;
             break;
 
+        case VIR_DOMAIN_FEATURE_CAPABILITIES:
+            node = ctxt->node;
+            ctxt->node = nodes[i];
+            if ((tmp = virXPathString("string(./@policy)", ctxt))) {
+                if ((def->features[val] = virDomainCapabilitiesPolicyTypeFromString(tmp)) == -1) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown state attribute '%s' of feature '%s'"),
+                                   tmp, virDomainFeatureTypeToString(val));
+                    goto error;
+                }
+                VIR_FREE(tmp);
+            } else {
+                def->features[val] = VIR_DOMAIN_FEATURE_STATE_DEFAULT;
+            }
+            ctxt->node = node;
+            break;
         case VIR_DOMAIN_FEATURE_PVSPINLOCK:
             node = ctxt->node;
             ctxt->node = nodes[i];
@@ -11970,6 +12031,37 @@ virDomainDefParseXML(xmlDocPtr xml,
         VIR_FREE(nodes);
         ctxt->node = node;
     }
+
+    if ((n = virXPathNodeSet("./features/capabilities/*", ctxt, &nodes)) < 0)
+        goto error;
+
+    for (i = 0; i < n; i++) {
+        int val = virDomainCapsFeatureTypeFromString((const char *)nodes[i]->name);
+        if (val < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unexpected capability feature '%s'"), nodes[i]->name);
+            goto error;
+        }
+
+        if (val >= 0 && val < VIR_DOMAIN_CAPS_FEATURE_LAST) {
+            node = ctxt->node;
+            ctxt->node = nodes[i];
+
+            if ((tmp = virXPathString("string(./@state)", ctxt))) {
+                if ((def->caps_features[val] = virDomainFeatureStateTypeFromString(tmp)) == -1) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown state attribute '%s' of feature capability '%s'"),
+                                   tmp, virDomainFeatureTypeToString(val));
+                    goto error;
+                }
+                VIR_FREE(tmp);
+            } else {
+                def->caps_features[val] = VIR_DOMAIN_FEATURE_STATE_ON;
+            }
+            ctxt->node = node;
+        }
+    }
+    VIR_FREE(nodes);
 
     if (virDomainEventActionParseXML(ctxt, "on_reboot",
                                      "string(./on_reboot[1])",
@@ -17175,6 +17267,19 @@ verify(((VIR_DOMAIN_XML_INTERNAL_STATUS |
          VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST)
         & DUMPXML_FLAGS) == 0);
 
+static bool
+virDomainDefHasCapabilitiesFeatures(virDomainDefPtr def)
+{
+    size_t i;
+
+    for (i = 0; i < VIR_DOMAIN_CAPS_FEATURE_LAST; i++) {
+        if (def->caps_features[i] != VIR_DOMAIN_FEATURE_STATE_DEFAULT)
+            return true;
+    }
+
+    return false;
+}
+
 /* This internal version can accept VIR_DOMAIN_XML_INTERNAL_*,
  * whereas the public version cannot.  Also, it appends to an existing
  * buffer (possibly with auto-indent), rather than flattening to string.
@@ -17670,6 +17775,25 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 }
                 virBufferAdjustIndent(buf, -2);
                 virBufferAddLit(buf, "</hyperv>\n");
+                break;
+
+            case VIR_DOMAIN_FEATURE_CAPABILITIES:
+                if (def->features[i] == VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT &&
+                        !virDomainDefHasCapabilitiesFeatures(def))
+                    break;
+
+                virBufferAsprintf(buf, "<capabilities policy='%s'>\n",
+                                  virDomainCapabilitiesPolicyTypeToString(def->features[i]));
+                virBufferAdjustIndent(buf, 2);
+                for (j = 0; j < VIR_DOMAIN_CAPS_FEATURE_LAST; j++) {
+                    if (def->caps_features[j] != VIR_DOMAIN_FEATURE_STATE_DEFAULT)
+                        virBufferAsprintf(buf, "<%s state='%s'/>\n",
+                                          virDomainCapsFeatureTypeToString(j),
+                                          virDomainFeatureStateTypeToString(
+                                              def->caps_features[j]));
+                }
+                virBufferAdjustIndent(buf, -2);
+                virBufferAddLit(buf, "</capabilities>\n");
                 break;
 
             case VIR_DOMAIN_FEATURE_LAST:

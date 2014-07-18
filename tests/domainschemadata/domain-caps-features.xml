@@ -1,0 +1,28 @@
+<domain type='lxc'>
+    <name>demo</name>
+    <uuid>8369f1ac-7e46-e869-4ca5-759d51478066</uuid>
+    <os>
+        <type>exe</type>
+        <init>/sh</init>
+    </os>
+    <features>
+        <capabilities policy="deny">
+            <mknod state="on"/>
+        </capabilities>
+    </features>
+    <resource>
+      <partition>/virtualmachines</partition>
+    </resource>
+    <memory unit='KiB'>500000</memory>
+    <devices>
+        <filesystem type='mount'>
+            <source dir='/root/container'/>
+            <target dir='/'/>
+        </filesystem>
+        <filesystem type='mount'>
+            <source dir='/home'/>
+            <target dir='/home'/>
+        </filesystem>
+        <console type='pty'/>
+    </devices>
+</domain>

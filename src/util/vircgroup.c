@@ -2660,14 +2660,45 @@ virCgroupDenyAllDevices(virCgroupPtr group)
                                 "a");
 }
 
+/**
+ * virCgroupAllowAllDevices:
+ *
+ * Allows the permissiong for all devices by setting lines similar
+ * to these ones (obviously the 'm' permission is an example):
+ *
+ * 'b *:* m'
+ * 'c *:* m'
+ *
+ * @group: The cgroup to allow devices for
+ * @perms: Bitwise or of VIR_CGROUP_DEVICE permission bits to allow
+ *
+ * Returns: 0 on success
+ */
+int
+virCgroupAllowAllDevices(virCgroupPtr group, int perms)
+{
+    int ret = -1;
+
+    if (virCgroupAllowDevice(group, 'b', -1, -1, perms) < 0)
+        goto cleanup;
+
+    if (virCgroupAllowDevice(group, 'c', -1, -1, perms) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
 
 /**
  * virCgroupAllowDevice:
  *
  * @group: The cgroup to allow a device for
  * @type: The device type (i.e., 'c' or 'b')
- * @major: The major number of the device
- * @minor: The minor number of the device
+ * @major: The major number of the device, a negative value means '*'
+ * @minor: The minor number of the device, a negative value means '*'
  * @perms: Bitwise or of VIR_CGROUP_DEVICE permission bits to allow
  *
  * Returns: 0 on success
@@ -2678,8 +2709,18 @@ virCgroupAllowDevice(virCgroupPtr group, char type, int major, int minor,
 {
     int ret = -1;
     char *devstr = NULL;
+    char *majorstr = NULL;
+    char *minorstr = NULL;
 
-    if (virAsprintf(&devstr, "%c %i:%i %s", type, major, minor,
+    if ((major < 0 && VIR_STRDUP(majorstr, "*") < 0) ||
+            virAsprintf(&majorstr, "%i", major) < 0)
+        goto cleanup;
+
+    if ((minor < 0 && VIR_STRDUP(minorstr, "*") < 0) ||
+            virAsprintf(&minorstr, "%i", minor) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&devstr, "%c %s:%s %s", type, majorstr, minorstr,
                     virCgroupGetDevicePermsString(perms)) < 0)
         goto cleanup;
 
@@ -2693,6 +2734,8 @@ virCgroupAllowDevice(virCgroupPtr group, char type, int major, int minor,
 
  cleanup:
     VIR_FREE(devstr);
+    VIR_FREE(majorstr);
+    VIR_FREE(minorstr);
     return ret;
 }
 
@@ -4232,6 +4275,14 @@ virCgroupGetCpusetCpus(virCgroupPtr group ATTRIBUTE_UNUSED,
     return -1;
 }
 
+int
+virCgroupAllowAllDevices(virCgroupPtr group ATTRIBUTE_UNUSED,
+                         int perms ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
 
 int
 virCgroupDenyAllDevices(virCgroupPtr group ATTRIBUTE_UNUSED)

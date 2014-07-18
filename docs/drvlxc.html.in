@@ -540,6 +540,53 @@ debootstrap, whatever) under /opt/vm-1-root:
 &lt;/domain&gt;
 </pre>
 
+<h2><a name="capabilities">Altering the available capabilities</a></h2>
+
+<p>
+By default the libvirt LXC driver drops some capabilities among which CAP_MKNOD.
+However <span class="since">since 1.2.6</span> libvirt can be told to keep or
+drop some capabilities using a domain configuration like the following:
+</p>
+<pre>
+...
+&lt;features&gt;
+  &lt;capabilities policy='default'&gt;
+    &lt;mknod state='on'/&gt;
+    &lt;sys_chroot state='off'/&gt;
+  &lt;/capabilities&gt;
+&lt;/features&gt;
+...
+</pre>
+<p>
+The capabilities children elements are named after the capabilities as defined in
+<code>man 7 capabilities</code>. An <code>off</code> state tells libvirt to drop the
+capability, while an <code>on</code> state will force to keep the capability even though
+this one is dropped by default.
+</p>
+<p>
+The <code>policy</code> attribute can be one of <code>default</code>, <code>allow</code>
+or <code>deny</code>. It defines the default rules for capabilities: either keep the
+default behavior that is dropping a few selected capabilities, or keep all capabilities
+or drop all capabilities. The interest of <code>allow</code> and <code>deny</code> is that
+they guarantee that all capabilities will be kept (or removed) even if new ones are added
+later.
+</p>
+<p>
+The following example, drops all capabilities but CAP_MKNOD:
+</p>
+<pre>
+...
+&lt;features&gt;
+  &lt;capabilities policy='deny'&gt;
+    &lt;mknod state='on'/&gt;
+  &lt;/capabilities&gt;
+&lt;/features&gt;
+...
+</pre>
+<p>
+Note that allowing capabilities that are normally dropped by default can seriously
+affect the security of the container and the host.
+</p>
 
 <h2><a name="usage">Container usage / management</a></h2>
 

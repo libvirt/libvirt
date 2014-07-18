@@ -1776,25 +1776,233 @@ static int lxcContainerResolveSymlinks(virDomainDefPtr vmDef)
  * host system, since they are not currently "containerized"
  */
 #if WITH_CAPNG
-static int lxcContainerDropCapabilities(bool keepReboot)
+
+/* Define capabilities to -1 if those aren't defined in the kernel:
+ * this will help us ignore them. */
+# ifndef CAP_AUDIT_CONTROL
+#  define CAP_AUDIT_CONTROL -1
+# endif
+# ifndef CAP_AUDIT_WRITE
+#  define CAP_AUDIT_WRITE -1
+# endif
+# ifndef CAP_BLOCK_SUSPEND
+#  define CAP_BLOCK_SUSPEND -1
+# endif
+# ifndef CAP_CHOWN
+#  define CAP_CHOWN -1
+# endif
+# ifndef CAP_DAC_OVERRIDE
+#  define CAP_DAC_OVERRIDE -1
+# endif
+# ifndef CAP_DAC_READ_SEARCH
+#  define CAP_DAC_READ_SEARCH -1
+# endif
+# ifndef CAP_FOWNER
+#  define CAP_FOWNER -1
+# endif
+# ifndef CAP_FSETID
+#  define CAP_FSETID -1
+# endif
+# ifndef CAP_IPC_LOCK
+#  define CAP_IPC_LOCK -1
+# endif
+# ifndef CAP_IPC_OWNER
+#  define CAP_IPC_OWNER -1
+# endif
+# ifndef CAP_KILL
+#  define CAP_KILL -1
+# endif
+# ifndef CAP_LEASE
+#  define CAP_LEASE -1
+# endif
+# ifndef CAP_LINUX_IMMUTABLE
+#  define CAP_LINUX_IMMUTABLE -1
+# endif
+# ifndef CAP_MAC_ADMIN
+#  define CAP_MAC_ADMIN -1
+# endif
+# ifndef CAP_MAC_OVERRIDE
+#  define CAP_MAC_OVERRIDE -1
+# endif
+# ifndef CAP_MKNOD
+#  define CAP_MKNOD -1
+# endif
+# ifndef CAP_NET_ADMIN
+#  define CAP_NET_ADMIN -1
+# endif
+# ifndef CAP_NET_BIND_SERVICE
+#  define CAP_NET_BIND_SERVICE -1
+# endif
+# ifndef CAP_NET_BROADCAST
+#  define CAP_NET_BROADCAST -1
+# endif
+# ifndef CAP_NET_RAW
+#  define CAP_NET_RAW -1
+# endif
+# ifndef CAP_SETGID
+#  define CAP_SETGID -1
+# endif
+# ifndef CAP_SETFCAP
+#  define CAP_SETFCAP -1
+# endif
+# ifndef CAP_SETPCAP
+#  define CAP_SETPCAP -1
+# endif
+# ifndef CAP_SETUID
+#  define CAP_SETUID -1
+# endif
+# ifndef CAP_SYS_ADMIN
+#  define CAP_SYS_ADMIN -1
+# endif
+# ifndef CAP_SYS_BOOT
+#  define CAP_SYS_BOOT -1
+# endif
+# ifndef CAP_SYS_CHROOT
+#  define CAP_SYS_CHROOT -1
+# endif
+# ifndef CAP_SYS_MODULE
+#  define CAP_SYS_MODULE -1
+# endif
+# ifndef CAP_SYS_NICE
+#  define CAP_SYS_NICE -1
+# endif
+# ifndef CAP_SYS_PACCT
+#  define CAP_SYS_PACCT -1
+# endif
+# ifndef CAP_SYS_PTRACE
+#  define CAP_SYS_PTRACE -1
+# endif
+# ifndef CAP_SYS_RAWIO
+#  define CAP_SYS_RAWIO -1
+# endif
+# ifndef CAP_SYS_RESOURCE
+#  define CAP_SYS_RESOURCE -1
+# endif
+# ifndef CAP_SYS_TIME
+#  define CAP_SYS_TIME -1
+# endif
+# ifndef CAP_SYS_TTY_CONFIG
+#  define CAP_SYS_TTY_CONFIG -1
+# endif
+# ifndef CAP_SYSLOG
+#  define CAP_SYSLOG -1
+# endif
+# ifndef CAP_WAKE_ALARM
+#  define CAP_WAKE_ALARM -1
+# endif
+
+static int lxcContainerDropCapabilities(virDomainDefPtr def,
+                                        bool keepReboot)
 {
     int ret;
+    size_t i;
+    int policy = def->features[VIR_DOMAIN_FEATURE_CAPABILITIES];
+
+    /* Maps virDomainCapsFeature to CAPS_* */
+    static unsigned int capsMapping[] = {CAP_AUDIT_CONTROL,
+                                         CAP_AUDIT_WRITE,
+                                         CAP_BLOCK_SUSPEND,
+                                         CAP_CHOWN,
+                                         CAP_DAC_OVERRIDE,
+                                         CAP_DAC_READ_SEARCH,
+                                         CAP_FOWNER,
+                                         CAP_FSETID,
+                                         CAP_IPC_LOCK,
+                                         CAP_IPC_OWNER,
+                                         CAP_KILL,
+                                         CAP_LEASE,
+                                         CAP_LINUX_IMMUTABLE,
+                                         CAP_MAC_ADMIN,
+                                         CAP_MAC_OVERRIDE,
+                                         CAP_MKNOD,
+                                         CAP_NET_ADMIN,
+                                         CAP_NET_BIND_SERVICE,
+                                         CAP_NET_BROADCAST,
+                                         CAP_NET_RAW,
+                                         CAP_SETGID,
+                                         CAP_SETFCAP,
+                                         CAP_SETPCAP,
+                                         CAP_SETUID,
+                                         CAP_SYS_ADMIN,
+                                         CAP_SYS_BOOT,
+                                         CAP_SYS_CHROOT,
+                                         CAP_SYS_MODULE,
+                                         CAP_SYS_NICE,
+                                         CAP_SYS_PACCT,
+                                         CAP_SYS_PTRACE,
+                                         CAP_SYS_RAWIO,
+                                         CAP_SYS_RESOURCE,
+                                         CAP_SYS_TIME,
+                                         CAP_SYS_TTY_CONFIG,
+                                         CAP_SYSLOG,
+                                         CAP_WAKE_ALARM};
 
     capng_get_caps_process();
 
-    if ((ret = capng_updatev(CAPNG_DROP,
-                             CAPNG_EFFECTIVE | CAPNG_PERMITTED |
-                             CAPNG_INHERITABLE | CAPNG_BOUNDING_SET,
-                             CAP_SYS_MODULE, /* No kernel module loading */
-                             CAP_SYS_TIME, /* No changing the clock */
-                             CAP_MKNOD, /* No creating device nodes */
-                             CAP_AUDIT_CONTROL, /* No messing with auditing status */
-                             CAP_MAC_ADMIN, /* No messing with LSM config */
-                             keepReboot ? -1 : CAP_SYS_BOOT, /* No use of reboot */
-                             -1)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to remove capabilities: %d"), ret);
-        return -1;
+    /* Make sure we drop everything if required by the user */
+    if (policy == VIR_DOMAIN_CAPABILITIES_POLICY_DENY)
+        capng_clear(CAPNG_SELECT_BOTH);
+
+    /* Apply all single capabilities changes */
+    for (i = 0; i < VIR_DOMAIN_CAPS_FEATURE_LAST; i++) {
+        bool toDrop = false;
+        int state = def->caps_features[i];
+
+        if (!cap_valid(capsMapping[i]))
+            continue;
+
+        switch ((virDomainCapabilitiesPolicy) policy) {
+
+        case VIR_DOMAIN_CAPABILITIES_POLICY_DENY:
+            if (state == VIR_DOMAIN_FEATURE_STATE_ON &&
+                    (ret = capng_update(CAPNG_ADD,
+                                        CAPNG_EFFECTIVE | CAPNG_PERMITTED |
+                                        CAPNG_INHERITABLE | CAPNG_BOUNDING_SET,
+                                        capsMapping[i])) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Failed to add capability %s: %d"),
+                               virDomainCapsFeatureTypeToString(i), ret);
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT:
+            switch ((virDomainCapsFeature) i) {
+            case VIR_DOMAIN_CAPS_FEATURE_SYS_BOOT: /* No use of reboot */
+                toDrop = !keepReboot && (state != VIR_DOMAIN_FEATURE_STATE_ON);
+                break;
+            case VIR_DOMAIN_CAPS_FEATURE_SYS_MODULE: /* No kernel module loading */
+            case VIR_DOMAIN_CAPS_FEATURE_SYS_TIME: /* No changing the clock */
+            case VIR_DOMAIN_CAPS_FEATURE_MKNOD: /* No creating device nodes */
+            case VIR_DOMAIN_CAPS_FEATURE_AUDIT_CONTROL: /* No messing with auditing status */
+            case VIR_DOMAIN_CAPS_FEATURE_MAC_ADMIN: /* No messing with LSM config */
+                toDrop = (state != VIR_DOMAIN_FEATURE_STATE_ON);
+                break;
+            default: /* User specified capabilities to drop */
+                toDrop = (state == VIR_DOMAIN_FEATURE_STATE_OFF);
+            }
+            /* Fallthrough */
+
+        case VIR_DOMAIN_CAPABILITIES_POLICY_ALLOW:
+            if (policy == VIR_DOMAIN_CAPABILITIES_POLICY_ALLOW)
+                toDrop = state == VIR_DOMAIN_FEATURE_STATE_OFF;
+
+            if (toDrop && (ret = capng_update(CAPNG_DROP,
+                                              CAPNG_EFFECTIVE | CAPNG_PERMITTED |
+                                              CAPNG_INHERITABLE | CAPNG_BOUNDING_SET,
+                                              capsMapping[i])) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Failed to remove capability %s: %d"),
+                               virDomainCapsFeatureTypeToString(i), ret);
+                return -1;
+            }
+            break;
+
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported capabilities policy: %s"),
+                           virDomainCapabilitiesPolicyTypeToString(policy));
+        }
     }
 
     if ((ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
@@ -1812,7 +2020,8 @@ static int lxcContainerDropCapabilities(bool keepReboot)
     return 0;
 }
 #else
-static int lxcContainerDropCapabilities(bool keepReboot ATTRIBUTE_UNUSED)
+static int lxcContainerDropCapabilities(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                        bool keepReboot ATTRIBUTE_UNUSED)
 {
     VIR_WARN("libcap-ng support not compiled in, unable to clear capabilities");
     return 0;
@@ -1917,7 +2126,7 @@ static int lxcContainerChild(void *data)
     }
 
     /* drop a set of root capabilities */
-    if (lxcContainerDropCapabilities(!!hasReboot) < 0)
+    if (lxcContainerDropCapabilities(vmDef, !!hasReboot) < 0)
         goto cleanup;
 
     if (lxcContainerSendContinue(argv->handshakefd) < 0) {

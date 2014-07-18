@@ -147,6 +147,8 @@ virDomainBlockedReasonTypeFromString;
 virDomainBlockedReasonTypeToString;
 virDomainBootMenuTypeFromString;
 virDomainBootMenuTypeToString;
+virDomainCapabilitiesPolicyTypeToString;
+virDomainCapsFeatureTypeToString;
 virDomainChrConsoleTargetTypeFromString;
 virDomainChrConsoleTargetTypeToString;
 virDomainChrDefForeach;
@@ -1060,6 +1062,7 @@ virBufferVasprintf;
 # util/vircgroup.h
 virCgroupAddTask;
 virCgroupAddTaskController;
+virCgroupAllowAllDevices;
 virCgroupAllowDevice;
 virCgroupAllowDeviceMajor;
 virCgroupAllowDevicePath;

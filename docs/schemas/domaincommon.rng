@@ -3815,6 +3815,9 @@
               <empty/>
             </element>
           </optional>
+          <optional>
+            <ref name="capabilities"/>
+          </optional>
         </interleave>
       </element>
     </optional>
@@ -4387,11 +4390,215 @@
     </element>
   </define>
 
+  <!-- Optional capabilities features -->
+  <define name="capabilities">
+    <element name="capabilities">
+      <ref name="capabilitiespolicy"/>
+      <interleave>
+        <optional>
+          <element name="audit_control">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="audit_write">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="block_suspend">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="chown">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="dac_override">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="dac_read_search">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="fowner">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="fsetid">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="ipc_lock">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="ipc_owner">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="kill">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="lease">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="linux_immutable">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="mac_admin">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="mac_override">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="mknod">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="net_admin">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="net_bind_service">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="net_broadcast">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="net_raw">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="setgid">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="setfcap">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="setpcap">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="setuid">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="sys_admin">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="sys_boot">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="sys_chroot">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="sys_module">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="sys_nice">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="sys_pacct">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="sys_ptrace">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="sys_rawio">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="sys_resource">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="sys_time">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="sys_tty_config">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="syslog">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="wake_alarm">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
   <define name="featurestate">
     <attribute name="state">
       <choice>
         <value>on</value>
         <value>off</value>
+      </choice>
+    </attribute>
+  </define>
+
+  <define name="capabilitiespolicy">
+    <attribute name="policy">
+      <choice>
+        <value>default</value>
+        <value>allow</value>
+        <value>deny</value>
       </choice>
     </attribute>
   </define>

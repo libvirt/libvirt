@@ -177,6 +177,8 @@ const char *virCgroupGetDevicePermsString(int perms);
 
 int virCgroupDenyAllDevices(virCgroupPtr group);
 
+int virCgroupAllowAllDevices(virCgroupPtr group, int perms);
+
 int virCgroupAllowDevice(virCgroupPtr group,
                          char type,
                          int major,
