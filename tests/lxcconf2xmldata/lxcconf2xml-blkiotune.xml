@@ -25,6 +25,8 @@
   </os>
   <features>
     <privnet/>
+    <capabilities policy='allow'>
+    </capabilities>
   </features>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

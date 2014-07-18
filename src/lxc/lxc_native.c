@@ -853,6 +853,28 @@ lxcSetBlkioTune(virDomainDefPtr def, virConfPtr properties)
     return 0;
 }
 
+static void
+lxcSetCapDrop(virDomainDefPtr def, virConfPtr properties)
+{
+    virConfValuePtr value;
+    char **toDrop = NULL;
+    const char *capString;
+    size_t i;
+
+    if ((value = virConfGetValue(properties, "lxc.cap.drop")) && value->str)
+        toDrop = virStringSplit(value->str, " ", 0);
+
+    for (i = 0; i < VIR_DOMAIN_CAPS_FEATURE_LAST; i++) {
+        capString = virDomainCapsFeatureTypeToString(i);
+        if (toDrop != NULL && virStringArrayHasString(toDrop, capString))
+            def->caps_features[i] = VIR_DOMAIN_FEATURE_STATE_OFF;
+    }
+
+    def->features[VIR_DOMAIN_FEATURE_CAPABILITIES] = VIR_DOMAIN_CAPABILITIES_POLICY_ALLOW;
+
+    virStringFreeList(toDrop);
+}
+
 virDomainDefPtr
 lxcParseConfigString(const char *config)
 {
@@ -949,6 +971,9 @@ lxcParseConfigString(const char *config)
     /* lxc.cgroup.blkio.* */
     if (lxcSetBlkioTune(vmdef, properties) < 0)
         goto error;
+
+    /* lxc.cap.drop */
+    lxcSetCapDrop(vmdef, properties);
 
     goto cleanup;
 

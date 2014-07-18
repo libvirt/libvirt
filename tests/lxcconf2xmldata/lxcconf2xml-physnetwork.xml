@@ -8,6 +8,10 @@
     <type>exe</type>
     <init>/sbin/init</init>
   </os>
+  <features>
+    <capabilities policy='allow'>
+    </capabilities>
+  </features>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>

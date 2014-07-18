@@ -8,6 +8,14 @@
     <type arch='i686'>exe</type>
     <init>/sbin/init</init>
   </os>
+  <features>
+    <capabilities policy='allow'>
+      <mac_admin state='off'/>
+      <mac_override state='off'/>
+      <mknod state='off'/>
+      <sys_module state='off'/>
+    </capabilities>
+  </features>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
