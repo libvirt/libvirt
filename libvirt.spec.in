@@ -60,15 +60,16 @@
 %if 0%{?fedora}
     %if 0%{?fedora} < 16
         # Fedora doesn't have any QEMU on ppc64 until FC16 - only ppc
+        # I think F17 is the first release with the power64 macro
         %ifarch ppc64
             %define with_qemu_tcg 0
         %endif
     %endif
     %if 0%{?fedora} >= 18
-        %define qemu_kvm_arches %{ix86} x86_64 ppc64 s390x
+        %define qemu_kvm_arches %{ix86} x86_64 %{power64} s390x
     %endif
     %if 0%{?fedora} >= 20
-        %define qemu_kvm_arches %{ix86} x86_64 ppc64 s390x %{arm}
+        %define qemu_kvm_arches %{ix86} x86_64 %{power64} s390x %{arm}
     %endif
 %endif
 
