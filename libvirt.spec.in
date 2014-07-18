@@ -69,7 +69,7 @@
         %define qemu_kvm_arches %{ix86} x86_64 %{power64} s390x
     %endif
     %if 0%{?fedora} >= 20
-        %define qemu_kvm_arches %{ix86} x86_64 %{power64} s390x %{arm}
+        %define qemu_kvm_arches %{ix86} x86_64 %{power64} s390x %{arm} aarch64
     %endif
 %endif
 
