@@ -1065,7 +1065,7 @@ exclude_file_name_regexp--sc_prohibit_nonreentrant = \
   ^((po|tests)/|docs/.*(py|html\.in)|run.in$$|tools/wireshark/util/genxdrstub\.pl$$)
 
 exclude_file_name_regexp--sc_prohibit_raw_allocation = \
-  ^(docs/hacking\.html\.in)|(src/util/viralloc\.[ch]|examples/.*|tests/securityselinuxhelper\.c|tests/vircgroupmock\.c|tools/wireshark/src/packet-libvirt.c)$$
+  ^(docs/hacking\.html\.in|src/util/viralloc\.[ch]|examples/.*|tests/(securityselinuxhelper|vircgroupmock)\.c|tools/wireshark/src/packet-libvirt\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_readlink = \
   ^src/(util/virutil|lxc/lxc_container)\.c$$
@@ -1073,12 +1073,11 @@ exclude_file_name_regexp--sc_prohibit_readlink = \
 exclude_file_name_regexp--sc_prohibit_setuid = ^src/util/virutil\.c$$
 
 exclude_file_name_regexp--sc_prohibit_sprintf = \
-  ^(docs/hacking\.html\.in)|(examples/systemtap/.*stp)|(src/dtrace2systemtap\.pl)|(src/rpc/gensystemtap\.pl)|(tools/wireshark/util/genxdrstub\.pl)$$
+  (^docs/hacking\.html\.in|\.stp|\.pl)$$
 
 exclude_file_name_regexp--sc_prohibit_strncpy = ^src/util/virstring\.c$$
 
-exclude_file_name_regexp--sc_prohibit_strtol = \
-  ^(src/util/.*|examples/dom.*/.*)\.c$$
+exclude_file_name_regexp--sc_prohibit_strtol = ^examples/dom.*/.*\.c$$
 
 exclude_file_name_regexp--sc_prohibit_xmlGetProp = ^src/util/virxml\.c$$
 
