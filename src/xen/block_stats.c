@@ -59,20 +59,6 @@
 #  define XENVBD_MAJOR 202
 # endif
 
-static int
-xstrtoint64(char const *s, int base, int64_t *result)
-{
-    long long int lli;
-    char *p;
-
-    errno = 0;
-    lli = strtoll(s, &p, base);
-    if (errno || !(*p == 0 || *p == '\n') || p == s || (int64_t) lli != lli)
-        return -1;
-    *result = lli;
-    return 0;
-}
-
 static int64_t
 read_stat(const char *path)
 {
@@ -93,7 +79,7 @@ read_stat(const char *path)
         return -1;
 
     str[i] = '\0';              /* make sure the string is nul-terminated */
-    if (xstrtoint64(str, 10, &r) == -1)
+    if (virStrToLong_ll(str, NULL, 10, (long long *) &r) < 0)
         return -1;
 
     return r;

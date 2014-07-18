@@ -566,7 +566,9 @@ sexpr_int(const struct sexpr *sexpr, const char *name)
     const char *value = sexpr_node(sexpr, name);
 
     if (value) {
-        return strtol(value, NULL, 0);
+        int val = 0;
+        virStrToLong_i(value, NULL, 0, &val);
+        return val;
     }
     return 0;
 }
@@ -587,7 +589,9 @@ sexpr_float(const struct sexpr *sexpr, const char *name)
     const char *value = sexpr_node(sexpr, name);
 
     if (value) {
-        return strtod(value, NULL);
+        double val = 0;
+        virStrToDouble(value, NULL, &val);
+        return val;
     }
     return 0;
 }
@@ -608,7 +612,9 @@ sexpr_u64(const struct sexpr *sexpr, const char *name)
     const char *value = sexpr_node(sexpr, name);
 
     if (value) {
-        return strtoll(value, NULL, 0);
+        unsigned long long val = 0;
+        virStrToLong_ull(value, NULL, 0, &val);
+        return val;
     }
     return 0;
 }

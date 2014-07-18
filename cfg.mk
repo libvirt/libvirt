@@ -1078,7 +1078,7 @@ exclude_file_name_regexp--sc_prohibit_sprintf = \
 exclude_file_name_regexp--sc_prohibit_strncpy = ^src/util/virstring\.c$$
 
 exclude_file_name_regexp--sc_prohibit_strtol = \
-  ^(src/(util/virsexpr|(vbox|xen|xenxs)/.*)\.c)|(examples/domsuspend/suspend.c)$$
+  ^(src/util/.*|examples/domsuspend/suspend)\.c$$
 
 exclude_file_name_regexp--sc_prohibit_xmlGetProp = ^src/util/virxml\.c$$
 

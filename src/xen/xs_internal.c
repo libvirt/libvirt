@@ -224,7 +224,7 @@ int
 xenStoreNumOfDomains(virConnectPtr conn)
 {
     unsigned int num;
-    char **idlist = NULL, *endptr;
+    char **idlist = NULL;
     size_t i;
     int ret = -1, realnum = 0;
     long id;
@@ -233,8 +233,7 @@ xenStoreNumOfDomains(virConnectPtr conn)
     idlist = xs_directory(priv->xshandle, 0, "/local/domain", &num);
     if (idlist) {
         for (i = 0; i < num; i++) {
-            id = strtol(idlist[i], &endptr, 10);
-            if ((endptr == idlist[i]) || (*endptr != 0))
+            if (virStrToLong_l(idlist[i], NULL, 10, &id) < 0)
                 goto out;
 
             /* Sometimes xenstore has stale domain IDs, so filter
@@ -266,7 +265,7 @@ xenStoreDoListDomains(virConnectPtr conn,
                       int *ids,
                       int maxids)
 {
-    char **idlist = NULL, *endptr;
+    char **idlist = NULL;
     unsigned int num;
     size_t i;
     int ret = -1;
@@ -277,8 +276,7 @@ xenStoreDoListDomains(virConnectPtr conn,
         goto out;
 
     for (ret = 0, i = 0; (i < num) && (ret < maxids); i++) {
-        id = strtol(idlist[i], &endptr, 10);
-        if ((endptr == idlist[i]) || (*endptr != 0))
+        if (virStrToLong_l(idlist[i], NULL, 10, &id) < 0)
             goto out;
 
         /* Sometimes xenstore has stale domain IDs, so filter
@@ -337,10 +335,7 @@ xenStoreDomainGetVNCPort(virConnectPtr conn, int domid)
 
     tmp = virDomainDoStoreQuery(conn, domid, "console/vnc-port");
     if (tmp != NULL) {
-        char *end;
-        ret = strtol(tmp, &end, 10);
-        if (ret == 0 && end == tmp)
-            ret = -1;
+        virStrToLong_i(tmp, NULL, 10, &ret);
         VIR_FREE(tmp);
     }
     return ret;

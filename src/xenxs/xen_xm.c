@@ -84,9 +84,7 @@ static int xenXMConfigGetULong(virConfPtr conf,
     if (val->type == VIR_CONF_LONG) {
         *value = val->l;
     } else if (val->type == VIR_CONF_STRING) {
-        char *ret;
-        *value = strtol(val->str, &ret, 10);
-        if (ret == val->str) {
+        if (virStrToLong_ul(val->str, NULL, 10, value) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("config value %s was malformed"), name);
             return -1;
@@ -117,9 +115,7 @@ static int xenXMConfigGetULongLong(virConfPtr conf,
     if (val->type == VIR_CONF_LONG) {
         *value = val->l;
     } else if (val->type == VIR_CONF_STRING) {
-        char *ret;
-        *value = strtoll(val->str, &ret, 10);
-        if (ret == val->str) {
+        if (virStrToLong_ull(val->str, NULL, 10, value) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("config value %s was malformed"), name);
             return -1;
@@ -1030,7 +1026,9 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                         if (VIR_STRDUP(graphics->data.vnc.keymap, key + 7) < 0)
                             goto cleanup;
                     } else if (STRPREFIX(key, "vncdisplay=")) {
-                        graphics->data.vnc.port = strtol(key+11, NULL, 10) + 5900;
+                        virStrToLong_i(key + 11, NULL, 10,
+                                       &graphics->data.vnc.port);
+                        graphics->data.vnc.port += 5900;
                     }
                 } else {
                     if (STRPREFIX(key, "display=")) {

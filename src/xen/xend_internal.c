@@ -849,9 +849,7 @@ xenDaemonDomainLookupByName_ids(virConnectPtr xend,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("domain information incomplete, missing domid"));
         goto error;
-    }
-    ret = strtol(value, NULL, 0);
-    if ((ret == 0) && (value[0] != '0')) {
+    } else if (virStrToLong_i(value, NULL, 0, &ret) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("domain information incorrect domid not numeric"));
         ret = -1;
@@ -874,22 +872,26 @@ xend_detect_config_version(virConnectPtr conn)
     struct sexpr *root;
     const char *value;
     xenUnifiedPrivatePtr priv = conn->privateData;
+    int ret = -1;
 
     root = sexpr_get(conn, "/xend/node/");
     if (root == NULL)
-        return -1;
+        return ret;
 
     value = sexpr_node(root, "node/xend_config_format");
 
     if (value) {
-        priv->xendConfigVersion = strtol(value, NULL, 10);
+        if (virStrToLong_i(value, NULL, 10, &priv->xendConfigVersion) < 0)
+            goto cleanup;
     }  else {
         /* Xen prior to 3.0.3 did not have the xend_config_format
            field, and is implicitly version 1. */
         priv->xendConfigVersion = XEND_CONFIG_VERSION_3_0_2;
     }
+    ret = 0;
+ cleanup:
     sexpr_free(root);
-    return 0;
+    return ret;
 }
 
 
