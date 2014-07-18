@@ -13922,6 +13922,8 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virDomainDefPtr config = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
+    bool was_running = false;
+    bool was_stopped = false;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
                   VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED |
@@ -14022,12 +14024,10 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (snap->def->state == VIR_DOMAIN_RUNNING
-        || snap->def->state == VIR_DOMAIN_PAUSED) {
+    switch ((virDomainState) snap->def->state) {
+    case VIR_DOMAIN_RUNNING:
+    case VIR_DOMAIN_PAUSED:
         /* Transitions 2, 3, 5, 6, 8, 9 */
-        bool was_running = false;
-        bool was_stopped = false;
-
         /* When using the loadvm monitor command, qemu does not know
          * whether to pause or run the reverted domain, and just stays
          * in the same state as before the monitor command, whether
@@ -14153,7 +14153,16 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                                  detail);
             }
         }
-    } else {
+        break;
+
+    case VIR_DOMAIN_SHUTDOWN:
+    case VIR_DOMAIN_SHUTOFF:
+    case VIR_DOMAIN_CRASHED:
+    case VIR_DOMAIN_NOSTATE:
+    case VIR_DOMAIN_BLOCKED:
+        /* XXX: The following one is clearly wrong! */
+    case VIR_DOMAIN_PMSUSPENDED:
+    case VIR_DOMAIN_LAST:
         /* Transitions 1, 4, 7 */
         /* Newer qemu -loadvm refuses to revert to the state of a snapshot
          * created by qemu-img snapshot -c.  If the domain is running, we
@@ -14217,6 +14226,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                                   detail);
             }
         }
+        break;
     }
 
     ret = 0;
