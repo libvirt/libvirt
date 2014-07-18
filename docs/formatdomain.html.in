@@ -2778,7 +2778,7 @@
   &lt;devices&gt;
     &lt;hostdev mode='subsystem' type='pci' managed='yes'&gt;
       &lt;source&gt;
-        &lt;address bus='0x06' slot='0x02' function='0x0'/&gt;
+        &lt;address domain='0x0000' bus='0x06' slot='0x02' function='0x0'/&gt;
       &lt;/source&gt;
       &lt;boot order='1'/&gt;
       &lt;rom bar='on' file='/etc/fake/boot.bin'/&gt;
@@ -2892,7 +2892,7 @@
       USB bus and device number the device appears at on the host.
       The values of these attributes can be given in decimal, hexadecimal
       (starting with 0x) or octal (starting with 0) form.
-      For PCI devices the element carries 3 attributes allowing to designate
+      For PCI devices the element carries 4 attributes allowing to designate
       the device as can be found with the <code>lspci</code> or
       with <code>virsh
       nodedev-list</code>. <a href="#elementsAddress">See above</a> for
