@@ -152,23 +152,35 @@ bhyveBuildDiskArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
                      virCommandPtr cmd)
 {
     const char *bus_type;
+    const char *disk_source;
 
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_SATA:
-        bus_type = "ahci-hd";
+        switch (disk->device) {
+        case VIR_DOMAIN_DISK_DEVICE_DISK:
+            bus_type = "ahci-hd";
+            break;
+        case VIR_DOMAIN_DISK_DEVICE_CDROM:
+            bus_type = "ahci-cd";
+            break;
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("unsupported disk device"));
+            return -1;
+        }
         break;
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
-        bus_type = "virtio-blk";
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+            bus_type = "virtio-blk";
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("unsupported disk device"));
+            return -1;
+        }
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("unsupported disk bus type"));
-        return -1;
-    }
-
-    if (disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("unsupported disk device"));
         return -1;
     }
 
@@ -178,10 +190,20 @@ bhyveBuildDiskArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
         return -1;
     }
 
+    disk_source = virDomainDiskGetSource(disk);
+
+    if ((disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
+        (disk_source == NULL)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("cdrom device without source path "
+                             "not supported"));
+            return -1;
+    }
+
     virCommandAddArg(cmd, "-s");
     virCommandAddArgFormat(cmd, "%d:0,%s,%s",
                            disk->info.addr.pci.slot, bus_type,
-                           virDomainDiskGetSource(disk));
+                           disk_source);
 
     return 0;
 }
@@ -282,7 +304,8 @@ virBhyveProcessBuildLoadCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
 
     disk = def->disks[0];
 
-    if (disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) {
+    if ((disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) &&
+        (disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("unsupported disk device"));
         return NULL;

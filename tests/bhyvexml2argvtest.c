@@ -104,6 +104,7 @@ mymain(void)
 
     DO_TEST("base");
     DO_TEST("acpiapic");
+    DO_TEST("disk-cdrom");
     DO_TEST("disk-virtio");
     DO_TEST("macaddr");
     DO_TEST("serial");
