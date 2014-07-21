@@ -335,7 +335,7 @@ xenStoreDomainGetVNCPort(virConnectPtr conn, int domid)
 
     tmp = virDomainDoStoreQuery(conn, domid, "console/vnc-port");
     if (tmp != NULL) {
-        virStrToLong_i(tmp, NULL, 10, &ret);
+        ignore_value(virStrToLong_i(tmp, NULL, 10, &ret));
         VIR_FREE(tmp);
     }
     return ret;

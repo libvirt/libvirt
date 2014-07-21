@@ -1026,8 +1026,13 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                         if (VIR_STRDUP(graphics->data.vnc.keymap, key + 7) < 0)
                             goto cleanup;
                     } else if (STRPREFIX(key, "vncdisplay=")) {
-                        virStrToLong_i(key + 11, NULL, 10,
-                                       &graphics->data.vnc.port);
+                        if (virStrToLong_i(key + 11, NULL, 10,
+                                           &graphics->data.vnc.port) < 0) {
+                            virReportError(VIR_ERR_INTERNAL_ERROR,
+                                           _("invalid vncdisplay value '%s'"),
+                                           key + 11);
+                            goto cleanup;
+                        }
                         graphics->data.vnc.port += 5900;
                     }
                 } else {

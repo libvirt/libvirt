@@ -2344,8 +2344,8 @@ static void vboxHostDeviceGetXMLDesc(vboxGlobalData *data, virDomainDefPtr def, 
         VBOX_UTF16_TO_UTF8(vendorIdUtf16, &vendorIdUtf8);
         VBOX_UTF16_TO_UTF8(productIdUtf16, &productIdUtf8);
 
-        virStrToLong_ui(vendorIdUtf8, &endptr, 16, &vendorId);
-        virStrToLong_ui(productIdUtf8, &endptr, 16, &productId);
+        ignore_value(virStrToLong_ui(vendorIdUtf8, &endptr, 16, &vendorId));
+        ignore_value(virStrToLong_ui(productIdUtf8, &endptr, 16, &productId));
 
         def->hostdevs[USBFilterCount]->source.subsys.u.usb.vendor  = vendorId;
         def->hostdevs[USBFilterCount]->source.subsys.u.usb.product = productId;

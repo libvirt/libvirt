@@ -567,7 +567,7 @@ sexpr_int(const struct sexpr *sexpr, const char *name)
 
     if (value) {
         int val = 0;
-        virStrToLong_i(value, NULL, 0, &val);
+        ignore_value(virStrToLong_i(value, NULL, 0, &val));
         return val;
     }
     return 0;
@@ -590,7 +590,7 @@ sexpr_float(const struct sexpr *sexpr, const char *name)
 
     if (value) {
         double val = 0;
-        virStrToDouble(value, NULL, &val);
+        ignore_value(virStrToDouble(value, NULL, &val));
         return val;
     }
     return 0;
@@ -613,7 +613,7 @@ sexpr_u64(const struct sexpr *sexpr, const char *name)
 
     if (value) {
         unsigned long long val = 0;
-        virStrToLong_ull(value, NULL, 0, &val);
+        ignore_value(virStrToLong_ull(value, NULL, 0, &val));
         return val;
     }
     return 0;
