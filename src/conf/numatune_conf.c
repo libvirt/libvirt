@@ -76,13 +76,15 @@ virDomainNumatuneNodeSpecified(virDomainNumatunePtr numatune,
 }
 
 static int
-virDomainNumatuneNodeParseXML(virDomainDefPtr def,
+virDomainNumatuneNodeParseXML(virDomainNumatunePtr *numatunePtr,
+                              size_t ncells,
                               xmlXPathContextPtr ctxt)
 {
     char *tmp = NULL;
     int n = 0;;
     int ret = -1;
     size_t i = 0;
+    virDomainNumatunePtr numatune = *numatunePtr;
     xmlNodePtr *nodes = NULL;
 
     if ((n = virXPathNodeSet("./numatune/memnode", ctxt, &nodes)) < 0) {
@@ -94,29 +96,31 @@ virDomainNumatuneNodeParseXML(virDomainDefPtr def,
     if (!n)
         return 0;
 
-    if (def->numatune && def->numatune->memory.specified &&
-        def->numatune->memory.placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO) {
+    if (numatune && numatune->memory.specified &&
+        numatune->memory.placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Per-node binding is not compatible with "
                          "automatic NUMA placement."));
         goto cleanup;
     }
 
-    if (!def->cpu || !def->cpu->ncells) {
+    if (!ncells) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Element 'memnode' is invalid without "
                          "any guest NUMA cells"));
         goto cleanup;
     }
 
-    if (!def->numatune && VIR_ALLOC(def->numatune) < 0)
+    if (!numatune && VIR_ALLOC(numatune) < 0)
         goto cleanup;
 
-    VIR_FREE(def->numatune->mem_nodes);
-    if (VIR_ALLOC_N(def->numatune->mem_nodes, def->cpu->ncells) < 0)
+    *numatunePtr = numatune;
+
+    VIR_FREE(numatune->mem_nodes);
+    if (VIR_ALLOC_N(numatune->mem_nodes, ncells) < 0)
         goto cleanup;
 
-    def->numatune->nmem_nodes = def->cpu->ncells;
+    numatune->nmem_nodes = ncells;
 
     for (i = 0; i < n; i++) {
         int mode = 0;
@@ -139,14 +143,14 @@ virDomainNumatuneNodeParseXML(virDomainDefPtr def,
         }
         VIR_FREE(tmp);
 
-        if (cellid >= def->numatune->nmem_nodes) {
+        if (cellid >= numatune->nmem_nodes) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Argument 'cellid' in memnode element must "
                              "correspond to existing guest's NUMA cell"));
             goto cleanup;
         }
 
-        mem_node = &def->numatune->mem_nodes[cellid];
+        mem_node = &numatune->mem_nodes[cellid];
 
         if (mem_node->nodeset) {
             virReportError(VIR_ERR_XML_ERROR,
@@ -189,7 +193,9 @@ virDomainNumatuneNodeParseXML(virDomainDefPtr def,
 }
 
 int
-virDomainNumatuneParseXML(virDomainDefPtr def,
+virDomainNumatuneParseXML(virDomainNumatunePtr *numatunePtr,
+                          bool placement_static,
+                          size_t ncells,
                           xmlXPathContextPtr ctxt)
 {
     char *tmp = NULL;
@@ -212,23 +218,25 @@ virDomainNumatuneParseXML(virDomainDefPtr def,
 
     node = virXPathNode("./numatune/memory[1]", ctxt);
 
-    if (def->numatune) {
-        virDomainNumatuneFree(def->numatune);
-        def->numatune = NULL;
+    if (*numatunePtr) {
+        virDomainNumatuneFree(*numatunePtr);
+        *numatunePtr = NULL;
     }
 
-    if (!node && def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
-        if (virDomainNumatuneNodeParseXML(def, ctxt) < 0)
+    if (!node && placement_static) {
+        if (virDomainNumatuneNodeParseXML(numatunePtr, ncells, ctxt) < 0)
             goto cleanup;
         return 0;
     }
 
     if (!node) {
-        /* We know that def->placement_mode is "auto" if we're here */
-        if (virDomainNumatuneSet(def, VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO,
-                                 -1, NULL) < 0)
-            goto cleanup;
-        return 0;
+        /* We know that placement_mode is "auto" if we're here */
+        ret = virDomainNumatuneSet(numatunePtr,
+                                   placement_static,
+                                   VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO,
+                                   -1,
+                                   NULL);
+        goto cleanup;
     }
 
     tmp = virXMLPropString(node, "mode");
@@ -260,12 +268,15 @@ virDomainNumatuneParseXML(virDomainDefPtr def,
         goto cleanup;
     VIR_FREE(tmp);
 
-    if (virDomainNumatuneSet(def, placement, mode, nodeset) < 0)
+    if (virDomainNumatuneSet(numatunePtr,
+                             placement_static,
+                             placement,
+                             mode,
+                             nodeset) < 0)
         goto cleanup;
 
-    if (virDomainNumatuneNodeParseXML(def, ctxt) < 0)
+    if (virDomainNumatuneNodeParseXML(numatunePtr, ncells, ctxt) < 0)
         goto cleanup;
-
 
     ret = 0;
  cleanup:
@@ -420,12 +431,13 @@ virDomainNumatuneMaybeFormatNodeset(virDomainNumatunePtr numatune,
 }
 
 int
-virDomainNumatuneSet(virDomainDefPtr def,
+virDomainNumatuneSet(virDomainNumatunePtr *numatunePtr,
+                     bool placement_static,
                      int placement,
                      int mode,
                      virBitmapPtr nodeset)
 {
-    bool create = !def->numatune;  /* Whether we are creating new struct */
+    bool create = !*numatunePtr;  /* Whether we are creating new struct */
     int ret = -1;
     virDomainNumatunePtr numatune = NULL;
 
@@ -449,9 +461,9 @@ virDomainNumatuneSet(virDomainDefPtr def,
         goto cleanup;
     }
 
-    if (create && VIR_ALLOC(def->numatune) < 0)
+    if (create && VIR_ALLOC(*numatunePtr) < 0)
         goto cleanup;
-    numatune = def->numatune;
+    numatune = *numatunePtr;
 
     if (create) {
         /* Defaults for new struct */
@@ -474,8 +486,7 @@ virDomainNumatuneSet(virDomainDefPtr def,
     }
 
     if (placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_DEFAULT) {
-        if (numatune->memory.nodeset ||
-            def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC)
+        if (numatune->memory.nodeset || placement_static)
             placement = VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC;
         else
             placement = VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO;
@@ -487,13 +498,6 @@ virDomainNumatuneSet(virDomainDefPtr def,
                        _("nodeset for NUMA memory tuning must be set "
                          "if 'placement' is 'static'"));
         goto cleanup;
-    }
-
-    if (placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO) {
-        virBitmapFree(numatune->memory.nodeset);
-        numatune->memory.nodeset = NULL;
-        if (!def->cpumask)
-            def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO;
     }
 
     if (placement != -1)

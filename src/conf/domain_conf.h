@@ -1809,6 +1809,8 @@ struct _virDomainResourceDef {
  * NB: if adding to this struct, virDomainDefCheckABIStability
  * may well need an update
  */
+typedef struct _virDomainDef virDomainDef;
+typedef virDomainDef *virDomainDefPtr;
 struct _virDomainDef {
     int virtType;
     int id;

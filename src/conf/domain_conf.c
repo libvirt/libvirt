@@ -11800,8 +11800,15 @@ virDomainDefParseXML(xmlDocPtr xml,
         }
     }
 
-    if (virDomainNumatuneParseXML(def, ctxt) < 0)
+    if (virDomainNumatuneParseXML(&def->numatune,
+                                  def->placement_mode ==
+                                  VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
+                                  def->cpu ? def->cpu->ncells : 0,
+                                  ctxt) < 0)
         goto error;
+
+    if (virDomainNumatuneHasPlacementAuto(def->numatune) && !def->cpumask)
+        def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO;
 
     if ((n = virXPathNodeSet("./resource", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

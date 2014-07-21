@@ -8788,12 +8788,18 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
             qemuDomainSetNumaParamsLive(vm, caps, nodeset) < 0)
             goto cleanup;
 
-        if (virDomainNumatuneSet(vm->def, -1, mode, nodeset) < 0)
+        if (virDomainNumatuneSet(&vm->def->numatune,
+                                 vm->def->placement_mode ==
+                                 VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
+                                 -1, mode, nodeset) < 0)
             goto cleanup;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (virDomainNumatuneSet(persistentDef, -1, mode, nodeset) < 0)
+        if (virDomainNumatuneSet(&persistentDef->numatune,
+                                 persistentDef->placement_mode ==
+                                 VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
+                                 -1, mode, nodeset) < 0)
             goto cleanup;
 
         if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)

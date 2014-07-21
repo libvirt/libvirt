@@ -30,15 +30,6 @@
 # include "virbitmap.h"
 # include "virbuffer.h"
 
-/*
- * Since numatune configuration is closely bound to the whole config,
- * and because we don't have separate domain_conf headers for
- * typedefs, structs and functions, we need to have a forward
- * declaration here for virDomainDef due to circular dependencies.
- */
-typedef struct _virDomainDef virDomainDef;
-typedef virDomainDef *virDomainDefPtr;
-
 
 typedef struct _virDomainNumatune virDomainNumatune;
 typedef virDomainNumatune *virDomainNumatunePtr;
@@ -60,8 +51,11 @@ void virDomainNumatuneFree(virDomainNumatunePtr numatune);
 /*
  * XML Parse/Format functions
  */
-int virDomainNumatuneParseXML(virDomainDefPtr def, xmlXPathContextPtr ctxt)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int virDomainNumatuneParseXML(virDomainNumatunePtr *numatunePtr,
+                              bool placement_static,
+                              size_t ncells,
+                              xmlXPathContextPtr ctxt)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 
 int virDomainNumatuneFormatXML(virBufferPtr buf, virDomainNumatunePtr numatune)
     ATTRIBUTE_NONNULL(1);
@@ -91,8 +85,11 @@ int virDomainNumatuneMaybeFormatNodeset(virDomainNumatunePtr numatune,
 /*
  * Setters
  */
-int virDomainNumatuneSet(virDomainDefPtr def, int placement,
-                         int mode, virBitmapPtr nodeset)
+int virDomainNumatuneSet(virDomainNumatunePtr *numatunePtr,
+                         bool placement_static,
+                         int placement,
+                         int mode,
+                         virBitmapPtr nodeset)
     ATTRIBUTE_NONNULL(1);
 
 /*

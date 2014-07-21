@@ -734,8 +734,12 @@ lxcSetCpusetTune(virDomainDefPtr def, virConfPtr properties)
         value->str) {
         if (virBitmapParse(value->str, 0, &nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
             return -1;
-        if (virDomainNumatuneSet(def, VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC,
-                                 VIR_DOMAIN_NUMATUNE_MEM_STRICT, nodeset) < 0) {
+        if (virDomainNumatuneSet(&def->numatune,
+                                 def->placement_mode ==
+                                 VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
+                                 VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC,
+                                 VIR_DOMAIN_NUMATUNE_MEM_STRICT,
+                                 nodeset) < 0) {
             virBitmapFree(nodeset);
             return -1;
         }
