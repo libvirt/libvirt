@@ -13393,6 +13393,26 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         goto cleanup;
     }
 
+    /* allow snapshots only in certain states */
+    switch ((virDomainState) vm->state.state) {
+        /* valid states */
+    case VIR_DOMAIN_RUNNING:
+    case VIR_DOMAIN_PAUSED:
+    case VIR_DOMAIN_SHUTDOWN:
+    case VIR_DOMAIN_SHUTOFF:
+    case VIR_DOMAIN_CRASHED:
+    case VIR_DOMAIN_PMSUSPENDED:
+        break;
+
+        /* invalid states */
+    case VIR_DOMAIN_NOSTATE:
+    case VIR_DOMAIN_BLOCKED: /* invalid state, unused in qemu */
+    case VIR_DOMAIN_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Invalid domain state %s"),
+                       virDomainStateTypeToString(vm->state.state));
+        goto cleanup;
+    }
+
     if (redefine) {
         if (!virDomainSnapshotRedefinePrep(domain, vm, &def, &snap,
                                            &update_current, flags) < 0)
