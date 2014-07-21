@@ -390,7 +390,7 @@ virNumaGetMaxCPUs(void)
 }
 
 
-#ifdef HAVE_NUMA_BITMASK_ISBITSET
+#if WITH_NUMACTL && HAVE_NUMA_BITMASK_ISBITSET
 /**
  * virNumaNodeIsAvailable:
  * @node: node to check
@@ -485,7 +485,7 @@ virNumaGetDistances(int node ATTRIBUTE_UNUSED,
 {
     *distances = NULL;
     *ndistances = 0;
-    VIR_DEBUG("NUMA distance information isn't availble on this host");
+    VIR_DEBUG("NUMA distance information isn't available on this host");
     return 0;
 }
 #endif
