@@ -92,6 +92,7 @@ typedef enum {
     VIR_STORAGE_POOL_RBD,      /* RADOS Block Device */
     VIR_STORAGE_POOL_SHEEPDOG, /* Sheepdog device */
     VIR_STORAGE_POOL_GLUSTER,  /* Gluster device */
+    VIR_STORAGE_POOL_ZFS,      /* ZFS */
 
     VIR_STORAGE_POOL_LAST,
 } virStoragePoolType;
@@ -509,7 +510,8 @@ VIR_ENUM_DECL(virStoragePartedFs)
                  VIR_CONNECT_LIST_STORAGE_POOLS_MPATH    | \
                  VIR_CONNECT_LIST_STORAGE_POOLS_RBD      | \
                  VIR_CONNECT_LIST_STORAGE_POOLS_SHEEPDOG | \
-                 VIR_CONNECT_LIST_STORAGE_POOLS_GLUSTER)
+                 VIR_CONNECT_LIST_STORAGE_POOLS_GLUSTER  | \
+                 VIR_CONNECT_LIST_STORAGE_POOLS_ZFS)
 
 # define VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ALL                  \
                 (VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE     | \

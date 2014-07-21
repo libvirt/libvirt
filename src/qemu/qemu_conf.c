@@ -1369,6 +1369,7 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
     case VIR_STORAGE_POOL_LOGICAL:
     case VIR_STORAGE_POOL_DISK:
     case VIR_STORAGE_POOL_SCSI:
+    case VIR_STORAGE_POOL_ZFS:
         if (!(def->src->path = virStorageVolGetPath(vol)))
             goto cleanup;
 

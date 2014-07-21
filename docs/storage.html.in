@@ -117,6 +117,9 @@
       <li>
         <a href="#StorageBackendGluster">Gluster backend</a>
       </li>
+      <li>
+        <a href="#StorageBackendZFS">ZFS backend</a>
+      </li>
     </ul>
 
     <h2><a name="StorageBackendDir">Directory pool</a></h2>
@@ -741,6 +744,37 @@
     <p>
       The valid volume types are the same as for the <code>directory</code>
       pool type.
+    </p>
+
+    <h2><a name="StorageBackendZFS">ZFS pools</a></h2>
+    <p>
+      This provides a pool based on the ZFS filesystem. It is currently
+      supported on FreeBSD only.
+
+      A pool has to be created before libvirt could start using it. That
+      could be done using <code>zpool create</code> command. Please refer to
+      the ZFS documentation for details on a pool creation.
+
+      <span class="since">Since 1.2.8</span>
+    </p>
+
+    <h3>Example pool input</h3>
+    <pre>
+      &lt;pool type="zfs"&gt;
+        &lt;name&gt;myzfspool&lt;/name&gt;
+        &lt;source&gt;
+          &lt;name&gt;zpoolname&lt;/name&gt;
+        &lt;/source&gt;
+       &lt;/pool&gt;</pre>
+
+    <h3>Valid pool format types</h3>
+    <p>
+      The ZFS volume pool does not use the pool format type element.
+    </p>
+
+    <h3>Valid pool format types</h3>
+    <p>
+      The ZFS volume pool does not use the volume format type element.
     </p>
 
   </body>

@@ -22,6 +22,7 @@
         <ref name='poolrbd'/>
         <ref name='poolsheepdog'/>
         <ref name='poolgluster'/>
+        <ref name='poolzfs'/>
       </choice>
     </element>
   </define>
@@ -154,6 +155,17 @@
       <ref name='commonmetadata'/>
       <ref name='sizing'/>
       <ref name='sourcegluster'/>
+    </interleave>
+  </define>
+
+  <define name='poolzfs'>
+    <attribute name='type'>
+      <value>zfs</value>
+    </attribute>
+    <interleave>
+      <ref name='commonmetadata'/>
+      <ref name='sizing'/>
+      <ref name='sourcezfs'/>
     </interleave>
   </define>
 
@@ -367,6 +379,14 @@
           <text/>
         </attribute>
       </choice>
+    </element>
+  </define>
+
+  <define name='sourcezfs'>
+    <element name='source'>
+      <interleave>
+        <ref name='sourceinfoname'/>
+      </interleave>
     </element>
   </define>
 

@@ -1734,6 +1734,10 @@ AC_ARG_WITH([storage-gluster],
   [AS_HELP_STRING([--with-storage-gluster],
     [with Gluster backend for the storage driver @<:@default=check@:>@])],
   [],[with_storage_gluster=check])
+AC_ARG_WITH([storage-zfs],
+  [AS_HELP_STRING([--with-storage-zfs],
+    [with ZFS backend for the storage driver @<:@default=check@:>@])],
+  [],[with_storage_zfs=check])
 
 if test "$with_libvirtd" = "no"; then
   with_storage_dir=no
@@ -1746,6 +1750,7 @@ if test "$with_libvirtd" = "no"; then
   with_storage_rbd=no
   with_storage_sheepdog=no
   with_storage_gluster=no
+  with_storage_zfs=no
 fi
 if test "$with_storage_dir" = "yes" ; then
   AC_DEFINE_UNQUOTED([WITH_STORAGE_DIR], 1, [whether directory backend for storage driver is enabled])
@@ -1962,6 +1967,43 @@ if test "$with_storage_gluster" = "yes"; then
     [whether Gluster backend for storage driver is enabled])
 fi
 AM_CONDITIONAL([WITH_STORAGE_GLUSTER], [test "$with_storage_gluster" = "yes"])
+
+if test "$with_storage_zfs" = "check"; then
+    with_storage_zfs=$with_freebsd
+fi
+
+if test "$with_storage_zfs" = "yes" && test "$with_freebsd" = "no"; then
+    AC_MSG_ERROR([The ZFS storage driver can be enabled on FreeBSD only.])
+fi
+
+if test "$with_storage_zfs" = "yes" ||
+   test "$with_storage_zfs" = "check"; then
+  AC_PATH_PROG([ZFS], [zfs], [], [$PATH:/sbin:/usr/sbin])
+  AC_PATH_PROG([ZPOOL], [zpool], [], [$PATH:/sbin:/usr/sbin])
+
+  if test "$with_storage_zfs" = "yes"; then
+    if test -z "$ZFS" || test -z "$ZPOOL"; then
+      AC_MSG_ERROR([We need zfs and zpool for ZFS storage driver])
+    fi
+  else
+    if test -z "$ZFS" || test -z "$ZPOOL"; then
+      with_storage_zfs=no
+    fi
+
+    if test "$with_storage_zfs" = "check"; then
+      with_storage_zfs=yes
+    fi
+  fi
+
+  if test "$with_storage_zfs" = "yes"; then
+    AC_DEFINE_UNQUOTED([WITH_STORAGE_ZFS], 1,
+      [whether ZFS backend for storage driver is enabled])
+    AC_DEFINE_UNQUOTED([ZFS], ["$ZFS"], [Location of zfs program])
+    AC_DEFINE_UNQUOTED([ZPOOL], ["$ZPOOL"], [Location of zpool program])
+  fi
+fi
+AM_CONDITIONAL([WITH_STORAGE_ZFS],
+  [test "$with_storage_zfs" = "yes"])
 
 if test "$with_storage_fs" = "yes" ||
    test "$with_storage_gluster" = "yes"; then
@@ -2806,6 +2848,7 @@ AC_MSG_NOTICE([    Disk: $with_storage_disk])
 AC_MSG_NOTICE([     RBD: $with_storage_rbd])
 AC_MSG_NOTICE([Sheepdog: $with_storage_sheepdog])
 AC_MSG_NOTICE([ Gluster: $with_storage_gluster])
+AC_MSG_NOTICE([     ZFS: $with_storage_zfs])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Security Drivers])
 AC_MSG_NOTICE([])

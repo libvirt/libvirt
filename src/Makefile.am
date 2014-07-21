@@ -862,6 +862,9 @@ STORAGE_DRIVER_SHEEPDOG_SOURCES =				\
 STORAGE_DRIVER_GLUSTER_SOURCES =				\
 		storage/storage_backend_gluster.h storage/storage_backend_gluster.c
 
+STORAGE_DRIVER_ZFS_SOURCES =					\
+                storage/storage_backend_zfs.h storage/storage_backend_zfs.c
+
 STORAGE_HELPER_DISK_SOURCES =					\
 		storage/parthelper.c
 
@@ -1514,6 +1517,10 @@ libvirt_driver_storage_impl_la_CFLAGS += $(GLUSTERFS_CFLAGS)
 libvirt_driver_storage_impl_la_LIBADD += $(GLUSTERFS_LIBS)
 endif WITH_STORAGE_GLUSTER
 
+if WITH_STORAGE_ZFS
+libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_ZFS_SOURCES)
+endif WITH_STORAGE_ZFS
+
 if WITH_NODE_DEVICES
 # Needed to keep automake quiet about conditionals
 if WITH_DRIVER_MODULES
@@ -1723,6 +1730,7 @@ EXTRA_DIST +=							\
 		$(STORAGE_DRIVER_RBD_SOURCES)			\
 		$(STORAGE_DRIVER_SHEEPDOG_SOURCES)		\
 		$(STORAGE_DRIVER_GLUSTER_SOURCES)		\
+		$(STORAGE_DRIVER_ZFS_SOURCES)			\
 		$(NODE_DEVICE_DRIVER_SOURCES)			\
 		$(NODE_DEVICE_DRIVER_HAL_SOURCES)		\
 		$(NODE_DEVICE_DRIVER_UDEV_SOURCES)		\
