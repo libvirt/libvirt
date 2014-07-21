@@ -2176,7 +2176,7 @@ virFindFCHostCapableVport(const char *sysfs_prefix)
 int
 virReadSCSIUniqueId(const char *sysfs_prefix ATTRIBUTE_UNUSED,
                     int host ATTRIBUTE_UNUSED,
-                    unsigned int *result ATTRIBUTE_UNUSED)
+                    int *result ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
@@ -2188,7 +2188,7 @@ virFindSCSIHostByPCI(const char *sysfs_prefix ATTRIBUTE_UNUSED,
                      unsigned int unique_id ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
-    return -1;
+    return NULL;
 }
 
 int
