@@ -13401,8 +13401,13 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     case VIR_DOMAIN_SHUTDOWN:
     case VIR_DOMAIN_SHUTOFF:
     case VIR_DOMAIN_CRASHED:
-    case VIR_DOMAIN_PMSUSPENDED:
         break;
+
+    case VIR_DOMAIN_PMSUSPENDED:
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("qemu doesn't support taking snapshots of "
+                         "PMSUSPENDED guests"));
+        goto cleanup;
 
         /* invalid states */
     case VIR_DOMAIN_NOSTATE:
@@ -14178,8 +14183,6 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     case VIR_DOMAIN_SHUTDOWN:
     case VIR_DOMAIN_SHUTOFF:
     case VIR_DOMAIN_CRASHED:
-        /* XXX: The following one is clearly wrong! */
-    case VIR_DOMAIN_PMSUSPENDED:
         /* Transitions 1, 4, 7 */
         /* Newer qemu -loadvm refuses to revert to the state of a snapshot
          * created by qemu-img snapshot -c.  If the domain is running, we
@@ -14244,6 +14247,12 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             }
         }
         break;
+
+    case VIR_DOMAIN_PMSUSPENDED:
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("qemu doesn't support reversion of snapshot taken in "
+                         "PMSUSPENDED state"));
+        goto cleanup;
 
     case VIR_DOMAIN_NOSTATE:
     case VIR_DOMAIN_BLOCKED:
