@@ -16,9 +16,11 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include
+INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include \
+           -I$(top_builddir)/gnulib/lib -I$(top_srcdir)/gnulib/lib \
+           -I$(top_srcdir)
 LDADDS = $(STATIC_BINARIES) $(WARN_CFLAGS) $(top_builddir)/src/libvirt.la \
-	$(COVERAGE_LDFLAGS)
+         $(top_builddir)/gnulib/lib/libgnu.la $(COVERAGE_LDFLAGS)
 
 noinst_PROGRAMS=domtop
 
