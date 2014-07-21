@@ -151,10 +151,10 @@ gather_pci_cap(LibHalContext *ctx, const char *udi,
     if (get_str_prop(ctx, udi, "pci.linux.sysfs_path", &sysfs_path) == 0) {
         char *p = strrchr(sysfs_path, '/');
         if (p) {
-            (void)virStrToLong_ui(p+1, &p, 16, &d->pci_dev.domain);
-            (void)virStrToLong_ui(p+1, &p, 16, &d->pci_dev.bus);
-            (void)virStrToLong_ui(p+1, &p, 16, &d->pci_dev.slot);
-            (void)virStrToLong_ui(p+1, &p, 16, &d->pci_dev.function);
+            ignore_value(virStrToLong_ui(p+1, &p, 16, &d->pci_dev.domain));
+            ignore_value(virStrToLong_ui(p+1, &p, 16, &d->pci_dev.bus));
+            ignore_value(virStrToLong_ui(p+1, &p, 16, &d->pci_dev.slot));
+            ignore_value(virStrToLong_ui(p+1, &p, 16, &d->pci_dev.function));
         }
 
         if (!virPCIGetPhysicalFunction(sysfs_path,
