@@ -4191,7 +4191,13 @@ qemu-kvm -net nic,model=? /dev/null
               configured, it can be desirable to restrict what
               channels can be run on each port.  This is achieved by
               adding one or more &lt;channel&gt; elements inside the
-              main &lt;graphics&gt; element. Valid channel names
+              main &lt;graphics&gt; element and setting the <code>mode</code>
+              attribute to either <code>secure</code> or <code>insecure</code>.
+              Setting the mode attribute overrides the default value as set
+              by the <code>defaultMode</code> attribute. (Note that specifying
+              <code>any</code> as mode discards the entry as the channel would
+              inherit the default mode anyways)
+              Valid channel names
               include <code>main</code>, <code>display</code>,
               <code>inputs</code>, <code>cursor</code>,
               <code>playback</code>, <code>record</code>
