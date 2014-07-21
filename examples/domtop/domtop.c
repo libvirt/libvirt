@@ -254,7 +254,7 @@ do_top(virConnectPtr conn,
 {
     int ret = -1;
     virDomainPtr dom;
-    int max_id;
+    int max_id = 0;
     int nparams = 0, then_nparams = 0, now_nparams = 0;
     virTypedParameterPtr then_params = NULL, now_params = NULL;
     struct sigaction action_stop;
