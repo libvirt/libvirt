@@ -2664,6 +2664,7 @@ int virDomainObjSetMetadata(virDomainObjPtr vm,
                             const char *uri,
                             virCapsPtr caps,
                             virDomainXMLOptionPtr xmlopt,
+                            const char *stateDir,
                             const char *configDir,
                             unsigned int flags);
 

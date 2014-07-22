@@ -1046,7 +1046,8 @@ bhyveDomainSetMetadata(virDomainPtr dom,
         goto cleanup;
 
     ret = virDomainObjSetMetadata(vm, type, metadata, key, uri, caps,
-                                  privconn->xmlopt, BHYVE_CONFIG_DIR, flags);
+                                  privconn->xmlopt, BHYVE_STATE_DIR,
+                                  BHYVE_CONFIG_DIR, flags);
 
  cleanup:
     virObjectUnref(caps);

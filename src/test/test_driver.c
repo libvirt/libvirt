@@ -3042,7 +3042,7 @@ static int testDomainSetMetadata(virDomainPtr dom,
 
     ret = virDomainObjSetMetadata(privdom, type, metadata, key, uri,
                                   privconn->caps, privconn->xmlopt,
-                                  NULL, flags);
+                                  NULL, NULL, flags);
 
  cleanup:
     if (privdom)

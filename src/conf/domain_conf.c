@@ -18140,6 +18140,9 @@ virDomainSaveXML(const char *configDir,
     char *configFile = NULL;
     int ret = -1;
 
+    if (!configDir)
+        return 0;
+
     if ((configFile = virDomainConfigFile(configDir, def->name)) == NULL)
         goto cleanup;
 
@@ -19770,6 +19773,7 @@ virDomainObjSetMetadata(virDomainObjPtr vm,
                         const char *uri,
                         virCapsPtr caps,
                         virDomainXMLOptionPtr xmlopt,
+                        const char *stateDir,
                         const char *configDir,
                         unsigned int flags)
 {
@@ -19782,12 +19786,17 @@ virDomainObjSetMetadata(virDomainObjPtr vm,
                                         &persistentDef) < 0)
         return -1;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE)
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (virDomainDefSetMetadata(vm->def, type, metadata, key, uri) < 0)
             return -1;
 
+        if (virDomainSaveStatus(xmlopt, stateDir, vm) < 0)
+            return -1;
+    }
+
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (virDomainDefSetMetadata(persistentDef, type, metadata, key, uri) < 0)
+        if (virDomainDefSetMetadata(persistentDef, type, metadata, key,
+                                    uri) < 0)
             return -1;
 
         if (virDomainSaveConfig(configDir, persistentDef) < 0)

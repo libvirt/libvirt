@@ -16118,7 +16118,8 @@ qemuDomainSetMetadata(virDomainPtr dom,
         goto cleanup;
 
     ret = virDomainObjSetMetadata(vm, type, metadata, key, uri, caps,
-                                  driver->xmlopt, cfg->configDir, flags);
+                                  driver->xmlopt, cfg->stateDir,
+                                  cfg->configDir, flags);
 
  cleanup:
     virObjectUnlock(vm);
