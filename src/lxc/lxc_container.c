@@ -495,7 +495,7 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
                                                  char **veths)
 {
     int rc = 0;
-    size_t i;
+    size_t i, j;
     char *newname = NULL;
     virDomainNetDefPtr netDef;
     bool privNet = vmDef->features[VIR_DOMAIN_FEATURE_PRIVNET] ==
@@ -515,6 +515,24 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
         rc = virNetDevSetName(veths[i], newname);
         if (rc < 0)
             goto error_out;
+
+        for (j = 0; j < netDef->nips; j++) {
+            virDomainNetIpDefPtr ip = netDef->ips[j];
+            unsigned int prefix = (ip->prefix > 0) ? ip->prefix :
+                                  VIR_SOCKET_ADDR_DEFAULT_PREFIX;
+            char *ipStr = virSocketAddrFormat(&ip->address);
+
+            VIR_DEBUG("Adding IP address '%s/%u' to '%s'",
+                      ipStr, ip->prefix, newname);
+            if (virNetDevSetIPAddress(newname, &ip->address, prefix) < 0) {
+                virReportError(VIR_ERR_SYSTEM_ERROR,
+                               _("Failed to set IP address '%s' on %s"),
+                               ipStr, newname);
+                VIR_FREE(ipStr);
+                goto error_out;
+            }
+            VIR_FREE(ipStr);
+        }
 
         VIR_DEBUG("Enabling %s", newname);
         rc = virNetDevSetOnline(newname, true);
