@@ -1306,7 +1306,11 @@ vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
             VIR_DEBUG("NIC(%zu): brname: %s", i, def->nets[i]->data.bridge.brname);
             VIR_DEBUG("NIC(%zu): script: %s", i, def->nets[i]->script);
-            VIR_DEBUG("NIC(%zu): ipaddr: %s", i, def->nets[i]->data.bridge.ipaddr);
+            if (def->nets[i]->nips > 0) {
+                char *ipStr = virSocketAddrFormat(&def->nets[i]->ips[0]->address);
+                VIR_DEBUG("NIC(%zu): ipaddr: %s", i, ipStr);
+                VIR_FREE(ipStr);
+            }
         }
 
         gVBoxAPI.UIMachine.GetNetworkAdapter(machine, i, &adapter);

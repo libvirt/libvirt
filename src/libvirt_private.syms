@@ -322,6 +322,7 @@ virDomainLockFailureTypeFromString;
 virDomainLockFailureTypeToString;
 virDomainMemballoonModelTypeFromString;
 virDomainMemballoonModelTypeToString;
+virDomainNetAppendIpAddress;
 virDomainNetDefFormat;
 virDomainNetDefFree;
 virDomainNetFind;

@@ -920,12 +920,9 @@ xenParseVif(virConfPtr conf, virDomainDefPtr def)
             if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
                 if (bridge[0] && VIR_STRDUP(net->data.bridge.brname, bridge) < 0)
                     goto cleanup;
-                if (ip[0] && VIR_STRDUP(net->data.bridge.ipaddr, ip) < 0)
-                    goto cleanup;
-            } else {
-                if (ip[0] && VIR_STRDUP(net->data.ethernet.ipaddr, ip) < 0)
-                    goto cleanup;
             }
+            if (ip[0] && virDomainNetAppendIpAddress(net, ip, AF_INET, 0) < 0)
+                goto cleanup;
 
             if (script && script[0] &&
                 VIR_STRDUP(net->script, script) < 0)
@@ -1223,16 +1220,22 @@ xenFormatNet(virConnectPtr conn,
     switch (net->type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         virBufferAsprintf(&buf, ",bridge=%s", net->data.bridge.brname);
-        if (net->data.bridge.ipaddr)
-            virBufferAsprintf(&buf, ",ip=%s", net->data.bridge.ipaddr);
+        if (net->nips > 0) {
+            char *ipStr = virSocketAddrFormat(&net->ips[0]->address);
+            virBufferAsprintf(&buf, ",ip=%s", ipStr);
+            VIR_FREE(ipStr);
+        }
         virBufferAsprintf(&buf, ",script=%s", DEFAULT_VIF_SCRIPT);
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
         if (net->script)
             virBufferAsprintf(&buf, ",script=%s", net->script);
-        if (net->data.ethernet.ipaddr)
-            virBufferAsprintf(&buf, ",ip=%s", net->data.ethernet.ipaddr);
+        if (net->nips > 0) {
+            char *ipStr = virSocketAddrFormat(&net->ips[0]->address);
+            virBufferAsprintf(&buf, ",ip=%s", ipStr);
+            VIR_FREE(ipStr);
+        }
         break;
 
     case VIR_DOMAIN_NET_TYPE_NETWORK:

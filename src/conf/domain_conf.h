@@ -478,6 +478,13 @@ typedef enum {
     VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST
 } virDomainHostdevCapsType;
 
+typedef struct _virDomainNetIpDef virDomainNetIpDef;
+typedef virDomainNetIpDef *virDomainNetIpDefPtr;
+struct _virDomainNetIpDef {
+    virSocketAddr address;       /* ipv4 or ipv6 address */
+    unsigned int prefix; /* number of 1 bits in the net mask */
+};
+
 typedef struct _virDomainHostdevCaps virDomainHostdevCaps;
 typedef virDomainHostdevCaps *virDomainHostdevCapsPtr;
 struct _virDomainHostdevCaps {
@@ -941,7 +948,6 @@ struct _virDomainNetDef {
     union {
         struct {
             char *dev;
-            char *ipaddr;
         } ethernet;
         virDomainChrSourceDefPtr vhostuser;
         struct {
@@ -963,7 +969,6 @@ struct _virDomainNetDef {
         } network;
         struct {
             char *brname;
-            char *ipaddr;
         } bridge;
         struct {
             char *name;
@@ -993,6 +998,8 @@ struct _virDomainNetDef {
     virNetDevVlan vlan;
     int trustGuestRxFilters; /* enum virTristateBool */
     int linkstate;
+    size_t nips;
+    virDomainNetIpDefPtr *ips;
 };
 
 /* Used for prefix of ifname of any network name generated dynamically
@@ -2554,6 +2561,10 @@ virNetDevBandwidthPtr
 virDomainNetGetActualBandwidth(virDomainNetDefPtr iface);
 virNetDevVlanPtr virDomainNetGetActualVlan(virDomainNetDefPtr iface);
 bool virDomainNetGetActualTrustGuestRxFilters(virDomainNetDefPtr iface);
+int virDomainNetAppendIpAddress(virDomainNetDefPtr def,
+                                const char *address,
+                                int family,
+                                unsigned int prefix);
 
 int virDomainControllerInsert(virDomainDefPtr def,
                               virDomainControllerDefPtr controller)

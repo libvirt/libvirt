@@ -2311,14 +2311,24 @@
           <empty/>
         </element>
       </optional>
-      <optional>
+      <zeroOrMore>
         <element name="ip">
           <attribute name="address">
-            <ref name="ipv4Addr"/>
+            <ref name="ipAddr"/>
           </attribute>
+          <optional>
+            <attribute name="family">
+              <ref name="addr-family"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="prefix">
+              <ref name="ipPrefix"/>
+            </attribute>
+          </optional>
           <empty/>
         </element>
-      </optional>
+      </zeroOrMore>
       <optional>
         <element name="script">
           <attribute name="path">

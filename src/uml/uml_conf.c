@@ -174,7 +174,7 @@ umlBuildCommandLineNet(virConnectPtr conn,
         virBufferAddLit(&buf, "tuntap,");
         if (def->ifname)
             virBufferAdd(&buf, def->ifname, -1);
-        if (def->data.ethernet.ipaddr) {
+        if (def->nips > 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("IP address not supported for ethernet interface"));
             goto error;

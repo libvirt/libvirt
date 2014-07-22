@@ -4321,6 +4321,29 @@ qemu-kvm -net nic,model=? /dev/null
       <span class="since">Since 0.9.5</span>
     </p>
 
+    <h5><a name="ipconfig">IP configuration</a></h5>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='network'&gt;
+      &lt;source network='default'/&gt;
+      &lt;target dev='vnet0'/&gt;
+      <b>&lt;ip family='ipv4' address='192.168.122.5' prefix='24'/&gt;</b>
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...
+</pre>
+
+    <p>
+    <span class="since">Since 1.2.12</span> the network devices and host devices
+    with network capabilities can be provided zero or more IP addresses to set
+    on the target device. Note that some hypervisors or network device types
+    will simply ignore them or only use the first one. The <code>family</code>
+    attribute can be set to either <code>ipv4</code> or <code>ipv6</code>, the
+    <code>address</code> attribute holds the IP address. The <code>prefix</code>
+    is not mandatory since some hypervisors do not handle it.
+    </p>
+
     <h5><a name="elementVhostuser">vhost-user interface</a></h5>
 
     <p>

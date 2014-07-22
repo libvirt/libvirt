@@ -28,6 +28,8 @@
     <interface type='bridge'>
       <mac address='00:16:3e:0f:ef:8a'/>
       <source bridge='bri0'/>
+      <ip address='192.168.122.12' family='ipv4' prefix='24'/>
+      <ip address='192.168.122.13' family='ipv4' prefix='24'/>
       <target dev='veth0'/>
       <guest dev='eth2'/>
     </interface>

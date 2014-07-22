@@ -1414,6 +1414,8 @@ virDomainActualNetDefFree(virDomainActualNetDefPtr def)
 
 void virDomainNetDefFree(virDomainNetDefPtr def)
 {
+    size_t i;
+
     if (!def)
         return;
 
@@ -1422,7 +1424,6 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
         VIR_FREE(def->data.ethernet.dev);
-        VIR_FREE(def->data.ethernet.ipaddr);
         break;
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
@@ -1443,7 +1444,6 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         VIR_FREE(def->data.bridge.brname);
-        VIR_FREE(def->data.bridge.ipaddr);
         break;
 
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
@@ -1470,6 +1470,10 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     VIR_FREE(def->ifname);
     VIR_FREE(def->ifname_guest);
     VIR_FREE(def->ifname_guest_actual);
+
+    for (i = 0; i < def->nips; i++)
+        VIR_FREE(def->ips[i]);
+    VIR_FREE(def->ips);
 
     virDomainDeviceInfoClear(&def->info);
 
@@ -4770,6 +4774,58 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     return ret;
 }
 
+static virDomainNetIpDefPtr
+virDomainNetIpParseXML(xmlNodePtr node)
+{
+    /* Parse the prefix in every case */
+    virDomainNetIpDefPtr ip = NULL;
+    char *prefixStr = NULL;
+    unsigned int prefixValue = 0;
+    char *familyStr = NULL;
+    int family = AF_UNSPEC;
+    char *address = NULL;
+
+    if (!(prefixStr = virXMLPropString(node, "prefix")) ||
+        (virStrToLong_ui(prefixStr, NULL, 10, &prefixValue) < 0)) {
+        // Don't shout, as some old config may not have a prefix
+        VIR_DEBUG("Missing or invalid network prefix");
+    }
+
+    if (!(address = virXMLPropString(node, "address"))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Missing network address"));
+        goto error;
+    }
+
+    familyStr = virXMLPropString(node, "family");
+    if (familyStr && STREQ(familyStr, "ipv4"))
+        family = AF_INET;
+    else if (familyStr && STREQ(familyStr, "ipv6"))
+        family = AF_INET6;
+    else
+        family = virSocketAddrNumericFamily(address);
+
+    if (VIR_ALLOC(ip) < 0)
+        goto error;
+
+    if (virSocketAddrParse(&ip->address, address, family) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Failed to parse IP address: '%s'"),
+                       address);
+        goto error;
+    }
+    ip->prefix = prefixValue;
+
+    return ip;
+
+ error:
+    VIR_FREE(prefixStr);
+    VIR_FREE(familyStr);
+    VIR_FREE(address);
+    VIR_FREE(ip);
+    return NULL;
+}
+
 static int
 virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
                                 xmlXPathContextPtr ctxt,
@@ -7208,6 +7264,31 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
 #define NET_MODEL_CHARS \
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"
 
+
+int
+virDomainNetAppendIpAddress(virDomainNetDefPtr def,
+                            const char *address,
+                            int family,
+                            unsigned int prefix)
+{
+    virDomainNetIpDefPtr ipDef = NULL;
+    if (VIR_ALLOC(ipDef) < 0)
+        return -1;
+
+    if (virSocketAddrParse(&ipDef->address, address, family) < 0)
+        goto error;
+    ipDef->prefix = prefix;
+
+    if (VIR_APPEND_ELEMENT(def->ips, def->nips, ipDef) < 0)
+        goto error;
+
+    return 0;
+
+ error:
+    VIR_FREE(ipDef);
+    return -1;
+}
+
 /* Parse the XML definition for a network interface
  * @param node XML nodeset to parse for net definition
  * @return 0 on success, -1 on failure
@@ -7255,6 +7336,9 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     virDomainActualNetDefPtr actual = NULL;
     xmlNodePtr oldnode = ctxt->node;
     int ret, val;
+    size_t i;
+    size_t nips = 0;
+    virDomainNetIpDefPtr *ips = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -7343,11 +7427,14 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                        xmlStrEqual(cur->name, BAD_CAST "source")) {
                 address = virXMLPropString(cur, "address");
                 port = virXMLPropString(cur, "port");
-            } else if (!address &&
-                       (def->type == VIR_DOMAIN_NET_TYPE_ETHERNET ||
-                        def->type == VIR_DOMAIN_NET_TYPE_BRIDGE) &&
-                       xmlStrEqual(cur->name, BAD_CAST "ip")) {
-                address = virXMLPropString(cur, "address");
+            } else if (xmlStrEqual(cur->name, BAD_CAST "ip")) {
+                virDomainNetIpDefPtr ip = NULL;
+
+                if (!(ip = virDomainNetIpParseXML(cur)))
+                    goto error;
+
+                if (VIR_APPEND_ELEMENT(ips, nips, ip) < 0)
+                    goto error;
             } else if (!ifname &&
                        xmlStrEqual(cur->name, BAD_CAST "target")) {
                 ifname = virXMLPropString(cur, "dev");
@@ -7547,10 +7634,6 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             def->data.ethernet.dev = dev;
             dev = NULL;
         }
-        if (address != NULL) {
-            def->data.ethernet.ipaddr = address;
-            address = NULL;
-        }
         break;
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
@@ -7562,10 +7645,6 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
         def->data.bridge.brname = bridge;
         bridge = NULL;
-        if (address != NULL) {
-            def->data.bridge.ipaddr = address;
-            address = NULL;
-        }
         break;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:
@@ -7660,6 +7739,11 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
+    }
+
+    for (i = 0; i < nips; i++) {
+        if (VIR_APPEND_ELEMENT(def->ips, def->nips, ips[i]) < 0)
+            goto error;
     }
 
     if (script != NULL) {
@@ -7924,6 +8008,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(linkstate);
     VIR_FREE(addrtype);
     VIR_FREE(trustGuestRxFilters);
+    VIR_FREE(ips);
     virNWFilterHashTableFree(filterparams);
 
     return def;
@@ -17042,6 +17127,30 @@ virDomainFSDefFormat(virBufferPtr buf,
     return 0;
 }
 
+static void
+virDomainNetIpsFormat(virBufferPtr buf, virDomainNetIpDefPtr *ips, size_t nips)
+{
+    size_t i;
+
+    /* Output IP addresses */
+    for (i = 0; i < nips; i++) {
+        virSocketAddrPtr address = &ips[i]->address;
+        char *ipStr = virSocketAddrFormat(address);
+        const char *familyStr = NULL;
+        if (VIR_SOCKET_ADDR_IS_FAMILY(address, AF_INET6))
+            familyStr = "ipv6";
+        else if (VIR_SOCKET_ADDR_IS_FAMILY(address, AF_INET))
+            familyStr = "ipv4";
+        virBufferAsprintf(buf, "<ip address='%s'",
+                          ipStr);
+        if (familyStr)
+            virBufferAsprintf(buf, " family='%s'", familyStr);
+        if (ips[i]->prefix != 0)
+            virBufferAsprintf(buf, " prefix='%u'", ips[i]->prefix);
+        virBufferAddLit(buf, "/>\n");
+    }
+}
+
 static int
 virDomainHostdevDefFormatSubsys(virBufferPtr buf,
                                 virDomainHostdevDefPtr def,
@@ -17273,7 +17382,6 @@ virDomainActualNetDefContentsFormat(virBufferPtr buf,
         return -1;
     return 0;
 }
-
 
 /* virDomainActualNetDefFormat() - format the ActualNetDef
  * info inside an <actual> element, as required for internal storage
@@ -17511,9 +17619,6 @@ virDomainNetDefFormat(virBufferPtr buf,
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
             virBufferEscapeString(buf, "<source dev='%s'/>\n",
                                   def->data.ethernet.dev);
-            if (def->data.ethernet.ipaddr)
-                virBufferAsprintf(buf, "<ip address='%s'/>\n",
-                                  def->data.ethernet.ipaddr);
             break;
 
         case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
@@ -17531,10 +17636,6 @@ virDomainNetDefFormat(virBufferPtr buf,
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
             virBufferEscapeString(buf, "<source bridge='%s'/>\n",
                                   def->data.bridge.brname);
-            if (def->data.bridge.ipaddr) {
-                virBufferAsprintf(buf, "<ip address='%s'/>\n",
-                                  def->data.bridge.ipaddr);
-            }
             break;
 
         case VIR_DOMAIN_NET_TYPE_SERVER:
@@ -17581,6 +17682,8 @@ virDomainNetDefFormat(virBufferPtr buf,
         if (virNetDevBandwidthFormat(def->bandwidth, buf) < 0)
             return -1;
     }
+
+    virDomainNetIpsFormat(buf, def->ips, def->nips);
 
     virBufferEscapeString(buf, "<script path='%s'/>\n",
                           def->script);

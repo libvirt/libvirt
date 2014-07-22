@@ -565,14 +565,14 @@ xenParseSxprNets(virDomainDefPtr def,
                     VIR_STRDUP(net->script, tmp2) < 0)
                     goto cleanup;
                 tmp = sexpr_node(node, "device/vif/ip");
-                if (VIR_STRDUP(net->data.bridge.ipaddr, tmp) < 0)
+                if (tmp && virDomainNetAppendIpAddress(net, tmp, AF_UNSPEC, 0) < 0)
                     goto cleanup;
             } else {
                 net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
                 if (VIR_STRDUP(net->script, tmp2) < 0)
                     goto cleanup;
                 tmp = sexpr_node(node, "device/vif/ip");
-                if (VIR_STRDUP(net->data.ethernet.ipaddr, tmp) < 0)
+                if (tmp && virDomainNetAppendIpAddress(net, tmp, AF_UNSPEC, 0) < 0)
                     goto cleanup;
             }
 
@@ -1898,8 +1898,11 @@ xenFormatSxprNet(virConnectPtr conn,
             script = def->script;
 
         virBufferEscapeSexpr(buf, "(script '%s')", script);
-        if (def->data.bridge.ipaddr != NULL)
-            virBufferEscapeSexpr(buf, "(ip '%s')", def->data.bridge.ipaddr);
+        if (def->nips > 0) {
+            char *ipStr = virSocketAddrFormat(&def->ips[0]->address);
+            virBufferEscapeSexpr(buf, "(ip '%s')", ipStr);
+            VIR_FREE(ipStr);
+        }
         break;
 
     case VIR_DOMAIN_NET_TYPE_NETWORK:
@@ -1932,8 +1935,11 @@ xenFormatSxprNet(virConnectPtr conn,
         if (def->script)
             virBufferEscapeSexpr(buf, "(script '%s')",
                                  def->script);
-        if (def->data.ethernet.ipaddr != NULL)
-            virBufferEscapeSexpr(buf, "(ip '%s')", def->data.ethernet.ipaddr);
+        if (def->nips > 0) {
+            char *ipStr = virSocketAddrFormat(&def->ips[0]->address);
+            virBufferEscapeSexpr(buf, "(ip '%s')", ipStr);
+            VIR_FREE(ipStr);
+        }
         break;
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:

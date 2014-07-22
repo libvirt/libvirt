@@ -93,7 +93,7 @@ testReadNetworkConf(const void *data ATTRIBUTE_UNUSED)
         "  <devices>\n"
         "    <interface type='ethernet'>\n"
         "      <mac address='00:00:00:00:00:00'/>\n"
-        "      <ip address='194.44.18.88'/>\n"
+        "      <ip address='194.44.18.88' family='ipv4'/>\n"
         "    </interface>\n"
         "    <interface type='bridge'>\n"
         "      <mac address='00:18:51:c1:05:ee'/>\n"

@@ -853,7 +853,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
 
     if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
         (net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
-         net->data.ethernet.ipaddr == NULL)) {
+         net->nips == 0)) {
         virBuffer buf = VIR_BUFFER_INITIALIZER;
         int veid = openvzGetVEID(vpsid);
 
@@ -904,9 +904,10 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         virCommandAddArg(cmd, "--netif_add");
         virCommandAddArgBuffer(cmd, &buf);
     } else if (net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
-              net->data.ethernet.ipaddr != NULL) {
+              net->nips > 0) {
         /* --ipadd ip */
-        virCommandAddArgList(cmd, "--ipadd", net->data.ethernet.ipaddr, NULL);
+        char *ipStr = virSocketAddrFormat(&net->ips[0]->address);
+        virCommandAddArgList(cmd, "--ipadd", ipStr, NULL);
     }
 
     /* TODO: processing NAT and physical device */
