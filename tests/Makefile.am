@@ -83,7 +83,6 @@ EXTRA_DIST =		\
 	domainsnapshotxml2xmlin \
 	domainsnapshotxml2xmlout \
 	fchostdata \
-	scsihostdata \
 	interfaceschemadata \
 	lxcconf2xmldata \
 	lxcxml2xmldata \
