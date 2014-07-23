@@ -1843,6 +1843,14 @@ struct _virDomainResourceDef {
     char *partition;
 };
 
+typedef struct _virDomaiHugePage virDomainHugePage;
+typedef virDomainHugePage *virDomainHugePagePtr;
+
+struct _virDomaiHugePage {
+    virBitmapPtr nodemask;      /* guest's NUMA node mask */
+    unsigned long long size;    /* hugepage size in KiB */
+};
+
 /*
  * Guest VM main configuration
  *
@@ -1869,7 +1877,10 @@ struct _virDomainDef {
     struct {
         unsigned long long max_balloon; /* in kibibytes */
         unsigned long long cur_balloon; /* in kibibytes */
-        bool hugepage_backed;
+
+        virDomainHugePagePtr hugepages;
+        size_t nhugepages;
+
         bool nosharepages;
         bool locked;
         int dump_core; /* enum virTristateSwitch */

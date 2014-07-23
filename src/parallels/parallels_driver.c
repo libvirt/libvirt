@@ -2023,7 +2023,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
             return -1;
     }
 
-    if (old->mem.hugepage_backed != new->mem.hugepage_backed ||
+    if (old->mem.nhugepages != new->mem.nhugepages ||
         old->mem.hard_limit != new->mem.hard_limit ||
         old->mem.soft_limit != new->mem.soft_limit ||
         old->mem.min_guarantee != new->mem.min_guarantee ||

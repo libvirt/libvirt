@@ -197,6 +197,7 @@ mymain(void)
     DO_TEST("hyperv-off");
 
     DO_TEST("hugepages");
+    DO_TEST("hugepages-pages");
     DO_TEST("nosharepages");
     DO_TEST("disk-aio");
     DO_TEST("disk-cdrom");

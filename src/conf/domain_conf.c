@@ -11330,6 +11330,57 @@ virDomainParseMemory(const char *xpath, xmlXPathContextPtr ctxt,
 }
 
 
+static int
+virDomainHugepagesParseXML(xmlNodePtr node,
+                           xmlXPathContextPtr ctxt,
+                           virDomainHugePagePtr hugepage)
+{
+    int ret = -1;
+    xmlNodePtr oldnode = ctxt->node;
+    unsigned long long bytes, max;
+    char *unit = NULL, *nodeset = NULL;
+
+    ctxt->node = node;
+
+    /* On 32-bit machines, our bound is 0xffffffff * KiB. On 64-bit
+     * machines, our bound is off_t (2^63).  */
+    if (sizeof(unsigned long) < sizeof(long long))
+        max = 1024ull * ULONG_MAX;
+    else
+        max = LLONG_MAX;
+
+    if (virXPathULongLong("string(./@size)", ctxt, &bytes) < 0) {
+        virReportError(VIR_ERR_XML_DETAIL, "%s",
+                       _("unable to parse size attribute"));
+        goto cleanup;
+    }
+
+    unit = virXPathString("string(./@unit)", ctxt);
+
+    if (virScaleInteger(&bytes, unit, 1024, max) < 0)
+        goto cleanup;
+
+    if (!(hugepage->size = VIR_DIV_UP(bytes, 1024))) {
+        virReportError(VIR_ERR_XML_DETAIL, "%s",
+                       _("hugepage size can't be zero"));
+        goto cleanup;
+    }
+
+    if ((nodeset = virXMLPropString(node, "nodeset"))) {
+        if (virBitmapParse(nodeset, 0, &hugepage->nodemask,
+                           VIR_DOMAIN_CPUMASK_LEN) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(unit);
+    VIR_FREE(nodeset);
+    ctxt->node = oldnode;
+    return ret;
+}
+
+
 static virDomainResourceDefPtr
 virDomainResourceDefParse(xmlNodePtr node,
                           xmlXPathContextPtr ctxt)
@@ -11397,7 +11448,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 {
     xmlNodePtr *nodes = NULL, node = NULL;
     char *tmp = NULL;
-    size_t i;
+    size_t i, j;
     int n;
     long id = -1;
     virDomainDefPtr def;
@@ -11547,8 +11598,55 @@ virDomainDefParseXML(xmlDocPtr xml,
         def->mem.cur_balloon = def->mem.max_balloon;
     }
 
-    if ((node = virXPathNode("./memoryBacking/hugepages", ctxt)))
-        def->mem.hugepage_backed = true;
+
+    if ((n = virXPathNodeSet("./memoryBacking/hugepages/page", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot extract hugepages nodes"));
+        goto error;
+    }
+
+    if (n) {
+        if (VIR_ALLOC_N(def->mem.hugepages, n) < 0)
+            goto error;
+
+        for (i = 0; i < n; i++) {
+            if (virDomainHugepagesParseXML(nodes[i], ctxt,
+                                           &def->mem.hugepages[i]) < 0)
+                goto error;
+            def->mem.nhugepages++;
+
+            for (j = 0; j < i; j++) {
+                if (def->mem.hugepages[i].nodemask &&
+                    def->mem.hugepages[j].nodemask &&
+                    virBitmapOverlaps(def->mem.hugepages[i].nodemask,
+                                      def->mem.hugepages[j].nodemask)) {
+                    virReportError(VIR_ERR_XML_DETAIL,
+                                   _("nodeset attribute of hugepages "
+                                     "of sizes %llu and %llu intersect"),
+                                   def->mem.hugepages[i].size,
+                                   def->mem.hugepages[j].size);
+                    goto error;
+                } else if (!def->mem.hugepages[i].nodemask &&
+                           !def->mem.hugepages[j].nodemask) {
+                    virReportError(VIR_ERR_XML_DETAIL,
+                                   _("two master hugepages detected: "
+                                     "%llu and %llu"),
+                                   def->mem.hugepages[i].size,
+                                   def->mem.hugepages[j].size);
+                    goto error;
+                }
+            }
+        }
+
+        VIR_FREE(nodes);
+    } else {
+        if ((node = virXPathNode("./memoryBacking/hugepages", ctxt))) {
+            if (VIR_ALLOC(def->mem.hugepages) < 0)
+                goto error;
+
+            def->mem.nhugepages = 1;
+        }
+    }
 
     if ((node = virXPathNode("./memoryBacking/nosharepages", ctxt)))
         def->mem.nosharepages = true;
@@ -11570,7 +11668,6 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     for (i = 0; i < n; i++) {
-        size_t j;
         if (virDomainBlkioDeviceParseXML(nodes[i],
                                          &def->blkio.devices[i]) < 0)
             goto error;
@@ -12509,7 +12606,6 @@ virDomainDefParseXML(xmlDocPtr xml,
 
         if (chr->target.port == -1) {
             int maxport = -1;
-            size_t j;
             for (j = 0; j < i; j++) {
                 if (def->parallels[j]->target.port > maxport)
                     maxport = def->parallels[j]->target.port;
@@ -12537,7 +12633,6 @@ virDomainDefParseXML(xmlDocPtr xml,
 
         if (chr->target.port == -1) {
             int maxport = -1;
-            size_t j;
             for (j = 0; j < i; j++) {
                 if (def->serials[j]->target.port > maxport)
                     maxport = def->serials[j]->target.port;
@@ -12595,7 +12690,6 @@ virDomainDefParseXML(xmlDocPtr xml,
         if (chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
             chr->info.addr.vioserial.port == 0) {
             int maxport = 0;
-            size_t j;
             for (j = 0; j < i; j++) {
                 virDomainChrDefPtr thischr = def->channels[j];
                 if (thischr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
@@ -12712,7 +12806,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->videos, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
-        size_t j = def->nvideos;
+        j = def->nvideos;
         virDomainVideoDefPtr video = virDomainVideoDefParseXML(nodes[j],
                                                                def,
                                                                flags);
@@ -14138,12 +14232,37 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
                        dst->mem.cur_balloon, src->mem.cur_balloon);
         goto error;
     }
-    if (src->mem.hugepage_backed != dst->mem.hugepage_backed) {
+    if (src->mem.nhugepages != dst->mem.nhugepages) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain huge page backing %d does not match source %d"),
-                       dst->mem.hugepage_backed,
-                       src->mem.hugepage_backed);
+                       _("Target domain huge pages count %zu does not match source %zu"),
+                       dst->mem.nhugepages, src->mem.nhugepages);
         goto error;
+    }
+    for (i = 0; i < src->mem.nhugepages; i++) {
+        virDomainHugePagePtr src_huge = &src->mem.hugepages[i];
+        virDomainHugePagePtr dst_huge = &dst->mem.hugepages[i];
+
+        if (src_huge->size != dst_huge->size) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Target domain huge page size %llu "
+                             "does not match source %llu"),
+                           dst_huge->size, src_huge->size);
+            goto error;
+        }
+
+        if (src_huge->nodemask && dst_huge->nodemask) {
+            if (!virBitmapEqual(src_huge->nodemask, dst_huge->nodemask)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Target huge page nodemask does not match source"));
+                goto error;
+            }
+        } else {
+            if (src_huge->nodemask || dst_huge->nodemask) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Target huge page nodemask does not match source"));
+                goto error;
+            }
+        }
     }
 
     if (src->vcpus != dst->vcpus) {
@@ -17264,6 +17383,54 @@ virDomainResourceDefFormat(virBufferPtr buf,
 }
 
 
+static int
+virDomainHugepagesFormatBuf(virBufferPtr buf,
+                            virDomainHugePagePtr hugepage)
+{
+    int ret = -1;
+
+    virBufferAsprintf(buf, "<page size='%llu' unit='KiB'",
+                      hugepage->size);
+
+    if (hugepage->nodemask) {
+        char *nodeset = NULL;
+        if (!(nodeset = virBitmapFormat(hugepage->nodemask)))
+            goto cleanup;
+        virBufferAsprintf(buf, " nodeset='%s'", nodeset);
+        VIR_FREE(nodeset);
+    }
+
+    virBufferAddLit(buf, "/>\n");
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+static void
+virDomainHugepagesFormat(virBufferPtr buf,
+                         virDomainHugePagePtr hugepages,
+                         size_t nhugepages)
+{
+    size_t i;
+
+    if (nhugepages == 1 &&
+        hugepages[0].size == 0) {
+        virBufferAddLit(buf, "<hugepages/>\n");
+        return;
+    }
+
+    virBufferAddLit(buf, "<hugepages>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    for (i = 0; i < nhugepages; i++)
+        virDomainHugepagesFormatBuf(buf, &hugepages[i]);
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</hugepages>\n");
+}
+
+
 #define DUMPXML_FLAGS                           \
     (VIR_DOMAIN_XML_SECURE |                    \
      VIR_DOMAIN_XML_INACTIVE |                  \
@@ -17460,11 +17627,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAddLit(buf, "</memtune>\n");
     }
 
-    if (def->mem.hugepage_backed || def->mem.nosharepages || def->mem.locked) {
+    if (def->mem.nhugepages || def->mem.nosharepages || def->mem.locked) {
         virBufferAddLit(buf, "<memoryBacking>\n");
         virBufferAdjustIndent(buf, 2);
-        if (def->mem.hugepage_backed)
-            virBufferAddLit(buf, "<hugepages/>\n");
+        if (def->mem.nhugepages)
+            virDomainHugepagesFormat(buf, def->mem.hugepages, def->mem.nhugepages);
         if (def->mem.nosharepages)
             virBufferAddLit(buf, "<nosharepages/>\n");
         if (def->mem.locked)

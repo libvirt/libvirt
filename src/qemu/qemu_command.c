@@ -7383,7 +7383,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     virCommandAddArg(cmd, "-m");
     def->mem.max_balloon = VIR_DIV_UP(def->mem.max_balloon, 1024) * 1024;
     virCommandAddArgFormat(cmd, "%llu", def->mem.max_balloon / 1024);
-    if (def->mem.hugepage_backed) {
+    if (def->mem.nhugepages) {
         char *mem_path;
 
         if (!cfg->nhugetlbfs) {

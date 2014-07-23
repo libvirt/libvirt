@@ -617,7 +617,9 @@
 &lt;domain&gt;
   ...
   &lt;memoryBacking&gt;
-    &lt;hugepages/&gt;
+    &lt;hugepages&gt;
+      &lt;page size="1" unit="G" nodeset="0-3,5"/&gt;
+      &lt;page size="2" unit="M" nodeset="4"/&gt;
     &lt;nosharepages/&gt;
     &lt;locked/&gt;
   &lt;/memoryBacking&gt;
@@ -632,7 +634,19 @@
     <dl>
       <dt><code>hugepages</code></dt>
       <dd>This tells the hypervisor that the guest should have its memory
-        allocated using hugepages instead of the normal native page size.</dd>
+      allocated using hugepages instead of the normal native page size.
+      <span class='since'>Since 1.2.5</span> it's possible to set hugepages
+      more specifically per numa node. The <code>page</code> element is
+      introduced. It has one compulsory attribute <code>size</code> which
+      specifies which hugepages should be used (especially useful on systems
+      supporting hugepages of different sizes). The default unit for the
+      <code>size</code> attribute is kilobytes (multiplier of 1024). If you
+      want to use different unit, use optional <code>unit</code> attribute.
+      For systems with NUMA, the optional <code>nodeset</code> attribute may
+      come handy as it ties given guest's NUMA nodes to certain hugepage
+      sizes. From the example snippet, one gigabyte hugepages are used for
+      every NUMA node except node number four. For the correct syntax see
+      <a href="#elementsNUMATuning">this</a>.</dd>
       <dt><code>nosharepages</code></dt>
       <dd>Instructs hypervisor to disable shared pages (memory merge, KSM) for
         this domain. <span class="since">Since 1.0.6</span></dd>

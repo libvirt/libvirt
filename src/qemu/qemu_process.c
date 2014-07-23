@@ -3791,7 +3791,7 @@ int qemuProcessStart(virConnectPtr conn,
     }
     virDomainAuditSecurityLabel(vm, true);
 
-    if (vm->def->mem.hugepage_backed) {
+    if (vm->def->mem.nhugepages) {
         for (i = 0; i < cfg->nhugetlbfs; i++) {
             char *hugepagePath = qemuGetHugepagePath(&cfg->hugetlbfs[i]);
 
