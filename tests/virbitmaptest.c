@@ -510,6 +510,30 @@ test9(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
+test10(const void *opaque ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+    virBitmapPtr b1 = NULL, b2 = NULL, b3 = NULL;
+
+    if (virBitmapParse("0-3,5-8,11-15", 0, &b1, 20) < 0 ||
+        virBitmapParse("4,9,10,16-19", 0, &b2, 20) < 0 ||
+        virBitmapParse("15", 0, &b3, 20) < 0)
+        goto cleanup;
+
+    if (virBitmapOverlaps(b1, b2) ||
+        virBitmapOverlaps(b2, b3) ||
+        !virBitmapOverlaps(b1, b3))
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virBitmapFree(b1);
+    virBitmapFree(b2);
+    virBitmapFree(b3);
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -531,6 +555,8 @@ mymain(void)
     if (virtTestRun("test8", test8, NULL) < 0)
         ret = -1;
     if (virtTestRun("test9", test9, NULL) < 0)
+        ret = -1;
+    if (virtTestRun("test10", test10, NULL) < 0)
         ret = -1;
 
     return ret;

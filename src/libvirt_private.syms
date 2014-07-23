@@ -1005,6 +1005,7 @@ virBitmapNewCopy;
 virBitmapNewData;
 virBitmapNextClearBit;
 virBitmapNextSetBit;
+virBitmapOverlaps;
 virBitmapParse;
 virBitmapSetAll;
 virBitmapSetBit;

@@ -114,5 +114,8 @@ size_t virBitmapCountBits(virBitmapPtr bitmap)
 char *virBitmapDataToString(void *data,
                             int len)
     ATTRIBUTE_NONNULL(1);
+bool virBitmapOverlaps(virBitmapPtr b1,
+                       virBitmapPtr b2)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 #endif
