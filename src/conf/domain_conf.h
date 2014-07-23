@@ -1872,7 +1872,9 @@ struct _virDomainDef {
 
     virDomainOSDef os;
     char *emulator;
-    /* These three options are of type virTristateSwitch */
+    /* These three options are of type virTristateSwitch,
+     * except VIR_DOMAIN_FEATURE_CAPABILITIES that is of type
+     * virDomainCapabilitiesPolicy */
     int features[VIR_DOMAIN_FEATURE_LAST];
     int apic_eoi;
     int hyperv_features[VIR_DOMAIN_HYPERV_LAST];
