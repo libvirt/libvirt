@@ -263,6 +263,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "memory-backend-ram", /* 170 */
               "numa",
+              "memory-backend-file",
     );
 
 
@@ -1481,6 +1482,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "pvpanic", QEMU_CAPS_DEVICE_PANIC },
     { "usb-kbd", QEMU_CAPS_DEVICE_USB_KBD },
     { "memory-backend-ram", QEMU_CAPS_OBJECT_MEMORY_RAM },
+    { "memory-backend-file", QEMU_CAPS_OBJECT_MEMORY_FILE },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {

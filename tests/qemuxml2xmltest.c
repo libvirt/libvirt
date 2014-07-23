@@ -198,6 +198,8 @@ mymain(void)
 
     DO_TEST("hugepages");
     DO_TEST("hugepages-pages");
+    DO_TEST("hugepages-pages2");
+    DO_TEST("hugepages-pages3");
     DO_TEST("nosharepages");
     DO_TEST("disk-aio");
     DO_TEST("disk-cdrom");

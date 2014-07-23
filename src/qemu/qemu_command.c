@@ -6432,21 +6432,33 @@ qemuBuildSmpArgStr(const virDomainDef *def,
 }
 
 static int
-qemuBuildNumaArgStr(const virDomainDef *def,
+qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
+                    const virDomainDef *def,
                     virCommandPtr cmd,
                     virQEMUCapsPtr qemuCaps)
 {
-    size_t i;
+    size_t i, j;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virDomainHugePagePtr master_hugepage = NULL;
     char *cpumask = NULL, *tmpmask = NULL, *next = NULL;
     char *nodemask = NULL;
+    char *mem_path = NULL;
     int ret = -1;
 
     if (virDomainNumatuneHasPerNodeBinding(def->numatune) &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
+        !(virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
+          virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Per-node memory binding is not supported "
                          "with this QEMU"));
+        goto cleanup;
+    }
+
+    if (def->mem.nhugepages && def->mem.hugepages[0].size &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("huge pages per NUMA node are not "
+                         "supported with this QEMU"));
         goto cleanup;
     }
 
@@ -6468,15 +6480,74 @@ qemuBuildNumaArgStr(const virDomainDef *def,
             goto cleanup;
         }
 
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
             virDomainNumatuneMemMode mode;
+            virDomainHugePagePtr hugepage = NULL;
             const char *policy = NULL;
 
             mode = virDomainNumatuneGetMode(def->numatune, i);
             policy = qemuNumaPolicyTypeToString(mode);
 
-            virBufferAsprintf(&buf, "memory-backend-ram,size=%dM,id=ram-node%zu",
-                              cellmem, i);
+            /* Find the huge page size we want to use */
+            for (j = 0; j < def->mem.nhugepages; j++) {
+                bool thisHugepage = false;
+
+                hugepage = &def->mem.hugepages[j];
+
+                if (!hugepage->nodemask) {
+                    master_hugepage = hugepage;
+                    continue;
+                }
+
+                if (virBitmapGetBit(hugepage->nodemask, i, &thisHugepage) < 0) {
+                    /* Ignore this error. It's not an error after all. Well,
+                     * the nodemask for this <page/> can contain lower NUMA
+                     * nodes than we are querying in here. */
+                    continue;
+                }
+
+                if (thisHugepage) {
+                    /* Hooray, we've found the page size */
+                    break;
+                }
+            }
+
+            if (j == def->mem.nhugepages) {
+                /* We have not found specific huge page to be used with this
+                 * NUMA node. Use the generic setting then (<page/> without any
+                 * @nodemask) if possible. */
+                hugepage = master_hugepage;
+            }
+
+            if (hugepage) {
+                /* Now lets see, if the huge page we want to use is even mounted
+                 * and ready to use */
+
+                for (j = 0; j < cfg->nhugetlbfs; j++) {
+                    if (cfg->hugetlbfs[j].size == hugepage->size)
+                        break;
+                }
+
+                if (j == cfg->nhugetlbfs) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Unable to find any usable hugetlbfs mount for %llu KiB"),
+                                   hugepage->size);
+                    goto cleanup;
+                }
+
+                VIR_FREE(mem_path);
+                if (!(mem_path = qemuGetHugepagePath(&cfg->hugetlbfs[j])))
+                    goto cleanup;
+
+                virBufferAsprintf(&buf,
+                                  "memory-backend-file,prealloc=yes,mem-path=%s",
+                                  mem_path);
+            } else {
+                virBufferAddLit(&buf, "memory-backend-ram");
+            }
+
+            virBufferAsprintf(&buf, ",size=%dM,id=ram-node%zu", cellmem, i);
 
             if (virDomainNumatuneMaybeFormatNodeset(def->numatune, NULL,
                                                     &nodemask, i) < 0)
@@ -6515,7 +6586,8 @@ qemuBuildNumaArgStr(const virDomainDef *def,
             virBufferAdd(&buf, tmpmask, -1);
         }
 
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
             virBufferAsprintf(&buf, ",memdev=ram-node%zu", i);
         } else {
             virBufferAsprintf(&buf, ",mem=%d", cellmem);
@@ -6528,6 +6600,7 @@ qemuBuildNumaArgStr(const virDomainDef *def,
  cleanup:
     VIR_FREE(cpumask);
     VIR_FREE(nodemask);
+    VIR_FREE(mem_path);
     virBufferFreeAndReset(&buf);
     return ret;
 }
@@ -7383,7 +7456,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     virCommandAddArg(cmd, "-m");
     def->mem.max_balloon = VIR_DIV_UP(def->mem.max_balloon, 1024) * 1024;
     virCommandAddArgFormat(cmd, "%llu", def->mem.max_balloon / 1024);
-    if (def->mem.nhugepages) {
+    if (def->mem.nhugepages && !def->mem.hugepages[0].size) {
         char *mem_path;
 
         if (!cfg->nhugetlbfs) {
@@ -7427,7 +7500,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     VIR_FREE(smp);
 
     if (def->cpu && def->cpu->ncells)
-        if (qemuBuildNumaArgStr(def, cmd, qemuCaps) < 0)
+        if (qemuBuildNumaArgStr(cfg, def, cmd, qemuCaps) < 0)
             goto error;
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_UUID))

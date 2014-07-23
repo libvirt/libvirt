@@ -211,6 +211,7 @@ typedef enum {
     QEMU_CAPS_CHANGE_BACKING_FILE = 169, /* change name of backing file in metadata */
     QEMU_CAPS_OBJECT_MEMORY_RAM  = 170, /* -object memory-backend-ram */
     QEMU_CAPS_NUMA               = 171, /* newer -numa handling with disjoint cpu ranges */
+    QEMU_CAPS_OBJECT_MEMORY_FILE = 172, /* -object memory-backend-file */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 } virQEMUCapsFlags;

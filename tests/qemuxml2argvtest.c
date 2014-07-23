@@ -525,13 +525,15 @@ mymain(void)
     if (VIR_STRDUP_QUIET(driver.config->stateDir, "/nowhere") < 0)
         return EXIT_FAILURE;
     VIR_FREE(driver.config->hugetlbfs);
-    if (VIR_ALLOC_N(driver.config->hugetlbfs, 1) < 0)
+    if (VIR_ALLOC_N(driver.config->hugetlbfs, 2) < 0)
         return EXIT_FAILURE;
-    driver.config->nhugetlbfs = 1;
-    if (VIR_STRDUP(driver.config->hugetlbfs[0].mnt_dir, "/dev/hugepages") < 0)
+    driver.config->nhugetlbfs = 2;
+    if (VIR_STRDUP(driver.config->hugetlbfs[0].mnt_dir, "/dev/hugepages2M") < 0 ||
+        VIR_STRDUP(driver.config->hugetlbfs[1].mnt_dir, "/dev/hugepages1G") < 0)
         return EXIT_FAILURE;
     driver.config->hugetlbfs[0].size = 2048;
     driver.config->hugetlbfs[0].deflt = true;
+    driver.config->hugetlbfs[1].size = 1048576;
     driver.config->spiceTLS = 1;
     if (VIR_STRDUP_QUIET(driver.config->spicePassword, "123456") < 0)
         return EXIT_FAILURE;
@@ -665,6 +667,12 @@ mymain(void)
     DO_TEST("hyperv-off", NONE);
 
     DO_TEST("hugepages", QEMU_CAPS_MEM_PATH);
+    DO_TEST("hugepages-pages", QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_RAM,
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("hugepages-pages2", QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_RAM,
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("hugepages-pages3", QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_RAM,
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("nosharepages", QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_MEM_MERGE);
     DO_TEST("disk-cdrom", NONE);
     DO_TEST("disk-cdrom-network-http", QEMU_CAPS_KVM, QEMU_CAPS_DEVICE,
