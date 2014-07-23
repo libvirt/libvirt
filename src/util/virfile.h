@@ -283,4 +283,16 @@ int virBuildPathInternal(char **path, ...) ATTRIBUTE_SENTINEL;
 int virFilePrintf(FILE *fp, const char *msg, ...)
     ATTRIBUTE_FMT_PRINTF(2, 3);
 
+typedef struct _virHugeTLBFS virHugeTLBFS;
+typedef virHugeTLBFS *virHugeTLBFSPtr;
+struct _virHugeTLBFS {
+    char *mnt_dir;                  /* Where the FS is mount to */
+    unsigned long long size;        /* page size in kibibytes */
+    bool deflt;                     /* is this the default huge page size */
+};
+
+int virFileGetHugepageSize(const char *path,
+                           unsigned long long *size);
+int virFileFindHugeTLBFS(virHugeTLBFSPtr *ret_fs,
+                         size_t *ret_nfs);
 #endif /* __VIR_FILE_H */

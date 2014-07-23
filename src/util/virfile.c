@@ -2837,6 +2837,9 @@ int virFilePrintf(FILE *fp, const char *msg, ...)
 # ifndef CIFS_SUPER_MAGIC
 #  define CIFS_SUPER_MAGIC 0xFF534D42
 # endif
+# ifndef HUGETLBFS_MAGIC
+#  define HUGETLBFS_MAGIC 0x958458f6
+# endif
 
 int
 virFileIsSharedFSType(const char *path,
@@ -2909,14 +2912,157 @@ virFileIsSharedFSType(const char *path,
 
     return 0;
 }
-#else
+
+int
+virFileGetHugepageSize(const char *path,
+                       unsigned long long *size)
+{
+    int ret = -1;
+    struct statfs fs;
+
+    if (statfs(path, &fs) < 0) {
+        virReportSystemError(errno,
+                             _("cannot determine filesystem for '%s'"),
+                             path);
+        goto cleanup;
+    }
+
+    if (fs.f_type != HUGETLBFS_MAGIC) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("not a hugetlbfs mount: '%s'"),
+                       path);
+        goto cleanup;
+    }
+
+    *size = fs.f_bsize / 1024; /* we are storing size in KiB */
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+# define PROC_MEMINFO "/proc/meminfo"
+# define HUGEPAGESIZE_STR "Hugepagesize:"
+
+static int
+virFileGetDefaultHugepageSize(unsigned long long *size)
+{
+    int ret = -1;
+    char *meminfo, *c, *n, *unit;
+
+    if (virFileReadAll(PROC_MEMINFO, 4096, &meminfo) < 0)
+        goto cleanup;
+
+    if (!(c = strstr(meminfo, HUGEPAGESIZE_STR))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to parse %s"),
+                       PROC_MEMINFO);
+        goto cleanup;
+    }
+    c += strlen(HUGEPAGESIZE_STR);
+
+    if ((n = strchr(c, '\n'))) {
+        /* Cut off the rest of the meminfo file */
+        *n = '\0';
+    }
+
+    if (virStrToLong_ull(c, &unit, 10, size) < 0 || STRNEQ(unit, " kB")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to parse %s %s"),
+                       HUGEPAGESIZE_STR, c);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(meminfo);
+    return ret;
+}
+
+# define PROC_MOUNTS "/proc/mounts"
+
+int
+virFileFindHugeTLBFS(virHugeTLBFSPtr *ret_fs,
+                     size_t *ret_nfs)
+{
+    int ret = -1;
+    FILE *f = NULL;
+    struct mntent mb;
+    char mntbuf[1024];
+    virHugeTLBFSPtr fs = NULL;
+    size_t nfs = 0;
+    unsigned long long default_hugepagesz;
+
+    if (virFileGetDefaultHugepageSize(&default_hugepagesz) < 0)
+        goto cleanup;
+
+    if (!(f = setmntent(PROC_MOUNTS, "r"))) {
+        virReportSystemError(errno,
+                             _("Unable to open %s"),
+                             PROC_MOUNTS);
+        goto cleanup;
+    }
+
+    while (getmntent_r(f, &mb, mntbuf, sizeof(mntbuf))) {
+        virHugeTLBFSPtr tmp;
+
+        if (STRNEQ(mb.mnt_type, "hugetlbfs"))
+            continue;
+
+        if (VIR_EXPAND_N(fs, nfs, 1) < 0)
+             goto cleanup;
+
+        tmp = &fs[nfs - 1];
+
+        if (VIR_STRDUP(tmp->mnt_dir, mb.mnt_dir) < 0)
+            goto cleanup;
+
+        if (virFileGetHugepageSize(tmp->mnt_dir, &tmp->size) < 0)
+            goto cleanup;
+
+        tmp->deflt = tmp->size == default_hugepagesz;
+    }
+
+    *ret_fs = fs;
+    *ret_nfs = nfs;
+    fs = NULL;
+    nfs = 0;
+    ret = 0;
+
+ cleanup:
+    endmntent(f);
+    while (nfs)
+        VIR_FREE(fs[--nfs].mnt_dir);
+    VIR_FREE(fs);
+    return ret;
+}
+
+#else /* defined __linux__ */
+
 int virFileIsSharedFSType(const char *path ATTRIBUTE_UNUSED,
                           int fstypes ATTRIBUTE_UNUSED)
 {
     /* XXX implement me :-) */
     return 0;
 }
-#endif
+
+int
+virFileGetHugepageSize(const char *path ATTRIBUTE_UNUSED,
+                       unsigned long long *size ATTRIBUTE_UNUSED)
+{
+    /* XXX implement me :-) */
+    virReportUnsupportedError();
+    return -1;
+}
+
+int
+virFileFindHugeTLBFS(virHugeTLBFSPtr *ret_fs ATTRIBUTE_UNUSED,
+                     size_t *ret_nfs ATTRIBUTE_UNUSED)
+{
+    /* XXX implement me :-) */
+    virReportUnsupportedError();
+    return -1;
+}
+#endif /* defined __linux__ */
 
 int virFileIsSharedFS(const char *path)
 {
