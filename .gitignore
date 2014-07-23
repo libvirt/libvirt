@@ -60,6 +60,7 @@
 /daemon/libvirtd.pod
 /daemon/libvirtd.policy
 /daemon/libvirtd.service
+/daemon/libvirtd.socket
 /daemon/test_libvirtd.aug
 /docs/aclperms.htmlinc
 /docs/apibuild.py.stamp

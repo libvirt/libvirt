@@ -1671,11 +1671,13 @@ done
 
     %if %{with_systemd}
         %if %{with_systemd_macros}
-            %systemd_post virtlockd.socket libvirtd.service
+            %systemd_post virtlockd.socket libvirtd.service libvirtd.socket
         %else
 if [ $1 -eq 1 ] ; then
     # Initial installation
-    /bin/systemctl enable virtlockd.socket libvirtd.service >/dev/null 2>&1 || :
+    /bin/systemctl enable \
+        virtlockd.socket \
+        libvirtd.service >/dev/null 2>&1 || :
 fi
         %endif
     %else
@@ -1696,12 +1698,24 @@ fi
 %preun daemon
     %if %{with_systemd}
         %if %{with_systemd_macros}
-            %systemd_preun libvirtd.service virtlockd.socket virtlockd.service
+            %systemd_preun \
+                libvirtd.socket \
+                libvirtd.service \
+                virtlockd.socket \
+                virtlockd.service
         %else
 if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
-    /bin/systemctl --no-reload disable libvirtd.service virtlockd.socket virtlockd.service > /dev/null 2>&1 || :
-    /bin/systemctl stop libvirtd.service virtlockd.socket virtlockd.service > /dev/null 2>&1 || :
+    /bin/systemctl --no-reload disable \
+        libvirtd.socket \
+        libvirtd.service \
+        virtlockd.socket \
+        virtlockd.service > /dev/null 2>&1 || :
+    /bin/systemctl stop \
+        libvirtd.socket \
+        libvirtd.service \
+        virtlockd.socket \
+        virtlockd.service > /dev/null 2>&1 || :
 fi
         %endif
     %else
@@ -1858,6 +1872,7 @@ exit 0
 
     %if %{with_systemd}
 %{_unitdir}/libvirtd.service
+%{_unitdir}/libvirtd.socket
 %{_unitdir}/virtlockd.service
 %{_unitdir}/virtlockd.socket
     %else

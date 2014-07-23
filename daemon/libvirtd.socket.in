@@ -1,0 +1,11 @@
+[Socket]
+ListenStream=@runstatedir@/libvirt/libvirt-sock
+ListenStream=@runstatedir@/libvirt/libvirt-sock-ro
+
+; The following settings must match libvirtd.conf file in order to
+; work as expected because libvirtd can't change them later.
+; SocketMode=0777 is safe only if authentication on the socket is set
+; up.  For further information, please see the libvirtd.conf file.
+SocketMode=0777
+SocketUser=root
+SocketGroup=root
