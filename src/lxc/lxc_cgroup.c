@@ -337,6 +337,7 @@ virLXCTeardownHostUSBDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
 static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                                       virCgroupPtr cgroup)
 {
+    int capMknod = def->caps_features[VIR_DOMAIN_CAPS_FEATURE_MKNOD];
     int ret = -1;
     size_t i;
     static virLXCCgroupDevicePolicy devices[] = {
@@ -354,7 +355,6 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
         goto cleanup;
 
     /* white list mknod if CAP_MKNOD has to be kept */
-    int capMknod = def->caps_features[VIR_DOMAIN_CAPS_FEATURE_MKNOD];
     if (capMknod == VIR_DOMAIN_FEATURE_STATE_ON) {
         if (virCgroupAllowAllDevices(cgroup,
                                     VIR_CGROUP_DEVICE_MKNOD) < 0)
