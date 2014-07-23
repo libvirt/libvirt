@@ -524,12 +524,14 @@ mymain(void)
     VIR_FREE(driver.config->stateDir);
     if (VIR_STRDUP_QUIET(driver.config->stateDir, "/nowhere") < 0)
         return EXIT_FAILURE;
-    VIR_FREE(driver.config->hugetlbfsMount);
-    if (VIR_STRDUP_QUIET(driver.config->hugetlbfsMount, "/dev/hugepages") < 0)
+    VIR_FREE(driver.config->hugetlbfs);
+    if (VIR_ALLOC_N(driver.config->hugetlbfs, 1) < 0)
         return EXIT_FAILURE;
-    VIR_FREE(driver.config->hugepagePath);
-    if (VIR_STRDUP_QUIET(driver.config->hugepagePath, "/dev/hugepages/libvirt/qemu") < 0)
+    driver.config->nhugetlbfs = 1;
+    if (VIR_STRDUP(driver.config->hugetlbfs[0].mnt_dir, "/dev/hugepages") < 0)
         return EXIT_FAILURE;
+    driver.config->hugetlbfs[0].size = 2048;
+    driver.config->hugetlbfs[0].deflt = true;
     driver.config->spiceTLS = 1;
     if (VIR_STRDUP_QUIET(driver.config->spicePassword, "123456") < 0)
         return EXIT_FAILURE;

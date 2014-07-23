@@ -3791,12 +3791,21 @@ int qemuProcessStart(virConnectPtr conn,
     }
     virDomainAuditSecurityLabel(vm, true);
 
-    if (cfg->hugepagePath && vm->def->mem.hugepage_backed) {
-        if (virSecurityManagerSetHugepages(driver->securityManager,
-                                           vm->def, cfg->hugepagePath) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                    "%s", _("Unable to set huge path in security driver"));
-            goto cleanup;
+    if (vm->def->mem.hugepage_backed) {
+        for (i = 0; i < cfg->nhugetlbfs; i++) {
+            char *hugepagePath = qemuGetHugepagePath(&cfg->hugetlbfs[i]);
+
+            if (!hugepagePath)
+                goto cleanup;
+
+            if (virSecurityManagerSetHugepages(driver->securityManager,
+                                               vm->def, hugepagePath) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("Unable to set huge path in security driver"));
+                VIR_FREE(hugepagePath);
+                goto cleanup;
+            }
+            VIR_FREE(hugepagePath);
         }
     }
 

@@ -7384,14 +7384,12 @@ qemuBuildCommandLine(virConnectPtr conn,
     def->mem.max_balloon = VIR_DIV_UP(def->mem.max_balloon, 1024) * 1024;
     virCommandAddArgFormat(cmd, "%llu", def->mem.max_balloon / 1024);
     if (def->mem.hugepage_backed) {
-        if (!cfg->hugetlbfsMount) {
+        char *mem_path;
+
+        if (!cfg->nhugetlbfs) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("hugetlbfs filesystem is not mounted"));
-            goto error;
-        }
-        if (!cfg->hugepagePath) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("hugepages are disabled by administrator config"));
+                           "%s", _("hugetlbfs filesystem is not mounted "
+                                   "or disabled by administrator config"));
             goto error;
         }
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MEM_PATH)) {
@@ -7400,8 +7398,14 @@ qemuBuildCommandLine(virConnectPtr conn,
                            def->emulator);
             goto error;
         }
+
+        if (!(mem_path = qemuGetDefaultHugepath(cfg->hugetlbfs,
+                                                cfg->nhugetlbfs)))
+            goto error;
+
         virCommandAddArgList(cmd, "-mem-prealloc", "-mem-path",
-                             cfg->hugepagePath, NULL);
+                             mem_path, NULL);
+        VIR_FREE(mem_path);
     }
 
     if (def->mem.locked && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_MLOCK)) {

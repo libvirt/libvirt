@@ -45,6 +45,7 @@
 # include "qemu_capabilities.h"
 # include "virclosecallbacks.h"
 # include "virhostdev.h"
+# include "virfile.h"
 
 # ifdef CPU_SETSIZE /* Linux */
 #  define QEMUD_CPUMASK_LEN CPU_SETSIZE
@@ -126,8 +127,9 @@ struct _virQEMUDriverConfig {
     int webSocketPortMin;
     int webSocketPortMax;
 
-    char *hugetlbfsMount;
-    char *hugepagePath;
+    virHugeTLBFSPtr hugetlbfs;
+    size_t nhugetlbfs;
+
     char *bridgeHelperName;
 
     bool macFilter;
@@ -311,4 +313,7 @@ int qemuTranslateDiskSourcePool(virConnectPtr conn,
 int qemuTranslateSnapshotDiskSourcePool(virConnectPtr conn,
                                         virDomainSnapshotDiskDefPtr def);
 
+char * qemuGetHugepagePath(virHugeTLBFSPtr hugepage);
+char * qemuGetDefaultHugepath(virHugeTLBFSPtr hugetlbfs,
+                              size_t nhugetlbfs);
 #endif /* __QEMUD_CONF_H */

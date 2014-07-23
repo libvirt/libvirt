@@ -230,19 +230,17 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     cfg->migrationPortMin = QEMU_MIGRATION_PORT_MIN;
     cfg->migrationPortMax = QEMU_MIGRATION_PORT_MAX;
 
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
-    /* For privileged driver, try and find hugepage mount automatically.
+    /* For privileged driver, try and find hugetlbfs mounts automatically.
      * Non-privileged driver requires admin to create a dir for the
-     * user, chown it, and then let user configure it manually */
+     * user, chown it, and then let user configure it manually. */
     if (privileged &&
-        !(cfg->hugetlbfsMount = virFileFindMountPoint("hugetlbfs"))) {
-        if (errno != ENOENT) {
-            virReportSystemError(errno, "%s",
-                                 _("unable to find hugetlbfs mountpoint"));
+        virFileFindHugeTLBFS(&cfg->hugetlbfs, &cfg->nhugetlbfs) < 0) {
+        /* This however is not implemented on all platforms. */
+        virErrorPtr err = virGetLastError();
+        if (err && err->code != VIR_ERR_NO_SUPPORT)
             goto error;
-        }
     }
-#endif
+
     if (VIR_STRDUP(cfg->bridgeHelperName, "/usr/libexec/qemu-bridge-helper") < 0)
         goto error;
 
@@ -293,8 +291,11 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->spicePassword);
     VIR_FREE(cfg->spiceSASLdir);
 
-    VIR_FREE(cfg->hugetlbfsMount);
-    VIR_FREE(cfg->hugepagePath);
+    while (cfg->nhugetlbfs) {
+        cfg->nhugetlbfs--;
+        VIR_FREE(cfg->hugetlbfs[cfg->nhugetlbfs].mnt_dir);
+    }
+    VIR_FREE(cfg->hugetlbfs);
     VIR_FREE(cfg->bridgeHelperName);
 
     VIR_FREE(cfg->saveImageFormat);
@@ -304,6 +305,26 @@ static void virQEMUDriverConfigDispose(void *obj)
     virStringFreeList(cfg->securityDriverNames);
 
     VIR_FREE(cfg->lockManagerName);
+}
+
+
+static int
+virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
+                                 const char *path,
+                                 bool deflt)
+{
+    int ret = -1;
+
+    if (VIR_STRDUP(hugetlbfs->mnt_dir, path) < 0)
+        goto cleanup;
+
+    if (virFileGetHugepageSize(path, &hugetlbfs->size) < 0)
+        goto cleanup;
+
+    hugetlbfs->deflt = deflt;
+    ret = 0;
+ cleanup:
+    return ret;
 }
 
 
@@ -555,7 +576,59 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     GET_VALUE_BOOL("auto_dump_bypass_cache", cfg->autoDumpBypassCache);
     GET_VALUE_BOOL("auto_start_bypass_cache", cfg->autoStartBypassCache);
 
-    GET_VALUE_STR("hugetlbfs_mount", cfg->hugetlbfsMount);
+    /* Some crazy backcompat. Back in the old days, this was just a pure
+     * string. We must continue supporting it. These days however, this may be
+     * an array of strings. */
+    p = virConfGetValue(conf, "hugetlbfs_mount");
+    if (p) {
+        /* There already might be something autodetected. Avoid leaking it. */
+        while (cfg->nhugetlbfs) {
+            cfg->nhugetlbfs--;
+            VIR_FREE(cfg->hugetlbfs[cfg->nhugetlbfs].mnt_dir);
+        }
+        VIR_FREE(cfg->hugetlbfs);
+
+        if (p->type == VIR_CONF_LIST) {
+            size_t len = 0;
+            virConfValuePtr pp = p->list;
+
+            /* Calc length and check items */
+            while (pp) {
+                if (pp->type != VIR_CONF_STRING) {
+                    virReportError(VIR_ERR_CONF_SYNTAX, "%s",
+                                   _("hugetlbfs_mount must be a list of strings"));
+                    goto cleanup;
+                }
+                len++;
+                pp = pp->next;
+            }
+
+            if (len && VIR_ALLOC_N(cfg->hugetlbfs, len) < 0)
+                goto cleanup;
+            cfg->nhugetlbfs = len;
+
+            pp = p->list;
+            len = 0;
+            while (pp) {
+                if (virQEMUDriverConfigHugeTLBFSInit(&cfg->hugetlbfs[len],
+                                                     pp->str, !len) < 0)
+                    goto cleanup;
+                len++;
+                pp = pp->next;
+            }
+        } else {
+            CHECK_TYPE("hugetlbfs_mount", VIR_CONF_STRING);
+            if (STRNEQ(p->str, "")) {
+                if (VIR_ALLOC_N(cfg->hugetlbfs, 1) < 0)
+                    goto cleanup;
+                cfg->nhugetlbfs = 1;
+                if (virQEMUDriverConfigHugeTLBFSInit(&cfg->hugetlbfs[0],
+                                                     p->str, true) < 0)
+                    goto cleanup;
+            }
+        }
+    }
+
     GET_VALUE_STR("bridge_helper", cfg->bridgeHelperName);
 
     GET_VALUE_BOOL("mac_filter", cfg->macFilter);
@@ -1405,4 +1478,31 @@ qemuTranslateSnapshotDiskSourcePool(virConnectPtr conn ATTRIBUTE_UNUSED,
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("Snapshots are not yet supported with 'pool' volumes"));
     return -1;
+}
+
+char *
+qemuGetHugepagePath(virHugeTLBFSPtr hugepage)
+{
+    char *ret;
+
+    if (virAsprintf(&ret, "%s/libvirt/qemu", hugepage->mnt_dir) < 0)
+        return NULL;
+
+    return ret;
+}
+
+char *
+qemuGetDefaultHugepath(virHugeTLBFSPtr hugetlbfs,
+                       size_t nhugetlbfs)
+{
+    size_t i;
+
+    for (i = 0; i < nhugetlbfs; i++)
+        if (hugetlbfs[i].deflt)
+            break;
+
+    if (i == nhugetlbfs)
+        i = 0;
+
+    return qemuGetHugepagePath(&hugetlbfs[i]);
 }

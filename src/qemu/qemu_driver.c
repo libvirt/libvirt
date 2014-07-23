@@ -627,11 +627,11 @@ qemuStateInitialize(bool privileged,
     char *driverConf = NULL;
     virConnectPtr conn = NULL;
     char ebuf[1024];
-    char *membase = NULL;
-    char *mempath = NULL;
     virQEMUDriverConfigPtr cfg;
     uid_t run_uid = -1;
     gid_t run_gid = -1;
+    char *hugepagePath = NULL;
+    size_t i;
 
     if (VIR_ALLOC(qemu_driver) < 0)
         return -1;
@@ -803,37 +803,33 @@ qemuStateInitialize(bool privileged,
 
     /* If hugetlbfs is present, then we need to create a sub-directory within
      * it, since we can't assume the root mount point has permissions that
-     * will let our spawned QEMU instances use it.
-     *
-     * NB the check for '/', since user may config "" to disable hugepages
-     * even when mounted
-     */
-    if (cfg->hugetlbfsMount &&
-        cfg->hugetlbfsMount[0] == '/') {
-        if (virAsprintf(&membase, "%s/libvirt",
-                        cfg->hugetlbfsMount) < 0 ||
-            virAsprintf(&mempath, "%s/qemu", membase) < 0)
+     * will let our spawned QEMU instances use it. */
+    for (i = 0; i < cfg->nhugetlbfs; i++) {
+        hugepagePath = qemuGetHugepagePath(&cfg->hugetlbfs[i]);
+
+        if (!hugepagePath)
             goto error;
 
-        if (virFileMakePath(mempath) < 0) {
+        if (virFileMakePath(hugepagePath) < 0) {
             virReportSystemError(errno,
-                                 _("unable to create hugepage path %s"), mempath);
+                                 _("unable to create hugepage path %s"),
+                                 hugepagePath);
             goto error;
         }
         if (cfg->privileged) {
-            if (virFileUpdatePerm(membase, 0, S_IXGRP | S_IXOTH) < 0)
+            if (virFileUpdatePerm(cfg->hugetlbfs[i].mnt_dir,
+                                  0, S_IXGRP | S_IXOTH) < 0)
                 goto error;
-            if (chown(mempath, cfg->user, cfg->group) < 0) {
+            if (chown(hugepagePath, cfg->user, cfg->group) < 0) {
                 virReportSystemError(errno,
                                      _("unable to set ownership on %s to %d:%d"),
-                                     mempath, (int) cfg->user,
+                                     hugepagePath,
+                                     (int) cfg->user,
                                      (int) cfg->group);
                 goto error;
             }
         }
-        VIR_FREE(membase);
-
-        cfg->hugepagePath = mempath;
+        VIR_FREE(hugepagePath);
     }
 
     if (!(qemu_driver->closeCallbacks = virCloseCallbacksNew()))
@@ -894,8 +890,7 @@ qemuStateInitialize(bool privileged,
  error:
     virObjectUnref(conn);
     VIR_FREE(driverConf);
-    VIR_FREE(membase);
-    VIR_FREE(mempath);
+    VIR_FREE(hugepagePath);
     qemuStateCleanup();
     return -1;
 }
