@@ -498,6 +498,8 @@ struct _virDomainHostdevCaps {
         } misc;
         struct {
             char *iface;
+            size_t nips;
+            virDomainNetIpDefPtr *ips;
         } net;
     } u;
 };

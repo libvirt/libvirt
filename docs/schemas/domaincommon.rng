@@ -3808,11 +3808,31 @@
     <attribute name="type">
       <value>net</value>
     </attribute>
-    <element name="source">
-      <element name="interface">
-        <ref name="deviceName"/>
+    <interleave>
+      <element name="source">
+        <element name="interface">
+          <ref name="deviceName"/>
+        </element>
       </element>
-    </element>
+      <zeroOrMore>
+        <element name="ip">
+          <attribute name="address">
+            <ref name="ipAddr"/>
+          </attribute>
+          <optional>
+            <attribute name="family">
+              <ref name="addr-family"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="prefix">
+              <ref name="ipPrefix"/>
+            </attribute>
+          </optional>
+          <empty/>
+        </element>
+      </zeroOrMore>
+    </interleave>
   </define>
 
   <define name="usbproduct">

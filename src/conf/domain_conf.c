@@ -1818,6 +1818,8 @@ virDomainHostdevSubsysSCSIiSCSIClear(virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc
 
 void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
 {
+    size_t i;
+
     if (!def)
         return;
 
@@ -1842,6 +1844,9 @@ void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
             break;
         case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
             VIR_FREE(def->source.caps.u.net.iface);
+            for (i = 0; i < def->source.caps.u.net.nips; i++)
+                VIR_FREE(def->source.caps.u.net.ips[i]);
+            VIR_FREE(def->source.caps.u.net.ips);
             break;
         }
         break;
@@ -4833,6 +4838,8 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
                                 virDomainHostdevDefPtr def)
 {
     xmlNodePtr sourcenode;
+    xmlNodePtr *ipnodes = NULL;
+    int nipnodes;
     int ret = -1;
 
     /* @type is passed in from the caller rather than read from the
@@ -4887,6 +4894,26 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
                            _("Missing <interface> element in hostdev net device"));
             goto error;
         }
+
+        /* Parse possible IP addresses */
+        if ((nipnodes = virXPathNodeSet("./ip", ctxt, &ipnodes)) < 0)
+            goto error;
+
+        if (nipnodes) {
+            size_t i;
+            for (i = 0; i < nipnodes; i++) {
+                virDomainNetIpDefPtr ip = virDomainNetIpParseXML(ipnodes[i]);
+
+                if (!ip)
+                    goto error;
+
+                if (VIR_APPEND_ELEMENT(def->source.caps.u.net.ips,
+                                       def->source.caps.u.net.nips, ip) < 0) {
+                    VIR_FREE(ip);
+                    goto error;
+                }
+            }
+        }
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -4896,6 +4923,7 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
     }
     ret = 0;
  error:
+    VIR_FREE(ipnodes);
     return ret;
 }
 
@@ -17302,6 +17330,12 @@ virDomainHostdevDefFormatCaps(virBufferPtr buf,
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</source>\n");
+
+    if (def->source.caps.type == VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET) {
+        virDomainNetIpsFormat(buf, def->source.caps.u.net.ips,
+                              def->source.caps.u.net.nips);
+    }
+
     return 0;
 }
 

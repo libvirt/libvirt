@@ -35,6 +35,8 @@
       <source>
         <interface>eth0</interface>
       </source>
+      <ip address='192.168.122.2' family='ipv4'/>
+      <ip address='2003:db8:1:0:214:1234:fe0b:3596' family='ipv6' prefix='24'/>
     </hostdev>
   </devices>
 </domain>

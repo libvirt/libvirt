@@ -4330,6 +4330,14 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;target dev='vnet0'/&gt;
       <b>&lt;ip family='ipv4' address='192.168.122.5' prefix='24'/&gt;</b>
     &lt;/interface&gt;
+    ...
+    &lt;hostdev mode='capabilities' type='net'&gt;
+      &lt;source&gt;
+        &lt;interface&gt;eth0&lt;/interface&gt;
+      &lt;/source&gt;
+      <b>&lt;ip family='ipv4' address='192.168.122.6' prefix='24'/&gt;</b>
+    &lt;/hostdev&gt;
+
   &lt;/devices&gt;
   ...
 </pre>
