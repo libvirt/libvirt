@@ -37,6 +37,8 @@
     <interface type='bridge'>
       <mac address='02:00:15:8f:05:c1'/>
       <source bridge='virbr0'/>
+      <ip address='192.168.122.2' family='ipv4' prefix='24'/>
+      <ip address='2003:db8:1:0:214:1234:fe0b:3596' family='ipv6' prefix='64'/>
       <guest dev='eth0'/>
       <link state='up'/>
     </interface>
