@@ -4553,6 +4553,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
 
     if (!(seclabel = virSecurityLabelDefNew(p)))
         goto error;
+    VIR_FREE(p);
 
     /* set default value */
     seclabel->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
@@ -4586,6 +4587,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
             goto error;
         }
     }
+    VIR_FREE(p);
 
     if (seclabel->type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
         !seclabel->relabel) {
@@ -4636,6 +4638,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
         }
 
         seclabel->label = p;
+        p = NULL;
     }
 
     /* Only parse imagelabel, if requested live XML with relabeling */
@@ -4650,6 +4653,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
             goto error;
         }
         seclabel->imagelabel = p;
+        p = NULL;
     }
 
     /* Only parse baselabel for dynamic label type */
@@ -4657,6 +4661,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
         p = virXPathStringLimit("string(./baselabel[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
         seclabel->baselabel = p;
+        p = NULL;
     }
 
     return seclabel;
