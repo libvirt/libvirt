@@ -462,6 +462,9 @@ lxcAddNetworkDefinition(lxcNetworkParseData *data)
                 goto error;
         }
 
+        hostdev->source.caps.u.net.ips = data->ips;
+        hostdev->source.caps.u.net.nips = data->nips;
+
         if (VIR_EXPAND_N(data->def->hostdevs, data->def->nhostdevs, 1) < 0)
             goto error;
         data->def->hostdevs[data->def->nhostdevs - 1] = hostdev;
