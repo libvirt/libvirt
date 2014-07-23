@@ -361,6 +361,7 @@ main(int argc, char **argv)
 
     VIR_FREE(pid_file);
     VIR_FREE(exptime);
+    VIR_FREE(lease_entries);
     VIR_FREE(custom_lease_file);
     virJSONValueFree(lease_new);
     virJSONValueFree(leases_array);
