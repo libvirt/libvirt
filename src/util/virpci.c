@@ -2847,3 +2847,15 @@ virPCIDeviceGetLinkCapSta(virPCIDevicePtr dev,
     virPCIDeviceConfigClose(dev, fd);
     return ret;
 }
+
+
+void
+virPCIEDeviceInfoFree(virPCIEDeviceInfoPtr dev)
+{
+    if (!dev)
+        return;
+
+    VIR_FREE(dev->link_cap);
+    VIR_FREE(dev->link_sta);
+    VIR_FREE(dev);
+}

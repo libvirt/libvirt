@@ -1291,7 +1291,7 @@ virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
 
     ret = 0;
  out:
-    VIR_FREE(pci_express);
+    virPCIEDeviceInfoFree(pci_express);
     ctxt->node = orignode;
     return ret;
 }
@@ -1664,6 +1664,7 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
             VIR_FREE(data->pci_dev.iommuGroupDevices[i]);
         }
         VIR_FREE(data->pci_dev.iommuGroupDevices);
+        virPCIEDeviceInfoFree(data->pci_dev.pci_express);
         break;
     case VIR_NODE_DEV_CAP_USB_DEV:
         VIR_FREE(data->usb_dev.product_name);

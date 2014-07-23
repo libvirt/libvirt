@@ -1753,6 +1753,7 @@ virPCIDeviceSetUnbindFromStub;
 virPCIDeviceSetUsedBy;
 virPCIDeviceUnbind;
 virPCIDeviceWaitForCleanup;
+virPCIEDeviceInfoFree;
 virPCIGetNetName;
 virPCIGetPhysicalFunction;
 virPCIGetVirtualFunctionIndex;

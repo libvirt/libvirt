@@ -570,7 +570,7 @@ static int udevProcessPCI(struct udev_device *device,
 
  out:
     virPCIDeviceFree(pciDev);
-    VIR_FREE(pci_express);
+    virPCIEDeviceInfoFree(pci_express);
     return ret;
 }
 

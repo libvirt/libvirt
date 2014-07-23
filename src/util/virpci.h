@@ -212,4 +212,7 @@ int virPCIDeviceGetLinkCapSta(virPCIDevicePtr dev,
                               unsigned int *cap_width,
                               unsigned int *sta_speed,
                               unsigned int *sta_width);
+
+void virPCIEDeviceInfoFree(virPCIEDeviceInfoPtr dev);
+
 #endif /* __VIR_PCI_H__ */
