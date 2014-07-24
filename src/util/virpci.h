@@ -1,7 +1,7 @@
 /*
  * virpci.h: helper APIs for managing host PCI devices
  *
- * Copyright (C) 2009, 2011-2013 Red Hat, Inc.
+ * Copyright (C) 2009, 2011-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,7 @@
 
 # include "internal.h"
 # include "virobject.h"
+# include "virutil.h"
 
 typedef struct _virPCIDevice virPCIDevice;
 typedef virPCIDevice *virPCIDevicePtr;
@@ -39,6 +40,33 @@ struct _virPCIDeviceAddress {
     unsigned int bus;
     unsigned int slot;
     unsigned int function;
+};
+
+typedef enum {
+    VIR_PCIE_LINK_SPEED_NA = 0,
+    VIR_PCIE_LINK_SPEED_25,
+    VIR_PCIE_LINK_SPEED_5,
+    VIR_PCIE_LINK_SPEED_8,
+    VIR_PCIE_LINK_SPEED_LAST
+} virPCIELinkSpeed;
+
+VIR_ENUM_DECL(virPCIELinkSpeed)
+
+typedef struct _virPCIELink virPCIELink;
+typedef virPCIELink *virPCIELinkPtr;
+struct _virPCIELink {
+    int port;
+    virPCIELinkSpeed speed;
+    unsigned int width;
+};
+
+typedef struct _virPCIEDeviceInfo virPCIEDeviceInfo;
+typedef virPCIEDeviceInfo *virPCIEDeviceInfoPtr;
+struct _virPCIEDeviceInfo {
+    /* Not all PCI Express devices have link. For example this 'Root Complex
+     * Integrated Endpoint' and 'Root Complex Event Collector' don't have it. */
+    virPCIELink *link_cap;   /* PCIe device link capabilities */
+    virPCIELink *link_sta;   /* Actually negotiated capabilities */
 };
 
 virPCIDevicePtr virPCIDeviceNew(unsigned int domain,

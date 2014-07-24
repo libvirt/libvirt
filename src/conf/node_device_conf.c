@@ -58,9 +58,6 @@ VIR_ENUM_IMPL(virNodeDevNetCap, VIR_NODE_DEV_CAP_NET_LAST,
               "80203",
               "80211")
 
-VIR_ENUM_IMPL(virPCIELinkSpeed, VIR_PCIE_LINK_SPEED_LAST,
-              "", "2.5", "5", "8")
-
 static int
 virNodeDevCapsDefParseString(const char *xpath,
                              xmlXPathContextPtr ctxt,

@@ -52,6 +52,9 @@ VIR_LOG_INIT("util.pci");
 #define PCI_ID_LEN 10   /* "XXXX XXXX" */
 #define PCI_ADDR_LEN 13 /* "XXXX:XX:XX.X" */
 
+VIR_ENUM_IMPL(virPCIELinkSpeed, VIR_PCIE_LINK_SPEED_LAST,
+              "", "2.5", "5", "8")
+
 struct _virPCIDevice {
     unsigned int  domain;
     unsigned int  bus;
