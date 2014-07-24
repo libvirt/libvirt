@@ -497,6 +497,8 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
     int rc = 0;
     size_t i, j;
     char *newname = NULL;
+    char *toStr = NULL;
+    char *viaStr = NULL;
     virDomainNetDefPtr netDef;
     bool privNet = vmDef->features[VIR_DOMAIN_FEATURE_PRIVNET] ==
                    VIR_TRISTATE_SWITCH_ON;
@@ -539,6 +541,28 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
         if (rc < 0)
             goto error_out;
 
+        /* Set the routes */
+        for (j = 0; j < netDef->nroutes; j++) {
+            virDomainNetRouteDefPtr route = netDef->routes[j];
+            if (VIR_SOCKET_ADDR_VALID(&route->to))
+                toStr = virSocketAddrFormat(&route->to);
+            else
+                if (VIR_STRDUP(toStr, "default") < 0)
+                    goto error_out;
+            viaStr = virSocketAddrFormat(&route->via);
+            VIR_DEBUG("Adding route %s/%d via %s", toStr, route->prefix, viaStr);
+
+            if (virNetDevAddRoute(newname, &route->to, route->prefix,
+                                  &route->via, 0) < 0) {
+                virReportError(VIR_ERR_SYSTEM_ERROR,
+                               _("Failed to add route %s/%d via %s"),
+                               toStr, route->prefix, viaStr);
+                goto error_out;
+            }
+            VIR_FREE(toStr);
+            VIR_FREE(viaStr);
+        }
+
         VIR_FREE(newname);
     }
 
@@ -547,6 +571,8 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
         rc = virNetDevSetOnline("lo", true);
 
  error_out:
+    VIR_FREE(toStr);
+    VIR_FREE(viaStr);
     VIR_FREE(newname);
     return rc;
 }
