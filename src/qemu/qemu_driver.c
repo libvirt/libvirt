@@ -16976,8 +16976,12 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
         }
     } else {
         if (!(qemuCaps = virQEMUCapsCacheLookupByArch(driver->qemuCapsCache,
-                                                      arch)))
+                                                      arch))) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("unable to find any emulator to serve '%s' "
+                             "architecture"), virArchToString(arch));
             goto cleanup;
+        }
 
         emulatorbin = virQEMUCapsGetBinary(qemuCaps);
     }
