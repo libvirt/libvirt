@@ -3168,6 +3168,7 @@
           <value>ac97</value>
           <value>ich6</value>
           <value>ich9</value>
+          <value>usb</value>
         </choice>
       </attribute>
       <interleave>

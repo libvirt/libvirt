@@ -2086,9 +2086,10 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
     for (i = 0; i < def->nsounds; i++) {
         if (def->sounds[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             continue;
-        /* Skip ISA sound card, and PCSPK */
+        /* Skip ISA sound card, PCSPK and usb-audio */
         if (def->sounds[i]->model == VIR_DOMAIN_SOUND_MODEL_SB16 ||
-            def->sounds[i]->model == VIR_DOMAIN_SOUND_MODEL_PCSPK)
+            def->sounds[i]->model == VIR_DOMAIN_SOUND_MODEL_PCSPK ||
+            def->sounds[i]->model == VIR_DOMAIN_SOUND_MODEL_USB)
             continue;
 
         if (virDomainPCIAddressReserveNextSlot(addrs, &def->sounds[i]->info,
@@ -4682,6 +4683,15 @@ qemuBuildSoundDevStr(virDomainDefPtr def,
         break;
     case VIR_DOMAIN_SOUND_MODEL_ICH6:
         model = "intel-hda";
+        break;
+    case VIR_DOMAIN_SOUND_MODEL_USB:
+        model = "usb-audio";
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_USB_AUDIO)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("usb-audio controller is not supported "
+                             "by this QEMU binary"));
+            goto error;
+        }
         break;
     case VIR_DOMAIN_SOUND_MODEL_ICH9:
         model = "ich9-intel-hda";

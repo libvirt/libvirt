@@ -5031,9 +5031,10 @@ qemu-kvm -net nic,model=? /dev/null
         The <code>sound</code> element has one mandatory attribute,
         <code>model</code>, which specifies what real sound device is emulated.
         Valid values are specific to the underlying hypervisor, though typical
-        choices are 'es1370', 'sb16', 'ac97', and 'ich6'
+        choices are 'es1370', 'sb16', 'ac97', 'ich6' and 'usb'.
         (<span class="since">
-         'ac97' only since 0.6.0, 'ich6' only since 0.8.8</span>)
+         'ac97' only since 0.6.0, 'ich6' only since 0.8.8,
+         'usb' only since 1.2.7</span>)
       </dd>
     </dl>
 

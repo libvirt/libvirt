@@ -14,4 +14,5 @@ id=sound6-codec0,bus=sound6.0,cad=0 \
 -device ich9-intel-hda,id=sound7,bus=pci.0,addr=0x8 \
 -device hda-micro,id=sound7-codec0,bus=sound7.0,cad=0 \
 -device hda-duplex,id=sound7-codec1,bus=sound7.0,cad=1 \
+-device usb-audio,id=sound8 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x9

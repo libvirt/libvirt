@@ -458,7 +458,8 @@ VIR_ENUM_IMPL(virDomainSoundModel, VIR_DOMAIN_SOUND_MODEL_LAST,
               "pcspk",
               "ac97",
               "ich6",
-              "ich9")
+              "ich9",
+              "usb")
 
 VIR_ENUM_IMPL(virDomainMemballoonModel, VIR_DOMAIN_MEMBALLOON_MODEL_LAST,
               "virtio",

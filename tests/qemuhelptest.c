@@ -842,7 +842,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX,
             QEMU_CAPS_VNC_SHARE_POLICY,
             QEMU_CAPS_DEVICE_USB_KBD,
-            QEMU_CAPS_DEVICE_USB_STORAGE);
+            QEMU_CAPS_DEVICE_USB_STORAGE,
+            QEMU_CAPS_OBJECT_USB_AUDIO);
     DO_TEST("qemu-1.2.0", 1002000, 0, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -951,7 +952,8 @@ mymain(void)
             QEMU_CAPS_VNC_SHARE_POLICY,
             QEMU_CAPS_DEVICE_USB_STORAGE,
             QEMU_CAPS_DEVICE_USB_KBD,
-            QEMU_CAPS_USB_STORAGE_REMOVABLE);
+            QEMU_CAPS_USB_STORAGE_REMOVABLE,
+            QEMU_CAPS_OBJECT_USB_AUDIO);
     DO_TEST("qemu-kvm-1.2.0", 1002000, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -1065,7 +1067,8 @@ mymain(void)
             QEMU_CAPS_VNC_SHARE_POLICY,
             QEMU_CAPS_DEVICE_USB_STORAGE,
             QEMU_CAPS_DEVICE_USB_KBD,
-            QEMU_CAPS_USB_STORAGE_REMOVABLE);
+            QEMU_CAPS_USB_STORAGE_REMOVABLE,
+            QEMU_CAPS_OBJECT_USB_AUDIO);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

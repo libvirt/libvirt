@@ -143,4 +143,5 @@
     <flag name='host-pci-multidomain'/>
     <flag name='msg-timestamp'/>
     <flag name='numa'/>
+    <flag name='usb-audio'/>
   </qemuCaps>

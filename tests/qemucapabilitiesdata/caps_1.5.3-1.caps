@@ -137,4 +137,5 @@
     <flag name='spiceport'/>
     <flag name='usb-kbd'/>
     <flag name='host-pci-multidomain'/>
+    <flag name='usb-audio'/>
   </qemuCaps>

@@ -36,6 +36,7 @@
       <codec type='micro'/>
       <codec type='duplex'/>
     </sound>
+    <sound model='usb'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>
