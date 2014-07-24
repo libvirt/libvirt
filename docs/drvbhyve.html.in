@@ -42,9 +42,10 @@ in this sample domain XML.
 </p>
 
 <p>
-A limitation that is not obvious from this sample domain XML is that currently only a
-single network and a single disk device are supported for each domain (as PCI slot allocation code
-in libvirt bhyve driver is yet to be implemented).
+Note: in older libvirt versions, only a single network device and a single
+disk device were supported per-domain. However,
+<span class="since">since 1.2.6</span> the libvirt bhyve driver supports
+up to 31 PCI devices.
 </p>
 
 <pre>
@@ -70,6 +71,11 @@ in libvirt bhyve driver is yet to be implemented).
         &lt;driver name='file' type='raw'/&gt;
         &lt;source file='/path/to/bhyve_freebsd.img'/&gt;
         &lt;target dev='hda' bus='sata'/&gt;
+      &lt;/disk&gt;
+      &lt;disk type='file' device='cdrom'&gt;
+        &lt;driver name='file' type='raw'/&gt;
+        &lt;source file='/path/to/cdrom.iso'/&gt;
+        &lt;target dev='hdc' bus='sata'/&gt;
       &lt;/disk&gt;
       &lt;interface type='bridge'&gt;
         &lt;model type='virtio'/&gt;
