@@ -547,7 +547,6 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
         case VIR_NODE_DEV_CAP_FC_HOST:
         case VIR_NODE_DEV_CAP_VPORTS:
         case VIR_NODE_DEV_CAP_LAST:
-        default:
             break;
         }
 
@@ -1405,7 +1404,10 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
     case VIR_NODE_DEV_CAP_STORAGE:
         ret = virNodeDevCapStorageParseXML(ctxt, def, node, &caps->data);
         break;
-    default:
+    case VIR_NODE_DEV_CAP_FC_HOST:
+    case VIR_NODE_DEV_CAP_VPORTS:
+    case VIR_NODE_DEV_CAP_SCSI_GENERIC:
+    case VIR_NODE_DEV_CAP_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown capability type '%d' for '%s'"),
                        caps->type, def->name);
@@ -1703,7 +1705,6 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
     case VIR_NODE_DEV_CAP_FC_HOST:
     case VIR_NODE_DEV_CAP_VPORTS:
     case VIR_NODE_DEV_CAP_LAST:
-    default:
         /* This case is here to shutup the compiler */
         break;
     }
