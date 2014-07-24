@@ -424,9 +424,35 @@ typedef struct {
     char *name;
     virDomainNetIpDefPtr *ips;
     size_t nips;
+    char *gateway_ipv4;
+    char *gateway_ipv6;
     bool privnet;
     size_t networks;
 } lxcNetworkParseData;
+
+static int
+lxcAddNetworkRouteDefinition(const char *address,
+                             int family,
+                             virDomainNetRouteDefPtr **routes,
+                             size_t *nroutes)
+{
+    virDomainNetRouteDefPtr route = NULL;
+
+    if (VIR_ALLOC(route) < 0)
+        goto error;
+
+    if (virSocketAddrParse(&route->via, address, family) < 0)
+        goto error;
+
+    if (VIR_APPEND_ELEMENT(*routes, *nroutes, route) < 0)
+        goto error;
+
+    return 0;
+
+ error:
+    VIR_FREE(route);
+    return -1;
+}
 
 static int
 lxcAddNetworkDefinition(lxcNetworkParseData *data)
@@ -465,6 +491,18 @@ lxcAddNetworkDefinition(lxcNetworkParseData *data)
         hostdev->source.caps.u.net.ips = data->ips;
         hostdev->source.caps.u.net.nips = data->nips;
 
+        if (data->gateway_ipv4 &&
+            lxcAddNetworkRouteDefinition(data->gateway_ipv4, AF_INET,
+                                         &hostdev->source.caps.u.net.routes,
+                                         &hostdev->source.caps.u.net.nroutes) < 0)
+                goto error;
+
+        if (data->gateway_ipv6 &&
+            lxcAddNetworkRouteDefinition(data->gateway_ipv6, AF_INET6,
+                                         &hostdev->source.caps.u.net.routes,
+                                         &hostdev->source.caps.u.net.nroutes) < 0)
+                goto error;
+
         if (VIR_EXPAND_N(data->def->hostdevs, data->def->nhostdevs, 1) < 0)
             goto error;
         data->def->hostdevs[data->def->nhostdevs - 1] = hostdev;
@@ -476,6 +514,18 @@ lxcAddNetworkDefinition(lxcNetworkParseData *data)
 
         net->ips = data->ips;
         net->nips = data->nips;
+
+        if (data->gateway_ipv4 &&
+            lxcAddNetworkRouteDefinition(data->gateway_ipv4, AF_INET,
+                                         &net->routes,
+                                         &net->nroutes) < 0)
+                goto error;
+
+        if (data->gateway_ipv6 &&
+            lxcAddNetworkRouteDefinition(data->gateway_ipv6, AF_INET6,
+                                         &net->routes,
+                                         &net->nroutes) < 0)
+                goto error;
 
         if (VIR_EXPAND_N(data->def->nets, data->def->nnets, 1) < 0)
             goto error;
@@ -568,6 +618,10 @@ lxcNetworkWalkCallback(const char *name, virConfValuePtr value, void *data)
             VIR_FREE(ip);
             return -1;
         }
+    } else if (STREQ(name, "lxc.network.ipv4.gateway")) {
+        parseData->gateway_ipv4 = value->str;
+    } else if (STREQ(name, "lxc.network.ipv6.gateway")) {
+        parseData->gateway_ipv6 = value->str;
     } else if (STRPREFIX(name, "lxc.network")) {
         VIR_WARN("Unhandled network property: %s = %s",
                  name,
@@ -584,7 +638,8 @@ lxcConvertNetworkSettings(virDomainDefPtr def, virConfPtr properties)
     int result = -1;
     size_t i;
     lxcNetworkParseData data = {def, NULL, NULL, NULL, NULL,
-                                NULL, NULL, NULL, NULL, 0, true, 0};
+                                NULL, NULL, NULL, NULL, 0,
+                                NULL, NULL, true, 0};
 
     if (virConfWalk(properties, lxcNetworkWalkCallback, &data) < 0)
         goto error;
