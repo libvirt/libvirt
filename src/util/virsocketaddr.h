@@ -55,6 +55,8 @@ typedef struct {
     ((s)->data.sa.sa_family)
 
 # define VIR_SOCKET_ADDR_DEFAULT_PREFIX 24
+# define VIR_SOCKET_ADDR_IPV4_ALL "0.0.0.0"
+# define VIR_SOCKET_ADDR_IPV6_ALL "::"
 
 typedef virSocketAddr *virSocketAddrPtr;
 

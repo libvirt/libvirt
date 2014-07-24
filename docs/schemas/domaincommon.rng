@@ -2329,6 +2329,11 @@
           <empty/>
         </element>
       </zeroOrMore>
+      <zeroOrMore>
+        <element name="route">
+          <ref name="route"/>
+        </element>
+      </zeroOrMore>
       <optional>
         <element name="script">
           <attribute name="path">
@@ -3597,6 +3602,27 @@
     </element>
   </define>
 
+  <define name="route">
+    <interleave>
+      <attribute name="family">
+        <ref name="addr-family"/>
+      </attribute>
+      <attribute name="via">
+        <ref name="ipAddr"/>
+      </attribute>
+      <optional>
+        <attribute name="address">
+          <ref name="ipAddr"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="prefix">
+          <ref name="ipPrefix"/>
+        </attribute>
+      </optional>
+    </interleave>
+  </define>
+
   <define name="hostdev">
     <element name="hostdev">
       <interleave>
@@ -3830,6 +3856,11 @@
             </attribute>
           </optional>
           <empty/>
+        </element>
+      </zeroOrMore>
+      <zeroOrMore>
+        <element name="route">
+          <ref name="route"/>
         </element>
       </zeroOrMore>
     </interleave>

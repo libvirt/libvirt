@@ -1475,7 +1475,11 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
         VIR_FREE(def->ips[i]);
     VIR_FREE(def->ips);
 
-    virDomainDeviceInfoClear(&def->info);
+    for (i = 0; i < def->nroutes; i++)
+        VIR_FREE(def->routes[i]);
+    VIR_FREE(def->routes);
+
+        virDomainDeviceInfoClear(&def->info);
 
     VIR_FREE(def->filter);
     virNWFilterHashTableFree(def->filterparams);
@@ -1847,6 +1851,9 @@ void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
             for (i = 0; i < def->source.caps.u.net.nips; i++)
                 VIR_FREE(def->source.caps.u.net.ips[i]);
             VIR_FREE(def->source.caps.u.net.ips);
+            for (i = 0; i < def->source.caps.u.net.nroutes; i++)
+                VIR_FREE(def->source.caps.u.net.routes[i]);
+            VIR_FREE(def->source.caps.u.net.routes);
             break;
         }
         break;
@@ -4831,6 +4838,64 @@ virDomainNetIpParseXML(xmlNodePtr node)
     return NULL;
 }
 
+static virDomainNetRouteDefPtr
+virDomainNetRouteParse(xmlNodePtr node)
+{
+    virDomainNetRouteDefPtr route = NULL;
+    char *familyStr = NULL;
+    int family = AF_UNSPEC;
+    char *via = NULL;
+    char *to = NULL;
+    char *prefixStr = NULL;
+
+    to = virXMLPropString(node, "address");
+    if (!(via = virXMLPropString(node, "via"))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Missing route address"));
+        goto error;
+    }
+
+    familyStr = virXMLPropString(node, "family");
+    if (familyStr && STREQ(familyStr, "ipv4"))
+        family = AF_INET;
+    else if (familyStr && STREQ(familyStr, "ipv6"))
+        family = AF_INET6;
+    else
+        family = virSocketAddrNumericFamily(via);
+
+    if (VIR_ALLOC(route) < 0)
+        goto error;
+
+    if (virSocketAddrParse(&route->via, via, family) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Failed to parse IP address: '%s'"),
+                       via);
+        goto error;
+    }
+
+    if (to && virSocketAddrParse(&route->to, to, family) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Failed to parse IP address: '%s'"),
+                       to);
+        goto error;
+    }
+
+    if (!(prefixStr = virXMLPropString(node, "prefix")) ||
+        (virStrToLong_ui(prefixStr, NULL, 10, &route->prefix) < 0)) {
+    }
+
+    return route;
+
+ error:
+    VIR_FREE(familyStr);
+    VIR_FREE(via);
+    VIR_FREE(to);
+    VIR_FREE(prefixStr);
+    VIR_FREE(route);
+
+    return NULL;
+}
+
 static int
 virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
                                 xmlXPathContextPtr ctxt,
@@ -4840,6 +4905,8 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
     xmlNodePtr sourcenode;
     xmlNodePtr *ipnodes = NULL;
     int nipnodes;
+    xmlNodePtr *routenodes = NULL;
+    int nroutenodes;
     int ret = -1;
 
     /* @type is passed in from the caller rather than read from the
@@ -4914,6 +4981,26 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
                 }
             }
         }
+
+        /* Look for possible gateways */
+        if ((nroutenodes = virXPathNodeSet("./route", ctxt, &routenodes)) < 0)
+            goto error;
+
+        if (nroutenodes) {
+            size_t i;
+            for (i = 0; i < nroutenodes; i++) {
+                virDomainNetRouteDefPtr route = virDomainNetRouteParse(routenodes[i]);
+
+                if (!route)
+                    goto error;
+
+                if (VIR_APPEND_ELEMENT(def->source.caps.u.net.routes,
+                                       def->source.caps.u.net.nroutes, route) < 0) {
+                    VIR_FREE(route);
+                    goto error;
+                }
+            }
+        }
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -4924,6 +5011,7 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
     ret = 0;
  error:
     VIR_FREE(ipnodes);
+    VIR_FREE(routenodes);
     return ret;
 }
 
@@ -7367,6 +7455,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     size_t i;
     size_t nips = 0;
     virDomainNetIpDefPtr *ips = NULL;
+    size_t nroutes = 0;
+    virDomainNetRouteDefPtr *routes = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -7462,6 +7552,13 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                     goto error;
 
                 if (VIR_APPEND_ELEMENT(ips, nips, ip) < 0)
+                    goto error;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "route")) {
+                virDomainNetRouteDefPtr route = NULL;
+                if (!(route = virDomainNetRouteParse(cur)))
+                    goto error;
+
+                if (VIR_APPEND_ELEMENT(routes, nroutes, route) < 0)
                     goto error;
             } else if (!ifname &&
                        xmlStrEqual(cur->name, BAD_CAST "target")) {
@@ -7773,6 +7870,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         if (VIR_APPEND_ELEMENT(def->ips, def->nips, ips[i]) < 0)
             goto error;
     }
+    def->nroutes = nroutes;
+    def->routes = routes;
 
     if (script != NULL) {
         def->script = script;
@@ -17179,6 +17278,37 @@ virDomainNetIpsFormat(virBufferPtr buf, virDomainNetIpDefPtr *ips, size_t nips)
     }
 }
 
+static void
+virDomainNetRoutesFormat(virBufferPtr buf,
+                         virDomainNetRouteDefPtr *routes,
+                         size_t nroutes)
+{
+    size_t i;
+
+    for (i = 0; i < nroutes; i++) {
+        virDomainNetRouteDefPtr route = routes[i];
+        const char *familyStr = NULL;
+        char *via = virSocketAddrFormat(&route->via);
+        char *to = NULL;
+
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&route->via, AF_INET6))
+            familyStr = "ipv6";
+        else if (VIR_SOCKET_ADDR_IS_FAMILY(&route->via, AF_INET))
+            familyStr = "ipv4";
+        virBufferAsprintf(buf, "<route family='%s' via='%s'", familyStr, via);
+
+        if (VIR_SOCKET_ADDR_VALID(&route->to)) {
+            to = virSocketAddrFormat(&route->to);
+            virBufferAsprintf(buf, " address='%s'", to);
+        }
+
+        if (route->prefix > 0)
+            virBufferAsprintf(buf, " prefix='%d'", route->prefix);
+
+        virBufferAddLit(buf, "/>\n");
+    }
+}
+
 static int
 virDomainHostdevDefFormatSubsys(virBufferPtr buf,
                                 virDomainHostdevDefPtr def,
@@ -17334,6 +17464,8 @@ virDomainHostdevDefFormatCaps(virBufferPtr buf,
     if (def->source.caps.type == VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET) {
         virDomainNetIpsFormat(buf, def->source.caps.u.net.ips,
                               def->source.caps.u.net.nips);
+        virDomainNetRoutesFormat(buf, def->source.caps.u.net.routes,
+                                 def->source.caps.u.net.nroutes);
     }
 
     return 0;
@@ -17718,6 +17850,7 @@ virDomainNetDefFormat(virBufferPtr buf,
     }
 
     virDomainNetIpsFormat(buf, def->ips, def->nips);
+    virDomainNetRoutesFormat(buf, def->routes, def->nroutes);
 
     virBufferEscapeString(buf, "<script path='%s'/>\n",
                           def->script);

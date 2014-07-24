@@ -485,6 +485,14 @@ struct _virDomainNetIpDef {
     unsigned int prefix; /* number of 1 bits in the net mask */
 };
 
+typedef struct _virDomainNetRouteDef virDomainNetRouteDef;
+typedef virDomainNetRouteDef *virDomainNetRouteDefPtr;
+struct _virDomainNetRouteDef {
+    virSocketAddr via;
+    virSocketAddr to;
+    unsigned int prefix;
+};
+
 typedef struct _virDomainHostdevCaps virDomainHostdevCaps;
 typedef virDomainHostdevCaps *virDomainHostdevCapsPtr;
 struct _virDomainHostdevCaps {
@@ -500,6 +508,8 @@ struct _virDomainHostdevCaps {
             char *iface;
             size_t nips;
             virDomainNetIpDefPtr *ips;
+            size_t nroutes;
+            virDomainNetRouteDefPtr *routes;
         } net;
     } u;
 };
@@ -1002,6 +1012,8 @@ struct _virDomainNetDef {
     int linkstate;
     size_t nips;
     virDomainNetIpDefPtr *ips;
+    size_t nroutes;
+    virDomainNetRouteDefPtr *routes;
 };
 
 /* Used for prefix of ifname of any network name generated dynamically

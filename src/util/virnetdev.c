@@ -992,8 +992,33 @@ virNetDevAddRoute(const char *ifname,
     void *addrData = NULL;
     size_t addrDataLen;
     int errCode;
+    virSocketAddr defaultAddr;
+    virSocketAddrPtr actualAddr;
+    char *toStr = NULL;
+    char *viaStr = NULL;
 
-    if (virNetDevGetIPAddressBinary(addr, &addrData, &addrDataLen) < 0 ||
+    actualAddr = addr;
+
+    /* If we have no valid network address, then use the default one */
+    if (!addr || !VIR_SOCKET_ADDR_VALID(addr)) {
+        VIR_DEBUG("computing default address");
+        int family = VIR_SOCKET_ADDR_FAMILY(gateway);
+        if (family == AF_INET) {
+            if (virSocketAddrParseIPv4(&defaultAddr, VIR_SOCKET_ADDR_IPV4_ALL) < 0)
+                goto cleanup;
+        } else {
+            if (virSocketAddrParseIPv6(&defaultAddr, VIR_SOCKET_ADDR_IPV6_ALL) < 0)
+                goto cleanup;
+        }
+
+        actualAddr = &defaultAddr;
+    }
+
+    toStr = virSocketAddrFormat(actualAddr);
+    viaStr = virSocketAddrFormat(gateway);
+    VIR_DEBUG("Adding route %s/%d via %s", toStr, prefix, viaStr);
+
+    if (virNetDevGetIPAddressBinary(actualAddr, &addrData, &addrDataLen) < 0 ||
         virNetDevGetIPAddressBinary(gateway, &gatewayData, &addrDataLen) < 0)
         goto cleanup;
 
@@ -1010,7 +1035,7 @@ virNetDevAddRoute(const char *ifname,
 
     memset(&rtmsg, 0, sizeof(rtmsg));
 
-    rtmsg.rtm_family = VIR_SOCKET_ADDR_FAMILY(addr);
+    rtmsg.rtm_family = VIR_SOCKET_ADDR_FAMILY(gateway);
     rtmsg.rtm_table = RT_TABLE_MAIN;
     rtmsg.rtm_scope = RT_SCOPE_UNIVERSE;
     rtmsg.rtm_protocol = RTPROT_BOOT;
@@ -1043,6 +1068,8 @@ virNetDevAddRoute(const char *ifname,
 
     ret = 0;
  cleanup:
+    VIR_FREE(toStr);
+    VIR_FREE(viaStr);
     nlmsg_free(nlmsg);
     return ret;
 
