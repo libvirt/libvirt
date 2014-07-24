@@ -1255,7 +1255,7 @@ static const vshCmdOptDef opts_blkiotune[] = {
     },
     {.name = "weight",
      .type = VSH_OT_INT,
-     .help = N_("IO Weight in range [100, 1000]")
+     .help = N_("IO Weight")
     },
     {.name = "device-weights",
      .type = VSH_OT_STRING,

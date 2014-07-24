@@ -7819,13 +7819,6 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
             virTypedParameterPtr param = &params[i];
 
             if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
-                if (params[i].value.ui > 1000 || params[i].value.ui < 100) {
-                    virReportError(VIR_ERR_INVALID_ARG, "%s",
-                                   _("out of blkio weight range."));
-                    ret = -1;
-                    continue;
-                }
-
                 if (virCgroupSetBlkioWeight(priv->cgroup, params[i].value.ui) < 0)
                     ret = -1;
             } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT) ||
@@ -7920,13 +7913,6 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
             virTypedParameterPtr param = &params[i];
 
             if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
-                if (params[i].value.ui > 1000 || params[i].value.ui < 100) {
-                    virReportError(VIR_ERR_INVALID_ARG, "%s",
-                                   _("out of blkio weight range."));
-                    ret = -1;
-                    continue;
-                }
-
                 persistentDef->blkio.weight = params[i].value.ui;
             } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT) ||
                        STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS) ||
