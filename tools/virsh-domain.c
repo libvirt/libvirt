@@ -9543,6 +9543,9 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
         break;
     }
 
+    if (!ret)
+        vshError(ctl, _("No graphical display found"));
+
  cleanup:
     VIR_FREE(doc);
     VIR_FREE(xpath);
