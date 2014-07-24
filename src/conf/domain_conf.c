@@ -7903,6 +7903,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(vhostuser_path);
     VIR_FREE(vhostuser_mode);
     VIR_FREE(ifname);
+    VIR_FREE(ifname_guest);
+    VIR_FREE(ifname_guest_actual);
     VIR_FREE(dev);
     virDomainActualNetDefFree(actual);
     VIR_FREE(script);
