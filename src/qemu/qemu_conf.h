@@ -286,7 +286,7 @@ bool qemuSharedDeviceEntryDomainExists(qemuSharedDeviceEntryPtr entry,
                                        int *index)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-char * qemuGetSharedDeviceKey(const char *disk_path)
+char *qemuGetSharedDeviceKey(const char *disk_path)
     ATTRIBUTE_NONNULL(1);
 
 void qemuSharedDeviceEntryFree(void *payload, const void *name)
