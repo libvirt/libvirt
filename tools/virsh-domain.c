@@ -9375,7 +9375,8 @@ static const vshCmdInfo info_domdisplay[] = {
      .data = N_("domain display connection URI")
     },
     {.name = "desc",
-     .data = N_("Output the IP address and port number for the graphical display.")
+     .data = N_("Output the IP address and port number "
+                "for the graphical display.")
     },
     {.name = NULL}
 };
@@ -9389,6 +9390,11 @@ static const vshCmdOptDef opts_domdisplay[] = {
     {.name = "include-password",
      .type = VSH_OT_BOOL,
      .help = N_("includes the password into the connection URI if available")
+    },
+    {.name = "type",
+     .type = VSH_OT_DATA,
+     .help = N_("select particular graphics display "
+                "(e.g. \"vnc\", \"spice\", \"rdp\")")
     },
     {.name = NULL}
 };
@@ -9408,6 +9414,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     char *passwd = NULL;
     char *output = NULL;
     const char *scheme[] = { "vnc", "spice", "rdp", NULL };
+    const char *type = NULL;
     int iter = 0;
     int tmp;
     int flags = 0;
@@ -9426,6 +9433,9 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "include-password"))
         flags |= VIR_DOMAIN_XML_SECURE;
 
+    if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
+        goto cleanup;
+
     if (!(doc = virDomainGetXMLDesc(dom, flags)))
         goto cleanup;
 
@@ -9434,6 +9444,10 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
 
     /* Attempt to grab our display info */
     for (iter = 0; scheme[iter] != NULL; iter++) {
+        /* Particular scheme requested */
+        if (type && STRNEQ(type, scheme[iter]))
+            continue;
+
         /* Create our XPATH lookup for the current display's port */
         if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "port") < 0)
             goto cleanup;
@@ -9543,8 +9557,12 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
         break;
     }
 
-    if (!ret)
-        vshError(ctl, _("No graphical display found"));
+    if (!ret) {
+        if (type)
+            vshError(ctl, _("No graphical display with type '%s' found"), type);
+        else
+            vshError(ctl, _("No graphical display found"));
+    }
 
  cleanup:
     VIR_FREE(doc);
