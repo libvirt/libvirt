@@ -343,6 +343,9 @@ qemuSecurityChownCallback(virStorageSourcePtr src,
     if (virStorageSourceIsLocalStorage(src)) {
         /* use direct chmod for local files so that the file doesn't
          * need to be initialized */
+        if (!src->path)
+            return 0;
+
         if (stat(src->path, &sb) >= 0) {
             if (sb.st_uid == uid &&
                 sb.st_gid == gid) {
