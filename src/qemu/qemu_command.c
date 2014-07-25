@@ -4674,16 +4674,10 @@ qemuBuildSoundDevStr(virDomainDefPtr def,
                      virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    const char *model = virDomainSoundModelTypeToString(sound->model);
-
-    if (!model) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("invalid sound model"));
-        goto error;
-    }
+    const char *model;
 
     /* Hack for devices with different names in QEMU and libvirt */
-    switch (sound->model) {
+    switch ((virDomainSoundModel) sound->model) {
     case VIR_DOMAIN_SOUND_MODEL_ES1370:
         model = "ES1370";
         break;
@@ -4702,6 +4696,15 @@ qemuBuildSoundDevStr(virDomainDefPtr def,
             goto error;
         }
         break;
+    case VIR_DOMAIN_SOUND_MODEL_SB16:
+        model = "sb16";
+        break;
+    case VIR_DOMAIN_SOUND_MODEL_PCSPK: /* pc-speaker is handled separately */
+    case VIR_DOMAIN_SOUND_MODEL_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("sound card model '%s' is not supported by qemu"),
+                       virDomainSoundModelTypeToString(sound->model));
+        goto error;
     }
 
     virBufferAsprintf(&buf, "%s,id=%s", model, sound->info.alias);
