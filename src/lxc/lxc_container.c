@@ -536,31 +536,33 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
             VIR_FREE(ipStr);
         }
 
-        VIR_DEBUG("Enabling %s", newname);
-        rc = virNetDevSetOnline(newname, true);
-        if (rc < 0)
-            goto error_out;
-
-        /* Set the routes */
-        for (j = 0; j < netDef->nroutes; j++) {
-            virDomainNetRouteDefPtr route = netDef->routes[j];
-            if (VIR_SOCKET_ADDR_VALID(&route->to))
-                toStr = virSocketAddrFormat(&route->to);
-            else
-                if (VIR_STRDUP(toStr, "default") < 0)
-                    goto error_out;
-            viaStr = virSocketAddrFormat(&route->via);
-            VIR_DEBUG("Adding route %s/%d via %s", toStr, route->prefix, viaStr);
-
-            if (virNetDevAddRoute(newname, &route->to, route->prefix,
-                                  &route->via, 0) < 0) {
-                virReportError(VIR_ERR_SYSTEM_ERROR,
-                               _("Failed to add route %s/%d via %s"),
-                               toStr, route->prefix, viaStr);
+        if (netDef->linkstate != VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN) {
+            VIR_DEBUG("Enabling %s", newname);
+            rc = virNetDevSetOnline(newname, true);
+            if (rc < 0)
                 goto error_out;
+
+            /* Set the routes */
+            for (j = 0; j < netDef->nroutes; j++) {
+                virDomainNetRouteDefPtr route = netDef->routes[j];
+                if (VIR_SOCKET_ADDR_VALID(&route->to))
+                    toStr = virSocketAddrFormat(&route->to);
+                else
+                    if (VIR_STRDUP(toStr, "default") < 0)
+                        goto error_out;
+                viaStr = virSocketAddrFormat(&route->via);
+                VIR_DEBUG("Adding route %s/%d via %s", toStr, route->prefix, viaStr);
+
+                if (virNetDevAddRoute(newname, &route->to, route->prefix,
+                                      &route->via, 0) < 0) {
+                    virReportError(VIR_ERR_SYSTEM_ERROR,
+                                   _("Failed to add route %s/%d via %s"),
+                                   toStr, route->prefix, viaStr);
+                    goto error_out;
+                }
+                VIR_FREE(toStr);
+                VIR_FREE(viaStr);
             }
-            VIR_FREE(toStr);
-            VIR_FREE(viaStr);
         }
 
         VIR_FREE(newname);
