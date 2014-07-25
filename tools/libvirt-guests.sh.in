@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (C) 2011-2013 Red Hat, Inc.
+# Copyright (C) 2011-2014 Red Hat, Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -250,8 +250,8 @@ suspend_guest()
 }
 
 # shutdown_guest URI GUEST
-# Start a ACPI shutdown of GUEST on URI. This function return after the quest
-# was successfully shutdown or the timeout defined by $SHUTDOWN_TIMEOUT expires.
+# Start an ACPI shutdown of GUEST on URI. This function returns after the guest
+# was successfully shutdown or the timeout defined by $SHUTDOWN_TIMEOUT expired.
 shutdown_guest()
 {
     uri=$1
