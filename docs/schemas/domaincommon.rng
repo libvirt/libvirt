@@ -201,6 +201,7 @@
         <value>vbox</value>
         <value>phyp</value>
         <value>parallels</value>
+        <value>bhyve</value>
       </choice>
     </attribute>
   </define>
@@ -3010,6 +3011,7 @@
       <value>pty</value>
       <value>spicevmc</value>
       <value>spiceport</value>
+      <value>nmdm</value>
     </choice>
   </define>
 
@@ -3081,6 +3083,12 @@
         </optional>
         <optional>
           <attribute name="channel"/>
+        </optional>
+        <optional>
+          <attribute name="master"/>
+        </optional>
+        <optional>
+          <attribute name="slave"/>
         </optional>
         <optional>
           <ref name='devSeclabel'/>
