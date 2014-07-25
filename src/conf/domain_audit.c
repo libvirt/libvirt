@@ -253,10 +253,7 @@ virDomainAuditRNG(virDomainObjPtr vm,
     if (newDef) {
         switch ((virDomainRNGBackend) newDef->backend) {
         case VIR_DOMAIN_RNG_BACKEND_RANDOM:
-            if (newDef->source.file)
-                newsrcpath = newDef->source.file;
-            else
-                newsrcpath = "/dev/random";
+            newsrcpath = newDef->source.file;
             break;
 
         case VIR_DOMAIN_RNG_BACKEND_EGD:
@@ -271,10 +268,7 @@ virDomainAuditRNG(virDomainObjPtr vm,
     if (oldDef) {
         switch ((virDomainRNGBackend) oldDef->backend) {
         case VIR_DOMAIN_RNG_BACKEND_RANDOM:
-            if (oldDef->source.file)
-                oldsrcpath = oldDef->source.file;
-            else
-                oldsrcpath = "/dev/random";
+            oldsrcpath = oldDef->source.file;
             break;
 
         case VIR_DOMAIN_RNG_BACKEND_EGD:

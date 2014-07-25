@@ -3057,6 +3057,14 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
         }
     }
 
+    /* set default path for virtio-rng "random" backend to /dev/random */
+    if (dev->type == VIR_DOMAIN_DEVICE_RNG &&
+        dev->data.rng->backend == VIR_DOMAIN_RNG_BACKEND_RANDOM &&
+        !dev->data.rng->source.file) {
+        if (VIR_STRDUP(dev->data.rng->source.file, "/dev/random") < 0)
+            return -1;
+    }
+
     return 0;
 }
 
@@ -16546,11 +16554,7 @@ virDomainRNGDefFormat(virBufferPtr buf,
 
     switch ((virDomainRNGBackend) def->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
-        if (def->source.file)
-            virBufferEscapeString(buf, ">%s</backend>\n", def->source.file);
-        else
-            virBufferAddLit(buf, "/>\n");
-
+        virBufferEscapeString(buf, ">%s</backend>\n", def->source.file);
         break;
 
     case VIR_DOMAIN_RNG_BACKEND_EGD:

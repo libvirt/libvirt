@@ -5626,9 +5626,8 @@ qemuBuildRNGBackendArgs(virCommandPtr cmd,
             goto cleanup;
         }
 
-        virBufferAsprintf(&buf, "rng-random,id=%s", dev->info.alias);
-        if (dev->source.file)
-            virBufferAsprintf(&buf, ",filename=%s", dev->source.file);
+        virBufferAsprintf(&buf, "rng-random,id=%s,filename=%s",
+                          dev->info.alias, dev->source.file);
 
         virCommandAddArg(cmd, "-object");
         virCommandAddArgBuffer(cmd, &buf);
