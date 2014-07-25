@@ -2950,7 +2950,7 @@ virDomainSaveImageDefineXML(virConnectPtr conn, const char *file,
  * a crashed state after the dump completes.  If @flags includes
  * VIR_DUMP_LIVE, then make the core dump while continuing to allow
  * the guest to run; otherwise, the guest is suspended during the dump.
- * VIR_DUMP_RESET flag forces reset of the quest after dump.
+ * VIR_DUMP_RESET flag forces reset of the guest after dump.
  * The above three flags are mutually exclusive.
  *
  * Additionally, if @flags includes VIR_DUMP_BYPASS_CACHE, then libvirt
@@ -3042,7 +3042,7 @@ virDomainCoreDump(virDomainPtr domain, const char *to, unsigned int flags)
  * a crashed state after the dump completes.  If @flags includes
  * VIR_DUMP_LIVE, then make the core dump while continuing to allow
  * the guest to run; otherwise, the guest is suspended during the dump.
- * VIR_DUMP_RESET flag forces reset of the quest after dump.
+ * VIR_DUMP_RESET flag forces reset of the guest after dump.
  * The above three flags are mutually exclusive.
  *
  * Additionally, if @flags includes VIR_DUMP_BYPASS_CACHE, then libvirt
