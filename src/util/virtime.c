@@ -94,7 +94,9 @@ int virTimeFieldsNowRaw(struct tm *fields)
     if (virTimeMillisNowRaw(&now) < 0)
         return -1;
 
-    return virTimeFieldsThenRaw(now, fields);
+    virTimeFieldsThen(now, fields);
+
+    return 0;
 }
 
 
@@ -114,16 +116,15 @@ const unsigned short int __mon_yday[2][13] = {
     ((y) % 4 == 0 && ((y) % 100 != 0 || (y) % 400 == 0))
 
 /**
- * virTimeFieldsThenRaw:
+ * virTimeFieldsThen:
  * @when: the time to convert in milliseconds
  * @fields: filled with time @when fields
  *
  * Converts the timestamp @when into broken-down field format.
  * Time time is always in UTC
  *
- * Returns 0 on success, -1 on error with errno set
  */
-int virTimeFieldsThenRaw(unsigned long long when, struct tm *fields)
+void virTimeFieldsThen(unsigned long long when, struct tm *fields)
 {
     /* This code is taken from GLibC under terms of LGPLv2+ */
     long int days, rem, y;
@@ -171,7 +172,6 @@ int virTimeFieldsThenRaw(unsigned long long when, struct tm *fields)
     days -= ip[y];
     fields->tm_mon = y;
     fields->tm_mday = days + 1;
-    return 0;
 }
 
 
@@ -209,8 +209,7 @@ int virTimeStringThenRaw(unsigned long long when, char *buf)
 {
     struct tm fields;
 
-    if (virTimeFieldsThenRaw(when, &fields) < 0)
-        return -1;
+    virTimeFieldsThen(when, &fields);
 
     fields.tm_year += 1900;
     fields.tm_mon += 1;
@@ -264,27 +263,7 @@ int virTimeFieldsNow(struct tm *fields)
     if (virTimeMillisNow(&now) < 0)
         return -1;
 
-    return virTimeFieldsThen(now, fields);
-}
-
-
-/**
- * virTimeFieldsThen:
- * @when: the time to convert in milliseconds
- * @fields: filled with time @when fields
- *
- * Converts the timestamp @when into broken-down field format.
- * Time time is always in UTC
- *
- * Returns 0 on success, -1 on error with error reported
- */
-int virTimeFieldsThen(unsigned long long when, struct tm *fields)
-{
-    if (virTimeFieldsThenRaw(when, fields) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to break out time format"));
-        return -1;
-    }
+    virTimeFieldsThen(now, fields);
     return 0;
 }
 

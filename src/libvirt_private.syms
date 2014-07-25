@@ -2032,7 +2032,6 @@ virThreadPoolSendJob;
 virTimeFieldsNow;
 virTimeFieldsNowRaw;
 virTimeFieldsThen;
-virTimeFieldsThenRaw;
 virTimeLocalOffsetFromUTC;
 virTimeMillisNow;
 virTimeMillisNowRaw;

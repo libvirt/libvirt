@@ -44,8 +44,7 @@ static int testTimeFields(const void *args)
     const struct testTimeFieldsData *data = args;
     struct tm actual;
 
-    if (virTimeFieldsThen(data->when, &actual) < 0)
-        return -1;
+    virTimeFieldsThen(data->when, &actual);
 
 #define COMPARE(field)                                          \
     do {                                                        \
