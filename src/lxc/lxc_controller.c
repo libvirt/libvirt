@@ -1164,6 +1164,20 @@ static int virLXCControllerMain(virLXCControllerPtr ctrl)
     return rc;
 }
 
+static unsigned int
+virLXCControllerLookupUsernsMap(virDomainIdMapEntryPtr map,
+                                int num,
+                                unsigned int src)
+{
+    size_t i;
+
+    for (i = 0; i < num; i++) {
+        if (src > map[i].start && src < map[i].start + map[i].count)
+            return map[i].target + (src - map[i].start);
+    }
+
+    return src;
+}
 
 static int
 virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
@@ -1930,6 +1944,7 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
     char *opts = NULL;
     char *devpts = NULL;
     int ret = -1;
+    gid_t ptsgid = 5;
 
     VIR_DEBUG("Setting up private /dev/pts");
 
@@ -1949,10 +1964,15 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
         goto cleanup;
     }
 
+    if (ctrl->def->idmap.ngidmap)
+        ptsgid = virLXCControllerLookupUsernsMap(ctrl->def->idmap.gidmap,
+                                                 ctrl->def->idmap.ngidmap,
+                                                 ptsgid);
+
     /* XXX should we support gid=X for X!=5 for distros which use
      * a different gid for tty?  */
-    if (virAsprintf(&opts, "newinstance,ptmxmode=0666,mode=0620,gid=5%s",
-                    (mount_options ? mount_options : "")) < 0)
+    if (virAsprintf(&opts, "newinstance,ptmxmode=0666,mode=0620,gid=%u%s",
+                    ptsgid, (mount_options ? mount_options : "")) < 0)
         goto cleanup;
 
     VIR_DEBUG("Mount devpts on %s type=tmpfs flags=%x, opts=%s",
