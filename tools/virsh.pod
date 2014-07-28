@@ -2981,6 +2981,9 @@ of the amount of data to be uploaded. A negative value is interpreted
 as an unsigned long long value to essentially include everything from
 the offset to the end of the volume.
 An error will occur if the I<local-file> is greater than the specified length.
+See the description for the libvirt virStorageVolUpload API for details
+regarding possible target volume and pool changes as a result of the
+pool refresh when the upload is attempted.
 
 =item B<vol-download> [I<--pool> I<pool-or-uuid>] [I<--offset> I<bytes>]
 [I<--length> I<bytes>] I<vol-name-or-key-or-path> I<local-file>

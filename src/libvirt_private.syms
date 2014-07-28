@@ -825,6 +825,7 @@ virFDStreamCreateFile;
 virFDStreamOpen;
 virFDStreamOpenFile;
 virFDStreamOpenPTY;
+virFDStreamSetInternalCloseCb;
 
 
 # libvirt_internal.h

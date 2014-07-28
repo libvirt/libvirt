@@ -59,6 +59,12 @@ static virStorageDriverStatePtr driverState;
 
 static int storageStateCleanup(void);
 
+typedef struct _virStorageVolStreamInfo virStorageVolStreamInfo;
+typedef virStorageVolStreamInfo *virStorageVolStreamInfoPtr;
+struct _virStorageVolStreamInfo {
+    char *pool_name;
+};
+
 static void storageDriverLock(virStorageDriverStatePtr driver)
 {
     virMutexLock(&driver->lock);
@@ -1956,6 +1962,78 @@ storageVolDownload(virStorageVolPtr obj,
 }
 
 
+/**
+ * Frees opaque data.
+ *
+ * @opaque Data to be freed.
+ */
+static void
+virStorageVolPoolRefreshDataFree(void *opaque)
+{
+    virStorageVolStreamInfoPtr cbdata = opaque;
+
+    VIR_FREE(cbdata->pool_name);
+    VIR_FREE(cbdata);
+}
+
+/**
+ * Thread to handle the pool refresh
+ *
+ * @st Pointer to stream being closed.
+ * @opaque Domain's device information structure.
+ */
+static void
+virStorageVolPoolRefreshThread(void *opaque)
+{
+
+    virStorageVolStreamInfoPtr cbdata = opaque;
+    virStoragePoolObjPtr pool = NULL;
+    virStorageBackendPtr backend;
+
+    storageDriverLock(driverState);
+    if (!(pool = virStoragePoolObjFindByName(&driverState->pools,
+                                             cbdata->pool_name)))
+        goto cleanup;
+
+    if (!(backend = virStorageBackendForType(pool->def->type)))
+        goto cleanup;
+
+    virStoragePoolObjClearVols(pool);
+    if (backend->refreshPool(NULL, pool) < 0)
+        VIR_DEBUG("Failed to refresh storage pool");
+
+ cleanup:
+    if (pool)
+        virStoragePoolObjUnlock(pool);
+    storageDriverUnlock(driverState);
+    virStorageVolPoolRefreshDataFree(cbdata);
+}
+
+/**
+ * Callback being called if a FDstream is closed. Will spin off a thread
+ * to perform a pool refresh.
+ *
+ * @st Pointer to stream being closed.
+ * @opaque Buffer to hold the pool name to be rereshed
+ */
+static void
+virStorageVolFDStreamCloseCb(virStreamPtr st ATTRIBUTE_UNUSED,
+                             void *opaque)
+{
+    virThread thread;
+
+    if (virThreadCreate(&thread, false, virStorageVolPoolRefreshThread,
+                        opaque) < 0) {
+        /* Not much else can be done */
+        VIR_ERROR(_("Failed to create thread to handle pool refresh"));
+        goto error;
+    }
+    return; /* Thread will free opaque data */
+
+ error:
+    virStorageVolPoolRefreshDataFree(opaque);
+}
+
 static int
 storageVolUpload(virStorageVolPtr obj,
                  virStreamPtr stream,
@@ -1966,6 +2044,7 @@ storageVolUpload(virStorageVolPtr obj,
     virStorageBackendPtr backend;
     virStoragePoolObjPtr pool = NULL;
     virStorageVolDefPtr vol = NULL;
+    virStorageVolStreamInfoPtr cbdata = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -1996,11 +2075,35 @@ storageVolUpload(virStorageVolPtr obj,
         goto cleanup;
     }
 
+    /* If we have a refreshPool, use the callback routine in order to
+     * refresh the pool after the volume upload stream closes. This way
+     * we make sure the volume and pool data are refreshed without user
+     * interaction and we can just lookup the backend in the callback
+     * routine in order to call the refresh API.
+     */
+    if (backend->refreshPool) {
+        if (VIR_ALLOC(cbdata) < 0 ||
+            VIR_STRDUP(cbdata->pool_name, pool->def->name) < 0)
+            goto cleanup;
+    }
+
     ret = backend->uploadVol(obj->conn, pool, vol, stream,
                              offset, length, flags);
 
+    /* Add cleanup callback - call after uploadVol since the stream
+     * is then fully set up
+     */
+    if (cbdata) {
+        virFDStreamSetInternalCloseCb(stream,
+                                      virStorageVolFDStreamCloseCb,
+                                      cbdata, NULL);
+        cbdata = NULL;
+    }
+
  cleanup:
     virStoragePoolObjUnlock(pool);
+    if (cbdata)
+        virStorageVolPoolRefreshDataFree(cbdata);
 
     return ret;
 }
