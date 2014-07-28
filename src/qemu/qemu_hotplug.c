@@ -2181,12 +2181,8 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     if (needBandwidthSet) {
         if (virNetDevBandwidthSet(newdev->ifname,
                                   virDomainNetGetActualBandwidth(newdev),
-                                  false) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot set bandwidth limits on %s"),
-                           newdev->ifname);
+                                  false) < 0)
             goto cleanup;
-        }
         needReplaceDevDef = true;
     }
 

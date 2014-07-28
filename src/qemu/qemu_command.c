@@ -382,12 +382,8 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
 
     if (virNetDevBandwidthSet(net->ifname,
                               virDomainNetGetActualBandwidth(net),
-                              false) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot set bandwidth limits on %s"),
-                       net->ifname);
+                              false) < 0)
         goto cleanup;
-    }
 
     if (net->filter && net->ifname &&
         virDomainConfNWFilterInstantiate(conn, def->uuid, net) < 0) {

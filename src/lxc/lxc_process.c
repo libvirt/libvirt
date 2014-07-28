@@ -276,12 +276,8 @@ char *virLXCProcessSetupInterfaceBridged(virConnectPtr conn,
 
     if (virNetDevBandwidthSet(net->ifname,
                               virDomainNetGetActualBandwidth(net),
-                              false) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot set bandwidth limits on %s"),
-                       net->ifname);
+                              false) < 0)
         goto cleanup;
-    }
 
     if (net->filter &&
         virDomainConfNWFilterInstantiate(conn, vm->uuid, net) < 0)

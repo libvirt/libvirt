@@ -922,9 +922,6 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
     }
 
     if (virNetDevBandwidthSet(cr_ifname, bandwidth, false) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot set bandwidth limits on %s"),
-                       cr_ifname);
         if (withTap)
             VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
         else

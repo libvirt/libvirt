@@ -2081,12 +2081,8 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     }
 
     if (virNetDevBandwidthSet(network->def->bridge,
-                              network->def->bandwidth, true) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot set bandwidth limits on %s"),
-                       network->def->bridge);
+                              network->def->bandwidth, true) < 0)
         goto err5;
-    }
 
     VIR_FREE(macTapIfName);
 
