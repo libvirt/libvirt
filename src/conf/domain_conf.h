@@ -610,6 +610,16 @@ struct _virDomainBlockIoTuneInfo {
 typedef virDomainBlockIoTuneInfo *virDomainBlockIoTuneInfoPtr;
 
 
+typedef enum {
+    VIR_DOMAIN_DISK_MIRROR_STATE_NONE = 0, /* No job, or job still not synced */
+    VIR_DOMAIN_DISK_MIRROR_STATE_READY, /* Job in second phase */
+    VIR_DOMAIN_DISK_MIRROR_STATE_ABORT, /* Job aborted, waiting for event */
+    VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT, /* Job pivoted, waiting for event */
+
+    VIR_DOMAIN_DISK_MIRROR_STATE_LAST
+} virDomainDiskMirrorState;
+
+
 /* Stores the virtual disk configuration */
 struct _virDomainDiskDef {
     virStorageSourcePtr src; /* non-NULL.  XXX Allow NULL for empty cdrom? */
@@ -621,7 +631,7 @@ struct _virDomainDiskDef {
     int removable; /* enum virTristateSwitch */
 
     virStorageSourcePtr mirror;
-    bool mirroring;
+    int mirrorState; /* enum virDomainDiskMirrorState */
 
     struct {
         unsigned int cylinders;
@@ -2567,6 +2577,7 @@ VIR_ENUM_DECL(virDomainDiskIo)
 VIR_ENUM_DECL(virDomainDeviceSGIO)
 VIR_ENUM_DECL(virDomainDiskTray)
 VIR_ENUM_DECL(virDomainDiskDiscard)
+VIR_ENUM_DECL(virDomainDiskMirrorState)
 VIR_ENUM_DECL(virDomainController)
 VIR_ENUM_DECL(virDomainControllerModelPCI)
 VIR_ENUM_DECL(virDomainControllerModelSCSI)

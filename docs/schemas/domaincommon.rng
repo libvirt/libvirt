@@ -4309,7 +4309,11 @@
       </choice>
       <optional>
         <attribute name='ready'>
-          <value>yes</value>
+          <choice>
+            <value>yes</value>
+            <value>abort</value>
+            <value>pivot</value>
+          </choice>
         </attribute>
       </optional>
     </element>

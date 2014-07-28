@@ -14841,7 +14841,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
     format = virStorageFileFormatTypeToString(disk->mirror->format);
 
     /* Probe the status, if needed.  */
-    if (!disk->mirroring) {
+    if (!disk->mirrorState) {
         qemuDomainObjEnterMonitor(driver, vm);
         rc = qemuMonitorBlockJob(priv->mon, device, NULL, NULL, 0, &info,
                                   BLOCK_JOB_INFO, true);
@@ -14855,10 +14855,10 @@ qemuDomainBlockPivot(virConnectPtr conn,
         }
         if (rc == 1 && info.cur == info.end &&
             info.type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY)
-            disk->mirroring = true;
+            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
     }
 
-    if (!disk->mirroring) {
+    if (disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_READY) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
                        _("disk '%s' not ready for pivot yet"),
                        disk->dst);
@@ -14934,7 +14934,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
     }
 
     disk->mirror = NULL;
-    disk->mirroring = false;
+    disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
 
  cleanup:
     /* revert to original disk def on failure */
@@ -15091,7 +15091,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
      * avoid checking if pivot is safe.  */
     if (mode == BLOCK_JOB_INFO && ret == 1 && disk->mirror &&
         info->cur == info->end && info->type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY)
-        disk->mirroring = true;
+        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
 
     /* A successful block job cancelation stops any mirroring.  */
     if (mode == BLOCK_JOB_ABORT && disk->mirror) {
@@ -15099,7 +15099,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
          * the mirror, and audit that fact, before dropping things.  */
         virStorageSourceFree(disk->mirror);
         disk->mirror = NULL;
-        disk->mirroring = false;
+        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
     }
 
  waitjob:

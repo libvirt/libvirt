@@ -747,6 +747,12 @@ VIR_ENUM_IMPL(virDomainDiskDiscard, VIR_DOMAIN_DISK_DISCARD_LAST,
               "unmap",
               "ignore")
 
+VIR_ENUM_IMPL(virDomainDiskMirrorState, VIR_DOMAIN_DISK_MIRROR_STATE_LAST,
+              "none",
+              "yes",
+              "abort",
+              "pivot")
+
 #define VIR_DOMAIN_XML_WRITE_FLAGS  VIR_DOMAIN_XML_SECURE
 #define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
 
@@ -5482,7 +5488,14 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 }
                 ready = virXMLPropString(cur, "ready");
                 if (ready) {
-                    def->mirroring = true;
+                    if ((def->mirrorState =
+                         virDomainDiskMirrorStateTypeFromString(ready)) < 0) {
+                        virReportError(VIR_ERR_XML_ERROR,
+                                       _("unknown mirror ready state %s"),
+                                       ready);
+                        VIR_FREE(ready);
+                        goto error;
+                    }
                     VIR_FREE(ready);
                 }
             } else if (xmlStrEqual(cur->name, BAD_CAST "auth")) {
@@ -15392,8 +15405,12 @@ virDomainDiskDefFormat(virBufferPtr buf,
             virBufferEscapeString(buf, " file='%s'", def->mirror->path);
             virBufferEscapeString(buf, " format='%s'", formatStr);
         }
-        if (def->mirroring)
-            virBufferAddLit(buf, " ready='yes'");
+        if (def->mirrorState) {
+            const char *mirror;
+
+            mirror = virDomainDiskMirrorStateTypeToString(def->mirrorState);
+            virBufferEscapeString(buf, " ready='%s'", mirror);
+        }
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         virBufferEscapeString(buf, "<format type='%s'/>\n", formatStr);

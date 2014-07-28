@@ -1921,9 +1921,13 @@
         format of the source).  The details of the <code>source</code>
         sub-element are determined by the <code>type</code> attribute
         of the mirror, similar to what is done for the
-        overall <code>disk</code> device element. If
-        attribute <code>ready</code> is present, then it is known the
-        disk is ready to pivot; otherwise, the disk is probably still
+        overall <code>disk</code> device element. The
+        attribute <code>ready</code>, if present, tracks progress of
+        the job: <code>yes</code> if the disk is known to be ready to
+        pivot, or, <span class="since">since
+        1.2.7</span>, <code>abort</code> or <code>pivot</code> if the
+        job is in the process of completing.  If <code>ready</code> is
+        not present, the disk is probably still
         copying.  For now, this element only valid in output; it is
         ignored on input.  The <code>source</code> sub-element exists
         for all two-phase jobs <span class="since">since 1.2.6</span>.
