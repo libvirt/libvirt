@@ -4674,7 +4674,7 @@ qemuBuildSoundDevStr(virDomainDefPtr def,
                      virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    const char *model;
+    const char *model = NULL;
 
     /* Hack for devices with different names in QEMU and libvirt */
     switch ((virDomainSoundModel) sound->model) {
