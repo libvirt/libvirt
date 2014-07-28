@@ -4883,7 +4883,7 @@ qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid PCI passthrough type '%s'"),
                        virDomainHostdevSubsysPCIBackendTypeToString(backend));
-        break;
+        goto error;
     }
 
     virBufferAddLit(&buf, ",host=");
