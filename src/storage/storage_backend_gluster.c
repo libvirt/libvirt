@@ -638,8 +638,13 @@ virStorageFileBackendGlusterCreate(virStorageSourcePtr src)
 {
     virStorageFileBackendGlusterPrivPtr priv = src->drv->priv;
     glfs_fd_t *fd = NULL;
+    mode_t mode = S_IRUSR;
 
-    if (!(fd = glfs_open(priv->vol, src->path, O_CREAT | O_TRUNC | O_WRONLY)))
+    if (!src->readonly)
+        mode |= S_IWUSR;
+
+    if (!(fd = glfs_creat(priv->vol, src->path,
+                          O_CREAT | O_TRUNC | O_WRONLY, mode)))
         return -1;
 
     ignore_value(glfs_close(fd));
