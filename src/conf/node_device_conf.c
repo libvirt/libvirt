@@ -1349,7 +1349,7 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
 {
     virNodeDevCapsDefPtr caps;
     char *tmp;
-    int val, ret;
+    int val, ret = -1;
 
     if (VIR_ALLOC(caps) < 0)
         return NULL;
