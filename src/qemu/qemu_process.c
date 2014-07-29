@@ -1016,6 +1016,8 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virObjectEventPtr event2 = NULL;
     const char *path;
     virDomainDiskDefPtr disk;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    bool save = false;
 
     virObjectLock(vm);
     disk = qemuProcessFindDomainDiskByAlias(vm, diskAlias);
@@ -1027,29 +1029,52 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         event = virDomainEventBlockJobNewFromObj(vm, path, type, status);
         event2 = virDomainEventBlockJob2NewFromObj(vm, disk->dst, type,
                                                    status);
-        /* XXX If we completed a block pull or commit, then recompute
-         * the cached backing chain to match.  Better would be storing
-         * the chain ourselves rather than reprobing, but this
-         * requires modifying domain_conf and our XML to fully track
-         * the chain across libvirtd restarts.  For that matter, if
-         * qemu gains support for committing the active layer, we have
-         * to update disk->src.  */
-        if ((type == VIR_DOMAIN_BLOCK_JOB_TYPE_PULL ||
-             type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT) &&
-            status == VIR_DOMAIN_BLOCK_JOB_COMPLETED)
+
+        /* If we completed a block pull or commit, then update the XML
+         * to match.  */
+        if (status == VIR_DOMAIN_BLOCK_JOB_COMPLETED) {
+            if (disk->mirrorState == VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT) {
+                /* XXX We want to revoke security labels and disk
+                 * lease, as well as audit that revocation, before
+                 * dropping the original source.  But it gets tricky
+                 * if both source and mirror share common backing
+                 * files (we want to only revoke the non-shared
+                 * portion of the chain); so for now, we leak the
+                 * access to the original.  */
+                virStorageSourceFree(disk->src);
+                disk->src = disk->mirror;
+            } else {
+                virStorageSourceFree(disk->mirror);
+            }
+
+            /* Recompute the cached backing chain to match our
+             * updates.  Better would be storing the chain ourselves
+             * rather than reprobing, but we haven't quite completed
+             * that conversion to use our XML tracking. */
+            disk->mirror = NULL;
+            save = disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
             qemuDomainDetermineDiskChain(driver, vm, disk, true);
-        if (disk->mirror && type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
+        } else if (disk->mirror && type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
             if (status == VIR_DOMAIN_BLOCK_JOB_READY) {
                 disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
+                save = true;
             } else if (status == VIR_DOMAIN_BLOCK_JOB_FAILED) {
                 virStorageSourceFree(disk->mirror);
                 disk->mirror = NULL;
                 disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+                save = true;
             }
         }
     }
 
+    if (save) {
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+            VIR_WARN("Unable to save status on vm %s after block job",
+                     vm->def->name);
+    }
     virObjectUnlock(vm);
+    virObjectUnref(cfg);
 
     if (event)
         qemuDomainEventQueue(driver, event);

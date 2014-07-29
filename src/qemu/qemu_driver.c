@@ -14906,38 +14906,43 @@ qemuDomainBlockPivot(virConnectPtr conn,
          virSecurityManagerSetDiskLabel(driver->securityManager, vm->def, disk) < 0))
         goto cleanup;
 
-    /* Attempt the pivot.  */
+    /* Attempt the pivot.  Record the attempt now, to prevent duplicate
+     * attempts; but the actual disk change will be made when emitting
+     * the event.
+     * XXX On libvirtd restarts, if we missed the qemu event, we need
+     * to double check what state qemu is in.
+     * XXX We should be using qemu's rerror flag to make sure the job
+     * remains alive until we know it's final state.
+     * XXX If the abort command is synchronous but the qemu event says
+     * that pivot failed, we need to reflect that failure into the
+     * overall return value.  */
+    disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT;
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorDrivePivot(priv->mon, device, disk->mirror->path, format);
     qemuDomainObjExitMonitor(driver, vm);
 
-    if (ret == 0) {
-        /* XXX We want to revoke security labels and disk lease, as
-         * well as audit that revocation, before dropping the original
-         * source.  But it gets tricky if both source and mirror share
-         * common backing files (we want to only revoke the non-shared
-         * portion of the chain, and is made more difficult by the
-         * fact that we aren't tracking the full chain ourselves; so
-         * for now, we leak the access to the original.  */
-        virStorageSourceFree(oldsrc);
-        oldsrc = NULL;
-    } else {
+    if (ret < 0) {
         /* On failure, qemu abandons the mirror, and reverts back to
          * the source disk (RHEL 6.3 has a bug where the revert could
          * cause catastrophic failure in qemu, but we don't need to
          * worry about it here as it is not an upstream qemu problem.  */
         /* XXX should we be parsing the exact qemu error, or calling
          * 'query-block', to see what state we really got left in
-         * before killing the mirroring job?  And just as on the
-         * success case, there's security labeling to worry about.  */
+         * before killing the mirroring job?
+         * XXX We want to revoke security labels and disk lease, as
+         * well as audit that revocation, before dropping the original
+         * source.  But it gets tricky if both source and mirror share
+         * common backing files (we want to only revoke the non-shared
+         * portion of the chain); so for now, we leak the access to
+         * the original.  */
         virStorageSourceFree(disk->mirror);
+        disk->mirror = NULL;
+        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
     }
-
-    disk->mirror = NULL;
-    disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        ret = -1;
 
  cleanup:
-    /* revert to original disk def on failure */
     if (oldsrc)
         disk->src = oldsrc;
 
@@ -14980,6 +14985,8 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     unsigned int baseIndex = 0;
     char *basePath = NULL;
     char *backingPath = NULL;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    bool save = false;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -15033,19 +15040,30 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
                        disk->dst);
         goto endjob;
     }
-    if (mode == BLOCK_JOB_ABORT &&
-        (flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT) &&
-        !(async && disk->mirror)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("pivot of disk '%s' requires an active copy job"),
-                       disk->dst);
-        goto endjob;
-    }
+    if (mode == BLOCK_JOB_ABORT) {
+        if ((flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT) &&
+            !(async && disk->mirror)) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("pivot of disk '%s' requires an active copy job"),
+                           disk->dst);
+            goto endjob;
+        }
+        if (disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_NONE &&
+            disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_READY) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("another job on disk '%s' is still being ended"),
+                           disk->dst);
+            goto endjob;
+        }
 
-    if (disk->mirror && mode == BLOCK_JOB_ABORT &&
-        (flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT)) {
-        ret = qemuDomainBlockPivot(conn, driver, vm, device, disk);
-        goto waitjob;
+        if (disk->mirror && (flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT)) {
+            ret = qemuDomainBlockPivot(conn, driver, vm, device, disk);
+            goto waitjob;
+        }
+        if (disk->mirror) {
+            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_ABORT;
+            save = true;
+        }
     }
 
     if (base &&
@@ -15084,36 +15102,40 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     ret = qemuMonitorBlockJob(priv->mon, device, basePath, backingPath,
                               bandwidth, info, mode, async);
     qemuDomainObjExitMonitor(driver, vm);
-    if (ret < 0)
+    if (ret < 0) {
+        if (mode == BLOCK_JOB_ABORT && disk->mirror)
+            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
         goto endjob;
+    }
 
     /* Snoop block copy operations, so future cancel operations can
      * avoid checking if pivot is safe.  */
     if (mode == BLOCK_JOB_INFO && ret == 1 && disk->mirror &&
-        info->cur == info->end && info->type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY)
+        info->cur == info->end && !disk->mirrorState) {
         disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
-
-    /* A successful block job cancelation stops any mirroring.  */
-    if (mode == BLOCK_JOB_ABORT && disk->mirror) {
-        /* XXX We should also revoke security labels and disk lease on
-         * the mirror, and audit that fact, before dropping things.  */
-        virStorageSourceFree(disk->mirror);
-        disk->mirror = NULL;
-        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+        save = true;
     }
 
  waitjob:
+    /* If we have made changes to XML due to a copy job, make a best
+     * effort to save it now.  But we can ignore failure, since there
+     * will be further changes when the event marks completion.  */
+    if (save)
+        ignore_value(virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm));
+
     /* With synchronous block cancel, we must synthesize an event, and
      * we silently ignore the ABORT_ASYNC flag.  With asynchronous
-     * block cancel, the event will come from qemu, but without the
-     * ABORT_ASYNC flag, we must block to guarantee synchronous
-     * operation.  We do the waiting while still holding the VM job,
-     * to prevent newly scheduled block jobs from confusing us.  */
+     * block cancel, the event will come from qemu and will update the
+     * XML as appropriate, but without the ABORT_ASYNC flag, we must
+     * block to guarantee synchronous operation.  We do the waiting
+     * while still holding the VM job, to prevent newly scheduled
+     * block jobs from confusing us.  */
     if (mode == BLOCK_JOB_ABORT) {
         if (!async) {
             /* Older qemu that lacked async reporting also lacked
-             * active commit, so we can hardcode the event to pull.
-             * We have to generate two variants of the event. */
+             * blockcopy and active commit, so we can hardcode the
+             * event to pull, and we know the XML doesn't need
+             * updating.  We have to generate two event variants.  */
             int type = VIR_DOMAIN_BLOCK_JOB_TYPE_PULL;
             int status = VIR_DOMAIN_BLOCK_JOB_CANCELED;
             event = virDomainEventBlockJobNewFromObj(vm, disk->src->path, type,
@@ -15121,6 +15143,8 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
             event2 = virDomainEventBlockJob2NewFromObj(vm, disk->dst, type,
                                                        status);
         } else if (!(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC)) {
+            /* XXX If the event reports failure, we should reflect
+             * that back into the return status of this API call.  */
             while (1) {
                 /* Poll every 50ms */
                 static struct timespec ts = { .tv_sec = 0,
@@ -15158,6 +15182,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     }
 
  cleanup:
+    virObjectUnref(cfg);
     VIR_FREE(basePath);
     VIR_FREE(backingPath);
     VIR_FREE(device);
@@ -15388,6 +15413,10 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     need_unlink = false;
     disk->mirror = mirror;
     mirror = NULL;
+
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        VIR_WARN("Unable to save status on vm %s after state change",
+                 vm->def->name);
 
  endjob:
     if (need_unlink && unlink(dest))
