@@ -632,6 +632,7 @@ struct _virDomainDiskDef {
 
     virStorageSourcePtr mirror;
     int mirrorState; /* enum virDomainDiskMirrorState */
+    int mirrorJob; /* virDomainBlockJobType */
 
     struct {
         unsigned int cylinders;

@@ -4290,6 +4290,13 @@
             </attribute>
           </optional>
           <optional>
+            <attribute name='job'>
+              <choice>
+                <value>copy</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
             <interleave>
               <ref name='diskSourceFile'/>
               <optional>
@@ -4299,6 +4306,12 @@
           </optional>
         </group>
         <group> <!-- preferred format -->
+          <attribute name='job'>
+            <choice>
+              <value>copy</value>
+              <value>active-commit</value>
+            </choice>
+          </attribute>
           <interleave>
             <ref name="diskSource"/>
             <optional>

@@ -232,6 +232,7 @@ mymain(void)
     DO_TEST_DIFFERENT("disk-mirror-old");
     DO_TEST_FULL("disk-mirror", false, WHEN_ACTIVE);
     DO_TEST_FULL("disk-mirror", true, WHEN_INACTIVE);
+    DO_TEST_FULL("disk-active-commit", false, WHEN_ACTIVE);
     DO_TEST("graphics-listen-network");
     DO_TEST("graphics-vnc");
     DO_TEST("graphics-vnc-websocket");

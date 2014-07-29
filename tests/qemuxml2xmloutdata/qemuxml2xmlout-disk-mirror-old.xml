@@ -17,7 +17,7 @@
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <backingStore/>
-      <mirror type='file' file='/dev/HostVG/QEMUGuest1Copy' ready='yes'>
+      <mirror type='file' file='/dev/HostVG/QEMUGuest1Copy' job='copy' ready='yes'>
         <source file='/dev/HostVG/QEMUGuest1Copy'/>
       </mirror>
       <target dev='hda' bus='ide'/>
@@ -33,7 +33,7 @@
     <disk type='file' device='disk'>
       <source file='/tmp/data.img'/>
       <backingStore/>
-      <mirror type='file' file='/tmp/copy.img' format='qcow2'>
+      <mirror type='file' file='/tmp/copy.img' format='qcow2' job='copy'>
         <format type='qcow2'/>
         <source file='/tmp/copy.img'/>
       </mirror>

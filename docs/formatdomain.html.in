@@ -1913,16 +1913,19 @@
       </dd>
       <dt><code>mirror</code></dt>
       <dd>
-        This element is present if the hypervisor has started a block
-        copy operation (via the <code>virDomainBlockRebase</code>
-        API), where the mirror location in the <code>source</code>
-        sub-element will eventually have the same contents as the
-        source, and with the file format in the
+        This element is present if the hypervisor has started a
+        long-running block job operation, where the mirror location in
+        the <code>source</code> sub-element will eventually have the
+        same contents as the source, and with the file format in the
         sub-element <code>format</code> (which might differ from the
         format of the source).  The details of the <code>source</code>
         sub-element are determined by the <code>type</code> attribute
         of the mirror, similar to what is done for the
-        overall <code>disk</code> device element. The
+        overall <code>disk</code> device element. The <code>job</code>
+        attribute mentions which API started the operation ("copy" for
+        the <code>virDomainBlockRebase</code> API, or "active-commit"
+        for the <code>virDomainBlockCommit</code>
+        API), <span class="since">since 1.2.7</span>.  The
         attribute <code>ready</code>, if present, tracks progress of
         the job: <code>yes</code> if the disk is known to be ready to
         pivot, or, <span class="since">since

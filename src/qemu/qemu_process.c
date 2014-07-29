@@ -1017,6 +1017,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     const char *path;
     virDomainDiskDefPtr disk;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virDomainDiskDefPtr persistDisk = NULL;
     bool save = false;
 
     virObjectLock(vm);
@@ -1025,6 +1026,9 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     if (disk) {
         /* Have to generate two variants of the event for old vs. new
          * client callbacks */
+        if (type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
+            disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
+            type = disk->mirrorJob;
         path = virDomainDiskGetSource(disk);
         event = virDomainEventBlockJobNewFromObj(vm, path, type, status);
         event2 = virDomainEventBlockJob2NewFromObj(vm, disk->dst, type,
@@ -1034,6 +1038,31 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
          * to match.  */
         if (status == VIR_DOMAIN_BLOCK_JOB_COMPLETED) {
             if (disk->mirrorState == VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT) {
+                if (vm->newDef) {
+                    int indx = virDomainDiskIndexByName(vm->newDef, disk->dst,
+                                                        false);
+                    virStorageSourcePtr copy = NULL;
+
+                    if (indx >= 0) {
+                        persistDisk = vm->newDef->disks[indx];
+                        copy = virStorageSourceCopy(disk->mirror, false);
+                        if (virStorageSourceInitChainElement(copy,
+                                                             persistDisk->src,
+                                                             false) < 0) {
+                            VIR_WARN("Unable to update persistent definition "
+                                     "on vm %s after block job",
+                                     vm->def->name);
+                            virStorageSourceFree(copy);
+                            copy = NULL;
+                            persistDisk = NULL;
+                        }
+                    }
+                    if (copy) {
+                        virStorageSourceFree(persistDisk->src);
+                        persistDisk->src = copy;
+                    }
+                }
+
                 /* XXX We want to revoke security labels and disk
                  * lease, as well as audit that revocation, before
                  * dropping the original source.  But it gets tricky
@@ -1054,8 +1083,11 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
             disk->mirror = NULL;
             save = disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
             disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+            disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
             qemuDomainDetermineDiskChain(driver, vm, disk, true);
-        } else if (disk->mirror && type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
+        } else if (disk->mirror &&
+                   (type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY ||
+                    type == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)) {
             if (status == VIR_DOMAIN_BLOCK_JOB_READY) {
                 disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
                 save = true;
@@ -1063,6 +1095,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                 virStorageSourceFree(disk->mirror);
                 disk->mirror = NULL;
                 disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+                disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
                 save = true;
             }
         }
@@ -1072,6 +1105,10 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
             VIR_WARN("Unable to save status on vm %s after block job",
                      vm->def->name);
+        if (persistDisk && virDomainSaveConfig(cfg->configDir,
+                                               vm->newDef) < 0)
+            VIR_WARN("Unable to update persistent definition on vm %s "
+                     "after block job", vm->def->name);
     }
     virObjectUnlock(vm);
     virObjectUnref(cfg);

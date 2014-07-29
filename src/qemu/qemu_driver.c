@@ -14938,6 +14938,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
         virStorageSourceFree(disk->mirror);
         disk->mirror = NULL;
         disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+        disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
     }
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         ret = -1;
@@ -15413,6 +15414,7 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     need_unlink = false;
     disk->mirror = mirror;
     mirror = NULL;
+    disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         VIR_WARN("Unable to save status on vm %s after state change",

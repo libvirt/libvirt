@@ -753,6 +753,12 @@ VIR_ENUM_IMPL(virDomainDiskMirrorState, VIR_DOMAIN_DISK_MIRROR_STATE_LAST,
               "abort",
               "pivot")
 
+/* Internal mapping: subset of block job types that can be present in
+ * <mirror> XML (remaining types are not two-phase). */
+VIR_ENUM_DECL(virDomainBlockJob)
+VIR_ENUM_IMPL(virDomainBlockJob, VIR_DOMAIN_BLOCK_JOB_TYPE_LAST,
+              "", "", "copy", "", "active-commit")
+
 #define VIR_DOMAIN_XML_WRITE_FLAGS  VIR_DOMAIN_XML_SECURE
 #define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
 
@@ -5437,9 +5443,25 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                        xmlStrEqual(cur->name, BAD_CAST "mirror") &&
                        !(flags & VIR_DOMAIN_XML_INACTIVE)) {
                 char *ready;
+                char *blockJob;
 
                 if (VIR_ALLOC(def->mirror) < 0)
                     goto error;
+
+                blockJob = virXMLPropString(cur, "job");
+                if (blockJob) {
+                    def->mirrorJob = virDomainBlockJobTypeFromString(blockJob);
+                    if (def->mirrorJob <= 0) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("unknown mirror job type '%s'"),
+                                       blockJob);
+                        VIR_FREE(blockJob);
+                        goto error;
+                    }
+                    VIR_FREE(blockJob);
+                } else {
+                    def->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
+                }
 
                 mirrorType = virXMLPropString(cur, "type");
                 if (mirrorType) {
@@ -5461,6 +5483,12 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                     if (!def->mirror->path) {
                         virReportError(VIR_ERR_XML_ERROR, "%s",
                                        _("mirror requires file name"));
+                        goto error;
+                    }
+                    if (def->mirrorJob != VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
+                        virReportError(VIR_ERR_XML_ERROR, "%s",
+                                       _("mirror without type only supported "
+                                         "by copy job"));
                         goto error;
                     }
                     mirrorFormat = virXMLPropString(cur, "format");
@@ -15401,10 +15429,13 @@ virDomainDiskDefFormat(virBufferPtr buf,
             formatStr = virStorageFileFormatTypeToString(def->mirror->format);
         virBufferAsprintf(buf, "<mirror type='%s'",
                           virStorageTypeToString(def->mirror->type));
-        if (def->mirror->type == VIR_STORAGE_TYPE_FILE) {
+        if (def->mirror->type == VIR_STORAGE_TYPE_FILE &&
+            def->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
             virBufferEscapeString(buf, " file='%s'", def->mirror->path);
             virBufferEscapeString(buf, " format='%s'", formatStr);
         }
+        virBufferEscapeString(buf, " job='%s'",
+                              virDomainBlockJobTypeToString(def->mirrorJob));
         if (def->mirrorState) {
             const char *mirror;
 
