@@ -3216,6 +3216,73 @@ qemuGetDriveSourceString(virStorageSourcePtr src,
 }
 
 
+/* Perform disk definition config validity checks */
+int
+qemuCheckDiskConfig(virDomainDiskDefPtr disk)
+{
+    if (virDiskNameToIndex(disk->dst) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unsupported disk type '%s'"), disk->dst);
+        goto error;
+    }
+
+    if (disk->wwn) {
+        if ((disk->bus != VIR_DOMAIN_DISK_BUS_IDE) &&
+            (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only ide and scsi disk support wwn"));
+            goto error;
+        }
+    }
+
+    if ((disk->vendor || disk->product) &&
+        disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only scsi disk supports vendor and product"));
+            goto error;
+    }
+
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+        /* make sure that both the bus supports type='lun' (SG_IO). */
+        if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO &&
+            disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("disk device='lun' is not supported for bus='%s'"),
+                           virDomainDiskQEMUBusTypeToString(disk->bus));
+            goto error;
+        }
+        if (disk->src->type == VIR_STORAGE_TYPE_NETWORK) {
+            if (disk->src->protocol != VIR_STORAGE_NET_PROTOCOL_ISCSI) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("disk device='lun' is not supported "
+                                 "for protocol='%s'"),
+                               virStorageNetProtocolTypeToString(disk->src->protocol));
+                goto error;
+            }
+        } else if (!virDomainDiskSourceIsBlockType(disk->src)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disk device='lun' is only valid for block "
+                             "type disk source"));
+            goto error;
+        }
+        if (disk->wwn) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Setting wwn is not supported for lun device"));
+            goto error;
+        }
+        if (disk->vendor || disk->product) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Setting vendor or product is not supported "
+                             "for lun device"));
+            goto error;
+        }
+    }
+    return 0;
+ error:
+    return -1;
+}
+
+
 char *
 qemuBuildDriveStr(virConnectPtr conn,
                   virDomainDiskDefPtr disk,
@@ -3602,68 +3669,18 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
-    int idx = virDiskNameToIndex(disk->dst);
     int controllerModel;
 
-    if (idx < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unsupported disk type '%s'"), disk->dst);
+    if (qemuCheckDiskConfig(disk) < 0)
         goto error;
-    }
 
-    if (disk->wwn) {
-        if ((disk->bus != VIR_DOMAIN_DISK_BUS_IDE) &&
-            (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Only ide and scsi disk support wwn"));
-            goto error;
-        }
-    }
-
-    if ((disk->vendor || disk->product) &&
-        disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Only scsi disk supports vendor and product"));
-            goto error;
-    }
-
+    /* Live only checks */
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-        /* make sure that both the bus and the qemu binary support
-         *  type='lun' (SG_IO).
-         */
-        if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO &&
-            disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("disk device='lun' is not supported for bus='%s'"),
-                           bus);
-            goto error;
-        }
-        if (disk->src->type == VIR_STORAGE_TYPE_NETWORK) {
-            if (disk->src->protocol != VIR_STORAGE_NET_PROTOCOL_ISCSI) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("disk device='lun' is not supported for protocol='%s'"),
-                               virStorageNetProtocolTypeToString(disk->src->protocol));
-                goto error;
-            }
-        } else if (!virDomainDiskSourceIsBlockType(disk->src)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disk device='lun' is only valid for block type disk source"));
-            goto error;
-        }
+        /* make sure that the qemu binary supports type='lun' (SG_IO). */
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SG_IO)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disk device='lun' is not supported by this QEMU"));
-            goto error;
-        }
-        if (disk->wwn) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Setting wwn is not supported for lun device"));
-            goto error;
-        }
-        if (disk->vendor || disk->product) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Setting vendor or product is not supported "
-                             "for lun device"));
+                           _("disk device='lun' is not supported by "
+                             "this QEMU"));
             goto error;
         }
     }

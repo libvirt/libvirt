@@ -271,4 +271,6 @@ qemuParseKeywords(const char *str,
 int qemuGetDriveSourceString(virStorageSourcePtr src,
                              virConnectPtr conn,
                              char **source);
+
+int qemuCheckDiskConfig(virDomainDiskDefPtr disk);
 #endif /* __QEMU_COMMAND_H__*/
