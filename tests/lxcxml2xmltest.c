@@ -144,6 +144,7 @@ mymain(void)
     DO_TEST_DIFFERENT("filesystem-ram");
     DO_TEST("filesystem-root");
     DO_TEST("idmap");
+    DO_TEST("capabilities");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);

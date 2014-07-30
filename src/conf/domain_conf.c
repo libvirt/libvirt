@@ -17860,7 +17860,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             break;
     }
 
-    if (i != VIR_DOMAIN_FEATURE_LAST) {
+    if (i != VIR_DOMAIN_FEATURE_LAST ||
+        virDomainDefHasCapabilitiesFeatures(def)) {
         virBufferAddLit(buf, "<features>\n");
         virBufferAdjustIndent(buf, 2);
 
