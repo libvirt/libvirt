@@ -858,14 +858,17 @@ virStorageBackendCreateQemuImgOpts(char **opts,
     return -1;
 }
 
+/* Create a qemu-img virCommand from the supplied binary path,
+ * volume definitions and imgformat
+ */
 virCommandPtr
-virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
-                                  virStoragePoolObjPtr pool,
-                                  virStorageVolDefPtr vol,
-                                  virStorageVolDefPtr inputvol,
-                                  unsigned int flags,
-                                  const char *create_tool,
-                                  int imgformat)
+virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
+                                         virStoragePoolObjPtr pool,
+                                         virStorageVolDefPtr vol,
+                                         virStorageVolDefPtr inputvol,
+                                         unsigned int flags,
+                                         const char *create_tool,
+                                         int imgformat)
 {
     virCommandPtr cmd = NULL;
     bool do_encryption = (vol->target.encryption != NULL);
@@ -1094,8 +1097,8 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     if (imgformat < 0)
         goto cleanup;
 
-    cmd = virStorageBackendCreateQemuImgCmd(conn, pool, vol, inputvol, flags,
-                                            create_tool, imgformat);
+    cmd = virStorageBackendCreateQemuImgCmdFromVol(conn, pool, vol, inputvol,
+                                                   flags, create_tool, imgformat);
     if (!cmd)
         goto cleanup;
 

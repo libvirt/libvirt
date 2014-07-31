@@ -192,13 +192,13 @@ char *virStorageBackendStablePath(virStoragePoolObjPtr pool,
                                   bool loop);
 
 virCommandPtr
-virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
-                                  virStoragePoolObjPtr pool,
-                                  virStorageVolDefPtr vol,
-                                  virStorageVolDefPtr inputvol,
-                                  unsigned int flags,
-                                  const char *create_tool,
-                                  int imgformat);
+virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
+                                         virStoragePoolObjPtr pool,
+                                         virStorageVolDefPtr vol,
+                                         virStorageVolDefPtr inputvol,
+                                         unsigned int flags,
+                                         const char *create_tool,
+                                         int imgformat);
 
 /* ------- virStorageFile backends ------------ */
 typedef struct _virStorageFileBackend virStorageFileBackend;
