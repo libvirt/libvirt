@@ -796,41 +796,53 @@ virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
     return ret;
 }
 
+struct _virStorageBackendQemuImgInfo {
+    int format;
+    const char *path;
+    unsigned long long size_arg;
+    bool encryption;
+    bool preallocate;
+    const char *compat;
+    virBitmapPtr features;
+    bool nocow;
+
+    const char *backingPath;
+    int backingFormat;
+
+    const char *inputPath;
+    int inputFormat;
+};
+
 static int
 virStorageBackendCreateQemuImgOpts(char **opts,
-                                   const char *backingType,
-                                   bool encryption,
-                                   bool preallocate,
-                                   int format,
-                                   const char *compat,
-                                   bool nocow,
-                                   virBitmapPtr features)
+                                   struct _virStorageBackendQemuImgInfo info)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    if (backingType)
-        virBufferAsprintf(&buf, "backing_fmt=%s,", backingType);
-    if (encryption)
+    if (info.backingPath)
+        virBufferAsprintf(&buf, "backing_fmt=%s,",
+                          virStorageFileFormatTypeToString(info.backingFormat));
+    if (info.encryption)
         virBufferAddLit(&buf, "encryption=on,");
-    if (preallocate)
+    if (info.preallocate)
         virBufferAddLit(&buf, "preallocation=metadata,");
-    if (nocow)
+    if (info.nocow)
         virBufferAddLit(&buf, "nocow=on,");
 
-    if (compat)
-        virBufferAsprintf(&buf, "compat=%s,", compat);
-    if (features && format == VIR_STORAGE_FILE_QCOW2) {
+    if (info.compat)
+        virBufferAsprintf(&buf, "compat=%s,", info.compat);
+    if (info.features && info.format == VIR_STORAGE_FILE_QCOW2) {
         for (i = 0; i < VIR_STORAGE_FILE_FEATURE_LAST; i++) {
-            if (virBitmapIsBitSet(features, i)) {
+            if (virBitmapIsBitSet(info.features, i)) {
                 switch ((virStorageFileFeature) i) {
                 case VIR_STORAGE_FILE_FEATURE_LAZY_REFCOUNTS:
-                    if (STREQ_NULLABLE(compat, "0.10")) {
+                    if (STREQ_NULLABLE(info.compat, "0.10")) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                        _("Feature %s not supported with compat"
                                          " level %s"),
                                        virStorageFileFeatureTypeToString(i),
-                                       compat);
+                                       info.compat);
                         goto error;
                     }
                     break;
@@ -871,75 +883,75 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
                                          int imgformat)
 {
     virCommandPtr cmd = NULL;
-    bool do_encryption = (vol->target.encryption != NULL);
-    unsigned long long int size_arg;
-    bool preallocate = !!(flags & VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA);
     const char *type;
     const char *backingType = NULL;
-    const char *inputPath = NULL;
     const char *inputType = NULL;
-    const char *compat = vol->target.compat;
     char *opts = NULL;
-    bool convert = false;
-    bool backing = false;
+    struct _virStorageBackendQemuImgInfo info = {
+        .format = vol->target.format,
+        .path = vol->target.path,
+        .encryption = vol->target.encryption != NULL,
+        .preallocate = !!(flags & VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA),
+        .compat = vol->target.compat,
+        .features = vol->target.features,
+        .nocow = vol->target.nocow,
+    };
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, NULL);
 
     /* Treat output block devices as 'raw' format */
-    type = virStorageFileFormatTypeToString(vol->type == VIR_STORAGE_VOL_BLOCK ?
-                                            VIR_STORAGE_FILE_RAW :
-                                            vol->target.format);
+    if (vol->type == VIR_STORAGE_VOL_BLOCK)
+        info.format = VIR_STORAGE_FILE_RAW;
 
-    if (!type) {
+    if (!(type = virStorageFileFormatTypeToString(info.format))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown storage vol type %d"),
-                       vol->target.format);
+                       info.format);
         return NULL;
     }
 
-    if (preallocate && vol->target.format != VIR_STORAGE_FILE_QCOW2) {
+    if (info.preallocate && info.format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("metadata preallocation only available with qcow2"));
         return NULL;
     }
-    if (vol->target.compat && vol->target.format != VIR_STORAGE_FILE_QCOW2) {
+    if (info.compat && info.format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("compatibility option only available with qcow2"));
         return NULL;
     }
-    if (vol->target.features && vol->target.format != VIR_STORAGE_FILE_QCOW2) {
+    if (info.features && info.format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("format features only available with qcow2"));
         return NULL;
     }
 
     if (inputvol) {
-        if (!(inputPath = inputvol->target.path)) {
+        if (!(info.inputPath = inputvol->target.path)) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("missing input volume target path"));
             return NULL;
         }
 
-        inputType = virStorageFileFormatTypeToString(inputvol->type == VIR_STORAGE_VOL_BLOCK ?
-                                                     VIR_STORAGE_FILE_RAW :
-                                                     inputvol->target.format);
-
-        if (!inputType) {
+        info.inputFormat = inputvol->target.format;
+        if (inputvol->type == VIR_STORAGE_VOL_BLOCK)
+            info.inputFormat = VIR_STORAGE_FILE_RAW;
+        if (!(inputType = virStorageFileFormatTypeToString(info.inputFormat))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown storage vol type %d"),
-                           inputvol->target.format);
+                           info.inputFormat);
             return NULL;
         }
-
     }
 
     if (vol->target.backingStore) {
         int accessRetCode = -1;
         char *absolutePath = NULL;
 
-        backingType = virStorageFileFormatTypeToString(vol->target.backingStore->format);
+        info.backingFormat = vol->target.backingStore->format;
+        info.backingPath = vol->target.backingStore->path;
 
-        if (preallocate) {
+        if (info.preallocate) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("metadata preallocation conflicts with backing"
                              " store"));
@@ -951,43 +963,41 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
          * may cause issues with lvm. Untested essentially.
          */
         if (inputvol && inputvol->target.backingStore &&
-            STRNEQ_NULLABLE(inputvol->target.backingStore->path,
-                            vol->target.backingStore->path)) {
+            STRNEQ_NULLABLE(inputvol->target.backingStore->path, info.backingPath)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("a different backing store cannot be specified."));
             return NULL;
         }
 
-        if (backingType == NULL) {
+        if (!(backingType = virStorageFileFormatTypeToString(info.backingFormat))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown storage vol backing store type %d"),
-                           vol->target.backingStore->format);
+                           info.backingFormat);
             return NULL;
         }
 
         /* Convert relative backing store paths to absolute paths for access
          * validation.
          */
-        if ('/' != *(vol->target.backingStore->path) &&
+        if ('/' != *(info.backingPath) &&
             virAsprintf(&absolutePath, "%s/%s", pool->def->target.path,
-                        vol->target.backingStore->path) < 0)
+                        info.backingPath) < 0)
             return NULL;
-        accessRetCode = access(absolutePath ? absolutePath
-                               : vol->target.backingStore->path, R_OK);
+        accessRetCode = access(absolutePath ? absolutePath : info.backingPath, R_OK);
         VIR_FREE(absolutePath);
         if (accessRetCode != 0) {
             virReportSystemError(errno,
                                  _("inaccessible backing store volume %s"),
-                                 vol->target.backingStore->path);
+                                 info.backingPath);
             return NULL;
         }
     }
 
-    if (do_encryption) {
+    if (info.encryption) {
         virStorageEncryptionPtr enc;
 
-        if (vol->target.format != VIR_STORAGE_FILE_QCOW &&
-            vol->target.format != VIR_STORAGE_FILE_QCOW2) {
+        if (info.format != VIR_STORAGE_FILE_QCOW &&
+            info.format != VIR_STORAGE_FILE_QCOW2) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("qcow volume encryption unsupported with "
                              "volume format %s"), type);
@@ -1014,33 +1024,30 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
     }
 
     /* Size in KB */
-    size_arg = VIR_DIV_UP(vol->target.capacity, 1024);
+    info.size_arg = VIR_DIV_UP(vol->target.capacity, 1024);
 
     cmd = virCommandNew(create_tool);
 
-    convert = !!inputvol;
-    backing = !inputvol && vol->target.backingStore;
+    /* ignore the backing volume when we're converting a volume */
+    if (info.inputPath) {
+        info.backingPath = NULL;
+        backingType = NULL;
+    }
 
-    if (convert)
+    if (info.inputPath)
         virCommandAddArgList(cmd, "convert", "-f", inputType, "-O", type, NULL);
     else
         virCommandAddArgList(cmd, "create", "-f", type, NULL);
 
-    if (backing)
-        virCommandAddArgList(cmd, "-b", vol->target.backingStore->path, NULL);
+    if (info.backingPath)
+        virCommandAddArgList(cmd, "-b", info.backingPath, NULL);
 
     if (imgformat >= QEMU_IMG_BACKING_FORMAT_OPTIONS) {
-        if (vol->target.format == VIR_STORAGE_FILE_QCOW2 && !compat &&
+        if (info.format == VIR_STORAGE_FILE_QCOW2 && !info.compat &&
             imgformat == QEMU_IMG_BACKING_FORMAT_OPTIONS_COMPAT)
-            compat = "0.10";
+            info.compat = "0.10";
 
-        if (virStorageBackendCreateQemuImgOpts(&opts,
-                                               backing ? backingType : NULL,
-                                               do_encryption, preallocate,
-                                               vol->target.format,
-                                               compat,
-                                               vol->target.nocow,
-                                               vol->target.features) < 0) {
+        if (virStorageBackendCreateQemuImgOpts(&opts, info) < 0) {
             virCommandFree(cmd);
             return NULL;
         }
@@ -1048,22 +1055,22 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
             virCommandAddArgList(cmd, "-o", opts, NULL);
         VIR_FREE(opts);
     } else {
-        if (backing) {
+        if (info.backingPath) {
             if (imgformat == QEMU_IMG_BACKING_FORMAT_FLAG)
                 virCommandAddArgList(cmd, "-F", backingType, NULL);
             else
                 VIR_DEBUG("Unable to set backing store format for %s with %s",
-                          vol->target.path, create_tool);
+                          info.path, create_tool);
         }
-        if (do_encryption)
+        if (info.encryption)
             virCommandAddArg(cmd, "-e");
     }
 
-    if (convert)
-        virCommandAddArg(cmd, inputPath);
-    virCommandAddArg(cmd, vol->target.path);
-    if (!convert && size_arg)
-        virCommandAddArgFormat(cmd, "%lluK", size_arg);
+    if (info.inputPath)
+        virCommandAddArg(cmd, info.inputPath);
+    virCommandAddArg(cmd, info.path);
+    if (!info.inputPath && info.size_arg)
+        virCommandAddArgFormat(cmd, "%lluK", info.size_arg);
 
     return cmd;
 }
