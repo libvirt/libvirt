@@ -1824,33 +1824,34 @@ networkSetIPv6Sysctls(virNetworkObjPtr network)
 {
     char *field = NULL;
     int ret = -1;
+    bool enableIPv6 =  !!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0);
 
-    if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0)) {
-        /* Only set disable_ipv6 if there are no ipv6 addresses defined for
-         * the network.
-         */
-        if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/disable_ipv6",
-                        network->def->bridge) < 0)
-            goto cleanup;
+    /* set disable_ipv6 if there are no ipv6 addresses defined for the
+     * network. But also unset it if there *are* ipv6 addresses, as we
+     * can't be sure of its default value.
+     */
+    if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/disable_ipv6",
+                    network->def->bridge) < 0)
+       goto cleanup;
 
-        if (access(field, W_OK) < 0 && errno == ENOENT) {
+    if (access(field, W_OK) < 0 && errno == ENOENT) {
+        if (!enableIPv6)
             VIR_DEBUG("ipv6 appears to already be disabled on %s",
                       network->def->bridge);
-            ret = 0;
-            goto cleanup;
-        }
-
-        if (virFileWriteStr(field, "1", 0) < 0) {
-            virReportSystemError(errno,
-                                 _("cannot write to %s to disable IPv6 on bridge %s"),
-                                 field, network->def->bridge);
-            goto cleanup;
-        }
-        VIR_FREE(field);
+        ret = 0;
+        goto cleanup;
     }
 
-    /* The rest of the ipv6 sysctl tunables should always be set,
-     * whether or not we're using ipv6 on this bridge.
+    if (virFileWriteStr(field, enableIPv6 ? "0" : "1", 0) < 0) {
+        virReportSystemError(errno,
+                             _("cannot write to %s to enable/disable IPv6 "
+                               "on bridge %s"), field, network->def->bridge);
+        goto cleanup;
+    }
+    VIR_FREE(field);
+
+    /* The rest of the ipv6 sysctl tunables should always be set the
+     * same, whether or not we're using ipv6 on this bridge.
      */
 
     /* Prevent guests from hijacking the host network by sending out
