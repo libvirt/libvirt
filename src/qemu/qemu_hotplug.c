@@ -744,7 +744,9 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
         if (!(orig_disk = virDomainDiskFindByBusAndDst(vm->def,
                                                        disk->bus, disk->dst))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("No device with bus '%s' and target '%s'"),
+                           _("No device with bus '%s' and target '%s'. "
+                             "cdrom and floppy device hotplug isn't supported "
+                             "by libvirt"),
                            virDomainDiskBusTypeToString(disk->bus),
                            disk->dst);
             goto end;
