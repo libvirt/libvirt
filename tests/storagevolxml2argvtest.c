@@ -237,6 +237,9 @@ mymain(void)
             "qcow2-nobacking-convert-prealloc", flags, FMT_OPTIONS);
     DO_TEST_FAIL("pool-dir", "vol-qcow2",
                  "pool-dir", "vol-file",
+                 "qcow2-convert-nobacking", 0, FMT_OPTIONS);
+    DO_TEST_FAIL("pool-dir", "vol-qcow2",
+                 "pool-dir", "vol-file",
                  "qcow2-convert-prealloc", flags, FMT_OPTIONS);
     DO_TEST("pool-dir", "vol-qcow2",
             NULL, NULL,

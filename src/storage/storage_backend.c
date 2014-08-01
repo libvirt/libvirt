@@ -887,7 +887,7 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
          * backing store, not really sure what use it serves though, and it
          * may cause issues with lvm. Untested essentially.
          */
-        if (inputvol &&
+        if (inputvol && inputvol->target.backingStore &&
             STRNEQ_NULLABLE(inputvol->target.backingStore->path,
                             vol->target.backingStore->path)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
