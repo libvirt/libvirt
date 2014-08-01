@@ -20004,29 +20004,26 @@ virDomainDefFindDevice(virDomainDefPtr def,
  * Return true if its source is block type, or false otherwise.
  */
 bool
-virDomainDiskSourceIsBlockType(virDomainDiskDefPtr def)
+virDomainDiskSourceIsBlockType(virStorageSourcePtr src)
 {
-    /* No reason to think the disk source is block type if
-     * the source is empty
-     */
-    if (!virDomainDiskGetSource(def))
+    if (!src->path)
         return false;
 
-    if (virDomainDiskGetType(def) == VIR_STORAGE_TYPE_BLOCK)
+    if (src->type == VIR_STORAGE_TYPE_BLOCK)
         return true;
 
     /* For volume types, check the srcpool.
      * If it's a block type source pool, then it's possible
      */
-    if (virDomainDiskGetType(def) == VIR_STORAGE_TYPE_VOLUME &&
-        def->src->srcpool &&
-        def->src->srcpool->voltype == VIR_STORAGE_VOL_BLOCK) {
+    if (src->type == VIR_STORAGE_TYPE_VOLUME &&
+        src->srcpool &&
+        src->srcpool->voltype == VIR_STORAGE_VOL_BLOCK) {
         /* We don't think the volume accessed by remote URI is
          * block type source, since we can't/shouldn't manage it
          * (e.g. set sgio=filtered|unfiltered for it) in libvirt.
          */
-         if (def->src->srcpool->pooltype == VIR_STORAGE_POOL_ISCSI &&
-             def->src->srcpool->mode == VIR_STORAGE_SOURCE_POOL_MODE_DIRECT)
+         if (src->srcpool->pooltype == VIR_STORAGE_POOL_ISCSI &&
+             src->srcpool->mode == VIR_STORAGE_SOURCE_POOL_MODE_DIRECT)
              return false;
 
         return true;

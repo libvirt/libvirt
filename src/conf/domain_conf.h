@@ -2713,7 +2713,7 @@ int virDomainDefFindDevice(virDomainDefPtr def,
                            virDomainDeviceDefPtr dev,
                            bool reportError);
 
-bool virDomainDiskSourceIsBlockType(virDomainDiskDefPtr def)
+bool virDomainDiskSourceIsBlockType(virStorageSourcePtr src)
     ATTRIBUTE_NONNULL(1);
 
 void virDomainChrSourceDefClear(virDomainChrSourceDefPtr def);

@@ -3660,7 +3660,7 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                                virStorageNetProtocolTypeToString(disk->src->protocol));
                 goto error;
             }
-        } else if (!virDomainDiskSourceIsBlockType(disk)) {
+        } else if (!virDomainDiskSourceIsBlockType(disk->src)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("disk device='lun' is only valid for block type disk source"));
             goto error;
