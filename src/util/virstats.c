@@ -1,7 +1,7 @@
 /*
  * virstats.c: Block and network stats.
  *
- * Copyright (C) 2007-2010 Red Hat, Inc.
+ * Copyright (C) 2007-2010, 2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,7 +29,7 @@
 #include <unistd.h>
 #include <regex.h>
 
-#ifdef HAVE_GETIFADDRS
+#if defined(HAVE_GETIFADDRS) && defined(AF_LINK)
 # include <net/if.h>
 # include <ifaddrs.h>
 #endif
@@ -119,7 +119,7 @@ virNetInterfaceStats(const char *path,
                    _("/proc/net/dev: Interface not found"));
     return -1;
 }
-#elif defined(HAVE_GETIFADDRS)
+#elif defined(HAVE_GETIFADDRS) && defined(AF_LINK)
 int
 virNetInterfaceStats(const char *path,
                      struct _virDomainInterfaceStats *stats)
