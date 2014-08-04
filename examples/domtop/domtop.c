@@ -199,7 +199,7 @@ print_cpu_usage(const char *dom_name,
                 virTypedParameterPtr now_params,
                 size_t now_nparams)
 {
-    size_t i, j, k;
+    size_t i, j;
     size_t nparams = now_nparams;
     bool delim = false;
 
