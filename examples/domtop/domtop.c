@@ -94,13 +94,12 @@ print_usage(const char *progname)
            unified_progname);
 }
 
-static int
+static void
 parse_argv(int argc, char *argv[],
            const char **uri,
            const char **dom_name,
            unsigned int *milliseconds)
 {
-    int ret = -1;
     int arg;
     unsigned long val;
     char *p;
@@ -155,10 +154,6 @@ parse_argv(int argc, char *argv[],
 
     if (argc > optind)
         *dom_name = argv[optind];
-
-    ret = 0;
- cleanup:
-    return ret;
 }
 
 static int
@@ -368,8 +363,7 @@ main(int argc, char *argv[])
     unsigned int milliseconds = 500; /* Sleep this long between two API calls */
     const int connect_flags = 0; /* No connect flags for now */
 
-    if (parse_argv(argc, argv, &uri, &dom_name, &milliseconds) < 0)
-        goto cleanup;
+    parse_argv(argc, argv, &uri, &dom_name, &milliseconds);
 
     DEBUG("Proceeding with uri=%s dom_name=%s milliseconds=%u",
           uri, dom_name, milliseconds);
