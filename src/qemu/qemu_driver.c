@@ -6648,9 +6648,6 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
     if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0)
         goto end;
 
-    if (qemuSetupDiskCgroup(vm, disk) < 0)
-        goto end;
-
     switch (disk->device) {
     case VIR_DOMAIN_DISK_DEVICE_CDROM:
     case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
@@ -6700,11 +6697,6 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
                        virDomainDiskBusTypeToString(disk->bus));
         break;
     }
-
-    if (ret != 0 &&
-        qemuTeardownDiskCgroup(vm, disk) < 0)
-        VIR_WARN("Failed to teardown cgroup for disk path %s",
-                 NULLSTR(virDomainDiskGetSource(disk)));
 
  end:
     virObjectUnref(caps);

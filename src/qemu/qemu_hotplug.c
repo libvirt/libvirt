@@ -61,6 +61,83 @@ VIR_LOG_INIT("qemu.qemu_hotplug");
 unsigned long long qemuDomainRemoveDeviceWaitTime = 1000ull * 5;
 
 
+/**
+ * qemuDomainPrepareDisk:
+ * @driver: qemu driver struct
+ * @vm: domain object
+ * @disk: disk to prepare
+ * @overridesrc: Source different than @disk->src when necessary
+ * @teardown: Teardown the disk instead of adding it to a vm
+ *
+ * Setup the locks, cgroups and security permissions on a disk of a VM.
+ * If @overridesrc is specified the source struct is used instead of the
+ * one present in @disk. If @teardown is true, then the labels and cgroups
+ * are removed instead.
+ *
+ * Returns 0 on success and -1 on error. Reports libvirt error.
+ */
+static int
+qemuDomainPrepareDisk(virQEMUDriverPtr driver,
+                      virDomainObjPtr vm,
+                      virDomainDiskDefPtr disk,
+                      virStorageSourcePtr overridesrc,
+                      bool teardown)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int ret = -1;
+    virStorageSourcePtr origsrc = NULL;
+
+    if (overridesrc) {
+        origsrc = disk->src;
+        disk->src = overridesrc;
+    }
+
+    /* just tear down the disk access */
+    if (teardown) {
+        ret = 0;
+        goto rollback_cgroup;
+    }
+
+    if (virDomainLockDiskAttach(driver->lockManager, cfg->uri,
+                                vm, disk) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerSetDiskLabel(driver->securityManager,
+                                       vm->def, disk) < 0)
+        goto rollback_lock;
+
+    if (qemuSetupDiskCgroup(vm, disk) < 0)
+        goto rollback_label;
+
+    ret = 0;
+    goto cleanup;
+
+ rollback_cgroup:
+    if (qemuTeardownDiskCgroup(vm, disk) < 0)
+        VIR_WARN("Unable to tear down cgroup access on %s",
+                 virDomainDiskGetSource(disk));
+
+ rollback_label:
+    if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
+                                           vm->def, disk) < 0)
+        VIR_WARN("Unable to restore security label on %s",
+                 virDomainDiskGetSource(disk));
+
+ rollback_lock:
+    if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
+        VIR_WARN("Unable to release lock on %s",
+                 virDomainDiskGetSource(disk));
+
+ cleanup:
+    if (origsrc)
+        disk->src = origsrc;
+
+    virObjectUnref(cfg);
+
+    return ret;
+}
+
+
 int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainDiskDefPtr disk,
@@ -88,17 +165,8 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (virDomainLockDiskAttach(driver->lockManager, cfg->uri,
-                                vm, disk) < 0)
+    if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
-
-    if (virSecurityManagerSetDiskLabel(driver->securityManager,
-                                       vm->def, disk) < 0) {
-        if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
-            VIR_WARN("Unable to release lock on %s",
-                     virDomainDiskGetSource(disk));
-        goto cleanup;
-    }
 
     if (!(driveAlias = qemuDeviceDriveHostAlias(origdisk, priv->qemuCaps)))
         goto error;
@@ -160,14 +228,7 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     if (ret < 0)
         goto error;
 
-    if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
-                                           vm->def, origdisk) < 0)
-        VIR_WARN("Unable to restore security label on ejected image %s",
-                 virDomainDiskGetSource(origdisk));
-
-    if (virDomainLockDiskDetach(driver->lockManager, vm, origdisk) < 0)
-        VIR_WARN("Unable to release lock on disk %s",
-                 virDomainDiskGetSource(origdisk));
+    ignore_value(qemuDomainPrepareDisk(driver, vm, origdisk, NULL, true));
 
     if (virDomainDiskSetSource(origdisk, src) < 0)
         goto error;
@@ -183,12 +244,7 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
  error:
     virDomainAuditDisk(vm, origdisk->src, disk->src, "update", false);
 
-    if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
-                                           vm->def, disk) < 0)
-        VIR_WARN("Unable to restore security label on new media %s", src);
-
-    if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
-        VIR_WARN("Unable to release lock on %s", src);
+    ignore_value(qemuDomainPrepareDisk(driver, vm, disk, NULL, true));
 
     goto cleanup;
 }
@@ -267,16 +323,8 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
         }
     }
 
-    if (virDomainLockDiskAttach(driver->lockManager, cfg->uri,
-                                vm, disk) < 0)
+    if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
-
-    if (virSecurityManagerSetDiskLabel(driver->securityManager,
-                                       vm->def, disk) < 0) {
-        if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
-            VIR_WARN("Unable to release lock on %s", src);
-        goto cleanup;
-    }
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
@@ -347,6 +395,8 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
  error:
     if (releaseaddr)
         qemuDomainReleaseDeviceAddress(vm, &disk->info, src);
+
+    ignore_value(qemuDomainPrepareDisk(driver, vm, disk, NULL, true));
 
     if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
                                            vm->def, disk) < 0)
@@ -496,7 +546,6 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     char *devstr = NULL;
     int ret = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    const char *src = virDomainDiskGetSource(disk);
 
     for (i = 0; i < vm->def->ndisks; i++) {
         if (STREQ(vm->def->disks[i]->dst, disk->dst)) {
@@ -506,16 +555,8 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
         }
     }
 
-    if (virDomainLockDiskAttach(driver->lockManager, cfg->uri,
-                                vm, disk) < 0)
+    if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
-
-    if (virSecurityManagerSetDiskLabel(driver->securityManager,
-                                       vm->def, disk) < 0) {
-        if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
-            VIR_WARN("Unable to release lock on %s", src);
-        goto cleanup;
-    }
 
     /* We should have an address already, so make sure */
     if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
@@ -598,13 +639,7 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     return ret;
 
  error:
-    if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
-                                           vm->def, disk) < 0)
-        VIR_WARN("Unable to restore security label on %s", src);
-
-    if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
-        VIR_WARN("Unable to release lock on %s", src);
-
+    ignore_value(qemuDomainPrepareDisk(driver, vm, disk, NULL, true));
     goto cleanup;
 }
 
@@ -737,9 +772,6 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
     if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0)
         goto end;
 
-    if (qemuSetupDiskCgroup(vm, disk) < 0)
-        goto end;
-
     switch (disk->device)  {
     case VIR_DOMAIN_DISK_DEVICE_CDROM:
     case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
@@ -804,12 +836,6 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
                        _("disk device type '%s' cannot be hotplugged"),
                        virDomainDiskDeviceTypeToString(disk->device));
         break;
-    }
-
-    if (ret != 0 &&
-        qemuTeardownDiskCgroup(vm, disk) < 0) {
-        VIR_WARN("Failed to teardown cgroup for disk path %s",
-                 NULLSTR(src));
     }
 
  end:
