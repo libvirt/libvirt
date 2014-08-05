@@ -15099,6 +15099,9 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     ret = qemuMonitorBlockJob(priv->mon, device, basePath, backingPath,
                               bandwidth, info, mode, async);
     qemuDomainObjExitMonitor(driver, vm);
+    if (info && info->type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
+        disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
+        info->type = disk->mirrorJob;
     if (ret < 0) {
         if (mode == BLOCK_JOB_ABORT && disk->mirror)
             disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
