@@ -108,7 +108,7 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     qemuDomainObjExitMonitor(driver, vm);
 
     if (ret < 0)
-        goto audit;
+        goto error;
 
     virObjectRef(vm);
     /* we don't want to report errors from media tray_open polling */
@@ -128,7 +128,7 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Unable to eject media"));
         ret = -1;
-        goto audit;
+        goto error;
     }
 
     src = virDomainDiskGetSource(disk);
@@ -154,7 +154,7 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                                      src, format);
         qemuDomainObjExitMonitor(driver, vm);
     }
- audit:
+
     virDomainAuditDisk(vm, origdisk->src, disk->src, "update", ret >= 0);
 
     if (ret < 0)
@@ -181,6 +181,8 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     return ret;
 
  error:
+    virDomainAuditDisk(vm, origdisk->src, disk->src, "update", false);
+
     if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
                                            vm->def, disk) < 0)
         VIR_WARN("Unable to restore security label on new media %s", src);
