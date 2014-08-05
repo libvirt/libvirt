@@ -1643,7 +1643,7 @@ virNetDevRxFilterFree;
 virNetDevRxFilterModeTypeFromString;
 virNetDevRxFilterModeTypeToString;
 virNetDevRxFilterNew;
-virNetDevSetIPv4Address;
+virNetDevSetIPAddress;
 virNetDevSetMAC;
 virNetDevSetMTU;
 virNetDevSetMTUFromDevice;

@@ -1899,8 +1899,8 @@ networkAddAddrToBridge(virNetworkObjPtr network,
         return -1;
     }
 
-    if (virNetDevSetIPv4Address(network->def->bridge,
-                                &ipdef->address, prefix) < 0)
+    if (virNetDevSetIPAddress(network->def->bridge,
+                              &ipdef->address, prefix) < 0)
         return -1;
 
     return 0;

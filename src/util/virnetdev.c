@@ -907,7 +907,7 @@ virNetDevCreateNetlinkAddressMessage(int messageType,
 }
 
 /**
- * virNetDevSetIPv4Address:
+ * virNetDevSetIPAddress:
  * @ifname: the interface name
  * @addr: the IP address (IPv4 or IPv6)
  * @prefix: number of 1 bits in the netmask
@@ -918,9 +918,9 @@ virNetDevCreateNetlinkAddressMessage(int messageType,
  *
  * Returns 0 in case of success or -1 in case of error.
  */
-int virNetDevSetIPv4Address(const char *ifname,
-                            virSocketAddr *addr,
-                            unsigned int prefix)
+int virNetDevSetIPAddress(const char *ifname,
+                          virSocketAddr *addr,
+                          unsigned int prefix)
 {
     virSocketAddr *broadcast = NULL;
     int ret = -1;
@@ -965,9 +965,9 @@ int virNetDevSetIPv4Address(const char *ifname,
 
 #else /* defined(__linux__) && defined(HAVE_LIBNL) */
 
-int virNetDevSetIPv4Address(const char *ifname,
-                            virSocketAddr *addr,
-                            unsigned int prefix)
+int virNetDevSetIPAddress(const char *ifname,
+                          virSocketAddr *addr,
+                          unsigned int prefix)
 {
     virCommandPtr cmd = NULL;
     char *addrstr = NULL, *bcaststr = NULL;

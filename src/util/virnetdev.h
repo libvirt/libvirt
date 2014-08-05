@@ -87,9 +87,9 @@ int virNetDevIsOnline(const char *ifname,
                       bool *online)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
-int virNetDevSetIPv4Address(const char *ifname,
-                            virSocketAddr *addr,
-                            unsigned int prefix)
+int virNetDevSetIPAddress(const char *ifname,
+                          virSocketAddr *addr,
+                          unsigned int prefix)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 int virNetDevAddRoute(const char *ifname,
                       virSocketAddrPtr addr,
