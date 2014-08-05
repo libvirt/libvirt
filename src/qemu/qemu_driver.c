@@ -6639,6 +6639,7 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
     virDomainDiskDefPtr orig_disk = NULL;
     virDomainDiskDefPtr tmp = NULL;
     virDomainDeviceDefPtr dev_copy = NULL;
+    virStorageSourcePtr newsrc;
     virCapsPtr caps = NULL;
     int ret = -1;
 
@@ -6677,7 +6678,10 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
         if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
             goto end;
 
-        ret = qemuDomainChangeEjectableMedia(driver, vm, disk, orig_disk, force);
+        newsrc = disk->src;
+        disk->src = NULL;
+
+        ret = qemuDomainChangeEjectableMedia(driver, vm, orig_disk, newsrc, force);
         /* 'disk' must not be accessed now - it has been freed.
          * 'orig_disk' now points to the new disk, while 'dev_copy'
          * now points to the old disk */

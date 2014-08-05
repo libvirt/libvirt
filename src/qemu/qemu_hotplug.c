@@ -141,34 +141,33 @@ qemuDomainPrepareDisk(virQEMUDriverPtr driver,
 int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainDiskDefPtr disk,
-                                   virDomainDiskDefPtr origdisk,
+                                   virStorageSourcePtr newsrc,
                                    bool force)
 {
     int ret = -1;
     char *driveAlias = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int retries = CHANGE_MEDIA_RETRIES;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    const char *src = NULL;
+    const char *format = NULL;
 
-    if (!origdisk->info.alias) {
+    if (!disk->info.alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing disk device alias name for %s"), origdisk->dst);
+                       _("missing disk device alias name for %s"), disk->dst);
         goto cleanup;
     }
 
-    if (origdisk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-        origdisk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
+    if (disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+        disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Removable media not supported for %s device"),
                        virDomainDiskDeviceTypeToString(disk->device));
         goto cleanup;
     }
 
-    if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
+    if (qemuDomainPrepareDisk(driver, vm, disk, newsrc, false) < 0)
         goto cleanup;
 
-    if (!(driveAlias = qemuDeviceDriveHostAlias(origdisk, priv->qemuCaps)))
+    if (!(driveAlias = qemuDeviceDriveHostAlias(disk, priv->qemuCaps)))
         goto error;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -181,7 +180,7 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     virObjectRef(vm);
     /* we don't want to report errors from media tray_open polling */
     while (retries) {
-        if (origdisk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)
+        if (disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)
             break;
 
         retries--;
@@ -199,53 +198,42 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         goto error;
     }
 
-    src = virDomainDiskGetSource(disk);
-    if (src) {
-        /* deliberately don't depend on 'ret' as 'eject' may have failed the
-         * first time and we are going to check the drive state anyway */
-        const char *format = NULL;
-        int type = virDomainDiskGetType(disk);
-        int diskFormat = virDomainDiskGetFormat(disk);
-
-        if (type != VIR_STORAGE_TYPE_DIR) {
-            if (diskFormat > 0) {
-                format = virStorageFileFormatTypeToString(diskFormat);
+    if (newsrc->path) {
+        if (virStorageSourceGetActualType(newsrc) != VIR_STORAGE_TYPE_DIR) {
+            if (newsrc->format > 0) {
+                format = virStorageFileFormatTypeToString(newsrc->format);
             } else {
-                diskFormat = virDomainDiskGetFormat(origdisk);
-                if (diskFormat > 0)
-                    format = virStorageFileFormatTypeToString(diskFormat);
+                if (disk->src->format > 0)
+                    format = virStorageFileFormatTypeToString(disk->src->format);
             }
         }
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorChangeMedia(priv->mon,
                                      driveAlias,
-                                     src, format);
+                                     newsrc->path,
+                                     format);
         qemuDomainObjExitMonitor(driver, vm);
     }
 
-    virDomainAuditDisk(vm, origdisk->src, disk->src, "update", ret >= 0);
+    virDomainAuditDisk(vm, disk->src, newsrc, "update", ret >= 0);
 
     if (ret < 0)
         goto error;
 
-    ignore_value(qemuDomainPrepareDisk(driver, vm, origdisk, NULL, true));
+    ignore_value(qemuDomainPrepareDisk(driver, vm, disk, NULL, true));
 
-    if (virDomainDiskSetSource(origdisk, src) < 0)
-        goto error;
-    virDomainDiskSetType(origdisk, virDomainDiskGetType(disk));
-
-    virDomainDiskDefFree(disk);
+    virStorageSourceFree(disk->src);
+    disk->src = newsrc;
+    newsrc = NULL;
 
  cleanup:
+    virStorageSourceFree(newsrc);
     VIR_FREE(driveAlias);
-    virObjectUnref(cfg);
     return ret;
 
  error:
-    virDomainAuditDisk(vm, origdisk->src, disk->src, "update", false);
-
-    ignore_value(qemuDomainPrepareDisk(driver, vm, disk, NULL, true));
-
+    virDomainAuditDisk(vm, disk->src, newsrc, "update", false);
+    ignore_value(qemuDomainPrepareDisk(driver, vm, disk, newsrc, true));
     goto cleanup;
 }
 
@@ -747,6 +735,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
     virDomainDiskDefPtr disk = dev->data.disk;
     virDomainDiskDefPtr orig_disk = NULL;
     virDomainDeviceDefPtr dev_copy = NULL;
+    virStorageSourcePtr newsrc;
     virDomainDiskDefPtr tmp = NULL;
     virCapsPtr caps = NULL;
     int ret = -1;
@@ -789,6 +778,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
         if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
             goto end;
 
+
         tmp = dev->data.disk;
         dev->data.disk = orig_disk;
 
@@ -799,8 +789,11 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
         }
         dev->data.disk = tmp;
 
-        ret = qemuDomainChangeEjectableMedia(driver, vm, disk, orig_disk, false);
-        /* 'disk' must not be accessed now - it has been free'd.
+        newsrc = disk->src;
+        disk->src = NULL;
+
+        ret = qemuDomainChangeEjectableMedia(driver, vm, orig_disk, newsrc, false);
+        /* 'newsrc' must not be accessed now - it has been free'd.
          * 'orig_disk' now points to the new disk, while 'dev_copy'
          * now points to the old disk */
 
