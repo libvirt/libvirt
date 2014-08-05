@@ -3456,7 +3456,9 @@ static int qemuDumpToFd(virQEMUDriverPtr driver, virDomainObjPtr vm,
 
         if (ret <= 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("unsupported dumpformat '%s'"), dumpformat);
+                           _("unsupported dumpformat '%s' "
+                             "for this QEMU binary"),
+                           dumpformat);
             ret = -1;
             goto cleanup;
         }
