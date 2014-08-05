@@ -765,7 +765,7 @@
          <td>Mask applied to MAC address of destination</td>
        </tr>
        <tr>
-         <td>vlan-id</td>
+         <td>vlanid</td>
          <td>UINT16 (0x0-0xfff, 0 - 4095)</td>
          <td>VLAN ID</td>
        </tr>
