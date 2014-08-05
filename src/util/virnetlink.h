@@ -52,6 +52,8 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
                       uint32_t src_pid, uint32_t dst_pid,
                       unsigned int protocol, unsigned int groups);
 
+int virNetlinkGetErrorCode(struct nlmsghdr *resp, unsigned int recvbuflen);
+
 typedef void (*virNetlinkEventHandleCallback)(struct nlmsghdr *,
                                               unsigned int length,
                                               struct sockaddr_nl *peer,

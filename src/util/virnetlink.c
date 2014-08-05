@@ -276,6 +276,44 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
     return ret;
 }
 
+int virNetlinkGetErrorCode(struct nlmsghdr *resp, unsigned int recvbuflen)
+{
+    struct nlmsgerr *err;
+    int result = 0;
+
+    if (recvbuflen < NLMSG_LENGTH(0) || resp == NULL)
+        goto malformed_resp;
+
+    switch (resp->nlmsg_type) {
+    case NLMSG_ERROR:
+        err = (struct nlmsgerr *)NLMSG_DATA(resp);
+        if (resp->nlmsg_len < NLMSG_LENGTH(sizeof(*err)))
+            goto malformed_resp;
+
+        switch (err->error) {
+        case 0: /* ACK */
+            break;
+
+        default:
+            result = err->error;
+        }
+        break;
+
+    case NLMSG_DONE:
+        break;
+
+    default:
+        goto malformed_resp;
+    }
+
+    return result;
+
+ malformed_resp:
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("malformed netlink response message"));
+    return -EINVAL;
+}
+
 static void
 virNetlinkEventServerLock(virNetlinkEventSrvPrivatePtr driver)
 {

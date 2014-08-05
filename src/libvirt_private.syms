@@ -1740,6 +1740,7 @@ virNetlinkEventServiceLocalPid;
 virNetlinkEventServiceStart;
 virNetlinkEventServiceStop;
 virNetlinkEventServiceStopAll;
+virNetlinkGetErrorCode;
 virNetlinkShutdown;
 virNetlinkStartup;
 
