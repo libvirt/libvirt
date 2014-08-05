@@ -2180,16 +2180,121 @@ static int networkShutdownNetworkVirtual(virNetworkDriverStatePtr driver ATTRIBU
     return 0;
 }
 
+
+/* networkCreateInterfacePool:
+ * @netdef: the original NetDef from the network
+ *
+ * Creates an implicit interface pool of VF's when a PF dev is given
+ */
+static int
+networkCreateInterfacePool(virNetworkDefPtr netdef)
+{
+    size_t numVirtFns = 0;
+    char **vfNames = NULL;
+    virPCIDeviceAddressPtr *virtFns;
+
+    int ret = -1;
+    size_t i;
+
+    if ((virNetDevGetVirtualFunctions(netdef->forward.pfs->dev,
+                                      &vfNames, &virtFns, &numVirtFns)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get Virtual functions on %s"),
+                       netdef->forward.pfs->dev);
+        goto cleanup;
+    }
+
+    netdef->forward.nifs = 0;
+    if (VIR_ALLOC_N(netdef->forward.ifs, numVirtFns) < 0)
+        goto cleanup;
+
+    for (i = 0; i < numVirtFns; i++) {
+        virPCIDeviceAddressPtr thisVirtFn = virtFns[i];
+        const char *thisName = vfNames[i];
+        virNetworkForwardIfDefPtr thisIf
+            = &netdef->forward.ifs[netdef->forward.nifs];
+
+        switch (netdef->forward.type) {
+        case VIR_NETWORK_FORWARD_BRIDGE:
+        case VIR_NETWORK_FORWARD_PRIVATE:
+        case VIR_NETWORK_FORWARD_VEPA:
+        case VIR_NETWORK_FORWARD_PASSTHROUGH:
+            if (thisName) {
+                if (VIR_STRDUP(thisIf->device.dev, thisName) < 0)
+                    goto cleanup;
+                thisIf->type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
+                netdef->forward.nifs++;
+            } else {
+                VIR_WARN("VF %zu of SRIOV PF %s couldn't be added to the "
+                         "interface pool because it isn't bound "
+                         "to a network driver - possibly in use elsewhere",
+                         i, netdef->forward.pfs->dev);
+            }
+            break;
+
+        case VIR_NETWORK_FORWARD_HOSTDEV:
+            /* VF's are always PCI devices */
+            thisIf->type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI;
+            thisIf->device.pci.domain = thisVirtFn->domain;
+            thisIf->device.pci.bus = thisVirtFn->bus;
+            thisIf->device.pci.slot = thisVirtFn->slot;
+            thisIf->device.pci.function = thisVirtFn->function;
+            netdef->forward.nifs++;
+            break;
+
+        case VIR_NETWORK_FORWARD_NONE:
+        case VIR_NETWORK_FORWARD_NAT:
+        case VIR_NETWORK_FORWARD_ROUTE:
+        case VIR_NETWORK_FORWARD_LAST:
+            /* by definition these will never be encountered here */
+            break;
+        }
+    }
+
+    if (netdef->forward.nifs == 0) {
+        /* If we don't get at least one interface in the pool, declare
+         * failure
+         */
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("No usable Vf's present on SRIOV PF %s"),
+                       netdef->forward.pfs->dev);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    if (ret < 0) {
+        /* free all the entries made before error */
+        for (i = 0; i < netdef->forward.nifs; i++) {
+            if (netdef->forward.ifs[i].type
+                == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV)
+                VIR_FREE(netdef->forward.ifs[i].device.dev);
+        }
+        netdef->forward.nifs = 0;
+    }
+    if (netdef->forward.nifs == 0)
+        VIR_FREE(netdef->forward.ifs);
+
+    for (i = 0; i < numVirtFns; i++) {
+        VIR_FREE(vfNames[i]);
+        VIR_FREE(virtFns[i]);
+    }
+    VIR_FREE(vfNames);
+    VIR_FREE(virtFns);
+    return ret;
+}
+
+
 static int
 networkStartNetworkExternal(virNetworkDriverStatePtr driver ATTRIBUTE_UNUSED,
-                            virNetworkObjPtr network ATTRIBUTE_UNUSED)
+                            virNetworkObjPtr network)
 {
     /* put anything here that needs to be done each time a network of
      * type BRIDGE, PRIVATE, VEPA, HOSTDEV or PASSTHROUGH is started. On
      * failure, undo anything you've done, and return -1. On success
      * return 0.
      */
-    return 0;
+    return networkCreateInterfacePool(network->def);
 }
 
 static int networkShutdownNetworkExternal(virNetworkDriverStatePtr driver ATTRIBUTE_UNUSED,
@@ -3599,109 +3704,6 @@ int networkRegister(void)
  * driver, we will need to present these functions via a second
  * "backend" function table.
  */
-
-/* networkCreateInterfacePool:
- * @netdef: the original NetDef from the network
- *
- * Creates an implicit interface pool of VF's when a PF dev is given
- */
-static int
-networkCreateInterfacePool(virNetworkDefPtr netdef)
-{
-    size_t numVirtFns = 0;
-    char **vfNames = NULL;
-    virPCIDeviceAddressPtr *virtFns;
-
-    int ret = -1;
-    size_t i;
-
-    if ((virNetDevGetVirtualFunctions(netdef->forward.pfs->dev,
-                                      &vfNames, &virtFns, &numVirtFns)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get Virtual functions on %s"),
-                       netdef->forward.pfs->dev);
-        goto cleanup;
-    }
-
-    netdef->forward.nifs = 0;
-    if (VIR_ALLOC_N(netdef->forward.ifs, numVirtFns) < 0)
-        goto cleanup;
-
-    for (i = 0; i < numVirtFns; i++) {
-        virPCIDeviceAddressPtr thisVirtFn = virtFns[i];
-        const char *thisName = vfNames[i];
-        virNetworkForwardIfDefPtr thisIf
-            = &netdef->forward.ifs[netdef->forward.nifs];
-
-        switch (netdef->forward.type) {
-        case VIR_NETWORK_FORWARD_BRIDGE:
-        case VIR_NETWORK_FORWARD_PRIVATE:
-        case VIR_NETWORK_FORWARD_VEPA:
-        case VIR_NETWORK_FORWARD_PASSTHROUGH:
-            if (thisName) {
-                if (VIR_STRDUP(thisIf->device.dev, thisName) < 0)
-                    goto cleanup;
-                thisIf->type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
-                netdef->forward.nifs++;
-            } else {
-                VIR_WARN("VF %zu of SRIOV PF %s couldn't be added to the "
-                         "interface pool because it isn't bound "
-                         "to a network driver - possibly in use elsewhere",
-                         i, netdef->forward.pfs->dev);
-            }
-            break;
-
-        case VIR_NETWORK_FORWARD_HOSTDEV:
-            /* VF's are always PCI devices */
-            thisIf->type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI;
-            thisIf->device.pci.domain = thisVirtFn->domain;
-            thisIf->device.pci.bus = thisVirtFn->bus;
-            thisIf->device.pci.slot = thisVirtFn->slot;
-            thisIf->device.pci.function = thisVirtFn->function;
-            netdef->forward.nifs++;
-            break;
-
-        case VIR_NETWORK_FORWARD_NONE:
-        case VIR_NETWORK_FORWARD_NAT:
-        case VIR_NETWORK_FORWARD_ROUTE:
-        case VIR_NETWORK_FORWARD_LAST:
-            /* by definition these will never be encountered here */
-            break;
-        }
-    }
-
-    if (netdef->forward.nifs == 0) {
-        /* If we don't get at least one interface in the pool, declare
-         * failure
-         */
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("No usable Vf's present on SRIOV PF %s"),
-                       netdef->forward.pfs->dev);
-        goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-    if (ret < 0) {
-        /* free all the entries made before error */
-        for (i = 0; i < netdef->forward.nifs; i++) {
-            if (netdef->forward.ifs[i].type
-                == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV)
-                VIR_FREE(netdef->forward.ifs[i].device.dev);
-        }
-        netdef->forward.nifs = 0;
-    }
-    if (netdef->forward.nifs == 0)
-        VIR_FREE(netdef->forward.ifs);
-
-    for (i = 0; i < numVirtFns; i++) {
-        VIR_FREE(vfNames[i]);
-        VIR_FREE(virtFns[i]);
-    }
-    VIR_FREE(vfNames);
-    VIR_FREE(virtFns);
-    return ret;
-}
 
 /* networkAllocateActualDevice:
  * @dom: domain definition that @iface belongs to
