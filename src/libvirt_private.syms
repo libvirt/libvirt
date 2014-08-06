@@ -1618,7 +1618,7 @@ virMacAddrSetRaw;
 # util/virnetdev.h
 virNetDevAddMulti;
 virNetDevAddRoute;
-virNetDevClearIPv4Address;
+virNetDevClearIPAddress;
 virNetDevDelMulti;
 virNetDevExists;
 virNetDevGetIndex;

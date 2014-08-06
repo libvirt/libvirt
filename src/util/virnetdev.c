@@ -1053,7 +1053,7 @@ virNetDevAddRoute(const char *ifname,
 }
 
 /**
- * virNetDevClearIPv4Address:
+ * virNetDevClearIPAddress:
  * @ifname: the interface name
  * @addr: the IP address (IPv4 or IPv6)
  * @prefix: number of 1 bits in the netmask
@@ -1062,9 +1062,9 @@ virNetDevAddRoute(const char *ifname,
  *
  * Returns 0 in case of success or -1 in case of error.
  */
-int virNetDevClearIPv4Address(const char *ifname,
-                              virSocketAddr *addr,
-                              unsigned int prefix)
+int virNetDevClearIPAddress(const char *ifname,
+                            virSocketAddr *addr,
+                            unsigned int prefix)
 {
     int ret = -1;
     struct nl_msg *nlmsg = NULL;
@@ -1176,9 +1176,9 @@ virNetDevAddRoute(const char *ifname,
     return ret;
 }
 
-int virNetDevClearIPv4Address(const char *ifname,
-                              virSocketAddr *addr,
-                              unsigned int prefix)
+int virNetDevClearIPAddress(const char *ifname,
+                            virSocketAddr *addr,
+                            unsigned int prefix)
 {
     virCommandPtr cmd = NULL;
     char *addrstr;
