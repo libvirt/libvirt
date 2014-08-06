@@ -988,7 +988,12 @@ vboxSetBootDeviceOrder(virDomainDefPtr def, vboxGlobalData *data,
     VIR_DEBUG("def->os.initrd           %s", def->os.initrd);
     VIR_DEBUG("def->os.cmdline          %s", def->os.cmdline);
     VIR_DEBUG("def->os.root             %s", def->os.root);
-    VIR_DEBUG("def->os.loader           %s", def->os.loader);
+    if (def->os.loader) {
+        VIR_DEBUG("def->os.loader->path     %s", def->os.loader->path);
+        VIR_DEBUG("def->os.loader->readonly %d", def->os.loader->readonly);
+        VIR_DEBUG("def->os.loader->type     %d", def->os.loader->type);
+        VIR_DEBUG("def->os.loader->nvram    %s", def->os.loader->nvram);
+    }
     VIR_DEBUG("def->os.bootloader       %s", def->os.bootloader);
     VIR_DEBUG("def->os.bootloaderArgs   %s", def->os.bootloaderArgs);
 

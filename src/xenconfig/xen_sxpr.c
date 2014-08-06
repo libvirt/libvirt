@@ -93,13 +93,15 @@ xenParseSxprOS(const struct sexpr *node,
                int hvm)
 {
     if (hvm) {
-        if (sexpr_node_copy(node, "domain/image/hvm/loader", &def->os.loader) < 0)
+        if (VIR_ALLOC(def->os.loader) < 0)
             goto error;
-        if (def->os.loader == NULL) {
-            if (sexpr_node_copy(node, "domain/image/hvm/kernel", &def->os.loader) < 0)
+        if (sexpr_node_copy(node, "domain/image/hvm/loader", &def->os.loader->path) < 0)
+            goto error;
+        if (def->os.loader->path == NULL) {
+            if (sexpr_node_copy(node, "domain/image/hvm/kernel", &def->os.loader->path) < 0)
                 goto error;
 
-            if (def->os.loader == NULL) {
+            if (def->os.loader->path == NULL) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("domain information incomplete, missing HVM loader"));
                 return -1;
@@ -128,7 +130,7 @@ xenParseSxprOS(const struct sexpr *node,
     /* If HVM kenrel == loader, then old xend, so kill off kernel */
     if (hvm &&
         def->os.kernel &&
-        STREQ(def->os.kernel, def->os.loader)) {
+        STREQ(def->os.kernel, def->os.loader->path)) {
         VIR_FREE(def->os.kernel);
     }
     /* Drop kernel argument that has no value */
@@ -2280,9 +2282,9 @@ xenFormatSxpr(virConnectPtr conn,
         if (hvm) {
             char bootorder[VIR_DOMAIN_BOOT_LAST+1];
             if (def->os.kernel)
-                virBufferEscapeSexpr(&buf, "(loader '%s')", def->os.loader);
+                virBufferEscapeSexpr(&buf, "(loader '%s')", def->os.loader->path);
             else
-                virBufferEscapeSexpr(&buf, "(kernel '%s')", def->os.loader);
+                virBufferEscapeSexpr(&buf, "(kernel '%s')", def->os.loader->path);
 
             virBufferAsprintf(&buf, "(vcpus %u)", def->maxvcpus);
             if (def->vcpus < def->maxvcpus)

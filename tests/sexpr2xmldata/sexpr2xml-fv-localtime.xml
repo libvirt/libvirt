@@ -6,7 +6,7 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type>hvm</type>
-    <loader>/usr/lib/xen/boot/hvmloader</loader>
+    <loader type='rom'>/usr/lib/xen/boot/hvmloader</loader>
     <boot dev='hd'/>
   </os>
   <features>

@@ -396,6 +396,8 @@ mymain(void)
     DO_TEST_DIFFERENT("numatune-memnode");
     DO_TEST("numatune-memnode-no-memory");
 
+    DO_TEST("bios-nvram");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 

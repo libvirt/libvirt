@@ -242,6 +242,27 @@
       <interleave>
         <optional>
           <element name="loader">
+            <optional>
+              <attribute name="readonly">
+                <choice>
+                  <value>yes</value>
+                  <value>no</value>
+                </choice>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="type">
+                <choice>
+                  <value>rom</value>
+                  <value>pflash</value>
+                </choice>
+              </attribute>
+            </optional>
+            <ref name="absFilePath"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="nvram">
             <ref name="absFilePath"/>
           </element>
         </optional>

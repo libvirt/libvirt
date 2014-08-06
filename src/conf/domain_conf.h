@@ -1628,6 +1628,26 @@ struct _virDomainBIOSDef {
     int rt_delay;
 };
 
+typedef enum {
+    VIR_DOMAIN_LOADER_TYPE_ROM = 0,
+    VIR_DOMAIN_LOADER_TYPE_PFLASH,
+
+    VIR_DOMAIN_LOADER_TYPE_LAST
+} virDomainLoader;
+
+VIR_ENUM_DECL(virDomainLoader)
+
+typedef struct _virDomainLoaderDef virDomainLoaderDef;
+typedef virDomainLoaderDef *virDomainLoaderDefPtr;
+struct _virDomainLoaderDef {
+    char *path;
+    int readonly;   /* enum virTristateBool */
+    virDomainLoader type;
+    char *nvram;    /* path to non-volatile RAM */
+};
+
+void virDomainLoaderDefFree(virDomainLoaderDefPtr loader);
+
 /* Operating system configuration data & machine / arch */
 typedef struct _virDomainOSDef virDomainOSDef;
 typedef virDomainOSDef *virDomainOSDefPtr;
@@ -1647,7 +1667,7 @@ struct _virDomainOSDef {
     char *cmdline;
     char *dtb;
     char *root;
-    char *loader;
+    virDomainLoaderDefPtr loader;
     char *bootloader;
     char *bootloaderArgs;
     int smbios_mode;

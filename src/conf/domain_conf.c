@@ -780,6 +780,11 @@ VIR_ENUM_IMPL(virDomainDiskMirrorState, VIR_DOMAIN_DISK_MIRROR_STATE_LAST,
               "abort",
               "pivot")
 
+VIR_ENUM_IMPL(virDomainLoader,
+              VIR_DOMAIN_LOADER_TYPE_LAST,
+              "rom",
+              "pflash")
+
 /* Internal mapping: subset of block job types that can be present in
  * <mirror> XML (remaining types are not two-phase). */
 VIR_ENUM_DECL(virDomainBlockJob)
@@ -2013,6 +2018,17 @@ virDomainPanicDefFree(virDomainPanicDefPtr panic)
     VIR_FREE(panic);
 }
 
+void
+virDomainLoaderDefFree(virDomainLoaderDefPtr loader)
+{
+    if (!loader)
+        return;
+
+    VIR_FREE(loader->path);
+    VIR_FREE(loader->nvram);
+    VIR_FREE(loader);
+}
+
 void virDomainDefFree(virDomainDefPtr def)
 {
     size_t i;
@@ -2118,7 +2134,7 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->os.cmdline);
     VIR_FREE(def->os.dtb);
     VIR_FREE(def->os.root);
-    VIR_FREE(def->os.loader);
+    virDomainLoaderDefFree(def->os.loader);
     VIR_FREE(def->os.bootloader);
     VIR_FREE(def->os.bootloaderArgs);
 
@@ -11715,6 +11731,42 @@ virDomainDefMaybeAddHostdevSCSIcontroller(virDomainDefPtr def)
     return 0;
 }
 
+static int
+virDomainLoaderDefParseXML(xmlNodePtr node,
+                           virDomainLoaderDefPtr loader)
+{
+    int ret = -1;
+    char *readonly_str = NULL;
+    char *type_str = NULL;
+
+    readonly_str = virXMLPropString(node, "readonly");
+    type_str = virXMLPropString(node, "type");
+    loader->path = (char *) xmlNodeGetContent(node);
+
+    if (readonly_str &&
+        (loader->readonly = virTristateBoolTypeFromString(readonly_str)) <= 0) {
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("unknown readonly value: %s"), readonly_str);
+        goto cleanup;
+    }
+
+    if (type_str) {
+        int type;
+        if ((type = virDomainLoaderTypeFromString(type_str)) < 0) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("unknown type value: %s"), type_str);
+            goto cleanup;
+        }
+        loader->type = type;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(readonly_str);
+    VIR_FREE(type_str);
+    return ret;
+}
+
 static virDomainDefPtr
 virDomainDefParseXML(xmlDocPtr xml,
                      xmlNodePtr root,
@@ -12755,12 +12807,22 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (STREQ(def->os.type, "xen") ||
         STREQ(def->os.type, "hvm") ||
         STREQ(def->os.type, "uml")) {
+        xmlNodePtr loader_node;
+
         def->os.kernel = virXPathString("string(./os/kernel[1])", ctxt);
         def->os.initrd = virXPathString("string(./os/initrd[1])", ctxt);
         def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
         def->os.dtb = virXPathString("string(./os/dtb[1])", ctxt);
         def->os.root = virXPathString("string(./os/root[1])", ctxt);
-        def->os.loader = virXPathString("string(./os/loader[1])", ctxt);
+        if ((loader_node = virXPathNode("./os/loader[1]", ctxt))) {
+            if (VIR_ALLOC(def->os.loader) < 0)
+                goto error;
+
+            if (virDomainLoaderDefParseXML(loader_node, def->os.loader) < 0)
+                goto error;
+
+            def->os.loader->nvram = virXPathString("string(./os/nvram[1])", ctxt);
+        }
     }
 
     if (STREQ(def->os.type, "hvm")) {
@@ -17841,6 +17903,23 @@ virDomainHugepagesFormat(virBufferPtr buf,
     virBufferAddLit(buf, "</hugepages>\n");
 }
 
+static void
+virDomainLoaderDefFormat(virBufferPtr buf,
+                         virDomainLoaderDefPtr loader)
+{
+    const char *readonly = virTristateBoolTypeToString(loader->readonly);
+    const char *type = virDomainLoaderTypeToString(loader->type);
+
+    virBufferAddLit(buf, "<loader");
+
+    if (loader->readonly)
+        virBufferAsprintf(buf, " readonly='%s'", readonly);
+
+    virBufferAsprintf(buf, " type='%s'>", type);
+
+    virBufferEscapeString(buf, "%s</loader>\n", loader->path);
+    virBufferEscapeString(buf, "<nvram>%s</nvram>\n", loader->nvram);
+}
 
 static bool
 virDomainDefHasCapabilitiesFeatures(virDomainDefPtr def)
@@ -18161,8 +18240,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     for (i = 0; def->os.initargv && def->os.initargv[i]; i++)
         virBufferEscapeString(buf, "<initarg>%s</initarg>\n",
                               def->os.initargv[i]);
-    virBufferEscapeString(buf, "<loader>%s</loader>\n",
-                          def->os.loader);
+    if (def->os.loader)
+        virDomainLoaderDefFormat(buf, def->os.loader);
     virBufferEscapeString(buf, "<kernel>%s</kernel>\n",
                           def->os.kernel);
     virBufferEscapeString(buf, "<initrd>%s</initrd>\n",

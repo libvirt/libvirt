@@ -7528,7 +7528,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     if (def->os.loader) {
         virCommandAddArg(cmd, "-bios");
-        virCommandAddArg(cmd, def->os.loader);
+        virCommandAddArg(cmd, def->os.loader->path);
     }
 
     /* Set '-m MB' based on maxmem, because the lower 'memory' limit
@@ -11359,7 +11359,8 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 goto error;
         } else if (STREQ(arg, "-bios")) {
             WANT_VALUE();
-            if (VIR_STRDUP(def->os.loader, val) < 0)
+            if (VIR_ALLOC(def->os.loader) < 0 ||
+                VIR_STRDUP(def->os.loader->path, val) < 0)
                 goto error;
         } else if (STREQ(arg, "-initrd")) {
             WANT_VALUE();

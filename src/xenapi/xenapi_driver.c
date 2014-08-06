@@ -1430,7 +1430,8 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
             VIR_FREE(boot_policy);
             goto error;
         }
-        if (VIR_STRDUP(defPtr->os.loader, "pygrub") < 0) {
+        if (VIR_ALLOC(defPtr->os.loader) < 0 ||
+            VIR_STRDUP(defPtr->os.loader->path, "pygrub") < 0) {
             VIR_FREE(boot_policy);
             goto error;
         }

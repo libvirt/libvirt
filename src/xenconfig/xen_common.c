@@ -1065,7 +1065,8 @@ xenParseOS(virConfPtr conf, virDomainDefPtr def)
     if (STREQ(def->os.type, "hvm")) {
         const char *boot;
 
-       if (xenConfigCopyString(conf, "kernel", &def->os.loader) < 0)
+        if (VIR_ALLOC(def->os.loader) < 0 ||
+            xenConfigCopyString(conf, "kernel", &def->os.loader->path) < 0)
             return -1;
 
         if (xenConfigGetString(conf, "boot", &boot, "c") < 0)
@@ -1738,8 +1739,8 @@ xenFormatOS(virConfPtr conf, virDomainDefPtr def)
         if (xenXMConfigSetString(conf, "builder", "hvm") < 0)
             return -1;
 
-        if (def->os.loader &&
-            xenXMConfigSetString(conf, "kernel", def->os.loader) < 0)
+        if (def->os.loader && def->os.loader->path &&
+            xenXMConfigSetString(conf, "kernel", def->os.loader->path) < 0)
             return -1;
 
         for (i = 0; i < def->os.nBootDevs; i++) {

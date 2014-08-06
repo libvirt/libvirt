@@ -1006,8 +1006,8 @@ get_files(vahControl * ctl)
         if (vah_add_file(&buf, ctl->def->os.dtb, "r") != 0)
             goto cleanup;
 
-    if (ctl->def->os.loader && ctl->def->os.loader)
-        if (vah_add_file(&buf, ctl->def->os.loader, "r") != 0)
+    if (ctl->def->os.loader && ctl->def->os.loader->path)
+        if (vah_add_file(&buf, ctl->def->os.loader->path, "r") != 0)
             goto cleanup;
 
     for (i = 0; i < ctl->def->ngraphics; i++) {

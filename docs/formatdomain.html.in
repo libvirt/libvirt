@@ -102,7 +102,8 @@
   ...
   &lt;os&gt;
     &lt;type&gt;hvm&lt;/type&gt;
-    &lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
+    &lt;loader readonly='on' type='rom'&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
+    &lt;nvram&gt;/var/lib/libvirt/nvram/guest_VARS.fd&lt;/nvram&gt;
     &lt;boot dev='hd'/&gt;
     &lt;boot dev='cdrom'/&gt;
     &lt;bootmenu enable='yes' timeout='3000'/&gt;
@@ -129,7 +130,21 @@
         used to assist the domain creation process. It is used by Xen
         fully virtualized domains as well as setting the QEMU BIOS file
         path for QEMU/KVM domains. <span class="since">Xen since 0.1.0,
-        QEMU/KVM since 0.9.12</span></dd>
+        QEMU/KVM since 0.9.12</span> Then, <span class="since">since
+        1.2.8</span> it's possible for the element to have two
+        optional attributes: <code>readonly</code> (accepted values are
+        <code>yes</code> and <code>no</code>) to reflect the fact that the
+        image should be writable or read-only. The second attribute
+        <code>type</code> accepts values <code>rom</code> and
+        <code>pflash</code>. It tells the hypervisor where in the guest
+        memory the file should be mapped.  For instance, if the loader
+        path points to an UEFI image, <code>type</code> should be
+        <code>pflash</code>.</dd>
+      <dt><code>nvram</code></dt>
+      <dd>Some UEFI firmwares may want to use a non-volatile memory to store
+        some variables. In the host, this is represented as a file and the
+        path to the file is stored in this element. <span class="since">Since
+        1.2.8</span></dd>
       <dt><code>boot</code></dt>
       <dd>The <code>dev</code> attribute takes one of the values "fd", "hd",
         "cdrom" or "network" and is used to specify the next boot device
