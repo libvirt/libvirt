@@ -14886,23 +14886,33 @@ qemuDomainBlockPivot(virConnectPtr conn,
         }
     }
 
-    /* We previously labeled only the top-level image; but if the
-     * image includes a relative backing file, the pivot may result in
-     * qemu needing to open the entire backing chain, so we need to
-     * label the entire chain.  This action is safe even if the
-     * backing chain has already been labeled; but only necessary when
-     * we know for sure that there is a backing chain.  */
-    oldsrc = disk->src;
-    disk->src = disk->mirror;
+    /* For active commit, the mirror is part of the already labeled
+     * chain.  For blockcopy, we previously labeled only the top-level
+     * image; but if the user is reusing an external image that
+     * includes a backing file, the pivot may result in qemu needing
+     * to open the entire backing chain, so we need to label the
+     * entire chain.  This action is safe even if the backing chain
+     * has already been labeled; but only necessary when we know for
+     * sure that there is a backing chain.  */
+    if (disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
+        oldsrc = disk->src;
+        disk->src = disk->mirror;
 
-    if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0)
-        goto cleanup;
+        if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0)
+            goto cleanup;
 
-    if (disk->mirror->format && disk->mirror->format != VIR_STORAGE_FILE_RAW &&
-        (virDomainLockDiskAttach(driver->lockManager, cfg->uri, vm, disk) < 0 ||
-         qemuSetupDiskCgroup(vm, disk) < 0 ||
-         virSecurityManagerSetDiskLabel(driver->securityManager, vm->def, disk) < 0))
-        goto cleanup;
+        if (disk->mirror->format &&
+            disk->mirror->format != VIR_STORAGE_FILE_RAW &&
+            (virDomainLockDiskAttach(driver->lockManager, cfg->uri, vm,
+                                     disk) < 0 ||
+             qemuSetupDiskCgroup(vm, disk) < 0 ||
+             virSecurityManagerSetDiskLabel(driver->securityManager, vm->def,
+                                            disk) < 0))
+            goto cleanup;
+
+        disk->src = oldsrc;
+        oldsrc = NULL;
+    }
 
     /* Attempt the pivot.  Record the attempt now, to prevent duplicate
      * attempts; but the actual disk change will be made when emitting
