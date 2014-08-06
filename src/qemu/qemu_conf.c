@@ -949,6 +949,47 @@ qemuSharedDeviceEntryCopy(const qemuSharedDeviceEntry *entry)
     return NULL;
 }
 
+
+static int
+qemuSharedDeviceEntryInsert(virQEMUDriverPtr driver,
+                            const char *key,
+                            const char *name)
+{
+    qemuSharedDeviceEntry *entry = NULL;
+    int ret = -1;
+
+    if ((entry = virHashLookup(driver->sharedDevices, key))) {
+        /* Nothing to do if the shared scsi host device is already
+         * recorded in the table.
+         */
+        if (qemuSharedDeviceEntryDomainExists(entry, name, NULL)) {
+            ret = 0;
+            goto cleanup;
+        }
+
+        if (VIR_EXPAND_N(entry->domains, entry->ref, 1) < 0 ||
+            VIR_STRDUP(entry->domains[entry->ref - 1], name) < 0)
+            goto cleanup;
+    } else {
+        if (VIR_ALLOC(entry) < 0 ||
+            VIR_ALLOC_N(entry->domains, 1) < 0 ||
+            VIR_STRDUP(entry->domains[0], name) < 0)
+            goto cleanup;
+
+        entry->ref = 1;
+
+        if (virHashAddEntry(driver->sharedDevices, key, entry))
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    qemuSharedDeviceEntryFree(entry, NULL);
+
+    return ret;
+}
+
 /* qemuAddSharedDevice:
  * @driver: Pointer to qemu driver struct
  * @dev: The device def
@@ -963,8 +1004,6 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
                     virDomainDeviceDefPtr dev,
                     const char *name)
 {
-    qemuSharedDeviceEntry *entry = NULL;
-    qemuSharedDeviceEntry *new_entry = NULL;
     virDomainDiskDefPtr disk = NULL;
     virDomainHostdevDefPtr hostdev = NULL;
     char *dev_name = NULL;
@@ -1016,43 +1055,11 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    if ((entry = virHashLookup(driver->sharedDevices, key))) {
-        /* Nothing to do if the shared scsi host device is already
-         * recorded in the table.
-         */
-        if (qemuSharedDeviceEntryDomainExists(entry, name, NULL)) {
-            ret = 0;
-            goto cleanup;
-        }
-
-        if (!(new_entry = qemuSharedDeviceEntryCopy(entry)))
-            goto cleanup;
-
-        if (VIR_EXPAND_N(new_entry->domains, new_entry->ref, 1) < 0 ||
-            VIR_STRDUP(new_entry->domains[new_entry->ref - 1], name) < 0) {
-            qemuSharedDeviceEntryFree(new_entry, NULL);
-            goto cleanup;
-        }
-
-        if (virHashUpdateEntry(driver->sharedDevices, key, new_entry) < 0) {
-            qemuSharedDeviceEntryFree(new_entry, NULL);
-            goto cleanup;
-        }
-    } else {
-        if (VIR_ALLOC(entry) < 0 ||
-            VIR_ALLOC_N(entry->domains, 1) < 0 ||
-            VIR_STRDUP(entry->domains[0], name) < 0) {
-            qemuSharedDeviceEntryFree(entry, NULL);
-            goto cleanup;
-        }
-
-        entry->ref = 1;
-
-        if (virHashAddEntry(driver->sharedDevices, key, entry))
-            goto cleanup;
-    }
+    if (qemuSharedDeviceEntryInsert(driver, key, name) < 0)
+        goto cleanup;
 
     ret = 0;
+
  cleanup:
     qemuDriverUnlock(driver);
     VIR_FREE(dev_name);
