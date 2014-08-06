@@ -817,6 +817,7 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
             goto cleanup;
     }
 
+    VIR_FREE(meta->backingStoreRaw);
     if (fileTypeInfo[meta->format].getBackingStore != NULL) {
         int store = fileTypeInfo[meta->format].getBackingStore(&meta->backingStoreRaw,
                                                          backingFormat,
