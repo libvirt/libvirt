@@ -1732,12 +1732,12 @@ virNodeDeviceCapMatch(virNodeDeviceObjPtr devobj,
             return true;
 
         if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST) {
-            if (type == VIR_CONNECT_LIST_NODE_DEVICES_CAP_FC_HOST &&
+            if (type == VIR_NODE_DEV_CAP_FC_HOST &&
                 (cap->data.scsi_host.flags &
                  VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST))
                 return true;
 
-            if (type == VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPORTS &&
+            if (type == VIR_NODE_DEV_CAP_VPORTS &&
                 (cap->data.scsi_host.flags &
                  VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS))
                 return true;
