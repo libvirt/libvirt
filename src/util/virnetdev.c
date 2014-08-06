@@ -1052,6 +1052,47 @@ virNetDevAddRoute(const char *ifname,
     goto cleanup;
 }
 
+/**
+ * virNetDevClearIPv4Address:
+ * @ifname: the interface name
+ * @addr: the IP address (IPv4 or IPv6)
+ * @prefix: number of 1 bits in the netmask
+ *
+ * Delete an IP address from an interface.
+ *
+ * Returns 0 in case of success or -1 in case of error.
+ */
+int virNetDevClearIPv4Address(const char *ifname,
+                              virSocketAddr *addr,
+                              unsigned int prefix)
+{
+    int ret = -1;
+    struct nl_msg *nlmsg = NULL;
+    struct nlmsghdr *resp = NULL;
+    unsigned int recvbuflen;
+
+    if (!(nlmsg = virNetDevCreateNetlinkAddressMessage(RTM_DELADDR, ifname,
+                                                       addr, prefix,
+                                                       NULL)))
+        goto cleanup;
+
+    if (virNetlinkCommand(nlmsg, &resp, &recvbuflen, 0, 0,
+                          NETLINK_ROUTE, 0) < 0)
+        goto cleanup;
+
+    if (virNetlinkGetErrorCode(resp, recvbuflen) < 0) {
+        virReportError(VIR_ERR_SYSTEM_ERROR,
+                       _("Error removing IP address from %s"), ifname);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    nlmsg_free(nlmsg);
+    VIR_FREE(resp);
+    return ret;
+}
+
 #else /* defined(__linux__) && defined(HAVE_LIBNL) */
 
 int virNetDevSetIPAddress(const char *ifname,
@@ -1134,18 +1175,6 @@ virNetDevAddRoute(const char *ifname,
     virCommandFree(cmd);
     return ret;
 }
-#endif /* defined(__linux__) && defined(HAVE_LIBNL) */
-
-/**
- * virNetDevClearIPv4Address:
- * @ifname: the interface name
- * @addr: the IP address (IPv4 or IPv6)
- * @prefix: number of 1 bits in the netmask
- *
- * Delete an IP address from an interface.
- *
- * Returns 0 in case of success or -1 in case of error.
- */
 
 int virNetDevClearIPv4Address(const char *ifname,
                               virSocketAddr *addr,
@@ -1157,7 +1186,7 @@ int virNetDevClearIPv4Address(const char *ifname,
 
     if (!(addrstr = virSocketAddrFormat(addr)))
         goto cleanup;
-#ifdef IFCONFIG_PATH
+# ifdef IFCONFIG_PATH
     cmd = virCommandNew(IFCONFIG_PATH);
     virCommandAddArg(cmd, ifname);
     if (VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET6))
@@ -1166,12 +1195,12 @@ int virNetDevClearIPv4Address(const char *ifname,
         virCommandAddArg(cmd, "inet");
     virCommandAddArgFormat(cmd, "%s/%u", addrstr, prefix);
     virCommandAddArg(cmd, "-alias");
-#else
+# else
     cmd = virCommandNew(IP_PATH);
     virCommandAddArgList(cmd, "addr", "del", NULL);
     virCommandAddArgFormat(cmd, "%s/%u", addrstr, prefix);
     virCommandAddArgList(cmd, "dev", ifname, NULL);
-#endif
+# endif
 
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
@@ -1183,6 +1212,7 @@ int virNetDevClearIPv4Address(const char *ifname,
     return ret;
 }
 
+#endif /* defined(__linux__) && defined(HAVE_LIBNL) */
 
 /**
  * virNetDevGetIPv4Address:
