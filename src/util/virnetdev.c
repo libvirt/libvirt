@@ -963,6 +963,95 @@ int virNetDevSetIPAddress(const char *ifname,
     return ret;
 }
 
+/**
+ * virNetDevAddRoute:
+ * @ifname: the interface name
+ * @addr: the IP network address (IPv4 or IPv6)
+ * @prefix: number of 1 bits in the netmask
+ * @gateway: via address for route (same as @addr)
+ *
+ * Add a route for a network IP address to an interface. This function
+ * *does not* remove any previously added IP static routes.
+ *
+ * Returns 0 in case of success or -1 in case of error.
+ */
+int
+virNetDevAddRoute(const char *ifname,
+                  virSocketAddrPtr addr,
+                  unsigned int prefix,
+                  virSocketAddrPtr gateway,
+                  unsigned int metric)
+{
+    int ret = -1;
+    struct nl_msg *nlmsg = NULL;
+    struct nlmsghdr *resp = NULL;
+    unsigned int recvbuflen;
+    unsigned int ifindex;
+    struct rtmsg rtmsg;
+    void *gatewayData = NULL;
+    void *addrData = NULL;
+    size_t addrDataLen;
+    int errCode;
+
+    if (virNetDevGetIPAddressBinary(addr, &addrData, &addrDataLen) < 0 ||
+        virNetDevGetIPAddressBinary(gateway, &gatewayData, &addrDataLen) < 0)
+        goto cleanup;
+
+    /* Get the interface index */
+    if ((ifindex = if_nametoindex(ifname)) == 0)
+        goto cleanup;
+
+    if (!(nlmsg = nlmsg_alloc_simple(RTM_NEWROUTE,
+                                     NLM_F_REQUEST | NLM_F_CREATE |
+                                     NLM_F_EXCL))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    memset(&rtmsg, 0, sizeof(rtmsg));
+
+    rtmsg.rtm_family = VIR_SOCKET_ADDR_FAMILY(addr);
+    rtmsg.rtm_table = RT_TABLE_MAIN;
+    rtmsg.rtm_scope = RT_SCOPE_UNIVERSE;
+    rtmsg.rtm_protocol = RTPROT_BOOT;
+    rtmsg.rtm_type = RTN_UNICAST;
+    rtmsg.rtm_dst_len = prefix;
+
+    if (nlmsg_append(nlmsg, &rtmsg, sizeof(rtmsg), NLMSG_ALIGNTO) < 0)
+        goto buffer_too_small;
+
+    if (prefix > 0 && nla_put(nlmsg, RTA_DST, addrDataLen, addrData) < 0)
+        goto buffer_too_small;
+
+    if (nla_put(nlmsg, RTA_GATEWAY, addrDataLen, gatewayData) < 0)
+        goto buffer_too_small;
+
+    if (nla_put_u32(nlmsg, RTA_OIF, ifindex) < 0)
+        goto buffer_too_small;
+
+    if (metric > 0 && nla_put_u32(nlmsg, RTA_PRIORITY, metric) < 0)
+        goto buffer_too_small;
+
+    if (virNetlinkCommand(nlmsg, &resp, &recvbuflen, 0, 0,
+                          NETLINK_ROUTE, 0) < 0)
+        goto cleanup;
+
+    if ((errCode = virNetlinkGetErrorCode(resp, recvbuflen)) < 0) {
+        virReportSystemError(errCode, _("Error adding route to %s"), ifname);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    nlmsg_free(nlmsg);
+    return ret;
+
+ buffer_too_small:
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("allocated netlink buffer is too small"));
+    goto cleanup;
+}
+
 #else /* defined(__linux__) && defined(HAVE_LIBNL) */
 
 int virNetDevSetIPAddress(const char *ifname,
@@ -1013,21 +1102,6 @@ int virNetDevSetIPAddress(const char *ifname,
     return ret;
 }
 
-#endif /* defined(__linux__) && defined(HAVE_LIBNL) */
-
-/**
- * virNetDevAddRoute:
- * @ifname: the interface name
- * @addr: the IP network address (IPv4 or IPv6)
- * @prefix: number of 1 bits in the netmask
- * @gateway: via address for route (same as @addr)
- *
- * Add a route for a network IP address to an interface. This function
- * *does not* remove any previously added IP static routes.
- *
- * Returns 0 in case of success or -1 in case of error.
- */
-
 int
 virNetDevAddRoute(const char *ifname,
                   virSocketAddrPtr addr,
@@ -1060,6 +1134,7 @@ virNetDevAddRoute(const char *ifname,
     virCommandFree(cmd);
     return ret;
 }
+#endif /* defined(__linux__) && defined(HAVE_LIBNL) */
 
 /**
  * virNetDevClearIPv4Address:
