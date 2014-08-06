@@ -177,6 +177,16 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
         }
     }
 
+    /* validate that the passed path is absolute */
+    if (virStorageSourceIsLocalStorage(def->src) &&
+        def->src->path &&
+        def->src->path[0] != '/') {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("disk snapshot image path '%s' must be absolute"),
+                       def->src->path);
+        goto cleanup;
+    }
+
     if (!def->snapshot && (def->src->path || def->src->format))
         def->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
 
@@ -326,6 +336,14 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     }
     def->file = memoryFile;
     memoryFile = NULL;
+
+    /* verify that memory path is absolute */
+    if (def->file && def->file[0] != '/') {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("memory snapshot file path (%s) must be absolute"),
+                       def->file);
+        goto cleanup;
+    }
 
     if ((n = virXPathNodeSet("./disks/*", ctxt, &nodes)) < 0)
         goto cleanup;
