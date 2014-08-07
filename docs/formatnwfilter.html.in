@@ -1101,6 +1101,11 @@
          <td>End of range of valid destination ports; requires <code>protocol</code></td>
        </tr>
        <tr>
+         <td>dscp</td>
+         <td>UINT8 (0x0-0x3f, 0 - 63)</td>
+         <td>Differentiated Services Code Point</td>
+       </tr>
+       <tr>
          <td>comment <span class="since">(Since 0.8.5)</span></td>
          <td>STRING</td>
          <td>text with max. 256 characters</td>
@@ -1284,6 +1289,11 @@
          <td>End of range of valid destination ports</td>
        </tr>
        <tr>
+         <td>dscp</td>
+         <td>UINT8 (0x0-0x3f, 0 - 63)</td>
+         <td>Differentiated Services Code Point</td>
+       </tr>
+       <tr>
          <td>comment <span class="since">(Since 0.8.5)</span></td>
          <td>STRING</td>
          <td>text with max. 256 characters</td>
@@ -1399,6 +1409,11 @@
          <td>ICMP code</td>
        </tr>
        <tr>
+         <td>dscp</td>
+         <td>UINT8 (0x0-0x3f, 0 - 63)</td>
+         <td>Differentiated Services Code Point</td>
+       </tr>
+       <tr>
          <td>comment <span class="since">(Since 0.8.5)</span></td>
          <td>STRING</td>
          <td>text with max. 256 characters</td>
@@ -1496,6 +1511,11 @@
          <td>dstipto</td>
          <td>IP_ADDR</td>
          <td>End of range of destination IP address</td>
+       </tr>
+       <tr>
+         <td>dscp</td>
+         <td>UINT8 (0x0-0x3f, 0 - 63)</td>
+         <td>Differentiated Services Code Point</td>
        </tr>
        <tr>
          <td>comment <span class="since">(Since 0.8.5)</span></td>
@@ -1604,6 +1624,11 @@
          <td>End of range of valid destination ports</td>
        </tr>
        <tr>
+         <td>dscp</td>
+         <td>UINT8 (0x0-0x3f, 0 - 63)</td>
+         <td>Differentiated Services Code Point</td>
+       </tr>
+       <tr>
          <td>comment <span class="since">(Since 0.8.5)</span></td>
          <td>STRING</td>
          <td>text with max. 256 characters</td>
@@ -1705,6 +1730,11 @@
          <td>ICMPv6 code</td>
        </tr>
        <tr>
+         <td>dscp</td>
+         <td>UINT8 (0x0-0x3f, 0 - 63)</td>
+         <td>Differentiated Services Code Point</td>
+       </tr>
+       <tr>
          <td>comment <span class="since">(Since 0.8.5)</span></td>
          <td>STRING</td>
          <td>text with max. 256 characters</td>
@@ -1787,6 +1817,11 @@
          <td>dstipto</td>
          <td>IPV6_ADDR</td>
          <td>End of range of destination IP address</td>
+       </tr>
+       <tr>
+         <td>dscp</td>
+         <td>UINT8 (0x0-0x3f, 0 - 63)</td>
+         <td>Differentiated Services Code Point</td>
        </tr>
        <tr>
          <td>comment <span class="since">(Since 0.8.5)</span></td>
