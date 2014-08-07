@@ -318,8 +318,8 @@ virDomainAuditNet(virDomainObjPtr vm,
 
 /**
  * virDomainAuditNetDevice:
- * @vm: domain opening a network-related device
- * @def: details of network device that fd will be tied to
+ * @vmDef: the definition of the VM
+ * @netDef: details of network device that fd will be tied to
  * @device: device being opened (such as /dev/vhost-net,
  * /dev/net/tun, /dev/tanN). Note that merely opening a device
  * does not mean that virDomain owns it; a followup virDomainAuditNet

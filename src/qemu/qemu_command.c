@@ -160,7 +160,7 @@ VIR_ENUM_IMPL(qemuNumaPolicy, VIR_DOMAIN_NUMATUNE_MEM_LAST,
  * qemuPhysIfaceConnect:
  * @def: the definition of the VM (needed by 802.1Qbh and audit)
  * @driver: pointer to the driver instance
- * @net: pointer to he VM's interface description with direct device type
+ * @net: pointer to the VM's interface description with direct device type
  * @qemuCaps: flags for qemu
  * @vmop: VM operation type
  *
