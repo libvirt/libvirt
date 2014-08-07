@@ -1151,38 +1151,25 @@ xenParseXMEmulatedDevices(virConfPtr conf, virDomainDefPtr def)
 }
 
 
-/*
- * Turn a config record into a lump of XML describing the
- * domain, suitable for later feeding for virDomainCreateXML
- */
-virDomainDefPtr
-xenParseXM(virConfPtr conf, int xendConfigVersion,
-           virCapsPtr caps)
+static int
+xenParseXMGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
 {
+    const char *defaultMachine;
     const char *str;
     int hvm = 0;
-    virDomainDefPtr def = NULL;
-    size_t i;
-    const char *defaultMachine;
-
-    if (VIR_ALLOC(def) < 0)
-        return NULL;
-
-    def->virtType = VIR_DOMAIN_VIRT_XEN;
-    def->id = -1;
 
     if (xenXMConfigCopyString(conf, "name", &def->name) < 0)
-        goto cleanup;
-    if (xenXMConfigGetUUID(conf, "uuid", def->uuid) < 0)
-        goto cleanup;
+        return -1;
 
+    if (xenXMConfigGetUUID(conf, "uuid", def->uuid) < 0)
+        return -1;
 
     if ((xenXMConfigGetString(conf, "builder", &str, "linux") == 0) &&
         STREQ(str, "hvm"))
         hvm = 1;
 
     if (VIR_STRDUP(def->os.type, hvm ? "hvm" : "xen") < 0)
-        goto cleanup;
+        return -1;
 
     def->os.arch =
         virCapabilitiesDefaultGuestArch(caps,
@@ -1192,7 +1179,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("no supported architecture for os type '%s'"),
                        def->os.type);
-        goto cleanup;
+        return -1;
     }
 
     defaultMachine = virCapabilitiesDefaultGuestMachine(caps,
@@ -1201,10 +1188,34 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                                                         virDomainVirtTypeToString(def->virtType));
     if (defaultMachine != NULL) {
         if (VIR_STRDUP(def->os.machine, defaultMachine) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    if (hvm) {
+    return 0;
+}
+
+
+/*
+ * Turn a config record into a lump of XML describing the
+ * domain, suitable for later feeding for virDomainCreateXML
+ */
+virDomainDefPtr
+xenParseXM(virConfPtr conf, int xendConfigVersion,
+           virCapsPtr caps)
+{
+    virDomainDefPtr def = NULL;
+    size_t i;
+
+    if (VIR_ALLOC(def) < 0)
+        return NULL;
+
+    def->virtType = VIR_DOMAIN_VIRT_XEN;
+    def->id = -1;
+
+    if (xenParseXMGeneralMeta(conf, def, caps) < 0)
+        goto cleanup;
+
+    if (STREQ(def->os.type, "hvm")) {
         const char *boot;
         if (xenXMConfigCopyString(conf, "kernel", &def->os.loader) < 0)
             goto cleanup;
