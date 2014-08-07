@@ -1106,6 +1106,51 @@ xenParseXMVif(virConfPtr conf, virDomainDefPtr def)
 }
 
 
+static int
+xenParseXMEmulatedDevices(virConfPtr conf, virDomainDefPtr def)
+{
+    const char *str;
+
+    if (STREQ(def->os.type, "hvm")) {
+        if (xenXMConfigGetString(conf, "soundhw", &str, NULL) < 0)
+            return -1;
+
+        if (str &&
+            xenParseSxprSound(def, str) < 0)
+            return -1;
+
+        if (xenXMConfigGetString(conf, "usbdevice", &str, NULL) < 0)
+            return -1;
+
+        if (str &&
+            (STREQ(str, "tablet") ||
+             STREQ(str, "mouse") ||
+             STREQ(str, "keyboard"))) {
+            virDomainInputDefPtr input;
+            if (VIR_ALLOC(input) < 0)
+                return -1;
+
+            input->bus = VIR_DOMAIN_INPUT_BUS_USB;
+            if (STREQ(str, "mouse"))
+                input->type = VIR_DOMAIN_INPUT_TYPE_MOUSE;
+            else if (STREQ(str, "tablet"))
+                input->type = VIR_DOMAIN_INPUT_TYPE_TABLET;
+            else if (STREQ(str, "keyboard"))
+                input->type = VIR_DOMAIN_INPUT_TYPE_KBD;
+            if (VIR_ALLOC_N(def->inputs, 1) < 0) {
+                virDomainInputDefFree(input);
+                return -1;
+
+            }
+            def->inputs[0] = input;
+            def->ninputs = 1;
+        }
+    }
+
+    return 0;
+}
+
+
 /*
  * Turn a config record into a lump of XML describing the
  * domain, suitable for later feeding for virDomainCreateXML
@@ -1235,46 +1280,14 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     if (xenParseXMPCI(conf, def) < 0)
         goto cleanup;
 
-    if (hvm) {
-        if (xenXMConfigGetString(conf, "usbdevice", &str, NULL) < 0)
-            goto cleanup;
-        if (str &&
-            (STREQ(str, "tablet") ||
-             STREQ(str, "mouse") ||
-             STREQ(str, "keyboard"))) {
-            virDomainInputDefPtr input;
-            if (VIR_ALLOC(input) < 0)
-                goto cleanup;
-            input->bus = VIR_DOMAIN_INPUT_BUS_USB;
-            if (STREQ(str, "mouse"))
-                input->type = VIR_DOMAIN_INPUT_TYPE_MOUSE;
-            else if (STREQ(str, "tablet"))
-                input->type = VIR_DOMAIN_INPUT_TYPE_TABLET;
-            else if (STREQ(str, "keyboard"))
-                input->type = VIR_DOMAIN_INPUT_TYPE_KBD;
-            if (VIR_ALLOC_N(def->inputs, 1) < 0) {
-                virDomainInputDefFree(input);
-                goto cleanup;
-            }
-            def->inputs[0] = input;
-            def->ninputs = 1;
-        }
-    }
+    if (xenParseXMEmulatedDevices(conf, def) < 0)
+        goto cleanup;
 
     if (xenParseXMVfb(conf, def, xendConfigVersion) < 0)
         goto cleanup;
 
     if (xenParseXMCharDev(conf, def) < 0)
         goto cleanup;
-
-    if (hvm) {
-        if (xenXMConfigGetString(conf, "soundhw", &str, NULL) < 0)
-            goto cleanup;
-
-        if (str &&
-            xenParseSxprSound(def, str) < 0)
-            goto cleanup;
-    }
 
     return def;
 
