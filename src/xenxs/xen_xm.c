@@ -339,6 +339,99 @@ xenParseXMEventsActions(virConfPtr conf, virDomainDefPtr def)
 }
 
 
+static int
+xenParseXMPCI(virConfPtr conf, virDomainDefPtr def)
+{
+    virConfValuePtr list = virConfGetValue(conf, "pci");
+    virDomainHostdevDefPtr hostdev = NULL;
+
+    if (list && list->type == VIR_CONF_LIST) {
+        list = list->list;
+        while (list) {
+            char domain[5];
+            char bus[3];
+            char slot[3];
+            char func[2];
+            char *key, *nextkey;
+            int domainID;
+            int busID;
+            int slotID;
+            int funcID;
+
+            domain[0] = bus[0] = slot[0] = func[0] = '\0';
+
+            if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
+                goto skippci;
+            /* pci=['0000:00:1b.0','0000:00:13.0'] */
+            if (!(key = list->str))
+                goto skippci;
+            if (!(nextkey = strchr(key, ':')))
+                goto skippci;
+            if (virStrncpy(domain, key, (nextkey - key), sizeof(domain)) == NULL) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Domain %s too big for destination"), key);
+                goto skippci;
+            }
+
+            key = nextkey + 1;
+            if (!(nextkey = strchr(key, ':')))
+                goto skippci;
+            if (virStrncpy(bus, key, (nextkey - key), sizeof(bus)) == NULL) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Bus %s too big for destination"), key);
+                goto skippci;
+            }
+
+            key = nextkey + 1;
+            if (!(nextkey = strchr(key, '.')))
+                goto skippci;
+            if (virStrncpy(slot, key, (nextkey - key), sizeof(slot)) == NULL) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Slot %s too big for destination"), key);
+                goto skippci;
+            }
+
+            key = nextkey + 1;
+            if (strlen(key) != 1)
+                goto skippci;
+            if (virStrncpy(func, key, 1, sizeof(func)) == NULL) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Function %s too big for destination"), key);
+                goto skippci;
+            }
+
+            if (virStrToLong_i(domain, NULL, 16, &domainID) < 0)
+                goto skippci;
+            if (virStrToLong_i(bus, NULL, 16, &busID) < 0)
+                goto skippci;
+            if (virStrToLong_i(slot, NULL, 16, &slotID) < 0)
+                goto skippci;
+            if (virStrToLong_i(func, NULL, 16, &funcID) < 0)
+                goto skippci;
+            if (!(hostdev = virDomainHostdevDefAlloc()))
+               return -1;
+
+            hostdev->managed = false;
+            hostdev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
+            hostdev->source.subsys.u.pci.addr.domain = domainID;
+            hostdev->source.subsys.u.pci.addr.bus = busID;
+            hostdev->source.subsys.u.pci.addr.slot = slotID;
+            hostdev->source.subsys.u.pci.addr.function = funcID;
+
+            if (VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev) < 0) {
+                virDomainHostdevDefFree(hostdev);
+                return -1;
+            }
+
+        skippci:
+            list = list->next;
+        }
+    }
+
+    return 0;
+}
+
+
 #define MAX_VFB 1024
 
 /*
@@ -357,7 +450,6 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     virDomainDiskDefPtr disk = NULL;
     virDomainNetDefPtr net = NULL;
     virDomainGraphicsDefPtr graphics = NULL;
-    virDomainHostdevDefPtr hostdev = NULL;
     size_t i;
     const char *defaultMachine;
     unsigned long count;
@@ -841,95 +933,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
         }
     }
 
-    list = virConfGetValue(conf, "pci");
-    if (list && list->type == VIR_CONF_LIST) {
-        list = list->list;
-        while (list) {
-            char domain[5];
-            char bus[3];
-            char slot[3];
-            char func[2];
-            char *key, *nextkey;
-            int domainID;
-            int busID;
-            int slotID;
-            int funcID;
-
-            domain[0] = bus[0] = slot[0] = func[0] = '\0';
-
-            if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
-                goto skippci;
-
-            /* pci=['0000:00:1b.0','0000:00:13.0'] */
-            if (!(key = list->str))
-                goto skippci;
-            if (!(nextkey = strchr(key, ':')))
-                goto skippci;
-
-            if (virStrncpy(domain, key, (nextkey - key), sizeof(domain)) == NULL) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Domain %s too big for destination"), key);
-                goto skippci;
-            }
-
-            key = nextkey + 1;
-            if (!(nextkey = strchr(key, ':')))
-                goto skippci;
-
-            if (virStrncpy(bus, key, (nextkey - key), sizeof(bus)) == NULL) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Bus %s too big for destination"), key);
-                goto skippci;
-            }
-
-            key = nextkey + 1;
-            if (!(nextkey = strchr(key, '.')))
-                goto skippci;
-
-            if (virStrncpy(slot, key, (nextkey - key), sizeof(slot)) == NULL) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Slot %s too big for destination"), key);
-                goto skippci;
-            }
-
-            key = nextkey + 1;
-            if (strlen(key) != 1)
-                goto skippci;
-
-            if (virStrncpy(func, key, 1, sizeof(func)) == NULL) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Function %s too big for destination"), key);
-                goto skippci;
-            }
-
-            if (virStrToLong_i(domain, NULL, 16, &domainID) < 0)
-                goto skippci;
-            if (virStrToLong_i(bus, NULL, 16, &busID) < 0)
-                goto skippci;
-            if (virStrToLong_i(slot, NULL, 16, &slotID) < 0)
-                goto skippci;
-            if (virStrToLong_i(func, NULL, 16, &funcID) < 0)
-                goto skippci;
-
-            if (!(hostdev = virDomainHostdevDefAlloc()))
-               goto cleanup;
-
-            hostdev->managed = false;
-            hostdev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
-            hostdev->source.subsys.u.pci.addr.domain = domainID;
-            hostdev->source.subsys.u.pci.addr.bus = busID;
-            hostdev->source.subsys.u.pci.addr.slot = slotID;
-            hostdev->source.subsys.u.pci.addr.function = funcID;
-
-            if (VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev) < 0) {
-                virDomainHostdevDefFree(hostdev);
-                goto cleanup;
-            }
-
-        skippci:
-            list = list->next;
-        }
-    }
+    if (xenParseXMPCI(conf, def) < 0)
+        goto cleanup;
 
     if (hvm) {
         if (xenXMConfigGetString(conf, "usbdevice", &str, NULL) < 0)
