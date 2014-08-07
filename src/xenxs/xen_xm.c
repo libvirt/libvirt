@@ -263,7 +263,48 @@ xenParseXMMem(virConfPtr conf, virDomainDefPtr def)
 }
 
 
+static int
+xenParseXMTimeOffset(virConfPtr conf, virDomainDefPtr def,
+                     int xendConfigVersion)
+{
+    int vmlocaltime;
+
+    if (xenXMConfigGetBool(conf, "localtime", &vmlocaltime, 0) < 0)
+        return -1;
+
+    if (STREQ(def->os.type, "hvm")) {
+        /* only managed HVM domains since 3.1.0 have persistent rtc_timeoffset */
+        if (xendConfigVersion < XEND_CONFIG_VERSION_3_1_0) {
+            if (vmlocaltime)
+                def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
+            else
+                def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
+            def->clock.data.utc_reset = true;
+        } else {
+            unsigned long rtc_timeoffset;
+            def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_VARIABLE;
+            if (xenXMConfigGetULong(conf, "rtc_timeoffset", &rtc_timeoffset, 0) < 0)
+                return -1;
+
+            def->clock.data.variable.adjustment = (int)rtc_timeoffset;
+            def->clock.data.variable.basis = vmlocaltime ?
+                VIR_DOMAIN_CLOCK_BASIS_LOCALTIME :
+                VIR_DOMAIN_CLOCK_BASIS_UTC;
+        }
+    } else {
+        /* PV domains do not have an emulated RTC and the offset is fixed. */
+        def->clock.offset = vmlocaltime ?
+            VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME :
+            VIR_DOMAIN_CLOCK_OFFSET_UTC;
+        def->clock.data.utc_reset = true;
+    } /* !hvm */
+
+    return 0;
+}
+
+
 #define MAX_VFB 1024
+
 /*
  * Turn a config record into a lump of XML describing the
  * domain, suitable for later feeding for virDomainCreateXML
@@ -283,7 +324,6 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     virDomainHostdevDefPtr hostdev = NULL;
     size_t i;
     const char *defaultMachine;
-    int vmlocaltime = 0;
     unsigned long count;
     char *script = NULL;
     char *listenAddr = NULL;
@@ -460,34 +500,9 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             def->clock.timers[0] = timer;
         }
     }
-    if (xenXMConfigGetBool(conf, "localtime", &vmlocaltime, 0) < 0)
-        goto cleanup;
 
-    if (hvm) {
-        /* only managed HVM domains since 3.1.0 have persistent rtc_timeoffset */
-        if (xendConfigVersion < XEND_CONFIG_VERSION_3_1_0) {
-            if (vmlocaltime)
-                def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
-            else
-                def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
-            def->clock.data.utc_reset = true;
-        } else {
-            unsigned long rtc_timeoffset;
-            def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_VARIABLE;
-            if (xenXMConfigGetULong(conf, "rtc_timeoffset", &rtc_timeoffset, 0) < 0)
-                goto cleanup;
-            def->clock.data.variable.adjustment = (int)rtc_timeoffset;
-            def->clock.data.variable.basis = vmlocaltime ?
-                VIR_DOMAIN_CLOCK_BASIS_LOCALTIME :
-                VIR_DOMAIN_CLOCK_BASIS_UTC;
-        }
-    } else {
-        /* PV domains do not have an emulated RTC and the offset is fixed. */
-        def->clock.offset = vmlocaltime ?
-            VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME :
-            VIR_DOMAIN_CLOCK_OFFSET_UTC;
-        def->clock.data.utc_reset = true;
-    } /* !hvm */
+    if (xenParseXMTimeOffset(conf, def, xendConfigVersion) < 0)
+        goto cleanup;
 
     if (xenXMConfigCopyStringOpt(conf, "device_model", &def->emulator) < 0)
         goto cleanup;
