@@ -432,6 +432,78 @@ xenParseXMPCI(virConfPtr conf, virDomainDefPtr def)
 }
 
 
+static int
+xenParseXMCPUFeatures(virConfPtr conf, virDomainDefPtr def)
+{
+    unsigned long count = 0;
+    const char *str = NULL;
+    int val = 0;
+
+    if (xenXMConfigGetULong(conf, "vcpus", &count, 1) < 0 ||
+        MAX_VIRT_CPUS < count)
+        return -1;
+
+    def->maxvcpus = count;
+    if (xenXMConfigGetULong(conf, "vcpu_avail", &count, -1) < 0)
+        return -1;
+
+    def->vcpus = MIN(count_one_bits_l(count), def->maxvcpus);
+    if (xenXMConfigGetString(conf, "cpus", &str, NULL) < 0)
+        return -1;
+
+    if (str && (virBitmapParse(str, 0, &def->cpumask, 4096) < 0))
+        return -1;
+
+    if (STREQ(def->os.type, "hvm")) {
+        if (xenXMConfigGetBool(conf, "pae", &val, 0) < 0)
+            return -1;
+
+        else if (val)
+            def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_TRISTATE_SWITCH_ON;
+        if (xenXMConfigGetBool(conf, "acpi", &val, 0) < 0)
+            return -1;
+
+        else if (val)
+            def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_TRISTATE_SWITCH_ON;
+        if (xenXMConfigGetBool(conf, "apic", &val, 0) < 0)
+            return -1;
+
+        else if (val)
+            def->features[VIR_DOMAIN_FEATURE_APIC] = VIR_TRISTATE_SWITCH_ON;
+        if (xenXMConfigGetBool(conf, "hap", &val, 0) < 0)
+            return -1;
+
+        else if (val)
+            def->features[VIR_DOMAIN_FEATURE_HAP] = VIR_TRISTATE_SWITCH_ON;
+        if (xenXMConfigGetBool(conf, "viridian", &val, 0) < 0)
+            return -1;
+
+        else if (val)
+            def->features[VIR_DOMAIN_FEATURE_VIRIDIAN] = VIR_TRISTATE_SWITCH_ON;
+
+        if (xenXMConfigGetBool(conf, "hpet", &val, -1) < 0)
+            return -1;
+
+        else if (val != -1) {
+            virDomainTimerDefPtr timer;
+
+            if (VIR_ALLOC_N(def->clock.timers, 1) < 0 ||
+                VIR_ALLOC(timer) < 0)
+                return -1;
+
+            timer->name = VIR_DOMAIN_TIMER_NAME_HPET;
+            timer->present = val;
+            timer->tickpolicy = -1;
+
+            def->clock.ntimers = 1;
+            def->clock.timers[0] = timer;
+        }
+    }
+
+    return 0;
+}
+
+
 #define MAX_VFB 1024
 
 /*
@@ -452,7 +524,6 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     virDomainGraphicsDefPtr graphics = NULL;
     size_t i;
     const char *defaultMachine;
-    unsigned long count;
     char *script = NULL;
     char *listenAddr = NULL;
 
@@ -550,61 +621,11 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     if (xenParseXMMem(conf, def) < 0)
         goto cleanup;
 
-    if (xenXMConfigGetULong(conf, "vcpus", &count, 1) < 0 ||
-        MAX_VIRT_CPUS < count)
-        goto cleanup;
-    def->maxvcpus = count;
-    if (xenXMConfigGetULong(conf, "vcpu_avail", &count, -1) < 0)
-        goto cleanup;
-    def->vcpus = MIN(count_one_bits_l(count), def->maxvcpus);
-
-    if (xenXMConfigGetString(conf, "cpus", &str, NULL) < 0)
-        goto cleanup;
-    if (str && (virBitmapParse(str, 0, &def->cpumask, 4096) < 0))
-            goto cleanup;
-
     if (xenParseXMEventsActions(conf, def) < 0)
         goto cleanup;
 
-    if (hvm) {
-        if (xenXMConfigGetBool(conf, "pae", &val, 0) < 0)
-            goto cleanup;
-        else if (val)
-            def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_TRISTATE_SWITCH_ON;
-        if (xenXMConfigGetBool(conf, "acpi", &val, 0) < 0)
-            goto cleanup;
-        else if (val)
-            def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_TRISTATE_SWITCH_ON;
-        if (xenXMConfigGetBool(conf, "apic", &val, 0) < 0)
-            goto cleanup;
-        else if (val)
-            def->features[VIR_DOMAIN_FEATURE_APIC] = VIR_TRISTATE_SWITCH_ON;
-        if (xenXMConfigGetBool(conf, "hap", &val, 0) < 0)
-            goto cleanup;
-        else if (val)
-            def->features[VIR_DOMAIN_FEATURE_HAP] = VIR_TRISTATE_SWITCH_ON;
-        if (xenXMConfigGetBool(conf, "viridian", &val, 0) < 0)
-            goto cleanup;
-        else if (val)
-            def->features[VIR_DOMAIN_FEATURE_VIRIDIAN] = VIR_TRISTATE_SWITCH_ON;
-
-        if (xenXMConfigGetBool(conf, "hpet", &val, -1) < 0)
-            goto cleanup;
-        else if (val != -1) {
-            virDomainTimerDefPtr timer;
-
-            if (VIR_ALLOC_N(def->clock.timers, 1) < 0 ||
-                VIR_ALLOC(timer) < 0)
-                goto cleanup;
-
-            timer->name = VIR_DOMAIN_TIMER_NAME_HPET;
-            timer->present = val;
-            timer->tickpolicy = -1;
-
-            def->clock.ntimers = 1;
-            def->clock.timers[0] = timer;
-        }
-    }
+    if (xenParseXMCPUFeatures(conf, def) < 0)
+        goto cleanup;
 
     if (xenParseXMTimeOffset(conf, def, xendConfigVersion) < 0)
         goto cleanup;
