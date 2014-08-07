@@ -2202,19 +2202,29 @@ Likewise, I<--shareable> is an alias for I<--mode shareable>.
 [I<--target target>] [I<--mac mac>] [I<--script script>] [I<--model model>]
 [I<--config>] [I<--inbound average,peak,burst>] [I<--outbound average,peak,burst>]
 
-Attach a new network interface to the domain.  I<type> can be either I<network>
-to indicate a physical network device or I<bridge> to indicate a bridge to a
-device.  I<source> indicates the source device.  I<target> allows to indicate
-the target device in the guest. Names starting with 'vnet' are considered as
-auto-generated an hence blanked out.  I<mac> allows to specify the MAC address
-of the network interface.  I<script> allows to specify a path to a script
-handling a bridge instead of the default one.  I<model> allows to specify the
-model type.  I<inbound> and I<outbound> control the bandwidth of the interface.
-I<peak> and I<burst> are optional, so "average,peak", "average,,burst" and
-"average" are also legal. Values for I<average> and I<peak> are
-expressed in kilobytes per second, while I<burst> is expressed in kilobytes
-in a single burst at -I<peak> speed as described in the Network XML
-documentation at L<http://libvirt.org/formatnetwork.html#elementQoS>.
+Attach a new network interface to the domain.  I<type> can be either
+I<network> to indicate connection via a libvirt virtual network or
+I<bridge> to indicate connection via a bridge device on the host.
+I<source> indicates the source of the connection (either the name of a
+network, or of a bridge device).  I<target> is used to specify the
+tap/macvtap device to be used to connect the domain to the
+source. Names starting with 'vnet' are considered as auto-generated
+and are blanked out/regenerated each time the interface is attached.
+I<mac> specifies the MAC address of the network interface; if a MAC
+address is not given, a new address will be automatically generated
+(and stored in the persistent configuration if "--config" is given on
+the commandline).  I<script> is used to specify a path to a custom
+script to be called while attaching to a bridge - this will be called
+instead of the default script not in addition to it; --script is valid
+only for interfaces of type I<bridge> and only for Xen domains.
+I<model> specifies the network device model to be presented to the
+domain.  I<inbound> and I<outbound> control the bandwidth of the
+interface.  I<peak> and I<burst> are optional, so "average,peak",
+"average,,burst" and "average" are also legal. Values for I<average>
+and I<peak> are expressed in kilobytes per second, while I<burst> is
+expressed in kilobytes in a single burst at -I<peak> speed as
+described in the Network XML documentation at
+L<http://libvirt.org/formatnetwork.html#elementQoS>.
 
 If I<--live> is specified, affect a running domain.
 If I<--config> is specified, affect the next startup of a persistent domain.
