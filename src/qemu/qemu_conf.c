@@ -814,81 +814,67 @@ qemuGetSharedDeviceKey(const char *device_path)
  * Returns 0 if no conflicts, otherwise returns -1.
  */
 static int
-qemuCheckSharedDevice(virHashTablePtr sharedDevices,
-                      virDomainDeviceDefPtr dev)
+qemuCheckSharedDisk(virHashTablePtr sharedDevices,
+                    virDomainDiskDefPtr disk)
 {
-    virDomainDiskDefPtr disk = NULL;
     char *sysfs_path = NULL;
     char *key = NULL;
     int val;
-    int ret = 0;
-    const char *src;
+    int ret = -1;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
-        disk = dev->data.disk;
-
-        /* The only conflicts between shared disk we care about now
-         * is sgio setting, which is only valid for device='lun'.
-         */
-        if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN)
-            return 0;
-    } else {
+    if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN)
         return 0;
-    }
 
-    src = virDomainDiskGetSource(disk);
-    if (!(sysfs_path = virGetUnprivSGIOSysfsPath(src, NULL))) {
-        ret = -1;
+    if (!(sysfs_path = virGetUnprivSGIOSysfsPath(disk->src->path, NULL)))
+        goto cleanup;
+
+    /* It can't be conflict if unpriv_sgio is not supported by kernel. */
+    if (!virFileExists(sysfs_path)) {
+        ret = 0;
         goto cleanup;
     }
 
-    /* It can't be conflict if unpriv_sgio is not supported
-     * by kernel.
-     */
-    if (!virFileExists(sysfs_path))
+    if (!(key = qemuGetSharedDeviceKey(disk->src->path)))
         goto cleanup;
 
-    if (!(key = qemuGetSharedDeviceKey(src))) {
-        ret = -1;
+    /* It can't be conflict if no other domain is sharing it. */
+    if (!(virHashLookup(sharedDevices, key))) {
+        ret = 0;
         goto cleanup;
     }
 
-    /* It can't be conflict if no other domain is
-     * is sharing it.
-     */
-    if (!(virHashLookup(sharedDevices, key)))
+    if (virGetDeviceUnprivSGIO(disk->src->path, NULL, &val) < 0)
         goto cleanup;
 
-    if (virGetDeviceUnprivSGIO(src, NULL, &val) < 0) {
-        ret = -1;
+    if (!((val == 0 &&
+           (disk->sgio == VIR_DOMAIN_DEVICE_SGIO_FILTERED ||
+            disk->sgio == VIR_DOMAIN_DEVICE_SGIO_DEFAULT)) ||
+          (val == 1 &&
+           disk->sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED))) {
+
+        if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_VOLUME) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("sgio of shared disk 'pool=%s' 'volume=%s' conflicts "
+                             "with other active domains"),
+                           disk->src->srcpool->pool,
+                           disk->src->srcpool->volume);
+        } else {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("sgio of shared disk '%s' conflicts with other "
+                             "active domains"), disk->src->path);
+        }
+
         goto cleanup;
     }
 
-    if ((val == 0 &&
-         (disk->sgio == VIR_DOMAIN_DEVICE_SGIO_FILTERED ||
-          disk->sgio == VIR_DOMAIN_DEVICE_SGIO_DEFAULT)) ||
-        (val == 1 &&
-         disk->sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED))
-        goto cleanup;
+    ret = 0;
 
-    if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_VOLUME) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("sgio of shared disk 'pool=%s' 'volume=%s' conflicts "
-                         "with other active domains"),
-                       disk->src->srcpool->pool,
-                       disk->src->srcpool->volume);
-    } else {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("sgio of shared disk '%s' conflicts with other "
-                         "active domains"), src);
-    }
-
-    ret = -1;
  cleanup:
     VIR_FREE(sysfs_path);
     VIR_FREE(key);
     return ret;
 }
+
 
 bool
 qemuSharedDeviceEntryDomainExists(qemuSharedDeviceEntryPtr entry,
@@ -1007,10 +993,11 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
     }
 
     qemuDriverLock(driver);
-    if (qemuCheckSharedDevice(driver->sharedDevices, dev) < 0)
-        goto cleanup;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
+        if (qemuCheckSharedDisk(driver->sharedDevices, disk) < 0)
+            goto cleanup;
+
         if (!(key = qemuGetSharedDeviceKey(virDomainDiskGetSource(disk))))
             goto cleanup;
     } else {
