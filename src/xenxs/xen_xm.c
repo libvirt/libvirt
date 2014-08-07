@@ -303,6 +303,42 @@ xenParseXMTimeOffset(virConfPtr conf, virDomainDefPtr def,
 }
 
 
+static int
+xenParseXMEventsActions(virConfPtr conf, virDomainDefPtr def)
+{
+    const char *str = NULL;
+
+    if (xenXMConfigGetString(conf, "on_poweroff", &str, "destroy") < 0)
+        return -1;
+
+    if ((def->onPoweroff = virDomainLifecycleTypeFromString(str)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected value %s for on_poweroff"), str);
+        return -1;
+    }
+
+    if (xenXMConfigGetString(conf, "on_reboot", &str, "restart") < 0)
+        return -1;
+
+    if ((def->onReboot = virDomainLifecycleTypeFromString(str)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected value %s for on_reboot"), str);
+        return -1;
+    }
+
+    if (xenXMConfigGetString(conf, "on_crash", &str, "restart") < 0)
+        return -1;
+
+    if ((def->onCrash = virDomainLifecycleCrashTypeFromString(str)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected value %s for on_crash"), str);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 #define MAX_VFB 1024
 
 /*
@@ -435,31 +471,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     if (str && (virBitmapParse(str, 0, &def->cpumask, 4096) < 0))
             goto cleanup;
 
-    if (xenXMConfigGetString(conf, "on_poweroff", &str, "destroy") < 0)
+    if (xenParseXMEventsActions(conf, def) < 0)
         goto cleanup;
-    if ((def->onPoweroff = virDomainLifecycleTypeFromString(str)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected value %s for on_poweroff"), str);
-        goto cleanup;
-    }
-
-    if (xenXMConfigGetString(conf, "on_reboot", &str, "restart") < 0)
-        goto cleanup;
-    if ((def->onReboot = virDomainLifecycleTypeFromString(str)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected value %s for on_reboot"), str);
-        goto cleanup;
-    }
-
-    if (xenXMConfigGetString(conf, "on_crash", &str, "restart") < 0)
-        goto cleanup;
-    if ((def->onCrash = virDomainLifecycleCrashTypeFromString(str)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected value %s for on_crash"), str);
-        goto cleanup;
-    }
-
-
 
     if (hvm) {
         if (xenXMConfigGetBool(conf, "pae", &val, 0) < 0)
