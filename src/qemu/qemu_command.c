@@ -3989,13 +3989,13 @@ char *qemuBuildFSStr(virDomainFSDefPtr fs,
     }
 
     if (fs->wrpolicy) {
-       if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_FSDEV_WRITEOUT)) {
-           virBufferAsprintf(&opt, ",writeout=%s", wrpolicy);
-       } else {
-           virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                          _("filesystem writeout not supported"));
-           goto error;
-       }
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_FSDEV_WRITEOUT)) {
+            virBufferAsprintf(&opt, ",writeout=%s", wrpolicy);
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("filesystem writeout not supported"));
+            goto error;
+        }
     }
 
     virBufferAsprintf(&opt, ",id=%s%s", QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
