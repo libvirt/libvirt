@@ -103,7 +103,7 @@
   &lt;os&gt;
     &lt;type&gt;hvm&lt;/type&gt;
     &lt;loader readonly='on' type='rom'&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
-    &lt;nvram&gt;/var/lib/libvirt/nvram/guest_VARS.fd&lt;/nvram&gt;
+    &lt;nvram template='/usr/share/OVMF/OVMF_VARS.fd'&gt;/var/lib/libvirt/nvram/guest_VARS.fd&lt;/nvram&gt;
     &lt;boot dev='hd'/&gt;
     &lt;boot dev='cdrom'/&gt;
     &lt;bootmenu enable='yes' timeout='3000'/&gt;
@@ -142,9 +142,12 @@
         <code>pflash</code>.</dd>
       <dt><code>nvram</code></dt>
       <dd>Some UEFI firmwares may want to use a non-volatile memory to store
-        some variables. In the host, this is represented as a file and the
-        path to the file is stored in this element. <span class="since">Since
-        1.2.8</span></dd>
+        some variables. In the host, this is represented as a file and the path
+        to the file is stored in this element. Moreover, when the domain is
+        started up libvirt copies so called master NVRAM store file defined
+        in <code>qemu.conf</code>. If needed, the <code>template</code>
+        attribute can be used to per domain override map of master NVRAM stores
+        from the config file. <span class="since">Since 1.2.8</span></dd>
       <dt><code>boot</code></dt>
       <dd>The <code>dev</code> attribute takes one of the values "fd", "hd",
         "cdrom" or "network" and is used to specify the next boot device

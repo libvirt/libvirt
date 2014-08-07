@@ -172,6 +172,11 @@ struct _virQEMUDriverConfig {
     int migrationPortMax;
 
     bool logTimestamp;
+
+    /* Pairs of loader:nvram paths. The list is @nloader items long */
+    char **loader;
+    char **nvram;
+    size_t nloader;
 };
 
 /* Main driver state */

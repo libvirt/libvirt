@@ -263,7 +263,14 @@
         </optional>
         <optional>
           <element name="nvram">
-            <ref name="absFilePath"/>
+            <optional>
+              <attribute name="template">
+                <ref name="absFilePath"/>
+              </attribute>
+            </optional>
+            <optional>
+              <ref name="absFilePath"/>
+            </optional>
           </element>
         </optional>
         <optional>

@@ -88,6 +88,8 @@ module Libvirtd_qemu =
 
    let log_entry = bool_entry "log_timestamp"
 
+   let nvram_entry = str_array_entry "nvram"
+
    (* Each entry in the config is one of the following ... *)
    let entry = vnc_entry
              | spice_entry
@@ -100,6 +102,7 @@ module Libvirtd_qemu =
              | rpc_entry
              | network_entry
              | log_entry
+             | nvram_entry
 
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]

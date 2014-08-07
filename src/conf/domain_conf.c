@@ -2026,6 +2026,7 @@ virDomainLoaderDefFree(virDomainLoaderDefPtr loader)
 
     VIR_FREE(loader->path);
     VIR_FREE(loader->nvram);
+    VIR_FREE(loader->templt);
     VIR_FREE(loader);
 }
 
@@ -12822,6 +12823,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                 goto error;
 
             def->os.loader->nvram = virXPathString("string(./os/nvram[1])", ctxt);
+            def->os.loader->templt = virXPathString("string(./os/nvram[1]/@template)", ctxt);
         }
     }
 
@@ -17918,7 +17920,14 @@ virDomainLoaderDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf, " type='%s'>", type);
 
     virBufferEscapeString(buf, "%s</loader>\n", loader->path);
-    virBufferEscapeString(buf, "<nvram>%s</nvram>\n", loader->nvram);
+    if (loader->nvram || loader->templt) {
+        virBufferAddLit(buf, "<nvram");
+        virBufferEscapeString(buf, " template='%s'", loader->templt);
+        if (loader->nvram)
+            virBufferEscapeString(buf, ">%s</nvram>\n", loader->nvram);
+        else
+            virBufferAddLit(buf, "/>\n");
+    }
 }
 
 static bool

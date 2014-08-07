@@ -74,3 +74,6 @@ module Test_libvirtd_qemu =
 { "migration_port_min" = "49152" }
 { "migration_port_max" = "49215" }
 { "log_timestamp" = "0" }
+{ "nvram"
+    { "1" = "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd" }
+}
