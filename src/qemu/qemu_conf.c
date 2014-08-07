@@ -1088,6 +1088,79 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
         return 0;
 }
 
+
+static int
+qemuRemoveSharedDisk(virQEMUDriverPtr driver,
+                     virDomainDiskDefPtr disk,
+                     const char *name)
+{
+    char *key = NULL;
+    int ret = -1;
+
+    if (!disk->src->shared || !virDomainDiskSourceIsBlockType(disk->src))
+        return 0;
+
+    qemuDriverLock(driver);
+
+    if (!(key = qemuGetSharedDeviceKey(virDomainDiskGetSource(disk))))
+        goto cleanup;
+
+    if (qemuSharedDeviceEntryRemove(driver, key, name) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    qemuDriverUnlock(driver);
+    VIR_FREE(key);
+    return ret;
+}
+
+
+static int
+qemuRemoveSharedHostdev(virQEMUDriverPtr driver,
+                        virDomainHostdevDefPtr hostdev,
+                        const char *name)
+{
+    virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
+    char *key = NULL;
+    char *dev_name = NULL;
+    char *dev_path = NULL;
+    int ret = -1;
+
+    if (!hostdev->shareable ||
+        !(hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+          hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI))
+        return 0;
+
+    qemuDriverLock(driver);
+
+    if (!(dev_name = virSCSIDeviceGetDevName(NULL,
+                                             scsihostsrc->adapter,
+                                             scsihostsrc->bus,
+                                             scsihostsrc->target,
+                                             scsihostsrc->unit)))
+        goto cleanup;
+
+    if (virAsprintf(&dev_path, "/dev/%s", dev_name) < 0)
+        goto cleanup;
+
+    if (!(key = qemuGetSharedDeviceKey(dev_path)))
+        goto cleanup;
+
+    if (qemuSharedDeviceEntryRemove(driver, key, name) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    qemuDriverUnlock(driver);
+    VIR_FREE(dev_name);
+    VIR_FREE(dev_path);
+    VIR_FREE(key);
+    return ret;
+}
+
+
 /* qemuRemoveSharedDevice:
  * @driver: Pointer to qemu driver struct
  * @device: The device def
@@ -1102,62 +1175,14 @@ qemuRemoveSharedDevice(virQEMUDriverPtr driver,
                        virDomainDeviceDefPtr dev,
                        const char *name)
 {
-    virDomainDiskDefPtr disk = NULL;
-    virDomainHostdevDefPtr hostdev = NULL;
-    char *key = NULL;
-    char *dev_name = NULL;
-    char *dev_path = NULL;
-    int ret = -1;
-
-    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
-        disk = dev->data.disk;
-
-        if (!disk->src->shared || !virDomainDiskSourceIsBlockType(disk->src))
-            return 0;
-    } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
-        hostdev = dev->data.hostdev;
-
-        if (!hostdev->shareable ||
-            !(hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-              hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI))
-            return 0;
-    } else {
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK)
+        return qemuRemoveSharedDisk(driver, dev->data.disk, name);
+    else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV)
+        return qemuRemoveSharedHostdev(driver, dev->data.hostdev, name);
+    else
         return 0;
-    }
-
-    qemuDriverLock(driver);
-
-    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
-        if (!(key = qemuGetSharedDeviceKey(virDomainDiskGetSource(disk))))
-            goto cleanup;
-    } else {
-        virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
-        virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
-        if (!(dev_name = virSCSIDeviceGetDevName(NULL,
-                                                 scsihostsrc->adapter,
-                                                 scsihostsrc->bus,
-                                                 scsihostsrc->target,
-                                                 scsihostsrc->unit)))
-            goto cleanup;
-
-        if (virAsprintf(&dev_path, "/dev/%s", dev_name) < 0)
-            goto cleanup;
-
-        if (!(key = qemuGetSharedDeviceKey(dev_path)))
-            goto cleanup;
-    }
-
-    if (qemuSharedDeviceEntryRemove(driver, key, name) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    qemuDriverUnlock(driver);
-    VIR_FREE(dev_name);
-    VIR_FREE(dev_path);
-    VIR_FREE(key);
-    return ret;
 }
+
 
 int
 qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
