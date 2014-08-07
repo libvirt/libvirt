@@ -992,24 +992,14 @@ qemuAddSharedDisk(virQEMUDriverPtr driver,
 }
 
 
-static int
-qemuAddSharedHostdev(virQEMUDriverPtr driver,
-                     virDomainHostdevDefPtr hostdev,
-                     const char *name)
+static char *
+qemuGetSharedHostdevKey(virDomainHostdevDefPtr hostdev)
 {
     virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
     char *dev_name = NULL;
     char *dev_path = NULL;
     char *key = NULL;
-    int ret = -1;
-
-    if (!hostdev->shareable ||
-        !(hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-          hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI))
-        return 0;
-
-    qemuDriverLock(driver);
 
     if (!(dev_name = virSCSIDeviceGetDevName(NULL,
                                              scsihostsrc->adapter,
@@ -1024,15 +1014,33 @@ qemuAddSharedHostdev(virQEMUDriverPtr driver,
     if (!(key = qemuGetSharedDeviceKey(dev_path)))
         goto cleanup;
 
-    if (qemuSharedDeviceEntryInsert(driver, key, name) < 0)
-        goto cleanup;
-
-    ret = 0;
-
  cleanup:
-    qemuDriverUnlock(driver);
     VIR_FREE(dev_name);
     VIR_FREE(dev_path);
+
+    return key;
+}
+
+static int
+qemuAddSharedHostdev(virQEMUDriverPtr driver,
+                     virDomainHostdevDefPtr hostdev,
+                     const char *name)
+{
+    char *key = NULL;
+    int ret = -1;
+
+    if (!hostdev->shareable ||
+        !(hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+          hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI))
+        return 0;
+
+    if (!(key = qemuGetSharedHostdevKey(hostdev)))
+        return -1;
+
+    qemuDriverLock(driver);
+    ret = qemuSharedDeviceEntryInsert(driver, key, name);
+    qemuDriverUnlock(driver);
+
     VIR_FREE(key);
     return ret;
 }
@@ -1121,41 +1129,21 @@ qemuRemoveSharedHostdev(virQEMUDriverPtr driver,
                         virDomainHostdevDefPtr hostdev,
                         const char *name)
 {
-    virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
-    virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
     char *key = NULL;
-    char *dev_name = NULL;
-    char *dev_path = NULL;
-    int ret = -1;
+    int ret;
 
     if (!hostdev->shareable ||
         !(hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
           hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI))
         return 0;
 
+    if (!(key = qemuGetSharedHostdevKey(hostdev)))
+        return -1;
+
     qemuDriverLock(driver);
-
-    if (!(dev_name = virSCSIDeviceGetDevName(NULL,
-                                             scsihostsrc->adapter,
-                                             scsihostsrc->bus,
-                                             scsihostsrc->target,
-                                             scsihostsrc->unit)))
-        goto cleanup;
-
-    if (virAsprintf(&dev_path, "/dev/%s", dev_name) < 0)
-        goto cleanup;
-
-    if (!(key = qemuGetSharedDeviceKey(dev_path)))
-        goto cleanup;
-
-    if (qemuSharedDeviceEntryRemove(driver, key, name) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
+    ret = qemuSharedDeviceEntryRemove(driver, key, name);
     qemuDriverUnlock(driver);
-    VIR_FREE(dev_name);
-    VIR_FREE(dev_path);
+
     VIR_FREE(key);
     return ret;
 }
