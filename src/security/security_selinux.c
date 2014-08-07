@@ -1913,6 +1913,10 @@ virSecuritySELinuxRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
                                      mgr) < 0)
         rc = -1;
 
+    if (def->os.loader && def->os.loader->nvram &&
+        virSecuritySELinuxRestoreSecurityFileLabel(mgr, def->os.loader->nvram) < 0)
+        rc = -1;
+
     if (def->os.kernel &&
         virSecuritySELinuxRestoreSecurityFileLabel(mgr, def->os.kernel) < 0)
         rc = -1;
@@ -2294,6 +2298,10 @@ virSecuritySELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
                                      true,
                                      virSecuritySELinuxSetSecuritySmartcardCallback,
                                      mgr) < 0)
+        return -1;
+
+    if (def->os.loader && def->os.loader->nvram &&
+        virSecuritySELinuxSetFilecon(def->os.loader->nvram, data->content_context) < 0)
         return -1;
 
     if (def->os.kernel &&

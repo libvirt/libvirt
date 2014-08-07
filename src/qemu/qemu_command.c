@@ -7371,6 +7371,94 @@ qemuBuildChrDeviceCommandLine(virCommandPtr cmd,
     return 0;
 }
 
+static int
+qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
+                                 virDomainDefPtr def,
+                                 virQEMUCapsPtr qemuCaps)
+{
+    int ret = -1;
+    virDomainLoaderDefPtr loader = def->os.loader;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int unit = 0;
+
+    if (!loader)
+        return 0;
+
+    switch ((virDomainLoader) loader->type) {
+    case VIR_DOMAIN_LOADER_TYPE_ROM:
+        virCommandAddArg(cmd, "-bios");
+        virCommandAddArg(cmd, loader->path);
+        break;
+
+    case VIR_DOMAIN_LOADER_TYPE_PFLASH:
+        /* UEFI is supported only for x86_64 currently */
+        if (def->os.arch != VIR_ARCH_X86_64) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("pflash is not supported for %s guest architecture"),
+                           virArchToString(def->os.arch));
+            goto cleanup;
+        }
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this QEMU binary doesn't support -drive"));
+            goto cleanup;
+        }
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_FORMAT)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this QEMU binary doesn't support passing "
+                             "drive format"));
+            goto cleanup;
+        }
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_ACPI) &&
+            def->features[VIR_DOMAIN_FEATURE_ACPI] != VIR_TRISTATE_SWITCH_ON) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ACPI must be enabled in order to use UEFI"));
+            goto cleanup;
+        }
+
+        virBufferAsprintf(&buf,
+                          "file=%s,if=pflash,format=raw,unit=%d",
+                          loader->path, unit);
+        unit++;
+
+        if (loader->readonly) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_READONLY)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("this qemu doesn't support passing "
+                                 "readonly attribute"));
+                goto cleanup;
+            }
+
+            virBufferAsprintf(&buf, ",readonly=%s",
+                              virTristateSwitchTypeToString(loader->readonly));
+        }
+
+        virCommandAddArg(cmd, "-drive");
+        virCommandAddArgBuffer(cmd, &buf);
+
+        if (loader->nvram) {
+            virBufferFreeAndReset(&buf);
+            virBufferAsprintf(&buf,
+                              "file=%s,if=pflash,format=raw,unit=%d",
+                              loader->nvram, unit);
+
+            virCommandAddArg(cmd, "-drive");
+            virCommandAddArgBuffer(cmd, &buf);
+        }
+        break;
+
+    case VIR_DOMAIN_LOADER_TYPE_LAST:
+        /* nada */
+        break;
+    }
+
+    ret = 0;
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    return ret;
+}
+
 qemuBuildCommandLineCallbacks buildCommandLineCallbacks = {
     .qemuGetSCSIDeviceSgName = virSCSIDeviceGetSgName,
 };
@@ -7526,10 +7614,8 @@ qemuBuildCommandLine(virConnectPtr conn,
             virCommandAddArg(cmd, "-enable-nesting");
     }
 
-    if (def->os.loader) {
-        virCommandAddArg(cmd, "-bios");
-        virCommandAddArg(cmd, def->os.loader->path);
-    }
+    if (qemuBuildDomainLoaderCommandLine(cmd, def, qemuCaps) < 0)
+        goto error;
 
     /* Set '-m MB' based on maxmem, because the lower 'memory' limit
      * is set post-startup using the balloon driver. If balloon driver
