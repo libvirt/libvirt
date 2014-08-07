@@ -244,6 +244,25 @@ xenXMConfigGetUUID(virConfPtr conf, const char *name, unsigned char *uuid)
     return 0;
 }
 
+
+static int
+xenParseXMMem(virConfPtr conf, virDomainDefPtr def)
+{
+    if (xenXMConfigGetULongLong(conf, "memory", &def->mem.cur_balloon,
+                                MIN_XEN_GUEST_SIZE * 2) < 0)
+        return -1;
+
+    if (xenXMConfigGetULongLong(conf, "maxmem", &def->mem.max_balloon,
+                                def->mem.cur_balloon) < 0)
+        return -1;
+
+    def->mem.cur_balloon *= 1024;
+    def->mem.max_balloon *= 1024;
+
+    return 0;
+}
+
+
 #define MAX_VFB 1024
 /*
  * Turn a config record into a lump of XML describing the
@@ -251,7 +270,7 @@ xenXMConfigGetUUID(virConfPtr conf, const char *name, unsigned char *uuid)
  */
 virDomainDefPtr
 xenParseXM(virConfPtr conf, int xendConfigVersion,
-                       virCapsPtr caps)
+           virCapsPtr caps)
 {
     const char *str;
     int hvm = 0;
@@ -360,16 +379,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
         }
     }
 
-    if (xenXMConfigGetULongLong(conf, "memory", &def->mem.cur_balloon,
-                                MIN_XEN_GUEST_SIZE * 2) < 0)
+    if (xenParseXMMem(conf, def) < 0)
         goto cleanup;
-
-    if (xenXMConfigGetULongLong(conf, "maxmem", &def->mem.max_balloon,
-                                def->mem.cur_balloon) < 0)
-        goto cleanup;
-
-    def->mem.cur_balloon *= 1024;
-    def->mem.max_balloon *= 1024;
 
     if (xenXMConfigGetULong(conf, "vcpus", &count, 1) < 0 ||
         MAX_VIRT_CPUS < count)
