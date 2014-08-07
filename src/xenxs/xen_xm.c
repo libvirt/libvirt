@@ -856,6 +856,96 @@ xenParseXMVfb(virConfPtr conf, virDomainDefPtr def, int xendConfigVersion)
 }
 
 
+static int
+xenParseXMCharDev(virConfPtr conf, virDomainDefPtr def)
+{
+    const char *str;
+    virConfValuePtr value = NULL;
+    virDomainChrDefPtr chr = NULL;
+
+    if (STREQ(def->os.type, "hvm")) {
+        if (xenXMConfigGetString(conf, "parallel", &str, NULL) < 0)
+            goto cleanup;
+        if (str && STRNEQ(str, "none") &&
+            !(chr = xenParseSxprChar(str, NULL)))
+            goto cleanup;
+        if (chr) {
+            if (VIR_ALLOC_N(def->parallels, 1) < 0) {
+                goto cleanup;
+            }
+
+            chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
+            chr->target.port = 0;
+            def->parallels[0] = chr;
+            def->nparallels++;
+            chr = NULL;
+        }
+
+        /* Try to get the list of values to support multiple serial ports */
+        value = virConfGetValue(conf, "serial");
+        if (value && value->type == VIR_CONF_LIST) {
+            int portnum = -1;
+
+            value = value->list;
+            while (value) {
+                char *port = NULL;
+
+                if ((value->type != VIR_CONF_STRING) || (value->str == NULL))
+                    goto cleanup;
+                port = value->str;
+                portnum++;
+                if (STREQ(port, "none")) {
+                    value = value->next;
+                    continue;
+                }
+
+                if (!(chr = xenParseSxprChar(port, NULL)))
+                    goto cleanup;
+                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
+                chr->target.port = portnum;
+                if (VIR_APPEND_ELEMENT(def->serials, def->nserials, chr) < 0) {
+                    goto cleanup;
+                }
+
+                value = value->next;
+            }
+        } else {
+            /* If domain is not using multiple serial ports we parse data old way */
+            if (xenXMConfigGetString(conf, "serial", &str, NULL) < 0)
+                goto cleanup;
+            if (str && STRNEQ(str, "none") &&
+                !(chr = xenParseSxprChar(str, NULL)))
+                goto cleanup;
+            if (chr) {
+                if (VIR_ALLOC_N(def->serials, 1) < 0) {
+                    virDomainChrDefFree(chr);
+                    goto cleanup;
+                }
+                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
+                chr->target.port = 0;
+                def->serials[0] = chr;
+                def->nserials++;
+            }
+        }
+    } else {
+        if (VIR_ALLOC_N(def->consoles, 1) < 0)
+            goto cleanup;
+        def->nconsoles = 1;
+        if (!(def->consoles[0] = xenParseSxprChar("pty", NULL)))
+            goto cleanup;
+        def->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
+        def->consoles[0]->target.port = 0;
+        def->consoles[0]->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
+    }
+
+    return 0;
+
+ cleanup:
+    virDomainChrDefFree(chr);
+    return -1;
+}
+
+
 /*
  * Turn a config record into a lump of XML describing the
  * domain, suitable for later feeding for virDomainCreateXML
@@ -1157,87 +1247,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     if (xenParseXMVfb(conf, def, xendConfigVersion) < 0)
         goto cleanup;
 
-    if (hvm) {
-        virDomainChrDefPtr chr = NULL;
-
-        if (xenXMConfigGetString(conf, "parallel", &str, NULL) < 0)
-            goto cleanup;
-        if (str && STRNEQ(str, "none") &&
-            !(chr = xenParseSxprChar(str, NULL)))
-            goto cleanup;
-
-        if (chr) {
-            if (VIR_ALLOC_N(def->parallels, 1) < 0) {
-                virDomainChrDefFree(chr);
-                goto cleanup;
-            }
-            chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
-            chr->target.port = 0;
-            def->parallels[0] = chr;
-            def->nparallels++;
-            chr = NULL;
-        }
-
-        /* Try to get the list of values to support multiple serial ports */
-        list = virConfGetValue(conf, "serial");
-        if (list && list->type == VIR_CONF_LIST) {
-            int portnum = -1;
-
-            list = list->list;
-            while (list) {
-                char *port = NULL;
-
-                if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
-                    goto cleanup;
-
-                port = list->str;
-                portnum++;
-                if (STREQ(port, "none")) {
-                    list = list->next;
-                    continue;
-                }
-
-                if (!(chr = xenParseSxprChar(port, NULL)))
-                    goto cleanup;
-
-                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
-                chr->target.port = portnum;
-
-                if (VIR_APPEND_ELEMENT(def->serials, def->nserials, chr) < 0) {
-                    virDomainChrDefFree(chr);
-                    goto cleanup;
-                }
-
-                list = list->next;
-            }
-        } else {
-            /* If domain is not using multiple serial ports we parse data old way */
-            if (xenXMConfigGetString(conf, "serial", &str, NULL) < 0)
-                goto cleanup;
-            if (str && STRNEQ(str, "none") &&
-                !(chr = xenParseSxprChar(str, NULL)))
-                goto cleanup;
-            if (chr) {
-                if (VIR_ALLOC_N(def->serials, 1) < 0) {
-                    virDomainChrDefFree(chr);
-                    goto cleanup;
-                }
-                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
-                chr->target.port = 0;
-                def->serials[0] = chr;
-                def->nserials++;
-            }
-        }
-    } else {
-        if (VIR_ALLOC_N(def->consoles, 1) < 0)
-            goto cleanup;
-        def->nconsoles = 1;
-        if (!(def->consoles[0] = xenParseSxprChar("pty", NULL)))
-            goto cleanup;
-        def->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
-        def->consoles[0]->target.port = 0;
-        def->consoles[0]->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
-    }
+    if (xenParseXMCharDev(conf, def) < 0)
+        goto cleanup;
 
     if (hvm) {
         if (xenXMConfigGetString(conf, "soundhw", &str, NULL) < 0)
