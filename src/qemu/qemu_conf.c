@@ -924,31 +924,6 @@ qemuSharedDeviceEntryFree(void *payload, const void *name ATTRIBUTE_UNUSED)
     VIR_FREE(entry);
 }
 
-static qemuSharedDeviceEntryPtr
-qemuSharedDeviceEntryCopy(const qemuSharedDeviceEntry *entry)
-{
-    qemuSharedDeviceEntryPtr ret = NULL;
-    size_t i;
-
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
-
-    if (VIR_ALLOC_N(ret->domains, entry->ref) < 0)
-        goto cleanup;
-
-    for (i = 0; i < entry->ref; i++) {
-        if (VIR_STRDUP(ret->domains[i], entry->domains[i]) < 0)
-            goto cleanup;
-        ret->ref++;
-    }
-
-    return ret;
-
- cleanup:
-    qemuSharedDeviceEntryFree(ret, NULL);
-    return NULL;
-}
-
 
 static int
 qemuSharedDeviceEntryInsert(virQEMUDriverPtr driver,
@@ -1068,6 +1043,31 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
     return ret;
 }
 
+
+static int
+qemuSharedDeviceEntryRemove(virQEMUDriverPtr driver,
+                            const char *key,
+                            const char *name)
+{
+    qemuSharedDeviceEntryPtr entry = NULL;
+    int idx;
+
+    if (!(entry = virHashLookup(driver->sharedDevices, key)))
+        return -1;
+
+    /* Nothing to do if the shared disk is not recored in the table. */
+    if (!qemuSharedDeviceEntryDomainExists(entry, name, &idx))
+        return 0;
+
+    if (entry->ref != 1)
+        VIR_DELETE_ELEMENT(entry->domains, idx, entry->ref);
+    else
+        ignore_value(virHashRemoveEntry(driver->sharedDevices, key));
+
+    return 0;
+}
+
+
 /* qemuRemoveSharedDevice:
  * @driver: Pointer to qemu driver struct
  * @device: The device def
@@ -1082,15 +1082,12 @@ qemuRemoveSharedDevice(virQEMUDriverPtr driver,
                        virDomainDeviceDefPtr dev,
                        const char *name)
 {
-    qemuSharedDeviceEntryPtr entry = NULL;
-    qemuSharedDeviceEntryPtr new_entry = NULL;
     virDomainDiskDefPtr disk = NULL;
     virDomainHostdevDefPtr hostdev = NULL;
     char *key = NULL;
     char *dev_name = NULL;
     char *dev_path = NULL;
     int ret = -1;
-    int idx;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
         disk = dev->data.disk;
@@ -1130,30 +1127,8 @@ qemuRemoveSharedDevice(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    if (!(entry = virHashLookup(driver->sharedDevices, key)))
+    if (qemuSharedDeviceEntryRemove(driver, key, name) < 0)
         goto cleanup;
-
-    /* Nothing to do if the shared disk is not recored in
-     * the table.
-     */
-    if (!qemuSharedDeviceEntryDomainExists(entry, name, &idx)) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    if (entry->ref != 1) {
-        if (!(new_entry = qemuSharedDeviceEntryCopy(entry)))
-            goto cleanup;
-
-        VIR_DELETE_ELEMENT(new_entry->domains, idx, new_entry->ref);
-        if (virHashUpdateEntry(driver->sharedDevices, key, new_entry) < 0){
-            qemuSharedDeviceEntryFree(new_entry, NULL);
-            goto cleanup;
-        }
-    } else {
-        if (virHashRemoveEntry(driver->sharedDevices, key) < 0)
-            goto cleanup;
-    }
 
     ret = 0;
  cleanup:
