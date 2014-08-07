@@ -1195,33 +1195,22 @@ xenParseXMGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
 }
 
 
-/*
- * Turn a config record into a lump of XML describing the
- * domain, suitable for later feeding for virDomainCreateXML
- */
-virDomainDefPtr
-xenParseXM(virConfPtr conf, int xendConfigVersion,
-           virCapsPtr caps)
+static int
+xenParseXMOS(virConfPtr conf, virDomainDefPtr def)
 {
-    virDomainDefPtr def = NULL;
     size_t i;
 
-    if (VIR_ALLOC(def) < 0)
-        return NULL;
-
-    def->virtType = VIR_DOMAIN_VIRT_XEN;
-    def->id = -1;
-
-    if (xenParseXMGeneralMeta(conf, def, caps) < 0)
-        goto cleanup;
+    if (xenXMConfigCopyStringOpt(conf, "device_model", &def->emulator) < 0)
+        return -1;
 
     if (STREQ(def->os.type, "hvm")) {
         const char *boot;
-        if (xenXMConfigCopyString(conf, "kernel", &def->os.loader) < 0)
-            goto cleanup;
+
+       if (xenXMConfigCopyString(conf, "kernel", &def->os.loader) < 0)
+            return -1;
 
         if (xenXMConfigGetString(conf, "boot", &boot, "c") < 0)
-            goto cleanup;
+            return -1;
 
         for (i = 0; i < VIR_DOMAIN_BOOT_LAST && boot[i]; i++) {
             switch (*boot) {
@@ -1245,27 +1234,56 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
         const char *extra, *root;
 
         if (xenXMConfigCopyStringOpt(conf, "bootloader", &def->os.bootloader) < 0)
-            goto cleanup;
+            return -1;
         if (xenXMConfigCopyStringOpt(conf, "bootargs", &def->os.bootloaderArgs) < 0)
-            goto cleanup;
+            return -1;
 
         if (xenXMConfigCopyStringOpt(conf, "kernel", &def->os.kernel) < 0)
-            goto cleanup;
+            return -1;
+
         if (xenXMConfigCopyStringOpt(conf, "ramdisk", &def->os.initrd) < 0)
-            goto cleanup;
+            return -1;
+
         if (xenXMConfigGetString(conf, "extra", &extra, NULL) < 0)
-            goto cleanup;
+            return -1;
+
         if (xenXMConfigGetString(conf, "root", &root, NULL) < 0)
-            goto cleanup;
+            return -1;
 
         if (root) {
             if (virAsprintf(&def->os.cmdline, "root=%s %s", root, extra) < 0)
-                goto cleanup;
+                return -1;
         } else {
             if (VIR_STRDUP(def->os.cmdline, extra) < 0)
-                goto cleanup;
+                return -1;
         }
     }
+
+    return 0;
+}
+
+
+/*
+ * Turn a config record into a lump of XML describing the
+ * domain, suitable for later feeding for virDomainCreateXML
+ */
+virDomainDefPtr
+xenParseXM(virConfPtr conf, int xendConfigVersion,
+           virCapsPtr caps)
+{
+    virDomainDefPtr def = NULL;
+
+    if (VIR_ALLOC(def) < 0)
+        return NULL;
+
+    def->virtType = VIR_DOMAIN_VIRT_XEN;
+    def->id = -1;
+
+    if (xenParseXMGeneralMeta(conf, def, caps) < 0)
+        goto cleanup;
+
+    if (xenParseXMOS(conf, def) < 0)
+        goto cleanup;
 
     if (xenParseXMMem(conf, def) < 0)
         goto cleanup;
