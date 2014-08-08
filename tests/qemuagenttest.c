@@ -45,7 +45,7 @@ testQemuAgentFSFreeze(const void *data)
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
         goto cleanup;
 
-    if (qemuMonitorTestAddItem(test, "guest-fsfreeze-freeze",
+    if (qemuMonitorTestAddItem(test, "guest-fsfreeze-freeze-list",
                                "{ \"return\" : 5 }") < 0)
         goto cleanup;
 

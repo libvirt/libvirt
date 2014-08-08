@@ -1336,7 +1336,7 @@ int qemuAgentFSFreeze(qemuAgentPtr mon, const char **mountpoints,
         if (!arg)
             return -1;
 
-        cmd = qemuAgentMakeCommand("guest-fsfreeze-freeze",
+        cmd = qemuAgentMakeCommand("guest-fsfreeze-freeze-list",
                                    "a:mountpoints", arg, NULL);
     } else {
         cmd = qemuAgentMakeCommand("guest-fsfreeze-freeze", NULL);
