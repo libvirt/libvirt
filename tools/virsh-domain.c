@@ -8965,6 +8965,7 @@ doMigrate(void *opaque)
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int maxparams = 0;
+    virConnectPtr dconn = data->dconn;
 
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);
@@ -9079,18 +9080,12 @@ doMigrate(void *opaque)
             ret = '0';
     } else {
         /* For traditional live migration, connect to the destination host directly. */
-        virConnectPtr dconn = NULL;
         virDomainPtr ddom = NULL;
-
-        dconn = vshConnect(ctl, desturi, false);
-        if (!dconn)
-            goto out;
 
         if ((ddom = virDomainMigrate3(dom, dconn, params, nparams, flags))) {
             virDomainFree(ddom);
             ret = '0';
         }
-        virConnectClose(dconn);
     }
 
  out:
@@ -9152,6 +9147,23 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
     data.cmd = cmd;
     data.writefd = p[1];
 
+    if (vshCommandOptBool(cmd, "p2p") || vshCommandOptBool(cmd, "direct")) {
+        data.dconn = NULL;
+    } else {
+        /* For traditional live migration, connect to the destination host. */
+        virConnectPtr dconn = NULL;
+        const char *desturi = NULL;
+
+        if (vshCommandOptStringReq(ctl, cmd, "desturi", &desturi) < 0)
+            goto cleanup;
+
+        dconn = vshConnect(ctl, desturi, false);
+        if (!dconn)
+            goto cleanup;
+
+        data.dconn = dconn;
+    }
+
     if (virThreadCreate(&workerThread,
                         true,
                         doMigrate,
@@ -9163,6 +9175,8 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
     virThreadJoin(&workerThread);
 
  cleanup:
+    if (data.dconn)
+        virConnectClose(data.dconn);
     virDomainFree(dom);
     VIR_FORCE_CLOSE(p[0]);
     VIR_FORCE_CLOSE(p[1]);

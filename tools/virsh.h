@@ -371,6 +371,7 @@ struct _vshCtrlData {
     vshControl *ctl;
     const vshCmd *cmd;
     int writefd;
+    virConnectPtr dconn;
 };
 
 /* error handling */
