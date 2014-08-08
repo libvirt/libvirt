@@ -29,6 +29,7 @@
 # include "domain_conf.h"
 
 int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
+                                   virConnectPtr conn,
                                    virDomainObjPtr vm,
                                    virDomainDiskDefPtr disk,
                                    virStorageSourcePtr newsrc,

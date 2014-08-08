@@ -139,6 +139,7 @@ qemuDomainPrepareDisk(virQEMUDriverPtr driver,
 
 
 int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
+                                   virConnectPtr conn,
                                    virDomainObjPtr vm,
                                    virDomainDiskDefPtr disk,
                                    virStorageSourcePtr newsrc,
@@ -149,6 +150,7 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int retries = CHANGE_MEDIA_RETRIES;
     const char *format = NULL;
+    char *sourcestr = NULL;
 
     if (!disk->info.alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -198,7 +200,10 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         goto error;
     }
 
-    if (newsrc->path) {
+    if (!virStorageSourceIsLocalStorage(newsrc) || newsrc->path) {
+        if (qemuGetDriveSourceString(newsrc, conn, &sourcestr) < 0)
+            goto error;
+
         if (virStorageSourceGetActualType(newsrc) != VIR_STORAGE_TYPE_DIR) {
             if (newsrc->format > 0) {
                 format = virStorageFileFormatTypeToString(newsrc->format);
@@ -210,7 +215,7 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorChangeMedia(priv->mon,
                                      driveAlias,
-                                     newsrc->path,
+                                     sourcestr,
                                      format);
         qemuDomainObjExitMonitor(driver, vm);
     }
@@ -229,6 +234,7 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
  cleanup:
     virStorageSourceFree(newsrc);
     VIR_FREE(driveAlias);
+    VIR_FREE(sourcestr);
     return ret;
 
  error:
@@ -792,7 +798,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
         newsrc = disk->src;
         disk->src = NULL;
 
-        ret = qemuDomainChangeEjectableMedia(driver, vm, orig_disk, newsrc, false);
+        ret = qemuDomainChangeEjectableMedia(driver, conn, vm, orig_disk, newsrc, false);
         /* 'newsrc' must not be accessed now - it has been free'd.
          * 'orig_disk' now points to the new disk, while 'dev_copy'
          * now points to the old disk */
