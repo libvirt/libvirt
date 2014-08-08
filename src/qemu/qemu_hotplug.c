@@ -138,12 +138,29 @@ qemuDomainPrepareDisk(virQEMUDriverPtr driver,
 }
 
 
-int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
-                                   virConnectPtr conn,
-                                   virDomainObjPtr vm,
-                                   virDomainDiskDefPtr disk,
-                                   virStorageSourcePtr newsrc,
-                                   bool force)
+/**
+ * qemuDomainChangeEjectableMedia:
+ * @driver: qemu driver structure
+ * @conn: connection structure
+ * @vm: domain definition
+ * @disk: disk definition to change the source of
+ * @newsrc: new disk source to change to
+ * @force: force the change of media
+ *
+ * Change the media in an ejectable device to the one described by
+ * @newsrc. This function also removes the old source from the
+ * shared device table if appropriate. Note that newsrc is consumed
+ * on success and the old source is freed on success.
+ *
+ * Returns 0 on success, -1 on error and reports libvirt error
+ */
+int
+qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
+                               virConnectPtr conn,
+                               virDomainObjPtr vm,
+                               virDomainDiskDefPtr disk,
+                               virStorageSourcePtr newsrc,
+                               bool force)
 {
     int ret = -1;
     char *driveAlias = NULL;
@@ -225,6 +242,8 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     if (ret < 0)
         goto error;
 
+    /* remove the old source from shared device list */
+    ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
     ignore_value(qemuDomainPrepareDisk(driver, vm, disk, NULL, true));
 
     virStorageSourceFree(disk->src);
@@ -232,7 +251,6 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     newsrc = NULL;
 
  cleanup:
-    virStorageSourceFree(newsrc);
     VIR_FREE(driveAlias);
     VIR_FREE(sourcestr);
     return ret;
@@ -740,9 +758,6 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
 {
     virDomainDiskDefPtr disk = dev->data.disk;
     virDomainDiskDefPtr orig_disk = NULL;
-    virDomainDeviceDefPtr dev_copy = NULL;
-    virStorageSourcePtr newsrc;
-    virDomainDiskDefPtr tmp = NULL;
     virCapsPtr caps = NULL;
     int ret = -1;
     const char *driverName = virDomainDiskGetDriver(disk);
@@ -784,32 +799,14 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
         if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
             goto end;
 
-
-        tmp = dev->data.disk;
-        dev->data.disk = orig_disk;
-
-        if (!(dev_copy = virDomainDeviceDefCopy(dev, vm->def,
-                                                caps, driver->xmlopt))) {
-            dev->data.disk = tmp;
+        if (qemuDomainChangeEjectableMedia(driver, conn, vm, orig_disk,
+                                           disk->src, false) < 0)
             goto end;
-        }
-        dev->data.disk = tmp;
 
-        newsrc = disk->src;
         disk->src = NULL;
-
-        ret = qemuDomainChangeEjectableMedia(driver, conn, vm, orig_disk, newsrc, false);
-        /* 'newsrc' must not be accessed now - it has been free'd.
-         * 'orig_disk' now points to the new disk, while 'dev_copy'
-         * now points to the old disk */
-
-        /* Need to remove the shared disk entry for the original disk src
-         * if the operation is either ejecting or updating.
-         */
-        if (ret == 0)
-            ignore_value(qemuRemoveSharedDevice(driver, dev_copy,
-                                                vm->def->name));
+        ret = 0;
         break;
+
     case VIR_DOMAIN_DISK_DEVICE_DISK:
     case VIR_DOMAIN_DISK_DEVICE_LUN:
         if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
@@ -841,7 +838,6 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
     if (ret != 0)
         ignore_value(qemuRemoveSharedDevice(driver, dev, vm->def->name));
     virObjectUnref(caps);
-    virDomainDeviceDefFree(dev_copy);
     return ret;
 }
 

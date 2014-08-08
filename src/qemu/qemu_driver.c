@@ -6637,9 +6637,6 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
 {
     virDomainDiskDefPtr disk = dev->data.disk;
     virDomainDiskDefPtr orig_disk = NULL;
-    virDomainDiskDefPtr tmp = NULL;
-    virDomainDeviceDefPtr dev_copy = NULL;
-    virStorageSourcePtr newsrc;
     virCapsPtr caps = NULL;
     int ret = -1;
 
@@ -6664,38 +6661,20 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
         if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
             goto end;
 
-        tmp = dev->data.disk;
-        dev->data.disk = orig_disk;
-
-        if (!(dev_copy = virDomainDeviceDefCopy(dev, vm->def,
-                                                caps, driver->xmlopt))) {
-            dev->data.disk = tmp;
-            goto end;
-        }
-        dev->data.disk = tmp;
-
         /* Add the new disk src into shared disk hash table */
         if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
             goto end;
 
-        newsrc = disk->src;
-        disk->src = NULL;
-
-        ret = qemuDomainChangeEjectableMedia(driver, conn, vm,
-                                             orig_disk, newsrc, force);
-        /* 'disk' must not be accessed now - it has been freed.
-         * 'orig_disk' now points to the new disk, while 'dev_copy'
-         * now points to the old disk */
-
-        /* Need to remove the shared disk entry for the original
-         * disk src if the operation is either ejecting or updating.
-         */
-        if (ret == 0) {
-            dev->data.disk = NULL;
-            ignore_value(qemuRemoveSharedDevice(driver, dev_copy,
-                                                vm->def->name));
+        if (qemuDomainChangeEjectableMedia(driver, conn, vm,
+                                           orig_disk, dev->data.disk->src, force) < 0) {
+            ignore_value(qemuRemoveSharedDisk(driver, dev->data.disk, vm->def->name));
+            goto end;
         }
+
+        dev->data.disk->src = NULL;
+        ret = 0;
         break;
+
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("disk bus '%s' cannot be updated."),
@@ -6705,7 +6684,6 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
 
  end:
     virObjectUnref(caps);
-    virDomainDeviceDefFree(dev_copy);
     return ret;
 }
 

@@ -1097,7 +1097,7 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
 }
 
 
-static int
+int
 qemuRemoveSharedDisk(virQEMUDriverPtr driver,
                      virDomainDiskDefPtr disk,
                      const char *name)
