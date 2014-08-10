@@ -2953,8 +2953,9 @@ virFileGetDefaultHugepageSize(unsigned long long *size)
         goto cleanup;
 
     if (!(c = strstr(meminfo, HUGEPAGESIZE_STR))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse %s"),
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("%s not found in %s"),
+                       HUGEPAGESIZE_STR,
                        PROC_MEMINFO);
         goto cleanup;
     }
