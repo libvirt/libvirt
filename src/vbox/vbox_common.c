@@ -97,6 +97,10 @@ if (!data->vboxObj) {\
 
 #define VBOX_IID_INITIALIZE(iid)                gVBoxAPI.UIID.vboxIIDInitialize(iid)
 
+#define ARRAY_GET_MACHINES \
+    (gVBoxAPI.UArray.handleGetMachines(data->vboxObj))
+
+
 /* global vbox API, used for all common codes. */
 static vboxUniformedAPI gVBoxAPI;
 
@@ -472,5 +476,43 @@ char *vboxConnectGetCapabilities(virConnectPtr conn)
     ret = virCapabilitiesFormatXML(data->caps);
     vboxDriverUnlock(data);
 
+    return ret;
+}
+
+int vboxConnectListDomains(virConnectPtr conn, int *ids, int nids)
+{
+    VBOX_OBJECT_CHECK(conn, int, -1);
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
+    PRUint32 state;
+    nsresult rc;
+    size_t i, j;
+
+    rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get list of Domains, rc=%08x"),
+                       (unsigned)rc);
+        goto cleanup;
+    }
+
+    ret = 0;
+    for (i = 0, j = 0; (i < machines.count) && (j < nids); ++i) {
+        IMachine *machine = machines.items[i];
+
+        if (machine) {
+            PRBool isAccessible = PR_FALSE;
+            gVBoxAPI.UIMachine.GetAccessible(machine, &isAccessible);
+            if (isAccessible) {
+                gVBoxAPI.UIMachine.GetState(machine, &state);
+                if (gVBoxAPI.machineStateChecker.Online(state)) {
+                    ret++;
+                    ids[j++] = i + 1;
+                }
+            }
+        }
+    }
+
+ cleanup:
+    gVBoxAPI.UArray.vboxArrayRelease(&machines);
     return ret;
 }

@@ -921,45 +921,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static int vboxConnectListDomains(virConnectPtr conn, int *ids, int nids)
-{
-    VBOX_OBJECT_CHECK(conn, int, -1);
-    vboxArray machines = VBOX_ARRAY_INITIALIZER;
-    PRUint32 state;
-    nsresult rc;
-    size_t i, j;
-
-    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get list of Domains, rc=%08x"),
-                       (unsigned)rc);
-        goto cleanup;
-    }
-
-    ret = 0;
-    for (i = 0, j = 0; (i < machines.count) && (j < nids); ++i) {
-        IMachine *machine = machines.items[i];
-
-        if (machine) {
-            PRBool isAccessible = PR_FALSE;
-            machine->vtbl->GetAccessible(machine, &isAccessible);
-            if (isAccessible) {
-                machine->vtbl->GetState(machine, &state);
-                if ((state >= MachineState_FirstOnline) &&
-                    (state <= MachineState_LastOnline)) {
-                    ret++;
-                    ids[j++] = i + 1;
-                }
-            }
-        }
-    }
-
- cleanup:
-    vboxArrayRelease(&machines);
-    return ret;
-}
-
 static int vboxConnectNumOfDomains(virConnectPtr conn)
 {
     VBOX_OBJECT_CHECK(conn, int, -1);
@@ -11290,6 +11251,11 @@ static void _DEBUGIID(const char *msg, vboxIIDUnion *iidu)
 
 #endif /* VBOX_API_VERSION != 2002000 */
 
+static void* _handleGetMachines(IVirtualBox *vboxObj)
+{
+    return vboxObj->vtbl->GetMachines;
+}
+
 static nsresult _nsisupportsRelease(nsISupports *nsi)
 {
     return nsi->vtbl->Release(nsi);
@@ -11323,6 +11289,18 @@ static nsresult
 _virtualboxGetSystemProperties(IVirtualBox *vboxObj, ISystemProperties **systemProperties)
 {
     return vboxObj->vtbl->GetSystemProperties(vboxObj, systemProperties);
+}
+
+static nsresult
+_machineGetAccessible(IMachine *machine, PRBool *isAccessible)
+{
+    return machine->vtbl->GetAccessible(machine, isAccessible);
+}
+
+static nsresult
+_machineGetState(IMachine *machine, PRUint32 *state)
+{
+    return machine->vtbl->GetState(machine, state);
 }
 
 #if VBOX_API_VERSION < 4000000
@@ -11389,6 +11367,12 @@ _systemPropertiesGetMaxGuestCPUCount(ISystemProperties *systemProperties, PRUint
     return systemProperties->vtbl->GetMaxGuestCPUCount(systemProperties, maxCPUCount);
 }
 
+static bool _machineStateOnline(PRUint32 state)
+{
+    return ((state >= MachineState_FirstOnline) &&
+            (state <= MachineState_LastOnline));
+}
+
 static vboxUniformedPFN _UPFN = {
     .Initialize = _pfnInitialize,
     .Uninitialize = _pfnUninitialize,
@@ -11409,6 +11393,12 @@ static vboxUniformedIID _UIID = {
     .DEBUGIID = _DEBUGIID,
 };
 
+static vboxUniformedArray _UArray = {
+    .vboxArrayGet = vboxArrayGet,
+    .vboxArrayRelease = vboxArrayRelease,
+    .handleGetMachines = _handleGetMachines,
+};
+
 static vboxUniformednsISupports _nsUISupports = {
     .Release = _nsisupportsRelease,
 };
@@ -11417,6 +11407,11 @@ static vboxUniformedIVirtualBox _UIVirtualBox = {
     .GetVersion = _virtualboxGetVersion,
     .GetMachine = _virtualboxGetMachine,
     .GetSystemProperties = _virtualboxGetSystemProperties,
+};
+
+static vboxUniformedIMachine _UIMachine = {
+    .GetAccessible = _machineGetAccessible,
+    .GetState = _machineGetState,
 };
 
 static vboxUniformedISession _UISession = {
@@ -11438,6 +11433,10 @@ static vboxUniformedISystemProperties _UISystemProperties = {
     .GetMaxGuestCPUCount = _systemPropertiesGetMaxGuestCPUCount,
 };
 
+static uniformedMachineStateChecker _machineStateChecker = {
+    .Online = _machineStateOnline,
+};
+
 void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
 {
     pVBoxAPI->APIVersion = VBOX_API_VERSION;
@@ -11446,12 +11445,15 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->registerGlobalData = _registerGlobalData;
     pVBoxAPI->UPFN = _UPFN;
     pVBoxAPI->UIID = _UIID;
+    pVBoxAPI->UArray = _UArray;
     pVBoxAPI->nsUISupports = _nsUISupports;
     pVBoxAPI->UIVirtualBox = _UIVirtualBox;
+    pVBoxAPI->UIMachine = _UIMachine;
     pVBoxAPI->UISession = _UISession;
     pVBoxAPI->UIConsole = _UIConsole;
     pVBoxAPI->UIProgress = _UIProgress;
     pVBoxAPI->UISystemProperties = _UISystemProperties;
+    pVBoxAPI->machineStateChecker = _machineStateChecker;
 
 #if VBOX_API_VERSION <= 2002000 || VBOX_API_VERSION >= 4000000
     pVBoxAPI->domainEventCallbacks = 0;

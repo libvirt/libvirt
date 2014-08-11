@@ -162,6 +162,14 @@ typedef struct {
     void (*DEBUGIID)(const char *msg, vboxIIDUnion *iidu);
 } vboxUniformedIID;
 
+/* Functions for vboxArray */
+typedef struct {
+    nsresult (*vboxArrayGet)(vboxArray *array, void *self, void *getter);
+    void (*vboxArrayRelease)(vboxArray *array);
+    /* Generate function pointers for vboxArrayGet */
+    void* (*handleGetMachines)(IVirtualBox *vboxObj);
+} vboxUniformedArray;
+
 /* Functions for nsISupports */
 typedef struct {
     nsresult (*Release)(nsISupports *nsi);
@@ -173,6 +181,12 @@ typedef struct {
     nsresult (*GetMachine)(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IMachine **machine);
     nsresult (*GetSystemProperties)(IVirtualBox *vboxObj, ISystemProperties **systemProperties);
 } vboxUniformedIVirtualBox;
+
+/* Functions for IMachine */
+typedef struct {
+    nsresult (*GetAccessible)(IMachine *machine, PRBool *isAccessible);
+    nsresult (*GetState)(IMachine *machine, PRUint32 *state);
+} vboxUniformedIMachine;
 
 /* Functions for ISession */
 typedef struct {
@@ -198,6 +212,10 @@ typedef struct {
 } vboxUniformedISystemProperties;
 
 typedef struct {
+    bool (*Online)(PRUint32 state);
+} uniformedMachineStateChecker;
+
+typedef struct {
     /* vbox API version */
     uint32_t APIVersion;
     uint32_t XPCOMCVersion;
@@ -206,12 +224,15 @@ typedef struct {
     void (*registerGlobalData)(vboxGlobalData *data);
     vboxUniformedPFN UPFN;
     vboxUniformedIID UIID;
+    vboxUniformedArray UArray;
     vboxUniformednsISupports nsUISupports;
     vboxUniformedIVirtualBox UIVirtualBox;
+    vboxUniformedIMachine UIMachine;
     vboxUniformedISession UISession;
     vboxUniformedIConsole UIConsole;
     vboxUniformedIProgress UIProgress;
     vboxUniformedISystemProperties UISystemProperties;
+    uniformedMachineStateChecker machineStateChecker;
     /* vbox API features */
     bool domainEventCallbacks;
     bool hasStaticGlobalData;
@@ -234,6 +255,7 @@ int vboxConnectIsEncrypted(virConnectPtr conn);
 int vboxConnectIsAlive(virConnectPtr conn);
 int vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type);
 char *vboxConnectGetCapabilities(virConnectPtr conn);
+int vboxConnectListDomains(virConnectPtr conn, int *ids, int nids);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
