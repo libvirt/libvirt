@@ -167,5 +167,6 @@ typedef nsISupports ISession;
 typedef nsISupports IConsole;
 typedef nsISupports IProgress;
 typedef nsISupports IMachine;
+typedef nsISupports ISystemProperties;
 
 #endif /* VBOX_COMMON_H */

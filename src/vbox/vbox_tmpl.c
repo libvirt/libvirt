@@ -914,30 +914,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static int
-vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
-{
-    VBOX_OBJECT_CHECK(conn, int, -1);
-    PRUint32 maxCPUCount = 0;
-
-    /* VirtualBox Supports only hvm and thus the type passed to it
-     * has no meaning, setting it to ATTRIBUTE_UNUSED
-     */
-    ISystemProperties *systemProperties = NULL;
-
-    data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
-    if (systemProperties) {
-        systemProperties->vtbl->GetMaxGuestCPUCount(systemProperties, &maxCPUCount);
-        VBOX_RELEASE(systemProperties);
-    }
-
-    if (maxCPUCount > 0)
-        ret = maxCPUCount;
-
-    return ret;
-}
-
-
 static char *vboxConnectGetCapabilities(virConnectPtr conn) {
     VBOX_OBJECT_CHECK(conn, char *, NULL);
 
@@ -11346,6 +11322,12 @@ _virtualboxGetMachine(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IMachine **machi
 
 #endif /* VBOX_API_VERSION >= 4000000 */
 
+static nsresult
+_virtualboxGetSystemProperties(IVirtualBox *vboxObj, ISystemProperties **systemProperties)
+{
+    return vboxObj->vtbl->GetSystemProperties(vboxObj, systemProperties);
+}
+
 #if VBOX_API_VERSION < 4000000
 
 static nsresult
@@ -11404,6 +11386,12 @@ _progressGetResultCode(IProgress *progress, resultCodeUnion *resultCode)
 #endif /* VBOX_API_VERSION != 2002000 */
 }
 
+static nsresult
+_systemPropertiesGetMaxGuestCPUCount(ISystemProperties *systemProperties, PRUint32 *maxCPUCount)
+{
+    return systemProperties->vtbl->GetMaxGuestCPUCount(systemProperties, maxCPUCount);
+}
+
 static vboxUniformedPFN _UPFN = {
     .Initialize = _pfnInitialize,
     .Uninitialize = _pfnUninitialize,
@@ -11431,6 +11419,7 @@ static vboxUniformednsISupports _nsUISupports = {
 static vboxUniformedIVirtualBox _UIVirtualBox = {
     .GetVersion = _virtualboxGetVersion,
     .GetMachine = _virtualboxGetMachine,
+    .GetSystemProperties = _virtualboxGetSystemProperties,
 };
 
 static vboxUniformedISession _UISession = {
@@ -11448,6 +11437,10 @@ static vboxUniformedIProgress _UIProgress = {
     .GetResultCode = _progressGetResultCode,
 };
 
+static vboxUniformedISystemProperties _UISystemProperties = {
+    .GetMaxGuestCPUCount = _systemPropertiesGetMaxGuestCPUCount,
+};
+
 void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
 {
     pVBoxAPI->APIVersion = VBOX_API_VERSION;
@@ -11461,6 +11454,7 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->UISession = _UISession;
     pVBoxAPI->UIConsole = _UIConsole;
     pVBoxAPI->UIProgress = _UIProgress;
+    pVBoxAPI->UISystemProperties = _UISystemProperties;
 
 #if VBOX_API_VERSION <= 2002000 || VBOX_API_VERSION >= 4000000
     pVBoxAPI->domainEventCallbacks = 0;

@@ -439,3 +439,27 @@ int vboxConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     return 1;
 }
+
+int
+vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
+{
+    VBOX_OBJECT_CHECK(conn, int, -1);
+    PRUint32 maxCPUCount = 0;
+
+    /* VirtualBox Supports only hvm and thus the type passed to it
+     * has no meaning, setting it to ATTRIBUTE_UNUSED
+     */
+    ISystemProperties *systemProperties = NULL;
+
+    gVBoxAPI.UIVirtualBox.GetSystemProperties(data->vboxObj, &systemProperties);
+    if (!systemProperties)
+        goto cleanup;
+    gVBoxAPI.UISystemProperties.GetMaxGuestCPUCount(systemProperties, &maxCPUCount);
+
+    if (maxCPUCount > 0)
+        ret = maxCPUCount;
+
+ cleanup:
+    VBOX_RELEASE(systemProperties);
+    return ret;
+}

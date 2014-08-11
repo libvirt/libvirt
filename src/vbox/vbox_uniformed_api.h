@@ -171,6 +171,7 @@ typedef struct {
 typedef struct {
     nsresult (*GetVersion)(IVirtualBox *vboxObj, PRUnichar **versionUtf16);
     nsresult (*GetMachine)(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IMachine **machine);
+    nsresult (*GetSystemProperties)(IVirtualBox *vboxObj, ISystemProperties **systemProperties);
 } vboxUniformedIVirtualBox;
 
 /* Functions for ISession */
@@ -191,6 +192,11 @@ typedef struct {
     nsresult (*GetResultCode)(IProgress *progress, resultCodeUnion *resultCode);
 } vboxUniformedIProgress;
 
+/* Functions for ISystemProperties */
+typedef struct {
+    nsresult (*GetMaxGuestCPUCount)(ISystemProperties *systemProperties, PRUint32 *maxCPUCount);
+} vboxUniformedISystemProperties;
+
 typedef struct {
     /* vbox API version */
     uint32_t APIVersion;
@@ -205,6 +211,7 @@ typedef struct {
     vboxUniformedISession UISession;
     vboxUniformedIConsole UIConsole;
     vboxUniformedIProgress UIProgress;
+    vboxUniformedISystemProperties UISystemProperties;
     /* vbox API features */
     bool domainEventCallbacks;
     bool hasStaticGlobalData;
@@ -225,6 +232,7 @@ char *vboxConnectGetHostname(virConnectPtr conn);
 int vboxConnectIsSecure(virConnectPtr conn);
 int vboxConnectIsEncrypted(virConnectPtr conn);
 int vboxConnectIsAlive(virConnectPtr conn);
+int vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
