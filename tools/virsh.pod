@@ -272,6 +272,8 @@ connect to a local linux container
 
 =back
 
+To find the currently used URI, check the I<uri> command documented below.
+
 For remote access see the documentation page at
 L<http://libvirt.org/uri.html> on how to make URIs.
 The I<--readonly> option allows for read-only connection
