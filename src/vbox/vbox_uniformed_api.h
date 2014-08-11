@@ -201,6 +201,7 @@ typedef struct {
     nsresult (*CreateSharedFolder)(IMachine *machine, PRUnichar *name,
                                    PRUnichar *hostPath, PRBool writable,
                                    PRBool automount);
+    nsresult (*RemoveSharedFolder)(IMachine *machine, PRUnichar *name);
     nsresult (*LaunchVMProcess)(vboxGlobalData *data, IMachine *machine,
                                 vboxIIDUnion *iidu,
                                 PRUnichar *sessionType, PRUnichar *env,
@@ -434,8 +435,10 @@ typedef struct {
     void (*dumpIDEHDDsOld)(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine);
     void (*dumpDVD)(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine);
     int (*attachDVD)(vboxGlobalData *data, IMachine *machine, const char *src);
+    int (*detachDVD)(IMachine *machine);
     void (*dumpFloppy)(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine);
     int (*attachFloppy)(vboxGlobalData *data, IMachine *machine, const char *src);
+    int (*detachFloppy)(IMachine *machine);
     vboxUniformedPFN UPFN;
     vboxUniformedIID UIID;
     vboxUniformedArray UArray;
@@ -529,6 +532,7 @@ int vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
                                 unsigned int flags);
 int vboxDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
                                 unsigned int flags);
+int vboxDomainDetachDevice(virDomainPtr dom, const char *xml);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

@@ -1451,142 +1451,6 @@ _vboxAttachDrivesOld(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
 #endif /* VBOX_API_VERSION >= 4000000 */
 
-static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
-{
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    IMachine *machine    = NULL;
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    PRUint32 state       = MachineState_Null;
-    virDomainDefPtr def  = NULL;
-    virDomainDeviceDefPtr dev  = NULL;
-    nsresult rc;
-
-    if (VIR_ALLOC(def) < 0)
-        return ret;
-
-    if (VIR_STRDUP(def->os.type, "hvm") < 0)
-        goto cleanup;
-
-    dev = virDomainDeviceDefParse(xml, def, data->caps, data->xmlopt,
-                                  VIR_DOMAIN_XML_INACTIVE);
-    if (dev == NULL)
-        goto cleanup;
-
-    vboxIIDFromUUID(&iid, dom->uuid);
-    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching uuid"));
-        goto cleanup;
-    }
-
-    if (machine) {
-        machine->vtbl->GetState(machine, &state);
-
-        if ((state == MachineState_Running) ||
-            (state == MachineState_Paused)) {
-            rc = VBOX_SESSION_OPEN_EXISTING(iid.value, machine);
-        } else {
-            rc = VBOX_SESSION_OPEN(iid.value, machine);
-        }
-
-        if (NS_SUCCEEDED(rc)) {
-            rc = data->vboxSession->vtbl->GetMachine(data->vboxSession, &machine);
-            if (NS_SUCCEEDED(rc) && machine) {
-                if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
-#if VBOX_API_VERSION < 3001000
-                    int type = virDomainDiskGetType(dev->data.disk);
-
-                    if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-                        if (type == VIR_STORAGE_TYPE_FILE) {
-                            IDVDDrive *dvdDrive = NULL;
-                            /* Currently CDROM/DVD Drive is always IDE
-                             * Secondary Master so neglecting the following
-                             * parameter dev->data.disk->bus
-                             */
-                            machine->vtbl->GetDVDDrive(machine, &dvdDrive);
-                            if (dvdDrive) {
-                                rc = dvdDrive->vtbl->Unmount(dvdDrive);
-                                if (NS_FAILED(rc)) {
-                                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                                   _("could not de-attach the mounted ISO, rc=%08x"),
-                                                   (unsigned)rc);
-                                } else {
-                                    ret = 0;
-                                }
-                                VBOX_RELEASE(dvdDrive);
-                            }
-                        } else if (type == VIR_STORAGE_TYPE_BLOCK) {
-                        }
-                    } else if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-                        if (type == VIR_STORAGE_TYPE_FILE) {
-                            IFloppyDrive *floppyDrive;
-                            machine->vtbl->GetFloppyDrive(machine, &floppyDrive);
-                            if (floppyDrive) {
-                                PRBool enabled = PR_FALSE;
-
-                                floppyDrive->vtbl->GetEnabled(floppyDrive, &enabled);
-                                if (enabled) {
-                                    rc = floppyDrive->vtbl->Unmount(floppyDrive);
-                                    if (NS_FAILED(rc)) {
-                                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                                       _("could not attach the file "
-                                                         "to floppy drive, rc=%08x"),
-                                                       (unsigned)rc);
-                                    } else {
-                                        ret = 0;
-                                    }
-                                } else {
-                                    /* If you are here means floppy drive is already unmounted
-                                     * so don't flag error, just say everything is fine and quit
-                                     */
-                                    ret = 0;
-                                }
-                                VBOX_RELEASE(floppyDrive);
-                            }
-                        } else if (type == VIR_STORAGE_TYPE_BLOCK) {
-                        }
-                    }
-#else  /* VBOX_API_VERSION >= 3001000 */
-#endif /* VBOX_API_VERSION >= 3001000 */
-                } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
-                } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
-                    if (dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
-                        if (dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-                        }
-                    }
-                } else if (dev->type == VIR_DOMAIN_DEVICE_FS &&
-                           dev->data.fs->type == VIR_DOMAIN_FS_TYPE_MOUNT) {
-                    PRUnichar *nameUtf16;
-
-                    VBOX_UTF8_TO_UTF16(dev->data.fs->dst, &nameUtf16);
-
-                    rc = machine->vtbl->RemoveSharedFolder(machine, nameUtf16);
-
-                    if (NS_FAILED(rc)) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("could not detach shared folder '%s', rc=%08x"),
-                                       dev->data.fs->dst, (unsigned)rc);
-                    } else {
-                        ret = 0;
-                    }
-
-                    VBOX_UTF16_FREE(nameUtf16);
-                }
-                machine->vtbl->SaveSettings(machine);
-                VBOX_RELEASE(machine);
-            }
-            VBOX_SESSION_CLOSE();
-        }
-    }
-
- cleanup:
-    vboxIIDUnalloc(&iid);
-    virDomainDefFree(def);
-    virDomainDeviceDefFree(dev);
-    return ret;
-}
-
 static int
 vboxDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
                             unsigned int flags)
@@ -7635,6 +7499,33 @@ _attachDVD(vboxGlobalData *data, IMachine *machine, const char *src)
     return ret;
 }
 
+static int
+_detachDVD(IMachine *machine)
+{
+    IDVDDrive *dvdDrive = NULL;
+    int ret = -1;
+    nsresult rc;
+    /* Currently CDROM/DVD Drive is always IDE
+     * Secondary Master so neglecting the following
+     * parameter dev->data.disk->bus
+     */
+    machine->vtbl->GetDVDDrive(machine, &dvdDrive);
+    if (!dvdDrive)
+        return ret;
+
+    rc = dvdDrive->vtbl->Unmount(dvdDrive);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not de-attach the mounted ISO, rc=%08x"),
+                       (unsigned)rc);
+    } else {
+        ret = 0;
+    }
+    VBOX_RELEASE(dvdDrive);
+
+    return ret;
+}
+
 static void
 _dumpFloppy(virDomainDefPtr def,
             vboxGlobalData *data,
@@ -7753,6 +7644,41 @@ _attachFloppy(vboxGlobalData *data, IMachine *machine, const char *src)
     return ret;
 }
 
+static int
+_detachFloppy(IMachine *machine)
+{
+    IFloppyDrive *floppyDrive;
+    int ret = -1;
+    nsresult rc;
+
+    machine->vtbl->GetFloppyDrive(machine, &floppyDrive);
+    if (!floppyDrive)
+        return ret;
+
+    PRBool enabled = PR_FALSE;
+
+    floppyDrive->vtbl->GetEnabled(floppyDrive, &enabled);
+    if (enabled) {
+        rc = floppyDrive->vtbl->Unmount(floppyDrive);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("could not attach the file "
+                             "to floppy drive, rc=%08x"),
+                           (unsigned)rc);
+        } else {
+            ret = 0;
+        }
+    } else {
+        /* If you are here means floppy drive is already unmounted
+         * so don't flag error, just say everything is fine and quit
+         */
+        ret = 0;
+    }
+    VBOX_RELEASE(floppyDrive);
+
+    return ret;
+}
+
 #else  /* VBOX_API_VERSION >= 3001000 */
 
 static void
@@ -7780,6 +7706,13 @@ _attachDVD(vboxGlobalData *data ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+_detachDVD(IMachine *machine ATTRIBUTE_UNUSED)
+{
+    vboxUnsupported();
+    return 0;
+}
+
 static void
 _dumpFloppy(virDomainDefPtr def ATTRIBUTE_UNUSED,
             vboxGlobalData *data ATTRIBUTE_UNUSED,
@@ -7792,6 +7725,13 @@ static int
 _attachFloppy(vboxGlobalData *data ATTRIBUTE_UNUSED,
               IMachine *machine ATTRIBUTE_UNUSED,
               const char *src ATTRIBUTE_UNUSED)
+{
+    vboxUnsupported();
+    return 0;
+}
+
+static int
+_detachFloppy(IMachine *machine ATTRIBUTE_UNUSED)
 {
     vboxUnsupported();
     return 0;
@@ -8079,6 +8019,12 @@ _machineCreateSharedFolder(IMachine *machine, PRUnichar *name,
     return machine->vtbl->CreateSharedFolder(machine, name, hostPath,
                                              writable, automount);
 #endif /* VBOX_API_VERSION >= 4000000 */
+}
+
+static nsresult
+_machineRemoveSharedFolder(IMachine *machine, PRUnichar *name)
+{
+    return machine->vtbl->RemoveSharedFolder(machine, name);
 }
 
 static nsresult
@@ -9246,6 +9192,7 @@ static vboxUniformedIMachine _UIMachine = {
     .GetStorageControllerByName = _machineGetStorageControllerByName,
     .AttachDevice = _machineAttachDevice,
     .CreateSharedFolder = _machineCreateSharedFolder,
+    .RemoveSharedFolder = _machineRemoveSharedFolder,
     .LaunchVMProcess = _machineLaunchVMProcess,
     .GetAccessible = _machineGetAccessible,
     .GetState = _machineGetState,
@@ -9450,8 +9397,10 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->dumpIDEHDDsOld = _dumpIDEHDDsOld;
     pVBoxAPI->dumpDVD = _dumpDVD;
     pVBoxAPI->attachDVD = _attachDVD;
+    pVBoxAPI->detachDVD = _detachDVD;
     pVBoxAPI->dumpFloppy = _dumpFloppy;
     pVBoxAPI->attachFloppy = _attachFloppy;
+    pVBoxAPI->detachFloppy = _detachFloppy;
     pVBoxAPI->UPFN = _UPFN;
     pVBoxAPI->UIID = _UIID;
     pVBoxAPI->UArray = _UArray;
