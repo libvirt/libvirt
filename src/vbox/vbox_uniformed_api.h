@@ -260,6 +260,8 @@ char *vboxConnectGetCapabilities(virConnectPtr conn);
 int vboxConnectListDomains(virConnectPtr conn, int *ids, int nids);
 int vboxConnectNumOfDomains(virConnectPtr conn);
 virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id);
+virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
+                                    const unsigned char *uuid);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

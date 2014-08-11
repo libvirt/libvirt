@@ -624,3 +624,76 @@ virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id)
     gVBoxAPI.UArray.vboxArrayRelease(&machines);
     return ret;
 }
+
+virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
+                                    const unsigned char *uuid)
+{
+    VBOX_OBJECT_CHECK(conn, virDomainPtr, NULL);
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
+    vboxIIDUnion iid;
+    char *machineNameUtf8  = NULL;
+    PRUnichar *machineNameUtf16 = NULL;
+    unsigned char iid_as_uuid[VIR_UUID_BUFLEN];
+    size_t i;
+    bool matched = false;
+    nsresult rc;
+
+    VBOX_IID_INITIALIZE(&iid);
+    rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        return NULL;
+    }
+
+    for (i = 0; i < machines.count; ++i) {
+        IMachine *machine = machines.items[i];
+        PRBool isAccessible = PR_FALSE;
+
+        if (!machine)
+            continue;
+
+        gVBoxAPI.UIMachine.GetAccessible(machine, &isAccessible);
+        if (!isAccessible)
+            continue;
+
+        rc = gVBoxAPI.UIMachine.GetId(machine, &iid);
+        if (NS_FAILED(rc))
+            continue;
+        vboxIIDToUUID(&iid, iid_as_uuid);
+        vboxIIDUnalloc(&iid);
+
+        if (memcmp(uuid, iid_as_uuid, VIR_UUID_BUFLEN) == 0) {
+
+            PRUint32 state;
+
+            matched = true;
+
+            gVBoxAPI.UIMachine.GetName(machine, &machineNameUtf16);
+            VBOX_UTF16_TO_UTF8(machineNameUtf16, &machineNameUtf8);
+
+            gVBoxAPI.UIMachine.GetState(machine, &state);
+
+            /* get a new domain pointer from virGetDomain, if it fails
+             * then no need to assign the id, else assign the id, cause
+             * it is -1 by default. rest is taken care by virGetDomain
+             * itself, so need not worry.
+             */
+
+            ret = virGetDomain(conn, machineNameUtf8, iid_as_uuid);
+            if (ret &&
+                gVBoxAPI.machineStateChecker.Online(state))
+                ret->id = i + 1;
+         }
+
+         if (matched)
+             break;
+    }
+
+    /* Do the cleanup and take care you dont leak any memory */
+    VBOX_UTF8_FREE(machineNameUtf8);
+    VBOX_COM_UNALLOC_MEM(machineNameUtf16);
+    gVBoxAPI.UArray.vboxArrayRelease(&machines);
+
+    return ret;
+}
