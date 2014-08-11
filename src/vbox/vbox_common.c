@@ -434,3 +434,8 @@ int vboxConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
     /* No encryption is needed, or used on the local transport*/
     return 0;
 }
+
+int vboxConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
+}

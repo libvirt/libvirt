@@ -224,6 +224,7 @@ int vboxConnectGetVersion(virConnectPtr conn, unsigned long *version);
 char *vboxConnectGetHostname(virConnectPtr conn);
 int vboxConnectIsSecure(virConnectPtr conn);
 int vboxConnectIsEncrypted(virConnectPtr conn);
+int vboxConnectIsAlive(virConnectPtr conn);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

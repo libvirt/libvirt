@@ -914,11 +914,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static int vboxConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 1;
-}
-
 static int
 vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
 {
