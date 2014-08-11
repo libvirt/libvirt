@@ -407,6 +407,8 @@ virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml);
 int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags);
 int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags);
 int vboxDomainCreate(virDomainPtr dom);
+virDomainPtr vboxDomainCreateXML(virConnectPtr conn, const char *xml,
+                                 unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

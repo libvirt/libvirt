@@ -933,34 +933,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static virDomainPtr vboxDomainCreateXML(virConnectPtr conn, const char *xml,
-                                        unsigned int flags)
-{
-    /* VirtualBox currently doesn't have support for running
-     * virtual machines without actually defining them and thus
-     * for time being just define new machine and start it.
-     *
-     * TODO: After the appropriate API's are added in VirtualBox
-     * change this behaviour to the expected one.
-     */
-
-    virDomainPtr dom;
-
-    virCheckFlags(0, NULL);
-
-    dom = vboxDomainDefineXML(conn, xml);
-    if (dom == NULL)
-        return NULL;
-
-    if (vboxDomainCreate(dom) < 0) {
-        vboxDomainUndefineFlags(dom, 0);
-        virObjectUnref(dom);
-        return NULL;
-    }
-
-    return dom;
-}
-
 static virDomainPtr
 vboxDomainLookupByName(virConnectPtr conn, const char *name)
 {
