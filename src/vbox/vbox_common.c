@@ -2553,3 +2553,48 @@ int vboxDomainReboot(virDomainPtr dom, unsigned int flags)
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+int vboxDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    IMachine *machine    = NULL;
+    vboxIIDUnion iid;
+    IConsole *console    = NULL;
+    PRUint32 state;
+    PRBool isAccessible  = PR_FALSE;
+
+    virCheckFlags(0, -1);
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    if (!machine)
+        goto cleanup;
+
+    gVBoxAPI.UIMachine.GetAccessible(machine, &isAccessible);
+    if (!isAccessible)
+        goto cleanup;
+
+    gVBoxAPI.UIMachine.GetState(machine, &state);
+
+    if (gVBoxAPI.machineStateChecker.PoweredOff(state)) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("machine already powered down"));
+        goto cleanup;
+    }
+
+    gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+    gVBoxAPI.UISession.GetConsole(data->vboxSession, &console);
+    if (console) {
+        gVBoxAPI.UIConsole.PowerDown(console);
+        VBOX_RELEASE(console);
+        dom->id = -1;
+        ret = 0;
+    }
+    gVBoxAPI.UISession.Close(data->vboxSession);
+
+ cleanup:
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    return ret;
+}

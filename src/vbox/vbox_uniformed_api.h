@@ -240,6 +240,7 @@ typedef struct {
     nsresult (*Pause)(IConsole *console);
     nsresult (*Resume)(IConsole *console);
     nsresult (*PowerButton)(IConsole *console);
+    nsresult (*PowerDown)(IConsole *console);
     nsresult (*Reset)(IConsole *console);
 } vboxUniformedIConsole;
 
@@ -426,6 +427,7 @@ int vboxDomainResume(virDomainPtr dom);
 int vboxDomainShutdownFlags(virDomainPtr dom, unsigned int flags);
 int vboxDomainShutdown(virDomainPtr dom);
 int vboxDomainReboot(virDomainPtr dom, unsigned int flags);
+int vboxDomainDestroyFlags(virDomainPtr dom, unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

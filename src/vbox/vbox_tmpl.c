@@ -934,68 +934,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
 }
 
 static int
-vboxDomainDestroyFlags(virDomainPtr dom,
-                       unsigned int flags)
-{
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    IMachine *machine    = NULL;
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    IConsole *console    = NULL;
-    PRUint32 state       = MachineState_Null;
-    PRBool isAccessible  = PR_FALSE;
-    nsresult rc;
-
-    virCheckFlags(0, -1);
-
-    vboxIIDFromUUID(&iid, dom->uuid);
-    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching id %d"), dom->id);
-        goto cleanup;
-    }
-
-    if (!machine)
-        goto cleanup;
-
-    machine->vtbl->GetAccessible(machine, &isAccessible);
-    if (isAccessible) {
-        machine->vtbl->GetState(machine, &state);
-
-        if (state == MachineState_PoweredOff) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("machine already powered down"));
-            goto cleanup;
-        }
-
-        VBOX_SESSION_OPEN_EXISTING(iid.value, machine);
-        data->vboxSession->vtbl->GetConsole(data->vboxSession, &console);
-        if (console) {
-
-#if VBOX_API_VERSION == 2002000
-            console->vtbl->PowerDown(console);
-#else
-            IProgress *progress = NULL;
-            console->vtbl->PowerDown(console, &progress);
-            if (progress) {
-                progress->vtbl->WaitForCompletion(progress, -1);
-                VBOX_RELEASE(progress);
-            }
-#endif
-            VBOX_RELEASE(console);
-            dom->id = -1;
-            ret = 0;
-        }
-        VBOX_SESSION_CLOSE();
-    }
-
- cleanup:
-    VBOX_RELEASE(machine);
-    vboxIIDUnalloc(&iid);
-    return ret;
-}
-
-static int
 vboxDomainDestroy(virDomainPtr dom)
 {
     return vboxDomainDestroyFlags(dom, 0);
@@ -9850,6 +9788,23 @@ _consolePowerButton(IConsole *console)
 }
 
 static nsresult
+_consolePowerDown(IConsole *console)
+{
+    nsresult rc;
+#if VBOX_API_VERSION == 2002000
+    rc = console->vtbl->PowerDown(console);
+#else
+    IProgress *progress = NULL;
+    rc = console->vtbl->PowerDown(console, &progress);
+    if (progress) {
+        rc = progress->vtbl->WaitForCompletion(progress, -1);
+        VBOX_RELEASE(progress);
+    }
+#endif
+    return rc;
+}
+
+static nsresult
 _consoleReset(IConsole *console)
 {
     return console->vtbl->Reset(console);
@@ -10381,6 +10336,7 @@ static vboxUniformedIConsole _UIConsole = {
     .Pause = _consolePause,
     .Resume = _consoleResume,
     .PowerButton = _consolePowerButton,
+    .PowerDown = _consolePowerDown,
     .Reset = _consoleReset,
 };
 
