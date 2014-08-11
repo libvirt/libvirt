@@ -2128,6 +2128,126 @@ xenFormatXMOS(virConfPtr conf, virDomainDefPtr def)
 }
 
 
+static int
+xenFormatXMVfb(virConfPtr conf,
+               virDomainDefPtr def,
+               int xendConfigVersion)
+{
+    int hvm = STREQ(def->os.type, "hvm") ? 1 : 0;
+
+    if (def->ngraphics == 1) {
+        if (hvm || (xendConfigVersion < XEND_CONFIG_MIN_VERS_PVFB_NEWCONF)) {
+            if (def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
+                if (xenXMConfigSetInt(conf, "sdl", 1) < 0)
+                    return -1;
+
+                if (xenXMConfigSetInt(conf, "vnc", 0) < 0)
+                    return -1;
+
+                if (def->graphics[0]->data.sdl.display &&
+                    xenXMConfigSetString(conf, "display",
+                                     def->graphics[0]->data.sdl.display) < 0)
+                    return -1;
+
+                if (def->graphics[0]->data.sdl.xauth &&
+                    xenXMConfigSetString(conf, "xauthority",
+                                         def->graphics[0]->data.sdl.xauth) < 0)
+                    return -1;
+            } else {
+                const char *listenAddr;
+
+                if (xenXMConfigSetInt(conf, "sdl", 0) < 0)
+                    return -1;
+
+                if (xenXMConfigSetInt(conf, "vnc", 1) < 0)
+                    return -1;
+
+                if (xenXMConfigSetInt(conf, "vncunused",
+                              def->graphics[0]->data.vnc.autoport ? 1 : 0) < 0)
+                    return -1;
+
+                if (!def->graphics[0]->data.vnc.autoport &&
+                    xenXMConfigSetInt(conf, "vncdisplay",
+                                  def->graphics[0]->data.vnc.port - 5900) < 0)
+                    return -1;
+
+                listenAddr = virDomainGraphicsListenGetAddress(def->graphics[0], 0);
+                if (listenAddr &&
+                    xenXMConfigSetString(conf, "vnclisten", listenAddr) < 0)
+                    return -1;
+
+                if (def->graphics[0]->data.vnc.auth.passwd &&
+                    xenXMConfigSetString(conf, "vncpasswd",
+                                        def->graphics[0]->data.vnc.auth.passwd) < 0)
+                    return -1;
+
+                if (def->graphics[0]->data.vnc.keymap &&
+                    xenXMConfigSetString(conf, "keymap",
+                                        def->graphics[0]->data.vnc.keymap) < 0)
+                    return -1;
+            }
+        } else {
+            virConfValuePtr vfb, disp;
+            char *vfbstr = NULL;
+            virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+            if (def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
+                virBufferAddLit(&buf, "type=sdl");
+                if (def->graphics[0]->data.sdl.display)
+                    virBufferAsprintf(&buf, ",display=%s",
+                                      def->graphics[0]->data.sdl.display);
+                if (def->graphics[0]->data.sdl.xauth)
+                    virBufferAsprintf(&buf, ",xauthority=%s",
+                                      def->graphics[0]->data.sdl.xauth);
+            } else {
+                const char *listenAddr
+                    = virDomainGraphicsListenGetAddress(def->graphics[0], 0);
+
+                virBufferAddLit(&buf, "type=vnc");
+                virBufferAsprintf(&buf, ",vncunused=%d",
+                                  def->graphics[0]->data.vnc.autoport ? 1 : 0);
+                if (!def->graphics[0]->data.vnc.autoport)
+                    virBufferAsprintf(&buf, ",vncdisplay=%d",
+                                      def->graphics[0]->data.vnc.port - 5900);
+                if (listenAddr)
+                    virBufferAsprintf(&buf, ",vnclisten=%s", listenAddr);
+                if (def->graphics[0]->data.vnc.auth.passwd)
+                    virBufferAsprintf(&buf, ",vncpasswd=%s",
+                                      def->graphics[0]->data.vnc.auth.passwd);
+                if (def->graphics[0]->data.vnc.keymap)
+                    virBufferAsprintf(&buf, ",keymap=%s",
+                                      def->graphics[0]->data.vnc.keymap);
+            }
+            if (virBufferCheckError(&buf) < 0)
+                return -1;
+
+            vfbstr = virBufferContentAndReset(&buf);
+
+            if (VIR_ALLOC(vfb) < 0) {
+                VIR_FREE(vfbstr);
+                return -1;
+            }
+
+            if (VIR_ALLOC(disp) < 0) {
+                VIR_FREE(vfb);
+                VIR_FREE(vfbstr);
+                return -1;
+            }
+
+            vfb->type = VIR_CONF_LIST;
+            vfb->list = disp;
+            disp->type = VIR_CONF_STRING;
+            disp->str = vfbstr;
+
+            if (virConfSetValue(conf, "vfb", vfb) < 0)
+                return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
    either 32, or 64 on a platform where long is big enough.  */
 verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
@@ -2155,7 +2275,7 @@ xenFormatXM(virConnectPtr conn,
         goto cleanup;
 
     if (xenFormatXMOS(conf, def) < 0)
-        goto cleanup;
+         goto cleanup;
 
     if (xenFormatXMCPUFeatures(conf, def, xendConfigVersion) < 0)
         goto cleanup;
@@ -2196,104 +2316,8 @@ xenFormatXM(virConnectPtr conn,
         }
     }
 
-    if (def->ngraphics == 1) {
-        if (hvm || (xendConfigVersion < XEND_CONFIG_MIN_VERS_PVFB_NEWCONF)) {
-            if (def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
-                if (xenXMConfigSetInt(conf, "sdl", 1) < 0)
-                    goto cleanup;
-                if (xenXMConfigSetInt(conf, "vnc", 0) < 0)
-                    goto cleanup;
-                if (def->graphics[0]->data.sdl.display &&
-                    xenXMConfigSetString(conf, "display",
-                                     def->graphics[0]->data.sdl.display) < 0)
-                    goto cleanup;
-                if (def->graphics[0]->data.sdl.xauth &&
-                    xenXMConfigSetString(conf, "xauthority",
-                                         def->graphics[0]->data.sdl.xauth) < 0)
-                    goto cleanup;
-            } else {
-                const char *listenAddr;
-
-                if (xenXMConfigSetInt(conf, "sdl", 0) < 0)
-                    goto cleanup;
-                if (xenXMConfigSetInt(conf, "vnc", 1) < 0)
-                    goto cleanup;
-                if (xenXMConfigSetInt(conf, "vncunused",
-                              def->graphics[0]->data.vnc.autoport ? 1 : 0) < 0)
-                    goto cleanup;
-                if (!def->graphics[0]->data.vnc.autoport &&
-                    xenXMConfigSetInt(conf, "vncdisplay",
-                                  def->graphics[0]->data.vnc.port - 5900) < 0)
-                    goto cleanup;
-                listenAddr = virDomainGraphicsListenGetAddress(def->graphics[0], 0);
-                if (listenAddr &&
-                    xenXMConfigSetString(conf, "vnclisten", listenAddr) < 0)
-                    goto cleanup;
-                if (def->graphics[0]->data.vnc.auth.passwd &&
-                    xenXMConfigSetString(conf, "vncpasswd",
-                                        def->graphics[0]->data.vnc.auth.passwd) < 0)
-                    goto cleanup;
-                if (def->graphics[0]->data.vnc.keymap &&
-                    xenXMConfigSetString(conf, "keymap",
-                                        def->graphics[0]->data.vnc.keymap) < 0)
-                    goto cleanup;
-            }
-        } else {
-            virConfValuePtr vfb, disp;
-            char *vfbstr = NULL;
-            virBuffer buf = VIR_BUFFER_INITIALIZER;
-            if (def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
-                virBufferAddLit(&buf, "type=sdl");
-                if (def->graphics[0]->data.sdl.display)
-                    virBufferAsprintf(&buf, ",display=%s",
-                                      def->graphics[0]->data.sdl.display);
-                if (def->graphics[0]->data.sdl.xauth)
-                    virBufferAsprintf(&buf, ",xauthority=%s",
-                                      def->graphics[0]->data.sdl.xauth);
-            } else {
-                const char *listenAddr
-                    = virDomainGraphicsListenGetAddress(def->graphics[0], 0);
-
-                virBufferAddLit(&buf, "type=vnc");
-                virBufferAsprintf(&buf, ",vncunused=%d",
-                                  def->graphics[0]->data.vnc.autoport ? 1 : 0);
-                if (!def->graphics[0]->data.vnc.autoport)
-                    virBufferAsprintf(&buf, ",vncdisplay=%d",
-                                      def->graphics[0]->data.vnc.port - 5900);
-                if (listenAddr)
-                    virBufferAsprintf(&buf, ",vnclisten=%s", listenAddr);
-                if (def->graphics[0]->data.vnc.auth.passwd)
-                    virBufferAsprintf(&buf, ",vncpasswd=%s",
-                                      def->graphics[0]->data.vnc.auth.passwd);
-                if (def->graphics[0]->data.vnc.keymap)
-                    virBufferAsprintf(&buf, ",keymap=%s",
-                                      def->graphics[0]->data.vnc.keymap);
-            }
-            if (virBufferCheckError(&buf) < 0)
-                goto cleanup;
-
-            vfbstr = virBufferContentAndReset(&buf);
-
-            if (VIR_ALLOC(vfb) < 0) {
-                VIR_FREE(vfbstr);
-                goto cleanup;
-            }
-
-            if (VIR_ALLOC(disp) < 0) {
-                VIR_FREE(vfb);
-                VIR_FREE(vfbstr);
-                goto cleanup;
-            }
-
-            vfb->type = VIR_CONF_LIST;
-            vfb->list = disp;
-            disp->type = VIR_CONF_STRING;
-            disp->str = vfbstr;
-
-            if (virConfSetValue(conf, "vfb", vfb) < 0)
-                goto cleanup;
-        }
-    }
+    if (xenFormatXMVfb(conf, def, xendConfigVersion) < 0)
+        goto cleanup;
 
     if (xenFormatXMDisks(conf, def, xendConfigVersion) < 0)
         goto cleanup;
