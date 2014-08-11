@@ -222,6 +222,7 @@ int vboxConnectClose(virConnectPtr conn);
 int vboxDomainSave(virDomainPtr dom, const char *path);
 int vboxConnectGetVersion(virConnectPtr conn, unsigned long *version);
 char *vboxConnectGetHostname(virConnectPtr conn);
+int vboxConnectIsSecure(virConnectPtr conn);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

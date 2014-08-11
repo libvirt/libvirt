@@ -422,3 +422,9 @@ char *vboxConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     return virGetHostname();
 }
+
+int vboxConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Driver is using local, non-network based transport */
+    return 1;
+}
