@@ -9983,11 +9983,15 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
                 VIR_FREE(persistentNet->bandwidth->in);
                 persistentNet->bandwidth->in = bandwidth->in;
                 bandwidth->in = NULL;
+            } else  if (inboundSpecified) {
+                VIR_FREE(persistentNet->bandwidth->in);
             }
             if (bandwidth->out) {
                 VIR_FREE(persistentNet->bandwidth->out);
                 persistentNet->bandwidth->out = bandwidth->out;
                 bandwidth->out = NULL;
+            } else if (outboundSpecified) {
+                VIR_FREE(persistentNet->bandwidth->out);
             }
         }
 
