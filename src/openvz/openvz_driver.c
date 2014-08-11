@@ -96,8 +96,15 @@ openvzDomainDefPostParse(virDomainDefPtr def,
                          void *opaque ATTRIBUTE_UNUSED)
 {
     /* fill the init path */
-    if (STREQ(def->os.type, "exe") && !def->os.init)
-        return VIR_STRDUP(def->os.init, "/sbin/init") < 0 ? -1 : 0;
+    if (STREQ(def->os.type, "exe") && !def->os.init) {
+        if (VIR_STRDUP(def->os.init, "/sbin/init") < 0)
+            return -1;
+    }
+
+    /* memory hotplug tunables are not supported by this driver */
+    if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
+        return -1;
+
     return 0;
 }
 

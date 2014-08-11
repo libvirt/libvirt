@@ -567,6 +567,11 @@ libxlDomainDefPostParse(virDomainDefPtr def,
         def->nconsoles = 1;
         def->consoles[0] = chrdef;
     }
+
+    /* memory hotplug tunables are not supported by this driver */
+    if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
+        return -1;
+
     return 0;
 }
 

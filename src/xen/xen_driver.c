@@ -388,6 +388,10 @@ xenDomainDefPostParse(virDomainDefPtr def,
         def->memballoon = memballoon;
     }
 
+    /* memory hotplug tunables are not supported by this driver */
+    if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
+        return -1;
+
     return 0;
 }
 

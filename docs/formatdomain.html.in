@@ -675,6 +675,7 @@
 <pre>
 &lt;domain&gt;
   ...
+  &lt;maxMemory slots='16' unit='KiB'&gt;1524288&lt;/maxMemory&gt;
   &lt;memory unit='KiB'&gt;524288&lt;/memory&gt;
   &lt;currentMemory unit='KiB'&gt;524288&lt;/currentMemory&gt;
   ...
@@ -708,6 +709,25 @@
         <span class='since'><code>unit</code> since 0.9.11</span>,
         <span class='since'><code>dumpCore</code> since 0.10.2
         (QEMU only)</span></dd>
+      <dt><code>maxMemory</code></dt>
+      <dd>The run time maximum memory allocation of the guest. The initial
+        memory specified by either the <code>&lt;memory&gt;</code> element or
+        the NUMA cell size configuration can be increased by hot-plugging of
+        memory to the limit specified by this element.
+
+        The <code>unit</code> attribute behaves the same as for
+        <code>&lt;memory&gt;</code>.
+
+        The <code>slots</code> attribute specifies the number of slots
+        available for adding memory to the guest. The bounds are hypervisor
+        specific.
+
+        Note that due to alignment of the memory chunks added via memory
+        hotplug the full size allocation specified by this element may be
+        impossible to achieve.
+        <span class='since'>Since 1.2.14</span>
+      </dd>
+
       <dt><code>currentMemory</code></dt>
       <dd>The actual allocation of memory for the guest. This value can
         be less than the maximum allocation, to allow for ballooning

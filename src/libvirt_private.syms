@@ -187,6 +187,7 @@ virDomainCpuPlacementModeTypeFromString;
 virDomainCpuPlacementModeTypeToString;
 virDomainDefAddImplicitControllers;
 virDomainDefCheckABIStability;
+virDomainDefCheckUnsupportedMemoryHotplug;
 virDomainDefClearCCWAddresses;
 virDomainDefClearDeviceAliases;
 virDomainDefClearPCIAddresses;

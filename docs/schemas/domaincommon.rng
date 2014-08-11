@@ -593,6 +593,14 @@
         </element>
       </optional>
       <optional>
+        <element name="maxMemory">
+          <ref name="scaledInteger"/>
+          <attribute name="slots">
+            <ref name="unsignedInt"/>
+          </attribute>
+        </element>
+      </optional>
+      <optional>
         <element name="currentMemory">
           <ref name='scaledInteger'/>
         </element>

@@ -2041,6 +2041,10 @@ struct _virDomainMemtune {
     virDomainHugePagePtr hugepages;
     size_t nhugepages;
 
+    /* maximum supported memory for a guest, for hotplugging */
+    unsigned long long max_memory; /* in kibibytes */
+    unsigned int memory_slots; /* maximum count of RAM memory slots */
+
     bool nosharepages;
     bool locked;
     int dump_core; /* enum virTristateSwitch */
@@ -2335,6 +2339,9 @@ virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,
 
 bool virDomainObjTaint(virDomainObjPtr obj,
                        virDomainTaintFlags taint);
+
+
+int virDomainDefCheckUnsupportedMemoryHotplug(virDomainDefPtr def);
 
 void virDomainPanicDefFree(virDomainPanicDefPtr panic);
 void virDomainResourceDefFree(virDomainResourceDefPtr resource);

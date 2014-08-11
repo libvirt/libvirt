@@ -161,10 +161,14 @@ parallelsConnectGetCapabilities(virConnectPtr conn)
 }
 
 static int
-parallelsDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
+parallelsDomainDefPostParse(virDomainDefPtr def,
                             virCapsPtr caps ATTRIBUTE_UNUSED,
                             void *opaque ATTRIBUTE_UNUSED)
 {
+    /* memory hotplug tunables are not supported by this driver */
+    if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
+        return -1;
+
     return 0;
 }
 

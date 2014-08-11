@@ -981,6 +981,27 @@ virDomainBlkioDeviceParseXML(xmlNodePtr root,
 }
 
 
+/**
+ * virDomainDefCheckUnsupportedMemoryHotplug:
+ * @def: domain definition
+ *
+ * Returns -1 if the domain definition would enable memory hotplug via the
+ * <maxMemory> tunable and reports an error. Otherwise returns 0.
+ */
+int
+virDomainDefCheckUnsupportedMemoryHotplug(virDomainDefPtr def)
+{
+    /* memory hotplug tunables are not supported by this driver */
+    if (def->mem.max_memory > 0 || def->mem.memory_slots > 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("memory hotplug tunables <maxMemory> are not "
+                         "supported by this hypervisor driver"));
+        return -1;
+    }
+
+    return 0;
+}
+
 
 static void
 virDomainObjListDataFree(void *payload, const void *name ATTRIBUTE_UNUSED)
@@ -3236,6 +3257,22 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
         }
     } else if (def->mem.cur_balloon == 0) {
         def->mem.cur_balloon = virDomainDefGetMemoryActual(def);
+    }
+
+    if ((def->mem.max_memory || def->mem.memory_slots) &&
+        !(def->mem.max_memory && def->mem.memory_slots)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("both maximum memory size and "
+                         "memory slot count must be specified"));
+        return -1;
+    }
+
+    if (def->mem.max_memory &&
+        def->mem.max_memory < virDomainDefGetMemoryActual(def)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("maximum memory size must be equal or greater than "
+                         "the actual memory size"));
+        return -1;
     }
 
     /*
@@ -13264,6 +13301,16 @@ virDomainDefParseXML(xmlDocPtr xml,
                              &def->mem.cur_balloon, false, true) < 0)
         goto error;
 
+    if (virDomainParseMemory("./maxMemory[1]", NULL, ctxt,
+                             &def->mem.max_memory, false, false) < 0)
+        goto error;
+
+    if (virXPathUInt("string(./maxMemory[1]/@slots)", ctxt, &def->mem.memory_slots) == -2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Failed to parse memory slot count"));
+        goto error;
+    }
+
     /* and info about it */
     if ((tmp = virXPathString("string(./memory[1]/@dumpCore)", ctxt)) &&
         (def->mem.dump_core = virTristateSwitchTypeFromString(tmp)) <= 0) {
@@ -16189,6 +16236,19 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (!virDomainNumaCheckABIStability(src->numa, dst->numa))
         goto error;
+
+    if (src->mem.memory_slots != dst->mem.memory_slots) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain memory slots count '%u' doesn't match source '%u"),
+                       dst->mem.memory_slots, src->mem.memory_slots);
+        goto error;
+    }
+    if (src->mem.max_memory != dst->mem.max_memory) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target maximum memory size '%llu' doesn't match source '%llu'"),
+                       dst->mem.max_memory, src->mem.max_memory);
+        goto error;
+    }
 
     if (src->vcpus != dst->vcpus) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -19877,6 +19937,12 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, "%s\n", (char *) xmlBufferContent(xmlbuf));
         xmlBufferFree(xmlbuf);
         xmlIndentTreeOutput = oldIndentTreeOutput;
+    }
+
+    if (def->mem.max_memory) {
+        virBufferAsprintf(buf,
+                          "<maxMemory slots='%u' unit='KiB'>%llu</maxMemory>\n",
+                          def->mem.memory_slots, def->mem.max_memory);
     }
 
     virBufferAddLit(buf, "<memory");

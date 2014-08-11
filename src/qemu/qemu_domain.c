@@ -1052,6 +1052,10 @@ qemuDomainDefPostParse(virDomainDefPtr def,
                                   VIR_DOMAIN_INPUT_BUS_USB) < 0)
         return -1;
 
+    /* memory hotplug tunables are not supported by this driver */
+    if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
+        return -1;
+
     return 0;
 }
 

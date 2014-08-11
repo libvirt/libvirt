@@ -83,10 +83,14 @@ vmwareDataFreeFunc(void *data)
 }
 
 static int
-vmwareDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
+vmwareDomainDefPostParse(virDomainDefPtr def,
                          virCapsPtr caps ATTRIBUTE_UNUSED,
                          void *opaque ATTRIBUTE_UNUSED)
 {
+    /* memory hotplug tunables are not supported by this driver */
+    if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
+        return -1;
+
     return 0;
 }
 
