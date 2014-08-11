@@ -37,7 +37,12 @@ The file which has version dependent changes and includes the template
 file for given below for all of its functionality.
 
 vbox_tmpl.c
-The file where all the real driver implementation code exists.
+The file contains all version specified codes. It implements the
+vboxUniformedAPI for each vbox version.
+
+vbox_common.c
+The file implement the common driver, with the uniformed api which
+defined in vbox_uniformed_api.h and implemented in vbox_tmpl.c
 
 Now there would be a vbox_V*.c file (for eg: vbox_V2_2.c for V2.2) for
 each major virtualbox version which would do some preprocessor magic

@@ -121,6 +121,9 @@ if (!data->vboxObj) {\
 /* global vbox API, used for all common codes. */
 static vboxUniformedAPI gVBoxAPI;
 
+/* update the virDriver according to the vboxUniformedAPI */
+static void updateDriver(void);
+
 int vboxRegisterUniformedAPI(uint32_t uVersion)
 {
     /* Install gVBoxAPI according to the vbox API version.
@@ -149,6 +152,7 @@ int vboxRegisterUniformedAPI(uint32_t uVersion)
     } else {
         return -1;
     }
+    updateDriver();
     return 0;
 }
 
@@ -461,9 +465,10 @@ static void vboxUninitialize(vboxGlobalData *data)
     VIR_FREE(data);
 }
 
-virDrvOpenStatus vboxConnectOpen(virConnectPtr conn,
-                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                 unsigned int flags)
+static virDrvOpenStatus
+vboxConnectOpen(virConnectPtr conn,
+                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                unsigned int flags)
 {
     vboxGlobalData *data = NULL;
     uid_t uid = geteuid();
@@ -532,7 +537,7 @@ virDrvOpenStatus vboxConnectOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-int vboxConnectClose(virConnectPtr conn)
+static int vboxConnectClose(virConnectPtr conn)
 {
     vboxGlobalData *data = conn->privateData;
     VIR_DEBUG("%s: in vboxClose", conn->driver->name);
@@ -543,7 +548,7 @@ int vboxConnectClose(virConnectPtr conn)
     return 0;
 }
 
-int
+static int
 vboxDomainSave(virDomainPtr dom, const char *path ATTRIBUTE_UNUSED)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
@@ -604,7 +609,7 @@ static void vboxDriverUnlock(vboxGlobalData *data)
     virMutexUnlock(&data->lock);
 }
 
-int vboxConnectGetVersion(virConnectPtr conn, unsigned long *version)
+static int vboxConnectGetVersion(virConnectPtr conn, unsigned long *version)
 {
     vboxGlobalData *data = conn->privateData;
     VIR_DEBUG("%s: in vboxGetVersion", conn->driver->name);
@@ -616,29 +621,29 @@ int vboxConnectGetVersion(virConnectPtr conn, unsigned long *version)
     return 0;
 }
 
-char *vboxConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+static char *vboxConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     return virGetHostname();
 }
 
-int vboxConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int vboxConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     /* Driver is using local, non-network based transport */
     return 1;
 }
 
-int vboxConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int vboxConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     /* No encryption is needed, or used on the local transport*/
     return 0;
 }
 
-int vboxConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int vboxConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     return 1;
 }
 
-int
+static int
 vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
 {
     VBOX_OBJECT_CHECK(conn, int, -1);
@@ -662,7 +667,7 @@ vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
     return ret;
 }
 
-char *vboxConnectGetCapabilities(virConnectPtr conn)
+static char *vboxConnectGetCapabilities(virConnectPtr conn)
 {
     VBOX_OBJECT_CHECK(conn, char *, NULL);
 
@@ -673,7 +678,7 @@ char *vboxConnectGetCapabilities(virConnectPtr conn)
     return ret;
 }
 
-int vboxConnectListDomains(virConnectPtr conn, int *ids, int nids)
+static int vboxConnectListDomains(virConnectPtr conn, int *ids, int nids)
 {
     VBOX_OBJECT_CHECK(conn, int, -1);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
@@ -711,7 +716,7 @@ int vboxConnectListDomains(virConnectPtr conn, int *ids, int nids)
     return ret;
 }
 
-int vboxConnectNumOfDomains(virConnectPtr conn)
+static int vboxConnectNumOfDomains(virConnectPtr conn)
 {
     VBOX_OBJECT_CHECK(conn, int, -1);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
@@ -746,7 +751,7 @@ int vboxConnectNumOfDomains(virConnectPtr conn)
     return ret;
 }
 
-virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id)
+static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id)
 {
     VBOX_OBJECT_CHECK(conn, virDomainPtr, NULL);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
@@ -892,7 +897,7 @@ virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
     return ret;
 }
 
-virDomainPtr
+static virDomainPtr
 vboxDomainLookupByName(virConnectPtr conn, const char *name)
 {
     VBOX_OBJECT_CHECK(conn, virDomainPtr, NULL);
@@ -1873,7 +1878,7 @@ vboxAttachSharedFolder(virDomainDefPtr def, vboxGlobalData *data, IMachine *mach
     }
 }
 
-virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml)
+static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml)
 {
     VBOX_OBJECT_CHECK(conn, virDomainPtr, NULL);
     IMachine       *machine     = NULL;
@@ -2042,7 +2047,7 @@ detachDevices_common(vboxGlobalData *data, vboxIIDUnion *iidu)
     VBOX_UTF16_FREE(hddcnameUtf16);
 }
 
-int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
+static int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
@@ -2075,7 +2080,7 @@ int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
     return ret;
 }
 
-int vboxDomainUndefine(virDomainPtr dom)
+static int vboxDomainUndefine(virDomainPtr dom)
 {
     return vboxDomainUndefineFlags(dom, 0);
 }
@@ -2231,7 +2236,7 @@ vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine, vboxIIDUnion
     return ret;
 }
 
-int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
+static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
@@ -2299,13 +2304,13 @@ int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     return ret;
 }
 
-int vboxDomainCreate(virDomainPtr dom)
+static int vboxDomainCreate(virDomainPtr dom)
 {
     return vboxDomainCreateWithFlags(dom, 0);
 }
 
-virDomainPtr vboxDomainCreateXML(virConnectPtr conn, const char *xml,
-                                 unsigned int flags)
+static virDomainPtr vboxDomainCreateXML(virConnectPtr conn, const char *xml,
+                                        unsigned int flags)
 {
     /* VirtualBox currently doesn't have support for running
      * virtual machines without actually defining them and thus
@@ -2332,7 +2337,7 @@ virDomainPtr vboxDomainCreateXML(virConnectPtr conn, const char *xml,
     return dom;
 }
 
-int vboxDomainIsActive(virDomainPtr dom)
+static int vboxDomainIsActive(virDomainPtr dom)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
@@ -2398,7 +2403,7 @@ int vboxDomainIsActive(virDomainPtr dom)
     return ret;
 }
 
-int vboxDomainIsPersistent(virDomainPtr dom)
+static int vboxDomainIsPersistent(virDomainPtr dom)
 {
     /* All domains are persistent.  However, we do want to check for
      * existence. */
@@ -2417,7 +2422,7 @@ int vboxDomainIsPersistent(virDomainPtr dom)
     return ret;
 }
 
-int vboxDomainIsUpdated(virDomainPtr dom)
+static int vboxDomainIsUpdated(virDomainPtr dom)
 {
     /* VBox domains never have a persistent state that differs from
      * current state.  However, we do want to check for existence.  */
@@ -2436,7 +2441,7 @@ int vboxDomainIsUpdated(virDomainPtr dom)
     return ret;
 }
 
-int vboxDomainSuspend(virDomainPtr dom)
+static int vboxDomainSuspend(virDomainPtr dom)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
@@ -2483,7 +2488,7 @@ int vboxDomainSuspend(virDomainPtr dom)
     return ret;
 }
 
-int vboxDomainResume(virDomainPtr dom)
+static int vboxDomainResume(virDomainPtr dom)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
@@ -2530,7 +2535,7 @@ int vboxDomainResume(virDomainPtr dom)
     return ret;
 }
 
-int vboxDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
+static int vboxDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
@@ -2578,12 +2583,12 @@ int vboxDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
     return ret;
 }
 
-int vboxDomainShutdown(virDomainPtr dom)
+static int vboxDomainShutdown(virDomainPtr dom)
 {
     return vboxDomainShutdownFlags(dom, 0);
 }
 
-int vboxDomainReboot(virDomainPtr dom, unsigned int flags)
+static int vboxDomainReboot(virDomainPtr dom, unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
@@ -2627,7 +2632,7 @@ int vboxDomainReboot(virDomainPtr dom, unsigned int flags)
     return ret;
 }
 
-int vboxDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
+static int vboxDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
@@ -2672,12 +2677,12 @@ int vboxDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
     return ret;
 }
 
-int vboxDomainDestroy(virDomainPtr dom)
+static int vboxDomainDestroy(virDomainPtr dom)
 {
     return vboxDomainDestroyFlags(dom, 0);
 }
 
-char *vboxDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
+static char *vboxDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
     /* Returning "hvm" always as suggested on list, cause
      * this functions seems to be badly named and it
      * is supposed to pass the ABI name and not the domain
@@ -2689,7 +2694,7 @@ char *vboxDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
     return osType;
 }
 
-int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory)
+static int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
@@ -2743,7 +2748,7 @@ int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory)
     return ret;
 }
 
-int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
+static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
@@ -2822,8 +2827,8 @@ int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
     return ret;
 }
 
-int vboxDomainGetState(virDomainPtr dom, int *state,
-                       int *reason, unsigned int flags)
+static int vboxDomainGetState(virDomainPtr dom, int *state,
+                              int *reason, unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     vboxIIDUnion domiid;
@@ -2849,8 +2854,8 @@ int vboxDomainGetState(virDomainPtr dom, int *state,
     return ret;
 }
 
-int vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
-                            unsigned int flags)
+static int vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
+                                   unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
@@ -2895,12 +2900,12 @@ int vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     return ret;
 }
 
-int vboxDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
+static int vboxDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 {
     return vboxDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_AFFECT_LIVE);
 }
 
-int vboxDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
+static int vboxDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     ISystemProperties *systemProperties = NULL;
@@ -2928,7 +2933,7 @@ int vboxDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
     return ret;
 }
 
-int vboxDomainGetMaxVcpus(virDomainPtr dom)
+static int vboxDomainGetMaxVcpus(virDomainPtr dom)
 {
     return vboxDomainGetVcpusFlags(dom, (VIR_DOMAIN_AFFECT_LIVE |
                                          VIR_DOMAIN_VCPU_MAXIMUM));
@@ -3791,7 +3796,7 @@ vboxDumpParallel(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine, P
     }
 }
 
-char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
+static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, char *, NULL);
     virDomainDefPtr def  = NULL;
@@ -3949,8 +3954,8 @@ char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     return ret;
 }
 
-int vboxConnectListDefinedDomains(virConnectPtr conn,
-                                  char ** const names, int maxnames)
+static int vboxConnectListDefinedDomains(virConnectPtr conn,
+                                         char ** const names, int maxnames)
 {
     VBOX_OBJECT_CHECK(conn, int, -1);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
@@ -4008,7 +4013,7 @@ int vboxConnectListDefinedDomains(virConnectPtr conn,
     return ret;
 }
 
-int vboxConnectNumOfDefinedDomains(virConnectPtr conn)
+static int vboxConnectNumOfDefinedDomains(virConnectPtr conn)
 {
     VBOX_OBJECT_CHECK(conn, int, -1);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
@@ -4160,21 +4165,21 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
     return ret;
 }
 
-int vboxDomainAttachDevice(virDomainPtr dom, const char *xml)
+static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml)
 {
     return vboxDomainAttachDeviceImpl(dom, xml, 0);
 }
 
-int vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
-                                unsigned int flags)
+static int vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
+                                       unsigned int flags)
 {
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE, -1);
 
     return vboxDomainAttachDeviceImpl(dom, xml, 0);
 }
 
-int vboxDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
-                                unsigned int flags)
+static int vboxDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
+                                       unsigned int flags)
 {
     virCheckFlags(VIR_DOMAIN_AFFECT_CURRENT |
                   VIR_DOMAIN_AFFECT_LIVE |
@@ -4189,7 +4194,7 @@ int vboxDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
     return vboxDomainAttachDeviceImpl(dom, xml, 1);
 }
 
-int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
+static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
@@ -4290,8 +4295,8 @@ int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
     return ret;
 }
 
-int vboxDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
-                                unsigned int flags)
+static int vboxDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
+                                       unsigned int flags)
 {
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE, -1);
 
@@ -5246,7 +5251,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
     return ret;
 }
 
-virDomainSnapshotPtr
+static virDomainSnapshotPtr
 vboxDomainSnapshotCreateXML(virDomainPtr dom,
                             const char *xmlDesc,
                             unsigned int flags)
@@ -5500,9 +5505,8 @@ vboxDomainSnapshotGet(vboxGlobalData *data,
     return snapshot;
 }
 
-static
-int vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
-                                    virDomainSnapshotPtr snapshot)
+static int vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
+                                         virDomainSnapshotPtr snapshot)
 {
     virDomainPtr dom = snapshot->domain;
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
@@ -5720,7 +5724,7 @@ int vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
 
 static
 int vboxSnapshotGetReadOnlyDisks(virDomainSnapshotPtr snapshot,
-                                    virDomainSnapshotDefPtr def)
+                                 virDomainSnapshotDefPtr def)
 {
     virDomainPtr dom = snapshot->domain;
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
@@ -5934,8 +5938,8 @@ int vboxSnapshotGetReadOnlyDisks(virDomainSnapshotPtr snapshot,
     return ret;
 }
 
-char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
-                                   unsigned int flags)
+static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
+                                          unsigned int flags)
 {
     virDomainPtr dom = snapshot->domain;
     VBOX_OBJECT_CHECK(dom->conn, char *, NULL);
@@ -6073,7 +6077,7 @@ char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     return ret;
 }
 
-int vboxDomainSnapshotNum(virDomainPtr dom, unsigned int flags)
+static int vboxDomainSnapshotNum(virDomainPtr dom, unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     vboxIIDUnion iid;
@@ -6113,8 +6117,8 @@ int vboxDomainSnapshotNum(virDomainPtr dom, unsigned int flags)
     return ret;
 }
 
-int vboxDomainSnapshotListNames(virDomainPtr dom, char **names,
-                                int nameslen, unsigned int flags)
+static int vboxDomainSnapshotListNames(virDomainPtr dom, char **names,
+                                       int nameslen, unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     vboxIIDUnion iid;
@@ -6192,7 +6196,7 @@ int vboxDomainSnapshotListNames(virDomainPtr dom, char **names,
     return ret;
 }
 
-virDomainSnapshotPtr
+static virDomainSnapshotPtr
 vboxDomainSnapshotLookupByName(virDomainPtr dom, const char *name,
                                unsigned int flags)
 {
@@ -6218,8 +6222,8 @@ vboxDomainSnapshotLookupByName(virDomainPtr dom, const char *name,
     return ret;
 }
 
-int vboxDomainHasCurrentSnapshot(virDomainPtr dom,
-                                 unsigned int flags)
+static int vboxDomainHasCurrentSnapshot(virDomainPtr dom,
+                                        unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     vboxIIDUnion iid;
@@ -6250,7 +6254,7 @@ int vboxDomainHasCurrentSnapshot(virDomainPtr dom,
     return ret;
 }
 
-virDomainSnapshotPtr
+static virDomainSnapshotPtr
 vboxDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
                             unsigned int flags)
 {
@@ -6311,7 +6315,7 @@ vboxDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
     return ret;
 }
 
-virDomainSnapshotPtr
+static virDomainSnapshotPtr
 vboxDomainSnapshotCurrent(virDomainPtr dom, unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, virDomainSnapshotPtr, NULL);
@@ -6364,8 +6368,8 @@ vboxDomainSnapshotCurrent(virDomainPtr dom, unsigned int flags)
     return ret;
 }
 
-int vboxDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
-                                unsigned int flags)
+static int vboxDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
+                                       unsigned int flags)
 {
     virDomainPtr dom = snapshot->domain;
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
@@ -6421,8 +6425,8 @@ int vboxDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
     return ret;
 }
 
-int vboxDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
-                                  unsigned int flags)
+static int vboxDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
+                                         unsigned int flags)
 {
     virDomainPtr dom = snapshot->domain;
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
@@ -6448,8 +6452,8 @@ int vboxDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
     return ret;
 }
 
-int vboxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
-                               unsigned int flags)
+static int vboxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
+                                      unsigned int flags)
 {
     virDomainPtr dom = snapshot->domain;
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
@@ -7044,8 +7048,8 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
     return ret;
 }
 
-int vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
-                             unsigned int flags)
+static int vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
+                                    unsigned int flags)
 {
     virDomainPtr dom = snapshot->domain;
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
@@ -7125,7 +7129,7 @@ int vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     return ret;
 }
 
-char *
+static char *
 vboxDomainScreenshot(virDomainPtr dom,
                      virStreamPtr st,
                      unsigned int screen,
@@ -7253,7 +7257,7 @@ vboxDomainScreenshot(virDomainPtr dom,
 }
 
 #define MATCH(FLAG) (flags & (FLAG))
-int
+static int
 vboxConnectListAllDomains(virConnectPtr conn,
                           virDomainPtr **domains,
                           unsigned int flags)
@@ -7409,14 +7413,14 @@ vboxConnectListAllDomains(virConnectPtr conn,
 }
 #undef MATCH
 
-int
+static int
 vboxNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
                 virNodeInfoPtr nodeinfo)
 {
     return nodeGetInfo(nodeinfo);
 }
 
-int
+static int
 vboxNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
                            unsigned long long *freeMems,
                            int startCell,
@@ -7425,7 +7429,7 @@ vboxNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
     return nodeGetCellsFreeMemory(freeMems, startCell, maxCells);
 }
 
-unsigned long long
+static unsigned long long
 vboxNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     unsigned long long freeMem;
@@ -7434,7 +7438,7 @@ vboxNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
     return freeMem;
 }
 
-int
+static int
 vboxNodeGetFreePages(virConnectPtr conn ATTRIBUTE_UNUSED,
                      unsigned int npages,
                      unsigned int *pages,
@@ -7446,4 +7450,89 @@ vboxNodeGetFreePages(virConnectPtr conn ATTRIBUTE_UNUSED,
     virCheckFlags(0, -1);
 
     return nodeGetFreePages(npages, pages, startCell, cellCount, counts);
+}
+
+/**
+ * Function Tables
+ */
+
+virDriver vboxCommonDriver = {
+    .no = VIR_DRV_VBOX,
+    .name = "VBOX",
+    .connectOpen = vboxConnectOpen, /* 0.6.3 */
+    .connectClose = vboxConnectClose, /* 0.6.3 */
+    .connectGetVersion = vboxConnectGetVersion, /* 0.6.3 */
+    .connectGetHostname = vboxConnectGetHostname, /* 0.6.3 */
+    .connectGetMaxVcpus = vboxConnectGetMaxVcpus, /* 0.6.3 */
+    .nodeGetInfo = vboxNodeGetInfo, /* 0.6.3 */
+    .connectGetCapabilities = vboxConnectGetCapabilities, /* 0.6.3 */
+    .connectListDomains = vboxConnectListDomains, /* 0.6.3 */
+    .connectNumOfDomains = vboxConnectNumOfDomains, /* 0.6.3 */
+    .connectListAllDomains = vboxConnectListAllDomains, /* 0.9.13 */
+    .domainCreateXML = vboxDomainCreateXML, /* 0.6.3 */
+    .domainLookupByID = vboxDomainLookupByID, /* 0.6.3 */
+    .domainLookupByUUID = vboxDomainLookupByUUID, /* 0.6.3 */
+    .domainLookupByName = vboxDomainLookupByName, /* 0.6.3 */
+    .domainSuspend = vboxDomainSuspend, /* 0.6.3 */
+    .domainResume = vboxDomainResume, /* 0.6.3 */
+    .domainShutdown = vboxDomainShutdown, /* 0.6.3 */
+    .domainShutdownFlags = vboxDomainShutdownFlags, /* 0.9.10 */
+    .domainReboot = vboxDomainReboot, /* 0.6.3 */
+    .domainDestroy = vboxDomainDestroy, /* 0.6.3 */
+    .domainDestroyFlags = vboxDomainDestroyFlags, /* 0.9.4 */
+    .domainGetOSType = vboxDomainGetOSType, /* 0.6.3 */
+    .domainSetMemory = vboxDomainSetMemory, /* 0.6.3 */
+    .domainGetInfo = vboxDomainGetInfo, /* 0.6.3 */
+    .domainGetState = vboxDomainGetState, /* 0.9.2 */
+    .domainSave = vboxDomainSave, /* 0.6.3 */
+    .domainSetVcpus = vboxDomainSetVcpus, /* 0.7.1 */
+    .domainSetVcpusFlags = vboxDomainSetVcpusFlags, /* 0.8.5 */
+    .domainGetVcpusFlags = vboxDomainGetVcpusFlags, /* 0.8.5 */
+    .domainGetMaxVcpus = vboxDomainGetMaxVcpus, /* 0.7.1 */
+    .domainGetXMLDesc = vboxDomainGetXMLDesc, /* 0.6.3 */
+    .connectListDefinedDomains = vboxConnectListDefinedDomains, /* 0.6.3 */
+    .connectNumOfDefinedDomains = vboxConnectNumOfDefinedDomains, /* 0.6.3 */
+    .domainCreate = vboxDomainCreate, /* 0.6.3 */
+    .domainCreateWithFlags = vboxDomainCreateWithFlags, /* 0.8.2 */
+    .domainDefineXML = vboxDomainDefineXML, /* 0.6.3 */
+    .domainUndefine = vboxDomainUndefine, /* 0.6.3 */
+    .domainUndefineFlags = vboxDomainUndefineFlags, /* 0.9.5 */
+    .domainAttachDevice = vboxDomainAttachDevice, /* 0.6.3 */
+    .domainAttachDeviceFlags = vboxDomainAttachDeviceFlags, /* 0.7.7 */
+    .domainDetachDevice = vboxDomainDetachDevice, /* 0.6.3 */
+    .domainDetachDeviceFlags = vboxDomainDetachDeviceFlags, /* 0.7.7 */
+    .domainUpdateDeviceFlags = vboxDomainUpdateDeviceFlags, /* 0.8.0 */
+    .nodeGetCellsFreeMemory = vboxNodeGetCellsFreeMemory, /* 0.6.5 */
+    .nodeGetFreeMemory = vboxNodeGetFreeMemory, /* 0.6.5 */
+    .connectIsEncrypted = vboxConnectIsEncrypted, /* 0.7.3 */
+    .connectIsSecure = vboxConnectIsSecure, /* 0.7.3 */
+    .domainIsActive = vboxDomainIsActive, /* 0.7.3 */
+    .domainIsPersistent = vboxDomainIsPersistent, /* 0.7.3 */
+    .domainIsUpdated = vboxDomainIsUpdated, /* 0.8.6 */
+    .domainSnapshotCreateXML = vboxDomainSnapshotCreateXML, /* 0.8.0 */
+    .domainSnapshotGetXMLDesc = vboxDomainSnapshotGetXMLDesc, /* 0.8.0 */
+    .domainSnapshotNum = vboxDomainSnapshotNum, /* 0.8.0 */
+    .domainSnapshotListNames = vboxDomainSnapshotListNames, /* 0.8.0 */
+    .domainSnapshotLookupByName = vboxDomainSnapshotLookupByName, /* 0.8.0 */
+    .domainHasCurrentSnapshot = vboxDomainHasCurrentSnapshot, /* 0.8.0 */
+    .domainSnapshotGetParent = vboxDomainSnapshotGetParent, /* 0.9.7 */
+    .domainSnapshotCurrent = vboxDomainSnapshotCurrent, /* 0.8.0 */
+    .domainSnapshotIsCurrent = vboxDomainSnapshotIsCurrent, /* 0.9.13 */
+    .domainSnapshotHasMetadata = vboxDomainSnapshotHasMetadata, /* 0.9.13 */
+    .domainRevertToSnapshot = vboxDomainRevertToSnapshot, /* 0.8.0 */
+    .domainSnapshotDelete = vboxDomainSnapshotDelete, /* 0.8.0 */
+    .connectIsAlive = vboxConnectIsAlive, /* 0.9.8 */
+    .nodeGetFreePages = vboxNodeGetFreePages, /* 1.2.6 */
+};
+
+static void updateDriver(void)
+{
+    /* Update the vboxDriver according to the vboxUniformedAPI.
+     * We need to make sure the vboxUniformedAPI is initialized
+     * before calling this function. */
+    gVBoxAPI.registerDomainEvent(&vboxCommonDriver);
+    if (gVBoxAPI.supportScreenshot)
+        vboxCommonDriver.domainScreenshot = vboxDomainScreenshot;
+    else
+        vboxCommonDriver.domainScreenshot = NULL;
 }
