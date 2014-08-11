@@ -2359,6 +2359,61 @@ xenFormatXMVif(virConfPtr conf,
 }
 
 
+int
+xenFormatConfigCommon(virConfPtr conf,
+                      virDomainDefPtr def,
+                      virConnectPtr conn,
+                      int xendConfigVersion)
+{
+    if (xenFormatXMGeneralMeta(conf, def) < 0)
+        return -1;
+
+    if (xenFormatXMMem(conf, def) < 0)
+        return -1;
+
+    if (xenFormatXMCPUAllocation(conf, def) < 0)
+        return -1;
+
+    if (xenFormatXMOS(conf, def) < 0)
+        return -1;
+
+    if (xenFormatXMCPUFeatures(conf, def, xendConfigVersion) < 0)
+        return -1;;
+
+    if (xenFormatXMCDROM(conf, def, xendConfigVersion) < 0)
+        return -1;
+
+    if (xenFormatXMTimeOffset(conf, def, xendConfigVersion) < 0)
+        return -1;
+
+    if (xenFormatXMEventActions(conf, def) < 0)
+        return -1;
+
+    if (xenFormatXMEmulator(conf, def) < 0)
+        return -1;
+
+    if (xenFormatXMInputDevs(conf, def) < 0)
+        return -1;
+
+    if (xenFormatXMVfb(conf, def, xendConfigVersion) < 0)
+        return -1;
+
+    if (xenFormatXMVif(conf, conn, def, xendConfigVersion) < 0)
+        return -1;
+
+    if (xenFormatXMPCI(conf, def) < 0)
+        return -1;
+
+    if (xenFormatXMCharDev(conf, def) < 0)
+        return -1;
+
+    if (xenFormatXMSound(conf, def) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
    either 32, or 64 on a platform where long is big enough.  */
 verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
@@ -2373,52 +2428,10 @@ xenFormatXM(virConnectPtr conn,
     if (!(conf = virConfNew()))
         goto cleanup;
 
-    if (xenFormatXMGeneralMeta(conf, def) < 0)
-        goto cleanup;
-
-    if (xenFormatXMMem(conf, def) < 0)
-        goto cleanup;
-
-    if (xenFormatXMCPUAllocation(conf, def) < 0)
-        goto cleanup;
-
-    if (xenFormatXMOS(conf, def) < 0)
-         goto cleanup;
-
-    if (xenFormatXMCPUFeatures(conf, def, xendConfigVersion) < 0)
-        goto cleanup;
-
-    if (xenFormatXMCDROM(conf, def, xendConfigVersion) < 0)
-        goto cleanup;
-
-    if (xenFormatXMTimeOffset(conf, def, xendConfigVersion) < 0)
-        goto cleanup;
-
-    if (xenFormatXMEventActions(conf, def) < 0)
-        goto cleanup;
-
-    if (xenFormatXMEmulator(conf, def) < 0)
-        goto cleanup;
-
-    if (xenFormatXMInputDevs(conf, def) < 0)
-        goto cleanup;
-
-    if (xenFormatXMVfb(conf, def, xendConfigVersion) < 0)
+    if (xenFormatConfigCommon(conf, def, conn, xendConfigVersion) < 0)
         goto cleanup;
 
     if (xenFormatXMDisks(conf, def, xendConfigVersion) < 0)
-        goto cleanup;
-
-    if (xenFormatXMVif(conf, conn, def, xendConfigVersion) < 0)
-        goto cleanup;
-
-    if (xenFormatXMPCI(conf, def) < 0)
-        goto cleanup;
-
-    if (xenFormatXMCharDev(conf, def) < 0)
-        goto cleanup;
-
-    if (xenFormatXMSound(conf, def) < 0)
         goto cleanup;
 
     return conf;

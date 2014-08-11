@@ -41,4 +41,9 @@ int xenParseConfigCommon(virConfPtr conf,
                          virCapsPtr caps,
                          int xendConfigVersion);
 
+int xenFormatConfigCommon(virConfPtr conf,
+                          virDomainDefPtr def,
+                          virConnectPtr conn,
+                          int xendConfigVersion);
+
 #endif /* __VIR_XEN_XM_H__ */
