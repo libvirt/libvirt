@@ -2248,6 +2248,66 @@ xenFormatXMVfb(virConfPtr conf,
 }
 
 
+static int
+xenFormatXMSound(virConfPtr conf, virDomainDefPtr def)
+{
+    if (STREQ(def->os.type, "hvm")) {
+        if (def->sounds) {
+            virBuffer buf = VIR_BUFFER_INITIALIZER;
+            char *str = NULL;
+            int ret = xenFormatSxprSound(def, &buf);
+
+            str = virBufferContentAndReset(&buf);
+            if (ret == 0)
+                ret = xenXMConfigSetString(conf, "soundhw", str);
+
+            VIR_FREE(str);
+            if (ret < 0)
+                return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
+xenFormatXMInputDevs(virConfPtr conf, virDomainDefPtr def)
+{
+    size_t i;
+
+    if (STREQ(def->os.type, "hvm")) {
+        for (i = 0; i < def->ninputs; i++) {
+            if (def->inputs[i]->bus == VIR_DOMAIN_INPUT_BUS_USB) {
+                if (xenXMConfigSetInt(conf, "usb", 1) < 0)
+                    return -1;
+
+                switch (def->inputs[i]->type) {
+                    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+                        if (xenXMConfigSetString(conf, "usbdevice", "mouse") < 0)
+                            return -1;
+
+                        break;
+                    case VIR_DOMAIN_INPUT_TYPE_TABLET:
+                        if (xenXMConfigSetString(conf, "usbdevice", "tablet") < 0)
+                            return -1;
+
+                        break;
+                    case VIR_DOMAIN_INPUT_TYPE_KBD:
+                        if (xenXMConfigSetString(conf, "usbdevice", "keyboard") < 0)
+                            return -1;
+
+                        break;
+                }
+                break;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
 /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
    either 32, or 64 on a platform where long is big enough.  */
 verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
@@ -2292,29 +2352,8 @@ xenFormatXM(virConnectPtr conn,
     if (xenFormatXMEmulator(conf, def) < 0)
         goto cleanup;
 
-    if (hvm) {
-        for (i = 0; i < def->ninputs; i++) {
-            if (def->inputs[i]->bus == VIR_DOMAIN_INPUT_BUS_USB) {
-                if (xenXMConfigSetInt(conf, "usb", 1) < 0)
-                    goto cleanup;
-                switch (def->inputs[i]->type) {
-                    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
-                        if (xenXMConfigSetString(conf, "usbdevice", "mouse") < 0)
-                            goto cleanup;
-                        break;
-                    case VIR_DOMAIN_INPUT_TYPE_TABLET:
-                        if (xenXMConfigSetString(conf, "usbdevice", "tablet") < 0)
-                            goto cleanup;
-                        break;
-                    case VIR_DOMAIN_INPUT_TYPE_KBD:
-                        if (xenXMConfigSetString(conf, "usbdevice", "keyboard") < 0)
-                            goto cleanup;
-                        break;
-                }
-                break;
-            }
-        }
-    }
+    if (xenFormatXMInputDevs(conf, def) < 0)
+        goto cleanup;
 
     if (xenFormatXMVfb(conf, def, xendConfigVersion) < 0)
         goto cleanup;
@@ -2346,20 +2385,8 @@ xenFormatXM(virConnectPtr conn,
     if (xenFormatXMCharDev(conf, def) < 0)
         goto cleanup;
 
-    if (hvm) {
-        if (def->sounds) {
-            virBuffer buf = VIR_BUFFER_INITIALIZER;
-            char *str = NULL;
-            int ret = xenFormatSxprSound(def, &buf);
-            str = virBufferContentAndReset(&buf);
-            if (ret == 0)
-                ret = xenXMConfigSetString(conf, "soundhw", str);
-
-            VIR_FREE(str);
-            if (ret < 0)
-                goto cleanup;
-        }
-    }
+    if (xenFormatXMSound(conf, def) < 0)
+        goto cleanup;
 
     return conf;
 
