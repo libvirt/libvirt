@@ -493,6 +493,7 @@ typedef struct {
     int (*attachFloppy)(vboxGlobalData *data, IMachine *machine, const char *src);
     int (*detachFloppy)(IMachine *machine);
     int (*snapshotRestore)(virDomainPtr dom, IMachine *machine, ISnapshot *snapshot);
+    void (*registerDomainEvent)(virDriverPtr driver);
     vboxUniformedPFN UPFN;
     vboxUniformedIID UIID;
     vboxUniformedArray UArray;

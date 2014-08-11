@@ -1493,6 +1493,16 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
 #if VBOX_API_VERSION <= 2002000 || VBOX_API_VERSION >= 4000000
     /* No Callback support for VirtualBox 2.2.* series */
     /* No Callback support for VirtualBox 4.* series */
+
+static void
+_registerDomainEvent(virDriverPtr driver)
+{
+    driver->connectDomainEventRegister = NULL;
+    driver->connectDomainEventDeregister = NULL;
+    driver->connectDomainEventRegisterAny = NULL;
+    driver->connectDomainEventDeregisterAny = NULL;
+}
+
 #else /* !(VBOX_API_VERSION == 2002000 || VBOX_API_VERSION >= 4000000) */
 
 /* Functions needed for Callbacks */
@@ -2033,6 +2043,15 @@ vboxConnectDomainEventDeregisterAny(virConnectPtr conn,
         ret = 0;
 
     return ret;
+}
+
+static void
+_registerDomainEvent(virDriverPtr driver)
+{
+    driver->connectDomainEventRegister = vboxConnectDomainEventRegister; /* 0.7.0 */
+    driver->connectDomainEventDeregister = vboxConnectDomainEventDeregister; /* 0.7.0 */
+    driver->connectDomainEventRegisterAny = vboxConnectDomainEventRegisterAny; /* 0.8.0 */
+    driver->connectDomainEventDeregisterAny = vboxConnectDomainEventDeregisterAny; /* 0.8.0 */
 }
 
 #endif /* !(VBOX_API_VERSION == 2002000 || VBOX_API_VERSION >= 4000000) */
@@ -6382,6 +6401,7 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->attachFloppy = _attachFloppy;
     pVBoxAPI->detachFloppy = _detachFloppy;
     pVBoxAPI->snapshotRestore = _vboxDomainSnapshotRestore;
+    pVBoxAPI->registerDomainEvent = _registerDomainEvent;
     pVBoxAPI->UPFN = _UPFN;
     pVBoxAPI->UIID = _UIID;
     pVBoxAPI->UArray = _UArray;
