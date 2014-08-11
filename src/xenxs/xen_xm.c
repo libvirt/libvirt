@@ -2021,42 +2021,57 @@ xenFormatXMCPUFeatures(virConfPtr conf,
 }
 
 
-/* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
-   either 32, or 64 on a platform where long is big enough.  */
-verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
-
-virConfPtr
-xenFormatXM(virConnectPtr conn,
-            virDomainDefPtr def,
-            int xendConfigVersion)
+static int
+xenFormatXMEmulator(virConfPtr conf, virDomainDefPtr def)
 {
-    virConfPtr conf = NULL;
-    int hvm = 0;
+    if (def->emulator &&
+        xenXMConfigSetString(conf, "device_model", def->emulator) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+xenFormatXMCDROM(virConfPtr conf,
+                 virDomainDefPtr def,
+                 int xendConfigVersion)
+{
     size_t i;
-    virConfValuePtr netVal = NULL;
 
-    if (!(conf = virConfNew()))
-        goto cleanup;
+    if (STREQ(def->os.type, "hvm")) {
+        if (xendConfigVersion == XEND_CONFIG_VERSION_3_0_2) {
+            for (i = 0; i < def->ndisks; i++) {
+                if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
+                    def->disks[i]->dst &&
+                    STREQ(def->disks[i]->dst, "hdc") &&
+                    virDomainDiskGetSource(def->disks[i])) {
+                    if (xenXMConfigSetString(conf, "cdrom",
+                                             virDomainDiskGetSource(def->disks[i])) < 0)
+                        return -1;
+                    break;
+                }
+            }
+        }
+    }
 
-    if (xenFormatXMGeneralMeta(conf, def) < 0)
-        goto cleanup;
+    return 0;
+}
 
-    if (xenFormatXMMem(conf, def) < 0)
-        goto cleanup;
 
-    if (xenFormatXMCPUAllocation(conf, def) < 0)
-        goto cleanup;
+static int
+xenFormatXMOS(virConfPtr conf, virDomainDefPtr def)
+{
+    size_t i;
 
-    hvm = STREQ(def->os.type, "hvm") ? 1 : 0;
-
-    if (hvm) {
+    if (STREQ(def->os.type, "hvm")) {
         char boot[VIR_DOMAIN_BOOT_LAST+1];
         if (xenXMConfigSetString(conf, "builder", "hvm") < 0)
-            goto cleanup;
+            return -1;
 
         if (def->os.loader &&
             xenXMConfigSetString(conf, "kernel", def->os.loader) < 0)
-            goto cleanup;
+            return -1;
 
         for (i = 0; i < def->os.nBootDevs; i++) {
             switch (def->os.bootDevs[i]) {
@@ -2075,6 +2090,7 @@ xenFormatXM(virConnectPtr conn,
                 break;
             }
         }
+
         if (!def->os.nBootDevs) {
             boot[0] = 'c';
             boot[1] = '\0';
@@ -2083,43 +2099,69 @@ xenFormatXM(virConnectPtr conn,
         }
 
         if (xenXMConfigSetString(conf, "boot", boot) < 0)
-            goto cleanup;
-
-        if (xenFormatXMCPUFeatures(conf, def, xendConfigVersion) < 0)
-            goto cleanup;
-
-        if (xendConfigVersion == XEND_CONFIG_VERSION_3_0_2) {
-            for (i = 0; i < def->ndisks; i++) {
-                if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
-                    def->disks[i]->dst &&
-                    STREQ(def->disks[i]->dst, "hdc") &&
-                    virDomainDiskGetSource(def->disks[i])) {
-                    if (xenXMConfigSetString(conf, "cdrom",
-                                             virDomainDiskGetSource(def->disks[i])) < 0)
-                        goto cleanup;
-                    break;
-                }
-            }
-        }
+            return -1;
 
         /* XXX floppy disks */
     } else {
         if (def->os.bootloader &&
-            xenXMConfigSetString(conf, "bootloader", def->os.bootloader) < 0)
-            goto cleanup;
-        if (def->os.bootloaderArgs &&
-            xenXMConfigSetString(conf, "bootargs", def->os.bootloaderArgs) < 0)
-            goto cleanup;
-        if (def->os.kernel &&
-            xenXMConfigSetString(conf, "kernel", def->os.kernel) < 0)
-            goto cleanup;
-        if (def->os.initrd &&
-            xenXMConfigSetString(conf, "ramdisk", def->os.initrd) < 0)
-            goto cleanup;
-        if (def->os.cmdline &&
-            xenXMConfigSetString(conf, "extra", def->os.cmdline) < 0)
-            goto cleanup;
-    } /* !hvm */
+             xenXMConfigSetString(conf, "bootloader", def->os.bootloader) < 0)
+            return -1;
+
+         if (def->os.bootloaderArgs &&
+             xenXMConfigSetString(conf, "bootargs", def->os.bootloaderArgs) < 0)
+            return -1;
+
+         if (def->os.kernel &&
+             xenXMConfigSetString(conf, "kernel", def->os.kernel) < 0)
+            return -1;
+
+         if (def->os.initrd &&
+             xenXMConfigSetString(conf, "ramdisk", def->os.initrd) < 0)
+            return -1;
+
+         if (def->os.cmdline &&
+             xenXMConfigSetString(conf, "extra", def->os.cmdline) < 0)
+            return -1;
+     } /* !hvm */
+
+    return 0;
+}
+
+
+/* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
+   either 32, or 64 on a platform where long is big enough.  */
+verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
+
+virConfPtr
+xenFormatXM(virConnectPtr conn,
+            virDomainDefPtr def,
+            int xendConfigVersion)
+{
+    virConfPtr conf = NULL;
+    int hvm = STREQ(def->os.type, "hvm") ? 1 : 0;
+    size_t i;
+    virConfValuePtr netVal = NULL;
+
+    if (!(conf = virConfNew()))
+        goto cleanup;
+
+    if (xenFormatXMGeneralMeta(conf, def) < 0)
+        goto cleanup;
+
+    if (xenFormatXMMem(conf, def) < 0)
+        goto cleanup;
+
+    if (xenFormatXMCPUAllocation(conf, def) < 0)
+        goto cleanup;
+
+    if (xenFormatXMOS(conf, def) < 0)
+        goto cleanup;
+
+    if (xenFormatXMCPUFeatures(conf, def, xendConfigVersion) < 0)
+        goto cleanup;
+
+    if (xenFormatXMCDROM(conf, def, xendConfigVersion) < 0)
+        goto cleanup;
 
     if (xenFormatXMTimeOffset(conf, def, xendConfigVersion) < 0)
         goto cleanup;
@@ -2127,11 +2169,10 @@ xenFormatXM(virConnectPtr conn,
     if (xenFormatXMEventActions(conf, def) < 0)
         goto cleanup;
 
-    if (hvm) {
-        if (def->emulator &&
-            xenXMConfigSetString(conf, "device_model", def->emulator) < 0)
-            goto cleanup;
+    if (xenFormatXMEmulator(conf, def) < 0)
+        goto cleanup;
 
+    if (hvm) {
         for (i = 0; i < def->ninputs; i++) {
             if (def->inputs[i]->bus == VIR_DOMAIN_INPUT_BUS_USB) {
                 if (xenXMConfigSetInt(conf, "usb", 1) < 0)
