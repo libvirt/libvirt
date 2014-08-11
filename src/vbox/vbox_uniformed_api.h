@@ -256,6 +256,7 @@ int vboxConnectIsAlive(virConnectPtr conn);
 int vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type);
 char *vboxConnectGetCapabilities(virConnectPtr conn);
 int vboxConnectListDomains(virConnectPtr conn, int *ids, int nids);
+int vboxConnectNumOfDomains(virConnectPtr conn);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

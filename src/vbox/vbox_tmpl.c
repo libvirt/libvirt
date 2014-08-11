@@ -921,42 +921,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static int vboxConnectNumOfDomains(virConnectPtr conn)
-{
-    VBOX_OBJECT_CHECK(conn, int, -1);
-    vboxArray machines = VBOX_ARRAY_INITIALIZER;
-    PRUint32 state;
-    nsresult rc;
-    size_t i;
-
-    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get number of Domains, rc=%08x"), (unsigned)rc);
-        goto cleanup;
-    }
-
-    ret = 0;
-    for (i = 0; i < machines.count; ++i) {
-        IMachine *machine = machines.items[i];
-
-        if (machine) {
-            PRBool isAccessible = PR_FALSE;
-            machine->vtbl->GetAccessible(machine, &isAccessible);
-            if (isAccessible) {
-                machine->vtbl->GetState(machine, &state);
-                if ((state >= MachineState_FirstOnline) &&
-                    (state <= MachineState_LastOnline))
-                    ret++;
-            }
-        }
-    }
-
- cleanup:
-    vboxArrayRelease(&machines);
-    return ret;
-}
-
 static virDomainPtr vboxDomainCreateXML(virConnectPtr conn, const char *xml,
                                         unsigned int flags)
 {
