@@ -2155,3 +2155,8 @@ int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
  cleanup:
     return ret;
 }
+
+int vboxDomainCreate(virDomainPtr dom)
+{
+    return vboxDomainCreateWithFlags(dom, 0);
+}

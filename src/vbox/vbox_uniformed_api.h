@@ -406,6 +406,7 @@ virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
 virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml);
 int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags);
 int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags);
+int vboxDomainCreate(virDomainPtr dom);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

@@ -265,8 +265,6 @@ static vboxGlobalData *g_pVBoxGlobalData = NULL;
 
 #endif /* VBOX_API_VERSION >= 4000000 */
 
-static int vboxDomainCreate(virDomainPtr dom);
-
 #if VBOX_API_VERSION > 2002000 && VBOX_API_VERSION < 4000000
 /* Since vboxConnectGetCapabilities has been rewritten,
  * vboxDriverLock and vboxDriverUnlock only be used in code for
@@ -3079,11 +3077,6 @@ static int vboxConnectNumOfDefinedDomains(virConnectPtr conn)
  cleanup:
     vboxArrayRelease(&machines);
     return ret;
-}
-
-static int vboxDomainCreate(virDomainPtr dom)
-{
-    return vboxDomainCreateWithFlags(dom, 0);
 }
 
 #if VBOX_API_VERSION < 3001000
