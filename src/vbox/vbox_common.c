@@ -417,3 +417,8 @@ int vboxConnectGetVersion(virConnectPtr conn, unsigned long *version)
 
     return 0;
 }
+
+char *vboxConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return virGetHostname();
+}

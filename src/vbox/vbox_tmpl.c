@@ -914,12 +914,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static char *vboxConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return virGetHostname();
-}
-
-
 static int vboxConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     /* Driver is using local, non-network based transport */
