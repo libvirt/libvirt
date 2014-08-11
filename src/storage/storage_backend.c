@@ -621,7 +621,7 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
 
         if (virCommandRun(cmd, NULL) == 0) {
             /* command was successfully run, check if the file was created */
-            if (stat(vol->target.path, &st) >=0)
+            if (stat(vol->target.path, &st) >= 0)
                 filecreated = true;
         }
     }

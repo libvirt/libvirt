@@ -691,7 +691,7 @@ xenapiDomainLookupByName(virConnectPtr conn,
         }
         vm = vms->contents[0];
         xen_vm_get_uuid(session, &uuid, vm);
-        if (uuid!=NULL) {
+        if (uuid != NULL) {
             ignore_value(virUUIDParse(uuid, raw_uuid));
             domP = virGetDomain(conn, name, raw_uuid);
             if (domP != NULL) {

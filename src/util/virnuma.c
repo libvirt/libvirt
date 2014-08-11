@@ -451,7 +451,7 @@ virNumaGetDistances(int node,
 
     *ndistances = max_node + 1;
 
-    for (i = 0; i<= max_node; i++) {
+    for (i = 0; i <= max_node; i++) {
         if (!virNumaNodeIsAvailable(node))
             continue;
 

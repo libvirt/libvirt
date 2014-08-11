@@ -8397,7 +8397,7 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
 
     virDomainPtr dom = snapshot->domain;
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    virDomainSnapshotDefPtr def= NULL;
+    virDomainSnapshotDefPtr def = NULL;
     char *defXml = NULL;
     vboxIID domiid = VBOX_IID_INITIALIZER;
     nsresult rc;
@@ -10173,7 +10173,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network,
                                                                  &dhcpServer);
                 if (dhcpServer) {
                     ipdef->nranges = 1;
-                    if (VIR_ALLOC_N(ipdef->ranges, ipdef->nranges) >=0) {
+                    if (VIR_ALLOC_N(ipdef->ranges, ipdef->nranges) >= 0) {
                         PRUnichar *ipAddressUtf16     = NULL;
                         PRUnichar *networkMaskUtf16   = NULL;
                         PRUnichar *fromIPAddressUtf16 = NULL;
@@ -10211,7 +10211,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network,
                     }
 
                     ipdef->nhosts = 1;
-                    if (VIR_ALLOC_N(ipdef->hosts, ipdef->nhosts) >=0) {
+                    if (VIR_ALLOC_N(ipdef->hosts, ipdef->nhosts) >= 0) {
                         if (VIR_STRDUP(ipdef->hosts[0].name, network->name) < 0) {
                             VIR_FREE(ipdef->hosts);
                             ipdef->nhosts = 0;

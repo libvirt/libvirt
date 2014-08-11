@@ -32,8 +32,8 @@ foreach my $file (@ARGV) {
     while (defined (my $line = <FILE>)) {
         my $data = $line;
 
-        # Kill any quoted , ; or "
-        $data =~ s/'[";,]'/'X'/g;
+        # Kill any quoted , ; = or "
+        $data =~ s/'[";,=]'/'X'/g;
 
         # Kill any quoted strings
         $data =~ s,"([^\\\"]|\\.)*","XXX",g;
@@ -147,10 +147,9 @@ foreach my $file (@ARGV) {
 
         # Require spaces around assignment '=', compounds and '=='
         # with the exception of virAssertCmpInt()
-        while ($data =~ /[^!<>&|\-+*\/%\^'= ]=\+[^=]/ ||
-               $data =~ /[^!<>&|\-+*\/%\^'=]=[^= \\\n]/ ||
-               $data =~ /[\S]==/ ||
-               ($data =~ /==[^\s,]/ && $data !~ /[\s]virAssertCmpInt\(/)) {
+        $data =~ s/(virAssertCmpInt\(.* ).?=,/$1op,/;
+        while ($data =~ /[^ ]\b[!<>&|\-+*\/%\^=]?=[^=]/ ||
+               $data =~ /=[^= \\\n]/) {
             print "$file:$.: $line";
             $ret = 1;
             last;
