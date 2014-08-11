@@ -666,7 +666,6 @@ _vboxIIDFromArrayItem(vboxGlobalData *data, vboxIIDUnion *iidu,
     vboxIIDFromArrayItem_v3_x(data, &iidu->vboxIID_v3_x, array, idx);
 }
 
-
 # define vboxIIDUnalloc(iid) vboxIIDUnalloc_v3_x(data, iid)
 # define vboxIIDToUUID(iid, uuid) vboxIIDToUUID_v3_x(data, iid, uuid)
 # define vboxIIDFromUUID(iid, uuid) vboxIIDFromUUID_v3_x(data, iid, uuid)
@@ -676,7 +675,6 @@ _vboxIIDFromArrayItem(vboxGlobalData *data, vboxIIDUnion *iidu,
 # define DEBUGIID(msg, strUtf16) DEBUGPRUnichar(msg, strUtf16)
 
 #endif /* !(VBOX_API_VERSION == 2002000) */
-
 
 /**
  * function to generate the name for medium,
@@ -7786,6 +7784,18 @@ static void _DEBUGIID(const char *msg, vboxIIDUnion *iidu)
 
 #endif /* VBOX_API_VERSION != 2002000 */
 
+static void
+_vboxIIDToUtf8(vboxGlobalData *data ATTRIBUTE_UNUSED,
+               vboxIIDUnion *iidu ATTRIBUTE_UNUSED,
+               char **utf8 ATTRIBUTE_UNUSED)
+{
+#if VBOX_API_VERSION == 2002000
+    vboxUnsupported();
+#else /* !(VBOX_API_VERSION == 2002000) */
+    data->pFuncs->pfnUtf16ToUtf8(IID_MEMBER(value), utf8);
+#endif /* !(VBOX_API_VERSION == 2002000) */
+}
+
 static void* _handleGetMachines(IVirtualBox *vboxObj)
 {
     return vboxObj->vtbl->GetMachines;
@@ -7838,6 +7848,12 @@ _virtualboxGetMachine(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IMachine **machi
 }
 
 #endif /* VBOX_API_VERSION >= 4000000 */
+
+static nsresult
+_virtualboxOpenMachine(IVirtualBox *vboxObj, PRUnichar *settingsFile, IMachine **machine)
+{
+    return vboxObj->vtbl->OpenMachine(vboxObj, settingsFile, machine);
+}
 
 static nsresult
 _virtualboxGetSystemProperties(IVirtualBox *vboxObj, ISystemProperties **systemProperties)
@@ -7907,6 +7923,20 @@ _virtualboxCreateMachine(vboxGlobalData *data, virDomainDefPtr def, IMachine **m
     VBOX_UTF16_FREE(machineNameUtf16);
     vboxIIDUnalloc(&iid);
     return rc;
+}
+
+static nsresult
+_virtualboxCreateHardDiskMedium(IVirtualBox *vboxObj ATTRIBUTE_UNUSED,
+                                PRUnichar *format ATTRIBUTE_UNUSED,
+                                PRUnichar *location ATTRIBUTE_UNUSED,
+                                IMedium **medium ATTRIBUTE_UNUSED)
+{
+#if VBOX_API_VERSION < 3001000
+    vboxUnsupported();
+    return 0;
+#else /* VBOX_API_VERSION >= 3001000 */
+    return vboxObj->vtbl->CreateHardDisk(vboxObj, format, location, medium);
+#endif /* VBOX_API_VERSION >= 3001000 */
 }
 
 static nsresult
@@ -8033,6 +8063,20 @@ _machineLaunchVMProcess(vboxGlobalData *data,
 }
 
 static nsresult
+_machineUnregister(IMachine *machine ATTRIBUTE_UNUSED,
+                   PRUint32 cleanupMode ATTRIBUTE_UNUSED,
+                   PRUint32 *aMediaSize ATTRIBUTE_UNUSED,
+                   IMedium ***aMedia ATTRIBUTE_UNUSED)
+{
+#if VBOX_API_VERSION < 4000000
+    vboxUnsupported();
+    return 0;
+#else /* VBOX_API_VERSION >= 4000000 */
+    return machine->vtbl->Unregister(machine, cleanupMode, aMediaSize, aMedia);
+#endif /* VBOX_API_VERSION >= 4000000 */
+}
+
+static nsresult
 _machineGetAccessible(IMachine *machine, PRBool *isAccessible)
 {
     return machine->vtbl->GetAccessible(machine, isAccessible);
@@ -8115,6 +8159,18 @@ _machineGetUSBCommon(IMachine *machine, IUSBCommon **USBCommon)
 #else
     return machine->vtbl->GetUSBDeviceFilters(machine, USBCommon);
 #endif
+}
+
+static nsresult
+_machineGetCurrentSnapshot(IMachine *machine, ISnapshot **currentSnapshot)
+{
+    return machine->vtbl->GetCurrentSnapshot(machine, currentSnapshot);
+}
+
+static nsresult
+_machineGetSettingsFilePath(IMachine *machine, PRUnichar **settingsFilePath)
+{
+    return machine->vtbl->GetSettingsFilePath(machine, settingsFilePath);
 }
 
 static nsresult
@@ -8354,6 +8410,13 @@ static nsresult
 _consoleReset(IConsole *console)
 {
     return console->vtbl->Reset(console);
+}
+
+static nsresult
+_consoleTakeSnapshot(IConsole *console, PRUnichar *name,
+                     PRUnichar *description, IProgress **progress)
+{
+    return console->vtbl->TakeSnapshot(console, name, description, progress);
 }
 
 static nsresult
@@ -9012,9 +9075,73 @@ static nsresult _mediumGetReadOnly(IMedium *medium ATTRIBUTE_UNUSED,
 #endif /* VBOX_API_VERSION >= 3001000 */
 }
 
+#if VBOX_API_VERSION < 3001000
+
+static nsresult _mediumGetParent(IMedium *medium ATTRIBUTE_UNUSED,
+                                 IMedium **parent ATTRIBUTE_UNUSED)
+{
+    vboxUnsupported();
+    return 0;
+}
+
+static nsresult _mediumGetChildren(IMedium *medium ATTRIBUTE_UNUSED,
+                                   PRUint32 *childrenSize ATTRIBUTE_UNUSED,
+                                   IMedium ***children ATTRIBUTE_UNUSED)
+{
+    vboxUnsupported();
+    return 0;
+}
+
+static nsresult _mediumGetFormat(IMedium *medium ATTRIBUTE_UNUSED,
+                                 PRUnichar **format ATTRIBUTE_UNUSED)
+{
+    vboxUnsupported();
+    return 0;
+}
+
+static nsresult _mediumDeleteStorage(IMedium *medium ATTRIBUTE_UNUSED,
+                                     IProgress **progress ATTRIBUTE_UNUSED)
+{
+    vboxUnsupported();
+    return 0;
+}
+
+#else /* VBOX_API_VERSION >= 3001000 */
+
+static nsresult _mediumGetParent(IMedium *medium,
+                                 IMedium **parent)
+{
+    return medium->vtbl->GetParent(medium, parent);
+}
+
+static nsresult _mediumGetChildren(IMedium *medium,
+                                   PRUint32 *childrenSize,
+                                   IMedium ***children)
+{
+    return medium->vtbl->GetChildren(medium, childrenSize, children);
+}
+
+static nsresult _mediumGetFormat(IMedium *medium,
+                                 PRUnichar **format)
+{
+    return medium->vtbl->GetFormat(medium, format);
+}
+
+static nsresult _mediumDeleteStorage(IMedium *medium,
+                                     IProgress **progress)
+{
+    return medium->vtbl->DeleteStorage(medium, progress);
+}
+
+#endif /* VBOX_API_VERSION >= 3001000 */
+
 static nsresult _mediumRelease(IMedium *medium)
 {
     return medium->vtbl->nsisupports.Release((nsISupports *)medium);
+}
+static nsresult _mediumClose(IMedium *medium)
+{
+    return medium->vtbl->Close(medium);
 }
 
 static nsresult _mediumSetType(IMedium *medium ATTRIBUTE_UNUSED,
@@ -9026,6 +9153,27 @@ static nsresult _mediumSetType(IMedium *medium ATTRIBUTE_UNUSED,
     vboxUnsupported();
     return 0;
 #endif
+}
+
+static nsresult
+_mediumCreateDiffStorage(IMedium *medium ATTRIBUTE_UNUSED,
+                         IMedium *target ATTRIBUTE_UNUSED,
+                         PRUint32 variantSize ATTRIBUTE_UNUSED,
+                         PRUint32 *variant ATTRIBUTE_UNUSED,
+                         IProgress **progress ATTRIBUTE_UNUSED)
+{
+#if VBOX_API_VERSION < 3001000
+    vboxUnsupported();
+    return 0;
+#elif VBOX_API_VERSION < 4003000
+    if (variantSize == 0)
+        return 0;
+    if (variantSize > 1)
+        VIR_WARN("Only one variant is avaible in current version");
+    return medium->vtbl->CreateDiffStorage(medium, target, variant[0], progress);
+#else /* VBOX_API_VERSION >= 4003000 */
+    return medium->vtbl->CreateDiffStorage(medium, target, variantSize, variant, progress);
+#endif /* VBOX_API_VERSION >= 4003000 */
 }
 
 static nsresult
@@ -9146,6 +9294,7 @@ static vboxUniformedIID _UIID = {
     .vboxIIDFromUUID = _vboxIIDFromUUID,
     .vboxIIDIsEqual = _vboxIIDIsEqual,
     .vboxIIDFromArrayItem = _vboxIIDFromArrayItem,
+    .vboxIIDToUtf8 = _vboxIIDToUtf8,
     .DEBUGIID = _DEBUGIID,
 };
 
@@ -9165,8 +9314,10 @@ static vboxUniformednsISupports _nsUISupports = {
 static vboxUniformedIVirtualBox _UIVirtualBox = {
     .GetVersion = _virtualboxGetVersion,
     .GetMachine = _virtualboxGetMachine,
+    .OpenMachine = _virtualboxOpenMachine,
     .GetSystemProperties = _virtualboxGetSystemProperties,
     .CreateMachine = _virtualboxCreateMachine,
+    .CreateHardDiskMedium = _virtualboxCreateHardDiskMedium,
     .RegisterMachine = _virtualboxRegisterMachine,
     .FindMedium = _virtualboxFindMedium,
     .OpenMedium = _virtualboxOpenMedium,
@@ -9179,6 +9330,7 @@ static vboxUniformedIMachine _UIMachine = {
     .CreateSharedFolder = _machineCreateSharedFolder,
     .RemoveSharedFolder = _machineRemoveSharedFolder,
     .LaunchVMProcess = _machineLaunchVMProcess,
+    .Unregister = _machineUnregister,
     .GetAccessible = _machineGetAccessible,
     .GetState = _machineGetState,
     .GetName = _machineGetName,
@@ -9191,6 +9343,8 @@ static vboxUniformedIMachine _UIMachine = {
     .GetParallelPort = _machineGetParallelPort,
     .GetVRDxServer = _machineGetVRDxServer,
     .GetUSBCommon = _machineGetUSBCommon,
+    .GetCurrentSnapshot = _machineGetCurrentSnapshot,
+    .GetSettingsFilePath = _machineGetSettingsFilePath,
     .GetCPUCount = _machineGetCPUCount,
     .SetCPUCount = _machineSetCPUCount,
     .GetMemorySize = _machineGetMemorySize,
@@ -9227,6 +9381,7 @@ static vboxUniformedIConsole _UIConsole = {
     .PowerButton = _consolePowerButton,
     .PowerDown = _consolePowerDown,
     .Reset = _consoleReset,
+    .TakeSnapshot = _consoleTakeSnapshot,
 };
 
 static vboxUniformedIProgress _UIProgress = {
@@ -9337,8 +9492,14 @@ static vboxUniformedIMedium _UIMedium = {
     .GetId = _mediumGetId,
     .GetLocation = _mediumGetLocation,
     .GetReadOnly = _mediumGetReadOnly,
+    .GetParent = _mediumGetParent,
+    .GetChildren = _mediumGetChildren,
+    .GetFormat = _mediumGetFormat,
+    .DeleteStorage = _mediumDeleteStorage,
     .Release = _mediumRelease,
+    .Close = _mediumClose,
     .SetType = _mediumSetType,
+    .CreateDiffStorage = _mediumCreateDiffStorage,
 };
 
 static vboxUniformedIMediumAttachment _UIMediumAttachment = {
@@ -9446,6 +9607,12 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->accelerate2DVideo = 0;
     pVBoxAPI->oldMediumInterface = 1;
 #endif /* VBOX_API_VERSION < 3001000 */
+
+#if VBOX_API_VERSION >= 4002000
+    pVBoxAPI->vboxSnapshotRedefine = 1;
+#else /* VBOX_API_VERSION < 4002000 */
+    pVBoxAPI->vboxSnapshotRedefine = 0;
+#endif /* VBOX_API_VERSION < 4002000 */
 }
 
 /**

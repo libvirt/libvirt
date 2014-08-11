@@ -159,6 +159,7 @@ typedef struct {
     void (*vboxIIDFromUUID)(vboxGlobalData *data, vboxIIDUnion *iidu, const unsigned char *uuid);
     bool (*vboxIIDIsEqual)(vboxGlobalData *data, vboxIIDUnion *iidu1, vboxIIDUnion *iidu2);
     void (*vboxIIDFromArrayItem)(vboxGlobalData *data, vboxIIDUnion *iidu, vboxArray *array, int idx);
+    void (*vboxIIDToUtf8)(vboxGlobalData *data, vboxIIDUnion *iidu, char **utf8);
     void (*DEBUGIID)(const char *msg, vboxIIDUnion *iidu);
 } vboxUniformedIID;
 
@@ -182,8 +183,10 @@ typedef struct {
 typedef struct {
     nsresult (*GetVersion)(IVirtualBox *vboxObj, PRUnichar **versionUtf16);
     nsresult (*GetMachine)(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IMachine **machine);
+    nsresult (*OpenMachine)(IVirtualBox *vboxObj, PRUnichar *settingsFile, IMachine **machine);
     nsresult (*GetSystemProperties)(IVirtualBox *vboxObj, ISystemProperties **systemProperties);
     nsresult (*CreateMachine)(vboxGlobalData *data, virDomainDefPtr def, IMachine **machine, char *uuidstr);
+    nsresult (*CreateHardDiskMedium)(IVirtualBox *vboxObj, PRUnichar *format, PRUnichar *location, IMedium **medium);
     nsresult (*RegisterMachine)(IVirtualBox *vboxObj, IMachine *machine);
     nsresult (*FindMedium)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType, PRUint32 accessMode, IMedium **medium);
     nsresult (*OpenMedium)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType, PRUint32 accessMode, IMedium **medium);
@@ -206,6 +209,8 @@ typedef struct {
                                 vboxIIDUnion *iidu,
                                 PRUnichar *sessionType, PRUnichar *env,
                                 IProgress **progress);
+    nsresult (*Unregister)(IMachine *machine, PRUint32 cleanupMode,
+                           PRUint32 *aMediaSize, IMedium ***aMedia);
     nsresult (*GetAccessible)(IMachine *machine, PRBool *isAccessible);
     nsresult (*GetState)(IMachine *machine, PRUint32 *state);
     nsresult (*GetName)(IMachine *machine, PRUnichar **name);
@@ -218,6 +223,8 @@ typedef struct {
     nsresult (*GetParallelPort)(IMachine *machine, PRUint32 slot, IParallelPort **port);
     nsresult (*GetVRDxServer)(IMachine *machine, IVRDxServer **VRDxServer);
     nsresult (*GetUSBCommon)(IMachine *machine, IUSBCommon **USBCommon);
+    nsresult (*GetCurrentSnapshot)(IMachine *machine, ISnapshot **currentSnapshot);
+    nsresult (*GetSettingsFilePath)(IMachine *machine, PRUnichar **settingsFilePath);
     nsresult (*GetCPUCount)(IMachine *machine, PRUint32 *CPUCount);
     nsresult (*SetCPUCount)(IMachine *machine, PRUint32 CPUCount);
     nsresult (*GetMemorySize)(IMachine *machine, PRUint32 *memorySize);
@@ -256,6 +263,8 @@ typedef struct {
     nsresult (*PowerButton)(IConsole *console);
     nsresult (*PowerDown)(IConsole *console);
     nsresult (*Reset)(IConsole *console);
+    nsresult (*TakeSnapshot)(IConsole *console, PRUnichar *name,
+                             PRUnichar *description, IProgress **progress);
 } vboxUniformedIConsole;
 
 /* Functions for IProgress */
@@ -385,8 +394,15 @@ typedef struct {
     nsresult (*GetId)(IMedium *medium, vboxIIDUnion *iidu);
     nsresult (*GetLocation)(IMedium *medium, PRUnichar **location);
     nsresult (*GetReadOnly)(IMedium *medium, PRBool *readOnly);
+    nsresult (*GetParent)(IMedium *medium, IMedium **parent);
+    nsresult (*GetChildren)(IMedium *medium, PRUint32 *childrenSize, IMedium ***children);
+    nsresult (*GetFormat)(IMedium *medium, PRUnichar **format);
+    nsresult (*DeleteStorage)(IMedium *medium, IProgress **progress);
     nsresult (*Release)(IMedium *medium);
+    nsresult (*Close)(IMedium *medium);
     nsresult (*SetType)(IMedium *medium, PRUint32 type);
+    nsresult (*CreateDiffStorage)(IMedium *medium, IMedium *target, PRUint32 variantSize,
+                                  PRUint32 *variant, IProgress **progress);
 } vboxUniformedIMedium;
 
 /* Functions for IMediumAttachment */
@@ -471,6 +487,7 @@ typedef struct {
     bool accelerate2DVideo;
     bool vboxAttachDrivesUseOld;
     bool oldMediumInterface;
+    bool vboxSnapshotRedefine;
 } vboxUniformedAPI;
 
 /* libvirt API

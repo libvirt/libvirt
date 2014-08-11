@@ -269,5 +269,6 @@ typedef nsISupports IMedium;
 typedef nsISupports IMediumAttachment;
 typedef nsISupports IStorageController;
 typedef nsISupports ISharedFolder;
+typedef nsISupports ISnapshot;
 
 #endif /* VBOX_COMMON_H */
