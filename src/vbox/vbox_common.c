@@ -2066,6 +2066,11 @@ int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
     return ret;
 }
 
+int vboxDomainUndefine(virDomainPtr dom)
+{
+    return vboxDomainUndefineFlags(dom, 0);
+}
+
 static int
 vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine, vboxIIDUnion *iid)
 {

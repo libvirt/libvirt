@@ -493,6 +493,7 @@ virDomainPtr
 vboxDomainLookupByName(virConnectPtr conn, const char *name);
 virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml);
 int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags);
+int vboxDomainUndefine(virDomainPtr dom);
 int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags);
 int vboxDomainCreate(virDomainPtr dom);
 virDomainPtr vboxDomainCreateXML(virConnectPtr conn, const char *xml,

@@ -1451,12 +1451,6 @@ _vboxAttachDrivesOld(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
 #endif /* VBOX_API_VERSION >= 4000000 */
 
-static int
-vboxDomainUndefine(virDomainPtr dom)
-{
-    return vboxDomainUndefineFlags(dom, 0);
-}
-
 static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
                                       const char *xml,
                                       int mediaChangeOnly ATTRIBUTE_UNUSED)
