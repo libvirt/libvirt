@@ -584,6 +584,9 @@ virDomainSnapshotPtr
 vboxDomainSnapshotLookupByName(virDomainPtr dom, const char *name,
                                unsigned int flags);
 int vboxDomainHasCurrentSnapshot(virDomainPtr dom, unsigned int flags);
+virDomainSnapshotPtr
+vboxDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
+                            unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

@@ -6246,3 +6246,64 @@ int vboxDomainHasCurrentSnapshot(virDomainPtr dom,
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+virDomainSnapshotPtr
+vboxDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
+                            unsigned int flags)
+{
+    virDomainPtr dom = snapshot->domain;
+    VBOX_OBJECT_CHECK(dom->conn, virDomainSnapshotPtr, NULL);
+    vboxIIDUnion iid;
+    IMachine *machine = NULL;
+    ISnapshot *snap = NULL;
+    ISnapshot *parent = NULL;
+    PRUnichar *nameUtf16 = NULL;
+    char *name = NULL;
+    nsresult rc;
+
+    virCheckFlags(0, NULL);
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    if (!(snap = vboxDomainSnapshotGet(data, dom, machine, snapshot->name)))
+        goto cleanup;
+
+    rc = gVBoxAPI.UISnapshot.GetParent(snap, &parent);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get parent of snapshot %s"),
+                       snapshot->name);
+        goto cleanup;
+    }
+    if (!parent) {
+        virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
+                       _("snapshot '%s' does not have a parent"),
+                       snapshot->name);
+        goto cleanup;
+    }
+
+    rc = gVBoxAPI.UISnapshot.GetName(parent, &nameUtf16);
+    if (NS_FAILED(rc) || !nameUtf16) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get name of parent of snapshot %s"),
+                       snapshot->name);
+        goto cleanup;
+    }
+    VBOX_UTF16_TO_UTF8(nameUtf16, &name);
+    if (!name) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ret = virGetDomainSnapshot(dom, name);
+
+ cleanup:
+    VBOX_UTF8_FREE(name);
+    VBOX_UTF16_FREE(nameUtf16);
+    VBOX_RELEASE(snap);
+    VBOX_RELEASE(parent);
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    return ret;
+}
