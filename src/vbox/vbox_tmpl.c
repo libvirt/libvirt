@@ -1523,44 +1523,6 @@ vboxDomainSnapshotGet(vboxGlobalData *data,
     return snapshot;
 }
 
-static int
-vboxDomainHasCurrentSnapshot(virDomainPtr dom,
-                             unsigned int flags)
-{
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    IMachine *machine = NULL;
-    ISnapshot *snapshot = NULL;
-    nsresult rc;
-
-    virCheckFlags(0, -1);
-
-    vboxIIDFromUUID(&iid, dom->uuid);
-    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching UUID"));
-        goto cleanup;
-    }
-
-    rc = machine->vtbl->GetCurrentSnapshot(machine, &snapshot);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("could not get current snapshot"));
-        goto cleanup;
-    }
-
-    if (snapshot)
-        ret = 1;
-    else
-        ret = 0;
-
- cleanup:
-    VBOX_RELEASE(machine);
-    vboxIIDUnalloc(&iid);
-    return ret;
-}
-
 static virDomainSnapshotPtr
 vboxDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
                             unsigned int flags)

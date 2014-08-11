@@ -6214,3 +6214,35 @@ vboxDomainSnapshotLookupByName(virDomainPtr dom, const char *name,
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+int vboxDomainHasCurrentSnapshot(virDomainPtr dom,
+                                 unsigned int flags)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIIDUnion iid;
+    IMachine *machine = NULL;
+    ISnapshot *snapshot = NULL;
+    nsresult rc;
+
+    virCheckFlags(0, -1);
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    rc = gVBoxAPI.UIMachine.GetCurrentSnapshot(machine, &snapshot);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get current snapshot"));
+        goto cleanup;
+    }
+
+    if (snapshot)
+        ret = 1;
+    else
+        ret = 0;
+
+ cleanup:
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    return ret;
+}
