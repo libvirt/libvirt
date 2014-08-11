@@ -137,6 +137,7 @@ typedef struct {
 virDrvOpenStatus vboxConnectOpen(virConnectPtr conn,
                                  virConnectAuthPtr auth,
                                  unsigned int flags);
+int vboxConnectClose(virConnectPtr conn);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

@@ -289,3 +289,14 @@ virDrvOpenStatus vboxConnectOpen(virConnectPtr conn,
 
     return VIR_DRV_OPEN_SUCCESS;
 }
+
+int vboxConnectClose(virConnectPtr conn)
+{
+    vboxGlobalData *data = conn->privateData;
+    VIR_DEBUG("%s: in vboxClose", conn->driver->name);
+
+    vboxUninitialize(data);
+    conn->privateData = NULL;
+
+    return 0;
+}

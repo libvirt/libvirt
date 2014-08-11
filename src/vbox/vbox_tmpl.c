@@ -834,35 +834,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static void vboxUninitialize(vboxGlobalData *data)
-{
-    if (!data)
-        return;
-
-    if (data->pFuncs)
-        data->pFuncs->pfnComUninitialize();
-
-    virObjectUnref(data->caps);
-    virObjectUnref(data->xmlopt);
-#if VBOX_API_VERSION == 2002000
-    /* No domainEventCallbacks in 2.2.* version */
-#else  /* !(VBOX_API_VERSION == 2002000) */
-    virObjectEventStateFree(data->domainEvents);
-#endif /* !(VBOX_API_VERSION == 2002000) */
-    VIR_FREE(data);
-}
-
-static int vboxConnectClose(virConnectPtr conn)
-{
-    vboxGlobalData *data = conn->privateData;
-    VIR_DEBUG("%s: in vboxClose", conn->driver->name);
-
-    vboxUninitialize(data);
-    conn->privateData = NULL;
-
-    return 0;
-}
-
 static int vboxConnectGetVersion(virConnectPtr conn, unsigned long *version)
 {
     vboxGlobalData *data = conn->privateData;
