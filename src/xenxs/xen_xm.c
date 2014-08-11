@@ -1676,6 +1676,21 @@ xenFormatXMGeneralMeta(virConfPtr conf, virDomainDefPtr def)
 }
 
 
+static int
+xenFormatXMMem(virConfPtr conf, virDomainDefPtr def)
+{
+    if (xenXMConfigSetInt(conf, "maxmem",
+                          VIR_DIV_UP(def->mem.max_balloon, 1024)) < 0)
+        return -1;
+
+    if (xenXMConfigSetInt(conf, "memory",
+                          VIR_DIV_UP(def->mem.cur_balloon, 1024)) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
    either 32, or 64 on a platform where long is big enough.  */
 verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
@@ -1699,12 +1714,7 @@ xenFormatXM(virConnectPtr conn,
     if (xenFormatXMGeneralMeta(conf, def) < 0)
         goto cleanup;
 
-    if (xenXMConfigSetInt(conf, "maxmem",
-                          VIR_DIV_UP(def->mem.max_balloon, 1024)) < 0)
-        goto cleanup;
-
-    if (xenXMConfigSetInt(conf, "memory",
-                          VIR_DIV_UP(def->mem.cur_balloon, 1024)) < 0)
+    if (xenFormatXMMem(conf, def) < 0)
         goto cleanup;
 
     if (xenXMConfigSetInt(conf, "vcpus", def->maxvcpus) < 0)
