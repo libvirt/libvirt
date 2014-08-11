@@ -933,32 +933,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static int vboxDomainIsPersistent(virDomainPtr dom ATTRIBUTE_UNUSED)
-{
-    /* All domains are persistent.  However, we do want to check for
-     * existence. */
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    IMachine *machine = NULL;
-    nsresult rc;
-
-    vboxIIDFromUUID(&iid, dom->uuid);
-    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching UUID"));
-        goto cleanup;
-    }
-
-    ret = 1;
-
- cleanup:
-    VBOX_RELEASE(machine);
-    vboxIIDUnalloc(&iid);
-    return ret;
-}
-
-
 static int vboxDomainIsUpdated(virDomainPtr dom ATTRIBUTE_UNUSED)
 {
     /* VBox domains never have a persistent state that differs from

@@ -2324,3 +2324,22 @@ int vboxDomainIsActive(virDomainPtr dom)
 
     return ret;
 }
+
+int vboxDomainIsPersistent(virDomainPtr dom)
+{
+    /* All domains are persistent.  However, we do want to check for
+     * existence. */
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIIDUnion iid;
+    IMachine *machine = NULL;
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    ret = 1;
+
+ cleanup:
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    return ret;
+}

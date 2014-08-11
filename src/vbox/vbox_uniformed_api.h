@@ -412,6 +412,7 @@ int vboxDomainCreate(virDomainPtr dom);
 virDomainPtr vboxDomainCreateXML(virConnectPtr conn, const char *xml,
                                  unsigned int flags);
 int vboxDomainIsActive(virDomainPtr dom);
+int vboxDomainIsPersistent(virDomainPtr dom);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
