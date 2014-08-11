@@ -428,3 +428,9 @@ int vboxConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
     /* Driver is using local, non-network based transport */
     return 1;
 }
+
+int vboxConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* No encryption is needed, or used on the local transport*/
+    return 0;
+}

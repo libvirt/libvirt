@@ -914,12 +914,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static int vboxConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    /* No encryption is needed, or used on the local transport*/
-    return 0;
-}
-
 static int vboxConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     return 1;
