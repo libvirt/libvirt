@@ -956,12 +956,6 @@ static virDomainState _vboxConvertState(PRUint32 state)
 }
 
 static int
-vboxDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
-{
-    return vboxDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_AFFECT_LIVE);
-}
-
-static int
 vboxDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);

@@ -2821,3 +2821,8 @@ int vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+int vboxDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
+{
+    return vboxDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_AFFECT_LIVE);
+}

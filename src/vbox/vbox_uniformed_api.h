@@ -440,7 +440,7 @@ int vboxDomainGetState(virDomainPtr dom, int *state,
                        int *reason, unsigned int flags);
 int vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                             unsigned int flags);
-
+int vboxDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
