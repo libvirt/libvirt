@@ -109,7 +109,6 @@ if (!data->vboxObj) {\
 #define ARRAY_GET_MACHINES \
     (gVBoxAPI.UArray.handleGetMachines(data->vboxObj))
 
-
 /* global vbox API, used for all common codes. */
 static vboxUniformedAPI gVBoxAPI;
 
@@ -275,6 +274,66 @@ static bool vboxGetDeviceDetails(const char *deviceName,
           *deviceSlot, maxPortPerInst, maxSlotPerPort);
 
     return true;
+}
+
+/**
+ * function to generate the name for medium,
+ * for e.g: hda, sda, etc
+ *
+ * @returns     null terminated string with device name or NULL
+ *              for failures
+ * @param       conn            Input Connection Pointer
+ * @param       storageBus      Input storage bus type
+ * @param       deviceInst      Input device instance number
+ * @param       devicePort      Input port number
+ * @param       deviceSlot      Input slot number
+ * @param       aMaxPortPerInst Input array of max port per device instance
+ * @param       aMaxSlotPerPort Input array of max slot per device port
+ *
+ */
+static char *vboxGenerateMediumName(PRUint32  storageBus,
+                                    PRInt32   deviceInst,
+                                    PRInt32   devicePort,
+                                    PRInt32   deviceSlot,
+                                    PRUint32 *aMaxPortPerInst,
+                                    PRUint32 *aMaxSlotPerPort)
+{
+    const char *prefix = NULL;
+    char *name  = NULL;
+    int   total = 0;
+    PRUint32 maxPortPerInst = 0;
+    PRUint32 maxSlotPerPort = 0;
+
+    if (!aMaxPortPerInst ||
+        !aMaxSlotPerPort)
+        return NULL;
+
+    if ((storageBus < StorageBus_IDE) ||
+        (storageBus > StorageBus_Floppy))
+        return NULL;
+
+    maxPortPerInst = aMaxPortPerInst[storageBus];
+    maxSlotPerPort = aMaxSlotPerPort[storageBus];
+    total =   (deviceInst * maxPortPerInst * maxSlotPerPort)
+            + (devicePort * maxSlotPerPort)
+            + deviceSlot;
+
+    if (storageBus == StorageBus_IDE) {
+        prefix = "hd";
+    } else if ((storageBus == StorageBus_SATA) ||
+               (storageBus == StorageBus_SCSI)) {
+        prefix = "sd";
+    } else if (storageBus == StorageBus_Floppy) {
+        prefix = "fd";
+    }
+
+    name = virIndexToDiskName(total, prefix);
+
+    VIR_DEBUG("name=%s, total=%d, storageBus=%u, deviceInst=%d, "
+          "devicePort=%d deviceSlot=%d, maxPortPerInst=%u maxSlotPerPort=%u",
+          NULLSTR(name), total, storageBus, deviceInst, devicePort,
+          deviceSlot, maxPortPerInst, maxSlotPerPort);
+    return name;
 }
 
 static virDomainDefParserConfig vboxDomainDefParserConfig = {
@@ -2859,4 +2918,1019 @@ int vboxDomainGetMaxVcpus(virDomainPtr dom)
 {
     return vboxDomainGetVcpusFlags(dom, (VIR_DOMAIN_AFFECT_LIVE |
                                          VIR_DOMAIN_VCPU_MAXIMUM));
+}
+
+static void
+vboxHostDeviceGetXMLDesc(vboxGlobalData *data, virDomainDefPtr def, IMachine *machine)
+{
+    IUSBCommon *USBCommon = NULL;
+    PRBool enabled = PR_FALSE;
+    vboxArray deviceFilters = VBOX_ARRAY_INITIALIZER;
+    size_t i;
+    PRUint32 USBFilterCount = 0;
+
+    def->nhostdevs = 0;
+
+    gVBoxAPI.UIMachine.GetUSBCommon(machine, &USBCommon);
+    if (!USBCommon)
+        return;
+
+    gVBoxAPI.UIUSBCommon.GetEnabled(USBCommon, &enabled);
+    if (!enabled)
+        goto release_controller;
+
+    gVBoxAPI.UArray.vboxArrayGet(&deviceFilters, USBCommon,
+                                 gVBoxAPI.UArray.handleUSBGetDeviceFilters(USBCommon));
+
+    if (deviceFilters.count <= 0)
+        goto release_filters;
+
+    /* check if the filters are active and then only
+     * alloc mem and set def->nhostdevs
+     */
+
+    for (i = 0; i < deviceFilters.count; i++) {
+        PRBool active = PR_FALSE;
+        IUSBDeviceFilter *deviceFilter = deviceFilters.items[i];
+
+        gVBoxAPI.UIUSBDeviceFilter.GetActive(deviceFilter, &active);
+        if (active) {
+            def->nhostdevs++;
+        }
+    }
+
+    if (def->nhostdevs == 0)
+        goto release_filters;
+
+    /* Alloc mem needed for the filters now */
+    if (VIR_ALLOC_N(def->hostdevs, def->nhostdevs) < 0)
+        goto release_filters;
+
+    for (i = 0; i < def->nhostdevs; i++) {
+        def->hostdevs[i] = virDomainHostdevDefAlloc();
+        if (!def->hostdevs[i])
+            goto release_hostdevs;
+    }
+
+    for (i = 0; i < deviceFilters.count; i++) {
+        PRBool active                  = PR_FALSE;
+        IUSBDeviceFilter *deviceFilter = deviceFilters.items[i];
+        PRUnichar *vendorIdUtf16       = NULL;
+        char *vendorIdUtf8             = NULL;
+        unsigned vendorId              = 0;
+        PRUnichar *productIdUtf16      = NULL;
+        char *productIdUtf8            = NULL;
+        unsigned productId             = 0;
+        char *endptr                   = NULL;
+
+        gVBoxAPI.UIUSBDeviceFilter.GetActive(deviceFilter, &active);
+        if (!active)
+            continue;
+
+        def->hostdevs[USBFilterCount]->mode =
+            VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
+        def->hostdevs[USBFilterCount]->source.subsys.type =
+            VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB;
+
+        gVBoxAPI.UIUSBDeviceFilter.GetVendorId(deviceFilter, &vendorIdUtf16);
+        gVBoxAPI.UIUSBDeviceFilter.GetProductId(deviceFilter, &productIdUtf16);
+
+        VBOX_UTF16_TO_UTF8(vendorIdUtf16, &vendorIdUtf8);
+        VBOX_UTF16_TO_UTF8(productIdUtf16, &productIdUtf8);
+
+        ignore_value(virStrToLong_ui(vendorIdUtf8, &endptr, 16, &vendorId));
+        ignore_value(virStrToLong_ui(productIdUtf8, &endptr, 16, &productId));
+
+        def->hostdevs[USBFilterCount]->source.subsys.u.usb.vendor  = vendorId;
+        def->hostdevs[USBFilterCount]->source.subsys.u.usb.product = productId;
+
+        VBOX_UTF16_FREE(vendorIdUtf16);
+        VBOX_UTF8_FREE(vendorIdUtf8);
+
+        VBOX_UTF16_FREE(productIdUtf16);
+        VBOX_UTF8_FREE(productIdUtf8);
+
+        USBFilterCount++;
+    }
+
+ release_filters:
+    gVBoxAPI.UArray.vboxArrayRelease(&deviceFilters);
+ release_controller:
+    VBOX_RELEASE(USBCommon);
+    return;
+
+ release_hostdevs:
+    for (i = 0; i < def->nhostdevs; i++)
+        virDomainHostdevDefFree(def->hostdevs[i]);
+    VIR_FREE(def->hostdevs);
+
+    goto release_filters;
+}
+
+static void
+vboxDumpIDEHDDsNew(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
+{
+    /* dump IDE hdds if present */
+    vboxArray mediumAttachments         = VBOX_ARRAY_INITIALIZER;
+    bool error = false;
+    int diskCount = 0;
+    size_t i;
+    PRUint32   maxPortPerInst[StorageBus_Floppy + 1] = {};
+    PRUint32   maxSlotPerPort[StorageBus_Floppy + 1] = {};
+
+    if (gVBoxAPI.oldMediumInterface)
+        VIR_WARN("This function may not work in current vbox version");
+
+    def->ndisks = 0;
+    gVBoxAPI.UArray.vboxArrayGet(&mediumAttachments, machine,
+                                 gVBoxAPI.UArray.handleMachineGetMediumAttachments(machine));
+
+    /* get the number of attachments */
+    for (i = 0; i < mediumAttachments.count; i++) {
+        IMediumAttachment *imediumattach = mediumAttachments.items[i];
+        if (imediumattach) {
+            IMedium *medium = NULL;
+
+            gVBoxAPI.UIMediumAttachment.GetMedium(imediumattach, &medium);
+            if (medium) {
+                def->ndisks++;
+                VBOX_RELEASE(medium);
+            }
+        }
+    }
+
+    /* Allocate mem, if fails return error */
+    if (VIR_ALLOC_N(def->disks, def->ndisks) >= 0) {
+        for (i = 0; i < def->ndisks; i++) {
+            virDomainDiskDefPtr disk = virDomainDiskDefNew();
+            if (!disk) {
+                error = true;
+                break;
+            }
+            def->disks[i] = disk;
+        }
+    } else {
+        error = true;
+    }
+
+    if (!error)
+        error = !vboxGetMaxPortSlotValues(data->vboxObj, maxPortPerInst, maxSlotPerPort);
+
+    /* get the attachment details here */
+    for (i = 0; i < mediumAttachments.count && diskCount < def->ndisks && !error; i++) {
+        IMediumAttachment *imediumattach = mediumAttachments.items[i];
+        IStorageController *storageController = NULL;
+        PRUnichar *storageControllerName = NULL;
+        PRUint32   deviceType     = DeviceType_Null;
+        PRUint32   storageBus     = StorageBus_Null;
+        PRBool     readOnly       = PR_FALSE;
+        IMedium   *medium         = NULL;
+        PRUnichar *mediumLocUtf16 = NULL;
+        char      *mediumLocUtf8  = NULL;
+        PRUint32   deviceInst     = 0;
+        PRInt32    devicePort     = 0;
+        PRInt32    deviceSlot     = 0;
+
+        if (!imediumattach)
+            continue;
+
+        gVBoxAPI.UIMediumAttachment.GetMedium(imediumattach, &medium);
+        if (!medium)
+            continue;
+
+        gVBoxAPI.UIMediumAttachment.GetController(imediumattach, &storageControllerName);
+        if (!storageControllerName) {
+            VBOX_RELEASE(medium);
+            continue;
+        }
+
+        gVBoxAPI.UIMachine.GetStorageControllerByName(machine,
+                                                      storageControllerName,
+                                                      &storageController);
+        VBOX_UTF16_FREE(storageControllerName);
+        if (!storageController) {
+            VBOX_RELEASE(medium);
+            continue;
+        }
+
+        gVBoxAPI.UIMedium.GetLocation(medium, &mediumLocUtf16);
+        VBOX_UTF16_TO_UTF8(mediumLocUtf16, &mediumLocUtf8);
+        VBOX_UTF16_FREE(mediumLocUtf16);
+        ignore_value(virDomainDiskSetSource(def->disks[diskCount],
+                                            mediumLocUtf8));
+        VBOX_UTF8_FREE(mediumLocUtf8);
+
+        if (!virDomainDiskGetSource(def->disks[diskCount])) {
+            VBOX_RELEASE(medium);
+            VBOX_RELEASE(storageController);
+            error = true;
+            break;
+        }
+
+        gVBoxAPI.UIStorageController.GetBus(storageController, &storageBus);
+        if (storageBus == StorageBus_IDE) {
+            def->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_IDE;
+        } else if (storageBus == StorageBus_SATA) {
+            def->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_SATA;
+        } else if (storageBus == StorageBus_SCSI) {
+            def->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_SCSI;
+        } else if (storageBus == StorageBus_Floppy) {
+            def->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_FDC;
+        }
+
+        gVBoxAPI.UIMediumAttachment.GetType(imediumattach, &deviceType);
+        if (deviceType == DeviceType_HardDisk)
+            def->disks[diskCount]->device = VIR_DOMAIN_DISK_DEVICE_DISK;
+        else if (deviceType == DeviceType_Floppy)
+            def->disks[diskCount]->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
+        else if (deviceType == DeviceType_DVD)
+            def->disks[diskCount]->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
+
+        gVBoxAPI.UIMediumAttachment.GetPort(imediumattach, &devicePort);
+        gVBoxAPI.UIMediumAttachment.GetDevice(imediumattach, &deviceSlot);
+        def->disks[diskCount]->dst = vboxGenerateMediumName(storageBus,
+                                                            deviceInst,
+                                                            devicePort,
+                                                            deviceSlot,
+                                                            maxPortPerInst,
+                                                            maxSlotPerPort);
+        if (!def->disks[diskCount]->dst) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not generate medium name for the disk "
+                             "at: controller instance:%u, port:%d, slot:%d"),
+                           deviceInst, devicePort, deviceSlot);
+            VBOX_RELEASE(medium);
+            VBOX_RELEASE(storageController);
+            error = true;
+            break;
+        }
+
+        gVBoxAPI.UIMedium.GetReadOnly(medium, &readOnly);
+        if (readOnly == PR_TRUE)
+            def->disks[diskCount]->src->readonly = true;
+
+        virDomainDiskSetType(def->disks[diskCount],
+                             VIR_STORAGE_TYPE_FILE);
+
+        VBOX_RELEASE(medium);
+        VBOX_RELEASE(storageController);
+        diskCount++;
+    }
+
+    gVBoxAPI.UArray.vboxArrayRelease(&mediumAttachments);
+
+    /* cleanup on error */
+    if (error) {
+        for (i = 0; i < def->ndisks; i++) {
+            VIR_FREE(def->disks[i]);
+        }
+        VIR_FREE(def->disks);
+        def->ndisks = 0;
+    }
+}
+
+static void
+vboxDumpVideo(virDomainDefPtr def, vboxGlobalData *data ATTRIBUTE_UNUSED,
+              IMachine *machine)
+{
+    /* dump video options vram/2d/3d/directx/etc. */
+    /* Currently supports only one graphics card */
+    def->nvideos = 1;
+    if (VIR_ALLOC_N(def->videos, def->nvideos) >= 0) {
+        if (VIR_ALLOC(def->videos[0]) >= 0) {
+            /* the default is: vram is 8MB, One monitor, 3dAccel Off */
+            PRUint32 VRAMSize          = 8;
+            PRUint32 monitorCount      = 1;
+            PRBool accelerate3DEnabled = PR_FALSE;
+            PRBool accelerate2DEnabled = PR_FALSE;
+
+            gVBoxAPI.UIMachine.GetVRAMSize(machine, &VRAMSize);
+            gVBoxAPI.UIMachine.GetMonitorCount(machine, &monitorCount);
+            gVBoxAPI.UIMachine.GetAccelerate3DEnabled(machine, &accelerate3DEnabled);
+            if (gVBoxAPI.accelerate2DVideo)
+                gVBoxAPI.UIMachine.GetAccelerate2DVideoEnabled(machine, &accelerate2DEnabled);
+
+            def->videos[0]->type            = VIR_DOMAIN_VIDEO_TYPE_VBOX;
+            def->videos[0]->vram            = VRAMSize * 1024;
+            def->videos[0]->heads           = monitorCount;
+            if (VIR_ALLOC(def->videos[0]->accel) >= 0) {
+                def->videos[0]->accel->support3d = accelerate3DEnabled;
+                def->videos[0]->accel->support2d = accelerate2DEnabled;
+            }
+        }
+    }
+}
+
+static void
+vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
+{
+    /* dump display options vrdp/gui/sdl */
+    int vrdpPresent           = 0;
+    int sdlPresent            = 0;
+    int guiPresent            = 0;
+    int totalPresent          = 0;
+    char *guiDisplay          = NULL;
+    char *sdlDisplay          = NULL;
+    PRUnichar *keyTypeUtf16   = NULL;
+    PRUnichar *valueTypeUtf16 = NULL;
+    char      *valueTypeUtf8  = NULL;
+    IVRDxServer *VRDxServer   = NULL;
+    PRBool VRDxEnabled        = PR_FALSE;
+
+    def->ngraphics = 0;
+
+    VBOX_UTF8_TO_UTF16("FRONTEND/Type", &keyTypeUtf16);
+    gVBoxAPI.UIMachine.GetExtraData(machine, keyTypeUtf16, &valueTypeUtf16);
+    VBOX_UTF16_FREE(keyTypeUtf16);
+
+    if (valueTypeUtf16) {
+        VBOX_UTF16_TO_UTF8(valueTypeUtf16, &valueTypeUtf8);
+        VBOX_UTF16_FREE(valueTypeUtf16);
+
+        if (STREQ(valueTypeUtf8, "sdl") || STREQ(valueTypeUtf8, "gui")) {
+            PRUnichar *keyDislpayUtf16   = NULL;
+            PRUnichar *valueDisplayUtf16 = NULL;
+            char      *valueDisplayUtf8  = NULL;
+
+            VBOX_UTF8_TO_UTF16("FRONTEND/Display", &keyDislpayUtf16);
+            gVBoxAPI.UIMachine.GetExtraData(machine, keyDislpayUtf16, &valueDisplayUtf16);
+            VBOX_UTF16_FREE(keyDislpayUtf16);
+
+            if (valueDisplayUtf16) {
+                VBOX_UTF16_TO_UTF8(valueDisplayUtf16, &valueDisplayUtf8);
+                VBOX_UTF16_FREE(valueDisplayUtf16);
+
+                if (strlen(valueDisplayUtf8) <= 0)
+                    VBOX_UTF8_FREE(valueDisplayUtf8);
+            }
+
+            if (STREQ(valueTypeUtf8, "sdl")) {
+                sdlPresent = 1;
+                if (VIR_STRDUP(sdlDisplay, valueDisplayUtf8) < 0) {
+                    /* just don't go to cleanup yet as it is ok to have
+                     * sdlDisplay as NULL and we check it below if it
+                     * exist and then only use it there
+                     */
+                }
+                totalPresent++;
+            }
+
+            if (STREQ(valueTypeUtf8, "gui")) {
+                guiPresent = 1;
+                if (VIR_STRDUP(guiDisplay, valueDisplayUtf8) < 0) {
+                    /* just don't go to cleanup yet as it is ok to have
+                     * guiDisplay as NULL and we check it below if it
+                     * exist and then only use it there
+                     */
+                }
+                totalPresent++;
+            }
+            VBOX_UTF8_FREE(valueDisplayUtf8);
+        }
+
+        if (STREQ(valueTypeUtf8, "vrdp"))
+            vrdpPresent = 1;
+
+        VBOX_UTF8_FREE(valueTypeUtf8);
+    }
+
+    if ((totalPresent > 0) && (VIR_ALLOC_N(def->graphics, totalPresent) >= 0)) {
+        if ((guiPresent) && (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0)) {
+            def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
+            if (guiDisplay)
+                def->graphics[def->ngraphics]->data.desktop.display = guiDisplay;
+            def->ngraphics++;
+        }
+
+        if ((sdlPresent) && (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0)) {
+            def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_SDL;
+            if (sdlDisplay)
+                def->graphics[def->ngraphics]->data.sdl.display = sdlDisplay;
+            def->ngraphics++;
+        }
+    } else if ((vrdpPresent != 1) && (totalPresent == 0) && (VIR_ALLOC_N(def->graphics, 1) >= 0)) {
+        if (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0) {
+            const char *tmp;
+            def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
+            tmp = virGetEnvBlockSUID("DISPLAY");
+            if (VIR_STRDUP(def->graphics[def->ngraphics]->data.desktop.display, tmp) < 0) {
+                /* just don't go to cleanup yet as it is ok to have
+                 * display as NULL
+                 */
+            }
+            totalPresent++;
+            def->ngraphics++;
+        }
+    }
+
+    gVBoxAPI.UIMachine.GetVRDxServer(machine, &VRDxServer);
+    if (VRDxServer) {
+        gVBoxAPI.UIVRDxServer.GetEnabled(VRDxServer, &VRDxEnabled);
+        if (VRDxEnabled) {
+
+            totalPresent++;
+
+            if ((VIR_REALLOC_N(def->graphics, totalPresent) >= 0) &&
+                (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0)) {
+                PRUnichar *netAddressUtf16   = NULL;
+                char      *netAddressUtf8    = NULL;
+                PRBool allowMultiConnection  = PR_FALSE;
+                PRBool reuseSingleConnection = PR_FALSE;
+
+                gVBoxAPI.UIVRDxServer.GetPorts(data, VRDxServer, def->graphics[def->ngraphics]);
+
+                def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_RDP;
+
+                gVBoxAPI.UIVRDxServer.GetNetAddress(data, VRDxServer, &netAddressUtf16);
+                if (netAddressUtf16) {
+                    VBOX_UTF16_TO_UTF8(netAddressUtf16, &netAddressUtf8);
+                    if (STRNEQ(netAddressUtf8, ""))
+                        virDomainGraphicsListenSetAddress(def->graphics[def->ngraphics], 0,
+                                                          netAddressUtf8, -1, true);
+                    VBOX_UTF16_FREE(netAddressUtf16);
+                    VBOX_UTF8_FREE(netAddressUtf8);
+                }
+
+                gVBoxAPI.UIVRDxServer.GetAllowMultiConnection(VRDxServer, &allowMultiConnection);
+                if (allowMultiConnection) {
+                    def->graphics[def->ngraphics]->data.rdp.multiUser = true;
+                }
+
+                gVBoxAPI.UIVRDxServer.GetReuseSingleConnection(VRDxServer, &reuseSingleConnection);
+                if (reuseSingleConnection) {
+                    def->graphics[def->ngraphics]->data.rdp.replaceUser = true;
+                }
+
+                def->ngraphics++;
+            } else
+                virReportOOMError();
+        }
+        VBOX_RELEASE(VRDxServer);
+    }
+}
+
+static void
+vboxDumpSharedFolders(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
+{
+    /* shared folders */
+    vboxArray sharedFolders = VBOX_ARRAY_INITIALIZER;
+    size_t i = 0;
+
+    def->nfss = 0;
+
+    gVBoxAPI.UArray.vboxArrayGet(&sharedFolders, machine,
+                                 gVBoxAPI.UArray.handleMachineGetSharedFolders(machine));
+
+    if (sharedFolders.count <= 0)
+        goto sharedFoldersCleanup;
+
+    if (VIR_ALLOC_N(def->fss, sharedFolders.count) < 0)
+        goto sharedFoldersCleanup;
+
+    for (i = 0; i < sharedFolders.count; i++) {
+        ISharedFolder *sharedFolder = sharedFolders.items[i];
+        PRUnichar *nameUtf16 = NULL;
+        char *name = NULL;
+        PRUnichar *hostPathUtf16 = NULL;
+        char *hostPath = NULL;
+        PRBool writable = PR_FALSE;
+
+        if (VIR_ALLOC(def->fss[i]) < 0)
+            goto sharedFoldersCleanup;
+
+        def->fss[i]->type = VIR_DOMAIN_FS_TYPE_MOUNT;
+
+        gVBoxAPI.UISharedFolder.GetHostPath(sharedFolder, &hostPathUtf16);
+        VBOX_UTF16_TO_UTF8(hostPathUtf16, &hostPath);
+        if (VIR_STRDUP(def->fss[i]->src, hostPath) < 0) {
+            VBOX_UTF8_FREE(hostPath);
+            VBOX_UTF16_FREE(hostPathUtf16);
+            goto sharedFoldersCleanup;
+        }
+        VBOX_UTF8_FREE(hostPath);
+        VBOX_UTF16_FREE(hostPathUtf16);
+
+        gVBoxAPI.UISharedFolder.GetName(sharedFolder, &nameUtf16);
+        VBOX_UTF16_TO_UTF8(nameUtf16, &name);
+        if (VIR_STRDUP(def->fss[i]->dst, name) < 0) {
+            VBOX_UTF8_FREE(name);
+            VBOX_UTF16_FREE(nameUtf16);
+            goto sharedFoldersCleanup;
+        }
+        VBOX_UTF8_FREE(name);
+        VBOX_UTF16_FREE(nameUtf16);
+
+        gVBoxAPI.UISharedFolder.GetWritable(sharedFolder, &writable);
+        def->fss[i]->readonly = !writable;
+
+        ++def->nfss;
+    }
+
+ sharedFoldersCleanup:
+    gVBoxAPI.UArray.vboxArrayRelease(&sharedFolders);
+}
+
+static void
+vboxDumpNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine, PRUint32 networkAdapterCount)
+{
+    PRUint32 netAdpIncCnt = 0;
+    size_t i = 0;
+    /* dump network cards if present */
+    def->nnets = 0;
+    /* Get which network cards are enabled */
+    for (i = 0; i < networkAdapterCount; i++) {
+        INetworkAdapter *adapter = NULL;
+
+        gVBoxAPI.UIMachine.GetNetworkAdapter(machine, i, &adapter);
+        if (adapter) {
+            PRBool enabled = PR_FALSE;
+
+            gVBoxAPI.UINetworkAdapter.GetEnabled(adapter, &enabled);
+            if (enabled) {
+                def->nnets++;
+            }
+
+            VBOX_RELEASE(adapter);
+        }
+    }
+
+    /* Allocate memory for the networkcards which are enabled */
+    if ((def->nnets > 0) && (VIR_ALLOC_N(def->nets, def->nnets) >= 0)) {
+        for (i = 0; i < def->nnets; i++) {
+            ignore_value(VIR_ALLOC(def->nets[i]));
+        }
+    }
+
+    /* Now get the details about the network cards here */
+    for (i = 0; netAdpIncCnt < def->nnets && i < networkAdapterCount; i++) {
+        INetworkAdapter *adapter = NULL;
+
+        gVBoxAPI.UIMachine.GetNetworkAdapter(machine, i, &adapter);
+        if (adapter) {
+            PRBool enabled = PR_FALSE;
+
+            gVBoxAPI.UINetworkAdapter.GetEnabled(adapter, &enabled);
+            if (enabled) {
+                PRUint32 attachmentType    = NetworkAttachmentType_Null;
+                PRUint32 adapterType       = NetworkAdapterType_Null;
+                PRUnichar *MACAddressUtf16 = NULL;
+                char *MACAddress           = NULL;
+                char macaddr[VIR_MAC_STRING_BUFLEN] = {0};
+
+                gVBoxAPI.UINetworkAdapter.GetAttachmentType(adapter, &attachmentType);
+                if (attachmentType == NetworkAttachmentType_NAT) {
+
+                    def->nets[netAdpIncCnt]->type = VIR_DOMAIN_NET_TYPE_USER;
+
+                } else if (attachmentType == NetworkAttachmentType_Bridged) {
+                    PRUnichar *hostIntUtf16 = NULL;
+                    char *hostInt           = NULL;
+
+                    def->nets[netAdpIncCnt]->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
+
+                    gVBoxAPI.UINetworkAdapter.GetBridgedInterface(adapter, &hostIntUtf16);
+
+                    VBOX_UTF16_TO_UTF8(hostIntUtf16, &hostInt);
+                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->data.bridge.brname, hostInt));
+
+                    VBOX_UTF8_FREE(hostInt);
+                    VBOX_UTF16_FREE(hostIntUtf16);
+
+                } else if (attachmentType == NetworkAttachmentType_Internal) {
+                    PRUnichar *intNetUtf16 = NULL;
+                    char *intNet           = NULL;
+
+                    def->nets[netAdpIncCnt]->type = VIR_DOMAIN_NET_TYPE_INTERNAL;
+
+                    gVBoxAPI.UINetworkAdapter.GetInternalNetwork(adapter, &intNetUtf16);
+
+                    VBOX_UTF16_TO_UTF8(intNetUtf16, &intNet);
+                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->data.internal.name, intNet));
+
+                    VBOX_UTF8_FREE(intNet);
+                    VBOX_UTF16_FREE(intNetUtf16);
+
+                } else if (attachmentType == NetworkAttachmentType_HostOnly) {
+                    PRUnichar *hostIntUtf16 = NULL;
+                    char *hostInt           = NULL;
+
+                    def->nets[netAdpIncCnt]->type = VIR_DOMAIN_NET_TYPE_NETWORK;
+
+                    gVBoxAPI.UINetworkAdapter.GetHostOnlyInterface(adapter, &hostIntUtf16);
+
+                    VBOX_UTF16_TO_UTF8(hostIntUtf16, &hostInt);
+                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->data.network.name, hostInt));
+
+                    VBOX_UTF8_FREE(hostInt);
+                    VBOX_UTF16_FREE(hostIntUtf16);
+
+                } else {
+                    /* default to user type i.e. NAT in VirtualBox if this
+                     * dump is ever used to create a machine.
+                     */
+                    def->nets[netAdpIncCnt]->type = VIR_DOMAIN_NET_TYPE_USER;
+                }
+
+                gVBoxAPI.UINetworkAdapter.GetAdapterType(adapter, &adapterType);
+                if (adapterType == NetworkAdapterType_Am79C970A) {
+                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "Am79C970A"));
+                } else if (adapterType == NetworkAdapterType_Am79C973) {
+                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "Am79C973"));
+                } else if (adapterType == NetworkAdapterType_I82540EM) {
+                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "82540EM"));
+                } else if (adapterType == NetworkAdapterType_I82545EM) {
+                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "82545EM"));
+                } else if (adapterType == NetworkAdapterType_I82543GC) {
+                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "82543GC"));
+                } else if (gVBoxAPI.APIVersion >= 3000051 &&
+                           adapterType == NetworkAdapterType_Virtio) {
+                    /* Only vbox 3.1 and later support NetworkAdapterType_Virto */
+                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "virtio"));
+                }
+
+                gVBoxAPI.UINetworkAdapter.GetMACAddress(adapter, &MACAddressUtf16);
+                VBOX_UTF16_TO_UTF8(MACAddressUtf16, &MACAddress);
+                snprintf(macaddr, VIR_MAC_STRING_BUFLEN,
+                         "%c%c:%c%c:%c%c:%c%c:%c%c:%c%c",
+                         MACAddress[0], MACAddress[1], MACAddress[2], MACAddress[3],
+                         MACAddress[4], MACAddress[5], MACAddress[6], MACAddress[7],
+                         MACAddress[8], MACAddress[9], MACAddress[10], MACAddress[11]);
+
+                /* XXX some real error handling here some day ... */
+                if (virMacAddrParse(macaddr, &def->nets[netAdpIncCnt]->mac) < 0)
+                {}
+
+                netAdpIncCnt++;
+
+                VBOX_UTF16_FREE(MACAddressUtf16);
+                VBOX_UTF8_FREE(MACAddress);
+            }
+
+            VBOX_RELEASE(adapter);
+        }
+    }
+}
+
+static void
+vboxDumpAudio(virDomainDefPtr def, vboxGlobalData *data ATTRIBUTE_UNUSED,
+              IMachine *machine)
+{
+    /* dump sound card if active */
+
+    /* Set def->nsounds to one as VirtualBox currently supports
+     * only one sound card
+     */
+    IAudioAdapter *audioAdapter = NULL;
+
+    gVBoxAPI.UIMachine.GetAudioAdapter(machine, &audioAdapter);
+    if (audioAdapter) {
+        PRBool enabled = PR_FALSE;
+
+        gVBoxAPI.UIAudioAdapter.GetEnabled(audioAdapter, &enabled);
+        if (enabled) {
+            PRUint32 audioController = AudioControllerType_AC97;
+
+            def->nsounds = 1;
+            if (VIR_ALLOC_N(def->sounds, def->nsounds) >= 0) {
+                if (VIR_ALLOC(def->sounds[0]) >= 0) {
+                    gVBoxAPI.UIAudioAdapter.GetAudioController(audioAdapter, &audioController);
+                    if (audioController == AudioControllerType_SB16) {
+                        def->sounds[0]->model = VIR_DOMAIN_SOUND_MODEL_SB16;
+                    } else if (audioController == AudioControllerType_AC97) {
+                        def->sounds[0]->model = VIR_DOMAIN_SOUND_MODEL_AC97;
+                    }
+                } else {
+                    VIR_FREE(def->sounds);
+                    def->nsounds = 0;
+                }
+            } else {
+                def->nsounds = 0;
+            }
+        }
+        VBOX_RELEASE(audioAdapter);
+    }
+}
+
+static void
+vboxDumpSerial(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine, PRUint32 serialPortCount)
+{
+    PRUint32 serialPortIncCount = 0;
+    size_t i = 0;
+    /* dump serial port if active */
+    def->nserials = 0;
+    /* Get which serial ports are enabled/active */
+    for (i = 0; i < serialPortCount; i++) {
+        ISerialPort *serialPort = NULL;
+
+        gVBoxAPI.UIMachine.GetSerialPort(machine, i, &serialPort);
+        if (serialPort) {
+            PRBool enabled = PR_FALSE;
+
+            gVBoxAPI.UISerialPort.GetEnabled(serialPort, &enabled);
+            if (enabled) {
+                def->nserials++;
+            }
+
+            VBOX_RELEASE(serialPort);
+        }
+    }
+
+    /* Allocate memory for the serial ports which are enabled */
+    if ((def->nserials > 0) && (VIR_ALLOC_N(def->serials, def->nserials) >= 0)) {
+        for (i = 0; i < def->nserials; i++) {
+            ignore_value(VIR_ALLOC(def->serials[i]));
+        }
+    }
+
+    /* Now get the details about the serial ports here */
+    for (i = 0;
+         serialPortIncCount < def->nserials && i < serialPortCount;
+         i++) {
+        ISerialPort *serialPort = NULL;
+
+        gVBoxAPI.UIMachine.GetSerialPort(machine, i, &serialPort);
+        if (serialPort) {
+            PRBool enabled = PR_FALSE;
+
+            gVBoxAPI.UISerialPort.GetEnabled(serialPort, &enabled);
+            if (enabled) {
+                PRUint32 hostMode    = PortMode_Disconnected;
+                PRUint32 IOBase      = 0;
+                PRUint32 IRQ         = 0;
+                PRUnichar *pathUtf16 = NULL;
+                char *path           = NULL;
+
+                gVBoxAPI.UISerialPort.GetHostMode(serialPort, &hostMode);
+                if (hostMode == PortMode_HostPipe) {
+                    def->serials[serialPortIncCount]->source.type = VIR_DOMAIN_CHR_TYPE_PIPE;
+                } else if (hostMode == PortMode_HostDevice) {
+                    def->serials[serialPortIncCount]->source.type = VIR_DOMAIN_CHR_TYPE_DEV;
+                } else if (gVBoxAPI.APIVersion >= 2002051 &&
+                           hostMode == PortMode_RawFile) {
+                    /* PortMode RawFile is used for vbox 3.0 or later */
+                    def->serials[serialPortIncCount]->source.type = VIR_DOMAIN_CHR_TYPE_FILE;
+                } else {
+                    def->serials[serialPortIncCount]->source.type = VIR_DOMAIN_CHR_TYPE_NULL;
+                }
+
+                def->serials[serialPortIncCount]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
+
+                gVBoxAPI.UISerialPort.GetIRQ(serialPort, &IRQ);
+                gVBoxAPI.UISerialPort.GetIOBase(serialPort, &IOBase);
+                if ((IRQ == 4) && (IOBase == 1016)) {
+                    def->serials[serialPortIncCount]->target.port = 0;
+                } else if ((IRQ == 3) && (IOBase == 760)) {
+                    def->serials[serialPortIncCount]->target.port = 1;
+                }
+
+                gVBoxAPI.UISerialPort.GetPath(serialPort, &pathUtf16);
+
+                if (pathUtf16) {
+                    VBOX_UTF16_TO_UTF8(pathUtf16, &path);
+                    ignore_value(VIR_STRDUP(def->serials[serialPortIncCount]->source.data.file.path, path));
+                }
+
+                serialPortIncCount++;
+
+                VBOX_UTF16_FREE(pathUtf16);
+                VBOX_UTF8_FREE(path);
+            }
+
+            VBOX_RELEASE(serialPort);
+        }
+    }
+}
+
+static void
+vboxDumpParallel(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine, PRUint32 parallelPortCount)
+{
+    PRUint32 parallelPortIncCount = 0;
+    size_t i = 0;
+    /* dump parallel ports if active */
+    def->nparallels = 0;
+    /* Get which parallel ports are enabled/active */
+    for (i = 0; i < parallelPortCount; i++) {
+        IParallelPort *parallelPort = NULL;
+
+        gVBoxAPI.UIMachine.GetParallelPort(machine, i, &parallelPort);
+        if (parallelPort) {
+            PRBool enabled = PR_FALSE;
+
+            gVBoxAPI.UIParallelPort.GetEnabled(parallelPort, &enabled);
+            if (enabled) {
+                def->nparallels++;
+            }
+
+            VBOX_RELEASE(parallelPort);
+        }
+    }
+
+    /* Allocate memory for the parallel ports which are enabled */
+    if ((def->nparallels > 0) && (VIR_ALLOC_N(def->parallels, def->nparallels) >= 0)) {
+        for (i = 0; i < def->nparallels; i++) {
+            ignore_value(VIR_ALLOC(def->parallels[i]));
+        }
+    }
+
+    /* Now get the details about the parallel ports here */
+    for (i = 0;
+         parallelPortIncCount < def->nparallels &&
+             i < parallelPortCount;
+         i++) {
+        IParallelPort *parallelPort = NULL;
+
+        gVBoxAPI.UIMachine.GetParallelPort(machine, i, &parallelPort);
+        if (parallelPort) {
+            PRBool enabled = PR_FALSE;
+
+            gVBoxAPI.UIParallelPort.GetEnabled(parallelPort, &enabled);
+            if (enabled) {
+                PRUint32 IOBase      = 0;
+                PRUint32 IRQ         = 0;
+                PRUnichar *pathUtf16 = NULL;
+                char *path           = NULL;
+
+                gVBoxAPI.UIParallelPort.GetIRQ(parallelPort, &IRQ);
+                gVBoxAPI.UIParallelPort.GetIOBase(parallelPort, &IOBase);
+                if ((IRQ == 7) && (IOBase == 888)) {
+                    def->parallels[parallelPortIncCount]->target.port = 0;
+                } else if ((IRQ == 5) && (IOBase == 632)) {
+                    def->parallels[parallelPortIncCount]->target.port = 1;
+                }
+
+                def->parallels[parallelPortIncCount]->source.type = VIR_DOMAIN_CHR_TYPE_FILE;
+                def->parallels[parallelPortIncCount]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
+
+                gVBoxAPI.UIParallelPort.GetPath(parallelPort, &pathUtf16);
+
+                VBOX_UTF16_TO_UTF8(pathUtf16, &path);
+                ignore_value(VIR_STRDUP(def->parallels[parallelPortIncCount]->source.data.file.path, path));
+
+                parallelPortIncCount++;
+
+                VBOX_UTF16_FREE(pathUtf16);
+                VBOX_UTF8_FREE(path);
+            }
+
+            VBOX_RELEASE(parallelPort);
+        }
+    }
+}
+
+char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
+{
+    VBOX_OBJECT_CHECK(dom->conn, char *, NULL);
+    virDomainDefPtr def  = NULL;
+    IMachine *machine    = NULL;
+    vboxIIDUnion iid;
+    PRBool accessible = PR_FALSE;
+    size_t i = 0;
+    PRBool PAEEnabled                   = PR_FALSE;
+    PRBool ACPIEnabled                  = PR_FALSE;
+    PRBool IOAPICEnabled                = PR_FALSE;
+    PRUint32 CPUCount                   = 0;
+    PRUint32 memorySize                 = 0;
+    PRUint32 networkAdapterCount        = 0;
+    PRUint32 maxMemorySize              = 4 * 1024;
+    PRUint32 maxBootPosition            = 0;
+    PRUint32 serialPortCount            = 0;
+    PRUint32 parallelPortCount          = 0;
+    IBIOSSettings *bios                 = NULL;
+    PRUint32 chipsetType                = ChipsetType_Null;
+    ISystemProperties *systemProperties = NULL;
+
+    /* Flags checked by virDomainDefFormat */
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC(def) < 0)
+        goto cleanup;
+
+    gVBoxAPI.UIMachine.GetAccessible(machine, &accessible);
+    if (!accessible)
+        goto cleanup;
+
+    def->virtType = VIR_DOMAIN_VIRT_VBOX;
+    def->id = dom->id;
+    memcpy(def->uuid, dom->uuid, VIR_UUID_BUFLEN);
+    if (VIR_STRDUP(def->name, dom->name) < 0)
+        goto cleanup;
+
+    gVBoxAPI.UIMachine.GetMemorySize(machine, &memorySize);
+    def->mem.cur_balloon = memorySize * 1024;
+
+    if (gVBoxAPI.chipsetType)
+        gVBoxAPI.UIMachine.GetChipsetType(machine, &chipsetType);
+
+    gVBoxAPI.UIVirtualBox.GetSystemProperties(data->vboxObj, &systemProperties);
+    if (systemProperties) {
+        gVBoxAPI.UISystemProperties.GetMaxGuestRAM(systemProperties, &maxMemorySize);
+        gVBoxAPI.UISystemProperties.GetMaxBootPosition(systemProperties, &maxBootPosition);
+        gVBoxAPI.UISystemProperties.GetMaxNetworkAdapters(systemProperties, chipsetType, &networkAdapterCount);
+        gVBoxAPI.UISystemProperties.GetSerialPortCount(systemProperties, &serialPortCount);
+        gVBoxAPI.UISystemProperties.GetParallelPortCount(systemProperties, &parallelPortCount);
+        VBOX_RELEASE(systemProperties);
+        systemProperties = NULL;
+    }
+    /* Currently setting memory and maxMemory as same, cause
+     * the notation here seems to be inconsistent while
+     * reading and while dumping xml
+     */
+    /* def->mem.max_balloon = maxMemorySize * 1024; */
+    def->mem.max_balloon = memorySize * 1024;
+
+    gVBoxAPI.UIMachine.GetCPUCount(machine, &CPUCount);
+    def->maxvcpus = def->vcpus = CPUCount;
+
+    /* Skip cpumasklen, cpumask, onReboot, onPoweroff, onCrash */
+
+    if (VIR_STRDUP(def->os.type, "hvm") < 0)
+        goto cleanup;
+
+    def->os.arch = virArchFromHost();
+
+    def->os.nBootDevs = 0;
+    for (i = 0; (i < VIR_DOMAIN_BOOT_LAST) && (i < maxBootPosition); i++) {
+        PRUint32 device = DeviceType_Null;
+
+        gVBoxAPI.UIMachine.GetBootOrder(machine, i+1, &device);
+
+        if (device == DeviceType_Floppy) {
+            def->os.bootDevs[i] = VIR_DOMAIN_BOOT_FLOPPY;
+            def->os.nBootDevs++;
+        } else if (device == DeviceType_DVD) {
+            def->os.bootDevs[i] = VIR_DOMAIN_BOOT_CDROM;
+            def->os.nBootDevs++;
+        } else if (device == DeviceType_HardDisk) {
+            def->os.bootDevs[i] = VIR_DOMAIN_BOOT_DISK;
+            def->os.nBootDevs++;
+        } else if (device == DeviceType_Network) {
+            def->os.bootDevs[i] = VIR_DOMAIN_BOOT_NET;
+            def->os.nBootDevs++;
+        } else if (device == DeviceType_USB) {
+            /* Not supported by libvirt yet */
+        } else if (device == DeviceType_SharedFolder) {
+            /* Not supported by libvirt yet */
+            /* Can VirtualBox really boot from a shared folder? */
+        }
+    }
+
+    gVBoxAPI.UIMachine.GetCPUProperty(machine, CPUPropertyType_PAE, &PAEEnabled);
+    if (PAEEnabled)
+        def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_TRISTATE_SWITCH_ON;
+
+    gVBoxAPI.UIMachine.GetBIOSSettings(machine, &bios);
+    if (bios) {
+        gVBoxAPI.UIBIOSSettings.GetACPIEnabled(bios, &ACPIEnabled);
+        if (ACPIEnabled)
+            def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_TRISTATE_SWITCH_ON;
+
+        gVBoxAPI.UIBIOSSettings.GetIOAPICEnabled(bios, &IOAPICEnabled);
+        if (IOAPICEnabled)
+            def->features[VIR_DOMAIN_FEATURE_APIC] = VIR_TRISTATE_SWITCH_ON;
+
+        VBOX_RELEASE(bios);
+    }
+
+    /* Currently VirtualBox always uses locatime
+     * so locatime is always true here */
+    def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
+
+    vboxDumpVideo(def, data, machine);
+    vboxDumpDisplay(def, data, machine);
+
+    /* As the medium interface changed from 3.0 to 3.1.
+     * There are two totally different implementations.
+     * The old one would be version specified, while the
+     * new one is using the vboxUniformedAPI and be put
+     * into the common code.
+     */
+    if (gVBoxAPI.oldMediumInterface)
+        gVBoxAPI.dumpIDEHDDsOld(def, data, machine);
+    else
+        vboxDumpIDEHDDsNew(def, data, machine);
+
+    vboxDumpSharedFolders(def, data, machine);
+    vboxDumpNetwork(def, data, machine, networkAdapterCount);
+    vboxDumpAudio(def, data, machine);
+
+    if (gVBoxAPI.oldMediumInterface) {
+        gVBoxAPI.dumpDVD(def, data, machine);
+        gVBoxAPI.dumpFloppy(def, data, machine);
+    }
+
+    vboxDumpSerial(def, data, machine, serialPortCount);
+    vboxDumpParallel(def, data, machine, parallelPortCount);
+
+    /* dump USB devices/filters if active */
+    vboxHostDeviceGetXMLDesc(data, def, machine);
+
+    ret = virDomainDefFormat(def, flags);
+
+ cleanup:
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    virDomainDefFree(def);
+    return ret;
 }

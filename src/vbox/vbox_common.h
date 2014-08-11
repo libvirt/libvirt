@@ -196,6 +196,15 @@ enum NetworkAdapterType
     NetworkAdapterType_Virtio = 6
 };
 
+enum NetworkAttachmentType
+{
+    NetworkAttachmentType_Null = 0,
+    NetworkAttachmentType_NAT = 1,
+    NetworkAttachmentType_Bridged = 2,
+    NetworkAttachmentType_Internal = 3,
+    NetworkAttachmentType_HostOnly = 4
+};
+
 enum PortMode
 {
     PortMode_Disconnected = 0,
