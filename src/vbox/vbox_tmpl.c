@@ -933,12 +933,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static int
-vboxDomainDestroy(virDomainPtr dom)
-{
-    return vboxDomainDestroyFlags(dom, 0);
-}
-
 static char *vboxDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
     /* Returning "hvm" always as suggested on list, cause
      * this functions seems to be badly named and it

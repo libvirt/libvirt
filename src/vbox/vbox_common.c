@@ -2598,3 +2598,8 @@ int vboxDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+int vboxDomainDestroy(virDomainPtr dom)
+{
+    return vboxDomainDestroyFlags(dom, 0);
+}
