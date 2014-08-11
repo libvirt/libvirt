@@ -257,6 +257,8 @@ typedef nsISupports IVRDxServer;
 typedef nsISupports IUSBCommon;
 typedef nsISupports IUSBDeviceFilter;
 typedef nsISupports IMedium;
+typedef nsISupports IMediumAttachment;
 typedef nsISupports IStorageController;
+typedef nsISupports ISharedFolder;
 
 #endif /* VBOX_COMMON_H */
