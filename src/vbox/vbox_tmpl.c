@@ -933,60 +933,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static int vboxDomainShutdownFlags(virDomainPtr dom,
-                                   unsigned int flags)
-{
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    IMachine *machine    = NULL;
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    IConsole *console    = NULL;
-    PRUint32 state       = MachineState_Null;
-    PRBool isAccessible  = PR_FALSE;
-    nsresult rc;
-
-    virCheckFlags(0, -1);
-
-    vboxIIDFromUUID(&iid, dom->uuid);
-    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching id %d"), dom->id);
-        goto cleanup;
-    }
-
-    if (!machine)
-        goto cleanup;
-
-    machine->vtbl->GetAccessible(machine, &isAccessible);
-    if (isAccessible) {
-        machine->vtbl->GetState(machine, &state);
-
-        if (state == MachineState_Paused) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("machine paused, so can't power it down"));
-            goto cleanup;
-        } else if (state == MachineState_PoweredOff) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("machine already powered down"));
-            goto cleanup;
-        }
-
-        VBOX_SESSION_OPEN_EXISTING(iid.value, machine);
-        data->vboxSession->vtbl->GetConsole(data->vboxSession, &console);
-        if (console) {
-            console->vtbl->PowerButton(console);
-            VBOX_RELEASE(console);
-            ret = 0;
-        }
-        VBOX_SESSION_CLOSE();
-    }
-
- cleanup:
-    VBOX_RELEASE(machine);
-    vboxIIDUnalloc(&iid);
-    return ret;
-}
-
 static int vboxDomainShutdown(virDomainPtr dom)
 {
     return vboxDomainShutdownFlags(dom, 0);
@@ -9953,6 +9899,12 @@ _consoleResume(IConsole *console)
 }
 
 static nsresult
+_consolePowerButton(IConsole *console)
+{
+    return console->vtbl->PowerButton(console);
+}
+
+static nsresult
 _progressWaitForCompletion(IProgress *progress, PRInt32 timeout)
 {
     return progress->vtbl->WaitForCompletion(progress, timeout);
@@ -10390,6 +10342,11 @@ static bool _machineStatePaused(PRUint32 state)
     return state == MachineState_Paused;
 }
 
+static bool _machineStatePoweredOff(PRUint32 state)
+{
+    return state == MachineState_PoweredOff;
+}
+
 static vboxUniformedPFN _UPFN = {
     .Initialize = _pfnInitialize,
     .Uninitialize = _pfnUninitialize,
@@ -10472,6 +10429,7 @@ static vboxUniformedIConsole _UIConsole = {
     .SaveState = _consoleSaveState,
     .Pause = _consolePause,
     .Resume = _consoleResume,
+    .PowerButton = _consolePowerButton,
 };
 
 static vboxUniformedIProgress _UIProgress = {
@@ -10559,6 +10517,7 @@ static uniformedMachineStateChecker _machineStateChecker = {
     .NotStart = _machineStateNotStart,
     .Running = _machineStateRunning,
     .Paused = _machineStatePaused,
+    .PoweredOff = _machineStatePoweredOff,
 };
 
 void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)

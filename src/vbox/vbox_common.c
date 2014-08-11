@@ -2456,3 +2456,51 @@ int vboxDomainResume(virDomainPtr dom)
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+int vboxDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    IMachine *machine    = NULL;
+    vboxIIDUnion iid;
+    IConsole *console    = NULL;
+    PRUint32 state;
+    PRBool isAccessible  = PR_FALSE;
+
+    virCheckFlags(0, -1);
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    if (!machine)
+        goto cleanup;
+
+    gVBoxAPI.UIMachine.GetAccessible(machine, &isAccessible);
+    if (!isAccessible)
+        goto cleanup;
+
+    gVBoxAPI.UIMachine.GetState(machine, &state);
+
+    if (gVBoxAPI.machineStateChecker.Paused(state)) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("machine paused, so can't power it down"));
+        goto cleanup;
+    } else if (gVBoxAPI.machineStateChecker.PoweredOff(state)) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("machine already powered down"));
+        goto cleanup;
+    }
+
+    gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+    gVBoxAPI.UISession.GetConsole(data->vboxSession, &console);
+    if (console) {
+        gVBoxAPI.UIConsole.PowerButton(console);
+        VBOX_RELEASE(console);
+        ret = 0;
+    }
+    gVBoxAPI.UISession.Close(data->vboxSession);
+
+ cleanup:
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    return ret;
+}
