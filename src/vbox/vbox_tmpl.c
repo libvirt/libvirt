@@ -254,7 +254,6 @@ static vboxGlobalData *g_pVBoxGlobalData = NULL;
 
 static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml);
 static int vboxDomainCreate(virDomainPtr dom);
-static int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags);
 
 #if VBOX_API_VERSION > 2002000 && VBOX_API_VERSION < 4000000
 /* Since vboxConnectGetCapabilities has been rewritten,
@@ -4782,181 +4781,6 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml)
     vboxIIDUnalloc(&iid);
     virDomainDefFree(def);
     return NULL;
-}
-
-static int
-vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
-{
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    IMachine *machine    = NULL;
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    nsresult rc;
-#if VBOX_API_VERSION >= 4000000
-    vboxArray media = VBOX_ARRAY_INITIALIZER;
-#endif
-    /* No managed save, so we explicitly reject
-     * VIR_DOMAIN_UNDEFINE_MANAGED_SAVE.  No snapshot metadata for
-     * VBox, so we can trivially ignore that flag.  */
-    virCheckFlags(VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA, -1);
-
-    vboxIIDFromUUID(&iid, dom->uuid);
-
-#if VBOX_API_VERSION < 4000000
-    /* Block for checking if HDD's are attched to VM.
-     * considering just IDE bus for now. Also skipped
-     * chanel=1 and device=0 (Secondary Master) as currenlty
-     * it is allocated to CD/DVD Drive by default.
-     *
-     * Only do this for VirtualBox 3.x and before. Since
-     * VirtualBox 4.0 the Unregister method can do this for use.
-     */
-    {
-        PRUnichar *hddcnameUtf16 = NULL;
-
-        char *hddcname;
-        ignore_value(VIR_STRDUP(hddcname, "IDE"));
-        VBOX_UTF8_TO_UTF16(hddcname, &hddcnameUtf16);
-        VIR_FREE(hddcname);
-
-        /* Open a Session for the machine */
-        rc = VBOX_SESSION_OPEN(iid.value, machine);
-        if (NS_SUCCEEDED(rc)) {
-            rc = data->vboxSession->vtbl->GetMachine(data->vboxSession, &machine);
-            if (NS_SUCCEEDED(rc) && machine) {
-
-# if VBOX_API_VERSION < 3001000
-                /* Disconnect all the drives if present */
-                machine->vtbl->DetachHardDisk(machine, hddcnameUtf16, 0, 0);
-                machine->vtbl->DetachHardDisk(machine, hddcnameUtf16, 0, 1);
-                machine->vtbl->DetachHardDisk(machine, hddcnameUtf16, 1, 1);
-# else  /* VBOX_API_VERSION >= 3001000 */
-                /* get all the controller first, then the attachments and
-                 * remove them all so that the machine can be undefined
-                 */
-                vboxArray storageControllers = VBOX_ARRAY_INITIALIZER;
-                size_t i = 0, j = 0;
-
-                vboxArrayGet(&storageControllers, machine,
-                             machine->vtbl->GetStorageControllers);
-
-                for (i = 0; i < storageControllers.count; i++) {
-                    IStorageController *strCtl = storageControllers.items[i];
-                    PRUnichar *strCtlName = NULL;
-                    vboxArray mediumAttachments = VBOX_ARRAY_INITIALIZER;
-
-                    if (!strCtl)
-                        continue;
-
-                    strCtl->vtbl->GetName(strCtl, &strCtlName);
-                    vboxArrayGetWithPtrArg(&mediumAttachments, machine,
-                                           machine->vtbl->GetMediumAttachmentsOfController,
-                                           strCtlName);
-
-                    for (j = 0; j < mediumAttachments.count; j++) {
-                        IMediumAttachment *medAtt = mediumAttachments.items[j];
-                        PRInt32 port = ~0U;
-                        PRInt32 device = ~0U;
-
-                        if (!medAtt)
-                            continue;
-
-                        medAtt->vtbl->GetPort(medAtt, &port);
-                        medAtt->vtbl->GetDevice(medAtt, &device);
-
-                        if ((port != ~0U) && (device != ~0U)) {
-                            machine->vtbl->DetachDevice(machine,
-                                                        strCtlName,
-                                                        port,
-                                                        device);
-                        }
-                    }
-
-                    vboxArrayRelease(&storageControllers);
-
-                    machine->vtbl->RemoveStorageController(machine, strCtlName);
-                    VBOX_UTF16_FREE(strCtlName);
-                }
-
-                vboxArrayRelease(&storageControllers);
-# endif /* VBOX_API_VERSION >= 3001000 */
-
-                machine->vtbl->SaveSettings(machine);
-            }
-            VBOX_SESSION_CLOSE();
-        }
-        VBOX_UTF16_FREE(hddcnameUtf16);
-    }
-#endif
-
-#if VBOX_API_VERSION < 4000000
-    rc = data->vboxObj->vtbl->UnregisterMachine(data->vboxObj, iid.value, &machine);
-#else /* VBOX_API_VERSION >= 4000000 */
-    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching uuid"));
-        return -1;
-    }
-
-    /* We're not interested in the array returned by the Unregister method,
-     * but in the side effect of unregistering the virtual machine. In order
-     * to call the Unregister method correctly we need to use the vboxArray
-     * wrapper here. */
-    rc = vboxArrayGetWithUintArg(&media, machine, machine->vtbl->Unregister,
-                                 CleanupMode_DetachAllReturnNone);
-#endif /* VBOX_API_VERSION >= 4000000 */
-    DEBUGIID("UUID of machine being undefined", iid.value);
-
-    if (NS_SUCCEEDED(rc)) {
-#if VBOX_API_VERSION < 4000000
-        machine->vtbl->DeleteSettings(machine);
-#else /* VBOX_API_VERSION >= 4000000 */
-        IProgress *progress = NULL;
-
-        /* The IMachine Delete method takes an array of IMedium items to be
-         * deleted along with the virtual machine. We just want to pass an
-         * empty array. But instead of adding a full vboxArraySetWithReturn to
-         * the glue layer (in order to handle the required signature of the
-         * Delete method) we use a local solution here. */
-# ifdef WIN32
-        SAFEARRAY *safeArray = NULL;
-        typedef HRESULT __stdcall (*IMachine_Delete)(IMachine *self,
-                                                     SAFEARRAY **media,
-                                                     IProgress **progress);
-
-#  if VBOX_API_VERSION < 4003000
-        ((IMachine_Delete)machine->vtbl->Delete)(machine, &safeArray, &progress);
-#  else
-        ((IMachine_Delete)machine->vtbl->DeleteConfig)(machine, &safeArray, &progress);
-#  endif
-# else
-        /* XPCOM doesn't like NULL as an array, even when the array size is 0.
-         * Instead pass it a dummy array to avoid passing NULL. */
-        IMedium *array[] = { NULL };
-#  if VBOX_API_VERSION < 4003000
-        machine->vtbl->Delete(machine, 0, array, &progress);
-#  else
-        machine->vtbl->DeleteConfig(machine, 0, array, &progress);
-#  endif
-# endif
-        if (progress != NULL) {
-            progress->vtbl->WaitForCompletion(progress, -1);
-            VBOX_RELEASE(progress);
-        }
-#endif /* VBOX_API_VERSION >= 4000000 */
-        ret = 0;
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("could not delete the domain, rc=%08x"), (unsigned)rc);
-    }
-
-#if VBOX_API_VERSION >= 4000000
-    vboxArrayUnalloc(&media);
-#endif
-    vboxIIDUnalloc(&iid);
-    VBOX_RELEASE(machine);
-
-    return ret;
 }
 
 static int
@@ -11012,6 +10836,154 @@ void _registerGlobalData(vboxGlobalData *data ATTRIBUTE_UNUSED)
 #endif /* VBOX_API_VERSION != 2002000 */
 }
 
+#if VBOX_API_VERSION < 4000000
+
+# if VBOX_API_VERSION < 3001000
+static void
+_detachDevices(vboxGlobalData *data ATTRIBUTE_UNUSED,
+               IMachine *machine, PRUnichar *hddcnameUtf16)
+{
+    /* Disconnect all the drives if present */
+    machine->vtbl->DetachHardDisk(machine, hddcnameUtf16, 0, 0);
+    machine->vtbl->DetachHardDisk(machine, hddcnameUtf16, 0, 1);
+    machine->vtbl->DetachHardDisk(machine, hddcnameUtf16, 1, 1);
+}
+# else  /* VBOX_API_VERSION >= 3001000 */
+static void
+_detachDevices(vboxGlobalData *data, IMachine *machine,
+               PRUnichar *hddcnameUtf16 ATTRIBUTE_UNUSED)
+{
+    /* get all the controller first, then the attachments and
+    * remove them all so that the machine can be undefined
+    */
+   vboxArray storageControllers = VBOX_ARRAY_INITIALIZER;
+   size_t i = 0, j = 0;
+
+   vboxArrayGet(&storageControllers, machine,
+                machine->vtbl->GetStorageControllers);
+
+   for (i = 0; i < storageControllers.count; i++) {
+       IStorageController *strCtl = storageControllers.items[i];
+       PRUnichar *strCtlName = NULL;
+       vboxArray mediumAttachments = VBOX_ARRAY_INITIALIZER;
+
+       if (!strCtl)
+           continue;
+
+       strCtl->vtbl->GetName(strCtl, &strCtlName);
+       vboxArrayGetWithPtrArg(&mediumAttachments, machine,
+                              machine->vtbl->GetMediumAttachmentsOfController,
+                              strCtlName);
+
+       for (j = 0; j < mediumAttachments.count; j++) {
+           IMediumAttachment *medAtt = mediumAttachments.items[j];
+           PRInt32 port = ~0U;
+           PRInt32 device = ~0U;
+
+           if (!medAtt)
+               continue;
+
+           medAtt->vtbl->GetPort(medAtt, &port);
+           medAtt->vtbl->GetDevice(medAtt, &device);
+
+           if ((port != ~0U) && (device != ~0U)) {
+               machine->vtbl->DetachDevice(machine,
+                                           strCtlName,
+                                           port,
+                                           device);
+           }
+       }
+       vboxArrayRelease(&storageControllers);
+       machine->vtbl->RemoveStorageController(machine, strCtlName);
+       VBOX_UTF16_FREE(strCtlName);
+   }
+   vboxArrayRelease(&storageControllers);
+}
+# endif /* VBOX_API_VERSION >= 3001000 */
+
+static nsresult
+_unregisterMachine(vboxGlobalData *data, vboxIIDUnion *iidu, IMachine **machine)
+{
+    return data->vboxObj->vtbl->UnregisterMachine(data->vboxObj, IID_MEMBER(value), machine);
+}
+
+static void
+_deleteConfig(IMachine *machine)
+{
+    machine->vtbl->DeleteSettings(machine);
+}
+
+#else /* VBOX_API_VERSION >= 4000000 */
+
+static void
+_detachDevices(vboxGlobalData *data ATTRIBUTE_UNUSED,
+               IMachine *machine ATTRIBUTE_UNUSED,
+               PRUnichar *hddcnameUtf16 ATTRIBUTE_UNUSED)
+{
+    vboxUnsupported();
+}
+
+static nsresult
+_unregisterMachine(vboxGlobalData *data, vboxIIDUnion *iidu, IMachine **machine)
+{
+    nsresult rc;
+    vboxArray media = VBOX_ARRAY_INITIALIZER;
+    rc = VBOX_OBJECT_GET_MACHINE(IID_MEMBER(value), machine);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching uuid"));
+        return rc;
+    }
+
+    /* We're not interested in the array returned by the Unregister method,
+     * but in the side effect of unregistering the virtual machine. In order
+     * to call the Unregister method correctly we need to use the vboxArray
+     * wrapper here. */
+    rc = vboxArrayGetWithUintArg(&media, *machine, (*machine)->vtbl->Unregister,
+                                 CleanupMode_DetachAllReturnNone);
+    vboxArrayUnalloc(&media);
+    return rc;
+}
+
+static void
+_deleteConfig(IMachine *machine)
+{
+    IProgress *progress = NULL;
+
+    /* The IMachine Delete method takes an array of IMedium items to be
+     * deleted along with the virtual machine. We just want to pass an
+     * empty array. But instead of adding a full vboxArraySetWithReturn to
+     * the glue layer (in order to handle the required signature of the
+     * Delete method) we use a local solution here. */
+# ifdef WIN32
+    SAFEARRAY *safeArray = NULL;
+    typedef HRESULT __stdcall (*IMachine_Delete)(IMachine *self,
+                                                 SAFEARRAY **media,
+                                                 IProgress **progress);
+
+#  if VBOX_API_VERSION < 4003000
+    ((IMachine_Delete)machine->vtbl->Delete)(machine, &safeArray, &progress);
+#  else
+    ((IMachine_Delete)machine->vtbl->DeleteConfig)(machine, &safeArray, &progress);
+#  endif
+# else
+    /* XPCOM doesn't like NULL as an array, even when the array size is 0.
+     * Instead pass it a dummy array to avoid passing NULL. */
+    IMedium *array[] = { NULL };
+#  if VBOX_API_VERSION < 4003000
+    machine->vtbl->Delete(machine, 0, array, &progress);
+#  else
+    machine->vtbl->DeleteConfig(machine, 0, array, &progress);
+#  endif
+# endif
+    if (progress != NULL) {
+        progress->vtbl->WaitForCompletion(progress, -1);
+        VBOX_RELEASE(progress);
+    }
+}
+
+#endif /* VBOX_API_VERSION >= 4000000 */
+
 static void _pfnUninitialize(vboxGlobalData *data)
 {
     if (data->pFuncs)
@@ -11138,7 +11110,19 @@ _machineGetId(IMachine *machine, vboxIIDUnion *iidu)
     return machine->vtbl->GetId(machine, &IID_MEMBER(value));
 }
 
+static nsresult
+_machineSaveSettings(IMachine *machine)
+{
+    return machine->vtbl->SaveSettings(machine);
+}
+
 #if VBOX_API_VERSION < 4000000
+
+static nsresult
+_sessionOpen(vboxGlobalData *data, vboxIIDUnion *iidu, IMachine *machine ATTRIBUTE_UNUSED)
+{
+    return data->vboxObj->vtbl->OpenSession(data->vboxObj, data->vboxSession, IID_MEMBER(value));
+}
 
 static nsresult
 _sessionOpenExisting(vboxGlobalData *data, vboxIIDUnion *iidu, IMachine *machine ATTRIBUTE_UNUSED)
@@ -11153,6 +11137,12 @@ _sessionClose(ISession *session)
 }
 
 #else /* VBOX_API_VERSION >= 4000000 */
+
+static nsresult
+_sessionOpen(vboxGlobalData *data, vboxIIDUnion *iidu ATTRIBUTE_UNUSED, IMachine *machine)
+{
+    return machine->vtbl->LockMachine(machine, data->vboxSession, LockType_Write);
+}
 
 static nsresult
 _sessionOpenExisting(vboxGlobalData *data, vboxIIDUnion *iidu ATTRIBUTE_UNUSED, IMachine *machine)
@@ -11172,6 +11162,12 @@ static nsresult
 _sessionGetConsole(ISession *session, IConsole **console)
 {
     return session->vtbl->GetConsole(session, console);
+}
+
+static nsresult
+_sessionGetMachine(ISession *session, IMachine **machine)
+{
+    return session->vtbl->GetMachine(session, machine);
 }
 
 static nsresult
@@ -11249,11 +11245,14 @@ static vboxUniformedIMachine _UIMachine = {
     .GetState = _machineGetState,
     .GetName = _machineGetName,
     .GetId = _machineGetId,
+    .SaveSettings = _machineSaveSettings,
 };
 
 static vboxUniformedISession _UISession = {
+    .Open = _sessionOpen,
     .OpenExisting = _sessionOpenExisting,
     .GetConsole = _sessionGetConsole,
+    .GetMachine = _sessionGetMachine,
     .Close = _sessionClose,
 };
 
@@ -11280,6 +11279,9 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->XPCOMCVersion = VBOX_XPCOMC_VERSION;
     pVBoxAPI->initializeDomainEvent = _initializeDomainEvent;
     pVBoxAPI->registerGlobalData = _registerGlobalData;
+    pVBoxAPI->detachDevices = _detachDevices;
+    pVBoxAPI->unregisterMachine = _unregisterMachine;
+    pVBoxAPI->deleteConfig = _deleteConfig;
     pVBoxAPI->UPFN = _UPFN;
     pVBoxAPI->UIID = _UIID;
     pVBoxAPI->UArray = _UArray;
@@ -11307,8 +11309,10 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
 #if VBOX_API_VERSION >= 4000000
     /* Get machine for the call to VBOX_SESSION_OPEN_EXISTING */
     pVBoxAPI->getMachineForSession = 1;
+    pVBoxAPI->detachDevicesExplicitly = 0;
 #else /* VBOX_API_VERSION < 4000000 */
     pVBoxAPI->getMachineForSession = 0;
+    pVBoxAPI->detachDevicesExplicitly = 1;
 #endif /* VBOX_API_VERSION < 4000000 */
 }
 

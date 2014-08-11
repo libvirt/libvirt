@@ -27,6 +27,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "nodeinfo.h"
+#include "virstring.h"
 
 #include "vbox_common.h"
 #include "vbox_uniformed_api.h"
@@ -694,6 +695,75 @@ virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
     VBOX_UTF8_FREE(machineNameUtf8);
     VBOX_COM_UNALLOC_MEM(machineNameUtf16);
     gVBoxAPI.UArray.vboxArrayRelease(&machines);
+
+    return ret;
+}
+
+static void
+detachDevices_common(vboxGlobalData *data, vboxIIDUnion *iidu)
+{
+    /* Block for checking if HDD's are attched to VM.
+     * considering just IDE bus for now. Also skipped
+     * chanel=1 and device=0 (Secondary Master) as currenlty
+     * it is allocated to CD/DVD Drive by default.
+     *
+     * Only do this for VirtualBox 3.x and before. Since
+     * VirtualBox 4.0 the Unregister method can do this for use.
+     */
+    IMachine *machine = NULL;
+    PRUnichar *hddcnameUtf16 = NULL;
+    nsresult rc;
+    char *hddcname;
+
+    if (!gVBoxAPI.detachDevicesExplicitly)
+        VIR_WARN("This function may not work in current vbox version");
+
+    ignore_value(VIR_STRDUP(hddcname, "IDE"));
+    VBOX_UTF8_TO_UTF16(hddcname, &hddcnameUtf16);
+    VIR_FREE(hddcname);
+
+    /* Open a Session for the machine */
+    rc = gVBoxAPI.UISession.Open(data, iidu, machine);
+    if (NS_SUCCEEDED(rc)) {
+        rc = gVBoxAPI.UISession.GetMachine(data->vboxSession, &machine);
+        if (NS_SUCCEEDED(rc) && machine) {
+            gVBoxAPI.detachDevices(data, machine, hddcnameUtf16);
+            gVBoxAPI.UIMachine.SaveSettings(machine);
+        }
+        gVBoxAPI.UISession.Close(data->vboxSession);
+    }
+    VBOX_UTF16_FREE(hddcnameUtf16);
+}
+
+int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    IMachine *machine    = NULL;
+    vboxIIDUnion iid;
+    nsresult rc;
+
+    gVBoxAPI.UIID.vboxIIDInitialize(&iid);
+    /* No managed save, so we explicitly reject
+     * VIR_DOMAIN_UNDEFINE_MANAGED_SAVE.  No snapshot metadata for
+     * VBox, so we can trivially ignore that flag.  */
+    virCheckFlags(VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA, -1);
+    vboxIIDFromUUID(&iid, dom->uuid);
+    if (gVBoxAPI.detachDevicesExplicitly)
+        detachDevices_common(data, &iid);
+    rc = gVBoxAPI.unregisterMachine(data, &iid, &machine);
+
+    DEBUGIID("UUID of machine being undefined", &iid);
+
+    if (NS_SUCCEEDED(rc)) {
+        gVBoxAPI.deleteConfig(machine);
+        ret = 0;
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not delete the domain, rc=%08x"), (unsigned)rc);
+    }
+
+    vboxIIDUnalloc(&iid);
+    VBOX_RELEASE(machine);
 
     return ret;
 }

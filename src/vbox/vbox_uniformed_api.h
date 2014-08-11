@@ -188,12 +188,15 @@ typedef struct {
     nsresult (*GetState)(IMachine *machine, PRUint32 *state);
     nsresult (*GetName)(IMachine *machine, PRUnichar **name);
     nsresult (*GetId)(IMachine *machine, vboxIIDUnion *iidu);
+    nsresult (*SaveSettings)(IMachine *machine);
 } vboxUniformedIMachine;
 
 /* Functions for ISession */
 typedef struct {
+    nsresult (*Open)(vboxGlobalData *data, vboxIIDUnion *iidu, IMachine *machine);
     nsresult (*OpenExisting)(vboxGlobalData *data, vboxIIDUnion *iidu, IMachine *machine);
     nsresult (*GetConsole)(ISession *session, IConsole **console);
+    nsresult (*GetMachine)(ISession *session, IMachine **machine);
     nsresult (*Close)(ISession *session);
 } vboxUniformedISession;
 
@@ -224,6 +227,9 @@ typedef struct {
     /* vbox APIs */
     int (*initializeDomainEvent)(vboxGlobalData *data);
     void (*registerGlobalData)(vboxGlobalData *data);
+    void (*detachDevices)(vboxGlobalData *data, IMachine *machine, PRUnichar *hddcnameUtf16);
+    nsresult (*unregisterMachine)(vboxGlobalData *data, vboxIIDUnion *iidu, IMachine **machine);
+    void (*deleteConfig)(IMachine *machine);
     vboxUniformedPFN UPFN;
     vboxUniformedIID UIID;
     vboxUniformedArray UArray;
@@ -239,6 +245,7 @@ typedef struct {
     bool domainEventCallbacks;
     bool hasStaticGlobalData;
     bool getMachineForSession;
+    bool detachDevicesExplicitly;
 } vboxUniformedAPI;
 
 /* libvirt API
@@ -262,6 +269,7 @@ int vboxConnectNumOfDomains(virConnectPtr conn);
 virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id);
 virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
                                     const unsigned char *uuid);
+int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
