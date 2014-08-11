@@ -429,6 +429,7 @@ int vboxDomainShutdown(virDomainPtr dom);
 int vboxDomainReboot(virDomainPtr dom, unsigned int flags);
 int vboxDomainDestroyFlags(virDomainPtr dom, unsigned int flags);
 int vboxDomainDestroy(virDomainPtr dom);
+char *vboxDomainGetOSType(virDomainPtr dom);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

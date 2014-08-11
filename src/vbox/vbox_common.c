@@ -2603,3 +2603,15 @@ int vboxDomainDestroy(virDomainPtr dom)
 {
     return vboxDomainDestroyFlags(dom, 0);
 }
+
+char *vboxDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
+    /* Returning "hvm" always as suggested on list, cause
+     * this functions seems to be badly named and it
+     * is supposed to pass the ABI name and not the domain
+     * operating system driver as I had imagined ;)
+     */
+    char *osType;
+
+    ignore_value(VIR_STRDUP(osType, "hvm"));
+    return osType;
+}
