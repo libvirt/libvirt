@@ -6109,3 +6109,82 @@ int vboxDomainSnapshotNum(virDomainPtr dom, unsigned int flags)
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+int vboxDomainSnapshotListNames(virDomainPtr dom, char **names,
+                                int nameslen, unsigned int flags)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIIDUnion iid;
+    IMachine *machine = NULL;
+    nsresult rc;
+    ISnapshot **snapshots = NULL;
+    int count = 0;
+    size_t i;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_METADATA) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS) {
+        vboxIIDUnion empty;
+
+        VBOX_IID_INITIALIZE(&empty);
+        if (VIR_ALLOC_N(snapshots, 1) < 0)
+            goto cleanup;
+        rc = gVBoxAPI.UIMachine.FindSnapshot(machine, &empty, snapshots);
+        if (NS_FAILED(rc) || !snapshots[0]) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("could not get root snapshot for domain %s"),
+                           dom->name);
+            goto cleanup;
+        }
+        count = 1;
+    } else {
+        if ((count = vboxDomainSnapshotGetAll(dom, machine, &snapshots)) < 0)
+            goto cleanup;
+    }
+
+    for (i = 0; i < nameslen; i++) {
+        PRUnichar *nameUtf16;
+        char *name;
+
+        if (i >= count)
+            break;
+
+        rc = gVBoxAPI.UISnapshot.GetName(snapshots[i], &nameUtf16);
+        if (NS_FAILED(rc) || !nameUtf16) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("could not get snapshot name"));
+            goto cleanup;
+        }
+        VBOX_UTF16_TO_UTF8(nameUtf16, &name);
+        VBOX_UTF16_FREE(nameUtf16);
+        if (VIR_STRDUP(names[i], name) < 0) {
+            VBOX_UTF8_FREE(name);
+            goto cleanup;
+        }
+        VBOX_UTF8_FREE(name);
+    }
+
+    if (count <= nameslen)
+        ret = count;
+    else
+        ret = nameslen;
+
+ cleanup:
+    if (count > 0) {
+        for (i = 0; i < count; i++)
+            VBOX_RELEASE(snapshots[i]);
+    }
+    VIR_FREE(snapshots);
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    return ret;
+}
