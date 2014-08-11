@@ -933,55 +933,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static int vboxDomainReboot(virDomainPtr dom, unsigned int flags)
-{
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    IMachine *machine    = NULL;
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    IConsole *console    = NULL;
-    PRUint32 state       = MachineState_Null;
-    PRBool isAccessible  = PR_FALSE;
-    nsresult rc;
-
-    virCheckFlags(0, -1);
-
-    vboxIIDFromUUID(&iid, dom->uuid);
-    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching id %d"), dom->id);
-        goto cleanup;
-    }
-
-    if (!machine)
-        goto cleanup;
-
-    machine->vtbl->GetAccessible(machine, &isAccessible);
-    if (isAccessible) {
-        machine->vtbl->GetState(machine, &state);
-
-        if (state == MachineState_Running) {
-            VBOX_SESSION_OPEN_EXISTING(iid.value, machine);
-            data->vboxSession->vtbl->GetConsole(data->vboxSession, &console);
-            if (console) {
-                console->vtbl->Reset(console);
-                VBOX_RELEASE(console);
-                ret = 0;
-            }
-            VBOX_SESSION_CLOSE();
-        } else {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("machine not running, so can't reboot it"));
-            goto cleanup;
-        }
-    }
-
- cleanup:
-    VBOX_RELEASE(machine);
-    vboxIIDUnalloc(&iid);
-    return ret;
-}
-
 static int
 vboxDomainDestroyFlags(virDomainPtr dom,
                        unsigned int flags)
@@ -9899,6 +9850,12 @@ _consolePowerButton(IConsole *console)
 }
 
 static nsresult
+_consoleReset(IConsole *console)
+{
+    return console->vtbl->Reset(console);
+}
+
+static nsresult
 _progressWaitForCompletion(IProgress *progress, PRInt32 timeout)
 {
     return progress->vtbl->WaitForCompletion(progress, timeout);
@@ -10424,6 +10381,7 @@ static vboxUniformedIConsole _UIConsole = {
     .Pause = _consolePause,
     .Resume = _consoleResume,
     .PowerButton = _consolePowerButton,
+    .Reset = _consoleReset,
 };
 
 static vboxUniformedIProgress _UIProgress = {
