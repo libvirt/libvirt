@@ -2669,3 +2669,82 @@ int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory)
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
+    char *machineName    = NULL;
+    PRUnichar *machineNameUtf16 = NULL;
+    nsresult rc;
+    size_t i = 0;
+
+    rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        goto cleanup;
+    }
+
+    info->nrVirtCpu = 0;
+    for (i = 0; i < machines.count; ++i) {
+        IMachine *machine = machines.items[i];
+        PRBool isAccessible = PR_FALSE;
+
+        if (!machine)
+            continue;
+
+        gVBoxAPI.UIMachine.GetAccessible(machine, &isAccessible);
+        if (!isAccessible)
+            continue;
+
+        gVBoxAPI.UIMachine.GetName(machine, &machineNameUtf16);
+        VBOX_UTF16_TO_UTF8(machineNameUtf16, &machineName);
+
+        if (STREQ(dom->name, machineName)) {
+            /* Get the Machine State (also match it with
+            * virDomainState). Get the Machine memory and
+            * for time being set max_balloon and cur_balloon to same
+            * Also since there is no direct way of checking
+            * the cputime required (one condition being the
+            * VM is remote), return zero for cputime. Get the
+            * number of CPU.
+            */
+            PRUint32 CPUCount   = 0;
+            PRUint32 memorySize = 0;
+            PRUint32 state;
+            PRUint32 maxMemorySize = 4 * 1024;
+            ISystemProperties *systemProperties = NULL;
+
+            gVBoxAPI.UIVirtualBox.GetSystemProperties(data->vboxObj, &systemProperties);
+            if (systemProperties) {
+                gVBoxAPI.UISystemProperties.GetMaxGuestRAM(systemProperties, &maxMemorySize);
+                VBOX_RELEASE(systemProperties);
+                systemProperties = NULL;
+            }
+
+            gVBoxAPI.UIMachine.GetCPUCount(machine, &CPUCount);
+            gVBoxAPI.UIMachine.GetMemorySize(machine, &memorySize);
+            gVBoxAPI.UIMachine.GetState(machine, &state);
+
+            info->cpuTime = 0;
+            info->nrVirtCpu = CPUCount;
+            info->memory = memorySize * 1024;
+            info->maxMem = maxMemorySize * 1024;
+            info->state = gVBoxAPI.vboxConvertState(state);
+
+            ret = 0;
+        }
+
+        VBOX_UTF8_FREE(machineName);
+        VBOX_COM_UNALLOC_MEM(machineNameUtf16);
+        if (info->nrVirtCpu)
+            break;
+
+    }
+
+    gVBoxAPI.UArray.vboxArrayRelease(&machines);
+
+ cleanup:
+    return ret;
+}

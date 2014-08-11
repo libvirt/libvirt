@@ -933,7 +933,7 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static virDomainState vboxConvertState(enum MachineState state)
+static virDomainState _vboxConvertState(PRUint32 state)
 {
     switch (state) {
         case MachineState_Running:
@@ -953,86 +953,6 @@ static virDomainState vboxConvertState(enum MachineState state)
         default:
             return VIR_DOMAIN_NOSTATE;
     }
-}
-
-static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
-{
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    vboxArray machines = VBOX_ARRAY_INITIALIZER;
-    char *machineName    = NULL;
-    PRUnichar *machineNameUtf16 = NULL;
-    nsresult rc;
-    size_t i = 0;
-
-    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get list of machines, rc=%08x"), (unsigned)rc);
-        goto cleanup;
-    }
-
-    info->nrVirtCpu = 0;
-    for (i = 0; i < machines.count; ++i) {
-        IMachine *machine = machines.items[i];
-        PRBool isAccessible = PR_FALSE;
-
-        if (!machine)
-            continue;
-
-        machine->vtbl->GetAccessible(machine, &isAccessible);
-        if (isAccessible) {
-
-            machine->vtbl->GetName(machine, &machineNameUtf16);
-            VBOX_UTF16_TO_UTF8(machineNameUtf16, &machineName);
-
-            if (STREQ(dom->name, machineName)) {
-                /* Get the Machine State (also match it with
-                * virDomainState). Get the Machine memory and
-                * for time being set max_balloon and cur_balloon to same
-                * Also since there is no direct way of checking
-                * the cputime required (one condition being the
-                * VM is remote), return zero for cputime. Get the
-                * number of CPU.
-                */
-                PRUint32 CPUCount   = 0;
-                PRUint32 memorySize = 0;
-                PRUint32 state      = MachineState_Null;
-                PRUint32 maxMemorySize = 4 * 1024;
-                ISystemProperties *systemProperties = NULL;
-
-                data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
-                if (systemProperties) {
-                    systemProperties->vtbl->GetMaxGuestRAM(systemProperties, &maxMemorySize);
-                    VBOX_RELEASE(systemProperties);
-                    systemProperties = NULL;
-                }
-
-
-                machine->vtbl->GetCPUCount(machine, &CPUCount);
-                machine->vtbl->GetMemorySize(machine, &memorySize);
-                machine->vtbl->GetState(machine, &state);
-
-                info->cpuTime = 0;
-                info->nrVirtCpu = CPUCount;
-                info->memory = memorySize * 1024;
-                info->maxMem = maxMemorySize * 1024;
-                info->state = vboxConvertState(state);
-
-                ret = 0;
-            }
-
-            VBOX_UTF8_FREE(machineName);
-            VBOX_COM_UNALLOC_MEM(machineNameUtf16);
-            if (info->nrVirtCpu)
-                break;
-        }
-
-    }
-
-    vboxArrayRelease(&machines);
-
- cleanup:
-    return ret;
 }
 
 static int
@@ -1059,7 +979,7 @@ vboxDomainGetState(virDomainPtr dom,
 
     machine->vtbl->GetState(machine, &mstate);
 
-    *state = vboxConvertState(mstate);
+    *state = _vboxConvertState(mstate);
 
     if (reason)
         *reason = 0;
@@ -9557,9 +9477,21 @@ _machineGetUSBCommon(IMachine *machine, IUSBCommon **USBCommon)
 }
 
 static nsresult
+_machineGetCPUCount(IMachine *machine, PRUint32 *CPUCount)
+{
+    return machine->vtbl->GetCPUCount(machine, CPUCount);
+}
+
+static nsresult
 _machineSetCPUCount(IMachine *machine, PRUint32 CPUCount)
 {
     return machine->vtbl->SetCPUCount(machine, CPUCount);
+}
+
+static nsresult
+_machineGetMemorySize(IMachine *machine, PRUint32 *memorySize)
+{
+    return machine->vtbl->GetMemorySize(machine, memorySize);
 }
 
 static nsresult
@@ -9828,6 +9760,12 @@ _systemPropertiesGetMaxDevicesPerPortForStorageBus(ISystemProperties *systemProp
     return 0;
 }
 #endif
+
+static nsresult
+_systemPropertiesGetMaxGuestRAM(ISystemProperties *systemProperties, PRUint32 *maxGuestRAM)
+{
+    return systemProperties->vtbl->GetMaxGuestRAM(systemProperties, maxGuestRAM);
+}
 
 static nsresult
 _biosSettingsSetACPIEnabled(IBIOSSettings *bios, PRBool ACPIEnabled)
@@ -10235,7 +10173,9 @@ static vboxUniformedIMachine _UIMachine = {
     .GetParallelPort = _machineGetParallelPort,
     .GetVRDxServer = _machineGetVRDxServer,
     .GetUSBCommon = _machineGetUSBCommon,
+    .GetCPUCount = _machineGetCPUCount,
     .SetCPUCount = _machineSetCPUCount,
+    .GetMemorySize = _machineGetMemorySize,
     .SetMemorySize = _machineSetMemorySize,
     .SetCPUProperty = _machineSetCPUProperty,
     .SetBootOrder = _machineSetBootOrder,
@@ -10279,6 +10219,7 @@ static vboxUniformedISystemProperties _UISystemProperties = {
     .GetParallelPortCount = _systemPropertiesGetParallelPortCount,
     .GetMaxPortCountForStorageBus = _systemPropertiesGetMaxPortCountForStorageBus,
     .GetMaxDevicesPerPortForStorageBus = _systemPropertiesGetMaxDevicesPerPortForStorageBus,
+    .GetMaxGuestRAM = _systemPropertiesGetMaxGuestRAM,
 };
 
 static vboxUniformedIBIOSSettings _UIBIOSSettings = {
@@ -10363,6 +10304,7 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->unregisterMachine = _unregisterMachine;
     pVBoxAPI->deleteConfig = _deleteConfig;
     pVBoxAPI->vboxAttachDrivesOld = _vboxAttachDrivesOld;
+    pVBoxAPI->vboxConvertState = _vboxConvertState;
     pVBoxAPI->UPFN = _UPFN;
     pVBoxAPI->UIID = _UIID;
     pVBoxAPI->UArray = _UArray;

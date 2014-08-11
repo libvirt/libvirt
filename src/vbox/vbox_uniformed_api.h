@@ -212,7 +212,9 @@ typedef struct {
     nsresult (*GetParallelPort)(IMachine *machine, PRUint32 slot, IParallelPort **port);
     nsresult (*GetVRDxServer)(IMachine *machine, IVRDxServer **VRDxServer);
     nsresult (*GetUSBCommon)(IMachine *machine, IUSBCommon **USBCommon);
+    nsresult (*GetCPUCount)(IMachine *machine, PRUint32 *CPUCount);
     nsresult (*SetCPUCount)(IMachine *machine, PRUint32 CPUCount);
+    nsresult (*GetMemorySize)(IMachine *machine, PRUint32 *memorySize);
     nsresult (*SetMemorySize)(IMachine *machine, PRUint32 memorySize);
     nsresult (*SetCPUProperty)(IMachine *machine, PRUint32 property, PRBool value);
     nsresult (*SetBootOrder)(IMachine *machine, PRUint32 position, PRUint32 device);
@@ -263,6 +265,7 @@ typedef struct {
                                              PRUint32 *maxPortCount);
     nsresult (*GetMaxDevicesPerPortForStorageBus)(ISystemProperties *systemProperties,
                                                   PRUint32 bus, PRUint32 *maxDevicesPerPort);
+    nsresult (*GetMaxGuestRAM)(ISystemProperties *systemProperties, PRUint32 *maxGuestRAM);
 } vboxUniformedISystemProperties;
 
 /* Functions for IBIOSSettings */
@@ -360,6 +363,7 @@ typedef struct {
     nsresult (*unregisterMachine)(vboxGlobalData *data, vboxIIDUnion *iidu, IMachine **machine);
     void (*deleteConfig)(IMachine *machine);
     void (*vboxAttachDrivesOld)(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine);
+    virDomainState (*vboxConvertState)(PRUint32 state);
     vboxUniformedPFN UPFN;
     vboxUniformedIID UIID;
     vboxUniformedArray UArray;
@@ -431,6 +435,7 @@ int vboxDomainDestroyFlags(virDomainPtr dom, unsigned int flags);
 int vboxDomainDestroy(virDomainPtr dom);
 char *vboxDomainGetOSType(virDomainPtr dom);
 int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory);
+int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
