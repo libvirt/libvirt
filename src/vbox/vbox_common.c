@@ -6360,3 +6360,60 @@ vboxDomainSnapshotCurrent(virDomainPtr dom, unsigned int flags)
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+int vboxDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
+                                unsigned int flags)
+{
+    virDomainPtr dom = snapshot->domain;
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIIDUnion iid;
+    IMachine *machine = NULL;
+    ISnapshot *snap = NULL;
+    ISnapshot *current = NULL;
+    PRUnichar *nameUtf16 = NULL;
+    char *name = NULL;
+    nsresult rc;
+
+    virCheckFlags(0, -1);
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    if (!(snap = vboxDomainSnapshotGet(data, dom, machine, snapshot->name)))
+        goto cleanup;
+
+    rc = gVBoxAPI.UIMachine.GetCurrentSnapshot(machine, &current);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get current snapshot"));
+        goto cleanup;
+    }
+    if (!current) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    rc = gVBoxAPI.UISnapshot.GetName(current, &nameUtf16);
+    if (NS_FAILED(rc) || !nameUtf16) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get current snapshot name"));
+        goto cleanup;
+    }
+
+    VBOX_UTF16_TO_UTF8(nameUtf16, &name);
+    if (!name) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ret = STREQ(snapshot->name, name);
+
+ cleanup:
+    VBOX_UTF8_FREE(name);
+    VBOX_UTF16_FREE(nameUtf16);
+    VBOX_RELEASE(snap);
+    VBOX_RELEASE(current);
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    return ret;
+}
