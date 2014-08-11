@@ -824,6 +824,76 @@ virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
     return ret;
 }
 
+virDomainPtr
+vboxDomainLookupByName(virConnectPtr conn, const char *name)
+{
+    VBOX_OBJECT_CHECK(conn, virDomainPtr, NULL);
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
+    vboxIIDUnion iid;
+    char *machineNameUtf8  = NULL;
+    PRUnichar *machineNameUtf16 = NULL;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    size_t i;
+    bool matched = false;
+    nsresult rc;
+
+    VBOX_IID_INITIALIZE(&iid);
+    rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        return NULL;
+    }
+
+    for (i = 0; i < machines.count; ++i) {
+        IMachine *machine = machines.items[i];
+        PRBool isAccessible = PR_FALSE;
+
+        if (!machine)
+            continue;
+
+        gVBoxAPI.UIMachine.GetAccessible(machine, &isAccessible);
+        if (!isAccessible)
+            continue;
+
+        gVBoxAPI.UIMachine.GetName(machine, &machineNameUtf16);
+        VBOX_UTF16_TO_UTF8(machineNameUtf16, &machineNameUtf8);
+
+        if (STREQ(name, machineNameUtf8)) {
+
+            PRUint32 state;
+
+            matched = true;
+
+            gVBoxAPI.UIMachine.GetId(machine, &iid);
+            vboxIIDToUUID(&iid, uuid);
+            vboxIIDUnalloc(&iid);
+
+            gVBoxAPI.UIMachine.GetState(machine, &state);
+
+            /* get a new domain pointer from virGetDomain, if it fails
+             * then no need to assign the id, else assign the id, cause
+             * it is -1 by default. rest is taken care by virGetDomain
+             * itself, so need not worry.
+             */
+
+            ret = virGetDomain(conn, machineNameUtf8, uuid);
+            if (ret &&
+                gVBoxAPI.machineStateChecker.Online(state))
+                ret->id = i + 1;
+        }
+
+        VBOX_UTF8_FREE(machineNameUtf8);
+        VBOX_COM_UNALLOC_MEM(machineNameUtf16);
+        if (matched)
+            break;
+    }
+
+    gVBoxAPI.UArray.vboxArrayRelease(&machines);
+
+    return ret;
+}
+
 static void
 vboxSetBootDeviceOrder(virDomainDefPtr def, vboxGlobalData *data,
                        IMachine *machine)

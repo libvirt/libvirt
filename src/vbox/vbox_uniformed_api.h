@@ -403,6 +403,8 @@ int vboxConnectNumOfDomains(virConnectPtr conn);
 virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id);
 virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
                                     const unsigned char *uuid);
+virDomainPtr
+vboxDomainLookupByName(virConnectPtr conn, const char *name);
 virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml);
 int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags);
 int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags);
