@@ -39,6 +39,10 @@
 #include "vbox_glue.h"
 #include "virerror.h"
 #include "virutil.h"
+#include "domain_event.h"
+#include "domain_conf.h"
+
+#include "vbox_install_api.h"
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
@@ -161,6 +165,8 @@ int vboxRegister(void)
         } else {
             VIR_DEBUG("Unsupported VirtualBox API version: %u", uVersion);
         }
+        /* Register vboxUniformedAPI. */
+        vboxRegisterUniformedAPI(uVersion);
     } else {
         VIR_DEBUG("VBoxCGlueInit failed, using dummy driver");
     }
@@ -175,9 +181,9 @@ int vboxRegister(void)
     return 0;
 }
 
-static virDrvOpenStatus vboxConnectOpen(virConnectPtr conn,
-                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                        unsigned int flags)
+static virDrvOpenStatus dummyConnectOpen(virConnectPtr conn,
+                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                         unsigned int flags)
 {
     uid_t uid = geteuid();
 
@@ -218,5 +224,5 @@ static virDrvOpenStatus vboxConnectOpen(virConnectPtr conn,
 static virDriver vboxDriverDummy = {
     VIR_DRV_VBOX,
     "VBOX",
-    .connectOpen = vboxConnectOpen,
+    .connectOpen = dummyConnectOpen,
 };

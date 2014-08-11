@@ -89,11 +89,14 @@
 
 /* Include this *last* or we'll get the wrong vbox_CAPI_*.h. */
 #include "vbox_glue.h"
-
+#include "vbox_uniformed_api.h"
 
 #define VIR_FROM_THIS                   VIR_FROM_VBOX
 
 VIR_LOG_INIT("vbox.vbox_tmpl");
+
+#define vboxUnsupported() \
+    VIR_WARN("No %s in current vbox version %d.", __FUNCTION__, VBOX_API_VERSION);
 
 #define VBOX_UTF16_FREE(arg)                                            \
     do {                                                                \
@@ -203,41 +206,7 @@ if (strUtf16) {\
           (unsigned)(iid)->m3[7]);\
 }\
 
-typedef struct {
-    virMutex lock;
-    unsigned long version;
-
-    virCapsPtr caps;
-    virDomainXMLOptionPtr xmlopt;
-
-    IVirtualBox *vboxObj;
-    ISession *vboxSession;
-
-    /** Our version specific API table pointer. */
-    PCVBOXXPCOM pFuncs;
-
-#if VBOX_API_VERSION == 2002000
-
-} vboxGlobalData;
-
-#else /* !(VBOX_API_VERSION == 2002000) */
-
-    /* Async event handling */
-    virObjectEventStatePtr domainEvents;
-    int fdWatch;
-
-# if VBOX_API_VERSION <= 3002000
-    /* IVirtualBoxCallback is used in VirtualBox 3.x only */
-    IVirtualBoxCallback *vboxCallback;
-# endif /* VBOX_API_VERSION <= 3002000 */
-
-    nsIEventQueue  *vboxQueue;
-    int volatile vboxCallBackRefCount;
-
-    /* pointer back to the connection */
-    virConnectPtr conn;
-
-} vboxGlobalData;
+#if VBOX_API_VERSION > 2002000
 
 /* g_pVBoxGlobalData has to be global variable,
  * there is no other way to make the callbacks
@@ -865,137 +834,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-
-static virDomainDefParserConfig vboxDomainDefParserConfig = {
-    .macPrefix = { 0x08, 0x00, 0x27 },
-};
-
-
-static virDomainXMLOptionPtr
-vboxXMLConfInit(void)
-{
-    return virDomainXMLOptionNew(&vboxDomainDefParserConfig,
-                                 NULL, NULL);
-}
-
-
-static virCapsPtr vboxCapsInit(void)
-{
-    virCapsPtr caps;
-    virCapsGuestPtr guest;
-
-    if ((caps = virCapabilitiesNew(virArchFromHost(),
-                                   false, false)) == NULL)
-        goto no_memory;
-
-    if (nodeCapsInitNUMA(caps) < 0)
-        goto no_memory;
-
-    if ((guest = virCapabilitiesAddGuest(caps,
-                                         "hvm",
-                                         caps->host.arch,
-                                         NULL,
-                                         NULL,
-                                         0,
-                                         NULL)) == NULL)
-        goto no_memory;
-
-    if (virCapabilitiesAddGuestDomain(guest,
-                                      "vbox",
-                                      NULL,
-                                      NULL,
-                                      0,
-                                      NULL) == NULL)
-        goto no_memory;
-
-    return caps;
-
- no_memory:
-    virObjectUnref(caps);
-    return NULL;
-}
-
-static int
-vboxInitialize(vboxGlobalData *data)
-{
-    data->pFuncs = g_pfnGetFunctions(VBOX_XPCOMC_VERSION);
-
-    if (data->pFuncs == NULL)
-        goto cleanup;
-
-#if VBOX_XPCOMC_VERSION == 0x00010000U
-    data->pFuncs->pfnComInitialize(&data->vboxObj, &data->vboxSession);
-#else  /* !(VBOX_XPCOMC_VERSION == 0x00010000U) */
-    data->pFuncs->pfnComInitialize(IVIRTUALBOX_IID_STR, &data->vboxObj,
-                               ISESSION_IID_STR, &data->vboxSession);
-
-# if VBOX_API_VERSION == 2002000
-
-    /* No event queue functionality in 2.2.* as of now */
-
-# else  /* !(VBOX_API_VERSION == 2002000) */
-
-    /* Initial the fWatch needed for Event Callbacks */
-    data->fdWatch = -1;
-
-    data->pFuncs->pfnGetEventQueue(&data->vboxQueue);
-
-    if (data->vboxQueue == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("nsIEventQueue object is null"));
-        goto cleanup;
-    }
-
-# endif /* !(VBOX_API_VERSION == 2002000) */
-#endif /* !(VBOX_XPCOMC_VERSION == 0x00010000U) */
-
-    if (data->vboxObj == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("IVirtualBox object is null"));
-        goto cleanup;
-    }
-
-    if (data->vboxSession == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("ISession object is null"));
-        goto cleanup;
-    }
-
-    return 0;
-
- cleanup:
-    return -1;
-}
-
-static int vboxExtractVersion(vboxGlobalData *data)
-{
-    int ret = -1;
-    PRUnichar *versionUtf16 = NULL;
-    nsresult rc;
-
-    if (data->version > 0)
-        return 0;
-
-    rc = data->vboxObj->vtbl->GetVersion(data->vboxObj, &versionUtf16);
-    if (NS_SUCCEEDED(rc)) {
-        char *vboxVersion = NULL;
-
-        VBOX_UTF16_TO_UTF8(versionUtf16, &vboxVersion);
-
-        if (virParseVersionString(vboxVersion, &data->version, false) >= 0)
-            ret = 0;
-
-        VBOX_UTF8_FREE(vboxVersion);
-        VBOX_COM_UNALLOC_MEM(versionUtf16);
-    }
-
-    if (ret != 0)
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not extract VirtualBox version"));
-
-    return ret;
-}
-
 static void vboxUninitialize(vboxGlobalData *data)
 {
     if (!data)
@@ -1012,82 +850,6 @@ static void vboxUninitialize(vboxGlobalData *data)
     virObjectEventStateFree(data->domainEvents);
 #endif /* !(VBOX_API_VERSION == 2002000) */
     VIR_FREE(data);
-}
-
-
-static virDrvOpenStatus vboxConnectOpen(virConnectPtr conn,
-                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                        unsigned int flags)
-{
-    vboxGlobalData *data = NULL;
-    uid_t uid = geteuid();
-
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (conn->uri == NULL &&
-        !(conn->uri = virURIParse(uid ? "vbox:///session" : "vbox:///system")))
-        return VIR_DRV_OPEN_ERROR;
-
-    if (conn->uri->scheme == NULL ||
-        STRNEQ(conn->uri->scheme, "vbox"))
-        return VIR_DRV_OPEN_DECLINED;
-
-    /* Leave for remote driver */
-    if (conn->uri->server != NULL)
-        return VIR_DRV_OPEN_DECLINED;
-
-    if (conn->uri->path == NULL || STREQ(conn->uri->path, "")) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("no VirtualBox driver path specified (try vbox:///session)"));
-        return VIR_DRV_OPEN_ERROR;
-    }
-
-    if (uid != 0) {
-        if (STRNEQ(conn->uri->path, "/session")) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown driver path '%s' specified (try vbox:///session)"), conn->uri->path);
-            return VIR_DRV_OPEN_ERROR;
-        }
-    } else { /* root */
-        if (STRNEQ(conn->uri->path, "/system") &&
-            STRNEQ(conn->uri->path, "/session")) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown driver path '%s' specified (try vbox:///system)"), conn->uri->path);
-            return VIR_DRV_OPEN_ERROR;
-        }
-    }
-
-    if (VIR_ALLOC(data) < 0)
-        return VIR_DRV_OPEN_ERROR;
-
-    if (!(data->caps = vboxCapsInit()) ||
-        vboxInitialize(data) < 0 ||
-        vboxExtractVersion(data) < 0 ||
-        !(data->xmlopt = vboxXMLConfInit())) {
-        vboxUninitialize(data);
-        return VIR_DRV_OPEN_ERROR;
-    }
-
-#if VBOX_API_VERSION == 2002000
-
-    /* No domainEventCallbacks in 2.2.* version */
-
-#else  /* !(VBOX_API_VERSION == 2002000) */
-
-    if (!(data->domainEvents = virObjectEventStateNew())) {
-        vboxUninitialize(data);
-        return VIR_DRV_OPEN_ERROR;
-    }
-
-    data->conn = conn;
-    g_pVBoxGlobalData = data;
-
-#endif /* !(VBOX_API_VERSION == 2002000) */
-
-    conn->privateData = data;
-    VIR_DEBUG("in vboxOpen");
-
-    return VIR_DRV_OPEN_SUCCESS;
 }
 
 static int vboxConnectClose(virConnectPtr conn)
@@ -11497,6 +11259,121 @@ vboxNodeGetFreePages(virConnectPtr conn ATTRIBUTE_UNUSED,
     return nodeGetFreePages(npages, pages, startCell, cellCount, counts);
 }
 
+static int _pfnInitialize(vboxGlobalData *data)
+{
+    data->pFuncs = g_pfnGetFunctions(VBOX_XPCOMC_VERSION);
+    if (data->pFuncs == NULL)
+        return -1;
+#if VBOX_XPCOMC_VERSION == 0x00010000U
+    data->pFuncs->pfnComInitialize(&data->vboxObj, &data->vboxSession);
+#else  /* !(VBOX_XPCOMC_VERSION == 0x00010000U) */
+    data->pFuncs->pfnComInitialize(IVIRTUALBOX_IID_STR, &data->vboxObj, ISESSION_IID_STR, &data->vboxSession);
+#endif /* !(VBOX_XPCOMC_VERSION == 0x00010000U) */
+    return 0;
+}
+
+static int
+_initializeDomainEvent(vboxGlobalData *data ATTRIBUTE_UNUSED)
+{
+#if VBOX_API_VERSION <= 2002000 || VBOX_API_VERSION >= 4000000
+    /* No event queue functionality in 2.2.* and 4.* as of now */
+    vboxUnsupported();
+#else /* VBOX_API_VERSION > 2002000 || VBOX_API_VERSION < 4000000 */
+    /* Initialize the fWatch needed for Event Callbacks */
+    data->fdWatch = -1;
+    data->pFuncs->pfnGetEventQueue(&data->vboxQueue);
+    if (data->vboxQueue == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("nsIEventQueue object is null"));
+        return -1;
+    }
+#endif /* VBOX_API_VERSION > 2002000 || VBOX_API_VERSION < 4000000 */
+    return 0;
+}
+
+static
+void _registerGlobalData(vboxGlobalData *data ATTRIBUTE_UNUSED)
+{
+#if VBOX_API_VERSION == 2002000
+    vboxUnsupported();
+#else /* VBOX_API_VERSION != 2002000 */
+    g_pVBoxGlobalData = data;
+#endif /* VBOX_API_VERSION != 2002000 */
+}
+
+static void _pfnUninitialize(vboxGlobalData *data)
+{
+    if (data->pFuncs)
+        data->pFuncs->pfnComUninitialize();
+}
+
+static void _pfnComUnallocMem(PCVBOXXPCOM pFuncs, void *pv)
+{
+    pFuncs->pfnComUnallocMem(pv);
+}
+
+static void _pfnUtf16Free(PCVBOXXPCOM pFuncs, PRUnichar *pwszString)
+{
+    pFuncs->pfnUtf16Free(pwszString);
+}
+
+static void _pfnUtf8Free(PCVBOXXPCOM pFuncs, char *pszString)
+{
+    pFuncs->pfnUtf8Free(pszString);
+}
+
+static int _pfnUtf16ToUtf8(PCVBOXXPCOM pFuncs, const PRUnichar *pwszString, char **ppszString)
+{
+    return pFuncs->pfnUtf16ToUtf8(pwszString, ppszString);
+}
+
+static int _pfnUtf8ToUtf16(PCVBOXXPCOM pFuncs, const char *pszString, PRUnichar **ppwszString)
+{
+    return pFuncs->pfnUtf8ToUtf16(pszString, ppwszString);
+}
+
+static nsresult
+_virtualboxGetVersion(IVirtualBox *vboxObj, PRUnichar **versionUtf16)
+{
+    return vboxObj->vtbl->GetVersion(vboxObj, versionUtf16);
+}
+
+static vboxUniformedPFN _UPFN = {
+    .Initialize = _pfnInitialize,
+    .Uninitialize = _pfnUninitialize,
+    .ComUnallocMem = _pfnComUnallocMem,
+    .Utf16Free = _pfnUtf16Free,
+    .Utf8Free = _pfnUtf8Free,
+    .Utf16ToUtf8 = _pfnUtf16ToUtf8,
+    .Utf8ToUtf16 = _pfnUtf8ToUtf16,
+};
+
+static vboxUniformedIVirtualBox _UIVirtualBox = {
+    .GetVersion = _virtualboxGetVersion,
+};
+
+void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
+{
+    pVBoxAPI->APIVersion = VBOX_API_VERSION;
+    pVBoxAPI->XPCOMCVersion = VBOX_XPCOMC_VERSION;
+    pVBoxAPI->initializeDomainEvent = _initializeDomainEvent;
+    pVBoxAPI->registerGlobalData = _registerGlobalData;
+    pVBoxAPI->UPFN = _UPFN;
+    pVBoxAPI->UIVirtualBox = _UIVirtualBox;
+
+#if VBOX_API_VERSION <= 2002000 || VBOX_API_VERSION >= 4000000
+    pVBoxAPI->domainEventCallbacks = 0;
+#else /* VBOX_API_VERSION > 2002000 || VBOX_API_VERSION < 4000000 */
+    pVBoxAPI->domainEventCallbacks = 1;
+#endif /* VBOX_API_VERSION > 2002000 || VBOX_API_VERSION < 4000000 */
+
+#if VBOX_API_VERSION == 2002000
+    pVBoxAPI->hasStaticGlobalData = 0;
+#else /* VBOX_API_VERSION > 2002000 */
+    pVBoxAPI->hasStaticGlobalData = 1;
+#endif /* VBOX_API_VERSION > 2002000 */
+
+}
 
 /**
  * Function Tables
