@@ -2343,3 +2343,22 @@ int vboxDomainIsPersistent(virDomainPtr dom)
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+int vboxDomainIsUpdated(virDomainPtr dom)
+{
+    /* VBox domains never have a persistent state that differs from
+     * current state.  However, we do want to check for existence.  */
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIIDUnion iid;
+    IMachine *machine = NULL;
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    return ret;
+}
