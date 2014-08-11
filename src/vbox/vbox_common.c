@@ -6188,3 +6188,29 @@ int vboxDomainSnapshotListNames(virDomainPtr dom, char **names,
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+virDomainSnapshotPtr
+vboxDomainSnapshotLookupByName(virDomainPtr dom, const char *name,
+                               unsigned int flags)
+{
+    VBOX_OBJECT_CHECK(dom->conn, virDomainSnapshotPtr, NULL);
+    vboxIIDUnion iid;
+    IMachine *machine = NULL;
+    ISnapshot *snapshot = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    if (!(snapshot = vboxDomainSnapshotGet(data, dom, machine, name)))
+        goto cleanup;
+
+    ret = virGetDomainSnapshot(dom, name);
+
+ cleanup:
+    VBOX_RELEASE(snapshot);
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    return ret;
+}

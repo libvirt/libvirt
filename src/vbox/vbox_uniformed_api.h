@@ -580,6 +580,9 @@ char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 int vboxDomainSnapshotNum(virDomainPtr dom, unsigned int flags);
 int vboxDomainSnapshotListNames(virDomainPtr dom, char **names,
                                 int nameslen, unsigned int flags);
+virDomainSnapshotPtr
+vboxDomainSnapshotLookupByName(virDomainPtr dom, const char *name,
+                               unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

@@ -1523,39 +1523,6 @@ vboxDomainSnapshotGet(vboxGlobalData *data,
     return snapshot;
 }
 
-static virDomainSnapshotPtr
-vboxDomainSnapshotLookupByName(virDomainPtr dom,
-                               const char *name,
-                               unsigned int flags)
-{
-    VBOX_OBJECT_CHECK(dom->conn, virDomainSnapshotPtr, NULL);
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    IMachine *machine = NULL;
-    ISnapshot *snapshot = NULL;
-    nsresult rc;
-
-    virCheckFlags(0, NULL);
-
-    vboxIIDFromUUID(&iid, dom->uuid);
-    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching UUID"));
-        goto cleanup;
-    }
-
-    if (!(snapshot = vboxDomainSnapshotGet(data, dom, machine, name)))
-        goto cleanup;
-
-    ret = virGetDomainSnapshot(dom, name);
-
- cleanup:
-    VBOX_RELEASE(snapshot);
-    VBOX_RELEASE(machine);
-    vboxIIDUnalloc(&iid);
-    return ret;
-}
-
 static int
 vboxDomainHasCurrentSnapshot(virDomainPtr dom,
                              unsigned int flags)
