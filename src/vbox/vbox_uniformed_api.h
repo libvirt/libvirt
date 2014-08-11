@@ -272,6 +272,7 @@ typedef struct {
     nsresult (*Reset)(IConsole *console);
     nsresult (*TakeSnapshot)(IConsole *console, PRUnichar *name,
                              PRUnichar *description, IProgress **progress);
+    nsresult (*DeleteSnapshot)(IConsole *console, vboxIIDUnion *iidu, IProgress **progress);
 } vboxUniformedIConsole;
 
 /* Functions for IProgress */
@@ -596,6 +597,9 @@ int vboxDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
                                 unsigned int flags);
 int vboxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                unsigned int flags);
+int vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
+                             unsigned int flags);
+
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
