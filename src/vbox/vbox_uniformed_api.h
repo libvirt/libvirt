@@ -591,6 +591,8 @@ virDomainSnapshotPtr
 vboxDomainSnapshotCurrent(virDomainPtr dom, unsigned int flags);
 int vboxDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
                                 unsigned int flags);
+int vboxDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
+                                unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

@@ -6417,3 +6417,30 @@ int vboxDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+int vboxDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
+                                  unsigned int flags)
+{
+    virDomainPtr dom = snapshot->domain;
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIIDUnion iid;
+    IMachine *machine = NULL;
+    ISnapshot *snap = NULL;
+
+    virCheckFlags(0, -1);
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    /* Check that snapshot exists.  If so, there is no metadata.  */
+    if (!(snap = vboxDomainSnapshotGet(data, dom, machine, snapshot->name)))
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VBOX_RELEASE(snap);
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    return ret;
+}

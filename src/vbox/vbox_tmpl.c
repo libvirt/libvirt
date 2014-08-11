@@ -1523,40 +1523,6 @@ vboxDomainSnapshotGet(vboxGlobalData *data,
     return snapshot;
 }
 
-static int
-vboxDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
-                              unsigned int flags)
-{
-    virDomainPtr dom = snapshot->domain;
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    IMachine *machine = NULL;
-    ISnapshot *snap = NULL;
-    nsresult rc;
-
-    virCheckFlags(0, -1);
-
-    vboxIIDFromUUID(&iid, dom->uuid);
-    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching UUID"));
-        goto cleanup;
-    }
-
-    /* Check that snapshot exists.  If so, there is no metadata.  */
-    if (!(snap = vboxDomainSnapshotGet(data, dom, machine, snapshot->name)))
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    VBOX_RELEASE(snap);
-    VBOX_RELEASE(machine);
-    vboxIIDUnalloc(&iid);
-    return ret;
-}
-
 #if VBOX_API_VERSION < 3001000
 static int
 vboxDomainSnapshotRestore(virDomainPtr dom,
