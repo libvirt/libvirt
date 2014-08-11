@@ -3993,3 +3993,43 @@ int vboxConnectListDefinedDomains(virConnectPtr conn,
     gVBoxAPI.UArray.vboxArrayRelease(&machines);
     return ret;
 }
+
+int vboxConnectNumOfDefinedDomains(virConnectPtr conn)
+{
+    VBOX_OBJECT_CHECK(conn, int, -1);
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
+    PRUint32 state;
+    nsresult rc;
+    size_t i;
+
+    rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj,
+                                      ARRAY_GET_MACHINES);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get number of Defined Domains, rc=%08x"),
+                       (unsigned)rc);
+        goto cleanup;
+    }
+
+    ret = 0;
+    for (i = 0; i < machines.count; ++i) {
+        PRBool isAccessible = PR_FALSE;
+        IMachine *machine = machines.items[i];
+
+        if (!machine)
+            continue;
+
+        gVBoxAPI.UIMachine.GetAccessible(machine, &isAccessible);
+        if (!isAccessible)
+            continue;
+
+        gVBoxAPI.UIMachine.GetState(machine, &state);
+        if (gVBoxAPI.machineStateChecker.Inactive(state)) {
+            ret++;
+        }
+    }
+
+ cleanup:
+    gVBoxAPI.UArray.vboxArrayRelease(&machines);
+    return ret;
+}

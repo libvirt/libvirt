@@ -967,44 +967,6 @@ static virDomainState _vboxConvertState(PRUint32 state)
     }
 }
 
-static int vboxConnectNumOfDefinedDomains(virConnectPtr conn)
-{
-    VBOX_OBJECT_CHECK(conn, int, -1);
-    vboxArray machines = VBOX_ARRAY_INITIALIZER;
-    PRUint32 state       = MachineState_Null;
-    nsresult rc;
-    size_t i;
-
-    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get number of Defined Domains, rc=%08x"),
-                       (unsigned)rc);
-        goto cleanup;
-    }
-
-    ret = 0;
-    for (i = 0; i < machines.count; ++i) {
-        IMachine *machine = machines.items[i];
-
-        if (machine) {
-            PRBool isAccessible = PR_FALSE;
-            machine->vtbl->GetAccessible(machine, &isAccessible);
-            if (isAccessible) {
-                machine->vtbl->GetState(machine, &state);
-                if ((state < MachineState_FirstOnline) ||
-                    (state > MachineState_LastOnline)) {
-                    ret++;
-                }
-            }
-        }
-    }
-
- cleanup:
-    vboxArrayRelease(&machines);
-    return ret;
-}
-
 #if VBOX_API_VERSION < 3001000
 
 static void

@@ -520,6 +520,7 @@ int vboxDomainGetMaxVcpus(virDomainPtr dom);
 char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags);
 int vboxConnectListDefinedDomains(virConnectPtr conn,
                                   char ** const names, int maxnames);
+int vboxConnectNumOfDefinedDomains(virConnectPtr conn);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
