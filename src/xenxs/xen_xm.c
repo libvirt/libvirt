@@ -1776,6 +1776,41 @@ xenFormatXMTimeOffset(virConfPtr conf,
 }
 
 
+static int
+xenFormatXMEventActions(virConfPtr conf, virDomainDefPtr def)
+{
+    const char *lifecycle = NULL;
+
+    if (!(lifecycle = virDomainLifecycleTypeToString(def->onPoweroff))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected lifecycle action %d"), def->onPoweroff);
+        return -1;
+    }
+    if (xenXMConfigSetString(conf, "on_poweroff", lifecycle) < 0)
+        return -1;
+
+
+    if (!(lifecycle = virDomainLifecycleTypeToString(def->onReboot))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected lifecycle action %d"), def->onReboot);
+        return -1;
+    }
+    if (xenXMConfigSetString(conf, "on_reboot", lifecycle) < 0)
+        return -1;
+
+
+    if (!(lifecycle = virDomainLifecycleCrashTypeToString(def->onCrash))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected lifecycle action %d"), def->onCrash);
+        return -1;
+    }
+    if (xenXMConfigSetString(conf, "on_crash", lifecycle) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
    either 32, or 64 on a platform where long is big enough.  */
 verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
@@ -1789,7 +1824,6 @@ xenFormatXM(virConnectPtr conn,
     int hvm = 0;
     size_t i;
     char *cpus = NULL;
-    const char *lifecycle;
     virConfValuePtr diskVal = NULL;
     virConfValuePtr netVal = NULL;
 
@@ -1928,33 +1962,8 @@ xenFormatXM(virConnectPtr conn,
     if (xenFormatXMTimeOffset(conf, def, xendConfigVersion) < 0)
         goto cleanup;
 
-    if (!(lifecycle = virDomainLifecycleTypeToString(def->onPoweroff))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected lifecycle action %d"), def->onPoweroff);
+    if (xenFormatXMEventActions(conf, def) < 0)
         goto cleanup;
-    }
-    if (xenXMConfigSetString(conf, "on_poweroff", lifecycle) < 0)
-        goto cleanup;
-
-
-    if (!(lifecycle = virDomainLifecycleTypeToString(def->onReboot))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected lifecycle action %d"), def->onReboot);
-        goto cleanup;
-    }
-    if (xenXMConfigSetString(conf, "on_reboot", lifecycle) < 0)
-        goto cleanup;
-
-
-    if (!(lifecycle = virDomainLifecycleCrashTypeToString(def->onCrash))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected lifecycle action %d"), def->onCrash);
-        goto cleanup;
-    }
-    if (xenXMConfigSetString(conf, "on_crash", lifecycle) < 0)
-        goto cleanup;
-
-
 
     if (hvm) {
         if (def->emulator &&
