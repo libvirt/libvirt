@@ -3934,3 +3934,62 @@ char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     virDomainDefFree(def);
     return ret;
 }
+
+int vboxConnectListDefinedDomains(virConnectPtr conn,
+                                  char ** const names, int maxnames)
+{
+    VBOX_OBJECT_CHECK(conn, int, -1);
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
+    char *machineName    = NULL;
+    PRUnichar *machineNameUtf16 = NULL;
+    PRUint32 state;
+    nsresult rc;
+    size_t i, j;
+
+    rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj,
+                                      ARRAY_GET_MACHINES);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get list of Defined Domains, rc=%08x"),
+                       (unsigned)rc);
+        goto cleanup;
+    }
+
+    memset(names, 0, sizeof(names[i]) * maxnames);
+
+    ret = 0;
+    for (i = 0, j = 0; (i < machines.count) && (j < maxnames); i++) {
+        PRBool isAccessible = PR_FALSE;
+        IMachine *machine = machines.items[i];
+
+        if (!machine)
+            continue;
+
+        gVBoxAPI.UIMachine.GetAccessible(machine, &isAccessible);
+        if (!isAccessible)
+            continue;
+
+        gVBoxAPI.UIMachine.GetState(machine, &state);
+        if (!gVBoxAPI.machineStateChecker.Inactive(state))
+            continue;
+
+        gVBoxAPI.UIMachine.GetName(machine, &machineNameUtf16);
+        VBOX_UTF16_TO_UTF8(machineNameUtf16, &machineName);
+        if (VIR_STRDUP(names[j], machineName) < 0) {
+            VBOX_UTF16_FREE(machineNameUtf16);
+            VBOX_UTF8_FREE(machineName);
+            for (j = 0; j < maxnames; j++)
+                VIR_FREE(names[j]);
+            ret = -1;
+            goto cleanup;
+        }
+        VBOX_UTF16_FREE(machineNameUtf16);
+        VBOX_UTF8_FREE(machineName);
+        j++;
+        ret++;
+    }
+
+ cleanup:
+    gVBoxAPI.UArray.vboxArrayRelease(&machines);
+    return ret;
+}

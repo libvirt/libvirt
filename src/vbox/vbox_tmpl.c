@@ -967,60 +967,6 @@ static virDomainState _vboxConvertState(PRUint32 state)
     }
 }
 
-static int vboxConnectListDefinedDomains(virConnectPtr conn, char ** const names, int maxnames) {
-    VBOX_OBJECT_CHECK(conn, int, -1);
-    vboxArray machines = VBOX_ARRAY_INITIALIZER;
-    char *machineName    = NULL;
-    PRUnichar *machineNameUtf16 = NULL;
-    PRUint32 state;
-    nsresult rc;
-    size_t i, j;
-
-    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get list of Defined Domains, rc=%08x"),
-                       (unsigned)rc);
-        goto cleanup;
-    }
-
-    memset(names, 0, sizeof(names[i]) * maxnames);
-
-    ret = 0;
-    for (i = 0, j = 0; (i < machines.count) && (j < maxnames); i++) {
-        IMachine *machine = machines.items[i];
-
-        if (machine) {
-            PRBool isAccessible = PR_FALSE;
-            machine->vtbl->GetAccessible(machine, &isAccessible);
-            if (isAccessible) {
-                machine->vtbl->GetState(machine, &state);
-                if ((state < MachineState_FirstOnline) ||
-                    (state > MachineState_LastOnline)) {
-                    machine->vtbl->GetName(machine, &machineNameUtf16);
-                    VBOX_UTF16_TO_UTF8(machineNameUtf16, &machineName);
-                    if (VIR_STRDUP(names[j], machineName) < 0) {
-                        VBOX_UTF16_FREE(machineNameUtf16);
-                        VBOX_UTF8_FREE(machineName);
-                        for (j = 0; j < maxnames; j++)
-                            VIR_FREE(names[j]);
-                        ret = -1;
-                        goto cleanup;
-                    }
-                    VBOX_UTF16_FREE(machineNameUtf16);
-                    VBOX_UTF8_FREE(machineName);
-                    j++;
-                    ret++;
-                }
-            }
-        }
-    }
-
- cleanup:
-    vboxArrayRelease(&machines);
-    return ret;
-}
-
 static int vboxConnectNumOfDefinedDomains(virConnectPtr conn)
 {
     VBOX_OBJECT_CHECK(conn, int, -1);
@@ -9369,6 +9315,12 @@ static bool _machineStateOnline(PRUint32 state)
             (state <= MachineState_LastOnline));
 }
 
+static bool _machineStateInactive(PRUint32 state)
+{
+    return ((state > MachineState_FirstOnline) &&
+            (state < MachineState_LastOnline));
+}
+
 static bool _machineStateNotStart(PRUint32 state)
 {
     return ((state == MachineState_PoweredOff) ||
@@ -9622,6 +9574,7 @@ static vboxUniformedISharedFolder _UISharedFolder = {
 
 static uniformedMachineStateChecker _machineStateChecker = {
     .Online = _machineStateOnline,
+    .Inactive = _machineStateInactive,
     .NotStart = _machineStateNotStart,
     .Running = _machineStateRunning,
     .Paused = _machineStatePaused,

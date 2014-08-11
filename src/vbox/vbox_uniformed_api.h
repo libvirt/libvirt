@@ -412,6 +412,7 @@ typedef struct {
 
 typedef struct {
     bool (*Online)(PRUint32 state);
+    bool (*Inactive)(PRUint32 state);
     bool (*NotStart)(PRUint32 state);
     bool (*Running)(PRUint32 state);
     bool (*Paused)(PRUint32 state);
@@ -517,6 +518,8 @@ int vboxDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus);
 int vboxDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags);
 int vboxDomainGetMaxVcpus(virDomainPtr dom);
 char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags);
+int vboxConnectListDefinedDomains(virConnectPtr conn,
+                                  char ** const names, int maxnames);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
