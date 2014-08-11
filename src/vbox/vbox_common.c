@@ -2748,3 +2748,30 @@ int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
  cleanup:
     return ret;
 }
+
+int vboxDomainGetState(virDomainPtr dom, int *state,
+                       int *reason, unsigned int flags)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIIDUnion domiid;
+    IMachine *machine = NULL;
+    PRUint32 mstate;
+
+    virCheckFlags(0, -1);
+
+    if (openSessionForMachine(data, dom->uuid, &domiid, &machine, false) < 0)
+        goto cleanup;
+
+    gVBoxAPI.UIMachine.GetState(machine, &mstate);
+
+    *state = gVBoxAPI.vboxConvertState(mstate);
+
+    if (reason)
+        *reason = 0;
+
+    ret = 0;
+
+ cleanup:
+    vboxIIDUnalloc(&domiid);
+    return ret;
+}
