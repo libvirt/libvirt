@@ -1897,6 +1897,51 @@ xenFormatXMCharDev(virConfPtr conf, virDomainDefPtr def)
 }
 
 
+static int
+xenFormatXMDisks(virConfPtr conf, virDomainDefPtr def, int xendConfigVersion)
+{
+    virConfValuePtr diskVal = NULL;
+    size_t i = 0;
+    int hvm = STREQ(def->os.type, "hvm");
+
+    if (VIR_ALLOC(diskVal) < 0)
+        goto cleanup;
+
+    diskVal->type = VIR_CONF_LIST;
+    diskVal->list = NULL;
+
+    for (i = 0; i < def->ndisks; i++) {
+        if (xendConfigVersion == XEND_CONFIG_VERSION_3_0_2 &&
+            def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
+            def->disks[i]->dst &&
+            STREQ(def->disks[i]->dst, "hdc")) {
+            continue;
+        }
+
+        if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+            continue;
+
+        if (xenFormatXMDisk(diskVal, def->disks[i],
+                            hvm, xendConfigVersion) < 0)
+            goto cleanup;
+    }
+
+    if (diskVal->list != NULL) {
+        int ret = virConfSetValue(conf, "disk", diskVal);
+        diskVal = NULL;
+        if (ret < 0)
+            goto cleanup;
+    }
+    VIR_FREE(diskVal);
+
+    return 0;
+
+ cleanup:
+    virConfFreeValue(diskVal);
+    return -1;
+}
+
+
 /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
    either 32, or 64 on a platform where long is big enough.  */
 verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
@@ -1910,7 +1955,6 @@ xenFormatXM(virConnectPtr conn,
     int hvm = 0;
     size_t i;
     char *cpus = NULL;
-    virConfValuePtr diskVal = NULL;
     virConfValuePtr netVal = NULL;
 
     if (!(conf = virConfNew()))
@@ -2178,33 +2222,8 @@ xenFormatXM(virConnectPtr conn,
         }
     }
 
-    /* analyze of the devices */
-    if (VIR_ALLOC(diskVal) < 0)
+    if (xenFormatXMDisks(conf, def, xendConfigVersion) < 0)
         goto cleanup;
-    diskVal->type = VIR_CONF_LIST;
-    diskVal->list = NULL;
-
-    for (i = 0; i < def->ndisks; i++) {
-        if (xendConfigVersion == XEND_CONFIG_VERSION_3_0_2 &&
-            def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
-            def->disks[i]->dst &&
-            STREQ(def->disks[i]->dst, "hdc")) {
-            continue;
-        }
-        if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
-            continue;
-
-        if (xenFormatXMDisk(diskVal, def->disks[i],
-                            hvm, xendConfigVersion) < 0)
-            goto cleanup;
-    }
-    if (diskVal->list != NULL) {
-        int ret = virConfSetValue(conf, "disk", diskVal);
-        diskVal = NULL;
-        if (ret < 0)
-            goto cleanup;
-    }
-    VIR_FREE(diskVal);
 
     if (VIR_ALLOC(netVal) < 0)
         goto cleanup;
@@ -2248,7 +2267,6 @@ xenFormatXM(virConnectPtr conn,
     return conf;
 
  cleanup:
-    virConfFreeValue(diskVal);
     virConfFreeValue(netVal);
     VIR_FREE(cpus);
     if (conf)
