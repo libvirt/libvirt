@@ -158,6 +158,86 @@ struct _vboxArray {
 
 # endif /* !WIN32 */
 
+/* We make the assumption that these enum flags
+ * are compatible in all vbox API version.
+ *
+ * Yes it is, as it has been checked from vbox 2.2 to
+ * vbox 4.3.3. And this rule MAY NOT stands for new
+ * vbox versions.
+ * */
+enum CPUPropertyType
+{
+    CPUPropertyType_Null = 0,
+    CPUPropertyType_PAE = 1,
+    CPUPropertyType_Synthetic = 2,
+};
+
+enum AudioControllerType
+{
+    AudioControllerType_AC97 = 0,
+    AudioControllerType_SB16 = 1
+};
+
+enum ChipsetType
+{
+    ChipsetType_Null = 0,
+    ChipsetType_PIIX3 = 1,
+    ChipsetType_ICH9 = 2
+};
+
+enum NetworkAdapterType
+{
+    NetworkAdapterType_Null = 0,
+    NetworkAdapterType_Am79C970A = 1,
+    NetworkAdapterType_Am79C973 = 2,
+    NetworkAdapterType_I82540EM = 3,
+    NetworkAdapterType_I82543GC = 4,
+    NetworkAdapterType_I82545EM = 5,
+    NetworkAdapterType_Virtio = 6
+};
+
+enum PortMode
+{
+    PortMode_Disconnected = 0,
+    PortMode_HostPipe = 1,
+    PortMode_HostDevice = 2,
+    PortMode_RawFile = 3
+};
+
+enum DeviceType
+{
+    DeviceType_Null = 0,
+    DeviceType_Floppy = 1,
+    DeviceType_DVD = 2,
+    DeviceType_HardDisk = 3,
+    DeviceType_Network = 4,
+    DeviceType_USB = 5,
+    DeviceType_SharedFolder = 6
+};
+
+enum StorageBus
+{
+    StorageBus_Null = 0,
+    StorageBus_IDE = 1,
+    StorageBus_SATA = 2,
+    StorageBus_SCSI = 3,
+    StorageBus_Floppy = 4,
+    StorageBus_SAS = 5
+};
+
+enum AccessMode
+{
+    AccessMode_ReadOnly = 1,
+    AccessMode_ReadWrite = 2
+};
+
+enum MediumType
+{
+    MediumType_Normal = 0,
+    MediumType_Immutable = 1,
+    MediumType_Writethrough = 2,
+};
+
 /* Simplied definitions in vbox_CAPI_*.h */
 
 typedef void const *PCVBOXXPCOM;
@@ -168,5 +248,15 @@ typedef nsISupports IConsole;
 typedef nsISupports IProgress;
 typedef nsISupports IMachine;
 typedef nsISupports ISystemProperties;
+typedef nsISupports IBIOSSettings;
+typedef nsISupports IAudioAdapter;
+typedef nsISupports INetworkAdapter;
+typedef nsISupports ISerialPort;
+typedef nsISupports IParallelPort;
+typedef nsISupports IVRDxServer;
+typedef nsISupports IUSBCommon;
+typedef nsISupports IUSBDeviceFilter;
+typedef nsISupports IMedium;
+typedef nsISupports IStorageController;
 
 #endif /* VBOX_COMMON_H */

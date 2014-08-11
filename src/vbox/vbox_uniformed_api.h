@@ -180,14 +180,43 @@ typedef struct {
     nsresult (*GetVersion)(IVirtualBox *vboxObj, PRUnichar **versionUtf16);
     nsresult (*GetMachine)(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IMachine **machine);
     nsresult (*GetSystemProperties)(IVirtualBox *vboxObj, ISystemProperties **systemProperties);
+    nsresult (*CreateMachine)(vboxGlobalData *data, virDomainDefPtr def, IMachine **machine, char *uuidstr);
+    nsresult (*RegisterMachine)(IVirtualBox *vboxObj, IMachine *machine);
+    nsresult (*FindMedium)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType, PRUint32 accessMode, IMedium **medium);
+    nsresult (*OpenMedium)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType, PRUint32 accessMode, IMedium **medium);
 } vboxUniformedIVirtualBox;
 
 /* Functions for IMachine */
 typedef struct {
+    nsresult (*AddStorageController)(IMachine *machine, PRUnichar *name,
+        PRUint32 connectionType, IStorageController **controller);
+    nsresult (*AttachDevice)(IMachine *machine, PRUnichar *name,
+                             PRInt32 controllerPort, PRInt32 device,
+                             PRUint32 type, IMedium *medium);
+    nsresult (*CreateSharedFolder)(IMachine *machine, PRUnichar *name,
+                                   PRUnichar *hostPath, PRBool writable,
+                                   PRBool automount);
     nsresult (*GetAccessible)(IMachine *machine, PRBool *isAccessible);
     nsresult (*GetState)(IMachine *machine, PRUint32 *state);
     nsresult (*GetName)(IMachine *machine, PRUnichar **name);
     nsresult (*GetId)(IMachine *machine, vboxIIDUnion *iidu);
+    nsresult (*GetBIOSSettings)(IMachine *machine, IBIOSSettings **bios);
+    nsresult (*GetAudioAdapter)(IMachine *machine, IAudioAdapter **audioAdapter);
+    nsresult (*GetNetworkAdapter)(IMachine *machine, PRUint32 slot, INetworkAdapter **adapter);
+    nsresult (*GetChipsetType)(IMachine *machine, PRUint32 *chipsetType);
+    nsresult (*GetSerialPort)(IMachine *machine, PRUint32 slot, ISerialPort **port);
+    nsresult (*GetParallelPort)(IMachine *machine, PRUint32 slot, IParallelPort **port);
+    nsresult (*GetVRDxServer)(IMachine *machine, IVRDxServer **VRDxServer);
+    nsresult (*GetUSBCommon)(IMachine *machine, IUSBCommon **USBCommon);
+    nsresult (*SetCPUCount)(IMachine *machine, PRUint32 CPUCount);
+    nsresult (*SetMemorySize)(IMachine *machine, PRUint32 memorySize);
+    nsresult (*SetCPUProperty)(IMachine *machine, PRUint32 property, PRBool value);
+    nsresult (*SetBootOrder)(IMachine *machine, PRUint32 position, PRUint32 device);
+    nsresult (*SetVRAMSize)(IMachine *machine, PRUint32 VRAMSize);
+    nsresult (*SetMonitorCount)(IMachine *machine, PRUint32 monitorCount);
+    nsresult (*SetAccelerate3DEnabled)(IMachine *machine, PRBool accelerate3DEnabled);
+    nsresult (*SetAccelerate2DVideoEnabled)(IMachine *machine, PRBool accelerate2DVideoEnabled);
+    nsresult (*SetExtraData)(IMachine *machine, PRUnichar *key, PRUnichar *value);
     nsresult (*SaveSettings)(IMachine *machine);
 } vboxUniformedIMachine;
 
@@ -214,7 +243,92 @@ typedef struct {
 /* Functions for ISystemProperties */
 typedef struct {
     nsresult (*GetMaxGuestCPUCount)(ISystemProperties *systemProperties, PRUint32 *maxCPUCount);
+    nsresult (*GetMaxBootPosition)(ISystemProperties *systemProperties, PRUint32 *maxBootPosition);
+    nsresult (*GetMaxNetworkAdapters)(ISystemProperties *systemProperties, PRUint32 chipset,
+                                      PRUint32 *maxNetworkAdapters);
+    nsresult (*GetSerialPortCount)(ISystemProperties *systemProperties, PRUint32 *SerialPortCount);
+    nsresult (*GetParallelPortCount)(ISystemProperties *systemProperties, PRUint32 *ParallelPortCount);
+    nsresult (*GetMaxPortCountForStorageBus)(ISystemProperties *systemProperties, PRUint32 bus,
+                                             PRUint32 *maxPortCount);
+    nsresult (*GetMaxDevicesPerPortForStorageBus)(ISystemProperties *systemProperties,
+                                                  PRUint32 bus, PRUint32 *maxDevicesPerPort);
 } vboxUniformedISystemProperties;
+
+/* Functions for IBIOSSettings */
+typedef struct {
+    nsresult (*SetACPIEnabled)(IBIOSSettings *bios, PRBool ACPIEnabled);
+    nsresult (*SetIOAPICEnabled)(IBIOSSettings *bios, PRBool IOAPICEnabled);
+} vboxUniformedIBIOSSettings;
+
+/* Functions for IAudioAdapter */
+typedef struct {
+    nsresult (*SetEnabled)(IAudioAdapter *audioAdapter, PRBool enabled);
+    nsresult (*SetAudioController)(IAudioAdapter *audioAdapter, PRUint32 audioController);
+} vboxUniformedIAudioAdapter;
+
+/* Functions for INetworkAdapter */
+typedef struct {
+    nsresult (*SetEnabled)(INetworkAdapter *adapter, PRBool enabled);
+    nsresult (*SetAdapterType)(INetworkAdapter *adapter, PRUint32 adapterType);
+    nsresult (*SetBridgedInterface)(INetworkAdapter *adapter, PRUnichar *bridgedInterface);
+    nsresult (*SetInternalNetwork)(INetworkAdapter *adapter, PRUnichar *internalNetwork);
+    nsresult (*SetHostOnlyInterface)(INetworkAdapter *adapter, PRUnichar *hostOnlyInterface);
+    nsresult (*SetMACAddress)(INetworkAdapter *adapter, PRUnichar *MACAddress);
+    nsresult (*AttachToBridgedInterface)(INetworkAdapter *adapter);
+    nsresult (*AttachToInternalNetwork)(INetworkAdapter *adapter);
+    nsresult (*AttachToHostOnlyInterface)(INetworkAdapter *adapter);
+    nsresult (*AttachToNAT)(INetworkAdapter *adapter);
+} vboxUniformedINetworkAdapter;
+
+/* Functions for ISerialPort */
+typedef struct {
+    nsresult (*SetEnabled)(ISerialPort *port, PRBool enabled);
+    nsresult (*SetPath)(ISerialPort *port, PRUnichar *path);
+    nsresult (*SetIRQ)(ISerialPort *port, PRUint32 IRQ);
+    nsresult (*SetIOBase)(ISerialPort *port, PRUint32 IOBase);
+    nsresult (*SetHostMode)(ISerialPort *port, PRUint32 hostMode);
+} vboxUniformedISerialPort;
+
+/* Functions for IParallelPort */
+typedef struct {
+    nsresult (*SetEnabled)(IParallelPort *port, PRBool enabled);
+    nsresult (*SetPath)(IParallelPort *port, PRUnichar *path);
+    nsresult (*SetIRQ)(IParallelPort *port, PRUint32 IRQ);
+    nsresult (*SetIOBase)(IParallelPort *port, PRUint32 IOBase);
+} vboxUniformedIParallelPort;
+
+/* Functions for IVRDPServer and IVRDEServer */
+typedef struct {
+    nsresult (*SetEnabled)(IVRDxServer *VRDxServer, PRBool enabled);
+    nsresult (*SetPorts)(vboxGlobalData *data, IVRDxServer *VRDxServer,
+                         virDomainGraphicsDefPtr graphics);
+    nsresult (*SetReuseSingleConnection)(IVRDxServer *VRDxServer, PRBool enabled);
+    nsresult (*SetAllowMultiConnection)(IVRDxServer *VRDxServer, PRBool enabled);
+    nsresult (*SetNetAddress)(vboxGlobalData *data, IVRDxServer *VRDxServer,
+                              PRUnichar *netAddress);
+} vboxUniformedIVRDxServer;
+
+/* Common Functions for IUSBController and IUSBDeviceFilters */
+typedef struct {
+    nsresult (*Enable)(IUSBCommon *USBCommon);
+    nsresult (*CreateDeviceFilter)(IUSBCommon *USBCommon, PRUnichar *name,
+                                   IUSBDeviceFilter **filter);
+    nsresult (*InsertDeviceFilter)(IUSBCommon *USBCommon, PRUint32 position,
+                                   IUSBDeviceFilter *filter);
+} vboxUniformedIUSBCommon;
+
+typedef struct {
+    nsresult (*SetProductId)(IUSBDeviceFilter *USBDeviceFilter, PRUnichar *productId);
+    nsresult (*SetActive)(IUSBDeviceFilter *USBDeviceFilter, PRBool active);
+    nsresult (*SetVendorId)(IUSBDeviceFilter *USBDeviceFilter, PRUnichar *vendorId);
+} vboxUniformedIUSBDeviceFilter;
+
+/* Functions for IMedium */
+typedef struct {
+    nsresult (*GetId)(IMedium *medium, vboxIIDUnion *iidu);
+    nsresult (*Release)(IMedium *medium);
+    nsresult (*SetType)(IMedium *medium, PRUint32 type);
+} vboxUniformedIMedium;
 
 typedef struct {
     bool (*Online)(PRUint32 state);
@@ -230,6 +344,7 @@ typedef struct {
     void (*detachDevices)(vboxGlobalData *data, IMachine *machine, PRUnichar *hddcnameUtf16);
     nsresult (*unregisterMachine)(vboxGlobalData *data, vboxIIDUnion *iidu, IMachine **machine);
     void (*deleteConfig)(IMachine *machine);
+    void (*vboxAttachDrivesOld)(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine);
     vboxUniformedPFN UPFN;
     vboxUniformedIID UIID;
     vboxUniformedArray UArray;
@@ -240,12 +355,24 @@ typedef struct {
     vboxUniformedIConsole UIConsole;
     vboxUniformedIProgress UIProgress;
     vboxUniformedISystemProperties UISystemProperties;
+    vboxUniformedIBIOSSettings UIBIOSSettings;
+    vboxUniformedIAudioAdapter UIAudioAdapter;
+    vboxUniformedINetworkAdapter UINetworkAdapter;
+    vboxUniformedISerialPort UISerialPort;
+    vboxUniformedIParallelPort UIParallelPort;
+    vboxUniformedIVRDxServer UIVRDxServer;
+    vboxUniformedIUSBCommon UIUSBCommon;
+    vboxUniformedIUSBDeviceFilter UIUSBDeviceFilter;
+    vboxUniformedIMedium UIMedium;
     uniformedMachineStateChecker machineStateChecker;
     /* vbox API features */
     bool domainEventCallbacks;
     bool hasStaticGlobalData;
     bool getMachineForSession;
     bool detachDevicesExplicitly;
+    bool chipsetType;
+    bool accelerate2DVideo;
+    bool vboxAttachDrivesUseOld;
 } vboxUniformedAPI;
 
 /* libvirt API
@@ -269,6 +396,7 @@ int vboxConnectNumOfDomains(virConnectPtr conn);
 virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id);
 virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
                                     const unsigned char *uuid);
+virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml);
 int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
