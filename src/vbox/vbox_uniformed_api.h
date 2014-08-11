@@ -473,6 +473,7 @@ typedef struct {
     void (*dumpFloppy)(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine);
     int (*attachFloppy)(vboxGlobalData *data, IMachine *machine, const char *src);
     int (*detachFloppy)(IMachine *machine);
+    int (*snapshotRestore)(virDomainPtr dom, IMachine *machine, ISnapshot *snapshot);
     vboxUniformedPFN UPFN;
     vboxUniformedIID UIID;
     vboxUniformedArray UArray;
@@ -593,6 +594,8 @@ int vboxDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
                                 unsigned int flags);
 int vboxDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
                                 unsigned int flags);
+int vboxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
+                               unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

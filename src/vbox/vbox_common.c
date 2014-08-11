@@ -6444,3 +6444,71 @@ int vboxDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+int vboxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
+                               unsigned int flags)
+{
+    virDomainPtr dom = snapshot->domain;
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIIDUnion domiid;
+    IMachine *machine = NULL;
+    ISnapshot *newSnapshot = NULL;
+    ISnapshot *prevSnapshot = NULL;
+    PRBool online = PR_FALSE;
+    PRUint32 state;
+    nsresult rc;
+
+    virCheckFlags(0, -1);
+
+    if (openSessionForMachine(data, dom->uuid, &domiid, &machine, false) < 0)
+        goto cleanup;
+
+    newSnapshot = vboxDomainSnapshotGet(data, dom, machine, snapshot->name);
+    if (!newSnapshot)
+        goto cleanup;
+
+    rc = gVBoxAPI.UISnapshot.GetOnline(newSnapshot, &online);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get online state of snapshot %s"),
+                       snapshot->name);
+        goto cleanup;
+    }
+
+    rc = gVBoxAPI.UIMachine.GetCurrentSnapshot(machine, &prevSnapshot);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get current snapshot of domain %s"),
+                       dom->name);
+        goto cleanup;
+    }
+
+    rc = gVBoxAPI.UIMachine.GetState(machine, &state);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get domain state"));
+        goto cleanup;
+    }
+
+    if (gVBoxAPI.machineStateChecker.Online(state)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot revert snapshot of running domain"));
+        goto cleanup;
+    }
+
+    if (gVBoxAPI.snapshotRestore(dom, machine, newSnapshot))
+        goto cleanup;
+
+    if (online) {
+        ret = vboxDomainCreate(dom);
+        if (!ret)
+            gVBoxAPI.snapshotRestore(dom, machine, prevSnapshot);
+    } else
+        ret = 0;
+
+ cleanup:
+    VBOX_RELEASE(prevSnapshot);
+    VBOX_RELEASE(newSnapshot);
+    vboxIIDUnalloc(&domiid);
+    return ret;
+}

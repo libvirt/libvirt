@@ -1525,7 +1525,7 @@ vboxDomainSnapshotGet(vboxGlobalData *data,
 
 #if VBOX_API_VERSION < 3001000
 static int
-vboxDomainSnapshotRestore(virDomainPtr dom,
+_vboxDomainSnapshotRestore(virDomainPtr dom,
                           IMachine *machine,
                           ISnapshot *snapshot)
 {
@@ -1555,7 +1555,7 @@ vboxDomainSnapshotRestore(virDomainPtr dom,
 }
 #else
 static int
-vboxDomainSnapshotRestore(virDomainPtr dom,
+_vboxDomainSnapshotRestore(virDomainPtr dom,
                           IMachine *machine,
                           ISnapshot *snapshot)
 {
@@ -1629,81 +1629,6 @@ vboxDomainSnapshotRestore(virDomainPtr dom,
     return ret;
 }
 #endif
-
-static int
-vboxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
-                           unsigned int flags)
-{
-    virDomainPtr dom = snapshot->domain;
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    vboxIID domiid = VBOX_IID_INITIALIZER;
-    IMachine *machine = NULL;
-    ISnapshot *newSnapshot = NULL;
-    ISnapshot *prevSnapshot = NULL;
-    PRBool online = PR_FALSE;
-    PRUint32 state;
-    nsresult rc;
-
-    virCheckFlags(0, -1);
-
-    vboxIIDFromUUID(&domiid, dom->uuid);
-    rc = VBOX_OBJECT_GET_MACHINE(domiid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching UUID"));
-        goto cleanup;
-    }
-
-    newSnapshot = vboxDomainSnapshotGet(data, dom, machine, snapshot->name);
-    if (!newSnapshot)
-        goto cleanup;
-
-    rc = newSnapshot->vtbl->GetOnline(newSnapshot, &online);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("could not get online state of snapshot %s"),
-                       snapshot->name);
-        goto cleanup;
-    }
-
-    rc = machine->vtbl->GetCurrentSnapshot(machine, &prevSnapshot);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("could not get current snapshot of domain %s"),
-                       dom->name);
-        goto cleanup;
-    }
-
-    rc = machine->vtbl->GetState(machine, &state);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("could not get domain state"));
-        goto cleanup;
-    }
-
-    if (state >= MachineState_FirstOnline
-        && state <= MachineState_LastOnline) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("cannot revert snapshot of running domain"));
-        goto cleanup;
-    }
-
-    if (vboxDomainSnapshotRestore(dom, machine, newSnapshot))
-        goto cleanup;
-
-    if (online) {
-        ret = vboxDomainCreate(dom);
-        if (!ret)
-            vboxDomainSnapshotRestore(dom, machine, prevSnapshot);
-    } else
-        ret = 0;
-
- cleanup:
-    VBOX_RELEASE(prevSnapshot);
-    VBOX_RELEASE(newSnapshot);
-    vboxIIDUnalloc(&domiid);
-    return ret;
-}
 
 static int
 vboxDomainSnapshotDeleteSingle(vboxGlobalData *data,
@@ -7493,6 +7418,7 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->dumpFloppy = _dumpFloppy;
     pVBoxAPI->attachFloppy = _attachFloppy;
     pVBoxAPI->detachFloppy = _detachFloppy;
+    pVBoxAPI->snapshotRestore = _vboxDomainSnapshotRestore;
     pVBoxAPI->UPFN = _UPFN;
     pVBoxAPI->UIID = _UIID;
     pVBoxAPI->UArray = _UArray;
