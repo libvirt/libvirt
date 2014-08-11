@@ -949,74 +949,6 @@ static virDomainPtr vboxDomainCreateXML(virConnectPtr conn, const char *xml,
     return dom;
 }
 
-static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id)
-{
-    VBOX_OBJECT_CHECK(conn, virDomainPtr, NULL);
-    vboxArray machines = VBOX_ARRAY_INITIALIZER;
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    PRUint32 state;
-    nsresult rc;
-
-    /* Internal vbox IDs start from 0, the public libvirt ID
-     * starts from 1, so refuse id == 0, and adjust the rest*/
-    if (id == 0) {
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching id %d"), id);
-        return NULL;
-    }
-    id = id - 1;
-
-    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get list of machines, rc=%08x"), (unsigned)rc);
-        return NULL;
-    }
-
-    if (id < machines.count) {
-        IMachine *machine = machines.items[id];
-
-        if (machine) {
-            PRBool isAccessible = PR_FALSE;
-            machine->vtbl->GetAccessible(machine, &isAccessible);
-            if (isAccessible) {
-                machine->vtbl->GetState(machine, &state);
-                if ((state >= MachineState_FirstOnline) &&
-                    (state <= MachineState_LastOnline)) {
-                    PRUnichar *machineNameUtf16 = NULL;
-                    char      *machineNameUtf8  = NULL;
-
-                    machine->vtbl->GetName(machine, &machineNameUtf16);
-                    VBOX_UTF16_TO_UTF8(machineNameUtf16, &machineNameUtf8);
-
-                    machine->vtbl->GetId(machine, &iid.value);
-                    vboxIIDToUUID(&iid, uuid);
-                    vboxIIDUnalloc(&iid);
-
-                    /* get a new domain pointer from virGetDomain, if it fails
-                     * then no need to assign the id, else assign the id, cause
-                     * it is -1 by default. rest is taken care by virGetDomain
-                     * itself, so need not worry.
-                     */
-
-                    ret = virGetDomain(conn, machineNameUtf8, uuid);
-                    if (ret)
-                        ret->id = id + 1;
-
-                    /* Cleanup all the XPCOM allocated stuff here */
-                    VBOX_UTF8_FREE(machineNameUtf8);
-                    VBOX_UTF16_FREE(machineNameUtf16);
-                }
-            }
-        }
-    }
-
-    vboxArrayRelease(&machines);
-
-    return ret;
-}
-
 static virDomainPtr
 vboxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
@@ -11267,6 +11199,18 @@ _machineGetState(IMachine *machine, PRUint32 *state)
     return machine->vtbl->GetState(machine, state);
 }
 
+static nsresult
+_machineGetName(IMachine *machine, PRUnichar **name)
+{
+    return machine->vtbl->GetName(machine, name);
+}
+
+static nsresult
+_machineGetId(IMachine *machine, vboxIIDUnion *iidu)
+{
+    return machine->vtbl->GetId(machine, &IID_MEMBER(value));
+}
+
 #if VBOX_API_VERSION < 4000000
 
 static nsresult
@@ -11376,6 +11320,8 @@ static vboxUniformedIVirtualBox _UIVirtualBox = {
 static vboxUniformedIMachine _UIMachine = {
     .GetAccessible = _machineGetAccessible,
     .GetState = _machineGetState,
+    .GetName = _machineGetName,
+    .GetId = _machineGetId,
 };
 
 static vboxUniformedISession _UISession = {

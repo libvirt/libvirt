@@ -186,6 +186,8 @@ typedef struct {
 typedef struct {
     nsresult (*GetAccessible)(IMachine *machine, PRBool *isAccessible);
     nsresult (*GetState)(IMachine *machine, PRUint32 *state);
+    nsresult (*GetName)(IMachine *machine, PRUnichar **name);
+    nsresult (*GetId)(IMachine *machine, vboxIIDUnion *iidu);
 } vboxUniformedIMachine;
 
 /* Functions for ISession */
@@ -257,6 +259,7 @@ int vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type);
 char *vboxConnectGetCapabilities(virConnectPtr conn);
 int vboxConnectListDomains(virConnectPtr conn, int *ids, int nids);
 int vboxConnectNumOfDomains(virConnectPtr conn);
+virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

@@ -551,3 +551,76 @@ int vboxConnectNumOfDomains(virConnectPtr conn)
     gVBoxAPI.UArray.vboxArrayRelease(&machines);
     return ret;
 }
+
+virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id)
+{
+    VBOX_OBJECT_CHECK(conn, virDomainPtr, NULL);
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
+    IMachine *machine;
+    PRBool isAccessible = PR_FALSE;
+    PRUnichar *machineNameUtf16 = NULL;
+    char *machineNameUtf8  = NULL;
+    vboxIIDUnion iid;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    PRUint32 state;
+    nsresult rc;
+
+    VBOX_IID_INITIALIZE(&iid);
+    /* Internal vbox IDs start from 0, the public libvirt ID
+     * starts from 1, so refuse id == 0, and adjust the rest*/
+    if (id == 0) {
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching id %d"), id);
+        return NULL;
+    }
+    id = id - 1;
+
+    rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        return NULL;
+    }
+
+    if (id >= machines.count)
+        goto cleanup;
+
+    machine = machines.items[id];
+
+    if (!machine)
+        goto cleanup;
+
+    isAccessible = PR_FALSE;
+    gVBoxAPI.UIMachine.GetAccessible(machine, &isAccessible);
+    if (!isAccessible)
+        goto cleanup;
+
+    gVBoxAPI.UIMachine.GetState(machine, &state);
+    if (!gVBoxAPI.machineStateChecker.Online(state))
+        goto cleanup;
+
+    gVBoxAPI.UIMachine.GetName(machine, &machineNameUtf16);
+    VBOX_UTF16_TO_UTF8(machineNameUtf16, &machineNameUtf8);
+
+    gVBoxAPI.UIMachine.GetId(machine, &iid);
+    vboxIIDToUUID(&iid, uuid);
+    vboxIIDUnalloc(&iid);
+
+    /* get a new domain pointer from virGetDomain, if it fails
+     * then no need to assign the id, else assign the id, cause
+     * it is -1 by default. rest is taken care by virGetDomain
+     * itself, so need not worry.
+     */
+
+    ret = virGetDomain(conn, machineNameUtf8, uuid);
+    if (ret)
+        ret->id = id + 1;
+
+    /* Cleanup all the XPCOM allocated stuff here */
+    VBOX_UTF8_FREE(machineNameUtf8);
+    VBOX_UTF16_FREE(machineNameUtf16);
+
+ cleanup:
+    gVBoxAPI.UArray.vboxArrayRelease(&machines);
+    return ret;
+}
