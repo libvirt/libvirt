@@ -121,10 +121,51 @@ typedef PRUint32 nsresult;
 # define NS_FAILED(_nsresult) (NS_UNLIKELY((_nsresult) & 0x80000000))
 # define NS_SUCCEEDED(_nsresult) (NS_LIKELY(!((_nsresult) & 0x80000000)))
 
+/**
+ * An "interface id" which can be used to uniquely identify a given
+ * interface.
+ * A "unique identifier". This is modeled after OSF DCE UUIDs.
+ */
+
+struct nsID {
+  PRUint32 m0;
+  PRUint16 m1;
+  PRUint16 m2;
+  PRUint8 m3[8];
+};
+
+typedef struct nsID nsID;
+typedef nsID nsIID;
+
+typedef struct _vboxArray vboxArray;
+
+# ifdef WIN32
+
+struct _vboxArray {
+    void **items;
+    size_t count;
+    void *handle;
+};
+#  define VBOX_ARRAY_INITIALIZER { NULL, 0, NULL }
+
+# else /* !WIN32 */
+
+struct _vboxArray {
+    void **items;
+    size_t count;
+};
+#  define VBOX_ARRAY_INITIALIZER { NULL, 0 }
+
+# endif /* !WIN32 */
+
 /* Simplied definitions in vbox_CAPI_*.h */
 
 typedef void const *PCVBOXXPCOM;
-typedef void IVirtualBox;
-typedef void ISession;
+typedef struct nsISupports nsISupports;
+typedef nsISupports IVirtualBox;
+typedef nsISupports ISession;
+typedef nsISupports IConsole;
+typedef nsISupports IProgress;
+typedef nsISupports IMachine;
 
 #endif /* VBOX_COMMON_H */

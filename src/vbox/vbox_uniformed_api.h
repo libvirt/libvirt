@@ -56,6 +56,46 @@
  *
  */
 
+/* Extracted define from vbox_tmpl.c */
+
+# ifdef WIN32
+struct _vboxIID_v2_x_WIN32 {
+    /* IID is represented by a GUID value. */
+    GUID value;
+};
+# endif /* !WIN32 */
+
+struct _vboxIID_v2_x {
+    /* IID is represented by a pointer to a nsID. */
+    nsID *value;
+
+    /* backing is used in cases where we need to create or copy an IID.
+     * We cannot allocate memory that can be freed by ComUnallocMem.
+     * Therefore, we use this stack allocated nsID instead. */
+    nsID backing;
+};
+
+struct _vboxIID_v3_x {
+    /* IID is represented by a UTF-16 encoded UUID in string form. */
+    PRUnichar *value;
+
+    /* owner indicates if we own the value and need to free it. */
+    bool owner;
+};
+
+typedef union {
+# ifdef WIN32
+    struct _vboxIID_v2_x_WIN32 vboxIID_v2_x_WIN32;
+# endif /* !WIN32 */
+    struct _vboxIID_v2_x vboxIID_v2_x;
+    struct _vboxIID_v3_x vboxIID_v3_x;
+} vboxIIDUnion;
+
+typedef union {
+    nsresult uResultCode;
+    PRInt32 resultCode;
+} resultCodeUnion;
+
 typedef struct {
     virMutex lock;
     unsigned long version;
@@ -111,10 +151,45 @@ typedef struct {
     int (*Utf8ToUtf16)(PCVBOXXPCOM pFuncs, const char *pszString, PRUnichar **ppwszString);
 } vboxUniformedPFN;
 
+/* Functions for vboxIID */
+typedef struct {
+    void (*vboxIIDInitialize)(vboxIIDUnion *iidu);
+    void (*vboxIIDUnalloc)(vboxGlobalData *data, vboxIIDUnion *iidu);
+    void (*vboxIIDToUUID)(vboxGlobalData *data, vboxIIDUnion *iidu, unsigned char *uuid);
+    void (*vboxIIDFromUUID)(vboxGlobalData *data, vboxIIDUnion *iidu, const unsigned char *uuid);
+    bool (*vboxIIDIsEqual)(vboxGlobalData *data, vboxIIDUnion *iidu1, vboxIIDUnion *iidu2);
+    void (*vboxIIDFromArrayItem)(vboxGlobalData *data, vboxIIDUnion *iidu, vboxArray *array, int idx);
+    void (*DEBUGIID)(const char *msg, vboxIIDUnion *iidu);
+} vboxUniformedIID;
+
+/* Functions for nsISupports */
+typedef struct {
+    nsresult (*Release)(nsISupports *nsi);
+} vboxUniformednsISupports;
+
 /* Functions for IVirtualBox */
 typedef struct {
     nsresult (*GetVersion)(IVirtualBox *vboxObj, PRUnichar **versionUtf16);
+    nsresult (*GetMachine)(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IMachine **machine);
 } vboxUniformedIVirtualBox;
+
+/* Functions for ISession */
+typedef struct {
+    nsresult (*OpenExisting)(vboxGlobalData *data, vboxIIDUnion *iidu, IMachine *machine);
+    nsresult (*GetConsole)(ISession *session, IConsole **console);
+    nsresult (*Close)(ISession *session);
+} vboxUniformedISession;
+
+/* Functions for IConsole */
+typedef struct {
+    nsresult (*SaveState)(IConsole *console, IProgress **progress);
+} vboxUniformedIConsole;
+
+/* Functions for IProgress */
+typedef struct {
+    nsresult (*WaitForCompletion)(IProgress *progress, PRInt32 timeout);
+    nsresult (*GetResultCode)(IProgress *progress, resultCodeUnion *resultCode);
+} vboxUniformedIProgress;
 
 typedef struct {
     /* vbox API version */
@@ -124,10 +199,16 @@ typedef struct {
     int (*initializeDomainEvent)(vboxGlobalData *data);
     void (*registerGlobalData)(vboxGlobalData *data);
     vboxUniformedPFN UPFN;
+    vboxUniformedIID UIID;
+    vboxUniformednsISupports nsUISupports;
     vboxUniformedIVirtualBox UIVirtualBox;
+    vboxUniformedISession UISession;
+    vboxUniformedIConsole UIConsole;
+    vboxUniformedIProgress UIProgress;
     /* vbox API features */
     bool domainEventCallbacks;
     bool hasStaticGlobalData;
+    bool getMachineForSession;
 } vboxUniformedAPI;
 
 /* libvirt API
@@ -138,6 +219,7 @@ virDrvOpenStatus vboxConnectOpen(virConnectPtr conn,
                                  virConnectAuthPtr auth,
                                  unsigned int flags);
 int vboxConnectClose(virConnectPtr conn);
+int vboxDomainSave(virDomainPtr dom, const char *path);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

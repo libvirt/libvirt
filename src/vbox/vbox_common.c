@@ -42,6 +42,9 @@
 
 VIR_LOG_INIT("vbox.vbox_common");
 
+#define RC_SUCCEEDED(rc) NS_SUCCEEDED(rc.resultCode)
+#define RC_FAILED(rc) NS_FAILED(rc.resultCode)
+
 #define VBOX_UTF16_FREE(arg)                                            \
     do {                                                                \
         if (arg) {                                                      \
@@ -68,6 +71,31 @@ VIR_LOG_INIT("vbox.vbox_common");
 
 #define VBOX_UTF16_TO_UTF8(arg1, arg2)  gVBoxAPI.UPFN.Utf16ToUtf8(data->pFuncs, arg1, arg2)
 #define VBOX_UTF8_TO_UTF16(arg1, arg2)  gVBoxAPI.UPFN.Utf8ToUtf16(data->pFuncs, arg1, arg2)
+
+#define VBOX_RELEASE(arg)                                                     \
+    do {                                                                      \
+        if (arg) {                                                            \
+            gVBoxAPI.nsUISupports.Release((void *)arg);                        \
+            (arg) = NULL;                                                     \
+        }                                                                     \
+    } while (0)
+
+#define VBOX_OBJECT_CHECK(conn, type, value) \
+vboxGlobalData *data = conn->privateData;\
+type ret = value;\
+if (!data->vboxObj) {\
+    return ret;\
+}
+
+#define vboxIIDUnalloc(iid)                     gVBoxAPI.UIID.vboxIIDUnalloc(data, iid)
+#define vboxIIDToUUID(iid, uuid)                gVBoxAPI.UIID.vboxIIDToUUID(data, iid, uuid)
+#define vboxIIDFromUUID(iid, uuid)              gVBoxAPI.UIID.vboxIIDFromUUID(data, iid, uuid)
+#define vboxIIDIsEqual(iid1, iid2)              gVBoxAPI.UIID.vboxIIDIsEqual(data, iid1, iid2)
+#define DEBUGIID(msg, iid)                      gVBoxAPI.UIID.DEBUGIID(msg, iid)
+#define vboxIIDFromArrayItem(iid, array, idx) \
+    gVBoxAPI.UIID.vboxIIDFromArrayItem(data, iid, array, idx)
+
+#define VBOX_IID_INITIALIZE(iid)                gVBoxAPI.UIID.vboxIIDInitialize(iid)
 
 /* global vbox API, used for all common codes. */
 static vboxUniformedAPI gVBoxAPI;
@@ -99,6 +127,22 @@ int vboxRegisterUniformedAPI(uint32_t uVersion)
         vbox43_4InstallUniformedAPI(&gVBoxAPI);
     } else {
         return -1;
+    }
+    return 0;
+}
+
+static int openSessionForMachine(vboxGlobalData *data, const unsigned char *dom_uuid, vboxIIDUnion *iid,
+                                 IMachine **machine, bool checkflag)
+{
+    VBOX_IID_INITIALIZE(iid);
+    vboxIIDFromUUID(iid, dom_uuid);
+    if (!checkflag || gVBoxAPI.getMachineForSession) {
+        /* Get machine for the call to VBOX_SESSION_OPEN_EXISTING */
+        if (NS_FAILED(gVBoxAPI.UIVirtualBox.GetMachine(data->vboxObj, iid, machine))) {
+            virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                           _("no domain with matching uuid"));
+            return -1;
+        }
     }
     return 0;
 }
@@ -299,4 +343,55 @@ int vboxConnectClose(virConnectPtr conn)
     conn->privateData = NULL;
 
     return 0;
+}
+
+int
+vboxDomainSave(virDomainPtr dom, const char *path ATTRIBUTE_UNUSED)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    IConsole *console    = NULL;
+    vboxIIDUnion iid;
+    IMachine *machine = NULL;
+    IProgress *progress = NULL;
+    resultCodeUnion resultCode;
+    nsresult rc;
+
+    /* VirtualBox currently doesn't support saving to a file
+     * at a location other then the machine folder and thus
+     * setting path to ATTRIBUTE_UNUSED for now, will change
+     * this behaviour once get the VirtualBox API in right
+     * shape to do this
+     */
+
+    /* Open a Session for the machine */
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, true) < 0)
+        goto cleanup;
+
+    rc = gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+    if (NS_FAILED(rc))
+        goto cleanup;
+
+    rc = gVBoxAPI.UISession.GetConsole(data->vboxSession, &console);
+    if (NS_FAILED(rc) || !console)
+        goto freeSession;
+
+    rc = gVBoxAPI.UIConsole.SaveState(console, &progress);
+    if (!progress)
+        goto freeSession;
+
+    gVBoxAPI.UIProgress.WaitForCompletion(progress, -1);
+    gVBoxAPI.UIProgress.GetResultCode(progress, &resultCode);
+    if (RC_SUCCEEDED(resultCode))
+        ret = 0;
+
+ freeSession:
+    gVBoxAPI.UISession.Close(data->vboxSession);
+
+ cleanup:
+    DEBUGIID("UUID of machine being saved:", &iid);
+    VBOX_RELEASE(machine);
+    VBOX_RELEASE(console);
+    VBOX_RELEASE(progress);
+    vboxIIDUnalloc(&iid);
+    return ret;
 }

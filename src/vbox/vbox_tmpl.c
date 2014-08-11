@@ -192,7 +192,7 @@ if (strUtf16) {\
 
 #define DEBUGUUID(msg, iid) \
 {\
-    VIR_DEBUG(msg ": {%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}",\
+    VIR_DEBUG("%s: {%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}", msg,\
           (unsigned)(iid)->m0,\
           (unsigned)(iid)->m1,\
           (unsigned)(iid)->m2,\
@@ -355,16 +355,19 @@ static void nsIDFromChar(nsID *iid, const unsigned char *uuid)
 typedef struct _vboxIID_v2_x_WIN32 vboxIID;
 typedef struct _vboxIID_v2_x_WIN32 vboxIID_v2_x_WIN32;
 
-struct _vboxIID_v2_x_WIN32 {
-    /* IID is represented by a GUID value. */
-    GUID value;
-};
-
 #  define VBOX_IID_INITIALIZER { { 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } } }
+#  define IID_MEMBER(name) (iidu->vboxIID_v2_x_WIN32.name)
 
 static void
 vboxIIDUnalloc_v2_x_WIN32(vboxGlobalData *data ATTRIBUTE_UNUSED,
                           vboxIID_v2_x_WIN32 *iid ATTRIBUTE_UNUSED)
+{
+    /* Nothing to free */
+}
+
+static void
+_vboxIIDUnalloc(vboxGlobalData *data ATTRIBUTE_UNUSED,
+                vboxIIDUnion *iid ATTRIBUTE_UNUSED)
 {
     /* Nothing to free */
 }
@@ -376,6 +379,12 @@ vboxIIDToUUID_v2_x_WIN32(vboxIID_v2_x_WIN32 *iid, unsigned char *uuid)
 }
 
 static void
+_vboxIIDToUUID(vboxGlobalData *data ATTRIBUTE_UNUSED, vboxIIDUnion *iidu, unsigned char *uuid)
+{
+    vboxIIDToUUID_v2_x_WIN32(&iidu->vboxIID_v2_x_WIN32, uuid);
+}
+
+static void
 vboxIIDFromUUID_v2_x_WIN32(vboxGlobalData *data, vboxIID_v2_x_WIN32 *iid,
                            const unsigned char *uuid)
 {
@@ -384,10 +393,23 @@ vboxIIDFromUUID_v2_x_WIN32(vboxGlobalData *data, vboxIID_v2_x_WIN32 *iid,
     nsIDFromChar((nsID *)&iid->value, uuid);
 }
 
+static void
+_vboxIIDFromUUID(vboxGlobalData *data, vboxIIDUnion *iidu,
+                 const unsigned char *uuid)
+{
+    vboxIIDFromUUID_v2_x_WIN32(data, &iidu->vboxIID_v2_x_WIN32, uuid);
+}
+
 static bool
 vboxIIDIsEqual_v2_x_WIN32(vboxIID_v2_x_WIN32 *iid1, vboxIID_v2_x_WIN32 *iid2)
 {
     return memcmp(&iid1->value, &iid2->value, sizeof(GUID)) == 0;
+}
+
+static bool
+_vboxIIDIsEqual(vboxGlobalData *data ATTRIBUTE_UNUSED, vboxIIDUnion *iidu1, vboxIIDUnion *iidu2)
+{
+    return vboxIIDIsEqual_v2_x_WIN32(&iidu1->vboxIID_v2_x_WIN32, &iidu2->vboxIID_v2_x_WIN32);
 }
 
 static void
@@ -399,6 +421,13 @@ vboxIIDFromArrayItem_v2_x_WIN32(vboxGlobalData *data, vboxIID_v2_x_WIN32 *iid,
     vboxIIDUnalloc_v2_x_WIN32(data, iid);
 
     memcpy(&iid->value, &items[idx], sizeof(GUID));
+}
+
+static void
+_vboxIIDFromArrayItem(vboxGlobalData *data, vboxIIDUnion *iidu,
+                      vboxArray *array, int idx)
+{
+    vboxIIDFromArrayItem_v2_x_WIN32(data, &iidu->vboxIID_v2_x_WIN32, array, idx);
 }
 
 #  define vboxIIDUnalloc(iid) vboxIIDUnalloc_v2_x_WIN32(data, iid)
@@ -414,17 +443,8 @@ vboxIIDFromArrayItem_v2_x_WIN32(vboxGlobalData *data, vboxIID_v2_x_WIN32 *iid,
 typedef struct _vboxIID_v2_x vboxIID;
 typedef struct _vboxIID_v2_x vboxIID_v2_x;
 
-struct _vboxIID_v2_x {
-    /* IID is represented by a pointer to a nsID. */
-    nsID *value;
-
-    /* backing is used in cases where we need to create or copy an IID.
-     * We cannot allocate memory that can be freed by ComUnallocMem.
-     * Therefore, we use this stack allocated nsID instead. */
-    nsID backing;
-};
-
 #  define VBOX_IID_INITIALIZER { NULL, { 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } } }
+#  define IID_MEMBER(name) (iidu->vboxIID_v2_x.name)
 
 static void
 vboxIIDUnalloc_v2_x(vboxGlobalData *data, vboxIID_v2_x *iid)
@@ -441,9 +461,22 @@ vboxIIDUnalloc_v2_x(vboxGlobalData *data, vboxIID_v2_x *iid)
 }
 
 static void
+_vboxIIDUnalloc(vboxGlobalData *data, vboxIIDUnion *iidu)
+{
+    vboxIIDUnalloc_v2_x(data, &iidu->vboxIID_v2_x);
+}
+
+static void
 vboxIIDToUUID_v2_x(vboxIID_v2_x *iid, unsigned char *uuid)
 {
     nsIDtoChar(uuid, iid->value);
+}
+
+static void
+_vboxIIDToUUID(vboxGlobalData *data ATTRIBUTE_UNUSED,
+               vboxIIDUnion *iidu, unsigned char *uuid)
+{
+    vboxIIDToUUID_v2_x(&iidu->vboxIID_v2_x, uuid);
 }
 
 static void
@@ -458,10 +491,24 @@ vboxIIDFromUUID_v2_x(vboxGlobalData *data, vboxIID_v2_x *iid,
     nsIDFromChar(iid->value, uuid);
 }
 
+static void
+_vboxIIDFromUUID(vboxGlobalData *data, vboxIIDUnion *iidu,
+                 const unsigned char *uuid)
+{
+    vboxIIDFromUUID_v2_x(data, &iidu->vboxIID_v2_x, uuid);
+}
+
 static bool
 vboxIIDIsEqual_v2_x(vboxIID_v2_x *iid1, vboxIID_v2_x *iid2)
 {
     return memcmp(iid1->value, iid2->value, sizeof(nsID)) == 0;
+}
+
+static bool
+_vboxIIDIsEqual(vboxGlobalData *data ATTRIBUTE_UNUSED,
+                vboxIIDUnion *iidu1, vboxIIDUnion *iidu2)
+{
+    return vboxIIDIsEqual_v2_x(&iidu1->vboxIID_v2_x, &iidu2->vboxIID_v2_x);
 }
 
 static void
@@ -473,6 +520,13 @@ vboxIIDFromArrayItem_v2_x(vboxGlobalData *data, vboxIID_v2_x *iid,
     iid->value = &iid->backing;
 
     memcpy(iid->value, array->items[idx], sizeof(nsID));
+}
+
+static void
+_vboxIIDFromArrayItem(vboxGlobalData *data, vboxIIDUnion *iidu,
+                      vboxArray *array, int idx)
+{
+    vboxIIDFromArrayItem_v2_x(data, &iidu->vboxIID_v2_x, array, idx);
 }
 
 #  define vboxIIDUnalloc(iid) vboxIIDUnalloc_v2_x(data, iid)
@@ -490,15 +544,8 @@ vboxIIDFromArrayItem_v2_x(vboxGlobalData *data, vboxIID_v2_x *iid,
 typedef struct _vboxIID_v3_x vboxIID;
 typedef struct _vboxIID_v3_x vboxIID_v3_x;
 
-struct _vboxIID_v3_x {
-    /* IID is represented by a UTF-16 encoded UUID in string form. */
-    PRUnichar *value;
-
-    /* owner indicates if we own the value and need to free it. */
-    bool owner;
-};
-
 # define VBOX_IID_INITIALIZER { NULL, true }
+# define IID_MEMBER(name) (iidu->vboxIID_v3_x.name)
 
 static void
 vboxIIDUnalloc_v3_x(vboxGlobalData *data, vboxIID_v3_x *iid)
@@ -509,6 +556,12 @@ vboxIIDUnalloc_v3_x(vboxGlobalData *data, vboxIID_v3_x *iid)
 
     iid->value = NULL;
     iid->owner = true;
+}
+
+static void
+_vboxIIDUnalloc(vboxGlobalData *data, vboxIIDUnion *iidu)
+{
+    vboxIIDUnalloc_v3_x(data, &iidu->vboxIID_v3_x);
 }
 
 static void
@@ -525,6 +578,13 @@ vboxIIDToUUID_v3_x(vboxGlobalData *data, vboxIID_v3_x *iid,
 }
 
 static void
+_vboxIIDToUUID(vboxGlobalData *data, vboxIIDUnion *iidu,
+               unsigned char *uuid)
+{
+    vboxIIDToUUID_v3_x(data, &iidu->vboxIID_v3_x, uuid);
+}
+
+static void
 vboxIIDFromUUID_v3_x(vboxGlobalData *data, vboxIID_v3_x *iid,
                      const unsigned char *uuid)
 {
@@ -535,6 +595,13 @@ vboxIIDFromUUID_v3_x(vboxGlobalData *data, vboxIID_v3_x *iid,
     virUUIDFormat(uuid, utf8);
 
     data->pFuncs->pfnUtf8ToUtf16(utf8, &iid->value);
+}
+
+static void
+_vboxIIDFromUUID(vboxGlobalData *data, vboxIIDUnion *iidu,
+                 const unsigned char *uuid)
+{
+    vboxIIDFromUUID_v3_x(data, &iidu->vboxIID_v3_x, uuid);
 }
 
 static bool
@@ -555,6 +622,12 @@ vboxIIDIsEqual_v3_x(vboxGlobalData *data, vboxIID_v3_x *iid1,
     return memcmp(uuid1, uuid2, VIR_UUID_BUFLEN) == 0;
 }
 
+static bool
+_vboxIIDIsEqual(vboxGlobalData *data, vboxIIDUnion *iidu1,
+                vboxIIDUnion *iidu2)
+{
+    return vboxIIDIsEqual_v3_x(data, &iidu1->vboxIID_v3_x, &iidu2->vboxIID_v3_x);
+}
 
 static void
 vboxIIDFromArrayItem_v3_x(vboxGlobalData *data, vboxIID_v3_x *iid,
@@ -564,6 +637,13 @@ vboxIIDFromArrayItem_v3_x(vboxGlobalData *data, vboxIID_v3_x *iid,
 
     iid->value = array->items[idx];
     iid->owner = false;
+}
+
+static void
+_vboxIIDFromArrayItem(vboxGlobalData *data, vboxIIDUnion *iidu,
+                      vboxArray *array, int idx)
+{
+    vboxIIDFromArrayItem_v3_x(data, &iidu->vboxIID_v3_x, array, idx);
 }
 
 
@@ -1823,67 +1903,6 @@ vboxDomainGetState(virDomainPtr dom,
 
  cleanup:
     vboxIIDUnalloc(&domiid);
-    return ret;
-}
-
-static int vboxDomainSave(virDomainPtr dom, const char *path ATTRIBUTE_UNUSED)
-{
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    IConsole *console    = NULL;
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    IMachine *machine = NULL;
-    nsresult rc;
-
-    /* VirtualBox currently doesn't support saving to a file
-     * at a location other then the machine folder and thus
-     * setting path to ATTRIBUTE_UNUSED for now, will change
-     * this behaviour once get the VirtualBox API in right
-     * shape to do this
-     */
-
-    /* Open a Session for the machine */
-    vboxIIDFromUUID(&iid, dom->uuid);
-#if VBOX_API_VERSION >= 4000000
-    /* Get machine for the call to VBOX_SESSION_OPEN_EXISTING */
-    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching uuid"));
-        return -1;
-    }
-#endif
-
-    rc = VBOX_SESSION_OPEN_EXISTING(iid.value, machine);
-    if (NS_SUCCEEDED(rc)) {
-        rc = data->vboxSession->vtbl->GetConsole(data->vboxSession, &console);
-        if (NS_SUCCEEDED(rc) && console) {
-            IProgress *progress = NULL;
-
-            console->vtbl->SaveState(console, &progress);
-
-            if (progress) {
-#if VBOX_API_VERSION == 2002000
-                nsresult resultCode;
-#else
-                PRInt32 resultCode;
-#endif
-
-                progress->vtbl->WaitForCompletion(progress, -1);
-                progress->vtbl->GetResultCode(progress, &resultCode);
-                if (NS_SUCCEEDED(resultCode)) {
-                    ret = 0;
-                }
-                VBOX_RELEASE(progress);
-            }
-            VBOX_RELEASE(console);
-        }
-        VBOX_SESSION_CLOSE();
-    }
-
-    DEBUGIID("UUID of machine being saved:", iid.value);
-
-    VBOX_RELEASE(machine);
-    vboxIIDUnalloc(&iid);
     return ret;
 }
 
@@ -11303,10 +11322,122 @@ static int _pfnUtf8ToUtf16(PCVBOXXPCOM pFuncs, const char *pszString, PRUnichar 
     return pFuncs->pfnUtf8ToUtf16(pszString, ppwszString);
 }
 
+#if VBOX_API_VERSION == 2002000
+
+static void _vboxIIDInitialize(vboxIIDUnion *iidu)
+{
+    memset(iidu, 0, sizeof(vboxIIDUnion));
+}
+
+static void _DEBUGIID(const char *msg, vboxIIDUnion *iidu)
+{
+# ifdef WIN32
+    DEBUGUUID(msg, (nsID *)&IID_MEMBER(value));
+# else /* !WIN32 */
+    DEBUGUUID(msg, IID_MEMBER(value));
+# endif /* !WIN32 */
+}
+
+#else /* VBOX_API_VERSION != 2002000 */
+
+static void _vboxIIDInitialize(vboxIIDUnion *iidu)
+{
+    memset(iidu, 0, sizeof(vboxIIDUnion));
+    IID_MEMBER(owner) = true;
+}
+
+static void _DEBUGIID(const char *msg, vboxIIDUnion *iidu)
+{
+    DEBUGPRUnichar(msg, IID_MEMBER(value));
+}
+
+#endif /* VBOX_API_VERSION != 2002000 */
+
+static nsresult _nsisupportsRelease(nsISupports *nsi)
+{
+    return nsi->vtbl->Release(nsi);
+}
+
 static nsresult
 _virtualboxGetVersion(IVirtualBox *vboxObj, PRUnichar **versionUtf16)
 {
     return vboxObj->vtbl->GetVersion(vboxObj, versionUtf16);
+}
+
+#if VBOX_API_VERSION < 4000000
+
+static nsresult
+_virtualboxGetMachine(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IMachine **machine)
+{
+    return vboxObj->vtbl->GetMachine(vboxObj, IID_MEMBER(value), machine);
+}
+
+#else /* VBOX_API_VERSION >= 4000000 */
+
+static nsresult
+_virtualboxGetMachine(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IMachine **machine)
+{
+    return vboxObj->vtbl->FindMachine(vboxObj, IID_MEMBER(value), machine);
+}
+
+#endif /* VBOX_API_VERSION >= 4000000 */
+
+#if VBOX_API_VERSION < 4000000
+
+static nsresult
+_sessionOpenExisting(vboxGlobalData *data, vboxIIDUnion *iidu, IMachine *machine ATTRIBUTE_UNUSED)
+{
+    return data->vboxObj->vtbl->OpenExistingSession(data->vboxObj, data->vboxSession, IID_MEMBER(value));
+}
+
+static nsresult
+_sessionClose(ISession *session)
+{
+    return session->vtbl->Close(session);
+}
+
+#else /* VBOX_API_VERSION >= 4000000 */
+
+static nsresult
+_sessionOpenExisting(vboxGlobalData *data, vboxIIDUnion *iidu ATTRIBUTE_UNUSED, IMachine *machine)
+{
+    return machine->vtbl->LockMachine(machine, data->vboxSession, LockType_Shared);
+}
+
+static nsresult
+_sessionClose(ISession *session)
+{
+    return session->vtbl->UnlockMachine(session);
+}
+
+#endif /* VBOX_API_VERSION >= 4000000 */
+
+static nsresult
+_sessionGetConsole(ISession *session, IConsole **console)
+{
+    return session->vtbl->GetConsole(session, console);
+}
+
+static nsresult
+_consoleSaveState(IConsole *console, IProgress **progress)
+{
+    return console->vtbl->SaveState(console, progress);
+}
+
+static nsresult
+_progressWaitForCompletion(IProgress *progress, PRInt32 timeout)
+{
+    return progress->vtbl->WaitForCompletion(progress, timeout);
+}
+
+static nsresult
+_progressGetResultCode(IProgress *progress, resultCodeUnion *resultCode)
+{
+#if VBOX_API_VERSION == 2002000
+    return progress->vtbl->GetResultCode(progress, &resultCode->uResultCode);
+#else /* VBOX_API_VERSION != 2002000 */
+    return progress->vtbl->GetResultCode(progress, &resultCode->resultCode);
+#endif /* VBOX_API_VERSION != 2002000 */
 }
 
 static vboxUniformedPFN _UPFN = {
@@ -11319,8 +11450,38 @@ static vboxUniformedPFN _UPFN = {
     .Utf8ToUtf16 = _pfnUtf8ToUtf16,
 };
 
+static vboxUniformedIID _UIID = {
+    .vboxIIDInitialize = _vboxIIDInitialize,
+    .vboxIIDUnalloc = _vboxIIDUnalloc,
+    .vboxIIDToUUID = _vboxIIDToUUID,
+    .vboxIIDFromUUID = _vboxIIDFromUUID,
+    .vboxIIDIsEqual = _vboxIIDIsEqual,
+    .vboxIIDFromArrayItem = _vboxIIDFromArrayItem,
+    .DEBUGIID = _DEBUGIID,
+};
+
+static vboxUniformednsISupports _nsUISupports = {
+    .Release = _nsisupportsRelease,
+};
+
 static vboxUniformedIVirtualBox _UIVirtualBox = {
     .GetVersion = _virtualboxGetVersion,
+    .GetMachine = _virtualboxGetMachine,
+};
+
+static vboxUniformedISession _UISession = {
+    .OpenExisting = _sessionOpenExisting,
+    .GetConsole = _sessionGetConsole,
+    .Close = _sessionClose,
+};
+
+static vboxUniformedIConsole _UIConsole = {
+    .SaveState = _consoleSaveState,
+};
+
+static vboxUniformedIProgress _UIProgress = {
+    .WaitForCompletion = _progressWaitForCompletion,
+    .GetResultCode = _progressGetResultCode,
 };
 
 void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
@@ -11330,7 +11491,12 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->initializeDomainEvent = _initializeDomainEvent;
     pVBoxAPI->registerGlobalData = _registerGlobalData;
     pVBoxAPI->UPFN = _UPFN;
+    pVBoxAPI->UIID = _UIID;
+    pVBoxAPI->nsUISupports = _nsUISupports;
     pVBoxAPI->UIVirtualBox = _UIVirtualBox;
+    pVBoxAPI->UISession = _UISession;
+    pVBoxAPI->UIConsole = _UIConsole;
+    pVBoxAPI->UIProgress = _UIProgress;
 
 #if VBOX_API_VERSION <= 2002000 || VBOX_API_VERSION >= 4000000
     pVBoxAPI->domainEventCallbacks = 0;
@@ -11344,6 +11510,12 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->hasStaticGlobalData = 1;
 #endif /* VBOX_API_VERSION > 2002000 */
 
+#if VBOX_API_VERSION >= 4000000
+    /* Get machine for the call to VBOX_SESSION_OPEN_EXISTING */
+    pVBoxAPI->getMachineForSession = 1;
+#else /* VBOX_API_VERSION < 4000000 */
+    pVBoxAPI->getMachineForSession = 0;
+#endif /* VBOX_API_VERSION < 4000000 */
 }
 
 /**
