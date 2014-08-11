@@ -956,61 +956,6 @@ static virDomainState _vboxConvertState(PRUint32 state)
 }
 
 static int
-vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
-                        unsigned int flags)
-{
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    IMachine *machine    = NULL;
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    PRUint32  CPUCount   = nvcpus;
-    nsresult rc;
-
-    if (flags != VIR_DOMAIN_AFFECT_LIVE) {
-        virReportError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
-        return -1;
-    }
-
-    vboxIIDFromUUID(&iid, dom->uuid);
-#if VBOX_API_VERSION >= 4000000
-    /* Get machine for the call to VBOX_SESSION_OPEN */
-    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching uuid"));
-        return -1;
-    }
-#endif
-
-    rc = VBOX_SESSION_OPEN(iid.value, machine);
-    if (NS_SUCCEEDED(rc)) {
-        data->vboxSession->vtbl->GetMachine(data->vboxSession, &machine);
-        if (machine) {
-            rc = machine->vtbl->SetCPUCount(machine, CPUCount);
-            if (NS_SUCCEEDED(rc)) {
-                machine->vtbl->SaveSettings(machine);
-                ret = 0;
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("could not set the number of cpus of the domain "
-                                 "to: %u, rc=%08x"),
-                               CPUCount, (unsigned)rc);
-            }
-            VBOX_RELEASE(machine);
-        } else {
-            virReportError(VIR_ERR_NO_DOMAIN,
-                           _("no domain with matching id %d"), dom->id);
-        }
-    } else {
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("can't open session to the domain with id %d"), dom->id);
-    }
-    VBOX_SESSION_CLOSE();
-
-    vboxIIDUnalloc(&iid);
-    return ret;
-}
-
-static int
 vboxDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 {
     return vboxDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_AFFECT_LIVE);

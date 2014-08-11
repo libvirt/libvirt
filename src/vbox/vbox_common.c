@@ -2775,3 +2775,49 @@ int vboxDomainGetState(virDomainPtr dom, int *state,
     vboxIIDUnalloc(&domiid);
     return ret;
 }
+
+int vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
+                            unsigned int flags)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    IMachine *machine    = NULL;
+    vboxIIDUnion iid;
+    PRUint32  CPUCount   = nvcpus;
+    nsresult rc;
+
+    if (flags != VIR_DOMAIN_AFFECT_LIVE) {
+        virReportError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
+        return -1;
+    }
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, true) < 0)
+        return -1;
+
+    rc = gVBoxAPI.UISession.Open(data, &iid, machine);
+    if (NS_SUCCEEDED(rc)) {
+        gVBoxAPI.UISession.GetMachine(data->vboxSession, &machine);
+        if (machine) {
+            rc = gVBoxAPI.UIMachine.SetCPUCount(machine, CPUCount);
+            if (NS_SUCCEEDED(rc)) {
+                gVBoxAPI.UIMachine.SaveSettings(machine);
+                ret = 0;
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("could not set the number of cpus of the domain "
+                                 "to: %u, rc=%08x"),
+                               CPUCount, (unsigned)rc);
+            }
+            VBOX_RELEASE(machine);
+        } else {
+            virReportError(VIR_ERR_NO_DOMAIN,
+                           _("no domain with matching id %d"), dom->id);
+        }
+    } else {
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("can't open session to the domain with id %d"), dom->id);
+    }
+    gVBoxAPI.UISession.Close(data->vboxSession);
+
+    vboxIIDUnalloc(&iid);
+    return ret;
+}

@@ -438,6 +438,9 @@ int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory);
 int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info);
 int vboxDomainGetState(virDomainPtr dom, int *state,
                        int *reason, unsigned int flags);
+int vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
+                            unsigned int flags);
+
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
