@@ -1452,21 +1452,6 @@ _vboxAttachDrivesOld(virDomainDefPtr def ATTRIBUTE_UNUSED,
 #endif /* VBOX_API_VERSION >= 4000000 */
 
 static int
-vboxDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
-                            unsigned int flags)
-{
-    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
-
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("cannot modify the persistent configuration of a domain"));
-        return -1;
-    }
-
-    return vboxDomainDetachDevice(dom, xml);
-}
-
-static int
 vboxDomainSnapshotGetAll(virDomainPtr dom,
                          IMachine *machine,
                          ISnapshot ***snapshots)

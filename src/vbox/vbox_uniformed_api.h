@@ -533,6 +533,8 @@ int vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
 int vboxDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
                                 unsigned int flags);
 int vboxDomainDetachDevice(virDomainPtr dom, const char *xml);
+int vboxDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
+                                unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

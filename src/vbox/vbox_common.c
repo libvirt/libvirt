@@ -4280,3 +4280,11 @@ int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
     virDomainDeviceDefFree(dev);
     return ret;
 }
+
+int vboxDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
+                                unsigned int flags)
+{
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE, -1);
+
+    return vboxDomainDetachDevice(dom, xml);
+}
