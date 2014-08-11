@@ -914,19 +914,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static int vboxConnectGetVersion(virConnectPtr conn, unsigned long *version)
-{
-    vboxGlobalData *data = conn->privateData;
-    VIR_DEBUG("%s: in vboxGetVersion", conn->driver->name);
-
-    vboxDriverLock(data);
-    *version = data->version;
-    vboxDriverUnlock(data);
-
-    return 0;
-}
-
-
 static char *vboxConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     return virGetHostname();

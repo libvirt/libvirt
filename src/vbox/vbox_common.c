@@ -395,3 +395,25 @@ vboxDomainSave(virDomainPtr dom, const char *path ATTRIBUTE_UNUSED)
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+static void vboxDriverLock(vboxGlobalData *data)
+{
+    virMutexLock(&data->lock);
+}
+
+static void vboxDriverUnlock(vboxGlobalData *data)
+{
+    virMutexUnlock(&data->lock);
+}
+
+int vboxConnectGetVersion(virConnectPtr conn, unsigned long *version)
+{
+    vboxGlobalData *data = conn->privateData;
+    VIR_DEBUG("%s: in vboxGetVersion", conn->driver->name);
+
+    vboxDriverLock(data);
+    *version = data->version;
+    vboxDriverUnlock(data);
+
+    return 0;
+}
