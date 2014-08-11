@@ -1660,32 +1660,43 @@ xenFormatXMPCI(virConfPtr conf,
 }
 
 
+static int
+xenFormatXMGeneralMeta(virConfPtr conf, virDomainDefPtr def)
+{
+    char uuid[VIR_UUID_STRING_BUFLEN];
+
+    if (xenXMConfigSetString(conf, "name", def->name) < 0)
+        return -1;
+
+    virUUIDFormat(def->uuid, uuid);
+    if (xenXMConfigSetString(conf, "uuid", uuid) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
    either 32, or 64 on a platform where long is big enough.  */
 verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
 
-virConfPtr xenFormatXM(virConnectPtr conn,
-                                   virDomainDefPtr def,
-                                   int xendConfigVersion)
+virConfPtr
+xenFormatXM(virConnectPtr conn,
+            virDomainDefPtr def,
+            int xendConfigVersion)
 {
     virConfPtr conf = NULL;
     int hvm = 0, vmlocaltime = 0;
     size_t i;
     char *cpus = NULL;
     const char *lifecycle;
-    char uuid[VIR_UUID_STRING_BUFLEN];
     virConfValuePtr diskVal = NULL;
     virConfValuePtr netVal = NULL;
 
     if (!(conf = virConfNew()))
         goto cleanup;
 
-
-    if (xenXMConfigSetString(conf, "name", def->name) < 0)
-        goto cleanup;
-
-    virUUIDFormat(def->uuid, uuid);
-    if (xenXMConfigSetString(conf, "uuid", uuid) < 0)
+    if (xenFormatXMGeneralMeta(conf, def) < 0)
         goto cleanup;
 
     if (xenXMConfigSetInt(conf, "maxmem",
