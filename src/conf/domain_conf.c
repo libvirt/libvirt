@@ -16286,7 +16286,9 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, "<model type='%s'/>\n",
                               def->model);
         if (STREQ(def->model, "virtio") &&
-            (def->driver.virtio.name || def->driver.virtio.txmode)) {
+            (def->driver.virtio.name || def->driver.virtio.txmode ||
+             def->driver.virtio.ioeventfd || def->driver.virtio.event_idx ||
+             def->driver.virtio.queues)) {
             virBufferAddLit(buf, "<driver");
             if (def->driver.virtio.name) {
                 virBufferAsprintf(buf, " name='%s'",
