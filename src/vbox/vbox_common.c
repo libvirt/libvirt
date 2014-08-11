@@ -2826,3 +2826,31 @@ int vboxDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 {
     return vboxDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_AFFECT_LIVE);
 }
+
+int vboxDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    ISystemProperties *systemProperties = NULL;
+    PRUint32 maxCPUCount = 0;
+
+    if (flags != (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
+        virReportError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
+        return -1;
+    }
+
+    /* Currently every domain supports the same number of max cpus
+     * as that supported by vbox and thus take it directly from
+     * the systemproperties.
+     */
+
+    gVBoxAPI.UIVirtualBox.GetSystemProperties(data->vboxObj, &systemProperties);
+    if (systemProperties) {
+        gVBoxAPI.UISystemProperties.GetMaxGuestCPUCount(systemProperties, &maxCPUCount);
+        VBOX_RELEASE(systemProperties);
+    }
+
+    if (maxCPUCount > 0)
+        ret = maxCPUCount;
+
+    return ret;
+}
