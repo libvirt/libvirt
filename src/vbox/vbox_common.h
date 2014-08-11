@@ -247,6 +247,24 @@ enum MediumType
     MediumType_Writethrough = 2,
 };
 
+enum CleanupMode
+{
+    CleanupMode_UnregisterOnly = 1,
+    CleanupMode_DetachAllReturnNone = 2,
+    CleanupMode_DetachAllReturnHardDisksOnly = 3,
+    CleanupMode_Full = 4
+};
+
+enum MediumVariant
+{
+    MediumVariant_Standard = 0,
+    MediumVariant_VmdkSplit2G = 0x01,
+    MediumVariant_VmdkStreamOptimized = 0x04,
+    MediumVariant_VmdkESX = 0x08,
+    MediumVariant_Fixed = 0x10000,
+    MediumVariant_Diff = 0x20000
+};
+
 /* Simplied definitions in vbox_CAPI_*.h */
 
 typedef void const *PCVBOXXPCOM;
