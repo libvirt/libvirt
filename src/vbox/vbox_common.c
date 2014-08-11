@@ -2504,3 +2504,8 @@ int vboxDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+int vboxDomainShutdown(virDomainPtr dom)
+{
+    return vboxDomainShutdownFlags(dom, 0);
+}

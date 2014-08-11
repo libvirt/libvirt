@@ -423,6 +423,7 @@ int vboxDomainIsUpdated(virDomainPtr dom);
 int vboxDomainSuspend(virDomainPtr dom);
 int vboxDomainResume(virDomainPtr dom);
 int vboxDomainShutdownFlags(virDomainPtr dom, unsigned int flags);
+int vboxDomainShutdown(virDomainPtr dom);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

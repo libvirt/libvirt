@@ -933,12 +933,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static int vboxDomainShutdown(virDomainPtr dom)
-{
-    return vboxDomainShutdownFlags(dom, 0);
-}
-
-
 static int vboxDomainReboot(virDomainPtr dom, unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
