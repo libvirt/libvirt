@@ -955,13 +955,6 @@ static virDomainState _vboxConvertState(PRUint32 state)
     }
 }
 
-static int
-vboxDomainGetMaxVcpus(virDomainPtr dom)
-{
-    return vboxDomainGetVcpusFlags(dom, (VIR_DOMAIN_AFFECT_LIVE |
-                                         VIR_DOMAIN_VCPU_MAXIMUM));
-}
-
 static void vboxHostDeviceGetXMLDesc(vboxGlobalData *data, virDomainDefPtr def, IMachine *machine)
 {
 #if VBOX_API_VERSION < 4003000

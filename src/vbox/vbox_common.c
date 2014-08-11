@@ -2854,3 +2854,9 @@ int vboxDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
 
     return ret;
 }
+
+int vboxDomainGetMaxVcpus(virDomainPtr dom)
+{
+    return vboxDomainGetVcpusFlags(dom, (VIR_DOMAIN_AFFECT_LIVE |
+                                         VIR_DOMAIN_VCPU_MAXIMUM));
+}
