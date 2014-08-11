@@ -1523,65 +1523,6 @@ vboxDomainSnapshotGet(vboxGlobalData *data,
     return snapshot;
 }
 
-static virDomainSnapshotPtr
-vboxDomainSnapshotCurrent(virDomainPtr dom,
-                          unsigned int flags)
-{
-    VBOX_OBJECT_CHECK(dom->conn, virDomainSnapshotPtr, NULL);
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    IMachine *machine = NULL;
-    ISnapshot *snapshot = NULL;
-    PRUnichar *nameUtf16 = NULL;
-    char *name = NULL;
-    nsresult rc;
-
-    virCheckFlags(0, NULL);
-
-    vboxIIDFromUUID(&iid, dom->uuid);
-    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching UUID"));
-        goto cleanup;
-    }
-
-    rc = machine->vtbl->GetCurrentSnapshot(machine, &snapshot);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("could not get current snapshot"));
-        goto cleanup;
-    }
-
-    if (!snapshot) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("domain has no snapshots"));
-        goto cleanup;
-    }
-
-    rc = snapshot->vtbl->GetName(snapshot, &nameUtf16);
-    if (NS_FAILED(rc) || !nameUtf16) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("could not get current snapshot name"));
-        goto cleanup;
-    }
-
-    VBOX_UTF16_TO_UTF8(nameUtf16, &name);
-    if (!name) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    ret = virGetDomainSnapshot(dom, name);
-
- cleanup:
-    VBOX_UTF8_FREE(name);
-    VBOX_UTF16_FREE(nameUtf16);
-    VBOX_RELEASE(snapshot);
-    VBOX_RELEASE(machine);
-    vboxIIDUnalloc(&iid);
-    return ret;
-}
-
 static int
 vboxDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
                             unsigned int flags)
