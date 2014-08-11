@@ -752,7 +752,7 @@ struct _virDomainControllerDef {
 };
 
 
-/* Two types of disk backends */
+/* Types of disk backends */
 typedef enum {
     VIR_DOMAIN_FS_TYPE_MOUNT, /* Mounts (binds) a host dir on a guest dir */
     VIR_DOMAIN_FS_TYPE_BLOCK, /* Mounts a host block dev on a guest dir */
