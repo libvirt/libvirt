@@ -6069,3 +6069,43 @@ char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     vboxIIDUnalloc(&domiid);
     return ret;
 }
+
+int vboxDomainSnapshotNum(virDomainPtr dom, unsigned int flags)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIIDUnion iid;
+    IMachine *machine = NULL;
+    nsresult rc;
+    PRUint32 snapshotCount;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    /* VBox snapshots do not require libvirt to maintain any metadata.  */
+    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_METADATA) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    rc = gVBoxAPI.UIMachine.GetSnapshotCount(machine, &snapshotCount);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get snapshot count for domain %s"),
+                       dom->name);
+        goto cleanup;
+    }
+
+    /* VBox has at most one root snapshot.  */
+    if (snapshotCount && (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS))
+        ret = 1;
+    else
+        ret = snapshotCount;
+
+ cleanup:
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    return ret;
+}

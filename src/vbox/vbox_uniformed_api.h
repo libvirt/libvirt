@@ -577,6 +577,7 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
                             unsigned int flags);
 char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
                                    unsigned int flags);
+int vboxDomainSnapshotNum(virDomainPtr dom, unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

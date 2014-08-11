@@ -1524,53 +1524,6 @@ vboxDomainSnapshotGet(vboxGlobalData *data,
 }
 
 static int
-vboxDomainSnapshotNum(virDomainPtr dom,
-                      unsigned int flags)
-{
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    IMachine *machine = NULL;
-    nsresult rc;
-    PRUint32 snapshotCount;
-
-    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
-                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
-
-    vboxIIDFromUUID(&iid, dom->uuid);
-    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching UUID"));
-        goto cleanup;
-    }
-
-    /* VBox snapshots do not require libvirt to maintain any metadata.  */
-    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_METADATA) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    rc = machine->vtbl->GetSnapshotCount(machine, &snapshotCount);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("could not get snapshot count for domain %s"),
-                       dom->name);
-        goto cleanup;
-    }
-
-    /* VBox has at most one root snapshot.  */
-    if (snapshotCount && (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS))
-        ret = 1;
-    else
-        ret = snapshotCount;
-
- cleanup:
-    VBOX_RELEASE(machine);
-    vboxIIDUnalloc(&iid);
-    return ret;
-}
-
-static int
 vboxDomainSnapshotListNames(virDomainPtr dom,
                             char **names,
                             int nameslen,
