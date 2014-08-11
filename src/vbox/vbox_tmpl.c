@@ -933,63 +933,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory)
-{
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    IMachine *machine    = NULL;
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    PRUint32 state       = MachineState_Null;
-    PRBool isAccessible  = PR_FALSE;
-    nsresult rc;
-
-    vboxIIDFromUUID(&iid, dom->uuid);
-    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching id %d"), dom->id);
-        goto cleanup;
-    }
-
-    if (!machine)
-        goto cleanup;
-
-    machine->vtbl->GetAccessible(machine, &isAccessible);
-    if (isAccessible) {
-        machine->vtbl->GetState(machine, &state);
-
-        if (state != MachineState_PoweredOff) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("memory size can't be changed unless domain is powered down"));
-            goto cleanup;
-        }
-
-        rc = VBOX_SESSION_OPEN(iid.value, machine);
-        if (NS_SUCCEEDED(rc)) {
-            rc = data->vboxSession->vtbl->GetMachine(data->vboxSession, &machine);
-            if (NS_SUCCEEDED(rc) && machine) {
-
-                rc = machine->vtbl->SetMemorySize(machine,
-                                                  VIR_DIV_UP(memory, 1024));
-                if (NS_SUCCEEDED(rc)) {
-                    machine->vtbl->SaveSettings(machine);
-                    ret = 0;
-                } else {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("could not set the memory size of the "
-                                     "domain to: %lu Kb, rc=%08x"),
-                                   memory, (unsigned)rc);
-                }
-            }
-            VBOX_SESSION_CLOSE();
-        }
-    }
-
- cleanup:
-    VBOX_RELEASE(machine);
-    vboxIIDUnalloc(&iid);
-    return ret;
-}
-
 static virDomainState vboxConvertState(enum MachineState state)
 {
     switch (state) {

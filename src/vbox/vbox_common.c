@@ -2615,3 +2615,57 @@ char *vboxDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
     ignore_value(VIR_STRDUP(osType, "hvm"));
     return osType;
 }
+
+int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    IMachine *machine    = NULL;
+    vboxIIDUnion iid;
+    PRUint32 state;
+    PRBool isAccessible  = PR_FALSE;
+    nsresult rc;
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    if (!machine)
+        goto cleanup;
+
+    gVBoxAPI.UIMachine.GetAccessible(machine, &isAccessible);
+    if (!isAccessible)
+        goto cleanup;
+
+    gVBoxAPI.UIMachine.GetState(machine, &state);
+
+    if (!gVBoxAPI.machineStateChecker.PoweredOff(state)) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("memory size can't be changed unless domain is powered down"));
+        goto cleanup;
+    }
+
+    rc = gVBoxAPI.UISession.Open(data, &iid, machine);
+    if (NS_FAILED(rc))
+        goto cleanup;
+
+    rc = gVBoxAPI.UISession.GetMachine(data->vboxSession, &machine);
+    if (NS_SUCCEEDED(rc) && machine) {
+
+        rc = gVBoxAPI.UIMachine.SetMemorySize(machine,
+                                              VIR_DIV_UP(memory, 1024));
+        if (NS_SUCCEEDED(rc)) {
+            gVBoxAPI.UIMachine.SaveSettings(machine);
+            ret = 0;
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("could not set the memory size of the "
+                             "domain to: %lu Kb, rc=%08x"),
+                           memory, (unsigned)rc);
+        }
+    }
+    gVBoxAPI.UISession.Close(data->vboxSession);
+
+ cleanup:
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    return ret;
+}
