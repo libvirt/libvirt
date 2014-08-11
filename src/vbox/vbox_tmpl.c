@@ -3081,238 +3081,6 @@ static int vboxConnectNumOfDefinedDomains(virConnectPtr conn)
     return ret;
 }
 
-
-static int
-vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine,
-                 vboxIID *iid ATTRIBUTE_UNUSED /* >= 4.0 */)
-{
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    int vrdpPresent              = 0;
-    int sdlPresent               = 0;
-    int guiPresent               = 0;
-    char *guiDisplay             = NULL;
-    char *sdlDisplay             = NULL;
-    PRUnichar *keyTypeUtf16      = NULL;
-    PRUnichar *valueTypeUtf16    = NULL;
-    char      *valueTypeUtf8     = NULL;
-    PRUnichar *keyDislpayUtf16   = NULL;
-    PRUnichar *valueDisplayUtf16 = NULL;
-    char      *valueDisplayUtf8  = NULL;
-    IProgress *progress          = NULL;
-    PRUnichar *env               = NULL;
-    PRUnichar *sessionType       = NULL;
-    nsresult rc;
-
-    VBOX_UTF8_TO_UTF16("FRONTEND/Type", &keyTypeUtf16);
-    machine->vtbl->GetExtraData(machine, keyTypeUtf16, &valueTypeUtf16);
-    VBOX_UTF16_FREE(keyTypeUtf16);
-
-    if (valueTypeUtf16) {
-        VBOX_UTF16_TO_UTF8(valueTypeUtf16, &valueTypeUtf8);
-        VBOX_UTF16_FREE(valueTypeUtf16);
-
-        if (STREQ(valueTypeUtf8, "sdl") || STREQ(valueTypeUtf8, "gui")) {
-
-            VBOX_UTF8_TO_UTF16("FRONTEND/Display", &keyDislpayUtf16);
-            machine->vtbl->GetExtraData(machine, keyDislpayUtf16,
-                                        &valueDisplayUtf16);
-            VBOX_UTF16_FREE(keyDislpayUtf16);
-
-            if (valueDisplayUtf16) {
-                VBOX_UTF16_TO_UTF8(valueDisplayUtf16, &valueDisplayUtf8);
-                VBOX_UTF16_FREE(valueDisplayUtf16);
-
-                if (strlen(valueDisplayUtf8) <= 0)
-                    VBOX_UTF8_FREE(valueDisplayUtf8);
-            }
-
-            if (STREQ(valueTypeUtf8, "sdl")) {
-                sdlPresent = 1;
-                if (VIR_STRDUP(sdlDisplay, valueDisplayUtf8) < 0) {
-                    /* just don't go to cleanup yet as it is ok to have
-                     * sdlDisplay as NULL and we check it below if it
-                     * exist and then only use it there
-                     */
-                }
-            }
-
-            if (STREQ(valueTypeUtf8, "gui")) {
-                guiPresent = 1;
-                if (VIR_STRDUP(guiDisplay, valueDisplayUtf8) < 0) {
-                    /* just don't go to cleanup yet as it is ok to have
-                     * guiDisplay as NULL and we check it below if it
-                     * exist and then only use it there
-                     */
-                }
-            }
-        }
-
-        if (STREQ(valueTypeUtf8, "vrdp")) {
-            vrdpPresent = 1;
-        }
-
-        if (!vrdpPresent && !sdlPresent && !guiPresent) {
-            /* if nothing is selected it means either the machine xml
-             * file is really old or some values are missing so fallback
-             */
-            guiPresent = 1;
-        }
-
-        VBOX_UTF8_FREE(valueTypeUtf8);
-
-    } else {
-        guiPresent = 1;
-    }
-    VBOX_UTF8_FREE(valueDisplayUtf8);
-
-    if (guiPresent) {
-        if (guiDisplay) {
-            char *displayutf8;
-            if (virAsprintf(&displayutf8, "DISPLAY=%s", guiDisplay) >= 0) {
-                VBOX_UTF8_TO_UTF16(displayutf8, &env);
-                VIR_FREE(displayutf8);
-            }
-            VIR_FREE(guiDisplay);
-        }
-
-        VBOX_UTF8_TO_UTF16("gui", &sessionType);
-    }
-
-    if (sdlPresent) {
-        if (sdlDisplay) {
-            char *displayutf8;
-            if (virAsprintf(&displayutf8, "DISPLAY=%s", sdlDisplay) >= 0) {
-                VBOX_UTF8_TO_UTF16(displayutf8, &env);
-                VIR_FREE(displayutf8);
-            }
-            VIR_FREE(sdlDisplay);
-        }
-
-        VBOX_UTF8_TO_UTF16("sdl", &sessionType);
-    }
-
-    if (vrdpPresent) {
-        VBOX_UTF8_TO_UTF16("vrdp", &sessionType);
-    }
-
-#if VBOX_API_VERSION < 4000000
-    rc = data->vboxObj->vtbl->OpenRemoteSession(data->vboxObj,
-                                                data->vboxSession,
-                                                iid->value,
-                                                sessionType,
-                                                env,
-                                                &progress);
-#else /* VBOX_API_VERSION >= 4000000 */
-    rc = machine->vtbl->LaunchVMProcess(machine, data->vboxSession,
-                                        sessionType, env, &progress);
-#endif /* VBOX_API_VERSION >= 4000000 */
-
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("OpenRemoteSession/LaunchVMProcess failed, domain can't be started"));
-        ret = -1;
-    } else {
-        PRBool completed = 0;
-#if VBOX_API_VERSION == 2002000
-        nsresult resultCode;
-#else
-        PRInt32  resultCode;
-#endif
-        progress->vtbl->WaitForCompletion(progress, -1);
-        rc = progress->vtbl->GetCompleted(progress, &completed);
-        if (NS_FAILED(rc)) {
-            /* error */
-            ret = -1;
-        }
-        progress->vtbl->GetResultCode(progress, &resultCode);
-        if (NS_FAILED(resultCode)) {
-            /* error */
-            ret = -1;
-        } else {
-            /* all ok set the domid */
-            dom->id = maxDomID + 1;
-            ret = 0;
-        }
-    }
-
-    VBOX_RELEASE(progress);
-
-    VBOX_SESSION_CLOSE();
-
-    VBOX_UTF16_FREE(env);
-    VBOX_UTF16_FREE(sessionType);
-
-    return ret;
-}
-
-static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
-{
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    vboxArray machines = VBOX_ARRAY_INITIALIZER;
-    unsigned char uuid[VIR_UUID_BUFLEN] = {0};
-    nsresult rc;
-    size_t i = 0;
-
-    virCheckFlags(0, -1);
-
-    if (!dom->name) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Error while reading the domain name"));
-        goto cleanup;
-    }
-
-    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get list of machines, rc=%08x"), (unsigned)rc);
-        goto cleanup;
-    }
-
-    for (i = 0; i < machines.count; ++i) {
-        IMachine *machine = machines.items[i];
-        PRBool isAccessible = PR_FALSE;
-
-        if (!machine)
-            continue;
-
-        machine->vtbl->GetAccessible(machine, &isAccessible);
-        if (isAccessible) {
-            vboxIID iid = VBOX_IID_INITIALIZER;
-
-            rc = machine->vtbl->GetId(machine, &iid.value);
-            if (NS_FAILED(rc))
-                continue;
-            vboxIIDToUUID(&iid, uuid);
-
-            if (memcmp(dom->uuid, uuid, VIR_UUID_BUFLEN) == 0) {
-                PRUint32 state = MachineState_Null;
-                machine->vtbl->GetState(machine, &state);
-
-                if ((state == MachineState_PoweredOff) ||
-                    (state == MachineState_Saved) ||
-                    (state == MachineState_Aborted)) {
-                    ret = vboxStartMachine(dom, i, machine, &iid);
-                } else {
-                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                                   _("machine is not in "
-                                     "poweroff|saved|aborted state, so "
-                                     "couldn't start it"));
-                    ret = -1;
-                }
-            }
-            vboxIIDUnalloc(&iid);
-            if (ret != -1)
-                break;
-        }
-    }
-
-    /* Do the cleanup and take care you dont leak any memory */
-    vboxArrayRelease(&machines);
-
- cleanup:
-    return ret;
-}
-
 static int vboxDomainCreate(virDomainPtr dom)
 {
     return vboxDomainCreateWithFlags(dom, 0);
@@ -10258,6 +10026,25 @@ _machineCreateSharedFolder(IMachine *machine, PRUnichar *name,
 #endif /* VBOX_API_VERSION >= 4000000 */
 }
 
+static nsresult
+_machineLaunchVMProcess(vboxGlobalData *data,
+                        IMachine *machine ATTRIBUTE_UNUSED,
+                        vboxIIDUnion *iidu ATTRIBUTE_UNUSED,
+                        PRUnichar *sessionType, PRUnichar *env,
+                        IProgress **progress)
+{
+#if VBOX_API_VERSION < 4000000
+    return data->vboxObj->vtbl->OpenRemoteSession(data->vboxObj,
+                                                  data->vboxSession,
+                                                  IID_MEMBER(value),
+                                                  sessionType,
+                                                  env,
+                                                  progress);
+#else /* VBOX_API_VERSION >= 4000000 */
+    return machine->vtbl->LaunchVMProcess(machine, data->vboxSession,
+                                          sessionType, env, progress);
+#endif /* VBOX_API_VERSION >= 4000000 */
+}
 
 static nsresult
 _machineGetAccessible(IMachine *machine, PRBool *isAccessible)
@@ -10405,6 +10192,12 @@ _machineSetAccelerate2DVideoEnabled(IMachine *machine ATTRIBUTE_UNUSED,
 }
 
 static nsresult
+_machineGetExtraData(IMachine *machine, PRUnichar *key, PRUnichar **value)
+{
+    return machine->vtbl->GetExtraData(machine, key, value);
+}
+
+static nsresult
 _machineSetExtraData(IMachine *machine, PRUnichar *key, PRUnichar *value)
 {
     return machine->vtbl->SetExtraData(machine, key, value);
@@ -10490,6 +10283,12 @@ _progressGetResultCode(IProgress *progress, resultCodeUnion *resultCode)
 #else /* VBOX_API_VERSION != 2002000 */
     return progress->vtbl->GetResultCode(progress, &resultCode->resultCode);
 #endif /* VBOX_API_VERSION != 2002000 */
+}
+
+static nsresult
+_progressGetCompleted(IProgress *progress, PRBool *completed)
+{
+    return progress->vtbl->GetCompleted(progress, completed);
 }
 
 static nsresult
@@ -10891,6 +10690,13 @@ static bool _machineStateOnline(PRUint32 state)
             (state <= MachineState_LastOnline));
 }
 
+static bool _machineStateNotStart(PRUint32 state)
+{
+    return ((state == MachineState_PoweredOff) ||
+            (state == MachineState_Saved) ||
+            (state == MachineState_Aborted));
+}
+
 static vboxUniformedPFN _UPFN = {
     .Initialize = _pfnInitialize,
     .Uninitialize = _pfnUninitialize,
@@ -10935,6 +10741,7 @@ static vboxUniformedIMachine _UIMachine = {
     .AddStorageController = _machineAddStorageController,
     .AttachDevice = _machineAttachDevice,
     .CreateSharedFolder = _machineCreateSharedFolder,
+    .LaunchVMProcess = _machineLaunchVMProcess,
     .GetAccessible = _machineGetAccessible,
     .GetState = _machineGetState,
     .GetName = _machineGetName,
@@ -10955,6 +10762,7 @@ static vboxUniformedIMachine _UIMachine = {
     .SetMonitorCount = _machineSetMonitorCount,
     .SetAccelerate3DEnabled = _machineSetAccelerate3DEnabled,
     .SetAccelerate2DVideoEnabled = _machineSetAccelerate2DVideoEnabled,
+    .GetExtraData = _machineGetExtraData,
     .SetExtraData = _machineSetExtraData,
     .SaveSettings = _machineSaveSettings,
 };
@@ -10974,6 +10782,7 @@ static vboxUniformedIConsole _UIConsole = {
 static vboxUniformedIProgress _UIProgress = {
     .WaitForCompletion = _progressWaitForCompletion,
     .GetResultCode = _progressGetResultCode,
+    .GetCompleted = _progressGetCompleted,
 };
 
 static vboxUniformedISystemProperties _UISystemProperties = {
@@ -11052,6 +10861,7 @@ static vboxUniformedIMedium _UIMedium = {
 
 static uniformedMachineStateChecker _machineStateChecker = {
     .Online = _machineStateOnline,
+    .NotStart = _machineStateNotStart,
 };
 
 void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)

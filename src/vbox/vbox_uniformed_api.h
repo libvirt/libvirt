@@ -196,6 +196,10 @@ typedef struct {
     nsresult (*CreateSharedFolder)(IMachine *machine, PRUnichar *name,
                                    PRUnichar *hostPath, PRBool writable,
                                    PRBool automount);
+    nsresult (*LaunchVMProcess)(vboxGlobalData *data, IMachine *machine,
+                                vboxIIDUnion *iidu,
+                                PRUnichar *sessionType, PRUnichar *env,
+                                IProgress **progress);
     nsresult (*GetAccessible)(IMachine *machine, PRBool *isAccessible);
     nsresult (*GetState)(IMachine *machine, PRUint32 *state);
     nsresult (*GetName)(IMachine *machine, PRUnichar **name);
@@ -216,6 +220,7 @@ typedef struct {
     nsresult (*SetMonitorCount)(IMachine *machine, PRUint32 monitorCount);
     nsresult (*SetAccelerate3DEnabled)(IMachine *machine, PRBool accelerate3DEnabled);
     nsresult (*SetAccelerate2DVideoEnabled)(IMachine *machine, PRBool accelerate2DVideoEnabled);
+    nsresult (*GetExtraData)(IMachine *machine, PRUnichar *key, PRUnichar **value);
     nsresult (*SetExtraData)(IMachine *machine, PRUnichar *key, PRUnichar *value);
     nsresult (*SaveSettings)(IMachine *machine);
 } vboxUniformedIMachine;
@@ -238,6 +243,7 @@ typedef struct {
 typedef struct {
     nsresult (*WaitForCompletion)(IProgress *progress, PRInt32 timeout);
     nsresult (*GetResultCode)(IProgress *progress, resultCodeUnion *resultCode);
+    nsresult (*GetCompleted)(IProgress *progress, PRBool *completed);
 } vboxUniformedIProgress;
 
 /* Functions for ISystemProperties */
@@ -332,6 +338,7 @@ typedef struct {
 
 typedef struct {
     bool (*Online)(PRUint32 state);
+    bool (*NotStart)(PRUint32 state);
 } uniformedMachineStateChecker;
 
 typedef struct {
@@ -398,6 +405,7 @@ virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
                                     const unsigned char *uuid);
 virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml);
 int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags);
+int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

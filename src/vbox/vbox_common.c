@@ -1936,3 +1936,222 @@ int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
 
     return ret;
 }
+
+static int
+vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine, vboxIIDUnion *iid)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    int vrdpPresent              = 0;
+    int sdlPresent               = 0;
+    int guiPresent               = 0;
+    char *guiDisplay             = NULL;
+    char *sdlDisplay             = NULL;
+    PRUnichar *keyTypeUtf16      = NULL;
+    PRUnichar *valueTypeUtf16    = NULL;
+    char      *valueTypeUtf8     = NULL;
+    PRUnichar *keyDislpayUtf16   = NULL;
+    PRUnichar *valueDisplayUtf16 = NULL;
+    char      *valueDisplayUtf8  = NULL;
+    IProgress *progress          = NULL;
+    PRUnichar *env               = NULL;
+    PRUnichar *sessionType       = NULL;
+    nsresult rc;
+
+    VBOX_UTF8_TO_UTF16("FRONTEND/Type", &keyTypeUtf16);
+    gVBoxAPI.UIMachine.GetExtraData(machine, keyTypeUtf16, &valueTypeUtf16);
+    VBOX_UTF16_FREE(keyTypeUtf16);
+
+    if (valueTypeUtf16) {
+        VBOX_UTF16_TO_UTF8(valueTypeUtf16, &valueTypeUtf8);
+        VBOX_UTF16_FREE(valueTypeUtf16);
+
+        if (STREQ(valueTypeUtf8, "sdl") || STREQ(valueTypeUtf8, "gui")) {
+
+            VBOX_UTF8_TO_UTF16("FRONTEND/Display", &keyDislpayUtf16);
+            gVBoxAPI.UIMachine.GetExtraData(machine, keyDislpayUtf16,
+                                            &valueDisplayUtf16);
+            VBOX_UTF16_FREE(keyDislpayUtf16);
+
+            if (valueDisplayUtf16) {
+                VBOX_UTF16_TO_UTF8(valueDisplayUtf16, &valueDisplayUtf8);
+                VBOX_UTF16_FREE(valueDisplayUtf16);
+
+                if (strlen(valueDisplayUtf8) <= 0)
+                    VBOX_UTF8_FREE(valueDisplayUtf8);
+            }
+
+            if (STREQ(valueTypeUtf8, "sdl")) {
+                sdlPresent = 1;
+                if (VIR_STRDUP(sdlDisplay, valueDisplayUtf8) < 0) {
+                    /* just don't go to cleanup yet as it is ok to have
+                     * sdlDisplay as NULL and we check it below if it
+                     * exist and then only use it there
+                     */
+                }
+            }
+
+            if (STREQ(valueTypeUtf8, "gui")) {
+                guiPresent = 1;
+                if (VIR_STRDUP(guiDisplay, valueDisplayUtf8) < 0) {
+                    /* just don't go to cleanup yet as it is ok to have
+                     * guiDisplay as NULL and we check it below if it
+                     * exist and then only use it there
+                     */
+                }
+            }
+        }
+
+        if (STREQ(valueTypeUtf8, "vrdp")) {
+            vrdpPresent = 1;
+        }
+
+        if (!vrdpPresent && !sdlPresent && !guiPresent) {
+            /* if nothing is selected it means either the machine xml
+             * file is really old or some values are missing so fallback
+             */
+            guiPresent = 1;
+        }
+
+        VBOX_UTF8_FREE(valueTypeUtf8);
+
+    } else {
+        guiPresent = 1;
+    }
+    VBOX_UTF8_FREE(valueDisplayUtf8);
+
+    if (guiPresent) {
+        if (guiDisplay) {
+            char *displayutf8;
+            if (virAsprintf(&displayutf8, "DISPLAY=%s", guiDisplay) >= 0) {
+                VBOX_UTF8_TO_UTF16(displayutf8, &env);
+                VIR_FREE(displayutf8);
+            }
+            VIR_FREE(guiDisplay);
+        }
+
+        VBOX_UTF8_TO_UTF16("gui", &sessionType);
+    }
+
+    if (sdlPresent) {
+        if (sdlDisplay) {
+            char *displayutf8;
+            if (virAsprintf(&displayutf8, "DISPLAY=%s", sdlDisplay) >= 0) {
+                VBOX_UTF8_TO_UTF16(displayutf8, &env);
+                VIR_FREE(displayutf8);
+            }
+            VIR_FREE(sdlDisplay);
+        }
+
+        VBOX_UTF8_TO_UTF16("sdl", &sessionType);
+    }
+
+    if (vrdpPresent) {
+        VBOX_UTF8_TO_UTF16("vrdp", &sessionType);
+    }
+
+    rc = gVBoxAPI.UIMachine.LaunchVMProcess(data, machine, iid,
+                                            sessionType, env,
+                                            &progress);
+
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("OpenRemoteSession/LaunchVMProcess failed, domain can't be started"));
+        ret = -1;
+    } else {
+        PRBool completed = 0;
+        resultCodeUnion resultCode;
+
+        gVBoxAPI.UIProgress.WaitForCompletion(progress, -1);
+        rc = gVBoxAPI.UIProgress.GetCompleted(progress, &completed);
+        if (NS_FAILED(rc)) {
+            /* error */
+            ret = -1;
+        }
+        gVBoxAPI.UIProgress.GetResultCode(progress, &resultCode);
+        if (RC_FAILED(resultCode)) {
+            /* error */
+            ret = -1;
+        } else {
+            /* all ok set the domid */
+            dom->id = maxDomID + 1;
+            ret = 0;
+        }
+    }
+
+    VBOX_RELEASE(progress);
+
+    gVBoxAPI.UISession.Close(data->vboxSession);
+
+    VBOX_UTF16_FREE(env);
+    VBOX_UTF16_FREE(sessionType);
+
+    return ret;
+}
+
+int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
+    unsigned char uuid[VIR_UUID_BUFLEN] = {0};
+    nsresult rc;
+    size_t i = 0;
+
+    virCheckFlags(0, -1);
+
+    if (!dom->name) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Error while reading the domain name"));
+        goto cleanup;
+    }
+
+    rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        goto cleanup;
+    }
+
+    for (i = 0; i < machines.count; ++i) {
+        IMachine *machine = machines.items[i];
+        PRBool isAccessible = PR_FALSE;
+
+        if (!machine)
+            continue;
+
+        gVBoxAPI.UIMachine.GetAccessible(machine, &isAccessible);
+        if (isAccessible) {
+            vboxIIDUnion iid;
+
+            VBOX_IID_INITIALIZE(&iid);
+
+            rc = gVBoxAPI.UIMachine.GetId(machine, &iid);
+            if (NS_FAILED(rc))
+                continue;
+            vboxIIDToUUID(&iid, uuid);
+
+            if (memcmp(dom->uuid, uuid, VIR_UUID_BUFLEN) == 0) {
+                PRUint32 state;
+                gVBoxAPI.UIMachine.GetState(machine, &state);
+
+                if (gVBoxAPI.machineStateChecker.NotStart(state)) {
+                    ret = vboxStartMachine(dom, i, machine, &iid);
+                } else {
+                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                                   _("machine is not in "
+                                     "poweroff|saved|aborted state, so "
+                                     "couldn't start it"));
+                    ret = -1;
+                }
+            }
+            vboxIIDUnalloc(&iid);
+            if (ret != -1)
+                break;
+        }
+    }
+
+    /* Do the cleanup and take care you dont leak any memory */
+    gVBoxAPI.UArray.vboxArrayRelease(&machines);
+
+ cleanup:
+    return ret;
+}
