@@ -378,6 +378,9 @@ virBitmapParse(const char *str,
         }
     }
 
+    if (virBitmapIsAllClear(*bitmap))
+        goto error;
+
     return virBitmapCountBits(*bitmap);
 
  error:

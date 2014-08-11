@@ -1210,6 +1210,7 @@ mymain(void)
     DO_TEST("cputune-zero-shares", QEMU_CAPS_NAME);
 
     DO_TEST("numatune-memory", NONE);
+    DO_TEST_PARSE_ERROR("numatune-memory-invalid-nodeset", NONE);
     DO_TEST("numatune-memnode", QEMU_CAPS_NUMA, QEMU_CAPS_OBJECT_MEMORY_RAM);
     DO_TEST_FAILURE("numatune-memnode", NONE);
 
