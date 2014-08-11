@@ -77,6 +77,8 @@ VIR_LOG_INIT("vbox.vbox_common");
 #define VBOX_UTF16_TO_UTF8(arg1, arg2)  gVBoxAPI.UPFN.Utf16ToUtf8(data->pFuncs, arg1, arg2)
 #define VBOX_UTF8_TO_UTF16(arg1, arg2)  gVBoxAPI.UPFN.Utf8ToUtf16(data->pFuncs, arg1, arg2)
 
+#define VBOX_ADDREF(arg)                gVBoxAPI.nsUISupports.AddRef((void *)(arg))
+
 #define VBOX_RELEASE(arg)                                                     \
     do {                                                                      \
         if (arg) {                                                            \
@@ -5355,5 +5357,715 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&domiid);
     virDomainSnapshotDefFree(def);
+    return ret;
+}
+
+static int
+vboxDomainSnapshotGetAll(virDomainPtr dom,
+                         IMachine *machine,
+                         ISnapshot ***snapshots)
+{
+    vboxIIDUnion empty;
+    ISnapshot **list = NULL;
+    PRUint32 count;
+    nsresult rc;
+    unsigned int next;
+    unsigned int top;
+
+    VBOX_IID_INITIALIZE(&empty);
+    rc = gVBoxAPI.UIMachine.GetSnapshotCount(machine, &count);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get snapshot count for domain %s"),
+                       dom->name);
+        goto error;
+    }
+
+    if (count == 0)
+        goto out;
+
+    if (VIR_ALLOC_N(list, count) < 0)
+        goto error;
+
+    rc = gVBoxAPI.UIMachine.FindSnapshot(machine, &empty, list);
+    if (NS_FAILED(rc) || !list[0]) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get root snapshot for domain %s"),
+                       dom->name);
+        goto error;
+    }
+
+    /* BFS walk through snapshot tree */
+    top = 1;
+    for (next = 0; next < count; next++) {
+        vboxArray children = VBOX_ARRAY_INITIALIZER;
+        size_t i;
+
+        if (!list[next]) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected number of snapshots < %u"), count);
+            goto error;
+        }
+
+        rc = gVBoxAPI.UArray.vboxArrayGet(&children, list[next],
+                                          gVBoxAPI.UArray.handleSnapshotGetChildren(list[next]));
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("could not get children snapshots"));
+            goto error;
+        }
+        for (i = 0; i < children.count; i++) {
+            ISnapshot *child = children.items[i];
+            if (!child)
+                continue;
+            if (top == count) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected number of snapshots > %u"), count);
+                gVBoxAPI.UArray.vboxArrayRelease(&children);
+                goto error;
+            }
+            VBOX_ADDREF(child);
+            list[top++] = child;
+        }
+        gVBoxAPI.UArray.vboxArrayRelease(&children);
+    }
+
+ out:
+    *snapshots = list;
+    return count;
+
+ error:
+    if (list) {
+        for (next = 0; next < count; next++)
+            VBOX_RELEASE(list[next]);
+    }
+    VIR_FREE(list);
+
+    return -1;
+}
+
+static ISnapshot *
+vboxDomainSnapshotGet(vboxGlobalData *data,
+                      virDomainPtr dom,
+                      IMachine *machine,
+                      const char *name)
+{
+    ISnapshot **snapshots = NULL;
+    ISnapshot *snapshot = NULL;
+    nsresult rc;
+    int count = 0;
+    size_t i;
+
+    if ((count = vboxDomainSnapshotGetAll(dom, machine, &snapshots)) < 0)
+        goto cleanup;
+
+    for (i = 0; i < count; i++) {
+        PRUnichar *nameUtf16;
+        char *nameUtf8;
+
+        rc = gVBoxAPI.UISnapshot.GetName(snapshots[i], &nameUtf16);
+        if (NS_FAILED(rc) || !nameUtf16) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("could not get snapshot name"));
+            goto cleanup;
+        }
+        VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
+        VBOX_UTF16_FREE(nameUtf16);
+        if (STREQ(name, nameUtf8))
+            snapshot = snapshots[i];
+        VBOX_UTF8_FREE(nameUtf8);
+
+        if (snapshot)
+            break;
+    }
+
+    if (!snapshot) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("domain %s has no snapshots with name %s"),
+                       dom->name, name);
+        goto cleanup;
+    }
+
+ cleanup:
+    if (count > 0) {
+        for (i = 0; i < count; i++) {
+            if (snapshots[i] != snapshot)
+                VBOX_RELEASE(snapshots[i]);
+        }
+    }
+    VIR_FREE(snapshots);
+    return snapshot;
+}
+
+static
+int vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
+                                    virDomainSnapshotPtr snapshot)
+{
+    virDomainPtr dom = snapshot->domain;
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIIDUnion domiid;
+    IMachine *machine = NULL;
+    ISnapshot *snap = NULL;
+    IMachine *snapMachine = NULL;
+    vboxArray mediumAttachments = VBOX_ARRAY_INITIALIZER;
+    PRUint32 maxPortPerInst[StorageBus_Floppy + 1] = {};
+    PRUint32 maxSlotPerPort[StorageBus_Floppy + 1] = {};
+    int diskCount = 0;
+    nsresult rc;
+    vboxIIDUnion snapIid;
+    char *snapshotUuidStr = NULL;
+    size_t i = 0;
+
+    if (!gVBoxAPI.vboxSnapshotRedefine)
+        VIR_WARN("This function may not work in current version");
+
+    VBOX_IID_INITIALIZE(&snapIid);
+    if (openSessionForMachine(data, dom->uuid, &domiid, &machine, false) < 0)
+        goto cleanup;
+
+    if (!(snap = vboxDomainSnapshotGet(data, dom, machine, snapshot->name)))
+        goto cleanup;
+
+    rc = gVBoxAPI.UISnapshot.GetId(snap, &snapIid);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not get snapshot id"));
+        goto cleanup;
+    }
+
+    gVBoxAPI.UIID.vboxIIDToUtf8(data, &snapIid, &snapshotUuidStr);
+    vboxIIDUnalloc(&snapIid);
+    rc = gVBoxAPI.UISnapshot.GetMachine(snap, &snapMachine);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get machine"));
+        goto cleanup;
+    }
+    def->ndisks = 0;
+    rc = gVBoxAPI.UArray.vboxArrayGet(&mediumAttachments, snapMachine,
+                                      gVBoxAPI.UArray.handleMachineGetMediumAttachments(snapMachine));
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no medium attachments"));
+        goto cleanup;
+    }
+    /* get the number of attachments */
+    for (i = 0; i < mediumAttachments.count; i++) {
+        IMediumAttachment *imediumattach = mediumAttachments.items[i];
+        if (imediumattach) {
+            IMedium *medium = NULL;
+
+            rc = gVBoxAPI.UIMediumAttachment.GetMedium(imediumattach, &medium);
+            if (NS_FAILED(rc)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("cannot get medium"));
+                goto cleanup;
+            }
+            if (medium) {
+                def->ndisks++;
+                VBOX_RELEASE(medium);
+            }
+        }
+    }
+    /* Allocate mem, if fails return error */
+    if (VIR_ALLOC_N(def->disks, def->ndisks) < 0)
+        goto cleanup;
+    for (i = 0; i < def->ndisks; i++) {
+        if (VIR_ALLOC(def->disks[i].src) < 0)
+            goto cleanup;
+    }
+
+    if (!vboxGetMaxPortSlotValues(data->vboxObj, maxPortPerInst, maxSlotPerPort))
+        goto cleanup;
+
+    /* get the attachment details here */
+    for (i = 0; i < mediumAttachments.count && diskCount < def->ndisks; i++) {
+        IStorageController *storageController = NULL;
+        PRUnichar *storageControllerName = NULL;
+        PRUint32   deviceType     = DeviceType_Null;
+        PRUint32   storageBus     = StorageBus_Null;
+        IMedium   *disk         = NULL;
+        PRUnichar *childLocUtf16 = NULL;
+        char      *childLocUtf8  = NULL;
+        PRUint32   deviceInst     = 0;
+        PRInt32    devicePort     = 0;
+        PRInt32    deviceSlot     = 0;
+        vboxArray children = VBOX_ARRAY_INITIALIZER;
+        vboxArray snapshotIids = VBOX_ARRAY_INITIALIZER;
+        IMediumAttachment *imediumattach = mediumAttachments.items[i];
+        void *handle;
+        size_t j = 0;
+        size_t k = 0;
+        if (!imediumattach)
+            continue;
+        rc = gVBoxAPI.UIMediumAttachment.GetMedium(imediumattach, &disk);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get medium"));
+            goto cleanup;
+        }
+        if (!disk)
+            continue;
+        rc = gVBoxAPI.UIMediumAttachment.GetController(imediumattach, &storageControllerName);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get controller"));
+            goto cleanup;
+        }
+        if (!storageControllerName) {
+            VBOX_RELEASE(disk);
+            continue;
+        }
+        handle = gVBoxAPI.UArray.handleMediumGetChildren(disk);
+        rc = gVBoxAPI.UArray.vboxArrayGet(&children, disk, handle);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get children disk"));
+            goto cleanup;
+        }
+        handle = gVBoxAPI.UArray.handleMediumGetSnapshotIds(disk);
+        rc = gVBoxAPI.UArray.vboxArrayGetWithIIDArg(&snapshotIids, disk,
+                                                    handle, &domiid);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get snapshot ids"));
+            goto cleanup;
+        }
+        for (j = 0; j < children.count; ++j) {
+            IMedium *child = children.items[j];
+            for (k = 0; k < snapshotIids.count; ++k) {
+                PRUnichar *diskSnapId = snapshotIids.items[k];
+                char *diskSnapIdStr = NULL;
+                VBOX_UTF16_TO_UTF8(diskSnapId, &diskSnapIdStr);
+                if (STREQ(diskSnapIdStr, snapshotUuidStr)) {
+                    rc = gVBoxAPI.UIMachine.GetStorageControllerByName(machine,
+                                                                       storageControllerName,
+                                                                       &storageController);
+                    VBOX_UTF16_FREE(storageControllerName);
+                    if (!storageController) {
+                        VBOX_RELEASE(child);
+                        break;
+                    }
+                    rc = gVBoxAPI.UIMedium.GetLocation(child, &childLocUtf16);
+                    if (NS_FAILED(rc)) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                       _("cannot get disk location"));
+                        goto cleanup;
+                    }
+                    VBOX_UTF16_TO_UTF8(childLocUtf16, &childLocUtf8);
+                    VBOX_UTF16_FREE(childLocUtf16);
+                    if (VIR_STRDUP(def->disks[diskCount].src->path, childLocUtf8) < 0) {
+                        VBOX_RELEASE(child);
+                        VBOX_RELEASE(storageController);
+                        goto cleanup;
+                    }
+                    VBOX_UTF8_FREE(childLocUtf8);
+
+                    rc = gVBoxAPI.UIStorageController.GetBus(storageController, &storageBus);
+                    if (NS_FAILED(rc)) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                       _("cannot get storage controller bus"));
+                        goto cleanup;
+                    }
+                    rc = gVBoxAPI.UIMediumAttachment.GetType(imediumattach, &deviceType);
+                    if (NS_FAILED(rc)) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                       _("cannot get medium attachment type"));
+                        goto cleanup;
+                    }
+                    rc = gVBoxAPI.UIMediumAttachment.GetPort(imediumattach, &devicePort);
+                    if (NS_FAILED(rc)) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                       _("cannot get medium attachment type"));
+                        goto cleanup;
+                    }
+                    rc = gVBoxAPI.UIMediumAttachment.GetDevice(imediumattach, &deviceSlot);
+                    if (NS_FAILED(rc)) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                       _("cannot get medium attachment device"));
+                        goto cleanup;
+                    }
+                    def->disks[diskCount].src->type = VIR_STORAGE_TYPE_FILE;
+                    def->disks[diskCount].name = vboxGenerateMediumName(storageBus,
+                                                                        deviceInst,
+                                                                        devicePort,
+                                                                        deviceSlot,
+                                                                        maxPortPerInst,
+                                                                        maxSlotPerPort);
+                }
+                VBOX_UTF8_FREE(diskSnapIdStr);
+            }
+        }
+        VBOX_RELEASE(storageController);
+        VBOX_RELEASE(disk);
+        diskCount++;
+    }
+    gVBoxAPI.UArray.vboxArrayRelease(&mediumAttachments);
+
+    ret = 0;
+ cleanup:
+    if (ret < 0) {
+        for (i = 0; i < def->ndisks; i++) {
+            VIR_FREE(def->disks[i].src);
+        }
+        VIR_FREE(def->disks);
+        def->ndisks = 0;
+    }
+    VBOX_RELEASE(snap);
+    return ret;
+}
+
+static
+int vboxSnapshotGetReadOnlyDisks(virDomainSnapshotPtr snapshot,
+                                    virDomainSnapshotDefPtr def)
+{
+    virDomainPtr dom = snapshot->domain;
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIIDUnion domiid;
+    ISnapshot *snap = NULL;
+    IMachine *machine = NULL;
+    IMachine *snapMachine = NULL;
+    IStorageController *storageController = NULL;
+    IMedium *disk = NULL;
+    nsresult rc;
+    vboxArray mediumAttachments = VBOX_ARRAY_INITIALIZER;
+    size_t i = 0;
+    PRUint32 maxPortPerInst[StorageBus_Floppy + 1] = {};
+    PRUint32 maxSlotPerPort[StorageBus_Floppy + 1] = {};
+    int diskCount = 0;
+
+    if (!gVBoxAPI.vboxSnapshotRedefine)
+        VIR_WARN("This function may not work in current version");
+
+    if (openSessionForMachine(data, dom->uuid, &domiid, &machine, false) < 0)
+        goto cleanup;
+
+    if (!(snap = vboxDomainSnapshotGet(data, dom, machine, snapshot->name)))
+        goto cleanup;
+
+    rc = gVBoxAPI.UISnapshot.GetMachine(snap, &snapMachine);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot get machine"));
+        goto cleanup;
+    }
+    /*
+     * Get READ ONLY disks
+     * In the snapshot metadata, these are the disks written inside the <domain> node
+    */
+    rc = gVBoxAPI.UArray.vboxArrayGet(&mediumAttachments, snapMachine,
+                                      gVBoxAPI.UArray.handleMachineGetMediumAttachments(snapMachine));
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot get medium attachments"));
+        goto cleanup;
+    }
+    /* get the number of attachments */
+    for (i = 0; i < mediumAttachments.count; i++) {
+        IMediumAttachment *imediumattach = mediumAttachments.items[i];
+        if (imediumattach) {
+            IMedium *medium = NULL;
+
+            rc = gVBoxAPI.UIMediumAttachment.GetMedium(imediumattach, &medium);
+            if (NS_FAILED(rc)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("cannot get medium"));
+                goto cleanup;
+            }
+            if (medium) {
+                def->dom->ndisks++;
+                VBOX_RELEASE(medium);
+            }
+        }
+    }
+
+    /* Allocate mem, if fails return error */
+    if (VIR_ALLOC_N(def->dom->disks, def->dom->ndisks) >= 0) {
+        for (i = 0; i < def->dom->ndisks; i++) {
+            virDomainDiskDefPtr diskDef = virDomainDiskDefNew();
+            if (!diskDef)
+                goto cleanup;
+            def->dom->disks[i] = diskDef;
+        }
+    } else {
+        goto cleanup;
+    }
+
+    if (!vboxGetMaxPortSlotValues(data->vboxObj, maxPortPerInst, maxSlotPerPort))
+        goto cleanup;
+
+    /* get the attachment details here */
+    for (i = 0; i < mediumAttachments.count && diskCount < def->dom->ndisks; i++) {
+        PRUnichar *storageControllerName = NULL;
+        PRUint32   deviceType     = DeviceType_Null;
+        PRUint32   storageBus     = StorageBus_Null;
+        PRBool     readOnly       = PR_FALSE;
+        PRUnichar *mediumLocUtf16 = NULL;
+        char      *mediumLocUtf8  = NULL;
+        PRUint32   deviceInst     = 0;
+        PRInt32    devicePort     = 0;
+        PRInt32    deviceSlot     = 0;
+        IMediumAttachment *imediumattach = mediumAttachments.items[i];
+        if (!imediumattach)
+            continue;
+        rc = gVBoxAPI.UIMediumAttachment.GetMedium(imediumattach, &disk);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get medium"));
+            goto cleanup;
+        }
+        if (!disk)
+            continue;
+        rc = gVBoxAPI.UIMediumAttachment.GetController(imediumattach, &storageControllerName);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get storage controller name"));
+            goto cleanup;
+        }
+        if (!storageControllerName)
+            continue;
+        rc = gVBoxAPI.UIMachine.GetStorageControllerByName(machine,
+                                                           storageControllerName,
+                                                           &storageController);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get storage controller"));
+            goto cleanup;
+        }
+        VBOX_UTF16_FREE(storageControllerName);
+        if (!storageController)
+            continue;
+        rc = gVBoxAPI.UIMedium.GetLocation(disk, &mediumLocUtf16);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get disk location"));
+            goto cleanup;
+        }
+        VBOX_UTF16_TO_UTF8(mediumLocUtf16, &mediumLocUtf8);
+        VBOX_UTF16_FREE(mediumLocUtf16);
+        if (VIR_STRDUP(def->dom->disks[diskCount]->src->path, mediumLocUtf8) < 0)
+            goto cleanup;
+
+        VBOX_UTF8_FREE(mediumLocUtf8);
+
+        rc = gVBoxAPI.UIStorageController.GetBus(storageController, &storageBus);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get storage controller bus"));
+            goto cleanup;
+        }
+        if (storageBus == StorageBus_IDE) {
+            def->dom->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_IDE;
+        } else if (storageBus == StorageBus_SATA) {
+            def->dom->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_SATA;
+        } else if (storageBus == StorageBus_SCSI) {
+            def->dom->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_SCSI;
+        } else if (storageBus == StorageBus_Floppy) {
+            def->dom->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_FDC;
+        }
+
+        rc = gVBoxAPI.UIMediumAttachment.GetType(imediumattach, &deviceType);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get medium attachment type"));
+            goto cleanup;
+        }
+        if (deviceType == DeviceType_HardDisk)
+            def->dom->disks[diskCount]->device = VIR_DOMAIN_DISK_DEVICE_DISK;
+        else if (deviceType == DeviceType_Floppy)
+            def->dom->disks[diskCount]->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
+        else if (deviceType == DeviceType_DVD)
+            def->dom->disks[diskCount]->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
+
+        rc = gVBoxAPI.UIMediumAttachment.GetPort(imediumattach, &devicePort);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get medium attachment port"));
+            goto cleanup;
+        }
+        rc = gVBoxAPI.UIMediumAttachment.GetDevice(imediumattach, &deviceSlot);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get device"));
+            goto cleanup;
+        }
+        rc = gVBoxAPI.UIMedium.GetReadOnly(disk, &readOnly);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot get read only attribute"));
+            goto cleanup;
+        }
+        if (readOnly == PR_TRUE)
+            def->dom->disks[diskCount]->src->readonly = true;
+        def->dom->disks[diskCount]->src->type = VIR_STORAGE_TYPE_FILE;
+        def->dom->disks[diskCount]->dst = vboxGenerateMediumName(storageBus,
+                                                                 deviceInst,
+                                                                 devicePort,
+                                                                 deviceSlot,
+                                                                 maxPortPerInst,
+                                                                 maxSlotPerPort);
+        if (!def->dom->disks[diskCount]->dst) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not generate medium name for the disk "
+                             "at: controller instance:%u, port:%d, slot:%d"),
+                           deviceInst, devicePort, deviceSlot);
+            ret = -1;
+            goto cleanup;
+        }
+        diskCount ++;
+    }
+    /* cleanup on error */
+
+    ret = 0;
+ cleanup:
+    if (ret < 0) {
+        for (i = 0; i < def->dom->ndisks; i++)
+            virDomainDiskDefFree(def->dom->disks[i]);
+        VIR_FREE(def->dom->disks);
+        def->dom->ndisks = 0;
+    }
+    VBOX_RELEASE(disk);
+    VBOX_RELEASE(storageController);
+    gVBoxAPI.UArray.vboxArrayRelease(&mediumAttachments);
+    VBOX_RELEASE(snap);
+    return ret;
+}
+
+char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
+                                   unsigned int flags)
+{
+    virDomainPtr dom = snapshot->domain;
+    VBOX_OBJECT_CHECK(dom->conn, char *, NULL);
+    vboxIIDUnion domiid;
+    IMachine *machine = NULL;
+    ISnapshot *snap = NULL;
+    ISnapshot *parent = NULL;
+    nsresult rc;
+    virDomainSnapshotDefPtr def = NULL;
+    PRUnichar *str16;
+    char *str8;
+    PRInt64 timestamp;
+    PRBool online = PR_FALSE;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    virCheckFlags(0, NULL);
+
+    if (openSessionForMachine(data, dom->uuid, &domiid, &machine, false) < 0)
+        goto cleanup;
+
+    if (!(snap = vboxDomainSnapshotGet(data, dom, machine, snapshot->name)))
+        goto cleanup;
+
+    if (VIR_ALLOC(def) < 0 || VIR_ALLOC(def->dom) < 0)
+        goto cleanup;
+    if (VIR_STRDUP(def->name, snapshot->name) < 0)
+        goto cleanup;
+
+    if (gVBoxAPI.vboxSnapshotRedefine) {
+        /* Register def->dom properties for them to be saved inside the snapshot XMl
+         * Otherwise, there is a problem while parsing the xml
+         */
+        PRUint32 memorySize = 0;
+        PRUint32 CPUCount = 0;
+
+        def->dom->virtType = VIR_DOMAIN_VIRT_VBOX;
+        def->dom->id = dom->id;
+        memcpy(def->dom->uuid, dom->uuid, VIR_UUID_BUFLEN);
+        if (VIR_STRDUP(def->dom->name, dom->name) < 0)
+            goto cleanup;
+        gVBoxAPI.UIMachine.GetMemorySize(machine, &memorySize);
+        def->dom->mem.cur_balloon = memorySize * 1024;
+        /* Currently setting memory and maxMemory as same, cause
+         * the notation here seems to be inconsistent while
+         * reading and while dumping xml
+         */
+        def->dom->mem.max_balloon = memorySize * 1024;
+        if (VIR_STRDUP(def->dom->os.type, "hvm") < 0)
+            goto cleanup;
+        def->dom->os.arch = virArchFromHost();
+        gVBoxAPI.UIMachine.GetCPUCount(machine, &CPUCount);
+        def->dom->maxvcpus = def->dom->vcpus = CPUCount;
+        if (vboxSnapshotGetReadWriteDisks(def, snapshot) < 0) {
+            VIR_DEBUG("Could not get read write disks for snapshot");
+        }
+
+        if (vboxSnapshotGetReadOnlyDisks(snapshot, def) < 0) {
+            VIR_DEBUG("Could not get Readonly disks for snapshot");
+        }
+    }
+
+    rc = gVBoxAPI.UISnapshot.GetDescription(snap, &str16);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get description of snapshot %s"),
+                       snapshot->name);
+        goto cleanup;
+    }
+    if (str16) {
+        VBOX_UTF16_TO_UTF8(str16, &str8);
+        VBOX_UTF16_FREE(str16);
+        if (VIR_STRDUP(def->description, str8) < 0) {
+            VBOX_UTF8_FREE(str8);
+            goto cleanup;
+        }
+        VBOX_UTF8_FREE(str8);
+    }
+
+    rc = gVBoxAPI.UISnapshot.GetTimeStamp(snap, &timestamp);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get creation time of snapshot %s"),
+                       snapshot->name);
+        goto cleanup;
+    }
+    /* timestamp is in milliseconds while creationTime in seconds */
+    def->creationTime = timestamp / 1000;
+
+    rc = gVBoxAPI.UISnapshot.GetParent(snap, &parent);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get parent of snapshot %s"),
+                       snapshot->name);
+        goto cleanup;
+    }
+    if (parent) {
+        rc = gVBoxAPI.UISnapshot.GetName(parent, &str16);
+        if (NS_FAILED(rc) || !str16) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("could not get name of parent of snapshot %s"),
+                           snapshot->name);
+            goto cleanup;
+        }
+        VBOX_UTF16_TO_UTF8(str16, &str8);
+        VBOX_UTF16_FREE(str16);
+        if (VIR_STRDUP(def->parent, str8) < 0) {
+            VBOX_UTF8_FREE(str8);
+            goto cleanup;
+        }
+        VBOX_UTF8_FREE(str8);
+    }
+
+    rc = gVBoxAPI.UISnapshot.GetOnline(snap, &online);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get online state of snapshot %s"),
+                       snapshot->name);
+        goto cleanup;
+    }
+    if (online)
+        def->state = VIR_DOMAIN_RUNNING;
+    else
+        def->state = VIR_DOMAIN_SHUTOFF;
+
+    virUUIDFormat(dom->uuid, uuidstr);
+    memcpy(def->dom->uuid, dom->uuid, VIR_UUID_BUFLEN);
+    ret = virDomainSnapshotDefFormat(uuidstr, def, flags, 0);
+
+ cleanup:
+    virDomainSnapshotDefFree(def);
+    VBOX_RELEASE(parent);
+    VBOX_RELEASE(snap);
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&domiid);
     return ret;
 }

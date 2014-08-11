@@ -166,17 +166,22 @@ typedef struct {
 /* Functions for vboxArray */
 typedef struct {
     nsresult (*vboxArrayGet)(vboxArray *array, void *self, void *getter);
+    nsresult (*vboxArrayGetWithIIDArg)(vboxArray *array, void *self, void *getter, vboxIIDUnion *iidu);
     void (*vboxArrayRelease)(vboxArray *array);
     /* Generate function pointers for vboxArrayGet */
     void* (*handleGetMachines)(IVirtualBox *vboxObj);
     void* (*handleUSBGetDeviceFilters)(IUSBCommon *USBCommon);
     void* (*handleMachineGetMediumAttachments)(IMachine *machine);
     void* (*handleMachineGetSharedFolders)(IMachine *machine);
+    void* (*handleSnapshotGetChildren)(ISnapshot *snapshot);
+    void* (*handleMediumGetChildren)(IMedium *medium);
+    void* (*handleMediumGetSnapshotIds)(IMedium *medium);
 } vboxUniformedArray;
 
 /* Functions for nsISupports */
 typedef struct {
     nsresult (*Release)(nsISupports *nsi);
+    nsresult (*AddRef)(nsISupports *nsi);
 } vboxUniformednsISupports;
 
 /* Functions for IVirtualBox */
@@ -211,6 +216,7 @@ typedef struct {
                                 IProgress **progress);
     nsresult (*Unregister)(IMachine *machine, PRUint32 cleanupMode,
                            PRUint32 *aMediaSize, IMedium ***aMedia);
+    nsresult (*FindSnapshot)(IMachine *machine, vboxIIDUnion *iidu, ISnapshot **snapshot);
     nsresult (*GetAccessible)(IMachine *machine, PRBool *isAccessible);
     nsresult (*GetState)(IMachine *machine, PRUint32 *state);
     nsresult (*GetName)(IMachine *machine, PRUnichar **name);
@@ -243,6 +249,7 @@ typedef struct {
     nsresult (*SetAccelerate2DVideoEnabled)(IMachine *machine, PRBool accelerate2DVideoEnabled);
     nsresult (*GetExtraData)(IMachine *machine, PRUnichar *key, PRUnichar **value);
     nsresult (*SetExtraData)(IMachine *machine, PRUnichar *key, PRUnichar *value);
+    nsresult (*GetSnapshotCount)(IMachine *machine, PRUint32 *snapshotCount);
     nsresult (*SaveSettings)(IMachine *machine);
 } vboxUniformedIMachine;
 
@@ -427,6 +434,17 @@ typedef struct {
     nsresult (*GetWritable)(ISharedFolder *sharedFolder, PRBool *writable);
 } vboxUniformedISharedFolder;
 
+/* Functions for ISnapshot */
+typedef struct {
+    nsresult (*GetName)(ISnapshot *snapshot, PRUnichar **name);
+    nsresult (*GetId)(ISnapshot *snapshot, vboxIIDUnion *iidu);
+    nsresult (*GetMachine)(ISnapshot *snapshot, IMachine **machine);
+    nsresult (*GetDescription)(ISnapshot *snapshot, PRUnichar **description);
+    nsresult (*GetTimeStamp)(ISnapshot *snapshot, PRInt64 *timeStamp);
+    nsresult (*GetParent)(ISnapshot *snapshot, ISnapshot **parent);
+    nsresult (*GetOnline)(ISnapshot *snapshot, PRBool *online);
+} vboxUniformedISnapshot;
+
 typedef struct {
     bool (*Online)(PRUint32 state);
     bool (*Inactive)(PRUint32 state);
@@ -477,6 +495,7 @@ typedef struct {
     vboxUniformedIMediumAttachment UIMediumAttachment;
     vboxUniformedIStorageController UIStorageController;
     vboxUniformedISharedFolder UISharedFolder;
+    vboxUniformedISnapshot UISnapshot;
     uniformedMachineStateChecker machineStateChecker;
     /* vbox API features */
     bool domainEventCallbacks;
@@ -556,7 +575,8 @@ virDomainSnapshotPtr
 vboxDomainSnapshotCreateXML(virDomainPtr dom,
                             const char *xmlDesc,
                             unsigned int flags);
-
+char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
+                                   unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
