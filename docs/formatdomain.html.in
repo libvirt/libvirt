@@ -1616,12 +1616,12 @@
       &lt;source dev='/dev/sda'/&gt;
       &lt;geometry cyls='16383' heads='16' secs='63' trans='lba'/&gt;
       &lt;blockio logical_block_size='512' physical_block_size='4096'/&gt;
-      &lt;target dev='sdb' bus='ide'/&gt;
+      &lt;target dev='hdj' bus='ide'/&gt;
     &lt;/disk&gt;
     &lt;disk type='volume' device='disk'&gt;
       &lt;driver name='qemu' type='raw'/&gt;
       &lt;source pool='blk-pool0' volume='blk-pool0-vol0'/&gt;
-      &lt;target dev='sdc' bus='ide'/&gt;
+      &lt;target dev='hdk' bus='ide'/&gt;
     &lt;/disk&gt;
     &lt;disk type='network' device='disk'&gt;
       &lt;driver name='qemu' type='raw'/&gt;
@@ -1641,7 +1641,7 @@
       &lt;auth username='myuser'&gt;
         &lt;secret type='iscsi' usage='libvirtiscsi'/&gt;
       &lt;/auth&gt;
-      &lt;target dev='vdb' bus='scsi'/&gt;
+      &lt;target dev='sdb' bus='scsi'/&gt;
     &lt;/disk&gt;
     &lt;disk type='volume' device='disk'&gt;
       &lt;driver name='qemu' type='raw'/&gt;
@@ -1649,7 +1649,7 @@
       &lt;auth username='myuser'&gt;
         &lt;secret type='iscsi' usage='libvirtiscsi'/&gt;
       &lt;/auth&gt;
-      &lt;target dev='vdc' bus='virtio'/&gt;
+      &lt;target dev='vdb' bus='virtio'/&gt;
     &lt;/disk&gt;
     &lt;disk type='volume' device='disk'&gt;
       &lt;driver name='qemu' type='raw'/&gt;
@@ -1657,7 +1657,7 @@
       &lt;auth username='myuser'&gt;
         &lt;secret type='iscsi' usage='libvirtiscsi'/&gt;
       &lt;/auth&gt;
-      &lt;target dev='vdd' bus='virtio'/&gt;
+      &lt;target dev='vdc' bus='virtio'/&gt;
     &lt;/disk&gt;
     &lt;disk type='file' device='disk'&gt;
       &lt;driver name='qemu' type='qcow2'/&gt;
@@ -1671,7 +1671,7 @@
           &lt;backingStore/&gt;
         &lt;/backingStore&gt;
       &lt;/backingStore&gt;
-      &lt;target dev='vde' bus='virtio'/&gt;
+      &lt;target dev='vdd' bus='virtio'/&gt;
     &lt;/disk&gt;
   &lt;/devices&gt;
   ...</pre>
