@@ -2362,3 +2362,50 @@ int vboxDomainIsUpdated(virDomainPtr dom)
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+int vboxDomainSuspend(virDomainPtr dom)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    IMachine *machine    = NULL;
+    vboxIIDUnion iid;
+    IConsole *console    = NULL;
+    PRBool isAccessible  = PR_FALSE;
+    PRUint32 state;
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    if (!machine)
+        goto cleanup;
+
+    gVBoxAPI.UIMachine.GetAccessible(machine, &isAccessible);
+    if (!isAccessible)
+        goto cleanup;
+
+    gVBoxAPI.UIMachine.GetState(machine, &state);
+
+    if (gVBoxAPI.machineStateChecker.Running(state)) {
+        /* set state pause */
+        gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+        gVBoxAPI.UISession.GetConsole(data->vboxSession, &console);
+        if (console) {
+            gVBoxAPI.UIConsole.Pause(console);
+            VBOX_RELEASE(console);
+            ret = 0;
+        } else {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("error while suspending the domain"));
+            goto cleanup;
+        }
+        gVBoxAPI.UISession.Close(data->vboxSession);
+    } else {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("machine not in running state to suspend it"));
+        goto cleanup;
+    }
+
+ cleanup:
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    return ret;
+}
