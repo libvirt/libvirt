@@ -4038,3 +4038,120 @@ int vboxConnectNumOfDefinedDomains(virConnectPtr conn)
     gVBoxAPI.UArray.vboxArrayRelease(&machines);
     return ret;
 }
+
+static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
+                                      const char *xml,
+                                      int mediaChangeOnly ATTRIBUTE_UNUSED)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    IMachine *machine    = NULL;
+    vboxIIDUnion iid;
+    PRUint32 state;
+    virDomainDefPtr def  = NULL;
+    virDomainDeviceDefPtr dev  = NULL;
+    nsresult rc;
+
+    VBOX_IID_INITIALIZE(&iid);
+    if (VIR_ALLOC(def) < 0)
+        return ret;
+
+    if (VIR_STRDUP(def->os.type, "hvm") < 0)
+        goto cleanup;
+
+    dev = virDomainDeviceDefParse(xml, def, data->caps, data->xmlopt,
+                                  VIR_DOMAIN_XML_INACTIVE);
+    if (dev == NULL)
+        goto cleanup;
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    if (!machine)
+        goto cleanup;
+
+    gVBoxAPI.UIMachine.GetState(machine, &state);
+
+    if (gVBoxAPI.machineStateChecker.Running(state) ||
+        gVBoxAPI.machineStateChecker.Paused(state)) {
+        rc = gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+    } else {
+        rc = gVBoxAPI.UISession.Open(data, &iid, machine);
+    }
+
+    if (NS_FAILED(rc))
+        goto cleanup;
+
+    rc = gVBoxAPI.UISession.GetMachine(data->vboxSession, &machine);
+
+    if (NS_SUCCEEDED(rc) && machine) {
+        /* ret = -VIR_ERR_ARGUMENT_UNSUPPORTED means the current device don't support hotplug. */
+        ret = -VIR_ERR_ARGUMENT_UNSUPPORTED;
+        if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
+            if (gVBoxAPI.oldMediumInterface) {
+                const char *src = virDomainDiskGetSource(dev->data.disk);
+                int type = virDomainDiskGetType(dev->data.disk);
+
+                if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
+                    if (type == VIR_STORAGE_TYPE_FILE && src) {
+                        ret = gVBoxAPI.attachDVD(data, machine, src);
+                    } else if (type == VIR_STORAGE_TYPE_BLOCK) {
+                    }
+                } else if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
+                    if (type == VIR_STORAGE_TYPE_FILE && src) {
+                        ret = gVBoxAPI.attachFloppy(data, machine, src);
+                    } else if (type == VIR_STORAGE_TYPE_BLOCK) {
+                    }
+                }
+            }
+        } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
+        } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
+            if (dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+                if (dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+                }
+            }
+        } else if (dev->type == VIR_DOMAIN_DEVICE_FS &&
+                   dev->data.fs->type == VIR_DOMAIN_FS_TYPE_MOUNT) {
+            PRUnichar *nameUtf16;
+            PRUnichar *hostPathUtf16;
+            PRBool writable;
+
+            VBOX_UTF8_TO_UTF16(dev->data.fs->dst, &nameUtf16);
+            VBOX_UTF8_TO_UTF16(dev->data.fs->src, &hostPathUtf16);
+            writable = !dev->data.fs->readonly;
+
+            rc = gVBoxAPI.UIMachine.CreateSharedFolder(machine, nameUtf16, hostPathUtf16,
+                                                       writable, PR_FALSE);
+
+            if (NS_FAILED(rc)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("could not attach shared folder '%s', rc=%08x"),
+                               dev->data.fs->dst, (unsigned)rc);
+                ret = -1;
+            } else {
+                ret = 0;
+            }
+
+            VBOX_UTF16_FREE(nameUtf16);
+            VBOX_UTF16_FREE(hostPathUtf16);
+        }
+        gVBoxAPI.UIMachine.SaveSettings(machine);
+        VBOX_RELEASE(machine);
+
+        if (ret == -VIR_ERR_ARGUMENT_UNSUPPORTED) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, _("Unsupported device type %d"), dev->type);
+            ret = -1;
+        }
+    }
+    gVBoxAPI.UISession.Close(data->vboxSession);
+
+ cleanup:
+    vboxIIDUnalloc(&iid);
+    virDomainDefFree(def);
+    virDomainDeviceDefFree(dev);
+    return ret;
+}
+
+int vboxDomainAttachDevice(virDomainPtr dom, const char *xml)
+{
+    return vboxDomainAttachDeviceImpl(dom, xml, 0);
+}

@@ -1650,11 +1650,6 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
     return ret;
 }
 
-static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml)
-{
-    return vboxDomainAttachDeviceImpl(dom, xml, 0);
-}
-
 static int
 vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
                             unsigned int flags)
@@ -7813,6 +7808,63 @@ _dumpDVD(virDomainDefPtr def,
     VBOX_RELEASE(dvdDrive);
 }
 
+static int
+_attachDVD(vboxGlobalData *data, IMachine *machine, const char *src)
+{
+    IDVDDrive *dvdDrive     = NULL;
+    IDVDImage *dvdImage     = NULL;
+    PRUnichar *dvdfileUtf16 = NULL;
+    vboxIID dvduuid = VBOX_IID_INITIALIZER;
+    vboxIID dvdemptyuuid = VBOX_IID_INITIALIZER;
+    nsresult rc;
+    int ret = -1;
+
+    /* Currently CDROM/DVD Drive is always IDE
+     * Secondary Master so neglecting the following
+     * parameter dev->data.disk->bus
+     */
+    machine->vtbl->GetDVDDrive(machine, &dvdDrive);
+    if (!dvdDrive)
+        return ret;
+
+    VBOX_UTF8_TO_UTF16(src, &dvdfileUtf16);
+
+    data->vboxObj->vtbl->FindDVDImage(data->vboxObj, dvdfileUtf16, &dvdImage);
+    if (!dvdImage) {
+        data->vboxObj->vtbl->OpenDVDImage(data->vboxObj, dvdfileUtf16, dvdemptyuuid.value, &dvdImage);
+    }
+
+    if (!dvdImage)
+        goto cleanup;
+
+    rc = dvdImage->vtbl->imedium.GetId((IMedium *)dvdImage, &dvduuid.value);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("can't get the uuid of the file to "
+                         "be attached to cdrom: %s, rc=%08x"),
+                       src, (unsigned)rc);
+    } else {
+        /* unmount the previous mounted image */
+        dvdDrive->vtbl->Unmount(dvdDrive);
+        rc = dvdDrive->vtbl->MountImage(dvdDrive, dvduuid.value);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("could not attach the file to cdrom: %s, rc=%08x"),
+                           src, (unsigned)rc);
+        } else {
+            ret = 0;
+            DEBUGIID("CD/DVD Image UUID:", dvduuid.value);
+        }
+    }
+
+    VBOX_MEDIUM_RELEASE(dvdImage);
+ cleanup:
+    vboxIIDUnalloc(&dvduuid);
+    VBOX_UTF16_FREE(dvdfileUtf16);
+    VBOX_RELEASE(dvdDrive);
+    return ret;
+}
+
 static void
 _dumpFloppy(virDomainDefPtr def,
             vboxGlobalData *data,
@@ -7872,6 +7924,65 @@ _dumpFloppy(virDomainDefPtr def,
     VBOX_RELEASE(floppyDrive);
 }
 
+static int
+_attachFloppy(vboxGlobalData *data, IMachine *machine, const char *src)
+{
+    IFloppyDrive *floppyDrive;
+    IFloppyImage *floppyImage   = NULL;
+    PRUnichar *fdfileUtf16      = NULL;
+    vboxIID fduuid = VBOX_IID_INITIALIZER;
+    vboxIID fdemptyuuid = VBOX_IID_INITIALIZER;
+    nsresult rc;
+    int ret = -1;
+
+    machine->vtbl->GetFloppyDrive(machine, &floppyDrive);
+    if (!floppyDrive)
+        return ret;
+
+    rc = floppyDrive->vtbl->SetEnabled(floppyDrive, 1);
+    if (NS_FAILED(rc))
+        goto cleanup;
+
+    VBOX_UTF8_TO_UTF16(src, &fdfileUtf16);
+    rc = data->vboxObj->vtbl->FindFloppyImage(data->vboxObj,
+                                              fdfileUtf16,
+                                              &floppyImage);
+
+    if (!floppyImage) {
+        data->vboxObj->vtbl->OpenFloppyImage(data->vboxObj,
+                                             fdfileUtf16,
+                                             fdemptyuuid.value,
+                                             &floppyImage);
+    }
+
+    if (floppyImage) {
+        rc = floppyImage->vtbl->imedium.GetId((IMedium *)floppyImage, &fduuid.value);
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("can't get the uuid of the file to be "
+                             "attached to floppy drive: %s, rc=%08x"),
+                           src, (unsigned)rc);
+        } else {
+            rc = floppyDrive->vtbl->MountImage(floppyDrive, fduuid.value);
+            if (NS_FAILED(rc)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("could not attach the file to floppy drive: %s, rc=%08x"),
+                               src, (unsigned)rc);
+            } else {
+                ret = 0;
+                DEBUGIID("attached floppy, UUID:", fduuid.value);
+            }
+        }
+        VBOX_MEDIUM_RELEASE(floppyImage);
+    }
+    vboxIIDUnalloc(&fduuid);
+    VBOX_UTF16_FREE(fdfileUtf16);
+
+ cleanup:
+    VBOX_RELEASE(floppyDrive);
+    return ret;
+}
+
 #else  /* VBOX_API_VERSION >= 3001000 */
 
 static void
@@ -7890,12 +8001,30 @@ _dumpDVD(virDomainDefPtr def ATTRIBUTE_UNUSED,
     vboxUnsupported();
 }
 
+static int
+_attachDVD(vboxGlobalData *data ATTRIBUTE_UNUSED,
+           IMachine *machine ATTRIBUTE_UNUSED,
+           const char *src ATTRIBUTE_UNUSED)
+{
+    vboxUnsupported();
+    return 0;
+}
+
 static void
 _dumpFloppy(virDomainDefPtr def ATTRIBUTE_UNUSED,
             vboxGlobalData *data ATTRIBUTE_UNUSED,
             IMachine *machine ATTRIBUTE_UNUSED)
 {
     vboxUnsupported();
+}
+
+static int
+_attachFloppy(vboxGlobalData *data ATTRIBUTE_UNUSED,
+              IMachine *machine ATTRIBUTE_UNUSED,
+              const char *src ATTRIBUTE_UNUSED)
+{
+    vboxUnsupported();
+    return 0;
 }
 
 #endif  /* VBOX_API_VERSION >= 3001000 */
@@ -9550,7 +9679,9 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->vboxConvertState = _vboxConvertState;
     pVBoxAPI->dumpIDEHDDsOld = _dumpIDEHDDsOld;
     pVBoxAPI->dumpDVD = _dumpDVD;
+    pVBoxAPI->attachDVD = _attachDVD;
     pVBoxAPI->dumpFloppy = _dumpFloppy;
+    pVBoxAPI->attachFloppy = _attachFloppy;
     pVBoxAPI->UPFN = _UPFN;
     pVBoxAPI->UIID = _UIID;
     pVBoxAPI->UArray = _UArray;

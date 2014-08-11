@@ -433,7 +433,9 @@ typedef struct {
     virDomainState (*vboxConvertState)(PRUint32 state);
     void (*dumpIDEHDDsOld)(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine);
     void (*dumpDVD)(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine);
+    int (*attachDVD)(vboxGlobalData *data, IMachine *machine, const char *src);
     void (*dumpFloppy)(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine);
+    int (*attachFloppy)(vboxGlobalData *data, IMachine *machine, const char *src);
     vboxUniformedPFN UPFN;
     vboxUniformedIID UIID;
     vboxUniformedArray UArray;
@@ -522,6 +524,7 @@ char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags);
 int vboxConnectListDefinedDomains(virConnectPtr conn,
                                   char ** const names, int maxnames);
 int vboxConnectNumOfDefinedDomains(virConnectPtr conn);
+int vboxDomainAttachDevice(virDomainPtr dom, const char *xml);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
