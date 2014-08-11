@@ -3733,48 +3733,6 @@ static char *vboxStorageVolGetPath(virStorageVolPtr vol) {
     return ret;
 }
 
-static int
-vboxNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
-                virNodeInfoPtr nodeinfo)
-{
-    return nodeGetInfo(nodeinfo);
-}
-
-
-static int
-vboxNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
-                           unsigned long long *freeMems,
-                           int startCell,
-                           int maxCells)
-{
-    return nodeGetCellsFreeMemory(freeMems, startCell, maxCells);
-}
-
-
-static unsigned long long
-vboxNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    unsigned long long freeMem;
-    if (nodeGetMemory(NULL, &freeMem) < 0)
-        return 0;
-    return freeMem;
-}
-
-
-static int
-vboxNodeGetFreePages(virConnectPtr conn ATTRIBUTE_UNUSED,
-                     unsigned int npages,
-                     unsigned int *pages,
-                     int startCell,
-                     unsigned int cellCount,
-                     unsigned long long *counts,
-                     unsigned int flags)
-{
-    virCheckFlags(0, -1);
-
-    return nodeGetFreePages(npages, pages, startCell, cellCount, counts);
-}
-
 static int _pfnInitialize(vboxGlobalData *data)
 {
     data->pFuncs = g_pfnGetFunctions(VBOX_XPCOMC_VERSION);

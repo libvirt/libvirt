@@ -7408,3 +7408,42 @@ vboxConnectListAllDomains(virConnectPtr conn,
     return ret;
 }
 #undef MATCH
+
+int
+vboxNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
+                virNodeInfoPtr nodeinfo)
+{
+    return nodeGetInfo(nodeinfo);
+}
+
+int
+vboxNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           unsigned long long *freeMems,
+                           int startCell,
+                           int maxCells)
+{
+    return nodeGetCellsFreeMemory(freeMems, startCell, maxCells);
+}
+
+unsigned long long
+vboxNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    unsigned long long freeMem;
+    if (nodeGetMemory(NULL, &freeMem) < 0)
+        return 0;
+    return freeMem;
+}
+
+int
+vboxNodeGetFreePages(virConnectPtr conn ATTRIBUTE_UNUSED,
+                     unsigned int npages,
+                     unsigned int *pages,
+                     int startCell,
+                     unsigned int cellCount,
+                     unsigned long long *counts,
+                     unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
+    return nodeGetFreePages(npages, pages, startCell, cellCount, counts);
+}

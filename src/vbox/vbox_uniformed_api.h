@@ -623,6 +623,19 @@ char *vboxDomainScreenshot(virDomainPtr dom, virStreamPtr st,
                            unsigned int screen, unsigned int flags);
 int vboxConnectListAllDomains(virConnectPtr conn, virDomainPtr **domains,
                               unsigned int flags);
+int vboxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo);
+int vboxNodeGetCellsFreeMemory(virConnectPtr conn,
+                               unsigned long long *freeMems,
+                               int startCell,
+                               int maxCells);
+unsigned long long vboxNodeGetFreeMemory(virConnectPtr);
+int vboxNodeGetFreePages(virConnectPtr conn,
+                         unsigned int npages,
+                         unsigned int *pages,
+                         int startCell,
+                         unsigned int cellCount,
+                         unsigned long long *counts,
+                         unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
