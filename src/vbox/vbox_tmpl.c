@@ -933,59 +933,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-static int vboxDomainResume(virDomainPtr dom)
-{
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
-    IMachine *machine    = NULL;
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    IConsole *console    = NULL;
-    PRUint32 state       = MachineState_Null;
-    nsresult rc;
-
-    PRBool isAccessible = PR_FALSE;
-
-    vboxIIDFromUUID(&iid, dom->uuid);
-    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching id %d"), dom->id);
-        goto cleanup;
-    }
-
-    if (!machine)
-        goto cleanup;
-
-    machine->vtbl->GetAccessible(machine, &isAccessible);
-    if (isAccessible) {
-        machine->vtbl->GetState(machine, &state);
-
-        if (state == MachineState_Paused) {
-            /* resume the machine here */
-            VBOX_SESSION_OPEN_EXISTING(iid.value, machine);
-            data->vboxSession->vtbl->GetConsole(data->vboxSession, &console);
-            if (console) {
-                console->vtbl->Resume(console);
-                VBOX_RELEASE(console);
-                ret = 0;
-            } else {
-                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                               _("error while resuming the domain"));
-                goto cleanup;
-            }
-            VBOX_SESSION_CLOSE();
-        } else {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("machine not paused, so can't resume it"));
-            goto cleanup;
-        }
-    }
-
- cleanup:
-    VBOX_RELEASE(machine);
-    vboxIIDUnalloc(&iid);
-    return ret;
-}
-
 static int vboxDomainShutdownFlags(virDomainPtr dom,
                                    unsigned int flags)
 {
@@ -10000,6 +9947,12 @@ _consolePause(IConsole *console)
 }
 
 static nsresult
+_consoleResume(IConsole *console)
+{
+    return console->vtbl->Resume(console);
+}
+
+static nsresult
 _progressWaitForCompletion(IProgress *progress, PRInt32 timeout)
 {
     return progress->vtbl->WaitForCompletion(progress, timeout);
@@ -10432,6 +10385,11 @@ static bool _machineStateRunning(PRUint32 state)
     return state == MachineState_Running;
 }
 
+static bool _machineStatePaused(PRUint32 state)
+{
+    return state == MachineState_Paused;
+}
+
 static vboxUniformedPFN _UPFN = {
     .Initialize = _pfnInitialize,
     .Uninitialize = _pfnUninitialize,
@@ -10513,6 +10471,7 @@ static vboxUniformedISession _UISession = {
 static vboxUniformedIConsole _UIConsole = {
     .SaveState = _consoleSaveState,
     .Pause = _consolePause,
+    .Resume = _consoleResume,
 };
 
 static vboxUniformedIProgress _UIProgress = {
@@ -10599,6 +10558,7 @@ static uniformedMachineStateChecker _machineStateChecker = {
     .Online = _machineStateOnline,
     .NotStart = _machineStateNotStart,
     .Running = _machineStateRunning,
+    .Paused = _machineStatePaused,
 };
 
 void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)

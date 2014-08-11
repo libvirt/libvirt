@@ -2409,3 +2409,50 @@ int vboxDomainSuspend(virDomainPtr dom)
     vboxIIDUnalloc(&iid);
     return ret;
 }
+
+int vboxDomainResume(virDomainPtr dom)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    IMachine *machine    = NULL;
+    vboxIIDUnion iid;
+    IConsole *console    = NULL;
+    PRUint32 state;
+    PRBool isAccessible = PR_FALSE;
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    if (!machine)
+        goto cleanup;
+
+    gVBoxAPI.UIMachine.GetAccessible(machine, &isAccessible);
+    if (!isAccessible)
+        goto cleanup;
+
+    gVBoxAPI.UIMachine.GetState(machine, &state);
+
+    if (gVBoxAPI.machineStateChecker.Paused(state)) {
+        /* resume the machine here */
+        gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+        gVBoxAPI.UISession.GetConsole(data->vboxSession, &console);
+        if (console) {
+            gVBoxAPI.UIConsole.Resume(console);
+            VBOX_RELEASE(console);
+            ret = 0;
+        } else {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("error while resuming the domain"));
+            goto cleanup;
+        }
+        gVBoxAPI.UISession.Close(data->vboxSession);
+    } else {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("machine not paused, so can't resume it"));
+        goto cleanup;
+    }
+
+ cleanup:
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    return ret;
+}

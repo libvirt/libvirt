@@ -238,6 +238,7 @@ typedef struct {
 typedef struct {
     nsresult (*SaveState)(IConsole *console, IProgress **progress);
     nsresult (*Pause)(IConsole *console);
+    nsresult (*Resume)(IConsole *console);
 } vboxUniformedIConsole;
 
 /* Functions for IProgress */
@@ -341,6 +342,7 @@ typedef struct {
     bool (*Online)(PRUint32 state);
     bool (*NotStart)(PRUint32 state);
     bool (*Running)(PRUint32 state);
+    bool (*Paused)(PRUint32 state);
 } uniformedMachineStateChecker;
 
 typedef struct {
@@ -417,6 +419,7 @@ int vboxDomainIsActive(virDomainPtr dom);
 int vboxDomainIsPersistent(virDomainPtr dom);
 int vboxDomainIsUpdated(virDomainPtr dom);
 int vboxDomainSuspend(virDomainPtr dom);
+int vboxDomainResume(virDomainPtr dom);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
