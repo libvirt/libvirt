@@ -1811,6 +1811,92 @@ xenFormatXMEventActions(virConfPtr conf, virDomainDefPtr def)
 }
 
 
+static int
+xenFormatXMCharDev(virConfPtr conf, virDomainDefPtr def)
+{
+    size_t i;
+
+    if (STREQ(def->os.type, "hvm")) {
+        if (def->nparallels) {
+            virBuffer buf = VIR_BUFFER_INITIALIZER;
+            char *str;
+            int ret;
+
+            ret = xenFormatSxprChr(def->parallels[0], &buf);
+            str = virBufferContentAndReset(&buf);
+            if (ret == 0)
+                ret = xenXMConfigSetString(conf, "parallel", str);
+            VIR_FREE(str);
+            if (ret < 0)
+                return -1;
+        } else {
+            if (xenXMConfigSetString(conf, "parallel", "none") < 0)
+                return -1;
+        }
+
+        if (def->nserials) {
+            if ((def->nserials == 1) && (def->serials[0]->target.port == 0)) {
+                virBuffer buf = VIR_BUFFER_INITIALIZER;
+                char *str;
+                int ret;
+
+                ret = xenFormatSxprChr(def->serials[0], &buf);
+                str = virBufferContentAndReset(&buf);
+                if (ret == 0)
+                    ret = xenXMConfigSetString(conf, "serial", str);
+                VIR_FREE(str);
+                if (ret < 0)
+                    return -1;
+            } else {
+                size_t j = 0;
+                int maxport = -1, port;
+                virConfValuePtr serialVal = NULL;
+
+                if (VIR_ALLOC(serialVal) < 0)
+                    return -1;
+
+                serialVal->type = VIR_CONF_LIST;
+                serialVal->list = NULL;
+
+                for (i = 0; i < def->nserials; i++)
+                    if (def->serials[i]->target.port > maxport)
+                        maxport = def->serials[i]->target.port;
+
+                for (port = 0; port <= maxport; port++) {
+                    virDomainChrDefPtr chr = NULL;
+
+                    for (j = 0; j < def->nserials; j++) {
+                        if (def->serials[j]->target.port == port) {
+                            chr = def->serials[j];
+                            break;
+                        }
+                    }
+
+                    if (xenFormatXMSerial(serialVal, chr) < 0) {
+                        VIR_FREE(serialVal);
+                        return -1;
+                    }
+                }
+
+                if (serialVal->list != NULL) {
+                    int ret = virConfSetValue(conf, "serial", serialVal);
+
+                    serialVal = NULL;
+                    if (ret < 0)
+                        return -1;
+                }
+                VIR_FREE(serialVal);
+            }
+        } else {
+            if (xenXMConfigSetString(conf, "serial", "none") < 0)
+                return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
    either 32, or 64 on a platform where long is big enough.  */
 verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
@@ -2141,79 +2227,10 @@ xenFormatXM(virConnectPtr conn,
     if (xenFormatXMPCI(conf, def) < 0)
         goto cleanup;
 
+    if (xenFormatXMCharDev(conf, def) < 0)
+        goto cleanup;
+
     if (hvm) {
-        if (def->nparallels) {
-            virBuffer buf = VIR_BUFFER_INITIALIZER;
-            char *str;
-            int ret;
-
-            ret = xenFormatSxprChr(def->parallels[0], &buf);
-            str = virBufferContentAndReset(&buf);
-            if (ret == 0)
-                ret = xenXMConfigSetString(conf, "parallel", str);
-            VIR_FREE(str);
-            if (ret < 0)
-                goto cleanup;
-        } else {
-            if (xenXMConfigSetString(conf, "parallel", "none") < 0)
-                goto cleanup;
-        }
-
-        if (def->nserials) {
-            if ((def->nserials == 1) && (def->serials[0]->target.port == 0)) {
-                virBuffer buf = VIR_BUFFER_INITIALIZER;
-                char *str;
-                int ret;
-
-                ret = xenFormatSxprChr(def->serials[0], &buf);
-                str = virBufferContentAndReset(&buf);
-                if (ret == 0)
-                    ret = xenXMConfigSetString(conf, "serial", str);
-                VIR_FREE(str);
-                if (ret < 0)
-                    goto cleanup;
-            } else {
-                size_t j = 0;
-                int maxport = -1, port;
-                virConfValuePtr serialVal = NULL;
-
-                if (VIR_ALLOC(serialVal) < 0)
-                    goto cleanup;
-                serialVal->type = VIR_CONF_LIST;
-                serialVal->list = NULL;
-
-                for (i = 0; i < def->nserials; i++)
-                    if (def->serials[i]->target.port > maxport)
-                        maxport = def->serials[i]->target.port;
-
-                for (port = 0; port <= maxport; port++) {
-                    virDomainChrDefPtr chr = NULL;
-                    for (j = 0; j < def->nserials; j++) {
-                        if (def->serials[j]->target.port == port) {
-                            chr = def->serials[j];
-                            break;
-                        }
-                    }
-                    if (xenFormatXMSerial(serialVal, chr) < 0) {
-                        virConfFreeValue(serialVal);
-                        goto cleanup;
-                    }
-                }
-
-                if (serialVal->list != NULL) {
-                    int ret = virConfSetValue(conf, "serial", serialVal);
-                    serialVal = NULL;
-                    if (ret < 0)
-                        goto cleanup;
-                }
-                VIR_FREE(serialVal);
-            }
-        } else {
-            if (xenXMConfigSetString(conf, "serial", "none") < 0)
-                goto cleanup;
-        }
-
-
         if (def->sounds) {
             virBuffer buf = VIR_BUFFER_INITIALIZER;
             char *str = NULL;
