@@ -1942,32 +1942,15 @@ xenFormatXMDisks(virConfPtr conf, virDomainDefPtr def, int xendConfigVersion)
 }
 
 
-/* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
-   either 32, or 64 on a platform where long is big enough.  */
-verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
-
-virConfPtr
-xenFormatXM(virConnectPtr conn,
-            virDomainDefPtr def,
-            int xendConfigVersion)
+static int
+xenFormatXMCPUAllocation(virConfPtr conf, virDomainDefPtr def)
 {
-    virConfPtr conf = NULL;
-    int hvm = 0;
-    size_t i;
+    int ret = -1;
     char *cpus = NULL;
-    virConfValuePtr netVal = NULL;
-
-    if (!(conf = virConfNew()))
-        goto cleanup;
-
-    if (xenFormatXMGeneralMeta(conf, def) < 0)
-        goto cleanup;
-
-    if (xenFormatXMMem(conf, def) < 0)
-        goto cleanup;
 
     if (xenXMConfigSetInt(conf, "vcpus", def->maxvcpus) < 0)
         goto cleanup;
+
     /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
        either 32, or 64 on a platform where long is big enough.  */
     if (def->vcpus < def->maxvcpus &&
@@ -1982,7 +1965,87 @@ xenFormatXM(virConnectPtr conn,
     if (cpus &&
         xenXMConfigSetString(conf, "cpus", cpus) < 0)
         goto cleanup;
+
+    ret = 0;
+
+ cleanup:
     VIR_FREE(cpus);
+    return ret;
+}
+
+
+static int
+xenFormatXMCPUFeatures(virConfPtr conf,
+                       virDomainDefPtr def,
+                       int xendConfigVersion)
+{
+    size_t i;
+
+    if (STREQ(def->os.type, "hvm")) {
+        if (xenXMConfigSetInt(conf, "pae",
+                              (def->features[VIR_DOMAIN_FEATURE_PAE] ==
+                               VIR_TRISTATE_SWITCH_ON) ? 1 : 0) < 0)
+            return -1;
+
+        if (xenXMConfigSetInt(conf, "acpi",
+                              (def->features[VIR_DOMAIN_FEATURE_ACPI] ==
+                               VIR_TRISTATE_SWITCH_ON) ? 1 : 0) < 0)
+            return -1;
+
+        if (xenXMConfigSetInt(conf, "apic",
+                              (def->features[VIR_DOMAIN_FEATURE_APIC] ==
+                               VIR_TRISTATE_SWITCH_ON) ? 1 : 0) < 0)
+            return -1;
+
+        if (xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4) {
+            if (xenXMConfigSetInt(conf, "hap",
+                                  (def->features[VIR_DOMAIN_FEATURE_HAP] ==
+                                   VIR_TRISTATE_SWITCH_ON) ? 1 : 0) < 0)
+                return -1;
+
+            if (xenXMConfigSetInt(conf, "viridian",
+                                  (def->features[VIR_DOMAIN_FEATURE_VIRIDIAN] ==
+                                   VIR_TRISTATE_SWITCH_ON) ? 1 : 0) < 0)
+                return -1;
+        }
+
+        for (i = 0; i < def->clock.ntimers; i++) {
+            if (def->clock.timers[i]->name == VIR_DOMAIN_TIMER_NAME_HPET &&
+                def->clock.timers[i]->present != -1 &&
+                xenXMConfigSetInt(conf, "hpet", def->clock.timers[i]->present) < 0)
+                return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+/* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
+   either 32, or 64 on a platform where long is big enough.  */
+verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
+
+virConfPtr
+xenFormatXM(virConnectPtr conn,
+            virDomainDefPtr def,
+            int xendConfigVersion)
+{
+    virConfPtr conf = NULL;
+    int hvm = 0;
+    size_t i;
+    virConfValuePtr netVal = NULL;
+
+    if (!(conf = virConfNew()))
+        goto cleanup;
+
+    if (xenFormatXMGeneralMeta(conf, def) < 0)
+        goto cleanup;
+
+    if (xenFormatXMMem(conf, def) < 0)
+        goto cleanup;
+
+    if (xenFormatXMCPUAllocation(conf, def) < 0)
+        goto cleanup;
 
     hvm = STREQ(def->os.type, "hvm") ? 1 : 0;
 
@@ -2022,39 +2085,8 @@ xenFormatXM(virConnectPtr conn,
         if (xenXMConfigSetString(conf, "boot", boot) < 0)
             goto cleanup;
 
-        if (xenXMConfigSetInt(conf, "pae",
-                              (def->features[VIR_DOMAIN_FEATURE_PAE] ==
-                               VIR_TRISTATE_SWITCH_ON) ? 1 : 0) < 0)
+        if (xenFormatXMCPUFeatures(conf, def, xendConfigVersion) < 0)
             goto cleanup;
-
-        if (xenXMConfigSetInt(conf, "acpi",
-                              (def->features[VIR_DOMAIN_FEATURE_ACPI] ==
-                               VIR_TRISTATE_SWITCH_ON) ? 1 : 0) < 0)
-            goto cleanup;
-
-        if (xenXMConfigSetInt(conf, "apic",
-                              (def->features[VIR_DOMAIN_FEATURE_APIC] ==
-                               VIR_TRISTATE_SWITCH_ON) ? 1 : 0) < 0)
-            goto cleanup;
-
-        if (xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4) {
-            if (xenXMConfigSetInt(conf, "hap",
-                                  (def->features[VIR_DOMAIN_FEATURE_HAP] ==
-                                   VIR_TRISTATE_SWITCH_ON) ? 1 : 0) < 0)
-                goto cleanup;
-
-            if (xenXMConfigSetInt(conf, "viridian",
-                                  (def->features[VIR_DOMAIN_FEATURE_VIRIDIAN] ==
-                                   VIR_TRISTATE_SWITCH_ON) ? 1 : 0) < 0)
-                goto cleanup;
-        }
-
-        for (i = 0; i < def->clock.ntimers; i++) {
-            if (def->clock.timers[i]->name == VIR_DOMAIN_TIMER_NAME_HPET &&
-                def->clock.timers[i]->present != -1 &&
-                xenXMConfigSetInt(conf, "hpet", def->clock.timers[i]->present) < 0)
-                goto cleanup;
-        }
 
         if (xendConfigVersion == XEND_CONFIG_VERSION_3_0_2) {
             for (i = 0; i < def->ndisks; i++) {
@@ -2268,7 +2300,6 @@ xenFormatXM(virConnectPtr conn,
 
  cleanup:
     virConfFreeValue(netVal);
-    VIR_FREE(cpus);
     if (conf)
         virConfFree(conf);
     return NULL;
