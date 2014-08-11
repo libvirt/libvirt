@@ -621,6 +621,8 @@ int vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
                              unsigned int flags);
 char *vboxDomainScreenshot(virDomainPtr dom, virStreamPtr st,
                            unsigned int screen, unsigned int flags);
+int vboxConnectListAllDomains(virConnectPtr conn, virDomainPtr **domains,
+                              unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
