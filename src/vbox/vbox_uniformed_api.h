@@ -525,6 +525,8 @@ int vboxConnectListDefinedDomains(virConnectPtr conn,
                                   char ** const names, int maxnames);
 int vboxConnectNumOfDefinedDomains(virConnectPtr conn);
 int vboxDomainAttachDevice(virDomainPtr dom, const char *xml);
+int vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
+                                unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

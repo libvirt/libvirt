@@ -4155,3 +4155,11 @@ int vboxDomainAttachDevice(virDomainPtr dom, const char *xml)
 {
     return vboxDomainAttachDeviceImpl(dom, xml, 0);
 }
+
+int vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
+                                unsigned int flags)
+{
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE, -1);
+
+    return vboxDomainAttachDeviceImpl(dom, xml, 0);
+}

@@ -1650,21 +1650,6 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
     return ret;
 }
 
-static int
-vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
-                            unsigned int flags)
-{
-    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
-
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("cannot modify the persistent configuration of a domain"));
-        return -1;
-    }
-
-    return vboxDomainAttachDeviceImpl(dom, xml, 0);
-}
-
 static int vboxDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
                                        unsigned int flags)
 {
