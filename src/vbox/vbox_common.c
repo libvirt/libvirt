@@ -19,6 +19,7 @@
 #include <config.h>
 
 #include <unistd.h>
+#include <fcntl.h>
 
 #include "internal.h"
 #include "datatypes.h"
@@ -32,6 +33,8 @@
 #include "virtime.h"
 #include "snapshot_conf.h"
 #include "vbox_snapshot_conf.h"
+#include "fdstream.h"
+#include "configmake.h"
 
 #include "vbox_common.h"
 #include "vbox_uniformed_api.h"
@@ -7119,5 +7122,132 @@ int vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     VBOX_RELEASE(snap);
     vboxIIDUnalloc(&domiid);
     gVBoxAPI.UISession.Close(data->vboxSession);
+    return ret;
+}
+
+char *
+vboxDomainScreenshot(virDomainPtr dom,
+                     virStreamPtr st,
+                     unsigned int screen,
+                     unsigned int flags)
+{
+    VBOX_OBJECT_CHECK(dom->conn, char *, NULL);
+    IConsole *console = NULL;
+    vboxIIDUnion iid;
+    IMachine *machine = NULL;
+    nsresult rc;
+    char *tmp;
+    int tmp_fd = -1;
+    unsigned int max_screen;
+
+    if (!gVBoxAPI.supportScreenshot) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("virDomainScreenshot don't support for current vbox version"));
+        return NULL;
+    }
+
+    virCheckFlags(0, NULL);
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        return NULL;
+
+    rc = gVBoxAPI.UIMachine.GetMonitorCount(machine, &max_screen);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("unable to get monitor count"));
+        VBOX_RELEASE(machine);
+        return NULL;
+    }
+
+    if (screen >= max_screen) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("screen ID higher than monitor "
+                         "count (%d)"), max_screen);
+        VBOX_RELEASE(machine);
+        return NULL;
+    }
+
+    if (virAsprintf(&tmp, "%s/cache/libvirt/vbox.screendump.XXXXXX", LOCALSTATEDIR) < 0) {
+        VBOX_RELEASE(machine);
+        return NULL;
+    }
+
+    if ((tmp_fd = mkostemp(tmp, O_CLOEXEC)) == -1) {
+        virReportSystemError(errno, _("mkostemp(\"%s\") failed"), tmp);
+        VIR_FREE(tmp);
+        VBOX_RELEASE(machine);
+        return NULL;
+    }
+
+
+    rc = gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+    if (NS_SUCCEEDED(rc)) {
+        rc = gVBoxAPI.UISession.GetConsole(data->vboxSession, &console);
+        if (NS_SUCCEEDED(rc) && console) {
+            IDisplay *display = NULL;
+
+            gVBoxAPI.UIConsole.GetDisplay(console, &display);
+
+            if (display) {
+                PRUint32 width, height, bitsPerPixel;
+                PRUint32 screenDataSize;
+                PRUint8 *screenData;
+                PRInt32 xOrigin, yOrigin;
+
+                rc = gVBoxAPI.UIDisplay.GetScreenResolution(display, screen,
+                                                            &width, &height,
+                                                            &bitsPerPixel,
+                                                            &xOrigin, &yOrigin);
+
+                if (NS_FAILED(rc) || !width || !height) {
+                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                                   _("unable to get screen resolution"));
+                    goto endjob;
+                }
+
+                rc = gVBoxAPI.UIDisplay.TakeScreenShotPNGToArray(display, screen,
+                                                                 width, height,
+                                                                 &screenDataSize,
+                                                                 &screenData);
+                if (NS_FAILED(rc)) {
+                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                                   _("failed to take screenshot"));
+                    goto endjob;
+                }
+
+                if (safewrite(tmp_fd, (char *) screenData,
+                              screenDataSize) < 0) {
+                    virReportSystemError(errno, _("unable to write data "
+                                                  "to '%s'"), tmp);
+                    goto endjob;
+                }
+
+                if (VIR_CLOSE(tmp_fd) < 0) {
+                    virReportSystemError(errno, _("unable to close %s"), tmp);
+                    goto endjob;
+                }
+
+                if (VIR_STRDUP(ret, "image/png") < 0)
+                    goto endjob;
+
+                if (virFDStreamOpenFile(st, tmp, 0, 0, O_RDONLY) < 0) {
+                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                                   _("unable to open stream"));
+                    VIR_FREE(ret);
+                }
+ endjob:
+                VIR_FREE(screenData);
+                VBOX_RELEASE(display);
+            }
+            VBOX_RELEASE(console);
+        }
+        gVBoxAPI.UISession.Close(data->vboxSession);
+    }
+
+    VIR_FORCE_CLOSE(tmp_fd);
+    unlink(tmp);
+    VIR_FREE(tmp);
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
     return ret;
 }

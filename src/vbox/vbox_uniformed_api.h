@@ -273,6 +273,7 @@ typedef struct {
     nsresult (*TakeSnapshot)(IConsole *console, PRUnichar *name,
                              PRUnichar *description, IProgress **progress);
     nsresult (*DeleteSnapshot)(IConsole *console, vboxIIDUnion *iidu, IProgress **progress);
+    nsresult (*GetDisplay)(IConsole *console, IDisplay **display);
 } vboxUniformedIConsole;
 
 /* Functions for IProgress */
@@ -446,6 +447,23 @@ typedef struct {
     nsresult (*GetOnline)(ISnapshot *snapshot, PRBool *online);
 } vboxUniformedISnapshot;
 
+/* Functions for IDisplay */
+typedef struct {
+    nsresult (*GetScreenResolution)(IDisplay *display,
+                                    PRUint32 screenId,
+                                    PRUint32 *width,
+                                    PRUint32 *height,
+                                    PRUint32 *bitsPerPixel,
+                                    PRInt32 *xOrigin,
+                                    PRInt32 *yOrigin);
+    nsresult (*TakeScreenShotPNGToArray)(IDisplay *display,
+                                         PRUint32 screenId,
+                                         PRUint32 width,
+                                         PRUint32 height,
+                                         PRUint32 *screenDataSize,
+                                         PRUint8** screenData);
+} vboxUniformedIDisplay;
+
 typedef struct {
     bool (*Online)(PRUint32 state);
     bool (*Inactive)(PRUint32 state);
@@ -498,6 +516,7 @@ typedef struct {
     vboxUniformedIStorageController UIStorageController;
     vboxUniformedISharedFolder UISharedFolder;
     vboxUniformedISnapshot UISnapshot;
+    vboxUniformedIDisplay UIDisplay;
     uniformedMachineStateChecker machineStateChecker;
     /* vbox API features */
     bool domainEventCallbacks;
@@ -509,6 +528,7 @@ typedef struct {
     bool vboxAttachDrivesUseOld;
     bool oldMediumInterface;
     bool vboxSnapshotRedefine;
+    bool supportScreenshot;
 } vboxUniformedAPI;
 
 /* libvirt API
@@ -599,7 +619,8 @@ int vboxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                unsigned int flags);
 int vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
                              unsigned int flags);
-
+char *vboxDomainScreenshot(virDomainPtr dom, virStreamPtr st,
+                           unsigned int screen, unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

@@ -3733,141 +3733,6 @@ static char *vboxStorageVolGetPath(virStorageVolPtr vol) {
     return ret;
 }
 
-#if VBOX_API_VERSION >= 4000000
-static char *
-vboxDomainScreenshot(virDomainPtr dom,
-                     virStreamPtr st,
-                     unsigned int screen,
-                     unsigned int flags)
-{
-    VBOX_OBJECT_CHECK(dom->conn, char *, NULL);
-    IConsole *console = NULL;
-    vboxIID iid = VBOX_IID_INITIALIZER;
-    IMachine *machine = NULL;
-    nsresult rc;
-    char *tmp;
-    int tmp_fd = -1;
-    unsigned int max_screen;
-
-    virCheckFlags(0, NULL);
-
-    vboxIIDFromUUID(&iid, dom->uuid);
-    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching uuid"));
-        return NULL;
-    }
-
-    rc = machine->vtbl->GetMonitorCount(machine, &max_screen);
-    if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("unable to get monitor count"));
-        VBOX_RELEASE(machine);
-        return NULL;
-    }
-
-    if (screen >= max_screen) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("screen ID higher than monitor "
-                         "count (%d)"), max_screen);
-        VBOX_RELEASE(machine);
-        return NULL;
-    }
-
-    if (virAsprintf(&tmp, "%s/cache/libvirt/vbox.screendump.XXXXXX", LOCALSTATEDIR) < 0) {
-        VBOX_RELEASE(machine);
-        return NULL;
-    }
-
-    if ((tmp_fd = mkostemp(tmp, O_CLOEXEC)) == -1) {
-        virReportSystemError(errno, _("mkostemp(\"%s\") failed"), tmp);
-        VIR_FREE(tmp);
-        VBOX_RELEASE(machine);
-        return NULL;
-    }
-
-
-    rc = VBOX_SESSION_OPEN_EXISTING(iid.value, machine);
-    if (NS_SUCCEEDED(rc)) {
-        rc = data->vboxSession->vtbl->GetConsole(data->vboxSession, &console);
-        if (NS_SUCCEEDED(rc) && console) {
-            IDisplay *display = NULL;
-
-            console->vtbl->GetDisplay(console, &display);
-
-            if (display) {
-                PRUint32 width, height, bitsPerPixel;
-                PRUint32 screenDataSize;
-                PRUint8 *screenData;
-# if VBOX_API_VERSION >= 4003000
-                PRInt32 xOrigin, yOrigin;
-# endif
-
-                rc = display->vtbl->GetScreenResolution(display, screen,
-                                                        &width, &height,
-# if VBOX_API_VERSION < 4003000
-                                                        &bitsPerPixel);
-# else
-                                                        &bitsPerPixel,
-                                                        &xOrigin, &yOrigin);
-# endif
-
-                if (NS_FAILED(rc) || !width || !height) {
-                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                                   _("unable to get screen resolution"));
-                    goto endjob;
-                }
-
-                rc = display->vtbl->TakeScreenShotPNGToArray(display, screen,
-                                                             width, height,
-                                                             &screenDataSize,
-                                                             &screenData);
-                if (NS_FAILED(rc)) {
-                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                                   _("failed to take screenshot"));
-                    goto endjob;
-                }
-
-                if (safewrite(tmp_fd, (char *) screenData,
-                              screenDataSize) < 0) {
-                    virReportSystemError(errno, _("unable to write data "
-                                                  "to '%s'"), tmp);
-                    goto endjob;
-                }
-
-                if (VIR_CLOSE(tmp_fd) < 0) {
-                    virReportSystemError(errno, _("unable to close %s"), tmp);
-                    goto endjob;
-                }
-
-                if (VIR_STRDUP(ret, "image/png") < 0)
-                    goto endjob;
-
-                if (virFDStreamOpenFile(st, tmp, 0, 0, O_RDONLY) < 0) {
-                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                                   _("unable to open stream"));
-                    VIR_FREE(ret);
-                }
- endjob:
-                VIR_FREE(screenData);
-                VBOX_RELEASE(display);
-            }
-            VBOX_RELEASE(console);
-        }
-        VBOX_SESSION_CLOSE();
-    }
-
-    VIR_FORCE_CLOSE(tmp_fd);
-    unlink(tmp);
-    VIR_FREE(tmp);
-    VBOX_RELEASE(machine);
-    vboxIIDUnalloc(&iid);
-    return ret;
-}
-#endif /* VBOX_API_VERSION >= 4000000 */
-
-
 #define MATCH(FLAG) (flags & (FLAG))
 static int
 vboxConnectListAllDomains(virConnectPtr conn,
@@ -5475,6 +5340,12 @@ _consoleDeleteSnapshot(IConsole *console, vboxIIDUnion *iidu, IProgress **progre
 }
 
 static nsresult
+_consoleGetDisplay(IConsole *console, IDisplay **display)
+{
+    return console->vtbl->GetDisplay(console, display);
+}
+
+static nsresult
 _progressWaitForCompletion(IProgress *progress, PRInt32 timeout)
 {
     return progress->vtbl->WaitForCompletion(progress, timeout);
@@ -6340,6 +6211,46 @@ _snapshotGetOnline(ISnapshot *snapshot, PRBool *online)
     return snapshot->vtbl->GetOnline(snapshot, online);
 }
 
+static nsresult
+_displayGetScreenResolution(IDisplay *display ATTRIBUTE_UNUSED,
+                            PRUint32 screenId ATTRIBUTE_UNUSED,
+                            PRUint32 *width ATTRIBUTE_UNUSED,
+                            PRUint32 *height ATTRIBUTE_UNUSED,
+                            PRUint32 *bitsPerPixel ATTRIBUTE_UNUSED,
+                            PRInt32 *xOrigin ATTRIBUTE_UNUSED,
+                            PRInt32 *yOrigin ATTRIBUTE_UNUSED)
+{
+#if VBOX_API_VERSION < 3002000
+    vboxUnsupported();
+    return 0;
+#elif VBOX_API_VERSION < 4003000
+    return display->vtbl->GetScreenResolution(display, screenId, width,
+                                              height, bitsPerPixel);
+#else /* VBOX_API_VERSION >= 4003000 */
+    return display->vtbl->GetScreenResolution(display, screenId, width,
+                                              height, bitsPerPixel,
+                                              xOrigin, yOrigin);
+#endif /* VBOX_API_VERSION >= 4003000 */
+}
+
+static nsresult
+_displayTakeScreenShotPNGToArray(IDisplay *display ATTRIBUTE_UNUSED,
+                                 PRUint32 screenId ATTRIBUTE_UNUSED,
+                                 PRUint32 width ATTRIBUTE_UNUSED,
+                                 PRUint32 height ATTRIBUTE_UNUSED,
+                                 PRUint32 *screenDataSize ATTRIBUTE_UNUSED,
+                                 PRUint8** screenData ATTRIBUTE_UNUSED)
+{
+#if VBOX_API_VERSION < 4000000
+    vboxUnsupported();
+    return 0;
+#else /* VBOX_API_VERSION >= 4000000 */
+    return display->vtbl->TakeScreenShotPNGToArray(display, screenId, width,
+                                                   height, screenDataSize,
+                                                   screenData);
+#endif /* VBOX_API_VERSION >= 4000000 */
+}
+
 static bool _machineStateOnline(PRUint32 state)
 {
     return ((state >= MachineState_FirstOnline) &&
@@ -6487,6 +6398,7 @@ static vboxUniformedIConsole _UIConsole = {
     .Reset = _consoleReset,
     .TakeSnapshot = _consoleTakeSnapshot,
     .DeleteSnapshot = _consoleDeleteSnapshot,
+    .GetDisplay = _consoleGetDisplay,
 };
 
 static vboxUniformedIProgress _UIProgress = {
@@ -6635,6 +6547,11 @@ static vboxUniformedISnapshot _UISnapshot = {
     .GetOnline = _snapshotGetOnline,
 };
 
+static vboxUniformedIDisplay _UIDisplay = {
+    .GetScreenResolution = _displayGetScreenResolution,
+    .TakeScreenShotPNGToArray = _displayTakeScreenShotPNGToArray,
+};
+
 static uniformedMachineStateChecker _machineStateChecker = {
     .Online = _machineStateOnline,
     .Inactive = _machineStateInactive,
@@ -6686,6 +6603,7 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->UIStorageController = _UIStorageController;
     pVBoxAPI->UISharedFolder = _UISharedFolder;
     pVBoxAPI->UISnapshot = _UISnapshot;
+    pVBoxAPI->UIDisplay = _UIDisplay;
     pVBoxAPI->machineStateChecker = _machineStateChecker;
 
 #if VBOX_API_VERSION <= 2002000 || VBOX_API_VERSION >= 4000000
@@ -6705,10 +6623,12 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->getMachineForSession = 1;
     pVBoxAPI->detachDevicesExplicitly = 0;
     pVBoxAPI->vboxAttachDrivesUseOld = 0;
+    pVBoxAPI->supportScreenshot = 1;
 #else /* VBOX_API_VERSION < 4000000 */
     pVBoxAPI->getMachineForSession = 0;
     pVBoxAPI->detachDevicesExplicitly = 1;
     pVBoxAPI->vboxAttachDrivesUseOld = 1;
+    pVBoxAPI->supportScreenshot = 0;
 #endif /* VBOX_API_VERSION < 4000000 */
 
 #if VBOX_API_VERSION >= 4001000

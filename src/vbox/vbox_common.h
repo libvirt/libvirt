@@ -301,5 +301,6 @@ typedef nsISupports IMediumAttachment;
 typedef nsISupports IStorageController;
 typedef nsISupports ISharedFolder;
 typedef nsISupports ISnapshot;
+typedef nsISupports IDisplay;
 
 #endif /* VBOX_COMMON_H */
