@@ -233,6 +233,7 @@ int vboxConnectIsSecure(virConnectPtr conn);
 int vboxConnectIsEncrypted(virConnectPtr conn);
 int vboxConnectIsAlive(virConnectPtr conn);
 int vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type);
+char *vboxConnectGetCapabilities(virConnectPtr conn);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

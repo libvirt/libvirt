@@ -256,6 +256,11 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml);
 static int vboxDomainCreate(virDomainPtr dom);
 static int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags);
 
+#if VBOX_API_VERSION > 2002000 && VBOX_API_VERSION < 4000000
+/* Since vboxConnectGetCapabilities has been rewritten,
+ * vboxDriverLock and vboxDriverUnlock only be used in code for
+ * 3.x release. */
+
 static void vboxDriverLock(vboxGlobalData *data)
 {
     virMutexLock(&data->lock);
@@ -265,6 +270,8 @@ static void vboxDriverUnlock(vboxGlobalData *data)
 {
     virMutexUnlock(&data->lock);
 }
+
+#endif
 
 #if VBOX_API_VERSION == 2002000
 
@@ -912,16 +919,6 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     VBOX_UTF8_FREE(utf8);
 
     return result;
-}
-
-static char *vboxConnectGetCapabilities(virConnectPtr conn) {
-    VBOX_OBJECT_CHECK(conn, char *, NULL);
-
-    vboxDriverLock(data);
-    ret = virCapabilitiesFormatXML(data->caps);
-    vboxDriverUnlock(data);
-
-    return ret;
 }
 
 static int vboxConnectListDomains(virConnectPtr conn, int *ids, int nids)

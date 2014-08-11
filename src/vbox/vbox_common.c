@@ -463,3 +463,14 @@ vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
     VBOX_RELEASE(systemProperties);
     return ret;
 }
+
+char *vboxConnectGetCapabilities(virConnectPtr conn)
+{
+    VBOX_OBJECT_CHECK(conn, char *, NULL);
+
+    vboxDriverLock(data);
+    ret = virCapabilitiesFormatXML(data->caps);
+    vboxDriverUnlock(data);
+
+    return ret;
+}
