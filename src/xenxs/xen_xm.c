@@ -1691,6 +1691,91 @@ xenFormatXMMem(virConfPtr conf, virDomainDefPtr def)
 }
 
 
+static int
+xenFormatXMTimeOffset(virConfPtr conf,
+                      virDomainDefPtr def,
+                      int xendConfigVersion)
+{
+    int vmlocaltime;
+
+    if (xendConfigVersion < XEND_CONFIG_VERSION_3_1_0) {
+        /* <3.1: UTC and LOCALTIME */
+        switch (def->clock.offset) {
+        case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+            vmlocaltime = 0;
+            break;
+        case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+            vmlocaltime = 1;
+            break;
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported clock offset='%s'"),
+                           virDomainClockOffsetTypeToString(def->clock.offset));
+            return -1;
+        }
+
+    } else {
+        if (STREQ(def->os.type, "hvm")) {
+            /* >=3.1 HV: VARIABLE */
+            int rtc_timeoffset;
+
+            switch (def->clock.offset) {
+            case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
+                vmlocaltime = (int)def->clock.data.variable.basis;
+                rtc_timeoffset = def->clock.data.variable.adjustment;
+                break;
+            case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+                if (def->clock.data.utc_reset) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("unsupported clock adjustment='reset'"));
+                    return -1;
+                }
+                vmlocaltime = 0;
+                rtc_timeoffset = 0;
+                break;
+            case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+                if (def->clock.data.utc_reset) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("unsupported clock adjustment='reset'"));
+                    return -1;
+                }
+                vmlocaltime = 1;
+                rtc_timeoffset = 0;
+                break;
+            default:
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported clock offset='%s'"),
+                               virDomainClockOffsetTypeToString(def->clock.offset));
+                return -1;
+            }
+            if (xenXMConfigSetInt(conf, "rtc_timeoffset", rtc_timeoffset) < 0)
+                return -1;
+
+        } else {
+            /* >=3.1 PV: UTC and LOCALTIME */
+            switch (def->clock.offset) {
+            case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+                vmlocaltime = 0;
+                break;
+            case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+                vmlocaltime = 1;
+                break;
+            default:
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported clock offset='%s'"),
+                               virDomainClockOffsetTypeToString(def->clock.offset));
+                return -1;
+            }
+        } /* !hvm */
+    }
+
+    if (xenXMConfigSetInt(conf, "localtime", vmlocaltime) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
    either 32, or 64 on a platform where long is big enough.  */
 verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
@@ -1701,7 +1786,7 @@ xenFormatXM(virConnectPtr conn,
             int xendConfigVersion)
 {
     virConfPtr conf = NULL;
-    int hvm = 0, vmlocaltime = 0;
+    int hvm = 0;
     size_t i;
     char *cpus = NULL;
     const char *lifecycle;
@@ -1840,77 +1925,8 @@ xenFormatXM(virConnectPtr conn,
             goto cleanup;
     } /* !hvm */
 
-
-    if (xendConfigVersion < XEND_CONFIG_VERSION_3_1_0) {
-        /* <3.1: UTC and LOCALTIME */
-        switch (def->clock.offset) {
-        case VIR_DOMAIN_CLOCK_OFFSET_UTC:
-            vmlocaltime = 0;
-            break;
-        case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
-            vmlocaltime = 1;
-            break;
-        default:
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported clock offset='%s'"),
-                           virDomainClockOffsetTypeToString(def->clock.offset));
-            goto cleanup;
-        }
-    } else {
-        if (hvm) {
-            /* >=3.1 HV: VARIABLE */
-            int rtc_timeoffset;
-            switch (def->clock.offset) {
-            case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
-                vmlocaltime = (int)def->clock.data.variable.basis;
-                rtc_timeoffset = def->clock.data.variable.adjustment;
-                break;
-            case VIR_DOMAIN_CLOCK_OFFSET_UTC:
-                if (def->clock.data.utc_reset) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("unsupported clock adjustment='reset'"));
-                    goto cleanup;
-                }
-                vmlocaltime = 0;
-                rtc_timeoffset = 0;
-                break;
-            case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
-                if (def->clock.data.utc_reset) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("unsupported clock adjustment='reset'"));
-                    goto cleanup;
-                }
-                vmlocaltime = 1;
-                rtc_timeoffset = 0;
-                break;
-            default:
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported clock offset='%s'"),
-                               virDomainClockOffsetTypeToString(def->clock.offset));
-                goto cleanup;
-            }
-            if (xenXMConfigSetInt(conf, "rtc_timeoffset", rtc_timeoffset) < 0)
-                goto cleanup;
-        } else {
-            /* >=3.1 PV: UTC and LOCALTIME */
-            switch (def->clock.offset) {
-            case VIR_DOMAIN_CLOCK_OFFSET_UTC:
-                vmlocaltime = 0;
-                break;
-            case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
-                vmlocaltime = 1;
-                break;
-            default:
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported clock offset='%s'"),
-                               virDomainClockOffsetTypeToString(def->clock.offset));
-                goto cleanup;
-            }
-        } /* !hvm */
-    }
-    if (xenXMConfigSetInt(conf, "localtime", vmlocaltime) < 0)
+    if (xenFormatXMTimeOffset(conf, def, xendConfigVersion) < 0)
         goto cleanup;
-
 
     if (!(lifecycle = virDomainLifecycleTypeToString(def->onPoweroff))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
