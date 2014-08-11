@@ -7,7 +7,6 @@
     <boot dev='hd'/>
   </os>
   <memory>524288</memory>
-  <maxMemory>1524288</maxMemory>
   <vcpu>4</vcpu>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
