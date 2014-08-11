@@ -1263,12 +1263,59 @@ xenParseXMOS(virConfPtr conf, virDomainDefPtr def)
 }
 
 
+int
+xenParseConfigCommon(virConfPtr conf,
+                     virDomainDefPtr def,
+                     virCapsPtr caps,
+                     int xendConfigVersion)
+{
+    if (xenParseXMGeneralMeta(conf, def, caps) < 0)
+        return -1;
+
+    if (xenParseXMOS(conf, def) < 0)
+        return -1;
+
+    if (xenParseXMMem(conf, def) < 0)
+        return -1;
+
+    if (xenParseXMEventsActions(conf, def) < 0)
+        return -1;
+
+    if (xenParseXMCPUFeatures(conf, def) < 0)
+        return -1;
+
+    if (xenParseXMTimeOffset(conf, def, xendConfigVersion) < 0)
+        return -1;
+
+    if (xenXMConfigCopyStringOpt(conf, "device_model", &def->emulator) < 0)
+        return -1;
+
+    if (xenParseXMVif(conf, def) < 0)
+        return -1;
+
+    if (xenParseXMPCI(conf, def) < 0)
+        return -1;
+
+    if (xenParseXMEmulatedDevices(conf, def) < 0)
+        return -1;
+
+    if (xenParseXMVfb(conf, def, xendConfigVersion) < 0)
+        return -1;
+
+    if (xenParseXMCharDev(conf, def) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /*
  * Turn a config record into a lump of XML describing the
  * domain, suitable for later feeding for virDomainCreateXML
  */
 virDomainDefPtr
-xenParseXM(virConfPtr conf, int xendConfigVersion,
+xenParseXM(virConfPtr conf,
+           int xendConfigVersion,
            virCapsPtr caps)
 {
     virDomainDefPtr def = NULL;
@@ -1279,44 +1326,11 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     def->virtType = VIR_DOMAIN_VIRT_XEN;
     def->id = -1;
 
-    if (xenParseXMGeneralMeta(conf, def, caps) < 0)
-        goto cleanup;
-
-    if (xenParseXMOS(conf, def) < 0)
-        goto cleanup;
-
-    if (xenParseXMMem(conf, def) < 0)
-        goto cleanup;
-
-    if (xenParseXMEventsActions(conf, def) < 0)
-        goto cleanup;
-
-    if (xenParseXMCPUFeatures(conf, def) < 0)
-        goto cleanup;
-
-    if (xenParseXMTimeOffset(conf, def, xendConfigVersion) < 0)
+    if (xenParseConfigCommon(conf, def, caps, xendConfigVersion) < 0)
         goto cleanup;
 
     if (xenParseXMDisk(conf, def, xendConfigVersion) < 0)
-        goto cleanup;
-
-    if (xenXMConfigCopyStringOpt(conf, "device_model", &def->emulator) < 0)
-        goto cleanup;
-
-    if (xenParseXMVif(conf, def) < 0)
-        goto cleanup;
-
-    if (xenParseXMPCI(conf, def) < 0)
-        goto cleanup;
-
-    if (xenParseXMEmulatedDevices(conf, def) < 0)
-        goto cleanup;
-
-    if (xenParseXMVfb(conf, def, xendConfigVersion) < 0)
-        goto cleanup;
-
-    if (xenParseXMCharDev(conf, def) < 0)
-        goto cleanup;
+         goto cleanup;
 
     return def;
 
