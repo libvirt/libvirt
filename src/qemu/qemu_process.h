@@ -53,6 +53,7 @@ typedef enum {
 int qemuProcessStart(virConnectPtr conn,
                      virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
+                     int asyncJob,
                      const char *migrateFrom,
                      int stdin_fd,
                      const char *stdin_path,

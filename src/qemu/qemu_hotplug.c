@@ -2357,7 +2357,8 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
             ret = qemuDomainChangeGraphicsPasswords(driver, vm,
                                                     VIR_DOMAIN_GRAPHICS_TYPE_VNC,
                                                     &dev->data.vnc.auth,
-                                                    cfg->vncPassword);
+                                                    cfg->vncPassword,
+                                                    QEMU_ASYNC_JOB_NONE);
             if (ret < 0)
                 goto cleanup;
 
@@ -2407,7 +2408,8 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
             ret = qemuDomainChangeGraphicsPasswords(driver, vm,
                                                     VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
                                                     &dev->data.spice.auth,
-                                                    cfg->spicePassword);
+                                                    cfg->spicePassword,
+                                                    QEMU_ASYNC_JOB_NONE);
 
             if (ret < 0)
                 goto cleanup;
@@ -3517,7 +3519,8 @@ qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   int type,
                                   virDomainGraphicsAuthDefPtr auth,
-                                  const char *defaultPasswd)
+                                  const char *defaultPasswd,
+                                  int asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     time_t now = time(NULL);
@@ -3534,7 +3537,8 @@ qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
     if (auth->connected)
         connected = virDomainGraphicsAuthConnectedTypeToString(auth->connected);
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        goto cleanup;
     ret = qemuMonitorSetPassword(priv->mon,
                                  type,
                                  auth->passwd ? auth->passwd : defaultPasswd,

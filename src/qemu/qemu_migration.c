@@ -2480,7 +2480,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     /* Start the QEMU daemon, with the same command-line arguments plus
      * -incoming $migrateFrom
      */
-    if (qemuProcessStart(dconn, driver, vm, migrateFrom, dataFD[0], NULL, NULL,
+    if (qemuProcessStart(dconn, driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
+                         migrateFrom, dataFD[0], NULL, NULL,
                          VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START,
                          VIR_QEMU_PROCESS_START_PAUSED |
                          VIR_QEMU_PROCESS_START_AUTODESTROY) < 0) {

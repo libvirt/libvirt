@@ -2497,7 +2497,8 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 
 int
 qemuDomainUpdateDeviceList(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm)
+                           virDomainObjPtr vm,
+                           int asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char **aliases;
@@ -2505,7 +2506,8 @@ qemuDomainUpdateDeviceList(virQEMUDriverPtr driver,
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT))
         return 0;
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
     if (qemuMonitorGetDeviceAliases(priv->mon, &aliases) < 0) {
         qemuDomainObjExitMonitor(driver, vm);
         return -1;
