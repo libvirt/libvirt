@@ -678,7 +678,14 @@ daemonSetupLogging(struct daemonConfig *config,
         (godaemon || !isatty(STDIN_FILENO))) {
         char *tmp;
         if (access("/run/systemd/journal/socket", W_OK) >= 0) {
-            if (virAsprintf(&tmp, "%d:journald", virLogGetDefaultPriority()) < 0)
+            virLogPriority priority = virLogGetDefaultPriority();
+
+            /* By default we don't want to log too much stuff into journald as
+             * it may employ rate limiting and thus block libvirt execution. */
+            if (priority == VIR_LOG_DEBUG)
+                priority = VIR_LOG_INFO;
+
+            if (virAsprintf(&tmp, "%d:journald", priority) < 0)
                 goto error;
             virLogParseOutputs(tmp);
             VIR_FREE(tmp);
