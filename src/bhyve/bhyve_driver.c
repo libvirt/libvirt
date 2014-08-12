@@ -1191,7 +1191,7 @@ bhyveStateInitialize(bool priveleged ATTRIBUTE_UNUSED,
     if (virFileMakePath(BHYVE_STATE_DIR) < 0) {
         virReportSystemError(errno,
                              _("Failed to mkdir %s"),
-                             BHYVE_LOG_DIR);
+                             BHYVE_STATE_DIR);
         goto cleanup;
     }
 
