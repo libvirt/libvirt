@@ -662,7 +662,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
 }
 #undef GET_VALUE_BOOL
 #undef GET_VALUE_LONG
-#undef GET_VALUE_STRING
+#undef GET_VALUE_STR
 
 virQEMUDriverConfigPtr virQEMUDriverGetConfig(virQEMUDriverPtr driver)
 {
