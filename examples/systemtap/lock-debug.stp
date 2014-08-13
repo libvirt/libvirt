@@ -1,0 +1,118 @@
+#!/usr/bin/stap --ldd -d /usr/sbin/libvirtd -c libvirtd
+#
+# Usage with installed libvirt daemon:
+#     stap --ldd -d /usr/sbin/libvirtd -c libvirtd \
+#          lock-debug.stp /usr/lib/libvirt.so
+#
+# If made executable; simple './lock-debug.stp' should work too.
+#
+# TODOs:
+#
+# Document usage with uninstalled daemon and libs. Assuming CWD is toplevel
+# source git directory, it should be only slight modification to the following:
+#
+#     ./run stap --ldd -c daemon/libvirtd -d daemon/libvirtd
+#       examples/systemtap/lock-debug.stp src/.libs/libvirt.so
+#
+# Debug RWLock mechanisms as well.
+#
+# Author: Martin Kletzander <mkletzan@redhat.com>
+
+
+global mx_tolock
+global mx_locked
+
+
+function filter()
+{
+    if (pid() != target())
+        return 1
+
+    return 0
+}
+
+probe library = process( %( $# > 0 %? @1 %: "/usr/lib/libvirt.so" %) )
+{
+    if (filter()) next
+}
+
+probe lock = library.function("virMutexLock")
+{
+    lockname = usymdata($m)
+}
+
+probe unlock = library.function("virMutexUnlock")
+{
+    lockname = usymdata($m)
+}
+
+probe begin
+{
+    %( $# > 1 %? println("error: Too many parameters"); exit();
+       %: print("Started, press ^C when the proccess hangs\n"); %)
+}
+
+probe lock.call
+{
+    mx_tolock[lockname, tid()] = sprint_usyms(ubacktrace())
+}
+
+probe lock.return
+{
+    if ([lockname, tid()] in mx_tolock) {
+        mx_locked[lockname, tid()] = mx_tolock[lockname, tid()]
+        delete mx_tolock[lockname, tid()]
+    } else {
+        printf("internal error: lock acquired unwillingly?\n")
+    }
+}
+
+probe unlock.call
+{
+    found = 0
+
+    foreach ([lock, tid] in mx_locked) {
+        if (lock != lockname)
+            continue
+        if (tid != tid()) {
+            printf("Warning: lock released on different thread that locked it.\n")
+            printf("Lock trace:\n%s\n", mx_locked[lock, tid])
+            printf("Unlock trace:\n%s\n", sprint_usyms(ubacktrace()))
+        }
+
+        found = tid
+        break
+    }
+
+    if (found && [lockname, found] in mx_locked)
+        delete mx_locked[lockname, found]
+}
+
+probe end
+{
+    tmp = 0
+
+    printf("\n=============\n")
+
+    foreach (bt1 = [lock1, tid1] in mx_tolock) {
+        deadlock = 0
+
+        foreach (bt2 = [lock2, tid2] in mx_tolock) {
+            if (lock1 == lock2) {
+                if (!tmp++)
+                    printf("The following locks cannot be acquired:\n")
+
+                if (!deadlock++)
+                    printf("Lock %s was locked in thread %d with this trace:\n%s\n",
+                           lock1, tid1, bt1)
+
+                printf("and is waiting to be locked by thread %d here:\n%s\n",
+                       tid2, bt2)
+            }
+        }
+        if (deadlock)
+            printf("---\n")
+    }
+    if (!tmp)
+        printf("No deadlocks found, sorry.\n")
+}
