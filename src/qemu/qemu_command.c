@@ -192,10 +192,6 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
         vmop, cfg->stateDir,
         virDomainNetGetActualBandwidth(net));
     if (rc >= 0) {
-        if (virSecurityManagerSetTapFDLabel(driver->securityManager,
-                                            def, rc) < 0)
-            goto error;
-
         virDomainAuditNetDevice(def, net, res_ifname, true);
         VIR_FREE(net->ifname);
         net->ifname = res_ifname;
@@ -203,17 +199,6 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
 
     virObjectUnref(cfg);
     return rc;
-
- error:
-    ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
-                     res_ifname, &net->mac,
-                     virDomainNetGetActualDirectDev(net),
-                     virDomainNetGetActualDirectMode(net),
-                     virDomainNetGetActualVirtPortProfile(net),
-                     cfg->stateDir));
-    VIR_FREE(res_ifname);
-    virObjectUnref(cfg);
-    return -1;
 }
 
 
@@ -7201,6 +7186,9 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     }
 
     for (i = 0; i < tapfdSize; i++) {
+        if (virSecurityManagerSetTapFDLabel(driver->securityManager,
+                                            def, tapfd[i]) < 0)
+            goto cleanup;
         virCommandPassFD(cmd, tapfd[i],
                          VIR_COMMAND_PASS_FD_CLOSE_PARENT);
         if (virAsprintf(&tapfdName[i], "%d", tapfd[i]) < 0)

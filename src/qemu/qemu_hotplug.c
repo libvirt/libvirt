@@ -948,6 +948,12 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
             goto cleanup;
     }
 
+    for (i = 0; i < tapfdSize; i++) {
+        if (virSecurityManagerSetTapFDLabel(driver->securityManager,
+                                            vm->def, tapfd[i]) < 0)
+            goto cleanup;
+    }
+
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NET_NAME) ||
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceNetAlias(vm->def, net, -1) < 0)
