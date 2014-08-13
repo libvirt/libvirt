@@ -472,6 +472,7 @@ mymain(void)
     DO_TEST("serial-spiceport-nospice");
     DO_TEST("parallel-tcp");
     DO_TEST("console-compat");
+    DO_TEST_DIFFERENT("console-compat2");
     DO_TEST("console-virtio-many");
     DO_TEST("channel-guestfwd");
     DO_TEST("channel-virtio");

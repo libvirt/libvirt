@@ -3588,6 +3588,27 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
             def->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
             def->consoles[0]->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
         }
+    } else if (def->os.type == VIR_DOMAIN_OSTYPE_HVM && def->nserials > 0 &&
+               def->serials[0]->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+               def->serials[0]->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA) {
+        /* Create a stub console to match the serial port.
+         * console[0] either does not exist
+         *                or has a different type than SERIAL or NONE.
+         */
+        virDomainChrDefPtr chr;
+        if (VIR_ALLOC(chr) < 0)
+            return -1;
+
+        if (VIR_INSERT_ELEMENT(def->consoles,
+                               0,
+                               def->nconsoles,
+                               chr) < 0) {
+            VIR_FREE(chr);
+            return -1;
+        }
+
+        def->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
+        def->consoles[0]->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
     }
 
     if (virDomainDefRejectDuplicateControllers(def) < 0)
@@ -21540,6 +21561,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (virDomainChrDefFormat(buf, &console, flags) < 0)
             goto error;
     }
+    /* The back-compat console device stub is added when parsing the domain XML
+     * and handled above, this is for formatting definitions created via other
+     * means.
+     */
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
         def->nconsoles == 0 &&
         def->nserials > 0) {
