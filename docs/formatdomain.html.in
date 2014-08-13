@@ -726,7 +726,8 @@
       <dt><code>min_guarantee</code></dt>
       <dd> The optional <code>min_guarantee</code> element is the guaranteed
         minimum memory allocation for the guest. The units for this value are
-        kibibytes (i.e. blocks of 1024 bytes)</dd>
+        kibibytes (i.e. blocks of 1024 bytes). This element is only supported
+        by VMware ESX and OpenVZ drivers.</dd>
     </dl>
 
 

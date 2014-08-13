@@ -4020,6 +4020,13 @@ int qemuProcessStart(virConnectPtr conn,
                                     flags & VIR_QEMU_PROCESS_START_COLD) < 0)
         goto cleanup;
 
+    if (vm->def->mem.min_guarantee) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Parameter 'min_guarantee' "
+                         "not supported by QEMU."));
+        goto cleanup;
+    }
+
     if (VIR_ALLOC(priv->monConfig) < 0)
         goto cleanup;
 
