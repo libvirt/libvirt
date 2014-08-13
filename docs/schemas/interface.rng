@@ -440,7 +440,7 @@
 
   <define name='vlan-id'>
     <data type="unsignedInt">
-      <param name="maxInclusive">4096</param>
+      <param name="maxInclusive">4095</param>
     </data>
   </define>
 </grammar>
