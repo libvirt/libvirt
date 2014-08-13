@@ -2279,6 +2279,7 @@ mymain(void)
     DO_TEST_SIMPLE("inject-nmi", qemuMonitorJSONInjectNMI);
     DO_TEST_SIMPLE("system_wakeup", qemuMonitorJSONSystemWakeup);
     DO_TEST_SIMPLE("nbd-server-stop", qemuMonitorJSONNBDServerStop);
+    DO_TEST_SIMPLE("rtc-reset-reinjection", qemuMonitorJSONRTCResetReinjection);
     DO_TEST_GEN(qemuMonitorJSONSetLink);
     DO_TEST_GEN(qemuMonitorJSONBlockResize);
     DO_TEST_GEN(qemuMonitorJSONSetVNCPassword);

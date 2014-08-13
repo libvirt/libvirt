@@ -437,4 +437,6 @@ int qemuMonitorJSONGetDeviceAliases(qemuMonitorPtr mon,
 int qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
                                virArch arch,
                                virCPUDataPtr *data);
+
+int qemuMonitorJSONRTCResetReinjection(qemuMonitorPtr mon);
 #endif /* QEMU_MONITOR_JSON_H */

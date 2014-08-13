@@ -213,6 +213,7 @@ typedef enum {
     QEMU_CAPS_NUMA               = 171, /* newer -numa handling with disjoint cpu ranges */
     QEMU_CAPS_OBJECT_MEMORY_FILE = 172, /* -object memory-backend-file */
     QEMU_CAPS_OBJECT_USB_AUDIO   = 173, /* usb-audio device support */
+    QEMU_CAPS_RTC_RESET_REINJECTION = 174, /* rtc-reset-reinjection monitor command */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 } virQEMUCapsFlags;

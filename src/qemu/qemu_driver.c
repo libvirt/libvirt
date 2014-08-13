@@ -16844,6 +16844,13 @@ qemuDomainSetTime(virDomainPtr dom,
 
     priv = vm->privateData;
 
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_RTC_RESET_REINJECTION)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot set time: qemu doesn't support "
+                         "rtc-reset-reinjection command"));
+        goto cleanup;
+    }
+
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
@@ -16859,6 +16866,16 @@ qemuDomainSetTime(virDomainPtr dom,
     qemuDomainObjEnterAgent(vm);
     rv = qemuAgentSetTime(priv->agent, seconds, nseconds, rtcSync);
     qemuDomainObjExitAgent(vm);
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    rv = qemuMonitorRTCResetReinjection(priv->mon);
+    qemuDomainObjExitMonitor(driver, vm);
 
     if (rv < 0)
         goto endjob;

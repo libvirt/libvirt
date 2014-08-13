@@ -790,6 +790,8 @@ int qemuMonitorGetGuestCPU(qemuMonitorPtr mon,
                            virArch arch,
                            virCPUDataPtr *data);
 
+int qemuMonitorRTCResetReinjection(qemuMonitorPtr mon);
+
 /**
  * When running two dd process and using <> redirection, we need a
  * shell that will not truncate files.  These two strings serve that

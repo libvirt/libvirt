@@ -5851,3 +5851,24 @@ qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
         return -1;
     }
 }
+
+int
+qemuMonitorJSONRTCResetReinjection(qemuMonitorPtr mon)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("rtc-reset-reinjection",
+                                           NULL)))
+        return ret;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
