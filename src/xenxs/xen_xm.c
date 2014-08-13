@@ -2308,6 +2308,43 @@ xenFormatXMInputDevs(virConfPtr conf, virDomainDefPtr def)
 }
 
 
+static int
+xenFormatXMVif(virConfPtr conf,
+               virConnectPtr conn,
+               virDomainDefPtr def,
+               int xendConfigVersion)
+{
+   virConfValuePtr netVal = NULL;
+   size_t i;
+   int hvm = STREQ(def->os.type, "hvm");
+
+   if (VIR_ALLOC(netVal) < 0)
+        goto cleanup;
+    netVal->type = VIR_CONF_LIST;
+    netVal->list = NULL;
+
+    for (i = 0; i < def->nnets; i++) {
+        if (xenFormatXMNet(conn, netVal, def->nets[i],
+                           hvm, xendConfigVersion) < 0)
+           goto cleanup;
+    }
+
+    if (netVal->list != NULL) {
+        int ret = virConfSetValue(conf, "vif", netVal);
+        netVal = NULL;
+        if (ret < 0)
+            goto cleanup;
+    }
+
+    VIR_FREE(netVal);
+    return 0;
+
+ cleanup:
+    virConfFreeValue(netVal);
+    return -1;
+}
+
+
 /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
    either 32, or 64 on a platform where long is big enough.  */
 verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
@@ -2318,9 +2355,6 @@ xenFormatXM(virConnectPtr conn,
             int xendConfigVersion)
 {
     virConfPtr conf = NULL;
-    int hvm = STREQ(def->os.type, "hvm") ? 1 : 0;
-    size_t i;
-    virConfValuePtr netVal = NULL;
 
     if (!(conf = virConfNew()))
         goto cleanup;
@@ -2361,23 +2395,8 @@ xenFormatXM(virConnectPtr conn,
     if (xenFormatXMDisks(conf, def, xendConfigVersion) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC(netVal) < 0)
+    if (xenFormatXMVif(conf, conn, def, xendConfigVersion) < 0)
         goto cleanup;
-    netVal->type = VIR_CONF_LIST;
-    netVal->list = NULL;
-
-    for (i = 0; i < def->nnets; i++) {
-        if (xenFormatXMNet(conn, netVal, def->nets[i],
-                           hvm, xendConfigVersion) < 0)
-            goto cleanup;
-    }
-    if (netVal->list != NULL) {
-        int ret = virConfSetValue(conf, "vif", netVal);
-        netVal = NULL;
-        if (ret < 0)
-            goto cleanup;
-    }
-    VIR_FREE(netVal);
 
     if (xenFormatXMPCI(conf, def) < 0)
         goto cleanup;
@@ -2391,7 +2410,6 @@ xenFormatXM(virConnectPtr conn,
     return conf;
 
  cleanup:
-    virConfFreeValue(netVal);
     if (conf)
         virConfFree(conf);
     return NULL;
