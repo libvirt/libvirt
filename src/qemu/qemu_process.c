@@ -2323,8 +2323,10 @@ qemuProcessInitPasswords(virConnectPtr conn,
                 goto cleanup;
 
             alias = vm->def->disks[i]->info.alias;
-            if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+            if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0) {
+                VIR_FREE(secret);
                 goto cleanup;
+            }
             ret = qemuMonitorSetDrivePassphrase(priv->mon, alias, secret);
             VIR_FREE(secret);
             qemuDomainObjExitMonitor(driver, vm);
