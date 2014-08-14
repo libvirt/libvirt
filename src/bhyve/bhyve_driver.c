@@ -689,10 +689,10 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
     if (bhyveDomainAssignAddresses(def, NULL) < 0)
         goto cleanup;
 
-    if (!(loadcmd = virBhyveProcessBuildLoadCmd(privconn, def)))
+    if (!(loadcmd = virBhyveProcessBuildLoadCmd(conn, def)))
         goto cleanup;
 
-    if (!(cmd = virBhyveProcessBuildBhyveCmd(privconn, def, true)))
+    if (!(cmd = virBhyveProcessBuildBhyveCmd(conn, def, true)))
         goto cleanup;
 
     virBufferAdd(&buf, virCommandToString(loadcmd), -1);

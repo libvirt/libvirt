@@ -137,7 +137,7 @@ virBhyveProcessStart(virConnectPtr conn,
         goto cleanup;
 
     /* Call bhyve to start the VM */
-    if (!(cmd = virBhyveProcessBuildBhyveCmd(driver,
+    if (!(cmd = virBhyveProcessBuildBhyveCmd(conn,
                                              vm->def,
                                              false)))
         goto cleanup;
@@ -151,7 +151,7 @@ virBhyveProcessStart(virConnectPtr conn,
     /* Now bhyve command is constructed, meaning the
      * domain is ready to be started, so we can build
      * and execute bhyveload command */
-    if (!(load_cmd = virBhyveProcessBuildLoadCmd(driver, vm->def)))
+    if (!(load_cmd = virBhyveProcessBuildLoadCmd(conn, vm->def)))
         goto cleanup;
     virCommandSetOutputFD(load_cmd, &logfd);
     virCommandSetErrorFD(load_cmd, &logfd);

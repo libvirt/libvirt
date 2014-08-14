@@ -23,8 +23,11 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virDomainDefPtr vmdef = NULL;
     virDomainObj vm;
     virCommandPtr cmd = NULL;
+    virConnectPtr conn;
     int ret = -1;
 
+    if (!(conn = virGetConnect()))
+        goto out;
 
     if (!(vmdef = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
                                         1 << VIR_DOMAIN_VIRT_BHYVE,
@@ -33,7 +36,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     vm.def = vmdef;
 
-    if (!(cmd = virBhyveProcessBuildBhyveCmd(&driver, vmdef, false)))
+    if (!(cmd = virBhyveProcessBuildBhyveCmd(conn, vmdef, false)))
         goto out;
 
     if (!(actualargv = virCommandToString(cmd)))

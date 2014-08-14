@@ -33,6 +33,7 @@
 #include "virnetdev.h"
 #include "virnetdevbridge.h"
 #include "virnetdevtap.h"
+#include "storage/storage_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_BHYVE
 
@@ -184,7 +185,8 @@ bhyveBuildDiskArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    if (virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_FILE) {
+    if ((virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_FILE) &&
+        (virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_VOLUME)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("unsupported disk type"));
         return -1;
@@ -209,7 +211,7 @@ bhyveBuildDiskArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
 }
 
 virCommandPtr
-virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
+virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
                              virDomainDefPtr def, bool dryRun)
 {
     /*
@@ -263,6 +265,9 @@ virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDefPtr disk = def->disks[i];
 
+        if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
+            goto error;
+
         if (bhyveBuildDiskArgStr(def, disk, cmd) < 0)
             goto error;
     }
@@ -290,7 +295,7 @@ virBhyveProcessBuildDestroyCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
 }
 
 virCommandPtr
-virBhyveProcessBuildLoadCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
+virBhyveProcessBuildLoadCmd(virConnectPtr conn,
                             virDomainDefPtr def)
 {
     virCommandPtr cmd;
@@ -304,6 +309,9 @@ virBhyveProcessBuildLoadCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
 
     disk = def->disks[0];
 
+    if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
+        return NULL;
+
     if ((disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) &&
         (disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -311,7 +319,8 @@ virBhyveProcessBuildLoadCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
         return NULL;
     }
 
-    if (virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_FILE) {
+    if ((virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_FILE) &&
+        (virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_VOLUME)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("unsupported disk type"));
         return NULL;

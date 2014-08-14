@@ -29,15 +29,16 @@
 
 # define BHYVE_CONFIG_FORMAT_ARGV "bhyve-argv"
 
-virCommandPtr virBhyveProcessBuildBhyveCmd(bhyveConnPtr,
-                             virDomainDefPtr def, bool dryRun);
+virCommandPtr virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
+                                           virDomainDefPtr def,
+                                           bool dryRun);
 
 virCommandPtr
 virBhyveProcessBuildDestroyCmd(bhyveConnPtr driver,
                                virDomainDefPtr def);
 
 virCommandPtr
-virBhyveProcessBuildLoadCmd(bhyveConnPtr driver,
+virBhyveProcessBuildLoadCmd(virConnectPtr conn,
                             virDomainDefPtr def);
 
 #endif /* __BHYVE_COMMAND_H__ */

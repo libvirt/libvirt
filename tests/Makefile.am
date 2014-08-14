@@ -674,6 +674,9 @@ bhyvexml2argvmock_la_LDFLAGS = -module -avoid-version \
 			-rpath /evil/libtool/hack/to/force/shared/lib/creation
 
 bhyve_LDADDS = ../src/libvirt_driver_bhyve_impl.la
+if WITH_STORAGE
+bhyve_LDADDS += ../src/libvirt_driver_storage_impl.la
+endif WITH_STORAGE
 bhyve_LDADDS += $(LDADDS)
 bhyvexml2argvtest_SOURCES = \
 	bhyvexml2argvtest.c \
