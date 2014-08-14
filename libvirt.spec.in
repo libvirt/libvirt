@@ -446,6 +446,7 @@ BuildRequires: gettext-devel
 BuildRequires: libtool
 BuildRequires: /usr/bin/pod2man
 %endif
+BuildRequires: perl
 BuildRequires: python
 %if %{with_systemd}
 BuildRequires: systemd-units

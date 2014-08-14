@@ -2173,6 +2173,9 @@ AM_CONDITIONAL([WITH_HYPERV], [test "$with_hyperv" = "yes"])
 dnl Allow perl/python overrides
 AC_PATH_PROGS([PYTHON], [python2 python])
 AC_PATH_PROG([PERL], [perl])
+if test -z "$PERL"; then
+         AC_MSG_ERROR([Failed to find perl.])
+fi
 
 AC_ARG_WITH([test-suite],
             [AS_HELP_STRING([--with-test-suite],
