@@ -2196,6 +2196,9 @@ networkCreateInterfacePool(virNetworkDefPtr netdef)
     int ret = -1;
     size_t i;
 
+    if (netdef->forward.npfs == 0 || netdef->forward.nifs > 0)
+       return 0;
+
     if ((virNetDevGetVirtualFunctions(netdef->forward.pfs->dev,
                                       &vfNames, &virtFns, &numVirtFns)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2204,7 +2207,6 @@ networkCreateInterfacePool(virNetworkDefPtr netdef)
         goto cleanup;
     }
 
-    netdef->forward.nifs = 0;
     if (VIR_ALLOC_N(netdef->forward.ifs, numVirtFns) < 0)
         goto cleanup;
 
@@ -3843,10 +3845,8 @@ networkAllocateActualDevice(virDomainDefPtr dom,
         virDomainHostdevSubsysPCIBackendType backend;
 
         iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_HOSTDEV;
-        if (netdef->forward.npfs > 0 && netdef->forward.nifs <= 0 &&
-            networkCreateInterfacePool(netdef) < 0) {
+        if (networkCreateInterfacePool(netdef) < 0)
             goto error;
-        }
 
         /* pick first dev with 0 connections */
         for (i = 0; i < netdef->forward.nifs; i++) {
@@ -3978,10 +3978,8 @@ networkAllocateActualDevice(virDomainDefPtr dom,
         } else {
             /* pick an interface from the pool */
 
-            if (netdef->forward.npfs > 0 && netdef->forward.nifs == 0 &&
-                networkCreateInterfacePool(netdef) < 0) {
+            if (networkCreateInterfacePool(netdef) < 0)
                 goto error;
-            }
 
             /* PASSTHROUGH mode, and PRIVATE Mode + 802.1Qbh both
              * require exclusive access to a device, so current
@@ -4149,10 +4147,9 @@ networkNotifyActualDevice(virDomainDefPtr dom,
         goto success;
     }
 
-    if (netdef->forward.npfs > 0 && netdef->forward.nifs == 0 &&
-        networkCreateInterfacePool(netdef) < 0) {
+    if (networkCreateInterfacePool(netdef) < 0)
         goto error;
-    }
+
     if (netdef->forward.nifs == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("network '%s' uses a direct or hostdev mode, "
