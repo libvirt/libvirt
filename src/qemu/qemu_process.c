@@ -66,6 +66,7 @@
 #include "virnuma.h"
 #include "virstring.h"
 #include "virhostdev.h"
+#include "storage/storage_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -3327,7 +3328,7 @@ qemuProcessReconnect(void *opaque)
     for (i = 0; i < obj->def->ndisks; i++) {
         virDomainDeviceDef dev;
 
-        if (qemuTranslateDiskSourcePool(conn, obj->def->disks[i]) < 0)
+        if (virStorageTranslateDiskSourcePool(conn, obj->def->disks[i]) < 0)
             goto error;
 
         /* XXX we should be able to restore all data from XML in the future */
@@ -4011,7 +4012,7 @@ int qemuProcessStart(virConnectPtr conn,
      * cgroup and security setting.
      */
     for (i = 0; i < vm->def->ndisks; i++) {
-        if (qemuTranslateDiskSourcePool(conn, vm->def->disks[i]) < 0)
+        if (virStorageTranslateDiskSourcePool(conn, vm->def->disks[i]) < 0)
             goto cleanup;
     }
 

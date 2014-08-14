@@ -21,6 +21,7 @@
 # include "conf/storage_conf.h"
 # include "cpu/cpu_map.h"
 # include "virstring.h"
+# include "storage/storage_driver.h"
 
 # include "testutilsqemu.h"
 
@@ -351,7 +352,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     }
 
     for (i = 0; i < vmdef->ndisks; i++) {
-        if (qemuTranslateDiskSourcePool(conn, vmdef->disks[i]) < 0)
+        if (virStorageTranslateDiskSourcePool(conn, vmdef->disks[i]) < 0)
             goto out;
     }
 

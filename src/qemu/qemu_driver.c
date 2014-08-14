@@ -6642,7 +6642,7 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
     virCapsPtr caps = NULL;
     int ret = -1;
 
-    if (qemuTranslateDiskSourcePool(conn, disk) < 0)
+    if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
         goto end;
 
     if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0)
@@ -12588,7 +12588,7 @@ qemuDomainSnapshotPrepareDiskExternal(virConnectPtr conn,
         return -1;
 
     if (!active) {
-        if (qemuTranslateDiskSourcePool(conn, disk) < 0)
+        if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
             return -1;
 
         if (qemuDomainSnapshotPrepareDiskExternalBackingInactive(disk) < 0)
@@ -12646,7 +12646,7 @@ qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
     if (active)
         return 0;
 
-    if (qemuTranslateDiskSourcePool(conn, disk) < 0)
+    if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
         return -1;
 
     actualType = virStorageSourceGetActualType(disk->src);

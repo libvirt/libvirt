@@ -307,9 +307,6 @@ int qemuSetUnprivSGIO(virDomainDeviceDefPtr dev);
 int qemuDriverAllocateID(virQEMUDriverPtr driver);
 virDomainXMLOptionPtr virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver);
 
-int qemuTranslateDiskSourcePool(virConnectPtr conn,
-                                virDomainDiskDefPtr def);
-
 int qemuTranslateSnapshotDiskSourcePool(virConnectPtr conn,
                                         virDomainSnapshotDiskDefPtr def);
 
