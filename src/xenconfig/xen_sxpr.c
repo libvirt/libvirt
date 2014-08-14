@@ -39,7 +39,7 @@
 #include "virstoragefile.h"
 #include "virstring.h"
 
-VIR_LOG_INIT("xenxs.xen_sxpr");
+VIR_LOG_INIT("xenconfig.xen_sxpr");
 
 /* Get a domain id from a S-expression string */
 int xenGetDomIdFromSxprString(const char *sexpr, int xendConfigVersion, int *id)

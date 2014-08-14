@@ -10,7 +10,7 @@
 #include "internal.h"
 #include "xen/xend_internal.h"
 #include "xen/xen_driver.h"
-#include "xenxs/xen_sxpr.h"
+#include "xenconfig/xen_sxpr.h"
 #include "testutils.h"
 #include "testutilsxen.h"
 #include "virstring.h"

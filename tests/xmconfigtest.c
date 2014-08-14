@@ -31,7 +31,7 @@
 #include "datatypes.h"
 #include "xen/xen_driver.h"
 #include "xen/xm_internal.h"
-#include "xenxs/xen_xm.h"
+#include "xenconfig/xen_xm.h"
 #include "testutils.h"
 #include "testutilsxen.h"
 #include "viralloc.h"

@@ -964,10 +964,10 @@ CPU_SOURCES =							\
 VMX_SOURCES =							\
 		vmx/vmx.c vmx/vmx.h
 
-XENXS_SOURCES =							\
-		xenxs/xenxs_private.h				\
-		xenxs/xen_sxpr.c xenxs/xen_sxpr.h		\
-		xenxs/xen_xm.c xenxs/xen_xm.h
+XENCONFIG_SOURCES =						\
+		xenconfig/xenxs_private.h			\
+		xenconfig/xen_sxpr.c xenconfig/xen_sxpr.h	\
+		xenconfig/xen_xm.c xenconfig/xen_xm.h
 
 pkgdata_DATA =	cpu/cpu_map.xml
 
@@ -1019,13 +1019,13 @@ libvirt_vmx_la_CFLAGS = \
 libvirt_vmx_la_SOURCES = $(VMX_SOURCES)
 endif WITH_VMX
 
-if WITH_XENXS
-noinst_LTLIBRARIES += libvirt_xenxs.la
-libvirt_la_BUILT_LIBADD += libvirt_xenxs.la
-libvirt_xenxs_la_CFLAGS = \
+if WITH_XENCONFIG
+noinst_LTLIBRARIES += libvirt_xenconfig.la
+libvirt_la_BUILT_LIBADD += libvirt_xenconfig.la
+libvirt_xenconfig_la_CFLAGS = \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
-libvirt_xenxs_la_SOURCES = $(XENXS_SOURCES)
-endif WITH_XENXS
+libvirt_xenconfig_la_SOURCES = $(XENCONFIG_SOURCES)
+endif WITH_XENCONFIG
 
 
 noinst_LTLIBRARIES += libvirt_driver.la
@@ -1101,7 +1101,7 @@ libvirt_driver_xen_impl_la_CFLAGS =					\
 		$(XEN_CFLAGS)					\
 		-I$(top_srcdir)/src/access			\
 		-I$(top_srcdir)/src/conf			\
-		-I$(top_srcdir)/src/xenxs			\
+		-I$(top_srcdir)/src/xenconfig			\
 		$(AM_CFLAGS)
 libvirt_driver_xen_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_xen_impl_la_LIBADD = $(XEN_LIBS)
@@ -1186,10 +1186,10 @@ libvirt_driver_libxl_impl_la_CFLAGS = 		\
 		$(LIBXL_CFLAGS)			\
 		-I$(top_srcdir)/src/access	\
 		-I$(top_srcdir)/src/conf	\
-		-I$(top_srcdir)/src/xenxs	\
+		-I$(top_srcdir)/src/xenconfig	\
 		$(AM_CFLAGS)
 libvirt_driver_libxl_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_libxl_impl_la_LIBADD = $(LIBXL_LIBS) libvirt_xenxs.la
+libvirt_driver_libxl_impl_la_LIBADD = $(LIBXL_LIBS) libvirt_xenconfig.la
 libvirt_driver_libxl_impl_la_SOURCES = $(LIBXL_DRIVER_SOURCES)
 endif WITH_LIBXL
 
@@ -1743,7 +1743,7 @@ EXTRA_DIST +=							\
 		$(SECRET_DRIVER_SOURCES)			\
 		$(VBOX_DRIVER_EXTRA_DIST)			\
 		$(VMWARE_DRIVER_SOURCES)			\
-		$(XENXS_SOURCES)				\
+		$(XENCONFIG_SOURCES)				\
 		$(ACCESS_DRIVER_POLKIT_POLICY)
 
 check-local: check-augeas
@@ -1893,11 +1893,11 @@ else ! WITH_VMWARE
 SYM_FILES += $(srcdir)/libvirt_vmware.syms
 endif ! WITH_VMWARE
 
-if WITH_XENXS
-USED_SYM_FILES += $(srcdir)/libvirt_xenxs.syms
-else ! WITH_XENXS
-SYM_FILES += $(srcdir)/libvirt_xenxs.syms
-endif ! WITH_XENXS
+if WITH_XENCONFIG
+USED_SYM_FILES += $(srcdir)/libvirt_xenconfig.syms
+else ! WITH_XENCONFIG
+SYM_FILES += $(srcdir)/libvirt_xenconfig.syms
+endif ! WITH_XENCONFIG
 
 if WITH_SASL
 USED_SYM_FILES += $(srcdir)/libvirt_sasl.syms

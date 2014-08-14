@@ -2,7 +2,7 @@
 # These symbols are dependent upon --with-xen via WITH_XEN or --with-libxl via WITH_LIBXL.
 #
 
-# xenxs/xen_sxpr.h
+# xenconfig/xen_sxpr.h
 xenFormatSxpr;
 xenFormatSxprChr;
 xenFormatSxprDisk;
@@ -16,7 +16,7 @@ xenParseSxprChar;
 xenParseSxprSound;
 xenParseSxprString;
 
-# xenxs/xen_xm.h
+# xenconfig/xen_xm.h
 xenFormatXM;
 xenParseXM;
 

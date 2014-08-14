@@ -232,8 +232,8 @@ src/xen/xm_internal.c
 src/xen/xs_internal.c
 src/xenapi/xenapi_driver.c
 src/xenapi/xenapi_utils.c
-src/xenxs/xen_sxpr.c
-src/xenxs/xen_xm.c
+src/xenconfig/xen_sxpr.c
+src/xenconfig/xen_xm.c
 tools/libvirt-guests.sh.in
 tools/virsh.c
 tools/virsh.h
