@@ -11993,12 +11993,6 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->cputune.vcpupin, n) < 0)
         goto error;
 
-    if (n > def->maxvcpus) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("vcpupin nodes must be less than maxvcpus"));
-        goto error;
-    }
-
     for (i = 0; i < n; i++) {
         virDomainVcpuPinDefPtr vcpupin = NULL;
         vcpupin = virDomainVcpuPinDefParseXML(nodes[i], ctxt, def->maxvcpus, 0);
