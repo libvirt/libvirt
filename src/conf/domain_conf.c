@@ -11308,11 +11308,9 @@ virDomainPanicDefParseXML(xmlNodePtr node)
 /* Parse the XML definition for a vcpupin or emulatorpin.
  *
  * vcpupin has the form of
- *
  *   <vcpupin vcpu='0' cpuset='0'/>
  *
  * and emulatorpin has the form of
- *
  *   <emulatorpin cpuset='0'/>
  *
  * A vcpuid of -1 is valid and only valid for emulatorpin. So callers
@@ -11322,7 +11320,7 @@ static virDomainVcpuPinDefPtr
 virDomainVcpuPinDefParseXML(xmlNodePtr node,
                             xmlXPathContextPtr ctxt,
                             int maxvcpus,
-                            int emulator)
+                            bool emulator)
 {
     virDomainVcpuPinDefPtr def;
     xmlNodePtr oldnode = ctxt->node;
@@ -11335,46 +11333,43 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (emulator == 0) {
+    if (!emulator) {
         ret = virXPathInt("string(./@vcpu)", ctxt, &vcpuid);
         if ((ret == -2) || (vcpuid < -1)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("vcpu id must be an unsigned integer or -1"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("vcpu id must be an unsigned integer or -1"));
             goto error;
         } else if (vcpuid == -1) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("vcpu id value -1 is not allowed for vcpupin"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("vcpu id value -1 is not allowed for vcpupin"));
             goto error;
         }
+
+        if (vcpuid >= maxvcpus) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("vcpu id must be less than maxvcpus"));
+            goto error;
+        }
+
+        def->vcpuid = vcpuid;
     }
 
-    if (vcpuid >= maxvcpus) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("vcpu id must be less than maxvcpus"));
+    if (!(tmp = virXMLPropString(node, "cpuset"))) {
+        if (emulator)
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing cpuset for emulatorpin"));
+        else
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing cpuset for vcpupin"));
+
         goto error;
     }
 
-    def->vcpuid = vcpuid;
-
-    tmp = virXMLPropString(node, "cpuset");
-
-    if (tmp) {
-        char *set = tmp;
-        int cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
-
-        if (virBitmapParse(set, 0, &def->cpumask,
-                           cpumasklen) < 0) {
-            VIR_FREE(tmp);
-            goto error;
-        }
-        VIR_FREE(tmp);
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("missing cpuset for vcpupin"));
+    if (virBitmapParse(tmp, 0, &def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
         goto error;
-    }
 
  cleanup:
+    VIR_FREE(tmp);
     ctxt->node = oldnode;
     return def;
 
@@ -11995,7 +11990,8 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     for (i = 0; i < n; i++) {
         virDomainVcpuPinDefPtr vcpupin = NULL;
-        vcpupin = virDomainVcpuPinDefParseXML(nodes[i], ctxt, def->maxvcpus, 0);
+        vcpupin = virDomainVcpuPinDefParseXML(nodes[i], ctxt,
+                                              def->maxvcpus, false);
 
         if (!vcpupin)
             goto error;
@@ -12069,7 +12065,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             }
 
             def->cputune.emulatorpin = virDomainVcpuPinDefParseXML(nodes[0], ctxt,
-                                                                   def->maxvcpus, 1);
+                                                                   0, true);
 
             if (!def->cputune.emulatorpin)
                 goto error;
