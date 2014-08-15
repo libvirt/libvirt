@@ -2230,7 +2230,8 @@ qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
-    int vcpu, n;
+    virDomainVcpuPinDefPtr pininfo;
+    int n;
     int ret = -1;
 
     if (!def->cputune.nvcpupin)
@@ -2242,11 +2243,15 @@ qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
         return -1;
     }
 
-    for (n = 0; n < def->cputune.nvcpupin; n++) {
-        vcpu = def->cputune.vcpupin[n]->vcpuid;
+    for (n = 0; n < def->vcpus; n++) {
+        /* set affinity only for existing vcpus */
+        if (!(pininfo = virDomainVcpuPinFindByVcpu(def->cputune.vcpupin,
+                                                   def->cputune.nvcpupin,
+                                                   n)))
+            continue;
 
-        if (virProcessSetAffinity(priv->vcpupids[vcpu],
-                                  def->cputune.vcpupin[n]->cpumask) < 0) {
+        if (virProcessSetAffinity(priv->vcpupids[n],
+                                  pininfo->cpumask) < 0) {
             goto cleanup;
         }
     }
