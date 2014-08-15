@@ -4277,6 +4277,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     qemuAgentCPUInfoPtr cpuinfo = NULL;
     int ncpuinfo;
     qemuDomainObjPrivatePtr priv;
+    size_t i;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -4386,6 +4387,12 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         }
 
         if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+            /* remove vcpupin entries for vcpus that were unplugged */
+            if (nvcpus < persistentDef->vcpus) {
+                for (i = persistentDef->vcpus; i >= nvcpus; i--)
+                    virDomainVcpuPinDel(persistentDef, i);
+            }
+
             if (maximum) {
                 persistentDef->maxvcpus = nvcpus;
                 if (nvcpus < persistentDef->vcpus)
