@@ -478,8 +478,10 @@ static int virFDStreamOpenInternal(virStreamPtr st,
               st, fd, cmd, errfd, length);
 
     if ((st->flags & VIR_STREAM_NONBLOCK) &&
-        virSetNonBlock(fd) < 0)
+        virSetNonBlock(fd) < 0) {
+        virReportSystemError(errno, "%s", _("Unable to set non-blocking mode"));
         return -1;
+    }
 
     if (VIR_ALLOC(fdst) < 0)
         return -1;
