@@ -7375,7 +7375,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             goto error;
         }
 
-        if (def->blkio.weight || def->blkio.ndevices) {
+        if (def->blkio.weight) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Block I/O tuning is not available in session mode"));
             goto error;
