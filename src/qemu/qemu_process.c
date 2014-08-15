@@ -3950,6 +3950,11 @@ int qemuProcessStart(virConnectPtr conn,
                     goto cleanup;
                 }
                 graphics->listens[0].fromConfig = true;
+            } else if (graphics->nListens > 1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("QEMU does not support multiple listen "
+                                 "addresses for one graphics device."));
+                goto cleanup;
             }
         }
     }
