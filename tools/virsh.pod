@@ -1254,6 +1254,36 @@ I<--total> for only the total stats, I<start> for only the per-cpu
 stats of the CPUs from I<start>, I<count> for only I<count> CPUs'
 stats.
 
+=item B<metadata> I<domain> [[I<--live>] [I<--config>] | [I<--current>]]
+[I<--edit>] [I<uri>] [I<key>] [I<set>] [I<--remove>]
+
+Show or modify custom XML metadata of a domain. The metadata is a user
+defined XML that allows to store arbitrary XML data in the domain definition.
+Multiple separate custom metadata pieces can be stored in the domain XML.
+The pieces are identified by a private XML namespace provided via the
+I<uri> argument.
+
+Flags I<--live> or I<--config> select whether this command works on live
+or persistent definitions of the domain. If both I<--live> and I<--config>
+are specified, the I<--config> option takes precedence on getting the current
+description and both live configuration and config are updated while setting
+the description. I<--current> is exclusive and implied if none of these was
+specified.
+
+Flag I<--remove> specifies that the metadata element specified by the I<uri>
+argument should be removed rather than updated.
+
+Flag I<--edit> specifies that an editor with the metadata identified by the
+I<uri> argument should be opened and the contents saved back afterwards.
+Otherwise the new contents can be provided via the I<set> argument.
+
+When setting metadata via I<--edit> or I<set> the I<key> argument must be
+specified and is used to prefix the custom elements to bind them
+to the private namespace.
+
+If neither of I<--edit> and I<set> are specified the XML metadata corresponding
+to the I<uri> namespace is displayed instead of being modified.
+
 =item B<migrate> [I<--live>] [I<--offline>] [I<--direct>] [I<--p2p> [I<--tunnelled>]]
 [I<--persistent>] [I<--undefinesource>] [I<--suspend>] [I<--copy-storage-all>]
 [I<--copy-storage-inc>] [I<--change-protection>] [I<--unsafe>] [I<--verbose>]
