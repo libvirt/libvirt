@@ -1718,7 +1718,8 @@ virStorageBackendVolUploadLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     /* Not using O_CREAT because the file is required to already exist at
      * this point */
-    return virFDStreamOpenFile(stream, vol->target.path, offset, len, O_WRONLY);
+    return virFDStreamOpenBlockDevice(stream, vol->target.path,
+                                      offset, len, O_WRONLY);
 }
 
 int
@@ -1732,7 +1733,8 @@ virStorageBackendVolDownloadLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     virCheckFlags(0, -1);
 
-    return virFDStreamOpenFile(stream, vol->target.path, offset, len, O_RDONLY);
+    return virFDStreamOpenBlockDevice(stream, vol->target.path,
+                                      offset, len, O_RDONLY);
 }
 
 
