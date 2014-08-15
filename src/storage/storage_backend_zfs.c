@@ -326,4 +326,6 @@ virStorageBackend virStorageBackendZFS = {
     .refreshPool = virStorageBackendZFSRefreshPool,
     .createVol = virStorageBackendZFSCreateVol,
     .deleteVol = virStorageBackendZFSDeleteVol,
+    .uploadVol = virStorageBackendVolUploadLocal,
+    .downloadVol = virStorageBackendVolDownloadLocal,
 };
