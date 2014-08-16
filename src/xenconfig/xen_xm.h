@@ -36,14 +36,4 @@ virConfPtr xenFormatXM(virConnectPtr conn, virDomainDefPtr def,
 virDomainDefPtr xenParseXM(virConfPtr conf, int xendConfigVersion,
                            virCapsPtr caps);
 
-int xenParseConfigCommon(virConfPtr conf,
-                         virDomainDefPtr def,
-                         virCapsPtr caps,
-                         int xendConfigVersion);
-
-int xenFormatConfigCommon(virConfPtr conf,
-                          virDomainDefPtr def,
-                          virConnectPtr conn,
-                          int xendConfigVersion);
-
 #endif /* __VIR_XEN_XM_H__ */
