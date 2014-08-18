@@ -1190,11 +1190,6 @@ typedef int
                           unsigned long long *counts,
                           unsigned int flags);
 
-typedef int
-(*virDrvNetworkGetDHCPLeases)(virNetworkPtr network,
-                              const char *mac,
-                              virNetworkDHCPLeasePtr **leases,
-                              unsigned int flags);
 
 typedef struct _virDriver virDriver;
 typedef virDriver *virDriverPtr;
@@ -1509,7 +1504,11 @@ typedef int
 typedef int
 (*virDrvNetworkIsPersistent)(virNetworkPtr net);
 
-
+typedef int
+(*virDrvNetworkGetDHCPLeases)(virNetworkPtr network,
+                              const char *mac,
+                              virNetworkDHCPLeasePtr **leases,
+                              unsigned int flags);
 
 typedef struct _virNetworkDriver virNetworkDriver;
 typedef virNetworkDriver *virNetworkDriverPtr;
