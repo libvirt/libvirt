@@ -656,6 +656,7 @@ effect on the next boot.
 Show or modify description and title of a domain. These values are user
 fields that allow to store arbitrary textual data to allow easy
 identification of domains. Title should be short, although it's not enforced.
+(See also B<metadata> that works with XML based domain metadata.)
 
 Flags I<--live> or I<--config> select whether this command works on live
 or persistent definitions of the domain. If both I<--live> and I<--config>
@@ -1261,7 +1262,8 @@ Show or modify custom XML metadata of a domain. The metadata is a user
 defined XML that allows to store arbitrary XML data in the domain definition.
 Multiple separate custom metadata pieces can be stored in the domain XML.
 The pieces are identified by a private XML namespace provided via the
-I<uri> argument.
+I<uri> argument. (See also B<desc> that works with textual metadata of
+a domain.)
 
 Flags I<--live> or I<--config> select whether this command works on live
 or persistent definitions of the domain. If both I<--live> and I<--config>
