@@ -1600,7 +1600,7 @@ I<domain>
 Allows you to show (and set) the domain scheduler parameters. The parameters
 available for each hypervisor are:
 
-LXC (posix scheduler) : cpu_shares
+LXC (posix scheduler) : cpu_shares, vcpu_period, vcpu_quota
 
 QEMU/KVM (posix scheduler): cpu_shares, vcpu_period, vcpu_quota,
 emulator_period, emulator_quota
