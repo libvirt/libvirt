@@ -1289,7 +1289,7 @@ to the I<uri> namespace is displayed instead of being modified.
 =item B<migrate> [I<--live>] [I<--offline>] [I<--direct>] [I<--p2p> [I<--tunnelled>]]
 [I<--persistent>] [I<--undefinesource>] [I<--suspend>] [I<--copy-storage-all>]
 [I<--copy-storage-inc>] [I<--change-protection>] [I<--unsafe>] [I<--verbose>]
-[I<--compressed>] [I<--abort-on-error>]
+[I<--compressed>] [I<--abort-on-error>] [I<--auto-converge>]
 I<domain> I<desturi> [I<migrateuri>] [I<graphicsuri>] [I<listen-address>]
 [I<dname>] [I<--timeout> B<seconds>] [I<--xml> B<file>]
 
@@ -1314,7 +1314,8 @@ used to reject the migration if the hypervisor lacks change protection
 support.  I<--verbose> displays the progress of migration.  I<--compressed>
 activates compression of memory pages that have to be transferred repeatedly
 during live migration. I<--abort-on-error> cancels the migration if a soft
-error (for example I/O error) happens during the migration.
+error (for example I/O error) happens during the migration. I<--auto-converge>
+forces convergence during live migration.
 
 B<Note>: Individual hypervisors usually do not support all possible types of
 migration. For example, QEMU does not support direct migration.
