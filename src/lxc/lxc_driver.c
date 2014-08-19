@@ -2182,19 +2182,19 @@ lxcDomainParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
         temp = p + 1;
 
         if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT)) {
-            if (virStrToLong_ui(temp, &p, 10, &result[i].weight) < 0)
+            if (virStrToLong_uip(temp, &p, 10, &result[i].weight) < 0)
                 goto error;
         } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS)) {
-            if (virStrToLong_ui(temp, &p, 10, &result[i].riops) < 0)
+            if (virStrToLong_uip(temp, &p, 10, &result[i].riops) < 0)
                 goto error;
         } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS)) {
-            if (virStrToLong_ui(temp, &p, 10, &result[i].wiops) < 0)
+            if (virStrToLong_uip(temp, &p, 10, &result[i].wiops) < 0)
                 goto error;
         } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_READ_BPS)) {
-            if (virStrToLong_ull(temp, &p, 10, &result[i].rbps) < 0)
+            if (virStrToLong_ullp(temp, &p, 10, &result[i].rbps) < 0)
                 goto error;
         } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS)){
-            if (virStrToLong_ull(temp, &p, 10, &result[i].wbps) < 0)
+            if (virStrToLong_ullp(temp, &p, 10, &result[i].wbps) < 0)
                 goto error;
         } else {
             goto error;
