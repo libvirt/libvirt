@@ -2590,7 +2590,8 @@ Start a (previously defined) inactive network.
 
 =item B<net-undefine> I<network>
 
-Undefine the configuration for an inactive network.
+Undefine the configuration for a persistent network. If the network is active,
+make it transient.
 
 =item B<net-uuid> I<network-name>
 
