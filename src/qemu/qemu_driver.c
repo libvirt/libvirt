@@ -15807,7 +15807,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     int ret = -1;
     size_t i;
     int idx = -1;
-    int conf_idx;
+    int conf_idx = -1;
     bool set_bytes = false;
     bool set_iops = false;
     virQEMUDriverConfigPtr cfg = NULL;
