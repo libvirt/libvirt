@@ -1926,6 +1926,8 @@ nodeCapsInitNUMA(virCapsPtr caps)
         cpus = NULL;
         siblings = NULL;
         pageinfo = NULL;
+        virBitmapFree(cpumap);
+        cpumap = NULL;
     }
 
     ret = 0;

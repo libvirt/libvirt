@@ -308,7 +308,7 @@ virNumaGetNodeCPUs(int node,
  cleanup:
     VIR_FREE(mask);
     VIR_FREE(allonesmask);
-    VIR_FREE(cpumap);
+    virBitmapFree(cpumap);
 
     return ret;
 }
