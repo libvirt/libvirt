@@ -1921,6 +1921,13 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
         (ret < 0 && (acpiRequested || !flags))) {
         qemuDomainSetFakeReboot(driver, vm, isReboot);
 
+        /* Even if agent failed, we have to check if guest went away
+         * by itself while our locks were down.  */
+        if (useAgent && !virDomainObjIsActive(vm)) {
+            ret = 0;
+            goto endjob;
+        }
+
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorSystemPowerdown(priv->mon);
         qemuDomainObjExitMonitor(driver, vm);
@@ -4359,6 +4366,12 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
         if (ncpuinfo < 0)
             goto endjob;
+
+        if (!virDomainObjIsActive(vm)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("domain is not running"));
+            goto endjob;
+        }
 
         if (qemuAgentUpdateCPUInfo(nvcpus, cpuinfo, ncpuinfo) < 0)
             goto endjob;
