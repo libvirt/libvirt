@@ -2193,7 +2193,7 @@ lxcDomainParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
         } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_READ_BPS)) {
             if (virStrToLong_ullp(temp, &p, 10, &result[i].rbps) < 0)
                 goto error;
-        } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS)){
+        } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS)) {
             if (virStrToLong_ullp(temp, &p, 10, &result[i].wbps) < 0)
                 goto error;
         } else {
@@ -2606,7 +2606,7 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
                             break;
                         }
                     }
-                } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS)){
+                } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS)) {
                     for (j = 0; j < ndevices; j++) {
                         if (virCgroupSetBlkioDeviceWriteBps(priv->cgroup,
                                                             devices[j].path,

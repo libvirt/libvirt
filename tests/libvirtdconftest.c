@@ -217,7 +217,7 @@ mymain(void)
         goto cleanup;
     }
 
-    if (uncomment_all_params(filedata, &params) < 0){
+    if (uncomment_all_params(filedata, &params) < 0) {
         perror("Find params");
         ret = -1;
         goto cleanup;

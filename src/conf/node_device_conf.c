@@ -187,7 +187,7 @@ virNodeDeviceObjPtr virNodeDeviceAssignDef(virNodeDeviceObjListPtr devs,
     }
     virNodeDeviceObjLock(device);
 
-    if (VIR_APPEND_ELEMENT_COPY(devs->objs, devs->count, device) < 0){
+    if (VIR_APPEND_ELEMENT_COPY(devs->objs, devs->count, device) < 0) {
         virNodeDeviceObjUnlock(device);
         virNodeDeviceObjFree(device);
         return NULL;

@@ -1123,7 +1123,7 @@ cmdVolResize(vshControl *ctl, const vshCmd *cmd)
     if (*capacityStr == '-') {
         /* The API always requires a positive value; but we allow a
          * negative value for convenience.  */
-        if (delta && vshCommandOptBool(cmd, "shrink")){
+        if (delta && vshCommandOptBool(cmd, "shrink")) {
             capacityStr++;
         } else {
             vshError(ctl, "%s",

@@ -332,7 +332,7 @@ hostsfileAdd(dnsmasqHostsfile *hostsfile,
         if (virAsprintf(&hostsfile->hosts[hostsfile->nhosts].host, "%s,%s,%s",
                         mac, ipstr, name) < 0)
             goto error;
-    } else if (name && !mac){
+    } else if (name && !mac) {
         if (virAsprintf(&hostsfile->hosts[hostsfile->nhosts].host, "%s,%s",
                         name, ipstr) < 0)
             goto error;

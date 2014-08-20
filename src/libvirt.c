@@ -7613,7 +7613,7 @@ virDomainGetSchedulerType(virDomainPtr domain, int *nparams)
     virCheckDomainReturn(domain, NULL);
     conn = domain->conn;
 
-    if (conn->driver->domainGetSchedulerType){
+    if (conn->driver->domainGetSchedulerType) {
         schedtype = conn->driver->domainGetSchedulerType(domain, nparams);
         if (!schedtype)
             goto error;
@@ -10987,7 +10987,7 @@ virNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(uuid, error);
 
-    if (conn->networkDriver && conn->networkDriver->networkLookupByUUID){
+    if (conn->networkDriver && conn->networkDriver->networkLookupByUUID) {
         virNetworkPtr ret;
         ret = conn->networkDriver->networkLookupByUUID(conn, uuid);
         if (!ret)
@@ -14217,7 +14217,7 @@ virStorageVolGetInfo(virStorageVolPtr vol,
 
     conn = vol->conn;
 
-    if (conn->storageDriver->storageVolGetInfo){
+    if (conn->storageDriver->storageVolGetInfo) {
         int ret;
         ret = conn->storageDriver->storageVolGetInfo(vol, info);
         if (ret < 0)
@@ -16964,7 +16964,7 @@ virNWFilterLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(uuid, error);
 
-    if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterLookupByUUID){
+    if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterLookupByUUID) {
         virNWFilterPtr ret;
         ret = conn->nwfilterDriver->nwfilterLookupByUUID(conn, uuid);
         if (!ret)

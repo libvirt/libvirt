@@ -1075,7 +1075,7 @@ get_files(vahControl * ctl)
                 ctl->def->fss[i]->type == VIR_DOMAIN_FS_TYPE_MOUNT &&
                 (ctl->def->fss[i]->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_PATH ||
                  ctl->def->fss[i]->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT) &&
-                ctl->def->fss[i]->src){
+                ctl->def->fss[i]->src) {
             virDomainFSDefPtr fs = ctl->def->fss[i];
 
             if (vah_add_path(&buf, fs->src, fs->readonly ? "r" : "rw", true) != 0)

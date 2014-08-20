@@ -7865,7 +7865,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
                             break;
                         }
                     }
-                } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS)){
+                } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS)) {
                     for (j = 0; j < ndevices; j++) {
                         if (virCgroupSetBlkioDeviceWriteBps(priv->cgroup,
                                                             devices[j].path,

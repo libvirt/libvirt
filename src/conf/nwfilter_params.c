@@ -724,7 +724,7 @@ addToTable(void *payload, const void *name, void *data)
         return;
     }
 
-    if (virNWFilterHashTablePut(atts->target, (const char *)name, val) < 0){
+    if (virNWFilterHashTablePut(atts->target, (const char *)name, val) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not put variable '%s' into hashmap"),
                        (const char *)name);

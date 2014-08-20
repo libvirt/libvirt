@@ -193,7 +193,7 @@ virStorageEncryptionParseXML(xmlXPathContextPtr ctxt)
     ret->format = format;
 
     n = virXPathNodeSet("./secret", ctxt, &nodes);
-    if (n < 0){
+    if (n < 0) {
         goto cleanup;
     }
     if (n != 0 && VIR_ALLOC_N(ret->secrets, n) < 0)

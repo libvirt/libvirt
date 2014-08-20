@@ -130,7 +130,7 @@ public class minitest {
         Connect conn=null;
         try{
             conn = new <span style="color: #0071FF; background-color: #FFFFFF">Connect</span>("test:///default", true);
-        } catch (<span style="color: #0071FF; background-color: #FFFFFF">LibvirtException</span> e){
+        } catch (<span style="color: #0071FF; background-color: #FFFFFF">LibvirtException</span> e) {
             System.out.println("exception caught:"+e);
             System.out.println(e.getError());
         }
@@ -139,7 +139,7 @@ public class minitest {
             System.out.println("Domain:" + testDomain.<span style="color: #E50073; background-color: #FFFFFF">getName</span>() + " id " +
                                testDomain.<span style="color: #E50073; background-color: #FFFFFF">getID</span>() + " running " +
                                testDomain.<span style="color: #E50073; background-color: #FFFFFF">getOSType</span>());
-        } catch (<span style="color: #0071FF; background-color: #FFFFFF">LibvirtException</span> e){
+        } catch (<span style="color: #0071FF; background-color: #FFFFFF">LibvirtException</span> e) {
             System.out.println("exception caught:"+e);
             System.out.println(e.getError());
         }

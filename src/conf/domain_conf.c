@@ -14423,7 +14423,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
                        dst->os.type, src->os.type);
         goto error;
     }
-    if (src->os.arch != dst->os.arch){
+    if (src->os.arch != dst->os.arch) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain architecture %s does not match source %s"),
                        virArchToString(dst->os.arch),

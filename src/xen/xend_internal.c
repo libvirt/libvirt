@@ -2976,7 +2976,7 @@ xenDaemonGetSchedulerType(virConnectPtr conn,
 
     /* get xen_scheduler from xend/node */
     ret = sexpr_node(root, "node/xen_scheduler");
-    if (ret == NULL){
+    if (ret == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("node information incomplete, missing scheduler name"));
         goto error;
@@ -3047,7 +3047,7 @@ xenDaemonGetSchedulerParameters(virConnectPtr conn,
         goto error;
     }
 
-    switch (sched_nparam){
+    switch (sched_nparam) {
         case XEN_SCHED_SEDF_NPARAM:
             if (*nparams < XEN_SCHED_SEDF_NPARAM) {
                 virReportError(VIR_ERR_INVALID_ARG,
@@ -3152,7 +3152,7 @@ xenDaemonSetSchedulerParameters(virConnectPtr conn,
         goto error;
     }
 
-    switch (sched_nparam){
+    switch (sched_nparam) {
         case XEN_SCHED_SEDF_NPARAM:
             /* TODO: Implement for Xen/SEDF */
             TODO

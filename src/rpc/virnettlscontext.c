@@ -1003,7 +1003,7 @@ static int virNetTLSContextValidCertificate(virNetTLSContextPtr ctxt,
 
     memset(dname, 0, dnamesize);
 
-    if ((ret = gnutls_certificate_verify_peers2(sess->session, &status)) < 0){
+    if ((ret = gnutls_certificate_verify_peers2(sess->session, &status)) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("Unable to verify TLS peer: %s"),
                        gnutls_strerror(ret));

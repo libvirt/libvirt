@@ -943,6 +943,12 @@ sc_prohibit_empty_first_line:
 	  print "$(ME): Prohibited empty first line" > "/dev/stderr";	\
 	} exit fail; }' $$($(VC_LIST_EXCEPT));
 
+sc_prohibit_paren_brace:
+	@prohibit='\)\{$$'						\
+	in_vc_files='\.[chx]$$'						\
+	halt='Put space between closing parenthesis and opening brace'	\
+	  $(_sc_search_regexp)
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 

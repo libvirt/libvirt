@@ -1194,7 +1194,7 @@ xenHypervisorGetSchedulerType(virConnectPtr conn,
         if (ret < 0)
             return NULL;
 
-        switch (op.u.getschedulerid.sched_id){
+        switch (op.u.getschedulerid.sched_id) {
             case XEN_SCHEDULER_SEDF:
                 ignore_value(VIR_STRDUP(schedulertype, "sedf"));
                 if (nparams)
@@ -1257,7 +1257,7 @@ xenHypervisorGetSchedulerParameters(virConnectPtr conn,
         if (ret < 0)
             return -1;
 
-        switch (op_sys.u.getschedulerid.sched_id){
+        switch (op_sys.u.getschedulerid.sched_id) {
             case XEN_SCHEDULER_SEDF:
                 if (*nparams < XEN_SCHED_SEDF_NPARAM) {
                     virReportError(VIR_ERR_INVALID_ARG,
@@ -1360,7 +1360,7 @@ xenHypervisorSetSchedulerParameters(virConnectPtr conn,
         ret = xenHypervisorDoV2Sys(priv->handle, &op_sys);
         if (ret == -1) return -1;
 
-        switch (op_sys.u.getschedulerid.sched_id){
+        switch (op_sys.u.getschedulerid.sched_id) {
         case XEN_SCHEDULER_SEDF:
             /* TODO: Implement for Xen/SEDF */
             TODO
@@ -1885,13 +1885,13 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
     if (virXen_getdomaininfo(fd, 0, &info) == 1) {
         /* RHEL 5.0 */
         hv_versions.dom_interface = 3; /* XEN_DOMCTL_INTERFACE_VERSION */
-        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
+        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0) {
             VIR_DEBUG("Using hypervisor call v2, sys ver2 dom ver3");
             goto done;
         }
         /* Fedora 7 */
         hv_versions.dom_interface = 4; /* XEN_DOMCTL_INTERFACE_VERSION */
-        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
+        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0) {
             VIR_DEBUG("Using hypervisor call v2, sys ver2 dom ver4");
             goto done;
         }
@@ -1901,7 +1901,7 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
     if (virXen_getdomaininfo(fd, 0, &info) == 1) {
         /* xen-3.1 */
         hv_versions.dom_interface = 5; /* XEN_DOMCTL_INTERFACE_VERSION */
-        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
+        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0) {
             VIR_DEBUG("Using hypervisor call v2, sys ver3 dom ver5");
             goto done;
         }
@@ -1911,7 +1911,7 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
     if (virXen_getdomaininfo(fd, 0, &info) == 1) {
         /* Fedora 8 */
         hv_versions.dom_interface = 5; /* XEN_DOMCTL_INTERFACE_VERSION */
-        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
+        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0) {
             VIR_DEBUG("Using hypervisor call v2, sys ver4 dom ver5");
             goto done;
         }
@@ -1921,7 +1921,7 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
     if (virXen_getdomaininfo(fd, 0, &info) == 1) {
         /* Xen 3.2, Fedora 9 */
         hv_versions.dom_interface = 5; /* XEN_DOMCTL_INTERFACE_VERSION */
-        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
+        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0) {
             VIR_DEBUG("Using hypervisor call v2, sys ver6 dom ver5");
             goto done;
         }
@@ -1943,12 +1943,12 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
     hv_versions.sys_interface = 8; /* XEN_SYSCTL_INTERFACE_VERSION */
     if (virXen_getdomaininfo(fd, 0, &info) == 1) {
         hv_versions.dom_interface = 7; /* XEN_DOMCTL_INTERFACE_VERSION */
-        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
+        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0) {
             VIR_DEBUG("Using hypervisor call v2, sys ver8 dom ver7");
             goto done;
         }
         hv_versions.dom_interface = 8; /* XEN_DOMCTL_INTERFACE_VERSION */
-        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
+        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0) {
             VIR_DEBUG("Using hypervisor call v2, sys ver8 dom ver8");
             goto done;
         }
@@ -1961,7 +1961,7 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
     hv_versions.sys_interface = 9; /* XEN_SYSCTL_INTERFACE_VERSION */
     if (virXen_getdomaininfo(fd, 0, &info) == 1) {
         hv_versions.dom_interface = 8; /* XEN_DOMCTL_INTERFACE_VERSION */
-        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
+        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0) {
             VIR_DEBUG("Using hypervisor call v2, sys ver9 dom ver8");
             goto done;
         }

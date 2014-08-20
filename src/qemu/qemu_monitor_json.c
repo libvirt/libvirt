@@ -3868,7 +3868,7 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("No active operation on device: %s"),
                            device);
-        } else if (qemuMonitorJSONHasError(reply, "DeviceInUse")){
+        } else if (qemuMonitorJSONHasError(reply, "DeviceInUse")) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("Device %s in use"), device);
         } else if (qemuMonitorJSONHasError(reply, "NotSupported")) {
