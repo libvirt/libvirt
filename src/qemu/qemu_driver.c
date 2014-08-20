@@ -15807,6 +15807,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     int ret = -1;
     size_t i;
     int idx = -1;
+    int conf_idx;
     bool set_bytes = false;
     bool set_iops = false;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -15846,9 +15847,6 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     priv = vm->privateData;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto endjob;
-
-    if (!(device = qemuDiskPathToAlias(vm, disk, &idx)))
         goto endjob;
 
     if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
@@ -15905,6 +15903,15 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         goto endjob;
     }
 
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if ((conf_idx = virDomainDiskIndexByName(persistentDef, disk, true)) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("missing persistent configuration for disk '%s'"),
+                           disk);
+            goto endjob;
+        }
+    }
+
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -15912,6 +15919,9 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
                          "QEMU binary"));
             goto endjob;
         }
+
+        if (!(device = qemuDiskPathToAlias(vm, disk, &idx)))
+            goto endjob;
 
         /* If the user didn't specify bytes limits, inherit previous
          * values; likewise if the user didn't specify iops
@@ -15937,7 +15947,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         sa_assert(persistentDef);
-        oldinfo = &persistentDef->disks[idx]->blkdeviotune;
+        oldinfo = &persistentDef->disks[conf_idx]->blkdeviotune;
         if (!set_bytes) {
             info.total_bytes_sec = oldinfo->total_bytes_sec;
             info.read_bytes_sec = oldinfo->read_bytes_sec;
@@ -15948,7 +15958,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
             info.read_iops_sec = oldinfo->read_iops_sec;
             info.write_iops_sec = oldinfo->write_iops_sec;
         }
-        persistentDef->disks[idx]->blkdeviotune = info;
+        persistentDef->disks[conf_idx]->blkdeviotune = info;
         ret = virDomainSaveConfig(cfg->configDir, persistentDef);
         if (ret < 0) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
