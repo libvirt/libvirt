@@ -2731,7 +2731,7 @@ virNetworkDefFormatBuf(virBufferPtr buf,
         if (def->forward.nifs &&
             (!def->forward.npfs || !(flags & VIR_NETWORK_XML_INACTIVE))) {
             for (i = 0; i < def->forward.nifs; i++) {
-                if (def->forward.type != VIR_NETWORK_FORWARD_HOSTDEV) {
+                if (def->forward.ifs[i].type == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV) {
                     virBufferEscapeString(buf, "<interface dev='%s'",
                                           def->forward.ifs[i].device.dev);
                     if (!(flags & VIR_NETWORK_XML_INACTIVE) &&
@@ -2740,8 +2740,7 @@ virNetworkDefFormatBuf(virBufferPtr buf,
                                           def->forward.ifs[i].connections);
                     }
                     virBufferAddLit(buf, "/>\n");
-                }
-                else {
+                } else {
                     if (def->forward.ifs[i].type ==  VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI) {
                         if (virDevicePCIAddressFormat(buf,
                                                       def->forward.ifs[i].device.pci,

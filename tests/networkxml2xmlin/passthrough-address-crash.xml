@@ -1,0 +1,7 @@
+<network>
+  <name>passthrough_001</name>
+  <uuid>50e92386-8dd1-4a95-8a4b-9a888274eb66</uuid>
+  <forward mode='passthrough'>
+    <address type='pci' domain='0x0000' bus='0x11' slot='0x10' function='0x1'/>
+  </forward>
+</network>
