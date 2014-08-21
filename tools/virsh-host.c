@@ -263,10 +263,10 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_freepages[] = {
     {.name = "help",
-     .data = N_("NUMA free memory")
+     .data = N_("NUMA free pages")
     },
     {.name = "desc",
-     .data = N_("display available free memory for the NUMA cell.")
+     .data = N_("display available free pages for the NUMA cell.")
     },
     {.name = NULL}
 };
