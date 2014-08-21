@@ -198,6 +198,9 @@ mymain(void)
     DO_TEST("hyperv");
     DO_TEST("hyperv-off");
 
+    DO_TEST("kvm-features");
+    DO_TEST("kvm-features-off");
+
     DO_TEST("hugepages");
     DO_TEST("hugepages-pages");
     DO_TEST("hugepages-pages2");

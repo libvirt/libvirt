@@ -1515,6 +1515,7 @@ typedef enum {
     VIR_DOMAIN_FEATURE_VIRIDIAN,
     VIR_DOMAIN_FEATURE_PRIVNET,
     VIR_DOMAIN_FEATURE_HYPERV,
+    VIR_DOMAIN_FEATURE_KVM,
     VIR_DOMAIN_FEATURE_PVSPINLOCK,
     VIR_DOMAIN_FEATURE_CAPABILITIES,
 
@@ -1528,6 +1529,12 @@ typedef enum {
 
     VIR_DOMAIN_HYPERV_LAST
 } virDomainHyperv;
+
+typedef enum {
+    VIR_DOMAIN_KVM_HIDDEN = 0,
+
+    VIR_DOMAIN_KVM_LAST
+} virDomainKVM;
 
 typedef enum {
     VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT = 0,
@@ -1945,6 +1952,7 @@ struct _virDomainDef {
     int features[VIR_DOMAIN_FEATURE_LAST];
     int apic_eoi;
     int hyperv_features[VIR_DOMAIN_HYPERV_LAST];
+    int kvm_features[VIR_DOMAIN_KVM_LAST];
     unsigned int hyperv_spinlocks;
 
     /* These options are of type virTristateSwitch: ON = keep, OFF = drop */
@@ -2628,6 +2636,7 @@ VIR_ENUM_DECL(virDomainGraphicsSpiceStreamingMode)
 VIR_ENUM_DECL(virDomainGraphicsSpiceMouseMode)
 VIR_ENUM_DECL(virDomainGraphicsVNCSharePolicy)
 VIR_ENUM_DECL(virDomainHyperv)
+VIR_ENUM_DECL(virDomainKVM)
 VIR_ENUM_DECL(virDomainRNGModel)
 VIR_ENUM_DECL(virDomainRNGBackend)
 VIR_ENUM_DECL(virDomainTPMModel)

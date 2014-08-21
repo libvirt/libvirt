@@ -6230,6 +6230,25 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
         }
     }
 
+    if (def->features[VIR_DOMAIN_FEATURE_KVM] == VIR_TRISTATE_SWITCH_ON) {
+        if (!have_cpu) {
+            virBufferAdd(&buf, default_model, -1);
+            have_cpu = true;
+        }
+
+        for (i = 0; i < VIR_DOMAIN_KVM_LAST; i++) {
+            switch ((virDomainKVM) i) {
+            case VIR_DOMAIN_KVM_HIDDEN:
+                if (def->kvm_features[i] == VIR_TRISTATE_SWITCH_ON)
+                    virBufferAddLit(&buf, ",kvm=off");
+                break;
+
+            case VIR_DOMAIN_KVM_LAST:
+                break;
+            }
+        }
+    }
+
     if (virBufferCheckError(&buf) < 0)
         goto cleanup;
 
@@ -10712,6 +10731,9 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             }
             virStringFreeList(hv_tokens);
             hv_tokens = NULL;
+        } else if (STREQ(tokens[i], "kvm=off")) {
+             dom->features[VIR_DOMAIN_FEATURE_KVM] = VIR_TRISTATE_SWITCH_ON;
+             dom->kvm_features[VIR_DOMAIN_KVM_HIDDEN] = VIR_TRISTATE_SWITCH_ON;
         }
     }
 

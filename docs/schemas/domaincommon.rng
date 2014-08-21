@@ -3831,7 +3831,7 @@
   </define>
   <!--
       A set of optional features: PAE, APIC, ACPI,
-      HyperV Enlightenment, paravirtual spinlocks  and HAP support
+      HyperV Enlightenment, KVM features, paravirtual spinlocks and HAP support
     -->
   <define name="features">
     <optional>
@@ -3871,6 +3871,9 @@
             <element name="viridian">
               <empty/>
             </element>
+          </optional>
+          <optional>
+            <ref name="kvm"/>
           </optional>
           <optional>
             <element name="privnet">
@@ -4471,6 +4474,19 @@
                 <data type="unsignedInt"/>
               </attribute>
             </optional>
+          </element>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
+  <!-- Optional KVM features -->
+  <define name="kvm">
+    <element name="kvm">
+      <interleave>
+        <optional>
+          <element name="hidden">
+            <ref name="featurestate"/>
           </element>
         </optional>
       </interleave>

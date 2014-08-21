@@ -284,6 +284,8 @@ mymain(void)
 
     DO_TEST("hyperv");
 
+    DO_TEST("kvm-features");
+
     DO_TEST("pseries-nvram");
     DO_TEST("pseries-disk");
 

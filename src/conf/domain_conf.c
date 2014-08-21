@@ -142,6 +142,7 @@ VIR_ENUM_IMPL(virDomainFeature, VIR_DOMAIN_FEATURE_LAST,
               "viridian",
               "privnet",
               "hyperv",
+              "kvm",
               "pvspinlock",
               "capabilities")
 
@@ -154,6 +155,9 @@ VIR_ENUM_IMPL(virDomainHyperv, VIR_DOMAIN_HYPERV_LAST,
               "relaxed",
               "vapic",
               "spinlocks")
+
+VIR_ENUM_IMPL(virDomainKVM, VIR_DOMAIN_KVM_LAST,
+              "hidden")
 
 VIR_ENUM_IMPL(virDomainCapsFeature, VIR_DOMAIN_CAPS_FEATURE_LAST,
               "audit_control",
@@ -12203,6 +12207,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         case VIR_DOMAIN_FEATURE_VIRIDIAN:
         case VIR_DOMAIN_FEATURE_PRIVNET:
         case VIR_DOMAIN_FEATURE_HYPERV:
+        case VIR_DOMAIN_FEATURE_KVM:
             def->features[val] = VIR_TRISTATE_SWITCH_ON;
             break;
 
@@ -12323,6 +12328,54 @@ virDomainDefParseXML(xmlDocPtr xml,
                     break;
 
                 case VIR_DOMAIN_HYPERV_LAST:
+                    break;
+            }
+        }
+        VIR_FREE(nodes);
+        ctxt->node = node;
+    }
+
+    if (def->features[VIR_DOMAIN_FEATURE_KVM] == VIR_TRISTATE_SWITCH_ON) {
+        int feature;
+        int value;
+        node = ctxt->node;
+        if ((n = virXPathNodeSet("./features/kvm/*", ctxt, &nodes)) < 0)
+            goto error;
+
+        for (i = 0; i < n; i++) {
+            feature = virDomainKVMTypeFromString((const char *)nodes[i]->name);
+            if (feature < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported KVM feature: %s"),
+                               nodes[i]->name);
+                goto error;
+            }
+
+            ctxt->node = nodes[i];
+
+            switch ((virDomainKVM) feature) {
+                case VIR_DOMAIN_KVM_HIDDEN:
+                    if (!(tmp = virXPathString("string(./@state)", ctxt))) {
+                        virReportError(VIR_ERR_XML_ERROR,
+                                       _("missing 'state' attribute for "
+                                         "KVM feature '%s'"),
+                                       nodes[i]->name);
+                        goto error;
+                    }
+
+                    if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("invalid value of state argument "
+                                         "for KVM feature '%s'"),
+                                       nodes[i]->name);
+                        goto error;
+                    }
+
+                    VIR_FREE(tmp);
+                    def->kvm_features[feature] = value;
+                    break;
+
+                case VIR_DOMAIN_KVM_LAST:
                     break;
             }
         }
@@ -14333,6 +14386,29 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
                 break;
 
             case VIR_DOMAIN_HYPERV_LAST:
+                break;
+            }
+        }
+    }
+
+    /* kvm */
+    if (src->features[VIR_DOMAIN_FEATURE_KVM] == VIR_TRISTATE_SWITCH_ON) {
+        for (i = 0; i < VIR_DOMAIN_KVM_LAST; i++) {
+            switch ((virDomainKVM) i) {
+            case VIR_DOMAIN_KVM_HIDDEN:
+                if (src->kvm_features[i] != dst->kvm_features[i]) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("State of KVM feature '%s' differs: "
+                                     "source: '%s', destination: '%s'"),
+                                   virDomainKVMTypeToString(i),
+                                   virTristateSwitchTypeToString(src->kvm_features[i]),
+                                   virTristateSwitchTypeToString(dst->kvm_features[i]));
+                    return false;
+                }
+
+                break;
+
+            case VIR_DOMAIN_KVM_LAST:
                 break;
             }
         }
@@ -18170,6 +18246,30 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 }
                 virBufferAdjustIndent(buf, -2);
                 virBufferAddLit(buf, "</hyperv>\n");
+                break;
+
+            case VIR_DOMAIN_FEATURE_KVM:
+                if (def->features[i] != VIR_TRISTATE_SWITCH_ON)
+                    break;
+
+                virBufferAddLit(buf, "<kvm>\n");
+                virBufferAdjustIndent(buf, 2);
+                for (j = 0; j < VIR_DOMAIN_KVM_LAST; j++) {
+                    switch ((virDomainKVM) j) {
+                    case VIR_DOMAIN_KVM_HIDDEN:
+                        if (def->kvm_features[j])
+                            virBufferAsprintf(buf, "<%s state='%s'/>\n",
+                                              virDomainKVMTypeToString(j),
+                                              virTristateSwitchTypeToString(
+                                                  def->kvm_features[j]));
+                        break;
+
+                    case VIR_DOMAIN_KVM_LAST:
+                        break;
+                    }
+                }
+                virBufferAdjustIndent(buf, -2);
+                virBufferAddLit(buf, "</kvm>\n");
                 break;
 
             case VIR_DOMAIN_FEATURE_CAPABILITIES:

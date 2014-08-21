@@ -1250,6 +1250,9 @@
       &lt;vapic state='on'/&gt;
       &lt;spinlocks state='on' retries='4096'/&gt;
     &lt;/hyperv&gt;
+    &lt;kvm&gt;
+      &lt;hidden state='on'/&gt;
+    &lt;/kvm&gt;
     &lt;pvspinlock/&gt;
 
   &lt;/features&gt;
@@ -1328,7 +1331,23 @@
           can be explicitly disabled by using <code>state='off'</code>
           attribute.
       </dd>
-
+      <dt><code>kvm</code></dt>
+      <dd>Various features to change the behavior of the KVM hypervisor.
+      <table class="top_table">
+        <tr>
+          <th>Feature</th>
+          <th>Description</th>
+          <th>Value</th>
+          <th>Since</th>
+        </tr>
+        <tr>
+          <td>hidden</td>
+          <td>Hide the KVM hypervisor from standard MSR based discovery</td>
+          <td>on, off</td>
+          <td><span class="since">2.1.0 (QEMU only)</span></td>
+        </tr>
+      </table>
+      </dd>
     </dl>
 
     <h3><a name="elementsTime">Time keeping</a></h3>
