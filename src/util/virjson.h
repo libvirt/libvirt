@@ -1,7 +1,7 @@
 /*
  * virjson.h: JSON object parsing/formatting
  *
- * Copyright (C) 2009, 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2009, 2012-2015 Red Hat, Inc.
  * Copyright (C) 2009 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -164,5 +164,7 @@ typedef int (*virJSONValueObjectIteratorFunc)(const char *key,
 int virJSONValueObjectForeachKeyValue(virJSONValuePtr object,
                                       virJSONValueObjectIteratorFunc cb,
                                       void *opaque);
+
+virJSONValuePtr virJSONValueCopy(virJSONValuePtr in);
 
 #endif /* __VIR_JSON_H_ */

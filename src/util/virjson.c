@@ -1,7 +1,7 @@
 /*
  * virjson.c: JSON object parsing/formatting
  *
- * Copyright (C) 2009-2010, 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2009-2010, 2012-2015 Red Hat, Inc.
  * Copyright (C) 2009 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1230,6 +1230,69 @@ virJSONValueObjectForeachKeyValue(virJSONValuePtr object,
     }
 
     return 0;
+}
+
+
+virJSONValuePtr
+virJSONValueCopy(virJSONValuePtr in)
+{
+    size_t i;
+    virJSONValuePtr out = NULL;
+
+    if (!in)
+        return NULL;
+
+    switch ((virJSONType) in->type) {
+    case VIR_JSON_TYPE_OBJECT:
+        out = virJSONValueNewObject();
+        if (!out)
+            return NULL;
+        for (i = 0; i < in->data.object.npairs; i++) {
+            virJSONValuePtr val = NULL;
+            if (!(val = virJSONValueCopy(in->data.object.pairs[i].value)))
+                goto error;
+            if (virJSONValueObjectAppend(out, in->data.object.pairs[i].key,
+                                         val) < 0) {
+                virJSONValueFree(val);
+                goto error;
+            }
+        }
+        break;
+    case VIR_JSON_TYPE_ARRAY:
+        out = virJSONValueNewArray();
+        if (!out)
+            return NULL;
+        for (i = 0; i < in->data.array.nvalues; i++) {
+            virJSONValuePtr val = NULL;
+            if (!(val = virJSONValueCopy(in->data.array.values[i])))
+                goto error;
+            if (virJSONValueArrayAppend(out, val) < 0) {
+                virJSONValueFree(val);
+                goto error;
+            }
+        }
+        break;
+
+    /* No need to error out in the following cases */
+    case VIR_JSON_TYPE_STRING:
+        out = virJSONValueNewString(in->data.string);
+        break;
+    case VIR_JSON_TYPE_NUMBER:
+        out = virJSONValueNewNumber(in->data.number);
+        break;
+    case VIR_JSON_TYPE_BOOLEAN:
+        out = virJSONValueNewBoolean(in->data.boolean);
+        break;
+    case VIR_JSON_TYPE_NULL:
+        out = virJSONValueNewNull();
+        break;
+    }
+
+    return out;
+
+ error:
+    virJSONValueFree(out);
+    return NULL;
 }
 
 

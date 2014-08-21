@@ -119,6 +119,91 @@ testJSONAddRemove(const void *data)
 
 
 static int
+testJSONCopy(const void *data)
+{
+    const struct testInfo *info = data;
+    virJSONValuePtr json = NULL;
+    virJSONValuePtr jsonCopy = NULL;
+    char *result = NULL;
+    char *resultCopy = NULL;
+    int ret = -1;
+
+    json = virJSONValueFromString(info->doc);
+    if (!json) {
+        if (virTestGetVerbose())
+            fprintf(stderr, "Failed to parse %s\n", info->doc);
+        ret = -1;
+        goto cleanup;
+    }
+
+    jsonCopy = virJSONValueCopy(json);
+    if (!jsonCopy) {
+        if (virTestGetVerbose())
+            fprintf(stderr, "Failed to copy JSON data\n");
+        ret = -1;
+        goto cleanup;
+    }
+
+    result = virJSONValueToString(json, false);
+    if (!result) {
+        if (virTestGetVerbose())
+            fprintf(stderr, "Failed to format original JSON data\n");
+        ret = -1;
+        goto cleanup;
+    }
+
+    resultCopy = virJSONValueToString(json, false);
+    if (!resultCopy) {
+        if (virTestGetVerbose())
+            fprintf(stderr, "Failed to format copied JSON data\n");
+        ret = -1;
+        goto cleanup;
+    }
+
+    if (STRNEQ(result, resultCopy)) {
+        if (virTestGetVerbose())
+            virtTestDifference(stderr, result, resultCopy);
+        ret = -1;
+        goto cleanup;
+    }
+
+    VIR_FREE(result);
+    VIR_FREE(resultCopy);
+
+    result = virJSONValueToString(json, true);
+    if (!result) {
+        if (virTestGetVerbose())
+            fprintf(stderr, "Failed to format original JSON data\n");
+        ret = -1;
+        goto cleanup;
+    }
+
+    resultCopy = virJSONValueToString(json, true);
+    if (!resultCopy) {
+        if (virTestGetVerbose())
+            fprintf(stderr, "Failed to format copied JSON data\n");
+        ret = -1;
+        goto cleanup;
+    }
+
+    if (STRNEQ(result, resultCopy)) {
+        if (virTestGetVerbose())
+            virtTestDifference(stderr, result, resultCopy);
+        ret = -1;
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(result);
+    VIR_FREE(resultCopy);
+    virJSONValueFree(json);
+    virJSONValueFree(jsonCopy);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -179,6 +264,32 @@ mymain(void)
                  true);
     DO_TEST_FULL("add and remove", AddRemove,
                  "[ 1 ]", NULL, false);
+
+    DO_TEST_FULL("copy and free", Copy,
+                 "{\"return\": [{\"name\": \"quit\"}, {\"name\": \"eject\"},"
+                 "{\"name\": \"change\"}, {\"name\": \"screendump\"},"
+                 "{\"name\": \"stop\"}, {\"name\": \"cont\"}, {\"name\": "
+                 "\"system_reset\"}, {\"name\": \"system_powerdown\"}, "
+                 "{\"name\": \"device_add\"}, {\"name\": \"device_del\"}, "
+                 "{\"name\": \"cpu\"}, {\"name\": \"memsave\"}, {\"name\": "
+                 "\"pmemsave\"}, {\"name\": \"migrate\"}, {\"name\": "
+                 "\"migrate_cancel\"}, {\"name\": \"migrate_set_speed\"},"
+                 "{\"name\": \"client_migrate_info\"}, {\"name\": "
+                 "\"migrate_set_downtime\"}, {\"name\": \"netdev_add\"}, "
+                 "{\"name\": \"netdev_del\"}, {\"name\": \"block_resize\"},"
+                 "{\"name\": \"balloon\"}, {\"name\": \"set_link\"}, {\"name\":"
+                 "\"getfd\"}, {\"name\": \"closefd\"}, {\"name\": \"block_passwd\"},"
+                 "{\"name\": \"set_password\"}, {\"name\": \"expire_password\"},"
+                 "{\"name\": \"qmp_capabilities\"}, {\"name\": "
+                 "\"human-monitor-command\"}, {\"name\": \"query-version\"},"
+                 "{\"name\": \"query-commands\"}, {\"name\": \"query-chardev\"},"
+                 "{\"name\": \"query-block\"}, {\"name\": \"query-blockstats\"}, "
+                 "{\"name\": \"query-cpus\"}, {\"name\": \"query-pci\"}, {\"name\":"
+                 "\"query-kvm\"}, {\"name\": \"query-status\"}, {\"name\": "
+                 "\"query-mice\"}, {\"name\": \"query-vnc\"}, {\"name\": "
+                 "\"query-spice\"}, {\"name\": \"query-name\"}, {\"name\": "
+                 "\"query-uuid\"}, {\"name\": \"query-migrate\"}, {\"name\": "
+                 "\"query-balloon\"}], \"id\": \"libvirt-2\"}", NULL, true);
 
 
     DO_TEST_PARSE("almost nothing", "[]");

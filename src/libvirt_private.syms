@@ -1585,6 +1585,7 @@ virJSONValueArrayAppend;
 virJSONValueArrayGet;
 virJSONValueArraySize;
 virJSONValueArraySteal;
+virJSONValueCopy;
 virJSONValueFree;
 virJSONValueFromString;
 virJSONValueGetArrayAsBitmap;
