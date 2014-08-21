@@ -419,37 +419,50 @@
       <dt><code>vcpu</code></dt>
       <dd>The content of this element defines the maximum number of virtual
         CPUs allocated for the guest OS, which must be between 1 and
-        the maximum supported by the hypervisor.  <span class="since">Since
-        0.4.4</span>, this element can contain an optional
-        <code>cpuset</code> attribute, which is a comma-separated
-        list of physical CPU numbers that domain process and virtual CPUs
-        can be pinned to by default. (NB: The pinning policy of domain
-        process and virtual CPUs can be specified separately by
-        <code>cputune</code>. If attribute <code>emulatorpin</code>
-        of <code>cputune</code> is specified, <code>cpuset</code>
-        specified by <code>vcpu</code> here will be ignored; Similarly,
-        For virtual CPUs which has <code>vcpupin</code> specified,
-        <code>cpuset</code> specified by <code>cpuset</code> here
-        will be ignored; For virtual CPUs which doesn't have
-        <code>vcpupin</code> specified, it will be pinned to the physical
-        CPUs specified by <code>cpuset</code> here).
-        Each element in that list is either a single CPU number,
-        a range of CPU numbers, or a caret followed by a CPU number to
-        be excluded from a previous range.  <span class="since">Since
-        0.8.5</span>, the optional attribute <code>current</code> can
-        be used to specify whether fewer than the maximum number of
-        virtual CPUs should be enabled.  <span class="since">Since
-        0.9.11 (QEMU and KVM only)</span>, the optional attribute
-        <code>placement</code> can be used to indicate the CPU placement
-        mode for domain process, its value can be either "static" or
-        "auto", defaults to <code>placement</code> of <code>numatune</code>,
-         or "static" if <code>cpuset</code> is specified. "auto" indicates
-        the domain process will be pinned to the advisory nodeset from querying
-        numad, and the value of attribute <code>cpuset</code> will be ignored
-        if it's specified. If both <code>cpuset</code> and <code>placement</code>
-        are not specified, or if <code>placement</code> is "static", but no
-        <code>cpuset</code> is specified, the domain process will be pinned to
-        all the available physical CPUs.
+        the maximum supported by the hypervisor.
+        <dl>
+         <dt><code>cpuset</code></dt>
+         <dd>
+           The optional attribute <code>cpuset</code> is a comma-separated
+           list of physical CPU numbers that domain process and virtual CPUs
+           can be pinned to by default. (NB: The pinning policy of domain
+           process and virtual CPUs can be specified separately by
+           <code>cputune</code>. If the attribute <code>emulatorpin</code>
+           of <code>cputune</code> is specified, the <code>cpuset</code>
+           specified by <code>vcpu</code> here will be ignored. Similarly,
+           for virtual CPUs which have the <code>vcpupin</code> specified,
+           the <code>cpuset</code> specified by <code>cpuset</code> here
+           will be ignored. For virtual CPUs which don't have
+           <code>vcpupin</code> specified, each will be pinned to the physical
+           CPUs specified by <code>cpuset</code> here).
+           Each element in that list is either a single CPU number,
+           a range of CPU numbers, or a caret followed by a CPU number to
+           be excluded from a previous range.
+           <span class="since">Since 0.4.4</span>
+         </dd>
+         <dt><code>current</code></dt>
+         <dd>
+           The optional attribute <code>current</code> can
+           be used to specify whether fewer than the maximum number of
+           virtual CPUs should be enabled.
+           <span class="since">Since 0.8.5</span>
+         </dd>
+         <dt><code>placement</code></dt>
+         <dd>
+           The optional attribute <code>placement</code> can be used to
+           indicate the CPU placement mode for domain process. The value can
+           be either "static" or "auto", but defaults to <code>placement</code>
+           of <code>numatune</code> or "static" if <code>cpuset</code> is
+           specified. Using "auto" indicates the domain process will be pinned
+           to the advisory nodeset from querying numad and the value of
+           attribute <code>cpuset</code> will be ignored if it's specified.
+           If both <code>cpuset</code> and <code>placement</code> are not
+           specified or if <code>placement</code> is "static", but no
+           <code>cpuset</code> is specified, the domain process will be
+           pinned to all the available physical CPUs.
+           <span class="since">Since 0.9.11 (QEMU and KVM only)</span>
+         </dd>
+        </dl>
       </dd>
     </dl>
 
