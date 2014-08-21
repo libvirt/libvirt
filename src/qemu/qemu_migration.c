@@ -1723,8 +1723,9 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
                              qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret;
     qemuMonitorMigrationStatus status;
+    qemuDomainJobInfoPtr jobInfo;
+    int ret;
 
     memset(&status, 0, sizeof(status));
 
@@ -1738,62 +1739,40 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
 
     qemuDomainObjExitMonitor(driver, vm);
 
-    priv->job.status = status;
-
-    if (ret < 0 || virTimeMillisNow(&priv->job.info.timeElapsed) < 0)
+    if (ret < 0 ||
+        qemuDomainJobInfoUpdateTime(priv->job.current) < 0)
         return -1;
 
-    priv->job.info.timeElapsed -= priv->job.start;
-
     ret = -1;
-    switch (priv->job.status.status) {
+    jobInfo = priv->job.current;
+    switch (status.status) {
+    case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
+        jobInfo->type = VIR_DOMAIN_JOB_COMPLETED;
+        /* fall through */
+    case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
+    case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
+        ret = 0;
+        break;
+
     case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
-        priv->job.info.type = VIR_DOMAIN_JOB_NONE;
+        jobInfo->type = VIR_DOMAIN_JOB_NONE;
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("%s: %s"), job, _("is not active"));
         break;
 
-    case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
-        ret = 0;
-        break;
-
-    case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
-        priv->job.info.fileTotal = priv->job.status.disk_total;
-        priv->job.info.fileRemaining = priv->job.status.disk_remaining;
-        priv->job.info.fileProcessed = priv->job.status.disk_transferred;
-
-        priv->job.info.memTotal = priv->job.status.ram_total;
-        priv->job.info.memRemaining = priv->job.status.ram_remaining;
-        priv->job.info.memProcessed = priv->job.status.ram_transferred;
-
-        priv->job.info.dataTotal =
-            priv->job.status.ram_total + priv->job.status.disk_total;
-        priv->job.info.dataRemaining =
-            priv->job.status.ram_remaining + priv->job.status.disk_remaining;
-        priv->job.info.dataProcessed =
-            priv->job.status.ram_transferred +
-            priv->job.status.disk_transferred;
-
-        ret = 0;
-        break;
-
-    case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
-        priv->job.info.type = VIR_DOMAIN_JOB_COMPLETED;
-        ret = 0;
-        break;
-
     case QEMU_MONITOR_MIGRATION_STATUS_ERROR:
-        priv->job.info.type = VIR_DOMAIN_JOB_FAILED;
+        jobInfo->type = VIR_DOMAIN_JOB_FAILED;
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("%s: %s"), job, _("unexpectedly failed"));
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_CANCELLED:
-        priv->job.info.type = VIR_DOMAIN_JOB_CANCELLED;
+        jobInfo->type = VIR_DOMAIN_JOB_CANCELLED;
         virReportError(VIR_ERR_OPERATION_ABORTED,
                        _("%s: %s"), job, _("canceled by client"));
         break;
     }
+    jobInfo->status = status;
 
     return ret;
 }
@@ -1803,11 +1782,14 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
  * QEMU reports failed migration.
  */
 static int
-qemuMigrationWaitForCompletion(virQEMUDriverPtr driver, virDomainObjPtr vm,
+qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
                                qemuDomainAsyncJob asyncJob,
-                               virConnectPtr dconn, bool abort_on_error)
+                               virConnectPtr dconn,
+                               bool abort_on_error)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainJobInfoPtr jobInfo = priv->job.current;
     const char *job;
     int pauseReason;
 
@@ -1825,9 +1807,9 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver, virDomainObjPtr vm,
         job = _("job");
     }
 
-    priv->job.info.type = VIR_DOMAIN_JOB_UNBOUNDED;
+    jobInfo->type = VIR_DOMAIN_JOB_UNBOUNDED;
 
-    while (priv->job.info.type == VIR_DOMAIN_JOB_UNBOUNDED) {
+    while (jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED) {
         /* Poll every 50ms for progress & to allow cancellation */
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
 
@@ -1856,13 +1838,13 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver, virDomainObjPtr vm,
         virObjectLock(vm);
     }
 
-    if (priv->job.info.type == VIR_DOMAIN_JOB_COMPLETED) {
+    if (jobInfo->type == VIR_DOMAIN_JOB_COMPLETED) {
         return 0;
-    } else if (priv->job.info.type == VIR_DOMAIN_JOB_UNBOUNDED) {
+    } else if (jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED) {
         /* The migration was aborted by us rather than QEMU itself so let's
          * update the job type and notify the caller to send migrate_cancel.
          */
-        priv->job.info.type = VIR_DOMAIN_JOB_FAILED;
+        jobInfo->type = VIR_DOMAIN_JOB_FAILED;
         return -2;
     } else {
         return -1;
@@ -4914,7 +4896,7 @@ qemuMigrationJobStart(virQEMUDriverPtr driver,
                                           JOB_MASK(QEMU_JOB_MIGRATION_OP)));
     }
 
-    priv->job.info.type = VIR_DOMAIN_JOB_UNBOUNDED;
+    priv->job.current->type = VIR_DOMAIN_JOB_UNBOUNDED;
 
     return 0;
 }

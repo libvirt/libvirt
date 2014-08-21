@@ -163,11 +163,9 @@ qemuDomainObjResetAsyncJob(qemuDomainObjPrivatePtr priv)
     job->asyncOwner = 0;
     job->phase = 0;
     job->mask = QEMU_JOB_DEFAULT_MASK;
-    job->start = 0;
     job->dump_memory_only = false;
     job->asyncAbort = false;
-    memset(&job->status, 0, sizeof(job->status));
-    memset(&job->info, 0, sizeof(job->info));
+    VIR_FREE(job->current);
 }
 
 void
@@ -200,6 +198,7 @@ qemuDomainObjTransferJob(virDomainObjPtr obj)
 static void
 qemuDomainObjFreeJob(qemuDomainObjPrivatePtr priv)
 {
+    VIR_FREE(priv->job.current);
     virCondDestroy(&priv->job.cond);
     virCondDestroy(&priv->job.asyncCond);
 }
@@ -208,6 +207,150 @@ static bool
 qemuDomainTrackJob(qemuDomainJob job)
 {
     return (QEMU_DOMAIN_TRACK_JOBS & JOB_MASK(job)) != 0;
+}
+
+
+int
+qemuDomainJobInfoUpdateTime(qemuDomainJobInfoPtr jobInfo)
+{
+    unsigned long long now;
+
+    if (!jobInfo->started)
+        return 0;
+
+    if (virTimeMillisNow(&now) < 0)
+        return -1;
+
+    jobInfo->timeElapsed = now - jobInfo->started;
+    return 0;
+}
+
+int
+qemuDomainJobInfoToInfo(qemuDomainJobInfoPtr jobInfo,
+                        virDomainJobInfoPtr info)
+{
+    info->timeElapsed = jobInfo->timeElapsed;
+    info->timeRemaining = jobInfo->timeRemaining;
+
+    info->memTotal = jobInfo->status.ram_total;
+    info->memRemaining = jobInfo->status.ram_remaining;
+    info->memProcessed = jobInfo->status.ram_transferred;
+
+    info->fileTotal = jobInfo->status.disk_total;
+    info->fileRemaining = jobInfo->status.disk_remaining;
+    info->fileProcessed = jobInfo->status.disk_transferred;
+
+    info->dataTotal = info->memTotal + info->fileTotal;
+    info->dataRemaining = info->memRemaining + info->fileRemaining;
+    info->dataProcessed = info->memProcessed + info->fileProcessed;
+
+    return 0;
+}
+
+int
+qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
+                          int *type,
+                          virTypedParameterPtr *params,
+                          int *nparams)
+{
+    qemuMonitorMigrationStatus *status = &jobInfo->status;
+    virTypedParameterPtr par = NULL;
+    int maxpar = 0;
+    int npar = 0;
+
+    if (virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_TIME_ELAPSED,
+                                jobInfo->timeElapsed) < 0)
+        goto error;
+
+    if (jobInfo->type == VIR_DOMAIN_JOB_BOUNDED &&
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_TIME_REMAINING,
+                                jobInfo->timeRemaining) < 0)
+        goto error;
+
+    if (status->downtime_set &&
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_DOWNTIME,
+                                status->downtime) < 0)
+        goto error;
+
+    if (virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_DATA_TOTAL,
+                                status->ram_total +
+                                status->disk_total) < 0 ||
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_DATA_PROCESSED,
+                                status->ram_transferred +
+                                status->disk_transferred) < 0 ||
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_DATA_REMAINING,
+                                status->ram_remaining +
+                                status->disk_remaining) < 0)
+        goto error;
+
+    if (virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_MEMORY_TOTAL,
+                                status->ram_total) < 0 ||
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_MEMORY_PROCESSED,
+                                status->ram_transferred) < 0 ||
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_MEMORY_REMAINING,
+                                status->ram_remaining) < 0)
+        goto error;
+
+    if (status->ram_duplicate_set) {
+        if (virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                    VIR_DOMAIN_JOB_MEMORY_CONSTANT,
+                                    status->ram_duplicate) < 0 ||
+            virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                    VIR_DOMAIN_JOB_MEMORY_NORMAL,
+                                    status->ram_normal) < 0 ||
+            virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                    VIR_DOMAIN_JOB_MEMORY_NORMAL_BYTES,
+                                    status->ram_normal_bytes) < 0)
+            goto error;
+    }
+
+    if (virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_DISK_TOTAL,
+                                status->disk_total) < 0 ||
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_DISK_PROCESSED,
+                                status->disk_transferred) < 0 ||
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_DISK_REMAINING,
+                                status->disk_remaining) < 0)
+        goto error;
+
+    if (status->xbzrle_set) {
+        if (virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                    VIR_DOMAIN_JOB_COMPRESSION_CACHE,
+                                    status->xbzrle_cache_size) < 0 ||
+            virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                    VIR_DOMAIN_JOB_COMPRESSION_BYTES,
+                                    status->xbzrle_bytes) < 0 ||
+            virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                    VIR_DOMAIN_JOB_COMPRESSION_PAGES,
+                                    status->xbzrle_pages) < 0 ||
+            virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                    VIR_DOMAIN_JOB_COMPRESSION_CACHE_MISSES,
+                                    status->xbzrle_cache_miss) < 0 ||
+            virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                    VIR_DOMAIN_JOB_COMPRESSION_OVERFLOW,
+                                    status->xbzrle_overflow) < 0)
+            goto error;
+    }
+
+    *type = jobInfo->type;
+    *params = par;
+    *nparams = npar;
+    return 0;
+
+ error:
+    virTypedParamsFree(par, npar);
+    return -1;
 }
 
 
@@ -1071,7 +1214,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
     unsigned long long then;
     bool nested = job == QEMU_JOB_ASYNC_NESTED;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    int ret;
+    int ret = -1;
 
     VIR_DEBUG("Starting %s: %s (async=%s vm=%p name=%s)",
               job == QEMU_JOB_ASYNC ? "async job" : "job",
@@ -1127,9 +1270,11 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
                   qemuDomainAsyncJobTypeToString(asyncJob),
                   obj, obj->def->name);
         qemuDomainObjResetAsyncJob(priv);
+        if (VIR_ALLOC(priv->job.current) < 0)
+            goto cleanup;
         priv->job.asyncJob = asyncJob;
         priv->job.asyncOwner = virThreadSelfID();
-        priv->job.start = now;
+        priv->job.current->started = now;
     }
 
     if (qemuDomainTrackJob(job))
@@ -1163,6 +1308,8 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
         virReportSystemError(errno,
                              "%s", _("cannot acquire job mutex"));
     }
+
+ cleanup:
     priv->jobs_queued--;
     virObjectUnref(obj);
     virObjectUnref(cfg);

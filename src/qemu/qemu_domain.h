@@ -100,6 +100,18 @@ typedef enum {
 } qemuDomainAsyncJob;
 VIR_ENUM_DECL(qemuDomainAsyncJob)
 
+typedef struct _qemuDomainJobInfo qemuDomainJobInfo;
+typedef qemuDomainJobInfo *qemuDomainJobInfoPtr;
+struct _qemuDomainJobInfo {
+    virDomainJobType type;
+    unsigned long long started; /* When the async job started */
+    /* Computed values */
+    unsigned long long timeElapsed;
+    unsigned long long timeRemaining;
+    /* Raw values from QEMU */
+    qemuMonitorMigrationStatus status;
+};
+
 struct qemuDomainJobObj {
     virCond cond;                       /* Use to coordinate jobs */
     qemuDomainJob active;               /* Currently running job */
@@ -110,10 +122,8 @@ struct qemuDomainJobObj {
     unsigned long long asyncOwner;      /* Thread which set current async job */
     int phase;                          /* Job phase (mainly for migrations) */
     unsigned long long mask;            /* Jobs allowed during async job */
-    unsigned long long start;           /* When the async job started */
     bool dump_memory_only;              /* use dump-guest-memory to do dump */
-    qemuMonitorMigrationStatus status;  /* Raw async job progress data */
-    virDomainJobInfo info;              /* Processed async job progress data */
+    qemuDomainJobInfoPtr current;       /* async job progress data */
     bool asyncAbort;                    /* abort of async job requested */
 };
 
@@ -377,5 +387,17 @@ bool qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
 
 bool qemuDomainAgentAvailable(qemuDomainObjPrivatePtr priv,
                               bool reportError);
+
+int qemuDomainJobInfoUpdateTime(qemuDomainJobInfoPtr jobInfo)
+    ATTRIBUTE_NONNULL(1);
+int qemuDomainJobInfoToInfo(qemuDomainJobInfoPtr jobInfo,
+                            virDomainJobInfoPtr info)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
+                              int *type,
+                              virTypedParameterPtr *params,
+                              int *nparams)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
 #endif /* __QEMU_DOMAIN_H__ */

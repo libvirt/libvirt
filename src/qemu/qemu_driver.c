@@ -2655,15 +2655,13 @@ qemuDomainGetControlInfo(virDomainPtr dom,
     if (priv->monError) {
         info->state = VIR_DOMAIN_CONTROL_ERROR;
     } else if (priv->job.active) {
-        if (!priv->monStart) {
+        if (virTimeMillisNow(&info->stateTime) < 0)
+            goto cleanup;
+        if (priv->job.current) {
             info->state = VIR_DOMAIN_CONTROL_JOB;
-            if (virTimeMillisNow(&info->stateTime) < 0)
-                goto cleanup;
-            info->stateTime -= priv->job.start;
+            info->stateTime -= priv->job.current->started;
         } else {
             info->state = VIR_DOMAIN_CONTROL_OCCUPIED;
-            if (virTimeMillisNow(&info->stateTime) < 0)
-                goto cleanup;
             info->stateTime -= priv->monStart;
         }
     } else {
@@ -3110,8 +3108,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
         goto endjob;
     }
 
-    memset(&priv->job.info, 0, sizeof(priv->job.info));
-    priv->job.info.type = VIR_DOMAIN_JOB_UNBOUNDED;
+    priv->job.current->type = VIR_DOMAIN_JOB_UNBOUNDED;
 
     /* Pause */
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
@@ -3460,6 +3457,7 @@ static int qemuDumpToFd(virQEMUDriverPtr driver, virDomainObjPtr vm,
                                           fd) < 0)
         return -1;
 
+    VIR_FREE(priv->job.current);
     priv->job.dump_memory_only = true;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
@@ -11616,17 +11614,15 @@ static int qemuDomainGetJobInfo(virDomainPtr dom,
         goto cleanup;
 
     if (virDomainObjIsActive(vm)) {
-        if (priv->job.asyncJob && !priv->job.dump_memory_only) {
-            memcpy(info, &priv->job.info, sizeof(*info));
-
+        if (priv->job.current) {
             /* Refresh elapsed time again just to ensure it
              * is fully updated. This is primarily for benefit
              * of incoming migration which we don't currently
              * monitor actively in the background thread
              */
-            if (virTimeMillisNow(&info->timeElapsed) < 0)
+            if (qemuDomainJobInfoUpdateTime(priv->job.current) < 0 ||
+                qemuDomainJobInfoToInfo(priv->job.current, info) < 0)
                 goto cleanup;
-            info->timeElapsed -= priv->job.start;
         } else {
             memset(info, 0, sizeof(*info));
             info->type = VIR_DOMAIN_JOB_NONE;
@@ -11655,9 +11651,6 @@ qemuDomainGetJobStats(virDomainPtr dom,
 {
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
-    virTypedParameterPtr par = NULL;
-    int maxpar = 0;
-    int npar = 0;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -11676,7 +11669,7 @@ qemuDomainGetJobStats(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!priv->job.asyncJob || priv->job.dump_memory_only) {
+    if (!priv->job.current) {
         *type = VIR_DOMAIN_JOB_NONE;
         *params = NULL;
         *nparams = 0;
@@ -11689,102 +11682,16 @@ qemuDomainGetJobStats(virDomainPtr dom,
      * of incoming migration which we don't currently
      * monitor actively in the background thread
      */
-    if (virTimeMillisNow(&priv->job.info.timeElapsed) < 0)
-        goto cleanup;
-    priv->job.info.timeElapsed -= priv->job.start;
-
-    if (virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                VIR_DOMAIN_JOB_TIME_ELAPSED,
-                                priv->job.info.timeElapsed) < 0)
+    if (qemuDomainJobInfoUpdateTime(priv->job.current) < 0 ||
+        qemuDomainJobInfoToParams(priv->job.current,
+                                  type, params, nparams) < 0)
         goto cleanup;
 
-    if (priv->job.info.type == VIR_DOMAIN_JOB_BOUNDED &&
-        virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                VIR_DOMAIN_JOB_TIME_REMAINING,
-                                priv->job.info.timeRemaining) < 0)
-        goto cleanup;
-
-    if (priv->job.status.downtime_set &&
-        virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                VIR_DOMAIN_JOB_DOWNTIME,
-                                priv->job.status.downtime) < 0)
-        goto cleanup;
-
-    if (virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                VIR_DOMAIN_JOB_DATA_TOTAL,
-                                priv->job.info.dataTotal) < 0 ||
-        virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                VIR_DOMAIN_JOB_DATA_PROCESSED,
-                                priv->job.info.dataProcessed) < 0 ||
-        virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                VIR_DOMAIN_JOB_DATA_REMAINING,
-                                priv->job.info.dataRemaining) < 0)
-        goto cleanup;
-
-    if (virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                VIR_DOMAIN_JOB_MEMORY_TOTAL,
-                                priv->job.info.memTotal) < 0 ||
-        virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                VIR_DOMAIN_JOB_MEMORY_PROCESSED,
-                                priv->job.info.memProcessed) < 0 ||
-        virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                VIR_DOMAIN_JOB_MEMORY_REMAINING,
-                                priv->job.info.memRemaining) < 0)
-        goto cleanup;
-
-    if (priv->job.status.ram_duplicate_set) {
-        if (virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                    VIR_DOMAIN_JOB_MEMORY_CONSTANT,
-                                    priv->job.status.ram_duplicate) < 0 ||
-            virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                    VIR_DOMAIN_JOB_MEMORY_NORMAL,
-                                    priv->job.status.ram_normal) < 0 ||
-            virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                    VIR_DOMAIN_JOB_MEMORY_NORMAL_BYTES,
-                                    priv->job.status.ram_normal_bytes) < 0)
-            goto cleanup;
-    }
-
-    if (virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                VIR_DOMAIN_JOB_DISK_TOTAL,
-                                priv->job.info.fileTotal) < 0 ||
-        virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                VIR_DOMAIN_JOB_DISK_PROCESSED,
-                                priv->job.info.fileProcessed) < 0 ||
-        virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                VIR_DOMAIN_JOB_DISK_REMAINING,
-                                priv->job.info.fileRemaining) < 0)
-        goto cleanup;
-
-    if (priv->job.status.xbzrle_set) {
-        if (virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                    VIR_DOMAIN_JOB_COMPRESSION_CACHE,
-                                    priv->job.status.xbzrle_cache_size) < 0 ||
-            virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                    VIR_DOMAIN_JOB_COMPRESSION_BYTES,
-                                    priv->job.status.xbzrle_bytes) < 0 ||
-            virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                    VIR_DOMAIN_JOB_COMPRESSION_PAGES,
-                                    priv->job.status.xbzrle_pages) < 0 ||
-            virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                    VIR_DOMAIN_JOB_COMPRESSION_CACHE_MISSES,
-                                    priv->job.status.xbzrle_cache_miss) < 0 ||
-            virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                    VIR_DOMAIN_JOB_COMPRESSION_OVERFLOW,
-                                    priv->job.status.xbzrle_overflow) < 0)
-            goto cleanup;
-    }
-
-    *type = priv->job.info.type;
-    *params = par;
-    *nparams = npar;
     ret = 0;
 
  cleanup:
     if (vm)
         virObjectUnlock(vm);
-    if (ret < 0)
-        virTypedParamsFree(par, npar);
     return ret;
 }
 
