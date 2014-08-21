@@ -3472,7 +3472,7 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
         case 'k':
             if (virStrToLong_i(optarg, NULL, 0, &keepalive) < 0 ||
                 keepalive < 0) {
-                vshError(ctl, _("option -%s requires a positive numeric argument"),
+                vshError(ctl, _("option %s requires a positive numeric argument"),
                          longindex == -1 ? "-k" : "--keepalive-interval");
                 exit(EXIT_FAILURE);
             }
@@ -3481,7 +3481,7 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
         case 'K':
             if (virStrToLong_i(optarg, NULL, 0, &keepalive) < 0 ||
                 keepalive < 0) {
-                vshError(ctl, _("option -%s requires a positive numeric argument"),
+                vshError(ctl, _("option %s requires a positive numeric argument"),
                          longindex == -1 ? "-K" : "--keepalive-count");
                 exit(EXIT_FAILURE);
             }
