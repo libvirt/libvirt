@@ -544,8 +544,7 @@ int virNetSocketNewConnectUNIX(const char *path,
                                const char *binary,
                                virNetSocketPtr *retsock)
 {
-    char *buf = NULL;
-    int fd, passfd;
+    int fd, passfd = -1;
     virSocketAddr localAddr;
     virSocketAddr remoteAddr;
 
@@ -647,8 +646,8 @@ int virNetSocketNewConnectUNIX(const char *path,
     return 0;
 
  error:
-    VIR_FREE(buf);
     VIR_FORCE_CLOSE(fd);
+    VIR_FORCE_CLOSE(passfd);
     if (spawnDaemon)
         unlink(path);
     return -1;
