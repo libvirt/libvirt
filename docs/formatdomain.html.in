@@ -470,6 +470,32 @@
       </dd>
     </dl>
 
+    <h3><a name="elementsIOThreadsAllocation">IOThreads Allocation</a></h3>
+      <p>
+        IOThreads are dedicated event loop threads for supported disk
+        devices to perform block I/O requests in order to improve
+        scalability especially on an SMP host/guest with many LUNs.
+        <span class="since">Since 1.2.8 (QEMU only)</span>
+      </p>
+
+<pre>
+&lt;domain&gt;
+  ...
+  &lt;iothreads&gt;4&lt;/iothreads&gt;
+  ...
+&lt;/domain&gt;
+</pre>
+
+    <dl>
+      <dt><code>iothreads</code></dt>
+      <dd>
+        The content of this optional element defines the number
+        of IOThreads to be assigned to the domain for use by
+        virtio-blk-pci target storage devices. There should be
+        only 1 or 2 IOThreads per host CPU. There may be more than
+        supported device assigned to each IOThread.
+      </dd>
+    </dl>
 
     <h3><a name="elementsCPUTuning">CPU Tuning</a></h3>
 

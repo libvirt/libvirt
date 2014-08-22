@@ -1915,6 +1915,8 @@ struct _virDomainDef {
     int placement_mode;
     virBitmapPtr cpumask;
 
+    unsigned int iothreads;
+
     struct {
         unsigned long shares;
         bool sharesSpecified;

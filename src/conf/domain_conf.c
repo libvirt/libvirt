@@ -11977,6 +11977,15 @@ virDomainDefParseXML(xmlDocPtr xml,
         }
     }
 
+    /* Optional - iothreads */
+    tmp = virXPathString("string(./iothreads[1])", ctxt);
+    if (tmp && virStrToLong_uip(tmp, NULL, 10, &def->iothreads) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid iothreads count '%s'"), tmp);
+        goto error;
+    }
+    VIR_FREE(tmp);
+
     /* Extract cpu tunables. */
     if ((n = virXPathULong("string(./cputune/shares[1])", ctxt,
                            &def->cputune.shares)) < -1) {
@@ -14563,6 +14572,14 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain vCPU max %d does not match source %d"),
                        dst->maxvcpus, src->maxvcpus);
+        goto error;
+    }
+
+    if (src->iothreads != dst->iothreads) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain iothreads count %u does not "
+                         "match source %u"),
+                       dst->iothreads, src->iothreads);
         goto error;
     }
 
@@ -17970,6 +17987,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (def->vcpus != def->maxvcpus)
         virBufferAsprintf(buf, " current='%u'", def->vcpus);
     virBufferAsprintf(buf, ">%u</vcpu>\n", def->maxvcpus);
+
+    if (def->iothreads > 0)
+        virBufferAsprintf(buf, "<iothreads>%u</iothreads>\n", def->iothreads);
 
     if (def->cputune.sharesSpecified ||
         (def->cputune.nvcpupin && !virDomainIsAllVcpupinInherited(def)) ||
