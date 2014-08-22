@@ -1628,13 +1628,13 @@ parallelsApplyVideoParams(parallelsDomObjPtr pdom,
     }
 
     if (old->vram != new->vram) {
-        if (new->vram % (1 << 20) != 0) {
+        if (new->vram % (1 << 10) != 0) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Video RAM size should be multiple of 1Mb."));
             return -1;
         }
 
-        snprintf(str_vram, 31, "%d", new->vram >> 20);
+        snprintf(str_vram, 31, "%dK", new->vram);
         str_vram[31] = '\0';
 
         if (parallelsCmdRun(PRLCTL, "set", pdom->uuid,
