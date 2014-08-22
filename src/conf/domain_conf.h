@@ -1630,6 +1630,8 @@ struct _virDomainOSDef {
     size_t nBootDevs;
     int bootDevs[VIR_DOMAIN_BOOT_LAST];
     int bootmenu; /* enum virTristateBool */
+    unsigned int bm_timeout;
+    bool bm_timeout_set;
     char *init;
     char **initargv;
     char *kernel;

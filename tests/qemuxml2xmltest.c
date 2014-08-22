@@ -171,7 +171,9 @@ mymain(void)
     DO_TEST("boot-network");
     DO_TEST("boot-floppy");
     DO_TEST("boot-multi");
+    DO_TEST("boot-menu-enable-with-timeout");
     DO_TEST("boot-menu-disable");
+    DO_TEST_DIFFERENT("boot-menu-disable-with-timeout");
     DO_TEST("boot-order");
     DO_TEST("bootloader");
 

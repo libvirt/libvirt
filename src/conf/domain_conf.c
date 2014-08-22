@@ -11188,6 +11188,19 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
         VIR_FREE(tmp);
     }
 
+    tmp = virXPathString("string(./os/bootmenu[1]/@timeout)", ctxt);
+    if (tmp && def->os.bootmenu == VIR_TRISTATE_BOOL_YES) {
+        if (virStrToLong_uip(tmp, NULL, 0, &def->os.bm_timeout) < 0 ||
+            def->os.bm_timeout > 65535) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("invalid value for boot menu timeout, "
+                             "must be in range [0,65535]"));
+            goto cleanup;
+        }
+        def->os.bm_timeout_set = true;
+    }
+    VIR_FREE(tmp);
+
     tmp = virXPathString("string(./os/bios[1]/@useserial)", ctxt);
     if (tmp) {
         if (STREQ(tmp, "yes")) {
@@ -17960,9 +17973,13 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             virBufferAsprintf(buf, "<boot dev='%s'/>\n", boottype);
         }
 
-        if (def->os.bootmenu)
-            virBufferAsprintf(buf, "<bootmenu enable='%s'/>\n",
+        if (def->os.bootmenu) {
+            virBufferAsprintf(buf, "<bootmenu enable='%s'",
                               virTristateBoolTypeToString(def->os.bootmenu));
+            if (def->os.bm_timeout_set)
+                virBufferAsprintf(buf, " timeout='%u'", def->os.bm_timeout);
+            virBufferAddLit(buf, "/>\n");
+        }
 
         if (def->os.bios.useserial || def->os.bios.rt_set) {
             virBufferAddLit(buf, "<bios");

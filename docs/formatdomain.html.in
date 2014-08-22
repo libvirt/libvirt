@@ -105,7 +105,7 @@
     &lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
     &lt;boot dev='hd'/&gt;
     &lt;boot dev='cdrom'/&gt;
-    &lt;bootmenu enable='yes'/&gt;
+    &lt;bootmenu enable='yes' timeout='3000'/&gt;
     &lt;smbios mode='sysinfo'/&gt;
     &lt;bios useserial='yes' rebootTimeout='0'/&gt;
   &lt;/os&gt;
@@ -158,6 +158,11 @@
       startup. The <code>enable</code> attribute can be either "yes" or "no".
       If not specified, the hypervisor default is used. <span class="since">
       Since 0.8.3</span>
+      Additional attribute <code>timeout</code> takes the number of milliseconds
+      the boot menu should wait until it times out.  Allowed values are numbers
+      in range [0, 65535] inclusive and it is valid if and only if the previous
+      <code>enable</code> is set to "yes".
+      <span class="since"> Since 1.2.8</span>
       </dd>
       <dt><code>smbios</code></dt>
       <dd>How to populate SMBIOS information visible in the guest.

@@ -259,6 +259,11 @@
                 <value>no</value>
               </choice>
             </attribute>
+            <optional>
+              <attribute name="timeout">
+                <ref name="unsignedShort"/>
+              </attribute>
+            </optional>
           </element>
         </optional>
         <optional>

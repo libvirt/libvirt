@@ -607,6 +607,7 @@ mymain(void)
     DO_TEST("boot-menu-enable",
             QEMU_CAPS_BOOT_MENU, QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE,
             QEMU_CAPS_BOOTINDEX);
+    DO_TEST_PARSE_ERROR("boot-menu-enable-with-timeout-invalid", NONE);
     DO_TEST("boot-menu-disable", QEMU_CAPS_BOOT_MENU);
     DO_TEST("boot-menu-disable-drive",
             QEMU_CAPS_BOOT_MENU, QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE);
