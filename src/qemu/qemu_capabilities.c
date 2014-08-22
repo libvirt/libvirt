@@ -266,6 +266,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "memory-backend-file",
               "usb-audio",
               "rtc-reset-reinjection",
+
+              "splash-timeout", /* 175 */
     );
 
 
@@ -1132,6 +1134,8 @@ virQEMUCapsComputeCmdFlags(const char *help,
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_BOOT_MENU);
     if (strstr(help, ",reboot-timeout=rb_time"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_REBOOT_TIMEOUT);
+    if (strstr(help, ",splash-time=sp_time"))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_SPLASH_TIMEOUT);
     if ((fsdev = strstr(help, "-fsdev"))) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_FSDEV);
         if (strstr(fsdev, "readonly"))
@@ -2431,6 +2435,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "realtime", "mlock", QEMU_CAPS_MLOCK },
     { "boot-opts", "strict", QEMU_CAPS_BOOT_STRICT },
     { "boot-opts", "reboot-timeout", QEMU_CAPS_REBOOT_TIMEOUT },
+    { "boot-opts", "splash-time", QEMU_CAPS_SPLASH_TIMEOUT },
     { "spice", "disable-agent-file-xfer", QEMU_CAPS_SPICE_FILE_XFER_DISABLE },
     { "msg", "timestamp", QEMU_CAPS_MSG_TIMESTAMP },
     { "numa", NULL, QEMU_CAPS_NUMA },
