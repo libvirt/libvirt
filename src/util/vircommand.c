@@ -201,6 +201,8 @@ virCommandFDSet(virCommandPtr cmd,
     return 0;
 }
 
+#ifndef WIN32
+
 static void
 virCommandReorderFDs(virCommandPtr cmd)
 {
@@ -272,8 +274,6 @@ virCommandReorderFDs(virCommandPtr cmd)
     cmd->has_error = -1;
     return;
 }
-
-#ifndef WIN32
 
 /**
  * virFork:

@@ -2397,6 +2397,8 @@ void virUpdateSelfLastChanged(const char *path)
     }
 }
 
+#ifndef WIN32
+
 /**
  * virGetListenFDs:
  *
@@ -2458,3 +2460,13 @@ virGetListenFDs(void)
 
     return nfds;
 }
+
+#else /* WIN32 */
+
+unsigned int
+virGetListenFDs(void)
+{
+    return 0;
+}
+
+#endif /* WIN32 */
