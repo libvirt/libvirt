@@ -1532,7 +1532,7 @@ parallelsApplyGraphicsParams(virDomainGraphicsDefPtr *oldgraphics, int nold,
 
     return 0;
  error:
-    virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                    _("changing display parameters is not supported "
                      "by parallels driver"));
     return -1;
@@ -1580,7 +1580,7 @@ parallelsApplySerialParams(virDomainChrDefPtr *oldserials, int nold,
 
     return 0;
  error:
-    virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                    _("changing serial device parameters is "
                      "not supported by parallels driver"));
     return -1;
@@ -1595,7 +1595,7 @@ parallelsApplyVideoParams(parallelsDomObjPtr pdom,
     char str_vram[32];
 
     if (nold != 1 || nnew != 1) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Only one video device is "
                          "supported by parallels driver"));
         return -1;
@@ -1604,14 +1604,14 @@ parallelsApplyVideoParams(parallelsDomObjPtr pdom,
     old = oldvideos[0];
     new = newvideos[0];
     if (new->type != VIR_DOMAIN_VIDEO_TYPE_VGA) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Only VGA video device is "
                          "supported by parallels driver"));
         return -1;
     }
 
     if (new->heads != 1) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Only one monitor is supported by parallels driver"));
         return -1;
     }
@@ -1621,15 +1621,16 @@ parallelsApplyVideoParams(parallelsDomObjPtr pdom,
         old->accel->support2d != new->accel->support2d ||
         old->accel->support3d != new->accel->support3d) {
 
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                    _("Changing video acceleration parameters is "
                      "not supported by parallels driver"));
         return -1;
+
     }
 
     if (old->vram != new->vram) {
         if (new->vram % (1 << 10) != 0) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Video RAM size should be multiple of 1Mb."));
             return -1;
         }
@@ -1659,7 +1660,7 @@ static int parallelsAddHdd(parallelsDomObjPtr pdom,
         int format = virDomainDiskGetFormat(disk);
 
         if (format != VIR_STORAGE_FILE_PLOOP) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Invalid disk format: %d"), type);
             goto cleanup;
         }
@@ -1668,7 +1669,7 @@ static int parallelsAddHdd(parallelsDomObjPtr pdom,
     } else if (VIR_STORAGE_TYPE_BLOCK) {
         virCommandAddArg(cmd, "--device");
     } else {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Invalid disk type: %d"), type);
         goto cleanup;
     }
@@ -1676,7 +1677,7 @@ static int parallelsAddHdd(parallelsDomObjPtr pdom,
     virCommandAddArg(cmd, src);
 
     if (!(strbus = parallelsGetDiskBusName(disk->bus))) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Invalid disk bus: %d"), disk->bus);
         goto cleanup;
     }
@@ -1732,7 +1733,7 @@ parallelsApplyDisksParams(parallelsDomObjPtr pdom,
 
         if (!newdisk) {
             if (parallelsRemoveHdd(pdom, olddisk)) {
-                virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Can't remove disk '%s' "
                                  "in the specified config"), olddisks[i]->serial);
                 return -1;
@@ -1757,7 +1758,7 @@ parallelsApplyDisksParams(parallelsDomObjPtr pdom,
             snprintf(strpos, 15, "%d", newdisk->info.addr.drive.target);
 
             if (!(strbus = parallelsGetDiskBusName(newdisk->bus))) {
-                virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Unsupported disk bus: %d"), newdisk->bus);
                 return -1;
             }
@@ -1805,58 +1806,58 @@ static int parallelsApplyIfaceParams(parallelsDomObjPtr pdom,
     }
 
     if (!create && oldnet->type != newnet->type) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Changing network type is not supported"));
         goto cleanup;
     }
 
     if (!STREQ_NULLABLE(oldnet->model, newnet->model)) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Changing network device model is not supported"));
         goto cleanup;
     }
 
     if (!STREQ_NULLABLE(oldnet->data.network.portgroup,
                         newnet->data.network.portgroup)) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Changing network portgroup is not supported"));
         goto cleanup;
     }
 
     if (!virNetDevVPortProfileEqual(oldnet->virtPortProfile,
                                     newnet->virtPortProfile)) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Changing virtual port profile is not supported"));
         goto cleanup;
     }
 
     if (newnet->tune.sndbuf_specified) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting send buffer size is not supported"));
         goto cleanup;
     }
 
     if (!STREQ_NULLABLE(oldnet->script, newnet->script)) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting startup script is not supported"));
         goto cleanup;
     }
 
     if (!STREQ_NULLABLE(oldnet->filter, newnet->filter)) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Changing filter params is not supported"));
         goto cleanup;
     }
 
     if (newnet->bandwidth != NULL) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting bandwidth params is not supported"));
         goto cleanup;
     }
 
     for (i = 0; i < sizeof(newnet->vlan); i++) {
         if (((char *)&newnet->vlan)[i] != 0) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Setting vlan params is not supported"));
             goto cleanup;
         }
@@ -1989,13 +1990,13 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
     }
 
     if (new->title && !STREQ_NULLABLE(old->title, new->title)) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("titles are not supported by parallels driver"));
         return -1;
     }
 
     if (new->blkio.ndevices > 0) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("blkio parameters are not supported "
                          "by parallels driver"));
         return -1;
@@ -2003,14 +2004,14 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
 
     if (old->mem.max_balloon != new->mem.max_balloon) {
         if (new->mem.max_balloon != new->mem.cur_balloon) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing balloon parameters is not supported "
                          "by parallels driver"));
            return -1;
         }
 
         if (new->mem.max_balloon % (1 << 10) != 0) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Memory size should be multiple of 1Mb."));
             return -1;
         }
@@ -2029,7 +2030,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
         old->mem.min_guarantee != new->mem.min_guarantee ||
         old->mem.swap_hard_limit != new->mem.swap_hard_limit) {
 
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Memory parameter is not supported "
                          "by parallels driver"));
         return -1;
@@ -2037,7 +2038,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
 
     if (old->vcpus != new->vcpus) {
         if (new->vcpus != new->maxvcpus) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("current vcpus must be equal to maxvcpus"));
             return -1;
         }
@@ -2051,7 +2052,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
     }
 
     if (old->placement_mode != new->placement_mode) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing cpu placement mode is not supported "
                          "by parallels driver"));
         return -1;
@@ -2061,7 +2062,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
         (old->cpumask == NULL || new->cpumask == NULL ||
         !virBitmapEqual(old->cpumask, new->cpumask))) {
 
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing cpu mask is not supported "
                          "by parallels driver"));
         return -1;
@@ -2073,13 +2074,13 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
         old->cputune.quota != new->cputune.quota ||
         old->cputune.nvcpupin != new->cputune.nvcpupin) {
 
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("cputune is not supported by parallels driver"));
         return -1;
     }
 
     if (!virDomainNumatuneEquals(old->numatune, new->numatune)) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("numa parameters are not supported "
                           "by parallels driver"));
         return -1;
@@ -2089,7 +2090,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
         old->onPoweroff != new->onPoweroff ||
         old->onCrash != new->onCrash) {
 
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("on_reboot, on_poweroff and on_crash parameters "
                          "are not supported by parallels driver"));
         return -1;
@@ -2108,7 +2109,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
         new->os.bootloaderArgs != NULL || new->os.smbios_mode != 0 ||
         new->os.bios.useserial != 0) {
 
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing OS parameters is not supported "
                          "by parallels driver"));
         return -1;
@@ -2118,7 +2119,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
             new->os.bootDevs[0] != VIR_DOMAIN_BOOT_DISK ||
             new->os.init != NULL || new->os.initargv != NULL) {
 
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("changing OS parameters is not supported "
                              "by parallels driver"));
             return -1;
@@ -2128,7 +2129,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
             !STREQ_NULLABLE(old->os.init, new->os.init) ||
             (new->os.initargv != NULL && new->os.initargv[0] != NULL)) {
 
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("changing OS parameters is not supported "
                              "by parallels driver"));
             return -1;
@@ -2137,7 +2138,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
 
 
     if (!STREQ_NULLABLE(old->emulator, new->emulator)) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing emulator is not supported "
                          "by parallels driver"));
         return -1;
@@ -2145,7 +2146,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
 
     for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
         if (old->features[i] != new->features[i]) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("changing features is not supported "
                              "by parallels driver"));
             return -1;
@@ -2155,7 +2156,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
     if (new->clock.offset != VIR_DOMAIN_CLOCK_OFFSET_UTC ||
         new->clock.ntimers != 0) {
 
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing clock parameters is not supported "
                          "by parallels driver"));
         return -1;
@@ -2171,7 +2172,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
         new->nparallels || new->nchannels != 0 ||
         new->nleases != 0 || new->nhubs != 0) {
 
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing devices parameters is not supported "
                          "by parallels driver"));
         return -1;
@@ -2183,7 +2184,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
         (new->inputs[0]->type != VIR_DOMAIN_INPUT_TYPE_MOUSE ||
         new->inputs[0]->bus != VIR_DOMAIN_INPUT_BUS_PS2))) {
 
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing input devices parameters is not supported "
                          "by parallels driver"));
     }
