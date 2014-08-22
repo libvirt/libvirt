@@ -268,6 +268,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "rtc-reset-reinjection",
 
               "splash-timeout", /* 175 */
+              "iothread",
     );
 
 
@@ -1493,6 +1494,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "memory-backend-ram", QEMU_CAPS_OBJECT_MEMORY_RAM },
     { "memory-backend-file", QEMU_CAPS_OBJECT_MEMORY_FILE },
     { "usb-audio", QEMU_CAPS_OBJECT_USB_AUDIO },
+    { "iothread", QEMU_CAPS_OBJECT_IOTHREAD},
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {

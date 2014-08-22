@@ -7543,6 +7543,19 @@ qemuBuildCommandLine(virConnectPtr conn,
     virCommandAddArg(cmd, smp);
     VIR_FREE(smp);
 
+    if (def->iothreads > 0 &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
+        /* Create named iothread objects starting with 1. These may be used
+         * by a disk definition which will associate to an iothread by
+         * supplying a value of 1 up to the number of iothreads available
+         * (since 0 would indicate to not use the feature).
+         */
+        for (i = 1; i <= def->iothreads; i++) {
+            virCommandAddArg(cmd, "-object");
+            virCommandAddArgFormat(cmd, "iothread,id=iothread%zu", i);
+        }
+    }
+
     if (def->cpu && def->cpu->ncells)
         if (qemuBuildNumaArgStr(cfg, def, cmd, qemuCaps) < 0)
             goto error;
