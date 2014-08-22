@@ -259,7 +259,7 @@ virLXCLoadDriverConfig(virLXCDriverConfigPtr cfg,
     if (!conf)
         goto done;
 
-#define CHECK_TYPE(name,typ) if (p && p->type != (typ)) {               \
+#define CHECK_TYPE(name, typ) if (p && p->type != (typ)) {              \
         virReportError(VIR_ERR_INTERNAL_ERROR,                          \
                        "%s: %s: expected type " #typ,                   \
                        filename, (name));                               \

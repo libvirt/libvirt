@@ -10,7 +10,7 @@
 #include <libvirt/virterror.h>
 
 #define VIR_DEBUG(fmt) printf("%s:%d: " fmt "\n", __func__, __LINE__)
-#define STREQ(a,b) (strcmp(a,b) == 0)
+#define STREQ(a, b) (strcmp(a, b) == 0)
 
 #ifndef ATTRIBUTE_UNUSED
 # define ATTRIBUTE_UNUSED __attribute__((__unused__))

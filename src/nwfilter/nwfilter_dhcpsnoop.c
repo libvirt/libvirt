@@ -1229,7 +1229,7 @@ virNWFilterSnoopRateLimit(virNWFilterSnoopRateLimitConfPtr rl)
 {
     time_t now = time(0);
     int diff;
-# define IN_BURST(n,b) ((n)-(b) <= 1) /* bursts span 2 discrete seconds */
+# define IN_BURST(n, b) ((n)-(b) <= 1) /* bursts span 2 discrete seconds */
 
     if (rl->prev != now && !IN_BURST(now, rl->burst)) {
         rl->prev = now;

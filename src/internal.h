@@ -78,16 +78,16 @@
 # endif
 
 /* String equality tests, suggested by Jim Meyering. */
-# define STREQ(a,b) (strcmp(a,b) == 0)
-# define STRCASEEQ(a,b) (c_strcasecmp(a,b) == 0)
-# define STRNEQ(a,b) (strcmp(a,b) != 0)
-# define STRCASENEQ(a,b) (c_strcasecmp(a,b) != 0)
-# define STREQLEN(a,b,n) (strncmp(a,b,n) == 0)
-# define STRCASEEQLEN(a,b,n) (c_strncasecmp(a,b,n) == 0)
-# define STRNEQLEN(a,b,n) (strncmp(a,b,n) != 0)
-# define STRCASENEQLEN(a,b,n) (c_strncasecmp(a,b,n) != 0)
-# define STRPREFIX(a,b) (strncmp(a,b,strlen(b)) == 0)
-# define STRSKIP(a,b) (STRPREFIX(a,b) ? (a) + strlen(b) : NULL)
+# define STREQ(a, b) (strcmp(a, b) == 0)
+# define STRCASEEQ(a, b) (c_strcasecmp(a, b) == 0)
+# define STRNEQ(a, b) (strcmp(a, b) != 0)
+# define STRCASENEQ(a, b) (c_strcasecmp(a, b) != 0)
+# define STREQLEN(a, b, n) (strncmp(a, b, n) == 0)
+# define STRCASEEQLEN(a, b, n) (c_strncasecmp(a, b, n) == 0)
+# define STRNEQLEN(a, b, n) (strncmp(a, b, n) != 0)
+# define STRCASENEQLEN(a, b, n) (c_strncasecmp(a, b, n) != 0)
+# define STRPREFIX(a, b) (strncmp(a, b, strlen(b)) == 0)
+# define STRSKIP(a, b) (STRPREFIX(a, b) ? (a) + strlen(b) : NULL)
 
 # define STREQ_NULLABLE(a, b)                           \
     ((a) ? (b) && STREQ((a) ? (a) : "", (b) ? (b) : "") : !(b))
@@ -109,7 +109,7 @@
 #    define __GNUC_PREREQ(maj, min)                                        \
     ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
 #   else
-#    define __GNUC_PREREQ(maj,min) 0
+#    define __GNUC_PREREQ(maj, min) 0
 #   endif
 
 /* Work around broken limits.h on debian etch */
@@ -162,10 +162,10 @@
  */
 #  ifndef ATTRIBUTE_FMT_PRINTF
 #   if __GNUC_PREREQ (4, 4)
-#    define ATTRIBUTE_FMT_PRINTF(fmtpos,argpos) \
+#    define ATTRIBUTE_FMT_PRINTF(fmtpos, argpos) \
     __attribute__((__format__ (__gnu_printf__, fmtpos, argpos)))
 #   else
-#    define ATTRIBUTE_FMT_PRINTF(fmtpos,argpos) \
+#    define ATTRIBUTE_FMT_PRINTF(fmtpos, argpos) \
     __attribute__((__format__ (__printf__, fmtpos, argpos)))
 #   endif
 #  endif

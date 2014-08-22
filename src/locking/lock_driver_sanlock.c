@@ -118,7 +118,7 @@ static int virLockManagerSanlockLoadConfig(const char *configFile)
     if (!(conf = virConfReadFile(configFile, 0)))
         return -1;
 
-#define CHECK_TYPE(name,typ) if (p && p->type != (typ)) {               \
+#define CHECK_TYPE(name, typ) if (p && p->type != (typ)) {              \
         virReportError(VIR_ERR_INTERNAL_ERROR,                          \
                        "%s: %s: expected type " #typ,                   \
                        configFile, (name));                             \

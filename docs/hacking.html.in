@@ -614,7 +614,7 @@
     </p>
 <pre>
   #if defined(HAVE_POSIX_FALLOCATE) &amp;&amp; !defined(HAVE_FALLOCATE)
-  # define fallocate(a,ignored,b,c) posix_fallocate(a,b,c)
+  # define fallocate(a, ignored, b, c) posix_fallocate(a, b, c)
   #endif
 </pre>
 

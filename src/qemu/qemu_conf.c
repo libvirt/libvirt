@@ -347,7 +347,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (!(conf = virConfReadFile(filename, 0)))
         goto cleanup;
 
-#define CHECK_TYPE(name,typ)                          \
+#define CHECK_TYPE(name, typ)                         \
     if (p && p->type != (typ)) {                      \
         virReportError(VIR_ERR_INTERNAL_ERROR,        \
                        "%s: %s: expected type " #typ, \

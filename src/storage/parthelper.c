@@ -48,7 +48,7 @@
 #include "virstring.h"
 
 /* we don't need to include the full internal.h just for this */
-#define STREQ(a,b) (strcmp(a,b) == 0)
+#define STREQ(a, b) (strcmp(a, b) == 0)
 
 /* Make the comparisons below fail if your parted headers
    are so old that they lack the definition.  */
