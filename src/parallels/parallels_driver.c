@@ -2417,6 +2417,16 @@ parallelsDomainGetVcpus(virDomainPtr domain,
 }
 
 
+static int
+parallelsNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
+                       unsigned char **cpumap,
+                       unsigned int *online,
+                       unsigned int flags)
+{
+    return nodeGetCPUMap(cpumap, online, flags);
+}
+
+
 static virDriver parallelsDriver = {
     .no = VIR_DRV_PARALLELS,
     .name = "Parallels",
@@ -2448,6 +2458,7 @@ static virDriver parallelsDriver = {
     .domainShutdown = parallelsDomainShutdown, /* 0.10.0 */
     .domainCreate = parallelsDomainCreate,    /* 0.10.0 */
     .domainDefineXML = parallelsDomainDefineXML,      /* 0.10.0 */
+    .nodeGetCPUMap = parallelsNodeGetCPUMap, /* 1.2.8 */
     .connectIsEncrypted = parallelsConnectIsEncrypted, /* 1.2.5 */
     .connectIsSecure = parallelsConnectIsSecure, /* 1.2.5 */
     .connectIsAlive = parallelsConnectIsAlive, /* 1.2.5 */
