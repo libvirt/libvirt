@@ -23,6 +23,7 @@
 #include <config.h>
 
 #include <unistd.h>
+#include <c-ctype.h>
 
 #include "driver.h"
 #include "viralloc.h"
@@ -45,7 +46,8 @@ VIR_LOG_INIT("driver");
 void *
 virDriverLoadModule(const char *name)
 {
-    char *modfile = NULL, *regfunc = NULL;
+    char *modfile = NULL, *regfunc = NULL, *fixedname = NULL;
+    char *tmp;
     void *handle = NULL;
     int (*regsym)(void);
 
@@ -72,7 +74,18 @@ virDriverLoadModule(const char *name)
         goto cleanup;
     }
 
-    if (virAsprintfQuiet(&regfunc, "%sRegister", name) < 0) {
+    if (VIR_STRDUP_QUIET(fixedname, name) < 0) {
+        VIR_ERROR(_("out of memory"));
+        goto cleanup;
+    }
+
+    /* convert something_like_this into somethingLikeThis */
+    while ((tmp = strchr(fixedname, '_'))) {
+        memmove(tmp, tmp + 1, strlen(tmp));
+        *tmp = c_toupper(*tmp);
+    }
+
+    if (virAsprintfQuiet(&regfunc, "%sRegister", fixedname) < 0) {
         goto cleanup;
     }
 
@@ -89,11 +102,13 @@ virDriverLoadModule(const char *name)
 
     VIR_FREE(modfile);
     VIR_FREE(regfunc);
+    VIR_FREE(fixedname);
     return handle;
 
  cleanup:
     VIR_FREE(modfile);
     VIR_FREE(regfunc);
+    VIR_FREE(fixedname);
     if (handle)
         dlclose(handle);
     return NULL;
