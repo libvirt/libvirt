@@ -383,13 +383,16 @@ static void daemonInitialize(void)
      * is not loaded they'll get a suitable error at that point
      */
 # ifdef WITH_VBOX
-    virDriverLoadModule("vbox");
+    virDriverLoadModule("vbox_network");
 # endif
 # ifdef WITH_NETWORK
     virDriverLoadModule("network");
 # endif
 # ifdef WITH_INTERFACE
     virDriverLoadModule("interface");
+# endif
+# ifdef WITH_VBOX
+    virDriverLoadModule("vbox_storage");
 # endif
 # ifdef WITH_STORAGE
     virDriverLoadModule("storage");
@@ -418,18 +421,24 @@ static void daemonInitialize(void)
 # ifdef WITH_UML
     virDriverLoadModule("uml");
 # endif
+# ifdef WITH_VBOX
+    virDriverLoadModule("vbox");
+# endif
 # ifdef WITH_BHYVE
     virDriverLoadModule("bhyve");
 # endif
 #else
 # ifdef WITH_VBOX
-    vboxRegister();
+    vboxNetworkRegister();
 # endif
 # ifdef WITH_NETWORK
     networkRegister();
 # endif
 # ifdef WITH_INTERFACE
     interfaceRegister();
+# endif
+# ifdef WITH_VBOX
+    vboxStorageRegister();
 # endif
 # ifdef WITH_STORAGE
     storageRegister();
@@ -457,6 +466,9 @@ static void daemonInitialize(void)
 # endif
 # ifdef WITH_UML
     umlRegister();
+# endif
+# ifdef WITH_VBOX
+    vboxRegister();
 # endif
 # ifdef WITH_BHYVE
     bhyveRegister();

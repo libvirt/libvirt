@@ -75,12 +75,15 @@ static virDriver vboxDriverDummy;
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
-int vboxRegister(void)
+static void
+vboxGetDrivers(virDriverPtr *driver_ret,
+               virNetworkDriverPtr *networkDriver_ret,
+               virStorageDriverPtr *storageDriver_ret)
 {
-    virDriverPtr        driver;
+    virDriverPtr driver;
     virNetworkDriverPtr networkDriver;
     virStorageDriverPtr storageDriver;
-    uint32_t            uVersion;
+    uint32_t uVersion;
 
     /*
      * If the glue layer does not initialize, we register a driver
@@ -157,15 +160,52 @@ int vboxRegister(void)
         VIR_DEBUG("VBoxCGlueInit failed, using dummy driver");
     }
 
-    if (virRegisterDriver(driver) < 0)
-        return -1;
+    if (driver_ret)
+        *driver_ret = driver;
+    if (networkDriver_ret)
+        *networkDriver_ret = networkDriver;
+    if (storageDriver_ret)
+        *storageDriver_ret = storageDriver;
+}
+
+
+#if !defined(WITH_DRIVER_MODULES) || defined(VBOX_NETWORK_DRIVER)
+int vboxNetworkRegister(void)
+{
+    virNetworkDriverPtr networkDriver;
+
+    vboxGetDrivers(NULL, &networkDriver, NULL);
     if (virRegisterNetworkDriver(networkDriver) < 0)
         return -1;
-    if (virRegisterStorageDriver(storageDriver) < 0)
-        return -1;
-
     return 0;
 }
+#endif
+
+#if !defined(WITH_DRIVER_MODULES) || defined(VBOX_STORAGE_DRIVER)
+int vboxStorageRegister(void)
+{
+    virStorageDriverPtr storageDriver;
+
+    vboxGetDrivers(NULL, NULL, &storageDriver);
+
+    if (virRegisterStorageDriver(storageDriver) < 0)
+        return -1;
+    return 0;
+}
+#endif
+
+#if !defined(WITH_DRIVER_MODULES) || defined(VBOX_DRIVER)
+int vboxRegister(void)
+{
+    virDriverPtr driver;
+
+    vboxGetDrivers(&driver, NULL, NULL);
+
+    if (virRegisterDriver(driver) < 0)
+        return -1;
+    return 0;
+}
+#endif
 
 static virDrvOpenStatus dummyConnectOpen(virConnectPtr conn,
                                          virConnectAuthPtr auth ATTRIBUTE_UNUSED,

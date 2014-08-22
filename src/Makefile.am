@@ -1135,13 +1135,27 @@ libvirt_driver_vmware_la_SOURCES = $(VMWARE_DRIVER_SOURCES)
 endif WITH_VMWARE
 
 if WITH_VBOX
-noinst_LTLIBRARIES += libvirt_driver_vbox_impl.la
+noinst_LTLIBRARIES += \
+		libvirt_driver_vbox_impl.la	\
+		libvirt_driver_vbox_network_impl.la	\
+		libvirt_driver_vbox_storage_impl.la
 libvirt_driver_vbox_la_SOURCES =
 libvirt_driver_vbox_la_LIBADD = libvirt_driver_vbox_impl.la
+libvirt_driver_vbox_network_la_SOURCES =
+libvirt_driver_vbox_network_la_LIBADD = libvirt_driver_vbox_network_impl.la
+libvirt_driver_vbox_storage_la_SOURCES =
+libvirt_driver_vbox_storage_la_LIBADD = libvirt_driver_vbox_storage_impl.la
 if WITH_DRIVER_MODULES
-mod_LTLIBRARIES += libvirt_driver_vbox.la
+mod_LTLIBRARIES += \
+		libvirt_driver_vbox.la	\
+		libvirt_driver_vbox_network.la	\
+		libvirt_driver_vbox_storage.la
 libvirt_driver_vbox_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_vbox_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
+libvirt_driver_vbox_network_la_LIBADD += ../gnulib/lib/libgnu.la
+libvirt_driver_vbox_network_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
+libvirt_driver_vbox_storage_la_LIBADD += ../gnulib/lib/libgnu.la
+libvirt_driver_vbox_storage_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 else ! WITH_DRIVER_MODULES
 noinst_LTLIBRARIES += libvirt_driver_vbox.la
 # GPLv2-only license requries that it be linked into
@@ -1151,12 +1165,33 @@ endif ! WITH_DRIVER_MODULES
 
 libvirt_driver_vbox_impl_la_CFLAGS =				\
 		-I$(top_srcdir)/src/conf			\
-		$(AM_CFLAGS)
+		$(AM_CFLAGS)	\
+		-DVBOX_DRIVER
 libvirt_driver_vbox_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_vbox_impl_la_LIBADD =  $(DLOPEN_LIBS)		\
 		$(MSCOM_LIBS)					\
 		$(LIBXML_LIBS)
 libvirt_driver_vbox_impl_la_SOURCES = $(VBOX_DRIVER_SOURCES)
+
+libvirt_driver_vbox_network_impl_la_CFLAGS =	\
+		-I$(top_srcdir)/src/conf	\
+		$(AM_CFLAGS)	\
+		-DVBOX_NETWORK_DRIVER
+libvirt_driver_vbox_network_impl_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_driver_vbox_network_impl_la_LIBADD = $(DLOPEN_LIBS)		\
+		$(MSCOM_LIBS)					\
+		$(LIBXML_LIBS)
+libvirt_driver_vbox_network_impl_la_SOURCES = $(VBOX_DRIVER_SOURCES)
+
+libvirt_driver_vbox_storage_impl_la_CFLAGS =	\
+		-I$(top_srcdir)/src/conf	\
+		$(AM_CFLAGS)	\
+		-DVBOX_STORAGE_DRIVER
+libvirt_driver_vbox_storage_impl_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_driver_vbox_storage_impl_la_LIBADD = $(DLOPEN_LIBS)		\
+		$(MSCOM_LIBS)					\
+		$(LIBXML_LIBS)
+libvirt_driver_vbox_storage_impl_la_SOURCES = $(VBOX_DRIVER_SOURCES)
 endif WITH_VBOX
 
 if WITH_XENAPI
