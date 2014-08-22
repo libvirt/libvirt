@@ -960,6 +960,7 @@ xenParseVif(virConfPtr conf, virDomainDefPtr def)
     return 0;
 
  cleanup:
+    virDomainNetDefFree(net);
     VIR_FREE(script);
     return -1;
 }
