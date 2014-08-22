@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2013 Red Hat, Inc.
+ * Copyright (C) 2009-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -342,6 +342,7 @@ virNetDevBandwidthEqual(virNetDevBandwidthPtr a,
 
         if (a->in->average != b->in->average ||
             a->in->peak != b->in->peak ||
+            a->in->floor != b->in->floor ||
             a->in->burst != b->in->burst)
             return false;
     } else if (b->in) {
@@ -355,6 +356,7 @@ virNetDevBandwidthEqual(virNetDevBandwidthPtr a,
 
         if (a->out->average != b->out->average ||
             a->out->peak != b->out->peak ||
+            a->out->floor != b->out->floor ||
             a->out->burst != b->out->burst)
             return false;
     } else if (b->out) {
