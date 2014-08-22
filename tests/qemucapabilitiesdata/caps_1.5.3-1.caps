@@ -139,4 +139,5 @@
     <flag name='host-pci-multidomain'/>
     <flag name='usb-audio'/>
     <flag name='splash-timeout'/>
+    <flag name='ivshmem'/>
   </qemuCaps>

@@ -518,7 +518,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_SCSI_GENERIC,
             QEMU_CAPS_DEVICE_USB_KBD,
             QEMU_CAPS_DEVICE_USB_STORAGE,
-            QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
+            QEMU_CAPS_HOST_PCI_MULTIDOMAIN,
+            QEMU_CAPS_DEVICE_IVSHMEM);
     DO_TEST("qemu-kvm-0.12.1.2-rhel61", 12001, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -746,7 +747,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX,
             QEMU_CAPS_DEVICE_USB_KBD,
             QEMU_CAPS_DEVICE_USB_STORAGE,
-            QEMU_CAPS_SPLASH_TIMEOUT);
+            QEMU_CAPS_SPLASH_TIMEOUT,
+            QEMU_CAPS_DEVICE_IVSHMEM);
     DO_TEST("qemu-1.1.0", 1001000, 0, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -845,7 +847,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_USB_KBD,
             QEMU_CAPS_DEVICE_USB_STORAGE,
             QEMU_CAPS_OBJECT_USB_AUDIO,
-            QEMU_CAPS_SPLASH_TIMEOUT);
+            QEMU_CAPS_SPLASH_TIMEOUT,
+            QEMU_CAPS_DEVICE_IVSHMEM);
     DO_TEST("qemu-1.2.0", 1002000, 0, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -956,7 +959,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_USB_KBD,
             QEMU_CAPS_USB_STORAGE_REMOVABLE,
             QEMU_CAPS_OBJECT_USB_AUDIO,
-            QEMU_CAPS_SPLASH_TIMEOUT);
+            QEMU_CAPS_SPLASH_TIMEOUT,
+            QEMU_CAPS_DEVICE_IVSHMEM);
     DO_TEST("qemu-kvm-1.2.0", 1002000, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -1072,7 +1076,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_USB_KBD,
             QEMU_CAPS_USB_STORAGE_REMOVABLE,
             QEMU_CAPS_OBJECT_USB_AUDIO,
-            QEMU_CAPS_SPLASH_TIMEOUT);
+            QEMU_CAPS_SPLASH_TIMEOUT,
+            QEMU_CAPS_DEVICE_IVSHMEM);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

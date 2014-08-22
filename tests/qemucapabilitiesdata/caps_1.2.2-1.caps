@@ -115,4 +115,5 @@
     <flag name='usb-kbd'/>
     <flag name='host-pci-multidomain'/>
     <flag name='usb-audio'/>
+    <flag name='ivshmem'/>
   </qemuCaps>

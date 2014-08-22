@@ -159,4 +159,5 @@
     <flag name='splash-timeout'/>
     <flag name='iothread'/>
     <flag name='migrate-rdma'/>
+    <flag name='ivshmem'/>
   </qemuCaps>

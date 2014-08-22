@@ -270,6 +270,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "splash-timeout", /* 175 */
               "iothread",
               "migrate-rdma",
+              "ivshmem",
     );
 
 
@@ -1500,6 +1501,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "memory-backend-file", QEMU_CAPS_OBJECT_MEMORY_FILE },
     { "usb-audio", QEMU_CAPS_OBJECT_USB_AUDIO },
     { "iothread", QEMU_CAPS_OBJECT_IOTHREAD},
+    { "ivshmem", QEMU_CAPS_DEVICE_IVSHMEM },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
