@@ -1131,9 +1131,12 @@ Convert a domain name (or UUID) to a domain id
 
 Abort the currently running domain job.
 
-=item B<domjobinfo> I<domain>
+=item B<domjobinfo> I<domain> [I<--completed>]
 
-Returns information about jobs running on a domain.
+Returns information about jobs running on a domain. I<--completed> tells
+virsh to return information about a recently finished job. Statistics of
+a completed job are automatically destroyed once read or when libvirtd
+is restarted.
 
 =item B<domname> I<domain-id-or-uuid>
 

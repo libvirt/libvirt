@@ -5115,6 +5115,10 @@ static const vshCmdOptDef opts_resume[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("domain name, id or uuid")
     },
+    {.name = "completed",
+     .type = VSH_OT_BOOL,
+     .help = N_("return statistics of a recently completed job")
+    },
     {.name = NULL}
 };
 
@@ -5405,14 +5409,18 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     unsigned long long value;
+    unsigned int flags = 0;
     int rc;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
+    if (vshCommandOptBool(cmd, "completed"))
+        flags |= VIR_DOMAIN_JOB_STATS_COMPLETED;
+
     memset(&info, 0, sizeof(info));
 
-    rc = virDomainGetJobStats(dom, &info.type, &params, &nparams, 0);
+    rc = virDomainGetJobStats(dom, &info.type, &params, &nparams, flags);
     if (rc == 0) {
         if (virTypedParamsGetULLong(params, nparams,
                                     VIR_DOMAIN_JOB_TIME_ELAPSED,
@@ -5449,6 +5457,11 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
                                     &info.fileRemaining) < 0)
             goto save_error;
     } else if (last_error->code == VIR_ERR_NO_SUPPORT) {
+        if (flags) {
+            vshError(ctl, "%s", _("Optional flags are not supported by the "
+                                  "daemon"));
+            goto cleanup;
+        }
         vshDebug(ctl, VSH_ERR_DEBUG, "detailed statistics not supported\n");
         vshResetLibvirtError();
         rc = virDomainGetJobInfo(dom, &info);
@@ -5459,7 +5472,9 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
     vshPrint(ctl, "%-17s %-12s\n", _("Job type:"),
              vshDomainJobToString(info.type));
     if (info.type != VIR_DOMAIN_JOB_BOUNDED &&
-        info.type != VIR_DOMAIN_JOB_UNBOUNDED) {
+        info.type != VIR_DOMAIN_JOB_UNBOUNDED &&
+        (!(flags & VIR_DOMAIN_JOB_STATS_COMPLETED) ||
+         info.type != VIR_DOMAIN_JOB_COMPLETED)) {
         ret = true;
         goto cleanup;
     }
@@ -5524,7 +5539,13 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
                                       &value)) < 0) {
         goto save_error;
     } else if (rc) {
-        vshPrint(ctl, "%-17s %-12llu ms\n", _("Expected downtime:"), value);
+        if (info.type == VIR_DOMAIN_JOB_COMPLETED) {
+            vshPrint(ctl, "%-17s %-12llu ms\n",
+                     _("Total downtime:"), value);
+        } else {
+            vshPrint(ctl, "%-17s %-12llu ms\n",
+                     _("Expected downtime:"), value);
+        }
     }
 
     if ((rc = virTypedParamsGetULLong(params, nparams,
