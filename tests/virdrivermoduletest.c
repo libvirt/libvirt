@@ -71,6 +71,9 @@ mymain(void)
 #else
 # define USE_NETWORK NULL
 #endif
+#ifdef WITH_INTERFACE
+    TEST("interface", NULL);
+#endif
 #ifdef WITH_STORAGE
     TEST("storage", NULL);
 #endif
@@ -83,8 +86,11 @@ mymain(void)
 #ifdef WITH_NWFILTER
     TEST("nwfilter", NULL);
 #endif
-#ifdef WITH_INTERFACE
-    TEST("interface", NULL);
+#ifdef WITH_XEN
+    TEST("xen", NULL);
+#endif
+#ifdef WITH_LIBXL
+    TEST("libxl", NULL);
 #endif
 #ifdef WITH_QEMU
     TEST("qemu", USE_NETWORK);
@@ -95,11 +101,11 @@ mymain(void)
 #ifdef WITH_UML
     TEST("uml", NULL);
 #endif
-#ifdef WITH_XEN
-    TEST("xen", NULL);
+#ifdef WITH_VBOX
+    TEST("vbox", NULL);
 #endif
-#ifdef WITH_LIBXL
-    TEST("libxl", NULL);
+#ifdef WITH_BHYVE
+    TEST("bhyve", NULL);
 #endif
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
