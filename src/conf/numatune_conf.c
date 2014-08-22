@@ -437,13 +437,26 @@ virDomainNumatuneSet(virDomainNumatunePtr *numatunePtr,
                      int mode,
                      virBitmapPtr nodeset)
 {
-    bool create = !*numatunePtr;  /* Whether we are creating new struct */
+    bool created = false;
     int ret = -1;
-    virDomainNumatunePtr numatune = NULL;
+    virDomainNumatunePtr numatune;
 
     /* No need to do anything in this case */
     if (mode == -1 && placement == -1 && !nodeset)
         return 0;
+
+    if (!(*numatunePtr)) {
+        if (VIR_ALLOC(*numatunePtr) < 0)
+            goto cleanup;
+
+        created = true;
+        if (mode == -1)
+            mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
+        if (placement == -1)
+            placement = VIR_DOMAIN_NUMATUNE_PLACEMENT_DEFAULT;
+    }
+
+    numatune = *numatunePtr;
 
     /* Range checks */
     if (mode != -1 &&
@@ -453,6 +466,7 @@ virDomainNumatuneSet(virDomainNumatunePtr *numatunePtr,
                        mode);
         goto cleanup;
     }
+
     if (placement != -1 &&
         (placement < 0 || placement >= VIR_DOMAIN_NUMATUNE_PLACEMENT_LAST)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -461,21 +475,9 @@ virDomainNumatuneSet(virDomainNumatunePtr *numatunePtr,
         goto cleanup;
     }
 
-    if (create && VIR_ALLOC(*numatunePtr) < 0)
-        goto cleanup;
-    numatune = *numatunePtr;
-
-    if (create) {
-        /* Defaults for new struct */
-        if (mode == -1)
-            mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
-
-        if (placement == -1)
-            placement = VIR_DOMAIN_NUMATUNE_PLACEMENT_DEFAULT;
-    }
-
     if (mode != -1)
         numatune->memory.mode = mode;
+
     if (nodeset) {
         virBitmapFree(numatune->memory.nodeset);
         numatune->memory.nodeset = virBitmapNewCopy(nodeset);
@@ -500,13 +502,26 @@ virDomainNumatuneSet(virDomainNumatunePtr *numatunePtr,
         goto cleanup;
     }
 
+    /* setting nodeset when placement auto is invalid */
+    if (placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO &&
+        numatune->memory.nodeset) {
+        virBitmapFree(numatune->memory.nodeset);
+        numatune->memory.nodeset = NULL;
+    }
+
     if (placement != -1)
         numatune->memory.placement = placement;
 
     numatune->memory.specified = true;
 
     ret = 0;
+
  cleanup:
+    if (ret < 0 && created) {
+        virDomainNumatuneFree(*numatunePtr);
+        *numatunePtr = NULL;
+    }
+
     return ret;
 }
 
