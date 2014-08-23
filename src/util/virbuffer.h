@@ -1,7 +1,7 @@
 /*
  * virbuffer.h: buffers for libvirt
  *
- * Copyright (C) 2005-2008, 2011-2013 Red Hat, Inc.
+ * Copyright (C) 2005-2008, 2011-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -64,7 +64,7 @@ int virBufferCheckErrorInternal(const virBuffer *buf,
  *
  * Checks if the buffer is in error state and reports an error.
  *
- * Returns 0 if no error has occured, otherwise an error is reported
+ * Returns 0 if no error has occurred, otherwise an error is reported
  * and -1 is returned.
  */
 # define virBufferCheckError(buf) \
