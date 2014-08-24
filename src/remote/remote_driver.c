@@ -8112,6 +8112,7 @@ static virDriver remote_driver = {
     .domainBlockJobSetSpeed = remoteDomainBlockJobSetSpeed, /* 0.9.4 */
     .domainBlockPull = remoteDomainBlockPull, /* 0.9.4 */
     .domainBlockRebase = remoteDomainBlockRebase, /* 0.9.10 */
+    .domainBlockCopy = remoteDomainBlockCopy, /* 1.2.9 */
     .domainBlockCommit = remoteDomainBlockCommit, /* 0.10.2 */
     .connectSetKeepAlive = remoteConnectSetKeepAlive, /* 0.9.8 */
     .connectIsAlive = remoteConnectIsAlive, /* 0.9.8 */

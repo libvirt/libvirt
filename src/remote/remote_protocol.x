@@ -124,6 +124,9 @@ const REMOTE_DOMAIN_BLOCK_IO_TUNE_PARAMETERS_MAX = 16;
 /* Upper limit on list of numa parameters. */
 const REMOTE_DOMAIN_NUMA_PARAMETERS_MAX = 16;
 
+/* Upper limit on block copy tunable parameters. */
+const REMOTE_DOMAIN_BLOCK_COPY_PARAMETERS_MAX = 16;
+
 /* Upper limit on list of node cpu stats. */
 const REMOTE_NODE_CPU_STATS_MAX = 16;
 
@@ -1282,6 +1285,13 @@ struct remote_domain_block_rebase_args {
     remote_nonnull_string path;
     remote_string base;
     unsigned hyper bandwidth;
+    unsigned int flags;
+};
+struct remote_domain_block_copy_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string path;
+    remote_nonnull_string destxml;
+    remote_typed_param params<REMOTE_DOMAIN_BLOCK_COPY_PARAMETERS_MAX>;
     unsigned int flags;
 };
 struct remote_domain_block_commit_args {
@@ -5456,5 +5466,11 @@ enum remote_procedure {
      * @acl: connect:search_domains
      * @aclfilter: domain:read
      */
-    REMOTE_PROC_CONNECT_GET_ALL_DOMAIN_STATS = 344
+    REMOTE_PROC_CONNECT_GET_ALL_DOMAIN_STATS = 344,
+
+    /**
+     * @generate: both
+     * @acl: domain:block_write
+     */
+    REMOTE_PROC_DOMAIN_BLOCK_COPY = 345
 };
