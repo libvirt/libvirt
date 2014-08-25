@@ -1572,6 +1572,9 @@
       <optional>
         <ref name="discard"/>
       </optional>
+      <optional>
+        <ref name="driverIOThread"/>
+      </optional>
       <empty/>
     </element>
   </define>
@@ -1657,6 +1660,11 @@
         <value>unmap</value>
         <value>ignore</value>
       </choice>
+    </attribute>
+  </define>
+  <define name="driverIOThread">
+    <attribute name='iothread'>
+      <ref name="unsignedInt"/>
     </attribute>
   </define>
   <define name="controller">

@@ -2160,6 +2160,14 @@
             (ignore the discard request).
             <span class='since'>Since 1.0.6 (QEMU and KVM only)</span>
           </li>
+          <li>
+            The optional <code>iothread</code> attribute assigns the
+            disk to an IOThread as defined by the range for the domain
+            <a href="#elementsIOThreadsAllocation"><code>iothreads</code></a>
+            value. Multiple devices may be assigned to the same IOThread and
+            are numbered from 1 to the domain iothreads value.
+            <span class='since'>Since 1.2.8 (QEMU only)</span>
+          </li>
         </ul>
       </dd>
       <dt><code>boot</code></dt>

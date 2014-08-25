@@ -5422,6 +5422,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *ioeventfd = NULL;
     char *event_idx = NULL;
     char *copy_on_read = NULL;
+    char *driverIOThread = NULL;
     char *devaddr = NULL;
     virStorageEncryptionPtr encryption = NULL;
     char *serial = NULL;
@@ -5570,6 +5571,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 event_idx = virXMLPropString(cur, "event_idx");
                 copy_on_read = virXMLPropString(cur, "copy_on_read");
                 discard = virXMLPropString(cur, "discard");
+                driverIOThread = virXMLPropString(cur, "iothread");
             } else if (!def->mirror &&
                        xmlStrEqual(cur->name, BAD_CAST "mirror") &&
                        !(flags & VIR_DOMAIN_XML_INACTIVE)) {
@@ -6104,6 +6106,15 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
     }
 
+    if (driverIOThread) {
+        if (virStrToLong_uip(driverIOThread, NULL, 10, &def->iothread) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid iothread attribute in disk driver "
+                             "element: %s"), driverIOThread);
+            goto error;
+        }
+    }
+
     if (devaddr) {
         if (virDomainParseLegacyDeviceAddress(devaddr,
                                               &def->info.addr.pci) < 0) {
@@ -6204,6 +6215,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(event_idx);
     VIR_FREE(copy_on_read);
     VIR_FREE(discard);
+    VIR_FREE(driverIOThread);
     VIR_FREE(devaddr);
     VIR_FREE(serial);
     virStorageEncryptionFree(encryption);
@@ -15637,7 +15649,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     if (def->src->driverName || def->src->format > 0 || def->cachemode ||
         def->error_policy || def->rerror_policy || def->iomode ||
         def->ioeventfd || def->event_idx || def->copy_on_read ||
-        def->discard) {
+        def->discard || def->iothread) {
         virBufferAddLit(buf, "<driver");
         if (def->src->driverName)
             virBufferAsprintf(buf, " name='%s'", def->src->driverName);
@@ -15660,6 +15672,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " copy_on_read='%s'", copy_on_read);
         if (def->discard)
             virBufferAsprintf(buf, " discard='%s'", discard);
+        if (def->iothread)
+            virBufferAsprintf(buf, " iothread='%u'", def->iothread);
         virBufferAddLit(buf, "/>\n");
     }
 

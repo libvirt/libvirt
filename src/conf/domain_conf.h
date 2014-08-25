@@ -667,6 +667,7 @@ struct _virDomainDiskDef {
     int rawio; /* no = 0, yes = 1 */
     int sgio; /* enum virDomainDeviceSGIO */
     int discard; /* enum virDomainDiskDiscard */
+    unsigned int iothread; /* unused = 0, > 0 specific thread # */
 };
 
 
