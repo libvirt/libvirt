@@ -17198,6 +17198,202 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
 }
 
 
+static int
+qemuDomainGetStatsState(virDomainObjPtr dom,
+                        virDomainStatsRecordPtr record,
+                        int *maxparams,
+                        unsigned int privflags ATTRIBUTE_UNUSED)
+{
+    if (virTypedParamsAddInt(&record->params,
+                             &record->nparams,
+                             maxparams,
+                             "state.state",
+                             dom->state.state) < 0)
+        return -1;
+
+    if (virTypedParamsAddInt(&record->params,
+                             &record->nparams,
+                             maxparams,
+                             "state.reason",
+                             dom->state.reason) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+typedef int
+(*qemuDomainGetStatsFunc)(virDomainObjPtr dom,
+                          virDomainStatsRecordPtr record,
+                          int *maxparams,
+                          unsigned int flags);
+
+struct qemuDomainGetStatsWorker {
+    qemuDomainGetStatsFunc func;
+    unsigned int stats;
+};
+
+static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
+    { qemuDomainGetStatsState, VIR_DOMAIN_STATS_STATE},
+    { NULL, 0 }
+};
+
+
+static int
+qemuDomainGetStatsCheckSupport(unsigned int *stats,
+                               bool enforce)
+{
+    unsigned int supportedstats = 0;
+    size_t i;
+
+    for (i = 0; qemuDomainGetStatsWorkers[i].func; i++)
+        supportedstats |= qemuDomainGetStatsWorkers[i].stats;
+
+    if (*stats == 0) {
+        *stats = supportedstats;
+        return 0;
+    }
+
+    if (enforce &&
+        *stats & ~supportedstats) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("Stats types bits 0x%x are not supported by this daemon"),
+                       *stats & ~supportedstats);
+        return -1;
+    }
+
+    *stats &= supportedstats;
+    return 0;
+}
+
+
+static int
+qemuDomainGetStats(virConnectPtr conn,
+                   virDomainObjPtr dom,
+                   unsigned int stats,
+                   virDomainStatsRecordPtr *record,
+                   unsigned int flags)
+{
+    int maxparams = 0;
+    virDomainStatsRecordPtr tmp;
+    size_t i;
+    int ret = -1;
+
+    if (VIR_ALLOC(tmp) < 0)
+        goto cleanup;
+
+    for (i = 0; qemuDomainGetStatsWorkers[i].func; i++) {
+        if (stats & qemuDomainGetStatsWorkers[i].stats) {
+            if (qemuDomainGetStatsWorkers[i].func(dom, tmp, &maxparams,
+                                                  flags) < 0)
+                goto cleanup;
+        }
+    }
+
+    if (!(tmp->dom = virGetDomain(conn, dom->def->name, dom->def->uuid)))
+        goto cleanup;
+
+    *record = tmp;
+    tmp = NULL;
+    ret = 0;
+
+ cleanup:
+    if (tmp) {
+        virTypedParamsFree(tmp->params, tmp->nparams);
+        VIR_FREE(tmp);
+    }
+
+    return ret;
+}
+
+
+static int
+qemuConnectGetAllDomainStats(virConnectPtr conn,
+                             virDomainPtr *doms,
+                             unsigned int ndoms,
+                             unsigned int stats,
+                             virDomainStatsRecordPtr **retStats,
+                             unsigned int flags)
+{
+    virQEMUDriverPtr driver = conn->privateData;
+    virDomainPtr *domlist = NULL;
+    virDomainObjPtr dom = NULL;
+    virDomainStatsRecordPtr *tmpstats = NULL;
+    bool enforce = !!(flags & VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS);
+    int ntempdoms;
+    int nstats = 0;
+    size_t i;
+    int ret = -1;
+
+    if (ndoms)
+        virCheckFlags(VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS, -1);
+    else
+        virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE |
+                      VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT |
+                      VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE |
+                      VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS, -1);
+
+    if (virConnectGetAllDomainStatsEnsureACL(conn) < 0)
+        return -1;
+
+    if (qemuDomainGetStatsCheckSupport(&stats, enforce) < 0)
+        return -1;
+
+    if (!ndoms) {
+        unsigned int lflags = flags & (VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE |
+                                       VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT |
+                                       VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE);
+
+        if ((ntempdoms = virDomainObjListExport(driver->domains,
+                                                conn,
+                                                &domlist,
+                                                virConnectGetAllDomainStatsCheckACL,
+                                                lflags)) < 0)
+            goto cleanup;
+
+        ndoms = ntempdoms;
+        doms = domlist;
+    }
+
+    if (VIR_ALLOC_N(tmpstats, ndoms + 1) < 0)
+        goto cleanup;
+
+    for (i = 0; i < ndoms; i++) {
+        virDomainStatsRecordPtr tmp = NULL;
+
+        if (!(dom = qemuDomObjFromDomain(doms[i])))
+            continue;
+
+        if (!domlist &&
+            !virConnectGetAllDomainStatsCheckACL(conn, dom->def))
+            continue;
+
+        if (qemuDomainGetStats(conn, dom, stats, &tmp, flags) < 0)
+            goto cleanup;
+
+        if (tmp)
+            tmpstats[nstats++] = tmp;
+
+        virObjectUnlock(dom);
+        dom = NULL;
+    }
+
+    *retStats = tmpstats;
+    tmpstats = NULL;
+
+    ret = nstats;
+
+ cleanup:
+    if (dom)
+        virObjectUnlock(dom);
+
+    virDomainStatsRecordListFree(tmpstats);
+    virDomainListFree(domlist);
+
+    return ret;
+}
+
+
 static virDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
     .name = QEMU_DRIVER_NAME,
@@ -17395,6 +17591,7 @@ static virDriver qemuDriver = {
     .domainSetTime = qemuDomainSetTime, /* 1.2.5 */
     .nodeGetFreePages = qemuNodeGetFreePages, /* 1.2.6 */
     .connectGetDomainCapabilities = qemuConnectGetDomainCapabilities, /* 1.2.7 */
+    .connectGetAllDomainStats = qemuConnectGetAllDomainStats, /* 1.2.8 */
 };
 
 
