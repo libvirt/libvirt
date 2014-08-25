@@ -769,7 +769,8 @@ int virFDStreamOpenPTY(virStreamPtr st,
 {
     return virFDStreamOpenFileInternal(st, path,
                                        offset, length,
-                                       oflags | O_CREAT, 0);
+                                       oflags | O_CREAT, 0,
+                                       false);
 }
 #endif /* !HAVE_CFMAKERAW */
 
