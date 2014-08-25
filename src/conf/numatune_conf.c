@@ -81,7 +81,7 @@ virDomainNumatuneNodeParseXML(virDomainNumatunePtr *numatunePtr,
                               xmlXPathContextPtr ctxt)
 {
     char *tmp = NULL;
-    int n = 0;;
+    int n = 0;
     int ret = -1;
     size_t i = 0;
     virDomainNumatunePtr numatune = *numatunePtr;

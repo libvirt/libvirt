@@ -380,7 +380,7 @@ if ($mode eq "debug") {
     }
 }
 
-# Bodies for dispatch functions ("remote_dispatch_bodies.h").
+# Bodies for dispatch functions ("remote_dispatch.h").
 elsif ($mode eq "server") {
     my %generate = map { $_ => 1 } @autogen;
     my @keys = sort (keys %calls);
@@ -537,7 +537,7 @@ elsif ($mode eq "server") {
                     push(@args_list, "args->$1.$1_len");
                 } elsif ($args_member =~ m/^remote_typed_param (\S+)<(\S+)>;/) {
                     push(@vars_list, "virTypedParameterPtr $1 = NULL");
-                    push(@vars_list, "int n$1 = 0;");
+                    push(@vars_list, "int n$1 = 0");
                     if ($call->{ProcName} eq "NodeSetMemoryParameters") {
                         push(@args_list, "priv->conn");
                     }

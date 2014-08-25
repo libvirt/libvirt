@@ -62,7 +62,7 @@ static int testMessageSimple(const void *args ATTRIBUTE_UNUSED)
     unsigned int in_uint32 = 200000000, out_uint32 = 0;
     long long in_int64 = 1000000000000LL, out_int64 = 0;
     unsigned long long in_uint64 = 2000000000000LL, out_uint64 = 0;
-    double in_double = 3.14159265359, out_double = 0;;
+    double in_double = 3.14159265359, out_double = 0;
     const char *in_string = "Hello World";
     char *out_string = NULL;
     const char *in_objectpath = "/org/libvirt/test";
@@ -338,7 +338,7 @@ static int testMessageStruct(const void *args ATTRIBUTE_UNUSED)
     unsigned int in_uint32 = 200000000, out_uint32 = 0;
     long long in_int64 = -1000000000000LL, out_int64 = 0;
     unsigned long long in_uint64 = 2000000000000LL, out_uint64 = 0;
-    double in_double = 3.14159265359, out_double = 0;;
+    double in_double = 3.14159265359, out_double = 0;
     const char *in_string = "Hello World";
     char *out_string = NULL;
     const char *in_objectpath = "/org/libvirt/test";
