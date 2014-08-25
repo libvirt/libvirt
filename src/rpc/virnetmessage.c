@@ -564,3 +564,29 @@ int virNetMessageDupFD(virNetMessagePtr msg,
     }
     return fd;
 }
+
+int virNetMessageAddFD(virNetMessagePtr msg,
+                       int fd)
+{
+    int newfd = -1;
+
+    if ((newfd = dup(fd)) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to duplicate FD %d"),
+                             fd);
+        goto error;
+    }
+
+    if (virSetInherit(newfd, false) < 0) {
+        virReportSystemError(errno,
+                             _("Cannot set close-on-exec %d"),
+                             newfd);
+        goto error;
+    }
+    if (VIR_APPEND_ELEMENT(msg->fds, msg->nfds, newfd) < 0)
+        goto error;
+    return 0;
+ error:
+    VIR_FORCE_CLOSE(newfd);
+    return -1;
+}

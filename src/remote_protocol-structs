@@ -2153,6 +2153,11 @@ struct remote_domain_open_graphics_args {
         u_int                      idx;
         u_int                      flags;
 };
+struct remote_domain_open_graphics_fd_args {
+        remote_nonnull_domain      dom;
+        u_int                      idx;
+        u_int                      flags;
+};
 struct remote_node_suspend_for_duration_args {
         u_int                      target;
         uint64_t                   duration;
@@ -2862,4 +2867,5 @@ enum remote_procedure {
         REMOTE_PROC_NODE_GET_FREE_PAGES = 340,
         REMOTE_PROC_NETWORK_GET_DHCP_LEASES = 341,
         REMOTE_PROC_CONNECT_GET_DOMAIN_CAPABILITIES = 342,
+        REMOTE_PROC_DOMAIN_OPEN_GRAPHICS_FD = 343,
 };

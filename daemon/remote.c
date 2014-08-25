@@ -4399,6 +4399,50 @@ remoteDispatchDomainOpenGraphics(virNetServerPtr server ATTRIBUTE_UNUSED,
 }
 
 static int
+remoteDispatchDomainOpenGraphicsFd(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                   virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                   virNetMessagePtr msg,
+                                   virNetMessageErrorPtr rerr,
+                                   remote_domain_open_graphics_fd_args *args)
+{
+    virDomainPtr dom = NULL;
+    int rv = -1;
+    int fd = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    if (virDomainOpenGraphicsFD(dom,
+                                args->idx,
+                                &fd,
+                                args->flags) < 0)
+        goto cleanup;
+
+    if (virNetMessageAddFD(msg, fd) < 0)
+        goto cleanup;
+
+    /* return 1 here to let virNetServerProgramDispatchCall know
+     * we are passing a FD */
+    rv = 1;
+
+ cleanup:
+    VIR_FORCE_CLOSE(fd);
+    if (rv < 0) {
+        virNetMessageSaveError(rerr);
+    }
+
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+static int
 remoteDispatchDomainGetInterfaceParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
                                            virNetServerClientPtr client ATTRIBUTE_UNUSED,
                                            virNetMessagePtr msg ATTRIBUTE_UNUSED,

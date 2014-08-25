@@ -2733,6 +2733,12 @@ struct remote_domain_open_graphics_args {
     unsigned int flags;
 };
 
+struct remote_domain_open_graphics_fd_args {
+    remote_nonnull_domain dom;
+    unsigned int idx;
+    unsigned int flags;
+};
+
 struct remote_node_suspend_for_duration_args {
     unsigned int target;
     unsigned hyper duration;
@@ -5420,5 +5426,12 @@ enum remote_procedure {
      * @generate: both
      * @acl: connect:write
      */
-    REMOTE_PROC_CONNECT_GET_DOMAIN_CAPABILITIES = 342
+    REMOTE_PROC_CONNECT_GET_DOMAIN_CAPABILITIES = 342,
+
+    /**
+     * @generate: none
+     * @acl: domain:open_graphics
+     */
+    REMOTE_PROC_DOMAIN_OPEN_GRAPHICS_FD = 343
+
 };

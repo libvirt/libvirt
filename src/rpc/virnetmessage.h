@@ -96,4 +96,7 @@ void virNetMessageSaveError(virNetMessageErrorPtr rerr)
 int virNetMessageDupFD(virNetMessagePtr msg,
                        size_t slot);
 
+int virNetMessageAddFD(virNetMessagePtr msg,
+                       int fd);
+
 #endif /* __VIR_NET_MESSAGE_H__ */

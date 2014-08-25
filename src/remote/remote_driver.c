@@ -6446,6 +6446,48 @@ remoteDomainOpenGraphics(virDomainPtr dom,
 
 
 static int
+remoteDomainOpenGraphicsFD(virDomainPtr dom,
+                           unsigned int idx,
+                           int *fd,
+                           unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_open_graphics_args args;
+    struct private_data *priv = dom->conn->privateData;
+    int *fdout = NULL;
+    size_t fdoutlen = 0;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, dom);
+    args.idx = idx;
+    args.flags = flags;
+
+    if (callFull(dom->conn, priv, 0,
+                 NULL, 0,
+                 &fdout, &fdoutlen,
+                 REMOTE_PROC_DOMAIN_OPEN_GRAPHICS_FD,
+                 (xdrproc_t) xdr_remote_domain_open_graphics_fd_args, (char *) &args,
+                 (xdrproc_t) xdr_void, NULL) == -1)
+        goto done;
+
+    if (fdoutlen != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no file descriptor received"));
+        goto done;
+    }
+    *fd = fdout[0];
+
+    rv = 0;
+
+ done:
+    remoteDriverUnlock(priv);
+
+    return rv;
+}
+
+
+static int
 remoteConnectSetKeepAlive(virConnectPtr conn, int interval, unsigned int count)
 {
     struct private_data *priv = conn->privateData;
@@ -7963,6 +8005,7 @@ static virDriver remote_driver = {
     .domainOpenConsole = remoteDomainOpenConsole, /* 0.8.6 */
     .domainOpenChannel = remoteDomainOpenChannel, /* 1.0.2 */
     .domainOpenGraphics = remoteDomainOpenGraphics, /* 0.9.7 */
+    .domainOpenGraphicsFD = remoteDomainOpenGraphicsFD, /* 1.2.8 */
     .domainInjectNMI = remoteDomainInjectNMI, /* 0.9.2 */
     .domainMigrateBegin3 = remoteDomainMigrateBegin3, /* 0.9.2 */
     .domainMigratePrepare3 = remoteDomainMigratePrepare3, /* 0.9.2 */
