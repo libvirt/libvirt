@@ -2524,6 +2524,27 @@ struct remote_network_get_dhcp_leases_ret {
         } leases;
         u_int                      ret;
 };
+struct remote_domain_stats_record {
+        remote_nonnull_domain      dom;
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+};
+struct remote_connect_get_all_domain_stats_args {
+        struct {
+                u_int              doms_len;
+                remote_nonnull_domain * doms_val;
+        } doms;
+        u_int                      stats;
+        u_int                      flags;
+};
+struct remote_connect_get_all_domain_stats_ret {
+        struct {
+                u_int              retStats_len;
+                remote_domain_stats_record * retStats_val;
+        } retStats;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -2868,4 +2889,5 @@ enum remote_procedure {
         REMOTE_PROC_NETWORK_GET_DHCP_LEASES = 341,
         REMOTE_PROC_CONNECT_GET_DOMAIN_CAPABILITIES = 342,
         REMOTE_PROC_DOMAIN_OPEN_GRAPHICS_FD = 343,
+        REMOTE_PROC_CONNECT_GET_ALL_DOMAIN_STATS = 344,
 };

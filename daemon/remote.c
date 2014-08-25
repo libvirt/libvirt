@@ -6383,6 +6383,92 @@ remoteDispatchNetworkGetDHCPLeases(virNetServerPtr server ATTRIBUTE_UNUSED,
 }
 
 
+static int
+remoteDispatchConnectGetAllDomainStats(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                       virNetServerClientPtr client,
+                                       virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                       virNetMessageErrorPtr rerr,
+                                       remote_connect_get_all_domain_stats_args *args,
+                                       remote_connect_get_all_domain_stats_ret *ret)
+{
+    int rv = -1;
+    size_t i;
+    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
+    virDomainStatsRecordPtr *retStats = NULL;
+    int nrecords = 0;
+    virDomainPtr *doms = NULL;
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->doms.doms_len) {
+        if (VIR_ALLOC_N(doms, args->doms.doms_len + 1) < 0)
+            goto cleanup;
+
+        for (i = 0; i < args->doms.doms_len; i++) {
+            if (!(doms[i] = get_nonnull_domain(priv->conn, args->doms.doms_val[i])))
+                goto cleanup;
+        }
+
+        if ((nrecords = virDomainListGetStats(doms,
+                                              args->stats,
+                                              &retStats,
+                                              args->flags)) < 0)
+            goto cleanup;
+    } else {
+        if ((nrecords = virConnectGetAllDomainStats(priv->conn,
+                                                    args->stats,
+                                                    &retStats,
+                                                    args->flags)) < 0)
+            goto cleanup;
+    }
+
+    if (nrecords > REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Number of domain stats records is %d, "
+                         "which exceeds max limit: %d"),
+                       nrecords, REMOTE_DOMAIN_LIST_MAX);
+        goto cleanup;
+    }
+
+    if (nrecords) {
+        if (VIR_ALLOC_N(ret->retStats.retStats_val, nrecords) < 0)
+            goto cleanup;
+
+        ret->retStats.retStats_len = nrecords;
+
+        for (i = 0; i < nrecords; i++) {
+            remote_domain_stats_record *dst = ret->retStats.retStats_val + i;
+
+            make_nonnull_domain(&dst->dom, retStats[i]->dom);
+
+            if (remoteSerializeTypedParameters(retStats[i]->params,
+                                               retStats[i]->nparams,
+                                               &dst->params.params_val,
+                                               &dst->params.params_len,
+                                               VIR_TYPED_PARAM_STRING_OKAY) < 0)
+                goto cleanup;
+        }
+    } else {
+        ret->retStats.retStats_len = 0;
+        ret->retStats.retStats_val = NULL;
+    }
+
+    rv = 0;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+
+    virDomainStatsRecordListFree(retStats);
+    virDomainListFree(doms);
+
+    return rv;
+}
+
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire

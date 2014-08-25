@@ -241,6 +241,9 @@ const REMOTE_DOMAIN_FSFREEZE_MOUNTPOINTS_MAX = 256;
 /* Upper limit on the maximum number of leases in one lease file */
 const REMOTE_NETWORK_DHCP_LEASES_MAX = 65536;
 
+/* Upper limit on count of parameters returned via bulk stats API */
+const REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX = 4096;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -3063,6 +3066,20 @@ struct remote_network_get_dhcp_leases_ret {
     unsigned int ret;
 };
 
+struct remote_domain_stats_record {
+    remote_nonnull_domain dom;
+    remote_typed_param params<REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX>;
+};
+
+struct remote_connect_get_all_domain_stats_args {
+    remote_nonnull_domain doms<REMOTE_DOMAIN_LIST_MAX>;
+    unsigned int stats;
+    unsigned int flags;
+};
+
+struct remote_connect_get_all_domain_stats_ret {
+    remote_domain_stats_record retStats<REMOTE_DOMAIN_LIST_MAX>;
+};
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -5432,6 +5449,12 @@ enum remote_procedure {
      * @generate: none
      * @acl: domain:open_graphics
      */
-    REMOTE_PROC_DOMAIN_OPEN_GRAPHICS_FD = 343
+    REMOTE_PROC_DOMAIN_OPEN_GRAPHICS_FD = 343,
 
+    /**
+     * @generate: none
+     * @acl: connect:search_domains
+     * @aclfilter: domain:read
+     */
+    REMOTE_PROC_CONNECT_GET_ALL_DOMAIN_STATS = 344
 };

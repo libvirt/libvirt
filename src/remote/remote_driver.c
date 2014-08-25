@@ -7717,6 +7717,89 @@ remoteNetworkGetDHCPLeases(virNetworkPtr net,
 }
 
 
+static int
+remoteConnectGetAllDomainStats(virConnectPtr conn,
+                               virDomainPtr *doms,
+                               unsigned int ndoms,
+                               unsigned int stats,
+                               virDomainStatsRecordPtr **retStats,
+                               unsigned int flags)
+{
+    struct private_data *priv = conn->networkPrivateData;
+    int rv = -1;
+    size_t i;
+    remote_connect_get_all_domain_stats_args args;
+    remote_connect_get_all_domain_stats_ret ret;
+
+    virDomainStatsRecordPtr *tmpret = NULL;
+
+    if (ndoms) {
+        if (VIR_ALLOC_N(args.doms.doms_val, ndoms) < 0)
+            goto cleanup;
+
+        for (i = 0; i < ndoms; i++)
+            make_nonnull_domain(args.doms.doms_val + i, doms[i]);
+    }
+    args.doms.doms_len = ndoms;
+
+    args.stats = stats;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+
+    remoteDriverLock(priv);
+    if (call(conn, priv, 0, REMOTE_PROC_CONNECT_GET_ALL_DOMAIN_STATS,
+             (xdrproc_t)xdr_remote_connect_get_all_domain_stats_args, (char *)&args,
+             (xdrproc_t)xdr_remote_connect_get_all_domain_stats_ret, (char *)&ret) == -1) {
+        remoteDriverUnlock(priv);
+        goto cleanup;
+    }
+    remoteDriverUnlock(priv);
+
+    if (ret.retStats.retStats_len > REMOTE_DOMAIN_LIST_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Number of stats entries is %d, which exceeds max limit: %d"),
+                       ret.retStats.retStats_len, REMOTE_DOMAIN_LIST_MAX);
+        goto cleanup;
+    }
+
+    *retStats = NULL;
+
+    if (VIR_ALLOC_N(tmpret, ret.retStats.retStats_len + 1) < 0)
+        goto cleanup;
+
+    for (i = 0; i < ret.retStats.retStats_len; i++) {
+        virDomainStatsRecordPtr elem;
+        remote_domain_stats_record *rec = ret.retStats.retStats_val + i;
+
+        if (VIR_ALLOC(elem) < 0)
+            goto cleanup;
+
+        if (!(elem->dom = get_nonnull_domain(conn, rec->dom)))
+            goto cleanup;
+
+        if (remoteDeserializeTypedParameters(rec->params.params_val,
+                                             rec->params.params_len,
+                                             REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX,
+                                             &elem->params,
+                                             &elem->nparams))
+            goto cleanup;
+
+        tmpret[i] = elem;
+    }
+
+    *retStats = tmpret;
+    tmpret = NULL;
+    rv = ret.retStats.retStats_len;
+
+ cleanup:
+    virDomainStatsRecordListFree(tmpret);
+    xdr_free((xdrproc_t)xdr_remote_connect_get_all_domain_stats_ret,
+             (char *) &ret);
+
+    return rv;
+}
+
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
  * (name, uuid) pair into virDomainPtr or virNetworkPtr object.
  * These can return NULL if underlying memory allocations fail,
@@ -8056,6 +8139,7 @@ static virDriver remote_driver = {
     .domainSetTime = remoteDomainSetTime, /* 1.2.5 */
     .nodeGetFreePages = remoteNodeGetFreePages, /* 1.2.6 */
     .connectGetDomainCapabilities = remoteConnectGetDomainCapabilities, /* 1.2.7 */
+    .connectGetAllDomainStats = remoteConnectGetAllDomainStats, /* 1.2.8 */
 };
 
 static virNetworkDriver network_driver = {
