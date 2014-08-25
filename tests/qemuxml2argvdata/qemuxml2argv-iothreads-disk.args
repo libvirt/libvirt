@@ -1,0 +1,17 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S -M \
+pc -m 214 -smp 2 \
+-object iothread,id=iothread1 \
+-object iothread,id=iothread2 \
+-nographic -nodefaults -monitor \
+unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -usb \
+-drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-ide0-0-0 \
+-device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
+-drive file=/var/lib/libvirt/images/iothrtest1.img,if=none,\
+id=drive-virtio-disk1 \
+-device virtio-blk-pci,iothread=iothread1,bus=pci.0,addr=0x4,\
+drive=drive-virtio-disk1,id=virtio-disk1 \
+-drive file=/var/lib/libvirt/images/iothrtest2.img,if=none,\
+id=drive-virtio-disk2 \
+-device virtio-blk-pci,iothread=iothread2,bus=pci.0,addr=0x3,\
+drive=drive-virtio-disk2,id=virtio-disk2

@@ -3674,6 +3674,39 @@ qemuBuildDriveStr(virConnectPtr conn,
     return NULL;
 }
 
+
+static bool
+qemuCheckIothreads(virDomainDefPtr def,
+                   virQEMUCapsPtr qemuCaps,
+                   virDomainDiskDefPtr disk)
+{
+    /* Have capability */
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("IOThreads not supported for this QEMU"));
+        return false;
+    }
+
+    /* Right "type" of disk" */
+    if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO &&
+        disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("IOThreads only available for virtio pci disk"));
+        return false;
+    }
+
+    /* Value larger than iothreads available? */
+    if (disk->iothread > def->iothreads) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Disk iothread '%u' invalid only %u IOThreads"),
+                       disk->iothread, def->iothreads);
+        return false;
+    }
+
+    return true;
+}
+
+
 char *
 qemuBuildDriveDevStr(virDomainDefPtr def,
                      virDomainDiskDefPtr disk,
@@ -3697,6 +3730,9 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
             goto error;
         }
     }
+
+    if (disk->iothread && !qemuCheckIothreads(def, qemuCaps, disk))
+        goto error;
 
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_IDE:
@@ -3875,6 +3911,8 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
             virBufferAddLit(&opt, "virtio-blk-device");
         } else {
             virBufferAddLit(&opt, "virtio-blk-pci");
+            if (disk->iothread)
+                virBufferAsprintf(&opt, ",iothread=iothread%u", disk->iothread);
         }
         qemuBuildIoEventFdStr(&opt, disk->ioeventfd, qemuCaps);
         if (disk->event_idx &&

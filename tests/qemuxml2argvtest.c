@@ -1186,6 +1186,8 @@ mymain(void)
     DO_TEST("smp", QEMU_CAPS_SMP_TOPOLOGY);
 
     DO_TEST("iothreads", QEMU_CAPS_OBJECT_IOTHREAD);
+    DO_TEST("iothreads-disk", QEMU_CAPS_OBJECT_IOTHREAD, QEMU_CAPS_DEVICE,
+            QEMU_CAPS_DRIVE);
 
     DO_TEST("cpu-topology1", QEMU_CAPS_SMP_TOPOLOGY);
     DO_TEST("cpu-topology2", QEMU_CAPS_SMP_TOPOLOGY);
