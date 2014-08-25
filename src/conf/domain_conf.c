@@ -5416,6 +5416,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *mirrorType = NULL;
     int expected_secret_usage = -1;
     int auth_secret_usage = -1;
+    int ret = 0;
 
     if (!(def = virDomainDiskDefNew()))
         return NULL;
@@ -5644,39 +5645,69 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                     goto error;
                 }
             } else if (xmlStrEqual(cur->name, BAD_CAST "iotune")) {
-                if (virXPathULongLong("string(./iotune/total_bytes_sec)",
-                                      ctxt,
-                                      &def->blkdeviotune.total_bytes_sec) < 0) {
+                ret = virXPathULongLong("string(./iotune/total_bytes_sec)",
+                                        ctxt,
+                                        &def->blkdeviotune.total_bytes_sec);
+                if (ret == -2) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("total throughput limit must be an integer"));
+                    goto error;
+                } else if (ret < 0) {
                     def->blkdeviotune.total_bytes_sec = 0;
                 }
 
-                if (virXPathULongLong("string(./iotune/read_bytes_sec)",
-                                      ctxt,
-                                      &def->blkdeviotune.read_bytes_sec) < 0) {
+                ret = virXPathULongLong("string(./iotune/read_bytes_sec)",
+                                        ctxt,
+                                        &def->blkdeviotune.read_bytes_sec);
+                if (ret == -2) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("read throughput limit must be an integer"));
+                    goto error;
+                } else if (ret < 0) {
                     def->blkdeviotune.read_bytes_sec = 0;
                 }
 
-                if (virXPathULongLong("string(./iotune/write_bytes_sec)",
-                                      ctxt,
-                                      &def->blkdeviotune.write_bytes_sec) < 0) {
+                ret = virXPathULongLong("string(./iotune/write_bytes_sec)",
+                                        ctxt,
+                                        &def->blkdeviotune.write_bytes_sec);
+                if (ret == -2) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("write throughput limit must be an integer"));
+                    goto error;
+                } else if (ret < 0) {
                     def->blkdeviotune.write_bytes_sec = 0;
                 }
 
-                if (virXPathULongLong("string(./iotune/total_iops_sec)",
-                                      ctxt,
-                                      &def->blkdeviotune.total_iops_sec) < 0) {
+                ret = virXPathULongLong("string(./iotune/total_iops_sec)",
+                                        ctxt,
+                                        &def->blkdeviotune.total_iops_sec);
+                if (ret == -2) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("total I/O operations limit must be an integer"));
+                    goto error;
+                } else if (ret < 0) {
                     def->blkdeviotune.total_iops_sec = 0;
                 }
 
-                if (virXPathULongLong("string(./iotune/read_iops_sec)",
-                                      ctxt,
-                                      &def->blkdeviotune.read_iops_sec) < 0) {
+                ret = virXPathULongLong("string(./iotune/read_iops_sec)",
+                                        ctxt,
+                                        &def->blkdeviotune.read_iops_sec);
+                if (ret == -2) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("read I/O operations limit must be an integer"));
+                    goto error;
+                } else if (ret < 0) {
                     def->blkdeviotune.read_iops_sec = 0;
                 }
 
-                if (virXPathULongLong("string(./iotune/write_iops_sec)",
-                                      ctxt,
-                                      &def->blkdeviotune.write_iops_sec) < 0) {
+                ret = virXPathULongLong("string(./iotune/write_iops_sec)",
+                                        ctxt,
+                                        &def->blkdeviotune.write_iops_sec);
+                if (ret == -2) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("write I/O operations limit must be an integer"));
+                    goto error;
+                } else if (ret < 0) {
                     def->blkdeviotune.write_iops_sec = 0;
                 }
 
