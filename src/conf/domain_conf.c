@@ -100,6 +100,8 @@ typedef enum {
    VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM       = 1 << 19,
    VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT      = 1 << 20,
    VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST    = 1 << 21,
+   /* parse only source half of <disk> */
+   VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE     = 1 << 22,
 } virDomainXMLInternalFlags;
 
 #define DUMPXML_FLAGS                           \
@@ -113,7 +115,8 @@ verify(((VIR_DOMAIN_XML_INTERNAL_STATUS |
          VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES |
          VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM |
          VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT |
-         VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST)
+         VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST |
+         VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE)
         & DUMPXML_FLAGS) == 0);
 
 VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
@@ -5847,9 +5850,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
      * to indicate no media present. LUN is for raw access CD-ROMs
      * that are not attached to a physical device presently */
     if (source == NULL && def->src->hosts == NULL && !def->src->srcpool &&
-        def->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
-        def->device != VIR_DOMAIN_DISK_DEVICE_LUN &&
-        def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
+        (def->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
+         (flags & VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE))) {
         virReportError(VIR_ERR_NO_SOURCE,
                        target ? "%s" : NULL, target);
         goto error;
@@ -5869,7 +5871,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         ctxt->node = saved_node;
     }
 
-    if (target == NULL) {
+    if (!target && !(flags & VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE)) {
         if (def->src->srcpool) {
             char *tmp;
             if (virAsprintf(&tmp, "pool = '%s', volume = '%s'",
@@ -5884,27 +5886,29 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
     }
 
-    if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-        !STRPREFIX(target, "fd")) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid floppy device name: %s"), target);
-        goto error;
-    }
+    if (!(flags & VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE)) {
+        if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+            !STRPREFIX(target, "fd")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid floppy device name: %s"), target);
+            goto error;
+        }
 
-    /* Force CDROM to be listed as read only */
-    if (def->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-        def->src->readonly = true;
+        /* Force CDROM to be listed as read only */
+        if (def->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+            def->src->readonly = true;
 
-    if ((def->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
-         def->device == VIR_DOMAIN_DISK_DEVICE_LUN) &&
-        !STRPREFIX((const char *)target, "hd") &&
-        !STRPREFIX((const char *)target, "sd") &&
-        !STRPREFIX((const char *)target, "vd") &&
-        !STRPREFIX((const char *)target, "xvd") &&
-        !STRPREFIX((const char *)target, "ubd")) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid harddisk device name: %s"), target);
-        goto error;
+        if ((def->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
+             def->device == VIR_DOMAIN_DISK_DEVICE_LUN) &&
+            !STRPREFIX((const char *)target, "hd") &&
+            !STRPREFIX((const char *)target, "sd") &&
+            !STRPREFIX((const char *)target, "vd") &&
+            !STRPREFIX((const char *)target, "xvd") &&
+            !STRPREFIX((const char *)target, "ubd")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid harddisk device name: %s"), target);
+            goto error;
+        }
     }
 
     if (snapshot) {
@@ -5958,7 +5962,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     } else {
         if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
             def->bus = VIR_DOMAIN_DISK_BUS_FDC;
-        } else {
+        } else if (!(flags & VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE)) {
             if (STRPREFIX(target, "hd"))
                 def->bus = VIR_DOMAIN_DISK_BUS_IDE;
             else if (STRPREFIX(target, "sd"))
@@ -6193,12 +6197,14 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
     }
 
-    if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE
-        && virDomainDiskDefAssignAddress(xmlopt, def) < 0)
-        goto error;
+    if (!(flags & VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE)) {
+        if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE
+            && virDomainDiskDefAssignAddress(xmlopt, def) < 0)
+            goto error;
 
-    if (virDomainDiskBackingStoreParse(ctxt, def->src) < 0)
-        goto error;
+        if (virDomainDiskBackingStoreParse(ctxt, def->src) < 0)
+            goto error;
+    }
 
  cleanup:
     VIR_FREE(bus);
@@ -10409,6 +10415,47 @@ virDomainDeviceDefParse(const char *xmlStr,
  error:
     VIR_FREE(dev);
     goto cleanup;
+}
+
+
+virStorageSourcePtr
+virDomainDiskDefSourceParse(const char *xmlStr,
+                            const virDomainDef *def,
+                            virDomainXMLOptionPtr xmlopt,
+                            unsigned int flags)
+{
+    xmlDocPtr xml;
+    xmlNodePtr node;
+    xmlXPathContextPtr ctxt = NULL;
+    virDomainDiskDefPtr disk = NULL;
+    virStorageSourcePtr ret = NULL;
+
+    if (!(xml = virXMLParseStringCtxt(xmlStr, _("(disk_definition)"), &ctxt)))
+        goto cleanup;
+    node = ctxt->node;
+
+    if (!xmlStrEqual(node->name, BAD_CAST "disk")) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("expecting root element of 'disk', not '%s'"),
+                       node->name);
+        goto cleanup;
+    }
+
+    flags |= VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE;
+    if (!(disk = virDomainDiskDefParseXML(xmlopt, node, ctxt,
+                                          NULL, def->seclabels,
+                                          def->nseclabels,
+                                          flags)))
+        goto cleanup;
+
+    ret = disk->src;
+    disk->src = NULL;
+
+ cleanup:
+    virDomainDiskDefFree(disk);
+    xmlFreeDoc(xml);
+    xmlXPathFreeContext(ctxt);
+    return ret;
 }
 
 
