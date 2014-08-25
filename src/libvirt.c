@@ -20182,6 +20182,64 @@ virDomainOpenGraphics(virDomainPtr dom,
 
 
 /**
+ * virDomainOpenGraphicsFD:
+ * @dom: pointer to domain object
+ * @idx: index of graphics config to open
+ * @fd: returned file descriptor
+ * @flags: bitwise-OR of virDomainOpenGraphicsFlags
+ *
+ * This will create a socket pair connected to the graphics backend of @dom.
+ * One socket will be returned as @fd.
+ * If @dom has multiple graphics backends configured, then @idx will determine
+ * which one is opened, starting from @idx 0.
+ *
+ * To disable any authentication, pass the VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH
+ * constant for @flags.
+ *
+ * This method can only be used when connected to a local
+ * libvirt hypervisor, over a UNIX domain socket. Attempts
+ * to use this method over a TCP connection will always fail
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int
+virDomainOpenGraphicsFD(virDomainPtr dom,
+                        unsigned int idx,
+                        int *fd,
+                        unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(dom, "idx=%u, fd=%p, flags=%x",
+                     idx, fd, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(dom, -1);
+    virCheckNonNullArgGoto(fd, error);
+
+    virCheckReadOnlyGoto(dom->conn->flags, error);
+
+    if (!VIR_DRV_SUPPORTS_FEATURE(dom->conn->driver, dom->conn,
+                                  VIR_DRV_FEATURE_FD_PASSING)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("fd passing is not supported by this connection"));
+        goto error;
+    }
+
+    if (dom->conn->driver->domainOpenGraphicsFD) {
+        int ret;
+        ret = dom->conn->driver->domainOpenGraphicsFD(dom, idx, fd, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+/**
  * virConnectSetKeepAlive:
  * @conn: pointer to a hypervisor connection
  * @interval: number of seconds of inactivity before a keepalive message is sent

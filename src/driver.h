@@ -888,6 +888,12 @@ typedef int
                             unsigned int flags);
 
 typedef int
+(*virDrvDomainOpenGraphicsFD)(virDomainPtr dom,
+                              unsigned int idx,
+                              int *fd,
+                              unsigned int flags);
+
+typedef int
 (*virDrvDomainInjectNMI)(virDomainPtr dom,
                          unsigned int flags);
 
@@ -1369,6 +1375,7 @@ struct _virDriver {
     virDrvDomainOpenConsole domainOpenConsole;
     virDrvDomainOpenChannel domainOpenChannel;
     virDrvDomainOpenGraphics domainOpenGraphics;
+    virDrvDomainOpenGraphicsFD domainOpenGraphicsFD;
     virDrvDomainInjectNMI domainInjectNMI;
     virDrvDomainMigrateBegin3 domainMigrateBegin3;
     virDrvDomainMigratePrepare3 domainMigratePrepare3;

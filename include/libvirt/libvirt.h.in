@@ -5321,6 +5321,11 @@ int virDomainOpenGraphics(virDomainPtr dom,
                           int fd,
                           unsigned int flags);
 
+int virDomainOpenGraphicsFD(virDomainPtr dom,
+                            unsigned int idx,
+                            int *fd,
+                            unsigned int flags);
+
 int virDomainInjectNMI(virDomainPtr domain, unsigned int flags);
 
 int virDomainFSTrim(virDomainPtr dom,
