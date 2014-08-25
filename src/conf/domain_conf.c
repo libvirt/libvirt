@@ -89,18 +89,32 @@ struct _virDomainXMLOption {
 
 
 /* Private flags used internally by virDomainSaveStatus and
- * virDomainLoadStatus. */
+ * virDomainLoadStatus, in addition to the public virDomainXMLFlags. */
 typedef enum {
    /* dump internal domain status information */
-   VIR_DOMAIN_XML_INTERNAL_STATUS = (1<<16),
+   VIR_DOMAIN_XML_INTERNAL_STATUS          = 1 << 16,
    /* dump/parse <actual> element */
-   VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET = (1<<17),
+   VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET      = 1 << 17,
    /* dump/parse original states of host PCI device */
-   VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES = (1<<18),
-   VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM = (1<<19),
-   VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT = (1<<20),
-   VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST = (1<<21),
+   VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES = 1 << 18,
+   VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM       = 1 << 19,
+   VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT      = 1 << 20,
+   VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST    = 1 << 21,
 } virDomainXMLInternalFlags;
+
+#define DUMPXML_FLAGS                           \
+    (VIR_DOMAIN_XML_SECURE |                    \
+     VIR_DOMAIN_XML_INACTIVE |                  \
+     VIR_DOMAIN_XML_UPDATE_CPU |                \
+     VIR_DOMAIN_XML_MIGRATABLE)
+
+verify(((VIR_DOMAIN_XML_INTERNAL_STATUS |
+         VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
+         VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES |
+         VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM |
+         VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT |
+         VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST)
+        & DUMPXML_FLAGS) == 0);
 
 VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
               "custom-argv",
@@ -10359,7 +10373,7 @@ virDomainDeviceDefParse(const char *xmlStr,
     }
 
     /* callback to fill driver specific device aspects */
-    if (virDomainDeviceDefPostParse(dev, def,  caps, xmlopt) < 0)
+    if (virDomainDeviceDefPostParse(dev, def, caps, xmlopt) < 0)
         goto error;
 
  cleanup:
@@ -17725,18 +17739,6 @@ virDomainHugepagesFormat(virBufferPtr buf,
     virBufferAddLit(buf, "</hugepages>\n");
 }
 
-
-#define DUMPXML_FLAGS                           \
-    (VIR_DOMAIN_XML_SECURE |                    \
-     VIR_DOMAIN_XML_INACTIVE |                  \
-     VIR_DOMAIN_XML_UPDATE_CPU |                \
-     VIR_DOMAIN_XML_MIGRATABLE)
-
-verify(((VIR_DOMAIN_XML_INTERNAL_STATUS |
-         VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
-         VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES |
-         VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST)
-        & DUMPXML_FLAGS) == 0);
 
 static bool
 virDomainDefHasCapabilitiesFeatures(virDomainDefPtr def)
