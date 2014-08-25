@@ -15557,6 +15557,89 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     return ret;
 }
 
+
+static int
+qemuDomainBlockCopy(virDomainPtr dom, const char *disk, const char *destxml,
+                    virTypedParameterPtr params, int nparams,
+                    unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+    unsigned long long bandwidth = 0;
+    unsigned int granularity = 0;
+    unsigned long long buf_size = 0;
+    virStorageSourcePtr dest = NULL;
+    size_t i;
+
+    virCheckFlags(VIR_DOMAIN_BLOCK_COPY_SHALLOW |
+                  VIR_DOMAIN_BLOCK_COPY_REUSE_EXT, -1);
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_BLOCK_COPY_BANDWIDTH,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_COPY_GRANULARITY,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_BLOCK_COPY_BUF_SIZE,
+                               VIR_TYPED_PARAM_ULLONG,
+                               NULL) < 0)
+        return -1;
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainBlockCopyEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    for (i = 0; i < nparams; i++) {
+        virTypedParameterPtr param = &params[i];
+
+        /* Typed params (wisely) refused to expose unsigned long, but
+         * back-compat demands that we stick with a maximum of
+         * unsigned long bandwidth in MiB/s, while our value is
+         * unsigned long long in bytes/s.  Hence, we have to do
+         * overflow detection if this is a 32-bit server handling a
+         * 64-bit client.  */
+        if (STREQ(param->field, VIR_DOMAIN_BLOCK_COPY_BANDWIDTH)) {
+            if (sizeof(unsigned long) < sizeof(bandwidth) &&
+                param->value.ul > ULONG_MAX * (1ULL << 20)) {
+                virReportError(VIR_ERR_OVERFLOW,
+                               _("bandwidth must be less than %llu bytes"),
+                               ULONG_MAX * (1ULL << 20));
+                goto cleanup;
+            }
+            bandwidth = param->value.ul;
+        } else if (STREQ(param->field, VIR_DOMAIN_BLOCK_COPY_GRANULARITY)) {
+            granularity = param->value.ui;
+        } else if (STREQ(param->field, VIR_DOMAIN_BLOCK_COPY_BUF_SIZE)) {
+            buf_size = param->value.ul;
+        }
+    }
+    if (granularity) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("granularity tuning not supported yet"));
+        goto cleanup;
+    }
+    if (buf_size) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("buffer size tuning not supported yet"));
+        goto cleanup;
+    }
+
+    if (!(dest = virDomainDiskDefSourceParse(destxml, vm->def, driver->xmlopt,
+                                             VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    ret = qemuDomainBlockCopyCommon(vm, dom->conn, disk, dest,
+                                    bandwidth, flags);
+    vm = NULL;
+
+ cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
+}
+
+
 static int
 qemuDomainBlockPull(virDomainPtr dom, const char *path, unsigned long bandwidth,
                     unsigned int flags)
@@ -17629,6 +17712,7 @@ static virDriver qemuDriver = {
     .domainBlockJobSetSpeed = qemuDomainBlockJobSetSpeed, /* 0.9.4 */
     .domainBlockPull = qemuDomainBlockPull, /* 0.9.4 */
     .domainBlockRebase = qemuDomainBlockRebase, /* 0.9.10 */
+    .domainBlockCopy = qemuDomainBlockCopy, /* 1.2.9 */
     .domainBlockCommit = qemuDomainBlockCommit, /* 1.0.0 */
     .connectIsAlive = qemuConnectIsAlive, /* 0.9.8 */
     .nodeSuspendForDuration = qemuNodeSuspendForDuration, /* 0.9.8 */
