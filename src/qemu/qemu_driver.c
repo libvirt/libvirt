@@ -15806,6 +15806,84 @@ qemuDomainOpenGraphics(virDomainPtr dom,
 }
 
 static int
+qemuDomainOpenGraphicsFD(virDomainPtr dom,
+                         unsigned int idx,
+                         int *fd,
+                         unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv;
+    const char *protocol;
+    int pair[2] = {-1, -1};
+
+    virCheckFlags(VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH, -1);
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainOpenGraphicsFdEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (idx >= vm->def->ngraphics) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("No graphics backend with index %d"), idx);
+        goto cleanup;
+    }
+    switch (vm->def->graphics[idx]->type) {
+    case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        protocol = "vnc";
+        break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        protocol = "spice";
+        break;
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Can only open VNC or SPICE graphics backends, not %s"),
+                       virDomainGraphicsTypeToString(vm->def->graphics[idx]->type));
+        goto cleanup;
+    }
+
+    if (virSecurityManagerSetSocketLabel(driver->securityManager, vm->def) < 0)
+        goto cleanup;
+
+    if (socketpair(PF_UNIX, SOCK_STREAM, 0, pair) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerClearSocketLabel(driver->securityManager, vm->def) < 0)
+        goto cleanup;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorOpenGraphics(priv->mon, protocol, pair[1], "graphicsfd",
+                                  (flags & VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH) != 0);
+    qemuDomainObjExitMonitor(driver, vm);
+    if (!qemuDomainObjEndJob(driver, vm))
+        vm = NULL;
+
+    *fd = pair[0];
+
+ cleanup:
+    if (ret < 0) {
+        VIR_FORCE_CLOSE(pair[0]);
+        VIR_FORCE_CLOSE(pair[1]);
+    }
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
+}
+
+static int
 qemuDomainSetBlockIoTune(virDomainPtr dom,
                          const char *disk,
                          virTypedParameterPtr params,
@@ -17262,6 +17340,7 @@ static virDriver qemuDriver = {
     .connectDomainQemuMonitorEventDeregister = qemuConnectDomainQemuMonitorEventDeregister, /* 1.2.3 */
     .domainOpenConsole = qemuDomainOpenConsole, /* 0.8.6 */
     .domainOpenGraphics = qemuDomainOpenGraphics, /* 0.9.7 */
+    .domainOpenGraphicsFD = qemuDomainOpenGraphicsFD, /* 1.2.8 */
     .domainInjectNMI = qemuDomainInjectNMI, /* 0.9.2 */
     .domainMigrateBegin3 = qemuDomainMigrateBegin3, /* 0.9.2 */
     .domainMigratePrepare3 = qemuDomainMigratePrepare3, /* 0.9.2 */
