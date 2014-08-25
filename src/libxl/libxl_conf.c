@@ -1130,10 +1130,24 @@ libxlMakeVfbList(virPortAllocatorPtr graphicsports,
         libxl_domain_build_info *b_info = &d_config->b_info;
         libxl_device_vfb vfb = d_config->vfbs[0];
 
-        if (libxl_defbool_val(vfb.vnc.enable))
-            memcpy(&b_info->u.hvm.vnc, &vfb.vnc, sizeof(libxl_vnc_info));
-        else if (libxl_defbool_val(vfb.sdl.enable))
-            memcpy(&b_info->u.hvm.sdl, &vfb.sdl, sizeof(libxl_sdl_info));
+        if (libxl_defbool_val(vfb.vnc.enable)) {
+            libxl_defbool_set(&b_info->u.hvm.vnc.enable, true);
+            if (VIR_STRDUP(b_info->u.hvm.vnc.listen, vfb.vnc.listen) < 0)
+                goto error;
+            if (VIR_STRDUP(b_info->u.hvm.vnc.passwd, vfb.vnc.passwd) < 0)
+                goto error;
+            b_info->u.hvm.vnc.display = vfb.vnc.display;
+            libxl_defbool_set(&b_info->u.hvm.vnc.findunused,
+                              libxl_defbool_val(vfb.vnc.findunused));
+        } else if (libxl_defbool_val(vfb.sdl.enable)) {
+            libxl_defbool_set(&b_info->u.hvm.sdl.enable, true);
+            libxl_defbool_set(&b_info->u.hvm.sdl.opengl,
+                              libxl_defbool_val(vfb.sdl.opengl));
+            if (VIR_STRDUP(b_info->u.hvm.sdl.display, vfb.sdl.display) < 0)
+                goto error;
+            if (VIR_STRDUP(b_info->u.hvm.sdl.xauthority, vfb.sdl.xauthority) < 0)
+                goto error;
+        }
     }
 
     return 0;
