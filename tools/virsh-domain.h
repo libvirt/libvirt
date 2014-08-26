@@ -28,6 +28,10 @@
 
 # include "virsh.h"
 
+virDomainPtr vshLookupDomainBy(vshControl *ctl,
+                               const char *name,
+                               unsigned int flags);
+
 virDomainPtr vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
                                    const char **name, unsigned int flags);
 
