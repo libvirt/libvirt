@@ -1197,6 +1197,14 @@ typedef int
                           unsigned int flags);
 
 
+typedef int
+(*virDrvConnectGetAllDomainStats)(virConnectPtr conn,
+                                  virDomainPtr *doms,
+                                  unsigned int ndoms,
+                                  unsigned int stats,
+                                  virDomainStatsRecordPtr **retStats,
+                                  unsigned int flags);
+
 typedef struct _virDriver virDriver;
 typedef virDriver *virDriverPtr;
 
@@ -1418,6 +1426,7 @@ struct _virDriver {
     virDrvDomainSetTime domainSetTime;
     virDrvNodeGetFreePages nodeGetFreePages;
     virDrvConnectGetDomainCapabilities connectGetDomainCapabilities;
+    virDrvConnectGetAllDomainStats connectGetAllDomainStats;
 };
 
 

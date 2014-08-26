@@ -2501,6 +2501,30 @@ int virDomainDetachDeviceFlags(virDomainPtr domain,
 int virDomainUpdateDeviceFlags(virDomainPtr domain,
                                const char *xml, unsigned int flags);
 
+typedef struct _virDomainStatsRecord virDomainStatsRecord;
+typedef virDomainStatsRecord *virDomainStatsRecordPtr;
+struct _virDomainStatsRecord {
+    virDomainPtr dom;
+    virTypedParameterPtr params;
+    int nparams;
+};
+
+typedef enum {
+    VIR_DOMAIN_STATS_STATE = (1 << 0), /* return domain state */
+} virDomainStatsTypes;
+
+int virConnectGetAllDomainStats(virConnectPtr conn,
+                                unsigned int stats,
+                                virDomainStatsRecordPtr **retStats,
+                                unsigned int flags);
+
+int virDomainListGetStats(virDomainPtr *doms,
+                          unsigned int stats,
+                          virDomainStatsRecordPtr **retStats,
+                          unsigned int flags);
+
+void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
+
 /*
  * BlockJob API
  */

@@ -671,8 +671,11 @@ LIBVIRT_1.2.7 {
 } LIBVIRT_1.2.6;
 
 LIBVIRT_1.2.8 {
-     global:
-         virDomainOpenGraphicsFD;
+    global:
+        virConnectGetAllDomainStats;
+        virDomainListGetStats;
+        virDomainOpenGraphicsFD;
+        virDomainStatsRecordListFree;
 } LIBVIRT_1.2.7;
 
 # .... define new API here using predicted next version number ....

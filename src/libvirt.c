@@ -21399,3 +21399,189 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
     virDispatchError(conn);
     return NULL;
 }
+
+
+/**
+ * virConnectGetAllDomainStats:
+ * @conn: pointer to the hypervisor connection
+ * @stats: stats to return, binary-OR of virDomainStatsTypes
+ * @retStats: Pointer that will be filled with the array of returned stats.
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Query statistics for all domains on a given connection.
+ *
+ * Report statistics of various parameters for a running VM according to @stats
+ * field. The statistics are returned as an array of structures for each queried
+ * domain. The structure contains an array of typed parameters containing the
+ * individual statistics. The typed parameter name for each statistic field
+ * consists of a dot-separated string containing name of the requested group
+ * followed by a group specific description of the statistic value.
+ *
+ * The statistic groups are enabled using the @stats parameter which is a
+ * binary-OR of enum virDomainStatsTypes. The following groups are available
+ * (although not necessarily implemented for each hypervisor):
+ *
+ * VIR_DOMAIN_STATS_STATE: Return domain state and reason for entering that
+ * state. The typed parameter keys are in this format:
+ * "state.state" - state of the VM, returned as int from virDomainState enum
+ * "state.reason" - reason for entering given state, returned as int from
+ *                  virDomain*Reason enum corresponding to given state.
+ *
+ * Using 0 for @stats returns all stats groups supported by the given
+ * hypervisor.
+ *
+ * Returns the count of returned statistics structures on success, -1 on error.
+ * The requested data are returned in the @retStats parameter. The returned
+ * array should be freed by the caller. See virDomainStatsRecordListFree.
+ */
+int
+virConnectGetAllDomainStats(virConnectPtr conn,
+                            unsigned int stats,
+                            virDomainStatsRecordPtr **retStats,
+                            unsigned int flags)
+{
+    int ret = -1;
+
+    VIR_DEBUG("conn=%p, stats=0x%x, retStats=%p, flags=0x%x",
+              conn, stats, retStats, flags);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, -1);
+    virCheckNonNullArgGoto(retStats, cleanup);
+
+    if (!conn->driver->connectGetAllDomainStats) {
+        virReportUnsupportedError();
+        goto cleanup;
+    }
+
+    ret = conn->driver->connectGetAllDomainStats(conn, NULL, 0, stats,
+                                                 retStats, flags);
+
+ cleanup:
+    if (ret < 0)
+        virDispatchError(conn);
+
+    return ret;
+}
+
+
+/**
+ * virDomainListGetStats:
+ * @doms: NULL terminated array of domains
+ * @stats: stats to return, binary-OR of virDomainStatsTypes
+ * @retStats: Pointer that will be filled with the array of returned stats.
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Query statistics for domains provided by @doms. Note that all domains in
+ * @doms must share the same connection.
+ *
+ * Report statistics of various parameters for a running VM according to @stats
+ * field. The statistics are returned as an array of structures for each queried
+ * domain. The structure contains an array of typed parameters containing the
+ * individual statistics. The typed parameter name for each statistic field
+ * consists of a dot-separated string containing name of the requested group
+ * followed by a group specific description of the statistic value.
+ *
+ * The statistic groups are enabled using the @stats parameter which is a
+ * binary-OR of enum virDomainStatsTypes. The following groups are available
+ * (although not necessarily implemented for each hypervisor):
+ *
+ * VIR_DOMAIN_STATS_STATE: Return domain state and reason for entering that
+ * state. The typed parameter keys are in this format:
+ * "state.state" - state of the VM, returned as int from virDomainState enum
+ * "state.reason" - reason for entering given state, returned as int from
+ *                  virDomain*Reason enum corresponding to given state.
+ *
+ * Using 0 for @stats returns all stats groups supported by the given
+ * hypervisor.
+ *
+ * Returns the count of returned statistics structures on success, -1 on error.
+ * The requested data are returned in the @retStats parameter. The returned
+ * array should be freed by the caller. See virDomainStatsRecordListFree.
+ * Note that the count of returned stats may be less than the domain count
+ * provided via @doms.
+ */
+int
+virDomainListGetStats(virDomainPtr *doms,
+                      unsigned int stats,
+                      virDomainStatsRecordPtr **retStats,
+                      unsigned int flags)
+{
+    virConnectPtr conn = NULL;
+    virDomainPtr *nextdom = doms;
+    unsigned int ndoms = 0;
+    int ret = -1;
+
+    VIR_DEBUG("doms=%p, stats=0x%x, retStats=%p, flags=0x%x",
+              doms, stats, retStats, flags);
+
+    virResetLastError();
+
+    virCheckNonNullArgGoto(doms, cleanup);
+    virCheckNonNullArgGoto(retStats, cleanup);
+
+    if (!*doms) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("doms array in %s must contain at least one domain"),
+                       __FUNCTION__);
+        goto cleanup;
+    }
+
+    conn = doms[0]->conn;
+    virCheckConnectReturn(conn, -1);
+
+    if (!conn->driver->connectGetAllDomainStats) {
+        virReportUnsupportedError();
+        goto cleanup;
+    }
+
+    while (*nextdom) {
+        virDomainPtr dom = *nextdom;
+
+        virCheckDomainGoto(dom, cleanup);
+
+        if (dom->conn != conn) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("domains in 'doms' array must belong to a "
+                             "single connection in %s"), __FUNCTION__);
+            goto cleanup;
+        }
+
+        ndoms++;
+        nextdom++;
+    }
+
+    ret = conn->driver->connectGetAllDomainStats(conn, doms, ndoms,
+                                                 stats, retStats, flags);
+
+ cleanup:
+    if (ret < 0)
+        virDispatchError(conn);
+    return ret;
+}
+
+
+/**
+ * virDomainStatsRecordListFree:
+ * @stats: NULL terminated array of virDomainStatsRecords to free
+ *
+ * Convenience function to free a list of domain stats returned by
+ * virDomainListGetStats and virConnectGetAllDomainStats.
+ */
+void
+virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats)
+{
+    virDomainStatsRecordPtr *next;
+
+    if (!stats)
+        return;
+
+    for (next = stats; *next; next++) {
+        virTypedParamsFree((*next)->params, (*next)->nparams);
+        virDomainFree((*next)->dom);
+        VIR_FREE(*next);
+    }
+
+    VIR_FREE(stats);
+}
