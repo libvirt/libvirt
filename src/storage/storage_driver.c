@@ -2892,7 +2892,6 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
               src->path, src->format, (int)uid, (int)gid, allow_probe);
 
     virHashTablePtr cycle = NULL;
-    char *canonPath = NULL;
     int ret = -1;
 
     if (!(cycle = virHashCreate(5, NULL)))
@@ -2904,7 +2903,6 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
     ret = virStorageFileGetMetadataRecurse(src, uid, gid,
                                            allow_probe, cycle);
 
-    VIR_FREE(canonPath);
     virHashFree(cycle);
     return ret;
 }
