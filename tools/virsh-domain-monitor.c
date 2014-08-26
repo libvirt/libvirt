@@ -1954,6 +1954,182 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
 }
 #undef FILTER
 
+/*
+ * "domstats" command
+ */
+static const vshCmdInfo info_domstats[] = {
+    {.name = "help",
+     .data = N_("get statistics about one or multiple domains")
+    },
+    {.name = "desc",
+     .data = N_("Gets statistics about one or more (or all) domains")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_domstats[] = {
+    {.name = "state",
+     .type = VSH_OT_BOOL,
+     .help = N_("report domain state"),
+    },
+    {.name = "list-active",
+     .type = VSH_OT_BOOL,
+     .help = N_("list only active domains"),
+    },
+    {.name = "list-inactive",
+     .type = VSH_OT_BOOL,
+     .help = N_("list only inactive domains"),
+    },
+    {.name = "list-persistent",
+     .type = VSH_OT_BOOL,
+     .help = N_("list only persistent domains"),
+    },
+    {.name = "list-transient",
+     .type = VSH_OT_BOOL,
+     .help = N_("list only transient domains"),
+    },
+    {.name = "list-running",
+     .type = VSH_OT_BOOL,
+     .help = N_("list only running domains"),
+    },
+    {.name = "list-paused",
+     .type = VSH_OT_BOOL,
+     .help = N_("list only paused domains"),
+    },
+    {.name = "list-shutoff",
+     .type = VSH_OT_BOOL,
+     .help = N_("list only shutoff domains"),
+    },
+    {.name = "list-other",
+     .type = VSH_OT_BOOL,
+     .help = N_("list only domains in other states"),
+    },
+    {.name = "raw",
+     .type = VSH_OT_BOOL,
+     .help = N_("do not pretty-print the fields"),
+    },
+    {.name = "enforce",
+     .type = VSH_OT_BOOL,
+     .help = N_("enforce requested stats parameters"),
+    },
+    {.name = "domain",
+     .type = VSH_OT_ARGV,
+     .flags = VSH_OFLAG_NONE,
+     .help = N_("list of domains to get stats for"),
+    },
+    {.name = NULL}
+};
+
+
+static bool
+vshDomainStatsPrintRecord(vshControl *ctl ATTRIBUTE_UNUSED,
+                          virDomainStatsRecordPtr record,
+                          bool raw ATTRIBUTE_UNUSED)
+{
+    char *param;
+    size_t i;
+
+    vshPrint(ctl, "Domain: '%s'\n", virDomainGetName(record->dom));
+
+    /* XXX: Implement pretty-printing */
+
+    for (i = 0; i < record->nparams; i++) {
+        if (!(param = vshGetTypedParamValue(ctl, record->params + i)))
+            return false;
+
+        vshPrint(ctl, "  %s=%s\n", record->params[i].field, param);
+
+        VIR_FREE(param);
+    }
+
+    vshPrint(ctl, "\n");
+    return true;
+}
+
+static bool
+cmdDomstats(vshControl *ctl, const vshCmd *cmd)
+{
+    unsigned int stats = 0;
+    virDomainPtr *domlist = NULL;
+    virDomainPtr dom;
+    size_t ndoms = 0;
+    virDomainStatsRecordPtr *records = NULL;
+    virDomainStatsRecordPtr *next;
+    bool raw = vshCommandOptBool(cmd, "raw");
+    int flags = 0;
+    const vshCmdOpt *opt = NULL;
+    bool ret = false;
+
+    if (vshCommandOptBool(cmd, "state"))
+        stats |= VIR_DOMAIN_STATS_STATE;
+
+    if (vshCommandOptBool(cmd, "list-active"))
+        flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_ACTIVE;
+
+    if (vshCommandOptBool(cmd, "list-inactive"))
+        flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_INACTIVE;
+
+    if (vshCommandOptBool(cmd, "list-persistent"))
+        flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_PERSISTENT;
+
+    if (vshCommandOptBool(cmd, "list-transient"))
+        flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_TRANSIENT;
+
+    if (vshCommandOptBool(cmd, "list-running"))
+        flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_RUNNING;
+
+    if (vshCommandOptBool(cmd, "list-paused"))
+        flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_PAUSED;
+
+    if (vshCommandOptBool(cmd, "list-shutoff"))
+        flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_SHUTOFF;
+
+    if (vshCommandOptBool(cmd, "list-other"))
+        flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_OTHER;
+
+    if (vshCommandOptBool(cmd, "enforce"))
+        flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS;
+
+    if (vshCommandOptBool(cmd, "domain")) {
+        if (VIR_ALLOC_N(domlist, 1) < 0)
+            goto cleanup;
+        ndoms = 1;
+
+        while ((opt = vshCommandOptArgv(cmd, opt))) {
+            if (!(dom = vshLookupDomainBy(ctl, opt->data,
+                                          VSH_BYID | VSH_BYUUID | VSH_BYNAME)))
+                goto cleanup;
+
+            if (VIR_INSERT_ELEMENT(domlist, ndoms - 1, ndoms, dom) < 0)
+                goto cleanup;
+        }
+
+        if (virDomainListGetStats(domlist,
+                                  stats,
+                                  &records,
+                                  flags) < 0)
+            goto cleanup;
+    } else {
+       if ((virConnectGetAllDomainStats(ctl->conn,
+                                        stats,
+                                        &records,
+                                        flags)) < 0)
+           goto cleanup;
+    }
+
+    for (next = records; *next; next++) {
+        if (!vshDomainStatsPrintRecord(ctl, *next, raw))
+            goto cleanup;
+    }
+
+    ret = true;
+ cleanup:
+    virDomainStatsRecordListFree(records);
+    virDomainListFree(domlist);
+
+    return ret;
+}
+
 const vshCmdDef domMonitoringCmds[] = {
     {.name = "domblkerror",
      .handler = cmdDomBlkError,
@@ -2019,6 +2195,12 @@ const vshCmdDef domMonitoringCmds[] = {
      .handler = cmdDomstate,
      .opts = opts_domstate,
      .info = info_domstate,
+     .flags = 0
+    },
+    {.name = "domstats",
+     .handler = cmdDomstats,
+     .opts = opts_domstats,
+     .info = info_domstats,
      .flags = 0
     },
     {.name = "domtime",

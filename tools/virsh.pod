@@ -813,6 +813,31 @@ that require a block device name (such as I<domblkinfo> or
 I<snapshot-create> for disk snapshots) will accept either target
 or unique source names printed by this command.
 
+=item B<domstats> [I<--raw>] [I<--enforce>] [I<--state>]
+[[I<--list-active>] [I<--list-inactive>] [I<--list-persistent>]
+[I<--list-transient>] [I<--list-running>] [I<--list-paused>]
+[I<--list-shutoff>] [I<--list-other>]] | [I<domain> ...]
+
+Get statistics for multiple or all domains. Without any argument this
+command prints all available statistics for all domains.
+
+The list of domains to gather stats for can be either limited by listing
+the domains as a space separated list, or by specifying one of the
+filtering flags I<--list-*>. (The approaches can't be combined.)
+
+By default some of the returned fields may be converted to more
+human friendly values by a set of pretty-printers. To suppress this
+behavior use the I<--raw> flag.
+
+The individual statistics groups are selectable via specific flags. By
+default all supported statistics groups are returned. Supported
+statistics groups flags are: I<--state>.
+
+Selecting a specific statistics groups doesn't guarantee that the
+daemon supports the selected group of stats. Flag I<--enforce>
+forces the command to fail if the daemon doesn't support the
+selected group.
+
 =item B<domiflist> I<domain> [I<--inactive>]
 
 Print a table showing the brief information of all virtual interfaces
