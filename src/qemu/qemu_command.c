@@ -3620,6 +3620,18 @@ qemuBuildDriveStr(virConnectPtr conn,
         goto error;
     }
 
+    if (disk->blkdeviotune.total_bytes_sec > LLONG_MAX ||
+        disk->blkdeviotune.read_bytes_sec > LLONG_MAX ||
+        disk->blkdeviotune.write_bytes_sec > LLONG_MAX ||
+        disk->blkdeviotune.total_iops_sec > LLONG_MAX ||
+        disk->blkdeviotune.read_iops_sec > LLONG_MAX ||
+        disk->blkdeviotune.write_iops_sec > LLONG_MAX) {
+        virReportError(VIR_ERR_OVERFLOW,
+                      _("block I/O throttle limit must "
+                        "be less than %llu using QEMU"), LLONG_MAX);
+        goto error;
+    }
+
     if (disk->blkdeviotune.total_bytes_sec) {
         virBufferAsprintf(&opt, ",bps=%llu",
                           disk->blkdeviotune.total_bytes_sec);
