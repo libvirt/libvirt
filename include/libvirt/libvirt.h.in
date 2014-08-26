@@ -2542,8 +2542,8 @@ typedef enum {
      * flags), job ends on completion */
 
     VIR_DOMAIN_BLOCK_JOB_TYPE_COPY = 2,
-    /* Block Copy (virDomainBlockRebase with flags), job exists as
-     * long as mirroring is active */
+    /* Block Copy (virDomainBlockCopy, or virDomainBlockRebase with
+     * flags), job exists as long as mirroring is active */
 
     VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT = 3,
     /* Block Commit (virDomainBlockCommit without flags), job ends on
@@ -2619,6 +2619,60 @@ typedef enum {
 int           virDomainBlockRebase(virDomainPtr dom, const char *disk,
                                    const char *base, unsigned long bandwidth,
                                    unsigned int flags);
+
+/**
+ * virDomainBlockCopyFlags:
+ *
+ * Flags available for virDomainBlockCopy().
+ */
+typedef enum {
+    VIR_DOMAIN_BLOCK_COPY_SHALLOW   = 1 << 0, /* Limit copy to top of source
+                                                 backing chain */
+    VIR_DOMAIN_BLOCK_COPY_REUSE_EXT = 1 << 1, /* Reuse existing external
+                                                 file for a copy */
+} virDomainBlockCopyFlags;
+
+/**
+ * VIR_DOMAIN_BLOCK_COPY_BANDWIDTH:
+ * Macro for the virDomainBlockCopy bandwidth tunable: it represents
+ * the maximum bandwidth in bytes/s, and is used while getting the
+ * copy operation into the mirrored phase, with a type of ullong.  For
+ * compatibility with virDomainBlockJobSetSpeed(), values larger than
+ * 2^52 bytes/sec (a 32-bit MiB/s value) may be rejected due to
+ * overflow considerations, and hypervisors may further restrict the
+ * set of valid values. Specifying 0 is the same as omitting this
+ * parameter, to request no bandwidth limiting.  Some hypervisors may
+ * lack support for this parameter, while still allowing a subsequent
+ * change of bandwidth via virDomainBlockJobSetSpeed().  The actual
+ * speed can be determined with virDomainGetBlockJobInfo().
+ */
+#define VIR_DOMAIN_BLOCK_COPY_BANDWIDTH "bandwidth"
+
+/**
+ * VIR_DOMAIN_BLOCK_COPY_GRANULARITY:
+ * Macro for the virDomainBlockCopy granularity tunable: it represents
+ * the granularity in bytes at which the copy operation recognizes
+ * dirty blocks that need copying, as an unsigned int.  Hypervisors may
+ * restrict this to be a power of two or fall within a certain
+ * range. Specifying 0 is the same as omitting this parameter, to
+ * request the hypervisor default.
+ */
+#define VIR_DOMAIN_BLOCK_COPY_GRANULARITY "granularity"
+
+/**
+ * VIR_DOMAIN_BLOCK_COPY_BUF_SIZE:
+ * Macro for the virDomainBlockCopy buffer size tunable: it represents
+ * how much data in bytes can be in flight between source and destination,
+ * as an unsigned int. Specifying 0 is the same as omitting this parameter,
+ * to request the hypervisor default.
+ */
+#define VIR_DOMAIN_BLOCK_COPY_BUF_SIZE "buf-size"
+
+int virDomainBlockCopy(virDomainPtr dom, const char *disk,
+                       const char *destxml,
+                       virTypedParameterPtr params,
+                       int nparams,
+                       unsigned int flags);
 
 /**
  * virDomainBlockCommitFlags:
@@ -4854,7 +4908,7 @@ typedef void (*virConnectDomainEventGraphicsCallback)(virConnectPtr conn,
  * virConnectDomainEventBlockJobStatus:
  *
  * Tracks status of a virDomainBlockPull(), virDomainBlockRebase(),
- * or virDomainBlockCommit() operation
+ * virDomainBlockCopy(), or virDomainBlockCommit() operation
  */
 typedef enum {
     VIR_DOMAIN_BLOCK_JOB_COMPLETED = 0,

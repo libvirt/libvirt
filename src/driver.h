@@ -2,7 +2,7 @@
  * driver.h: description of the set of interfaces provided by a
  *           entry point to the virtualization engine
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1015,6 +1015,14 @@ typedef int
                            unsigned int flags);
 
 typedef int
+(*virDrvDomainBlockCopy)(virDomainPtr dom,
+                         const char *path,
+                         const char *destxml,
+                         virTypedParameterPtr params,
+                         int nparams,
+                         unsigned int flags);
+
+typedef int
 (*virDrvDomainBlockCommit)(virDomainPtr dom,
                            const char *disk,
                            const char *base,
@@ -1397,6 +1405,7 @@ struct _virDriver {
     virDrvDomainBlockJobSetSpeed domainBlockJobSetSpeed;
     virDrvDomainBlockPull domainBlockPull;
     virDrvDomainBlockRebase domainBlockRebase;
+    virDrvDomainBlockCopy domainBlockCopy;
     virDrvDomainBlockCommit domainBlockCommit;
     virDrvConnectSetKeepAlive connectSetKeepAlive;
     virDrvConnectIsAlive connectIsAlive;

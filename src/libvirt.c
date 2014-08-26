@@ -19924,7 +19924,13 @@ virDomainBlockPull(virDomainPtr dom, const char *disk,
  * The actual speed can be determined with virDomainGetBlockJobInfo().
  *
  * When @base is NULL and @flags is 0, this is identical to
- * virDomainBlockPull().
+ * virDomainBlockPull().  When @flags contains VIR_DOMAIN_BLOCK_REBASE_COPY,
+ * this command is shorthand for virDomainBlockCopy() where the destination
+ * XML encodes @base as a <disk type='file'>, @bandwidth is properly scaled
+ * and passed as a typed parameter, the shallow and reuse external flags
+ * are preserved, and remaining flags control whether the XML encodes a
+ * destination format of raw instead of leaving the destination identical
+ * to the source format or probed from the reused file.
  *
  * Returns 0 if the operation has started, -1 on failure.
  */
@@ -19961,6 +19967,120 @@ virDomainBlockRebase(virDomainPtr dom, const char *disk,
         int ret;
         ret = conn->driver->domainBlockRebase(dom, disk, base, bandwidth,
                                               flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+
+/**
+ * virDomainBlockCopy:
+ * @dom: pointer to domain object
+ * @disk: path to the block device, or device shorthand
+ * @destxml: XML description of the copy destination
+ * @params: Pointer to block copy parameter objects, or NULL
+ * @nparams: Number of block copy parameters (this value can be the same or
+ *           less than the number of parameters supported)
+ * @flags: bitwise-OR of virDomainBlockCopyFlags
+ *
+ * Copy the guest-visible contents of a disk image to a new file described
+ * by @destxml.  The destination XML has a top-level element of <disk>, and
+ * resembles what is used when hot-plugging a disk via virDomainAttachDevice(),
+ * except that only sub-elements related to describing the new host resource
+ * are necessary (sub-elements related to the guest view, such as <target>,
+ * are ignored).  It is strongly recommended to include a <driver type='...'/>
+ * format designation for the destination, to avoid the potential of any
+ * security problem that might be caused by probing a file for its format.
+ *
+ * This command starts a long-running copy.  By default, the copy will pull
+ * the entire source chain into the destination file, but if @flags also
+ * contains VIR_DOMAIN_BLOCK_COPY_SHALLOW, then only the top of the source
+ * chain will be copied (the source and destination have a common backing
+ * file).  The format of the destination file is controlled by the <driver>
+ * sub-element of the XML.  The destination will be created unless the
+ * VIR_DOMAIN_BLOCK_COPY_REUSE_EXT flag is present stating that the file
+ * was pre-created with the correct format and metadata and sufficient
+ * size to hold the copy. In case the VIR_DOMAIN_BLOCK_COPY_SHALLOW flag
+ * is used the pre-created file has to exhibit the same guest visible contents
+ * as the backing file of the original image. This allows a management app to
+ * pre-create files with relative backing file names, rather than the default
+ * of absolute backing file names.
+ *
+ * A copy job has two parts; in the first phase, the source is copied into
+ * the destination, and the job can only be canceled by reverting to the
+ * source file; progress in this phase can be tracked via the
+ * virDomainBlockJobInfo() command, with a job type of
+ * VIR_DOMAIN_BLOCK_JOB_TYPE_COPY.  The job transitions to the second
+ * phase when the job info states cur == end, and remains alive to mirror
+ * all further changes to both source and destination.  The user must
+ * call virDomainBlockJobAbort() to end the mirroring while choosing
+ * whether to revert to source or pivot to the destination.  An event is
+ * issued when the job ends, and depending on the hypervisor, an event may
+ * also be issued when the job transitions from pulling to mirroring.  If
+ * the job is aborted, a new job will have to start over from the beginning
+ * of the first phase.
+ *
+ * Some hypervisors will restrict certain actions, such as virDomainSave()
+ * or virDomainDetachDevice(), while a copy job is active; they may
+ * also restrict a copy job to transient domains.
+ *
+ * The @disk parameter is either an unambiguous source name of the
+ * block device (the <source file='...'/> sub-element, such as
+ * "/path/to/image"), or the device target shorthand (the
+ * <target dev='...'/> sub-element, such as "vda").  Valid names
+ * can be found by calling virDomainGetXMLDesc() and inspecting
+ * elements within //domain/devices/disk.
+ *
+ * The @params and @nparams arguments can be used to set hypervisor-specific
+ * tuning parameters, such as maximum bandwidth or granularity.  For a
+ * parameter that the hypervisor understands, explicitly specifying 0
+ * behaves the same as omitting the parameter, to use the hypervisor
+ * default; however, omitting a parameter is less likely to fail.
+ *
+ * This command is a superset of the older virDomainBlockRebase() when used
+ * with the VIR_DOMAIN_BLOCK_REBASE_COPY flag, and offers better control
+ * over the destination format, the ability to copy to a destination that
+ * is not a local file, and the possibility of additional tuning parameters.
+ *
+ * Returns 0 if the operation has started, -1 on failure.
+ */
+int
+virDomainBlockCopy(virDomainPtr dom, const char *disk,
+                   const char *destxml,
+                   virTypedParameterPtr params,
+                   int nparams,
+                   unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom,
+                     "disk=%s, destxml=%s, params=%p, nparams=%d, flags=%x",
+                     disk, destxml, params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    virCheckDomainReturn(dom, -1);
+    conn = dom->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
+    virCheckNonNullArgGoto(disk, error);
+    virCheckNonNullArgGoto(destxml, error);
+    virCheckNonNegativeArgGoto(nparams, error);
+    if (nparams)
+        virCheckNonNullArgGoto(params, error);
+
+    if (conn->driver->domainBlockCopy) {
+        int ret;
+        ret = conn->driver->domainBlockCopy(dom, disk, destxml,
+                                            params, nparams, flags);
         if (ret < 0)
             goto error;
         return ret;
