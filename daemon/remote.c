@@ -4398,6 +4398,7 @@ remoteDispatchDomainOpenGraphics(virNetServerPtr server ATTRIBUTE_UNUSED,
     return rv;
 }
 
+
 static int
 remoteDispatchDomainOpenGraphicsFd(virNetServerPtr server ATTRIBUTE_UNUSED,
                                    virNetServerClientPtr client ATTRIBUTE_UNUSED,
@@ -4419,10 +4420,9 @@ remoteDispatchDomainOpenGraphicsFd(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
         goto cleanup;
 
-    if (virDomainOpenGraphicsFD(dom,
-                                args->idx,
-                                &fd,
-                                args->flags) < 0)
+    if ((fd = virDomainOpenGraphicsFD(dom,
+                                      args->idx,
+                                      args->flags)) < 0)
         goto cleanup;
 
     if (virNetMessageAddFD(msg, fd) < 0)
@@ -4442,6 +4442,8 @@ remoteDispatchDomainOpenGraphicsFd(virNetServerPtr server ATTRIBUTE_UNUSED,
         virDomainFree(dom);
     return rv;
 }
+
+
 static int
 remoteDispatchDomainGetInterfaceParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
                                            virNetServerClientPtr client ATTRIBUTE_UNUSED,

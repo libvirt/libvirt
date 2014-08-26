@@ -20305,11 +20305,11 @@ virDomainOpenGraphics(virDomainPtr dom,
  * virDomainOpenGraphicsFD:
  * @dom: pointer to domain object
  * @idx: index of graphics config to open
- * @fd: returned file descriptor
  * @flags: bitwise-OR of virDomainOpenGraphicsFlags
  *
  * This will create a socket pair connected to the graphics backend of @dom.
- * One socket will be returned as @fd.
+ * One end of the socket will be returned on success, and the other end is
+ * handed to the hypervisor.
  * If @dom has multiple graphics backends configured, then @idx will determine
  * which one is opened, starting from @idx 0.
  *
@@ -20318,23 +20318,20 @@ virDomainOpenGraphics(virDomainPtr dom,
  *
  * This method can only be used when connected to a local
  * libvirt hypervisor, over a UNIX domain socket. Attempts
- * to use this method over a TCP connection will always fail
+ * to use this method over a TCP connection will always fail.
  *
- * Returns 0 on success, -1 on failure
+ * Returns an fd on success, -1 on failure
  */
 int
 virDomainOpenGraphicsFD(virDomainPtr dom,
                         unsigned int idx,
-                        int *fd,
                         unsigned int flags)
 {
-    VIR_DOMAIN_DEBUG(dom, "idx=%u, fd=%p, flags=%x",
-                     idx, fd, flags);
+    VIR_DOMAIN_DEBUG(dom, "idx=%u, flags=%x", idx, flags);
 
     virResetLastError();
 
     virCheckDomainReturn(dom, -1);
-    virCheckNonNullArgGoto(fd, error);
 
     virCheckReadOnlyGoto(dom->conn->flags, error);
 
@@ -20347,7 +20344,7 @@ virDomainOpenGraphicsFD(virDomainPtr dom,
 
     if (dom->conn->driver->domainOpenGraphicsFD) {
         int ret;
-        ret = dom->conn->driver->domainOpenGraphicsFD(dom, idx, fd, flags);
+        ret = dom->conn->driver->domainOpenGraphicsFD(dom, idx, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -20359,6 +20356,8 @@ virDomainOpenGraphicsFD(virDomainPtr dom,
     virDispatchError(dom->conn);
     return -1;
 }
+
+
 /**
  * virConnectSetKeepAlive:
  * @conn: pointer to a hypervisor connection

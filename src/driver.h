@@ -890,7 +890,6 @@ typedef int
 typedef int
 (*virDrvDomainOpenGraphicsFD)(virDomainPtr dom,
                               unsigned int idx,
-                              int *fd,
                               unsigned int flags);
 
 typedef int

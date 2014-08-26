@@ -6448,7 +6448,6 @@ remoteDomainOpenGraphics(virDomainPtr dom,
 static int
 remoteDomainOpenGraphicsFD(virDomainPtr dom,
                            unsigned int idx,
-                           int *fd,
                            unsigned int flags)
 {
     int rv = -1;
@@ -6472,15 +6471,21 @@ remoteDomainOpenGraphicsFD(virDomainPtr dom,
         goto done;
 
     if (fdoutlen != 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("no file descriptor received"));
+        if (fdoutlen) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("too many file descriptors received"));
+            while (fdoutlen)
+                VIR_FORCE_CLOSE(fdout[--fdoutlen]);
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("no file descriptor received"));
+        }
         goto done;
     }
-    *fd = fdout[0];
-
-    rv = 0;
+    rv = fdout[0];
 
  done:
+    VIR_FREE(fdout);
     remoteDriverUnlock(priv);
 
     return rv;

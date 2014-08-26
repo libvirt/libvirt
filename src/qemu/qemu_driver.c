@@ -15808,7 +15808,6 @@ qemuDomainOpenGraphics(virDomainPtr dom,
 static int
 qemuDomainOpenGraphicsFD(virDomainPtr dom,
                          unsigned int idx,
-                         int *fd,
                          unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
@@ -15866,18 +15865,19 @@ qemuDomainOpenGraphicsFD(virDomainPtr dom,
         goto cleanup;
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorOpenGraphics(priv->mon, protocol, pair[1], "graphicsfd",
-                                  (flags & VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH) != 0);
+                                  (flags & VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH));
     qemuDomainObjExitMonitor(driver, vm);
     if (!qemuDomainObjEndJob(driver, vm))
         vm = NULL;
+    if (ret < 0)
+        goto cleanup;
 
-    *fd = pair[0];
+    ret = pair[0];
+    pair[0] = -1;
 
  cleanup:
-    if (ret < 0) {
-        VIR_FORCE_CLOSE(pair[0]);
-        VIR_FORCE_CLOSE(pair[1]);
-    }
+    VIR_FORCE_CLOSE(pair[0]);
+    VIR_FORCE_CLOSE(pair[1]);
     if (vm)
         virObjectUnlock(vm);
     return ret;
