@@ -2707,6 +2707,8 @@ int virDomainObjListExport(virDomainObjListPtr doms,
                            virDomainObjListFilter filter,
                            unsigned int flags);
 
+void virDomainListFree(virDomainPtr *list);
+
 int
 virDomainDefMaybeAddController(virDomainDefPtr def,
                                int type,

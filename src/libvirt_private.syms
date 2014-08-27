@@ -311,6 +311,7 @@ virDomainLifecycleCrashTypeFromString;
 virDomainLifecycleCrashTypeToString;
 virDomainLifecycleTypeFromString;
 virDomainLifecycleTypeToString;
+virDomainListFree;
 virDomainLiveConfigHelperMethod;
 virDomainLockFailureTypeFromString;
 virDomainLockFailureTypeToString;
