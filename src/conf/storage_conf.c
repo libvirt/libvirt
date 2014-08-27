@@ -661,6 +661,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         }
 
         source->auth = authdef;
+        authdef = NULL;
     }
 
     source->vendor = virXPathString("string(./vendor/@name)", ctxt);
@@ -673,6 +674,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     VIR_FREE(port);
     VIR_FREE(nodeset);
     VIR_FREE(adapter_type);
+    virStorageAuthDefFree(authdef);
     return ret;
 }
 
