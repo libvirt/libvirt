@@ -8167,6 +8167,7 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
                     goto cleanup;
                 break;
 
+            /* coverity[dead_error_begin] */
             default:
                 break;
                 /* should not hit here */
@@ -8349,6 +8350,7 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
                 break;
 
 
+            /* coverity[dead_error_begin] */
             default:
                 break;
                 /* should not hit here */
@@ -8601,6 +8603,7 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
                     goto cleanup;
                 break;
 
+            /* coverity[dead_error_begin] */
             default:
                 break;
                 /* should not hit here */
@@ -8645,6 +8648,7 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
                 goto cleanup;
             break;
 
+        /* coverity[dead_error_begin] */
         default:
             break;
             /* should not hit here */
@@ -8942,6 +8946,7 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
 
             break;
 
+        /* coverity[dead_error_begin] */
         default:
             break;
             /* should not hit here */
@@ -10118,6 +10123,7 @@ qemuDomainGetInterfaceParameters(virDomainPtr dom,
             if (net->bandwidth && net->bandwidth->out)
                 params[i].value.ui = net->bandwidth->out->burst;
             break;
+        /* coverity[dead_error_begin] */
         default:
             break;
             /* should not hit here */
@@ -16188,6 +16194,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
                                         reply.write_iops_sec) < 0)
                 goto endjob;
             break;
+        /* coverity[dead_error_begin] */
         default:
             break;
         }
