@@ -1307,7 +1307,8 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
                                _("canceled by client"));
                 goto error;
             }
-            mon_ret = qemuMonitorBlockJobInfo(priv->mon, diskAlias, &info);
+            mon_ret = qemuMonitorBlockJobInfo(priv->mon, diskAlias, &info,
+                                              NULL);
             qemuDomainObjExitMonitor(driver, vm);
 
             if (mon_ret < 0)

@@ -19667,10 +19667,14 @@ virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
  * @dom: pointer to domain object
  * @disk: path to the block device, or device shorthand
  * @info: pointer to a virDomainBlockJobInfo structure
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virDomainBlockJobInfoFlags
  *
  * Request block job information for the given disk.  If an operation is active
- * @info will be updated with the current progress.
+ * @info will be updated with the current progress.  The units used for the
+ * bandwidth field of @info depends on @flags.  If @flags includes
+ * VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES, bandwidth is in bytes/second
+ * (although this mode can risk failure due to overflow, depending on both
+ * client and server word size); otherwise, the value is rounded up to MiB/s.
  *
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as

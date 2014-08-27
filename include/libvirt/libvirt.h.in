@@ -2585,13 +2585,23 @@ typedef enum {
     VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT = 1 << 1,
 } virDomainBlockJobAbortFlags;
 
+int virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
+                           unsigned int flags);
+
+/* Flags for use with virDomainGetBlockJobInfo */
+typedef enum {
+    VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES = 1 << 0, /* bandwidth in bytes/s
+                                                           instead of MiB/s */
+} virDomainBlockJobInfoFlags;
+
 /* An iterator for monitoring block job operations */
 typedef unsigned long long virDomainBlockJobCursor;
 
 typedef struct _virDomainBlockJobInfo virDomainBlockJobInfo;
 struct _virDomainBlockJobInfo {
     int type; /* virDomainBlockJobType */
-    unsigned long bandwidth;
+    unsigned long bandwidth; /* either bytes/s or MiB/s, according to flags */
+
     /*
      * The following fields provide an indication of block job progress.  @cur
      * indicates the current position and will be between 0 and @end.  @end is
@@ -2603,11 +2613,10 @@ struct _virDomainBlockJobInfo {
 };
 typedef virDomainBlockJobInfo *virDomainBlockJobInfoPtr;
 
-int       virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
-                                 unsigned int flags);
-int     virDomainGetBlockJobInfo(virDomainPtr dom, const char *disk,
-                                 virDomainBlockJobInfoPtr info,
-                                 unsigned int flags);
+int virDomainGetBlockJobInfo(virDomainPtr dom, const char *disk,
+                             virDomainBlockJobInfoPtr info,
+                             unsigned int flags);
+
 int    virDomainBlockJobSetSpeed(virDomainPtr dom, const char *disk,
                                  unsigned long bandwidth, unsigned int flags);
 
@@ -2653,13 +2662,16 @@ typedef enum {
  * the maximum bandwidth in bytes/s, and is used while getting the
  * copy operation into the mirrored phase, with a type of ullong.  For
  * compatibility with virDomainBlockJobSetSpeed(), values larger than
- * 2^52 bytes/sec (a 32-bit MiB/s value) may be rejected due to
- * overflow considerations, and hypervisors may further restrict the
- * set of valid values. Specifying 0 is the same as omitting this
- * parameter, to request no bandwidth limiting.  Some hypervisors may
- * lack support for this parameter, while still allowing a subsequent
- * change of bandwidth via virDomainBlockJobSetSpeed().  The actual
- * speed can be determined with virDomainGetBlockJobInfo().
+ * 2^52 bytes/sec (a 32-bit MiB/s value) may be rejected on input due
+ * to overflow considerations (but do you really have an interface
+ * with that much bandwidth?), and values larger than 2^31 bytes/sec
+ * may cause overflow problems if queried in bytes/sec.  Hypervisors
+ * may further restrict the set of valid values. Specifying 0 is the
+ * same as omitting this parameter, to request no bandwidth limiting.
+ * Some hypervisors may lack support for this parameter, while still
+ * allowing a subsequent change of bandwidth via
+ * virDomainBlockJobSetSpeed().  The actual speed can be determined
+ * with virDomainGetBlockJobInfo().
  */
 #define VIR_DOMAIN_BLOCK_COPY_BANDWIDTH "bandwidth"
 

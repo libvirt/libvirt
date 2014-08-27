@@ -291,7 +291,8 @@ int qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
 
 int qemuMonitorJSONBlockJobInfo(qemuMonitorPtr mon,
                                 const char *device,
-                                virDomainBlockJobInfoPtr info)
+                                virDomainBlockJobInfoPtr info,
+                                unsigned long long *bandwidth)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int qemuMonitorJSONSetLink(qemuMonitorPtr mon,

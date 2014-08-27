@@ -3706,15 +3706,18 @@ int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
     return ret;
 }
 
-/* Returns -1 on error, 0 if not the right device, 1 if info was populated.  */
+/* Returns -1 on error, 0 if not the right device, 1 if info was
+ * populated.  However, rather than populate info->bandwidth (which
+ * might overflow on 32-bit machines), bandwidth is tracked optionally
+ * on the side.  */
 static int
 qemuMonitorJSONGetBlockJobInfoOne(virJSONValuePtr entry,
                                   const char *device,
-                                  virDomainBlockJobInfoPtr info)
+                                  virDomainBlockJobInfoPtr info,
+                                  unsigned long long *bandwidth)
 {
     const char *this_dev;
     const char *type;
-    unsigned long long speed_bytes;
 
     if ((this_dev = virJSONValueObjectGetString(entry, "device")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3739,12 +3742,12 @@ qemuMonitorJSONGetBlockJobInfoOne(virJSONValuePtr entry,
     else
         info->type = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
 
-    if (virJSONValueObjectGetNumberUlong(entry, "speed", &speed_bytes) < 0) {
+    if (bandwidth &&
+        virJSONValueObjectGetNumberUlong(entry, "speed", bandwidth) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("entry was missing 'speed'"));
         return -1;
     }
-    info->bandwidth = speed_bytes / 1024ULL / 1024ULL;
 
     if (virJSONValueObjectGetNumberUlong(entry, "offset", &info->cur) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3768,7 +3771,8 @@ qemuMonitorJSONGetBlockJobInfoOne(virJSONValuePtr entry,
 int
 qemuMonitorJSONBlockJobInfo(qemuMonitorPtr mon,
                             const char *device,
-                            virDomainBlockJobInfoPtr info)
+                            virDomainBlockJobInfoPtr info,
+                            unsigned long long *bandwidth)
 {
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
@@ -3809,7 +3813,8 @@ qemuMonitorJSONBlockJobInfo(qemuMonitorPtr mon,
             ret = -1;
             goto cleanup;
         }
-        ret = qemuMonitorJSONGetBlockJobInfoOne(entry, device, info);
+        ret = qemuMonitorJSONGetBlockJobInfoOne(entry, device, info,
+                                                bandwidth);
     }
 
  cleanup:

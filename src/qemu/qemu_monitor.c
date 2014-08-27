@@ -3366,14 +3366,16 @@ qemuMonitorBlockJob(qemuMonitorPtr mon,
 int
 qemuMonitorBlockJobInfo(qemuMonitorPtr mon,
                         const char *device,
-                        virDomainBlockJobInfoPtr info)
+                        virDomainBlockJobInfoPtr info,
+                        unsigned long long *bandwidth)
 {
     int ret = -1;
 
-    VIR_DEBUG("mon=%p, device=%s, info=%p", mon, device, info);
+    VIR_DEBUG("mon=%p, device=%s, info=%p, bandwidth=%p",
+              mon, device, info, bandwidth);
 
     if (mon->json)
-        ret = qemuMonitorJSONBlockJobInfo(mon, device, info);
+        ret = qemuMonitorJSONBlockJobInfo(mon, device, info, bandwidth);
     else
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("block jobs require JSON monitor"));

@@ -14857,7 +14857,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
     /* Probe the status, if needed.  */
     if (!disk->mirrorState) {
         qemuDomainObjEnterMonitor(driver, vm);
-        rc = qemuMonitorBlockJobInfo(priv->mon, device, &info);
+        rc = qemuMonitorBlockJobInfo(priv->mon, device, &info, NULL);
         qemuDomainObjExitMonitor(driver, vm);
         if (rc < 0)
             goto cleanup;
@@ -15180,7 +15180,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
                 virDomainBlockJobInfo dummy;
 
                 qemuDomainObjEnterMonitor(driver, vm);
-                ret = qemuMonitorBlockJobInfo(priv->mon, device, &dummy);
+                ret = qemuMonitorBlockJobInfo(priv->mon, device, &dummy, NULL);
                 qemuDomainObjExitMonitor(driver, vm);
 
                 if (ret <= 0)
@@ -15253,8 +15253,9 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
     int idx;
     virDomainDiskDefPtr disk;
     int ret = -1;
+    unsigned long long bandwidth;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
@@ -15287,7 +15288,7 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
     disk = vm->def->disks[idx];
 
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorBlockJobInfo(priv->mon, device, info);
+    ret = qemuMonitorBlockJobInfo(priv->mon, device, info, &bandwidth);
     qemuDomainObjExitMonitor(driver, vm);
     if (ret < 0)
         goto endjob;
@@ -15295,6 +15296,17 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
     if (info->type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
         disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
         info->type = disk->mirrorJob;
+    if (bandwidth) {
+        if (!(flags & VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES))
+            bandwidth = VIR_DIV_UP(bandwidth, 1024 * 1024);
+        info->bandwidth = bandwidth;
+        if (info->bandwidth != bandwidth) {
+            virReportError(VIR_ERR_OVERFLOW,
+                           _("bandwidth %llu cannot be represented in result"),
+                           bandwidth);
+            goto endjob;
+        }
+    }
 
     /* Snoop block copy operations, so future cancel operations can
      * avoid checking if pivot is safe.  Save the change to XML, but
