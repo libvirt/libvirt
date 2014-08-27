@@ -506,10 +506,11 @@ qemuMonitorIOWrite(qemuMonitorPtr mon)
           mon->msg->txLength - mon->msg->txOffset,
           done, errno);
 
-    if (mon->msg->txFD != -1)
+    if (mon->msg->txFD != -1) {
         PROBE(QEMU_MONITOR_IO_SEND_FD,
               "mon=%p fd=%d ret=%d errno=%d",
               mon, mon->msg->txFD, done, errno);
+    }
 
     if (done < 0) {
         if (errno == EAGAIN)
