@@ -14857,8 +14857,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
     /* Probe the status, if needed.  */
     if (!disk->mirrorState) {
         qemuDomainObjEnterMonitor(driver, vm);
-        rc = qemuMonitorBlockJob(priv->mon, device, NULL, NULL, 0, &info,
-                                  BLOCK_JOB_INFO, true);
+        rc = qemuMonitorBlockJobInfo(priv->mon, device, &info);
         qemuDomainObjExitMonitor(driver, vm);
         if (rc < 0)
             goto cleanup;
@@ -15125,7 +15124,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
 
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorBlockJob(priv->mon, device, basePath, backingPath,
-                              bandwidth, NULL, mode, async);
+                              bandwidth, mode, async);
     qemuDomainObjExitMonitor(driver, vm);
     if (ret < 0) {
         if (mode == BLOCK_JOB_ABORT && disk->mirror)
@@ -15169,8 +15168,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
                 virDomainBlockJobInfo dummy;
 
                 qemuDomainObjEnterMonitor(driver, vm);
-                ret = qemuMonitorBlockJob(priv->mon, device, NULL, NULL, 0,
-                                          &dummy, BLOCK_JOB_INFO, async);
+                ret = qemuMonitorBlockJobInfo(priv->mon, device, &dummy);
                 qemuDomainObjExitMonitor(driver, vm);
 
                 if (ret <= 0)
@@ -15277,8 +15275,7 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
     disk = vm->def->disks[idx];
 
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorBlockJob(priv->mon, device, NULL, NULL, 0,
-                              info, BLOCK_JOB_INFO, true);
+    ret = qemuMonitorBlockJobInfo(priv->mon, device, info);
     qemuDomainObjExitMonitor(driver, vm);
     if (ret < 0)
         goto endjob;

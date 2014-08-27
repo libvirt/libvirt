@@ -3360,22 +3360,22 @@ int qemuMonitorScreendump(qemuMonitorPtr mon,
 }
 
 /* bandwidth is in MiB/sec */
-int qemuMonitorBlockJob(qemuMonitorPtr mon,
-                        const char *device,
-                        const char *base,
-                        const char *backingName,
-                        unsigned long bandwidth,
-                        virDomainBlockJobInfoPtr info,
-                        qemuMonitorBlockJobCmd mode,
-                        bool modern)
+int
+qemuMonitorBlockJob(qemuMonitorPtr mon,
+                    const char *device,
+                    const char *base,
+                    const char *backingName,
+                    unsigned long bandwidth,
+                    qemuMonitorBlockJobCmd mode,
+                    bool modern)
 {
     int ret = -1;
     unsigned long long speed;
 
     VIR_DEBUG("mon=%p, device=%s, base=%s, backingName=%s, bandwidth=%luM, "
-              "info=%p, mode=%o, modern=%d",
+              "mode=%o, modern=%d",
               mon, device, NULLSTR(base), NULLSTR(backingName),
-              bandwidth, info, mode, modern);
+              bandwidth, mode, modern);
 
     /* Convert bandwidth MiB to bytes - unfortunately the JSON QMP protocol is
      * limited to LLONG_MAX also for unsigned values */
@@ -3390,12 +3390,31 @@ int qemuMonitorBlockJob(qemuMonitorPtr mon,
 
     if (mon->json)
         ret = qemuMonitorJSONBlockJob(mon, device, base, backingName,
-                                      speed, info, mode, modern);
+                                      speed, mode, modern);
     else
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("block jobs require JSON monitor"));
     return ret;
 }
+
+
+int
+qemuMonitorBlockJobInfo(qemuMonitorPtr mon,
+                        const char *device,
+                        virDomainBlockJobInfoPtr info)
+{
+    int ret = -1;
+
+    VIR_DEBUG("mon=%p, device=%s, info=%p", mon, device, info);
+
+    if (mon->json)
+        ret = qemuMonitorJSONBlockJobInfo(mon, device, info);
+    else
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("block jobs require JSON monitor"));
+    return ret;
+}
+
 
 int qemuMonitorSetBlockIoThrottle(qemuMonitorPtr mon,
                                   const char *device,

@@ -3684,9 +3684,11 @@ int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
     return ret;
 }
 
-static int qemuMonitorJSONGetBlockJobInfoOne(virJSONValuePtr entry,
-                                              const char *device,
-                                              virDomainBlockJobInfoPtr info)
+/* Returns -1 on error, 0 if not the right device, 1 if info was populated.  */
+static int
+qemuMonitorJSONGetBlockJobInfoOne(virJSONValuePtr entry,
+                                  const char *device,
+                                  virDomainBlockJobInfoPtr info)
 {
     const char *this_dev;
     const char *type;
@@ -3698,7 +3700,7 @@ static int qemuMonitorJSONGetBlockJobInfoOne(virJSONValuePtr entry,
         return -1;
     }
     if (!STREQ(this_dev, device))
-        return -1;
+        return 0;
 
     type = virJSONValueObjectGetString(entry, "type");
     if (!type) {
@@ -3733,54 +3735,65 @@ static int qemuMonitorJSONGetBlockJobInfoOne(virJSONValuePtr entry,
                        _("entry was missing 'len'"));
         return -1;
     }
-    return 0;
+    return 1;
 }
 
-/** qemuMonitorJSONGetBlockJobInfo:
- * Parse Block Job information.
- * The reply is a JSON array of objects, one per active job.
+/**
+ * qemuMonitorJSONBlockJobInfo:
+ * Parse Block Job information, and populate info for the named device.
+ * Return 1 if info available, 0 if device has no block job, and -1 on error.
  */
-static int qemuMonitorJSONGetBlockJobInfo(virJSONValuePtr reply,
-                                           const char *device,
-                                           virDomainBlockJobInfoPtr info)
+int
+qemuMonitorJSONBlockJobInfo(qemuMonitorPtr mon,
+                            const char *device,
+                            virDomainBlockJobInfoPtr info)
 {
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     int nr_results;
     size_t i;
+    int ret = -1;
 
-    if (!info)
+    cmd = qemuMonitorJSONMakeCommand("query-block-jobs", NULL);
+    if (!cmd)
         return -1;
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
     if ((data = virJSONValueObjectGet(reply, "return")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("reply was missing return data"));
-        return -1;
+        goto cleanup;
     }
 
     if (data->type != VIR_JSON_TYPE_ARRAY) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unrecognized format of block job information"));
-        return -1;
+        goto cleanup;
     }
 
     if ((nr_results = virJSONValueArraySize(data)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unable to determine array size"));
-        return -1;
+        goto cleanup;
     }
 
-    for (i = 0; i < nr_results; i++) {
+    for (i = ret = 0; i < nr_results && ret == 0; i++) {
         virJSONValuePtr entry = virJSONValueArrayGet(data, i);
         if (!entry) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing array element"));
-            return -1;
+            ret = -1;
+            goto cleanup;
         }
-        if (qemuMonitorJSONGetBlockJobInfoOne(entry, device, info) == 0)
-            return 1;
+        ret = qemuMonitorJSONGetBlockJobInfoOne(entry, device, info);
     }
 
-    return 0;
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
 }
 
 
@@ -3791,7 +3804,6 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
                         const char *base,
                         const char *backingName,
                         unsigned long long speed,
-                        virDomainBlockJobInfoPtr info,
                         qemuMonitorBlockJobCmd mode,
                         bool modern)
 {
@@ -3831,11 +3843,6 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
         cmd = qemuMonitorJSONMakeCommand(cmd_name,
                                          "s:device", device,
                                          NULL);
-        break;
-
-    case BLOCK_JOB_INFO:
-        cmd_name = "query-block-jobs";
-        cmd = qemuMonitorJSONMakeCommand(cmd_name, NULL);
         break;
 
     case BLOCK_JOB_SPEED:
@@ -3887,9 +3894,6 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
                            NULLSTR(virJSONValueObjectGetString(error, "desc")));
         }
     }
-
-    if (ret == 0 && mode == BLOCK_JOB_INFO)
-        ret = qemuMonitorJSONGetBlockJobInfo(reply, device, info);
 
     virJSONValueFree(cmd);
     virJSONValueFree(reply);

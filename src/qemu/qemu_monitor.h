@@ -685,7 +685,6 @@ int qemuMonitorSendKey(qemuMonitorPtr mon,
 
 typedef enum {
     BLOCK_JOB_ABORT,
-    BLOCK_JOB_INFO,
     BLOCK_JOB_SPEED,
     BLOCK_JOB_PULL,
 } qemuMonitorBlockJobCmd;
@@ -695,10 +694,14 @@ int qemuMonitorBlockJob(qemuMonitorPtr mon,
                         const char *base,
                         const char *backingName,
                         unsigned long bandwidth,
-                        virDomainBlockJobInfoPtr info,
                         qemuMonitorBlockJobCmd mode,
                         bool modern)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int qemuMonitorBlockJobInfo(qemuMonitorPtr mon,
+                            const char *device,
+                            virDomainBlockJobInfoPtr info)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int qemuMonitorOpenGraphics(qemuMonitorPtr mon,
                             const char *protocol,
