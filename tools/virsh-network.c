@@ -974,7 +974,7 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
     if (current) {
         if (live || config) {
             vshError(ctl, "%s", _("--current must be specified exclusively"));
-            return false;
+            goto cleanup;
         }
         flags |= VIR_NETWORK_UPDATE_AFFECT_CURRENT;
     } else {
