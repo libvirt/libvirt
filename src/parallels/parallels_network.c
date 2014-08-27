@@ -226,10 +226,8 @@ parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
         goto cleanup;
     }
 
-    if (!(net = virNetworkAssignDef(&privconn->networks, def, false))) {
-        virNetworkDefFree(def);
+    if (!(net = virNetworkAssignDef(&privconn->networks, def, false)))
         goto cleanup;
-    }
     net->active = 1;
     net->autostart = 1;
     virNetworkObjUnlock(net);
