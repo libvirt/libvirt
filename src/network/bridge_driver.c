@@ -993,6 +993,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                                  "(as described in RFC1918/RFC3484/RFC4193)."),
                                ipaddr, (int)version / 1000000,
                                (int)(version % 1000000) / 1000);
+                VIR_FREE(ipaddr);
                 goto cleanup;
             }
             virBufferAsprintf(&configbuf, "listen-address=%s\n", ipaddr);
