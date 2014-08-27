@@ -2024,8 +2024,9 @@ static int
 x86UpdateHostModel(virCPUDefPtr guest,
                    const virCPUDef *host)
 {
-    virCPUDefPtr oldguest;
+    virCPUDefPtr oldguest = NULL;
     size_t i;
+    int ret = -1;
 
     guest->match = VIR_CPU_MATCH_EXACT;
 
@@ -2037,20 +2038,24 @@ x86UpdateHostModel(virCPUDefPtr guest,
 
     /* update the host model according to the desired configuration */
     if (!(oldguest = virCPUDefCopy(guest)))
-        return -1;
+        goto cleanup;
 
     virCPUDefFreeModel(guest);
     if (virCPUDefCopyModel(guest, host, true) < 0)
-        return -1;
+        goto cleanup;
 
     for (i = 0; i < oldguest->nfeatures; i++) {
         if (virCPUDefUpdateFeature(guest,
                                    oldguest->features[i].name,
                                    oldguest->features[i].policy) < 0)
-            return -1;
+            goto cleanup;
     }
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    virCPUDefFree(oldguest);
+    return ret;
 }
 
 
