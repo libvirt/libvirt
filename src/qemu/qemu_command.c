@@ -6237,6 +6237,7 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
                                       def->hyperv_spinlocks);
                 break;
 
+            /* coverity[dead_error_begin] */
             case VIR_DOMAIN_HYPERV_LAST:
                 break;
             }
@@ -9835,7 +9836,6 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
     int idx = -1;
     int busid = -1;
     int unitid = -1;
-    int trans = VIR_DOMAIN_DISK_TRANS_DEFAULT;
 
     if (qemuParseKeywords(val,
                           &keywords,
@@ -10054,12 +10054,12 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
         } else if (STREQ(keywords[i], "trans")) {
             def->geometry.trans =
                 virDomainDiskGeometryTransTypeFromString(values[i]);
-            if ((trans < VIR_DOMAIN_DISK_TRANS_DEFAULT) ||
-                (trans >= VIR_DOMAIN_DISK_TRANS_LAST)) {
+            if ((def->geometry.trans < VIR_DOMAIN_DISK_TRANS_DEFAULT) ||
+                (def->geometry.trans >= VIR_DOMAIN_DISK_TRANS_LAST)) {
                 virDomainDiskDefFree(def);
                 def = NULL;
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot parse translation value'%s'"),
+                               _("cannot parse translation value '%s'"),
                                values[i]);
                 goto error;
             }
