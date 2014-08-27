@@ -16211,11 +16211,13 @@ virDomainActualNetDefFormat(virBufferPtr buf,
                             virDomainNetDefPtr def,
                             unsigned int flags)
 {
-    unsigned int type = virDomainNetGetActualType(def);
-    const char *typeStr = virDomainNetTypeToString(type);
+    unsigned int type;
+    const char *typeStr;
 
     if (!def)
         return 0;
+    type = virDomainNetGetActualType(def);
+    typeStr = virDomainNetTypeToString(type);
 
     if (!typeStr) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
