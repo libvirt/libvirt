@@ -3349,9 +3349,12 @@ virQEMUCapsPtr virQEMUCapsNewForBinary(const char *binary,
                                        uid_t runUid,
                                        gid_t runGid)
 {
-    virQEMUCapsPtr qemuCaps = virQEMUCapsNew();
+    virQEMUCapsPtr qemuCaps;
     struct stat sb;
     int rv;
+
+    if (!(qemuCaps = virQEMUCapsNew()))
+        goto error;
 
     if (VIR_STRDUP(qemuCaps->binary, binary) < 0)
         goto error;
