@@ -946,6 +946,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
         sock = socket(cur->ai_family, cur->ai_socktype, cur->ai_protocol);
         if (sock >= 0) {
             if (connect(sock, cur->ai_addr, cur->ai_addrlen) == 0) {
+                freeaddrinfo(ai);
                 goto connected;
             }
             VIR_FORCE_CLOSE(sock);
