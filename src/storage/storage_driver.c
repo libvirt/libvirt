@@ -2441,11 +2441,12 @@ virStorageFileIsInitialized(virStorageSourcePtr src)
 static bool
 virStorageFileSupportsBackingChainTraversal(virStorageSourcePtr src)
 {
-    int actualType = virStorageSourceGetActualType(src);
+    int actualType;
     virStorageFileBackendPtr backend;
 
     if (!src)
         return false;
+    actualType = virStorageSourceGetActualType(src);
 
     if (src->drv) {
         backend = src->drv->backend;
@@ -2473,11 +2474,12 @@ virStorageFileSupportsBackingChainTraversal(virStorageSourcePtr src)
 bool
 virStorageFileSupportsSecurityDriver(virStorageSourcePtr src)
 {
-    int actualType = virStorageSourceGetActualType(src);
+    int actualType;
     virStorageFileBackendPtr backend;
 
     if (!src)
         return false;
+    actualType = virStorageSourceGetActualType(src);
 
     if (src->drv) {
         backend = src->drv->backend;
