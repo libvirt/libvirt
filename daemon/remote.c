@@ -1535,7 +1535,7 @@ remoteDispatchConnectListAllDomains(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (doms) {
+    if (doms && ndomains > 0) {
         for (i = 0; i < ndomains; i++)
             virDomainFree(doms[i]);
         VIR_FREE(doms);
@@ -4632,7 +4632,7 @@ remoteDispatchDomainGetDiskErrors(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetMessageSaveError(rerr);
     if (dom)
         virDomainFree(dom);
-    if (errors) {
+    if (errors && len > 0) {
         size_t i;
         for (i = 0; i < len; i++)
             VIR_FREE(errors[i].disk);
@@ -4698,7 +4698,7 @@ remoteDispatchDomainListAllSnapshots(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetMessageSaveError(rerr);
     if (dom)
         virDomainFree(dom);
-    if (snaps) {
+    if (snaps && nsnaps > 0) {
         for (i = 0; i < nsnaps; i++)
             virDomainSnapshotFree(snaps[i]);
         VIR_FREE(snaps);
@@ -4769,7 +4769,7 @@ remoteDispatchDomainSnapshotListAllChildren(virNetServerPtr server ATTRIBUTE_UNU
         virDomainSnapshotFree(snapshot);
     if (dom)
         virDomainFree(dom);
-    if (snaps) {
+    if (snaps && nsnaps > 0) {
         for (i = 0; i < nsnaps; i++)
             virDomainSnapshotFree(snaps[i]);
         VIR_FREE(snaps);
@@ -4828,7 +4828,7 @@ remoteDispatchConnectListAllStoragePools(virNetServerPtr server ATTRIBUTE_UNUSED
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (pools) {
+    if (pools && npools > 0) {
         for (i = 0; i < npools; i++)
             virStoragePoolFree(pools[i]);
         VIR_FREE(pools);
@@ -4891,7 +4891,7 @@ remoteDispatchStoragePoolListAllVolumes(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (vols) {
+    if (vols && nvols > 0) {
         for (i = 0; i < nvols; i++)
             virStorageVolFree(vols[i]);
         VIR_FREE(vols);
@@ -4952,7 +4952,7 @@ remoteDispatchConnectListAllNetworks(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (nets) {
+    if (nets && nnets > 0) {
         for (i = 0; i < nnets; i++)
             virNetworkFree(nets[i]);
         VIR_FREE(nets);
@@ -5011,7 +5011,7 @@ remoteDispatchConnectListAllInterfaces(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (ifaces) {
+    if (ifaces && nifaces > 0) {
         for (i = 0; i < nifaces; i++)
             virInterfaceFree(ifaces[i]);
         VIR_FREE(ifaces);
@@ -5070,7 +5070,7 @@ remoteDispatchConnectListAllNodeDevices(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (devices) {
+    if (devices && ndevices > 0) {
         for (i = 0; i < ndevices; i++)
             virNodeDeviceFree(devices[i]);
         VIR_FREE(devices);
@@ -5129,7 +5129,7 @@ remoteDispatchConnectListAllNWFilters(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (filters) {
+    if (filters && nfilters > 0) {
         for (i = 0; i < nfilters; i++)
             virNWFilterFree(filters[i]);
         VIR_FREE(filters);
@@ -5188,7 +5188,7 @@ remoteDispatchConnectListAllSecrets(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (secrets) {
+    if (secrets && nsecrets > 0) {
         for (i = 0; i < nsecrets; i++)
             virSecretFree(secrets[i]);
         VIR_FREE(secrets);
@@ -6373,7 +6373,7 @@ remoteDispatchNetworkGetDHCPLeases(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (leases) {
+    if (leases && nleases > 0) {
         for (i = 0; i < nleases; i++)
             virNetworkDHCPLeaseFree(leases[i]);
         VIR_FREE(leases);
