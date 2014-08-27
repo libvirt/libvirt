@@ -2795,6 +2795,7 @@ qemuParseISCSIString(virDomainDiskDefPtr def)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("invalid name '%s' for iSCSI disk"),
                            def->src->path);
+            virURIFree(uri);
             return -1;
         }
     }
