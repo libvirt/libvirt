@@ -1475,14 +1475,14 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
              virDomainPtr *pdom)
 {
     virDomainPtr dom = NULL;
-    const char *name, *path;
+    const char *path;
     unsigned long bandwidth = 0;
     int ret = -1;
     const char *base = NULL;
     const char *top = NULL;
     unsigned int flags = 0;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
 
     if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
