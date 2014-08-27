@@ -12437,8 +12437,8 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     }
 
     if (redefine) {
-        if (!virDomainSnapshotRedefinePrep(domain, vm, &def, &snap,
-                                           &update_current, flags) < 0)
+        if (virDomainSnapshotRedefinePrep(domain, vm, &def, &snap,
+                                          &update_current, flags) < 0)
             goto cleanup;
     } else {
         /* Easiest way to clone inactive portion of vm->def is via
