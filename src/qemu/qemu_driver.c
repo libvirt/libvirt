@@ -14294,7 +14294,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("qemu doesn't support reversion of snapshot taken in "
                          "PMSUSPENDED state"));
-        goto cleanup;
+        goto endjob;
 
     case VIR_DOMAIN_NOSTATE:
     case VIR_DOMAIN_BLOCKED:
@@ -14303,7 +14303,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                        _("Invalid target domain state '%s'. Refusing "
                          "snapshot reversion"),
                        virDomainStateTypeToString(snap->def->state));
-        goto cleanup;
+        goto endjob;
     }
 
     ret = 0;
