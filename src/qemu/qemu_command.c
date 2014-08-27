@@ -370,7 +370,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
                               false) < 0)
         goto cleanup;
 
-    if (net->filter && net->ifname &&
+    if (net->filter &&
         virDomainConfNWFilterInstantiate(conn, def->uuid, net) < 0) {
         goto cleanup;
     }
