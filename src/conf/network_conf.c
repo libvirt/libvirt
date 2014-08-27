@@ -3627,6 +3627,8 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
                            def->name,
                            startip ? startip : "unknown",
                            endip ? endip : "unknown");
+            VIR_FREE(startip);
+            VIR_FREE(endip);
             goto cleanup;
         }
 
