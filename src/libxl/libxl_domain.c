@@ -532,8 +532,10 @@ libxlDomainDefPostParse(virDomainDefPtr def,
         chrdef->target.port = 0;
         chrdef->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
 
-        if (VIR_ALLOC_N(def->consoles, 1) < 0)
+        if (VIR_ALLOC_N(def->consoles, 1) < 0) {
+            virDomainChrDefFree(chrdef);
             return -1;
+        }
 
         def->nconsoles = 1;
         def->consoles[0] = chrdef;
