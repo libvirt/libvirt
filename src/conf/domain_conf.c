@@ -2136,6 +2136,10 @@ void virDomainDefFree(virDomainDefPtr def)
     virDomainMemballoonDefFree(def->memballoon);
     virDomainNVRAMDefFree(def->nvram);
 
+    for (i = 0; i < def->mem.nhugepages; i++)
+        virBitmapFree(def->mem.hugepages[i].nodemask);
+    VIR_FREE(def->mem.hugepages);
+
     for (i = 0; i < def->nseclabels; i++)
         virSecurityLabelDefFree(def->seclabels[i]);
     VIR_FREE(def->seclabels);
