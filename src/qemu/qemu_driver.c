@@ -10516,6 +10516,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     }
 
  cleanup:
+    VIR_FREE(buf);
     VIR_FREE(alias);
     virStorageSourceFree(meta);
     VIR_FORCE_CLOSE(fd);
