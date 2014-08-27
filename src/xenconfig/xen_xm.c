@@ -201,6 +201,7 @@ xenParseXMDisk(virConfPtr conf, virDomainDefPtr def, int xendConfigVersion)
             skipdisk:
             list = list->next;
             virDomainDiskDefFree(disk);
+            disk = NULL;
         }
     }
 
