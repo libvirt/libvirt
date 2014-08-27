@@ -2108,6 +2108,7 @@ int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
         virCapsGuestMachinePtr mach;
         if (VIR_ALLOC(mach) < 0)
             goto error;
+        (*machines)[i] = mach;
         if (qemuCaps->machineAliases[i]) {
             if (VIR_STRDUP(mach->name, qemuCaps->machineAliases[i]) < 0 ||
                 VIR_STRDUP(mach->canonical, qemuCaps->machineTypes[i]) < 0)
@@ -2117,7 +2118,6 @@ int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
                 goto error;
         }
         mach->maxCpus = qemuCaps->machineMaxCpus[i];
-        (*machines)[i] = mach;
     }
 
     return 0;
