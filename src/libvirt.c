@@ -21524,8 +21524,8 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  * virConnectGetAllDomainStats:
  * @conn: pointer to the hypervisor connection
  * @stats: stats to return, binary-OR of virDomainStatsTypes
- * @retStats: Pointer that will be filled with the array of returned stats.
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @retStats: Pointer that will be filled with the array of returned stats
+ * @flags: extra flags; binary-OR of virConnectGetAllDomainStatsFlags
  *
  * Query statistics for all domains on a given connection.
  *
@@ -21548,6 +21548,26 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *
  * Using 0 for @stats returns all stats groups supported by the given
  * hypervisor.
+ *
+ * Specifying VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS as @flags makes
+ * the function return error in case some of the stat types in @stats were
+ * not recognized by the daemon.
+ *
+ * Similarly to virConnectListAllDomains, @flags can contain various flags to
+ * filter the list of domains to provide stats for.
+ *
+ * VIR_CONNECT_GET_ALL_DOMAINS_STATS_ACTIVE selects online domains while
+ * VIR_CONNECT_GET_ALL_DOMAINS_STATS_INACTIVE selects offline ones.
+ *
+ * VIR_CONNECT_GET_ALL_DOMAINS_STATS_PERSISTENT and
+ * VIR_CONNECT_GET_ALL_DOMAINS_STATS_TRANSIENT allow to filter the list
+ * according to their persistence.
+ *
+ * To filter the list of VMs by domain state @flags can contain
+ * VIR_CONNECT_GET_ALL_DOMAINS_STATS_RUNNING,
+ * VIR_CONNECT_GET_ALL_DOMAINS_STATS_PAUSED,
+ * VIR_CONNECT_GET_ALL_DOMAINS_STATS_SHUTOFF and/or
+ * VIR_CONNECT_GET_ALL_DOMAINS_STATS_OTHER for all other states.
  *
  * Returns the count of returned statistics structures on success, -1 on error.
  * The requested data are returned in the @retStats parameter. The returned
@@ -21589,8 +21609,8 @@ virConnectGetAllDomainStats(virConnectPtr conn,
  * virDomainListGetStats:
  * @doms: NULL terminated array of domains
  * @stats: stats to return, binary-OR of virDomainStatsTypes
- * @retStats: Pointer that will be filled with the array of returned stats.
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @retStats: Pointer that will be filled with the array of returned stats
+ * @flags: extra flags; binary-OR of virConnectGetAllDomainStatsFlags
  *
  * Query statistics for domains provided by @doms. Note that all domains in
  * @doms must share the same connection.
@@ -21614,6 +21634,13 @@ virConnectGetAllDomainStats(virConnectPtr conn,
  *
  * Using 0 for @stats returns all stats groups supported by the given
  * hypervisor.
+ *
+ * Specifying VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS as @flags makes
+ * the function return error in case some of the stat types in @stats were
+ * not recognized by the daemon.
+ *
+ * Note that any of the domain list filtering flags in @flags will be rejected
+ * by this function.
  *
  * Returns the count of returned statistics structures on success, -1 on error.
  * The requested data are returned in the @retStats parameter. The returned
