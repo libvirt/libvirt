@@ -331,12 +331,12 @@ char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
             net->ifname, &net->mac,
             virDomainNetGetActualDirectDev(net),
             virDomainNetGetActualDirectMode(net),
-            false, false, def->uuid,
+            false, def->uuid,
             virDomainNetGetActualVirtPortProfile(net),
             &res_ifname,
             VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
             cfg->stateDir,
-            virDomainNetGetActualBandwidth(net)) < 0)
+            virDomainNetGetActualBandwidth(net), 0) < 0)
         goto cleanup;
 
     ret = res_ifname;

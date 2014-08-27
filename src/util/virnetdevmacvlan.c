@@ -796,26 +796,31 @@ virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
  * @res_ifname: Pointer to a string pointer where the actual name of the
  *     interface will be stored into if everything succeeded. It is up
  *     to the caller to free the string.
+ * @flags: OR of virNetDevMacVLanCreateFlags.
  *
- * Returns file descriptor of the tap device in case of success with @withTap,
- * otherwise returns 0; returns -1 on error.
+ * Returns file descriptor of the tap device in case of success with
+ * @flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP, otherwise returns 0; returns
+ * -1 on error.
  */
 int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
                                            const virMacAddr *macaddress,
                                            const char *linkdev,
                                            virNetDevMacVLanMode mode,
-                                           bool withTap,
                                            int vnet_hdr,
                                            const unsigned char *vmuuid,
                                            virNetDevVPortProfilePtr virtPortProfile,
                                            char **res_ifname,
                                            virNetDevVPortProfileOp vmOp,
                                            char *stateDir,
-                                           virNetDevBandwidthPtr bandwidth)
+                                           virNetDevBandwidthPtr bandwidth,
+                                           unsigned int flags)
 {
-    const char *type = withTap ? "macvtap" : "macvlan";
-    const char *prefix = withTap ? MACVTAP_NAME_PREFIX : MACVLAN_NAME_PREFIX;
-    const char *pattern = withTap ? MACVTAP_NAME_PATTERN : MACVLAN_NAME_PATTERN;
+    const char *type = (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
+        "macvtap" : "macvlan";
+    const char *prefix = (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
+        MACVTAP_NAME_PREFIX : MACVLAN_NAME_PREFIX;
+    const char *pattern = (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
+        MACVTAP_NAME_PATTERN : MACVLAN_NAME_PATTERN;
     int c, rc;
     char ifname[IFNAMSIZ];
     int retries, do_retry = 0;
@@ -903,7 +908,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
         goto disassociate_exit;
     }
 
-    if (withTap) {
+    if (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) {
         if ((rc = virNetDevMacVLanTapOpen(cr_ifname, 10)) < 0)
             goto disassociate_exit;
 
@@ -922,7 +927,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
     }
 
     if (virNetDevBandwidthSet(cr_ifname, bandwidth, false) < 0) {
-        if (withTap)
+        if (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP)
             VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
         else
             rc = -1;
@@ -1066,15 +1071,16 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname ATTRIBUTE_UNUSED,
                                            const virMacAddr *macaddress ATTRIBUTE_UNUSED,
                                            const char *linkdev ATTRIBUTE_UNUSED,
                                            virNetDevMacVLanMode mode ATTRIBUTE_UNUSED,
-                                           bool withTap ATTRIBUTE_UNUSED,
                                            int vnet_hdr ATTRIBUTE_UNUSED,
                                            const unsigned char *vmuuid ATTRIBUTE_UNUSED,
                                            virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
                                            char **res_ifname ATTRIBUTE_UNUSED,
                                            virNetDevVPortProfileOp vmop ATTRIBUTE_UNUSED,
                                            char *stateDir ATTRIBUTE_UNUSED,
-                                           virNetDevBandwidthPtr bandwidth ATTRIBUTE_UNUSED)
+                                           virNetDevBandwidthPtr bandwidth ATTRIBUTE_UNUSED,
+                                           unsigned int flags)
 {
+    virCheckFlags(0, -1);
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
     return -1;
