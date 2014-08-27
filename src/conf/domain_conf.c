@@ -2247,13 +2247,11 @@ void virDomainObjAssignDef(virDomainObjPtr domain,
         domain->newDef = def;
     } else {
         if (live) {
-            if (domain->def) {
-                /* save current configuration to be restored on domain shutdown */
-                if (!domain->newDef)
-                    domain->newDef = domain->def;
-                else
-                    virDomainDefFree(domain->def);
-            }
+            /* save current configuration to be restored on domain shutdown */
+            if (!domain->newDef)
+                domain->newDef = domain->def;
+            else
+                virDomainDefFree(domain->def);
             domain->def = def;
         } else {
             if (oldDef)
