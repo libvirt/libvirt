@@ -412,7 +412,10 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
     }
 
  done:
-    virURIFree(uri);
+    if (!uri_in)
+        VIR_FREE(hostname);
+    else
+        virURIFree(uri);
     if (vm)
         virObjectUnlock(vm);
     return ret;
