@@ -5654,7 +5654,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                     }
                     VIR_FREE(ready);
                 }
-            } else if (xmlStrEqual(cur->name, BAD_CAST "auth")) {
+            } else if (!authdef &&
+                       xmlStrEqual(cur->name, BAD_CAST "auth")) {
                 if (!(authdef = virStorageAuthDefParse(node->doc, cur)))
                     goto error;
                 if ((auth_secret_usage =
@@ -12065,19 +12066,21 @@ virDomainDefParseXML(xmlDocPtr xml,
                                         vcpupin->vcpuid)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("duplicate vcpupin for same vcpu"));
-            VIR_FREE(vcpupin);
+            virDomainVcpuPinDefFree(vcpupin);
             goto error;
         }
 
-        if (vcpupin->vcpuid >= def->vcpus)
+        if (vcpupin->vcpuid >= def->vcpus) {
             /* To avoid the regression when daemon loading
              * domain confs, we can't simply error out if
              * <vcpupin> nodes greater than current vcpus,
              * ignoring them instead.
              */
             VIR_WARN("Ignore vcpupin for not onlined vcpus");
-        else
+            virDomainVcpuPinDefFree(vcpupin);
+        } else {
             def->cputune.vcpupin[def->cputune.nvcpupin++] = vcpupin;
+        }
     }
     VIR_FREE(nodes);
 
@@ -13127,6 +13130,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Can't add host USB device: "
                              "USB is disabled in this host"));
+            virDomainHostdevDefFree(hostdev);
             goto error;
         }
 
@@ -13266,6 +13270,7 @@ virDomainDefParseXML(xmlDocPtr xml,
              virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                             _("Can't add redirected USB device: "
                               "USB is disabled for this domain"));
+            virDomainRedirdevDefFree(redirdev);
             goto error;
         }
 
@@ -15127,8 +15132,10 @@ virDomainEmulatorPinAdd(virDomainDefPtr def,
 
         emulatorpin->vcpuid = -1;
         emulatorpin->cpumask = virBitmapNewData(cpumap, maplen);
-        if (!emulatorpin->cpumask)
+        if (!emulatorpin->cpumask) {
+            virDomainVcpuPinDefFree(emulatorpin);
             return -1;
+        }
 
         def->cputune.emulatorpin = emulatorpin;
     } else {
