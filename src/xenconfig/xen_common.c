@@ -776,10 +776,8 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def)
                 !(chr = xenParseSxprChar(str, NULL)))
                 goto cleanup;
             if (chr) {
-                if (VIR_ALLOC_N(def->serials, 1) < 0) {
-                    virDomainChrDefFree(chr);
+                if (VIR_ALLOC_N(def->serials, 1) < 0)
                     goto cleanup;
-                }
                 chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
                 chr->target.port = 0;
                 def->serials[0] = chr;
@@ -953,6 +951,7 @@ xenParseVif(virConfPtr conf, virDomainDefPtr def)
         skipnic:
             list = list->next;
             virDomainNetDefFree(net);
+            net = NULL;
             VIR_FREE(script);
         }
     }
