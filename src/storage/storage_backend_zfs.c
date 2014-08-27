@@ -58,7 +58,8 @@ virStorageBackendZFSCheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 static int
 virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
-                             const char *volume)
+                             virStorageVolDefPtr vol,
+                             const char *volume_string)
 {
     int ret = -1;
     char **tokens;
@@ -66,9 +67,9 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
     char **name_tokens = NULL;
     char *vol_name;
     bool is_new_vol = false;
-    virStorageVolDefPtr vol = NULL;
+    virStorageVolDefPtr volume = NULL;
 
-    if (!(tokens = virStringSplitCount(volume, "\t", 0, &count)))
+    if (!(tokens = virStringSplitCount(volume_string, "\t", 0, &count)))
         return -1;
 
     if (count != 2)
@@ -79,36 +80,41 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
 
     vol_name = name_tokens[1];
 
-    vol = virStorageVolDefFindByName(pool, vol_name);
+    if (vol == NULL)
+        volume = virStorageVolDefFindByName(pool, vol_name);
+    else
+        volume = vol;
 
-    if (vol == NULL) {
-        if (VIR_ALLOC(vol) < 0)
+    if (volume == NULL) {
+        if (VIR_ALLOC(volume) < 0)
             goto cleanup;
 
         is_new_vol = true;
-        vol->type = VIR_STORAGE_VOL_BLOCK;
+        volume->type = VIR_STORAGE_VOL_BLOCK;
 
-        if (VIR_STRDUP(vol->name, vol_name) < 0)
+        if (VIR_STRDUP(volume->name, vol_name) < 0)
             goto cleanup;
     }
 
-    if (!vol->key && VIR_STRDUP(vol->key, tokens[0]) < 0)
+    if (!volume->key && VIR_STRDUP(volume->key, tokens[0]) < 0)
         goto cleanup;
 
-    if (vol->target.path == NULL) {
-        if (virAsprintf(&vol->target.path, "%s/%s",
-                        pool->def->target.path, vol->name) < 0)
+    if (volume->target.path == NULL) {
+        if (virAsprintf(&volume->target.path, "%s/%s",
+                        pool->def->target.path, volume->name) < 0)
             goto cleanup;
     }
 
-    if (virStrToLong_ull(tokens[1], NULL, 10, &vol->target.capacity) < 0) {
+    if (virStrToLong_ull(tokens[1], NULL, 10, &volume->target.capacity) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("malformed volsize reported"));
         goto cleanup;
     }
 
     if (is_new_vol &&
-        VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count, vol) < 0)
+        VIR_APPEND_ELEMENT(pool->volumes.objs,
+                           pool->volumes.count,
+                           volume) < 0)
         goto cleanup;
 
     ret = 0;
@@ -116,12 +122,13 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
     virStringFreeList(tokens);
     virStringFreeList(name_tokens);
     if (is_new_vol && (ret == -1))
-        virStorageVolDefFree(vol);
+        virStorageVolDefFree(volume);
     return ret;
 }
 
 static int
-virStorageBackendZFSFindVols(virStoragePoolObjPtr pool)
+virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
+                             virStorageVolDefPtr vol)
 {
     virCommandPtr cmd = NULL;
     char *volumes_list = NULL;
@@ -157,7 +164,7 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool)
         if (STREQ(lines[i], ""))
             continue;
 
-        if (virStorageBackendZFSParseVol(pool, lines[i]) < 0)
+        if (virStorageBackendZFSParseVol(pool, vol, lines[i]) < 0)
             continue;
     }
 
@@ -233,7 +240,7 @@ virStorageBackendZFSRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     /* Obtain a list of volumes */
-    if (virStorageBackendZFSFindVols(pool) < 0)
+    if (virStorageBackendZFSFindVols(pool, NULL) < 0)
         goto cleanup;
 
  cleanup:
@@ -285,7 +292,7 @@ virStorageBackendZFSCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
-    if (virStorageBackendZFSFindVols(pool) < 0)
+    if (virStorageBackendZFSFindVols(pool, vol) < 0)
         goto cleanup;
 
     ret = 0;
