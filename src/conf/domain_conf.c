@@ -2804,6 +2804,8 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
             return -1;
     }
 
+    /* Coverity is not very happy with this - all dead_error_condition */
+#if !STATIC_ANALYSIS
     /* This switch statement is here to trigger compiler warning when adding
      * a new device type. When you are adding a new field to the switch you
      * also have to add an iteration statement above. Otherwise the switch
@@ -2833,6 +2835,7 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
     case VIR_DOMAIN_DEVICE_RNG:
         break;
     }
+#endif
 
     return 0;
 }
@@ -12263,6 +12266,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             ctxt->node = node;
             break;
 
+        /* coverity[dead_error_begin] */
         case VIR_DOMAIN_FEATURE_LAST:
             break;
         }
@@ -12346,6 +12350,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                     def->hyperv_features[feature] = value;
                     break;
 
+                /* coverity[dead_error_begin] */
                 case VIR_DOMAIN_HYPERV_LAST:
                     break;
             }
@@ -12394,6 +12399,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                     def->kvm_features[feature] = value;
                     break;
 
+                /* coverity[dead_error_begin] */
                 case VIR_DOMAIN_KVM_LAST:
                     break;
             }
@@ -14406,6 +14412,7 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
                 }
                 break;
 
+            /* coverity[dead_error_begin] */
             case VIR_DOMAIN_HYPERV_LAST:
                 break;
             }
@@ -14429,6 +14436,7 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
 
                 break;
 
+            /* coverity[dead_error_begin] */
             case VIR_DOMAIN_KVM_LAST:
                 break;
             }
@@ -18253,6 +18261,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                         virBufferAddLit(buf, "/>\n");
                         break;
 
+                    /* coverity[dead_error_begin] */
                     case VIR_DOMAIN_HYPERV_LAST:
                         break;
                     }
@@ -18277,6 +18286,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                                                   def->kvm_features[j]));
                         break;
 
+                    /* coverity[dead_error_begin] */
                     case VIR_DOMAIN_KVM_LAST:
                         break;
                     }
@@ -18304,6 +18314,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 virBufferAddLit(buf, "</capabilities>\n");
                 break;
 
+            /* coverity[dead_error_begin] */
             case VIR_DOMAIN_FEATURE_LAST:
                 break;
             }
@@ -20255,6 +20266,7 @@ virDomainObjGetMetadata(virDomainObjPtr vm,
             goto cleanup;
         break;
 
+    /* coverity[dead_error_begin] */
     case VIR_DOMAIN_METADATA_LAST:
         break;
     }
@@ -20340,6 +20352,7 @@ virDomainDefSetMetadata(virDomainDefPtr def,
         }
         break;
 
+    /* coverity[dead_error_begin] */
     case VIR_DOMAIN_METADATA_LAST:
         break;
     }
