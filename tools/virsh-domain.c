@@ -1461,23 +1461,21 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
 }
 
 typedef enum {
-    VSH_CMD_BLOCK_JOB_ABORT = 0,
-    VSH_CMD_BLOCK_JOB_INFO = 1,
-    VSH_CMD_BLOCK_JOB_SPEED = 2,
-    VSH_CMD_BLOCK_JOB_PULL = 3,
-    VSH_CMD_BLOCK_JOB_COPY = 4,
-    VSH_CMD_BLOCK_JOB_COMMIT = 5,
+    VSH_CMD_BLOCK_JOB_ABORT,
+    VSH_CMD_BLOCK_JOB_SPEED,
+    VSH_CMD_BLOCK_JOB_PULL,
+    VSH_CMD_BLOCK_JOB_COPY,
+    VSH_CMD_BLOCK_JOB_COMMIT,
 } vshCmdBlockJobMode;
 
-static int
+static bool
 blockJobImpl(vshControl *ctl, const vshCmd *cmd,
-             virDomainBlockJobInfoPtr info, int mode,
-             virDomainPtr *pdom)
+             vshCmdBlockJobMode mode, virDomainPtr *pdom)
 {
     virDomainPtr dom = NULL;
     const char *path;
     unsigned long bandwidth = 0;
-    int ret = -1;
+    bool ret = false;
     const char *base = NULL;
     const char *top = NULL;
     unsigned int flags = 0;
@@ -1493,19 +1491,18 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
         goto cleanup;
     }
 
-    switch ((vshCmdBlockJobMode) mode) {
+    switch (mode) {
     case VSH_CMD_BLOCK_JOB_ABORT:
         if (vshCommandOptBool(cmd, "async"))
             flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
         if (vshCommandOptBool(cmd, "pivot"))
             flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT;
-        ret = virDomainBlockJobAbort(dom, path, flags);
-        break;
-    case VSH_CMD_BLOCK_JOB_INFO:
-        ret = virDomainGetBlockJobInfo(dom, path, info, 0);
+        if (virDomainBlockJobAbort(dom, path, flags) < 0)
+            goto cleanup;
         break;
     case VSH_CMD_BLOCK_JOB_SPEED:
-        ret = virDomainBlockJobSetSpeed(dom, path, bandwidth, 0);
+        if (virDomainBlockJobSetSpeed(dom, path, bandwidth, 0) < 0)
+            goto cleanup;
         break;
     case VSH_CMD_BLOCK_JOB_PULL:
         if (vshCommandOptStringReq(ctl, cmd, "base", &base) < 0)
@@ -1513,10 +1510,13 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
         if (vshCommandOptBool(cmd, "keep-relative"))
             flags |= VIR_DOMAIN_BLOCK_REBASE_RELATIVE;
 
-        if (base || flags)
-            ret = virDomainBlockRebase(dom, path, base, bandwidth, flags);
-        else
-            ret = virDomainBlockPull(dom, path, bandwidth, 0);
+        if (base || flags) {
+            if (virDomainBlockRebase(dom, path, base, bandwidth, flags) < 0)
+                goto cleanup;
+        } else {
+            if (virDomainBlockPull(dom, path, bandwidth, 0) < 0)
+                goto cleanup;
+        }
 
         break;
     case VSH_CMD_BLOCK_JOB_COMMIT:
@@ -1533,7 +1533,8 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
             flags |= VIR_DOMAIN_BLOCK_COMMIT_ACTIVE;
         if (vshCommandOptBool(cmd, "keep-relative"))
             flags |= VIR_DOMAIN_BLOCK_COMMIT_RELATIVE;
-        ret = virDomainBlockCommit(dom, path, base, top, bandwidth, flags);
+        if (virDomainBlockCommit(dom, path, base, top, bandwidth, flags) < 0)
+            goto cleanup;
         break;
     case VSH_CMD_BLOCK_JOB_COPY:
         flags |= VIR_DOMAIN_BLOCK_REBASE_COPY;
@@ -1545,11 +1546,15 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
             flags |= VIR_DOMAIN_BLOCK_REBASE_COPY_RAW;
         if (vshCommandOptStringReq(ctl, cmd, "dest", &base) < 0)
             goto cleanup;
-        ret = virDomainBlockRebase(dom, path, base, bandwidth, flags);
+        if (virDomainBlockRebase(dom, path, base, bandwidth, flags) < 0)
+            goto cleanup;
+        break;
     }
 
+    ret = true;
+
  cleanup:
-    if (pdom && ret == 0)
+    if (pdom && ret)
         *pdom = dom;
     else if (dom)
         virDomainFree(dom);
@@ -1721,7 +1726,7 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (blockJobImpl(ctl, cmd, NULL, VSH_CMD_BLOCK_JOB_COMMIT, &dom) < 0)
+    if (!blockJobImpl(ctl, cmd, VSH_CMD_BLOCK_JOB_COMMIT, &dom))
         goto cleanup;
 
     if (!blocking) {
@@ -1924,7 +1929,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (blockJobImpl(ctl, cmd, NULL, VSH_CMD_BLOCK_JOB_COPY, &dom) < 0)
+    if (!blockJobImpl(ctl, cmd, VSH_CMD_BLOCK_JOB_COPY, &dom))
         goto cleanup;
 
     if (!blocking) {
@@ -2069,14 +2074,17 @@ vshDomainBlockJobToString(int type)
 static bool
 cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
 {
-    int mode;
     virDomainBlockJobInfo info;
-    int ret;
+    bool ret = false;
+    int rc;
     bool abortMode = (vshCommandOptBool(cmd, "abort") ||
                       vshCommandOptBool(cmd, "async") ||
                       vshCommandOptBool(cmd, "pivot"));
     bool infoMode = vshCommandOptBool(cmd, "info");
     bool bandwidth = vshCommandOptBool(cmd, "bandwidth");
+    virDomainPtr dom = NULL;
+    const char *path;
+    unsigned int flags = 0;
 
     if (abortMode + infoMode + bandwidth > 1) {
         vshError(ctl, "%s",
@@ -2085,24 +2093,35 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (abortMode)
-        mode = VSH_CMD_BLOCK_JOB_ABORT;
-    else if (bandwidth)
-        mode = VSH_CMD_BLOCK_JOB_SPEED;
-    else
-        mode = VSH_CMD_BLOCK_JOB_INFO;
+        return blockJobImpl(ctl, cmd, VSH_CMD_BLOCK_JOB_ABORT, NULL);
+    if (bandwidth)
+        return blockJobImpl(ctl, cmd, VSH_CMD_BLOCK_JOB_SPEED, NULL);
 
-    ret = blockJobImpl(ctl, cmd, &info, mode, NULL);
-    if (ret < 0)
-        return false;
+    /* Everything below here is for --info mode */
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        goto cleanup;
 
-    if (ret == 0 || mode != VSH_CMD_BLOCK_JOB_INFO)
-        return true;
+    /* XXX Allow path to be optional to list info on all devices at once */
+    if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
+        goto cleanup;
+
+    rc = virDomainGetBlockJobInfo(dom, path, &info, flags);
+    if (rc < 0)
+        goto cleanup;
+    if (rc == 0) {
+        ret = true;
+        goto cleanup;
+    }
 
     vshPrintJobProgress(vshDomainBlockJobToString(info.type),
                         info.end - info.cur, info.end);
     if (info.bandwidth != 0)
         vshPrint(ctl, _("    Bandwidth limit: %lu MiB/s\n"), info.bandwidth);
-    return true;
+    ret = true;
+ cleanup:
+    if (dom)
+        virDomainFree(dom);
+    return ret;
 }
 
 /*
@@ -2201,7 +2220,7 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (blockJobImpl(ctl, cmd, NULL, VSH_CMD_BLOCK_JOB_PULL, &dom) < 0)
+    if (!blockJobImpl(ctl, cmd, VSH_CMD_BLOCK_JOB_PULL, &dom))
         goto cleanup;
 
     if (!blocking) {
