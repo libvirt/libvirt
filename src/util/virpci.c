@@ -801,6 +801,7 @@ virPCIDeviceTrySecondaryBusReset(virPCIDevicePtr dev,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Active %s devices on bus with %s, not doing bus reset"),
                        conflict->name, dev->name);
+        virPCIDeviceFree(conflict);
         return -1;
     }
 
