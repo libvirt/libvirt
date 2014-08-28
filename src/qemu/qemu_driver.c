@@ -14010,8 +14010,11 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    if (!(snap = qemuSnapObjFromSnapshot(vm, snapshot)))
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
+
+    if (!(snap = qemuSnapObjFromSnapshot(vm, snapshot)))
+        goto endjob;
 
     if (!vm->persistent &&
         snap->def->state != VIR_DOMAIN_RUNNING &&
@@ -14021,13 +14024,13 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("transient domain needs to request run or pause "
                          "to revert to inactive snapshot"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (virDomainSnapshotIsExternal(snap)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("revert to external snapshot not supported yet"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {
@@ -14035,7 +14038,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY,
                            _("snapshot '%s' lacks domain '%s' rollback info"),
                            snap->def->name, vm->def->name);
-            goto cleanup;
+            goto endjob;
         }
         if (virDomainObjIsActive(vm) &&
             !(snap->def->state == VIR_DOMAIN_RUNNING
@@ -14044,7 +14047,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                       VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED))) {
             virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY, "%s",
                            _("must respawn qemu to start inactive snapshot"));
-            goto cleanup;
+            goto endjob;
         }
     }
 
@@ -14053,7 +14056,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         vm->current_snapshot->def->current = false;
         if (qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
                                             cfg->snapshotDir) < 0)
-            goto cleanup;
+            goto endjob;
         vm->current_snapshot = NULL;
         /* XXX Should we restore vm->current_snapshot after this point
          * in the failure cases where we know there was no change?  */
@@ -14068,11 +14071,8 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     if (snap->def->dom) {
         config = virDomainDefCopy(snap->def->dom, caps, driver->xmlopt, true);
         if (!config)
-            goto cleanup;
+            goto endjob;
     }
-
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
-        goto cleanup;
 
     switch ((virDomainState) snap->def->state) {
     case VIR_DOMAIN_RUNNING:
@@ -14383,8 +14383,11 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     if (virDomainSnapshotDeleteEnsureACL(snapshot->domain->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!(snap = qemuSnapObjFromSnapshot(vm, snapshot)))
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
+
+    if (!(snap = qemuSnapObjFromSnapshot(vm, snapshot)))
+        goto endjob;
 
     if (!metadata_only) {
         if (!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) &&
@@ -14398,12 +14401,9 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("deletion of %d external disk snapshots not "
                              "supported yet"), external);
-            goto cleanup;
+            goto endjob;
         }
     }
-
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
-        goto cleanup;
 
     if (flags & (VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
                  VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)) {
