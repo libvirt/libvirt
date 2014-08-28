@@ -125,9 +125,11 @@ virNetServerServiceNewFDOrUNIX(const char *path,
     } else {
         /*
          * There's still enough file descriptors.  In this case we'll
-         * use the current one and increment it afterwards.
+         * use the current one and increment it afterwards. Take care
+         * with order of operation for pointer arithmetic and auto
+         * increment on cur_fd - the parentheses are necessary.
          */
-        return virNetServerServiceNewFD(*cur_fd++,
+        return virNetServerServiceNewFD((*cur_fd)++,
                                         auth,
 #if WITH_GNUTLS
                                         tls,
