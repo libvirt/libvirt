@@ -899,7 +899,8 @@ unlimited. The hypervisor can choose whether to reject the value or
 convert it to the maximum value allowed.
 
 =item B<blockcopy> I<domain> I<path> I<dest> [I<bandwidth>] [I<--shallow>]
-[I<--reuse-external>] [I<--raw>] [I<--wait> [I<--async>] [I<--verbose>]]
+[I<--reuse-external>] [I<--raw>] [I<--blockdev>]
+[I<--wait> [I<--async>] [I<--verbose>]]
 [{I<--pivot> | I<--finish>}] [I<--timeout> B<seconds>]
 
 Copy a disk backing image chain to I<dest>. By default, this command
@@ -917,7 +918,9 @@ The format of the destination is determined by the first match in the
 following list: if I<--raw> is specified, it will be raw; if
 I<--reuse-external> is specified, the existing destination is probed
 for a format; and in all other cases, the destination format will
-match the source format.
+match the source format.  The destination is treated as a regular
+file unless I<--blockdev> is used to signal that it is a block
+device.
 
 By default, the copy job runs in the background, and consists of two
 phases.  Initially, the job must copy all data from the source, and

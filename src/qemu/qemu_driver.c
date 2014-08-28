@@ -15372,7 +15372,8 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
 
     /* Preliminaries: find the disk we are editing, sanity checks */
     virCheckFlags(VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
-                  VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT, -1);
+                  VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
+                  VIR_DOMAIN_BLOCK_REBASE_COPY_DEV, -1);
 
     priv = vm->privateData;
     cfg = virQEMUDriverGetConfig(driver);
@@ -15433,25 +15434,34 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
             virReportSystemError(errno, _("unable to stat for disk %s: %s"),
                                  disk->dst, dest);
             goto endjob;
-        } else if (flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT) {
+        } else if (flags & (VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
+                            VIR_DOMAIN_BLOCK_REBASE_COPY_DEV)) {
             virReportSystemError(errno,
                                  _("missing destination file for disk %s: %s"),
                                  disk->dst, dest);
             goto endjob;
         }
-    } else if (!S_ISBLK(st.st_mode) && st.st_size &&
-               !(flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("external destination file for disk %s already "
-                         "exists and is not a block device: %s"),
-                       disk->dst, dest);
-        goto endjob;
+    } else if (!S_ISBLK(st.st_mode)) {
+        if (st.st_size && !(flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("external destination file for disk %s already "
+                             "exists and is not a block device: %s"),
+                           disk->dst, dest);
+            goto endjob;
+        }
+        if (flags & VIR_DOMAIN_BLOCK_REBASE_COPY_DEV) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("blockdev flag requested for disk %s, but file "
+                             "'%s' is not a block device"), disk->dst, dest);
+            goto endjob;
+        }
     }
 
     if (VIR_ALLOC(mirror) < 0)
         goto endjob;
     /* XXX Allow non-file mirror destinations */
-    mirror->type = VIR_STORAGE_TYPE_FILE;
+    mirror->type = flags & VIR_DOMAIN_BLOCK_REBASE_COPY_DEV ?
+        VIR_STORAGE_TYPE_BLOCK : VIR_STORAGE_TYPE_FILE;
 
     if (format) {
         if ((mirror->format = virStorageFileFormatTypeFromString(format)) <= 0) {
@@ -15546,7 +15556,8 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
                   VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
                   VIR_DOMAIN_BLOCK_REBASE_COPY |
                   VIR_DOMAIN_BLOCK_REBASE_COPY_RAW |
-                  VIR_DOMAIN_BLOCK_REBASE_RELATIVE, -1);
+                  VIR_DOMAIN_BLOCK_REBASE_RELATIVE |
+                  VIR_DOMAIN_BLOCK_REBASE_COPY_DEV, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
@@ -15583,7 +15594,8 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     }
 
     flags &= (VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
-              VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT);
+              VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
+              VIR_DOMAIN_BLOCK_REBASE_COPY_DEV);
     ret = qemuDomainBlockCopy(vm, dom->conn, path, base, format,
                               bandwidth, flags);
     vm = NULL;

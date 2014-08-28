@@ -19885,7 +19885,10 @@ virDomainBlockPull(virDomainPtr dom, const char *disk,
  * pre-create files with relative backing file names, rather than the default
  * of absolute backing file names; as a security precaution, you should
  * generally only use reuse_ext with the shallow flag and a non-raw
- * destination file.
+ * destination file.  By default, the copy destination will be treated as
+ * type='file', but using VIR_DOMAIN_BLOCK_REBASE_COPY_DEV treats the
+ * destination as type='block' (affecting how virDomainGetBlockInfo() will
+ * report allocation after pivoting).
  *
  * A copy job has two parts; in the first phase, the @bandwidth parameter
  * affects how fast the source is pulled into the destination, and the job
@@ -19960,7 +19963,8 @@ virDomainBlockRebase(virDomainPtr dom, const char *disk,
         virCheckNonNullArgGoto(base, error);
     } else if (flags & (VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
                         VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
-                        VIR_DOMAIN_BLOCK_REBASE_COPY_RAW)) {
+                        VIR_DOMAIN_BLOCK_REBASE_COPY_RAW |
+                        VIR_DOMAIN_BLOCK_REBASE_COPY_DEV)) {
         virReportInvalidArg(flags,
                             _("use of flags in %s requires a copy job"),
                             __FUNCTION__);

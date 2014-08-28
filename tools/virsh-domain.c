@@ -1544,6 +1544,8 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
             flags |= VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
         if (vshCommandOptBool(cmd, "raw"))
             flags |= VIR_DOMAIN_BLOCK_REBASE_COPY_RAW;
+        if (vshCommandOptBool(cmd, "blockdev"))
+            flags |= VIR_DOMAIN_BLOCK_REBASE_COPY_DEV;
         if (vshCommandOptStringReq(ctl, cmd, "dest", &base) < 0)
             goto cleanup;
         if (virDomainBlockRebase(dom, path, base, bandwidth, flags) < 0)
@@ -1854,6 +1856,10 @@ static const vshCmdOptDef opts_block_copy[] = {
     {.name = "raw",
      .type = VSH_OT_BOOL,
      .help = N_("use raw destination file")
+    },
+    {.name = "blockdev",
+     .type = VSH_OT_BOOL,
+     .help = N_("copy destination is block device instead of regular file")
     },
     {.name = "wait",
      .type = VSH_OT_BOOL,

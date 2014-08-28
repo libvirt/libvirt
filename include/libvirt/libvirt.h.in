@@ -2638,6 +2638,8 @@ typedef enum {
     VIR_DOMAIN_BLOCK_REBASE_RELATIVE  = 1 << 4, /* Keep backing chain
                                                    referenced using relative
                                                    names */
+    VIR_DOMAIN_BLOCK_REBASE_COPY_DEV  = 1 << 5, /* Treat destination as block
+                                                   device instead of file */
 } virDomainBlockRebaseFlags;
 
 int           virDomainBlockRebase(virDomainPtr dom, const char *disk,
