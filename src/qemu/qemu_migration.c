@@ -3019,8 +3019,26 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
                              ? QEMU_MIGRATION_PHASE_CONFIRM3
                              : QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED);
 
-    if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen, 0)))
+    if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
+                                       QEMU_MIGRATION_COOKIE_STATS)))
         goto cleanup;
+
+    /* Update total times with the values sent by the destination daemon */
+    if (mig->jobInfo) {
+        qemuDomainObjPrivatePtr priv = vm->privateData;
+        if (priv->job.completed) {
+            qemuDomainJobInfoPtr jobInfo = priv->job.completed;
+            if (mig->jobInfo->status.downtime_set) {
+                jobInfo->status.downtime = mig->jobInfo->status.downtime;
+                jobInfo->status.downtime_set = true;
+            }
+            if (mig->jobInfo->timeElapsed)
+                jobInfo->timeElapsed = mig->jobInfo->timeElapsed;
+        } else {
+            priv->job.completed = mig->jobInfo;
+            mig->jobInfo = NULL;
+        }
+    }
 
     if (flags & VIR_MIGRATE_OFFLINE)
         goto done;
@@ -4860,7 +4878,8 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                                          VIR_DOMAIN_EVENT_STOPPED_FAILED);
     }
 
-    if (qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen, 0) < 0)
+    if (qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen,
+                                QEMU_MIGRATION_COOKIE_STATS) < 0)
         VIR_WARN("Unable to encode migration cookie");
 
  endjob:
