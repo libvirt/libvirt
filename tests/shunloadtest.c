@@ -114,6 +114,7 @@ int main(int argc ATTRIBUTE_UNUSED, char **argv)
     }
     if (!(startup = dlsym(lib, "shunloadStart"))) {
         fprintf(stderr, "Cannot find shunloadStart %s\n", dlerror());
+        dlclose(lib);
         return 1;
     }
 
