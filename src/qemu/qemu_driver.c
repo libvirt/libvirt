@@ -13023,7 +13023,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
         if (!(actions = virJSONValueNewArray()))
-            goto cleanup;
+            return -1;
     } else if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DISK_SNAPSHOT)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("live disk snapshot not supported with this "
@@ -13106,7 +13106,6 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
         }
     }
 
- cleanup:
     /* recheck backing chains of all disks involved in the snapshot */
     orig_err = virSaveLastError();
     for (i = 0; i < snap->def->ndisks; i++) {
