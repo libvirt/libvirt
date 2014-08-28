@@ -1136,7 +1136,10 @@ Abort the currently running domain job.
 Returns information about jobs running on a domain. I<--completed> tells
 virsh to return information about a recently finished job. Statistics of
 a completed job are automatically destroyed once read or when libvirtd
-is restarted.
+is restarted. Note that time information returned for completed
+migrations may be completely irrelevant unless both source and
+destination hosts have synchronized time (i.e., NTP daemon is running
+on both of them).
 
 =item B<domname> I<domain-id-or-uuid>
 

@@ -222,7 +222,35 @@ qemuDomainJobInfoUpdateTime(qemuDomainJobInfoPtr jobInfo)
     if (virTimeMillisNow(&now) < 0)
         return -1;
 
+    if (now < jobInfo->started) {
+        VIR_WARN("Async job starts in the future");
+        jobInfo->started = 0;
+        return 0;
+    }
+
     jobInfo->timeElapsed = now - jobInfo->started;
+    return 0;
+}
+
+int
+qemuDomainJobInfoUpdateDowntime(qemuDomainJobInfoPtr jobInfo)
+{
+    unsigned long long now;
+
+    if (!jobInfo->stopped)
+        return 0;
+
+    if (virTimeMillisNow(&now) < 0)
+        return -1;
+
+    if (now < jobInfo->stopped) {
+        VIR_WARN("Guest's CPUs stopped in the future");
+        jobInfo->stopped = 0;
+        return 0;
+    }
+
+    jobInfo->status.downtime = now - jobInfo->stopped;
+    jobInfo->status.downtime_set = true;
     return 0;
 }
 

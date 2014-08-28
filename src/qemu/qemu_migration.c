@@ -623,6 +623,9 @@ qemuMigrationCookieStatisticsXMLFormat(virBufferPtr buf,
     virBufferAddLit(buf, "<statistics>\n");
     virBufferAdjustIndent(buf, 2);
 
+    virBufferAsprintf(buf, "<started>%llu</started>\n", jobInfo->started);
+    virBufferAsprintf(buf, "<stopped>%llu</stopped>\n", jobInfo->stopped);
+
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_TIME_ELAPSED,
                       jobInfo->timeElapsed);
@@ -890,6 +893,9 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
 
     status = &jobInfo->status;
     jobInfo->type = VIR_DOMAIN_JOB_COMPLETED;
+
+    virXPathULongLong("string(./started[1])", ctxt, &jobInfo->started);
+    virXPathULongLong("string(./stopped[1])", ctxt, &jobInfo->stopped);
 
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_TIME_ELAPSED "[1])",
                       ctxt, &jobInfo->timeElapsed);
@@ -2015,6 +2021,7 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
     }
 
     if (jobInfo->type == VIR_DOMAIN_JOB_COMPLETED) {
+        qemuDomainJobInfoUpdateDowntime(jobInfo);
         VIR_FREE(priv->job.completed);
         if (VIR_ALLOC(priv->job.completed) == 0)
             *priv->job.completed = *jobInfo;
@@ -3597,8 +3604,10 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         VIR_FORCE_CLOSE(fd);
     }
 
-    if (priv->job.completed)
+    if (priv->job.completed) {
         qemuDomainJobInfoUpdateTime(priv->job.completed);
+        qemuDomainJobInfoUpdateDowntime(priv->job.completed);
+    }
 
     cookieFlags |= QEMU_MIGRATION_COOKIE_NETWORK |
                    QEMU_MIGRATION_COOKIE_STATS;
@@ -4810,6 +4819,10 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                                                      VIR_DOMAIN_EVENT_STOPPED_FAILED);
                 }
                 goto endjob;
+            }
+            if (priv->job.completed) {
+                qemuDomainJobInfoUpdateTime(priv->job.completed);
+                qemuDomainJobInfoUpdateDowntime(priv->job.completed);
             }
         }
 

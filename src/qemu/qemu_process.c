@@ -755,6 +755,9 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         VIR_DEBUG("Transitioned guest %s to paused state",
                   vm->def->name);
 
+        if (priv->job.current)
+            ignore_value(virTimeMillisNow(&priv->job.current->stopped));
+
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_UNKNOWN);
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
@@ -2889,7 +2892,8 @@ qemuProcessStartCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
 }
 
 
-int qemuProcessStopCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
+int qemuProcessStopCPUs(virQEMUDriverPtr driver,
+                        virDomainObjPtr vm,
                         virDomainPausedReason reason,
                         qemuDomainAsyncJob asyncJob)
 {
@@ -2906,6 +2910,9 @@ int qemuProcessStopCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
 
     if (ret < 0)
         goto cleanup;
+
+    if (priv->job.current)
+        ignore_value(virTimeMillisNow(&priv->job.current->stopped));
 
     virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
     if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)

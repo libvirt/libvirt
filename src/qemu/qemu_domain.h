@@ -105,6 +105,7 @@ typedef qemuDomainJobInfo *qemuDomainJobInfoPtr;
 struct _qemuDomainJobInfo {
     virDomainJobType type;
     unsigned long long started; /* When the async job started */
+    unsigned long long stopped; /* When the domain's CPUs were stopped */
     /* Computed values */
     unsigned long long timeElapsed;
     unsigned long long timeRemaining;
@@ -390,6 +391,8 @@ bool qemuDomainAgentAvailable(qemuDomainObjPrivatePtr priv,
                               bool reportError);
 
 int qemuDomainJobInfoUpdateTime(qemuDomainJobInfoPtr jobInfo)
+    ATTRIBUTE_NONNULL(1);
+int qemuDomainJobInfoUpdateDowntime(qemuDomainJobInfoPtr jobInfo)
     ATTRIBUTE_NONNULL(1);
 int qemuDomainJobInfoToInfo(qemuDomainJobInfoPtr jobInfo,
                             virDomainJobInfoPtr info)

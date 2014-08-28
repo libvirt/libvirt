@@ -17581,7 +17581,10 @@ virDomainGetJobInfo(virDomainPtr domain, virDomainJobInfoPtr info)
  * return statistics about a recently completed job. Specifically, this
  * flag may be used to query statistics of a completed incoming migration.
  * Statistics of a completed job are automatically destroyed once read or
- * when libvirtd is restarted.
+ * when libvirtd is restarted. Note that time information returned for
+ * completed migrations may be completely irrelevant unless both source and
+ * destination hosts have synchronized time (i.e., NTP daemon is running on
+ * both of them).
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
