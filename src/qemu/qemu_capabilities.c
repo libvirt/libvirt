@@ -433,8 +433,10 @@ virQEMUCapsParseMachineTypesStr(const char *output,
 
         if ((t = strstr(p, "(alias of ")) && (!next || t < next)) {
             p = t + strlen("(alias of ");
-            if (!(t = strchr(p, ')')) || (next && t >= next))
+            if (!(t = strchr(p, ')')) || (next && t >= next)) {
+                VIR_FREE(name);
                 continue;
+            }
 
             if (VIR_STRNDUP(canonical, p, t - p) < 0) {
                 VIR_FREE(name);
