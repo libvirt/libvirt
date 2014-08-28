@@ -2038,15 +2038,19 @@ static const vshCmdOptDef opts_block_job[] = {
     },
     {.name = "async",
      .type = VSH_OT_BOOL,
-     .help = N_("don't wait for --abort to complete")
+     .help = N_("implies --abort; request but don't wait for job end")
     },
     {.name = "pivot",
      .type = VSH_OT_BOOL,
-     .help = N_("conclude and pivot a copy job")
+     .help = N_("implies --abort; conclude and pivot a copy or commit job")
     },
     {.name = "info",
      .type = VSH_OT_BOOL,
      .help = N_("get active job information for the specified disk")
+    },
+    {.name = "raw",
+     .type = VSH_OT_BOOL,
+     .help = N_("implies --info; output details rather than human summary")
     },
     {.name = "bandwidth",
      .type = VSH_OT_DATA,
@@ -2077,10 +2081,11 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
     virDomainBlockJobInfo info;
     bool ret = false;
     int rc;
+    bool raw = vshCommandOptBool(cmd, "raw");
     bool abortMode = (vshCommandOptBool(cmd, "abort") ||
                       vshCommandOptBool(cmd, "async") ||
                       vshCommandOptBool(cmd, "pivot"));
-    bool infoMode = vshCommandOptBool(cmd, "info");
+    bool infoMode = vshCommandOptBool(cmd, "info") || raw;
     bool bandwidth = vshCommandOptBool(cmd, "bandwidth");
     virDomainPtr dom = NULL;
     const char *path;
@@ -2088,7 +2093,7 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
 
     if (abortMode + infoMode + bandwidth > 1) {
         vshError(ctl, "%s",
-                 _("conflict between --abort, --info, and --bandwidth modes"));
+                 _("conflict between abort, info, and bandwidth modes"));
         return false;
     }
 
@@ -2109,14 +2114,24 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
     if (rc < 0)
         goto cleanup;
     if (rc == 0) {
+        if (!raw)
+            vshPrint(ctl, _("No current block job for %s"), path);
         ret = true;
         goto cleanup;
     }
 
-    vshPrintJobProgress(vshDomainBlockJobToString(info.type),
-                        info.end - info.cur, info.end);
-    if (info.bandwidth != 0)
-        vshPrint(ctl, _("    Bandwidth limit: %lu MiB/s\n"), info.bandwidth);
+    if (raw) {
+        vshPrint(ctl, _(" type=%s\n bandwidth=%lu\n cur=%llu\n end=%llu\n"),
+                 vshDomainBlockJobTypeToString(info.type),
+                 info.bandwidth, info.cur, info.end);
+    } else {
+        vshPrintJobProgress(vshDomainBlockJobToString(info.type),
+                            info.end - info.cur, info.end);
+        if (info.bandwidth != 0)
+            vshPrint(ctl, _("    Bandwidth limit: %lu MiB/s"),
+                     info.bandwidth);
+        vshPrint(ctl, "\n");
+    }
     ret = true;
  cleanup:
     if (dom)
