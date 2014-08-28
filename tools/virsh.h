@@ -238,6 +238,8 @@ struct _vshControl {
                                    virDomainGetState is not supported */
     bool useSnapshotOld;        /* cannot use virDomainSnapshotGetParent or
                                    virDomainSnapshotNumChildren */
+    bool blockJobNoBytes;       /* true if _BANDWIDTH_BYTE blockjob flags
+                                   are missing */
     virThread eventLoop;
     virMutex lock;
     bool eventLoopStarted;

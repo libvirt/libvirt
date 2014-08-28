@@ -1013,7 +1013,7 @@ exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
 
 =item B<blockjob> I<domain> I<path> { [I<--abort>] [I<--async>] [I<--pivot>] |
-[I<--info>] [I<--raw>] | [I<bandwidth>] }
+[I<--info>] [I<--raw>] [I<--bytes>] | [I<bandwidth>] }
 
 Manage active block operations.  There are three mutually-exclusive modes:
 I<--info>, I<bandwidth>, and I<--abort>.  I<--async> and I<--pivot> imply
@@ -1034,7 +1034,11 @@ commit job be pivoted over to the new image.
 In I<--info> mode, the active job information on the specified
 disk will be printed.  By default, the output is a single human-readable
 summary line; this format may change in future versions.  Adding
-I<--raw> lists each field of the struct, in a stable format.
+I<--raw> lists each field of the struct, in a stable format.  If the
+I<--bytes> flag is set, then the command errors out if the server could
+not supply bytes/s resolution; when omitting the flag, raw output is
+listed in MiB/s and human-readable output automatically selects the
+best resolution supported by the server.
 
 I<bandwidth> can be used to set bandwidth limit for the active job.
 Specifying a negative value is interpreted as an unsigned long long

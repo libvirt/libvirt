@@ -397,6 +397,7 @@ vshReconnect(vshControl *ctl)
     disconnected = 0;
     ctl->useGetInfo = false;
     ctl->useSnapshotOld = false;
+    ctl->blockJobNoBytes = false;
 }
 
 
@@ -454,6 +455,7 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
 
     ctl->useGetInfo = false;
     ctl->useSnapshotOld = false;
+    ctl->blockJobNoBytes = false;
     ctl->readonly = ro;
 
     ctl->conn = vshConnect(ctl, ctl->name, ctl->readonly);

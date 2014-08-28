@@ -2048,6 +2048,10 @@ static const vshCmdOptDef opts_block_job[] = {
      .type = VSH_OT_BOOL,
      .help = N_("get active job information for the specified disk")
     },
+    {.name = "bytes",
+     .type = VSH_OT_BOOL,
+     .help = N_("with --info, get bandwidth in bytes rather than MiB/s")
+    },
     {.name = "raw",
      .type = VSH_OT_BOOL,
      .help = N_("implies --info; output details rather than human summary")
@@ -2080,8 +2084,9 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainBlockJobInfo info;
     bool ret = false;
-    int rc;
+    int rc = -1;
     bool raw = vshCommandOptBool(cmd, "raw");
+    bool bytes = vshCommandOptBool(cmd, "bytes");
     bool abortMode = (vshCommandOptBool(cmd, "abort") ||
                       vshCommandOptBool(cmd, "async") ||
                       vshCommandOptBool(cmd, "pivot"));
@@ -2090,10 +2095,16 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     const char *path;
     unsigned int flags = 0;
+    unsigned long long speed;
 
     if (abortMode + infoMode + bandwidth > 1) {
         vshError(ctl, "%s",
                  _("conflict between abort, info, and bandwidth modes"));
+        return false;
+    }
+    /* XXX also support --bytes with bandwidth mode */
+    if (bytes && (abortMode || bandwidth)) {
+        vshError(ctl, "%s", _("--bytes requires info mode"));
         return false;
     }
 
@@ -2110,9 +2121,47 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
         goto cleanup;
 
-    rc = virDomainGetBlockJobInfo(dom, path, &info, flags);
-    if (rc < 0)
-        goto cleanup;
+    /* If bytes were requested, or if raw mode is not forcing a MiB/s
+     * query and cache can't prove failure, then query bytes/sec.  */
+    if (bytes || !(raw || ctl->blockJobNoBytes)) {
+        flags |= VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES;
+        rc = virDomainGetBlockJobInfo(dom, path, &info, flags);
+        if (rc < 0) {
+            /* Check for particular errors, let all the rest be fatal. */
+            switch (last_error->code) {
+            case VIR_ERR_INVALID_ARG:
+                ctl->blockJobNoBytes = true;
+                /* fallthrough */
+            case VIR_ERR_OVERFLOW:
+                if (!bytes && !raw) {
+                    /* try again with MiB/s, unless forcing bytes */
+                    vshResetLibvirtError();
+                    break;
+                }
+                /* fallthrough */
+            default:
+                goto cleanup;
+            }
+        }
+        speed = info.bandwidth;
+    }
+    /* If we don't already have a query result, query for MiB/s */
+    if (rc < 0) {
+        flags &= ~VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES;
+        if ((rc = virDomainGetBlockJobInfo(dom, path, &info, flags)) < 0)
+            goto cleanup;
+        speed = info.bandwidth;
+        /* Scale to bytes/s unless in raw mode */
+        if (!raw) {
+            speed <<= 20;
+            if (speed >> 20 != info.bandwidth) {
+                vshError(ctl, _("overflow in converting %ld MiB/s to bytes\n"),
+                         info.bandwidth);
+                goto cleanup;
+            }
+        }
+    }
+
     if (rc == 0) {
         if (!raw)
             vshPrint(ctl, _("No current block job for %s"), path);
@@ -2127,9 +2176,12 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
     } else {
         vshPrintJobProgress(vshDomainBlockJobToString(info.type),
                             info.end - info.cur, info.end);
-        if (info.bandwidth != 0)
-            vshPrint(ctl, _("    Bandwidth limit: %lu MiB/s"),
-                     info.bandwidth);
+        if (speed) {
+            const char *unit;
+            double val = vshPrettyCapacity(speed, &unit);
+            vshPrint(ctl, _("    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"),
+                     speed, val, unit);
+        }
         vshPrint(ctl, "\n");
     }
     ret = true;
