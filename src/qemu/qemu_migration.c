@@ -80,6 +80,7 @@ enum qemuMigrationCookieFlags {
     QEMU_MIGRATION_COOKIE_FLAG_PERSISTENT,
     QEMU_MIGRATION_COOKIE_FLAG_NETWORK,
     QEMU_MIGRATION_COOKIE_FLAG_NBD,
+    QEMU_MIGRATION_COOKIE_FLAG_STATS,
 
     QEMU_MIGRATION_COOKIE_FLAG_LAST
 };
@@ -91,7 +92,8 @@ VIR_ENUM_IMPL(qemuMigrationCookieFlag,
               "lockstate",
               "persistent",
               "network",
-              "nbd");
+              "nbd",
+              "statistics");
 
 enum qemuMigrationCookieFeatures {
     QEMU_MIGRATION_COOKIE_GRAPHICS  = (1 << QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS),
@@ -99,6 +101,7 @@ enum qemuMigrationCookieFeatures {
     QEMU_MIGRATION_COOKIE_PERSISTENT = (1 << QEMU_MIGRATION_COOKIE_FLAG_PERSISTENT),
     QEMU_MIGRATION_COOKIE_NETWORK = (1 << QEMU_MIGRATION_COOKIE_FLAG_NETWORK),
     QEMU_MIGRATION_COOKIE_NBD = (1 << QEMU_MIGRATION_COOKIE_FLAG_NBD),
+    QEMU_MIGRATION_COOKIE_STATS = (1 << QEMU_MIGRATION_COOKIE_FLAG_STATS),
 };
 
 typedef struct _qemuMigrationCookieGraphics qemuMigrationCookieGraphics;
@@ -169,6 +172,9 @@ struct _qemuMigrationCookie {
 
     /* If (flags & QEMU_MIGRATION_COOKIE_NBD) */
     qemuMigrationCookieNBDPtr nbd;
+
+    /* If (flags & QEMU_MIGRATION_COOKIE_STATS) */
+    qemuDomainJobInfoPtr jobInfo;
 };
 
 static void qemuMigrationCookieGraphicsFree(qemuMigrationCookieGraphicsPtr grap)
@@ -533,6 +539,25 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
 }
 
 
+static int
+qemuMigrationCookieAddStatistics(qemuMigrationCookiePtr mig,
+                                 virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (!priv->job.completed)
+        return 0;
+
+    if (!mig->jobInfo && VIR_ALLOC(mig->jobInfo) < 0)
+        return -1;
+
+    *mig->jobInfo = *priv->job.completed;
+    mig->flags |= QEMU_MIGRATION_COOKIE_STATS;
+
+    return 0;
+}
+
+
 static void qemuMigrationCookieGraphicsXMLFormat(virBufferPtr buf,
                                                  qemuMigrationCookieGraphicsPtr grap)
 {
@@ -586,6 +611,81 @@ qemuMigrationCookieNetworkXMLFormat(virBufferPtr buf,
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</network>\n");
     }
+}
+
+
+static void
+qemuMigrationCookieStatisticsXMLFormat(virBufferPtr buf,
+                                       qemuDomainJobInfoPtr jobInfo)
+{
+    qemuMonitorMigrationStatus *status = &jobInfo->status;
+
+    virBufferAddLit(buf, "<statistics>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                      VIR_DOMAIN_JOB_TIME_ELAPSED,
+                      jobInfo->timeElapsed);
+    virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                      VIR_DOMAIN_JOB_TIME_REMAINING,
+                      jobInfo->timeRemaining);
+    if (status->downtime_set)
+        virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                          VIR_DOMAIN_JOB_DOWNTIME,
+                          status->downtime);
+
+    virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                      VIR_DOMAIN_JOB_MEMORY_TOTAL,
+                      status->ram_total);
+    virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                      VIR_DOMAIN_JOB_MEMORY_PROCESSED,
+                      status->ram_transferred);
+    virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                      VIR_DOMAIN_JOB_MEMORY_REMAINING,
+                      status->ram_remaining);
+
+    if (status->ram_duplicate_set) {
+        virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                          VIR_DOMAIN_JOB_MEMORY_CONSTANT,
+                          status->ram_duplicate);
+        virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                          VIR_DOMAIN_JOB_MEMORY_NORMAL,
+                          status->ram_normal);
+        virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                          VIR_DOMAIN_JOB_MEMORY_NORMAL_BYTES,
+                          status->ram_normal_bytes);
+    }
+
+    virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                      VIR_DOMAIN_JOB_DISK_TOTAL,
+                      status->disk_total);
+    virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                      VIR_DOMAIN_JOB_DISK_PROCESSED,
+                      status->disk_transferred);
+    virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                      VIR_DOMAIN_JOB_DISK_REMAINING,
+                      status->disk_remaining);
+
+    if (status->xbzrle_set) {
+        virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                          VIR_DOMAIN_JOB_COMPRESSION_CACHE,
+                          status->xbzrle_cache_size);
+        virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                          VIR_DOMAIN_JOB_COMPRESSION_BYTES,
+                          status->xbzrle_bytes);
+        virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                          VIR_DOMAIN_JOB_COMPRESSION_PAGES,
+                          status->xbzrle_pages);
+        virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                          VIR_DOMAIN_JOB_COMPRESSION_CACHE_MISSES,
+                          status->xbzrle_cache_miss);
+        virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                          VIR_DOMAIN_JOB_COMPRESSION_OVERFLOW,
+                          status->xbzrle_overflow);
+    }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</statistics>\n");
 }
 
 
@@ -649,6 +749,9 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
             virBufferAsprintf(buf, " port='%d'", mig->nbd->port);
         virBufferAddLit(buf, "/>\n");
     }
+
+    if (mig->flags & QEMU_MIGRATION_COOKIE_STATS && mig->jobInfo)
+        qemuMigrationCookieStatisticsXMLFormat(buf, mig->jobInfo);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</qemu-migration>\n");
@@ -769,6 +872,70 @@ qemuMigrationCookieNetworkXMLParse(xmlXPathContextPtr ctxt)
     qemuMigrationCookieNetworkFree(optr);
     optr = NULL;
     goto cleanup;
+}
+
+
+static qemuDomainJobInfoPtr
+qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
+{
+    qemuDomainJobInfoPtr jobInfo = NULL;
+    qemuMonitorMigrationStatus *status;
+    xmlNodePtr save_ctxt = ctxt->node;
+
+    if (!(ctxt->node = virXPathNode("./statistics", ctxt)))
+        goto cleanup;
+
+    if (VIR_ALLOC(jobInfo) < 0)
+        goto cleanup;
+
+    status = &jobInfo->status;
+    jobInfo->type = VIR_DOMAIN_JOB_COMPLETED;
+
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_TIME_ELAPSED "[1])",
+                      ctxt, &jobInfo->timeElapsed);
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_TIME_REMAINING "[1])",
+                      ctxt, &jobInfo->timeRemaining);
+    if (virXPathULongLong("string(./" VIR_DOMAIN_JOB_DOWNTIME "[1])",
+                          ctxt, &status->downtime) == 0)
+        status->downtime_set = true;
+
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_TOTAL "[1])",
+                      ctxt, &status->ram_total);
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_PROCESSED "[1])",
+                      ctxt, &status->ram_transferred);
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_REMAINING "[1])",
+                      ctxt, &status->ram_remaining);
+
+    if (virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_CONSTANT "[1])",
+                          ctxt, &status->ram_duplicate) == 0)
+        status->ram_duplicate_set = true;
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_NORMAL "[1])",
+                      ctxt, &status->ram_normal);
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_NORMAL_BYTES "[1])",
+                      ctxt, &status->ram_normal_bytes);
+
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_DISK_TOTAL "[1])",
+                      ctxt, &status->disk_total);
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_DISK_PROCESSED "[1])",
+                      ctxt, &status->disk_transferred);
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_DISK_REMAINING "[1])",
+                      ctxt, &status->disk_remaining);
+
+    if (virXPathULongLong("string(./" VIR_DOMAIN_JOB_COMPRESSION_CACHE "[1])",
+                          ctxt, &status->xbzrle_cache_size) == 0)
+        status->xbzrle_set = true;
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_COMPRESSION_BYTES "[1])",
+                      ctxt, &status->xbzrle_bytes);
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_COMPRESSION_PAGES "[1])",
+                      ctxt, &status->xbzrle_pages);
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_COMPRESSION_CACHE_MISSES "[1])",
+                      ctxt, &status->xbzrle_cache_miss);
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_COMPRESSION_OVERFLOW "[1])",
+                      ctxt, &status->xbzrle_overflow);
+
+ cleanup:
+    ctxt->node = save_ctxt;
+    return jobInfo;
 }
 
 
@@ -947,6 +1114,11 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
         VIR_FREE(port);
     }
 
+    if (flags & QEMU_MIGRATION_COOKIE_STATS &&
+        virXPathBoolean("boolean(./statistics)", ctxt) &&
+        (!(mig->jobInfo = qemuMigrationCookieStatisticsXMLParse(ctxt))))
+        goto error;
+
     virObjectUnref(caps);
     return 0;
 
@@ -1015,6 +1187,10 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
 
     if ((flags & QEMU_MIGRATION_COOKIE_NBD) &&
         qemuMigrationCookieAddNBD(mig, driver, dom) < 0)
+        return -1;
+
+    if (flags & QEMU_MIGRATION_COOKIE_STATS &&
+        qemuMigrationCookieAddStatistics(mig, dom) < 0)
         return -1;
 
     if (!(*cookieout = qemuMigrationCookieXMLFormatStr(driver, mig)))
@@ -3424,7 +3600,8 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     if (priv->job.completed)
         qemuDomainJobInfoUpdateTime(priv->job.completed);
 
-    cookieFlags |= QEMU_MIGRATION_COOKIE_NETWORK;
+    cookieFlags |= QEMU_MIGRATION_COOKIE_NETWORK |
+                   QEMU_MIGRATION_COOKIE_STATS;
     if (flags & VIR_MIGRATE_PERSIST_DEST)
         cookieFlags |= QEMU_MIGRATION_COOKIE_PERSISTENT;
     if (ret == 0 &&
@@ -4508,8 +4685,10 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                                        : QEMU_MIGRATION_PHASE_FINISH2);
 
     qemuDomainCleanupRemove(vm, qemuMigrationPrepareCleanup);
+    VIR_FREE(priv->job.completed);
 
-    cookie_flags = QEMU_MIGRATION_COOKIE_NETWORK;
+    cookie_flags = QEMU_MIGRATION_COOKIE_NETWORK |
+                   QEMU_MIGRATION_COOKIE_STATS;
     if (flags & VIR_MIGRATE_PERSIST_DEST)
         cookie_flags |= QEMU_MIGRATION_COOKIE_PERSISTENT;
 
@@ -4525,6 +4704,11 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("guest unexpectedly quit"));
             goto endjob;
+        }
+
+        if (mig->jobInfo) {
+            priv->job.completed = mig->jobInfo;
+            mig->jobInfo = NULL;
         }
 
         if (!(flags & VIR_MIGRATE_OFFLINE)) {
