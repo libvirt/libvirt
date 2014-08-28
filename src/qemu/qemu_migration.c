@@ -1839,6 +1839,9 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
     }
 
     if (jobInfo->type == VIR_DOMAIN_JOB_COMPLETED) {
+        VIR_FREE(priv->job.completed);
+        if (VIR_ALLOC(priv->job.completed) == 0)
+            *priv->job.completed = *jobInfo;
         return 0;
     } else if (jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED) {
         /* The migration was aborted by us rather than QEMU itself so let's
@@ -3417,6 +3420,9 @@ qemuMigrationRun(virQEMUDriverPtr driver,
             ret = -1;
         VIR_FORCE_CLOSE(fd);
     }
+
+    if (priv->job.completed)
+        qemuDomainJobInfoUpdateTime(priv->job.completed);
 
     cookieFlags |= QEMU_MIGRATION_COOKIE_NETWORK;
     if (flags & VIR_MIGRATE_PERSIST_DEST)

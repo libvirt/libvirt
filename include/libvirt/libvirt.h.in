@@ -4320,6 +4320,17 @@ struct _virDomainJobInfo {
     unsigned long long fileRemaining;
 };
 
+/**
+ * virDomainGetJobStatsFlags:
+ *
+ * Flags OR'ed together to provide specific behavior when querying domain
+ * job statistics.
+ */
+typedef enum {
+    VIR_DOMAIN_JOB_STATS_COMPLETED = 1 << 0, /* return stats of a recently
+                                              * completed job */
+} virDomainGetJobStatsFlags;
+
 int virDomainGetJobInfo(virDomainPtr dom,
                         virDomainJobInfoPtr info);
 int virDomainGetJobStats(virDomainPtr domain,

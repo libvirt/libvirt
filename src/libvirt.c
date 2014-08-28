@@ -17567,7 +17567,7 @@ virDomainGetJobInfo(virDomainPtr domain, virDomainJobInfoPtr info)
  * @type: where to store the job type (one of virDomainJobType)
  * @params: where to store job statistics
  * @nparams: number of items in @params
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virDomainGetJobStatsFlags
  *
  * Extract information about progress of a background job on a domain.
  * Will return an error if the domain is not active. The function returns
@@ -17576,6 +17576,12 @@ virDomainGetJobInfo(virDomainPtr domain, virDomainJobInfoPtr info)
  * macros and new fields will likely be introduced in the future so callers
  * may receive fields that they do not understand in case they talk to a
  * newer server.
+ *
+ * When @flags contains VIR_DOMAIN_JOB_STATS_COMPLETED, the function will
+ * return statistics about a recently completed job. Specifically, this
+ * flag may be used to query statistics of a completed incoming migration.
+ * Statistics of a completed job are automatically destroyed once read or
+ * when libvirtd is restarted.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */

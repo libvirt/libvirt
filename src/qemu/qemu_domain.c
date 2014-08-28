@@ -199,6 +199,7 @@ static void
 qemuDomainObjFreeJob(qemuDomainObjPrivatePtr priv)
 {
     VIR_FREE(priv->job.current);
+    VIR_FREE(priv->job.completed);
     virCondDestroy(&priv->job.cond);
     virCondDestroy(&priv->job.asyncCond);
 }
