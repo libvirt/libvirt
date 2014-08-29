@@ -15467,6 +15467,8 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
                       unsigned long bandwidth, unsigned int flags)
 {
     virDomainObjPtr vm;
+    const char *format = NULL;
+    int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
                   VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
@@ -15477,22 +15479,37 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
 
-    if (virDomainBlockRebaseEnsureACL(dom->conn, vm->def) < 0) {
+    if (virDomainBlockRebaseEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    /* For normal rebase (enhanced blockpull), the common code handles
+     * everything, including vm cleanup. */
+    if (!(flags & VIR_DOMAIN_BLOCK_REBASE_COPY))
+        return qemuDomainBlockJobImpl(vm, dom->conn, path, base, bandwidth,
+                                      NULL, BLOCK_JOB_PULL, flags);
+
+    /* If we got here, we are doing a block copy rebase. */
+    if (flags & VIR_DOMAIN_BLOCK_REBASE_COPY_RAW)
+        format = "raw";
+
+    /* XXX: If we are doing a shallow copy but not reusing an external
+     * file, we should attempt to pre-create the destination with a
+     * relative backing chain instead of qemu's default of absolute */
+    if (flags & VIR_DOMAIN_BLOCK_REBASE_RELATIVE) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Relative backing during copy not supported yet"));
+        goto cleanup;
+    }
+
+    flags &= (VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
+              VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT);
+    ret = qemuDomainBlockCopy(vm, dom->conn, path, base, format,
+                              bandwidth, flags);
+    vm = NULL;
+ cleanup:
+    if (vm)
         virObjectUnlock(vm);
-        return -1;
-    }
-
-    if (flags & VIR_DOMAIN_BLOCK_REBASE_COPY) {
-        const char *format = NULL;
-        if (flags & VIR_DOMAIN_BLOCK_REBASE_COPY_RAW)
-            format = "raw";
-        flags &= ~(VIR_DOMAIN_BLOCK_REBASE_COPY |
-                   VIR_DOMAIN_BLOCK_REBASE_COPY_RAW);
-        return qemuDomainBlockCopy(vm, dom->conn, path, base, format, bandwidth, flags);
-    }
-
-    return qemuDomainBlockJobImpl(vm, dom->conn, path, base, bandwidth, NULL,
-                                  BLOCK_JOB_PULL, flags);
+    return ret;
 }
 
 static int
