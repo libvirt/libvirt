@@ -1464,7 +1464,6 @@ typedef enum {
     VSH_CMD_BLOCK_JOB_ABORT,
     VSH_CMD_BLOCK_JOB_SPEED,
     VSH_CMD_BLOCK_JOB_PULL,
-    VSH_CMD_BLOCK_JOB_COPY,
     VSH_CMD_BLOCK_JOB_COMMIT,
 } vshCmdBlockJobMode;
 
@@ -1534,21 +1533,6 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
         if (vshCommandOptBool(cmd, "keep-relative"))
             flags |= VIR_DOMAIN_BLOCK_COMMIT_RELATIVE;
         if (virDomainBlockCommit(dom, path, base, top, bandwidth, flags) < 0)
-            goto cleanup;
-        break;
-    case VSH_CMD_BLOCK_JOB_COPY:
-        flags |= VIR_DOMAIN_BLOCK_REBASE_COPY;
-        if (vshCommandOptBool(cmd, "shallow"))
-            flags |= VIR_DOMAIN_BLOCK_REBASE_SHALLOW;
-        if (vshCommandOptBool(cmd, "reuse-external"))
-            flags |= VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
-        if (vshCommandOptBool(cmd, "raw"))
-            flags |= VIR_DOMAIN_BLOCK_REBASE_COPY_RAW;
-        if (vshCommandOptBool(cmd, "blockdev"))
-            flags |= VIR_DOMAIN_BLOCK_REBASE_COPY_DEV;
-        if (vshCommandOptStringReq(ctl, cmd, "dest", &base) < 0)
-            goto cleanup;
-        if (virDomainBlockRebase(dom, path, base, bandwidth, flags) < 0)
             goto cleanup;
         break;
     }
@@ -1892,6 +1876,9 @@ static bool
 cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
+    const char *dest;
+    unsigned long bandwidth = 0;
+    unsigned int flags = VIR_DOMAIN_BLOCK_REBASE_COPY;
     bool ret = false;
     bool blocking = vshCommandOptBool(cmd, "wait");
     bool verbose = vshCommandOptBool(cmd, "verbose");
@@ -1907,6 +1894,9 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
     bool quit = false;
     int abort_flags = 0;
 
+    if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
+        return false;
+
     blocking |= vshCommandOptBool(cmd, "timeout") || pivot || finish;
     if (blocking) {
         if (pivot && finish) {
@@ -1914,8 +1904,6 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
             return false;
         }
         if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
-            return false;
-        if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
             return false;
         if (vshCommandOptBool(cmd, "async"))
             abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
@@ -1935,7 +1923,26 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (!blockJobImpl(ctl, cmd, VSH_CMD_BLOCK_JOB_COPY, &dom))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        goto cleanup;
+
+    if (vshCommandOptULWrap(cmd, "bandwidth", &bandwidth) < 0) {
+        vshError(ctl, "%s", _("bandwidth must be a number"));
+        goto cleanup;
+    }
+
+    if (vshCommandOptBool(cmd, "shallow"))
+        flags |= VIR_DOMAIN_BLOCK_REBASE_SHALLOW;
+    if (vshCommandOptBool(cmd, "reuse-external"))
+        flags |= VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
+    if (vshCommandOptBool(cmd, "raw"))
+        flags |= VIR_DOMAIN_BLOCK_REBASE_COPY_RAW;
+    if (vshCommandOptBool(cmd, "blockdev"))
+        flags |= VIR_DOMAIN_BLOCK_REBASE_COPY_DEV;
+    if (vshCommandOptStringReq(ctl, cmd, "dest", &dest) < 0)
+        goto cleanup;
+
+    if (virDomainBlockRebase(dom, path, dest, bandwidth, flags) < 0)
         goto cleanup;
 
     if (!blocking) {
