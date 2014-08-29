@@ -649,7 +649,7 @@ int qemuMonitorDriveMirror(qemuMonitorPtr mon,
                            const char *device,
                            const char *file,
                            const char *format,
-                           unsigned long bandwidth,
+                           unsigned long long bandwidth,
                            unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 int qemuMonitorDrivePivot(qemuMonitorPtr mon,
@@ -663,7 +663,7 @@ int qemuMonitorBlockCommit(qemuMonitorPtr mon,
                            const char *top,
                            const char *base,
                            const char *backingName,
-                           unsigned long bandwidth)
+                           unsigned long long bandwidth)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4);
 bool qemuMonitorSupportsActiveCommit(qemuMonitorPtr mon);
@@ -693,7 +693,7 @@ int qemuMonitorBlockJob(qemuMonitorPtr mon,
                         const char *device,
                         const char *base,
                         const char *backingName,
-                        unsigned long bandwidth,
+                        unsigned long long bandwidth,
                         qemuMonitorBlockJobCmd mode,
                         bool modern)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);

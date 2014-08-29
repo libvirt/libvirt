@@ -3178,33 +3178,21 @@ qemuMonitorDiskSnapshot(qemuMonitorPtr mon, virJSONValuePtr actions,
     return ret;
 }
 
-/* Start a drive-mirror block job.  bandwidth is in MiB/sec.  */
+/* Start a drive-mirror block job.  bandwidth is in bytes/sec.  */
 int
 qemuMonitorDriveMirror(qemuMonitorPtr mon,
                        const char *device, const char *file,
-                       const char *format, unsigned long bandwidth,
+                       const char *format, unsigned long long bandwidth,
                        unsigned int flags)
 {
     int ret = -1;
-    unsigned long long speed;
 
-    VIR_DEBUG("mon=%p, device=%s, file=%s, format=%s, bandwidth=%ld, "
+    VIR_DEBUG("mon=%p, device=%s, file=%s, format=%s, bandwidth=%lld, "
               "flags=%x",
               mon, device, file, NULLSTR(format), bandwidth, flags);
 
-    /* Convert bandwidth MiB to bytes - unfortunately the JSON QMP protocol is
-     * limited to LLONG_MAX also for unsigned values */
-    speed = bandwidth;
-    if (speed > LLONG_MAX >> 20) {
-        virReportError(VIR_ERR_OVERFLOW,
-                       _("bandwidth must be less than %llu"),
-                       LLONG_MAX >> 20);
-        return -1;
-    }
-    speed <<= 20;
-
     if (mon->json)
-        ret = qemuMonitorJSONDriveMirror(mon, device, file, format, speed,
+        ret = qemuMonitorJSONDriveMirror(mon, device, file, format, bandwidth,
                                          flags);
     else
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -3228,33 +3216,22 @@ qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
     return ret;
 }
 
-/* Start a block-commit block job.  bandwidth is in MiB/sec.  */
+/* Start a block-commit block job.  bandwidth is in bytes/sec.  */
 int
 qemuMonitorBlockCommit(qemuMonitorPtr mon, const char *device,
                        const char *top, const char *base,
                        const char *backingName,
-                       unsigned long bandwidth)
+                       unsigned long long bandwidth)
 {
     int ret = -1;
-    unsigned long long speed;
 
-    VIR_DEBUG("mon=%p, device=%s, top=%s, base=%s, backingName=%s, bandwidth=%lu",
+    VIR_DEBUG("mon=%p, device=%s, top=%s, base=%s, backingName=%s, "
+              "bandwidth=%llu",
               mon, device, top, base, NULLSTR(backingName), bandwidth);
-
-    /* Convert bandwidth MiB to bytes - unfortunately the JSON QMP protocol is
-     * limited to LLONG_MAX also for unsigned values */
-    speed = bandwidth;
-    if (speed > LLONG_MAX >> 20) {
-        virReportError(VIR_ERR_OVERFLOW,
-                       _("bandwidth must be less than %llu"),
-                       LLONG_MAX >> 20);
-        return -1;
-    }
-    speed <<= 20;
 
     if (mon->json)
         ret = qemuMonitorJSONBlockCommit(mon, device, top, base,
-                                         backingName, speed);
+                                         backingName, bandwidth);
     else
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("block-commit requires JSON monitor"));
@@ -3359,38 +3336,26 @@ int qemuMonitorScreendump(qemuMonitorPtr mon,
     return ret;
 }
 
-/* bandwidth is in MiB/sec */
+/* bandwidth is in bytes/sec */
 int
 qemuMonitorBlockJob(qemuMonitorPtr mon,
                     const char *device,
                     const char *base,
                     const char *backingName,
-                    unsigned long bandwidth,
+                    unsigned long long bandwidth,
                     qemuMonitorBlockJobCmd mode,
                     bool modern)
 {
     int ret = -1;
-    unsigned long long speed;
 
-    VIR_DEBUG("mon=%p, device=%s, base=%s, backingName=%s, bandwidth=%luM, "
+    VIR_DEBUG("mon=%p, device=%s, base=%s, backingName=%s, bandwidth=%lluB, "
               "mode=%o, modern=%d",
               mon, device, NULLSTR(base), NULLSTR(backingName),
               bandwidth, mode, modern);
 
-    /* Convert bandwidth MiB to bytes - unfortunately the JSON QMP protocol is
-     * limited to LLONG_MAX also for unsigned values */
-    speed = bandwidth;
-    if (speed > LLONG_MAX >> 20) {
-        virReportError(VIR_ERR_OVERFLOW,
-                       _("bandwidth must be less than %llu"),
-                       LLONG_MAX >> 20);
-        return -1;
-    }
-    speed <<= 20;
-
     if (mon->json)
         ret = qemuMonitorJSONBlockJob(mon, device, base, backingName,
-                                      speed, mode, modern);
+                                      bandwidth, mode, modern);
     else
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("block jobs require JSON monitor"));

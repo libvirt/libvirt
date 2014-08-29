@@ -14989,6 +14989,8 @@ qemuDomainBlockPivot(virConnectPtr conn,
     return ret;
 }
 
+
+/* bandwidth in MiB/s per public API */
 static int
 qemuDomainBlockJobImpl(virDomainObjPtr vm,
                        virConnectPtr conn,
@@ -15011,6 +15013,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     char *backingPath = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     bool save = false;
+    unsigned long long speed = bandwidth;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -15122,9 +15125,18 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
         }
     }
 
+    /* Convert bandwidth MiB to bytes */
+    if (speed > LLONG_MAX >> 20) {
+        virReportError(VIR_ERR_OVERFLOW,
+                       _("bandwidth must be less than %llu"),
+                       LLONG_MAX >> 20);
+        goto endjob;
+    }
+    speed <<= 20;
+
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorBlockJob(priv->mon, device, basePath, backingPath,
-                              bandwidth, mode, async);
+                              speed, mode, async);
     qemuDomainObjExitMonitor(driver, vm);
     if (ret < 0) {
         if (mode == BLOCK_JOB_ABORT && disk->mirror)
@@ -15326,12 +15338,14 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom, const char *path,
                                   BLOCK_JOB_SPEED, flags);
 }
 
+
+/* bandwidth in bytes/s */
 static int
 qemuDomainBlockCopy(virDomainObjPtr vm,
                     virConnectPtr conn,
                     const char *path,
                     const char *dest, const char *format,
-                    unsigned long bandwidth, unsigned int flags)
+                    unsigned long long bandwidth, unsigned int flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
     qemuDomainObjPrivatePtr priv;
@@ -15514,6 +15528,7 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     virDomainObjPtr vm;
     const char *format = NULL;
     int ret = -1;
+    unsigned long long speed = bandwidth;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
                   VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
@@ -15536,6 +15551,15 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     /* If we got here, we are doing a block copy rebase. */
     if (flags & VIR_DOMAIN_BLOCK_REBASE_COPY_RAW)
         format = "raw";
+
+    /* Convert bandwidth MiB to bytes */
+    if (speed > LLONG_MAX >> 20) {
+        virReportError(VIR_ERR_OVERFLOW,
+                       _("bandwidth must be less than %llu"),
+                       LLONG_MAX >> 20);
+        goto cleanup;
+    }
+    speed <<= 20;
 
     /* XXX: If we are doing a shallow copy but not reusing an external
      * file, we should attempt to pre-create the destination with a
@@ -15602,6 +15626,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     char *basePath = NULL;
     char *backingPath = NULL;
     virStorageSourcePtr mirror = NULL;
+    unsigned long long speed = bandwidth;
 
     /* XXX Add support for COMMIT_DELETE */
     virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW |
@@ -15631,6 +15656,15 @@ qemuDomainBlockCommit(virDomainPtr dom,
                        _("online commit not supported with this QEMU binary"));
         goto endjob;
     }
+
+    /* Convert bandwidth MiB to bytes */
+    if (speed > LLONG_MAX >> 20) {
+        virReportError(VIR_ERR_OVERFLOW,
+                       _("bandwidth must be less than %llu"),
+                       LLONG_MAX >> 20);
+        goto endjob;
+    }
+    speed <<= 20;
 
     device = qemuDiskPathToAlias(vm, path, &idx);
     if (!device)
@@ -15766,7 +15800,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorBlockCommit(priv->mon, device,
                                  topPath, basePath, backingPath,
-                                 bandwidth);
+                                 speed);
     qemuDomainObjExitMonitor(driver, vm);
 
     if (mirror) {
