@@ -14934,7 +14934,8 @@ qemuDomainBlockPivot(virConnectPtr conn,
 }
 
 
-/* bandwidth in MiB/s per public API */
+/* bandwidth in MiB/s per public API. Caller must lock vm beforehand,
+ * and not access it afterwards.  */
 static int
 qemuDomainBlockJobImpl(virDomainObjPtr vm,
                        virConnectPtr conn,
@@ -15295,13 +15296,16 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom, const char *path,
 }
 
 
-/* bandwidth in bytes/s */
+/* bandwidth in bytes/s.  Caller must lock vm beforehand, and not
+ * access it afterwards; likewise, caller must not access mirror
+ * afterwards.  */
 static int
-qemuDomainBlockCopy(virDomainObjPtr vm,
-                    virConnectPtr conn,
-                    const char *path,
-                    const char *dest, const char *format,
-                    unsigned long long bandwidth, unsigned int flags)
+qemuDomainBlockCopyCommon(virDomainObjPtr vm,
+                          virConnectPtr conn,
+                          const char *path,
+                          virStorageSourcePtr mirror,
+                          unsigned long long bandwidth,
+                          unsigned int flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
     qemuDomainObjPrivatePtr priv;
@@ -15311,13 +15315,13 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     int idx;
     struct stat st;
     bool need_unlink = false;
-    virStorageSourcePtr mirror = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
+    const char *format = NULL;
+    int desttype = virStorageSourceGetActualType(mirror);
 
     /* Preliminaries: find the disk we are editing, sanity checks */
-    virCheckFlags(VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
-                  VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
-                  VIR_DOMAIN_BLOCK_REBASE_COPY_DEV, -1);
+    virCheckFlags(VIR_DOMAIN_BLOCK_COPY_SHALLOW |
+                  VIR_DOMAIN_BLOCK_COPY_REUSE_EXT, -1);
 
     priv = vm->privateData;
     cfg = virQEMUDriverGetConfig(driver);
@@ -15362,8 +15366,8 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0)
         goto endjob;
 
-    if ((flags & VIR_DOMAIN_BLOCK_REBASE_SHALLOW) &&
-        STREQ_NULLABLE(format, "raw") &&
+    if ((flags & VIR_DOMAIN_BLOCK_COPY_SHALLOW) &&
+        mirror->format == VIR_STORAGE_FILE_RAW &&
         disk->src->backingStore->path) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("disk '%s' has backing file, so raw shallow copy "
@@ -15373,72 +15377,65 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     }
 
     /* Prepare the destination file.  */
-    if (stat(dest, &st) < 0) {
+    /* XXX Allow non-file mirror destinations */
+    if (!virStorageSourceIsLocalStorage(mirror)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("non-file destination not supported yet"));
+    }
+    if (stat(mirror->path, &st) < 0) {
         if (errno != ENOENT) {
             virReportSystemError(errno, _("unable to stat for disk %s: %s"),
-                                 disk->dst, dest);
+                                 disk->dst, mirror->path);
             goto endjob;
-        } else if (flags & (VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
-                            VIR_DOMAIN_BLOCK_REBASE_COPY_DEV)) {
+        } else if (flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT ||
+                   desttype == VIR_STORAGE_TYPE_BLOCK) {
             virReportSystemError(errno,
                                  _("missing destination file for disk %s: %s"),
-                                 disk->dst, dest);
+                                 disk->dst, mirror->path);
             goto endjob;
         }
     } else if (!S_ISBLK(st.st_mode)) {
-        if (st.st_size && !(flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)) {
+        if (st.st_size && !(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("external destination file for disk %s already "
                              "exists and is not a block device: %s"),
-                           disk->dst, dest);
+                           disk->dst, mirror->path);
             goto endjob;
         }
-        if (flags & VIR_DOMAIN_BLOCK_REBASE_COPY_DEV) {
+        if (desttype == VIR_STORAGE_TYPE_BLOCK) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("blockdev flag requested for disk %s, but file "
-                             "'%s' is not a block device"), disk->dst, dest);
+                             "'%s' is not a block device"),
+                           disk->dst, mirror->path);
             goto endjob;
         }
     }
 
-    if (VIR_ALLOC(mirror) < 0)
-        goto endjob;
-    /* XXX Allow non-file mirror destinations */
-    mirror->type = flags & VIR_DOMAIN_BLOCK_REBASE_COPY_DEV ?
-        VIR_STORAGE_TYPE_BLOCK : VIR_STORAGE_TYPE_FILE;
-
-    if (format) {
-        if ((mirror->format = virStorageFileFormatTypeFromString(format)) <= 0) {
-            virReportError(VIR_ERR_INVALID_ARG, _("unrecognized format '%s'"),
-                           format);
-            goto endjob;
-        }
-    } else {
-        if (!(flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)) {
+    if (!mirror->format) {
+        if (!(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT)) {
             mirror->format = disk->src->format;
         } else {
             /* If the user passed the REUSE_EXT flag, then either they
-             * also passed the RAW flag (and format is non-NULL), or it is
-             * safe for us to probe the format from the file that we will
-             * be using.  */
-            mirror->format = virStorageFileProbeFormat(dest, cfg->user,
+             * can also pass the RAW flag or use XML to tell us the format.
+             * So if we get here, we assume it is safe for us to probe the
+             * format from the file that we will be using.  */
+            mirror->format = virStorageFileProbeFormat(mirror->path, cfg->user,
                                                        cfg->group);
         }
     }
 
     /* pre-create the image file */
-    if (!(flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)) {
-        int fd = qemuOpenFile(driver, vm, dest, O_WRONLY | O_TRUNC | O_CREAT,
+    if (!(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT)) {
+        int fd = qemuOpenFile(driver, vm, mirror->path,
+                              O_WRONLY | O_TRUNC | O_CREAT,
                               &need_unlink, NULL);
         if (fd < 0)
             goto endjob;
         VIR_FORCE_CLOSE(fd);
     }
 
-    if (!format && mirror->format > 0)
+    if (mirror->format > 0)
         format = virStorageFileFormatTypeToString(mirror->format);
-    if (VIR_STRDUP(mirror->path, dest) < 0)
-        goto endjob;
 
     if (virStorageSourceInitChainElement(mirror, disk->src, false) < 0)
         goto endjob;
@@ -15452,8 +15449,8 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
 
     /* Actually start the mirroring */
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorDriveMirror(priv->mon, device, dest, format, bandwidth,
-                                 flags);
+    ret = qemuMonitorDriveMirror(priv->mon, device, mirror->path, format,
+                                 bandwidth, flags);
     virDomainAuditDisk(vm, NULL, mirror, "mirror", ret >= 0);
     qemuDomainObjExitMonitor(driver, vm);
     if (ret < 0) {
@@ -15473,8 +15470,8 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
                  vm->def->name);
 
  endjob:
-    if (need_unlink && unlink(dest))
-        VIR_WARN("unable to unlink just-created %s", dest);
+    if (need_unlink && unlink(mirror->path))
+        VIR_WARN("unable to unlink just-created %s", mirror->path);
     virStorageSourceFree(mirror);
     if (!qemuDomainObjEndJob(driver, vm))
         vm = NULL;
@@ -15492,9 +15489,9 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
                       unsigned long bandwidth, unsigned int flags)
 {
     virDomainObjPtr vm;
-    const char *format = NULL;
     int ret = -1;
     unsigned long long speed = bandwidth;
+    virStorageSourcePtr dest = NULL;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
                   VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
@@ -15516,8 +15513,14 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
                                       BLOCK_JOB_PULL, flags);
 
     /* If we got here, we are doing a block copy rebase. */
+    if (VIR_ALLOC(dest) < 0)
+        goto cleanup;
+    dest->type = (flags & VIR_DOMAIN_BLOCK_REBASE_COPY_DEV) ?
+        VIR_STORAGE_TYPE_BLOCK : VIR_STORAGE_TYPE_FILE;
+    if (VIR_STRDUP(dest->path, base) < 0)
+        goto cleanup;
     if (flags & VIR_DOMAIN_BLOCK_REBASE_COPY_RAW)
-        format = "raw";
+        dest->format = VIR_STORAGE_FILE_RAW;
 
     /* Convert bandwidth MiB to bytes */
     if (speed > LLONG_MAX >> 20) {
@@ -15537,15 +15540,20 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
         goto cleanup;
     }
 
+    /* We rely on the fact that VIR_DOMAIN_BLOCK_REBASE_SHALLOW
+     * and VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT map to the same values
+     * as for block copy. */
     flags &= (VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
-              VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
-              VIR_DOMAIN_BLOCK_REBASE_COPY_DEV);
-    ret = qemuDomainBlockCopy(vm, dom->conn, path, base, format,
-                              bandwidth, flags);
+              VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT);
+    ret = qemuDomainBlockCopyCommon(vm, dom->conn, path, dest,
+                                    bandwidth, flags);
     vm = NULL;
+    dest = NULL;
+
  cleanup:
     if (vm)
         virObjectUnlock(vm);
+    virStorageSourceFree(dest);
     return ret;
 }
 
