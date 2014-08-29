@@ -4061,3 +4061,44 @@ qemuMonitorRTCResetReinjection(qemuMonitorPtr mon)
 
     return qemuMonitorJSONRTCResetReinjection(mon);
 }
+
+/**
+ * qemuMonitorGetIOThreads:
+ * @mon: Pointer to the monitor
+ * @iothreads: Location to return array of IOThreadInfo data
+ *
+ * Issue query-iothreads command.
+ * Retrieve the list of iothreads defined/running for the machine
+ *
+ * Returns count of IOThreadInfo structures on success
+ *        -1 on error.
+ */
+int
+qemuMonitorGetIOThreads(qemuMonitorPtr mon,
+                        qemuMonitorIOThreadsInfoPtr **iothreads)
+{
+
+    VIR_DEBUG("mon=%p iothreads=%p", mon, iothreads);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONGetIOThreads(mon, iothreads);
+}
+
+void qemuMonitorIOThreadsInfoFree(qemuMonitorIOThreadsInfoPtr iothread)
+{
+    if (!iothread)
+        return;
+    VIR_FREE(iothread->name);
+    VIR_FREE(iothread);
+}

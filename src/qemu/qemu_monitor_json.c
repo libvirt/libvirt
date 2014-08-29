@@ -5910,3 +5910,94 @@ qemuMonitorJSONRTCResetReinjection(qemuMonitorPtr mon)
     virJSONValueFree(reply);
     return ret;
 }
+
+/**
+ * Query and parse returned array of data such as:
+ *
+ *  {u'return': [{u'id': u'iothread1', u'thread-id': 30992}, \
+ *               {u'id': u'iothread2', u'thread-id': 30993}]}
+ */
+int
+qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,
+                            qemuMonitorIOThreadsInfoPtr **iothreads)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    qemuMonitorIOThreadsInfoPtr *infolist = NULL;
+    int n = 0;
+    size_t i;
+
+    *iothreads = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-iothreads", NULL)))
+        return ret;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-iothreads reply was missing return data"));
+        goto cleanup;
+    }
+
+    if ((n = virJSONValueArraySize(data)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-iothreads reply data was not an array"));
+        goto cleanup;
+    }
+
+    /* null-terminated list */
+    if (VIR_ALLOC_N(infolist, n + 1) < 0)
+        goto cleanup;
+
+    for (i = 0; i < n; i++) {
+        virJSONValuePtr child = virJSONValueArrayGet(data, i);
+        const char *tmp;
+        qemuMonitorIOThreadsInfoPtr info;
+
+        if (VIR_ALLOC(info) < 0)
+            goto cleanup;
+
+        infolist[i] = info;
+
+        if (!(tmp = virJSONValueObjectGetString(child, "id"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-iothreads reply data was missing 'id'"));
+            goto cleanup;
+        }
+
+        if (VIR_STRDUP(info->name, tmp) < 0)
+            goto cleanup;
+
+        if (virJSONValueObjectGetNumberInt(child, "thread-id",
+                                           &info->thread_id) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-iothreads reply has malformed "
+                             "'thread-id' data"));
+            goto cleanup;
+        }
+    }
+
+    ret = n;
+    *iothreads = infolist;
+
+ cleanup:
+    if (ret < 0 && infolist) {
+        for (i = 0; i < n; i++)
+            qemuMonitorIOThreadsInfoFree(infolist[i]);
+        VIR_FREE(infolist);
+    }
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

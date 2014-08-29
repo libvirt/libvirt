@@ -446,4 +446,8 @@ int qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
                                virCPUDataPtr *data);
 
 int qemuMonitorJSONRTCResetReinjection(qemuMonitorPtr mon);
+
+int qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,
+                                qemuMonitorIOThreadsInfoPtr **iothreads)
+    ATTRIBUTE_NONNULL(2);
 #endif /* QEMU_MONITOR_JSON_H */

@@ -798,6 +798,18 @@ int qemuMonitorGetGuestCPU(qemuMonitorPtr mon,
 
 int qemuMonitorRTCResetReinjection(qemuMonitorPtr mon);
 
+typedef struct _qemuMonitorIOThreadsInfo qemuMonitorIOThreadsInfo;
+typedef qemuMonitorIOThreadsInfo *qemuMonitorIOThreadsInfoPtr;
+
+struct _qemuMonitorIOThreadsInfo {
+    char *name;
+    int thread_id;
+};
+int qemuMonitorGetIOThreads(qemuMonitorPtr mon,
+                            qemuMonitorIOThreadsInfoPtr **iothreads);
+
+void qemuMonitorIOThreadsInfoFree(qemuMonitorIOThreadsInfoPtr iothread);
+
 /**
  * When running two dd process and using <> redirection, we need a
  * shell that will not truncate files.  These two strings serve that

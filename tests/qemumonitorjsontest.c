@@ -2217,6 +2217,76 @@ testQemuMonitorJSONGetNonExistingCPUData(const void *opaque)
 }
 
 static int
+testQemuMonitorJSONGetIOThreads(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    qemuMonitorIOThreadsInfoPtr *info;
+    int ninfo = 0;
+    int ret = -1;
+    size_t i;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "query-iothreads",
+                               "{ "
+                               "  \"return\": [ "
+                               "   { "
+                               "     \"id\": \"iothread1\", "
+                               "     \"thread-id\": 30992 "
+                               "   }, "
+                               "   { "
+                               "     \"id\": \"iothread2\", "
+                               "     \"thread-id\": 30993 "
+                               "   } "
+                               "  ]"
+                               "}") < 0)
+        goto cleanup;
+
+    if ((ninfo = qemuMonitorGetIOThreads(qemuMonitorTestGetMonitor(test),
+                                         &info)) < 0)
+        goto cleanup;
+
+    if (ninfo != 2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "ninfo %d is not 2", ninfo);
+        goto cleanup;
+    }
+
+#define CHECK(i, wantname, wantthread_id)                               \
+    do {                                                                \
+        if (STRNEQ(info[i]->name, (wantname))) {                        \
+            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
+                           "name %s is not %s",                         \
+                           info[i]->name, (wantname));                  \
+            goto cleanup;                                               \
+        }                                                               \
+        if (info[i]->thread_id != (wantthread_id)) {                    \
+            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
+                           "thread_id %d is not %d",                    \
+                           info[i]->thread_id, (wantthread_id));        \
+            goto cleanup;                                               \
+        }                                                               \
+    } while (0)
+
+    CHECK(0, "iothread1", 30992);
+    CHECK(1, "iothread2", 30993);
+
+#undef CHECK
+
+    ret = 0;
+
+ cleanup:
+    qemuMonitorTestFree(test);
+    for (i = 0; i < ninfo; i++)
+        qemuMonitorIOThreadsInfoFree(info[i]);
+    VIR_FREE(info);
+
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -2272,6 +2342,7 @@ mymain(void)
     DO_TEST(GetDeviceAliases);
     DO_TEST(CPU);
     DO_TEST(GetNonExistingCPUData);
+    DO_TEST(GetIOThreads);
     DO_TEST_SIMPLE("qmp_capabilities", qemuMonitorJSONSetCapabilities);
     DO_TEST_SIMPLE("system_powerdown", qemuMonitorJSONSystemPowerdown);
     DO_TEST_SIMPLE("system_reset", qemuMonitorJSONSystemReset);
