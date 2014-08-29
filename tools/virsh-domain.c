@@ -1818,11 +1818,10 @@ static const vshCmdOptDef opts_block_copy[] = {
     {.name = "path",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("fully-qualified path of disk")
+     .help = N_("fully-qualified path of source disk")
     },
     {.name = "dest",
      .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("path of the copy to create")
     },
     {.name = "bandwidth",
@@ -1838,8 +1837,8 @@ static const vshCmdOptDef opts_block_copy[] = {
      .help = N_("reuse existing destination")
     },
     {.name = "raw",
-     .type = VSH_OT_BOOL,
-     .help = N_("use raw destination file")
+     .type = VSH_OT_ALIAS,
+     .help = "format=raw"
     },
     {.name = "blockdev",
      .type = VSH_OT_BOOL,
@@ -1869,6 +1868,22 @@ static const vshCmdOptDef opts_block_copy[] = {
      .type = VSH_OT_BOOL,
      .help = N_("with --wait, don't wait for cancel to finish")
     },
+    {.name = "xml",
+     .type = VSH_OT_DATA,
+     .help = N_("filename containing XML description of the copy destination")
+    },
+    {.name = "format",
+     .type = VSH_OT_DATA,
+     .help = N_("format of the destination file")
+    },
+    {.name = "granularity",
+     .type = VSH_OT_INT,
+     .help = N_("power-of-two granularity to use during the copy")
+    },
+    {.name = "buf-size",
+     .type = VSH_OT_INT,
+     .help = N_("maximum amount of in-flight data during the copy")
+    },
     {.name = NULL}
 };
 
@@ -1876,14 +1891,18 @@ static bool
 cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
-    const char *dest;
+    const char *dest = NULL;
+    const char *format = NULL;
     unsigned long bandwidth = 0;
-    unsigned int flags = VIR_DOMAIN_BLOCK_REBASE_COPY;
+    unsigned int granularity = 0;
+    unsigned long long buf_size = 0;
+    unsigned int flags = 0;
     bool ret = false;
     bool blocking = vshCommandOptBool(cmd, "wait");
     bool verbose = vshCommandOptBool(cmd, "verbose");
     bool pivot = vshCommandOptBool(cmd, "pivot");
     bool finish = vshCommandOptBool(cmd, "finish");
+    bool blockdev = vshCommandOptBool(cmd, "blockdev");
     int timeout = 0;
     struct sigaction sig_action;
     struct sigaction old_sig_action;
@@ -1893,9 +1912,23 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
     const char *path = NULL;
     bool quit = false;
     int abort_flags = 0;
+    const char *xml = NULL;
+    char *xmlstr = NULL;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
 
     if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
         return false;
+    if (vshCommandOptString(cmd, "dest", &dest) < 0)
+        return false;
+    if (vshCommandOptString(cmd, "xml", &xml) < 0)
+        return false;
+    if (vshCommandOptString(cmd, "format", &format) < 0)
+        return false;
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(dest, xml);
+    VSH_EXCLUSIVE_OPTIONS_VAR(format, xml);
+    VSH_EXCLUSIVE_OPTIONS_VAR(blockdev, xml);
 
     blocking |= vshCommandOptBool(cmd, "timeout") || pivot || finish;
     if (blocking) {
@@ -1926,24 +1959,100 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
 
+    /* XXX: Parse bandwidth as scaled input, rather than forcing
+     * MiB/s, and either reject negative input or treat it as 0 rather
+     * than trying to guess which value will work well across both
+     * APIs with their different sizes and scales.  */
     if (vshCommandOptULWrap(cmd, "bandwidth", &bandwidth) < 0) {
         vshError(ctl, "%s", _("bandwidth must be a number"));
         goto cleanup;
     }
+    if (vshCommandOptUInt(cmd, "granularity", &granularity) < 0) {
+        vshError(ctl, "%s", _("granularity must be a number"));
+        goto cleanup;
+    }
+    if (vshCommandOptULongLong(cmd, "buf-size", &buf_size) < 0) {
+        vshError(ctl, "%s", _("buf-size must be a number"));
+        goto cleanup;
+    }
 
+    if (xml) {
+        if (virFileReadAll(xml, 8192, &xmlstr) < 0) {
+            vshReportError(ctl);
+            goto cleanup;
+        }
+    } else if (!dest) {
+        vshError(ctl, "%s", _("need either --dest or --xml"));
+        goto cleanup;
+    }
+
+    /* Exploit that some VIR_DOMAIN_BLOCK_REBASE_* and
+     * VIR_DOMAIN_BLOCK_COPY_* flags have the same values.  */
     if (vshCommandOptBool(cmd, "shallow"))
         flags |= VIR_DOMAIN_BLOCK_REBASE_SHALLOW;
     if (vshCommandOptBool(cmd, "reuse-external"))
         flags |= VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
-    if (vshCommandOptBool(cmd, "raw"))
-        flags |= VIR_DOMAIN_BLOCK_REBASE_COPY_RAW;
-    if (vshCommandOptBool(cmd, "blockdev"))
-        flags |= VIR_DOMAIN_BLOCK_REBASE_COPY_DEV;
-    if (vshCommandOptStringReq(ctl, cmd, "dest", &dest) < 0)
-        goto cleanup;
 
-    if (virDomainBlockRebase(dom, path, dest, bandwidth, flags) < 0)
-        goto cleanup;
+    if (granularity || buf_size || (format && STRNEQ(format, "raw")) || xml) {
+        /* New API */
+        if (bandwidth || granularity || buf_size) {
+            params = vshCalloc(ctl, 3, sizeof(*params));
+            if (bandwidth) {
+                /* bandwidth is ulong MiB/s, but the typed parameter is
+                 * ullong bytes/s; make sure we don't overflow */
+                if (bandwidth > ULLONG_MAX >> 20) {
+                    virReportError(VIR_ERR_OVERFLOW,
+                                   _("bandwidth must be less than %llu"),
+                                   ULLONG_MAX >> 20);
+                }
+                if (virTypedParameterAssign(&params[nparams++],
+                                            VIR_DOMAIN_BLOCK_COPY_BANDWIDTH,
+                                            VIR_TYPED_PARAM_ULLONG,
+                                            bandwidth << 20ULL) < 0)
+                    goto cleanup;
+            }
+            if (granularity &&
+                virTypedParameterAssign(&params[nparams++],
+                                        VIR_DOMAIN_BLOCK_COPY_GRANULARITY,
+                                        VIR_TYPED_PARAM_UINT,
+                                        granularity) < 0)
+                goto cleanup;
+            if (buf_size &&
+                virTypedParameterAssign(&params[nparams++],
+                                        VIR_DOMAIN_BLOCK_COPY_BUF_SIZE,
+                                        VIR_TYPED_PARAM_ULLONG,
+                                        buf_size) < 0)
+                goto cleanup;
+        }
+
+        if (!xmlstr) {
+            virBuffer buf = VIR_BUFFER_INITIALIZER;
+            virBufferAsprintf(&buf, "<disk type='%s'>\n",
+                              blockdev ? "block" : "file");
+            virBufferAdjustIndent(&buf, 2);
+            virBufferAsprintf(&buf, "<source %s", blockdev ? "dev" : "file");
+            virBufferEscapeString(&buf, "='%s'/>\n", dest);
+            virBufferEscapeString(&buf, "<driver type='%s'/>\n", format);
+            virBufferAdjustIndent(&buf, -2);
+            virBufferAddLit(&buf, "</disk>\n");
+            if (virBufferCheckError(&buf) < 0)
+                goto cleanup;
+            xmlstr = virBufferContentAndReset(&buf);
+        }
+
+        if (virDomainBlockCopy(dom, path, xmlstr, params, nparams, flags) < 0)
+            goto cleanup;
+    } else {
+        /* Old API */
+        flags |= VIR_DOMAIN_BLOCK_REBASE_COPY;
+        if (vshCommandOptBool(cmd, "blockdev"))
+            flags |= VIR_DOMAIN_BLOCK_REBASE_COPY_DEV;
+        if (STREQ_NULLABLE(format, "raw"))
+            flags |= VIR_DOMAIN_BLOCK_REBASE_COPY_RAW;
+
+        if (virDomainBlockRebase(dom, path, dest, bandwidth, flags) < 0)
+            goto cleanup;
+    }
 
     if (!blocking) {
         vshPrint(ctl, "%s", _("Block Copy started"));
@@ -2014,6 +2123,8 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
+    VIR_FREE(xmlstr);
+    virTypedParamsFree(params, nparams);
     if (dom)
         virDomainFree(dom);
     if (blocking)
