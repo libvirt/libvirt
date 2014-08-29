@@ -14994,7 +14994,7 @@ static int
 qemuDomainBlockJobImpl(virDomainObjPtr vm,
                        virConnectPtr conn,
                        const char *path, const char *base,
-                       unsigned long bandwidth, virDomainBlockJobInfoPtr info,
+                       unsigned long bandwidth,
                        int mode, unsigned int flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
@@ -15125,23 +15125,12 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
 
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorBlockJob(priv->mon, device, basePath, backingPath,
-                              bandwidth, info, mode, async);
+                              bandwidth, NULL, mode, async);
     qemuDomainObjExitMonitor(driver, vm);
-    if (info && info->type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
-        disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
-        info->type = disk->mirrorJob;
     if (ret < 0) {
         if (mode == BLOCK_JOB_ABORT && disk->mirror)
             disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
         goto endjob;
-    }
-
-    /* Snoop block copy operations, so future cancel operations can
-     * avoid checking if pivot is safe.  */
-    if (mode == BLOCK_JOB_INFO && ret == 1 && disk->mirror &&
-        info->cur == info->end && !disk->mirrorState) {
-        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
-        save = true;
     }
 
  waitjob:
@@ -15239,15 +15228,22 @@ qemuDomainBlockJobAbort(virDomainPtr dom, const char *path, unsigned int flags)
         return -1;
     }
 
-    return qemuDomainBlockJobImpl(vm, dom->conn, path, NULL, 0, NULL, BLOCK_JOB_ABORT,
-                                  flags);
+    return qemuDomainBlockJobImpl(vm, dom->conn, path, NULL, 0,
+                                  BLOCK_JOB_ABORT, flags);
 }
 
 static int
 qemuDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
                            virDomainBlockJobInfoPtr info, unsigned int flags)
 {
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
+    char *device = NULL;
+    int idx;
+    virDomainDiskDefPtr disk;
+    int ret = -1;
+
     virCheckFlags(0, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -15258,8 +15254,60 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
         return -1;
     }
 
-    return qemuDomainBlockJobImpl(vm, dom->conn, path, NULL, 0, info, BLOCK_JOB_INFO,
-                                  flags);
+    priv = vm->privateData;
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC) &&
+        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_SYNC)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("block jobs not supported with this QEMU binary"));
+        goto cleanup;
+    }
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not running"));
+        goto endjob;
+    }
+
+    device = qemuDiskPathToAlias(vm, path, &idx);
+    if (!device)
+        goto endjob;
+    disk = vm->def->disks[idx];
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorBlockJob(priv->mon, device, NULL, NULL, 0,
+                              info, BLOCK_JOB_INFO, true);
+    qemuDomainObjExitMonitor(driver, vm);
+    if (ret < 0)
+        goto endjob;
+
+    if (info->type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
+        disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
+        info->type = disk->mirrorJob;
+
+    /* Snoop block copy operations, so future cancel operations can
+     * avoid checking if pivot is safe.  Save the change to XML, but
+     * we can ignore failure because it is only an optimization.  We
+     * hold the vm lock, so modifying the in-memory representation is
+     * safe, even if we are a query rather than a modify job. */
+    if (ret == 1 && disk->mirror &&
+        info->cur == info->end && !disk->mirrorState) {
+        virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
+        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
+        ignore_value(virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm));
+        virObjectUnref(cfg);
+    }
+ endjob:
+    if (!qemuDomainObjEndJob(driver, vm))
+        vm = NULL;
+
+ cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
 }
 
 static int
@@ -15277,7 +15325,7 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom, const char *path,
         return -1;
     }
 
-    return qemuDomainBlockJobImpl(vm, dom->conn, path, NULL, bandwidth, NULL,
+    return qemuDomainBlockJobImpl(vm, dom->conn, path, NULL, bandwidth,
                                   BLOCK_JOB_SPEED, flags);
 }
 
@@ -15486,7 +15534,7 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
      * everything, including vm cleanup. */
     if (!(flags & VIR_DOMAIN_BLOCK_REBASE_COPY))
         return qemuDomainBlockJobImpl(vm, dom->conn, path, base, bandwidth,
-                                      NULL, BLOCK_JOB_PULL, flags);
+                                      BLOCK_JOB_PULL, flags);
 
     /* If we got here, we are doing a block copy rebase. */
     if (flags & VIR_DOMAIN_BLOCK_REBASE_COPY_RAW)
@@ -15527,7 +15575,7 @@ qemuDomainBlockPull(virDomainPtr dom, const char *path, unsigned long bandwidth,
         return -1;
     }
 
-    return qemuDomainBlockJobImpl(vm, dom->conn, path, NULL, bandwidth, NULL,
+    return qemuDomainBlockJobImpl(vm, dom->conn, path, NULL, bandwidth,
                                   BLOCK_JOB_PULL, flags);
 }
 
