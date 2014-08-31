@@ -15070,14 +15070,19 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
         }
     }
 
-    /* Convert bandwidth MiB to bytes */
-    if (speed > LLONG_MAX >> 20) {
-        virReportError(VIR_ERR_OVERFLOW,
-                       _("bandwidth must be less than %llu"),
-                       LLONG_MAX >> 20);
-        goto endjob;
+    /* Convert bandwidth MiB to bytes, if needed */
+    if ((mode == BLOCK_JOB_SPEED &&
+         !(flags & VIR_DOMAIN_BLOCK_JOB_SPEED_BANDWIDTH_BYTES)) ||
+        (mode == BLOCK_JOB_PULL &&
+         !(flags & VIR_DOMAIN_BLOCK_PULL_BANDWIDTH_BYTES))) {
+        if (speed > LLONG_MAX >> 20) {
+            virReportError(VIR_ERR_OVERFLOW,
+                           _("bandwidth must be less than %llu"),
+                           LLONG_MAX >> 20);
+            goto endjob;
+        }
+        speed <<= 20;
     }
-    speed <<= 20;
 
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorBlockJob(priv->mon, device, basePath, backingPath,
@@ -15281,7 +15286,7 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom, const char *path,
                            unsigned long bandwidth, unsigned int flags)
 {
     virDomainObjPtr vm;
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_BLOCK_JOB_SPEED_BANDWIDTH_BYTES, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
@@ -15500,7 +15505,8 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
                   VIR_DOMAIN_BLOCK_REBASE_COPY |
                   VIR_DOMAIN_BLOCK_REBASE_COPY_RAW |
                   VIR_DOMAIN_BLOCK_REBASE_RELATIVE |
-                  VIR_DOMAIN_BLOCK_REBASE_COPY_DEV, -1);
+                  VIR_DOMAIN_BLOCK_REBASE_COPY_DEV |
+                  VIR_DOMAIN_BLOCK_REBASE_BANDWIDTH_BYTES, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
@@ -15524,14 +15530,16 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     if (flags & VIR_DOMAIN_BLOCK_REBASE_COPY_RAW)
         dest->format = VIR_STORAGE_FILE_RAW;
 
-    /* Convert bandwidth MiB to bytes */
-    if (speed > LLONG_MAX >> 20) {
-        virReportError(VIR_ERR_OVERFLOW,
-                       _("bandwidth must be less than %llu"),
-                       LLONG_MAX >> 20);
-        goto cleanup;
+    /* Convert bandwidth MiB to bytes, if necessary */
+    if (!(flags & VIR_DOMAIN_BLOCK_REBASE_BANDWIDTH_BYTES)) {
+        if (speed > LLONG_MAX >> 20) {
+            virReportError(VIR_ERR_OVERFLOW,
+                           _("bandwidth must be less than %llu"),
+                           LLONG_MAX >> 20);
+            goto cleanup;
+        }
+        speed <<= 20;
     }
-    speed <<= 20;
 
     /* XXX: If we are doing a shallow copy but not reusing an external
      * file, we should attempt to pre-create the destination with a
@@ -15637,7 +15645,7 @@ qemuDomainBlockPull(virDomainPtr dom, const char *path, unsigned long bandwidth,
                     unsigned int flags)
 {
     virDomainObjPtr vm;
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_BLOCK_PULL_BANDWIDTH_BYTES, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
@@ -15682,7 +15690,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
     /* XXX Add support for COMMIT_DELETE */
     virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW |
                   VIR_DOMAIN_BLOCK_COMMIT_ACTIVE |
-                  VIR_DOMAIN_BLOCK_COMMIT_RELATIVE, -1);
+                  VIR_DOMAIN_BLOCK_COMMIT_RELATIVE |
+                  VIR_DOMAIN_BLOCK_COMMIT_BANDWIDTH_BYTES, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
@@ -15708,14 +15717,16 @@ qemuDomainBlockCommit(virDomainPtr dom,
         goto endjob;
     }
 
-    /* Convert bandwidth MiB to bytes */
-    if (speed > LLONG_MAX >> 20) {
-        virReportError(VIR_ERR_OVERFLOW,
-                       _("bandwidth must be less than %llu"),
-                       LLONG_MAX >> 20);
-        goto endjob;
+    /* Convert bandwidth MiB to bytes, if necessary */
+    if (!(flags & VIR_DOMAIN_BLOCK_COMMIT_BANDWIDTH_BYTES)) {
+        if (speed > LLONG_MAX >> 20) {
+            virReportError(VIR_ERR_OVERFLOW,
+                           _("bandwidth must be less than %llu"),
+                           LLONG_MAX >> 20);
+            goto endjob;
+        }
+        speed <<= 20;
     }
-    speed <<= 20;
 
     device = qemuDiskPathToAlias(vm, path, &idx);
     if (!device)

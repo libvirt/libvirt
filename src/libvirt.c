@@ -19733,11 +19733,20 @@ virDomainGetBlockJobInfo(virDomainPtr dom, const char *disk,
  * virDomainBlockJobSetSpeed:
  * @dom: pointer to domain object
  * @disk: path to the block device, or device shorthand
- * @bandwidth: specify bandwidth limit in MiB/s
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @bandwidth: specify bandwidth limit; flags determine the unit
+ * @flags: bitwise-OR of virDomainBlockJobSetSpeedFlags
  *
  * Set the maximimum allowable bandwidth that a block job may consume.  If
- * bandwidth is 0, the limit will revert to the hypervisor default.
+ * bandwidth is 0, the limit will revert to the hypervisor default of
+ * unlimited.
+ *
+ * If @flags contains VIR_DOMAIN_BLOCK_JOB_SPEED_BANDWIDTH_BYTES, @bandwidth
+ * is in bytes/second; otherwise, it is in MiB/second.  Values larger than
+ * 2^52 bytes/sec may be rejected due to overflow considerations based on
+ * the word size of both client and server, and values larger than 2^31
+ * bytes/sec may cause overflow problems if later queried by
+ * virDomainGetBlockJobInfo() without scaling.  Hypervisors may further
+ * restrict the range of valid bandwidth values.
  *
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
@@ -19785,8 +19794,8 @@ virDomainBlockJobSetSpeed(virDomainPtr dom, const char *disk,
  * virDomainBlockPull:
  * @dom: pointer to domain object
  * @disk: path to the block device, or device shorthand
- * @bandwidth: (optional) specify copy bandwidth limit in MiB/s
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @bandwidth: (optional) specify bandwidth limit; flags determine the unit
+ * @flags: bitwise-OR of virDomainBlockPullFlags
  *
  * Populate a disk image with data from its backing image.  Once all data from
  * its backing image has been pulled, the disk no longer depends on a backing
@@ -19803,12 +19812,20 @@ virDomainBlockJobSetSpeed(virDomainPtr dom, const char *disk,
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
- * The maximum bandwidth (in MiB/s) that will be used to do the copy can be
- * specified with the bandwidth parameter.  If set to 0, libvirt will choose a
- * suitable default.  Some hypervisors do not support this feature and will
- * return an error if bandwidth is not 0; in this case, it might still be
- * possible for a later call to virDomainBlockJobSetSpeed() to succeed.
- * The actual speed can be determined with virDomainGetBlockJobInfo().
+ * The maximum bandwidth that will be used to do the copy can be
+ * specified with the @bandwidth parameter.  If set to 0, there is no
+ * limit.  If @flags includes VIR_DOMAIN_BLOCK_PULL_BANDWIDTH_BYTES,
+ * @bandwidth is in bytes/second; otherwise, it is in MiB/second.
+ * Values larger than 2^52 bytes/sec may be rejected due to overflow
+ * considerations based on the word size of both client and server,
+ * and values larger than 2^31 bytes/sec may cause overflow problems
+ * if later queried by virDomainGetBlockJobInfo() without scaling.
+ * Hypervisors may further restrict the range of valid bandwidth
+ * values.  Some hypervisors do not support this feature and will
+ * return an error if bandwidth is not 0; in this case, it might still
+ * be possible for a later call to virDomainBlockJobSetSpeed() to
+ * succeed.  The actual speed can be determined with
+ * virDomainGetBlockJobInfo().
  *
  * This is shorthand for virDomainBlockRebase() with a NULL base.
  *
@@ -19853,7 +19870,7 @@ virDomainBlockPull(virDomainPtr dom, const char *disk,
  * @disk: path to the block device, or device shorthand
  * @base: path to backing file to keep, or device shorthand,
  *        or NULL for no backing file
- * @bandwidth: (optional) specify copy bandwidth limit in MiB/s
+ * @bandwidth: (optional) specify bandwidth limit; flags determine the unit
  * @flags: bitwise-OR of virDomainBlockRebaseFlags
  *
  * Populate a disk image with data from its backing image chain, and
@@ -19932,12 +19949,20 @@ virDomainBlockPull(virDomainPtr dom, const char *disk,
  * example, "vda[3]" refers to the backing store with index equal to "3"
  * in the chain of disk "vda".
  *
- * The maximum bandwidth (in MiB/s) that will be used to do the copy can be
- * specified with the bandwidth parameter.  If set to 0, libvirt will choose a
- * suitable default.  Some hypervisors do not support this feature and will
- * return an error if bandwidth is not 0; in this case, it might still be
- * possible for a later call to virDomainBlockJobSetSpeed() to succeed.
- * The actual speed can be determined with virDomainGetBlockJobInfo().
+ * The maximum bandwidth that will be used to do the copy can be
+ * specified with the @bandwidth parameter.  If set to 0, there is no
+ * limit.  If @flags includes VIR_DOMAIN_BLOCK_REBASE_BANDWIDTH_BYTES,
+ * @bandwidth is in bytes/second; otherwise, it is in MiB/second.
+ * Values larger than 2^52 bytes/sec may be rejected due to overflow
+ * considerations based on the word size of both client and server,
+ * and values larger than 2^31 bytes/sec may cause overflow problems
+ * if later queried by virDomainGetBlockJobInfo() without scaling.
+ * Hypervisors may further restrict the range of valid bandwidth
+ * values.  Some hypervisors do not support this feature and will
+ * return an error if bandwidth is not 0; in this case, it might still
+ * be possible for a later call to virDomainBlockJobSetSpeed() to
+ * succeed.  The actual speed can be determined with
+ * virDomainGetBlockJobInfo().
  *
  * When @base is NULL and @flags is 0, this is identical to
  * virDomainBlockPull().  When @flags contains VIR_DOMAIN_BLOCK_REBASE_COPY,
@@ -20119,7 +20144,7 @@ virDomainBlockCopy(virDomainPtr dom, const char *disk,
  *        or NULL for default
  * @top: path to file within backing chain that contains data to be merged,
  *       or device shorthand, or NULL to merge all possible data
- * @bandwidth: (optional) specify commit bandwidth limit in MiB/s
+ * @bandwidth: (optional) specify bandwidth limit; flags determine the unit
  * @flags: bitwise-OR of virDomainBlockCommitFlags
  *
  * Commit changes that were made to temporary top-level files within a disk
@@ -20197,12 +20222,20 @@ virDomainBlockCopy(virDomainPtr dom, const char *disk,
  * example, "vda[3]" refers to the backing store with index equal to "3"
  * in the chain of disk "vda".
  *
- * The maximum bandwidth (in MiB/s) that will be used to do the commit can be
- * specified with the bandwidth parameter.  If set to 0, libvirt will choose a
- * suitable default.  Some hypervisors do not support this feature and will
- * return an error if bandwidth is not 0; in this case, it might still be
- * possible for a later call to virDomainBlockJobSetSpeed() to succeed.
- * The actual speed can be determined with virDomainGetBlockJobInfo().
+ * The maximum bandwidth that will be used to do the commit can be
+ * specified with the @bandwidth parameter.  If set to 0, there is no
+ * limit.  If @flags includes VIR_DOMAIN_BLOCK_COMMIT_BANDWIDTH_BYTES,
+ * @bandwidth is in bytes/second; otherwise, it is in MiB/second.
+ * Values larger than 2^52 bytes/sec may be rejected due to overflow
+ * considerations based on the word size of both client and server,
+ * and values larger than 2^31 bytes/sec may cause overflow problems
+ * if later queried by virDomainGetBlockJobInfo() without scaling.
+ * Hypervisors may further restrict the range of valid bandwidth
+ * values.  Some hypervisors do not support this feature and will
+ * return an error if bandwidth is not 0; in this case, it might still
+ * be possible for a later call to virDomainBlockJobSetSpeed() to
+ * succeed.  The actual speed can be determined with
+ * virDomainGetBlockJobInfo().
  *
  * Returns 0 if the operation has started, -1 on failure.
  */
