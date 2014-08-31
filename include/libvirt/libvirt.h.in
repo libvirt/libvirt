@@ -2678,8 +2678,8 @@ typedef enum {
  * VIR_DOMAIN_BLOCK_COPY_BUF_SIZE:
  * Macro for the virDomainBlockCopy buffer size tunable: it represents
  * how much data in bytes can be in flight between source and destination,
- * as an unsigned int. Specifying 0 is the same as omitting this parameter,
- * to request the hypervisor default.
+ * as an unsigned long long. Specifying 0 is the same as omitting this
+ * parameter, to request the hypervisor default.
  */
 #define VIR_DOMAIN_BLOCK_COPY_BUF_SIZE "buf-size"
 
