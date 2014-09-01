@@ -264,6 +264,7 @@ qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm)
                                            vm->def) < 0) {
         VIR_ERROR(_("Failed to clear security context for agent for %s"),
                   vm->def->name);
+        qemuAgentClose(agent);
         goto cleanup;
     }
 
