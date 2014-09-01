@@ -3757,7 +3757,7 @@ virCgroupIsolateMount(virCgroupPtr group, const char *oldroot,
                                      _("Unable to symlink directory %s to %s"),
                                      group->controllers[i].mountPoint,
                                      group->controllers[i].linkPoint);
-                return -1;
+                goto cleanup;
             }
         }
     }
