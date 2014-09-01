@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2013 Red Hat, Inc.
+ * Copyright (C) 2008-2014 Red Hat, Inc.
  * Copyright (C) 2008 IBM Corp.
  *
  * lxc_container.c: file description
@@ -886,12 +886,14 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
             if (ret == 0) {
                 VIR_DEBUG("Skipping '%s' which isn't mounted in host",
                           mnt->dst);
+                VIR_FREE(mnt_src);
                 continue;
             }
         }
 
         if (mnt->skipUserNS && userns_enabled) {
             VIR_DEBUG("Skipping due to user ns enablement");
+            VIR_FREE(mnt_src);
             continue;
         }
 
@@ -930,6 +932,8 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
                                  MS_BIND|MS_REMOUNT|MS_RDONLY);
             goto cleanup;
         }
+
+        VIR_FREE(mnt_src);
     }
 
     rc = 0;
