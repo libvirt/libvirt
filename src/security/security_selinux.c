@@ -2340,7 +2340,7 @@ virSecuritySELinuxSetTapFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     if (!secdef || !secdef->label)
         return 0;
 
-    return virSecuritySELinuxFSetFilecon(fd, secdef->label);
+    return virSecuritySELinuxFSetFilecon(fd, secdef->imagelabel);
 }
 
 static char *
