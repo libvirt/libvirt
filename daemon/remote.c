@@ -2305,8 +2305,10 @@ remoteDispatchDomainMigratePrepare2(virNetServerPtr server ATTRIBUTE_UNUSED,
     rv = 0;
 
  cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         virNetMessageSaveError(rerr);
+        VIR_FREE(uri_out);
+    }
     return rv;
 }
 
