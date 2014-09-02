@@ -7686,7 +7686,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     virCommandAddArg(cmd, "-m");
     def->mem.max_balloon = VIR_DIV_UP(def->mem.max_balloon, 1024) * 1024;
     virCommandAddArgFormat(cmd, "%llu", def->mem.max_balloon / 1024);
-    if (def->mem.nhugepages && !def->mem.hugepages[0].size) {
+    if (def->mem.nhugepages && (!def->cpu || !def->cpu->ncells)) {
         char *mem_path;
 
         if (!cfg->nhugetlbfs) {
@@ -7702,9 +7702,26 @@ qemuBuildCommandLine(virConnectPtr conn,
             goto error;
         }
 
-        if (!(mem_path = qemuGetDefaultHugepath(cfg->hugetlbfs,
-                                                cfg->nhugetlbfs)))
-            goto error;
+        if (def->mem.hugepages[0].size) {
+            for (j = 0; j < cfg->nhugetlbfs; j++) {
+                if (cfg->hugetlbfs[j].size == def->mem.hugepages[0].size)
+                    break;
+            }
+
+            if (j == cfg->nhugetlbfs) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Unable to find any usable hugetlbfs mount for %llu KiB"),
+                               def->mem.hugepages[0].size);
+                goto error;
+            }
+
+            if (!(mem_path = qemuGetHugepagePath(&cfg->hugetlbfs[j])))
+                goto error;
+        } else {
+            if (!(mem_path = qemuGetDefaultHugepath(cfg->hugetlbfs,
+                                                    cfg->nhugetlbfs)))
+                goto error;
+        }
 
         virCommandAddArgList(cmd, "-mem-prealloc", "-mem-path",
                              mem_path, NULL);
