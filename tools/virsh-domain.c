@@ -311,6 +311,10 @@ static const vshCmdOptDef opts_attach_disk[] = {
      .type = VSH_OT_STRING,
      .help = N_("subdriver of disk device")
     },
+    {.name = "iothread",
+     .type = VSH_OT_STRING,
+     .help = N_("IOThread to be used by supported device")
+    },
     {.name = "cache",
      .type = VSH_OT_STRING,
      .help = N_("cache mode of disk device")
@@ -527,8 +531,8 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     const char *source = NULL, *target = NULL, *driver = NULL,
                 *subdriver = NULL, *type = NULL, *mode = NULL,
-                *cache = NULL, *serial = NULL, *straddr = NULL,
-                *wwn = NULL, *targetbus = NULL;
+                *iothread = NULL, *cache = NULL, *serial = NULL,
+                *straddr = NULL, *wwn = NULL, *targetbus = NULL;
     struct DiskAddress diskAddr;
     bool isFile = false, functionReturn = false;
     int ret;
@@ -558,6 +562,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptStringReq(ctl, cmd, "subdriver", &subdriver) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "type", &type) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "mode", &mode) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "iothread", &iothread) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "cache", &cache) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "serial", &serial) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "wwn", &wwn) < 0 ||
@@ -601,13 +606,15 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     virBufferAddLit(&buf, ">\n");
     virBufferAdjustIndent(&buf, 2);
 
-    if (driver || subdriver || cache) {
+    if (driver || subdriver || iothread || cache) {
         virBufferAddLit(&buf, "<driver");
 
         if (driver)
             virBufferAsprintf(&buf, " name='%s'", driver);
         if (subdriver)
             virBufferAsprintf(&buf, " type='%s'", subdriver);
+        if (iothread)
+            virBufferAsprintf(&buf, " iothread='%s'", iothread);
         if (cache)
             virBufferAsprintf(&buf, " cache='%s'", cache);
 
