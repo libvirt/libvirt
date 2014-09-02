@@ -521,6 +521,7 @@ testDomainGenerateIfname(virDomainDefPtr domdef)
 
         if (!found)
             return ifname;
+        VIR_FREE(ifname);
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
