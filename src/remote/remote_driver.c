@@ -7730,7 +7730,7 @@ remoteConnectGetAllDomainStats(virConnectPtr conn,
     size_t i;
     remote_connect_get_all_domain_stats_args args;
     remote_connect_get_all_domain_stats_ret ret;
-
+    virDomainStatsRecordPtr elem = NULL;
     virDomainStatsRecordPtr *tmpret = NULL;
 
     if (ndoms) {
@@ -7769,7 +7769,6 @@ remoteConnectGetAllDomainStats(virConnectPtr conn,
         goto cleanup;
 
     for (i = 0; i < ret.retStats.retStats_len; i++) {
-        virDomainStatsRecordPtr elem;
         remote_domain_stats_record *rec = ret.retStats.retStats_val + i;
 
         if (VIR_ALLOC(elem) < 0)
@@ -7786,6 +7785,7 @@ remoteConnectGetAllDomainStats(virConnectPtr conn,
             goto cleanup;
 
         tmpret[i] = elem;
+        elem = NULL;
     }
 
     *retStats = tmpret;
@@ -7793,6 +7793,10 @@ remoteConnectGetAllDomainStats(virConnectPtr conn,
     rv = ret.retStats.retStats_len;
 
  cleanup:
+    if (elem) {
+        virObjectUnref(elem->dom);
+        VIR_FREE(elem);
+    }
     virDomainStatsRecordListFree(tmpret);
     xdr_free((xdrproc_t)xdr_remote_connect_get_all_domain_stats_ret,
              (char *) &ret);
