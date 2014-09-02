@@ -9,6 +9,319 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
+    <h3>1.2.8: Sep 2 2014</h3>
+    <ul>
+      <li> Features:<br/>
+      blockcopy: virDomainBlockCopy with XML destination, typed params (Eric Blake),<br/>
+      lib: Introduce API for retrieving bulk domain stats (Peter Krempa),<br/>
+      Introduce virDomainOpenGraphicsFD API (Ján Tomko),<br/>
+      storage: ZFS support (Roman Bogorodskiy)<br/>
+      </li>
+
+      <li>Documentation:<br/>
+      fix bootmenu timeout description (Martin Kletzander),<br/>
+      conf: add support for bootmenu timeout (Martin Kletzander),<br/>
+      maint: fix comment typo (Eric Blake),<br/>
+      formatdomain: Reformat vCPU description (John Ferlan),<br/>
+      virsh: Fix help info for freepages (Li Yang),<br/>
+      virsh: man: Add LXC format info for domxml-from/to-native (Li Yang),<br/>
+      virsh: Fix comment for net-undefine (Li Yang),<br/>
+      man: virsh: add missing auto-converge option for 'migrate' (Pradipta Kr. Banerjee),<br/>
+      nwfilter: add missing dscp attribute (Jianwei Hu),<br/>
+      virsh: man: Crosslink "desc" and "metadata" sections (Peter Krempa),<br/>
+      man: virsh: Add 'vcpu_period' and 'vcpu_quota' support info for LXC (Li Yang),<br/>
+      man: virsh: Add man page for "virsh metadata" (Peter Krempa),<br/>
+      fix missing forward slash (Jianwei Hu),<br/>
+      use correct hints per bus type in &lt;disk&gt; examples (Eric Blake),<br/>
+      use unique dev names in &lt;disk&gt; examples (Eric Blake),<br/>
+      virsh: clean up attach-interface paragraph in man page (Laine Stump),<br/>
+      audit: Fix some comments (Wang Rui)<br/>
+      </li>
+
+      <li>Portability:<br/>
+      spec: drop anything older than Fedora 13 (Eric Blake),<br/>
+      fix mingw build (Pavel Hrdina),<br/>
+      build: fix mingw build with virCommandReorderFDs (Martin Kletzander),<br/>
+      build: force configure failed when perl is missing (Jincheng Miao),<br/>
+      Include param.h in case of HAVE_BSD_CPU_AFFINITY (Guido Günther)<br/>
+      </li>
+
+      <li>Bug Fixes:<br/>
+      blockcopy: allow larger buf-size (Eric Blake),<br/>
+      selinux: properly label tap FDs with imagelabel (Martin Kletzander),<br/>
+      Fix connection to already running session libvirtd (Christophe Fergeau),<br/>
+      storage: zfs: fix double listing of new volumes (Roman Bogorodskiy),<br/>
+      qemu_driver: Resolve Coverity FORWARD_NULL (John Ferlan),<br/>
+      virnetserverservice: Resolve Coverity ARRAY_VS_SINGLETON (John Ferlan),<br/>
+      libxl_migration: Resolve Coverity NULL_RETURNS (John Ferlan),<br/>
+      qemu_command: Resolve Coverity DEADCODE (John Ferlan),<br/>
+      qemu_driver: Resolve Coverity DEADCODE (John Ferlan),<br/>
+      domain_conf: Resolve Coverity DEADCODE (John Ferlan),<br/>
+      qemu_monitor: Resolve Coverity NESTING_INDENT_MISMATCH (John Ferlan),<br/>
+      storage_conf: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      qemu_driver: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      phyp_driver: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      libxl_migration: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      bridge_driver: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      virsh-network: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      network_conf: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      qemu_capabilities: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      libxl_domain: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      qemu_agent: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      qemu_command: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      cpu_x86: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      domain_conf: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      daemon: Resolve Coverity NEGATIVE_RETURNS (John Ferlan),<br/>
+      qemu_capabilities: Resolve Coverity RESOURCE_LEAK (Wang Rui),<br/>
+      tests: Resolve Coverity RESOURCE_LEAK (Wang Rui),<br/>
+      util: Resolve Coverity RESOURCE_LEAK (Wang Rui),<br/>
+      virsh: fix keepalive error msg (Erik Skultety),<br/>
+      qemu_capabilities: Resolve Coverity NULL_RETURNS (John Ferlan),<br/>
+      qemu_driver: Resolve Coverity CONSTANT_EXPRESSION_RESULT (John Ferlan),<br/>
+      domain_conf: Resolve Coverity REVERSE_INULL (John Ferlan),<br/>
+      qemu_command: Resolve Coverity REVERSE_INULL (John Ferlan),<br/>
+      domain_conf: Resolve Coverity REVERSE_INULL (John Ferlan),<br/>
+      storage_driver: Resolve Coverity REVERSE_INULL (John Ferlan),<br/>
+      xen_xm: Resolve Coverity USE_AFTER_FREE (John Ferlan),<br/>
+      xen_common: Resolve Coverity USE_AFTER_FREE (John Ferlan),<br/>
+      parallels: Resolve Coverity USE_AFTER_FREE (John Ferlan),<br/>
+      conf: fix leak with def-&gt;mem.hugepages (Martin Kletzander),<br/>
+      qemu: call endjob in RevertToSnapshot (Jincheng Miao),<br/>
+      virsh: Initialize vshData in cmdMigrate (Ján Tomko),<br/>
+      libxl: fix memory corruption introduced by commit b55cc5f4e (Jim Fehlig),<br/>
+      iotune: setting an invalid value now reports error (Erik Skultety),<br/>
+      xenconfig: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      virnetsocket: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      commandtest: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      numatune: setting --mode does not work well (Erik Skultety),<br/>
+      qemu: min_guarantee: Parameter 'min_guarantee' not supported (Erik Skultety),<br/>
+      Parallels: fix error with video card RAM dimension (Alexander Burluka),<br/>
+      util: compare floor attribute in virNetDevBandwidthEqual (Martin Kletzander),<br/>
+      conf: net: Correctly switch how to format address fields (Peter Krempa),<br/>
+      Perform disk config validity checking for attach-device config (John Ferlan),<br/>
+      nodeCapsInitNUMA: Avoid @cpumap leak (Michal Privoznik),<br/>
+      qemu: Issue rtc-reset-reinjection command after guest-set-time (Michal Privoznik),<br/>
+      qemu: forbid negative blkio values (Martin Kletzander),<br/>
+      lxc: forbid negative blkio values (Martin Kletzander),<br/>
+      qemu: Fix build error introduced in 653137eb957a278b556c6226424aad5395a (Peter Krempa),<br/>
+      qemu: blkiotune: Avoid accessing non-existing disk configuration (Peter Krempa),<br/>
+      qemu: Label all TAP FDs (Michal Privoznik),<br/>
+      cmdMigrate: move vshConnect before vshWatchJob (Chunyan Liu),<br/>
+      qemu: cpu: unplug: Remove vcpu pinning on cold cpu unplug (Peter Krempa),<br/>
+      qemu: Redundant listen address entry in quest xml (Erik Skultety),<br/>
+      daemon: Fix driver registration ordering (Michal Privoznik),<br/>
+      network: fix crash when starting a network with no &lt;pf&gt; element (Laine Stump),<br/>
+      qemu_process: fix memleak found by coverity (Pavel Hrdina),<br/>
+      Maximum vlanid should be 4095 in interface.rng (Jianwei Hu),<br/>
+      LXC: Fix virLXCControllerSetupDevPTS() wrt user namespaces (Richard Weinberger),<br/>
+      conf: fix parsing 'cmd_per_lun' and 'max_sectors' (Mo yuxiang),<br/>
+      bhyve: fix error message in bhyveStateInitialize (Dmitry Guryanov),<br/>
+      qemu: migration: Check domain live state after exitting the monitor (Peter Krempa),<br/>
+      qemu: managedsave: Check that VM is alive after entering async job (Peter Krempa),<br/>
+      numatune: Fix parsing of empty nodeset (0,^0) (Erik Skultety),<br/>
+      conf: Format interface's driver more frequently (Michal Privoznik),<br/>
+      network: populate interface pool immediately when network is started (Laine Stump),<br/>
+      network: make networkCreateInterfacePool more robust (Laine Stump),<br/>
+      Make 'uri' command a bit more prominent. (Guido Günther),<br/>
+      Don't fail qemu driver intialization if we can't determine hugepage size (Guido Günther),<br/>
+      blockjob: fix use-after-free in blockcopy (Eric Blake),<br/>
+      blockjob: avoid memory leak during block pivot (Eric Blake),<br/>
+      snapshot: conf: Enforce absolute paths on disk and memory images (Peter Krempa),<br/>
+      Node Devices: Fix nodedev-list for fc_host &amp; vports. (Prerna Saxena),<br/>
+      blockjob: correctly report active commit for job info (Eric Blake),<br/>
+      Fix vlanid attribute name in nwfilter d (Jianwei Hu),<br/>
+      Don't overwrite errors from virNetDevBandwidthSet (Ján Tomko),<br/>
+      virsh: check if domiftune parameters fit into UINT (Ján Tomko),<br/>
+      storage: Refresh storage pool after upload (John Ferlan)<br/>
+      </li>
+
+      <li>Improvements:<br/>
+      qemu: Allow use of iothreads for disk definitions (John Ferlan),<br/>
+      domain_conf: Add support for iothreads in disk definition (John Ferlan),<br/>
+      qemu: Add support for iothreads (John Ferlan),<br/>
+      domain_conf: Introduce iothreads XML (John Ferlan),<br/>
+      qemu: Implement bulk stats API and one of the stats groups to return (Peter Krempa),<br/>
+      virsh: Implement command to excercise the bulk stats APIs (Peter Krempa),<br/>
+      remote: Implement bulk domain stats APIs in the remote driver (Peter Krempa),<br/>
+      lib: Add few flags for the bulk stats APIs (Peter Krempa),<br/>
+      conf: Add helper to free domain list (Peter Krempa),<br/>
+      vbox: Register per partes (Michal Privoznik),<br/>
+      virDriverLoadModule: Honor libvirt func name tranlsation (Michal Privoznik),<br/>
+      virdrivermoduletest: Test all the modules (Michal Privoznik),<br/>
+      domain_conf: fix internal flag verification (Eric Blake),<br/>
+      API: Tweak virDomainOpenGraphics to return fd directly (Eric Blake),<br/>
+      virsh: domain: Split out code to lookup domain from string (Peter Krempa),<br/>
+      Wire up virDomainOpenGraphicsFD in QEMU driver (Ján Tomko),<br/>
+      Add RPC implementation for virDomainOpenGraphicsFd (Ján Tomko),<br/>
+      blkdeviotune: check for overflow when parsing XML (Erik Skultety),<br/>
+      storage: remove unused 'canonPath' in virStorageFileGetMetadata (Chen Fan),<br/>
+      Add new 'kvm' domain feature and ability to hide KVM signature (Alex Williamson),<br/>
+      maint: drop spurious semicolons (Eric Blake),<br/>
+      daemon: Fix option -v missing info priority log (Zhou Yimin),<br/>
+      qemu: add support for splash-timeout (Martin Kletzander),<br/>
+      qemu: add capability probing for splash-timeout (Martin Kletzander),<br/>
+      storage: zfs: implement download and upload (Roman Bogorodskiy),<br/>
+      fdstream: introduce virFDStreamOpenBlockDevice (Roman Bogorodskiy),<br/>
+      fdstream: report error if virSetNonBlock fails (Roman Bogorodskiy),<br/>
+      qemu: check for active domain after agent interaction (Eric Blake),<br/>
+      Parallels: Change config report errors code. (Alexander Burluka),<br/>
+      Parallels: add virNodeGetCPUMap(). (Alexander Burluka),<br/>
+      daemon: use socket activation with systemd (Martin Kletzander),<br/>
+      rpc: pass listen FD to the daemon being started (Martin Kletzander),<br/>
+      util: add virCommandPassListenFDs() function (Martin Kletzander),<br/>
+      tests: support dynamic prefixes in commandtest (Martin Kletzander),<br/>
+      cfg.mk: allow integers to be assigned a value computed with i|j|k (Martin Kletzander),<br/>
+      daemon: support passing FDs from the calling process (Martin Kletzander),<br/>
+      rpc: set listen backlog on FDs as well as on other sockets (Martin Kletzander),<br/>
+      remote: create virNetServerServiceNewFDOrUNIX() wrapper (Martin Kletzander),<br/>
+      util: abstract parsing of passed FDs into virGetListenFDs() (Martin Kletzander),<br/>
+      virsh: Don't print extra '-'s in error message for -k and -K options (Peter Krempa),<br/>
+      hvsupport: Adapt to vbox driver rewrite (Michal Privoznik),<br/>
+      qemu: hotplug: Sanitize shared device removal on media change (Peter Krempa),<br/>
+      qemu: conf: Split out code to retrieve hostdev key and reuse it (Peter Krempa),<br/>
+      qemu: conf: Split up qemuRemoveSharedDevice into per-device-type functions (Peter Krempa),<br/>
+      qemu: conf: Split up qemuAddSharedDevice into per-device-type functions (Peter Krempa),<br/>
+      qemu: conf: rename qemuCheckSharedDevice to qemuCheckSharedDisk (Peter Krempa),<br/>
+      qemu: shared: Split out shared device list remove code (Peter Krempa),<br/>
+      qemu: shared: Split out insertion code to the shared device list (Peter Krempa),<br/>
+      qemu: hotplug: Format proper source string for cdrom media change (Peter Krempa),<br/>
+      qemu: hotplug: Change arguments for qemuDomainChangeEjectableMedia (Peter Krempa),<br/>
+      qemu: hotplug: Add helper to initialize/teardown new disks for VMs (Peter Krempa),<br/>
+      qemu: hotplug: Untangle cleanup paths in qemuDomainChangeEjectableMedia (Peter Krempa),<br/>
+      conf: Pass virStorageSource into virDomainDiskSourceIsBlockType (Peter Krempa),<br/>
+      qemu: Explicitly state that hotplugging cdroms and floppies doesn't work (Peter Krempa),<br/>
+      conf: fix comment (Giuseppe Scrivano),<br/>
+      conf, virDomainFSDefPtr: rename "path" argument to "target" (Giuseppe Scrivano),<br/>
+      bhyve: add volumes support (Roman Bogorodskiy),<br/>
+      storage: make disk source pool translation generic (Roman Bogorodskiy),<br/>
+      driver: Move virDrvNetworkGetDHCPLeases to the appropriate section (Peter Krempa),<br/>
+      qemu: allow device block I/O tuning in session mode (Martin Kletzander),<br/>
+      src/xenconfig: move common parsing/formatting to xen_common (Jim Fehlig),<br/>
+      src/xenconfig: wrap common formatting code (Kiarie Kahurani),<br/>
+      src/xenconfig: wrap common parsing code (Kiarie Kahurani),<br/>
+      xen: rename xenxs to xenconfig (Jim Fehlig),<br/>
+      qemu: process: Pin on per-vcpu basis instead of per-vcpupin element (Peter Krempa),<br/>
+      conf: Refactor virDomainVcpuPinDefParseXML (Peter Krempa),<br/>
+      conf: cpupin: Remove useless checking of vcpupin element count (Peter Krempa),<br/>
+      qemu: process: Remove unnecessary argument and rename function (Peter Krempa),<br/>
+      vbox: Introducing vboxCommonDriver (Taowei),<br/>
+      vbox: Add registerDomainEvent (Taowei),<br/>
+      vbox: Rewrite vboxNode functions (Taowei),<br/>
+      vbox: Rewrite vboxConnectListAllDomains (Taowei),<br/>
+      vbox: Rewrite vboxDomainScreenshot (Taowei),<br/>
+      vbox: Rewrite vboxDomainSnapshotDelete (Taowei),<br/>
+      vbox: Rewrite vboxDomainRevertToSnapshot (Taowei),<br/>
+      vbox: Rewrite vboxDomainSnapshotHasMetadata (Taowei),<br/>
+      vbox: Rewrite vboxDomainSnapshotIsCurrent (Taowei),<br/>
+      vbox: Rewrite vboxDomainSnapshotCurrent (Taowei),<br/>
+      vbox: Rewrite vboxDomainSnapshotGetParent (Taowei),<br/>
+      vbox: Rewrite vboxDomainHasCurrentSnapshot (Taowei),<br/>
+      vbox: Rewrite vboxSnapshotLookupByName (Taowei),<br/>
+      vbox: Rewrite vboxDomainSnapshotListNames (Taowei),<br/>
+      vbox: Rewrite vboxDomainSnapshotNum (Taowei),<br/>
+      vbox: Rewrite vboxDomainSnapshotGetXMLDesc (Taowei),<br/>
+      vbox: Rewrite vboxDomainSnapshotCreateXML (Taowei),<br/>
+      vbox: Add API for vboxDomainSnapshotCreateXML (Taowei),<br/>
+      vbox: Rewrite vboxDomainDetachDeviceFlags (Taowei),<br/>
+      vbox: Rewrite vboxDomainDetachDevice (Taowei),<br/>
+      vbox: Rewrite vboxDomainUpdateDeviceFlags (Taowei),<br/>
+      vbox: Rewrite vboxDomainAttachDeviceFlags (Taowei),<br/>
+      vbox: Rewrite vboxDomainAttachDevice (Taowei),<br/>
+      vbox: Rewrite vboxDomainUndefine (Taowei),<br/>
+      vbox: Rewrite vboxConnectNumOfDefinedDomains (Taowei),<br/>
+      vbox: Rewrite vboxConnectListDefinedDomains (Taowei),<br/>
+      vbox: Rewrite vboxDomainGetXMLDesc (Taowei),<br/>
+      vbox: Add API for vboxDomainGetXMLDesc (Taowei),<br/>
+      vbox: Rewrite vboxDomainGetMaxVcpus (Taowei),<br/>
+      vbox: Rewrite vboxDomainGetVcpusFlags (Taowei),<br/>
+      vbox: Rewrite vboxDomainSetVcpus (Taowei),<br/>
+      vbox: Rewrite vboxDomainSetVcpusFlags (Taowei),<br/>
+      vbox: Rewrite vboxDomainGetState (Taowei),<br/>
+      vbox: Rewrite vboxDomainGetInfo (Taowei),<br/>
+      vbox: Rewrite vboxDomainSetMemory (Taowei),<br/>
+      vbox: Rewrite vboxDomainGetOSType (Taowei),<br/>
+      vbox: Rewrite vboxDomainDestroy (Taowei),<br/>
+      vbox: Rewrite vboxDomainDestroyFlags (Taowei),<br/>
+      vbox: Rewrite vboxDomainReboot (Taowei),<br/>
+      vbox: Rewrite vboxDomainShutdown (Taowei),<br/>
+      vbox: Rewrite vboxDomainShutdownFlags (Taowei),<br/>
+      vbox: Rewrite vboxDomainResume (Taowei),<br/>
+      vbox: Rewrite vboxDomainSuspend (Taowei),<br/>
+      vbox: Rewrite vboxDomainIsUpdated (Taowei),<br/>
+      vbox: Rewrite vboxDomainIsPersistent (Taowei),<br/>
+      vbox: Rewrite vboxDomainIsActive (Taowei),<br/>
+      vbox: Rewrite vboxDomainLookupByName (Taowei),<br/>
+      vbox: Rewrite vboxDomainCreateXML (Taowei),<br/>
+      vbox: Rewrite vboxDomainCreate (Taowei),<br/>
+      vbox: Rewrite vboxDomainCreateWithFlags (Taowei),<br/>
+      vbox: Rewrite vboxDomainDefineXML (Taowei),<br/>
+      vbox: Rewrite vboxDomainUndefineFlags (Taowei),<br/>
+      vbox: Rewrite vboxDomainLookupByUUID (Taowei),<br/>
+      vbox: Rewrite vboxDomainLookupById (Taowei),<br/>
+      vbox: Rewrite vboxConnectNumOfDomains (Taowei),<br/>
+      vbox: Rewrite vboxConnectListDomains (Taowei),<br/>
+      vbox: Rewrite vboxConnectGetCapabilities (Taowei),<br/>
+      vbox: Rewrite vboxConnectGetMaxVcpus (Taowei),<br/>
+      vbox: Rewrite vboxConnectIsAlive (Taowei),<br/>
+      vbox: Rewrite vboxConnectIsEncrypted (Taowei),<br/>
+      vbox: Rewrite vboxConnectIsSecure (Taowei),<br/>
+      vbox: Rewrite vboxConnectGetHostname (Taowei),<br/>
+      vbox: Rewrite vboxConnectGetVersion (Taowei),<br/>
+      vbox: Rewrite vboxDomainSave (Taowei),<br/>
+      vbox: Rewrite vboxConnectClose (Taowei),<br/>
+      vbox: Begin to rewrite, vboxConnectOpen (Taowei),<br/>
+      src/xenxs: Refactor code formating vif device config (Jim Fehlig),<br/>
+      src/xenxs: Refactor code formating peripheral device config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code formating Vfb config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code formating OS config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code formating CPU config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code formating xm disk config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code formating Char devices config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code formating event actions config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code formating virtual time config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code formating memory config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code formating general VM config (Kiarie Kahurani),<br/>
+      qemu: Tidy up job handling during live migration (Sam Bobroff),<br/>
+      LXC: resolve issues in lxcDomainSetMaxMemory (Chen Hanxiao),<br/>
+      daemon: Limit default log level to journald to VIR_LOG_INFO (Peter Krempa),<br/>
+      libvirtd: conf: Mention support for logging into journald (Peter Krempa),<br/>
+      maint: improve syntax check for space around = (Eric Blake),<br/>
+      qemu_conf: Undefine the correct symbol (Michal Privoznik),<br/>
+      qemu: process: Fix header format of qemuProcessSetVcpuAffinities (Peter Krempa),<br/>
+      qemu: use guest-fsfreeze-freeze-list command if mountpoints to freeze specified (Tomoki Sekiyama),<br/>
+      qemu: Actually clear bandwidth settings (Jianwei Hu),<br/>
+      src/xenxs: Refactor code parsing OS config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code parsing general config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code parsing emulated hardware config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code parsing Vif config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code parsing Char devices config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code parsing Vfb config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code parsing xm disk config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code parsing CPU features (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code parsing PCI config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code parsing event actions (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code parsing virtual time config (Kiarie Kahurani),<br/>
+      src/xenxs: Refactor code parsing memory config (Kiarie Kahurani),<br/>
+      conf: Add USB sound card support and implement it for qemu (Peter Krempa),<br/>
+      hostdev: Add iSCSI hostdev XML (John Ferlan),<br/>
+      domain_conf: Common routine to handle network storage host xml def (John Ferlan),<br/>
+      qemu: Make virFileFindHugeTLBFS fault tolerant (Michal Privoznik),<br/>
+      qemu: reword caps-related error (Martin Kletzander),<br/>
+      domtop: Turn parse_argv into void (Michal Privoznik),<br/>
+      qemu: fix comment in qemu.conf (Martin Kletzander)<br/>
+      </li>
+
+      <li>Cleanups:<br/>
+      virsh: drop unused variable (Eric Blake),<br/>
+      Fix spacing around commas (Michal Privoznik),<br/>
+      examples: test: Kill unsupported maxMemory element (Peter Krempa),<br/>
+      cleanup spaces between parentheses and braces (Martin Kletzander),<br/>
+      qemu_command: fix block indentation (Giuseppe Scrivano),<br/>
+      qemu: Remove extraneous space in function prototypes (John Ferlan),<br/>
+      daemon: Fix indentation in libvirtd.c (Wang Rui),<br/>
+      domtop: Remove unused variable (Michal Privoznik)<br/>
+      </li>
+    </ul>
     <h3>1.2.7: Aug 2 2014</h3>
     <ul>
       <li> Features:<br/>

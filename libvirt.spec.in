@@ -2247,6 +2247,13 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Tue Sep  2 2014 Daniel Veillard <veillard@redhat.com> - 1.2.8-1
+- blockcopy: virDomainBlockCopy with XML destination, typed params
+- Introduce API for retrieving bulk domain stats
+- Introduce virDomainOpenGraphicsFD API
+- storage: ZFS support
+- many improvements and bug fixes
+
 * Sun Aug  3 2014 Daniel Veillard <veillard@redhat.com> - 1.2.7-1
 - Introduce virConnectGetDomainCapabilities
 - many improvements and bug fixes
