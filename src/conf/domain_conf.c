@@ -4974,6 +4974,13 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
                       host->secModels[0].model);
             if (VIR_STRDUP(def->seclabels[0]->model, host->secModels[0].model) < 0)
                 goto error;
+
+            if (STREQ(def->seclabels[0]->model, "none") &&
+                flags & VIR_DOMAIN_XML_INACTIVE) {
+                /* Fix older configurations */
+                def->seclabels[0]->type = VIR_DOMAIN_SECLABEL_NONE;
+                def->seclabels[0]->relabel = false;
+            }
         } else {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing security model in domain seclabel"));
