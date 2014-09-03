@@ -903,6 +903,23 @@ qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
 }
 
 int
+qemuSetupCgroupIOThreadsPin(virCgroupPtr cgroup,
+                            virDomainVcpuPinDefPtr *iothreadspin,
+                            int niothreadspin,
+                            int iothreadid)
+{
+    size_t i;
+
+    for (i = 0; i < niothreadspin; i++) {
+        if (iothreadid == iothreadspin[i]->vcpuid) {
+            return qemuSetupCgroupEmulatorPin(cgroup, iothreadspin[i]->cpumask);
+        }
+    }
+
+    return -1;
+}
+
+int
 qemuSetupCgroupEmulatorPin(virCgroupPtr cgroup,
                            virBitmapPtr cpumask)
 {
@@ -1077,6 +1094,93 @@ qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
     if (cgroup_emulator) {
         virCgroupRemove(cgroup_emulator);
         virCgroupFree(&cgroup_emulator);
+    }
+
+    return -1;
+}
+
+int
+qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
+{
+    virCgroupPtr cgroup_iothread = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDefPtr def = vm->def;
+    size_t i, j;
+    unsigned long long period = vm->def->cputune.period;
+    long long quota = vm->def->cputune.quota;
+
+    if ((period || quota) &&
+        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cgroup cpu is required for scheduler tuning"));
+        return -1;
+    }
+
+    /*
+     * If CPU cgroup controller is not initialized here, then we need
+     * neither period nor quota settings.  And if CPUSET controller is
+     * not initialized either, then there's nothing to do anyway.
+     */
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU) &&
+        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
+        return 0;
+
+    /* We are trying to setup cgroups for CPU pinning, which can also be done
+     * with virProcessSetAffinity, thus the lack of cgroups is not fatal here.
+     */
+    if (priv->cgroup == NULL)
+        return 0;
+
+    if (priv->niothreadpids == 0) {
+        VIR_WARN("Unable to get iothreads' pids.");
+        return 0;
+    }
+
+    for (i = 0; i < priv->niothreadpids; i++) {
+        /* IOThreads are numbered 1..n, although the array is 0..n-1,
+         * so we will account for that here
+         */
+        if (virCgroupNewIOThread(priv->cgroup, i+1, true, &cgroup_iothread) < 0)
+            goto cleanup;
+
+        /* move the thread for iothread to sub dir */
+        if (virCgroupAddTask(cgroup_iothread, priv->iothreadpids[i]) < 0)
+            goto cleanup;
+
+        if (period || quota) {
+            if (qemuSetupCgroupVcpuBW(cgroup_iothread, period, quota) < 0)
+                goto cleanup;
+        }
+
+        /* Set iothreadpin in cgroup if iothreadpin xml is provided */
+        if (virCgroupHasController(priv->cgroup,
+                                   VIR_CGROUP_CONTROLLER_CPUSET)) {
+            /* find the right CPU to pin, otherwise
+             * qemuSetupCgroupIOThreadsPin will fail. */
+            for (j = 0; j < def->cputune.niothreadspin; j++) {
+                /* IOThreads are numbered/named 1..n */
+                if (def->cputune.iothreadspin[j]->vcpuid != i+1)
+                    continue;
+
+                if (qemuSetupCgroupIOThreadsPin(cgroup_iothread,
+                                                def->cputune.iothreadspin,
+                                                def->cputune.niothreadspin,
+                                                i+1) < 0)
+                    goto cleanup;
+
+                break;
+            }
+        }
+
+        virCgroupFree(&cgroup_iothread);
+    }
+
+    return 0;
+
+ cleanup:
+    if (cgroup_iothread) {
+        virCgroupRemove(cgroup_iothread);
+        virCgroupFree(&cgroup_iothread);
     }
 
     return -1;
