@@ -7826,7 +7826,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
             virTypedParameterPtr param = &params[i];
 
             if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
-                if (virCgroupSetBlkioWeight(priv->cgroup, params[i].value.ui) < 0)
+                if (virCgroupSetBlkioWeight(priv->cgroup, param->value.ui) < 0)
                     ret = -1;
             } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT) ||
                        STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS) ||
@@ -7837,7 +7837,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
                 virBlkioDevicePtr devices = NULL;
                 size_t j;
 
-                if (qemuDomainParseBlkioDeviceStr(params[i].value.s,
+                if (qemuDomainParseBlkioDeviceStr(param->value.s,
                                                   param->field,
                                                   &devices,
                                                   &ndevices) < 0) {
@@ -7920,7 +7920,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
             virTypedParameterPtr param = &params[i];
 
             if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
-                persistentDef->blkio.weight = params[i].value.ui;
+                persistentDef->blkio.weight = param->value.ui;
             } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT) ||
                        STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS) ||
                        STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS) ||
@@ -7929,8 +7929,8 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
                 virBlkioDevicePtr devices = NULL;
                 size_t ndevices;
 
-                if (qemuDomainParseBlkioDeviceStr(params[i].value.s,
-                                                  params->field,
+                if (qemuDomainParseBlkioDeviceStr(param->value.s,
+                                                  param->field,
                                                   &devices,
                                                   &ndevices) < 0) {
                     ret = -1;
