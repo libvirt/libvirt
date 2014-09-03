@@ -1677,11 +1677,7 @@ fi
 %preun daemon
     %if %{with_systemd}
         %if %{with_systemd_macros}
-            %systemd_preun \
-                libvirtd.socket \
-                libvirtd.service \
-                virtlockd.socket \
-                virtlockd.service
+            %systemd_preun libvirtd.socket libvirtd.service virtlockd.socket virtlockd.service
         %else
 if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
