@@ -13607,7 +13607,7 @@ qemuDomainSnapshotListNames(virDomainPtr domain,
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = qemuDomObjFromDomain(domain)))
-        goto cleanup;
+        return -1;
 
     if (virDomainSnapshotListNamesEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
@@ -13616,8 +13616,7 @@ qemuDomainSnapshotListNames(virDomainPtr domain,
                                          flags);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     return n;
 }
 
@@ -13633,7 +13632,7 @@ qemuDomainSnapshotNum(virDomainPtr domain,
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = qemuDomObjFromDomain(domain)))
-        goto cleanup;
+        return -1;
 
     if (virDomainSnapshotNumEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
@@ -13641,8 +13640,7 @@ qemuDomainSnapshotNum(virDomainPtr domain,
     n = virDomainSnapshotObjListNum(vm->snapshots, NULL, flags);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     return n;
 }
 
@@ -13659,7 +13657,7 @@ qemuDomainListAllSnapshots(virDomainPtr domain,
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = qemuDomObjFromDomain(domain)))
-        goto cleanup;
+        return -1;
 
     if (virDomainListAllSnapshotsEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
@@ -13667,8 +13665,7 @@ qemuDomainListAllSnapshots(virDomainPtr domain,
     n = virDomainListSnapshots(vm->snapshots, NULL, domain, snaps, flags);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     return n;
 }
 
@@ -13687,7 +13684,7 @@ qemuDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = qemuDomObjFromSnapshot(snapshot)))
-        goto cleanup;
+        return -1;
 
     if (virDomainSnapshotListChildrenNamesEnsureACL(snapshot->domain->conn, vm->def) < 0)
         goto cleanup;
@@ -13699,8 +13696,7 @@ qemuDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
                                          flags);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     return n;
 }
 
@@ -13717,7 +13713,7 @@ qemuDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = qemuDomObjFromSnapshot(snapshot)))
-        goto cleanup;
+        return -1;
 
     if (virDomainSnapshotNumChildrenEnsureACL(snapshot->domain->conn, vm->def) < 0)
         goto cleanup;
@@ -13728,8 +13724,7 @@ qemuDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
     n = virDomainSnapshotObjListNum(vm->snapshots, snap, flags);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     return n;
 }
 
@@ -13747,7 +13742,7 @@ qemuDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = qemuDomObjFromSnapshot(snapshot)))
-        goto cleanup;
+        return -1;
 
     if (virDomainSnapshotListAllChildrenEnsureACL(snapshot->domain->conn, vm->def) < 0)
         goto cleanup;
@@ -13759,8 +13754,7 @@ qemuDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
                                flags);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     return n;
 }
 
@@ -13777,7 +13771,7 @@ qemuDomainSnapshotLookupByName(virDomainPtr domain,
     virCheckFlags(0, NULL);
 
     if (!(vm = qemuDomObjFromDomain(domain)))
-        goto cleanup;
+        return NULL;
 
     if (virDomainSnapshotLookupByNameEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
@@ -13788,8 +13782,7 @@ qemuDomainSnapshotLookupByName(virDomainPtr domain,
     snapshot = virGetDomainSnapshot(domain, snap->def->name);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     return snapshot;
 }
 
@@ -13804,7 +13797,7 @@ qemuDomainHasCurrentSnapshot(virDomainPtr domain,
     virCheckFlags(0, -1);
 
     if (!(vm = qemuDomObjFromDomain(domain)))
-        goto cleanup;
+        return -1;
 
     if (virDomainHasCurrentSnapshotEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
@@ -13812,8 +13805,7 @@ qemuDomainHasCurrentSnapshot(virDomainPtr domain,
     ret = (vm->current_snapshot != NULL);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     return ret;
 }
 
@@ -13829,7 +13821,7 @@ qemuDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
     virCheckFlags(0, NULL);
 
     if (!(vm = qemuDomObjFromSnapshot(snapshot)))
-        goto cleanup;
+        return NULL;
 
     if (virDomainSnapshotGetParentEnsureACL(snapshot->domain->conn, vm->def) < 0)
         goto cleanup;
@@ -13847,8 +13839,7 @@ qemuDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
     parent = virGetDomainSnapshot(snapshot->domain, snap->def->parent);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     return parent;
 }
 
@@ -13863,7 +13854,7 @@ qemuDomainSnapshotCurrent(virDomainPtr domain,
     virCheckFlags(0, NULL);
 
     if (!(vm = qemuDomObjFromDomain(domain)))
-        goto cleanup;
+        return NULL;
 
     if (virDomainSnapshotCurrentEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
@@ -13877,8 +13868,7 @@ qemuDomainSnapshotCurrent(virDomainPtr domain,
     snapshot = virGetDomainSnapshot(domain, vm->current_snapshot->def->name);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     return snapshot;
 }
 
@@ -13895,7 +13885,7 @@ qemuDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     virCheckFlags(VIR_DOMAIN_XML_SECURE, NULL);
 
     if (!(vm = qemuDomObjFromSnapshot(snapshot)))
-        goto cleanup;
+        return NULL;
 
     if (virDomainSnapshotGetXMLDescEnsureACL(snapshot->domain->conn, vm->def) < 0)
         goto cleanup;
@@ -13908,8 +13898,7 @@ qemuDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     xml = virDomainSnapshotDefFormat(uuidstr, snap->def, flags, 0);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     return xml;
 }
 
@@ -13925,7 +13914,7 @@ qemuDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
     virCheckFlags(0, -1);
 
     if (!(vm = qemuDomObjFromSnapshot(snapshot)))
-        goto cleanup;
+        return -1;
 
     if (virDomainSnapshotIsCurrentEnsureACL(snapshot->domain->conn, vm->def) < 0)
         goto cleanup;
@@ -13937,8 +13926,7 @@ qemuDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
            STREQ(snapshot->name, vm->current_snapshot->def->name));
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     return ret;
 }
 
@@ -13954,7 +13942,7 @@ qemuDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
     virCheckFlags(0, -1);
 
     if (!(vm = qemuDomObjFromSnapshot(snapshot)))
-        goto cleanup;
+        return -1;
 
     if (virDomainSnapshotHasMetadataEnsureACL(snapshot->domain->conn, vm->def) < 0)
         goto cleanup;
@@ -13968,8 +13956,7 @@ qemuDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
     ret = 1;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     return ret;
 }
 
