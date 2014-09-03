@@ -8759,6 +8759,14 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
         virCgroupSetCpusetMems(priv->cgroup, nodeset_str) < 0)
         goto cleanup;
 
+    for (i = 0; i < priv->niothreadpids; i++) {
+        if (virCgroupNewIOThread(priv->cgroup, i, false, &cgroup_temp) < 0 ||
+            virCgroupSetCpusetMems(cgroup_temp, nodeset_str) < 0)
+            goto cleanup;
+        virCgroupFree(&cgroup_temp);
+    }
+
+
     ret = 0;
  cleanup:
     VIR_FREE(nodeset_str);
