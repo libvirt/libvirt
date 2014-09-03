@@ -1492,6 +1492,49 @@ virCgroupNewEmulator(virCgroupPtr domain,
 }
 
 
+/**
+ * virCgroupNewIOThread:
+ *
+ * @domain: group for the domain
+ * @iothreadid: id of the iothread
+ * @create: true to create if not already existing
+ * @group: Pointer to returned virCgroupPtr
+ *
+ * Returns 0 on success, or -1 on error
+ */
+int
+virCgroupNewIOThread(virCgroupPtr domain,
+                     int iothreadid,
+                     bool create,
+                     virCgroupPtr *group)
+{
+    int ret = -1;
+    char *name = NULL;
+    int controllers;
+
+    if (virAsprintf(&name, "iothread%d", iothreadid) < 0)
+        goto cleanup;
+
+    controllers = ((1 << VIR_CGROUP_CONTROLLER_CPU) |
+                   (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
+                   (1 << VIR_CGROUP_CONTROLLER_CPUSET));
+
+    if (virCgroupNew(-1, name, domain, controllers, group) < 0)
+        goto cleanup;
+
+    if (virCgroupMakeGroup(domain, *group, create, VIR_CGROUP_NONE) < 0) {
+        virCgroupRemove(*group);
+        virCgroupFree(group);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(name);
+    return ret;
+}
+
+
 int
 virCgroupNewDetect(pid_t pid,
                    int controllers,

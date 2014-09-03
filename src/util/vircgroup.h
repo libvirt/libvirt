@@ -76,6 +76,12 @@ int virCgroupNewEmulator(virCgroupPtr domain,
                          virCgroupPtr *group)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 
+int virCgroupNewIOThread(virCgroupPtr domain,
+                         int iothreadid,
+                         bool create,
+                         virCgroupPtr *group)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+
 int virCgroupNewDetect(pid_t pid,
                        int controllers,
                        virCgroupPtr *group);
