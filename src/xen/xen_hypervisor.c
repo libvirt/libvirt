@@ -1664,8 +1664,9 @@ virXen_getvcpusinfo(int handle,
                     ipt->state = VIR_VCPU_RUNNING;
                 if (op.u.getvcpuinfo.blocked)
                     ipt->state = VIR_VCPU_BLOCKED;
-            } else
+            } else {
                 ipt->state = VIR_VCPU_OFFLINE;
+            }
 
             ipt->cpuTime = op.u.getvcpuinfo.cpu_time;
             ipt->cpu = op.u.getvcpuinfo.online ? (int)op.u.getvcpuinfo.cpu : -1;
@@ -1675,8 +1676,9 @@ virXen_getvcpusinfo(int handle,
                     ipt->state = VIR_VCPU_RUNNING;
                 if (op.u.getvcpuinfod5.blocked)
                     ipt->state = VIR_VCPU_BLOCKED;
-            } else
+            } else {
                 ipt->state = VIR_VCPU_OFFLINE;
+            }
 
             ipt->cpuTime = op.u.getvcpuinfod5.cpu_time;
             ipt->cpu = op.u.getvcpuinfod5.online ? (int)op.u.getvcpuinfod5.cpu : -1;
@@ -2375,8 +2377,9 @@ xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
                                subs[1].rm_eo-subs[1].rm_so,
                                sizeof(hvm_type)) == NULL)
                     goto no_memory;
-            } else if (regexec(&flags_pae_rec, line, 0, NULL, 0) == 0)
+            } else if (regexec(&flags_pae_rec, line, 0, NULL, 0) == 0) {
                 host_pae = 1;
+            }
         }
     }
 
@@ -2427,17 +2430,14 @@ xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
                         pae = 1;
                     else
                         nonpae = 1;
-                }
-                else if (STRPREFIX(&token[subs[2].rm_so], "x86_64")) {
+                } else if (STRPREFIX(&token[subs[2].rm_so], "x86_64")) {
                     arch = VIR_ARCH_X86_64;
-                }
-                else if (STRPREFIX(&token[subs[2].rm_so], "ia64")) {
+                } else if (STRPREFIX(&token[subs[2].rm_so], "ia64")) {
                     arch = VIR_ARCH_ITANIUM;
                     if (subs[3].rm_so != -1 &&
                         STRPREFIX(&token[subs[3].rm_so], "be"))
                         ia64_be = 1;
-                }
-                else if (STRPREFIX(&token[subs[2].rm_so], "powerpc64")) {
+                } else if (STRPREFIX(&token[subs[2].rm_so], "powerpc64")) {
                     arch = VIR_ARCH_PPC64;
                 } else {
                     /* XXX surely no other Xen archs exist. Arrrrrrrrrm  */

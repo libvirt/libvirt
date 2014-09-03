@@ -883,7 +883,7 @@ xend_detect_config_version(virConnectPtr conn)
     if (value) {
         if (virStrToLong_i(value, NULL, 10, &priv->xendConfigVersion) < 0)
             goto cleanup;
-    }  else {
+    } else {
         /* Xen prior to 3.0.3 did not have the xend_config_format
            field, and is implicitly version 1. */
         priv->xendConfigVersion = XEND_CONFIG_VERSION_3_0_2;
@@ -1206,8 +1206,7 @@ xenDaemonOpen(virConnectPtr conn,
         if (xenDaemonOpen_unix(conn, conn->uri->path) < 0 ||
             xend_detect_config_version(conn) == -1)
             goto failed;
-    }
-    else if (STRCASEEQ(conn->uri->scheme, "xen")) {
+    } else if (STRCASEEQ(conn->uri->scheme, "xen")) {
         /*
          * try first to open the unix socket
          */
@@ -2531,8 +2530,7 @@ xenDaemonDetachDeviceFlags(virConnectPtr conn,
         ret = xend_op(conn, minidef->name, "op", "device_configure",
                       "config", xendev, "dev", ref, NULL);
         VIR_FREE(xendev);
-    }
-    else {
+    } else {
         ret = xend_op(conn, minidef->name, "op", "device_destroy",
                       "type", class, "dev", ref, "force", "0", "rm_cfg", "1",
                       NULL);
@@ -2767,8 +2765,7 @@ xenDaemonDomainMigratePerform(virConnectPtr conn,
         if (uriptr->port)
             snprintf(port, sizeof(port), "%d", uriptr->port);
         virURIFree(uriptr);
-    }
-    else if ((p = strrchr(uri, ':')) != NULL) { /* "hostname:port" */
+    } else if ((p = strrchr(uri, ':')) != NULL) { /* "hostname:port" */
         int port_nr, n;
 
         if (virStrToLong_i(p+1, NULL, 10, &port_nr) < 0) {
@@ -2783,8 +2780,7 @@ xenDaemonDomainMigratePerform(virConnectPtr conn,
         if (VIR_STRDUP(hostname, uri) < 0)
             return -1;
         hostname[n] = '\0';
-    }
-    else {                      /* "hostname" (or IP address) */
+    } else {                      /* "hostname" (or IP address) */
         if (VIR_STRDUP(hostname, uri) < 0)
             return -1;
     }
@@ -3244,13 +3240,13 @@ xenDaemonDomainBlockPeek(virConnectPtr conn,
     const char *actual;
 
     /* Security check: The path must correspond to a block device. */
-    if (minidef->id > 0)
+    if (minidef->id > 0) {
         root = sexpr_get(conn, "/xend/domain/%d?detail=1",
                          minidef->id);
-    else if (minidef->id < 0)
+    } else if (minidef->id < 0) {
         root = sexpr_get(conn, "/xend/domain/%s?detail=1",
                          minidef->name);
-    else {
+    } else {
         /* This call always fails for dom0. */
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domainBlockPeek is not supported for dom0"));

@@ -541,7 +541,7 @@ xenParseCPUFeatures(virConfPtr conf, virDomainDefPtr def)
         if (xenConfigGetBool(conf, "hpet", &val, -1) < 0)
             return -1;
 
-        else if (val != -1) {
+        if (val != -1) {
             virDomainTimerDefPtr timer;
 
             if (VIR_ALLOC_N(def->clock.timers, 1) < 0 ||
@@ -1269,12 +1269,10 @@ xenFormatNet(virConnectPtr conn,
     if (!hvm) {
         if (net->model != NULL)
             virBufferAsprintf(&buf, ",model=%s", net->model);
-    }
-    else {
+    } else {
         if (net->model != NULL && STREQ(net->model, "netfront")) {
             virBufferAddLit(&buf, ",type=netfront");
-        }
-        else {
+        } else {
             if (net->model != NULL)
                 virBufferAsprintf(&buf, ",model=%s", net->model);
 

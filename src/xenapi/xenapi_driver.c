@@ -472,8 +472,9 @@ xenapiConnectListDomains(virConnectPtr conn, int *ids, int maxids)
     if (xen_session_get_this_host(session, &host, session)) {
         xen_host_get_resident_vms(session, &result, host);
         xen_host_free(host);
-    } else
+    } else {
         xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, NULL);
+    }
     if (result != NULL) {
         for (i = 0; (i < (result->size)) && (i < maxids); i++) {
             xen_vm_get_domid(session, &t0, result->contents[i]);
@@ -656,12 +657,13 @@ xenapiDomainLookupByUUID(virConnectPtr conn,
                 domP->id = record->domid;
             }
             xen_vm_record_free(record);
-        }
-        else
+        } else {
             xenapiSessionErrorHandler(conn, VIR_ERR_NO_DOMAIN, NULL);
+        }
         xen_vm_free(vm);
-    } else
+    } else {
         xenapiSessionErrorHandler(conn, VIR_ERR_NO_DOMAIN, NULL);
+    }
     return domP;
 }
 
@@ -958,8 +960,9 @@ xenapiDomainGetOSType(virDomainPtr dom)
         ignore_value(VIR_STRDUP(ostype,
                                 STREQ(boot_policy, "BIOS order") ? "hvm" : "xen"));
         VIR_FREE(boot_policy);
-    } else
+    } else {
         xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
+    }
 
  cleanup:
     if (vms)

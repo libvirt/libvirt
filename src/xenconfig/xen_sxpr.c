@@ -1176,8 +1176,9 @@ xenParseSxpr(const struct sexpr *root,
                            _("unknown lifecycle type %s"), tmp);
             goto error;
         }
-    } else
+    } else {
         def->onPoweroff = VIR_DOMAIN_LIFECYCLE_DESTROY;
+    }
 
     tmp = sexpr_node(root, "domain/on_reboot");
     if (tmp != NULL) {
@@ -1186,8 +1187,9 @@ xenParseSxpr(const struct sexpr *root,
                            _("unknown lifecycle type %s"), tmp);
             goto error;
         }
-    } else
+    } else {
         def->onReboot = VIR_DOMAIN_LIFECYCLE_RESTART;
+    }
 
     tmp = sexpr_node(root, "domain/on_crash");
     if (tmp != NULL) {
@@ -1196,8 +1198,9 @@ xenParseSxpr(const struct sexpr *root,
                            _("unknown lifecycle type %s"), tmp);
             goto error;
         }
-    } else
+    } else {
         def->onCrash = VIR_DOMAIN_LIFECYCLE_DESTROY;
+    }
 
     if (hvm) {
         if (sexpr_int(root, "domain/image/hvm/acpi"))
@@ -1950,12 +1953,10 @@ xenFormatSxprNet(virConnectPtr conn,
     if (!hvm) {
         if (def->model != NULL)
             virBufferEscapeSexpr(buf, "(model '%s')", def->model);
-    }
-    else {
+    } else {
         if (def->model != NULL && STREQ(def->model, "netfront")) {
             virBufferAddLit(buf, "(type netfront)");
-        }
-        else {
+        } else {
             if (def->model != NULL) {
                 virBufferEscapeSexpr(buf, "(model '%s')", def->model);
             }
@@ -2393,8 +2394,7 @@ xenFormatSxpr(virConnectPtr conn,
                         }
                     }
                     virBufferAddLit(&buf, "))");
-                }
-                else {
+                } else {
                     virBufferAddLit(&buf, "(serial ");
                     if (xenFormatSxprChr(def->serials[0], &buf) < 0)
                         goto error;
