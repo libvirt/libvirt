@@ -12185,6 +12185,7 @@ qemuDomainSnapshotFSFreeze(virQEMUDriverPtr driver,
     return frozen < 0 ? -2 : frozen;
 }
 
+
 /* Return -1 on error, otherwise number of thawed filesystems. */
 static int
 qemuDomainSnapshotFSThaw(virQEMUDriverPtr driver,
@@ -12230,6 +12231,7 @@ qemuDomainSnapshotFSThaw(virQEMUDriverPtr driver,
     return thawed;
 }
 
+
 /* The domain is expected to be locked and inactive. */
 static int
 qemuDomainSnapshotCreateInactiveInternal(virQEMUDriverPtr driver,
@@ -12238,6 +12240,7 @@ qemuDomainSnapshotCreateInactiveInternal(virQEMUDriverPtr driver,
 {
     return qemuDomainSnapshotForEachQcow2(driver, vm, snap, "-c", false);
 }
+
 
 /* The domain is expected to be locked and inactive. */
 static int
@@ -12419,6 +12422,7 @@ qemuDomainSnapshotCreateActiveInternal(virConnectPtr conn,
 
     return ret;
 }
+
 
 static int
 qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
@@ -12825,6 +12829,7 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
     return ret;
 }
 
+
 /* The domain is expected to hold monitor lock.  */
 static int
 qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
@@ -12943,6 +12948,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     return ret;
 }
 
+
 /* The domain is expected to hold monitor lock.  This is the
  * counterpart to qemuDomainSnapshotCreateSingleDiskActive, called
  * only on a failed transaction. */
@@ -12980,6 +12986,7 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
         virStorageSourceFree(tmp);
     }
 }
+
 
 /* The domain is expected to be locked and active. */
 static int
@@ -13586,9 +13593,12 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     return snapshot;
 }
 
-static int qemuDomainSnapshotListNames(virDomainPtr domain, char **names,
-                                       int nameslen,
-                                       unsigned int flags)
+
+static int
+qemuDomainSnapshotListNames(virDomainPtr domain,
+                            char **names,
+                            int nameslen,
+                            unsigned int flags)
 {
     virDomainObjPtr vm = NULL;
     int n = -1;
@@ -13611,8 +13621,10 @@ static int qemuDomainSnapshotListNames(virDomainPtr domain, char **names,
     return n;
 }
 
-static int qemuDomainSnapshotNum(virDomainPtr domain,
-                                 unsigned int flags)
+
+static int
+qemuDomainSnapshotNum(virDomainPtr domain,
+                      unsigned int flags)
 {
     virDomainObjPtr vm = NULL;
     int n = -1;
@@ -13634,8 +13646,10 @@ static int qemuDomainSnapshotNum(virDomainPtr domain,
     return n;
 }
 
+
 static int
-qemuDomainListAllSnapshots(virDomainPtr domain, virDomainSnapshotPtr **snaps,
+qemuDomainListAllSnapshots(virDomainPtr domain,
+                           virDomainSnapshotPtr **snaps,
                            unsigned int flags)
 {
     virDomainObjPtr vm = NULL;
@@ -13657,6 +13671,7 @@ qemuDomainListAllSnapshots(virDomainPtr domain, virDomainSnapshotPtr **snaps,
         virObjectUnlock(vm);
     return n;
 }
+
 
 static int
 qemuDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
@@ -13689,6 +13704,7 @@ qemuDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
     return n;
 }
 
+
 static int
 qemuDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
                               unsigned int flags)
@@ -13716,6 +13732,7 @@ qemuDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
         virObjectUnlock(vm);
     return n;
 }
+
 
 static int
 qemuDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
@@ -13747,9 +13764,11 @@ qemuDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
     return n;
 }
 
-static virDomainSnapshotPtr qemuDomainSnapshotLookupByName(virDomainPtr domain,
-                                                           const char *name,
-                                                           unsigned int flags)
+
+static virDomainSnapshotPtr
+qemuDomainSnapshotLookupByName(virDomainPtr domain,
+                               const char *name,
+                               unsigned int flags)
 {
     virDomainObjPtr vm;
     virDomainSnapshotObjPtr snap = NULL;
@@ -13774,8 +13793,10 @@ static virDomainSnapshotPtr qemuDomainSnapshotLookupByName(virDomainPtr domain,
     return snapshot;
 }
 
-static int qemuDomainHasCurrentSnapshot(virDomainPtr domain,
-                                        unsigned int flags)
+
+static int
+qemuDomainHasCurrentSnapshot(virDomainPtr domain,
+                             unsigned int flags)
 {
     virDomainObjPtr vm;
     int ret = -1;
@@ -13795,6 +13816,7 @@ static int qemuDomainHasCurrentSnapshot(virDomainPtr domain,
         virObjectUnlock(vm);
     return ret;
 }
+
 
 static virDomainSnapshotPtr
 qemuDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
@@ -13830,8 +13852,10 @@ qemuDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
     return parent;
 }
 
-static virDomainSnapshotPtr qemuDomainSnapshotCurrent(virDomainPtr domain,
-                                                      unsigned int flags)
+
+static virDomainSnapshotPtr
+qemuDomainSnapshotCurrent(virDomainPtr domain,
+                          unsigned int flags)
 {
     virDomainObjPtr vm;
     virDomainSnapshotPtr snapshot = NULL;
@@ -13858,8 +13882,10 @@ static virDomainSnapshotPtr qemuDomainSnapshotCurrent(virDomainPtr domain,
     return snapshot;
 }
 
-static char *qemuDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
-                                          unsigned int flags)
+
+static char *
+qemuDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
+                             unsigned int flags)
 {
     virDomainObjPtr vm = NULL;
     char *xml = NULL;
@@ -13886,6 +13912,7 @@ static char *qemuDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         virObjectUnlock(vm);
     return xml;
 }
+
 
 static int
 qemuDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
@@ -13946,6 +13973,7 @@ qemuDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
     return ret;
 }
 
+
 /* The domain is expected to be locked and inactive. */
 static int
 qemuDomainSnapshotRevertInactive(virQEMUDriverPtr driver,
@@ -13957,8 +13985,10 @@ qemuDomainSnapshotRevertInactive(virQEMUDriverPtr driver,
     return ret > 0 ? -1 : ret;
 }
 
-static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
-                                      unsigned int flags)
+
+static int
+qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
+                           unsigned int flags)
 {
     virQEMUDriverPtr driver = snapshot->domain->conn->privateData;
     virDomainObjPtr vm = NULL;
@@ -14329,6 +14359,7 @@ struct _virQEMUSnapReparent {
     virDomainSnapshotObjPtr last;
 };
 
+
 static void
 qemuDomainSnapshotReparentChildren(void *payload,
                                    const void *name ATTRIBUTE_UNUSED,
@@ -14358,8 +14389,9 @@ qemuDomainSnapshotReparentChildren(void *payload,
 }
 
 
-static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
-                                    unsigned int flags)
+static int
+qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
+                         unsigned int flags)
 {
     virQEMUDriverPtr driver = snapshot->domain->conn->privateData;
     virDomainObjPtr vm = NULL;
