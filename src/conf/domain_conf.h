@@ -1949,6 +1949,8 @@ struct _virDomainDef {
         size_t nvcpupin;
         virDomainVcpuPinDefPtr *vcpupin;
         virDomainVcpuPinDefPtr emulatorpin;
+        size_t niothreadspin;
+        virDomainVcpuPinDefPtr *iothreadspin;
     } cputune;
 
     virDomainNumatunePtr numatune;

@@ -810,6 +810,16 @@
           </attribute>
         </element>
       </optional>
+      <zeroOrMore>
+        <element name="iothreadpin">
+          <attribute name="iothread">
+            <ref name="unsignedInt"/>
+          </attribute>
+          <attribute name="cpuset">
+            <ref name="cpuset"/>
+          </attribute>
+        </element>
+      </zeroOrMore>
     </element>
   </define>
 

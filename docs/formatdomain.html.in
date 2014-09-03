@@ -526,6 +526,8 @@
     &lt;vcpupin vcpu="2" cpuset="2,3"/&gt;
     &lt;vcpupin vcpu="3" cpuset="0,4"/&gt;
     &lt;emulatorpin cpuset="1-3"/&gt;
+    &lt;iothreadpin iothread="1" cpuset="5,6"/&gt;
+    &lt;iothreadpin iothread="2" cpuset="7,8"/&gt;
     &lt;shares&gt;2048&lt;/shares&gt;
     &lt;period&gt;1000000&lt;/period&gt;
     &lt;quota&gt;-1&lt;/quota&gt;
@@ -566,6 +568,22 @@
          CPUs to pin to. NB, <code>emulatorpin</code> is not allowed if
          attribute <code>placement</code> of element <code>vcpu</code> is
          "auto".
+       </dd>
+       <dt><code>iothreadpin</code></dt>
+       <dd>
+         The optional <code>iothreadpin</code> element specifies which of host
+         physical CPUs the IOThreads will be pinned to. If this is omitted
+         and attribute <code>cpuset</code> of element <code>vcpu</code> is
+         not specified, the IOThreads are pinned to all the physical CPUs
+         by default. There are two required attributes, the attribute
+         <code>iothread</code> specifies the IOThread id and the attribute
+         <code>cpuset</code> specifying which physical CPUs to pin to. The
+         <code>iothread</code> value begins at "1" through the number of
+          <a href="#elementsIOThreadsAllocation"><code>iothreads</code></a>
+         allocated to the domain. A value of "0" is not permitted.
+         NB, <code>iothreadpin</code> is not allowed if attribute
+         <code>placement</code> of element <code>vcpu</code> is "auto".
+        <span class="since">Since 1.2.9</span>
        </dd>
       <dt><code>shares</code></dt>
       <dd>

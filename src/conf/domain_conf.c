@@ -2170,6 +2170,9 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virDomainVcpuPinDefFree(def->cputune.emulatorpin);
 
+    virDomainVcpuPinDefArrayFree(def->cputune.iothreadspin,
+                                 def->cputune.niothreadspin);
+
     virDomainNumatuneFree(def->numatune);
 
     virSysinfoDefFree(def->sysinfo);
@@ -11464,6 +11467,9 @@ virDomainPanicDefParseXML(xmlNodePtr node)
  * and emulatorpin has the form of
  *   <emulatorpin cpuset='0'/>
  *
+ * and an iothreadspin has the form
+ *   <iothreadpin iothread='1' cpuset='2'/>
+ *
  * A vcpuid of -1 is valid and only valid for emulatorpin. So callers
  * have to check the returned cpuid for validity.
  */
@@ -11471,11 +11477,13 @@ static virDomainVcpuPinDefPtr
 virDomainVcpuPinDefParseXML(xmlNodePtr node,
                             xmlXPathContextPtr ctxt,
                             int maxvcpus,
-                            bool emulator)
+                            bool emulator,
+                            bool iothreads)
 {
     virDomainVcpuPinDefPtr def;
     xmlNodePtr oldnode = ctxt->node;
     int vcpuid = -1;
+    unsigned int iothreadid;
     char *tmp = NULL;
     int ret;
 
@@ -11484,7 +11492,7 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (!emulator) {
+    if (!emulator && !iothreads) {
         ret = virXPathInt("string(./@vcpu)", ctxt, &vcpuid);
         if ((ret == -2) || (vcpuid < -1)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -11505,10 +11513,41 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
         def->vcpuid = vcpuid;
     }
 
+    if (iothreads && (tmp = virXPathString("string(./@iothread)", ctxt))) {
+        if (virStrToLong_uip(tmp, NULL, 10, &iothreadid) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("invalid setting for iothread '%s'"), tmp);
+            goto error;
+        }
+        VIR_FREE(tmp);
+
+        if (iothreadid == 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("zero is an invalid iothread id value"));
+            goto error;
+        }
+
+        /* NB: maxvcpus is actually def->iothreads
+         * IOThreads are numbered "iothread1...iothread<n>", where
+         * "n" is the iothreads value
+         */
+        if (iothreadid > maxvcpus) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("iothread id must not exceed iothreads"));
+            goto error;
+        }
+
+        /* Rather than creating our own structure we are reusing the vCPU */
+        def->vcpuid = iothreadid;
+    }
+
     if (!(tmp = virXMLPropString(node, "cpuset"))) {
         if (emulator)
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing cpuset for emulatorpin"));
+        else if (iothreads)
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing cpuset for iothreadpin"));
         else
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing cpuset for vcpupin"));
@@ -12187,7 +12226,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     for (i = 0; i < n; i++) {
         virDomainVcpuPinDefPtr vcpupin = NULL;
         vcpupin = virDomainVcpuPinDefParseXML(nodes[i], ctxt,
-                                              def->maxvcpus, false);
+                                              def->maxvcpus, false, false);
 
         if (!vcpupin)
             goto error;
@@ -12262,8 +12301,9 @@ virDomainDefParseXML(xmlDocPtr xml,
                 goto error;
             }
 
-            def->cputune.emulatorpin = virDomainVcpuPinDefParseXML(nodes[0], ctxt,
-                                                                   0, true);
+            def->cputune.emulatorpin = virDomainVcpuPinDefParseXML(nodes[0],
+                                                                   ctxt, 0,
+                                                                   true, false);
 
             if (!def->cputune.emulatorpin)
                 goto error;
@@ -12272,6 +12312,49 @@ virDomainDefParseXML(xmlDocPtr xml,
         }
     }
     VIR_FREE(nodes);
+
+
+    if ((n = virXPathNodeSet("./cputune/iothreadpin", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot extract iothreadpin nodes"));
+        goto error;
+    }
+
+    /* Ignore iothreadpin if <vcpu> placement is "auto", they
+     * conflict with each other, and <vcpu> placement can't be
+     * simply ignored, as <numatune>'s placement defaults to it.
+     */
+    if (n) {
+        if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
+            if (VIR_ALLOC_N(def->cputune.iothreadspin, n) < 0)
+                goto error;
+
+            for (i = 0; i < n; i++) {
+                virDomainVcpuPinDefPtr iothreadpin = NULL;
+                iothreadpin = virDomainVcpuPinDefParseXML(nodes[i], ctxt,
+                                                          def->iothreads,
+                                                          false, true);
+                if (!iothreadpin)
+                    goto error;
+
+                if (virDomainVcpuPinIsDuplicate(def->cputune.iothreadspin,
+                                                def->cputune.niothreadspin,
+                                                iothreadpin->vcpuid)) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("duplicate iothreadpin for same iothread"));
+                    virDomainVcpuPinDefFree(iothreadpin);
+                    goto error;
+                }
+
+                def->cputune.iothreadspin[def->cputune.niothreadspin++] =
+                    iothreadpin;
+            }
+        } else {
+            VIR_WARN("Ignore iothreadpin for <vcpu> placement is 'auto'");
+        }
+    }
+    VIR_FREE(nodes);
+
 
     /* analysis of cpu handling */
     if ((node = virXPathNode("./cpu[1]", ctxt)) != NULL) {
@@ -17958,6 +18041,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     int n;
     size_t i;
     bool blkio = false;
+    bool cputune = false;
 
     virCheckFlags(DUMPXML_FLAGS |
                   VIR_DOMAIN_XML_INTERNAL_STATUS |
@@ -18149,8 +18233,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         (def->cputune.nvcpupin && !virDomainIsAllVcpupinInherited(def)) ||
         def->cputune.period || def->cputune.quota ||
         def->cputune.emulatorpin ||
-        def->cputune.emulator_period || def->cputune.emulator_quota)
+        def->cputune.emulator_period || def->cputune.emulator_quota ||
+        def->cputune.niothreadspin) {
         virBufferAddLit(buf, "<cputune>\n");
+        cputune = true;
+    }
 
     virBufferAdjustIndent(buf, 2);
     if (def->cputune.sharesSpecified)
@@ -18201,12 +18288,27 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, "cpuset='%s'/>\n", cpumask);
         VIR_FREE(cpumask);
     }
+
+    for (i = 0; i < def->cputune.niothreadspin; i++) {
+        char *cpumask;
+        /* Ignore the iothreadpin which inherit from "cpuset of "<vcpu>." */
+        if (def->cpumask &&
+            virBitmapEqual(def->cpumask,
+                           def->cputune.iothreadspin[i]->cpumask))
+            continue;
+
+        virBufferAsprintf(buf, "<iothreadpin iothread='%u' ",
+                          def->cputune.iothreadspin[i]->vcpuid);
+
+        if (!(cpumask = virBitmapFormat(def->cputune.iothreadspin[i]->cpumask)))
+            goto error;
+
+        virBufferAsprintf(buf, "cpuset='%s'/>\n", cpumask);
+        VIR_FREE(cpumask);
+    }
+
     virBufferAdjustIndent(buf, -2);
-    if (def->cputune.sharesSpecified ||
-        (def->cputune.nvcpupin && !virDomainIsAllVcpupinInherited(def)) ||
-        def->cputune.period || def->cputune.quota ||
-        def->cputune.emulatorpin ||
-        def->cputune.emulator_period || def->cputune.emulator_quota)
+    if (cputune)
         virBufferAddLit(buf, "</cputune>\n");
 
     if (virDomainNumatuneFormatXML(buf, def->numatune) < 0)
