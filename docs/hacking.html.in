@@ -593,6 +593,37 @@
   }
 </pre>
 
+    <p>Use hanging braces for compound statements: the opening brace
+      of a compound statement should be on the same line as the
+      condition being tested.  Only top-level function bodies, nested
+      scopes, and compound structure declarations should ever have {
+      on a line by itself.
+    </p>
+
+<pre>
+  void
+  foo(int a, int b)
+  {                          // correct - function body
+      int 2d[][] = {
+        {                    // correct - complex initialization
+          1, 2,
+        },
+      };
+      if (a)
+      {                      // BAD: compound brace on its own line
+          do_stuff();
+      }
+      {                      // correct - nested scope
+          int tmp;
+          if (a &lt; b) {       // correct - hanging brace
+              tmp = b;
+              b = a;
+              a = tmp;
+          }
+      }
+  }
+</pre>
+
     <h2><a name="preprocessor">Preprocessor</a></h2>
 
     <p>Macros defined with an ALL_CAPS name should generally be

@@ -918,12 +918,18 @@ sc_require_if_else_matching_braces:
 	  $(_sc_search_regexp)
 
 sc_curly_braces_style:
-	@files=$$($(VC_LIST_EXCEPT) | grep '\.[ch]$$');                \
-	$(GREP) -nHP                                                   \
-'^\s*(?!([a-zA-Z_]*for_?each[a-zA-Z_]*) ?\()([_a-zA-Z0-9]+( [_a-zA-Z0-9]+)* ?\()?(\*?[_a-zA-Z0-9]+(,? \*?[_a-zA-Z0-9\[\]]+)+|void)\) ?\{' \
-	$$files && { echo '$(ME): Non-K&R style used for curly'        \
-			  'braces around function body, see'           \
-			  'HACKING' 1>&2; exit 1; } || :
+	@files=$$($(VC_LIST_EXCEPT) | grep '\.[ch]$$');			\
+	if $(GREP) -nHP							\
+'^\s*(?!([a-zA-Z_]*for_?each[a-zA-Z_]*) ?\()([_a-zA-Z0-9]+( [_a-zA-Z0-9]+)* ?\()?(\*?[_a-zA-Z0-9]+(,? \*?[_a-zA-Z0-9\[\]]+)+|void)\) ?\{'		\
+	$$files; then							\
+	  echo '$(ME): Non-K&R style used for curly braces around'	\
+		'function body, see HACKING' 1>&2; exit 1;		\
+	fi;								\
+	if $(GREP) -A1 -En ' ((if|for|while|switch) \(|(else|do)\b)[^{]*$$'\
+	  $$files | $(GREP) '^[^ ]*- *{'; then				\
+	  echo '$(ME): Use hanging braces for compound statements,'	\
+		'see HACKING' 1>&2; exit 1;				\
+	fi
 
 sc_prohibit_windows_special_chars_in_filename:
 	@files=$$($(VC_LIST_EXCEPT) | grep '[:*?"<>|]');               \
