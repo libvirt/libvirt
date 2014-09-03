@@ -1956,7 +1956,22 @@ virStorageSourceGetActualType(virStorageSourcePtr def)
 bool
 virStorageSourceIsLocalStorage(virStorageSourcePtr src)
 {
-    return virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_NETWORK;
+    virStorageType type = virStorageSourceGetActualType(src);
+
+    switch (type) {
+    case VIR_STORAGE_TYPE_FILE:
+    case VIR_STORAGE_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_DIR:
+        return true;
+
+    case VIR_STORAGE_TYPE_NETWORK:
+    case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_LAST:
+    case VIR_STORAGE_TYPE_NONE:
+        return false;
+    }
+
+    return false;
 }
 
 
