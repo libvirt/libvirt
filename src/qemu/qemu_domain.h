@@ -154,6 +154,9 @@ struct _qemuDomainObjPrivate {
     int nvcpupids;
     int *vcpupids;
 
+    int niothreadpids;
+    int *iothreadpids;
+
     virDomainPCIAddressSetPtr pciaddrs;
     virDomainCCWAddressSetPtr ccwaddrs;
     int persistentAddrs;
