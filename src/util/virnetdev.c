@@ -1132,8 +1132,7 @@ virNetDevGetVirtualFunctions(const char *pfname,
     if (VIR_ALLOC_N(*vfname, *n_vfname) < 0)
         goto cleanup;
 
-    for (i = 0; i < *n_vfname; i++)
-    {
+    for (i = 0; i < *n_vfname; i++) {
         if (virPCIGetAddrString((*virt_fns)[i]->domain,
                                 (*virt_fns)[i]->bus,
                                 (*virt_fns)[i]->slot,

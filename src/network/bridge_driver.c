@@ -3871,8 +3871,7 @@ networkAllocateActualDevice(virDomainDefPtr dom,
         iface->data.network.actual->data.hostdev.def.source.subsys.type = dev->type;
         iface->data.network.actual->data.hostdev.def.source.subsys.u.pci.addr = dev->device.pci;
 
-        switch (netdef->forward.driverName)
-        {
+        switch (netdef->forward.driverName) {
         case VIR_NETWORK_FORWARD_DRIVER_NAME_DEFAULT:
             backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT;
             break;

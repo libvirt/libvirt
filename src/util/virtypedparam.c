@@ -195,8 +195,7 @@ virTypedParameterAssign(virTypedParameterPtr param, const char *name,
         goto cleanup;
     }
     param->type = type;
-    switch (type)
-    {
+    switch (type) {
     case VIR_TYPED_PARAM_INT:
         param->value.i = va_arg(ap, int);
         break;

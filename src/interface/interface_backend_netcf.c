@@ -126,8 +126,7 @@ netcfStateReload(void)
 
     virObjectLock(driverState);
     ncf_close(driverState->netcf);
-    if (ncf_init(&driverState->netcf, NULL) != 0)
-    {
+    if (ncf_init(&driverState->netcf, NULL) != 0) {
         /* this isn't a good situation, because we can't shut down the
          * driver as there may still be connections to it. If we set
          * the netcf handle to NULL, any subsequent calls to netcf
@@ -178,8 +177,7 @@ netcfGetMinimalDefForDevice(struct netcf_if *iface)
 
 static int netcf_to_vir_err(int netcf_errcode)
 {
-    switch (netcf_errcode)
-    {
+    switch (netcf_errcode) {
         case NETCF_NOERROR:
             /* no error, everything ok */
             return VIR_ERR_OK;
@@ -285,8 +283,7 @@ static int
 netcfInterfaceClose(virConnectPtr conn)
 {
 
-    if (conn->interfacePrivateData != NULL)
-    {
+    if (conn->interfacePrivateData != NULL) {
         virObjectUnref(conn->interfacePrivateData);
         conn->interfacePrivateData = NULL;
     }

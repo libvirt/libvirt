@@ -24,16 +24,14 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
     }
 
     model = virSecurityManagerGetModel(mgr);
-    if (!model)
-    {
+    if (!model) {
         fprintf(stderr, "Failed to copy secModel model: %s",
                 strerror(errno));
         return EXIT_FAILURE;
     }
 
     doi = virSecurityManagerGetDOI(mgr);
-    if (!doi)
-    {
+    if (!doi) {
         fprintf(stderr, "Failed to copy secModel DOI: %s",
                 strerror(errno));
         return EXIT_FAILURE;

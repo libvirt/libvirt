@@ -1153,8 +1153,7 @@ virGetWin32DirectoryRoot(char **path)
 
     *path = NULL;
 
-    if (GetWindowsDirectory(windowsdir, ARRAY_CARDINALITY(windowsdir)))
-    {
+    if (GetWindowsDirectory(windowsdir, ARRAY_CARDINALITY(windowsdir))) {
         const char *tmp;
         /* Usually X:\Windows, but in terminal server environments
          * might be an UNC path, AFAIK.
@@ -1499,8 +1498,7 @@ void virFileWaitForDevices(void)
      * If this fails for any reason, we still have the backup of polling for
      * 5 seconds for device nodes.
      */
-    if (virRun(settleprog, &exitstatus) < 0)
-    {}
+    ignore_value(virRun(settleprog, &exitstatus));
 }
 #else
 void virFileWaitForDevices(void)

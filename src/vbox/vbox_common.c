@@ -3576,8 +3576,8 @@ vboxDumpNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine, PR
                          MACAddress[8], MACAddress[9], MACAddress[10], MACAddress[11]);
 
                 /* XXX some real error handling here some day ... */
-                if (virMacAddrParse(macaddr, &def->nets[netAdpIncCnt]->mac) < 0)
-                {}
+                ignore_value(virMacAddrParse(macaddr,
+                                             &def->nets[netAdpIncCnt]->mac));
 
                 netAdpIncCnt++;
 

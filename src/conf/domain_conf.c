@@ -16068,8 +16068,7 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
     virBufferAddLit(buf, ">\n");
 
     virBufferAdjustIndent(buf, 2);
-    switch (def->source.subsys.type)
-    {
+    switch (def->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         if (usbsrc->vendor) {
             virBufferAsprintf(buf, "<vendor id='0x%.4x'/>\n", usbsrc->vendor);
@@ -16146,8 +16145,7 @@ virDomainHostdevDefFormatCaps(virBufferPtr buf,
     virBufferAddLit(buf, "<source>\n");
 
     virBufferAdjustIndent(buf, 2);
-    switch (def->source.caps.type)
-    {
+    switch (def->source.caps.type) {
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
         virBufferEscapeString(buf, "<block>%s</block>\n",
                               def->source.caps.u.storage.block);

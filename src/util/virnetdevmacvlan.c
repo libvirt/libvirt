@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright (C) 2010-2012 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -583,8 +583,7 @@ virNetDevMacVLanVPortProfileCallback(struct nlmsghdr *hdr,
             VIR_DEBUG("IFLA_VF_MAC = %2x:%2x:%2x:%2x:%2x:%2x",
                       m[0], m[1], m[2], m[3], m[4], m[5]);
 
-            if (virMacAddrCmpRaw(&calld->macaddress, mac->mac))
-            {
+            if (virMacAddrCmpRaw(&calld->macaddress, mac->mac)) {
                 /* Repeat the same check for a broadcast mac */
                 size_t i;
 

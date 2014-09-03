@@ -1172,8 +1172,7 @@ virBuildPathInternal(char **path, ...)
     path_component = va_arg(ap, char *);
     virBufferAdd(&buf, path_component, -1);
 
-    while ((path_component = va_arg(ap, char *)) != NULL)
-    {
+    while ((path_component = va_arg(ap, char *)) != NULL) {
         virBufferAddChar(&buf, '/');
         virBufferAdd(&buf, path_component, -1);
     }
