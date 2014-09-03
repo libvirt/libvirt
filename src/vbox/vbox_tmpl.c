@@ -3642,8 +3642,9 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
 #else /* VBOX_API_VERSION >= 4000000 */
                 def.target.capacity = hddLogicalSize;
 #endif /* VBOX_API_VERSION >= 4000000 */
-            } else
+            } else {
                 defOk = 0;
+            }
 
             rc = VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetSize, &hddActualSize);
             if (NS_SUCCEEDED(rc) && defOk)

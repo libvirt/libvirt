@@ -336,16 +336,17 @@ phypConnectNumOfDomainsGeneric(virConnectPtr conn, unsigned int type)
     const char *state;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (type == 0)
+    if (type == 0) {
         state = "|grep Running";
-    else if (type == 1) {
+    } else if (type == 1) {
         if (system_type == HMC) {
             state = "|grep \"Not Activated\"";
         } else {
             state = "|grep \"Open Firmware\"";
         }
-    } else
+    } else {
         state = " ";
+    }
 
     virBufferAddLit(&buf, "lssyscfg -r lpar");
     if (system_type == HMC)
@@ -787,8 +788,9 @@ phypUUIDTable_Init(virConnectPtr conn)
                     VIR_WARN("Unable to generate UUID for domain %d",
                              ids[i]);
             }
-        } else
+        } else {
             goto cleanup;
+        }
 
         if (phypUUIDTable_WriteFile(conn) == -1)
             goto cleanup;
@@ -1019,8 +1021,9 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
             virReportError(VIR_ERR_AUTH_FAILED,
                            "%s", _("Authentication failed"));
             goto disconnect;
-        } else
+        } else {
             goto exit;
+        }
 
     } else if (rc == LIBSSH2_ERROR_NONE) {
         goto exit;
@@ -2204,9 +2207,9 @@ phypStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
         goto cleanup;
     }
 
-    if (vol->name != NULL)
+    if (vol->name != NULL) {
         voldef.name = vol->name;
-    else {
+    } else {
         VIR_ERROR(_("Unable to determine storage pool's name."));
         goto cleanup;
     }
@@ -2313,9 +2316,9 @@ phypStoragePoolListVolumes(virStoragePoolPtr pool, char **const volumes,
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
 
     /* I need to parse the textual return in order to get the volumes */
-    if (exit_status < 0 || ret == NULL)
+    if (exit_status < 0 || ret == NULL) {
         goto cleanup;
-    else {
+    } else {
         volumes_list = ret;
 
         while (got < nvolumes) {
@@ -2327,8 +2330,9 @@ phypStoragePoolListVolumes(virStoragePoolPtr pool, char **const volumes,
                     goto cleanup;
                 char_ptr++;
                 volumes_list = char_ptr;
-            } else
+            } else {
                 break;
+            }
         }
     }
 
@@ -2512,9 +2516,9 @@ phypConnectListStoragePools(virConnectPtr conn, char **const pools, int npools)
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
 
     /* I need to parse the textual return in order to get the storage pools */
-    if (exit_status < 0 || ret == NULL)
+    if (exit_status < 0 || ret == NULL) {
         goto cleanup;
-    else {
+    } else {
         storage_pools = ret;
 
         while (got < npools) {
@@ -2526,8 +2530,9 @@ phypConnectListStoragePools(virConnectPtr conn, char **const pools, int npools)
                     goto cleanup;
                 char_ptr++;
                 storage_pools = char_ptr;
-            } else
+            } else {
                 break;
+            }
         }
     }
 
@@ -2643,9 +2648,9 @@ phypStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
     virStoragePoolDef def;
     memset(&def, 0, sizeof(virStoragePoolDef));
 
-    if (pool->name != NULL)
+    if (pool->name != NULL) {
         def.name = pool->name;
-    else {
+    } else {
         VIR_ERROR(_("Unable to determine storage pool's name."));
         goto err;
     }
@@ -3134,9 +3139,9 @@ phypConnectListDefinedDomains(virConnectPtr conn, char **const names, int nnames
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
 
     /* I need to parse the textual return in order to get the domains */
-    if (exit_status < 0 || ret == NULL)
+    if (exit_status < 0 || ret == NULL) {
         goto cleanup;
-    else {
+    } else {
         domains = ret;
 
         while (got < nnames) {
@@ -3148,8 +3153,9 @@ phypConnectListDefinedDomains(virConnectPtr conn, char **const names, int nnames
                     goto cleanup;
                 char_ptr++;
                 domains = char_ptr;
-            } else
+            } else {
                 break;
+            }
         }
     }
 
@@ -3617,8 +3623,9 @@ phypDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     } else if (ncpus < nvcpus) {
         operation = 'a';
         amount = nvcpus - ncpus;
-    } else
+    } else {
         return 0;
+    }
 
     virBufferAddLit(&buf, "chhwres -r proc");
     if (system_type == HMC)

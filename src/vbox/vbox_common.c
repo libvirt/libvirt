@@ -1291,8 +1291,7 @@ vboxAttachSound(virDomainDefPtr def, IMachine *machine)
     if (def->sounds[0]->model == VIR_DOMAIN_SOUND_MODEL_SB16) {
         gVBoxAPI.UIAudioAdapter.SetAudioController(audioAdapter,
                                                    AudioControllerType_SB16);
-    } else
-    if (def->sounds[0]->model == VIR_DOMAIN_SOUND_MODEL_AC97) {
+    } else if (def->sounds[0]->model == VIR_DOMAIN_SOUND_MODEL_AC97) {
         gVBoxAPI.UIAudioAdapter.SetAudioController(audioAdapter,
                                                    AudioControllerType_AC97);
     }
@@ -3381,8 +3380,9 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 }
 
                 def->ngraphics++;
-            } else
+            } else {
                 virReportOOMError();
+            }
         }
         VBOX_RELEASE(VRDxServer);
     }
@@ -6510,8 +6510,9 @@ static int vboxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         ret = vboxDomainCreate(dom);
         if (!ret)
             gVBoxAPI.snapshotRestore(dom, machine, prevSnapshot);
-    } else
+    } else {
         ret = 0;
+    }
 
  cleanup:
     VBOX_RELEASE(prevSnapshot);
@@ -7093,8 +7094,7 @@ static int vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cannot delete metadata of a snapshot with children"));
             goto cleanup;
-        } else
-        if (gVBoxAPI.vboxSnapshotRedefine) {
+        } else if (gVBoxAPI.vboxSnapshotRedefine) {
             ret = vboxDomainSnapshotDeleteMetadataOnly(snapshot);
         }
         goto cleanup;

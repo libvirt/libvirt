@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2014 Red Hat, Inc.
  * Copyright (C) 2012 Fujitsu Limited.
  *
  * lxc_fuse.c: fuse filesystem support for libvirt lxc
@@ -75,8 +76,9 @@ static int lxcProcGetattr(const char *path, struct stat *stbuf)
         stbuf->st_atime = sb.st_atime;
         stbuf->st_ctime = sb.st_ctime;
         stbuf->st_mtime = sb.st_mtime;
-    } else
+    } else {
         res = -ENOENT;
+    }
 
  cleanup:
     VIR_FREE(mempath);
@@ -163,47 +165,47 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
             *ptr = '\0';
 
             if (STREQ(line, "MemTotal") &&
-                (def->mem.hard_limit || def->mem.max_balloon))
+                (def->mem.hard_limit || def->mem.max_balloon)) {
                 virBufferAsprintf(new_meminfo, "MemTotal:       %8llu kB\n",
                                   meminfo.memtotal);
-            else if (STREQ(line, "MemFree") &&
-                       (def->mem.hard_limit || def->mem.max_balloon))
+            } else if (STREQ(line, "MemFree") &&
+                       (def->mem.hard_limit || def->mem.max_balloon)) {
                 virBufferAsprintf(new_meminfo, "MemFree:        %8llu kB\n",
                                   (meminfo.memtotal - meminfo.memusage));
-            else if (STREQ(line, "Buffers"))
+            } else if (STREQ(line, "Buffers")) {
                 virBufferAsprintf(new_meminfo, "Buffers:        %8d kB\n", 0);
-            else if (STREQ(line, "Cached"))
+            } else if (STREQ(line, "Cached")) {
                 virBufferAsprintf(new_meminfo, "Cached:         %8llu kB\n",
                                   meminfo.cached);
-            else if (STREQ(line, "Active"))
+            } else if (STREQ(line, "Active")) {
                 virBufferAsprintf(new_meminfo, "Active:         %8llu kB\n",
                                   (meminfo.active_anon + meminfo.active_file));
-            else if (STREQ(line, "Inactive"))
+            } else if (STREQ(line, "Inactive")) {
                 virBufferAsprintf(new_meminfo, "Inactive:       %8llu kB\n",
                                   (meminfo.inactive_anon + meminfo.inactive_file));
-            else if (STREQ(line, "Active(anon)"))
+            } else if (STREQ(line, "Active(anon)")) {
                 virBufferAsprintf(new_meminfo, "Active(anon):   %8llu kB\n",
                                   meminfo.active_anon);
-            else if (STREQ(line, "Inactive(anon)"))
+            } else if (STREQ(line, "Inactive(anon)")) {
                 virBufferAsprintf(new_meminfo, "Inactive(anon): %8llu kB\n",
                                   meminfo.inactive_anon);
-            else if (STREQ(line, "Active(file)"))
+            } else if (STREQ(line, "Active(file)")) {
                 virBufferAsprintf(new_meminfo, "Active(file):   %8llu kB\n",
                                   meminfo.active_file);
-            else if (STREQ(line, "Inactive(file)"))
+            } else if (STREQ(line, "Inactive(file)")) {
                 virBufferAsprintf(new_meminfo, "Inactive(file): %8llu kB\n",
                                   meminfo.inactive_file);
-            else if (STREQ(line, "Unevictable"))
+            } else if (STREQ(line, "Unevictable")) {
                 virBufferAsprintf(new_meminfo, "Unevictable:    %8llu kB\n",
                                   meminfo.unevictable);
-            else if (STREQ(line, "SwapTotal") && def->mem.swap_hard_limit)
+            } else if (STREQ(line, "SwapTotal") && def->mem.swap_hard_limit) {
                 virBufferAsprintf(new_meminfo, "SwapTotal:      %8llu kB\n",
                                   (meminfo.swaptotal - meminfo.memtotal));
-            else if (STREQ(line, "SwapFree") && def->mem.swap_hard_limit)
+            } else if (STREQ(line, "SwapFree") && def->mem.swap_hard_limit) {
                 virBufferAsprintf(new_meminfo, "SwapFree:       %8llu kB\n",
                                   (meminfo.swaptotal - meminfo.memtotal -
                                    meminfo.swapusage + meminfo.memusage));
-            else {
+            } else {
                 *ptr = ':';
                 virBufferAdd(new_meminfo, line, -1);
             }
