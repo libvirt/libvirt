@@ -885,7 +885,7 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
                                         int *fd)
 {
     virLockManagerSanlockPrivatePtr priv = lock->privateData;
-    struct sanlk_options *opt;
+    struct sanlk_options *opt = NULL;
     struct sanlk_resource **res_args;
     int res_count;
     bool res_free = false;
