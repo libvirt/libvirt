@@ -41,5 +41,5 @@
     </controller>
     <memballoon model='none'/>
   </devices>
-  <seclabel type='none'/>
+  <seclabel type='none' model='none'/>
 </domain>

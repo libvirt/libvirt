@@ -252,6 +252,16 @@ virCapsPtr testQemuCapsInit(void)
                                    false, false)) == NULL)
         return NULL;
 
+    /* Add dummy 'none' security_driver. This is equal to setting
+     * security_driver = "none" in qemu.conf. */
+    if (VIR_ALLOC_N(caps->host.secModels, 1) < 0)
+        goto cleanup;
+    caps->host.nsecModels = 1;
+
+    if (VIR_STRDUP(caps->host.secModels[0].model, "none") < 0 ||
+        VIR_STRDUP(caps->host.secModels[0].doi, "0") < 0)
+        goto cleanup;
+
     if ((caps->host.cpu = virCPUDefCopy(&host_cpu)) == NULL ||
         (machines = testQemuAllocMachines(&nmachines)) == NULL)
         goto cleanup;

@@ -315,12 +315,13 @@ mymain(void)
     DO_TEST_FULL("seclabel-dynamic-baselabel", false, WHEN_INACTIVE);
     DO_TEST_FULL("seclabel-dynamic-override", false, WHEN_INACTIVE);
     DO_TEST_FULL("seclabel-dynamic-labelskip", true, WHEN_INACTIVE);
-    DO_TEST_FULL("seclabel-dynamic-relabel", false, WHEN_INACTIVE);
+    DO_TEST_FULL("seclabel-dynamic-relabel", true, WHEN_INACTIVE);
     DO_TEST("seclabel-static");
     DO_TEST_FULL("seclabel-static-labelskip", false, WHEN_ACTIVE);
-    DO_TEST("seclabel-none");
+    DO_TEST_DIFFERENT("seclabel-none");
     DO_TEST("seclabel-dac-none");
     DO_TEST("seclabel-dynamic-none");
+    DO_TEST_FULL("seclabel-dynamic-none-relabel", true, WHEN_INACTIVE);
     DO_TEST("numad-static-vcpu-no-numatune");
     DO_TEST("disk-scsi-lun-passthrough-sgio");
 
