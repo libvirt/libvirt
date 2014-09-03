@@ -910,6 +910,13 @@ sc_require_space_before_label:
 	halt="Top-level labels should be indented by one space"        \
 	  $(_sc_search_regexp)
 
+# Doesn't catch all cases of mismatched braces across if-else, but it helps
+sc_require_if_else_matching_braces:
+	@prohibit='(  else( if .*\))? {|} else( if .*\))?$$)'		\
+	in_vc_files='\.[chx]$$'						\
+	halt="if one side of if-else uses {}, both sides must use it"	\
+	  $(_sc_search_regexp)
+
 sc_curly_braces_style:
 	@files=$$($(VC_LIST_EXCEPT) | grep '\.[ch]$$');                \
 	$(GREP) -nHP                                                   \
