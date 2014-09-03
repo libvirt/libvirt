@@ -4141,6 +4141,7 @@ int qemuProcessStart(virConnectPtr conn,
     virCommandSetPreExecHook(cmd, qemuProcessHook, &hookData);
     virCommandSetMaxProcesses(cmd, cfg->maxProcesses);
     virCommandSetMaxFiles(cmd, cfg->maxFiles);
+    virCommandSetUmask(cmd, 0x002);
 
     VIR_DEBUG("Setting up security labelling");
     if (virSecurityManagerSetChildProcessLabel(driver->securityManager,

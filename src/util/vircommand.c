@@ -133,6 +133,7 @@ struct _virCommand {
 #if defined(WITH_SECDRIVER_APPARMOR)
     char *appArmorProfile;
 #endif
+    int umask;
 };
 
 /* See virCommandSetDryRun for description for this variable */
@@ -582,6 +583,8 @@ virExec(virCommandPtr cmd)
 
     /* child */
 
+    if (cmd->umask)
+        umask(cmd->umask);
     ret = EXIT_CANCELED;
     openmax = sysconf(_SC_OPEN_MAX);
     if (openmax < 0) {
@@ -1080,6 +1083,14 @@ virCommandSetMaxFiles(virCommandPtr cmd, unsigned int files)
         return;
 
     cmd->maxFiles = files;
+}
+
+void virCommandSetUmask(virCommandPtr cmd, int umask)
+{
+    if (!cmd || cmd->has_error)
+        return;
+
+    cmd->umask = umask;
 }
 
 /**

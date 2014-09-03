@@ -1171,6 +1171,7 @@ virCommandSetPidFile;
 virCommandSetPreExecHook;
 virCommandSetSELinuxLabel;
 virCommandSetUID;
+virCommandSetUmask;
 virCommandSetWorkingDirectory;
 virCommandToString;
 virCommandWait;
