@@ -62,12 +62,13 @@ int main(int argc, char **argv) {
     size_t i, n;
     int open_max;
     char **origenv;
-    char **newenv;
+    char **newenv = NULL;
     char *cwd;
     FILE *log = fopen(abs_builddir "/commandhelper.log", "w");
+    int ret = EXIT_FAILURE;
 
     if (!log)
-        goto error;
+        goto cleanup;
 
     for (i = 1; i < argc; i++) {
         fprintf(log, "ARG:%s\n", argv[i]);
@@ -81,7 +82,7 @@ int main(int argc, char **argv) {
     }
 
     if (VIR_ALLOC_N_QUIET(newenv, n) < 0)
-        return EXIT_FAILURE;
+        goto cleanup;
 
     origenv = environ;
     n = i = 0;
@@ -101,7 +102,7 @@ int main(int argc, char **argv) {
 
     open_max = sysconf(_SC_OPEN_MAX);
     if (open_max < 0)
-        return EXIT_FAILURE;
+        goto cleanup;
     for (i = 0; i < open_max; i++) {
         int f;
         int closed;
@@ -115,7 +116,7 @@ int main(int argc, char **argv) {
 
     fprintf(log, "DAEMON:%s\n", getpgrp() == getsid(0) ? "yes" : "no");
     if (!(cwd = getcwd(NULL, 0)))
-        return EXIT_FAILURE;
+        goto cleanup;
     if (strlen(cwd) > strlen(".../commanddata") &&
         STREQ(cwd + strlen(cwd) - strlen("/commanddata"), "/commanddata"))
         strcpy(cwd, ".../commanddata");
@@ -124,11 +125,9 @@ int main(int argc, char **argv) {
 
     fprintf(log, "UMASK:%04o\n", umask(0));
 
-    VIR_FORCE_FCLOSE(log);
-
     if (argc > 1 && STREQ(argv[1], "--close-stdin")) {
         if (freopen("/dev/null", "r", stdin) != stdin)
-            goto error;
+            goto cleanup;
         usleep(100*1000);
     }
 
@@ -143,13 +142,13 @@ int main(int argc, char **argv) {
     for (;;) {
         got = read(STDIN_FILENO, buf, sizeof(buf));
         if (got < 0)
-            goto error;
+            goto cleanup;
         if (got == 0)
             break;
         if (safewrite(STDOUT_FILENO, buf, got) != got)
-            goto error;
+            goto cleanup;
         if (safewrite(STDERR_FILENO, buf, got) != got)
-            goto error;
+            goto cleanup;
     }
 
     fprintf(stdout, "END STDOUT\n");
@@ -157,10 +156,12 @@ int main(int argc, char **argv) {
     fprintf(stderr, "END STDERR\n");
     fflush(stderr);
 
-    return EXIT_SUCCESS;
+    ret = EXIT_SUCCESS;
 
- error:
-    return EXIT_FAILURE;
+ cleanup:
+    VIR_FORCE_FCLOSE(log);
+    VIR_FREE(newenv);
+    return ret;
 }
 
 #else
