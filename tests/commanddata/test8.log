@@ -5,3 +5,4 @@ FD:1
 FD:2
 DAEMON:no
 CWD:/tmp
+UMASK:0022

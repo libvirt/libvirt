@@ -10,3 +10,4 @@ FD:1
 FD:2
 DAEMON:no
 CWD:.../commanddata
+UMASK:0002

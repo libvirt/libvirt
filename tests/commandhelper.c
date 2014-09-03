@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include "internal.h"
 #include "virutil.h"
@@ -120,6 +121,8 @@ int main(int argc, char **argv) {
         strcpy(cwd, ".../commanddata");
     fprintf(log, "CWD:%s\n", cwd);
     VIR_FREE(cwd);
+
+    fprintf(log, "UMASK:%04o\n", umask(0));
 
     VIR_FORCE_FCLOSE(log);
 

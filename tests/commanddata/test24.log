@@ -5,3 +5,4 @@ FD:3
 FD:4
 DAEMON:yes
 CWD:/
+UMASK:0022

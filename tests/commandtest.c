@@ -617,6 +617,7 @@ static int test15(const void *unused ATTRIBUTE_UNUSED)
     if (virAsprintf(&cwd, "%s/commanddata", abs_srcdir) < 0)
         goto cleanup;
     virCommandSetWorkingDirectory(cmd, cwd);
+    virCommandSetUmask(cmd, 002);
 
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
@@ -1132,6 +1133,8 @@ mymain(void)
 
     if (chdir("/tmp") < 0)
         return EXIT_FAILURE;
+
+    umask(022);
 
     setpgid(0, 0);
     ignore_value(setsid());
