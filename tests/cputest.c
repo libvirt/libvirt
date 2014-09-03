@@ -1,7 +1,7 @@
 /*
  * cputest.c: Test the libvirtd internal CPU APIs
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -333,9 +333,9 @@ cpuTestBaseline(const void *arg)
     baseline = cpuBaseline(cpus, ncpus, NULL, 0, data->flags);
     if (data->result < 0) {
         virResetLastError();
-        if (!baseline)
+        if (!baseline) {
             ret = 0;
-        else if (virTestGetVerbose()) {
+        } else if (virTestGetVerbose()) {
             fprintf(stderr, "\n%-70s... ",
                     "cpuBaseline was expected to fail but it succeeded");
         }

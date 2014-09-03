@@ -1422,9 +1422,9 @@ virDBusCall(DBusConnection *conn,
                                                             call,
                                                             VIR_DBUS_METHOD_CALL_TIMEOUT_MILLIS,
                                                             error ? error : &localerror))) {
-        if (error)
+        if (error) {
             ret = 0;
-        else {
+        } else {
             virReportError(VIR_ERR_DBUS_SERVICE, _("%s: %s"), member,
                 localerror.message ? localerror.message : _("unknown error"));
         }

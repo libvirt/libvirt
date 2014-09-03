@@ -1,7 +1,7 @@
 /*
  * viruri.c: URI parsing wrappers for libxml2 functions
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -80,32 +80,28 @@ virURIParseParams(virURIPtr uri)
         eq = strchr(query, '=');
         if (eq && eq >= end) eq = NULL;
 
-        /* Empty section (eg. "&&"). */
-        if (end == query)
+        if (end == query) {
+            /* Empty section (eg. "&&"). */
             goto next;
-
-        /* If there is no '=' character, then we have just "name"
-         * and consistent with CGI.pm we assume value is "".
-         */
-        else if (!eq) {
+        } else if (!eq) {
+            /* If there is no '=' character, then we have just "name"
+             * and consistent with CGI.pm we assume value is "".
+             */
             name = xmlURIUnescapeString(query, end - query, NULL);
             if (!name) goto no_memory;
-        }
-        /* Or if we have "name=" here (works around annoying
-         * problem when calling xmlURIUnescapeString with len = 0).
-         */
-        else if (eq+1 == end) {
+        } else if (eq+1 == end) {
+            /* Or if we have "name=" here (works around annoying
+             * problem when calling xmlURIUnescapeString with len = 0).
+             */
             name = xmlURIUnescapeString(query, eq - query, NULL);
             if (!name) goto no_memory;
-        }
-        /* If the '=' character is at the beginning then we have
-         * "=value" and consistent with CGI.pm we _ignore_ this.
-         */
-        else if (query == eq)
+        } else if (query == eq) {
+            /* If the '=' character is at the beginning then we have
+             * "=value" and consistent with CGI.pm we _ignore_ this.
+             */
             goto next;
-
-        /* Otherwise it's "name=value". */
-        else {
+        } else {
+            /* Otherwise it's "name=value". */
             name = xmlURIUnescapeString(query, eq - query, NULL);
             if (!name)
                 goto no_memory;

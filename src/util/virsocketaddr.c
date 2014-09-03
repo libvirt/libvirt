@@ -693,9 +693,9 @@ int virSocketAddrGetNumNetmaskBits(const virSocketAddr *netmask)
         j = i << 3;
         while (j < (8 * 4)) {
             bit = 1 << (7 - (j & 7));
-            if ((tm[j >> 3] & bit)) {
+            if ((tm[j >> 3] & bit))
                 c++;
-            } else
+            else
                 break;
             j++;
         }
@@ -727,9 +727,9 @@ int virSocketAddrGetNumNetmaskBits(const virSocketAddr *netmask)
         j = i << 4;
         while (j < (16 * 8)) {
             bit = 1 << (15 - (j & 0xf));
-            if ((tm[j >> 4] & bit)) {
+            if ((tm[j >> 4] & bit))
                 c++;
-            } else
+            else
                 break;
             j++;
         }

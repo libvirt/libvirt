@@ -843,13 +843,13 @@ virNetSocketNewConnectLibSSH2(const char *host,
     if (virNetSSHSessionAuthSetCallback(sess, auth) != 0)
         goto error;
 
-    if (STRCASEEQ("auto", knownHostsVerify))
+    if (STRCASEEQ("auto", knownHostsVerify)) {
         verify = VIR_NET_SSH_HOSTKEY_VERIFY_AUTO_ADD;
-    else if (STRCASEEQ("ignore", knownHostsVerify))
+    } else if (STRCASEEQ("ignore", knownHostsVerify)) {
         verify = VIR_NET_SSH_HOSTKEY_VERIFY_IGNORE;
-    else if (STRCASEEQ("normal", knownHostsVerify))
+    } else if (STRCASEEQ("normal", knownHostsVerify)) {
         verify = VIR_NET_SSH_HOSTKEY_VERIFY_NORMAL;
-    else {
+    } else {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Invalid host key verification method: '%s'"),
                        knownHostsVerify);
@@ -873,20 +873,20 @@ virNetSocketNewConnectLibSSH2(const char *host,
     authMethodNext = authMethodsCopy;
 
     while ((authMethod = strsep(&authMethodNext, ","))) {
-        if (STRCASEEQ(authMethod, "keyboard-interactive"))
+        if (STRCASEEQ(authMethod, "keyboard-interactive")) {
             ret = virNetSSHSessionAuthAddKeyboardAuth(sess, username, -1);
-        else if (STRCASEEQ(authMethod, "password"))
+        } else if (STRCASEEQ(authMethod, "password")) {
             ret = virNetSSHSessionAuthAddPasswordAuth(sess,
                                                       uri,
                                                       username);
-        else if (STRCASEEQ(authMethod, "privkey"))
+        } else if (STRCASEEQ(authMethod, "privkey")) {
             ret = virNetSSHSessionAuthAddPrivKeyAuth(sess,
                                                      username,
                                                      privkey,
                                                      NULL);
-        else if (STRCASEEQ(authMethod, "agent"))
+        } else if (STRCASEEQ(authMethod, "agent")) {
             ret = virNetSSHSessionAuthAddAgentAuth(sess, username);
-        else {
+        } else {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Invalid authentication method: '%s'"),
                            authMethod);

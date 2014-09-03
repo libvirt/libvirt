@@ -815,8 +815,9 @@ virNetDevVPortProfileGetNthParent(const char *ifname, int ifindex, unsigned int 
         if (tb[IFLA_LINK]) {
             ifindex = *(int *)RTA_DATA(tb[IFLA_LINK]);
             ifname = NULL;
-        } else
+        } else {
             end = true;
+        }
 
         i++;
     }

@@ -3,6 +3,7 @@
 #
 # esx_vi_generator.py: generates most of the SOAP type mapping code
 #
+# Copyright (C) 2014 Red Hat, Inc.
 # Copyright (C) 2010-2012 Matthias Bolte <matthias.bolte@googlemail.com>
 # Copyright (C) 2013 Ata E Husain Bohra <ata.husain@hotmail.com>
 #
@@ -433,9 +434,8 @@ class Type:
 
 
     def generate_typefromstring(self):
-        string =  "           else if (STREQ(type, \"%s\")) {\n" % self.name
+        string =  "           if (STREQ(type, \"%s\"))\n" % self.name
         string += "               return esxVI_Type_%s;\n" % self.name
-        string += "           }\n"
 
         return string
 

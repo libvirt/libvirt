@@ -1,7 +1,7 @@
 /*
  * virbuffer.c: buffers for libvirt
  *
- * Copyright (C) 2005-2008, 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2005-2008, 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -585,9 +585,9 @@ virBufferURIEncodeString(virBufferPtr buf, const char *str)
         return;
 
     for (p = str; *p; ++p) {
-        if (c_isalnum(*p))
+        if (c_isalnum(*p)) {
             buf->content[buf->use++] = *p;
-        else {
+        } else {
             uc = (unsigned char) *p;
             buf->content[buf->use++] = '%';
             buf->content[buf->use++] = hex[uc >> 4];

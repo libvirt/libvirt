@@ -1,7 +1,7 @@
 /*
  * esx_vi_types.c: client for the VMware VI API 2.5 to manage ESX hosts
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010, 2014 Red Hat, Inc.
  * Copyright (C) 2009-2011 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -873,9 +873,7 @@ esxVI_Type_FromString(const char *type)
 
 #include "esx_vi_types.generated.typefromstring"
 
-    else {
-        return esxVI_Type_Other;
-    }
+    return esxVI_Type_Other;
 }
 
 

@@ -492,8 +492,7 @@ virPCIDeviceIterDevices(virPCIDeviceIterPredicate predicate,
             virPCIDeviceFree(check);
             ret = -1;
             break;
-        }
-        else if (rc == 1) {
+        } else if (rc == 1) {
             VIR_DEBUG("%s %s: iter matched on %s", dev->id, dev->name, check->name);
             *matched = check;
             ret = 1;
@@ -1468,8 +1467,7 @@ virPCIDeviceWaitForCleanup(virPCIDevicePtr dev, const char *matcher)
                 ret = 1;
                 break;
             }
-        }
-        else {
+        } else {
             in_matching_device = false;
 
             /* expected format: <start>-<end> : <domain>:<bus>:<slot>.<function> */
@@ -2272,9 +2270,9 @@ virPCIDeviceIsBehindSwitchLackingACS(virPCIDevicePtr dev)
          * into play since devices on the root bus can't P2P without going
          * through the root IOMMU.
          */
-        if (dev->bus == 0)
+        if (dev->bus == 0) {
             return 0;
-        else {
+        } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to find parent device for %s"),
                            dev->name);

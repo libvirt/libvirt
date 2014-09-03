@@ -1049,7 +1049,7 @@ int virNetDevValidateConfig(const char *ifname,
     if (ifindex != -1) {
         if (virNetDevGetIndex(ifname, &idx) < 0)
             goto cleanup;
-        else if (idx != ifindex) {
+        if (idx != ifindex) {
             ret = 0;
             goto cleanup;
         }

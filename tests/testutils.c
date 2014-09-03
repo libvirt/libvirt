@@ -115,9 +115,9 @@ void virtTestResult(const char *name, int ret, const char *msg, ...)
     testCounter++;
     if (virTestGetVerbose()) {
         fprintf(stderr, "%3zu) %-60s ", testCounter, name);
-        if (ret == 0)
+        if (ret == 0) {
             fprintf(stderr, "OK\n");
-        else {
+        } else {
             fprintf(stderr, "FAILED\n");
             if (msg) {
                 char *str;

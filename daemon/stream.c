@@ -1,7 +1,7 @@
 /*
  * stream.c: APIs for managing client streams
  *
- * Copyright (C) 2009, 2011 Red Hat, Inc.
+ * Copyright (C) 2009-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -612,10 +612,10 @@ daemonStreamHandleAbort(virNetServerClientPtr client,
     virStreamEventRemoveCallback(stream->st);
     virStreamAbort(stream->st);
 
-    if (msg->header.status == VIR_NET_ERROR)
+    if (msg->header.status == VIR_NET_ERROR) {
         virReportError(VIR_ERR_RPC,
                        "%s", _("stream aborted at client request"));
-    else {
+    } else {
         VIR_WARN("unexpected stream status %d", msg->header.status);
         virReportError(VIR_ERR_RPC,
                        _("stream aborted with unexpected status %d"),

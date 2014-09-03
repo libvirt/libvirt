@@ -606,9 +606,9 @@ doRemoteOpen(virConnectPtr conn,
                 else
                     transport = trans_unix;
             } else {
-                if (STRCASEEQ(transport_str, "tls"))
+                if (STRCASEEQ(transport_str, "tls")) {
                     transport = trans_tls;
-                else if (STRCASEEQ(transport_str, "unix")) {
+                } else if (STRCASEEQ(transport_str, "unix")) {
                     if (conn->uri->server) {
                         virReportError(VIR_ERR_INVALID_ARG,
                                        _("using unix socket and remote "
@@ -618,15 +618,15 @@ doRemoteOpen(virConnectPtr conn,
                     } else {
                         transport = trans_unix;
                     }
-                } else if (STRCASEEQ(transport_str, "ssh"))
+                } else if (STRCASEEQ(transport_str, "ssh")) {
                     transport = trans_ssh;
-                else if (STRCASEEQ(transport_str, "libssh2"))
+                } else if (STRCASEEQ(transport_str, "libssh2")) {
                     transport = trans_libssh2;
-                else if (STRCASEEQ(transport_str, "ext"))
+                } else if (STRCASEEQ(transport_str, "ext")) {
                     transport = trans_ext;
-                else if (STRCASEEQ(transport_str, "tcp"))
+                } else if (STRCASEEQ(transport_str, "tcp")) {
                     transport = trans_tcp;
-                else {
+                } else {
                     virReportError(VIR_ERR_INVALID_ARG, "%s",
                                    _("remote_open: transport in URL not recognised "
                                      "(should be tls|unix|ssh|ext|tcp|libssh2)"));

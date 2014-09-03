@@ -2364,10 +2364,9 @@ static int umlDomainDetachDevice(virDomainPtr dom, const char *xml)
         dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
         if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_UML)
             ret = umlDomainDetachUmlDisk(driver, vm, dev);
-        else {
+        else
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("This type of disk cannot be hot unplugged"));
-        }
     } else {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        "%s", _("This type of device cannot be hot unplugged"));
