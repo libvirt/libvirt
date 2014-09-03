@@ -2791,9 +2791,9 @@ qemuParseISCSIString(virDomainDiskDefPtr def)
     if (uri->path &&
         (slash = strchr(uri->path + 1, '/')) != NULL) {
 
-        if (slash[1] == '\0')
+        if (slash[1] == '\0') {
             *slash = '\0';
-        else if (virStrToLong_ui(slash + 1, NULL, 10, &lun) == -1) {
+        } else if (virStrToLong_ui(slash + 1, NULL, 10, &lun) == -1) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("invalid name '%s' for iSCSI disk"),
                            def->src->path);
@@ -6491,8 +6491,7 @@ qemuBuildSmpArgStr(const virDomainDef *def,
             virBufferAsprintf(&buf, ",sockets=%u", def->cpu->sockets);
             virBufferAsprintf(&buf, ",cores=%u", def->cpu->cores);
             virBufferAsprintf(&buf, ",threads=%u", def->cpu->threads);
-        }
-        else {
+        } else {
             virBufferAsprintf(&buf, ",sockets=%u", def->maxvcpus);
             virBufferAsprintf(&buf, ",cores=%u", 1);
             virBufferAsprintf(&buf, ",threads=%u", 1);
@@ -7807,10 +7806,10 @@ qemuBuildCommandLine(virConnectPtr conn,
                                    virDomainTimerTickpolicyTypeToString(def->clock.timers[i]->tickpolicy));
                     goto error;
                 }
-            } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_RTC)
-                       && (def->clock.timers[i]->tickpolicy
-                           != VIR_DOMAIN_TIMER_TICKPOLICY_DELAY)
-                       && (def->clock.timers[i]->tickpolicy != -1)) {
+            } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_RTC) &&
+                       (def->clock.timers[i]->tickpolicy
+                        != VIR_DOMAIN_TIMER_TICKPOLICY_DELAY) &&
+                       (def->clock.timers[i]->tickpolicy != -1)) {
                 /* a non-default rtc policy was given, but there is no
                    way to implement it in this version of qemu */
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -9986,8 +9985,9 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                         if (VIR_STRDUP(def->src->path, vdi) < 0)
                             goto error;
                     }
-                } else
+                } else {
                     def->src->type = VIR_STORAGE_TYPE_FILE;
+                }
             } else {
                 def->src->type = VIR_STORAGE_TYPE_FILE;
             }
@@ -10000,20 +10000,22 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                                    _("pseries systems do not support ide devices '%s'"), val);
                     goto error;
                 }
-            } else if (STREQ(values[i], "scsi"))
+            } else if (STREQ(values[i], "scsi")) {
                 def->bus = VIR_DOMAIN_DISK_BUS_SCSI;
-            else if (STREQ(values[i], "virtio"))
+            } else if (STREQ(values[i], "virtio")) {
                 def->bus = VIR_DOMAIN_DISK_BUS_VIRTIO;
-            else if (STREQ(values[i], "xen"))
+            } else if (STREQ(values[i], "xen")) {
                 def->bus = VIR_DOMAIN_DISK_BUS_XEN;
-            else if (STREQ(values[i], "sd"))
+            } else if (STREQ(values[i], "sd")) {
                 def->bus = VIR_DOMAIN_DISK_BUS_SD;
+            }
         } else if (STREQ(keywords[i], "media")) {
             if (STREQ(values[i], "cdrom")) {
                 def->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
                 def->src->readonly = true;
-            } else if (STREQ(values[i], "floppy"))
+            } else if (STREQ(values[i], "floppy")) {
                 def->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
+            }
         } else if (STREQ(keywords[i], "format")) {
             if (VIR_STRDUP(def->src->driverName, "qemu") < 0)
                 goto error;
@@ -10888,8 +10890,9 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
         cpu->sockets = sockets;
         cpu->cores = cores;
         cpu->threads = threads;
-    } else if (sockets || cores || threads)
+    } else if (sockets || cores || threads) {
         goto syntax;
+    }
 
     ret = 0;
 
@@ -11215,9 +11218,9 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             if (!(disk = virDomainDiskDefNew()))
                 goto error;
 
-            if (STRPREFIX(val, "/dev/"))
+            if (STRPREFIX(val, "/dev/")) {
                 disk->src->type = VIR_STORAGE_TYPE_BLOCK;
-            else if (STRPREFIX(val, "nbd:")) {
+            } else if (STRPREFIX(val, "nbd:")) {
                 disk->src->type = VIR_STORAGE_TYPE_NETWORK;
                 disk->src->protocol = VIR_STORAGE_NET_PROTOCOL_NBD;
             } else if (STRPREFIX(val, "rbd:")) {
@@ -11231,8 +11234,9 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 disk->src->type = VIR_STORAGE_TYPE_NETWORK;
                 disk->src->protocol = VIR_STORAGE_NET_PROTOCOL_SHEEPDOG;
                 val += strlen("sheepdog:");
-            } else
+            } else {
                 disk->src->type = VIR_STORAGE_TYPE_FILE;
+            }
             if (STREQ(arg, "-cdrom")) {
                 disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
                 if (((def->os.arch == VIR_ARCH_PPC64) &&
@@ -11367,9 +11371,9 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             const char *token = NULL;
             WANT_VALUE();
 
-            if (!strchr(val, ','))
+            if (!strchr(val, ',')) {
                 qemuParseCommandLineBootDevs(def, val);
-            else {
+            } else {
                 token = val;
                 while (token && *token) {
                     if (STRPREFIX(token, "order=")) {
@@ -11683,11 +11687,11 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             WANT_VALUE();
 
             val += strlen("PIIX4_PM.disable_s3=");
-            if (STREQ(val, "0"))
+            if (STREQ(val, "0")) {
                 def->pm.s3 = VIR_TRISTATE_BOOL_YES;
-            else if (STREQ(val, "1"))
+            } else if (STREQ(val, "1")) {
                 def->pm.s3 = VIR_TRISTATE_BOOL_NO;
-            else {
+            } else {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("invalid value for disable_s3 parameter: "
                                  "'%s'"), val);
@@ -11700,11 +11704,11 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             WANT_VALUE();
 
             val += strlen("PIIX4_PM.disable_s4=");
-            if (STREQ(val, "0"))
+            if (STREQ(val, "0")) {
                 def->pm.s4 = VIR_TRISTATE_BOOL_YES;
-            else if (STREQ(val, "1"))
+            } else if (STREQ(val, "1")) {
                 def->pm.s4 = VIR_TRISTATE_BOOL_NO;
-            else {
+            } else {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("invalid value for disable_s4 parameter: "
                                  "'%s'"), val);

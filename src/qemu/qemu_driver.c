@@ -2559,9 +2559,9 @@ static int qemuDomainGetInfo(virDomainPtr dom,
         } else if (qemuDomainJobAllowed(priv, QEMU_JOB_QUERY)) {
             if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
                 goto cleanup;
-            if (!virDomainObjIsActive(vm))
+            if (!virDomainObjIsActive(vm)) {
                 err = 0;
-            else {
+            } else {
                 qemuDomainObjEnterMonitor(driver, vm);
                 err = qemuMonitorGetBalloonInfo(priv->mon, &balloon);
                 qemuDomainObjExitMonitor(driver, vm);
@@ -3698,9 +3698,9 @@ static int qemuDomainCoreDumpWithFormat(virDomainPtr dom,
         }
     }
 
-    if (qemuDomainObjEndAsyncJob(driver, vm) == 0)
+    if (qemuDomainObjEndAsyncJob(driver, vm) == 0) {
         vm = NULL;
-    else if ((ret == 0) && (flags & VIR_DUMP_CRASH) && !vm->persistent) {
+    } else if ((ret == 0) && (flags & VIR_DUMP_CRASH) && !vm->persistent) {
         qemuDomainRemoveInactive(driver, vm);
         vm = NULL;
     }
@@ -5647,9 +5647,9 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     if (virFileWrapperFdClose(wrapperFd) < 0)
         VIR_WARN("Failed to close %s", path);
 
-    if (!qemuDomainObjEndJob(driver, vm))
+    if (!qemuDomainObjEndJob(driver, vm)) {
         vm = NULL;
-    else if (ret < 0 && !vm->persistent) {
+    } else if (ret < 0 && !vm->persistent) {
         qemuDomainRemoveInactive(driver, vm);
         vm = NULL;
     }
@@ -7708,17 +7708,17 @@ qemuDomainMergeBlkioDevice(virBlkioDevicePtr *dest_array,
             if (STREQ(src->path, dest->path)) {
                 found = true;
 
-                if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT))
+                if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT)) {
                     dest->weight = src->weight;
-                else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS))
+                } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS)) {
                     dest->riops = src->riops;
-                else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS))
+                } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS)) {
                     dest->wiops = src->wiops;
-                else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_READ_BPS))
+                } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_READ_BPS)) {
                     dest->rbps = src->rbps;
-                else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS))
+                } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS)) {
                     dest->wbps = src->wbps;
-                else {
+                } else {
                     virReportError(VIR_ERR_INVALID_ARG, _("Unknown parameter %s"),
                                    type);
                     return -1;
@@ -7733,17 +7733,17 @@ qemuDomainMergeBlkioDevice(virBlkioDevicePtr *dest_array,
                 return -1;
             dest = &(*dest_array)[*dest_size - 1];
 
-            if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT))
+            if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT)) {
                 dest->weight = src->weight;
-            else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS))
+            } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS)) {
                 dest->riops = src->riops;
-            else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS))
+            } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS)) {
                 dest->wiops = src->wiops;
-            else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_READ_BPS))
+            } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_READ_BPS)) {
                 dest->rbps = src->rbps;
-            else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS))
+            } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS)) {
                 dest->wbps = src->wbps;
-            else {
+            } else {
                 *dest_size = *dest_size - 1;
                 return -1;
             }

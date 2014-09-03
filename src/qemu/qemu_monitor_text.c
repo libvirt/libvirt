@@ -2726,17 +2726,14 @@ int qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon, const char *name)
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Failed to take snapshot: %s"), reply);
         goto cleanup;
-    }
-    else if (strstr(reply, "No block device can accept snapshots") != NULL) {
+    } else if (strstr(reply, "No block device can accept snapshots") != NULL) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("this domain does not have a device to take snapshots"));
         goto cleanup;
-    }
-    else if (strstr(reply, "Could not open VM state file") != NULL) {
+    } else if (strstr(reply, "Could not open VM state file") != NULL) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s", reply);
         goto cleanup;
-    }
-    else if (strstr(reply, "Error") != NULL
+    } else if (strstr(reply, "Error") != NULL
              && strstr(reply, "while writing VM") != NULL) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s", reply);
         goto cleanup;
@@ -2769,27 +2766,22 @@ int qemuMonitorTextLoadSnapshot(qemuMonitorPtr mon, const char *name)
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("this domain does not have a device to load snapshots"));
         goto cleanup;
-    }
-    else if (strstr(reply, "Could not find snapshot") != NULL) {
+    } else if (strstr(reply, "Could not find snapshot") != NULL) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("the snapshot '%s' does not exist, and was not loaded"),
                        name);
         goto cleanup;
-    }
-    else if (strstr(reply, "Snapshots not supported on device") != NULL) {
+    } else if (strstr(reply, "Snapshots not supported on device") != NULL) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s", reply);
         goto cleanup;
-    }
-    else if (strstr(reply, "Could not open VM state file") != NULL) {
+    } else if (strstr(reply, "Could not open VM state file") != NULL) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s", reply);
         goto cleanup;
-    }
-    else if (strstr(reply, "Error") != NULL
+    } else if (strstr(reply, "Error") != NULL
              && strstr(reply, "while loading VM state") != NULL) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s", reply);
         goto cleanup;
-    }
-    else if (strstr(reply, "Error") != NULL
+    } else if (strstr(reply, "Error") != NULL
              && strstr(reply, "while activating snapshot on") != NULL) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s", reply);
         goto cleanup;
@@ -2821,12 +2813,10 @@ int qemuMonitorTextDeleteSnapshot(qemuMonitorPtr mon, const char *name)
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("this domain does not have a device to delete snapshots"));
         goto cleanup;
-    }
-    else if (strstr(reply, "Snapshots not supported on device") != NULL) {
+    } else if (strstr(reply, "Snapshots not supported on device") != NULL) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s", reply);
         goto cleanup;
-    }
-    else if (strstr(reply, "Error") != NULL
+    } else if (strstr(reply, "Error") != NULL
              && strstr(reply, "while deleting snapshot") != NULL) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s", reply);
         goto cleanup;

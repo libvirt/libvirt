@@ -966,12 +966,13 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         if (virDomainCCWAddressAssign(&net->info, priv->ccwaddrs,
                                       !net->info.addr.ccw.assigned) < 0)
             goto cleanup;
-    } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390))
+    } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("virtio-s390 net device cannot be hotplugged."));
-    else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-             virDomainPCIAddressEnsureAddr(priv->pciaddrs, &net->info) < 0)
-             goto cleanup;
+    } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
+               virDomainPCIAddressEnsureAddr(priv->pciaddrs, &net->info) < 0) {
+        goto cleanup;
+    }
 
     releaseaddr = true;
 

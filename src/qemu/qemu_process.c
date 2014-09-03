@@ -4659,8 +4659,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
             if (graphics->data.vnc.autoport) {
                 virPortAllocatorRelease(driver->remotePorts,
                                         graphics->data.vnc.port);
-            }
-            else if (graphics->data.vnc.portReserved) {
+            } else if (graphics->data.vnc.portReserved) {
                 virPortAllocatorSetUsed(driver->remotePorts,
                                         graphics->data.spice.port,
                                         false);

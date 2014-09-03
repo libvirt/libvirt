@@ -629,11 +629,11 @@ virQEMUCapsProbeCPUModels(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid)
     virCommandPtr cmd;
 
     if (qemuCaps->arch == VIR_ARCH_I686 ||
-        qemuCaps->arch == VIR_ARCH_X86_64)
+        qemuCaps->arch == VIR_ARCH_X86_64) {
         parse = virQEMUCapsParseX86Models;
-    else if (qemuCaps->arch == VIR_ARCH_PPC64)
+    } else if (qemuCaps->arch == VIR_ARCH_PPC64) {
         parse = virQEMUCapsParsePPCModels;
-    else {
+    } else {
         VIR_DEBUG("don't know how to parse %s CPU models",
                   virArchToString(qemuCaps->arch));
         return 0;
