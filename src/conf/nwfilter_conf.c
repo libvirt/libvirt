@@ -1858,10 +1858,12 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                                     item->u.u8 = uint_val;
                                     found = true;
                                     data.ui = uint_val;
-                                } else
+                                } else {
                                     rc = -1;
-                            } else
+                                }
+                            } else {
                                 rc = -1;
+                            }
                         break;
 
                         case DATATYPE_UINT16_HEX:
@@ -1873,10 +1875,12 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                                     item->u.u16 = uint_val;
                                     found = true;
                                     data.ui = uint_val;
-                                } else
+                                } else {
                                     rc = -1;
-                            } else
+                                }
+                            } else {
                                 rc = -1;
+                            }
                         break;
 
                         case DATATYPE_UINT32_HEX:
@@ -1887,8 +1891,9 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                                 item->u.u32 = uint_val;
                                 found = true;
                                 data.ui = uint_val;
-                            } else
+                            } else {
                                 rc = -1;
+                            }
                         break;
 
                         case DATATYPE_IPADDR:
@@ -1904,8 +1909,9 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                                         item->u.u8 = (uint8_t)uint_val;
                                     found = true;
                                     data.ui = uint_val;
-                                } else
+                                } else {
                                     rc = -1;
+                                }
                             } else {
                                 if (virSocketAddrParseIPv4(&ipaddr, prop) < 0) {
                                     rc = -1;
@@ -1951,8 +1957,9 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                                         item->u.u8 = (uint8_t)uint_val;
                                     found = true;
                                     data.ui = uint_val;
-                                } else
+                                } else {
                                     rc = -1;
+                                }
                             } else {
                                 if (virSocketAddrParseIPv6(&ipaddr, prop) < 0) {
                                     rc = -1;
@@ -2457,8 +2464,9 @@ virNWFilterRuleParse(xmlNodePtr node)
                     i++;
                     if (!virAttr[i].id)
                         break;
-                } else
+                } else {
                    break;
+                }
             }
         }
 
@@ -2667,8 +2675,9 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
                     virNWFilterEntryFree(entry);
                     goto cleanup;
                 }
-            } else
+            } else {
                 virNWFilterEntryFree(entry);
+            }
         }
         curr = curr->next;
     }

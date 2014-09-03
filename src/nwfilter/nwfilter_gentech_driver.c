@@ -1,7 +1,7 @@
 /*
  * nwfilter_gentech_driver.c: generic technology driver
  *
- * Copyright (C) 2011, 2013 Red Hat, Inc.
+ * Copyright (C) 2011-2014 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corp.
  * Copyright (C) 2010 Stefan Berger
  *
@@ -699,8 +699,9 @@ virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
                                filter->name, learning);
                 goto err_exit;
             }
-        } else
+        } else {
             goto err_unresolvable_vars;
+        }
     } else if (virHashSize(missing_vars->hashTable) > 1) {
         goto err_unresolvable_vars;
     } else if (!forceWithPendingReq &&

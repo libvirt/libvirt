@@ -782,9 +782,9 @@ networkKillDaemon(pid_t pid, const char *daemonName, const char *networkName)
      */
     for (i = 0; i < 25; i++) {
         int signum = 0;
-        if (i == 0)
+        if (i == 0) {
             signum = SIGTERM;
-        else if (i == 15) {
+        } else if (i == 15) {
             signum = SIGKILL;
             signame = "KILL";
         }
@@ -1221,9 +1221,9 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
 
     /* Are we doing RA instead of radvd? */
     if (DNSMASQ_RA_SUPPORT(caps)) {
-        if (ipv6def)
+        if (ipv6def) {
             virBufferAddLit(&configbuf, "enable-ra\n");
-        else {
+        } else {
             for (i = 0;
                  (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, i));
                  i++) {

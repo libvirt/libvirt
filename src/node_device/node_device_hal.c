@@ -546,8 +546,9 @@ dev_refresh(const char *udi)
          * to sub-capabilities (like net.80203) is nasty ... so avoid it.
          */
         virNodeDeviceObjRemove(&driverState->devs, dev);
-    } else
+    } else {
         VIR_DEBUG("no device named %s", name);
+    }
     nodeDeviceUnlock(driverState);
 
     if (dev) {

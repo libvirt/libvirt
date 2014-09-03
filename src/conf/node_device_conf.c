@@ -683,9 +683,9 @@ virNodeDevCapStorageParseXML(xmlXPathContextPtr ctxt,
             goto out;
         }
 
-        if (STREQ(type, "hotpluggable"))
+        if (STREQ(type, "hotpluggable")) {
             data->storage.flags |= VIR_NODE_DEV_CAP_STORAGE_HOTPLUGGABLE;
-        else if (STREQ(type, "removable")) {
+        } else if (STREQ(type, "removable")) {
             xmlNodePtr orignode2;
 
             data->storage.flags |= VIR_NODE_DEV_CAP_STORAGE_REMOVABLE;

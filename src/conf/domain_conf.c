@@ -6579,15 +6579,15 @@ virDomainFSDefParseXML(xmlNodePtr node,
                 xmlStrEqual(cur->name, BAD_CAST "source")) {
 
                 if (def->type == VIR_DOMAIN_FS_TYPE_MOUNT ||
-                    def->type == VIR_DOMAIN_FS_TYPE_BIND)
+                    def->type == VIR_DOMAIN_FS_TYPE_BIND) {
                     source = virXMLPropString(cur, "dir");
-                else if (def->type == VIR_DOMAIN_FS_TYPE_FILE)
+                } else if (def->type == VIR_DOMAIN_FS_TYPE_FILE) {
                     source = virXMLPropString(cur, "file");
-                else if (def->type == VIR_DOMAIN_FS_TYPE_BLOCK)
+                } else if (def->type == VIR_DOMAIN_FS_TYPE_BLOCK) {
                     source = virXMLPropString(cur, "dev");
-                else if (def->type == VIR_DOMAIN_FS_TYPE_TEMPLATE)
+                } else if (def->type == VIR_DOMAIN_FS_TYPE_TEMPLATE) {
                     source = virXMLPropString(cur, "name");
-                else if (def->type == VIR_DOMAIN_FS_TYPE_RAM) {
+                } else if (def->type == VIR_DOMAIN_FS_TYPE_RAM) {
                     usage = virXMLPropString(cur, "usage");
                     units = virXMLPropString(cur, "units");
                 }
@@ -7129,11 +7129,11 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         def->data.vhostuser->data.nix.path = vhostuser_path;
         vhostuser_path = NULL;
 
-        if (STREQ(vhostuser_mode, "server"))
+        if (STREQ(vhostuser_mode, "server")) {
             def->data.vhostuser->data.nix.listen = true;
-        else if (STREQ(vhostuser_mode, "client"))
+        } else if (STREQ(vhostuser_mode, "client")) {
             def->data.vhostuser->data.nix.listen = false;
-        else {
+        } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Wrong <source> 'mode' attribute "
                              "specified with <interface "
@@ -9315,9 +9315,9 @@ virDomainWatchdogDefParseXML(xmlNodePtr node,
     }
 
     action = virXMLPropString(node, "action");
-    if (action == NULL)
+    if (action == NULL) {
         def->action = VIR_DOMAIN_WATCHDOG_ACTION_RESET;
-    else {
+    } else {
         def->action = virDomainWatchdogActionTypeFromString(action);
         if (def->action < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -9612,9 +9612,9 @@ virSysinfoParseXML(xmlNodePtr node,
                            "%s", _("malformed <sysinfo> uuid element"));
             goto error;
         }
-        if (uuid_generated)
+        if (uuid_generated) {
             memcpy(domUUID, uuidbuf, VIR_UUID_BUFLEN);
-        else if (memcmp(domUUID, uuidbuf, VIR_UUID_BUFLEN) != 0) {
+        } else if (memcmp(domUUID, uuidbuf, VIR_UUID_BUFLEN) != 0) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
                            _("UUID mismatch between <uuid> and "
                              "<sysinfo>"));
@@ -10148,11 +10148,11 @@ virDomainRedirFilterUSBDevDefParseXML(xmlNodePtr node)
 
     allow = virXMLPropString(node, "allow");
     if (allow) {
-        if (STREQ(allow, "yes"))
+        if (STREQ(allow, "yes")) {
             def->allow = true;
-        else if (STREQ(allow, "no"))
+        } else if (STREQ(allow, "no")) {
             def->allow = false;
-        else {
+        } else {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Invalid allow value, either 'yes' or 'no'"));
             goto error;

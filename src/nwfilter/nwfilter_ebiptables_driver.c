@@ -1509,9 +1509,9 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
         return 0;
     }
 
-    if (rule->action == VIR_NWFILTER_RULE_ACTION_ACCEPT)
+    if (rule->action == VIR_NWFILTER_RULE_ACTION_ACCEPT) {
         target = accept_target;
-    else {
+    } else {
         target = virNWFilterJumpTargetTypeToString(rule->action);
         skipMatch = defMatch;
     }

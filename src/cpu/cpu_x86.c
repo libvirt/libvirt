@@ -1,7 +1,7 @@
 /*
  * cpu_x86.c: CPU driver for CPUs with x86 compatible CPUID instruction
  *
- * Copyright (C) 2009-2011, 2013 Red Hat, Inc.
+ * Copyright (C) 2009-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -710,9 +710,9 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
             goto error;
     }
 
-    if (map->features == NULL)
+    if (map->features == NULL) {
         map->features = feature;
-    else {
+    } else {
         feature->next = map->features;
         map->features = feature;
     }
@@ -1048,9 +1048,9 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
             goto error;
     }
 
-    if (map->models == NULL)
+    if (map->models == NULL) {
         map->models = model;
-    else {
+    } else {
         model->next = map->models;
         map->models = model;
     }
@@ -1882,9 +1882,9 @@ x86Baseline(virCPUDefPtr *cpus,
     cpu->type = VIR_CPU_TYPE_GUEST;
     cpu->match = VIR_CPU_MATCH_EXACT;
 
-    if (!cpus[0]->vendor)
+    if (!cpus[0]->vendor) {
         outputVendor = false;
-    else if (!(vendor = x86VendorFind(map, cpus[0]->vendor))) {
+    } else if (!(vendor = x86VendorFind(map, cpus[0]->vendor))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Unknown CPU vendor %s"), cpus[0]->vendor);
         goto error;
@@ -1914,9 +1914,9 @@ x86Baseline(virCPUDefPtr *cpus,
             goto error;
         }
 
-        if (cpus[i]->vendor)
+        if (cpus[i]->vendor) {
             vn = cpus[i]->vendor;
-        else {
+        } else {
             outputVendor = false;
             if (model->vendor)
                 vn = model->vendor->name;

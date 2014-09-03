@@ -159,11 +159,11 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
 
     prop = virXPathString("string(./@ephemeral)", ctxt);
     if (prop != NULL) {
-        if (STREQ(prop, "yes"))
+        if (STREQ(prop, "yes")) {
             def->ephemeral = true;
-        else if (STREQ(prop, "no"))
+        } else if (STREQ(prop, "no")) {
             def->ephemeral = false;
-        else {
+        } else {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("invalid value of 'ephemeral'"));
             goto cleanup;
@@ -173,11 +173,11 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
 
     prop = virXPathString("string(./@private)", ctxt);
     if (prop != NULL) {
-        if (STREQ(prop, "yes"))
+        if (STREQ(prop, "yes")) {
             def->private = true;
-        else if (STREQ(prop, "no"))
+        } else if (STREQ(prop, "no")) {
             def->private = false;
-        else {
+        } else {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("invalid value of 'private'"));
             goto cleanup;

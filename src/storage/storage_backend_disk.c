@@ -414,9 +414,9 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto error;
     }
 
-    if (flags & VIR_STORAGE_POOL_BUILD_OVERWRITE)
+    if (flags & VIR_STORAGE_POOL_BUILD_OVERWRITE) {
         ok_to_mklabel = true;
-    else {
+    } else {
         int check;
 
         check = virStorageBackendDiskFindLabel(
