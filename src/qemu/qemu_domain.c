@@ -162,7 +162,7 @@ qemuDomainObjResetAsyncJob(qemuDomainObjPrivatePtr priv)
     job->asyncJob = QEMU_ASYNC_JOB_NONE;
     job->asyncOwner = 0;
     job->phase = 0;
-    job->mask = DEFAULT_JOB_MASK;
+    job->mask = QEMU_JOB_DEFAULT_MASK;
     job->start = 0;
     job->dump_memory_only = false;
     job->asyncAbort = false;

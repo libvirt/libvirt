@@ -54,7 +54,7 @@
 # endif
 
 # define JOB_MASK(job)                  (1 << (job - 1))
-# define DEFAULT_JOB_MASK               \
+# define QEMU_JOB_DEFAULT_MASK          \
     (JOB_MASK(QEMU_JOB_QUERY) |         \
      JOB_MASK(QEMU_JOB_DESTROY) |       \
      JOB_MASK(QEMU_JOB_ABORT))

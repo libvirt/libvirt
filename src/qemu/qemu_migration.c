@@ -4907,9 +4907,9 @@ qemuMigrationJobStart(virQEMUDriverPtr driver,
     if (job == QEMU_ASYNC_JOB_MIGRATION_IN) {
         qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_NONE);
     } else {
-        qemuDomainObjSetAsyncJobMask(vm, DEFAULT_JOB_MASK |
-                                     JOB_MASK(QEMU_JOB_SUSPEND) |
-                                     JOB_MASK(QEMU_JOB_MIGRATION_OP));
+        qemuDomainObjSetAsyncJobMask(vm, (QEMU_JOB_DEFAULT_MASK |
+                                          JOB_MASK(QEMU_JOB_SUSPEND) |
+                                          JOB_MASK(QEMU_JOB_MIGRATION_OP)));
     }
 
     priv->job.info.type = VIR_DOMAIN_JOB_UNBOUNDED;

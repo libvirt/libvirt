@@ -13207,9 +13207,9 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
             goto endjob;
 
         /* allow the migration job to be cancelled or the domain to be paused */
-        qemuDomainObjSetAsyncJobMask(vm, DEFAULT_JOB_MASK |
-                                     JOB_MASK(QEMU_JOB_SUSPEND) |
-                                     JOB_MASK(QEMU_JOB_MIGRATION_OP));
+        qemuDomainObjSetAsyncJobMask(vm, (QEMU_JOB_DEFAULT_MASK |
+                                          JOB_MASK(QEMU_JOB_SUSPEND) |
+                                          JOB_MASK(QEMU_JOB_MIGRATION_OP)));
 
         cfg = virQEMUDriverGetConfig(driver);
         if (cfg->snapshotImageFormat) {
@@ -13241,7 +13241,7 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
         memory_unlink = true;
 
         /* forbid any further manipulation */
-        qemuDomainObjSetAsyncJobMask(vm, DEFAULT_JOB_MASK);
+        qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_DEFAULT_MASK);
     }
 
     /* now the domain is now paused if:
