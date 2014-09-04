@@ -2360,7 +2360,7 @@ virNetworkDNSDefFormat(virBufferPtr buf,
 {
     size_t i, j;
 
-    if (!(def->forwardPlainNames || def->forwarders || def->nhosts ||
+    if (!(def->forwardPlainNames || def->nfwds || def->nhosts ||
           def->nsrvs || def->ntxts))
         return 0;
 
@@ -2376,7 +2376,7 @@ virNetworkDNSDefFormat(virBufferPtr buf,
             return -1;
         }
         virBufferAsprintf(buf, " forwardPlainNames='%s'", fwd);
-        if (!(def->forwarders || def->nhosts || def->nsrvs || def->ntxts)) {
+        if (!(def->nfwds || def->nhosts || def->nsrvs || def->ntxts)) {
             virBufferAddLit(buf, "/>\n");
             return 0;
         }
