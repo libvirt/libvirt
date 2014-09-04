@@ -6296,6 +6296,7 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
                     virBufferAddLit(&buf, ",kvm=off");
                 break;
 
+            /* coverity[dead_error_begin] */
             case VIR_DOMAIN_KVM_LAST:
                 break;
             }
