@@ -8498,17 +8498,15 @@ cmdQemuAttach(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (!(dom = virDomainQemuAttach(ctl->conn, pid_value, flags)))
-        goto cleanup;
-
-    if (dom != NULL) {
-        vshPrint(ctl, _("Domain %s attached to pid %u\n"),
-                 virDomainGetName(dom), pid_value);
-        virDomainFree(dom);
-        ret = true;
-    } else {
+    if (!(dom = virDomainQemuAttach(ctl->conn, pid_value, flags))) {
         vshError(ctl, _("Failed to attach to pid %u"), pid_value);
+        goto cleanup;
     }
+
+    vshPrint(ctl, _("Domain %s attached to pid %u\n"),
+                virDomainGetName(dom), pid_value);
+    virDomainFree(dom);
+    ret = true;
 
  cleanup:
     return ret;
