@@ -1933,17 +1933,13 @@ nodeCapsInitNUMA(virCapsPtr caps)
     ret = 0;
 
  cleanup:
-    if (topology_failed || ret < 0)
+    if ((topology_failed || ret < 0) && cpus)
         virCapabilitiesClearHostNUMACellCPUTopology(cpus, ncpus);
 
     virBitmapFree(cpumap);
     VIR_FREE(cpus);
     VIR_FREE(siblings);
     VIR_FREE(pageinfo);
-
-    if (ret < 0)
-        VIR_FREE(cpus);
-
     return ret;
 }
 
