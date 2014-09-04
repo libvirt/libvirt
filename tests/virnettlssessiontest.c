@@ -240,6 +240,8 @@ mymain(void)
 {
     int ret = 0;
 
+    setenv("GNUTLS_FORCE_FIPS_MODE", "2", 1);
+
     testTLSInit(KEYFILE);
 
 # define DO_SESS_TEST(_caCrt, _serverCrt, _clientCrt, _expectServerFail, \

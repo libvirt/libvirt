@@ -113,6 +113,8 @@ mymain(void)
 {
     int ret = 0;
 
+    setenv("GNUTLS_FORCE_FIPS_MODE", "2", 1);
+
     testTLSInit(KEYFILE);
 
 # define DO_CTX_TEST(_isServer, _caCrt, _crt, _expectFail)              \
