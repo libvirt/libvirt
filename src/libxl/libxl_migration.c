@@ -527,7 +527,6 @@ libxlDomainMigrationFinish(virConnectPtr dconn,
         libxlDomainCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FAILED);
-        libxlDomainEventQueue(driver, event);
     }
 
  cleanup:
