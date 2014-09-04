@@ -43,7 +43,7 @@
 #include "virthread.h"
 #include "configmake.h"
 
-#define DH_BITS 1024
+#define DH_BITS 2048
 
 #define LIBVIRT_PKI_DIR SYSCONFDIR "/pki"
 #define LIBVIRT_CACERT LIBVIRT_PKI_DIR "/CA/cacert.pem"
