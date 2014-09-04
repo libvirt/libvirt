@@ -17402,7 +17402,7 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
         if (!(dom = qemuDomObjFromDomain(doms[i])))
             continue;
 
-        if (!domlist &&
+        if (doms != domlist &&
             !virConnectGetAllDomainStatsCheckACL(conn, dom->def))
             continue;
 
