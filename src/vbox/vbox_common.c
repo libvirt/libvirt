@@ -4345,6 +4345,11 @@ static int vboxCloseDisksRecursively(virDomainPtr dom, char *location)
             PRUnichar *childLocationUtf = NULL;
             char *childLocation = NULL;
             rc = gVBoxAPI.UIMedium.GetLocation(childMedium, &childLocationUtf);
+            if (NS_FAILED(rc)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Unable to get childMedium location"));
+                goto cleanup;
+            }
             VBOX_UTF16_TO_UTF8(childLocationUtf, &childLocation);
             VBOX_UTF16_FREE(childLocationUtf);
             if (vboxCloseDisksRecursively(dom, childLocation) < 0) {
@@ -4767,7 +4772,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
                  * succeed, unless there is still another machine which uses the
                  * medium. No harm done if we ignore the error.
                  */
-                rc = gVBoxAPI.UIMedium.Close(medium);
+                ignore_value(gVBoxAPI.UIMedium.Close(medium));
             }
             VBOX_UTF8_FREE(locationUtf8);
         }
@@ -6987,7 +6992,7 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
              * reference in a sane order, which means that closing will normally
              * succeed, unless there is still another machine which uses the
              * medium. No harm done if we ignore the error. */
-            rc = gVBoxAPI.UIMedium.Close(medium);
+            ignore_value(gVBoxAPI.UIMedium.Close(medium));
         }
         VBOX_UTF16_FREE(locationUtf16);
         VBOX_UTF8_FREE(locationUtf8);
