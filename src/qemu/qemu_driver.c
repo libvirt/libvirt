@@ -7683,8 +7683,10 @@ qemuDomainParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
                    _("unable to parse blkio device '%s' '%s'"),
                    type, blkioDeviceStr);
  cleanup:
-    virBlkioDeviceArrayClear(result, ndevices);
-    VIR_FREE(result);
+    if (result) {
+        virBlkioDeviceArrayClear(result, ndevices);
+        VIR_FREE(result);
+    }
     return -1;
 }
 
