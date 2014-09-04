@@ -2034,7 +2034,7 @@ xenFormatConfigCommon(virConfPtr conf,
         return -1;
 
     if (xenFormatCPUFeatures(conf, def, xendConfigVersion) < 0)
-        return -1;;
+        return -1;
 
     if (xenFormatCDROM(conf, def, xendConfigVersion) < 0)
         return -1;
