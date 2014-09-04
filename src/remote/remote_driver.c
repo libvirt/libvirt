@@ -72,6 +72,11 @@ VIR_LOG_INIT("remote.remote_driver");
 # define HYPER_TO_ULONG(_to, _from) (_to) = (_from)
 #endif
 
+#define remoteDeserializeTypedParameters(ret_params_val, ret_params_len,      \
+                                         limit, params, nparams)              \
+    deserializeTypedParameters(__FUNCTION__, ret_params_val, ret_params_len,  \
+                               limit, params, nparams)
+
 static bool inside_daemon = false;
 static virDriverPtr remoteDriver = NULL;
 
@@ -1743,21 +1748,30 @@ remoteSerializeTypedParameters(virTypedParameterPtr params,
 
 /* Helper to deserialize typed parameters. */
 static int
-remoteDeserializeTypedParameters(remote_typed_param *ret_params_val,
-                                 u_int ret_params_len,
-                                 int limit,
-                                 virTypedParameterPtr *params,
-                                 int *nparams)
+deserializeTypedParameters(const char *funcname,
+                           remote_typed_param *ret_params_val,
+                           u_int ret_params_len,
+                           int limit,
+                           virTypedParameterPtr *params,
+                           int *nparams)
 {
     size_t i = 0;
     int rv = -1;
     bool userAllocated = *params != NULL;
 
+    if (ret_params_len > limit) {
+        virReportError(VIR_ERR_RPC,
+                       _("%s: too many parameters '%u' for limit '%d'"),
+                       funcname, ret_params_len, limit);
+        goto cleanup;
+    }
+
     if (userAllocated) {
         /* Check the length of the returned list carefully. */
-        if (ret_params_len > limit || ret_params_len > *nparams) {
-            virReportError(VIR_ERR_RPC, "%s",
-                           _("returned number of parameters exceeds limit"));
+        if (ret_params_len > *nparams) {
+            virReportError(VIR_ERR_RPC,
+                           _("%s: too many parameters '%u' for nparams '%d'"),
+                           funcname, ret_params_len, *nparams);
             goto cleanup;
         }
     } else {
@@ -1774,8 +1788,8 @@ remoteDeserializeTypedParameters(remote_typed_param *ret_params_val,
         if (virStrcpyStatic(param->field,
                             ret_param->field) == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Parameter %s too big for destination"),
-                           ret_param->field);
+                           _("%s: parameter %s too big for destination"),
+                           funcname, ret_param->field);
             goto cleanup;
         }
 
@@ -1811,8 +1825,8 @@ remoteDeserializeTypedParameters(remote_typed_param *ret_params_val,
                 goto cleanup;
             break;
         default:
-            virReportError(VIR_ERR_RPC, _("unknown parameter type: %d"),
-                           param->type);
+            virReportError(VIR_ERR_RPC, _("%s: unknown parameter type: %d"),
+                           funcname, param->type);
             goto cleanup;
         }
     }
@@ -6987,19 +7001,12 @@ remoteDomainGetJobStats(virDomainPtr domain,
              (xdrproc_t) xdr_remote_domain_get_job_stats_ret, (char *) &ret) == -1)
         goto done;
 
-    if (ret.params.params_len > REMOTE_DOMAIN_JOB_STATS_MAX) {
-        virReportError(VIR_ERR_RPC,
-                       _("Too many job stats '%d' for limit '%d'"),
-                       ret.params.params_len,
-                       REMOTE_DOMAIN_JOB_STATS_MAX);
-        goto cleanup;
-    }
-
     *type = ret.type;
 
     if (remoteDeserializeTypedParameters(ret.params.params_val,
                                          ret.params.params_len,
-                                         0, params, nparams) < 0)
+                                         REMOTE_DOMAIN_JOB_STATS_MAX,
+                                         params, nparams) < 0)
         goto cleanup;
 
     rv = 0;
