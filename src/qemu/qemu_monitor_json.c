@@ -639,7 +639,7 @@ qemuMonitorJSONKeywordStringToJSON(const char *str, const char *firstkeyword)
     size_t i;
 
     if (!(ret = virJSONValueNewObject()))
-        goto error;
+        return NULL;
 
     if (qemuParseKeywords(str, &keywords, &values, &nkeywords, 1) < 0)
         goto error;
