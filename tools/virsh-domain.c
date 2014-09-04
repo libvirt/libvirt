@@ -6734,7 +6734,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     virTypedParameterPtr params = NULL;
-    int pos, max_id, cpu = 0, show_count = -1, nparams = 0;
+    int pos, max_id, cpu = 0, show_count = -1, nparams = 0, stats_per_cpu;
     size_t i, j;
     bool show_total = false, show_per_cpu = false;
     unsigned int flags = 0;
@@ -6853,11 +6853,12 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     /* passing start_cpu == -1 gives us domain's total status */
-    if ((nparams = virDomainGetCPUStats(dom, params, nparams, -1, 1, flags)) < 0)
+    if ((stats_per_cpu = virDomainGetCPUStats(dom, params, nparams,
+                                              -1, 1, flags)) < 0)
         goto failed_stats;
 
     vshPrint(ctl, _("Total:\n"));
-    for (i = 0; i < nparams; i++) {
+    for (i = 0; i < stats_per_cpu; i++) {
         vshPrint(ctl, "\t%-12s ", params[i].field);
         if ((STREQ(params[i].field, VIR_DOMAIN_CPU_STATS_CPUTIME) ||
              STREQ(params[i].field, VIR_DOMAIN_CPU_STATS_USERTIME) ||
