@@ -198,6 +198,9 @@ virStringFreeListCount(char **strings,
 {
     size_t i;
 
+    if (!strings)
+        return;
+
     for (i = 0; i < count; i++)
         VIR_FREE(strings[i]);
 
