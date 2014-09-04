@@ -2725,7 +2725,7 @@ qemuProcessInitPCIAddresses(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int naddrs;
-    int ret;
+    int ret = -1;
     qemuMonitorPCIAddress *addrs = NULL;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
@@ -2734,7 +2734,8 @@ qemuProcessInitPCIAddresses(virQEMUDriverPtr driver,
                                            &addrs);
     qemuDomainObjExitMonitor(driver, vm);
 
-    ret = qemuProcessDetectPCIAddresses(vm, addrs, naddrs);
+    if (naddrs > 0)
+        ret = qemuProcessDetectPCIAddresses(vm, addrs, naddrs);
 
     VIR_FREE(addrs);
 
