@@ -1112,7 +1112,8 @@ sexpr_to_xend_topology(const struct sexpr *root, virCapsPtr caps)
  parse_error:
     virReportError(VIR_ERR_XEN_CALL, "%s", _("topology syntax error"));
  error:
-    virCapabilitiesClearHostNUMACellCPUTopology(cpuInfo, nb_cpus);
+    if (nb_cpus > 0)
+        virCapabilitiesClearHostNUMACellCPUTopology(cpuInfo, nb_cpus);
     VIR_FREE(cpuInfo);
     return -1;
 }
