@@ -128,7 +128,6 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot probe backing volume format: %s"),
                                target->backingStore->path);
-                ret = -3;
             } else {
                 target->backingStore->format = rc;
             }
