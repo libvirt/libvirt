@@ -180,8 +180,7 @@ main(int argc, char **argv)
         goto cleanup;
 
     /* Removed extraneous trailing space in DNSMASQ_LEASE_EXPIRES (dnsmasq < 2.52) */
-    if (exptime &&
-        exptime[strlen(exptime) - 1] == ' ')
+    if (exptime[strlen(exptime) - 1] == ' ')
         exptime[strlen(exptime) - 1] = '\0';
 
     /* Check if it is an IPv6 lease */
