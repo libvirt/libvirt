@@ -162,10 +162,12 @@ testStrdup(const void *data ATTRIBUTE_UNUSED)
         virFilePrintf(stderr, "unexpected strdup result %d, expected 1\n", value);
         goto cleanup;
     }
+    /* coverity[dead_error_begin] */
     if (i != 1) {
         virFilePrintf(stderr, "unexpected side effects i=%zu, expected 1\n", i);
         goto cleanup;
     }
+    /* coverity[dead_error_begin] */
     if (j != 1) {
         virFilePrintf(stderr, "unexpected side effects j=%zu, expected 1\n", j);
         goto cleanup;
@@ -182,14 +184,17 @@ testStrdup(const void *data ATTRIBUTE_UNUSED)
         virFilePrintf(stderr, "unexpected strdup result %d, expected 0\n", value);
         goto cleanup;
     }
+    /* coverity[dead_error_begin] */
     if (i != 2) {
         virFilePrintf(stderr, "unexpected side effects i=%zu, expected 2\n", i);
         goto cleanup;
     }
+    /* coverity[dead_error_begin] */
     if (j != 2) {
         virFilePrintf(stderr, "unexpected side effects j=%zu, expected 2\n", j);
         goto cleanup;
     }
+    /* coverity[dead_error_begin] */
     if (k != 1) {
         virFilePrintf(stderr, "unexpected side effects k=%zu, expected 1\n", k);
         goto cleanup;
