@@ -2285,7 +2285,7 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
     size_t defIdx = 0;
 
     if ((nmachines = qemuMonitorGetMachines(mon, &machines)) < 0)
-        goto cleanup;
+        return -1;
 
     if (VIR_ALLOC_N(qemuCaps->machineTypes, nmachines) < 0)
         goto cleanup;
