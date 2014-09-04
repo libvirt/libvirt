@@ -3614,7 +3614,8 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         orig_err = virSaveLastError();
 
     /* cancel any outstanding NBD jobs */
-    qemuMigrationCancelDriveMirror(mig, driver, vm);
+    if (mig)
+        qemuMigrationCancelDriveMirror(mig, driver, vm);
 
     if (spec->fwdType != MIGRATION_FWD_DIRECT) {
         if (iothread && qemuMigrationStopTunnel(iothread, ret < 0) < 0)
