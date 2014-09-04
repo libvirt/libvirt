@@ -1111,9 +1111,6 @@ cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
     ret = true; goto edit_cleanup;
 #define EDIT_DEFINE \
     (network_edited = virNetworkDefineXML(ctl->conn, doc_edited))
-#define EDIT_FREE \
-    if (network_edited) \
-        virNetworkFree(network_edited);
 #include "virsh-edit.c"
 
     vshPrint(ctl, _("Network %s XML configuration edited.\n"),

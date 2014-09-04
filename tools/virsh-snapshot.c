@@ -589,9 +589,6 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
     (strstr(doc, "<state>disk-snapshot</state>") ? \
     define_flags |= VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY : 0), \
     edited = virDomainSnapshotCreateXML(dom, doc_edited, define_flags)
-#define EDIT_FREE \
-    if (edited) \
-        virDomainSnapshotFree(edited);
 #include "virsh-edit.c"
 
     edited_name = virDomainSnapshotGetName(edited);

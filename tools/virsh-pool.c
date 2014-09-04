@@ -1767,9 +1767,6 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
     ret = true; goto edit_cleanup;
 #define EDIT_DEFINE \
     (pool_edited = virStoragePoolDefineXML(ctl->conn, doc_edited, 0))
-#define EDIT_FREE \
-    if (pool_edited)    \
-        virStoragePoolFree(pool_edited);
 #include "virsh-edit.c"
 
     vshPrint(ctl, _("Pool %s XML configuration edited.\n"),

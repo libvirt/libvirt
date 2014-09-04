@@ -128,9 +128,6 @@ cmdInterfaceEdit(vshControl *ctl, const vshCmd *cmd)
     ret = true; goto edit_cleanup;
 #define EDIT_DEFINE \
     (iface_edited = virInterfaceDefineXML(ctl->conn, doc_edited, 0))
-#define EDIT_FREE \
-    if (iface_edited)   \
-        virInterfaceFree(iface_edited);
 #include "virsh-edit.c"
 
     vshPrint(ctl, _("Interface %s XML configuration edited.\n"),

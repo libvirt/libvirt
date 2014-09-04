@@ -428,9 +428,6 @@ cmdNWFilterEdit(vshControl *ctl, const vshCmd *cmd)
     ret = true; goto edit_cleanup;
 #define EDIT_DEFINE \
     (nwfilter_edited = virNWFilterDefineXML(ctl->conn, doc_edited))
-#define EDIT_FREE \
-    if (nwfilter_edited)    \
-        virNWFilterFree(nwfilter);
 #include "virsh-edit.c"
 
     vshPrint(ctl, _("Network filter %s XML configuration edited.\n"),

@@ -40,9 +40,6 @@
  *      For example:
  *      #define EDIT_DEFINE (dom_edited = virDomainDefineXML(ctl->conn, doc_edited))
  *
- * EDIT_FREE - statement which vir*Free()-s object defined by EDIT_DEFINE, e.g:
- *      #define EDIT_FREE if (dom_edited) virDomainFree(dom_edited);
- *
  * Michal Privoznik <mprivozn@redhat.com>
  */
 
@@ -56,10 +53,6 @@
 
 #ifndef EDIT_DEFINE
 # error Missing EDIT_DEFINE definition
-#endif
-
-#ifndef EDIT_FREE
-# error Missing EDIT_FREE definition
 #endif
 
 do {
@@ -116,7 +109,6 @@ do {
     }
 
     /* Everything checks out, so redefine the object. */
-    EDIT_FREE;
     if (!msg && !(EDIT_DEFINE)) {
         msg = _("Failed.");
     }
@@ -162,4 +154,3 @@ do {
 #undef EDIT_GET_XML
 #undef EDIT_NOT_CHANGED
 #undef EDIT_DEFINE
-#undef EDIT_FREE

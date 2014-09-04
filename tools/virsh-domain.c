@@ -4242,7 +4242,6 @@ cmdSaveImageEdit(vshControl *ctl, const vshCmd *cmd)
     ret = true; goto edit_cleanup;
 #define EDIT_DEFINE \
     (virDomainSaveImageDefineXML(ctl->conn, file, doc_edited, define_flags) == 0)
-#define EDIT_FREE /* */
 #include "virsh-edit.c"
 
     vshPrint(ctl, _("State file %s edited.\n"), file);
@@ -7400,7 +7399,6 @@ cmdMetadata(vshControl *ctl, const vshCmd *cmd)
 #define EDIT_DEFINE                                                         \
         (virDomainSetMetadata(dom, VIR_DOMAIN_METADATA_ELEMENT, doc_edited, \
                               key, uri, flags) == 0)
-#define EDIT_FREE /* nothing */
 #include "virsh-edit.c"
 
         vshPrint("%s\n", _("Metadata modified"));
@@ -10894,9 +10892,6 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
     ret = true; goto edit_cleanup;
 #define EDIT_DEFINE \
     (dom_edited = virDomainDefineXML(ctl->conn, doc_edited))
-#define EDIT_FREE \
-    if (dom_edited) \
-        virDomainFree(dom_edited);
 #include "virsh-edit.c"
 
     vshPrint(ctl, _("Domain %s XML configuration edited.\n"),
