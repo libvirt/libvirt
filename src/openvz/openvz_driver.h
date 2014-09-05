@@ -31,6 +31,16 @@
 
 # include "internal.h"
 
+# define OPENVZ_MIGRATION_FLAGS                 \
+    (VIR_MIGRATE_LIVE)
+
+/* All supported migration parameters and their types. */
+# define OPENVZ_MIGRATION_PARAMETERS                            \
+    VIR_MIGRATE_PARAM_URI,              VIR_TYPED_PARAM_STRING, \
+    VIR_MIGRATE_PARAM_DEST_NAME,        VIR_TYPED_PARAM_STRING, \
+    VIR_MIGRATE_PARAM_DEST_XML,         VIR_TYPED_PARAM_STRING, \
+    NULL
+
 int openvzRegister(void);
 
 #endif

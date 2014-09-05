@@ -2207,6 +2207,348 @@ openvzNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int
+openvzConnectSupportsFeature(virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
+{
+    switch (feature) {
+    case VIR_DRV_FEATURE_MIGRATION_PARAMS:
+    case VIR_DRV_FEATURE_MIGRATION_V3:
+        return 1;
+    default:
+        return 0;
+    }
+}
+
+
+static char *
+openvzDomainMigrateBegin3Params(virDomainPtr domain,
+                                virTypedParameterPtr params,
+                                int nparams,
+                                char **cookieout ATTRIBUTE_UNUSED,
+                                int *cookieoutlen ATTRIBUTE_UNUSED,
+                                unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    struct openvz_driver *driver = domain->conn->privateData;
+    char *xml = NULL;
+    int status;
+
+    virCheckFlags(OPENVZ_MIGRATION_FLAGS, NULL);
+    if (virTypedParamsValidate(params, nparams, OPENVZ_MIGRATION_PARAMETERS) < 0)
+        return NULL;
+
+    openvzDriverLock(driver);
+    vm = virDomainObjListFindByUUID(driver->domains, domain->uuid);
+    openvzDriverUnlock(driver);
+
+    if (!vm) {
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (openvzGetVEStatus(vm, &status, NULL) == -1)
+        goto cleanup;
+
+    if (status != VIR_DOMAIN_RUNNING) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("domain is not in running state"));
+        goto cleanup;
+    }
+
+    xml = virDomainDefFormat(vm->def, VIR_DOMAIN_XML_SECURE);
+
+ cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    return xml;
+}
+
+static int
+openvzDomainMigratePrepare3Params(virConnectPtr dconn,
+                                  virTypedParameterPtr params,
+                                  int nparams,
+                                  const char *cookiein ATTRIBUTE_UNUSED,
+                                  int cookieinlen ATTRIBUTE_UNUSED,
+                                  char **cookieout ATTRIBUTE_UNUSED,
+                                  int *cookieoutlen ATTRIBUTE_UNUSED,
+                                  char **uri_out,
+                                  unsigned int fflags ATTRIBUTE_UNUSED)
+{
+    struct openvz_driver *driver = dconn->privateData;
+    const char *dom_xml = NULL;
+    const char *uri_in = NULL;
+    virDomainDefPtr def = NULL;
+    virDomainObjPtr vm = NULL;
+    char *hostname = NULL;
+    virURIPtr uri = NULL;
+    int ret = -1;
+
+    if (virTypedParamsValidate(params, nparams, OPENVZ_MIGRATION_PARAMETERS) < 0)
+        goto error;
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_XML,
+                                &dom_xml) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_URI,
+                                &uri_in) < 0)
+        goto error;
+
+    if (!dom_xml) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no domain XML passed"));
+        goto error;
+    }
+
+    if (!(def = virDomainDefParseString(dom_xml, driver->caps, driver->xmlopt,
+                                        1 << VIR_DOMAIN_VIRT_OPENVZ,
+                                        VIR_DOMAIN_XML_INACTIVE)))
+        goto error;
+
+    if (!(vm = virDomainObjListAdd(driver->domains, def,
+                                   driver->xmlopt,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
+                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
+                                   NULL)))
+        goto error;
+    def = NULL;
+
+    if (!uri_in) {
+        if ((hostname = virGetHostname()) == NULL)
+            goto error;
+
+        if (STRPREFIX(hostname, "localhost")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("hostname on destination resolved to localhost,"
+                             " but migration requires an FQDN"));
+            goto error;
+        }
+    } else {
+        uri = virURIParse(uri_in);
+
+        if (uri == NULL) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("unable to parse URI: %s"),
+                           uri_in);
+            goto error;
+        }
+
+        if (uri->server == NULL) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("missing host in migration URI: %s"),
+                           uri_in);
+            goto error;
+        } else {
+            hostname = uri->server;
+        }
+    }
+
+    if (virAsprintf(uri_out, "ssh://%s", hostname) < 0)
+        goto error;
+
+    ret = 0;
+    goto done;
+
+ error:
+    virDomainDefFree(def);
+    if (vm) {
+        virDomainObjListRemove(driver->domains, vm);
+        vm = NULL;
+    }
+
+ done:
+    virURIFree(uri);
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
+}
+
+static int
+openvzDomainMigratePerform3Params(virDomainPtr domain,
+                                  const char *dconnuri ATTRIBUTE_UNUSED,
+                                  virTypedParameterPtr params,
+                                  int nparams,
+                                  const char *cookiein ATTRIBUTE_UNUSED,
+                                  int cookieinlen ATTRIBUTE_UNUSED,
+                                  char **cookieout ATTRIBUTE_UNUSED,
+                                  int *cookieoutlen ATTRIBUTE_UNUSED,
+                                  unsigned int flags)
+{
+    struct openvz_driver *driver = domain->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    const char *uri_str = NULL;
+    virURIPtr uri = NULL;
+    virCommandPtr cmd = virCommandNew(VZMIGRATE);
+    int ret = -1;
+
+    virCheckFlags(OPENVZ_MIGRATION_FLAGS, -1);
+    if (virTypedParamsValidate(params, nparams, OPENVZ_MIGRATION_PARAMETERS) < 0)
+        goto cleanup;
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_URI,
+                                &uri_str) < 0)
+        goto cleanup;
+
+    openvzDriverLock(driver);
+    vm = virDomainObjListFindByUUID(driver->domains, domain->uuid);
+    openvzDriverUnlock(driver);
+
+    if (!vm) {
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    /* parse dst host:port from uri */
+    uri = virURIParse(uri_str);
+    if (uri == NULL || uri->server == NULL)
+        goto cleanup;
+
+    if (flags & VIR_MIGRATE_LIVE)
+        virCommandAddArg(cmd, "--live");
+    virCommandAddArg(cmd, uri->server);
+    virCommandAddArg(cmd, vm->def->name);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virCommandFree(cmd);
+    virURIFree(uri);
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
+}
+
+static virDomainPtr
+openvzDomainMigrateFinish3Params(virConnectPtr dconn,
+                                 virTypedParameterPtr params,
+                                 int nparams,
+                                 const char *cookiein ATTRIBUTE_UNUSED,
+                                 int cookieinlen ATTRIBUTE_UNUSED,
+                                 char **cookieout ATTRIBUTE_UNUSED,
+                                 int *cookieoutlen ATTRIBUTE_UNUSED,
+                                 unsigned int flags,
+                                 int cancelled)
+{
+    struct openvz_driver *driver = dconn->privateData;
+    virDomainObjPtr vm = NULL;
+    const char *dname = NULL;
+    virDomainPtr dom = NULL;
+    int status;
+
+    if (cancelled)
+        goto cleanup;
+
+    virCheckFlags(OPENVZ_MIGRATION_FLAGS, NULL);
+    if (virTypedParamsValidate(params, nparams, OPENVZ_MIGRATION_PARAMETERS) < 0)
+        goto cleanup;
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME,
+                                &dname) < 0)
+        goto cleanup;
+
+    if (!dname ||
+        !(vm = virDomainObjListFindByName(driver->domains, dname))) {
+        /* Migration obviously failed if the domain doesn't exist */
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Migration failed. No domain on destination host "
+                         "with matching name '%s'"),
+                       NULLSTR(dname));
+        goto cleanup;
+    }
+
+    if (openvzGetVEStatus(vm, &status, NULL) == -1)
+        goto cleanup;
+
+    if (status != VIR_DOMAIN_RUNNING) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("domain is not running on destination host"));
+        goto cleanup;
+    }
+
+    vm->def->id = strtoI(vm->def->name);
+    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_MIGRATED);
+
+    dom = virGetDomain(dconn, vm->def->name, vm->def->uuid);
+    if (dom)
+        dom->id = vm->def->id;
+
+ cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    return dom;
+}
+
+static int
+openvzDomainMigrateConfirm3Params(virDomainPtr domain,
+                                  virTypedParameterPtr params,
+                                  int nparams,
+                                  const char *cookiein ATTRIBUTE_UNUSED,
+                                  int cookieinlen ATTRIBUTE_UNUSED,
+                                  unsigned int flags,
+                                  int cancelled)
+{
+    struct openvz_driver *driver = domain->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    int status;
+    int ret = -1;
+
+    virCheckFlags(OPENVZ_MIGRATION_FLAGS, -1);
+    if (virTypedParamsValidate(params, nparams, OPENVZ_MIGRATION_PARAMETERS) < 0)
+        goto cleanup;
+
+    openvzDriverLock(driver);
+    vm = virDomainObjListFindByUUID(driver->domains, domain->uuid);
+    openvzDriverUnlock(driver);
+
+    if (!vm) {
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    if (cancelled) {
+        if (openvzGetVEStatus(vm, &status, NULL) == -1)
+            goto cleanup;
+
+        if (status == VIR_DOMAIN_RUNNING) {
+            ret = 0;
+        } else {
+            VIR_DEBUG("Domain '%s' does not recover after failed migration",
+                      vm->def->name);
+        }
+
+        goto cleanup;
+    }
+
+    vm->def->id = -1;
+
+    VIR_DEBUG("Domain '%s' successfully migrated", vm->def->name);
+
+    virDomainObjListRemove(driver->domains, vm);
+    vm = NULL;
+
+    ret = 0;
+
+ cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
+}
+
+
 static virDriver openvzDriver = {
     .no = VIR_DRV_OPENVZ,
     .name = "OPENVZ",
@@ -2265,6 +2607,12 @@ static virDriver openvzDriver = {
     .connectIsAlive = openvzConnectIsAlive, /* 0.9.8 */
     .domainUpdateDeviceFlags = openvzDomainUpdateDeviceFlags, /* 0.9.13 */
     .domainGetHostname = openvzDomainGetHostname, /* 0.10.0 */
+    .connectSupportsFeature = openvzConnectSupportsFeature, /* 1.2.8 */
+    .domainMigrateBegin3Params = openvzDomainMigrateBegin3Params, /* 1.2.8 */
+    .domainMigratePrepare3Params = openvzDomainMigratePrepare3Params, /* 1.2.8 */
+    .domainMigratePerform3Params = openvzDomainMigratePerform3Params, /* 1.2.8 */
+    .domainMigrateFinish3Params = openvzDomainMigrateFinish3Params, /* 1.2.8 */
+    .domainMigrateConfirm3Params = openvzDomainMigrateConfirm3Params, /* 1.2.8 */
 };
 
 int openvzRegister(void)
