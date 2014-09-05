@@ -631,8 +631,11 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque)
         error = true;
     } else {
         if (events & VIR_EVENT_HANDLE_WRITABLE) {
-            if (qemuMonitorIOWrite(mon) < 0)
+            if (qemuMonitorIOWrite(mon) < 0) {
                 error = true;
+                if (errno == ECONNRESET)
+                    hangup = true;
+            }
             events &= ~VIR_EVENT_HANDLE_WRITABLE;
         }
 
@@ -642,6 +645,8 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque)
             events &= ~VIR_EVENT_HANDLE_READABLE;
             if (got < 0) {
                 error = true;
+                if (errno == ECONNRESET)
+                    hangup = true;
             } else if (got == 0) {
                 eof = true;
             } else {
@@ -683,8 +688,9 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque)
         if (hangup) {
             /* Check if an error message from qemu is available and if so, use
              * it to overwrite the actual message. It's done only in early
-             * startup phases where the message from qemu is certainly more
-             * interesting than a "connection reset by peer" message.
+             * startup phases or during incoming migration when the message
+             * from qemu is certainly more interesting than a
+             * "connection reset by peer" message.
              */
             char *qemuMessage;
 

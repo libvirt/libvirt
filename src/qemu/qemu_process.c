@@ -4379,8 +4379,10 @@ int qemuProcessStart(virConnectPtr conn,
             goto cleanup;
     }
 
-    /* unset reporting errors from qemu log */
-    qemuMonitorSetDomainLog(priv->mon, -1);
+    /* Keep watching qemu log for errors during incoming migration, otherwise
+     * unset reporting errors from qemu log. */
+    if (!migrateFrom)
+        qemuMonitorSetDomainLog(priv->mon, -1);
 
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);

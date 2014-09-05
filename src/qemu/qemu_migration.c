@@ -4689,6 +4689,8 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
  cleanup:
     virPortAllocatorRelease(driver->migrationPorts, port);
     if (vm) {
+        if (priv->mon)
+            qemuMonitorSetDomainLog(priv->mon, -1);
         VIR_FREE(priv->origname);
         virObjectUnlock(vm);
     }
