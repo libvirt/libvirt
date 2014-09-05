@@ -89,6 +89,7 @@ struct x86_map {
     struct x86_vendor *vendors;
     struct x86_feature *features;
     struct x86_model *models;
+    struct x86_feature *migrate_blockers;
 };
 
 static struct x86_map* virCPUx86Map = NULL;
@@ -592,6 +593,28 @@ x86FeatureFree(struct x86_feature *feature)
 
 
 static struct x86_feature *
+x86FeatureCopy(const struct x86_feature *src)
+{
+    struct x86_feature *feature;
+
+    if (VIR_ALLOC(feature) < 0)
+        return NULL;
+
+    if (VIR_STRDUP(feature->name, src->name) < 0)
+        goto error;
+
+    if ((feature->data = x86DataCopy(src->data)) == NULL)
+        goto error;
+
+    return feature;
+
+ error:
+    x86FeatureFree(feature);
+    return NULL;
+}
+
+
+static struct x86_feature *
 x86FeatureFind(const struct x86_map *map,
                const char *name)
 {
@@ -677,6 +700,9 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
     int ret = 0;
     size_t i;
     int n;
+    char *str = NULL;
+    bool migratable = true;
+    struct x86_feature *migrate_blocker = NULL;
 
     if (!(feature = x86FeatureNew()))
         goto error;
@@ -694,6 +720,10 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
         goto ignore;
     }
 
+    str = virXPathString("string(@migratable)", ctxt);
+    if (STREQ_NULLABLE(str, "no"))
+        migratable = false;
+
     n = virXPathNodeSet("./cpuid", ctxt, &nodes);
     if (n < 0)
         goto ignore;
@@ -710,6 +740,14 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
             goto error;
     }
 
+    if (!migratable) {
+        if ((migrate_blocker = x86FeatureCopy(feature)) == NULL)
+            goto error;
+
+        migrate_blocker->next = map->migrate_blockers;
+        map->migrate_blockers = migrate_blocker;
+    }
+
     if (map->features == NULL) {
         map->features = feature;
     } else {
@@ -720,6 +758,7 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
  out:
     ctxt->node = ctxt_node;
     VIR_FREE(nodes);
+    VIR_FREE(str);
 
     return ret;
 
@@ -728,6 +767,7 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
 
  ignore:
     x86FeatureFree(feature);
+    x86FeatureFree(migrate_blocker);
     goto out;
 }
 
@@ -1091,6 +1131,12 @@ x86MapFree(struct x86_map *map)
         struct x86_vendor *vendor = map->vendors;
         map->vendors = vendor->next;
         x86VendorFree(vendor);
+    }
+
+    while (map->migrate_blockers != NULL) {
+        struct x86_feature *migrate_blocker = map->migrate_blockers;
+        map->migrate_blockers = migrate_blocker->next;
+        x86FeatureFree(migrate_blocker);
     }
 
     VIR_FREE(map);
@@ -2025,16 +2071,15 @@ x86UpdateHostModel(virCPUDefPtr guest,
                    const virCPUDef *host)
 {
     virCPUDefPtr oldguest = NULL;
+    const struct x86_map *map;
+    const struct x86_feature *feat;
     size_t i;
     int ret = -1;
 
     guest->match = VIR_CPU_MATCH_EXACT;
 
-    /* no updates are required */
-    if (guest->nfeatures == 0) {
-        virCPUDefFreeModel(guest);
-        return virCPUDefCopyModel(guest, host, true);
-    }
+    if (!(map = virCPUx86GetMap()))
+        goto cleanup;
 
     /* update the host model according to the desired configuration */
     if (!(oldguest = virCPUDefCopy(guest)))
@@ -2043,6 +2088,16 @@ x86UpdateHostModel(virCPUDefPtr guest,
     virCPUDefFreeModel(guest);
     if (virCPUDefCopyModel(guest, host, true) < 0)
         goto cleanup;
+
+    /* Remove non-migratable features by default
+     * Note: this only works as long as no CPU model contains non-migratable
+     * features directly */
+    for (i = 0; i < guest->nfeatures; i++) {
+        for (feat = map->migrate_blockers; feat; feat = feat->next) {
+            if (STREQ(feat->name, guest->features[i].name))
+                VIR_DELETE_ELEMENT_INPLACE(guest->features, i, guest->nfeatures);
+        }
+    }
 
     for (i = 0; i < oldguest->nfeatures; i++) {
         if (virCPUDefUpdateFeature(guest,

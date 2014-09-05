@@ -1,0 +1,27 @@
+<cpu>
+  <arch>x86_64</arch>
+  <model>SandyBridge</model>
+  <vendor>Intel</vendor>
+  <topology sockets='1' cores='2' threads='2'/>
+  <feature name='invtsc'/>
+  <feature name='osxsave'/>
+  <feature name='pcid'/>
+  <feature name='pdcm'/>
+  <feature name='xtpr'/>
+  <feature name='tm2'/>
+  <feature name='est'/>
+  <feature name='smx'/>
+  <feature name='vmx'/>
+  <feature name='ds_cpl'/>
+  <feature name='monitor'/>
+  <feature name='dtes64'/>
+  <feature name='pbe'/>
+  <feature name='tm'/>
+  <feature name='ht'/>
+  <feature name='ss'/>
+  <feature name='acpi'/>
+  <feature name='ds'/>
+  <feature name='vme'/>
+  <pages unit='KiB' size='4'/>
+  <pages unit='KiB' size='2048'/>
+</cpu>

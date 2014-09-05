@@ -328,7 +328,7 @@
     </feature>
 
     <!-- Advanced Power Management edx features -->
-    <feature name='invtsc'>
+    <feature name='invtsc' migratable='no'>
       <cpuid function='0x80000007' edx='0x00000100'/>
     </feature>
 
