@@ -457,10 +457,14 @@ qemuMonitorJSONMakeCommandRaw(bool wrap, const char *cmdname, ...)
          * S: string value, omitted if null
          *
          * i: signed integer value
+         * j: signed integer value, error if negative
          * z: signed integer value, omitted if zero
+         * y: signed integer value, omitted if zero, error if negative
          *
          * I: signed long integer value
+         * J: signed long integer value, error if negative
          * Z: signed long integer value, omitted if zero
+         * Y: signed long integer value, omitted if zero, error if negative
          *
          * u: unsigned integer value
          * p: unsigned integer value, omitted if zero
@@ -500,10 +504,19 @@ qemuMonitorJSONMakeCommandRaw(bool wrap, const char *cmdname, ...)
         }   break;
 
         case 'z':
+        case 'y':
+        case 'j':
         case 'i': {
             int val = va_arg(args, int);
 
-            if (!val && type == 'z')
+            if (val < 0 && (type == 'j' || type == 'y')) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("argument key '%s' must not be negative"),
+                               key);
+                goto error;
+            }
+
+            if (!val && (type == 'z' || type == 'y'))
                 continue;
 
             ret = virJSONValueObjectAppendNumberInt(jargs, key, val);
@@ -520,10 +533,19 @@ qemuMonitorJSONMakeCommandRaw(bool wrap, const char *cmdname, ...)
         }   break;
 
         case 'Z':
+        case 'Y':
+        case 'J':
         case 'I': {
             long long val = va_arg(args, long long);
 
-            if (!val && type == 'Z')
+            if (val < 0 && (type == 'J' || type == 'Y')) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("argument key '%s' must not be negative"),
+                               key);
+                goto error;
+            }
+
+            if (!val && (type == 'Z' || type == 'Y'))
                 continue;
 
             ret = virJSONValueObjectAppendNumberLong(jargs, key, val);
@@ -3408,7 +3430,7 @@ qemuMonitorJSONDriveMirror(qemuMonitorPtr mon,
     cmd = qemuMonitorJSONMakeCommand("drive-mirror",
                                      "s:device", device,
                                      "s:target", file,
-                                     "U:speed", speed,
+                                     "Y:speed", speed,
                                      "s:sync", shallow ? "top" : "full",
                                      "s:mode", reuse ? "existing" : "absolute-paths",
                                      "S:format", format,
@@ -3474,7 +3496,7 @@ qemuMonitorJSONBlockCommit(qemuMonitorPtr mon, const char *device,
 
     cmd = qemuMonitorJSONMakeCommand("block-commit",
                                      "s:device", device,
-                                     "U:speed", speed,
+                                     "Y:speed", speed,
                                      "S:top", top,
                                      "S:base", base,
                                      "S:backing-file", backingName,
@@ -3849,7 +3871,7 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
         cmd_name = modern ? "block-job-set-speed" : "block_job_set_speed";
         cmd = qemuMonitorJSONMakeCommand(cmd_name,
                                          "s:device", device,
-                                         modern ? "U:speed" : "U:value", speed,
+                                         modern ? "J:speed" : "J:value", speed,
                                          NULL);
         break;
 
@@ -3857,7 +3879,7 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
         cmd_name = modern ? "block-stream" : "block_stream";
         cmd = qemuMonitorJSONMakeCommand(cmd_name,
                                          "s:device", device,
-                                         "P:speed", speed,
+                                         "Y:speed", speed,
                                          "S:base", base,
                                          "S:backing-file", backingName,
                                          NULL);
