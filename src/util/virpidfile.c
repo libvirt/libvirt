@@ -545,17 +545,15 @@ virPidFileConstructPath(bool privileged,
         if (virAsprintf(pidfile, "%s/run/%s.pid", statedir, progname) < 0)
             goto cleanup;
     } else {
-        mode_t old_umask;
-
         if (!(rundir = virGetUserRuntimeDirectory()))
             goto cleanup;
 
-        old_umask = umask(077);
-        if (virFileMakePath(rundir) < 0) {
-            umask(old_umask);
+        if (virFileMakePathWithMode(rundir, 0700) < 0) {
+            virReportSystemError(errno,
+                                 _("Cannot create user runtime directory '%s'"),
+                                 rundir);
             goto cleanup;
         }
-        umask(old_umask);
 
         if (virAsprintf(pidfile, "%s/%s.pid", rundir, progname) < 0) {
             VIR_FREE(rundir);
