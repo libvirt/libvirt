@@ -1773,6 +1773,7 @@ virPCIIsVirtualFunction;
 virPidFileAcquire;
 virPidFileAcquirePath;
 virPidFileBuildPath;
+virPidFileConstructPath;
 virPidFileDelete;
 virPidFileDeletePath;
 virPidFileRead;

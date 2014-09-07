@@ -1,7 +1,7 @@
 /*
  * virpidfile.h: manipulation of pidfiles
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2011, 2014 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
  *
@@ -68,5 +68,10 @@ int virPidFileReleasePath(const char *path,
 int virPidFileRelease(const char *dir,
                       const char *name,
                       int fd);
+
+int virPidFileConstructPath(bool privileged,
+                            const char *statedir,
+                            const char *progname,
+                            char **pidfile);
 
 #endif /* __VIR_PIDFILE_H__ */

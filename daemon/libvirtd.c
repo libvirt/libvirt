@@ -251,41 +251,6 @@ static int daemonForkIntoBackground(const char *argv0)
 
 
 static int
-daemonPidFilePath(bool privileged,
-                  char **pidfile)
-{
-    if (privileged) {
-        if (VIR_STRDUP(*pidfile, LOCALSTATEDIR "/run/libvirtd.pid") < 0)
-            goto error;
-    } else {
-        char *rundir = NULL;
-        mode_t old_umask;
-
-        if (!(rundir = virGetUserRuntimeDirectory()))
-            goto error;
-
-        old_umask = umask(077);
-        if (virFileMakePath(rundir) < 0) {
-            umask(old_umask);
-            goto error;
-        }
-        umask(old_umask);
-
-        if (virAsprintf(pidfile, "%s/libvirtd.pid", rundir) < 0) {
-            VIR_FREE(rundir);
-            goto error;
-        }
-
-        VIR_FREE(rundir);
-    }
-
-    return 0;
-
- error:
-    return -1;
-}
-
-static int
 daemonUnixSocketPaths(struct daemonConfig *config,
                       bool privileged,
                       char **sockfile,
@@ -1313,8 +1278,10 @@ int main(int argc, char **argv) {
     }
 
     if (!pid_file &&
-        daemonPidFilePath(privileged,
-                          &pid_file) < 0) {
+        virPidFileConstructPath(privileged,
+                                LOCALSTATEDIR,
+                                "libvirtd",
+                                &pid_file) < 0) {
         VIR_ERROR(_("Can't determine pid file path."));
         exit(EXIT_FAILURE);
     }
