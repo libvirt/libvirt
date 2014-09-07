@@ -529,6 +529,9 @@ virPidFileConstructPath(bool privileged,
                         const char *progname,
                         char **pidfile)
 {
+    int ret = -1;
+    char *rundir = NULL;
+
     if (privileged) {
         /*
          * This is here just to allow calling this function with
@@ -542,29 +545,27 @@ virPidFileConstructPath(bool privileged,
         if (virAsprintf(pidfile, "%s/run/%s.pid", statedir, progname) < 0)
             goto cleanup;
     } else {
-        char *rundir = NULL;
         mode_t old_umask;
 
         if (!(rundir = virGetUserRuntimeDirectory()))
-            goto error;
+            goto cleanup;
 
         old_umask = umask(077);
         if (virFileMakePath(rundir) < 0) {
             umask(old_umask);
-            goto error;
+            goto cleanup;
         }
         umask(old_umask);
 
         if (virAsprintf(pidfile, "%s/%s.pid", rundir, progname) < 0) {
             VIR_FREE(rundir);
-            goto error;
+            goto cleanup;
         }
 
-        VIR_FREE(rundir);
     }
 
-    return 0;
-
- error:
-    return -1;
+    ret = 0;
+ cleanup:
+    VIR_FREE(rundir);
+    return ret;
 }
