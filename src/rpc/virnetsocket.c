@@ -51,9 +51,11 @@
 #include "virlog.h"
 #include "virfile.h"
 #include "virthread.h"
+#include "virpidfile.h"
 #include "virprobe.h"
 #include "virprocess.h"
 #include "virstring.h"
+#include "dirname.h"
 #include "passfd.h"
 
 #if WITH_SSH2
@@ -541,7 +543,10 @@ int virNetSocketNewConnectUNIX(const char *path,
                                const char *binary,
                                virNetSocketPtr *retsock)
 {
+    char *binname = NULL;
+    char *pidpath = NULL;
     int fd, passfd = -1;
+    int pidfd = -1;
     virSocketAddr localAddr;
     virSocketAddr remoteAddr;
 
@@ -580,16 +585,46 @@ int virNetSocketNewConnectUNIX(const char *path,
             goto error;
         }
 
+        if (!(binname = last_component(binary)) || binname[0] == '\0') {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot determine basename for binary '%s'"),
+                           binary);
+            goto error;
+        }
+
+        if (virPidFileConstructPath(false, NULL, binname, &pidpath) < 0)
+            goto error;
+
+        pidfd = virPidFileAcquirePath(pidpath, false, getpid());
+        if (pidfd < 0) {
+            /*
+             * This can happen in a very rare case of two clients spawning two
+             * daemons at the same time, and the error in the logs that gets
+             * reset here can be a clue to some future debugging.
+             */
+            virResetLastError();
+            spawnDaemon = false;
+            goto retry;
+        }
+
         if ((passfd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
             virReportSystemError(errno, "%s", _("Failed to create socket"));
             goto error;
         }
 
         /*
-         * We have to fork() here, because umask() is set
-         * per-process, chmod() is racy and fchmod() has undefined
-         * behaviour on sockets according to POSIX, so it doesn't
-         * work outside Linux.
+         * We already even acquired the pidfile, so no one else should be using
+         * @path right now.  So we're OK to unlink it and paying attention to
+         * the return value makes no real sense here.  Only if it's not an
+         * abstract socket, of course.
+         */
+        if (path[0] != '@')
+            unlink(path);
+
+        /*
+         * We have to fork() here, because umask() is set per-process, chmod()
+         * is racy and fchmod() has undefined behaviour on sockets according to
+         * POSIX, so it doesn't work outside Linux.
          */
         if ((pid = virFork()) < 0)
             goto error;
@@ -607,12 +642,16 @@ int virNetSocketNewConnectUNIX(const char *path,
 
         if (status != EXIT_SUCCESS) {
             /*
-             * OK, so the subprocces failed to bind() the socket.  This may mean
-             * that another daemon was starting at the same time and succeeded
-             * with its bind().  So we'll try connecting again, but this time
-             * without spawning the daemon.
+             * OK, so the child failed to bind() the socket.  This may mean that
+             * another daemon was starting at the same time and succeeded with
+             * its bind() (even though it should not happen because we using a
+             * pidfile for the race).  So we'll try connecting again, but this
+             * time without spawning the daemon.
              */
             spawnDaemon = false;
+            virPidFileDeletePath(pidpath);
+            VIR_FORCE_CLOSE(pidfd);
+            VIR_FORCE_CLOSE(passfd);
             goto retry;
         }
 
@@ -629,6 +668,12 @@ int virNetSocketNewConnectUNIX(const char *path,
             goto error;
         }
 
+        /*
+         * Do we need to eliminate the super-rare race here any more?  It would
+         * need incorporating the following VIR_FORCE_CLOSE() into a
+         * virCommandHook inside a virNetSocketForkDaemon().
+         */
+        VIR_FORCE_CLOSE(pidfd);
         if (virNetSocketForkDaemon(binary, passfd) < 0)
             goto error;
     }
@@ -642,11 +687,17 @@ int virNetSocketNewConnectUNIX(const char *path,
     if (!(*retsock = virNetSocketNew(&localAddr, &remoteAddr, true, fd, -1, 0)))
         goto error;
 
+    VIR_FREE(pidpath);
+
     return 0;
 
  error:
+    if (pidfd >= 0)
+        virPidFileDeletePath(pidpath);
+    VIR_FREE(pidpath);
     VIR_FORCE_CLOSE(fd);
     VIR_FORCE_CLOSE(passfd);
+    VIR_FORCE_CLOSE(pidfd);
     if (spawnDaemon)
         unlink(path);
     return -1;
