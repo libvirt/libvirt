@@ -278,10 +278,8 @@ int virNetSocketNewListenTCP(const char *nodename,
             goto error;
         }
 
-        if (virSetSockReuseAddr(fd) < 0) {
-            virReportSystemError(errno, "%s", _("Unable to enable port reuse"));
+        if (virSetSockReuseAddr(fd, true) < 0)
             goto error;
-        }
 
 #ifdef IPV6_V6ONLY
         if (runp->ai_family == PF_INET6) {
@@ -493,9 +491,8 @@ int virNetSocketNewConnectTCP(const char *nodename,
             goto error;
         }
 
-        if (virSetSockReuseAddr(fd) < 0) {
+        if (virSetSockReuseAddr(fd, false) < 0)
             VIR_WARN("Unable to enable port reuse");
-        }
 
         if (connect(fd, runp->ai_addr, runp->ai_addrlen) >= 0)
             break;

@@ -142,11 +142,8 @@ static int virPortAllocatorBindToPort(bool *used,
         goto cleanup;
     }
 
-    if (virSetSockReuseAddr(fd) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to set socket reuse addr flag"));
+    if (virSetSockReuseAddr(fd, true) < 0)
         goto cleanup;
-    }
 
     if (ipv6 && setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY, (void*)&v6only,
                            sizeof(v6only)) < 0) {

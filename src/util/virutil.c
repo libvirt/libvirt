@@ -148,7 +148,7 @@ int virSetCloseExec(int fd)
 }
 
 #ifdef WIN32
-int virSetSockReuseAddr(int fd ATTRIBUTE_UNUSED)
+int virSetSockReuseAddr(int fd ATTRIBUTE_UNUSED, bool fatal ATTRIBUTE_UNUSED)
 {
     /*
      * SO_REUSEADDR on Windows is actually akin to SO_REUSEPORT
@@ -163,10 +163,17 @@ int virSetSockReuseAddr(int fd ATTRIBUTE_UNUSED)
     return 0;
 }
 #else
-int virSetSockReuseAddr(int fd)
+int virSetSockReuseAddr(int fd, bool fatal)
 {
     int opt = 1;
-    return setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    int ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+
+    if (ret < 0 && fatal) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to set socket reuse addr flag"));
+    }
+
+    return ret;
 }
 #endif
 

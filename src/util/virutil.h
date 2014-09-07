@@ -43,7 +43,7 @@ int virSetBlocking(int fd, bool blocking) ATTRIBUTE_RETURN_CHECK;
 int virSetNonBlock(int fd) ATTRIBUTE_RETURN_CHECK;
 int virSetInherit(int fd, bool inherit) ATTRIBUTE_RETURN_CHECK;
 int virSetCloseExec(int fd) ATTRIBUTE_RETURN_CHECK;
-int virSetSockReuseAddr(int fd) ATTRIBUTE_RETURN_CHECK;
+int virSetSockReuseAddr(int fd, bool fatal) ATTRIBUTE_RETURN_CHECK;
 
 int virPipeReadUntilEOF(int outfd, int errfd,
                         char **outbuf, char **errbuf);
