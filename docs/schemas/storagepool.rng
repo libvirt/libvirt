@@ -166,6 +166,9 @@
       <ref name='commonmetadata'/>
       <ref name='sizing'/>
       <ref name='sourcezfs'/>
+      <optional>
+        <ref name='target'/>
+      </optional>
     </interleave>
   </define>
 
@@ -386,6 +389,9 @@
     <element name='source'>
       <interleave>
         <ref name='sourceinfoname'/>
+        <optional>
+          <ref name='sourceinfodev'/>
+        </optional>
       </interleave>
     </element>
   </define>

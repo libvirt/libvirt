@@ -1,0 +1,19 @@
+<pool type='zfs'>
+  <name>zfs</name>
+  <uuid>429126d2-f4bb-45b0-b336-2e81dc6d241c</uuid>
+  <capacity unit='bytes'>0</capacity>
+  <allocation unit='bytes'>0</allocation>
+  <available unit='bytes'>0</available>
+  <source>
+    <device path='/dev/ada1'/>
+    <name>testpool</name>
+  </source>
+  <target>
+    <path>/dev/zvol/testpool</path>
+    <permissions>
+      <mode>0755</mode>
+      <owner>-1</owner>
+      <group>-1</group>
+    </permissions>
+  </target>
+</pool>

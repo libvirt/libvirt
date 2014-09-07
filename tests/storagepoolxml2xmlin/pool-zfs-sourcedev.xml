@@ -1,0 +1,8 @@
+<pool type="zfs">
+  <name>zfs</name>
+  <uuid>429126d2-f4bb-45b0-b336-2e81dc6d241c</uuid>
+  <source>
+    <name>testpool</name>
+    <device path="/dev/ada1"/>
+  </source>
+</pool>

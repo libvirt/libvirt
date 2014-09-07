@@ -282,7 +282,8 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
     },
     {.poolType = VIR_STORAGE_POOL_ZFS,
      .poolOptions = {
-         .flags = (VIR_STORAGE_POOL_SOURCE_NAME),
+         .flags = (VIR_STORAGE_POOL_SOURCE_NAME |
+                   VIR_STORAGE_POOL_SOURCE_DEVICE),
          .defaultFormat = VIR_STORAGE_FILE_RAW,
      },
     },

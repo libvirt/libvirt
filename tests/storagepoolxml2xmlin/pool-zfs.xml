@@ -1,0 +1,7 @@
+<pool type="zfs">
+  <name>zfs</name>
+  <uuid>024835f8-52b5-4226-b2b4-8c0d3afa5b2f</uuid>
+  <source>
+    <name>testpool</name>
+  </source>
+</pool>

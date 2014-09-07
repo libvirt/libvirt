@@ -325,6 +325,61 @@ virStorageBackendZFSDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     return ret;
 }
 
+static int
+virStorageBackendZFSBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
+                              virStoragePoolObjPtr pool,
+                              unsigned int flags)
+{
+    virCommandPtr cmd = NULL;
+    size_t i;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (pool->def->source.ndevice == 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       "%s", _("missing source devices"));
+        return -1;
+    }
+
+    cmd = virCommandNewArgList(ZPOOL, "create",
+                               pool->def->source.name, NULL);
+
+    for (i = 0; i < pool->def->source.ndevice; i++)
+        virCommandAddArg(cmd, pool->def->source.devices[i].path);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virCommandFree(cmd);
+    return ret;
+}
+
+static int
+virStorageBackendZFSDeletePool(virConnectPtr conn ATTRIBUTE_UNUSED,
+                               virStoragePoolObjPtr pool,
+                               unsigned int flags)
+{
+    virCommandPtr cmd = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    cmd = virCommandNewArgList(ZPOOL, "destroy",
+                               pool->def->source.name, NULL);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virCommandFree(cmd);
+    return ret;
+}
 
 virStorageBackend virStorageBackendZFS = {
     .type = VIR_STORAGE_POOL_ZFS,
@@ -333,6 +388,8 @@ virStorageBackend virStorageBackendZFS = {
     .refreshPool = virStorageBackendZFSRefreshPool,
     .createVol = virStorageBackendZFSCreateVol,
     .deleteVol = virStorageBackendZFSDeleteVol,
+    .buildPool = virStorageBackendZFSBuildPool,
+    .deletePool = virStorageBackendZFSDeletePool,
     .uploadVol = virStorageBackendVolUploadLocal,
     .downloadVol = virStorageBackendVolDownloadLocal,
 };
