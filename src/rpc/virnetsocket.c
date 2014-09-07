@@ -574,66 +574,66 @@ int virNetSocketNewConnectUNIX(const char *path,
 
  retry:
     if (connect(fd, &remoteAddr.data.sa, remoteAddr.len) < 0) {
+        int status = 0;
+        pid_t pid = 0;
+
         if (!spawnDaemon) {
             virReportSystemError(errno, _("Failed to connect socket to '%s'"),
                                  path);
             goto error;
-        } else {
-            int status = 0;
-            pid_t pid = 0;
-
-            if ((passfd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
-                virReportSystemError(errno, "%s", _("Failed to create socket"));
-                goto error;
-            }
-
-            /*
-             * We have to fork() here, because umask() is set
-             * per-process, chmod() is racy and fchmod() has undefined
-             * behaviour on sockets according to POSIX, so it doesn't
-             * work outside Linux.
-             */
-            if ((pid = virFork()) < 0)
-                goto error;
-
-            if (pid == 0) {
-                umask(0077);
-                if (bind(passfd, &remoteAddr.data.sa, remoteAddr.len) < 0)
-                    _exit(EXIT_FAILURE);
-
-                _exit(EXIT_SUCCESS);
-            }
-
-            if (virProcessWait(pid, &status, false) < 0)
-                goto error;
-
-            if (status != EXIT_SUCCESS) {
-                /*
-                 * OK, so the subprocces failed to bind() the socket.  This may mean
-                 * that another daemon was starting at the same time and succeeded
-                 * with its bind().  So we'll try connecting again, but this time
-                 * without spawning the daemon.
-                 */
-                spawnDaemon = false;
-                goto retry;
-            }
-
-            if (listen(passfd, 0) < 0) {
-                virReportSystemError(errno, "%s",
-                                     _("Failed to listen on socket that's about "
-                                       "to be passed to the daemon"));
-                goto error;
-            }
-
-            if (connect(fd, &remoteAddr.data.sa, remoteAddr.len) < 0) {
-                virReportSystemError(errno, _("Failed to connect socket to '%s'"),
-                                     path);
-                goto error;
-            }
-
-            if (virNetSocketForkDaemon(binary, passfd) < 0)
-                goto error;
         }
+
+        if ((passfd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
+            virReportSystemError(errno, "%s", _("Failed to create socket"));
+            goto error;
+        }
+
+        /*
+         * We have to fork() here, because umask() is set
+         * per-process, chmod() is racy and fchmod() has undefined
+         * behaviour on sockets according to POSIX, so it doesn't
+         * work outside Linux.
+         */
+        if ((pid = virFork()) < 0)
+            goto error;
+
+        if (pid == 0) {
+            umask(0077);
+            if (bind(passfd, &remoteAddr.data.sa, remoteAddr.len) < 0)
+                _exit(EXIT_FAILURE);
+
+            _exit(EXIT_SUCCESS);
+        }
+
+        if (virProcessWait(pid, &status, false) < 0)
+            goto error;
+
+        if (status != EXIT_SUCCESS) {
+            /*
+             * OK, so the subprocces failed to bind() the socket.  This may mean
+             * that another daemon was starting at the same time and succeeded
+             * with its bind().  So we'll try connecting again, but this time
+             * without spawning the daemon.
+             */
+            spawnDaemon = false;
+            goto retry;
+        }
+
+        if (listen(passfd, 0) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Failed to listen on socket that's about "
+                                   "to be passed to the daemon"));
+            goto error;
+        }
+
+        if (connect(fd, &remoteAddr.data.sa, remoteAddr.len) < 0) {
+            virReportSystemError(errno, _("Failed to connect socket to '%s'"),
+                                 path);
+            goto error;
+        }
+
+        if (virNetSocketForkDaemon(binary, passfd) < 0)
+            goto error;
     }
 
     localAddr.len = sizeof(localAddr.data);
