@@ -405,16 +405,10 @@
 
   <define name='featuretoggle'>
     <attribute name='toggle'>
-      <choice>
-        <value>yes</value>
-        <value>no</value>
-      </choice>
+      <ref name="virYesNo"/>
     </attribute>
     <attribute name='default'>
-      <choice>
-        <value>on</value>
-        <value>off</value>
-      </choice>
+      <ref name="virOnOff"/>
     </attribute>
   </define>
 

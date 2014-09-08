@@ -127,7 +127,7 @@
         <element name="bridge">
           <optional>
             <attribute name="stp">
-              <ref name="on-or-off"/>
+              <ref name="virOnOff"/>
             </attribute>
           </optional>
           <!-- Bridge forward delay (see 'brctl setfd') -->
@@ -376,7 +376,7 @@
     <element name="dhcp">
       <optional>
         <attribute name="peerdns">
-          <ref name="yes-or-no"/>
+          <ref name="virYesNo"/>
         </attribute>
       </optional>
     </element>
@@ -414,21 +414,6 @@
        It would perhaps make sense to use iproute2 names, that is prefix
        instead of destination and nexthop instead of gateway.
   -->
-
-  <!-- Auxiliary definitions -->
-  <define name="on-or-off">
-    <choice>
-      <value>on</value>
-      <value>off</value>
-    </choice>
-  </define>
-
-  <define name="yes-or-no">
-    <choice>
-      <value>yes</value>
-      <value>no</value>
-    </choice>
-  </define>
 
   <!-- Type library -->
 

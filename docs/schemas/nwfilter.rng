@@ -377,10 +377,7 @@
     <interleave>
       <optional>
          <attribute name="match">
-           <choice>
-             <value>yes</value>
-             <value>no</value>
-           </choice>
+           <ref name="virYesNo"/>
          </attribute>
       </optional>
     </interleave>

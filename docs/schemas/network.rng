@@ -21,12 +21,9 @@
            with no gateways addresses specified -->
       <optional>
         <attribute name="ipv6">
-         <choice>
-          <value>yes</value>
-          <value>no</value>
-          </choice>
-         </attribute>
-       </optional>
+          <ref name="virYesNo"/>
+        </attribute>
+      </optional>
       <interleave>
 
         <!-- The name of the network, used to refer to it through the API
@@ -53,10 +50,7 @@
 
             <optional>
               <attribute name="stp">
-                <choice>
-                  <value>on</value>
-                  <value>off</value>
-                </choice>
+                <ref name="virOnOff"/>
               </attribute>
             </optional>
 
@@ -104,10 +98,7 @@
 
             <optional>
               <attribute name="managed">
-                <choice>
-                  <value>yes</value>
-                  <value>no</value>
-                </choice>
+                <ref name="virYesNo"/>
               </attribute>
             </optional>
             <interleave>
@@ -203,10 +194,7 @@
             </attribute>
             <optional>
               <attribute name="default">
-                <choice>
-                  <value>yes</value>
-                  <value>no</value>
-                </choice>
+                <ref name="virYesNo"/>
               </attribute>
             </optional>
             <interleave>
@@ -236,10 +224,7 @@
           <element name="dns">
             <optional>
               <attribute name="forwardPlainNames">
-                <choice>
-                  <value>yes</value>
-                  <value>no</value>
-                </choice>
+                <ref name="virYesNo"/>
               </attribute>
             </optional>
             <interleave>

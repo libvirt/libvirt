@@ -87,10 +87,7 @@
 
   <define name='supported'>
     <attribute name='supported'>
-      <choice>
-        <value>yes</value>
-        <value>no</value>
-      </choice>
+      <ref name="virYesNo"/>
     </attribute>
   </define>
 

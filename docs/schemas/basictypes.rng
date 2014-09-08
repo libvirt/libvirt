@@ -77,10 +77,7 @@
     </attribute>
     <optional>
       <attribute name="multifunction">
-        <choice>
-          <value>on</value>
-          <value>off</value>
-        </choice>
+        <ref name="virOnOff"/>
       </attribute>
     </optional>
   </define>
@@ -444,6 +441,20 @@
         </optional>
       </element>
     </optional>
+  </define>
+
+  <define name="virYesNo">
+    <choice>
+      <value>yes</value>
+      <value>no</value>
+    </choice>
+  </define>
+
+  <define name="virOnOff">
+    <choice>
+      <value>on</value>
+      <value>off</value>
+    </choice>
   </define>
 
 </grammar>
