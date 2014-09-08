@@ -9418,12 +9418,18 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     if (def->panic) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PANIC)) {
-            if (def->panic->info.addr.isa.iobase > 0) {
+            if (def->panic->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA) {
                 virCommandAddArg(cmd, "-device");
                 virCommandAddArgFormat(cmd, "pvpanic,ioport=%d",
                                        def->panic->info.addr.isa.iobase);
-            } else {
+            } else if (def->panic->info.type ==
+                       VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
                 virCommandAddArgList(cmd, "-device", "pvpanic", NULL);
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("panic is supported only "
+                                 "with ISA address type"));
+                goto error;
             }
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
