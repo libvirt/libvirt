@@ -1,6 +1,6 @@
 [Unit]
 Description=Suspend Active Libvirt Guests
-After=network.target libvirtd.service
+After=network.target libvirtd.service time-sync.target
 Documentation=man:libvirtd(8)
 Documentation=http://libvirt.org
 
