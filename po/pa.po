@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2014-05-03 17:15-0400\n"
+"POT-Creation-Date: 2014-09-08 13:09-0400\n"
 "PO-Revision-Date: 2013-09-26 08:41+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Panjabi (Punjabi) <punjabi-users@lists.sf.net>\n"
@@ -1091,7 +1091,7 @@ msgid "domain '%s' already exists with uuid %s"
 msgstr "ਡੋਮੇਨ '%s' ਪਹਿਲਾਂ ਹੀ uuid %s ਨਾਲ ਮੌਜੂਦ ਹੈ"
 
 #: src/conf/domain_conf.c:2313 src/lxc/lxc_driver.c:2566
-#: src/lxc/lxc_driver.c:2640 src/libxl/libxl_driver.c:3862
+#: src/lxc/lxc_driver.c:2640 src/libxl/libxl_driver.c:3881
 #: src/openvz/openvz_driver.c:1981 src/qemu/qemu_driver.c:1686
 #: src/qemu/qemu_driver.c:1698 src/qemu/qemu_driver.c:1770
 #: src/qemu/qemu_driver.c:1871 src/qemu/qemu_driver.c:1986
@@ -1114,12 +1114,12 @@ msgstr "ਡੋਮੇਨ '%s' ਪਹਿਲਾਂ ਹੀ uuid %s ਨਾਲ ਮੌ�
 #: src/qemu/qemu_driver.c:13686 src/qemu/qemu_driver.c:13767
 #: src/qemu/qemu_driver.c:13876 src/qemu/qemu_driver.c:14016
 #: src/qemu/qemu_driver.c:14044 src/qemu/qemu_driver.c:14134
-#: src/qemu/qemu_driver.c:14245 src/qemu/qemu_driver.c:14464
-#: src/qemu/qemu_driver.c:14591 src/qemu/qemu_driver.c:14978
-#: src/qemu/qemu_driver.c:15329 src/qemu/qemu_driver.c:15388
-#: src/qemu/qemu_driver.c:15436 src/qemu/qemu_driver.c:15476
-#: src/qemu/qemu_driver.c:15547 src/qemu/qemu_driver.c:15569
-#: src/qemu/qemu_driver.c:15619 src/qemu/qemu_driver.c:15641
+#: src/qemu/qemu_driver.c:14246 src/qemu/qemu_driver.c:14469
+#: src/qemu/qemu_driver.c:14596 src/qemu/qemu_driver.c:14983
+#: src/qemu/qemu_driver.c:15334 src/qemu/qemu_driver.c:15393
+#: src/qemu/qemu_driver.c:15441 src/qemu/qemu_driver.c:15481
+#: src/qemu/qemu_driver.c:15552 src/qemu/qemu_driver.c:15574
+#: src/qemu/qemu_driver.c:15624 src/qemu/qemu_driver.c:15646
 #: src/qemu/qemu_migration.c:2086 src/qemu/qemu_migration.c:4040
 #: src/uml/uml_driver.c:2564 src/xen/xen_driver.c:2624
 #: src/xen/xm_internal.c:675
@@ -3846,10 +3846,10 @@ msgstr "ਅਚਾਨਕ ਇੰਟਰਫੇਸ ਕਿਸਮ %d"
 
 #: src/conf/interface_conf.c:1260 src/conf/network_conf.c:360
 #: src/conf/node_device_conf.c:184 src/conf/nwfilter_conf.c:3018
-#: src/conf/storage_conf.c:1744 src/libxl/libxl_driver.c:830
+#: src/conf/storage_conf.c:1744 src/libxl/libxl_driver.c:849
 #: src/parallels/parallels_driver.c:894 src/qemu/qemu_driver.c:585
-#: src/remote/remote_driver.c:929 src/test/test_driver.c:602
-#: src/test/test_driver.c:1194 src/xen/xen_driver.c:441
+#: src/remote/remote_driver.c:929 src/test/test_driver.c:603
+#: src/test/test_driver.c:1195 src/xen/xen_driver.c:441
 msgid "cannot initialize mutex"
 msgstr "mutex ਨੂੰ ਸ਼ੁਰੂ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
@@ -5609,7 +5609,7 @@ msgid "storage pool missing type attribute"
 msgstr ""
 
 #: src/conf/storage_conf.c:854 src/storage/storage_driver.c:503
-#: src/test/test_driver.c:4356
+#: src/test/test_driver.c:4357
 #, c-format
 msgid "unknown storage pool type %s"
 msgstr "ਅਚਾਨਕ OS ਕਿਸਮ %s"
@@ -7382,7 +7382,7 @@ msgid "cannot read from stream"
 msgstr "ਤੋਂ ਪੜ ਨਹੀਂ ਸਕਿਆ"
 
 #: src/fdstream.c:501 src/locking/lock_daemon.c:140
-#: src/locking/lock_daemon.c:183 src/qemu/qemu_capabilities.c:2765
+#: src/locking/lock_daemon.c:183 src/qemu/qemu_capabilities.c:2827
 #: src/util/vireventpoll.c:682 src/util/virnodesuspend.c:66
 #: src/util/virobject.c:221
 msgid "Unable to initialize mutex"
@@ -8939,8 +8939,8 @@ msgid "Failed to make root private"
 msgstr "ਰੂਟ ਪਰਾਈਵੇਟ ਬਣਾਉਣ ਲਈ ਫੇਲ"
 
 #: src/lxc/lxc_container.c:679 src/lxc/lxc_container.c:699
-#: src/lxc/lxc_container.c:1089 src/lxc/lxc_container.c:1373
-#: src/lxc/lxc_container.c:1436
+#: src/lxc/lxc_container.c:1092 src/lxc/lxc_container.c:1376
+#: src/lxc/lxc_container.c:1439
 #, c-format
 msgid "Failed to create %s"
 msgstr "%s ਨੂੰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
@@ -8989,193 +8989,193 @@ msgstr "%s ਨੂੰ %s ਕਿਸਮ %s ਉੱਤੇ ਮਾਊਂਟ ਕਰਨ �
 msgid "Failed to mount %s on /proc/meminfo"
 msgstr ""
 
-#: src/lxc/lxc_container.c:950
+#: src/lxc/lxc_container.c:951
 msgid "Cannot create /dev"
 msgstr ""
 
-#: src/lxc/lxc_container.c:958
+#: src/lxc/lxc_container.c:960
 #, c-format
 msgid "Failed to mount %s on /dev"
 msgstr ""
 
-#: src/lxc/lxc_container.c:986
+#: src/lxc/lxc_container.c:989
 msgid "Cannot create /dev/pts"
 msgstr "/dev/pts ਬਣਾ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/lxc/lxc_container.c:995
+#: src/lxc/lxc_container.c:998
 #, c-format
 msgid "Failed to mount %s on /dev/pts"
 msgstr ""
 
-#: src/lxc/lxc_container.c:1022
+#: src/lxc/lxc_container.c:1025
 #, c-format
 msgid "Failed to symlink device %s to %s"
 msgstr "PCI ਜੰਤਰ '%s' ਨੂੰ %s ਵਿੱਚ ਬਾਈਂਡ ਕਰਨ ਤੋਂ ਫੇਲ"
 
-#: src/lxc/lxc_container.c:1034
+#: src/lxc/lxc_container.c:1037
 msgid "Failed to bind /dev/pts/ptmx on to /dev/ptmx"
 msgstr "/dev/pts/ptmx ਨੂੰ /dev/ptmx ਨਾਲ ਬਾਈਂਡ ਕਰਨ ਤੋਂ ਫੇਲ ਹੋਇਆ"
 
-#: src/lxc/lxc_container.c:1045
+#: src/lxc/lxc_container.c:1048
 #, c-format
 msgid "Failed to symlink %s to %s"
 msgstr "symlink %s ਤੋਂ %s ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/lxc/lxc_container.c:1053
+#: src/lxc/lxc_container.c:1056
 #, c-format
 msgid "Failed to symlink %s to /dev/console"
 msgstr "%s ਨੂੰ /dev/console ਨਾਲ ਸਿਮਲਿੰਕ ਫੇਲ ਹੋਇਆ"
 
-#: src/lxc/lxc_container.c:1076
+#: src/lxc/lxc_container.c:1079
 #, c-format
 msgid "Unable to stat bind target %s"
 msgstr "ਗਿਸਟ ਚਾਲੂ ਕਰਨ ਵਿੱਚ ਫੇਲ %s"
 
-#: src/lxc/lxc_container.c:1082
+#: src/lxc/lxc_container.c:1085
 #, c-format
 msgid "Unable to stat bind source %s"
 msgstr "ਗਿਸਟ ਚਾਲੂ ਕਰਨ ਵਿੱਚ ਫੇਲ: %s"
 
-#: src/lxc/lxc_container.c:1099
+#: src/lxc/lxc_container.c:1102
 #, c-format
 msgid "Failed to create bind target %s"
 msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ: %s"
 
-#: src/lxc/lxc_container.c:1106
+#: src/lxc/lxc_container.c:1109
 #, c-format
 msgid "Failed to close bind target %s"
 msgstr "ਟਾਰਗਿਟ %s ਨੂੰ ਪਾਰਸ ਕਰਨ ਲਈ ਫੇਲ"
 
-#: src/lxc/lxc_container.c:1115
+#: src/lxc/lxc_container.c:1118
 #, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "ਮਾਨੀਟਰ ਡਾਇਰੈਕਟਰੀ %s ਬਣਾਉਣ ਤੋਂ ਫੇਲ: %s"
 
-#: src/lxc/lxc_container.c:1124 src/lxc/lxc_container.c:1452
+#: src/lxc/lxc_container.c:1127 src/lxc/lxc_container.c:1455
 #, c-format
 msgid "Failed to make directory %s readonly"
 msgstr "ਡਾਇਰੈਕਟਰੀ %s ਨੂੰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/lxc/lxc_container.c:1131
+#: src/lxc/lxc_container.c:1134
 #, c-format
 msgid "Failed to make directory %s readwrite"
 msgstr ""
 
-#: src/lxc/lxc_container.c:1158
+#: src/lxc/lxc_container.c:1161
 #, c-format
 msgid "Unable to open filesystem %s"
 msgstr "%s ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਅਸਫਲ"
 
-#: src/lxc/lxc_container.c:1164
+#: src/lxc/lxc_container.c:1167
 msgid "Unable to create blkid library handle"
 msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/lxc/lxc_container.c:1169
+#: src/lxc/lxc_container.c:1172
 #, c-format
 msgid "Unable to associate device %s with blkid library"
 msgstr "ਜੰਤਰ %s ਨੂੰ blkid ਲਾਇਬਰੇਰੀ ਨਾਲ ਜੋੜਨ ਤੋਂ ਫੇਲ"
 
-#: src/lxc/lxc_container.c:1185
+#: src/lxc/lxc_container.c:1188
 #, c-format
 msgid "Too many filesystems detected for %s"
 msgstr "%s ਵਿੱਚ ਬਹੁਤ ਜ਼ਿਆਦਾ ਡਰਾਈਵਰ ਰਜਿਸਟਰ ਹਨ"
 
-#: src/lxc/lxc_container.c:1189
+#: src/lxc/lxc_container.c:1192
 #, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "%s ਤੋਂ ਸਭ ਜੰਤਰ ਹਟਾਉਣ ਲਈ ਫੇਲ"
 
-#: src/lxc/lxc_container.c:1197
+#: src/lxc/lxc_container.c:1200
 #, c-format
 msgid "Unable to find filesystem type for %s"
 msgstr "%s ਲਈ cgroup ਲੱਭਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/lxc/lxc_container.c:1266 src/util/iohelper.c:151
+#: src/lxc/lxc_container.c:1269 src/util/iohelper.c:151
 #, c-format
 msgid "Unable to read %s"
 msgstr "%s ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਅਸਫਲ"
 
-#: src/lxc/lxc_container.c:1296
+#: src/lxc/lxc_container.c:1299
 #, c-format
 msgid "%s has unexpected '*' before last line"
 msgstr "%s ਦੀ ਅਚਾਨਕ ਗਲਤੀ ਹੈ '*' ਆਖਰੀ ਲਾਈਨ ਤੋਂ ਪਹਿਲਾਂ"
 
-#: src/lxc/lxc_container.c:1319
+#: src/lxc/lxc_container.c:1322
 #, c-format
 msgid "Failed to mount device %s to %s"
 msgstr "ਜੰਤਰ %s ਨੂੰ %s ਉੱਪਰ ਮਾਊਂਟ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
-#: src/lxc/lxc_container.c:1342
+#: src/lxc/lxc_container.c:1345
 #, c-format
 msgid "Failed to mount device %s to %s, unable to detect filesystem"
 msgstr "ਜੰਤਰ %s ਨੂੰ %s ਤੇ ਮਾਊਂਟ ਕਰਨ ਵਿੱਚ ਫੇਲ੍ਹ, ਫਾਇਲਸਿਸਟਮ ਖੋਜਣ ਵਿੱਚ ਅਸਮਰਥ"
 
-#: src/lxc/lxc_container.c:1386
+#: src/lxc/lxc_container.c:1389
 #, c-format
 msgid "Failed to mount device %s to %s as %s"
 msgstr "ਜੰਤਰ %s ਨੂੰ %s ਉੱਪਰ %s ਵਾਂਗ ਮਾਊਂਟ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
-#: src/lxc/lxc_container.c:1443
+#: src/lxc/lxc_container.c:1446
 #, c-format
 msgid "Failed to mount directory %s as tmpfs"
 msgstr "ਡਾਇਰੈਕਟਰੀ %s ਨੂੰ tmpfs ਵਾਂਗ ਮਾਊਂਟ ਕਰਨ ਤੋਂ ਫੇਲ੍ਹ"
 
-#: src/lxc/lxc_container.c:1491
+#: src/lxc/lxc_container.c:1494
 #, c-format
 msgid "Unexpected filesystem type %s"
 msgstr "ਅਚਾਨਕ ਫਾਇਲ-ਸਿਸਟਮ ਕਿਸਮ %s"
 
-#: src/lxc/lxc_container.c:1496
+#: src/lxc/lxc_container.c:1499
 #, c-format
 msgid "Cannot mount filesystem type %s"
 msgstr "ਅਚਾਨਕ ਫਾਇਲ-ਸਿਸਟਮ ਕਿਸਮ %s"
 
-#: src/lxc/lxc_container.c:1540
+#: src/lxc/lxc_container.c:1543
 #, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
 msgstr ""
 
-#: src/lxc/lxc_container.c:1754
+#: src/lxc/lxc_container.c:1757
 #, c-format
 msgid "Failed to remove capabilities: %d"
 msgstr "ਸਮਰੱਥਾ ਹਟਾਉਣ ਲਈ ਫੇਲ ਹੈ: %d"
 
-#: src/lxc/lxc_container.c:1760
+#: src/lxc/lxc_container.c:1763
 #, c-format
 msgid "Failed to apply capabilities: %d"
 msgstr "ਸਮਰੱਥਾ ਲਾਗੂ ਕਰਨ ਵਿੱਚ ਫੇਲ: %d"
 
-#: src/lxc/lxc_container.c:1806
+#: src/lxc/lxc_container.c:1809
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild() ਨੂੰ ਗਲਤ vm ਪਰਿਭਾਸ਼ਾ ਪਾਸ ਕੀਤੀ ਹੈ"
 
-#: src/lxc/lxc_container.c:1815
+#: src/lxc/lxc_container.c:1818
 msgid "Failed to read the container continue message"
 msgstr "ਕੰਨਟੇਨਰ ਜਾਰੀ ਸੁਨੇਹੇ ਪੜਂ ਵਿੱਚ ਫੇਲ"
 
-#: src/lxc/lxc_container.c:1847
+#: src/lxc/lxc_container.c:1850
 #, c-format
 msgid "Failed to open tty %s"
 msgstr "tty %s ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/lxc/lxc_container.c:1863
+#: src/lxc/lxc_container.c:1866
 #, c-format
 msgid "cannot find init path '%s' relative to container root"
 msgstr "ਕੰਟੇਨਰ ਜੜ੍ਹ ਨਾਲ ਸੰਬੰਧਿਤ init ਰਾਹ '%s' ਨਹੀਂ ਲੱਭ ਸਕਦਾ"
 
-#: src/lxc/lxc_container.c:1882
+#: src/lxc/lxc_container.c:1885
 msgid "Failed to send continue signal to controller"
 msgstr ""
 
-#: src/lxc/lxc_container.c:2014
+#: src/lxc/lxc_container.c:2017
 msgid "Kernel doesn't support user namespace"
 msgstr ""
 
-#: src/lxc/lxc_container.c:2031
+#: src/lxc/lxc_container.c:2034
 msgid "Failed to run clone container"
 msgstr "ਕਲੋਨ ਕੰਨਟੇਨਰ ਚੱਲਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/lxc/lxc_container.c:2093
+#: src/lxc/lxc_container.c:2096
 #, c-format
 msgid "Failed to change owner of %s to %u:%u"
 msgstr ""
@@ -9466,15 +9466,15 @@ msgstr "ਅਧਿਕਤਮ ਮੈਮੋਰੀ ਤੋਂ ਜਿਆਦਾ ਮੈ�
 #: src/lxc/lxc_driver.c:2236 src/lxc/lxc_driver.c:2465
 #: src/lxc/lxc_driver.c:2514 src/lxc/lxc_driver.c:2733
 #: src/lxc/lxc_driver.c:2810 src/lxc/lxc_driver.c:4501
-#: src/libxl/libxl_driver.c:1300 src/libxl/libxl_driver.c:1352
-#: src/libxl/libxl_driver.c:1404 src/libxl/libxl_driver.c:1451
-#: src/libxl/libxl_driver.c:1489 src/libxl/libxl_driver.c:1856
-#: src/libxl/libxl_driver.c:1968 src/libxl/libxl_driver.c:2047
-#: src/libxl/libxl_driver.c:2326 src/libxl/libxl_driver.c:2427
-#: src/libxl/libxl_driver.c:3161 src/libxl/libxl_driver.c:3265
-#: src/libxl/libxl_driver.c:3369 src/libxl/libxl_driver.c:3646
-#: src/libxl/libxl_driver.c:3710 src/libxl/libxl_driver.c:3787
-#: src/libxl/libxl_driver.c:3958 src/openvz/openvz_driver.c:598
+#: src/libxl/libxl_driver.c:1319 src/libxl/libxl_driver.c:1371
+#: src/libxl/libxl_driver.c:1423 src/libxl/libxl_driver.c:1470
+#: src/libxl/libxl_driver.c:1508 src/libxl/libxl_driver.c:1875
+#: src/libxl/libxl_driver.c:1987 src/libxl/libxl_driver.c:2066
+#: src/libxl/libxl_driver.c:2345 src/libxl/libxl_driver.c:2446
+#: src/libxl/libxl_driver.c:3180 src/libxl/libxl_driver.c:3284
+#: src/libxl/libxl_driver.c:3388 src/libxl/libxl_driver.c:3665
+#: src/libxl/libxl_driver.c:3729 src/libxl/libxl_driver.c:3806
+#: src/libxl/libxl_driver.c:3977 src/openvz/openvz_driver.c:598
 #: src/openvz/openvz_driver.c:636 tools/virsh-domain.c:9051
 #: tools/virsh-domain.c:9220
 msgid "Domain is not running"
@@ -9501,7 +9501,7 @@ msgstr ""
 msgid "unable to set memory %s tunable"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:1034 src/libxl/libxl_driver.c:2631
+#: src/lxc/lxc_driver.c:1034 src/libxl/libxl_driver.c:2650
 #: src/vmware/vmware_driver.c:723
 msgid "Domain is already running"
 msgstr "ਡੋਮੇਨ ਪਹਿਲਾਂ ਹੀ ਚੱਲ ਰਿਹਾ ਹੈ"
@@ -9571,13 +9571,13 @@ msgstr "ਟਰਾਂਜ਼ੀਐਂਟ ਡੋਮੇਨ ਲਈ ਆਟੋਸਟਾਰ
 msgid "Cannot create autostart directory %s"
 msgstr "ਆਟੋਸਟਾਰਟ ਡਾਇਰੈਕਟਰੀ %s ਬਣਾਈ ਨਹੀਂ ਜਾ ਸਕਦੀ"
 
-#: src/lxc/lxc_driver.c:2338 src/libxl/libxl_driver.c:3604
+#: src/lxc/lxc_driver.c:2338 src/libxl/libxl_driver.c:3623
 #: src/qemu/qemu_driver.c:7332 src/uml/uml_driver.c:2438
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "symlink '%s ਤੋਂ '%s' ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/lxc/lxc_driver.c:2345 src/libxl/libxl_driver.c:3611
+#: src/lxc/lxc_driver.c:2345 src/libxl/libxl_driver.c:3630
 #: src/network/bridge_driver.c:2972 src/qemu/qemu_driver.c:7339
 #: src/storage/storage_driver.c:1171 src/uml/uml_driver.c:2445
 #, c-format
@@ -9601,7 +9601,7 @@ msgstr "ਜੰਤਰ '%s' ਨੂੰ ਬੰਦ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 msgid "default"
 msgstr "ਮੂਲ"
 
-#: src/lxc/lxc_driver.c:2594 src/libxl/libxl_driver.c:3880
+#: src/lxc/lxc_driver.c:2594 src/libxl/libxl_driver.c:3899
 #: src/qemu/qemu_driver.c:13722 src/uml/uml_driver.c:2592
 #: src/xen/xen_driver.c:2652
 #, c-format
@@ -9635,7 +9635,7 @@ msgstr ""
 msgid "Unable to send SIGTERM to init pid %llu"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:2873 src/libxl/libxl_driver.c:2987
+#: src/lxc/lxc_driver.c:2873 src/libxl/libxl_driver.c:3006
 #, c-format
 msgid "target %s already exists."
 msgstr "ਟਾਰਗਿਟ %s ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ।"
@@ -9644,7 +9644,7 @@ msgstr "ਟਾਰਗਿਟ %s ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ�
 msgid "device is already in the domain configuration"
 msgstr "ਜੰਤਰ ਪਹਿਲਾਂ ਹੀ ਡੋਮੇਨ ਸੰਰਚਨਾ ਵਿੱਚ ਮੌਜੂਦ ਹੈ"
 
-#: src/lxc/lxc_driver.c:2906 src/libxl/libxl_driver.c:2998
+#: src/lxc/lxc_driver.c:2906 src/libxl/libxl_driver.c:3017
 msgid "persistent attach of device is not supported"
 msgstr "ਸਿਰਫ ਇੱਕ ਹੀ watchdog ਜੰਤਰ ਸਹਿਯੋਗੀ ਹੈ"
 
@@ -9660,11 +9660,11 @@ msgstr ""
 msgid "no matching network device was found"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:2949 src/libxl/libxl_driver.c:3120
+#: src/lxc/lxc_driver.c:2949 src/libxl/libxl_driver.c:3139
 msgid "persistent update of device is not supported"
 msgstr "ਜੰਤਰ ਕਿਸਮ ਦੇ ਹਾਟਪਲੱਗ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
-#: src/lxc/lxc_driver.c:2974 src/libxl/libxl_driver.c:3036
+#: src/lxc/lxc_driver.c:2974 src/libxl/libxl_driver.c:3055
 #: src/qemu/qemu_driver.c:6689
 #, c-format
 msgid "no target device %s"
@@ -9676,7 +9676,7 @@ msgstr "ਜੰਤਰ %s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 msgid "device not present in domain configuration"
 msgstr "Xend ਡੋਮੇਨ ਜਾਣਾਕਰੀ ਪਾਰਸ ਕਰਨ ਲਈ ਫੇਲ"
 
-#: src/lxc/lxc_driver.c:3014 src/libxl/libxl_driver.c:3044
+#: src/lxc/lxc_driver.c:3014 src/libxl/libxl_driver.c:3063
 msgid "persistent detach of device is not supported"
 msgstr "ਸਿਰਫ ਇੱਕ ਹੀ watchdog ਜੰਤਰ ਸਹਿਯੋਗੀ ਹੈ"
 
@@ -9703,7 +9703,7 @@ msgstr ""
 msgid "devices cgroup isn't mounted"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:3209 src/libxl/libxl_driver.c:2857
+#: src/lxc/lxc_driver.c:3209 src/libxl/libxl_driver.c:2876
 #: src/qemu/qemu_driver.c:6586 src/qemu/qemu_hotplug.c:251
 #: src/qemu/qemu_hotplug.c:476 src/qemu/qemu_hotplug.c:599
 #: src/uml/uml_driver.c:2140
@@ -9757,13 +9757,13 @@ msgstr ""
 msgid "Cannot attach hostdev until init PID is known"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:3729 src/libxl/libxl_driver.c:2969
+#: src/lxc/lxc_driver.c:3729 src/libxl/libxl_driver.c:2988
 #: src/uml/uml_driver.c:2221
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "ਜੰਤਰ ਕਿਸਮ '%s' ਜੋੜੀ ਨਹੀਂ ਜਾ ਸਕਦੀ"
 
-#: src/lxc/lxc_driver.c:3757 src/libxl/libxl_driver.c:2917
+#: src/lxc/lxc_driver.c:3757 src/libxl/libxl_driver.c:2936
 #: src/qemu/qemu_hotplug.c:2984 src/uml/uml_driver.c:2271
 #, c-format
 msgid "disk %s not found"
@@ -9787,7 +9787,7 @@ msgstr ""
 msgid "hostdev %s not found"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:4108 src/libxl/libxl_driver.c:3017
+#: src/lxc/lxc_driver.c:4108 src/libxl/libxl_driver.c:3036
 #: src/xen/xm_internal.c:1381
 #, c-format
 msgid "device type '%s' cannot be detached"
@@ -9800,8 +9800,8 @@ msgid "cannot do live update a device on inactive domain"
 msgstr "ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ ਤੇ ਜੰਤਰ ਹਟਾ ਨਹੀਂ ਸਕਦਾ"
 
 #: src/lxc/lxc_driver.c:4161 src/lxc/lxc_driver.c:4284
-#: src/lxc/lxc_driver.c:4394 src/libxl/libxl_driver.c:3168
-#: src/libxl/libxl_driver.c:3272 src/libxl/libxl_driver.c:3376
+#: src/lxc/lxc_driver.c:4394 src/libxl/libxl_driver.c:3187
+#: src/libxl/libxl_driver.c:3291 src/libxl/libxl_driver.c:3395
 #: src/qemu/qemu_driver.c:6899 src/qemu/qemu_driver.c:7046
 #: src/qemu/qemu_driver.c:7181
 msgid "cannot modify device on transient domain"
@@ -9811,7 +9811,7 @@ msgstr "ਟਰਾਂਜ਼ੀਐਂਟ ਡੋਮੇਨ ਨਾ-ਪਰਭਾਸ਼ਿ
 msgid "Unable to modify live devices"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:4535 src/libxl/libxl_driver.c:1068
+#: src/lxc/lxc_driver.c:4535 src/libxl/libxl_driver.c:1087
 #: src/qemu/qemu_command.c:7787 src/qemu/qemu_driver.c:1207
 #: src/xen/xen_driver.c:633
 msgid "Host SMBIOS information is not available"
@@ -9953,7 +9953,7 @@ msgstr ""
 msgid "unknown error"
 msgstr "ਅਣਜਾਣ ਗਲਤੀ"
 
-#: src/libxl/libxl_driver.c:144 src/libxl/libxl_driver.c:3449
+#: src/libxl/libxl_driver.c:144 src/libxl/libxl_driver.c:3468
 msgid "libxl_get_physinfo_info failed"
 msgstr "libxl_get_physinfo_info failed"
 
@@ -9994,12 +9994,12 @@ msgstr "XML ਪੜਨ ਵਿੱਚ ਫੇਲ"
 msgid "Unable to cleanup domain %d"
 msgstr "ਡੋਮੇਨ %d ਲਈ cgroup ਬਣਾਉਣ ਤੋਂ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:485 src/libxl/libxl_driver.c:2376
+#: src/libxl/libxl_driver.c:485 src/libxl/libxl_driver.c:2395
 #, c-format
 msgid "Failed to pin vcpu '%d' with libxenlight"
 msgstr "vcpu '%d' ਨੂੰ libxenlight ਨਾਲ ਪਿੰਨ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:586 src/qemu/qemu_driver.c:5629
+#: src/libxl/libxl_driver.c:589 src/qemu/qemu_driver.c:5629
 #, c-format
 msgid ""
 "cannot restore domain '%s' uuid %s from a file which belongs to domain '%s' "
@@ -10008,366 +10008,366 @@ msgstr ""
 "ਡੋਮੇਨ '%s' uuid %s ਨੂੰ, ਫਾਈਲ ਜਿਹੜੀ ਕਿ ਡੋਮੇਨ '%s' uuid %s ਨਾਲ ਸੰਬੰਧਿਤ ਹੈ, ਤੋਂ ਮੁੜ-ਸਟੋਰ ਨਹੀਂ "
 "ਕੀਤਾ ਜਾ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:611
+#: src/libxl/libxl_driver.c:614
 #, c-format
 msgid "libxenlight failed to get free memory for domain '%s'"
 msgstr "ਡੋਮੇਨ '%s' ਲਈ ਮੈਮੋਰੀ ਸੀਮਾ ਸੈੱਟ ਕਰਨ ਤੋਂ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:628
+#: src/libxl/libxl_driver.c:637
 #, c-format
 msgid "libxenlight failed to create new domain '%s'"
 msgstr "ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ '%s' ਬਣਾਉਣ ਲਈ ਅਸਫ਼ਲ ਹੈ"
 
-#: src/libxl/libxl_driver.c:632
+#: src/libxl/libxl_driver.c:641
 #, c-format
 msgid "libxenlight failed to restore domain '%s'"
 msgstr "ਡੋਮੇਨ '%s' ਲੈਣ ਲਈ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:644
+#: src/libxl/libxl_driver.c:653
 msgid "libxenlight failed to store userdata"
 msgstr "userdata ਸੰਭਾਲਣ ਤੋਂ libxenlight ਅਸਫਲ ਹੋਇਆ"
 
-#: src/libxl/libxl_driver.c:850
+#: src/libxl/libxl_driver.c:869
 #, c-format
 msgid "failed to create log dir '%s': %s"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:857
+#: src/libxl/libxl_driver.c:876
 #, c-format
 msgid "failed to create state dir '%s': %s"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:864
+#: src/libxl/libxl_driver.c:883
 #, c-format
 msgid "failed to create lib dir '%s': %s"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:871
+#: src/libxl/libxl_driver.c:890
 #, c-format
 msgid "failed to create save dir '%s': %s"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:886
+#: src/libxl/libxl_driver.c:905
 msgid "cannot create capabilities for libxenlight"
 msgstr "ਡੋਮੇਨ ਲਈ cputime ਪੜ ਨਹੀਂ ਸਕਿਆ"
 
-#: src/libxl/libxl_driver.c:991
+#: src/libxl/libxl_driver.c:1010
 msgid "libxenlight state driver is not active"
 msgstr "lxc ਸਟੇਟ ਡਰਾਈਵਰ ਸਰਗਰਮ ਨਹੀਂ ਹੈ"
 
-#: src/libxl/libxl_driver.c:1001 src/xen/xen_driver.c:415
+#: src/libxl/libxl_driver.c:1020 src/xen/xen_driver.c:415
 #, c-format
 msgid "unexpected Xen URI path '%s', try xen:///"
 msgstr "ਅਚਾਨਕ Xen URI ਟਿਕਾਣਾ '%s', xen:/// ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ"
 
-#: src/libxl/libxl_driver.c:1309
+#: src/libxl/libxl_driver.c:1328
 #, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
 msgstr "ਡੋਮੇਨ '%d' ਮੁਅੱਤਲ ਕਰਨ ਲਈ ਫੇਲ ਹੈ"
 
-#: src/libxl/libxl_driver.c:1361
+#: src/libxl/libxl_driver.c:1380
 #, c-format
 msgid "Failed to resume domain '%d' with libxenlight"
 msgstr "ਡੋਮੇਨ '%d' ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:1411
+#: src/libxl/libxl_driver.c:1430
 #, c-format
 msgid "Failed to shutdown domain '%d' with libxenlight"
 msgstr "ਡੋਮੇਨ '%d' ਬੰਦ ਕਰਨ ਲਈ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:1458
+#: src/libxl/libxl_driver.c:1477
 #, c-format
 msgid "Failed to reboot domain '%d' with libxenlight"
 msgstr "ਡੋਮੇਨ '%d' ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਲਈ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:1498 src/libxl/libxl_driver.c:1818
-#: src/libxl/libxl_driver.c:1997
+#: src/libxl/libxl_driver.c:1517 src/libxl/libxl_driver.c:1837
+#: src/libxl/libxl_driver.c:2016
 #, c-format
 msgid "Failed to destroy domain '%d'"
 msgstr "ਡੋਮੇਨ '%d' ਖਤਮ ਕਰਨ ਲਈ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:1603
+#: src/libxl/libxl_driver.c:1622
 msgid "cannot set memory on an inactive domain"
 msgstr "ਸਰਗਰਮ ਡੋਮੇਨ ਦੀ ਮੈਮੋਰੀ ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:1610 src/libxl/libxl_driver.c:2203
+#: src/libxl/libxl_driver.c:1629 src/libxl/libxl_driver.c:2222
 msgid "cannot change persistent config of a transient domain"
 msgstr "ਟਰਾਂਜ਼ੀਐਂਟ ਡੋਮੇਨ ਨਾ-ਪਰਭਾਸ਼ਿਤ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:1626
+#: src/libxl/libxl_driver.c:1645
 #, c-format
 msgid "Failed to set maximum memory for domain '%d' with libxenlight"
 msgstr "ਡੋਮੇਨ '%d' ਲਈ ਮੈਮੋਰੀ ਸੀਮਾ ਸੈੱਟ ਕਰਨ ਤੋਂ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:1647 src/qemu/qemu_driver.c:2252
+#: src/libxl/libxl_driver.c:1666 src/qemu/qemu_driver.c:2252
 #: src/uml/uml_driver.c:1838
 msgid "cannot set memory higher than max memory"
 msgstr "ਅਧਿਕਤਮ ਮੈਮੋਰੀ ਤੋਂ ਜਿਆਦਾ ਮੈਮੋਰੀ ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:1656
+#: src/libxl/libxl_driver.c:1675
 #, c-format
 msgid "Failed to set memory for domain '%d' with libxenlight"
 msgstr "ਡੋਮੇਨ '%d' ਲਈ ਮੈਮੋਰੀ ਸੀਮਾ ਸੈੱਟ ਕਰਨ ਤੋਂ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:1713
+#: src/libxl/libxl_driver.c:1732
 #, c-format
 msgid "libxl_domain_info failed for domain '%d'"
 msgstr "cputime ਨੂੰ ਡੋਮੇਨ '%d' ਲਈ ਪੜ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:1773
+#: src/libxl/libxl_driver.c:1792
 #, c-format
 msgid "Domain '%d' has to be running because libxenlight will suspend it"
 msgstr "ਡੋਮੇਨ '%d' ਚੱਲ ਰਹੀ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ ਕਿਉਂਕਿ libxenlight ਇਸਨੂੰ ਮੁਲਤਵੀ ਕਰ ਦੇਵੇਗਾ"
 
-#: src/libxl/libxl_driver.c:1781
+#: src/libxl/libxl_driver.c:1800
 #, c-format
 msgid "Failed to create domain save file '%s'"
 msgstr "%s ਤੇ ਡੋਮੇਨ ਸੰਭਾਲਣ ਵਾਲੀ ਫਾਇਲ ਬਣਾਉਣ ਤੋਂ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:1796
+#: src/libxl/libxl_driver.c:1815
 msgid "Failed to write save file header"
 msgstr "ਹੈਡਰ ਸੰਭਾਲਣ ਵੇਲੇ ਲਿਖਣ ਤੋਂ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:1802
+#: src/libxl/libxl_driver.c:1821
 msgid "Failed to write xml description"
 msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:1808
+#: src/libxl/libxl_driver.c:1827
 #, c-format
 msgid "Failed to save domain '%d' with libxenlight"
 msgstr "'%d' ਡੋਮੇਨ ਨੂੰ ਸੰਭਾਲਣ ਲਈ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:1828 src/libxl/libxl_driver.c:1931
+#: src/libxl/libxl_driver.c:1847 src/libxl/libxl_driver.c:1950
 msgid "cannot close file"
 msgstr "ਫਾਇਲ ਨੂੰ ਬੰਦ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:1845 src/libxl/libxl_driver.c:1897
-#: src/test/test_driver.c:1919 src/test/test_driver.c:2032
+#: src/libxl/libxl_driver.c:1864 src/libxl/libxl_driver.c:1916
+#: src/test/test_driver.c:1920 src/test/test_driver.c:2033
 #: src/xen/xen_driver.c:1191 src/xen/xen_driver.c:1314
 msgid "xml modification unsupported"
 msgstr "xml ਨਵੀਨੀਕਰਣ ਅਸਮਰਥਿਤ"
 
-#: src/libxl/libxl_driver.c:1978
+#: src/libxl/libxl_driver.c:1997
 #, c-format
 msgid "Before dumping core, failed to suspend domain '%d' with libxenlight"
 msgstr "ਕੋਰ ਨੂੰ ਸੁੱਟਣ ਤੋਂ ਪਹਿਲਾਂ, libxenlight ਨਾਲ ਡੋਮੇਨ '%d' ਨੂੰ ਮੁਲਤਵੀ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
 
-#: src/libxl/libxl_driver.c:1989
+#: src/libxl/libxl_driver.c:2008
 #, c-format
 msgid "Failed to dump core of domain '%d' with libxenlight"
 msgstr "'%d' ਡੋਮੇਨ ਨੂੰ libxenlight ਲਈ ਸੰਭਾਲਣ ਲਈ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:2015
+#: src/libxl/libxl_driver.c:2034
 #, c-format
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr "ਕੋਰ ਨੂੰ ਸੁੱਟਣ ਤੋਂ ਬਾਅਦ, libxenlight ਨਾਲ ਡੋਮੇਨ '%d' ਨੂੰ ਮੁੜ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
 
-#: src/libxl/libxl_driver.c:2052 src/qemu/qemu_driver.c:3266
+#: src/libxl/libxl_driver.c:2071 src/qemu/qemu_driver.c:3266
 msgid "cannot do managed save for transient domain"
 msgstr "ਟਰਾਂਜ਼ੀਐਂਟ ਡੋਮੇਨ ਲਈ ਆਟੋਸਟਾਰਟ ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:2180 src/libxl/libxl_driver.c:2319
-#: src/test/test_driver.c:2335 src/xen/xen_driver.c:1366
+#: src/libxl/libxl_driver.c:2199 src/libxl/libxl_driver.c:2338
+#: src/test/test_driver.c:2336 src/xen/xen_driver.c:1366
 #, c-format
 msgid "invalid flag combination: (0x%x)"
 msgstr "ਗਲਤ ਫਲਾਸ ਕੰਬੀਨੇਸ਼ਨ: (0x%x)"
 
-#: src/libxl/libxl_driver.c:2185
+#: src/libxl/libxl_driver.c:2204
 msgid "nvcpus is zero"
 msgstr "nvcpus ਸਿਫ਼ਰ ਹੈ"
 
-#: src/libxl/libxl_driver.c:2197
+#: src/libxl/libxl_driver.c:2216
 msgid "cannot set vcpus on an inactive domain"
 msgstr "ਇੱਕ ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ ਲਈ vcpus ਨੂੰ ਵੇਖਾ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:2209 src/xen/xend_internal.c:1807
+#: src/libxl/libxl_driver.c:2228 src/xen/xend_internal.c:1807
 #: src/xen/xm_internal.c:690
 msgid "could not determine max vcpus for the domain"
 msgstr "ਡੋਮੇਨ ਲਈ ਅਧਿਕਤਮ vcpus ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
-#: src/libxl/libxl_driver.c:2219 src/qemu/qemu_driver.c:4160
+#: src/libxl/libxl_driver.c:2238 src/qemu/qemu_driver.c:4160
 #: src/xen/xend_internal.c:1812 src/xen/xm_internal.c:699
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
 msgstr "ਲੋੜੀਂਦਾ vcpus ਡੋਮੇਨ ਲਈ ਅਧਿਕਤਮ ਮਨਜੂਰ vcpus ਤੋਂ ਜਿਆਦਾ ਹੈ: %d > %d"
 
-#: src/libxl/libxl_driver.c:2255 src/libxl/libxl_driver.c:2264
+#: src/libxl/libxl_driver.c:2274 src/libxl/libxl_driver.c:2283
 #, c-format
 msgid "Failed to set vcpus for domain '%d' with libxenlight"
 msgstr "ਡੋਮੇਨ '%d' ਲਈ ਮੈਮੋਰੀ ਸੀਮਾ ਸੈੱਟ ਕਰਨ ਤੋਂ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:2333
+#: src/libxl/libxl_driver.c:2352
 msgid "domain is transient"
 msgstr "ਡੋਮੇਨ ਚੱਲ ਨਹੀਂ ਰਿਹਾ"
 
-#: src/libxl/libxl_driver.c:2366 src/test/test_driver.c:2527
+#: src/libxl/libxl_driver.c:2385 src/test/test_driver.c:2528
 msgid "cannot pin vcpus on an inactive domain"
 msgstr "ਇੱਕ ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ ਤੇ vcpus ਨੂੰ ਪਿੰਨ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:2391
+#: src/libxl/libxl_driver.c:2410
 msgid "failed to update or add vcpupin xml"
 msgstr "ਡੋਮੇਨ xml ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:2435
+#: src/libxl/libxl_driver.c:2454
 #, c-format
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr "libxenlight ਦੇ ਨਾਲ '%d' ਡੋਮੇਨ ਦੇ ਲਈ vcpus ਸੂਚੀਬੱਧ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
 
-#: src/libxl/libxl_driver.c:2511 src/libxl/libxl_driver.c:2555
+#: src/libxl/libxl_driver.c:2530 src/libxl/libxl_driver.c:2574
 #: src/qemu/qemu_driver.c:5735 src/qemu/qemu_driver.c:5783
 #: src/xen/xen_driver.c:1596 src/xen/xen_driver.c:1649
 #, c-format
 msgid "unsupported config type %s"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਸੰਰਚਨਾ ਕਿਸਮ %s"
 
-#: src/libxl/libxl_driver.c:2521
+#: src/libxl/libxl_driver.c:2540
 msgid "parsing xm config failed"
 msgstr "ਪੂਲ ਦੀ ਕੋਈ ਸੰਰਚਨਾ ਫਾਇਲ ਨਹੀ ਹੈ"
 
-#: src/libxl/libxl_driver.c:2732 src/qemu/qemu_driver.c:6229
+#: src/libxl/libxl_driver.c:2751 src/qemu/qemu_driver.c:6229
 #: src/uml/uml_driver.c:2100 src/vmware/vmware_driver.c:766
 msgid "cannot undefine transient domain"
 msgstr "ਟਰਾਂਜ਼ੀਐਂਟ ਡੋਮੇਨ ਨਾ-ਪਰਭਾਸ਼ਿਤ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:2744 src/qemu/qemu_driver.c:6254
+#: src/libxl/libxl_driver.c:2763 src/qemu/qemu_driver.c:6254
 msgid "Failed to remove domain managed save image"
 msgstr "ਡੋਮੇਨ ਸੰਭਾਲਣ ਵਾਲੀ ਫਾਇਲ ਬਣਾਉਣ ਤੋਂ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:2749 src/qemu/qemu_driver.c:6260
+#: src/libxl/libxl_driver.c:2768 src/qemu/qemu_driver.c:6260
 #: tools/virsh-domain.c:3132
 msgid "Refusing to undefine while domain managed save image exists"
 msgstr "ਡੋਮੇਨ ਪ੍ਰਬੰਧਿਤ save image ਦੀ ਹੋਂਦ ਹੁੰਦੇ ਹੋਏ ਵੀ ਗੈਰ-ਪ੍ਰਭਾਸ਼ਿਤ ਕਰਨ ਤੋਂ ਇਨਕਾਰ ਹੋ ਰਿਹਾ"
 
-#: src/libxl/libxl_driver.c:2805 src/qemu/qemu_driver.c:6485
+#: src/libxl/libxl_driver.c:2824 src/qemu/qemu_driver.c:6485
 #: src/qemu/qemu_hotplug.c:717
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr "ਬੱਸ '%s' ਟਾਰਗਿਟ '%s' ਵਾਲਾ ਕੋਈ ਜੰਤਰ ਨਹੀਂ"
 
-#: src/libxl/libxl_driver.c:2812 src/qemu/qemu_hotplug.c:82
+#: src/libxl/libxl_driver.c:2831 src/qemu/qemu_hotplug.c:82
 #, c-format
 msgid "Removable media not supported for %s device"
 msgstr "'%s' ਜੰਤਰ ਲਈ ਹਟਾਉਣਯੋਗ ਮੀਡੀਆ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
-#: src/libxl/libxl_driver.c:2822
+#: src/libxl/libxl_driver.c:2841
 #, c-format
 msgid "libxenlight failed to change media for disk '%s'"
 msgstr "ਡਾਇਰੈਕਟਰੀ '%s' ਨੂੰ ਬਣਾਉਣ ਵਿੱਚ ਚਾਈਲਡ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:2863 src/qemu/qemu_hotplug.c:618
+#: src/libxl/libxl_driver.c:2882 src/qemu/qemu_hotplug.c:618
 #: src/uml/uml_driver.c:2147
 msgid "disk source path is missing"
 msgstr "ਡਿਸਕ ਸਰੋਤ ਟਿਕਾਣਾ ਗੈਰ-ਮੌਜੂਦ ਹੈ"
 
-#: src/libxl/libxl_driver.c:2876
+#: src/libxl/libxl_driver.c:2895
 #, c-format
 msgid "libxenlight failed to attach disk '%s'"
 msgstr "'%s' ਡਿਸਕ ਜੋੜਨ ਲਈ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:2885 src/qemu/qemu_hotplug.c:764
+#: src/libxl/libxl_driver.c:2904 src/qemu/qemu_hotplug.c:764
 #: src/uml/uml_driver.c:2216
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "ਡਿਸਕ ਬੱਸ '%s' ਹਾਟਪਲੱਗ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:2891 src/qemu/qemu_hotplug.c:770
+#: src/libxl/libxl_driver.c:2910 src/qemu/qemu_hotplug.c:770
 #, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "ਡਿਸਕ ਜੰਤਰ ਕਿਸਮ '%s' ਹਾਟਪਲੱਗ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ"
 
-#: src/libxl/libxl_driver.c:2929
+#: src/libxl/libxl_driver.c:2948
 #, c-format
 msgid "libxenlight failed to detach disk '%s'"
 msgstr "ਡਿਸਕ '%s' ਹਟਾਉਣ ਲਈ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:2939
+#: src/libxl/libxl_driver.c:2958
 #, c-format
 msgid "disk bus '%s' cannot be hot unplugged."
 msgstr "ਡਿਸਕ ਬੱਸ '%s' ਹਾਟਪਲੱਗ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:2945
+#: src/libxl/libxl_driver.c:2964
 #, c-format
 msgid "device type '%s' cannot hot unplugged"
 msgstr "ਡਿਸਕ ਜੰਤਰ ਕਿਸਮ '%s' ਹਾਟਪਲੱਗ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ"
 
-#: src/libxl/libxl_driver.c:3069 src/qemu/qemu_driver.c:6524
+#: src/libxl/libxl_driver.c:3088 src/qemu/qemu_driver.c:6524
 #, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr "ਡਿਸਕ ਬੱਸ '%s' ਹਾਟਪਲੱਗ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:3076
+#: src/libxl/libxl_driver.c:3095
 #, c-format
 msgid "device type '%s' cannot be updated"
 msgstr "ਜੰਤਰ ਕਿਸਮ '%s' ਜੋੜੀ ਨਹੀਂ ਜਾ ਸਕਦੀ"
 
-#: src/libxl/libxl_driver.c:3097 src/openvz/openvz_driver.c:2021
+#: src/libxl/libxl_driver.c:3116 src/openvz/openvz_driver.c:2021
 #: src/qemu/qemu_driver.c:6783
 #, c-format
 msgid "target %s doesn't exist."
 msgstr "ਇੰਟਰਫੇਸ %s ਮੌਜੂਦ ਨਹੀਂ ਹੈ"
 
-#: src/libxl/libxl_driver.c:3103 src/qemu/qemu_driver.c:6790
+#: src/libxl/libxl_driver.c:3122 src/qemu/qemu_driver.c:6790
 msgid "this disk doesn't support update"
 msgstr "ਇੰਪੁੱਟ ਜੰਤਰ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਦਿੰਦਾ"
 
-#: src/libxl/libxl_driver.c:3478 src/libxl/libxl_conf.c:142
+#: src/libxl/libxl_driver.c:3497 src/libxl/libxl_conf.c:142
 msgid "libxl_get_numainfo failed"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3485 src/nodeinfo.c:1492 src/nodeinfo.c:1676
+#: src/libxl/libxl_driver.c:3504 src/nodeinfo.c:1492 src/nodeinfo.c:1676
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr "ਸਟਾਰਟ ਸੈੱਲ %d ਰੇਂਜ ਤੋਂ ਬਾਹਰ ਹੈ (0-%d)"
 
-#: src/libxl/libxl_driver.c:3582 src/qemu/qemu_driver.c:7310
+#: src/libxl/libxl_driver.c:3601 src/qemu/qemu_driver.c:7310
 #: src/uml/uml_driver.c:2416
 msgid "cannot set autostart for transient domain"
 msgstr "ਟਰਾਂਜ਼ੀਐਂਟ ਡੋਮੇਨ ਲਈ ਆਟੋਸਟਾਰਟ ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:3597 src/qemu/qemu_driver.c:7325
+#: src/libxl/libxl_driver.c:3616 src/qemu/qemu_driver.c:7325
 #: src/storage/storage_driver.c:1156 src/uml/uml_driver.c:2431
 #, c-format
 msgid "cannot create autostart directory %s"
 msgstr "ਆਟੋਸਟਾਰਟ ਡਾਇਰੈਕਟਰੀ %s ਬਣਾਈ ਨਹੀਂ ਜਾ ਸਕਦੀ"
 
-#: src/libxl/libxl_driver.c:3672
+#: src/libxl/libxl_driver.c:3691
 #, c-format
 msgid "Failed to get scheduler id for domain '%d' with libxenlight"
 msgstr "libxenlight ਦੇ ਨਾਲ '%d' ਡੋਮੇਨ ਲਈ scheduler id ਲੈਣ ਵਿੱਚ ਅਸਫਲ"
 
-#: src/libxl/libxl_driver.c:3720 src/libxl/libxl_driver.c:3797
+#: src/libxl/libxl_driver.c:3739 src/libxl/libxl_driver.c:3816
 msgid "Only 'credit' scheduler is supported"
 msgstr "ਸਿਰਫ 1 ਕੰਟਰੋਲਰ ਸਹਿਯੋਗੀ ਹੈ"
 
-#: src/libxl/libxl_driver.c:3726 src/libxl/libxl_driver.c:3803
+#: src/libxl/libxl_driver.c:3745 src/libxl/libxl_driver.c:3822
 #, c-format
 msgid "Failed to get scheduler parameters for domain '%d' with libxenlight"
 msgstr "libxenlight ਦੇ ਨਾਲ '%d' ਡੋਮੇਨ ਲਈ scheduler ਗੁਣ ਲੈਣ ਵਿੱਚ ਅਸਫਲ"
 
-#: src/libxl/libxl_driver.c:3819
+#: src/libxl/libxl_driver.c:3838
 #, c-format
 msgid "Failed to set scheduler parameters for domain '%d' with libxenlight"
 msgstr "libxenlight ਦੇ ਨਾਲ '%d' ਡੋਮੇਨ ਲਈ scheduler id ਪੱਕੀ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
 
-#: src/libxl/libxl_driver.c:3850 src/xen/xen_driver.c:2631
+#: src/libxl/libxl_driver.c:3869 src/xen/xen_driver.c:2631
 msgid "Named device aliases are not supported"
 msgstr "ਲੋੜੀਂਦੀ ਪ੍ਰਮਾਣਿਕਤਾ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ।"
 
-#: src/libxl/libxl_driver.c:3873 src/qemu/qemu_driver.c:13715
+#: src/libxl/libxl_driver.c:3892 src/qemu/qemu_driver.c:13715
 #, c-format
 msgid "cannot find character device %s"
 msgstr "ਅੱਖਰ ਜੰਤਰ %s ਵਿੱਚ ਪੋਰਟ ਨੰਬਰ ਨਹੀਂ ਲੱਭ ਸਕਿਆ"
 
-#: src/libxl/libxl_driver.c:3900 src/qemu/qemu_driver.c:13735
+#: src/libxl/libxl_driver.c:3919 src/qemu/qemu_driver.c:13735
 msgid "Active console session exists for this domain"
 msgstr "ਇਸ ਡੋਮੇਨ ਲਈ ਸਰਗਰਮ ਕੰਸੋਲ ਸੈਸ਼ਨ ਮੌਜੂਦ ਹੈ"
 
-#: src/libxl/libxl_driver.c:4001
+#: src/libxl/libxl_driver.c:4020
 msgid "unable to get numa affinity"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:4011
+#: src/libxl/libxl_driver.c:4030
 #, c-format
 msgid "Node %zu out of range"
 msgstr ""
@@ -10384,9 +10384,9 @@ msgstr ""
 msgid "Failed to get version info from libxenlight"
 msgstr "ਡਿਸਕ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ"
 
-#: src/libxl/libxl_conf.c:264 src/libxl/libxl_conf.c:1030
-#: src/storage/storage_backend.c:1585
-#: src/storage/storage_backend_logical.c:199
+#: src/libxl/libxl_conf.c:264 src/libxl/libxl_conf.c:1044
+#: src/storage/storage_backend.c:1609
+#: src/storage/storage_backend_logical.c:200
 #, c-format
 msgid "Failed to compile regex %s"
 msgstr "regex %s ਨੂੰ ਕੰਪਾਈਲ ਕਰਨ ਵਿੱਚ ਫੇਲ"
@@ -10442,26 +10442,26 @@ msgstr ""
 msgid "Unable to find an unused VNC port"
 msgstr "ਇੱਕ ਨਾ-ਵਰਤੀ VNC ਪੋਰਟ ਲੱਭਣ ਵਿੱਚ ਅਸਫਲ"
 
-#: src/libxl/libxl_conf.c:1073
+#: src/libxl/libxl_conf.c:1087
 #, c-format
 msgid "Failed to create log file '%s': %s"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:1083
+#: src/libxl/libxl_conf.c:1097
 msgid "cannot create logger for libxenlight, disabling driver"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:1088
+#: src/libxl/libxl_conf.c:1102
 msgid ""
 "cannot initialize libxenlight context, probably not running in a Xen Dom0, "
 "disabling driver"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:1094
+#: src/libxl/libxl_conf.c:1108
 msgid "cannot version information from libxenlight, disabling driver"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:1104
+#: src/libxl/libxl_conf.c:1118
 msgid "Unable to configure libxl's memory management parameters"
 msgstr ""
 
@@ -10555,7 +10555,7 @@ msgstr "ਨੈੱਟਵਰਕ ਪਹਿਲਾਂ ਹੀ ਸਰਗਰਮ ਹੈ"
 #: src/network/bridge_driver.c:2653 src/network/bridge_driver.c:2791
 #: src/network/bridge_driver.c:2817 src/network/bridge_driver.c:2934
 #: src/parallels/parallels_network.c:477 src/parallels/parallels_network.c:528
-#: src/parallels/parallels_network.c:594 src/test/test_driver.c:3441
+#: src/parallels/parallels_network.c:594 src/test/test_driver.c:3442
 msgid "no network with matching uuid"
 msgstr "ਕੋਈ ਨੈੱਟਵਰਕ uuid ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ"
 
@@ -10612,7 +10612,7 @@ msgstr ""
 msgid "network is not active"
 msgstr "ਨੈੱਟਵਰਕ ਸਰਗਰਮ ਨਹੀਂ ਹੈ"
 
-#: src/network/bridge_driver.c:2889 src/test/test_driver.c:3571
+#: src/network/bridge_driver.c:2889 src/test/test_driver.c:3572
 #, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "ਨੈੱਟਵਰਕ '%s' ਦਾ ਬਰਿੱਜ ਨਾਂ ਨਹੀਂ ਹੈ।"
@@ -10936,14 +10936,14 @@ msgstr "ਡਰਾਈਵਰ ਲਿੰਕ %s ਨੂੰ ਰਿਜ਼ੌਲਵ ਨਹ�
 #: src/node_device/node_device_driver.c:311
 #: src/node_device/node_device_driver.c:344
 #: src/node_device/node_device_driver.c:382
-#: src/node_device/node_device_driver.c:416 src/test/test_driver.c:5530
-#: src/test/test_driver.c:5556 src/test/test_driver.c:5590
-#: src/test/test_driver.c:5621
+#: src/node_device/node_device_driver.c:416 src/test/test_driver.c:5531
+#: src/test/test_driver.c:5557 src/test/test_driver.c:5591
+#: src/test/test_driver.c:5622
 #, c-format
 msgid "no node device with matching name '%s'"
 msgstr "ਨਾਂ '%s' ਨਾਲ ਮੇਲ ਖਾਂਦਾ ਕੋਈ ਨੋਡ ਜੰਤਰ ਨਹੀਂ ਹੈ"
 
-#: src/node_device/node_device_driver.c:357 src/test/test_driver.c:5565
+#: src/node_device/node_device_driver.c:357 src/test/test_driver.c:5566
 msgid "no parent for this device"
 msgstr "ਇਸ ਜੰਤਰ ਲਈ ਕੋਈ ਅਧਾਰ ਨਹੀਂ ਹੈ"
 
@@ -11952,7 +11952,7 @@ msgstr "%s ਨੂੰ %s ਲਈ ਸੈੱਟ ਕਰਨ ਤੋ ਫੇਲ: %d"
 
 #: src/openvz/openvz_driver.c:1975 src/parallels/parallels_driver.c:67
 #: src/parallels/parallels_driver.c:1142 src/qemu/qemu_driver.c:1377
-#: src/test/test_driver.c:2290 src/uml/uml_driver.c:1758
+#: src/test/test_driver.c:2291 src/uml/uml_driver.c:1758
 #: src/uml/uml_driver.c:1787 src/uml/uml_driver.c:1823
 #: src/uml/uml_driver.c:2190 src/uml/uml_driver.c:2310
 #: src/uml/uml_driver.c:2555 src/vmware/vmware_driver.c:760
@@ -11961,7 +11961,7 @@ msgid "no domain with matching uuid '%s'"
 msgstr "uuid '%s' ਨਾਲ ਮੇਲ ਖਾਂਦਾ ਕੋਈ ਡੋਮੇਨ ਨਹੀਂ ਹੈ"
 
 #: src/openvz/openvz_driver.c:1998 src/qemu/qemu_driver.c:9190
-#: src/test/test_driver.c:3092
+#: src/test/test_driver.c:3093
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "ਗਲਤ ਮਾਰਗ, '%s' ਇੱਕ ਅਣਜਾਣ ਇੰਟਰਫੇਸ ਹੈ"
@@ -12271,7 +12271,7 @@ msgstr ""
 msgid "Failed to load pool configs"
 msgstr "ਪੂਲ ਮੁਅੱਤਲ ਕਰਨ ਲਈ ਫੇਲ ਹੈ"
 
-#: src/parallels/parallels_storage.c:681 src/storage/storage_backend_fs.c:904
+#: src/parallels/parallels_storage.c:681 src/storage/storage_backend_fs.c:898
 #, c-format
 msgid "cannot statvfs path '%s'"
 msgstr " statvfs ਮਾਰਗ '%s' ਨਹੀਂ ਕਰ ਸਕਦਾ"
@@ -12287,9 +12287,9 @@ msgid "storage pool '%s' is still active"
 msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ '%s' ਹਾਲੇ ਵੀ ਸਰਗਰਮ ਹੈ"
 
 #: src/parallels/parallels_storage.c:805 src/storage/storage_driver.c:771
-#: src/storage/storage_driver.c:821 src/test/test_driver.c:4328
-#: src/test/test_driver.c:4499 src/test/test_driver.c:4535
-#: src/test/test_driver.c:4606
+#: src/storage/storage_driver.c:821 src/test/test_driver.c:4329
+#: src/test/test_driver.c:4500 src/test/test_driver.c:4536
+#: src/test/test_driver.c:4607
 #, c-format
 msgid "storage pool '%s' is already active"
 msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ'%s' ਪਹਿਲਾਂ ਹੀ ਸਰਗਰਮ ਹੈ"
@@ -12312,18 +12312,18 @@ msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ'%s' ਪਹਿਲਾਂ ਹੀ ਸਰਗਰ�
 #: src/storage/storage_driver.c:1967 src/storage/storage_driver.c:2276
 #: src/storage/storage_driver.c:2344 src/storage/storage_driver.c:2433
 #: src/storage/storage_driver.c:2493 src/storage/storage_driver.c:2544
-#: src/test/test_driver.c:4564 src/test/test_driver.c:4641
-#: src/test/test_driver.c:4796 src/test/test_driver.c:4832
-#: src/test/test_driver.c:4942 src/test/test_driver.c:5059
-#: src/test/test_driver.c:5137 src/test/test_driver.c:5234
-#: src/test/test_driver.c:5312 src/test/test_driver.c:5360
-#: src/test/test_driver.c:5400
+#: src/test/test_driver.c:4565 src/test/test_driver.c:4642
+#: src/test/test_driver.c:4797 src/test/test_driver.c:4833
+#: src/test/test_driver.c:4943 src/test/test_driver.c:5060
+#: src/test/test_driver.c:5138 src/test/test_driver.c:5235
+#: src/test/test_driver.c:5313 src/test/test_driver.c:5361
+#: src/test/test_driver.c:5401
 #, c-format
 msgid "storage pool '%s' is not active"
 msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ '%s' ਸਰਗਰਮ ਨਹੀਂ ਹੈ"
 
 #: src/parallels/parallels_storage.c:988 src/storage/storage_driver.c:1146
-#: src/test/test_driver.c:4763
+#: src/test/test_driver.c:4764
 msgid "pool has no config file"
 msgstr "ਪੂਲ ਦੀ ਕੋਈ ਸੰਰਚਨਾ ਫਾਇਲ ਨਹੀ ਹੈ"
 
@@ -12337,33 +12337,33 @@ msgstr "ਪੂਲ ਦੀ ਕੋਈ ਸੰਰਚਨਾ ਫਾਇਲ ਨਹੀ ਹ
 #: src/storage/storage_driver.c:1906 src/storage/storage_driver.c:1978
 #: src/storage/storage_driver.c:2284 src/storage/storage_driver.c:2355
 #: src/storage/storage_driver.c:2441 src/storage/storage_driver.c:2501
-#: src/storage/storage_driver.c:2552 src/test/test_driver.c:4950
-#: src/test/test_driver.c:5154 src/test/test_driver.c:5227
-#: src/test/test_driver.c:5305 src/test/test_driver.c:5353
-#: src/test/test_driver.c:5393
+#: src/storage/storage_driver.c:2552 src/test/test_driver.c:4951
+#: src/test/test_driver.c:5155 src/test/test_driver.c:5228
+#: src/test/test_driver.c:5306 src/test/test_driver.c:5354
+#: src/test/test_driver.c:5394
 #, c-format
 msgid "no storage vol with matching name '%s'"
 msgstr "ਕੋਈ ਸਟੋਰੇਜ਼ ਵਾਲੀਅਮ '%s' ਨਾਂ ਨਾਲ ਨਹੀਂ ਮੇਲ ਖਾਂਦਾ"
 
-#: src/parallels/parallels_storage.c:1148 src/test/test_driver.c:4995
+#: src/parallels/parallels_storage.c:1148 src/test/test_driver.c:4996
 #, c-format
 msgid "no storage vol with matching key '%s'"
 msgstr "ਕੋਈ ਸਟੋਰੇਜ਼ ਵਾਲੀਅਮ '%s' ਕੁੰਜੀ ਨਾਲ ਨਹੀਂ ਮੇਲ ਖਾਂਦਾ"
 
-#: src/parallels/parallels_storage.c:1180 src/test/test_driver.c:5030
+#: src/parallels/parallels_storage.c:1180 src/test/test_driver.c:5031
 #, c-format
 msgid "no storage vol with matching path '%s'"
 msgstr "ਕੋਈ ਸਟੋਰੇਜ਼ ਵਾਲੀਅਮ '%s' ਮਾਰਗ ਨਾਲ ਨਹੀਂ ਮੇਲ ਖਾਂਦਾ"
 
 #: src/parallels/parallels_storage.c:1217
-#: src/parallels/parallels_storage.c:1342 src/test/test_driver.c:5069
-#: src/test/test_driver.c:5147
+#: src/parallels/parallels_storage.c:1342 src/test/test_driver.c:5070
+#: src/test/test_driver.c:5148
 msgid "storage vol already exists"
 msgstr "ਸਟੋਰੇਜ਼ ਵਾਲੀਅਮ ਹਾਲੇ ਵੀ ਮੌਜੂਦ ਹੈ"
 
 #: src/parallels/parallels_storage.c:1226
-#: src/parallels/parallels_storage.c:1358 src/test/test_driver.c:5077
-#: src/test/test_driver.c:5163
+#: src/parallels/parallels_storage.c:1358 src/test/test_driver.c:5078
+#: src/test/test_driver.c:5164
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
 msgstr "ਪੂਲ ਵਿੱਚ ਵਾਲੀਅਮ '%s' ਲਈ ਲੋੜੀਂਦੀ ਸਪੇਸ ਨਹੀਂ ਹੈ"
@@ -12829,26 +12829,26 @@ msgstr ""
 msgid "Cannot find suitable emulator for %s"
 msgstr "%s ਲਈ ਯੋਗ ਇੰਮੁਲੇਟਰ ਨਹੀਂ ਲੱਭ ਸਕਿਆ"
 
-#: src/qemu/qemu_capabilities.c:2047
+#: src/qemu/qemu_capabilities.c:2097
 msgid "unable to probe for add-fd"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:2480
+#: src/qemu/qemu_capabilities.c:2537
 #, c-format
 msgid "Unknown QEMU arch %s"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:2673
+#: src/qemu/qemu_capabilities.c:2735
 #, c-format
 msgid "Failed to kill process %lld: %s"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:2700
+#: src/qemu/qemu_capabilities.c:2762
 #, c-format
 msgid "Cannot check QEMU binary %s"
 msgstr "QEMU ਬਾਇਨਰੀ %s ਜਾਂਚ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/qemu/qemu_capabilities.c:2711
+#: src/qemu/qemu_capabilities.c:2773
 #, c-format
 msgid "QEMU binary %s is not executable"
 msgstr ""
@@ -13302,7 +13302,7 @@ msgstr ""
 msgid "disk aio mode not supported with this QEMU binary"
 msgstr "SATA ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ"
 
-#: src/qemu/qemu_command.c:4189 src/qemu/qemu_driver.c:14752
+#: src/qemu/qemu_command.c:4189 src/qemu/qemu_driver.c:14757
 msgid "block I/O throttling not supported with this QEMU binary"
 msgstr "STDIO ਮਾਈਗਰੇਸ਼ਨ ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ"
 
@@ -14544,7 +14544,7 @@ msgid "Unable to write to domain logfile %s"
 msgstr "ਡੋਮੇਨ logfile %s ਲਿਖਣ ਤੋਂ ਅਸਮਰਥ"
 
 #: src/qemu/qemu_domain.c:1804 src/storage/storage_backend.c:947
-#: src/storage/storage_backend_fs.c:1217
+#: src/storage/storage_backend_fs.c:1211
 msgid "unable to find kvm-img or qemu-img"
 msgstr "kvm-img ਜਾਂ qemu-img ਨੂੰ ਲੱਭਣ ਵਿੱਚ ਅਸਫਲ"
 
@@ -14716,16 +14716,16 @@ msgstr "ਮੁੜ-ਪ੍ਰਾਪਤੀ ਕਾਰਵਾਈ ਫੇਲ ਹੋਈ"
 #: src/qemu/qemu_driver.c:1848 src/qemu/qemu_driver.c:1954
 #: src/qemu/qemu_driver.c:4176 src/qemu/qemu_driver.c:4906
 #: src/qemu/qemu_driver.c:11456 src/qemu/qemu_driver.c:11483
-#: src/qemu/qemu_driver.c:15420 src/qemu/qemu_driver.c:15553
-#: src/qemu/qemu_driver.c:15631
+#: src/qemu/qemu_driver.c:15425 src/qemu/qemu_driver.c:15558
+#: src/qemu/qemu_driver.c:15636
 msgid "QEMU guest agent is not available due to an error"
 msgstr "ਕਿਸੇ ਗਲਤੀ ਦੀ ਵਜ੍ਹਾ ਕਰ ਕੇ QEMU ਪ੍ਰਾਹੁਣਾ ਏਜੰਟ ਉਪਲੱਬਧ ਨਹੀਂ"
 
 #: src/qemu/qemu_driver.c:1859 src/qemu/qemu_driver.c:1960
 #: src/qemu/qemu_driver.c:4183 src/qemu/qemu_driver.c:4913
 #: src/qemu/qemu_driver.c:11462 src/qemu/qemu_driver.c:11490
-#: src/qemu/qemu_driver.c:15427 src/qemu/qemu_driver.c:15560
-#: src/qemu/qemu_driver.c:15625
+#: src/qemu/qemu_driver.c:15432 src/qemu/qemu_driver.c:15565
+#: src/qemu/qemu_driver.c:15630
 msgid "QEMU guest agent is not configured"
 msgstr "QEMU ਪ੍ਰਾਹੁਣਾ ਏਜੰਟ ਸੰਰਚਿਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ"
 
@@ -14923,7 +14923,7 @@ msgstr ""
 msgid "cannot change vcpu count of this domain"
 msgstr "ਇਸ ਡੋਮੇਨ ਦਾ vcpu ਕਾਊਂਟ ਤਬਦੀਲ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/qemu/qemu_driver.c:4124 src/test/test_driver.c:2340
+#: src/qemu/qemu_driver.c:4124 src/test/test_driver.c:2341
 #: src/xen/xen_driver.c:1371
 #, c-format
 msgid "argument out of range: %d"
@@ -15181,7 +15181,7 @@ msgid "size must be less than %llu"
 msgstr "ਆਕਾਰ %llu ਤੋਂ ਛੋਟਾ ਜਰੂਰੀ ਹੋਵੇ"
 
 #: src/qemu/qemu_driver.c:8888 src/qemu/qemu_driver.c:8950
-#: src/qemu/qemu_driver.c:9027 src/test/test_driver.c:3036
+#: src/qemu/qemu_driver.c:9027 src/test/test_driver.c:3037
 #, c-format
 msgid "invalid path: %s"
 msgstr "ਗਲਤ ਮਾਰਗ: %s"
@@ -15245,8 +15245,8 @@ msgstr "ਡਿਸਕ %s ਕੋਲ ਇਸ ਵੇਲੇ ਕੋਈ ਨਿਰਧਾ�
 msgid "no disk format for %s and probing is disabled"
 msgstr "%s ਲਈ ਕੋਈ ਡਿਸਕ ਫਾਰਮੈਟ ਨਹੀਂ ਹੈ ਅਤੇ ਪੜਤਾਲ ਅਯੋਗ ਕੀਤੀ ਹੈ"
 
-#: src/qemu/qemu_driver.c:9777 src/storage/storage_backend.c:1138
-#: src/storage/storage_backend.c:1170 src/util/virstoragefile.c:777
+#: src/qemu/qemu_driver.c:9777 src/storage/storage_backend.c:1214
+#: src/storage/storage_backend.c:1253 src/util/virstoragefile.c:777
 #: src/util/virstoragefile.c:924
 #, c-format
 msgid "cannot stat file '%s'"
@@ -15339,7 +15339,7 @@ msgstr "ਸਰਗਰਮ qemu ਡੋਮੇਨਾਂ ਨੂੰ ਬਾਹਰੀ ਸ
 msgid "external snapshot format for disk %s is unsupported: %s"
 msgstr "ਡਿਸਕ %s ਲਈ ਬਾਹਰੀ ਸਨੈਪਸਾਟ ਫਾਰਮੈਟ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ: %s"
 
-#: src/qemu/qemu_driver.c:11782 src/qemu/qemu_driver.c:14293
+#: src/qemu/qemu_driver.c:11782 src/qemu/qemu_driver.c:14294
 #, c-format
 msgid "unable to stat for disk %s: %s"
 msgstr "USB ਡਿਸਕ %s ਸ਼ਾਮਿਲ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ: %s"
@@ -15532,7 +15532,7 @@ msgid ""
 "setting bandwidth at start of block pull not supported with this QEMU binary"
 msgstr "TCP ਮਾਈਗਰੇਸ਼ਨ ਨੂੰ ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
-#: src/qemu/qemu_driver.c:14055 src/qemu/qemu_driver.c:14256
+#: src/qemu/qemu_driver.c:14055 src/qemu/qemu_driver.c:14257
 #, c-format
 msgid "disk '%s' already in active block copy job"
 msgstr ""
@@ -15542,135 +15542,135 @@ msgstr ""
 msgid "pivot of disk '%s' requires an active copy job"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14264
+#: src/qemu/qemu_driver.c:14265
 msgid "block copy is not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14273
+#: src/qemu/qemu_driver.c:14274
 msgid "domain is not transient"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14284
+#: src/qemu/qemu_driver.c:14285
 #, c-format
 msgid "disk '%s' has backing file, so raw shallow copy is not possible"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14298
+#: src/qemu/qemu_driver.c:14299
 #, c-format
 msgid "missing destination file for disk %s: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14305
+#: src/qemu/qemu_driver.c:14306
 #, c-format
 msgid ""
 "external destination file for disk %s already exists and is not a block "
 "device: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14322
+#: src/qemu/qemu_driver.c:14314
 #, c-format
 msgid "unrecognized format '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14469
+#: src/qemu/qemu_driver.c:14474
 msgid "online commit not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14480
+#: src/qemu/qemu_driver.c:14485
 #, c-format
 msgid "disk %s has no source file to be committed"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14495
+#: src/qemu/qemu_driver.c:14500
 #, c-format
 msgid "could not find top '%s' in chain for '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14501
+#: src/qemu/qemu_driver.c:14506
 #, c-format
 msgid "top '%s' in chain for '%s' has no backing file"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14510
+#: src/qemu/qemu_driver.c:14515
 #, c-format
 msgid "could not find base '%s' below '%s' in chain for '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14521
+#: src/qemu/qemu_driver.c:14526
 #, c-format
 msgid "base '%s' is not immediately below '%s' in chain for '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14599
+#: src/qemu/qemu_driver.c:14604
 #, c-format
 msgid "No graphics backend with index %d"
 msgstr "ਸੂਚੀ %d ਵਾਲਾ ਕੋਈ ਡੋਮੇਨ ਨਹੀਂ"
 
-#: src/qemu/qemu_driver.c:14611
+#: src/qemu/qemu_driver.c:14616
 #, c-format
 msgid "Can only open VNC or SPICE graphics backends, not %s"
 msgstr "ਸਿਰਫ਼ VNC ਜਾਂ SPICE ਗਰਾਫਿਕਸ ਬੈਕਐਂਡ ਖੋਲ੍ਹ ਸਕਦਾ ਹੈ, %s ਨਹੀਂ"
 
-#: src/qemu/qemu_driver.c:14704
+#: src/qemu/qemu_driver.c:14709
 #, c-format
 msgid "block I/O throttle limit value must be less than %llu"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14738
+#: src/qemu/qemu_driver.c:14743
 msgid "total and read/write of bytes_sec cannot be set at the same time"
 msgstr "bytes_sec ਦਾ ਕੁੱਲ ਅਤੇ ਪੜ੍ਹਨ/ਲਿਖਣ ਇਕੋ ਸਮੇਂ ਤੇ ਸੈੱਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ"
 
-#: src/qemu/qemu_driver.c:14745
+#: src/qemu/qemu_driver.c:14750
 msgid "total and read/write of iops_sec cannot be set at the same time"
 msgstr "iops_sec ਦਾ ਕੁੱਲ ਅਤੇ ਪੜ੍ਹਨ/ਲਿਖਣ ਇਕੋ ਸਮੇਂ ਤੇ ਸੈੱਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ"
 
-#: src/qemu/qemu_driver.c:14796
+#: src/qemu/qemu_driver.c:14801
 msgid "Write to config file failed"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਤੇ ਲਿਖਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/qemu/qemu_driver.c:15107 src/qemu/qemu_driver.c:15121
+#: src/qemu/qemu_driver.c:15112 src/qemu/qemu_driver.c:15126
 msgid "unable to get cpu account"
 msgstr "cpu ਅਕਾਊਂਟ ਪਤਾ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
 
-#: src/qemu/qemu_driver.c:15182 src/qemu/qemu_driver.c:15258
+#: src/qemu/qemu_driver.c:15187 src/qemu/qemu_driver.c:15263
 msgid "cpuacct parse error"
 msgstr "ਪਾਰਸਰ ਗਲਤੀ"
 
-#: src/qemu/qemu_driver.c:15235
+#: src/qemu/qemu_driver.c:15240
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
 msgstr "start_cpu %d  %d ਦੇ ਵੱਧੋ-ਵੱਧ ਤੋਂ ਜਿਆਦਾ ਹੈ"
 
-#: src/qemu/qemu_driver.c:15335
+#: src/qemu/qemu_driver.c:15340
 msgid "cgroup CPUACCT controller is not mounted"
 msgstr "cgroup CPUACCT ਕੰਟਰੋਲਕ ਮਾਊਂਟ ਨਹੀਂ ਹੋਇਆ"
 
-#: src/qemu/qemu_driver.c:15365
+#: src/qemu/qemu_driver.c:15370
 msgid "Duration not supported. Use 0 for now"
 msgstr "ਅਰਸਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ। ਹੁਣ ਲਈ 0 ਵਰਤੋ"
 
-#: src/qemu/qemu_driver.c:15373
+#: src/qemu/qemu_driver.c:15378
 #, c-format
 msgid "Unknown suspend target: %u"
 msgstr "ਅਚਾਨਕ ਵਿਧੀ: %u"
 
-#: src/qemu/qemu_driver.c:15396
+#: src/qemu/qemu_driver.c:15401
 msgid "Unable to suspend domain due to missing system_wakeup monitor command"
 msgstr "ਲਾਪਤਾ system_wakeup ਮੌਨੀਟਰ ਕਮਾਂਡ ਦੇ ਕਰ ਕੇ ਡੋਮੇਨ ਨੂੰ ਮੁਲਤਵੀ ਕਰਨ ਤੋਂ ਅਸਮਰੱਥ"
 
-#: src/qemu/qemu_driver.c:15406
+#: src/qemu/qemu_driver.c:15411
 msgid "S3 state is disabled for this domain"
 msgstr "ਇਸ ਡੋਮੇਨ ਲਈ S3 ਹਾਲਤ ਅਯੋਗ ਕੀਤੀ ਗਈ ਹੈ"
 
-#: src/qemu/qemu_driver.c:15413
+#: src/qemu/qemu_driver.c:15418
 msgid "S4 state is disabled for this domain"
 msgstr "ਇਸ ਡੋਮੇਨ ਲਈ S4 ਹਾਲਤ ਅਯੋਗ ਕੀਤੀ ਗਈ ਹੈ"
 
-#: src/qemu/qemu_driver.c:15484
+#: src/qemu/qemu_driver.c:15489
 msgid "Unable to wake up domain due to missing system_wakeup monitor command"
 msgstr "ਲਾਪਤਾ system_wakeup ਮੌਨੀਟਰ ਕਮਾਂਡ ਦੇ ਕਰ ਕੇ ਡੋਮੇਨ ਨੂੰ ਜਗਾਉਣ ਤੋਂ ਅਸਮਰੱਥ"
 
-#: src/qemu/qemu_driver.c:15604
+#: src/qemu/qemu_driver.c:15609
 msgid "Specifying mount point is not supported for now"
 msgstr ""
 
@@ -19931,7 +19931,7 @@ msgid "cannot sync data to file '%s'"
 msgstr "ਡਾਟੇ ਨੂੰ '%s' ਫਾਇਲ ਨਾਲ ਸਮਕਾਲੀ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
 #: src/storage/storage_backend.c:224 src/storage/storage_backend.c:301
-#: src/storage/storage_backend_logical.c:738
+#: src/storage/storage_backend_logical.c:741
 #, c-format
 msgid "cannot close file '%s'"
 msgstr "ਫਾਇਲ '%s' ਨੂੰ ਬੰਦ ਨਹੀਂ ਕਰ ਸਕਦਾ"
@@ -19941,7 +19941,7 @@ msgid "metadata preallocation is not supported for block volumes"
 msgstr ""
 
 #: src/storage/storage_backend.c:264 src/storage/storage_backend_fs.c:765
-#: src/storage/storage_backend_fs.c:782 src/storage/storage_backend_fs.c:1031
+#: src/storage/storage_backend_fs.c:782 src/storage/storage_backend_fs.c:1025
 #, c-format
 msgid "cannot create path '%s'"
 msgstr "ਮਾਰਗ '%s' ਨਹੀਂ ਬਣਾ ਸਕਦਾ"
@@ -19967,8 +19967,8 @@ msgstr "ਫਾਇਲ '%s' ਨੂੰ ਭਰ ਨਹੀਂ ਸਕਦਾ"
 msgid "metadata preallocation is not supported for raw volumes"
 msgstr ""
 
-#: src/storage/storage_backend.c:382 src/storage/storage_backend_disk.c:630
-#: src/storage/storage_backend_logical.c:679
+#: src/storage/storage_backend.c:382 src/storage/storage_backend_disk.c:631
+#: src/storage/storage_backend_logical.c:681
 #: src/storage/storage_backend_rbd.c:466
 msgid "storage pool does not support encrypted volumes"
 msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ ਇਨਕ੍ਰਿਪਟਡ ਵਾਲੀਅਮਾਂ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਦਿੰਦਾ"
@@ -20084,54 +20084,79 @@ msgstr "ਅਣਜਾਣ ਫਾਇਲ ਨੇ ਟੂਲ ਕਿਸਮ '%d' ਬਣ�
 msgid "creation of non-raw file images is not supported without qemu-img."
 msgstr "non-raw ਈਮੇਜ ਬਣਾਉਣ ਨੂੰ qemu-img ਤੋਂ ਬਿਨਾਂ ਬਣਾਉਣ ਲਈ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ।"
 
-#: src/storage/storage_backend.c:1163
-#, c-format
-msgid "cannot open volume '%s'"
-msgstr "ਵਾਲੀਅਮ '%s' ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
-
-#: src/storage/storage_backend.c:1199
-#, c-format
-msgid "unexpected storage mode for '%s'"
-msgstr "ਅਚਾਨਕ ਸਟੋਰੇਜ਼ ਮੋਡ '%s' ਲਈ"
-
-#: src/storage/storage_backend.c:1319
-#, c-format
-msgid "cannot seek to end of file '%s'"
-msgstr "ਫਾਇਲ '%s' ਦੇ ਅੰਤ ਤੱਕ ਵੇਖ ਨਹੀਂ ਸਕਦਾ"
-
-#: src/storage/storage_backend.c:1347
-#, c-format
-msgid "cannot get file context of '%s'"
-msgstr "'%s' ਦਾ ਫਾਇਲ ਪ੍ਰਸੰਗ ਵੇਖ ਨਹੀਂ ਸਕਦਾ"
-
-#: src/storage/storage_backend.c:1416
+#: src/storage/storage_backend.c:1167
 #, c-format
 msgid "cannot seek to beginning of file '%s'"
 msgstr "ਫਾਇਲ '%s' ਦੇ ਸ਼ੁਰੂ ਵਿੱਚ ਖੋਜ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/storage/storage_backend.c:1423
+#: src/storage/storage_backend.c:1174
 #, c-format
 msgid "cannot read beginning of file '%s'"
 msgstr "ਫਾਇਲ '%s' ਦੇ ਸ਼ੁਰੂ ਵਿੱਚ ਪੜ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/storage/storage_backend.c:1497
+#: src/storage/storage_backend.c:1225
+#, c-format
+msgid "Volume path '%s' is a FIFO"
+msgstr ""
+
+#: src/storage/storage_backend.c:1233
+#, fuzzy, c-format
+msgid "Volume path '%s' is a socket"
+msgstr "ਮਾਰਗ '%s' ਨੀਯਤ ਹੈ"
+
+#: src/storage/storage_backend.c:1248
+#, c-format
+msgid "cannot open volume '%s'"
+msgstr "ਵਾਲੀਅਮ '%s' ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
+
+#: src/storage/storage_backend.c:1275
+#, fuzzy, c-format
+msgid "Cannot use volume path '%s'"
+msgstr "ਵਾਲੀਅਮ '%s' ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
+
+#: src/storage/storage_backend.c:1285
+#, fuzzy, c-format
+msgid "unexpected type for file '%s'"
+msgstr "ਅਚਾਨਕ ਕਿਸਮ %d ਖੇਤਰ %s ਲਈ"
+
+#: src/storage/storage_backend.c:1291
+#, fuzzy, c-format
+msgid "unable to set blocking mode for '%s'"
+msgstr "%s ਲਈ ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
+
+#: src/storage/storage_backend.c:1304
+#, c-format
+msgid "unexpected storage mode for '%s'"
+msgstr "ਅਚਾਨਕ ਸਟੋਰੇਜ਼ ਮੋਡ '%s' ਲਈ"
+
+#: src/storage/storage_backend.c:1417
+#, c-format
+msgid "cannot seek to end of file '%s'"
+msgstr "ਫਾਇਲ '%s' ਦੇ ਅੰਤ ਤੱਕ ਵੇਖ ਨਹੀਂ ਸਕਦਾ"
+
+#: src/storage/storage_backend.c:1445
+#, c-format
+msgid "cannot get file context of '%s'"
+msgstr "'%s' ਦਾ ਫਾਇਲ ਪ੍ਰਸੰਗ ਵੇਖ ਨਹੀਂ ਸਕਦਾ"
+
+#: src/storage/storage_backend.c:1521
 #, c-format
 msgid "cannot read dir '%s'"
 msgstr "ਡਾਇਰੈਕਟਰੀ '%s' ਨੂੰ ਪੜ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/storage/storage_backend.c:1611
+#: src/storage/storage_backend.c:1635
 msgid "cannot read fd"
 msgstr "fd ਨੂੰ ਪੜ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/storage/storage_backend.c:1718
+#: src/storage/storage_backend.c:1742
 msgid "cannot open file using fd"
 msgstr "fd ਵਰਤ ਕੇ ਫਾਇਲ ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/storage/storage_backend.c:1749
+#: src/storage/storage_backend.c:1773
 msgid "read error on pipe"
 msgstr "ਪੜਨ ਵੇਲੇ ਪਾਈਪ ਗਲਤੀ"
 
-#: src/storage/storage_backend.c:1778 src/storage/storage_backend.c:1791
+#: src/storage/storage_backend.c:1802 src/storage/storage_backend.c:1815
 #, c-format
 msgid "%s not implemented on Win32"
 msgstr "%s ਨੂੰ Win32 ਤੇ ਲਾਗੂ ਨਹੀਂ ਕੀਤਾ"
@@ -20144,54 +20169,54 @@ msgstr "ਜੰਤਰ ਸ਼ੁਰੂਆਤੀ ਟਿਕਾਣਾ ਪਾਰਸ ਨ�
 msgid "cannot parse device end location"
 msgstr "ਜੰਤਰ ਅੰਤਲਾ ਟਿਕਾਣਾ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/storage/storage_backend_disk.c:320
+#: src/storage/storage_backend_disk.c:321
 #, c-format
 msgid "device path '%s' doesn't exist"
 msgstr "ਟੈਂਪਲਿਟ '%s' ਮੌਜੂਦ ਨਹੀਂ ਹੈ"
 
-#: src/storage/storage_backend_disk.c:385 src/storage/storage_backend_fs.c:746
+#: src/storage/storage_backend_disk.c:386 src/storage/storage_backend_fs.c:746
 msgid "Overwrite and no overwrite flags are mutually exclusive"
 msgstr "ਮੁੜ-ਲਿਖੋ ਅਤੇ ਮੁੜ ਨਾ ਲਿਖੋ ਫਲੈਗ ਆਪਸੀ ਤੌਰ ਤੇ ਖਾਸ ਹਨ"
 
-#: src/storage/storage_backend_disk.c:401
+#: src/storage/storage_backend_disk.c:402
 msgid "Error checking for disk label"
 msgstr "ਡਿਸਕ ਲੇਬਲ ਲਈ ਗਲਤੀ ਦੀ ਜਾਂਚ ਕਰ ਰਿਹਾ ਹੈ"
 
-#: src/storage/storage_backend_disk.c:404
+#: src/storage/storage_backend_disk.c:405
 msgid "Disk label already present"
 msgstr "ਸਟੋਰੇਜ਼ ਵਾਲੀਅਮ ਹਾਲੇ ਵੀ ਮੌਜੂਦ ਹੈ"
 
-#: src/storage/storage_backend_disk.c:463
+#: src/storage/storage_backend_disk.c:464
 msgid "Invalid partition type"
 msgstr "ਗਲਤ ਭਾਗ ਕਿਸਮ"
 
-#: src/storage/storage_backend_disk.c:472
+#: src/storage/storage_backend_disk.c:473
 msgid "extended partition already exists"
 msgstr "ਐਕਸਟੈੱਡਡ ਭਾਗ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
 
-#: src/storage/storage_backend_disk.c:501
+#: src/storage/storage_backend_disk.c:502
 msgid "no extended partition found and no primary partition available"
 msgstr "ਕੋਈ ਐਕਸਟੈਂਡਡ ਭਾਗ ਨਹੀਂ ਲੱਭਿਆ ਜਾਂ ਕੋਈ ਪਰਾਇਮਰੀ ਭਾਗ ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ"
 
-#: src/storage/storage_backend_disk.c:507
+#: src/storage/storage_backend_disk.c:508
 msgid "unknown partition type"
 msgstr "ਅਣਜਾਣ ਭਾਗ ਕਿਸਮ"
 
-#: src/storage/storage_backend_disk.c:589
+#: src/storage/storage_backend_disk.c:590
 msgid "no large enough free extent"
 msgstr "ਲੋੜੀਂਦੇ ਫਰੀ ਐਕਸਟੈਂਟ ਵੱਡੇ ਨਹੀਂ ਹਨ"
 
-#: src/storage/storage_backend_disk.c:707
+#: src/storage/storage_backend_disk.c:708
 #, c-format
 msgid "Couldn't read volume target path '%s'"
 msgstr "ਵਾਲੀਅਮ ਟਾਰਗਿਟ ਮਾਰਗ '%s' ਨੂੰ ਪੜ ਨਹੀਂ ਸਕਿਆ"
 
-#: src/storage/storage_backend_disk.c:720
+#: src/storage/storage_backend_disk.c:721
 #, c-format
 msgid "Volume path '%s' did not start with parent pool source device name."
 msgstr "ਵਾਲੀਅਮ ਮਾਰਗ '%s' ਪੇਰੈਂਟ ਪੂਲ ਸੋਰਸ ਜੰਤਰ ਨਾਂ ਨਾਲ ਚਾਲੂ ਨਹੀਂ ਹੁੰਦਾ।"
 
-#: src/storage/storage_backend_disk.c:730
+#: src/storage/storage_backend_disk.c:731
 #, c-format
 msgid "cannot parse partition number from target '%s'"
 msgstr "ਟਾਰਗਿਟ '%s' ਤੋਂ ਭਾਗ ਨੰਬਰ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
@@ -20211,7 +20236,7 @@ msgstr "ਗਲਤ netfs ਮਾਰਗ (/ ਨਹੀਂ): %s"
 msgid "invalid netfs path (ends in /): %s"
 msgstr "ਗਲਤ netfs ਮਾਰਗ (/ ਵਿੱਚ ਅੰਤ ਹੁੰਦਾ ਹੈ): %s"
 
-#: src/storage/storage_backend_fs.c:264 src/test/test_driver.c:4375
+#: src/storage/storage_backend_fs.c:264 src/test/test_driver.c:4376
 msgid "hostname must be specified for netfs sources"
 msgstr "ਜੰਤਰ ਐਡਰੈੱਸ ਲਈ ਕੋਈ ਕਿਸਮ ਨਹੀਂ ਦਿੱਤੀ"
 
@@ -20297,50 +20322,45 @@ msgstr "'%s' ਪੂਲ ਨੂੰ ਫਾਰਮੈੱਟ ਕਰਨ ਵੇਲੇ �
 msgid "path '%s' is not absolute"
 msgstr "ਮਾਰਗ '%s' ਨੀਯਤ ਹੈ"
 
-#: src/storage/storage_backend_fs.c:887
-#, c-format
-msgid "cannot probe backing volume info: %s"
-msgstr "ਵਾਲੀਅਮ ਇਨਫੋ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ: %s"
-
-#: src/storage/storage_backend_fs.c:968
+#: src/storage/storage_backend_fs.c:962
 #, c-format
 msgid "failed to remove pool '%s'"
 msgstr "ਪੂਲ '%s' ਹਟਾਉਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
 
-#: src/storage/storage_backend_fs.c:999
+#: src/storage/storage_backend_fs.c:993
 #, c-format
 msgid "volume target path '%s' already exists"
 msgstr ""
 
-#: src/storage/storage_backend_fs.c:1021
+#: src/storage/storage_backend_fs.c:1015
 msgid "cannot copy from volume to a directory volume"
 msgstr "ਵਾਲੀਅਮ ਤੋਂ ਡਾਇਰੈਕਟਰੀ ਵਾਲੀਅਮ ਤੋਂ ਨਕਲ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/storage/storage_backend_fs.c:1052
+#: src/storage/storage_backend_fs.c:1046
 msgid ""
 "storage pool does not support building encrypted volumes from other volumes"
 msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ ਹੋਰ ਵਾਲੀਅਮਾਂ ਤੋਂ ਇਨਕ੍ਰਿਪਟਡ ਵਾਲੀਅਮਾਂ ਬਣਾਉਣ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਦਿੰਦਾ"
 
-#: src/storage/storage_backend_fs.c:1072
+#: src/storage/storage_backend_fs.c:1066
 msgid "creation of non-raw images is not supported without qemu-img"
 msgstr "non-raw ਈਮੇਜ ਬਣਾਉਣ ਨੂੰ qemu-img ਤੋਂ ਬਿਨਾਂ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
-#: src/storage/storage_backend_fs.c:1130
+#: src/storage/storage_backend_fs.c:1124
 #, c-format
 msgid "cannot unlink file '%s'"
 msgstr "ਫਾਇਲ '%s' ਦਾ ਲਿੰਕ ਨਹੀਂ ਹਟਾ ਸਕਦਾ"
 
-#: src/storage/storage_backend_fs.c:1139
+#: src/storage/storage_backend_fs.c:1133
 #, c-format
 msgid "cannot remove directory '%s'"
 msgstr "ਡਾਇਰੈਕਟੀ '%s' ਹਟਾ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/storage/storage_backend_fs.c:1148
+#: src/storage/storage_backend_fs.c:1142
 #, c-format
 msgid "removing block or network volumes is not supported: %s"
 msgstr "ਬਲਾਕ ਜਾਂ ਨੈੱਟਵਰਕ ਆਇਤਨ ਹਟਾਉਣਾ ਸਮਰਥਿਤ ਨਹੀਂ: %s"
 
-#: src/storage/storage_backend_fs.c:1257
+#: src/storage/storage_backend_fs.c:1251
 msgid "preallocate is only supported for raw type volume"
 msgstr ""
 
@@ -20380,7 +20400,7 @@ msgid "Failed to run command '%s' to update iscsi interface with IQN '%s'"
 msgstr "iscsi ਇੰਟਰਫੇਸ ਨੂੰ IQN '%s' ਨਾਲ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਕਮਾਂਡ '%s' ਚਲਾਉਣ ਤੋਂ ਫੇਲ ਹੋਇਆ"
 
 #: src/storage/storage_backend_iscsi.c:372
-#: src/storage/storage_backend_scsi.c:507 src/util/virutil.c:1842
+#: src/storage/storage_backend_scsi.c:438 src/util/virutil.c:1842
 #: src/util/virutil.c:1936
 #, c-format
 msgid "Failed to opendir path '%s'"
@@ -20436,70 +20456,70 @@ msgstr ""
 msgid "no secret matches usage value '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_logical.c:146
+#: src/storage/storage_backend_logical.c:147
 msgid "malformed volume extent stripes value"
 msgstr "ਗਲਤ ਵਾਲੀਅਮ ਐਕਸਟੈੰਟ ਅਕਾਰ ਮੁੱਲ"
 
-#: src/storage/storage_backend_logical.c:158
+#: src/storage/storage_backend_logical.c:159
 msgid "malformed volume extent length value"
 msgstr "ਗਲਤ ਵਾਲੀਅਮ ਐਕਸਟੈੰਟ ਲੰਬਾਈ ਮੁੱਲ"
 
-#: src/storage/storage_backend_logical.c:163
+#: src/storage/storage_backend_logical.c:164
 msgid "malformed volume extent size value"
 msgstr "ਗਲਤ ਵਾਲੀਅਮ ਐਕਸਟੈੰਟ ਅਕਾਰ ਮੁੱਲ"
 
-#: src/storage/storage_backend_logical.c:168
+#: src/storage/storage_backend_logical.c:169
 msgid "malformed volume allocation value"
 msgstr "ਗਲਤ ਵਾਲੀਅਮ ਐਕਸਟੈੰਟ ਅਕਾਰ ਮੁੱਲ"
 
-#: src/storage/storage_backend_logical.c:208
+#: src/storage/storage_backend_logical.c:209
 msgid "malformed volume extent devices value"
 msgstr "ਗਲਤ ਵਾਲੀਅਮ ਐਕਸਟੈਂਟ ਅਕਾਰ ਮੁੱਲ"
 
-#: src/storage/storage_backend_logical.c:234
+#: src/storage/storage_backend_logical.c:235
 msgid "malformed volume extent offset value"
 msgstr "ਗਲਤ ਵਾਲੀਅਮ ਐਕਸਟੈਂਟ ਆਫਸੈੱਟ ਮੁੱਲ"
 
-#: src/storage/storage_backend_logical.c:438
+#: src/storage/storage_backend_logical.c:439
 msgid "failed to get source from sourceList"
 msgstr "ਸਰੋਤ ਸੂਚੀ ਵਿੱਚੋਂ ਸਰੋਤ ਲੱਭਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/storage/storage_backend_logical.c:497
+#: src/storage/storage_backend_logical.c:498
 #, c-format
 msgid "cannot open device '%s'"
 msgstr "ਜੰਤਰ '%s' ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/storage/storage_backend_logical.c:503
+#: src/storage/storage_backend_logical.c:504
 #, c-format
 msgid "cannot clear device header of '%s'"
 msgstr "'%s' ਦੇ ਜੰਤਰ ਸਿਰਲੇਖ ਨੂੰ ਸਾਫ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/storage/storage_backend_logical.c:510
+#: src/storage/storage_backend_logical.c:511
 #, c-format
 msgid "cannot flush header of device'%s'"
 msgstr "ਜੰਤਰ '%s' ਨੂੰ ਬੰਦ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/storage/storage_backend_logical.c:517
+#: src/storage/storage_backend_logical.c:518
 #, c-format
 msgid "cannot close device '%s'"
 msgstr "ਜੰਤਰ '%s' ਨੂੰ ਬੰਦ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/storage/storage_backend_logical.c:724
+#: src/storage/storage_backend_logical.c:727
 #, c-format
 msgid "cannot set file owner '%s'"
 msgstr "ਫਾਇਲ ਮਾਲਕ '%s' ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/storage/storage_backend_logical.c:731
+#: src/storage/storage_backend_logical.c:734
 #, c-format
 msgid "cannot set file mode '%s'"
 msgstr "ਫਾਇਲ ਮੋਡ '%s' ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/storage/storage_backend_logical.c:746
+#: src/storage/storage_backend_logical.c:749
 #, c-format
 msgid "cannot find newly created volume '%s'"
 msgstr "ਨਵਾਂ ਬਣਿਆ ਵਾਲੀਅਮ '%s' ਲੱਭ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/storage/storage_backend_mpath.c:223
+#: src/storage/storage_backend_mpath.c:191
 #, c-format
 msgid "Failed to get %s minor number"
 msgstr "%s ਛੋਟਾ ਨੰਬਰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਫੇਲ"
@@ -20610,49 +20630,44 @@ msgstr "typefile '%s' ਨੂੰ ਪੜ ਨਹੀਂ ਸਕਦਾ"
 msgid "Device type '%s' is not an integer"
 msgstr "ਜੰਤਰ ਕਿਸਮ '%s' ਇੱਕ ਪੂਰਨਅੰਕ ਨਹੀਂ ਹੈ"
 
-#: src/storage/storage_backend_scsi.c:269
-#, c-format
-msgid "Failed to update volume for '%s'"
-msgstr "'%s' ਲਈ ਵਾਲੀਅਮ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਫੇਲ"
-
-#: src/storage/storage_backend_scsi.c:318
-#: src/storage/storage_backend_scsi.c:399
+#: src/storage/storage_backend_scsi.c:249
+#: src/storage/storage_backend_scsi.c:330
 #, c-format
 msgid "Failed to opendir sysfs path '%s'"
 msgstr "opendir sysfs ਮਾਰਗ '%s' ਵਿੱਚ ਫੇਲ"
 
-#: src/storage/storage_backend_scsi.c:362
+#: src/storage/storage_backend_scsi.c:293
 #, c-format
 msgid "Failed to parse block name %s"
 msgstr "ਬਲਾਕ ਨਾਂ %s ਨੂੰ ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
 
-#: src/storage/storage_backend_scsi.c:445
+#: src/storage/storage_backend_scsi.c:376
 #, c-format
 msgid "Failed to determine if %u:%u:%u:%u is a Direct-Access LUN"
 msgstr "Failed to determine if %u:%u:%u:%u is a Direct-Access LUN"
 
-#: src/storage/storage_backend_scsi.c:549
+#: src/storage/storage_backend_scsi.c:480
 #, c-format
 msgid "Could not open '%s' to trigger host scan"
 msgstr "ਮੇਜ਼ਬਾਨ ਸਕੈਨ ਟਰਿੱਗਰ ਕਰਨ ਲਈ '%s' ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/storage/storage_backend_scsi.c:560
+#: src/storage/storage_backend_scsi.c:491
 #, c-format
 msgid "Write to '%s' to trigger host scan failed"
 msgstr "ਟਰਿੱਗਰ ਹੋਸਟ ਸਕੈਨ ਵਿੱਚ '%s' ਵਿੱਚ ਲਿਖਣਾ ਫੇਲ ਹੋਇਆ"
 
-#: src/storage/storage_backend_scsi.c:590
-#: src/storage/storage_backend_scsi.c:597
+#: src/storage/storage_backend_scsi.c:521
+#: src/storage/storage_backend_scsi.c:528
 #, c-format
 msgid "Invalid adapter name '%s' for SCSI pool"
 msgstr ""
 
-#: src/storage/storage_backend_scsi.c:619
+#: src/storage/storage_backend_scsi.c:550
 #, c-format
 msgid "Failed to find SCSI host with wwnn='%s', wwpn='%s'"
 msgstr ""
 
-#: src/storage/storage_backend_scsi.c:646
+#: src/storage/storage_backend_scsi.c:577
 msgid "'parent' for vHBA not specified, and cannot find one on this host"
 msgstr ""
 
@@ -20703,7 +20718,7 @@ msgstr ""
 msgid "no storage pool with matching name '%s'"
 msgstr "ਕੋਈ ਸਟੋਰੇਜ਼ ਪੂਲ '%s' ਨਾਂ ਨਾਲ ਨਹੀਂ ਮੇਲ ਖਾਂਦਾ"
 
-#: src/storage/storage_driver.c:513 src/test/test_driver.c:4385
+#: src/storage/storage_driver.c:513 src/test/test_driver.c:4386
 #, c-format
 msgid "pool type '%s' does not support source discovery"
 msgstr "ਪੂਲ ਕਿਸਮ '%s' ਸਰੋਤ ਡਾਇਰੈਕਟਰੀ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਦਿੰਦਾ"
@@ -20834,188 +20849,188 @@ msgstr ""
 msgid "invalid runstate"
 msgstr ""
 
-#: src/test/test_driver.c:426
+#: src/test/test_driver.c:427
 #, c-format
 msgid "Exceeded max iface limit %d"
 msgstr "ਵੱਧ-ਤੋਂ-ਵੱਧ iface ਸੀਮਾ %d ਪਾਰ ਕਰ ਗਿਆ ਹੈ"
 
-#: src/test/test_driver.c:773
+#: src/test/test_driver.c:774
 #, c-format
 msgid "resolving %s filename"
 msgstr ""
 
-#: src/test/test_driver.c:809
+#: src/test/test_driver.c:810
 msgid "invalid node cpu nodes value"
 msgstr "ਗਲਤ ਸਾਊਂਡ ਮਾਡਲ"
 
-#: src/test/test_driver.c:818
+#: src/test/test_driver.c:819
 msgid "invalid node cpu sockets value"
 msgstr "ਗਲਤ ਨੋਡ cpu ਸਾਕਟ ਮੁੱਲ"
 
-#: src/test/test_driver.c:827
+#: src/test/test_driver.c:828
 msgid "invalid node cpu cores value"
 msgstr "ਗਲਤ ਨੋਡ cpu ਕੋਰ ਮੁੱਲ"
 
-#: src/test/test_driver.c:836
+#: src/test/test_driver.c:837
 msgid "invalid node cpu threads value"
 msgstr "ਗਲਤ ਨੋਡ cpu ਥਰਿੱਡ ਮੁੱਲ"
 
-#: src/test/test_driver.c:849
+#: src/test/test_driver.c:850
 msgid "invalid node cpu active value"
 msgstr "ਗਲਤ ਨੋਡ cpu ਐਕਟਿਵ ਮੁੱਲ"
 
-#: src/test/test_driver.c:857
+#: src/test/test_driver.c:858
 msgid "invalid node cpu mhz value"
 msgstr "ਗਲਤ ਨੋਡ cpu mhz ਮੁੱਲ"
 
-#: src/test/test_driver.c:865 src/xenxs/xen_xm.c:703
+#: src/test/test_driver.c:866 src/xenxs/xen_xm.c:703
 #, c-format
 msgid "Model %s too big for destination"
 msgstr "ਮਾਡਲ %s ਨੀਯਤ ਟਿਕਾਣੇ ਲਈ ਬਹੁਤ ਵੱਡਾ ਹੈ"
 
-#: src/test/test_driver.c:877
+#: src/test/test_driver.c:878
 msgid "invalid node memory value"
 msgstr "ਗਲਤ ਨੋਡ ਮੈਮੋਰੀ ਮੁੱਲ"
 
-#: src/test/test_driver.c:1217
+#: src/test/test_driver.c:1218
 msgid "Root element is not 'node'"
 msgstr "ਰੂਟ (Root) ਐਲੀਮੈਂਟ 'ਨੋਡ' ਨਹੀਂ ਹੈ"
 
-#: src/test/test_driver.c:1285
+#: src/test/test_driver.c:1286
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: supply a path or use test:///default"
 
-#: src/test/test_driver.c:1646
+#: src/test/test_driver.c:1647
 #, c-format
 msgid "domain '%s' not paused"
 msgstr "ਡੋਮੇਨ '%s' ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
 
-#: src/test/test_driver.c:1689 src/test/test_driver.c:1733
+#: src/test/test_driver.c:1690 src/test/test_driver.c:1734
 #, c-format
 msgid "domain '%s' not running"
 msgstr "ਡੋਮੇਨ '%s' ਹਾਲੇ ਵੀ ਚੱਲ ਰਹੀ ਹੈ"
 
-#: src/test/test_driver.c:1854 src/test/test_driver.c:2448
-#: src/test/test_driver.c:3042 src/test/test_driver.c:3098
+#: src/test/test_driver.c:1855 src/test/test_driver.c:2449
+#: src/test/test_driver.c:3043 src/test/test_driver.c:3099
 msgid "getting time of day"
 msgstr "ਦਿਨ ਦਾ ਸਮਾਂ ਲਿਆ ਜਾ ਰਿਹਾ ਹੈ"
 
-#: src/test/test_driver.c:1937
+#: src/test/test_driver.c:1938
 #, c-format
 msgid "saving domain '%s' failed to allocate space for metadata"
 msgstr "saving domain '%s' failed to allocate space for metadata"
 
-#: src/test/test_driver.c:1944
+#: src/test/test_driver.c:1945
 #, c-format
 msgid "saving domain '%s' to '%s': open failed"
 msgstr "saving domain '%s' to '%s': open failed"
 
-#: src/test/test_driver.c:1951 src/test/test_driver.c:1957
-#: src/test/test_driver.c:1963 src/test/test_driver.c:1970
+#: src/test/test_driver.c:1952 src/test/test_driver.c:1958
+#: src/test/test_driver.c:1964 src/test/test_driver.c:1971
 #, c-format
 msgid "saving domain '%s' to '%s': write failed"
 msgstr "saving domain '%s' to '%s': write failed"
 
-#: src/test/test_driver.c:2040
+#: src/test/test_driver.c:2041
 #, c-format
 msgid "cannot read domain image '%s'"
 msgstr "ਡੋਮੇਨ ਈਮੇਜ਼ '%s' ਨੂੰ ਪੜ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/test/test_driver.c:2046
+#: src/test/test_driver.c:2047
 #, c-format
 msgid "incomplete save header in '%s'"
 msgstr "'%s' ਵਿੱਚ ਸਿਰਲੇਖ ਸੰਭਾਲਣਾ ਅਧੂਰਾ"
 
-#: src/test/test_driver.c:2052
+#: src/test/test_driver.c:2053
 msgid "mismatched header magic"
 msgstr "ਨਾ-ਮੇਲ-ਖਾਂਦਾ ਸਿਰਲੇਖ ਮੈਜਿਕ"
 
-#: src/test/test_driver.c:2057
+#: src/test/test_driver.c:2058
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "ਮੈਟਾਡਾਟਾ ਲੰਬਾਈ '%s' ਵਿੱਚ ਪੜ੍ਹਨ ਤੋਂ ਫੇਲ ਹੋਇਆ"
 
-#: src/test/test_driver.c:2063
+#: src/test/test_driver.c:2064
 msgid "length of metadata out of range"
 msgstr "ਮੈਟਾਡਾਟਾ ਦੀ ਲੰਬਾਈ ਰੇਂਜ ਤੋਂ ਜਿਆਦਾ ਹੈ"
 
-#: src/test/test_driver.c:2070
+#: src/test/test_driver.c:2071
 #, c-format
 msgid "incomplete metadata in '%s'"
 msgstr ""
 
-#: src/test/test_driver.c:2142
+#: src/test/test_driver.c:2143
 #, c-format
 msgid "domain '%s' coredump: failed to open %s"
 msgstr "domain '%s' coredump: failed to open %s"
 
-#: src/test/test_driver.c:2148
+#: src/test/test_driver.c:2149
 #, c-format
 msgid "domain '%s' coredump: failed to write header to %s"
 msgstr "ਡੋਮੇਨ '%s' coredump: %s ਵਿੱਚ ਹੈਡਰ ਲਿਖਣ ਤੋਂ ਫੇਲ ਹੋਇਆ"
 
-#: src/test/test_driver.c:2154
+#: src/test/test_driver.c:2155
 #, c-format
 msgid "domain '%s' coredump: write failed: %s"
 msgstr "ਡੋਮੇਨ '%s' coredump: ਲਿਖਣ ਤੋਂ ਫੇਲ ਹੋਇਆ: %s"
 
-#: src/test/test_driver.c:2355
+#: src/test/test_driver.c:2356
 msgid "cannot hotplug vcpus for an inactive domain"
 msgstr "ਇੱਕ ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ ਲਈ vcpus ਨੂੰ ਹਾਟਪਲੱਗ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/test/test_driver.c:2367
+#: src/test/test_driver.c:2368
 #, c-format
 msgid "requested cpu amount exceeds maximum (%d > %d)"
 msgstr "ਲੋੜੀਂਦੀ cpu ਮਾਤਰਾ ਵੱਧੋ-ਵੱਧ ਤੋਂ ਜਿਆਦਾ ਹੈ (%d > %d)"
 
-#: src/test/test_driver.c:2440
+#: src/test/test_driver.c:2441
 msgid "cannot list vcpus for an inactive domain"
 msgstr "ਇੱਕ ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ ਲਈ vcpus ਨੂੰ ਵੇਖਾ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/test/test_driver.c:2533
+#: src/test/test_driver.c:2534
 msgid "requested vcpu is higher than allocated vcpus"
 msgstr "ਲੋੜੀਂਦਾ vcpus ਮਨਜੂਰ vcpus ਤੋਂ ਜਿਆਦਾ ਹੈ"
 
-#: src/test/test_driver.c:2743
+#: src/test/test_driver.c:2744
 msgid "Range exceeds available cells"
 msgstr "ਰੇਂਜ ਉਪਲੱਬਦ ਸੈੱਲਾਂ ਤੋਂ ਜਿਆਦਾ ਹੈ"
 
-#: src/test/test_driver.c:2779
+#: src/test/test_driver.c:2780
 #, c-format
 msgid "Domain '%s' is already running"
 msgstr "ਡੋਮੇਨ '%s' ਪਹਿਲਾਂ ਹੀ ਚੱਲ ਰਿਹਾ ਹੈ"
 
-#: src/test/test_driver.c:3404
+#: src/test/test_driver.c:3405
 #, c-format
 msgid "Network '%s' is still running"
 msgstr "ਨੈੱਟਵਰਕ '%s' ਹਾਲੇ ਵੀ ਚੱਲ ਰਹੀ ਹੈ"
 
-#: src/test/test_driver.c:3485
+#: src/test/test_driver.c:3486
 #, c-format
 msgid "Network '%s' is already running"
 msgstr "ਨੈੱਟਵਰਕ '%s' ਪਹਿਲਾਂ ਹੀ ਚੱਲ ਰਹੀ ਹੈ"
 
-#: src/test/test_driver.c:3839
+#: src/test/test_driver.c:3840
 msgid "there is another transaction running."
 msgstr "ਇੱਕ ਹੋਰ ਲੈਣ-ਦੇਣ ਚੱਲ ਰਿਹਾ ਹੈ।"
 
-#: src/test/test_driver.c:3867
+#: src/test/test_driver.c:3868
 msgid "no transaction running, nothing to be committed."
 msgstr "ਕੋਈ ਲੈਣ-ਦੇਣ ਨਹੀਂ ਚੱਲ ਰਿਹਾ, ਪੱਕਾ ਕਰਨ ਨੂੰ ਕੁੱਝ ਨਹੀਂ।"
 
-#: src/test/test_driver.c:3895
+#: src/test/test_driver.c:3896
 msgid "no transaction running, nothing to rollback."
 msgstr "ਕੋਈ ਲੈਣ-ਦੇਣ ਨਹੀਂ ਚੱਲ ਰਿਹਾ ਹੈ, ਪਿਛਾਂਹ ਰਿੜ੍ਹਨ ਨੂੰ ਕੁੱਝ ਵੀ ਨਹੀਂ।"
 
-#: src/test/test_driver.c:4415
+#: src/test/test_driver.c:4416
 msgid "storage pool already exists"
 msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
 
-#: src/test/test_driver.c:4874
+#: src/test/test_driver.c:4875
 msgid "no storage pool with matching uuid"
 msgstr "uuid ਨਾਲ ਮੇਲ ਖਾਂਦਾ ਕੋਈ ਸਟੋਰੇਜ਼ ਪੂਲ ਨਹੀਂ ਹੈ"
 
-#: src/test/test_driver.c:4880
+#: src/test/test_driver.c:4881
 msgid "storage pool is not active"
 msgstr "ਲਾਗ ਮਾਰਗ ਇੱਕ ਫਾਇਲ ਨਹੀਂ ਹੈ"
 
@@ -24340,8 +24355,8 @@ msgid "%s in %s must not be NULL"
 msgstr "%s ਦਾ %s ਵਿੱਚ NULL ਨਹੀਂ ਹੋਣਾ ਜਰੂਰੀ ਹੈ"
 
 #: src/util/virerror.h:102
-#, c-format
-msgid "%s in %s must greater than zero"
+#, fuzzy, c-format
+msgid "%s in %s must be greater than zero"
 msgstr "%s ਦਾ %s ਵਿੱਚ ਸਿਫ਼ਰ ਤੋਂ ਵੱਡਾ ਹੋਣਾ ਜਰੂਰੀ ਹੈ"
 
 #: src/util/virerror.h:113
@@ -34209,3 +34224,9 @@ msgstr ""
 #, c-format
 msgid "Unable to exec shell %s"
 msgstr ""
+
+#~ msgid "cannot probe backing volume info: %s"
+#~ msgstr "ਵਾਲੀਅਮ ਇਨਫੋ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ: %s"
+
+#~ msgid "Failed to update volume for '%s'"
+#~ msgstr "'%s' ਲਈ ਵਾਲੀਅਮ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਫੇਲ"
