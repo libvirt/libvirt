@@ -3189,17 +3189,19 @@ int
 qemuMonitorDriveMirror(qemuMonitorPtr mon,
                        const char *device, const char *file,
                        const char *format, unsigned long long bandwidth,
+                       unsigned int granularity, unsigned long long buf_size,
                        unsigned int flags)
 {
     int ret = -1;
 
     VIR_DEBUG("mon=%p, device=%s, file=%s, format=%s, bandwidth=%lld, "
-              "flags=%x",
-              mon, device, file, NULLSTR(format), bandwidth, flags);
+              "granularity=%#x, buf_size=%lld, flags=%x",
+              mon, device, file, NULLSTR(format), bandwidth, granularity,
+              buf_size, flags);
 
     if (mon->json)
         ret = qemuMonitorJSONDriveMirror(mon, device, file, format, bandwidth,
-                                         flags);
+                                         granularity, buf_size, flags);
     else
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("drive-mirror requires JSON monitor"));

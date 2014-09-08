@@ -650,6 +650,8 @@ int qemuMonitorDriveMirror(qemuMonitorPtr mon,
                            const char *file,
                            const char *format,
                            unsigned long long bandwidth,
+                           unsigned int granularity,
+                           unsigned long long buf_size,
                            unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 int qemuMonitorDrivePivot(qemuMonitorPtr mon,

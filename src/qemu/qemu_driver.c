@@ -15305,6 +15305,8 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                           const char *path,
                           virStorageSourcePtr mirror,
                           unsigned long long bandwidth,
+                          unsigned int granularity,
+                          unsigned long long buf_size,
                           unsigned int flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
@@ -15450,7 +15452,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     /* Actually start the mirroring */
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorDriveMirror(priv->mon, device, mirror->path, format,
-                                 bandwidth, flags);
+                                 bandwidth, granularity, buf_size, flags);
     virDomainAuditDisk(vm, NULL, mirror, "mirror", ret >= 0);
     qemuDomainObjExitMonitor(driver, vm);
     if (ret < 0) {
@@ -15546,7 +15548,7 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     flags &= (VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
               VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT);
     ret = qemuDomainBlockCopyCommon(vm, dom->conn, path, dest,
-                                    bandwidth, flags);
+                                    bandwidth, 0, 0, flags);
     vm = NULL;
     dest = NULL;
 
@@ -15614,23 +15616,13 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *disk, const char *destxml,
             buf_size = param->value.ul;
         }
     }
-    if (granularity) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("granularity tuning not supported yet"));
-        goto cleanup;
-    }
-    if (buf_size) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("buffer size tuning not supported yet"));
-        goto cleanup;
-    }
 
     if (!(dest = virDomainDiskDefSourceParse(destxml, vm->def, driver->xmlopt,
                                              VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     ret = qemuDomainBlockCopyCommon(vm, dom->conn, disk, dest,
-                                    bandwidth, flags);
+                                    bandwidth, granularity, buf_size, flags);
     vm = NULL;
 
  cleanup:

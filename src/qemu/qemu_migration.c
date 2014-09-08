@@ -1461,7 +1461,7 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
                                            QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
             goto error;
         mon_ret = qemuMonitorDriveMirror(priv->mon, diskAlias, nbd_dest,
-                                         NULL, speed, mirror_flags);
+                                         NULL, speed, 0, 0, mirror_flags);
         qemuDomainObjExitMonitor(driver, vm);
 
         if (mon_ret < 0)

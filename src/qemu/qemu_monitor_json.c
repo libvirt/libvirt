@@ -3422,6 +3422,8 @@ int
 qemuMonitorJSONDriveMirror(qemuMonitorPtr mon,
                            const char *device, const char *file,
                            const char *format, unsigned long long speed,
+                           unsigned int granularity,
+                           unsigned long long buf_size,
                            unsigned int flags)
 {
     int ret = -1;
@@ -3434,6 +3436,8 @@ qemuMonitorJSONDriveMirror(qemuMonitorPtr mon,
                                      "s:device", device,
                                      "s:target", file,
                                      "Y:speed", speed,
+                                     "z:granularity", granularity,
+                                     "P:buf-size", buf_size,
                                      "s:sync", shallow ? "top" : "full",
                                      "s:mode", reuse ? "existing" : "absolute-paths",
                                      "S:format", format,
