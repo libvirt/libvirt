@@ -1141,7 +1141,7 @@
     ...
     &lt;numa&gt;
       &lt;cell id='0' cpus='0-3' memory='512000'/&gt;
-      &lt;cell id='1' cpus='4-7' memory='512000'/&gt;
+      &lt;cell id='1' cpus='4-7' memory='512000' memAccess='shared'/&gt;
     &lt;/numa&gt;
     ...
   &lt;/cpu&gt;
@@ -1158,6 +1158,11 @@
       assigned <code>id</code>s in the increasing order starting from
       0.  Mixing cells with and without the <code>id</code> attribute
       is not recommended as it may result in unwanted behaviour.
+
+      <span class='since'>Since 1.2.9</span> the optional attribute
+      <code>memAccess</code> can control whether the memory is to be
+      mapped as "shared" or "private".  This is valid only for
+      hugepages-backed memory.
     </p>
 
     <p>

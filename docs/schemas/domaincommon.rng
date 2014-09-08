@@ -4030,6 +4030,14 @@
       <attribute name="memory">
         <ref name="memoryKB"/>
       </attribute>
+      <optional>
+        <attribute name="memAccess">
+          <choice>
+            <value>shared</value>
+            <value>private</value>
+          </choice>
+        </attribute>
+      </optional>
     </element>
   </define>
 

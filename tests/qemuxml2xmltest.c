@@ -205,6 +205,7 @@ mymain(void)
     DO_TEST("hugepages-pages");
     DO_TEST("hugepages-pages2");
     DO_TEST("hugepages-pages3");
+    DO_TEST("hugepages-shared");
     DO_TEST("nosharepages");
     DO_TEST("disk-aio");
     DO_TEST("disk-cdrom");
@@ -392,6 +393,7 @@ mymain(void)
     DO_TEST_DIFFERENT("cpu-numa1");
     DO_TEST_DIFFERENT("cpu-numa2");
     DO_TEST("cpu-numa-disjoint");
+    DO_TEST("cpu-numa-memshared");
 
     DO_TEST_DIFFERENT("numatune-auto-prefer");
     DO_TEST_DIFFERENT("numatune-memnode");

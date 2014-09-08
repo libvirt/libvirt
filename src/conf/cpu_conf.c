@@ -56,6 +56,11 @@ VIR_ENUM_IMPL(virCPUFeaturePolicy, VIR_CPU_FEATURE_LAST,
               "disable",
               "forbid")
 
+VIR_ENUM_IMPL(virMemAccess, VIR_MEM_ACCESS_LAST,
+              "default",
+              "shared",
+              "private")
+
 
 void ATTRIBUTE_NONNULL(1)
 virCPUDefFreeModel(virCPUDefPtr def)
@@ -435,7 +440,7 @@ virCPUDefParseXML(xmlNodePtr node,
         def->ncells = n;
 
         for (i = 0; i < n; i++) {
-            char *cpus, *memory;
+            char *cpus, *memory, *memAccessStr;
             int ret, ncpus = 0;
             unsigned int cur_cell;
             char *tmp = NULL;
@@ -491,7 +496,7 @@ virCPUDefParseXML(xmlNodePtr node,
                 goto error;
             }
 
-            ret  = virStrToLong_ui(memory, NULL, 10, &def->cells[cur_cell].mem);
+            ret = virStrToLong_ui(memory, NULL, 10, &def->cells[cur_cell].mem);
             if (ret == -1) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("Invalid 'memory' attribute in NUMA cell"));
@@ -499,6 +504,22 @@ virCPUDefParseXML(xmlNodePtr node,
                 goto error;
             }
             VIR_FREE(memory);
+
+            memAccessStr = virXMLPropString(nodes[i], "memAccess");
+            if (memAccessStr) {
+                def->cells[cur_cell].memAccess =
+                    virMemAccessTypeFromString(memAccessStr);
+
+                if (def->cells[cur_cell].memAccess <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("Invalid 'memAccess' attribute "
+                                     "value '%s'"),
+                                   memAccessStr);
+                    VIR_FREE(memAccessStr);
+                    goto cleanup;
+                }
+                VIR_FREE(memAccessStr);
+            }
         }
     }
 
@@ -674,10 +695,15 @@ virCPUDefFormatBuf(virBufferPtr buf,
         virBufferAddLit(buf, "<numa>\n");
         virBufferAdjustIndent(buf, 2);
         for (i = 0; i < def->ncells; i++) {
+            virMemAccess memAccess = def->cells[i].memAccess;
+
             virBufferAddLit(buf, "<cell");
             virBufferAsprintf(buf, " id='%zu'", i);
             virBufferAsprintf(buf, " cpus='%s'", def->cells[i].cpustr);
             virBufferAsprintf(buf, " memory='%d'", def->cells[i].mem);
+            if (memAccess)
+                virBufferAsprintf(buf, " memAccess='%s'",
+                                  virMemAccessTypeToString(memAccess));
             virBufferAddLit(buf, "/>\n");
         }
         virBufferAdjustIndent(buf, -2);
