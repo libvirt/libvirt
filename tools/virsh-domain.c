@@ -2000,7 +2000,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
             if (bandwidth) {
                 /* bandwidth is ulong MiB/s, but the typed parameter is
                  * ullong bytes/s; make sure we don't overflow */
-                if (bandwidth > ULLONG_MAX >> 20) {
+                if (bandwidth + 0ULL > ULLONG_MAX >> 20) {
                     virReportError(VIR_ERR_OVERFLOW,
                                    _("bandwidth must be less than %llu"),
                                    ULLONG_MAX >> 20);
