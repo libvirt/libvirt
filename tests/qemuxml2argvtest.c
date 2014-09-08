@@ -684,6 +684,8 @@ mymain(void)
             QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-pages3", QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("hugepages-shared", QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_RAM,
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("nosharepages", QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_MEM_MERGE);
     DO_TEST("disk-cdrom", NONE);
     DO_TEST("disk-cdrom-network-http", QEMU_CAPS_KVM, QEMU_CAPS_DEVICE,
@@ -1208,6 +1210,9 @@ mymain(void)
     DO_TEST_PARSE_ERROR("cpu-numa3", NONE);
     DO_TEST_FAILURE("cpu-numa-disjoint", NONE);
     DO_TEST("cpu-numa-disjoint", QEMU_CAPS_NUMA);
+    DO_TEST_FAILURE("cpu-numa-memshared", QEMU_CAPS_SMP_TOPOLOGY,
+                    QEMU_CAPS_OBJECT_MEMORY_RAM);
+    DO_TEST_FAILURE("cpu-numa-memshared", QEMU_CAPS_SMP_TOPOLOGY);
     DO_TEST("cpu-host-model", NONE);
     skipLegacyCPUs = true;
     DO_TEST("cpu-host-model-fallback", NONE);

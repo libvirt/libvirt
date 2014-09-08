@@ -6553,6 +6553,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     for (i = 0; i < def->cpu->ncells; i++) {
         int cellmem = VIR_DIV_UP(def->cpu->cells[i].mem, 1024);
         def->cpu->cells[i].mem = cellmem * 1024;
+        virTristateSwitch memAccess = def->cpu->cells[i].memAccess;
 
         VIR_FREE(cpumask);
         VIR_FREE(nodemask);
@@ -6631,7 +6632,28 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
                 virBufferAsprintf(&buf,
                                   "memory-backend-file,prealloc=yes,mem-path=%s",
                                   mem_path);
+
+                switch (memAccess) {
+                case VIR_MEM_ACCESS_SHARED:
+                    virBufferAddLit(&buf, ",share=on");
+                    break;
+
+                case VIR_MEM_ACCESS_PRIVATE:
+                    virBufferAddLit(&buf, ",share=off");
+                    break;
+
+                case VIR_MEM_ACCESS_DEFAULT:
+                case VIR_MEM_ACCESS_LAST:
+                    break;
+                }
+
             } else {
+                if (memAccess) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("Shared memory mapping is supported "
+                                     "only with hugepages"));
+                    goto cleanup;
+                }
                 virBufferAddLit(&buf, "memory-backend-ram");
             }
 
@@ -6662,6 +6684,13 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
 
             virCommandAddArg(cmd, "-object");
             virCommandAddArgBuffer(cmd, &buf);
+        } else {
+            if (memAccess) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Shared memory mapping is not supported "
+                                 "with this QEMU"));
+                goto cleanup;
+            }
         }
 
         virCommandAddArg(cmd, "-numa");
