@@ -3681,15 +3681,17 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
             qemuDomainObjExitMonitor(driver, vm);
         }
 
-        if (resume && qemuProcessStartCPUs(driver, vm, dom->conn,
-                                           VIR_DOMAIN_RUNNING_UNPAUSED,
-                                           QEMU_ASYNC_JOB_DUMP) < 0) {
-            event = virDomainEventLifecycleNewFromObj(vm,
-                                             VIR_DOMAIN_EVENT_SUSPENDED,
-                                             VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
-            if (virGetLastError() == NULL)
-                virReportError(VIR_ERR_OPERATION_FAILED,
-                               "%s", _("resuming after dump failed"));
+        if (resume && virDomainObjIsActive(vm)) {
+            if (qemuProcessStartCPUs(driver, vm, dom->conn,
+                                     VIR_DOMAIN_RUNNING_UNPAUSED,
+                                     QEMU_ASYNC_JOB_DUMP) < 0) {
+                event = virDomainEventLifecycleNewFromObj(vm,
+                                                          VIR_DOMAIN_EVENT_SUSPENDED,
+                                                          VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
+                if (virGetLastError() == NULL)
+                    virReportError(VIR_ERR_OPERATION_FAILED,
+                                   "%s", _("resuming after dump failed"));
+            }
         }
     }
 
