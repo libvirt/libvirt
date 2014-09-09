@@ -2489,7 +2489,8 @@ qemuMonitorJSONGetMigrationStatusReply(virJSONValuePtr reply,
         return -1;
     }
 
-    virJSONValueObjectGetNumberUlong(ret, "total-time", &status->total_time);
+    ignore_value(virJSONValueObjectGetNumberUlong(ret, "total-time",
+                                                  &status->total_time));
     if (status->status == QEMU_MONITOR_MIGRATION_STATUS_COMPLETED) {
         rc = virJSONValueObjectGetNumberUlong(ret, "downtime",
                                               &status->downtime);
@@ -2534,9 +2535,10 @@ qemuMonitorJSONGetMigrationStatusReply(virJSONValuePtr reply,
         if (virJSONValueObjectGetNumberUlong(ram, "duplicate",
                                              &status->ram_duplicate) == 0)
             status->ram_duplicate_set = true;
-        virJSONValueObjectGetNumberUlong(ram, "normal", &status->ram_normal);
-        virJSONValueObjectGetNumberUlong(ram, "normal-bytes",
-                                         &status->ram_normal_bytes);
+        ignore_value(virJSONValueObjectGetNumberUlong(ram, "normal",
+                                                      &status->ram_normal));
+        ignore_value(virJSONValueObjectGetNumberUlong(ram, "normal-bytes",
+                                                      &status->ram_normal_bytes));
 
         virJSONValuePtr disk = virJSONValueObjectGet(ret, "disk");
         if (disk) {
