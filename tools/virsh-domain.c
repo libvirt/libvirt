@@ -3887,7 +3887,8 @@ doSave(void *opaque)
  out:
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
  out_sig:
-    if (dom) virDomainFree(dom);
+    if (dom)
+        virDomainFree(dom);
     VIR_FREE(xml);
     ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
 }
@@ -4051,8 +4052,7 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, _("\nDomain %s saved to %s\n"), name, to);
 
  cleanup:
-    if (dom)
-        virDomainFree(dom);
+    virDomainFree(dom);
     return ret;
 }
 
