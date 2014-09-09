@@ -44,6 +44,8 @@ char *virStringJoin(const char **strings,
 void virStringFreeList(char **strings);
 void virStringFreeListCount(char **strings, size_t count);
 
+size_t virStringListLen(const char **strings);
+
 bool virStringArrayHasString(char **strings, const char *needle);
 
 char *virArgvToString(const char *const *argv);
