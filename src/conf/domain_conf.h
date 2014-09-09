@@ -439,6 +439,7 @@ typedef virDomainHostdevSubsysSCSI *virDomainHostdevSubsysSCSIPtr;
 struct _virDomainHostdevSubsysSCSI {
     int protocol; /* enum virDomainHostdevSCSIProtocolType */
     int sgio; /* enum virDomainDeviceSGIO */
+    int rawio; /* enum virTristateBool */
     union {
         virDomainHostdevSubsysSCSIHost host;
         virDomainHostdevSubsysSCSIiSCSI iscsi;

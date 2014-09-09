@@ -369,6 +369,7 @@ mymain(void)
     DO_TEST("disk-copy_on_read");
     DO_TEST("hostdev-scsi-shareable");
     DO_TEST("hostdev-scsi-sgio");
+    DO_TEST("hostdev-scsi-rawio");
 
     DO_TEST_DIFFERENT("hostdev-scsi-autogen-address");
 

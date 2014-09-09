@@ -1815,7 +1815,7 @@
           <dt><code>rawio</code> attribute
           <span class="since">since 0.9.10</span></dt>
             <dd>
-            Indicates whether the disk is needs rawio capability; valid
+            Indicates whether the disk needs rawio capability. Valid
             settings are "yes" or "no" (default is "no"). If any one disk
             in a domain has rawio='yes', rawio capability will be enabled
             for all disks in the domain (because, in the case of QEMU, this
@@ -2925,7 +2925,7 @@
 <pre>
   ...
   &lt;devices&gt;
-    &lt;hostdev mode='subsystem' type='scsi'&gt;
+    &lt;hostdev mode='subsystem' type='scsi' sgio='filtered' rawio='yes'&gt;
       &lt;source&gt;
         &lt;adapter name='scsi_host0'/&gt;
         &lt;address type='scsi' bus='0' target='0' unit='0'/&gt;
@@ -2984,7 +2984,13 @@
             (<span class="since">since 1.0.6</span>) attribute indicates
             whether the kernel will filter unprivileged SG_IO commands for
             the disk, valid settings are "filtered" or "unfiltered".
-            The default is "filtered".
+            The default is "filtered". The optional <code>rawio</code>
+            (<span class="since">since 1.2.9</span>) attribute indicates
+            whether the lun needs the rawio capability. Valid settings are
+            "yes" or "no". See the rawio description within the
+            <a href="#elementsDisks">disk</a> section.
+            If a disk lun in the domain already has the rawio capability,
+            then this setting not required.
           </dd>
         </dl>
       </dd>

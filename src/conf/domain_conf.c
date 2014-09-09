@@ -4504,6 +4504,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     xmlNodePtr sourcenode;
     char *managed = NULL;
     char *sgio = NULL;
+    char *rawio = NULL;
     char *backendStr = NULL;
     int backend;
     int ret = -1;
@@ -4521,6 +4522,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     }
 
     sgio = virXMLPropString(node, "sgio");
+    rawio = virXMLPropString(node, "rawio");
 
     /* @type is passed in from the caller rather than read from the
      * xml document, because it is specified in different places for
@@ -4572,6 +4574,21 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
         }
     }
 
+    if (rawio) {
+        if (def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("rawio is only supported for scsi host device"));
+            goto error;
+        }
+
+        if ((scsisrc->rawio = virTristateBoolTypeFromString(rawio)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown hostdev rawio setting '%s'"),
+                           rawio);
+            goto error;
+        }
+    }
+
     switch (def->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         if (virDomainHostdevSubsysPCIDefParseXML(sourcenode, def, flags) < 0)
@@ -4611,6 +4628,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
  error:
     VIR_FREE(managed);
     VIR_FREE(sgio);
+    VIR_FREE(rawio);
     VIR_FREE(backendStr);
     return ret;
 }
@@ -17804,6 +17822,12 @@ virDomainHostdevDefFormat(virBufferPtr buf,
             scsisrc->sgio)
             virBufferAsprintf(buf, " sgio='%s'",
                               virDomainDeviceSGIOTypeToString(scsisrc->sgio));
+
+        if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
+            scsisrc->rawio) {
+            virBufferAsprintf(buf, " rawio='%s'",
+                              virTristateBoolTypeToString(scsisrc->rawio));
+        }
     }
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);

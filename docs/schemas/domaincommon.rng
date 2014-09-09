@@ -1252,9 +1252,7 @@
             </choice>
           </attribute>
           <optional>
-            <attribute name="rawio">
-              <ref name="virYesNo"/>
-            </attribute>
+            <ref name="rawIO"/>
           </optional>
           <optional>
             <attribute name="sgio">
@@ -3577,6 +3575,9 @@
         </choice>
       </attribute>
     </optional>
+    <optional>
+      <ref name="rawIO"/>
+    </optional>
     <element name="source">
       <choice>
         <group>  <!-- scsi_host adapter -->
@@ -4936,5 +4937,10 @@
         <ref name="address"/>
       </optional>
     </element>
+  </define>
+  <define name="rawIO">
+    <attribute name="rawio">
+      <ref name="virYesNo"/>
+    </attribute>
   </define>
 </grammar>
