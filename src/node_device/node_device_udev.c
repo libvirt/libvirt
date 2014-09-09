@@ -532,6 +532,7 @@ static int udevProcessUSBDevice(struct udev_device *device,
 {
     union _virNodeDevCapData *data = &def->caps->data;
     int ret = -1;
+    int err;
 
     if (udevGetUintProperty(device,
                             "BUSNUM",
@@ -554,10 +555,17 @@ static int udevProcessUSBDevice(struct udev_device *device,
         goto out;
     }
 
-    if (udevGetStringSysfsAttr(device,
-                              "manufacturer",
-                              &data->usb_dev.vendor_name) == PROPERTY_ERROR) {
+    err = udevGetStringProperty(device,
+                                "ID_VENDOR_FROM_DATABASE",
+                                &data->usb_dev.vendor_name);
+    if (err == PROPERTY_ERROR)
         goto out;
+    if (err == PROPERTY_MISSING) {
+        if (udevGetStringSysfsAttr(device,
+                                  "manufacturer",
+                                  &data->usb_dev.vendor_name) == PROPERTY_ERROR) {
+            goto out;
+        }
     }
 
     if (udevGetUintProperty(device,
@@ -567,10 +575,17 @@ static int udevProcessUSBDevice(struct udev_device *device,
         goto out;
     }
 
-    if (udevGetStringSysfsAttr(device,
-                              "product",
-                              &data->usb_dev.product_name) == PROPERTY_ERROR) {
+    err = udevGetStringProperty(device,
+                                "ID_MODEL_FROM_DATABASE",
+                                &data->usb_dev.product_name);
+    if (err == PROPERTY_ERROR)
         goto out;
+    if (err == PROPERTY_MISSING) {
+        if (udevGetStringSysfsAttr(device,
+                                  "product",
+                                  &data->usb_dev.product_name) == PROPERTY_ERROR) {
+            goto out;
+        }
     }
 
     if (udevGenerateDeviceName(device, def, NULL) != 0) {
