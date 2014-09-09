@@ -4538,6 +4538,12 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     virBitmapPtr pcpumap = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
+    virObjectEventPtr event = NULL;
+    char paramField[VIR_TYPED_PARAM_FIELD_LENGTH] = "";
+    char *str = NULL;
+    virTypedParameterPtr eventParams = NULL;
+    int eventNparams = 0;
+    int eventMaxparams = 0;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -4645,6 +4651,18 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
             goto cleanup;
+
+        if (snprintf(paramField, VIR_TYPED_PARAM_FIELD_LENGTH,
+                     VIR_DOMAIN_EVENT_CPUTUNE_VCPUPIN, vcpu) < 0) {
+            goto cleanup;
+        }
+
+        str = virBitmapFormat(pcpumap);
+        if (virTypedParamsAddString(&eventParams, &eventNparams,
+                                    &eventMaxparams, paramField, str) < 0)
+            goto cleanup;
+
+        event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
@@ -4680,6 +4698,9 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
         virCgroupFree(&cgroup_vcpu);
     if (vm)
         virObjectUnlock(vm);
+    if (event)
+        qemuDomainEventQueue(driver, event);
+    VIR_FREE(str);
     virBitmapFree(pcpumap);
     virObjectUnref(caps);
     virObjectUnref(cfg);
@@ -4804,6 +4825,12 @@ qemuDomainPinEmulator(virDomainPtr dom,
     virBitmapPtr pcpumap = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
+    virObjectEventPtr event = NULL;
+    char * str = NULL;
+    virTypedParameterPtr eventParams = NULL;
+    int eventNparams = 0;
+    int eventMaxparams = 0;
+
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -4909,6 +4936,15 @@ qemuDomainPinEmulator(virDomainPtr dom,
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
             goto cleanup;
+
+        str = virBitmapFormat(pcpumap);
+        if (virTypedParamsAddString(&eventParams, &eventNparams,
+                                    &eventMaxparams,
+                                    VIR_DOMAIN_EVENT_CPUTUNE_EMULATORIN,
+                                    str) < 0)
+            goto cleanup;
+
+        event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
@@ -4938,6 +4974,9 @@ qemuDomainPinEmulator(virDomainPtr dom,
  cleanup:
     if (cgroup_emulator)
         virCgroupFree(&cgroup_emulator);
+    if (event)
+        qemuDomainEventQueue(driver, event);
+    VIR_FREE(str);
     virBitmapFree(pcpumap);
     virObjectUnref(caps);
     if (vm)
@@ -9202,6 +9241,10 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
+    virObjectEventPtr event = NULL;
+    virTypedParameterPtr eventParams = NULL;
+    int eventNparams = 0;
+    int eventMaxNparams = 0;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -9272,6 +9315,12 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
                 vm->def->cputune.shares = val;
                 vm->def->cputune.sharesSpecified = true;
+
+                if (virTypedParamsAddULLong(&eventParams, &eventNparams,
+                                            &eventMaxNparams,
+                                            VIR_DOMAIN_EVENT_CPUTUNE_CPU_SHARES,
+                                            val) < 0)
+                    goto cleanup;
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
@@ -9289,6 +9338,12 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                     goto cleanup;
 
                 vm->def->cputune.period = value_ul;
+
+                if (virTypedParamsAddULLong(&eventParams, &eventNparams,
+                                            &eventMaxNparams,
+                                            VIR_DOMAIN_EVENT_CPUTUNE_VCPU_PERIOD,
+                                            value_ul) < 0)
+                    goto cleanup;
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG)
@@ -9303,6 +9358,12 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                     goto cleanup;
 
                 vm->def->cputune.quota = value_l;
+
+                if (virTypedParamsAddLLong(&eventParams, &eventNparams,
+                                           &eventMaxNparams,
+                                           VIR_DOMAIN_EVENT_CPUTUNE_VCPU_QUOTA,
+                                           value_l) < 0)
+                    goto cleanup;
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG)
@@ -9318,6 +9379,12 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                     goto cleanup;
 
                 vm->def->cputune.emulator_period = value_ul;
+
+                if (virTypedParamsAddULLong(&eventParams, &eventNparams,
+                                            &eventMaxNparams,
+                                            VIR_DOMAIN_EVENT_CPUTUNE_EMULATOR_PERIOD,
+                                            value_ul) < 0)
+                    goto cleanup;
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG)
@@ -9333,6 +9400,12 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                     goto cleanup;
 
                 vm->def->cputune.emulator_quota = value_l;
+
+                if (virTypedParamsAddLLong(&eventParams, &eventNparams,
+                                           &eventMaxNparams,
+                                           VIR_DOMAIN_EVENT_CPUTUNE_EMULATOR_QUOTA,
+                                           value_l) < 0)
+                    goto cleanup;
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG)
@@ -9343,6 +9416,12 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         goto cleanup;
 
+    if (eventNparams) {
+        event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
+        eventNparams = 0;
+        if (event)
+            qemuDomainEventQueue(driver, event);
+    }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         rc = virDomainSaveConfig(cfg->configDir, vmdef);
@@ -9359,6 +9438,8 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
     virDomainDefFree(vmdef);
     if (vm)
         virObjectUnlock(vm);
+    if (eventNparams)
+        virTypedParamsFree(eventParams, eventNparams);
     virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;

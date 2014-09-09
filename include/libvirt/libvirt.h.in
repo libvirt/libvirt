@@ -5204,6 +5204,66 @@ typedef void (*virConnectDomainEventDeviceRemovedCallback)(virConnectPtr conn,
                                                            void *opaque);
 
 /**
+ * VIR_DOMAIN_EVENT_CPUTUNE_VCPUPIN:
+ *
+ * Macro represents formatted pinning for one vcpu specified by id which is
+ * appended to the parameter name, for example "cputune.vcpupin1",
+ * as VIR_TYPED_PARAM_STRING.
+ */
+#define VIR_DOMAIN_EVENT_CPUTUNE_VCPUPIN "cputune.vcpupin%u"
+
+/**
+ * VIR_DOMAIN_EVENT_CPUTUNE_EMULATORIN:
+ *
+ * Macro represents formatted pinning for emulator process,
+ * as VIR_TYPED_PARAM_STRING.
+ */
+#define VIR_DOMAIN_EVENT_CPUTUNE_EMULATORIN "cputune.emulatorpin"
+
+/**
+ * VIR_DOMAIN_EVENT_CPUTUNE_CPU_SHARES:
+ *
+ * Macro represents proportional weight of the scheduler used on the
+ * host cpu, when using the posix scheduler, as VIR_TYPED_PARAM_ULLONG.
+ */
+#define VIR_DOMAIN_EVENT_CPUTUNE_CPU_SHARES "cputune.cpu_shares"
+
+/**
+ * VIR_DOMAIN_EVENT_CPUTUNE_VCPU_PERIOD:
+ *
+ * Macro represents the enforcement period for a quota, in microseconds,
+ * for vcpus only, when using the posix scheduler, as VIR_TYPED_PARAM_ULLONG.
+ */
+#define VIR_DOMAIN_EVENT_CPUTUNE_VCPU_PERIOD "cputune.vcpu_period"
+
+/**
+ * VIR_DOMAIN_EVENT_CPUTUNE_VCPU_QUOTA:
+ *
+ * Macro represents the maximum bandwidth to be used within a period for
+ * vcpus only, when using the posix scheduler, as VIR_TYPED_PARAM_LLONG.
+ */
+#define VIR_DOMAIN_EVENT_CPUTUNE_VCPU_QUOTA "cputune.vcpu_quota"
+
+/**
+ * VIR_DOMAIN_EVENT_CPUTUNE_EMULATOR_PERIOD:
+ *
+ * Macro represents the enforcement period for a quota in microseconds,
+ * when using the posix scheduler, for all emulator activity not tied to
+ * vcpus, as VIR_TYPED_PARAM_ULLONG.
+ */
+#define VIR_DOMAIN_EVENT_CPUTUNE_EMULATOR_PERIOD "cputune.emulator_period"
+
+/**
+ * VIR_DOMAIN_EVENT_CPUTUNE_EMULATOR_QUOTA:
+ *
+ * Macro represents the maximum bandwidth to be used within a period for
+ * all emulator activity not tied to vcpus, when using the posix scheduler,
+ * as an VIR_TYPED_PARAM_LLONG.
+ */
+#define VIR_DOMAIN_EVENT_CPUTUNE_EMULATOR_QUOTA "cputune.emulator_quota"
+
+
+/**
  * virConnectDomainEventTunableCallback:
  * @conn: connection object
  * @dom: domain on which the event occurred
@@ -5214,6 +5274,9 @@ typedef void (*virConnectDomainEventDeviceRemovedCallback)(virConnectPtr conn,
  * This callback occurs when tunable values are updated. The params must not
  * be freed in the callback handler as it's done internally after the callback
  * handler is executed.
+ *
+ * Currently supported name spaces:
+ *  "cputune.*"
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_TUNABLE with virConnectDomainEventRegisterAny()

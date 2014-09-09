@@ -34,6 +34,7 @@
 #include "virscsi.h"
 #include "virstring.h"
 #include "virfile.h"
+#include "virtypedparam.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -676,6 +677,10 @@ static int
 qemuSetupCpuCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virObjectEventPtr event = NULL;
+    virTypedParameterPtr eventParams = NULL;
+    int eventNparams = 0;
+    int eventMaxparams = 0;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
        if (vm->def->cputune.sharesSpecified) {
@@ -694,7 +699,19 @@ qemuSetupCpuCgroup(virDomainObjPtr vm)
 
         if (virCgroupGetCpuShares(priv->cgroup, &val) < 0)
             return -1;
-        vm->def->cputune.shares = val;
+        if (vm->def->cputune.shares != val) {
+            vm->def->cputune.shares = val;
+            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
+                                        &eventMaxparams,
+                                        VIR_DOMAIN_EVENT_CPUTUNE_CPU_SHARES,
+                                        val) < 0)
+                return -1;
+
+            event = virDomainEventTunableNewFromObj(vm, eventParams, eventNparams);
+        }
+
+        if (event)
+            qemuDomainEventQueue(vm->privateData, event);
     }
 
     return 0;
