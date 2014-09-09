@@ -1926,6 +1926,10 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
     for (i = 0; i < obj->def->ndisks; i++)
         qemuDomainObjCheckDiskTaint(driver, obj, obj->def->disks[i], logFD);
 
+    for (i = 0; i < obj->def->nhostdevs; i++)
+        qemuDomainObjCheckHostdevTaint(driver, obj, obj->def->hostdevs[i],
+                                       logFD);
+
     for (i = 0; i < obj->def->nnets; i++)
         qemuDomainObjCheckNetTaint(driver, obj, obj->def->nets[i], logFD);
 
@@ -1950,6 +1954,20 @@ void qemuDomainObjCheckDiskTaint(virQEMUDriverPtr driver,
                            logFD);
 
     virObjectUnref(cfg);
+}
+
+
+void qemuDomainObjCheckHostdevTaint(virQEMUDriverPtr driver,
+                                    virDomainObjPtr obj,
+                                    virDomainHostdevDefPtr hostdev,
+                                    int logFD)
+{
+    virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+
+    if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
+        scsisrc->rawio == VIR_TRISTATE_BOOL_YES)
+            qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES,
+                               logFD);
 }
 
 

@@ -6581,6 +6581,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
         break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
+        qemuDomainObjCheckHostdevTaint(driver, vm, dev->data.hostdev, -1);
         ret = qemuDomainAttachHostDevice(dom->conn, driver, vm,
                                          dev->data.hostdev);
         if (!ret)

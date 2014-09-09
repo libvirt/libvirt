@@ -3983,6 +3983,7 @@ int qemuProcessStart(virConnectPtr conn,
     struct qemuProcessHookData hookData;
     unsigned long cur_balloon;
     size_t i;
+    bool rawio_set = false;
     char *nodeset = NULL;
     virBitmapPtr nodemask = NULL;
     unsigned int stop_flags;
@@ -4360,6 +4361,7 @@ int qemuProcessStart(virConnectPtr conn,
         if (vm->def->disks[i]->rawio == VIR_TRISTATE_BOOL_YES) {
 #ifdef CAP_SYS_RAWIO
             virCommandAllowCap(cmd, CAP_SYS_RAWIO);
+            rawio_set = true;
 #else
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Raw I/O is not supported on this platform"));
@@ -4374,6 +4376,24 @@ int qemuProcessStart(virConnectPtr conn,
 
         if (qemuSetUnprivSGIO(&dev) < 0)
             goto cleanup;
+    }
+
+    /* If rawio not already set, check hostdevs as well */
+    if (!rawio_set) {
+        for (i = 0; i < vm->def->nhostdevs; i++) {
+            virDomainHostdevSubsysSCSIPtr scsisrc =
+                &vm->def->hostdevs[i]->source.subsys.u.scsi;
+            if (scsisrc->rawio == VIR_TRISTATE_BOOL_YES) {
+#ifdef CAP_SYS_RAWIO
+                virCommandAllowCap(cmd, CAP_SYS_RAWIO);
+                break;
+#else
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Raw I/O is not supported on this platform"));
+                goto cleanup;
+#endif
+            }
+        }
     }
 
     virCommandSetPreExecHook(cmd, qemuProcessHook, &hookData);
