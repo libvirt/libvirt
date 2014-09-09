@@ -3605,10 +3605,12 @@ getCompressionType(virQEMUDriverPtr driver)
     return ret;
 }
 
-static int qemuDomainCoreDumpWithFormat(virDomainPtr dom,
-                                        const char *path,
-                                        unsigned int dumpformat,
-                                        unsigned int flags)
+
+static int
+qemuDomainCoreDumpWithFormat(virDomainPtr dom,
+                             const char *path,
+                             unsigned int dumpformat,
+                             unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -3670,13 +3672,8 @@ static int qemuDomainCoreDumpWithFormat(virDomainPtr dom,
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
-    }
-
-    /* Since the monitor is always attached to a pty for libvirt, it
-       will support synchronous operations so we always get here after
-       the migration is complete.  */
-    else if (((resume && paused) || (flags & VIR_DUMP_RESET)) &&
-             virDomainObjIsActive(vm)) {
+    } else if (((resume && paused) || (flags & VIR_DUMP_RESET)) &&
+               virDomainObjIsActive(vm)) {
         if ((ret == 0) && (flags & VIR_DUMP_RESET)) {
             priv =  vm->privateData;
             qemuDomainObjEnterMonitor(driver, vm);
@@ -3711,13 +3708,17 @@ static int qemuDomainCoreDumpWithFormat(virDomainPtr dom,
     return ret;
 }
 
-static int qemuDomainCoreDump(virDomainPtr dom,
-                              const char *path,
-                              unsigned int flags)
+
+static int
+qemuDomainCoreDump(virDomainPtr dom,
+                   const char *path,
+                   unsigned int flags)
 {
     return qemuDomainCoreDumpWithFormat(dom, path,
-                                        VIR_DOMAIN_CORE_DUMP_FORMAT_RAW, flags);
+                                        VIR_DOMAIN_CORE_DUMP_FORMAT_RAW,
+                                        flags);
 }
+
 
 static char *
 qemuDomainScreenshot(virDomainPtr dom,
