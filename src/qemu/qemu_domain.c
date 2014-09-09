@@ -1222,13 +1222,12 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
               qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
               obj, obj->def->name);
 
-    priv->jobs_queued++;
-
     if (virTimeMillisNow(&now) < 0) {
         virObjectUnref(cfg);
         return -1;
     }
 
+    priv->jobs_queued++;
     then = now + QEMU_JOB_WAIT_TIME;
 
     virObjectRef(obj);
