@@ -2014,6 +2014,7 @@ qemuParseCommandLine(virCapsPtr caps,
                 case VIR_STORAGE_NET_PROTOCOL_FTP:
                 case VIR_STORAGE_NET_PROTOCOL_FTPS:
                 case VIR_STORAGE_NET_PROTOCOL_TFTP:
+                case VIR_STORAGE_NET_PROTOCOL_SSH:
                 case VIR_STORAGE_NET_PROTOCOL_LAST:
                 case VIR_STORAGE_NET_PROTOCOL_NONE:
                     /* ignored for now */

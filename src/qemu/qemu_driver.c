@@ -13373,6 +13373,7 @@ qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
         case VIR_STORAGE_NET_PROTOCOL_FTP:
         case VIR_STORAGE_NET_PROTOCOL_FTPS:
         case VIR_STORAGE_NET_PROTOCOL_TFTP:
+        case VIR_STORAGE_NET_PROTOCOL_SSH:
         case VIR_STORAGE_NET_PROTOCOL_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("external inactive snapshots are not supported on "
@@ -13435,6 +13436,7 @@ qemuDomainSnapshotPrepareDiskExternalOverlayActive(virDomainSnapshotDiskDefPtr d
         case VIR_STORAGE_NET_PROTOCOL_FTP:
         case VIR_STORAGE_NET_PROTOCOL_FTPS:
         case VIR_STORAGE_NET_PROTOCOL_TFTP:
+        case VIR_STORAGE_NET_PROTOCOL_SSH:
         case VIR_STORAGE_NET_PROTOCOL_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("external active snapshots are not supported on "
@@ -13579,6 +13581,7 @@ qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
         case VIR_STORAGE_NET_PROTOCOL_FTP:
         case VIR_STORAGE_NET_PROTOCOL_FTPS:
         case VIR_STORAGE_NET_PROTOCOL_TFTP:
+        case VIR_STORAGE_NET_PROTOCOL_SSH:
         case VIR_STORAGE_NET_PROTOCOL_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("internal inactive snapshots are not supported on "

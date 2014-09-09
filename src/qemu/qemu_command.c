@@ -480,6 +480,9 @@ qemuNetworkDriveGetPort(int protocol,
         case VIR_STORAGE_NET_PROTOCOL_NBD:
             return 10809;
 
+        case VIR_STORAGE_NET_PROTOCOL_SSH:
+            return 22;
+
         case VIR_STORAGE_NET_PROTOCOL_ISCSI:
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
             /* no default port specified */
@@ -878,6 +881,10 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
             ret = virBufferContentAndReset(&buf);
             break;
 
+        case VIR_STORAGE_NET_PROTOCOL_SSH:
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("'ssh' protocol is not yet supported"));
+            goto cleanup;
 
         case VIR_STORAGE_NET_PROTOCOL_LAST:
         case VIR_STORAGE_NET_PROTOCOL_NONE:
