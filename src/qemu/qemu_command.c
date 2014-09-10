@@ -1770,7 +1770,6 @@ qemuValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
             VIR_DEBUG("PCI address 0:0:2.0 in use, future addition of a video"
                       " device will not be possible without manual"
                       " intervention");
-            virResetLastError();
         } else if (virDomainPCIAddressReserveSlot(addrs, &tmp_addr, flags) < 0) {
             goto cleanup;
         }
