@@ -236,6 +236,7 @@ src/xenapi/xenapi_utils.c
 src/xenconfig/xen_common.c
 src/xenconfig/xen_sxpr.c
 src/xenconfig/xen_xm.c
+tests/virpolkittest.c
 tools/libvirt-guests.sh.in
 tools/virsh.c
 tools/virsh.h

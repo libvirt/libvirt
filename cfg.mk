@@ -1143,3 +1143,6 @@ exclude_file_name_regexp--sc_prohibit_mixed_case_abbreviations = \
 
 exclude_file_name_regexp--sc_prohibit_empty_first_line = \
   ^(README|daemon/THREADS\.txt|src/esx/README|docs/library.xen|tests/vmwareverdata/fusion-5.0.3.txt|tests/nodeinfodata/linux-raspberrypi/cpu/offline)$$
+
+exclude_file_name_regexp--sc_prohibit_useless_translation = \
+  ^tests/virpolkittest.c

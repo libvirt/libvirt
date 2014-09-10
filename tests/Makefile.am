@@ -197,7 +197,11 @@ endif WITH_LIBVIRTD
 
 if WITH_DBUS
 test_programs += virdbustest \
-                 virsystemdtest
+                 virsystemdtest \
+                 $(NULL)
+if WITH_POLKIT1
+test_programs += virpolkittest
+endif WITH_POLKIT1
 endif WITH_DBUS
 
 if WITH_SECDRIVER_SELINUX
@@ -1007,6 +1011,11 @@ virmockdbus_la_SOURCES = \
 virmockdbus_la_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
 virmockdbus_la_LDFLAGS = -module -avoid-version \
         -rpath /evil/libtool/hack/to/force/shared/lib/creation
+
+virpolkittest_SOURCES = \
+	virpolkittest.c testutils.h testutils.c
+virpolkittest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
+virpolkittest_LDADD = $(LDADDS) $(DBUS_LIBS)
 
 virsystemdtest_SOURCES = \
 	virsystemdtest.c testutils.h testutils.c
