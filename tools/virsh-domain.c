@@ -7219,7 +7219,9 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
 
             /* Compare original XML with edited.  Has it changed at all? */
             if (STREQ(desc, desc_edited)) {
-                vshPrint(ctl, _("Domain description not changed.\n"));
+                vshPrint(ctl, "%s",
+                         title ? _("Domain title not changed\n") :
+                                 _("Domain description not changed\n"));
                 ret = true;
                 goto cleanup;
             }
@@ -7231,10 +7233,13 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
 
         if (virDomainSetMetadata(dom, type, desc, NULL, NULL, flags) < 0) {
             vshError(ctl, "%s",
-                     _("Failed to set new domain description"));
+                     title ? _("Failed to set new domain title") :
+                             _("Failed to set new domain description"));
             goto cleanup;
         }
-        vshPrint(ctl, "%s", _("Domain description updated successfully"));
+        vshPrint(ctl, "%s",
+                 title ? _("Domain title updated successfully") :
+                         _("Domain description updated successfully"));
     } else {
         desc = vshGetDomainDescription(ctl, dom, title,
                                        config?VIR_DOMAIN_XML_INACTIVE:0);
@@ -7244,7 +7249,9 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
         if (strlen(desc) > 0)
             vshPrint(ctl, "%s", desc);
         else
-            vshPrint(ctl, _("No description for domain: %s"),
+            vshPrint(ctl,
+                     title ? _("No title for domain: %s") :
+                             _("No description for domain: %s"),
                      virDomainGetName(dom));
     }
 
