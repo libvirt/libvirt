@@ -11454,6 +11454,37 @@ vshEventDeviceRemovedPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
         vshEventDone(data->ctl);
 }
 
+static void
+vshEventTunablePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                     virDomainPtr dom,
+                     virTypedParameterPtr params,
+                     int nparams,
+                     void *opaque)
+{
+    vshDomEventData *data = opaque;
+    size_t i;
+    char *value = NULL;
+
+    if (!data->loop && *data->count)
+        return;
+
+    vshPrint(data->ctl,
+             _("event 'tunable' for domain %s:\n"),
+             virDomainGetName(dom));
+
+    for (i = 0; i < nparams; i++) {
+        value = virTypedParameterToString(&params[i]);
+        if (value) {
+            vshPrint(data->ctl, _("\t%s: %s\n"), params[i].field, value);
+            VIR_FREE(value);
+        }
+    }
+
+    (*data->count)++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
 static vshEventCallback vshEventCallbacks[] = {
     { "lifecycle",
       VIR_DOMAIN_EVENT_CALLBACK(vshEventLifecyclePrint), },
@@ -11487,6 +11518,8 @@ static vshEventCallback vshEventCallbacks[] = {
       VIR_DOMAIN_EVENT_CALLBACK(vshEventDeviceRemovedPrint), },
     { "block-job-2",
       VIR_DOMAIN_EVENT_CALLBACK(vshEventBlockJobPrint), },
+    { "tunable",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventTunablePrint), },
 };
 verify(VIR_DOMAIN_EVENT_ID_LAST == ARRAY_CARDINALITY(vshEventCallbacks));
 

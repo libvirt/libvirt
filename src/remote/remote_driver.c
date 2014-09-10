@@ -331,6 +331,11 @@ remoteDomainBuildEventBlockJob2(virNetClientProgramPtr prog,
                                 void *evdata, void *opaque);
 
 static void
+remoteDomainBuildEventCallbackTunable(virNetClientProgramPtr prog,
+                                      virNetClientPtr client,
+                                      void *evdata, void *opaque);
+
+static void
 remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                  virNetClientPtr client ATTRIBUTE_UNUSED,
                                  void *evdata, void *opaque);
@@ -481,6 +486,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteDomainBuildEventBlockJob2,
       sizeof(remote_domain_event_block_job_2_msg),
       (xdrproc_t)xdr_remote_domain_event_block_job_2_msg },
+    { REMOTE_PROC_DOMAIN_EVENT_CALLBACK_TUNABLE,
+      remoteDomainBuildEventCallbackTunable,
+      sizeof(remote_domain_event_callback_tunable_msg),
+      (xdrproc_t)xdr_remote_domain_event_callback_tunable_msg },
 };
 
 
@@ -5510,6 +5519,39 @@ remoteDomainBuildEventCallbackDeviceRemoved(virNetClientProgramPtr prog ATTRIBUT
     virConnectPtr conn = opaque;
     remote_domain_event_callback_device_removed_msg *msg = evdata;
     remoteDomainBuildEventDeviceRemovedHelper(conn, &msg->msg, msg->callbackID);
+}
+
+
+static void
+remoteDomainBuildEventCallbackTunable(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                      virNetClientPtr client ATTRIBUTE_UNUSED,
+                                      void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    remote_domain_event_callback_tunable_msg *msg = evdata;
+    struct private_data *priv = conn->privateData;
+    virDomainPtr dom;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    virObjectEventPtr event = NULL;
+
+    if (remoteDeserializeTypedParameters(msg->params.params_val,
+                                         msg->params.params_len,
+                                         REMOTE_DOMAIN_EVENT_TUNABLE_MAX,
+                                         &params, &nparams) < 0)
+        return;
+
+    dom = get_nonnull_domain(conn, msg->dom);
+    if (!dom) {
+        virTypedParamsFree(params, nparams);
+        return;
+    }
+
+    event = virDomainEventTunableNewFromDom(dom, params, nparams);
+
+    virDomainFree(dom);
+
+    remoteEventQueue(priv, event, msg->callbackID);
 }
 
 

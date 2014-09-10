@@ -111,6 +111,13 @@ remoteDeserializeTypedParameters(remote_typed_param *args_params_val,
                                  int *nparams);
 
 static int
+remoteSerializeTypedParameters(virTypedParameterPtr params,
+                               int nparams,
+                               remote_typed_param **ret_params_val,
+                               u_int *ret_params_len,
+                               unsigned int flags);
+
+static int
 remoteSerializeDomainDiskErrors(virDomainDiskErrorPtr errors,
                                 int nerrors,
                                 remote_domain_disk_error **ret_errors_val,
@@ -969,6 +976,43 @@ remoteRelayDomainEventBlockJob2(virConnectPtr conn,
 }
 
 
+static int
+remoteRelayDomainEventTunable(virConnectPtr conn,
+                              virDomainPtr dom,
+                              virTypedParameterPtr params,
+                              int nparams,
+                              void *opaque)
+{
+    daemonClientEventCallbackPtr callback = opaque;
+    remote_domain_event_callback_tunable_msg data;
+
+    if (callback->callbackID < 0 ||
+        !remoteRelayDomainEventCheckACL(callback->client, conn, dom))
+        return -1;
+
+    VIR_DEBUG("Relaying domain tunable event %s %d, callback %d",
+              dom->name, dom->id, callback->callbackID);
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+    data.callbackID = callback->callbackID;
+    make_nonnull_domain(&data.dom, dom);
+
+    if (remoteSerializeTypedParameters(params, nparams,
+                                       &data.params.params_val,
+                                       &data.params.params_len,
+                                       VIR_TYPED_PARAM_STRING_OKAY) < 0)
+        return -1;
+
+    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+                                  REMOTE_PROC_DOMAIN_EVENT_CALLBACK_TUNABLE,
+                                  (xdrproc_t)xdr_remote_domain_event_callback_tunable_msg,
+                                  &data);
+
+    return 0;
+}
+
+
 static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventReboot),
@@ -987,6 +1031,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventPMSuspendDisk),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventDeviceRemoved),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventBlockJob2),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventTunable),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

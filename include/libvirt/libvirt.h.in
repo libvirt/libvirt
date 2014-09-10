@@ -5203,6 +5203,27 @@ typedef void (*virConnectDomainEventDeviceRemovedCallback)(virConnectPtr conn,
                                                            const char *devAlias,
                                                            void *opaque);
 
+/**
+ * virConnectDomainEventTunableCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @params: changed tunable values stored as array of virTypedParameter
+ * @nparams: size of the array
+ * @opaque: application specified data
+ *
+ * This callback occurs when tunable values are updated. The params must not
+ * be freed in the callback handler as it's done internally after the callback
+ * handler is executed.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_TUNABLE with virConnectDomainEventRegisterAny()
+ */
+typedef void (*virConnectDomainEventTunableCallback)(virConnectPtr conn,
+                                                     virDomainPtr dom,
+                                                     virTypedParameterPtr params,
+                                                     int nparams,
+                                                     void *opaque);
+
 
 /**
  * VIR_DOMAIN_EVENT_CALLBACK:
@@ -5238,6 +5259,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK = 14, /* virConnectDomainEventPMSuspendDiskCallback */
     VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED = 15, /* virConnectDomainEventDeviceRemovedCallback */
     VIR_DOMAIN_EVENT_ID_BLOCK_JOB_2 = 16,    /* virConnectDomainEventBlockJobCallback */
+    VIR_DOMAIN_EVENT_ID_TUNABLE = 17,        /* virConnectDomainEventTunableCallback */
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_ID_LAST

@@ -473,6 +473,8 @@ virDomainEventStateRegister;
 virDomainEventStateRegisterID;
 virDomainEventTrayChangeNewFromDom;
 virDomainEventTrayChangeNewFromObj;
+virDomainEventTunableNewFromDom;
+virDomainEventTunableNewFromObj;
 virDomainEventWatchdogNewFromDom;
 virDomainEventWatchdogNewFromObj;
 virDomainQemuMonitorEventNew;

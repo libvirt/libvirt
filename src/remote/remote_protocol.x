@@ -247,6 +247,9 @@ const REMOTE_NETWORK_DHCP_LEASES_MAX = 65536;
 /* Upper limit on count of parameters returned via bulk stats API */
 const REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX = 4096;
 
+/* Upper limit of message size for tunable event. */
+const REMOTE_DOMAIN_EVENT_TUNABLE_MAX = 8388608;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -2990,6 +2993,12 @@ struct remote_domain_event_block_job_2_msg {
     int status;
 };
 
+struct remote_domain_event_callback_tunable_msg {
+    int callbackID;
+    remote_nonnull_domain dom;
+    remote_typed_param params<REMOTE_DOMAIN_EVENT_TUNABLE_MAX>;
+};
+
 struct remote_connect_get_cpu_model_names_args {
     remote_nonnull_string arch;
     int need_results;
@@ -5472,5 +5481,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: domain:block_write
      */
-    REMOTE_PROC_DOMAIN_BLOCK_COPY = 345
+    REMOTE_PROC_DOMAIN_BLOCK_COPY = 345,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_TUNABLE = 346
 };
