@@ -16484,6 +16484,41 @@ virDomainActualNetDefFormat(virBufferPtr buf,
     return 0;
 }
 
+
+static int
+virDomainVirtioNetDriverFormat(char **outstr,
+                               virDomainNetDefPtr def)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    if (def->driver.virtio.name) {
+        virBufferAsprintf(&buf, "name='%s' ",
+                          virDomainNetBackendTypeToString(def->driver.virtio.name));
+    }
+    if (def->driver.virtio.txmode) {
+        virBufferAsprintf(&buf, "txmode='%s' ",
+                          virDomainNetVirtioTxModeTypeToString(def->driver.virtio.txmode));
+    }
+    if (def->driver.virtio.ioeventfd) {
+        virBufferAsprintf(&buf, "ioeventfd='%s' ",
+                          virTristateSwitchTypeToString(def->driver.virtio.ioeventfd));
+    }
+    if (def->driver.virtio.event_idx) {
+        virBufferAsprintf(&buf, "event_idx='%s' ",
+                          virTristateSwitchTypeToString(def->driver.virtio.event_idx));
+    }
+    if (def->driver.virtio.queues)
+        virBufferAsprintf(&buf, "queues='%u' ", def->driver.virtio.queues);
+
+    virBufferTrim(&buf, " ", -1);
+
+    if (virBufferCheckError(&buf) < 0)
+        return -1;
+
+    *outstr = virBufferContentAndReset(&buf);
+    return 0;
+}
+
+
 int
 virDomainNetDefFormat(virBufferPtr buf,
                       virDomainNetDefPtr def,
@@ -16659,30 +16694,15 @@ virDomainNetDefFormat(virBufferPtr buf,
     if (def->model) {
         virBufferEscapeString(buf, "<model type='%s'/>\n",
                               def->model);
-        if (STREQ(def->model, "virtio") &&
-            (def->driver.virtio.name || def->driver.virtio.txmode ||
-             def->driver.virtio.ioeventfd || def->driver.virtio.event_idx ||
-             def->driver.virtio.queues)) {
-            virBufferAddLit(buf, "<driver");
-            if (def->driver.virtio.name) {
-                virBufferAsprintf(buf, " name='%s'",
-                                  virDomainNetBackendTypeToString(def->driver.virtio.name));
-            }
-            if (def->driver.virtio.txmode) {
-                virBufferAsprintf(buf, " txmode='%s'",
-                                  virDomainNetVirtioTxModeTypeToString(def->driver.virtio.txmode));
-            }
-            if (def->driver.virtio.ioeventfd) {
-                virBufferAsprintf(buf, " ioeventfd='%s'",
-                                  virTristateSwitchTypeToString(def->driver.virtio.ioeventfd));
-            }
-            if (def->driver.virtio.event_idx) {
-                virBufferAsprintf(buf, " event_idx='%s'",
-                                  virTristateSwitchTypeToString(def->driver.virtio.event_idx));
-            }
-            if (def->driver.virtio.queues)
-                virBufferAsprintf(buf, " queues='%u'", def->driver.virtio.queues);
-            virBufferAddLit(buf, "/>\n");
+        if (STREQ(def->model, "virtio")) {
+            char *str;
+
+            if (virDomainVirtioNetDriverFormat(&str, def) < 0)
+                return -1;
+
+            if (str)
+                virBufferAsprintf(buf, "<driver %s/>\n", str);
+            VIR_FREE(str);
         }
     }
     if (def->filter) {
