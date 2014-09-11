@@ -16317,9 +16317,13 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        int idx = virDomainDiskIndexByName(vm->def, disk, true);
-        if (idx < 0)
+        int idx = virDomainDiskIndexByName(persistentDef, disk, true);
+        if (idx < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("disk '%s' was not found in the domain config"),
+                           disk);
             goto endjob;
+        }
         reply = persistentDef->disks[idx]->blkdeviotune;
     }
 
