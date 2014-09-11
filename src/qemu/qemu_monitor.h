@@ -481,12 +481,15 @@ int qemuMonitorGetSpiceMigrationStatus(qemuMonitorPtr mon,
 typedef enum {
     QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
     QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE,
+    QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
 
     QEMU_MONITOR_MIGRATION_CAPS_LAST
 } qemuMonitorMigrationCaps;
 
 VIR_ENUM_DECL(qemuMonitorMigrationCaps);
 
+int qemuMonitorGetMigrationCapabilities(qemuMonitorPtr mon,
+                                        char ***capabilities);
 int qemuMonitorGetMigrationCapability(qemuMonitorPtr mon,
                                       qemuMonitorMigrationCaps capability);
 int qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,

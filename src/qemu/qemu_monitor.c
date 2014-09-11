@@ -121,7 +121,7 @@ VIR_ENUM_IMPL(qemuMonitorMigrationStatus,
 
 VIR_ENUM_IMPL(qemuMonitorMigrationCaps,
               QEMU_MONITOR_MIGRATION_CAPS_LAST,
-              "xbzrle", "auto-converge")
+              "xbzrle", "auto-converge", "rdma-pin-all")
 
 VIR_ENUM_IMPL(qemuMonitorVMStatus,
               QEMU_MONITOR_VM_STATUS_LAST,
@@ -3785,6 +3785,26 @@ char *qemuMonitorGetTargetArch(qemuMonitorPtr mon)
     }
 
     return qemuMonitorJSONGetTargetArch(mon);
+}
+
+
+int
+qemuMonitorGetMigrationCapabilities(qemuMonitorPtr mon,
+                                    char ***capabilities)
+{
+    VIR_DEBUG("mon=%p", mon);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    /* No capability is supported without JSON monitor */
+    if (!mon->json)
+        return 0;
+
+    return qemuMonitorJSONGetMigrationCapabilities(mon, capabilities);
 }
 
 

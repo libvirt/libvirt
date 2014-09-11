@@ -269,6 +269,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "splash-timeout", /* 175 */
               "iothread",
+              "migrate-rdma",
     );
 
 
@@ -993,9 +994,9 @@ virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
     if (virQEMUCapsInitPages(caps) < 0)
         VIR_WARN("Failed to get pages info");
 
-    /* Add domain migration transport URI */
-    virCapabilitiesAddHostMigrateTransport(caps,
-                                           "tcp");
+    /* Add domain migration transport URIs */
+    virCapabilitiesAddHostMigrateTransport(caps, "tcp");
+    virCapabilitiesAddHostMigrateTransport(caps, "rdma");
 
     /* QEMU can support pretty much every arch that exists,
      * so just probe for them all - we gracefully fail
@@ -1433,6 +1434,10 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "nbd-server-start", QEMU_CAPS_NBD_SERVER },
     { "change-backing-file", QEMU_CAPS_CHANGE_BACKING_FILE },
     { "rtc-reset-reinjection", QEMU_CAPS_RTC_RESET_REINJECTION },
+};
+
+struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
+    { "rdma-pin-all", QEMU_CAPS_MIGRATE_RDMA },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsEvents[] = {
@@ -2476,6 +2481,25 @@ virQEMUCapsProbeQMPCommandLine(virQEMUCapsPtr qemuCaps,
     return 0;
 }
 
+static int
+virQEMUCapsProbeQMPMigrationCapabilities(virQEMUCapsPtr qemuCaps,
+                                         qemuMonitorPtr mon)
+{
+    char **caps = NULL;
+    int ncaps;
+
+    if ((ncaps = qemuMonitorGetMigrationCapabilities(mon, &caps)) < 0)
+        return -1;
+
+    virQEMUCapsProcessStringFlags(qemuCaps,
+                                  ARRAY_CARDINALITY(virQEMUCapsMigration),
+                                  virQEMUCapsMigration,
+                                  ncaps, caps);
+    virQEMUCapsFreeStringList(ncaps, caps);
+
+    return 0;
+}
+
 int virQEMUCapsProbeQMP(virQEMUCapsPtr qemuCaps,
                         qemuMonitorPtr mon)
 {
@@ -3167,6 +3191,8 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     if (virQEMUCapsProbeQMPTPM(qemuCaps, mon) < 0)
         goto cleanup;
     if (virQEMUCapsProbeQMPCommandLine(qemuCaps, mon) < 0)
+        goto cleanup;
+    if (virQEMUCapsProbeQMPMigrationCapabilities(qemuCaps, mon) < 0)
         goto cleanup;
 
     ret = 0;

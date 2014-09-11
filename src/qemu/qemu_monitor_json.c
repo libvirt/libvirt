@@ -5214,14 +5214,18 @@ qemuMonitorJSONGetTargetArch(qemuMonitorPtr mon)
 
 
 int
-qemuMonitorJSONGetMigrationCapability(qemuMonitorPtr mon,
-                                      qemuMonitorMigrationCaps capability)
+qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
+                                        char ***capabilities)
 {
     int ret;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr caps;
+    char **list = NULL;
     size_t i;
+    int n;
+
+    *capabilities = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-migrate-capabilities",
                                            NULL)))
@@ -5240,14 +5244,17 @@ qemuMonitorJSONGetMigrationCapability(qemuMonitorPtr mon,
 
     ret = -1;
 
-    caps = virJSONValueObjectGet(reply, "return");
-    if (!caps || caps->type != VIR_JSON_TYPE_ARRAY) {
+    if (!(caps = virJSONValueObjectGet(reply, "return")) ||
+        (n = virJSONValueArraySize(caps)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing migration capabilities"));
         goto cleanup;
     }
 
-    for (i = 0; i < virJSONValueArraySize(caps); i++) {
+    if (VIR_ALLOC_N(list, n + 1) < 0)
+        goto cleanup;
+
+    for (i = 0; i < n; i++) {
         virJSONValuePtr cap = virJSONValueArrayGet(caps, i);
         const char *name;
 
@@ -5263,17 +5270,36 @@ qemuMonitorJSONGetMigrationCapability(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        if (qemuMonitorMigrationCapsTypeFromString(name) == capability) {
-            ret = 1;
+        if (VIR_STRDUP(list[i], name) < 1)
             goto cleanup;
-        }
     }
 
-    ret = 0;
+    ret = n;
+    *capabilities = list;
 
  cleanup:
+    if (ret < 0)
+        virStringFreeList(list);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
+    return ret;
+}
+
+
+int
+qemuMonitorJSONGetMigrationCapability(qemuMonitorPtr mon,
+                                      qemuMonitorMigrationCaps capability)
+{
+    int ret;
+    char **capsList = NULL;
+    const char *cap = qemuMonitorMigrationCapsTypeToString(capability);
+
+    if (qemuMonitorJSONGetMigrationCapabilities(mon, &capsList) < 0)
+        return -1;
+
+    ret = virStringArrayHasString(capsList, cap);
+
+    virStringFreeList(capsList);
     return ret;
 }
 

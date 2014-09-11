@@ -1785,3 +1785,13 @@
         "desc": "The command query-command-line-options has not been found"
     }
 }
+
+{
+    "return": [
+        {
+            "capability": "xbzrle",
+            "state": false
+        }
+    ],
+    "id": "libvirt-34"
+}

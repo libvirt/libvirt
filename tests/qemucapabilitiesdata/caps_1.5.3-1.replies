@@ -2539,3 +2539,13 @@
     ],
     "id": "libvirt-33"
 }
+
+{
+    "return": [
+        {
+            "capability": "xbzrle",
+            "state": false
+        }
+    ],
+    "id": "libvirt-34"
+}

@@ -2501,3 +2501,25 @@
     ],
     "id": "libvirt-33"
 }
+
+{
+    "return": [
+        {
+            "capability": "xbzrle",
+            "state": false
+        },
+        {
+            "capability": "x-rdma-pin-all",
+            "state": false
+        },
+        {
+            "capability": "auto-converge",
+            "state": false
+        },
+        {
+            "capability": "zero-blocks",
+            "state": false
+        }
+    ],
+    "id": "libvirt-34"
+}

@@ -137,6 +137,8 @@ int qemuMonitorJSONSetMigrationCacheSize(qemuMonitorPtr mon,
 int qemuMonitorJSONGetMigrationStatus(qemuMonitorPtr mon,
                                       qemuMonitorMigrationStatusPtr status);
 
+int qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
+                                            char ***capabilities);
 int qemuMonitorJSONGetMigrationCapability(qemuMonitorPtr mon,
                                           qemuMonitorMigrationCaps capability);
 int qemuMonitorJSONSetMigrationCapability(qemuMonitorPtr mon,

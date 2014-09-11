@@ -216,6 +216,7 @@ typedef enum {
     QEMU_CAPS_RTC_RESET_REINJECTION = 174, /* rtc-reset-reinjection monitor command */
     QEMU_CAPS_SPLASH_TIMEOUT     = 175, /* -boot splash-time */
     QEMU_CAPS_OBJECT_IOTHREAD    = 176, /* -object iothread */
+    QEMU_CAPS_MIGRATE_RDMA       = 177, /* have rdma migration */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 } virQEMUCapsFlags;
