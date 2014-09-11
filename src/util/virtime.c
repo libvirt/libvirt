@@ -127,22 +127,16 @@ const unsigned short int __mon_yday[2][13] = {
 void virTimeFieldsThen(unsigned long long when, struct tm *fields)
 {
     /* This code is taken from GLibC under terms of LGPLv2+ */
+    /* Remove the 'offset' or GMT manipulation since we don't care. See
+     * commit id '3ec12898' comments regarding localtime.
+     */
     long int days, rem, y;
     const unsigned short int *ip;
     unsigned long long whenSecs = when / 1000ull;
-    unsigned int offset = 0; /* We hardcoded GMT */
 
     days = whenSecs / SECS_PER_DAY;
     rem = whenSecs % SECS_PER_DAY;
-    rem += offset;
-    while (rem < 0) {
-        rem += SECS_PER_DAY;
-        --days;
-    }
-    while (rem >= SECS_PER_DAY) {
-        rem -= SECS_PER_DAY;
-        ++days;
-    }
+
     fields->tm_hour = rem / SECS_PER_HOUR;
     rem %= SECS_PER_HOUR;
     fields->tm_min = rem / 60;
