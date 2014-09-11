@@ -2366,7 +2366,71 @@
               </optional>
             </group>
           </choice>
-          <empty/>
+          <interleave>
+            <optional>
+              <element name='host'>
+                <optional>
+                  <attribute name='csum'>
+                    <ref name="virOnOff"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name='gso'>
+                    <ref name="virOnOff"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name='tso4'>
+                    <ref name="virOnOff"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name='tso6'>
+                    <ref name="virOnOff"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name='ecn'>
+                    <ref name="virOnOff"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name='ufo'>
+                    <ref name="virOnOff"/>
+                  </attribute>
+                </optional>
+              </element>
+            </optional>
+            <optional>
+              <element name='guest'>
+                <optional>
+                  <attribute name='csum'>
+                    <ref name="virOnOff"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name='tso4'>
+                    <ref name="virOnOff"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name='tso6'>
+                    <ref name="virOnOff"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name='ecn'>
+                    <ref name="virOnOff"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name='ufo'>
+                    <ref name="virOnOff"/>
+                  </attribute>
+                </optional>
+              </element>
+            </optional>
+          </interleave>
         </element>
       </optional>
       <optional>

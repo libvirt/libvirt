@@ -261,6 +261,7 @@ mymain(void)
     DO_TEST("net-user");
     DO_TEST("net-virtio");
     DO_TEST("net-virtio-device");
+    DO_TEST("net-virtio-disable-offloads");
     DO_TEST("net-eth");
     DO_TEST("net-eth-ifname");
     DO_TEST("net-virtio-network-portgroup");

@@ -6919,6 +6919,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *ioeventfd = NULL;
     char *event_idx = NULL;
     char *queues = NULL;
+    char *str = NULL;
     char *filter = NULL;
     char *internal = NULL;
     char *devaddr = NULL;
@@ -7414,6 +7415,115 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             }
             def->driver.virtio.queues = q;
         }
+        if ((str = virXPathString("string(./driver/host/@csum)", ctxt))) {
+            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown host csum mode '%s'"),
+                               str);
+                goto error;
+            }
+            def->driver.virtio.host.csum = val;
+        }
+        VIR_FREE(str);
+        if ((str = virXPathString("string(./driver/host/@gso)", ctxt))) {
+            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown host gso mode '%s'"),
+                               str);
+                goto error;
+            }
+            def->driver.virtio.host.gso = val;
+        }
+        VIR_FREE(str);
+        if ((str = virXPathString("string(./driver/host/@tso4)", ctxt))) {
+            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown host tso4 mode '%s'"),
+                               str);
+                goto error;
+            }
+            def->driver.virtio.host.tso4 = val;
+        }
+        VIR_FREE(str);
+        if ((str = virXPathString("string(./driver/host/@tso6)", ctxt))) {
+            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown host tso6 mode '%s'"),
+                               str);
+                goto error;
+            }
+            def->driver.virtio.host.tso6 = val;
+        }
+        VIR_FREE(str);
+        if ((str = virXPathString("string(./driver/host/@ecn)", ctxt))) {
+            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown host ecn mode '%s'"),
+                               str);
+                goto error;
+            }
+            def->driver.virtio.host.ecn = val;
+        }
+        VIR_FREE(str);
+        if ((str = virXPathString("string(./driver/host/@ufo)", ctxt))) {
+            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown host ufo mode '%s'"),
+                               str);
+                goto error;
+            }
+            def->driver.virtio.host.ufo = val;
+        }
+        VIR_FREE(str);
+        if ((str = virXPathString("string(./driver/guest/@csum)", ctxt))) {
+            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown guest csum mode '%s'"),
+                               str);
+                goto error;
+            }
+            def->driver.virtio.guest.csum = val;
+        }
+        VIR_FREE(str);
+        if ((str = virXPathString("string(./driver/guest/@tso4)", ctxt))) {
+            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown guest tso4 mode '%s'"),
+                               str);
+                goto error;
+            }
+            def->driver.virtio.guest.tso4 = val;
+        }
+        VIR_FREE(str);
+        if ((str = virXPathString("string(./driver/guest/@tso6)", ctxt))) {
+            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown guest tso6 mode '%s'"),
+                               str);
+                goto error;
+            }
+            def->driver.virtio.guest.tso6 = val;
+        }
+        VIR_FREE(str);
+        if ((str = virXPathString("string(./driver/guest/@ecn)", ctxt))) {
+            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown guest ecn mode '%s'"),
+                               str);
+                goto error;
+            }
+            def->driver.virtio.guest.ecn = val;
+        }
+        VIR_FREE(str);
+        if ((str = virXPathString("string(./driver/guest/@ufo)", ctxt))) {
+            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown guest ufo mode '%s'"),
+                               str);
+                goto error;
+            }
+            def->driver.virtio.guest.ufo = val;
+        }
     }
 
     def->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DEFAULT;
@@ -7471,6 +7581,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(ioeventfd);
     VIR_FREE(event_idx);
     VIR_FREE(queues);
+    VIR_FREE(str);
     VIR_FREE(filter);
     VIR_FREE(type);
     VIR_FREE(internal);
@@ -16512,6 +16623,80 @@ virDomainActualNetDefFormat(virBufferPtr buf,
 
 
 static int
+virDomainVirtioNetGuestOptsFormat(char **outstr,
+                                  virDomainNetDefPtr def)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    if (def->driver.virtio.guest.csum) {
+        virBufferAsprintf(&buf, "csum='%s' ",
+                          virTristateSwitchTypeToString(def->driver.virtio.guest.csum));
+    }
+    if (def->driver.virtio.guest.tso4) {
+        virBufferAsprintf(&buf, "tso4='%s' ",
+                          virTristateSwitchTypeToString(def->driver.virtio.guest.tso4));
+    }
+    if (def->driver.virtio.guest.tso6) {
+        virBufferAsprintf(&buf, "tso6='%s' ",
+                          virTristateSwitchTypeToString(def->driver.virtio.guest.tso6));
+    }
+    if (def->driver.virtio.guest.ecn) {
+        virBufferAsprintf(&buf, "ecn='%s' ",
+                          virTristateSwitchTypeToString(def->driver.virtio.guest.ecn));
+    }
+    if (def->driver.virtio.guest.ufo) {
+        virBufferAsprintf(&buf, "ufo='%s' ",
+                          virTristateSwitchTypeToString(def->driver.virtio.guest.ufo));
+    }
+    virBufferTrim(&buf, " ", -1);
+
+    if (virBufferCheckError(&buf) < 0)
+        return -1;
+
+    *outstr = virBufferContentAndReset(&buf);
+    return 0;
+}
+
+
+static int
+virDomainVirtioNetHostOptsFormat(char **outstr,
+                                 virDomainNetDefPtr def)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    if (def->driver.virtio.host.csum) {
+        virBufferAsprintf(&buf, "csum='%s' ",
+                          virTristateSwitchTypeToString(def->driver.virtio.host.csum));
+    }
+    if (def->driver.virtio.host.gso) {
+        virBufferAsprintf(&buf, "gso='%s' ",
+                          virTristateSwitchTypeToString(def->driver.virtio.host.gso));
+    }
+    if (def->driver.virtio.host.tso4) {
+        virBufferAsprintf(&buf, "tso4='%s' ",
+                          virTristateSwitchTypeToString(def->driver.virtio.host.tso4));
+    }
+    if (def->driver.virtio.host.tso6) {
+        virBufferAsprintf(&buf, "tso6='%s' ",
+                          virTristateSwitchTypeToString(def->driver.virtio.host.tso6));
+    }
+    if (def->driver.virtio.host.ecn) {
+        virBufferAsprintf(&buf, "ecn='%s' ",
+                          virTristateSwitchTypeToString(def->driver.virtio.host.ecn));
+    }
+    if (def->driver.virtio.host.ufo) {
+        virBufferAsprintf(&buf, "ufo='%s' ",
+                          virTristateSwitchTypeToString(def->driver.virtio.host.ufo));
+    }
+    virBufferTrim(&buf, " ", -1);
+
+    if (virBufferCheckError(&buf) < 0)
+        return -1;
+
+    *outstr = virBufferContentAndReset(&buf);
+    return 0;
+}
+
+
+static int
 virDomainVirtioNetDriverFormat(char **outstr,
                                virDomainNetDefPtr def)
 {
@@ -16561,7 +16746,6 @@ virDomainNetDefFormat(virBufferPtr buf,
     const char *typeStr;
     virDomainHostdevDefPtr hostdef = NULL;
     char macstr[VIR_MAC_STRING_BUFLEN];
-
 
     if (publicActual) {
         if (!(typeStr = virDomainNetTypeToString(actualType))) {
@@ -16721,14 +16905,36 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, "<model type='%s'/>\n",
                               def->model);
         if (STREQ(def->model, "virtio")) {
-            char *str;
+            char *str = NULL, *gueststr = NULL, *hoststr = NULL;
+            int rc = 0;
 
-            if (virDomainVirtioNetDriverFormat(&str, def) < 0)
-                return -1;
+            if (virDomainVirtioNetDriverFormat(&str, def) < 0 ||
+                virDomainVirtioNetGuestOptsFormat(&gueststr, def) < 0 ||
+                virDomainVirtioNetHostOptsFormat(&hoststr, def) < 0)
+                rc = -1;
 
-            if (str)
-                virBufferAsprintf(buf, "<driver %s/>\n", str);
+            if (!gueststr && !hoststr) {
+                if (str)
+                    virBufferAsprintf(buf, "<driver %s/>\n", str);
+            } else {
+                if (str)
+                    virBufferAsprintf(buf, "<driver %s>\n", str);
+                else
+                    virBufferAddLit(buf, "<driver>\n");
+                virBufferAdjustIndent(buf, 2);
+                if (hoststr)
+                    virBufferAsprintf(buf, "<host %s/>\n", hoststr);
+                if (gueststr)
+                    virBufferAsprintf(buf, "<guest %s/>\n", gueststr);
+                virBufferAdjustIndent(buf, -2);
+                virBufferAddLit(buf, "</driver>\n");
+            }
             VIR_FREE(str);
+            VIR_FREE(hoststr);
+            VIR_FREE(gueststr);
+
+            if (rc < 0)
+                return -1;
         }
     }
     if (def->backend.tap || def->backend.vhost) {

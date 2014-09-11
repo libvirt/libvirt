@@ -895,6 +895,21 @@ struct _virDomainNetDef {
             virTristateSwitch ioeventfd;
             virTristateSwitch event_idx;
             unsigned int queues; /* Multiqueue virtio-net */
+            struct {
+                virTristateSwitch csum;
+                virTristateSwitch gso;
+                virTristateSwitch tso4;
+                virTristateSwitch tso6;
+                virTristateSwitch ecn;
+                virTristateSwitch ufo;
+            } host;
+            struct {
+                virTristateSwitch csum;
+                virTristateSwitch tso4;
+                virTristateSwitch tso6;
+                virTristateSwitch ecn;
+                virTristateSwitch ufo;
+            } guest;
         } virtio;
     } driver;
     struct {
