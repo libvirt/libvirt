@@ -89,8 +89,9 @@ distdir: sc_vulnerable_makefile_CVE-2012-3386.z
 endif
 
 # Files that should never cause syntax check failures.
+#  (^(HACKING|docs/(news\.html\.in|.*\.patch))|\.(po|fig|gif|ico|png))$$
 VC_LIST_ALWAYS_EXCLUDE_REGEX = \
-  (^(HACKING|docs/(news\.html\.in|.*\.patch))|\.(po|fig|gif|ico|png))$$
+  (^(HACKING|docs/(news\.html\.in|.*\.patch)|src/xenconfig/xen_xl_disk.[chl])|\.(po|fig|gif|ico|png))$$
 
 # Functions like free() that are no-ops on NULL arguments.
 useless_free_options =				\

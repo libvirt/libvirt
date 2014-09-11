@@ -146,6 +146,7 @@ m4_ifndef([LT_INIT], [
 ])
 AM_PROG_CC_C_O
 AM_PROG_LD
+AM_PROG_LEX
 
 AC_MSG_CHECKING([for how to mark DSO non-deletable at runtime])
 LIBVIRT_NODELETE=

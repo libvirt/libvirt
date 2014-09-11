@@ -1000,11 +1000,22 @@ CPU_SOURCES =							\
 VMX_SOURCES =							\
 		vmx/vmx.c vmx/vmx.h
 
+AM_LFLAGS = -Pxl_disk_ --header-file=../$*.h
+LEX_OUTPUT_ROOT = lex.xl_disk_
+BUILT_SOURCES += xenconfig/xen_xl_disk.c xenconfig/xen_xl_disk.h
+# Generated header file is not implicitly added to dist
+EXTRA_DIST += xenconfig/xen_xl_disk.h
+CLEANFILES += xenconfig/xen_xl_disk.h xenconfig/xen_xl_disk.c
+
+XENXLDISKPARSER_SOURCES = xenconfig/xen_xl_disk.l
+
 XENCONFIG_SOURCES =						\
 		xenconfig/xenxs_private.h			\
-		xenconfig/xen_common.c xenconfig/xen_common.h   \
+		xenconfig/xen_common.c xenconfig/xen_common.h	\
 		xenconfig/xen_sxpr.c xenconfig/xen_sxpr.h	\
-		xenconfig/xen_xm.c xenconfig/xen_xm.h
+		xenconfig/xen_xm.c xenconfig/xen_xm.h		\
+		xenconfig/xen_xl.c xenconfig/xen_xl.h		\
+		xenconfig/xen_xl_disk_i.h
 
 pkgdata_DATA =	cpu/cpu_map.xml
 
@@ -1059,10 +1070,19 @@ libvirt_vmx_la_SOURCES = $(VMX_SOURCES)
 endif WITH_VMX
 
 if WITH_XENCONFIG
+# Flex generated XL disk parser needs to be compiled without WARN_FLAGS
+# Add the generated object to its own library to control CFLAGS
+noinst_LTLIBRARIES += libvirt_xenxldiskparser.la
+libvirt_xenxldiskparser_la_CFLAGS = \
+		-I$(top_srcdir)/src/conf $(AM_CFLAGS) -Wno-unused-parameter
+libvirt_xenxldiskparser_la_SOURCES = \
+	$(XENXLDISKPARSER_SOURCES)
+
 noinst_LTLIBRARIES += libvirt_xenconfig.la
 libvirt_la_BUILT_LIBADD += libvirt_xenconfig.la
 libvirt_xenconfig_la_CFLAGS = \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
+libvirt_xenconfig_la_LIBADD = libvirt_xenxldiskparser.la
 libvirt_xenconfig_la_SOURCES = $(XENCONFIG_SOURCES)
 endif WITH_XENCONFIG
 
@@ -1824,6 +1844,7 @@ EXTRA_DIST +=							\
 		$(VBOX_DRIVER_EXTRA_DIST)			\
 		$(VMWARE_DRIVER_SOURCES)			\
 		$(XENCONFIG_SOURCES)				\
+		$(XENXLDISKPARSER_SOURCES)			\
 		$(ACCESS_DRIVER_POLKIT_POLICY)
 
 check-local: check-augeas

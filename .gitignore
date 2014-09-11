@@ -140,6 +140,7 @@
 /src/remote/*_protocol.[ch]
 /src/rpc/virkeepaliveprotocol.[ch]
 /src/rpc/virnetprotocol.[ch]
+/src/xenconfig/xen_xl_disk.[ch]
 /src/test_libvirt*.aug
 /src/test_virtlockd.aug
 /src/util/virkeymaps.h
