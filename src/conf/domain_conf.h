@@ -897,6 +897,10 @@ struct _virDomainNetDef {
             unsigned int queues; /* Multiqueue virtio-net */
         } virtio;
     } driver;
+    struct {
+        char *tap;
+        char *vhost;
+    } backend;
     union {
         struct {
             char *dev;

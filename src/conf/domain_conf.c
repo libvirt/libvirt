@@ -1415,6 +1415,8 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
         break;
     }
 
+    VIR_FREE(def->backend.tap);
+    VIR_FREE(def->backend.vhost);
     VIR_FREE(def->virtPortProfile);
     VIR_FREE(def->script);
     VIR_FREE(def->ifname);
@@ -7049,6 +7051,9 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             } else if (xmlStrEqual(cur->name, BAD_CAST "vlan")) {
                 if (virNetDevVlanParse(cur, ctxt, &def->vlan) < 0)
                     goto error;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "backend")) {
+                def->backend.tap = virXMLPropString(cur, "tap");
+                def->backend.vhost = virXMLPropString(cur, "vhost");
             }
         }
         cur = cur->next;
@@ -16699,6 +16704,12 @@ virDomainNetDefFormat(virBufferPtr buf,
                 virBufferAsprintf(buf, "<driver %s/>\n", str);
             VIR_FREE(str);
         }
+    }
+    if (def->backend.tap || def->backend.vhost) {
+        virBufferAddLit(buf, "<backend");
+        virBufferEscapeString(buf, " tap='%s'", def->backend.tap);
+        virBufferEscapeString(buf, " vhost='%s'", def->backend.vhost);
+        virBufferAddLit(buf, "/>\n");
     }
     if (def->filter) {
         if (virNWFilterFormatParamAttributes(buf, def->filterparams,

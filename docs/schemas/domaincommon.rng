@@ -2347,6 +2347,16 @@
         </element>
       </optional>
       <optional>
+        <element name="backend">
+           <attribute name='tap'>
+             <ref name='absFilePath'/>
+           </attribute>
+           <attribute name='vhost'>
+             <ref name='absFilePath'/>
+           </attribute>
+        </element>
+      </optional>
+      <optional>
         <element name="driver">
           <choice>
             <group>

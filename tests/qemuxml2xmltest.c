@@ -399,6 +399,8 @@ mymain(void)
 
     DO_TEST("bios-nvram");
 
+    DO_TEST("tap-vhost");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 
