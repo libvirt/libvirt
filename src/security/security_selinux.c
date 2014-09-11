@@ -2300,8 +2300,11 @@ virSecuritySELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
                                      mgr) < 0)
         return -1;
 
+    /* This is different than kernel or initrd. The nvram store
+     * is really a disk, qemu can read and write to it. */
     if (def->os.loader && def->os.loader->nvram &&
-        virSecuritySELinuxSetFilecon(def->os.loader->nvram, data->content_context) < 0)
+        secdef && secdef->imagelabel &&
+        virSecuritySELinuxSetFilecon(def->os.loader->nvram, secdef->imagelabel) < 0)
         return -1;
 
     if (def->os.kernel &&
