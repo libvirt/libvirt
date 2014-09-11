@@ -55,6 +55,7 @@
 
 #include "parallels_driver.h"
 #include "parallels_utils.h"
+#include "parallels_sdk.h"
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
 
@@ -929,8 +930,16 @@ parallelsOpenDefault(virConnectPtr conn)
     if (virMutexInit(&privconn->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot initialize mutex"));
-        goto error;
+        goto err_free;
     }
+
+    if (prlsdkInit(privconn)) {
+        VIR_DEBUG("%s", _("Can't initialize Parallels SDK"));
+        goto err_free;
+    }
+
+    if (prlsdkConnect(privconn) < 0)
+        goto err_free;
 
     if (!(privconn->caps = parallelsBuildCapabilities()))
         goto error;
@@ -953,6 +962,9 @@ parallelsOpenDefault(virConnectPtr conn)
     virObjectUnref(privconn->domains);
     virObjectUnref(privconn->caps);
     virStoragePoolObjListFree(&privconn->pools);
+    prlsdkDisconnect(privconn);
+    prlsdkDeinit();
+ err_free:
     VIR_FREE(privconn);
     return VIR_DRV_OPEN_ERROR;
 }
@@ -999,7 +1011,9 @@ parallelsConnectClose(virConnectPtr conn)
     virObjectUnref(privconn->caps);
     virObjectUnref(privconn->xmlopt);
     virObjectUnref(privconn->domains);
+    prlsdkDisconnect(privconn);
     conn->privateData = NULL;
+    prlsdkDeinit();
 
     parallelsDriverUnlock(privconn);
     virMutexDestroy(&privconn->lock);

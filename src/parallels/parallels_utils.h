@@ -23,6 +23,8 @@
 #ifndef PARALLELS_UTILS_H
 # define PARALLELS_UTILS_H
 
+# include <Parallels.h>
+
 # include "driver.h"
 # include "conf/domain_conf.h"
 # include "conf/storage_conf.h"
@@ -40,6 +42,8 @@
 struct _parallelsConn {
     virMutex lock;
     virDomainObjListPtr domains;
+    PRL_HANDLE server;
+    PRL_UINT32 jobTimeout;
     virStoragePoolObjList pools;
     virNetworkObjList networks;
     virCapsPtr caps;

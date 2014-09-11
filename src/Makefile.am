@@ -788,7 +788,9 @@ PARALLELS_DRIVER_SOURCES =					\
 		parallels/parallels_utils.c			\
 		parallels/parallels_utils.h			\
 		parallels/parallels_storage.c		\
-		parallels/parallels_network.c
+		parallels/parallels_network.c		\
+		parallels/parallels_sdk.h			\
+		parallels/parallels_sdk.c
 
 BHYVE_DRIVER_SOURCES =						\
 		bhyve/bhyve_capabilities.c			\
