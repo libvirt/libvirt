@@ -6907,7 +6907,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     virNWFilterHashTablePtr filterparams = NULL;
     virDomainActualNetDefPtr actual = NULL;
     xmlNodePtr oldnode = ctxt->node;
-    int ret;
+    int ret, val;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -7251,13 +7251,12 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
 
         if (mode != NULL) {
-            int m;
-            if ((m = virNetDevMacVLanModeTypeFromString(mode)) < 0) {
+            if ((val = virNetDevMacVLanModeTypeFromString(mode)) < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Unknown mode has been specified"));
                 goto error;
             }
-            def->data.direct.mode = m;
+            def->data.direct.mode = val;
         } else {
             def->data.direct.mode = VIR_NETDEV_MACVLAN_MODE_VEPA;
         }
@@ -7332,31 +7331,28 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (def->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
         STREQ_NULLABLE(def->model, "virtio")) {
         if (backend != NULL) {
-            int name;
-            if ((name = virDomainNetBackendTypeFromString(backend)) < 0 ||
-                name == VIR_DOMAIN_NET_BACKEND_TYPE_DEFAULT) {
+            if ((val = virDomainNetBackendTypeFromString(backend)) < 0 ||
+                val == VIR_DOMAIN_NET_BACKEND_TYPE_DEFAULT) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Unknown interface <driver name='%s'> "
                                  "has been specified"),
                                backend);
                 goto error;
             }
-            def->driver.virtio.name = name;
+            def->driver.virtio.name = val;
         }
         if (txmode != NULL) {
-            int m;
-            if ((m = virDomainNetVirtioTxModeTypeFromString(txmode)) < 0 ||
-                m == VIR_DOMAIN_NET_VIRTIO_TX_MODE_DEFAULT) {
+            if ((val = virDomainNetVirtioTxModeTypeFromString(txmode)) < 0 ||
+                val == VIR_DOMAIN_NET_VIRTIO_TX_MODE_DEFAULT) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Unknown interface <driver txmode='%s'> "
                                  "has been specified"),
                                txmode);
                 goto error;
             }
-            def->driver.virtio.txmode = m;
+            def->driver.virtio.txmode = val;
         }
         if (ioeventfd) {
-            int val;
             if ((val = virTristateSwitchTypeFromString(ioeventfd)) <= 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unknown interface ioeventfd mode '%s'"),
@@ -7366,14 +7362,13 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             def->driver.virtio.ioeventfd = val;
         }
         if (event_idx) {
-            int idx;
-            if ((idx = virTristateSwitchTypeFromString(event_idx)) <= 0) {
+            if ((val = virTristateSwitchTypeFromString(event_idx)) <= 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unknown interface event_idx mode '%s'"),
                                event_idx);
                 goto error;
             }
-            def->driver.virtio.event_idx = idx;
+            def->driver.virtio.event_idx = val;
         }
         if (queues) {
             unsigned int q;
