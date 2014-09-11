@@ -1941,6 +1941,7 @@ virStorageSourceFree;
 virStorageSourceGetActualType;
 virStorageSourceGetSecurityLabelDef;
 virStorageSourceInitChainElement;
+virStorageSourceIsEmpty;
 virStorageSourceIsLocalStorage;
 virStorageSourceNewFromBacking;
 virStorageSourcePoolDefFree;

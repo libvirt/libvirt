@@ -1976,6 +1976,27 @@ virStorageSourceIsLocalStorage(virStorageSourcePtr src)
 
 
 /**
+ * virStorageSourceIsEmpty:
+ *
+ * @src: disk source to check
+ *
+ * Returns true if the guest disk has no associated host storage source
+ * (such as an empty cdrom drive).
+ */
+bool
+virStorageSourceIsEmpty(virStorageSourcePtr src)
+{
+    if (virStorageSourceIsLocalStorage(src) && !src->path)
+        return true;
+
+    if (src->type == VIR_STORAGE_TYPE_NONE)
+        return true;
+
+    return false;
+}
+
+
+/**
  * virStorageSourceBackingStoreClear:
  *
  * @src: disk source to clear
