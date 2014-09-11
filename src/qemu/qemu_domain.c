@@ -2510,20 +2510,18 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
     for (i = vm->def->ndisks; i > 0; i--) {
         size_t idx = i - 1;
         virDomainDiskDefPtr disk = vm->def->disks[idx];
-        const char *path = virDomainDiskGetSource(disk);
         virStorageFileFormat format = virDomainDiskGetFormat(disk);
-        virStorageType type = virStorageSourceGetActualType(disk->src);
 
-        if (!path)
+        if (virStorageSourceIsEmpty(disk->src))
             continue;
 
         /* There is no need to check the backing chain for disks
          * without backing support, the fact that the file exists is
          * more than enough */
-        if (type != VIR_STORAGE_TYPE_NETWORK &&
+        if (virStorageSourceIsLocalStorage(disk->src) &&
             format >= VIR_STORAGE_FILE_NONE &&
             format < VIR_STORAGE_FILE_BACKING &&
-            virFileExists(path))
+            virFileExists(virDomainDiskGetSource(disk)))
             continue;
 
         if (qemuDomainDetermineDiskChain(driver, vm, disk, false) >= 0 &&
