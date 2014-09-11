@@ -2000,8 +2000,11 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
     }
 
     pid = virFork();
-    if (pid < 0)
-        return -errno;
+    if (pid < 0) {
+        ret = -errno;
+        VIR_FREE(groups);
+        return ret;
+    }
 
     if (pid == 0) {
 
