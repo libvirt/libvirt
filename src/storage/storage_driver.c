@@ -2781,6 +2781,7 @@ virStorageFileChown(virStorageSourcePtr src,
 /* Recursive workhorse for virStorageFileGetMetadata.  */
 static int
 virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
+                                 virStorageSourcePtr parent,
                                  uid_t uid, gid_t gid,
                                  bool allow_probe,
                                  bool report_broken,
@@ -2805,9 +2806,18 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         return -1;
 
     if (virStorageFileAccess(src, F_OK) < 0) {
-        virReportSystemError(errno,
-                             _("Cannot access backing file %s"),
-                             src->path);
+        if (src == parent) {
+            virReportSystemError(errno,
+                                 _("Cannot access storage file '%s' "
+                                   "(as uid:%d, gid:%d)"),
+                                 src->path, (int)uid, (int)gid);
+        } else {
+            virReportSystemError(errno,
+                                 _("Cannot access backing file '%s' "
+                                   "of storage file '%s' (as uid:%d, gid:%d)"),
+                                 src->path, parent->path, (int)uid, (int)gid);
+        }
+
         goto cleanup;
     }
 
@@ -2848,7 +2858,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     else
         backingStore->format = backingFormat;
 
-    if ((ret = virStorageFileGetMetadataRecurse(backingStore,
+    if ((ret = virStorageFileGetMetadataRecurse(backingStore, parent,
                                                 uid, gid,
                                                 allow_probe, report_broken,
                                                 cycle)) < 0) {
@@ -2912,7 +2922,7 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
     if (src->format <= VIR_STORAGE_FILE_NONE)
         src->format = allow_probe ? VIR_STORAGE_FILE_AUTO : VIR_STORAGE_FILE_RAW;
 
-    ret = virStorageFileGetMetadataRecurse(src, uid, gid,
+    ret = virStorageFileGetMetadataRecurse(src, src, uid, gid,
                                            allow_probe, report_broken, cycle);
 
     virHashFree(cycle);
