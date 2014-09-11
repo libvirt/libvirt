@@ -1390,7 +1390,9 @@ if WITH_PARALLELS
 noinst_LTLIBRARIES += libvirt_driver_parallels.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_parallels.la
 libvirt_driver_parallels_la_CFLAGS = \
-		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
+		-I$(top_srcdir)/src/conf $(AM_CFLAGS) \
+		$(PARALLELS_SDK_CFLAGS)
+libvirt_driver_parallels_la_LIBADD = $(PARALLELS_SDK_LIBS)
 libvirt_driver_parallels_la_SOURCES = $(PARALLELS_DRIVER_SOURCES)
 endif WITH_PARALLELS
 

@@ -1046,19 +1046,21 @@ dnl
 dnl Checks for the Parallels driver
 dnl
 
-if test "$with_parallels" = "check"; then
-    with_parallels=$with_linux
-    if test ! $host_cpu = 'x86_64'; then
-        with_parallels=no
+
+if test "$with_parallels" = "yes" ||
+   test "$with_parallels" = "check"; then
+    PKG_CHECK_MODULES([PARALLELS_SDK], [parallels-sdk],
+                      [PARALLELS_SDK_FOUND=yes], [PARALLELS_SDK_FOUND=no])
+
+    if test "$with_parallels" = "yes" && test "$PARALLELS_SDK_FOUND" = "no"; then
+        AC_MSG_ERROR([Parallels Virtualization SDK is needed to build the Parallels driver.])
     fi
-fi
 
-if test "$with_parallels" = "yes" && test "$with_linux" = "no"; then
-    AC_MSG_ERROR([The Parallels driver can be enabled on Linux only.])
-fi
-
-if test "$with_parallels" = "yes"; then
-    AC_DEFINE_UNQUOTED([WITH_PARALLELS], 1, [whether Parallels driver is enabled])
+    with_parallels=$PARALLELS_SDK_FOUND
+    if test "$with_parallels" = "yes"; then
+        AC_DEFINE_UNQUOTED([WITH_PARALLELS], 1,
+                           [whether Parallels driver is enabled])
+    fi
 fi
 AM_CONDITIONAL([WITH_PARALLELS], [test "$with_parallels" = "yes"])
 
