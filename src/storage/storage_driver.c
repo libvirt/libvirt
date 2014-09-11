@@ -2783,6 +2783,7 @@ static int
 virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
                                  uid_t uid, gid_t gid,
                                  bool allow_probe,
+                                 bool report_broken,
                                  virHashTablePtr cycle)
 {
     int ret = -1;
@@ -2847,9 +2848,13 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     else
         backingStore->format = backingFormat;
 
-    if (virStorageFileGetMetadataRecurse(backingStore,
-                                         uid, gid, allow_probe,
-                                         cycle) < 0) {
+    if ((ret = virStorageFileGetMetadataRecurse(backingStore,
+                                                uid, gid,
+                                                allow_probe, report_broken,
+                                                cycle)) < 0) {
+        if (report_broken)
+            goto cleanup;
+
         /* if we fail somewhere midway, just accept and return a
          * broken chain */
         ret = 0;
@@ -2883,15 +2888,20 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
  * format, since a malicious guest can turn a raw file into any
  * other non-raw format at will.
  *
+ * If @report_broken is true, the whole function fails with a possibly sane
+ * error instead of just returning a broken chain.
+ *
  * Caller MUST free result after use via virStorageSourceFree.
  */
 int
 virStorageFileGetMetadata(virStorageSourcePtr src,
                           uid_t uid, gid_t gid,
-                          bool allow_probe)
+                          bool allow_probe,
+                          bool report_broken)
 {
-    VIR_DEBUG("path=%s format=%d uid=%d gid=%d probe=%d",
-              src->path, src->format, (int)uid, (int)gid, allow_probe);
+    VIR_DEBUG("path=%s format=%d uid=%d gid=%d probe=%d, report_broken=%d",
+              src->path, src->format, (int)uid, (int)gid,
+              allow_probe, report_broken);
 
     virHashTablePtr cycle = NULL;
     int ret = -1;
@@ -2903,7 +2913,7 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
         src->format = allow_probe ? VIR_STORAGE_FILE_AUTO : VIR_STORAGE_FILE_RAW;
 
     ret = virStorageFileGetMetadataRecurse(src, uid, gid,
-                                           allow_probe, cycle);
+                                           allow_probe, report_broken, cycle);
 
     virHashFree(cycle);
     return ret;

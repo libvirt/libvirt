@@ -119,7 +119,7 @@ testStorageFileGetMetadata(const char *path,
     if (VIR_STRDUP(ret->path, path) < 0)
         goto error;
 
-    if (virStorageFileGetMetadata(ret, uid, gid, allow_probe) < 0)
+    if (virStorageFileGetMetadata(ret, uid, gid, allow_probe, false) < 0)
         goto error;
 
     return ret;

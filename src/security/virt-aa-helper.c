@@ -932,7 +932,7 @@ get_files(vahControl * ctl)
          */
         if (!disk->src->backingStore) {
             bool probe = ctl->allowDiskFormatProbing;
-            virStorageFileGetMetadata(disk->src, -1, -1, probe);
+            virStorageFileGetMetadata(disk->src, -1, -1, probe, false);
         }
 
         /* XXX passing ignoreOpenFailure = true to get back to the behavior

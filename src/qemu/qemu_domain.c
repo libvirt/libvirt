@@ -2730,7 +2730,8 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 
     if (virStorageFileGetMetadata(disk->src,
                                   uid, gid,
-                                  cfg->allowDiskFormatProbing) < 0)
+                                  cfg->allowDiskFormatProbing,
+                                  false) < 0)
         ret = -1;
 
  cleanup:
