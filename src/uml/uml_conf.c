@@ -124,7 +124,7 @@ umlConnectTapDevice(virConnectPtr conn,
     }
 
     if (virNetDevTapCreateInBridgePort(bridge, &net->ifname, &net->mac,
-                                       vm->uuid, &tapfd, 1,
+                                       vm->uuid, net->backend.tap, &tapfd, 1,
                                        virDomainNetGetActualVirtPortProfile(net),
                                        virDomainNetGetActualVlan(net),
                                        VIR_NETDEV_TAP_CREATE_IFUP |

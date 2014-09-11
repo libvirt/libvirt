@@ -82,7 +82,7 @@ bhyveNetCleanup(virDomainObjPtr vm)
                 ignore_value(virNetDevBridgeRemovePort(
                                 virDomainNetGetActualBridgeName(net),
                                 net->ifname));
-                ignore_value(virNetDevTapDelete(net->ifname));
+                ignore_value(virNetDevTapDelete(net->ifname, NULL));
             }
         }
     }

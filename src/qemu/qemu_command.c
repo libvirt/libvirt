@@ -290,6 +290,10 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     bool template_ifname = false;
     int actualType = virDomainNetGetActualType(net);
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    const char *tunpath = "/dev/net/tun";
+
+    if (net->backend.tap)
+        tunpath = net->backend.tap;
 
     if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
         bool fail = false;
@@ -338,18 +342,18 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
 
     if (cfg->privileged) {
         if (virNetDevTapCreateInBridgePort(brname, &net->ifname, &net->mac,
-                                           def->uuid, tapfd, *tapfdSize,
+                                           def->uuid, tunpath, tapfd, *tapfdSize,
                                            virDomainNetGetActualVirtPortProfile(net),
                                            virDomainNetGetActualVlan(net),
                                            tap_create_flags) < 0) {
-            virDomainAuditNetDevice(def, net, "/dev/net/tun", false);
+            virDomainAuditNetDevice(def, net, tunpath, false);
             goto cleanup;
         }
     } else {
         if (qemuCreateInBridgePortWithHelper(cfg, brname,
                                              &net->ifname,
                                              tapfd, tap_create_flags) < 0) {
-            virDomainAuditNetDevice(def, net, "/dev/net/tun", false);
+            virDomainAuditNetDevice(def, net, tunpath, false);
             goto cleanup;
         }
         /* qemuCreateInBridgePortWithHelper can only create a single FD */
@@ -359,7 +363,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         }
     }
 
-    virDomainAuditNetDevice(def, net, "/dev/net/tun", true);
+    virDomainAuditNetDevice(def, net, tunpath, true);
 
     if (cfg->macFilter &&
         ebtablesAddForwardAllowIn(driver->ebtables,
@@ -443,6 +447,10 @@ qemuOpenVhostNet(virDomainDefPtr def,
                  int *vhostfdSize)
 {
     size_t i;
+    const char *vhostnet_path = net->backend.vhost;
+
+    if (!vhostnet_path)
+        vhostnet_path = "/dev/vhost-net";
 
     /* If running a plain QEMU guest, or
      * if the config says explicitly to not use vhost, return now*/
@@ -480,13 +488,13 @@ qemuOpenVhostNet(virDomainDefPtr def,
     }
 
     for (i = 0; i < *vhostfdSize; i++) {
-        vhostfd[i] = open("/dev/vhost-net", O_RDWR);
+        vhostfd[i] = open(vhostnet_path, O_RDWR);
 
         /* If the config says explicitly to use vhost and we couldn't open it,
          * report an error.
          */
         if (vhostfd[i] < 0) {
-            virDomainAuditNetDevice(def, net, "/dev/vhost-net", false);
+            virDomainAuditNetDevice(def, net, vhostnet_path, false);
             if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                "%s", _("vhost-net was requested for an interface, "
@@ -499,7 +507,7 @@ qemuOpenVhostNet(virDomainDefPtr def,
             break;
         }
     }
-    virDomainAuditNetDevice(def, net, "/dev/vhost-net", *vhostfdSize);
+    virDomainAuditNetDevice(def, net, vhostnet_path, *vhostfdSize);
     return 0;
 
  error:
