@@ -138,6 +138,7 @@ EXTRA_DIST =		\
 	vmx2xmldata \
 	xencapsdata \
 	xmconfigdata \
+	xlconfigdata \
 	xml2sexprdata \
 	xml2vmxdata \
 	vmwareverdata \
@@ -225,7 +226,8 @@ ssh_LDADD = $(COVERAGE_LDFLAGS)
 
 if WITH_XEN
 test_programs += xml2sexprtest sexpr2xmltest \
-	xmconfigtest xencapstest statstest reconnect
+	xmconfigtest xencapstest statstest reconnect \
+	xlconfigtest
 endif WITH_XEN
 if WITH_QEMU
 test_programs += qemuxml2argvtest qemuxml2xmltest qemuxmlnstest \
@@ -476,6 +478,11 @@ sexpr2xmltest_SOURCES = \
 	sexpr2xmltest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
 sexpr2xmltest_LDADD = $(xen_LDADDS)
+
+xlconfigtest_SOURCES = \
+	xlconfigtest.c testutilsxen.c testutilsxen.h \
+	testutils.c testutils.h
+xlconfigtest_LDADD =$(xen_LDADDS)
 
 xmconfigtest_SOURCES = \
 	xmconfigtest.c testutilsxen.c testutilsxen.h \

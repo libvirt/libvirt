@@ -69,3 +69,53 @@ virCapsPtr testXenCapsInit(void)
     virObjectUnref(caps);
     return NULL;
 }
+
+
+virCapsPtr
+testXLInitCaps(void)
+{
+    virCapsPtr caps;
+    virCapsGuestPtr guest;
+    virCapsGuestMachinePtr *machines;
+    int nmachines;
+    static const char *const x86_machines[] = {
+        "xenfv"
+    };
+    static const char *const xen_machines[] = {
+        "xenpv"
+    };
+
+    if ((caps = virCapabilitiesNew(virArchFromHost(),
+                                   false, false)) == NULL)
+        return NULL;
+    nmachines = ARRAY_CARDINALITY(x86_machines);
+    if ((machines = virCapabilitiesAllocMachines(x86_machines, nmachines)) == NULL)
+        goto cleanup;
+    if ((guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_X86_64,
+                                         "/usr/lib/xen/bin/qemu-dm", NULL,
+                                         nmachines, machines)) == NULL)
+        goto cleanup;
+    machines = NULL;
+    if (virCapabilitiesAddGuestDomain(guest, "xen", NULL,
+                                      NULL, 0, NULL) == NULL)
+        goto cleanup;
+    nmachines = ARRAY_CARDINALITY(xen_machines);
+    if ((machines = virCapabilitiesAllocMachines(xen_machines, nmachines)) == NULL)
+        goto cleanup;
+
+    if ((guest = virCapabilitiesAddGuest(caps, "xen", VIR_ARCH_X86_64,
+                                        "/usr/lib/xen/bin/qemu-dm", NULL,
+                                        nmachines, machines)) == NULL)
+        goto cleanup;
+    machines = NULL;
+
+    if (virCapabilitiesAddGuestDomain(guest, "xen", NULL,
+                                      NULL, 0, NULL) == NULL)
+        goto cleanup;
+    return caps;
+
+ cleanup:
+    virCapabilitiesFreeMachines(machines, nmachines);
+    virObjectUnref(caps);
+    return NULL;
+}
