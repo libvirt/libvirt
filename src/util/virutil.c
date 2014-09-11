@@ -1063,6 +1063,7 @@ virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
 
     ret = mgetgroups(user, primary, list);
     if (ret < 0) {
+        sa_assert(!*list);
         virReportSystemError(errno,
                              _("cannot get group list for '%s'"), user);
         goto cleanup;
