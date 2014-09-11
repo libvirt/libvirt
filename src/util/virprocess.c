@@ -28,7 +28,6 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <sys/syscall.h>
 #if HAVE_SETRLIMIT
 # include <sys/time.h>
 # include <sys/resource.h>
@@ -78,10 +77,21 @@ VIR_LOG_INIT("util.process");
 #endif
 
 #ifndef HAVE_SETNS
+# ifndef WIN32
+#  include <sys/syscall.h>
+
 static inline int setns(int fd, int nstype)
 {
     return syscall(__NR_setns, fd, nstype);
 }
+# else
+static inline int setns(int fd ATTRIBUTE_UNUSED, int nstype ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Namespaces are not supported on windows."));
+    return -1;
+}
+# endif /* WIN32 */
 #endif /* HAVE_SETNS */
 
 /**
