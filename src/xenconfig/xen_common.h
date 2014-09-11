@@ -27,11 +27,25 @@
 # include "virconf.h"
 # include "domain_conf.h"
 
-int
-xenConfigGetString(virConfPtr conf,
-                   const char *name,
-                   const char **value,
-                   const char *def);
+int xenConfigGetString(virConfPtr conf,
+                       const char *name,
+                       const char **value,
+                       const char *def);
+
+int xenConfigGetBool(virConfPtr conf, const char *name, int *value, int def);
+
+int xenConfigSetInt(virConfPtr conf, const char *name, long long value);
+
+int xenConfigSetString(virConfPtr conf, const char *setting, const char *value);
+
+int xenConfigGetULong(virConfPtr conf,
+                      const char *name,
+                      unsigned long *value,
+                      unsigned long def);
+
+int xenConfigCopyStringOpt(virConfPtr conf,
+                           const char *name,
+                           char **value);
 
 int xenParseConfigCommon(virConfPtr conf,
                          virDomainDefPtr def,
