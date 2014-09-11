@@ -2513,27 +2513,6 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
     return -1;
 }
 
-static int
-qemuDiskChainCheckBroken(virDomainDiskDefPtr disk)
-{
-    char *brokenFile = NULL;
-
-    if (!virDomainDiskGetSource(disk))
-        return 0;
-
-    if (virStorageFileChainGetBroken(disk->src, &brokenFile) < 0)
-        return -1;
-
-    if (brokenFile) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Backing file '%s' of image '%s' is missing."),
-                       brokenFile, virDomainDiskGetSource(disk));
-        VIR_FREE(brokenFile);
-        return -1;
-    }
-
-    return 0;
-}
 
 int
 qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
@@ -2561,8 +2540,7 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
             virFileExists(virDomainDiskGetSource(disk)))
             continue;
 
-        if (qemuDomainDetermineDiskChain(driver, vm, disk, false) >= 0 &&
-            qemuDiskChainCheckBroken(disk) >= 0)
+        if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) >= 0)
             continue;
 
         if (disk->startupPolicy &&
@@ -2707,7 +2685,8 @@ int
 qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              virDomainDiskDefPtr disk,
-                             bool force_probe)
+                             bool force_probe,
+                             bool report_broken)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = 0;
@@ -2729,7 +2708,7 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
     if (virStorageFileGetMetadata(disk->src,
                                   uid, gid,
                                   cfg->allowDiskFormatProbing,
-                                  false) < 0)
+                                  report_broken) < 0)
         ret = -1;
 
  cleanup:

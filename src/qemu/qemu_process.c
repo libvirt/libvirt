@@ -1090,7 +1090,8 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
             save = disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
             disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
             disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
-            qemuDomainDetermineDiskChain(driver, vm, disk, true);
+            ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk,
+                                                      true, true));
         } else if (disk->mirror &&
                    (type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY ||
                     type == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)) {
@@ -3430,9 +3431,12 @@ qemuProcessReconnect(void *opaque)
         if (virStorageTranslateDiskSourcePool(conn, obj->def->disks[i]) < 0)
             goto error;
 
-        /* XXX we should be able to restore all data from XML in the future */
-        if (qemuDomainDetermineDiskChain(driver, obj,
-                                         obj->def->disks[i], true) < 0)
+        /* XXX we should be able to restore all data from XML in the future.
+         * This should be the only place that calls qemuDomainDetermineDiskChain
+         * with @report_broken == false to guarantee best-effort domain
+         * reconnect */
+        if (qemuDomainDetermineDiskChain(driver, obj, obj->def->disks[i],
+                                         true, false) < 0)
             goto error;
 
         dev.type = VIR_DOMAIN_DEVICE_DISK;

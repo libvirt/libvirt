@@ -6833,7 +6833,7 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
     if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
         goto end;
 
-    if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0)
+    if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) < 0)
         goto end;
 
     switch (disk->device) {
@@ -13254,7 +13254,8 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     for (i = 0; i < snap->def->ndisks; i++) {
         if (snap->def->disks[i].snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
             continue;
-        qemuDomainDetermineDiskChain(driver, vm, vm->def->disks[i], true);
+        ignore_value(qemuDomainDetermineDiskChain(driver, vm, vm->def->disks[i],
+                                                  true, true));
     }
     if (orig_err) {
         virSetError(orig_err);
@@ -15062,7 +15063,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
         oldsrc = disk->src;
         disk->src = disk->mirror;
 
-        if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0)
+        if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) < 0)
             goto cleanup;
 
         if (disk->mirror->format &&
@@ -15575,7 +15576,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         goto endjob;
     }
 
-    if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0)
+    if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) < 0)
         goto endjob;
 
     if ((flags & VIR_DOMAIN_BLOCK_COPY_SHALLOW) &&
@@ -15944,7 +15945,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
                        disk->dst);
         goto endjob;
     }
-    if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0)
+    if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) < 0)
         goto endjob;
 
     if (!top)
