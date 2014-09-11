@@ -2347,7 +2347,7 @@ virSecuritySELinuxSetTapFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     virSecurityLabelDefPtr secdef;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-    if (!secdef || !secdef->label)
+    if (!secdef || !secdef->imagelabel)
         return 0;
 
     return virSecuritySELinuxFSetFilecon(fd, secdef->imagelabel);
