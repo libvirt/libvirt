@@ -1,0 +1,10 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -usb \
+-hda /dev/HostVG/QEMUGuest7 \
+-device virtio-net-pci,csum=off,gso=off,\
+host_tso4=off,host_tso6=off,host_ecn=off,host_ufo=off,\
+guest_csum=off,guest_tso4=off,guest_tso6=off,guest_ecn=off,guest_ufo=off,\
+vlan=0,id=net0,mac=00:22:44:66:88:aa,bus=pci.0,addr=0x3 \
+-net user,vlan=0,name=hostnet0 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4

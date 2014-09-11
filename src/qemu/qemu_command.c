@@ -4473,6 +4473,50 @@ qemuBuildNicDevStr(virDomainDefPtr def,
             virBufferAsprintf(&buf, ",event_idx=%s",
                               virTristateSwitchTypeToString(net->driver.virtio.event_idx));
         }
+        if (net->driver.virtio.host.csum) {
+            virBufferAsprintf(&buf, ",csum=%s",
+                              virTristateSwitchTypeToString(net->driver.virtio.host.csum));
+        }
+        if (net->driver.virtio.host.gso) {
+            virBufferAsprintf(&buf, ",gso=%s",
+                              virTristateSwitchTypeToString(net->driver.virtio.host.gso));
+        }
+        if (net->driver.virtio.host.tso4) {
+            virBufferAsprintf(&buf, ",host_tso4=%s",
+                              virTristateSwitchTypeToString(net->driver.virtio.host.tso4));
+        }
+        if (net->driver.virtio.host.tso6) {
+            virBufferAsprintf(&buf, ",host_tso6=%s",
+                              virTristateSwitchTypeToString(net->driver.virtio.host.tso6));
+        }
+        if (net->driver.virtio.host.ecn) {
+            virBufferAsprintf(&buf, ",host_ecn=%s",
+                              virTristateSwitchTypeToString(net->driver.virtio.host.ecn));
+        }
+        if (net->driver.virtio.host.ufo) {
+            virBufferAsprintf(&buf, ",host_ufo=%s",
+                              virTristateSwitchTypeToString(net->driver.virtio.host.ufo));
+        }
+        if (net->driver.virtio.guest.csum) {
+            virBufferAsprintf(&buf, ",guest_csum=%s",
+                              virTristateSwitchTypeToString(net->driver.virtio.guest.csum));
+        }
+        if (net->driver.virtio.guest.tso4) {
+            virBufferAsprintf(&buf, ",guest_tso4=%s",
+                              virTristateSwitchTypeToString(net->driver.virtio.guest.tso4));
+        }
+        if (net->driver.virtio.guest.tso6) {
+            virBufferAsprintf(&buf, ",guest_tso6=%s",
+                              virTristateSwitchTypeToString(net->driver.virtio.guest.tso6));
+        }
+        if (net->driver.virtio.guest.ecn) {
+            virBufferAsprintf(&buf, ",guest_ecn=%s",
+                              virTristateSwitchTypeToString(net->driver.virtio.guest.ecn));
+        }
+        if (net->driver.virtio.guest.ufo) {
+            virBufferAsprintf(&buf, ",guest_ufo=%s",
+                              virTristateSwitchTypeToString(net->driver.virtio.guest.ufo));
+        }
     }
     if (usingVirtio && vhostfdSize > 1) {
         /* As advised at http://www.linux-kvm.org/page/Multiqueue
