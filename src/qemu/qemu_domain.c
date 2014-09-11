@@ -2439,11 +2439,8 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
                                  size_t diskIndex,
                                  bool cold_boot)
 {
-    char uuid[VIR_UUID_STRING_BUFLEN];
     int startupPolicy = vm->def->disks[diskIndex]->startupPolicy;
     int device = vm->def->disks[diskIndex]->device;
-
-    virUUIDFormat(vm->def->uuid, uuid);
 
     switch ((virDomainStartupPolicy) startupPolicy) {
         case VIR_DOMAIN_STARTUP_POLICY_OPTIONAL:
