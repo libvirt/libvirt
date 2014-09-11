@@ -2891,7 +2891,8 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
                 return -1;
             }
 
-            virDomainHostdevInsert(vmdef, hostdev);
+            if (virDomainHostdevInsert(vmdef, hostdev) < 0)
+                return -1;
             break;
 
         default:
