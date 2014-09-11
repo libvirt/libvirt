@@ -3248,6 +3248,10 @@ static const vshCmdOptDef opts_undefine[] = {
      .type = VSH_OT_BOOL,
      .help = N_("remove all domain snapshot metadata, if inactive")
     },
+    {.name = "nvram",
+     .type = VSH_OT_BOOL,
+     .help = N_("remove nvram file, if inactive")
+    },
     {.name = NULL}
 };
 
@@ -3270,6 +3274,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     bool snapshots_metadata = vshCommandOptBool(cmd, "snapshots-metadata");
     bool wipe_storage = vshCommandOptBool(cmd, "wipe-storage");
     bool remove_all_storage = vshCommandOptBool(cmd, "remove-all-storage");
+    bool nvram = vshCommandOptBool(cmd, "nvram");
     /* Positive if these items exist.  */
     int has_managed_save = 0;
     int has_snapshots_metadata = 0;
@@ -3312,6 +3317,9 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     if (snapshots_metadata) {
         flags |= VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA;
         snapshots_safe = true;
+    }
+    if (nvram) {
+        flags |= VIR_DOMAIN_UNDEFINE_NVRAM;
     }
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
@@ -3503,11 +3511,15 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
      * VIR_DOMAIN_UNDEFINE_MANAGED_SAVE in 0.9.4, the
      * VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA flag was not present
      * until 0.9.5; skip to piecewise emulation if we couldn't prove
-     * above that the new API is safe.  */
-    if (managed_save_safe && snapshots_safe) {
+     * above that the new API is safe.
+     * Moreover, only the newer UndefineFlags() API understands
+     * the VIR_DOMAIN_UNDEFINE_NVRAM flag. So if user has
+     * specified --nvram we must use the Flags() API. */
+    if ((managed_save_safe && snapshots_safe) || nvram) {
         rc = virDomainUndefineFlags(dom, flags);
-        if (rc == 0 || (last_error->code != VIR_ERR_NO_SUPPORT &&
-                        last_error->code != VIR_ERR_INVALID_ARG))
+        if (rc == 0 || nvram ||
+            (last_error->code != VIR_ERR_NO_SUPPORT &&
+             last_error->code != VIR_ERR_INVALID_ARG))
             goto out;
         vshResetLibvirtError();
     }

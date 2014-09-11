@@ -2257,6 +2257,8 @@ typedef enum {
     VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA = (1 << 1), /* If last use of domain,
                                                           then also remove any
                                                           snapshot metadata */
+    VIR_DOMAIN_UNDEFINE_NVRAM              = (1 << 2), /* Also remove any
+                                                          nvram file */
 
     /* Future undefine control flags should come here. */
 } virDomainUndefineFlagsValues;

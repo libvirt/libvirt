@@ -6408,7 +6408,8 @@ qemuDomainUndefineFlags(virDomainPtr dom,
     virQEMUDriverConfigPtr cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_UNDEFINE_MANAGED_SAVE |
-                  VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA, -1);
+                  VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA |
+                  VIR_DOMAIN_UNDEFINE_NVRAM, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
@@ -6453,6 +6454,23 @@ qemuDomainUndefineFlags(virDomainPtr dom,
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("Refusing to undefine while domain managed "
                              "save image exists"));
+            goto cleanup;
+        }
+    }
+
+    if (!virDomainObjIsActive(vm) &&
+        vm->def->os.loader && vm->def->os.loader->nvram &&
+        virFileExists(vm->def->os.loader->nvram)) {
+        if (!(flags & VIR_DOMAIN_UNDEFINE_NVRAM)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot delete inactive domain with nvram"));
+            goto cleanup;
+        }
+
+        if (unlink(vm->def->os.loader->nvram) < 0) {
+            virReportSystemError(errno,
+                                 _("failed to remove nvram: %s"),
+                                 vm->def->os.loader->nvram);
             goto cleanup;
         }
     }
