@@ -561,7 +561,13 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
         if (VIR_STRDUP(disk->name, def->dom->disks[i]->dst) < 0)
             goto cleanup;
         disk->index = i;
-        disk->snapshot = def->dom->disks[i]->snapshot;
+
+        /* Don't snapshot empty drives */
+        if (virStorageSourceIsEmpty(def->dom->disks[i]->src))
+            disk->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
+        else
+            disk->snapshot = def->dom->disks[i]->snapshot;
+
         disk->src->type = VIR_STORAGE_TYPE_FILE;
         if (!disk->snapshot)
             disk->snapshot = default_snapshot;
