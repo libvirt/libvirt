@@ -163,9 +163,9 @@ static int daemonForkIntoBackground(const char *argv0)
 
             VIR_FORCE_CLOSE(statuspipe[0]);
 
-            if ((stdinfd = open("/dev/null", O_RDONLY)) < 0)
+            if ((stdinfd = open("/dev/null", O_RDONLY)) <= STDERR_FILENO)
                 goto cleanup;
-            if ((stdoutfd = open("/dev/null", O_WRONLY)) < 0)
+            if ((stdoutfd = open("/dev/null", O_WRONLY)) <= STDERR_FILENO)
                 goto cleanup;
             if (dup2(stdinfd, STDIN_FILENO) != STDIN_FILENO)
                 goto cleanup;
@@ -173,9 +173,9 @@ static int daemonForkIntoBackground(const char *argv0)
                 goto cleanup;
             if (dup2(stdoutfd, STDERR_FILENO) != STDERR_FILENO)
                 goto cleanup;
-            if (stdinfd > STDERR_FILENO && VIR_CLOSE(stdinfd) < 0)
+            if (VIR_CLOSE(stdinfd) < 0)
                 goto cleanup;
-            if (stdoutfd > STDERR_FILENO && VIR_CLOSE(stdoutfd) < 0)
+            if (VIR_CLOSE(stdoutfd) < 0)
                 goto cleanup;
 
             if (setsid() < 0)
