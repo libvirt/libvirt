@@ -1728,7 +1728,7 @@ virQEMUCapsParseDeviceStrObjectProps(const char *str,
     ret = nproplist;
 
  cleanup:
-    if (ret < 0)
+    if (ret < 0 && proplist)
         virQEMUCapsFreeStringList(nproplist, proplist);
     return ret;
 }
