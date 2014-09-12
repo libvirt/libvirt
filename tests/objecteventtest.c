@@ -359,7 +359,8 @@ testDomainStartStopEvent(const void *data)
 
     /* Test domain is started */
     virDomainDestroy(dom);
-    virDomainCreate(dom);
+    if (virDomainCreate(dom) < 0)
+        goto cleanup;
 
     if (virEventRunDefaultImpl() < 0)
         goto cleanup;

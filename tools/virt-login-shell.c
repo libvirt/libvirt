@@ -275,7 +275,7 @@ main(int argc, char **argv)
     if (!dom)
         goto cleanup;
 
-    if (!virDomainIsActive(dom) && virDomainCreate(dom)) {
+    if (!virDomainIsActive(dom) && virDomainCreate(dom) < 0) {
         virErrorPtr last_error;
         last_error = virGetLastError();
         if (last_error->code != VIR_ERR_OPERATION_INVALID) {
