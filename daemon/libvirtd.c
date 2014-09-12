@@ -442,12 +442,13 @@ static void daemonInitialize(void)
 }
 
 
-static int daemonSetupNetworking(virNetServerPtr srv,
-                                 struct daemonConfig *config,
-                                 const char *sock_path,
-                                 const char *sock_path_ro,
-                                 bool ipsock,
-                                 bool privileged)
+static int ATTRIBUTE_NONNULL(3)
+daemonSetupNetworking(virNetServerPtr srv,
+                      struct daemonConfig *config,
+                      const char *sock_path,
+                      const char *sock_path_ro,
+                      bool ipsock,
+                      bool privileged)
 {
     virNetServerServicePtr svc = NULL;
     virNetServerServicePtr svcRO = NULL;
@@ -467,7 +468,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
             return -1;
     }
 
-    if (nfds && nfds > ((int)!!sock_path + (int)!!sock_path_ro)) {
+    if (nfds > (sock_path_ro ? 2 : 1)) {
         VIR_ERROR(_("Too many (%u) FDs passed from caller"), nfds);
         return -1;
     }
