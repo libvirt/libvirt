@@ -5114,10 +5114,6 @@ static const vshCmdOptDef opts_resume[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("domain name, id or uuid")
     },
-    {.name = "completed",
-     .type = VSH_OT_BOOL,
-     .help = N_("return statistics of a recently completed job")
-    },
     {.name = NULL}
 };
 
@@ -5376,6 +5372,10 @@ static const vshCmdOptDef opts_domjobinfo[] = {
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
      .help = N_("domain name, id or uuid")
+    },
+    {.name = "completed",
+     .type = VSH_OT_BOOL,
+     .help = N_("return statistics of a recently completed job")
     },
     {.name = NULL}
 };
