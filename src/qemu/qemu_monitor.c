@@ -478,6 +478,8 @@ static int
 qemuMonitorIOWrite(qemuMonitorPtr mon)
 {
     int done;
+    char *buf;
+    size_t len;
 
     /* If no active message, or fully transmitted, the no-op */
     if (!mon->msg || mon->msg->txOffset == mon->msg->txLength)
@@ -489,22 +491,16 @@ qemuMonitorIOWrite(qemuMonitorPtr mon)
         return -1;
     }
 
+    buf = mon->msg->txBuffer + mon->msg->txOffset;
+    len = mon->msg->txLength - mon->msg->txOffset;
     if (mon->msg->txFD == -1)
-        done = write(mon->fd,
-                     mon->msg->txBuffer + mon->msg->txOffset,
-                     mon->msg->txLength - mon->msg->txOffset);
+        done = write(mon->fd, buf, len);
     else
-        done = qemuMonitorIOWriteWithFD(mon,
-                                        mon->msg->txBuffer + mon->msg->txOffset,
-                                        mon->msg->txLength - mon->msg->txOffset,
-                                        mon->msg->txFD);
+        done = qemuMonitorIOWriteWithFD(mon, buf, len, mon->msg->txFD);
 
     PROBE(QEMU_MONITOR_IO_WRITE,
-          "mon=%p buf=%s len=%d ret=%d errno=%d",
-          mon,
-          mon->msg->txBuffer + mon->msg->txOffset,
-          mon->msg->txLength - mon->msg->txOffset,
-          done, errno);
+          "mon=%p buf=%s len=%lu ret=%d errno=%d",
+          mon, buf, len, done, errno);
 
     if (mon->msg->txFD != -1) {
         PROBE(QEMU_MONITOR_IO_SEND_FD,
