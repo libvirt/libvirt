@@ -18088,9 +18088,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if ((def->mem.hard_limit &&
          def->mem.hard_limit != VIR_DOMAIN_MEMORY_PARAM_UNLIMITED) ||
         (def->mem.soft_limit &&
-         def->mem.hard_limit != VIR_DOMAIN_MEMORY_PARAM_UNLIMITED) ||
+         def->mem.soft_limit != VIR_DOMAIN_MEMORY_PARAM_UNLIMITED) ||
         (def->mem.swap_hard_limit &&
-         def->mem.hard_limit != VIR_DOMAIN_MEMORY_PARAM_UNLIMITED) ||
+         def->mem.swap_hard_limit != VIR_DOMAIN_MEMORY_PARAM_UNLIMITED) ||
         def->mem.min_guarantee) {
         virBufferAddLit(buf, "<memtune>\n");
         virBufferAdjustIndent(buf, 2);
