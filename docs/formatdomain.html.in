@@ -102,7 +102,7 @@
   ...
   &lt;os&gt;
     &lt;type&gt;hvm&lt;/type&gt;
-    &lt;loader readonly='on' type='rom'&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
+    &lt;loader readonly='yes' type='rom'&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
     &lt;nvram template='/usr/share/OVMF/OVMF_VARS.fd'&gt;/var/lib/libvirt/nvram/guest_VARS.fd&lt;/nvram&gt;
     &lt;boot dev='hd'/&gt;
     &lt;boot dev='cdrom'/&gt;
