@@ -9825,8 +9825,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
         /* TLS Port */
         if (tls_port) {
             virBufferAsprintf(&buf,
-                              "%stls-port=%d",
-                              params ? "&" : "?",
+                              "?tls-port=%d",
                               tls_port);
             params = true;
         }
