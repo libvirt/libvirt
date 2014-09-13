@@ -714,7 +714,7 @@ qemuSetSCSIControllerModel(virDomainDefPtr def,
         }
     } else {
         if ((def->os.arch == VIR_ARCH_PPC64) &&
-            STREQ(def->os.machine, "pseries")) {
+            STRPREFIX(def->os.machine, "pseries")) {
             *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
         } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI)) {
             *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
@@ -1261,7 +1261,7 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
     for (i = 0; i < def->nserials; i++) {
         if (def->serials[i]->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
             (def->os.arch == VIR_ARCH_PPC64) &&
-            STREQ(def->os.machine, "pseries"))
+            STRPREFIX(def->os.machine, "pseries"))
             def->serials[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
         if (qemuAssignSpaprVIOAddress(def, &def->serials[i]->info,
                                       VIO_ADDR_SERIAL) < 0)
@@ -1270,7 +1270,7 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
 
     if (def->nvram) {
         if (def->os.arch == VIR_ARCH_PPC64 &&
-            STREQ(def->os.machine, "pseries"))
+            STRPREFIX(def->os.machine, "pseries"))
             def->nvram->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
         if (qemuAssignSpaprVIOAddress(def, &def->nvram->info,
                                       VIO_ADDR_NVRAM) < 0)
@@ -9462,7 +9462,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     if (def->nvram) {
         if (def->os.arch == VIR_ARCH_PPC64 &&
-            STREQ(def->os.machine, "pseries")) {
+            STRPREFIX(def->os.machine, "pseries")) {
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVRAM)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("nvram device is not supported by "
@@ -9579,7 +9579,7 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
 {
     virBuffer cmd = VIR_BUFFER_INITIALIZER;
 
-    if ((arch == VIR_ARCH_PPC64) && STREQ(machine, "pseries")) {
+    if ((arch == VIR_ARCH_PPC64) && STRPREFIX(machine, "pseries")) {
         if (serial->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
             serial->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO) {
             virBufferAsprintf(&cmd, "spapr-vty,chardev=char%s",
@@ -10002,7 +10002,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
         goto error;
 
     if (((dom->os.arch == VIR_ARCH_PPC64) &&
-        dom->os.machine && STREQ(dom->os.machine, "pseries")))
+        dom->os.machine && STRPREFIX(dom->os.machine, "pseries")))
         def->bus = VIR_DOMAIN_DISK_BUS_SCSI;
     else
        def->bus = VIR_DOMAIN_DISK_BUS_IDE;
@@ -10095,7 +10095,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
             if (STREQ(values[i], "ide")) {
                 def->bus = VIR_DOMAIN_DISK_BUS_IDE;
                 if (((dom->os.arch == VIR_ARCH_PPC64) &&
-                     dom->os.machine && STREQ(dom->os.machine, "pseries"))) {
+                     dom->os.machine && STRPREFIX(dom->os.machine, "pseries"))) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("pseries systems do not support ide devices '%s'"), val);
                     goto error;
@@ -11340,7 +11340,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             if (STREQ(arg, "-cdrom")) {
                 disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
                 if (((def->os.arch == VIR_ARCH_PPC64) &&
-                    def->os.machine && STREQ(def->os.machine, "pseries")))
+                    def->os.machine && STRPREFIX(def->os.machine, "pseries")))
                     disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
                 if (VIR_STRDUP(disk->dst, "hdc") < 0)
                     goto error;
@@ -11356,7 +11356,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                     else
                         disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
                    if (((def->os.arch == VIR_ARCH_PPC64) &&
-                       def->os.machine && STREQ(def->os.machine, "pseries")))
+                       def->os.machine && STRPREFIX(def->os.machine, "pseries")))
                        disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
                 }
                 if (VIR_STRDUP(disk->dst, arg + 1) < 0)
