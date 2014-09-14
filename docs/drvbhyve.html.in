@@ -141,5 +141,21 @@ tweak them.</p>
 /usr/sbin/bhyve -c 2 -m 214 -A -I -H -P -s 0:0,hostbridge -s 3:0,virtio-net,tap0,mac=52:54:00:5d:74:e3 -s 2:0,virtio-blk,/home/user/vm1.img -s 1,lpc -l com1,/dev/nmdm0A vm1
 </pre>
 
+<h3><a name="zfsvolume">Using ZFS volumes</a></h3>
+
+<p>It's possible to use ZFS volumes as disk devices <span class="since">since 1.2.8</span>.
+An example of domain XML device entry for that will look like:</p>
+
+<pre>
+  ...
+  &lt;disk type='volume' device='disk'&gt;
+    &lt;source pool='zfspool' volume='vol1'/&gt;
+    &lt;target dev='vdb' bus='virtio'/&gt;
+  &lt;/disk&gt;
+  ...</pre>
+
+<p>Please refer to the <a href="storage.html">Storage documentation</a> for more details on storage
+management.</p>
+
   </body>
 </html>

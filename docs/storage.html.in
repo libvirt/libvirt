@@ -750,13 +750,17 @@
     <p>
       This provides a pool based on the ZFS filesystem. It is currently
       supported on FreeBSD only.
-
-      A pool has to be created before libvirt could start using it. That
-      could be done using <code>zpool create</code> command. Please refer to
-      the ZFS documentation for details on a pool creation.
-
-      <span class="since">Since 1.2.8</span>
     </p>
+
+    <p>A pool could either be created manually using the <code>zpool create</code>
+      command and its name specified in the source section or <span class="since">
+      since 1.2.9</span> source devices could be specified to create a pool using
+      libvirt.
+    </p>
+
+    <p>Please refer to the ZFS documentation for details on a pool creation.</p>
+
+    <p><span class="since">Since 1.2.8</span></p>.
 
     <h3>Example pool input</h3>
     <pre>
@@ -764,8 +768,10 @@
         &lt;name&gt;myzfspool&lt;/name&gt;
         &lt;source&gt;
           &lt;name&gt;zpoolname&lt;/name&gt;
+          &lt;device path="/dev/ada1"/&gt;
+          &lt;device path="/dev/ada2"/&gt;
         &lt;/source&gt;
-       &lt;/pool&gt;</pre>
+      &lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
     <p>
