@@ -96,6 +96,7 @@
 #include "storage/storage_driver.h"
 #include "virhostdev.h"
 #include "domain_capabilities.h"
+#include "vircgroup.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -17406,6 +17407,48 @@ typedef enum {
 #define HAVE_JOB(flags) ((flags) & QEMU_DOMAIN_STATS_HAVE_JOB)
 
 
+static int
+qemuDomainGetStatsCpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                      virDomainObjPtr dom,
+                      virDomainStatsRecordPtr record,
+                      int *maxparams,
+                      unsigned int privflags ATTRIBUTE_UNUSED)
+{
+    qemuDomainObjPrivatePtr priv = dom->privateData;
+    unsigned long long cpu_time = 0;
+    unsigned long long user_time = 0;
+    unsigned long long sys_time = 0;
+    int err = 0;
+
+    if (!priv->cgroup)
+        return 0;
+
+    err = virCgroupGetCpuacctUsage(priv->cgroup, &cpu_time);
+    if (!err && virTypedParamsAddULLong(&record->params,
+                                        &record->nparams,
+                                        maxparams,
+                                        "cpu.time",
+                                        cpu_time) < 0)
+        return -1;
+
+    err = virCgroupGetCpuacctStat(priv->cgroup, &user_time, &sys_time);
+    if (!err && virTypedParamsAddULLong(&record->params,
+                                        &record->nparams,
+                                        maxparams,
+                                        "cpu.user",
+                                        user_time) < 0)
+        return -1;
+    if (!err && virTypedParamsAddULLong(&record->params,
+                                        &record->nparams,
+                                        maxparams,
+                                        "cpu.system",
+                                        sys_time) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 typedef int
 (*qemuDomainGetStatsFunc)(virQEMUDriverPtr driver,
                           virDomainObjPtr dom,
@@ -17421,6 +17464,7 @@ struct qemuDomainGetStatsWorker {
 
 static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
     { qemuDomainGetStatsState, VIR_DOMAIN_STATS_STATE, false },
+    { qemuDomainGetStatsCpu, VIR_DOMAIN_STATS_CPU_TOTAL, false },
     { NULL, 0, false }
 };
 

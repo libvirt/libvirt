@@ -21596,6 +21596,14 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  * "state.reason" - reason for entering given state, returned as int from
  *                  virDomain*Reason enum corresponding to given state.
  *
+ * VIR_DOMAIN_STATS_CPU_TOTAL: Return CPU statistics and usage information.
+ * The typed parameter keys are in this format:
+ * "cpu.time" - total cpu time spent for this domain in nanoseconds
+ *              as unsigned long long.
+ * "cpu.user" - user cpu time spent in nanoseconds as unsigned long long.
+ * "cpu.system" - system cpu time spent in nanoseconds as unsigned long long.
+ *
+ *
  * Using 0 for @stats returns all stats groups supported by the given
  * hypervisor.
  *
