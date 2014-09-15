@@ -71,27 +71,33 @@ VIR_LOG_INIT("util.process");
 #  define __NR_setns 308
 # elif defined(__i386__)
 #  define __NR_setns 346
-# else
-#  error "__NR_setns is not defined"
+# elif defined(__arm__)
+#  define __NR_setns 375
+# elif defined(__aarch64__)
+#  define __NR_setns 375
+# elif defined(__powerpc__)
+#  define __NR_setns 350
+# elif defined(__s390__)
+#  define __NR_setns 339
 # endif
 #endif
 
 #ifndef HAVE_SETNS
-# ifndef WIN32
+# if defined(__NR_setns) && !defined(WIN32)
 #  include <sys/syscall.h>
 
 static inline int setns(int fd, int nstype)
 {
     return syscall(__NR_setns, fd, nstype);
 }
-# else
+# else /* __NR_setns && !WIN32 */
 static inline int setns(int fd ATTRIBUTE_UNUSED, int nstype ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
-                         _("Namespaces are not supported on windows."));
+                         _("Namespaces are not supported on this platform."));
     return -1;
 }
-# endif /* WIN32 */
+# endif /* __NR_setns && !WIN32 */
 #endif /* HAVE_SETNS */
 
 /**
