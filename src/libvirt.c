@@ -21603,6 +21603,12 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  * "cpu.user" - user cpu time spent in nanoseconds as unsigned long long.
  * "cpu.system" - system cpu time spent in nanoseconds as unsigned long long.
  *
+ * VIR_DOMAIN_STATS_BALLOON: Return memory balloon device information.
+ * The typed parameter keys are in this format:
+ * "balloon.current" - the memory in kiB currently used
+ *                     as unsigned long long.
+ * "balloon.maximum" - the maximum memory in kiB allowed
+ *                     as unsigned long long.
  *
  * Using 0 for @stats returns all stats groups supported by the given
  * hypervisor.

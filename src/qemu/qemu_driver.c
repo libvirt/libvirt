@@ -17448,6 +17448,42 @@ qemuDomainGetStatsCpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+qemuDomainGetStatsBalloon(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                          virDomainObjPtr dom,
+                          virDomainStatsRecordPtr record,
+                          int *maxparams,
+                          unsigned int privflags ATTRIBUTE_UNUSED)
+{
+    qemuDomainObjPrivatePtr priv = dom->privateData;
+    unsigned long long cur_balloon = 0;
+    int err = 0;
+
+    if (dom->def->memballoon &&
+        dom->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
+        cur_balloon = dom->def->mem.max_balloon;
+    } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BALLOON_EVENT)) {
+        cur_balloon = dom->def->mem.cur_balloon;
+    } else {
+        err = -1;
+    }
+
+    if (!err && virTypedParamsAddULLong(&record->params,
+                                        &record->nparams,
+                                        maxparams,
+                                        "balloon.current",
+                                        cur_balloon) < 0)
+        return -1;
+
+    if (virTypedParamsAddULLong(&record->params,
+                                &record->nparams,
+                                maxparams,
+                                "balloon.maximum",
+                                dom->def->mem.max_balloon) < 0)
+        return -1;
+
+    return 0;
+}
 
 typedef int
 (*qemuDomainGetStatsFunc)(virQEMUDriverPtr driver,
@@ -17465,6 +17501,7 @@ struct qemuDomainGetStatsWorker {
 static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
     { qemuDomainGetStatsState, VIR_DOMAIN_STATS_STATE, false },
     { qemuDomainGetStatsCpu, VIR_DOMAIN_STATS_CPU_TOTAL, false },
+    { qemuDomainGetStatsBalloon, VIR_DOMAIN_STATS_BALLOON, true },
     { NULL, 0, false }
 };
 
