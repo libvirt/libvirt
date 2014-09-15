@@ -21656,6 +21656,12 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *                          unsigned long long.
  * "block.<num>.errors" - Xen only: the 'oo_req' value as
  *                        unsigned long long.
+ * "block.<num>.allocation" - offset of the highest written sector
+ *                            as unsigned long long.
+ * "block.<num>.capacity" - logical size in bytes of the block device backing
+ *                          image as unsigned long long.
+ * "block.<num>.physical" - physical size in bytes of the container of the
+ *                          backing image as unsigned long long.
  *
  * Note that entire stats groups or individual stat fields may be missing from
  * the output in case they are not supported by the given hypervisor, are not

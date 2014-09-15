@@ -360,6 +360,7 @@ struct _qemuBlockStats {
     long long flush_total_times;
     unsigned long long capacity;
     unsigned long long physical;
+    unsigned long long wr_highest_offset;
 };
 
 int qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,

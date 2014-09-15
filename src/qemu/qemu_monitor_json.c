@@ -1782,6 +1782,40 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
 }
 
 
+typedef enum {
+    QEMU_MONITOR_BLOCK_EXTENT_ERROR_OK,
+    QEMU_MONITOR_BLOCK_EXTENT_ERROR_NOPARENT,
+    QEMU_MONITOR_BLOCK_EXTENT_ERROR_NOSTATS,
+    QEMU_MONITOR_BLOCK_EXTENT_ERROR_NOOFFSET,
+} qemuMonitorBlockExtentError;
+
+
+static int
+qemuMonitorJSONDevGetBlockExtent(virJSONValuePtr dev,
+                                 unsigned long long *extent)
+{
+    virJSONValuePtr stats;
+    virJSONValuePtr parent;
+
+    if ((parent = virJSONValueObjectGet(dev, "parent")) == NULL ||
+        parent->type != VIR_JSON_TYPE_OBJECT) {
+        return QEMU_MONITOR_BLOCK_EXTENT_ERROR_NOPARENT;
+    }
+
+    if ((stats = virJSONValueObjectGet(parent, "stats")) == NULL ||
+        stats->type != VIR_JSON_TYPE_OBJECT) {
+        return QEMU_MONITOR_BLOCK_EXTENT_ERROR_NOSTATS;
+    }
+
+    if (virJSONValueObjectGetNumberUlong(stats, "wr_highest_offset",
+                                         extent) < 0) {
+        return QEMU_MONITOR_BLOCK_EXTENT_ERROR_NOOFFSET;
+    }
+
+    return QEMU_MONITOR_BLOCK_EXTENT_ERROR_OK;
+}
+
+
 int qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
                                         virHashTablePtr *ret_stats)
 {
@@ -1906,6 +1940,9 @@ int qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
                            "flush_total_time_ns");
             goto cleanup;
         }
+
+        /* it's ok to not have this information here. Just skip silently. */
+        qemuMonitorJSONDevGetBlockExtent(dev, &bstats->wr_highest_offset);
 
         if (virHashAddEntry(hash, dev_name, bstats) < 0)
             goto cleanup;
@@ -2076,6 +2113,36 @@ int qemuMonitorJSONGetBlockStatsParamsNumber(qemuMonitorPtr mon,
     return ret;
 }
 
+
+static int
+qemuMonitorJSONReportBlockExtentError(qemuMonitorBlockExtentError error)
+{
+    switch (error) {
+    case QEMU_MONITOR_BLOCK_EXTENT_ERROR_NOPARENT:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("blockstats parent entry was not in "
+                         "expected format"));
+        break;
+
+    case QEMU_MONITOR_BLOCK_EXTENT_ERROR_NOSTATS:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("blockstats stats entry was not in "
+                         "expected format"));
+
+    case QEMU_MONITOR_BLOCK_EXTENT_ERROR_NOOFFSET:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot read %s statistic"),
+                         "wr_highest_offset");
+        break;
+
+    case QEMU_MONITOR_BLOCK_EXTENT_ERROR_OK:
+        return 0;
+    }
+
+    return -1;
+}
+
+
 int qemuMonitorJSONGetBlockExtent(qemuMonitorPtr mon,
                                   const char *dev_name,
                                   unsigned long long *extent)
@@ -2110,9 +2177,8 @@ int qemuMonitorJSONGetBlockExtent(qemuMonitorPtr mon,
 
     for (i = 0; i < virJSONValueArraySize(devices); i++) {
         virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
-        virJSONValuePtr stats;
-        virJSONValuePtr parent;
         const char *thisdev;
+        int err;
         if (!dev || dev->type != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("blockstats device entry was not in expected format"));
@@ -2136,24 +2202,9 @@ int qemuMonitorJSONGetBlockExtent(qemuMonitorPtr mon,
             continue;
 
         found = true;
-        if ((parent = virJSONValueObjectGet(dev, "parent")) == NULL ||
-            parent->type != VIR_JSON_TYPE_OBJECT) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("blockstats parent entry was not in expected format"));
-            goto cleanup;
-        }
-
-        if ((stats = virJSONValueObjectGet(parent, "stats")) == NULL ||
-            stats->type != VIR_JSON_TYPE_OBJECT) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("blockstats stats entry was not in expected format"));
-            goto cleanup;
-        }
-
-        if (virJSONValueObjectGetNumberUlong(stats, "wr_highest_offset", extent) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot read %s statistic"),
-                           "wr_highest_offset");
+        if ((err = qemuMonitorJSONDevGetBlockExtent(dev, extent)) !=
+             QEMU_MONITOR_BLOCK_EXTENT_ERROR_OK) {
+            qemuMonitorJSONReportBlockExtentError(err);
             goto cleanup;
         }
     }

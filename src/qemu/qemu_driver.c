@@ -17907,6 +17907,19 @@ do { \
         goto cleanup; \
 } while (0)
 
+#define QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, num, name, value) \
+do { \
+    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
+    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
+             "block.%zu.%s", num, name); \
+    if (virTypedParamsAddULLong(&(record)->params, \
+                                &(record)->nparams, \
+                                maxparams, \
+                                param_name, \
+                                value) < 0) \
+        goto cleanup; \
+} while (0)
+
 static int
 qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
                         virDomainObjPtr dom,
@@ -17925,6 +17938,7 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
 
     qemuDomainObjEnterMonitor(driver, dom);
     rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats);
+    ignore_value(qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats));
     qemuDomainObjExitMonitor(driver, dom);
 
     if (rc < 0) {
@@ -17961,6 +17975,17 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
                                 "fl.reqs", entry->flush_req);
         QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
                                 "fl.times", entry->flush_total_times);
+
+        QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, i,
+                                 "allocation", entry->wr_highest_offset);
+
+        if (entry->capacity)
+            QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, i,
+                                     "capacity", entry->capacity);
+        if (entry->physical)
+            QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, i,
+                                     "physical", entry->physical);
+
     }
 
     ret = 0;
@@ -17971,6 +17996,8 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
 }
 
 #undef QEMU_ADD_BLOCK_PARAM_LL
+
+#undef QEMU_ADD_BLOCK_PARAM_ULL
 
 #undef QEMU_ADD_NAME_PARAM
 
