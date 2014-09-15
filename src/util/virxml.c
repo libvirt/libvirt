@@ -420,7 +420,7 @@ virXPathULongLong(const char *xpath,
 }
 
 /**
- * virXPathULongLong:
+ * virXPathLongLong:
  * @xpath: the XPath string to evaluate
  * @ctxt: an XPath context
  * @value: the returned long long value
