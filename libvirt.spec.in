@@ -1737,7 +1737,7 @@ if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ;
     sub=${orig_sub}
     nl='
 '
-    routes="${nl}$(ip route show | cut -d' ' -f1)"
+    routes="${nl}$(ip route show | cut -d' ' -f1)${nl}"
     case ${routes} in
       *"${nl}192.168.${orig_sub}.0/24${nl}"*)
         # there was a match, so we need to look for an unused subnet
