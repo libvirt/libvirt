@@ -62,7 +62,7 @@
 
             <optional>
               <attribute name="delay">
-                <data type="integer"/>
+                <data type="unsignedLong"/>
               </attribute>
             </optional>
 

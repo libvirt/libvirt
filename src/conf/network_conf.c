@@ -2003,7 +2003,7 @@ static virNetworkDefPtr
 virNetworkDefParseXML(xmlXPathContextPtr ctxt)
 {
     virNetworkDefPtr def;
-    char *tmp;
+    char *tmp = NULL;
     char *stp = NULL;
     xmlNodePtr *ipNodes = NULL;
     xmlNodePtr *routeNodes = NULL;
@@ -2037,7 +2037,6 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
         }
     } else {
         if (virUUIDParse(tmp, def->uuid) < 0) {
-            VIR_FREE(tmp);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("malformed uuid element"));
             goto error;
@@ -2078,8 +2077,16 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     stp = virXPathString("string(./bridge[1]/@stp)", ctxt);
     def->stp = (stp && STREQ(stp, "off")) ? false : true;
 
-    if (virXPathULong("string(./bridge[1]/@delay)", ctxt, &def->delay) < 0)
-        def->delay = 0;
+    tmp = virXPathString("string(./bridge[1]/@delay)", ctxt);
+    if (tmp) {
+        if (virStrToLong_ulp(tmp, NULL, 10, &def->delay) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid delay value in network '%s'"),
+                           def->name);
+            goto error;
+        }
+    }
+    VIR_FREE(tmp);
 
     tmp = virXPathString("string(./mac[1]/@address)", ctxt);
     if (tmp) {
@@ -2087,14 +2094,12 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             virReportError(VIR_ERR_XML_ERROR,
                            _("Invalid bridge mac address '%s' in network '%s'"),
                            tmp, def->name);
-            VIR_FREE(tmp);
             goto error;
         }
         if (virMacAddrIsMulticast(&def->mac)) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Invalid multicast bridge mac address '%s' in network '%s'"),
                            tmp, def->name);
-            VIR_FREE(tmp);
             goto error;
         }
         VIR_FREE(tmp);
@@ -2126,9 +2131,9 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             goto error;
         /* parse each portgroup */
         for (i = 0; i < nPortGroups; i++) {
-            int ret = virNetworkPortGroupParseXML(&def->portGroups[i],
-                                                  portGroupNodes[i], ctxt);
-            if (ret < 0)
+            if (virNetworkPortGroupParseXML(&def->portGroups[i],
+                                            portGroupNodes[i],
+                                            ctxt) < 0)
                 goto error;
             def->nPortGroups++;
         }
@@ -2147,9 +2152,10 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             goto error;
         /* parse each addr */
         for (i = 0; i < nIps; i++) {
-            int ret = virNetworkIPDefParseXML(def->name, ipNodes[i],
-                                              ctxt, &def->ips[i]);
-            if (ret < 0)
+            if (virNetworkIPDefParseXML(def->name,
+                                        ipNodes[i],
+                                        ctxt,
+                                        &def->ips[i]) < 0)
                 goto error;
             def->nips++;
         }
@@ -2168,9 +2174,10 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             goto error;
         /* parse each definition */
         for (i = 0; i < nRoutes; i++) {
-            int ret = virNetworkRouteDefParseXML(def->name, routeNodes[i],
-                                              ctxt, &def->routes[i]);
-            if (ret < 0)
+            if (virNetworkRouteDefParseXML(def->name,
+                                           routeNodes[i],
+                                           ctxt,
+                                           &def->routes[i]) < 0)
                 goto error;
             def->nroutes++;
         }
@@ -2289,6 +2296,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     return def;
 
  error:
+    VIR_FREE(tmp);
     VIR_FREE(routeNodes);
     VIR_FREE(stp);
     virNetworkDefFree(def);
