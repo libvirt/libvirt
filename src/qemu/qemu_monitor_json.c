@@ -1734,13 +1734,8 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
                                      long long *flush_total_times,
                                      long long *errs)
 {
-    int ret;
-    size_t i;
-    bool found = false;
-    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-blockstats",
-                                                     NULL);
-    virJSONValuePtr reply = NULL;
-    virJSONValuePtr devices;
+    qemuBlockStats stats;
+    int ret = -1;
 
     *rd_req = *rd_bytes = -1;
     *wr_req = *wr_bytes = *errs = -1;
@@ -1754,7 +1749,47 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
     if (flush_total_times)
         *flush_total_times = -1;
 
+    if (qemuMonitorJSONGetAllBlockStatsInfo(mon, dev_name, &stats, 1) != 1)
+        goto cleanup;
+
+    *rd_req = stats.rd_req;
+    *rd_bytes = stats.rd_bytes;
+    *wr_req = stats.wr_req;
+    *wr_bytes = stats.wr_bytes;
+    *errs = -1; /* QEMU does not have this */
+
+    if (rd_total_times)
+        *rd_total_times = stats.rd_total_times;
+    if (wr_total_times)
+        *wr_total_times = stats.wr_total_times;
+    if (flush_req)
+        *flush_req = stats.flush_req;
+    if (flush_total_times)
+        *flush_total_times = stats.flush_total_times;
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
+int qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
+                                        const char *dev_name,
+                                        qemuBlockStatsPtr bstats,
+                                        int nstats)
+{
+    int ret, count;
+    size_t i;
+    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-blockstats",
+                                                     NULL);
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr devices;
+
     if (!cmd)
+        return -1;
+
+    if (!bstats || nstats <= 0)
         return -1;
 
     ret = qemuMonitorJSONCommand(mon, cmd, &reply);
@@ -1772,108 +1807,123 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    for (i = 0; i < virJSONValueArraySize(devices); i++) {
+    count = 0;
+    for (i = 0; i < virJSONValueArraySize(devices) && count < nstats; i++) {
         virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
         virJSONValuePtr stats;
-        const char *thisdev;
         if (!dev || dev->type != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("blockstats device entry was not in expected format"));
+                           _("blockstats device entry was not "
+                             "in expected format"));
             goto cleanup;
         }
 
-        if ((thisdev = virJSONValueObjectGetString(dev, "device")) == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("blockstats device entry was not in expected format"));
-            goto cleanup;
-        }
-
-        /* New QEMU has separate names for host & guest side of the disk
-         * and libvirt gives the host side a 'drive-' prefix. The passed
-         * in dev_name is the guest side though
+        /* If dev_name is specified, we are looking for a specific device,
+         * so we must be stricter.
          */
-        if (STRPREFIX(thisdev, QEMU_DRIVE_HOST_PREFIX))
-            thisdev += strlen(QEMU_DRIVE_HOST_PREFIX);
+        if (dev_name) {
+            const char *thisdev = virJSONValueObjectGetString(dev, "device");
+            if (!thisdev) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("blockstats device entry was not "
+                                 "in expected format"));
+                goto cleanup;
+            }
 
-        if (STRNEQ(thisdev, dev_name))
-            continue;
+            /* New QEMU has separate names for host & guest side of the disk
+             * and libvirt gives the host side a 'drive-' prefix. The passed
+             * in dev_name is the guest side though
+             */
+            if (STRPREFIX(thisdev, QEMU_DRIVE_HOST_PREFIX))
+                thisdev += strlen(QEMU_DRIVE_HOST_PREFIX);
 
-        found = true;
+            if (STRNEQ(thisdev, dev_name))
+                continue;
+        }
+
         if ((stats = virJSONValueObjectGet(dev, "stats")) == NULL ||
             stats->type != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("blockstats stats entry was not in expected format"));
+                           _("blockstats stats entry was not "
+                             "in expected format"));
             goto cleanup;
         }
 
-        if (virJSONValueObjectGetNumberLong(stats, "rd_bytes", rd_bytes) < 0) {
+        if (virJSONValueObjectGetNumberLong(stats, "rd_bytes",
+                                            &bstats->rd_bytes) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot read %s statistic"),
                            "rd_bytes");
             goto cleanup;
         }
-        if (virJSONValueObjectGetNumberLong(stats, "rd_operations", rd_req) < 0) {
+        if (virJSONValueObjectGetNumberLong(stats, "rd_operations",
+                                            &bstats->rd_req) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot read %s statistic"),
                             "rd_operations");
             goto cleanup;
         }
-        if (rd_total_times &&
-            virJSONValueObjectHasKey(stats, "rd_total_time_ns") &&
+        if (virJSONValueObjectHasKey(stats, "rd_total_time_ns") &&
             (virJSONValueObjectGetNumberLong(stats, "rd_total_time_ns",
-                                             rd_total_times) < 0)) {
+                                             &bstats->rd_total_times) < 0)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot read %s statistic"),
                            "rd_total_time_ns");
             goto cleanup;
         }
-        if (virJSONValueObjectGetNumberLong(stats, "wr_bytes", wr_bytes) < 0) {
+        if (virJSONValueObjectGetNumberLong(stats, "wr_bytes",
+                                            &bstats->wr_bytes) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot read %s statistic"),
                            "wr_bytes");
             goto cleanup;
         }
-        if (virJSONValueObjectGetNumberLong(stats, "wr_operations", wr_req) < 0) {
+        if (virJSONValueObjectGetNumberLong(stats, "wr_operations",
+                                            &bstats->wr_req) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot read %s statistic"),
                            "wr_operations");
             goto cleanup;
         }
-        if (wr_total_times &&
-            virJSONValueObjectHasKey(stats, "wr_total_time_ns") &&
+        if (virJSONValueObjectHasKey(stats, "wr_total_time_ns") &&
             (virJSONValueObjectGetNumberLong(stats, "wr_total_time_ns",
-                                             wr_total_times) < 0)) {
+                                             &bstats->wr_total_times) < 0)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot read %s statistic"),
                            "wr_total_time_ns");
             goto cleanup;
         }
-        if (flush_req &&
-            virJSONValueObjectHasKey(stats, "flush_operations") &&
+        if (virJSONValueObjectHasKey(stats, "flush_operations") &&
             (virJSONValueObjectGetNumberLong(stats, "flush_operations",
-                                            flush_req) < 0)) {
+                                             &bstats->flush_req) < 0)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot read %s statistic"),
                            "flush_operations");
             goto cleanup;
         }
-        if (flush_total_times &&
-            virJSONValueObjectHasKey(stats, "flush_total_time_ns") &&
+        if (virJSONValueObjectHasKey(stats, "flush_total_time_ns") &&
             (virJSONValueObjectGetNumberLong(stats, "flush_total_time_ns",
-                                            flush_total_times) < 0)) {
+                                             &bstats->flush_total_times) < 0)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot read %s statistic"),
                            "flush_total_time_ns");
             goto cleanup;
         }
+
+        count++;
+        bstats++;
+
+        if (dev_name && count)
+            break;
     }
 
-    if (!found) {
+    if (dev_name && !count) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot find statistics for device '%s'"), dev_name);
         goto cleanup;
     }
-    ret = 0;
+
+    ret = count;
 
  cleanup:
     virJSONValueFree(cmd);

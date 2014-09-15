@@ -21636,6 +21636,27 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  * "net.<num>.tx.errs" - transmission errors as unsigned long long.
  * "net.<num>.tx.drop" - transmit packets dropped as unsigned long long.
  *
+ * VIR_DOMAIN_STATS_BLOCK: Return block devices statistics.
+ * The typed parameter keys are in this format:
+ * "block.count" - number of block devices on this domain
+ *                 as unsigned int.
+ * "block.<num>.name" - name of the block device <num> as string.
+ *                      matches the target name (vda/sda/hda) of the
+ *                      block device.
+ * "block.<num>.rd.reqs" - number of read requests as unsigned long long.
+ * "block.<num>.rd.bytes" - number of read bytes as unsigned long long.
+ * "block.<num>.rd.times" - total time (ns) spent on reads as
+ *                          unsigned long long.
+ * "block.<num>.wr.reqs" - number of write requests as unsigned long long.
+ * "block.<num>.wr.bytes" - number of written bytes as unsigned long long.
+ * "block.<num>.wr.times" - total time (ns) spent on writes as
+ *                          unsigned long long.
+ * "block.<num>.fl.reqs" - total flush requests as unsigned long long.
+ * "block.<num>.fl.times" - total time (ns) spent on cache flushing as
+ *                          unsigned long long.
+ * "block.<num>.errors" - Xen only: the 'oo_req' value as
+ *                        unsigned long long.
+ *
  * Using 0 for @stats returns all stats groups supported by the given
  * hypervisor.
  *

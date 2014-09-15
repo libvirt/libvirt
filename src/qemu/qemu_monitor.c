@@ -1756,6 +1756,32 @@ int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
     return ret;
 }
 
+/* Fills the first 'nstats' block stats. 'stats' must be an array.
+ * Returns <0 on error, otherwise the number of block stats retrieved.
+ * if 'dev_name' is != NULL, look for this device only and skip
+ * any other. In that case return value cannot be greater than 1.
+ */
+int
+qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
+                                const char *dev_name,
+                                qemuBlockStatsPtr stats,
+                                int nstats)
+{
+    int ret;
+    VIR_DEBUG("mon=%p dev=%s", mon, dev_name);
+
+    if (mon->json) {
+        ret = qemuMonitorJSONGetAllBlockStatsInfo(mon, dev_name,
+                                                  stats, nstats);
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("unable to query all block stats with this QEMU"));
+        return -1;
+    }
+
+    return ret;
+}
+
 /* Return 0 and update @nparams with the number of block stats
  * QEMU supports if success. Return -1 if failure.
  */

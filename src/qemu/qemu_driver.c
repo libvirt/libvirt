@@ -9672,6 +9672,7 @@ qemuDomainBlockStats(virDomainPtr dom,
     return ret;
 }
 
+
 static int
 qemuDomainBlockStatsFlags(virDomainPtr dom,
                           const char *path,
@@ -17651,6 +17652,85 @@ qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 #undef QEMU_ADD_NET_PARAM
 
+/* expects a LL, but typed parameter must be ULL */
+#define QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, num, name, value) \
+do { \
+    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
+    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
+             "block.%zu.%s", num, name); \
+    if (value >= 0 && virTypedParamsAddULLong(&(record)->params, \
+                                              &(record)->nparams, \
+                                              maxparams, \
+                                              param_name, \
+                                              value) < 0) \
+        goto cleanup; \
+} while (0)
+
+static int
+qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
+                        virDomainObjPtr dom,
+                        virDomainStatsRecordPtr record,
+                        int *maxparams,
+                        unsigned int privflags)
+{
+    size_t i;
+    int ret = -1;
+    int nstats = dom->def->ndisks;
+    qemuBlockStatsPtr stats = NULL;
+    qemuDomainObjPrivatePtr priv = dom->privateData;
+
+    if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom))
+        return 0; /* it's ok, just go ahead silently */
+
+    if (VIR_ALLOC_N(stats, nstats) < 0)
+        return -1;
+
+    qemuDomainObjEnterMonitor(driver, dom);
+
+    nstats = qemuMonitorGetAllBlockStatsInfo(priv->mon, NULL,
+                                             stats, nstats);
+
+    qemuDomainObjExitMonitor(driver, dom);
+
+    if (nstats < 0) {
+        virResetLastError();
+        ret = 0; /* still ok, again go ahead silently */
+        goto cleanup;
+    }
+
+    QEMU_ADD_COUNT_PARAM(record, maxparams, "block", dom->def->ndisks);
+
+    for (i = 0; i < nstats; i++) {
+        QEMU_ADD_NAME_PARAM(record, maxparams,
+                            "block", i, dom->def->disks[i]->dst);
+
+        QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
+                                "rd.reqs", stats[i].rd_req);
+        QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
+                                "rd.bytes", stats[i].rd_bytes);
+        QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
+                                "rd.times", stats[i].rd_total_times);
+        QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
+                                "wr.reqs", stats[i].wr_req);
+        QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
+                                "wr.bytes", stats[i].wr_bytes);
+        QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
+                                "wr.times", stats[i].wr_total_times);
+        QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
+                                "fl.reqs", stats[i].flush_req);
+        QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
+                                "fl.times", stats[i].flush_total_times);
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(stats);
+    return ret;
+}
+
+#undef QEMU_ADD_BLOCK_PARAM_LL
+
 #undef QEMU_ADD_NAME_PARAM
 
 #undef QEMU_ADD_COUNT_PARAM
@@ -17674,6 +17754,7 @@ static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
     { qemuDomainGetStatsBalloon, VIR_DOMAIN_STATS_BALLOON, true },
     { qemuDomainGetStatsVcpu, VIR_DOMAIN_STATS_VCPU, false },
     { qemuDomainGetStatsInterface, VIR_DOMAIN_STATS_INTERFACE, false },
+    { qemuDomainGetStatsBlock, VIR_DOMAIN_STATS_BLOCK, true },
     { NULL, 0, false }
 };
 

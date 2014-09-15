@@ -346,6 +346,26 @@ int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
                                  long long *flush_req,
                                  long long *flush_total_times,
                                  long long *errs);
+
+typedef struct _qemuBlockStats qemuBlockStats;
+typedef qemuBlockStats *qemuBlockStatsPtr;
+struct _qemuBlockStats {
+    long long rd_req;
+    long long rd_bytes;
+    long long wr_req;
+    long long wr_bytes;
+    long long rd_total_times;
+    long long wr_total_times;
+    long long flush_req;
+    long long flush_total_times;
+};
+
+int qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
+                                    const char *dev_name,
+                                    qemuBlockStatsPtr stats,
+                                    int nstats)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+
 int qemuMonitorGetBlockStatsParamsNumber(qemuMonitorPtr mon,
                                          int *nparams);
 

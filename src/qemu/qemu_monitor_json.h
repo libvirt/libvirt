@@ -79,6 +79,10 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
                                      long long *flush_req,
                                      long long *flush_total_times,
                                      long long *errs);
+int qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
+                                        const char *dev_name,
+                                        qemuBlockStatsPtr stats,
+                                        int nstats);
 int qemuMonitorJSONGetBlockStatsParamsNumber(qemuMonitorPtr mon,
                                              int *nparams);
 int qemuMonitorJSONGetBlockExtent(qemuMonitorPtr mon,
