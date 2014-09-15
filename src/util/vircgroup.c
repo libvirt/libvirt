@@ -3983,6 +3983,18 @@ virCgroupNewEmulator(virCgroupPtr domain ATTRIBUTE_UNUSED,
 
 
 int
+virCgroupNewIOThread(virCgroupPtr domain ATTRIBUTE_UNUSED,
+                     int iothreadid ATTRIBUTE_UNUSED,
+                     bool create ATTRIBUTE_UNUSED,
+                     virCgroupPtr *group ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
 virCgroupNewDetect(pid_t pid ATTRIBUTE_UNUSED,
                    int controllers ATTRIBUTE_UNUSED,
                    virCgroupPtr *group ATTRIBUTE_UNUSED)
