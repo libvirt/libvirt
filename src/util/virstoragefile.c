@@ -385,15 +385,22 @@ qcowXGetBackingStore(char **res,
     offset = virReadBufInt64BE(buf + QCOWX_HDR_BACKING_FILE_OFFSET);
     if (offset > buf_size)
         return BACKING_STORE_INVALID;
+
+    if (offset == 0) {
+        if (format)
+            *format = VIR_STORAGE_FILE_NONE;
+        return BACKING_STORE_OK;
+    }
+
     size = virReadBufInt32BE(buf + QCOWX_HDR_BACKING_FILE_SIZE);
     if (size == 0) {
         if (format)
             *format = VIR_STORAGE_FILE_NONE;
         return BACKING_STORE_OK;
     }
-    if (offset + size > buf_size || offset + size < offset)
+    if (size > 1023)
         return BACKING_STORE_INVALID;
-    if (size + 1 == 0)
+    if (offset + size > buf_size || offset + size < offset)
         return BACKING_STORE_INVALID;
     if (VIR_ALLOC_N(*res, size + 1) < 0)
         return BACKING_STORE_ERROR;
