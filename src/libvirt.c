@@ -21734,14 +21734,8 @@ virConnectGetAllDomainStats(virConnectPtr conn,
  * followed by a group specific description of the statistic value.
  *
  * The statistic groups are enabled using the @stats parameter which is a
- * binary-OR of enum virDomainStatsTypes. The following groups are available
- * (although not necessarily implemented for each hypervisor):
- *
- * VIR_DOMAIN_STATS_STATE: Return domain state and reason for entering that
- * state. The typed parameter keys are in this format:
- * "state.state" - state of the VM, returned as int from virDomainState enum
- * "state.reason" - reason for entering given state, returned as int from
- *                  virDomain*Reason enum corresponding to given state.
+ * binary-OR of enum virDomainStatsTypes. The stats groups are documented
+ * in virConnectGetAllDomainStats.
  *
  * Using 0 for @stats returns all stats groups supported by the given
  * hypervisor.
