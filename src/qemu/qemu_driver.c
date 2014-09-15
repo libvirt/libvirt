@@ -1380,6 +1380,76 @@ qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
 }
 
 
+static int
+qemuDomainHelperGetVcpus(virDomainObjPtr vm, virVcpuInfoPtr info, int maxinfo,
+                         unsigned char *cpumaps, int maplen)
+{
+    int maxcpu, hostcpus;
+    size_t i, v;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if ((hostcpus = nodeGetCPUCount()) < 0)
+        return -1;
+
+    maxcpu = maplen * 8;
+    if (maxcpu > hostcpus)
+        maxcpu = hostcpus;
+
+    /* Clamp to actual number of vcpus */
+    if (maxinfo > priv->nvcpupids)
+        maxinfo = priv->nvcpupids;
+
+    if (maxinfo >= 1) {
+        if (info != NULL) {
+            memset(info, 0, sizeof(*info) * maxinfo);
+            for (i = 0; i < maxinfo; i++) {
+                info[i].number = i;
+                info[i].state = VIR_VCPU_RUNNING;
+
+                if (priv->vcpupids != NULL &&
+                    qemuGetProcessInfo(&(info[i].cpuTime),
+                                       &(info[i].cpu),
+                                       NULL,
+                                       vm->pid,
+                                       priv->vcpupids[i]) < 0) {
+                    virReportSystemError(errno, "%s",
+                                         _("cannot get vCPU placement & pCPU time"));
+                    return -1;
+                }
+            }
+        }
+
+        if (cpumaps != NULL) {
+            memset(cpumaps, 0, maplen * maxinfo);
+            if (priv->vcpupids != NULL) {
+                for (v = 0; v < maxinfo; v++) {
+                    unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, v);
+                    virBitmapPtr map = NULL;
+                    unsigned char *tmpmap = NULL;
+                    int tmpmapLen = 0;
+
+                    if (virProcessGetAffinity(priv->vcpupids[v],
+                                              &map, maxcpu) < 0)
+                        return -1;
+                    virBitmapToData(map, &tmpmap, &tmpmapLen);
+                    if (tmpmapLen > maplen)
+                        tmpmapLen = maplen;
+                    memcpy(cpumap, tmpmap, tmpmapLen);
+
+                    VIR_FREE(tmpmap);
+                    virBitmapFree(map);
+                }
+            } else {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               "%s", _("cpu affinity is not available"));
+                return -1;
+            }
+        }
+    }
+    return maxinfo;
+}
+
+
 static virDomainPtr qemuDomainLookupByID(virConnectPtr conn,
                                          int id)
 {
@@ -4959,10 +5029,7 @@ qemuDomainGetVcpus(virDomainPtr dom,
                    int maplen)
 {
     virDomainObjPtr vm;
-    size_t i;
-    int v, maxcpu, hostcpus;
     int ret = -1;
-    qemuDomainObjPrivatePtr priv;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
@@ -4977,67 +5044,7 @@ qemuDomainGetVcpus(virDomainPtr dom,
         goto cleanup;
     }
 
-    priv = vm->privateData;
-
-    if ((hostcpus = nodeGetCPUCount()) < 0)
-        goto cleanup;
-
-    maxcpu = maplen * 8;
-    if (maxcpu > hostcpus)
-        maxcpu = hostcpus;
-
-    /* Clamp to actual number of vcpus */
-    if (maxinfo > priv->nvcpupids)
-        maxinfo = priv->nvcpupids;
-
-    if (maxinfo >= 1) {
-        if (info != NULL) {
-            memset(info, 0, sizeof(*info) * maxinfo);
-            for (i = 0; i < maxinfo; i++) {
-                info[i].number = i;
-                info[i].state = VIR_VCPU_RUNNING;
-
-                if (priv->vcpupids != NULL &&
-                    qemuGetProcessInfo(&(info[i].cpuTime),
-                                       &(info[i].cpu),
-                                       NULL,
-                                       vm->pid,
-                                       priv->vcpupids[i]) < 0) {
-                    virReportSystemError(errno, "%s",
-                                         _("cannot get vCPU placement & pCPU time"));
-                    goto cleanup;
-                }
-            }
-        }
-
-        if (cpumaps != NULL) {
-            memset(cpumaps, 0, maplen * maxinfo);
-            if (priv->vcpupids != NULL) {
-                for (v = 0; v < maxinfo; v++) {
-                    unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, v);
-                    virBitmapPtr map = NULL;
-                    unsigned char *tmpmap = NULL;
-                    int tmpmapLen = 0;
-
-                    if (virProcessGetAffinity(priv->vcpupids[v],
-                                              &map, maxcpu) < 0)
-                        goto cleanup;
-                    virBitmapToData(map, &tmpmap, &tmpmapLen);
-                    if (tmpmapLen > maplen)
-                        tmpmapLen = maplen;
-                    memcpy(cpumap, tmpmap, tmpmapLen);
-
-                    VIR_FREE(tmpmap);
-                    virBitmapFree(map);
-                }
-            } else {
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               "%s", _("cpu affinity is not available"));
-                goto cleanup;
-            }
-        }
-    }
-    ret = maxinfo;
+    ret = qemuDomainHelperGetVcpus(vm, info, maxinfo, cpumaps, maplen);
 
  cleanup:
     if (vm)
@@ -17485,6 +17492,75 @@ qemuDomainGetStatsBalloon(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
     return 0;
 }
 
+
+static int
+qemuDomainGetStatsVcpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                       virDomainObjPtr dom,
+                       virDomainStatsRecordPtr record,
+                       int *maxparams,
+                       unsigned int privflags ATTRIBUTE_UNUSED)
+{
+    size_t i;
+    int ret = -1;
+    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
+    virVcpuInfoPtr cpuinfo = NULL;
+
+    if (virTypedParamsAddUInt(&record->params,
+                              &record->nparams,
+                              maxparams,
+                              "vcpu.current",
+                              (unsigned) dom->def->vcpus) < 0)
+        return -1;
+
+    if (virTypedParamsAddUInt(&record->params,
+                              &record->nparams,
+                              maxparams,
+                              "vcpu.maximum",
+                              (unsigned) dom->def->maxvcpus) < 0)
+        return -1;
+
+    if (VIR_ALLOC_N(cpuinfo, dom->def->vcpus) < 0)
+        return -1;
+
+    if (qemuDomainHelperGetVcpus(dom, cpuinfo, dom->def->vcpus,
+                                 NULL, 0) < 0) {
+        virResetLastError();
+        ret = 0; /* it's ok to be silent and go ahead */
+        goto cleanup;
+    }
+
+    for (i = 0; i < dom->def->vcpus; i++) {
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                 "vcpu.%zu.state", i);
+        if (virTypedParamsAddInt(&record->params,
+                                 &record->nparams,
+                                 maxparams,
+                                 param_name,
+                                 cpuinfo[i].state) < 0)
+            goto cleanup;
+
+        /* stats below are available only if the VM is alive */
+        if (!virDomainObjIsActive(dom))
+            continue;
+
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                 "vcpu.%zu.time", i);
+        if (virTypedParamsAddULLong(&record->params,
+                                    &record->nparams,
+                                    maxparams,
+                                    param_name,
+                                    cpuinfo[i].cpuTime) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(cpuinfo);
+    return ret;
+}
+
+
 typedef int
 (*qemuDomainGetStatsFunc)(virQEMUDriverPtr driver,
                           virDomainObjPtr dom,
@@ -17502,6 +17578,7 @@ static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
     { qemuDomainGetStatsState, VIR_DOMAIN_STATS_STATE, false },
     { qemuDomainGetStatsCpu, VIR_DOMAIN_STATS_CPU_TOTAL, false },
     { qemuDomainGetStatsBalloon, VIR_DOMAIN_STATS_BALLOON, true },
+    { qemuDomainGetStatsVcpu, VIR_DOMAIN_STATS_VCPU, false },
     { NULL, 0, false }
 };
 

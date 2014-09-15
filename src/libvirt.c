@@ -21610,6 +21610,18 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  * "balloon.maximum" - the maximum memory in kiB allowed
  *                     as unsigned long long.
  *
+ * VIR_DOMAIN_STATS_VCPU: Return virtual CPU statistics.
+ * Due to VCPU hotplug, the vcpu.<num>.* array could be sparse.
+ * The actual size of the array corresponds to "vcpu.current".
+ * The array size will never exceed "vcpu.maximum".
+ * The typed parameter keys are in this format:
+ * "vcpu.current" - current number of online virtual CPUs as unsigned int.
+ * "vcpu.maximum" - maximum number of online virtual CPUs as unsigned int.
+ * "vcpu.<num>.state" - state of the virtual CPU <num>, as int
+ *                      from virVcpuState enum.
+ * "vcpu.<num>.time" - virtual cpu time spent by virtual CPU <num>
+ *                     as unsigned long long.
+ *
  * Using 0 for @stats returns all stats groups supported by the given
  * hypervisor.
  *
