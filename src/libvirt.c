@@ -21622,6 +21622,20 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  * "vcpu.<num>.time" - virtual cpu time spent by virtual CPU <num>
  *                     as unsigned long long.
  *
+ * VIR_DOMAIN_STATS_INTERFACE: Return network interface statistics.
+ * The typed parameter keys are in this format:
+ * "net.count" - number of network interfaces on this domain
+ *               as unsigned int.
+ * "net.<num>.name" - name of the interface <num> as string.
+ * "net.<num>.rx.bytes" - bytes received as unsigned long long.
+ * "net.<num>.rx.pkts" - packets received as unsigned long long.
+ * "net.<num>.rx.errs" - receive errors as unsigned long long.
+ * "net.<num>.rx.drop" - receive packets dropped as unsigned long long.
+ * "net.<num>.tx.bytes" - bytes transmitted as unsigned long long.
+ * "net.<num>.tx.pkts" - packets transmitted as unsigned long long.
+ * "net.<num>.tx.errs" - transmission errors as unsigned long long.
+ * "net.<num>.tx.drop" - transmit packets dropped as unsigned long long.
+ *
  * Using 0 for @stats returns all stats groups supported by the given
  * hypervisor.
  *

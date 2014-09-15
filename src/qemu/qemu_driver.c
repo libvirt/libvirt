@@ -17560,6 +17560,100 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
     return ret;
 }
 
+#define QEMU_ADD_COUNT_PARAM(record, maxparams, type, count) \
+do { \
+    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
+    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "%s.count", type); \
+    if (virTypedParamsAddUInt(&(record)->params, \
+                              &(record)->nparams, \
+                              maxparams, \
+                              param_name, \
+                              count) < 0) \
+        return -1; \
+} while (0)
+
+#define QEMU_ADD_NAME_PARAM(record, maxparams, type, num, name) \
+do { \
+    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
+    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
+             "%s.%zu.name", type, num); \
+    if (virTypedParamsAddString(&(record)->params, \
+                                &(record)->nparams, \
+                                maxparams, \
+                                param_name, \
+                                name) < 0) \
+        return -1; \
+} while (0)
+
+#define QEMU_ADD_NET_PARAM(record, maxparams, num, name, value) \
+do { \
+    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
+    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
+             "net.%zu.%s", num, name); \
+    if (value >= 0 && virTypedParamsAddULLong(&(record)->params, \
+                                              &(record)->nparams, \
+                                              maxparams, \
+                                              param_name, \
+                                              value) < 0) \
+        return -1; \
+} while (0)
+
+static int
+qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                            virDomainObjPtr dom,
+                            virDomainStatsRecordPtr record,
+                            int *maxparams,
+                            unsigned int privflags ATTRIBUTE_UNUSED)
+{
+    size_t i;
+    struct _virDomainInterfaceStats tmp;
+
+    if (!virDomainObjIsActive(dom))
+        return 0;
+
+    QEMU_ADD_COUNT_PARAM(record, maxparams, "net", dom->def->nnets);
+
+    /* Check the path is one of the domain's network interfaces. */
+    for (i = 0; i < dom->def->nnets; i++) {
+        if (!dom->def->nets[i]->ifname)
+            continue;
+
+        memset(&tmp, 0, sizeof(tmp));
+
+        QEMU_ADD_NAME_PARAM(record, maxparams,
+                            "net", i, dom->def->nets[i]->ifname);
+
+        if (virNetInterfaceStats(dom->def->nets[i]->ifname, &tmp) < 0) {
+            virResetLastError();
+            continue;
+        }
+
+        QEMU_ADD_NET_PARAM(record, maxparams, i,
+                           "rx.bytes", tmp.rx_bytes);
+        QEMU_ADD_NET_PARAM(record, maxparams, i,
+                           "rx.pkts", tmp.rx_packets);
+        QEMU_ADD_NET_PARAM(record, maxparams, i,
+                           "rx.errs", tmp.rx_errs);
+        QEMU_ADD_NET_PARAM(record, maxparams, i,
+                           "rx.drop", tmp.rx_drop);
+        QEMU_ADD_NET_PARAM(record, maxparams, i,
+                           "tx.bytes", tmp.tx_bytes);
+        QEMU_ADD_NET_PARAM(record, maxparams, i,
+                           "tx.pkts", tmp.tx_packets);
+        QEMU_ADD_NET_PARAM(record, maxparams, i,
+                           "tx.errs", tmp.tx_errs);
+        QEMU_ADD_NET_PARAM(record, maxparams, i,
+                           "tx.drop", tmp.tx_drop);
+    }
+
+    return 0;
+}
+
+#undef QEMU_ADD_NET_PARAM
+
+#undef QEMU_ADD_NAME_PARAM
+
+#undef QEMU_ADD_COUNT_PARAM
 
 typedef int
 (*qemuDomainGetStatsFunc)(virQEMUDriverPtr driver,
@@ -17579,6 +17673,7 @@ static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
     { qemuDomainGetStatsCpu, VIR_DOMAIN_STATS_CPU_TOTAL, false },
     { qemuDomainGetStatsBalloon, VIR_DOMAIN_STATS_BALLOON, true },
     { qemuDomainGetStatsVcpu, VIR_DOMAIN_STATS_VCPU, false },
+    { qemuDomainGetStatsInterface, VIR_DOMAIN_STATS_INTERFACE, false },
     { NULL, 0, false }
 };
 
