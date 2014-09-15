@@ -6550,6 +6550,30 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
+    for (i = 0; i < def->mem.nhugepages; i++) {
+        ssize_t next_bit, pos = 0;
+
+        if (!def->mem.hugepages[i].nodemask) {
+            /* This is the master hugepage to use. Skip it as it has no
+             * nodemask anyway. */
+            continue;
+        }
+
+        if (def->cpu && def->cpu->ncells) {
+            /* Fortunately, we allow only guest NUMA nodes to be continuous
+             * starting from zero. */
+            pos = def->cpu->ncells - 1;
+        }
+
+        next_bit = virBitmapNextSetBit(def->mem.hugepages[i].nodemask, pos);
+        if (next_bit >= 0) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("hugepages: node %zd not found"),
+                           next_bit);
+            goto cleanup;
+        }
+    }
+
     for (i = 0; i < def->cpu->ncells; i++) {
         int cellmem = VIR_DIV_UP(def->cpu->cells[i].mem, 1024);
         def->cpu->cells[i].mem = cellmem * 1024;
