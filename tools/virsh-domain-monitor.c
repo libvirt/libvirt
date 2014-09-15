@@ -1972,6 +1972,26 @@ static const vshCmdOptDef opts_domstats[] = {
      .type = VSH_OT_BOOL,
      .help = N_("report domain state"),
     },
+    {.name = "cpu-total",
+     .type = VSH_OT_BOOL,
+     .help = N_("report domain physical cpu usage"),
+    },
+    {.name = "balloon",
+     .type = VSH_OT_BOOL,
+     .help = N_("report domain balloon statistics"),
+    },
+    {.name = "vcpu",
+     .type = VSH_OT_BOOL,
+     .help = N_("report domain virtual cpu information"),
+    },
+    {.name = "interface",
+     .type = VSH_OT_BOOL,
+     .help = N_("report domain network interface information"),
+    },
+    {.name = "block",
+     .type = VSH_OT_BOOL,
+     .help = N_("report domain block device statistics"),
+    },
     {.name = "list-active",
      .type = VSH_OT_BOOL,
      .help = N_("list only active domains"),
@@ -2062,6 +2082,21 @@ cmdDomstats(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "state"))
         stats |= VIR_DOMAIN_STATS_STATE;
+
+    if (vshCommandOptBool(cmd, "cpu-total"))
+        stats |= VIR_DOMAIN_STATS_CPU_TOTAL;
+
+    if (vshCommandOptBool(cmd, "balloon"))
+        stats |= VIR_DOMAIN_STATS_BALLOON;
+
+    if (vshCommandOptBool(cmd, "vcpu"))
+        stats |= VIR_DOMAIN_STATS_VCPU;
+
+    if (vshCommandOptBool(cmd, "interface"))
+        stats |= VIR_DOMAIN_STATS_INTERFACE;
+
+    if (vshCommandOptBool(cmd, "block"))
+        stats |= VIR_DOMAIN_STATS_BLOCK;
 
     if (vshCommandOptBool(cmd, "list-active"))
         flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_ACTIVE;

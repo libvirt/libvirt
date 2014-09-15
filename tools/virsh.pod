@@ -814,6 +814,7 @@ I<snapshot-create> for disk snapshots) will accept either target
 or unique source names printed by this command.
 
 =item B<domstats> [I<--raw>] [I<--enforce>] [I<--state>]
+[I<--cpu-total>] [I<--balloon>] [I<--vcpu>] [I<--interface>] [I<--block>]
 [[I<--list-active>] [I<--list-inactive>] [I<--list-persistent>]
 [I<--list-transient>] [I<--list-running>] [I<--list-paused>]
 [I<--list-shutoff>] [I<--list-other>]] | [I<domain> ...]
@@ -831,7 +832,8 @@ behavior use the I<--raw> flag.
 
 The individual statistics groups are selectable via specific flags. By
 default all supported statistics groups are returned. Supported
-statistics groups flags are: I<--state>.
+statistics groups flags are: I<--state>, I<--cpu-total>, I<--balloon>,
+I<--vcpu>, I<--interface>, I<--block>.
 
 Selecting a specific statistics groups doesn't guarantee that the
 daemon supports the selected group of stats. Flag I<--enforce>
