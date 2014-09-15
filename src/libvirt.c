@@ -21657,6 +21657,11 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  * "block.<num>.errors" - Xen only: the 'oo_req' value as
  *                        unsigned long long.
  *
+ * Note that entire stats groups or individual stat fields may be missing from
+ * the output in case they are not supported by the given hypervisor, are not
+ * applicable for the current state of the guest domain, or their retrieval
+ * was not successful.
+ *
  * Using 0 for @stats returns all stats groups supported by the given
  * hypervisor.
  *
