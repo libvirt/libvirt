@@ -17373,7 +17373,8 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
 
 
 static int
-qemuDomainGetStatsState(virDomainObjPtr dom,
+qemuDomainGetStatsState(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                        virDomainObjPtr dom,
                         virDomainStatsRecordPtr record,
                         int *maxparams,
                         unsigned int privflags ATTRIBUTE_UNUSED)
@@ -17396,8 +17397,18 @@ qemuDomainGetStatsState(virDomainObjPtr dom,
 }
 
 
+typedef enum {
+    QEMU_DOMAIN_STATS_HAVE_JOB = (1 << 0), /* job is entered, monitor can be
+                                              accessed */
+} qemuDomainStatsFlags;
+
+
+#define HAVE_JOB(flags) ((flags) & QEMU_DOMAIN_STATS_HAVE_JOB)
+
+
 typedef int
-(*qemuDomainGetStatsFunc)(virDomainObjPtr dom,
+(*qemuDomainGetStatsFunc)(virQEMUDriverPtr driver,
+                          virDomainObjPtr dom,
                           virDomainStatsRecordPtr record,
                           int *maxparams,
                           unsigned int flags);
@@ -17405,11 +17416,12 @@ typedef int
 struct qemuDomainGetStatsWorker {
     qemuDomainGetStatsFunc func;
     unsigned int stats;
+    bool monitor;
 };
 
 static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
-    { qemuDomainGetStatsState, VIR_DOMAIN_STATS_STATE},
-    { NULL, 0 }
+    { qemuDomainGetStatsState, VIR_DOMAIN_STATS_STATE, false },
+    { NULL, 0, false }
 };
 
 
@@ -17441,6 +17453,20 @@ qemuDomainGetStatsCheckSupport(unsigned int *stats,
 }
 
 
+static bool
+qemuDomainGetStatsNeedMonitor(unsigned int stats)
+{
+    size_t i;
+
+    for (i = 0; qemuDomainGetStatsWorkers[i].func; i++)
+        if (stats & qemuDomainGetStatsWorkers[i].stats &&
+            qemuDomainGetStatsWorkers[i].monitor)
+            return true;
+
+    return false;
+}
+
+
 static int
 qemuDomainGetStats(virConnectPtr conn,
                    virDomainObjPtr dom,
@@ -17458,8 +17484,8 @@ qemuDomainGetStats(virConnectPtr conn,
 
     for (i = 0; qemuDomainGetStatsWorkers[i].func; i++) {
         if (stats & qemuDomainGetStatsWorkers[i].stats) {
-            if (qemuDomainGetStatsWorkers[i].func(dom, tmp, &maxparams,
-                                                  flags) < 0)
+            if (qemuDomainGetStatsWorkers[i].func(conn->privateData, dom, tmp,
+                                                  &maxparams, flags) < 0)
                 goto cleanup;
         }
     }
@@ -17498,6 +17524,8 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
     int nstats = 0;
     size_t i;
     int ret = -1;
+    unsigned int privflags = 0;
+    unsigned int domflags = 0;
 
     if (ndoms)
         virCheckFlags(VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS, -1);
@@ -17532,7 +17560,11 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
     if (VIR_ALLOC_N(tmpstats, ndoms + 1) < 0)
         goto cleanup;
 
+    if (qemuDomainGetStatsNeedMonitor(stats))
+        privflags |= QEMU_DOMAIN_STATS_HAVE_JOB;
+
     for (i = 0; i < ndoms; i++) {
+        domflags = privflags;
         virDomainStatsRecordPtr tmp = NULL;
 
         if (!(dom = qemuDomObjFromDomain(doms[i])))
@@ -17542,11 +17574,21 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
             !virConnectGetAllDomainStatsCheckACL(conn, dom->def))
             continue;
 
-        if (qemuDomainGetStats(conn, dom, stats, &tmp, flags) < 0)
-            goto cleanup;
+        if (HAVE_JOB(domflags) &&
+            qemuDomainObjBeginJob(driver, dom, QEMU_JOB_QUERY) < 0)
+            /* As it was never requested. Gather as much as possible anyway. */
+            domflags &= ~QEMU_DOMAIN_STATS_HAVE_JOB;
+
+        if (qemuDomainGetStats(conn, dom, stats, &tmp, domflags) < 0)
+            goto endjob;
 
         if (tmp)
             tmpstats[nstats++] = tmp;
+
+        if (HAVE_JOB(domflags) && !qemuDomainObjEndJob(driver, dom)) {
+            dom = NULL;
+            continue;
+        }
 
         virObjectUnlock(dom);
         dom = NULL;
@@ -17556,6 +17598,11 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
     tmpstats = NULL;
 
     ret = nstats;
+
+ endjob:
+    if (HAVE_JOB(domflags) && dom)
+        if (!qemuDomainObjEndJob(driver, dom))
+            dom = NULL;
 
  cleanup:
     if (dom)
