@@ -2457,6 +2457,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                         virDomainDefPtr *def,
                         const char *origname,
                         virStreamPtr st,
+                        const char *protocol,
                         unsigned short port,
                         bool autoPort,
                         const char *listenAddress,
@@ -2569,6 +2570,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         struct addrinfo *info = NULL;
         struct addrinfo hints = { .ai_flags = AI_ADDRCONFIG,
                                   .ai_socktype = SOCK_STREAM };
+        const char *incFormat;
 
         if (getaddrinfo("::", NULL, &hints, &info) == 0) {
             freeaddrinfo(info);
@@ -2605,21 +2607,27 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
             } else {
                 /* listenAddress is a hostname */
             }
-        } else {
+        } else if (qemuIPv6Capable && hostIPv6Capable) {
             /* Listen on :: instead of 0.0.0.0 if QEMU understands it
              * and there is at least one IPv6 address configured
              */
-            listenAddress = qemuIPv6Capable && hostIPv6Capable ?
-                encloseAddress = true, "::" : "0.0.0.0";
+            listenAddress = "::";
+            encloseAddress = true;
+        } else {
+            listenAddress = "0.0.0.0";
         }
 
-        /* QEMU will be started with -incoming [<IPv6 addr>]:port,
-         * -incoming <IPv4 addr>:port or -incoming <hostname>:port
+        /* QEMU will be started with
+         *   -incoming protocol:[<IPv6 addr>]:port,
+         *   -incoming protocol:<IPv4 addr>:port, or
+         *   -incoming protocol:<hostname>:port
          */
-        if ((encloseAddress &&
-             virAsprintf(&migrateFrom, "tcp:[%s]:%d", listenAddress, port) < 0) ||
-            (!encloseAddress &&
-             virAsprintf(&migrateFrom, "tcp:%s:%d", listenAddress, port) < 0))
+        if (encloseAddress)
+            incFormat = "%s:[%s]:%d";
+        else
+            incFormat = "%s:%s:%d";
+        if (virAsprintf(&migrateFrom, incFormat,
+                        protocol, listenAddress, port) < 0)
             goto cleanup;
     }
 
@@ -2812,7 +2820,7 @@ qemuMigrationPrepareTunnel(virQEMUDriverPtr driver,
 
     ret = qemuMigrationPrepareAny(driver, dconn, cookiein, cookieinlen,
                                   cookieout, cookieoutlen, def, origname,
-                                  st, 0, false, NULL, flags);
+                                  st, NULL, 0, false, NULL, flags);
     return ret;
 }
 
@@ -2955,7 +2963,8 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
 
     ret = qemuMigrationPrepareAny(driver, dconn, cookiein, cookieinlen,
                                   cookieout, cookieoutlen, def, origname,
-                                  NULL, port, autoPort, listenAddress, flags);
+                                  NULL, uri ? uri->scheme : "tcp",
+                                  port, autoPort, listenAddress, flags);
  cleanup:
     virURIFree(uri);
     VIR_FREE(hostname);
@@ -3171,6 +3180,7 @@ struct _qemuMigrationSpec {
     enum qemuMigrationDestinationType destType;
     union {
         struct {
+            const char *protocol;
             const char *name;
             int port;
         } host;
@@ -3538,6 +3548,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     switch (spec->destType) {
     case MIGRATION_DEST_HOST:
         ret = qemuMonitorMigrateToHost(priv->mon, migrate_flags,
+                                       spec->dest.host.protocol,
                                        spec->dest.host.name,
                                        spec->dest.host.port);
         break;
@@ -3678,7 +3689,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     goto cleanup;
 }
 
-/* Perform migration using QEMU's native TCP migrate support,
+/* Perform migration using QEMU's native migrate support,
  * not encrypted obviously
  */
 static int doNativeMigrate(virQEMUDriverPtr driver,
@@ -3712,6 +3723,7 @@ static int doNativeMigrate(virQEMUDriverPtr driver,
         spec.destType = MIGRATION_DEST_CONNECT_HOST;
     else
         spec.destType = MIGRATION_DEST_HOST;
+    spec.dest.host.protocol = uribits->scheme;
     spec.dest.host.name = uribits->server;
     spec.dest.host.port = uribits->port;
     spec.fwdType = MIGRATION_FWD_DIRECT;

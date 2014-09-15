@@ -505,6 +505,7 @@ int qemuMonitorMigrateToFd(qemuMonitorPtr mon,
 
 int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
                              unsigned int flags,
+                             const char *protocol,
                              const char *hostname,
                              int port);
 
