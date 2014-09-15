@@ -768,58 +768,60 @@
   <!-- All the cpu related tunables would go in the cputune -->
   <define name="cputune">
     <element name="cputune">
-      <optional>
-        <element name="shares">
-          <ref name="cpushares"/>
-        </element>
-      </optional>
-      <optional>
-        <element name="period">
-          <ref name="cpuperiod"/>
-        </element>
-      </optional>
-      <optional>
-        <element name="quota">
-          <ref name="cpuquota"/>
-        </element>
-      </optional>
-      <optional>
-        <element name="emulator_period">
-          <ref name="cpuperiod"/>
-        </element>
-      </optional>
-      <optional>
-        <element name="emulator_quota">
-          <ref name="cpuquota"/>
-        </element>
-      </optional>
-      <zeroOrMore>
-        <element name="vcpupin">
-          <attribute name="vcpu">
-            <ref name="vcpuid"/>
-          </attribute>
-          <attribute name="cpuset">
-            <ref name="cpuset"/>
-          </attribute>
-        </element>
-      </zeroOrMore>
-      <optional>
-        <element name="emulatorpin">
-          <attribute name="cpuset">
-            <ref name="cpuset"/>
-          </attribute>
-        </element>
-      </optional>
-      <zeroOrMore>
-        <element name="iothreadpin">
-          <attribute name="iothread">
-            <ref name="unsignedInt"/>
-          </attribute>
-          <attribute name="cpuset">
-            <ref name="cpuset"/>
-          </attribute>
-        </element>
-      </zeroOrMore>
+      <interleave>
+        <optional>
+          <element name="shares">
+            <ref name="cpushares"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="period">
+            <ref name="cpuperiod"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="quota">
+            <ref name="cpuquota"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="emulator_period">
+            <ref name="cpuperiod"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="emulator_quota">
+            <ref name="cpuquota"/>
+          </element>
+        </optional>
+        <zeroOrMore>
+          <element name="vcpupin">
+            <attribute name="vcpu">
+              <ref name="vcpuid"/>
+            </attribute>
+            <attribute name="cpuset">
+              <ref name="cpuset"/>
+            </attribute>
+          </element>
+        </zeroOrMore>
+        <optional>
+          <element name="emulatorpin">
+            <attribute name="cpuset">
+              <ref name="cpuset"/>
+            </attribute>
+          </element>
+        </optional>
+        <zeroOrMore>
+          <element name="iothreadpin">
+            <attribute name="iothread">
+              <ref name="unsignedInt"/>
+            </attribute>
+            <attribute name="cpuset">
+              <ref name="cpuset"/>
+            </attribute>
+          </element>
+        </zeroOrMore>
+      </interleave>
     </element>
   </define>
 

@@ -6,15 +6,14 @@
   <vcpu placement='static'>2</vcpu>
   <iothreads>2</iothreads>
   <cputune>
-    <!-- intentionally in odd order -->
-    <iothreadpin iothread='2' cpuset='3'/>
-    <iothreadpin iothread='1' cpuset='2'/>
-    <emulatorpin cpuset='1'/>
+    <shares>2048</shares>
+    <period>1000000</period>
+    <quota>-1</quota>
     <vcpupin vcpu='1' cpuset='1'/>
     <vcpupin vcpu='0' cpuset='0'/>
-    <quota>-1</quota>
-    <period>1000000</period>
-    <shares>2048</shares>
+    <emulatorpin cpuset='1'/>
+    <iothreadpin iothread='2' cpuset='3'/>
+    <iothreadpin iothread='1' cpuset='2'/>
   </cputune>
   <os>
     <type arch='i686' machine='pc'>hvm</type>

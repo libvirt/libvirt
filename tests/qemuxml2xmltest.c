@@ -302,7 +302,7 @@ mymain(void)
 
     DO_TEST("smp");
     DO_TEST("iothreads");
-    DO_TEST("cputune-iothreads");
+    DO_TEST_DIFFERENT("cputune-iothreads");
     DO_TEST("iothreads-disk");
     DO_TEST("lease");
     DO_TEST("event_idx");
