@@ -2817,6 +2817,29 @@ qemuMigrationPrepareTunnel(virQEMUDriverPtr driver,
 }
 
 
+static virURIPtr
+qemuMigrationParseURI(const char *uri, bool *wellFormed)
+{
+    char *tmp = NULL;
+    virURIPtr parsed;
+
+    /* For compatibility reasons tcp://... URIs are sent as tcp:...
+     * We need to transform them to a well-formed URI before parsing. */
+    if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri + 4, "//")) {
+        if (virAsprintf(&tmp, "tcp://%s", uri + 4) < 0)
+            return NULL;
+        uri = tmp;
+    }
+
+    parsed = virURIParse(uri);
+    if (parsed && wellFormed)
+        *wellFormed = !tmp;
+    VIR_FREE(tmp);
+
+    return parsed;
+}
+
+
 int
 qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
                            virConnectPtr dconn,
@@ -2834,11 +2857,8 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
     unsigned short port = 0;
     bool autoPort = true;
     char *hostname = NULL;
-    const char *p;
-    char *uri_str = NULL;
     int ret = -1;
     virURIPtr uri = NULL;
-    bool well_formed_uri = true;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     const char *migrateHost = cfg->migrateHost;
 
@@ -2890,34 +2910,18 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
          * compatibility with old targets. We at least make the
          * new targets accept both syntaxes though.
          */
-        /* Caller frees */
         if (virAsprintf(uri_out, "tcp:%s:%d", hostname, port) < 0)
             goto cleanup;
     } else {
-        /* Check the URI starts with "tcp:".  We will escape the
-         * URI when passing it to the qemu monitor, so bad
-         * characters in hostname part don't matter.
-         */
-        if (!(p = STRSKIP(uri_in, "tcp:"))) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("only tcp URIs are supported for KVM/QEMU"
-                             " migrations"));
+        bool well_formed_uri;
+
+        if (!(uri = qemuMigrationParseURI(uri_in, &well_formed_uri)))
             goto cleanup;
-        }
 
-        /* Convert uri_in to well-formed URI with // after tcp: */
-        if (!(STRPREFIX(uri_in, "tcp://"))) {
-            well_formed_uri = false;
-            if (virAsprintf(&uri_str, "tcp://%s", p) < 0)
-                goto cleanup;
-        }
-
-        uri = virURIParse(uri_str ? uri_str : uri_in);
-        VIR_FREE(uri_str);
-
-        if (uri == NULL) {
-            virReportError(VIR_ERR_INVALID_ARG, _("unable to parse URI: %s"),
-                           uri_in);
+        if (STRNEQ(uri->scheme, "tcp")) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                           _("unsupported scheme %s in migration URI %s"),
+                           uri->scheme, uri_in);
             goto cleanup;
         }
 
@@ -2931,18 +2935,15 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
             if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0)
                 goto cleanup;
 
+            /* Send well-formed URI only if uri_in was well-formed */
             if (well_formed_uri) {
                 uri->port = port;
-
-                /* Caller frees */
                 if (!(*uri_out = virURIFormat(uri)))
                     goto cleanup;
             } else {
-                /* Caller frees */
                 if (virAsprintf(uri_out, "%s:%d", uri_in, port) < 0)
                     goto cleanup;
             }
-
         } else {
             port = uri->port;
             autoPort = false;
@@ -3704,17 +3705,7 @@ static int doNativeMigrate(virQEMUDriverPtr driver,
               cookieout, cookieoutlen, flags, resource,
               NULLSTR(graphicsuri));
 
-    if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {
-        char *tmp;
-        /* HACK: source host generates bogus URIs, so fix them up */
-        if (virAsprintf(&tmp, "tcp://%s", uri + strlen("tcp:")) < 0)
-            return -1;
-        uribits = virURIParse(tmp);
-        VIR_FREE(tmp);
-    } else {
-        uribits = virURIParse(uri);
-    }
-    if (!uribits)
+    if (!(uribits = qemuMigrationParseURI(uri, NULL)))
         return -1;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD))
