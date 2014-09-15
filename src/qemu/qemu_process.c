@@ -2110,8 +2110,12 @@ qemuProcessDetectIOThreadPIDs(virQEMUDriverPtr driver,
         goto cleanup;
     niothreads = qemuMonitorGetIOThreads(priv->mon, &iothreads);
     qemuDomainObjExitMonitor(driver, vm);
-    if (niothreads <= 0)
+    if (niothreads < 0)
         goto cleanup;
+
+    /* Nothing to do */
+    if (niothreads == 0)
+        return 0;
 
     if (niothreads != vm->def->iothreads) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
