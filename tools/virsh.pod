@@ -835,6 +835,52 @@ default all supported statistics groups are returned. Supported
 statistics groups flags are: I<--state>, I<--cpu-total>, I<--balloon>,
 I<--vcpu>, I<--interface>, I<--block>.
 
+When selecting the I<--state> group the following fields are returned:
+"state.state" - state of the VM, returned as number from virDomainState enum,
+"state.reason" - reason for entering given state, returned as int from,
+virDomain*Reason enum corresponding to given state.
+
+I<--cpu-total> returns:
+"cpu.time" - total cpu time spent for this domain in nanoseconds,
+"cpu.user" - user cpu time spent in nanoseconds,
+"cpu.system" - system cpu time spent in nanoseconds
+
+I<--balloon> returns:
+"balloon.current" - the memory in kiB currently used,
+"balloon.maximum" - the maximum memory in kiB allowed
+
+I<--vcpu> returns:
+"vcpu.current" - current number of online virtual CPUs,
+"vcpu.maximum" - maximum number of online virtual CPUs,
+"vcpu.<num>.state" - state of the virtual CPU <num>, as number
+from virVcpuState enum,
+"vcpu.<num>.time" - virtual cpu time spent by virtual CPU <num>
+
+I<--interface> returns:
+"net.count" - number of network interfaces on this domain,
+"net.<num>.name" - name of the interface <num>,
+"net.<num>.rx.bytes" - number of bytes received,
+"net.<num>.rx.pkts" - number of packets received,
+"net.<num>.rx.errs" - number of receive errors,
+"net.<num>.rx.drop" - number of receive packets dropped,
+"net.<num>.tx.bytes" - number of bytes transmitted,
+"net.<num>.tx.pkts" - number of packets transmitted,
+"net.<num>.tx.errs" - number of transmission errors,
+"net.<num>.tx.drop" - number of transmit packets dropped,
+
+I<block> returns:
+"block.count" - number of block devices on this domain,
+"block.<num>.name" - name of the target of the block device <num>,
+"block.<num>.rd.reqs" - number of read requests,
+"block.<num>.rd.bytes" - number of read bytes,
+"block.<num>.rd.times" - total time (ns) spent on reads,
+"block.<num>.wr.reqs" - number of write requests,
+"block.<num>.wr.bytes" - number of written bytes,
+"block.<num>.wr.times" - total time (ns) spent on writes,
+"block.<num>.fl.reqs" - total flush requests,
+"block.<num>.fl.times" - total time (ns) spent on cache flushing,
+"block.<num>.errors" - Xen only: the 'oo_req' value,
+
 Selecting a specific statistics groups doesn't guarantee that the
 daemon supports the selected group of stats. Flag I<--enforce>
 forces the command to fail if the daemon doesn't support the
