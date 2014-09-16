@@ -954,6 +954,7 @@ mymain(void)
     DO_TEST_FAILURE("misc-enable-s4", NONE);
     DO_TEST("misc-no-reboot", NONE);
     DO_TEST("misc-uuid", QEMU_CAPS_NAME, QEMU_CAPS_UUID);
+    DO_TEST_PARSE_ERROR("vhost_queues-invalid", NONE);
     DO_TEST("net-vhostuser", QEMU_CAPS_DEVICE, QEMU_CAPS_NETDEV);
     DO_TEST("net-user", NONE);
     DO_TEST("net-virtio", NONE);

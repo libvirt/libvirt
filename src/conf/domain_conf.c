@@ -7377,7 +7377,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
         if (queues) {
             unsigned int q;
-            if (virStrToLong_ui(queues, NULL, 10, &q) < 0) {
+            if (virStrToLong_uip(queues, NULL, 10, &q) < 0) {
                 virReportError(VIR_ERR_XML_DETAIL,
                                _("'queues' attribute must be positive number: %s"),
                                queues);
