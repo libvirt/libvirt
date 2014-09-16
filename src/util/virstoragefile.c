@@ -1927,6 +1927,10 @@ virStorageSourceInitChainElement(virStorageSourcePtr newelem,
         virStorageSourceSeclabelsCopy(newelem, old) < 0)
         goto cleanup;
 
+    if (!newelem->driverName &&
+        VIR_STRDUP(newelem->driverName, old->driverName) < 0)
+        goto cleanup;
+
     newelem->shared = old->shared;
     newelem->readonly = old->readonly;
 
