@@ -899,9 +899,11 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
         goto link_del_exit;
     }
 
-    if (virNetDevSetOnline(cr_ifname, true) < 0) {
-        rc = -1;
-        goto disassociate_exit;
+    if (flags & VIR_NETDEV_MACVLAN_CREATE_IFUP) {
+        if (virNetDevSetOnline(cr_ifname, true) < 0) {
+            rc = -1;
+            goto disassociate_exit;
+        }
     }
 
     if (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) {

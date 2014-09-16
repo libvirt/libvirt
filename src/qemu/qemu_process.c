@@ -42,6 +42,7 @@
 #include "qemu_hostdev.h"
 #include "qemu_hotplug.h"
 #include "qemu_migration.h"
+#include "qemu_interface.h"
 
 #include "cpu/cpu.h"
 #include "datatypes.h"
@@ -3123,6 +3124,12 @@ qemuProcessStartCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
+    /* Bring up netdevs before starting CPUs */
+    if (reason != VIR_DOMAIN_RUNNING_UNPAUSED &&
+        reason != VIR_DOMAIN_RUNNING_SAVE_CANCELED &&
+        qemuInterfaceStartDevices(vm->def) < 0)
+       goto cleanup;
 
     VIR_DEBUG("Using lock state '%s'", NULLSTR(priv->lockState));
     if (virDomainLockProcessResume(driver->lockManager, cfg->uri,

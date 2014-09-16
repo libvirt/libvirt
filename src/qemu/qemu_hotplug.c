@@ -30,6 +30,7 @@
 #include "qemu_domain.h"
 #include "qemu_command.h"
 #include "qemu_hostdev.h"
+#include "qemu_interface.h"
 #include "domain_audit.h"
 #include "netdev_bandwidth_conf.h"
 #include "domain_nwfilter.h"
@@ -942,6 +943,10 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
     }
+
+    /* Set device online immediately */
+    if (qemuInterfaceStartDevice(net) < 0)
+       goto cleanup;
 
     /* Set Bandwidth */
     if (virNetDevSupportBandwidth(actualType) &&

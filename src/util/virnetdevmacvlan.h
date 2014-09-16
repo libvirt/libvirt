@@ -44,6 +44,8 @@ typedef enum {
    VIR_NETDEV_MACVLAN_CREATE_NONE     = 0,
    /* Create with a tap device */
    VIR_NETDEV_MACVLAN_CREATE_WITH_TAP = 1 << 0,
+   /* Bring the interface up */
+   VIR_NETDEV_MACVLAN_CREATE_IFUP     = 1 << 1,
 } virNetDevMacVLanCreateFlags;
 
 int virNetDevMacVLanCreate(const char *ifname,

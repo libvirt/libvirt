@@ -297,6 +297,7 @@ char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
     virNetDevVPortProfilePtr prof;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
     const char *linkdev = virDomainNetGetActualDirectDev(net);
+    unsigned int macvlan_create_flags = VIR_NETDEV_MACVLAN_CREATE_IFUP;
 
     /* XXX how todo bandwidth controls ?
      * Since the 'net-ifname' is about to be moved to a different
@@ -332,7 +333,8 @@ char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
             prof,
             &res_ifname,
             VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
-            cfg->stateDir, 0) < 0)
+            cfg->stateDir,
+            macvlan_create_flags) < 0)
         goto cleanup;
 
     ret = res_ifname;
