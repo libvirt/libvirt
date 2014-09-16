@@ -2286,7 +2286,8 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
     const char *uri_in = NULL;
     virDomainDefPtr def = NULL;
     virDomainObjPtr vm = NULL;
-    char *hostname = NULL;
+    char *my_hostname = NULL;
+    const char *hostname = NULL;
     virURIPtr uri = NULL;
     int ret = -1;
 
@@ -2321,10 +2322,10 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
     def = NULL;
 
     if (!uri_in) {
-        if ((hostname = virGetHostname()) == NULL)
+        if ((my_hostname = virGetHostname()) == NULL)
             goto error;
 
-        if (STRPREFIX(hostname, "localhost")) {
+        if (STRPREFIX(my_hostname, "localhost")) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("hostname on destination resolved to localhost,"
                              " but migration requires an FQDN"));
@@ -2364,6 +2365,7 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
     }
 
  done:
+    VIR_FREE(my_hostname);
     virURIFree(uri);
     if (vm)
         virObjectUnlock(vm);
@@ -2385,7 +2387,7 @@ openvzDomainMigratePerform3Params(virDomainPtr domain,
     virDomainObjPtr vm = NULL;
     const char *uri_str = NULL;
     virURIPtr uri = NULL;
-    virCommandPtr cmd = virCommandNew(VZMIGRATE);
+    virCommandPtr cmd = NULL;
     int ret = -1;
 
     virCheckFlags(OPENVZ_MIGRATION_FLAGS, -1);
@@ -2412,6 +2414,7 @@ openvzDomainMigratePerform3Params(virDomainPtr domain,
     if (uri == NULL || uri->server == NULL)
         goto cleanup;
 
+    cmd = virCommandNew(VZMIGRATE);
     if (flags & VIR_MIGRATE_LIVE)
         virCommandAddArg(cmd, "--live");
     virCommandAddArg(cmd, uri->server);
