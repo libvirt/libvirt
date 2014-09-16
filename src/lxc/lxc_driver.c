@@ -3084,7 +3084,7 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
 static int
 lxcDomainInterfaceStats(virDomainPtr dom,
                         const char *path,
-                        struct _virDomainInterfaceStats *stats)
+                        virDomainInterfaceStatsPtr stats)
 {
     virDomainObjPtr vm;
     size_t i;
@@ -3126,7 +3126,7 @@ lxcDomainInterfaceStats(virDomainPtr dom,
 static int
 lxcDomainInterfaceStats(virDomainPtr dom,
                         const char *path ATTRIBUTE_UNUSED,
-                        struct _virDomainInterfaceStats *stats ATTRIBUTE_UNUSED)
+                        virDomainInterfaceStatsPtr stats ATTRIBUTE_UNUSED)
 {
     virReportUnsupportedError();
     return -1;

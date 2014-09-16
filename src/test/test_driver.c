@@ -3422,7 +3422,7 @@ static int testDomainBlockStats(virDomainPtr domain,
 
 static int testDomainInterfaceStats(virDomainPtr domain,
                                     const char *path,
-                                    struct _virDomainInterfaceStats *stats)
+                                    virDomainInterfaceStatsPtr stats)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;

@@ -2242,7 +2242,7 @@ xenUnifiedDomainBlockStats(virDomainPtr dom, const char *path,
 
 static int
 xenUnifiedDomainInterfaceStats(virDomainPtr dom, const char *path,
-                               struct _virDomainInterfaceStats *stats)
+                               virDomainInterfaceStatsPtr stats)
 {
     virDomainDefPtr def = NULL;
     int ret = -1;

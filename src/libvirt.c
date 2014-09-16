@@ -8047,8 +8047,8 @@ virDomainInterfaceStats(virDomainPtr dom, const char *path,
                         virDomainInterfaceStatsPtr stats, size_t size)
 {
     virConnectPtr conn;
-    struct _virDomainInterfaceStats stats2 = { -1, -1, -1, -1,
-                                               -1, -1, -1, -1 };
+    virDomainInterfaceStatsStruct stats2 = { -1, -1, -1, -1,
+                                             -1, -1, -1, -1 };
 
     VIR_DOMAIN_DEBUG(dom, "path=%s, stats=%p, size=%zi",
                      path, stats, size);

@@ -129,7 +129,7 @@ int     xenHypervisorDomainBlockStats   (virConnectPtr conn,
           ATTRIBUTE_NONNULL (1);
 int     xenHypervisorDomainInterfaceStats (virDomainDefPtr def,
                                            const char *path,
-                                           struct _virDomainInterfaceStats *stats)
+                                           virDomainInterfaceStatsPtr stats)
           ATTRIBUTE_NONNULL (1);
 
 int     xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn,

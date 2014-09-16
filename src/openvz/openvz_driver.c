@@ -1975,7 +1975,7 @@ openvzGetVEStatus(virDomainObjPtr vm, int *status, int *reason)
 static int
 openvzDomainInterfaceStats(virDomainPtr dom,
                            const char *path,
-                           struct _virDomainInterfaceStats *stats)
+                           virDomainInterfaceStatsPtr stats)
 {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;

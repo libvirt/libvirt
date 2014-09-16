@@ -517,7 +517,7 @@ typedef int
 typedef int
 (*virDrvDomainInterfaceStats)(virDomainPtr domain,
                               const char *path,
-                              struct _virDomainInterfaceStats *stats);
+                              virDomainInterfaceStatsPtr stats);
 
 typedef int
 (*virDrvDomainSetInterfaceParameters)(virDomainPtr dom,

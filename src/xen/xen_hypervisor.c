@@ -1451,7 +1451,7 @@ xenHypervisorDomainBlockStats(virConnectPtr conn,
 int
 xenHypervisorDomainInterfaceStats(virDomainDefPtr def,
                                   const char *path,
-                                  struct _virDomainInterfaceStats *stats)
+                                  virDomainInterfaceStatsPtr stats)
 {
 #ifdef __linux__
     int rqdomid, device;

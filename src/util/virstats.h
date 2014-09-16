@@ -26,6 +26,6 @@
 # include "internal.h"
 
 extern int virNetInterfaceStats(const char *path,
-                                struct _virDomainInterfaceStats *stats);
+                                virDomainInterfaceStatsPtr stats);
 
 #endif /* __STATS_LINUX_H__ */

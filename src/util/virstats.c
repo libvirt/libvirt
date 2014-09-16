@@ -51,7 +51,7 @@
 #ifdef __linux__
 int
 virNetInterfaceStats(const char *path,
-                     struct _virDomainInterfaceStats *stats)
+                     virDomainInterfaceStatsPtr stats)
 {
     int path_len;
     FILE *fp;
@@ -122,7 +122,7 @@ virNetInterfaceStats(const char *path,
 #elif defined(HAVE_GETIFADDRS) && defined(AF_LINK)
 int
 virNetInterfaceStats(const char *path,
-                     struct _virDomainInterfaceStats *stats)
+                     virDomainInterfaceStatsPtr stats)
 {
     struct ifaddrs *ifap, *ifa;
     struct if_data *ifd;
@@ -168,7 +168,7 @@ virNetInterfaceStats(const char *path,
 #else
 int
 virNetInterfaceStats(const char *path ATTRIBUTE_UNUSED,
-                     struct _virDomainInterfaceStats *stats ATTRIBUTE_UNUSED)
+                     virDomainInterfaceStatsPtr stats ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                    _("interface stats not implemented on this platform"));

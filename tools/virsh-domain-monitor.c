@@ -1047,7 +1047,7 @@ cmdDomIfstat(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     const char *name = NULL, *device = NULL;
-    struct _virDomainInterfaceStats stats;
+    virDomainInterfaceStatsStruct stats;
     bool ret = false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))

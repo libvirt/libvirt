@@ -9850,7 +9850,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
 static int
 qemuDomainInterfaceStats(virDomainPtr dom,
                          const char *path,
-                         struct _virDomainInterfaceStats *stats)
+                         virDomainInterfaceStatsPtr stats)
 {
     virDomainObjPtr vm;
     size_t i;
