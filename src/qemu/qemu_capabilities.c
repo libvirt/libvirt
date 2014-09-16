@@ -3609,6 +3609,42 @@ virQEMUCapsGetDefaultMachine(virQEMUCapsPtr qemuCaps)
 
 
 static void
+virQEMUCapsFillDomainLoaderCaps(virQEMUCapsPtr qemuCaps,
+                                virDomainCapsLoaderPtr loader,
+                                virArch arch)
+{
+    loader->device.supported = true;
+
+    VIR_DOMAIN_CAPS_ENUM_SET(loader->type,
+                             VIR_DOMAIN_LOADER_TYPE_ROM);
+
+    if (arch == VIR_ARCH_X86_64 &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_FORMAT))
+        VIR_DOMAIN_CAPS_ENUM_SET(loader->type,
+                                 VIR_DOMAIN_LOADER_TYPE_PFLASH);
+
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_READONLY))
+        VIR_DOMAIN_CAPS_ENUM_SET(loader->readonly,
+                                 VIR_TRISTATE_BOOL_YES,
+                                 VIR_TRISTATE_BOOL_NO);
+}
+
+
+static void
+virQEMUCapsFillDomainOSCaps(virQEMUCapsPtr qemuCaps,
+                            virDomainCapsOSPtr os,
+                            virArch arch)
+{
+    virDomainCapsLoaderPtr loader = &os->loader;
+
+    os->device.supported = true;
+    virQEMUCapsFillDomainLoaderCaps(qemuCaps, loader, arch);
+}
+
+
+static void
 virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCapsPtr qemuCaps,
                                     virDomainCapsDeviceDiskPtr disk)
 {
@@ -3686,12 +3722,14 @@ void
 virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
                           virQEMUCapsPtr qemuCaps)
 {
+    virDomainCapsOSPtr os = &domCaps->os;
     virDomainCapsDeviceDiskPtr disk = &domCaps->disk;
     virDomainCapsDeviceHostdevPtr hostdev = &domCaps->hostdev;
     int maxvcpus = virQEMUCapsGetMachineMaxCpus(qemuCaps, domCaps->machine);
 
     domCaps->maxvcpus = maxvcpus;
 
+    virQEMUCapsFillDomainOSCaps(qemuCaps, os, domCaps->arch);
     virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps, disk);
     virQEMUCapsFillDomainDeviceHostdevCaps(qemuCaps, hostdev);
 }

@@ -4,6 +4,19 @@
   <machine>my-machine-type</machine>
   <arch>x86_64</arch>
   <vcpu max='255'/>
+  <os supported='yes'>
+    <loader supported='yes'>
+      <enum name='type'>
+        <value>rom</value>
+        <value>pflash</value>
+      </enum>
+      <enum name='readonly'>
+        <value>default</value>
+        <value>yes</value>
+        <value>no</value>
+      </enum>
+    </loader>
+  </os>
   <devices>
     <disk supported='yes'>
       <enum name='diskDevice'>

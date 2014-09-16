@@ -3,6 +3,18 @@
   <domain>kvm</domain>
   <machine>pc-1.2</machine>
   <arch>x86_64</arch>
+  <os supported='yes'>
+    <loader supported='yes'>
+      <enum name='type'>
+        <value>rom</value>
+        <value>pflash</value>
+      </enum>
+      <enum name='readonly'>
+        <value>yes</value>
+        <value>no</value>
+      </enum>
+    </loader>
+  </os>
   <devices>
     <disk supported='yes'>
       <enum name='diskDevice'>

@@ -43,6 +43,21 @@ struct _virDomainCapsDevice {
     bool supported; /* true if <devtype> is supported by hypervisor */
 };
 
+typedef struct _virDomainCapsLoader virDomainCapsLoader;
+typedef virDomainCapsLoader *virDomainCapsLoaderPtr;
+struct _virDomainCapsLoader {
+    virDomainCapsDevice device;
+    virDomainCapsEnum type;     /* Info about virDomainLoader */
+    virDomainCapsEnum readonly; /* Info about readonly:virTristateBool */
+};
+
+typedef struct _virDomainCapsOS virDomainCapsOS;
+typedef virDomainCapsOS *virDomainCapsOSPtr;
+struct _virDomainCapsOS {
+    virDomainCapsDevice device;
+    virDomainCapsLoader loader;     /* Info about virDomainLoaderDef */
+};
+
 typedef struct _virDomainCapsDeviceDisk virDomainCapsDeviceDisk;
 typedef virDomainCapsDeviceDisk *virDomainCapsDeviceDiskPtr;
 struct _virDomainCapsDeviceDisk {
@@ -75,6 +90,7 @@ struct _virDomainCaps {
     /* Some machine specific info */
     int maxvcpus;
 
+    virDomainCapsOS os;
     virDomainCapsDeviceDisk disk;
     virDomainCapsDeviceHostdev hostdev;
     /* add new domain devices here */

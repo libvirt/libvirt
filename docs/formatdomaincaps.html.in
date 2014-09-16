@@ -93,6 +93,46 @@
       <dd>The maximum number of supported virtual CPUs</dd>
     </dl>
 
+    <h3><a name="elementsOSBIOS">BIOS bootloader</a></h3>
+
+    <p>Sometimes users might want to tweak some BIOS knobs or use
+    UEFI. For cases like that, <a
+    href="formatdomain.html#elementsOSBIOS"><code>os</code></a>
+    element exposes what values can be passed to its children.</p>
+
+<pre>
+&lt;domainCapabilities&gt;
+  ...
+  &lt;os supported='yes'&gt;
+    &lt;loader supported='yes'&gt;
+      &lt;enum name='type'&gt;
+        &lt;value&gt;rom&lt;/value&gt;
+        &lt;value&gt;pflash&lt;/value&gt;
+      &lt;/enum&gt;
+      &lt;enum name='readonly'&gt;
+        &lt;value&gt;yes&lt;/value&gt;
+        &lt;value&gt;no&lt;/value&gt;
+      &lt;/enum&gt;
+    &lt;/loader&gt;
+  &lt;/os&gt;
+  ...
+&lt;domainCapabilities&gt;
+</pre>
+
+    <p>For the <code>loader</code> element, the following can occur:</p>
+
+    <dl>
+      <dt>type</dt>
+      <dd>Whether loader is a typical BIOS (<code>rom</code>) or
+      an UEFI binary (<code>pflash</code>). This refers to
+      <code>type</code> attribute of the &lt;loader/&gt;
+      element.</dd>
+
+      <dt>readonly</dt>
+      <dd>Options for the <code>readonly</code> attribute of the
+      &lt;loader/&gt; element.</dd>
+    </dl>
+
     <h3><a name="elementsDevices">Devices</a></h3>
 
     <p>

@@ -178,6 +178,32 @@ virDomainCapsEnumFormat(virBufferPtr buf,
                                 #capsEnum, valToStr);               \
     } while (0)
 
+
+static void
+virDomainCapsLoaderFormat(virBufferPtr buf,
+                          virDomainCapsLoaderPtr loader)
+{
+    FORMAT_PROLOGUE(loader);
+
+    ENUM_PROCESS(loader, type, virDomainLoaderTypeToString);
+    ENUM_PROCESS(loader, readonly, virTristateBoolTypeToString);
+
+    FORMAT_EPILOGUE(loader);
+}
+
+static void
+virDomainCapsOSFormat(virBufferPtr buf,
+                      virDomainCapsOSPtr os)
+{
+    virDomainCapsLoaderPtr loader = &os->loader;
+
+    FORMAT_PROLOGUE(os);
+
+    virDomainCapsLoaderFormat(buf, loader);
+
+    FORMAT_EPILOGUE(os);
+}
+
 static void
 virDomainCapsDeviceDiskFormat(virBufferPtr buf,
                               virDomainCapsDeviceDiskPtr const disk)
@@ -224,6 +250,8 @@ virDomainCapsFormatInternal(virBufferPtr buf,
 
     if (caps->maxvcpus)
         virBufferAsprintf(buf, "<vcpu max='%d'/>\n", caps->maxvcpus);
+
+    virDomainCapsOSFormat(buf, &caps->os);
 
     virBufferAddLit(buf, "<devices>\n");
     virBufferAdjustIndent(buf, 2);

@@ -38,9 +38,17 @@ static void
 fillAll(virDomainCapsPtr domCaps,
         void *opaque ATTRIBUTE_UNUSED)
 {
+    virDomainCapsOSPtr os = &domCaps->os;
+    virDomainCapsLoaderPtr loader = &os->loader;
     virDomainCapsDeviceDiskPtr disk = &domCaps->disk;
     virDomainCapsDeviceHostdevPtr hostdev = &domCaps->hostdev;
     domCaps->maxvcpus = 255;
+
+    os->device.supported = true;
+
+    loader->device.supported = true;
+    SET_ALL_BITS(loader->type);
+    SET_ALL_BITS(loader->readonly);
 
     disk->device.supported = true;
     SET_ALL_BITS(disk->diskDevice);
