@@ -5387,7 +5387,7 @@ lxcNodeGetInfo(virConnectPtr conn,
 
 static int
 lxcDomainMemoryStats(virDomainPtr dom,
-                     struct _virDomainMemoryStat *stats,
+                     virDomainMemoryStatPtr stats,
                      unsigned int nr_stats,
                      unsigned int flags)
 {

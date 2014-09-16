@@ -535,7 +535,7 @@ typedef int
 
 typedef int
 (*virDrvDomainMemoryStats)(virDomainPtr domain,
-                           struct _virDomainMemoryStat *stats,
+                           virDomainMemoryStatPtr stats,
                            unsigned int nr_stats,
                            unsigned int flags);
 

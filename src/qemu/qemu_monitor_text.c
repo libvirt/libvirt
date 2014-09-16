@@ -684,7 +684,7 @@ int qemuMonitorTextGetBalloonInfo(qemuMonitorPtr mon,
 
     if ((offset = strstr(reply, BALLOON_PREFIX)) != NULL) {
         offset += strlen(BALLOON_PREFIX);
-        struct _virDomainMemoryStat stats[1];
+        virDomainMemoryStatStruct stats[1];
 
         if (qemuMonitorParseBalloonInfo(offset, stats, 1) == 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

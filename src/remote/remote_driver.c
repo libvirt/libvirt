@@ -2690,7 +2690,7 @@ remoteDomainGetSchedulerType(virDomainPtr domain, int *nparams)
 
 static int
 remoteDomainMemoryStats(virDomainPtr domain,
-                        struct _virDomainMemoryStat *stats,
+                        virDomainMemoryStatPtr stats,
                         unsigned int nr_stats,
                         unsigned int flags)
 {

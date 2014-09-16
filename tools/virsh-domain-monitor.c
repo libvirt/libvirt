@@ -295,7 +295,7 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     const char *name;
-    struct _virDomainMemoryStat stats[VIR_DOMAIN_MEMORY_STAT_NR];
+    virDomainMemoryStatStruct stats[VIR_DOMAIN_MEMORY_STAT_NR];
     unsigned int nr_stats;
     size_t i;
     int ret = false;

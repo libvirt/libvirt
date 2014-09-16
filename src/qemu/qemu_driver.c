@@ -10187,7 +10187,7 @@ qemuDomainGetInterfaceParameters(virDomainPtr dom,
 
 static int
 qemuDomainMemoryStats(virDomainPtr dom,
-                      struct _virDomainMemoryStat *stats,
+                      virDomainMemoryStatPtr stats,
                       unsigned int nr_stats,
                       unsigned int flags)
 {
