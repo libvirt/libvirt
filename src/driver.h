@@ -505,7 +505,7 @@ typedef int
 typedef int
 (*virDrvDomainBlockStats)(virDomainPtr domain,
                           const char *path,
-                          struct _virDomainBlockStats *stats);
+                          virDomainBlockStatsPtr stats);
 
 typedef int
 (*virDrvDomainBlockStatsFlags)(virDomainPtr domain,

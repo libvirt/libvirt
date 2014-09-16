@@ -2301,7 +2301,7 @@ lxcDomainMergeBlkioDevice(virBlkioDevicePtr *dest_array,
 static int
 lxcDomainBlockStats(virDomainPtr dom,
                     const char *path,
-                    struct _virDomainBlockStats *stats)
+                    virDomainBlockStatsPtr stats)
 {
     int ret = -1, idx;
     virDomainObjPtr vm;

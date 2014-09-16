@@ -899,7 +899,7 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     const char *name = NULL, *device = NULL;
-    struct _virDomainBlockStats stats;
+    virDomainBlockStatsStruct stats;
     virTypedParameterPtr params = NULL;
     virTypedParameterPtr par = NULL;
     char *value = NULL;

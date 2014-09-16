@@ -152,7 +152,7 @@ check_bd_connected(xenUnifiedPrivatePtr priv, int device, int domid)
 
 static int
 read_bd_stats(xenUnifiedPrivatePtr priv,
-              int device, int domid, struct _virDomainBlockStats *stats)
+              int device, int domid, virDomainBlockStatsPtr stats)
 {
     stats->rd_req   = read_bd_stat(device, domid, "rd_req");
     stats->rd_bytes = read_bd_stat(device, domid, "rd_sect");
@@ -343,7 +343,7 @@ int
 xenLinuxDomainBlockStats(xenUnifiedPrivatePtr priv,
                          virDomainDefPtr def,
                          const char *path,
-                         struct _virDomainBlockStats *stats)
+                         virDomainBlockStatsPtr stats)
 {
     int device = xenLinuxDomainDeviceID(def->id, path);
 

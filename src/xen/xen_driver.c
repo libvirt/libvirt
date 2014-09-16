@@ -2222,7 +2222,7 @@ xenUnifiedDomainSetSchedulerParameters(virDomainPtr dom,
 
 static int
 xenUnifiedDomainBlockStats(virDomainPtr dom, const char *path,
-                           struct _virDomainBlockStats *stats)
+                           virDomainBlockStatsPtr stats)
 {
     virDomainDefPtr def = NULL;
     int ret = -1;

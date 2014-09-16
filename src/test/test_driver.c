@@ -3369,7 +3369,7 @@ testDomainSetSchedulerParameters(virDomainPtr domain,
 
 static int testDomainBlockStats(virDomainPtr domain,
                                 const char *path,
-                                struct _virDomainBlockStats *stats)
+                                virDomainBlockStatsPtr stats)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;

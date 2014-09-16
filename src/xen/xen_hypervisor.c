@@ -1423,7 +1423,7 @@ int
 xenHypervisorDomainBlockStats(virConnectPtr conn,
                               virDomainDefPtr def,
                               const char *path,
-                              struct _virDomainBlockStats *stats)
+                              virDomainBlockStatsPtr stats)
 {
 #ifdef __linux__
     xenUnifiedPrivatePtr priv = conn->privateData;

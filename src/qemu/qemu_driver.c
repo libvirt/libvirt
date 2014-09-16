@@ -9603,7 +9603,7 @@ qemuDomainBlockResize(virDomainPtr dom,
 static int
 qemuDomainBlockStats(virDomainPtr dom,
                      const char *path,
-                     struct _virDomainBlockStats *stats)
+                     virDomainBlockStatsPtr stats)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     int idx;

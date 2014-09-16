@@ -7908,7 +7908,7 @@ virDomainBlockStats(virDomainPtr dom, const char *disk,
                     virDomainBlockStatsPtr stats, size_t size)
 {
     virConnectPtr conn;
-    struct _virDomainBlockStats stats2 = { -1, -1, -1, -1, -1 };
+    virDomainBlockStatsStruct stats2 = { -1, -1, -1, -1, -1 };
 
     VIR_DOMAIN_DEBUG(dom, "disk=%s, stats=%p, size=%zi", disk, stats, size);
 
