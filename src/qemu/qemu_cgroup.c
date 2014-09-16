@@ -1140,7 +1140,8 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
         /* IOThreads are numbered 1..n, although the array is 0..n-1,
          * so we will account for that here
          */
-        if (virCgroupNewIOThread(priv->cgroup, i+1, true, &cgroup_iothread) < 0)
+        if (virCgroupNewIOThread(priv->cgroup, i + 1, true,
+                                 &cgroup_iothread) < 0)
             goto cleanup;
 
         /* move the thread for iothread to sub dir */
@@ -1159,13 +1160,13 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
              * qemuSetupCgroupIOThreadsPin will fail. */
             for (j = 0; j < def->cputune.niothreadspin; j++) {
                 /* IOThreads are numbered/named 1..n */
-                if (def->cputune.iothreadspin[j]->vcpuid != i+1)
+                if (def->cputune.iothreadspin[j]->vcpuid != i + 1)
                     continue;
 
                 if (qemuSetupCgroupIOThreadsPin(cgroup_iothread,
                                                 def->cputune.iothreadspin,
                                                 def->cputune.niothreadspin,
-                                                i+1) < 0)
+                                                i + 1) < 0)
                     goto cleanup;
 
                 break;

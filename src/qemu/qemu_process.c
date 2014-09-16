@@ -2358,7 +2358,7 @@ qemuProcessSetIOThreadsAffinity(virDomainObjPtr vm)
         /* set affinity only for existing vcpus */
         if (!(pininfo = virDomainVcpuPinFindByVcpu(def->cputune.iothreadspin,
                                                    def->cputune.niothreadspin,
-                                                   i+1)))
+                                                   i + 1)))
             continue;
 
         if (virProcessSetAffinity(priv->iothreadpids[i], pininfo->cpumask) < 0)
