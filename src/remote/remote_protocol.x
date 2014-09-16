@@ -3061,6 +3061,18 @@ struct remote_node_get_free_pages_ret {
     unsigned hyper counts<REMOTE_NODE_MAX_CELLS>;
 };
 
+struct remote_node_alloc_pages_args {
+    unsigned int pageSizes<REMOTE_NODE_MAX_CELLS>;
+    unsigned hyper pageCounts<REMOTE_NODE_MAX_CELLS>;
+    int startCell;
+    unsigned int cellCount;
+    unsigned int flags;
+};
+
+struct remote_node_alloc_pages_ret {
+    int ret;
+};
+
 struct remote_network_dhcp_lease {
     remote_nonnull_string iface;
     hyper expirytime;
@@ -5487,5 +5499,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_TUNABLE = 346
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_TUNABLE = 346,
+
+    /**
+     * @generate: none
+     * @acl: connect:write
+     */
+    REMOTE_PROC_NODE_ALLOC_PAGES = 347
 };

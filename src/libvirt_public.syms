@@ -679,4 +679,9 @@ LIBVIRT_1.2.8 {
         virDomainStatsRecordListFree;
 } LIBVIRT_1.2.7;
 
+LIBVIRT_1.2.9 {
+    global:
+        virNodeAllocPages;
+} LIBVIRT_1.2.8;
+
 # .... define new API here using predicted next version number ....

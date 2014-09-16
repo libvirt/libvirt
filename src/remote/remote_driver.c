@@ -7853,6 +7853,52 @@ remoteConnectGetAllDomainStats(virConnectPtr conn,
     return rv;
 }
 
+
+static int
+remoteNodeAllocPages(virConnectPtr conn,
+                     unsigned int npages,
+                     unsigned int *pageSizes,
+                     unsigned long long *pageCounts,
+                     int startCell,
+                     unsigned int cellCount,
+                     unsigned int flags)
+{
+    int rv = -1;
+    remote_node_alloc_pages_args args;
+    remote_node_alloc_pages_ret ret;
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    if (npages > REMOTE_NODE_MAX_CELLS) {
+        virReportError(VIR_ERR_RPC,
+                       _("too many NUMA cells: %d > %d"),
+                       npages, REMOTE_NODE_MAX_CELLS);
+        goto done;
+    }
+
+    args.pageSizes.pageSizes_val = (u_int *) pageSizes;
+    args.pageSizes.pageSizes_len = npages;
+    args.pageCounts.pageCounts_val = (uint64_t *) pageCounts;
+    args.pageCounts.pageCounts_len = npages;
+    args.startCell = startCell;
+    args.cellCount = cellCount;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+    if (call(conn, priv, 0, REMOTE_PROC_NODE_ALLOC_PAGES,
+             (xdrproc_t) xdr_remote_node_alloc_pages_args, (char *) &args,
+             (xdrproc_t) xdr_remote_node_alloc_pages_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.ret;
+
+ done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
  * (name, uuid) pair into virDomainPtr or virNetworkPtr object.
  * These can return NULL if underlying memory allocations fail,
@@ -8194,6 +8240,7 @@ static virDriver remote_driver = {
     .nodeGetFreePages = remoteNodeGetFreePages, /* 1.2.6 */
     .connectGetDomainCapabilities = remoteConnectGetDomainCapabilities, /* 1.2.7 */
     .connectGetAllDomainStats = remoteConnectGetAllDomainStats, /* 1.2.8 */
+    .nodeAllocPages = remoteNodeAllocPages, /* 1.2.9 */
 };
 
 static virNetworkDriver network_driver = {

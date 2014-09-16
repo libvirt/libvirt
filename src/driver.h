@@ -1212,6 +1212,15 @@ typedef int
                                   virDomainStatsRecordPtr **retStats,
                                   unsigned int flags);
 
+typedef int
+(*virDrvNodeAllocPages)(virConnectPtr conn,
+                        unsigned int npages,
+                        unsigned int *pageSizes,
+                        unsigned long long *pageCounts,
+                        int startCell,
+                        unsigned int cellCount,
+                        unsigned int flags);
+
 typedef struct _virDriver virDriver;
 typedef virDriver *virDriverPtr;
 
@@ -1435,6 +1444,7 @@ struct _virDriver {
     virDrvNodeGetFreePages nodeGetFreePages;
     virDrvConnectGetDomainCapabilities connectGetDomainCapabilities;
     virDrvConnectGetAllDomainStats connectGetAllDomainStats;
+    virDrvNodeAllocPages nodeAllocPages;
 };
 
 

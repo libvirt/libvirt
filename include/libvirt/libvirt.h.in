@@ -5616,6 +5616,22 @@ int virNodeGetFreePages(virConnectPtr conn,
                         unsigned int cellcount,
                         unsigned long long *counts,
                         unsigned int flags);
+
+typedef enum {
+    VIR_NODE_ALLOC_PAGES_ADD = 0, /* Add @pageCounts to the pages pool. This
+                                     can be used only to size up the pool. */
+    VIR_NODE_ALLOC_PAGES_SET = (1 << 0), /* Don't add @pageCounts, instead set
+                                            passed number of pages. This can be
+                                            used to free allocated pages. */
+} virNodeAllocPagesFlags;
+
+int virNodeAllocPages(virConnectPtr conn,
+                      unsigned int npages,
+                      unsigned int *pageSizes,
+                      unsigned long long *pageCounts,
+                      int startCell,
+                      unsigned int cellCount,
+                      unsigned int flags);
 /**
  * virSchedParameterType:
  *

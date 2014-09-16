@@ -6303,6 +6303,43 @@ remoteDispatchConnectGetAllDomainStats(virNetServerPtr server ATTRIBUTE_UNUSED,
 }
 
 
+static int
+remoteDispatchNodeAllocPages(virNetServerPtr server ATTRIBUTE_UNUSED,
+                             virNetServerClientPtr client,
+                             virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                             virNetMessageErrorPtr rerr,
+                             remote_node_alloc_pages_args *args,
+                             remote_node_alloc_pages_ret *ret)
+{
+    int rv = -1;
+    int len;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((len = virNodeAllocPages(priv->conn,
+                                 args->pageSizes.pageSizes_len,
+                                 args->pageSizes.pageSizes_val,
+                                 (unsigned long long *) args->pageCounts.pageCounts_val,
+                                 args->startCell,
+                                 args->cellCount,
+                                 args->flags)) < 0)
+        goto cleanup;
+
+    ret->ret = len;
+    rv = 0;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    return rv;
+}
+
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire

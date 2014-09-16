@@ -21841,3 +21841,75 @@ virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats)
 
     VIR_FREE(stats);
 }
+
+
+/**
+ * virNodeAllocPages:
+ * @conn: pointer to the hypervisor connection
+ * @npages: number of items in the @pageSizes and
+ *          @pageCounts arrays
+ * @pageSizes: which huge page sizes to allocate
+ * @pageCounts: how many pages should be allocated
+ * @startCell: index of first cell to allocate pages on
+ * @cellCount: number of consecutive cells to allocate pages on
+ * @flags: extra flags; binary-OR of virNodeAllocPagesFlags
+ *
+ * Sometimes, when trying to start a new domain, it may be
+ * necessary to reserve some huge pages in the system pool which
+ * can be then allocated by the domain. This API serves that
+ * purpose. On its input, @pageSizes and @pageCounts are arrays
+ * of the same cardinality of @npages. The @pageSizes contains
+ * page sizes which are to be allocated in the system (the size
+ * unit is kibibytes), and @pageCounts then contains the number
+ * of pages to reserve.  If @flags is 0
+ * (VIR_NODE_ALLOC_PAGES_ADD), each pool corresponding to
+ * @pageSizes grows by the number of pages specified in the
+ * corresponding @pageCounts.  If @flags contains
+ * VIR_NODE_ALLOC_PAGES_SET, each pool mentioned is resized to
+ * the given number of pages.  The pages pool can be allocated
+ * over several NUMA nodes at once, just point at @startCell and
+ * tell how many subsequent NUMA nodes should be taken in. As a
+ * special case, if @startCell is equal to negative one, then
+ * kernel is instructed to allocate the pages over all NUMA nodes
+ * proportionally.
+ *
+ * Returns: the number of nodes successfully adjusted or -1 in
+ * case of an error.
+ */
+int
+virNodeAllocPages(virConnectPtr conn,
+                  unsigned int npages,
+                  unsigned int *pageSizes,
+                  unsigned long long *pageCounts,
+                  int startCell,
+                  unsigned int cellCount,
+                  unsigned int flags)
+{
+    VIR_DEBUG("conn=%p npages=%u pageSizes=%p pageCounts=%p "
+              "startCell=%d cellCount=%u flagx=%x",
+              conn, npages, pageSizes, pageCounts, startCell,
+              cellCount, flags);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, -1);
+    virCheckNonZeroArgGoto(npages, error);
+    virCheckNonNullArgGoto(pageSizes, error);
+    virCheckNonNullArgGoto(pageCounts, error);
+    virCheckNonZeroArgGoto(cellCount, error);
+
+    if (conn->driver->nodeAllocPages) {
+        int ret;
+        ret = conn->driver->nodeAllocPages(conn, npages, pageSizes,
+                                           pageCounts, startCell,
+                                           cellCount, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+ error:
+    virDispatchError(conn);
+    return -1;
+}
