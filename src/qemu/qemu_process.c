@@ -2105,6 +2105,9 @@ qemuProcessDetectIOThreadPIDs(virQEMUDriverPtr driver,
     int ret = -1;
     size_t i;
 
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD))
+        return 0;
+
     /* Get the list of IOThreads from qemu */
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto cleanup;
