@@ -105,6 +105,7 @@
   ...
   &lt;os supported='yes'&gt;
     &lt;loader supported='yes'&gt;
+      &lt;value&gt;/usr/share/OVMF/OVMF_CODE.fd&lt;/value&gt;
       &lt;enum name='type'&gt;
         &lt;value&gt;rom&lt;/value&gt;
         &lt;value&gt;pflash&lt;/value&gt;
@@ -122,6 +123,11 @@
     <p>For the <code>loader</code> element, the following can occur:</p>
 
     <dl>
+      <dt>value</dt>
+      <dd>List of known loader paths. Currently this is only used
+      to advertise known locations of OVMF binaries for qemu. Binaries
+      will only be listed if they actually exist on disk.</dd>
+
       <dt>type</dt>
       <dd>Whether loader is a typical BIOS (<code>rom</code>) or
       an UEFI binary (<code>pflash</code>). This refers to

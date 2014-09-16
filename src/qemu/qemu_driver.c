@@ -17285,11 +17285,14 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
     int virttype; /* virDomainVirtType */
     virDomainCapsPtr domCaps = NULL;
     int arch = virArchFromHost(); /* virArch */
+    virQEMUDriverConfigPtr cfg = NULL;
 
     virCheckFlags(0, ret);
 
     if (virConnectGetDomainCapabilitiesEnsureACL(conn) < 0)
         return ret;
+
+    cfg = virQEMUDriverGetConfig(driver);
 
     if (qemuHostdevHostSupportsPassthroughLegacy())
         virttype = VIR_DOMAIN_VIRT_KVM;
@@ -17357,11 +17360,12 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
     if (!(domCaps = virDomainCapsNew(emulatorbin, machine, arch, virttype)))
         goto cleanup;
 
-    if (virQEMUCapsFillDomainCaps(domCaps, qemuCaps) < 0)
+    if (virQEMUCapsFillDomainCaps(domCaps, qemuCaps, cfg) < 0)
         goto cleanup;
 
     ret = virDomainCapsFormat(domCaps);
  cleanup:
+    virObjectUnref(cfg);
     virObjectUnref(domCaps);
     virObjectUnref(qemuCaps);
     return ret;

@@ -324,7 +324,12 @@ int virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
                                    virQEMUCapsPtr kvmbinCaps,
                                    virArch guestarch);
 
+/* Forward declaration */
+typedef struct _virQEMUDriverConfig virQEMUDriverConfig;
+typedef virQEMUDriverConfig *virQEMUDriverConfigPtr;
+
 int virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
-                              virQEMUCapsPtr qemuCaps);
+                              virQEMUCapsPtr qemuCaps,
+                              virQEMUDriverConfigPtr cfg);
 
 #endif /* __QEMU_CAPABILITIES_H__*/

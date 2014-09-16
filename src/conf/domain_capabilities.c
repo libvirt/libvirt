@@ -48,12 +48,28 @@ VIR_ONCE_GLOBAL_INIT(virDomainCaps)
 
 
 static void
+virDomainCapsStringValuesFree(virDomainCapsStringValuesPtr values)
+{
+    size_t i;
+
+    if (!values || !values->values)
+        return;
+
+    for (i = 0; i < values->nvalues; i++)
+        VIR_FREE(values->values[i]);
+    VIR_FREE(values->values);
+}
+
+
+static void
 virDomainCapsDispose(void *obj)
 {
     virDomainCapsPtr caps = obj;
 
     VIR_FREE(caps->path);
     VIR_FREE(caps->machine);
+
+    virDomainCapsStringValuesFree(&caps->os.loader.values);
 }
 
 
@@ -156,6 +172,18 @@ virDomainCapsEnumFormat(virBufferPtr buf,
     return ret;
 }
 
+
+static void
+virDomainCapsStringValuesFormat(virBufferPtr buf,
+                                virDomainCapsStringValuesPtr values)
+{
+    size_t i;
+
+    for (i = 0; i < values->nvalues; i++)
+        virBufferEscapeString(buf, "<value>%s</value>\n", values->values[i]);
+}
+
+
 #define FORMAT_PROLOGUE(item)                                       \
     do {                                                            \
         virBufferAsprintf(buf, "<" #item " supported='%s'%s\n",     \
@@ -185,6 +213,7 @@ virDomainCapsLoaderFormat(virBufferPtr buf,
 {
     FORMAT_PROLOGUE(loader);
 
+    virDomainCapsStringValuesFormat(buf, &loader->values);
     ENUM_PROCESS(loader, type, virDomainLoaderTypeToString);
     ENUM_PROCESS(loader, readonly, virTristateBoolTypeToString);
 

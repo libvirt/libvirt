@@ -47,6 +47,9 @@
   <define name='loader'>
     <element name='loader'>
       <ref name='supported'/>
+      <optional>
+        <ref name='value'/>
+      </optional>
       <ref name='enum'/>
     </element>
   </define>
@@ -85,6 +88,14 @@
     </element>
   </define>
 
+  <define name='value'>
+    <zeroOrMore>
+      <element name='value'>
+        <text/>
+      </element>
+    </zeroOrMore>
+  </define>
+
   <define name='supported'>
     <attribute name='supported'>
       <ref name="virYesNo"/>
@@ -97,11 +108,7 @@
         <attribute name='name'>
           <text/>
         </attribute>
-        <zeroOrMore>
-          <element name='value'>
-            <text/>
-          </element>
-        </zeroOrMore>
+        <ref name='value'/>
       </element>
     </zeroOrMore>
   </define>

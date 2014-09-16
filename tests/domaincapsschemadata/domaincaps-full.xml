@@ -6,6 +6,8 @@
   <vcpu max='255'/>
   <os supported='yes'>
     <loader supported='yes'>
+      <value>/foo/bar</value>
+      <value>/tmp/my_path</value>
       <enum name='type'>
         <value>rom</value>
         <value>pflash</value>

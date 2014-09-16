@@ -37,6 +37,13 @@ struct _virDomainCapsEnum {
     unsigned int values; /* Bitmask of values supported in the corresponding enum */
 };
 
+typedef struct _virDomainCapsStringValues virDomainCapsStringValues;
+typedef virDomainCapsStringValues *virDomainCapsStringValuesPtr;
+struct _virDomainCapsStringValues {
+    char **values;  /* raw string values */
+    size_t nvalues; /* number of strings */
+};
+
 typedef struct _virDomainCapsDevice virDomainCapsDevice;
 typedef virDomainCapsDevice *virDomainCapsDevicePtr;
 struct _virDomainCapsDevice {
@@ -47,6 +54,7 @@ typedef struct _virDomainCapsLoader virDomainCapsLoader;
 typedef virDomainCapsLoader *virDomainCapsLoaderPtr;
 struct _virDomainCapsLoader {
     virDomainCapsDevice device;
+    virDomainCapsStringValues values;   /* Info about values for the element */
     virDomainCapsEnum type;     /* Info about virDomainLoader */
     virDomainCapsEnum readonly; /* Info about readonly:virTristateBool */
 };
