@@ -1890,12 +1890,67 @@ struct _virDomainResourceDef {
     char *partition;
 };
 
-typedef struct _virDomaiHugePage virDomainHugePage;
+typedef struct _virDomainHugePage virDomainHugePage;
 typedef virDomainHugePage *virDomainHugePagePtr;
 
-struct _virDomaiHugePage {
+struct _virDomainHugePage {
     virBitmapPtr nodemask;      /* guest's NUMA node mask */
     unsigned long long size;    /* hugepage size in KiB */
+};
+
+typedef struct _virDomainCputune virDomainCputune;
+typedef virDomainCputune *virDomainCputunePtr;
+
+struct _virDomainCputune {
+    unsigned long shares;
+    bool sharesSpecified;
+    unsigned long long period;
+    long long quota;
+    unsigned long long emulator_period;
+    long long emulator_quota;
+    size_t nvcpupin;
+    virDomainVcpuPinDefPtr *vcpupin;
+    virDomainVcpuPinDefPtr emulatorpin;
+    size_t niothreadspin;
+    virDomainVcpuPinDefPtr *iothreadspin;
+};
+
+typedef struct _virDomainBlkiotune virDomainBlkiotune;
+typedef virDomainBlkiotune *virDomainBlkiotunePtr;
+
+struct _virDomainBlkiotune {
+    unsigned int weight;
+
+    size_t ndevices;
+    virBlkioDevicePtr devices;
+};
+
+typedef struct _virDomainMemtune virDomainMemtune;
+typedef virDomainMemtune *virDomainMemtunePtr;
+
+struct _virDomainMemtune {
+    unsigned long long max_balloon; /* in kibibytes */
+    unsigned long long cur_balloon; /* in kibibytes */
+
+    virDomainHugePagePtr hugepages;
+    size_t nhugepages;
+
+    bool nosharepages;
+    bool locked;
+    int dump_core; /* enum virTristateSwitch */
+    unsigned long long hard_limit; /* in kibibytes */
+    unsigned long long soft_limit; /* in kibibytes */
+    unsigned long long min_guarantee; /* in kibibytes */
+    unsigned long long swap_hard_limit; /* in kibibytes */
+};
+
+typedef struct _virDomainPowerManagement virDomainPowerManagement;
+typedef virDomainPowerManagement *virDomainPowerManagementPtr;
+
+struct _virDomainPowerManagement {
+    /* These options are of type enum virTristateBool */
+    int s3;
+    int s4;
 };
 
 /*
@@ -1914,28 +1969,9 @@ struct _virDomainDef {
     char *title;
     char *description;
 
-    struct {
-        unsigned int weight;
+    virDomainBlkiotune blkio;
+    virDomainMemtune mem;
 
-        size_t ndevices;
-        virBlkioDevicePtr devices;
-    } blkio;
-
-    struct {
-        unsigned long long max_balloon; /* in kibibytes */
-        unsigned long long cur_balloon; /* in kibibytes */
-
-        virDomainHugePagePtr hugepages;
-        size_t nhugepages;
-
-        bool nosharepages;
-        bool locked;
-        int dump_core; /* enum virTristateSwitch */
-        unsigned long long hard_limit; /* in kibibytes */
-        unsigned long long soft_limit; /* in kibibytes */
-        unsigned long long min_guarantee; /* in kibibytes */
-        unsigned long long swap_hard_limit; /* in kibibytes */
-    } mem;
     unsigned short vcpus;
     unsigned short maxvcpus;
     int placement_mode;
@@ -1943,19 +1979,7 @@ struct _virDomainDef {
 
     unsigned int iothreads;
 
-    struct {
-        unsigned long shares;
-        bool sharesSpecified;
-        unsigned long long period;
-        long long quota;
-        unsigned long long emulator_period;
-        long long emulator_quota;
-        size_t nvcpupin;
-        virDomainVcpuPinDefPtr *vcpupin;
-        virDomainVcpuPinDefPtr emulatorpin;
-        size_t niothreadspin;
-        virDomainVcpuPinDefPtr *iothreadspin;
-    } cputune;
+    virDomainCputune cputune;
 
     virDomainNumatunePtr numatune;
     virDomainResourceDefPtr resource;
@@ -1968,11 +1992,7 @@ struct _virDomainDef {
 
     int onLockFailure; /* enum virDomainLockFailureAction */
 
-    struct {
-        /* These options are of type enum virTristateBool */
-        int s3;
-        int s4;
-    } pm;
+    virDomainPowerManagement pm;
 
     virDomainOSDef os;
     char *emulator;
