@@ -17134,6 +17134,9 @@ qemuDomainSetTime(virDomainPtr dom,
     rv = qemuAgentSetTime(priv->agent, seconds, nseconds, rtcSync);
     qemuDomainObjExitAgent(vm);
 
+    if (rv < 0)
+        goto endjob;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
