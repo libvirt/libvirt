@@ -4112,10 +4112,10 @@ qemuMonitorGetIOThreads(qemuMonitorPtr mon,
         return -1;
     }
 
+    /* Requires JSON to make the query */
     if (!mon->json) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("JSON monitor is required"));
-        return -1;
+        *iothreads = NULL;
+        return 0;
     }
 
     return qemuMonitorJSONGetIOThreads(mon, iothreads);
