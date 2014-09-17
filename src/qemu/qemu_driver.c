@@ -5390,6 +5390,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                         const char *path,
                         virDomainDefPtr *ret_def,
                         virQEMUSaveHeaderPtr ret_header,
+                        char **xmlout,
                         bool bypass_cache,
                         virFileWrapperFdPtr *wrapperFd,
                         const char *xmlin, int state, bool edit,
@@ -5512,7 +5513,10 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
         def = tmp;
     }
 
-    VIR_FREE(xml);
+    if (xmlout)
+        *xmlout = xml;
+    else
+        VIR_FREE(xml);
 
     *ret_def = def;
     *ret_header = header;
@@ -5668,7 +5672,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     else if (flags & VIR_DOMAIN_SAVE_PAUSED)
         state = 0;
 
-    fd = qemuDomainSaveImageOpen(driver, path, &def, &header,
+    fd = qemuDomainSaveImageOpen(driver, path, &def, &header, NULL,
                                  (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
                                  &wrapperFd, dxml, state, false, false);
     if (fd < 0)
@@ -5729,8 +5733,8 @@ qemuDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *path,
     /* We only take subset of virDomainDefFormat flags.  */
     virCheckFlags(VIR_DOMAIN_XML_SECURE, NULL);
 
-    fd = qemuDomainSaveImageOpen(driver, path, &def, &header, false, NULL,
-                                 NULL, -1, false, false);
+    fd = qemuDomainSaveImageOpen(driver, path, &def, &header, NULL,
+                                 false, NULL, NULL, -1, false, false);
 
     if (fd < 0)
         goto cleanup;
@@ -5767,8 +5771,8 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
     else if (flags & VIR_DOMAIN_SAVE_PAUSED)
         state = 0;
 
-    fd = qemuDomainSaveImageOpen(driver, path, &def, &header, false, NULL,
-                                 dxml, state, true, false);
+    fd = qemuDomainSaveImageOpen(driver, path, &def, &header, NULL,
+                                 false, NULL, dxml, state, true, false);
 
     if (fd < 0) {
         /* Check for special case of no change needed.  */
@@ -5832,7 +5836,7 @@ qemuDomainObjRestore(virConnectPtr conn,
     virQEMUSaveHeader header;
     virFileWrapperFdPtr wrapperFd = NULL;
 
-    fd = qemuDomainSaveImageOpen(driver, path, &def, &header,
+    fd = qemuDomainSaveImageOpen(driver, path, &def, &header, NULL,
                                  bypass_cache, &wrapperFd, NULL, -1, false,
                                  true);
     if (fd < 0) {
