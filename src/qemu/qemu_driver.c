@@ -5644,20 +5644,24 @@ qemuDomainRestoreFlags(virConnectPtr conn,
                        unsigned int flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
+    qemuDomainObjPrivatePtr priv = NULL;
     virDomainDefPtr def = NULL;
-    virDomainDefPtr newdef = NULL;
     virDomainObjPtr vm = NULL;
+    char *xml = NULL;
+    char *xmlout = NULL;
+    const char *newxml = dxml;
     int fd = -1;
     int ret = -1;
     virQEMUSaveHeader header;
     virFileWrapperFdPtr wrapperFd = NULL;
+    bool hook_taint = false;
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
                   VIR_DOMAIN_SAVE_RUNNING |
                   VIR_DOMAIN_SAVE_PAUSED, -1);
 
 
-    fd = qemuDomainSaveImageOpen(driver, path, &def, &header, NULL,
+    fd = qemuDomainSaveImageOpen(driver, path, &def, &header, &xml,
                                  (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
                                  &wrapperFd, false, false);
     if (fd < 0)
@@ -5666,12 +5670,31 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     if (virDomainRestoreFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    if (dxml) {
-        if (!(newdef = qemuDomainSaveImageUpdateDef(driver, def, dxml)))
+    if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
+        int hookret;
+
+        if ((hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, def->name,
+                                   VIR_HOOK_QEMU_OP_RESTORE,
+                                   VIR_HOOK_SUBOP_BEGIN,
+                                   NULL,
+                                   dxml ? dxml : xml,
+                                   &xmlout)) < 0)
+            goto cleanup;
+
+        if (hookret == 0 && xmlout) {
+            VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
+            hook_taint = true;
+            newxml = xmlout;
+        }
+    }
+
+    if (newxml) {
+        virDomainDefPtr tmp;
+        if (!(tmp = qemuDomainSaveImageUpdateDef(driver, def, newxml)))
             goto cleanup;
 
         virDomainDefFree(def);
-        def = newdef;
+        def = tmp;
     }
 
     if (!(vm = virDomainObjListAdd(driver->domains, def,
@@ -5686,6 +5709,11 @@ qemuDomainRestoreFlags(virConnectPtr conn,
         header.was_running = 1;
     else if (flags & VIR_DOMAIN_SAVE_PAUSED)
         header.was_running = 0;
+
+    if (hook_taint) {
+        priv = vm->privateData;
+        priv->hookRun = true;
+    }
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
@@ -5705,6 +5733,8 @@ qemuDomainRestoreFlags(virConnectPtr conn,
  cleanup:
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
+    VIR_FREE(xml);
+    VIR_FREE(xmlout);
     virFileWrapperFdFree(wrapperFd);
     if (vm)
         virObjectUnlock(vm);
@@ -5842,17 +5872,43 @@ qemuDomainObjRestore(virConnectPtr conn,
                      bool bypass_cache)
 {
     virDomainDefPtr def = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     int fd = -1;
     int ret = -1;
+    char *xml = NULL;
+    char *xmlout = NULL;
     virQEMUSaveHeader header;
     virFileWrapperFdPtr wrapperFd = NULL;
 
-    fd = qemuDomainSaveImageOpen(driver, path, &def, &header, NULL,
+    fd = qemuDomainSaveImageOpen(driver, path, &def, &header, &xml,
                                  bypass_cache, &wrapperFd, false, true);
     if (fd < 0) {
         if (fd == -3)
             ret = 1;
         goto cleanup;
+    }
+
+    if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
+        int hookret;
+
+        if ((hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, def->name,
+                                   VIR_HOOK_QEMU_OP_RESTORE,
+                                   VIR_HOOK_SUBOP_BEGIN,
+                                   NULL, xml, &xmlout)) < 0)
+            goto cleanup;
+
+        if (hookret == 0 && xmlout) {
+            virDomainDefPtr tmp;
+
+            VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
+
+            if (!(tmp = qemuDomainSaveImageUpdateDef(driver, def, xmlout)))
+                goto cleanup;
+
+            virDomainDefFree(def);
+            def = tmp;
+            priv->hookRun = true;
+        }
     }
 
     if (STRNEQ(vm->def->name, def->name) ||
@@ -5878,6 +5934,8 @@ qemuDomainObjRestore(virConnectPtr conn,
         VIR_WARN("Failed to close %s", path);
 
  cleanup:
+    VIR_FREE(xml);
+    VIR_FREE(xmlout);
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
     virFileWrapperFdFree(wrapperFd);

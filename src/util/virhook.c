@@ -77,7 +77,8 @@ VIR_ENUM_IMPL(virHookQemuOp, VIR_HOOK_QEMU_OP_LAST,
               "migrate",
               "started",
               "reconnect",
-              "attach")
+              "attach",
+              "restore")
 
 VIR_ENUM_IMPL(virHookLxcOp, VIR_HOOK_LXC_OP_LAST,
               "start",

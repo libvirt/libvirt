@@ -60,6 +60,7 @@ typedef enum {
     VIR_HOOK_QEMU_OP_STARTED,          /* domain has started */
     VIR_HOOK_QEMU_OP_RECONNECT,        /* domain is being reconnected by libvirt */
     VIR_HOOK_QEMU_OP_ATTACH,           /* domain is being attached to be libvirt */
+    VIR_HOOK_QEMU_OP_RESTORE,          /* domain is being restored */
 
     VIR_HOOK_QEMU_OP_LAST,
 } virHookQemuOpType;
