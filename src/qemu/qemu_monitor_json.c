@@ -81,6 +81,7 @@ static void qemuMonitorJSONHandleBalloonChange(qemuMonitorPtr mon, virJSONValueP
 static void qemuMonitorJSONHandlePMSuspendDisk(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleGuestPanic(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleDeviceDeleted(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleNicRxFilterChanged(qemuMonitorPtr mon, virJSONValuePtr data);
 
 typedef struct {
     const char *type;
@@ -96,6 +97,7 @@ static qemuEventHandler eventHandlers[] = {
     { "DEVICE_DELETED", qemuMonitorJSONHandleDeviceDeleted, },
     { "DEVICE_TRAY_MOVED", qemuMonitorJSONHandleTrayChange, },
     { "GUEST_PANICKED", qemuMonitorJSONHandleGuestPanic, },
+    { "NIC_RX_FILTER_CHANGED", qemuMonitorJSONHandleNicRxFilterChanged, },
     { "POWERDOWN", qemuMonitorJSONHandlePowerdown, },
     { "RESET", qemuMonitorJSONHandleReset, },
     { "RESUME", qemuMonitorJSONHandleResume, },
@@ -1036,6 +1038,21 @@ qemuMonitorJSONHandleDeviceDeleted(qemuMonitorPtr mon, virJSONValuePtr data)
 
     qemuMonitorEmitDeviceDeleted(mon, device);
 }
+
+
+static void
+qemuMonitorJSONHandleNicRxFilterChanged(qemuMonitorPtr mon, virJSONValuePtr data)
+{
+    const char *name;
+
+    if (!(name = virJSONValueObjectGetString(data, "name"))) {
+        VIR_WARN("missing device in NIC_RX_FILTER_CHANGED event");
+        return;
+    }
+
+    qemuMonitorEmitNicRxFilterChanged(mon, name);
+}
+
 
 int
 qemuMonitorJSONHumanCommandWithFd(qemuMonitorPtr mon,

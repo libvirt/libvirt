@@ -4146,6 +4146,58 @@ processDeviceDeletedEvent(virQEMUDriverPtr driver,
 }
 
 
+static void
+processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               char *devAlias)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virDomainDeviceDef dev;
+    virDomainNetDefPtr def;
+
+    VIR_DEBUG("Received NIC_RX_FILTER_CHANGED event for device %s "
+              "from domain %p %s",
+              devAlias, vm, vm->def->name);
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        VIR_DEBUG("Domain is not running");
+        goto endjob;
+    }
+
+    if (virDomainDefFindDevice(vm->def, devAlias, &dev, true) < 0) {
+        VIR_WARN("NIC_RX_FILTER_CHANGED event received for "
+                 "non-existent device %s in domain %s",
+                 devAlias, vm->def->name);
+        goto endjob;
+    }
+    if (dev.type != VIR_DOMAIN_DEVICE_NET) {
+        VIR_WARN("NIC_RX_FILTER_CHANGED event received for "
+                 "non-network device %s in domain %s",
+                 devAlias, vm->def->name);
+        goto endjob;
+    }
+    def = dev.data.net;
+
+    /* handle the event - send query-rx-filter and respond to it. */
+
+    VIR_DEBUG("process NIC_RX_FILTER_CHANGED event for network "
+              "device %s in domain %s", def->info.alias, vm->def->name);
+
+ endjob:
+    /* We had an extra reference to vm before starting a new job so ending the
+     * job is guaranteed not to remove the last reference.
+     */
+    ignore_value(qemuDomainObjEndJob(driver, vm));
+
+ cleanup:
+    VIR_FREE(devAlias);
+    virObjectUnref(cfg);
+}
+
+
 static void qemuProcessEventHandler(void *data, void *opaque)
 {
     struct qemuProcessEvent *processEvent = data;
@@ -4165,6 +4217,9 @@ static void qemuProcessEventHandler(void *data, void *opaque)
         break;
     case QEMU_PROCESS_EVENT_DEVICE_DELETED:
         processDeviceDeletedEvent(driver, vm, processEvent->data);
+        break;
+    case QEMU_PROCESS_EVENT_NIC_RX_FILTER_CHANGED:
+        processNicRxFilterChangedEvent(driver, vm, processEvent->data);
         break;
     case QEMU_PROCESS_EVENT_LAST:
         break;

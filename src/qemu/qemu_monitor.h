@@ -171,6 +171,10 @@ typedef int (*qemuMonitorDomainDeviceDeletedCallback)(qemuMonitorPtr mon,
                                                       virDomainObjPtr vm,
                                                       const char *devAlias,
                                                       void *opaque);
+typedef int (*qemuMonitorDomainNicRxFilterChangedCallback)(qemuMonitorPtr mon,
+                                                           virDomainObjPtr vm,
+                                                           const char *devAlias,
+                                                           void *opaque);
 
 typedef struct _qemuMonitorCallbacks qemuMonitorCallbacks;
 typedef qemuMonitorCallbacks *qemuMonitorCallbacksPtr;
@@ -197,6 +201,7 @@ struct _qemuMonitorCallbacks {
     qemuMonitorDomainPMSuspendDiskCallback domainPMSuspendDisk;
     qemuMonitorDomainGuestPanicCallback domainGuestPanic;
     qemuMonitorDomainDeviceDeletedCallback domainDeviceDeleted;
+    qemuMonitorDomainNicRxFilterChangedCallback domainNicRxFilterChanged;
 };
 
 char *qemuMonitorEscapeArg(const char *in);
@@ -285,6 +290,8 @@ int qemuMonitorEmitPMSuspendDisk(qemuMonitorPtr mon);
 int qemuMonitorEmitGuestPanic(qemuMonitorPtr mon);
 int qemuMonitorEmitDeviceDeleted(qemuMonitorPtr mon,
                                  const char *devAlias);
+int qemuMonitorEmitNicRxFilterChanged(qemuMonitorPtr mon,
+                                      const char *devAlias);
 
 int qemuMonitorStartCPUs(qemuMonitorPtr mon,
                          virConnectPtr conn);
