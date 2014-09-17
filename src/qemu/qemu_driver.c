@@ -5503,16 +5503,6 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto error;
 
-    if (xmlin) {
-        virDomainDefPtr tmp;
-
-        if (!(tmp = qemuDomainSaveImageUpdateDef(driver, def, xmlin)))
-            goto error;
-
-        virDomainDefFree(def);
-        def = tmp;
-    }
-
     if (xmlout)
         *xmlout = xml;
     else
@@ -5655,6 +5645,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
 {
     virQEMUDriverPtr driver = conn->privateData;
     virDomainDefPtr def = NULL;
+    virDomainDefPtr newdef = NULL;
     virDomainObjPtr vm = NULL;
     int fd = -1;
     int ret = -1;
@@ -5680,6 +5671,14 @@ qemuDomainRestoreFlags(virConnectPtr conn,
 
     if (virDomainRestoreFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
+
+    if (dxml) {
+        if (!(newdef = qemuDomainSaveImageUpdateDef(driver, def, dxml)))
+            goto cleanup;
+
+        virDomainDefFree(def);
+        def = newdef;
+    }
 
     if (!(vm = virDomainObjListAdd(driver->domains, def,
                                    driver->xmlopt,
@@ -5757,6 +5756,7 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
     virQEMUDriverPtr driver = conn->privateData;
     int ret = -1;
     virDomainDefPtr def = NULL;
+    virDomainDefPtr newdef = NULL;
     int fd = -1;
     virQEMUSaveHeader header;
     char *xml = NULL;
@@ -5784,7 +5784,10 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
     if (virDomainSaveImageDefineXMLEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    xml = qemuDomainDefFormatXML(driver, def,
+    if (!(newdef = qemuDomainSaveImageUpdateDef(driver, def, dxml)))
+        goto cleanup;
+
+    xml = qemuDomainDefFormatXML(driver, newdef,
                                  VIR_DOMAIN_XML_INACTIVE |
                                  VIR_DOMAIN_XML_SECURE |
                                  VIR_DOMAIN_XML_MIGRATABLE);
@@ -5815,6 +5818,7 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
 
  cleanup:
     virDomainDefFree(def);
+    virDomainDefFree(newdef);
     VIR_FORCE_CLOSE(fd);
     VIR_FREE(xml);
     return ret;
