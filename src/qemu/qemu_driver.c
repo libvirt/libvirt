@@ -5319,6 +5319,68 @@ static int qemuNodeGetSecurityModel(virConnectPtr conn,
     return ret;
 }
 
+
+/**
+ * qemuDomainSaveImageUpdateDef:
+ * @driver: qemu driver data
+ * @def: def of the domain from the save image
+ * @newxml: user provided replacement XML
+ *
+ * Returns the new domain definition in case @newxml is ABI compatible with the
+ * guest.
+ */
+static virDomainDefPtr
+qemuDomainSaveImageUpdateDef(virQEMUDriverPtr driver,
+                             virDomainDefPtr def,
+                             const char *newxml)
+{
+    virDomainDefPtr ret = NULL;
+    virDomainDefPtr newdef_migr = NULL;
+    virDomainDefPtr newdef = NULL;
+    virCapsPtr caps = NULL;
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    if (!(newdef = virDomainDefParseString(newxml, caps, driver->xmlopt,
+                                           QEMU_EXPECTED_VIRT_TYPES,
+                                           VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    if (!(newdef_migr = qemuDomainDefCopy(driver,
+                                          newdef,
+                                          VIR_DOMAIN_XML_MIGRATABLE)))
+        goto cleanup;
+
+    if (!virDomainDefCheckABIStability(def, newdef_migr)) {
+        virResetLastError();
+
+        /* Due to a bug in older version of external snapshot creation
+         * code, the XML saved in the save image was not a migratable
+         * XML. To ensure backwards compatibility with the change of the
+         * saved XML type, we need to check the ABI compatibility against
+         * the user provided XML if the check against the migratable XML
+         * fails. Snapshots created prior to v1.1.3 have this issue. */
+        if (!virDomainDefCheckABIStability(def, newdef))
+            goto cleanup;
+
+        /* use the user provided XML */
+        ret = newdef;
+        newdef = NULL;
+    } else {
+        ret = newdef_migr;
+        newdef_migr = NULL;
+    }
+
+ cleanup:
+    virObjectUnref(caps);
+    virDomainDefFree(newdef);
+    virDomainDefFree(newdef_migr);
+
+    return ret;
+}
+
+
 /* Return -1 on most failures after raising error, -2 if edit was specified
  * but xmlin and state (-1 for no change, 0 for paused, 1 for running) do
  * not represent any changes (no error raised), -3 if corrupt image was
@@ -5439,45 +5501,15 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                                         QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto error;
+
     if (xmlin) {
-        virDomainDefPtr def2 = NULL;
-        virDomainDefPtr newdef = NULL;
+        virDomainDefPtr tmp;
 
-        if (!(def2 = virDomainDefParseString(xmlin, caps, driver->xmlopt,
-                                             QEMU_EXPECTED_VIRT_TYPES,
-                                             VIR_DOMAIN_XML_INACTIVE)))
+        if (!(tmp = qemuDomainSaveImageUpdateDef(driver, def, xmlin)))
             goto error;
-
-        newdef = qemuDomainDefCopy(driver, def2, VIR_DOMAIN_XML_MIGRATABLE);
-        if (!newdef) {
-            virDomainDefFree(def2);
-            goto error;
-        }
-
-        if (!virDomainDefCheckABIStability(def, newdef)) {
-            virDomainDefFree(newdef);
-            virResetLastError();
-
-            /* Due to a bug in older version of external snapshot creation
-             * code, the XML saved in the save image was not a migratable
-             * XML. To ensure backwards compatibility with the change of the
-             * saved XML type, we need to check the ABI compatibility against
-             * the user provided XML if the check against the migratable XML
-             * fails. Snapshots created prior to v1.1.3 have this issue. */
-            if (!virDomainDefCheckABIStability(def, def2)) {
-                virDomainDefFree(def2);
-                goto error;
-            }
-
-            /* use the user provided XML */
-            newdef = def2;
-            def2 = NULL;
-        } else {
-            virDomainDefFree(def2);
-        }
 
         virDomainDefFree(def);
-        def = newdef;
+        def = tmp;
     }
 
     VIR_FREE(xml);
