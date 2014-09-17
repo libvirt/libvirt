@@ -118,6 +118,17 @@ fillQemuCaps(virDomainCapsPtr domCaps,
                              VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT,
                              VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM,
                              VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO);
+
+    /* Moreover, as of f05b6a918e28 we are expecting to see
+     * OVMF_CODE.fd file which may not exists everywhere. */
+    if (!domCaps->os.loader.values.nvalues) {
+        virDomainCapsLoaderPtr loader = &domCaps->os.loader;
+
+        if (fillStringValues(&loader->values,
+                             "/usr/share/OVMF/OVMF_CODE.fd",
+                             NULL) < 0)
+            return -1;
+    }
     return 0;
 }
 #endif /* WITH_QEMU */
