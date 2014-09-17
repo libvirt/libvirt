@@ -1011,38 +1011,36 @@ qemuSharedDeviceEntryInsert(virQEMUDriverPtr driver,
                             const char *name)
 {
     qemuSharedDeviceEntry *entry = NULL;
-    int ret = -1;
 
     if ((entry = virHashLookup(driver->sharedDevices, key))) {
         /* Nothing to do if the shared scsi host device is already
          * recorded in the table.
          */
-        if (qemuSharedDeviceEntryDomainExists(entry, name, NULL)) {
-            ret = 0;
-            goto cleanup;
+        if (!qemuSharedDeviceEntryDomainExists(entry, name, NULL)) {
+            if (VIR_EXPAND_N(entry->domains, entry->ref, 1) < 0 ||
+                VIR_STRDUP(entry->domains[entry->ref - 1], name) < 0) {
+                /* entry is owned by the hash table here */
+                entry = NULL;
+                goto error;
+            }
         }
-
-        if (VIR_EXPAND_N(entry->domains, entry->ref, 1) < 0 ||
-            VIR_STRDUP(entry->domains[entry->ref - 1], name) < 0)
-            goto cleanup;
     } else {
         if (VIR_ALLOC(entry) < 0 ||
             VIR_ALLOC_N(entry->domains, 1) < 0 ||
             VIR_STRDUP(entry->domains[0], name) < 0)
-            goto cleanup;
+            goto error;
 
         entry->ref = 1;
 
         if (virHashAddEntry(driver->sharedDevices, key, entry))
-            goto cleanup;
+            goto error;
     }
 
-    ret = 0;
+    return 0;
 
- cleanup:
+ error:
     qemuSharedDeviceEntryFree(entry, NULL);
-
-    return ret;
+    return -1;
 }
 
 
