@@ -561,6 +561,18 @@ to the NUMA cell you're interested in. I<pagesize> is a scaled integer (see
 B<NOTES> above).  Alternatively, if I<--all> is used, info on each possible
 combination of NUMA cell and page size is printed out.
 
+=item B<allocpages> [I<--pagesize>] I<pagesize> [I<--pagecount>] I<pagecount>
+[[I<--cellno>] I<cellno>] [I<--add>] [I<--all>]
+
+Change the size of pages pool of I<pagesize> on the host. If
+I<--add> is specified, then I<pagecount> pages are added into the
+pool. However, if I<--add> wasn't specified, then the
+I<pagecount> is taken as the new absolute size of the pool (this
+may be used to free some pages and size the pool down). The
+I<cellno> modifier can be used to narrow the modification down to
+a single host NUMA cell. On the other end of spectrum lies
+I<--all> which executes the modification on all NUMA cells.
+
 =item B<cpu-baseline> I<FILE> [I<--features>]
 
 Compute baseline CPU which will be supported by all host CPUs given in <file>.
