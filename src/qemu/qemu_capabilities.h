@@ -324,7 +324,7 @@ int virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
                                    virQEMUCapsPtr kvmbinCaps,
                                    virArch guestarch);
 
-void virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
-                               virQEMUCapsPtr qemuCaps);
+int virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
+                              virQEMUCapsPtr qemuCaps);
 
 #endif /* __QEMU_CAPABILITIES_H__*/

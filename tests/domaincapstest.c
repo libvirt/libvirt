@@ -28,13 +28,13 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-typedef void (*virDomainCapsFill)(virDomainCapsPtr domCaps,
-                                  void *opaque);
+typedef int (*virDomainCapsFill)(virDomainCapsPtr domCaps,
+                                 void *opaque);
 
 #define SET_ALL_BITS(x) \
     memset(&(x.values), 0xff, sizeof(x.values))
 
-static void
+static int
 fillAll(virDomainCapsPtr domCaps,
         void *opaque ATTRIBUTE_UNUSED)
 {
@@ -60,18 +60,20 @@ fillAll(virDomainCapsPtr domCaps,
     SET_ALL_BITS(hostdev->subsysType);
     SET_ALL_BITS(hostdev->capsType);
     SET_ALL_BITS(hostdev->pciBackend);
+    return 0;
 }
 
 
 #ifdef WITH_QEMU
 # include "testutilsqemu.h"
-static void
+static int
 fillQemuCaps(virDomainCapsPtr domCaps,
              void *opaque)
 {
     virQEMUCapsPtr qemuCaps = (virQEMUCapsPtr) opaque;
 
-    virQEMUCapsFillDomainCaps(domCaps, qemuCaps);
+    if (virQEMUCapsFillDomainCaps(domCaps, qemuCaps) < 0)
+        return -1;
 
     /* The function above tries to query host's KVM & VFIO capabilities by
      * calling qemuHostdevHostSupportsPassthroughLegacy() and
@@ -82,6 +84,7 @@ fillQemuCaps(virDomainCapsPtr domCaps,
                              VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT,
                              VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM,
                              VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO);
+    return 0;
 }
 #endif /* WITH_QEMU */
 
@@ -99,8 +102,10 @@ buildVirDomainCaps(const char *emulatorbin,
     if (!(domCaps = virDomainCapsNew(emulatorbin, machine, arch, type)))
         goto cleanup;
 
-    if (fillFunc)
-        fillFunc(domCaps, opaque);
+    if (fillFunc && fillFunc(domCaps, opaque) < 0) {
+        virObjectUnref(domCaps);
+        domCaps = NULL;
+    }
 
  cleanup:
     return domCaps;

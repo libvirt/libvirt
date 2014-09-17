@@ -3608,7 +3608,7 @@ virQEMUCapsGetDefaultMachine(virQEMUCapsPtr qemuCaps)
 }
 
 
-static void
+static int
 virQEMUCapsFillDomainLoaderCaps(virQEMUCapsPtr qemuCaps,
                                 virDomainCapsLoaderPtr loader,
                                 virArch arch)
@@ -3629,10 +3629,11 @@ virQEMUCapsFillDomainLoaderCaps(virQEMUCapsPtr qemuCaps,
         VIR_DOMAIN_CAPS_ENUM_SET(loader->readonly,
                                  VIR_TRISTATE_BOOL_YES,
                                  VIR_TRISTATE_BOOL_NO);
+    return 0;
 }
 
 
-static void
+static int
 virQEMUCapsFillDomainOSCaps(virQEMUCapsPtr qemuCaps,
                             virDomainCapsOSPtr os,
                             virArch arch)
@@ -3640,11 +3641,13 @@ virQEMUCapsFillDomainOSCaps(virQEMUCapsPtr qemuCaps,
     virDomainCapsLoaderPtr loader = &os->loader;
 
     os->device.supported = true;
-    virQEMUCapsFillDomainLoaderCaps(qemuCaps, loader, arch);
+    if (virQEMUCapsFillDomainLoaderCaps(qemuCaps, loader, arch) < 0)
+        return -1;
+    return 0;
 }
 
 
-static void
+static int
 virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCapsPtr qemuCaps,
                                     virDomainCapsDeviceDiskPtr disk)
 {
@@ -3667,10 +3670,11 @@ virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCapsPtr qemuCaps,
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE))
         VIR_DOMAIN_CAPS_ENUM_SET(disk->bus, VIR_DOMAIN_DISK_BUS_USB);
+    return 0;
 }
 
 
-static void
+static int
 virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
                                        virDomainCapsDeviceHostdevPtr hostdev)
 {
@@ -3715,10 +3719,11 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
                                  VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT,
                                  VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM);
     }
+    return 0;
 }
 
 
-void
+int
 virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
                           virQEMUCapsPtr qemuCaps)
 {
@@ -3729,7 +3734,9 @@ virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
 
     domCaps->maxvcpus = maxvcpus;
 
-    virQEMUCapsFillDomainOSCaps(qemuCaps, os, domCaps->arch);
-    virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps, disk);
-    virQEMUCapsFillDomainDeviceHostdevCaps(qemuCaps, hostdev);
+    if (virQEMUCapsFillDomainOSCaps(qemuCaps, os, domCaps->arch) < 0 ||
+        virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps, disk) < 0 ||
+        virQEMUCapsFillDomainDeviceHostdevCaps(qemuCaps, hostdev) < 0)
+        return -1;
+    return 0;
 }
