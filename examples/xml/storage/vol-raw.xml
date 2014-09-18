@@ -1,7 +1,0 @@
-<volume type="file">
-  <name>raw.img</name>
-  <storage>
-    <allocation unit="M">10</allocation>
-    <capacity unit="M">1000</capacity>
-  </storage>
-</volume>

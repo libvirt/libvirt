@@ -1,3 +1,0 @@
-<cpu match='exact'>
-  <model>Opteron_G1</model>
-</cpu>

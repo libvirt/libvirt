@@ -1,2 +1,0 @@
-@DNSMASQ@ --strict-order --bind-interfaces --conf-file= \
---except-interface lo --listen-address 192.168.122.1\

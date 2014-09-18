@@ -1,6 +1,0 @@
-Makefile
-Makefile.in
-*.exe
-.deps
-.libs
-event-test

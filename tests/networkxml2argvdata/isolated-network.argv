@@ -1,6 +1,0 @@
-@DNSMASQ@ --strict-order --bind-interfaces --conf-file= \
---except-interface lo --dhcp-option=3 --no-resolv \
---listen-address 192.168.152.1 \
---dhcp-range 192.168.152.2,192.168.152.254 \
---dhcp-leasefile=/var/lib/libvirt/dnsmasq/private.leases --dhcp-lease-max=253 \
---dhcp-no-override\

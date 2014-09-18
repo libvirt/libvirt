@@ -1,4 +1,0 @@
-<cpu match='minimum'>
-  <model>Penryn</model>
-  <vendor>Bogus</vendor>
-</cpu>

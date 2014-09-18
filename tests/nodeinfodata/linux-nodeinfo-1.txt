@@ -1,1 +1,0 @@
-CPUs: 2, MHz: 2800, Nodes: 1, Cores: 2
