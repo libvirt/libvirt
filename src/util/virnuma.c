@@ -841,6 +841,102 @@ virNumaGetPages(int node,
 }
 
 
+int
+virNumaSetPagePoolSize(int node,
+                       unsigned int page_size,
+                       unsigned long long page_count,
+                       bool add)
+{
+    int ret = -1;
+    char *nr_path = NULL, *nr_buf =  NULL;
+    char *end;
+    unsigned long long nr_count;
+
+    if (page_size == sysconf(_SC_PAGESIZE) / 1024) {
+        /* Special case as kernel handles system pages
+         * differently to huge pages. */
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("system pages pool can't be modified"));
+        goto cleanup;
+    }
+
+    if (virNumaGetHugePageInfoPath(&nr_path, node, page_size, "nr_hugepages") < 0)
+        goto cleanup;
+
+    /* Firstly check, if there's anything for us to do */
+    if (virFileReadAll(nr_path, 1024, &nr_buf) < 0)
+        goto cleanup;
+
+    if (virStrToLong_ull(nr_buf, &end, 10, &nr_count) < 0 ||
+        *end != '\n') {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("invalid number '%s' in '%s'"),
+                       nr_buf, nr_path);
+        goto cleanup;
+    }
+
+    if (add) {
+        if (!page_count) {
+            VIR_DEBUG("Nothing left to do: add = true page_count = 0");
+            ret = 0;
+            goto cleanup;
+        }
+        page_count += nr_count;
+    } else {
+        if (nr_count == page_count) {
+            VIR_DEBUG("Nothing left to do: nr_count = page_count = %llu",
+                      page_count);
+            ret = 0;
+            goto cleanup;
+        }
+    }
+
+    /* Okay, page pool adjustment must be done in two steps. In
+     * first we write the desired number into nr_hugepages file.
+     * Kernel then starts to allocate the pages (return from
+     * write should be postponed until the kernel is finished).
+     * However, kernel may have not been successful and reserved
+     * all the pages we wanted. So do the second read to check.
+     */
+    VIR_FREE(nr_buf);
+    if (virAsprintf(&nr_buf, "%llu", page_count) < 0)
+        goto cleanup;
+
+    if (virFileWriteStr(nr_path, nr_buf, 0) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to write to: %s"), nr_path);
+        goto cleanup;
+    }
+
+    /* And now do the check. */
+
+    VIR_FREE(nr_buf);
+    if (virFileReadAll(nr_path, 1024, &nr_buf) < 0)
+        goto cleanup;
+
+    if (virStrToLong_ull(nr_buf, &end, 10, &nr_count) < 0 ||
+        *end != '\n') {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("invalid number '%s' in '%s'"),
+                       nr_buf, nr_path);
+        goto cleanup;
+    }
+
+    if (nr_count != page_count) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Unable to allocate %llu pages. Allocated only %llu"),
+                       page_count, nr_count);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(nr_buf);
+    VIR_FREE(nr_path);
+    return ret;
+}
+
+
 #else /* #ifdef __linux__ */
 int
 virNumaGetPageInfo(int node ATTRIBUTE_UNUSED,
@@ -864,6 +960,18 @@ virNumaGetPages(int node ATTRIBUTE_UNUSED,
 {
     virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                    _("page info is not supported on this platform"));
+    return -1;
+}
+
+
+int
+virNumaSetPagePoolSize(int node ATTRIBUTE_UNUSED,
+                       unsigned int page_size ATTRIBUTE_UNUSED,
+                       unsigned long long page_count ATTRIBUTE_UNUSED,
+                       bool add ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                   _("page pool allocation is not supported on this platform"));
     return -1;
 }
 #endif /* #ifdef __linux__ */
