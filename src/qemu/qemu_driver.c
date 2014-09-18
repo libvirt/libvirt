@@ -17373,7 +17373,8 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
     if (!(domCaps = virDomainCapsNew(emulatorbin, machine, arch, virttype)))
         goto cleanup;
 
-    if (virQEMUCapsFillDomainCaps(domCaps, qemuCaps, cfg) < 0)
+    if (virQEMUCapsFillDomainCaps(domCaps, qemuCaps,
+                                  cfg->loader, cfg->nloader) < 0)
         goto cleanup;
 
     ret = virDomainCapsFormat(domCaps);

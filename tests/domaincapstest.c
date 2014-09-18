@@ -106,7 +106,8 @@ fillQemuCaps(virDomainCapsPtr domCaps,
     virQEMUCapsPtr qemuCaps = data->qemuCaps;
     virQEMUDriverConfigPtr cfg = data->cfg;
 
-    if (virQEMUCapsFillDomainCaps(domCaps, qemuCaps, cfg) < 0)
+    if (virQEMUCapsFillDomainCaps(domCaps, qemuCaps,
+                                  cfg->loader, cfg->nloader) < 0)
         return -1;
 
     /* The function above tries to query host's KVM & VFIO capabilities by

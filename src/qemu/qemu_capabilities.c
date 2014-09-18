@@ -3610,43 +3610,44 @@ virQEMUCapsGetDefaultMachine(virQEMUCapsPtr qemuCaps)
 
 static int
 virQEMUCapsFillDomainLoaderCaps(virQEMUCapsPtr qemuCaps,
-                                virDomainCapsLoaderPtr loader,
+                                virDomainCapsLoaderPtr capsLoader,
                                 virArch arch,
-                                virQEMUDriverConfigPtr cfg)
+                                char **loader,
+                                size_t nloader)
 {
     size_t i;
 
-    loader->device.supported = true;
+    capsLoader->device.supported = true;
 
-    if (VIR_ALLOC_N(loader->values.values, cfg->nloader) < 0)
+    if (VIR_ALLOC_N(capsLoader->values.values, nloader) < 0)
         return -1;
 
-    for (i = 0; i < cfg->nloader; i++) {
-        const char *filename = cfg->loader[i];
+    for (i = 0; i < nloader; i++) {
+        const char *filename = loader[i];
 
         if (!virFileExists(filename)) {
             VIR_DEBUG("loader filename=%s does not exist", filename);
             continue;
         }
 
-        if (VIR_STRDUP(loader->values.values[loader->values.nvalues],
+        if (VIR_STRDUP(capsLoader->values.values[capsLoader->values.nvalues],
                        filename) < 0)
             return -1;
-        loader->values.nvalues++;
+        capsLoader->values.nvalues++;
     }
 
-    VIR_DOMAIN_CAPS_ENUM_SET(loader->type,
+    VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->type,
                              VIR_DOMAIN_LOADER_TYPE_ROM);
 
     if (arch == VIR_ARCH_X86_64 &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_FORMAT))
-        VIR_DOMAIN_CAPS_ENUM_SET(loader->type,
+        VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->type,
                                  VIR_DOMAIN_LOADER_TYPE_PFLASH);
 
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_READONLY))
-        VIR_DOMAIN_CAPS_ENUM_SET(loader->readonly,
+        VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->readonly,
                                  VIR_TRISTATE_BOOL_YES,
                                  VIR_TRISTATE_BOOL_NO);
     return 0;
@@ -3657,12 +3658,14 @@ static int
 virQEMUCapsFillDomainOSCaps(virQEMUCapsPtr qemuCaps,
                             virDomainCapsOSPtr os,
                             virArch arch,
-                            virQEMUDriverConfigPtr cfg)
+                            char **loader,
+                            size_t nloader)
 {
-    virDomainCapsLoaderPtr loader = &os->loader;
+    virDomainCapsLoaderPtr capsLoader = &os->loader;
 
     os->device.supported = true;
-    if (virQEMUCapsFillDomainLoaderCaps(qemuCaps, loader, arch, cfg) < 0)
+    if (virQEMUCapsFillDomainLoaderCaps(qemuCaps, capsLoader, arch,
+                                        loader, nloader) < 0)
         return -1;
     return 0;
 }
@@ -3747,7 +3750,8 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
 int
 virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
                           virQEMUCapsPtr qemuCaps,
-                          virQEMUDriverConfigPtr cfg)
+                          char **loader,
+                          size_t nloader)
 {
     virDomainCapsOSPtr os = &domCaps->os;
     virDomainCapsDeviceDiskPtr disk = &domCaps->disk;
@@ -3756,7 +3760,8 @@ virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
 
     domCaps->maxvcpus = maxvcpus;
 
-    if (virQEMUCapsFillDomainOSCaps(qemuCaps, os, domCaps->arch, cfg) < 0 ||
+    if (virQEMUCapsFillDomainOSCaps(qemuCaps, os, domCaps->arch,
+                                    loader, nloader) < 0 ||
         virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps, disk) < 0 ||
         virQEMUCapsFillDomainDeviceHostdevCaps(qemuCaps, hostdev) < 0)
         return -1;
