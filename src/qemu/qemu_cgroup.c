@@ -1131,7 +1131,7 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
     if (priv->cgroup == NULL)
         return 0;
 
-    if (priv->niothreadpids == 0) {
+    if (def->iothreads && priv->niothreadpids == 0) {
         VIR_WARN("Unable to get iothreads' pids.");
         return 0;
     }
