@@ -1945,8 +1945,9 @@ void qemuDomainObjCheckDiskTaint(virQEMUDriverPtr driver,
         cfg->allowDiskFormatProbing)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_DISK_PROBING, logFD);
 
-    if (disk->rawio == 1)
-        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES, logFD);
+    if (disk->rawio == VIR_TRISTATE_BOOL_YES)
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES,
+                           logFD);
 
     virObjectUnref(cfg);
 }

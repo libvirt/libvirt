@@ -5954,12 +5954,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
 
     if (rawio) {
-        def->rawio_specified = true;
-        if (STREQ(rawio, "yes")) {
-            def->rawio = 1;
-        } else if (STREQ(rawio, "no")) {
-            def->rawio = 0;
-        } else {
+        if ((def->rawio = virTristateBoolTypeFromString(rawio)) <= 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("unknown disk rawio setting '%s'"),
                            rawio);
@@ -15828,12 +15823,9 @@ virDomainDiskDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf,
                       "<disk type='%s' device='%s'",
                       type, device);
-    if (def->rawio_specified) {
-        if (def->rawio == 1) {
-            virBufferAddLit(buf, " rawio='yes'");
-        } else if (def->rawio == 0) {
-            virBufferAddLit(buf, " rawio='no'");
-        }
+    if (def->rawio) {
+        virBufferAsprintf(buf, " rawio='%s'",
+                          virTristateBoolTypeToString(def->rawio));
     }
 
     if (def->sgio)

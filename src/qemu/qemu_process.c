@@ -4357,7 +4357,7 @@ int qemuProcessStart(virConnectPtr conn,
         virDomainDeviceDef dev;
         virDomainDiskDefPtr disk = vm->def->disks[i];
 
-        if (vm->def->disks[i]->rawio == 1) {
+        if (vm->def->disks[i]->rawio == VIR_TRISTATE_BOOL_YES) {
 #ifdef CAP_SYS_RAWIO
             virCommandAllowCap(cmd, CAP_SYS_RAWIO);
 #else

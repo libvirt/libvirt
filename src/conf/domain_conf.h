@@ -663,8 +663,7 @@ struct _virDomainDiskDef {
     int startupPolicy; /* enum virDomainStartupPolicy */
     bool transient;
     virDomainDeviceInfo info;
-    bool rawio_specified;
-    int rawio; /* no = 0, yes = 1 */
+    int rawio; /* enum virTristateBool */
     int sgio; /* enum virDomainDeviceSGIO */
     int discard; /* enum virDomainDiskDiscard */
     unsigned int iothread; /* unused = 0, > 0 specific thread # */
