@@ -7462,6 +7462,24 @@ vboxNodeGetFreePages(virConnectPtr conn ATTRIBUTE_UNUSED,
     return nodeGetFreePages(npages, pages, startCell, cellCount, counts);
 }
 
+static int
+vboxNodeAllocPages(virConnectPtr conn ATTRIBUTE_UNUSED,
+                   unsigned int npages,
+                   unsigned int *pageSizes,
+                   unsigned long long *pageCounts,
+                   int startCell,
+                   unsigned int cellCount,
+                   unsigned int flags)
+{
+    bool add = !(flags & VIR_NODE_ALLOC_PAGES_SET);
+
+    virCheckFlags(VIR_NODE_ALLOC_PAGES_SET, -1);
+
+    return nodeAllocPages(npages, pageSizes, pageCounts,
+                          startCell, cellCount, add);
+}
+
+
 /**
  * Function Tables
  */
@@ -7533,6 +7551,7 @@ virDriver vboxCommonDriver = {
     .domainSnapshotDelete = vboxDomainSnapshotDelete, /* 0.8.0 */
     .connectIsAlive = vboxConnectIsAlive, /* 0.9.8 */
     .nodeGetFreePages = vboxNodeGetFreePages, /* 1.2.6 */
+    .nodeAllocPages = vboxNodeAllocPages, /* 1.2.8 */
 };
 
 static void updateDriver(void)

@@ -18142,6 +18142,27 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
 }
 
 
+static int
+qemuNodeAllocPages(virConnectPtr conn,
+                   unsigned int npages,
+                   unsigned int *pageSizes,
+                   unsigned long long *pageCounts,
+                   int startCell,
+                   unsigned int cellCount,
+                   unsigned int flags)
+{
+    bool add = !(flags & VIR_NODE_ALLOC_PAGES_SET);
+
+    virCheckFlags(VIR_NODE_ALLOC_PAGES_SET, -1);
+
+    if (virNodeAllocPagesEnsureACL(conn) < 0)
+        return -1;
+
+    return nodeAllocPages(npages, pageSizes, pageCounts,
+                          startCell, cellCount, add);
+}
+
+
 static virDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
     .name = QEMU_DRIVER_NAME,
@@ -18341,6 +18362,7 @@ static virDriver qemuDriver = {
     .nodeGetFreePages = qemuNodeGetFreePages, /* 1.2.6 */
     .connectGetDomainCapabilities = qemuConnectGetDomainCapabilities, /* 1.2.7 */
     .connectGetAllDomainStats = qemuConnectGetAllDomainStats, /* 1.2.8 */
+    .nodeAllocPages = qemuNodeAllocPages, /* 1.2.8 */
 };
 
 

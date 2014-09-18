@@ -63,4 +63,11 @@ int nodeGetFreePages(unsigned int npages,
                      int startCell,
                      unsigned int cellCount,
                      unsigned long long *counts);
+
+int nodeAllocPages(unsigned int npages,
+                   unsigned int *pageSizes,
+                   unsigned long long *pageCounts,
+                   int startCell,
+                   unsigned int cellCount,
+                   bool add);
 #endif /* __VIR_NODEINFO_H__*/

@@ -893,6 +893,7 @@ virLockManagerRelease;
 
 
 # nodeinfo.h
+nodeAllocPages;
 nodeCapsInitNUMA;
 nodeGetCellsFreeMemory;
 nodeGetCPUBitmap;

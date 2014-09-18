@@ -2897,6 +2897,27 @@ umlNodeGetFreePages(virConnectPtr conn,
 }
 
 
+static int
+umlNodeAllocPages(virConnectPtr conn,
+                  unsigned int npages,
+                  unsigned int *pageSizes,
+                  unsigned long long *pageCounts,
+                  int startCell,
+                  unsigned int cellCount,
+                  unsigned int flags)
+{
+    bool add = !(flags & VIR_NODE_ALLOC_PAGES_SET);
+
+    virCheckFlags(VIR_NODE_ALLOC_PAGES_SET, -1);
+
+    if (virNodeAllocPagesEnsureACL(conn) < 0)
+        return -1;
+
+    return nodeAllocPages(npages, pageSizes, pageCounts,
+                          startCell, cellCount, add);
+}
+
+
 static virDriver umlDriver = {
     .no = VIR_DRV_UML,
     .name = "UML",
@@ -2959,6 +2980,7 @@ static virDriver umlDriver = {
     .nodeGetMemoryParameters = umlNodeGetMemoryParameters, /* 0.10.2 */
     .nodeSetMemoryParameters = umlNodeSetMemoryParameters, /* 0.10.2 */
     .nodeGetFreePages = umlNodeGetFreePages, /* 1.2.6 */
+    .nodeAllocPages = umlNodeAllocPages, /* 1.2.8 */
 };
 
 static virStateDriver umlStateDriver = {
