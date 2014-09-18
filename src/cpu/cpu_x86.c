@@ -2094,8 +2094,10 @@ x86UpdateHostModel(virCPUDefPtr guest,
      * features directly */
     for (i = 0; i < guest->nfeatures; i++) {
         for (feat = map->migrate_blockers; feat; feat = feat->next) {
-            if (STREQ(feat->name, guest->features[i].name))
+            if (STREQ(feat->name, guest->features[i].name)) {
+                VIR_FREE(guest->features[i].name);
                 VIR_DELETE_ELEMENT_INPLACE(guest->features, i, guest->nfeatures);
+            }
         }
     }
 
