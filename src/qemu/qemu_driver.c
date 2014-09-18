@@ -6127,7 +6127,8 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
                                      NULL, -1, NULL,
                                      VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
                                      &buildCommandLineCallbacks,
-                                     true)))
+                                     true,
+                                     qemuCheckFips())))
         goto cleanup;
 
     ret = virCommandToString(cmd);

@@ -3293,6 +3293,35 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk)
 }
 
 
+/* Qemu 1.2 and later have a binary flag -enable-fips that must be
+ * used for VNC auth to obey FIPS settings; but the flag only
+ * exists on Linux, and with no way to probe for it via QMP.  Our
+ * solution: if FIPS mode is required, then unconditionally use
+ * the flag, regardless of qemu version, for the following matrix:
+ *
+ *                          old QEMU            new QEMU
+ * FIPS enabled             doesn't start       VNC auth disabled
+ * FIPS disabled/missing    VNC auth enabled    VNC auth enabled
+ */
+bool
+qemuCheckFips(void)
+{
+    bool ret = false;
+
+    if (virFileExists("/proc/sys/crypto/fips_enabled")) {
+        char *buf = NULL;
+
+        if (virFileReadAll("/proc/sys/crypto/fips_enabled", 10, &buf) < 0)
+            return ret;
+        if (STREQ(buf, "1\n"))
+            ret = true;
+        VIR_FREE(buf);
+    }
+
+    return ret;
+}
+
+
 char *
 qemuBuildDriveStr(virConnectPtr conn,
                   virDomainDiskDefPtr disk,
@@ -7543,7 +7572,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                      virDomainSnapshotObjPtr snapshot,
                      virNetDevVPortProfileOp vmop,
                      qemuBuildCommandLineCallbacksPtr callbacks,
-                     bool standalone)
+                     bool standalone,
+                     bool enableFips)
 {
     virErrorPtr originalError = NULL;
     size_t i, j;
@@ -7656,7 +7686,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (!standalone)
         virCommandAddArg(cmd, "-S"); /* freeze CPU */
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_FIPS))
+    if (enableFips)
         virCommandAddArg(cmd, "-enable-fips");
 
     if (qemuBuildMachineArgStr(cmd, def, qemuCaps) < 0)

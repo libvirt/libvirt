@@ -31,7 +31,6 @@ typedef testQemuData *testQemuDataPtr;
 struct _testQemuData {
     virDomainXMLOptionPtr xmlopt;
     const char *base;
-    bool fips;
 };
 
 static qemuMonitorTestPtr
@@ -143,12 +142,6 @@ testQemuCaps(const void *opaque)
                                   qemuMonitorTestGetMonitor(mon)) < 0)
         goto cleanup;
 
-    /* So that our test does not depend on the contents of /proc, we
-     * hoisted the setting of ENABLE_FIPS to virQEMUCapsInitQMP.  But
-     * we do want to test the effect of that flag.  */
-    if (data->fips)
-        virQEMUCapsSet(capsComputed, QEMU_CAPS_ENABLE_FIPS);
-
     if (testQemuCapsCompare(capsProvided, capsComputed) < 0)
         goto cleanup;
 
@@ -183,19 +176,18 @@ mymain(void)
 
     data.xmlopt = xmlopt;
 
-#define DO_TEST_FULL(name, use_fips)                 \
-    data.base = name;                                \
-    data.fips = use_fips;                            \
-    if (virtTestRun(name, testQemuCaps, &data) < 0)  \
-        ret = -1
+#define DO_TEST(name)                                   \
+    do {                                                \
+        data.base = name;                               \
+        if (virtTestRun(name, testQemuCaps, &data) < 0) \
+            ret = -1;                                   \
+    } while (0)
 
-#define DO_TEST(name) DO_TEST_FULL(name, false)
-
-    DO_TEST_FULL("caps_1.2.2-1", true);
+    DO_TEST("caps_1.2.2-1");
     DO_TEST("caps_1.3.1-1");
     DO_TEST("caps_1.4.2-1");
     DO_TEST("caps_1.5.3-1");
-    DO_TEST_FULL("caps_1.6.0-1", true);
+    DO_TEST("caps_1.6.0-1");
     DO_TEST("caps_1.6.50-1");
 
     virObjectUnref(xmlopt);

@@ -78,7 +78,8 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    virDomainSnapshotObjPtr current_snapshot,
                                    virNetDevVPortProfileOp vmop,
                                    qemuBuildCommandLineCallbacksPtr callbacks,
-                                   bool forXMLToArgv)
+                                   bool forXMLToArgv,
+                                   bool enableFips)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(11);
 
 /* Generate '-device' string for chardev device */
@@ -273,4 +274,7 @@ int qemuGetDriveSourceString(virStorageSourcePtr src,
                              char **source);
 
 int qemuCheckDiskConfig(virDomainDiskDefPtr disk);
+
+bool
+qemuCheckFips(void);
 #endif /* __QEMU_COMMAND_H__*/

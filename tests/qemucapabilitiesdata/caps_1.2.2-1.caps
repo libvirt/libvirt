@@ -112,7 +112,6 @@
     <flag name='usb-storage'/>
     <flag name='usb-storage.removable'/>
     <flag name='kvm-pit-lost-tick-policy'/>
-    <flag name='enable-fips'/>
     <flag name='usb-kbd'/>
     <flag name='host-pci-multidomain'/>
     <flag name='usb-audio'/>

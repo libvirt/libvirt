@@ -259,6 +259,7 @@ typedef enum {
     FLAG_EXPECT_FAILURE     = 1 << 1,
     FLAG_EXPECT_PARSE_ERROR = 1 << 2,
     FLAG_JSON               = 1 << 3,
+    FLAG_FIPS               = 1 << 4,
 } virQemuXML2ArgvTestFlags;
 
 static int testCompareXMLToArgvFiles(const char *xml,
@@ -360,7 +361,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      (flags & FLAG_JSON), extraFlags,
                                      migrateFrom, migrateFd, NULL,
                                      VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
-                                     &testCallbacks, false))) {
+                                     &testCallbacks, false,
+                                     (flags & FLAG_FIPS)))) {
         if (!virtTestOOMActive() &&
             (flags & FLAG_EXPECT_FAILURE)) {
             ret = 0;
@@ -442,6 +444,9 @@ testCompareXMLToArgvHelper(const void *data)
 
     if (virQEMUCapsGet(info->extraFlags, QEMU_CAPS_MONITOR_JSON))
         flags |= FLAG_JSON;
+
+    if (virQEMUCapsGet(info->extraFlags, QEMU_CAPS_ENABLE_FIPS))
+        flags |= FLAG_FIPS;
 
     result = testCompareXMLToArgvFiles(xml, args, info->extraFlags,
                                        info->migrateFrom, info->migrateFd,
@@ -1454,6 +1459,8 @@ mymain(void)
 
     DO_TEST("panic", QEMU_CAPS_DEVICE_PANIC,
             QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
+
+    DO_TEST("fips-enabled", QEMU_CAPS_ENABLE_FIPS);
 
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);

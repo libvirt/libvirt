@@ -3215,30 +3215,6 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
     config.data.nix.path = monpath;
     config.data.nix.listen = false;
 
-    /* Qemu 1.2 and later have a binary flag -enable-fips that must be
-     * used for VNC auth to obey FIPS settings; but the flag only
-     * exists on Linux, and with no way to probe for it via QMP.  Our
-     * solution: if FIPS mode is required, then unconditionally use
-     * the flag, regardless of qemu version, for the following matrix:
-     *
-     *                          old QEMU            new QEMU
-     * FIPS enabled             doesn't start       VNC auth disabled
-     * FIPS disabled/missing    VNC auth enabled    VNC auth enabled
-     *
-     * Setting the flag here instead of in virQEMUCapsInitQMPMonitor
-     * or virQEMUCapsInitHelp also allows the testsuite to be
-     * independent of FIPS setting.
-     */
-    if (virFileExists("/proc/sys/crypto/fips_enabled")) {
-        char *buf = NULL;
-
-        if (virFileReadAll("/proc/sys/crypto/fips_enabled", 10, &buf) < 0)
-            goto cleanup;
-        if (STREQ(buf, "1\n"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_ENABLE_FIPS);
-        VIR_FREE(buf);
-    }
-
     VIR_DEBUG("Try to get caps via QMP qemuCaps=%p", qemuCaps);
 
     /*
