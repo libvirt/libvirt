@@ -99,10 +99,8 @@ void virAuditSend(virLogSourcePtr source,
 #endif
 
     va_start(args, fmt);
-    if (virVasprintf(&str, fmt, args) < 0) {
+    if (virVasprintf(&str, fmt, args) < 0)
         VIR_WARN("Out of memory while formatting audit message");
-        str = NULL;
-    }
     va_end(args);
 
     if (auditlog && str) {
