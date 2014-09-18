@@ -6577,7 +6577,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     for (i = 0; i < def->cpu->ncells; i++) {
         int cellmem = VIR_DIV_UP(def->cpu->cells[i].mem, 1024);
         def->cpu->cells[i].mem = cellmem * 1024;
-        virTristateSwitch memAccess = def->cpu->cells[i].memAccess;
+        virMemAccess memAccess = def->cpu->cells[i].memAccess;
 
         VIR_FREE(cpumask);
         VIR_FREE(nodemask);
