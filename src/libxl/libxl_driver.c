@@ -2381,25 +2381,22 @@ libxlDomainDefineXML(virConnectPtr conn, const char *xml)
     virObjectEventPtr event = NULL;
     virDomainDefPtr oldDef = NULL;
 
-    /* Lock the driver until the virDomainObj is created and locked */
-    libxlDriverLock(driver);
     if (!(def = virDomainDefParseString(xml, cfg->caps, driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE)))
-        goto cleanup_unlock;
+        goto cleanup;
 
     if (virDomainDefineXMLEnsureACL(conn, def) < 0)
-        goto cleanup_unlock;
+        goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains, def,
                                    driver->xmlopt,
                                    0,
                                    &oldDef)))
-        goto cleanup_unlock;
+        goto cleanup;
 
     def = NULL;
     vm->persistent = 1;
-    libxlDriverUnlock(driver);
 
     if (virDomainSaveConfig(cfg->configDir,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
@@ -2426,10 +2423,6 @@ libxlDomainDefineXML(virConnectPtr conn, const char *xml)
         libxlDomainEventQueue(driver, event);
     virObjectUnref(cfg);
     return dom;
-
- cleanup_unlock:
-    libxlDriverUnlock(driver);
-    goto cleanup;
 }
 
 static int
