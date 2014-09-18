@@ -974,6 +974,9 @@ virXMLFindChildNodeByNs(xmlNodePtr root,
 {
     xmlNodePtr next;
 
+    if (!root)
+        return NULL;
+
     for (next = root->children; next; next = next->next) {
         if (next->ns &&
             STREQ_NULLABLE((const char *) next->ns->href, uri))
