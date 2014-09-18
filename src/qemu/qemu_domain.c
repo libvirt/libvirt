@@ -2707,20 +2707,18 @@ int
 qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              virDomainDiskDefPtr disk,
-                             bool force)
+                             bool force_probe)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = 0;
     uid_t uid;
     gid_t gid;
-    int type = virStorageSourceGetActualType(disk->src);
 
-    if (type != VIR_STORAGE_TYPE_NETWORK &&
-        !disk->src->path)
+    if (virStorageSourceIsEmpty(disk->src))
         goto cleanup;
 
     if (disk->src->backingStore) {
-        if (force)
+        if (force_probe)
             virStorageSourceBackingStoreClear(disk->src);
         else
             goto cleanup;
