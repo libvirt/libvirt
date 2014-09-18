@@ -2343,17 +2343,47 @@ virSecuritySELinuxSetImageFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 }
 
 static int
-virSecuritySELinuxSetTapFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+virSecuritySELinuxSetTapFDLabel(virSecurityManagerPtr mgr,
                                 virDomainDefPtr def,
                                 int fd)
 {
+    struct stat buf;
+    security_context_t fcon = NULL;
     virSecurityLabelDefPtr secdef;
+    char *str = NULL;
+    int rc = -1;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-    if (!secdef || !secdef->imagelabel)
+    if (!secdef || !secdef->label)
         return 0;
 
-    return virSecuritySELinuxFSetFilecon(fd, secdef->imagelabel);
+    if (fstat(fd, &buf) < 0) {
+        virReportSystemError(errno, _("cannot stat tap fd %d"), fd);
+        goto cleanup;
+    }
+
+    if ((buf.st_mode & S_IFMT) != S_IFCHR) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("tap fd %d is not character device"), fd);
+        goto cleanup;
+    }
+
+    if (getContext(mgr, "/dev/tap.*", buf.st_mode, &fcon) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot lookup default selinux label for tap fd %d"), fd);
+        goto cleanup;
+    }
+
+    if (!(str = virSecuritySELinuxContextAddRange(secdef->label, fcon))) {
+        goto cleanup;
+    } else {
+        rc = virSecuritySELinuxFSetFilecon(fd, str);
+    }
+
+ cleanup:
+    freecon(fcon);
+    VIR_FREE(str);
+    return rc;
 }
 
 static char *
