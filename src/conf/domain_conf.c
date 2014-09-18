@@ -6850,6 +6850,15 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
             goto error;
         }
         VIR_FREE(class_id);
+    } else if (actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+        char *brname = virXPathString("string(./source/@bridge)", ctxt);
+        if (!brname) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing <source> element with bridge name in "
+                             "interface's <actual> element"));
+            goto error;
+        }
+        actual->data.bridge.brname = brname;
     }
 
     bandwidth_node = virXPathNode("./bandwidth", ctxt);
