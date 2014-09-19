@@ -1200,6 +1200,9 @@ libxlMakeVfbList(virPortAllocatorPtr graphicsports,
             if (VIR_STRDUP(b_info->u.hvm.sdl.xauthority, vfb.sdl.xauthority) < 0)
                 goto error;
         }
+
+        if (VIR_STRDUP(b_info->u.hvm.keymap, vfb.keymap) < 0)
+            goto error;
     }
 
     return 0;
