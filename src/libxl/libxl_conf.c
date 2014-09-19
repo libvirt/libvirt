@@ -40,6 +40,7 @@
 #include "viralloc.h"
 #include "viruuid.h"
 #include "capabilities.h"
+#include "vircommand.h"
 #include "libxl_domain.h"
 #include "libxl_conf.h"
 #include "libxl_utils.h"
@@ -793,6 +794,37 @@ libxlDiskSetDiscard(libxl_device_disk *x_disk, int discard)
                      "disk 'discard' option passing"));
     return -1;
 #endif
+}
+
+
+#define LIBXL_QEMU_DM_STR  "Options specific to the Xen version:"
+
+int
+libxlDomainGetEmulatorType(const virDomainDef *def)
+{
+    int ret = LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN;
+    virCommandPtr cmd = NULL;
+    char *output = NULL;
+
+    if (STREQ(def->os.type, "hvm")) {
+        if (def->emulator) {
+            cmd = virCommandNew(def->emulator);
+
+            virCommandAddArgList(cmd, "-help", NULL);
+            virCommandSetOutputBuffer(cmd, &output);
+
+            if (virCommandRun(cmd, NULL) < 0)
+                goto cleanup;
+
+            if (strstr(output, LIBXL_QEMU_DM_STR))
+                ret = LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN_TRADITIONAL;
+        }
+    }
+
+ cleanup:
+    VIR_FREE(output);
+    virCommandFree(cmd);
+    return ret;
 }
 
 

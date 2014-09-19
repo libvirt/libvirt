@@ -163,6 +163,9 @@ virCapsPtr
 libxlMakeCapabilities(libxl_ctx *ctx);
 
 int
+libxlDomainGetEmulatorType(const virDomainDef *def);
+
+int
 libxlMakeDisk(virDomainDiskDefPtr l_dev, libxl_device_disk *x_dev);
 int
 libxlMakeNic(virDomainDefPtr def,
