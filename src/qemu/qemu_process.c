@@ -4357,13 +4357,15 @@ int qemuProcessStart(virConnectPtr conn,
         virDomainDeviceDef dev;
         virDomainDiskDefPtr disk = vm->def->disks[i];
 
-        if (vm->def->disks[i]->rawio == 1)
+        if (vm->def->disks[i]->rawio == 1) {
 #ifdef CAP_SYS_RAWIO
             virCommandAllowCap(cmd, CAP_SYS_RAWIO);
 #else
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Raw I/O is not supported on this platform"));
+            goto cleanup;
 #endif
+        }
 
         dev.type = VIR_DOMAIN_DEVICE_DISK;
         dev.data.disk = disk;
