@@ -9953,6 +9953,10 @@ int
 virDomainVideoDefaultRAM(const virDomainDef *def,
                          int type)
 {
+    /* Defer setting default vram to the Xen drivers */
+    if (def->virtType == VIR_DOMAIN_VIRT_XEN)
+        return 0;
+
     switch (type) {
         /* Weird, QEMU defaults to 9 MB ??! */
     case VIR_DOMAIN_VIDEO_TYPE_VGA:

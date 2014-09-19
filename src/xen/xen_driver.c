@@ -353,6 +353,25 @@ xenDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         return -1;
     }
 
+    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO && dev->data.video->vram == 0) {
+        switch (dev->data.video->type) {
+        case VIR_DOMAIN_VIDEO_TYPE_VGA:
+        case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
+        case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
+            dev->data.video->vram = 9 * 1024;
+        break;
+
+        case VIR_DOMAIN_VIDEO_TYPE_XEN:
+            /* Original Xen PVFB hardcoded to 4 MB */
+            dev->data.video->vram = 4 * 1024;
+            break;
+
+        case VIR_DOMAIN_VIDEO_TYPE_QXL:
+            /* Use 64M as the minimal video video memory for qxl device */
+            return 64 * 1024;
+        }
+    }
+
     return 0;
 }
 
