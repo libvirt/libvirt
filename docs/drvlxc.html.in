@@ -88,6 +88,8 @@ to be provided by all container technologies on Linux.
 <dd>The fixed string <code>/bin:/usr/bin</code></dd>
 <dt>TERM</dt>
 <dd>The fixed string <code>linux</code></dd>
+<dt>HOME</dt>
+<dd>The fixed string <code>/</code></dd>
 </dl>
 
 <p>
