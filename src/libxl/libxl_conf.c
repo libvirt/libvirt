@@ -705,6 +705,28 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
         if (VIR_STRDUP(b_info->u.hvm.boot, bootorder) < 0)
             goto error;
 
+        if (def->emulator) {
+            if (!virFileExists(def->emulator)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("emulator '%s' not found"),
+                               def->emulator);
+                goto error;
+            }
+
+            if (!virFileIsExecutable(def->emulator)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("emulator '%s' is not executable"),
+                               def->emulator);
+                goto error;
+            }
+
+            VIR_FREE(b_info->device_model);
+            if (VIR_STRDUP(b_info->device_model, def->emulator) < 0)
+                goto error;
+
+            b_info->device_model_version = libxlDomainGetEmulatorType(def);
+        }
+
         if (def->nserials) {
             if (def->nserials > 1) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
