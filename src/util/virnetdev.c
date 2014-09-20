@@ -1932,3 +1932,34 @@ virNetDevGetLinkInfo(const char *ifname,
     return 0;
 }
 #endif /* defined(__linux__) */
+
+
+VIR_ENUM_IMPL(virNetDevRxFilterMode,
+              VIR_NETDEV_RX_FILTER_MODE_LAST,
+              "none",
+              "normal",
+              "all");
+
+
+virNetDevRxFilterPtr
+virNetDevRxFilterNew(void)
+{
+    virNetDevRxFilterPtr filter;
+
+    if (VIR_ALLOC(filter) < 0)
+        return NULL;
+    return filter;
+}
+
+
+void
+virNetDevRxFilterFree(virNetDevRxFilterPtr filter)
+{
+    if (filter) {
+        VIR_FREE(filter->name);
+        VIR_FREE(filter->unicast.table);
+        VIR_FREE(filter->multicast.table);
+        VIR_FREE(filter->vlan.table);
+        VIR_FREE(filter);
+    }
+}

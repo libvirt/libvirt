@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2007-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,6 +36,42 @@ typedef struct ifreq virIfreq;
 # else
 typedef void virIfreq;
 # endif
+
+typedef enum {
+   VIR_NETDEV_RX_FILTER_MODE_NONE = 0,
+   VIR_NETDEV_RX_FILTER_MODE_NORMAL,
+   VIR_NETDEV_RX_FILTER_MODE_ALL,
+
+   VIR_NETDEV_RX_FILTER_MODE_LAST
+} virNetDevRxFilterMode;
+VIR_ENUM_DECL(virNetDevRxFilterMode)
+
+typedef struct _virNetDevRxFilter virNetDevRxFilter;
+typedef virNetDevRxFilter *virNetDevRxFilterPtr;
+struct _virNetDevRxFilter {
+    char *name; /* the alias used by qemu, *not* name used by guest */
+    virMacAddr mac;
+    bool promiscuous;
+    bool broadcastAllowed;
+
+    struct {
+        int mode; /* enum virNetDevRxFilterMode */
+        bool overflow;
+        virMacAddrPtr table;
+        size_t nTable;
+    } unicast;
+    struct {
+        int mode; /* enum virNetDevRxFilterMode */
+        bool overflow;
+        virMacAddrPtr table;
+        size_t nTable;
+    } multicast;
+    struct {
+        int mode; /* enum virNetDevRxFilterMode */
+        unsigned int *table;
+        size_t nTable;
+    } vlan;
+};
 
 int virNetDevSetupControl(const char *ifname,
                           virIfreq *ifr)
@@ -149,5 +185,9 @@ int virNetDevGetVirtualFunctionInfo(const char *vfname, char **pfname,
 int virNetDevGetLinkInfo(const char *ifname,
                          virInterfaceLinkPtr lnk)
     ATTRIBUTE_NONNULL(1);
+
+virNetDevRxFilterPtr virNetDevRxFilterNew(void)
+   ATTRIBUTE_RETURN_CHECK;
+void virNetDevRxFilterFree(virNetDevRxFilterPtr filter);
 
 #endif /* __VIR_NETDEV_H__ */
