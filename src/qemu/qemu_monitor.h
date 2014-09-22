@@ -31,6 +31,7 @@
 # include "virbitmap.h"
 # include "virhash.h"
 # include "virjson.h"
+# include "virnetdev.h"
 # include "device_conf.h"
 # include "cpu/cpu.h"
 
@@ -626,6 +627,9 @@ int qemuMonitorAddNetdev(qemuMonitorPtr mon,
 
 int qemuMonitorRemoveNetdev(qemuMonitorPtr mon,
                             const char *alias);
+
+int qemuMonitorQueryRxFilter(qemuMonitorPtr mon, const char *alias,
+                             virNetDevRxFilterPtr *filter);
 
 int qemuMonitorGetPtyPaths(qemuMonitorPtr mon,
                            virHashTablePtr paths);

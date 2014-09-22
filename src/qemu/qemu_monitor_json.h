@@ -210,6 +210,9 @@ int qemuMonitorJSONAddNetdev(qemuMonitorPtr mon,
 int qemuMonitorJSONRemoveNetdev(qemuMonitorPtr mon,
                                 const char *alias);
 
+int qemuMonitorJSONQueryRxFilter(qemuMonitorPtr mon, const char *alias,
+                                 virNetDevRxFilterPtr *filter);
+
 int qemuMonitorJSONGetPtyPaths(qemuMonitorPtr mon,
                                virHashTablePtr paths);
 

@@ -2929,6 +2929,32 @@ int qemuMonitorRemoveNetdev(qemuMonitorPtr mon,
 }
 
 
+int
+qemuMonitorQueryRxFilter(qemuMonitorPtr mon, const char *alias,
+                         virNetDevRxFilterPtr *filter)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p alias=%s filter=%p",
+              mon, alias, filter);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+
+    VIR_DEBUG("mon=%p, alias=%s", mon, alias);
+
+    if (mon->json)
+        ret = qemuMonitorJSONQueryRxFilter(mon, alias, filter);
+    else
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("query-rx-filter requires JSON monitor"));
+    return ret;
+}
+
+
 int qemuMonitorGetPtyPaths(qemuMonitorPtr mon,
                            virHashTablePtr paths)
 {

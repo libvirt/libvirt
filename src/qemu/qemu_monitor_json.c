@@ -3313,6 +3313,221 @@ int qemuMonitorJSONRemoveNetdev(qemuMonitorPtr mon,
 }
 
 
+static int
+qemuMonitorJSONQueryRxFilterParse(virJSONValuePtr msg,
+                                  virNetDevRxFilterPtr *filter)
+{
+    int ret = -1;
+    const char *tmp;
+    virJSONValuePtr returnArray, entry, table, element;
+    int nTable;
+    size_t i;
+    virNetDevRxFilterPtr fil = virNetDevRxFilterNew();
+
+    if (!fil)
+        goto cleanup;
+
+    if (!(returnArray = virJSONValueObjectGet(msg, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-rx-filter reply was missing return data"));
+        goto cleanup;
+    }
+    if (returnArray->type != VIR_JSON_TYPE_ARRAY) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-rx-filter return data was not an array"));
+        goto cleanup;
+    }
+    if (!(entry = virJSONValueArrayGet(returnArray, 0))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query -rx-filter return data missing array element"));
+        goto cleanup;
+    }
+
+    if (!(tmp = virJSONValueObjectGetString(entry, "name"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing or invalid name "
+                         "in query-rx-filter response"));
+        goto cleanup;
+    }
+    if (VIR_STRDUP(fil->name, tmp) < 0)
+        goto cleanup;
+    if ((!(tmp = virJSONValueObjectGetString(entry, "main-mac"))) ||
+        virMacAddrParse(tmp, &fil->mac) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing or invalid 'main-mac' "
+                         "in query-rx-filter response"));
+        goto cleanup;
+    }
+    if (virJSONValueObjectGetBoolean(entry, "promiscuous",
+                                     &fil->promiscuous) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing or invalid 'promiscuous' "
+                         "in query-rx-filter response"));
+        goto cleanup;
+    }
+    if (virJSONValueObjectGetBoolean(entry, "broadcast-allowed",
+                                     &fil->broadcastAllowed) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing or invalid 'broadcast-allowed' "
+                         "in query-rx-filter response"));
+        goto cleanup;
+    }
+
+    if ((!(tmp = virJSONValueObjectGetString(entry, "unicast"))) ||
+        ((fil->unicast.mode
+          = virNetDevRxFilterModeTypeFromString(tmp)) < 0)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing or invalid 'unicast' "
+                         "in query-rx-filter response"));
+        goto cleanup;
+    }
+    if (virJSONValueObjectGetBoolean(entry, "unicast-overflow",
+                                     &fil->unicast.overflow) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing or invalid 'unicast-overflow' "
+                         "in query-rx-filter response"));
+        goto cleanup;
+    }
+    if ((!(table = virJSONValueObjectGet(entry, "unicast-table"))) ||
+        ((nTable = virJSONValueArraySize(table)) < 0)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing or invalid 'unicast-table' array "
+                         "in query-rx-filter response"));
+        goto cleanup;
+    }
+    if (VIR_ALLOC_N(fil->unicast.table, nTable))
+        goto cleanup;
+    for (i = 0; i < nTable; i++) {
+        if (!(element = virJSONValueArrayGet(table, i)) ||
+            !(tmp = virJSONValueGetString(element))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Missing or invalid element %zu of 'unicast' "
+                             "list in query-rx-filter response"), i);
+            goto cleanup;
+        }
+        if (virMacAddrParse(tmp, &fil->unicast.table[i]) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("invalid mac address '%s' in 'unicast-table' "
+                             "array in query-rx-filter response"), tmp);
+            goto cleanup;
+        }
+    }
+    fil->unicast.nTable = nTable;
+
+    if ((!(tmp = virJSONValueObjectGetString(entry, "multicast"))) ||
+        ((fil->multicast.mode
+          = virNetDevRxFilterModeTypeFromString(tmp)) < 0)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing or invalid 'multicast' "
+                         "in query-rx-filter response"));
+        goto cleanup;
+    }
+    if (virJSONValueObjectGetBoolean(entry, "multicast-overflow",
+                                     &fil->multicast.overflow) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing or invalid 'multicast-overflow' "
+                         "in query-rx-filter response"));
+        goto cleanup;
+    }
+    if ((!(table = virJSONValueObjectGet(entry, "multicast-table"))) ||
+        ((nTable = virJSONValueArraySize(table)) < 0)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing or invalid 'multicast-table' array "
+                         "in query-rx-filter response"));
+        goto cleanup;
+    }
+    if (VIR_ALLOC_N(fil->multicast.table, nTable))
+        goto cleanup;
+    for (i = 0; i < nTable; i++) {
+        if (!(element = virJSONValueArrayGet(table, i)) ||
+            !(tmp = virJSONValueGetString(element))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Missing or invalid element %zu of 'multicast' "
+                             "list in query-rx-filter response"), i);
+            goto cleanup;
+        }
+        if (virMacAddrParse(tmp, &fil->multicast.table[i]) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("invalid mac address '%s' in 'multicast-table' "
+                             "array in query-rx-filter response"), tmp);
+            goto cleanup;
+        }
+    }
+    fil->multicast.nTable = nTable;
+
+    if ((!(tmp = virJSONValueObjectGetString(entry, "vlan"))) ||
+        ((fil->vlan.mode
+          = virNetDevRxFilterModeTypeFromString(tmp)) < 0)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing or invalid 'vlan' "
+                         "in query-rx-filter response"));
+        goto cleanup;
+    }
+    if ((!(table = virJSONValueObjectGet(entry, "vlan-table"))) ||
+        ((nTable = virJSONValueArraySize(table)) < 0)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing or invalid 'vlan-table' array "
+                         "in query-rx-filter response"));
+        goto cleanup;
+    }
+    if (VIR_ALLOC_N(fil->vlan.table, nTable))
+        goto cleanup;
+    for (i = 0; i < nTable; i++) {
+        if (!(element = virJSONValueArrayGet(table, i)) ||
+            virJSONValueGetNumberUint(element, &fil->vlan.table[i]) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Missing or invalid element %zu of 'vlan-table' "
+                             "array in query-rx-filter response"), i);
+            goto cleanup;
+        }
+    }
+    fil->vlan.nTable = nTable;
+
+    ret = 0;
+ cleanup:
+    if (ret < 0) {
+        virNetDevRxFilterFree(fil);
+        fil = NULL;
+    }
+    *filter = fil;
+    return ret;
+}
+
+
+int
+qemuMonitorJSONQueryRxFilter(qemuMonitorPtr mon, const char *alias,
+                             virNetDevRxFilterPtr *filter)
+{
+    int ret = -1;
+    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-rx-filter",
+                                                     "s:name", alias,
+                                                     NULL);
+    virJSONValuePtr reply = NULL;
+
+    if (!cmd)
+        goto cleanup;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONQueryRxFilterParse(reply, filter) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret < 0) {
+        virNetDevRxFilterFree(*filter);
+        *filter = NULL;
+    }
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 /*
  * Example return data
  *

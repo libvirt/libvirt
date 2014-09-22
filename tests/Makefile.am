@@ -35,6 +35,7 @@ AM_CFLAGS = \
 	-Dabs_builddir="\"$(abs_builddir)\"" \
 	-Dabs_srcdir="\"$(abs_srcdir)\"" \
 	$(LIBXML_CFLAGS) \
+	$(LIBNL_CFLAGS) \
 	$(GNUTLS_CFLAGS) \
 	$(SASL_CFLAGS) \
 	$(SELINUX_CFLAGS) \
