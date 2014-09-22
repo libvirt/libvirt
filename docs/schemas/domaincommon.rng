@@ -2313,12 +2313,16 @@
       </optional>
       <optional>
         <element name="backend">
+          <optional>
            <attribute name='tap'>
              <ref name='absFilePath'/>
            </attribute>
+          </optional>
+          <optional>
            <attribute name='vhost'>
              <ref name='absFilePath'/>
            </attribute>
+          </optional>
         </element>
       </optional>
       <optional>
