@@ -203,7 +203,7 @@ virCPUDefParseXML(xmlNodePtr node,
         if (virXPathBoolean("boolean(./arch)", ctxt)) {
             if (virXPathBoolean("boolean(./@match)", ctxt)) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("'arch' element element cannot be used inside 'cpu'"
+                               _("'arch' element cannot be used inside 'cpu'"
                                  " element with 'match' attribute'"));
                 goto error;
             }
