@@ -7065,8 +7065,15 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 if (virNetDevVlanParse(cur, ctxt, &def->vlan) < 0)
                     goto error;
             } else if (xmlStrEqual(cur->name, BAD_CAST "backend")) {
-                def->backend.tap = virXMLPropString(cur, "tap");
-                def->backend.vhost = virXMLPropString(cur, "vhost");
+                char *tmp = NULL;
+
+                if ((tmp = virXMLPropString(cur, "tap")))
+                    def->backend.tap = virFileSanitizePath(tmp);
+                VIR_FREE(tmp);
+
+                if ((tmp = virXMLPropString(cur, "vhost")))
+                    def->backend.vhost = virFileSanitizePath(tmp);
+                VIR_FREE(tmp);
             }
         }
         cur = cur->next;
