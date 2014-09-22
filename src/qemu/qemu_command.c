@@ -3508,11 +3508,17 @@ qemuBuildDriveStr(virConnectPtr conn,
         virBufferAddLit(&opt, ",boot=on");
     if (disk->src->readonly &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_READONLY)) {
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE &&
-            disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("readonly ide disks are not supported"));
-            goto error;
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+            if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("readonly ide disks are not supported"));
+                goto error;
+            }
+            if (disk->bus == VIR_DOMAIN_DISK_BUS_SATA) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("readonly sata disks are not supported"));
+                goto error;
+            }
         }
         virBufferAddLit(&opt, ",readonly=on");
     }
