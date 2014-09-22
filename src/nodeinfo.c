@@ -2028,10 +2028,24 @@ nodeGetFreePages(unsigned int npages,
                  unsigned long long *counts)
 {
     int ret = -1;
-    int cell;
+    int cell, lastCell;
     size_t i, ncounts = 0;
 
-    for (cell = startCell; cell < (int) (startCell + cellCount); cell++) {
+    if ((lastCell = virNumaGetMaxNode()) < 0)
+        return 0;
+
+    if (startCell > lastCell) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("start cell %d out of range (0-%d)"),
+                       startCell, lastCell);
+        goto cleanup;
+    }
+
+    lastCell = startCell + cellCount;
+    if (startCell + cellCount < lastCell)
+        lastCell = startCell + cellCount;
+
+    for (cell = startCell; cell < lastCell; cell++) {
         for (i = 0; i < npages; i++) {
             unsigned int page_size = pages[i];
             unsigned int page_free;
