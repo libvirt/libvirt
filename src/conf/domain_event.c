@@ -1798,7 +1798,7 @@ virDomainQemuMonitorEventStateRegisterID(virConnectPtr conn,
     if (VIR_ALLOC(data) < 0)
         return -1;
     data->flags = flags;
-    if (flags != -1) {
+    if (event && flags != -1) {
         int rflags = REG_NOSUB;
 
         if (flags & VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_NOCASE)
