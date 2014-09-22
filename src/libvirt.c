@@ -21307,7 +21307,7 @@ virDomainSetTime(virDomainPtr dom,
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
  * This calls queries the host system on free pages of
- * specified size. Ont the input, @pages is expected to be
+ * specified size. For the input, @pages is expected to be
  * filled with pages that caller is interested in (the size
  * unit is kibibytes, so e.g. pass 2048 for 2MB), then @startcell
  * refers to the first NUMA node that info should be collected
