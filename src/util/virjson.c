@@ -63,6 +63,217 @@ struct _virJSONParser {
 };
 
 
+/**
+ * virJSONValueObjectCreateVArgs:
+ * @obj: returns the created JSON object
+ * @...: a key-value argument pairs, terminated by NULL
+ *
+ * Creates a JSON value object filled with key-value pairs supplied as variable
+ * argument list.
+ *
+ * Keys look like   s:name  the first letter is a type code:
+ * Explanation of type codes:
+ * s: string value, must be non-null
+ * S: string value, omitted if null
+ *
+ * i: signed integer value
+ * j: signed integer value, error if negative
+ * z: signed integer value, omitted if zero
+ * y: signed integer value, omitted if zero, error if negative
+ *
+ * I: signed long integer value
+ * J: signed long integer value, error if negative
+ * Z: signed long integer value, omitted if zero
+ * Y: signed long integer value, omitted if zero, error if negative
+ *
+ * u: unsigned integer value
+ * p: unsigned integer value, omitted if zero
+ *
+ * U: unsigned long integer value (see below for quirks)
+ * P: unsigned long integer value, omitted if zero
+ *
+ * b: boolean value
+ * B: boolean value, omitted if false
+ *
+ * d: double precision floating point number
+ * n: json null value
+ * a: json array
+ *
+ * The value corresponds to the selected type.
+ *
+ * Returns -1 on error. 1 on success, if at least one key:pair was valid 0
+ * in case of no error but nothing was filled (@obj will be NULL).
+ */
+int
+virJSONValueObjectCreateVArgs(virJSONValuePtr *obj, va_list args)
+{
+    virJSONValuePtr jargs = NULL;
+    char type;
+    char *key;
+    int ret = -1;
+    int rc;
+
+    *obj = NULL;
+
+    if (!(jargs = virJSONValueNewObject()))
+        goto cleanup;
+
+    while ((key = va_arg(args, char *)) != NULL) {
+
+        if (strlen(key) < 3) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("argument key '%s' is too short, missing type prefix"),
+                           key);
+            goto cleanup;
+        }
+
+        type = key[0];
+        key += 2;
+
+        /* This doesn't support maps, but no command uses those.  */
+        switch (type) {
+        case 'S':
+        case 's': {
+            char *val = va_arg(args, char *);
+            if (!val) {
+                if (type == 'S')
+                    continue;
+
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("argument key '%s' must not have null value"),
+                               key);
+                goto cleanup;
+            }
+            rc = virJSONValueObjectAppendString(jargs, key, val);
+        }   break;
+
+        case 'z':
+        case 'y':
+        case 'j':
+        case 'i': {
+            int val = va_arg(args, int);
+
+            if (val < 0 && (type == 'j' || type == 'y')) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("argument key '%s' must not be negative"),
+                               key);
+                goto cleanup;
+            }
+
+            if (!val && (type == 'z' || type == 'y'))
+                continue;
+
+            rc = virJSONValueObjectAppendNumberInt(jargs, key, val);
+        }   break;
+
+        case 'p':
+        case 'u': {
+            unsigned int val = va_arg(args, unsigned int);
+
+            if (!val && type == 'p')
+                continue;
+
+            rc = virJSONValueObjectAppendNumberUint(jargs, key, val);
+        }   break;
+
+        case 'Z':
+        case 'Y':
+        case 'J':
+        case 'I': {
+            long long val = va_arg(args, long long);
+
+            if (val < 0 && (type == 'J' || type == 'Y')) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("argument key '%s' must not be negative"),
+                               key);
+                goto cleanup;
+            }
+
+            if (!val && (type == 'Z' || type == 'Y'))
+                continue;
+
+            rc = virJSONValueObjectAppendNumberLong(jargs, key, val);
+        }   break;
+
+        case 'P':
+        case 'U': {
+            /* qemu silently truncates numbers larger than LLONG_MAX,
+             * so passing the full range of unsigned 64 bit integers
+             * is not safe here.  Pass them as signed 64 bit integers
+             * instead.
+             */
+            long long val = va_arg(args, long long);
+
+            if (!val && type == 'P')
+                continue;
+
+            rc = virJSONValueObjectAppendNumberLong(jargs, key, val);
+        }   break;
+
+        case 'd': {
+            double val = va_arg(args, double);
+            rc = virJSONValueObjectAppendNumberDouble(jargs, key, val);
+        }   break;
+
+        case 'B':
+        case 'b': {
+            int val = va_arg(args, int);
+
+            if (!val && type == 'B')
+                continue;
+
+            rc = virJSONValueObjectAppendBoolean(jargs, key, val);
+        }   break;
+
+        case 'n': {
+            rc = virJSONValueObjectAppendNull(jargs, key);
+        }   break;
+
+        case 'a': {
+            virJSONValuePtr val = va_arg(args, virJSONValuePtr);
+            rc = virJSONValueObjectAppend(jargs, key, val);
+        }   break;
+
+        default:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unsupported data type '%c' for arg '%s'"), type, key - 2);
+            goto cleanup;
+        }
+
+        if (rc < 0)
+            goto cleanup;
+    }
+
+    /* verify that we added at least one key-value pair */
+    if (virJSONValueObjectKeysNumber(jargs) == 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    *obj = jargs;
+    jargs = NULL;
+    ret = 1;
+
+ cleanup:
+    virJSONValueFree(jargs);
+    return ret;
+}
+
+
+int
+virJSONValueObjectCreate(virJSONValuePtr *obj, ...)
+{
+    va_list args;
+    int ret;
+
+    va_start(args, obj);
+    ret = virJSONValueObjectCreateVArgs(obj, args);
+    va_end(args);
+
+    return ret;
+}
+
+
 void
 virJSONValueFree(virJSONValuePtr value)
 {
