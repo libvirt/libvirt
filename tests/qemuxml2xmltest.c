@@ -404,6 +404,7 @@ mymain(void)
     DO_TEST("bios-nvram");
 
     DO_TEST("tap-vhost");
+    DO_TEST("shmem");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

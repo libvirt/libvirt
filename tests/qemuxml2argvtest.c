@@ -1466,6 +1466,8 @@ mymain(void)
 
     DO_TEST("fips-enabled", QEMU_CAPS_ENABLE_FIPS);
 
+    DO_TEST_PARSE_ERROR("shmem-msi-only", NONE);
+
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

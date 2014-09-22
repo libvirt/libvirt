@@ -3278,6 +3278,44 @@
       </optional>
     </element>
   </define>
+
+  <define name="shmem">
+    <element name="shmem">
+      <attribute name="name"/>
+      <interleave>
+        <optional>
+          <element name="size">
+            <ref name="scaledInteger"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="server">
+            <optional>
+              <attribute name="path">
+                <ref name="absFilePath"/>
+              </attribute>
+            </optional>
+          </element>
+        </optional>
+        <optional>
+          <element name="msi">
+            <optional>
+              <ref name="ioeventfd"/>
+            </optional>
+            <optional>
+              <attribute name="vectors">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
+          </element>
+        </optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
   <define name="memballoon">
     <element name="memballoon">
       <attribute name="model">
@@ -3864,6 +3902,7 @@
             <ref name="redirfilter"/>
             <ref name="rng"/>
             <ref name="tpm"/>
+            <ref name="shmem"/>
           </choice>
         </zeroOrMore>
         <optional>

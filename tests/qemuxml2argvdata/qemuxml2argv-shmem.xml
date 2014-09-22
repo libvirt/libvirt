@@ -1,0 +1,51 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu</emulator>
+    <controller type='usb' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
+    <memballoon model='none'/>
+    <shmem name='shmem0'/>
+    <shmem name='shmem1'>
+      <size unit='M'>128</size>
+    </shmem>
+    <shmem name='shmem2'>
+      <size unit='M'>256</size>
+    </shmem>
+    <shmem name='shmem3'>
+      <size unit='M'>512</size>
+      <server/>
+    </shmem>
+    <shmem name='shmem4'>
+      <size unit='M'>1024</size>
+      <server path='/tmp/shmem4-sock'/>
+    </shmem>
+    <shmem name='shmem5'>
+      <size unit='M'>2048</size>
+      <server path='/tmp/shmem5-sock'/>
+      <msi ioeventfd='off'/>
+    </shmem>
+    <shmem name='shmem6'>
+      <size unit='M'>4096</size>
+      <server path='/tmp/shmem6-sock'/>
+      <msi vectors='16'/>
+    </shmem>
+    <shmem name='shmem7'>
+      <size unit='M'>8192</size>
+      <server path='/tmp/shmem7-sock'/>
+      <msi vectors='32' ioeventfd='on'/>
+    </shmem>
+  </devices>
+</domain>

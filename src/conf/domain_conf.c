@@ -255,7 +255,8 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "chr",
               "memballoon",
               "nvram",
-              "rng")
+              "rng",
+              "shmem")
 
 VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "none",
@@ -1720,6 +1721,17 @@ void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def)
     VIR_FREE(def);
 }
 
+void virDomainShmemDefFree(virDomainShmemDefPtr def)
+{
+    if (!def)
+        return;
+
+    virDomainDeviceInfoClear(&def->info);
+    VIR_FREE(def->server.path);
+    VIR_FREE(def->name);
+    VIR_FREE(def);
+}
+
 void virDomainVideoDefFree(virDomainVideoDefPtr def)
 {
     if (!def)
@@ -1920,6 +1932,9 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
         break;
     case VIR_DOMAIN_DEVICE_NVRAM:
         virDomainNVRAMDefFree(def->data.nvram);
+        break;
+    case VIR_DOMAIN_DEVICE_SHMEM:
+        virDomainShmemDefFree(def->data.shmem);
         break;
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_NONE:
@@ -2180,6 +2195,10 @@ void virDomainDefFree(virDomainDefPtr def)
     virSysinfoDefFree(def->sysinfo);
 
     virDomainRedirFilterDefFree(def->redirfilter);
+
+    for (i = 0; i < def->nshmems; i++)
+        virDomainShmemDefFree(def->shmems[i]);
+    VIR_FREE(def->shmems);
 
     if (def->namespaceData && def->ns.free)
         (def->ns.free)(def->namespaceData);
@@ -2613,6 +2632,8 @@ virDomainDeviceGetInfo(virDomainDeviceDefPtr device)
         return &device->data.memballoon->info;
     case VIR_DOMAIN_DEVICE_NVRAM:
         return &device->data.nvram->info;
+    case VIR_DOMAIN_DEVICE_SHMEM:
+        return &device->data.shmem->info;
     case VIR_DOMAIN_DEVICE_RNG:
         return &device->data.rng->info;
 
@@ -2828,6 +2849,12 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
         if (cb(def, &device, &def->hubs[i]->info, opaque) < 0)
             return -1;
     }
+    device.type = VIR_DOMAIN_DEVICE_SHMEM;
+    for (i = 0; i < def->nshmems; i++) {
+        device.data.shmem = def->shmems[i];
+        if (cb(def, &device, &def->shmems[i]->info, opaque) < 0)
+            return -1;
+    }
 
     /* Coverity is not very happy with this - all dead_error_condition */
 #if !STATIC_ANALYSIS
@@ -2856,6 +2883,7 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
     case VIR_DOMAIN_DEVICE_CHR:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_RNG:
         break;
@@ -9702,6 +9730,84 @@ virDomainNVRAMDefParseXML(xmlNodePtr node,
     return NULL;
 }
 
+static virDomainShmemDefPtr
+virDomainShmemDefParseXML(xmlNodePtr node,
+                          xmlXPathContextPtr ctxt,
+                          unsigned int flags)
+{
+    char *tmp = NULL;
+    virDomainShmemDefPtr def = NULL;
+    virDomainShmemDefPtr ret = NULL;
+    xmlNodePtr msi = NULL;
+    xmlNodePtr save = ctxt->node;
+    xmlNodePtr server = NULL;
+
+
+    if (VIR_ALLOC(def) < 0)
+        return NULL;
+
+    ctxt->node = node;
+
+    if (!(def->name = virXMLPropString(node, "name"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("shmem element must contain 'name' attribute"));
+        goto cleanup;
+    }
+
+    if (virDomainParseScaledValue("./size[1]", ctxt, &def->size,
+                                    1, ULLONG_MAX, false) < 0)
+        goto cleanup;
+
+    if ((server = virXPathNode("./server", ctxt))) {
+        def->server.enabled = true;
+
+        if ((tmp = virXMLPropString(server, "path")))
+            def->server.path = virFileSanitizePath(tmp);
+        VIR_FREE(tmp);
+    }
+
+    if ((msi = virXPathNode("./msi", ctxt))) {
+        def->msi.enabled = true;
+
+        if ((tmp = virXMLPropString(msi, "vectors")) &&
+            virStrToLong_uip(tmp, NULL, 0, &def->msi.vectors) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("invalid number of vectors for shmem: '%s'"),
+                           tmp);
+            goto cleanup;
+        }
+        VIR_FREE(tmp);
+
+        if ((tmp = virXMLPropString(msi, "ioeventfd")) &&
+            (def->msi.ioeventfd = virTristateSwitchTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("invalid msi ioeventfd setting for shmem: '%s'"),
+                           tmp);
+            goto cleanup;
+        }
+        VIR_FREE(tmp);
+    }
+
+    /* msi option is only relevant with a server */
+    if (def->msi.enabled && !def->server.enabled) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("msi option is only supported with a server"));
+        goto cleanup;
+    }
+
+    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+        goto cleanup;
+
+
+    ret = def;
+    def = NULL;
+ cleanup:
+    ctxt->node = save;
+    VIR_FREE(tmp);
+    virDomainShmemDefFree(def);
+    return ret;
+}
+
 static virSysinfoDefPtr
 virSysinfoParseXML(xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
@@ -10556,6 +10662,10 @@ virDomainDeviceDefParse(const char *xmlStr,
         break;
     case VIR_DOMAIN_DEVICE_NVRAM:
         if (!(dev->data.nvram = virDomainNVRAMDefParseXML(node, flags)))
+            goto error;
+        break;
+    case VIR_DOMAIN_DEVICE_SHMEM:
+        if (!(dev->data.shmem = virDomainShmemDefParseXML(node, ctxt, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_NONE:
@@ -13686,6 +13796,25 @@ virDomainDefParseXML(xmlDocPtr xml,
         VIR_FREE(nodes);
     }
 
+    /* analysis of the shmem devices */
+    if ((n = virXPathNodeSet("./devices/shmem", ctxt, &nodes)) < 0) {
+        goto error;
+    }
+    if (n && VIR_ALLOC_N(def->shmems, n) < 0)
+        goto error;
+
+    node = ctxt->node;
+    for (i = 0; i < n; i++) {
+        virDomainShmemDefPtr shmem;
+        ctxt->node = nodes[i];
+        shmem = virDomainShmemDefParseXML(nodes[i], ctxt, flags);
+        if (!shmem)
+            goto error;
+
+        def->shmems[def->nshmems++] = shmem;
+    }
+    ctxt->node = node;
+    VIR_FREE(nodes);
 
     /* analysis of the user namespace mapping */
     if ((n = virXPathNodeSet("./idmap/uid", ctxt, &nodes)) < 0)
@@ -17470,6 +17599,54 @@ static int virDomainPanicDefFormat(virBufferPtr buf,
 }
 
 static int
+virDomainShmemDefFormat(virBufferPtr buf,
+                        virDomainShmemDefPtr def,
+                        unsigned int flags)
+{
+    virBufferAsprintf(buf, "<shmem name='%s'", def->name);
+
+    if (!def->size &&
+        !def->server.enabled &&
+        !def->msi.enabled &&
+        !virDomainDeviceInfoIsSet(&def->info, flags)) {
+        virBufferAddLit(buf, "/>\n");
+        return 0;
+    } else {
+        virBufferAddLit(buf, ">\n");
+    }
+
+    virBufferAdjustIndent(buf, 2);
+
+    if (def->size)
+        virBufferAsprintf(buf, "<size unit='M'>%llu</size>\n",
+                          VIR_DIV_UP(def->size, 1024 * 1024));
+
+    if (def->server.enabled) {
+        virBufferAddLit(buf, "<server");
+        virBufferEscapeString(buf, " path='%s'", def->server.path);
+        virBufferAddLit(buf, "/>\n");
+    }
+
+    if (def->msi.enabled) {
+        virBufferAddLit(buf, "<msi");
+        if (def->msi.vectors)
+            virBufferAsprintf(buf, " vectors='%u'", def->msi.vectors);
+        if (def->msi.ioeventfd)
+            virBufferAsprintf(buf, " ioeventfd='%s'",
+                              virTristateSwitchTypeToString(def->msi.ioeventfd));
+        virBufferAddLit(buf, "/>\n");
+    }
+
+    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+        return -1;
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</shmem>\n");
+
+    return 0;
+}
+
+static int
 virDomainRNGDefFormat(virBufferPtr buf,
                       virDomainRNGDefPtr def,
                       unsigned int flags)
@@ -19089,6 +19266,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virDomainPanicDefFormat(buf, def->panic) < 0)
         goto error;
 
+    for (n = 0; n < def->nshmems; n++)
+        if (virDomainShmemDefFormat(buf, def->shmems[n], flags) < 0)
+            goto error;
+
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</devices>\n");
 
@@ -20454,6 +20635,7 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
     case VIR_DOMAIN_DEVICE_SMARTCARD:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Copying definition of '%d' type "

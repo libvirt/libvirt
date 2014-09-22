@@ -136,6 +136,9 @@ typedef virDomainPanicDef *virDomainPanicDefPtr;
 typedef struct _virDomainChrSourceDef virDomainChrSourceDef;
 typedef virDomainChrSourceDef *virDomainChrSourceDefPtr;
 
+typedef struct _virDomainShmemDef virDomainShmemDef;
+typedef virDomainShmemDef *virDomainShmemDefPtr;
+
 /* Flags for the 'type' field in virDomainDeviceDef */
 typedef enum {
     VIR_DOMAIN_DEVICE_NONE = 0,
@@ -157,6 +160,7 @@ typedef enum {
     VIR_DOMAIN_DEVICE_MEMBALLOON,
     VIR_DOMAIN_DEVICE_NVRAM,
     VIR_DOMAIN_DEVICE_RNG,
+    VIR_DOMAIN_DEVICE_SHMEM,
 
     VIR_DOMAIN_DEVICE_LAST
 } virDomainDeviceType;
@@ -184,6 +188,7 @@ struct _virDomainDeviceDef {
         virDomainMemballoonDefPtr memballoon;
         virDomainNVRAMDefPtr nvram;
         virDomainRNGDefPtr rng;
+        virDomainShmemDefPtr shmem;
     } data;
 };
 
@@ -1506,6 +1511,21 @@ struct _virDomainNVRAMDef {
     virDomainDeviceInfo info;
 };
 
+struct _virDomainShmemDef {
+    char *name;
+    unsigned long long size;
+    struct {
+        bool enabled;
+        char *path;
+    } server;
+    struct {
+        bool enabled;
+        unsigned vectors;
+        virTristateSwitch ioeventfd;
+    } msi;
+    virDomainDeviceInfo info;
+};
+
 typedef enum {
     VIR_DOMAIN_SMBIOS_NONE = 0,
     VIR_DOMAIN_SMBIOS_EMULATE,
@@ -2082,6 +2102,9 @@ struct _virDomainDef {
     size_t nrngs;
     virDomainRNGDefPtr *rngs;
 
+    size_t nshmems;
+    virDomainShmemDefPtr *shmems;
+
     /* Only 1 */
     virDomainWatchdogDefPtr watchdog;
     virDomainMemballoonDefPtr memballoon;
@@ -2279,6 +2302,7 @@ void virDomainHostdevDefFree(virDomainHostdevDefPtr def);
 void virDomainHubDefFree(virDomainHubDefPtr def);
 void virDomainRedirdevDefFree(virDomainRedirdevDefPtr def);
 void virDomainRedirFilterDefFree(virDomainRedirFilterDefPtr def);
+void virDomainShmemDefFree(virDomainShmemDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
 virDomainDeviceDefPtr virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
                                              const virDomainDef *def,

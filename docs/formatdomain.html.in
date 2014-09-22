@@ -5582,6 +5582,58 @@ qemu-kvm -net nic,model=? /dev/null
     </dd>
   </dl>
 
+  <h4><a name="elementsShmem">Shared memory device</a></h4>
+
+    <p>
+      A shared memory device allows to share a memory region between
+      different virtual machines and the host.
+      <span class="since">Since 1.2.9, QEMU and KVM only</span>
+    </p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;shmem name='my_shmem0'&gt;
+      &lt;size unit='M'&gt;4&lt;/size&gt;
+    &lt;/shmem&gt;
+    &lt;shmem name='shmem_server'&gt;
+      &lt;size unit='M'&gt;2&lt;/size&gt;
+      &lt;server path='/tmp/socket-shmem'/&gt;
+      &lt;msi vectors='32' ioeventfd='on'/&gt;
+    &lt;/shmem&gt;
+  &lt;/devices&gt;
+  ...
+</pre>
+
+  <dl>
+    <dt><code>shmem</code></dt>
+    <dd>
+      The <code>shmem</code> element has one mandatory attribute,
+      <code>name</code> to identify the shared memory.
+    </dd>
+    <dt><code>size</code></dt>
+    <dd>
+      The optional <code>size</code> element specifies the size of the shared
+      memory. This must be power of 2 and greater than or equal to 1 MiB.
+    </dd>
+    <dt><code>server</code></dt>
+    <dd>
+      The optional <code>server</code> element can be used to configure a server
+      socket the device is supposed to connect to.  The optional
+      <code>path</code> attribute specifies the path to the unix socket and
+      defaults to <code>/var/lib/libvirt/shmem/$shmem-$name-sock</code>.
+    </dd>
+    <dt><code>msi</code></dt>
+    <dd>
+      The optional <code>msi</code> element enables/disables (values "on"/"off",
+      respectively) MSI interrupts. This option can currently be used only
+      together with the <code>server</code> element. The <code>vectors</code>
+      attribute can be used to specify the number of interrupt
+      vectors. The <code>ioeventd</code> attribute enables/disables (values
+      "on"/"off", respectively) ioeventfd.
+    </dd>
+  </dl>
+
     <h3><a name="seclabel">Security label</a></h3>
 
     <p>
