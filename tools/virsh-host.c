@@ -293,7 +293,8 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     unsigned int npages;
     unsigned int *pagesize = NULL;
-    unsigned long long tmp = 0;
+    unsigned long long bytes = 0;
+    unsigned int kibibytes = 0;
     int cell;
     unsigned long long *counts = NULL;
     size_t i, j;
@@ -304,8 +305,15 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
     xmlXPathContextPtr ctxt = NULL;
     bool all = vshCommandOptBool(cmd, "all");
     bool cellno = vshCommandOptBool(cmd, "cellno");
+    bool pagesz = vshCommandOptBool(cmd, "pagesize");
 
     VSH_EXCLUSIVE_OPTIONS_VAR(all, cellno);
+
+    if (vshCommandOptScaledInt(cmd, "pagesize", &bytes, 1024, UINT_MAX) < 0) {
+        vshError(ctl, "%s", _("page size has to be a number"));
+        goto cleanup;
+    }
+    kibibytes = VIR_DIV_UP(bytes, 1024);
 
     if (all) {
         if (!(cap_xml = virConnectGetCapabilities(ctl->conn))) {
@@ -318,30 +326,36 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         }
 
-        nodes_cnt = virXPathNodeSet("/capabilities/host/cpu/pages", ctxt, &nodes);
+        if (!pagesz) {
+            nodes_cnt = virXPathNodeSet("/capabilities/host/cpu/pages", ctxt, &nodes);
 
-        if (nodes_cnt <= 0) {
-            vshError(ctl, "%s", _("could not get information about "
-                                  "supported page sizes"));
-            goto cleanup;
-        }
-
-        pagesize = vshCalloc(ctl, nodes_cnt, sizeof(*pagesize));
-
-        for (i = 0; i < nodes_cnt; i++) {
-            char *val = virXMLPropString(nodes[i], "size");
-
-            if (virStrToLong_ui(val, NULL, 10, &pagesize[i]) < 0) {
-                vshError(ctl, _("unable to parse page size: %s"), val);
-                VIR_FREE(val);
+            if (nodes_cnt <= 0) {
+                vshError(ctl, "%s", _("could not get information about "
+                                      "supported page sizes"));
                 goto cleanup;
             }
 
-            VIR_FREE(val);
-        }
+            pagesize = vshCalloc(ctl, nodes_cnt, sizeof(*pagesize));
 
-        npages = nodes_cnt;
-        VIR_FREE(nodes);
+            for (i = 0; i < nodes_cnt; i++) {
+                char *val = virXMLPropString(nodes[i], "size");
+
+                if (virStrToLong_ui(val, NULL, 10, &pagesize[i]) < 0) {
+                    vshError(ctl, _("unable to parse page size: %s"), val);
+                    VIR_FREE(val);
+                    goto cleanup;
+                }
+
+                VIR_FREE(val);
+            }
+
+            npages = nodes_cnt;
+            VIR_FREE(nodes);
+        } else {
+            pagesize = vshMalloc(ctl, sizeof(*pagesize));
+            pagesize[0] = kibibytes;
+            npages = 1;
+        }
 
         counts = vshCalloc(ctl, npages, sizeof(*counts));
 
@@ -380,22 +394,19 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
         }
 
         if (cell < -1) {
-            vshError(ctl, "%s", _("cell number must be non-negative integer or -1"));
+            vshError(ctl, "%s",
+                     _("cell number must be non-negative integer or -1"));
             goto cleanup;
         }
 
-        if (vshCommandOptScaledInt(cmd, "pagesize", &tmp, 1, UINT_MAX) < 0) {
-            vshError(ctl, "%s", _("page size has to be a number"));
+        if (!pagesz) {
+            vshError(ctl, "%s", _("missing pagesize argument"));
             goto cleanup;
         }
+
         /* page size is expected in kibibytes */
         pagesize = vshMalloc(ctl, sizeof(*pagesize));
-        *pagesize = tmp / 1024;
-
-        if (!pagesize[0]) {
-            vshError(ctl, "%s", _("page size must be at least 1KiB"));
-            goto cleanup;
-        }
+        pagesize[0] = kibibytes;
 
         counts = vshMalloc(ctl, sizeof(*counts));
 
