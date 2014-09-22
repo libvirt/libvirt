@@ -15947,7 +15947,7 @@ virDomainListPopulate(void *payload,
     /* just count the machines */
     if (!data->domains) {
         data->ndomains++;
-        return;
+        goto cleanup;
     }
 
     if (!(dom = virGetDomain(data->conn, vm->def->name, vm->def->uuid))) {
