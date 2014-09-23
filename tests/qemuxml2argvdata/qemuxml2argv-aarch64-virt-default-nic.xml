@@ -7,6 +7,9 @@
   <features>
     <acpi/>
   </features>
+  <cpu match='exact'>
+    <model>cortex-a53</model>
+  </cpu>
   <os>
     <type arch="aarch64" machine="virt">hvm</type>
     <kernel>/aarch64.kernel</kernel>

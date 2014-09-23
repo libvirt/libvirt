@@ -1,4 +1,4 @@
-<domain type='qemu'>
+<domain type='kvm'>
   <name>f14</name>
   <uuid>553effab-b5e1-2d80-dfe3-da4344826c43</uuid>
   <memory unit='KiB'>1048576</memory>
@@ -38,7 +38,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>
   <devices>
-    <emulator>/usr/bin/qemu</emulator>
+    <emulator>/usr/bin/qemu-kvm</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
       <source file='/var/lib/libvirt/images/f14.img'/>

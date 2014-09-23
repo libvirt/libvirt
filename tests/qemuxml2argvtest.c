@@ -933,7 +933,7 @@ mymain(void)
             QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_QXL);
     DO_TEST("graphics-spice-timeout",
-            QEMU_CAPS_DRIVE,
+            QEMU_CAPS_KVM, QEMU_CAPS_DRIVE,
             QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
             QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_QXL_VGA);
@@ -1208,14 +1208,14 @@ mymain(void)
     DO_TEST("cpu-topology1", QEMU_CAPS_SMP_TOPOLOGY);
     DO_TEST("cpu-topology2", QEMU_CAPS_SMP_TOPOLOGY);
     DO_TEST("cpu-topology3", NONE);
-    DO_TEST("cpu-minimum1", NONE);
-    DO_TEST("cpu-minimum2", NONE);
-    DO_TEST("cpu-exact1", NONE);
-    DO_TEST("cpu-exact2", NONE);
-    DO_TEST("cpu-exact2-nofallback", NONE);
-    DO_TEST("cpu-fallback", NONE);
-    DO_TEST_FAILURE("cpu-nofallback", NONE);
-    DO_TEST("cpu-strict1", NONE);
+    DO_TEST("cpu-minimum1", QEMU_CAPS_KVM);
+    DO_TEST("cpu-minimum2", QEMU_CAPS_KVM);
+    DO_TEST("cpu-exact1", QEMU_CAPS_KVM);
+    DO_TEST("cpu-exact2", QEMU_CAPS_KVM);
+    DO_TEST("cpu-exact2-nofallback", QEMU_CAPS_KVM);
+    DO_TEST("cpu-fallback", QEMU_CAPS_KVM);
+    DO_TEST_FAILURE("cpu-nofallback", QEMU_CAPS_KVM);
+    DO_TEST("cpu-strict1", QEMU_CAPS_KVM);
     DO_TEST("cpu-numa1", NONE);
     DO_TEST("cpu-numa2", QEMU_CAPS_SMP_TOPOLOGY);
     DO_TEST_PARSE_ERROR("cpu-numa3", NONE);
@@ -1303,7 +1303,8 @@ mymain(void)
     DO_TEST("pseries-usb-kbd", QEMU_CAPS_PCI_OHCI,
             QEMU_CAPS_DEVICE_USB_KBD, QEMU_CAPS_CHARDEV,
             QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
-    DO_TEST_FAILURE("pseries-cpu-exact", QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("pseries-cpu-exact", QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE,
+            QEMU_CAPS_NODEFCONFIG);
     DO_TEST("disk-ide-drive-split",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_IDE_CD);

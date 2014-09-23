@@ -3,7 +3,7 @@ PATH=/bin \
 HOME=/home/test \
 USER=test \
 LOGNAME=test QEMU_AUDIO_DRV=none \
-/usr/bin/qemu \
+/usr/bin/qemu-kvm \
 -S \
 -M pc \
 -cpu Penryn,-sse4.1 \
