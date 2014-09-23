@@ -3792,13 +3792,13 @@ static int doNativeMigrate(virQEMUDriverPtr driver,
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("outgoing RDMA migration is not supported "
                              "with this QEMU binary"));
-            return -1;
+            goto cleanup;
         }
         if (!vm->def->mem.hard_limit) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("cannot start RDMA migration with no memory hard "
                              "limit set"));
-            return -1;
+            goto cleanup;
         }
     }
 
@@ -3819,6 +3819,7 @@ static int doNativeMigrate(virQEMUDriverPtr driver,
     if (spec.destType == MIGRATION_DEST_FD)
         VIR_FORCE_CLOSE(spec.dest.fd.qemu);
 
+ cleanup:
     virURIFree(uribits);
 
     return ret;
