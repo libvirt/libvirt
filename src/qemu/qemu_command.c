@@ -6140,6 +6140,133 @@ qemuBuildClockArgStr(virDomainClockDefPtr def)
     return NULL;
 }
 
+static int
+qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
+                        const virDomainDef *def,
+                        virBufferPtr buf,
+                        virQEMUCapsPtr qemuCaps,
+                        bool *hasHwVirt,
+                        bool migrating)
+{
+    int ret = -1;
+    size_t i;
+    virCPUDefPtr host = NULL;
+    virCPUDefPtr guest = NULL;
+    virCPUDefPtr cpu = NULL;
+    size_t ncpus = 0;
+    char **cpus = NULL;
+    virCPUDataPtr data = NULL;
+    char *compare_msg = NULL;
+    virCPUCompareResult cmp;
+    const char *preferred;
+    virCapsPtr caps = NULL;
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    host = caps->host.cpu;
+
+    if (!host ||
+        !host->model ||
+        (ncpus = virQEMUCapsGetCPUDefinitions(qemuCaps, &cpus)) == 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("CPU specification not supported by hypervisor"));
+        goto cleanup;
+    }
+
+    if (!(cpu = virCPUDefCopy(def->cpu)))
+        goto cleanup;
+
+    if (cpu->mode != VIR_CPU_MODE_CUSTOM &&
+        !migrating &&
+        cpuUpdate(cpu, host) < 0)
+        goto cleanup;
+
+    cmp = cpuGuestData(host, cpu, &data, &compare_msg);
+    switch (cmp) {
+    case VIR_CPU_COMPARE_INCOMPATIBLE:
+        if (compare_msg) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("guest and host CPU are not compatible: %s"),
+                           compare_msg);
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("guest CPU is not compatible with host CPU"));
+        }
+        /* fall through */
+    case VIR_CPU_COMPARE_ERROR:
+        goto cleanup;
+
+    default:
+        break;
+    }
+
+    /* Only 'svm' requires --enable-nesting. The nested
+     * 'vmx' patches now simply hook off the CPU features
+     */
+    if (def->os.arch == VIR_ARCH_X86_64 ||
+        def->os.arch == VIR_ARCH_I686) {
+        int hasSVM = cpuHasFeature(data, "svm");
+        if (hasSVM < 0)
+            goto cleanup;
+        *hasHwVirt = hasSVM > 0 ? true : false;
+    }
+
+    if (cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH) {
+        const char *mode = virCPUModeTypeToString(cpu->mode);
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_HOST)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("CPU mode '%s' is not supported by QEMU"
+                             " binary"), mode);
+            goto cleanup;
+        }
+        if (def->virtType != VIR_DOMAIN_VIRT_KVM) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("CPU mode '%s' is only supported with kvm"),
+                           mode);
+            goto cleanup;
+        }
+        virBufferAddLit(buf, "host");
+    } else {
+        if (VIR_ALLOC(guest) < 0)
+            goto cleanup;
+        if (VIR_STRDUP(guest->vendor_id, cpu->vendor_id) < 0)
+            goto cleanup;
+
+        guest->arch = host->arch;
+        if (cpu->match == VIR_CPU_MATCH_MINIMUM)
+            preferred = host->model;
+        else
+            preferred = cpu->model;
+
+        guest->type = VIR_CPU_TYPE_GUEST;
+        guest->fallback = cpu->fallback;
+        if (cpuDecode(guest, data, (const char **)cpus, ncpus, preferred) < 0)
+            goto cleanup;
+
+        virBufferAdd(buf, guest->model, -1);
+        if (guest->vendor_id)
+            virBufferAsprintf(buf, ",vendor=%s", guest->vendor_id);
+        for (i = 0; i < guest->nfeatures; i++) {
+            char sign;
+            if (guest->features[i].policy == VIR_CPU_FEATURE_DISABLE)
+                sign = '-';
+            else
+                sign = '+';
+
+            virBufferAsprintf(buf, ",%c%s", sign, guest->features[i].name);
+        }
+    }
+
+    ret = 0;
+cleanup:
+    virObjectUnref(caps);
+    VIR_FREE(compare_msg);
+    cpuDataFree(data);
+    virCPUDefFree(guest);
+    virCPUDefFree(cpu);
+    return ret;
+}
 
 static int
 qemuBuildCpuArgStr(virQEMUDriverPtr driver,
@@ -6151,26 +6278,13 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
                    bool *hasHwVirt,
                    bool migrating)
 {
-    virCPUDefPtr host = NULL;
-    virCPUDefPtr guest = NULL;
-    virCPUDefPtr cpu = NULL;
-    size_t ncpus = 0;
-    char **cpus = NULL;
     const char *default_model;
-    virCPUDataPtr data = NULL;
     bool have_cpu = false;
-    char *compare_msg = NULL;
     int ret = -1;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
-    virCapsPtr caps = NULL;
 
     *hasHwVirt = false;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
-    host = caps->host.cpu;
 
     if (def->os.arch == VIR_ARCH_I686)
         default_model = "qemu32";
@@ -6179,100 +6293,9 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
 
     if (def->cpu &&
         (def->cpu->mode != VIR_CPU_MODE_CUSTOM || def->cpu->model)) {
-        virCPUCompareResult cmp;
-        const char *preferred;
-
-        if (!host ||
-            !host->model ||
-            (ncpus = virQEMUCapsGetCPUDefinitions(qemuCaps, &cpus)) == 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("CPU specification not supported by hypervisor"));
+        if (qemuBuildCpuModelArgStr(driver, def, &buf, qemuCaps,
+                                    hasHwVirt, migrating) < 0)
             goto cleanup;
-        }
-
-        if (!(cpu = virCPUDefCopy(def->cpu)))
-            goto cleanup;
-
-        if (cpu->mode != VIR_CPU_MODE_CUSTOM &&
-            !migrating &&
-            cpuUpdate(cpu, host) < 0)
-            goto cleanup;
-
-        cmp = cpuGuestData(host, cpu, &data, &compare_msg);
-        switch (cmp) {
-        case VIR_CPU_COMPARE_INCOMPATIBLE:
-            if (compare_msg) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("guest and host CPU are not compatible: %s"),
-                               compare_msg);
-            } else {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("guest CPU is not compatible with host CPU"));
-            }
-            /* fall through */
-        case VIR_CPU_COMPARE_ERROR:
-            goto cleanup;
-
-        default:
-            break;
-        }
-
-        /* Only 'svm' requires --enable-nesting. The nested
-         * 'vmx' patches now simply hook off the CPU features
-         */
-        if (def->os.arch == VIR_ARCH_X86_64 ||
-            def->os.arch == VIR_ARCH_I686) {
-            int hasSVM = cpuHasFeature(data, "svm");
-            if (hasSVM < 0)
-                goto cleanup;
-            *hasHwVirt = hasSVM > 0 ? true : false;
-        }
-
-        if (cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH) {
-            const char *mode = virCPUModeTypeToString(cpu->mode);
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_HOST)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("CPU mode '%s' is not supported by QEMU"
-                                 " binary"), mode);
-                goto cleanup;
-            }
-            if (def->virtType != VIR_DOMAIN_VIRT_KVM) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("CPU mode '%s' is only supported with kvm"),
-                               mode);
-                goto cleanup;
-            }
-            virBufferAddLit(&buf, "host");
-        } else {
-            if (VIR_ALLOC(guest) < 0)
-                goto cleanup;
-            if (VIR_STRDUP(guest->vendor_id, cpu->vendor_id) < 0)
-                goto cleanup;
-
-            guest->arch = host->arch;
-            if (cpu->match == VIR_CPU_MATCH_MINIMUM)
-                preferred = host->model;
-            else
-                preferred = cpu->model;
-
-            guest->type = VIR_CPU_TYPE_GUEST;
-            guest->fallback = cpu->fallback;
-            if (cpuDecode(guest, data, (const char **)cpus, ncpus, preferred) < 0)
-                goto cleanup;
-
-            virBufferAdd(&buf, guest->model, -1);
-            if (guest->vendor_id)
-                virBufferAsprintf(&buf, ",vendor=%s", guest->vendor_id);
-            for (i = 0; i < guest->nfeatures; i++) {
-                char sign;
-                if (guest->features[i].policy == VIR_CPU_FEATURE_DISABLE)
-                    sign = '-';
-                else
-                    sign = '+';
-
-                virBufferAsprintf(&buf, ",%c%s", sign, guest->features[i].name);
-            }
-        }
         have_cpu = true;
     } else {
         /*
@@ -6398,11 +6421,6 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    VIR_FREE(compare_msg);
-    cpuDataFree(data);
-    virCPUDefFree(guest);
-    virCPUDefFree(cpu);
-    virObjectUnref(caps);
     return ret;
 }
 
