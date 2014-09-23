@@ -6784,6 +6784,7 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     char *type = NULL;
     char *mode = NULL;
     char *addrtype = NULL;
+    char *trustGuestRxFilters = NULL;
 
     if (VIR_ALLOC(actual) < 0)
         return -1;
@@ -6808,6 +6809,16 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unsupported type '%s' in interface's <actual> element"),
                        type);
+        goto error;
+    }
+
+    trustGuestRxFilters = virXMLPropString(node, "trustGuestRxFilters");
+    if (trustGuestRxFilters &&
+        ((actual->trustGuestRxFilters
+          = virTristateBoolTypeFromString(trustGuestRxFilters)) <= 0)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown trustGuestRxFilters value '%s'"),
+                       trustGuestRxFilters);
         goto error;
     }
 
@@ -6906,6 +6917,7 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     VIR_FREE(type);
     VIR_FREE(mode);
     VIR_FREE(addrtype);
+    VIR_FREE(trustGuestRxFilters);
     virDomainActualNetDefFree(actual);
 
     ctxt->node = save_ctxt;
@@ -6957,6 +6969,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *vhostuser_mode = NULL;
     char *vhostuser_path = NULL;
     char *vhostuser_type = NULL;
+    char *trustGuestRxFilters = NULL;
     virNWFilterHashTablePtr filterparams = NULL;
     virDomainActualNetDefPtr actual = NULL;
     xmlNodePtr oldnode = ctxt->node;
@@ -6976,6 +6989,16 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
     } else {
         def->type = VIR_DOMAIN_NET_TYPE_USER;
+    }
+
+    trustGuestRxFilters = virXMLPropString(node, "trustGuestRxFilters");
+    if (trustGuestRxFilters &&
+        ((def->trustGuestRxFilters
+          = virTristateBoolTypeFromString(trustGuestRxFilters)) <= 0)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown trustGuestRxFilters value '%s'"),
+                       trustGuestRxFilters);
+        goto error;
     }
 
     cur = node->children;
@@ -7617,6 +7640,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(mode);
     VIR_FREE(linkstate);
     VIR_FREE(addrtype);
+    VIR_FREE(trustGuestRxFilters);
     virNWFilterHashTableFree(filterparams);
 
     return def;
@@ -16740,6 +16764,9 @@ virDomainActualNetDefFormat(virBufferPtr buf,
         if  (hostdef && hostdef->managed)
             virBufferAddLit(buf, " managed='yes'");
     }
+    if (def->trustGuestRxFilters)
+        virBufferAsprintf(buf, " trustGuestRxFilters='%s'",
+                          virTristateBoolTypeToString(def->trustGuestRxFilters));
     virBufferAddLit(buf, ">\n");
 
     virBufferAdjustIndent(buf, 2);
@@ -16897,6 +16924,9 @@ virDomainNetDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "<interface type='%s'", typeStr);
     if (hostdef && hostdef->managed)
         virBufferAddLit(buf, " managed='yes'");
+    if (def->trustGuestRxFilters)
+        virBufferAsprintf(buf, " trustGuestRxFilters='%s'",
+                          virTristateBoolTypeToString(def->trustGuestRxFilters));
     virBufferAddLit(buf, ">\n");
 
     virBufferAdjustIndent(buf, 2);
@@ -20370,6 +20400,18 @@ virDomainNetGetActualVlan(virDomainNetDefPtr iface)
         return vlan;
     return NULL;
 }
+
+
+bool
+virDomainNetGetActualTrustGuestRxFilters(virDomainNetDefPtr iface)
+{
+    if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
+        iface->data.network.actual)
+        return (iface->data.network.actual->trustGuestRxFilters
+                == VIR_TRISTATE_BOOL_YES);
+    return iface->trustGuestRxFilters == VIR_TRISTATE_BOOL_YES;
+}
+
 
 /* Return listens[i] from the appropriate union for the graphics
  * type, or NULL if this is an unsuitable type, or the index is out of

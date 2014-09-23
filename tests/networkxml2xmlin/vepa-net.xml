@@ -1,4 +1,4 @@
-<network>
+<network trustGuestRxFilters="no">
   <name>vepa-net</name>
   <uuid>81ff0d90-c91e-6742-64da-4a736edb9a8b</uuid>
   <forward mode="vepa">
@@ -14,7 +14,7 @@
       <parameters typeid="2193047" typeidversion="3"/>
     </virtualport>
   </portgroup>
-  <portgroup name="alice">
+  <portgroup name="alice" trustGuestRxFilters="yes">
     <virtualport type="802.1Qbg">
       <parameters managerid="13"/>
     </virtualport>

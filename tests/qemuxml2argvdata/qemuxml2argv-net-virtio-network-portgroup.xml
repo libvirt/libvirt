@@ -22,7 +22,7 @@
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
-    <interface type='network'>
+    <interface type='network' trustGuestRxFilters='yes'>
       <mac address='00:11:22:33:44:55'/>
       <source network='rednet' portgroup='bob'/>
       <vlan>
@@ -33,7 +33,7 @@
       </virtualport>
       <model type='virtio'/>
     </interface>
-    <interface type='network'>
+    <interface type='network' trustGuestRxFilters='no'>
       <mac address='10:11:22:33:44:55'/>
       <source network='blue' portgroup='sam'/>
       <virtualport>

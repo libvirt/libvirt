@@ -24,6 +24,11 @@
           <ref name="virYesNo"/>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="trustGuestRxFilters">
+          <ref name="virYesNo"/>
+        </attribute>
+      </optional>
       <interleave>
 
         <!-- The name of the network, used to refer to it through the API
@@ -194,6 +199,11 @@
             </attribute>
             <optional>
               <attribute name="default">
+                <ref name="virYesNo"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="trustGuestRxFilters">
                 <ref name="virYesNo"/>
               </attribute>
             </optional>

@@ -219,6 +219,7 @@ struct _virPortGroupDef {
     virNetDevVPortProfilePtr virtPortProfile;
     virNetDevBandwidthPtr bandwidth;
     virNetDevVlan vlan;
+    int trustGuestRxFilters; /* enum virTristateBool */
 };
 
 typedef struct _virNetworkDef virNetworkDef;
@@ -256,6 +257,7 @@ struct _virNetworkDef {
     virPortGroupDefPtr portGroups;
     virNetDevBandwidthPtr bandwidth;
     virNetDevVlan vlan;
+    int trustGuestRxFilters; /* enum virTristateBool */
 };
 
 typedef struct _virNetworkObj virNetworkObj;

@@ -35,7 +35,7 @@
     </p>
 
     <pre>
-      &lt;network ipv6='yes'&gt;
+      &lt;network ipv6='yes' trustGuestRxFilters='no'&gt;
         &lt;name&gt;default&lt;/name&gt;
         &lt;uuid&gt;3e3fce45-4f53-4fa7-bb32-11f34168b82b&lt;/uuid&gt;
         ...</pre>
@@ -60,6 +60,16 @@
         to have guest-to-guest communications.  For further information,
         see the example below for the example with no gateway addresses.
         <span class="since">Since 1.0.1</span></dd>
+      <dt><code>trustGuestRxFilters='yes'</code></dt>
+      <dd>The optional parameter <code>trustGuestRxFilters</code> can
+        be used to set that attribute of the same name for each domain
+        interface connected to this network (<span class="since">since
+        1.2.10</span>). See
+        the <a href="formatdomain.html#elementSNICS">Network
+        interfaces</a> section of the domain XML documentation for
+        more details. Note that an explicit setting of this attribute
+        in a portgroup or the individual domain interface will
+        override the setting in the network.</dd>
     </dl>
 
     <h3><a name="elementsConnect">Connectivity</a></h3>
@@ -606,7 +616,7 @@
       &lt;outbound average='1000' peak='5000' burst='5120'/&gt;
     &lt;/bandwidth&gt;
   &lt;/portgroup&gt;</b>
-  <b>&lt;portgroup name='sales'&gt;
+  <b>&lt;portgroup name='sales' trustGuestRxFilters='no'&gt;
     &lt;virtualport type='802.1Qbh'&gt;
       &lt;parameters profileid='salestest'/&gt;
     &lt;/virtualport&gt;
@@ -626,7 +636,7 @@
       network can have multiple portgroup elements (and one of those
       can optionally be designated as the 'default' portgroup for the
       network), and each portgroup has a name, as well as various
-      subelements associated with it. The currently supported
+      attributes and subelements associated with it. The currently supported
       subelements are <code>&lt;bandwidth&gt;</code>
       (described <a href="formatnetwork.html#elementQoS">here</a>)
       and <code>&lt;virtualport&gt;</code>
@@ -649,6 +659,19 @@
       in more than one virtualport, and is not identical, will be
       considered an error, and will prevent the interface from
       starting.
+    </p>
+    <p>
+      portgroups also support the optional
+      parameter <code>trustGuestRxFilters</code> which can be used to
+      set that attribute of the same name for each domain interface
+      using this portgroup (<span class="since">since
+      1.2.10</span>). See
+      the <a href="formatdomain.html#elementSNICS">Network
+      interfaces</a> section of the domain XML documentation for more
+      details. Note that an explicit setting of this attribute in the
+      portgroup overrides the network-wide setting, and an explicit
+      setting in the individual domain interface will override the
+      setting in the portgroup.
     </p>
 
     <h5><a name="elementsStaticroute">Static Routes</a></h5>

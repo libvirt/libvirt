@@ -1615,6 +1615,7 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
     xmlNodePtr vlanNode;
     xmlNodePtr bandwidth_node;
     char *isDefault = NULL;
+    char *trustGuestRxFilters = NULL;
 
     int result = -1;
 
@@ -1631,6 +1632,18 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
 
     isDefault = virXPathString("string(./@default)", ctxt);
     def->isDefault = isDefault && STRCASEEQ(isDefault, "yes");
+
+    trustGuestRxFilters
+        = virXPathString("string(./@trustGuestRxFilters)", ctxt);
+    if (trustGuestRxFilters) {
+        if ((def->trustGuestRxFilters
+             = virTristateBoolTypeFromString(trustGuestRxFilters)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid trustGuestRxFilters setting '%s' "
+                             "in portgroup"), trustGuestRxFilters);
+            goto cleanup;
+        }
+    }
 
     virtPortNode = virXPathNode("./virtualport", ctxt);
     if (virtPortNode &&
@@ -1654,6 +1667,7 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
         virPortGroupDefClear(def);
     }
     VIR_FREE(isDefault);
+    VIR_FREE(trustGuestRxFilters);
 
     ctxt->node = save;
     return result;
@@ -2013,6 +2027,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     xmlNodePtr virtPortNode = NULL;
     xmlNodePtr forwardNode = NULL;
     char *ipv6nogwStr = NULL;
+    char *trustGuestRxFilters = NULL;
     xmlNodePtr save = ctxt->node;
     xmlNodePtr bandwidthNode = NULL;
     xmlNodePtr vlanNode;
@@ -2059,6 +2074,20 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             goto error;
         }
         VIR_FREE(ipv6nogwStr);
+    }
+
+    trustGuestRxFilters
+        = virXPathString("string(./@trustGuestRxFilters)", ctxt);
+    if (trustGuestRxFilters) {
+        if ((def->trustGuestRxFilters
+             = virTristateBoolTypeFromString(trustGuestRxFilters)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid trustGuestRxFilters setting '%s' "
+                             "in network '%s'"),
+                           trustGuestRxFilters, def->name);
+            goto error;
+        }
+        VIR_FREE(trustGuestRxFilters);
     }
 
     /* Parse network domain information */
@@ -2303,6 +2332,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     VIR_FREE(ipNodes);
     VIR_FREE(portGroupNodes);
     VIR_FREE(ipv6nogwStr);
+    VIR_FREE(trustGuestRxFilters);
     ctxt->node = save;
     return NULL;
 }
@@ -2597,6 +2627,9 @@ virPortGroupDefFormat(virBufferPtr buf,
     if (def->isDefault) {
         virBufferAddLit(buf, " default='yes'");
     }
+    if (def->trustGuestRxFilters)
+        virBufferAsprintf(buf, " trustGuestRxFilters='%s'",
+                          virTristateBoolTypeToString(def->trustGuestRxFilters));
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
     if (virNetDevVlanFormat(&def->vlan, buf) < 0)
@@ -2675,6 +2708,9 @@ virNetworkDefFormatBuf(virBufferPtr buf,
     }
     if (def->ipv6nogw)
         virBufferAddLit(buf, " ipv6='yes'");
+    if (def->trustGuestRxFilters)
+        virBufferAsprintf(buf, " trustGuestRxFilters='%s'",
+                          virTristateBoolTypeToString(def->trustGuestRxFilters));
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
     virBufferEscapeString(buf, "<name>%s</name>\n", def->name);

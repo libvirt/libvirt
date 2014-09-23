@@ -3343,10 +3343,9 @@
 <pre>
   ...
   &lt;devices&gt;
-    &lt;interface type='bridge'&gt;
-      &lt;source bridge='xenbr0'/&gt;
-      &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
-      &lt;script path='vif-bridge'/&gt;
+    &lt;interface type='direct' trustGuestRxFilters='yes'&gt;
+      &lt;source dev='eth0'/&gt;
+      &lt;mac address='52:54:00:5d:c7:9e'/&gt;
       &lt;boot order='1'/&gt;
       &lt;rom bar='off'/&gt;
     &lt;/interface&gt;
@@ -3356,8 +3355,23 @@
     <p>
       There are several possibilities for specifying a network
       interface visible to the guest.  Each subsection below provides
-      more details about common setup options.  Additionally,
-      each <code>&lt;interface&gt;</code> element has an
+      more details about common setup options.
+    </p>
+    <p>
+      <span class="since">Since 1.2.10</span>),
+      the <code>interface</code> element
+      property <code>trustGuestRxFilters</code> provides the
+      capability for the host to detect and trust reports from the
+      guest regarding changes to the interface mac address and receive
+      filters by setting the attribute to <code>yes</code>. The default
+      setting for the attribute is <code>no</code> for security
+      reasons and support depends on the guest network device model as
+      well as the type of connection on the host - currently it is
+      only supported for the virtio ddevice model and for macvtap
+      connections on the host.
+    </p>
+    <p>
+      Each <code>&lt;interface&gt;</code> element has an
       optional <code>&lt;address&gt;</code> sub-element that can tie
       the interface to a particular pci slot, with
       attribute <code>type='pci'</code>
@@ -3589,6 +3603,18 @@
       being the default mode. The individual modes cause the delivery of
       packets to behave as follows:
     </p>
+    <p>
+      If the model type is set to <code>virtio</code> and
+      interface's <code>trustGuestRxFilters</code> attribute is set
+      to <code>yes</code>, changes made to the interface mac address,
+      unicast/multicast receive filters, and vlan settings in the
+      guest will be monitored and propagated to the associated macvtap
+      device on the host (<span class="since">Since
+      1.2.10</span>). If <code>trustGuestRxFilters</code> is not set,
+      or is not supported for the device model in use, an attempted
+      change to the mac address originating from the guest side will
+      result in a non-working network connection.
+    </p>
 
     <dl>
       <dt><code>vepa</code></dt>
@@ -3621,7 +3647,7 @@
   ...
   &lt;devices&gt;
     ...
-    &lt;interface type='direct'&gt;
+    &lt;interface type='direct' trustGuestRxFilters='no'&gt;
       &lt;source dev='eth0' mode='vepa'/&gt;
     &lt;/interface&gt;
   &lt;/devices&gt;

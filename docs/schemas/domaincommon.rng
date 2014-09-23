@@ -2240,6 +2240,11 @@
           </interleave>
         </group>
       </choice>
+      <optional>
+        <attribute name="trustGuestRxFilters">
+          <ref name="virYesNo"/>
+        </attribute>
+      </optional>
     </element>
   </define>
   <!--
