@@ -6160,6 +6160,8 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
     virCPUCompareResult cmp;
     const char *preferred;
     virCapsPtr caps = NULL;
+    bool compareAgainstHost = (def->virtType == VIR_DOMAIN_VIRT_KVM ||
+        def->cpu->mode != VIR_CPU_MODE_CUSTOM);
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -6182,30 +6184,33 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
         cpuUpdate(cpu, host) < 0)
         goto cleanup;
 
-    cmp = cpuGuestData(host, cpu, &data, &compare_msg);
-    switch (cmp) {
-    case VIR_CPU_COMPARE_INCOMPATIBLE:
-        if (compare_msg) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("guest and host CPU are not compatible: %s"),
-                           compare_msg);
-        } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("guest CPU is not compatible with host CPU"));
-        }
-        /* fall through */
-    case VIR_CPU_COMPARE_ERROR:
-        goto cleanup;
+    /* For non-KVM, CPU features are emulated, so host compat doesn't matter */
+    if (compareAgainstHost) {
+        cmp = cpuGuestData(host, cpu, &data, &compare_msg);
+        switch (cmp) {
+        case VIR_CPU_COMPARE_INCOMPATIBLE:
+            if (compare_msg) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("guest and host CPU are not compatible: %s"),
+                               compare_msg);
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("guest CPU is not compatible with host CPU"));
+            }
+            /* fall through */
+        case VIR_CPU_COMPARE_ERROR:
+            goto cleanup;
 
-    default:
-        break;
+        default:
+            break;
+        }
     }
 
     /* Only 'svm' requires --enable-nesting. The nested
      * 'vmx' patches now simply hook off the CPU features
      */
-    if (def->os.arch == VIR_ARCH_X86_64 ||
-        def->os.arch == VIR_ARCH_I686) {
+    if ((def->os.arch == VIR_ARCH_X86_64 || def->os.arch == VIR_ARCH_I686) &&
+         compareAgainstHost) {
         int hasSVM = cpuHasFeature(data, "svm");
         if (hasSVM < 0)
             goto cleanup;
@@ -6233,16 +6238,23 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
         if (VIR_STRDUP(guest->vendor_id, cpu->vendor_id) < 0)
             goto cleanup;
 
-        guest->arch = host->arch;
-        if (cpu->match == VIR_CPU_MATCH_MINIMUM)
-            preferred = host->model;
-        else
-            preferred = cpu->model;
+        if (compareAgainstHost) {
+            guest->arch = host->arch;
+            if (cpu->match == VIR_CPU_MATCH_MINIMUM)
+                preferred = host->model;
+            else
+                preferred = cpu->model;
 
-        guest->type = VIR_CPU_TYPE_GUEST;
-        guest->fallback = cpu->fallback;
-        if (cpuDecode(guest, data, (const char **)cpus, ncpus, preferred) < 0)
-            goto cleanup;
+            guest->type = VIR_CPU_TYPE_GUEST;
+            guest->fallback = cpu->fallback;
+            if (cpuDecode(guest, data,
+                          (const char **)cpus, ncpus, preferred) < 0)
+                goto cleanup;
+        } else {
+            guest->arch = def->os.arch;
+            if (VIR_STRDUP(guest->model, cpu->model) < 0)
+                goto cleanup;
+        }
 
         virBufferAdd(buf, guest->model, -1);
         if (guest->vendor_id)
@@ -6259,7 +6271,7 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
     }
 
     ret = 0;
-cleanup:
+ cleanup:
     virObjectUnref(caps);
     VIR_FREE(compare_msg);
     cpuDataFree(data);
