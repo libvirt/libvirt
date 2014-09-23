@@ -3794,6 +3794,16 @@ networkAllocateActualDevice(virDomainDefPtr dom,
     if (vlan && virNetDevVlanCopy(&iface->data.network.actual->vlan, vlan) < 0)
         goto error;
 
+    if (iface->trustGuestRxFilters)
+       iface->data.network.actual->trustGuestRxFilters
+          = iface->trustGuestRxFilters;
+    else if (portgroup && portgroup->trustGuestRxFilters)
+       iface->data.network.actual->trustGuestRxFilters
+          = portgroup->trustGuestRxFilters;
+    else if (netdef->trustGuestRxFilters)
+       iface->data.network.actual->trustGuestRxFilters
+          = netdef->trustGuestRxFilters;
+
     if ((netdef->forward.type == VIR_NETWORK_FORWARD_NONE) ||
         (netdef->forward.type == VIR_NETWORK_FORWARD_NAT) ||
         (netdef->forward.type == VIR_NETWORK_FORWARD_ROUTE)) {
