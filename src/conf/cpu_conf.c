@@ -413,7 +413,7 @@ virCPUDefParseXML(xmlNodePtr node,
         for (j = 0; j < i; j++) {
             if (STREQ(name, def->features[j].name)) {
                 virReportError(VIR_ERR_XML_ERROR,
-                               _("CPU feature `%s' specified more than once"),
+                               _("CPU feature '%s' specified more than once"),
                                name);
                 VIR_FREE(name);
                 goto error;
@@ -731,7 +731,7 @@ virCPUDefUpdateFeatureInternal(virCPUDefPtr def,
             }
 
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("CPU feature `%s' specified more than once"),
+                           _("CPU feature '%s' specified more than once"),
                            name);
 
             return -1;
