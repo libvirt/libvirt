@@ -6594,7 +6594,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
             continue;
         }
 
-        if (def->cpu && def->cpu->ncells) {
+        if (def->cpu->ncells) {
             /* Fortunately, we allow only guest NUMA nodes to be continuous
              * starting from zero. */
             pos = def->cpu->ncells - 1;
