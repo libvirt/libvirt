@@ -315,7 +315,7 @@
 
     <dl>
       <dt><code>start</code></dt>
-      <dd>First user ID in container.</dd>
+      <dd>First user ID in container. It must be '0'.</dd>
       <dt><code>target</code></dt>
       <dd>The first user ID in container will be mapped to this target user
           ID in host.</dd>
