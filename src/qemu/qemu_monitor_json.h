@@ -229,6 +229,14 @@ int qemuMonitorJSONAddDevice(qemuMonitorPtr mon,
 int qemuMonitorJSONDelDevice(qemuMonitorPtr mon,
                              const char *devalias);
 
+int qemuMonitorJSONAddObject(qemuMonitorPtr mon,
+                             const char *type,
+                             const char *objalias,
+                             virJSONValuePtr props);
+
+int qemuMonitorJSONDelObject(qemuMonitorPtr mon,
+                             const char *objalias);
+
 int qemuMonitorJSONAddDrive(qemuMonitorPtr mon,
                             const char *drivestr);
 

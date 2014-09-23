@@ -3132,6 +3132,54 @@ int qemuMonitorAddDevice(qemuMonitorPtr mon,
     return qemuMonitorAddDeviceWithFd(mon, devicestr, -1, NULL);
 }
 
+
+/**
+ * qemuMonitorAddObject:
+ * @mon: Pointer to monitor object
+ * @type: Type name of object to add
+ * @objalias: Alias of the new object
+ * @props: Optional arguments for the given type. The object is consumed and
+ *         should not be referenced by the caller after this function returns.
+ *
+ * Returns 0 on success -1 on error.
+ */
+int
+qemuMonitorAddObject(qemuMonitorPtr mon,
+                     const char *type,
+                     const char *objalias,
+                     virJSONValuePtr props)
+{
+    VIR_DEBUG("mon=%p type=%s objalias=%s props=%p",
+              mon, type, objalias, props);
+    int ret = -1;
+
+    if (mon->json)
+        ret = qemuMonitorJSONAddObject(mon, type, objalias, props);
+    else
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("object adding requires JSON monitor"));
+
+    return ret;
+}
+
+
+int
+qemuMonitorDelObject(qemuMonitorPtr mon,
+                     const char *objalias)
+{
+    VIR_DEBUG("mon=%p objalias=%s", mon, objalias);
+    int ret = -1;
+
+    if (mon->json)
+        ret = qemuMonitorJSONDelObject(mon, objalias);
+    else
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("object deletion requires JSON monitor"));
+
+    return ret;
+}
+
+
 int qemuMonitorAddDrive(qemuMonitorPtr mon,
                         const char *drivestr)
 {

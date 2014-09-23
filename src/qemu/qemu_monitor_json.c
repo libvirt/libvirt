@@ -3561,6 +3561,63 @@ int qemuMonitorJSONAddDevice(qemuMonitorPtr mon,
 }
 
 
+int qemuMonitorJSONAddObject(qemuMonitorPtr mon,
+                             const char *type,
+                             const char *objalias,
+                             virJSONValuePtr props)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    cmd = qemuMonitorJSONMakeCommand("object-add",
+                                     "s:qom-type", type,
+                                     "s:id", objalias,
+                                     "A:props", props,
+                                     NULL);
+    if (!cmd)
+        goto cleanup;
+
+     /* @props is part of @cmd now. Avoid double free */
+    props = NULL;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    virJSONValueFree(props);
+    return ret;
+}
+
+
+int qemuMonitorJSONDelObject(qemuMonitorPtr mon,
+                             const char *objalias)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    cmd = qemuMonitorJSONMakeCommand("object-del",
+                                     "s:id", objalias,
+                                     NULL);
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 int qemuMonitorJSONAddDrive(qemuMonitorPtr mon,
                             const char *drivestr)
 {
