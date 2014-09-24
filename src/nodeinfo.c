@@ -2043,7 +2043,7 @@ nodeGetFreePages(unsigned int npages,
 
     lastCell = MIN(lastCell, startCell + cellCount);
 
-    for (cell = startCell; cell < lastCell; cell++) {
+    for (cell = startCell; cell <= lastCell; cell++) {
         for (i = 0; i < npages; i++) {
             unsigned int page_size = pages[i];
             unsigned int page_free;
