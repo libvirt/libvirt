@@ -248,7 +248,7 @@ const REMOTE_NETWORK_DHCP_LEASES_MAX = 65536;
 const REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX = 4096;
 
 /* Upper limit of message size for tunable event. */
-const REMOTE_DOMAIN_EVENT_TUNABLE_MAX = 8388608;
+const REMOTE_DOMAIN_EVENT_TUNABLE_MAX = 2048;
 
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];

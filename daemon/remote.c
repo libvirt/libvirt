@@ -986,8 +986,8 @@ remoteRelayDomainEventTunable(virConnectPtr conn,
         !remoteRelayDomainEventCheckACL(callback->client, conn, dom))
         return -1;
 
-    VIR_DEBUG("Relaying domain tunable event %s %d, callback %d",
-              dom->name, dom->id, callback->callbackID);
+    VIR_DEBUG("Relaying domain tunable event %s %d, callback %d, params %p %d",
+              dom->name, dom->id, callback->callbackID, params, nparams);
 
     /* build return data */
     memset(&data, 0, sizeof(data));
