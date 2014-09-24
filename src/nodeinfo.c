@@ -2041,7 +2041,7 @@ nodeGetFreePages(unsigned int npages,
         goto cleanup;
     }
 
-    lastCell = MIN(lastCell, startCell + cellCount);
+    lastCell = MIN(lastCell, startCell + (int) cellCount - 1);
 
     for (cell = startCell; cell <= lastCell; cell++) {
         for (i = 0; i < npages; i++) {
