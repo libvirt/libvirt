@@ -476,6 +476,15 @@ myDomainEventTunableCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     printf("%s EVENT: Domain %s(%d) tunable updated:\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom));
 
+#ifdef WIN32
+/* MinGW doesn't know the lld/llu so we have to use I64f/I64u instead. */
+# define LLD_FORMAT "%I64d"
+# define LLU_FORMAT "%I64u"
+#else /* WIN32 */
+# define LLD_FORMAT "%lld"
+# define LLU_FORMAT "%llu"
+#endif /* WIN32 */
+
     for (i = 0; i < nparams; i++) {
         switch (params[i].type) {
         case VIR_TYPED_PARAM_INT:
@@ -485,10 +494,10 @@ myDomainEventTunableCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
             printf("\t%s: %u\n", params[i].field, params[i].value.ui);
             break;
         case VIR_TYPED_PARAM_LLONG:
-            printf("\t%s: %lld\n", params[i].field, params[i].value.l);
+            printf("\t%s: " LLD_FORMAT "\n", params[i].field, params[i].value.l);
             break;
         case VIR_TYPED_PARAM_ULLONG:
-            printf("\t%s: %llu\n", params[i].field, params[i].value.ul);
+            printf("\t%s: " LLU_FORMAT "\n", params[i].field, params[i].value.ul);
             break;
         case VIR_TYPED_PARAM_DOUBLE:
             printf("\t%s: %g\n", params[i].field, params[i].value.d);
