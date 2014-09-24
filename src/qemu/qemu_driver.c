@@ -4152,8 +4152,13 @@ processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
                                char *devAlias)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDeviceDef dev;
     virDomainNetDefPtr def;
+    virNetDevRxFilterPtr filter = NULL;
+    virMacAddr oldMAC;
+    char newMacStr[VIR_MAC_STRING_BUFLEN];
+    int ret;
 
     VIR_DEBUG("Received NIC_RX_FILTER_CHANGED event for device %s "
               "from domain %p %s",
@@ -4181,10 +4186,54 @@ processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
     }
     def = dev.data.net;
 
+    if (!virDomainNetGetActualTrustGuestRxFilters(def)) {
+        VIR_WARN("ignore NIC_RX_FILTER_CHANGED event for network "
+                  "device %s in domain %s",
+                  def->info.alias, vm->def->name);
+        /* not sending "query-rx-filter" will also suppress any
+         * further NIC_RX_FILTER_CHANGED events for this device
+         */
+        goto endjob;
+    }
+
     /* handle the event - send query-rx-filter and respond to it. */
 
     VIR_DEBUG("process NIC_RX_FILTER_CHANGED event for network "
               "device %s in domain %s", def->info.alias, vm->def->name);
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorQueryRxFilter(priv->mon, devAlias, &filter);
+    qemuDomainObjExitMonitor(driver, vm);
+    if (ret < 0)
+        goto endjob;
+
+    virMacAddrFormat(&filter->mac, newMacStr);
+
+    if (virDomainNetGetActualType(def) == VIR_DOMAIN_NET_TYPE_DIRECT) {
+
+        /* For macvtap connections, set the macvtap device's MAC
+         * address to match that of the guest device.
+         */
+
+        if (virNetDevGetMAC(def->ifname, &oldMAC) < 0) {
+            VIR_WARN("Couldn't get current MAC address of device %s "
+                     "while responding to NIC_RX_FILTER_CHANGED",
+                     def->ifname);
+            goto endjob;
+        }
+
+        if (virMacAddrCmp(&oldMAC, &filter->mac)) {
+            /* set new MAC address from guest to associated macvtap device */
+            if (virNetDevSetMAC(def->ifname, &filter->mac) < 0) {
+                VIR_WARN("Couldn't set new MAC address %s to device %s "
+                         "while responding to NIC_RX_FILTER_CHANGED",
+                         newMacStr, def->ifname);
+            } else {
+                VIR_DEBUG("device %s MAC address set to %s",
+                          def->ifname, newMacStr);
+            }
+        }
+    }
 
  endjob:
     /* We had an extra reference to vm before starting a new job so ending the
@@ -4193,6 +4242,7 @@ processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
     ignore_value(qemuDomainObjEndJob(driver, vm));
 
  cleanup:
+    virNetDevRxFilterFree(filter);
     VIR_FREE(devAlias);
     virObjectUnref(cfg);
 }
