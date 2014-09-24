@@ -78,12 +78,10 @@ int qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
 int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      virDomainDeviceDefPtr dev);
-int qemuDomainDetachNetDevice(virConnectPtr conn,
-                              virQEMUDriverPtr driver,
+int qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainDeviceDefPtr dev);
-int qemuDomainDetachHostDevice(virConnectPtr conn,
-                               virQEMUDriverPtr driver,
+int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainDeviceDefPtr dev);
 int qemuDomainAttachLease(virQEMUDriverPtr driver,

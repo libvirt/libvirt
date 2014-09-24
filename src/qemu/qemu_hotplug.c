@@ -3326,8 +3326,7 @@ qemuDomainDetachHostUSBDevice(virQEMUDriverPtr driver,
 }
 
 static int
-qemuDomainDetachHostSCSIDevice(virConnectPtr conn ATTRIBUTE_UNUSED,
-                               virQEMUDriverPtr driver,
+qemuDomainDetachHostSCSIDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr detach)
 {
@@ -3361,8 +3360,7 @@ qemuDomainDetachHostSCSIDevice(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-qemuDomainDetachThisHostDevice(virConnectPtr conn,
-                               virQEMUDriverPtr driver,
+qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr detach)
 {
@@ -3376,7 +3374,7 @@ qemuDomainDetachThisHostDevice(virConnectPtr conn,
         ret = qemuDomainDetachHostUSBDevice(driver, vm, detach);
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-        ret = qemuDomainDetachHostSCSIDevice(conn, driver, vm, detach);
+        ret = qemuDomainDetachHostSCSIDevice(driver, vm, detach);
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -3399,8 +3397,7 @@ qemuDomainDetachThisHostDevice(virConnectPtr conn,
 }
 
 /* search for a hostdev matching dev and detach it */
-int qemuDomainDetachHostDevice(virConnectPtr conn,
-                               virQEMUDriverPtr driver,
+int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainDeviceDefPtr dev)
 {
@@ -3469,14 +3466,13 @@ int qemuDomainDetachHostDevice(virConnectPtr conn,
      * function so that mac address / virtualport are reset
      */
     if (detach->parent.type == VIR_DOMAIN_DEVICE_NET)
-        return qemuDomainDetachNetDevice(conn, driver, vm, &detach->parent);
+        return qemuDomainDetachNetDevice(driver, vm, &detach->parent);
     else
-        return qemuDomainDetachThisHostDevice(conn, driver, vm, detach);
+        return qemuDomainDetachThisHostDevice(driver, vm, detach);
 }
 
 int
-qemuDomainDetachNetDevice(virConnectPtr conn,
-                          virQEMUDriverPtr driver,
+qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainDeviceDefPtr dev)
 {
@@ -3492,7 +3488,7 @@ qemuDomainDetachNetDevice(virConnectPtr conn,
 
     if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         /* coverity[negative_returns] */
-        ret = qemuDomainDetachThisHostDevice(conn, driver, vm,
+        ret = qemuDomainDetachThisHostDevice(driver, vm,
                                              virDomainNetGetActualHostdev(detach));
         goto cleanup;
     }
