@@ -1329,7 +1329,8 @@ virSecuritySELinuxSetSecurityHostdevSubsysLabel(virDomainDefPtr def,
     /* Like virSecuritySELinuxSetSecurityImageLabelInternal() for a networked
      * disk, do nothing for an iSCSI hostdev
      */
-    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
+    if (dev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
+        scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
         return 0;
 
     switch (dev->source.subsys.type) {
@@ -1522,7 +1523,8 @@ virSecuritySELinuxRestoreSecurityHostdevSubsysLabel(virSecurityManagerPtr mgr,
     /* Like virSecuritySELinuxRestoreSecurityImageLabelInt() for a networked
      * disk, do nothing for an iSCSI hostdev
      */
-    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
+    if (dev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
+        scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
         return 0;
 
     switch (dev->source.subsys.type) {
