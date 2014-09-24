@@ -1887,13 +1887,13 @@ int qemuDomainChangeNetLinkState(virQEMUDriverPtr driver,
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    VIR_DEBUG("dev: %s, state: %d", dev->info.alias, linkstate);
-
     if (!dev->info.alias) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("can't change link state: device alias not found"));
         return -1;
     }
+
+    VIR_DEBUG("dev: %s, state: %d", dev->info.alias, linkstate);
 
     qemuDomainObjEnterMonitor(driver, vm);
 
