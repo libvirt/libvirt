@@ -691,6 +691,7 @@ mymain(void)
             QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-shared", QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST_PARSE_ERROR("hugepages-memaccess-invalid", NONE);
     DO_TEST_FAILURE("hugepages-pages4", QEMU_CAPS_MEM_PATH,
             QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-pages5", QEMU_CAPS_MEM_PATH);

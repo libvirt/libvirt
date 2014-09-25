@@ -507,17 +507,19 @@ virCPUDefParseXML(xmlNodePtr node,
 
             memAccessStr = virXMLPropString(nodes[i], "memAccess");
             if (memAccessStr) {
-                def->cells[cur_cell].memAccess =
-                    virMemAccessTypeFromString(memAccessStr);
+                int rc = virMemAccessTypeFromString(memAccessStr);
 
-                if (def->cells[cur_cell].memAccess <= 0) {
+                if (rc <= 0) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("Invalid 'memAccess' attribute "
                                      "value '%s'"),
                                    memAccessStr);
                     VIR_FREE(memAccessStr);
-                    goto cleanup;
+                    goto error;
                 }
+
+                def->cells[cur_cell].memAccess = rc;
+
                 VIR_FREE(memAccessStr);
             }
         }
