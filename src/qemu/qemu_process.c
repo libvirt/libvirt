@@ -3876,6 +3876,9 @@ qemuPrepareNVRAM(virQEMUDriverConfigPtr cfg,
             goto cleanup;
 
         generated = true;
+
+        if (virDomainSaveConfig(cfg->configDir, def) < 0)
+            goto cleanup;
     }
 
     if (!virFileExists(loader->nvram)) {
