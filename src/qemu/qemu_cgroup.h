@@ -66,7 +66,7 @@ int qemuSetupCgroupForIOThreads(virDomainObjPtr vm);
 int qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virBitmapPtr nodemask);
-int qemuRemoveCgroup(virDomainObjPtr vm);
+int qemuRemoveCgroup(virQEMUDriverPtr driver, virDomainObjPtr vm);
 int qemuAddToCgroup(virDomainObjPtr vm);
 
 #endif /* __QEMU_CGROUP_H__ */

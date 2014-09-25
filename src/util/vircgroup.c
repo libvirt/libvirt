@@ -1680,6 +1680,17 @@ virCgroupNewMachineSystemd(const char *name,
 }
 
 
+/*
+ * Returns 0 on success, -1 on fatal error
+ */
+int virCgroupTerminateMachine(const char *name,
+                              const char *drivername,
+                              bool privileged)
+{
+    return virSystemdTerminateMachine(name, drivername, privileged);
+}
+
+
 static int
 virCgroupNewMachineManual(const char *name,
                           const char *drivername,

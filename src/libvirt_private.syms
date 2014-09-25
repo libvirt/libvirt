@@ -1118,6 +1118,7 @@ virCgroupSetMemorySoftLimit;
 virCgroupSetMemSwapHardLimit;
 virCgroupSetOwner;
 virCgroupSupportsCpuBW;
+virCgroupTerminateMachine;
 
 
 # util/virclosecallbacks.h

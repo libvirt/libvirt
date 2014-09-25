@@ -1206,12 +1206,21 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
 }
 
 int
-qemuRemoveCgroup(virDomainObjPtr vm)
+qemuRemoveCgroup(virQEMUDriverPtr driver,
+                 virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (priv->cgroup == NULL)
         return 0; /* Not supported, so claim success */
+
+    if (virCgroupTerminateMachine(vm->def->name,
+                                  "qemu",
+                                  cfg->privileged) < 0) {
+        if (!virCgroupNewIgnoreError())
+            VIR_DEBUG("Failed to terminate cgroup for %s", vm->def->name);
+    }
 
     return virCgroupRemove(priv->cgroup);
 }

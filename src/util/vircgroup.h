@@ -106,6 +106,11 @@ int virCgroupNewMachine(const char *name,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_NONNULL(4);
 
+int virCgroupTerminateMachine(const char *name,
+                              const char *drivername,
+                              bool privileged)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 bool virCgroupNewIgnoreError(void);
 
 void virCgroupFree(virCgroupPtr *group);

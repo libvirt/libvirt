@@ -4143,7 +4143,7 @@ int qemuProcessStart(virConnectPtr conn,
     /* Ensure no historical cgroup for this VM is lying around bogus
      * settings */
     VIR_DEBUG("Ensuring no historical cgroup is lying around");
-    qemuRemoveCgroup(vm);
+    qemuRemoveCgroup(driver, vm);
 
     for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
@@ -4921,7 +4921,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     }
 
  retry:
-    if ((ret = qemuRemoveCgroup(vm)) < 0) {
+    if ((ret = qemuRemoveCgroup(driver, vm)) < 0) {
         if (ret == -EBUSY && (retries++ < 5)) {
             usleep(200*1000);
             goto retry;
