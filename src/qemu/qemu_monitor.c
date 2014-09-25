@@ -1776,6 +1776,23 @@ qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
     return qemuMonitorJSONGetAllBlockStatsInfo(mon, ret_stats);
 }
 
+
+/* Updates "stats" to fill virtual and physical size of the image */
+int qemuMonitorBlockStatsUpdateCapacity(qemuMonitorPtr mon,
+                                        virHashTablePtr stats)
+{
+    VIR_DEBUG("mon=%p, stats=%p", mon, stats);
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("block capacity/size info requires JSON monitor"));
+        return -1;
+    }
+
+    return qemuMonitorJSONBlockStatsUpdateCapacity(mon, stats);
+}
+
+
 /* Return 0 and update @nparams with the number of block stats
  * QEMU supports if success. Return -1 if failure.
  */

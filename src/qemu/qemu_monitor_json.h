@@ -81,6 +81,8 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
                                      long long *errs);
 int qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
                                         virHashTablePtr *ret_stats);
+int qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitorPtr mon,
+                                            virHashTablePtr stats);
 int qemuMonitorJSONGetBlockStatsParamsNumber(qemuMonitorPtr mon,
                                              int *nparams);
 int qemuMonitorJSONGetBlockExtent(qemuMonitorPtr mon,

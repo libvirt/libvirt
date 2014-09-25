@@ -358,10 +358,16 @@ struct _qemuBlockStats {
     long long wr_total_times;
     long long flush_req;
     long long flush_total_times;
+    unsigned long long capacity;
+    unsigned long long physical;
 };
 
 int qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
                                     virHashTablePtr *ret_stats)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int qemuMonitorBlockStatsUpdateCapacity(qemuMonitorPtr mon,
+                                        virHashTablePtr stats)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorGetBlockStatsParamsNumber(qemuMonitorPtr mon,

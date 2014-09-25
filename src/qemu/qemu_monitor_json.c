@@ -1925,6 +1925,84 @@ int qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
 }
 
 
+int qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitorPtr mon,
+                                            virHashTablePtr stats)
+{
+    int ret = -1;
+    int rc;
+    size_t i;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr devices;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-block", NULL)))
+        return -1;
+
+    if ((rc = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    devices = virJSONValueObjectGet(reply, "return");
+    if (!devices || devices->type != VIR_JSON_TYPE_ARRAY) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-block reply was missing device list"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < virJSONValueArraySize(devices); i++) {
+        virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
+        virJSONValuePtr inserted;
+        virJSONValuePtr image;
+        qemuBlockStatsPtr bstats;
+        const char *devname;
+
+        if (!dev || dev->type != VIR_JSON_TYPE_OBJECT) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-block device entry was not "
+                             "in expected format"));
+            goto cleanup;
+        }
+
+        if (!(devname = virJSONValueObjectGetString(dev, "device"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-block device entry was not "
+                             "in expected format"));
+            goto cleanup;
+        }
+
+        if (STRPREFIX(devname, QEMU_DRIVE_HOST_PREFIX))
+            devname += strlen(QEMU_DRIVE_HOST_PREFIX);
+
+        /* ignore missing info */
+        if (!(bstats = virHashLookup(stats, devname)))
+            continue;
+
+        /* drive may be empty */
+        if (!(inserted = virJSONValueObjectGet(dev, "inserted")) ||
+            !(image = virJSONValueObjectGet(inserted, "image")))
+            continue;
+
+        if (virJSONValueObjectGetNumberUlong(image, "virtual-size",
+                                             &bstats->capacity) < 0)
+            continue;
+
+        /* if actual-size is missing, image is not thin provisioned */
+        if (virJSONValueObjectGetNumberUlong(image, "actual-size",
+                                             &bstats->physical) < 0)
+            bstats->physical = bstats->capacity;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 int qemuMonitorJSONGetBlockStatsParamsNumber(qemuMonitorPtr mon,
                                              int *nparams)
 {
