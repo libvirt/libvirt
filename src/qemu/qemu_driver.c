@@ -17922,24 +17922,18 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
 {
     size_t i;
     int ret = -1;
-    int nstats = dom->def->ndisks;
-    qemuBlockStatsPtr stats = NULL;
+    int rc;
+    virHashTablePtr stats = NULL;
     qemuDomainObjPrivatePtr priv = dom->privateData;
 
     if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom))
         return 0; /* it's ok, just go ahead silently */
 
-    if (VIR_ALLOC_N(stats, nstats) < 0)
-        return -1;
-
     qemuDomainObjEnterMonitor(driver, dom);
-
-    nstats = qemuMonitorGetAllBlockStatsInfo(priv->mon, NULL,
-                                             stats, nstats);
-
+    rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats);
     qemuDomainObjExitMonitor(driver, dom);
 
-    if (nstats < 0) {
+    if (rc < 0) {
         virResetLastError();
         ret = 0; /* still ok, again go ahead silently */
         goto cleanup;
@@ -17947,32 +17941,38 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
 
     QEMU_ADD_COUNT_PARAM(record, maxparams, "block", dom->def->ndisks);
 
-    for (i = 0; i < nstats; i++) {
-        QEMU_ADD_NAME_PARAM(record, maxparams,
-                            "block", i, dom->def->disks[i]->dst);
+    for (i = 0; i < dom->def->ndisks; i++) {
+        qemuBlockStats *entry;
+        virDomainDiskDefPtr disk = dom->def->disks[i];
+
+        QEMU_ADD_NAME_PARAM(record, maxparams, "block", i, disk->dst);
+
+        if (!disk->info.alias ||
+            !(entry = virHashLookup(stats, disk->info.alias)))
+            continue;
 
         QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
-                                "rd.reqs", stats[i].rd_req);
+                                "rd.reqs", entry->rd_req);
         QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
-                                "rd.bytes", stats[i].rd_bytes);
+                                "rd.bytes", entry->rd_bytes);
         QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
-                                "rd.times", stats[i].rd_total_times);
+                                "rd.times", entry->rd_total_times);
         QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
-                                "wr.reqs", stats[i].wr_req);
+                                "wr.reqs", entry->wr_req);
         QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
-                                "wr.bytes", stats[i].wr_bytes);
+                                "wr.bytes", entry->wr_bytes);
         QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
-                                "wr.times", stats[i].wr_total_times);
+                                "wr.times", entry->wr_total_times);
         QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
-                                "fl.reqs", stats[i].flush_req);
+                                "fl.reqs", entry->flush_req);
         QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
-                                "fl.times", stats[i].flush_total_times);
+                                "fl.times", entry->flush_total_times);
     }
 
     ret = 0;
 
  cleanup:
-    VIR_FREE(stats);
+    virHashFree(stats);
     return ret;
 }
 

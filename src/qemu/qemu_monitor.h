@@ -361,10 +361,8 @@ struct _qemuBlockStats {
 };
 
 int qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
-                                    const char *dev_name,
-                                    qemuBlockStatsPtr stats,
-                                    int nstats)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+                                    virHashTablePtr *ret_stats)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorGetBlockStatsParamsNumber(qemuMonitorPtr mon,
                                          int *nparams);

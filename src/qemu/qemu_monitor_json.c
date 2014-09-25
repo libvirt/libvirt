@@ -1734,7 +1734,8 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
                                      long long *flush_total_times,
                                      long long *errs)
 {
-    qemuBlockStats stats;
+    qemuBlockStats *stats;
+    virHashTablePtr blockstats = NULL;
     int ret = -1;
 
     *rd_req = *rd_bytes = -1;
@@ -1749,56 +1750,61 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
     if (flush_total_times)
         *flush_total_times = -1;
 
-    if (qemuMonitorJSONGetAllBlockStatsInfo(mon, dev_name, &stats, 1) != 1)
+    if (qemuMonitorJSONGetAllBlockStatsInfo(mon, &blockstats) < 0)
         goto cleanup;
 
-    *rd_req = stats.rd_req;
-    *rd_bytes = stats.rd_bytes;
-    *wr_req = stats.wr_req;
-    *wr_bytes = stats.wr_bytes;
+    if (!(stats = virHashLookup(blockstats, dev_name))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot find statistics for device '%s'"), dev_name);
+        goto cleanup;
+    }
+
+    *rd_req = stats->rd_req;
+    *rd_bytes = stats->rd_bytes;
+    *wr_req = stats->wr_req;
+    *wr_bytes = stats->wr_bytes;
     *errs = -1; /* QEMU does not have this */
 
     if (rd_total_times)
-        *rd_total_times = stats.rd_total_times;
+        *rd_total_times = stats->rd_total_times;
     if (wr_total_times)
-        *wr_total_times = stats.wr_total_times;
+        *wr_total_times = stats->wr_total_times;
     if (flush_req)
-        *flush_req = stats.flush_req;
+        *flush_req = stats->flush_req;
     if (flush_total_times)
-        *flush_total_times = stats.flush_total_times;
+        *flush_total_times = stats->flush_total_times;
 
     ret = 0;
 
  cleanup:
+    virHashFree(blockstats);
     return ret;
 }
 
 
 int qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
-                                        const char *dev_name,
-                                        qemuBlockStatsPtr bstats,
-                                        int nstats)
+                                        virHashTablePtr *ret_stats)
 {
-    int ret, count;
+    int ret = -1;
+    int rc;
     size_t i;
-    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-blockstats",
-                                                     NULL);
+    virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr devices;
+    qemuBlockStatsPtr bstats = NULL;
+    virHashTablePtr hash = NULL;
 
-    if (!cmd)
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-blockstats", NULL)))
         return -1;
 
-    if (!bstats || nstats <= 0)
-        return -1;
-
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
-
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-    if (ret < 0)
+    if (!(hash = virHashCreate(10, virHashValueFree)))
         goto cleanup;
-    ret = -1;
+
+    if ((rc = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
 
     devices = virJSONValueObjectGet(reply, "return");
     if (!devices || devices->type != VIR_JSON_TYPE_ARRAY) {
@@ -1807,10 +1813,14 @@ int qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    count = 0;
-    for (i = 0; i < virJSONValueArraySize(devices) && count < nstats; i++) {
+    for (i = 0; i < virJSONValueArraySize(devices); i++) {
         virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
         virJSONValuePtr stats;
+        const char *devname;
+
+        if (VIR_ALLOC(bstats) < 0)
+            goto cleanup;
+
         if (!dev || dev->type != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("blockstats device entry was not "
@@ -1818,28 +1828,15 @@ int qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        /* If dev_name is specified, we are looking for a specific device,
-         * so we must be stricter.
-         */
-        if (dev_name) {
-            const char *thisdev = virJSONValueObjectGetString(dev, "device");
-            if (!thisdev) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("blockstats device entry was not "
-                                 "in expected format"));
-                goto cleanup;
-            }
-
-            /* New QEMU has separate names for host & guest side of the disk
-             * and libvirt gives the host side a 'drive-' prefix. The passed
-             * in dev_name is the guest side though
-             */
-            if (STRPREFIX(thisdev, QEMU_DRIVE_HOST_PREFIX))
-                thisdev += strlen(QEMU_DRIVE_HOST_PREFIX);
-
-            if (STRNEQ(thisdev, dev_name))
-                continue;
+        if (!(devname = virJSONValueObjectGetString(dev, "device"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("blockstats device entry was not "
+                             "in expected format"));
+            goto cleanup;
         }
+
+        if (STRPREFIX(devname, QEMU_DRIVE_HOST_PREFIX))
+            devname += strlen(QEMU_DRIVE_HOST_PREFIX);
 
         if ((stats = virJSONValueObjectGet(dev, "stats")) == NULL ||
             stats->type != VIR_JSON_TYPE_OBJECT) {
@@ -1910,22 +1907,18 @@ int qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        count++;
-        bstats++;
-
-        if (dev_name && count)
-            break;
+        if (virHashAddEntry(hash, devname, bstats) < 0)
+            goto cleanup;
+        bstats = NULL;
     }
 
-    if (dev_name && !count) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot find statistics for device '%s'"), dev_name);
-        goto cleanup;
-    }
-
-    ret = count;
+    *ret_stats = hash;
+    hash = NULL;
+    ret = 0;
 
  cleanup:
+    VIR_FREE(bstats);
+    virHashFree(hash);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;

@@ -1763,23 +1763,17 @@ int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
  */
 int
 qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
-                                const char *dev_name,
-                                qemuBlockStatsPtr stats,
-                                int nstats)
+                                virHashTablePtr *ret_stats)
 {
-    int ret;
-    VIR_DEBUG("mon=%p dev=%s", mon, dev_name);
+    VIR_DEBUG("mon=%p ret_stats=%p", mon, ret_stats);
 
-    if (mon->json) {
-        ret = qemuMonitorJSONGetAllBlockStatsInfo(mon, dev_name,
-                                                  stats, nstats);
-    } else {
+    if (!mon->json) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unable to query all block stats with this QEMU"));
         return -1;
     }
 
-    return ret;
+    return qemuMonitorJSONGetAllBlockStatsInfo(mon, ret_stats);
 }
 
 /* Return 0 and update @nparams with the number of block stats
