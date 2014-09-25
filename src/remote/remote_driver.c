@@ -7622,9 +7622,7 @@ remoteNodeGetFreePages(virConnectPtr conn,
         goto done;
     }
 
-    if (VIR_ALLOC_N(args.pages.pages_val, npages) < 0)
-        goto done;
-    memcpy(args.pages.pages_val, pages, npages * sizeof(*pages));
+    args.pages.pages_val = (u_int *) pages;
     args.pages.pages_len = npages;
     args.startCell = startCell;
     args.cellCount = cellCount;
