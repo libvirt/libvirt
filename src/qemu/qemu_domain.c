@@ -2540,7 +2540,7 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
             virFileExists(virDomainDiskGetSource(disk)))
             continue;
 
-        if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) >= 0)
+        if (qemuDomainDetermineDiskChain(driver, vm, disk, true, true) >= 0)
             continue;
 
         if (disk->startupPolicy &&
