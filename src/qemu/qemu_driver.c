@@ -16275,6 +16275,10 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     bool set_iops = false;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
+    virObjectEventPtr event = NULL;
+    virTypedParameterPtr eventParams = NULL;
+    int eventNparams = 0;
+    int eventMaxparams = 0;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -16316,6 +16320,10 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
                                         &persistentDef) < 0)
         goto endjob;
 
+    if (virTypedParamsAddString(&eventParams, &eventNparams, &eventMaxparams,
+                                VIR_DOMAIN_EVENT_BLKDEVIOTUNE_DISK, disk) < 0)
+        goto endjob;
+
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
 
@@ -16329,26 +16337,56 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         if (STREQ(param->field, VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC)) {
             info.total_bytes_sec = param->value.ul;
             set_bytes = true;
+            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
+                                        &eventMaxparams,
+                                        VIR_DOMAIN_EVENT_BLKDEVIOTUNE_TOTAL_BYTES_SEC,
+                                        param->value.ul) < 0)
+                goto endjob;
         } else if (STREQ(param->field,
                          VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC)) {
             info.read_bytes_sec = param->value.ul;
             set_bytes = true;
+            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
+                                        &eventMaxparams,
+                                        VIR_DOMAIN_EVENT_BLKDEVIOTUNE_READ_BYTES_SEC,
+                                        param->value.ul) < 0)
+                goto endjob;
         } else if (STREQ(param->field,
                          VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC)) {
             info.write_bytes_sec = param->value.ul;
             set_bytes = true;
+            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
+                                        &eventMaxparams,
+                                        VIR_DOMAIN_EVENT_BLKDEVIOTUNE_WRITE_BYTES_SEC,
+                                        param->value.ul) < 0)
+                goto endjob;
         } else if (STREQ(param->field,
                          VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC)) {
             info.total_iops_sec = param->value.ul;
             set_iops = true;
+            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
+                                        &eventMaxparams,
+                                        VIR_DOMAIN_EVENT_BLKDEVIOTUNE_TOTAL_IOPS_SEC,
+                                        param->value.ul) < 0)
+                goto endjob;
         } else if (STREQ(param->field,
                          VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC)) {
             info.read_iops_sec = param->value.ul;
             set_iops = true;
+            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
+                                        &eventMaxparams,
+                                        VIR_DOMAIN_EVENT_BLKDEVIOTUNE_READ_IOPS_SEC,
+                                        param->value.ul) < 0)
+                goto endjob;
         } else if (STREQ(param->field,
                          VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC)) {
             info.write_iops_sec = param->value.ul;
             set_iops = true;
+            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
+                                        &eventMaxparams,
+                                        VIR_DOMAIN_EVENT_BLKDEVIOTUNE_WRITE_IOPS_SEC,
+                                        param->value.ul) < 0)
+                goto endjob;
         }
     }
 
@@ -16413,6 +16451,13 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
                            _("Saving live XML config failed"));
             goto endjob;
         }
+
+        if (eventNparams) {
+            event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
+            eventNparams = 0;
+            if (event)
+                qemuDomainEventQueue(driver, event);
+        }
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
@@ -16445,6 +16490,8 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     VIR_FREE(device);
     if (vm)
         virObjectUnlock(vm);
+    if (eventNparams)
+        virTypedParamsFree(eventParams, eventNparams);
     virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
