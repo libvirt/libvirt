@@ -16406,6 +16406,13 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         if (ret < 0)
             goto endjob;
         vm->def->disks[idx]->blkdeviotune = info;
+
+        ret = virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm);
+        if (ret < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("Saving live XML config failed"));
+            goto endjob;
+        }
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
