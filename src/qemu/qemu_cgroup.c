@@ -703,7 +703,7 @@ qemuSetupCpuCgroup(virDomainObjPtr vm)
             vm->def->cputune.shares = val;
             if (virTypedParamsAddULLong(&eventParams, &eventNparams,
                                         &eventMaxparams,
-                                        VIR_DOMAIN_EVENT_CPUTUNE_CPU_SHARES,
+                                        VIR_DOMAIN_TUNABLE_CPU_CPU_SHARES,
                                         val) < 0)
                 return -1;
 
