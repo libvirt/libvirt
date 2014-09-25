@@ -1029,6 +1029,10 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
         if (virAsprintf(&def->hubs[i]->info.alias, "hub%zu", i) < 0)
             return -1;
     }
+    for (i = 0; i < def->nshmems; i++) {
+        if (virAsprintf(&def->shmems[i]->info.alias, "shmem%zu", i) < 0)
+            return -1;
+    }
     for (i = 0; i < def->nsmartcards; i++) {
         if (virAsprintf(&def->smartcards[i]->info.alias, "smartcard%zu", i) < 0)
             return -1;
@@ -7526,6 +7530,114 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
 }
 
 static int
+qemuBuildShmemDevCmd(virCommandPtr cmd,
+                     virDomainDefPtr def,
+                     virDomainShmemDefPtr shmem,
+                     virQEMUCapsPtr qemuCaps)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_IVSHMEM)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("ivshmem device is not supported "
+                         "with this QEMU binary"));
+        goto error;
+    }
+
+    virBufferAddLit(&buf, "ivshmem");
+    if (shmem->size) {
+        /*
+         * Thanks to our parsing code, we have a guarantee that the
+         * size is power of two and is at least a mebibyte in size.
+         * But because it may change inthe future, the checks are
+         * doubled in here.
+         */
+        if (shmem->size & (shmem->size - 1)) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("shmem size must be a power of two"));
+            goto error;
+        }
+        if (shmem->size < 1024 * 1024) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("shmem size must be at least 1 MiB"));
+            goto error;
+        }
+        virBufferAsprintf(&buf, ",size=%llum",
+                          VIR_DIV_UP(shmem->size, 1024 * 1024));
+    }
+
+    if (!shmem->server.enabled) {
+        virBufferAsprintf(&buf, ",shm=%s", shmem->name);
+    } else {
+        virBufferAsprintf(&buf, ",chardev=char%s", shmem->info.alias);
+        if (shmem->msi.enabled) {
+            virBufferAddLit(&buf, ",msi=on");
+            if (shmem->msi.vectors)
+                virBufferAsprintf(&buf, ",vectors=%u", shmem->msi.vectors);
+            if (shmem->msi.ioeventfd)
+                virBufferAsprintf(&buf, ",ioeventfd=%s",
+                                  virTristateSwitchTypeToString(shmem->msi.ioeventfd));
+        }
+    }
+
+    if (qemuBuildDeviceAddressStr(&buf, def, &shmem->info, qemuCaps) < 0)
+        goto error;
+
+    if (virBufferCheckError(&buf) < 0)
+        goto error;
+
+    virCommandAddArg(cmd, "-device");
+    virCommandAddArgBuffer(cmd, &buf);
+
+    return 0;
+
+ error:
+    virBufferFreeAndReset(&buf);
+    return -1;
+}
+
+static int
+qemuBuildShmemCommandLine(virCommandPtr cmd,
+                          virDomainDefPtr def,
+                          virDomainShmemDefPtr shmem,
+                          virQEMUCapsPtr qemuCaps)
+{
+    if (qemuBuildShmemDevCmd(cmd, def, shmem, qemuCaps) < 0)
+        return -1;
+
+    if (shmem->server.enabled) {
+        char *devstr = NULL;
+        virDomainChrSourceDef source = {
+            .type = VIR_DOMAIN_CHR_TYPE_UNIX,
+            .data.nix = {
+                .path = shmem->server.path,
+                .listen = false,
+            }
+        };
+
+        if (!shmem->server.path &&
+            virAsprintf(&source.data.nix.path,
+                        "/var/lib/libvirt/shmem-%s-sock",
+                        shmem->name) < 0)
+            return -1;
+
+        devstr = qemuBuildChrChardevStr(&source, shmem->info.alias, qemuCaps);
+
+        if (!shmem->server.path)
+            VIR_FREE(source.data.nix.path);
+
+        if (!devstr)
+            return -1;
+
+        virCommandAddArg(cmd, "-chardev");
+        virCommandAddArg(cmd, devstr);
+        VIR_FREE(devstr);
+    }
+
+    return 0;
+}
+
+static int
 qemuBuildChrDeviceCommandLine(virCommandPtr cmd,
                               virDomainDefPtr def,
                               virDomainChrDefPtr chr,
@@ -9718,6 +9830,11 @@ qemuBuildCommandLine(virConnectPtr conn,
                            _("your QEMU is too old to support pvpanic"));
             goto error;
         }
+    }
+
+    for (i = 0; i < def->nshmems; i++) {
+        if (qemuBuildShmemCommandLine(cmd, def, def->shmems[i], qemuCaps))
+            goto error;
     }
 
     if (mlock) {

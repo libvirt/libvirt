@@ -1,0 +1,16 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -usb \
+-device ivshmem,shm=shmem0 \
+-device ivshmem,size=128m,shm=shmem1 \
+-device ivshmem,size=256m,shm=shmem2 \
+-device ivshmem,size=512m,chardev=charshmem3 \
+-chardev socket,id=charshmem3,path=/var/lib/libvirt/shmem-shmem3-sock \
+-device ivshmem,size=1024m,chardev=charshmem4 \
+-chardev socket,id=charshmem4,path=/tmp/shmem4-sock \
+-device ivshmem,size=2048m,chardev=charshmem5,msi=on,ioeventfd=off \
+-chardev socket,id=charshmem5,path=/tmp/shmem5-sock \
+-device ivshmem,size=4096m,chardev=charshmem6,msi=on,vectors=16 \
+-chardev socket,id=charshmem6,path=/tmp/shmem6-sock \
+-device ivshmem,size=8192m,chardev=charshmem7,msi=on,vectors=32,ioeventfd=on \
+-chardev socket,id=charshmem7,path=/tmp/shmem7-sock

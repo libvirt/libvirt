@@ -9758,7 +9758,7 @@ virDomainShmemDefParseXML(xmlNodePtr node,
                                     1, ULLONG_MAX, false) < 0)
         goto cleanup;
 
-    if ((server = virXPathNode("./server", ctxt))) {
+    if ((server = virXPathNode("./server[1]", ctxt))) {
         def->server.enabled = true;
 
         if ((tmp = virXMLPropString(server, "path")))
@@ -9766,7 +9766,7 @@ virDomainShmemDefParseXML(xmlNodePtr node,
         VIR_FREE(tmp);
     }
 
-    if ((msi = virXPathNode("./msi", ctxt))) {
+    if ((msi = virXPathNode("./msi[1]", ctxt))) {
         def->msi.enabled = true;
 
         if ((tmp = virXMLPropString(msi, "vectors")) &&
