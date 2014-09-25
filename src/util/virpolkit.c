@@ -238,12 +238,12 @@ int virPolkitCheckAuth(const char *actionid,
 
 #else /* ! WITH_POLKIT1 && ! WITH_POLKIT0 */
 
-int virPolkitCheckAuth(const char *actionid,
-                       pid_t pid,
-                       unsigned long long startTime,
-                       uid_t uid,
-                       const char **details,
-                       bool allowInteraction)
+int virPolkitCheckAuth(const char *actionid ATTRIBUTE_UNUSED,
+                       pid_t pid ATTRIBUTE_UNUSED,
+                       unsigned long long startTime ATTRIBUTE_UNUSED,
+                       uid_t uid ATTRIBUTE_UNUSED,
+                       const char **details ATTRIBUTE_UNUSED,
+                       bool allowInteraction ATTRIBUTE_UNUSED)
 {
     VIR_ERROR(_("Polkit auth attempted, even though polkit is not available"));
     virReportError(VIR_ERR_AUTH_FAILED, "%s",
