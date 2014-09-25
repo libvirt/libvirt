@@ -2980,7 +2980,7 @@ static virDriver umlDriver = {
     .nodeGetMemoryParameters = umlNodeGetMemoryParameters, /* 0.10.2 */
     .nodeSetMemoryParameters = umlNodeSetMemoryParameters, /* 0.10.2 */
     .nodeGetFreePages = umlNodeGetFreePages, /* 1.2.6 */
-    .nodeAllocPages = umlNodeAllocPages, /* 1.2.8 */
+    .nodeAllocPages = umlNodeAllocPages, /* 1.2.9 */
 };
 
 static virStateDriver umlStateDriver = {

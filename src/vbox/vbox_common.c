@@ -7551,7 +7551,7 @@ virDriver vboxCommonDriver = {
     .domainSnapshotDelete = vboxDomainSnapshotDelete, /* 0.8.0 */
     .connectIsAlive = vboxConnectIsAlive, /* 0.9.8 */
     .nodeGetFreePages = vboxNodeGetFreePages, /* 1.2.6 */
-    .nodeAllocPages = vboxNodeAllocPages, /* 1.2.8 */
+    .nodeAllocPages = vboxNodeAllocPages, /* 1.2.9 */
 };
 
 static void updateDriver(void)

@@ -18416,7 +18416,7 @@ static virDriver qemuDriver = {
     .nodeGetFreePages = qemuNodeGetFreePages, /* 1.2.6 */
     .connectGetDomainCapabilities = qemuConnectGetDomainCapabilities, /* 1.2.7 */
     .connectGetAllDomainStats = qemuConnectGetAllDomainStats, /* 1.2.8 */
-    .nodeAllocPages = qemuNodeAllocPages, /* 1.2.8 */
+    .nodeAllocPages = qemuNodeAllocPages, /* 1.2.9 */
 };
 
 

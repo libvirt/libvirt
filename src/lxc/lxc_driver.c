@@ -5797,7 +5797,7 @@ static virDriver lxcDriver = {
     .domainReboot = lxcDomainReboot, /* 1.0.1 */
     .domainLxcOpenNamespace = lxcDomainLxcOpenNamespace, /* 1.0.2 */
     .nodeGetFreePages = lxcNodeGetFreePages, /* 1.2.6 */
-    .nodeAllocPages = lxcNodeAllocPages, /* 1.2.8 */
+    .nodeAllocPages = lxcNodeAllocPages, /* 1.2.9 */
 };
 
 static virStateDriver lxcStateDriver = {
