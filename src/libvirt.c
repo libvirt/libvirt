@@ -21893,6 +21893,7 @@ virNodeAllocPages(virConnectPtr conn,
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
+    virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonZeroArgGoto(npages, error);
     virCheckNonNullArgGoto(pageSizes, error);
     virCheckNonNullArgGoto(pageCounts, error);
