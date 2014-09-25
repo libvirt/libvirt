@@ -465,7 +465,7 @@
       <element name='format'>
         <attribute name='type'>
           <choice>
-            <value>auto</value>
+            <value>unknown</value> <!-- back-compat requires keeping 'unknown' not 'auto' -->
             <value>lvm2</value>
           </choice>
         </attribute>

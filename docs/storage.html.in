@@ -328,14 +328,10 @@
 
     <h3>Valid pool format types</h3>
     <p>
-      The logical volume pool supports the following formats:
+      The logical volume pool supports only the <code>lvm2</code> format,
+      although not supplying a format value will result in automatic
+      selection of the<code>lvm2</code> format.
     </p>
-    <ul>
-      <li><code>auto</code> - automatically determine format</li>
-      <li>
-        <code>lvm2</code>
-      </li>
-    </ul>
 
     <h3>Valid volume format types</h3>
     <p>
