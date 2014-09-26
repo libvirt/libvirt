@@ -1326,7 +1326,7 @@ const vshCmdDef hostAndHypervisorCmds[] = {
     {.name = "allocpages",
      .handler = cmdAllocpages,
      .opts = opts_allocpages,
-     .info = info_capabilities,
+     .info = info_allocpages,
      .flags = 0
     },
     {.name = "capabilities",
