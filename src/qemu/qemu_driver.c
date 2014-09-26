@@ -4940,7 +4940,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
         str = virBitmapFormat(pcpumap);
         if (virTypedParamsAddString(&eventParams, &eventNparams,
                                     &eventMaxparams,
-                                    VIR_DOMAIN_TUNABLE_CPU_EMULATORIN,
+                                    VIR_DOMAIN_TUNABLE_CPU_EMULATORPIN,
                                     str) < 0)
             goto cleanup;
 

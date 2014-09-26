@@ -5213,12 +5213,12 @@ typedef void (*virConnectDomainEventDeviceRemovedCallback)(virConnectPtr conn,
 #define VIR_DOMAIN_TUNABLE_CPU_VCPUPIN "cputune.vcpupin%u"
 
 /**
- * VIR_DOMAIN_TUNABLE_CPU_EMULATORIN:
+ * VIR_DOMAIN_TUNABLE_CPU_EMULATORPIN:
  *
  * Macro represents formatted pinning for emulator process,
  * as VIR_TYPED_PARAM_STRING.
  */
-#define VIR_DOMAIN_TUNABLE_CPU_EMULATORIN "cputune.emulatorpin"
+#define VIR_DOMAIN_TUNABLE_CPU_EMULATORPIN "cputune.emulatorpin"
 
 /**
  * VIR_DOMAIN_TUNABLE_CPU_CPU_SHARES:
