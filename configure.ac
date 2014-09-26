@@ -2613,7 +2613,11 @@ if test "$with_linux" = "yes"; then
              [whether the netlink v1 library is available])
         ], [
             if test "$with_macvtap" = "yes"; then
-                AC_MSG_ERROR([libnl-devel >= $LIBNL_REQUIRED is required for macvtap support])
+                    if test "$LIBNL_REQUIRED" = "3.0";then
+                        AC_MSG_ERROR([libnl3-devel >= $LIBNL_REQUIRED is required for macvtap support])
+                    else
+                        AC_MSG_ERROR([libnl-devel >= $LIBNL_REQUIRED is required for macvtap support])
+                    fi
             fi
         ])
     fi
