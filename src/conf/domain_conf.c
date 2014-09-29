@@ -236,7 +236,8 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "rng",
               "shmem",
               "tpm",
-              "panic")
+              "panic",
+              "memory")
 
 VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "none",
@@ -780,6 +781,9 @@ VIR_ENUM_DECL(virDomainBlockJob)
 VIR_ENUM_IMPL(virDomainBlockJob, VIR_DOMAIN_BLOCK_JOB_TYPE_LAST,
               "", "", "copy", "", "active-commit")
 
+VIR_ENUM_IMPL(virDomainMemoryModel, VIR_DOMAIN_MEMORY_MODEL_LAST,
+              "", "dimm")
+
 static virClassPtr virDomainObjClass;
 static virClassPtr virDomainObjListClass;
 static virClassPtr virDomainXMLOptionClass;
@@ -997,6 +1001,27 @@ virDomainDefCheckUnsupportedMemoryHotplug(virDomainDefPtr def)
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("memory hotplug tunables <maxMemory> are not "
                          "supported by this hypervisor driver"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/**
+ * virDomainDeviceDefCheckUnsupportedMemoryDevice:
+ * @dev: device definition
+ *
+ * Returns -1 if the device definition describes a memory device and reports an
+ * error. Otherwise returns 0.
+ */
+int
+virDomainDeviceDefCheckUnsupportedMemoryDevice(virDomainDeviceDefPtr dev)
+{
+    /* This driver doesn't yet know how to handle memory devices */
+    if (dev->type == VIR_DOMAIN_DEVICE_MEMORY) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("memory devices are not supported by this driver"));
         return -1;
     }
 
@@ -1937,6 +1962,16 @@ void virDomainRedirFilterDefFree(virDomainRedirFilterDefPtr def)
     VIR_FREE(def);
 }
 
+void virDomainMemoryDefFree(virDomainMemoryDefPtr def)
+{
+    if (!def)
+        return;
+
+    virBitmapFree(def->sourceNodes);
+    virDomainDeviceInfoClear(&def->info);
+    VIR_FREE(def);
+}
+
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
 {
     if (!def)
@@ -2005,6 +2040,9 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
         break;
     case VIR_DOMAIN_DEVICE_PANIC:
         virDomainPanicDefFree(def->data.panic);
+        break;
+    case VIR_DOMAIN_DEVICE_MEMORY:
+        virDomainMemoryDefFree(def->data.memory);
         break;
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_NONE:
@@ -2202,6 +2240,10 @@ void virDomainDefFree(virDomainDefPtr def)
     for (i = 0; i < def->nrngs; i++)
         virDomainRNGDefFree(def->rngs[i]);
     VIR_FREE(def->rngs);
+
+    for (i = 0; i < def->nmems; i++)
+        virDomainMemoryDefFree(def->mems[i]);
+    VIR_FREE(def->mems);
 
     virDomainTPMDefFree(def->tpm);
 
@@ -2744,6 +2786,8 @@ virDomainDeviceGetInfo(virDomainDeviceDefPtr device)
         return &device->data.tpm->info;
     case VIR_DOMAIN_DEVICE_PANIC:
         return &device->data.panic->info;
+    case VIR_DOMAIN_DEVICE_MEMORY:
+        return &device->data.memory->info;
 
     /* The following devices do not contain virDomainDeviceInfo */
     case VIR_DOMAIN_DEVICE_LEASE:
@@ -3064,6 +3108,13 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
             return -1;
     }
 
+    device.type = VIR_DOMAIN_DEVICE_MEMORY;
+    for (i = 0; i < def->nmems; i++) {
+        device.data.memory = def->mems[i];
+        if (cb(def, &device, &def->mems[i]->info, opaque) < 0)
+            return -1;
+    }
+
     /* Coverity is not very happy with this - all dead_error_condition */
 #if !STATIC_ANALYSIS
     /* This switch statement is here to trigger compiler warning when adding
@@ -3096,6 +3147,7 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_RNG:
+    case VIR_DOMAIN_DEVICE_MEMORY:
         break;
     }
 #endif
@@ -7083,10 +7135,16 @@ unsigned long long
 virDomainDefGetMemoryInitial(virDomainDefPtr def)
 {
     unsigned long long ret;
+    size_t i;
 
     /* return NUMA memory size total in case numa is enabled */
-    if ((ret = virDomainNumaGetMemorySize(def->numa)) > 0)
+    if ((ret = virDomainNumaGetMemorySize(def->numa)) > 0) {
         return ret;
+    } else {
+        ret = def->mem.max_balloon;
+        for (i = 0; i < def->nmems; i++)
+            ret -= def->mems[i]->size;
+    }
 
     return def->mem.max_balloon;
 }
@@ -7118,7 +7176,17 @@ virDomainDefSetMemoryInitial(virDomainDefPtr def,
 unsigned long long
 virDomainDefGetMemoryActual(virDomainDefPtr def)
 {
-    return virDomainDefGetMemoryInitial(def);
+    unsigned long long ret;
+    size_t i;
+
+    if ((ret = virDomainNumaGetMemorySize(def->numa)) > 0) {
+        for (i = 0; i < def->nmems; i++)
+            ret += def->mems[i]->size;
+    } else {
+        ret = def->mem.max_balloon;
+    }
+
+    return ret;
 }
 
 
@@ -11477,6 +11545,119 @@ virDomainPMStateParseXML(xmlXPathContextPtr ctxt,
     return ret;
 }
 
+
+static int
+virDomainMemorySourceDefParseXML(xmlNodePtr node,
+                                 xmlXPathContextPtr ctxt,
+                                 virDomainMemoryDefPtr def)
+{
+    int ret = -1;
+    char *nodemask = NULL;
+    xmlNodePtr save = ctxt->node;
+    ctxt->node = node;
+
+    if (virDomainParseMemory("./pagesize", "./pagesize/@unit", ctxt,
+                             &def->pagesize, false, false) < 0)
+        goto cleanup;
+
+    if ((nodemask = virXPathString("string(./nodemask)", ctxt))) {
+        if (virBitmapParse(nodemask, 0, &def->sourceNodes,
+                           VIR_DOMAIN_CPUMASK_LEN) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(nodemask);
+    ctxt->node = save;
+    return ret;
+}
+
+
+static int
+virDomainMemoryTargetDefParseXML(xmlNodePtr node,
+                                 xmlXPathContextPtr ctxt,
+                                 virDomainMemoryDefPtr def)
+{
+    int ret = -1;
+    xmlNodePtr save = ctxt->node;
+    ctxt->node = node;
+
+    if (virXPathUInt("string(./node)", ctxt, &def->targetNode) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("invalid or missing value of memory device node"));
+        goto cleanup;
+    }
+
+    if (virDomainParseMemory("./size", "./size/@unit", ctxt,
+                             &def->size, true, false) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    ctxt->node = save;
+    return ret;
+}
+
+
+static virDomainMemoryDefPtr
+virDomainMemoryDefParseXML(xmlNodePtr memdevNode,
+                           xmlXPathContextPtr ctxt,
+                           unsigned int flags)
+{
+    char *tmp = NULL;
+    xmlNodePtr save = ctxt->node;
+    xmlNodePtr node;
+    virDomainMemoryDefPtr def;
+
+    ctxt->node = memdevNode;
+
+    if (VIR_ALLOC(def) < 0)
+        return NULL;
+
+    if (!(tmp = virXMLPropString(memdevNode, "model"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing memory model"));
+        goto error;
+    }
+
+    if ((def->model = virDomainMemoryModelTypeFromString(tmp)) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid memory model '%s'"), tmp);
+        goto error;
+    }
+    VIR_FREE(tmp);
+
+    /* source */
+    if ((node = virXPathNode("./source", ctxt)) &&
+        virDomainMemorySourceDefParseXML(node, ctxt, def) < 0)
+        goto error;
+
+    /* target */
+    if (!(node = virXPathNode("./target", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing <target> element for <memory> device"));
+        goto error;
+    }
+
+    if (virDomainMemoryTargetDefParseXML(node, ctxt, def) < 0)
+        goto error;
+
+    if (virDomainDeviceInfoParseXML(memdevNode, NULL, &def->info, flags) < 0)
+        goto error;
+
+    return def;
+
+ error:
+    VIR_FREE(tmp);
+    virDomainMemoryDefFree(def);
+    ctxt->node = save;
+    return NULL;
+}
+
+
 virDomainDeviceDefPtr
 virDomainDeviceDefParse(const char *xmlStr,
                         const virDomainDef *def,
@@ -11609,6 +11790,10 @@ virDomainDeviceDefParse(const char *xmlStr,
         break;
     case VIR_DOMAIN_DEVICE_PANIC:
         if (!(dev->data.panic = virDomainPanicDefParseXML(node)))
+            goto error;
+        break;
+    case VIR_DOMAIN_DEVICE_MEMORY:
+        if (!(dev->data.memory = virDomainMemoryDefParseXML(node, ctxt, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_NONE:
@@ -15010,6 +15195,23 @@ virDomainDefParseXML(xmlDocPtr xml,
     ctxt->node = node;
     VIR_FREE(nodes);
 
+    /* analysis of memory devices */
+    if ((n = virXPathNodeSet("./devices/memory", ctxt, &nodes)) < 0)
+        goto error;
+    if (n && VIR_ALLOC_N(def->mems, n) < 0)
+        goto error;
+
+    for (i = 0; i < n; i++) {
+        virDomainMemoryDefPtr mem = virDomainMemoryDefParseXML(nodes[i],
+                                                               ctxt,
+                                                               flags);
+        if (!mem)
+            goto error;
+
+        def->mems[def->nmems++] = mem;
+    }
+    VIR_FREE(nodes);
+
     /* analysis of the user namespace mapping */
     if ((n = virXPathNodeSet("./idmap/uid", ctxt, &nodes)) < 0)
         goto error;
@@ -16249,6 +16451,39 @@ virDomainPanicDefCheckABIStability(virDomainPanicDefPtr src,
     return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
 }
 
+static bool
+virDomainMemoryDefCheckABIStability(virDomainMemoryDefPtr src,
+                                    virDomainMemoryDefPtr dst)
+{
+    if (src->model != dst->model) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target memory device model '%s' "
+                         "doesn't match source model '%s'"),
+                       virDomainMemoryModelTypeToString(dst->model),
+                       virDomainMemoryModelTypeToString(src->model));
+        return false;
+    }
+
+    if (src->targetNode != dst->targetNode) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target memory device targetNode '%u' "
+                         "doesn't match source targetNode '%u'"),
+                       dst->targetNode, src->targetNode);
+        return false;
+    }
+
+    if (src->size != dst->size) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target memory device size '%llu' doesn't match "
+                         "source memory device size '%llu'"),
+                       dst->size, src->size);
+        return false;
+    }
+
+    return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
+}
+
+
 /* This compares two configurations and looks for any differences
  * which will affect the guest ABI. This is primarily to allow
  * validation of custom XML config passed in during migration
@@ -16667,6 +16902,18 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         goto error;
     }
 
+    if (src->nmems != dst->nmems) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain memory device count %zu "
+                         "does not match source %zu"), dst->nmems, src->nmems);
+        goto error;
+    }
+
+    for (i = 0; i < src->nmems; i++) {
+        if (!virDomainMemoryDefCheckABIStability(src->mems[i], dst->mems[i]))
+            goto error;
+    }
+
     /* Coverity is not very happy with this - all dead_error_condition */
 #if !STATIC_ANALYSIS
     /* This switch statement is here to trigger compiler warning when adding
@@ -16698,6 +16945,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_MEMORY:
         break;
     }
 #endif
@@ -19185,6 +19433,81 @@ virDomainRNGDefFree(virDomainRNGDefPtr def)
     VIR_FREE(def);
 }
 
+
+static int
+virDomainMemorySourceDefFormat(virBufferPtr buf,
+                               virDomainMemoryDefPtr def)
+{
+    char *bitmap = NULL;
+    int ret = -1;
+
+    if (!def->pagesize && !def->sourceNodes)
+        return 0;
+
+    virBufferAddLit(buf, "<source>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    if (def->sourceNodes) {
+        if (!(bitmap = virBitmapFormat(def->sourceNodes)))
+            goto cleanup;
+
+        virBufferAsprintf(buf, "<nodemask>%s</nodemask>\n", bitmap);
+    }
+
+    if (def->pagesize)
+        virBufferAsprintf(buf, "<pagesize unit='KiB'>%llu</pagesize>\n",
+                          def->pagesize);
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</source>\n");
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(bitmap);
+    return ret;
+}
+
+
+static void
+virDomainMemoryTargetDefFormat(virBufferPtr buf,
+                               virDomainMemoryDefPtr def)
+{
+    virBufferAddLit(buf, "<target>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    virBufferAsprintf(buf, "<size unit='KiB'>%llu</size>\n", def->size);
+    virBufferAsprintf(buf, "<node>%u</node>\n", def->targetNode);
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</target>\n");
+}
+
+static int
+virDomainMemoryDefFormat(virBufferPtr buf,
+                         virDomainMemoryDefPtr def,
+                         unsigned int flags)
+{
+    const char *model = virDomainMemoryModelTypeToString(def->model);
+
+    virBufferAsprintf(buf, "<memory model='%s'>\n", model);
+    virBufferAdjustIndent(buf, 2);
+
+    if (virDomainMemorySourceDefFormat(buf, def) < 0)
+        return -1;
+
+    virDomainMemoryTargetDefFormat(buf, def);
+
+    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
+        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+            return -1;
+    }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</memory>\n");
+    return 0;
+}
+
 static void
 virDomainVideoAccelDefFormat(virBufferPtr buf,
                              virDomainVideoAccelDefPtr def)
@@ -20771,6 +21094,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (virDomainShmemDefFormat(buf, def->shmems[n], flags) < 0)
             goto error;
 
+    for (n = 0; n < def->nmems; n++)
+        if (virDomainMemoryDefFormat(buf, def->mems[n], flags) < 0)
+            goto error;
+
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</devices>\n");
 
@@ -22174,6 +22501,9 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         break;
     case VIR_DOMAIN_DEVICE_PANIC:
         rc = virDomainPanicDefFormat(&buf, src->data.panic);
+        break;
+    case VIR_DOMAIN_DEVICE_MEMORY:
+        rc = virDomainMemoryDefFormat(&buf, src->data.memory, flags);
         break;
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_SMARTCARD:

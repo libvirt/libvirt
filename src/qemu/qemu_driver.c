@@ -7656,6 +7656,9 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
             dev->data.rng = NULL;
         break;
 
+    /*TODO: implement later */
+    case VIR_DOMAIN_DEVICE_MEMORY:
+
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -7733,6 +7736,8 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
     case VIR_DOMAIN_DEVICE_RNG:
         ret = qemuDomainDetachRNGDevice(driver, vm, dev->data.rng);
         break;
+    case VIR_DOMAIN_DEVICE_MEMORY:
+        /* TODO: Implement later */
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
@@ -7850,6 +7855,7 @@ qemuDomainUpdateDeviceLive(virConnectPtr conn,
     case VIR_DOMAIN_DEVICE_HOSTDEV:
     case VIR_DOMAIN_DEVICE_CONTROLLER:
     case VIR_DOMAIN_DEVICE_REDIRDEV:
+    case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_CHR:
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_TPM:
@@ -7992,6 +7998,9 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
         dev->data.rng = NULL;
         break;
 
+    case VIR_DOMAIN_DEVICE_MEMORY:
+        /* TODO: implement later */
+
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
@@ -8117,6 +8126,9 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         virDomainRNGDefFree(virDomainRNGRemove(vmdef, idx));
         break;
 
+    case VIR_DOMAIN_DEVICE_MEMORY:
+        /* TODO: implement later */
+
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
@@ -8223,6 +8235,7 @@ qemuDomainUpdateDeviceConfig(virQEMUCapsPtr qemuCaps,
     case VIR_DOMAIN_DEVICE_CONTROLLER:
     case VIR_DOMAIN_DEVICE_REDIRDEV:
     case VIR_DOMAIN_DEVICE_CHR:
+    case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:

@@ -1200,6 +1200,9 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         }
     }
 
+    if (virDomainDeviceDefCheckUnsupportedMemoryDevice(dev) < 0)
+        goto cleanup;
+
     ret = 0;
 
  cleanup:

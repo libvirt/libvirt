@@ -4071,6 +4071,7 @@
             <ref name="rng"/>
             <ref name="tpm"/>
             <ref name="shmem"/>
+            <ref name="memorydev"/>
           </choice>
         </zeroOrMore>
         <optional>
@@ -4484,6 +4485,55 @@
         </attribute>
       </optional>
       <empty/>
+    </element>
+  </define>
+
+  <define name="memorydev">
+    <element name="memory">
+      <attribute name="model">
+        <choice>
+          <value>dimm</value>
+        </choice>
+      </attribute>
+      <interleave>
+        <optional>
+          <ref name="memorydev-source"/>
+        </optional>
+        <ref name="memorydev-target"/>
+        <optional>
+          <ref name="address"/>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
+  <define name="memorydev-source">
+    <element name="source">
+      <interleave>
+        <optional>
+          <element name="pagesize">
+            <ref name="scaledInteger"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="nodemask">
+            <ref name="cpuset"/>
+          </element>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
+  <define name="memorydev-target">
+    <element name="target">
+      <interleave>
+        <element name="size">
+          <ref name="scaledInteger"/>
+        </element>
+        <element name="node">
+          <ref name="unsignedInt"/>
+        </element>
+      </interleave>
     </element>
   </define>
 
