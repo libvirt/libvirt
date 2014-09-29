@@ -12023,12 +12023,6 @@ qemuDomainMigrateSetMaxDowntime(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not being migrated"));
-        goto endjob;
-    }
-
     VIR_DEBUG("Setting migration downtime to %llums", downtime);
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorSetMigrationDowntime(priv->mon, downtime);
