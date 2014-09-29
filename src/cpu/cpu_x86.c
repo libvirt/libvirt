@@ -2068,15 +2068,14 @@ x86UpdateCustom(virCPUDefPtr guest,
 
 static int
 x86UpdateHostModel(virCPUDefPtr guest,
-                   const virCPUDef *host)
+                   const virCPUDef *host,
+                   bool passthrough)
 {
     virCPUDefPtr oldguest = NULL;
     const struct x86_map *map;
     const struct x86_feature *feat;
     size_t i;
     int ret = -1;
-
-    guest->match = VIR_CPU_MATCH_EXACT;
 
     if (!(map = virCPUx86GetMap()))
         goto cleanup;
@@ -2100,8 +2099,7 @@ x86UpdateHostModel(virCPUDefPtr guest,
             }
         }
     }
-
-    for (i = 0; i < oldguest->nfeatures; i++) {
+    for (i = 0; !passthrough && i < oldguest->nfeatures; i++) {
         if (virCPUDefUpdateFeature(guest,
                                    oldguest->features[i].name,
                                    oldguest->features[i].policy) < 0)
@@ -2125,12 +2123,12 @@ x86Update(virCPUDefPtr guest,
         return x86UpdateCustom(guest, host);
 
     case VIR_CPU_MODE_HOST_MODEL:
-        return x86UpdateHostModel(guest, host);
+        guest->match = VIR_CPU_MATCH_EXACT;
+        return x86UpdateHostModel(guest, host, false);
 
     case VIR_CPU_MODE_HOST_PASSTHROUGH:
         guest->match = VIR_CPU_MATCH_MINIMUM;
-        virCPUDefFreeModel(guest);
-        return virCPUDefCopyModel(guest, host, true);
+        return x86UpdateHostModel(guest, host, true);
 
     case VIR_CPU_MODE_LAST:
         break;
