@@ -3787,6 +3787,11 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
     bool ret = false;
     size_t i;
 
+    /* no features are passed to QEMU with -cpu host
+     * so it makes no sense to verify them */
+    if (def->cpu && def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
+        return true;
+
     switch (arch) {
     case VIR_ARCH_I686:
     case VIR_ARCH_X86_64:
