@@ -1816,7 +1816,7 @@ int qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
     for (i = 0; i < virJSONValueArraySize(devices); i++) {
         virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
         virJSONValuePtr stats;
-        const char *devname;
+        const char *dev_name;
 
         if (VIR_ALLOC(bstats) < 0)
             goto cleanup;
@@ -1828,15 +1828,15 @@ int qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        if (!(devname = virJSONValueObjectGetString(dev, "device"))) {
+        if (!(dev_name = virJSONValueObjectGetString(dev, "device"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("blockstats device entry was not "
                              "in expected format"));
             goto cleanup;
         }
 
-        if (STRPREFIX(devname, QEMU_DRIVE_HOST_PREFIX))
-            devname += strlen(QEMU_DRIVE_HOST_PREFIX);
+        if (STRPREFIX(dev_name, QEMU_DRIVE_HOST_PREFIX))
+            dev_name += strlen(QEMU_DRIVE_HOST_PREFIX);
 
         if ((stats = virJSONValueObjectGet(dev, "stats")) == NULL ||
             stats->type != VIR_JSON_TYPE_OBJECT) {
@@ -1907,7 +1907,7 @@ int qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        if (virHashAddEntry(hash, devname, bstats) < 0)
+        if (virHashAddEntry(hash, dev_name, bstats) < 0)
             goto cleanup;
         bstats = NULL;
     }
