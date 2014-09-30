@@ -2062,26 +2062,37 @@ virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
     return ret;
 }
 
-static bool
-matchSCSIAdapterParent(virStoragePoolObjPtr pool,
-                       virStoragePoolDefPtr def)
+static int
+getSCSIHostNumber(virStoragePoolSourceAdapter adapter,
+                  unsigned int *hostnum)
 {
-    virDevicePCIAddressPtr pooladdr =
-        &pool->def->source.adapter.data.scsi_host.parentaddr;
-    virDevicePCIAddressPtr defaddr =
-        &def->source.adapter.data.scsi_host.parentaddr;
-    int pool_unique_id =
-        pool->def->source.adapter.data.scsi_host.unique_id;
-    int def_unique_id =
-        def->source.adapter.data.scsi_host.unique_id;
-    if (pooladdr->domain == defaddr->domain &&
-        pooladdr->bus == defaddr->bus &&
-        pooladdr->slot == defaddr->slot &&
-        pooladdr->function == defaddr->function &&
-        pool_unique_id == def_unique_id) {
-        return true;
+    int ret = -1;
+    unsigned int num;
+    char *name = NULL;
+
+    if (adapter.data.scsi_host.has_parent) {
+        virDevicePCIAddress addr = adapter.data.scsi_host.parentaddr;
+        unsigned int unique_id = adapter.data.scsi_host.unique_id;
+
+        if (!(name = virGetSCSIHostNameByParentaddr(addr.domain,
+                                                    addr.bus,
+                                                    addr.slot,
+                                                    addr.function,
+                                                    unique_id)))
+            goto cleanup;
+        if (virGetSCSIHostNumber(name, &num) < 0)
+            goto cleanup;
+    } else {
+        if (virGetSCSIHostNumber(adapter.data.scsi_host.name, &num) < 0)
+            goto cleanup;
     }
-    return false;
+
+    *hostnum = num;
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(name);
+    return ret;
 }
 
 int
@@ -2130,14 +2141,14 @@ virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
                        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST &&
                        def->source.adapter.type ==
                        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
-                if (pool->def->source.adapter.data.scsi_host.name) {
-                    if (STREQ(pool->def->source.adapter.data.scsi_host.name,
-                              def->source.adapter.data.scsi_host.name))
-                        matchpool = pool;
-                } else {
-                    if (matchSCSIAdapterParent(pool, def))
-                        matchpool = pool;
-                }
+                unsigned int pool_hostnum, def_hostnum;
+
+                if (getSCSIHostNumber(pool->def->source.adapter,
+                                      &pool_hostnum) < 0 ||
+                    getSCSIHostNumber(def->source.adapter, &def_hostnum) < 0)
+                    goto error;
+                if (pool_hostnum == def_hostnum)
+                    matchpool = pool;
             }
             break;
         case VIR_STORAGE_POOL_ISCSI:
@@ -2177,6 +2188,10 @@ virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
         ret = -1;
     }
     return ret;
+
+ error:
+    virStoragePoolObjUnlock(pool);
+    return -1;
 }
 
 void
