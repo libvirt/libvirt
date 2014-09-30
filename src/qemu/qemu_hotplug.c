@@ -2786,6 +2786,12 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
     qemuDomainReleaseDeviceAddress(vm, &net->info, NULL);
     virDomainConfNWFilterTeardown(net);
 
+    if (cfg->macFilter && (net->ifname != NULL)) {
+        ignore_value(ebtablesRemoveForwardAllowIn(driver->ebtables,
+                                                  net->ifname,
+                                                  &net->mac));
+    }
+
     if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
         ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
                          net->ifname, &net->mac,
@@ -2794,12 +2800,6 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
                          virDomainNetGetActualVirtPortProfile(net),
                          cfg->stateDir));
         VIR_FREE(net->ifname);
-    }
-
-    if (cfg->macFilter && (net->ifname != NULL)) {
-        ignore_value(ebtablesRemoveForwardAllowIn(driver->ebtables,
-                                                  net->ifname,
-                                                  &net->mac));
     }
 
     vport = virDomainNetGetActualVirtPortProfile(net);
