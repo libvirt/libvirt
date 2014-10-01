@@ -9185,6 +9185,13 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
                                         &persistentDef) < 0)
         goto endjob;
 
+    if (!cfg->privileged &&
+        flags & VIR_DOMAIN_AFFECT_LIVE) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("NUMA tuning is not available in session mode"));
+        goto cleanup;
+    }
+
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -9276,6 +9283,7 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
     size_t i;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr persistentDef = NULL;
+    virQEMUDriverConfigPtr cfg = NULL;
     char *nodeset = NULL;
     int ret = -1;
     virCapsPtr caps = NULL;
@@ -9294,6 +9302,7 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
         return -1;
 
     priv = vm->privateData;
+    cfg = virQEMUDriverGetConfig(driver);
 
     if (virDomainGetNumaParametersEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -9309,14 +9318,6 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
         *nparams = QEMU_NB_NUMA_PARAM;
         ret = 0;
         goto cleanup;
-    }
-
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_MEMORY)) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           "%s", _("cgroup memory controller is not mounted"));
-            goto cleanup;
-        }
     }
 
     for (i = 0; i < QEMU_NB_NUMA_PARAM && i < *nparams; i++) {
@@ -9341,9 +9342,16 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
                 if (!nodeset)
                     goto cleanup;
             } else {
-                if (virCgroupGetCpusetMems(priv->cgroup, &nodeset) < 0)
-                    goto cleanup;
+                if (!virCgroupHasController(priv->cgroup,
+                                            VIR_CGROUP_CONTROLLER_MEMORY) ||
+                    virCgroupGetCpusetMems(priv->cgroup, &nodeset) < 0) {
+                    nodeset = virDomainNumatuneFormatNodeset(vm->def->numatune,
+                                                             NULL, -1);
+                    if (!nodeset)
+                        goto cleanup;
+                }
             }
+
             if (virTypedParameterAssign(param, VIR_DOMAIN_NUMA_NODESET,
                                         VIR_TYPED_PARAM_STRING, nodeset) < 0)
                 goto cleanup;
@@ -9368,6 +9376,7 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(caps);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -10337,6 +10346,12 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
 
     if (virDomainSetInterfaceParametersEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
+
+    if (!cfg->privileged) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("Network bandwidth tuning is not available in session mode"));
+        goto cleanup;
+    }
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;

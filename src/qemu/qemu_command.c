@@ -7812,7 +7812,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     emulator = def->emulator;
 
     if (!cfg->privileged) {
-        /* If we have no cgroups than we can have no tunings that
+        /* If we have no cgroups then we can have no tunings that
          * require them */
 
         if (def->mem.hard_limit || def->mem.soft_limit ||
@@ -7834,6 +7834,17 @@ qemuBuildCommandLine(virConnectPtr conn,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("CPU tuning is not available in session mode"));
             goto error;
+        }
+
+        virDomainNetDefPtr *nets = def->nets;
+        virNetDevBandwidthPtr bandwidth = NULL;
+        size_t nnets = def->nnets;
+        for (i = 0; i < nnets; i++) {
+            if ((bandwidth = virDomainNetGetActualBandwidth(nets[i])) != NULL) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                    _("Network bandwidth tuning is not available in session mode"));
+                goto error;
+            }
         }
     }
 
