@@ -116,7 +116,7 @@ typedef struct _virInterfaceVlanDef virInterfaceVlanDef;
 typedef virInterfaceVlanDef *virInterfaceVlanDefPtr;
 struct _virInterfaceVlanDef {
     char *tag;       /* TAG for vlan */
-    char *devname;   /* device name for vlan */
+    char *dev_name;   /* device name for vlan */
 };
 
 typedef struct _virInterfaceIpDef virInterfaceIpDef;

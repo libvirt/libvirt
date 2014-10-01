@@ -1015,7 +1015,7 @@ udevGetIfaceDefVlan(struct udev *udev ATTRIBUTE_UNUSED,
 
     if (VIR_STRNDUP(ifacedef->data.vlan.tag, vid_pos, vid_len) < 0)
         goto cleanup;
-    if (VIR_STRNDUP(ifacedef->data.vlan.devname, dev_pos, dev_len) < 0) {
+    if (VIR_STRNDUP(ifacedef->data.vlan.dev_name, dev_pos, dev_len) < 0) {
         VIR_FREE(ifacedef->data.vlan.tag);
         goto cleanup;
     }

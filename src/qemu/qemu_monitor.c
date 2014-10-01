@@ -1821,7 +1821,7 @@ int qemuMonitorGetBlockExtent(qemuMonitorPtr mon,
                               unsigned long long *extent)
 {
     int ret;
-    VIR_DEBUG("mon=%p, dev_name=%p", mon, dev_name);
+    VIR_DEBUG("mon=%p, dev_name=%s", mon, dev_name);
 
     if (mon->json)
         ret = qemuMonitorJSONGetBlockExtent(mon, dev_name, extent);
@@ -1836,7 +1836,7 @@ int qemuMonitorBlockResize(qemuMonitorPtr mon,
                            unsigned long long size)
 {
     int ret;
-    VIR_DEBUG("mon=%p, devname=%p size=%llu", mon, device, size);
+    VIR_DEBUG("mon=%p, device=%s size=%llu", mon, device, size);
 
     if (mon->json)
         ret = qemuMonitorJSONBlockResize(mon, device, size);

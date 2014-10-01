@@ -101,7 +101,7 @@ void virInterfaceDefFree(virInterfaceDefPtr def)
             break;
         case VIR_INTERFACE_TYPE_VLAN:
             VIR_FREE(def->data.vlan.tag);
-            VIR_FREE(def->data.vlan.devname);
+            VIR_FREE(def->data.vlan.dev_name);
             break;
     }
 
@@ -671,9 +671,9 @@ virInterfaceDefParseVlan(virInterfaceDefPtr def,
         return -1;
     }
 
-    def->data.vlan.devname =
+    def->data.vlan.dev_name =
          virXPathString("string(./interface/@name)", ctxt);
-    if (def->data.vlan.devname == NULL) {
+    if (def->data.vlan.dev_name == NULL) {
         virReportError(VIR_ERR_XML_ERROR,
                        "%s", _("vlan interface misses name attribute"));
         return -1;
@@ -955,11 +955,11 @@ virInterfaceVlanDefFormat(virBufferPtr buf, const virInterfaceDef *def)
     }
 
     virBufferAsprintf(buf, "<vlan tag='%s'", def->data.vlan.tag);
-    if (def->data.vlan.devname != NULL) {
+    if (def->data.vlan.dev_name != NULL) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         virBufferAsprintf(buf, "<interface name='%s'/>\n",
-                          def->data.vlan.devname);
+                          def->data.vlan.dev_name);
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</vlan>\n");
     } else {

@@ -745,13 +745,13 @@ int virFileLoopDeviceAssociate(const char *file,
 
 
 static int
-virFileNBDDeviceIsBusy(const char *devname)
+virFileNBDDeviceIsBusy(const char *dev_name)
 {
     char *path;
     int ret = -1;
 
     if (virAsprintf(&path, SYSFS_BLOCK_DIR "/%s/pid",
-                    devname) < 0)
+                    dev_name) < 0)
         return -1;
 
     if (!virFileExists(path)) {
@@ -760,7 +760,7 @@ virFileNBDDeviceIsBusy(const char *devname)
         else
             virReportSystemError(errno,
                                  _("Cannot check NBD device %s pid"),
-                                 devname);
+                                 dev_name);
         goto cleanup;
     }
     ret = 1;

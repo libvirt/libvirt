@@ -962,6 +962,13 @@ sc_prohibit_paren_brace:
 	halt='Put space between closing parenthesis and opening brace'	\
 	  $(_sc_search_regexp)
 
+# FreeBSD exports the "devname" symbol which produces a warning.
+sc_prohibit_devname:
+	@prohibit='\bdevname\b'	\
+	exclude='sc_prohibit_devname' \
+	halt='avoid using 'devname' as FreeBSD exports the symbol' \
+	  $(_sc_search_regexp)
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
@@ -1146,3 +1153,6 @@ exclude_file_name_regexp--sc_prohibit_empty_first_line = \
 
 exclude_file_name_regexp--sc_prohibit_useless_translation = \
   ^tests/virpolkittest.c
+
+exclude_file_name_regexp--sc_prohibit_devname = \
+  ^(tools/virsh.pod|cfg.mk|docs/.*)$$

@@ -333,7 +333,7 @@ int qemuMonitorBlockIOStatusToError(const char *status);
 virHashTablePtr qemuMonitorGetBlockInfo(qemuMonitorPtr mon);
 struct qemuDomainDiskInfo *
 qemuMonitorBlockInfoLookup(virHashTablePtr blockInfo,
-                           const char *devname);
+                           const char *dev_name);
 
 int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
                                  const char *dev_name,
@@ -378,7 +378,7 @@ int qemuMonitorGetBlockExtent(qemuMonitorPtr mon,
                               const char *dev_name,
                               unsigned long long *extent);
 int qemuMonitorBlockResize(qemuMonitorPtr mon,
-                           const char *devname,
+                           const char *dev_name,
                            unsigned long long size);
 int qemuMonitorSetVNCPassword(qemuMonitorPtr mon,
                               const char *password);
@@ -395,7 +395,7 @@ int qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, bool online);
 
 
 /* XXX should we pass the virDomainDiskDefPtr instead
- * and hide devname details inside monitor. Reconsider
+ * and hide dev_name details inside monitor. Reconsider
  * this when doing the QMP implementation
  */
 int qemuMonitorEjectMedia(qemuMonitorPtr mon,

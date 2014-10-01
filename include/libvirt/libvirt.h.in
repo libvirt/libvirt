@@ -5601,7 +5601,7 @@ typedef enum {
 } virDomainConsoleFlags;
 
 int virDomainOpenConsole(virDomainPtr dom,
-                         const char *devname,
+                         const char *dev_name,
                          virStreamPtr st,
                          unsigned int flags);
 

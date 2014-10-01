@@ -43,7 +43,7 @@ extern void virHostMsgFail(virHostValidateLevel level,
                            const char *hint);
 
 extern int virHostValidateDevice(const char *hvname,
-                                 const char *devname,
+                                 const char *dev_name,
                                  virHostValidateLevel level,
                                  const char *hint);
 
