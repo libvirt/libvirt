@@ -1993,7 +1993,7 @@ int qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitorPtr mon,
         virJSONValuePtr inserted;
         virJSONValuePtr image;
         qemuBlockStatsPtr bstats;
-        const char *devname;
+        const char *dev_name;
 
         if (!dev || dev->type != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2002,18 +2002,18 @@ int qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        if (!(devname = virJSONValueObjectGetString(dev, "device"))) {
+        if (!(dev_name = virJSONValueObjectGetString(dev, "device"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("query-block device entry was not "
                              "in expected format"));
             goto cleanup;
         }
 
-        if (STRPREFIX(devname, QEMU_DRIVE_HOST_PREFIX))
-            devname += strlen(QEMU_DRIVE_HOST_PREFIX);
+        if (STRPREFIX(dev_name, QEMU_DRIVE_HOST_PREFIX))
+            dev_name += strlen(QEMU_DRIVE_HOST_PREFIX);
 
         /* ignore missing info */
-        if (!(bstats = virHashLookup(stats, devname)))
+        if (!(bstats = virHashLookup(stats, dev_name)))
             continue;
 
         /* drive may be empty */
