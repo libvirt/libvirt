@@ -2128,6 +2128,7 @@ qemuMonitorJSONReportBlockExtentError(qemuMonitorBlockExtentError error)
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("blockstats stats entry was not in "
                          "expected format"));
+        break;
 
     case QEMU_MONITOR_BLOCK_EXTENT_ERROR_NOOFFSET:
         virReportError(VIR_ERR_INTERNAL_ERROR,
