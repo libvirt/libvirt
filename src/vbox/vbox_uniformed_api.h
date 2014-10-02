@@ -586,22 +586,6 @@ typedef struct {
 
 virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
                                     const unsigned char *uuid);
-virDrvOpenStatus vboxNetworkOpen(virConnectPtr conn,
-                                 virConnectAuthPtr auth,
-                                 unsigned int flags);
-int vboxNetworkClose(virConnectPtr conn);
-int vboxConnectNumOfNetworks(virConnectPtr conn);
-int vboxConnectListNetworks(virConnectPtr conn, char **const names, int nnames);
-int vboxConnectNumOfDefinedNetworks(virConnectPtr conn);
-int vboxConnectListDefinedNetworks(virConnectPtr conn, char **const names, int nnames);
-virNetworkPtr vboxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid);
-virNetworkPtr vboxNetworkLookupByName(virConnectPtr conn, const char *name);
-virNetworkPtr vboxNetworkCreateXML(virConnectPtr conn, const char *xml);
-virNetworkPtr vboxNetworkDefineXML(virConnectPtr conn, const char *xml);
-int vboxNetworkUndefine(virNetworkPtr network);
-int vboxNetworkDestroy(virNetworkPtr network);
-int vboxNetworkCreate(virNetworkPtr network);
-char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

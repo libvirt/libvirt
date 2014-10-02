@@ -5894,24 +5894,6 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
  * Function Tables
  */
 
-virNetworkDriver NAME(NetworkDriver) = {
-    "VBOX",
-    .networkOpen = vboxNetworkOpen, /* 0.6.4 */
-    .networkClose = vboxNetworkClose, /* 0.6.4 */
-    .connectNumOfNetworks = vboxConnectNumOfNetworks, /* 0.6.4 */
-    .connectListNetworks = vboxConnectListNetworks, /* 0.6.4 */
-    .connectNumOfDefinedNetworks = vboxConnectNumOfDefinedNetworks, /* 0.6.4 */
-    .connectListDefinedNetworks = vboxConnectListDefinedNetworks, /* 0.6.4 */
-    .networkLookupByUUID = vboxNetworkLookupByUUID, /* 0.6.4 */
-    .networkLookupByName = vboxNetworkLookupByName, /* 0.6.4 */
-    .networkCreateXML = vboxNetworkCreateXML, /* 0.6.4 */
-    .networkDefineXML = vboxNetworkDefineXML, /* 0.6.4 */
-    .networkUndefine = vboxNetworkUndefine, /* 0.6.4 */
-    .networkCreate = vboxNetworkCreate, /* 0.6.4 */
-    .networkDestroy = vboxNetworkDestroy, /* 0.6.4 */
-    .networkGetXMLDesc = vboxNetworkGetXMLDesc, /* 0.6.4 */
-};
-
 virStorageDriver NAME(StorageDriver) = {
     .name               = "VBOX",
     .storageOpen = vboxStorageOpen, /* 0.7.1 */

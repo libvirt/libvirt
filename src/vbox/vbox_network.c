@@ -31,6 +31,7 @@
 
 #include "vbox_common.h"
 #include "vbox_uniformed_api.h"
+#include "vbox_get_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
@@ -85,9 +86,10 @@ static vboxUniformedAPI gVBoxAPI;
  * The Network Functions here on
  */
 
-virDrvOpenStatus vboxNetworkOpen(virConnectPtr conn,
-                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                 unsigned int flags)
+static virDrvOpenStatus
+vboxNetworkOpen(virConnectPtr conn,
+                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                unsigned int flags)
 {
     vboxGlobalData *data = conn->privateData;
 
@@ -107,14 +109,14 @@ virDrvOpenStatus vboxNetworkOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_DECLINED;
 }
 
-int vboxNetworkClose(virConnectPtr conn)
+static int vboxNetworkClose(virConnectPtr conn)
 {
     VIR_DEBUG("network uninitialized");
     conn->networkPrivateData = NULL;
     return 0;
 }
 
-int vboxConnectNumOfNetworks(virConnectPtr conn)
+static int vboxConnectNumOfNetworks(virConnectPtr conn)
 {
     vboxGlobalData *data = conn->privateData;
     vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
@@ -159,7 +161,7 @@ int vboxConnectNumOfNetworks(virConnectPtr conn)
     return ret;
 }
 
-int vboxConnectListNetworks(virConnectPtr conn, char **const names, int nnames)
+static int vboxConnectListNetworks(virConnectPtr conn, char **const names, int nnames)
 {
     vboxGlobalData *data = conn->privateData;
     vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
@@ -216,7 +218,7 @@ int vboxConnectListNetworks(virConnectPtr conn, char **const names, int nnames)
     return ret;
 }
 
-int vboxConnectNumOfDefinedNetworks(virConnectPtr conn)
+static int vboxConnectNumOfDefinedNetworks(virConnectPtr conn)
 {
     vboxGlobalData *data = conn->privateData;
     vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
@@ -261,7 +263,7 @@ int vboxConnectNumOfDefinedNetworks(virConnectPtr conn)
     return ret;
 }
 
-int vboxConnectListDefinedNetworks(virConnectPtr conn, char **const names, int nnames)
+static int vboxConnectListDefinedNetworks(virConnectPtr conn, char **const names, int nnames)
 {
     vboxGlobalData *data = conn->privateData;
     vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
@@ -318,7 +320,7 @@ int vboxConnectListDefinedNetworks(virConnectPtr conn, char **const names, int n
     return ret;
 }
 
-virNetworkPtr vboxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
+static virNetworkPtr vboxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
     vboxGlobalData *data = conn->privateData;
     PRUint32 interfaceType = 0;
@@ -370,7 +372,7 @@ virNetworkPtr vboxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *u
     return ret;
 }
 
-virNetworkPtr vboxNetworkLookupByName(virConnectPtr conn, const char *name)
+static virNetworkPtr vboxNetworkLookupByName(virConnectPtr conn, const char *name)
 {
     vboxGlobalData *data = conn->privateData;
     PRUnichar *nameUtf16 = NULL;
@@ -621,12 +623,12 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
     return ret;
 }
 
-virNetworkPtr vboxNetworkCreateXML(virConnectPtr conn, const char *xml)
+static virNetworkPtr vboxNetworkCreateXML(virConnectPtr conn, const char *xml)
 {
     return vboxNetworkDefineCreateXML(conn, xml, true);
 }
 
-virNetworkPtr vboxNetworkDefineXML(virConnectPtr conn, const char *xml)
+static virNetworkPtr vboxNetworkDefineXML(virConnectPtr conn, const char *xml)
 {
     return vboxNetworkDefineCreateXML(conn, xml, false);
 }
@@ -727,17 +729,17 @@ vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterface)
     return ret;
 }
 
-int vboxNetworkUndefine(virNetworkPtr network)
+static int vboxNetworkUndefine(virNetworkPtr network)
 {
     return vboxNetworkUndefineDestroy(network, true);
 }
 
-int vboxNetworkDestroy(virNetworkPtr network)
+static int vboxNetworkDestroy(virNetworkPtr network)
 {
     return vboxNetworkUndefineDestroy(network, false);
 }
 
-int vboxNetworkCreate(virNetworkPtr network)
+static int vboxNetworkCreate(virNetworkPtr network)
 {
     vboxGlobalData *data = network->conn->privateData;
     char *networkNameUtf8 = NULL;
@@ -830,7 +832,7 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
     return result;
 }
 
-char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
+static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
 {
     vboxGlobalData *data = network->conn->privateData;
     virNetworkDefPtr def = NULL;
@@ -998,4 +1000,53 @@ char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
     VIR_FREE(networkNameUtf8);
     VBOX_RELEASE(dhcpServer);
     return ret;
+}
+
+virNetworkDriver vboxNetworkDriver = {
+    "VBOX",
+    .networkOpen = vboxNetworkOpen, /* 0.6.4 */
+    .networkClose = vboxNetworkClose, /* 0.6.4 */
+    .connectNumOfNetworks = vboxConnectNumOfNetworks, /* 0.6.4 */
+    .connectListNetworks = vboxConnectListNetworks, /* 0.6.4 */
+    .connectNumOfDefinedNetworks = vboxConnectNumOfDefinedNetworks, /* 0.6.4 */
+    .connectListDefinedNetworks = vboxConnectListDefinedNetworks, /* 0.6.4 */
+    .networkLookupByUUID = vboxNetworkLookupByUUID, /* 0.6.4 */
+    .networkLookupByName = vboxNetworkLookupByName, /* 0.6.4 */
+    .networkCreateXML = vboxNetworkCreateXML, /* 0.6.4 */
+    .networkDefineXML = vboxNetworkDefineXML, /* 0.6.4 */
+    .networkUndefine = vboxNetworkUndefine, /* 0.6.4 */
+    .networkCreate = vboxNetworkCreate, /* 0.6.4 */
+    .networkDestroy = vboxNetworkDestroy, /* 0.6.4 */
+    .networkGetXMLDesc = vboxNetworkGetXMLDesc, /* 0.6.4 */
+};
+
+virNetworkDriverPtr vboxGetNetworkDriver(uint32_t uVersion)
+{
+    /* Install gVBoxAPI according to the vbox API version.
+     * Return -1 for unsupported version.
+     */
+    if (uVersion >= 2001052 && uVersion < 2002051) {
+        vbox22InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 2002051 && uVersion < 3000051) {
+        vbox30InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 3000051 && uVersion < 3001051) {
+        vbox31InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 3001051 && uVersion < 3002051) {
+        vbox32InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 3002051 && uVersion < 4000051) {
+        vbox40InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 4000051 && uVersion < 4001051) {
+        vbox41InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 4001051 && uVersion < 4002020) {
+        vbox42InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 4002020 && uVersion < 4002051) {
+        vbox42_20InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 4002051 && uVersion < 4003004) {
+        vbox43InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 4003004 && uVersion < 4003051) {
+        vbox43_4InstallUniformedAPI(&gVBoxAPI);
+    } else {
+        return NULL;
+    }
+    return &vboxNetworkDriver;
 }

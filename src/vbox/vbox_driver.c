@@ -71,7 +71,7 @@ extern virStorageDriver vbox43_4StorageDriver;
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
-#if !defined(WITH_DRIVER_MODULES) || defined(VBOX_NETWORK_DRIVER) || defined(VBOX_STORAGE_DRIVER)
+#if !defined(WITH_DRIVER_MODULES) || defined(VBOX_STORAGE_DRIVER)
 static void
 vboxGetDrivers(virDriverPtr *driver_ret,
                virNetworkDriverPtr *networkDriver_ret,
@@ -161,9 +161,12 @@ vboxGetDrivers(virDriverPtr *driver_ret,
 #if !defined(WITH_DRIVER_MODULES) || defined(VBOX_NETWORK_DRIVER)
 int vboxNetworkRegister(void)
 {
-    virNetworkDriverPtr networkDriver;
+    virNetworkDriverPtr networkDriver = NULL;
+    uint32_t uVersion;
 
-    vboxGetDrivers(NULL, &networkDriver, NULL);
+    if (VBoxCGlueInit(&uVersion) == 0)
+        networkDriver = vboxGetNetworkDriver(uVersion);
+
     if (virRegisterNetworkDriver(networkDriver) < 0)
         return -1;
     return 0;
