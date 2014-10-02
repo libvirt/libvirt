@@ -2061,44 +2061,6 @@ _registerDomainEvent(virDriverPtr driver)
  */
 
 static virNetworkPtr
-vboxNetworkLookupByName(virConnectPtr conn, const char *name)
-{
-    VBOX_OBJECT_HOST_CHECK(conn, virNetworkPtr, NULL);
-    PRUnichar *nameUtf16                    = NULL;
-    IHostNetworkInterface *networkInterface = NULL;
-
-    VBOX_UTF8_TO_UTF16(name, &nameUtf16);
-
-    host->vtbl->FindHostNetworkInterfaceByName(host, nameUtf16, &networkInterface);
-
-    if (networkInterface) {
-        PRUint32 interfaceType = 0;
-
-        networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
-
-        if (interfaceType == HostNetworkInterfaceType_HostOnly) {
-            unsigned char uuid[VIR_UUID_BUFLEN];
-            vboxIID iid = VBOX_IID_INITIALIZER;
-
-            networkInterface->vtbl->GetId(networkInterface, &iid.value);
-            vboxIIDToUUID(&iid, uuid);
-            ret = virGetNetwork(conn, name, uuid);
-            VIR_DEBUG("Network Name: %s", name);
-
-            DEBUGIID("Network UUID", iid.value);
-            vboxIIDUnalloc(&iid);
-        }
-
-        VBOX_RELEASE(networkInterface);
-    }
-
-    VBOX_UTF16_FREE(nameUtf16);
-    VBOX_RELEASE(host);
-
-    return ret;
-}
-
-static virNetworkPtr
 vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
 {
     VBOX_OBJECT_HOST_CHECK(conn, virNetworkPtr, NULL);
@@ -5861,6 +5823,14 @@ _hostFindHostNetworkInterfaceById(IHost *host, vboxIIDUnion *iidu,
 }
 
 static nsresult
+_hostFindHostNetworkInterfaceByName(IHost *host, PRUnichar *name,
+                                    IHostNetworkInterface **networkInterface)
+{
+    return host->vtbl->FindHostNetworkInterfaceByName(host, name,
+                                                      networkInterface);
+}
+
+static nsresult
 _hnInterfaceGetInterfaceType(IHostNetworkInterface *hni, PRUint32 *interfaceType)
 {
     return hni->vtbl->GetInterfaceType(hni, interfaceType);
@@ -5876,6 +5846,12 @@ static nsresult
 _hnInterfaceGetName(IHostNetworkInterface *hni, PRUnichar **name)
 {
     return hni->vtbl->GetName(hni, name);
+}
+
+static nsresult
+_hnInterfaceGetId(IHostNetworkInterface *hni, vboxIIDUnion *iidu)
+{
+    return hni->vtbl->GetId(hni, &IID_MEMBER(value));
 }
 
 static bool _machineStateOnline(PRUint32 state)
@@ -6183,12 +6159,14 @@ static vboxUniformedIDisplay _UIDisplay = {
 
 static vboxUniformedIHost _UIHost = {
     .FindHostNetworkInterfaceById = _hostFindHostNetworkInterfaceById,
+    .FindHostNetworkInterfaceByName = _hostFindHostNetworkInterfaceByName,
 };
 
 static vboxUniformedIHNInterface _UIHNInterface = {
     .GetInterfaceType = _hnInterfaceGetInterfaceType,
     .GetStatus = _hnInterfaceGetStatus,
     .GetName = _hnInterfaceGetName,
+    .GetId = _hnInterfaceGetId,
 };
 
 static uniformedMachineStateChecker _machineStateChecker = {

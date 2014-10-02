@@ -470,6 +470,8 @@ typedef struct {
 typedef struct {
     nsresult (*FindHostNetworkInterfaceById)(IHost *host, vboxIIDUnion *iidu,
                                              IHostNetworkInterface **networkInterface);
+    nsresult (*FindHostNetworkInterfaceByName)(IHost *host, PRUnichar *name,
+                                               IHostNetworkInterface **networkInterface);
 } vboxUniformedIHost;
 
 /* Functions for IHostNetworkInterface */
@@ -477,6 +479,7 @@ typedef struct {
     nsresult (*GetInterfaceType)(IHostNetworkInterface *hni, PRUint32 *interfaceType);
     nsresult (*GetStatus)(IHostNetworkInterface *hni, PRUint32 *status);
     nsresult (*GetName)(IHostNetworkInterface *hni, PRUnichar **name);
+    nsresult (*GetId)(IHostNetworkInterface *hni, vboxIIDUnion *iidu);
 } vboxUniformedIHNInterface;
 
 typedef struct {
@@ -560,6 +563,7 @@ int vboxConnectListNetworks(virConnectPtr conn, char **const names, int nnames);
 int vboxConnectNumOfDefinedNetworks(virConnectPtr conn);
 int vboxConnectListDefinedNetworks(virConnectPtr conn, char **const names, int nnames);
 virNetworkPtr vboxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid);
+virNetworkPtr vboxNetworkLookupByName(virConnectPtr conn, const char *name);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
