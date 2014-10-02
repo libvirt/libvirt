@@ -42,7 +42,7 @@
 #include "domain_event.h"
 #include "domain_conf.h"
 
-#include "vbox_install_api.h"
+#include "vbox_get_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
@@ -69,18 +69,14 @@ extern virStorageDriver vbox43StorageDriver;
 extern virNetworkDriver vbox43_4NetworkDriver;
 extern virStorageDriver vbox43_4StorageDriver;
 
-extern virDriver vboxCommonDriver;
-
-static virDriver vboxDriverDummy;
-
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
+#if !defined(WITH_DRIVER_MODULES) || defined(VBOX_NETWORK_DRIVER) || defined(VBOX_STORAGE_DRIVER)
 static void
 vboxGetDrivers(virDriverPtr *driver_ret,
                virNetworkDriverPtr *networkDriver_ret,
                virStorageDriverPtr *storageDriver_ret)
 {
-    virDriverPtr driver;
     virNetworkDriverPtr networkDriver;
     virStorageDriverPtr storageDriver;
     uint32_t uVersion;
@@ -91,7 +87,6 @@ vboxGetDrivers(virDriverPtr *driver_ret,
      * if the user requests a vbox:// URI which we know will
      * never work
      */
-    driver        = &vboxDriverDummy;
     networkDriver = &vbox22NetworkDriver;
     storageDriver = &vbox22StorageDriver;
 
@@ -150,24 +145,18 @@ vboxGetDrivers(virDriverPtr *driver_ret,
         } else {
             VIR_DEBUG("Unsupported VirtualBox API version: %u", uVersion);
         }
-        /* Register vboxUniformedAPI. */
-        if (vboxRegisterUniformedAPI(uVersion) == 0)
-            /* Only if successfully register the uniformed api,
-             * can we use the vboxCommonDriver. Or use the
-             * vboxDriverDummy in case of failure. */
-            driver = &vboxCommonDriver;
     } else {
         VIR_DEBUG("VBoxCGlueInit failed, using dummy driver");
     }
 
     if (driver_ret)
-        *driver_ret = driver;
+        *driver_ret = NULL;
     if (networkDriver_ret)
         *networkDriver_ret = networkDriver;
     if (storageDriver_ret)
         *storageDriver_ret = storageDriver;
 }
-
+#endif
 
 #if !defined(WITH_DRIVER_MODULES) || defined(VBOX_NETWORK_DRIVER)
 int vboxNetworkRegister(void)
@@ -195,18 +184,6 @@ int vboxStorageRegister(void)
 #endif
 
 #if !defined(WITH_DRIVER_MODULES) || defined(VBOX_DRIVER)
-int vboxRegister(void)
-{
-    virDriverPtr driver;
-
-    vboxGetDrivers(&driver, NULL, NULL);
-
-    if (virRegisterDriver(driver) < 0)
-        return -1;
-    return 0;
-}
-#endif
-
 static virDrvOpenStatus dummyConnectOpen(virConnectPtr conn,
                                          virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                          unsigned int flags)
@@ -252,3 +229,20 @@ static virDriver vboxDriverDummy = {
     "VBOX",
     .connectOpen = dummyConnectOpen, /* 0.6.3 */
 };
+
+int vboxRegister(void)
+{
+    virDriverPtr driver = NULL;
+    uint32_t uVersion;
+
+    if (VBoxCGlueInit(&uVersion) == 0)
+        driver = vboxGetDriver(uVersion);
+
+    if (!driver)
+        driver = &vboxDriverDummy;
+
+    if (virRegisterDriver(driver) < 0)
+        return -1;
+    return 0;
+}
+#endif

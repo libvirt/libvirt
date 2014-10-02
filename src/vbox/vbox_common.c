@@ -38,7 +38,7 @@
 
 #include "vbox_common.h"
 #include "vbox_uniformed_api.h"
-#include "vbox_install_api.h"
+#include "vbox_get_driver.h"
 
 /* Common codes for vbox driver. With the definitions in vbox_common.h,
  * it treats vbox structs as a void*. Though vboxUniformedAPI
@@ -120,41 +120,6 @@ if (!data->vboxObj) {\
 
 /* global vbox API, used for all common codes. */
 static vboxUniformedAPI gVBoxAPI;
-
-/* update the virDriver according to the vboxUniformedAPI */
-static void updateDriver(void);
-
-int vboxRegisterUniformedAPI(uint32_t uVersion)
-{
-    /* Install gVBoxAPI according to the vbox API version.
-     * Return -1 for unsupported version.
-     */
-    if (uVersion >= 2001052 && uVersion < 2002051) {
-        vbox22InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 2002051 && uVersion < 3000051) {
-        vbox30InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 3000051 && uVersion < 3001051) {
-        vbox31InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 3001051 && uVersion < 3002051) {
-        vbox32InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 3002051 && uVersion < 4000051) {
-        vbox40InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 4000051 && uVersion < 4001051) {
-        vbox41InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 4001051 && uVersion < 4002020) {
-        vbox42InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 4002020 && uVersion < 4002051) {
-        vbox42_20InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 4002051 && uVersion < 4003004) {
-        vbox43InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 4003004 && uVersion < 4003051) {
-        vbox43_4InstallUniformedAPI(&gVBoxAPI);
-    } else {
-        return -1;
-    }
-    updateDriver();
-    return 0;
-}
 
 static int openSessionForMachine(vboxGlobalData *data, const unsigned char *dom_uuid, vboxIIDUnion *iid,
                                  IMachine **machine, bool checkflag)
@@ -7564,4 +7529,36 @@ static void updateDriver(void)
         vboxCommonDriver.domainScreenshot = vboxDomainScreenshot;
     else
         vboxCommonDriver.domainScreenshot = NULL;
+}
+
+virDriverPtr vboxGetDriver(uint32_t uVersion)
+{
+    /* Install gVBoxAPI according to the vbox API version.
+     * Return -1 for unsupported version.
+     */
+    if (uVersion >= 2001052 && uVersion < 2002051) {
+        vbox22InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 2002051 && uVersion < 3000051) {
+        vbox30InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 3000051 && uVersion < 3001051) {
+        vbox31InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 3001051 && uVersion < 3002051) {
+        vbox32InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 3002051 && uVersion < 4000051) {
+        vbox40InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 4000051 && uVersion < 4001051) {
+        vbox41InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 4001051 && uVersion < 4002020) {
+        vbox42InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 4002020 && uVersion < 4002051) {
+        vbox42_20InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 4002051 && uVersion < 4003004) {
+        vbox43InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 4003004 && uVersion < 4003051) {
+        vbox43_4InstallUniformedAPI(&gVBoxAPI);
+    } else {
+        return NULL;
+    }
+    updateDriver();
+    return &vboxCommonDriver;
 }

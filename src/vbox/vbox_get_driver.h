@@ -16,11 +16,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VBOX_INSTALL_API_H
-# define VBOX_INSTALL_API_H
+#ifndef VBOX_GET_DRIVER_H
+# define VBOX_GET_DRIVER_H
 
 # include "internal.h"
 
-int vboxRegisterUniformedAPI(uint32_t uVersion);
+virDriverPtr vboxGetDriver(uint32_t uVersion);
 
-#endif /* VBOX_INSTALL_API_H */
+#endif /* VBOX_GET_DRIVER_H */

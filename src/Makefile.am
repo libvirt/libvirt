@@ -666,7 +666,7 @@ VMWARE_DRIVER_SOURCES =						\
 VBOX_DRIVER_SOURCES =						\
 	vbox/vbox_glue.c vbox/vbox_glue.h			\
 	vbox/vbox_driver.c vbox/vbox_driver.h			\
-	vbox/vbox_snapshot_conf.c vbox/vbox_snapshot_conf.h \
+	vbox/vbox_snapshot_conf.c vbox/vbox_snapshot_conf.h     \
 	vbox/vbox_V2_2.c vbox/vbox_CAPI_v2_2.h			\
 	vbox/vbox_V3_0.c vbox/vbox_CAPI_v3_0.h			\
 	vbox/vbox_V3_1.c vbox/vbox_CAPI_v3_1.h			\
@@ -674,12 +674,12 @@ VBOX_DRIVER_SOURCES =						\
 	vbox/vbox_V4_0.c vbox/vbox_CAPI_v4_0.h			\
 	vbox/vbox_V4_1.c vbox/vbox_CAPI_v4_1.h			\
 	vbox/vbox_V4_2.c vbox/vbox_CAPI_v4_2.h			\
-	vbox/vbox_V4_2_20.c vbox/vbox_CAPI_v4_2_20.h			\
+	vbox/vbox_V4_2_20.c vbox/vbox_CAPI_v4_2_20.h		\
 	vbox/vbox_V4_3.c vbox/vbox_CAPI_v4_3.h			\
 	vbox/vbox_V4_3_4.c vbox/vbox_CAPI_v4_3_4.h              \
 	vbox/vbox_common.c vbox/vbox_common.h                   \
 	vbox/vbox_uniformed_api.h                               \
-	vbox/vbox_install_api.h
+	vbox/vbox_get_driver.h
 
 VBOX_DRIVER_EXTRA_DIST =					\
 		vbox/vbox_tmpl.c vbox/README			\
