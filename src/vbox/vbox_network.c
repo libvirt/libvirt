@@ -736,3 +736,75 @@ int vboxNetworkDestroy(virNetworkPtr network)
 {
     return vboxNetworkUndefineDestroy(network, false);
 }
+
+int vboxNetworkCreate(virNetworkPtr network)
+{
+    vboxGlobalData *data = network->conn->privateData;
+    char *networkNameUtf8 = NULL;
+    PRUnichar *networkInterfaceNameUtf16 = NULL;
+    IHostNetworkInterface *networkInterface = NULL;
+    PRUnichar *networkNameUtf16 = NULL;
+    IDHCPServer *dhcpServer = NULL;
+    PRUnichar *trunkTypeUtf16 = NULL;
+    PRUint32 interfaceType = 0;
+    IHost *host = NULL;
+    int ret = -1;
+
+    if (!data->vboxObj)
+        return ret;
+
+    gVBoxAPI.UIVirtualBox.GetHost(data->vboxObj, &host);
+    if (!host)
+        return ret;
+
+    /* Current limitation of the function for VirtualBox 2.2.* is
+     * that the default hostonly network "vboxnet0" is always active
+     * and thus all this functions does is start the dhcp server,
+     * but the network can still be used without starting the dhcp
+     * server by giving the machine static IP
+     */
+
+    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", network->name) < 0)
+        goto cleanup;
+
+    VBOX_UTF8_TO_UTF16(network->name, &networkInterfaceNameUtf16);
+
+    gVBoxAPI.UIHost.FindHostNetworkInterfaceByName(host, networkInterfaceNameUtf16, &networkInterface);
+
+    if (!networkInterface)
+        goto cleanup;
+
+    gVBoxAPI.UIHNInterface.GetInterfaceType(networkInterface, &interfaceType);
+
+    if (interfaceType != HostNetworkInterfaceType_HostOnly)
+        goto cleanup;
+
+    VBOX_UTF8_TO_UTF16(networkNameUtf8, &networkNameUtf16);
+
+    gVBoxAPI.UIVirtualBox.FindDHCPServerByNetworkName(data->vboxObj,
+                                                      networkNameUtf16,
+                                                      &dhcpServer);
+    if (!dhcpServer)
+        goto cleanup;
+
+    gVBoxAPI.UIDHCPServer.SetEnabled(dhcpServer, PR_TRUE);
+
+    VBOX_UTF8_TO_UTF16("netflt", &trunkTypeUtf16);
+
+    gVBoxAPI.UIDHCPServer.Start(dhcpServer,
+                                networkNameUtf16,
+                                networkInterfaceNameUtf16,
+                                trunkTypeUtf16);
+
+    VBOX_UTF16_FREE(trunkTypeUtf16);
+    ret = 0;
+
+ cleanup:
+    VBOX_RELEASE(dhcpServer);
+    VBOX_UTF16_FREE(networkNameUtf16);
+    VBOX_RELEASE(networkInterface);
+    VBOX_UTF16_FREE(networkInterfaceNameUtf16);
+    VBOX_RELEASE(host);
+    VIR_FREE(networkNameUtf8);
+    return ret;
+}

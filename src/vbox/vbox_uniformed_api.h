@@ -593,6 +593,7 @@ virNetworkPtr vboxNetworkCreateXML(virConnectPtr conn, const char *xml);
 virNetworkPtr vboxNetworkDefineXML(virConnectPtr conn, const char *xml);
 int vboxNetworkUndefine(virNetworkPtr network);
 int vboxNetworkDestroy(virNetworkPtr network);
+int vboxNetworkCreate(virNetworkPtr network);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
