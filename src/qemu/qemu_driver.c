@@ -2460,9 +2460,15 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
         qemuDomainObjEnterMonitor(driver, vm);
         r = qemuMonitorSetMemoryStatsPeriod(priv->mon, period);
         qemuDomainObjExitMonitor(driver, vm);
-        if (r < 0)
+        if (r < 0) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("unable to set balloon driver collection period"));
+            goto endjob;
+        }
+
+        vm->def->memballoon->period = period;
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+            goto endjob;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
