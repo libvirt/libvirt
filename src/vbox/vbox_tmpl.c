@@ -2060,40 +2060,6 @@ _registerDomainEvent(virDriverPtr driver)
  * The Network Functions here on
  */
 
-static int vboxConnectNumOfDefinedNetworks(virConnectPtr conn)
-{
-    VBOX_OBJECT_HOST_CHECK(conn, int, 0);
-    vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
-    size_t i = 0;
-
-    vboxArrayGet(&networkInterfaces, host, host->vtbl->GetNetworkInterfaces);
-
-    for (i = 0; i < networkInterfaces.count; i++) {
-        IHostNetworkInterface *networkInterface = networkInterfaces.items[i];
-
-        if (networkInterface) {
-            PRUint32 interfaceType = 0;
-
-            networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
-            if (interfaceType == HostNetworkInterfaceType_HostOnly) {
-                PRUint32 status = HostNetworkInterfaceStatus_Unknown;
-
-                networkInterface->vtbl->GetStatus(networkInterface, &status);
-
-                if (status == HostNetworkInterfaceStatus_Down)
-                    ret++;
-            }
-        }
-    }
-
-    vboxArrayRelease(&networkInterfaces);
-
-    VBOX_RELEASE(host);
-
-    VIR_DEBUG("numActive: %d", ret);
-    return ret;
-}
-
 static int vboxConnectListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
     VBOX_OBJECT_HOST_CHECK(conn, int, 0);
     vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
