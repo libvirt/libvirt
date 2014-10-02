@@ -36,6 +36,9 @@
 
 VIR_LOG_INIT("vbox.vbox_network");
 
+#define RC_SUCCEEDED(rc) NS_SUCCEEDED(rc.resultCode)
+#define RC_FAILED(rc) NS_FAILED(rc.resultCode)
+
 #define VBOX_UTF16_FREE(arg)                                            \
     do {                                                                \
         if (arg) {                                                      \
@@ -626,4 +629,110 @@ virNetworkPtr vboxNetworkCreateXML(virConnectPtr conn, const char *xml)
 virNetworkPtr vboxNetworkDefineXML(virConnectPtr conn, const char *xml)
 {
     return vboxNetworkDefineCreateXML(conn, xml, false);
+}
+
+static int
+vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterface)
+{
+    vboxGlobalData *data = network->conn->privateData;
+    char *networkNameUtf8 = NULL;
+    PRUnichar *networkInterfaceNameUtf16 = NULL;
+    IHostNetworkInterface *networkInterface = NULL;
+    PRUnichar *networkNameUtf16 = NULL;
+    IDHCPServer *dhcpServer = NULL;
+    PRUint32 interfaceType = 0;
+    IHost *host = NULL;
+    int ret = -1;
+
+    if (!data->vboxObj)
+        return ret;
+
+    gVBoxAPI.UIVirtualBox.GetHost(data->vboxObj, &host);
+    if (!host)
+        return ret;
+
+    /* Current limitation of the function for VirtualBox 2.2.* is
+     * that you can't delete the default hostonly adaptor namely:
+     * vboxnet0 and thus all this functions does is remove the
+     * dhcp server configuration, but the network can still be used
+     * by giving the machine static IP and also it will still
+     * show up in the net-list in virsh
+     */
+
+    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", network->name) < 0)
+        goto cleanup;
+
+    VBOX_UTF8_TO_UTF16(network->name, &networkInterfaceNameUtf16);
+
+    gVBoxAPI.UIHost.FindHostNetworkInterfaceByName(host, networkInterfaceNameUtf16, &networkInterface);
+
+    if (!networkInterface)
+        goto cleanup;
+
+    gVBoxAPI.UIHNInterface.GetInterfaceType(networkInterface, &interfaceType);
+
+    if (interfaceType != HostNetworkInterfaceType_HostOnly)
+        goto cleanup;
+
+    if (gVBoxAPI.networkRemoveInterface && removeinterface) {
+        vboxIIDUnion iid;
+        IProgress *progress = NULL;
+        nsresult rc;
+        resultCodeUnion resultCode;
+
+        VBOX_IID_INITIALIZE(&iid);
+        rc = gVBoxAPI.UIHNInterface.GetId(networkInterface, &iid);
+
+        if (NS_FAILED(rc))
+            goto cleanup;
+
+        gVBoxAPI.UIHost.RemoveHostOnlyNetworkInterface(host, &iid, &progress);
+        vboxIIDUnalloc(&iid);
+
+        if (!progress)
+            goto cleanup;
+
+        gVBoxAPI.UIProgress.WaitForCompletion(progress, -1);
+        gVBoxAPI.UIProgress.GetResultCode(progress, &resultCode);
+        if (RC_FAILED(resultCode)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Error while removing hostonly network interface, rc=%08x"),
+                           resultCode.uResultCode);
+            goto cleanup;
+        }
+        VBOX_RELEASE(progress);
+    }
+
+    VBOX_UTF8_TO_UTF16(networkNameUtf8, &networkNameUtf16);
+
+    gVBoxAPI.UIVirtualBox.FindDHCPServerByNetworkName(data->vboxObj,
+                                                      networkNameUtf16,
+                                                      &dhcpServer);
+    if (!dhcpServer)
+        goto cleanup;
+
+    gVBoxAPI.UIDHCPServer.SetEnabled(dhcpServer, PR_FALSE);
+    gVBoxAPI.UIDHCPServer.Stop(dhcpServer);
+    if (removeinterface)
+        gVBoxAPI.UIVirtualBox.RemoveDHCPServer(data->vboxObj, dhcpServer);
+    ret = 0;
+    VBOX_RELEASE(dhcpServer);
+
+ cleanup:
+    VBOX_UTF16_FREE(networkNameUtf16);
+    VBOX_RELEASE(networkInterface);
+    VBOX_UTF16_FREE(networkInterfaceNameUtf16);
+    VBOX_RELEASE(host);
+    VIR_FREE(networkNameUtf8);
+    return ret;
+}
+
+int vboxNetworkUndefine(virNetworkPtr network)
+{
+    return vboxNetworkUndefineDestroy(network, true);
+}
+
+int vboxNetworkDestroy(virNetworkPtr network)
+{
+    return vboxNetworkUndefineDestroy(network, false);
 }

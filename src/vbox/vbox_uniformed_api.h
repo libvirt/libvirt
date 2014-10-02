@@ -199,6 +199,7 @@ typedef struct {
     nsresult (*OpenMedium)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType, PRUint32 accessMode, IMedium **medium);
     nsresult (*FindDHCPServerByNetworkName)(IVirtualBox *vboxObj, PRUnichar *name, IDHCPServer **server);
     nsresult (*CreateDHCPServer)(IVirtualBox *vboxObj, PRUnichar *name, IDHCPServer **server);
+    nsresult (*RemoveDHCPServer)(IVirtualBox *vboxObj, IDHCPServer *server);
 } vboxUniformedIVirtualBox;
 
 /* Functions for IMachine */
@@ -477,6 +478,8 @@ typedef struct {
     nsresult (*CreateHostOnlyNetworkInterface)(vboxGlobalData *data,
                                                IHost *host, char *name,
                                                IHostNetworkInterface **networkInterface);
+    nsresult (*RemoveHostOnlyNetworkInterface)(IHost *host, vboxIIDUnion *iidu,
+                                               IProgress **progress);
 } vboxUniformedIHost;
 
 /* Functions for IHostNetworkInterface */
@@ -499,6 +502,7 @@ typedef struct {
                                  PRUnichar *ToIPAddress);
     nsresult (*Start)(IDHCPServer *dhcpServer, PRUnichar *networkName,
                       PRUnichar *trunkName, PRUnichar *trunkType);
+    nsresult (*Stop)(IDHCPServer *dhcpServer);
 } vboxUniformedIDHCPServer;
 
 typedef struct {
@@ -570,6 +574,7 @@ typedef struct {
     bool oldMediumInterface;
     bool vboxSnapshotRedefine;
     bool supportScreenshot;
+    bool networkRemoveInterface;
 } vboxUniformedAPI;
 
 virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
@@ -586,6 +591,8 @@ virNetworkPtr vboxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *u
 virNetworkPtr vboxNetworkLookupByName(virConnectPtr conn, const char *name);
 virNetworkPtr vboxNetworkCreateXML(virConnectPtr conn, const char *xml);
 virNetworkPtr vboxNetworkDefineXML(virConnectPtr conn, const char *xml);
+int vboxNetworkUndefine(virNetworkPtr network);
+int vboxNetworkDestroy(virNetworkPtr network);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

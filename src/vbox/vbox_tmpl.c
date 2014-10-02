@@ -2042,97 +2042,6 @@ _registerDomainEvent(virDriverPtr driver)
  * The Network Functions here on
  */
 
-static int
-vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterface)
-{
-    VBOX_OBJECT_HOST_CHECK(network->conn, int, -1);
-    char *networkNameUtf8 = NULL;
-    PRUnichar *networkInterfaceNameUtf16    = NULL;
-    IHostNetworkInterface *networkInterface = NULL;
-
-    /* Current limitation of the function for VirtualBox 2.2.* is
-     * that you can't delete the default hostonly adaptor namely:
-     * vboxnet0 and thus all this functions does is remove the
-     * dhcp server configuration, but the network can still be used
-     * by giving the machine static IP and also it will still
-     * show up in the net-list in virsh
-     */
-
-    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", network->name) < 0)
-        goto cleanup;
-
-    VBOX_UTF8_TO_UTF16(network->name, &networkInterfaceNameUtf16);
-
-    host->vtbl->FindHostNetworkInterfaceByName(host, networkInterfaceNameUtf16, &networkInterface);
-
-    if (networkInterface) {
-        PRUint32 interfaceType = 0;
-
-        networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
-
-        if (interfaceType == HostNetworkInterfaceType_HostOnly) {
-            PRUnichar *networkNameUtf16 = NULL;
-            IDHCPServer *dhcpServer     = NULL;
-
-#if VBOX_API_VERSION != 2002000
-            if (removeinterface) {
-                PRUnichar *iidUtf16 = NULL;
-                IProgress *progress = NULL;
-
-                networkInterface->vtbl->GetId(networkInterface, &iidUtf16);
-
-                if (iidUtf16) {
-# if VBOX_API_VERSION == 3000000
-                    IHostNetworkInterface *netInt = NULL;
-                    host->vtbl->RemoveHostOnlyNetworkInterface(host, iidUtf16, &netInt, &progress);
-                    VBOX_RELEASE(netInt);
-# else  /* VBOX_API_VERSION > 3000000 */
-                    host->vtbl->RemoveHostOnlyNetworkInterface(host, iidUtf16, &progress);
-# endif /* VBOX_API_VERSION > 3000000 */
-                    VBOX_UTF16_FREE(iidUtf16);
-                }
-
-                if (progress) {
-                    progress->vtbl->WaitForCompletion(progress, -1);
-                    VBOX_RELEASE(progress);
-                }
-            }
-#endif /* VBOX_API_VERSION != 2002000 */
-
-            VBOX_UTF8_TO_UTF16(networkNameUtf8, &networkNameUtf16);
-
-            data->vboxObj->vtbl->FindDHCPServerByNetworkName(data->vboxObj,
-                                                             networkNameUtf16,
-                                                             &dhcpServer);
-            if (dhcpServer) {
-                dhcpServer->vtbl->SetEnabled(dhcpServer, PR_FALSE);
-                dhcpServer->vtbl->Stop(dhcpServer);
-                if (removeinterface)
-                    data->vboxObj->vtbl->RemoveDHCPServer(data->vboxObj, dhcpServer);
-                VBOX_RELEASE(dhcpServer);
-            }
-
-            VBOX_UTF16_FREE(networkNameUtf16);
-
-        }
-        VBOX_RELEASE(networkInterface);
-    }
-
-    VBOX_UTF16_FREE(networkInterfaceNameUtf16);
-    VBOX_RELEASE(host);
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(networkNameUtf8);
-    return ret;
-}
-
-static int vboxNetworkUndefine(virNetworkPtr network)
-{
-    return vboxNetworkUndefineDestroy(network, true);
-}
-
 static int vboxNetworkCreate(virNetworkPtr network)
 {
     VBOX_OBJECT_HOST_CHECK(network->conn, int, -1);
@@ -2199,11 +2108,6 @@ static int vboxNetworkCreate(virNetworkPtr network)
  cleanup:
     VIR_FREE(networkNameUtf8);
     return ret;
-}
-
-static int vboxNetworkDestroy(virNetworkPtr network)
-{
-    return vboxNetworkUndefineDestroy(network, false);
 }
 
 static char *vboxNetworkGetXMLDesc(virNetworkPtr network,
@@ -4222,6 +4126,12 @@ _virtualboxCreateDHCPServer(IVirtualBox *vboxObj, PRUnichar *name, IDHCPServer *
 }
 
 static nsresult
+_virtualboxRemoveDHCPServer(IVirtualBox *vboxObj, IDHCPServer *server)
+{
+    return vboxObj->vtbl->RemoveDHCPServer(vboxObj, server);
+}
+
+static nsresult
 _machineAddStorageController(IMachine *machine, PRUnichar *name,
                              PRUint32 connectionType,
                              IStorageController **controller)
@@ -5642,6 +5552,25 @@ _hostCreateHostOnlyNetworkInterface(vboxGlobalData *data ATTRIBUTE_UNUSED,
 }
 
 static nsresult
+_hostRemoveHostOnlyNetworkInterface(IHost *host ATTRIBUTE_UNUSED,
+                                    vboxIIDUnion *iidu ATTRIBUTE_UNUSED,
+                                    IProgress **progress ATTRIBUTE_UNUSED)
+{
+#if VBOX_API_VERSION == 2002000
+    vboxUnsupported();
+    return 0;
+#elif VBOX_API_VERSION == 3000000
+    nsresult rc;
+    IHostNetworkInterface *netInt = NULL;
+    rc = host->vtbl->RemoveHostOnlyNetworkInterface(host, IID_MEMBER(value), &netInt, progress);
+    VBOX_RELEASE(netInt);
+    return rc;
+#else  /* VBOX_API_VERSION > 3000000 */
+    return host->vtbl->RemoveHostOnlyNetworkInterface(host, IID_MEMBER(value), progress);
+#endif /* VBOX_API_VERSION > 3000000 */
+}
+
+static nsresult
 _hnInterfaceGetInterfaceType(IHostNetworkInterface *hni, PRUint32 *interfaceType)
 {
     return hni->vtbl->GetInterfaceType(hni, interfaceType);
@@ -5718,6 +5647,12 @@ _dhcpServerStart(IDHCPServer *dhcpServer, PRUnichar *networkName,
 {
     return dhcpServer->vtbl->Start(dhcpServer, networkName,
                                    trunkName, trunkType);
+}
+
+static nsresult
+_dhcpServerStop(IDHCPServer *dhcpServer)
+{
+    return dhcpServer->vtbl->Stop(dhcpServer);
 }
 
 static bool _machineStateOnline(PRUint32 state)
@@ -5807,6 +5742,7 @@ static vboxUniformedIVirtualBox _UIVirtualBox = {
     .OpenMedium = _virtualboxOpenMedium,
     .FindDHCPServerByNetworkName = _virtualboxFindDHCPServerByNetworkName,
     .CreateDHCPServer = _virtualboxCreateDHCPServer,
+    .RemoveDHCPServer = _virtualboxRemoveDHCPServer,
 };
 
 static vboxUniformedIMachine _UIMachine = {
@@ -6029,6 +5965,7 @@ static vboxUniformedIHost _UIHost = {
     .FindHostNetworkInterfaceById = _hostFindHostNetworkInterfaceById,
     .FindHostNetworkInterfaceByName = _hostFindHostNetworkInterfaceByName,
     .CreateHostOnlyNetworkInterface = _hostCreateHostOnlyNetworkInterface,
+    .RemoveHostOnlyNetworkInterface = _hostRemoveHostOnlyNetworkInterface,
 };
 
 static vboxUniformedIHNInterface _UIHNInterface = {
@@ -6045,6 +5982,7 @@ static vboxUniformedIDHCPServer _UIDHCPServer = {
     .SetEnabled = _dhcpServerSetEnabled,
     .SetConfiguration = _dhcpServerSetConfiguration,
     .Start = _dhcpServerStart,
+    .Stop = _dhcpServerStop,
 };
 
 static uniformedMachineStateChecker _machineStateChecker = {
@@ -6149,6 +6087,12 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
 #else /* VBOX_API_VERSION < 4002000 */
     pVBoxAPI->vboxSnapshotRedefine = 0;
 #endif /* VBOX_API_VERSION < 4002000 */
+
+#if VBOX_API_VERSION == 2002000
+    pVBoxAPI->networkRemoveInterface = 0;
+#else /* VBOX_API_VERSION > 2002000 */
+    pVBoxAPI->networkRemoveInterface = 1;
+#endif /* VBOX_API_VERSION > 2002000 */
 }
 
 /**
