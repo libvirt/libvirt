@@ -466,6 +466,12 @@ typedef struct {
                                          PRUint8** screenData);
 } vboxUniformedIDisplay;
 
+/* Functions for IHost */
+typedef struct {
+    nsresult (*FindHostNetworkInterfaceById)(IHost *host, vboxIIDUnion *iidu,
+                                             IHostNetworkInterface **networkInterface);
+} vboxUniformedIHost;
+
 /* Functions for IHostNetworkInterface */
 typedef struct {
     nsresult (*GetInterfaceType)(IHostNetworkInterface *hni, PRUint32 *interfaceType);
@@ -527,6 +533,7 @@ typedef struct {
     vboxUniformedISharedFolder UISharedFolder;
     vboxUniformedISnapshot UISnapshot;
     vboxUniformedIDisplay UIDisplay;
+    vboxUniformedIHost UIHost;
     vboxUniformedIHNInterface UIHNInterface;
     uniformedMachineStateChecker machineStateChecker;
     /* vbox API features */
@@ -552,6 +559,7 @@ int vboxConnectNumOfNetworks(virConnectPtr conn);
 int vboxConnectListNetworks(virConnectPtr conn, char **const names, int nnames);
 int vboxConnectNumOfDefinedNetworks(virConnectPtr conn);
 int vboxConnectListDefinedNetworks(virConnectPtr conn, char **const names, int nnames);
+virNetworkPtr vboxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

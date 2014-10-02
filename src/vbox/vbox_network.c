@@ -61,6 +61,19 @@ VIR_LOG_INIT("vbox.vbox_network");
         }                                                                     \
     } while (0)
 
+#define vboxIIDUnalloc(iid)                     gVBoxAPI.UIID.vboxIIDUnalloc(data, iid)
+#define vboxIIDToUUID(iid, uuid)                gVBoxAPI.UIID.vboxIIDToUUID(data, iid, uuid)
+#define vboxIIDFromUUID(iid, uuid)              gVBoxAPI.UIID.vboxIIDFromUUID(data, iid, uuid)
+#define vboxIIDIsEqual(iid1, iid2)              gVBoxAPI.UIID.vboxIIDIsEqual(data, iid1, iid2)
+#define DEBUGIID(msg, iid)                      gVBoxAPI.UIID.DEBUGIID(msg, iid)
+#define vboxIIDFromArrayItem(iid, array, idx) \
+    gVBoxAPI.UIID.vboxIIDFromArrayItem(data, iid, array, idx)
+
+#define VBOX_IID_INITIALIZE(iid)                gVBoxAPI.UIID.vboxIIDInitialize(iid)
+
+#define ARRAY_GET_MACHINES \
+    (gVBoxAPI.UArray.handleGetMachines(data->vboxObj))
+
 static vboxUniformedAPI gVBoxAPI;
 
 /**
@@ -297,5 +310,57 @@ int vboxConnectListDefinedNetworks(virConnectPtr conn, char **const names, int n
 
     VBOX_RELEASE(host);
 
+    return ret;
+}
+
+virNetworkPtr vboxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
+{
+    vboxGlobalData *data = conn->privateData;
+    PRUint32 interfaceType = 0;
+    char *nameUtf8 = NULL;
+    PRUnichar *nameUtf16 = NULL;
+    IHostNetworkInterface *networkInterface = NULL;
+    vboxIIDUnion iid;
+    IHost *host = NULL;
+    virNetworkPtr ret = NULL;
+
+    if (!data->vboxObj)
+        return ret;
+
+    gVBoxAPI.UIVirtualBox.GetHost(data->vboxObj, &host);
+    if (!host)
+        return ret;
+
+    VBOX_IID_INITIALIZE(&iid);
+    vboxIIDFromUUID(&iid, uuid);
+
+    /* TODO: "internal" networks are just strings and
+     * thus can't do much with them
+     */
+
+    gVBoxAPI.UIHost.FindHostNetworkInterfaceById(host, &iid,
+                                                 &networkInterface);
+    if (!networkInterface)
+        goto cleanup;
+
+    gVBoxAPI.UIHNInterface.GetInterfaceType(networkInterface, &interfaceType);
+
+    if (interfaceType != HostNetworkInterfaceType_HostOnly)
+        goto cleanup;
+
+    gVBoxAPI.UIHNInterface.GetName(networkInterface, &nameUtf16);
+    VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
+
+    ret = virGetNetwork(conn, nameUtf8, uuid);
+
+    VIR_DEBUG("Network Name: %s", nameUtf8);
+    DEBUGIID("Network UUID", &iid);
+    VBOX_UTF8_FREE(nameUtf8);
+    VBOX_UTF16_FREE(nameUtf16);
+
+ cleanup:
+    VBOX_RELEASE(networkInterface);
+    VBOX_RELEASE(host);
+    vboxIIDUnalloc(&iid);
     return ret;
 }

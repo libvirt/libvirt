@@ -2061,50 +2061,6 @@ _registerDomainEvent(virDriverPtr driver)
  */
 
 static virNetworkPtr
-vboxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
-{
-    VBOX_OBJECT_HOST_CHECK(conn, virNetworkPtr, NULL);
-    vboxIID iid = VBOX_IID_INITIALIZER;
-
-    vboxIIDFromUUID(&iid, uuid);
-
-    /* TODO: "internal" networks are just strings and
-     * thus can't do much with them
-     */
-    IHostNetworkInterface *networkInterface = NULL;
-
-    host->vtbl->FindHostNetworkInterfaceById(host, iid.value, &networkInterface);
-    if (networkInterface) {
-        PRUint32 interfaceType = 0;
-
-        networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
-
-        if (interfaceType == HostNetworkInterfaceType_HostOnly) {
-            char *nameUtf8       = NULL;
-            PRUnichar *nameUtf16 = NULL;
-
-            networkInterface->vtbl->GetName(networkInterface, &nameUtf16);
-            VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
-
-            ret = virGetNetwork(conn, nameUtf8, uuid);
-
-            VIR_DEBUG("Network Name: %s", nameUtf8);
-            DEBUGIID("Network UUID", iid.value);
-
-            VBOX_UTF8_FREE(nameUtf8);
-            VBOX_UTF16_FREE(nameUtf16);
-        }
-
-        VBOX_RELEASE(networkInterface);
-    }
-
-    VBOX_RELEASE(host);
-
-    vboxIIDUnalloc(&iid);
-    return ret;
-}
-
-static virNetworkPtr
 vboxNetworkLookupByName(virConnectPtr conn, const char *name)
 {
     VBOX_OBJECT_HOST_CHECK(conn, virNetworkPtr, NULL);
@@ -5897,6 +5853,14 @@ _displayTakeScreenShotPNGToArray(IDisplay *display ATTRIBUTE_UNUSED,
 }
 
 static nsresult
+_hostFindHostNetworkInterfaceById(IHost *host, vboxIIDUnion *iidu,
+                                  IHostNetworkInterface **networkInterface)
+{
+    return host->vtbl->FindHostNetworkInterfaceById(host, IID_MEMBER(value),
+                                                    networkInterface);
+}
+
+static nsresult
 _hnInterfaceGetInterfaceType(IHostNetworkInterface *hni, PRUint32 *interfaceType)
 {
     return hni->vtbl->GetInterfaceType(hni, interfaceType);
@@ -6217,6 +6181,10 @@ static vboxUniformedIDisplay _UIDisplay = {
     .TakeScreenShotPNGToArray = _displayTakeScreenShotPNGToArray,
 };
 
+static vboxUniformedIHost _UIHost = {
+    .FindHostNetworkInterfaceById = _hostFindHostNetworkInterfaceById,
+};
+
 static vboxUniformedIHNInterface _UIHNInterface = {
     .GetInterfaceType = _hnInterfaceGetInterfaceType,
     .GetStatus = _hnInterfaceGetStatus,
@@ -6276,6 +6244,7 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->UISharedFolder = _UISharedFolder;
     pVBoxAPI->UISnapshot = _UISnapshot;
     pVBoxAPI->UIDisplay = _UIDisplay;
+    pVBoxAPI->UIHost = _UIHost;
     pVBoxAPI->UIHNInterface = _UIHNInterface;
     pVBoxAPI->machineStateChecker = _machineStateChecker;
 
