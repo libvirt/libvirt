@@ -10215,7 +10215,18 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         } else {
             net->bandwidth = NULL;
         }
+
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            virNetDevBandwidthFree(net->data.network.actual->bandwidth);
+            if (virNetDevBandwidthCopy(&net->data.network.actual->bandwidth,
+                                       net->bandwidth) < 0)
+                goto cleanup;
+        }
+
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+            goto cleanup;
     }
+
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         if (!persistentNet->bandwidth) {
             persistentNet->bandwidth = bandwidth;
