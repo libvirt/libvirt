@@ -176,6 +176,7 @@ typedef struct {
     void* (*handleSnapshotGetChildren)(ISnapshot *snapshot);
     void* (*handleMediumGetChildren)(IMedium *medium);
     void* (*handleMediumGetSnapshotIds)(IMedium *medium);
+    void* (*handleHostGetNetworkInterfaces)(IHost *host);
 } vboxUniformedArray;
 
 /* Functions for nsISupports */
@@ -190,6 +191,7 @@ typedef struct {
     nsresult (*GetMachine)(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IMachine **machine);
     nsresult (*OpenMachine)(IVirtualBox *vboxObj, PRUnichar *settingsFile, IMachine **machine);
     nsresult (*GetSystemProperties)(IVirtualBox *vboxObj, ISystemProperties **systemProperties);
+    nsresult (*GetHost)(IVirtualBox *vboxObj, IHost **host);
     nsresult (*CreateMachine)(vboxGlobalData *data, virDomainDefPtr def, IMachine **machine, char *uuidstr);
     nsresult (*CreateHardDiskMedium)(IVirtualBox *vboxObj, PRUnichar *format, PRUnichar *location, IMedium **medium);
     nsresult (*RegisterMachine)(IVirtualBox *vboxObj, IMachine *machine);
@@ -464,6 +466,12 @@ typedef struct {
                                          PRUint8** screenData);
 } vboxUniformedIDisplay;
 
+/* Functions for IHostNetworkInterface */
+typedef struct {
+    nsresult (*GetInterfaceType)(IHostNetworkInterface *hni, PRUint32 *interfaceType);
+    nsresult (*GetStatus)(IHostNetworkInterface *hni, PRUint32 *status);
+} vboxUniformedIHNInterface;
+
 typedef struct {
     bool (*Online)(PRUint32 state);
     bool (*Inactive)(PRUint32 state);
@@ -518,6 +526,7 @@ typedef struct {
     vboxUniformedISharedFolder UISharedFolder;
     vboxUniformedISnapshot UISnapshot;
     vboxUniformedIDisplay UIDisplay;
+    vboxUniformedIHNInterface UIHNInterface;
     uniformedMachineStateChecker machineStateChecker;
     /* vbox API features */
     bool domainEventCallbacks;
@@ -538,6 +547,7 @@ virDrvOpenStatus vboxNetworkOpen(virConnectPtr conn,
                                  virConnectAuthPtr auth,
                                  unsigned int flags);
 int vboxNetworkClose(virConnectPtr conn);
+int vboxConnectNumOfNetworks(virConnectPtr conn);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

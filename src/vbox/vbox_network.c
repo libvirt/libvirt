@@ -33,6 +33,16 @@
 
 VIR_LOG_INIT("vbox.vbox_network");
 
+#define VBOX_RELEASE(arg)                                                     \
+    do {                                                                      \
+        if (arg) {                                                            \
+            gVBoxAPI.nsUISupports.Release((void *)arg);                       \
+            (arg) = NULL;                                                     \
+        }                                                                     \
+    } while (0)
+
+static vboxUniformedAPI gVBoxAPI;
+
 /**
  * The Network Functions here on
  */
@@ -64,4 +74,49 @@ int vboxNetworkClose(virConnectPtr conn)
     VIR_DEBUG("network uninitialized");
     conn->networkPrivateData = NULL;
     return 0;
+}
+
+int vboxConnectNumOfNetworks(virConnectPtr conn)
+{
+    vboxGlobalData *data = conn->privateData;
+    vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
+    IHost *host = NULL;
+    size_t i = 0;
+    int ret = -1;
+
+    if (!data->vboxObj)
+        return ret;
+
+    gVBoxAPI.UIVirtualBox.GetHost(data->vboxObj, &host);
+    if (!host)
+        return ret;
+
+    gVBoxAPI.UArray.vboxArrayGet(&networkInterfaces, host,
+                                 gVBoxAPI.UArray.handleHostGetNetworkInterfaces(host));
+
+    ret = 0;
+    for (i = 0; i < networkInterfaces.count; i++) {
+        IHostNetworkInterface *networkInterface = networkInterfaces.items[i];
+        PRUint32 status = HostNetworkInterfaceStatus_Unknown;
+        PRUint32 interfaceType = 0;
+
+        if (!networkInterface)
+            continue;
+
+        gVBoxAPI.UIHNInterface.GetInterfaceType(networkInterface, &interfaceType);
+        if (interfaceType != HostNetworkInterfaceType_HostOnly)
+            continue;
+
+        gVBoxAPI.UIHNInterface.GetStatus(networkInterface, &status);
+
+        if (status == HostNetworkInterfaceStatus_Up)
+            ret++;
+    }
+
+    gVBoxAPI.UArray.vboxArrayRelease(&networkInterfaces);
+
+    VBOX_RELEASE(host);
+
+    VIR_DEBUG("numActive: %d", ret);
+    return ret;
 }

@@ -265,6 +265,19 @@ enum MediumVariant
     MediumVariant_Diff = 0x20000
 };
 
+enum HostNetworkInterfaceStatus
+{
+    HostNetworkInterfaceStatus_Unknown = 0,
+    HostNetworkInterfaceStatus_Up = 1,
+    HostNetworkInterfaceStatus_Down = 2
+};
+
+enum HostNetworkInterfaceType
+{
+    HostNetworkInterfaceType_Bridged = 1,
+    HostNetworkInterfaceType_HostOnly = 2
+};
+
 # define VBOX_E_OBJECT_NOT_FOUND 0x80BB0001
 # define VBOX_E_INVALID_VM_STATE 0x80BB0002
 # define VBOX_E_VM_ERROR 0x80BB0003
@@ -302,5 +315,7 @@ typedef nsISupports IStorageController;
 typedef nsISupports ISharedFolder;
 typedef nsISupports ISnapshot;
 typedef nsISupports IDisplay;
+typedef nsISupports IHost;
+typedef nsISupports IHostNetworkInterface;
 
 #endif /* VBOX_COMMON_H */

@@ -2060,40 +2060,6 @@ _registerDomainEvent(virDriverPtr driver)
  * The Network Functions here on
  */
 
-static int vboxConnectNumOfNetworks(virConnectPtr conn)
-{
-    VBOX_OBJECT_HOST_CHECK(conn, int, 0);
-    vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
-    size_t i = 0;
-
-    vboxArrayGet(&networkInterfaces, host, host->vtbl->GetNetworkInterfaces);
-
-    for (i = 0; i < networkInterfaces.count; i++) {
-        IHostNetworkInterface *networkInterface = networkInterfaces.items[i];
-
-        if (networkInterface) {
-            PRUint32 interfaceType = 0;
-
-            networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
-            if (interfaceType == HostNetworkInterfaceType_HostOnly) {
-                PRUint32 status = HostNetworkInterfaceStatus_Unknown;
-
-                networkInterface->vtbl->GetStatus(networkInterface, &status);
-
-                if (status == HostNetworkInterfaceStatus_Up)
-                    ret++;
-            }
-        }
-    }
-
-    vboxArrayRelease(&networkInterfaces);
-
-    VBOX_RELEASE(host);
-
-    VIR_DEBUG("numActive: %d", ret);
-    return ret;
-}
-
 static int vboxConnectListNetworks(virConnectPtr conn, char **const names, int nnames) {
     VBOX_OBJECT_HOST_CHECK(conn, int, 0);
     vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
@@ -4501,6 +4467,11 @@ static void* _handleMediumGetSnapshotIds(IMedium *medium)
     return medium->vtbl->GetSnapshotIds;
 }
 
+static void* _handleHostGetNetworkInterfaces(IHost *host)
+{
+    return host->vtbl->GetNetworkInterfaces;
+}
+
 static nsresult _nsisupportsRelease(nsISupports *nsi)
 {
     return nsi->vtbl->Release(nsi);
@@ -4545,6 +4516,12 @@ static nsresult
 _virtualboxGetSystemProperties(IVirtualBox *vboxObj, ISystemProperties **systemProperties)
 {
     return vboxObj->vtbl->GetSystemProperties(vboxObj, systemProperties);
+}
+
+static nsresult
+_virtualboxGetHost(IVirtualBox *vboxObj, IHost **host)
+{
+    return vboxObj->vtbl->GetHost(vboxObj, host);
 }
 
 static nsresult
@@ -6043,6 +6020,18 @@ _displayTakeScreenShotPNGToArray(IDisplay *display ATTRIBUTE_UNUSED,
 #endif /* VBOX_API_VERSION >= 4000000 */
 }
 
+static nsresult
+_hnInterfaceGetInterfaceType(IHostNetworkInterface *hni, PRUint32 *interfaceType)
+{
+    return hni->vtbl->GetInterfaceType(hni, interfaceType);
+}
+
+static nsresult
+_hnInterfaceGetStatus(IHostNetworkInterface *hni, PRUint32 *status)
+{
+    return hni->vtbl->GetStatus(hni, status);
+}
+
 static bool _machineStateOnline(PRUint32 state)
 {
     return ((state >= MachineState_FirstOnline) &&
@@ -6109,6 +6098,7 @@ static vboxUniformedArray _UArray = {
     .handleSnapshotGetChildren = _handleSnapshotGetChildren,
     .handleMediumGetChildren = _handleMediumGetChildren,
     .handleMediumGetSnapshotIds = _handleMediumGetSnapshotIds,
+    .handleHostGetNetworkInterfaces = _handleHostGetNetworkInterfaces,
 };
 
 static vboxUniformednsISupports _nsUISupports = {
@@ -6121,6 +6111,7 @@ static vboxUniformedIVirtualBox _UIVirtualBox = {
     .GetMachine = _virtualboxGetMachine,
     .OpenMachine = _virtualboxOpenMachine,
     .GetSystemProperties = _virtualboxGetSystemProperties,
+    .GetHost = _virtualboxGetHost,
     .CreateMachine = _virtualboxCreateMachine,
     .CreateHardDiskMedium = _virtualboxCreateHardDiskMedium,
     .RegisterMachine = _virtualboxRegisterMachine,
@@ -6344,6 +6335,11 @@ static vboxUniformedIDisplay _UIDisplay = {
     .TakeScreenShotPNGToArray = _displayTakeScreenShotPNGToArray,
 };
 
+static vboxUniformedIHNInterface _UIHNInterface = {
+    .GetInterfaceType = _hnInterfaceGetInterfaceType,
+    .GetStatus = _hnInterfaceGetStatus,
+};
+
 static uniformedMachineStateChecker _machineStateChecker = {
     .Online = _machineStateOnline,
     .Inactive = _machineStateInactive,
@@ -6397,6 +6393,7 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->UISharedFolder = _UISharedFolder;
     pVBoxAPI->UISnapshot = _UISnapshot;
     pVBoxAPI->UIDisplay = _UIDisplay;
+    pVBoxAPI->UIHNInterface = _UIHNInterface;
     pVBoxAPI->machineStateChecker = _machineStateChecker;
 
 #if VBOX_API_VERSION <= 2002000 || VBOX_API_VERSION >= 4000000
