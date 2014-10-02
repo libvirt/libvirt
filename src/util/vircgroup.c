@@ -4029,6 +4029,17 @@ virCgroupNewDetectMachine(const char *name ATTRIBUTE_UNUSED,
     return -1;
 }
 
+
+int virCgroupTerminateMachine(const char *name ATTRIBUTE_UNUSED,
+                              const char *drivername ATTRIBUTE_UNUSED,
+                              bool privileged ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
 int
 virCgroupNewMachine(const char *name ATTRIBUTE_UNUSED,
                     const char *drivername ATTRIBUTE_UNUSED,
