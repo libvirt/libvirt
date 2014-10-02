@@ -534,6 +534,9 @@ typedef struct {
 
 virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
                                     const unsigned char *uuid);
+virDrvOpenStatus vboxNetworkOpen(virConnectPtr conn,
+                                 virConnectAuthPtr auth,
+                                 unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

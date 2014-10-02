@@ -2059,30 +2059,6 @@ _registerDomainEvent(virDriverPtr driver)
 /**
  * The Network Functions here on
  */
-static virDrvOpenStatus vboxNetworkOpen(virConnectPtr conn,
-                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                        unsigned int flags)
-{
-    vboxGlobalData *data = conn->privateData;
-
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (STRNEQ(conn->driver->name, "VBOX"))
-        goto cleanup;
-
-    if ((data->pFuncs      == NULL) ||
-        (data->vboxObj     == NULL) ||
-        (data->vboxSession == NULL))
-        goto cleanup;
-
-    VIR_DEBUG("network initialized");
-    /* conn->networkPrivateData = some network specific data */
-    return VIR_DRV_OPEN_SUCCESS;
-
- cleanup:
-    return VIR_DRV_OPEN_DECLINED;
-}
-
 static int vboxNetworkClose(virConnectPtr conn)
 {
     VIR_DEBUG("network uninitialized");
