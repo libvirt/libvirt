@@ -838,27 +838,6 @@ static PRUnichar *PRUnicharFromInt(int n) {
 
 #endif /* VBOX_API_VERSION >= 3001000 */
 
-static int
-vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
-                         virSocketAddrPtr addr)
-{
-    int result = -1;
-    char *utf8 = NULL;
-
-    VBOX_UTF16_TO_UTF8(utf16, &utf8);
-
-    if (virSocketAddrParse(addr, utf8, AF_UNSPEC) < 0) {
-        goto cleanup;
-    }
-
-    result = 0;
-
- cleanup:
-    VBOX_UTF8_FREE(utf8);
-
-    return result;
-}
-
 static virDomainState _vboxConvertState(PRUint32 state)
 {
     switch (state) {
@@ -2037,171 +2016,6 @@ _registerDomainEvent(virDriverPtr driver)
 }
 
 #endif /* !(VBOX_API_VERSION == 2002000 || VBOX_API_VERSION >= 4000000) */
-
-/**
- * The Network Functions here on
- */
-
-static char *vboxNetworkGetXMLDesc(virNetworkPtr network,
-                                   unsigned int flags)
-{
-    VBOX_OBJECT_HOST_CHECK(network->conn, char *, NULL);
-    virNetworkDefPtr def  = NULL;
-    virNetworkIpDefPtr ipdef = NULL;
-    char *networkNameUtf8 = NULL;
-    PRUnichar *networkInterfaceNameUtf16    = NULL;
-    IHostNetworkInterface *networkInterface = NULL;
-
-    virCheckFlags(0, NULL);
-
-    if (VIR_ALLOC(def) < 0)
-        goto cleanup;
-    if (VIR_ALLOC(ipdef) < 0)
-        goto cleanup;
-    def->ips = ipdef;
-    def->nips = 1;
-
-    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", network->name) < 0)
-        goto cleanup;
-
-    VBOX_UTF8_TO_UTF16(network->name, &networkInterfaceNameUtf16);
-
-    host->vtbl->FindHostNetworkInterfaceByName(host, networkInterfaceNameUtf16, &networkInterface);
-
-    if (networkInterface) {
-        PRUint32 interfaceType = 0;
-
-        networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
-
-        if (interfaceType == HostNetworkInterfaceType_HostOnly) {
-            if (VIR_STRDUP(def->name, network->name) >= 0) {
-                PRUnichar *networkNameUtf16 = NULL;
-                IDHCPServer *dhcpServer     = NULL;
-                vboxIID vboxnet0IID = VBOX_IID_INITIALIZER;
-
-                networkInterface->vtbl->GetId(networkInterface, &vboxnet0IID.value);
-                vboxIIDToUUID(&vboxnet0IID, def->uuid);
-
-                VBOX_UTF8_TO_UTF16(networkNameUtf8, &networkNameUtf16);
-
-                def->forward.type = VIR_NETWORK_FORWARD_NONE;
-
-                data->vboxObj->vtbl->FindDHCPServerByNetworkName(data->vboxObj,
-                                                                 networkNameUtf16,
-                                                                 &dhcpServer);
-                if (dhcpServer) {
-                    ipdef->nranges = 1;
-                    if (VIR_ALLOC_N(ipdef->ranges, ipdef->nranges) >= 0) {
-                        PRUnichar *ipAddressUtf16     = NULL;
-                        PRUnichar *networkMaskUtf16   = NULL;
-                        PRUnichar *fromIPAddressUtf16 = NULL;
-                        PRUnichar *toIPAddressUtf16   = NULL;
-                        bool errorOccurred = false;
-
-                        dhcpServer->vtbl->GetIPAddress(dhcpServer, &ipAddressUtf16);
-                        dhcpServer->vtbl->GetNetworkMask(dhcpServer, &networkMaskUtf16);
-                        dhcpServer->vtbl->GetLowerIP(dhcpServer, &fromIPAddressUtf16);
-                        dhcpServer->vtbl->GetUpperIP(dhcpServer, &toIPAddressUtf16);
-                        /* Currently virtualbox supports only one dhcp server per network
-                         * with contigious address space from start to end
-                         */
-                        if (vboxSocketParseAddrUtf16(data, ipAddressUtf16,
-                                                     &ipdef->address) < 0 ||
-                            vboxSocketParseAddrUtf16(data, networkMaskUtf16,
-                                                     &ipdef->netmask) < 0 ||
-                            vboxSocketParseAddrUtf16(data, fromIPAddressUtf16,
-                                                     &ipdef->ranges[0].start) < 0 ||
-                            vboxSocketParseAddrUtf16(data, toIPAddressUtf16,
-                                                     &ipdef->ranges[0].end) < 0) {
-                            errorOccurred = true;
-                        }
-
-                        VBOX_UTF16_FREE(ipAddressUtf16);
-                        VBOX_UTF16_FREE(networkMaskUtf16);
-                        VBOX_UTF16_FREE(fromIPAddressUtf16);
-                        VBOX_UTF16_FREE(toIPAddressUtf16);
-
-                        if (errorOccurred) {
-                            goto cleanup;
-                        }
-                    } else {
-                        ipdef->nranges = 0;
-                    }
-
-                    ipdef->nhosts = 1;
-                    if (VIR_ALLOC_N(ipdef->hosts, ipdef->nhosts) >= 0) {
-                        if (VIR_STRDUP(ipdef->hosts[0].name, network->name) < 0) {
-                            VIR_FREE(ipdef->hosts);
-                            ipdef->nhosts = 0;
-                        } else {
-                            PRUnichar *macAddressUtf16 = NULL;
-                            PRUnichar *ipAddressUtf16  = NULL;
-                            bool errorOccurred = false;
-
-                            networkInterface->vtbl->GetHardwareAddress(networkInterface, &macAddressUtf16);
-                            networkInterface->vtbl->GetIPAddress(networkInterface, &ipAddressUtf16);
-
-                            VBOX_UTF16_TO_UTF8(macAddressUtf16, &ipdef->hosts[0].mac);
-
-                            if (vboxSocketParseAddrUtf16(data, ipAddressUtf16,
-                                                         &ipdef->hosts[0].ip) < 0) {
-                                errorOccurred = true;
-                            }
-
-                            VBOX_UTF16_FREE(macAddressUtf16);
-                            VBOX_UTF16_FREE(ipAddressUtf16);
-
-                            if (errorOccurred) {
-                                goto cleanup;
-                            }
-                        }
-                    } else {
-                        ipdef->nhosts = 0;
-                    }
-
-                    VBOX_RELEASE(dhcpServer);
-                } else {
-                    PRUnichar *networkMaskUtf16 = NULL;
-                    PRUnichar *ipAddressUtf16   = NULL;
-                    bool errorOccurred = false;
-
-                    networkInterface->vtbl->GetNetworkMask(networkInterface, &networkMaskUtf16);
-                    networkInterface->vtbl->GetIPAddress(networkInterface, &ipAddressUtf16);
-
-                    if (vboxSocketParseAddrUtf16(data, networkMaskUtf16,
-                                                 &ipdef->netmask) < 0 ||
-                        vboxSocketParseAddrUtf16(data, ipAddressUtf16,
-                                                 &ipdef->address) < 0) {
-                        errorOccurred = true;
-                    }
-
-                    VBOX_UTF16_FREE(networkMaskUtf16);
-                    VBOX_UTF16_FREE(ipAddressUtf16);
-
-                    if (errorOccurred) {
-                        goto cleanup;
-                    }
-                }
-
-                DEBUGIID("Network UUID", vboxnet0IID.value);
-                vboxIIDUnalloc(&vboxnet0IID);
-                VBOX_UTF16_FREE(networkNameUtf16);
-            }
-        }
-
-        VBOX_RELEASE(networkInterface);
-    }
-
-    VBOX_UTF16_FREE(networkInterfaceNameUtf16);
-    VBOX_RELEASE(host);
-
-    ret = virNetworkDefFormat(def, 0);
-
- cleanup:
-    virNetworkDefFree(def);
-    VIR_FREE(networkNameUtf8);
-    return ret;
-}
 
 /**
  * The Storage Functions here on
@@ -5527,6 +5341,24 @@ _hnInterfaceGetId(IHostNetworkInterface *hni, vboxIIDUnion *iidu)
 }
 
 static nsresult
+_hnInterfaceGetHardwareAddress(IHostNetworkInterface *hni, PRUnichar **hardwareAddress)
+{
+    return hni->vtbl->GetHardwareAddress(hni, hardwareAddress);
+}
+
+static nsresult
+_hnInterfaceGetIPAddress(IHostNetworkInterface *hni, PRUnichar **IPAddress)
+{
+    return hni->vtbl->GetIPAddress(hni, IPAddress);
+}
+
+static nsresult
+_hnInterfaceGetNetworkMask(IHostNetworkInterface *hni, PRUnichar **networkMask)
+{
+    return hni->vtbl->GetNetworkMask(hni, networkMask);
+}
+
+static nsresult
 _hnInterfaceEnableStaticIPConfig(IHostNetworkInterface *hni, PRUnichar *IPAddress,
                                  PRUnichar *networkMask)
 {
@@ -5555,6 +5387,30 @@ _hnInterfaceDHCPRediscover(IHostNetworkInterface *hni)
 #else
     return hni->vtbl->DHCPRediscover(hni);
 #endif
+}
+
+static nsresult
+_dhcpServerGetIPAddress(IDHCPServer *dhcpServer, PRUnichar **IPAddress)
+{
+    return dhcpServer->vtbl->GetIPAddress(dhcpServer, IPAddress);
+}
+
+static nsresult
+_dhcpServerGetNetworkMask(IDHCPServer *dhcpServer, PRUnichar **networkMask)
+{
+    return dhcpServer->vtbl->GetNetworkMask(dhcpServer, networkMask);
+}
+
+static nsresult
+_dhcpServerGetLowerIP(IDHCPServer *dhcpServer, PRUnichar **lowerIP)
+{
+    return dhcpServer->vtbl->GetLowerIP(dhcpServer, lowerIP);
+}
+
+static nsresult
+_dhcpServerGetUpperIP(IDHCPServer *dhcpServer, PRUnichar **upperIP)
+{
+    return dhcpServer->vtbl->GetUpperIP(dhcpServer, upperIP);
 }
 
 static nsresult
@@ -5905,12 +5761,19 @@ static vboxUniformedIHNInterface _UIHNInterface = {
     .GetStatus = _hnInterfaceGetStatus,
     .GetName = _hnInterfaceGetName,
     .GetId = _hnInterfaceGetId,
+    .GetHardwareAddress = _hnInterfaceGetHardwareAddress,
+    .GetIPAddress = _hnInterfaceGetIPAddress,
+    .GetNetworkMask = _hnInterfaceGetNetworkMask,
     .EnableStaticIPConfig = _hnInterfaceEnableStaticIPConfig,
     .EnableDynamicIPConfig = _hnInterfaceEnableDynamicIPConfig,
     .DHCPRediscover = _hnInterfaceDHCPRediscover,
 };
 
 static vboxUniformedIDHCPServer _UIDHCPServer = {
+    .GetIPAddress = _dhcpServerGetIPAddress,
+    .GetNetworkMask = _dhcpServerGetNetworkMask,
+    .GetLowerIP = _dhcpServerGetLowerIP,
+    .GetUpperIP = _dhcpServerGetUpperIP,
     .SetEnabled = _dhcpServerSetEnabled,
     .SetConfiguration = _dhcpServerSetConfiguration,
     .Start = _dhcpServerStart,

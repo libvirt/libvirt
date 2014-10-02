@@ -808,3 +808,194 @@ int vboxNetworkCreate(virNetworkPtr network)
     VIR_FREE(networkNameUtf8);
     return ret;
 }
+
+static int
+vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
+                         virSocketAddrPtr addr)
+{
+    int result = -1;
+    char *utf8 = NULL;
+
+    VBOX_UTF16_TO_UTF8(utf16, &utf8);
+
+    if (virSocketAddrParse(addr, utf8, AF_UNSPEC) < 0) {
+        goto cleanup;
+    }
+
+    result = 0;
+
+ cleanup:
+    VBOX_UTF8_FREE(utf8);
+
+    return result;
+}
+
+char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
+{
+    vboxGlobalData *data = network->conn->privateData;
+    virNetworkDefPtr def = NULL;
+    virNetworkIpDefPtr ipdef = NULL;
+    char *networkNameUtf8 = NULL;
+    PRUnichar *networkInterfaceNameUtf16 = NULL;
+    IHostNetworkInterface *networkInterface = NULL;
+    PRUint32 interfaceType = 0;
+    PRUnichar *networkNameUtf16 = NULL;
+    IDHCPServer *dhcpServer = NULL;
+    vboxIIDUnion vboxnet0IID;
+    IHost *host = NULL;
+    char *ret = NULL;
+    nsresult rc;
+
+    if (!data->vboxObj)
+        return ret;
+
+    gVBoxAPI.UIVirtualBox.GetHost(data->vboxObj, &host);
+    if (!host)
+        return ret;
+
+    VBOX_IID_INITIALIZE(&vboxnet0IID);
+    virCheckFlags(0, NULL);
+
+    if (VIR_ALLOC(def) < 0)
+        goto cleanup;
+    if (VIR_ALLOC(ipdef) < 0)
+        goto cleanup;
+    def->ips = ipdef;
+    def->nips = 1;
+
+    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", network->name) < 0)
+        goto cleanup;
+
+    VBOX_UTF8_TO_UTF16(network->name, &networkInterfaceNameUtf16);
+
+    gVBoxAPI.UIHost.FindHostNetworkInterfaceByName(host, networkInterfaceNameUtf16, &networkInterface);
+
+    if (!networkInterface)
+        goto cleanup;
+
+    gVBoxAPI.UIHNInterface.GetInterfaceType(networkInterface, &interfaceType);
+
+    if (interfaceType != HostNetworkInterfaceType_HostOnly)
+        goto cleanup;
+
+    if (VIR_STRDUP(def->name, network->name) < 0)
+        goto cleanup;
+
+    rc = gVBoxAPI.UIHNInterface.GetId(networkInterface, &vboxnet0IID);
+    if (NS_FAILED(rc))
+        goto cleanup;
+    vboxIIDToUUID(&vboxnet0IID, def->uuid);
+
+    VBOX_UTF8_TO_UTF16(networkNameUtf8, &networkNameUtf16);
+
+    def->forward.type = VIR_NETWORK_FORWARD_NONE;
+
+    gVBoxAPI.UIVirtualBox.FindDHCPServerByNetworkName(data->vboxObj,
+                                                      networkNameUtf16,
+                                                      &dhcpServer);
+    if (dhcpServer) {
+        ipdef->nranges = 1;
+        if (VIR_ALLOC_N(ipdef->ranges, ipdef->nranges) >= 0) {
+            PRUnichar *ipAddressUtf16 = NULL;
+            PRUnichar *networkMaskUtf16 = NULL;
+            PRUnichar *fromIPAddressUtf16 = NULL;
+            PRUnichar *toIPAddressUtf16 = NULL;
+            bool errorOccurred = false;
+
+            gVBoxAPI.UIDHCPServer.GetIPAddress(dhcpServer, &ipAddressUtf16);
+            gVBoxAPI.UIDHCPServer.GetNetworkMask(dhcpServer, &networkMaskUtf16);
+            gVBoxAPI.UIDHCPServer.GetLowerIP(dhcpServer, &fromIPAddressUtf16);
+            gVBoxAPI.UIDHCPServer.GetUpperIP(dhcpServer, &toIPAddressUtf16);
+            /* Currently virtualbox supports only one dhcp server per network
+             * with contigious address space from start to end
+             */
+            if (vboxSocketParseAddrUtf16(data, ipAddressUtf16,
+                                         &ipdef->address) < 0 ||
+                vboxSocketParseAddrUtf16(data, networkMaskUtf16,
+                                         &ipdef->netmask) < 0 ||
+                vboxSocketParseAddrUtf16(data, fromIPAddressUtf16,
+                                         &ipdef->ranges[0].start) < 0 ||
+                vboxSocketParseAddrUtf16(data, toIPAddressUtf16,
+                                         &ipdef->ranges[0].end) < 0) {
+                errorOccurred = true;
+            }
+
+            VBOX_UTF16_FREE(ipAddressUtf16);
+            VBOX_UTF16_FREE(networkMaskUtf16);
+            VBOX_UTF16_FREE(fromIPAddressUtf16);
+            VBOX_UTF16_FREE(toIPAddressUtf16);
+
+            if (errorOccurred) {
+                goto cleanup;
+            }
+        } else {
+            ipdef->nranges = 0;
+        }
+
+        ipdef->nhosts = 1;
+        if (VIR_ALLOC_N(ipdef->hosts, ipdef->nhosts) >= 0) {
+            if (VIR_STRDUP(ipdef->hosts[0].name, network->name) < 0) {
+                VIR_FREE(ipdef->hosts);
+                ipdef->nhosts = 0;
+            } else {
+                PRUnichar *macAddressUtf16 = NULL;
+                PRUnichar *ipAddressUtf16 = NULL;
+                bool errorOccurred = false;
+
+                gVBoxAPI.UIHNInterface.GetHardwareAddress(networkInterface, &macAddressUtf16);
+                gVBoxAPI.UIHNInterface.GetIPAddress(networkInterface, &ipAddressUtf16);
+
+                VBOX_UTF16_TO_UTF8(macAddressUtf16, &ipdef->hosts[0].mac);
+
+                if (vboxSocketParseAddrUtf16(data, ipAddressUtf16,
+                                             &ipdef->hosts[0].ip) < 0) {
+                    errorOccurred = true;
+                }
+
+                VBOX_UTF16_FREE(macAddressUtf16);
+                VBOX_UTF16_FREE(ipAddressUtf16);
+
+                if (errorOccurred) {
+                    goto cleanup;
+                }
+            }
+        } else {
+            ipdef->nhosts = 0;
+        }
+    } else {
+        PRUnichar *networkMaskUtf16 = NULL;
+        PRUnichar *ipAddressUtf16 = NULL;
+        bool errorOccurred = false;
+
+        gVBoxAPI.UIHNInterface.GetNetworkMask(networkInterface, &networkMaskUtf16);
+        gVBoxAPI.UIHNInterface.GetIPAddress(networkInterface, &ipAddressUtf16);
+
+        if (vboxSocketParseAddrUtf16(data, networkMaskUtf16,
+                                     &ipdef->netmask) < 0 ||
+            vboxSocketParseAddrUtf16(data, ipAddressUtf16,
+                                     &ipdef->address) < 0) {
+            errorOccurred = true;
+        }
+
+        VBOX_UTF16_FREE(networkMaskUtf16);
+        VBOX_UTF16_FREE(ipAddressUtf16);
+
+        if (errorOccurred) {
+            goto cleanup;
+        }
+    }
+
+    DEBUGIID("Network UUID", &vboxnet0IID);
+    ret = virNetworkDefFormat(def, 0);
+
+ cleanup:
+    vboxIIDUnalloc(&vboxnet0IID);
+    VBOX_UTF16_FREE(networkNameUtf16);
+    VBOX_RELEASE(networkInterface);
+    VBOX_UTF16_FREE(networkInterfaceNameUtf16);
+    VBOX_RELEASE(host);
+    virNetworkDefFree(def);
+    VIR_FREE(networkNameUtf8);
+    VBOX_RELEASE(dhcpServer);
+    return ret;
+}

@@ -488,6 +488,9 @@ typedef struct {
     nsresult (*GetStatus)(IHostNetworkInterface *hni, PRUint32 *status);
     nsresult (*GetName)(IHostNetworkInterface *hni, PRUnichar **name);
     nsresult (*GetId)(IHostNetworkInterface *hni, vboxIIDUnion *iidu);
+    nsresult (*GetHardwareAddress)(IHostNetworkInterface *hni, PRUnichar **hardwareAddress);
+    nsresult (*GetIPAddress)(IHostNetworkInterface *hni, PRUnichar **IPAddress);
+    nsresult (*GetNetworkMask)(IHostNetworkInterface *hni, PRUnichar **networkMask);
     nsresult (*EnableStaticIPConfig)(IHostNetworkInterface *hni, PRUnichar *IPAddress,
                                      PRUnichar *networkMask);
     nsresult (*EnableDynamicIPConfig)(IHostNetworkInterface *hni);
@@ -496,6 +499,10 @@ typedef struct {
 
 /* Functions for IDHCPServer */
 typedef struct {
+    nsresult (*GetIPAddress)(IDHCPServer *dhcpServer, PRUnichar **IPAddress);
+    nsresult (*GetNetworkMask)(IDHCPServer *dhcpServer, PRUnichar **networkMask);
+    nsresult (*GetLowerIP)(IDHCPServer *dhcpServer, PRUnichar **lowerIP);
+    nsresult (*GetUpperIP)(IDHCPServer *dhcpServer, PRUnichar **upperIP);
     nsresult (*SetEnabled)(IDHCPServer *dhcpServer, PRBool enabled);
     nsresult (*SetConfiguration)(IDHCPServer *dhcpServer, PRUnichar *IPAddress,
                                  PRUnichar *networkMask, PRUnichar *FromIPAddress,
@@ -594,6 +601,7 @@ virNetworkPtr vboxNetworkDefineXML(virConnectPtr conn, const char *xml);
 int vboxNetworkUndefine(virNetworkPtr network);
 int vboxNetworkDestroy(virNetworkPtr network);
 int vboxNetworkCreate(virNetworkPtr network);
+char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
