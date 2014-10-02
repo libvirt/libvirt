@@ -25,6 +25,7 @@
 #include "domain_conf.h"
 #include "domain_event.h"
 #include "virlog.h"
+#include "virstring.h"
 
 #include "vbox_common.h"
 #include "vbox_uniformed_api.h"
@@ -32,6 +33,25 @@
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
 VIR_LOG_INIT("vbox.vbox_network");
+
+#define VBOX_UTF16_FREE(arg)                                            \
+    do {                                                                \
+        if (arg) {                                                      \
+            gVBoxAPI.UPFN.Utf16Free(data->pFuncs, arg);                 \
+            (arg) = NULL;                                               \
+        }                                                               \
+    } while (0)
+
+#define VBOX_UTF8_FREE(arg)                                             \
+    do {                                                                \
+        if (arg) {                                                      \
+            gVBoxAPI.UPFN.Utf8Free(data->pFuncs, arg);                  \
+            (arg) = NULL;                                               \
+        }                                                               \
+    } while (0)
+
+#define VBOX_UTF16_TO_UTF8(arg1, arg2)  gVBoxAPI.UPFN.Utf16ToUtf8(data->pFuncs, arg1, arg2)
+#define VBOX_UTF8_TO_UTF16(arg1, arg2)  gVBoxAPI.UPFN.Utf8ToUtf16(data->pFuncs, arg1, arg2)
 
 #define VBOX_RELEASE(arg)                                                     \
     do {                                                                      \
@@ -118,5 +138,62 @@ int vboxConnectNumOfNetworks(virConnectPtr conn)
     VBOX_RELEASE(host);
 
     VIR_DEBUG("numActive: %d", ret);
+    return ret;
+}
+
+int vboxConnectListNetworks(virConnectPtr conn, char **const names, int nnames)
+{
+    vboxGlobalData *data = conn->privateData;
+    vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
+    IHost *host = NULL;
+    size_t i = 0;
+    int ret = -1;
+
+    if (!data->vboxObj)
+        return ret;
+
+    gVBoxAPI.UIVirtualBox.GetHost(data->vboxObj, &host);
+    if (!host)
+        return ret;
+
+    gVBoxAPI.UArray.vboxArrayGet(&networkInterfaces, host,
+                                 gVBoxAPI.UArray.handleHostGetNetworkInterfaces(host));
+
+    ret = 0;
+    for (i = 0; (ret < nnames) && (i < networkInterfaces.count); i++) {
+        IHostNetworkInterface *networkInterface = networkInterfaces.items[i];
+        char *nameUtf8 = NULL;
+        PRUnichar *nameUtf16 = NULL;
+        PRUint32 interfaceType = 0;
+        PRUint32 status = HostNetworkInterfaceStatus_Unknown;
+
+        if (!networkInterface)
+            continue;
+
+        gVBoxAPI.UIHNInterface.GetInterfaceType(networkInterface, &interfaceType);
+
+        if (interfaceType != HostNetworkInterfaceType_HostOnly)
+            continue;
+
+        gVBoxAPI.UIHNInterface.GetStatus(networkInterface, &status);
+
+        if (status != HostNetworkInterfaceStatus_Up)
+            continue;
+
+        gVBoxAPI.UIHNInterface.GetName(networkInterface, &nameUtf16);
+        VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
+
+        VIR_DEBUG("nnames[%d]: %s", ret, nameUtf8);
+        if (VIR_STRDUP(names[ret], nameUtf8) >= 0)
+            ret++;
+
+        VBOX_UTF8_FREE(nameUtf8);
+        VBOX_UTF16_FREE(nameUtf16);
+    }
+
+    gVBoxAPI.UArray.vboxArrayRelease(&networkInterfaces);
+
+    VBOX_RELEASE(host);
+
     return ret;
 }

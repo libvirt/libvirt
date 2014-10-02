@@ -2060,51 +2060,6 @@ _registerDomainEvent(virDriverPtr driver)
  * The Network Functions here on
  */
 
-static int vboxConnectListNetworks(virConnectPtr conn, char **const names, int nnames) {
-    VBOX_OBJECT_HOST_CHECK(conn, int, 0);
-    vboxArray networkInterfaces = VBOX_ARRAY_INITIALIZER;
-    size_t i = 0;
-
-    vboxArrayGet(&networkInterfaces, host, host->vtbl->GetNetworkInterfaces);
-
-    for (i = 0; (ret < nnames) && (i < networkInterfaces.count); i++) {
-        IHostNetworkInterface *networkInterface = networkInterfaces.items[i];
-
-        if (networkInterface) {
-            PRUint32 interfaceType = 0;
-
-            networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
-
-            if (interfaceType == HostNetworkInterfaceType_HostOnly) {
-                PRUint32 status = HostNetworkInterfaceStatus_Unknown;
-
-                networkInterface->vtbl->GetStatus(networkInterface, &status);
-
-                if (status == HostNetworkInterfaceStatus_Up) {
-                    char *nameUtf8       = NULL;
-                    PRUnichar *nameUtf16 = NULL;
-
-                    networkInterface->vtbl->GetName(networkInterface, &nameUtf16);
-                    VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
-
-                    VIR_DEBUG("nnames[%d]: %s", ret, nameUtf8);
-                    if (VIR_STRDUP(names[ret], nameUtf8) >= 0)
-                        ret++;
-
-                    VBOX_UTF8_FREE(nameUtf8);
-                    VBOX_UTF16_FREE(nameUtf16);
-                }
-            }
-        }
-    }
-
-    vboxArrayRelease(&networkInterfaces);
-
-    VBOX_RELEASE(host);
-
-    return ret;
-}
-
 static int vboxConnectNumOfDefinedNetworks(virConnectPtr conn)
 {
     VBOX_OBJECT_HOST_CHECK(conn, int, 0);
@@ -6032,6 +5987,12 @@ _hnInterfaceGetStatus(IHostNetworkInterface *hni, PRUint32 *status)
     return hni->vtbl->GetStatus(hni, status);
 }
 
+static nsresult
+_hnInterfaceGetName(IHostNetworkInterface *hni, PRUnichar **name)
+{
+    return hni->vtbl->GetName(hni, name);
+}
+
 static bool _machineStateOnline(PRUint32 state)
 {
     return ((state >= MachineState_FirstOnline) &&
@@ -6338,6 +6299,7 @@ static vboxUniformedIDisplay _UIDisplay = {
 static vboxUniformedIHNInterface _UIHNInterface = {
     .GetInterfaceType = _hnInterfaceGetInterfaceType,
     .GetStatus = _hnInterfaceGetStatus,
+    .GetName = _hnInterfaceGetName,
 };
 
 static uniformedMachineStateChecker _machineStateChecker = {

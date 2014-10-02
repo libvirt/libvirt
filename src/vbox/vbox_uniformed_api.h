@@ -470,6 +470,7 @@ typedef struct {
 typedef struct {
     nsresult (*GetInterfaceType)(IHostNetworkInterface *hni, PRUint32 *interfaceType);
     nsresult (*GetStatus)(IHostNetworkInterface *hni, PRUint32 *status);
+    nsresult (*GetName)(IHostNetworkInterface *hni, PRUnichar **name);
 } vboxUniformedIHNInterface;
 
 typedef struct {
@@ -548,6 +549,7 @@ virDrvOpenStatus vboxNetworkOpen(virConnectPtr conn,
                                  unsigned int flags);
 int vboxNetworkClose(virConnectPtr conn);
 int vboxConnectNumOfNetworks(virConnectPtr conn);
+int vboxConnectListNetworks(virConnectPtr conn, char **const names, int nnames);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
