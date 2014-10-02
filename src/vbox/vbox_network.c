@@ -58,3 +58,10 @@ virDrvOpenStatus vboxNetworkOpen(virConnectPtr conn,
  cleanup:
     return VIR_DRV_OPEN_DECLINED;
 }
+
+int vboxNetworkClose(virConnectPtr conn)
+{
+    VIR_DEBUG("network uninitialized");
+    conn->networkPrivateData = NULL;
+    return 0;
+}

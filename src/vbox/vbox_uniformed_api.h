@@ -537,6 +537,7 @@ virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
 virDrvOpenStatus vboxNetworkOpen(virConnectPtr conn,
                                  virConnectAuthPtr auth,
                                  unsigned int flags);
+int vboxNetworkClose(virConnectPtr conn);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

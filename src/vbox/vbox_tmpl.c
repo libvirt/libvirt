@@ -2059,12 +2059,6 @@ _registerDomainEvent(virDriverPtr driver)
 /**
  * The Network Functions here on
  */
-static int vboxNetworkClose(virConnectPtr conn)
-{
-    VIR_DEBUG("network uninitialized");
-    conn->networkPrivateData = NULL;
-    return 0;
-}
 
 static int vboxConnectNumOfNetworks(virConnectPtr conn)
 {
