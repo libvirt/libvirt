@@ -197,6 +197,8 @@ typedef struct {
     nsresult (*RegisterMachine)(IVirtualBox *vboxObj, IMachine *machine);
     nsresult (*FindMedium)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType, PRUint32 accessMode, IMedium **medium);
     nsresult (*OpenMedium)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType, PRUint32 accessMode, IMedium **medium);
+    nsresult (*FindDHCPServerByNetworkName)(IVirtualBox *vboxObj, PRUnichar *name, IDHCPServer **server);
+    nsresult (*CreateDHCPServer)(IVirtualBox *vboxObj, PRUnichar *name, IDHCPServer **server);
 } vboxUniformedIVirtualBox;
 
 /* Functions for IMachine */
@@ -472,6 +474,9 @@ typedef struct {
                                              IHostNetworkInterface **networkInterface);
     nsresult (*FindHostNetworkInterfaceByName)(IHost *host, PRUnichar *name,
                                                IHostNetworkInterface **networkInterface);
+    nsresult (*CreateHostOnlyNetworkInterface)(vboxGlobalData *data,
+                                               IHost *host, char *name,
+                                               IHostNetworkInterface **networkInterface);
 } vboxUniformedIHost;
 
 /* Functions for IHostNetworkInterface */
@@ -480,7 +485,21 @@ typedef struct {
     nsresult (*GetStatus)(IHostNetworkInterface *hni, PRUint32 *status);
     nsresult (*GetName)(IHostNetworkInterface *hni, PRUnichar **name);
     nsresult (*GetId)(IHostNetworkInterface *hni, vboxIIDUnion *iidu);
+    nsresult (*EnableStaticIPConfig)(IHostNetworkInterface *hni, PRUnichar *IPAddress,
+                                     PRUnichar *networkMask);
+    nsresult (*EnableDynamicIPConfig)(IHostNetworkInterface *hni);
+    nsresult (*DHCPRediscover)(IHostNetworkInterface *hni);
 } vboxUniformedIHNInterface;
+
+/* Functions for IDHCPServer */
+typedef struct {
+    nsresult (*SetEnabled)(IDHCPServer *dhcpServer, PRBool enabled);
+    nsresult (*SetConfiguration)(IDHCPServer *dhcpServer, PRUnichar *IPAddress,
+                                 PRUnichar *networkMask, PRUnichar *FromIPAddress,
+                                 PRUnichar *ToIPAddress);
+    nsresult (*Start)(IDHCPServer *dhcpServer, PRUnichar *networkName,
+                      PRUnichar *trunkName, PRUnichar *trunkType);
+} vboxUniformedIDHCPServer;
 
 typedef struct {
     bool (*Online)(PRUint32 state);
@@ -538,6 +557,7 @@ typedef struct {
     vboxUniformedIDisplay UIDisplay;
     vboxUniformedIHost UIHost;
     vboxUniformedIHNInterface UIHNInterface;
+    vboxUniformedIDHCPServer UIDHCPServer;
     uniformedMachineStateChecker machineStateChecker;
     /* vbox API features */
     bool domainEventCallbacks;
@@ -564,6 +584,8 @@ int vboxConnectNumOfDefinedNetworks(virConnectPtr conn);
 int vboxConnectListDefinedNetworks(virConnectPtr conn, char **const names, int nnames);
 virNetworkPtr vboxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid);
 virNetworkPtr vboxNetworkLookupByName(virConnectPtr conn, const char *name);
+virNetworkPtr vboxNetworkCreateXML(virConnectPtr conn, const char *xml);
+virNetworkPtr vboxNetworkDefineXML(virConnectPtr conn, const char *xml);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

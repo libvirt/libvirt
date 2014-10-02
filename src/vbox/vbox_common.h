@@ -317,5 +317,6 @@ typedef nsISupports ISnapshot;
 typedef nsISupports IDisplay;
 typedef nsISupports IHost;
 typedef nsISupports IHostNetworkInterface;
+typedef nsISupports IDHCPServer;
 
 #endif /* VBOX_COMMON_H */

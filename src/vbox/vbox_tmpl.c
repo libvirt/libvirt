@@ -838,24 +838,6 @@ static PRUnichar *PRUnicharFromInt(int n) {
 
 #endif /* VBOX_API_VERSION >= 3001000 */
 
-static PRUnichar *
-vboxSocketFormatAddrUtf16(vboxGlobalData *data, virSocketAddrPtr addr)
-{
-    char *utf8 = NULL;
-    PRUnichar *utf16 = NULL;
-
-    utf8 = virSocketAddrFormat(addr);
-
-    if (utf8 == NULL) {
-        return NULL;
-    }
-
-    VBOX_UTF8_TO_UTF16(utf8, &utf16);
-    VIR_FREE(utf8);
-
-    return utf16;
-}
-
 static int
 vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
                          virSocketAddrPtr addr)
@@ -2059,224 +2041,6 @@ _registerDomainEvent(virDriverPtr driver)
 /**
  * The Network Functions here on
  */
-
-static virNetworkPtr
-vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
-{
-    VBOX_OBJECT_HOST_CHECK(conn, virNetworkPtr, NULL);
-    PRUnichar *networkInterfaceNameUtf16    = NULL;
-    char      *networkInterfaceNameUtf8     = NULL;
-    IHostNetworkInterface *networkInterface = NULL;
-    nsresult rc;
-
-    virNetworkDefPtr def = virNetworkDefParseString(xml);
-    virNetworkIpDefPtr ipdef;
-    virSocketAddr netmask;
-
-    if ((!def) ||
-        (def->forward.type != VIR_NETWORK_FORWARD_NONE) ||
-        (def->nips == 0 || !def->ips))
-        goto cleanup;
-
-    /* Look for the first IPv4 IP address definition and use that.
-     * If there weren't any IPv4 addresses, ignore the network (since it's
-     * required below to have an IPv4 address)
-    */
-    ipdef = virNetworkDefGetIpByIndex(def, AF_INET, 0);
-    if (!ipdef)
-        goto cleanup;
-
-    if (virNetworkIpDefNetmask(ipdef, &netmask) < 0)
-        goto cleanup;
-
-    /* the current limitation of hostonly network is that you can't
-     * assign a name to it and it defaults to vboxnet*, for e.g:
-     * vboxnet0, vboxnet1, etc. Also the UUID is assigned to it
-     * automatically depending on the mac address and thus both
-     * these paramters are ignored here for now.
-     */
-
-#if VBOX_API_VERSION == 2002000
-    if (STREQ(def->name, "vboxnet0")) {
-        PRUint32 interfaceType = 0;
-
-        VBOX_UTF8_TO_UTF16(def->name, &networkInterfaceNameUtf16);
-        host->vtbl->FindHostNetworkInterfaceByName(host, networkInterfaceNameUtf16, &networkInterface);
-
-        networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
-        if (interfaceType != HostNetworkInterfaceType_HostOnly) {
-            VBOX_RELEASE(networkInterface);
-            networkInterface = NULL;
-        }
-    }
-#else /* VBOX_API_VERSION != 2002000 */
-    {
-        IProgress *progress = NULL;
-        host->vtbl->CreateHostOnlyNetworkInterface(host, &networkInterface,
-                                                   &progress);
-
-        if (progress) {
-            progress->vtbl->WaitForCompletion(progress, -1);
-            VBOX_RELEASE(progress);
-        }
-    }
-#endif /* VBOX_API_VERSION != 2002000 */
-
-    if (networkInterface) {
-        unsigned char uuid[VIR_UUID_BUFLEN];
-        char      *networkNameUtf8  = NULL;
-        PRUnichar *networkNameUtf16 = NULL;
-        vboxIID vboxnetiid = VBOX_IID_INITIALIZER;
-
-        networkInterface->vtbl->GetName(networkInterface, &networkInterfaceNameUtf16);
-        if (networkInterfaceNameUtf16) {
-            VBOX_UTF16_TO_UTF8(networkInterfaceNameUtf16, &networkInterfaceNameUtf8);
-
-            if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", networkInterfaceNameUtf8) < 0) {
-                VBOX_RELEASE(host);
-                VBOX_RELEASE(networkInterface);
-                goto cleanup;
-            }
-        }
-
-        VBOX_UTF8_TO_UTF16(networkNameUtf8, &networkNameUtf16);
-
-        /* Currently support only one dhcp server per network
-         * with contigious address space from start to end
-         */
-        if ((ipdef->nranges >= 1) &&
-            VIR_SOCKET_ADDR_VALID(&ipdef->ranges[0].start) &&
-            VIR_SOCKET_ADDR_VALID(&ipdef->ranges[0].end)) {
-            IDHCPServer *dhcpServer = NULL;
-
-            data->vboxObj->vtbl->FindDHCPServerByNetworkName(data->vboxObj,
-                                                             networkNameUtf16,
-                                                             &dhcpServer);
-            if (!dhcpServer) {
-                /* create a dhcp server */
-                data->vboxObj->vtbl->CreateDHCPServer(data->vboxObj,
-                                                      networkNameUtf16,
-                                                      &dhcpServer);
-                VIR_DEBUG("couldn't find dhcp server so creating one");
-            }
-            if (dhcpServer) {
-                PRUnichar *ipAddressUtf16     = NULL;
-                PRUnichar *networkMaskUtf16   = NULL;
-                PRUnichar *fromIPAddressUtf16 = NULL;
-                PRUnichar *toIPAddressUtf16   = NULL;
-                PRUnichar *trunkTypeUtf16     = NULL;
-
-                ipAddressUtf16 = vboxSocketFormatAddrUtf16(data, &ipdef->address);
-                networkMaskUtf16 = vboxSocketFormatAddrUtf16(data, &netmask);
-                fromIPAddressUtf16 = vboxSocketFormatAddrUtf16(data, &ipdef->ranges[0].start);
-                toIPAddressUtf16 = vboxSocketFormatAddrUtf16(data, &ipdef->ranges[0].end);
-
-                if (ipAddressUtf16 == NULL || networkMaskUtf16 == NULL ||
-                    fromIPAddressUtf16 == NULL || toIPAddressUtf16 == NULL) {
-                    VBOX_UTF16_FREE(ipAddressUtf16);
-                    VBOX_UTF16_FREE(networkMaskUtf16);
-                    VBOX_UTF16_FREE(fromIPAddressUtf16);
-                    VBOX_UTF16_FREE(toIPAddressUtf16);
-                    VBOX_RELEASE(dhcpServer);
-                    goto cleanup;
-                }
-
-                VBOX_UTF8_TO_UTF16("netflt", &trunkTypeUtf16);
-
-                dhcpServer->vtbl->SetEnabled(dhcpServer, PR_TRUE);
-
-                dhcpServer->vtbl->SetConfiguration(dhcpServer,
-                                                   ipAddressUtf16,
-                                                   networkMaskUtf16,
-                                                   fromIPAddressUtf16,
-                                                   toIPAddressUtf16);
-
-                if (start)
-                    dhcpServer->vtbl->Start(dhcpServer,
-                                            networkNameUtf16,
-                                            networkInterfaceNameUtf16,
-                                            trunkTypeUtf16);
-
-                VBOX_UTF16_FREE(ipAddressUtf16);
-                VBOX_UTF16_FREE(networkMaskUtf16);
-                VBOX_UTF16_FREE(fromIPAddressUtf16);
-                VBOX_UTF16_FREE(toIPAddressUtf16);
-                VBOX_UTF16_FREE(trunkTypeUtf16);
-                VBOX_RELEASE(dhcpServer);
-            }
-        }
-
-        if ((ipdef->nhosts >= 1) &&
-            VIR_SOCKET_ADDR_VALID(&ipdef->hosts[0].ip)) {
-            PRUnichar *ipAddressUtf16   = NULL;
-            PRUnichar *networkMaskUtf16 = NULL;
-
-            ipAddressUtf16 = vboxSocketFormatAddrUtf16(data, &ipdef->hosts[0].ip);
-            networkMaskUtf16 = vboxSocketFormatAddrUtf16(data, &netmask);
-
-            if (ipAddressUtf16 == NULL || networkMaskUtf16 == NULL) {
-                VBOX_UTF16_FREE(ipAddressUtf16);
-                VBOX_UTF16_FREE(networkMaskUtf16);
-                goto cleanup;
-            }
-
-            /* Current drawback is that since EnableStaticIpConfig() sets
-             * IP and enables the interface so even if the dhcpserver is not
-             * started the interface is still up and running
-             */
-#if VBOX_API_VERSION < 4002000
-            networkInterface->vtbl->EnableStaticIpConfig(networkInterface,
-                                                         ipAddressUtf16,
-                                                         networkMaskUtf16);
-#else
-            networkInterface->vtbl->EnableStaticIPConfig(networkInterface,
-                                                         ipAddressUtf16,
-                                                         networkMaskUtf16);
-#endif
-
-            VBOX_UTF16_FREE(ipAddressUtf16);
-            VBOX_UTF16_FREE(networkMaskUtf16);
-        } else {
-#if VBOX_API_VERSION < 4002000
-            networkInterface->vtbl->EnableDynamicIpConfig(networkInterface);
-            networkInterface->vtbl->DhcpRediscover(networkInterface);
-#else
-            networkInterface->vtbl->EnableDynamicIPConfig(networkInterface);
-            networkInterface->vtbl->DHCPRediscover(networkInterface);
-#endif
-        }
-
-        rc = networkInterface->vtbl->GetId(networkInterface, &vboxnetiid.value);
-        if (NS_SUCCEEDED(rc)) {
-            vboxIIDToUUID(&vboxnetiid, uuid);
-            DEBUGIID("Real Network UUID", vboxnetiid.value);
-            vboxIIDUnalloc(&vboxnetiid);
-            ret = virGetNetwork(conn, networkInterfaceNameUtf8, uuid);
-        }
-
-        VIR_FREE(networkNameUtf8);
-        VBOX_UTF16_FREE(networkNameUtf16);
-        VBOX_RELEASE(networkInterface);
-    }
-
-    VBOX_UTF8_FREE(networkInterfaceNameUtf8);
-    VBOX_UTF16_FREE(networkInterfaceNameUtf16);
-    VBOX_RELEASE(host);
-
- cleanup:
-    virNetworkDefFree(def);
-    return ret;
-}
-
-static virNetworkPtr vboxNetworkCreateXML(virConnectPtr conn, const char *xml)
-{
-    return vboxNetworkDefineCreateXML(conn, xml, true);
-}
-
-static virNetworkPtr vboxNetworkDefineXML(virConnectPtr conn, const char *xml)
-{
-    return vboxNetworkDefineCreateXML(conn, xml, false);
-}
 
 static int
 vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterface)
@@ -4446,6 +4210,18 @@ _virtualboxOpenMedium(IVirtualBox *vboxObj ATTRIBUTE_UNUSED,
 }
 
 static nsresult
+_virtualboxFindDHCPServerByNetworkName(IVirtualBox *vboxObj, PRUnichar *name, IDHCPServer **server)
+{
+    return vboxObj->vtbl->FindDHCPServerByNetworkName(vboxObj, name, server);
+}
+
+static nsresult
+_virtualboxCreateDHCPServer(IVirtualBox *vboxObj, PRUnichar *name, IDHCPServer **server)
+{
+    return vboxObj->vtbl->CreateDHCPServer(vboxObj, name, server);
+}
+
+static nsresult
 _machineAddStorageController(IMachine *machine, PRUnichar *name,
                              PRUint32 connectionType,
                              IStorageController **controller)
@@ -5831,6 +5607,41 @@ _hostFindHostNetworkInterfaceByName(IHost *host, PRUnichar *name,
 }
 
 static nsresult
+_hostCreateHostOnlyNetworkInterface(vboxGlobalData *data ATTRIBUTE_UNUSED,
+                                    IHost *host, char *name ATTRIBUTE_UNUSED,
+                                    IHostNetworkInterface **networkInterface)
+{
+    nsresult rc = -1;
+#if VBOX_API_VERSION == 2002000
+    if (STREQ(name, "vboxnet0")) {
+        PRUint32 interfaceType = 0;
+        PRUnichar *networkInterfaceNameUtf16 = NULL;
+
+        VBOX_UTF8_TO_UTF16(name, &networkInterfaceNameUtf16);
+        host->vtbl->FindHostNetworkInterfaceByName(host, networkInterfaceNameUtf16, networkInterface);
+
+        (*networkInterface)->vtbl->GetInterfaceType(*networkInterface, &interfaceType);
+        if (interfaceType != HostNetworkInterfaceType_HostOnly) {
+            VBOX_RELEASE(*networkInterface);
+            *networkInterface = NULL;
+        } else {
+            rc = 0;
+        }
+    }
+#else /* VBOX_API_VERSION != 2002000 */
+    IProgress *progress = NULL;
+    host->vtbl->CreateHostOnlyNetworkInterface(host, networkInterface,
+                                               &progress);
+
+    if (progress) {
+        rc = progress->vtbl->WaitForCompletion(progress, -1);
+        VBOX_RELEASE(progress);
+    }
+#endif /* VBOX_API_VERSION != 2002000 */
+    return rc;
+}
+
+static nsresult
 _hnInterfaceGetInterfaceType(IHostNetworkInterface *hni, PRUint32 *interfaceType)
 {
     return hni->vtbl->GetInterfaceType(hni, interfaceType);
@@ -5852,6 +5663,61 @@ static nsresult
 _hnInterfaceGetId(IHostNetworkInterface *hni, vboxIIDUnion *iidu)
 {
     return hni->vtbl->GetId(hni, &IID_MEMBER(value));
+}
+
+static nsresult
+_hnInterfaceEnableStaticIPConfig(IHostNetworkInterface *hni, PRUnichar *IPAddress,
+                                 PRUnichar *networkMask)
+{
+#if VBOX_API_VERSION < 4002000
+    return hni->vtbl->EnableStaticIpConfig(hni, IPAddress, networkMask);
+#else
+    return hni->vtbl->EnableStaticIPConfig(hni, IPAddress, networkMask);
+#endif
+}
+
+static nsresult
+_hnInterfaceEnableDynamicIPConfig(IHostNetworkInterface *hni)
+{
+#if VBOX_API_VERSION < 4002000
+    return hni->vtbl->EnableDynamicIpConfig(hni);
+#else
+    return hni->vtbl->EnableDynamicIPConfig(hni);
+#endif
+}
+
+static nsresult
+_hnInterfaceDHCPRediscover(IHostNetworkInterface *hni)
+{
+#if VBOX_API_VERSION < 4002000
+    return hni->vtbl->DhcpRediscover(hni);
+#else
+    return hni->vtbl->DHCPRediscover(hni);
+#endif
+}
+
+static nsresult
+_dhcpServerSetEnabled(IDHCPServer *dhcpServer, PRBool enabled)
+{
+    return dhcpServer->vtbl->SetEnabled(dhcpServer, enabled);
+}
+
+static nsresult
+_dhcpServerSetConfiguration(IDHCPServer *dhcpServer, PRUnichar *IPAddress,
+                            PRUnichar *networkMask, PRUnichar *FromIPAddress,
+                            PRUnichar *ToIPAddress)
+{
+    return dhcpServer->vtbl->SetConfiguration(dhcpServer, IPAddress,
+                                              networkMask, FromIPAddress,
+                                              ToIPAddress);
+}
+
+static nsresult
+_dhcpServerStart(IDHCPServer *dhcpServer, PRUnichar *networkName,
+                 PRUnichar *trunkName, PRUnichar *trunkType)
+{
+    return dhcpServer->vtbl->Start(dhcpServer, networkName,
+                                   trunkName, trunkType);
 }
 
 static bool _machineStateOnline(PRUint32 state)
@@ -5939,6 +5805,8 @@ static vboxUniformedIVirtualBox _UIVirtualBox = {
     .RegisterMachine = _virtualboxRegisterMachine,
     .FindMedium = _virtualboxFindMedium,
     .OpenMedium = _virtualboxOpenMedium,
+    .FindDHCPServerByNetworkName = _virtualboxFindDHCPServerByNetworkName,
+    .CreateDHCPServer = _virtualboxCreateDHCPServer,
 };
 
 static vboxUniformedIMachine _UIMachine = {
@@ -6160,6 +6028,7 @@ static vboxUniformedIDisplay _UIDisplay = {
 static vboxUniformedIHost _UIHost = {
     .FindHostNetworkInterfaceById = _hostFindHostNetworkInterfaceById,
     .FindHostNetworkInterfaceByName = _hostFindHostNetworkInterfaceByName,
+    .CreateHostOnlyNetworkInterface = _hostCreateHostOnlyNetworkInterface,
 };
 
 static vboxUniformedIHNInterface _UIHNInterface = {
@@ -6167,6 +6036,15 @@ static vboxUniformedIHNInterface _UIHNInterface = {
     .GetStatus = _hnInterfaceGetStatus,
     .GetName = _hnInterfaceGetName,
     .GetId = _hnInterfaceGetId,
+    .EnableStaticIPConfig = _hnInterfaceEnableStaticIPConfig,
+    .EnableDynamicIPConfig = _hnInterfaceEnableDynamicIPConfig,
+    .DHCPRediscover = _hnInterfaceDHCPRediscover,
+};
+
+static vboxUniformedIDHCPServer _UIDHCPServer = {
+    .SetEnabled = _dhcpServerSetEnabled,
+    .SetConfiguration = _dhcpServerSetConfiguration,
+    .Start = _dhcpServerStart,
 };
 
 static uniformedMachineStateChecker _machineStateChecker = {
@@ -6224,6 +6102,7 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->UIDisplay = _UIDisplay;
     pVBoxAPI->UIHost = _UIHost;
     pVBoxAPI->UIHNInterface = _UIHNInterface;
+    pVBoxAPI->UIDHCPServer = _UIDHCPServer;
     pVBoxAPI->machineStateChecker = _machineStateChecker;
 
 #if VBOX_API_VERSION <= 2002000 || VBOX_API_VERSION >= 4000000
