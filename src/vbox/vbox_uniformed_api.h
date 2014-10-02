@@ -551,6 +551,7 @@ int vboxNetworkClose(virConnectPtr conn);
 int vboxConnectNumOfNetworks(virConnectPtr conn);
 int vboxConnectListNetworks(virConnectPtr conn, char **const names, int nnames);
 int vboxConnectNumOfDefinedNetworks(virConnectPtr conn);
+int vboxConnectListDefinedNetworks(virConnectPtr conn, char **const names, int nnames);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
