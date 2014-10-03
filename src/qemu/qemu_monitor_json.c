@@ -739,11 +739,13 @@ VIR_ENUM_IMPL(qemuMonitorIOErrorAction, VIR_DOMAIN_EVENT_IO_ERROR_LAST,
               "ignore", "stop", "report");
 
 
-static void qemuMonitorJSONHandleIOError(qemuMonitorPtr mon, virJSONValuePtr data)
+static void
+qemuMonitorJSONHandleIOError(qemuMonitorPtr mon, virJSONValuePtr data)
 {
     const char *device;
     const char *action;
-    const char *reason;
+    const char *reason = "";
+    bool nospc = false;
     int actionID;
 
     /* Throughout here we try our best to carry on upon errors,
@@ -759,14 +761,8 @@ static void qemuMonitorJSONHandleIOError(qemuMonitorPtr mon, virJSONValuePtr dat
         VIR_WARN("missing device in disk io error event");
     }
 
-#if 0
-    if ((reason = virJSONValueObjectGetString(data, "reason")) == NULL) {
-        VIR_WARN("missing reason in disk io error event");
-        reason = "";
-    }
-#else
-    reason = "";
-#endif
+    if (virJSONValueObjectGetBoolean(data, "nospace", &nospc) == 0 && nospc)
+        reason = "enospc";
 
     if ((actionID = qemuMonitorIOErrorActionTypeFromString(action)) < 0) {
         VIR_WARN("unknown disk io error action '%s'", action);
