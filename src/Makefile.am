@@ -1171,6 +1171,7 @@ noinst_LTLIBRARIES += libvirt_driver_vbox.la
 # GPLv2-only license requries that it be linked into
 # libvirtd and *not* libvirt.so
 #libvirt_la_BUILT_LIBADD += libvirt_driver_vbox.la
+libvirt_driver_vbox_la_LIBADD += libvirt_driver_vbox_network_impl.la
 endif ! WITH_DRIVER_MODULES
 
 libvirt_driver_vbox_impl_la_CFLAGS =				\
