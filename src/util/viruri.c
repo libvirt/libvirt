@@ -258,6 +258,13 @@ virURIFormat(virURIPtr uri)
         xmluri.server = tmpserver;
     }
 
+    /*
+     * This helps libxml2 deal with the difference
+     * between uri:/absolute/path and uri:///absolute/path.
+     */
+    if (!xmluri.server && !xmluri.port)
+        xmluri.port = -1;
+
     ret = (char *)xmlSaveUri(&xmluri);
     if (!ret) {
         virReportOOMError();
