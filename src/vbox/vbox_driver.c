@@ -74,10 +74,8 @@ extern virStorageDriver vbox43_4StorageDriver;
 #if !defined(WITH_DRIVER_MODULES) || defined(VBOX_STORAGE_DRIVER)
 static void
 vboxGetDrivers(virDriverPtr *driver_ret,
-               virNetworkDriverPtr *networkDriver_ret,
                virStorageDriverPtr *storageDriver_ret)
 {
-    virNetworkDriverPtr networkDriver;
     virStorageDriverPtr storageDriver;
     uint32_t uVersion;
 
@@ -87,7 +85,6 @@ vboxGetDrivers(virDriverPtr *driver_ret,
      * if the user requests a vbox:// URI which we know will
      * never work
      */
-    networkDriver = &vbox22NetworkDriver;
     storageDriver = &vbox22StorageDriver;
 
     /* Init the glue and get the API version. */
@@ -104,43 +101,33 @@ vboxGetDrivers(virDriverPtr *driver_ret,
          */
         if (uVersion >= 2001052 && uVersion < 2002051) {
             VIR_DEBUG("VirtualBox API version: 2.2");
-            networkDriver = &vbox22NetworkDriver;
             storageDriver = &vbox22StorageDriver;
         } else if (uVersion >= 2002051 && uVersion < 3000051) {
             VIR_DEBUG("VirtualBox API version: 3.0");
-            networkDriver = &vbox30NetworkDriver;
             storageDriver = &vbox30StorageDriver;
         } else if (uVersion >= 3000051 && uVersion < 3001051) {
             VIR_DEBUG("VirtualBox API version: 3.1");
-            networkDriver = &vbox31NetworkDriver;
             storageDriver = &vbox31StorageDriver;
         } else if (uVersion >= 3001051 && uVersion < 3002051) {
             VIR_DEBUG("VirtualBox API version: 3.2");
-            networkDriver = &vbox32NetworkDriver;
             storageDriver = &vbox32StorageDriver;
         } else if (uVersion >= 3002051 && uVersion < 4000051) {
             VIR_DEBUG("VirtualBox API version: 4.0");
-            networkDriver = &vbox40NetworkDriver;
             storageDriver = &vbox40StorageDriver;
         } else if (uVersion >= 4000051 && uVersion < 4001051) {
             VIR_DEBUG("VirtualBox API version: 4.1");
-            networkDriver = &vbox41NetworkDriver;
             storageDriver = &vbox41StorageDriver;
         } else if (uVersion >= 4001051 && uVersion < 4002020) {
             VIR_DEBUG("VirtualBox API version: 4.2");
-            networkDriver = &vbox42NetworkDriver;
             storageDriver = &vbox42StorageDriver;
         } else if (uVersion >= 4002020 && uVersion < 4002051) {
            VIR_DEBUG("VirtualBox API version: 4.2.20 or higher");
-           networkDriver  = &vbox42_20NetworkDriver;
            storageDriver  = &vbox42_20StorageDriver;
         } else if (uVersion >= 4002051 && uVersion < 4003004) {
             VIR_DEBUG("VirtualBox API version: 4.3");
-            networkDriver = &vbox43NetworkDriver;
             storageDriver = &vbox43StorageDriver;
         } else if (uVersion >= 4003004 && uVersion < 4003051) {
             VIR_DEBUG("VirtualBox API version: 4.3.4 or higher");
-            networkDriver = &vbox43_4NetworkDriver;
             storageDriver = &vbox43_4StorageDriver;
         } else {
             VIR_DEBUG("Unsupported VirtualBox API version: %u", uVersion);
@@ -151,8 +138,6 @@ vboxGetDrivers(virDriverPtr *driver_ret,
 
     if (driver_ret)
         *driver_ret = NULL;
-    if (networkDriver_ret)
-        *networkDriver_ret = networkDriver;
     if (storageDriver_ret)
         *storageDriver_ret = storageDriver;
 }
@@ -178,7 +163,7 @@ int vboxStorageRegister(void)
 {
     virStorageDriverPtr storageDriver;
 
-    vboxGetDrivers(NULL, NULL, &storageDriver);
+    vboxGetDrivers(NULL, &storageDriver);
 
     if (virRegisterStorageDriver(storageDriver) < 0)
         return -1;
