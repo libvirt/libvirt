@@ -7549,7 +7549,7 @@ qemuBuildShmemDevCmd(virCommandPtr cmd,
         /*
          * Thanks to our parsing code, we have a guarantee that the
          * size is power of two and is at least a mebibyte in size.
-         * But because it may change inthe future, the checks are
+         * But because it may change in the future, the checks are
          * doubled in here.
          */
         if (shmem->size & (shmem->size - 1)) {
@@ -7562,8 +7562,7 @@ qemuBuildShmemDevCmd(virCommandPtr cmd,
                            _("shmem size must be at least 1 MiB"));
             goto error;
         }
-        virBufferAsprintf(&buf, ",size=%llum",
-                          VIR_DIV_UP(shmem->size, 1024 * 1024));
+        virBufferAsprintf(&buf, ",size=%llum", shmem->size >> 20);
     }
 
     if (!shmem->server.enabled) {

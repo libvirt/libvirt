@@ -17603,7 +17603,7 @@ virDomainShmemDefFormat(virBufferPtr buf,
                         virDomainShmemDefPtr def,
                         unsigned int flags)
 {
-    virBufferAsprintf(buf, "<shmem name='%s'", def->name);
+    virBufferEscapeString(buf, "<shmem name='%s'", def->name);
 
     if (!def->size &&
         !def->server.enabled &&
@@ -17618,8 +17618,7 @@ virDomainShmemDefFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, 2);
 
     if (def->size)
-        virBufferAsprintf(buf, "<size unit='M'>%llu</size>\n",
-                          VIR_DIV_UP(def->size, 1024 * 1024));
+        virBufferAsprintf(buf, "<size unit='M'>%llu</size>\n", def->size >> 20);
 
     if (def->server.enabled) {
         virBufferAddLit(buf, "<server");

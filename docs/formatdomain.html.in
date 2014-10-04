@@ -5587,7 +5587,7 @@ qemu-kvm -net nic,model=? /dev/null
     <p>
       A shared memory device allows to share a memory region between
       different virtual machines and the host.
-      <span class="since">Since 1.2.9, QEMU and KVM only</span>
+      <span class="since">Since 1.2.10, QEMU and KVM only</span>
     </p>
 
 <pre>
