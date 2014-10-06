@@ -69,8 +69,18 @@ xenapiDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 }
 
 
+static int
+xenapiDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                         virCapsPtr caps ATTRIBUTE_UNUSED,
+                         void *opaque ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
 virDomainDefParserConfig xenapiDomainDefParserConfig = {
     .devicesPostParseCallback = xenapiDomainDeviceDefPostParse,
+    .domainPostParseCallback = xenapiDomainDefPostParse,
 };
 
 

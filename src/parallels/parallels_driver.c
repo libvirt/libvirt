@@ -915,8 +915,29 @@ parallelsLoadDomains(parallelsConnPtr privconn, const char *domain_name)
 }
 
 
+static int
+parallelsDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                            virCapsPtr caps ATTRIBUTE_UNUSED,
+                            void *opaque ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
+static int
+parallelsDomainDeviceDefPostParse(virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+                                  const virDomainDef *def ATTRIBUTE_UNUSED,
+                                  virCapsPtr caps ATTRIBUTE_UNUSED,
+                                  void *opaque ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
 virDomainDefParserConfig parallelsDomainDefParserConfig = {
     .macPrefix = {0x42, 0x1C, 0x00},
+    .devicesPostParseCallback = parallelsDomainDeviceDefPostParse,
+    .domainPostParseCallback = parallelsDomainDefPostParse,
 };
 
 

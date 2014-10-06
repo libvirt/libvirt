@@ -70,6 +70,16 @@ bhyveDomainDefPostParse(virDomainDefPtr def,
     return 0;
 }
 
+static int
+bhyveDomainDeviceDefPostParse(virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+                              const virDomainDef *def ATTRIBUTE_UNUSED,
+                              virCapsPtr caps ATTRIBUTE_UNUSED,
+                              void *opaque ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
 virDomainDefParserConfig virBhyveDriverDomainDefParserConfig = {
+    .devicesPostParseCallback = bhyveDomainDeviceDefPostParse,
     .domainPostParseCallback = bhyveDomainDefPostParse,
 };

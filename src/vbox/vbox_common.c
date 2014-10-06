@@ -314,8 +314,27 @@ static char *vboxGenerateMediumName(PRUint32  storageBus,
     return name;
 }
 
+static int
+vboxDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                       virCapsPtr caps ATTRIBUTE_UNUSED,
+                       void *opaque ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+static int
+vboxDomainDeviceDefPostParse(virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+                             const virDomainDef *def ATTRIBUTE_UNUSED,
+                             virCapsPtr caps ATTRIBUTE_UNUSED,
+                             void *opaque ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
 static virDomainDefParserConfig vboxDomainDefParserConfig = {
     .macPrefix = { 0x08, 0x00, 0x27 },
+    .devicesPostParseCallback = vboxDomainDeviceDefPostParse,
+    .domainPostParseCallback = vboxDomainDefPostParse,
 };
 
 static virDomainXMLOptionPtr

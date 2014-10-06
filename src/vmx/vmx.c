@@ -523,10 +523,28 @@ VIR_ENUM_IMPL(virVMXControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Helpers
  */
+static int
+vmxDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                      virCapsPtr caps ATTRIBUTE_UNUSED,
+                      void *opaque ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+static int
+vmxDomainDeviceDefPostParse(virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+                            const virDomainDef *def ATTRIBUTE_UNUSED,
+                            virCapsPtr caps ATTRIBUTE_UNUSED,
+                            void *opaque ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
 
 virDomainDefParserConfig virVMXDomainDefParserConfig = {
     .hasWideSCSIBus = true,
     .macPrefix = {0x00, 0x0c, 0x29},
+    .devicesPostParseCallback = vmxDomainDeviceDefPostParse,
+    .domainPostParseCallback = vmxDomainDefPostParse,
 };
 
 

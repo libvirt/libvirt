@@ -444,8 +444,18 @@ umlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 }
 
 
+static int
+umlDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                      virCapsPtr caps ATTRIBUTE_UNUSED,
+                      void *opaque ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
 virDomainDefParserConfig umlDriverDomainDefParserConfig = {
     .devicesPostParseCallback = umlDomainDeviceDefPostParse,
+    .domainPostParseCallback = umlDomainDefPostParse,
 };
 
 
