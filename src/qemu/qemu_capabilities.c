@@ -277,6 +277,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "vmware-svga.vgamem_mb",
               "qxl.vgamem_mb",
               "qxl-vga.vgamem_mb",
+              "pc-dimm",
     );
 
 
@@ -1530,6 +1531,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "usb-audio", QEMU_CAPS_OBJECT_USB_AUDIO },
     { "iothread", QEMU_CAPS_OBJECT_IOTHREAD},
     { "ivshmem", QEMU_CAPS_DEVICE_IVSHMEM },
+    { "pc-dimm", QEMU_CAPS_DEVICE_PC_DIMM },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
