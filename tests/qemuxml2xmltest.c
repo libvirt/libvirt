@@ -428,6 +428,9 @@ mymain(void)
     DO_TEST("smbios");
     DO_TEST("aarch64-aavmf-virtio-mmio");
 
+    DO_TEST("memory-hotplug");
+    DO_TEST("memory-hotplug-nonuma");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 

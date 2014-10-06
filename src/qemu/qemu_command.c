@@ -8492,13 +8492,35 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuDomainAlignMemorySizes(def) < 0)
         goto error;
 
-    /* Set '-m MB' based on maxmem, because the lower 'memory' limit
-     * is set post-startup using the balloon driver. If balloon driver
-     * is not supported, then they're out of luck anyway.  Update the
-     * XML to reflect our rounding.
-     */
     virCommandAddArg(cmd, "-m");
-    virCommandAddArgFormat(cmd, "%llu", virDomainDefGetMemoryInitial(def)  / 1024);
+
+    if (def->mem.max_memory) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PC_DIMM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("memory hotplug isn't supported by this QEMU binary"));
+            goto error;
+        }
+
+        /* due to guest support, qemu would silently enable NUMA with one node
+         * once the memory hotplug backend is enabled. To avoid possible
+         * confusion we will enforce user originated numa configuration along
+         * with memory hotplug. */
+        if (virDomainNumaGetNodeCount(def->numa) == 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("At least one numa node has to be configured when "
+                             "enabling memory hotplug"));
+            goto error;
+        }
+
+        /* Use the 'k' suffix to let qemu handle the units */
+        virCommandAddArgFormat(cmd, "size=%lluk,slots=%u,maxmem=%lluk",
+                               virDomainDefGetMemoryInitial(def),
+                               def->mem.memory_slots,
+                               def->mem.max_memory);
+
+    } else {
+       virCommandAddArgFormat(cmd, "%llu", virDomainDefGetMemoryInitial(def) / 1024);
+    }
 
     if (def->mem.nhugepages && !virDomainNumaGetNodeCount(def->numa)) {
         const long system_page_size = virGetSystemPageSizeKB();

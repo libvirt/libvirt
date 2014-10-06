@@ -1052,10 +1052,6 @@ qemuDomainDefPostParse(virDomainDefPtr def,
                                   VIR_DOMAIN_INPUT_BUS_USB) < 0)
         return -1;
 
-    /* memory hotplug tunables are not supported by this driver */
-    if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
-        return -1;
-
     return 0;
 }
 
@@ -2905,6 +2901,10 @@ qemuDomainAlignMemorySizes(virDomainDefPtr def)
     /* align initial memory size */
     mem = virDomainDefGetMemoryInitial(def);
     virDomainDefSetMemoryInitial(def, VIR_ROUND_UP(mem, 1024));
+
+    /* Align maximum memory size. QEMU requires rounding to next 4KiB block.
+     * We'll take the "traditional" path and round it to 1MiB*/
+    def->mem.max_memory = VIR_ROUND_UP(def->mem.max_memory, 1024);
 
     return 0;
 }

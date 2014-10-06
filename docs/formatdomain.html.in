@@ -725,7 +725,7 @@
         Note that due to alignment of the memory chunks added via memory
         hotplug the full size allocation specified by this element may be
         impossible to achieve.
-        <span class='since'>Since 1.2.14</span>
+        <span class='since'>Since 1.2.14 supported by the QEMU driver.</span>
       </dd>
 
       <dt><code>currentMemory</code></dt>

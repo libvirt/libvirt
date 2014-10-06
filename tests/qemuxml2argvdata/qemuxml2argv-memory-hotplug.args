@@ -1,0 +1,6 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S -M pc \
+-m size=219136k,slots=16,maxmem=1099511627776k \
+-smp 2 -numa node,nodeid=0,cpus=0-1,mem=214 \
+-nographic -monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
+-usb -hda /dev/HostVG/QEMUGuest1 -net none -serial none -parallel none
