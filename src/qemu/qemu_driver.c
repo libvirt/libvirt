@@ -9091,15 +9091,18 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
                                         &persistentDef) < 0)
-        goto cleanup;
+        goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("cgroup cpuset controller is not mounted"));
-            goto cleanup;
+            goto endjob;
         }
     }
 
@@ -9112,18 +9115,18 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
             if (mode < 0 || mode >= VIR_DOMAIN_NUMATUNE_MEM_LAST) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("unsupported numatune mode: '%d'"), mode);
-                goto cleanup;
+                goto endjob;
             }
 
         } else if (STREQ(param->field, VIR_DOMAIN_NUMA_NODESET)) {
             if (virBitmapParse(param->value.s, 0, &nodeset,
                                VIR_DOMAIN_CPUMASK_LEN) < 0)
-                goto cleanup;
+                goto endjob;
 
             if (virBitmapIsAllClear(nodeset)) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                                _("Invalid nodeset for numatune"));
-                goto cleanup;
+                goto endjob;
             }
         }
     }
@@ -9133,18 +9136,21 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
             virDomainNumatuneGetMode(vm->def->numatune, -1) != mode) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("can't change numatune mode for running domain"));
-            goto cleanup;
+            goto endjob;
         }
 
         if (nodeset &&
             qemuDomainSetNumaParamsLive(vm, caps, nodeset) < 0)
-            goto cleanup;
+            goto endjob;
 
         if (virDomainNumatuneSet(&vm->def->numatune,
                                  vm->def->placement_mode ==
                                  VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
                                  -1, mode, nodeset) < 0)
-            goto cleanup;
+            goto endjob;
+
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+            goto endjob;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
@@ -9152,13 +9158,17 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
                                  persistentDef->placement_mode ==
                                  VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
                                  -1, mode, nodeset) < 0)
-            goto cleanup;
+            goto endjob;
 
         if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
-            goto cleanup;
+            goto endjob;
     }
 
     ret = 0;
+
+ endjob:
+    if (!qemuDomainObjEndJob(driver, vm))
+        vm = NULL;
 
  cleanup:
     virBitmapFree(nodeset);
