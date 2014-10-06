@@ -1838,6 +1838,52 @@ virFindSCSIHostByPCI(const char *sysfs_prefix,
     return ret;
 }
 
+/* virGetSCSIHostNumber:
+ * @adapter_name: Name of the host adapter
+ * @result: Return the entry value as unsigned int
+ *
+ * Convert the various forms of scsi_host names into the numeric
+ * host# value that can be used in order to scan sysfs looking for
+ * the specific host.
+ *
+ * Names can be either "scsi_host#" or just "host#", where
+ * "host#" is the back-compat format, but both equate to
+ * the same source adapter.  First check if both pool and def
+ * are using same format (easier) - if so, then compare
+ *
+ * Returns 0 on success, and @result has the host number.
+ * Otherwise returns -1.
+ */
+int
+virGetSCSIHostNumber(const char *adapter_name,
+                     unsigned int *result)
+{
+    /* Specifying adapter like 'host5' is still supported for
+     * back-compat reason.
+     */
+    if (STRPREFIX(adapter_name, "scsi_host")) {
+        adapter_name += strlen("scsi_host");
+    } else if (STRPREFIX(adapter_name, "fc_host")) {
+        adapter_name += strlen("fc_host");
+    } else if (STRPREFIX(adapter_name, "host")) {
+        adapter_name += strlen("host");
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid adapter name '%s' for SCSI pool"),
+                       adapter_name);
+        return -1;
+    }
+
+    if (virStrToLong_ui(adapter_name, NULL, 10, result) == -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid adapter name '%s' for SCSI pool"),
+                       adapter_name);
+        return -1;
+    }
+
+    return 0;
+}
+
 /* virReadFCHost:
  * @sysfs_prefix: "fc_host" sysfs path, defaults to SYSFS_FC_HOST_PATH
  * @host: Host number, E.g. 5 of "fc_host/host5"
@@ -2203,6 +2249,14 @@ char *
 virFindSCSIHostByPCI(const char *sysfs_prefix ATTRIBUTE_UNUSED,
                      const char *parentaddr ATTRIBUTE_UNUSED,
                      unsigned int unique_id ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+    return NULL;
+}
+
+int
+virGetSCSIHostNumber(const char *adapter_name ATTRIBUTE_UNUSED,
+                     unsigned int *result ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return NULL;

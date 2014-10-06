@@ -2160,6 +2160,7 @@ virGetGroupList;
 virGetGroupName;
 virGetHostname;
 virGetListenFDs;
+virGetSCSIHostNumber;
 virGetSelfLastChanged;
 virGetUnprivSGIOSysfsPath;
 virGetUserCacheDirectory;
