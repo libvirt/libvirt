@@ -519,22 +519,15 @@ getAdapterName(virStoragePoolSourceAdapter adapter)
 
     if (adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
         if (adapter.data.scsi_host.has_parent) {
+            virDevicePCIAddress addr = adapter.data.scsi_host.parentaddr;
             unsigned int unique_id = adapter.data.scsi_host.unique_id;
 
-            if (virAsprintf(&parentaddr, "%04x:%02x:%02x.%01x",
-                            adapter.data.scsi_host.parentaddr.domain,
-                            adapter.data.scsi_host.parentaddr.bus,
-                            adapter.data.scsi_host.parentaddr.slot,
-                            adapter.data.scsi_host.parentaddr.function) < 0)
+            if (!(name = virGetSCSIHostNameByParentaddr(addr.domain,
+                                                        addr.bus,
+                                                        addr.slot,
+                                                        addr.function,
+                                                        unique_id)))
                 goto cleanup;
-            if (!(name = virFindSCSIHostByPCI(NULL, parentaddr,
-                                              unique_id))) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Failed to find scsi_host using PCI '%s' "
-                                 "and unique_id='%u'"),
-                               parentaddr, unique_id);
-                goto cleanup;
-            }
         } else {
             ignore_value(VIR_STRDUP(name, adapter.data.scsi_host.name));
         }

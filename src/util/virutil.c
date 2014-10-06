@@ -1884,6 +1884,45 @@ virGetSCSIHostNumber(const char *adapter_name,
     return 0;
 }
 
+/* virGetSCSIHostNameByParentaddr:
+ * @domain: The domain from the scsi_host parentaddr
+ * @bus: The bus from the scsi_host parentaddr
+ * @slot: The slot from the scsi_host parentaddr
+ * @function: The function from the scsi_host parentaddr
+ * @unique_id: The unique id value for parentaddr
+ *
+ * Generate a parentaddr and find the scsi_host host# for
+ * the provided parentaddr PCI address fields.
+ *
+ * Returns the "host#" string which must be free'd by
+ * the caller or NULL on error
+ */
+char *
+virGetSCSIHostNameByParentaddr(unsigned int domain,
+                               unsigned int bus,
+                               unsigned int slot,
+                               unsigned int function,
+                               unsigned int unique_id)
+{
+    char *name = NULL;
+    char *parentaddr = NULL;
+
+    if (virAsprintf(&parentaddr, "%04x:%02x:%02x.%01x",
+                    domain, bus, slot, function) < 0)
+        goto cleanup;
+    if (!(name = virFindSCSIHostByPCI(NULL, parentaddr, unique_id))) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Failed to find scsi_host using PCI '%s' "
+                         "and unique_id='%u'"),
+                       parentaddr, unique_id);
+        goto cleanup;
+    }
+
+ cleanup:
+    VIR_FREE(parentaddr);
+    return name;
+}
+
 /* virReadFCHost:
  * @sysfs_prefix: "fc_host" sysfs path, defaults to SYSFS_FC_HOST_PATH
  * @host: Host number, E.g. 5 of "fc_host/host5"
@@ -2257,6 +2296,17 @@ virFindSCSIHostByPCI(const char *sysfs_prefix ATTRIBUTE_UNUSED,
 int
 virGetSCSIHostNumber(const char *adapter_name ATTRIBUTE_UNUSED,
                      unsigned int *result ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+    return NULL;
+}
+
+char *
+virGetSCSIHostNameByParentaddr(unsigned int domain ATTRIBUTE_UNUSED,
+                               unsigned int bus ATTRIBUTE_UNUSED,
+                               unsigned int slot ATTRIBUTE_UNUSED,
+                               unsigned int function ATTRIBUTE_UNUSED,
+                               unsigned int unique_id ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return NULL;
