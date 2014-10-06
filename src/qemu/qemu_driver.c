@@ -10244,16 +10244,19 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
                                         &persistentDef) < 0)
-        goto cleanup;
+        goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         net = virDomainNetFind(vm->def, device);
         if (!net) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Can't find device %s"), device);
-            goto cleanup;
+            goto endjob;
         }
     }
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
@@ -10261,14 +10264,14 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         if (!persistentNet) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Can't find device %s"), device);
-            goto cleanup;
+            goto endjob;
         }
     }
 
     if ((VIR_ALLOC(bandwidth) < 0) ||
         (VIR_ALLOC(bandwidth->in) < 0) ||
         (VIR_ALLOC(bandwidth->out) < 0))
-        goto cleanup;
+        goto endjob;
 
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
@@ -10302,7 +10305,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (VIR_ALLOC(newBandwidth) < 0)
-            goto cleanup;
+            goto endjob;
 
         /* virNetDevBandwidthSet() will clear any previous value of
          * bandwidth parameters, so merge with old bandwidth parameters
@@ -10310,7 +10313,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         if (bandwidth->in ||
             (!inboundSpecified && net->bandwidth && net->bandwidth->in)) {
             if (VIR_ALLOC(newBandwidth->in) < 0)
-                goto cleanup;
+                goto endjob;
 
             memcpy(newBandwidth->in,
                    bandwidth->in ? bandwidth->in : net->bandwidth->in,
@@ -10319,7 +10322,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         if (bandwidth->out ||
             (!outboundSpecified && net->bandwidth && net->bandwidth->out)) {
             if (VIR_ALLOC(newBandwidth->out) < 0)
-                goto cleanup;
+                goto endjob;
 
             memcpy(newBandwidth->out,
                    bandwidth->out ? bandwidth->out : net->bandwidth->out,
@@ -10327,7 +10330,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         }
 
         if (virNetDevBandwidthSet(net->ifname, newBandwidth, false) < 0)
-            goto cleanup;
+            goto endjob;
 
         virNetDevBandwidthFree(net->bandwidth);
         if (newBandwidth->in || newBandwidth->out) {
@@ -10341,11 +10344,11 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
             virNetDevBandwidthFree(net->data.network.actual->bandwidth);
             if (virNetDevBandwidthCopy(&net->data.network.actual->bandwidth,
                                        net->bandwidth) < 0)
-                goto cleanup;
+                goto endjob;
         }
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
-            goto cleanup;
+            goto endjob;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
@@ -10370,10 +10373,15 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         }
 
         if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
-            goto cleanup;
+            goto endjob;
     }
 
     ret = 0;
+
+ endjob:
+    if (!qemuDomainObjEndJob(driver, vm))
+        vm = NULL;
+
  cleanup:
     virNetDevBandwidthFree(bandwidth);
     virNetDevBandwidthFree(newBandwidth);
