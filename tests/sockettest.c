@@ -234,6 +234,21 @@ testNumericHelper(const void *opaque)
     return 0;
 }
 
+struct testIsLocalhostData {
+    const char *addr;
+    bool result;
+};
+
+static int
+testIsLocalhostHelper(const void *opaque)
+{
+    const struct testIsLocalhostData *data = opaque;
+
+    if (virSocketAddrIsNumericLocalhost(data->addr) != data->result)
+        return -1;
+    return 0;
+}
+
 static int
 mymain(void)
 {
@@ -322,6 +337,13 @@ mymain(void)
             ret = -1;                                                   \
     } while (0)
 
+#define DO_TEST_LOCALHOST(addr, pass)                                   \
+    do {                                                                \
+        struct testIsLocalhostData data = { addr, pass };               \
+        if (virtTestRun("Test localhost " addr,                         \
+                       testIsLocalhostHelper, &data) < 0)               \
+            ret = -1;                                                   \
+    } while (0)
 
     DO_TEST_PARSE_AND_FORMAT("127.0.0.1", AF_UNSPEC, true);
     DO_TEST_PARSE_AND_FORMAT("127.0.0.1", AF_INET, true);
@@ -390,6 +412,19 @@ mymain(void)
     DO_TEST_NUMERIC_FAMILY("1", AF_INET);
     DO_TEST_NUMERIC_FAMILY("::ffff", AF_INET6);
     DO_TEST_NUMERIC_FAMILY("examplehost", -1);
+
+    DO_TEST_LOCALHOST("127.0.0.1", true);
+    DO_TEST_LOCALHOST("2130706433", true);
+    DO_TEST_LOCALHOST("0177.0.0.01", true);
+    DO_TEST_LOCALHOST("::1", true);
+    DO_TEST_LOCALHOST("0::1", true);
+    DO_TEST_LOCALHOST("0:0:0::1", true);
+    DO_TEST_LOCALHOST("[00:0::1]", false);
+    DO_TEST_LOCALHOST("[::1]", false);
+    DO_TEST_LOCALHOST("128.0.0.1", false);
+    DO_TEST_LOCALHOST("0.0.0.1", false);
+    DO_TEST_LOCALHOST("hello", false);
+    DO_TEST_LOCALHOST("fe80::1:1", false);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

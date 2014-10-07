@@ -1916,6 +1916,7 @@ virSocketAddrGetIpPrefix;
 virSocketAddrGetPort;
 virSocketAddrGetRange;
 virSocketAddrIsNetmask;
+virSocketAddrIsNumericLocalhost;
 virSocketAddrIsPrivate;
 virSocketAddrIsWildcard;
 virSocketAddrMask;

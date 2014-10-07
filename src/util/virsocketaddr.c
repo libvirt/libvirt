@@ -878,3 +878,36 @@ virSocketAddrNumericFamily(const char *address)
     freeaddrinfo(res);
     return family;
 }
+
+/**
+ * virSocketAddrIsNumericLocalhost:
+ * @address: address to check
+ *
+ * Check if passed address is a numeric 'localhost' address.
+ *
+ * Returns: true if @address is a numeric 'localhost' address,
+ *          false otherwise
+ */
+bool
+virSocketAddrIsNumericLocalhost(const char *addr)
+{
+    struct addrinfo *res;
+    struct in_addr tmp = { .s_addr = htonl(INADDR_LOOPBACK) };
+    struct sockaddr_in *inet4;
+    struct sockaddr_in6 *inet6;
+
+    if (virSocketAddrParseInternal(&res, addr, AF_UNSPEC, false) < 0)
+        return false;
+
+    switch (res->ai_addr->sa_family) {
+    case AF_INET:
+        inet4 = (struct sockaddr_in*) res->ai_addr;
+        return memcmp(&inet4->sin_addr.s_addr, &tmp.s_addr,
+                      sizeof(inet4->sin_addr.s_addr)) == 0;
+    case AF_INET6:
+        inet6 = (struct sockaddr_in6*) res->ai_addr;
+        return IN6_IS_ADDR_LOOPBACK(&(inet6->sin6_addr));
+    }
+    return false;
+
+}
