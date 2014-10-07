@@ -856,26 +856,25 @@ virSocketAddrGetIpPrefix(const virSocketAddr *address,
 }
 
 /**
- * virSocketAddrIsNumeric:
+ * virSocketAddrNumericFamily:
  * @address: address to check
  *
- * Check if passed address is an IP address in numeric format. For
- * instance, for 0.0.0.0 true is returned, for 'examplehost"
- * false is returned.
+ * Check if passed address is an IP address in numeric format. and
+ * return the address family, otherwise return 0.
  *
- * Returns: true if @address is an IP address,
- *          false otherwise
+ * Returns: AF_INET or AF_INET6 if @address is an numeric IP address,
+ *          -1 otherwise.
  */
-bool
-virSocketAddrIsNumeric(const char *address)
+int
+virSocketAddrNumericFamily(const char *address)
 {
     struct addrinfo *res;
     unsigned short family;
 
     if (virSocketAddrParseInternal(&res, address, AF_UNSPEC, false) < 0)
-        return false;
+        return -1;
 
     family = res->ai_addr->sa_family;
     freeaddrinfo(res);
-    return family == AF_INET || family == AF_INET6;
+    return family;
 }

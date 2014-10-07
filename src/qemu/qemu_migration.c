@@ -2605,7 +2605,6 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         if (VIR_STRDUP(migrateFrom, "stdio") < 0)
             goto cleanup;
     } else {
-        virSocketAddr listenAddressSocket;
         bool encloseAddress = false;
         bool hostIPv6Capable = false;
         bool qemuIPv6Capable = false;
@@ -2627,28 +2626,21 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         virObjectUnref(qemuCaps);
 
         if (listenAddress) {
-            if (virSocketAddrIsNumeric(listenAddress)) {
-                /* listenAddress is numeric IPv4 or IPv6 */
-                if (virSocketAddrParse(&listenAddressSocket, listenAddress, AF_UNSPEC) < 0)
+            if (virSocketAddrNumericFamily(listenAddress) == AF_INET6) {
+                if (!qemuIPv6Capable) {
+                    virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                                   _("qemu isn't capable of IPv6"));
                     goto cleanup;
-
-                /* address parsed successfully */
-                if (VIR_SOCKET_ADDR_IS_FAMILY(&listenAddressSocket, AF_INET6)) {
-                    if (!qemuIPv6Capable) {
-                        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                                       _("qemu isn't capable of IPv6"));
-                        goto cleanup;
-                    }
-                    if (!hostIPv6Capable) {
-                        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                                       _("host isn't capable of IPv6"));
-                        goto cleanup;
-                    }
-                    /* IPv6 address must be escaped in brackets on the cmd line */
-                    encloseAddress = true;
                 }
+                if (!hostIPv6Capable) {
+                    virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                                   _("host isn't capable of IPv6"));
+                    goto cleanup;
+                }
+                /* IPv6 address must be escaped in brackets on the cmd line */
+                encloseAddress = true;
             } else {
-                /* listenAddress is a hostname */
+                /* listenAddress is a hostname or IPv4 */
             }
         } else if (qemuIPv6Capable && hostIPv6Capable) {
             /* Listen on :: instead of 0.0.0.0 if QEMU understands it
@@ -2950,15 +2942,17 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
      * to be a correct hostname which refers to the target machine).
      */
     if (uri_in == NULL) {
+        bool encloseAddress = false;
+        const char *incFormat;
+
         if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0)
             goto cleanup;
 
         if (migrateHost != NULL) {
-            if (virSocketAddrIsNumeric(migrateHost) &&
-                virSocketAddrParse(NULL, migrateHost, AF_UNSPEC) < 0)
-                goto cleanup;
+            if (virSocketAddrNumericFamily(migrateHost) == AF_INET6)
+                encloseAddress = true;
 
-           if (VIR_STRDUP(hostname, migrateHost) < 0)
+            if (VIR_STRDUP(hostname, migrateHost) < 0)
                 goto cleanup;
         } else {
             if ((hostname = virGetHostname()) == NULL)
@@ -2977,7 +2971,12 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
          * compatibility with old targets. We at least make the
          * new targets accept both syntaxes though.
          */
-        if (virAsprintf(uri_out, "tcp:%s:%d", hostname, port) < 0)
+        if (encloseAddress)
+            incFormat = "%s:[%s]:%d";
+        else
+            incFormat = "%s:%s:%d";
+
+        if (virAsprintf(uri_out, incFormat, "tcp", hostname, port) < 0)
             goto cleanup;
     } else {
         bool well_formed_uri;
