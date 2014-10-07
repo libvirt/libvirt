@@ -2352,7 +2352,7 @@ virSecuritySELinuxSetTapFDLabel(virSecurityManagerPtr mgr,
     struct stat buf;
     security_context_t fcon = NULL;
     virSecurityLabelDefPtr secdef;
-    char *str = NULL;
+    char *str = NULL, *proc = NULL, *fd_path = NULL;
     int rc = -1;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
@@ -2370,7 +2370,24 @@ virSecuritySELinuxSetTapFDLabel(virSecurityManagerPtr mgr,
         goto cleanup;
     }
 
-    if (getContext(mgr, "/dev/tap.*", buf.st_mode, &fcon) < 0) {
+    /* Label /dev/tap.* devices only. Leave /dev/net/tun alone! */
+    if (virAsprintf(&proc, "/proc/self/fd/%d", fd) == -1)
+        goto cleanup;
+
+    if (virFileResolveLink(proc, &fd_path) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to resolve link: %s"), proc);
+        goto cleanup;
+    }
+
+    if (!STRPREFIX(fd_path, "/dev/tap")) {
+        VIR_DEBUG("fd=%d points to %s not setting SELinux label",
+                  fd, fd_path);
+        rc = 0;
+        goto cleanup;
+    }
+
+    if (getContext(mgr, "/dev/tap*", buf.st_mode, &fcon) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot lookup default selinux label for tap fd %d"), fd);
         goto cleanup;
@@ -2384,6 +2401,8 @@ virSecuritySELinuxSetTapFDLabel(virSecurityManagerPtr mgr,
 
  cleanup:
     freecon(fcon);
+    VIR_FREE(fd_path);
+    VIR_FREE(proc);
     VIR_FREE(str);
     return rc;
 }
