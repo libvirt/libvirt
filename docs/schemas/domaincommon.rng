@@ -4030,6 +4030,18 @@
       </attribute>
     </optional>
   </define>
+  <define name="dimmaddress">
+    <optional>
+      <attribute name="slot">
+        <ref name="unsignedInt"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="base">
+        <ref name="hexuint"/>
+      </attribute>
+    </optional>
+  </define>
   <define name="devices">
     <element name="devices">
       <interleave>
@@ -4448,6 +4460,12 @@
           <attribute name="type">
             <value>virtio-mmio</value>
           </attribute>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>dimm</value>
+          </attribute>
+          <ref name="dimmaddress"/>
         </group>
       </choice>
     </element>

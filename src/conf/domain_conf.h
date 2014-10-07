@@ -234,6 +234,7 @@ typedef enum {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM,
 
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST
 } virDomainDeviceAddressType;
@@ -309,6 +310,13 @@ struct _virDomainDeviceISAAddress {
     unsigned int irq;
 };
 
+typedef struct _virDomainDeviceDimmAddress virDomainDeviceDimmAddress;
+typedef virDomainDeviceDimmAddress *virDomainDeviceDimmAddressPtr;
+struct _virDomainDeviceDimmAddress {
+    unsigned int slot;
+    unsigned long long base;
+};
+
 typedef struct _virDomainDeviceInfo virDomainDeviceInfo;
 typedef virDomainDeviceInfo *virDomainDeviceInfoPtr;
 struct _virDomainDeviceInfo {
@@ -327,6 +335,7 @@ struct _virDomainDeviceInfo {
         virDomainDeviceSpaprVioAddress spaprvio;
         virDomainDeviceCCWAddress ccw;
         virDomainDeviceISAAddress isa;
+        virDomainDeviceDimmAddress dimm;
     } addr;
     int mastertype;
     union {

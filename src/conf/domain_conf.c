@@ -249,7 +249,8 @@ VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "virtio-s390",
               "ccw",
               "virtio-mmio",
-              "isa")
+              "isa",
+              "dimm")
 
 VIR_ENUM_IMPL(virDomainDiskDevice, VIR_DOMAIN_DISK_DEVICE_LAST,
               "disk",
@@ -2833,6 +2834,11 @@ virDomainDeviceInfoAddressIsEqual(const virDomainDeviceInfo *a,
         if (memcmp(&a->addr.isa, &b->addr.isa, sizeof(a->addr.isa)))
             return false;
         break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM:
+        if (memcmp(&a->addr.dimm, &b->addr.dimm, sizeof(a->addr.dimm)))
+            return false;
+        break;
     }
 
     return true;
@@ -3702,6 +3708,12 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " irq='0x%x'", info->addr.isa.irq);
         break;
 
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM:
+        virBufferAsprintf(buf, " slot='%u'", info->addr.dimm.slot);
+        virBufferAsprintf(buf, " base='0x%llx'", info->addr.dimm.base);
+
+        break;
+
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
@@ -4071,6 +4083,41 @@ virDomainDeviceISAAddressParseXML(xmlNodePtr node,
     return ret;
 }
 
+
+static int
+virDomainDeviceDimmAddressParseXML(xmlNodePtr node,
+                                   virDomainDeviceDimmAddressPtr addr)
+{
+    int ret = -1;
+    char *tmp = NULL;
+
+    if (!(tmp = virXMLPropString(node, "slot")) ||
+        virStrToLong_uip(tmp, NULL, 10, &addr->slot) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid or missing dimm slot id '%s'"),
+                       NULLSTR(tmp));
+        goto cleanup;
+    }
+    VIR_FREE(tmp);
+
+    if (!(tmp = virXMLPropString(node, "base")) ||
+        virStrToLong_ullp(tmp, NULL, 16, &addr->base) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid or missing dimm base address '%s'"),
+                       NULLSTR(tmp));
+        goto cleanup;
+    }
+    VIR_FREE(tmp);
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(tmp);
+
+    return ret;
+}
+
+
 /* Parse the XML definition for a device address
  * @param node XML nodeset to parse for device address definition
  */
@@ -4211,6 +4258,11 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("virtio-s390 bus doesn't have an address"));
         goto cleanup;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM:
+        if (virDomainDeviceDimmAddressParseXML(address, &info->addr.dimm) < 0)
+            goto cleanup;
+        break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
@@ -15405,6 +15457,26 @@ virDomainDeviceInfoCheckABIStability(virDomainDeviceInfoPtr src,
                            dst->addr.isa.irq,
                            src->addr.isa.iobase,
                            src->addr.isa.irq);
+            return false;
+        }
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM:
+        if (src->addr.dimm.slot != dst->addr.dimm.slot) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Target device dimm slot %u does not match "
+                             "source %u"),
+                           dst->addr.dimm.slot,
+                           src->addr.dimm.slot);
+            return false;
+        }
+
+        if (src->addr.dimm.base != dst->addr.dimm.base) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Target device dimm base addres '%llx' does "
+                             "not match source '%llx'"),
+                           dst->addr.dimm.base,
+                           src->addr.dimm.base);
             return false;
         }
         break;
