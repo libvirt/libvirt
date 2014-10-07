@@ -3306,7 +3306,7 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "<address type='%s'",
                       virDomainDeviceAddressTypeToString(info->type));
 
-    switch (info->type) {
+    switch ((virDomainDeviceAddressType) info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         virBufferAsprintf(buf, " domain='0x%.4x' bus='0x%.2x' slot='0x%.2x' function='0x%.1x'",
                           info->addr.pci.domain,
@@ -3368,10 +3368,10 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " irq='0x%x'", info->addr.isa.irq);
         break;
 
-    default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown address type '%d'"), info->type);
-        return -1;
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
+        break;
     }
 
     virBufferAddLit(buf, "/>\n");
@@ -3816,7 +3816,7 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
     type = virXMLPropString(address, "type");
 
     if (type) {
-        if ((info->type = virDomainDeviceAddressTypeFromString(type)) < 0) {
+        if ((info->type = virDomainDeviceAddressTypeFromString(type)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown address type '%s'"), type);
             goto cleanup;
@@ -3827,7 +3827,7 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
         goto cleanup;
     }
 
-    switch (info->type) {
+    switch ((virDomainDeviceAddressType) info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         if (virDevicePCIAddressParseXML(address, &info->addr.pci) < 0)
             goto cleanup;
@@ -3873,11 +3873,14 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
             goto cleanup;
         break;
 
-    default:
-        /* Should not happen */
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Unknown device address type"));
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("virtio-s390 bus doesn't have an address"));
         goto cleanup;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
+        break;
     }
 
     ret = 0;
@@ -14223,7 +14226,7 @@ virDomainDeviceInfoCheckABIStability(virDomainDeviceInfoPtr src,
         return false;
     }
 
-    switch (src->type) {
+    switch ((virDomainDeviceAddressType) src->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         if (src->addr.pci.domain != dst->addr.pci.domain ||
             src->addr.pci.bus != dst->addr.pci.bus ||
@@ -14296,6 +14299,15 @@ virDomainDeviceInfoCheckABIStability(virDomainDeviceInfoPtr src,
                            src->addr.isa.irq);
             return false;
         }
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
         break;
     }
 

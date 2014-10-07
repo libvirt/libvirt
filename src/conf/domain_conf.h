@@ -308,7 +308,7 @@ struct _virDomainDeviceInfo {
      * to consider the new fields
      */
     char *alias;
-    int type;
+    int type; /* virDomainDeviceAddressType */
     union {
         virDevicePCIAddress pci;
         virDomainDeviceDriveAddress drive;
