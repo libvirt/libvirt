@@ -522,6 +522,36 @@ testVirStringFreeListCount(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 
+struct testStripIPv6BracketsData {
+    const char *string;
+    const char *result;
+};
+
+static int testStripIPv6Brackets(const void *args)
+{
+    const struct testStripIPv6BracketsData *data = args;
+    int ret = -1;
+    char *res = NULL;
+
+    if (VIR_STRDUP(res, data->string) < 0)
+        goto cleanup;
+
+    virStringStripIPv6Brackets(res);
+
+    if (STRNEQ_NULLABLE(res, data->result)) {
+        fprintf(stderr, "Returned '%s', expected '%s'\n",
+                NULLSTR(res), NULLSTR(data->result));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(res);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -730,6 +760,25 @@ mymain(void)
     if (virtTestRun("virStringFreeListCount", testVirStringFreeListCount,
                     NULL) < 0)
         ret = -1;
+
+#define TEST_STRIP_IPV6_BRACKETS(str, res)                              \
+    do {                                                                \
+        struct testStripIPv6BracketsData stripData = {                  \
+            .string = str,                                              \
+            .result = res,                                              \
+        };                                                              \
+        if (virtTestRun("Strip brackets from IPv6 " #str,               \
+                        testStripIPv6Brackets, &stripData) < 0)         \
+            ret = -1;                                                   \
+    } while (0)
+
+    TEST_STRIP_IPV6_BRACKETS(NULL, NULL);
+    TEST_STRIP_IPV6_BRACKETS("[]", "[]");
+    TEST_STRIP_IPV6_BRACKETS("[:]", ":");
+    TEST_STRIP_IPV6_BRACKETS("[::1]", "::1");
+    TEST_STRIP_IPV6_BRACKETS("[hello:", "[hello:");
+    TEST_STRIP_IPV6_BRACKETS(":hello]", ":hello]");
+    TEST_STRIP_IPV6_BRACKETS(":[]:", ":[]:");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -929,3 +929,26 @@ virStringReplace(const char *haystack,
 
     return virBufferContentAndReset(&buf);
 }
+
+
+/**
+ * virStringStripIPv6Brackets:
+ * @str: the string to strip
+ *
+ * Modify the string in-place to remove the leading and closing brackets
+ * from an IPv6 address.
+ */
+void
+virStringStripIPv6Brackets(char *str)
+{
+    size_t len;
+
+    if (!str)
+        return;
+
+    len = strlen(str);
+    if (str[0] == '[' && str[len - 1] == ']' && strchr(str, ':')) {
+        memmove(&str[0], &str[1], len - 2);
+        str[len - 2] = '\0';
+    }
+}

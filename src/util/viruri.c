@@ -182,22 +182,10 @@ virURIParse(const char *uri)
     if (VIR_STRDUP(ret->user, xmluri->user) < 0)
         goto error;
 
-    /* First check: does it even make sense to jump inside */
-    if (ret->server != NULL &&
-        ret->server[0] == '[') {
-        size_t length = strlen(ret->server);
-
-        /* We want to modify the server string only if there are
-         * square brackets on both ends and inside there is IPv6
-         * address. Otherwise we could make a mistake by modifying
-         * something other than an IPv6 address. */
-        if (ret->server[length - 1] == ']' && strchr(ret->server, ':')) {
-            memmove(&ret->server[0], &ret->server[1], length - 2);
-            ret->server[length - 2] = '\0';
-        }
-        /* Even after such modification, it is completely ok to free
-         * the uri with xmlFreeURI() */
-    }
+    /* Strip square bracket from an IPv6 address.
+     * The function modifies the string in-place. Even after such
+     * modification, it is OK to free the URI with xmlFreeURI. */
+    virStringStripIPv6Brackets(ret->server);
 
     if (virURIParseParams(ret) < 0)
         goto error;
