@@ -14998,6 +14998,44 @@ virDomainPanicCheckABIStability(virDomainPanicDefPtr src,
 }
 
 
+static bool
+virDomainShmemDefCheckABIStability(virDomainShmemDefPtr src,
+                                   virDomainShmemDefPtr dst)
+{
+    if (STRNEQ_NULLABLE(src->name, dst->name)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target shared memory name '%s' does not match source "
+                         "'%s'"), dst->name, src->name);
+        return false;
+    }
+
+    if (src->size != dst->size) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target shared memory size '%llu' does not match "
+                         "source size '%llu'"), dst->size, src->size);
+        return false;
+    }
+
+    if (src->server.enabled != dst->server.enabled) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Target shared memory server usage doesn't match "
+                         "source"));
+        return false;
+    }
+
+    if (src->msi.vectors != dst->msi.vectors ||
+        src->msi.enabled != dst->msi.enabled ||
+        src->msi.ioeventfd != dst->msi.ioeventfd) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Target shared memory MSI configuration doesn't match "
+                         "source"));
+        return false;
+    }
+
+    return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
+}
+
+
 /* This compares two configurations and looks for any differences
  * which will affect the guest ABI. This is primarily to allow
  * validation of custom XML config passed in during migration
@@ -15398,6 +15436,18 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (!virDomainPanicCheckABIStability(src->panic, dst->panic))
         goto error;
+
+    if (src->nshmems != dst->nshmems) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain shared memory device count %zu "
+                         "does not match source %zu"), dst->nshmems, src->nshmems);
+        goto error;
+    }
+
+    for (i = 0; i < src->nshmems; i++) {
+        if (!virDomainShmemDefCheckABIStability(src->shmems[i], dst->shmems[i]))
+            goto error;
+    }
 
     return true;
 
