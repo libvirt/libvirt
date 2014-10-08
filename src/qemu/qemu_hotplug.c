@@ -3530,6 +3530,12 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
         }
     }
 
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
+        !detach->info.alias) {
+        if (qemuAssignDeviceNetAlias(vm->def, detach, -1) < 0)
+            goto cleanup;
+    }
+
     qemuDomainMarkDeviceForRemoval(vm, &detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
