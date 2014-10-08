@@ -15083,6 +15083,9 @@ static virDomainPtr qemuDomainQemuAttach(virConnectPtr conn,
     if (qemuCanonicalizeMachine(def, qemuCaps) < 0)
         goto cleanup;
 
+    if (qemuAssignDeviceAliases(def, qemuCaps) < 0)
+        goto cleanup;
+
     if (qemuDomainAssignAddresses(def, qemuCaps, NULL) < 0)
         goto cleanup;
 
