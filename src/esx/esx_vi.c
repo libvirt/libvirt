@@ -711,7 +711,8 @@ esxVI_MultiCURL_SocketCallback(CURL *handle ATTRIBUTE_UNUSED,
 
 static int
 esxVI_MultiCURL_TimerCallback(CURLM *handle ATTRIBUTE_UNUSED,
-                              long timeout_ms, void *callback_opaque)
+                              long timeout_ms ATTRIBUTE_UNUSED,
+                              void *callback_opaque)
 {
     esxVI_MultiCURL *multi = callback_opaque;
 
