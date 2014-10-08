@@ -3696,6 +3696,12 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
         return ret;
     }
 
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
+        !tmpChr->info.alias) {
+        if (qemuAssignDeviceChrAlias(vmdef, tmpChr, -1) < 0)
+            return ret;
+    }
+
     if (qemuBuildChrDeviceStr(&devstr, vm->def, chr, priv->qemuCaps) < 0)
         return ret;
 
