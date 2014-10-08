@@ -2998,6 +2998,12 @@ qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
         }
     }
 
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
+        !detach->info.alias) {
+        if (qemuAssignDeviceDiskAlias(vm->def, detach, priv->qemuCaps) < 0)
+            goto cleanup;
+    }
+
     qemuDomainMarkDeviceForRemoval(vm, &detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
