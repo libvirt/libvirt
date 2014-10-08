@@ -2,6 +2,7 @@
  * hyperv_wmi.c: general WMI over WSMAN related functions and structures for
  *               managing Microsoft Hyper-V hosts
  *
+ * Copyright (C) 2014 Red Hat, Inc.
  * Copyright (C) 2011 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Michael Sievers <msievers83@googlemail.com>
  *
@@ -105,6 +106,7 @@ hyperyVerifyResponse(WsManClient *client, WsXmlDocH response,
  * Object
  */
 
+/* This function guarantees that query is freed, even on failure */
 int
 hypervEnumAndPull(hypervPrivate *priv, virBufferPtr query, const char *root,
                   XmlSerializerInfo *serializerInfo, const char *resourceUri,
@@ -123,13 +125,17 @@ hypervEnumAndPull(hypervPrivate *priv, virBufferPtr query, const char *root,
     XML_TYPE_PTR data = NULL;
     hypervObject *object;
 
-    if (list == NULL || *list != NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+    if (virBufferCheckError(query) < 0) {
+        virBufferFreeAndReset(query);
         return -1;
     }
+    query_string = virBufferContentAndReset(query);
 
-    if (virBufferCheckError(query) < 0)
+    if (list == NULL || *list != NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        VIR_FREE(query_string);
         return -1;
+    }
 
     serializerContext = wsmc_get_serialization_context(priv->client);
 
@@ -141,7 +147,6 @@ hypervEnumAndPull(hypervPrivate *priv, virBufferPtr query, const char *root,
         goto cleanup;
     }
 
-    query_string = virBufferContentAndReset(query);
     filter = filter_create_simple(WSM_WQL_FILTER_DIALECT, query_string);
 
     if (filter == NULL) {
