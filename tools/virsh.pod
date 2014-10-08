@@ -3698,8 +3698,9 @@ using the UNIX driver. Ideally the process will also have had the
 
 Not all functions of libvirt are expected to work reliably after
 attaching to an externally launched QEMU process. There may be
-issues with the guest ABI changing upon migration, and hotunplug
-may not work.
+issues with the guest ABI changing upon migration and device hotplug
+or hotunplug may not work. The attached environment should be considered
+primarily read-only.
 
 =item B<qemu-monitor-command> I<domain> { [I<--hmp>] | [I<--pretty>] }
 I<command>...
