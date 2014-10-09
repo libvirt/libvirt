@@ -354,7 +354,7 @@ virProcessKillPainfully(pid_t pid, bool force)
         int signum;
         if (i == 0) {
             signum = SIGTERM; /* kindly suggest it should exit */
-        } else if ((i == 50) & force) {
+        } else if (i == 50 && force) {
             VIR_DEBUG("Timed out waiting after SIGTERM to process %lld, "
                       "sending SIGKILL", (long long)pid);
             /* No SIGKILL kill on Win32 ! Use SIGABRT instead which our
