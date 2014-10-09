@@ -3241,6 +3241,8 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
     config.data.nix.path = monpath;
     config.data.nix.listen = false;
 
+    virPidFileForceCleanupPath(pidfile);
+
     VIR_DEBUG("Try to get caps via QMP qemuCaps=%p", qemuCaps);
 
     /*
