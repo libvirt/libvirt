@@ -4147,6 +4147,106 @@ processDeviceDeletedEvent(virQEMUDriverPtr driver,
 
 
 static void
+syncNicRxFilterMacAddr(char *ifname, virNetDevRxFilterPtr guestFilter,
+                       virNetDevRxFilterPtr hostFilter)
+{
+    char newMacStr[VIR_MAC_STRING_BUFLEN];
+
+    if (virMacAddrCmp(&hostFilter->mac, &guestFilter->mac)) {
+        virMacAddrFormat(&guestFilter->mac, newMacStr);
+
+        /* set new MAC address from guest to associated macvtap device */
+        if (virNetDevSetMAC(ifname, &guestFilter->mac) < 0) {
+            VIR_WARN("Couldn't set new MAC address %s to device %s "
+                     "while responding to NIC_RX_FILTER_CHANGED",
+                     newMacStr, ifname);
+        } else {
+            VIR_DEBUG("device %s MAC address set to %s", ifname, newMacStr);
+        }
+    }
+}
+
+
+static void
+syncNicRxFilterGuestMulticast(char *ifname, virNetDevRxFilterPtr guestFilter,
+                              virNetDevRxFilterPtr hostFilter)
+{
+    size_t i, j;
+    bool found;
+    char macstr[VIR_MAC_STRING_BUFLEN];
+
+    for (i = 0; i < guestFilter->multicast.nTable; i++) {
+        found = false;
+
+        for (j = 0; j < hostFilter->multicast.nTable; j++) {
+            if (virMacAddrCmp(&guestFilter->multicast.table[i],
+                              &hostFilter->multicast.table[j]) == 0) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            virMacAddrFormat(&guestFilter->multicast.table[i], macstr);
+
+            if (virNetDevAddMulti(ifname, &guestFilter->multicast.table[i]) < 0) {
+                VIR_WARN("Couldn't add new multicast MAC address %s to "
+                         "device %s while responding to NIC_RX_FILTER_CHANGED",
+                         macstr, ifname);
+            } else {
+                VIR_DEBUG("Added multicast MAC %s to %s interface",
+                          macstr, ifname);
+            }
+        }
+    }
+}
+
+
+static void
+syncNicRxFilterHostMulticast(char *ifname, virNetDevRxFilterPtr guestFilter,
+                             virNetDevRxFilterPtr hostFilter)
+{
+    size_t i, j;
+    bool found;
+    char macstr[VIR_MAC_STRING_BUFLEN];
+
+    for (i = 0; i < hostFilter->multicast.nTable; i++) {
+        found = false;
+
+        for (j = 0; j < guestFilter->multicast.nTable; j++) {
+            if (virMacAddrCmp(&hostFilter->multicast.table[i],
+                              &guestFilter->multicast.table[j]) == 0) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            virMacAddrFormat(&hostFilter->multicast.table[i], macstr);
+
+            if (virNetDevDelMulti(ifname, &hostFilter->multicast.table[i]) < 0) {
+                VIR_WARN("Couldn't delete multicast MAC address %s from "
+                         "device %s while responding to NIC_RX_FILTER_CHANGED",
+                         macstr, ifname);
+            } else {
+                VIR_DEBUG("Deleted multicast MAC %s from %s interface",
+                          macstr, ifname);
+            }
+        }
+    }
+}
+
+
+static void
+syncNicRxFilterMulticast(char *ifname,
+                         virNetDevRxFilterPtr guestFilter,
+                         virNetDevRxFilterPtr hostFilter)
+{
+    syncNicRxFilterGuestMulticast(ifname, guestFilter, hostFilter);
+    syncNicRxFilterHostMulticast(ifname, guestFilter, hostFilter);
+}
+
+static void
 processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                char *devAlias)
@@ -4155,9 +4255,8 @@ processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDeviceDef dev;
     virDomainNetDefPtr def;
-    virNetDevRxFilterPtr filter = NULL;
-    virMacAddr oldMAC;
-    char newMacStr[VIR_MAC_STRING_BUFLEN];
+    virNetDevRxFilterPtr guestFilter = NULL;
+    virNetDevRxFilterPtr hostFilter = NULL;
     int ret;
 
     VIR_DEBUG("Received NIC_RX_FILTER_CHANGED event for device %s "
@@ -4202,37 +4301,27 @@ processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
               "device %s in domain %s", def->info.alias, vm->def->name);
 
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorQueryRxFilter(priv->mon, devAlias, &filter);
+    ret = qemuMonitorQueryRxFilter(priv->mon, devAlias, &guestFilter);
     qemuDomainObjExitMonitor(driver, vm);
     if (ret < 0)
         goto endjob;
 
-    virMacAddrFormat(&filter->mac, newMacStr);
-
     if (virDomainNetGetActualType(def) == VIR_DOMAIN_NET_TYPE_DIRECT) {
 
-        /* For macvtap connections, set the macvtap device's MAC
-         * address to match that of the guest device.
-         */
-
-        if (virNetDevGetMAC(def->ifname, &oldMAC) < 0) {
-            VIR_WARN("Couldn't get current MAC address of device %s "
+        if (virNetDevGetRxFilter(def->ifname, &hostFilter)) {
+            VIR_WARN("Couldn't get current RX filter for device %s "
                      "while responding to NIC_RX_FILTER_CHANGED",
                      def->ifname);
             goto endjob;
         }
 
-        if (virMacAddrCmp(&oldMAC, &filter->mac)) {
-            /* set new MAC address from guest to associated macvtap device */
-            if (virNetDevSetMAC(def->ifname, &filter->mac) < 0) {
-                VIR_WARN("Couldn't set new MAC address %s to device %s "
-                         "while responding to NIC_RX_FILTER_CHANGED",
-                         newMacStr, def->ifname);
-            } else {
-                VIR_DEBUG("device %s MAC address set to %s",
-                          def->ifname, newMacStr);
-            }
-        }
+        /* For macvtap connections, set the following macvtap network device
+         * attributes to match those of the guest network device:
+         * - MAC address
+         * - Multicast MAC address table
+         */
+        syncNicRxFilterMacAddr(def->ifname, guestFilter, hostFilter);
+        syncNicRxFilterMulticast(def->ifname, guestFilter, hostFilter);
     }
 
  endjob:
@@ -4242,7 +4331,8 @@ processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
     ignore_value(qemuDomainObjEndJob(driver, vm));
 
  cleanup:
-    virNetDevRxFilterFree(filter);
+    virNetDevRxFilterFree(hostFilter);
+    virNetDevRxFilterFree(guestFilter);
     VIR_FREE(devAlias);
     virObjectUnref(cfg);
 }
