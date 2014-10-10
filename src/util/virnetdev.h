@@ -189,5 +189,15 @@ int virNetDevGetLinkInfo(const char *ifname,
 virNetDevRxFilterPtr virNetDevRxFilterNew(void)
    ATTRIBUTE_RETURN_CHECK;
 void virNetDevRxFilterFree(virNetDevRxFilterPtr filter);
+int virNetDevGetRxFilter(const char *ifname,
+                         virNetDevRxFilterPtr *filter)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevAddMulti(const char *ifname,
+                      virMacAddrPtr macaddr)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+int virNetDevDelMulti(const char *ifname,
+                      virMacAddrPtr macaddr)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 #endif /* __VIR_NETDEV_H__ */

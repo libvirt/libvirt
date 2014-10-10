@@ -56,6 +56,35 @@
 
 VIR_LOG_INIT("util.netdev");
 
+#define PROC_NET_DEV_MCAST "/proc/net/dev_mcast"
+#define MAX_MCAST_SIZE 50*14336
+#define VIR_MCAST_NAME_LEN (IFNAMSIZ + 1)
+#define VIR_MCAST_INDEX_TOKEN_IDX 0
+#define VIR_MCAST_NAME_TOKEN_IDX 1
+#define VIR_MCAST_USERS_TOKEN_IDX 2
+#define VIR_MCAST_GLOBAL_TOKEN_IDX 3
+#define VIR_MCAST_ADDR_TOKEN_IDX 4
+#define VIR_MCAST_NUM_TOKENS 5
+#define VIR_MCAST_TOKEN_DELIMS " \n"
+#define VIR_MCAST_ADDR_LEN (VIR_MAC_HEXLEN + 1)
+
+typedef struct _virNetDevMcastEntry virNetDevMcastEntry;
+typedef virNetDevMcastEntry *virNetDevMcastEntryPtr;
+struct _virNetDevMcastEntry  {
+        int index;
+        char name[VIR_MCAST_NAME_LEN];
+        int users;
+        bool global;
+        virMacAddr macaddr;
+};
+
+typedef struct _virNetDevMcastList virNetDevMcastList;
+typedef virNetDevMcastList *virNetDevMcastListPtr;
+struct _virNetDevMcastList {
+    size_t nentries;
+    virNetDevMcastEntryPtr *entries;
+};
+
 #if defined(HAVE_STRUCT_IFREQ)
 static int virNetDevSetupControlFull(const char *ifname,
                                      struct ifreq *ifr,
@@ -1942,11 +1971,275 @@ virNetDevGetLinkInfo(const char *ifname,
 #endif /* defined(__linux__) */
 
 
+#if defined(SIOCADDMULTI) && defined(HAVE_STRUCT_IFREQ)
+/**
+ * virNetDevAddMulti:
+ * @ifname: interface name to which to add multicast MAC address
+ * @macaddr: MAC address
+ *
+ * This function adds the @macaddr to the multicast list for a given interface
+ * @ifname.
+ *
+ * Returns 0 in case of success or -1 on failure
+ */
+int virNetDevAddMulti(const char *ifname,
+                      virMacAddrPtr macaddr)
+{
+    int fd = -1;
+    int ret = -1;
+    struct ifreq ifr;
+
+    if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
+        return -1;
+
+    ifr.ifr_hwaddr.sa_family = AF_UNSPEC;
+    virMacAddrGetRaw(macaddr, (unsigned char *)ifr.ifr_hwaddr.sa_data);
+
+    if (ioctl(fd, SIOCADDMULTI, &ifr) < 0) {
+        char macstr[VIR_MAC_STRING_BUFLEN];
+        virReportSystemError(errno,
+                             _("Cannot add multicast MAC %s on '%s' interface"),
+                             virMacAddrFormat(macaddr, macstr), ifname);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+#else
+int virNetDevAddMulti(const char *ifname ATTRIBUTE_UNUSED,
+                      virMacAddrPtr macaddr ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to add address to interface "
+                           "multicast list on this platform"));
+    return -1;
+}
+#endif
+
+#if defined(SIOCDELMULTI) && defined(HAVE_STRUCT_IFREQ)
+/**
+ * virNetDevDelMulti:
+ * @ifname: interface name from which to delete the multicast MAC address
+ * @macaddr: MAC address
+ *
+ * This function deletes the @macaddr from the multicast list for a given
+ * interface @ifname.
+ *
+ * Returns 0 in case of success or -1 on failure
+ */
+int virNetDevDelMulti(const char *ifname,
+                      virMacAddrPtr macaddr)
+{
+    int fd = -1;
+    int ret = -1;
+    struct ifreq ifr;
+
+    if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
+        return -1;
+
+    ifr.ifr_hwaddr.sa_family = AF_UNSPEC;
+    virMacAddrGetRaw(macaddr, (unsigned char *)ifr.ifr_hwaddr.sa_data);
+
+    if (ioctl(fd, SIOCDELMULTI, &ifr) < 0) {
+        char macstr[VIR_MAC_STRING_BUFLEN];
+        virReportSystemError(errno,
+                             _("Cannot add multicast MAC %s on '%s' interface"),
+                             virMacAddrFormat(macaddr, macstr), ifname);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+#else
+int virNetDevDelMulti(const char *ifname ATTRIBUTE_UNUSED,
+                      virMacAddrPtr macaddr ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to delete address from interface "
+                           "multicast list on this platform"));
+    return -1;
+}
+#endif
+
+static int virNetDevParseMcast(char *buf, virNetDevMcastEntryPtr mcast)
+{
+    int ifindex;
+    int num;
+    char *next;
+    char *token;
+    char *saveptr;
+    char *endptr;
+
+    for (ifindex = 0, next = buf; ifindex < VIR_MCAST_NUM_TOKENS; ifindex++,
+         next = NULL) {
+        token = strtok_r(next, VIR_MCAST_TOKEN_DELIMS, &saveptr);
+
+        if (token == NULL) {
+            virReportSystemError(EINVAL,
+                                 _("failed to parse multicast address from '%s'"),
+                                 buf);
+            return -1;
+        }
+
+        switch (ifindex) {
+            case VIR_MCAST_INDEX_TOKEN_IDX:
+                if (virStrToLong_i(token, &endptr, 10, &num) < 0) {
+                    virReportSystemError(EINVAL,
+                                         _("Failed to parse interface index from '%s'"),
+                                         buf);
+                    return -1;
+
+                }
+                mcast->index = num;
+                break;
+            case VIR_MCAST_NAME_TOKEN_IDX:
+                if (virStrncpy(mcast->name, token, strlen(token),
+                    VIR_MCAST_NAME_LEN) == NULL) {
+                    virReportSystemError(EINVAL,
+                                         _("Failed to parse network device name from '%s'"),
+                                         buf);
+                    return -1;
+                }
+                break;
+            case VIR_MCAST_USERS_TOKEN_IDX:
+                if (virStrToLong_i(token, &endptr, 10, &num) < 0) {
+                    virReportSystemError(EINVAL,
+                                         _("Failed to parse users from '%s'"),
+                                         buf);
+                    return -1;
+
+                }
+                mcast->users = num;
+                break;
+            case VIR_MCAST_GLOBAL_TOKEN_IDX:
+                if (virStrToLong_i(token, &endptr, 10, &num) < 0) {
+                    virReportSystemError(EINVAL,
+                                         _("Failed to parse users from '%s'"),
+                                         buf);
+                    return -1;
+
+                }
+                mcast->global = num;
+                break;
+            case VIR_MCAST_ADDR_TOKEN_IDX:
+                if (virMacAddrParseHex((const char*)token,
+                    &mcast->macaddr) < 0) {
+                    virReportSystemError(EINVAL,
+                                         _("Failed to parse MAC address from '%s'"),
+                                         buf);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    return 0;
+}
+
+
+static void virNetDevMcastListClear(virNetDevMcastListPtr mcast)
+{
+    size_t i;
+
+    for (i = 0; i < mcast->nentries; i++)
+       VIR_FREE(mcast->entries[i]);
+    VIR_FREE(mcast->entries);
+    mcast->nentries = 0;
+}
+
+
+static int virNetDevGetMcastList(const char *ifname,
+                                 virNetDevMcastListPtr mcast)
+{
+    char *cur = NULL;
+    char *buf = NULL;
+    char *next = NULL;
+    int ret = -1, len;
+    virNetDevMcastEntryPtr entry = NULL;
+
+    mcast->entries = NULL;
+    mcast->nentries = 0;
+
+    /* Read entire multicast table into memory */
+    if ((len = virFileReadAll(PROC_NET_DEV_MCAST, MAX_MCAST_SIZE, &buf)) <= 0)
+        goto cleanup;
+
+    cur = buf;
+    while (cur) {
+        if (!entry && VIR_ALLOC(entry) < 0)
+                goto cleanup;
+
+        next = strchr(cur, '\n');
+        if (next)
+            next++;
+        if (virNetDevParseMcast(cur, entry))
+            goto cleanup;
+
+        /* Only return global multicast MAC addresses for
+         * specified interface */
+        if (entry->global && STREQ(ifname, entry->name)) {
+            if (VIR_APPEND_ELEMENT(mcast->entries, mcast->nentries, entry))
+                 goto cleanup;
+        } else {
+            memset(entry, 0, sizeof(virNetDevMcastEntry));
+        }
+        cur = next && ((next - buf) < len) ? next : NULL;
+    }
+
+    ret = 0;
+ cleanup:
+    if (ret < 0)
+        virNetDevMcastListClear(mcast);
+
+    VIR_FREE(entry);
+
+    return ret;
+}
+
+
 VIR_ENUM_IMPL(virNetDevRxFilterMode,
               VIR_NETDEV_RX_FILTER_MODE_LAST,
               "none",
               "normal",
               "all");
+
+
+static int virNetDevGetMulticastTable(const char *ifname,
+                                      virNetDevRxFilterPtr filter)
+{
+    size_t i;
+    int ret = -1;
+    virNetDevMcastList mcast;
+    filter->multicast.nTable = 0;
+    filter->multicast.table = NULL;
+
+    if (virNetDevGetMcastList(ifname, &mcast) < 0)
+        goto cleanup;
+
+    if (mcast.nentries > 0) {
+        if (VIR_ALLOC_N(filter->multicast.table, mcast.nentries) < 0)
+            goto cleanup;
+
+        for (i = 0; i < mcast.nentries; i++) {
+            virMacAddrSet(&filter->multicast.table[i],
+                          &mcast.entries[i]->macaddr);
+        }
+
+        filter->multicast.nTable = mcast.nentries;
+    }
+
+    ret = 0;
+ cleanup:
+    virNetDevMcastListClear(&mcast);
+
+    return ret;
+}
 
 
 virNetDevRxFilterPtr
@@ -1970,4 +2263,40 @@ virNetDevRxFilterFree(virNetDevRxFilterPtr filter)
         VIR_FREE(filter->vlan.table);
         VIR_FREE(filter);
     }
+}
+
+
+/**
+ * virNetDevGetRxFilter:
+ * This function supplies the RX filter list for a given device interface
+ *
+ * @ifname: Name of the interface
+ * @filter: The RX filter list
+ *
+ * Returns 0 or -1 on failure.
+ */
+int virNetDevGetRxFilter(const char *ifname,
+                         virNetDevRxFilterPtr *filter)
+{
+    int ret = -1;
+    virNetDevRxFilterPtr fil = virNetDevRxFilterNew();
+
+    if (!fil)
+        goto cleanup;
+
+    if (virNetDevGetMAC(ifname, &fil->mac))
+        goto cleanup;
+
+    if (virNetDevGetMulticastTable(ifname, fil))
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    if (ret < 0) {
+        virNetDevRxFilterFree(fil);
+        fil = NULL;
+    }
+
+    *filter = fil;
+    return ret;
 }

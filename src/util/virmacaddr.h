@@ -27,6 +27,7 @@
 # include "internal.h"
 
 # define VIR_MAC_BUFLEN 6
+# define VIR_MAC_HEXLEN (VIR_MAC_BUFLEN * 2)
 # define VIR_MAC_PREFIX_BUFLEN 3
 # define VIR_MAC_STRING_BUFLEN (VIR_MAC_BUFLEN * 3)
 
@@ -50,6 +51,9 @@ void virMacAddrGenerate(const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN],
                         virMacAddrPtr addr);
 int virMacAddrParse(const char* str,
                     virMacAddrPtr addr) ATTRIBUTE_RETURN_CHECK;
+int virMacAddrParseHex(const char* str,
+                       virMacAddrPtr addr)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 bool virMacAddrIsUnicast(const virMacAddr *addr);
 bool virMacAddrIsMulticast(const virMacAddr *addr);
 bool virMacAddrIsBroadcastRaw(const unsigned char s[VIR_MAC_BUFLEN]);

@@ -29,6 +29,7 @@
 #include "c-ctype.h"
 #include "virmacaddr.h"
 #include "virrandom.h"
+#include "virutil.h"
 
 static const unsigned char virMacAddrBroadcastAddrRaw[VIR_MAC_BUFLEN] =
     { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
@@ -196,6 +197,30 @@ virMacAddrFormat(const virMacAddr *addr,
              addr->addr[3], addr->addr[4], addr->addr[5]);
     str[VIR_MAC_STRING_BUFLEN-1] = '\0';
     return str;
+}
+
+/**
+ * virMacAddrParseHex:
+ * @str: string hexadecimal representation of MAC address, e.g., "F801EFCE3aCB"
+ * @addr: 6-byte MAC address
+ *
+ * Parse the hexadecimal representation of a MAC address
+ *
+ * Return 0 upon success, or -1 in case of error.
+ */
+int
+virMacAddrParseHex(const char *str, virMacAddrPtr addr)
+{
+    size_t i;
+
+    if (strspn(str, "0123456789abcdefABCDEF") != VIR_MAC_HEXLEN ||
+        str[VIR_MAC_HEXLEN])
+        return -1;
+
+    for (i = 0; i < VIR_MAC_BUFLEN; i++)
+        addr->addr[i] = (virHexToBin(str[2 * i]) << 4 |
+                         virHexToBin(str[2 * i + 1]));
+    return 0;
 }
 
 void virMacAddrGenerate(const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN],
