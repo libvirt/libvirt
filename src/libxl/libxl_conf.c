@@ -640,7 +640,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
 
     b_info->max_vcpus = def->maxvcpus;
     if (libxl_cpu_bitmap_alloc(ctx, &b_info->avail_vcpus, def->maxvcpus))
-        goto error;
+        return -1;
     libxl_bitmap_set_none(&b_info->avail_vcpus);
     for (i = 0; i < def->vcpus; i++)
         libxl_bitmap_set((&b_info->avail_vcpus), i);
@@ -703,26 +703,26 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
             bootorder[def->os.nBootDevs] = '\0';
         }
         if (VIR_STRDUP(b_info->u.hvm.boot, bootorder) < 0)
-            goto error;
+            return -1;
 
         if (def->emulator) {
             if (!virFileExists(def->emulator)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("emulator '%s' not found"),
                                def->emulator);
-                goto error;
+                return -1;
             }
 
             if (!virFileIsExecutable(def->emulator)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("emulator '%s' is not executable"),
                                def->emulator);
-                goto error;
+                return -1;
             }
 
             VIR_FREE(b_info->device_model);
             if (VIR_STRDUP(b_info->device_model, def->emulator) < 0)
-                goto error;
+                return -1;
 
             b_info->device_model_version = libxlDomainGetEmulatorType(def);
         }
@@ -732,17 +732,17 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                "%s",
                                _("Only one serial device is supported by libxl"));
-                goto error;
+                return -1;
             }
             if (libxlMakeChrdevStr(def->serials[0], &b_info->u.hvm.serial) < 0)
-                goto error;
+                return -1;
         }
 
         if (def->nparallels) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s",
                            _("Parallel devices are not supported by libxl"));
-            goto error;
+            return -1;
         }
 
         /*
@@ -761,33 +761,29 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
          */
         if (def->os.bootloader) {
             if (VIR_STRDUP(b_info->u.pv.bootloader, def->os.bootloader) < 0)
-                goto error;
+                return -1;
         } else if (def->os.kernel == NULL) {
             if (VIR_STRDUP(b_info->u.pv.bootloader, LIBXL_BOOTLOADER_PATH) < 0)
-                goto error;
+                return -1;
         }
         if (def->os.bootloaderArgs) {
             if (!(b_info->u.pv.bootloader_args =
                   virStringSplit(def->os.bootloaderArgs, " \t\n", 0)))
-                goto error;
+                return -1;
         }
         if (VIR_STRDUP(b_info->u.pv.cmdline, def->os.cmdline) < 0)
-            goto error;
+            return -1;
         if (def->os.kernel) {
             /* libxl_init_build_info() sets VIR_STRDUP(kernel.path, "hvmloader") */
             VIR_FREE(b_info->u.pv.kernel);
             if (VIR_STRDUP(b_info->u.pv.kernel, def->os.kernel) < 0)
-                goto error;
+                return -1;
         }
         if (VIR_STRDUP(b_info->u.pv.ramdisk, def->os.initrd) < 0)
-            goto error;
+            return -1;
     }
 
     return 0;
-
- error:
-    libxl_domain_build_info_dispose(b_info);
-    return -1;
 }
 
 static int
