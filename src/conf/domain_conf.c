@@ -2417,6 +2417,7 @@ virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
  * operations do not persist past shutdown.
  *
  * @param caps pointer to capabilities info
+ * @param xmlopt pointer to XML parser configuration object
  * @param domain domain object pointer
  * @param live if true, run this operation even for an inactive domain.
  *   this allows freely updated domain->def with runtime defaults before
@@ -2454,6 +2455,7 @@ virDomainObjSetDefTransient(virCapsPtr caps,
  * return the running config.
  *
  * @param caps pointer to capabilities info
+ * @param xmlopt pointer to XML parser configuration object
  * @param domain domain object pointer
  * @return NULL on error, virDOmainDefPtr on success
  */
