@@ -1816,6 +1816,7 @@ virPidFileBuildPath;
 virPidFileConstructPath;
 virPidFileDelete;
 virPidFileDeletePath;
+virPidFileForceCleanupPath;
 virPidFileRead;
 virPidFileReadIfAlive;
 virPidFileReadPath;
