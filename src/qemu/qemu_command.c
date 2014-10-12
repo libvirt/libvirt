@@ -4599,7 +4599,7 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
  * other configuration was used (to detect legacy configurations). Returns
  * -1 in case of an error.
  */
-static int
+int
 qemuBuildMemoryBackendStr(unsigned long long size,
                           unsigned long long pagesize,
                           int guestNode,
@@ -4873,7 +4873,7 @@ qemuBuildMemoryDimmBackendStr(virDomainMemoryDefPtr mem,
 }
 
 
-static char *
+char *
 qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem,
                          virQEMUCapsPtr qemuCaps)
 {

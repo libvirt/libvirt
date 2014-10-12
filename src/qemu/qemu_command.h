@@ -162,6 +162,21 @@ char *qemuBuildSoundDevStr(virDomainDefPtr domainDef,
                            virDomainSoundDefPtr sound,
                            virQEMUCapsPtr qemuCaps);
 
+int qemuBuildMemoryBackendStr(unsigned long long size,
+                              unsigned long long pagesize,
+                              int guestNode,
+                              virBitmapPtr userNodeset,
+                              virBitmapPtr autoNodeset,
+                              virDomainDefPtr def,
+                              virQEMUCapsPtr qemuCaps,
+                              virQEMUDriverConfigPtr cfg,
+                              const char **backendType,
+                              virJSONValuePtr *backendProps,
+                              bool force);
+
+char *qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem,
+                               virQEMUCapsPtr qemuCaps);
+
 /* Legacy, pre device support */
 char *qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev,
                                    virQEMUCapsPtr qemuCaps);

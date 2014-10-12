@@ -7656,8 +7656,12 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
             dev->data.rng = NULL;
         break;
 
-    /*TODO: implement later */
     case VIR_DOMAIN_DEVICE_MEMORY:
+        /* note that qemuDomainAttachMemory always consumes dev->data.memory */
+        ret = qemuDomainAttachMemory(driver, vm,
+                                     dev->data.memory);
+        dev->data.memory = NULL;
+        break;
 
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_FS:

@@ -1680,6 +1680,101 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
 }
 
 
+/**
+ * qemuDomainAttachMemory:
+ * @driver: qemu driver data
+ * @vm: VM object
+ * @mem: Definition of the memory device to be attached. @mem is always consumed
+ *
+ * Attaches memory device described by @mem to domain @vm.
+ *
+ * Returns 0 on success -1 on error.
+ */
+int
+qemuDomainAttachMemory(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       virDomainMemoryDefPtr mem)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    char *devstr = NULL;
+    char *objalias = NULL;
+    const char *backendType;
+    virJSONValuePtr props = NULL;
+    int id;
+    int ret = -1;
+
+    if (virAsprintf(&mem->info.alias, "dimm%zu", vm->def->nmems) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&objalias, "mem%s", mem->info.alias) < 0)
+        goto cleanup;
+
+    if (!(devstr = qemuBuildMemoryDeviceStr(mem, priv->qemuCaps)))
+        goto cleanup;
+
+    qemuDomainMemoryDeviceAlignSize(mem);
+
+    if (qemuBuildMemoryBackendStr(mem->size, mem->pagesize,
+                                  mem->targetNode, mem->sourceNodes, NULL,
+                                  vm->def, priv->qemuCaps, cfg,
+                                  &backendType, &props, true) < 0)
+        goto cleanup;
+
+    if (virDomainMemoryInsert(vm->def, mem) < 0) {
+        virJSONValueFree(props);
+        goto cleanup;
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuMonitorAddObject(priv->mon, backendType, objalias, props) < 0)
+        goto removedef;
+
+    if (qemuMonitorAddDevice(priv->mon, devstr) < 0) {
+        virErrorPtr err = virSaveLastError();
+        ignore_value(qemuMonitorDelObject(priv->mon, objalias));
+        virSetError(err);
+        virFreeError(err);
+        goto removedef;
+    }
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
+        /* we shouldn't touch mem now, as the def might be freed */
+        mem = NULL;
+        goto cleanup;
+    }
+
+    /* mem is consumed by vm->def */
+    mem = NULL;
+
+    /* this step is best effort, removing the device would be so much trouble */
+    ignore_value(qemuDomainUpdateMemoryDeviceInfo(driver, vm,
+                                                  QEMU_ASYNC_JOB_NONE));
+
+    ret = 0;
+
+ cleanup:
+    virObjectUnref(cfg);
+    VIR_FREE(devstr);
+    VIR_FREE(objalias);
+    virDomainMemoryDefFree(mem);
+    return ret;
+
+ removedef:
+    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
+        mem = NULL;
+        goto cleanup;
+    }
+
+    if ((id = virDomainMemoryFindByDef(vm->def, mem)) >= 0)
+        mem = virDomainMemoryRemove(vm->def, id);
+    else
+        mem = NULL;
+
+    goto cleanup;
+}
+
+
 static int
 qemuDomainAttachHostUSBDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
