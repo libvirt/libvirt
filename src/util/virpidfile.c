@@ -37,6 +37,7 @@
 #include "c-ctype.h"
 #include "areadlink.h"
 #include "virstring.h"
+#include "virprocess.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -566,4 +567,45 @@ virPidFileConstructPath(bool privileged,
  cleanup:
     VIR_FREE(rundir);
     return ret;
+}
+
+
+/**
+ * virPidFileForceCleanupPath:
+ *
+ * Check if the pidfile is left around and clean it up whatever it
+ * takes.  This doesn't raise an error.  This function must not be
+ * called multiple times with the same path, be it in threads or
+ * processes.  This function does not raise any errors.
+ *
+ * Returns 0 if the pidfile was successfully cleaned up, -1 otherwise.
+ */
+int
+virPidFileForceCleanupPath(const char *path)
+{
+    pid_t pid = 0;
+    int fd = -1;
+
+    if (!virFileExists(path))
+        return 0;
+
+    if (virPidFileReadPath(path, &pid) < 0)
+        return -1;
+
+    if (virPidFileAcquirePath(path, false, 0) == 0) {
+        virPidFileReleasePath(path, fd);
+    } else {
+        virResetLastError();
+
+        /* Only kill the process if the pid is valid one.  0 means
+         * there is somebody else doing the same pidfile cleanup
+         * machinery. */
+        if (pid)
+            virProcessKillPainfully(pid, true);
+
+        if (virPidFileDeletePath(path) < 0)
+            return -1;
+    }
+
+    return 0;
 }
