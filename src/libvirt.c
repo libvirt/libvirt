@@ -8760,6 +8760,10 @@ virDomainUndefine(virDomainPtr domain)
  * whether this flag is present.  On hypervisors where snapshots do
  * not use libvirt metadata, this flag has no effect.
  *
+ * If the domain has any nvram specified, then including
+ * VIR_DOMAIN_UNDEFINE_NVRAM will also remove that file, and omitting the flag
+ * will cause the undefine process to fail.
+ *
  * Returns 0 in case of success, -1 in case of error
  */
 int
