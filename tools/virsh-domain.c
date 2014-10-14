@@ -1984,7 +1984,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (xml) {
-        if (virFileReadAll(xml, 8192, &xmlstr) < 0) {
+        if (virFileReadAll(xml, VSH_MAX_XML_FILE, &xmlstr) < 0) {
             vshReportError(ctl);
             goto cleanup;
         }
@@ -3889,7 +3889,7 @@ doSave(void *opaque)
         goto out;
 
     if (xmlfile &&
-        virFileReadAll(xmlfile, 8192, &xml) < 0) {
+        virFileReadAll(xmlfile, VSH_MAX_XML_FILE, &xml) < 0) {
         vshReportError(ctl);
         goto out;
     }
@@ -4182,7 +4182,7 @@ cmdSaveImageDefine(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "xml", &xmlfile) < 0)
         return false;
 
-    if (virFileReadAll(xmlfile, 8192, &xml) < 0)
+    if (virFileReadAll(xmlfile, VSH_MAX_XML_FILE, &xml) < 0)
         goto cleanup;
 
     if (virDomainSaveImageDefineXML(ctl->conn, file, xml, flags) < 0) {
@@ -4765,7 +4765,7 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (xmlfile &&
-        virFileReadAll(xmlfile, 8192, &xml) < 0)
+        virFileReadAll(xmlfile, VSH_MAX_XML_FILE, &xml) < 0)
         goto cleanup;
 
     if (((flags || xml)
@@ -8945,7 +8945,7 @@ cmdDomXMLFromNative(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptStringReq(ctl, cmd, "config", &configFile) < 0)
         return false;
 
-    if (virFileReadAll(configFile, 1024*1024, &configData) < 0)
+    if (virFileReadAll(configFile, VSH_MAX_XML_FILE, &configData) < 0)
         return false;
 
     xmlData = virConnectDomainXMLFromNative(ctl->conn, format, configData, flags);
@@ -9001,7 +9001,7 @@ cmdDomXMLToNative(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptStringReq(ctl, cmd, "xml", &xmlFile) < 0)
         return false;
 
-    if (virFileReadAll(xmlFile, 1024*1024, &xmlData) < 0)
+    if (virFileReadAll(xmlFile, VSH_MAX_XML_FILE, &xmlData) < 0)
         return false;
 
     configData = virConnectDomainXMLToNative(ctl->conn, format, xmlData, flags);
@@ -9318,7 +9318,7 @@ doMigrate(void *opaque)
     if (opt) {
         char *xml;
 
-        if (virFileReadAll(opt, 1024 * 1024, &xml) < 0) {
+        if (virFileReadAll(opt, VSH_MAX_XML_FILE, &xml) < 0) {
             vshError(ctl, _("cannot read file '%s'"), opt);
             goto save_error;
         }
