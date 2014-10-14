@@ -772,7 +772,7 @@ respectfully with average value of zero.
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
 If I<--current> is specified, affect the current guest state.
-Both I<--live> and I<--current> flags may be given, but I<--current> is
+Both I<--live> and I<--config> flags may be given, but I<--current> is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
 
@@ -1078,7 +1078,7 @@ cannot be mixed with non-zero values for read or write.
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
 If I<--current> is specified, affect the current guest state.
-Both I<--live> and I<--current> flags may be given, but I<--current> is
+Both I<--live> and I<--config> flags may be given, but I<--current> is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
 
