@@ -8,32 +8,25 @@ Daniel Veillard <veillard@redhat.com> or <daniel@veillard.com>
 The primary maintainers and people with commit access rights:
 
 Alex Jia <ajia@redhat.com>
-Anthony Liguori <aliguori@us.ibm.com>
 Cédric Bosdonnat <cbosdonnat@suse.com>
-Chris Lalancette <clalance@redhat.com>
 Christophe Fergeau <cfergeau@redhat.com>
 Claudio Bley <cbley@av-test.de>
 Cole Robinson <crobinso@redhat.com>
 Daniel Berrange <berrange@redhat.com>
 Daniel Veillard <veillard@redhat.com>
-Dave Allan <dallan@redhat.com>
 Doug Goldstein <cardoe@gentoo.org>
 Eric Blake <eblake@redhat.com>
 Gao Feng <gaofeng@cn.fujitsu.com>
-Guannan Ren <gren@redhat.com>
 Guido Günther <agx@sigxcpu.org>
 Ján Tomko <jtomko@redhat.com>
 Jim Fehlig <jfehlig@suse.com>
-Jim Meyering <meyering@redhat.com>
 Jiří Denemark <jdenemar@redhat.com>
 John Ferlan <jferlan@redhat.com>
-John Levon <john.levon@sun.com>
 Laine Stump <laine@redhat.com>
 Mark McLoughlin <markmc@redhat.com>
 Martin Kletzander <mkletzan@redhat.com>
 Matthias Bolte <matthias.bolte@googlemail.com>
 Michal Prívozník <mprivozn@redhat.com>
-Osier Yang <jyang@redhat.com>
 Pavel Hrdina <phrdina@redhat.com>
 Peter Krempa <pkrempa@redhat.com>
 Richard W.M. Jones <rjones@redhat.com>
@@ -43,11 +36,18 @@ Wen Congyang <wency@cn.fujitsu.com>
 
 Previous maintainers:
 
+Anthony Liguori <aliguori@us.ibm.com>
 Atsushi SAKAI <sakaia@jp.fujitsu.com>
+Chris Lalancette <clalance@redhat.com>
 Dan Smith <danms@us.ibm.com>
+Dave Allan <dallan@redhat.com>
 Dave Leskovec <dlesko@linux.vnet.ibm.com>
+Guannan Ren <gren@redhat.com>
+Jim Meyering <meyering@redhat.com>
+John Levon <john.levon@sun.com>
 Justin Clift <jclift@redhat.com>
 Karel Zak <kzak@redhat.com>
+Osier Yang <jyang@redhat.com>
 
 Patches have also been contributed by:
 
