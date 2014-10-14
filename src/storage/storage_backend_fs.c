@@ -1370,9 +1370,10 @@ virStorageFileBackendFileInit(virStorageSourcePtr src)
 {
     virStorageFileBackendFsPrivPtr priv = NULL;
 
-    VIR_DEBUG("initializing FS storage file %p (%s:%s)", src,
+    VIR_DEBUG("initializing FS storage file %p (%s:%s)[%u:%u]", src,
               virStorageTypeToString(virStorageSourceGetActualType(src)),
-              src->path);
+              src->path,
+              (unsigned int)src->drv->uid, (unsigned int)src->drv->gid);
 
     if (VIR_ALLOC(priv) < 0)
         return -1;

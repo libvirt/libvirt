@@ -582,9 +582,10 @@ virStorageFileBackendGlusterInit(virStorageSourcePtr src)
 
     hostname = host->name;
 
-    VIR_DEBUG("initializing gluster storage file %p (gluster://%s:%s/%s%s)",
+    VIR_DEBUG("initializing gluster storage file %p (gluster://%s:%s/%s%s)[%u:%u]",
               src, hostname, host->port ? host->port : "0",
-              NULLSTR(src->volume), src->path);
+              NULLSTR(src->volume), src->path,
+              (unsigned int)src->drv->uid, (unsigned int)src->drv->gid);
 
     if (!src->volume) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
