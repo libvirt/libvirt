@@ -859,8 +859,7 @@ virSocketAddrGetIpPrefix(const virSocketAddr *address,
  * virSocketAddrNumericFamily:
  * @address: address to check
  *
- * Check if passed address is an IP address in numeric format. and
- * return the address family, otherwise return 0.
+ * Check if passed address is an IP address in numeric format.
  *
  * Returns: AF_INET or AF_INET6 if @address is an numeric IP address,
  *          -1 otherwise.
