@@ -130,7 +130,7 @@ int virNetDevGetVirtualFunctions(const char *pfname,
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevLinkDump(const char *ifname, int ifindex,
-                      struct nlattr **tb,
+                      void **nlData, struct nlattr **tb,
                       uint32_t src_pid, uint32_t dst_pid)
     ATTRIBUTE_RETURN_CHECK;
 
