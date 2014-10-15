@@ -99,6 +99,7 @@ struct _virJSONParser {
  * n: json null value
  *
  * a: json object, must be non-NULL
+ * A: json object, omitted if NULL
  *
  * The value corresponds to the selected type.
  *
@@ -230,10 +231,14 @@ virJSONValueObjectCreateVArgs(virJSONValuePtr *obj, va_list args)
             rc = virJSONValueObjectAppendNull(jargs, key);
         }   break;
 
+        case 'A':
         case 'a': {
             virJSONValuePtr val = va_arg(args, virJSONValuePtr);
 
             if (!val) {
+                if (type == 'A')
+                    continue;
+
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("argument key '%s' must not have null value"),
                                key);
