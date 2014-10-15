@@ -1237,23 +1237,25 @@ static struct nla_policy ifla_vf_policy[IFLA_VF_MAX+1] = {
 /**
  * virNetDevLinkDump:
  *
- * @ifname: The name of the interface; only use if ifindex < 0
- * @ifindex: The interface index; may be < 0 if ifname is given
- * @nlattr: pointer to a pointer of netlink attributes that will contain
- *          the results
+ * @ifname:  The name of the interface; only use if ifindex <= 0
+ * @ifindex: The interface index; may be <= 0 if ifname is given
+ * @data:    Gets a pointer to the raw data from netlink.
+             MUST BE FREED BY CALLER!
+ * @nlattr:  Pointer to a pointer of netlink attributes that will contain
+ *           the results
  * @src_pid: pid used for nl_pid of the local end of the netlink message
  *           (0 == "use getpid()")
  * @dst_pid: pid of destination nl_pid if the kernel
  *           is not the target of the netlink message but it is to be
  *           sent to another process (0 if sending to the kernel)
  *
- * Get information about an interface given its name or index.
+ * Get information from netlink about an interface given its name or index.
  *
  * Returns 0 on success, -1 on fatal error.
  */
 int
 virNetDevLinkDump(const char *ifname, int ifindex,
-                  struct nlattr **tb,
+                  void **nlData, struct nlattr **tb,
                   uint32_t src_pid, uint32_t dst_pid)
 {
     int rc = -1;
@@ -1335,7 +1337,9 @@ virNetDevLinkDump(const char *ifname, int ifindex,
     rc = 0;
 cleanup:
     nlmsg_free(nl_msg);
-    VIR_FREE(resp);
+    if (rc < 0)
+       VIR_FREE(resp);
+    *nlData = resp;
     return rc;
 
 malformed_resp:
@@ -1532,15 +1536,18 @@ virNetDevGetVfConfig(const char *ifname, int vf, virMacAddrPtr mac,
                      int *vlanid)
 {
     int rc = -1;
+    void *nlData = NULL;
     struct nlattr *tb[IFLA_MAX + 1] = {NULL, };
     int ifindex = -1;
 
-    rc = virNetDevLinkDump(ifname, ifindex, tb, 0, 0);
+    rc = virNetDevLinkDump(ifname, ifindex, &nlData, tb, 0, 0);
     if (rc < 0)
-        return rc;
+        goto cleanup;
 
     rc = virNetDevParseVfConfig(tb, vf, mac, vlanid);
 
+ cleanup:
+    VIR_FREE(nlData);
     return rc;
 }
 
@@ -1689,6 +1696,7 @@ virNetDevRestoreNetConfig(char *linkdev, int vf, char *stateDir)
 int
 virNetDevLinkDump(const char *ifname ATTRIBUTE_UNUSED,
                   int ifindex ATTRIBUTE_UNUSED,
+                  void **nlData ATTRIBUTE_UNUSED,
                   struct nlattr **tb ATTRIBUTE_UNUSED,
                   uint32_t src_pid ATTRIBUTE_UNUSED,
                   uint32_t dst_pid ATTRIBUTE_UNUSED)
