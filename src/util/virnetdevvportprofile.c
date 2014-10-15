@@ -787,7 +787,8 @@ virNetDevVPortProfileGetNthParent(const char *ifname, int ifindex, unsigned int 
                                   int *parent_ifindex, char *parent_ifname,
                                   unsigned int *nth)
 {
-    int rc;
+    int rc = -1;
+    void *nlData = NULL;
     struct nlattr *tb[IFLA_MAX + 1] = { NULL, };
     bool end = false;
     size_t i = 0;
@@ -798,7 +799,8 @@ virNetDevVPortProfileGetNthParent(const char *ifname, int ifindex, unsigned int 
         return -1;
 
     while (!end && i <= nthParent) {
-        rc = virNetDevLinkDump(ifname, ifindex, tb, 0, 0);
+        VIR_FREE(nlData);
+        rc = virNetDevLinkDump(ifname, ifindex, &nlData, tb, 0, 0);
         if (rc < 0)
             break;
 
@@ -807,7 +809,8 @@ virNetDevVPortProfileGetNthParent(const char *ifname, int ifindex, unsigned int 
                            IFNAMSIZ)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("buffer for root interface name is too small"));
-                return -1;
+                rc = -1;
+                goto cleanup;
             }
             *parent_ifindex = ifindex;
         }
@@ -824,6 +827,8 @@ virNetDevVPortProfileGetNthParent(const char *ifname, int ifindex, unsigned int 
 
     *nth = i - 1;
 
+ cleanup:
+    VIR_FREE(nlData);
     return rc;
 }
 
@@ -845,6 +850,7 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
     int rc;
     int src_pid = 0;
     uint32_t dst_pid = 0;
+    void *nlData = NULL;
     struct nlattr *tb[IFLA_MAX + 1] = { NULL, };
     int repeats = STATUS_POLL_TIMEOUT_USEC / STATUS_POLL_INTERVL_USEC;
     uint16_t status = 0;
@@ -877,7 +883,8 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
     }
 
     while (--repeats >= 0) {
-        rc = virNetDevLinkDump(NULL, ifindex, tb, src_pid, dst_pid);
+        VIR_FREE(nlData);
+        rc = virNetDevLinkDump(NULL, ifindex, &nlData, tb, src_pid, dst_pid);
         if (rc < 0)
             goto cleanup;
 
@@ -909,7 +916,7 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
     }
 
  cleanup:
-
+    VIR_FREE(nlData);
     return rc;
 }
 
