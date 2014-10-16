@@ -17572,7 +17572,8 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
 
         arch_from_caps = virQEMUCapsGetArch(qemuCaps);
 
-        if (arch_from_caps != arch) {
+        if (arch_from_caps != arch &&
+            (arch_from_caps != VIR_ARCH_X86_64 || arch != VIR_ARCH_I686)) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("architecture from emulator '%s' doesn't "
                              "match given architecture '%s'"),
