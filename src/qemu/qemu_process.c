@@ -4527,6 +4527,14 @@ int qemuProcessStart(virConnectPtr conn,
     if (ret == -1) /* The VM failed to start */
         goto cleanup;
 
+    VIR_DEBUG("Setting cgroup for emulator (if required)");
+    if (qemuSetupCgroupForEmulator(driver, vm, nodemask) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Setting affinity of emulator threads");
+    if (qemuProcessSetEmulatorAffinity(vm) < 0)
+        goto cleanup;
+
     VIR_DEBUG("Waiting for monitor to show up");
     if (qemuProcessWaitForMonitor(driver, vm, asyncJob, priv->qemuCaps, pos) < 0)
         goto cleanup;
@@ -4562,20 +4570,12 @@ int qemuProcessStart(virConnectPtr conn,
     if (qemuSetupCgroupForVcpu(vm) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Setting cgroup for emulator (if required)");
-    if (qemuSetupCgroupForEmulator(driver, vm, nodemask) < 0)
-        goto cleanup;
-
     VIR_DEBUG("Setting cgroup for each IOThread (if required)");
     if (qemuSetupCgroupForIOThreads(vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting VCPU affinities");
     if (qemuProcessSetVcpuAffinities(vm) < 0)
-        goto cleanup;
-
-    VIR_DEBUG("Setting affinity of emulator threads");
-    if (qemuProcessSetEmulatorAffinity(vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting affinity of IOThread threads");
