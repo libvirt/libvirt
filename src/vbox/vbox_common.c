@@ -7468,7 +7468,7 @@ vboxNodeAllocPages(virConnectPtr conn ATTRIBUTE_UNUSED,
  * Function Tables
  */
 
-virDriver vboxCommonDriver = {
+virHypervisorDriver vboxCommonDriver = {
     .no = VIR_DRV_VBOX,
     .name = "VBOX",
     .connectOpen = vboxConnectOpen, /* 0.6.3 */
@@ -7550,7 +7550,7 @@ static void updateDriver(void)
         vboxCommonDriver.domainScreenshot = NULL;
 }
 
-virDriverPtr vboxGetDriver(uint32_t uVersion)
+virHypervisorDriverPtr vboxGetHypervisorDriver(uint32_t uVersion)
 {
     /* Install gVBoxAPI according to the vbox API version.
      * Return -1 for unsupported version.

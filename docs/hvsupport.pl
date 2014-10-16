@@ -15,7 +15,7 @@ my $symslxc = "$srcdir/libvirt_lxc.syms";
 my $drivertable = "$srcdir/driver.h";
 
 my %groupheaders = (
-    "virDriver" => "Hypervisor APIs",
+    "virHypervisorDriver" => "Hypervisor APIs",
     "virNetworkDriver" => "Virtual Network APIs",
     "virInterfaceDriver" => "Host Interface APIs",
     "virNodeDeviceDriver" => "Host Device APIs",

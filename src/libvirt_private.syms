@@ -857,7 +857,7 @@ virDomainMigratePrepare3Params;
 virDomainMigratePrepareTunnel;
 virDomainMigratePrepareTunnel3;
 virDomainMigratePrepareTunnel3Params;
-virRegisterDriver;
+virRegisterHypervisorDriver;
 virRegisterInterfaceDriver;
 virRegisterNetworkDriver;
 virRegisterNodeDeviceDriver;

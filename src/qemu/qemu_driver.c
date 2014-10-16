@@ -18491,7 +18491,7 @@ qemuNodeAllocPages(virConnectPtr conn,
 }
 
 
-static virDriver qemuDriver = {
+static virHypervisorDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
     .name = QEMU_DRIVER_NAME,
     .connectOpen = qemuConnectOpen, /* 0.2.0 */
@@ -18705,7 +18705,7 @@ static virStateDriver qemuStateDriver = {
 
 int qemuRegister(void)
 {
-    if (virRegisterDriver(&qemuDriver) < 0)
+    if (virRegisterHypervisorDriver(&qemuDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&qemuStateDriver) < 0)
         return -1;

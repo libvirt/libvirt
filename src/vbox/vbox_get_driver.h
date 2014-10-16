@@ -21,7 +21,7 @@
 
 # include "internal.h"
 
-virDriverPtr vboxGetDriver(uint32_t uVersion);
+virHypervisorDriverPtr vboxGetHypervisorDriver(uint32_t uVersion);
 virNetworkDriverPtr vboxGetNetworkDriver(uint32_t uVersion);
 
 #endif /* VBOX_GET_DRIVER_H */

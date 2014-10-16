@@ -5291,7 +5291,7 @@ esxConnectListAllDomains(virConnectPtr conn,
 #undef MATCH
 
 
-static virDriver esxDriver = {
+static virHypervisorDriver esxDriver = {
     .no = VIR_DRV_ESX,
     .name = "ESX",
     .connectOpen = esxConnectOpen, /* 0.7.0 */
@@ -5376,7 +5376,7 @@ static virDriver esxDriver = {
 int
 esxRegister(void)
 {
-    if (virRegisterDriver(&esxDriver) < 0 ||
+    if (virRegisterHypervisorDriver(&esxDriver) < 0 ||
         esxInterfaceRegister() < 0 ||
         esxNetworkRegister() < 0 ||
         esxStorageRegister() < 0 ||

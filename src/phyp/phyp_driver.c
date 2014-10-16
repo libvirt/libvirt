@@ -3717,7 +3717,7 @@ phypInterfaceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
     return 0;
 }
 
-static virDriver phypDriver = {
+static virHypervisorDriver phypDriver = {
     .no = VIR_DRV_PHYP,
     .name = "PHYP",
     .connectOpen = phypConnectOpen, /* 0.7.0 */
@@ -3786,7 +3786,7 @@ static virInterfaceDriver phypInterfaceDriver = {
 int
 phypRegister(void)
 {
-    if (virRegisterDriver(&phypDriver) < 0)
+    if (virRegisterHypervisorDriver(&phypDriver) < 0)
         return -1;
     if (virRegisterStorageDriver(&phypStorageDriver) < 0)
         return -1;

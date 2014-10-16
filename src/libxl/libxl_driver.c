@@ -4729,7 +4729,7 @@ libxlDomainMigrateConfirm3Params(virDomainPtr domain,
 }
 
 
-static virDriver libxlDriver = {
+static virHypervisorDriver libxlDriver = {
     .no = VIR_DRV_LIBXL,
     .name = LIBXL_DRIVER_NAME,
     .connectOpen = libxlConnectOpen, /* 0.9.0 */
@@ -4837,7 +4837,7 @@ static virStateDriver libxlStateDriver = {
 int
 libxlRegister(void)
 {
-    if (virRegisterDriver(&libxlDriver) < 0)
+    if (virRegisterHypervisorDriver(&libxlDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&libxlStateDriver) < 0)
         return -1;

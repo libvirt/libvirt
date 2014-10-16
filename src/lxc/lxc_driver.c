@@ -5707,7 +5707,7 @@ lxcNodeAllocPages(virConnectPtr conn,
 
 
 /* Function Tables */
-static virDriver lxcDriver = {
+static virHypervisorDriver lxcDriver = {
     .no = VIR_DRV_LXC,
     .name = LXC_DRIVER_NAME,
     .connectOpen = lxcConnectOpen, /* 0.4.2 */
@@ -5810,7 +5810,7 @@ static virStateDriver lxcStateDriver = {
 
 int lxcRegister(void)
 {
-    if (virRegisterDriver(&lxcDriver) < 0)
+    if (virRegisterHypervisorDriver(&lxcDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&lxcStateDriver) < 0)
         return -1;

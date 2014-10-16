@@ -1221,11 +1221,11 @@ typedef int
                         unsigned int cellCount,
                         unsigned int flags);
 
-typedef struct _virDriver virDriver;
-typedef virDriver *virDriverPtr;
+typedef struct _virHypervisorDriver virHypervisorDriver;
+typedef virHypervisorDriver *virHypervisorDriverPtr;
 
 /**
- * _virDriver:
+ * _virHypervisorDriver:
  *
  * Structure associated to a virtualization driver, defining the various
  * entry points for it.
@@ -1236,7 +1236,7 @@ typedef virDriver *virDriverPtr;
  *  - open
  *  - close
  */
-struct _virDriver {
+struct _virHypervisorDriver {
     int no; /* the number virDrvNo */
     const char *name; /* the name of the driver */
     virDrvConnectOpen connectOpen;
@@ -2241,7 +2241,7 @@ struct _virNWFilterDriver {
  * TODO: also need ways to (des)activate a given driver
  *       lookup based on the URI given in a virConnectOpen(ReadOnly)
  */
-int virRegisterDriver(virDriverPtr) ATTRIBUTE_RETURN_CHECK;
+int virRegisterHypervisorDriver(virHypervisorDriverPtr) ATTRIBUTE_RETURN_CHECK;
 int virRegisterNetworkDriver(virNetworkDriverPtr) ATTRIBUTE_RETURN_CHECK;
 int virRegisterInterfaceDriver(virInterfaceDriverPtr) ATTRIBUTE_RETURN_CHECK;
 int virRegisterStorageDriver(virStorageDriverPtr) ATTRIBUTE_RETURN_CHECK;

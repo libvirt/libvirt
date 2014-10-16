@@ -122,8 +122,8 @@ VIR_LOG_INIT("libvirt");
         }                                                               \
     } while (0)
 
-static virDriverPtr virDriverTab[MAX_DRIVERS];
-static int virDriverTabCount = 0;
+static virHypervisorDriverPtr virHypervisorDriverTab[MAX_DRIVERS];
+static int virHypervisorDriverTabCount = 0;
 static virNetworkDriverPtr virNetworkDriverTab[MAX_DRIVERS];
 static int virNetworkDriverTabCount = 0;
 static virInterfaceDriverPtr virInterfaceDriverTab[MAX_DRIVERS];
@@ -668,7 +668,7 @@ virRegisterNWFilterDriver(virNWFilterDriverPtr driver)
 
 
 /**
- * virRegisterDriver:
+ * virRegisterHypervisorDriver:
  * @driver: pointer to a driver block
  *
  * Register a virtualization driver
@@ -676,19 +676,19 @@ virRegisterNWFilterDriver(virNWFilterDriverPtr driver)
  * Returns the driver priority or -1 in case of error.
  */
 int
-virRegisterDriver(virDriverPtr driver)
+virRegisterHypervisorDriver(virHypervisorDriverPtr driver)
 {
     VIR_DEBUG("driver=%p name=%s", driver,
               driver ? NULLSTR(driver->name) : "(null)");
 
     virCheckNonNullArgReturn(driver, -1);
-    virDriverCheckTabMaxReturn(virDriverTabCount, -1);
+    virDriverCheckTabMaxReturn(virHypervisorDriverTabCount, -1);
 
     VIR_DEBUG("registering %s as driver %d",
-           driver->name, virDriverTabCount);
+           driver->name, virHypervisorDriverTabCount);
 
-    virDriverTab[virDriverTabCount] = driver;
-    return virDriverTabCount++;
+    virHypervisorDriverTab[virHypervisorDriverTabCount] = driver;
+    return virHypervisorDriverTabCount++;
 }
 
 
@@ -1106,7 +1106,7 @@ do_open(const char *name,
     /* Cleansing flags */
     ret->flags = flags & VIR_CONNECT_RO;
 
-    for (i = 0; i < virDriverTabCount; i++) {
+    for (i = 0; i < virHypervisorDriverTabCount; i++) {
         /* We're going to probe the remote driver next. So we have already
          * probed all other client-side-only driver before, but none of them
          * accepted the URI.
@@ -1114,7 +1114,7 @@ do_open(const char *name,
          * driver then report a useful error, instead of a cryptic one about
          * not being able to connect to libvirtd or not being able to find
          * certificates. */
-        if (virDriverTab[i]->no == VIR_DRV_REMOTE &&
+        if (virHypervisorDriverTab[i]->no == VIR_DRV_REMOTE &&
             ret->uri != NULL && ret->uri->scheme != NULL &&
             (
 #ifndef WITH_PHYP
@@ -1142,11 +1142,11 @@ do_open(const char *name,
             goto failed;
         }
 
-        VIR_DEBUG("trying driver %zu (%s) ...", i, virDriverTab[i]->name);
-        ret->driver = virDriverTab[i];
-        res = virDriverTab[i]->connectOpen(ret, auth, flags);
+        VIR_DEBUG("trying driver %zu (%s) ...", i, virHypervisorDriverTab[i]->name);
+        ret->driver = virHypervisorDriverTab[i];
+        res = virHypervisorDriverTab[i]->connectOpen(ret, auth, flags);
         VIR_DEBUG("driver %zu %s returned %s",
-                  i, virDriverTab[i]->name,
+                  i, virHypervisorDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
                   (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
                   (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));

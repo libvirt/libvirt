@@ -73,7 +73,7 @@ extern virStorageDriver vbox43_4StorageDriver;
 
 #if !defined(WITH_DRIVER_MODULES) || defined(VBOX_STORAGE_DRIVER)
 static void
-vboxGetDrivers(virDriverPtr *driver_ret,
+vboxGetDrivers(virHypervisorDriverPtr *hypervisorDriver_ret,
                virStorageDriverPtr *storageDriver_ret)
 {
     virStorageDriverPtr storageDriver;
@@ -136,8 +136,8 @@ vboxGetDrivers(virDriverPtr *driver_ret,
         VIR_DEBUG("VBoxCGlueInit failed, using dummy driver");
     }
 
-    if (driver_ret)
-        *driver_ret = NULL;
+    if (hypervisorDriver_ret)
+        *hypervisorDriver_ret = NULL;
     if (storageDriver_ret)
         *storageDriver_ret = storageDriver;
 }
@@ -212,7 +212,7 @@ static virDrvOpenStatus dummyConnectOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_ERROR;
 }
 
-static virDriver vboxDriverDummy = {
+static virHypervisorDriver vboxDriverDummy = {
     VIR_DRV_VBOX,
     "VBOX",
     .connectOpen = dummyConnectOpen, /* 0.6.3 */
@@ -220,16 +220,16 @@ static virDriver vboxDriverDummy = {
 
 int vboxRegister(void)
 {
-    virDriverPtr driver = NULL;
+    virHypervisorDriverPtr driver = NULL;
     uint32_t uVersion;
 
     if (VBoxCGlueInit(&uVersion) == 0)
-        driver = vboxGetDriver(uVersion);
+        driver = vboxGetHypervisorDriver(uVersion);
 
     if (!driver)
         driver = &vboxDriverDummy;
 
-    if (virRegisterDriver(driver) < 0)
+    if (virRegisterHypervisorDriver(driver) < 0)
         return -1;
     return 0;
 }

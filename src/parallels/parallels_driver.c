@@ -2463,7 +2463,7 @@ parallelsNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
-static virDriver parallelsDriver = {
+static virHypervisorDriver parallelsDriver = {
     .no = VIR_DRV_PARALLELS,
     .name = "Parallels",
     .connectOpen = parallelsConnectOpen,            /* 0.10.0 */
@@ -2518,7 +2518,7 @@ parallelsRegister(void)
 
     VIR_FREE(prlctl_path);
 
-    if (virRegisterDriver(&parallelsDriver) < 0)
+    if (virRegisterHypervisorDriver(&parallelsDriver) < 0)
         return -1;
     if (parallelsStorageRegister())
         return -1;

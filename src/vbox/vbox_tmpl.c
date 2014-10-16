@@ -1456,7 +1456,7 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
     /* No Callback support for VirtualBox 4.* series */
 
 static void
-_registerDomainEvent(virDriverPtr driver)
+_registerDomainEvent(virHypervisorDriverPtr driver)
 {
     driver->connectDomainEventRegister = NULL;
     driver->connectDomainEventDeregister = NULL;
@@ -2007,7 +2007,7 @@ vboxConnectDomainEventDeregisterAny(virConnectPtr conn,
 }
 
 static void
-_registerDomainEvent(virDriverPtr driver)
+_registerDomainEvent(virHypervisorDriverPtr driver)
 {
     driver->connectDomainEventRegister = vboxConnectDomainEventRegister; /* 0.7.0 */
     driver->connectDomainEventDeregister = vboxConnectDomainEventDeregister; /* 0.7.0 */

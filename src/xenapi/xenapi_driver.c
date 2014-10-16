@@ -1963,7 +1963,7 @@ xenapiConnectIsAlive(virConnectPtr conn)
 }
 
 /* The interface which we export upwards to libvirt.c. */
-static virDriver xenapiDriver = {
+static virHypervisorDriver xenapiDriver = {
     .no = VIR_DRV_XENAPI,
     .name = "XenAPI",
     .connectOpen = xenapiConnectOpen, /* 0.8.0 */
@@ -2025,7 +2025,7 @@ static virDriver xenapiDriver = {
 int
 xenapiRegister(void)
 {
-    return virRegisterDriver(&xenapiDriver);
+    return virRegisterHypervisorDriver(&xenapiDriver);
 }
 
 /*

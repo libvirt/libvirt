@@ -7356,7 +7356,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
 
 
-static virDriver testDriver = {
+static virHypervisorDriver testDriver = {
     .no = VIR_DRV_TEST,
     .name = "Test",
     .connectOpen = testConnectOpen, /* 0.1.1 */
@@ -7583,7 +7583,7 @@ static virNWFilterDriver testNWFilterDriver = {
 int
 testRegister(void)
 {
-    if (virRegisterDriver(&testDriver) < 0)
+    if (virRegisterHypervisorDriver(&testDriver) < 0)
         return -1;
     if (virRegisterNetworkDriver(&testNetworkDriver) < 0)
         return -1;

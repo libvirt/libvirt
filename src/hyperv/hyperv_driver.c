@@ -1354,7 +1354,7 @@ hypervConnectListAllDomains(virConnectPtr conn,
 
 
 
-static virDriver hypervDriver = {
+static virHypervisorDriver hypervDriver = {
     .no = VIR_DRV_HYPERV,
     .name = "Hyper-V",
     .connectOpen = hypervConnectOpen, /* 0.9.5 */
@@ -1418,7 +1418,7 @@ hypervDebugHandler(const char *message, debug_level_e level,
 int
 hypervRegister(void)
 {
-    if (virRegisterDriver(&hypervDriver) < 0 ||
+    if (virRegisterHypervisorDriver(&hypervDriver) < 0 ||
         hypervInterfaceRegister() < 0 ||
         hypervNetworkRegister() < 0 ||
         hypervStorageRegister() < 0 ||
