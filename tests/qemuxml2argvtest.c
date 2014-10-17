@@ -1469,8 +1469,10 @@ mymain(void)
     DO_TEST("shmem", QEMU_CAPS_PCIDEVICE,
             QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_IVSHMEM);
     DO_TEST_FAILURE("shmem", NONE);
-    DO_TEST_FAILURE("shmem-invalid-size", NONE);
-    DO_TEST_FAILURE("shmem-small-size", NONE);
+    DO_TEST_FAILURE("shmem-invalid-size", QEMU_CAPS_PCIDEVICE,
+                    QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_IVSHMEM);
+    DO_TEST_FAILURE("shmem-small-size", QEMU_CAPS_PCIDEVICE,
+                    QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_IVSHMEM);
     DO_TEST_PARSE_ERROR("shmem-msi-only", NONE);
 
     virObjectUnref(driver.config);
