@@ -16829,8 +16829,9 @@ virDomainNetDefFormat(virBufferPtr buf,
                 virBufferAddLit(buf, "<source type='unix'");
                 virBufferEscapeString(buf, " path='%s'",
                                       def->data.vhostuser->data.nix.path);
-                if (def->data.vhostuser->data.nix.listen)
-                    virBufferAddLit(buf, " mode='server'");
+                virBufferAsprintf(buf, " mode='%s'",
+                                  def->data.vhostuser->data.nix.listen ?
+                                  "server"  : "client");
                 virBufferAddLit(buf, "/>\n");
             }
             break;

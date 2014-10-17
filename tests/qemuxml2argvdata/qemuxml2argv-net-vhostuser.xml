@@ -25,7 +25,12 @@
     <controller type='pci' index='0' model='pci-root'/>
     <interface type='vhostuser'>
       <mac address='52:54:00:ee:96:6b'/>
-      <source type='unix' path='/tmp/vhost.sock' mode='server'/>
+      <source type='unix' path='/tmp/vhost0.sock' mode='server'/>
+      <model type='virtio'/>
+    </interface>
+    <interface type='vhostuser'>
+      <mac address='52:54:00:ee:96:6c'/>
+      <source type='unix' path='/tmp/vhost1.sock' mode='client'/>
       <model type='virtio'/>
     </interface>
     <memballoon model='none'/>
