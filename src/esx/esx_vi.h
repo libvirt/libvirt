@@ -75,8 +75,7 @@
 
 
 
-typedef enum _esxVI_APIVersion esxVI_APIVersion;
-typedef enum _esxVI_ProductVersion esxVI_ProductVersion;
+typedef enum _esxVI_ProductLine esxVI_ProductLine;
 typedef enum _esxVI_Occurrence esxVI_Occurrence;
 typedef struct _esxVI_ParsedHostCpuIdInfo esxVI_ParsedHostCpuIdInfo;
 typedef struct _esxVI_CURL esxVI_CURL;
@@ -90,45 +89,10 @@ typedef struct _esxVI_List esxVI_List;
 
 
 
-enum _esxVI_APIVersion {
-    esxVI_APIVersion_Undefined = 0,
-    esxVI_APIVersion_Unknown,
-    esxVI_APIVersion_25,
-    esxVI_APIVersion_40,
-    esxVI_APIVersion_41,
-    esxVI_APIVersion_4x, /* > 4.1 */
-    esxVI_APIVersion_50,
-    esxVI_APIVersion_51,
-    esxVI_APIVersion_5x  /* > 5.1 */
-};
-
-/*
- * AAAABBBB: where AAAA0000 is the product and BBBB the version. this format
- * allows simple bitmask testing for a product independent of the version
- */
-enum _esxVI_ProductVersion {
-    esxVI_ProductVersion_Undefined = 0,
-
-    esxVI_ProductVersion_GSX   = (1 << 0) << 16,
-    esxVI_ProductVersion_GSX20 = esxVI_ProductVersion_GSX | 1,
-
-    esxVI_ProductVersion_ESX   = (1 << 1) << 16,
-    esxVI_ProductVersion_ESX35 = esxVI_ProductVersion_ESX | 1,
-    esxVI_ProductVersion_ESX40 = esxVI_ProductVersion_ESX | 2,
-    esxVI_ProductVersion_ESX41 = esxVI_ProductVersion_ESX | 3,
-    esxVI_ProductVersion_ESX4x = esxVI_ProductVersion_ESX | 4, /* > 4.1 */
-    esxVI_ProductVersion_ESX50 = esxVI_ProductVersion_ESX | 5,
-    esxVI_ProductVersion_ESX51 = esxVI_ProductVersion_ESX | 6,
-    esxVI_ProductVersion_ESX5x = esxVI_ProductVersion_ESX | 7, /* > 5.1 */
-
-    esxVI_ProductVersion_VPX   = (1 << 2) << 16,
-    esxVI_ProductVersion_VPX25 = esxVI_ProductVersion_VPX | 1,
-    esxVI_ProductVersion_VPX40 = esxVI_ProductVersion_VPX | 2,
-    esxVI_ProductVersion_VPX41 = esxVI_ProductVersion_VPX | 3,
-    esxVI_ProductVersion_VPX4x = esxVI_ProductVersion_VPX | 4, /* > 4.1 */
-    esxVI_ProductVersion_VPX50 = esxVI_ProductVersion_VPX | 5,
-    esxVI_ProductVersion_VPX51 = esxVI_ProductVersion_VPX | 6,
-    esxVI_ProductVersion_VPX5x = esxVI_ProductVersion_VPX | 7  /* > 5.1 */
+enum _esxVI_ProductLine {
+    esxVI_ProductLine_GSX = 0,
+    esxVI_ProductLine_ESX,
+    esxVI_ProductLine_VPX
 };
 
 enum _esxVI_Occurrence {
@@ -226,8 +190,9 @@ struct _esxVI_Context {
     char *username;
     char *password;
     esxVI_ServiceContent *service;
-    esxVI_APIVersion apiVersion;
-    esxVI_ProductVersion productVersion;
+    unsigned long apiVersion; /* = 1000000 * major + 1000 * minor + micro */
+    esxVI_ProductLine productLine;
+    unsigned long productVersion; /* = 1000000 * major + 1000 * minor + micro */
     esxVI_UserSession *session; /* ... except the session ... */
     virMutexPtr sessionLock; /* ... that is protected by this mutex */
     esxVI_Datacenter *datacenter;
@@ -536,8 +501,10 @@ int esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
 int esxVI_ParseHostCpuIdInfo(esxVI_ParsedHostCpuIdInfo *parsedHostCpuIdInfo,
                              esxVI_HostCpuIdInfo *hostCpuIdInfo);
 
+const char *esxVI_ProductLineToDisplayName(esxVI_ProductLine productLine);
+
 int esxVI_ProductVersionToDefaultVirtualHWVersion
-      (esxVI_ProductVersion productVersion);
+      (esxVI_ProductLine productLine, unsigned long productVersion);
 
 int esxVI_LookupHostInternetScsiHbaStaticTargetByName
       (esxVI_Context *ctx, const char *name,

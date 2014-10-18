@@ -1040,98 +1040,77 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
         return -1;
     }
 
-    if (STREQ(ctx->service->about->apiType, "HostAgent") ||
-        STREQ(ctx->service->about->apiType, "VirtualCenter")) {
-        if (STRPREFIX(ctx->service->about->apiVersion, "2.5")) {
-            ctx->apiVersion = esxVI_APIVersion_25;
-        } else if (STRPREFIX(ctx->service->about->apiVersion, "4.0")) {
-            ctx->apiVersion = esxVI_APIVersion_40;
-        } else if (STRPREFIX(ctx->service->about->apiVersion, "4.1")) {
-            ctx->apiVersion = esxVI_APIVersion_41;
-        } else if (STRPREFIX(ctx->service->about->apiVersion, "4.")) {
-            ctx->apiVersion = esxVI_APIVersion_4x;
-        } else if (STRPREFIX(ctx->service->about->apiVersion, "5.0")) {
-            ctx->apiVersion = esxVI_APIVersion_50;
-        } else if (STRPREFIX(ctx->service->about->apiVersion, "5.1")) {
-            ctx->apiVersion = esxVI_APIVersion_51;
-        } else if (STRPREFIX(ctx->service->about->apiVersion, "5.")) {
-            ctx->apiVersion = esxVI_APIVersion_5x;
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Expecting VI API major/minor version '2.5', '4.x' or "
-                             "'5.x' but found '%s'"), ctx->service->about->apiVersion);
-            return -1;
-        }
-
-        if (STREQ(ctx->service->about->productLineId, "gsx")) {
-            if (STRPREFIX(ctx->service->about->version, "2.0")) {
-                ctx->productVersion = esxVI_ProductVersion_GSX20;
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Expecting GSX major/minor version '2.0' but "
-                                 "found '%s'"), ctx->service->about->version);
-                return -1;
-            }
-        } else if (STREQ(ctx->service->about->productLineId, "esx") ||
-                   STREQ(ctx->service->about->productLineId, "embeddedEsx")) {
-            if (STRPREFIX(ctx->service->about->version, "3.5")) {
-                ctx->productVersion = esxVI_ProductVersion_ESX35;
-            } else if (STRPREFIX(ctx->service->about->version, "4.0")) {
-                ctx->productVersion = esxVI_ProductVersion_ESX40;
-            } else if (STRPREFIX(ctx->service->about->version, "4.1")) {
-                ctx->productVersion = esxVI_ProductVersion_ESX41;
-            } else if (STRPREFIX(ctx->service->about->version, "4.")) {
-                ctx->productVersion = esxVI_ProductVersion_ESX4x;
-            } else if (STRPREFIX(ctx->service->about->version, "5.0")) {
-                ctx->productVersion = esxVI_ProductVersion_ESX50;
-            } else if (STRPREFIX(ctx->service->about->version, "5.1")) {
-                ctx->productVersion = esxVI_ProductVersion_ESX51;
-            } else if (STRPREFIX(ctx->service->about->version, "5.")) {
-                ctx->productVersion = esxVI_ProductVersion_ESX5x;
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Expecting ESX major/minor version '3.5', "
-                                 "'4.x' or '5.x' but found '%s'"),
-                               ctx->service->about->version);
-                return -1;
-            }
-        } else if (STREQ(ctx->service->about->productLineId, "vpx")) {
-            if (STRPREFIX(ctx->service->about->version, "2.5")) {
-                ctx->productVersion = esxVI_ProductVersion_VPX25;
-            } else if (STRPREFIX(ctx->service->about->version, "4.0")) {
-                ctx->productVersion = esxVI_ProductVersion_VPX40;
-            } else if (STRPREFIX(ctx->service->about->version, "4.1")) {
-                ctx->productVersion = esxVI_ProductVersion_VPX41;
-            } else if (STRPREFIX(ctx->service->about->version, "4.")) {
-                ctx->productVersion = esxVI_ProductVersion_VPX4x;
-            } else if (STRPREFIX(ctx->service->about->version, "5.0")) {
-                ctx->productVersion = esxVI_ProductVersion_VPX50;
-            } else if (STRPREFIX(ctx->service->about->version, "5.1")) {
-                ctx->productVersion = esxVI_ProductVersion_VPX51;
-            } else if (STRPREFIX(ctx->service->about->version, "5.")) {
-                ctx->productVersion = esxVI_ProductVersion_VPX5x;
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Expecting VPX major/minor version '2.5', '4.x' "
-                                 "or '5.x' but found '%s'"),
-                               ctx->service->about->version);
-                return -1;
-            }
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Expecting product 'gsx' or 'esx' or 'embeddedEsx' "
-                             "or 'vpx' but found '%s'"),
-                           ctx->service->about->productLineId);
-            return -1;
-        }
-    } else {
+    if (STRNEQ(ctx->service->about->apiType, "HostAgent") &&
+        STRNEQ(ctx->service->about->apiType, "VirtualCenter")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Expecting VI API type 'HostAgent' or 'VirtualCenter' "
                          "but found '%s'"), ctx->service->about->apiType);
         return -1;
     }
 
-    if (ctx->productVersion & esxVI_ProductVersion_ESX) {
+    if (virParseVersionString(ctx->service->about->apiVersion,
+                              &ctx->apiVersion, true) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not parse VI API version '%s'"),
+                       ctx->service->about->apiVersion);
+        return -1;
+    }
+
+    if (ctx->apiVersion < 1000000 * 2 + 1000 * 5 /* 2.5 */) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Minimum supported %s version is %s but found version '%s'"),
+                       "VI API", "2.5", ctx->service->about->apiVersion);
+        return -1;
+    }
+
+    if (virParseVersionString(ctx->service->about->version,
+                              &ctx->productVersion, true) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not parse product version '%s'"),
+                       ctx->service->about->version);
+        return -1;
+    }
+
+    if (STREQ(ctx->service->about->productLineId, "gsx")) {
+        if (ctx->productVersion < 1000000 * 2 + 1000 * 0 /* 2.0 */) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Minimum supported %s version is %s but found version '%s'"),
+                           esxVI_ProductLineToDisplayName(esxVI_ProductLine_GSX),
+                           "2.0", ctx->service->about->version);
+            return -1;
+        }
+
+        ctx->productLine = esxVI_ProductLine_GSX;
+    } else if (STREQ(ctx->service->about->productLineId, "esx") ||
+               STREQ(ctx->service->about->productLineId, "embeddedEsx")) {
+        if (ctx->productVersion < 1000000 * 3 + 1000 * 5 /* 3.5 */) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Minimum supported %s version is %s but found version '%s'"),
+                           esxVI_ProductLineToDisplayName(esxVI_ProductLine_ESX),
+                           "3.5", ctx->service->about->version);
+            return -1;
+        }
+
+        ctx->productLine = esxVI_ProductLine_ESX;
+    } else if (STREQ(ctx->service->about->productLineId, "vpx")) {
+        if (ctx->productVersion < 1000000 * 2 + 1000 * 5 /* 2.5 */) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Minimum supported %s version is %s but found version '%s'"),
+                           esxVI_ProductLineToDisplayName(esxVI_ProductLine_VPX),
+                           "2.5", ctx->service->about->version);
+            return -1;
+        }
+
+        ctx->productLine = esxVI_ProductLine_VPX;
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Expecting product 'gsx' or 'esx' or 'embeddedEsx' "
+                         "or 'vpx' but found '%s'"),
+                       ctx->service->about->productLineId);
+        return -1;
+    }
+
+    if (ctx->productLine == esxVI_ProductLine_ESX) {
         /*
          * FIXME: Actually this should be detected by really calling
          * QueryVirtualDiskUuid and checking if a NotImplemented fault is
@@ -1142,7 +1121,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
         ctx->hasQueryVirtualDiskUuid = true;
     }
 
-    if (ctx->productVersion & esxVI_ProductVersion_VPX) {
+    if (ctx->productLine == esxVI_ProductLine_VPX) {
         ctx->hasSessionIsActive = true;
     }
 
@@ -4770,9 +4749,33 @@ esxVI_ParseHostCpuIdInfo(esxVI_ParsedHostCpuIdInfo *parsedHostCpuIdInfo,
 
 
 
-int
-esxVI_ProductVersionToDefaultVirtualHWVersion(esxVI_ProductVersion productVersion)
+const char *
+esxVI_ProductLineToDisplayName(esxVI_ProductLine productLine)
 {
+    switch (productLine) {
+      case esxVI_ProductLine_GSX:
+        return "Server/GSX";
+
+      case esxVI_ProductLine_ESX:
+        return "ESX(i)";
+
+      case esxVI_ProductLine_VPX:
+        return "vCenter/VPX";
+
+      default:
+        return "<unknown>";
+    }
+}
+
+
+
+int
+esxVI_ProductVersionToDefaultVirtualHWVersion(esxVI_ProductLine productLine,
+                                              unsigned long productVersion)
+{
+    /* product version == 1000000 * major + 1000 * minor + micro */
+    int major = productVersion / 1000000;
+
     /*
      * virtualHW.version compatibility matrix:
      *
@@ -4785,35 +4788,39 @@ esxVI_ProductVersionToDefaultVirtualHWVersion(esxVI_ProductVersion productVersio
      *   ESX 5.5    + + + + +    5.5
      *   GSX 2.0    + +          2.5
      */
-    switch (productVersion) {
-      case esxVI_ProductVersion_ESX35:
-      case esxVI_ProductVersion_VPX25:
-        return 4;
-
-      case esxVI_ProductVersion_GSX20:
-      case esxVI_ProductVersion_ESX40:
-      case esxVI_ProductVersion_ESX41:
-      case esxVI_ProductVersion_VPX40:
-      case esxVI_ProductVersion_VPX41:
+    switch (productLine) {
+      case esxVI_ProductLine_GSX:
         return 7;
 
-      case esxVI_ProductVersion_ESX4x:
-      case esxVI_ProductVersion_VPX4x:
-        return 7;
+      case esxVI_ProductLine_ESX:
+        switch (major) {
+          case 3:
+            return 4;
 
-      case esxVI_ProductVersion_ESX50:
-      case esxVI_ProductVersion_VPX50:
-        return 8;
+          case 4:
+            return 7;
 
-      case esxVI_ProductVersion_ESX51:
-      case esxVI_ProductVersion_ESX5x:
-      case esxVI_ProductVersion_VPX51:
-      case esxVI_ProductVersion_VPX5x:
-        return 8;
+          case 5:
+          default:
+            return 8;
+        }
+
+      case esxVI_ProductLine_VPX:
+        switch (major) {
+          case 2:
+            return 4;
+
+          case 4:
+            return 7;
+
+          case 5:
+          default:
+            return 8;
+        }
 
       default:
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unexpected product version"));
+                       _("Unexpected product line"));
         return -1;
     }
 }

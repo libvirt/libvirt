@@ -646,9 +646,9 @@ esxConnectToHost(esxPrivate *priv,
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *hostSystem = NULL;
     esxVI_Boolean inMaintenanceMode = esxVI_Boolean_Undefined;
-    esxVI_ProductVersion expectedProductVersion = STRCASEEQ(conn->uri->scheme, "esx")
-        ? esxVI_ProductVersion_ESX
-        : esxVI_ProductVersion_GSX;
+    esxVI_ProductLine expectedProductLine = STRCASEEQ(conn->uri->scheme, "esx")
+        ? esxVI_ProductLine_ESX
+        : esxVI_ProductLine_GSX;
 
     if (!vCenterIpAddress || *vCenterIpAddress) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -695,25 +695,13 @@ esxConnectToHost(esxPrivate *priv,
         goto cleanup;
     }
 
-    if (expectedProductVersion == esxVI_ProductVersion_ESX) {
-        if (priv->host->productVersion != esxVI_ProductVersion_ESX35 &&
-            priv->host->productVersion != esxVI_ProductVersion_ESX40 &&
-            priv->host->productVersion != esxVI_ProductVersion_ESX41 &&
-            priv->host->productVersion != esxVI_ProductVersion_ESX4x &&
-            priv->host->productVersion != esxVI_ProductVersion_ESX50 &&
-            priv->host->productVersion != esxVI_ProductVersion_ESX51 &&
-            priv->host->productVersion != esxVI_ProductVersion_ESX5x) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%s is neither an ESX 3.5, 4.x nor 5.x host"),
-                           conn->uri->server);
-            goto cleanup;
-        }
-    } else { /* GSX */
-        if (priv->host->productVersion != esxVI_ProductVersion_GSX20) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%s isn't a GSX 2.0 host"), conn->uri->server);
-            goto cleanup;
-        }
+    if (priv->host->productLine != expectedProductLine) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Expecting '%s' to be a %s host but found a %s host"),
+                       conn->uri->server,
+                       esxVI_ProductLineToDisplayName(expectedProductLine),
+                       esxVI_ProductLineToDisplayName(priv->host->productLine));
+        goto cleanup;
     }
 
     /* Query the host for maintenance mode and vCenter IP address */
@@ -815,16 +803,12 @@ esxConnectToVCenter(esxPrivate *priv,
         goto cleanup;
     }
 
-    if (priv->vCenter->productVersion != esxVI_ProductVersion_VPX25 &&
-        priv->vCenter->productVersion != esxVI_ProductVersion_VPX40 &&
-        priv->vCenter->productVersion != esxVI_ProductVersion_VPX41 &&
-        priv->vCenter->productVersion != esxVI_ProductVersion_VPX4x &&
-        priv->vCenter->productVersion != esxVI_ProductVersion_VPX50 &&
-        priv->vCenter->productVersion != esxVI_ProductVersion_VPX51 &&
-        priv->vCenter->productVersion != esxVI_ProductVersion_VPX5x) {
+    if (priv->vCenter->productLine != esxVI_ProductLine_VPX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s is neither a vCenter 2.5, 4.x nor 5.x server"),
-                       hostname);
+                       _("Expecting '%s' to be a %s host but found a %s host"),
+                       hostname,
+                       esxVI_ProductLineToDisplayName(esxVI_ProductLine_VPX),
+                       esxVI_ProductLineToDisplayName(priv->vCenter->productLine));
         goto cleanup;
     }
 
@@ -1217,14 +1201,7 @@ esxConnectGetVersion(virConnectPtr conn, unsigned long *version)
 {
     esxPrivate *priv = conn->privateData;
 
-    if (virParseVersionString(priv->primary->service->about->version,
-                              version, false) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not parse version number from '%s'"),
-                       priv->primary->service->about->version);
-
-        return -1;
-    }
+    *version = priv->primary->productVersion;
 
     return 0;
 }
@@ -2934,7 +2911,7 @@ esxConnectDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
     }
 
     virtualHW_version = esxVI_ProductVersionToDefaultVirtualHWVersion
-                          (priv->primary->productVersion);
+                          (priv->primary->productLine, priv->primary->productVersion);
 
     if (virtualHW_version < 0) {
         return NULL;
@@ -3190,7 +3167,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
 
     /* Build VMX from domain XML */
     virtualHW_version = esxVI_ProductVersionToDefaultVirtualHWVersion
-                          (priv->primary->productVersion);
+                          (priv->primary->productLine, priv->primary->productVersion);
 
     if (virtualHW_version < 0) {
         goto cleanup;
