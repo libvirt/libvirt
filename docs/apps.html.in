@@ -163,25 +163,21 @@
     <h2><a name="conversion">Conversion</a></h2>
 
     <dl>
-      <dt><a href="https://rwmj.wordpress.com/2009/10/13/poor-mans-p2v/">Poor mans p2v</a></dt>
+      <dt><a href="http://libguestfs.org/virt-p2v.1.html">virt-p2v</a></dt>
       <dd>
-        A simple approach for converting a physical machine to a virtual
-        machine, using a rescue CD.
+        Convert a physical machine to run on KVM.  It is a LiveCD
+        which is booted on the machine to be converted.  It collects a
+        little information from the user, then copies the disks over
+        to a remote machine and defines the XML for a domain to run
+        the guest.  (Note this tool is included with libguestfs)
       </dd>
-      <dt><a href="http://et.redhat.com/~rjones/virt-p2v/">virt-p2v</a></dt>
+      <dt><a href="http://libguestfs.org/virt-v2v.1.html">virt-v2v</a></dt>
       <dd>
-        An older tool for converting a physical machine into a virtual
-        machine.  It is a LiveCD which is booted on the machine to be
-        converted.  It collects a little information from the user, then
-        copies the disks over to a remote machine and defines the XML for a
-        domain to run the guest.
-      </dd>
-      <dt><a href="http://git.fedorahosted.org/git/?p=virt-v2v.git;a=summary">virt-v2v</a></dt>
-      <dd>
-        virt-v2v converts guests from a foreign hypervisor to run on KVM,
-        managed by libvirt.  It can currently convert Red Hat Enterprise
-        Linux (RHEL) and Fedora guests running on Xen and VMware ESX.  It
+        virt-v2v converts guests from a foreign hypervisor to run on
+        KVM, managed by libvirt.  It can convert guests from VMware or
+        Xen to run on OpenStack, oVirt (RHEV-M), or local libvirt.  It
         will enable VirtIO drivers in the converted guest if possible.
+        (Note this tool is included with libguestfs)
       </dd>
       <dd>
         For RHEL customers of Red Hat, conversion of Windows guests is also
