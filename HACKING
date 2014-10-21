@@ -14,7 +14,11 @@ General tips for contributing patches
 (1) Discuss any large changes on the mailing list first. Post patches early and
 listen to feedback.
 
-(2) Post patches in unified diff format, with git rename detection enabled. You
+(2) Official upstream repository is kept in git ("git://libvirt.org/libvirt.git")
+and is browsable along with other libvirt-related repositories (e.g.
+libvirt-python) online <http://libvirt.org>.
+
+(3) Post patches in unified diff format, with git rename detection enabled. You
 need a one-time setup of:
 
   git config diff.renames true
@@ -66,7 +70,7 @@ though).
 
 
 
-(3) In your commit message, make the summary line reasonably short (60 characters
+(4) In your commit message, make the summary line reasonably short (60 characters
 is typical), followed by a blank line, followed by any longer description of
 why your patch makes sense. If the patch fixes a regression, and you know what
 commit introduced the problem, mentioning that is useful. If the patch
@@ -78,7 +82,7 @@ is up to you if you want to include or omit them in the commit message.
 
 
 
-(4) Split large changes into a series of smaller patches, self-contained if
+(5) Split large changes into a series of smaller patches, self-contained if
 possible, with an explanation of each patch and an explanation of how the
 sequence of patches fits together. Moreover, please keep in mind that it's
 required to be able to compile cleanly (*including* "make check" and "make
@@ -89,10 +93,10 @@ things).
 
 
 
-(5) Make sure your patches apply against libvirt GIT. Developers only follow GIT
+(6) Make sure your patches apply against libvirt GIT. Developers only follow GIT
 and don't care much about released versions.
 
-(6) Run the automated tests on your code before submitting any changes. In
+(7) Run the automated tests on your code before submitting any changes. In
 particular, configure with compile warnings set to -Werror. This is done
 automatically for a git checkout; from a tarball, use:
 
@@ -138,7 +142,7 @@ various tests under gdb or Valgrind.
 
 
 
-(7) The Valgrind test should produce similar output to "make check". If the output
+(8) The Valgrind test should produce similar output to "make check". If the output
 has traces within libvirt API's, then investigation is required in order to
 determine the cause of the issue. Output such as the following indicates some
 sort of leak:
@@ -214,7 +218,7 @@ to "tests/.valgrind.supp" in order to suppress the warning:
 
 
 
-(8) Update tests and/or documentation, particularly if you are adding a new
+(9) Update tests and/or documentation, particularly if you are adding a new
 feature or changing the output of a program.
 
 
