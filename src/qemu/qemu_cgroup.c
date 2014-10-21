@@ -1222,6 +1222,8 @@ qemuRemoveCgroup(virQEMUDriverPtr driver,
             VIR_DEBUG("Failed to terminate cgroup for %s", vm->def->name);
     }
 
+    virObjectUnref(cfg);
+
     return virCgroupRemove(priv->cgroup);
 }
 
