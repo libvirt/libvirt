@@ -890,28 +890,19 @@ virSocketAddrNumericFamily(const char *address)
 bool
 virSocketAddrIsNumericLocalhost(const char *addr)
 {
-    struct addrinfo *res;
+    virSocketAddr res;
     struct in_addr tmp = { .s_addr = htonl(INADDR_LOOPBACK) };
-    struct sockaddr_in *inet4;
-    struct sockaddr_in6 *inet6;
-    bool ret = false;
 
-    if (virSocketAddrParseInternal(&res, addr, AF_UNSPEC, false) < 0)
-        return ret;
+    if (virSocketAddrParse(&res, addr, AF_UNSPEC) < 0)
+        return false;
 
-    switch (res->ai_addr->sa_family) {
+    switch (res.data.stor.ss_family) {
     case AF_INET:
-        inet4 = (struct sockaddr_in*) res->ai_addr;
-        ret = memcmp(&inet4->sin_addr.s_addr, &tmp.s_addr,
-                     sizeof(inet4->sin_addr.s_addr)) == 0;
-        break;
+        return memcmp(&res.data.inet4.sin_addr.s_addr, &tmp.s_addr,
+                     sizeof(res.data.inet4.sin_addr.s_addr)) == 0;
     case AF_INET6:
-        inet6 = (struct sockaddr_in6*) res->ai_addr;
-        ret = IN6_IS_ADDR_LOOPBACK(&(inet6->sin6_addr));
-        break;
+        return IN6_IS_ADDR_LOOPBACK(&res.data.inet6.sin6_addr);
     }
 
-    freeaddrinfo(res);
-    return ret;
-
+    return false;
 }
