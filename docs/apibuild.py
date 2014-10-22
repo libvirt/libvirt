@@ -24,6 +24,7 @@ included_files = {
   "libvirt.h": "header with general libvirt API definitions",
   "virterror.h": "header with error specific API definitions",
   "libvirt.c": "Main interfaces for the libvirt library",
+  "libvirt-domain.c": "Domain interfaces for the libvirt library",
   "libvirt-domain-snapshot.c": "Domain snapshot interfaces for the libvirt library",
   "libvirt-interface.c": "Interface interfaces for the libvirt library",
   "libvirt-network.c": "Network interfaces for the libvirt library",
