@@ -59,6 +59,7 @@ src/internal.h
 src/libvirt.c
 src/libvirt-domain.c
 src/libvirt-domain-snapshot.c
+src/libvirt-host.c
 src/libvirt-lxc.c
 src/libvirt-network.c
 src/libvirt-nwfilter.c

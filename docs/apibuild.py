@@ -26,6 +26,7 @@ included_files = {
   "libvirt.c": "Main interfaces for the libvirt library",
   "libvirt-domain.c": "Domain interfaces for the libvirt library",
   "libvirt-domain-snapshot.c": "Domain snapshot interfaces for the libvirt library",
+  "libvirt-host.c": "Host interfaces for the libvirt library",
   "libvirt-interface.c": "Interface interfaces for the libvirt library",
   "libvirt-network.c": "Network interfaces for the libvirt library",
   "libvirt-nodedev.c": "Node device interfaces for the libvirt library",
