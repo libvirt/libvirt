@@ -46,12 +46,6 @@
  *              Copyright (C) 1995-2004 Miquel van Smoorenburg
  */
 
-# if defined(__FreeBSD_kernel__)
-#  define VIR_INITCTL_FIFO  "/etc/.initctl"
-# else
-#  define VIR_INITCTL_FIFO  "/dev/initctl"
-# endif
-
 # define VIR_INITCTL_MAGIC 0x03091969
 # define VIR_INITCTL_CMD_START          0
 # define VIR_INITCTL_CMD_RUNLVL         1
@@ -124,6 +118,13 @@ virInitctlSetRunLevel(virInitctlRunLevel level)
     struct virInitctlRequest req;
     int fd = -1;
     int ret = -1;
+    const char *initctl_fifo = NULL;
+    size_t i = 0;
+    const char *initctl_fifos[] = {
+        "/run/initctl",
+        "/dev/initctl",
+        "/etc/.initctl",
+    };
 
     memset(&req, 0, sizeof(req));
 
@@ -133,22 +134,31 @@ virInitctlSetRunLevel(virInitctlRunLevel level)
     /* Yes it is an 'int' field, but wants a numeric character. Go figure */
     req.runlevel = '0' + level;
 
-    if ((fd = open(VIR_INITCTL_FIFO,
-                   O_WRONLY|O_NONBLOCK|O_CLOEXEC|O_NOCTTY)) < 0) {
-        if (errno == ENOENT) {
-            ret = 0;
+    for (i = 0; i < ARRAY_CARDINALITY(initctl_fifos); i++) {
+        initctl_fifo = initctl_fifos[i];
+
+        if ((fd = open(initctl_fifo,
+                       O_WRONLY|O_NONBLOCK|O_CLOEXEC|O_NOCTTY)) >= 0)
+            break;
+
+        if (errno != ENOENT) {
+            virReportSystemError(errno,
+                                 _("Cannot open init control %s"),
+                                 initctl_fifo);
             goto cleanup;
         }
-        virReportSystemError(errno,
-                             _("Cannot open init control %s"),
-                             VIR_INITCTL_FIFO);
+    }
+
+    /* Ensure we found a valid initctl fifo */
+    if (fd < 0) {
+        ret = 0;
         goto cleanup;
     }
 
     if (safewrite(fd, &req, sizeof(req)) != sizeof(req)) {
         virReportSystemError(errno,
                              _("Failed to send request to init control %s"),
-                             VIR_INITCTL_FIFO);
+                             initctl_fifo);
         goto cleanup;
     }
 
