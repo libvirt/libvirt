@@ -16,7 +16,7 @@ listen to feedback.
 
 (2) Official upstream repository is kept in git ("git://libvirt.org/libvirt.git")
 and is browsable along with other libvirt-related repositories (e.g.
-libvirt-python) online <http://libvirt.org>.
+libvirt-python) online <http://libvirt.org/git/>.
 
 (3) Post patches in unified diff format, with git rename detection enabled. You
 need a one-time setup of:
