@@ -5720,7 +5720,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
                                    &xmlout)) < 0)
             goto cleanup;
 
-        if (hookret == 0 && xmlout) {
+        if (hookret == 0 && !virStringIsEmpty(xmlout)) {
             VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
             hook_taint = true;
             newxml = xmlout;
@@ -5936,7 +5936,7 @@ qemuDomainObjRestore(virConnectPtr conn,
                                    NULL, xml, &xmlout)) < 0)
             goto cleanup;
 
-        if (hookret == 0 && xmlout) {
+        if (hookret == 0 && !virStringIsEmpty(xmlout)) {
             virDomainDefPtr tmp;
 
             VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
