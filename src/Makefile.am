@@ -189,6 +189,7 @@ DRIVER_SOURCES =							\
 		fdstream.c fdstream.h					\
 		$(NODE_INFO_SOURCES)					\
 		libvirt.c libvirt_internal.h				\
+		libvirt-domain-snapshot.c 				\
 		locking/lock_manager.c locking/lock_manager.h		\
 		locking/lock_driver.h					\
 		locking/lock_driver_nop.h locking/lock_driver_nop.c	\
@@ -2186,6 +2187,7 @@ libvirt_setuid_rpc_client_la_SOURCES = 		\
 		remote/lxc_protocol.c		\
 		datatypes.c			\
 		libvirt.c			\
+		libvirt-domain-snapshot.c	\
 		libvirt-lxc.c			\
 		$(NULL)
 
