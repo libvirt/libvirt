@@ -107,6 +107,8 @@ void virTrimSpaces(char *str, char **endp) ATTRIBUTE_NONNULL(1);
 void virSkipSpacesBackwards(const char *str, char **endp)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+bool virStringIsEmpty(const char *str);
+
 char *virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
     ATTRIBUTE_RETURN_CHECK;
 char *virStrcpy(char *dest, const char *src, size_t destbytes)
