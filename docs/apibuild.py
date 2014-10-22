@@ -25,6 +25,7 @@ included_files = {
   "virterror.h": "header with error specific API definitions",
   "libvirt.c": "Main interfaces for the libvirt library",
   "libvirt-domain-snapshot.c": "Domain snapshot interfaces for the libvirt library",
+  "libvirt-network.c": "Network interfaces for the libvirt library",
   "virerror.c": "implements error handling and reporting code for libvirt",
   "virevent.c": "event loop for monitoring file handles",
   "virtypedparam.c": "virTypedParameters APIs",
