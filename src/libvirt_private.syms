@@ -1999,6 +1999,7 @@ virStrdup;
 virStringArrayHasString;
 virStringFreeList;
 virStringFreeListCount;
+virStringIsEmpty;
 virStringJoin;
 virStringListLength;
 virStringReplace;

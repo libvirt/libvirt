@@ -633,6 +633,22 @@ virSkipSpacesBackwards(const char *str, char **endp)
         *endp = NULL;
 }
 
+/**
+ * virStringIsEmpty:
+ * @str: string to check
+ *
+ * Returns true if string is empty (may contain only whitespace) or NULL.
+ */
+bool
+virStringIsEmpty(const char *str)
+{
+    if (!str)
+        return true;
+
+    virSkipSpaces(&str);
+    return str[0] == '\0';
+}
+
 char *
 virArgvToString(const char *const *argv)
 {
