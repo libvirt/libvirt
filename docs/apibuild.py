@@ -30,6 +30,7 @@ included_files = {
   "libvirt-nodedev.c": "Node device interfaces for the libvirt library",
   "libvirt-nwfilter.c": "NWFilter interfaces for the libvirt library",
   "libvirt-secret.c": "Secret interfaces for the libvirt library",
+  "libvirt-storage.c": "Storage interfaces for the libvirt library",
   "libvirt-stream.c": "Stream interfaces for the libvirt library",
   "virerror.c": "implements error handling and reporting code for libvirt",
   "virevent.c": "event loop for monitoring file handles",
