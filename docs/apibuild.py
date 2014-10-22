@@ -27,6 +27,7 @@ included_files = {
   "libvirt-domain-snapshot.c": "Domain snapshot interfaces for the libvirt library",
   "libvirt-interface.c": "Interface interfaces for the libvirt library",
   "libvirt-network.c": "Network interfaces for the libvirt library",
+  "libvirt-nodedev.c": "Node device interfaces for the libvirt library",
   "libvirt-nwfilter.c": "NWFilter interfaces for the libvirt library",
   "virerror.c": "implements error handling and reporting code for libvirt",
   "virevent.c": "event loop for monitoring file handles",
