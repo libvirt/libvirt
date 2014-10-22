@@ -61,6 +61,7 @@ src/libvirt-domain-snapshot.c
 src/libvirt-lxc.c
 src/libvirt-network.c
 src/libvirt-nwfilter.c
+src/libvirt-secret.c
 src/libvirt-qemu.c
 src/locking/lock_daemon.c
 src/locking/lock_daemon_config.c
