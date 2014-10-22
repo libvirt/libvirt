@@ -192,6 +192,7 @@ DRIVER_SOURCES =							\
 		libvirt-domain-snapshot.c 				\
 		libvirt-interface.c	 				\
 		libvirt-network.c	 				\
+		libvirt-nwfilter.c	 				\
 		locking/lock_manager.c locking/lock_manager.h		\
 		locking/lock_driver.h					\
 		locking/lock_driver_nop.h locking/lock_driver_nop.c	\
@@ -2192,6 +2193,7 @@ libvirt_setuid_rpc_client_la_SOURCES = 		\
 		libvirt-domain-snapshot.c	\
 		libvirt-interface.c		\
 		libvirt-network.c		\
+		libvirt-nwfilter.c		\
 		libvirt-lxc.c			\
 		$(NULL)
 
