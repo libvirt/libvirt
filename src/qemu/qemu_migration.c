@@ -2570,7 +2570,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         if (hookret < 0) {
             goto cleanup;
         } else if (hookret == 0) {
-            if (!*xmlout) {
+            if (virStringIsEmpty(xmlout)) {
                 VIR_DEBUG("Migrate hook filter returned nothing; using the"
                           " original XML");
             } else {
