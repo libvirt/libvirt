@@ -56,18 +56,14 @@ esxNetworkOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
     }
 
-    conn->networkPrivateData = conn->privateData;
-
     return VIR_DRV_OPEN_SUCCESS;
 }
 
 
 
 static int
-esxNetworkClose(virConnectPtr conn)
+esxNetworkClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    conn->networkPrivateData = NULL;
-
     return 0;
 }
 
@@ -76,7 +72,7 @@ esxNetworkClose(virConnectPtr conn)
 static int
 esxConnectNumOfNetworks(virConnectPtr conn)
 {
-    esxPrivate *priv = conn->networkPrivateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_HostVirtualSwitch *hostVirtualSwitchList = NULL;
     esxVI_HostVirtualSwitch *hostVirtualSwitch = NULL;
     int count = 0;
@@ -103,7 +99,7 @@ static int
 esxConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
 {
     bool success = false;
-    esxPrivate *priv = conn->networkPrivateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_HostVirtualSwitch *hostVirtualSwitchList = NULL;
     esxVI_HostVirtualSwitch *hostVirtualSwitch = NULL;
     int count = 0;
@@ -169,7 +165,7 @@ static virNetworkPtr
 esxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
     virNetworkPtr network = NULL;
-    esxPrivate *priv = conn->networkPrivateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_HostVirtualSwitch *hostVirtualSwitchList = NULL;
     esxVI_HostVirtualSwitch *hostVirtualSwitch = NULL;
     unsigned char md5[MD5_DIGEST_SIZE]; /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
@@ -214,7 +210,7 @@ static virNetworkPtr
 esxNetworkLookupByName(virConnectPtr conn, const char *name)
 {
     virNetworkPtr network = NULL;
-    esxPrivate *priv = conn->networkPrivateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_HostVirtualSwitch *hostVirtualSwitch = NULL;
     unsigned char md5[MD5_DIGEST_SIZE]; /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
 
@@ -318,7 +314,7 @@ static virNetworkPtr
 esxNetworkDefineXML(virConnectPtr conn, const char *xml)
 {
     virNetworkPtr network = NULL;
-    esxPrivate *priv = conn->networkPrivateData;
+    esxPrivate *priv = conn->privateData;
     virNetworkDefPtr def = NULL;
     esxVI_HostVirtualSwitch *hostVirtualSwitch = NULL;
     esxVI_HostPortGroup *hostPortGroupList = NULL;
@@ -527,7 +523,7 @@ static int
 esxNetworkUndefine(virNetworkPtr network)
 {
     int result = -1;
-    esxPrivate *priv = network->conn->networkPrivateData;
+    esxPrivate *priv = network->conn->privateData;
     esxVI_HostVirtualSwitch *hostVirtualSwitch = NULL;
     esxVI_HostPortGroup *hostPortGroupList = NULL;
     esxVI_String *hostPortGroupKey = NULL;
@@ -670,7 +666,7 @@ static char *
 esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
 {
     char *xml = NULL;
-    esxPrivate *priv = network_->conn->networkPrivateData;
+    esxPrivate *priv = network_->conn->privateData;
     esxVI_HostVirtualSwitch *hostVirtualSwitch = NULL;
     int count = 0;
     esxVI_PhysicalNic *physicalNicList = NULL;

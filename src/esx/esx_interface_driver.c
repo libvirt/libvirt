@@ -50,18 +50,14 @@ esxInterfaceOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
     }
 
-    conn->interfacePrivateData = conn->privateData;
-
     return VIR_DRV_OPEN_SUCCESS;
 }
 
 
 
 static int
-esxInterfaceClose(virConnectPtr conn)
+esxInterfaceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    conn->interfacePrivateData = NULL;
-
     return 0;
 }
 
@@ -70,7 +66,7 @@ esxInterfaceClose(virConnectPtr conn)
 static int
 esxConnectNumOfInterfaces(virConnectPtr conn)
 {
-    esxPrivate *priv = conn->interfacePrivateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_PhysicalNic *physicalNicList = NULL;
     esxVI_PhysicalNic *physicalNic = NULL;
     int count = 0;
@@ -96,7 +92,7 @@ static int
 esxConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
 {
     bool success = false;
-    esxPrivate *priv = conn->interfacePrivateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_PhysicalNic *physicalNicList = NULL;
     esxVI_PhysicalNic *physicalNic = NULL;
     int count = 0;
@@ -161,7 +157,7 @@ static virInterfacePtr
 esxInterfaceLookupByName(virConnectPtr conn, const char *name)
 {
     virInterfacePtr iface = NULL;
-    esxPrivate *priv = conn->interfacePrivateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_PhysicalNic *physicalNic = NULL;
 
     if (esxVI_EnsureSession(priv->primary) < 0 ||
@@ -183,7 +179,7 @@ static virInterfacePtr
 esxInterfaceLookupByMACString(virConnectPtr conn, const char *mac)
 {
     virInterfacePtr iface = NULL;
-    esxPrivate *priv = conn->interfacePrivateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_PhysicalNic *physicalNic = NULL;
 
     if (esxVI_EnsureSession(priv->primary) < 0 ||
@@ -205,7 +201,7 @@ static char *
 esxInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
 {
     char *xml = NULL;
-    esxPrivate *priv = iface->conn->interfacePrivateData;
+    esxPrivate *priv = iface->conn->privateData;
     esxVI_PhysicalNic *physicalNic = NULL;
     virInterfaceDef def;
     bool hasAddress = false;

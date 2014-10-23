@@ -45,18 +45,14 @@ esxSecretOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
         return VIR_DRV_OPEN_DECLINED;
     }
 
-    conn->secretPrivateData = conn->privateData;
-
     return VIR_DRV_OPEN_SUCCESS;
 }
 
 
 
 static int
-esxSecretClose(virConnectPtr conn)
+esxSecretClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    conn->secretPrivateData = NULL;
-
     return 0;
 }
 

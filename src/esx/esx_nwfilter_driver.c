@@ -47,18 +47,14 @@ esxNWFilterOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
     }
 
-    conn->nwfilterPrivateData = conn->privateData;
-
     return VIR_DRV_OPEN_SUCCESS;
 }
 
 
 
 static int
-esxNWFilterClose(virConnectPtr conn)
+esxNWFilterClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    conn->nwfilterPrivateData = NULL;
-
     return 0;
 }
 

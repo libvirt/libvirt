@@ -54,7 +54,7 @@ esxConnectNumOfStoragePools(virConnectPtr conn)
 {
     bool success = false;
     int count = 0;
-    esxPrivate *priv = conn->storagePrivateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_HostInternetScsiHba *hostInternetScsiHba = NULL;
     esxVI_HostInternetScsiHbaStaticTarget *target;
 
@@ -99,7 +99,7 @@ esxConnectListStoragePools(virConnectPtr conn, char **const names,
 {
     bool success = false;
     int count = 0;
-    esxPrivate *priv = conn->storagePrivateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_HostInternetScsiHba *hostInternetScsiHba = NULL;
     esxVI_HostInternetScsiHbaStaticTarget *target;
     size_t i;
@@ -156,7 +156,7 @@ static virStoragePoolPtr
 esxStoragePoolLookupByName(virConnectPtr conn,
                            const char *name)
 {
-    esxPrivate *priv = conn->storagePrivateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_HostInternetScsiHbaStaticTarget *target = NULL;
     /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
     unsigned char md5[MD5_DIGEST_SIZE];
@@ -199,7 +199,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn,
                            const unsigned char *uuid)
 {
     virStoragePoolPtr pool = NULL;
-    esxPrivate *priv = conn->storagePrivateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_HostInternetScsiHba *hostInternetScsiHba = NULL;
     esxVI_HostInternetScsiHbaStaticTarget *target;
     /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
@@ -248,7 +248,7 @@ esxStoragePoolRefresh(virStoragePoolPtr pool,
                       unsigned int flags)
 {
     int result = -1;
-    esxPrivate *priv = pool->conn->storagePrivateData;
+    esxPrivate *priv = pool->conn->privateData;
     esxVI_HostInternetScsiHba *hostInternetScsiHba = NULL;
 
     virCheckFlags(0, -1);
@@ -295,7 +295,7 @@ static char *
 esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
 {
     char *xml = NULL;
-    esxPrivate *priv = pool->conn->storagePrivateData;
+    esxPrivate *priv = pool->conn->privateData;
     esxVI_HostInternetScsiHba *hostInternetScsiHba = NULL;
     esxVI_HostInternetScsiHbaStaticTarget *target;
     virStoragePoolDef def;
@@ -358,7 +358,7 @@ static int
 esxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
 {
     int count = 0;
-    esxPrivate *priv = pool->conn->storagePrivateData;
+    esxPrivate *priv = pool->conn->privateData;
     esxVI_HostScsiTopologyLun *hostScsiTopologyLunList = NULL;
     esxVI_HostScsiTopologyLun *hostScsiTopologyLun;
 
@@ -386,7 +386,7 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
 {
     bool success = false;
     int count = 0;
-    esxPrivate *priv = pool->conn->storagePrivateData;
+    esxPrivate *priv = pool->conn->privateData;
     esxVI_HostScsiTopologyLun *hostScsiTopologyLunList = NULL;
     esxVI_HostScsiTopologyLun *hostScsiTopologyLun;
     esxVI_ScsiLun *scsiLunList = NULL;
@@ -445,7 +445,7 @@ esxStorageVolLookupByName(virStoragePoolPtr pool,
                           const char *name)
 {
     virStorageVolPtr volume = NULL;
-    esxPrivate *priv = pool->conn->storagePrivateData;
+    esxPrivate *priv = pool->conn->privateData;
     esxVI_ScsiLun *scsiLunList = NULL;
     esxVI_ScsiLun *scsiLun;
     /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
@@ -491,7 +491,7 @@ static virStorageVolPtr
 esxStorageVolLookupByPath(virConnectPtr conn, const char *path)
 {
     virStorageVolPtr volume = NULL;
-    esxPrivate *priv = conn->storagePrivateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_ScsiLun *scsiLunList = NULL;
     esxVI_ScsiLun *scsiLun;
     esxVI_HostScsiDisk *hostScsiDisk = NULL;
@@ -539,7 +539,7 @@ static virStorageVolPtr
 esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
 {
     virStorageVolPtr volume = NULL;
-    esxPrivate *priv = conn->storagePrivateData;
+    esxPrivate *priv = conn->privateData;
     char *poolName = NULL;
     esxVI_ScsiLun *scsiLunList = NULL;
     esxVI_ScsiLun *scsiLun;
@@ -626,7 +626,7 @@ esxStorageVolGetInfo(virStorageVolPtr volume,
                      virStorageVolInfoPtr info)
 {
     int result = -1;
-    esxPrivate *priv = volume->conn->storagePrivateData;
+    esxPrivate *priv = volume->conn->privateData;
     esxVI_ScsiLun *scsiLunList = NULL;
     esxVI_ScsiLun *scsiLun;
     esxVI_HostScsiDisk *hostScsiDisk = NULL;
@@ -672,7 +672,7 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
                         unsigned int flags)
 {
     char *xml = NULL;
-    esxPrivate *priv = volume->conn->storagePrivateData;
+    esxPrivate *priv = volume->conn->privateData;
     virStoragePoolDef pool;
     esxVI_ScsiLun *scsiLunList = NULL;
     esxVI_ScsiLun *scsiLun;
