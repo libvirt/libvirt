@@ -405,6 +405,7 @@ mymain(void)
 
     DO_TEST("tap-vhost");
     DO_TEST("shmem");
+    DO_TEST("smbios");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

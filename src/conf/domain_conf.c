@@ -17668,17 +17668,6 @@ virDomainNVRAMDefFormat(virBufferPtr buf,
     return 0;
 }
 
-static int
-virDomainSysinfoDefFormat(virBufferPtr buf,
-                          virSysinfoDefPtr def)
-{
-    int ret;
-    virBufferAdjustIndent(buf, 2);
-    ret = virSysinfoFormat(buf, def);
-    virBufferAdjustIndent(buf, -2);
-    return ret;
-}
-
 
 static int
 virDomainWatchdogDefFormat(virBufferPtr buf,
@@ -18890,7 +18879,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virDomainResourceDefFormat(buf, def->resource);
 
     if (def->sysinfo)
-        virDomainSysinfoDefFormat(buf, def->sysinfo);
+        virSysinfoFormat(buf, def->sysinfo);
 
     if (def->os.bootloader) {
         virBufferEscapeString(buf, "<bootloader>%s</bootloader>\n",
