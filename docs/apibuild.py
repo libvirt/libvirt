@@ -28,6 +28,7 @@ included_files = {
   "libvirt-nodedev.h": "header with general libvirt API definitions",
   "libvirt-nwfilter.h": "header with general libvirt API definitions",
   "libvirt-secret.h": "header with general libvirt API definitions",
+  "libvirt-storage.h": "header with general libvirt API definitions",
   "libvirt-stream.h": "header with general libvirt API definitions",
   "virterror.h": "header with error specific API definitions",
   "libvirt.c": "Main interfaces for the libvirt library",
