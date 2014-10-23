@@ -3488,13 +3488,11 @@ static virDrvOpenStatus testNetworkOpen(virConnectPtr conn,
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
-    conn->networkPrivateData = conn->privateData;
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int testNetworkClose(virConnectPtr conn)
+static int testNetworkClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    conn->networkPrivateData = NULL;
     return 0;
 }
 
@@ -4048,13 +4046,11 @@ static virDrvOpenStatus testInterfaceOpen(virConnectPtr conn,
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
-    conn->interfacePrivateData = conn->privateData;
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int testInterfaceClose(virConnectPtr conn)
+static int testInterfaceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    conn->interfacePrivateData = NULL;
     return 0;
 }
 
@@ -4487,13 +4483,11 @@ static virDrvOpenStatus testStorageOpen(virConnectPtr conn,
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
-    conn->storagePrivateData = conn->privateData;
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int testStorageClose(virConnectPtr conn)
+static int testStorageClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    conn->storagePrivateData = NULL;
     return 0;
 }
 
@@ -5827,13 +5821,11 @@ static virDrvOpenStatus testNodeDeviceOpen(virConnectPtr conn,
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
-    conn->nodeDevicePrivateData = conn->privateData;
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int testNodeDeviceClose(virConnectPtr conn)
+static int testNodeDeviceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    conn->nodeDevicePrivateData = NULL;
     return 0;
 }
 
@@ -6298,13 +6290,11 @@ static virDrvOpenStatus testSecretOpen(virConnectPtr conn,
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
-    conn->secretPrivateData = conn->privateData;
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int testSecretClose(virConnectPtr conn)
+static int testSecretClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    conn->secretPrivateData = NULL;
     return 0;
 }
 
@@ -6318,13 +6308,11 @@ static virDrvOpenStatus testNWFilterOpen(virConnectPtr conn,
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
-    conn->nwfilterPrivateData = conn->privateData;
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int testNWFilterClose(virConnectPtr conn)
+static int testNWFilterClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    conn->nwfilterPrivateData = NULL;
     return 0;
 }
 
