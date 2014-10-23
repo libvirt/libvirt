@@ -303,7 +303,7 @@ sc_flags_debug:
 # than d).  The existence of long long, and of documentation about
 # flags, makes the regex in the third test slightly harder.
 sc_flags_usage:
-	@test "$$(cat $(srcdir)/include/libvirt/libvirt.h.in		\
+	@test "$$(cat $(srcdir)/include/libvirt/libvirt-domain.h	\
 	    $(srcdir)/include/libvirt/virterror.h			\
 	    $(srcdir)/include/libvirt/libvirt-qemu.h			\
 	    $(srcdir)/include/libvirt/libvirt-lxc.h			\

@@ -2251,6 +2251,7 @@ exit 0
 %dir %{_includedir}/libvirt
 %{_includedir}/libvirt/virterror.h
 %{_includedir}/libvirt/libvirt.h
+%{_includedir}/libvirt/libvirt-domain.h
 %{_includedir}/libvirt/libvirt-domain-snapshot.h
 %{_includedir}/libvirt/libvirt-event.h
 %{_includedir}/libvirt/libvirt-interface.h
