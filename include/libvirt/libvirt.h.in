@@ -4962,69 +4962,6 @@ int virConnectDomainEventDeregisterAny(virConnectPtr conn,
 
 
 /**
- * virNWFilter:
- *
- * a virNWFilter is a private structure representing a network filter
- */
-typedef struct _virNWFilter virNWFilter;
-
-/**
- * virNWFilterPtr:
- *
- * a virNWFilterPtr is pointer to a virNWFilter private structure,
- * this is the type used to reference a network filter in the API.
- */
-typedef virNWFilter *virNWFilterPtr;
-
-
-/*
- * List NWFilters
- */
-int                     virConnectNumOfNWFilters (virConnectPtr conn);
-int                     virConnectListNWFilters  (virConnectPtr conn,
-                                                  char **const names,
-                                                  int maxnames);
-int                     virConnectListAllNWFilters(virConnectPtr conn,
-                                                   virNWFilterPtr **filters,
-                                                   unsigned int flags);
-/*
- * Lookup nwfilter by name or uuid
- */
-virNWFilterPtr          virNWFilterLookupByName       (virConnectPtr conn,
-                                                       const char *name);
-virNWFilterPtr          virNWFilterLookupByUUID       (virConnectPtr conn,
-                                                       const unsigned char *uuid);
-virNWFilterPtr          virNWFilterLookupByUUIDString (virConnectPtr conn,
-                                                       const char *uuid);
-
-/*
- * Define persistent nwfilter
- */
-virNWFilterPtr          virNWFilterDefineXML    (virConnectPtr conn,
-                                                 const char *xmlDesc);
-
-/*
- * Delete persistent nwfilter
- */
-int                     virNWFilterUndefine     (virNWFilterPtr nwfilter);
-
-/*
- * NWFilter destroy/free
- */
-int                     virNWFilterRef          (virNWFilterPtr nwfilter);
-int                     virNWFilterFree         (virNWFilterPtr nwfilter);
-
-/*
- * NWFilter information
- */
-const char*             virNWFilterGetName       (virNWFilterPtr nwfilter);
-int                     virNWFilterGetUUID       (virNWFilterPtr nwfilter,
-                                                  unsigned char *uuid);
-int                     virNWFilterGetUUIDString (virNWFilterPtr nwfilter,
-                                                  char *buf);
-char *                  virNWFilterGetXMLDesc    (virNWFilterPtr nwfilter,
-                                                  unsigned int flags);
-/**
  * virDomainConsoleFlags
  *
  * Since 0.9.10
@@ -5265,6 +5202,7 @@ typedef virMemoryParameter *virMemoryParameterPtr;
 #include <libvirt/libvirt-domain-snapshot.h>
 #include <libvirt/libvirt-interface.h>
 #include <libvirt/libvirt-network.h>
+#include <libvirt/libvirt-nwfilter.h>
 #undef __VIR_LIBVIRT_H_INCLUDES__
 
 #ifdef __cplusplus

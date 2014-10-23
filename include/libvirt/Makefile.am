@@ -22,6 +22,7 @@ virinc_HEADERS = libvirt.h		\
 		 libvirt-domain-snapshot.h \
 		 libvirt-interface.h \
 		 libvirt-network.h \
+		 libvirt-nwfilter.h \
 		 libvirt-lxc.h		\
 		 libvirt-qemu.h		\
 		 virterror.h
