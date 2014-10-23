@@ -23,6 +23,7 @@ debugsym=None
 included_files = {
   "libvirt.h": "header with general libvirt API definitions",
   "libvirt-domain-snapshot.h": "header with general libvirt API definitions",
+  "libvirt-network.h": "header with general libvirt API definitions",
   "virterror.h": "header with error specific API definitions",
   "libvirt.c": "Main interfaces for the libvirt library",
   "libvirt-domain.c": "Domain interfaces for the libvirt library",
