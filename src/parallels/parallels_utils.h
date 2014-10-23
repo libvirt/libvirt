@@ -49,6 +49,7 @@ struct _parallelsConn {
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
     virObjectEventStatePtr domainEventState;
+    virStorageDriverStatePtr storageState;
 };
 
 typedef struct _parallelsConn parallelsConn;

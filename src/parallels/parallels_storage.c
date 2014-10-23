@@ -72,8 +72,8 @@ parallelsStorageClose(virConnectPtr conn)
 {
     parallelsConnPtr privconn = conn->privateData;
 
-    virStorageDriverStatePtr storageState = conn->storagePrivateData;
-    conn->storagePrivateData = NULL;
+    virStorageDriverStatePtr storageState = conn->privateData->storageState;
+    conn->privateData->storageState = NULL;
 
     parallelsStorageLock(storageState);
     virStoragePoolObjListFree(&privconn->pools);
@@ -189,7 +189,7 @@ parallelsPoolCreateByPath(virConnectPtr conn, const char *path)
     if (!(pool = virStoragePoolObjAssignDef(pools, def)))
         goto error;
 
-    if (virStoragePoolObjSaveDef(conn->storagePrivateData, pool, def) < 0) {
+    if (virStoragePoolObjSaveDef(conn->privateData->storageState, pool, def) < 0) {
         virStoragePoolObjRemove(pools, pool);
         goto error;
     }
@@ -404,7 +404,7 @@ parallelsPoolsAdd(virDomainObjPtr dom,
 static int parallelsLoadPools(virConnectPtr conn)
 {
     parallelsConnPtr privconn = conn->privateData;
-    virStorageDriverStatePtr storageState = conn->storagePrivateData;
+    virStorageDriverStatePtr storageState = conn->privateData->storageState;
     char *base = NULL;
     size_t i;
 
@@ -475,7 +475,7 @@ parallelsStorageOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
-    conn->storagePrivateData = storageState;
+    conn->privateData->storageState = storageState;
     parallelsStorageLock(storageState);
 
     if (parallelsLoadPools(conn))
@@ -728,7 +728,7 @@ parallelsStoragePoolDefineXML(virConnectPtr conn,
     if (!(pool = virStoragePoolObjAssignDef(&privconn->pools, def)))
         goto cleanup;
 
-    if (virStoragePoolObjSaveDef(conn->storagePrivateData, pool, def) < 0) {
+    if (virStoragePoolObjSaveDef(conn->privateData->storageState, pool, def) < 0) {
         virStoragePoolObjRemove(&privconn->pools, pool);
         def = NULL;
         goto cleanup;

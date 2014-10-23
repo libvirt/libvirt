@@ -328,8 +328,6 @@ parallelsNetworkOpen(virConnectPtr conn,
     if (STRNEQ(conn->driver->name, "Parallels"))
         return VIR_DRV_OPEN_DECLINED;
 
-    conn->networkPrivateData = conn->privateData;
-
     if (parallelsLoadNetworks(conn->privateData) < 0)
         return VIR_DRV_OPEN_DECLINED;
 
