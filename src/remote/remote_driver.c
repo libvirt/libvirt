@@ -3527,47 +3527,17 @@ remoteConnectListAllSecrets(virConnectPtr conn,
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
-remoteGenericOpen(virConnectPtr conn, void **genericPrivateData)
+remoteGenericOpen(virConnectPtr conn)
 {
     if (inside_daemon)
         return VIR_DRV_OPEN_DECLINED;
 
     if (conn->driver &&
         STREQ(conn->driver->name, "remote")) {
-        struct private_data *priv;
-
-        /* If we're here, the remote driver is already
-         * in use due to a) a QEMU uri, or b) a remote
-         * URI. So we can re-use existing connection */
-        priv = conn->privateData;
-        remoteDriverLock(priv);
-        priv->localUses++;
-        *genericPrivateData = priv;
-        remoteDriverUnlock(priv);
         return VIR_DRV_OPEN_SUCCESS;
     }
 
     return VIR_DRV_OPEN_DECLINED;
-}
-
-static int
-remoteGenericClose(virConnectPtr conn, void **genericPrivateData)
-{
-    int rv = 0;
-    struct private_data *priv = *genericPrivateData;
-
-    remoteDriverLock(priv);
-    priv->localUses--;
-    if (!priv->localUses) {
-        rv = doRemoteClose(conn, priv);
-        *genericPrivateData = NULL;
-        remoteDriverUnlock(priv);
-        virMutexDestroy(&priv->lock);
-        VIR_FREE(priv);
-    }
-    if (priv)
-        remoteDriverUnlock(priv);
-    return rv;
 }
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
@@ -3576,13 +3546,13 @@ remoteNetworkOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    return remoteGenericOpen(conn, &conn->networkPrivateData);
+    return remoteGenericOpen(conn);
 }
 
 static int
-remoteNetworkClose(virConnectPtr conn)
+remoteNetworkClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    return remoteGenericClose(conn, &conn->networkPrivateData);
+    return 0;
 }
 
 /*----------------------------------------------------------------------*/
@@ -3593,13 +3563,13 @@ remoteInterfaceOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    return remoteGenericOpen(conn, &conn->interfacePrivateData);
+    return remoteGenericOpen(conn);
 }
 
 static int
-remoteInterfaceClose(virConnectPtr conn)
+remoteInterfaceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    return remoteGenericClose(conn, &conn->interfacePrivateData);
+    return 0;
 }
 
 /*----------------------------------------------------------------------*/
@@ -3610,13 +3580,13 @@ remoteStorageOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    return remoteGenericOpen(conn, &conn->storagePrivateData);
+    return remoteGenericOpen(conn);
 }
 
 static int
-remoteStorageClose(virConnectPtr conn)
+remoteStorageClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    return remoteGenericClose(conn, &conn->storagePrivateData);
+    return 0;
 }
 
 static char *
@@ -3628,7 +3598,7 @@ remoteConnectFindStoragePoolSources(virConnectPtr conn,
     char *rv = NULL;
     remote_connect_find_storage_pool_sources_args args;
     remote_connect_find_storage_pool_sources_ret ret;
-    struct private_data *priv = conn->storagePrivateData;
+    struct private_data *priv = conn->privateData;
 
     remoteDriverLock(priv);
 
@@ -3794,13 +3764,13 @@ remoteNodeDeviceOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    return remoteGenericOpen(conn, &conn->nodeDevicePrivateData);
+    return remoteGenericOpen(conn);
 }
 
 static int
-remoteNodeDeviceClose(virConnectPtr conn)
+remoteNodeDeviceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    return remoteGenericClose(conn, &conn->nodeDevicePrivateData);
+    return 0;
 }
 
 static int
@@ -3808,8 +3778,6 @@ remoteNodeDeviceDettach(virNodeDevicePtr dev)
 {
     int rv = -1;
     remote_node_device_dettach_args args;
-    /* This method is unusual in that it uses the HV driver, not the devMon driver
-     * hence its use of privateData, instead of nodeDevicePrivateData */
     struct private_data *priv = dev->conn->privateData;
 
     remoteDriverLock(priv);
@@ -3835,10 +3803,6 @@ remoteNodeDeviceDetachFlags(virNodeDevicePtr dev,
 {
     int rv = -1;
     remote_node_device_detach_flags_args args;
-    /* This method is unusual in that it uses the HV driver, not the
-     * devMon driver hence its use of privateData, instead of
-     * nodeDevicePrivateData
-     */
     struct private_data *priv = dev->conn->privateData;
 
     remoteDriverLock(priv);
@@ -3864,8 +3828,6 @@ remoteNodeDeviceReAttach(virNodeDevicePtr dev)
 {
     int rv = -1;
     remote_node_device_re_attach_args args;
-    /* This method is unusual in that it uses the HV driver, not the devMon driver
-     * hence its use of privateData, instead of nodeDevicePrivateData */
     struct private_data *priv = dev->conn->privateData;
 
     remoteDriverLock(priv);
@@ -3917,13 +3879,13 @@ remoteNWFilterOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    return remoteGenericOpen(conn, &conn->nwfilterPrivateData);
+    return remoteGenericOpen(conn);
 }
 
 static int
-remoteNWFilterClose(virConnectPtr conn)
+remoteNWFilterClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    return remoteGenericClose(conn, &conn->nwfilterPrivateData);
+    return 0;
 }
 
 /*----------------------------------------------------------------------*/
@@ -5575,13 +5537,13 @@ remoteSecretOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    return remoteGenericOpen(conn, &conn->secretPrivateData);
+    return remoteGenericOpen(conn);
 }
 
 static int
-remoteSecretClose(virConnectPtr conn)
+remoteSecretClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    return remoteGenericClose(conn, &conn->secretPrivateData);
+    return 0;
 }
 
 static unsigned char *
@@ -5591,7 +5553,7 @@ remoteSecretGetValue(virSecretPtr secret, size_t *value_size,
     unsigned char *rv = NULL;
     remote_secret_get_value_args args;
     remote_secret_get_value_ret ret;
-    struct private_data *priv = secret->conn->secretPrivateData;
+    struct private_data *priv = secret->conn->privateData;
 
     remoteDriverLock(priv);
 
@@ -7672,7 +7634,7 @@ remoteNetworkGetDHCPLeases(virNetworkPtr net,
 {
     int rv = -1;
     size_t i;
-    struct private_data *priv = net->conn->networkPrivateData;
+    struct private_data *priv = net->conn->privateData;
     remote_network_get_dhcp_leases_args args;
     remote_network_get_dhcp_leases_ret ret;
 
@@ -7740,7 +7702,7 @@ remoteConnectGetAllDomainStats(virConnectPtr conn,
                                virDomainStatsRecordPtr **retStats,
                                unsigned int flags)
 {
-    struct private_data *priv = conn->networkPrivateData;
+    struct private_data *priv = conn->privateData;
     int rv = -1;
     size_t i;
     remote_connect_get_all_domain_stats_args args;

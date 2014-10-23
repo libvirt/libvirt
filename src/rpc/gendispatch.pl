@@ -1090,7 +1090,6 @@ elsif ($mode eq "client") {
         my @setters_list2 = ();
         my @free_list = ();
         my $priv_src = "conn";
-        my $priv_name = "privateData";
         my $call_args = "&args";
 
         if ($argtype eq "void") {
@@ -1106,7 +1105,6 @@ elsif ($mode eq "client") {
                 !($argtype =~ m/^remote_node_device_lookup_by_name_/) and
                 !($argtype =~ m/^remote_node_device_create_xml_/)) {
                 $has_node_device = 1;
-                $priv_name = "nodeDevicePrivateData";
             }
 
             foreach my $args_member (@{$call->{args_members}}) {
@@ -1124,12 +1122,6 @@ elsif ($mode eq "client") {
                             $priv_src = "$arg_name->domain->conn";
                         } else {
                             $priv_src = "$arg_name->conn";
-                        }
-
-                        if ($name =~ m/^storage_/) {
-                            $priv_name = "storagePrivateData";
-                        } elsif (!($name =~ m/^domain/)) {
-                            $priv_name = "${name}PrivateData";
                         }
                     }
 
@@ -1258,16 +1250,6 @@ elsif ($mode eq "client") {
             push(@args_list, "virConnectPtr conn");
         }
 
-        # fix priv_name for the NumOf* functions
-        if ($priv_name eq "privateData" and
-            !($call->{ProcName} =~ m/(Domains|DomainSnapshot)/) and
-            ($call->{ProcName} =~ m/NumOf(Defined|Domain)*(\S+)s/ or
-             $call->{ProcName} =~ m/List(Defined|Domain)*(\S+)s/)) {
-            my $prefix = lc $2;
-            $prefix =~ s/(pool|vol)$//;
-            $priv_name = "${prefix}PrivateData";
-        }
-
         # handle return values of the function
         my @ret_list = ();
         my @ret_list2 = ();
@@ -1341,14 +1323,6 @@ elsif ($mode eq "client") {
                     my $name = $1;
                     my $arg_name = $2;
                     my $type_name = name_to_TypeName($name);
-
-                    if ($name eq "node_device") {
-                        $priv_name = "nodeDevicePrivateData";
-                    } elsif ($name =~ m/^storage_/) {
-                        $priv_name = "storagePrivateData";
-                    } elsif (!($name =~ m/^domain/)) {
-                        $priv_name = "${name}PrivateData";
-                    }
 
                     if ($call->{ProcName} eq "DomainCreateWithFlags") {
                         # SPECIAL: virDomainCreateWithFlags updates the given
@@ -1475,7 +1449,7 @@ elsif ($mode eq "client") {
         print ")\n";
         print "{\n";
         print "    $single_ret_var;\n";
-        print "    struct private_data *priv = $priv_src->$priv_name;\n";
+        print "    struct private_data *priv = $priv_src->privateData;\n";
 
         foreach my $var (@vars_list) {
             print "    $var;\n";
