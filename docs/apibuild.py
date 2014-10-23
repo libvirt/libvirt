@@ -25,6 +25,7 @@ included_files = {
   "libvirt-domain.h": "header with general libvirt API definitions",
   "libvirt-domain-snapshot.h": "header with general libvirt API definitions",
   "libvirt-event.h": "header with general libvirt API definitions",
+  "libvirt-host.h": "header with general libvirt API definitions",
   "libvirt-interface.h": "header with general libvirt API definitions",
   "libvirt-network.h": "header with general libvirt API definitions",
   "libvirt-nodedev.h": "header with general libvirt API definitions",

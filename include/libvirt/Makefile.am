@@ -22,6 +22,7 @@ virinc_HEADERS = libvirt.h		\
 		 libvirt-domain.h \
 		 libvirt-domain-snapshot.h \
 		 libvirt-event.h \
+		 libvirt-host.h \
 		 libvirt-interface.h \
 		 libvirt-network.h \
 		 libvirt-nodedev.h \

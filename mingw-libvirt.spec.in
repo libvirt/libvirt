@@ -232,6 +232,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw32_includedir}/libvirt/libvirt-domain.h
 %{mingw32_includedir}/libvirt/libvirt-domain-snapshot.h
 %{mingw32_includedir}/libvirt/libvirt-event.h
+%{mingw32_includedir}/libvirt/libvirt-host.h
 %{mingw32_includedir}/libvirt/libvirt-interface.h
 %{mingw32_includedir}/libvirt/libvirt-network.h
 %{mingw32_includedir}/libvirt/libvirt-nodedev.h
@@ -305,6 +306,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw64_includedir}/libvirt/libvirt-domain.h
 %{mingw64_includedir}/libvirt/libvirt-domain-snapshot.h
 %{mingw64_includedir}/libvirt/libvirt-event.h
+%{mingw64_includedir}/libvirt/libvirt-host.h
 %{mingw64_includedir}/libvirt/libvirt-interface.h
 %{mingw64_includedir}/libvirt/libvirt-network.h
 %{mingw64_includedir}/libvirt/libvirt-nodedev.h
