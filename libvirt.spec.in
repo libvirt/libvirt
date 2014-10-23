@@ -2256,6 +2256,7 @@ exit 0
 %{_includedir}/libvirt/libvirt-network.h
 %{_includedir}/libvirt/libvirt-nodedev.h
 %{_includedir}/libvirt/libvirt-nwfilter.h
+%{_includedir}/libvirt/libvirt-secret.h
 %{_includedir}/libvirt/libvirt-qemu.h
 %{_includedir}/libvirt/libvirt-lxc.h
 %{_libdir}/pkgconfig/libvirt.pc

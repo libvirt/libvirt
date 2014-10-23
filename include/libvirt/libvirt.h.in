@@ -3673,90 +3673,6 @@ int virEventAddTimeout(int frequency,
 void virEventUpdateTimeout(int timer, int frequency);
 int virEventRemoveTimeout(int timer);
 
-/*
- * Secret manipulation API
- */
-
-/**
- * virSecret:
- *
- * A virSecret stores a secret value (e.g. a passphrase or encryption key)
- * and associated metadata.
- */
-typedef struct _virSecret virSecret;
-typedef virSecret *virSecretPtr;
-
-typedef enum {
-    VIR_SECRET_USAGE_TYPE_NONE = 0,
-    VIR_SECRET_USAGE_TYPE_VOLUME = 1,
-    VIR_SECRET_USAGE_TYPE_CEPH = 2,
-    VIR_SECRET_USAGE_TYPE_ISCSI = 3,
-
-#ifdef VIR_ENUM_SENTINELS
-    VIR_SECRET_USAGE_TYPE_LAST
-    /*
-     * NB: this enum value will increase over time as new events are
-     * added to the libvirt API. It reflects the last secret owner ID
-     * supported by this version of the libvirt API.
-     */
-#endif
-} virSecretUsageType;
-
-virConnectPtr           virSecretGetConnect     (virSecretPtr secret);
-int                     virConnectNumOfSecrets  (virConnectPtr conn);
-int                     virConnectListSecrets   (virConnectPtr conn,
-                                                 char **uuids,
-                                                 int maxuuids);
-
-/*
- * virConnectListAllSecrets:
- *
- * Flags used to filter the returned secrets. Flags in each group
- * are exclusive attributes of a secret.
- */
-typedef enum {
-    VIR_CONNECT_LIST_SECRETS_EPHEMERAL    = 1 << 0, /* kept in memory, never
-                                                       stored persistently */
-    VIR_CONNECT_LIST_SECRETS_NO_EPHEMERAL = 1 << 1,
-
-    VIR_CONNECT_LIST_SECRETS_PRIVATE      = 1 << 2, /* not revealed to any caller
-                                                       of libvirt, nor to any other
-                                                       node */
-    VIR_CONNECT_LIST_SECRETS_NO_PRIVATE   = 1 << 3,
-} virConnectListAllSecretsFlags;
-
-int                     virConnectListAllSecrets(virConnectPtr conn,
-                                                 virSecretPtr **secrets,
-                                                 unsigned int flags);
-virSecretPtr            virSecretLookupByUUID(virConnectPtr conn,
-                                              const unsigned char *uuid);
-virSecretPtr            virSecretLookupByUUIDString(virConnectPtr conn,
-                                                    const char *uuid);
-virSecretPtr            virSecretLookupByUsage(virConnectPtr conn,
-                                               int usageType,
-                                               const char *usageID);
-virSecretPtr            virSecretDefineXML      (virConnectPtr conn,
-                                                 const char *xml,
-                                                 unsigned int flags);
-int                     virSecretGetUUID        (virSecretPtr secret,
-                                                 unsigned char *buf);
-int                     virSecretGetUUIDString  (virSecretPtr secret,
-                                                 char *buf);
-int                     virSecretGetUsageType   (virSecretPtr secret);
-const char *            virSecretGetUsageID     (virSecretPtr secret);
-char *                  virSecretGetXMLDesc     (virSecretPtr secret,
-                                                 unsigned int flags);
-int                     virSecretSetValue       (virSecretPtr secret,
-                                                 const unsigned char *value,
-                                                 size_t value_size,
-                                                 unsigned int flags);
-unsigned char *         virSecretGetValue       (virSecretPtr secret,
-                                                 size_t *value_size,
-                                                 unsigned int flags);
-int                     virSecretUndefine       (virSecretPtr secret);
-int                     virSecretRef            (virSecretPtr secret);
-int                     virSecretFree           (virSecretPtr secret);
-
 typedef enum {
     VIR_STREAM_NONBLOCK = (1 << 0),
 } virStreamFlags;
@@ -5109,6 +5025,7 @@ typedef virMemoryParameter *virMemoryParameterPtr;
 #include <libvirt/libvirt-network.h>
 #include <libvirt/libvirt-nodedev.h>
 #include <libvirt/libvirt-nwfilter.h>
+#include <libvirt/libvirt-secret.h>
 #undef __VIR_LIBVIRT_H_INCLUDES__
 
 #ifdef __cplusplus

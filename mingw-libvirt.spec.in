@@ -234,6 +234,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw32_includedir}/libvirt/libvirt-network.h
 %{mingw32_includedir}/libvirt/libvirt-nodedev.h
 %{mingw32_includedir}/libvirt/libvirt-nwfilter.h
+%{mingw32_includedir}/libvirt/libvirt-secret.h
 %{mingw32_includedir}/libvirt/virterror.h
 %{mingw32_includedir}/libvirt/libvirt-lxc.h
 %{mingw32_includedir}/libvirt/libvirt-qemu.h
@@ -302,6 +303,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw64_includedir}/libvirt/libvirt-network.h
 %{mingw64_includedir}/libvirt/libvirt-nodedev.h
 %{mingw64_includedir}/libvirt/libvirt-nwfilter.h
+%{mingw64_includedir}/libvirt/libvirt-secret.h
 %{mingw64_includedir}/libvirt/virterror.h
 %{mingw64_includedir}/libvirt/libvirt-lxc.h
 %{mingw64_includedir}/libvirt/libvirt-qemu.h
