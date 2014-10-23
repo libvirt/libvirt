@@ -44,18 +44,14 @@ hypervStorageOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
     }
 
-    conn->storagePrivateData = conn->privateData;
-
     return VIR_DRV_OPEN_SUCCESS;
 }
 
 
 
 static int
-hypervStorageClose(virConnectPtr conn)
+hypervStorageClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    conn->storagePrivateData = NULL;
-
     return 0;
 }
 

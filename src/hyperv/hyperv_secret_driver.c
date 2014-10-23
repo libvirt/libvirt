@@ -44,18 +44,14 @@ hypervSecretOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
     }
 
-    conn->secretPrivateData = conn->privateData;
-
     return VIR_DRV_OPEN_SUCCESS;
 }
 
 
 
 static int
-hypervSecretClose(virConnectPtr conn)
+hypervSecretClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    conn->secretPrivateData = NULL;
-
     return 0;
 }
 

@@ -44,18 +44,14 @@ hypervNodeDeviceOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
     }
 
-    conn->nodeDevicePrivateData = conn->privateData;
-
     return VIR_DRV_OPEN_SUCCESS;
 }
 
 
 
 static int
-hypervNodeDeviceClose(virConnectPtr conn)
+hypervNodeDeviceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    conn->nodeDevicePrivateData = NULL;
-
     return 0;
 }
 

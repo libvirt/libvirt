@@ -44,18 +44,14 @@ hypervNetworkOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
     }
 
-    conn->networkPrivateData = conn->privateData;
-
     return VIR_DRV_OPEN_SUCCESS;
 }
 
 
 
 static int
-hypervNetworkClose(virConnectPtr conn)
+hypervNetworkClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    conn->networkPrivateData = NULL;
-
     return 0;
 }
 

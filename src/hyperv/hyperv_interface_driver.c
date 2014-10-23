@@ -44,18 +44,14 @@ hypervInterfaceOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
     }
 
-    conn->interfacePrivateData = conn->privateData;
-
     return VIR_DRV_OPEN_SUCCESS;
 }
 
 
 
 static int
-hypervInterfaceClose(virConnectPtr conn)
+hypervInterfaceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    conn->interfacePrivateData = NULL;
-
     return 0;
 }
 
