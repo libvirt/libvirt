@@ -2856,85 +2856,6 @@ int                      virNodeGetCellsFreeMemory(virConnectPtr conn,
                                                    int maxCells);
 
 
-/*
- * Physical host interface configuration API
- */
-
-/**
- * virInterface:
- *
- * a virInterface is a private structure representing a virtual interface.
- */
-typedef struct _virInterface virInterface;
-
-/**
- * virInterfacePtr:
- *
- * a virInterfacePtr is pointer to a virInterface private structure, this is the
- * type used to reference a virtual interface in the API.
- */
-typedef virInterface *virInterfacePtr;
-
-virConnectPtr           virInterfaceGetConnect    (virInterfacePtr iface);
-
-int                     virConnectNumOfInterfaces (virConnectPtr conn);
-int                     virConnectListInterfaces  (virConnectPtr conn,
-                                                   char **const names,
-                                                   int maxnames);
-
-int                     virConnectNumOfDefinedInterfaces (virConnectPtr conn);
-int                     virConnectListDefinedInterfaces  (virConnectPtr conn,
-                                                          char **const names,
-                                                          int maxnames);
-/*
- * virConnectListAllInterfaces:
- *
- * Flags used to filter the returned interfaces.
- */
-typedef enum {
-    VIR_CONNECT_LIST_INTERFACES_INACTIVE      = 1 << 0,
-    VIR_CONNECT_LIST_INTERFACES_ACTIVE        = 1 << 1,
-} virConnectListAllInterfacesFlags;
-
-int                     virConnectListAllInterfaces (virConnectPtr conn,
-                                                     virInterfacePtr **ifaces,
-                                                     unsigned int flags);
-
-virInterfacePtr         virInterfaceLookupByName  (virConnectPtr conn,
-                                                   const char *name);
-virInterfacePtr         virInterfaceLookupByMACString (virConnectPtr conn,
-                                                       const char *mac);
-
-const char*             virInterfaceGetName       (virInterfacePtr iface);
-const char*             virInterfaceGetMACString  (virInterfacePtr iface);
-
-typedef enum {
-    VIR_INTERFACE_XML_INACTIVE = 1 << 0 /* dump inactive interface information */
-} virInterfaceXMLFlags;
-
-char *                  virInterfaceGetXMLDesc    (virInterfacePtr iface,
-                                                   unsigned int flags);
-virInterfacePtr         virInterfaceDefineXML     (virConnectPtr conn,
-                                                   const char *xmlDesc,
-                                                   unsigned int flags);
-
-int                     virInterfaceUndefine      (virInterfacePtr iface);
-
-int                     virInterfaceCreate        (virInterfacePtr iface,
-                                                   unsigned int flags);
-
-int                     virInterfaceDestroy       (virInterfacePtr iface,
-                                                   unsigned int flags);
-
-int                     virInterfaceRef           (virInterfacePtr iface);
-int                     virInterfaceFree          (virInterfacePtr iface);
-
-int                     virInterfaceChangeBegin   (virConnectPtr conn,
-                                                   unsigned int flags);
-int                     virInterfaceChangeCommit  (virConnectPtr conn,
-                                                   unsigned int flags);
-int                     virInterfaceChangeRollback(virConnectPtr conn,
-                                                   unsigned int flags);
 
 /**
  * virStoragePool:
@@ -4059,7 +3980,6 @@ int virDomainIsUpdated(virDomainPtr dom);
 int virStoragePoolIsActive(virStoragePoolPtr pool);
 int virStoragePoolIsPersistent(virStoragePoolPtr pool);
 
-int virInterfaceIsActive(virInterfacePtr iface);
 
 int virConnectIsEncrypted(virConnectPtr conn);
 int virConnectIsSecure(virConnectPtr conn);
@@ -5343,6 +5263,7 @@ typedef virMemoryParameter *virMemoryParameterPtr;
 
 #define __VIR_LIBVIRT_H_INCLUDES__
 #include <libvirt/libvirt-domain-snapshot.h>
+#include <libvirt/libvirt-interface.h>
 #include <libvirt/libvirt-network.h>
 #undef __VIR_LIBVIRT_H_INCLUDES__
 
