@@ -25,6 +25,7 @@ virinc_HEADERS = libvirt.h		\
 		 libvirt-nodedev.h \
 		 libvirt-nwfilter.h \
 		 libvirt-secret.h \
+		 libvirt-stream.h \
 		 libvirt-lxc.h		\
 		 libvirt-qemu.h		\
 		 virterror.h
