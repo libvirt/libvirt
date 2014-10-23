@@ -1723,7 +1723,9 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (!blocking) {
-        vshPrint(ctl, "%s", _("Block Commit started"));
+        vshPrint(ctl, "%s", active ?
+                 _("Active Block Commit started") :
+                 _("Block Commit started"));
         ret = true;
         goto cleanup;
     }
