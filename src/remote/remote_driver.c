@@ -1124,33 +1124,6 @@ remoteAllocPrivateData(void)
     return priv;
 }
 
-static int
-remoteOpenSecondaryDriver(virConnectPtr conn,
-                          virConnectAuthPtr auth,
-                          unsigned int flags,
-                          struct private_data **priv)
-{
-    int ret;
-    int rflags = 0;
-
-    if (!((*priv) = remoteAllocPrivateData()))
-        return VIR_DRV_OPEN_ERROR;
-
-    if (flags & VIR_CONNECT_RO)
-        rflags |= VIR_DRV_OPEN_REMOTE_RO;
-
-    ret = doRemoteOpen(conn, *priv, auth, rflags);
-    if (ret != VIR_DRV_OPEN_SUCCESS) {
-        remoteDriverUnlock(*priv);
-        VIR_FREE(*priv);
-    } else {
-        (*priv)->localUses = 1;
-        remoteDriverUnlock(*priv);
-    }
-
-    return ret;
-}
-
 static virDrvOpenStatus
 remoteConnectOpen(virConnectPtr conn,
                   virConnectAuthPtr auth,
@@ -3554,8 +3527,7 @@ remoteConnectListAllSecrets(virConnectPtr conn,
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
-remoteGenericOpen(virConnectPtr conn, virConnectAuthPtr auth,
-                  unsigned int flags, void **genericPrivateData)
+remoteGenericOpen(virConnectPtr conn, void **genericPrivateData)
 {
     if (inside_daemon)
         return VIR_DRV_OPEN_DECLINED;
@@ -3573,24 +3545,9 @@ remoteGenericOpen(virConnectPtr conn, virConnectAuthPtr auth,
         *genericPrivateData = priv;
         remoteDriverUnlock(priv);
         return VIR_DRV_OPEN_SUCCESS;
-    } else if (conn->networkDriver &&
-               STREQ(conn->networkDriver->name, "remote")) {
-        struct private_data *priv = conn->networkPrivateData;
-        remoteDriverLock(priv);
-        *genericPrivateData = priv;
-        priv->localUses++;
-        remoteDriverUnlock(priv);
-        return VIR_DRV_OPEN_SUCCESS;
-    } else {
-        /* Using a non-remote driver, so we need to open a
-         * new connection for network APIs, forcing it to
-         * use the UNIX transport. This handles Xen driver
-         * which doesn't have its own impl of the network APIs. */
-        struct private_data *priv;
-        int ret = remoteOpenSecondaryDriver(conn, auth, flags, &priv);
-        *genericPrivateData = priv;
-        return ret;
     }
+
+    return VIR_DRV_OPEN_DECLINED;
 }
 
 static int
@@ -3614,10 +3571,12 @@ remoteGenericClose(virConnectPtr conn, void **genericPrivateData)
 }
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
-remoteNetworkOpen(virConnectPtr conn, virConnectAuthPtr auth,
+remoteNetworkOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                   unsigned int flags)
 {
-    return remoteGenericOpen(conn, auth, flags, &conn->networkPrivateData);
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
+    return remoteGenericOpen(conn, &conn->networkPrivateData);
 }
 
 static int
@@ -3629,10 +3588,12 @@ remoteNetworkClose(virConnectPtr conn)
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
-remoteInterfaceOpen(virConnectPtr conn, virConnectAuthPtr auth,
+remoteInterfaceOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                     unsigned int flags)
 {
-    return remoteGenericOpen(conn, auth, flags, &conn->interfacePrivateData);
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
+    return remoteGenericOpen(conn, &conn->interfacePrivateData);
 }
 
 static int
@@ -3644,10 +3605,12 @@ remoteInterfaceClose(virConnectPtr conn)
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
-remoteStorageOpen(virConnectPtr conn, virConnectAuthPtr auth,
+remoteStorageOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                   unsigned int flags)
 {
-    return remoteGenericOpen(conn, auth, flags, &conn->storagePrivateData);
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
+    return remoteGenericOpen(conn, &conn->storagePrivateData);
 }
 
 static int
@@ -3826,10 +3789,12 @@ remoteStoragePoolListAllVolumes(virStoragePoolPtr pool,
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
-remoteNodeDeviceOpen(virConnectPtr conn, virConnectAuthPtr auth,
+remoteNodeDeviceOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                      unsigned int flags)
 {
-    return remoteGenericOpen(conn, auth, flags, &conn->nodeDevicePrivateData);
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
+    return remoteGenericOpen(conn, &conn->nodeDevicePrivateData);
 }
 
 static int
@@ -3947,10 +3912,12 @@ remoteNodeDeviceReset(virNodeDevicePtr dev)
 /* ------------------------------------------------------------- */
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
-remoteNWFilterOpen(virConnectPtr conn, virConnectAuthPtr auth,
+remoteNWFilterOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                    unsigned int flags)
 {
-    return remoteGenericOpen(conn, auth, flags, &conn->nwfilterPrivateData);
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
+    return remoteGenericOpen(conn, &conn->nwfilterPrivateData);
 }
 
 static int
@@ -5603,10 +5570,12 @@ remoteDomainBuildQemuMonitorEvent(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
-remoteSecretOpen(virConnectPtr conn, virConnectAuthPtr auth,
+remoteSecretOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                  unsigned int flags)
 {
-    return remoteGenericOpen(conn, auth, flags, &conn->secretPrivateData);
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
+    return remoteGenericOpen(conn, &conn->secretPrivateData);
 }
 
 static int
