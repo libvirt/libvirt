@@ -2029,67 +2029,6 @@ _registerDomainEvent(virHypervisorDriverPtr driver)
 
 #endif /* !(VBOX_API_VERSION == 2002000 || VBOX_API_VERSION >= 4000000) */
 
-/**
- * The Storage Functions here on
- */
-
-static char *vboxStorageVolGetPath(virStorageVolPtr vol) {
-    VBOX_OBJECT_CHECK(vol->conn, char *, NULL);
-    IHardDisk *hardDisk  = NULL;
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    vboxIID hddIID = VBOX_IID_INITIALIZER;
-    nsresult rc;
-
-    if (virUUIDParse(vol->key, uuid) < 0) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Could not parse UUID from '%s'"), vol->key);
-        return ret;
-    }
-
-    vboxIIDFromUUID(&hddIID, uuid);
-#if VBOX_API_VERSION < 4000000
-    rc = data->vboxObj->vtbl->GetHardDisk(data->vboxObj, hddIID.value, &hardDisk);
-#elif VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
-    rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddIID.value,
-                                         DeviceType_HardDisk, &hardDisk);
-#else
-    rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddIID.value,
-                                         DeviceType_HardDisk, AccessMode_ReadWrite,
-                                         PR_FALSE, &hardDisk);
-#endif /* VBOX_API_VERSION >= 4000000 */
-    if (NS_SUCCEEDED(rc)) {
-        PRUint32 hddstate;
-
-        VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetState, &hddstate);
-        if (hddstate != MediaState_Inaccessible) {
-            PRUnichar *hddLocationUtf16 = NULL;
-            char      *hddLocationUtf8  = NULL;
-
-            VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetLocation, &hddLocationUtf16);
-
-            VBOX_UTF16_TO_UTF8(hddLocationUtf16, &hddLocationUtf8);
-            if (hddLocationUtf8) {
-
-                ignore_value(VIR_STRDUP(ret, hddLocationUtf8));
-
-                VIR_DEBUG("Storage Volume Name: %s", vol->name);
-                VIR_DEBUG("Storage Volume Path: %s", hddLocationUtf8);
-                VIR_DEBUG("Storage Volume Pool: %s", vol->pool);
-
-                VBOX_UTF8_FREE(hddLocationUtf8);
-            }
-
-            VBOX_UTF16_FREE(hddLocationUtf16);
-        }
-
-        VBOX_MEDIUM_RELEASE(hardDisk);
-    }
-
-    vboxIIDUnalloc(&hddIID);
-
-    return ret;
-}
-
 static int _pfnInitialize(vboxGlobalData *data)
 {
     data->pFuncs = g_pfnGetFunctions(VBOX_XPCOMC_VERSION);

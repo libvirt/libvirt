@@ -839,3 +839,58 @@ char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
     vboxIIDUnalloc(&hddIID);
     return ret;
 }
+
+char *vboxStorageVolGetPath(virStorageVolPtr vol)
+{
+    vboxGlobalData *data = vol->conn->privateData;
+    IHardDisk *hardDisk = NULL;
+    PRUnichar *hddLocationUtf16 = NULL;
+    char *hddLocationUtf8 = NULL;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    vboxIIDUnion hddIID;
+    PRUint32 hddstate;
+    nsresult rc;
+    char *ret = NULL;
+
+    if (!data->vboxObj) {
+        return ret;
+    }
+
+    if (virUUIDParse(vol->key, uuid) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Could not parse UUID from '%s'"), vol->key);
+        return ret;
+    }
+
+    VBOX_IID_INITIALIZE(&hddIID);
+    vboxIIDFromUUID(&hddIID, uuid);
+    rc = gVBoxAPI.UIVirtualBox.GetHardDiskByIID(data->vboxObj, &hddIID, &hardDisk);
+    if (NS_FAILED(rc))
+        goto cleanup;
+
+    gVBoxAPI.UIMedium.GetState(hardDisk, &hddstate);
+    if (hddstate == MediaState_Inaccessible)
+        goto cleanup;
+
+    gVBoxAPI.UIMedium.GetLocation(hardDisk, &hddLocationUtf16);
+    if (!hddLocationUtf16)
+        goto cleanup;
+
+    VBOX_UTF16_TO_UTF8(hddLocationUtf16, &hddLocationUtf8);
+    if (!hddLocationUtf8)
+        goto cleanup;
+
+    ignore_value(VIR_STRDUP(ret, hddLocationUtf8));
+
+    VIR_DEBUG("Storage Volume Name: %s", vol->name);
+    VIR_DEBUG("Storage Volume Path: %s", hddLocationUtf8);
+    VIR_DEBUG("Storage Volume Pool: %s", vol->pool);
+
+    VBOX_UTF8_FREE(hddLocationUtf8);
+
+ cleanup:
+    VBOX_UTF16_FREE(hddLocationUtf16);
+    VBOX_MEDIUM_RELEASE(hardDisk);
+    vboxIIDUnalloc(&hddIID);
+    return ret;
+}

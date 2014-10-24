@@ -624,6 +624,7 @@ virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
 int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags);
 int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info);
 char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags);
+char *vboxStorageVolGetPath(virStorageVolPtr vol);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
