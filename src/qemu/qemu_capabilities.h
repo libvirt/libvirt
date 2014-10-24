@@ -127,8 +127,8 @@ typedef enum {
     QEMU_CAPS_SCSI_DISK_CHANNEL  = 87, /* Is scsi-disk.channel available? */
     QEMU_CAPS_SCSI_BLOCK         = 88, /* -device scsi-block */
     QEMU_CAPS_TRANSACTION        = 89, /* transaction monitor command */
-    QEMU_CAPS_BLOCKJOB_SYNC      = 90, /* RHEL 6.2 block_job_cancel */
-    QEMU_CAPS_BLOCKJOB_ASYNC     = 91, /* qemu 1.1 block-job-cancel */
+    QEMU_CAPS_BLOCKJOB_SYNC      = 90, /* old block_job_cancel, block_stream */
+    QEMU_CAPS_BLOCKJOB_ASYNC     = 91, /* new block-job-cancel, block-stream */
     QEMU_CAPS_SCSI_CD            = 92, /* -device scsi-cd */
     QEMU_CAPS_IDE_CD             = 93, /* -device ide-cd */
     QEMU_CAPS_NO_USER_CONFIG     = 94, /* -no-user-config */
