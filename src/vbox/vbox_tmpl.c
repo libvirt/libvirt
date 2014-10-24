@@ -104,7 +104,10 @@ typedef IUSBDeviceFilters IUSBCommon;
 
 #if VBOX_API_VERSION < 3001000
 typedef IHardDiskAttachment IMediumAttachment;
-#endif /* VBOX_API_VERSION < 3001000 */
+#else  /* VBOX_API_VERSION >= 3001000 */
+typedef IMedium IHardDisk;
+typedef IMediumAttachment IHardDiskAttachment;
+#endif /* VBOX_API_VERSION >= 3001000 */
 
 #include "vbox_uniformed_api.h"
 
@@ -171,8 +174,6 @@ if (arg)\
 
 #else  /* VBOX_API_VERSION >= 3001000 */
 
-typedef IMedium IHardDisk;
-typedef IMediumAttachment IHardDiskAttachment;
 # define MediaState_Inaccessible     MediumState_Inaccessible
 # define HardDiskVariant_Standard    MediumVariant_Standard
 # define HardDiskVariant_Fixed       MediumVariant_Fixed
@@ -2034,72 +2035,6 @@ _registerDomainEvent(virHypervisorDriverPtr driver)
  */
 
 static virStorageVolPtr
-vboxStorageVolLookupByKey(virConnectPtr conn, const char *key)
-{
-    VBOX_OBJECT_CHECK(conn, virStorageVolPtr, NULL);
-    vboxIID hddIID = VBOX_IID_INITIALIZER;
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    IHardDisk *hardDisk  = NULL;
-    nsresult rc;
-
-    if (!key)
-        return ret;
-
-    if (virUUIDParse(key, uuid) < 0) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Could not parse UUID from '%s'"), key);
-        return NULL;
-    }
-
-    vboxIIDFromUUID(&hddIID, uuid);
-#if VBOX_API_VERSION < 4000000
-    rc = data->vboxObj->vtbl->GetHardDisk(data->vboxObj, hddIID.value, &hardDisk);
-#elif VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
-    rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddIID.value,
-                                         DeviceType_HardDisk, &hardDisk);
-#else
-    rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddIID.value,
-                                         DeviceType_HardDisk, AccessMode_ReadWrite,
-                                         PR_FALSE, &hardDisk);
-#endif /* VBOX_API_VERSION >= 4000000 */
-    if (NS_SUCCEEDED(rc)) {
-        PRUint32 hddstate;
-
-        VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetState, &hddstate);
-        if (hddstate != MediaState_Inaccessible) {
-            PRUnichar *hddNameUtf16 = NULL;
-            char      *hddNameUtf8  = NULL;
-
-            VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetName, &hddNameUtf16);
-            VBOX_UTF16_TO_UTF8(hddNameUtf16, &hddNameUtf8);
-
-            if (hddNameUtf8) {
-                if (vboxConnectNumOfStoragePools(conn) == 1) {
-                    ret = virGetStorageVol(conn, "default-pool", hddNameUtf8, key,
-                                           NULL, NULL);
-                    VIR_DEBUG("Storage Volume Pool: %s", "default-pool");
-                } else {
-                    /* TODO: currently only one default pool and thus
-                     * nothing here, change it when pools are supported
-                     */
-                }
-
-                VIR_DEBUG("Storage Volume Name: %s", key);
-                VIR_DEBUG("Storage Volume key : %s", hddNameUtf8);
-
-                VBOX_UTF8_FREE(hddNameUtf8);
-                VBOX_UTF16_FREE(hddNameUtf16);
-            }
-        }
-
-        VBOX_MEDIUM_RELEASE(hardDisk);
-    }
-
-    vboxIIDUnalloc(&hddIID);
-    return ret;
-}
-
-static virStorageVolPtr
 vboxStorageVolLookupByPath(virConnectPtr conn, const char *path)
 {
     VBOX_OBJECT_CHECK(conn, virStorageVolPtr, NULL);
@@ -3658,6 +3593,20 @@ _virtualboxOpenMedium(IVirtualBox *vboxObj ATTRIBUTE_UNUSED,
     vboxUnsupported();
     return 0;
 #endif
+}
+
+static nsresult
+_virtualboxGetHardDiskByIID(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IHardDisk **hardDisk)
+{
+#if VBOX_API_VERSION < 4000000
+    return vboxObj->vtbl->GetHardDisk(vboxObj, IID_MEMBER(value), hardDisk);
+#elif VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
+    return vboxObj->vtbl->FindMedium(vboxObj, IID_MEMBER(value), DeviceType_HardDisk,
+                                     hardDisk);
+#else /* VBOX_API_VERSION >= 4002000 */
+    return vboxObj->vtbl->OpenMedium(vboxObj, IID_MEMBER(value), DeviceType_HardDisk,
+                                     AccessMode_ReadWrite, PR_FALSE, hardDisk);
+#endif /* VBOX_API_VERSION >= 4002000 */
 }
 
 static nsresult
@@ -5340,6 +5289,7 @@ static vboxUniformedIVirtualBox _UIVirtualBox = {
     .RegisterMachine = _virtualboxRegisterMachine,
     .FindMedium = _virtualboxFindMedium,
     .OpenMedium = _virtualboxOpenMedium,
+    .GetHardDiskByIID = _virtualboxGetHardDiskByIID,
     .FindDHCPServerByNetworkName = _virtualboxFindDHCPServerByNetworkName,
     .CreateDHCPServer = _virtualboxCreateDHCPServer,
     .RemoveDHCPServer = _virtualboxRemoveDHCPServer,

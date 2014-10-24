@@ -276,3 +276,70 @@ virStorageVolPtr vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *
 
     return ret;
 }
+
+virStorageVolPtr vboxStorageVolLookupByKey(virConnectPtr conn, const char *key)
+{
+    vboxGlobalData *data = conn->privateData;
+    vboxIIDUnion hddIID;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    IHardDisk *hardDisk = NULL;
+    PRUnichar *hddNameUtf16 = NULL;
+    char *hddNameUtf8 = NULL;
+    PRUint32 hddstate;
+    nsresult rc;
+    virStorageVolPtr ret = NULL;
+
+    if (!data->vboxObj) {
+        return ret;
+    }
+
+    VBOX_IID_INITIALIZE(&hddIID);
+    if (!key)
+        return ret;
+
+    if (virUUIDParse(key, uuid) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Could not parse UUID from '%s'"), key);
+        return NULL;
+    }
+
+    vboxIIDFromUUID(&hddIID, uuid);
+    rc = gVBoxAPI.UIVirtualBox.GetHardDiskByIID(data->vboxObj, &hddIID, &hardDisk);
+    if (NS_FAILED(rc))
+        goto cleanup;
+
+    gVBoxAPI.UIMedium.GetState(hardDisk, &hddstate);
+    if (hddstate == MediaState_Inaccessible)
+        goto cleanup;
+
+    gVBoxAPI.UIMedium.GetName(hardDisk, &hddNameUtf16);
+    if (!hddNameUtf16)
+        goto cleanup;
+
+    VBOX_UTF16_TO_UTF8(hddNameUtf16, &hddNameUtf8);
+    if (!hddNameUtf8) {
+        VBOX_UTF16_FREE(hddNameUtf16);
+        goto cleanup;
+    }
+
+    if (vboxConnectNumOfStoragePools(conn) == 1) {
+        ret = virGetStorageVol(conn, "default-pool", hddNameUtf8, key,
+                               NULL, NULL);
+        VIR_DEBUG("Storage Volume Pool: %s", "default-pool");
+    } else {
+        /* TODO: currently only one default pool and thus
+         * nothing here, change it when pools are supported
+         */
+    }
+
+    VIR_DEBUG("Storage Volume Name: %s", key);
+    VIR_DEBUG("Storage Volume key : %s", hddNameUtf8);
+
+    VBOX_UTF8_FREE(hddNameUtf8);
+    VBOX_UTF16_FREE(hddNameUtf16);
+
+ cleanup:
+    VBOX_MEDIUM_RELEASE(hardDisk);
+    vboxIIDUnalloc(&hddIID);
+    return ret;
+}

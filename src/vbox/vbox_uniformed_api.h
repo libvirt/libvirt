@@ -198,6 +198,7 @@ typedef struct {
     nsresult (*RegisterMachine)(IVirtualBox *vboxObj, IMachine *machine);
     nsresult (*FindMedium)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType, PRUint32 accessMode, IMedium **medium);
     nsresult (*OpenMedium)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType, PRUint32 accessMode, IMedium **medium);
+    nsresult (*GetHardDiskByIID)(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IHardDisk **hardDisk);
     nsresult (*FindDHCPServerByNetworkName)(IVirtualBox *vboxObj, PRUnichar *name, IDHCPServer **server);
     nsresult (*CreateDHCPServer)(IVirtualBox *vboxObj, PRUnichar *name, IDHCPServer **server);
     nsresult (*RemoveDHCPServer)(IVirtualBox *vboxObj, IDHCPServer *server);
@@ -598,7 +599,7 @@ virStoragePoolPtr vboxStoragePoolLookupByName(virConnectPtr conn, const char *na
 int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool);
 int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nnames);
 virStorageVolPtr vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name);
-
+virStorageVolPtr vboxStorageVolLookupByKey(virConnectPtr conn, const char *key);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
