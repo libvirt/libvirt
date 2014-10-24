@@ -184,6 +184,15 @@ NODE_INFO_SOURCES = nodeinfo.h nodeinfo.c nodeinfopriv.h
 DATATYPES_SOURCES = datatypes.h datatypes.c
 DRIVER_SOURCES =							\
 		driver.c driver.h					\
+		driver-hypervisor.h					\
+		driver-interface.h					\
+		driver-network.h					\
+		driver-nodedev.h					\
+		driver-nwfilter.h					\
+		driver-secret.h						\
+		driver-state.h						\
+		driver-storage.h					\
+		driver-stream.h						\
 		internal.h						\
 		$(DATATYPES_SOURCES)					\
 		fdstream.c fdstream.h					\
