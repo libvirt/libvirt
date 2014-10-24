@@ -1022,31 +1022,9 @@ virNetworkDriver vboxNetworkDriver = {
 
 virNetworkDriverPtr vboxGetNetworkDriver(uint32_t uVersion)
 {
-    /* Install gVBoxAPI according to the vbox API version.
-     * Return -1 for unsupported version.
-     */
-    if (uVersion >= 2001052 && uVersion < 2002051) {
-        vbox22InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 2002051 && uVersion < 3000051) {
-        vbox30InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 3000051 && uVersion < 3001051) {
-        vbox31InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 3001051 && uVersion < 3002051) {
-        vbox32InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 3002051 && uVersion < 4000051) {
-        vbox40InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 4000051 && uVersion < 4001051) {
-        vbox41InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 4001051 && uVersion < 4002020) {
-        vbox42InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 4002020 && uVersion < 4002051) {
-        vbox42_20InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 4002051 && uVersion < 4003004) {
-        vbox43InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 4003004 && uVersion < 4003051) {
-        vbox43_4InstallUniformedAPI(&gVBoxAPI);
-    } else {
-        return NULL;
-    }
+    /* Install gVBoxAPI according to the vbox API version. */
+    int result = 0;
+    installUniformedAPI(gVBoxAPI, result);
+    if (result < 0) return NULL;
     return &vboxNetworkDriver;
 }
