@@ -147,3 +147,59 @@ int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
 
     return ret;
 }
+
+int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nnames)
+{
+    vboxGlobalData *data = pool->conn->privateData;
+    vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
+    PRUint32 numActive = 0;
+    nsresult rc;
+    size_t i;
+    int ret = -1;
+
+    if (!data->vboxObj) {
+        return ret;
+    }
+
+    rc = gVBoxAPI.UArray.vboxArrayGet(&hardDisks, data->vboxObj,
+                                      gVBoxAPI.UArray.handleGetHardDisks(data->vboxObj));
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get the volume list in the pool: %s, rc=%08x"),
+                       pool->name, (unsigned)rc);
+        return ret;
+    }
+
+    for (i = 0; i < hardDisks.count && numActive < nnames; ++i) {
+        IHardDisk *hardDisk = hardDisks.items[i];
+        PRUint32 hddstate;
+        char *nameUtf8 = NULL;
+        PRUnichar *nameUtf16 = NULL;
+
+        if (!hardDisk)
+            continue;
+
+        gVBoxAPI.UIMedium.GetState(hardDisk, &hddstate);
+        if (hddstate == MediaState_Inaccessible)
+            continue;
+
+        gVBoxAPI.UIMedium.GetName(hardDisk, &nameUtf16);
+
+        VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
+        VBOX_UTF16_FREE(nameUtf16);
+
+        if (!nameUtf8)
+            continue;
+
+        VIR_DEBUG("nnames[%d]: %s", numActive, nameUtf8);
+        if (VIR_STRDUP(names[numActive], nameUtf8) > 0)
+            numActive++;
+
+        VBOX_UTF8_FREE(nameUtf8);
+    }
+
+    gVBoxAPI.UArray.vboxArrayRelease(&hardDisks);
+    ret = numActive;
+
+    return ret;
+}

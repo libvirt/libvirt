@@ -2033,54 +2033,6 @@ _registerDomainEvent(virHypervisorDriverPtr driver)
  * The Storage Functions here on
  */
 
-static int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nnames) {
-    VBOX_OBJECT_CHECK(pool->conn, int, -1);
-    vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
-    PRUint32 numActive     = 0;
-    nsresult rc;
-    size_t i;
-
-    rc = vboxArrayGet(&hardDisks, data->vboxObj, data->vboxObj->vtbl->GetHardDisks);
-    if (NS_SUCCEEDED(rc)) {
-        for (i = 0; i < hardDisks.count && numActive < nnames; ++i) {
-            IHardDisk *hardDisk = hardDisks.items[i];
-
-            if (hardDisk) {
-                PRUint32 hddstate;
-                char      *nameUtf8  = NULL;
-                PRUnichar *nameUtf16 = NULL;
-
-                VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetState, &hddstate);
-                if (hddstate != MediaState_Inaccessible) {
-                    VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetName, &nameUtf16);
-
-                    VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
-                    VBOX_UTF16_FREE(nameUtf16);
-
-                    if (nameUtf8) {
-                        VIR_DEBUG("nnames[%d]: %s", numActive, nameUtf8);
-                        if (VIR_STRDUP(names[numActive], nameUtf8) > 0)
-                            numActive++;
-
-                        VBOX_UTF8_FREE(nameUtf8);
-                    }
-                }
-            }
-        }
-
-        vboxArrayRelease(&hardDisks);
-
-        ret = numActive;
-    } else {
-        ret = -1;
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("could not get the volume list in the pool: %s, rc=%08x"),
-                       pool->name, (unsigned)rc);
-    }
-
-    return ret;
-}
-
 static virStorageVolPtr
 vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name)
 {
@@ -4904,6 +4856,11 @@ static nsresult _mediumGetState(IMedium *medium, PRUint32 *state)
     return medium->vtbl->GetState(medium, state);
 }
 
+static nsresult _mediumGetName(IMedium *medium, PRUnichar **name)
+{
+    return medium->vtbl->GetName(medium, name);
+}
+
 static nsresult _mediumGetReadOnly(IMedium *medium ATTRIBUTE_UNUSED,
                                    PRBool *readOnly ATTRIBUTE_UNUSED)
 {
@@ -5626,6 +5583,7 @@ static vboxUniformedIMedium _UIMedium = {
     .GetId = _mediumGetId,
     .GetLocation = _mediumGetLocation,
     .GetState = _mediumGetState,
+    .GetName = _mediumGetName,
     .GetReadOnly = _mediumGetReadOnly,
     .GetParent = _mediumGetParent,
     .GetChildren = _mediumGetChildren,

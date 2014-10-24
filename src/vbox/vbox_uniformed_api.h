@@ -409,6 +409,7 @@ typedef struct {
     nsresult (*GetId)(IMedium *medium, vboxIIDUnion *iidu);
     nsresult (*GetLocation)(IMedium *medium, PRUnichar **location);
     nsresult (*GetState)(IMedium *medium, PRUint32 *state);
+    nsresult (*GetName)(IMedium *medium, PRUnichar **name);
     nsresult (*GetReadOnly)(IMedium *medium, PRBool *readOnly);
     nsresult (*GetParent)(IMedium *medium, IMedium **parent);
     nsresult (*GetChildren)(IMedium *medium, PRUint32 *childrenSize, IMedium ***children);
@@ -595,6 +596,7 @@ int vboxConnectNumOfStoragePools(virConnectPtr conn);
 int vboxConnectListStoragePools(virConnectPtr conn, char **const names, int nnames);
 virStoragePoolPtr vboxStoragePoolLookupByName(virConnectPtr conn, const char *name);
 int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool);
+int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nnames);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
