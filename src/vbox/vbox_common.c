@@ -1081,8 +1081,8 @@ vboxAttachDrivesNew(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine
                 continue;
             }
 
-            gVBoxAPI.UIVirtualBox.FindMedium(data->vboxObj, mediumFileUtf16,
-                                             deviceType, accessMode, &medium);
+            gVBoxAPI.UIVirtualBox.FindHardDisk(data->vboxObj, mediumFileUtf16,
+                                               deviceType, accessMode, &medium);
 
             if (!medium) {
                 PRUnichar *mediumEmpty = NULL;

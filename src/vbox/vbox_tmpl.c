@@ -3553,22 +3553,23 @@ _virtualboxRegisterMachine(IVirtualBox *vboxObj, IMachine *machine)
 }
 
 static nsresult
-_virtualboxFindMedium(IVirtualBox *vboxObj ATTRIBUTE_UNUSED,
-                      PRUnichar *location ATTRIBUTE_UNUSED,
-                      PRUint32 deviceType ATTRIBUTE_UNUSED,
-                      PRUint32 accessMode ATTRIBUTE_UNUSED,
-                      IMedium **medium ATTRIBUTE_UNUSED)
+_virtualboxFindHardDisk(IVirtualBox *vboxObj, PRUnichar *location,
+                        PRUint32 deviceType ATTRIBUTE_UNUSED,
+                        PRUint32 accessMode ATTRIBUTE_UNUSED,
+                        IHardDisk **hardDisk)
 {
-#if VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
+    /* In vbox 2.2 and 3.0, this function will create a IHardDisk object.
+     * In vbox 3.1 and later, this function will create a IMedium object.
+     */
+#if VBOX_API_VERSION < 4000000
+    return vboxObj->vtbl->FindHardDisk(vboxObj, location, hardDisk);
+#elif VBOX_API_VERSION < 4002000
     return vboxObj->vtbl->FindMedium(vboxObj, location,
-                                     deviceType, medium);
-#elif VBOX_API_VERSION >= 4002000
+                                     deviceType, hardDisk);
+#else /* VBOX_API_VERSION >= 4002000 */
     return vboxObj->vtbl->OpenMedium(vboxObj, location,
-                                     deviceType, accessMode, PR_FALSE, medium);
-#else
-    vboxUnsupported();
-    return 0;
-#endif
+                                     deviceType, accessMode, PR_FALSE, hardDisk);
+#endif /* VBOX_API_VERSION >= 4002000 */
 }
 
 static nsresult
@@ -5287,7 +5288,7 @@ static vboxUniformedIVirtualBox _UIVirtualBox = {
     .CreateMachine = _virtualboxCreateMachine,
     .CreateHardDiskMedium = _virtualboxCreateHardDiskMedium,
     .RegisterMachine = _virtualboxRegisterMachine,
-    .FindMedium = _virtualboxFindMedium,
+    .FindHardDisk = _virtualboxFindHardDisk,
     .OpenMedium = _virtualboxOpenMedium,
     .GetHardDiskByIID = _virtualboxGetHardDiskByIID,
     .FindDHCPServerByNetworkName = _virtualboxFindDHCPServerByNetworkName,

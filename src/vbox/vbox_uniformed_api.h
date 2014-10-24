@@ -196,7 +196,8 @@ typedef struct {
     nsresult (*CreateMachine)(vboxGlobalData *data, virDomainDefPtr def, IMachine **machine, char *uuidstr);
     nsresult (*CreateHardDiskMedium)(IVirtualBox *vboxObj, PRUnichar *format, PRUnichar *location, IMedium **medium);
     nsresult (*RegisterMachine)(IVirtualBox *vboxObj, IMachine *machine);
-    nsresult (*FindMedium)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType, PRUint32 accessMode, IMedium **medium);
+    nsresult (*FindHardDisk)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType,
+                             PRUint32 accessMode, IHardDisk **hardDisk);
     nsresult (*OpenMedium)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType, PRUint32 accessMode, IMedium **medium);
     nsresult (*GetHardDiskByIID)(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IHardDisk **hardDisk);
     nsresult (*FindDHCPServerByNetworkName)(IVirtualBox *vboxObj, PRUnichar *name, IDHCPServer **server);
