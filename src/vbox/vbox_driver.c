@@ -152,7 +152,7 @@ int vboxNetworkRegister(void)
     if (VBoxCGlueInit(&uVersion) == 0)
         networkDriver = vboxGetNetworkDriver(uVersion);
 
-    if (virRegisterNetworkDriver(networkDriver) < 0)
+    if (networkDriver && virRegisterNetworkDriver(networkDriver) < 0)
         return -1;
     return 0;
 }
