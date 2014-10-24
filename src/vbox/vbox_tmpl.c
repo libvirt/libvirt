@@ -42,24 +42,10 @@
 #include "internal.h"
 #include "datatypes.h"
 #include "domain_conf.h"
-#include "snapshot_conf.h"
-#include "vbox_snapshot_conf.h"
-#include "network_conf.h"
-#include "virerror.h"
 #include "domain_event.h"
-#include "storage_conf.h"
-#include "virstoragefile.h"
-#include "viruuid.h"
 #include "viralloc.h"
-#include "nodeinfo.h"
 #include "virlog.h"
-#include "vbox_driver.h"
-#include "configmake.h"
-#include "virfile.h"
-#include "fdstream.h"
-#include "viruri.h"
 #include "virstring.h"
-#include "virtime.h"
 #include "virutil.h"
 
 /* This one changes from version to version. */
@@ -133,18 +119,8 @@ VIR_LOG_INIT("vbox.vbox_tmpl");
         }                                                               \
     } while (0)
 
-#define VBOX_COM_UNALLOC_MEM(arg)                                       \
-    do {                                                                \
-        if (arg) {                                                      \
-            data->pFuncs->pfnComUnallocMem(arg);                        \
-            (arg) = NULL;                                               \
-        }                                                               \
-    } while (0)
-
 #define VBOX_UTF16_TO_UTF8(arg1, arg2)  data->pFuncs->pfnUtf16ToUtf8(arg1, arg2)
 #define VBOX_UTF8_TO_UTF16(arg1, arg2)  data->pFuncs->pfnUtf8ToUtf16(arg1, arg2)
-
-#define VBOX_ADDREF(arg) (arg)->vtbl->nsisupports.AddRef((nsISupports *)(arg))
 
 #define VBOX_RELEASE(arg)                                                     \
     do {                                                                      \
@@ -154,34 +130,12 @@ VIR_LOG_INIT("vbox.vbox_tmpl");
         }                                                                     \
     } while (0)
 
-#define VBOX_OBJECT_CHECK(conn, type, value) \
-vboxGlobalData *data = conn->privateData;\
-type ret = value;\
-if (!data->vboxObj) {\
-    return ret;\
-}
-
 #if VBOX_API_VERSION < 3001000
-
 # define VBOX_MEDIUM_RELEASE(arg) \
 if (arg)\
     (arg)->vtbl->imedium.nsisupports.Release((nsISupports *)(arg))
-# define VBOX_MEDIUM_FUNC_ARG1(object, func, arg1) \
-    (object)->vtbl->imedium.func((IMedium *)(object), arg1)
-# define VBOX_MEDIUM_FUNC_ARG2(object, func, arg1, arg2) \
-    (object)->vtbl->imedium.func((IMedium *)(object), arg1, arg2)
-
 #else  /* VBOX_API_VERSION >= 3001000 */
-
-# define MediaState_Inaccessible     MediumState_Inaccessible
-# define HardDiskVariant_Standard    MediumVariant_Standard
-# define HardDiskVariant_Fixed       MediumVariant_Fixed
 # define VBOX_MEDIUM_RELEASE(arg) VBOX_RELEASE(arg)
-# define VBOX_MEDIUM_FUNC_ARG1(object, func, arg1) \
-    (object)->vtbl->func(object, arg1)
-# define VBOX_MEDIUM_FUNC_ARG2(object, func, arg1, arg2) \
-    (object)->vtbl->func(object, arg1, arg2)
-
 #endif /* VBOX_API_VERSION >= 3001000 */
 
 #define DEBUGPRUnichar(msg, strUtf16) \
@@ -229,28 +183,16 @@ static vboxGlobalData *g_pVBoxGlobalData = NULL;
 
 #if VBOX_API_VERSION < 4000000
 
-# define VBOX_OBJECT_GET_MACHINE(/* in */ iid_value, /* out */ machine) \
-    data->vboxObj->vtbl->GetMachine(data->vboxObj, iid_value, machine)
-
 # define VBOX_SESSION_OPEN(/* in */ iid_value, /* unused */ machine) \
     data->vboxObj->vtbl->OpenSession(data->vboxObj, data->vboxSession, iid_value)
-
-# define VBOX_SESSION_OPEN_EXISTING(/* in */ iid_value, /* unused */ machine) \
-    data->vboxObj->vtbl->OpenExistingSession(data->vboxObj, data->vboxSession, iid_value)
 
 # define VBOX_SESSION_CLOSE() \
     data->vboxSession->vtbl->Close(data->vboxSession)
 
 #else /* VBOX_API_VERSION >= 4000000 */
 
-# define VBOX_OBJECT_GET_MACHINE(/* in */ iid_value, /* out */ machine) \
-    data->vboxObj->vtbl->FindMachine(data->vboxObj, iid_value, machine)
-
 # define VBOX_SESSION_OPEN(/* unused */ iid_value, /* in */ machine) \
     machine->vtbl->LockMachine(machine, data->vboxSession, LockType_Write)
-
-# define VBOX_SESSION_OPEN_EXISTING(/* unused */ iid_value, /* in */ machine) \
-    machine->vtbl->LockMachine(machine, data->vboxSession, LockType_Shared)
 
 # define VBOX_SESSION_CLOSE() \
     data->vboxSession->vtbl->UnlockMachine(data->vboxSession)
@@ -2163,7 +2105,7 @@ _unregisterMachine(vboxGlobalData *data, vboxIIDUnion *iidu, IMachine **machine)
 {
     nsresult rc;
     vboxArray media = VBOX_ARRAY_INITIALIZER;
-    rc = VBOX_OBJECT_GET_MACHINE(IID_MEMBER(value), machine);
+    rc = data->vboxObj->vtbl->FindMachine(data->vboxObj, IID_MEMBER(value), machine);
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_NO_DOMAIN, "%s",
                        _("no domain with matching uuid"));
