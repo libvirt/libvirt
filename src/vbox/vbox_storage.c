@@ -30,6 +30,7 @@
 
 #include "vbox_common.h"
 #include "vbox_uniformed_api.h"
+#include "vbox_get_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
@@ -41,9 +42,10 @@ static vboxUniformedAPI gVBoxAPI;
  * The Storage Functions here on
  */
 
-virDrvOpenStatus vboxStorageOpen(virConnectPtr conn,
-                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                 unsigned int flags)
+static virDrvOpenStatus
+vboxStorageOpen(virConnectPtr conn,
+                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                unsigned int flags)
 {
     vboxGlobalData *data = conn->privateData;
 
@@ -60,14 +62,14 @@ virDrvOpenStatus vboxStorageOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-int vboxStorageClose(virConnectPtr conn)
+static int vboxStorageClose(virConnectPtr conn)
 {
     VIR_DEBUG("vbox storage uninitialized");
     conn->storagePrivateData = NULL;
     return 0;
 }
 
-int vboxConnectNumOfStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int vboxConnectNumOfStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
 
     /** Currently only one pool supported, the default one
@@ -77,8 +79,8 @@ int vboxConnectNumOfStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED)
     return 1;
 }
 
-int vboxConnectListStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                char **const names, int nnames)
+static int vboxConnectListStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                       char **const names, int nnames)
 {
     int numActive = 0;
 
@@ -88,7 +90,8 @@ int vboxConnectListStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED,
     return numActive;
 }
 
-virStoragePoolPtr vboxStoragePoolLookupByName(virConnectPtr conn, const char *name)
+static virStoragePoolPtr
+vboxStoragePoolLookupByName(virConnectPtr conn, const char *name)
 {
     virStoragePoolPtr ret = NULL;
 
@@ -108,7 +111,7 @@ virStoragePoolPtr vboxStoragePoolLookupByName(virConnectPtr conn, const char *na
     return ret;
 }
 
-int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
+static int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
 {
     vboxGlobalData *data = pool->conn->privateData;
     vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
@@ -149,7 +152,8 @@ int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
     return ret;
 }
 
-int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nnames)
+static int
+vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nnames)
 {
     vboxGlobalData *data = pool->conn->privateData;
     vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
@@ -205,7 +209,8 @@ int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int n
     return ret;
 }
 
-virStorageVolPtr vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name)
+static virStorageVolPtr
+vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name)
 {
     vboxGlobalData *data = pool->conn->privateData;
     vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
@@ -278,7 +283,8 @@ virStorageVolPtr vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *
     return ret;
 }
 
-virStorageVolPtr vboxStorageVolLookupByKey(virConnectPtr conn, const char *key)
+static virStorageVolPtr
+vboxStorageVolLookupByKey(virConnectPtr conn, const char *key)
 {
     vboxGlobalData *data = conn->privateData;
     vboxIIDUnion hddIID;
@@ -345,7 +351,8 @@ virStorageVolPtr vboxStorageVolLookupByKey(virConnectPtr conn, const char *key)
     return ret;
 }
 
-virStorageVolPtr vboxStorageVolLookupByPath(virConnectPtr conn, const char *path)
+static virStorageVolPtr
+vboxStorageVolLookupByPath(virConnectPtr conn, const char *path)
 {
     vboxGlobalData *data = conn->privateData;
     PRUnichar *hddPathUtf16 = NULL;
@@ -422,8 +429,9 @@ virStorageVolPtr vboxStorageVolLookupByPath(virConnectPtr conn, const char *path
     return ret;
 }
 
-virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
-                                        const char *xml, unsigned int flags)
+static virStorageVolPtr
+vboxStorageVolCreateXML(virStoragePoolPtr pool,
+                        const char *xml, unsigned int flags)
 {
     vboxGlobalData *data = pool->conn->privateData;
     virStorageVolDefPtr def = NULL;
@@ -531,7 +539,7 @@ virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
     return ret;
 }
 
-int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
+static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
 {
     vboxGlobalData *data = vol->conn->privateData;
     unsigned char uuid[VIR_UUID_BUFLEN];
@@ -691,7 +699,7 @@ int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
     return ret;
 }
 
-int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info)
+static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info)
 {
     vboxGlobalData *data = vol->conn->privateData;
     IHardDisk *hardDisk = NULL;
@@ -747,7 +755,7 @@ int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info)
     return ret;
 }
 
-char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
+static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
 {
     vboxGlobalData *data = vol->conn->privateData;
     IHardDisk *hardDisk = NULL;
@@ -840,7 +848,7 @@ char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
     return ret;
 }
 
-char *vboxStorageVolGetPath(virStorageVolPtr vol)
+static char *vboxStorageVolGetPath(virStorageVolPtr vol)
 {
     vboxGlobalData *data = vol->conn->privateData;
     IHardDisk *hardDisk = NULL;
@@ -893,4 +901,59 @@ char *vboxStorageVolGetPath(virStorageVolPtr vol)
     VBOX_MEDIUM_RELEASE(hardDisk);
     vboxIIDUnalloc(&hddIID);
     return ret;
+}
+
+/**
+ * Function Tables
+ */
+
+virStorageDriver vboxStorageDriver = {
+    .name = "VBOX",
+    .storageOpen = vboxStorageOpen, /* 0.7.1 */
+    .storageClose = vboxStorageClose, /* 0.7.1 */
+    .connectNumOfStoragePools = vboxConnectNumOfStoragePools, /* 0.7.1 */
+    .connectListStoragePools = vboxConnectListStoragePools, /* 0.7.1 */
+    .storagePoolLookupByName = vboxStoragePoolLookupByName, /* 0.7.1 */
+    .storagePoolNumOfVolumes = vboxStoragePoolNumOfVolumes, /* 0.7.1 */
+    .storagePoolListVolumes = vboxStoragePoolListVolumes, /* 0.7.1 */
+
+    .storageVolLookupByName = vboxStorageVolLookupByName, /* 0.7.1 */
+    .storageVolLookupByKey = vboxStorageVolLookupByKey, /* 0.7.1 */
+    .storageVolLookupByPath = vboxStorageVolLookupByPath, /* 0.7.1 */
+    .storageVolCreateXML = vboxStorageVolCreateXML, /* 0.7.1 */
+    .storageVolDelete = vboxStorageVolDelete, /* 0.7.1 */
+    .storageVolGetInfo = vboxStorageVolGetInfo, /* 0.7.1 */
+    .storageVolGetXMLDesc = vboxStorageVolGetXMLDesc, /* 0.7.1 */
+    .storageVolGetPath = vboxStorageVolGetPath /* 0.7.1 */
+};
+
+virStorageDriverPtr vboxGetStorageDriver(uint32_t uVersion)
+{
+    /* Install gVBoxAPI according to the vbox API version.
+     * Return -1 for unsupported version.
+     */
+    if (uVersion >= 2001052 && uVersion < 2002051) {
+        vbox22InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 2002051 && uVersion < 3000051) {
+        vbox30InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 3000051 && uVersion < 3001051) {
+        vbox31InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 3001051 && uVersion < 3002051) {
+        vbox32InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 3002051 && uVersion < 4000051) {
+        vbox40InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 4000051 && uVersion < 4001051) {
+        vbox41InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 4001051 && uVersion < 4002020) {
+        vbox42InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 4002020 && uVersion < 4002051) {
+        vbox42_20InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 4002051 && uVersion < 4003004) {
+        vbox43InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 4003004 && uVersion < 4003051) {
+        vbox43_4InstallUniformedAPI(&gVBoxAPI);
+    } else {
+        return NULL;
+    }
+    return &vboxStorageDriver;
 }

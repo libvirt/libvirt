@@ -5129,27 +5129,3 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->networkRemoveInterface = 1;
 #endif /* VBOX_API_VERSION > 2002000 */
 }
-
-/**
- * Function Tables
- */
-
-virStorageDriver NAME(StorageDriver) = {
-    .name               = "VBOX",
-    .storageOpen = vboxStorageOpen, /* 0.7.1 */
-    .storageClose = vboxStorageClose, /* 0.7.1 */
-    .connectNumOfStoragePools = vboxConnectNumOfStoragePools, /* 0.7.1 */
-    .connectListStoragePools = vboxConnectListStoragePools, /* 0.7.1 */
-    .storagePoolLookupByName = vboxStoragePoolLookupByName, /* 0.7.1 */
-    .storagePoolNumOfVolumes = vboxStoragePoolNumOfVolumes, /* 0.7.1 */
-    .storagePoolListVolumes = vboxStoragePoolListVolumes, /* 0.7.1 */
-
-    .storageVolLookupByName = vboxStorageVolLookupByName, /* 0.7.1 */
-    .storageVolLookupByKey = vboxStorageVolLookupByKey, /* 0.7.1 */
-    .storageVolLookupByPath = vboxStorageVolLookupByPath, /* 0.7.1 */
-    .storageVolCreateXML = vboxStorageVolCreateXML, /* 0.7.1 */
-    .storageVolDelete = vboxStorageVolDelete, /* 0.7.1 */
-    .storageVolGetInfo = vboxStorageVolGetInfo, /* 0.7.1 */
-    .storageVolGetXMLDesc = vboxStorageVolGetXMLDesc, /* 0.7.1 */
-    .storageVolGetPath = vboxStorageVolGetPath /* 0.7.1 */
-};

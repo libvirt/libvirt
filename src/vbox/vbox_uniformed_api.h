@@ -608,23 +608,6 @@ typedef struct {
 
 virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
                                     const unsigned char *uuid);
-virDrvOpenStatus vboxStorageOpen(virConnectPtr conn, virConnectAuthPtr auth,
-                                 unsigned int flags);
-int vboxStorageClose(virConnectPtr conn);
-int vboxConnectNumOfStoragePools(virConnectPtr conn);
-int vboxConnectListStoragePools(virConnectPtr conn, char **const names, int nnames);
-virStoragePoolPtr vboxStoragePoolLookupByName(virConnectPtr conn, const char *name);
-int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool);
-int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nnames);
-virStorageVolPtr vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name);
-virStorageVolPtr vboxStorageVolLookupByKey(virConnectPtr conn, const char *key);
-virStorageVolPtr vboxStorageVolLookupByPath(virConnectPtr conn, const char *path);
-virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
-                                         const char *xml, unsigned int flags);
-int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags);
-int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info);
-char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags);
-char *vboxStorageVolGetPath(virStorageVolPtr vol);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
