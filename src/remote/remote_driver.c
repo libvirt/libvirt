@@ -7780,6 +7780,8 @@ remoteConnectGetAllDomainStats(virConnectPtr conn,
     virDomainStatsRecordPtr elem = NULL;
     virDomainStatsRecordPtr *tmpret = NULL;
 
+    memset(&args, 0, sizeof(args));
+
     if (ndoms) {
         if (VIR_ALLOC_N(args.doms.doms_val, ndoms) < 0)
             goto cleanup;
