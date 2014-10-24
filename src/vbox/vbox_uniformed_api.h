@@ -597,6 +597,8 @@ int vboxConnectListStoragePools(virConnectPtr conn, char **const names, int nnam
 virStoragePoolPtr vboxStoragePoolLookupByName(virConnectPtr conn, const char *name);
 int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool);
 int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nnames);
+virStorageVolPtr vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name);
+
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

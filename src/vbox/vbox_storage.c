@@ -203,3 +203,76 @@ int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int n
 
     return ret;
 }
+
+virStorageVolPtr vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name)
+{
+    vboxGlobalData *data = pool->conn->privateData;
+    vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
+    nsresult rc;
+    size_t i;
+    virStorageVolPtr ret = NULL;
+
+    if (!data->vboxObj) {
+        return ret;
+    }
+
+    if (!name)
+        return ret;
+
+    rc = gVBoxAPI.UArray.vboxArrayGet(&hardDisks, data->vboxObj,
+                                      gVBoxAPI.UArray.handleGetHardDisks(data->vboxObj));
+    if (NS_FAILED(rc))
+        return ret;
+
+    for (i = 0; i < hardDisks.count; ++i) {
+        IHardDisk *hardDisk = hardDisks.items[i];
+        PRUint32 hddstate;
+        char *nameUtf8 = NULL;
+        PRUnichar *nameUtf16 = NULL;
+
+        if (!hardDisk)
+            continue;
+
+        gVBoxAPI.UIMedium.GetState(hardDisk, &hddstate);
+        if (hddstate == MediaState_Inaccessible)
+            continue;
+
+        gVBoxAPI.UIMedium.GetName(hardDisk, &nameUtf16);
+
+        if (nameUtf16) {
+            VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
+            VBOX_UTF16_FREE(nameUtf16);
+        }
+
+        if (nameUtf8 && STREQ(nameUtf8, name)) {
+            vboxIIDUnion hddIID;
+            unsigned char uuid[VIR_UUID_BUFLEN];
+            char key[VIR_UUID_STRING_BUFLEN] = "";
+
+            VBOX_IID_INITIALIZE(&hddIID);
+            rc = gVBoxAPI.UIMedium.GetId(hardDisk, &hddIID);
+            if (NS_SUCCEEDED(rc)) {
+                vboxIIDToUUID(&hddIID, uuid);
+                virUUIDFormat(uuid, key);
+
+                ret = virGetStorageVol(pool->conn, pool->name, name, key,
+                                       NULL, NULL);
+
+                VIR_DEBUG("virStorageVolPtr: %p", ret);
+                VIR_DEBUG("Storage Volume Name: %s", name);
+                VIR_DEBUG("Storage Volume key : %s", key);
+                VIR_DEBUG("Storage Volume Pool: %s", pool->name);
+            }
+
+            vboxIIDUnalloc(&hddIID);
+            VBOX_UTF8_FREE(nameUtf8);
+            break;
+        }
+
+        VBOX_UTF8_FREE(nameUtf8);
+    }
+
+    gVBoxAPI.UArray.vboxArrayRelease(&hardDisks);
+
+    return ret;
+}
