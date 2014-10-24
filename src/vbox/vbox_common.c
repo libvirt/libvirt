@@ -5115,10 +5115,10 @@ vboxSnapshotRedefine(virDomainPtr dom,
             if (virAsprintf(&newLocationUtf8, "%sfakedisk-%d.vdi", machineLocationPath, it) < 0)
                 goto cleanup;
             VBOX_UTF8_TO_UTF16(newLocationUtf8, &newLocation);
-            rc = gVBoxAPI.UIVirtualBox.CreateHardDiskMedium(data->vboxObj,
-                                                            formatUtf16,
-                                                            newLocation,
-                                                            &newMedium);
+            rc = gVBoxAPI.UIVirtualBox.CreateHardDisk(data->vboxObj,
+                                                      formatUtf16,
+                                                      newLocation,
+                                                      &newMedium);
             VBOX_UTF16_FREE(newLocation);
             VBOX_UTF16_FREE(formatUtf16);
             if (NS_FAILED(rc)) {
@@ -6877,10 +6877,10 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
                                 machineLocationPath, def->parent, it) < 0)
                     goto cleanup;
                 VBOX_UTF8_TO_UTF16(newLocationUtf8, &newLocation);
-                rc = gVBoxAPI.UIVirtualBox.CreateHardDiskMedium(data->vboxObj,
-                                                                formatUtf16,
-                                                                newLocation,
-                                                                &newMedium);
+                rc = gVBoxAPI.UIVirtualBox.CreateHardDisk(data->vboxObj,
+                                                          formatUtf16,
+                                                          newLocation,
+                                                          &newMedium);
                 if (NS_FAILED(rc)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("Unable to create HardDisk, rc=%08x"),

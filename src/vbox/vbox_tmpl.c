@@ -3456,17 +3456,13 @@ _virtualboxCreateMachine(vboxGlobalData *data, virDomainDefPtr def, IMachine **m
 }
 
 static nsresult
-_virtualboxCreateHardDiskMedium(IVirtualBox *vboxObj ATTRIBUTE_UNUSED,
-                                PRUnichar *format ATTRIBUTE_UNUSED,
-                                PRUnichar *location ATTRIBUTE_UNUSED,
-                                IMedium **medium ATTRIBUTE_UNUSED)
+_virtualboxCreateHardDisk(IVirtualBox *vboxObj, PRUnichar *format,
+                          PRUnichar *location, IHardDisk **hardDisk)
 {
-#if VBOX_API_VERSION < 3001000
-    vboxUnsupported();
-    return 0;
-#else /* VBOX_API_VERSION >= 3001000 */
-    return vboxObj->vtbl->CreateHardDisk(vboxObj, format, location, medium);
-#endif /* VBOX_API_VERSION >= 3001000 */
+    /* In vbox 2.2 and 3.0, this function will create a IHardDisk object.
+     * In vbox 3.1 and later, this function will create a IMedium object.
+     */
+    return vboxObj->vtbl->CreateHardDisk(vboxObj, format, location, hardDisk);
 }
 
 static nsresult
@@ -5209,7 +5205,7 @@ static vboxUniformedIVirtualBox _UIVirtualBox = {
     .GetSystemProperties = _virtualboxGetSystemProperties,
     .GetHost = _virtualboxGetHost,
     .CreateMachine = _virtualboxCreateMachine,
-    .CreateHardDiskMedium = _virtualboxCreateHardDiskMedium,
+    .CreateHardDisk = _virtualboxCreateHardDisk,
     .RegisterMachine = _virtualboxRegisterMachine,
     .FindHardDisk = _virtualboxFindHardDisk,
     .OpenMedium = _virtualboxOpenMedium,

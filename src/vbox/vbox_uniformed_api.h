@@ -194,7 +194,7 @@ typedef struct {
     nsresult (*GetSystemProperties)(IVirtualBox *vboxObj, ISystemProperties **systemProperties);
     nsresult (*GetHost)(IVirtualBox *vboxObj, IHost **host);
     nsresult (*CreateMachine)(vboxGlobalData *data, virDomainDefPtr def, IMachine **machine, char *uuidstr);
-    nsresult (*CreateHardDiskMedium)(IVirtualBox *vboxObj, PRUnichar *format, PRUnichar *location, IMedium **medium);
+    nsresult (*CreateHardDisk)(IVirtualBox *vboxObj, PRUnichar *format, PRUnichar *location, IHardDisk **hardDisk);
     nsresult (*RegisterMachine)(IVirtualBox *vboxObj, IMachine *machine);
     nsresult (*FindHardDisk)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType,
                              PRUint32 accessMode, IHardDisk **hardDisk);
