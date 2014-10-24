@@ -586,6 +586,12 @@ typedef struct {
 
 virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
                                     const unsigned char *uuid);
+virDrvOpenStatus vboxStorageOpen(virConnectPtr conn, virConnectAuthPtr auth,
+                                 unsigned int flags);
+int vboxStorageClose(virConnectPtr conn);
+int vboxConnectNumOfStoragePools(virConnectPtr conn);
+int vboxConnectListStoragePools(virConnectPtr conn, char **const names, int nnames);
+virStoragePoolPtr vboxStoragePoolLookupByName(virConnectPtr conn, const char *name);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
