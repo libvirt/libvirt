@@ -34,6 +34,8 @@
 
 VIR_LOG_INIT("vbox.vbox_storage");
 
+static vboxUniformedAPI gVBoxAPI;
+
 /**
  * The Storage Functions here on
  */
@@ -101,6 +103,47 @@ virStoragePoolPtr vboxStoragePoolLookupByName(virConnectPtr conn, const char *na
 
         ret = virGetStoragePool(conn, name, uuid, NULL, NULL);
     }
+
+    return ret;
+}
+
+int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
+{
+    vboxGlobalData *data = pool->conn->privateData;
+    vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
+    PRUint32 hardDiskAccessible = 0;
+    nsresult rc;
+    size_t i;
+    int ret = -1;
+
+    if (!data->vboxObj) {
+        return ret;
+    }
+
+    rc = gVBoxAPI.UArray.vboxArrayGet(&hardDisks, data->vboxObj,
+                                      gVBoxAPI.UArray.handleGetHardDisks(data->vboxObj));
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get number of volumes in the pool: %s, rc=%08x"),
+                       pool->name, (unsigned)rc);
+        return ret;
+    }
+
+    for (i = 0; i < hardDisks.count; ++i) {
+        IHardDisk *hardDisk = hardDisks.items[i];
+        PRUint32 hddstate;
+
+        if (!hardDisk)
+            continue;
+
+        gVBoxAPI.UIMedium.GetState(hardDisk, &hddstate);
+        if (hddstate != MediaState_Inaccessible)
+            hardDiskAccessible++;
+    }
+
+    gVBoxAPI.UArray.vboxArrayRelease(&hardDisks);
+
+    ret = hardDiskAccessible;
 
     return ret;
 }

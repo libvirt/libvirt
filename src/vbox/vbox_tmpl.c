@@ -2033,40 +2033,6 @@ _registerDomainEvent(virHypervisorDriverPtr driver)
  * The Storage Functions here on
  */
 
-static int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
-{
-    VBOX_OBJECT_CHECK(pool->conn, int, -1);
-    vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
-    PRUint32 hardDiskAccessible = 0;
-    nsresult rc;
-    size_t i;
-
-    rc = vboxArrayGet(&hardDisks, data->vboxObj, data->vboxObj->vtbl->GetHardDisks);
-    if (NS_SUCCEEDED(rc)) {
-        for (i = 0; i < hardDisks.count; ++i) {
-            IHardDisk *hardDisk = hardDisks.items[i];
-            if (hardDisk) {
-                PRUint32 hddstate;
-
-                VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetState, &hddstate);
-                if (hddstate != MediaState_Inaccessible)
-                    hardDiskAccessible++;
-            }
-        }
-
-        vboxArrayRelease(&hardDisks);
-
-        ret = hardDiskAccessible;
-    } else {
-        ret = -1;
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("could not get number of volumes in the pool: %s, rc=%08x"),
-                       pool->name, (unsigned)rc);
-    }
-
-    return ret;
-}
-
 static int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nnames) {
     VBOX_OBJECT_CHECK(pool->conn, int, -1);
     vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
@@ -3579,6 +3545,11 @@ static void* _handleGetMachines(IVirtualBox *vboxObj)
     return vboxObj->vtbl->GetMachines;
 }
 
+static void* _handleGetHardDisks(IVirtualBox *vboxObj)
+{
+    return vboxObj->vtbl->GetHardDisks;
+}
+
 static void* _handleUSBGetDeviceFilters(IUSBCommon *USBCommon)
 {
     return USBCommon->vtbl->GetDeviceFilters;
@@ -4928,6 +4899,11 @@ static nsresult _mediumGetLocation(IMedium *medium, PRUnichar **location)
     return medium->vtbl->GetLocation(medium, location);
 }
 
+static nsresult _mediumGetState(IMedium *medium, PRUint32 *state)
+{
+    return medium->vtbl->GetState(medium, state);
+}
+
 static nsresult _mediumGetReadOnly(IMedium *medium ATTRIBUTE_UNUSED,
                                    PRBool *readOnly ATTRIBUTE_UNUSED)
 {
@@ -5446,6 +5422,7 @@ static vboxUniformedArray _UArray = {
     .vboxArrayGetWithIIDArg = _vboxArrayGetWithIIDArg,
     .vboxArrayRelease = vboxArrayRelease,
     .handleGetMachines = _handleGetMachines,
+    .handleGetHardDisks = _handleGetHardDisks,
     .handleUSBGetDeviceFilters = _handleUSBGetDeviceFilters,
     .handleMachineGetMediumAttachments = _handleMachineGetMediumAttachments,
     .handleMachineGetSharedFolders = _handleMachineGetSharedFolders,
@@ -5648,6 +5625,7 @@ static vboxUniformedIUSBDeviceFilter _UIUSBDeviceFilter = {
 static vboxUniformedIMedium _UIMedium = {
     .GetId = _mediumGetId,
     .GetLocation = _mediumGetLocation,
+    .GetState = _mediumGetState,
     .GetReadOnly = _mediumGetReadOnly,
     .GetParent = _mediumGetParent,
     .GetChildren = _mediumGetChildren,

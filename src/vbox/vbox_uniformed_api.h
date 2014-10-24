@@ -170,6 +170,7 @@ typedef struct {
     void (*vboxArrayRelease)(vboxArray *array);
     /* Generate function pointers for vboxArrayGet */
     void* (*handleGetMachines)(IVirtualBox *vboxObj);
+    void* (*handleGetHardDisks)(IVirtualBox *vboxObj);
     void* (*handleUSBGetDeviceFilters)(IUSBCommon *USBCommon);
     void* (*handleMachineGetMediumAttachments)(IMachine *machine);
     void* (*handleMachineGetSharedFolders)(IMachine *machine);
@@ -407,6 +408,7 @@ typedef struct {
 typedef struct {
     nsresult (*GetId)(IMedium *medium, vboxIIDUnion *iidu);
     nsresult (*GetLocation)(IMedium *medium, PRUnichar **location);
+    nsresult (*GetState)(IMedium *medium, PRUint32 *state);
     nsresult (*GetReadOnly)(IMedium *medium, PRBool *readOnly);
     nsresult (*GetParent)(IMedium *medium, IMedium **parent);
     nsresult (*GetChildren)(IMedium *medium, PRUint32 *childrenSize, IMedium ***children);
@@ -592,6 +594,7 @@ int vboxStorageClose(virConnectPtr conn);
 int vboxConnectNumOfStoragePools(virConnectPtr conn);
 int vboxConnectListStoragePools(virConnectPtr conn, char **const names, int nnames);
 virStoragePoolPtr vboxStoragePoolLookupByName(virConnectPtr conn, const char *name);
+int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

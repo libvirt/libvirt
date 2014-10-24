@@ -230,6 +230,7 @@ src/vbox/vbox_XPCOMCGlue.c
 src/vbox/vbox_driver.c
 src/vbox/vbox_common.c
 src/vbox/vbox_network.c
+src/vbox/vbox_storage.c
 src/vbox/vbox_snapshot_conf.c
 src/vbox/vbox_tmpl.c
 src/vmware/vmware_conf.c

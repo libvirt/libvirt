@@ -279,6 +279,17 @@ enum HostNetworkInterfaceType
     HostNetworkInterfaceType_HostOnly = 2
 };
 
+enum MediaState
+{
+    MediaState_NotCreated = 0,
+    MediaState_Created = 1,
+    MediaState_LockedRead = 2,
+    MediaState_LockedWrite = 3,
+    MediaState_Inaccessible = 4,
+    MediaState_Creating = 5,
+    MediaState_Deleting = 6
+};
+
 # define VBOX_E_OBJECT_NOT_FOUND 0x80BB0001
 # define VBOX_E_INVALID_VM_STATE 0x80BB0002
 # define VBOX_E_VM_ERROR 0x80BB0003
@@ -319,6 +330,7 @@ typedef nsISupports IDisplay;
 typedef nsISupports IHost;
 typedef nsISupports IHostNetworkInterface;
 typedef nsISupports IDHCPServer;
+typedef IMedium IHardDisk;
 
 /* Macros for all vbox drivers. */
 
