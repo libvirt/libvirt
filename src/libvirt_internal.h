@@ -285,4 +285,10 @@ int virDomainMigrateConfirm3Params(virDomainPtr domain,
                                    int cookieinlen,
                                    unsigned int flags,
                                    int cancelled);
+
+int
+virTypedParameterValidateSet(virConnectPtr conn,
+                             virTypedParameterPtr params,
+                             int nparams);
+
 #endif

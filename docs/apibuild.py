@@ -73,6 +73,7 @@ ignored_functions = {
   "virDomainMigratePrepareTunnel3": "private function for tunnelled migration",
   "DllMain": "specific function for Win32",
   "virTypedParamsValidate": "internal function in virtypedparam.c",
+  "virTypedParameterValidateSet": "internal function in virtypedparam.c",
   "virTypedParameterAssign": "internal function in virtypedparam.c",
   "virTypedParameterAssignFromStr": "internal function in virtypedparam.c",
   "virTypedParameterToString": "internal function in virtypedparam.c",

@@ -3786,7 +3786,7 @@ virDomainSetMemoryStatsPeriod(virDomainPtr domain, int period,
 
 /* Helper function called to validate incoming client array on any
  * interface that sets typed parameters in the hypervisor.  */
-static int
+int
 virTypedParameterValidateSet(virConnectPtr conn,
                              virTypedParameterPtr params,
                              int nparams)
