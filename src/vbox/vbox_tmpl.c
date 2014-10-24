@@ -106,7 +106,6 @@ typedef IUSBDeviceFilters IUSBCommon;
 typedef IHardDiskAttachment IMediumAttachment;
 #else  /* VBOX_API_VERSION >= 3001000 */
 typedef IMedium IHardDisk;
-typedef IMediumAttachment IHardDiskAttachment;
 #endif /* VBOX_API_VERSION >= 3001000 */
 
 #include "vbox_uniformed_api.h"
@@ -2034,181 +2033,6 @@ _registerDomainEvent(virHypervisorDriverPtr driver)
  * The Storage Functions here on
  */
 
-static int vboxStorageVolDelete(virStorageVolPtr vol,
-                                unsigned int flags)
-{
-    VBOX_OBJECT_CHECK(vol->conn, int, -1);
-    vboxIID hddIID = VBOX_IID_INITIALIZER;
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    IHardDisk *hardDisk  = NULL;
-    int deregister = 0;
-    nsresult rc;
-    size_t i = 0;
-    size_t j = 0;
-
-    virCheckFlags(0, -1);
-
-    if (virUUIDParse(vol->key, uuid) < 0) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Could not parse UUID from '%s'"), vol->key);
-        return -1;
-    }
-
-    vboxIIDFromUUID(&hddIID, uuid);
-#if VBOX_API_VERSION < 4000000
-    rc = data->vboxObj->vtbl->GetHardDisk(data->vboxObj, hddIID.value, &hardDisk);
-#elif VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
-    rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddIID.value,
-                                         DeviceType_HardDisk, &hardDisk);
-#else
-    rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddIID.value,
-                                         DeviceType_HardDisk, AccessMode_ReadWrite,
-                                         PR_FALSE, &hardDisk);
-#endif /* VBOX_API_VERSION >= 4000000 */
-    if (NS_SUCCEEDED(rc)) {
-        PRUint32 hddstate;
-
-        VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetState, &hddstate);
-        if (hddstate != MediaState_Inaccessible) {
-            PRUint32  machineIdsSize = 0;
-            vboxArray machineIds = VBOX_ARRAY_INITIALIZER;
-
-#if VBOX_API_VERSION < 3001000
-            vboxArrayGet(&machineIds, hardDisk, hardDisk->vtbl->imedium.GetMachineIds);
-#else  /* VBOX_API_VERSION >= 3001000 */
-            vboxArrayGet(&machineIds, hardDisk, hardDisk->vtbl->GetMachineIds);
-#endif /* VBOX_API_VERSION >= 3001000 */
-
-#if VBOX_API_VERSION == 2002000 && defined WIN32
-            /* VirtualBox 2.2 on Windows represents IIDs as GUIDs and the
-             * machineIds array contains direct instances of the GUID struct
-             * instead of pointers to the actual struct instances. But there
-             * is no 128bit width simple item type for a SafeArray to fit a
-             * GUID in. The largest simple type it 64bit width and VirtualBox
-             * uses two of this 64bit items to represents one GUID. Therefore,
-             * we divide the size of the SafeArray by two, to compensate for
-             * this workaround in VirtualBox */
-            machineIds.count /= 2;
-#endif /* VBOX_API_VERSION >= 2002000 */
-
-            machineIdsSize = machineIds.count;
-
-            for (i = 0; i < machineIds.count; i++) {
-                IMachine *machine = NULL;
-                vboxIID machineId = VBOX_IID_INITIALIZER;
-
-                vboxIIDFromArrayItem(&machineId, &machineIds, i);
-
-#if VBOX_API_VERSION >= 4000000
-                rc = VBOX_OBJECT_GET_MACHINE(machineId.value, &machine);
-                if (NS_FAILED(rc)) {
-                    virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                                   _("no domain with matching uuid"));
-                    break;
-                }
-#endif
-
-                rc = VBOX_SESSION_OPEN(machineId.value, machine);
-
-                if (NS_SUCCEEDED(rc)) {
-
-                    rc = data->vboxSession->vtbl->GetMachine(data->vboxSession, &machine);
-                    if (NS_SUCCEEDED(rc)) {
-                        vboxArray hddAttachments = VBOX_ARRAY_INITIALIZER;
-
-#if VBOX_API_VERSION < 3001000
-                        vboxArrayGet(&hddAttachments, machine,
-                                     machine->vtbl->GetHardDiskAttachments);
-#else  /* VBOX_API_VERSION >= 3001000 */
-                        vboxArrayGet(&hddAttachments, machine,
-                                     machine->vtbl->GetMediumAttachments);
-#endif /* VBOX_API_VERSION >= 3001000 */
-                        for (j = 0; j < hddAttachments.count; j++) {
-                            IHardDiskAttachment *hddAttachment = hddAttachments.items[j];
-
-                            if (hddAttachment) {
-                                IHardDisk *hdd = NULL;
-
-#if VBOX_API_VERSION < 3001000
-                                rc = hddAttachment->vtbl->GetHardDisk(hddAttachment, &hdd);
-#else  /* VBOX_API_VERSION >= 3001000 */
-                                rc = hddAttachment->vtbl->GetMedium(hddAttachment, &hdd);
-#endif /* VBOX_API_VERSION >= 3001000 */
-                                if (NS_SUCCEEDED(rc) && hdd) {
-                                    vboxIID iid = VBOX_IID_INITIALIZER;
-
-                                    rc = VBOX_MEDIUM_FUNC_ARG1(hdd, GetId, &iid.value);
-                                    if (NS_SUCCEEDED(rc)) {
-
-                                            DEBUGIID("HardDisk (to delete) UUID", hddIID.value);
-                                            DEBUGIID("HardDisk (currently processing) UUID", iid.value);
-
-                                        if (vboxIIDIsEqual(&hddIID, &iid)) {
-                                            PRUnichar *controller = NULL;
-                                            PRInt32    port       = 0;
-                                            PRInt32    device     = 0;
-
-                                            DEBUGIID("Found HardDisk to delete, UUID", hddIID.value);
-
-                                            hddAttachment->vtbl->GetController(hddAttachment, &controller);
-                                            hddAttachment->vtbl->GetPort(hddAttachment, &port);
-                                            hddAttachment->vtbl->GetDevice(hddAttachment, &device);
-
-#if VBOX_API_VERSION < 3001000
-                                            rc = machine->vtbl->DetachHardDisk(machine, controller, port, device);
-#else  /* VBOX_API_VERSION >= 3001000 */
-                                            rc = machine->vtbl->DetachDevice(machine, controller, port, device);
-#endif /* VBOX_API_VERSION >= 3001000 */
-                                            if (NS_SUCCEEDED(rc)) {
-                                                rc = machine->vtbl->SaveSettings(machine);
-                                                VIR_DEBUG("saving machine settings");
-                                            }
-
-                                            if (NS_SUCCEEDED(rc)) {
-                                                deregister++;
-                                                VIR_DEBUG("deregistering hdd:%d", deregister);
-                                            }
-
-                                            VBOX_UTF16_FREE(controller);
-                                        }
-                                        vboxIIDUnalloc(&iid);
-                                    }
-                                    VBOX_MEDIUM_RELEASE(hdd);
-                                }
-                            }
-                        }
-                        vboxArrayRelease(&hddAttachments);
-                        VBOX_RELEASE(machine);
-                    }
-                    VBOX_SESSION_CLOSE();
-                }
-
-                vboxIIDUnalloc(&machineId);
-            }
-
-            vboxArrayUnalloc(&machineIds);
-
-            if (machineIdsSize == 0 || machineIdsSize == deregister) {
-                IProgress *progress = NULL;
-                rc = hardDisk->vtbl->DeleteStorage(hardDisk, &progress);
-
-                if (NS_SUCCEEDED(rc) && progress) {
-                    progress->vtbl->WaitForCompletion(progress, -1);
-                    VBOX_RELEASE(progress);
-                    DEBUGIID("HardDisk deleted, UUID", hddIID.value);
-                    ret = 0;
-                }
-            }
-        }
-
-        VBOX_MEDIUM_RELEASE(hardDisk);
-    }
-
-    vboxIIDUnalloc(&hddIID);
-
-    return ret;
-}
-
 static int
 vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info)
 {
@@ -3236,6 +3060,11 @@ static void* _handleMediumGetSnapshotIds(IMedium *medium)
     return medium->vtbl->GetSnapshotIds;
 }
 
+static void* _handleMediumGetMachineIds(IMedium *medium)
+{
+    return medium->vtbl->GetMachineIds;
+}
+
 static void* _handleHostGetNetworkInterfaces(IHost *host)
 {
     return host->vtbl->GetNetworkInterfaces;
@@ -3545,6 +3374,17 @@ _machineFindSnapshot(IMachine *machine, vboxIIDUnion *iidu, ISnapshot **snapshot
 #else /* VBOX_API_VERSION >= 4000000 */
     return machine->vtbl->FindSnapshot(machine, IID_MEMBER(value), snapshot);
 #endif /* VBOX_API_VERSION >= 4000000 */
+}
+
+static nsresult
+_machineDetachDevice(IMachine *machine, PRUnichar *name,
+                     PRInt32 controllerPort, PRInt32 device)
+{
+#if VBOX_API_VERSION < 3001000
+    return machine->vtbl->DetachHardDisk(machine, name, controllerPort, device);
+#else  /* VBOX_API_VERSION >= 3001000 */
+    return machine->vtbl->DetachDevice(machine, name, controllerPort, device);
+#endif /* VBOX_API_VERSION >= 3001000 */
 }
 
 static nsresult
@@ -5035,6 +4875,12 @@ _hardDiskCreateBaseStorage(IHardDisk *hardDisk, PRUint64 logicalSize,
 #endif
 }
 
+static nsresult
+_hardDiskDeleteStorage(IHardDisk *hardDisk, IProgress **progress)
+{
+    return hardDisk->vtbl->DeleteStorage(hardDisk, progress);
+}
+
 static bool _machineStateOnline(PRUint32 state)
 {
     return ((state >= MachineState_FirstOnline) &&
@@ -5094,6 +4940,7 @@ static vboxUniformedArray _UArray = {
     .vboxArrayGet = vboxArrayGet,
     .vboxArrayGetWithIIDArg = _vboxArrayGetWithIIDArg,
     .vboxArrayRelease = vboxArrayRelease,
+    .vboxArrayUnalloc = vboxArrayUnalloc,
     .handleGetMachines = _handleGetMachines,
     .handleGetHardDisks = _handleGetHardDisks,
     .handleUSBGetDeviceFilters = _handleUSBGetDeviceFilters,
@@ -5102,6 +4949,7 @@ static vboxUniformedArray _UArray = {
     .handleSnapshotGetChildren = _handleSnapshotGetChildren,
     .handleMediumGetChildren = _handleMediumGetChildren,
     .handleMediumGetSnapshotIds = _handleMediumGetSnapshotIds,
+    .handleMediumGetMachineIds = _handleMediumGetMachineIds,
     .handleHostGetNetworkInterfaces = _handleHostGetNetworkInterfaces,
 };
 
@@ -5136,6 +4984,7 @@ static vboxUniformedIMachine _UIMachine = {
     .LaunchVMProcess = _machineLaunchVMProcess,
     .Unregister = _machineUnregister,
     .FindSnapshot = _machineFindSnapshot,
+    .DetachDevice = _machineDetachDevice,
     .GetAccessible = _machineGetAccessible,
     .GetState = _machineGetState,
     .GetName = _machineGetName,
@@ -5378,6 +5227,7 @@ static vboxUniformedIDHCPServer _UIDHCPServer = {
 
 static vboxUniformedIHardDisk _UIHardDisk = {
     .CreateBaseStorage = _hardDiskCreateBaseStorage,
+    .DeleteStorage = _hardDiskDeleteStorage,
 };
 
 static uniformedMachineStateChecker _machineStateChecker = {

@@ -530,3 +530,163 @@ virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
     virStorageVolDefFree(def);
     return ret;
 }
+
+int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
+{
+    vboxGlobalData *data = vol->conn->privateData;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    IHardDisk *hardDisk = NULL;
+    int deregister = 0;
+    PRUint32 hddstate = 0;
+    size_t i = 0;
+    size_t j = 0;
+    PRUint32  machineIdsSize = 0;
+    vboxArray machineIds = VBOX_ARRAY_INITIALIZER;
+    vboxIIDUnion hddIID;
+    nsresult rc;
+    int ret = -1;
+
+    if (!data->vboxObj) {
+        return ret;
+    }
+
+    VBOX_IID_INITIALIZE(&hddIID);
+    virCheckFlags(0, -1);
+
+    if (virUUIDParse(vol->key, uuid) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Could not parse UUID from '%s'"), vol->key);
+        return -1;
+    }
+
+    vboxIIDFromUUID(&hddIID, uuid);
+    rc = gVBoxAPI.UIVirtualBox.GetHardDiskByIID(data->vboxObj, &hddIID, &hardDisk);
+    if (NS_FAILED(rc))
+        goto cleanup;
+
+    gVBoxAPI.UIMedium.GetState(hardDisk, &hddstate);
+    if (hddstate == MediaState_Inaccessible)
+        goto cleanup;
+
+    gVBoxAPI.UArray.vboxArrayGet(&machineIds, hardDisk,
+                                 gVBoxAPI.UArray.handleMediumGetMachineIds(hardDisk));
+
+#if defined WIN32
+    /* VirtualBox 2.2 on Windows represents IIDs as GUIDs and the
+     * machineIds array contains direct instances of the GUID struct
+     * instead of pointers to the actual struct instances. But there
+     * is no 128bit width simple item type for a SafeArray to fit a
+     * GUID in. The largest simple type it 64bit width and VirtualBox
+     * uses two of this 64bit items to represents one GUID. Therefore,
+     * we divide the size of the SafeArray by two, to compensate for
+     * this workaround in VirtualBox */
+    if (gVBoxAPI.uVersion >= 2001052 && gVBoxAPI.uVersion < 2002051)
+        machineIds.count /= 2;
+#endif /* !defined WIN32 */
+
+    machineIdsSize = machineIds.count;
+
+    for (i = 0; i < machineIds.count; i++) {
+        IMachine *machine = NULL;
+        vboxIIDUnion machineId;
+        vboxArray hddAttachments = VBOX_ARRAY_INITIALIZER;
+
+        VBOX_IID_INITIALIZE(&machineId);
+        vboxIIDFromArrayItem(&machineId, &machineIds, i);
+
+        if (gVBoxAPI.getMachineForSession) {
+            rc = gVBoxAPI.UIVirtualBox.GetMachine(data->vboxObj, &machineId, &machine);
+            if (NS_FAILED(rc)) {
+                virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                               _("no domain with matching uuid"));
+                break;
+            }
+        }
+
+        rc = gVBoxAPI.UISession.Open(data, &machineId, machine);
+
+        if (NS_FAILED(rc)) {
+            vboxIIDUnalloc(&machineId);
+            continue;
+        }
+
+        rc = gVBoxAPI.UISession.GetMachine(data->vboxSession, &machine);
+        if (NS_FAILED(rc))
+            goto cleanupLoop;
+
+        gVBoxAPI.UArray.vboxArrayGet(&hddAttachments, machine,
+                                     gVBoxAPI.UArray.handleMachineGetMediumAttachments(machine));
+
+        for (j = 0; j < hddAttachments.count; j++) {
+            IMediumAttachment *hddAttachment = hddAttachments.items[j];
+            IHardDisk *hdd = NULL;
+            vboxIIDUnion iid;
+
+            if (!hddAttachment)
+                continue;
+
+            rc = gVBoxAPI.UIMediumAttachment.GetMedium(hddAttachment, &hdd);
+            if (NS_FAILED(rc) || !hdd)
+                continue;
+
+            VBOX_IID_INITIALIZE(&iid);
+            rc = gVBoxAPI.UIMedium.GetId(hdd, &iid);
+            if (NS_FAILED(rc)) {
+                VBOX_MEDIUM_RELEASE(hdd);
+                continue;
+            }
+
+            DEBUGIID("HardDisk (to delete) UUID", &hddIID);
+            DEBUGIID("HardDisk (currently processing) UUID", &iid);
+
+            if (vboxIIDIsEqual(&hddIID, &iid)) {
+                PRUnichar *controller = NULL;
+                PRInt32 port = 0;
+                PRInt32 device = 0;
+
+                DEBUGIID("Found HardDisk to delete, UUID", &hddIID);
+
+                gVBoxAPI.UIMediumAttachment.GetController(hddAttachment, &controller);
+                gVBoxAPI.UIMediumAttachment.GetPort(hddAttachment, &port);
+                gVBoxAPI.UIMediumAttachment.GetDevice(hddAttachment, &device);
+
+                rc = gVBoxAPI.UIMachine.DetachDevice(machine, controller, port, device);
+                if (NS_SUCCEEDED(rc)) {
+                    rc = gVBoxAPI.UIMachine.SaveSettings(machine);
+                    VIR_DEBUG("saving machine settings");
+                    deregister++;
+                    VIR_DEBUG("deregistering hdd:%d", deregister);
+                }
+
+                VBOX_UTF16_FREE(controller);
+            }
+            vboxIIDUnalloc(&iid);
+            VBOX_MEDIUM_RELEASE(hdd);
+        }
+
+ cleanupLoop:
+        gVBoxAPI.UArray.vboxArrayRelease(&hddAttachments);
+        VBOX_RELEASE(machine);
+        gVBoxAPI.UISession.Close(data->vboxSession);
+        vboxIIDUnalloc(&machineId);
+    }
+
+    gVBoxAPI.UArray.vboxArrayUnalloc(&machineIds);
+
+    if (machineIdsSize == 0 || machineIdsSize == deregister) {
+        IProgress *progress = NULL;
+        rc = gVBoxAPI.UIHardDisk.DeleteStorage(hardDisk, &progress);
+
+        if (NS_SUCCEEDED(rc) && progress) {
+            gVBoxAPI.UIProgress.WaitForCompletion(progress, -1);
+            VBOX_RELEASE(progress);
+            DEBUGIID("HardDisk deleted, UUID", &hddIID);
+            ret = 0;
+        }
+    }
+
+ cleanup:
+    VBOX_MEDIUM_RELEASE(hardDisk);
+    vboxIIDUnalloc(&hddIID);
+    return ret;
+}

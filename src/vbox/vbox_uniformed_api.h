@@ -168,6 +168,7 @@ typedef struct {
     nsresult (*vboxArrayGet)(vboxArray *array, void *self, void *getter);
     nsresult (*vboxArrayGetWithIIDArg)(vboxArray *array, void *self, void *getter, vboxIIDUnion *iidu);
     void (*vboxArrayRelease)(vboxArray *array);
+    void (*vboxArrayUnalloc)(vboxArray *array);
     /* Generate function pointers for vboxArrayGet */
     void* (*handleGetMachines)(IVirtualBox *vboxObj);
     void* (*handleGetHardDisks)(IVirtualBox *vboxObj);
@@ -177,6 +178,7 @@ typedef struct {
     void* (*handleSnapshotGetChildren)(ISnapshot *snapshot);
     void* (*handleMediumGetChildren)(IMedium *medium);
     void* (*handleMediumGetSnapshotIds)(IMedium *medium);
+    void* (*handleMediumGetMachineIds)(IMedium *medium);
     void* (*handleHostGetNetworkInterfaces)(IHost *host);
 } vboxUniformedArray;
 
@@ -225,6 +227,8 @@ typedef struct {
     nsresult (*Unregister)(IMachine *machine, PRUint32 cleanupMode,
                            PRUint32 *aMediaSize, IMedium ***aMedia);
     nsresult (*FindSnapshot)(IMachine *machine, vboxIIDUnion *iidu, ISnapshot **snapshot);
+    nsresult (*DetachDevice)(IMachine *machine, PRUnichar *name,
+                             PRInt32 controllerPort, PRInt32 device);
     nsresult (*GetAccessible)(IMachine *machine, PRBool *isAccessible);
     nsresult (*GetState)(IMachine *machine, PRUint32 *state);
     nsresult (*GetName)(IMachine *machine, PRUnichar **name);
@@ -523,6 +527,7 @@ typedef struct {
 typedef struct {
     nsresult (*CreateBaseStorage)(IHardDisk *hardDisk, PRUint64 logicalSize,
                                   PRUint32 variant, IProgress **progress);
+    nsresult (*DeleteStorage)(IHardDisk *hardDisk, IProgress **progress);
 } vboxUniformedIHardDisk;
 
 typedef struct {
@@ -613,6 +618,7 @@ virStorageVolPtr vboxStorageVolLookupByKey(virConnectPtr conn, const char *key);
 virStorageVolPtr vboxStorageVolLookupByPath(virConnectPtr conn, const char *path);
 virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
                                          const char *xml, unsigned int flags);
+int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
