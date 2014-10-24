@@ -159,18 +159,6 @@ if (!data->vboxObj) {\
     return ret;\
 }
 
-#define VBOX_OBJECT_HOST_CHECK(conn, type, value) \
-vboxGlobalData *data = conn->privateData;\
-type ret = value;\
-IHost *host = NULL;\
-if (!data->vboxObj) {\
-    return ret;\
-}\
-data->vboxObj->vtbl->GetHost(data->vboxObj, &host);\
-if (!host) {\
-    return ret;\
-}
-
 #if VBOX_API_VERSION < 3001000
 
 # define VBOX_MEDIUM_RELEASE(arg) \
@@ -1350,9 +1338,13 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
                           IMachine *machine,
                           ISnapshot *snapshot)
 {
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxGlobalData *data = dom->conn->privateData;
     vboxIID iid = VBOX_IID_INITIALIZER;
     nsresult rc;
+    int ret = -1;
+
+    if (!data->vboxObj)
+        return ret;
 
     rc = snapshot->vtbl->GetId(snapshot, &iid.value);
     if (NS_FAILED(rc)) {
@@ -1380,13 +1372,17 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
                           IMachine *machine,
                           ISnapshot *snapshot)
 {
-    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxGlobalData *data = dom->conn->privateData;
     IConsole *console = NULL;
     IProgress *progress = NULL;
     PRUint32 state;
     nsresult rc;
     PRInt32 result;
     vboxIID domiid = VBOX_IID_INITIALIZER;
+    int ret = -1;
+
+    if (!data->vboxObj)
+        return ret;
 
     rc = machine->vtbl->GetId(machine, &domiid.value);
     if (NS_FAILED(rc)) {
@@ -1815,9 +1811,13 @@ vboxConnectDomainEventRegister(virConnectPtr conn,
                                void *opaque,
                                virFreeCallback freecb)
 {
-    VBOX_OBJECT_CHECK(conn, int, -1);
+    vboxGlobalData *data = conn->privateData;
     int vboxRet          = -1;
     nsresult rc;
+    int ret = -1;
+
+    if (!data->vboxObj)
+        return ret;
 
     /* Locking has to be there as callbacks are not
      * really fully thread safe
@@ -1878,8 +1878,12 @@ static int
 vboxConnectDomainEventDeregister(virConnectPtr conn,
                                  virConnectDomainEventCallback callback)
 {
-    VBOX_OBJECT_CHECK(conn, int, -1);
+    vboxGlobalData *data = conn->privateData;
     int cnt;
+    int ret = -1;
+
+    if (!data->vboxObj)
+        return ret;
 
     /* Locking has to be there as callbacks are not
      * really fully thread safe
@@ -1913,9 +1917,13 @@ static int vboxConnectDomainEventRegisterAny(virConnectPtr conn,
                                              void *opaque,
                                              virFreeCallback freecb)
 {
-    VBOX_OBJECT_CHECK(conn, int, -1);
+    vboxGlobalData *data = conn->privateData;
     int vboxRet          = -1;
     nsresult rc;
+    int ret = -1;
+
+    if (!data->vboxObj)
+        return ret;
 
     /* Locking has to be there as callbacks are not
      * really fully thread safe
@@ -1978,8 +1986,12 @@ static int
 vboxConnectDomainEventDeregisterAny(virConnectPtr conn,
                                     int callbackID)
 {
-    VBOX_OBJECT_CHECK(conn, int, -1);
+    vboxGlobalData *data = conn->privateData;
     int cnt;
+    int ret = -1;
+
+    if (!data->vboxObj)
+        return ret;
 
     /* Locking has to be there as callbacks are not
      * really fully thread safe
