@@ -749,6 +749,10 @@ static int lxcDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
                                "%s", _("Failed to set memory for domain"));
                 goto cleanup;
             }
+
+            vm->def->mem.cur_balloon = newmem;
+            if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+                goto cleanup;
         }
 
         if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
