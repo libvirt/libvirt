@@ -343,3 +343,80 @@ virStorageVolPtr vboxStorageVolLookupByKey(virConnectPtr conn, const char *key)
     vboxIIDUnalloc(&hddIID);
     return ret;
 }
+
+virStorageVolPtr vboxStorageVolLookupByPath(virConnectPtr conn, const char *path)
+{
+    vboxGlobalData *data = conn->privateData;
+    PRUnichar *hddPathUtf16 = NULL;
+    IHardDisk *hardDisk = NULL;
+    PRUnichar *hddNameUtf16 = NULL;
+    char *hddNameUtf8 = NULL;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    char key[VIR_UUID_STRING_BUFLEN] = "";
+    vboxIIDUnion hddIID;
+    PRUint32 hddstate;
+    nsresult rc;
+    virStorageVolPtr ret = NULL;
+
+    if (!data->vboxObj) {
+        return ret;
+    }
+
+    VBOX_IID_INITIALIZE(&hddIID);
+
+    if (!path)
+        return ret;
+
+    VBOX_UTF8_TO_UTF16(path, &hddPathUtf16);
+
+    if (!hddPathUtf16)
+        return ret;
+
+    rc = gVBoxAPI.UIVirtualBox.FindHardDisk(data->vboxObj, hddPathUtf16,
+                                            DeviceType_HardDisk, AccessMode_ReadWrite, &hardDisk);
+    if (NS_FAILED(rc))
+        goto cleanup;
+
+    gVBoxAPI.UIMedium.GetState(hardDisk, &hddstate);
+    if (hddstate == MediaState_Inaccessible)
+        goto cleanup;
+
+    gVBoxAPI.UIMedium.GetName(hardDisk, &hddNameUtf16);
+
+    if (!hddNameUtf16)
+        goto cleanup;
+
+    VBOX_UTF16_TO_UTF8(hddNameUtf16, &hddNameUtf8);
+    VBOX_UTF16_FREE(hddNameUtf16);
+
+    if (!hddNameUtf8)
+        goto cleanup;
+
+    rc = gVBoxAPI.UIMedium.GetId(hardDisk, &hddIID);
+    if (NS_FAILED(rc)) {
+        VBOX_UTF8_FREE(hddNameUtf8);
+        goto cleanup;
+    }
+
+    vboxIIDToUUID(&hddIID, uuid);
+    virUUIDFormat(uuid, key);
+
+    /* TODO: currently only one default pool and thus
+     * the check below, change it when pools are supported
+     */
+    if (vboxConnectNumOfStoragePools(conn) == 1)
+        ret = virGetStorageVol(conn, "default-pool", hddNameUtf8, key,
+                               NULL, NULL);
+
+    VIR_DEBUG("Storage Volume Pool: %s", "default-pool");
+    VIR_DEBUG("Storage Volume Name: %s", hddNameUtf8);
+    VIR_DEBUG("Storage Volume key : %s", key);
+
+    vboxIIDUnalloc(&hddIID);
+    VBOX_UTF8_FREE(hddNameUtf8);
+
+ cleanup:
+    VBOX_MEDIUM_RELEASE(hardDisk);
+    VBOX_UTF16_FREE(hddPathUtf16);
+    return ret;
+}
