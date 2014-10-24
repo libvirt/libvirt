@@ -2033,76 +2033,6 @@ _registerDomainEvent(virHypervisorDriverPtr driver)
  * The Storage Functions here on
  */
 
-static int
-vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info)
-{
-    VBOX_OBJECT_CHECK(vol->conn, int, -1);
-    IHardDisk *hardDisk  = NULL;
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    vboxIID hddIID = VBOX_IID_INITIALIZER;
-    nsresult rc;
-
-    if (!info)
-        return ret;
-
-    if (virUUIDParse(vol->key, uuid) < 0) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Could not parse UUID from '%s'"), vol->key);
-        return ret;
-    }
-
-    vboxIIDFromUUID(&hddIID, uuid);
-#if VBOX_API_VERSION < 4000000
-    rc = data->vboxObj->vtbl->GetHardDisk(data->vboxObj, hddIID.value, &hardDisk);
-#elif VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
-    rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddIID.value,
-                                         DeviceType_HardDisk, &hardDisk);
-#else
-    rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddIID.value,
-                                         DeviceType_HardDisk, AccessMode_ReadWrite,
-                                         PR_FALSE, &hardDisk);
-#endif /* VBOX_API_VERSION >= 4000000 */
-    if (NS_SUCCEEDED(rc)) {
-        PRUint32 hddstate;
-
-        VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetState, &hddstate);
-        if (hddstate != MediaState_Inaccessible) {
-#if VBOX_API_VERSION < 4000000
-            PRUint64 hddLogicalSize;
-            PRUint64 hddActualSize;
-#else /* VBOX_API_VERSION >= 4000000 */
-            PRInt64 hddLogicalSize;
-            PRInt64 hddActualSize;
-#endif /* VBOX_API_VERSION >= 4000000 */
-
-            info->type = VIR_STORAGE_VOL_FILE;
-
-            hardDisk->vtbl->GetLogicalSize(hardDisk, &hddLogicalSize);
-#if VBOX_API_VERSION < 4000000
-            info->capacity = hddLogicalSize * 1024 * 1024; /* MB => Bytes */
-#else /* VBOX_API_VERSION >= 4000000 */
-            info->capacity = hddLogicalSize;
-#endif /* VBOX_API_VERSION >= 4000000 */
-
-            VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetSize, &hddActualSize);
-            info->allocation = hddActualSize;
-
-            ret = 0;
-
-            VIR_DEBUG("Storage Volume Name: %s", vol->name);
-            VIR_DEBUG("Storage Volume Type: %s", info->type == VIR_STORAGE_VOL_BLOCK ? "Block" : "File");
-            VIR_DEBUG("Storage Volume Capacity: %llu", info->capacity);
-            VIR_DEBUG("Storage Volume Allocation: %llu", info->allocation);
-        }
-
-        VBOX_MEDIUM_RELEASE(hardDisk);
-    }
-
-    vboxIIDUnalloc(&hddIID);
-
-    return ret;
-}
-
 static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
 {
     VBOX_OBJECT_CHECK(vol->conn, char *, NULL);
@@ -4407,6 +4337,19 @@ static nsresult _mediumGetName(IMedium *medium, PRUnichar **name)
     return medium->vtbl->GetName(medium, name);
 }
 
+static nsresult _mediumGetSize(IMedium *medium, PRUint64 *uSize)
+{
+#if VBOX_API_VERSION < 4000000
+    return medium->vtbl->GetSize(medium, uSize);
+#else /* VBOX_API_VERSION >= 4000000 */
+    nsresult rc;
+    PRInt64 Size;
+    rc = medium->vtbl->GetSize(medium, &Size);
+    *uSize = Size;
+    return rc;
+#endif /* VBOX_API_VERSION >= 4000000 */
+}
+
 static nsresult _mediumGetReadOnly(IMedium *medium ATTRIBUTE_UNUSED,
                                    PRBool *readOnly ATTRIBUTE_UNUSED)
 {
@@ -4881,6 +4824,21 @@ _hardDiskDeleteStorage(IHardDisk *hardDisk, IProgress **progress)
     return hardDisk->vtbl->DeleteStorage(hardDisk, progress);
 }
 
+static nsresult
+_hardDiskGetLogicalSizeInByte(IHardDisk *hardDisk, PRUint64 *uLogicalSize)
+{
+    nsresult rc;
+#if VBOX_API_VERSION < 4000000
+    rc = hardDisk->vtbl->GetLogicalSize(hardDisk, uLogicalSize);
+    *uLogicalSize *= 1024 * 1024; /* MB => Bytes */
+#else /* VBOX_API_VERSION >= 4000000 */
+    PRInt64 logicalSize;
+    rc = hardDisk->vtbl->GetLogicalSize(hardDisk, &logicalSize);
+    *uLogicalSize = logicalSize;
+#endif /* VBOX_API_VERSION >= 4000000 */
+    return rc;
+}
+
 static bool _machineStateOnline(PRUint32 state)
 {
     return ((state >= MachineState_FirstOnline) &&
@@ -5150,6 +5108,7 @@ static vboxUniformedIMedium _UIMedium = {
     .GetLocation = _mediumGetLocation,
     .GetState = _mediumGetState,
     .GetName = _mediumGetName,
+    .GetSize = _mediumGetSize,
     .GetReadOnly = _mediumGetReadOnly,
     .GetParent = _mediumGetParent,
     .GetChildren = _mediumGetChildren,
@@ -5228,6 +5187,7 @@ static vboxUniformedIDHCPServer _UIDHCPServer = {
 static vboxUniformedIHardDisk _UIHardDisk = {
     .CreateBaseStorage = _hardDiskCreateBaseStorage,
     .DeleteStorage = _hardDiskDeleteStorage,
+    .GetLogicalSizeInByte = _hardDiskGetLogicalSizeInByte,
 };
 
 static uniformedMachineStateChecker _machineStateChecker = {

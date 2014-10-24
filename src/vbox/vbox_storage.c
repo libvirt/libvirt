@@ -690,3 +690,59 @@ int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
     vboxIIDUnalloc(&hddIID);
     return ret;
 }
+
+int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info)
+{
+    vboxGlobalData *data = vol->conn->privateData;
+    IHardDisk *hardDisk = NULL;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    PRUint32 hddstate;
+    PRUint64 hddLogicalSize = 0;
+    PRUint64 hddActualSize = 0;
+    vboxIIDUnion hddIID;
+    nsresult rc;
+    int ret = -1;
+
+    if (!data->vboxObj) {
+        return ret;
+    }
+
+    if (!info)
+        return ret;
+
+    if (virUUIDParse(vol->key, uuid) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Could not parse UUID from '%s'"), vol->key);
+        return ret;
+    }
+
+    VBOX_IID_INITIALIZE(&hddIID);
+    vboxIIDFromUUID(&hddIID, uuid);
+    rc = gVBoxAPI.UIVirtualBox.GetHardDiskByIID(data->vboxObj, &hddIID, &hardDisk);
+    if (NS_FAILED(rc))
+        goto cleanup;
+
+    gVBoxAPI.UIMedium.GetState(hardDisk, &hddstate);
+    if (hddstate == MediaState_Inaccessible)
+        goto cleanup;
+
+    info->type = VIR_STORAGE_VOL_FILE;
+
+    gVBoxAPI.UIHardDisk.GetLogicalSizeInByte(hardDisk, &hddLogicalSize);
+    info->capacity = hddLogicalSize;
+
+    gVBoxAPI.UIMedium.GetSize(hardDisk, &hddActualSize);
+    info->allocation = hddActualSize;
+
+    ret = 0;
+
+    VIR_DEBUG("Storage Volume Name: %s", vol->name);
+    VIR_DEBUG("Storage Volume Type: %s", info->type == VIR_STORAGE_VOL_BLOCK ? "Block" : "File");
+    VIR_DEBUG("Storage Volume Capacity: %llu", info->capacity);
+    VIR_DEBUG("Storage Volume Allocation: %llu", info->allocation);
+
+ cleanup:
+    VBOX_MEDIUM_RELEASE(hardDisk);
+    vboxIIDUnalloc(&hddIID);
+    return ret;
+}
