@@ -290,6 +290,16 @@ enum MediaState
     MediaState_Deleting = 6
 };
 
+enum HardDiskVariant
+{
+    HardDiskVariant_Standard = 0,
+    HardDiskVariant_VmdkSplit2G = 0x01,
+    HardDiskVariant_VmdkStreamOptimized = 0x04,
+    HardDiskVariant_VmdkESX = 0x08,
+    HardDiskVariant_Fixed = 0x10000,
+    HardDiskVariant_Diff = 0x20000
+};
+
 # define VBOX_E_OBJECT_NOT_FOUND 0x80BB0001
 # define VBOX_E_INVALID_VM_STATE 0x80BB0002
 # define VBOX_E_VM_ERROR 0x80BB0003

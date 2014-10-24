@@ -517,6 +517,14 @@ typedef struct {
     nsresult (*Stop)(IDHCPServer *dhcpServer);
 } vboxUniformedIDHCPServer;
 
+/* Functions for IHardDisk, in vbox3.1 and later, it will call the
+ * corresponding functions in IMedium as IHardDisk does't exist in
+ * these versions. */
+typedef struct {
+    nsresult (*CreateBaseStorage)(IHardDisk *hardDisk, PRUint64 logicalSize,
+                                  PRUint32 variant, IProgress **progress);
+} vboxUniformedIHardDisk;
+
 typedef struct {
     bool (*Online)(PRUint32 state);
     bool (*Inactive)(PRUint32 state);
@@ -574,6 +582,7 @@ typedef struct {
     vboxUniformedIHost UIHost;
     vboxUniformedIHNInterface UIHNInterface;
     vboxUniformedIDHCPServer UIDHCPServer;
+    vboxUniformedIHardDisk UIHardDisk;
     uniformedMachineStateChecker machineStateChecker;
     /* vbox API features */
     bool domainEventCallbacks;
@@ -602,6 +611,8 @@ int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int n
 virStorageVolPtr vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name);
 virStorageVolPtr vboxStorageVolLookupByKey(virConnectPtr conn, const char *key);
 virStorageVolPtr vboxStorageVolLookupByPath(virConnectPtr conn, const char *path);
+virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
+                                         const char *xml, unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

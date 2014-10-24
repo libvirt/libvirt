@@ -26,6 +26,7 @@
 #include "domain_event.h"
 #include "virlog.h"
 #include "virstring.h"
+#include "storage_conf.h"
 
 #include "vbox_common.h"
 #include "vbox_uniformed_api.h"
@@ -418,5 +419,114 @@ virStorageVolPtr vboxStorageVolLookupByPath(virConnectPtr conn, const char *path
  cleanup:
     VBOX_MEDIUM_RELEASE(hardDisk);
     VBOX_UTF16_FREE(hddPathUtf16);
+    return ret;
+}
+
+virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
+                                        const char *xml, unsigned int flags)
+{
+    vboxGlobalData *data = pool->conn->privateData;
+    virStorageVolDefPtr def = NULL;
+    PRUnichar *hddFormatUtf16 = NULL;
+    PRUnichar *hddNameUtf16 = NULL;
+    virStoragePoolDef poolDef;
+    nsresult rc;
+    vboxIIDUnion hddIID;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    char key[VIR_UUID_STRING_BUFLEN] = "";
+    IHardDisk *hardDisk = NULL;
+    IProgress *progress = NULL;
+    PRUint64 logicalSize = 0;
+    PRUint32 variant = HardDiskVariant_Standard;
+    resultCodeUnion resultCode;
+    virStorageVolPtr ret = NULL;
+
+    if (!data->vboxObj) {
+        return ret;
+    }
+
+    virCheckFlags(0, NULL);
+
+    /* since there is currently one default pool now
+     * and virStorageVolDefFormat() just checks it type
+     * so just assign it for now, change the behaviour
+     * when vbox supports pools.
+     */
+    memset(&poolDef, 0, sizeof(poolDef));
+    poolDef.type = VIR_STORAGE_POOL_DIR;
+
+    if ((def = virStorageVolDefParseString(&poolDef, xml)) == NULL)
+        goto cleanup;
+
+    if (!def->name ||
+        (def->type != VIR_STORAGE_VOL_FILE))
+        goto cleanup;
+
+    /* For now only the vmdk, vpc and vdi type harddisk
+     * variants can be created.  For historical reason, we default to vdi */
+    if (def->target.format == VIR_STORAGE_FILE_VMDK) {
+        VBOX_UTF8_TO_UTF16("VMDK", &hddFormatUtf16);
+    } else if (def->target.format == VIR_STORAGE_FILE_VPC) {
+        VBOX_UTF8_TO_UTF16("VHD", &hddFormatUtf16);
+    } else {
+        VBOX_UTF8_TO_UTF16("VDI", &hddFormatUtf16);
+    }
+
+    /* If target.path isn't given, use default path ~/.VirtualBox/image_name */
+    if (def->target.path == NULL &&
+        virAsprintf(&def->target.path, "%s/.VirtualBox/%s", virGetUserDirectory(), def->name) < 0)
+        goto cleanup;
+    VBOX_UTF8_TO_UTF16(def->target.path, &hddNameUtf16);
+
+    if (!hddFormatUtf16 || !hddNameUtf16)
+        goto cleanup;
+
+    rc = gVBoxAPI.UIVirtualBox.CreateHardDisk(data->vboxObj, hddFormatUtf16, hddNameUtf16, &hardDisk);
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not create harddisk, rc=%08x"),
+                       (unsigned)rc);
+        goto cleanup;
+    }
+
+    logicalSize = VIR_DIV_UP(def->target.capacity, 1024 * 1024);
+
+    if (def->target.capacity == def->target.allocation)
+        variant = HardDiskVariant_Fixed;
+
+    rc = gVBoxAPI.UIHardDisk.CreateBaseStorage(hardDisk, logicalSize, variant, &progress);
+    if (NS_FAILED(rc) || !progress) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not create base storage, rc=%08x"),
+                       (unsigned)rc);
+        goto cleanup;
+    }
+
+    gVBoxAPI.UIProgress.WaitForCompletion(progress, -1);
+    gVBoxAPI.UIProgress.GetResultCode(progress, &resultCode);
+    if (RC_FAILED(resultCode)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not create base storage, rc=%08x"),
+                       (unsigned)resultCode.uResultCode);
+        goto cleanup;
+    }
+
+    VBOX_IID_INITIALIZE(&hddIID);
+    rc = gVBoxAPI.UIMedium.GetId(hardDisk, &hddIID);
+    if (NS_FAILED(rc))
+        goto cleanup;
+
+    vboxIIDToUUID(&hddIID, uuid);
+    virUUIDFormat(uuid, key);
+
+    ret = virGetStorageVol(pool->conn, pool->name, def->name, key,
+                           NULL, NULL);
+
+ cleanup:
+    vboxIIDUnalloc(&hddIID);
+    VBOX_RELEASE(progress);
+    VBOX_UTF16_FREE(hddFormatUtf16);
+    VBOX_UTF16_FREE(hddNameUtf16);
+    virStorageVolDefFree(def);
     return ret;
 }

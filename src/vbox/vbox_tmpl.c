@@ -2034,104 +2034,6 @@ _registerDomainEvent(virHypervisorDriverPtr driver)
  * The Storage Functions here on
  */
 
-static virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
-                                                const char *xml,
-                                                unsigned int flags)
-{
-    VBOX_OBJECT_CHECK(pool->conn, virStorageVolPtr, NULL);
-    virStorageVolDefPtr  def  = NULL;
-    PRUnichar *hddFormatUtf16 = NULL;
-    PRUnichar *hddNameUtf16   = NULL;
-    virStoragePoolDef poolDef;
-    nsresult rc;
-
-    virCheckFlags(0, NULL);
-
-    /* since there is currently one default pool now
-     * and virStorageVolDefFormat() just checks it type
-     * so just assign it for now, change the behaviour
-     * when vbox supports pools.
-     */
-    memset(&poolDef, 0, sizeof(poolDef));
-    poolDef.type = VIR_STORAGE_POOL_DIR;
-
-    if ((def = virStorageVolDefParseString(&poolDef, xml)) == NULL)
-        goto cleanup;
-
-    if (!def->name ||
-        (def->type != VIR_STORAGE_VOL_FILE))
-        goto cleanup;
-
-    /* For now only the vmdk, vpc and vdi type harddisk
-     * variants can be created.  For historical reason, we default to vdi */
-    if (def->target.format == VIR_STORAGE_FILE_VMDK) {
-        VBOX_UTF8_TO_UTF16("VMDK", &hddFormatUtf16);
-    } else if (def->target.format == VIR_STORAGE_FILE_VPC) {
-        VBOX_UTF8_TO_UTF16("VHD", &hddFormatUtf16);
-    } else {
-        VBOX_UTF8_TO_UTF16("VDI", &hddFormatUtf16);
-    }
-
-    VBOX_UTF8_TO_UTF16(def->name, &hddNameUtf16);
-
-    if (hddFormatUtf16 && hddNameUtf16) {
-        IHardDisk *hardDisk = NULL;
-
-        rc = data->vboxObj->vtbl->CreateHardDisk(data->vboxObj, hddFormatUtf16, hddNameUtf16, &hardDisk);
-        if (NS_SUCCEEDED(rc)) {
-            IProgress *progress    = NULL;
-            PRUint64   logicalSize = VIR_DIV_UP(def->target.capacity,
-                                                1024 * 1024);
-            PRUint32   variant     = HardDiskVariant_Standard;
-
-            if (def->target.capacity == def->target.allocation)
-                variant = HardDiskVariant_Fixed;
-
-#if VBOX_API_VERSION < 4003000
-            rc = hardDisk->vtbl->CreateBaseStorage(hardDisk, logicalSize, variant, &progress);
-#else
-            rc = hardDisk->vtbl->CreateBaseStorage(hardDisk, logicalSize, 1, &variant, &progress);
-#endif
-            if (NS_SUCCEEDED(rc) && progress) {
-#if VBOX_API_VERSION == 2002000
-                nsresult resultCode;
-#else
-                PRInt32  resultCode;
-#endif
-
-                progress->vtbl->WaitForCompletion(progress, -1);
-                progress->vtbl->GetResultCode(progress, &resultCode);
-
-                if (NS_SUCCEEDED(resultCode)) {
-                    vboxIID hddIID = VBOX_IID_INITIALIZER;
-                    unsigned char uuid[VIR_UUID_BUFLEN];
-                    char key[VIR_UUID_STRING_BUFLEN] = "";
-
-                    rc = VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetId, &hddIID.value);
-                    if (NS_SUCCEEDED(rc)) {
-                        vboxIIDToUUID(&hddIID, uuid);
-                        virUUIDFormat(uuid, key);
-
-                        ret = virGetStorageVol(pool->conn, pool->name, def->name, key,
-                                               NULL, NULL);
-                    }
-
-                    vboxIIDUnalloc(&hddIID);
-                }
-
-                VBOX_RELEASE(progress);
-            }
-        }
-    }
-
-    VBOX_UTF16_FREE(hddFormatUtf16);
-    VBOX_UTF16_FREE(hddNameUtf16);
-
- cleanup:
-    virStorageVolDefFree(def);
-    return ret;
-}
-
 static int vboxStorageVolDelete(virStorageVolPtr vol,
                                 unsigned int flags)
 {
@@ -5123,6 +5025,17 @@ _dhcpServerStop(IDHCPServer *dhcpServer)
     return dhcpServer->vtbl->Stop(dhcpServer);
 }
 
+static nsresult
+_hardDiskCreateBaseStorage(IHardDisk *hardDisk, PRUint64 logicalSize,
+                           PRUint32 variant, IProgress **progress)
+{
+#if VBOX_API_VERSION < 4003000
+    return hardDisk->vtbl->CreateBaseStorage(hardDisk, logicalSize, variant, progress);
+#else
+    return hardDisk->vtbl->CreateBaseStorage(hardDisk, logicalSize, 1, &variant, progress);
+#endif
+}
+
 static bool _machineStateOnline(PRUint32 state)
 {
     return ((state >= MachineState_FirstOnline) &&
@@ -5464,6 +5377,10 @@ static vboxUniformedIDHCPServer _UIDHCPServer = {
     .Stop = _dhcpServerStop,
 };
 
+static vboxUniformedIHardDisk _UIHardDisk = {
+    .CreateBaseStorage = _hardDiskCreateBaseStorage,
+};
+
 static uniformedMachineStateChecker _machineStateChecker = {
     .Online = _machineStateOnline,
     .Inactive = _machineStateInactive,
@@ -5520,6 +5437,7 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->UIHost = _UIHost;
     pVBoxAPI->UIHNInterface = _UIHNInterface;
     pVBoxAPI->UIDHCPServer = _UIDHCPServer;
+    pVBoxAPI->UIHardDisk = _UIHardDisk;
     pVBoxAPI->machineStateChecker = _machineStateChecker;
 
 #if VBOX_API_VERSION <= 2002000 || VBOX_API_VERSION >= 4000000
