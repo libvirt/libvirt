@@ -2033,123 +2033,6 @@ _registerDomainEvent(virHypervisorDriverPtr driver)
  * The Storage Functions here on
  */
 
-static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
-{
-    VBOX_OBJECT_CHECK(vol->conn, char *, NULL);
-    IHardDisk *hardDisk  = NULL;
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    vboxIID hddIID = VBOX_IID_INITIALIZER;
-    virStoragePoolDef pool;
-    virStorageVolDef def;
-    int defOk = 0;
-    nsresult rc;
-
-    virCheckFlags(0, NULL);
-
-    memset(&pool, 0, sizeof(pool));
-    memset(&def, 0, sizeof(def));
-
-    if (virUUIDParse(vol->key, uuid) < 0) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Could not parse UUID from '%s'"), vol->key);
-        return ret;
-    }
-
-    vboxIIDFromUUID(&hddIID, uuid);
-#if VBOX_API_VERSION < 4000000
-    rc = data->vboxObj->vtbl->GetHardDisk(data->vboxObj, hddIID.value, &hardDisk);
-#elif VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
-    rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddIID.value,
-                                         DeviceType_HardDisk, &hardDisk);
-#else
-    rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddIID.value,
-                                         DeviceType_HardDisk, AccessMode_ReadWrite,
-                                         PR_FALSE, &hardDisk);
-#endif /* VBOX_API_VERSION >= 4000000 */
-    if (NS_SUCCEEDED(rc)) {
-        PRUint32 hddstate;
-
-        VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetState, &hddstate);
-        if (NS_SUCCEEDED(rc) && hddstate != MediaState_Inaccessible) {
-            PRUnichar *hddFormatUtf16 = NULL;
-#if VBOX_API_VERSION < 4000000
-            PRUint64 hddLogicalSize;
-            PRUint64 hddActualSize;
-#else /* VBOX_API_VERSION >= 4000000 */
-            PRInt64 hddLogicalSize;
-            PRInt64 hddActualSize;
-#endif /* VBOX_API_VERSION >= 4000000 */
-
-            /* since there is currently one default pool now
-             * and virStorageVolDefFormat() just checks it type
-             * so just assign it for now, change the behaviour
-             * when vbox supports pools.
-             */
-            pool.type = VIR_STORAGE_POOL_DIR;
-            def.type = VIR_STORAGE_VOL_FILE;
-            defOk = 1;
-
-            rc = hardDisk->vtbl->GetLogicalSize(hardDisk, &hddLogicalSize);
-            if (NS_SUCCEEDED(rc) && defOk) {
-#if VBOX_API_VERSION < 4000000
-                def.target.capacity = hddLogicalSize * 1024 * 1024; /* MB => Bytes */
-#else /* VBOX_API_VERSION >= 4000000 */
-                def.target.capacity = hddLogicalSize;
-#endif /* VBOX_API_VERSION >= 4000000 */
-            } else {
-                defOk = 0;
-            }
-
-            rc = VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetSize, &hddActualSize);
-            if (NS_SUCCEEDED(rc) && defOk)
-                def.target.allocation = hddActualSize;
-            else
-                defOk = 0;
-
-            if (VIR_STRDUP(def.name, vol->name) < 0)
-                defOk = 0;
-
-            if (VIR_STRDUP(def.key, vol->key) < 0)
-                defOk = 0;
-
-            rc = hardDisk->vtbl->GetFormat(hardDisk, &hddFormatUtf16);
-            if (NS_SUCCEEDED(rc) && defOk) {
-                char *hddFormatUtf8 = NULL;
-
-                VBOX_UTF16_TO_UTF8(hddFormatUtf16, &hddFormatUtf8);
-                if (hddFormatUtf8) {
-
-                    VIR_DEBUG("Storage Volume Format: %s", hddFormatUtf8);
-
-                    if (STRCASEEQ("vmdk", hddFormatUtf8))
-                        def.target.format = VIR_STORAGE_FILE_VMDK;
-                    else if (STRCASEEQ("vhd", hddFormatUtf8))
-                        def.target.format = VIR_STORAGE_FILE_VPC;
-                    else if (STRCASEEQ("vdi", hddFormatUtf8))
-                        def.target.format = VIR_STORAGE_FILE_VDI;
-                    else
-                        def.target.format = VIR_STORAGE_FILE_RAW;
-
-                    VBOX_UTF8_FREE(hddFormatUtf8);
-                }
-
-                VBOX_UTF16_FREE(hddFormatUtf16);
-            } else {
-                defOk = 0;
-            }
-        }
-
-        VBOX_MEDIUM_RELEASE(hardDisk);
-    }
-
-    vboxIIDUnalloc(&hddIID);
-
-    if (defOk)
-        ret = virStorageVolDefFormat(&pool, &def);
-
-    return ret;
-}
-
 static char *vboxStorageVolGetPath(virStorageVolPtr vol) {
     VBOX_OBJECT_CHECK(vol->conn, char *, NULL);
     IHardDisk *hardDisk  = NULL;
@@ -4839,6 +4722,12 @@ _hardDiskGetLogicalSizeInByte(IHardDisk *hardDisk, PRUint64 *uLogicalSize)
     return rc;
 }
 
+static nsresult
+_hardDiskGetFormat(IHardDisk *hardDisk, PRUnichar **format)
+{
+    return hardDisk->vtbl->GetFormat(hardDisk, format);
+}
+
 static bool _machineStateOnline(PRUint32 state)
 {
     return ((state >= MachineState_FirstOnline) &&
@@ -5188,6 +5077,7 @@ static vboxUniformedIHardDisk _UIHardDisk = {
     .CreateBaseStorage = _hardDiskCreateBaseStorage,
     .DeleteStorage = _hardDiskDeleteStorage,
     .GetLogicalSizeInByte = _hardDiskGetLogicalSizeInByte,
+    .GetFormat = _hardDiskGetFormat,
 };
 
 static uniformedMachineStateChecker _machineStateChecker = {

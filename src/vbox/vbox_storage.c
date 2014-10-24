@@ -746,3 +746,96 @@ int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info)
     vboxIIDUnalloc(&hddIID);
     return ret;
 }
+
+char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
+{
+    vboxGlobalData *data = vol->conn->privateData;
+    IHardDisk *hardDisk = NULL;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    PRUnichar *hddFormatUtf16 = NULL;
+    char *hddFormatUtf8 = NULL;
+    PRUint64 hddLogicalSize = 0;
+    PRUint64 hddActualSize = 0;
+    virStoragePoolDef pool;
+    virStorageVolDef def;
+    vboxIIDUnion hddIID;
+    PRUint32 hddstate;
+    nsresult rc;
+    char *ret = NULL;
+
+    if (!data->vboxObj) {
+        return ret;
+    }
+
+    virCheckFlags(0, NULL);
+
+    memset(&pool, 0, sizeof(pool));
+    memset(&def, 0, sizeof(def));
+
+    if (virUUIDParse(vol->key, uuid) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Could not parse UUID from '%s'"), vol->key);
+        return ret;
+    }
+
+    VBOX_IID_INITIALIZE(&hddIID);
+    vboxIIDFromUUID(&hddIID, uuid);
+    rc = gVBoxAPI.UIVirtualBox.GetHardDiskByIID(data->vboxObj, &hddIID, &hardDisk);
+    if (NS_FAILED(rc))
+        goto cleanup;
+
+    gVBoxAPI.UIMedium.GetState(hardDisk, &hddstate);
+    if (hddstate == MediaState_Inaccessible)
+        goto cleanup;
+
+    /* since there is currently one default pool now
+     * and virStorageVolDefFormat() just checks it type
+     * so just assign it for now, change the behaviour
+     * when vbox supports pools.
+     */
+    pool.type = VIR_STORAGE_POOL_DIR;
+    def.type = VIR_STORAGE_VOL_FILE;
+
+    rc = gVBoxAPI.UIHardDisk.GetLogicalSizeInByte(hardDisk, &hddLogicalSize);
+    if (NS_FAILED(rc))
+        goto cleanup;
+
+    def.target.capacity = hddLogicalSize;
+
+    rc = gVBoxAPI.UIMedium.GetSize(hardDisk, &hddActualSize);
+    if (NS_FAILED(rc))
+        goto cleanup;
+
+    if (VIR_STRDUP(def.name, vol->name) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(def.key, vol->key) < 0)
+        goto cleanup;
+
+    rc = gVBoxAPI.UIHardDisk.GetFormat(hardDisk, &hddFormatUtf16);
+    if (NS_FAILED(rc))
+        goto cleanup;
+
+    VBOX_UTF16_TO_UTF8(hddFormatUtf16, &hddFormatUtf8);
+    if (!hddFormatUtf8)
+        goto cleanup;
+
+    VIR_DEBUG("Storage Volume Format: %s", hddFormatUtf8);
+
+    if (STRCASEEQ("vmdk", hddFormatUtf8))
+        def.target.format = VIR_STORAGE_FILE_VMDK;
+    else if (STRCASEEQ("vhd", hddFormatUtf8))
+        def.target.format = VIR_STORAGE_FILE_VPC;
+    else if (STRCASEEQ("vdi", hddFormatUtf8))
+        def.target.format = VIR_STORAGE_FILE_VDI;
+    else
+        def.target.format = VIR_STORAGE_FILE_RAW;
+    ret = virStorageVolDefFormat(&pool, &def);
+
+ cleanup:
+    VBOX_UTF16_FREE(hddFormatUtf16);
+    VBOX_UTF8_FREE(hddFormatUtf8);
+    VBOX_MEDIUM_RELEASE(hardDisk);
+    vboxIIDUnalloc(&hddIID);
+    return ret;
+}

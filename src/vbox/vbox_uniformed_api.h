@@ -530,6 +530,7 @@ typedef struct {
                                   PRUint32 variant, IProgress **progress);
     nsresult (*DeleteStorage)(IHardDisk *hardDisk, IProgress **progress);
     nsresult (*GetLogicalSizeInByte)(IHardDisk *hardDisk, PRUint64 *uLogicalSize);
+    nsresult (*GetFormat)(IHardDisk *hardDisk, PRUnichar **format);
 } vboxUniformedIHardDisk;
 
 typedef struct {
@@ -622,6 +623,7 @@ virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
                                          const char *xml, unsigned int flags);
 int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags);
 int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info);
+char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags);
 
 /* Version specified functions for installing uniformed API */
 void vbox22InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
