@@ -4680,14 +4680,13 @@ _mediumCreateDiffStorage(IMedium *medium ATTRIBUTE_UNUSED,
 }
 
 static nsresult
-_mediumAttachmentGetMedium(IMediumAttachment *mediumAttachment ATTRIBUTE_UNUSED,
-                           IMedium **medium ATTRIBUTE_UNUSED)
+_mediumAttachmentGetMedium(IMediumAttachment *mediumAttachment,
+                           IHardDisk **hardDisk)
 {
 #if VBOX_API_VERSION < 3001000
-    vboxUnsupported();
-    return 0;
+    return mediumAttachment->vtbl->GetHardDisk(mediumAttachment, hardDisk);
 #else /* VBOX_API_VERSION >= 3001000 */
-    return mediumAttachment->vtbl->GetMedium(mediumAttachment, medium);
+    return mediumAttachment->vtbl->GetMedium(mediumAttachment, hardDisk);
 #endif /* VBOX_API_VERSION >= 3001000 */
 }
 

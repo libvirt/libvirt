@@ -426,7 +426,7 @@ typedef struct {
 
 /* Functions for IMediumAttachment */
 typedef struct {
-    nsresult (*GetMedium)(IMediumAttachment *mediumAttachment, IMedium **medium);
+    nsresult (*GetMedium)(IMediumAttachment *mediumAttachment, IHardDisk **hardDisk);
     nsresult (*GetController)(IMediumAttachment *mediumAttachment, PRUnichar **controller);
     nsresult (*GetType)(IMediumAttachment *mediumAttachment, PRUint32 *type);
     nsresult (*GetPort)(IMediumAttachment *mediumAttachment, PRInt32 *port);
