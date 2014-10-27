@@ -14560,7 +14560,8 @@ qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         if (!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) &&
             virDomainSnapshotIsExternal(snap))
             external++;
-        if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN)
+        if (flags & (VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
+                     VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY))
             virDomainSnapshotForEachDescendant(snap,
                                                qemuDomainSnapshotCountExternal,
                                                &external);
