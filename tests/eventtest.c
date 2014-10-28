@@ -1,7 +1,7 @@
 /*
  * eventtest.c: Test the libvirtd event loop impl
  *
- * Copyright (C) 2009, 2011-2013 Red Hat, Inc.
+ * Copyright (C) 2009, 2011-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -116,9 +116,9 @@ testTimer(int timer, void *data)
 
 static pthread_mutex_t eventThreadMutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t eventThreadRunCond = PTHREAD_COND_INITIALIZER;
-static int eventThreadRunOnce = 0;
+static int eventThreadRunOnce;
 static pthread_cond_t eventThreadJobCond = PTHREAD_COND_INITIALIZER;
-static int eventThreadJobDone = 0;
+static int eventThreadJobDone;
 
 
 ATTRIBUTE_NORETURN static void *eventThreadLoop(void *data ATTRIBUTE_UNUSED) {

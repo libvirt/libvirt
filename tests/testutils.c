@@ -74,20 +74,20 @@ static unsigned int testVerbose = -1;
 static unsigned int testExpensive = -1;
 
 #ifdef TEST_OOM
-static unsigned int testOOM = 0;
+static unsigned int testOOM;
 static unsigned int testOOMStart = -1;
 static unsigned int testOOMEnd = -1;
-static unsigned int testOOMTrace = 0;
+static unsigned int testOOMTrace;
 # ifdef TEST_OOM_TRACE
 void *testAllocStack[30];
 int ntestAllocStack;
 # endif
 #endif
-static bool testOOMActive = false;
+static bool testOOMActive;
 
-static size_t testCounter = 0;
-static size_t testStart = 0;
-static size_t testEnd = 0;
+static size_t testCounter;
+static size_t testStart;
+static size_t testEnd;
 
 char *progname;
 

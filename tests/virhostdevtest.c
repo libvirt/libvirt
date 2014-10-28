@@ -53,7 +53,7 @@ static const unsigned char *uuid =
 static int nhostdevs = 3;
 static virDomainHostdevDefPtr hostdevs[] = {NULL, NULL, NULL};
 static virPCIDevicePtr dev[] = {NULL, NULL, NULL};
-static virHostdevManagerPtr mgr = NULL;
+static virHostdevManagerPtr mgr;
 
 static void
 myCleanup(void)

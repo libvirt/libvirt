@@ -36,7 +36,7 @@
 #  include <netinet/in.h>
 #  include <stdio.h>
 
-static bool host_has_ipv6 = false;
+static bool host_has_ipv6;
 static int (*realsocket)(int domain, int type, int protocol);
 
 static void init_syms(void)

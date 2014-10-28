@@ -34,7 +34,7 @@
 VIR_LOG_INIT("tests.scsitest");
 
 static const char *abs_top_srcdir;
-static char *virscsi_prefix = NULL;
+static char *virscsi_prefix;
 
 static int
 test1(const void *data ATTRIBUTE_UNUSED)
