@@ -67,7 +67,7 @@ struct _virLockDaemon {
 
 virLockDaemonPtr lockDaemon = NULL;
 
-static bool execRestart = false;
+static bool execRestart;
 
 enum {
     VIR_LOCK_DAEMON_ERR_NONE = 0,

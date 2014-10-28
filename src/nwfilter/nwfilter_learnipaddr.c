@@ -134,7 +134,7 @@ struct _virNWFilterIfaceLock {
 };
 
 
-static bool threadsTerminate = false;
+static bool threadsTerminate;
 
 
 int

@@ -144,7 +144,7 @@ static const struct int_map chain_priorities[] = {
  * only one filter update allowed
  */
 static virRWLock updateLock;
-static bool initialized = false;
+static bool initialized;
 
 void
 virNWFilterReadLockFilterUpdates(void)

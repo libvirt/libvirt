@@ -63,7 +63,7 @@ virNetcfDriverStateOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virNetcfDriverState)
 
-static virNetcfDriverStatePtr driverState = NULL;
+static virNetcfDriverStatePtr driverState;
 
 
 static void

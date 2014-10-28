@@ -56,7 +56,7 @@ struct _udevPrivate {
     bool privileged;
 };
 
-static virNodeDeviceDriverStatePtr driverState = NULL;
+static virNodeDeviceDriverStatePtr driverState;
 
 static int udevStrToLong_ull(char const *s,
                              char **end_ptr,

@@ -1,7 +1,7 @@
 /*
  * lock_driver_lockd.c: A lock driver which locks nothing
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2011, 2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -79,7 +79,7 @@ struct _virLockManagerLockDaemonDriver {
     char *scsiLockSpaceDir;
 };
 
-static virLockManagerLockDaemonDriverPtr driver = NULL;
+static virLockManagerLockDaemonDriverPtr driver;
 
 static int virLockManagerLockDaemonLoadConfig(const char *configFile)
 {

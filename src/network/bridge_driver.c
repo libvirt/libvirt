@@ -126,7 +126,7 @@ static int networkUnplugBandwidth(virNetworkObjPtr net,
 static void networkNetworkObjTaint(virNetworkObjPtr net,
                                    virNetworkTaintFlags taint);
 
-static virNetworkDriverStatePtr driverState = NULL;
+static virNetworkDriverStatePtr driverState;
 
 static virNetworkObjPtr
 networkObjFromNetwork(virNetworkPtr net)

@@ -79,7 +79,7 @@ struct _virLockManagerSanlockDriver {
     gid_t group;
 };
 
-static virLockManagerSanlockDriver *driver = NULL;
+static virLockManagerSanlockDriver *driver;
 
 struct _virLockManagerSanlockPrivate {
     const char *vm_uri;

@@ -92,7 +92,7 @@ struct x86_map {
     struct x86_feature *migrate_blockers;
 };
 
-static struct x86_map* virCPUx86Map = NULL;
+static struct x86_map* virCPUx86Map;
 int virCPUx86MapOnceInit(void);
 VIR_ONCE_GLOBAL_INIT(virCPUx86Map);
 

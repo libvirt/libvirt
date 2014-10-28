@@ -641,7 +641,7 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
         if (!baselabel) {
             if (def->virtType == VIR_DOMAIN_VIRT_QEMU) {
                 if (data->alt_domain_context == NULL) {
-                    static bool warned = false;
+                    static bool warned;
                     if (!warned) {
                         VIR_WARN("SELinux policy does not define a domain type for QEMU TCG. "
                                  "Guest startup may be denied due to missing 'execmem' privilege "

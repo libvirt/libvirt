@@ -817,8 +817,8 @@ void virNetServerRemoveShutdownInhibition(virNetServerPtr srv)
 
 
 
-static sig_atomic_t sigErrors = 0;
-static int sigLastErrno = 0;
+static sig_atomic_t sigErrors;
+static int sigLastErrno;
 static int sigWrite = -1;
 
 static void
