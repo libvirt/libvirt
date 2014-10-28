@@ -341,15 +341,25 @@ create_profile(const char *profile, const char *profile_name,
     int tlen, plen;
     int fd;
     int rc = -1;
+    const char *driver_name = NULL;
 
     if (virFileExists(profile)) {
         vah_error(NULL, 0, _("profile exists"));
         goto end;
     }
 
+    switch (virtType) {
+    case VIR_DOMAIN_VIRT_QEMU:
+    case VIR_DOMAIN_VIRT_KQEMU:
+    case VIR_DOMAIN_VIRT_KVM:
+        driver_name = "qemu";
+        break;
+    default:
+        driver_name = virDomainVirtTypeToString(virtType);
+    }
 
     if (virAsprintfQuiet(&template, "%s/TEMPLATE.%s", APPARMOR_DIR "/libvirt",
-                         virDomainVirtTypeToString(virtType)) < 0) {
+                         driver_name) < 0) {
         vah_error(NULL, 0, _("template name exceeds maximum length"));
         goto end;
     }
