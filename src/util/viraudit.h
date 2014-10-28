@@ -1,7 +1,7 @@
 /*
  * viraudit.h: auditing support
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2011, 2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,7 @@ typedef enum {
 
 int virAuditOpen(void);
 
-void virAuditLog(int enabled);
+void virAuditLog(bool enabled);
 
 void virAuditSend(virLogSourcePtr source,
                   const char *filename, size_t linenr, const char *funcname,

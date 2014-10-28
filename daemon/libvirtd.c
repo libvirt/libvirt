@@ -1443,7 +1443,7 @@ int main(int argc, char **argv) {
             VIR_DEBUG("Proceeding without auditing");
         }
     }
-    virAuditLog(config->audit_logging);
+    virAuditLog(config->audit_logging > 0);
 
     /* setup the hooks if any */
     if (virHookInitialize() < 0) {

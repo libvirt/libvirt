@@ -53,7 +53,7 @@ VIR_LOG_INIT("util.audit");
 #if WITH_AUDIT
 static int auditfd = -1;
 #endif
-static int auditlog = 0;
+static bool auditlog;
 
 int virAuditOpen(void)
 {
@@ -70,7 +70,7 @@ int virAuditOpen(void)
 }
 
 
-void virAuditLog(int logging)
+void virAuditLog(bool logging)
 {
     auditlog = logging;
 }
