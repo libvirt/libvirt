@@ -177,7 +177,7 @@ if (strUtf16) {\
  * them that way
  */
 
-static vboxGlobalData *g_pVBoxGlobalData = NULL;
+static vboxGlobalData *g_pVBoxGlobalData;
 
 #endif /* !(VBOX_API_VERSION == 2002000) */
 

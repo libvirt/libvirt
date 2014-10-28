@@ -471,7 +471,7 @@ static const char *defaultNodeXML =
 "</device>";
 
 static const unsigned long long defaultPoolCap = (100 * 1024 * 1024 * 1024ull);
-static const unsigned long long defaultPoolAlloc = 0;
+static const unsigned long long defaultPoolAlloc;
 
 static int testStoragePoolObjSetDefaults(virStoragePoolObjPtr pool);
 static int testNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);

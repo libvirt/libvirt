@@ -68,9 +68,9 @@ VIR_LOG_INIT("vbox.vbox_XPCOMCGlue");
 *   Global Variables                                                           *
 *******************************************************************************/
 /** The dlopen handle for VBoxXPCOMC. */
-static void *hVBoxXPCOMC = NULL;
+static void *hVBoxXPCOMC;
 /** Pointer to the VBoxXPCOMC function table. */
-static PCVBOXXPCOM pVBoxFuncs_v2_2 = NULL;
+static PCVBOXXPCOM pVBoxFuncs_v2_2;
 /** Pointer to VBoxGetXPCOMCFunctions for the loaded VBoxXPCOMC so/dylib/dll. */
 PFNVBOXGETXPCOMCFUNCTIONS g_pfnGetFunctions = NULL;
 

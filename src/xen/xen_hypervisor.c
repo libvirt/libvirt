@@ -126,7 +126,7 @@ typedef privcmd_hypercall_t hypercall_t;
 # define SYS_IFACE_MIN_VERS_NUMA 4
 #endif
 
-static int xen_ioctl_hypercall_cmd = 0;
+static int xen_ioctl_hypercall_cmd;
 static struct xenHypervisorVersions hv_versions = {
     .hv = 0,
     .hypervisor = 2,
@@ -134,7 +134,7 @@ static struct xenHypervisorVersions hv_versions = {
     .dom_interface = -1,
 };
 
-static int kb_per_pages = 0;
+static int kb_per_pages;
 
 /* Regular expressions used by xenHypervisorGetCapabilities, and
  * compiled once by xenHypervisorInit.  Note that these are POSIX.2

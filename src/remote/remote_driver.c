@@ -77,7 +77,7 @@ VIR_LOG_INIT("remote.remote_driver");
     deserializeTypedParameters(__FUNCTION__, ret_params_val, ret_params_len,  \
                                limit, params, nparams)
 
-static bool inside_daemon = false;
+static bool inside_daemon;
 
 struct private_data {
     virMutex lock;

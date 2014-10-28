@@ -76,7 +76,7 @@ VIR_LOG_INIT("libxl.libxl_driver");
 #define XEN_SCHED_CREDIT_NPARAM   2
 
 
-static libxlDriverPrivatePtr libxl_driver = NULL;
+static libxlDriverPrivatePtr libxl_driver;
 
 /* Function declarations */
 static int

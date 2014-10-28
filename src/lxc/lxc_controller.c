@@ -819,7 +819,7 @@ static int lxcControllerClearCapabilities(void)
     return 0;
 }
 
-static bool wantReboot = false;
+static bool wantReboot;
 static virMutex lock = VIR_MUTEX_INITIALIZER;
 
 

@@ -91,8 +91,8 @@ xenUnifiedDomainGetVcpusInternal(virDomainPtr dom,
                                  int maplen);
 
 
-static bool is_privileged = false;
-static virSysinfoDefPtr hostsysinfo = NULL;
+static bool is_privileged;
+static virSysinfoDefPtr hostsysinfo;
 
 static virDomainDefPtr xenGetDomainDefForID(virConnectPtr conn, int id)
 {

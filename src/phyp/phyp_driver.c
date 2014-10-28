@@ -68,9 +68,11 @@ VIR_LOG_INIT("phyp.phyp_driver");
  * URI: phyp://user@[hmc|ivm]/managed_system
  * */
 
-static unsigned const int HMC = 0;
-static unsigned const int PHYP_IFACENAME_SIZE = 24;
-static unsigned const int PHYP_MAC_SIZE = 12;
+enum {
+    HMC = 0,
+    PHYP_IFACENAME_SIZE = 24,
+    PHYP_MAC_SIZE = 12,
+};
 
 static int
 waitsocket(int socket_fd, LIBSSH2_SESSION * session)

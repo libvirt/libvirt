@@ -147,7 +147,7 @@ static int umlMonitorCommand(const struct uml_driver *driver,
                              const char *cmd,
                              char **reply);
 
-static struct uml_driver *uml_driver = NULL;
+static struct uml_driver *uml_driver;
 
 static int
 umlVMFilterRebuild(virDomainObjListIterator iter, void *data)
