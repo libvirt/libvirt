@@ -15671,8 +15671,9 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
              * that back into the return status of this API call.  */
             while (1) {
                 /* Poll every 50ms */
-                static struct timespec ts = { .tv_sec = 0,
-                                              .tv_nsec = 50 * 1000 * 1000ull };
+                static struct timespec ts = {
+                    .tv_sec = 0,
+                    .tv_nsec = 50 * 1000 * 1000ull };
                 virDomainBlockJobInfo dummy;
 
                 qemuDomainObjEnterMonitor(driver, vm);

@@ -962,6 +962,14 @@ sc_prohibit_paren_brace:
 	halt='Put space between closing parenthesis and opening brace'	\
 	  $(_sc_search_regexp)
 
+# C guarantees that static variables are zero initialized, and some compilers
+# waste space by sticking explicit initializers in .data instead of .bss
+sc_prohibit_static_zero_init:
+	@prohibit='\bstatic\b.*= *(0[^xX0-9]|NULL|false)'		\
+	in_vc_files='\.[chx](\.in)?$$'					\
+	halt='static variables do not need explicit zero initialization'\
+	  $(_sc_search_regexp)
+
 # FreeBSD exports the "devname" symbol which produces a warning.
 sc_prohibit_devname:
 	@prohibit='\bdevname\b'	\
