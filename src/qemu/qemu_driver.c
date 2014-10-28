@@ -7437,6 +7437,7 @@ qemuDomainUpdateDeviceConfig(virQEMUCapsPtr qemuCaps,
         if (disk->src->format)
             orig->src->format = disk->src->format;
         disk->src->path = NULL;
+        orig->startupPolicy = disk->startupPolicy;
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
