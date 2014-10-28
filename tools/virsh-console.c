@@ -1,7 +1,7 @@
 /*
  * virsh-console.c: A dumb serial console client
  *
- * Copyright (C) 2007-2008, 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2007-2008, 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -81,11 +81,9 @@ struct virConsole {
 };
 
 
-static int got_signal = 0;
 static void
 virConsoleHandleSignal(int sig ATTRIBUTE_UNUSED)
 {
-    got_signal = 1;
 }
 
 
@@ -336,7 +334,6 @@ vshRunConsole(vshControl *ctl,
     /* Trap all common signals so that we can safely restore the original
      * terminal settings on STDIN before the process exits - people don't like
      * being left with a messed up terminal ! */
-    got_signal = 0;
     sigaction(SIGQUIT, &sighandler, &old_sigquit);
     sigaction(SIGTERM, &sighandler, &old_sigterm);
     sigaction(SIGINT,  &sighandler, &old_sigint);

@@ -316,7 +316,7 @@ vshReportError(vshControl *ctl)
 /*
  * Detection of disconnections and automatic reconnection support
  */
-static int disconnected = 0; /* we may have been disconnected */
+static int disconnected; /* we may have been disconnected */
 
 /*
  * vshCatchDisconnect:
@@ -2985,7 +2985,7 @@ static char *
 vshReadlineOptionsGenerator(const char *text, int state)
 {
     static int list_index, len;
-    static const vshCmdDef *cmd = NULL;
+    static const vshCmdDef *cmd;
     const char *name;
 
     if (!state) {

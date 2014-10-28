@@ -1582,7 +1582,7 @@ vshPrintJobProgress(const char *label, unsigned long long remaining,
     fflush(stderr);
 }
 
-static volatile sig_atomic_t intCaught = 0;
+static volatile sig_atomic_t intCaught;
 
 static void vshCatchInt(int sig ATTRIBUTE_UNUSED,
                         siginfo_t *siginfo ATTRIBUTE_UNUSED,

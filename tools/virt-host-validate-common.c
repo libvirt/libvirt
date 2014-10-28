@@ -1,7 +1,7 @@
 /*
  * virt-host-validate-common.c: Sanity check helper APIs
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012, 2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -66,7 +66,7 @@ void virHostMsgCheck(const char *prefix,
 static bool virHostMsgWantEscape(void)
 {
     static bool detectTty = true;
-    static bool wantEscape = false;
+    static bool wantEscape;
     if (detectTty) {
         if (isatty(STDOUT_FILENO))
             wantEscape = true;
