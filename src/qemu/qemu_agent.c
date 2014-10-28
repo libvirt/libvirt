@@ -1009,14 +1009,12 @@ static const char *
 qemuAgentStringifyError(virJSONValuePtr error)
 {
     const char *klass = virJSONValueObjectGetString(error, "class");
-    const char *detail = NULL;
+    const char *detail = virJSONValueObjectGetString(error, "desc");
 
     /* The QMP 'desc' field is usually sufficient for our generic
-     * error reporting needs.
+     * error reporting needs. However, if not present, translate
+     * the class into something readable.
      */
-    if (klass)
-        detail = virJSONValueObjectGetString(error, "desc");
-
     if (!detail)
         detail = qemuAgentStringifyErrorClass(klass);
 
