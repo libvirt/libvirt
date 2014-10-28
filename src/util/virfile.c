@@ -1054,7 +1054,7 @@ safezero(int fd, off_t offset, off_t len)
     char *buf;
     unsigned long long remain, bytes;
 # ifdef HAVE_MMAP
-    static long pagemask = 0;
+    static long pagemask;
     off_t map_skip;
 
     /* align offset and length, rounding offset down and length up */

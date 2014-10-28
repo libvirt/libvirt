@@ -35,8 +35,8 @@ VIR_LOG_INIT("util.dbus");
 #ifdef WITH_DBUS
 
 static bool sharedBus = true;
-static DBusConnection *systembus = NULL;
-static DBusConnection *sessionbus = NULL;
+static DBusConnection *systembus;
+static DBusConnection *sessionbus;
 static virOnceControl systemonce = VIR_ONCE_CONTROL_INITIALIZER;
 static virOnceControl sessiononce = VIR_ONCE_CONTROL_INITIALIZER;
 static DBusError systemdbuserr;

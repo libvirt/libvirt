@@ -122,22 +122,22 @@ VIR_LOG_INIT("libvirt");
     } while (0)
 
 static virHypervisorDriverPtr virHypervisorDriverTab[MAX_DRIVERS];
-static int virHypervisorDriverTabCount = 0;
+static int virHypervisorDriverTabCount;
 static virNetworkDriverPtr virNetworkDriverTab[MAX_DRIVERS];
-static int virNetworkDriverTabCount = 0;
+static int virNetworkDriverTabCount;
 static virInterfaceDriverPtr virInterfaceDriverTab[MAX_DRIVERS];
-static int virInterfaceDriverTabCount = 0;
+static int virInterfaceDriverTabCount;
 static virStorageDriverPtr virStorageDriverTab[MAX_DRIVERS];
-static int virStorageDriverTabCount = 0;
+static int virStorageDriverTabCount;
 static virNodeDeviceDriverPtr virNodeDeviceDriverTab[MAX_DRIVERS];
-static int virNodeDeviceDriverTabCount = 0;
+static int virNodeDeviceDriverTabCount;
 static virSecretDriverPtr virSecretDriverTab[MAX_DRIVERS];
-static int virSecretDriverTabCount = 0;
+static int virSecretDriverTabCount;
 static virNWFilterDriverPtr virNWFilterDriverTab[MAX_DRIVERS];
-static int virNWFilterDriverTabCount = 0;
+static int virNWFilterDriverTabCount;
 #ifdef WITH_LIBVIRTD
 static virStateDriverPtr virStateDriverTab[MAX_DRIVERS];
-static int virStateDriverTabCount = 0;
+static int virStateDriverTabCount;
 #endif
 
 
@@ -354,7 +354,7 @@ static struct gcry_thread_cbs virTLSThreadImpl = {
 #endif /* WITH_GNUTLS_GCRYPT */
 
 
-static bool virGlobalError = false;
+static bool virGlobalError;
 static virOnceControl virGlobalOnce = VIR_ONCE_CONTROL_INITIALIZER;
 
 static void

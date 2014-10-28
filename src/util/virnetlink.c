@@ -103,7 +103,7 @@ static int nextWatch = 1;
 /* Linux kernel supports up to MAX_LINKS (32 at the time) individual
  * netlink protocols. */
 static virNetlinkEventSrvPrivatePtr server[MAX_LINKS] = {NULL};
-static virNetlinkHandle *placeholder_nlhandle = NULL;
+static virNetlinkHandle *placeholder_nlhandle;
 
 /* Function definitions */
 

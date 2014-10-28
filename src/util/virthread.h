@@ -1,7 +1,7 @@
 /*
  * virthread.h: basic thread synchronization primitives
  *
- * Copyright (C) 2009-2011, 2013 Red Hat, Inc.
+ * Copyright (C) 2009-2011, 2013-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -187,7 +187,7 @@ int virThreadLocalSet(virThreadLocalPtr l, void*) ATTRIBUTE_RETURN_CHECK;
  */
 # define VIR_ONCE_GLOBAL_INIT(classname)                                \
     static virOnceControl classname ## OnceControl = VIR_ONCE_CONTROL_INITIALIZER; \
-    static virErrorPtr classname ## OnceError = NULL;                   \
+    static virErrorPtr classname ## OnceError;                          \
                                                                         \
     static void classname ## Once(void)                                 \
     {                                                                   \

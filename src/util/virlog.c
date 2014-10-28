@@ -1,7 +1,7 @@
 /*
  * virlog.c: internal logging and debugging
  *
- * Copyright (C) 2008, 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2008, 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -61,7 +61,7 @@
 
 VIR_LOG_INIT("util.log");
 
-static regex_t *virLogRegex = NULL;
+static regex_t *virLogRegex;
 
 
 #define VIR_LOG_DATE_REGEX "[0-9]{4}-[0-9]{2}-[0-9]{2}"
@@ -86,8 +86,8 @@ typedef struct _virLogFilter virLogFilter;
 typedef virLogFilter *virLogFilterPtr;
 
 static int virLogFiltersSerial = 1;
-static virLogFilterPtr virLogFilters = NULL;
-static int virLogNbFilters = 0;
+static virLogFilterPtr virLogFilters;
+static int virLogNbFilters;
 
 /*
  * Outputs are used to emit the messages retained
@@ -105,8 +105,8 @@ struct _virLogOutput {
 typedef struct _virLogOutput virLogOutput;
 typedef virLogOutput *virLogOutputPtr;
 
-static virLogOutputPtr virLogOutputs = NULL;
-static int virLogNbOutputs = 0;
+static virLogOutputPtr virLogOutputs;
+static int virLogNbOutputs;
 
 /*
  * Default priorities
@@ -645,7 +645,7 @@ virLogStackTraceToFd(int fd)
 {
     void *array[100];
     int size;
-    static bool doneWarning = false;
+    static bool doneWarning;
     const char *msg = "Stack trace not available on this platform\n";
 
 #define STRIP_DEPTH 3
@@ -782,7 +782,7 @@ virLogOutputToSyslog(virLogSourcePtr source ATTRIBUTE_UNUSED,
     syslog(virLogPrioritySyslog(priority), "%s", str);
 }
 
-static char *current_ident = NULL;
+static char *current_ident;
 
 
 static void

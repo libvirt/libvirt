@@ -32,11 +32,11 @@
 VIR_LOG_INIT("util.alloc");
 
 #if TEST_OOM
-static int testMallocNext = 0;
-static int testMallocFailFirst = 0;
-static int testMallocFailLast = 0;
-static void (*testMallocHook)(int, void*) = NULL;
-static void *testMallocHookData = NULL;
+static int testMallocNext;
+static int testMallocFailFirst;
+static int testMallocFailLast;
+static void (*testMallocHook)(int, void*);
+static void *testMallocHookData;
 
 void virAllocTestInit(void)
 {
