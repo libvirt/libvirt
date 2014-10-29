@@ -271,6 +271,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "iothread",
               "migrate-rdma",
               "ivshmem",
+              "drive-iotune-max",
     );
 
 
@@ -2450,6 +2451,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "spice", "disable-agent-file-xfer", QEMU_CAPS_SPICE_FILE_XFER_DISABLE },
     { "msg", "timestamp", QEMU_CAPS_MSG_TIMESTAMP },
     { "numa", NULL, QEMU_CAPS_NUMA },
+    { "drive", "throttling.bps-total-max", QEMU_CAPS_DRIVE_IOTUNE_MAX},
 };
 
 static int

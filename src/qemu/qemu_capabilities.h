@@ -218,6 +218,7 @@ typedef enum {
     QEMU_CAPS_OBJECT_IOTHREAD    = 176, /* -object iothread */
     QEMU_CAPS_MIGRATE_RDMA       = 177, /* have rdma migration */
     QEMU_CAPS_DEVICE_IVSHMEM     = 178, /* -device ivshmem */
+    QEMU_CAPS_DRIVE_IOTUNE_MAX   = 179, /* -drive bps_max= and friends */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 } virQEMUCapsFlags;

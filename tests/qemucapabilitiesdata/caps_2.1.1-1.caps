@@ -160,4 +160,5 @@
     <flag name='iothread'/>
     <flag name='migrate-rdma'/>
     <flag name='ivshmem'/>
+    <flag name='drive-iotune-max'/>
   </qemuCaps>
