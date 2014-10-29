@@ -597,6 +597,9 @@ mymain(void)
     const char *tokens7[] = { "The", "quick", "brown", "fox", "", NULL };
     TEST_SPLIT("The quick brown fox ", " ", 0, tokens7);
 
+    const char *tokens8[] = { "gluster", "rdma", NULL };
+    TEST_SPLIT("gluster+rdma", "+", 2, tokens8);
+
     if (virtTestRun("strdup", testStrdup, NULL) < 0)
         ret = -1;
 
