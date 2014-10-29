@@ -3670,12 +3670,32 @@ qemuBuildDriveStr(virConnectPtr conn,
         goto error;
     }
 
+    /* block I/O throttling 1.7 */
+    if ((disk->blkdeviotune.total_bytes_sec_max ||
+         disk->blkdeviotune.read_bytes_sec_max ||
+         disk->blkdeviotune.write_bytes_sec_max ||
+         disk->blkdeviotune.total_iops_sec_max ||
+         disk->blkdeviotune.read_iops_sec_max ||
+         disk->blkdeviotune.write_iops_sec_max) &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("there is some block I/O throttling paramater that are not supported with this "
+                         "QEMU binary(need QEMU 1.7 or superior)"));
+        goto error;
+    }
+
     if (disk->blkdeviotune.total_bytes_sec > LLONG_MAX ||
         disk->blkdeviotune.read_bytes_sec > LLONG_MAX ||
         disk->blkdeviotune.write_bytes_sec > LLONG_MAX ||
         disk->blkdeviotune.total_iops_sec > LLONG_MAX ||
         disk->blkdeviotune.read_iops_sec > LLONG_MAX ||
-        disk->blkdeviotune.write_iops_sec > LLONG_MAX) {
+        disk->blkdeviotune.write_iops_sec > LLONG_MAX ||
+        disk->blkdeviotune.total_bytes_sec_max > LLONG_MAX ||
+        disk->blkdeviotune.read_bytes_sec_max > LLONG_MAX ||
+        disk->blkdeviotune.write_bytes_sec_max > LLONG_MAX ||
+        disk->blkdeviotune.total_iops_sec_max > LLONG_MAX ||
+        disk->blkdeviotune.read_iops_sec_max > LLONG_MAX ||
+        disk->blkdeviotune.write_iops_sec_max > LLONG_MAX) {
         virReportError(VIR_ERR_OVERFLOW,
                       _("block I/O throttle limit must "
                         "be less than %llu using QEMU"), LLONG_MAX);
@@ -3710,6 +3730,41 @@ qemuBuildDriveStr(virConnectPtr conn,
     if (disk->blkdeviotune.write_iops_sec) {
         virBufferAsprintf(&opt, ",iops_wr=%llu",
                           disk->blkdeviotune.write_iops_sec);
+    }
+
+    if (disk->blkdeviotune.total_bytes_sec_max) {
+        virBufferAsprintf(&opt, ",bps_max=%llu",
+                          disk->blkdeviotune.total_bytes_sec_max);
+    }
+
+    if (disk->blkdeviotune.read_bytes_sec_max) {
+        virBufferAsprintf(&opt, ",bps_rd_max=%llu",
+                          disk->blkdeviotune.read_bytes_sec_max);
+    }
+
+    if (disk->blkdeviotune.write_bytes_sec_max) {
+        virBufferAsprintf(&opt, ",bps_wr_max=%llu",
+                          disk->blkdeviotune.write_bytes_sec_max);
+    }
+
+    if (disk->blkdeviotune.total_iops_sec_max) {
+        virBufferAsprintf(&opt, ",iops_max=%llu",
+                          disk->blkdeviotune.total_iops_sec_max);
+    }
+
+    if (disk->blkdeviotune.read_iops_sec_max) {
+        virBufferAsprintf(&opt, ",iops_rd_max=%llu",
+                          disk->blkdeviotune.read_iops_sec_max);
+    }
+
+    if (disk->blkdeviotune.write_iops_sec_max) {
+        virBufferAsprintf(&opt, ",iops_wr_max=%llu",
+                          disk->blkdeviotune.write_iops_sec_max);
+    }
+
+    if (disk->blkdeviotune.write_iops_sec_max) {
+        virBufferAsprintf(&opt, ",iops_size=%llu",
+                          disk->blkdeviotune.size_iops_sec);
     }
 
     if (virBufferCheckError(&opt) < 0)
