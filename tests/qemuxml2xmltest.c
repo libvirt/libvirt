@@ -50,7 +50,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
         goto fail;
 
     if (STRNEQ(outXmlData, actual)) {
-        virtTestDifference(stderr, outXmlData, actual);
+        virtTestDifferenceFull(stderr, outXmlData, outxml, actual, inxml);
         goto fail;
     }
 
