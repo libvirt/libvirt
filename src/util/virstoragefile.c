@@ -2133,6 +2133,11 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
         goto cleanup;
     }
 
+    if (VIR_ALLOC(src->hosts) < 0)
+        goto cleanup;
+
+    src->nhosts = 1;
+
     if (!(scheme = virStringSplit(uri->scheme, "+", 2)))
         goto cleanup;
 
@@ -2182,11 +2187,6 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
 
         tmp[0] = '\0';
     }
-
-    if (VIR_ALLOC(src->hosts) < 0)
-        goto cleanup;
-
-    src->nhosts = 1;
 
     if (uri->port > 0) {
         if (virAsprintf(&src->hosts->port, "%d", uri->port) < 0)

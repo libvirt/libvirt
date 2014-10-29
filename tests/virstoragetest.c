@@ -835,6 +835,25 @@ mymain(void)
                (&qcow2, &nbd), EXP_PASS,
                (&qcow2, &nbd), ALLOW_PROBE | EXP_PASS);
 
+    /* Rewrite qcow2 to use an nbd: protocol as backend */
+    virCommandFree(cmd);
+    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
+                               "-F", "raw", "-b", "nbd+tcp://example.org:6000/blah",
+                               "qcow2", NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        ret = -1;
+    qcow2.expBackingStoreRaw = "nbd+tcp://example.org:6000/blah";
+
+    /* Qcow2 file with backing protocol instead of file */
+    testFileData nbd2 = {
+        .path = "blah",
+        .type = VIR_STORAGE_TYPE_NETWORK,
+        .format = VIR_STORAGE_FILE_RAW,
+    };
+    TEST_CHAIN(12, absqcow2, VIR_STORAGE_FILE_QCOW2,
+               (&qcow2, &nbd2), EXP_PASS,
+               (&qcow2, &nbd2), ALLOW_PROBE | EXP_PASS);
+
     /* qed file */
     testFileData qed = {
         .expBackingStoreRaw = absraw,
@@ -848,7 +867,7 @@ mymain(void)
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_RAW,
     };
-    TEST_CHAIN(12, absqed, VIR_STORAGE_FILE_AUTO,
+    TEST_CHAIN(13, absqed, VIR_STORAGE_FILE_AUTO,
                (&qed_as_raw), EXP_PASS,
                (&qed, &raw), ALLOW_PROBE | EXP_PASS);
 
@@ -858,10 +877,10 @@ mymain(void)
         .type = VIR_STORAGE_TYPE_DIR,
         .format = VIR_STORAGE_FILE_DIR,
     };
-    TEST_CHAIN(13, absdir, VIR_STORAGE_FILE_AUTO,
+    TEST_CHAIN(14, absdir, VIR_STORAGE_FILE_AUTO,
                (&dir), EXP_PASS,
                (&dir), ALLOW_PROBE | EXP_PASS);
-    TEST_CHAIN(14, absdir, VIR_STORAGE_FILE_DIR,
+    TEST_CHAIN(15, absdir, VIR_STORAGE_FILE_DIR,
                (&dir), EXP_PASS,
                (&dir), ALLOW_PROBE | EXP_PASS);
 
@@ -900,7 +919,7 @@ mymain(void)
 
     raw.path = datadir "/sub/../sub/../raw";
     raw.pathRel = "../raw";
-    TEST_CHAIN(15, abslink2, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(16, abslink2, VIR_STORAGE_FILE_QCOW2,
                (&link2, &link1, &raw), EXP_PASS,
                (&link2, &link1, &raw), ALLOW_PROBE | EXP_PASS);
 #endif
@@ -914,7 +933,7 @@ mymain(void)
     qcow2.expBackingStoreRaw = "qcow2";
 
     /* Behavior of an infinite loop chain */
-    TEST_CHAIN(16, absqcow2, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(17, absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2), EXP_WARN,
                (&qcow2), ALLOW_PROBE | EXP_WARN);
 
@@ -933,7 +952,7 @@ mymain(void)
     qcow2.expBackingStoreRaw = "wrap";
 
     /* Behavior of an infinite loop chain */
-    TEST_CHAIN(17, abswrap, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(18, abswrap, VIR_STORAGE_FILE_QCOW2,
                (&wrap, &qcow2), EXP_WARN,
                (&wrap, &qcow2), ALLOW_PROBE | EXP_WARN);
 
