@@ -1052,6 +1052,9 @@ convert it to the maximum value allowed.
 [[I<--config>] [I<--live>] | [I<--current>]]
 [[I<total-bytes-sec>] | [I<read-bytes-sec>] [I<write-bytes-sec>]]
 [[I<total-iops-sec>] | [I<read-iops-sec>] [I<write-iops-sec>]]
+[[I<total-bytes-sec-max>] | [I<read-bytes-sec-max>] [I<write-bytes-sec-max>]]
+[[I<total-iops-sec-max>] | [I<read-iops-sec-max>] [I<write-iops-sec-max>]]
+[I<size-iops-sec>]
 
 Set or query the block disk io parameters for a block device of I<domain>.
 I<device> specifies a unique target name (<target dev='name'/>) or source
@@ -1066,6 +1069,13 @@ I<--write-bytes-sec> specifies write throughput limit in bytes per second.
 I<--total-iops-sec> specifies total I/O operations limit per second.
 I<--read-iops-sec> specifies read I/O operations limit per second.
 I<--write-iops-sec> specifies write I/O operations limit per second.
+I<--total-bytes-sec-max> specifies maximum total throughput limit in bytes per second.
+I<--read-bytes-sec-max> specifies maximum read throughput limit in bytes per second.
+I<--write-bytes-sec-max> specifies maximum write throughput limit in bytes per second.
+I<--total-iops-sec-max> specifies maximum total I/O operations limit per second.
+I<--read-iops-sec-max> specifies maximum read I/O operations limit per second.
+I<--write-iops-sec-max> specifies maximum write I/O operations limit per second.
+I<--size-iops-sec> specifies size I/O operations limit per second.
 
 Older versions of virsh only accepted these options with underscore
 instead of dash, as in I<--total_bytes_sec>.

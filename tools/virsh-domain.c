@@ -1111,6 +1111,62 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
      .type = VSH_OT_INT,
      .help = N_("write I/O operations limit per second")
     },
+    {.name = "total_bytes_sec_max",
+     .type = VSH_OT_ALIAS,
+     .help = "total-bytes-sec-max"
+    },
+    {.name = "total-bytes-sec-max",
+     .type = VSH_OT_INT,
+     .help = N_("total max in bytes")
+    },
+    {.name = "read_bytes_sec_max",
+     .type = VSH_OT_ALIAS,
+     .help = "read-bytes-sec-max"
+    },
+    {.name = "read-bytes-sec-max",
+     .type = VSH_OT_INT,
+     .help = N_("read max in bytes")
+    },
+    {.name = "write_bytes_sec_max",
+     .type = VSH_OT_ALIAS,
+     .help = "write-bytes-sec-max"
+    },
+    {.name = "write-bytes-sec-max",
+     .type = VSH_OT_INT,
+     .help = N_("write max in bytes")
+    },
+    {.name = "total_iops_sec_max",
+     .type = VSH_OT_ALIAS,
+     .help = "total-iops-sec-max"
+    },
+    {.name = "total-iops-sec-max",
+     .type = VSH_OT_INT,
+     .help = N_("total I/O operations max")
+    },
+    {.name = "read_iops_sec_max",
+     .type = VSH_OT_ALIAS,
+     .help = "read-iops-sec-max"
+    },
+    {.name = "read-iops-sec-max",
+     .type = VSH_OT_INT,
+     .help = N_("read I/O operations max")
+    },
+    {.name = "write_iops_sec_max",
+     .type = VSH_OT_ALIAS,
+     .help = "write-iops-sec-max"
+    },
+    {.name = "write-iops-sec-max",
+     .type = VSH_OT_INT,
+     .help = N_("write I/O operations max")
+    },
+    {.name = "size_iops_sec",
+     .type = VSH_OT_ALIAS,
+     .help = "size-iops-sec"
+    },
+    {.name = "size-iops-sec",
+     .type = VSH_OT_INT,
+     .help = N_("I/O size in bytes")
+    },
     {.name = "config",
      .type = VSH_OT_BOOL,
      .help = N_("affect next boot")
@@ -1184,6 +1240,33 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
             goto save_error;
     }
 
+    if ((rv = vshCommandOptULongLong(cmd, "total-bytes-sec-max", &value)) < 0) {
+        goto interror;
+    } else if (rv > 0) {
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX,
+                                    value) < 0)
+            goto save_error;
+    }
+
+    if ((rv = vshCommandOptULongLong(cmd, "read-bytes-sec-max", &value)) < 0) {
+        goto interror;
+    } else if (rv > 0) {
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX,
+                                    value) < 0)
+            goto save_error;
+    }
+
+    if ((rv = vshCommandOptULongLong(cmd, "write-bytes-sec-max", &value)) < 0) {
+        goto interror;
+    } else if (rv > 0) {
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX,
+                                    value) < 0)
+            goto save_error;
+    }
+
     if ((rv = vshCommandOptULongLong(cmd, "total-iops-sec", &value)) < 0) {
         goto interror;
     } else if (rv > 0) {
@@ -1207,6 +1290,42 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
     } else if (rv > 0) {
         if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
                                     VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC,
+                                    value) < 0)
+            goto save_error;
+    }
+
+    if ((rv = vshCommandOptULongLong(cmd, "write-iops-sec-max", &value)) < 0) {
+        goto interror;
+    } else if (rv > 0) {
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX,
+                                    value) < 0)
+            goto save_error;
+    }
+
+    if ((rv = vshCommandOptULongLong(cmd, "read-iops-sec-max", &value)) < 0) {
+        goto interror;
+    } else if (rv > 0) {
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX,
+                                    value) < 0)
+            goto save_error;
+    }
+
+    if ((rv = vshCommandOptULongLong(cmd, "total-iops-sec-max", &value)) < 0) {
+        goto interror;
+    } else if (rv > 0) {
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX,
+                                    value) < 0)
+            goto save_error;
+    }
+
+    if ((rv = vshCommandOptULongLong(cmd, "size-iops-sec", &value)) < 0) {
+        goto interror;
+    } else if (rv > 0) {
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLOCK_IOTUNE_SIZE_IOPS_SEC,
                                     value) < 0)
             goto save_error;
     }
