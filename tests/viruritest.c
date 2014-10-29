@@ -173,6 +173,7 @@ mymain(void)
     TEST_PARSE("test://127.0.0.1:123/system", "test", "127.0.0.1", 123, "/system", NULL, NULL, NULL, NULL);
     TEST_PARSE("test://[::1]:123/system", "test", "::1", 123, "/system", NULL, NULL, NULL, NULL);
     TEST_PARSE("test://[2001:41c8:1:4fd4::2]:123/system", "test", "2001:41c8:1:4fd4::2", 123, "/system", NULL, NULL, NULL, NULL);
+    TEST_PARSE("gluster+rdma://example.com:1234/gv0/vol.img", "gluster+rdma", "example.com", 1234, "/gv0/vol.img", NULL, NULL, NULL, NULL);
 
     virURIParam params1[] = {
         { (char*)"foo", (char*)"one", false },
