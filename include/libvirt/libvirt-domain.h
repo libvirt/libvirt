@@ -1965,6 +1965,60 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC "write_iops_sec"
 
+/**
+ * VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX:
+ *
+ * Macro for the BlockIoTune tunable weight: it represents the maximum total
+ * bytes per second permitted through a block device, as a ullong.
+ */
+# define VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX "total_bytes_sec_max"
+
+/**
+ * VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX:
+ *
+ * Macro for the BlockIoTune tunable weight: it represents the maximum read
+ * bytes per second permitted through a block device, as a ullong.
+ */
+# define VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX "read_bytes_sec_max"
+
+/**
+ * VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX:
+ *
+ * Macro for the BlockIoTune tunable weight: it represents the maximum write
+ * bytes per second permitted through a block device, as a ullong.
+ */
+# define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX "write_bytes_sec_max"
+
+/**
+ * VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX:
+ *
+ * Macro for the BlockIoTune tunable weight: it represents the maximum
+ * I/O operations per second permitted through a block device, as a ullong.
+ */
+# define VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX "total_iops_sec_max"
+
+/**
+ * VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX:
+ *
+ * Macro for the BlockIoTune tunable weight: it represents the maximum read
+ * I/O operations per second permitted through a block device, as a ullong.
+ */
+# define VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX "read_iops_sec_max"
+
+/**
+ * VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX:
+ * Macro for the BlockIoTune tunable weight: it represents the maximum write
+ * I/O operations per second permitted through a block device, as a ullong.
+ */
+# define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX "write_iops_sec_max"
+
+/**
+ * VIR_DOMAIN_BLOCK_IOTUNE_SIZE_IOPS_SEC:
+ * Macro for the BlockIoTune tunable weight: it represents the size
+ * I/O operations per second permitted through a block device, as a ullong.
+ */
+# define VIR_DOMAIN_BLOCK_IOTUNE_SIZE_IOPS_SEC "size_iops_sec"
+
 int
 virDomainSetBlockIoTune(virDomainPtr dom,
                         const char *disk,
