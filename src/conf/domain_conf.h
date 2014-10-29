@@ -612,6 +612,13 @@ struct _virDomainBlockIoTuneInfo {
     unsigned long long total_iops_sec;
     unsigned long long read_iops_sec;
     unsigned long long write_iops_sec;
+    unsigned long long total_bytes_sec_max;
+    unsigned long long read_bytes_sec_max;
+    unsigned long long write_bytes_sec_max;
+    unsigned long long total_iops_sec_max;
+    unsigned long long read_iops_sec_max;
+    unsigned long long write_iops_sec_max;
+    unsigned long long size_iops_sec;
 };
 typedef virDomainBlockIoTuneInfo *virDomainBlockIoTuneInfoPtr;
 

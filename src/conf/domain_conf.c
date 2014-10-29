@@ -5820,6 +5820,49 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                     def->blkdeviotune.write_iops_sec = 0;
                 }
 
+                if (virXPathULongLong("string(./iotune/total_bytes_sec_max)",
+                                      ctxt,
+                                      &def->blkdeviotune.total_bytes_sec_max) < 0) {
+                    def->blkdeviotune.total_bytes_sec_max = 0;
+                }
+
+                if (virXPathULongLong("string(./iotune/read_bytes_sec_max)",
+                                      ctxt,
+                                      &def->blkdeviotune.read_bytes_sec_max) < 0) {
+                    def->blkdeviotune.read_bytes_sec_max = 0;
+                }
+
+                if (virXPathULongLong("string(./iotune/write_bytes_sec_max)",
+                                      ctxt,
+                                      &def->blkdeviotune.write_bytes_sec_max) < 0) {
+                    def->blkdeviotune.write_bytes_sec_max = 0;
+                }
+
+                if (virXPathULongLong("string(./iotune/total_iops_sec_max)",
+                                      ctxt,
+                                      &def->blkdeviotune.total_iops_sec_max) < 0) {
+                    def->blkdeviotune.total_iops_sec_max = 0;
+                }
+
+                if (virXPathULongLong("string(./iotune/read_iops_sec_max)",
+                                      ctxt,
+                                      &def->blkdeviotune.read_iops_sec_max) < 0) {
+                    def->blkdeviotune.read_iops_sec_max = 0;
+                }
+
+                if (virXPathULongLong("string(./iotune/write_iops_sec_max)",
+                                      ctxt,
+                                      &def->blkdeviotune.write_iops_sec_max) < 0) {
+                    def->blkdeviotune.write_iops_sec_max = 0;
+                }
+
+                if (virXPathULongLong("string(./iotune/size_iops_sec)",
+                                      ctxt,
+                                      &def->blkdeviotune.size_iops_sec) < 0) {
+                    def->blkdeviotune.size_iops_sec = 0;
+                }
+
+
                 if ((def->blkdeviotune.total_bytes_sec &&
                      def->blkdeviotune.read_bytes_sec) ||
                     (def->blkdeviotune.total_bytes_sec &&
@@ -5839,6 +5882,27 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                                      "cannot be set at the same time"));
                     goto error;
                 }
+
+                if ((def->blkdeviotune.total_bytes_sec_max &&
+                     def->blkdeviotune.read_bytes_sec_max) ||
+                    (def->blkdeviotune.total_bytes_sec_max &&
+                     def->blkdeviotune.write_bytes_sec_max)) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("total and read/write bytes_sec_max "
+                                     "cannot be set at the same time"));
+                    goto error;
+                }
+
+                if ((def->blkdeviotune.total_iops_sec_max &&
+                     def->blkdeviotune.read_iops_sec_max) ||
+                    (def->blkdeviotune.total_iops_sec_max &&
+                     def->blkdeviotune.write_iops_sec_max)) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("total and read/write iops_sec_max "
+                                     "cannot be set at the same time"));
+                    goto error;
+                }
+
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
                 def->src->readonly = true;
             } else if (xmlStrEqual(cur->name, BAD_CAST "shareable")) {
@@ -16378,7 +16442,14 @@ virDomainDiskDefFormat(virBufferPtr buf,
         def->blkdeviotune.write_bytes_sec ||
         def->blkdeviotune.total_iops_sec ||
         def->blkdeviotune.read_iops_sec ||
-        def->blkdeviotune.write_iops_sec) {
+        def->blkdeviotune.write_iops_sec ||
+        def->blkdeviotune.total_bytes_sec_max ||
+        def->blkdeviotune.read_bytes_sec_max ||
+        def->blkdeviotune.write_bytes_sec_max ||
+        def->blkdeviotune.total_iops_sec_max ||
+        def->blkdeviotune.read_iops_sec_max ||
+        def->blkdeviotune.write_iops_sec_max ||
+        def->blkdeviotune.size_iops_sec) {
         virBufferAddLit(buf, "<iotune>\n");
         virBufferAdjustIndent(buf, 2);
         if (def->blkdeviotune.total_bytes_sec) {
@@ -16411,6 +16482,42 @@ virDomainDiskDefFormat(virBufferPtr buf,
             virBufferAsprintf(buf, "<write_iops_sec>%llu</write_iops_sec>\n",
                               def->blkdeviotune.write_iops_sec);
         }
+
+        if (def->blkdeviotune.total_bytes_sec_max) {
+            virBufferAsprintf(buf, "<total_bytes_sec_max>%llu</total_bytes_sec_max>\n",
+                              def->blkdeviotune.total_bytes_sec_max);
+        }
+
+        if (def->blkdeviotune.read_bytes_sec_max) {
+            virBufferAsprintf(buf, "<read_bytes_sec_max>%llu</read_bytes_sec_max>\n",
+                              def->blkdeviotune.read_bytes_sec_max);
+        }
+
+        if (def->blkdeviotune.write_bytes_sec_max) {
+            virBufferAsprintf(buf, "<write_bytes_sec_max>%llu</write_bytes_sec_max>\n",
+                              def->blkdeviotune.write_bytes_sec_max);
+        }
+
+        if (def->blkdeviotune.total_iops_sec_max) {
+            virBufferAsprintf(buf, "<total_iops_sec_max>%llu</total_iops_sec_max>\n",
+                              def->blkdeviotune.total_iops_sec_max);
+        }
+
+        if (def->blkdeviotune.read_iops_sec_max) {
+            virBufferAsprintf(buf, "<read_iops_sec_max>%llu</read_iops_sec_max>\n",
+                              def->blkdeviotune.read_iops_sec_max);
+        }
+
+        if (def->blkdeviotune.write_iops_sec_max) {
+            virBufferAsprintf(buf, "<write_iops_sec_max>%llu</write_iops_sec_max>\n",
+                              def->blkdeviotune.write_iops_sec_max);
+        }
+
+        if (def->blkdeviotune.size_iops_sec) {
+            virBufferAsprintf(buf, "<size_iops_sec>%llu</size_iops_sec>\n",
+                              def->blkdeviotune.size_iops_sec);
+        }
+
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</iotune>\n");
     }

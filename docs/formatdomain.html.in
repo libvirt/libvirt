@@ -2119,6 +2119,31 @@
           <dt><code>write_iops_sec</code></dt>
           <dd>The optional <code>write_iops_sec</code> element is the
             write I/O operations per second.</dd>
+          <dt><code>total_bytes_sec_max</code></dt>
+          <dd>The optional <code>total_bytes_sec_max</code> element is the
+            maximum total throughput limit in bytes per second.  This cannot
+            appear with <code>read_bytes_sec_max</code>
+            or <code>write_bytes_sec_max</code>.</dd>
+          <dt><code>read_bytes_sec_max</code></dt>
+          <dd>The optional <code>read_bytes_sec_max</code> element is the
+            maximum read throughput limit in bytes per second.</dd>
+          <dt><code>write_bytes_sec_max</code></dt>
+          <dd>The optional <code>write_bytes_sec_max</code> element is the
+            maximum write throughput limit in bytes per second.</dd>
+          <dt><code>total_iops_sec_max</code></dt>
+          <dd>The optional <code>total_iops_sec_max</code> element is the
+            maximum total I/O operations per second.  This cannot
+            appear with <code>read_iops_sec_max</code>
+            or <code>write_iops_sec_max</code>.</dd>
+          <dt><code>read_iops_sec_max</code></dt>
+          <dd>The optional <code>read_iops_sec_max</code> element is the
+            maximum read I/O operations per second.</dd>
+          <dt><code>write_iops_sec_max</code></dt>
+          <dd>The optional <code>write_iops_sec_max</code> element is the
+            maximum write I/O operations per second.</dd>
+          <dt><code>size_iops_sec</code></dt>
+          <dd>The optional <code>size_iops_sec</code> element is the
+            size of I/O operations per second.</dd>
         </dl>
       </dd>
       <dt><code>driver</code></dt>
