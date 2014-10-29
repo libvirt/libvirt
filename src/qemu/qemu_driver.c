@@ -8084,7 +8084,7 @@ qemuDomainParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
     /* A valid string must have even number of fields, hence an odd
      * number of commas.  */
     if (!(nsep & 1))
-        goto error;
+        goto parse_error;
 
     ndevices = (nsep + 1) / 2;
 
@@ -8099,7 +8099,7 @@ qemuDomainParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
         /* device path */
         p = strchr(p, ',');
         if (!p)
-            goto error;
+            goto parse_error;
 
         if (VIR_STRNDUP(result[i].path, temp, p - temp) < 0)
             goto cleanup;
@@ -8109,21 +8109,23 @@ qemuDomainParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
 
         if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT)) {
             if (virStrToLong_uip(temp, &p, 10, &result[i].weight) < 0)
-                goto error;
+                goto number_error;
         } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS)) {
             if (virStrToLong_uip(temp, &p, 10, &result[i].riops) < 0)
-                goto error;
+                goto number_error;
         } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS)) {
             if (virStrToLong_uip(temp, &p, 10, &result[i].wiops) < 0)
-                goto error;
+                goto number_error;
         } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_READ_BPS)) {
             if (virStrToLong_ullp(temp, &p, 10, &result[i].rbps) < 0)
-                goto error;
+                goto number_error;
         } else if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS)) {
             if (virStrToLong_ullp(temp, &p, 10, &result[i].wbps) < 0)
-                goto error;
+                goto number_error;
         } else {
-            goto error;
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("unknown parameter '%s'"), type);
+            goto cleanup;
         }
 
         i++;
@@ -8131,7 +8133,7 @@ qemuDomainParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
         if (*p == '\0')
             break;
         else if (*p != ',')
-            goto error;
+            goto parse_error;
         temp = p + 1;
     }
 
@@ -8143,10 +8145,17 @@ qemuDomainParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
 
     return 0;
 
- error:
+ parse_error:
     virReportError(VIR_ERR_INVALID_ARG,
                    _("unable to parse blkio device '%s' '%s'"),
                    type, blkioDeviceStr);
+    goto cleanup;
+
+ number_error:
+    virReportError(VIR_ERR_INVALID_ARG,
+                   _("invalid value '%s' for parameter '%s' of device '%s'"),
+                   temp, type, result[i].path);
+
  cleanup:
     if (result) {
         virBlkioDeviceArrayClear(result, ndevices);
