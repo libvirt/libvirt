@@ -6334,27 +6334,33 @@ virDomainParseScaledValue(const char *xpath,
 {
     char *xpath_full = NULL;
     char *unit = NULL;
+    char *bytes_str = NULL;
     int ret = -1;
     unsigned long long bytes;
 
     *val = 0;
     if (virAsprintf(&xpath_full, "string(%s)", xpath) < 0)
         goto cleanup;
-    ret = virXPathULongLong(xpath_full, ctxt, &bytes);
-    if (ret < 0) {
-        if (ret == -2)
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("could not parse element %s"),
-                           xpath);
-        else if (required)
+
+    bytes_str = virXPathString(xpath_full, ctxt);
+    if (!bytes_str) {
+        if (!required) {
+            ret = 0;
+        } else {
             virReportError(VIR_ERR_XML_ERROR,
                            _("missing element %s"),
                            xpath);
-        else
-            ret = 0;
+        }
         goto cleanup;
     }
     VIR_FREE(xpath_full);
+
+    if (virStrToLong_ullp(bytes_str, NULL, 10, &bytes) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid value '%s' for element '%s'"),
+                       bytes_str, xpath);
+        goto cleanup;
+    }
 
     if (virAsprintf(&xpath_full, "string(%s/@unit)", xpath) < 0)
         goto cleanup;
@@ -6366,6 +6372,7 @@ virDomainParseScaledValue(const char *xpath,
     *val = bytes;
     ret = 1;
  cleanup:
+    VIR_FREE(bytes_str);
     VIR_FREE(xpath_full);
     VIR_FREE(unit);
     return ret;
