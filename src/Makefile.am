@@ -1228,7 +1228,7 @@ libvirt_driver_vbox_storage_impl_la_CFLAGS =	\
 libvirt_driver_vbox_storage_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_vbox_storage_impl_la_LIBADD = $(DLOPEN_LIBS)		\
 		$(MSCOM_LIBS)					\
-		$(LIBXML_LIBS)
+		$(LIBXML_LIBS)					\
 		libvirt_driver_vbox_impl.la
 libvirt_driver_vbox_storage_impl_la_SOURCES = $(VBOX_STORAGE_DRIVER_SOURCES)
 endif WITH_VBOX
