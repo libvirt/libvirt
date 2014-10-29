@@ -410,6 +410,11 @@ VIR_ENUM_IMPL(virDomainNetInterfaceLinkState, VIR_DOMAIN_NET_INTERFACE_LINK_STAT
               "up",
               "down")
 
+VIR_ENUM_IMPL(virDomainChrDeviceState, VIR_DOMAIN_CHR_DEVICE_STATE_LAST,
+              "default",
+              "connected",
+              "disconnected");
+
 VIR_ENUM_IMPL(virDomainChrSerialTarget,
               VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST,
               "isa-serial",
@@ -7857,13 +7862,15 @@ virDomainChrTargetTypeFromString(virDomainChrDefPtr def,
 
 static int
 virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
-                              xmlNodePtr cur)
+                              xmlNodePtr cur,
+                              unsigned int flags)
 {
     int ret = -1;
     unsigned int port;
     char *targetType = virXMLPropString(cur, "type");
     char *addrStr = NULL;
     char *portStr = NULL;
+    char *stateStr = NULL;
 
     if ((def->targetType =
          virDomainChrTargetTypeFromString(def, def->deviceType,
@@ -7920,6 +7927,20 @@ virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
 
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
             def->target.name = virXMLPropString(cur, "name");
+
+            if (!(flags & VIR_DOMAIN_XML_INACTIVE) &&
+                (stateStr = virXMLPropString(cur, "state"))) {
+                int tmp;
+
+                if ((tmp = virDomainChrDeviceStateTypeFromString(stateStr)) <= 0) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("invalid channel state value '%s'"),
+                                   stateStr);
+                    goto error;
+                }
+
+                def->state = tmp;
+            }
             break;
         }
         break;
@@ -7948,6 +7969,7 @@ virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
     VIR_FREE(targetType);
     VIR_FREE(addrStr);
     VIR_FREE(portStr);
+    VIR_FREE(stateStr);
 
     return ret;
 }
@@ -8323,7 +8345,7 @@ virDomainChrDefParseXML(xmlXPathContextPtr ctxt,
         if (cur->type == XML_ELEMENT_NODE) {
             if (xmlStrEqual(cur->name, BAD_CAST "target")) {
                 seenTarget = true;
-                if (virDomainChrDefParseTargetXML(def, cur) < 0)
+                if (virDomainChrDefParseTargetXML(def, cur, flags) < 0)
                     goto error;
             }
         }
@@ -17520,13 +17542,18 @@ virDomainChrDefFormat(virBufferPtr buf,
             break;
         }
 
-        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO: {
+        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
             if (def->target.name)
                 virBufferEscapeString(buf, " name='%s'", def->target.name);
+
+            if (def->state != VIR_DOMAIN_CHR_DEVICE_STATE_DEFAULT &&
+                !(flags & VIR_DOMAIN_XML_INACTIVE)) {
+                virBufferAsprintf(buf, " state='%s'",
+                                  virDomainChrDeviceStateTypeToString(def->state));
+            }
             break;
         }
 
-        }
         virBufferAddLit(buf, "/>\n");
         break;
     }

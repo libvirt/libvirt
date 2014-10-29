@@ -4911,7 +4911,7 @@ qemu-kvm -net nic,model=? /dev/null
     &lt;/channel&gt;
     &lt;channel type='unix'&gt;
       &lt;source mode='bind' path='/var/lib/libvirt/qemu/f16x86_64.agent'/&gt;
-      &lt;target type='virtio' name='org.qemu.guest_agent.0'/&gt;
+      &lt;target type='virtio' name='org.qemu.guest_agent.0' state='connected'/&gt;
     &lt;/channel&gt;
     &lt;channel type='spicevmc'&gt;
       &lt;target type='virtio' name='com.redhat.spice.0'/&gt;
@@ -4950,7 +4950,12 @@ qemu-kvm -net nic,model=? /dev/null
         This is very useful in case of a qemu guest agent, where users don't
         usually care about the source path since it's libvirt who talks to
         the guest agent. In case users want to utilize this feature, they should
-        leave <code>&lt;source&gt;</code> element out.
+        leave <code>&lt;source&gt;</code> element out. <span class="since">Since
+        1.2.11</span> the active XML for a virtio channel may contain an optional
+        <code>state</code> attribute that reflects whether a process in the
+        guest is active on the channel. This is an output-only attribute.
+        Possible values for the <code>state</code> attribute are
+        <code>connected</code> and <code>disconnected</code>.
       </dd>
       <dt><code>spicevmc</code></dt>
       <dd>Paravirtualized SPICE channel. The domain must also have a

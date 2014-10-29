@@ -991,6 +991,16 @@ struct _virDomainNetDef {
 # define VIR_NET_GENERATED_PREFIX "vnet"
 
 typedef enum {
+    VIR_DOMAIN_CHR_DEVICE_STATE_DEFAULT = 0,
+    VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED,
+    VIR_DOMAIN_CHR_DEVICE_STATE_DISCONNECTED,
+
+    VIR_DOMAIN_CHR_DEVICE_STATE_LAST
+} virDomainChrDeviceState;
+
+VIR_ENUM_DECL(virDomainChrDeviceState)
+
+typedef enum {
     VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL = 0,
     VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL,
     VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE,
@@ -1112,6 +1122,8 @@ struct _virDomainChrDef {
         virSocketAddrPtr addr; /* guestfwd */
         char *name; /* virtio */
     } target;
+
+    virDomainChrDeviceState state;
 
     virDomainChrSourceDef source;
 

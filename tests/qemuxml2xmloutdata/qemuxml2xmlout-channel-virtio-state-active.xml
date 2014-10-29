@@ -1,0 +1,43 @@
+<domain type='qemu' id='2'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static' cpuset='1-4,8-20,525'>1</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu</emulator>
+    <disk type='block' device='disk'>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <backingStore/>
+      <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='usb' index='0'/>
+    <controller type='ide' index='0'/>
+    <controller type='virtio-serial' index='1'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <channel type='pty'>
+      <target type='virtio' name='org.linux-kvm.port.foo' state='connected'/>
+      <address type='virtio-serial' controller='1' bus='0' port='3'/>
+    </channel>
+    <channel type='pty'>
+      <target type='virtio' name='org.linux-kvm.port.foo1' state='disconnected'/>
+      <address type='virtio-serial' controller='1' bus='0' port='4'/>
+    </channel>
+    <channel type='pty'>
+      <target type='virtio' name='org.linux-kvm.port.foo2'/>
+      <address type='virtio-serial' controller='1' bus='0' port='5'/>
+    </channel>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>

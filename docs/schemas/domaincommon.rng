@@ -3377,6 +3377,14 @@
       <optional>
         <attribute name="name"/>
       </optional>
+      <optional>
+        <attribute name="state">
+          <choice>
+            <value>connected</value>
+            <value>disconnected</value>
+          </choice>
+        </attribute>
+      </optional>
     </element>
   </define>
   <define name="channel">

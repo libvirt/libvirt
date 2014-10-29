@@ -288,6 +288,7 @@ mymain(void)
     DO_TEST("console-virtio-many");
     DO_TEST("channel-guestfwd");
     DO_TEST("channel-virtio");
+    DO_TEST_DIFFERENT("channel-virtio-state");
 
     DO_TEST("hostdev-usb-address");
     DO_TEST("hostdev-pci-address");
