@@ -2298,7 +2298,7 @@ virGetSCSIHostNumber(const char *adapter_name ATTRIBUTE_UNUSED,
                      unsigned int *result ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
-    return NULL;
+    return -1;
 }
 
 char *
