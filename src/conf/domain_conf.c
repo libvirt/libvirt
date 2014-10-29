@@ -19237,7 +19237,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virDomainResourceDefFormat(buf, def->resource);
 
     if (def->sysinfo)
-        virSysinfoFormat(buf, def->sysinfo);
+        ignore_value(virSysinfoFormat(buf, def->sysinfo));
 
     if (def->os.bootloader) {
         virBufferEscapeString(buf, "<bootloader>%s</bootloader>\n",
