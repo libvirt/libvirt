@@ -4280,6 +4280,12 @@ int qemuMonitorJSONOpenGraphics(qemuMonitorPtr mon,
 }
 
 
+#define GET_THROTTLE_STATS_OPTIONAL(FIELD, STORE)                             \
+    if (virJSONValueObjectGetNumberUlong(inserted,                            \
+                                         FIELD,                               \
+                                         &reply->STORE) < 0) {                \
+        reply->STORE = 0;                                                     \
+    }
 #define GET_THROTTLE_STATS(FIELD, STORE)                                      \
     if (virJSONValueObjectGetNumberUlong(inserted,                            \
                                          FIELD,                               \
@@ -4294,7 +4300,7 @@ static int
 qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
                                    const char *device,
                                    virDomainBlockIoTuneInfoPtr reply,
-                                   bool supportMaxOptions ATTRIBUTE_UNUSED)
+                                   bool supportMaxOptions)
 {
     virJSONValuePtr io_throttle;
     int ret = -1;
@@ -4346,6 +4352,15 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
         GET_THROTTLE_STATS("iops", total_iops_sec);
         GET_THROTTLE_STATS("iops_rd", read_iops_sec);
         GET_THROTTLE_STATS("iops_wr", write_iops_sec);
+        if (supportMaxOptions) {
+            GET_THROTTLE_STATS_OPTIONAL("bps_max", total_bytes_sec_max);
+            GET_THROTTLE_STATS_OPTIONAL("bps_rd_max", read_bytes_sec_max);
+            GET_THROTTLE_STATS_OPTIONAL("bps_wr_max", write_bytes_sec_max);
+            GET_THROTTLE_STATS_OPTIONAL("iops_max", total_iops_sec_max);
+            GET_THROTTLE_STATS_OPTIONAL("iops_rd_max", read_iops_sec_max);
+            GET_THROTTLE_STATS_OPTIONAL("iops_wr_max", write_iops_sec_max);
+            GET_THROTTLE_STATS_OPTIONAL("iops_size", size_iops_sec);
+        }
 
         break;
     }
@@ -4362,25 +4377,47 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
     return ret;
 }
 #undef GET_THROTTLE_STATS
+#undef GET_THROTTLE_STATS_OPTIONAL
 
 int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
                                       const char *device,
                                       virDomainBlockIoTuneInfoPtr info,
-                                      bool supportMaxOptions ATTRIBUTE_UNUSED)
+                                      bool supportMaxOptions)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr result = NULL;
 
-    cmd = qemuMonitorJSONMakeCommand("block_set_io_throttle",
-                                     "s:device", device,
-                                     "U:bps", info->total_bytes_sec,
-                                     "U:bps_rd", info->read_bytes_sec,
-                                     "U:bps_wr", info->write_bytes_sec,
-                                     "U:iops", info->total_iops_sec,
-                                     "U:iops_rd", info->read_iops_sec,
-                                     "U:iops_wr", info->write_iops_sec,
-                                     NULL);
+    /* The qemu capability check has already been made in
+     * qemuDomainSetBlockIoTune */
+    if (supportMaxOptions) {
+        cmd = qemuMonitorJSONMakeCommand("block_set_io_throttle",
+                                         "s:device", device,
+                                         "U:bps", info->total_bytes_sec,
+                                         "U:bps_rd", info->read_bytes_sec,
+                                         "U:bps_wr", info->write_bytes_sec,
+                                         "U:iops", info->total_iops_sec,
+                                         "U:iops_rd", info->read_iops_sec,
+                                         "U:iops_wr", info->write_iops_sec,
+                                         "U:bps_max", info->total_bytes_sec_max,
+                                         "U:bps_rd_max", info->read_bytes_sec_max,
+                                         "U:bps_wr_max", info->write_bytes_sec_max,
+                                         "U:iops_max", info->total_iops_sec_max,
+                                         "U:iops_rd_max", info->read_iops_sec_max,
+                                         "U:iops_wr_max", info->write_iops_sec_max,
+                                         "U:iops_size", info->size_iops_sec,
+                                         NULL);
+    } else {
+        cmd = qemuMonitorJSONMakeCommand("block_set_io_throttle",
+                                         "s:device", device,
+                                         "U:bps", info->total_bytes_sec,
+                                         "U:bps_rd", info->read_bytes_sec,
+                                         "U:bps_wr", info->write_bytes_sec,
+                                         "U:iops", info->total_iops_sec,
+                                         "U:iops_rd", info->read_iops_sec,
+                                         "U:iops_wr", info->write_iops_sec,
+                                         NULL);
+    }
     if (!cmd)
         return -1;
 
