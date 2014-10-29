@@ -2200,9 +2200,6 @@ static int virNetDevGetMcastList(const char *ifname,
 
     ret = 0;
  cleanup:
-    if (ret < 0)
-        virNetDevMcastListClear(mcast);
-
     VIR_FREE(entry);
 
     return ret;
