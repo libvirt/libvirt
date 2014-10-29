@@ -59,14 +59,18 @@ VIR_LOG_INIT("util.netdev");
 #define PROC_NET_DEV_MCAST "/proc/net/dev_mcast"
 #define MAX_MCAST_SIZE 50*14336
 #define VIR_MCAST_NAME_LEN (IFNAMSIZ + 1)
-#define VIR_MCAST_INDEX_TOKEN_IDX 0
-#define VIR_MCAST_NAME_TOKEN_IDX 1
-#define VIR_MCAST_USERS_TOKEN_IDX 2
-#define VIR_MCAST_GLOBAL_TOKEN_IDX 3
-#define VIR_MCAST_ADDR_TOKEN_IDX 4
-#define VIR_MCAST_NUM_TOKENS 5
 #define VIR_MCAST_TOKEN_DELIMS " \n"
 #define VIR_MCAST_ADDR_LEN (VIR_MAC_HEXLEN + 1)
+
+typedef enum {
+    VIR_MCAST_TYPE_INDEX_TOKEN,
+    VIR_MCAST_TYPE_NAME_TOKEN,
+    VIR_MCAST_TYPE_USERS_TOKEN,
+    VIR_MCAST_TYPE_GLOBAL_TOKEN,
+    VIR_MCAST_TYPE_ADDR_TOKEN,
+
+    VIR_MCAST_TYPE_LAST
+} virMCastType;
 
 typedef struct _virNetDevMcastEntry virNetDevMcastEntry;
 typedef virNetDevMcastEntry *virNetDevMcastEntryPtr;
@@ -2076,7 +2080,7 @@ static int virNetDevParseMcast(char *buf, virNetDevMcastEntryPtr mcast)
     char *saveptr;
     char *endptr;
 
-    for (ifindex = 0, next = buf; ifindex < VIR_MCAST_NUM_TOKENS; ifindex++,
+    for (ifindex = 0, next = buf; ifindex < VIR_MCAST_TYPE_LAST; ifindex++,
          next = NULL) {
         token = strtok_r(next, VIR_MCAST_TOKEN_DELIMS, &saveptr);
 
@@ -2087,8 +2091,8 @@ static int virNetDevParseMcast(char *buf, virNetDevMcastEntryPtr mcast)
             return -1;
         }
 
-        switch (ifindex) {
-            case VIR_MCAST_INDEX_TOKEN_IDX:
+        switch ((virMCastType)ifindex) {
+            case VIR_MCAST_TYPE_INDEX_TOKEN:
                 if (virStrToLong_i(token, &endptr, 10, &num) < 0) {
                     virReportSystemError(EINVAL,
                                          _("Failed to parse interface index from '%s'"),
@@ -2098,7 +2102,7 @@ static int virNetDevParseMcast(char *buf, virNetDevMcastEntryPtr mcast)
                 }
                 mcast->index = num;
                 break;
-            case VIR_MCAST_NAME_TOKEN_IDX:
+            case VIR_MCAST_TYPE_NAME_TOKEN:
                 if (virStrncpy(mcast->name, token, strlen(token),
                     VIR_MCAST_NAME_LEN) == NULL) {
                     virReportSystemError(EINVAL,
@@ -2107,7 +2111,7 @@ static int virNetDevParseMcast(char *buf, virNetDevMcastEntryPtr mcast)
                     return -1;
                 }
                 break;
-            case VIR_MCAST_USERS_TOKEN_IDX:
+            case VIR_MCAST_TYPE_USERS_TOKEN:
                 if (virStrToLong_i(token, &endptr, 10, &num) < 0) {
                     virReportSystemError(EINVAL,
                                          _("Failed to parse users from '%s'"),
@@ -2117,7 +2121,7 @@ static int virNetDevParseMcast(char *buf, virNetDevMcastEntryPtr mcast)
                 }
                 mcast->users = num;
                 break;
-            case VIR_MCAST_GLOBAL_TOKEN_IDX:
+            case VIR_MCAST_TYPE_GLOBAL_TOKEN:
                 if (virStrToLong_i(token, &endptr, 10, &num) < 0) {
                     virReportSystemError(EINVAL,
                                          _("Failed to parse users from '%s'"),
@@ -2127,7 +2131,7 @@ static int virNetDevParseMcast(char *buf, virNetDevMcastEntryPtr mcast)
                 }
                 mcast->global = num;
                 break;
-            case VIR_MCAST_ADDR_TOKEN_IDX:
+            case VIR_MCAST_TYPE_ADDR_TOKEN:
                 if (virMacAddrParseHex((const char*)token,
                     &mcast->macaddr) < 0) {
                     virReportSystemError(EINVAL,
@@ -2135,7 +2139,9 @@ static int virNetDevParseMcast(char *buf, virNetDevMcastEntryPtr mcast)
                                          buf);
                 }
                 break;
-            default:
+
+            /* coverity[dead_error_begin] */
+            case VIR_MCAST_TYPE_LAST:
                 break;
         }
     }
