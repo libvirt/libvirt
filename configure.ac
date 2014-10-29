@@ -2694,7 +2694,8 @@ AC_SUBST([ws_plugindir])
 # Check for Linux vs. BSD ifreq members
 AC_CHECK_MEMBERS([struct ifreq.ifr_newname,
                   struct ifreq.ifr_ifindex,
-                  struct ifreq.ifr_index],
+                  struct ifreq.ifr_index,
+                  struct ifreq.ifr_hwaddr],
                  [], [],
                  [#include <sys/socket.h>
                   #include <net/if.h>

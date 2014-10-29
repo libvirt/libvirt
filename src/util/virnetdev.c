@@ -1975,7 +1975,8 @@ virNetDevGetLinkInfo(const char *ifname,
 #endif /* defined(__linux__) */
 
 
-#if defined(SIOCADDMULTI) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCADDMULTI) && defined(HAVE_STRUCT_IFREQ) && \
+    defined(HAVE_STRUCT_IFREQ_IFR_HWADDR)
 /**
  * virNetDevAddMulti:
  * @ifname: interface name to which to add multicast MAC address
@@ -2023,7 +2024,8 @@ int virNetDevAddMulti(const char *ifname ATTRIBUTE_UNUSED,
 }
 #endif
 
-#if defined(SIOCDELMULTI) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCDELMULTI) && defined(HAVE_STRUCT_IFREQ) && \
+    defined(HAVE_STRUCT_IFREQ_IFR_HWADDR)
 /**
  * virNetDevDelMulti:
  * @ifname: interface name from which to delete the multicast MAC address
