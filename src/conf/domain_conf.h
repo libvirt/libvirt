@@ -1100,10 +1100,13 @@ struct _virDomainChrSourceDef {
 
 /* A complete character device, both host and domain views.  */
 struct _virDomainChrDef {
-    int deviceType;
+    int deviceType; /* enum virDomainChrDeviceType */
 
     bool targetTypeAttr;
-    int targetType;
+    int targetType; /* enum virDomainChrConsoleTargetType ||
+                       enum virDomainChrChannelTargetType ||
+                       enum virDomainChrSerialTargetType according to deviceType */
+
     union {
         int port; /* parallel, serial, console */
         virSocketAddrPtr addr; /* guestfwd */
