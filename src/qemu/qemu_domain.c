@@ -2392,8 +2392,12 @@ void
 qemuDomainRemoveInactive(virQEMUDriverPtr driver,
                          virDomainObjPtr vm)
 {
+    bool haveJob = true;
     char *snapDir;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        haveJob = false;
 
     /* Remove any snapshot metadata prior to removing the domain */
     if (qemuDomainSnapshotDiscardAllMetadata(driver, vm) < 0) {
@@ -2411,6 +2415,9 @@ qemuDomainRemoveInactive(virQEMUDriverPtr driver,
     }
     virDomainObjListRemove(driver->domains, vm);
     virObjectUnref(cfg);
+
+    if (haveJob)
+        ignore_value(qemuDomainObjEndJob(driver, vm));
 }
 
 void
