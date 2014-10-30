@@ -74,7 +74,7 @@ int vboxStorageRegister(void)
     if (VBoxCGlueInit(&uVersion) == 0)
         storageDriver = vboxGetStorageDriver(uVersion);
 
-    if (virRegisterStorageDriver(storageDriver) < 0)
+    if (storageDriver && virRegisterStorageDriver(storageDriver) < 0)
         return -1;
     return 0;
 }
