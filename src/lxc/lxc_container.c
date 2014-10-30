@@ -281,7 +281,7 @@ static int lxcContainerSetupFDs(int *ttyfd,
 
     if (ioctl(*ttyfd, TIOCSCTTY, NULL) < 0) {
         virReportSystemError(errno, "%s",
-                             _("ioctl(TIOCSTTY) failed"));
+                             _("ioctl(TIOCSCTTY) failed"));
         goto cleanup;
     }
 
