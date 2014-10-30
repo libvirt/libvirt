@@ -1381,6 +1381,8 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
                       expirytime, EMPTYSTR(lease->mac),
                       EMPTYSTR(typestr), cidr_format,
                       EMPTYSTR(lease->hostname), EMPTYSTR(lease->clientid));
+
+        VIR_FREE(cidr_format);
     }
 
     ret = true;
