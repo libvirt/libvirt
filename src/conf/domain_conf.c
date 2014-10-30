@@ -6380,19 +6380,23 @@ virDomainParseScaledValue(const char *xpath,
 
 
 /* Parse a memory element located at XPATH within CTXT, and store the
- * result into MEM.  If REQUIRED, then the value must exist;
- * otherwise, the value is optional.  The value is in blocks of 1024.
+ * result into MEM, in blocks of 1024.  If REQUIRED, then the value
+ * must exist; otherwise, the value is optional.  The value must not
+ * exceed VIR_DOMAIN_MEMORY_PARAM_UNLIMITED once scaled; additionally,
+ * if CAPPED is true, the value must fit within an unsigned long (only
+ * matters on 32-bit platforms).
+ *
  * Return 0 on success, -1 on failure after issuing error.  */
 static int
 virDomainParseMemory(const char *xpath, xmlXPathContextPtr ctxt,
-                     unsigned long long *mem, bool required)
+                     unsigned long long *mem, bool required, bool capped)
 {
     int ret = -1;
     unsigned long long bytes, max;
 
     /* On 32-bit machines, our bound is 0xffffffff * KiB. On 64-bit
      * machines, our bound is off_t (2^63).  */
-    if (sizeof(unsigned long) < sizeof(long long))
+    if (capped && sizeof(unsigned long) < sizeof(long long))
         max = 1024ull * ULONG_MAX;
     else
         max = LLONG_MAX;
@@ -12222,11 +12226,11 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     /* Extract domain memory */
     if (virDomainParseMemory("./memory[1]", ctxt,
-                             &def->mem.max_balloon, true) < 0)
+                             &def->mem.max_balloon, true, true) < 0)
         goto error;
 
     if (virDomainParseMemory("./currentMemory[1]", ctxt,
-                             &def->mem.cur_balloon, false) < 0)
+                             &def->mem.cur_balloon, false, true) < 0)
         goto error;
 
     /* and info about it */
@@ -12346,19 +12350,19 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     /* Extract other memory tunables */
     if (virDomainParseMemory("./memtune/hard_limit[1]", ctxt,
-                             &def->mem.hard_limit, false) < 0)
+                             &def->mem.hard_limit, false, false) < 0)
         goto error;
 
     if (virDomainParseMemory("./memtune/soft_limit[1]", ctxt,
-                             &def->mem.soft_limit, false) < 0)
+                             &def->mem.soft_limit, false, false) < 0)
         goto error;
 
     if (virDomainParseMemory("./memtune/min_guarantee[1]", ctxt,
-                             &def->mem.min_guarantee, false) < 0)
+                             &def->mem.min_guarantee, false, false) < 0)
         goto error;
 
     if (virDomainParseMemory("./memtune/swap_hard_limit[1]", ctxt,
-                             &def->mem.swap_hard_limit, false) < 0)
+                             &def->mem.swap_hard_limit, false, false) < 0)
         goto error;
 
     n = virXPathULong("string(./vcpu[1])", ctxt, &count);

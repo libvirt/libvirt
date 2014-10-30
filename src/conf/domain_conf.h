@@ -1966,8 +1966,10 @@ typedef struct _virDomainMemtune virDomainMemtune;
 typedef virDomainMemtune *virDomainMemtunePtr;
 
 struct _virDomainMemtune {
-    unsigned long long max_balloon; /* in kibibytes */
-    unsigned long long cur_balloon; /* in kibibytes */
+    unsigned long long max_balloon; /* in kibibytes, capped at ulong thanks
+                                       to virDomainGetMaxMemory */
+    unsigned long long cur_balloon; /* in kibibytes, capped at ulong thanks
+                                       to virDomainGetInfo */
 
     virDomainHugePagePtr hugepages;
     size_t nhugepages;
@@ -1975,10 +1977,10 @@ struct _virDomainMemtune {
     bool nosharepages;
     bool locked;
     int dump_core; /* enum virTristateSwitch */
-    unsigned long long hard_limit; /* in kibibytes */
-    unsigned long long soft_limit; /* in kibibytes */
-    unsigned long long min_guarantee; /* in kibibytes */
-    unsigned long long swap_hard_limit; /* in kibibytes */
+    unsigned long long hard_limit; /* in kibibytes, limit at off_t bytes */
+    unsigned long long soft_limit; /* in kibibytes, limit at off_t bytes */
+    unsigned long long min_guarantee; /* in kibibytes, limit at off_t bytes */
+    unsigned long long swap_hard_limit; /* in kibibytes, limit at off_t bytes */
 };
 
 typedef struct _virDomainPowerManagement virDomainPowerManagement;
