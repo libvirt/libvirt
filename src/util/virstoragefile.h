@@ -228,9 +228,11 @@ typedef virStorageDriverData *virStorageDriverDataPtr;
 typedef struct _virStorageSource virStorageSource;
 typedef virStorageSource *virStorageSourcePtr;
 
-/* Stores information related to a host resource.  In the case of
- * backing chains, multiple source disks join to form a single guest
- * view.  */
+/* Stores information related to a host resource.  In the case of backing
+ * chains, multiple source disks join to form a single guest view.
+ *
+ * IMPORTANT: When adding fields to this struct it's also necessary to add
+ * appropriate code to the virStorageSourceCopy deep copy function */
 struct _virStorageSource {
     int type; /* virStorageType */
     char *path;
