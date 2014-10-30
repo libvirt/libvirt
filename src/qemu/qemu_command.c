@@ -6632,7 +6632,8 @@ static int
 qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
                     const virDomainDef *def,
                     virCommandPtr cmd,
-                    virQEMUCapsPtr qemuCaps)
+                    virQEMUCapsPtr qemuCaps,
+                    virBitmapPtr nodeset)
 {
     size_t i, j;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -6792,7 +6793,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
 
             virBufferAsprintf(&buf, ",size=%dM,id=ram-node%zu", cellmem, i);
 
-            if (virDomainNumatuneMaybeFormatNodeset(def->numatune, NULL,
+            if (virDomainNumatuneMaybeFormatNodeset(def->numatune, nodeset,
                                                     &nodemask, i) < 0)
                 goto cleanup;
 
@@ -7653,7 +7654,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                      virNetDevVPortProfileOp vmop,
                      qemuBuildCommandLineCallbacksPtr callbacks,
                      bool standalone,
-                     bool enableFips)
+                     bool enableFips,
+                     virBitmapPtr nodeset)
 {
     virErrorPtr originalError = NULL;
     size_t i, j;
@@ -7870,7 +7872,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     if (def->cpu && def->cpu->ncells)
-        if (qemuBuildNumaArgStr(cfg, def, cmd, qemuCaps) < 0)
+        if (qemuBuildNumaArgStr(cfg, def, cmd, qemuCaps, nodeset) < 0)
             goto error;
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_UUID))

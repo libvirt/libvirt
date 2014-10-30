@@ -4320,7 +4320,8 @@ int qemuProcessStart(virConnectPtr conn,
                                      priv->monJSON, priv->qemuCaps,
                                      migrateFrom, stdin_fd, snapshot, vmop,
                                      &buildCommandLineCallbacks, false,
-                                     qemuCheckFips())))
+                                     qemuCheckFips(),
+                                     nodemask)))
         goto cleanup;
 
     /* now that we know it is about to start call the hook if present */
