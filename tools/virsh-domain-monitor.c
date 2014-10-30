@@ -1916,6 +1916,11 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
             ignore_value(virStrcpyStatic(id_buf, "-"));
 
         state = vshDomainState(ctl, dom, NULL);
+
+        /* Domain could've been removed in the meantime */
+        if (state < 0)
+            continue;
+
         if (optTable && managed && state == VIR_DOMAIN_SHUTOFF &&
             virDomainHasManagedSaveImage(dom, 0) > 0)
             state = -2;
