@@ -79,7 +79,8 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    virNetDevVPortProfileOp vmop,
                                    qemuBuildCommandLineCallbacksPtr callbacks,
                                    bool forXMLToArgv,
-                                   bool enableFips)
+                                   bool enableFips,
+                                   virBitmapPtr nodeset)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(11);
 
 /* Generate '-device' string for chardev device */
