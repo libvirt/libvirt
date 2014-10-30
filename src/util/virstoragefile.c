@@ -1851,9 +1851,12 @@ virStorageSourceCopy(const virStorageSource *src,
         VIR_STRDUP(ret->compat, src->compat) < 0)
         goto error;
 
-    if (!(ret->hosts = virStorageNetHostDefCopy(src->nhosts, src->hosts)))
-        goto error;
-    ret->nhosts = src->nhosts;
+    if (src->nhosts) {
+        if (!(ret->hosts = virStorageNetHostDefCopy(src->nhosts, src->hosts)))
+            goto error;
+
+        ret->nhosts = src->nhosts;
+    }
 
     if (src->srcpool &&
         !(ret->srcpool = virStorageSourcePoolDefCopy(src->srcpool)))
@@ -2092,9 +2095,13 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
 
         /* copy the host network part */
         ret->protocol = parent->protocol;
-        if (!(ret->hosts = virStorageNetHostDefCopy(parent->nhosts, parent->hosts)))
-            goto error;
-        ret->nhosts = parent->nhosts;
+        if (parent->nhosts) {
+            if (!(ret->hosts = virStorageNetHostDefCopy(parent->nhosts,
+                                                        parent->hosts)))
+                goto error;
+
+            ret->nhosts = parent->nhosts;
+        }
 
         if (VIR_STRDUP(ret->volume, parent->volume) < 0)
             goto error;
