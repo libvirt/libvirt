@@ -1981,7 +1981,18 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
          olddev->driver.virtio.txmode != newdev->driver.virtio.txmode ||
          olddev->driver.virtio.ioeventfd != newdev->driver.virtio.ioeventfd ||
          olddev->driver.virtio.event_idx != newdev->driver.virtio.event_idx ||
-         olddev->driver.virtio.queues != newdev->driver.virtio.queues)) {
+         olddev->driver.virtio.queues != newdev->driver.virtio.queues ||
+         olddev->driver.virtio.host.csum != newdev->driver.virtio.host.csum ||
+         olddev->driver.virtio.host.gso != newdev->driver.virtio.host.gso ||
+         olddev->driver.virtio.host.tso4 != newdev->driver.virtio.host.tso4 ||
+         olddev->driver.virtio.host.tso6 != newdev->driver.virtio.host.tso6 ||
+         olddev->driver.virtio.host.ecn != newdev->driver.virtio.host.ecn ||
+         olddev->driver.virtio.host.ufo != newdev->driver.virtio.host.ufo ||
+         olddev->driver.virtio.guest.csum != newdev->driver.virtio.guest.csum ||
+         olddev->driver.virtio.guest.tso4 != newdev->driver.virtio.guest.tso4 ||
+         olddev->driver.virtio.guest.tso6 != newdev->driver.virtio.guest.tso6 ||
+         olddev->driver.virtio.guest.ecn != newdev->driver.virtio.guest.ecn ||
+         olddev->driver.virtio.guest.ufo != newdev->driver.virtio.guest.ufo)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify virtio network device driver attributes"));
         goto cleanup;
