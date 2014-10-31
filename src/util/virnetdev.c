@@ -52,6 +52,10 @@
 # include <net/if_dl.h>
 #endif
 
+#ifndef IFNAMSIZ
+# define IFNAMSIZ 16
+#endif
+
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("util.netdev");
