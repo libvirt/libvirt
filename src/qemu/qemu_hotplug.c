@@ -3713,11 +3713,16 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
         return ret;
     }
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        !tmpChr->info.alias) {
-        if (qemuAssignDeviceChrAlias(vmdef, tmpChr, -1) < 0)
-            return ret;
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("qemu does not support -device"));
+        return ret;
     }
+
+    if (!tmpChr->info.alias && qemuAssignDeviceChrAlias(vmdef, tmpChr, -1) < 0)
+        return ret;
+
+    sa_assert(tmpChr->info.alias);
 
     if (qemuBuildChrDeviceStr(&devstr, vm->def, chr, priv->qemuCaps) < 0)
         return ret;
