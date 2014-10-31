@@ -2209,6 +2209,151 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
 
 
 static int
+virStorageSourceRBDAddHost(virStorageSourcePtr src,
+                           char *hostport)
+{
+    char *port;
+    size_t skip;
+    char **parts;
+
+    if (VIR_EXPAND_N(src->hosts, src->nhosts, 1) < 0)
+        return -1;
+
+    if ((port = strchr(hostport, ']'))) {
+        /* ipv6, strip brackets */
+        hostport += 1;
+        skip = 3;
+    } else {
+        port = strstr(hostport, "\\:");
+        skip = 2;
+    }
+
+    if (port) {
+        *port = '\0';
+        port += skip;
+        if (VIR_STRDUP(src->hosts[src->nhosts - 1].port, port) < 0)
+            goto error;
+    } else {
+        if (VIR_STRDUP(src->hosts[src->nhosts - 1].port, "6789") < 0)
+            goto error;
+    }
+
+    parts = virStringSplit(hostport, "\\:", 0);
+    if (!parts)
+        goto error;
+    src->hosts[src->nhosts-1].name = virStringJoin((const char **)parts, ":");
+    virStringFreeList(parts);
+    if (!src->hosts[src->nhosts-1].name)
+        goto error;
+
+    src->hosts[src->nhosts-1].transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
+    src->hosts[src->nhosts-1].socket = NULL;
+
+    return 0;
+
+ error:
+    VIR_FREE(src->hosts[src->nhosts-1].port);
+    VIR_FREE(src->hosts[src->nhosts-1].name);
+    return -1;
+}
+
+
+int
+virStorageSourceParseRBDColonString(const char *rbdstr,
+                                    virStorageSourcePtr src)
+{
+    char *options = NULL;
+    char *p, *e, *next;
+    virStorageAuthDefPtr authdef = NULL;
+
+    /* optionally skip the "rbd:" prefix if provided */
+    if (STRPREFIX(rbdstr, "rbd:"))
+        rbdstr += strlen("rbd:");
+
+    if (VIR_STRDUP(src->path, rbdstr) < 0)
+        goto error;
+
+    p = strchr(src->path, ':');
+    if (p) {
+        if (VIR_STRDUP(options, p + 1) < 0)
+            goto error;
+        *p = '\0';
+    }
+
+    /* options */
+    if (!options)
+        return 0; /* all done */
+
+    p = options;
+    while (*p) {
+        /* find : delimiter or end of string */
+        for (e = p; *e && *e != ':'; ++e) {
+            if (*e == '\\') {
+                e++;
+                if (*e == '\0')
+                    break;
+            }
+        }
+        if (*e == '\0') {
+            next = e;    /* last kv pair */
+        } else {
+            next = e + 1;
+            *e = '\0';
+        }
+
+        if (STRPREFIX(p, "id=")) {
+            /* formulate authdef for src->auth */
+            if (VIR_ALLOC(authdef) < 0)
+                goto error;
+
+            if (VIR_STRDUP(authdef->username, p + strlen("id=")) < 0)
+                goto error;
+
+            if (VIR_STRDUP(authdef->secrettype,
+                           virStorageAuthTypeToString(VIR_STORAGE_AUTH_TYPE_CEPHX)) < 0)
+                goto error;
+            src->auth = authdef;
+            authdef = NULL;
+
+            /* Cannot formulate a secretType (eg, usage or uuid) given
+             * what is provided.
+             */
+        }
+        if (STRPREFIX(p, "mon_host=")) {
+            char *h, *sep;
+
+            h = p + strlen("mon_host=");
+            while (h < e) {
+                for (sep = h; sep < e; ++sep) {
+                    if (*sep == '\\' && (sep[1] == ',' ||
+                                         sep[1] == ';' ||
+                                         sep[1] == ' ')) {
+                        *sep = '\0';
+                        sep += 2;
+                        break;
+                    }
+                }
+
+                if (virStorageSourceRBDAddHost(src, h) < 0)
+                    goto error;
+
+                h = sep;
+            }
+        }
+
+        p = next;
+    }
+    VIR_FREE(options);
+    return 0;
+
+ error:
+    VIR_FREE(options);
+    virStorageAuthDefFree(authdef);
+    return -1;
+}
+
+
+static int
 virStorageSourceParseBackingColon(virStorageSourcePtr src,
                                   const char *path)
 {

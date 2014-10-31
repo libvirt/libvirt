@@ -1993,6 +1993,7 @@ virStorageSourceInitChainElement;
 virStorageSourceIsEmpty;
 virStorageSourceIsLocalStorage;
 virStorageSourceNewFromBacking;
+virStorageSourceParseRBDColonString;
 virStorageSourcePoolDefFree;
 virStorageSourcePoolModeTypeFromString;
 virStorageSourcePoolModeTypeToString;

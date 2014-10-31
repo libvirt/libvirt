@@ -2535,137 +2535,20 @@ qemuGetSecretString(virConnectPtr conn,
 }
 
 
-static int qemuAddRBDHost(virDomainDiskDefPtr disk, char *hostport)
+static int
+qemuParseRBDString(virDomainDiskDefPtr disk)
 {
-    char *port;
-    size_t skip;
-    char **parts;
+    char *source = disk->src->path;
+    int ret;
 
-    if (VIR_EXPAND_N(disk->src->hosts, disk->src->nhosts, 1) < 0)
-        return -1;
+    disk->src->path = NULL;
 
-    if ((port = strchr(hostport, ']'))) {
-        /* ipv6, strip brackets */
-        hostport += 1;
-        skip = 3;
-    } else {
-        port = strstr(hostport, "\\:");
-        skip = 2;
-    }
+    ret = virStorageSourceParseRBDColonString(source, disk->src);
 
-    if (port) {
-        *port = '\0';
-        port += skip;
-        if (VIR_STRDUP(disk->src->hosts[disk->src->nhosts - 1].port, port) < 0)
-            goto error;
-    } else {
-        if (VIR_STRDUP(disk->src->hosts[disk->src->nhosts - 1].port, "6789") < 0)
-            goto error;
-    }
-
-    parts = virStringSplit(hostport, "\\:", 0);
-    if (!parts)
-        goto error;
-    disk->src->hosts[disk->src->nhosts-1].name = virStringJoin((const char **)parts, ":");
-    virStringFreeList(parts);
-    if (!disk->src->hosts[disk->src->nhosts-1].name)
-        goto error;
-
-    disk->src->hosts[disk->src->nhosts-1].transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
-    disk->src->hosts[disk->src->nhosts-1].socket = NULL;
-
-    return 0;
-
- error:
-    VIR_FREE(disk->src->hosts[disk->src->nhosts-1].port);
-    VIR_FREE(disk->src->hosts[disk->src->nhosts-1].name);
-    return -1;
+    VIR_FREE(source);
+    return ret;
 }
 
-/* disk->src initially has everything after the rbd: prefix */
-static int qemuParseRBDString(virDomainDiskDefPtr disk)
-{
-    char *options = NULL;
-    char *p, *e, *next;
-    virStorageAuthDefPtr authdef = NULL;
-
-    p = strchr(disk->src->path, ':');
-    if (p) {
-        if (VIR_STRDUP(options, p + 1) < 0)
-            goto error;
-        *p = '\0';
-    }
-
-    /* options */
-    if (!options)
-        return 0; /* all done */
-
-    p = options;
-    while (*p) {
-        /* find : delimiter or end of string */
-        for (e = p; *e && *e != ':'; ++e) {
-            if (*e == '\\') {
-                e++;
-                if (*e == '\0')
-                    break;
-            }
-        }
-        if (*e == '\0') {
-            next = e;    /* last kv pair */
-        } else {
-            next = e + 1;
-            *e = '\0';
-        }
-
-        if (STRPREFIX(p, "id=")) {
-            const char *secrettype;
-            /* formulate authdef for disk->src->auth */
-            if (VIR_ALLOC(authdef) < 0)
-                goto error;
-
-            if (VIR_STRDUP(authdef->username, p + strlen("id=")) < 0)
-                goto error;
-            secrettype = virSecretUsageTypeToString(VIR_SECRET_USAGE_TYPE_CEPH);
-            if (VIR_STRDUP(authdef->secrettype, secrettype) < 0)
-                goto error;
-            disk->src->auth = authdef;
-            authdef = NULL;
-
-            /* Cannot formulate a secretType (eg, usage or uuid) given
-             * what is provided.
-             */
-        }
-        if (STRPREFIX(p, "mon_host=")) {
-            char *h, *sep;
-
-            h = p + strlen("mon_host=");
-            while (h < e) {
-                for (sep = h; sep < e; ++sep) {
-                    if (*sep == '\\' && (sep[1] == ',' ||
-                                         sep[1] == ';' ||
-                                         sep[1] == ' ')) {
-                        *sep = '\0';
-                        sep += 2;
-                        break;
-                    }
-                }
-                if (qemuAddRBDHost(disk, h) < 0)
-                    goto error;
-
-                h = sep;
-            }
-        }
-
-        p = next;
-    }
-    VIR_FREE(options);
-    return 0;
-
- error:
-    VIR_FREE(options);
-    virStorageAuthDefFree(authdef);
-    return -1;
-}
 
 static int
 qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,

@@ -363,6 +363,10 @@ virStorageSourcePtr virStorageSourceCopy(const virStorageSource *src,
                                          bool backingChain)
     ATTRIBUTE_NONNULL(1);
 
+int virStorageSourceParseRBDColonString(const char *rbdstr,
+                                        virStorageSourcePtr src)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 typedef int
 (*virStorageFileSimplifyPathReadlinkCallback)(const char *path,
                                               char **link,
