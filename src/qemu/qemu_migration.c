@@ -1389,7 +1389,7 @@ qemuMigrationStartNBDServer(virQEMUDriverPtr driver,
  cleanup:
     VIR_FREE(diskAlias);
     if (ret < 0)
-        virPortAllocatorRelease(driver->remotePorts, port);
+        virPortAllocatorRelease(driver->migrationPorts, port);
     return ret;
 }
 
@@ -1595,7 +1595,7 @@ qemuMigrationStopNBDServer(virQEMUDriverPtr driver,
 
     qemuDomainObjExitMonitor(driver, vm);
 
-    virPortAllocatorRelease(driver->remotePorts, priv->nbdPort);
+    virPortAllocatorRelease(driver->migrationPorts, priv->nbdPort);
     priv->nbdPort = 0;
 }
 
@@ -2813,7 +2813,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     VIR_FORCE_CLOSE(dataFD[1]);
     if (vm) {
         if (ret < 0) {
-            virPortAllocatorRelease(driver->remotePorts, priv->nbdPort);
+            virPortAllocatorRelease(driver->migrationPorts, priv->nbdPort);
             priv->nbdPort = 0;
         }
         if (ret >= 0 || vm->persistent)

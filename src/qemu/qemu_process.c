@@ -4839,7 +4839,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         }
     }
 
-    virPortAllocatorRelease(driver->remotePorts, priv->nbdPort);
+    virPortAllocatorRelease(driver->migrationPorts, priv->nbdPort);
     priv->nbdPort = 0;
 
     if (priv->agent) {
