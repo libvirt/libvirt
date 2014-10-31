@@ -82,7 +82,9 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
         VIR_WARN("Failed to query host NUMA topology, disabling NUMA capabilities");
     }
 
-    if (virNodeSuspendGetTargetMask(&caps->host.powerMgmt) < 0)
+    /* Only probe for power management capabilities in the driver,
+     * not in the emulator */
+    if (driver && virNodeSuspendGetTargetMask(&caps->host.powerMgmt) < 0)
         VIR_WARN("Failed to get host power management capabilities");
 
     if (virGetHostUUID(caps->host.host_uuid)) {
