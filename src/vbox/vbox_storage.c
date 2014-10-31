@@ -551,7 +551,6 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
     PRUint32  machineIdsSize = 0;
     vboxArray machineIds = VBOX_ARRAY_INITIALIZER;
     vboxIIDUnion hddIID;
-    nsresult rc;
     int ret = -1;
 
     if (!data->vboxObj) {
@@ -568,8 +567,9 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
     }
 
     vboxIIDFromUUID(&hddIID, uuid);
-    rc = gVBoxAPI.UIVirtualBox.GetHardDiskByIID(data->vboxObj, &hddIID, &hardDisk);
-    if (NS_FAILED(rc))
+    if (NS_FAILED(gVBoxAPI.UIVirtualBox.GetHardDiskByIID(data->vboxObj,
+                                                         &hddIID,
+                                                         &hardDisk)))
         goto cleanup;
 
     gVBoxAPI.UIMedium.GetState(hardDisk, &hddstate);
@@ -603,23 +603,22 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
         vboxIIDFromArrayItem(&machineId, &machineIds, i);
 
         if (gVBoxAPI.getMachineForSession) {
-            rc = gVBoxAPI.UIVirtualBox.GetMachine(data->vboxObj, &machineId, &machine);
-            if (NS_FAILED(rc)) {
+            if (NS_FAILED(gVBoxAPI.UIVirtualBox.GetMachine(data->vboxObj,
+                                                           &machineId,
+                                                           &machine))) {
                 virReportError(VIR_ERR_NO_DOMAIN, "%s",
                                _("no domain with matching uuid"));
                 break;
             }
         }
 
-        rc = gVBoxAPI.UISession.Open(data, &machineId, machine);
-
-        if (NS_FAILED(rc)) {
+        if (NS_FAILED(gVBoxAPI.UISession.Open(data, &machineId, machine))) {
             vboxIIDUnalloc(&machineId);
             continue;
         }
 
-        rc = gVBoxAPI.UISession.GetMachine(data->vboxSession, &machine);
-        if (NS_FAILED(rc))
+        if (NS_FAILED(gVBoxAPI.UISession.GetMachine(data->vboxSession,
+                                                    &machine)))
             goto cleanupLoop;
 
         gVBoxAPI.UArray.vboxArrayGet(&hddAttachments, machine,
@@ -633,13 +632,12 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
             if (!hddAttachment)
                 continue;
 
-            rc = gVBoxAPI.UIMediumAttachment.GetMedium(hddAttachment, &hdd);
-            if (NS_FAILED(rc) || !hdd)
+            if (NS_FAILED(gVBoxAPI.UIMediumAttachment.GetMedium(hddAttachment,
+                                                                &hdd)) || !hdd)
                 continue;
 
             VBOX_IID_INITIALIZE(&iid);
-            rc = gVBoxAPI.UIMedium.GetId(hdd, &iid);
-            if (NS_FAILED(rc)) {
+            if (NS_FAILED(gVBoxAPI.UIMedium.GetId(hdd, &iid))) {
                 VBOX_MEDIUM_RELEASE(hdd);
                 continue;
             }
@@ -658,9 +656,8 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
                 gVBoxAPI.UIMediumAttachment.GetPort(hddAttachment, &port);
                 gVBoxAPI.UIMediumAttachment.GetDevice(hddAttachment, &device);
 
-                rc = gVBoxAPI.UIMachine.DetachDevice(machine, controller, port, device);
-                if (NS_SUCCEEDED(rc)) {
-                    rc = gVBoxAPI.UIMachine.SaveSettings(machine);
+                if (NS_SUCCEEDED(gVBoxAPI.UIMachine.DetachDevice(machine, controller, port, device))) {
+                    ignore_value(gVBoxAPI.UIMachine.SaveSettings(machine));
                     VIR_DEBUG("saving machine settings");
                     deregister++;
                     VIR_DEBUG("deregistering hdd:%d", deregister);
@@ -683,9 +680,8 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
 
     if (machineIdsSize == 0 || machineIdsSize == deregister) {
         IProgress *progress = NULL;
-        rc = gVBoxAPI.UIHardDisk.DeleteStorage(hardDisk, &progress);
-
-        if (NS_SUCCEEDED(rc) && progress) {
+        if (NS_SUCCEEDED(gVBoxAPI.UIHardDisk.DeleteStorage(hardDisk, &progress)) &&
+            progress) {
             gVBoxAPI.UIProgress.WaitForCompletion(progress, -1);
             VBOX_RELEASE(progress);
             DEBUGIID("HardDisk deleted, UUID", &hddIID);
