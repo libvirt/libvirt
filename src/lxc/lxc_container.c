@@ -2093,8 +2093,10 @@ static int lxcContainerChild(void *data)
         if (virAsprintf(&ttyPath, "%s/%s.devpts/%s",
                         LXC_STATE_DIR, vmDef->name, tty) < 0)
             goto cleanup;
-    } else if (VIR_STRDUP(ttyPath, "/dev/null") < 0) {
-            goto cleanup;
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("At least one tty is required"));
+        goto cleanup;
     }
 
     VIR_DEBUG("Container TTY path: %s", ttyPath);

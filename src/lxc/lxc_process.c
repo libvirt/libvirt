@@ -1144,6 +1144,12 @@ int virLXCProcessStart(virConnectPtr conn,
                                       vm->def, NULL) < 0)
         goto cleanup;
 
+    if (vm->def->nconsoles == 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("At least one PTY console is required"));
+        goto cleanup;
+    }
+
     for (i = 0; i < vm->def->nconsoles; i++) {
         char *ttyPath;
         if (vm->def->consoles[i]->source.type != VIR_DOMAIN_CHR_TYPE_PTY) {
