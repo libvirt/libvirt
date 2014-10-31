@@ -496,7 +496,7 @@ virCPUDefParseXML(xmlNodePtr node,
                 goto error;
             }
 
-            ret = virStrToLong_ui(memory, NULL, 10, &def->cells[cur_cell].mem);
+            ret = virStrToLong_ull(memory, NULL, 10, &def->cells[cur_cell].mem);
             if (ret == -1) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("Invalid 'memory' attribute in NUMA cell"));
@@ -702,7 +702,7 @@ virCPUDefFormatBuf(virBufferPtr buf,
             virBufferAddLit(buf, "<cell");
             virBufferAsprintf(buf, " id='%zu'", i);
             virBufferAsprintf(buf, " cpus='%s'", def->cells[i].cpustr);
-            virBufferAsprintf(buf, " memory='%d'", def->cells[i].mem);
+            virBufferAsprintf(buf, " memory='%llu'", def->cells[i].mem);
             if (memAccess)
                 virBufferAsprintf(buf, " memAccess='%s'",
                                   virMemAccessTypeToString(memAccess));

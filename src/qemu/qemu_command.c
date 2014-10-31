@@ -6693,7 +6693,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     }
 
     for (i = 0; i < def->cpu->ncells; i++) {
-        int cellmem = VIR_DIV_UP(def->cpu->cells[i].mem, 1024);
+        unsigned long long cellmem = VIR_DIV_UP(def->cpu->cells[i].mem, 1024);
         def->cpu->cells[i].mem = cellmem * 1024;
         virMemAccess memAccess = def->cpu->cells[i].memAccess;
 
@@ -6799,7 +6799,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
                 virBufferAddLit(&buf, "memory-backend-ram");
             }
 
-            virBufferAsprintf(&buf, ",size=%dM,id=ram-node%zu", cellmem, i);
+            virBufferAsprintf(&buf, ",size=%lluM,id=ram-node%zu", cellmem, i);
 
             if (virDomainNumatuneMaybeFormatNodeset(def->numatune, nodeset,
                                                     &nodemask, i) < 0)
@@ -6849,7 +6849,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
             virBufferAsprintf(&buf, ",memdev=ram-node%zu", i);
         } else {
-            virBufferAsprintf(&buf, ",mem=%d", cellmem);
+            virBufferAsprintf(&buf, ",mem=%llu", cellmem);
         }
 
         virCommandAddArgBuffer(cmd, &buf);
