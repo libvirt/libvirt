@@ -3253,7 +3253,8 @@ static int networkCreate(virNetworkPtr net)
     if (virNetworkCreateEnsureACL(net->conn, network->def) < 0)
         goto cleanup;
 
-    ret = networkStartNetwork(driver, network);
+    if ((ret = networkStartNetwork(driver, network)) < 0)
+        goto cleanup;
 
     event = virNetworkEventLifecycleNew(network->def->name,
                                         network->def->uuid,
