@@ -4581,7 +4581,8 @@ virDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     conn = domain->conn;
 
-    if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
+    if ((conn->flags & VIR_CONNECT_RO) &&
+        (flags & (VIR_DOMAIN_XML_SECURE | VIR_DOMAIN_XML_MIGRATABLE))) {
         virLibConnError(VIR_ERR_OPERATION_DENIED, "%s",
                         _("virDomainGetXMLDesc with secure flag"));
         goto error;
