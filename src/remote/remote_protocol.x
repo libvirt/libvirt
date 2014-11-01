@@ -3255,6 +3255,7 @@ enum remote_procedure {
      * @generate: both
      * @acl: domain:read
      * @acl: domain:read_secure:VIR_DOMAIN_XML_SECURE
+     * @acl: domain:read_secure:VIR_DOMAIN_XML_MIGRATABLE
      */
     REMOTE_PROC_DOMAIN_GET_XML_DESC = 14,
 
