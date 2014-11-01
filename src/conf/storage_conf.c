@@ -2094,6 +2094,28 @@ getSCSIHostNumber(virStoragePoolSourceAdapter adapter,
     VIR_FREE(name);
     return ret;
 }
+static bool
+matchSCSIAdapterParent(virStoragePoolObjPtr pool,
+                       virStoragePoolDefPtr def)
+{
+    virDevicePCIAddressPtr pooladdr =
+        &pool->def->source.adapter.data.scsi_host.parentaddr;
+    virDevicePCIAddressPtr defaddr =
+        &def->source.adapter.data.scsi_host.parentaddr;
+    int pool_unique_id =
+        pool->def->source.adapter.data.scsi_host.unique_id;
+    int def_unique_id =
+        def->source.adapter.data.scsi_host.unique_id;
+    if (pooladdr->domain == defaddr->domain &&
+        pooladdr->bus == defaddr->bus &&
+        pooladdr->slot == defaddr->slot &&
+        pooladdr->function == defaddr->function &&
+        pool_unique_id == def_unique_id) {
+        return true;
+    }
+    return false;
+}
+
 
 int
 virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
@@ -2142,6 +2164,13 @@ virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
                        def->source.adapter.type ==
                        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
                 unsigned int pool_hostnum, def_hostnum;
+
+                if (pool->def->source.adapter.data.scsi_host.has_parent &&
+                    def->source.adapter.data.scsi_host.has_parent &&
+                    matchSCSIAdapterParent(pool, def)) {
+                    matchpool = pool;
+                    break;
+                }
 
                 if (getSCSIHostNumber(pool->def->source.adapter,
                                       &pool_hostnum) < 0 ||
