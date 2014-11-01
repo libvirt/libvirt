@@ -2175,7 +2175,7 @@ virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
                 if (getSCSIHostNumber(pool->def->source.adapter,
                                       &pool_hostnum) < 0 ||
                     getSCSIHostNumber(def->source.adapter, &def_hostnum) < 0)
-                    goto error;
+                    break;
                 if (pool_hostnum == def_hostnum)
                     matchpool = pool;
             }
@@ -2217,10 +2217,6 @@ virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
         ret = -1;
     }
     return ret;
-
- error:
-    virStoragePoolObjUnlock(pool);
-    return -1;
 }
 
 void
