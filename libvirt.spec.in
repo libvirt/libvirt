@@ -2285,6 +2285,12 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Mon Nov  3 2014 Daniel Veillard <veillard@redhat.com> - 1.2.10-1
+- vbox: various drivers improvements
+- libxl: various drivers improvements
+- Internal driver refactoring
+- a number of improvements and bug fixes
+
 * Wed Oct  1 2014 Daniel Veillard <veillard@redhat.com> - 1.2.9-1
 - CVE-2014-3657: domain_conf: fix domain deadlock
 - CVE-2014-3633: qemu: blkiotune: Use correct definition when looking up disk
