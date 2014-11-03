@@ -4034,11 +4034,6 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
         VIR_WARN("Unable to release lease on %s", vm->def->name);
     VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
 
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
-        VIR_WARN("Unable to save status on vm %s after state change",
-                 vm->def->name);
-     }
-
     switch (action) {
     case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY:
         if (doCoreDumpToAutoDumpPath(driver, vm, VIR_DUMP_MEMORY_ONLY) < 0) {
@@ -4096,6 +4091,11 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
     }
 
  cleanup:
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
+        VIR_WARN("Unable to save status on vm %s after state change",
+                 vm->def->name);
+     }
+
     virObjectUnref(cfg);
 }
 
