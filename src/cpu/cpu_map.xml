@@ -627,5 +627,35 @@
       <pvr value='0x004b0100'/>
     </model>
 
+    <model name='power6'>
+      <vendor name='IBM'/>
+      <compat isa='2.05'/>
+      <pvr value='0x003e0000'/>
+    </model>
+
+    <model name='power7'>
+      <vendor name='IBM'/>
+      <compat isa='2.06'/>
+      <pvr value='0x003f0000'/>
+    </model>
+
+    <model name='power7+'>
+      <vendor name='IBM'/>
+      <compat isa='2.06B'/>
+      <pvr value='0x004a0000'/>
+    </model>
+
+    <model name='power8e'>
+      <vendor name='IBM'/>
+      <compat isa='2.07'/>
+      <pvr value='0x004b0000'/>
+    </model>
+
+    <model name='power8'>
+      <vendor name='IBM'/>
+      <compat isa='2.07'/>
+      <pvr value='0x004d0000'/>
+    </model>
+
   </arch>
 </cpus>
