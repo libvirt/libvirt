@@ -592,9 +592,8 @@ virPidFileForceCleanupPath(const char *path)
     if (virPidFileReadPath(path, &pid) < 0)
         return -1;
 
-    if (virPidFileAcquirePath(path, false, 0) == 0) {
-        virPidFileReleasePath(path, fd);
-    } else {
+    fd = virPidFileAcquirePath(path, false, 0);
+    if (fd < 0) {
         virResetLastError();
 
         /* Only kill the process if the pid is valid one.  0 means
@@ -606,6 +605,9 @@ virPidFileForceCleanupPath(const char *path)
         if (virPidFileDeletePath(path) < 0)
             return -1;
     }
+
+    if (fd)
+        virPidFileReleasePath(path, fd);
 
     return 0;
 }
