@@ -2458,8 +2458,12 @@ virStorageSourceParseBackingColon(virStorageSourcePtr src,
             goto cleanup;
         break;
 
-    case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
     case VIR_STORAGE_NET_PROTOCOL_RBD:
+        if (virStorageSourceParseRBDColonString(path, src) < 0)
+            goto cleanup;
+        break;
+
+    case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
     case VIR_STORAGE_NET_PROTOCOL_LAST:
     case VIR_STORAGE_NET_PROTOCOL_NONE:
         virReportError(VIR_ERR_INTERNAL_ERROR,
