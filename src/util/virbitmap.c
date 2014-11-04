@@ -651,6 +651,51 @@ virBitmapNextSetBit(virBitmapPtr bitmap, ssize_t pos)
 }
 
 /**
+ * virBitmapLastSetBit:
+ * @bitmap: the bitmap
+ *
+ * Search for the last set bit in bitmap @bitmap.
+ *
+ * Returns the position of the found bit, or -1 if no bit is set.
+ */
+ssize_t
+virBitmapLastSetBit(virBitmapPtr bitmap)
+{
+    ssize_t i;
+    int unusedBits;
+    ssize_t sz;
+    unsigned long bits;
+
+    unusedBits = bitmap->map_len * VIR_BITMAP_BITS_PER_UNIT - bitmap->max_bit;
+
+    sz = bitmap->map_len - 1;
+    if (unusedBits > 0) {
+        bits = bitmap->map[sz] & (VIR_BITMAP_BIT(VIR_BITMAP_BITS_PER_UNIT - unusedBits) - 1);
+        if (bits != 0)
+            goto found;
+
+        sz--;
+    }
+
+    for (; sz >= 0; sz--) {
+        bits = bitmap->map[sz];
+        if (bits != 0)
+            goto found;
+    }
+
+    if (bits == 0)
+        return -1;
+
+ found:
+    for (i = VIR_BITMAP_BITS_PER_UNIT - 1; i >= 0; i--) {
+        if (bits & 1UL << i)
+            return i + sz * VIR_BITMAP_BITS_PER_UNIT;
+    }
+
+    return -1;
+}
+
+/**
  * virBitmapNextClearBit:
  * @bitmap: the bitmap
  * @pos: the position after which to search for a clear bit

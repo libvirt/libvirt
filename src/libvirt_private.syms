@@ -1011,6 +1011,7 @@ virBitmapFree;
 virBitmapGetBit;
 virBitmapIsAllClear;
 virBitmapIsAllSet;
+virBitmapLastSetBit;
 virBitmapNew;
 virBitmapNewCopy;
 virBitmapNewData;

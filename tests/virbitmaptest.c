@@ -171,7 +171,7 @@ test3(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 
-/* test for virBitmapNextSetBit, virBitmapNextClearBit */
+/* test for virBitmapNextSetBit, virBitmapLastSetBit, virBitmapNextClearBit */
 static int
 test4(const void *data ATTRIBUTE_UNUSED)
 {
@@ -198,6 +198,9 @@ test4(const void *data ATTRIBUTE_UNUSED)
         goto error;
 
     if (virBitmapNextSetBit(bitmap, -1) != -1)
+        goto error;
+
+    if (virBitmapLastSetBit(bitmap) != -1)
         goto error;
 
     for (i = 0; i < size; i++) {
@@ -232,6 +235,11 @@ test4(const void *data ATTRIBUTE_UNUSED)
     if (virBitmapNextSetBit(bitmap, i) != -1)
         goto error;
 
+    j = sizeof(bitsPos)/sizeof(int) - 1;
+
+    if (virBitmapLastSetBit(bitmap) != bitsPos[j])
+        goto error;
+
     j = 0;
     i = -1;
 
@@ -253,6 +261,9 @@ test4(const void *data ATTRIBUTE_UNUSED)
             goto error;
     }
     if (virBitmapNextSetBit(bitmap, i) != -1)
+        goto error;
+
+    if (virBitmapLastSetBit(bitmap) != size - 1)
         goto error;
 
     if (virBitmapNextClearBit(bitmap, -1) != -1)
