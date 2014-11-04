@@ -1,0 +1,20 @@
+<domain type='kvm'>
+  <name>QEMUGuest1</name>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>4</vcpu>
+  <os>
+    <type arch='ppc64' machine='pseries'>hvm</type>
+  </os>
+  <cpu mode='host-model'>
+    <model>power7</model>
+  </cpu>
+  <clock offset='utc'/>
+  <devices>
+      <emulator>/usr/bin/qemu-system-ppc64</emulator>
+      <console type='pty'>
+        <address type="spapr-vio"/>
+      </console>
+      <memballoon model="none"/>
+  </devices>
+</domain>
