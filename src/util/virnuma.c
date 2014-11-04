@@ -98,15 +98,12 @@ virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
     int maxnode = 0;
     virBitmapPtr tmp_nodemask = NULL;
 
+    if (!virNumaNodesetIsAvailable(numatune))
+        return -1;
+
     tmp_nodemask = virDomainNumatuneGetNodeset(numatune, nodemask, -1);
     if (!tmp_nodemask)
         return 0;
-
-    if (numa_available() < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Host kernel is not aware of NUMA."));
-        return -1;
-    }
 
     maxnode = numa_max_node();
     maxnode = maxnode < NUMA_NUM_NODES ? maxnode : NUMA_NUM_NODES;
@@ -347,12 +344,8 @@ int
 virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
                          virBitmapPtr nodemask ATTRIBUTE_UNUSED)
 {
-    if (virDomainNumatuneGetNodeset(numatune, NULL, -1)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("libvirt is compiled without NUMA tuning support"));
-
+    if (!virNumaNodesetIsAvailable(numatune))
         return -1;
-    }
 
     return 0;
 }
