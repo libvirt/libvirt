@@ -2354,77 +2354,109 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
 
 
 static int
-virStorageSourceParseBackingColon(virStorageSourcePtr src,
-                                  const char *path)
+virStorageSourceParseNBDColonString(const char *nbdstr,
+                                    virStorageSourcePtr src)
 {
     char **backing = NULL;
     int ret = -1;
 
-    if (!(backing = virStringSplit(path, ":", 0)))
+    if (!(backing = virStringSplit(nbdstr, ":", 0)))
         goto cleanup;
 
-    if (!backing[0] ||
-        (src->protocol = virStorageNetProtocolTypeFromString(backing[0])) < 0) {
+    /* we know that backing[0] now equals to "nbd" */
+
+    if (VIR_ALLOC_N(src->hosts, 1) < 0)
+        goto cleanup;
+
+    src->nhosts = 1;
+    src->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
+
+    /* format: [] denotes optional sections, uppercase are variable strings
+     * nbd:unix:/PATH/TO/SOCKET[:exportname=EXPORTNAME]
+     * nbd:HOSTNAME:PORT[:exportname=EXPORTNAME]
+     */
+    if (!backing[1]) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing remote information in '%s' for protocol nbd"),
+                       nbdstr);
+        goto cleanup;
+    } else if (STREQ(backing[1], "unix")) {
+        if (!backing[2]) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("missing unix socket path in nbd backing string %s"),
+                           nbdstr);
+            goto cleanup;
+        }
+
+        if (VIR_STRDUP(src->hosts->socket, backing[2]) < 0)
+            goto cleanup;
+
+   } else {
+        if (!backing[1]) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("missing host name in nbd string '%s'"),
+                           nbdstr);
+            goto cleanup;
+        }
+
+        if (VIR_STRDUP(src->hosts->name, backing[1]) < 0)
+            goto cleanup;
+
+        if (!backing[2]) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("missing port in nbd string '%s'"),
+                           nbdstr);
+            goto cleanup;
+        }
+
+        if (VIR_STRDUP(src->hosts->port, backing[2]) < 0)
+            goto cleanup;
+    }
+
+    if (backing[3] && STRPREFIX(backing[3], "exportname=")) {
+        if (VIR_STRDUP(src->path, backing[3] + strlen("exportname=")) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virStringFreeList(backing);
+
+    return ret;
+}
+
+
+static int
+virStorageSourceParseBackingColon(virStorageSourcePtr src,
+                                  const char *path)
+{
+    char *protocol = NULL;
+    const char *p;
+    int ret = -1;
+
+    if (!(p = strchr(path, ':'))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid backing protocol string '%s'"),
+                       path);
+        goto cleanup;
+    }
+
+    if (VIR_STRNDUP(protocol, path, p - path) < 0)
+        goto cleanup;
+
+    if ((src->protocol = virStorageNetProtocolTypeFromString(protocol)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid backing protocol '%s'"),
-                       NULLSTR(backing[0]));
+                       protocol);
         goto cleanup;
     }
 
     switch ((virStorageNetProtocol) src->protocol) {
     case VIR_STORAGE_NET_PROTOCOL_NBD:
-        if (VIR_ALLOC_N(src->hosts, 1) < 0)
+        if (virStorageSourceParseNBDColonString(path, src) < 0)
             goto cleanup;
-        src->nhosts = 1;
-        src->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
-
-        /* format: [] denotes optional sections, uppercase are variable strings
-         * nbd:unix:/PATH/TO/SOCKET[:exportname=EXPORTNAME]
-         * nbd:HOSTNAME:PORT[:exportname=EXPORTNAME]
-         */
-        if (!backing[1]) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("missing remote information in '%s' for protocol nbd"),
-                           path);
-            goto cleanup;
-        } else if (STREQ(backing[1], "unix")) {
-            if (!backing[2]) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("missing unix socket path in nbd backing string %s"),
-                               path);
-                goto cleanup;
-            }
-
-            if (VIR_STRDUP(src->hosts->socket, backing[2]) < 0)
-                goto cleanup;
-
-       } else {
-            if (!backing[1]) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("missing host name in nbd string '%s'"),
-                               path);
-                goto cleanup;
-            }
-
-            if (VIR_STRDUP(src->hosts->name, backing[1]) < 0)
-                goto cleanup;
-
-            if (!backing[2]) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("missing port in nbd string '%s'"),
-                               path);
-                goto cleanup;
-            }
-
-            if (VIR_STRDUP(src->hosts->port, backing[2]) < 0)
-                goto cleanup;
-        }
-
-        if (backing[3] && STRPREFIX(backing[3], "exportname=")) {
-            if (VIR_STRDUP(src->path, backing[3] + strlen("exportname=")) < 0)
-                goto cleanup;
-        }
-     break;
+        break;
 
     case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
     case VIR_STORAGE_NET_PROTOCOL_RBD:
@@ -2432,7 +2464,7 @@ virStorageSourceParseBackingColon(virStorageSourcePtr src,
     case VIR_STORAGE_NET_PROTOCOL_NONE:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("backing store parser is not implemented for protocol %s"),
-                       backing[0]);
+                       protocol);
         goto cleanup;
 
     case VIR_STORAGE_NET_PROTOCOL_HTTP:
@@ -2444,16 +2476,15 @@ virStorageSourceParseBackingColon(virStorageSourcePtr src,
     case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("malformed backing store path for protocol %s"),
-                       backing[0]);
+                       protocol);
         goto cleanup;
     }
 
     ret = 0;
 
  cleanup:
-    virStringFreeList(backing);
+    VIR_FREE(protocol);
     return ret;
-
 }
 
 
