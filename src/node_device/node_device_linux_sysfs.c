@@ -62,7 +62,7 @@ detect_scsi_host_caps(union _virNodeDevCapData *d)
                           d->scsi_host.host,
                           "port_name",
                           &d->scsi_host.wwpn) < 0) {
-            VIR_ERROR(_("Failed to read WWPN for host%d"), d->scsi_host.host);
+            VIR_WARN("Failed to read WWPN for host%d", d->scsi_host.host);
             goto cleanup;
         }
 
@@ -70,7 +70,7 @@ detect_scsi_host_caps(union _virNodeDevCapData *d)
                           d->scsi_host.host,
                           "node_name",
                           &d->scsi_host.wwnn) < 0) {
-            VIR_ERROR(_("Failed to read WWNN for host%d"), d->scsi_host.host);
+            VIR_WARN("Failed to read WWNN for host%d", d->scsi_host.host);
             goto cleanup;
         }
 
@@ -78,8 +78,8 @@ detect_scsi_host_caps(union _virNodeDevCapData *d)
                           d->scsi_host.host,
                           "fabric_name",
                           &d->scsi_host.fabric_wwn) < 0) {
-            VIR_ERROR(_("Failed to read fabric WWN for host%d"),
-                      d->scsi_host.host);
+            VIR_WARN("Failed to read fabric WWN for host%d",
+                     d->scsi_host.host);
             goto cleanup;
         }
     }
@@ -91,8 +91,8 @@ detect_scsi_host_caps(union _virNodeDevCapData *d)
                           d->scsi_host.host,
                           "max_npiv_vports",
                           &max_vports) < 0) {
-            VIR_ERROR(_("Failed to read max_npiv_vports for host%d"),
-                      d->scsi_host.host);
+            VIR_WARN("Failed to read max_npiv_vports for host%d",
+                     d->scsi_host.host);
             goto cleanup;
         }
 
@@ -100,22 +100,22 @@ detect_scsi_host_caps(union _virNodeDevCapData *d)
                           d->scsi_host.host,
                           "npiv_vports_inuse",
                           &vports) < 0) {
-            VIR_ERROR(_("Failed to read npiv_vports_inuse for host%d"),
-                      d->scsi_host.host);
+            VIR_WARN("Failed to read npiv_vports_inuse for host%d",
+                     d->scsi_host.host);
             goto cleanup;
         }
 
         if (virStrToLong_i(max_vports, NULL, 10,
                            &d->scsi_host.max_vports) < 0) {
-            VIR_ERROR(_("Failed to parse value of max_npiv_vports '%s'"),
+            VIR_WARN("Failed to parse value of max_npiv_vports '%s'",
                       max_vports);
             goto cleanup;
         }
 
         if (virStrToLong_i(vports, NULL, 10,
                            &d->scsi_host.vports) < 0) {
-            VIR_ERROR(_("Failed to parse value of npiv_vports_inuse '%s'"),
-                      vports);
+            VIR_WARN("Failed to parse value of npiv_vports_inuse '%s'",
+                     vports);
             goto cleanup;
         }
     }

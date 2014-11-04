@@ -92,7 +92,6 @@ src/network/bridge_driver_linux.c
 src/network/leaseshelper.c
 src/node_device/node_device_driver.c
 src/node_device/node_device_hal.c
-src/node_device/node_device_linux_sysfs.c
 src/node_device/node_device_udev.c
 src/nodeinfo.c
 src/nwfilter/nwfilter_dhcpsnoop.c
