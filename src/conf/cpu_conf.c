@@ -619,6 +619,7 @@ virCPUDefFormatBuf(virBufferPtr buf,
         return 0;
 
     formatModel = (def->mode == VIR_CPU_MODE_CUSTOM ||
+                   def->mode == VIR_CPU_MODE_HOST_MODEL ||
                    (flags & VIR_DOMAIN_XML_UPDATE_CPU));
     formatFallback = (def->type == VIR_CPU_TYPE_GUEST &&
                       (def->mode == VIR_CPU_MODE_HOST_MODEL ||

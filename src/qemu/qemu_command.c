@@ -6226,7 +6226,9 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
         *hasHwVirt = hasSVM > 0 ? true : false;
     }
 
-    if (cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH) {
+    if ((cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH) ||
+        ((cpu->mode == VIR_CPU_MODE_HOST_MODEL) &&
+          ARCH_IS_PPC64(def->os.arch))) {
         const char *mode = virCPUModeTypeToString(cpu->mode);
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_HOST)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -6241,6 +6243,12 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
             goto cleanup;
         }
         virBufferAddLit(buf, "host");
+
+        if (ARCH_IS_PPC64(def->os.arch) &&
+            cpu->mode == VIR_CPU_MODE_HOST_MODEL) {
+            virBufferAsprintf(buf, ",compat=%s", def->cpu->model);
+        }
+
     } else {
         if (VIR_ALLOC(guest) < 0)
             goto cleanup;
