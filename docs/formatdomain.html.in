@@ -1047,7 +1047,20 @@
           (such as CPUID level) that don't work. Until these issues are fixed,
           it's a good idea to avoid using <code>host-model</code> and use
           <code>custom</code> mode with just the CPU model from host
-          capabilities XML.</dd>
+          capabilities XML.
+          <span class="since">(Since 1.2.11)</span>. PowerISA allows
+          processors to run VMs in binary compatibility mode supporting an
+          older version of ISA.  Libvirt on PowerPC architecture uses the
+          <code>host-model</code> to signify a guest mode CPU running in
+          binary compatibility mode. Example:
+          When a user needs a power7 VM to run in compatibility mode
+          on a Power8 host, this can be described in XML as follows :
+<pre>
+  &lt;cpu mode='host-model'&gt;
+    &lt;model&gt;power7&lt;/model&gt;
+  &lt;/cpu&gt;
+  ...</pre>
+          </dd>
           <dt><code>host-passthrough</code></dt>
           <dd>With this mode, the CPU visible to the guest should be exactly
           the same as the host CPU even in the aspects that libvirt does not
