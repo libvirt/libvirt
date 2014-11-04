@@ -34,6 +34,7 @@ char *virNumaGetAutoPlacementAdvice(unsigned short vcups,
 int virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
                              virBitmapPtr nodemask);
 
+bool virNumaNodesetIsAvailable(virDomainNumatunePtr numatune);
 bool virNumaIsAvailable(void);
 int virNumaGetMaxNode(void);
 bool virNumaNodeIsAvailable(int node);

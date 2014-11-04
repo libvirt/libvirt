@@ -53,6 +53,7 @@
 #include "virstoragefile.h"
 #include "virtpm.h"
 #include "virscsi.h"
+#include "virnuma.h"
 #if defined(__linux__)
 # include <linux/capability.h>
 #endif
@@ -6663,6 +6664,9 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
                          "supported with this QEMU"));
         goto cleanup;
     }
+
+    if (!virNumaNodesetIsAvailable(def->numatune))
+        goto cleanup;
 
     for (i = 0; i < def->mem.nhugepages; i++) {
         ssize_t next_bit, pos = 0;

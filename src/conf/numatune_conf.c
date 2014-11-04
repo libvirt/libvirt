@@ -612,3 +612,31 @@ virDomainNumatuneHasPerNodeBinding(virDomainNumatunePtr numatune)
 
     return false;
 }
+
+int
+virDomainNumatuneSpecifiedMaxNode(virDomainNumatunePtr numatune)
+{
+    int ret = -1;
+    virBitmapPtr nodemask = NULL;
+    size_t i;
+    int bit;
+
+    if (!numatune)
+        return ret;
+
+    nodemask = virDomainNumatuneGetNodeset(numatune, NULL, -1);
+    if (nodemask)
+        ret = virBitmapLastSetBit(nodemask);
+
+    for (i = 0; i < numatune->nmem_nodes; i++) {
+        nodemask = numatune->mem_nodes[i].nodeset;
+        if (!nodemask)
+            continue;
+
+        bit = virBitmapLastSetBit(nodemask);
+        if (bit > ret)
+            ret = bit;
+    }
+
+    return ret;
+}

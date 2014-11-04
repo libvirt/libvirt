@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include "internal.h"
+#include "virnuma.h"
 #include <time.h>
 
 time_t time(time_t *t)
@@ -29,4 +30,12 @@ time_t time(time_t *t)
     if (t)
         *t = ret;
     return ret;
+}
+
+int
+virNumaGetMaxNode(void)
+{
+   const int maxnodesNum = 7;
+
+   return maxnodesNum;
 }

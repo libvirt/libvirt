@@ -102,4 +102,5 @@ bool virDomainNumatuneHasPlacementAuto(virDomainNumatunePtr numatune);
 
 bool virDomainNumatuneHasPerNodeBinding(virDomainNumatunePtr numatune);
 
+int virDomainNumatuneSpecifiedMaxNode(virDomainNumatunePtr numatune);
 #endif /* __NUMATUNE_CONF_H__ */

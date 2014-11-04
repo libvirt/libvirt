@@ -1733,6 +1733,7 @@ virNumaGetPageInfo;
 virNumaGetPages;
 virNumaIsAvailable;
 virNumaNodeIsAvailable;
+virNumaNodesetIsAvailable;
 virNumaSetPagePoolSize;
 virNumaSetupMemoryPolicy;
 

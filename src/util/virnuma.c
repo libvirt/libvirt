@@ -165,6 +165,33 @@ virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
     return ret;
 }
 
+bool
+virNumaNodesetIsAvailable(virDomainNumatunePtr numatune)
+{
+    int maxnode;
+    int bit;
+
+    if (!numatune)
+        return true;
+
+    bit = virDomainNumatuneSpecifiedMaxNode(numatune);
+    if (bit < 0)
+        return true;
+
+    if ((maxnode = virNumaGetMaxNode()) < 0)
+        return false;
+
+    maxnode = maxnode < NUMA_NUM_NODES ? maxnode : NUMA_NUM_NODES;
+    if (bit > maxnode)
+        goto error;
+
+    return true;
+
+ error:
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("NUMA node %d is out of range"), bit);
+    return false;
+}
 
 bool
 virNumaIsAvailable(void)
@@ -330,6 +357,17 @@ virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
     return 0;
 }
 
+bool
+virNumaNodesetIsAvailable(virDomainNumatunePtr numatune)
+{
+    if (virDomainNumatuneSpecifiedMaxNode(numatune) >= 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("libvirt is compiled without NUMA tuning support"));
+        return false;
+    }
+
+    return true;
+}
 
 bool
 virNumaIsAvailable(void)
