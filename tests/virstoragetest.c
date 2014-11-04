@@ -279,6 +279,9 @@ struct _testFileData
     const char *path;
     int type;
     int format;
+    const char *secret;
+    const char *hostname;
+    int protocol;
 };
 
 enum {
@@ -306,7 +309,10 @@ static const char testStorageChainFormat[] =
     "encryption: %d\n"
     "relPath:%s\n"
     "type:%d\n"
-    "format:%d\n";
+    "format:%d\n"
+    "protocol:%s\n"
+    "hostname:%s\n"
+    "secret:%s\n";
 
 static int
 testStorageChain(const void *args)
@@ -369,7 +375,10 @@ testStorageChain(const void *args)
                         data->files[i]->expEncrypted,
                         NULLSTR(data->files[i]->pathRel),
                         data->files[i]->type,
-                        data->files[i]->format) < 0 ||
+                        data->files[i]->format,
+                        virStorageNetProtocolTypeToString(data->files[i]->protocol),
+                        NULLSTR(data->files[i]->hostname),
+                        NULLSTR(data->files[i]->secret)) < 0 ||
             virAsprintf(&actual,
                         testStorageChainFormat, i,
                         NULLSTR(elt->path),
@@ -378,7 +387,10 @@ testStorageChain(const void *args)
                         !!elt->encryption,
                         NULLSTR(elt->relPath),
                         elt->type,
-                        elt->format) < 0) {
+                        elt->format,
+                        virStorageNetProtocolTypeToString(elt->protocol),
+                        NULLSTR(elt->nhosts ? elt->hosts[0].name : NULL),
+                        NULLSTR(elt->auth ? elt->auth->username : NULL)) < 0) {
             VIR_FREE(expect);
             VIR_FREE(actual);
             goto cleanup;
@@ -830,6 +842,8 @@ mymain(void)
         .path = "blah",
         .type = VIR_STORAGE_TYPE_NETWORK,
         .format = VIR_STORAGE_FILE_RAW,
+        .protocol = VIR_STORAGE_NET_PROTOCOL_NBD,
+        .hostname = "example.org",
     };
     TEST_CHAIN(11, absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2, &nbd), EXP_PASS,
@@ -849,6 +863,8 @@ mymain(void)
         .path = "blah",
         .type = VIR_STORAGE_TYPE_NETWORK,
         .format = VIR_STORAGE_FILE_RAW,
+        .protocol = VIR_STORAGE_NET_PROTOCOL_NBD,
+        .hostname = "example.org",
     };
     TEST_CHAIN(12, absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2, &nbd2), EXP_PASS,
