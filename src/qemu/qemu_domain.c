@@ -980,6 +980,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
        break;
 
     case VIR_ARCH_PPC64:
+    case VIR_ARCH_PPC64LE:
         addPCIRoot = true;
         addDefaultUSBKBD = true;
         addDefaultUSBMouse = true;

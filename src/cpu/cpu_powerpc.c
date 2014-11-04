@@ -38,7 +38,7 @@
 
 VIR_LOG_INIT("cpu.cpu_powerpc");
 
-static const virArch archs[] = { VIR_ARCH_PPC64 };
+static const virArch archs[] = { VIR_ARCH_PPC64, VIR_ARCH_PPC64LE };
 
 struct ppc_vendor {
     char *name;

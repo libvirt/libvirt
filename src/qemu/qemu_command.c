@@ -714,7 +714,7 @@ qemuSetSCSIControllerModel(virDomainDefPtr def,
             return -1;
         }
     } else {
-        if ((def->os.arch == VIR_ARCH_PPC64) &&
+        if (ARCH_IS_PPC64(def->os.arch) &&
             STRPREFIX(def->os.machine, "pseries")) {
             *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
         } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI)) {
@@ -1265,7 +1265,7 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
 
     for (i = 0; i < def->nserials; i++) {
         if (def->serials[i]->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
-            (def->os.arch == VIR_ARCH_PPC64) &&
+            ARCH_IS_PPC64(def->os.arch) &&
             STRPREFIX(def->os.machine, "pseries"))
             def->serials[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
         if (qemuAssignSpaprVIOAddress(def, &def->serials[i]->info,
@@ -1274,7 +1274,7 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
     }
 
     if (def->nvram) {
-        if (def->os.arch == VIR_ARCH_PPC64 &&
+        if (ARCH_IS_PPC64(def->os.arch) &&
             STRPREFIX(def->os.machine, "pseries"))
             def->nvram->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
         if (qemuAssignSpaprVIOAddress(def, &def->nvram->info,
@@ -4200,7 +4200,7 @@ qemuBuildUSBControllerDevStr(virDomainDefPtr domainDef,
     model = def->model;
 
     if (model == -1) {
-        if (domainDef->os.arch == VIR_ARCH_PPC64)
+        if ARCH_IS_PPC64(domainDef->os.arch)
             model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
         else
             model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
@@ -8572,7 +8572,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                            !qemuDomainMachineIsQ35(def) &&
                            (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI) ||
                             (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI) &&
-                             def->os.arch == VIR_ARCH_PPC64))) {
+                             ARCH_IS_PPC64(def->os.arch)))) {
                     if (usblegacy) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                        _("Multiple legacy USB controllers are "
@@ -9770,7 +9770,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     if (def->nvram) {
-        if (def->os.arch == VIR_ARCH_PPC64 &&
+        if (ARCH_IS_PPC64(def->os.arch) &&
             STRPREFIX(def->os.machine, "pseries")) {
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVRAM)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -9893,7 +9893,7 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
 {
     virBuffer cmd = VIR_BUFFER_INITIALIZER;
 
-    if ((arch == VIR_ARCH_PPC64) && STRPREFIX(machine, "pseries")) {
+    if (ARCH_IS_PPC64(arch) && STRPREFIX(machine, "pseries")) {
         if (serial->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
             serial->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO) {
             virBufferAsprintf(&cmd, "spapr-vty,chardev=char%s",
@@ -10315,7 +10315,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
     if (VIR_ALLOC(def->src) < 0)
         goto error;
 
-    if (((dom->os.arch == VIR_ARCH_PPC64) &&
+    if ((ARCH_IS_PPC64(dom->os.arch) &&
         dom->os.machine && STRPREFIX(dom->os.machine, "pseries")))
         def->bus = VIR_DOMAIN_DISK_BUS_SCSI;
     else
@@ -10408,7 +10408,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
         } else if (STREQ(keywords[i], "if")) {
             if (STREQ(values[i], "ide")) {
                 def->bus = VIR_DOMAIN_DISK_BUS_IDE;
-                if (((dom->os.arch == VIR_ARCH_PPC64) &&
+                if ((ARCH_IS_PPC64(dom->os.arch) &&
                      dom->os.machine && STRPREFIX(dom->os.machine, "pseries"))) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("pseries systems do not support ide devices '%s'"), val);
@@ -11653,7 +11653,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             }
             if (STREQ(arg, "-cdrom")) {
                 disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
-                if (((def->os.arch == VIR_ARCH_PPC64) &&
+                if ((ARCH_IS_PPC64(def->os.arch) &&
                     def->os.machine && STRPREFIX(def->os.machine, "pseries")))
                     disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
                 if (VIR_STRDUP(disk->dst, "hdc") < 0)
@@ -11669,7 +11669,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                         disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
                     else
                         disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
-                   if (((def->os.arch == VIR_ARCH_PPC64) &&
+                   if ((ARCH_IS_PPC64(def->os.arch) &&
                        def->os.machine && STRPREFIX(def->os.machine, "pseries")))
                        disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
                 }

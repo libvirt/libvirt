@@ -633,7 +633,7 @@ virQEMUCapsProbeCPUModels(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid)
     if (qemuCaps->arch == VIR_ARCH_I686 ||
         qemuCaps->arch == VIR_ARCH_X86_64) {
         parse = virQEMUCapsParseX86Models;
-    } else if (qemuCaps->arch == VIR_ARCH_PPC64) {
+    } else if ARCH_IS_PPC64(qemuCaps->arch) {
         parse = virQEMUCapsParsePPCModels;
     } else {
         VIR_DEBUG("don't know how to parse %s CPU models",
@@ -2003,7 +2003,7 @@ bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
         return true;
 
     if (def->os.arch == VIR_ARCH_PPC ||
-        def->os.arch == VIR_ARCH_PPC64) {
+        ARCH_IS_PPC64(def->os.arch)) {
         /*
          * Usage of pci.0 naming:
          *
@@ -3575,7 +3575,7 @@ virQEMUCapsSupportsChardev(virDomainDefPtr def,
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
         return false;
 
-    if ((def->os.arch == VIR_ARCH_PPC) || (def->os.arch == VIR_ARCH_PPC64)) {
+    if ((def->os.arch == VIR_ARCH_PPC) || ARCH_IS_PPC64(def->os.arch)) {
         /* only pseries need -device spapr-vty with -chardev */
         return (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
                 chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO);

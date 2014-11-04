@@ -79,6 +79,9 @@ typedef enum {
                              (arch) == VIR_ARCH_PPC64LE ||\
                              (arch) == VIR_ARCH_PPCEMB)
 
+# define ARCH_IS_PPC64(arch)  ((arch) == VIR_ARCH_PPC64 ||\
+                               (arch) == VIR_ARCH_PPC64LE)
+
 # define ARCH_IS_ARM(arch)  ((arch) == VIR_ARCH_ARMV6L ||\
                              (arch) == VIR_ARCH_ARMV7L ||\
                              (arch) == VIR_ARCH_ARMV7B ||\
