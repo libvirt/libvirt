@@ -4823,7 +4823,8 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     VIR_FREE(priv->job.completed);
 
     cookie_flags = QEMU_MIGRATION_COOKIE_NETWORK |
-                   QEMU_MIGRATION_COOKIE_STATS;
+                   QEMU_MIGRATION_COOKIE_STATS |
+                   QEMU_MIGRATION_COOKIE_NBD;
     if (flags & VIR_MIGRATE_PERSIST_DEST)
         cookie_flags |= QEMU_MIGRATION_COOKIE_PERSISTENT;
 
