@@ -68,6 +68,7 @@
 #include "virhostdev.h"
 #include "storage/storage_driver.h"
 #include "configmake.h"
+#include "nwfilter_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -3389,6 +3390,8 @@ qemuProcessReconnect(void *opaque)
 
     VIR_FREE(data);
 
+    virNWFilterReadLockFilterUpdates();
+
     virObjectLock(obj);
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -3540,6 +3543,7 @@ qemuProcessReconnect(void *opaque)
 
     virObjectUnref(conn);
     virObjectUnref(cfg);
+    virNWFilterUnlockFilterUpdates();
 
     return;
 
@@ -3575,6 +3579,7 @@ qemuProcessReconnect(void *opaque)
     }
     virObjectUnref(conn);
     virObjectUnref(cfg);
+    virNWFilterUnlockFilterUpdates();
 }
 
 static int

@@ -5700,6 +5700,8 @@ qemuDomainRestoreFlags(virConnectPtr conn,
                   VIR_DOMAIN_SAVE_PAUSED, -1);
 
 
+    virNWFilterReadLockFilterUpdates();
+
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header, &xml,
                                  (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
                                  &wrapperFd, false, false);
@@ -5777,6 +5779,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     virFileWrapperFdFree(wrapperFd);
     if (vm)
         virObjectUnlock(vm);
+    virNWFilterUnlockFilterUpdates();
     return ret;
 }
 
@@ -7210,6 +7213,8 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
+    virNWFilterReadLockFilterUpdates();
+
     cfg = virQEMUDriverGetConfig(driver);
 
     affect = flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
@@ -7326,6 +7331,7 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
         virObjectUnlock(vm);
     virObjectUnref(caps);
     virObjectUnref(cfg);
+    virNWFilterUnlockFilterUpdates();
     return ret;
 }
 
@@ -7355,6 +7361,8 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_DEVICE_MODIFY_FORCE, -1);
+
+    virNWFilterReadLockFilterUpdates();
 
     cfg = virQEMUDriverGetConfig(driver);
 
@@ -7472,6 +7480,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         virObjectUnlock(vm);
     virObjectUnref(caps);
     virObjectUnref(cfg);
+    virNWFilterUnlockFilterUpdates();
     return ret;
 }
 
@@ -14159,6 +14168,8 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
      * and use of FORCE can cause multiple transitions.
      */
 
+    virNWFilterReadLockFilterUpdates();
+
     if (!(vm = qemuDomObjFromSnapshot(snapshot)))
         return -1;
 
@@ -14480,6 +14491,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         virObjectUnlock(vm);
     virObjectUnref(caps);
     virObjectUnref(cfg);
+    virNWFilterUnlockFilterUpdates();
 
     return ret;
 }
