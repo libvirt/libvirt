@@ -57,6 +57,7 @@
 #include "virstring.h"
 #include "virtypedparam.h"
 #include "virprocess.h"
+#include "nwfilter_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -2525,6 +2526,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     if (virTimeMillisNow(&now) < 0)
         return -1;
 
+    virNWFilterReadLockFilterUpdates();
+
     if (flags & VIR_MIGRATE_OFFLINE) {
         if (flags & (VIR_MIGRATE_NON_SHARED_DISK |
                      VIR_MIGRATE_NON_SHARED_INC)) {
@@ -2826,6 +2829,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         qemuDomainEventQueue(driver, event);
     qemuMigrationCookieFree(mig);
     virObjectUnref(caps);
+    virNWFilterUnlockFilterUpdates();
     return ret;
 
  stop:
