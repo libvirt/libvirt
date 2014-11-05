@@ -7846,6 +7846,7 @@ remoteConnectGetAllDomainStats(virConnectPtr conn,
         VIR_FREE(elem);
     }
     virDomainStatsRecordListFree(tmpret);
+    VIR_FREE(args.doms.doms_val);
     xdr_free((xdrproc_t)xdr_remote_connect_get_all_domain_stats_ret,
              (char *) &ret);
 
