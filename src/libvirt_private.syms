@@ -609,6 +609,7 @@ virDomainNumatuneParseXML;
 virDomainNumatunePlacementTypeFromString;
 virDomainNumatunePlacementTypeToString;
 virDomainNumatuneSet;
+virDomainNumatuneSpecifiedMaxNode;
 
 
 # conf/nwfilter_conf.h
