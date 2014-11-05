@@ -74,7 +74,7 @@ virNumaGetAutoPlacementAdvice(unsigned short vcpus,
     virCommandFree(cmd);
     return output;
 }
-#else
+#else /* !HAVE_NUMAD */
 char *
 virNumaGetAutoPlacementAdvice(unsigned short vcpus ATTRIBUTE_UNUSED,
                               unsigned long long balloon ATTRIBUTE_UNUSED)
@@ -83,7 +83,7 @@ virNumaGetAutoPlacementAdvice(unsigned short vcpus ATTRIBUTE_UNUSED,
                    _("numad is not available on this host"));
     return NULL;
 }
-#endif
+#endif /* !HAVE_NUMAD */
 
 #if WITH_NUMACTL
 int
@@ -339,7 +339,8 @@ virNumaGetNodeCPUs(int node,
 # undef MASK_CPU_ISSET
 # undef n_bits
 
-#else
+#else /* !WITH_NUMACTL */
+
 int
 virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
                          virBitmapPtr nodemask ATTRIBUTE_UNUSED)
@@ -404,8 +405,7 @@ virNumaGetNodeCPUs(int node ATTRIBUTE_UNUSED,
                    _("NUMA isn't available on this host"));
     return -1;
 }
-#endif
-
+#endif /* !WITH_NUMACTL */
 
 /**
  * virNumaGetMaxCPUs:
@@ -494,8 +494,8 @@ virNumaGetDistances(int node,
     return ret;
 }
 
+#else /* !(WITH_NUMACTL && HAVE_NUMA_BITMASK_ISBITSET) */
 
-#else
 bool
 virNumaNodeIsAvailable(int node)
 {
@@ -519,7 +519,7 @@ virNumaGetDistances(int node ATTRIBUTE_UNUSED,
     VIR_DEBUG("NUMA distance information isn't available on this host");
     return 0;
 }
-#endif
+#endif /* !(WITH_NUMACTL && HAVE_NUMA_BITMASK_ISBITSET) */
 
 
 /* currently all the huge page stuff below is linux only */
