@@ -219,6 +219,7 @@ static void qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
     VIR_FREE(mig->lockState);
     VIR_FREE(mig->lockDriver);
     VIR_FREE(mig->nbd);
+    VIR_FREE(mig->jobInfo);
     VIR_FREE(mig);
 }
 
