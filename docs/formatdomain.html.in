@@ -509,9 +509,9 @@
       <dd>
         The content of this optional element defines the number
         of IOThreads to be assigned to the domain for use by
-        virtio-blk-pci target storage devices. There should be
-        only 1 or 2 IOThreads per host CPU. There may be more than
-        supported device assigned to each IOThread.
+        virtio-blk-pci and virtio-blk-ccw target storage devices. There
+        should be only 1 or 2 IOThreads per host CPU. There may be more
+        than one supported device assigned to each IOThread.
       </dd>
     </dl>
 

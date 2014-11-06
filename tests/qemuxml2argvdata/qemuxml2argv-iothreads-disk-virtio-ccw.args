@@ -1,0 +1,14 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S \
+-M s390-ccw -m 214 -smp 1 \
+-object iothread,id=iothread1 \
+-object iothread,id=iothread2 \
+-nographic -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
+-drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-virtio-disk0 \
+-device virtio-blk-ccw,iothread=iothread1,devno=fe.0.0000,\
+drive=drive-virtio-disk0,id=virtio-disk0 \
+-drive file=/dev/HostVG/QEMUGuest2,if=none,id=drive-virtio-disk1 \
+-device virtio-blk-ccw,iothread=iothread2,devno=0.0.0007,\
+drive=drive-virtio-disk1,id=virtio-disk1 \
+-device virtio-balloon-ccw,id=balloon0,devno=fe.0.000a

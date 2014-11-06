@@ -3738,9 +3738,11 @@ qemuCheckIothreads(virDomainDefPtr def,
 
     /* Right "type" of disk" */
     if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO ||
-        disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+         disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("IOThreads only available for virtio pci disk"));
+                       _("IOThreads only available for virtio pci and "
+                         "virtio ccw disk"));
         return false;
     }
 
@@ -3952,6 +3954,8 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
         if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
             virBufferAddLit(&opt, "virtio-blk-ccw");
+            if (disk->iothread)
+                virBufferAsprintf(&opt, ",iothread=iothread%u", disk->iothread);
         } else if (disk->info.type ==
                    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
             virBufferAddLit(&opt, "virtio-blk-s390");

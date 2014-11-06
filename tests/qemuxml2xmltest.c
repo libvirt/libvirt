@@ -306,6 +306,7 @@ mymain(void)
     DO_TEST("iothreads");
     DO_TEST_DIFFERENT("cputune-iothreads");
     DO_TEST("iothreads-disk");
+    DO_TEST("iothreads-disk-virtio-ccw");
     DO_TEST("lease");
     DO_TEST("event_idx");
     DO_TEST("vhost_queues");
