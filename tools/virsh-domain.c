@@ -1616,7 +1616,7 @@ static const vshCmdOptDef opts_block_commit[] = {
      .help = N_("fully-qualified path of disk")
     },
     {.name = "bandwidth",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_INT,
      .help = N_("bandwidth limit in MiB/s")
     },
     {.name = "base",
@@ -1834,7 +1834,7 @@ static const vshCmdOptDef opts_block_copy[] = {
      .help = N_("path of the copy to create")
     },
     {.name = "bandwidth",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_INT,
      .help = N_("bandwidth limit in MiB/s")
     },
     {.name = "shallow",
@@ -2190,8 +2190,8 @@ static const vshCmdOptDef opts_block_job[] = {
      .help = N_("implies --info; output details rather than human summary")
     },
     {.name = "bandwidth",
-     .type = VSH_OT_DATA,
-     .help = N_("set the Bandwidth limit in MiB/s")
+     .type = VSH_OT_INT,
+     .help = N_("set the bandwidth limit in MiB/s")
     },
     {.name = NULL}
 };
@@ -2349,7 +2349,7 @@ static const vshCmdOptDef opts_block_pull[] = {
      .help = N_("fully-qualified path of disk")
     },
     {.name = "bandwidth",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_INT,
      .help = N_("bandwidth limit in MiB/s")
     },
     {.name = "base",
