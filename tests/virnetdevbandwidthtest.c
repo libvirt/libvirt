@@ -167,4 +167,4 @@ mymain(void)
     return ret;
 }
 
-VIRT_TEST_MAIN(mymain);
+VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virnetdevbandwidthmock.so")

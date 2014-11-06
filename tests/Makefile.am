@@ -167,7 +167,6 @@ test_programs = virshtest sockettest \
 	virstringtest \
 	virportallocatortest \
 	sysinfotest \
-	virnetdevbandwidthtest \
 	virkmodtest \
 	vircapstest \
 	domaincapstest \
@@ -318,7 +317,9 @@ test_programs += metadatatest
 test_programs += secretxml2xmltest
 
 if WITH_LINUX
-test_programs += virusbtest
+test_programs += virusbtest \
+	virnetdevbandwidthtest \
+	$(NULL)
 endif WITH_LINUX
 
 test_scripts = \
@@ -409,7 +410,9 @@ test_libraries += \
 endif WITH_DBUS
 
 if WITH_LINUX
-test_libraries += virusbmock.la
+test_libraries += virusbmock.la \
+		virnetdevbandwidthmock.la \
+		$(NULL)
 endif WITH_LINUX
 
 if WITH_TESTS
@@ -825,9 +828,6 @@ commandhelper_LDADD = \
 
 commandhelper_LDFLAGS = -static
 
-virnetdevbandwidthtest_SOURCES = \
-	virnetdevbandwidthtest.c testutils.h testutils.c
-virnetdevbandwidthtest_LDADD = $(LDADDS) $(LIBXML_LIBS)
 
 virkmodtest_SOURCES = \
 	virkmodtest.c testutils.h testutils.c
@@ -994,12 +994,24 @@ virusbtest_SOURCES = \
 	virusbtest.c testutils.h testutils.c
 virusbtest_LDADD = $(LDADDS)
 
+virnetdevbandwidthtest_SOURCES = \
+	virnetdevbandwidthtest.c testutils.h testutils.c
+virnetdevbandwidthtest_LDADD = $(LDADDS) $(LIBXML_LIBS)
+
 virusbmock_la_SOURCES = virusbmock.c
 virusbmock_la_CFLAGS = $(AM_CFLAGS)
 virusbmock_la_LDFLAGS = -module -avoid-version \
         -rpath /evil/libtool/hack/to/force/shared/lib/creation
+
+virnetdevbandwidthmock_la_SOURCES = \
+	virnetdevbandwidthmock.c
+virnetdevbandwidthmock_la_CFLAGS = $(AM_CFLAGS)
+virnetdevbandwidthmock_la_LDFLAGS = -module -avoid-version \
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+
 else ! WITH_LINUX
-	EXTRA_DIST += virusbtest.c virusbmock.c
+	EXTRA_DIST += virusbtest.c virusbmock.c \
+		virnetdevbandwidthtest.c virnetdevbandwidthmock.c
 endif ! WITH_LINUX
 
 if WITH_DBUS
