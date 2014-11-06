@@ -3737,7 +3737,7 @@ qemuCheckIothreads(virDomainDefPtr def,
     }
 
     /* Right "type" of disk" */
-    if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO &&
+    if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO ||
         disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("IOThreads only available for virtio pci disk"));
