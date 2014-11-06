@@ -87,8 +87,8 @@ virNumaGetAutoPlacementAdvice(unsigned short vcpus ATTRIBUTE_UNUSED,
 
 #if WITH_NUMACTL
 int
-virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
-                         virBitmapPtr nodemask)
+virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode,
+                         virBitmapPtr nodeset)
 {
     nodemask_t mask;
     int node = -1;
@@ -96,14 +96,9 @@ virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
     int bit = 0;
     size_t i;
     int maxnode = 0;
-    virBitmapPtr tmp_nodemask = NULL;
 
-    if (!virNumaNodesetIsAvailable(numatune))
+    if (!virNumaNodesetIsAvailable(nodeset))
         return -1;
-
-    tmp_nodemask = virDomainNumatuneGetNodeset(numatune, nodemask, -1);
-    if (!tmp_nodemask)
-        return 0;
 
     maxnode = numa_max_node();
     maxnode = maxnode < NUMA_NUM_NODES ? maxnode : NUMA_NUM_NODES;
@@ -111,7 +106,7 @@ virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
     /* Convert nodemask to NUMA bitmask. */
     nodemask_zero(&mask);
     bit = -1;
-    while ((bit = virBitmapNextSetBit(tmp_nodemask, bit)) >= 0) {
+    while ((bit = virBitmapNextSetBit(nodeset, bit)) >= 0) {
         if (bit > maxnode) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("NUMA node %d is out of range"), bit);
@@ -120,7 +115,7 @@ virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
         nodemask_set(&mask, bit);
     }
 
-    switch (virDomainNumatuneGetMode(numatune, -1)) {
+    switch (mode) {
     case VIR_DOMAIN_NUMATUNE_MEM_STRICT:
         numa_set_bind_policy(1);
         numa_set_membind(&mask);
@@ -160,34 +155,6 @@ virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
 
  cleanup:
     return ret;
-}
-
-bool
-virNumaNodesetIsAvailable(virDomainNumatunePtr numatune)
-{
-    int maxnode;
-    int bit;
-
-    if (!numatune)
-        return true;
-
-    bit = virDomainNumatuneSpecifiedMaxNode(numatune);
-    if (bit < 0)
-        return true;
-
-    if ((maxnode = virNumaGetMaxNode()) < 0)
-        return false;
-
-    maxnode = maxnode < NUMA_NUM_NODES ? maxnode : NUMA_NUM_NODES;
-    if (bit > maxnode)
-        goto error;
-
-    return true;
-
- error:
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("NUMA node %d is out of range"), bit);
-    return false;
 }
 
 bool
@@ -342,25 +309,13 @@ virNumaGetNodeCPUs(int node,
 #else /* !WITH_NUMACTL */
 
 int
-virNumaSetupMemoryPolicy(virDomainNumatunePtr numatune,
-                         virBitmapPtr nodemask ATTRIBUTE_UNUSED)
+virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode ATTRIBUTE_UNUSED,
+                         virBitmapPtr nodeset)
 {
-    if (!virNumaNodesetIsAvailable(numatune))
+    if (!virNumaNodesetIsAvailable(nodeset))
         return -1;
 
     return 0;
-}
-
-bool
-virNumaNodesetIsAvailable(virDomainNumatunePtr numatune)
-{
-    if (virDomainNumatuneSpecifiedMaxNode(numatune) >= 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("libvirt is compiled without NUMA tuning support"));
-        return false;
-    }
-
-    return true;
 }
 
 bool
@@ -1006,3 +961,22 @@ virNumaSetPagePoolSize(int node ATTRIBUTE_UNUSED,
     return -1;
 }
 #endif /* #ifdef __linux__ */
+
+bool
+virNumaNodesetIsAvailable(virBitmapPtr nodeset)
+{
+    ssize_t bit = -1;
+
+    if (!nodeset)
+        return true;
+
+    while ((bit = virBitmapNextSetBit(nodeset, bit)) >= 0) {
+        if (virNumaNodeIsAvailable(bit))
+            continue;
+
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("NUMA node %zd is unavailable"), bit);
+        return false;
+    }
+    return true;
+}

@@ -2924,6 +2924,9 @@ static int qemuProcessHook(void *data)
     struct qemuProcessHookData *h = data;
     int ret = -1;
     int fd;
+    virBitmapPtr nodeset = NULL;
+    virDomainNumatuneMemMode mode;
+
     /* This method cannot use any mutexes, which are not
      * protected across fork()
      */
@@ -2953,7 +2956,11 @@ static int qemuProcessHook(void *data)
     if (virSecurityManagerClearSocketLabel(h->driver->securityManager, h->vm->def) < 0)
         goto cleanup;
 
-    if (virNumaSetupMemoryPolicy(h->vm->def->numatune, h->nodemask) < 0)
+    mode = virDomainNumatuneGetMode(h->vm->def->numatune, -1);
+    nodeset = virDomainNumatuneGetNodeset(h->vm->def->numatune,
+                                          h->nodemask, -1);
+
+    if (virNumaSetupMemoryPolicy(mode, nodeset) < 0)
         goto cleanup;
 
     ret = 0;

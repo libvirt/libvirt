@@ -26,6 +26,7 @@
 
 #include "domain_conf.h"
 #include "viralloc.h"
+#include "virnuma.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
@@ -639,4 +640,27 @@ virDomainNumatuneSpecifiedMaxNode(virDomainNumatunePtr numatune)
     }
 
     return ret;
+}
+
+bool
+virDomainNumatuneNodesetIsAvailable(virDomainNumatunePtr numatune,
+                                    virBitmapPtr auto_nodeset)
+{
+    size_t i = 0;
+    virBitmapPtr b = NULL;
+
+    if (!numatune)
+        return true;
+
+    b = virDomainNumatuneGetNodeset(numatune, auto_nodeset, -1);
+    if (!virNumaNodesetIsAvailable(b))
+        return false;
+
+    for (i = 0; i < numatune->nmem_nodes; i++) {
+        b = virDomainNumatuneGetNodeset(numatune, auto_nodeset, i);
+        if (!virNumaNodesetIsAvailable(b))
+            return false;
+    }
+
+    return true;
 }

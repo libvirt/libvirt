@@ -6665,7 +6665,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    if (!virNumaNodesetIsAvailable(def->numatune))
+    if (!virDomainNumatuneNodesetIsAvailable(def->numatune, nodeset))
         goto cleanup;
 
     for (i = 0; i < def->mem.nhugepages; i++) {

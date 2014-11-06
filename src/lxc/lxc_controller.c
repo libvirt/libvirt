@@ -685,22 +685,29 @@ static int virLXCControllerGetNumadAdvice(virLXCControllerPtr ctrl,
  */
 static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl)
 {
-    virBitmapPtr nodemask = NULL;
+    virBitmapPtr auto_nodeset = NULL;
     int ret = -1;
+    virBitmapPtr nodeset = NULL;
+    virDomainNumatuneMemMode mode;
 
-    if (virLXCControllerGetNumadAdvice(ctrl, &nodemask) < 0 ||
-        virNumaSetupMemoryPolicy(ctrl->def->numatune, nodemask) < 0)
+    if (virLXCControllerGetNumadAdvice(ctrl, &auto_nodeset) < 0)
+        goto cleanup;
+
+    nodeset = virDomainNumatuneGetNodeset(ctrl->def->numatune, auto_nodeset, -1);
+    mode = virDomainNumatuneGetMode(ctrl->def->numatune, -1);
+
+    if (virNumaSetupMemoryPolicy(mode, nodeset) < 0)
         goto cleanup;
 
     if (virLXCControllerSetupCpuAffinity(ctrl) < 0)
         goto cleanup;
 
-    if (virLXCCgroupSetup(ctrl->def, ctrl->cgroup, nodemask) < 0)
+    if (virLXCCgroupSetup(ctrl->def, ctrl->cgroup, nodeset) < 0)
         goto cleanup;
 
     ret = 0;
  cleanup:
-    virBitmapFree(nodemask);
+    virBitmapFree(auto_nodeset);
     return ret;
 }
 

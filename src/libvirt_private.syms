@@ -605,6 +605,7 @@ virDomainNumatuneHasPlacementAuto;
 virDomainNumatuneMaybeFormatNodeset;
 virDomainNumatuneMemModeTypeFromString;
 virDomainNumatuneMemModeTypeToString;
+virDomainNumatuneNodesetIsAvailable;
 virDomainNumatuneParseXML;
 virDomainNumatunePlacementTypeFromString;
 virDomainNumatunePlacementTypeToString;

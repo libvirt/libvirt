@@ -39,3 +39,15 @@ virNumaGetMaxNode(void)
 
    return maxnodesNum;
 }
+
+#if WITH_NUMACTL && HAVE_NUMA_BITMASK_ISBITSET
+/*
+ * In case libvirt is compiled with full NUMA support, we need to mock
+ * this function in order to fake what numa nodes are available.
+ */
+bool
+virNumaNodeIsAvailable(int node)
+{
+    return node >= 0 && node <= virNumaGetMaxNode();
+}
+#endif /* WITH_NUMACTL && HAVE_NUMA_BITMASK_ISBITSET */
