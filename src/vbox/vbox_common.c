@@ -4144,23 +4144,12 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
                 const char *src = virDomainDiskGetSource(dev->data.disk);
                 int type = virDomainDiskGetType(dev->data.disk);
 
-                if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-                    if (type == VIR_STORAGE_TYPE_FILE && src) {
-                        ret = gVBoxAPI.attachDVD(data, machine, src);
-                    } else if (type == VIR_STORAGE_TYPE_BLOCK) {
-                    }
-                } else if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-                    if (type == VIR_STORAGE_TYPE_FILE && src) {
-                        ret = gVBoxAPI.attachFloppy(data, machine, src);
-                    } else if (type == VIR_STORAGE_TYPE_BLOCK) {
-                    }
-                }
-            }
-        } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
-        } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
-            if (dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
-                if (dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-                }
+                if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
+                    type == VIR_STORAGE_TYPE_FILE && src)
+                    ret = gVBoxAPI.attachDVD(data, machine, src);
+                else if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+                         type == VIR_STORAGE_TYPE_FILE && src)
+                    ret = gVBoxAPI.attachFloppy(data, machine, src);
             }
         } else if (dev->type == VIR_DOMAIN_DEVICE_FS &&
                    dev->data.fs->type == VIR_DOMAIN_FS_TYPE_MOUNT) {
