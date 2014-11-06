@@ -7841,17 +7841,6 @@ qemuBuildCommandLine(virConnectPtr conn,
                            _("CPU tuning is not available in session mode"));
             goto error;
         }
-
-        virDomainNetDefPtr *nets = def->nets;
-        virNetDevBandwidthPtr bandwidth = NULL;
-        size_t nnets = def->nnets;
-        for (i = 0; i < nnets; i++) {
-            if ((bandwidth = virDomainNetGetActualBandwidth(nets[i])) != NULL) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                    _("Network bandwidth tuning is not available in session mode"));
-                goto error;
-            }
-        }
     }
 
     for (i = 0; i < def->ngraphics; ++i) {

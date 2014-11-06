@@ -9384,7 +9384,6 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
     size_t i;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr persistentDef = NULL;
-    virQEMUDriverConfigPtr cfg = NULL;
     char *nodeset = NULL;
     int ret = -1;
     virCapsPtr caps = NULL;
@@ -9403,7 +9402,6 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
         return -1;
 
     priv = vm->privateData;
-    cfg = virQEMUDriverGetConfig(driver);
 
     if (virDomainGetNumaParametersEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -9477,7 +9475,6 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(caps);
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -10447,12 +10444,6 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
 
     if (virDomainSetInterfaceParametersEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
-
-    if (!cfg->privileged) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("Network bandwidth tuning is not available in session mode"));
-        goto cleanup;
-    }
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
