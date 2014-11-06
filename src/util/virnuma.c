@@ -460,7 +460,7 @@ virNumaNodeIsAvailable(int node)
         return false;
 
     /* Do we have anything better? */
-    return (node >= 0) && (node < max_node);
+    return (node >= 0) && (node <= max_node);
 }
 
 
