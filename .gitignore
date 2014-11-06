@@ -51,8 +51,7 @@
 /config.sub
 /configure
 /configure.lineno
-/conftest.c
-/conftest.err
+/conftest.*
 /daemon/*_dispatch.h
 /daemon/libvirt_qemud
 /daemon/libvirtd
