@@ -556,6 +556,20 @@ createVport(virStoragePoolSourceAdapter adapter)
     if (adapter.type != VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
         return 0;
 
+    /* If a parent was provided, then let's make sure it's vhost capable */
+    if (adapter.data.fchost.parent) {
+        if (virGetSCSIHostNumber(adapter.data.fchost.parent, &parent_host) < 0)
+            return -1;
+
+        if (!virIsCapableFCHost(NULL, parent_host)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("parent '%s' specified for vHBA "
+                             "is not vport capable"),
+                           adapter.data.fchost.parent);
+            return -1;
+        }
+    }
+
     /* This filters either HBA or already created vHBA */
     if ((name = virGetFCHostNameByWWN(NULL, adapter.data.fchost.wwnn,
                                       adapter.data.fchost.wwpn))) {
@@ -563,16 +577,17 @@ createVport(virStoragePoolSourceAdapter adapter)
         return 0;
     }
 
-    if (!adapter.data.fchost.parent &&
-        !(adapter.data.fchost.parent = virFindFCHostCapableVport(NULL))) {
-         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("'parent' for vHBA not specified, and "
-                         "cannot find one on this host"));
-         return -1;
-    }
+    if (!adapter.data.fchost.parent) {
+        if (!(adapter.data.fchost.parent = virFindFCHostCapableVport(NULL))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("'parent' for vHBA not specified, and "
+                             "cannot find one on this host"));
+            return -1;
+        }
 
-    if (virGetSCSIHostNumber(adapter.data.fchost.parent, &parent_host) < 0)
-        return -1;
+        if (virGetSCSIHostNumber(adapter.data.fchost.parent, &parent_host) < 0)
+            return -1;
+    }
 
     if (virManageVport(parent_host, adapter.data.fchost.wwpn,
                        adapter.data.fchost.wwnn, VPORT_CREATE) < 0)
