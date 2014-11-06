@@ -166,7 +166,13 @@
             to uniquely identify the device in the Fibre Channel storage fabric
             (the device can be either a HBA or vHBA). Both wwnn and wwpn should
             be specified. Use the command 'virsh nodedev-dumpxml' to determine
-            how to set the values for the wwnn/wwpn of a (v)HBA.
+            how to set the values for the wwnn/wwpn of a (v)HBA. The wwnn and
+            wwpn have very specific numerical format requirements based on the
+            hypervisor being used, thus care should be taken if you decide to
+            generate your own to follow the standards; otherwise, the pool
+            will fail to start with an opaque error message indicating failure
+            to write to the vport_create file during vport create/delete due
+            to "No such file or directory".
             <span class="since">Since 1.0.4</span>
           </dd>
         </dl>
@@ -176,7 +182,12 @@
             parent scsi_host device defined in the
             <a href="formatnode.html">Node Device</a> database as the
             <a href="http://wiki.libvirt.org/page/NPIV_in_libvirt">NPIV</a>
-            virtual Host Bus Adapter (vHBA).
+            virtual Host Bus Adapter (vHBA). The value provided must be
+            a vport capable scsi_host. The value is not the scsi_host of
+            the vHBA created by 'virsh nodedev-create', rather it is
+            the parent of that vHBA. If the value is not provided, libvirt
+            will determine the parent based either finding the wwnn,wwpn
+            defined for an existing scsi_host or by creating a vHBA.
             <span class="since">Since 1.0.4</span>
           </dd>
         </dl>

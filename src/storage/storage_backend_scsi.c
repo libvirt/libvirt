@@ -34,6 +34,7 @@
 #include "virlog.h"
 #include "virfile.h"
 #include "vircommand.h"
+#include "viraccessapicheck.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
@@ -547,8 +548,103 @@ getAdapterName(virStoragePoolSourceAdapter adapter)
     return name;
 }
 
+/*
+ * Using the host# name found via wwnn/wwpn lookup in the fc_host
+ * sysfs tree to get the parent 'scsi_host#'. On entry we need 'conn'
+ * set. We won't get here from the autostart path since the caller
+ * will return true before calling this function. For the shutdown
+ * path we won't be able to delete the vport.
+ */
+static char * ATTRIBUTE_NONNULL(1)
+getVhbaSCSIHostParent(virConnectPtr conn,
+                      const char *name)
+{
+    char *nodedev_name = NULL;
+    virNodeDevicePtr device = NULL;
+    char *xml = NULL;
+    virNodeDeviceDefPtr def = NULL;
+    char *vhba_parent = NULL;
+    virErrorPtr savedError = NULL;
+
+    VIR_DEBUG("conn=%p, name=%s", conn, name);
+
+    /* We get passed "host#" from the return from virGetFCHostNameByWWN,
+     * so we need to adjust that to what the nodedev lookup expects
+     */
+    if (virAsprintf(&nodedev_name, "scsi_%s", name) < 0)
+        goto cleanup;
+
+    /* Compare the scsi_host for the name with the provided parent
+     * if not the same, then fail
+     */
+    if (!(device = virNodeDeviceLookupByName(conn, nodedev_name))) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Cannot find '%s' in node device database"),
+                       nodedev_name);
+        goto cleanup;
+    }
+
+    if (!(xml = virNodeDeviceGetXMLDesc(device, 0)))
+        goto cleanup;
+
+    if (!(def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL)))
+        goto cleanup;
+
+    ignore_value(VIR_STRDUP(vhba_parent, def->parent));
+
+ cleanup:
+    if (!vhba_parent)
+        savedError = virSaveLastError();
+    VIR_FREE(nodedev_name);
+    virNodeDeviceDefFree(def);
+    VIR_FREE(xml);
+    virNodeDeviceFree(device);
+    if (savedError) {
+        virSetError(savedError);
+        virFreeError(savedError);
+    }
+    return vhba_parent;
+}
+
+/*
+ * Using the host# name found via wwnn/wwpn lookup in the fc_host
+ * sysfs tree to get the parent 'scsi_host#' to ensure it matches.
+ */
+static bool
+checkVhbaSCSIHostParent(virConnectPtr conn,
+                        const char *name,
+                        const char *parent_name)
+{
+    char *vhba_parent = NULL;
+    bool retval = false;
+
+    VIR_DEBUG("conn=%p, name=%s, parent_name=%s", conn, name, parent_name);
+
+    /* autostarted pool - assume we're OK */
+    if (!conn)
+        return true;
+
+    if (!(vhba_parent = getVhbaSCSIHostParent(conn, name)))
+        goto cleanup;
+
+    if (STRNEQ(parent_name, vhba_parent)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Parent attribute '%s' does not match parent '%s' "
+                         "determined for the '%s' wwnn/wwpn lookup."),
+                       parent_name, vhba_parent, name);
+        goto cleanup;
+    }
+
+    retval = true;
+
+ cleanup:
+    VIR_FREE(vhba_parent);
+    return retval;
+}
+
 static int
-createVport(virStoragePoolSourceAdapter adapter)
+createVport(virConnectPtr conn,
+            virStoragePoolSourceAdapter adapter)
 {
     unsigned int parent_host;
     char *name = NULL;
@@ -570,11 +666,23 @@ createVport(virStoragePoolSourceAdapter adapter)
         }
     }
 
-    /* This filters either HBA or already created vHBA */
+    /* If we find an existing HBA/vHBA within the fc_host sysfs
+     * using the wwnn/wwpn, then a nodedev is already created for
+     * this pool and we don't have to create the vHBA
+     */
     if ((name = virGetFCHostNameByWWN(NULL, adapter.data.fchost.wwnn,
                                       adapter.data.fchost.wwpn))) {
+        int retval = 0;
+
+        /* If a parent was provided, let's make sure the 'name' we've
+         * retrieved has the same parent
+         */
+        if (adapter.data.fchost.parent &&
+            !checkVhbaSCSIHostParent(conn, name, adapter.data.fchost.parent))
+            retval = -1;
+
         VIR_FREE(name);
-        return 0;
+        return retval;
     }
 
     if (!adapter.data.fchost.parent) {
@@ -705,11 +813,11 @@ virStorageBackendSCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-virStorageBackendSCSIStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
+virStorageBackendSCSIStartPool(virConnectPtr conn,
                                virStoragePoolObjPtr pool)
 {
     virStoragePoolSourceAdapter adapter = pool->def->source.adapter;
-    return createVport(adapter);
+    return createVport(conn, adapter);
 }
 
 static int
