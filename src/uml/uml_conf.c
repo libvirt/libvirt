@@ -105,8 +105,7 @@ virCapsPtr umlCapsInit(void)
 
 
 static int
-umlConnectTapDevice(virConnectPtr conn,
-                    virDomainDefPtr vm,
+umlConnectTapDevice(virDomainDefPtr vm,
                     virDomainNetDefPtr net,
                     const char *bridge)
 {
@@ -135,7 +134,7 @@ umlConnectTapDevice(virConnectPtr conn,
     }
 
     if (net->filter) {
-        if (virDomainConfNWFilterInstantiate(conn, vm->uuid, net) < 0) {
+        if (virDomainConfNWFilterInstantiate(vm->uuid, net) < 0) {
             if (template_ifname)
                 VIR_FREE(net->ifname);
             goto error;
@@ -217,7 +216,7 @@ umlBuildCommandLineNet(virConnectPtr conn,
         if (bridge == NULL)
             goto error;
 
-        if (umlConnectTapDevice(conn, vm, def, bridge) < 0) {
+        if (umlConnectTapDevice(vm, def, bridge) < 0) {
             VIR_FREE(bridge);
             goto error;
         }
@@ -228,7 +227,7 @@ umlBuildCommandLineNet(virConnectPtr conn,
     }
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        if (umlConnectTapDevice(conn, vm, def,
+        if (umlConnectTapDevice(vm, def,
                                 def->data.bridge.brname) < 0)
             goto error;
 

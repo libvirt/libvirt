@@ -7177,7 +7177,7 @@ qemuDomainUpdateDeviceLive(virConnectPtr conn,
         ret = qemuDomainChangeGraphics(driver, vm, dev->data.graphics);
         break;
     case VIR_DOMAIN_DEVICE_NET:
-        ret = qemuDomainChangeNet(driver, vm, dom, dev);
+        ret = qemuDomainChangeNet(driver, vm, dev);
         break;
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:

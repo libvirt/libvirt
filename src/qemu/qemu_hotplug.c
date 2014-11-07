@@ -914,7 +914,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         if (VIR_ALLOC_N(vhostfd, vhostfdSize) < 0)
             goto cleanup;
         memset(vhostfd, -1, sizeof(*vhostfd) * vhostfdSize);
-        if (qemuNetworkIfaceConnect(vm->def, conn, driver, net,
+        if (qemuNetworkIfaceConnect(vm->def, driver, net,
                                     priv->qemuCaps, tapfd, &tapfdSize) < 0)
             goto cleanup;
         iface_connected = true;
@@ -1830,8 +1830,7 @@ qemuDomainChangeNetBridge(virDomainObjPtr vm,
 }
 
 static int
-qemuDomainChangeNetFilter(virConnectPtr conn,
-                          virDomainObjPtr vm,
+qemuDomainChangeNetFilter(virDomainObjPtr vm,
                           virDomainNetDefPtr olddev,
                           virDomainNetDefPtr newdev)
 {
@@ -1851,7 +1850,7 @@ qemuDomainChangeNetFilter(virConnectPtr conn,
     virDomainConfNWFilterTeardown(olddev);
 
     if (newdev->filter &&
-        virDomainConfNWFilterInstantiate(conn, vm->def->uuid, newdev) < 0) {
+        virDomainConfNWFilterInstantiate(vm->def->uuid, newdev) < 0) {
         virErrorPtr errobj;
 
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -1859,7 +1858,7 @@ qemuDomainChangeNetFilter(virConnectPtr conn,
                          "- attempting to restore old rules"),
                        olddev->ifname);
         errobj = virSaveLastError();
-        ignore_value(virDomainConfNWFilterInstantiate(conn, vm->def->uuid, olddev));
+        ignore_value(virDomainConfNWFilterInstantiate(vm->def->uuid, olddev));
         virSetError(errobj);
         virFreeError(errobj);
         return -1;
@@ -1902,7 +1901,6 @@ int qemuDomainChangeNetLinkState(virQEMUDriverPtr driver,
 int
 qemuDomainChangeNet(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
-                    virDomainPtr dom,
                     virDomainDeviceDefPtr dev)
 {
     virDomainNetDefPtr newdev = dev->data.net;
@@ -2230,7 +2228,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     }
 
     if (needFilterChange) {
-        if (qemuDomainChangeNetFilter(dom->conn, vm, olddev, newdev) < 0)
+        if (qemuDomainChangeNetFilter(vm, olddev, newdev) < 0)
             goto cleanup;
         /* we successfully switched to the new filter, and we've
          * determined that the rest of newdev is equivalent to olddev,

@@ -285,7 +285,6 @@ static int qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
  */
 int
 qemuNetworkIfaceConnect(virDomainDefPtr def,
-                        virConnectPtr conn,
                         virQEMUDriverPtr driver,
                         virDomainNetDefPtr net,
                         virQEMUCapsPtr qemuCaps,
@@ -368,7 +367,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         goto cleanup;
 
     if (net->filter &&
-        virDomainConfNWFilterInstantiate(conn, def->uuid, net) < 0) {
+        virDomainConfNWFilterInstantiate(def->uuid, net) < 0) {
         goto cleanup;
     }
 
@@ -7420,7 +7419,6 @@ qemuBuildVhostuserCommandLine(virCommandPtr cmd,
 static int
 qemuBuildInterfaceCommandLine(virCommandPtr cmd,
                               virQEMUDriverPtr driver,
-                              virConnectPtr conn,
                               virDomainDefPtr def,
                               virDomainNetDefPtr net,
                               virQEMUCapsPtr qemuCaps,
@@ -7476,7 +7474,7 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
 
         memset(tapfd, -1, tapfdSize * sizeof(tapfd[0]));
 
-        if (qemuNetworkIfaceConnect(def, conn, driver, net,
+        if (qemuNetworkIfaceConnect(def, driver, net,
                                     qemuCaps, tapfd, &tapfdSize) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
@@ -8933,7 +8931,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             else
                 vlan = i;
 
-            if (qemuBuildInterfaceCommandLine(cmd, driver, conn, def, net,
+            if (qemuBuildInterfaceCommandLine(cmd, driver, def, net,
                                               qemuCaps, vlan, bootNet, vmop,
                                               standalone) < 0)
                 goto error;

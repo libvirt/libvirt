@@ -68,7 +68,6 @@ int qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
                                       int asyncJob);
 int qemuDomainChangeNet(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
-                        virDomainPtr dom,
                         virDomainDeviceDefPtr dev);
 int qemuDomainChangeNetLinkState(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,

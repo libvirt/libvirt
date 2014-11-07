@@ -3331,18 +3331,14 @@ qemuProcessNotifyNets(virDomainDefPtr def)
 }
 
 static int
-qemuProcessFiltersInstantiate(virConnectPtr conn,
-                              virDomainDefPtr def)
+qemuProcessFiltersInstantiate(virDomainDefPtr def)
 {
     size_t i;
-
-    if (!conn)
-        return 1;
 
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
         if ((net->filter) && (net->ifname)) {
-            if (virDomainConfNWFilterInstantiate(conn, def->uuid, net) < 0)
+            if (virDomainConfNWFilterInstantiate(def->uuid, net) < 0)
                 return 1;
         }
     }
@@ -3800,7 +3796,7 @@ qemuProcessReconnect(void *opaque)
     if (qemuProcessNotifyNets(obj->def) < 0)
         goto error;
 
-    if (qemuProcessFiltersInstantiate(conn, obj->def))
+    if (qemuProcessFiltersInstantiate(obj->def))
         goto error;
 
     if (qemuDomainCheckEjectableMedia(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)

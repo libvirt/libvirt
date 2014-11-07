@@ -4189,8 +4189,7 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
                            _("No bridge name specified"));
             goto cleanup;
         }
-        if (!(veth = virLXCProcessSetupInterfaceBridged(conn,
-                                                        vm->def,
+        if (!(veth = virLXCProcessSetupInterfaceBridged(vm->def,
                                                         net,
                                                         brname)))
             goto cleanup;

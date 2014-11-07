@@ -239,8 +239,7 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
 }
 
 
-char *virLXCProcessSetupInterfaceBridged(virConnectPtr conn,
-                                         virDomainDefPtr vm,
+char *virLXCProcessSetupInterfaceBridged(virDomainDefPtr vm,
                                          virDomainNetDefPtr net,
                                          const char *brname)
 {
@@ -274,7 +273,7 @@ char *virLXCProcessSetupInterfaceBridged(virConnectPtr conn,
         goto cleanup;
 
     if (net->filter &&
-        virDomainConfNWFilterInstantiate(conn, vm->uuid, net) < 0)
+        virDomainConfNWFilterInstantiate(vm->uuid, net) < 0)
         goto cleanup;
 
     ret = containerVeth;
@@ -391,8 +390,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
                                _("No bridge name specified"));
                 goto cleanup;
             }
-            if (!(veth = virLXCProcessSetupInterfaceBridged(conn,
-                                                            def,
+            if (!(veth = virLXCProcessSetupInterfaceBridged(def,
                                                             net,
                                                             brname)))
                 goto cleanup;

@@ -190,7 +190,6 @@ char *qemuBuildRedirdevDevStr(virDomainDefPtr def,
                               virDomainRedirdevDefPtr dev,
                               virQEMUCapsPtr qemuCaps);
 int qemuNetworkIfaceConnect(virDomainDefPtr def,
-                            virConnectPtr conn,
                             virQEMUDriverPtr driver,
                             virDomainNetDefPtr net,
                             virQEMUCapsPtr qemuCaps,
