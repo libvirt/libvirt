@@ -121,7 +121,7 @@
           <td>Name of the network interface, unique to the local host</td>
         </tr>
         <tr>
-          <td>interface_mac</td>
+          <td>interface_macaddr</td>
           <td>MAC address of the network interface, not unique</td>
         </tr>
       </tbody>
