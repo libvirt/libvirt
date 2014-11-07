@@ -6318,14 +6318,31 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     goto cleanup;
 }
 
-
-/* Parse a value located at XPATH within CTXT, and store the
- * result into val.  If REQUIRED, then the value must exist;
- * otherwise, the value is optional.  The value is in bytes.
- * Return 1 on success, 0 if the value was not present and
- * is not REQUIRED, -1 on failure after issuing error. */
+/**
+ * virDomainParseScaledValue:
+ * @xpath: XPath to memory amount
+ * @units_xpath: XPath to units attribute
+ * @ctxt: XPath context
+ * @val: scaled value is stored here
+ * @scale: default scale for @val
+ * @max: maximal @val allowed
+ * @required: is the value required?
+ *
+ * Parse a value located at @xpath within @ctxt, and store the
+ * result into @val. The value is scaled by units located at
+ * @units_xpath (or the 'unit' attribute under @xpath if
+ * @units_xpath is NULL). If units are not present, the default
+ * @scale is used. If @required is set, then the value must
+ * exist; otherwise, the value is optional. The resulting value
+ * is in bytes.
+ *
+ * Returns 1 on success,
+ *         0 if the value was not present and !@required,
+ *         -1 on failure after issuing error.
+ */
 static int
 virDomainParseScaledValue(const char *xpath,
+                          const char *units_xpath,
                           xmlXPathContextPtr ctxt,
                           unsigned long long *val,
                           unsigned long long scale,
@@ -6348,7 +6365,7 @@ virDomainParseScaledValue(const char *xpath,
             ret = 0;
         } else {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("missing element %s"),
+                           _("missing element or attribute '%s'"),
                            xpath);
         }
         goto cleanup;
@@ -6357,12 +6374,15 @@ virDomainParseScaledValue(const char *xpath,
 
     if (virStrToLong_ullp(bytes_str, NULL, 10, &bytes) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value '%s' for element '%s'"),
+                       _("Invalid value '%s' for element or attribute '%s'"),
                        bytes_str, xpath);
         goto cleanup;
     }
 
-    if (virAsprintf(&xpath_full, "string(%s/@unit)", xpath) < 0)
+    if ((units_xpath &&
+         virAsprintf(&xpath_full, "string(%s)", units_xpath) < 0) ||
+        (!units_xpath &&
+         virAsprintf(&xpath_full, "string(%s/@unit)", xpath) < 0))
         goto cleanup;
     unit = virXPathString(xpath_full, ctxt);
 
@@ -6379,17 +6399,35 @@ virDomainParseScaledValue(const char *xpath,
 }
 
 
-/* Parse a memory element located at XPATH within CTXT, and store the
- * result into MEM, in blocks of 1024.  If REQUIRED, then the value
- * must exist; otherwise, the value is optional.  The value must not
- * exceed VIR_DOMAIN_MEMORY_PARAM_UNLIMITED once scaled; additionally,
- * if CAPPED is true, the value must fit within an unsigned long (only
- * matters on 32-bit platforms).
+/**
+ * virDomainParseMemory:
+ * @xpath: XPath to memory amount
+ * @units_xpath: XPath to units attribute
+ * @ctxt: XPath context
+ * @mem: scaled memory amount is stored here
+ * @required: whether value is required
+ * @capped: whether scaled value must fit within unsigned long
  *
- * Return 0 on success, -1 on failure after issuing error.  */
+ * Parse a memory element or attribute located at @xpath within
+ * @ctxt, and store the result into @mem, in blocks of 1024. The
+ * value is scaled by units located at @units_xpath (or the
+ * 'unit' attribute under @xpath if @units_xpath is NULL). If
+ * units are not present, he default scale of 1024 is used. If
+ * @required is set, then the value must exist; otherwise, the
+ * value is optional.  The value must not exceed
+ * VIR_DOMAIN_MEMORY_PARAM_UNLIMITED once scaled; additionally,
+ * if @capped is true, the value must fit within an unsigned long
+ * (only matters on 32-bit platforms).
+ *
+ * Return 0 on success, -1 on failure after issuing error.
+ */
 static int
-virDomainParseMemory(const char *xpath, xmlXPathContextPtr ctxt,
-                     unsigned long long *mem, bool required, bool capped)
+virDomainParseMemory(const char *xpath,
+                     const char *units_xpath,
+                     xmlXPathContextPtr ctxt,
+                     unsigned long long *mem,
+                     bool required,
+                     bool capped)
 {
     int ret = -1;
     unsigned long long bytes, max;
@@ -6401,7 +6439,8 @@ virDomainParseMemory(const char *xpath, xmlXPathContextPtr ctxt,
     else
         max = LLONG_MAX;
 
-    ret = virDomainParseScaledValue(xpath, ctxt, &bytes, 1024, max, required);
+    ret = virDomainParseScaledValue(xpath, units_xpath, ctxt,
+                                    &bytes, 1024, max, required);
     if (ret < 0)
         goto cleanup;
 
@@ -6585,8 +6624,8 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                                  "should have index 0"));
                 goto error;
             }
-            if ((rc = virDomainParseScaledValue("./pcihole64", ctxt,
-                                                &bytes, 1024,
+            if ((rc = virDomainParseScaledValue("./pcihole64", NULL,
+                                                ctxt, &bytes, 1024,
                                                 1024ULL * ULONG_MAX, false)) < 0)
                 goto error;
 
@@ -6684,14 +6723,14 @@ virDomainFSDefParseXML(xmlNodePtr node,
         def->accessmode = VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH;
     }
 
-    if (virDomainParseScaledValue("./space_hard_limit[1]", ctxt,
-                                  &def->space_hard_limit, 1,
-                                  ULLONG_MAX, false) < 0)
+    if (virDomainParseScaledValue("./space_hard_limit[1]",
+                                  NULL, ctxt, &def->space_hard_limit,
+                                  1, ULLONG_MAX, false) < 0)
         goto error;
 
-    if (virDomainParseScaledValue("./space_soft_limit[1]", ctxt,
-                                  &def->space_soft_limit, 1,
-                                  ULLONG_MAX, false) < 0)
+    if (virDomainParseScaledValue("./space_soft_limit[1]",
+                                  NULL, ctxt, &def->space_soft_limit,
+                                  1, ULLONG_MAX, false) < 0)
         goto error;
 
     cur = node->children;
@@ -9824,8 +9863,8 @@ virDomainShmemDefParseXML(xmlNodePtr node,
         goto cleanup;
     }
 
-    if (virDomainParseScaledValue("./size[1]", ctxt, &def->size,
-                                    1, ULLONG_MAX, false) < 0)
+    if (virDomainParseScaledValue("./size[1]", NULL, ctxt,
+                                  &def->size, 1, ULLONG_MAX, false) < 0)
         goto cleanup;
 
     if ((server = virXPathNode("./server[1]", ctxt))) {
@@ -11965,30 +12004,15 @@ virDomainHugepagesParseXML(xmlNodePtr node,
 {
     int ret = -1;
     xmlNodePtr oldnode = ctxt->node;
-    unsigned long long bytes, max;
     char *unit = NULL, *nodeset = NULL;
 
     ctxt->node = node;
 
-    /* On 32-bit machines, our bound is 0xffffffff * KiB. On 64-bit
-     * machines, our bound is off_t (2^63).  */
-    if (sizeof(unsigned long) < sizeof(long long))
-        max = 1024ull * ULONG_MAX;
-    else
-        max = LLONG_MAX;
-
-    if (virXPathULongLong("string(./@size)", ctxt, &bytes) < 0) {
-        virReportError(VIR_ERR_XML_DETAIL, "%s",
-                       _("unable to parse size attribute"));
-        goto cleanup;
-    }
-
-    unit = virXPathString("string(./@unit)", ctxt);
-
-    if (virScaleInteger(&bytes, unit, 1024, max) < 0)
+    if (virDomainParseMemory("./@size", "./@unit", ctxt,
+                             &hugepage->size, true, false) < 0)
         goto cleanup;
 
-    if (!(hugepage->size = VIR_DIV_UP(bytes, 1024))) {
+    if (!hugepage->size) {
         virReportError(VIR_ERR_XML_DETAIL, "%s",
                        _("hugepage size can't be zero"));
         goto cleanup;
@@ -12225,11 +12249,11 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     /* Extract domain memory */
-    if (virDomainParseMemory("./memory[1]", ctxt,
+    if (virDomainParseMemory("./memory[1]", NULL, ctxt,
                              &def->mem.max_balloon, true, true) < 0)
         goto error;
 
-    if (virDomainParseMemory("./currentMemory[1]", ctxt,
+    if (virDomainParseMemory("./currentMemory[1]", NULL, ctxt,
                              &def->mem.cur_balloon, false, true) < 0)
         goto error;
 
@@ -12349,19 +12373,19 @@ virDomainDefParseXML(xmlDocPtr xml,
     VIR_FREE(nodes);
 
     /* Extract other memory tunables */
-    if (virDomainParseMemory("./memtune/hard_limit[1]", ctxt,
+    if (virDomainParseMemory("./memtune/hard_limit[1]", NULL, ctxt,
                              &def->mem.hard_limit, false, false) < 0)
         goto error;
 
-    if (virDomainParseMemory("./memtune/soft_limit[1]", ctxt,
+    if (virDomainParseMemory("./memtune/soft_limit[1]", NULL, ctxt,
                              &def->mem.soft_limit, false, false) < 0)
         goto error;
 
-    if (virDomainParseMemory("./memtune/min_guarantee[1]", ctxt,
+    if (virDomainParseMemory("./memtune/min_guarantee[1]", NULL, ctxt,
                              &def->mem.min_guarantee, false, false) < 0)
         goto error;
 
-    if (virDomainParseMemory("./memtune/swap_hard_limit[1]", ctxt,
+    if (virDomainParseMemory("./memtune/swap_hard_limit[1]", NULL, ctxt,
                              &def->mem.swap_hard_limit, false, false) < 0)
         goto error;
 
