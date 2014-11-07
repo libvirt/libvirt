@@ -1128,7 +1128,7 @@ phypConnectOpen(virConnectPtr conn,
                 virConnectAuthPtr auth, unsigned int flags)
 {
     LIBSSH2_SESSION *session = NULL;
-    int internal_socket;
+    int internal_socket = -1;
     uuid_tablePtr uuid_table = NULL;
     phyp_driverPtr phyp_driver = NULL;
     char *char_ptr;
@@ -1232,7 +1232,7 @@ phypConnectOpen(virConnectPtr conn,
         libssh2_session_free(session);
     }
 
-    VIR_FORCE_CLOSE(phyp_driver->sock);
+    VIR_FORCE_CLOSE(internal_socket);
 
     return VIR_DRV_OPEN_ERROR;
 }
