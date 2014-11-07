@@ -97,6 +97,9 @@ virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode,
     size_t i;
     int maxnode = 0;
 
+    if (!nodeset)
+        return 0;
+
     if (!virNumaNodesetIsAvailable(nodeset))
         return -1;
 
