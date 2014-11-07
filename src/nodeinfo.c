@@ -1374,8 +1374,7 @@ nodeSetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
     for (i = 0; i < nparams; i++) {
         rc = nodeSetMemoryParameterValue(&params[i]);
 
-        /* Out of memory */
-        if (rc == -2)
+        if (rc < 0)
             return -1;
     }
 
