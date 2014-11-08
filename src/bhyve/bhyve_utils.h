@@ -45,6 +45,8 @@ struct _bhyveConn {
     virObjectEventStatePtr domainEventState;
 
     virCloseCallbacksPtr closeCallbacks;
+
+    unsigned grubcaps;
 };
 
 typedef struct _bhyveConn bhyveConn;

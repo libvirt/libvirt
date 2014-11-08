@@ -25,8 +25,10 @@
 #include <net/if.h>
 #include <net/if_tap.h>
 
+#include "bhyve_capabilities.h"
 #include "bhyve_command.h"
 #include "bhyve_domain.h"
+#include "bhyve_driver.h"
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virfile.h"
@@ -446,6 +448,22 @@ virBhyveProcessBuildGrubbhyveCmd(virDomainDefPtr def,
     virCommandAddArg(cmd, "--memory");
     virCommandAddArgFormat(cmd, "%llu",
                            VIR_DIV_UP(def->mem.max_balloon, 1024));
+
+    if ((bhyveDriverGetGrubCaps(conn) & BHYVE_GRUB_CAP_CONSDEV) != 0 &&
+        def->nserials > 0) {
+        virDomainChrDefPtr chr;
+
+        chr = def->serials[0];
+
+        if (chr->source.type != VIR_DOMAIN_CHR_TYPE_NMDM) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("only nmdm console types are supported"));
+            return NULL;
+        }
+
+        virCommandAddArg(cmd, "--cons-dev");
+        virCommandAddArg(cmd, chr->source.data.file.path);
+    }
 
     /* VM name */
     virCommandAddArg(cmd, def->name);

@@ -25,4 +25,6 @@
 
 int bhyveRegister(void);
 
+unsigned bhyveDriverGetGrubCaps(virConnectPtr conn);
+
 #endif /* __BHYVE_DRIVER_H__ */

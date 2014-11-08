@@ -1169,6 +1169,9 @@ bhyveStateInitialize(bool priveleged ATTRIBUTE_UNUSED,
     if (!(bhyve_driver->caps = virBhyveCapsBuild()))
         goto cleanup;
 
+    if (virBhyveProbeGrubCaps(&bhyve_driver->grubcaps) < 0)
+        goto cleanup;
+
     if (!(bhyve_driver->xmlopt = virDomainXMLOptionNew(&virBhyveDriverDomainDefParserConfig,
                                                        &virBhyveDriverPrivateDataCallbacks,
                                                        NULL)))
@@ -1224,6 +1227,16 @@ bhyveStateInitialize(bool priveleged ATTRIBUTE_UNUSED,
     virObjectUnref(conn);
     bhyveStateCleanup();
     return -1;
+}
+
+unsigned
+bhyveDriverGetGrubCaps(virConnectPtr conn)
+{
+    bhyveConnPtr driver = conn->privateData;
+
+    if (driver != NULL)
+        return driver->grubcaps;
+    return 0;
 }
 
 static void
