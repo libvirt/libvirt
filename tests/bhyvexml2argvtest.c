@@ -37,6 +37,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto out;
 
     vm.def = vmdef;
+    conn->privateData = &driver;
 
     if (!(cmd = virBhyveProcessBuildBhyveCmd(conn, vmdef, false)))
         goto out;
@@ -152,6 +153,7 @@ mymain(void)
             ret = -1;                                         \
     } while (0)
 
+    driver.grubcaps = BHYVE_GRUB_CAP_CONSDEV;
 
     DO_TEST("base");
     DO_TEST("acpiapic");
@@ -164,6 +166,11 @@ mymain(void)
     DO_TEST("bhyveload-explicitargs");
     DO_TEST("custom-loader");
     DO_TEST("disk-cdrom-grub");
+    DO_TEST("serial-grub");
+
+    driver.grubcaps = 0;
+
+    DO_TEST("serial-grub-nocons");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
