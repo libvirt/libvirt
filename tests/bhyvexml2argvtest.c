@@ -160,6 +160,10 @@ mymain(void)
     DO_TEST("macaddr");
     DO_TEST("serial");
     DO_TEST("console");
+    DO_TEST("grub-defaults");
+    DO_TEST("bhyveload-explicitargs");
+    DO_TEST("custom-loader");
+    DO_TEST("disk-cdrom-grub");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

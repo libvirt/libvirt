@@ -1,0 +1,2 @@
+/usr/local/sbin/grub-bhyve --root cd --device-map '<device.map>' --memory 214 \
+bhyve
