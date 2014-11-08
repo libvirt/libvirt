@@ -234,6 +234,9 @@
     </choice>
   </define>
   <define name="oshvm">
+    <optional>
+      <ref name="bootloader"/>
+    </optional>
     <element name="os">
       <ref name="ostypehvm"/>
       <interleave>
@@ -1054,12 +1057,14 @@
     -->
   <define name="bootloader">
     <interleave>
-      <element name="bootloader">
-        <choice>
-          <ref name="absFilePath"/>
-          <empty/>
-        </choice>
-      </element>
+      <optional>
+        <element name="bootloader">
+          <choice>
+            <ref name="absFilePath"/>
+            <empty/>
+          </choice>
+        </element>
+      </optional>
       <optional>
         <element name="bootloader_args">
           <text/>
