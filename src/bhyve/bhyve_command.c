@@ -26,6 +26,8 @@
 #include <net/if_tap.h>
 
 #include "bhyve_command.h"
+#include "bhyve_domain.h"
+#include "datatypes.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "virstring.h"
@@ -294,11 +296,167 @@ virBhyveProcessBuildDestroyCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
     return cmd;
 }
 
-virCommandPtr
-virBhyveProcessBuildLoadCmd(virConnectPtr conn,
-                            virDomainDefPtr def)
+static void
+virAppendBootloaderArgs(virCommandPtr cmd, virDomainDefPtr def)
+{
+    char **blargs;
+
+    /* XXX: Handle quoted? */
+    blargs = virStringSplit(def->os.bootloaderArgs, " ", 0);
+    virCommandAddArgSet(cmd, (const char * const *)blargs);
+    virStringFreeList(blargs);
+}
+
+static virCommandPtr
+virBhyveProcessBuildBhyveloadCmd(virDomainDefPtr def, virDomainDiskDefPtr disk)
 {
     virCommandPtr cmd;
+
+    cmd = virCommandNew(BHYVELOAD);
+
+    if (def->os.bootloaderArgs == NULL) {
+        VIR_DEBUG("bhyveload with default arguments");
+
+        /* Memory (MB) */
+        virCommandAddArg(cmd, "-m");
+        virCommandAddArgFormat(cmd, "%llu",
+                               VIR_DIV_UP(def->mem.max_balloon, 1024));
+
+        /* Image path */
+        virCommandAddArg(cmd, "-d");
+        virCommandAddArg(cmd, virDomainDiskGetSource(disk));
+
+        /* VM name */
+        virCommandAddArg(cmd, def->name);
+    } else {
+        VIR_DEBUG("bhyveload with arguments");
+        virAppendBootloaderArgs(cmd, def);
+    }
+
+    return cmd;
+}
+
+static virCommandPtr
+virBhyveProcessBuildCustomLoaderCmd(virDomainDefPtr def)
+{
+    virCommandPtr cmd;
+
+    if (def->os.bootloaderArgs == NULL) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Custom loader requires explicit %s configuration"),
+                       "bootloader_args");
+        return NULL;
+    }
+
+    VIR_DEBUG("custom loader '%s' with arguments", def->os.bootloader);
+
+    cmd = virCommandNew(def->os.bootloader);
+    virAppendBootloaderArgs(cmd, def);
+    return cmd;
+}
+
+static bool
+virBhyveUsableDisk(virConnectPtr conn, virDomainDiskDefPtr disk)
+{
+
+    if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
+        return false;
+
+    if ((disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) &&
+        (disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("unsupported disk device"));
+        return false;
+    }
+
+    if ((virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_FILE) &&
+        (virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_VOLUME)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("unsupported disk type"));
+        return false;
+    }
+
+    return true;
+}
+
+static virCommandPtr
+virBhyveProcessBuildGrubbhyveCmd(virDomainDefPtr def,
+                                 virConnectPtr conn,
+                                 const char *devmap_file,
+                                 char **devicesmap_out)
+{
+    virDomainDiskDefPtr disk, cd;
+    virBuffer devicemap;
+    virCommandPtr cmd;
+    size_t i;
+
+    if (def->os.bootloaderArgs != NULL)
+        return virBhyveProcessBuildCustomLoaderCmd(def);
+
+    devicemap = (virBuffer)VIR_BUFFER_INITIALIZER;
+
+    /* Search disk list for CD or HDD device. */
+    cd = disk = NULL;
+    for (i = 0; i < def->ndisks; i++) {
+        if (!virBhyveUsableDisk(conn, def->disks[i]))
+            continue;
+
+        if (cd == NULL &&
+            def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
+            cd = def->disks[i];
+            VIR_INFO("Picking %s as boot CD", virDomainDiskGetSource(cd));
+        }
+
+        if (disk == NULL &&
+            def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+            disk = def->disks[i];
+            VIR_INFO("Picking %s as HDD", virDomainDiskGetSource(disk));
+        }
+    }
+
+    cmd = virCommandNew(def->os.bootloader);
+
+    VIR_DEBUG("grub-bhyve with default arguments");
+
+    if (devicesmap_out != NULL) {
+        /* Grub device.map (just for boot) */
+        if (disk != NULL)
+            virBufferAsprintf(&devicemap, "(hd0) %s\n",
+                              virDomainDiskGetSource(disk));
+
+        if (cd != NULL)
+            virBufferAsprintf(&devicemap, "(cd) %s\n",
+                              virDomainDiskGetSource(cd));
+
+        *devicesmap_out = virBufferContentAndReset(&devicemap);
+    }
+
+    if (cd != NULL) {
+        virCommandAddArg(cmd, "--root");
+        virCommandAddArg(cmd, "cd");
+    } else {
+        virCommandAddArg(cmd, "--root");
+        virCommandAddArg(cmd, "hd0,msdos1");
+    }
+
+    virCommandAddArg(cmd, "--device-map");
+    virCommandAddArg(cmd, devmap_file);
+
+    /* Memory in MB */
+    virCommandAddArg(cmd, "--memory");
+    virCommandAddArgFormat(cmd, "%llu",
+                           VIR_DIV_UP(def->mem.max_balloon, 1024));
+
+    /* VM name */
+    virCommandAddArg(cmd, def->name);
+
+    return cmd;
+}
+
+virCommandPtr
+virBhyveProcessBuildLoadCmd(virConnectPtr conn, virDomainDefPtr def,
+                            const char *devmap_file, char **devicesmap_out)
+{
     virDomainDiskDefPtr disk;
 
     if (def->ndisks < 1) {
@@ -307,38 +465,17 @@ virBhyveProcessBuildLoadCmd(virConnectPtr conn,
         return NULL;
     }
 
-    disk = def->disks[0];
+    if (def->os.bootloader == NULL) {
+        disk = def->disks[0];
 
-    if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
-        return NULL;
+        if (!virBhyveUsableDisk(conn, disk))
+            return NULL;
 
-    if ((disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) &&
-        (disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("unsupported disk device"));
-        return NULL;
+        return virBhyveProcessBuildBhyveloadCmd(def, disk);
+    } else if (strstr(def->os.bootloader, "grub-bhyve") != NULL) {
+        return virBhyveProcessBuildGrubbhyveCmd(def, conn, devmap_file,
+                                                devicesmap_out);
+    } else {
+        return virBhyveProcessBuildCustomLoaderCmd(def);
     }
-
-    if ((virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_FILE) &&
-        (virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_VOLUME)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("unsupported disk type"));
-        return NULL;
-    }
-
-    cmd = virCommandNew(BHYVELOAD);
-
-    /* Memory */
-    virCommandAddArg(cmd, "-m");
-    virCommandAddArgFormat(cmd, "%llu",
-                           VIR_DIV_UP(def->mem.max_balloon, 1024));
-
-    /* Image path */
-    virCommandAddArg(cmd, "-d");
-    virCommandAddArg(cmd, virDomainDiskGetSource(disk));
-
-    /* VM name */
-    virCommandAddArg(cmd, def->name);
-
-    return cmd;
 }

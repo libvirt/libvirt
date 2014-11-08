@@ -22,6 +22,7 @@
 #ifndef __BHYVE_COMMAND_H__
 # define __BHYVE_COMMAND_H__
 
+# include "bhyve_domain.h"
 # include "bhyve_utils.h"
 
 # include "domain_conf.h"
@@ -38,7 +39,7 @@ virBhyveProcessBuildDestroyCmd(bhyveConnPtr driver,
                                virDomainDefPtr def);
 
 virCommandPtr
-virBhyveProcessBuildLoadCmd(virConnectPtr conn,
-                            virDomainDefPtr def);
+virBhyveProcessBuildLoadCmd(virConnectPtr conn, virDomainDefPtr def,
+                            const char *devmap_file, char **devicesmap_out);
 
 #endif /* __BHYVE_COMMAND_H__ */

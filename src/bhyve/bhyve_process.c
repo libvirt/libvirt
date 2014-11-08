@@ -88,6 +88,14 @@ bhyveNetCleanup(virDomainObjPtr vm)
     }
 }
 
+static int
+virBhyveFormatDevMapFile(const char *vm_name, char **fn_out)
+{
+
+    return virAsprintf(fn_out, "%s/grub_bhyve-%s-device.map", BHYVE_STATE_DIR,
+                       vm_name);
+}
+
 int
 virBhyveProcessStart(virConnectPtr conn,
                      bhyveConnPtr driver,
@@ -95,6 +103,8 @@ virBhyveProcessStart(virConnectPtr conn,
                      virDomainRunningReason reason,
                      unsigned int flags)
 {
+    char *devmap_file = NULL;
+    char *devicemap = NULL;
     char *logfile = NULL;
     int logfd = -1;
     off_t pos = -1;
@@ -102,7 +112,7 @@ virBhyveProcessStart(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     virCommandPtr load_cmd = NULL;
     bhyveConnPtr privconn = conn->privateData;
-    int ret = -1;
+    int ret = -1, rc;
 
     if (virAsprintf(&logfile, "%s/%s.log",
                     BHYVE_LOG_DIR, vm->def->name) < 0)
@@ -151,10 +161,25 @@ virBhyveProcessStart(virConnectPtr conn,
     /* Now bhyve command is constructed, meaning the
      * domain is ready to be started, so we can build
      * and execute bhyveload command */
-    if (!(load_cmd = virBhyveProcessBuildLoadCmd(conn, vm->def)))
+    rc = virBhyveFormatDevMapFile(vm->def->name, &devmap_file);
+    if (rc < 0)
+        goto cleanup;
+
+    if (!(load_cmd = virBhyveProcessBuildLoadCmd(conn, vm->def, devmap_file,
+                                                 &devicemap)))
         goto cleanup;
     virCommandSetOutputFD(load_cmd, &logfd);
     virCommandSetErrorFD(load_cmd, &logfd);
+
+    if (devicemap != NULL) {
+        rc = virFileWriteStr(devmap_file, devicemap, 0644);
+        if (rc) {
+            virReportSystemError(errno,
+                                 _("Cannot write device.map '%s'"),
+                                 devmap_file);
+            goto cleanup;
+        }
+    }
 
     /* Log generated command line */
     virCommandWriteArgLog(load_cmd, logfd);
@@ -193,6 +218,15 @@ virBhyveProcessStart(virConnectPtr conn,
     ret = 0;
 
  cleanup:
+    if (devicemap != NULL) {
+        rc = unlink(devmap_file);
+        if (rc < 0 && errno != ENOENT)
+            virReportSystemError(errno, _("cannot unlink file '%s'"),
+                                 devmap_file);
+        VIR_FREE(devicemap);
+    }
+    VIR_FREE(devmap_file);
+
     if (ret < 0) {
         int exitstatus; /* Needed to avoid logging non-zero status */
         virCommandPtr destroy_cmd;

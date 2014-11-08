@@ -217,7 +217,9 @@
       a BIOS, and instead the host is responsible to kicking off the
       operating system boot. This may use a pseudo-bootloader in the
       host to provide an interface to choose a kernel for the guest.
-      An example is <code>pygrub</code> with Xen.
+      An example is <code>pygrub</code> with Xen. The Bhyve hypervisor
+      also uses a host bootloader, either <code>bhyveload</code> or
+      <code>grub-bhyve</code>.
     </p>
 
 <pre>

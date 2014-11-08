@@ -689,7 +689,8 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
     if (bhyveDomainAssignAddresses(def, NULL) < 0)
         goto cleanup;
 
-    if (!(loadcmd = virBhyveProcessBuildLoadCmd(conn, def)))
+    if (!(loadcmd = virBhyveProcessBuildLoadCmd(conn, def, "<device.map>",
+                                                NULL)))
         goto cleanup;
 
     if (!(cmd = virBhyveProcessBuildBhyveCmd(conn, def, true)))
