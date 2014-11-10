@@ -644,24 +644,25 @@ checkVhbaSCSIHostParent(virConnectPtr conn,
 
 static int
 createVport(virConnectPtr conn,
-            virStoragePoolSourceAdapter adapter)
+            virStoragePoolDefPtr def)
 {
+    virStoragePoolSourceAdapterPtr adapter = &def->source.adapter;
     unsigned int parent_host;
     char *name = NULL;
 
-    if (adapter.type != VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
+    if (adapter->type != VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
         return 0;
 
     /* If a parent was provided, then let's make sure it's vhost capable */
-    if (adapter.data.fchost.parent) {
-        if (virGetSCSIHostNumber(adapter.data.fchost.parent, &parent_host) < 0)
+    if (adapter->data.fchost.parent) {
+        if (virGetSCSIHostNumber(adapter->data.fchost.parent, &parent_host) < 0)
             return -1;
 
         if (!virIsCapableFCHost(NULL, parent_host)) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("parent '%s' specified for vHBA "
                              "is not vport capable"),
-                           adapter.data.fchost.parent);
+                           adapter->data.fchost.parent);
             return -1;
         }
     }
@@ -670,35 +671,35 @@ createVport(virConnectPtr conn,
      * using the wwnn/wwpn, then a nodedev is already created for
      * this pool and we don't have to create the vHBA
      */
-    if ((name = virGetFCHostNameByWWN(NULL, adapter.data.fchost.wwnn,
-                                      adapter.data.fchost.wwpn))) {
+    if ((name = virGetFCHostNameByWWN(NULL, adapter->data.fchost.wwnn,
+                                      adapter->data.fchost.wwpn))) {
         int retval = 0;
 
         /* If a parent was provided, let's make sure the 'name' we've
          * retrieved has the same parent
          */
-        if (adapter.data.fchost.parent &&
-            !checkVhbaSCSIHostParent(conn, name, adapter.data.fchost.parent))
+        if (adapter->data.fchost.parent &&
+            !checkVhbaSCSIHostParent(conn, name, adapter->data.fchost.parent))
             retval = -1;
 
         VIR_FREE(name);
         return retval;
     }
 
-    if (!adapter.data.fchost.parent) {
-        if (!(adapter.data.fchost.parent = virFindFCHostCapableVport(NULL))) {
+    if (!adapter->data.fchost.parent) {
+        if (!(adapter->data.fchost.parent = virFindFCHostCapableVport(NULL))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("'parent' for vHBA not specified, and "
                              "cannot find one on this host"));
             return -1;
         }
 
-        if (virGetSCSIHostNumber(adapter.data.fchost.parent, &parent_host) < 0)
+        if (virGetSCSIHostNumber(adapter->data.fchost.parent, &parent_host) < 0)
             return -1;
     }
 
-    if (virManageVport(parent_host, adapter.data.fchost.wwpn,
-                       adapter.data.fchost.wwnn, VPORT_CREATE) < 0)
+    if (virManageVport(parent_host, adapter->data.fchost.wwpn,
+                       adapter->data.fchost.wwnn, VPORT_CREATE) < 0)
         return -1;
 
     virFileWaitForDevices();
@@ -816,8 +817,7 @@ static int
 virStorageBackendSCSIStartPool(virConnectPtr conn,
                                virStoragePoolObjPtr pool)
 {
-    virStoragePoolSourceAdapter adapter = pool->def->source.adapter;
-    return createVport(conn, adapter);
+    return createVport(conn, pool->def);
 }
 
 static int

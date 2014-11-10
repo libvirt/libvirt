@@ -343,15 +343,15 @@ virStorageVolDefFree(virStorageVolDefPtr def)
 }
 
 static void
-virStoragePoolSourceAdapterClear(virStoragePoolSourceAdapter adapter)
+virStoragePoolSourceAdapterClear(virStoragePoolSourceAdapterPtr adapter)
 {
-    if (adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
-        VIR_FREE(adapter.data.fchost.wwnn);
-        VIR_FREE(adapter.data.fchost.wwpn);
-        VIR_FREE(adapter.data.fchost.parent);
-    } else if (adapter.type ==
+    if (adapter->type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+        VIR_FREE(adapter->data.fchost.wwnn);
+        VIR_FREE(adapter->data.fchost.wwpn);
+        VIR_FREE(adapter->data.fchost.parent);
+    } else if (adapter->type ==
                VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
-        VIR_FREE(adapter.data.scsi_host.name);
+        VIR_FREE(adapter->data.scsi_host.name);
     }
 }
 
@@ -380,7 +380,7 @@ virStoragePoolSourceClear(virStoragePoolSourcePtr source)
     VIR_FREE(source->devices);
     VIR_FREE(source->dir);
     VIR_FREE(source->name);
-    virStoragePoolSourceAdapterClear(source->adapter);
+    virStoragePoolSourceAdapterClear(&source->adapter);
     VIR_FREE(source->initiator.iqn);
     virStorageAuthDefFree(source->auth);
     VIR_FREE(source->vendor);

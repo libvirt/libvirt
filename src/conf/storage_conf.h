@@ -177,6 +177,7 @@ typedef enum {
 VIR_ENUM_DECL(virStoragePoolSourceAdapter)
 
 typedef struct _virStoragePoolSourceAdapter virStoragePoolSourceAdapter;
+typedef virStoragePoolSourceAdapter *virStoragePoolSourceAdapterPtr;
 struct _virStoragePoolSourceAdapter {
     int type; /* virStoragePoolSourceAdapterType */
 
