@@ -3251,6 +3251,62 @@ typedef void (*virConnectDomainEventDeviceRemovedCallback)(virConnectPtr conn,
 # define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_IOPS_SEC "blkdeviotune.write_iops_sec"
 
 /**
+ * VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC_MAX:
+ *
+ * Marco represents the total throughput limit in maximum bytes per second,
+ * as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC_MAX "blkdeviotune.total_bytes_sec_max"
+
+/**
+ * VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC_MAX:
+ *
+ * Marco represents the read throughput limit in maximum bytes per second,
+ * as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC_MAX "blkdeviotune.read_bytes_sec_max"
+
+/**
+ * VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_BYTES_SEC_MAX:
+ *
+ * Macro represents the write throughput limit in maximum bytes per second,
+ * as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_BYTES_SEC_MAX "blkdeviotune.write_bytes_sec_max"
+
+/**
+ * VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_IOPS_SEC_MAX:
+ *
+ * Macro represents the total maximum I/O operations per second,
+ * as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_IOPS_SEC_MAX "blkdeviotune.total_iops_sec_max"
+
+/**
+ * VIR_DOMAIN_TUNABLE_BLKDEV_READ_IOPS_SEC_MAX:
+ *
+ * Macro represents the read maximum I/O operations per second,
+ * as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_BLKDEV_READ_IOPS_SEC_MAX "blkdeviotune.read_iops_sec_max"
+
+/**
+ * VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_IOPS_SEC_MAX:
+ *
+ * Macro represents the write maximum I/O operations per second,
+ * as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_IOPS_SEC_MAX "blkdeviotune.write_iops_sec_max"
+
+/**
+ * VIR_DOMAIN_TUNABLE_BLKDEV_SIZE_IOPS_SEC:
+ *
+ * Macro represents the size maximum I/O operations per second,
+ * as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_BLKDEV_SIZE_IOPS_SEC "blkdeviotune.size_iops_sec"
+
+/**
  * virConnectDomainEventTunableCallback:
  * @conn: connection object
  * @dom: domain on which the event occurred

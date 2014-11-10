@@ -771,11 +771,13 @@ int qemuMonitorOpenGraphics(qemuMonitorPtr mon,
 
 int qemuMonitorSetBlockIoThrottle(qemuMonitorPtr mon,
                                   const char *device,
-                                  virDomainBlockIoTuneInfoPtr info);
+                                  virDomainBlockIoTuneInfoPtr info,
+                                  bool supportMaxOptions);
 
 int qemuMonitorGetBlockIoThrottle(qemuMonitorPtr mon,
                                   const char *device,
-                                  virDomainBlockIoTuneInfoPtr reply);
+                                  virDomainBlockIoTuneInfoPtr reply,
+                                  bool supportMaxOptions);
 
 int qemuMonitorSystemWakeup(qemuMonitorPtr mon);
 

@@ -3514,14 +3514,15 @@ qemuMonitorBlockJobInfo(qemuMonitorPtr mon,
 
 int qemuMonitorSetBlockIoThrottle(qemuMonitorPtr mon,
                                   const char *device,
-                                  virDomainBlockIoTuneInfoPtr info)
+                                  virDomainBlockIoTuneInfoPtr info,
+                                  bool supportMaxOptions)
 {
     int ret;
 
     VIR_DEBUG("mon=%p, device=%p, info=%p", mon, device, info);
 
     if (mon->json) {
-        ret = qemuMonitorJSONSetBlockIoThrottle(mon, device, info);
+        ret = qemuMonitorJSONSetBlockIoThrottle(mon, device, info, supportMaxOptions);
     } else {
         ret = qemuMonitorTextSetBlockIoThrottle(mon, device, info);
     }
@@ -3530,14 +3531,15 @@ int qemuMonitorSetBlockIoThrottle(qemuMonitorPtr mon,
 
 int qemuMonitorGetBlockIoThrottle(qemuMonitorPtr mon,
                                   const char *device,
-                                  virDomainBlockIoTuneInfoPtr reply)
+                                  virDomainBlockIoTuneInfoPtr reply,
+                                  bool supportMaxOptions)
 {
     int ret;
 
     VIR_DEBUG("mon=%p, device=%p, reply=%p", mon, device, reply);
 
     if (mon->json) {
-        ret = qemuMonitorJSONGetBlockIoThrottle(mon, device, reply);
+        ret = qemuMonitorJSONGetBlockIoThrottle(mon, device, reply, supportMaxOptions);
     } else {
         ret = qemuMonitorTextGetBlockIoThrottle(mon, device, reply);
     }

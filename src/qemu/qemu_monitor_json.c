@@ -4293,7 +4293,8 @@ int qemuMonitorJSONOpenGraphics(qemuMonitorPtr mon,
 static int
 qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
                                    const char *device,
-                                   virDomainBlockIoTuneInfoPtr reply)
+                                   virDomainBlockIoTuneInfoPtr reply,
+                                   bool supportMaxOptions ATTRIBUTE_UNUSED)
 {
     virJSONValuePtr io_throttle;
     int ret = -1;
@@ -4364,7 +4365,8 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
 
 int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
                                       const char *device,
-                                      virDomainBlockIoTuneInfoPtr info)
+                                      virDomainBlockIoTuneInfoPtr info,
+                                      bool supportMaxOptions ATTRIBUTE_UNUSED)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
@@ -4404,7 +4406,8 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
 
 int qemuMonitorJSONGetBlockIoThrottle(qemuMonitorPtr mon,
                                       const char *device,
-                                      virDomainBlockIoTuneInfoPtr reply)
+                                      virDomainBlockIoTuneInfoPtr reply,
+                                      bool supportMaxOptions)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
@@ -4431,7 +4434,7 @@ int qemuMonitorJSONGetBlockIoThrottle(qemuMonitorPtr mon,
     }
 
     if (ret == 0)
-        ret = qemuMonitorJSONBlockIoThrottleInfo(result, device, reply);
+        ret = qemuMonitorJSONBlockIoThrottleInfo(result, device, reply, supportMaxOptions);
 
     virJSONValueFree(cmd);
     virJSONValueFree(result);

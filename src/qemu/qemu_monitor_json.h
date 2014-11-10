@@ -325,11 +325,13 @@ int qemuMonitorJSONOpenGraphics(qemuMonitorPtr mon,
 
 int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
                                       const char *device,
-                                      virDomainBlockIoTuneInfoPtr info);
+                                      virDomainBlockIoTuneInfoPtr info,
+                                      bool supportMaxOptions);
 
 int qemuMonitorJSONGetBlockIoThrottle(qemuMonitorPtr mon,
                                       const char *device,
-                                      virDomainBlockIoTuneInfoPtr reply);
+                                      virDomainBlockIoTuneInfoPtr reply,
+                                      bool supportMaxOptions);
 
 int qemuMonitorJSONSystemWakeup(qemuMonitorPtr mon);
 
