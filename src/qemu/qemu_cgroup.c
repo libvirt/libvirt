@@ -611,6 +611,7 @@ static int
 qemuSetupCpusetMems(virDomainObjPtr vm,
                     virBitmapPtr nodemask)
 {
+    virCgroupPtr cgroup_temp = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *mem_mask = NULL;
     int ret = -1;
@@ -623,13 +624,16 @@ qemuSetupCpusetMems(virDomainObjPtr vm,
                                             &mem_mask, -1) < 0)
         goto cleanup;
 
-    if (mem_mask &&
-        virCgroupSetCpusetMems(priv->cgroup, mem_mask) < 0)
-        goto cleanup;
+    if (mem_mask)
+        if (virCgroupNewEmulator(priv->cgroup, false, &cgroup_temp) < 0 ||
+            virCgroupSetCpusetMems(cgroup_temp, mem_mask) < 0 ||
+            virCgroupSetCpusetMems(priv->cgroup, mem_mask) < 0)
+            goto cleanup;
 
     ret = 0;
  cleanup:
     VIR_FREE(mem_mask);
+    virCgroupFree(&cgroup_temp);
     return ret;
 }
 
