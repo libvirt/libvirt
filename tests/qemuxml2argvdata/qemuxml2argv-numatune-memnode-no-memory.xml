@@ -13,8 +13,8 @@
   </os>
   <cpu>
     <numa>
-      <cell id='0' cpus='0' memory='32768'/>
-      <cell id='1' cpus='1' memory='32768'/>
+      <cell id='0' cpus='0' memory='32768' unit='KiB'/>
+      <cell id='1' cpus='1' memory='32768' unit='KiB'/>
     </numa>
   </cpu>
   <clock offset='utc'/>

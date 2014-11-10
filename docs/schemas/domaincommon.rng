@@ -4144,6 +4144,11 @@
         <ref name="memoryKB"/>
       </attribute>
       <optional>
+        <attribute name="unit">
+          <ref name="unit"/>
+        </attribute>
+      </optional>
+      <optional>
         <attribute name="memAccess">
           <choice>
             <value>shared</value>

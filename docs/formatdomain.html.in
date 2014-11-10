@@ -1153,8 +1153,8 @@
   &lt;cpu&gt;
     ...
     &lt;numa&gt;
-      &lt;cell id='0' cpus='0-3' memory='512000'/&gt;
-      &lt;cell id='1' cpus='4-7' memory='512000' memAccess='shared'/&gt;
+      &lt;cell id='0' cpus='0-3' memory='512000' unit='KiB'/&gt;
+      &lt;cell id='1' cpus='4-7' memory='512000' unit='KiB' memAccess='shared'/&gt;
     &lt;/numa&gt;
     ...
   &lt;/cpu&gt;
@@ -1165,6 +1165,9 @@
       <code>cpus</code> specifies the CPU or range of CPUs that are
       part of the node. <code>memory</code> specifies the node memory
       in kibibytes (i.e. blocks of 1024 bytes).
+      <span class="since">Since 1.2.11</span> one can use an additional <a
+          href="#elementsMemoryAllocation"><code>unit</code></a> attribute to
+      define units in which <code>memory</code> is specified.
       <span class="since">Since 1.2.7</span> all cells should
       have <code>id</code> attribute in case referring to some cell is
       necessary in the code, otherwise the cells are

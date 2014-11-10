@@ -184,6 +184,7 @@ virCPUDefParseXML(xmlNodePtr node,
 {
     virCPUDefPtr def;
     xmlNodePtr *nodes = NULL;
+    xmlNodePtr oldnode = ctxt->node;
     int n;
     size_t i;
     char *cpuMode;
@@ -440,7 +441,7 @@ virCPUDefParseXML(xmlNodePtr node,
         def->ncells = n;
 
         for (i = 0; i < n; i++) {
-            char *cpus, *memory, *memAccessStr;
+            char *cpus, *memAccessStr;
             int ret, ncpus = 0;
             unsigned int cur_cell;
             char *tmp = NULL;
@@ -489,21 +490,10 @@ virCPUDefParseXML(xmlNodePtr node,
                 goto error;
             def->cells_cpus += ncpus;
 
-            memory = virXMLPropString(nodes[i], "memory");
-            if (!memory) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("Missing 'memory' attribute in NUMA cell"));
-                goto error;
-            }
-
-            ret = virStrToLong_ull(memory, NULL, 10, &def->cells[cur_cell].mem);
-            if (ret == -1) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("Invalid 'memory' attribute in NUMA cell"));
-                VIR_FREE(memory);
-                goto error;
-            }
-            VIR_FREE(memory);
+            ctxt->node = nodes[i];
+            if (virDomainParseMemory("./@memory", "./@unit", ctxt,
+                                     &def->cells[cur_cell].mem, true, false) < 0)
+                goto cleanup;
 
             memAccessStr = virXMLPropString(nodes[i], "memAccess");
             if (memAccessStr) {
@@ -526,6 +516,7 @@ virCPUDefParseXML(xmlNodePtr node,
     }
 
  cleanup:
+    ctxt->node = oldnode;
     VIR_FREE(fallback);
     VIR_FREE(vendor_id);
     VIR_FREE(nodes);
@@ -704,6 +695,7 @@ virCPUDefFormatBuf(virBufferPtr buf,
             virBufferAsprintf(buf, " id='%zu'", i);
             virBufferAsprintf(buf, " cpus='%s'", def->cells[i].cpustr);
             virBufferAsprintf(buf, " memory='%llu'", def->cells[i].mem);
+            virBufferAddLit(buf, " unit='KiB'");
             if (memAccess)
                 virBufferAsprintf(buf, " memAccess='%s'",
                                   virMemAccessTypeToString(memAccess));
