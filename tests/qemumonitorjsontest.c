@@ -1939,7 +1939,8 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCapability(const void *data)
     }
 
     if (qemuMonitorJSONSetMigrationCapability(qemuMonitorTestGetMonitor(test),
-                                              QEMU_MONITOR_MIGRATION_CAPS_XBZRLE) < 0)
+                                              QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
+                                              true) < 0)
         goto cleanup;
 
     ret = 0;

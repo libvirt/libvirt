@@ -5299,7 +5299,8 @@ qemuMonitorJSONGetMigrationCapability(qemuMonitorPtr mon,
 
 int
 qemuMonitorJSONSetMigrationCapability(qemuMonitorPtr mon,
-                                      qemuMonitorMigrationCaps capability)
+                                      qemuMonitorMigrationCaps capability,
+                                      bool state)
 {
     int ret = -1;
 
@@ -5319,7 +5320,7 @@ qemuMonitorJSONSetMigrationCapability(qemuMonitorPtr mon,
                 qemuMonitorMigrationCapsTypeToString(capability)) < 0)
         goto cleanup;
 
-    if (virJSONValueObjectAppendBoolean(cap, "state", 1) < 0)
+    if (virJSONValueObjectAppendBoolean(cap, "state", state) < 0)
         goto cleanup;
 
     if (virJSONValueArrayAppend(caps, cap) < 0)

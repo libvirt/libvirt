@@ -1804,6 +1804,7 @@ qemuMigrationSetOffline(virQEMUDriverPtr driver,
 static int
 qemuMigrationSetCompression(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
+                            bool state,
                             qemuDomainAsyncJob job)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -1818,6 +1819,9 @@ qemuMigrationSetCompression(virQEMUDriverPtr driver,
 
     if (ret < 0) {
         goto cleanup;
+    } else if (ret == 0 && !state) {
+        /* Unsupported but we want it off anyway */
+        goto cleanup;
     } else if (ret == 0) {
         if (job == QEMU_ASYNC_JOB_MIGRATION_IN) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
@@ -1834,7 +1838,8 @@ qemuMigrationSetCompression(virQEMUDriverPtr driver,
 
     ret = qemuMonitorSetMigrationCapability(
                 priv->mon,
-                QEMU_MONITOR_MIGRATION_CAPS_XBZRLE);
+                QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
+                state);
 
  cleanup:
     qemuDomainObjExitMonitor(driver, vm);
@@ -1844,6 +1849,7 @@ qemuMigrationSetCompression(virQEMUDriverPtr driver,
 static int
 qemuMigrationSetAutoConverge(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
+                             bool state,
                              qemuDomainAsyncJob job)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -1858,6 +1864,9 @@ qemuMigrationSetAutoConverge(virQEMUDriverPtr driver,
 
     if (ret < 0) {
         goto cleanup;
+    } else if (ret == 0 && !state) {
+        /* Unsupported but we want it off anyway */
+        goto cleanup;
     } else if (ret == 0) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Auto-Converge is not supported by "
@@ -1868,7 +1877,8 @@ qemuMigrationSetAutoConverge(virQEMUDriverPtr driver,
 
     ret = qemuMonitorSetMigrationCapability(
                 priv->mon,
-                QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE);
+                QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE,
+                state);
 
  cleanup:
     qemuDomainObjExitMonitor(driver, vm);
@@ -1879,6 +1889,7 @@ qemuMigrationSetAutoConverge(virQEMUDriverPtr driver,
 static int
 qemuMigrationSetPinAll(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
+                       bool state,
                        qemuDomainAsyncJob job)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -1892,6 +1903,9 @@ qemuMigrationSetPinAll(virQEMUDriverPtr driver,
                 QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL);
 
     if (ret < 0) {
+        goto cleanup;
+    } else if (ret == 0 && !state) {
+        /* Unsupported but we want it off anyway */
         goto cleanup;
     } else if (ret == 0) {
         if (job == QEMU_ASYNC_JOB_MIGRATION_IN) {
@@ -1909,7 +1923,8 @@ qemuMigrationSetPinAll(virQEMUDriverPtr driver,
 
     ret = qemuMonitorSetMigrationCapability(
                 priv->mon,
-                QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL);
+                QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
+                state);
 
  cleanup:
     qemuDomainObjExitMonitor(driver, vm);
@@ -2744,8 +2759,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         dataFD[1] = -1; /* 'st' owns the FD now & will close it */
     }
 
-    if (flags & VIR_MIGRATE_COMPRESSED &&
-        qemuMigrationSetCompression(driver, vm,
+    if (qemuMigrationSetCompression(driver, vm,
+                                    flags & VIR_MIGRATE_COMPRESSED,
                                     QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
         goto stop;
 
@@ -2754,8 +2769,9 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         goto stop;
     }
 
-    if (flags & VIR_MIGRATE_RDMA_PIN_ALL &&
-        qemuMigrationSetPinAll(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
+    if (qemuMigrationSetPinAll(driver, vm,
+                               flags & VIR_MIGRATE_RDMA_PIN_ALL,
+                               QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
         goto stop;
 
     if (mig->lockState) {
@@ -3572,18 +3588,18 @@ qemuMigrationRun(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    if (flags & VIR_MIGRATE_COMPRESSED &&
-        qemuMigrationSetCompression(driver, vm,
+    if (qemuMigrationSetCompression(driver, vm,
+                                    flags & VIR_MIGRATE_COMPRESSED,
                                     QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
 
-    if (flags & VIR_MIGRATE_AUTO_CONVERGE &&
-        qemuMigrationSetAutoConverge(driver, vm,
+    if (qemuMigrationSetAutoConverge(driver, vm,
+                                     flags & VIR_MIGRATE_AUTO_CONVERGE,
                                      QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
 
-    if (flags & VIR_MIGRATE_RDMA_PIN_ALL &&
-        qemuMigrationSetPinAll(driver, vm,
+    if (qemuMigrationSetPinAll(driver, vm,
+                               flags & VIR_MIGRATE_RDMA_PIN_ALL,
                                QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
 
