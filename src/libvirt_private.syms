@@ -753,6 +753,7 @@ virStoragePoolObjLock;
 virStoragePoolObjRemove;
 virStoragePoolObjSaveDef;
 virStoragePoolObjUnlock;
+virStoragePoolSaveConfig;
 virStoragePoolSourceAdapterTypeFromString;
 virStoragePoolSourceAdapterTypeToString;
 virStoragePoolSourceClear;

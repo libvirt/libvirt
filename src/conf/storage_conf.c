@@ -1884,14 +1884,33 @@ virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
 }
 
 int
-virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
-                         virStoragePoolObjPtr pool,
+virStoragePoolSaveConfig(const char *configFile,
                          virStoragePoolDefPtr def)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *xml;
     int ret = -1;
 
+    if (!(xml = virStoragePoolDefFormat(def))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to generate XML"));
+        return -1;
+    }
+
+    virUUIDFormat(def->uuid, uuidstr);
+    ret = virXMLSaveFile(configFile,
+                         virXMLPickShellSafeComment(def->name, uuidstr),
+                         "pool-edit", xml);
+    VIR_FREE(xml);
+
+    return ret;
+}
+
+int
+virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
+                         virStoragePoolObjPtr pool,
+                         virStoragePoolDefPtr def)
+{
     if (!pool->configFile) {
         if (virFileMakePath(driver->configDir) < 0) {
             virReportSystemError(errno,
@@ -1912,19 +1931,7 @@ virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
         }
     }
 
-    if (!(xml = virStoragePoolDefFormat(def))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to generate XML"));
-        return -1;
-    }
-
-    virUUIDFormat(def->uuid, uuidstr);
-    ret = virXMLSaveFile(pool->configFile,
-                         virXMLPickShellSafeComment(def->name, uuidstr),
-                         "pool-edit", xml);
-    VIR_FREE(xml);
-
-    return ret;
+    return virStoragePoolSaveConfig(pool->configFile, def);
 }
 
 int
