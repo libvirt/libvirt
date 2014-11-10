@@ -389,6 +389,11 @@
               <text/>
             </attribute>
           </optional>
+          <optional>
+            <attribute name='managed'>
+              <ref name="virYesNo"/>
+            </attribute>
+          </optional>
           <attribute name='wwnn'>
             <ref name='wwn'/>
           </attribute>

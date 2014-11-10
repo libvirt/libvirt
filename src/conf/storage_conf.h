@@ -192,6 +192,7 @@ struct _virStoragePoolSourceAdapter {
             char *parent;
             char *wwnn;
             char *wwpn;
+            int managed;        /* enum virTristateSwitch */
         } fchost;
     } data;
 };

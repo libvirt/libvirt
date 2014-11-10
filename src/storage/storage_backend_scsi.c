@@ -590,6 +590,9 @@ getVhbaSCSIHostParent(virConnectPtr conn,
     if (!(def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL)))
         goto cleanup;
 
+    /* The caller checks whether the returned value is NULL or not
+     * before continuing
+     */
     ignore_value(VIR_STRDUP(vhba_parent, def->parent));
 
  cleanup:
@@ -644,14 +647,20 @@ checkVhbaSCSIHostParent(virConnectPtr conn,
 
 static int
 createVport(virConnectPtr conn,
+            const char *configFile,
             virStoragePoolDefPtr def)
 {
     virStoragePoolSourceAdapterPtr adapter = &def->source.adapter;
     unsigned int parent_host;
     char *name = NULL;
+    char *parent_hoststr = NULL;
 
     if (adapter->type != VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
         return 0;
+
+    VIR_DEBUG("conn=%p, configFile='%s' parent='%s', wwnn='%s' wwpn='%s'",
+              conn, NULLSTR(configFile), NULLSTR(adapter->data.fchost.parent),
+              adapter->data.fchost.wwnn, adapter->data.fchost.wwpn);
 
     /* If a parent was provided, then let's make sure it's vhost capable */
     if (adapter->data.fchost.parent) {
@@ -687,15 +696,40 @@ createVport(virConnectPtr conn,
     }
 
     if (!adapter->data.fchost.parent) {
-        if (!(adapter->data.fchost.parent = virFindFCHostCapableVport(NULL))) {
+        if (!(parent_hoststr = virFindFCHostCapableVport(NULL))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("'parent' for vHBA not specified, and "
                              "cannot find one on this host"));
             return -1;
         }
 
-        if (virGetSCSIHostNumber(adapter->data.fchost.parent, &parent_host) < 0)
+        if (virGetSCSIHostNumber(parent_hoststr, &parent_host) < 0) {
+            VIR_FREE(parent_hoststr);
             return -1;
+        }
+
+        /* NOTE:
+         * We do not save the parent_hoststr in adapter->data.fchost.parent
+         * since we could be writing out the 'def' to the saved XML config.
+         * If we wrote out the name in the XML, then future starts would
+         * always use the same parent rather than finding the "best available"
+         * parent. Besides we have a way to determine the parent based on
+         * the 'name' field.
+         */
+        VIR_FREE(parent_hoststr);
+    }
+
+    /* Since we're creating the vHBA, then we need to manage removing it
+     * as well. Since we need this setting to "live" through a libvirtd
+     * restart, we need to save the persistent configuration. So if not
+     * already defined as YES, then force the issue.
+     */
+    if (adapter->data.fchost.managed != VIR_TRISTATE_BOOL_YES) {
+        adapter->data.fchost.managed = VIR_TRISTATE_BOOL_YES;
+        if (configFile) {
+            if (virStoragePoolSaveConfig(configFile, def) < 0)
+                return -1;
+        }
     }
 
     if (virManageVport(parent_host, adapter->data.fchost.wwpn,
@@ -707,29 +741,50 @@ createVport(virConnectPtr conn,
 }
 
 static int
-deleteVport(virStoragePoolSourceAdapter adapter)
+deleteVport(virConnectPtr conn,
+            virStoragePoolSourceAdapter adapter)
 {
     unsigned int parent_host;
     char *name = NULL;
+    char *vhba_parent = NULL;
     int ret = -1;
 
     if (adapter.type != VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
         return 0;
 
-    /* It must be a HBA instead of a vHBA as long as "parent"
-     * is NULL. "createVport" guaranteed "parent" for a vHBA
-     * cannot be NULL, it's either specified in XML, or detected
-     * automatically.
-     */
-    if (!adapter.data.fchost.parent)
+    VIR_DEBUG("conn=%p parent='%s', managed='%d' wwnn='%s' wwpn='%s'",
+              conn, NULLSTR(adapter.data.fchost.parent),
+              adapter.data.fchost.managed,
+              adapter.data.fchost.wwnn,
+              adapter.data.fchost.wwpn);
+
+    /* If we're not managing the deletion of the vHBA, then just return */
+    if (adapter.data.fchost.managed != VIR_TRISTATE_BOOL_YES)
         return 0;
 
+    /* Find our vHBA by searching the fc_host sysfs tree for our wwnn/wwpn */
     if (!(name = virGetFCHostNameByWWN(NULL, adapter.data.fchost.wwnn,
-                                       adapter.data.fchost.wwpn)))
-        return -1;
-
-    if (virGetSCSIHostNumber(adapter.data.fchost.parent, &parent_host) < 0)
+                                       adapter.data.fchost.wwpn))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to find fc_host for wwnn='%s' and wwpn='%s'"),
+                       adapter.data.fchost.wwnn, adapter.data.fchost.wwpn);
         goto cleanup;
+    }
+
+    /* If at startup time we provided a parent, then use that to
+     * get the parent_host value; otherwise, we have to determine
+     * the parent scsi_host which we did not save at startup time
+     */
+    if (adapter.data.fchost.parent) {
+        if (virGetSCSIHostNumber(adapter.data.fchost.parent, &parent_host) < 0)
+            goto cleanup;
+    } else {
+        if (!(vhba_parent = getVhbaSCSIHostParent(conn, name)))
+            goto cleanup;
+
+        if (virGetSCSIHostNumber(vhba_parent, &parent_host) < 0)
+            goto cleanup;
+    }
 
     if (virManageVport(parent_host, adapter.data.fchost.wwpn,
                        adapter.data.fchost.wwnn, VPORT_DELETE) < 0)
@@ -738,6 +793,7 @@ deleteVport(virStoragePoolSourceAdapter adapter)
     ret = 0;
  cleanup:
     VIR_FREE(name);
+    VIR_FREE(vhba_parent);
     return ret;
 }
 
@@ -817,15 +873,15 @@ static int
 virStorageBackendSCSIStartPool(virConnectPtr conn,
                                virStoragePoolObjPtr pool)
 {
-    return createVport(conn, pool->def);
+    return createVport(conn, pool->configFile, pool->def);
 }
 
 static int
-virStorageBackendSCSIStopPool(virConnectPtr conn ATTRIBUTE_UNUSED,
+virStorageBackendSCSIStopPool(virConnectPtr conn,
                               virStoragePoolObjPtr pool)
 {
     virStoragePoolSourceAdapter adapter = pool->def->source.adapter;
-    return deleteVport(adapter);
+    return deleteVport(conn, adapter);
 }
 
 virStorageBackend virStorageBackendSCSI = {

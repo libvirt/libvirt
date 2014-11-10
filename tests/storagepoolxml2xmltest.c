@@ -98,6 +98,7 @@ mymain(void)
     DO_TEST("pool-scsi");
     DO_TEST("pool-scsi-type-scsi-host");
     DO_TEST("pool-scsi-type-fc-host");
+    DO_TEST("pool-scsi-type-fc-host-managed");
     DO_TEST("pool-mpath");
     DO_TEST("pool-iscsi-multiiqn");
     DO_TEST("pool-iscsi-vendor-product");

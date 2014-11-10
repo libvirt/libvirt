@@ -475,6 +475,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     char *name = NULL;
     char *port = NULL;
     char *adapter_type = NULL;
+    char *managed = NULL;
     int n;
 
     relnode = ctxt->node;
@@ -578,6 +579,18 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
             VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
             source->adapter.data.fchost.parent =
                 virXPathString("string(./adapter/@parent)", ctxt);
+            managed = virXPathString("string(./adapter/@managed)", ctxt);
+            if (managed) {
+                source->adapter.data.fchost.managed =
+                    virTristateBoolTypeFromString(managed);
+                if (source->adapter.data.fchost.managed < 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown fc_host managed setting '%s'"),
+                                   managed);
+                    goto cleanup;
+                }
+            }
+
             source->adapter.data.fchost.wwnn =
                 virXPathString("string(./adapter/@wwnn)", ctxt);
             source->adapter.data.fchost.wwpn =
@@ -675,6 +688,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     VIR_FREE(port);
     VIR_FREE(nodeset);
     VIR_FREE(adapter_type);
+    VIR_FREE(managed);
     virStorageAuthDefFree(authdef);
     return ret;
 }
@@ -1076,6 +1090,9 @@ virStoragePoolSourceFormat(virBufferPtr buf,
         if (src->adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
             virBufferEscapeString(buf, " parent='%s'",
                                   src->adapter.data.fchost.parent);
+            if (src->adapter.data.fchost.managed)
+                virBufferAsprintf(buf, " managed='%s'",
+                                  virTristateBoolTypeToString(src->adapter.data.fchost.managed));
             virBufferAsprintf(buf, " wwnn='%s' wwpn='%s'/>\n",
                               src->adapter.data.fchost.wwnn,
                               src->adapter.data.fchost.wwpn);

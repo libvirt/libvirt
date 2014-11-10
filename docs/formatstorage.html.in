@@ -190,6 +190,19 @@
             defined for an existing scsi_host or by creating a vHBA.
             <span class="since">Since 1.0.4</span>
           </dd>
+          <dt><code>managed</code></dt>
+          <dd>An optional attribute to instruct the SCSI storage backend to
+            manage destroying the vHBA when the pool is destroyed. For
+            configurations that do not provide an already created vHBA
+            from a 'virsh nodedev-create', libvirt will set this property
+            to "yes". For configurations that have already created a vHBA
+            via 'virsh nodedev-create' and are using the wwnn/wwpn from
+            that vHBA and optionally the scsi_host parent, setting this
+            attribute to "yes" will allow libvirt to destroy the node device
+            when the pool is destroyed. If this attribute is set to "no" or
+            not defined in the XML, then libvirt will not destroy the vHBA.
+            <span class="since">Since 1.2.11</span>
+          </dd>
         </dl>
         <dl>
           <dt><code>parentaddr</code></dt>

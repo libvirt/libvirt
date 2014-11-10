@@ -1,0 +1,18 @@
+<pool type='scsi'>
+  <name>hba0</name>
+  <uuid>e9392370-2917-565e-692b-d057f46512d6</uuid>
+  <capacity unit='bytes'>0</capacity>
+  <allocation unit='bytes'>0</allocation>
+  <available unit='bytes'>0</available>
+  <source>
+    <adapter type='fc_host' parent='scsi_host5' managed='yes' wwnn='20000000c9831b4b' wwpn='10000000c9831b4b'/>
+  </source>
+  <target>
+    <path>/dev/disk/by-path</path>
+    <permissions>
+      <mode>0700</mode>
+      <owner>0</owner>
+      <group>0</group>
+    </permissions>
+  </target>
+</pool>
