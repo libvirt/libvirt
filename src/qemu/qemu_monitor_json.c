@@ -5955,9 +5955,15 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_NMDM:
     case VIR_DOMAIN_CHR_TYPE_LAST:
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Unsupported char device type '%d'"),
-                       chr->type);
+        if (virDomainChrTypeToString(chr->type)) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("Hotplug unsupported for char device type '%s'"),
+                           virDomainChrTypeToString(chr->type));
+        } else {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("Hotplug unsupported for char device type '%d'"),
+                           chr->type);
+        }
         goto error;
     }
 
