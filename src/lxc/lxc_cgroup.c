@@ -79,6 +79,10 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
             goto cleanup;
     }
 
+    if (virDomainNumatuneGetMode(def->numatune, -1) !=
+        VIR_DOMAIN_NUMATUNE_MEM_STRICT)
+        goto cleanup;
+
     if (virDomainNumatuneMaybeFormatNodeset(def->numatune, nodemask,
                                             &mask, -1) < 0)
         goto cleanup;
