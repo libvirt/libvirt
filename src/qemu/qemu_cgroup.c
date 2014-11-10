@@ -618,6 +618,10 @@ qemuSetupCpusetMems(virDomainObjPtr vm,
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
         return 0;
 
+    if (virDomainNumatuneGetMode(vm->def->numatune, -1) !=
+        VIR_DOMAIN_NUMATUNE_MEM_STRICT)
+        return 0;
+
     if (virDomainNumatuneMaybeFormatNodeset(vm->def->numatune,
                                             nodemask,
                                             &mem_mask, -1) < 0)
