@@ -2847,6 +2847,14 @@ int virDomainObjSetMetadata(virDomainObjPtr vm,
                             const char *configDir,
                             unsigned int flags);
 
+int
+virDomainParseMemory(const char *xpath,
+                     const char *units_xpath,
+                     xmlXPathContextPtr ctxt,
+                     unsigned long long *mem,
+                     bool required,
+                     bool capped);
+
 bool virDomainDefNeedsPlacementAdvice(virDomainDefPtr def)
     ATTRIBUTE_NONNULL(1);
 

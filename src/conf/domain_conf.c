@@ -6421,7 +6421,7 @@ virDomainParseScaledValue(const char *xpath,
  *
  * Return 0 on success, -1 on failure after issuing error.
  */
-static int
+int
 virDomainParseMemory(const char *xpath,
                      const char *units_xpath,
                      xmlXPathContextPtr ctxt,
