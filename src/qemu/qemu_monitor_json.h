@@ -142,7 +142,8 @@ int qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
 int qemuMonitorJSONGetMigrationCapability(qemuMonitorPtr mon,
                                           qemuMonitorMigrationCaps capability);
 int qemuMonitorJSONSetMigrationCapability(qemuMonitorPtr mon,
-                                          qemuMonitorMigrationCaps capability);
+                                          qemuMonitorMigrationCaps capability,
+                                          bool state);
 
 int qemuMonitorJSONMigrate(qemuMonitorPtr mon,
                            unsigned int flags,

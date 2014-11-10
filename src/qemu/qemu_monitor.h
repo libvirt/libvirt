@@ -506,7 +506,8 @@ int qemuMonitorGetMigrationCapabilities(qemuMonitorPtr mon,
 int qemuMonitorGetMigrationCapability(qemuMonitorPtr mon,
                                       qemuMonitorMigrationCaps capability);
 int qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
-                                      qemuMonitorMigrationCaps capability);
+                                      qemuMonitorMigrationCaps capability,
+                                      bool state);
 
 typedef enum {
   QEMU_MONITOR_MIGRATE_BACKGROUND	= 1 << 0,

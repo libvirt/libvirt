@@ -3930,7 +3930,8 @@ int qemuMonitorGetMigrationCapability(qemuMonitorPtr mon,
 }
 
 int qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
-                                      qemuMonitorMigrationCaps capability)
+                                      qemuMonitorMigrationCaps capability,
+                                      bool state)
 {
     VIR_DEBUG("mon=%p capability=%d", mon, capability);
 
@@ -3946,7 +3947,7 @@ int qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
         return -1;
     }
 
-    return qemuMonitorJSONSetMigrationCapability(mon, capability);
+    return qemuMonitorJSONSetMigrationCapability(mon, capability, state);
 }
 
 int qemuMonitorNBDServerStart(qemuMonitorPtr mon,
