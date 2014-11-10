@@ -1590,16 +1590,17 @@ virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
                               tgt->data.spiceport.channel);
         break;
 
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+        return src->data.spicevmc == tgt->data.spicevmc;
+
     case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_VC:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
-    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
     case VIR_DOMAIN_CHR_TYPE_LAST:
-        /* nada */
         break;
     }
 
-    return false;
+    return true;
 }
 
 void virDomainChrDefFree(virDomainChrDefPtr def)
