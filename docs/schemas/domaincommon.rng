@@ -1460,6 +1460,14 @@
             <empty/>
           </element>
         </optional>
+        <optional>
+          <element name="config">
+            <attribute name="file">
+              <ref name="absFilePath"/>
+            </attribute>
+            <empty/>
+          </element>
+        </optional>
         <empty/>
       </element>
     </interleave>

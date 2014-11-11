@@ -3013,6 +3013,9 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
                 }
             }
 
+            if (src->configFile)
+                virBufferEscape(&buf, '\\', ":", ":conf=%s", src->configFile);
+
             if (virBufferCheckError(&buf) < 0)
                 goto cleanup;
 

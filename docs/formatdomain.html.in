@@ -1680,6 +1680,7 @@
       &lt;source protocol="rbd" name="image_name2"&gt;
         &lt;host name="hostname" port="7000"/&gt;
         &lt;snapshot name="snapname"/&gt;
+        &lt;config file="/path/to/file"/&gt;
       &lt;/source&gt;
       &lt;target dev="hdc" bus="ide"/&gt;
       &lt;auth username='myuser'&gt;
@@ -2022,6 +2023,14 @@
             optionally specify an internal snapshot name to be used as the
             source for storage protocols.
             Supported for 'rbd' <span class="since">since 1.2.11 (QEMU only).</span>
+          </dd>
+          <dt><code>config</code></dt>
+          <dd>
+            The <code>file</code> attribute for the <code>config</code> element
+            provides a fully qualified path to a configuration file to be
+            provided as a parameter to the client of a networked storage
+            protocol. Supported for 'rbd' <span class="since">since 1.2.11
+            (QEMU only).</span>
           </dd>
         </dl>
 

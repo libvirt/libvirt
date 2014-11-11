@@ -3169,12 +3169,20 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
         virDomainDiskDefPtr disk = dev->data.disk;
 
-        /* internal snapshots are currently supported only with rbd: */
+        /* internal snapshots and config files are currently supported
+         * only with rbd: */
         if (virStorageSourceGetActualType(disk->src) != VIR_STORAGE_TYPE_NETWORK &&
             disk->src->protocol != VIR_STORAGE_NET_PROTOCOL_RBD) {
             if (disk->src->snapshot) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("<snapshot> element is currently supported "
+                                 "only with 'rbd' disks"));
+                return -1;
+            }
+
+            if (disk->src->configFile) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("<config> element is currently supported "
                                  "only with 'rbd' disks"));
                 return -1;
             }
@@ -5394,6 +5402,9 @@ virDomainDiskSourceParse(xmlNodePtr node,
 
         /* snapshot currently works only for remote disks */
         src->snapshot = virXPathString("string(./snapshot/@name)", ctxt);
+
+        /* config file currently only works with remote disks */
+        src->configFile = virXPathString("string(./config/@file)", ctxt);
 
         if (virDomainStorageHostParse(node, &src->hosts, &src->nhosts) < 0)
             goto cleanup;
@@ -16167,7 +16178,7 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
 
             VIR_FREE(path);
 
-            if (src->nhosts == 0 && !src->snapshot) {
+            if (src->nhosts == 0 && !src->snapshot && !src->configFile) {
                 virBufferAddLit(buf, "/>\n");
             } else {
                 virBufferAddLit(buf, ">\n");
@@ -16192,6 +16203,9 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
 
                 virBufferEscapeString(buf, "<snapshot name='%s'/>\n",
                                       src->snapshot);
+
+                virBufferEscapeString(buf, "<config file='%s'/>\n",
+                                      src->configFile);
 
                 virBufferAdjustIndent(buf, -2);
                 virBufferAddLit(buf, "</source>\n");

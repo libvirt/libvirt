@@ -1849,6 +1849,7 @@ virStorageSourceCopy(const virStorageSource *src,
         VIR_STRDUP(ret->relPath, src->relPath) < 0 ||
         VIR_STRDUP(ret->backingStoreRaw, src->backingStoreRaw) < 0 ||
         VIR_STRDUP(ret->snapshot, src->snapshot) < 0 ||
+        VIR_STRDUP(ret->configFile, src->configFile) < 0 ||
         VIR_STRDUP(ret->compat, src->compat) < 0)
         goto error;
 
@@ -2348,6 +2349,10 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
                 h = sep;
             }
         }
+
+        if (STRPREFIX(p, "conf=") &&
+            VIR_STRDUP(src->configFile, p + strlen("conf=")) < 0)
+            goto error;
 
         p = next;
     }
