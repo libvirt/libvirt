@@ -1549,8 +1549,8 @@ virValidateWWN(const char *wwn)
     }
 
     if (i != 16 || p[i]) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Malformed wwn: %s"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Malformed wwn: %s"), wwn);
         return false;
     }
 

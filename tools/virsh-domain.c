@@ -3228,7 +3228,7 @@ static const vshCmdOptDef opts_dom_pm_suspend[] = {
      .help = N_("duration in seconds")
     },
     {.name = "target",
-     .type = VSH_OT_STRING,
+     .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
      .help = N_("mem(Suspend-to-RAM), "
                 "disk(Suspend-to-Disk), "
@@ -4268,7 +4268,7 @@ static const vshCmdOptDef opts_save_image_define[] = {
      .help = N_("saved state file to modify")
     },
     {.name = "xml",
-     .type = VSH_OT_STRING,
+     .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
      .help = N_("filename containing updated XML for the target")
     },
