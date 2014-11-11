@@ -25,9 +25,20 @@ DOC_SOURCE_DIR=../src
 
 DEVHELP_DIR=$(datadir)/gtk-doc/html/libvirt
 
-apihtml =			\
-  html/index.html		\
-  html/libvirt-libvirt.html	\
+apihtml =					\
+  html/index.html				\
+  html/libvirt-libvirt-domain.html		\
+  html/libvirt-libvirt-domain-snapshot.html	\
+  html/libvirt-libvirt-event.html		\
+  html/libvirt-libvirt-host.html		\
+  html/libvirt-libvirt.html			\
+  html/libvirt-libvirt-interface.html		\
+  html/libvirt-libvirt-network.html		\
+  html/libvirt-libvirt-nodedev.html		\
+  html/libvirt-libvirt-nwfilter.html		\
+  html/libvirt-libvirt-secret.html		\
+  html/libvirt-libvirt-storage.html		\
+  html/libvirt-libvirt-stream.html		\
   html/libvirt-virterror.html
 
 apipng =	\

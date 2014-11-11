@@ -12,7 +12,17 @@ my $srcdir = shift @ARGV;
 my $symslibvirt = "$srcdir/libvirt_public.syms";
 my $symsqemu = "$srcdir/libvirt_qemu.syms";
 my $symslxc = "$srcdir/libvirt_lxc.syms";
-my $drivertable = "$srcdir/driver.h";
+my @drivertable = (
+    "$srcdir/driver-hypervisor.h",
+    "$srcdir/driver-interface.h",
+    "$srcdir/driver-network.h",
+    "$srcdir/driver-nodedev.h",
+    "$srcdir/driver-nwfilter.h",
+    "$srcdir/driver-secret.h",
+    "$srcdir/driver-state.h",
+    "$srcdir/driver-storage.h",
+    "$srcdir/driver-stream.h",
+    );
 
 my %groupheaders = (
     "virHypervisorDriver" => "Hypervisor APIs",
@@ -182,41 +192,44 @@ $apis{virDomainMigrateConfirm3Params} = "1.1.0";
 # and driver struct fields. This lets us later match
 # update the driver impls with the public APis.
 
-open FILE, "<$drivertable"
-    or die "cannot read $drivertable: $!";
-
 # Group name -> hash of APIs { fields -> api name }
 my %groups;
 my $ingrp;
-while (defined($line = <FILE>)) {
-    if ($line =~ /struct _(vir\w*Driver)/) {
-        my $grp = $1;
-        if ($grp ne "virStateDriver" &&
-            $grp ne "virStreamDriver") {
-            $ingrp = $grp;
-            $groups{$ingrp} = { apis => {}, drivers => {} };
-        }
-    } elsif ($ingrp) {
-        if ($line =~ /^\s*vir(?:Drv)(\w+)\s+(\w+);\s*$/) {
-            my $field = $2;
-            my $name = $1;
+foreach my $drivertable (@drivertable) {
+    open FILE, "<$drivertable"
+        or die "cannot read $drivertable: $!";
 
-            my $api;
-            if (exists $apis{"vir$name"}) {
-                $api = "vir$name";
-            } elsif ($name =~ /\w+(Open|Close)/) {
-                next;
-            } else {
-                die "driver $name does not have a public API";
+    while (defined($line = <FILE>)) {
+        if ($line =~ /struct _(vir\w*Driver)/) {
+            my $grp = $1;
+            if ($grp ne "virStateDriver" &&
+                $grp ne "virStreamDriver") {
+                $ingrp = $grp;
+                warn "[$ingrp]";
+                $groups{$ingrp} = { apis => {}, drivers => {} };
             }
-            $groups{$ingrp}->{apis}->{$field} = $api;
-        } elsif ($line =~ /};/) {
-            $ingrp = undef;
+        } elsif ($ingrp) {
+            if ($line =~ /^\s*vir(?:Drv)(\w+)\s+(\w+);\s*$/) {
+                my $field = $2;
+                my $name = $1;
+
+                my $api;
+                if (exists $apis{"vir$name"}) {
+                    $api = "vir$name";
+                } elsif ($name =~ /\w+(Open|Close)/) {
+                    next;
+                } else {
+                    die "driver $name does not have a public API";
+                }
+                $groups{$ingrp}->{apis}->{$field} = $api;
+            } elsif ($line =~ /};/) {
+                $ingrp = undef;
+            }
         }
     }
-}
 
-close FILE;
+    close FILE;
+}
 
 
 # Finally, we read all the primary driver files and extract
@@ -290,43 +303,43 @@ foreach my $src (@srcs) {
 # have a bit of manual fixup todo with the per-driver versioning
 # and support matrix
 
-$groups{virDriver}->{apis}->{"openAuth"} = "virConnectOpenAuth";
-$groups{virDriver}->{apis}->{"openReadOnly"} = "virConnectOpenReadOnly";
-$groups{virDriver}->{apis}->{"domainMigrate"} = "virDomainMigrate";
+$groups{virHypervisorDriver}->{apis}->{"openAuth"} = "virConnectOpenAuth";
+$groups{virHypervisorDriver}->{apis}->{"openReadOnly"} = "virConnectOpenReadOnly";
+$groups{virHypervisorDriver}->{apis}->{"domainMigrate"} = "virDomainMigrate";
 
 my $openAuthVers = (0 * 1000 * 1000) + (4 * 1000) + 0;
 
-foreach my $drv (keys %{$groups{"virDriver"}->{drivers}}) {
-    my $openVersStr = $groups{"virDriver"}->{drivers}->{$drv}->{"connectOpen"};
+foreach my $drv (keys %{$groups{"virHypervisorDriver"}->{drivers}}) {
+    my $openVersStr = $groups{"virHypervisorDriver"}->{drivers}->{$drv}->{"connectOpen"};
     my $openVers;
     if ($openVersStr =~ /(\d+)\.(\d+)\.(\d+)/) {
         $openVers = ($1 * 1000 * 1000) + ($2 * 1000) + $3;
     }
 
     # virConnectOpenReadOnly always matches virConnectOpen version
-    $groups{"virDriver"}->{drivers}->{$drv}->{"connectOpenReadOnly"} =
-        $groups{"virDriver"}->{drivers}->{$drv}->{"connectOpen"};
+    $groups{"virHypervisorDriver"}->{drivers}->{$drv}->{"connectOpenReadOnly"} =
+        $groups{"virHypervisorDriver"}->{drivers}->{$drv}->{"connectOpen"};
 
     # virConnectOpenAuth is always 0.4.0 if the driver existed
     # before this time, otherwise it matches the version of
     # the driver's virConnectOpen entry
     if ($openVersStr eq "Y" ||
         $openVers >= $openAuthVers) {
-        $groups{"virDriver"}->{drivers}->{$drv}->{"connectOpenAuth"} = $openVersStr;
+        $groups{"virHypervisorDriver"}->{drivers}->{$drv}->{"connectOpenAuth"} = $openVersStr;
     } else {
-        $groups{"virDriver"}->{drivers}->{$drv}->{"connectOpenAuth"} = "0.4.0";
+        $groups{"virHypervisorDriver"}->{drivers}->{$drv}->{"connectOpenAuth"} = "0.4.0";
     }
 }
 
 
 # Another special case for the virDomainCreateLinux which was replaced
 # with virDomainCreateXML
-$groups{virDriver}->{apis}->{"domainCreateLinux"} = "virDomainCreateLinux";
+$groups{virHypervisorDriver}->{apis}->{"domainCreateLinux"} = "virDomainCreateLinux";
 
 my $createAPIVers = (0 * 1000 * 1000) + (0 * 1000) + 3;
 
-foreach my $drv (keys %{$groups{"virDriver"}->{drivers}}) {
-    my $createVersStr = $groups{"virDriver"}->{drivers}->{$drv}->{"domainCreateXML"};
+foreach my $drv (keys %{$groups{"virHypervisorDriver"}->{drivers}}) {
+    my $createVersStr = $groups{"virHypervisorDriver"}->{drivers}->{$drv}->{"domainCreateXML"};
     next unless defined $createVersStr;
     my $createVers;
     if ($createVersStr =~ /(\d+)\.(\d+)\.(\d+)/) {
@@ -338,9 +351,9 @@ foreach my $drv (keys %{$groups{"virDriver"}->{drivers}}) {
     # the driver's virCreateXML entry
     if ($createVersStr eq "Y" ||
         $createVers >= $createAPIVers) {
-        $groups{"virDriver"}->{drivers}->{$drv}->{"domainCreateLinux"} = $createVersStr;
+        $groups{"virHypervisorDriver"}->{drivers}->{$drv}->{"domainCreateLinux"} = $createVersStr;
     } else {
-        $groups{"virDriver"}->{drivers}->{$drv}->{"domainCreateLinux"} = "0.0.3";
+        $groups{"virHypervisorDriver"}->{drivers}->{$drv}->{"domainCreateLinux"} = "0.0.3";
     }
 }
 
@@ -367,7 +380,7 @@ in.
 
 EOF
 
-foreach my $grp (sort { $a cmp $b } keys %groups) {
+    foreach my $grp (sort { $a cmp $b } keys %groups) {
     print "<h2><a name=\"$grp\">", $groupheaders{$grp}, "</a></h2>\n";
     print <<EOF;
 <table class="top_table">
