@@ -52,8 +52,6 @@
 
 VIR_LOG_INIT("util.iptables");
 
-bool iptables_supports_xlock = false;
-
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 enum {
