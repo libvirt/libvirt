@@ -3139,6 +3139,10 @@ virNetworkObjPtr virNetworkLoadConfig(virNetworkObjListPtr nets,
         def->forward.type == VIR_NETWORK_FORWARD_NAT ||
         def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
 
+        if (!def->mac_specified) {
+            virNetworkSetBridgeMacAddr(def);
+            virNetworkSaveConfig(configDir, def);
+        }
         /* Generate a bridge if none is specified, but don't check for collisions
          * if a bridge is hardcoded, so the network is at least defined.
          */

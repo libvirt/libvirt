@@ -1643,48 +1643,6 @@ exit 0
 
 %post daemon
 
-    %if %{with_network}
-# All newly defined networks will have a mac address for the bridge
-# auto-generated, but networks already existing at the time of upgrade
-# will not. We need to go through all the network configs, look for
-# those that don't have a mac address, and add one.
-
-network_files=$( (cd %{_localstatedir}/lib/libvirt/network && \
-                  grep -L "mac address" *.xml; \
-                  cd %{_sysconfdir}/libvirt/qemu/networks && \
-                  grep -L "mac address" *.xml) 2>/dev/null \
-                | sort -u)
-
-for file in $network_files
-do
-   # each file exists in either the config or state directory (or both) and
-   # does not have a mac address specified in either. We add the same mac
-   # address to both files (or just one, if the other isn't there)
-
-   mac4=`printf '%X' $(($RANDOM % 256))`
-   mac5=`printf '%X' $(($RANDOM % 256))`
-   mac6=`printf '%X' $(($RANDOM % 256))`
-   for dir in %{_localstatedir}/lib/libvirt/network \
-              %{_sysconfdir}/libvirt/qemu/networks
-   do
-      if test -f $dir/$file
-      then
-         sed -i.orig -e \
-           "s|\(<bridge.*$\)|\0\n  <mac address='52:54:00:$mac4:$mac5:$mac6'/>|" \
-           $dir/$file
-         if test $? != 0
-         then
-             echo "failed to add <mac address='52:54:00:$mac4:$mac5:$mac6'/>" \
-                  "to $dir/$file"
-             mv -f $dir/$file.orig $dir/$file
-         else
-             rm -f $dir/$file.orig
-         fi
-      fi
-   done
-done
-    %endif
-
     %if %{with_systemd}
         %if %{with_systemd_macros}
             %systemd_post virtlockd.socket libvirtd.service libvirtd.socket
