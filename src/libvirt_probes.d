@@ -15,6 +15,11 @@ provider libvirt {
 
 	probe event_poll_run(int nfds, int timeout);
 
+	# file: src/util/virdbus.c
+	# prefix: dbus
+	probe dbus_method_call(const char *interface, const char *member, const char *object, const char *destination);
+	probe dbus_method_error(const char *interface, const char *member, const char *object, const char *destination, const char *name, const char *message);
+	probe dbus_method_reply(const char *interface, const char *member, const char *object, const char *destination);
 
         # file: src/util/virobject.c
         # prefix: object

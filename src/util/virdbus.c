@@ -27,6 +27,7 @@
 #include "virlog.h"
 #include "virthread.h"
 #include "virstring.h"
+#include "virprobe.h"
 
 #define VIR_FROM_THIS VIR_FROM_DBUS
 
@@ -1521,20 +1522,35 @@ static int
 virDBusCall(DBusConnection *conn,
             DBusMessage *call,
             DBusMessage **replyout,
-            DBusError *error,
-            const char *member)
+            DBusError *error)
+
 {
     DBusMessage *reply = NULL;
     DBusError localerror;
     int ret = -1;
+    const char *iface, *member, *path, *dest;
 
     if (!error)
         dbus_error_init(&localerror);
+
+    iface = dbus_message_get_interface(call);
+    member = dbus_message_get_member(call);
+    path = dbus_message_get_path(call);
+    dest = dbus_message_get_destination(call);
+
+    PROBE(DBUS_METHOD_CALL,
+          "'%s.%s' on '%s' at '%s'",
+          iface, member, path, dest);
 
     if (!(reply = dbus_connection_send_with_reply_and_block(conn,
                                                             call,
                                                             VIR_DBUS_METHOD_CALL_TIMEOUT_MILLIS,
                                                             error ? error : &localerror))) {
+        PROBE(DBUS_METHOD_ERROR,
+              "'%s.%s' on '%s' at '%s' error %s: %s",
+              iface, member, path, dest,
+              error ? error->name : localerror.name,
+              error ? error->message : localerror.message);
         if (error) {
             ret = 0;
         } else {
@@ -1543,6 +1559,10 @@ virDBusCall(DBusConnection *conn,
         }
         goto cleanup;
     }
+
+    PROBE(DBUS_METHOD_REPLY,
+          "'%s.%s' on '%s' at '%s'",
+          iface, member, path, dest);
 
     ret = 0;
 
@@ -1616,7 +1636,7 @@ int virDBusCallMethod(DBusConnection *conn,
 
     ret = -1;
 
-    ret = virDBusCall(conn, call, replyout, error, member);
+    ret = virDBusCall(conn, call, replyout, error);
 
  cleanup:
     if (call)
