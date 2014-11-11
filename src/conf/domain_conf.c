@@ -3165,6 +3165,22 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
             return -1;
     }
 
+    /* verify disk source */
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
+        virDomainDiskDefPtr disk = dev->data.disk;
+
+        /* internal snapshots are currently supported only with rbd: */
+        if (virStorageSourceGetActualType(disk->src) != VIR_STORAGE_TYPE_NETWORK &&
+            disk->src->protocol != VIR_STORAGE_NET_PROTOCOL_RBD) {
+            if (disk->src->snapshot) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("<snapshot> element is currently supported "
+                                 "only with 'rbd' disks"));
+                return -1;
+            }
+        }
+    }
+
     return 0;
 }
 
@@ -5316,10 +5332,14 @@ virDomainDiskSourcePoolDefParse(xmlNodePtr node,
 
 int
 virDomainDiskSourceParse(xmlNodePtr node,
+                         xmlXPathContextPtr ctxt,
                          virStorageSourcePtr src)
 {
     int ret = -1;
     char *protocol = NULL;
+    xmlNodePtr saveNode = ctxt->node;
+
+    ctxt->node = node;
 
     switch ((virStorageType)src->type) {
     case VIR_STORAGE_TYPE_FILE:
@@ -5372,6 +5392,9 @@ virDomainDiskSourceParse(xmlNodePtr node,
             tmp[0] = '\0';
         }
 
+        /* snapshot currently works only for remote disks */
+        src->snapshot = virXPathString("string(./snapshot/@name)", ctxt);
+
         if (virDomainStorageHostParse(node, &src->hosts, &src->nhosts) < 0)
             goto cleanup;
         break;
@@ -5397,6 +5420,7 @@ virDomainDiskSourceParse(xmlNodePtr node,
 
  cleanup:
     VIR_FREE(protocol);
+    ctxt->node = saveNode;
     return ret;
 }
 
@@ -5452,7 +5476,7 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
         goto cleanup;
     }
 
-    if (virDomainDiskSourceParse(source, backingStore) < 0 ||
+    if (virDomainDiskSourceParse(source, ctxt, backingStore) < 0 ||
         virDomainDiskBackingStoreParse(ctxt, backingStore) < 0)
         goto cleanup;
 
@@ -5562,7 +5586,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 xmlStrEqual(cur->name, BAD_CAST "source")) {
                 sourceNode = cur;
 
-                if (virDomainDiskSourceParse(cur, def->src) < 0)
+                if (virDomainDiskSourceParse(cur, ctxt, def->src) < 0)
                     goto error;
                 source = def->src->path;
 
@@ -5728,7 +5752,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                                        _("mirror requires source element"));
                         goto error;
                     }
-                    if (virDomainDiskSourceParse(mirrorNode, def->mirror) < 0)
+                    if (virDomainDiskSourceParse(mirrorNode, ctxt,
+                                                 def->mirror) < 0)
                         goto error;
                 }
                 ready = virXMLPropString(cur, "ready");
@@ -16142,11 +16167,12 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
 
             VIR_FREE(path);
 
-            if (src->nhosts == 0) {
+            if (src->nhosts == 0 && !src->snapshot) {
                 virBufferAddLit(buf, "/>\n");
             } else {
                 virBufferAddLit(buf, ">\n");
                 virBufferAdjustIndent(buf, 2);
+
                 for (n = 0; n < src->nhosts; n++) {
                     virBufferAddLit(buf, "<host");
                     virBufferEscapeString(buf, " name='%s'",
@@ -16163,6 +16189,10 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
 
                     virBufferAddLit(buf, "/>\n");
                 }
+
+                virBufferEscapeString(buf, "<snapshot name='%s'/>\n",
+                                      src->snapshot);
+
                 virBufferAdjustIndent(buf, -2);
                 virBufferAddLit(buf, "</source>\n");
             }

@@ -2492,6 +2492,7 @@ virDomainDiskRemove(virDomainDefPtr def, size_t i);
 virDomainDiskDefPtr
 virDomainDiskRemoveByName(virDomainDefPtr def, const char *name);
 int virDomainDiskSourceParse(xmlNodePtr node,
+                             xmlXPathContextPtr ctxt,
                              virStorageSourcePtr src);
 
 bool virDomainHasDiskMirror(virDomainObjPtr vm);

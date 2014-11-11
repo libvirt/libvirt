@@ -1848,6 +1848,7 @@ virStorageSourceCopy(const virStorageSource *src,
         VIR_STRDUP(ret->driverName, src->driverName) < 0 ||
         VIR_STRDUP(ret->relPath, src->relPath) < 0 ||
         VIR_STRDUP(ret->backingStoreRaw, src->backingStoreRaw) < 0 ||
+        VIR_STRDUP(ret->snapshot, src->snapshot) < 0 ||
         VIR_STRDUP(ret->compat, src->compat) < 0)
         goto error;
 
@@ -2276,6 +2277,13 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
     p = strchr(src->path, ':');
     if (p) {
         if (VIR_STRDUP(options, p + 1) < 0)
+            goto error;
+        *p = '\0';
+    }
+
+    /* snapshot name */
+    if ((p = strchr(src->path, '@'))) {
+        if (VIR_STRDUP(src->snapshot, p + 1) < 0)
             goto error;
         *p = '\0';
     }

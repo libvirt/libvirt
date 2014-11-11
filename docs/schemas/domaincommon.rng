@@ -1452,6 +1452,14 @@
             </choice>
           </element>
         </zeroOrMore>
+        <optional>
+          <element name="snapshot">
+            <attribute name="name">
+              <ref name="genericName"/>
+            </attribute>
+            <empty/>
+          </element>
+        </optional>
         <empty/>
       </element>
     </interleave>

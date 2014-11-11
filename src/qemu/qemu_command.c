@@ -2983,6 +2983,9 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
 
             virBufferStrcat(&buf, "rbd:", src->path, NULL);
 
+            if (src->snapshot)
+                virBufferEscape(&buf, '\\', ":", "@%s", src->snapshot);
+
             if (username) {
                 virBufferEscape(&buf, '\\', ":", ":id=%s", username);
                 virBufferEscape(&buf, '\\', ":",

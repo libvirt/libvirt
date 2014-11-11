@@ -1679,6 +1679,7 @@
       &lt;driver name="qemu" type="raw"/&gt;
       &lt;source protocol="rbd" name="image_name2"&gt;
         &lt;host name="hostname" port="7000"/&gt;
+        &lt;snapshot name="snapname"/&gt;
       &lt;/source&gt;
       &lt;target dev="hdc" bus="ide"/&gt;
       &lt;auth username='myuser'&gt;
@@ -1952,15 +1953,17 @@
         is only valid when the specified storage volume is of 'file' or
         'block' type).
         <p>
-        When the disk <code>type</code> is "network", the <code>source</code>
-        may have zero or more <code>host</code> sub-elements used to
-        specify the hosts to connect.
+        The <code>source</code> element may contain the following sub elements:
         </p>
 
         <dl>
           <dt><code>host</code></dt>
           <dd>
             <p>
+            When the disk <code>type</code> is "network", the <code>source</code>
+            may have zero or more <code>host</code> sub-elements used to
+            specify the hosts to connect.
+
             The <code>host</code> element supports 4 attributes, viz.  "name",
             "port", "transport" and "socket", which specify the hostname,
             the port number, transport type and path to socket, respectively.
@@ -2012,6 +2015,13 @@
             transport is "unix", the socket attribute specifies the path to an
             AF_UNIX socket.
             </p>
+          </dd>
+          <dt><code>snapshot</code></dt>
+          <dd>
+            The <code>name</code> attribute of <code>snapshot</code> element can
+            optionally specify an internal snapshot name to be used as the
+            source for storage protocols.
+            Supported for 'rbd' <span class="since">since 1.2.11 (QEMU only).</span>
           </dd>
         </dl>
 
