@@ -23,6 +23,7 @@
 #include <sys/utsname.h>
 
 #include "viralloc.h"
+#include "virfile.h"
 #include "virlog.h"
 #include "virstring.h"
 #include "cpu/cpu.h"
@@ -103,4 +104,40 @@ virBhyveCapsBuild(void)
  error:
     virObjectUnref(caps);
     return NULL;
+}
+
+int
+virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps)
+{
+    char *binary, *help;
+    virCommandPtr cmd;
+    int ret, exit;
+
+    ret = 0;
+    *caps = 0;
+    cmd = NULL;
+    help = NULL;
+
+    binary = virFindFileInPath("grub-bhyve");
+    if (binary == NULL)
+        goto out;
+    if (!virFileIsExecutable(binary))
+        goto out;
+
+    cmd = virCommandNew(binary);
+    virCommandAddArg(cmd, "--help");
+    virCommandSetOutputBuffer(cmd, &help);
+    if (virCommandRun(cmd, &exit) < 0) {
+        ret = -1;
+        goto out;
+    }
+
+    if (strstr(help, "--cons-dev") != NULL)
+        *caps |= BHYVE_GRUB_CAP_CONSDEV;
+
+ out:
+    VIR_FREE(help);
+    virCommandFree(cmd);
+    VIR_FREE(binary);
+    return ret;
 }

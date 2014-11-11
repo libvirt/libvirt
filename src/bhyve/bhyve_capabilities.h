@@ -26,4 +26,11 @@
 
 virCapsPtr virBhyveCapsBuild(void);
 
+/* These are bit flags: */
+typedef enum {
+    BHYVE_GRUB_CAP_CONSDEV = 1,
+} virBhyveGrubCapsFlags;
+
+int virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps);
+
 #endif
