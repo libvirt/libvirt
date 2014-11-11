@@ -1073,6 +1073,7 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint32_t *opts_need_arg,
         if (i > 31)
             return -1; /* too many options */
         if (opt->type == VSH_OT_BOOL) {
+            optional = true;
             if (opt->flags & VSH_OFLAG_REQ)
                 return -1; /* bool options can't be mandatory */
             continue;
@@ -1105,12 +1106,14 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint32_t *opts_need_arg,
         if (opt->flags & VSH_OFLAG_REQ_OPT) {
             if (opt->flags & VSH_OFLAG_REQ)
                 *opts_required |= 1 << i;
+            else
+                optional = true;
             continue;
         }
 
         *opts_need_arg |= 1 << i;
         if (opt->flags & VSH_OFLAG_REQ) {
-            if (optional)
+            if (optional && opt->type != VSH_OT_ARGV)
                 return -1; /* mandatory options must be listed first */
             *opts_required |= 1 << i;
         } else {
