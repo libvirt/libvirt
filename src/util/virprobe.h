@@ -83,8 +83,8 @@
 
 #  define PROBE_EXPAND(NAME, ARGS) NAME(ARGS)
 #  define PROBE(NAME, FMT, ...)                              \
-    VIR_DEBUG_INT(&virLogSelf,                               \
-                  NULL, __LINE__, __func__,                  \
+    VIR_INFO_INT(&virLogSelf,                                \
+                  __FILE__, __LINE__, __func__,              \
                   #NAME ": " FMT, __VA_ARGS__);              \
     if (LIBVIRT_ ## NAME ## _ENABLED()) {                    \
         PROBE_EXPAND(LIBVIRT_ ## NAME,                       \
@@ -92,9 +92,9 @@
     }
 # else
 #  define PROBE(NAME, FMT, ...)                              \
-    VIR_DEBUG_INT(&virLogSelf,                               \
-                  NULL, __LINE__, __func__,                  \
-                  #NAME ": " FMT, __VA_ARGS__);
+    VIR_INFO_INT(&virLogSelf,                                \
+                 __FILE__, __LINE__, __func__,               \
+                 #NAME ": " FMT, __VA_ARGS__);
 # endif
 
 #endif /* __VIR_PROBE_H__ */
