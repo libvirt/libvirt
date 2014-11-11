@@ -3222,17 +3222,17 @@ static const vshCmdOptDef opts_dom_pm_suspend[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("domain name, id or uuid")
     },
-    {.name = "duration",
-     .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
-     .help = N_("duration in seconds")
-    },
     {.name = "target",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
      .help = N_("mem(Suspend-to-RAM), "
                 "disk(Suspend-to-Disk), "
                 "hybrid(Hybrid-Suspend)")
+    },
+    {.name = "duration",
+     .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
+     .help = N_("duration in seconds")
     },
     {.name = NULL}
 };
@@ -3940,10 +3940,6 @@ static const vshCmdInfo info_save[] = {
 };
 
 static const vshCmdOptDef opts_save[] = {
-    {.name = "bypass-cache",
-     .type = VSH_OT_BOOL,
-     .help = N_("avoid file system cache when saving")
-    },
     {.name = "domain",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -3953,6 +3949,10 @@ static const vshCmdOptDef opts_save[] = {
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
      .help = N_("where to save the data")
+    },
+    {.name = "bypass-cache",
+     .type = VSH_OT_BOOL,
+     .help = N_("avoid file system cache when saving")
     },
     {.name = "xml",
      .type = VSH_OT_STRING,
@@ -4408,14 +4408,14 @@ static const vshCmdInfo info_managedsave[] = {
 };
 
 static const vshCmdOptDef opts_managedsave[] = {
-    {.name = "bypass-cache",
-     .type = VSH_OT_BOOL,
-     .help = N_("avoid file system cache when saving")
-    },
     {.name = "domain",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
      .help = N_("domain name, id or uuid")
+    },
+    {.name = "bypass-cache",
+     .type = VSH_OT_BOOL,
+     .help = N_("avoid file system cache when saving")
     },
     {.name = "running",
      .type = VSH_OT_BOOL,
@@ -4918,6 +4918,16 @@ static const vshCmdInfo info_dump[] = {
 };
 
 static const vshCmdOptDef opts_dump[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = "file",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("where to dump the core")
+    },
     {.name = "live",
      .type = VSH_OT_BOOL,
      .help = N_("perform a live core dump if supported")
@@ -4933,16 +4943,6 @@ static const vshCmdOptDef opts_dump[] = {
     {.name = "reset",
      .type = VSH_OT_BOOL,
      .help = N_("reset the domain after core dump")
-    },
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("where to dump the core")
     },
     {.name = "verbose",
      .type = VSH_OT_BOOL,
@@ -7452,6 +7452,11 @@ static const vshCmdOptDef opts_metadata[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("domain name, id or uuid")
     },
+    {.name = "uri",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("URI of the namespace")
+    },
     {.name = "live",
      .type = VSH_OT_BOOL,
      .help = N_("modify/get running state")
@@ -7467,11 +7472,6 @@ static const vshCmdOptDef opts_metadata[] = {
     {.name = "edit",
      .type = VSH_OT_BOOL,
      .help = N_("use an editor to change the metadata")
-    },
-    {.name = "uri",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("URI of the namespace")
     },
     {.name = "key",
      .type = VSH_OT_DATA,
@@ -9269,6 +9269,16 @@ static const vshCmdInfo info_migrate[] = {
 };
 
 static const vshCmdOptDef opts_migrate[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = "desturi",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("connection URI of the destination host as seen from the client(normal migration) or source(p2p migration)")
+    },
     {.name = "live",
      .type = VSH_OT_BOOL,
      .help = N_("live migration")
@@ -9340,16 +9350,6 @@ static const vshCmdOptDef opts_migrate[] = {
     {.name = "abort-on-error",
      .type = VSH_OT_BOOL,
      .help = N_("abort on soft errors during migration")
-    },
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
-    {.name = "desturi",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("connection URI of the destination host as seen from the client(normal migration) or source(p2p migration)")
     },
     {.name = "migrateuri",
      .type = VSH_OT_DATA,

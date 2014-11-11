@@ -1621,14 +1621,14 @@ static const vshCmdInfo info_vol_pool[] = {
 };
 
 static const vshCmdOptDef opts_vol_pool[] = {
-    {.name = "uuid",
-     .type = VSH_OT_BOOL,
-     .help = N_("return the pool uuid rather than pool name")
-    },
     {.name = "vol",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
      .help = N_("volume key or path")
+    },
+    {.name = "uuid",
+     .type = VSH_OT_BOOL,
+     .help = N_("return the pool uuid rather than pool name")
     },
     {.name = NULL}
 };

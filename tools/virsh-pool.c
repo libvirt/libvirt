@@ -190,14 +190,14 @@ static const vshCmdOptDef opts_pool_X_as[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("name of the pool")
     },
-    {.name = "print-xml",
-     .type = VSH_OT_BOOL,
-     .help = N_("print XML document, but don't define/create")
-    },
     {.name = "type",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
      .help = N_("type of the pool")
+    },
+    {.name = "print-xml",
+     .type = VSH_OT_BOOL,
+     .help = N_("print XML document, but don't define/create")
     },
     {.name = "source-host",
      .type = VSH_OT_DATA,
