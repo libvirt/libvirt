@@ -40,6 +40,8 @@ int virSystemdCreateMachine(const char *name,
                             const char *rootdir,
                             pid_t pidleader,
                             bool iscontainer,
+                            size_t nnicindexes,
+                            int *nicindexes,
                             const char *partition);
 
 int virSystemdTerminateMachine(const char *name,

@@ -769,6 +769,7 @@ qemuInitCgroup(virQEMUDriverPtr driver,
                             NULL,
                             vm->pid,
                             false,
+                            0, NULL,
                             vm->def->resource->partition,
                             cfg->cgroupControllers,
                             &priv->cgroup) < 0) {

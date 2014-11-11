@@ -146,6 +146,7 @@ static int testCreateContainer(const void *opaque ATTRIBUTE_UNUSED)
                                 "/proc/123/root",
                                 123,
                                 true,
+                                0, NULL,
                                 "highpriority.slice") < 0) {
         fprintf(stderr, "%s", "Failed to create LXC machine\n");
         return -1;
@@ -181,6 +182,7 @@ static int testCreateMachine(const void *opaque ATTRIBUTE_UNUSED)
                                 NULL,
                                 123,
                                 false,
+                                0, NULL,
                                 NULL) < 0) {
         fprintf(stderr, "%s", "Failed to create KVM machine\n");
         return -1;
@@ -220,6 +222,7 @@ static int testCreateNoSystemd(const void *opaque ATTRIBUTE_UNUSED)
                                       NULL,
                                       123,
                                       false,
+                                      0, NULL,
                                       NULL)) == 0) {
         unsetenv("FAIL_NO_SERVICE");
         fprintf(stderr, "%s", "Unexpected create machine success\n");
@@ -254,6 +257,7 @@ static int testCreateSystemdNotRunning(const void *opaque ATTRIBUTE_UNUSED)
                                       NULL,
                                       123,
                                       false,
+                                      0, NULL,
                                       NULL)) == 0) {
         unsetenv("FAIL_NOT_REGISTERED");
         fprintf(stderr, "%s", "Unexpected create machine success\n");
@@ -288,6 +292,7 @@ static int testCreateBadSystemd(const void *opaque ATTRIBUTE_UNUSED)
                                       NULL,
                                       123,
                                       false,
+                                      0, NULL,
                                       NULL)) == 0) {
         unsetenv("FAIL_BAD_SERVICE");
         fprintf(stderr, "%s", "Unexpected create machine success\n");
@@ -297,6 +302,35 @@ static int testCreateBadSystemd(const void *opaque ATTRIBUTE_UNUSED)
 
     if (rv != -1) {
         fprintf(stderr, "%s", "Unexpected create machine error\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int testCreateNetwork(const void *opaque ATTRIBUTE_UNUSED)
+{
+    unsigned char uuid[VIR_UUID_BUFLEN] = {
+        1, 1, 1, 1,
+        2, 2, 2, 2,
+        3, 3, 3, 3,
+        4, 4, 4, 4
+    };
+    int nicindexes[] = {
+        2, 1729, 87539319,
+    };
+    size_t nnicindexes = ARRAY_CARDINALITY(nicindexes);
+    if (virSystemdCreateMachine("demo",
+                                "lxc",
+                                true,
+                                uuid,
+                                "/proc/123/root",
+                                123,
+                                true,
+                                nnicindexes, nicindexes,
+                                "highpriority.slice") < 0) {
+        fprintf(stderr, "%s", "Failed to create LXC machine\n");
         return -1;
     }
 
@@ -434,6 +468,8 @@ mymain(void)
                     testCreateSystemdNotRunning, NULL) < 0)
         ret = -1;
     if (virtTestRun("Test create bad systemd ", testCreateBadSystemd, NULL) < 0)
+        ret = -1;
+    if (virtTestRun("Test create with network ", testCreateNetwork, NULL) < 0)
         ret = -1;
 
 # define TEST_SCOPE(name, partition, unitname)                          \

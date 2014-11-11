@@ -100,6 +100,8 @@ int virCgroupNewMachine(const char *name,
                         const char *rootdir,
                         pid_t pidleader,
                         bool isContainer,
+                        size_t nnicindexes,
+                        int *nicindexes,
                         const char *partition,
                         int controllers,
                         virCgroupPtr *group)

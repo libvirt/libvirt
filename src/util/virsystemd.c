@@ -26,6 +26,7 @@
 #endif
 
 #include "virsystemd.h"
+#include "viratomic.h"
 #include "virdbus.h"
 #include "virstring.h"
 #include "viralloc.h"
@@ -147,7 +148,10 @@ char *virSystemdMakeMachineName(const char *name,
  * @uuid: globally unique UUID of the machine
  * @rootdir: root directory of machine filesystem
  * @pidleader: PID of the leader process
- * @slice: name of the slice to place the machine in
+ * @iscontainer: true if a container, false if a VM
+ * @nnicindexes: number of network interface indexes in list
+ * @nicindexes: list of network interface indexes
+ * @partition: name of the slice to place the machine in
  *
  * Returns 0 on success, -1 on fatal error, or -2 if systemd-machine is not available
  */
@@ -158,6 +162,8 @@ int virSystemdCreateMachine(const char *name,
                             const char *rootdir,
                             pid_t pidleader,
                             bool iscontainer,
+                            size_t nnicindexes,
+                            int *nicindexes,
                             const char *partition)
 {
     int ret;
@@ -165,6 +171,7 @@ int virSystemdCreateMachine(const char *name,
     char *machinename = NULL;
     char *creatorname = NULL;
     char *slicename = NULL;
+    static int hasCreateWithNetwork = 1;
 
     ret = virDBusIsServiceEnabled("org.freedesktop.machine1");
     if (ret < 0)
@@ -192,8 +199,18 @@ int virSystemdCreateMachine(const char *name,
     }
 
     /*
-     * The systemd DBus API we're invoking has the
-     * following signature
+     * The systemd DBus APIs we're invoking have the
+     * following signature(s)
+     *
+     * CreateMachineWithNetwork(in  s name,
+     *                          in  ay id,
+     *                          in  s service,
+     *                          in  s class,
+     *                          in  u leader,
+     *                          in  s root_directory,
+     *                          in  ai nicindexes
+     *                          in  a(sv) scope_properties,
+     *                          out o path);
      *
      * CreateMachine(in  s name,
      *               in  ay id,
@@ -221,38 +238,91 @@ int virSystemdCreateMachine(const char *name,
      * @root_directory: the root directory of the container, if
      * this is known & visible in the host filesystem, or empty string
      *
+     * @nicindexes: list of network interface indexes for the
+     * host end of the VETH device pairs.
+     *
      * @scope_properties:an array (not a dict!) of properties that are
      * passed on to PID 1 when creating a scope unit for your machine.
      * Will allow initial settings for the cgroup & similar.
      *
      * @path: a bus path returned for the machine object created, to
      * allow further API calls to be made against the object.
+     *
      */
 
     VIR_DEBUG("Attempting to create machine via systemd");
-    if (virDBusCallMethod(conn,
-                          NULL,
-                          NULL,
-                          "org.freedesktop.machine1",
-                          "/org/freedesktop/machine1",
-                          "org.freedesktop.machine1.Manager",
-                          "CreateMachine",
-                          "sayssusa(sv)",
-                          machinename,
-                          16,
-                          uuid[0], uuid[1], uuid[2], uuid[3],
-                          uuid[4], uuid[5], uuid[6], uuid[7],
-                          uuid[8], uuid[9], uuid[10], uuid[11],
-                          uuid[12], uuid[13], uuid[14], uuid[15],
-                          creatorname,
-                          iscontainer ? "container" : "vm",
-                          (unsigned int)pidleader,
-                          rootdir ? rootdir : "",
-                          3,
-                          "Slice", "s", slicename,
-                          "After", "as", 1, "libvirtd.service",
-                          "Before", "as", 1, "libvirt-guests.service") < 0)
-        goto cleanup;
+    if (virAtomicIntGet(&hasCreateWithNetwork)) {
+        DBusError error;
+        dbus_error_init(&error);
+
+        if (virDBusCallMethod(conn,
+                              NULL,
+                              &error,
+                              "org.freedesktop.machine1",
+                              "/org/freedesktop/machine1",
+                              "org.freedesktop.machine1.Manager",
+                              "CreateMachineWithNetwork",
+                              "sayssusa&ia(sv)",
+                              machinename,
+                              16,
+                              uuid[0], uuid[1], uuid[2], uuid[3],
+                              uuid[4], uuid[5], uuid[6], uuid[7],
+                              uuid[8], uuid[9], uuid[10], uuid[11],
+                              uuid[12], uuid[13], uuid[14], uuid[15],
+                              creatorname,
+                              iscontainer ? "container" : "vm",
+                              (unsigned int)pidleader,
+                              rootdir ? rootdir : "",
+                              nnicindexes, nicindexes,
+                              3,
+                              "Slice", "s", slicename,
+                              "After", "as", 1, "libvirtd.service",
+                              "Before", "as", 1, "libvirt-guests.service") < 0)
+            goto cleanup;
+
+        if (dbus_error_is_set(&error)) {
+            if (STREQ_NULLABLE("org.freedesktop.DBus.Error.UnknownMethod",
+                               error.name)) {
+                VIR_INFO("CreateMachineWithNetwork isn't supported, switching "
+                         "to legacy CreateMachine method for systemd-machined");
+                dbus_error_free(&error);
+                virAtomicIntSet(&hasCreateWithNetwork, 0);
+                /* Could re-structure without Using goto, but this
+                 * avoids another atomic read which would trigger
+                 * another memory barrier */
+                goto fallback;
+            }
+            virReportError(VIR_ERR_DBUS_SERVICE,
+                           _("CreateMachineWithNetwork: %s"),
+                           error.message ? error.message : _("unknown error"));
+            goto cleanup;
+        }
+    } else {
+    fallback:
+        if (virDBusCallMethod(conn,
+                              NULL,
+                              NULL,
+                              "org.freedesktop.machine1",
+                              "/org/freedesktop/machine1",
+                              "org.freedesktop.machine1.Manager",
+                              "CreateMachine",
+                              "sayssusa(sv)",
+                              machinename,
+                              16,
+                              uuid[0], uuid[1], uuid[2], uuid[3],
+                              uuid[4], uuid[5], uuid[6], uuid[7],
+                              uuid[8], uuid[9], uuid[10], uuid[11],
+                              uuid[12], uuid[13], uuid[14], uuid[15],
+                              creatorname,
+                              iscontainer ? "container" : "vm",
+                              (unsigned int)pidleader,
+                              rootdir ? rootdir : "",
+                              3,
+                              "Slice", "s", slicename,
+                              "After", "as", 1, "libvirtd.service",
+                              "Before", "as", 1, "libvirt-guests.service") < 0)
+            goto cleanup;
+    }
 
     ret = 0;
 
