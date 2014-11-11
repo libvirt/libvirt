@@ -1386,6 +1386,12 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
                     break;
                 case VSH_OT_STRING:
                     /* OT_STRING should never be VSH_OFLAG_REQ */
+                    if (opt->flags & VSH_OFLAG_REQ) {
+                        vshError(ctl,
+                                 _("internal error: bad options in command: '%s'"),
+                                 def->name);
+                        return false;
+                    }
                     snprintf(buf, sizeof(buf), _("--%s <string>"), opt->name);
                     break;
                 case VSH_OT_DATA:
