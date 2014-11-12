@@ -1382,6 +1382,16 @@ int virQEMUCapsParseHelpStr(const char *qemu,
 
     *version = (major * 1000 * 1000) + (minor * 1000) + micro;
 
+    /* Refuse to parse -help output for QEMU releases >= 1.2.0 that should be
+     * using QMP probing.
+     */
+    if (*version >= 1002000) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("QEMU %u.%u.%u is too new for help parsing"),
+                       major, minor, micro);
+        goto cleanup;
+    }
+
     if (virQEMUCapsComputeCmdFlags(help, *version, *is_kvm, *kvm_version,
                                    qemuCaps, check_yajl) < 0)
         goto cleanup;
