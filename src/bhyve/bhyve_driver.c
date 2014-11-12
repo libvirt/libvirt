@@ -231,7 +231,7 @@ bhyveConnectClose(virConnectPtr conn)
 }
 
 static char *
-bhyveConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+bhyveConnectGetHostname(virConnectPtr conn)
 {
     if (virConnectGetHostnameEnsureACL(conn) < 0)
         return NULL;
@@ -265,7 +265,7 @@ bhyveConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 }
 
 static int
-bhyveConnectGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *version)
+bhyveConnectGetVersion(virConnectPtr conn, unsigned long *version)
 {
     struct utsname ver;
 
@@ -1143,7 +1143,7 @@ bhyveStateCleanup(void)
 }
 
 static int
-bhyveStateInitialize(bool priveleged ATTRIBUTE_UNUSED,
+bhyveStateInitialize(bool priveleged,
                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
                      void *opaque ATTRIBUTE_UNUSED)
 {
@@ -1249,7 +1249,7 @@ bhyveStateAutoStart(void)
 }
 
 static int
-bhyveConnectGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED,
+bhyveConnectGetMaxVcpus(virConnectPtr conn,
                         const char *type)
 {
     if (virConnectGetMaxVcpusEnsureACL(conn) < 0)
@@ -1317,7 +1317,7 @@ bhyveNodeSetMemoryParameters(virConnectPtr conn,
 }
 
 static char *
-bhyveConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
+bhyveConnectBaselineCPU(virConnectPtr conn,
                         const char **xmlCPUs,
                         unsigned int ncpus,
                         unsigned int flags)

@@ -62,7 +62,7 @@ bhyveCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
 }
 
 virDomainPCIAddressSetPtr
-bhyveDomainPCIAddressSetCreate(virDomainDefPtr def ATTRIBUTE_UNUSED, unsigned int nbuses)
+bhyveDomainPCIAddressSetCreate(virDomainDefPtr def, unsigned int nbuses)
 {
     virDomainPCIAddressSetPtr addrs;
 

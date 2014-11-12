@@ -251,7 +251,7 @@ virBhyveProcessStart(virConnectPtr conn,
 int
 virBhyveProcessStop(bhyveConnPtr driver,
                     virDomainObjPtr vm,
-                    virDomainShutoffReason reason ATTRIBUTE_UNUSED)
+                    virDomainShutoffReason reason)
 {
     int ret = -1;
     virCommandPtr cmd = NULL;
