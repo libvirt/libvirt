@@ -1257,6 +1257,7 @@ main(int argc, char **argv)
         vah_error(ctl, 1, _("could not set PATH"));
     }
 
+    /* ensure the traditional IFS setting */
     if (setenv("IFS", " \t\n", 1) != 0) {
         vah_error(ctl, 1, _("could not set IFS"));
     }
