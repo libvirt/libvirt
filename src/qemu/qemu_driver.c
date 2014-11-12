@@ -17003,14 +17003,16 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
                                         &persistentDef) < 0)
         goto endjob;
 
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        /* If the VM is running, we can check if the current VM can use
+         * optional parameters or not. We didn't made this check sooner
+         * because we need vm->privateData which need
+         * virDomainLiveConfigHelperMethod to do so. */
+        priv = vm->privateData;
+        supportMaxOptions = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX);
+    }
+
     if ((*nparams) == 0) {
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-            priv = vm->privateData;
-            /* If the VM is running, we can check if the current VM can use
-             * optional parameters or not. We didn't made this check sooner
-             * because we need the VM data to do so. */
-            supportMaxOptions = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX);
-        }
         *nparams = supportMaxOptions ?
                    QEMU_NB_BLOCK_IO_TUNE_PARAM_MAX : QEMU_NB_BLOCK_IO_TUNE_PARAM;
         ret = 0;
@@ -17023,7 +17025,6 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        priv = vm->privateData;
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorGetBlockIoThrottle(priv->mon, device, &reply, supportMaxOptions);
         qemuDomainObjExitMonitor(driver, vm);
