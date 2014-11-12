@@ -36,7 +36,7 @@
 int virNetDevTapCreate(char **ifname,
                        const char *tunpath,
                        int *tapfd,
-                       int tapfdSize,
+                       size_t tapfdSize,
                        unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
@@ -68,7 +68,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
                                    const unsigned char *vmuuid,
                                    const char *tunpath,
                                    int *tapfd,
-                                   int tapfdSize,
+                                   size_t tapfdSize,
                                    virNetDevVPortProfilePtr virtPortProfile,
                                    virNetDevVlanPtr virtVlan,
                                    unsigned int flags)

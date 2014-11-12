@@ -98,9 +98,9 @@ char *qemuBuildHostNetStr(virDomainNetDefPtr net,
                           char type_sep,
                           int vlan,
                           char **tapfd,
-                          int tapfdSize,
+                          size_t tapfdSize,
                           char **vhostfd,
-                          int vhostfdSize);
+                          size_t vhostfdSize);
 
 /* Legacy, pre device support */
 char *qemuBuildNicStr(virDomainNetDefPtr net,
@@ -112,7 +112,7 @@ char *qemuBuildNicDevStr(virDomainDefPtr def,
                          virDomainNetDefPtr net,
                          int vlan,
                          int bootindex,
-                         int vhostfdSize,
+                         size_t vhostfdSize,
                          virQEMUCapsPtr qemuCaps);
 
 char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
@@ -195,7 +195,7 @@ int qemuNetworkIfaceConnect(virDomainDefPtr def,
                             virDomainNetDefPtr net,
                             virQEMUCapsPtr qemuCaps,
                             int *tapfd,
-                            int *tapfdSize)
+                            size_t *tapfdSize)
     ATTRIBUTE_NONNULL(2);
 
 int qemuPhysIfaceConnect(virDomainDefPtr def,
@@ -208,7 +208,7 @@ int qemuOpenVhostNet(virDomainDefPtr def,
                      virDomainNetDefPtr net,
                      virQEMUCapsPtr qemuCaps,
                      int *vhostfd,
-                     int *vhostfdSize);
+                     size_t *vhostfdSize);
 
 int qemuNetworkPrepareDevices(virDomainDefPtr def);
 

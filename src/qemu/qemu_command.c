@@ -289,7 +289,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
                         virDomainNetDefPtr net,
                         virQEMUCapsPtr qemuCaps,
                         int *tapfd,
-                        int *tapfdSize)
+                        size_t *tapfdSize)
 {
     const char *brname;
     int ret = -1;
@@ -433,7 +433,7 @@ qemuOpenVhostNet(virDomainDefPtr def,
                  virDomainNetDefPtr net,
                  virQEMUCapsPtr qemuCaps,
                  int *vhostfd,
-                 int *vhostfdSize)
+                 size_t *vhostfdSize)
 {
     size_t i;
     const char *vhostnet_path = net->backend.vhost;
@@ -490,7 +490,7 @@ qemuOpenVhostNet(virDomainDefPtr def,
                                        "but is unavailable"));
                 goto error;
             }
-            VIR_WARN("Unable to open vhost-net. Opened so far %zu, requested %d",
+            VIR_WARN("Unable to open vhost-net. Opened so far %zu, requested %zu",
                      i, *vhostfdSize);
             *vhostfdSize = i;
             break;
@@ -4353,7 +4353,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
                    virDomainNetDefPtr net,
                    int vlan,
                    int bootindex,
-                   int vhostfdSize,
+                   size_t vhostfdSize,
                    virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -4455,7 +4455,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
     if (usingVirtio && vhostfdSize > 1) {
         /* As advised at http://www.linux-kvm.org/page/Multiqueue
          * we should add vectors=2*N+2 where N is the vhostfdSize */
-        virBufferAsprintf(&buf, ",mq=on,vectors=%d", 2 * vhostfdSize + 2);
+        virBufferAsprintf(&buf, ",mq=on,vectors=%zu", 2 * vhostfdSize + 2);
     }
     if (vlan == -1)
         virBufferAsprintf(&buf, ",netdev=host%s", net->info.alias);
@@ -4488,9 +4488,9 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
                     char type_sep,
                     int vlan,
                     char **tapfd,
-                    int tapfdSize,
+                    size_t tapfdSize,
                     char **vhostfd,
-                    int vhostfdSize)
+                    size_t vhostfdSize)
 {
     bool is_tap = false;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -7359,9 +7359,9 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     int ret = -1;
     char *nic = NULL, *host = NULL;
     int *tapfd = NULL;
-    int tapfdSize = 0;
+    size_t tapfdSize = 0;
     int *vhostfd = NULL;
-    int vhostfdSize = 0;
+    size_t vhostfdSize = 0;
     char **tapfdName = NULL;
     char **vhostfdName = NULL;
     int actualType = virDomainNetGetActualType(net);

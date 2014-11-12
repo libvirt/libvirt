@@ -825,10 +825,10 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char **tapfdName = NULL;
     int *tapfd = NULL;
-    int tapfdSize = 0;
+    size_t tapfdSize = 0;
     char **vhostfdName = NULL;
     int *vhostfd = NULL;
-    int vhostfdSize = 0;
+    size_t vhostfdSize = 0;
     char *nicstr = NULL;
     char *netstr = NULL;
     virNetDevVPortProfilePtr vport = NULL;

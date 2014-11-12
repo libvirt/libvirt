@@ -235,7 +235,7 @@ virNetDevProbeVnetHdr(int tapfd)
 int virNetDevTapCreate(char **ifname,
                        const char *tunpath,
                        int *tapfd,
-                       int tapfdSize,
+                       size_t tapfdSize,
                        unsigned int flags)
 {
     size_t i;
@@ -370,7 +370,7 @@ int virNetDevTapDelete(const char *ifname,
 int virNetDevTapCreate(char **ifname,
                        const char *tunpath ATTRIBUTE_UNUSED,
                        int *tapfd,
-                       int tapfdSize,
+                       size_t tapfdSize,
                        unsigned int flags ATTRIBUTE_UNUSED)
 {
     int s;
@@ -481,7 +481,7 @@ int virNetDevTapDelete(const char *ifname,
 int virNetDevTapCreate(char **ifname ATTRIBUTE_UNUSED,
                        const char *tunpath ATTRIBUTE_UNUSED,
                        int *tapfd ATTRIBUTE_UNUSED,
-                       int tapfdSize ATTRIBUTE_UNUSED,
+                       size_t tapfdSize ATTRIBUTE_UNUSED,
                        unsigned int flags ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -534,7 +534,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
                                    const unsigned char *vmuuid,
                                    const char *tunpath,
                                    int *tapfd,
-                                   int tapfdSize,
+                                   size_t tapfdSize,
                                    virNetDevVPortProfilePtr virtPortProfile,
                                    virNetDevVlanPtr virtVlan,
                                    unsigned int flags)
