@@ -3762,7 +3762,7 @@ qemuBuildDriveStr(virConnectPtr conn,
                           disk->blkdeviotune.write_iops_sec_max);
     }
 
-    if (disk->blkdeviotune.write_iops_sec_max) {
+    if (disk->blkdeviotune.size_iops_sec) {
         virBufferAsprintf(&opt, ",iops_size=%llu",
                           disk->blkdeviotune.size_iops_sec);
     }
