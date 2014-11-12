@@ -1220,10 +1220,14 @@ xenFormatNet(virConnectPtr conn,
     switch (net->type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         virBufferAsprintf(&buf, ",bridge=%s", net->data.bridge.brname);
-        if (net->nips > 0) {
+        if (net->nips == 1) {
             char *ipStr = virSocketAddrFormat(&net->ips[0]->address);
             virBufferAsprintf(&buf, ",ip=%s", ipStr);
             VIR_FREE(ipStr);
+        } else if (net->nips > 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Driver does not support setting multiple IP addresses"));
+            goto cleanup;
         }
         virBufferAsprintf(&buf, ",script=%s", DEFAULT_VIF_SCRIPT);
         break;
@@ -1231,10 +1235,14 @@ xenFormatNet(virConnectPtr conn,
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
         if (net->script)
             virBufferAsprintf(&buf, ",script=%s", net->script);
-        if (net->nips > 0) {
+        if (net->nips == 1) {
             char *ipStr = virSocketAddrFormat(&net->ips[0]->address);
             virBufferAsprintf(&buf, ",ip=%s", ipStr);
             VIR_FREE(ipStr);
+        } else if (net->nips > 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Driver does not support setting multiple IP addresses"));
+            goto cleanup;
         }
         break;
 

@@ -1254,7 +1254,7 @@ vboxAttachSound(virDomainDefPtr def, IMachine *machine)
     VBOX_RELEASE(audioAdapter);
 }
 
-static void
+static int
 vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 {
     ISystemProperties *systemProperties = NULL;
@@ -1306,10 +1306,14 @@ vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
             VIR_DEBUG("NIC(%zu): brname: %s", i, def->nets[i]->data.bridge.brname);
             VIR_DEBUG("NIC(%zu): script: %s", i, def->nets[i]->script);
-            if (def->nets[i]->nips > 0) {
+            if (def->nets[i]->nips == 1) {
                 char *ipStr = virSocketAddrFormat(&def->nets[i]->ips[0]->address);
                 VIR_DEBUG("NIC(%zu): ipaddr: %s", i, ipStr);
                 VIR_FREE(ipStr);
+            } else if (def->nets[i]->nips > 1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Driver does not support setting multiple IP addresses"));
+                return -1;
             }
         }
 
@@ -1393,6 +1397,7 @@ vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         gVBoxAPI.UINetworkAdapter.SetMACAddress(adapter, MACAddress);
         VBOX_UTF16_FREE(MACAddress);
     }
+    return 0;
 }
 
 static void
@@ -1938,7 +1943,8 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml)
     vboxSetBootDeviceOrder(def, data, machine);
     vboxAttachDrives(def, data, machine);
     vboxAttachSound(def, machine);
-    vboxAttachNetwork(def, data, machine);
+    if (vboxAttachNetwork(def, data, machine) < 0)
+        goto cleanup;
     vboxAttachSerial(def, data, machine);
     vboxAttachParallel(def, data, machine);
     vboxAttachVideo(def, machine);

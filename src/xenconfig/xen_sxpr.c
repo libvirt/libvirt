@@ -1898,10 +1898,14 @@ xenFormatSxprNet(virConnectPtr conn,
             script = def->script;
 
         virBufferEscapeSexpr(buf, "(script '%s')", script);
-        if (def->nips > 0) {
+        if (def->nips == 1) {
             char *ipStr = virSocketAddrFormat(&def->ips[0]->address);
             virBufferEscapeSexpr(buf, "(ip '%s')", ipStr);
             VIR_FREE(ipStr);
+        } else if (def->nips > 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Driver does not support setting multiple IP addresses"));
+            return -1;
         }
         break;
 
@@ -1935,10 +1939,14 @@ xenFormatSxprNet(virConnectPtr conn,
         if (def->script)
             virBufferEscapeSexpr(buf, "(script '%s')",
                                  def->script);
-        if (def->nips > 0) {
+        if (def->nips == 1) {
             char *ipStr = virSocketAddrFormat(&def->ips[0]->address);
             virBufferEscapeSexpr(buf, "(ip '%s')", ipStr);
             VIR_FREE(ipStr);
+        } else if (def->nips > 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Driver does not support setting multiple IP addresses"));
+            return -1;
         }
         break;
 
