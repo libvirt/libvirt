@@ -1956,6 +1956,65 @@
         may have zero or more <code>host</code> sub-elements used to
         specify the hosts to connect.
         </p>
+
+        <dl>
+          <dt><code>host</code></dt>
+          <dd>
+            <p>
+            The <code>host</code> element supports 4 attributes, viz.  "name",
+            "port", "transport" and "socket", which specify the hostname,
+            the port number, transport type and path to socket, respectively.
+            The meaning of this element and the number of the elements depend
+            on the protocol attribute.
+            </p>
+            <table class="top_table">
+              <tr>
+                <th> Protocol </th>
+                <th> Meaning </th>
+                <th> Number of hosts </th>
+                <th> Default port </th>
+              </tr>
+              <tr>
+                <td> nbd </td>
+                <td> a server running nbd-server </td>
+                <td> only one </td>
+                <td> 10809 </td>
+              </tr>
+              <tr>
+                <td> iscsi </td>
+                <td> an iSCSI server </td>
+                <td> only one </td>
+                <td> 3260 </td>
+              </tr>
+              <tr>
+                <td> rbd </td>
+                <td> monitor servers of RBD </td>
+                <td> one or more </td>
+                <td> 6789 </td>
+              </tr>
+              <tr>
+                <td> sheepdog </td>
+                <td> one of the sheepdog servers (default is localhost:7000) </td>
+                <td> zero or one </td>
+                <td> 7000 </td>
+              </tr>
+              <tr>
+                <td> gluster </td>
+                <td> a server running glusterd daemon </td>
+                <td> only one </td>
+                <td> 24007 </td>
+              </tr>
+            </table>
+            <p>
+            gluster supports "tcp", "rdma", "unix" as valid values for the
+            transport attribute.  nbd supports "tcp" and "unix".  Others only
+            support "tcp".  If nothing is specified, "tcp" is assumed. If the
+            transport is "unix", the socket attribute specifies the path to an
+            AF_UNIX socket.
+            </p>
+          </dd>
+        </dl>
+
         <p>
         For a "file" or "volume" disk type which represents a cdrom or floppy
         (the <code>device</code> attribute), it is possible to define
@@ -2310,56 +2369,6 @@
         disk or CD-ROM device. It must not be longer than 16 printable
         characters.
         <span class='since'>Since 1.0.1</span>
-      </dd>
-      <dt><code>host</code></dt>
-      <dd>The <code>host</code> element supports 4 attributes, viz.  "name",
-        "port", "transport" and "socket", which specify the hostname, the port
-         number, transport type and path to socket, respectively. The meaning
-         of this element and the number of the elements depend on the protocol
-         attribute.
-        <table class="top_table">
-          <tr>
-            <th> Protocol </th>
-            <th> Meaning </th>
-            <th> Number of hosts </th>
-            <th> Default port </th>
-          </tr>
-          <tr>
-            <td> nbd </td>
-            <td> a server running nbd-server </td>
-            <td> only one </td>
-            <td> 10809 </td>
-          </tr>
-          <tr>
-            <td> iscsi </td>
-            <td> an iSCSI server </td>
-            <td> only one </td>
-            <td> 3260 </td>
-          </tr>
-          <tr>
-            <td> rbd </td>
-            <td> monitor servers of RBD </td>
-            <td> one or more </td>
-            <td> 6789 </td>
-          </tr>
-          <tr>
-            <td> sheepdog </td>
-            <td> one of the sheepdog servers (default is localhost:7000) </td>
-            <td> zero or one </td>
-            <td> 7000 </td>
-          </tr>
-          <tr>
-            <td> gluster </td>
-            <td> a server running glusterd daemon </td>
-            <td> only one </td>
-            <td> 24007 </td>
-          </tr>
-        </table>
-        gluster supports "tcp", "rdma", "unix" as valid values for the
-        transport attribute.  nbd supports "tcp" and "unix".  Others only
-        support "tcp".  If nothing is specified, "tcp" is assumed. If the
-        transport is "unix", the socket attribute specifies the path to an
-        AF_UNIX socket.
       </dd>
       <dt><code>address</code></dt>
       <dd>If present, the <code>address</code> element ties the disk
