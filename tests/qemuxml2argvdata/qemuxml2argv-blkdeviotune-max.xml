@@ -1,0 +1,51 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu</emulator>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='qcow2' cache='none'/>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='hda' bus='ide'/>
+      <iotune>
+        <total_bytes_sec>5000</total_bytes_sec>
+        <total_iops_sec>6000</total_iops_sec>
+        <total_bytes_sec_max>10000</total_bytes_sec_max>
+        <total_iops_sec_max>11000</total_iops_sec_max>
+      </iotune>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='qcow2' cache='none'/>
+      <source dev='/dev/HostVG/QEMUGuest2'/>
+      <target dev='hdb' bus='ide'/>
+      <iotune>
+        <read_bytes_sec>5000</read_bytes_sec>
+        <write_bytes_sec>5500</write_bytes_sec>
+        <read_iops_sec>3500</read_iops_sec>
+        <write_iops_sec>4000</write_iops_sec>
+        <read_bytes_sec_max>6000</read_bytes_sec_max>
+        <write_bytes_sec_max>6500</write_bytes_sec_max>
+        <read_iops_sec_max>7000</read_iops_sec_max>
+        <write_iops_sec_max>7500</write_iops_sec_max>
+        <size_iops_sec>2000</size_iops_sec>
+      </iotune>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
+    <controller type='usb' index='0'/>
+    <controller type='ide' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>
