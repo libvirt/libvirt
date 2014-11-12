@@ -575,6 +575,21 @@ mymain(void)
                  FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_ERROR,           \
                  __VA_ARGS__)
 
+# ifdef __linux__
+    /* This is a macro that invokes test only on Linux. It's
+     * meant to be called in those cases where qemuxml2argvmock
+     * cooperation is expected (e.g. we need a fixed time,
+     * predictable NUMA topology and so on). On non-Linux
+     * platforms the macro just consume its argument. */
+#  define DO_TEST_LINUX(name, ...)                                      \
+    DO_TEST_FULL(name, NULL, -1, 0, __VA_ARGS__)
+# else  /* __linux__ */
+#  define DO_TEST_LINUX(name, ...)                                      \
+    do {                                                                \
+        const char *tmp ATTRIBUTE_UNUSED = name;                        \
+    } while (0)
+# endif /* __linux__ */
+
 # define NONE QEMU_CAPS_LAST
 
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
@@ -684,14 +699,16 @@ mymain(void)
     DO_TEST("kvm-features-off", NONE);
 
     DO_TEST("hugepages", QEMU_CAPS_MEM_PATH);
-    DO_TEST("hugepages-pages", QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_RAM,
-            QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST_LINUX("hugepages-pages", QEMU_CAPS_MEM_PATH,
+                  QEMU_CAPS_OBJECT_MEMORY_RAM,
+                  QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-pages2", QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-pages3", QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-shared", QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_RAM,
-            QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST_LINUX("hugepages-shared", QEMU_CAPS_MEM_PATH,
+                  QEMU_CAPS_OBJECT_MEMORY_RAM,
+                  QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST_PARSE_ERROR("hugepages-memaccess-invalid", NONE);
     DO_TEST_FAILURE("hugepages-pages4", QEMU_CAPS_MEM_PATH,
             QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
@@ -1246,10 +1263,12 @@ mymain(void)
 
     DO_TEST("numatune-memory", NONE);
     DO_TEST_PARSE_ERROR("numatune-memory-invalid-nodeset", NONE);
-    DO_TEST("numatune-memnode", QEMU_CAPS_NUMA, QEMU_CAPS_OBJECT_MEMORY_RAM);
+    DO_TEST_LINUX("numatune-memnode", QEMU_CAPS_NUMA,
+                  QEMU_CAPS_OBJECT_MEMORY_RAM);
     DO_TEST_FAILURE("numatune-memnode", NONE);
 
-    DO_TEST("numatune-memnode-no-memory", QEMU_CAPS_NUMA, QEMU_CAPS_OBJECT_MEMORY_RAM);
+    DO_TEST_LINUX("numatune-memnode-no-memory", QEMU_CAPS_NUMA,
+                  QEMU_CAPS_OBJECT_MEMORY_RAM);
     DO_TEST_FAILURE("numatune-memnode-no-memory", NONE);
 
     DO_TEST("numatune-auto-nodeset-invalid", NONE);
