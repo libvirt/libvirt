@@ -905,9 +905,13 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         virCommandAddArgBuffer(cmd, &buf);
     } else if (net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
               net->nips > 0) {
+        size_t i;
+
         /* --ipadd ip */
-        char *ipStr = virSocketAddrFormat(&net->ips[0]->address);
-        virCommandAddArgList(cmd, "--ipadd", ipStr, NULL);
+        for (i = 0; i < net->nips; i++) {
+            char *ipStr = virSocketAddrFormat(&net->ips[i]->address);
+            virCommandAddArgList(cmd, "--ipadd", ipStr, NULL);
+        }
     }
 
     /* TODO: processing NAT and physical device */
