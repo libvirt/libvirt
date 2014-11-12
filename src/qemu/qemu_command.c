@@ -3676,11 +3676,12 @@ qemuBuildDriveStr(virConnectPtr conn,
          disk->blkdeviotune.write_bytes_sec_max ||
          disk->blkdeviotune.total_iops_sec_max ||
          disk->blkdeviotune.read_iops_sec_max ||
-         disk->blkdeviotune.write_iops_sec_max) &&
+         disk->blkdeviotune.write_iops_sec_max ||
+         disk->blkdeviotune.size_iops_sec) &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("there is some block I/O throttling paramater that are not supported with this "
-                         "QEMU binary(need QEMU 1.7 or superior)"));
+                       _("there are some block I/O throttling parameters "
+                         "that are not supported with this QEMU binary"));
         goto error;
     }
 
@@ -3695,7 +3696,8 @@ qemuBuildDriveStr(virConnectPtr conn,
         disk->blkdeviotune.write_bytes_sec_max > LLONG_MAX ||
         disk->blkdeviotune.total_iops_sec_max > LLONG_MAX ||
         disk->blkdeviotune.read_iops_sec_max > LLONG_MAX ||
-        disk->blkdeviotune.write_iops_sec_max > LLONG_MAX) {
+        disk->blkdeviotune.write_iops_sec_max > LLONG_MAX ||
+        disk->blkdeviotune.size_iops_sec > LLONG_MAX) {
         virReportError(VIR_ERR_OVERFLOW,
                       _("block I/O throttle limit must "
                         "be less than %llu using QEMU"), LLONG_MAX);
