@@ -131,4 +131,8 @@
     <flag name='host-pci-multidomain'/>
     <flag name='usb-audio'/>
     <flag name='ivshmem'/>
+    <flag name='VGA.vgamem_mb'/>
+    <flag name='vmware-svga.vgamem_mb'/>
+    <flag name='qxl.vgamem_mb'/>
+    <flag name='qxl-vga.vgamem_mb'/>
   </qemuCaps>

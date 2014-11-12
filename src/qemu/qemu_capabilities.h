@@ -219,6 +219,10 @@ typedef enum {
     QEMU_CAPS_MIGRATE_RDMA       = 177, /* have rdma migration */
     QEMU_CAPS_DEVICE_IVSHMEM     = 178, /* -device ivshmem */
     QEMU_CAPS_DRIVE_IOTUNE_MAX   = 179, /* -drive bps_max= and friends */
+    QEMU_CAPS_VGA_VGAMEM         = 180, /* -device VGA.vgamem_mb */
+    QEMU_CAPS_VMWARE_SVGA_VGAMEM = 181, /* -device vmware-svga.vgamem_mb */
+    QEMU_CAPS_QXL_VGAMEM         = 182, /* -device qxl.vgamem_mb */
+    QEMU_CAPS_QXL_VGA_VGAMEM     = 183, /* -device qxl-vga.vgamem_mb */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 } virQEMUCapsFlags;

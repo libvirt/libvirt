@@ -1408,6 +1408,198 @@
 {
     "return": [
         {
+            "name": "command_serr_enable",
+            "type": "on/off"
+        },
+        {
+            "name": "multifunction",
+            "type": "on/off"
+        },
+        {
+            "name": "rombar",
+            "type": "uint32"
+        },
+        {
+            "name": "romfile",
+            "type": "string"
+        },
+        {
+            "name": "addr",
+            "type": "pci-devfn"
+        },
+        {
+            "name": "vgamem_mb",
+            "type": "uint32"
+        }
+    ],
+    "id": "libvirt-27"
+}
+
+{
+    "return": [
+        {
+            "name": "command_serr_enable",
+            "type": "on/off"
+        },
+        {
+            "name": "multifunction",
+            "type": "on/off"
+        },
+        {
+            "name": "rombar",
+            "type": "uint32"
+        },
+        {
+            "name": "romfile",
+            "type": "string"
+        },
+        {
+            "name": "addr",
+            "type": "pci-devfn"
+        },
+        {
+            "name": "vgamem_mb",
+            "type": "uint32"
+        }
+    ],
+    "id": "libvirt-28"
+}
+
+{
+    "return": [
+        {
+            "name": "command_serr_enable",
+            "type": "on/off"
+        },
+        {
+            "name": "multifunction",
+            "type": "on/off"
+        },
+        {
+            "name": "rombar",
+            "type": "uint32"
+        },
+        {
+            "name": "romfile",
+            "type": "string"
+        },
+        {
+            "name": "addr",
+            "type": "pci-devfn"
+        },
+        {
+            "name": "vgamem_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "vram64_size_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "vram_size_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "ram_size_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "cmdlog",
+            "type": "uint32"
+        },
+        {
+            "name": "guestdebug",
+            "type": "uint32"
+        },
+        {
+            "name": "debug",
+            "type": "uint32"
+        },
+        {
+            "name": "revision",
+            "type": "uint32"
+        },
+        {
+            "name": "vram_size",
+            "type": "uint32"
+        },
+        {
+            "name": "ram_size",
+            "type": "uint32"
+        }
+    ],
+    "id": "libvirt-29"
+}
+
+{
+    "return": [
+        {
+            "name": "command_serr_enable",
+            "type": "on/off"
+        },
+        {
+            "name": "multifunction",
+            "type": "on/off"
+        },
+        {
+            "name": "rombar",
+            "type": "uint32"
+        },
+        {
+            "name": "romfile",
+            "type": "string"
+        },
+        {
+            "name": "addr",
+            "type": "pci-devfn"
+        },
+        {
+            "name": "vgamem_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "vram64_size_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "vram_size_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "ram_size_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "cmdlog",
+            "type": "uint32"
+        },
+        {
+            "name": "guestdebug",
+            "type": "uint32"
+        },
+        {
+            "name": "debug",
+            "type": "uint32"
+        },
+        {
+            "name": "revision",
+            "type": "uint32"
+        },
+        {
+            "name": "vram_size",
+            "type": "uint32"
+        },
+        {
+            "name": "ram_size",
+            "type": "uint32"
+        }
+    ],
+    "id": "libvirt-30"
+}
+
+{
+    "return": [
+        {
             "name": "xenpv"
         },
         {
@@ -1449,7 +1641,7 @@
             "name": "none"
         }
     ],
-    "id": "libvirt-26"
+    "id": "libvirt-31"
 }
 
 {
@@ -1521,7 +1713,7 @@
             "name": "Opteron_G4"
         }
     ],
-    "id": "libvirt-27"
+    "id": "libvirt-32"
 }
 
 {
@@ -1529,11 +1721,11 @@
         "enabled": false,
         "present": true
     },
-    "id": "libvirt-28"
+    "id": "libvirt-33"
 }
 
 {
-    "id": "libvirt-29",
+    "id": "libvirt-34",
     "error": {
         "class": "CommandNotFound",
         "desc": "The command query-tpm-models has not been found"
@@ -1541,7 +1733,7 @@
 }
 
 {
-    "id": "libvirt-30",
+    "id": "libvirt-35",
     "error": {
         "class": "CommandNotFound",
         "desc": "The command query-tpm-types has not been found"
@@ -1549,7 +1741,7 @@
 }
 
 {
-    "id": "libvirt-31",
+    "id": "libvirt-36",
     "error": {
         "class": "CommandNotFound",
         "desc": "The command query-command-line-options has not been found"
@@ -1563,5 +1755,5 @@
             "state": false
         }
     ],
-    "id": "libvirt-32"
+    "id": "libvirt-37"
 }

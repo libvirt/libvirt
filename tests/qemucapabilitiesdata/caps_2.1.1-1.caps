@@ -161,4 +161,8 @@
     <flag name='migrate-rdma'/>
     <flag name='ivshmem'/>
     <flag name='drive-iotune-max'/>
+    <flag name='VGA.vgamem_mb'/>
+    <flag name='vmware-svga.vgamem_mb'/>
+    <flag name='qxl.vgamem_mb'/>
+    <flag name='qxl-vga.vgamem_mb'/>
   </qemuCaps>

@@ -272,6 +272,11 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "migrate-rdma",
               "ivshmem",
               "drive-iotune-max",
+
+              "VGA.vgamem_mb", /* 180 */
+              "vmware-svga.vgamem_mb",
+              "qxl.vgamem_mb",
+              "qxl-vga.vgamem_mb",
     );
 
 
@@ -1581,6 +1586,22 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsKVMPit[] = {
     { "lost_tick_policy", QEMU_CAPS_KVM_PIT_TICK_POLICY },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVGA[] = {
+    { "vgamem_mb", QEMU_CAPS_VGA_VGAMEM },
+};
+
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVmwareSvga[] = {
+    { "vgamem_mb", QEMU_CAPS_VMWARE_SVGA_VGAMEM },
+};
+
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQxl[] = {
+    { "vgamem_mb", QEMU_CAPS_QXL_VGAMEM },
+};
+
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQxlVga[] = {
+    { "vgamem_mb", QEMU_CAPS_QXL_VGA_VGAMEM },
+};
+
 struct virQEMUCapsObjectTypeProps {
     const char *type;
     struct virQEMUCapsStringFlags *props;
@@ -1626,6 +1647,14 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsUSBStorage) },
     { "kvm-pit", virQEMUCapsObjectPropsKVMPit,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsKVMPit) },
+    { "VGA", virQEMUCapsObjectPropsVGA,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVGA) },
+    { "vmware-svga", virQEMUCapsObjectPropsVmwareSvga,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVmwareSvga) },
+    { "qxl", virQEMUCapsObjectPropsQxl,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsQxl) },
+    { "qxl-vga", virQEMUCapsObjectPropsQxlVga,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsQxlVga) },
 };
 
 
@@ -1817,6 +1846,10 @@ virQEMUCapsExtractDeviceStr(const char *qemu,
                          "-device", "usb-host,?",
                          "-device", "scsi-generic,?",
                          "-device", "usb-storage,?",
+                         "-device", "VGA,?",
+                         "-device", "vmware-svga,?",
+                         "-device", "qxl,?",
+                         "-device", "qxl-vga,?",
                          NULL);
     /* qemu -help goes to stdout, but qemu -device ? goes to stderr.  */
     virCommandSetErrorBuffer(cmd, &output);

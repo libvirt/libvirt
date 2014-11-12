@@ -2166,6 +2166,210 @@
 }
 
 {
+    "return": [
+        {
+            "name": "command_serr_enable",
+            "type": "on/off"
+        },
+        {
+            "name": "multifunction",
+            "type": "on/off"
+        },
+        {
+            "name": "rombar",
+            "type": "uint32"
+        },
+        {
+            "name": "romfile",
+            "type": "string"
+        },
+        {
+            "name": "addr",
+            "type": "pci-devfn"
+        },
+        {
+            "name": "mmio",
+            "type": "on/off"
+        },
+        {
+            "name": "vgamem_mb",
+            "type": "uint32"
+        }
+    ],
+    "id": "libvirt-28"
+}
+
+{
+    "return": [
+        {
+            "name": "command_serr_enable",
+            "type": "on/off"
+        },
+        {
+            "name": "multifunction",
+            "type": "on/off"
+        },
+        {
+            "name": "rombar",
+            "type": "uint32"
+        },
+        {
+            "name": "romfile",
+            "type": "string"
+        },
+        {
+            "name": "addr",
+            "type": "pci-devfn"
+        },
+        {
+            "name": "vgamem_mb",
+            "type": "uint32"
+        }
+    ],
+    "id": "libvirt-29"
+}
+
+{
+    "return": [
+        {
+            "name": "command_serr_enable",
+            "type": "on/off"
+        },
+        {
+            "name": "multifunction",
+            "type": "on/off"
+        },
+        {
+            "name": "rombar",
+            "type": "uint32"
+        },
+        {
+            "name": "romfile",
+            "type": "string"
+        },
+        {
+            "name": "addr",
+            "type": "pci-devfn"
+        },
+        {
+            "name": "surfaces",
+            "type": "int32"
+        },
+        {
+            "name": "vgamem_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "vram64_size_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "vram_size_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "ram_size_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "cmdlog",
+            "type": "uint32"
+        },
+        {
+            "name": "guestdebug",
+            "type": "uint32"
+        },
+        {
+            "name": "debug",
+            "type": "uint32"
+        },
+        {
+            "name": "revision",
+            "type": "uint32"
+        },
+        {
+            "name": "vram_size",
+            "type": "uint32"
+        },
+        {
+            "name": "ram_size",
+            "type": "uint32"
+        }
+    ],
+    "id": "libvirt-30"
+}
+
+{
+    "return": [
+        {
+            "name": "command_serr_enable",
+            "type": "on/off"
+        },
+        {
+            "name": "multifunction",
+            "type": "on/off"
+        },
+        {
+            "name": "rombar",
+            "type": "uint32"
+        },
+        {
+            "name": "romfile",
+            "type": "string"
+        },
+        {
+            "name": "addr",
+            "type": "pci-devfn"
+        },
+        {
+            "name": "surfaces",
+            "type": "int32"
+        },
+        {
+            "name": "vgamem_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "vram64_size_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "vram_size_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "ram_size_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "cmdlog",
+            "type": "uint32"
+        },
+        {
+            "name": "guestdebug",
+            "type": "uint32"
+        },
+        {
+            "name": "debug",
+            "type": "uint32"
+        },
+        {
+            "name": "revision",
+            "type": "uint32"
+        },
+        {
+            "name": "vram_size",
+            "type": "uint32"
+        },
+        {
+            "name": "ram_size",
+            "type": "uint32"
+        }
+    ],
+    "id": "libvirt-31"
+}
+
+{
   "return": [
     {
       "name": "pc-1.3",
@@ -2275,7 +2479,7 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-28"
+  "id": "libvirt-32"
 }
 
 {
@@ -2356,7 +2560,7 @@
       "name": "qemu64"
     }
   ],
-  "id": "libvirt-29"
+  "id": "libvirt-33"
 }
 
 {
@@ -2364,21 +2568,21 @@
     "enabled": false,
     "present": true
   },
-  "id": "libvirt-30"
+  "id": "libvirt-34"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-35"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-36"
 }
 
 {
@@ -3238,7 +3442,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-37"
 }
 
 {
@@ -3260,5 +3464,5 @@
       "capability": "zero-blocks"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-38"
 }
