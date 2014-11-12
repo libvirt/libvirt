@@ -3853,13 +3853,13 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
 
 static int
 qemuPrepareNVRAM(virQEMUDriverConfigPtr cfg,
-                 virDomainDefPtr def,
+                 virDomainObjPtr vm,
                  bool migrated)
 {
     int ret = -1;
     int srcFD = -1;
     int dstFD = -1;
-    virDomainLoaderDefPtr loader = def->os.loader;
+    virDomainLoaderDefPtr loader = vm->def->os.loader;
     bool generated = false;
     bool created = false;
 
@@ -3886,12 +3886,13 @@ qemuPrepareNVRAM(virQEMUDriverConfigPtr cfg,
     if (!loader->nvram) {
         if (virAsprintf(&loader->nvram,
                         "%s/lib/libvirt/qemu/nvram/%s_VARS.fd",
-                        LOCALSTATEDIR, def->name) < 0)
+                        LOCALSTATEDIR, vm->def->name) < 0)
             goto cleanup;
 
         generated = true;
 
-        if (virDomainSaveConfig(cfg->configDir, def) < 0)
+        if (vm->persistent &&
+            virDomainSaveConfig(cfg->configDir, vm->def) < 0)
             goto cleanup;
     }
 
@@ -4056,7 +4057,7 @@ int qemuProcessStart(virConnectPtr conn,
      * Fill them in prior to setting the domain def as transient. */
     VIR_DEBUG("Generating paths");
 
-    if (qemuPrepareNVRAM(cfg, vm->def, migrateFrom) < 0)
+    if (qemuPrepareNVRAM(cfg, vm, migrateFrom) < 0)
         goto cleanup;
 
     /* Do this upfront, so any part of the startup process can add
