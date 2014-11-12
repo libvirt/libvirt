@@ -381,38 +381,62 @@ virBhyveUsableDisk(virConnectPtr conn, virDomainDiskDefPtr disk)
     return true;
 }
 
+static void
+virBhyveFormatGrubDevice(virBufferPtr devicemap, virDomainDiskDefPtr def)
+{
+
+    if (def->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+        virBufferAsprintf(devicemap, "(cd) %s\n",
+                          virDomainDiskGetSource(def));
+    else
+        virBufferAsprintf(devicemap, "(hd0) %s\n",
+                          virDomainDiskGetSource(def));
+}
+
 static virCommandPtr
 virBhyveProcessBuildGrubbhyveCmd(virDomainDefPtr def,
                                  virConnectPtr conn,
                                  const char *devmap_file,
                                  char **devicesmap_out)
 {
-    virDomainDiskDefPtr disk, cd;
+    virDomainDiskDefPtr hdd, cd, userdef, diskdef;
     virBuffer devicemap;
     virCommandPtr cmd;
+    int best_idx;
     size_t i;
 
     if (def->os.bootloaderArgs != NULL)
         return virBhyveProcessBuildCustomLoaderCmd(def);
 
+    best_idx = INT_MAX;
     devicemap = (virBuffer)VIR_BUFFER_INITIALIZER;
 
-    /* Search disk list for CD or HDD device. */
-    cd = disk = NULL;
+    /* Search disk list for CD or HDD device. We'll respect <boot order=''> if
+     * present and otherwise pick the first CD or failing that HDD we come
+     * across. */
+    cd = hdd = userdef = NULL;
     for (i = 0; i < def->ndisks; i++) {
         if (!virBhyveUsableDisk(conn, def->disks[i]))
             continue;
 
-        if (cd == NULL &&
-            def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-            cd = def->disks[i];
-            VIR_INFO("Picking %s as boot CD", virDomainDiskGetSource(cd));
+        diskdef = def->disks[i];
+
+        if (diskdef->info.bootIndex && diskdef->info.bootIndex < best_idx) {
+            userdef = diskdef;
+            best_idx = userdef->info.bootIndex;
+            continue;
         }
 
-        if (disk == NULL &&
+        if (cd == NULL &&
+            def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
+            cd = diskdef;
+            VIR_INFO("Picking %s as CD", virDomainDiskGetSource(cd));
+        }
+
+        if (hdd == NULL &&
             def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-            disk = def->disks[i];
-            VIR_INFO("Picking %s as HDD", virDomainDiskGetSource(disk));
+            hdd = diskdef;
+            VIR_INFO("Picking %s as HDD", virDomainDiskGetSource(hdd));
         }
     }
 
@@ -422,22 +446,28 @@ virBhyveProcessBuildGrubbhyveCmd(virDomainDefPtr def,
 
     if (devicesmap_out != NULL) {
         /* Grub device.map (just for boot) */
-        if (disk != NULL)
-            virBufferAsprintf(&devicemap, "(hd0) %s\n",
-                              virDomainDiskGetSource(disk));
+        if (userdef != NULL) {
+            virBhyveFormatGrubDevice(&devicemap, userdef);
+        } else {
+            if (hdd != NULL)
+                virBhyveFormatGrubDevice(&devicemap, hdd);
 
-        if (cd != NULL)
-            virBufferAsprintf(&devicemap, "(cd) %s\n",
-                              virDomainDiskGetSource(cd));
+            if (cd != NULL)
+                virBhyveFormatGrubDevice(&devicemap, cd);
+        }
 
         *devicesmap_out = virBufferContentAndReset(&devicemap);
     }
 
-    if (cd != NULL) {
-        virCommandAddArg(cmd, "--root");
+    virCommandAddArg(cmd, "--root");
+    if (userdef != NULL) {
+        if (userdef->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+            virCommandAddArg(cmd, "cd");
+        else
+            virCommandAddArg(cmd, "hd0,msdos1");
+    } else if (cd != NULL) {
         virCommandAddArg(cmd, "cd");
     } else {
-        virCommandAddArg(cmd, "--root");
         virCommandAddArg(cmd, "hd0,msdos1");
     }
 

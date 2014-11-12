@@ -234,10 +234,11 @@ management.</p>
 <p>It's possible to boot non-FreeBSD guests by specifying an explicit
 bootloader, e.g. <code>grub-bhyve(1)</code>. Arguments to the bootloader may be
 specified as well. If the bootloader is <code>grub-bhyve</code> and arguments
-are omitted, libvirt will try and boot the first disk in the domain (either
-<code>cdrom</code>- or <code>disk</code>-type devices). If the disk type is
-<code>disk</code>, it will attempt to boot from the first partition in the disk
-image.</p>
+are omitted, libvirt will try and infer boot ordering from user-supplied
+&lt;boot order='N'&gt; configuration in the domain. Failing that, it will boot
+the first disk in the domain (either <code>cdrom</code>- or
+<code>disk</code>-type devices). If the disk type is <code>disk</code>, it will
+attempt to boot from the first partition in the disk image.</p>
 
 <pre>
   ...

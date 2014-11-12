@@ -163,6 +163,8 @@ mymain(void)
     DO_TEST("serial");
     DO_TEST("console");
     DO_TEST("grub-defaults");
+    DO_TEST("grub-bootorder");
+    DO_TEST("grub-bootorder2");
     DO_TEST("bhyveload-explicitargs");
     DO_TEST("custom-loader");
     DO_TEST("disk-cdrom-grub");
