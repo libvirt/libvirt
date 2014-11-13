@@ -960,9 +960,8 @@ testParseNodeInfo(virNodeInfoPtr nodeInfo, xmlXPathContextPtr ctxt)
                       nodeInfo->sockets * nodeInfo->nodes);
     ret = virXPathLong("string(/node/cpu/active[1])", ctxt, &l);
     if (ret == 0) {
-        if (l < nodeInfo->cpus) {
+        if (l < nodeInfo->cpus)
             nodeInfo->cpus = l;
-        }
     } else if (ret == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("invalid node cpu active value"));
@@ -1070,9 +1069,8 @@ testParseDomains(testConnPtr privconn,
     virDomainObjPtr obj;
 
     num = virXPathNodeSet("/node/domain", ctxt, &nodes);
-    if (num < 0) {
+    if (num < 0)
         goto error;
-    }
 
     for (i = 0; i < num; i++) {
         virDomainDefPtr def;
@@ -1137,9 +1135,8 @@ testParseNetworks(testConnPtr privconn,
     virNetworkObjPtr obj;
 
     num = virXPathNodeSet("/node/network", ctxt, &nodes);
-    if (num < 0) {
+    if (num < 0)
         goto error;
-    }
 
     for (i = 0; i < num; i++) {
         virNetworkDefPtr def;
@@ -1177,9 +1174,8 @@ testParseInterfaces(testConnPtr privconn,
     virInterfaceObjPtr obj;
 
     num = virXPathNodeSet("/node/interface", ctxt, &nodes);
-    if (num < 0) {
+    if (num < 0)
         goto error;
-    }
 
     for (i = 0; i < num; i++) {
         virInterfaceDefPtr def;
@@ -1225,9 +1221,8 @@ testOpenVolumesForPool(const char *file,
 
     num = virXPathNodeSet(vol_xpath, ctxt, &nodes);
     VIR_FREE(vol_xpath);
-    if (num < 0) {
+    if (num < 0)
         goto error;
-    }
 
     for (i = 0; i < num; i++) {
         xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file,
@@ -1275,9 +1270,8 @@ testParseStorage(testConnPtr privconn,
     virStoragePoolObjPtr obj;
 
     num = virXPathNodeSet("/node/pool", ctxt, &nodes);
-    if (num < 0) {
+    if (num < 0)
         goto error;
-    }
 
     for (i = 0; i < num; i++) {
         virStoragePoolDefPtr def;
@@ -1328,9 +1322,8 @@ testParseNodedevs(testConnPtr privconn,
     virNodeDeviceObjPtr obj;
 
     num = virXPathNodeSet("/node/device", ctxt, &nodes);
-    if (num < 0) {
+    if (num < 0)
         goto error;
-    }
 
     for (i = 0; i < num; i++) {
         virNodeDeviceDefPtr def;
@@ -1430,9 +1423,8 @@ testOpenFromFile(virConnectPtr conn, const char *file)
     if (!(privconn->eventState = virObjectEventStateNew()))
         goto error;
 
-    if (!(doc = virXMLParseFileCtxt(file, &ctxt))) {
+    if (!(doc = virXMLParseFileCtxt(file, &ctxt)))
         goto error;
-    }
 
     if (!xmlStrEqual(ctxt->node->name, BAD_CAST "node")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -2713,9 +2705,8 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
 
     case VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG:
         ret = testDomainUpdateVCPUs(privconn, privdom, nrCpus, 0);
-        if (ret == 0) {
+        if (ret == 0)
             persistentDef->vcpus = nrCpus;
-        }
         break;
     }
 
@@ -2806,9 +2797,8 @@ static int testDomainGetVcpus(virDomainPtr domain,
             unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, v);
 
             for (i = 0; i < maxcpu; i++) {
-                if (VIR_CPU_USABLE(privdomdata->cpumaps, privmaplen, v, i)) {
+                if (VIR_CPU_USABLE(privdomdata->cpumaps, privmaplen, v, i))
                     VIR_USE_CPU(cpumap, i);
-                }
             }
         }
     }
@@ -2866,9 +2856,8 @@ static int testDomainPinVcpu(virDomainPtr domain,
     memset(privcpumap, 0, privmaplen);
 
     for (i = 0; i < maxcpu; i++) {
-        if (VIR_CPU_USABLE(cpumap, maplen, 0, i)) {
+        if (VIR_CPU_USABLE(cpumap, maplen, 0, i))
             VIR_USE_CPU(privcpumap, i);
-        }
     }
 
     ret = 0;
@@ -4064,9 +4053,8 @@ static int testConnectNumOfInterfaces(virConnectPtr conn)
     testDriverLock(privconn);
     for (i = 0; (i < privconn->ifaces.count); i++) {
         virInterfaceObjLock(privconn->ifaces.objs[i]);
-        if (virInterfaceObjIsActive(privconn->ifaces.objs[i])) {
+        if (virInterfaceObjIsActive(privconn->ifaces.objs[i]))
             count++;
-        }
         virInterfaceObjUnlock(privconn->ifaces.objs[i]);
     }
     testDriverUnlock(privconn);
@@ -4111,9 +4099,8 @@ static int testConnectNumOfDefinedInterfaces(virConnectPtr conn)
     testDriverLock(privconn);
     for (i = 0; i < privconn->ifaces.count; i++) {
         virInterfaceObjLock(privconn->ifaces.objs[i]);
-        if (!virInterfaceObjIsActive(privconn->ifaces.objs[i])) {
+        if (!virInterfaceObjIsActive(privconn->ifaces.objs[i]))
             count++;
-        }
         virInterfaceObjUnlock(privconn->ifaces.objs[i]);
     }
     testDriverUnlock(privconn);
@@ -6058,14 +6045,12 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     testDriverLock(driver);
 
     def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, NULL);
-    if (def == NULL) {
+    if (def == NULL)
         goto cleanup;
-    }
 
     /* We run these next two simply for validation */
-    if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) == -1) {
+    if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) == -1)
         goto cleanup;
-    }
 
     if (virNodeDeviceGetParentHost(&driver->devs,
                                    def->name,
@@ -6093,9 +6078,8 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     }
 
 
-    if (!(obj = virNodeDeviceAssignDef(&driver->devs, def))) {
+    if (!(obj = virNodeDeviceAssignDef(&driver->devs, def)))
         goto cleanup;
-    }
     virNodeDeviceObjUnlock(obj);
 
     dev = virGetNodeDevice(conn, def->name);
@@ -6126,9 +6110,8 @@ testNodeDeviceDestroy(virNodeDevicePtr dev)
         goto out;
     }
 
-    if (virNodeDeviceGetWWNs(obj->def, &wwnn, &wwpn) == -1) {
+    if (virNodeDeviceGetWWNs(obj->def, &wwnn, &wwpn) == -1)
         goto out;
-    }
 
     if (VIR_STRDUP(parent_name, obj->def->parent) < 0)
         goto out;
@@ -7033,9 +7016,8 @@ testDomainSnapshotReparentChildren(void *payload,
     virDomainSnapshotObjPtr snap = payload;
     testSnapReparentDataPtr rep = data;
 
-    if (rep->err < 0) {
+    if (rep->err < 0)
         return;
-    }
 
     VIR_FREE(snap->def->parent);
     snap->parent = rep->parent;
@@ -7077,9 +7059,8 @@ testDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
                                            testDomainSnapshotDiscardAll,
                                            &rem);
         if (rem.current) {
-            if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) {
+            if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)
                 snap->def->current = true;
-            }
             vm->current_snapshot = snap;
         }
     } else if (snap->nchildren) {
