@@ -90,14 +90,17 @@ libxlDoMigrateReceive(void *opaque)
     virDomainObjPtr vm = args->vm;
     virNetSocketPtr *socks = args->socks;
     size_t nsocks = args->nsocks;
-    bool paused = args->flags & VIR_MIGRATE_PAUSED;
     libxlDriverPrivatePtr driver = args->conn->privateData;
     int recvfd = args->recvfd;
     size_t i;
     int ret;
 
+    /*
+     * Always start the domain paused.  If needed, unpause in the
+     * finish phase, after transfer of the domain is complete.
+     */
     virObjectLock(vm);
-    ret = libxlDomainStart(driver, vm, paused, recvfd);
+    ret = libxlDomainStart(driver, vm, true, recvfd);
     virObjectUnlock(vm);
 
     if (ret < 0 && !vm->persistent)
