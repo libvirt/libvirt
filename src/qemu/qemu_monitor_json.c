@@ -3396,8 +3396,9 @@ qemuMonitorJSONQueryRxFilter(qemuMonitorPtr mon, const char *alias,
  * ]}
  *
  */
-static int qemuMonitorJSONExtractPtyPaths(virJSONValuePtr reply,
-                                          virHashTablePtr paths)
+static int
+qemuMonitorJSONExtractChardevInfo(virJSONValuePtr reply,
+                                  virHashTablePtr info)
 {
     virJSONValuePtr data;
     int ret = -1;
@@ -3442,7 +3443,7 @@ static int qemuMonitorJSONExtractPtyPaths(virJSONValuePtr reply,
             if (VIR_STRDUP(path, type + strlen("pty:")) < 0)
                 goto cleanup;
 
-            if (virHashAddEntry(paths, id, path) < 0) {
+            if (virHashAddEntry(info, id, path) < 0) {
                 virReportError(VIR_ERR_OPERATION_FAILED,
                                _("failed to save chardev path '%s'"), path);
                 VIR_FREE(path);
@@ -3457,8 +3458,10 @@ static int qemuMonitorJSONExtractPtyPaths(virJSONValuePtr reply,
     return ret;
 }
 
-int qemuMonitorJSONGetPtyPaths(qemuMonitorPtr mon,
-                               virHashTablePtr paths)
+
+int
+qemuMonitorJSONGetChardevInfo(qemuMonitorPtr mon,
+                              virHashTablePtr info)
 
 {
     int ret;
@@ -3475,7 +3478,7 @@ int qemuMonitorJSONGetPtyPaths(qemuMonitorPtr mon,
         ret = qemuMonitorJSONCheckError(cmd, reply);
 
     if (ret == 0)
-        ret = qemuMonitorJSONExtractPtyPaths(reply, paths);
+        ret = qemuMonitorJSONExtractChardevInfo(reply, info);
 
     virJSONValueFree(cmd);
     virJSONValueFree(reply);

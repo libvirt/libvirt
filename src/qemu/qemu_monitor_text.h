@@ -179,8 +179,8 @@ int qemuMonitorTextAddNetdev(qemuMonitorPtr mon,
 int qemuMonitorTextRemoveNetdev(qemuMonitorPtr mon,
                                 const char *alias);
 
-int qemuMonitorTextGetPtyPaths(qemuMonitorPtr mon,
-                               virHashTablePtr paths);
+int qemuMonitorTextGetChardevInfo(qemuMonitorPtr mon,
+                                  virHashTablePtr info);
 
 int qemuMonitorTextAttachPCIDiskController(qemuMonitorPtr mon,
                                            const char *bus,

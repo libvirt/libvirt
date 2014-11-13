@@ -214,8 +214,8 @@ int qemuMonitorJSONRemoveNetdev(qemuMonitorPtr mon,
 int qemuMonitorJSONQueryRxFilter(qemuMonitorPtr mon, const char *alias,
                                  virNetDevRxFilterPtr *filter);
 
-int qemuMonitorJSONGetPtyPaths(qemuMonitorPtr mon,
-                               virHashTablePtr paths);
+int qemuMonitorJSONGetChardevInfo(qemuMonitorPtr mon,
+                                  virHashTablePtr info);
 
 int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon,
                                            const char *bus,

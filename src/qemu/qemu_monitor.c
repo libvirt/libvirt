@@ -2968,24 +2968,39 @@ qemuMonitorQueryRxFilter(qemuMonitorPtr mon, const char *alias,
 }
 
 
-int qemuMonitorGetPtyPaths(qemuMonitorPtr mon,
-                           virHashTablePtr paths)
+int
+qemuMonitorGetChardevInfo(qemuMonitorPtr mon,
+                          virHashTablePtr *retinfo)
 {
     int ret;
-    VIR_DEBUG("mon=%p",
-          mon);
+    virHashTablePtr info = NULL;
+
+    VIR_DEBUG("mon=%p retinfo=%p", mon, retinfo);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("monitor must not be NULL"));
-        return -1;
+        goto error;
     }
 
+    if (!(info = virHashCreate(10, virHashValueFree)))
+        goto error;
+
     if (mon->json)
-        ret = qemuMonitorJSONGetPtyPaths(mon, paths);
+        ret = qemuMonitorJSONGetChardevInfo(mon, info);
     else
-        ret = qemuMonitorTextGetPtyPaths(mon, paths);
-    return ret;
+        ret = qemuMonitorTextGetChardevInfo(mon, info);
+
+    if (ret < 0)
+        goto error;
+
+    *retinfo = info;
+    return 0;
+
+ error:
+    virHashFree(info);
+    *retinfo = NULL;
+    return -1;
 }
 
 

@@ -639,8 +639,8 @@ int qemuMonitorRemoveNetdev(qemuMonitorPtr mon,
 int qemuMonitorQueryRxFilter(qemuMonitorPtr mon, const char *alias,
                              virNetDevRxFilterPtr *filter);
 
-int qemuMonitorGetPtyPaths(qemuMonitorPtr mon,
-                           virHashTablePtr paths);
+int qemuMonitorGetChardevInfo(qemuMonitorPtr mon,
+                              virHashTablePtr *retinfo);
 
 int qemuMonitorAttachPCIDiskController(qemuMonitorPtr mon,
                                        const char *bus,

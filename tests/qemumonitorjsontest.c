@@ -1765,24 +1765,24 @@ testHashEqualString(const void *value1, const void *value2)
 }
 
 static int
-testQemuMonitorJSONqemuMonitorJSONGetPtyPaths(const void *data)
+testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
-    virHashTablePtr paths = NULL, expectedPaths = NULL;
+    virHashTablePtr info = NULL, expectedInfo = NULL;
 
     if (!test)
         return -1;
 
-    if (!(paths = virHashCreate(32, (virHashDataFree) free)) ||
-        !(expectedPaths = virHashCreate(32, NULL)))
+    if (!(info = virHashCreate(32, (virHashDataFree) free)) ||
+        !(expectedInfo = virHashCreate(32, NULL)))
         goto cleanup;
 
-    if (virHashAddEntry(expectedPaths, "charserial1", (void *) "/dev/pts/21") < 0 ||
-        virHashAddEntry(expectedPaths, "charserial0", (void *) "/dev/pts/20") < 0) {
+    if (virHashAddEntry(expectedInfo, "charserial1", (void *) "/dev/pts/21") < 0 ||
+        virHashAddEntry(expectedInfo, "charserial0", (void *) "/dev/pts/20") < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       "Unable to create expectedPaths hash table");
+                       "Unable to create expectedInfo hash table");
         goto cleanup;
     }
 
@@ -1806,11 +1806,11 @@ testQemuMonitorJSONqemuMonitorJSONGetPtyPaths(const void *data)
                                "}") < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONGetPtyPaths(qemuMonitorTestGetMonitor(test),
-                                   paths) < 0)
+    if (qemuMonitorJSONGetChardevInfo(qemuMonitorTestGetMonitor(test),
+                                      info) < 0)
         goto cleanup;
 
-    if (!virHashEqual(paths, expectedPaths, testHashEqualString)) {
+    if (!virHashEqual(info, expectedInfo, testHashEqualString)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Hashtable is different to the expected one");
         goto cleanup;
@@ -1818,8 +1818,8 @@ testQemuMonitorJSONqemuMonitorJSONGetPtyPaths(const void *data)
 
     ret = 0;
  cleanup:
-    virHashFree(paths);
-    virHashFree(expectedPaths);
+    virHashFree(info);
+    virHashFree(expectedInfo);
     qemuMonitorTestFree(test);
     return ret;
 }
@@ -2387,7 +2387,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetMigrationCacheSize);
     DO_TEST(qemuMonitorJSONGetMigrationStatus);
     DO_TEST(qemuMonitorJSONGetSpiceMigrationStatus);
-    DO_TEST(qemuMonitorJSONGetPtyPaths);
+    DO_TEST(qemuMonitorJSONGetChardevInfo);
     DO_TEST(qemuMonitorJSONSetBlockIoThrottle);
     DO_TEST(qemuMonitorJSONGetTargetArch);
     DO_TEST(qemuMonitorJSONGetMigrationCapability);

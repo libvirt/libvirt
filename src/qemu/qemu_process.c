@@ -1865,7 +1865,7 @@ qemuProcessLookupPTYs(virDomainDefPtr def,
                       virQEMUCapsPtr qemuCaps,
                       virDomainChrDefPtr *devices,
                       int count,
-                      virHashTablePtr paths)
+                      virHashTablePtr info)
 {
     size_t i;
 
@@ -1886,7 +1886,7 @@ qemuProcessLookupPTYs(virDomainDefPtr def,
                 return -1;
             }
 
-            path = (const char *) virHashLookup(paths, id);
+            path = (const char *) virHashLookup(info, id);
             if (path == NULL) {
                 if (chr->source.data.file.path == NULL) {
                     /* neither the log output nor 'info chardev' had a
@@ -1915,23 +1915,23 @@ qemuProcessLookupPTYs(virDomainDefPtr def,
 static int
 qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
                                      virQEMUCapsPtr qemuCaps,
-                                     virHashTablePtr paths)
+                                     virHashTablePtr info)
 {
     size_t i = 0;
 
     if (qemuProcessLookupPTYs(vm->def, qemuCaps,
                               vm->def->serials, vm->def->nserials,
-                              paths) < 0)
+                              info) < 0)
         return -1;
 
     if (qemuProcessLookupPTYs(vm->def, qemuCaps,
                               vm->def->parallels, vm->def->nparallels,
-                              paths) < 0)
+                              info) < 0)
         return -1;
 
     if (qemuProcessLookupPTYs(vm->def, qemuCaps,
                               vm->def->channels, vm->def->nchannels,
-                              paths) < 0)
+                              info) < 0)
         return -1;
     /* For historical reasons, console[0] can be just an alias
      * for serial[0]. That's why we need to update it as well. */
@@ -1951,7 +1951,7 @@ qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
 
     if (qemuProcessLookupPTYs(vm->def, qemuCaps,
                               vm->def->consoles + i, vm->def->nconsoles - i,
-                              paths) < 0)
+                              info) < 0)
         return -1;
 
     return 0;
@@ -2035,7 +2035,7 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
     size_t buf_size = 4096; /* Plenty of space to get startup greeting */
     int logfd = -1;
     int ret = -1;
-    virHashTablePtr paths = NULL;
+    virHashTablePtr info = NULL;
     qemuDomainObjPrivatePtr priv;
 
     if (pos != -1 &&
@@ -2060,22 +2060,18 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
      * reliable if it's available.
      * Note that the monitor itself can be on a pty, so we still need to try the
      * log output method. */
-    paths = virHashCreate(0, virHashValueFree);
-    if (paths == NULL)
-        goto cleanup;
-
     priv = vm->privateData;
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto cleanup;
-    ret = qemuMonitorGetPtyPaths(priv->mon, paths);
+    ret = qemuMonitorGetChardevInfo(priv->mon, &info);
     qemuDomainObjExitMonitor(driver, vm);
 
-    VIR_DEBUG("qemuMonitorGetPtyPaths returned %i", ret);
+    VIR_DEBUG("qemuMonitorGetChardevInfo returned %i", ret);
     if (ret == 0)
-        ret = qemuProcessFindCharDevicePTYsMonitor(vm, qemuCaps, paths);
+        ret = qemuProcessFindCharDevicePTYsMonitor(vm, qemuCaps, info);
 
  cleanup:
-    virHashFree(paths);
+    virHashFree(info);
 
     if (pos != -1 && kill(vm->pid, 0) == -1 && errno == ESRCH) {
         int len;
