@@ -157,9 +157,8 @@ hypervEnumAndPull(hypervPrivate *priv, virBufferPtr query, const char *root,
 
     response = wsmc_action_enumerate(priv->client, root, options, filter);
 
-    if (hyperyVerifyResponse(priv->client, response, "enumeration") < 0) {
+    if (hyperyVerifyResponse(priv->client, response, "enumeration") < 0)
         goto cleanup;
-    }
 
     enumContext = wsmc_get_enum_context(response);
 
@@ -170,9 +169,8 @@ hypervEnumAndPull(hypervPrivate *priv, virBufferPtr query, const char *root,
         response = wsmc_action_pull(priv->client, resourceUri, options,
                                     filter, enumContext);
 
-        if (hyperyVerifyResponse(priv->client, response, "pull") < 0) {
+        if (hyperyVerifyResponse(priv->client, response, "pull") < 0)
             goto cleanup;
-        }
 
         node = ws_xml_get_soap_body(response);
 
@@ -198,9 +196,8 @@ hypervEnumAndPull(hypervPrivate *priv, virBufferPtr query, const char *root,
             goto cleanup;
         }
 
-        if (ws_xml_get_child(node, 0, resourceUri, className) == NULL) {
+        if (ws_xml_get_child(node, 0, resourceUri, className) == NULL)
             break;
-        }
 
         data = ws_deserialize(serializerContext, node, serializerInfo,
                               className, resourceUri, NULL, 0, 0);
@@ -240,13 +237,11 @@ hypervEnumAndPull(hypervPrivate *priv, virBufferPtr query, const char *root,
     result = 0;
 
  cleanup:
-    if (options != NULL) {
+    if (options != NULL)
         wsmc_options_destroy(options);
-    }
 
-    if (filter != NULL) {
+    if (filter != NULL)
         filter_destroy(filter);
-    }
 
     if (data != NULL) {
 #if WS_SERIALIZER_FREE_MEM_WORKS
@@ -275,9 +270,8 @@ hypervFreeObject(hypervPrivate *priv ATTRIBUTE_UNUSED, hypervObject *object)
     WsSerializerContextH serializerContext;
 #endif
 
-    if (object == NULL) {
+    if (object == NULL)
         return;
-    }
 
 #if WS_SERIALIZER_FREE_MEM_WORKS
     serializerContext = wsmc_get_serialization_context(priv->client);
@@ -431,9 +425,8 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
     response = wsmc_action_invoke(priv->client, MSVM_COMPUTERSYSTEM_RESOURCE_URI,
                                   options, "RequestStateChange", NULL);
 
-    if (hyperyVerifyResponse(priv->client, response, "invocation") < 0) {
+    if (hyperyVerifyResponse(priv->client, response, "invocation") < 0)
         goto cleanup;
-    }
 
     /* Check return value */
     returnValue = ws_xml_get_xpath_value(response, (char *)"/s:Envelope/s:Body/p:RequestStateChange_OUTPUT/p:ReturnValue");
@@ -468,9 +461,8 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
             virBufferAddLit(&query, MSVM_CONCRETEJOB_WQL_SELECT);
             virBufferAsprintf(&query, "where InstanceID = \"%s\"", instanceID);
 
-            if (hypervGetMsvmConcreteJobList(priv, &query, &concreteJob) < 0) {
+            if (hypervGetMsvmConcreteJobList(priv, &query, &concreteJob) < 0)
                 goto cleanup;
-            }
 
             if (concreteJob == NULL) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -521,9 +513,8 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
     result = 0;
 
  cleanup:
-    if (options != NULL) {
+    if (options != NULL)
         wsmc_options_destroy(options);
-    }
 
     ws_xml_destroy_doc(response);
     VIR_FREE(selector);
@@ -576,9 +567,8 @@ bool
 hypervIsMsvmComputerSystemActive(Msvm_ComputerSystem *computerSystem,
                                  bool *in_transition)
 {
-    if (in_transition != NULL) {
+    if (in_transition != NULL)
         *in_transition = false;
-    }
 
     switch (computerSystem->data->EnabledState) {
       case MSVM_COMPUTERSYSTEM_ENABLEDSTATE_UNKNOWN:
@@ -602,9 +592,8 @@ hypervIsMsvmComputerSystemActive(Msvm_ComputerSystem *computerSystem,
       case MSVM_COMPUTERSYSTEM_ENABLEDSTATE_STOPPING:
       case MSVM_COMPUTERSYSTEM_ENABLEDSTATE_PAUSING:
       case MSVM_COMPUTERSYSTEM_ENABLEDSTATE_RESUMING:
-        if (in_transition != NULL) {
+        if (in_transition != NULL)
             *in_transition = true;
-        }
 
         return true;
 
@@ -634,9 +623,8 @@ hypervMsvmComputerSystemToDomain(virConnectPtr conn,
 
     *domain = virGetDomain(conn, computerSystem->data->ElementName, uuid);
 
-    if (*domain == NULL) {
+    if (*domain == NULL)
         return -1;
-    }
 
     if (hypervIsMsvmComputerSystemActive(computerSystem, NULL)) {
         (*domain)->id = computerSystem->data->ProcessID;
@@ -667,9 +655,8 @@ hypervMsvmComputerSystemFromDomain(virDomainPtr domain,
     virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_VIRTUAL);
     virBufferAsprintf(&query, "and Name = \"%s\"", uuid_string);
 
-    if (hypervGetMsvmComputerSystemList(priv, &query, computerSystem) < 0) {
+    if (hypervGetMsvmComputerSystemList(priv, &query, computerSystem) < 0)
         return -1;
-    }
 
     if (*computerSystem == NULL) {
         virReportError(VIR_ERR_NO_DOMAIN,

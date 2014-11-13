@@ -78,9 +78,8 @@ hypervParseUri(hypervParsedUri **parsedUri, virURIPtr uri)
     result = 0;
 
  cleanup:
-    if (result < 0) {
+    if (result < 0)
         hypervFreeParsedUri(parsedUri);
-    }
 
     return result;
 }
@@ -90,9 +89,8 @@ hypervParseUri(hypervParsedUri **parsedUri, virURIPtr uri)
 void
 hypervFreeParsedUri(hypervParsedUri **parsedUri)
 {
-    if (parsedUri == NULL || *parsedUri == NULL) {
+    if (parsedUri == NULL || *parsedUri == NULL)
         return;
-    }
 
     VIR_FREE((*parsedUri)->transport);
 
