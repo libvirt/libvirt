@@ -462,17 +462,26 @@
 
     <p>
       Omit the curly braces around an <code>if</code>, <code>while</code>,
-      <code>for</code> etc. body only
-      when that body occupies a single line.  In every other case we require
+      <code>for</code> etc. body only when both that body and the condition
+      itself occupy a single line.  In every other case we require
       the braces.  This ensures that it is trivially easy to identify a
       single-<i>statement</i> loop: each has only one <i>line</i> in its body.
     </p>
-    <p>
-      Omitting braces with a single-line body is fine:
-    </p>
 
 <pre>
-  while (expr) // one-line body -> omitting curly braces is ok
+  while (expr)             // single line body; {} is forbidden
+      single_line_stmt();
+</pre>
+
+<pre>
+  while (expr(arg1,
+              arg2))      // indentation makes it obvious it is single line,
+      single_line_stmt(); // {} is optional (not enforced either way)
+</pre>
+
+<pre>
+  while (expr1 &amp;&amp;
+         expr2)           // multi-line, at same indentation, {} required
       single_line_stmt();
 </pre>
 
