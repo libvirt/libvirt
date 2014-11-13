@@ -31,6 +31,8 @@ foreach my $file (@ARGV) {
 
     while (defined (my $line = <FILE>)) {
         my $data = $line;
+        # For temporary modifications
+        my $tmpdata;
 
         # Kill any quoted , ; = or "
         $data =~ s/'[";,=]'/'X'/g;
@@ -77,12 +79,15 @@ foreach my $file (@ARGV) {
         #
         #  foo (*bar, wizz);
         #
-        while ($data =~ /(\w+)\s\((?!\*)/) {
+        # We also don't want to spoil the $data so it can be used
+        # later on.
+        $tmpdata = $data;
+        while ($tmpdata =~ /(\w+)\s\((?!\*)/) {
             my $kw = $1;
 
             # Allow space after keywords only
             if ($kw =~ /^(if|for|while|switch|return)$/) {
-                $data =~ s/($kw\s\()/XXX(/;
+                $tmpdata =~ s/($kw\s\()/XXX(/;
             } else {
                 print "$file:$.: $line";
                 $ret = 1;
@@ -147,9 +152,10 @@ foreach my $file (@ARGV) {
 
         # Require spaces around assignment '=', compounds and '=='
         # with the exception of virAssertCmpInt()
-        $data =~ s/(virAssertCmpInt\(.* ).?=,/$1op,/;
-        while ($data =~ /[^ ]\b[!<>&|\-+*\/%\^=]?=[^=]/ ||
-               $data =~ /=[^= \\\n]/) {
+        $tmpdata = $data;
+        $tmpdata =~ s/(virAssertCmpInt\(.* ).?=,/$1op,/;
+        while ($tmpdata =~ /[^ ]\b[!<>&|\-+*\/%\^=]?=[^=]/ ||
+               $tmpdata =~ /=[^= \\\n]/) {
             print "$file:$.: $line";
             $ret = 1;
             last;
