@@ -537,6 +537,16 @@ libxlDomainMigrationFinish(virConnectPtr dconn,
     if (cancelled)
         goto cleanup;
 
+    /* Check if domain is alive */
+    if (!virDomainObjIsActive(vm)) {
+        /* Migration failed if domain is inactive */
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       "%s", _("Migration failed. Domain is not running "
+                               "on destination host"));
+        goto cleanup;
+    }
+
+    /* Unpause if requested */
     if (!(flags & VIR_MIGRATE_PAUSED)) {
         if (libxl_domain_unpause(priv->ctx, vm->def->id) != 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -556,24 +566,26 @@ libxlDomainMigrationFinish(virConnectPtr dconn,
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
     }
 
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
-        goto cleanup;
-
     if (event) {
         libxlDomainEventQueue(driver, event);
         event = NULL;
     }
 
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        goto cleanup;
+
     dom = virGetDomain(dconn, vm->def->name, vm->def->uuid);
 
+ cleanup:
     if (dom == NULL) {
         libxl_domain_destroy(priv->ctx, vm->def->id, NULL);
         libxlDomainCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FAILED);
+        if (!vm->persistent)
+            virDomainObjListRemove(driver->domains, vm);
     }
 
- cleanup:
     if (event)
         libxlDomainEventQueue(driver, event);
     virObjectUnref(cfg);

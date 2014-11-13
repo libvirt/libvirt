@@ -4686,17 +4686,8 @@ libxlDomainMigrateFinish3Params(virConnectPtr dconn,
         return NULL;
     }
 
-    if (!virDomainObjIsActive(vm)) {
-        /* Migration failed if domain is inactive */
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("Migration failed. Domain is not running "
-                               "on destination host"));
-        goto endjob;
-    }
-
     ret = libxlDomainMigrationFinish(dconn, vm, flags, cancelled);
 
- endjob:
     if (!libxlDomainObjEndJob(driver, vm))
         vm = NULL;
 
