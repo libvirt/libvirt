@@ -251,9 +251,8 @@ static void nsIDtoChar(unsigned char *uuid, const nsID *iid)
     uuidstrdst[16] = uuidstrsrc[14];
     uuidstrdst[17] = uuidstrsrc[15];
 
-    for (i = 18; i < VIR_UUID_STRING_BUFLEN; i++) {
+    for (i = 18; i < VIR_UUID_STRING_BUFLEN; i++)
         uuidstrdst[i] = uuidstrsrc[i];
-    }
 
     uuidstrdst[VIR_UUID_STRING_BUFLEN-1] = '\0';
     ignore_value(virUUIDParse(uuidstrdst, uuid));
@@ -291,9 +290,8 @@ static void nsIDFromChar(nsID *iid, const unsigned char *uuid)
     uuidstrdst[16] = uuidstrsrc[14];
     uuidstrdst[17] = uuidstrsrc[15];
 
-    for (i = 18; i < VIR_UUID_STRING_BUFLEN; i++) {
+    for (i = 18; i < VIR_UUID_STRING_BUFLEN; i++)
         uuidstrdst[i] = uuidstrsrc[i];
-    }
 
     uuidstrdst[VIR_UUID_STRING_BUFLEN-1] = '\0';
     ignore_value(virUUIDParse(uuidstrdst, uuidinterim));
@@ -399,13 +397,11 @@ typedef struct _vboxIID_v2_x vboxIID_v2_x;
 static void
 vboxIIDUnalloc_v2_x(vboxGlobalData *data, vboxIID_v2_x *iid)
 {
-    if (iid->value == NULL) {
+    if (iid->value == NULL)
         return;
-    }
 
-    if (iid->value != &iid->backing) {
+    if (iid->value != &iid->backing)
         data->pFuncs->pfnComUnallocMem(iid->value);
-    }
 
     iid->value = NULL;
 }
@@ -500,9 +496,8 @@ typedef struct _vboxIID_v3_x vboxIID_v3_x;
 static void
 vboxIIDUnalloc_v3_x(vboxGlobalData *data, vboxIID_v3_x *iid)
 {
-    if (iid->value != NULL && iid->owner) {
+    if (iid->value != NULL && iid->owner)
         data->pFuncs->pfnUtf16Free(iid->value);
-    }
 
     iid->value = NULL;
     iid->owner = true;
@@ -1770,9 +1765,8 @@ vboxConnectDomainEventRegister(virConnectPtr conn,
         data->vboxCallback = vboxAllocCallbackObj();
         if (data->vboxCallback != NULL) {
             rc = data->vboxObj->vtbl->RegisterCallback(data->vboxObj, data->vboxCallback);
-            if (NS_SUCCEEDED(rc)) {
+            if (NS_SUCCEEDED(rc))
                 vboxRet = 0;
-            }
         }
     } else {
         vboxRet = 0;
@@ -1809,9 +1803,8 @@ vboxConnectDomainEventRegister(virConnectPtr conn,
     if (ret >= 0) {
         return 0;
     } else {
-        if (data->vboxObj && data->vboxCallback) {
+        if (data->vboxObj && data->vboxCallback)
             data->vboxObj->vtbl->UnregisterCallback(data->vboxObj, data->vboxCallback);
-        }
         return -1;
     }
 }
@@ -1876,9 +1869,8 @@ static int vboxConnectDomainEventRegisterAny(virConnectPtr conn,
         data->vboxCallback = vboxAllocCallbackObj();
         if (data->vboxCallback != NULL) {
             rc = data->vboxObj->vtbl->RegisterCallback(data->vboxObj, data->vboxCallback);
-            if (NS_SUCCEEDED(rc)) {
+            if (NS_SUCCEEDED(rc))
                 vboxRet = 0;
-            }
         }
     } else {
         vboxRet = 0;
@@ -1917,9 +1909,8 @@ static int vboxConnectDomainEventRegisterAny(virConnectPtr conn,
     if (ret >= 0) {
         return ret;
     } else {
-        if (data->vboxObj && data->vboxCallback) {
+        if (data->vboxObj && data->vboxCallback)
             data->vboxObj->vtbl->UnregisterCallback(data->vboxObj, data->vboxCallback);
-        }
         return -1;
     }
 }
@@ -2350,9 +2341,8 @@ _attachDVD(vboxGlobalData *data, IMachine *machine, const char *src)
     VBOX_UTF8_TO_UTF16(src, &dvdfileUtf16);
 
     data->vboxObj->vtbl->FindDVDImage(data->vboxObj, dvdfileUtf16, &dvdImage);
-    if (!dvdImage) {
+    if (!dvdImage)
         data->vboxObj->vtbl->OpenDVDImage(data->vboxObj, dvdfileUtf16, dvdemptyuuid.value, &dvdImage);
-    }
 
     if (!dvdImage)
         goto cleanup;

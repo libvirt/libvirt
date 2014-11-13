@@ -429,9 +429,8 @@ vboxSocketFormatAddrUtf16(vboxGlobalData *data, virSocketAddrPtr addr)
 
     utf8 = virSocketAddrFormat(addr);
 
-    if (utf8 == NULL) {
+    if (utf8 == NULL)
         return NULL;
-    }
 
     VBOX_UTF8_TO_UTF16(utf8, &utf16);
     VIR_FREE(utf8);
@@ -820,9 +819,8 @@ vboxSocketParseAddrUtf16(vboxGlobalData *data, const PRUnichar *utf16,
 
     VBOX_UTF16_TO_UTF8(utf16, &utf8);
 
-    if (virSocketAddrParse(addr, utf8, AF_UNSPEC) < 0) {
+    if (virSocketAddrParse(addr, utf8, AF_UNSPEC) < 0)
         goto cleanup;
-    }
 
     result = 0;
 
@@ -927,9 +925,8 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
             VBOX_UTF16_FREE(fromIPAddressUtf16);
             VBOX_UTF16_FREE(toIPAddressUtf16);
 
-            if (errorOccurred) {
+            if (errorOccurred)
                 goto cleanup;
-            }
         } else {
             ipdef->nranges = 0;
         }
@@ -957,9 +954,8 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
                 VBOX_UTF16_FREE(macAddressUtf16);
                 VBOX_UTF16_FREE(ipAddressUtf16);
 
-                if (errorOccurred) {
+                if (errorOccurred)
                     goto cleanup;
-                }
             }
         } else {
             ipdef->nhosts = 0;
@@ -982,9 +978,8 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
         VBOX_UTF16_FREE(networkMaskUtf16);
         VBOX_UTF16_FREE(ipAddressUtf16);
 
-        if (errorOccurred) {
+        if (errorOccurred)
             goto cleanup;
-        }
     }
 
     DEBUGIID("Network UUID", &vboxnet0IID);

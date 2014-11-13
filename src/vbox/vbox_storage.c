@@ -120,9 +120,8 @@ static int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
     size_t i;
     int ret = -1;
 
-    if (!data->vboxObj) {
+    if (!data->vboxObj)
         return ret;
-    }
 
     rc = gVBoxAPI.UArray.vboxArrayGet(&hardDisks, data->vboxObj,
                                       gVBoxAPI.UArray.handleGetHardDisks(data->vboxObj));
@@ -162,9 +161,8 @@ vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nname
     size_t i;
     int ret = -1;
 
-    if (!data->vboxObj) {
+    if (!data->vboxObj)
         return ret;
-    }
 
     rc = gVBoxAPI.UArray.vboxArrayGet(&hardDisks, data->vboxObj,
                                       gVBoxAPI.UArray.handleGetHardDisks(data->vboxObj));
@@ -218,9 +216,8 @@ vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name)
     size_t i;
     virStorageVolPtr ret = NULL;
 
-    if (!data->vboxObj) {
+    if (!data->vboxObj)
         return ret;
-    }
 
     if (!name)
         return ret;
@@ -296,9 +293,8 @@ vboxStorageVolLookupByKey(virConnectPtr conn, const char *key)
     nsresult rc;
     virStorageVolPtr ret = NULL;
 
-    if (!data->vboxObj) {
+    if (!data->vboxObj)
         return ret;
-    }
 
     VBOX_IID_INITIALIZE(&hddIID);
     if (!key)
@@ -366,9 +362,8 @@ vboxStorageVolLookupByPath(virConnectPtr conn, const char *path)
     nsresult rc;
     virStorageVolPtr ret = NULL;
 
-    if (!data->vboxObj) {
+    if (!data->vboxObj)
         return ret;
-    }
 
     VBOX_IID_INITIALIZE(&hddIID);
 
@@ -449,9 +444,8 @@ vboxStorageVolCreateXML(virStoragePoolPtr pool,
     resultCodeUnion resultCode;
     virStorageVolPtr ret = NULL;
 
-    if (!data->vboxObj) {
+    if (!data->vboxObj)
         return ret;
-    }
 
     virCheckFlags(0, NULL);
 
@@ -553,9 +547,8 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
     vboxIIDUnion hddIID;
     int ret = -1;
 
-    if (!data->vboxObj) {
+    if (!data->vboxObj)
         return ret;
-    }
 
     VBOX_IID_INITIALIZE(&hddIID);
     virCheckFlags(0, -1);
@@ -707,9 +700,8 @@ static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info
     nsresult rc;
     int ret = -1;
 
-    if (!data->vboxObj) {
+    if (!data->vboxObj)
         return ret;
-    }
 
     if (!info)
         return ret;
@@ -767,9 +759,8 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
     nsresult rc;
     char *ret = NULL;
 
-    if (!data->vboxObj) {
+    if (!data->vboxObj)
         return ret;
-    }
 
     virCheckFlags(0, NULL);
 
@@ -856,9 +847,8 @@ static char *vboxStorageVolGetPath(virStorageVolPtr vol)
     nsresult rc;
     char *ret = NULL;
 
-    if (!data->vboxObj) {
+    if (!data->vboxObj)
         return ret;
-    }
 
     if (virUUIDParse(vol->key, uuid) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,

@@ -226,9 +226,8 @@ virVBoxSnapshotConfRetrieveSnapshot(xmlNodePtr snapshotNode,
 
     xPathContext->node = snapshotNode;
     descriptionNode = virXPathNode("./vbox:Description", xPathContext);
-    if (descriptionNode != NULL) {
+    if (descriptionNode != NULL)
         snapshot->description = virXMLNodeToString(descriptionNode->doc, descriptionNode);
-    }
 
     hardwareNode = virXPathNode("./vbox:Hardware", xPathContext);
     if (hardwareNode == NULL) {
@@ -447,9 +446,8 @@ virVBoxSnapshotConfSerializeSnapshot(xmlNodePtr node,
         for (i = 0; i < snapshot->nchildren; i++) {
             xmlNodePtr child = xmlNewNode(NULL, BAD_CAST "Snapshot");
             xmlAddChild(snapshotsNode, child);
-            if (virVBoxSnapshotConfSerializeSnapshot(child, snapshot->children[i]) < 0) {
+            if (virVBoxSnapshotConfSerializeSnapshot(child, snapshot->children[i]) < 0)
                 goto cleanup;
-            }
         }
     }
     result = 0;
@@ -850,9 +848,8 @@ virVBoxSnapshotConfAddHardDiskToMediaRegistry(virVBoxSnapshotConfHardDiskPtr har
         goto cleanup;
 
     parentDisk->children[parentDisk->nchildren - 1] = hardDisk;
-    if (hardDisk->parent == NULL) {
+    if (hardDisk->parent == NULL)
         hardDisk->parent = parentDisk;
-    }
     ret = 0;
 
  cleanup:
@@ -915,9 +912,8 @@ virVBoxSnapshotConfRemoveSnapshot(virVBoxSnapshotConfMachinePtr machine,
     parentSnapshot = snapshot->parent;
 
     snapshot->parent = NULL;
-    while (i < parentSnapshot->nchildren && parentSnapshot->children[i] != snapshot) {
+    while (i < parentSnapshot->nchildren && parentSnapshot->children[i] != snapshot)
         ++i;
-    }
     if (VIR_DELETE_ELEMENT(parentSnapshot->children, i, parentSnapshot->nchildren) < 0)
         goto cleanup;
 
@@ -975,9 +971,8 @@ virVBoxSnapshotConfRemoveHardDisk(virVBoxSnapshotConfMediaRegistryPtr mediaRegis
 
     parentHardDisk = hardDisk->parent;
     i = 0;
-    while (i < parentHardDisk->nchildren && parentHardDisk->children[i] != hardDisk) {
+    while (i < parentHardDisk->nchildren && parentHardDisk->children[i] != hardDisk)
         ++i;
-    }
     hardDisk->parent = NULL;
     if (VIR_DELETE_ELEMENT(parentHardDisk->children, i, parentHardDisk->nchildren) < 0)
         goto cleanup;
@@ -1320,9 +1315,8 @@ virVBoxSnapshotConfGetRWDisksPathsFromLibvirtXML(const char *filePath,
         xmlNodePtr node = nodes[i];
         xPathContext->node = node;
         xmlNodePtr sourceNode = virXPathNode("./source", xPathContext);
-        if (sourceNode) {
+        if (sourceNode)
             ret[i] = virXMLPropString(sourceNode, "file");
-        }
     }
     result = 0;
 
@@ -1382,9 +1376,8 @@ virVBoxSnapshotConfGetRODisksPathsFromLibvirtXML(const char *filePath,
         xmlNodePtr node = nodes[i];
         xPathContext->node = node;
         xmlNodePtr sourceNode = virXPathNode("./source", xPathContext);
-        if (sourceNode) {
+        if (sourceNode)
             ret[i] = virXMLPropString(sourceNode, "file");
-        }
     }
     result = 0;
 

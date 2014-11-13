@@ -99,9 +99,8 @@ tryLoadOne(const char *dir, bool setAppHome, bool ignoreMissing,
             return -1;
 
         if (!virFileExists(name)) {
-            if (!ignoreMissing) {
+            if (!ignoreMissing)
                 VIR_ERROR(_("Library '%s' doesn't exist"), name);
-            }
 
             VIR_FREE(name);
             return -1;
@@ -130,9 +129,8 @@ tryLoadOne(const char *dir, bool setAppHome, bool ignoreMissing,
          * FIXME: Don't warn in this case as it currently breaks make check
          *        on systems without VirtualBox.
          */
-        if (dir != NULL) {
+        if (dir != NULL)
             VIR_WARN("Could not dlopen '%s': %s", name, dlerror());
-        }
 
         goto cleanup;
     }
@@ -206,29 +204,25 @@ VBoxCGlueInit(unsigned int *version)
 
     /* If the user specifies the location, try only that. */
     if (home != NULL) {
-        if (tryLoadOne(home, false, false, version) < 0) {
+        if (tryLoadOne(home, false, false, version) < 0)
             return -1;
-        }
     }
 
     /* Try the additionally configured location. */
     if (VBOX_XPCOMC_DIR[0] != '\0') {
-        if (tryLoadOne(VBOX_XPCOMC_DIR, true, true, version) >= 0) {
+        if (tryLoadOne(VBOX_XPCOMC_DIR, true, true, version) >= 0)
             return 0;
-        }
     }
 
     /* Try the known locations. */
     for (i = 0; i < ARRAY_CARDINALITY(knownDirs); ++i) {
-        if (tryLoadOne(knownDirs[i], true, true, version) >= 0) {
+        if (tryLoadOne(knownDirs[i], true, true, version) >= 0)
             return 0;
-        }
     }
 
     /* Finally try the dynamic linker search path. */
-    if (tryLoadOne(NULL, false, true, version) >= 0) {
+    if (tryLoadOne(NULL, false, true, version) >= 0)
         return 0;
-    }
 
     /* No luck, return failure. */
     return -1;
@@ -271,9 +265,8 @@ vboxArrayGetHelper(vboxArray *array, nsresult nsrc, void **items, PRUint32 count
     array->items = NULL;
     array->count = 0;
 
-    if (NS_FAILED(nsrc)) {
+    if (NS_FAILED(nsrc))
         return nsrc;
-    }
 
     array->items = items;
     array->count = count;
@@ -338,16 +331,14 @@ vboxArrayRelease(vboxArray *array)
     size_t i;
     nsISupports *supports;
 
-    if (array->items == NULL) {
+    if (array->items == NULL)
         return;
-    }
 
     for (i = 0; i < array->count; ++i) {
         supports = array->items[i];
 
-        if (supports != NULL) {
+        if (supports != NULL)
             supports->vtbl->Release(supports);
-        }
     }
 
     pVBoxFuncs_v2_2->pfnComUnallocMem(array->items);
@@ -365,16 +356,14 @@ vboxArrayUnalloc(vboxArray *array)
     size_t i;
     void *item;
 
-    if (array->items == NULL) {
+    if (array->items == NULL)
         return;
-    }
 
     for (i = 0; i < array->count; ++i) {
         item = array->items[i];
 
-        if (item != NULL) {
+        if (item != NULL)
             pVBoxFuncs_v2_2->pfnComUnallocMem(item);
-        }
     }
 
     pVBoxFuncs_v2_2->pfnComUnallocMem(array->items);
