@@ -132,9 +132,8 @@ showDomains(virConnectPtr conn)
         goto out;
     }
 
-    if (numNames > 0) {
+    if (numNames > 0)
         printf("Inactive domains:\n");
-    }
 
     for (i = 0; i < numNames; i++) {
         printf("  %s\n", *(nameList + i));
@@ -181,9 +180,8 @@ authCallback(virConnectCredentialPtr cred, unsigned int ncred, void *cbdata)
         case VIR_CRED_AUTHNAME:
             cred[i].result = strdup(authData->username);
 
-            if (cred[i].result == NULL) {
+            if (cred[i].result == NULL)
                 return -1;
-            }
 
             cred[i].resultlen = strlen(cred[i].result);
             break;
@@ -191,9 +189,8 @@ authCallback(virConnectCredentialPtr cred, unsigned int ncred, void *cbdata)
         case VIR_CRED_PASSPHRASE:
             cred[i].result = strdup(authData->password);
 
-            if (cred[i].result == NULL) {
+            if (cred[i].result == NULL)
                 return -1;
-            }
 
             cred[i].resultlen = strlen(cred[i].result);
             break;

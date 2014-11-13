@@ -730,9 +730,8 @@ int main(int argc, char **argv)
     virConnectUnregisterCloseCallback(dconn, connectClose);
 
     VIR_DEBUG("Closing connection");
-    if (dconn && virConnectClose(dconn) < 0) {
+    if (dconn && virConnectClose(dconn) < 0)
         printf("error closing\n");
-    }
 
     printf("done\n");
     return 0;

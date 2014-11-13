@@ -500,9 +500,8 @@ remoteRelayDomainEventGraphics(virConnectPtr conn,
               authScheme, callback->callbackID);
 
     VIR_DEBUG("Subject %d", subject->nidentity);
-    for (i = 0; i < subject->nidentity; i++) {
+    for (i = 0; i < subject->nidentity; i++)
         VIR_DEBUG("  %s=%s", subject->identities[i].type, subject->identities[i].name);
-    }
 
     /* build return data */
     memset(&data, 0, sizeof(data));
@@ -4268,9 +4267,8 @@ remoteDispatchDomainOpenGraphicsFd(virNetServerPtr server ATTRIBUTE_UNUSED,
 
  cleanup:
     VIR_FORCE_CLOSE(fd);
-    if (rv < 0) {
+    if (rv < 0)
         virNetMessageSaveError(rerr);
-    }
 
     if (dom)
         virDomainFree(dom);
@@ -5689,9 +5687,8 @@ remoteDispatchDomainCreateXMLWithFiles(virNetServerPtr server ATTRIBUTE_UNUSED,
     rv = 0;
 
  cleanup:
-    for (i = 0; i < nfiles; i++) {
+    for (i = 0; i < nfiles; i++)
         VIR_FORCE_CLOSE(files[i]);
-    }
     VIR_FREE(files);
     if (rv < 0)
         virNetMessageSaveError(rerr);
@@ -5741,9 +5738,8 @@ static int remoteDispatchDomainCreateWithFiles(virNetServerPtr server ATTRIBUTE_
     rv = 0;
 
  cleanup:
-    for (i = 0; i < nfiles; i++) {
+    for (i = 0; i < nfiles; i++)
         VIR_FORCE_CLOSE(files[i]);
-    }
     VIR_FREE(files);
     if (rv < 0)
         virNetMessageSaveError(rerr);

@@ -981,9 +981,8 @@ static int migrateProfile(void)
     if (!(home = virGetUserDirectory()))
         goto cleanup;
 
-    if (virAsprintf(&old_base, "%s/.libvirt", home) < 0) {
+    if (virAsprintf(&old_base, "%s/.libvirt", home) < 0)
         goto cleanup;
-    }
 
     /* if the new directory is there or the old one is not: do nothing */
     if (!(config_dir = virGetUserConfigDirectory()))
@@ -998,21 +997,18 @@ static int migrateProfile(void)
     }
 
     /* test if we already attempted to migrate first */
-    if (virAsprintf(&updated, "%s/DEPRECATED-DIRECTORY", old_base) < 0) {
+    if (virAsprintf(&updated, "%s/DEPRECATED-DIRECTORY", old_base) < 0)
         goto cleanup;
-    }
-    if (virFileExists(updated)) {
+    if (virFileExists(updated))
         goto cleanup;
-    }
 
     config_home = virGetEnvBlockSUID("XDG_CONFIG_HOME");
     if (config_home && config_home[0] != '\0') {
         if (VIR_STRDUP(xdg_dir, config_home) < 0)
             goto cleanup;
     } else {
-        if (virAsprintf(&xdg_dir, "%s/.config", home) < 0) {
+        if (virAsprintf(&xdg_dir, "%s/.config", home) < 0)
             goto cleanup;
-        }
     }
 
     old_umask = umask(077);
@@ -1164,9 +1160,8 @@ int main(int argc, char **argv) {
 
         c = getopt_long(argc, argv, "ldf:p:t:vVh", opts, &optidx);
 
-        if (c == -1) {
+        if (c == -1)
             break;
-        }
 
         switch (c) {
         case 0:
