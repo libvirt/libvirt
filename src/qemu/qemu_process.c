@@ -2069,6 +2069,61 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
 
 
 static int
+qemuProcessRefreshChannelVirtioState(virDomainObjPtr vm,
+                                     virHashTablePtr info)
+{
+    size_t i;
+    qemuMonitorChardevInfoPtr entry;
+    char id[32];
+
+    for (i = 0; i < vm->def->nchannels; i++) {
+        virDomainChrDefPtr chr = vm->def->channels[i];
+        if (chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO) {
+            if (snprintf(id, sizeof(id), "char%s",
+                         chr->info.alias) >= sizeof(id)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("failed to format device alias "
+                                 "for PTY retrieval"));
+                return -1;
+            }
+
+            /* port state not reported */
+            if (!(entry = virHashLookup(info, id)) ||
+                !entry->state)
+                continue;
+
+            chr->state = entry->state;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
+qemuProcessReconnectRefreshChannelVirtioState(virQEMUDriverPtr driver,
+                                              virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virHashTablePtr info = NULL;
+    int ret = -1;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorGetChardevInfo(priv->mon, &info);
+    qemuDomainObjExitMonitor(driver, vm);
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = qemuProcessRefreshChannelVirtioState(vm, info);
+
+ cleanup:
+    virHashFree(info);
+    return ret;
+}
+
+
+static int
 qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           int asyncJob,
@@ -2111,8 +2166,14 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
     qemuDomainObjExitMonitor(driver, vm);
 
     VIR_DEBUG("qemuMonitorGetChardevInfo returned %i", ret);
-    if (ret == 0)
-        ret = qemuProcessFindCharDevicePTYsMonitor(vm, qemuCaps, info);
+    if (ret == 0) {
+        if ((ret = qemuProcessFindCharDevicePTYsMonitor(vm, qemuCaps,
+                                                        info)) < 0)
+            goto cleanup;
+
+        if ((ret = qemuProcessRefreshChannelVirtioState(vm, info)) < 0)
+            goto cleanup;
+    }
 
  cleanup:
     virHashFree(info);
@@ -3593,6 +3654,9 @@ qemuProcessReconnect(void *opaque)
         goto error;
 
     if (qemuDomainCheckEjectableMedia(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
+        goto error;
+
+    if (qemuProcessReconnectRefreshChannelVirtioState(driver, obj) < 0)
         goto error;
 
     if (qemuProcessRecoverJob(driver, obj, conn, &oldjob) < 0)
