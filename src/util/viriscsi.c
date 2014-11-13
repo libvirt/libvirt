@@ -157,9 +157,8 @@ virStorageBackendIQNFound(const char *initiatoriqn,
         *newline = '\0';
 
         iqn = strrchr(line, ',');
-        if (iqn == NULL) {
+        if (iqn == NULL)
             continue;
-        }
         iqn++;
 
         if (STREQ(iqn, initiatoriqn)) {
@@ -185,9 +184,8 @@ virStorageBackendIQNFound(const char *initiatoriqn,
         ret = IQN_ERROR;
 
  out:
-    if (ret == IQN_MISSING) {
+    if (ret == IQN_MISSING)
         VIR_DEBUG("Could not find interface with IQN '%s'", iqn);
-    }
 
     VIR_FREE(line);
     VIR_FORCE_FCLOSE(fp);
@@ -451,9 +449,8 @@ virISCSIScanTargets(const char *portal,
         *ntargetsret = list.ntargets;
         *targetsret = list.targets;
     } else {
-        for (i = 0; i < list.ntargets; i++) {
+        for (i = 0; i < list.ntargets; i++)
             VIR_FREE(list.targets[i]);
-        }
         VIR_FREE(list.targets);
     }
 

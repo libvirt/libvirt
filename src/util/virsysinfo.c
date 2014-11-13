@@ -179,9 +179,8 @@ virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
         eol = strchr(base, '\n');
         cur = strchr(base, ':') + 1;
 
-        if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0) {
+        if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0)
             return -1;
-        }
         processor = &ret->processor[ret->nprocessor - 1];
 
         virSkipSpaces(&cur);

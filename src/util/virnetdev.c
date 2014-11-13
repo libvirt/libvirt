@@ -1185,9 +1185,8 @@ virNetDevGetVirtualFunctions(const char *pfname,
             goto cleanup;
         }
 
-        if (virPCIGetNetName(pci_sysfs_device_link, &((*vfname)[i])) < 0) {
+        if (virPCIGetNetName(pci_sysfs_device_link, &((*vfname)[i])) < 0)
             VIR_INFO("VF does not have an interface name");
-        }
     }
 
     ret = 0;
@@ -1758,9 +1757,8 @@ virNetDevRestoreVfConfig(const char *pflinkdev, int vf,
                     stateDir, pflinkdev, vf) < 0)
         return rc;
 
-    if (virFileReadAll(path, 128, &fileData) < 0) {
+    if (virFileReadAll(path, 128, &fileData) < 0)
         goto cleanup;
-    }
 
     if ((vlan = strchr(fileData, '\n'))) {
         char *endptr;

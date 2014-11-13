@@ -546,9 +546,8 @@ static void virDBusTypeStackFree(virDBusTypeStack **stack,
     /* The iter in the first level of the stack is the
      * root iter which must not be freed
      */
-    for (i = 1; i < *nstack; i++) {
+    for (i = 1; i < *nstack; i++)
         VIR_FREE((*stack)[i].iter);
-    }
     VIR_FREE(*stack);
 }
 

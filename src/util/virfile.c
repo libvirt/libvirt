@@ -1180,9 +1180,8 @@ virBuildPathInternal(char **path, ...)
     va_end(ap);
 
     *path = virBufferContentAndReset(&buf);
-    if (*path == NULL) {
+    if (*path == NULL)
         ret = -1;
-    }
 
     return ret;
 }
@@ -2047,9 +2046,8 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
         /* XXX This makes assumptions about errno being < 255, which is
          * not true on Hurd.  */
         VIR_FORCE_CLOSE(pair[1]);
-        if (ret < 0) {
+        if (ret < 0)
             VIR_FORCE_CLOSE(fd);
-        }
         ret = -ret;
         if ((ret & 0xff) != ret) {
             VIR_WARN("unable to pass desired return value %d", ret);

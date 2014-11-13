@@ -185,9 +185,8 @@ virXPathLongBase(const char *xpath,
     } else if ((obj != NULL) && (obj->type == XPATH_NUMBER) &&
                (!(isnan(obj->floatval)))) {
         *value = (long) obj->floatval;
-        if (*value != obj->floatval) {
+        if (*value != obj->floatval)
             ret = -2;
-        }
     } else {
         ret = -1;
     }
@@ -291,9 +290,8 @@ virXPathULongBase(const char *xpath,
     } else if ((obj != NULL) && (obj->type == XPATH_NUMBER) &&
                (!(isnan(obj->floatval)))) {
         *value = (unsigned long) obj->floatval;
-        if (*value != obj->floatval) {
+        if (*value != obj->floatval)
             ret = -2;
-        }
     } else {
         ret = -1;
     }
@@ -408,9 +406,8 @@ virXPathULongLong(const char *xpath,
     } else if ((obj != NULL) && (obj->type == XPATH_NUMBER) &&
                (!(isnan(obj->floatval)))) {
         *value = (unsigned long long) obj->floatval;
-        if (*value != obj->floatval) {
+        if (*value != obj->floatval)
             ret = -2;
-        }
     } else {
         ret = -1;
     }
@@ -455,9 +452,8 @@ virXPathLongLong(const char *xpath,
     } else if ((obj != NULL) && (obj->type == XPATH_NUMBER) &&
                (!(isnan(obj->floatval)))) {
         *value = (long long) obj->floatval;
-        if (*value != obj->floatval) {
+        if (*value != obj->floatval)
             ret = -2;
-        }
     } else {
         ret = -1;
     }
@@ -655,9 +651,8 @@ catchXMLError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
     base = ctxt->input->base;
 
     /* skip backwards over any end-of-lines */
-    while ((cur > base) && ((*(cur) == '\n') || (*(cur) == '\r'))) {
+    while ((cur > base) && ((*(cur) == '\n') || (*(cur) == '\r')))
         cur--;
-    }
 
     /* search backwards for beginning-of-line (to max buff size) */
     while ((cur > base) && (*(cur) != '\n') && (*(cur) != '\r'))
@@ -669,9 +664,8 @@ catchXMLError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 
     /* search forward for end-of-line (to max buff size) */
     /* copy selected text to our buffer */
-    while ((*cur != 0) && (*(cur) != '\n') && (*(cur) != '\r')) {
+    while ((*cur != 0) && (*(cur) != '\n') && (*(cur) != '\r'))
         virBufferAddChar(&buf, *cur++);
-    }
 
     /* create blank line with problem pointer */
     contextstr = virBufferContentAndReset(&buf);

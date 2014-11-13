@@ -682,9 +682,8 @@ virNetDevMacVLanVPortProfileCallback(struct nlmsghdr *hdr,
         }
     }
 
-    if (!indicate) {
+    if (!indicate)
         return;
-    }
 
     VIR_INFO("Re-send 802.1qbg associate request:");
     VIR_INFO("  if: %s", calld->cr_ifname);
@@ -851,9 +850,8 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
             return -1;
 
         if (ret) {
-            if (STRPREFIX(tgifname, prefix)) {
+            if (STRPREFIX(tgifname, prefix))
                 goto create_name;
-            }
             virReportSystemError(EEXIST,
                                  _("Unable to create macvlan device %s"), tgifname);
             return -1;
@@ -983,9 +981,8 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
     int ret = 0;
     int vf = -1;
 
-    if (mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) {
+    if (mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU)
         ignore_value(virNetDevRestoreMacAddress(linkdev, stateDir));
-    }
 
     if (ifname) {
         if (virNetDevVPortProfileDisassociate(ifname,

@@ -108,9 +108,8 @@ virNetDevTapGetRealDeviceName(char *ifname ATTRIBUTE_UNUSED)
     while (virDirRead(dirp, &dp, "/dev") > 0) {
         if (STRPREFIX(dp->d_name, "tap")) {
             struct ifreq ifr;
-            if (virAsprintf(&devpath, "/dev/%s", dp->d_name) < 0) {
+            if (virAsprintf(&devpath, "/dev/%s", dp->d_name) < 0)
                 goto cleanup;
-            }
             if ((fd = open(devpath, O_RDWR)) < 0) {
                 if (errno == EBUSY) {
                     VIR_FREE(devpath);
@@ -444,9 +443,8 @@ int virNetDevTapCreate(char **ifname,
         VIR_FREE(dev_path);
     }
 
-    if (virNetDevSetName(ifr.ifr_name, *ifname) == -1) {
+    if (virNetDevSetName(ifr.ifr_name, *ifname) == -1)
         goto cleanup;
-    }
 
 
     ret = 0;

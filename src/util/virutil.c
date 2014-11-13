@@ -603,9 +603,8 @@ char *virIndexToDiskName(int idx, const char *prefix)
     strcpy(name, prefix);
     name[offset + i] = '\0';
 
-    for (i = i - 1, ctr = idx; ctr >= 0; --i, ctr = ctr / 26 - 1) {
+    for (i = i - 1, ctr = idx; ctr >= 0; --i, ctr = ctr / 26 - 1)
         name[offset + i] = 'a' + (ctr % 26);
-    }
 
     return name;
 }
@@ -1539,9 +1538,8 @@ virValidateWWN(const char *wwn)
     size_t i;
     const char *p = wwn;
 
-    if (STRPREFIX(wwn, "0x")) {
+    if (STRPREFIX(wwn, "0x"))
         p += 2;
-    }
 
     for (i = 0; p[i]; i++) {
         if (!c_isxdigit(p[i]))
@@ -2563,9 +2561,8 @@ virGetListenFDs(void)
 
         VIR_DEBUG("Disabling inheritance of passed FD %d", fd);
 
-        if (virSetInherit(fd, false) < 0) {
+        if (virSetInherit(fd, false) < 0)
             VIR_WARN("Couldn't disable inheritance of passed FD %d", fd);
-        }
     }
 
     return nfds;

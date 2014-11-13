@@ -1127,9 +1127,8 @@ virPCIDeviceUnbindFromStub(virPCIDevicePtr dev)
         goto reprobe;
 
     /* Xen's pciback.ko wants you to use remove_slot on the specific device */
-    if (virPCIDriverFile(&path, driver, "remove_slot") < 0) {
+    if (virPCIDriverFile(&path, driver, "remove_slot") < 0)
         goto cleanup;
-    }
 
     if (virFileExists(path) && virFileWriteStr(path, dev->name, 0) < 0) {
         virReportSystemError(errno,
@@ -1214,9 +1213,8 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev,
      * is triggered for such a device, it will also be immediately
      * bound by the stub.
      */
-    if (virPCIDriverFile(&path, stubDriverName, "new_id") < 0) {
+    if (virPCIDriverFile(&path, stubDriverName, "new_id") < 0)
         goto cleanup;
-    }
 
     if (virFileWriteStr(path, dev->id, 0) < 0) {
         virReportSystemError(errno,
@@ -1242,9 +1240,8 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev,
      */
     if (!virFileLinkPointsTo(driverLink, stubDriverPath)) {
         /* Xen's pciback.ko wants you to use new_slot first */
-        if (virPCIDriverFile(&path, stubDriverName, "new_slot") < 0) {
+        if (virPCIDriverFile(&path, stubDriverName, "new_slot") < 0)
             goto remove_id;
-        }
 
         if (virFileExists(path) && virFileWriteStr(path, dev->name, 0) < 0) {
             virReportSystemError(errno,
@@ -1255,9 +1252,8 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev,
         }
         dev->remove_slot = true;
 
-        if (virPCIDriverFile(&path, stubDriverName, "bind") < 0) {
+        if (virPCIDriverFile(&path, stubDriverName, "bind") < 0)
             goto remove_id;
-        }
 
         if (virFileWriteStr(path, dev->name, 0) < 0) {
             virReportSystemError(errno,
@@ -1505,9 +1501,8 @@ virPCIDeviceReadID(virPCIDevicePtr dev, const char *id_name)
     char *path = NULL;
     char *id_str;
 
-    if (virPCIFile(&path, dev->name, id_name) < 0) {
+    if (virPCIFile(&path, dev->name, id_name) < 0)
         return NULL;
-    }
 
     /* ID string is '0xNNNN\n' ... i.e. 7 bytes */
     if (virFileReadAll(path, 7, &id_str) < 0) {

@@ -1204,9 +1204,8 @@ int virStorageFileGetLVMKey(const char *path,
         char *tmp = *key;
 
         /* Find first non-space character */
-        while (*tmp && c_isspace(*tmp)) {
+        while (*tmp && c_isspace(*tmp))
             tmp++;
-        }
         /* Kill leading spaces */
         if (tmp != *key)
             memmove(*key, tmp, strlen(tmp)+1);
@@ -1919,9 +1918,8 @@ virStorageSourceInitChainElement(virStorageSourcePtr newelem,
 {
     int ret = -1;
 
-    if (force) {
+    if (force)
         virStorageSourceSeclabelsClear(newelem);
-    }
 
     if (!newelem->seclabels &&
         virStorageSourceSeclabelsCopy(newelem, old) < 0)

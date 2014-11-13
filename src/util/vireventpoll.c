@@ -221,9 +221,8 @@ int virEventPollAddTimeout(int frequency,
     unsigned long long now;
     int ret;
 
-    if (virTimeMillisNow(&now) < 0) {
+    if (virTimeMillisNow(&now) < 0)
         return -1;
-    }
 
     virMutexLock(&eventLoop.lock);
     if (eventLoop.timeoutsCount == eventLoop.timeoutsAlloc) {
@@ -270,9 +269,8 @@ void virEventPollUpdateTimeout(int timer, int frequency)
         return;
     }
 
-    if (virTimeMillisNow(&now) < 0) {
+    if (virTimeMillisNow(&now) < 0)
         return;
-    }
 
     virMutexLock(&eventLoop.lock);
     for (i = 0; i < eventLoop.timeoutsCount; i++) {
@@ -643,9 +641,8 @@ int virEventPollRunOnce(void)
     ret = poll(fds, nfds, timeout);
     if (ret < 0) {
         EVENT_DEBUG("Poll got error event %d", errno);
-        if (errno == EINTR || errno == EAGAIN) {
+        if (errno == EINTR || errno == EAGAIN)
             goto retry;
-        }
         virReportSystemError(errno, "%s",
                              _("Unable to poll on file handles"));
         goto error_unlocked;

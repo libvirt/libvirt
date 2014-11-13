@@ -65,9 +65,8 @@ sexpr_free(struct sexpr *sexpr)
 {
     int serrno = errno;
 
-    if (sexpr == NULL) {
+    if (sexpr == NULL)
         return;
-    }
 
     switch (sexpr->kind) {
         case SEXPR_CONS:
@@ -163,9 +162,8 @@ append(struct sexpr *lst, const struct sexpr *value)
     if (nil == NULL)
         return -1;
 
-    while (lst->kind != SEXPR_NIL) {
+    while (lst->kind != SEXPR_NIL)
         lst = lst->u.s.cdr;
-    }
 
     lst->kind = SEXPR_CONS;
     lst->u.s.car = (struct sexpr *) value;
@@ -300,9 +298,8 @@ _string2sexpr(const char *buffer, size_t * end)
             ptr = trim(ptr + tmp_len);
         }
 
-        if (*ptr == ')') {
+        if (*ptr == ')')
             ptr++;
-        }
     } else {
         const char *start;
 
@@ -394,13 +391,11 @@ sexpr_lookup_key(const struct sexpr *sexpr, const char *node)
     ptr = buffer;
     token = strsep(&ptr, "/");
 
-    if (sexpr->kind != SEXPR_CONS || sexpr->u.s.car->kind != SEXPR_VALUE) {
+    if (sexpr->kind != SEXPR_CONS || sexpr->u.s.car->kind != SEXPR_VALUE)
         goto cleanup;
-    }
 
-    if (STRNEQ(sexpr->u.s.car->u.value, token)) {
+    if (STRNEQ(sexpr->u.s.car->u.value, token))
         goto cleanup;
-    }
 
     for (token = strsep(&ptr, "/"); token; token = strsep(&ptr, "/")) {
         const struct sexpr *i;
@@ -419,14 +414,12 @@ sexpr_lookup_key(const struct sexpr *sexpr, const char *node)
             }
         }
 
-        if (i->kind == SEXPR_NIL) {
+        if (i->kind == SEXPR_NIL)
             break;
-        }
     }
 
-    if (token != NULL) {
+    if (token != NULL)
         goto cleanup;
-    }
 
     result = (struct sexpr *) sexpr;
 
@@ -538,9 +531,8 @@ sexpr_fmt_node(const struct sexpr *sexpr, const char *fmt, ...)
     result = virVasprintf(&node, fmt, ap);
     va_end(ap);
 
-    if (result < 0) {
+    if (result < 0)
         return NULL;
-    }
 
     value = sexpr_node(sexpr, node);
 

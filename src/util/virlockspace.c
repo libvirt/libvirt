@@ -679,9 +679,8 @@ int virLockSpaceReleaseResource(virLockSpacePtr lockspace,
     }
 
     for (i = 0; i < res->nOwners; i++) {
-        if (res->owners[i] == owner) {
+        if (res->owners[i] == owner)
             break;
-        }
     }
 
     if (i == res->nOwners) {
@@ -723,9 +722,8 @@ virLockSpaceRemoveResourcesForOwner(const void *payload,
     VIR_DEBUG("res %s owner %lld", res->name, (unsigned long long)data->owner);
 
     for (i = 0; i < res->nOwners; i++) {
-        if (res->owners[i] == data->owner) {
+        if (res->owners[i] == data->owner)
             break;
-        }
     }
 
     if (i == res->nOwners)

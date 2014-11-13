@@ -265,9 +265,8 @@ int virNetDevBridgeCreate(const char *brname)
         goto cleanup;
     }
 
-    if (virNetDevSetName(ifr.ifr_name, brname) == -1) {
+    if (virNetDevSetName(ifr.ifr_name, brname) == -1)
         goto cleanup;
-    }
 
     ret = 0;
  cleanup:

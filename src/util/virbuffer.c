@@ -368,9 +368,8 @@ virBufferVasprintf(virBufferPtr buf, const char *format, va_list argptr)
         buf->content[buf->use] = 0;
 
         grow_size = (count + 1 > 1000) ? count + 1 : 1000;
-        if (virBufferGrow(buf, grow_size) < 0) {
+        if (virBufferGrow(buf, grow_size) < 0)
             return;
-        }
 
         size = buf->size - buf->use;
         if ((count = vsnprintf(&buf->content[buf->use],

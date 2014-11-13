@@ -640,9 +640,8 @@ virBitmapNextSetBit(virBitmapPtr bitmap, ssize_t pos)
 
     bits = bitmap->map[nl] & ~((1UL << nb) - 1);
 
-    while (bits == 0 && ++nl < bitmap->map_len) {
+    while (bits == 0 && ++nl < bitmap->map_len)
         bits = bitmap->map[nl];
-    }
 
     if (bits == 0)
         return -1;
@@ -726,9 +725,8 @@ virBitmapNextClearBit(virBitmapPtr bitmap, ssize_t pos)
 
     bits = ~bitmap->map[nl] & ~((1UL << nb) - 1);
 
-    while (bits == 0 && ++nl < bitmap->map_len) {
+    while (bits == 0 && ++nl < bitmap->map_len)
         bits = ~bitmap->map[nl];
-    }
 
     if (nl == bitmap->map_len - 1) {
         /* Ensure tail bits are ignored.  */

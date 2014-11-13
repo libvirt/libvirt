@@ -1,7 +1,7 @@
 /*
  * virfirewall.c: integration with firewalls
  *
- * Copyright (C) 2013 Red Hat, Inc.
+ * Copyright (C) 2013, 2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -382,9 +382,8 @@ virFirewallAddRuleFullV(virFirewallPtr firewall,
         break;
     }
 
-    while ((str = va_arg(args, char *)) != NULL) {
+    while ((str = va_arg(args, char *)) != NULL)
         ADD_ARG(rule, str);
-    }
 
     if (group->addingRollback) {
         if (VIR_APPEND_ELEMENT_COPY(group->rollback,
@@ -590,9 +589,8 @@ void virFirewallRuleAddArgList(virFirewallPtr firewall,
 
     va_start(list, rule);
 
-    while ((str = va_arg(list, char *)) != NULL) {
+    while ((str = va_arg(list, char *)) != NULL)
         ADD_ARG(rule, str);
-    }
 
     va_end(list);
 

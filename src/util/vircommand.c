@@ -558,9 +558,8 @@ virExec(virCommandPtr cmd)
 
     pid = virFork();
 
-    if (pid < 0) {
+    if (pid < 0)
         goto cleanup;
-    }
 
     if (pid) { /* parent */
         VIR_FORCE_CLOSE(null);
@@ -3021,9 +3020,8 @@ virCommandRunNul(virCommandPtr cmd,
         v[i] = NULL;
 
     virCommandSetOutputFD(cmd, &fd);
-    if (virCommandRunAsync(cmd, NULL) < 0) {
+    if (virCommandRunAsync(cmd, NULL) < 0)
         goto cleanup;
-    }
 
     if ((fp = VIR_FDOPEN(fd, "r")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3050,9 +3048,8 @@ virCommandRunNul(virCommandPtr cmd,
             if (func(n_tok, v, data) < 0)
                 goto cleanup;
             n_tok = 0;
-            for (i = 0; i < n_columns; i++) {
+            for (i = 0; i < n_columns; i++)
                 VIR_FREE(v[i]);
-            }
         }
     }
 

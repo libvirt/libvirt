@@ -122,9 +122,8 @@ static void virThreadPoolWorker(void *opaque)
         if (job == pool->jobList.firstPrio) {
             virThreadPoolJobPtr tmp = job->next;
             while (tmp) {
-                if (tmp->priority) {
+                if (tmp->priority)
                     break;
-                }
                 tmp = tmp->next;
             }
             pool->jobList.firstPrio = tmp;

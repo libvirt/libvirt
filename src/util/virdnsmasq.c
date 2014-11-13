@@ -726,9 +726,8 @@ dnsmasqCapsRefreshInternal(dnsmasqCapsPtr caps, bool force)
                              caps->binaryPath);
         return -1;
     }
-    if (!force && caps->mtime == sb.st_mtime) {
+    if (!force && caps->mtime == sb.st_mtime)
         return 0;
-    }
     caps->mtime = sb.st_mtime;
 
     /* Make sure the binary we are about to try exec'ing exists.
