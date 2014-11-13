@@ -1879,8 +1879,12 @@ qemuProcessLookupPTYs(virDomainDefPtr def,
 
             if (snprintf(id, sizeof(id), "%s%s",
                          chardevfmt ? "char" : "",
-                         chr->info.alias) >= sizeof(id))
+                         chr->info.alias) >= sizeof(id)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("failed to format device alias "
+                                 "for PTY retrieval"));
                 return -1;
+            }
 
             path = (const char *) virHashLookup(paths, id);
             if (path == NULL) {
