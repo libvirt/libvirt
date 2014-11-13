@@ -639,9 +639,8 @@ virStorageBackendFileSystemProbe(const char *device,
  error:
     VIR_FREE(libblkid_format);
 
-    if (probe != NULL) {
+    if (probe != NULL)
         blkid_free_probe(probe);
-    }
 
     return ret;
 }
@@ -737,9 +736,8 @@ virStorageBackendMakeFileSystem(virStoragePoolObjPtr pool,
         ok_to_mkfs = true;
     }
 
-    if (ok_to_mkfs) {
+    if (ok_to_mkfs)
         ret = virStorageBackendExecuteMKFS(device, format);
-    }
 
  error:
     return ret;

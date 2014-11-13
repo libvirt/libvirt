@@ -119,14 +119,12 @@ virStorageBackendIsMultipath(const char *dev_name)
         goto out;
     }
 
-    if (STREQ(target_type, "multipath")) {
+    if (STREQ(target_type, "multipath"))
         ret = 1;
-    }
 
  out:
-    if (dmt != NULL) {
+    if (dmt != NULL)
         dm_task_destroy(dmt);
-    }
     return ret;
 }
 
@@ -138,21 +136,17 @@ virStorageBackendGetMinorNumber(const char *dev_name, uint32_t *minor)
     struct dm_task *dmt;
     struct dm_info info;
 
-    if (!(dmt = dm_task_create(DM_DEVICE_INFO))) {
+    if (!(dmt = dm_task_create(DM_DEVICE_INFO)))
         goto out;
-    }
 
-    if (!dm_task_set_name(dmt, dev_name)) {
+    if (!dm_task_set_name(dmt, dev_name))
         goto out;
-    }
 
-    if (!dm_task_run(dmt)) {
+    if (!dm_task_run(dmt))
         goto out;
-    }
 
-    if (!dm_task_get_info(dmt, &info)) {
+    if (!dm_task_get_info(dmt, &info))
         goto out;
-    }
 
     *minor = info.minor;
     ret = 0;
@@ -177,9 +171,8 @@ virStorageBackendCreateVols(virStoragePoolObjPtr pool,
     do {
         is_mpath = virStorageBackendIsMultipath(names->name);
 
-        if (is_mpath < 0) {
+        if (is_mpath < 0)
             goto out;
-        }
 
         if (is_mpath == 1) {
 
@@ -193,9 +186,8 @@ virStorageBackendCreateVols(virStoragePoolObjPtr pool,
                 goto out;
             }
 
-            if (virStorageBackendMpathNewVol(pool, minor, map_device) < 0) {
+            if (virStorageBackendMpathNewVol(pool, minor, map_device) < 0)
                 goto out;
-            }
 
             VIR_FREE(map_device);
         }
@@ -247,9 +239,8 @@ virStorageBackendGetMaps(virStoragePoolObjPtr pool)
     virStorageBackendCreateVols(pool, names);
 
  out:
-    if (dmt != NULL) {
+    if (dmt != NULL)
         dm_task_destroy(dmt);
-    }
     return retval;
 }
 

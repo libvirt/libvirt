@@ -256,9 +256,8 @@ getNewStyleBlockDevice(const char *lun_path,
 
     while ((direrr = virDirRead(block_dir, &block_dirent, block_path)) > 0) {
 
-        if (STREQLEN(block_dirent->d_name, ".", 1)) {
+        if (STREQLEN(block_dirent->d_name, ".", 1))
             continue;
-        }
 
         if (VIR_STRDUP(*block_device, block_dirent->d_name) < 0) {
             closedir(block_dir);
@@ -397,9 +396,8 @@ processLU(virStoragePoolObjPtr pool,
     VIR_DEBUG("%u:%u:%u:%u is a Direct-Access LUN",
               host, bus, target, lun);
 
-    if (getBlockDevice(host, bus, target, lun, &block_device) < 0) {
+    if (getBlockDevice(host, bus, target, lun, &block_device) < 0)
         goto out;
-    }
 
     if (virStorageBackendSCSINewLun(pool,
                                     host, bus, target, lun,

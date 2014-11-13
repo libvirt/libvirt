@@ -484,9 +484,8 @@ storageConnectListDefinedStoragePools(virConnectPtr conn,
 
  cleanup:
     storageDriverUnlock();
-    for (i = 0; i < got; i++) {
+    for (i = 0; i < got; i++)
         VIR_FREE(names[i]);
-    }
     memset(names, 0, nnames * sizeof(*names));
     return -1;
 }
@@ -1650,9 +1649,8 @@ storageVolCreateXML(virStoragePoolPtr obj,
     /* Wipe any key the user may have suggested, as volume creation
      * will generate the canonical key.  */
     VIR_FREE(voldef->key);
-    if (backend->createVol(obj->conn, pool, voldef) < 0) {
+    if (backend->createVol(obj->conn, pool, voldef) < 0)
         goto cleanup;
-    }
 
     pool->volumes.objs[pool->volumes.count++] = voldef;
     volobj = virGetStorageVol(obj->conn, pool->def->name, voldef->name,
@@ -1830,9 +1828,8 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
      * Wipe any key the user may have suggested, as volume creation
      * will generate the canonical key.  */
     VIR_FREE(newvol->key);
-    if (backend->createVol(obj->conn, pool, newvol) < 0) {
+    if (backend->createVol(obj->conn, pool, newvol) < 0)
         goto cleanup;
-    }
 
     pool->volumes.objs[pool->volumes.count++] = newvol;
     volobj = virGetStorageVol(obj->conn, pool->def->name, newvol->name,

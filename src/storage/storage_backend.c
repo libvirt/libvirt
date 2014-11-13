@@ -182,9 +182,8 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
     }
 
 #ifdef __linux__
-    if (ioctl(fd, BLKBSZGET, &wbytes) < 0) {
+    if (ioctl(fd, BLKBSZGET, &wbytes) < 0)
         wbytes = 0;
-    }
 #endif
     if ((wbytes == 0) && fstat(fd, &st) == 0)
         wbytes = st.st_blksize;
@@ -395,9 +394,8 @@ createRawFile(int fd, virStorageVolDefPtr vol,
             (vol->target.allocation < inputvol->target.capacity);
 
         ret = virStorageBackendCopyToFD(vol, inputvol, fd, &remain, want_sparse);
-        if (ret < 0) {
+        if (ret < 0)
             goto cleanup;
-        }
     }
 
     if (remain && need_alloc) {
@@ -631,9 +629,8 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
     virCommandSetGID(cmd, -1);
 
     if (!filecreated) {
-        if (virCommandRun(cmd, NULL) < 0) {
+        if (virCommandRun(cmd, NULL) < 0)
             return -1;
-        }
         if (stat(vol->target.path, &st) < 0) {
             virReportSystemError(errno,
                                  _("failed to create %s"), vol->target.path);

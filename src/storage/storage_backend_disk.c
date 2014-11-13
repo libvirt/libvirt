@@ -171,9 +171,8 @@ virStorageBackendDiskMakeFreeExtent(virStoragePoolObjPtr pool,
         return -1; /* Don't bother to re-alloc freeExtents - it'll be free'd shortly */
 
     /* first block reported as free, even if it is not */
-    if (dev->freeExtents[dev->nfreeExtent].start == 0) {
+    if (dev->freeExtents[dev->nfreeExtent].start == 0)
         dev->freeExtents[dev->nfreeExtent].start = SECTOR_SIZE;
-    }
 
     pool->def->available +=
         (dev->freeExtents[dev->nfreeExtent].end -
@@ -349,9 +348,8 @@ virStorageBackendDiskRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    if (virStorageBackendDiskReadGeometry(pool) != 0) {
+    if (virStorageBackendDiskReadGeometry(pool) != 0)
         return -1;
-    }
 
     return virStorageBackendDiskReadPartitions(pool, NULL);
 }
@@ -467,9 +465,8 @@ virStorageBackendDiskPartTypeToCreate(virStoragePoolObjPtr pool)
                 partType == VIR_STORAGE_VOL_DISK_TYPE_EXTENDED)
                 count++;
         }
-        if (count >= 4) {
+        if (count >= 4)
             return VIR_STORAGE_VOL_DISK_TYPE_LOGICAL;
-        }
     }
 
     /* for all other cases, all partitions are primary */
@@ -587,9 +584,8 @@ virStorageBackendDiskPartBoundaries(virStoragePoolObjPtr pool,
              }
              /* if we are creating a logical partition, we need one extra
                 block between partitions (or actually move start one block) */
-             if (partType == VIR_STORAGE_VOL_DISK_TYPE_LOGICAL) {
+             if (partType == VIR_STORAGE_VOL_DISK_TYPE_LOGICAL)
                  size -= SECTOR_SIZE;
-             }
          }
          if (size > neededSize &&
              (smallestSize == 0 ||
@@ -659,9 +655,8 @@ virStorageBackendDiskCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (virStorageBackendDiskPartFormat(pool, vol, &partFormat) != 0) {
+    if (virStorageBackendDiskPartFormat(pool, vol, &partFormat) != 0)
         goto cleanup;
-    }
     virCommandAddArg(cmd, partFormat);
 
     if (virStorageBackendDiskPartBoundaries(pool, &startOffset,
