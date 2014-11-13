@@ -1759,10 +1759,27 @@ testQemuMonitorJSONqemuMonitorJSONGetSpiceMigrationStatus(const void *data)
 }
 
 static int
-testHashEqualString(const void *value1, const void *value2)
+testHashEqualChardevInfo(const void *value1, const void *value2)
 {
-    return strcmp(value1, value2);
+    const qemuMonitorChardevInfo *info1 = value1;
+    const qemuMonitorChardevInfo *info2 = value2;
+
+    if (info1->state != info2->state)
+        goto error;
+
+    if (STRNEQ_NULLABLE(info1->ptyPath, info2->ptyPath))
+        goto error;
+
+    return 0;
+
+ error:
+    fprintf(stderr, "\n"
+            "info1->state: %d info2->state: %d\n"
+            "info1->ptyPath: %s info2->ptyPath: %s\n",
+            info1->state, info2->state, info1->ptyPath, info2->ptyPath);
+    return -1;
 }
+
 
 static int
 testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *data)
@@ -1771,6 +1788,10 @@ testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *data)
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     virHashTablePtr info = NULL, expectedInfo = NULL;
+    qemuMonitorChardevInfo info0 = { NULL, VIR_DOMAIN_CHR_DEVICE_STATE_DEFAULT };
+    qemuMonitorChardevInfo info1 = { (char *) "/dev/pts/21", VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED };
+    qemuMonitorChardevInfo info2 = { (char *) "/dev/pts/20", VIR_DOMAIN_CHR_DEVICE_STATE_DEFAULT };
+    qemuMonitorChardevInfo info3 = { NULL, VIR_DOMAIN_CHR_DEVICE_STATE_DISCONNECTED };
 
     if (!test)
         return -1;
@@ -1779,8 +1800,10 @@ testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *data)
         !(expectedInfo = virHashCreate(32, NULL)))
         goto cleanup;
 
-    if (virHashAddEntry(expectedInfo, "charserial1", (void *) "/dev/pts/21") < 0 ||
-        virHashAddEntry(expectedInfo, "charserial0", (void *) "/dev/pts/20") < 0) {
+    if (virHashAddEntry(expectedInfo, "charserial1", &info1) < 0 ||
+        virHashAddEntry(expectedInfo, "charserial0", &info2) < 0 ||
+        virHashAddEntry(expectedInfo, "charmonitor", &info0) < 0 ||
+        virHashAddEntry(expectedInfo, "charserial2", &info3) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Unable to create expectedInfo hash table");
         goto cleanup;
@@ -1791,7 +1814,8 @@ testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *data)
                                "    \"return\": ["
                                "        {"
                                "            \"filename\": \"pty:/dev/pts/21\","
-                               "            \"label\": \"charserial1\""
+                               "            \"label\": \"charserial1\","
+                               "            \"frontend-open\": true"
                                "        },"
                                "        {"
                                "            \"filename\": \"pty:/dev/pts/20\","
@@ -1800,6 +1824,11 @@ testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *data)
                                "        {"
                                "            \"filename\": \"unix:/var/lib/libvirt/qemu/gentoo.monitor,server\","
                                "            \"label\": \"charmonitor\""
+                               "        },"
+                               "        {"
+                               "            \"filename\": \"unix:/path/to/socket,server\","
+                               "            \"label\": \"charserial2\","
+                               "            \"frontend-open\": false"
                                "        }"
                                "    ],"
                                "    \"id\": \"libvirt-15\""
@@ -1810,7 +1839,7 @@ testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *data)
                                       info) < 0)
         goto cleanup;
 
-    if (!virHashEqual(info, expectedInfo, testHashEqualString)) {
+    if (!virHashEqual(info, expectedInfo, testHashEqualChardevInfo)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Hashtable is different to the expected one");
         goto cleanup;

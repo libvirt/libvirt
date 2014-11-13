@@ -3414,7 +3414,7 @@ qemuMonitorJSONQueryRxFilter(qemuMonitorPtr mon, const char *alias,
  *
  * {"return": [
  *      {"filename": "stdio", "label": "monitor"},
- *      {"filename": "pty:/dev/pts/6", "label": "serial0"},
+ *      {"filename": "pty:/dev/pts/6", "label": "serial0", "frontend-open": true},
  *      {"filename": "pty:/dev/pts/7", "label": "parallel0"}
  * ]}
  *
@@ -3426,6 +3426,7 @@ qemuMonitorJSONExtractChardevInfo(virJSONValuePtr reply,
     virJSONValuePtr data;
     int ret = -1;
     size_t i;
+    qemuMonitorChardevInfoPtr entry = NULL;
 
     if (!(data = virJSONValueObjectGet(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3440,44 +3441,60 @@ qemuMonitorJSONExtractChardevInfo(virJSONValuePtr reply,
     }
 
     for (i = 0; i < virJSONValueArraySize(data); i++) {
-        virJSONValuePtr entry = virJSONValueArrayGet(data, i);
+        virJSONValuePtr chardev = virJSONValueArrayGet(data, i);
         const char *type;
-        const char *id;
-        if (!entry) {
+        const char *alias;
+        bool connected;
+
+        if (!chardev) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("character device information was missing array element"));
             goto cleanup;
         }
 
-        if (!(type = virJSONValueObjectGetString(entry, "filename"))) {
+        if (!(alias = virJSONValueObjectGetString(chardev, "label"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("character device information was missing label"));
+            goto cleanup;
+        }
+
+        if (!(type = virJSONValueObjectGetString(chardev, "filename"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("character device information was missing filename"));
             goto cleanup;
         }
 
-        if (!(id = virJSONValueObjectGetString(entry, "label"))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("character device information was missing filename"));
+        if (VIR_ALLOC(entry) < 0)
+            goto cleanup;
+
+        if (STRPREFIX(type, "pty:") &&
+            VIR_STRDUP(entry->ptyPath, type + strlen("pty:")) < 0)
+            goto cleanup;
+
+        if (virJSONValueObjectGetBoolean(chardev, "frontend-open", &connected) == 0) {
+            if (connected)
+                entry->state = VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED;
+            else
+                entry->state = VIR_DOMAIN_CHR_DEVICE_STATE_DISCONNECTED;
+        }
+
+        if (virHashAddEntry(info, alias, entry) < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("failed to add chardev '%s' info"), alias);
             goto cleanup;
         }
 
-        if (STRPREFIX(type, "pty:")) {
-            char *path;
-            if (VIR_STRDUP(path, type + strlen("pty:")) < 0)
-                goto cleanup;
-
-            if (virHashAddEntry(info, id, path) < 0) {
-                virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("failed to save chardev path '%s'"), path);
-                VIR_FREE(path);
-                goto cleanup;
-            }
-        }
+        entry = NULL;
     }
 
     ret = 0;
 
  cleanup:
+    if (entry) {
+        VIR_FREE(entry->ptyPath);
+        VIR_FREE(entry);
+    }
+
     return ret;
 }
 

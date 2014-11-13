@@ -649,6 +649,12 @@ int qemuMonitorRemoveNetdev(qemuMonitorPtr mon,
 int qemuMonitorQueryRxFilter(qemuMonitorPtr mon, const char *alias,
                              virNetDevRxFilterPtr *filter);
 
+typedef struct _qemuMonitorChardevInfo qemuMonitorChardevInfo;
+typedef qemuMonitorChardevInfo *qemuMonitorChardevInfoPtr;
+struct _qemuMonitorChardevInfo {
+    char *ptyPath;
+    virDomainChrDeviceState state;
+};
 int qemuMonitorGetChardevInfo(qemuMonitorPtr mon,
                               virHashTablePtr *retinfo);
 

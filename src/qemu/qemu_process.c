@@ -1919,7 +1919,7 @@ qemuProcessLookupPTYs(virDomainDefPtr def,
 
         if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
             char id[32];
-            const char *path;
+            qemuMonitorChardevInfoPtr entry;
 
             if (snprintf(id, sizeof(id), "%s%s",
                          chardevfmt ? "char" : "",
@@ -1930,8 +1930,8 @@ qemuProcessLookupPTYs(virDomainDefPtr def,
                 return -1;
             }
 
-            path = (const char *) virHashLookup(info, id);
-            if (path == NULL) {
+            entry = virHashLookup(info, id);
+            if (!entry || !entry->ptyPath) {
                 if (chr->source.data.file.path == NULL) {
                     /* neither the log output nor 'info chardev' had a
                      * pty path for this chardev, report an error
@@ -1948,7 +1948,7 @@ qemuProcessLookupPTYs(virDomainDefPtr def,
             }
 
             VIR_FREE(chr->source.data.file.path);
-            if (VIR_STRDUP(chr->source.data.file.path, path) < 0)
+            if (VIR_STRDUP(chr->source.data.file.path, entry->ptyPath) < 0)
                 return -1;
         }
     }

@@ -2982,6 +2982,17 @@ qemuMonitorQueryRxFilter(qemuMonitorPtr mon, const char *alias,
 }
 
 
+static void
+qemuMonitorChardevInfoFree(void *data,
+                           const void *name ATTRIBUTE_UNUSED)
+{
+    qemuMonitorChardevInfoPtr info = data;
+
+    VIR_FREE(info->ptyPath);
+    VIR_FREE(info);
+}
+
+
 int
 qemuMonitorGetChardevInfo(qemuMonitorPtr mon,
                           virHashTablePtr *retinfo)
@@ -2997,7 +3008,7 @@ qemuMonitorGetChardevInfo(qemuMonitorPtr mon,
         goto error;
     }
 
-    if (!(info = virHashCreate(10, virHashValueFree)))
+    if (!(info = virHashCreate(10, qemuMonitorChardevInfoFree)))
         goto error;
 
     if (mon->json)

@@ -2174,6 +2174,7 @@ int qemuMonitorTextGetChardevInfo(qemuMonitorPtr mon,
                                   virHashTablePtr info)
 {
     char *reply = NULL;
+    qemuMonitorChardevInfoPtr entry = NULL;
     int ret = -1;
 
     if (qemuMonitorHMPCommand(mon, "info chardev", &reply) < 0)
@@ -2218,17 +2219,22 @@ int qemuMonitorTextGetChardevInfo(qemuMonitorPtr mon,
 
         /* Path is everything after needle to the end of the line */
         *eol = '\0';
-        char *path;
-        if (VIR_STRDUP(path, needle + strlen(NEEDLE)) < 0)
+
+        if (VIR_ALLOC(entry) < 0)
             goto cleanup;
 
-        if (virHashAddEntry(info, id, path) < 0) {
+        if (VIR_STRDUP(entry->ptyPath, needle + strlen(NEEDLE)) < 0)
+            goto cleanup;
+
+        if (virHashAddEntry(info, id, entry) < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("failed to save chardev path '%s'"),
-                           path);
-            VIR_FREE(path);
+                           entry->ptyPath);
+            VIR_FREE(entry->ptyPath);
             goto cleanup;
         }
+
+        entry = NULL;
 #undef NEEDLE
     }
 
@@ -2236,6 +2242,7 @@ int qemuMonitorTextGetChardevInfo(qemuMonitorPtr mon,
 
  cleanup:
     VIR_FREE(reply);
+    VIR_FREE(entry);
     return ret;
 }
 
