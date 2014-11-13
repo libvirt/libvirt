@@ -4650,6 +4650,7 @@ libxlDomainMigrateFinish3Params(virConnectPtr dconn,
     libxlDriverPrivatePtr driver = dconn->privateData;
     virDomainObjPtr vm = NULL;
     const char *dname = NULL;
+    virDomainPtr ret = NULL;
 
 #ifdef LIBXL_HAVE_NO_SUSPEND_RESUME
     virReportUnsupportedError();
@@ -4680,16 +4681,29 @@ libxlDomainMigrateFinish3Params(virConnectPtr dconn,
         return NULL;
     }
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0) {
+        virObjectUnlock(vm);
+        return NULL;
+    }
+
     if (!virDomainObjIsActive(vm)) {
         /* Migration failed if domain is inactive */
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("Migration failed. Domain is not running "
                                "on destination host"));
-        virObjectUnlock(vm);
-        return NULL;
+        goto endjob;
     }
 
-    return libxlDomainMigrationFinish(dconn, vm, flags, cancelled);
+    ret = libxlDomainMigrationFinish(dconn, vm, flags, cancelled);
+
+ endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
+
+    if (vm)
+        virObjectUnlock(vm);
+
+    return ret;
 }
 
 static int

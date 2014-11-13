@@ -573,7 +573,6 @@ libxlDomainMigrationFinish(virConnectPtr dconn,
  cleanup:
     if (event)
         libxlDomainEventQueue(driver, event);
-    virObjectUnlock(vm);
     virObjectUnref(cfg);
     return dom;
 }
