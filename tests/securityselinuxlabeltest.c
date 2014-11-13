@@ -120,9 +120,8 @@ testSELinuxLoadFileList(const char *testname,
                     abs_srcdir, testname) < 0)
         goto cleanup;
 
-    if (!(fp = fopen(path, "r"))) {
+    if (!(fp = fopen(path, "r")))
         goto cleanup;
-    }
 
     if (VIR_ALLOC_N(line, 1024) < 0)
         goto cleanup;
@@ -191,9 +190,8 @@ testSELinuxLoadDef(const char *testname)
                     abs_srcdir, testname) < 0)
         goto cleanup;
 
-    if (virFileReadAll(xmlfile, 1024*1024, &xmlstr) < 0) {
+    if (virFileReadAll(xmlfile, 1024*1024, &xmlstr) < 0)
         goto cleanup;
-    }
 
     if (!(def = virDomainDefParseString(xmlstr, caps, xmlopt,
                                         QEMU_EXPECTED_VIRT_TYPES,

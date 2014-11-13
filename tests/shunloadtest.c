@@ -74,9 +74,8 @@ static void *threadMain(void *arg)
         pthread_cond_signal(&cond);
     }
 
-    while (!quit) {
+    while (!quit)
         pthread_cond_wait(&cond, &lock);
-    }
     pthread_mutex_unlock(&lock);
 
     return NULL;
@@ -126,9 +125,8 @@ int main(int argc ATTRIBUTE_UNUSED, char **argv)
 
     /* Wait for the thread to start and call libvirt */
     pthread_mutex_lock(&lock);
-    while (!running && !failstart) {
+    while (!running && !failstart)
         pthread_cond_wait(&cond, &lock);
-    }
 
     /* Close the shared library (and thus make libvirt.so
      * non-resident */

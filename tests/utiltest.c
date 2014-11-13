@@ -124,9 +124,8 @@ testParseVersionString(const void *data ATTRIBUTE_UNUSED)
             return -1;
         }
 
-        if (result < 0) {
+        if (result < 0)
             continue;
-        }
 
         if (version != versions[i].version) {
             if (virTestGetDebug() > 0) {

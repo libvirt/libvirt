@@ -70,9 +70,8 @@ int main(int argc, char **argv) {
     if (!log)
         goto cleanup;
 
-    for (i = 1; i < argc; i++) {
+    for (i = 1; i < argc; i++)
         fprintf(log, "ARG:%s\n", argv[i]);
-    }
 
     origenv = environ;
     n = 0;

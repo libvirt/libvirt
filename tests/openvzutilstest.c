@@ -42,9 +42,8 @@ testReadConfigParam(const void *data ATTRIBUTE_UNUSED)
     char *conf = NULL;
     char *value = NULL;
 
-    if (virAsprintf(&conf, "%s/openvzutilstest.conf", abs_srcdir) < 0) {
+    if (virAsprintf(&conf, "%s/openvzutilstest.conf", abs_srcdir) < 0)
         return -1;
-    }
 
     for (i = 0; i < ARRAY_CARDINALITY(configParams); ++i) {
         if (openvzReadConfigParam(conf, configParams[i].param,
@@ -52,9 +51,8 @@ testReadConfigParam(const void *data ATTRIBUTE_UNUSED)
             goto cleanup;
         }
 
-        if (configParams[i].ret != 1) {
+        if (configParams[i].ret != 1)
             continue;
-        }
 
         if (STRNEQ(configParams[i].value, value)) {
             virtTestDifference(stderr, configParams[i].value, value);

@@ -124,9 +124,8 @@ static int eventThreadJobDone;
 ATTRIBUTE_NORETURN static void *eventThreadLoop(void *data ATTRIBUTE_UNUSED) {
     while (1) {
         pthread_mutex_lock(&eventThreadMutex);
-        while (!eventThreadRunOnce) {
+        while (!eventThreadRunOnce)
             pthread_cond_wait(&eventThreadRunCond, &eventThreadMutex);
-        }
         eventThreadRunOnce = 0;
         pthread_mutex_unlock(&eventThreadMutex);
 

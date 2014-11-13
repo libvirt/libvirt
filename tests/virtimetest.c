@@ -88,9 +88,8 @@ testTimeLocalOffset(const void *args)
     }
     tzset();
 
-    if (virTimeLocalOffsetFromUTC(&actual) < 0) {
+    if (virTimeLocalOffsetFromUTC(&actual) < 0)
         return -1;
-    }
 
     if (data->offset != actual) {
         VIR_DEBUG("Expect Offset %ld got %ld\n",

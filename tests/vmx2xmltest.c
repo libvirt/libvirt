@@ -27,9 +27,8 @@ testCapsInit(void)
 
     caps = virCapabilitiesNew(VIR_ARCH_I686, true, true);
 
-    if (caps == NULL) {
+    if (caps == NULL)
         return;
-    }
 
     virCapabilitiesAddHostMigrateTransport(caps, "esx");
 
@@ -39,9 +38,8 @@ testCapsInit(void)
                               VIR_ARCH_I686,
                               NULL, NULL, 0, NULL);
 
-    if (guest == NULL) {
+    if (guest == NULL)
         goto failure;
-    }
 
     if (virCapabilitiesAddGuestDomain(guest, "vmware", NULL, NULL, 0,
                                       NULL) == NULL) {
@@ -54,9 +52,8 @@ testCapsInit(void)
                               VIR_ARCH_X86_64,
                               NULL, NULL, 0, NULL);
 
-    if (guest == NULL) {
+    if (guest == NULL)
         goto failure;
-    }
 
     if (virCapabilitiesAddGuestDomain(guest, "vmware", NULL, NULL, 0,
                                       NULL) == NULL) {
@@ -201,9 +198,8 @@ mymain(void)
 
     testCapsInit();
 
-    if (caps == NULL) {
+    if (caps == NULL)
         return EXIT_FAILURE;
-    }
 
     if (!(xmlopt = virVMXDomainXMLConfInit()))
         return EXIT_FAILURE;

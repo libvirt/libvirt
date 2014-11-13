@@ -54,9 +54,8 @@ testParseDatastorePath(const void *data ATTRIBUTE_UNUSED)
             goto failure;
         }
 
-        if (paths[i].result < 0) {
+        if (paths[i].result < 0)
             continue;
-        }
 
         if (STRNEQ(paths[i].datastoreName, datastoreName)) {
             virtTestDifference(stderr, paths[i].datastoreName, datastoreName);
@@ -138,9 +137,8 @@ testConvertDateTimeToCalendarTime(const void *data ATTRIBUTE_UNUSED)
             return -1;
         }
 
-        if (times[i].calendarTime != calendarTime) {
+        if (times[i].calendarTime != calendarTime)
             return -1;
-        }
     }
 
     return 0;
@@ -186,9 +184,8 @@ testEscapeDatastoreItem(const void *data ATTRIBUTE_UNUSED)
 
         escaped = esxUtil_EscapeDatastoreItem(datastoreItems[i].string);
 
-        if (escaped == NULL) {
+        if (escaped == NULL)
             return -1;
-        }
 
         if (STRNEQ(datastoreItems[i].escaped, escaped)) {
             VIR_FREE(escaped);
@@ -228,9 +225,8 @@ testConvertWindows1252ToUTF8(const void *data ATTRIBUTE_UNUSED)
         utf8 = virVMXConvertToUTF8("Windows-1252",
                                    windows1252ToUTF8[i].windows1252);
 
-        if (utf8 == NULL) {
+        if (utf8 == NULL)
             return -1;
-        }
 
         if (STRNEQ(windows1252ToUTF8[i].utf8, utf8)) {
             VIR_FREE(utf8);

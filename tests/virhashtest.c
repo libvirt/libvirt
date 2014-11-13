@@ -531,17 +531,15 @@ testHashGetItems(const void *data ATTRIBUTE_UNUSED)
         virHashAddEntry(hash, keya, value3) < 0 ||
         virHashAddEntry(hash, keyc, value1) < 0 ||
         virHashAddEntry(hash, keyb, value2) < 0) {
-        if (virTestGetVerbose()) {
+        if (virTestGetVerbose())
             testError("\nfailed to create hash");
-        }
         goto cleanup;
     }
 
     if (!(array = virHashGetItems(hash, NULL)) ||
         array[3].key || array[3].value) {
-        if (virTestGetVerbose()) {
+        if (virTestGetVerbose())
             testError("\nfailed to get items with NULL sort");
-        }
         goto cleanup;
     }
     VIR_FREE(array);
@@ -554,9 +552,8 @@ testHashGetItems(const void *data ATTRIBUTE_UNUSED)
         STRNEQ(array[2].key, "c") ||
         STRNEQ(array[2].value, "1") ||
         array[3].key || array[3].value) {
-        if (virTestGetVerbose()) {
+        if (virTestGetVerbose())
             testError("\nfailed to get items with key sort");
-        }
         goto cleanup;
     }
     VIR_FREE(array);
@@ -569,9 +566,8 @@ testHashGetItems(const void *data ATTRIBUTE_UNUSED)
         STRNEQ(array[2].key, "a") ||
         STRNEQ(array[2].value, "3") ||
         array[3].key || array[3].value) {
-        if (virTestGetVerbose()) {
+        if (virTestGetVerbose())
             testError("\nfailed to get items with value sort");
-        }
         goto cleanup;
     }
 
@@ -612,44 +608,38 @@ testHashEqual(const void *data ATTRIBUTE_UNUSED)
         virHashAddEntry(hash1, keyc, value3_l) < 0 ||
         virHashAddEntry(hash2, keya, value1_u) < 0 ||
         virHashAddEntry(hash2, keyb, value2_u) < 0) {
-        if (virTestGetVerbose()) {
+        if (virTestGetVerbose())
             testError("\nfailed to create hashes");
-        }
         goto cleanup;
     }
 
     if (virHashEqual(hash1, hash2, testHashEqualCompValue)) {
-        if (virTestGetVerbose()) {
+        if (virTestGetVerbose())
             testError("\nfailed equal test for different number of elements");
-        }
         goto cleanup;
     }
 
     if (virHashAddEntry(hash2, keyc, value4_u) < 0) {
-        if (virTestGetVerbose()) {
+        if (virTestGetVerbose())
             testError("\nfailed to add element to hash2");
-        }
         goto cleanup;
     }
 
     if (virHashEqual(hash1, hash2, testHashEqualCompValue)) {
-        if (virTestGetVerbose()) {
+        if (virTestGetVerbose())
             testError("\nfailed equal test for same number of elements");
-        }
         goto cleanup;
     }
 
     if (virHashUpdateEntry(hash2, keyc, value3_u) < 0) {
-        if (virTestGetVerbose()) {
+        if (virTestGetVerbose())
             testError("\nfailed to update element in hash2");
-        }
         goto cleanup;
     }
 
     if (!virHashEqual(hash1, hash2, testHashEqualCompValue)) {
-        if (virTestGetVerbose()) {
+        if (virTestGetVerbose())
             testError("\nfailed equal test for equal hash tables");
-        }
         goto cleanup;
     }
 

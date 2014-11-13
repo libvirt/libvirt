@@ -38,9 +38,8 @@ static int testBufInfiniteLoop(const void *data)
      * which was the case after the above addchar at the time of the bug.
      * This test is a bit fragile, since it relies on virBuffer internals.
      */
-    if (virAsprintf(&addstr, "%*s", buf->a - buf->b - 1, "a") < 0) {
+    if (virAsprintf(&addstr, "%*s", buf->a - buf->b - 1, "a") < 0)
         goto out;
-    }
 
     if (info->doEscape)
         virBufferEscapeString(buf, "%s", addstr);

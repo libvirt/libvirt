@@ -27,9 +27,8 @@ testCapsInit(void)
 
     caps = virCapabilitiesNew(VIR_ARCH_I686, true, true);
 
-    if (caps == NULL) {
+    if (caps == NULL)
         return;
-    }
 
     virCapabilitiesAddHostMigrateTransport(caps, "esx");
 
@@ -40,9 +39,8 @@ testCapsInit(void)
                               VIR_ARCH_I686,
                               NULL, NULL, 0, NULL);
 
-    if (guest == NULL) {
+    if (guest == NULL)
         goto failure;
-    }
 
     if (virCapabilitiesAddGuestDomain(guest, "vmware", NULL, NULL, 0,
                                       NULL) == NULL) {
@@ -55,9 +53,8 @@ testCapsInit(void)
                               VIR_ARCH_X86_64,
                               NULL, NULL, 0, NULL);
 
-    if (guest == NULL) {
+    if (guest == NULL)
         goto failure;
-    }
 
     if (virCapabilitiesAddGuestDomain(guest, "vmware", NULL, NULL, 0,
                                       NULL) == NULL) {
@@ -81,21 +78,18 @@ testCompareFiles(const char *xml, const char *vmx, int virtualHW_version)
     char *formatted = NULL;
     virDomainDefPtr def = NULL;
 
-    if (virtTestLoadFile(xml, &xmlData) < 0) {
+    if (virtTestLoadFile(xml, &xmlData) < 0)
         goto failure;
-    }
 
-    if (virtTestLoadFile(vmx, &vmxData) < 0) {
+    if (virtTestLoadFile(vmx, &vmxData) < 0)
         goto failure;
-    }
 
     def = virDomainDefParseString(xmlData, caps, xmlopt,
                                   1 << VIR_DOMAIN_VIRT_VMWARE,
                                   VIR_DOMAIN_XML_INACTIVE);
 
-    if (def == NULL) {
+    if (def == NULL)
         goto failure;
-    }
 
     if (!virDomainDefCheckABIStability(def, def)) {
         fprintf(stderr, "ABI stability check failed on %s", xml);
@@ -104,9 +98,8 @@ testCompareFiles(const char *xml, const char *vmx, int virtualHW_version)
 
     formatted = virVMXFormatConfig(&ctx, xmlopt, def, virtualHW_version);
 
-    if (formatted == NULL) {
+    if (formatted == NULL)
         goto failure;
-    }
 
     if (STRNEQ(vmxData, formatted)) {
         virtTestDifference(stderr, vmxData, formatted);
@@ -207,9 +200,8 @@ testFormatVMXFileName(const char *src, void *opaque ATTRIBUTE_UNUSED)
     success = true;
 
  cleanup:
-    if (! success) {
+    if (! success)
         VIR_FREE(absolutePath);
-    }
 
     VIR_FREE(copyOfDatastorePath);
 
@@ -233,9 +225,8 @@ mymain(void)
 
     testCapsInit();
 
-    if (caps == NULL) {
+    if (caps == NULL)
         return EXIT_FAILURE;
-    }
 
     if (!(xmlopt = virVMXDomainXMLConfInit()))
         return EXIT_FAILURE;
