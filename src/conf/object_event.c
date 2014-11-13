@@ -388,9 +388,8 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
               callback, opaque, legacy, callbackID, serverFilter);
 
     /* Check incoming */
-    if (!cbList) {
+    if (!cbList)
         return -1;
-    }
 
     /* If there is no additional filtering, then check if we already
      * have this callback on our list.  */
@@ -460,9 +459,8 @@ virObjectEventQueueClear(virObjectEventQueuePtr queue)
     if (!queue)
         return;
 
-    for (i = 0; i < queue->count; i++) {
+    for (i = 0; i < queue->count; i++)
         virObjectUnref(queue->events[i]);
-    }
     VIR_FREE(queue->events);
     queue->count = 0;
 }

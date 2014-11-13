@@ -333,9 +333,8 @@ virStorageVolDefFree(virStorageVolDefPtr def)
     VIR_FREE(def->name);
     VIR_FREE(def->key);
 
-    for (i = 0; i < def->source.nextent; i++) {
+    for (i = 0; i < def->source.nextent; i++)
         VIR_FREE(def->source.extents[i].path);
-    }
     VIR_FREE(def->source.extents);
 
     virStorageSourceClear(&def->target);
@@ -370,9 +369,8 @@ virStoragePoolSourceClear(virStoragePoolSourcePtr source)
     if (!source)
         return;
 
-    for (i = 0; i < source->nhost; i++) {
+    for (i = 0; i < source->nhost; i++)
         VIR_FREE(source->hosts[i].name);
-    }
     VIR_FREE(source->hosts);
 
     for (i = 0; i < source->ndevice; i++)
@@ -481,9 +479,8 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     relnode = ctxt->node;
     ctxt->node = node;
 
-    if ((options = virStoragePoolOptionsForPoolType(pool_type)) == NULL) {
+    if ((options = virStoragePoolOptionsForPoolType(pool_type)) == NULL)
         goto cleanup;
-    }
 
     source->name = virXPathString("string(./name)", ctxt);
     if (pool_type == VIR_STORAGE_POOL_RBD && source->name == NULL) {
@@ -833,9 +830,8 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
         goto error;
     }
 
-    if ((options = virStoragePoolOptionsForPoolType(ret->type)) == NULL) {
+    if ((options = virStoragePoolOptionsForPoolType(ret->type)) == NULL)
         goto error;
-    }
 
     source_node = virXPathNode("./source", ctxt);
     if (source_node) {
@@ -945,13 +941,11 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
      * path and permissions */
     if (!(options->flags & VIR_STORAGE_POOL_SOURCE_NETWORK)) {
         if (ret->type == VIR_STORAGE_POOL_LOGICAL) {
-            if (virAsprintf(&target_path, "/dev/%s", ret->source.name) < 0) {
+            if (virAsprintf(&target_path, "/dev/%s", ret->source.name) < 0)
                 goto error;
-            }
         } else if (ret->type == VIR_STORAGE_POOL_ZFS) {
-            if (virAsprintf(&target_path, "/dev/zvol/%s", ret->source.name) < 0) {
+            if (virAsprintf(&target_path, "/dev/zvol/%s", ret->source.name) < 0)
                 goto error;
-            }
         } else {
             target_path = virXPathString("string(./target/path)", ctxt);
             if (!target_path) {
@@ -1814,9 +1808,8 @@ virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
     virStoragePoolDefPtr def;
     virStoragePoolObjPtr pool;
 
-    if (!(def = virStoragePoolDefParseFile(path))) {
+    if (!(def = virStoragePoolDefParseFile(path)))
         return NULL;
-    }
 
     if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -2006,9 +1999,8 @@ virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def)
     virBufferAddLit(&buf, "<sources>\n");
     virBufferAdjustIndent(&buf, 2);
 
-    for (i = 0; i < def->nsources; i++) {
+    for (i = 0; i < def->nsources; i++)
         virStoragePoolSourceFormat(&buf, options, &def->sources[i]);
-    }
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</sources>\n");

@@ -60,9 +60,8 @@ void virInterfaceProtocolDefFree(virInterfaceProtocolDefPtr def)
 
     if (def == NULL)
         return;
-    for (i = 0; i < def->nips; i++) {
+    for (i = 0; i < def->nips; i++)
         virInterfaceIpDefFree(def->ips[i]);
-    }
     VIR_FREE(def->ips);
     VIR_FREE(def->family);
     VIR_FREE(def->gateway);
@@ -106,9 +105,8 @@ void virInterfaceDefFree(virInterfaceDefPtr def)
     }
 
     /* free all protos */
-    for (pp = 0; pp < def->nprotos; pp++) {
+    for (pp = 0; pp < def->nprotos; pp++)
         virInterfaceProtocolDefFree(def->protos[pp]);
-    }
     VIR_FREE(def->protos);
     VIR_FREE(def);
 }
@@ -1081,9 +1079,8 @@ virInterfaceDefDevFormat(virBufferPtr buf, const virInterfaceDef *def,
         virInterfaceProtocolDefFormat(buf, def);
     }
 
-    if (def->type != VIR_INTERFACE_TYPE_BRIDGE) {
+    if (def->type != VIR_INTERFACE_TYPE_BRIDGE)
         virInterfaceLinkFormat(buf, &def->lnk);
-    }
     switch (def->type) {
         case VIR_INTERFACE_TYPE_ETHERNET:
             if (def->mac)

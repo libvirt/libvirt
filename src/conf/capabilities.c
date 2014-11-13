@@ -219,9 +219,8 @@ virCapabilitiesDispose(void *object)
         VIR_FREE(caps->host.migrateTrans[i]);
     VIR_FREE(caps->host.migrateTrans);
 
-    for (i = 0; i < caps->host.nsecModels; i++) {
+    for (i = 0; i < caps->host.nsecModels; i++)
         virCapabilitiesClearSecModel(&caps->host.secModels[i]);
-    }
     VIR_FREE(caps->host.secModels);
 
     VIR_FREE(caps->host.pagesSize);

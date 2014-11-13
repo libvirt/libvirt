@@ -2008,9 +2008,8 @@ virDomainVcpuPinDefArrayFree(virDomainVcpuPinDefPtr *def,
     if (!def)
         return;
 
-    for (i = 0; i < nvcpupin; i++) {
+    for (i = 0; i < nvcpupin; i++)
         virDomainVcpuPinDefFree(def[i]);
-    }
 
     VIR_FREE(def);
 }
@@ -2689,9 +2688,8 @@ virDomainDeviceInfoCopy(virDomainDeviceInfoPtr dst,
 void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
 {
     VIR_FREE(info->alias);
-    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB)
         VIR_FREE(info->addr.usb.port);
-    }
     memset(&info->addr, 0, sizeof(info->addr));
     info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
     VIR_FREE(info->romfile);
@@ -4804,9 +4802,8 @@ virDomainDiskDefAssignAddress(virDomainXMLOptionPtr xmlopt,
             def->info.addr.drive.unit = idx % 15;
 
             /* Skip the SCSI controller at unit 7 */
-            if (def->info.addr.drive.unit >= 7) {
+            if (def->info.addr.drive.unit >= 7)
                 ++def->info.addr.drive.unit;
-            }
         } else {
             /* For a narrow SCSI bus we define the default mapping to be
              * 7 units per bus, 1 bus per controller, many controllers */
@@ -5081,9 +5078,8 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
 
  error:
     ctxt->node = saved_node;
-    for (; i > 0; i--) {
+    for (; i > 0; i--)
         virSecurityLabelDefFree(def->seclabels[i - 1]);
-    }
     VIR_FREE(def->seclabels);
     def->nseclabels = 0;
     VIR_FREE(list);
@@ -5187,9 +5183,8 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
     return 0;
 
  error:
-    for (i = 0; i < nseclabels; i++) {
+    for (i = 0; i < nseclabels; i++)
         virSecurityDeviceLabelDefFree(seclabels[i]);
-    }
     VIR_FREE(seclabels);
     VIR_FREE(list);
     return -1;
@@ -6143,9 +6138,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
         }
     } else {
-        if (def->bus == VIR_DOMAIN_DISK_BUS_USB) {
+        if (def->bus == VIR_DOMAIN_DISK_BUS_USB)
             def->removable = VIR_TRISTATE_SWITCH_ABSENT;
-        }
     }
 
     if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
@@ -8329,9 +8323,8 @@ virDomainChrDefParseXML(xmlXPathContextPtr ctxt,
         if (cur->type == XML_ELEMENT_NODE) {
             if (xmlStrEqual(cur->name, BAD_CAST "target")) {
                 seenTarget = true;
-                if (virDomainChrDefParseTargetXML(def, cur) < 0) {
+                if (virDomainChrDefParseTargetXML(def, cur) < 0)
                     goto error;
-                }
             }
         }
         cur = cur->next;
@@ -9105,9 +9098,8 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
                     if (virDomainGraphicsListenGetType(def, i)
                         == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) {
                         found = virDomainGraphicsListenGetAddress(def, i);
-                        if (STREQ_NULLABLE(found, listenAddr)) {
+                        if (STREQ_NULLABLE(found, listenAddr))
                             matched = true;
-                        }
                         break;
                     }
                 }
@@ -9243,16 +9235,14 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
             def->data.rdp.port = 0;
 
         if ((replaceUser = virXMLPropString(node, "replaceUser")) != NULL) {
-            if (STREQ(replaceUser, "yes")) {
+            if (STREQ(replaceUser, "yes"))
                 def->data.rdp.replaceUser = true;
-            }
             VIR_FREE(replaceUser);
         }
 
         if ((multiUser = virXMLPropString(node, "multiUser")) != NULL) {
-            if (STREQ(multiUser, "yes")) {
+            if (STREQ(multiUser, "yes"))
                 def->data.rdp.multiUser = true;
-            }
             VIR_FREE(multiUser);
         }
 
@@ -10452,9 +10442,8 @@ virDomainRedirdevDefParseXML(xmlNodePtr node,
     if (remaining < 0)
         goto error;
 
-    if (def->source.chr.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
+    if (def->source.chr.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC)
         def->source.chr.data.spicevmc = VIR_DOMAIN_CHR_SPICEVMC_USBREDIR;
-    }
 
     if (virDomainDeviceInfoParseXML(node, bootHash, &def->info,
                                     flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
@@ -10648,9 +10637,8 @@ virDomainRedirFilterDefParseXML(xmlNodePtr node,
         goto error;
 
     ctxt->node = node;
-    if ((n = virXPathNodeSet("./usbdev", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./usbdev", ctxt, &nodes)) < 0)
         goto error;
-    }
 
     if (n && VIR_ALLOC_N(def->usbdevs, n) < 0)
         goto error;
@@ -11709,9 +11697,8 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
     }
 
     /* analysis of the boot devices */
-    if ((n = virXPathNodeSet("./os/boot", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./os/boot", ctxt, &nodes)) < 0)
         goto cleanup;
-    }
 
     if (n > 0 && deviceBoot) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -13250,9 +13237,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         def->os.init = virXPathString("string(./os/init[1])", ctxt);
         def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
 
-        if ((n = virXPathNodeSet("./os/initarg", ctxt, &nodes)) < 0) {
+        if ((n = virXPathNodeSet("./os/initarg", ctxt, &nodes)) < 0)
             goto error;
-        }
 
         if (VIR_ALLOC_N(def->os.initargv, n+1) < 0)
             goto error;
@@ -13392,9 +13378,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     VIR_FREE(nodes);
 
     /* analysis of the filesystems */
-    if ((n = virXPathNodeSet("./devices/filesystem", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/filesystem", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n && VIR_ALLOC_N(def->fss, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
@@ -13408,9 +13393,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     VIR_FREE(nodes);
 
     /* analysis of the network devices */
-    if ((n = virXPathNodeSet("./devices/interface", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/interface", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n && VIR_ALLOC_N(def->nets, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
@@ -13437,9 +13421,8 @@ virDomainDefParseXML(xmlDocPtr xml,
 
 
     /* analysis of the smartcard devices */
-    if ((n = virXPathNodeSet("./devices/smartcard", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/smartcard", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n && VIR_ALLOC_N(def->smartcards, n) < 0)
         goto error;
 
@@ -13455,9 +13438,8 @@ virDomainDefParseXML(xmlDocPtr xml,
 
 
     /* analysis of the character devices */
-    if ((n = virXPathNodeSet("./devices/parallel", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/parallel", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n && VIR_ALLOC_N(def->parallels, n) < 0)
         goto error;
 
@@ -13531,9 +13513,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
-    if ((n = virXPathNodeSet("./devices/channel", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/channel", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n && VIR_ALLOC_N(def->channels, n) < 0)
         goto error;
 
@@ -13571,9 +13552,8 @@ virDomainDefParseXML(xmlDocPtr xml,
 
 
     /* analysis of the input devices */
-    if ((n = virXPathNodeSet("./devices/input", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/input", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n && VIR_ALLOC_N(def->inputs, n) < 0)
         goto error;
 
@@ -13613,9 +13593,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     VIR_FREE(nodes);
 
     /* analysis of the graphics devices */
-    if ((n = virXPathNodeSet("./devices/graphics", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/graphics", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n && VIR_ALLOC_N(def->graphics, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
@@ -13649,9 +13628,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
 
     /* analysis of the sound devices */
-    if ((n = virXPathNodeSet("./devices/sound", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/sound", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n && VIR_ALLOC_N(def->sounds, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
@@ -13666,9 +13644,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     VIR_FREE(nodes);
 
     /* analysis of the video devices */
-    if ((n = virXPathNodeSet("./devices/video", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/video", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n && VIR_ALLOC_N(def->videos, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
@@ -13723,9 +13700,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
 
     /* analysis of the host devices */
-    if ((n = virXPathNodeSet("./devices/hostdev", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/hostdev", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n && VIR_REALLOC_N(def->hostdevs, def->nhostdevs + n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
@@ -13754,9 +13730,8 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     /* analysis of the watchdog devices */
     def->watchdog = NULL;
-    if ((n = virXPathNodeSet("./devices/watchdog", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/watchdog", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n > 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("only a single watchdog device is supported"));
@@ -13774,9 +13749,8 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     /* analysis of the memballoon devices */
     def->memballoon = NULL;
-    if ((n = virXPathNodeSet("./devices/memballoon", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/memballoon", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n > 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("only a single memory balloon device is supported"));
@@ -13824,9 +13798,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
-    if ((n = virXPathNodeSet("./devices/nvram", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/nvram", ctxt, &nodes)) < 0)
         goto error;
-    }
 
     if (n > 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -13842,9 +13815,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
 
     /* analysis of the hub devices */
-    if ((n = virXPathNodeSet("./devices/hub", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/hub", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n && VIR_ALLOC_N(def->hubs, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
@@ -13865,9 +13837,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     VIR_FREE(nodes);
 
     /* analysis of the redirected devices */
-    if ((n = virXPathNodeSet("./devices/redirdev", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/redirdev", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n && VIR_ALLOC_N(def->redirdevs, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
@@ -13890,9 +13861,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     VIR_FREE(nodes);
 
     /* analysis of the redirection filter rules */
-    if ((n = virXPathNodeSet("./devices/redirfilter", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/redirfilter", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n > 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("only one set of redirection filter rule is supported"));
@@ -13911,9 +13881,8 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     /* analysis of the panic devices */
     def->panic = NULL;
-    if ((n = virXPathNodeSet("./devices/panic", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/panic", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n > 1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("only a single panic device is supported"));
@@ -13930,9 +13899,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
 
     /* analysis of the shmem devices */
-    if ((n = virXPathNodeSet("./devices/shmem", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/shmem", ctxt, &nodes)) < 0)
         goto error;
-    }
     if (n && VIR_ALLOC_N(def->shmems, n) < 0)
         goto error;
 
@@ -14106,9 +14074,8 @@ virDomainObjParseXML(xmlDocPtr xml,
     }
     obj->pid = (pid_t)val;
 
-    if ((n = virXPathNodeSet("./taint", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./taint", ctxt, &nodes)) < 0)
         goto error;
-    }
     for (i = 0; i < n; i++) {
         char *str = virXMLPropString(nodes[i], "flag");
         if (str) {
@@ -15886,9 +15853,8 @@ virDomainEmulatorPinAdd(virDomainDefPtr def,
 int
 virDomainEmulatorPinDel(virDomainDefPtr def)
 {
-    if (!def->cputune.emulatorpin) {
+    if (!def->cputune.emulatorpin)
         return 0;
-    }
 
     virDomainVcpuPinDefFree(def->cputune.emulatorpin);
     def->cputune.emulatorpin = NULL;
@@ -16588,9 +16554,8 @@ virDomainControllerDefFormat(virBufferPtr buf,
                       "<controller type='%s' index='%u'",
                       type, def->idx);
 
-    if (model) {
+    if (model)
         virBufferEscapeString(buf, " model='%s'", model);
-    }
 
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
@@ -17556,9 +17521,8 @@ virDomainChrDefFormat(virBufferPtr buf,
         }
 
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO: {
-            if (def->target.name) {
+            if (def->target.name)
                 virBufferEscapeString(buf, " name='%s'", def->target.name);
-            }
             break;
         }
 
@@ -18114,9 +18078,8 @@ virDomainTimerDefFormat(virBufferPtr buf,
     }
 
     if (def->name == VIR_DOMAIN_TIMER_NAME_TSC) {
-        if (def->frequency > 0) {
+        if (def->frequency > 0)
             virBufferAsprintf(buf, " frequency='%lu'", def->frequency);
-        }
 
         if (def->mode != -1) {
             const char *mode
@@ -18138,15 +18101,12 @@ virDomainTimerDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         virBufferAddLit(buf, "<catchup");
-        if (def->catchup.threshold > 0) {
+        if (def->catchup.threshold > 0)
             virBufferAsprintf(buf, " threshold='%lu'", def->catchup.threshold);
-        }
-        if (def->catchup.slew > 0) {
+        if (def->catchup.slew > 0)
             virBufferAsprintf(buf, " slew='%lu'", def->catchup.slew);
-        }
-        if (def->catchup.limit > 0) {
+        if (def->catchup.limit > 0)
             virBufferAsprintf(buf, " limit='%lu'", def->catchup.limit);
-        }
         virBufferAddLit(buf, "/>\n");
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</timer>\n");
@@ -20536,9 +20496,8 @@ virDomainNetGetActualBridgeName(virDomainNetDefPtr iface)
         return iface->data.bridge.brname;
     if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
         iface->data.network.actual &&
-        iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+        iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE)
         return iface->data.network.actual->data.bridge.brname;
-    }
     return NULL;
 }
 
@@ -20549,9 +20508,8 @@ virDomainNetGetActualDirectDev(virDomainNetDefPtr iface)
         return iface->data.direct.linkdev;
     if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
         iface->data.network.actual &&
-        iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_DIRECT)
         return iface->data.network.actual->data.direct.linkdev;
-    }
     return NULL;
 }
 
@@ -20562,9 +20520,8 @@ virDomainNetGetActualDirectMode(virDomainNetDefPtr iface)
         return iface->data.direct.mode;
     if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
         iface->data.network.actual &&
-        iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_DIRECT)
         return iface->data.network.actual->data.direct.mode;
-    }
     return 0;
 }
 
@@ -20575,9 +20532,8 @@ virDomainNetGetActualHostdev(virDomainNetDefPtr iface)
         return &iface->data.hostdev.def;
     if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
         iface->data.network.actual &&
-        iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_HOSTDEV)
         return &iface->data.network.actual->data.hostdev.def;
-    }
     return NULL;
 }
 
@@ -20612,9 +20568,8 @@ virDomainNetGetActualBandwidth(virDomainNetDefPtr iface)
      * its bandwidth rather than the NetDef's bandwidth.
      */
     if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
-        iface->data.network.actual) {
+        iface->data.network.actual)
         return iface->data.network.actual->bandwidth;
-    }
     return iface->bandwidth;
 }
 

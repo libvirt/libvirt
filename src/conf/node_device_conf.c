@@ -669,9 +669,8 @@ virNodeDevCapStorageParseXML(xmlXPathContextPtr ctxt,
     data->storage.vendor     = virXPathString("string(./vendor[1])", ctxt);
     data->storage.serial     = virXPathString("string(./serial[1])", ctxt);
 
-    if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0)
         goto out;
-    }
 
     for (i = 0; i < n; i++) {
         char *type = virXMLPropString(nodes[i], "type");
@@ -841,9 +840,8 @@ virNodeDevCapSCSIHostParseXML(xmlXPathContextPtr ctxt,
         }
     }
 
-    if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0)
         goto out;
-    }
 
     for (i = 0; i < n; i++) {
         type = virXMLPropString(nodes[i], "type");
@@ -1453,9 +1451,8 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
 
     /* Parse device capabilities */
     nodes = NULL;
-    if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0)
         goto error;
-    }
 
     if (n == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1656,13 +1653,11 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
         VIR_FREE(data->pci_dev.product_name);
         VIR_FREE(data->pci_dev.vendor_name);
         VIR_FREE(data->pci_dev.physical_function);
-        for (i = 0; i < data->pci_dev.num_virtual_functions; i++) {
+        for (i = 0; i < data->pci_dev.num_virtual_functions; i++)
             VIR_FREE(data->pci_dev.virtual_functions[i]);
-        }
         VIR_FREE(data->pci_dev.virtual_functions);
-        for (i = 0; i < data->pci_dev.nIommuGroupDevices; i++) {
+        for (i = 0; i < data->pci_dev.nIommuGroupDevices; i++)
             VIR_FREE(data->pci_dev.iommuGroupDevices[i]);
-        }
         VIR_FREE(data->pci_dev.iommuGroupDevices);
         virPCIEDeviceInfoFree(data->pci_dev.pci_express);
         break;

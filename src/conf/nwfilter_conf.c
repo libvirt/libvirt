@@ -535,9 +535,8 @@ checkVlanVlanID(enum attrDatatype datatype, union data *value,
     int32_t res;
 
     res = value->ui;
-    if (res < 0 || res > 4095) {
+    if (res < 0 || res > 4095)
         res = -1;
-    }
 
     if (res != -1) {
         nwf->p.vlanHdrFilter.dataVlanID.u.u16 = res;
@@ -2899,9 +2898,8 @@ static virNWFilterCallbackDriverPtr callbackDrvArray[MAX_CALLBACK_DRIVER];
 void
 virNWFilterRegisterCallbackDriver(virNWFilterCallbackDriverPtr cbd)
 {
-    if (nCallbackDriver < MAX_CALLBACK_DRIVER) {
+    if (nCallbackDriver < MAX_CALLBACK_DRIVER)
         callbackDrvArray[nCallbackDriver++] = cbd;
-    }
 }
 
 void
@@ -3141,9 +3139,8 @@ virNWFilterObjLoad(virNWFilterObjListPtr nwfilters,
     virNWFilterDefPtr def;
     virNWFilterObjPtr nwfilter;
 
-    if (!(def = virNWFilterDefParseFile(path))) {
+    if (!(def = virNWFilterDefParseFile(path)))
         return NULL;
-    }
 
     if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -3177,9 +3174,8 @@ virNWFilterLoadAllConfigs(virNWFilterObjListPtr nwfilters,
     int ret = -1;
 
     if (!(dir = opendir(configDir))) {
-        if (errno == ENOENT) {
+        if (errno == ENOENT)
             return 0;
-        }
         virReportSystemError(errno, _("Failed to open dir '%s'"),
                              configDir);
         return -1;

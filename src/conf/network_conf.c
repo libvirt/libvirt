@@ -218,14 +218,12 @@ virNetworkForwardDefClear(virNetworkForwardDefPtr def)
 {
     size_t i;
 
-    for (i = 0; i < def->npfs && def->pfs; i++) {
+    for (i = 0; i < def->npfs && def->pfs; i++)
         virNetworkForwardPfDefClear(&def->pfs[i]);
-    }
     VIR_FREE(def->pfs);
 
-    for (i = 0; i < def->nifs && def->ifs; i++) {
+    for (i = 0; i < def->nifs && def->ifs; i++)
         virNetworkForwardIfDefClear(&def->ifs[i]);
-    }
     VIR_FREE(def->ifs);
     def->nifs = def->npfs = 0;
 }
@@ -244,19 +242,16 @@ virNetworkDefFree(virNetworkDefPtr def)
 
     virNetworkForwardDefClear(&def->forward);
 
-    for (i = 0; i < def->nips && def->ips; i++) {
+    for (i = 0; i < def->nips && def->ips; i++)
         virNetworkIpDefClear(&def->ips[i]);
-    }
     VIR_FREE(def->ips);
 
-    for (i = 0; i < def->nroutes && def->routes; i++) {
+    for (i = 0; i < def->nroutes && def->routes; i++)
         virNetworkRouteDefClear(&def->routes[i]);
-    }
     VIR_FREE(def->routes);
 
-    for (i = 0; i < def->nPortGroups && def->portGroups; i++) {
+    for (i = 0; i < def->nPortGroups && def->portGroups; i++)
         virPortGroupDefClear(&def->portGroups[i]);
-    }
     VIR_FREE(def->portGroups);
 
     virNetworkDNSDefClear(&def->dns);
@@ -596,9 +591,8 @@ virNetworkDefGetIpByIndex(const virNetworkDef *def,
     if (!def->ips || n >= def->nips)
         return NULL;
 
-    if (family == AF_UNSPEC) {
+    if (family == AF_UNSPEC)
         return &def->ips[n];
-    }
 
     /* find the nth ip of type "family" */
     for (i = 0; i < def->nips; i++) {
@@ -1363,9 +1357,8 @@ virNetworkIPDefParseXML(const char *networkName,
     result = 0;
 
  cleanup:
-    if (result < 0) {
+    if (result < 0)
         virNetworkIpDefClear(def);
-    }
     VIR_FREE(address);
     VIR_FREE(netmask);
 
@@ -1589,9 +1582,8 @@ virNetworkRouteDefParseXML(const char *networkName,
     result = 0;
 
  cleanup:
-    if (result < 0) {
+    if (result < 0)
         virNetworkRouteDefClear(def);
-    }
     VIR_FREE(address);
     VIR_FREE(netmask);
     VIR_FREE(gateway);
@@ -1663,9 +1655,8 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
 
     result = 0;
  cleanup:
-    if (result < 0) {
+    if (result < 0)
         virPortGroupDefClear(def);
-    }
     VIR_FREE(isDefault);
     VIR_FREE(trustGuestRxFilters);
 
@@ -2483,9 +2474,8 @@ virNetworkIpDefFormat(virBufferPtr buf,
 
     virBufferAddLit(buf, "<ip");
 
-    if (def->family) {
+    if (def->family)
         virBufferAsprintf(buf, " family='%s'", def->family);
-    }
     if (VIR_SOCKET_ADDR_VALID(&def->address)) {
         char *addr = virSocketAddrFormat(&def->address);
         if (!addr)
@@ -2500,9 +2490,8 @@ virNetworkIpDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " netmask='%s'", addr);
         VIR_FREE(addr);
     }
-    if (def->prefix > 0) {
+    if (def->prefix > 0)
         virBufferAsprintf(buf, " prefix='%u'", def->prefix);
-    }
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
 
@@ -2580,9 +2569,8 @@ virNetworkRouteDefFormat(virBufferPtr buf,
 
     virBufferAddLit(buf, "<route");
 
-    if (def->family) {
+    if (def->family)
         virBufferAsprintf(buf, " family='%s'", def->family);
-    }
     if (VIR_SOCKET_ADDR_VALID(&def->address)) {
         char *addr = virSocketAddrFormat(&def->address);
 
@@ -2599,9 +2587,8 @@ virNetworkRouteDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " netmask='%s'", addr);
         VIR_FREE(addr);
     }
-    if (def->has_prefix) {
+    if (def->has_prefix)
         virBufferAsprintf(buf, " prefix='%u'", def->prefix);
-    }
     if (VIR_SOCKET_ADDR_VALID(&def->gateway)) {
         char *addr = virSocketAddrFormat(&def->gateway);
         if (!addr)
@@ -2609,9 +2596,8 @@ virNetworkRouteDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " gateway='%s'", addr);
         VIR_FREE(addr);
     }
-    if (def->has_metric && def->metric > 0) {
+    if (def->has_metric && def->metric > 0)
         virBufferAsprintf(buf, " metric='%u'", def->metric);
-    }
     virBufferAddLit(buf, "/>\n");
 
     result = 0;
@@ -2624,9 +2610,8 @@ virPortGroupDefFormat(virBufferPtr buf,
                       const virPortGroupDef *def)
 {
     virBufferAsprintf(buf, "<portgroup name='%s'", def->name);
-    if (def->isDefault) {
+    if (def->isDefault)
         virBufferAddLit(buf, " default='yes'");
-    }
     if (def->trustGuestRxFilters)
         virBufferAsprintf(buf, " trustGuestRxFilters='%s'",
                           virTristateBoolTypeToString(def->trustGuestRxFilters));
@@ -2703,9 +2688,8 @@ virNetworkDefFormatBuf(virBufferPtr buf,
     bool shortforward;
 
     virBufferAddLit(buf, "<network");
-    if (!(flags & VIR_NETWORK_XML_INACTIVE) && (def->connections > 0)) {
+    if (!(flags & VIR_NETWORK_XML_INACTIVE) && (def->connections > 0))
         virBufferAsprintf(buf, " connections='%d'", def->connections);
-    }
     if (def->ipv6nogw)
         virBufferAddLit(buf, " ipv6='yes'");
     if (def->trustGuestRxFilters)
@@ -3326,9 +3310,8 @@ char *virNetworkAllocateBridge(virNetworkObjListPtr nets,
     do {
         if (virAsprintf(&newname, template, id) < 0)
             return NULL;
-        if (!virNetworkBridgeInUse(nets, newname, NULL)) {
+        if (!virNetworkBridgeInUse(nets, newname, NULL))
             return newname;
-        }
         VIR_FREE(newname);
 
         id++;
