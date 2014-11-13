@@ -48,9 +48,8 @@ static int update_caps(virNodeDeviceObjPtr dev)
     virNodeDevCapsDefPtr cap = dev->def->caps;
 
     while (cap) {
-        if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST) {
+        if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST)
             detect_scsi_host_caps(&dev->def->caps->data);
-        }
         if (cap->type == VIR_NODE_DEV_CAP_NET &&
             virNetDevGetLinkInfo(cap->data.net.ifname, &cap->data.net.lnk) < 0)
             return -1;
@@ -494,14 +493,12 @@ find_new_device(virConnectPtr conn, const char *wwnn, const char *wwpn)
 
         dev = nodeDeviceLookupSCSIHostByWWN(conn, wwnn, wwpn, 0);
 
-        if (dev != NULL) {
+        if (dev != NULL)
             break;
-        }
 
         sleep(5);
-        if (get_time(&now) == -1) {
+        if (get_time(&now) == -1)
             break;
-        }
     }
 
     nodeDeviceLock(driver);
@@ -527,16 +524,14 @@ nodeDeviceCreateXML(virConnectPtr conn,
     nodeDeviceLock(driver);
 
     def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, virt_type);
-    if (def == NULL) {
+    if (def == NULL)
         goto cleanup;
-    }
 
     if (virNodeDeviceCreateXMLEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) == -1) {
+    if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) == -1)
         goto cleanup;
-    }
 
     if (virNodeDeviceGetParentHost(&driver->devs,
                                    def->name,
@@ -556,9 +551,8 @@ nodeDeviceCreateXML(virConnectPtr conn,
     /* We don't check the return value, because one way or another,
      * we're returning what we get... */
 
-    if (dev == NULL) {
+    if (dev == NULL)
         virReportError(VIR_ERR_NO_NODE_DEVICE, NULL);
-    }
 
  cleanup:
     nodeDeviceUnlock(driver);
@@ -590,9 +584,8 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
     if (virNodeDeviceDestroyEnsureACL(dev->conn, obj->def) < 0)
         goto out;
 
-    if (virNodeDeviceGetWWNs(obj->def, &wwnn, &wwpn) == -1) {
+    if (virNodeDeviceGetWWNs(obj->def, &wwnn, &wwpn) == -1)
         goto out;
-    }
 
 
     /* virNodeDeviceGetParentHost will cause the device object's lock to be
