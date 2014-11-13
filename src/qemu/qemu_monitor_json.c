@@ -82,6 +82,7 @@ static void qemuMonitorJSONHandlePMSuspendDisk(qemuMonitorPtr mon, virJSONValueP
 static void qemuMonitorJSONHandleGuestPanic(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleDeviceDeleted(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleNicRxFilterChanged(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleSerialChange(qemuMonitorPtr mon, virJSONValuePtr data);
 
 typedef struct {
     const char *type;
@@ -112,6 +113,7 @@ static qemuEventHandler eventHandlers[] = {
     { "VNC_CONNECTED", qemuMonitorJSONHandleVNCConnect, },
     { "VNC_DISCONNECTED", qemuMonitorJSONHandleVNCDisconnect, },
     { "VNC_INITIALIZED", qemuMonitorJSONHandleVNCInitialize, },
+    { "VSERPORT_CHANGE", qemuMonitorJSONHandleSerialChange, },
     { "WAKEUP", qemuMonitorJSONHandlePMWakeup, },
     { "WATCHDOG", qemuMonitorJSONHandleWatchdog, },
     /* We use bsearch, so keep this list sorted.  */
@@ -892,6 +894,27 @@ qemuMonitorJSONHandleNicRxFilterChanged(qemuMonitorPtr mon, virJSONValuePtr data
     }
 
     qemuMonitorEmitNicRxFilterChanged(mon, name);
+}
+
+
+static void
+qemuMonitorJSONHandleSerialChange(qemuMonitorPtr mon,
+                                  virJSONValuePtr data)
+{
+    const char *name;
+    bool connected;
+
+    if (!(name = virJSONValueObjectGetString(data, "id"))) {
+        VIR_WARN("missing device alias in VSERPORT_CHANGE event");
+        return;
+    }
+
+    if (virJSONValueObjectGetBoolean(data, "open", &connected) < 0) {
+        VIR_WARN("missing port state for '%s' in VSERPORT_CHANGE event", name);
+        return;
+    }
+
+    qemuMonitorEmitSerialChange(mon, name, connected);
 }
 
 

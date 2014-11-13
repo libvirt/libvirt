@@ -1400,6 +1400,20 @@ qemuMonitorEmitNicRxFilterChanged(qemuMonitorPtr mon,
 }
 
 
+int
+qemuMonitorEmitSerialChange(qemuMonitorPtr mon,
+                            const char *devAlias,
+                            bool connected)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p, devAlias='%s', connected=%d", mon, devAlias, connected);
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainSerialChange, mon->vm, devAlias, connected);
+
+    return ret;
+}
+
+
 int qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 {
     int ret;

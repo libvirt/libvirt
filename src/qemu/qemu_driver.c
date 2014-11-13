@@ -4334,6 +4334,60 @@ processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
 }
 
 
+static void
+processSerialChangedEvent(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm,
+                          char *devAlias,
+                          bool connected)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virDomainChrDeviceState newstate;
+    virDomainDeviceDef dev;
+
+    if (connected)
+        newstate = VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED;
+    else
+        newstate = VIR_DOMAIN_CHR_DEVICE_STATE_DISCONNECTED;
+
+    VIR_DEBUG("Changing serial port state %s in domain %p %s",
+              devAlias, vm, vm->def->name);
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        VIR_DEBUG("Domain is not running");
+        goto endjob;
+    }
+
+    if (virDomainDefFindDevice(vm->def, devAlias, &dev, true) < 0)
+        goto endjob;
+
+    /* we care only about certain devices */
+    if (dev.type != VIR_DOMAIN_DEVICE_CHR ||
+        dev.data.chr->deviceType != VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL ||
+        dev.data.chr->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO)
+        goto endjob;
+
+    dev.data.chr->state = newstate;
+
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        VIR_WARN("unable to save status of domain %s after updating state of "
+                 "channel %s", vm->def->name, devAlias);
+
+ endjob:
+    /* We had an extra reference to vm before starting a new job so ending the
+     * job is guaranteed not to remove the last reference.
+     */
+    ignore_value(qemuDomainObjEndJob(driver, vm));
+
+ cleanup:
+    VIR_FREE(devAlias);
+    virObjectUnref(cfg);
+
+}
+
+
 static void qemuProcessEventHandler(void *data, void *opaque)
 {
     struct qemuProcessEvent *processEvent = data;
@@ -4357,6 +4411,9 @@ static void qemuProcessEventHandler(void *data, void *opaque)
     case QEMU_PROCESS_EVENT_NIC_RX_FILTER_CHANGED:
         processNicRxFilterChangedEvent(driver, vm, processEvent->data);
         break;
+    case QEMU_PROCESS_EVENT_SERIAL_CHANGED:
+        processSerialChangedEvent(driver, vm, processEvent->data,
+                                  processEvent->action);
     case QEMU_PROCESS_EVENT_LAST:
         break;
     }
