@@ -567,9 +567,8 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
 
                 switch (useNewFilter) {
                 case INSTANTIATE_FOLLOW_NEWFILTER:
-                    if (obj->newDef) {
+                    if (obj->newDef)
                         next_filter = obj->newDef;
-                    }
                     break;
                 case INSTANTIATE_ALWAYS:
                     break;
@@ -1139,15 +1138,13 @@ virNWFilterDomainFWUpdateCB(virDomainObjPtr obj,
                     break;
 
                 case STEP_TEAR_NEW:
-                    if (!virHashLookup(cb->skipInterfaces, net->ifname)) {
+                    if (!virHashLookup(cb->skipInterfaces, net->ifname))
                         ret = virNWFilterRollbackUpdateFilter(net);
-                    }
                     break;
 
                 case STEP_TEAR_OLD:
-                    if (!virHashLookup(cb->skipInterfaces, net->ifname)) {
+                    if (!virHashLookup(cb->skipInterfaces, net->ifname))
                         ret = virNWFilterTearOldFilter(net);
-                    }
                     break;
 
                 case STEP_APPLY_CURRENT:

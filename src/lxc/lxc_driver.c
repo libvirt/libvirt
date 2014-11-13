@@ -1586,9 +1586,8 @@ static int lxcStateInitialize(bool privileged,
         return 0;
     }
 
-    if (VIR_ALLOC(lxc_driver) < 0) {
+    if (VIR_ALLOC(lxc_driver) < 0)
         return -1;
-    }
     if (virMutexInit(&lxc_driver->lock) < 0) {
         VIR_FREE(lxc_driver);
         return -1;
@@ -1972,9 +1971,8 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
                     vm->def->cputune.period = params[i].value.ul;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
                 vmdef->cputune.period = params[i].value.ul;
-            }
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_QUOTA)) {
             if (flags & VIR_DOMAIN_AFFECT_LIVE) {
                 rc = lxcSetVcpuBWLive(priv->cgroup, 0, params[i].value.l);
@@ -1985,9 +1983,8 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
                     vm->def->cputune.quota = params[i].value.l;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
                 vmdef->cputune.quota = params[i].value.l;
-            }
         }
     }
 

@@ -74,9 +74,8 @@ int networkCheckRouteCollision(virNetworkDefPtr def)
 
         /* NUL-terminate the line, so sscanf doesn't go beyond a newline.  */
         char *nl = strchr(cur, '\n');
-        if (nl) {
+        if (nl)
             *nl++ = '\0';
-        }
 
         num = sscanf(cur, "%16s %127s %*s %*s %*s %*s %*s %127s",
                      iface, dest, mask);

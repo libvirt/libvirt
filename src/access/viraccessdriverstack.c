@@ -54,9 +54,8 @@ static void virAccessDriverStackCleanup(virAccessManagerPtr manager)
     virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
     size_t i;
 
-    for (i = 0; i < priv->managersLen; i++) {
+    for (i = 0; i < priv->managersLen; i++)
         virObjectUnref(priv->managers[i]);
-    }
     VIR_FREE(priv->managers);
 }
 

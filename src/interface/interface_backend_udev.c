@@ -845,9 +845,8 @@ udevGetIfaceDefBond(struct udev *udev,
     return 0;
 
  error:
-    for (i = 0; slave_count != -1 && i < slave_count; i++) {
+    for (i = 0; slave_count != -1 && i < slave_count; i++)
         VIR_FREE(slave_list[i]);
-    }
     VIR_FREE(slave_list);
 
     return -1;
@@ -952,9 +951,8 @@ udevGetIfaceDefBridge(struct udev *udev,
     return 0;
 
  error:
-    for (i = 0; member_count != -1 && i < member_count; i++) {
+    for (i = 0; member_count != -1 && i < member_count; i++)
         VIR_FREE(member_list[i]);
-    }
     VIR_FREE(member_list);
 
     return -1;
@@ -1102,14 +1100,12 @@ udevGetIfaceDef(struct udev *udev, const char *name)
          * to prevent false positives
          */
         vlan_parent_dev = strrchr(name, '.');
-        if (vlan_parent_dev) {
+        if (vlan_parent_dev)
             ifacedef->type = VIR_INTERFACE_TYPE_VLAN;
-        }
 
         /* Fallback check to see if this is a bond device */
-        if (udev_device_get_sysattr_value(dev, "bonding/mode")) {
+        if (udev_device_get_sysattr_value(dev, "bonding/mode"))
             ifacedef->type = VIR_INTERFACE_TYPE_BOND;
-        }
     }
 
     switch (ifacedef->type) {

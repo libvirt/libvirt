@@ -315,9 +315,8 @@ virNWFilterSnoopActivate(virNWFilterSnoopReqPtr req)
 
     virNWFilterSnoopActiveLock();
 
-    if (virHashAddEntry(virNWFilterSnoopState.active, key, (void *)0x1) < 0) {
+    if (virHashAddEntry(virNWFilterSnoopState.active, key, (void *)0x1) < 0)
         VIR_FREE(key);
-    }
 
     virNWFilterSnoopActiveUnlock();
 

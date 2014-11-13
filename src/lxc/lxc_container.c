@@ -396,9 +396,8 @@ int lxcContainerSendContinue(int control)
 
     VIR_DEBUG("Send continue on fd %d", control);
     writeCount = safewrite(control, &msg, sizeof(msg));
-    if (writeCount != sizeof(msg)) {
+    if (writeCount != sizeof(msg))
         goto error_out;
-    }
 
     rc = 0;
  error_out:
@@ -858,14 +857,12 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
          */
         if (userns_enabled && netns_disabled &&
             STREQ(mnt->src, "sysfs")) {
-            if (VIR_STRDUP(mnt_src, "/sys") < 0) {
+            if (VIR_STRDUP(mnt_src, "/sys") < 0)
                 goto cleanup;
-            }
             mnt_mflags = MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY|MS_BIND;
         } else {
-            if (VIR_STRDUP(mnt_src, mnt->src) < 0) {
+            if (VIR_STRDUP(mnt_src, mnt->src) < 0)
                 goto cleanup;
-            }
             mnt_mflags = mnt->mflags;
         }
 

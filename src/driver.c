@@ -85,9 +85,8 @@ virDriverLoadModule(const char *name)
         *tmp = c_toupper(*tmp);
     }
 
-    if (virAsprintfQuiet(&regfunc, "%sRegister", fixedname) < 0) {
+    if (virAsprintfQuiet(&regfunc, "%sRegister", fixedname) < 0)
         goto cleanup;
-    }
 
     regsym = dlsym(handle, regfunc);
     if (!regsym) {

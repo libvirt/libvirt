@@ -3084,14 +3084,12 @@ virNWFilterRuleInstSort(const void *a, const void *b)
     /* ensure root chain commands appear before all others since
        we will need them to create the child chains */
     if (root_a) {
-        if (root_b) {
+        if (root_b)
             goto normal;
-        }
         return -1; /* a before b */
     }
-    if (root_b) {
+    if (root_b)
         return 1; /* b before a */
-    }
  normal:
     /* priorities are limited to range [-1000, 1000] */
     return insta->priority - instb->priority;
@@ -3165,9 +3163,8 @@ ebtablesGetProtoIdxByFiltername(const char *filtername)
     enum l3_proto_idx idx;
 
     for (idx = 0; idx < L3_PROTO_LAST_IDX; idx++) {
-        if (STRPREFIX(filtername, l3_protocols[idx].val)) {
+        if (STRPREFIX(filtername, l3_protocols[idx].val))
             return idx;
-        }
     }
 
     return -1;
@@ -3303,9 +3300,8 @@ ebtablesGetSubChainInsts(virHashTablePtr chains,
  cleanup:
     VIR_FREE(filter_names);
     if (ret < 0) {
-        for (i = 0; i < *ninsts; i++) {
+        for (i = 0; i < *ninsts; i++)
             VIR_FREE(*insts[i]);
-        }
         VIR_FREE(*insts);
         *ninsts = 0;
     }

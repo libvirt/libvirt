@@ -536,9 +536,8 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon,
 
     if (vm)
         virObjectUnlock(vm);
-    if (event) {
+    if (event)
         virObjectEventStateQueue(driver->domainEventState, event);
-    }
 }
 
 static void virLXCProcessMonitorExitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED,
@@ -826,9 +825,8 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
     virCommandAddArgFormat(cmd, "%d", handshakefd);
     virCommandAddArg(cmd, "--background");
 
-    for (i = 0; i < nveths; i++) {
+    for (i = 0; i < nveths; i++)
         virCommandAddArgList(cmd, "--veth", veths[i], NULL);
-    }
 
     virCommandPassFD(cmd, handshakefd, 0);
 

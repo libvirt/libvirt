@@ -1340,9 +1340,8 @@ networkStartDhcpDaemon(virNetworkObjPtr network)
         goto cleanup;
 
     ret = virCommandRun(cmd, NULL);
-    if (ret < 0) {
+    if (ret < 0)
         goto cleanup;
-    }
 
     /*
      * There really is no race here - when dnsmasq daemonizes, its
@@ -2016,9 +2015,8 @@ networkStartNetworkVirtual(virNetworkObjPtr network)
             v6present = true;
 
         /* Add the IP address/netmask to the bridge */
-        if (networkAddAddrToBridge(network, ipdef) < 0) {
+        if (networkAddAddrToBridge(network, ipdef) < 0)
             goto err2;
-        }
     }
 
     /* Bring up the bridge interface */

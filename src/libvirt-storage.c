@@ -1746,9 +1746,8 @@ virStorageVolWipe(virStorageVolPtr vol,
     if (conn->storageDriver && conn->storageDriver->storageVolWipe) {
         int ret;
         ret = conn->storageDriver->storageVolWipe(vol, flags);
-        if (ret < 0) {
+        if (ret < 0)
             goto error;
-        }
         return ret;
     }
 
@@ -1789,9 +1788,8 @@ virStorageVolWipePattern(virStorageVolPtr vol,
     if (conn->storageDriver && conn->storageDriver->storageVolWipePattern) {
         int ret;
         ret = conn->storageDriver->storageVolWipePattern(vol, algorithm, flags);
-        if (ret < 0) {
+        if (ret < 0)
             goto error;
-        }
         return ret;
     }
 

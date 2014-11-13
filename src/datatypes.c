@@ -450,9 +450,8 @@ virStoragePoolDispose(void *obj)
     virUUIDFormat(pool->uuid, uuidstr);
     VIR_DEBUG("release pool %p %s %s", pool, pool->name, uuidstr);
 
-    if (pool->privateDataFreeFunc) {
+    if (pool->privateDataFreeFunc)
         pool->privateDataFreeFunc(pool->privateData);
-    }
 
     VIR_FREE(pool->name);
     virObjectUnref(pool->conn);
@@ -525,9 +524,8 @@ virStorageVolDispose(void *obj)
     virStorageVolPtr vol = obj;
     VIR_DEBUG("release vol %p %s", vol, vol->name);
 
-    if (vol->privateDataFreeFunc) {
+    if (vol->privateDataFreeFunc)
         vol->privateDataFreeFunc(vol->privateData);
-    }
 
     VIR_FREE(vol->key);
     VIR_FREE(vol->name);

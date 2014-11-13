@@ -741,9 +741,8 @@ virNodeDeviceDestroy(virNodeDevicePtr dev)
     if (dev->conn->nodeDeviceDriver &&
         dev->conn->nodeDeviceDriver->nodeDeviceDestroy) {
         int retval = dev->conn->nodeDeviceDriver->nodeDeviceDestroy(dev);
-        if (retval < 0) {
+        if (retval < 0)
             goto error;
-        }
 
         return 0;
     }
