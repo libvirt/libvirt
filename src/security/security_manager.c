@@ -875,9 +875,8 @@ virSecurityManagerGetNested(virSecurityManagerPtr mgr)
 {
     virSecurityManagerPtr* list = NULL;
 
-    if (STREQ("stack", mgr->drv->name)) {
+    if (STREQ("stack", mgr->drv->name))
         return virSecurityStackGetNested(mgr);
-    }
 
     if (VIR_ALLOC_N(list, 2) < 0)
         return NULL;

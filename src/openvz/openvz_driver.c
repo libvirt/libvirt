@@ -619,9 +619,8 @@ static int openvzDomainSuspend(virDomainPtr dom)
 
     if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
         openvzSetProgramSentinal(prog, vm->def->name);
-        if (virRun(prog, NULL) < 0) {
+        if (virRun(prog, NULL) < 0)
             goto cleanup;
-        }
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
     }
 
@@ -658,9 +657,8 @@ static int openvzDomainResume(virDomainPtr dom)
 
   if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
       openvzSetProgramSentinal(prog, vm->def->name);
-      if (virRun(prog, NULL) < 0) {
+      if (virRun(prog, NULL) < 0)
           goto cleanup;
-      }
       virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_UNPAUSED);
   }
 
@@ -1113,9 +1111,8 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
 
     openvzSetProgramSentinal(progstart, vm->def->name);
 
-    if (virRun(progstart, NULL) < 0) {
+    if (virRun(progstart, NULL) < 0)
         goto cleanup;
-    }
 
     vm->pid = strtoI(vm->def->name);
     vm->def->id = vm->pid;
@@ -1172,9 +1169,8 @@ openvzDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     }
 
     openvzSetProgramSentinal(prog, vm->def->name);
-    if (virRun(prog, NULL) < 0) {
+    if (virRun(prog, NULL) < 0)
         goto cleanup;
-    }
 
     vm->pid = strtoI(vm->def->name);
     vm->def->id = vm->pid;
@@ -1218,9 +1214,8 @@ openvzDomainUndefineFlags(virDomainPtr dom,
         goto cleanup;
 
     openvzSetProgramSentinal(prog, vm->def->name);
-    if (virRun(prog, NULL) < 0) {
+    if (virRun(prog, NULL) < 0)
         goto cleanup;
-    }
 
     if (virDomainObjIsActive(vm)) {
         vm->persistent = 0;
@@ -1264,9 +1259,8 @@ openvzDomainSetAutostart(virDomainPtr dom, int autostart)
     }
 
     openvzSetProgramSentinal(prog, vm->def->name);
-    if (virRun(prog, NULL) < 0) {
+    if (virRun(prog, NULL) < 0)
         goto cleanup;
-    }
     ret = 0;
 
  cleanup:
@@ -1357,9 +1351,8 @@ static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
     str_vcpus[31] = '\0';
 
     openvzSetProgramSentinal(prog, vm->def->name);
-    if (virRun(prog, NULL) < 0) {
+    if (virRun(prog, NULL) < 0)
         return -1;
-    }
 
     vm->def->maxvcpus = vm->def->vcpus = nvcpus;
     return 0;
@@ -1719,9 +1712,8 @@ openvzDomainSetMemoryInternal(virDomainObjPtr vm,
     snprintf(str_mem, sizeof(str_mem), "%llu", mem * 1024);
 
     openvzSetProgramSentinal(prog, vm->def->name);
-    if (virRun(prog, NULL) < 0) {
+    if (virRun(prog, NULL) < 0)
         goto cleanup;
-    }
 
     return 0;
 
@@ -2052,9 +2044,8 @@ openvzUpdateDevice(virDomainDefPtr vmdef,
             return -1;
         }
 
-        if (openvzSetDiskQuota(vmdef, fs, persist) < 0) {
+        if (openvzSetDiskQuota(vmdef, fs, persist) < 0)
             return -1;
-        }
         cur->space_hard_limit = fs->space_hard_limit;
         cur->space_soft_limit = fs->space_soft_limit;
     } else {

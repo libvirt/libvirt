@@ -336,9 +336,8 @@ umlInotifyEvent(int watch,
 
         dom = virDomainObjListFindByName(driver->domains, name);
 
-        if (!dom) {
+        if (!dom)
             continue;
-        }
 
         if (e.mask & IN_DELETE) {
             VIR_DEBUG("Got inotify domain shutdown '%s'", name);
@@ -1335,9 +1334,8 @@ static int umlGetProcessInfo(unsigned long long *cpuTime, pid_t pid)
     FILE *pidinfo;
     unsigned long long usertime, systime;
 
-    if (virAsprintf(&proc, "/proc/%lld/stat", (long long) pid) < 0) {
+    if (virAsprintf(&proc, "/proc/%lld/stat", (long long) pid) < 0)
         return -1;
-    }
 
     if (!(pidinfo = fopen(proc, "r"))) {
         /* VM probably shut down, so fake 0 */
@@ -2306,9 +2304,8 @@ static int umlDomainDetachUmlDisk(struct uml_driver *driver,
     char *reply;
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        if (STREQ(vm->def->disks[i]->dst, dev->data.disk->dst)) {
+        if (STREQ(vm->def->disks[i]->dst, dev->data.disk->dst))
             break;
-        }
     }
 
     if (i == vm->def->ndisks) {

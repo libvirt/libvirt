@@ -172,9 +172,8 @@ phypExec(LIBSSH2_SESSION *session, const char *cmd, int *exit_status,
         }
     }
 
-    if (channel == NULL) {
+    if (channel == NULL)
         goto err;
-    }
 
     while ((rc = libssh2_channel_exec(channel, cmd)) ==
            LIBSSH2_ERROR_EAGAIN) {
@@ -185,9 +184,8 @@ phypExec(LIBSSH2_SESSION *session, const char *cmd, int *exit_status,
         }
     }
 
-    if (rc != 0) {
+    if (rc != 0)
         goto err;
-    }
 
     for (;;) {
         /* loop until we block */
@@ -223,9 +221,8 @@ phypExec(LIBSSH2_SESSION *session, const char *cmd, int *exit_status,
         }
     }
 
-    if (rc == 0) {
+    if (rc == 0)
         exitcode = libssh2_channel_get_exit_status(channel);
-    }
 
     (*exit_status) = exitcode;
     libssh2_channel_free(channel);
@@ -731,9 +728,8 @@ phypUUIDTable_Pull(virConnectPtr conn)
         do {
             amount = sizeof(buffer);
 
-            if ((fileinfo.st_size - got) < amount) {
+            if ((fileinfo.st_size - got) < amount)
                 amount = fileinfo.st_size - got;
-            }
 
             rc = libssh2_channel_read(channel, buffer, amount);
             if (rc > 0) {
@@ -849,9 +845,8 @@ phypUUIDTable_Init(virConnectPtr conn)
 
  cleanup:
     if (ret < 0 && table_created) {
-        for (i = 0; i < uuid_table->nlpars; i++) {
+        for (i = 0; i < uuid_table->nlpars; i++)
             VIR_FREE(uuid_table->lpars[i]);
-        }
         VIR_FREE(uuid_table->lpars);
     }
     VIR_FREE(ids);
@@ -1718,18 +1713,16 @@ phypDomainAttachDevice(virDomainPtr domain, const char *xml)
 
     domain_name = escape_specialcharacters(domain->name);
 
-    if (domain_name == NULL) {
+    if (domain_name == NULL)
         goto cleanup;
-    }
 
     if (VIR_STRDUP(def->os.type, "aix") < 0)
         goto cleanup;
 
     dev = virDomainDeviceDefParse(xml, def, phyp_driver->caps, NULL,
                                   VIR_DOMAIN_XML_INACTIVE);
-    if (!dev) {
+    if (!dev)
         goto cleanup;
-    }
 
     if (!
         (vios_name =

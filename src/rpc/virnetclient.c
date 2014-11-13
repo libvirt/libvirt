@@ -160,9 +160,8 @@ static void virNetClientCallQueue(virNetClientCallPtr *head,
                                   virNetClientCallPtr call)
 {
     virNetClientCallPtr tmp = *head;
-    while (tmp && tmp->next) {
+    while (tmp && tmp->next)
         tmp = tmp->next;
-    }
     if (tmp)
         tmp->next = call;
     else
@@ -237,9 +236,8 @@ static bool virNetClientCallMatchPredicate(virNetClientCallPtr head,
 {
     virNetClientCallPtr tmp = head;
     while (tmp) {
-        if (pred(tmp, opaque)) {
+        if (pred(tmp, opaque))
             return true;
-        }
         tmp = tmp->next;
     }
     return false;
@@ -1535,9 +1533,8 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
         /* If we have existing SASL decoded data, pretend
          * the socket became readable so we consume it
          */
-        if (virNetSocketHasCachedData(client->sock)) {
+        if (virNetSocketHasCachedData(client->sock))
             fds[0].revents |= POLLIN;
-        }
 
         /* If wantClose flag is set, pretend there was an error on the socket
          */

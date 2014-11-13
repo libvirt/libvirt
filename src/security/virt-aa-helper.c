@@ -1253,14 +1253,12 @@ main(int argc, char **argv)
 
     /* clear the environment */
     environ = NULL;
-    if (setenv("PATH", "/sbin:/usr/sbin", 1) != 0) {
+    if (setenv("PATH", "/sbin:/usr/sbin", 1) != 0)
         vah_error(ctl, 1, _("could not set PATH"));
-    }
 
     /* ensure the traditional IFS setting */
-    if (setenv("IFS", " \t\n", 1) != 0) {
+    if (setenv("IFS", " \t\n", 1) != 0)
         vah_error(ctl, 1, _("could not set IFS"));
-    }
 
     if (!(progname = strrchr(argv[0], '/')))
         progname = argv[0];
@@ -1291,9 +1289,8 @@ main(int argc, char **argv)
     } else if (ctl->cmd == 'c' || ctl->cmd == 'r') {
         char *included_files = NULL;
 
-        if (ctl->cmd == 'c' && virFileExists(profile)) {
+        if (ctl->cmd == 'c' && virFileExists(profile))
             vah_error(ctl, 1, _("profile exists"));
-        }
 
         if (ctl->append && ctl->newfile) {
             if (vah_add_file(&buf, ctl->newfile, "rw") != 0)

@@ -172,9 +172,8 @@ umlBuildCommandLineNet(virConnectPtr conn,
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
         /* ethNNN=tuntap,tapname,macaddr,gateway */
         virBufferAddLit(&buf, "tuntap,");
-        if (def->ifname) {
+        if (def->ifname)
             virBufferAdd(&buf, def->ifname, -1);
-        }
         if (def->data.ethernet.ipaddr) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("IP address not supported for ethernet interface"));
@@ -215,9 +214,8 @@ umlBuildCommandLineNet(virConnectPtr conn,
         }
         bridge = virNetworkGetBridgeName(network);
         virNetworkFree(network);
-        if (bridge == NULL) {
+        if (bridge == NULL)
             goto error;
-        }
 
         if (umlConnectTapDevice(conn, vm, def, bridge) < 0) {
             VIR_FREE(bridge);

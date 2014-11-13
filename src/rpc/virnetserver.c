@@ -1233,9 +1233,8 @@ void virNetServerClose(virNetServerPtr srv)
 
     virObjectLock(srv);
 
-    for (i = 0; i < srv->nservices; i++) {
+    for (i = 0; i < srv->nservices; i++)
         virNetServerServiceClose(srv->services[i]);
-    }
 
     virObjectUnlock(srv);
 }

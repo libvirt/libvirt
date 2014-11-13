@@ -496,9 +496,8 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
                            _("Missing privateData field in JSON state document"));
             goto error;
         }
-        if (!(client->privateData = privNew(client, child, privOpaque))) {
+        if (!(client->privateData = privNew(client, child, privOpaque)))
             goto error;
-        }
         client->privateDataFreeFunc = privFree;
         client->privateDataPreExecRestart = privPreExecRestart;
     }

@@ -516,7 +516,6 @@ void virNetServerServiceClose(virNetServerServicePtr svc)
     if (!svc)
         return;
 
-    for (i = 0; i < svc->nsocks; i++) {
+    for (i = 0; i < svc->nsocks; i++)
         virNetSocketClose(svc->socks[i]);
-    }
 }

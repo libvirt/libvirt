@@ -4069,9 +4069,8 @@ static sasl_callback_t *remoteAuthMakeCallbacks(int *credtype, int ncredtype)
     sasl_callback_t *cbs;
     size_t i;
     int n;
-    if (VIR_ALLOC_N(cbs, ncredtype+1) < 0) {
+    if (VIR_ALLOC_N(cbs, ncredtype+1) < 0)
         return NULL;
-    }
 
     for (i = 0, n = 0; i < ncredtype; i++) {
         int id = remoteAuthCredVir2SASL(credtype[i]);
