@@ -468,9 +468,8 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        if (!(devstr = qemuBuildControllerDevStr(vm->def, controller, priv->qemuCaps, NULL))) {
+        if (!(devstr = qemuBuildControllerDevStr(vm->def, controller, priv->qemuCaps, NULL)))
             goto cleanup;
-        }
     }
 
     if (VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers+1) < 0)
@@ -3095,9 +3094,8 @@ qemuFindDisk(virDomainDefPtr def, const char *dst)
     size_t i;
 
     for (i = 0; i < def->ndisks; i++) {
-        if (STREQ(def->disks[i]->dst, dst)) {
+        if (STREQ(def->disks[i]->dst, dst))
             return i;
-        }
     }
 
     return -1;

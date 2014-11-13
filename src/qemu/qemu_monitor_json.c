@@ -565,9 +565,8 @@ static void qemuMonitorJSONHandleWatchdog(qemuMonitorPtr mon, virJSONValuePtr da
 {
     const char *action;
     int actionID;
-    if (!(action = virJSONValueObjectGetString(data, "action"))) {
+    if (!(action = virJSONValueObjectGetString(data, "action")))
         VIR_WARN("missing action in watchdog event");
-    }
     if (action) {
         if ((actionID = qemuMonitorWatchdogActionTypeFromString(action)) < 0) {
             VIR_WARN("unknown action %s in watchdog event", action);
@@ -602,9 +601,8 @@ qemuMonitorJSONHandleIOError(qemuMonitorPtr mon, virJSONValuePtr data)
         action = "ignore";
     }
 
-    if ((device = virJSONValueObjectGetString(data, "device")) == NULL) {
+    if ((device = virJSONValueObjectGetString(data, "device")) == NULL)
         VIR_WARN("missing device in disk io error event");
-    }
 
     if (virJSONValueObjectGetBoolean(data, "nospace", &nospc) == 0 && nospc)
         reason = "enospc";
@@ -4451,9 +4449,8 @@ int qemuMonitorJSONGetBlockIoThrottle(qemuMonitorPtr mon,
     virJSONValuePtr result = NULL;
 
     cmd = qemuMonitorJSONMakeCommand("query-block", NULL);
-    if (!cmd) {
+    if (!cmd)
         return -1;
-    }
 
     ret = qemuMonitorJSONCommand(mon, cmd, &result);
 
@@ -4485,9 +4482,8 @@ int qemuMonitorJSONSystemWakeup(qemuMonitorPtr mon)
     virJSONValuePtr reply = NULL;
 
     cmd = qemuMonitorJSONMakeCommand("system_wakeup", NULL);
-    if (!cmd) {
+    if (!cmd)
         return -1;
-    }
 
     ret = qemuMonitorJSONCommand(mon, cmd, &reply);
 

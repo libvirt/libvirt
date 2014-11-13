@@ -495,9 +495,8 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
         size_t i;
         virBufferAddLit(buf, "<vcpus>\n");
         virBufferAdjustIndent(buf, 2);
-        for (i = 0; i < priv->nvcpupids; i++) {
+        for (i = 0; i < priv->nvcpupids; i++)
             virBufferAsprintf(buf, "<vcpu pid='%d'/>\n", priv->vcpupids[i]);
-        }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</vcpus>\n");
     }

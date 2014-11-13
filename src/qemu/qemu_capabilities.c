@@ -1179,9 +1179,8 @@ virQEMUCapsComputeCmdFlags(const char *help,
     if (is_kvm && (version >= 10000 || kvm_version >= 74))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNET_HDR);
 
-    if (strstr(help, ",vhost=")) {
+    if (strstr(help, ",vhost="))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOST_NET);
-    }
 
     /* Do not use -no-shutdown if qemu doesn't support it or SIGTERM handling
      * is most likely buggy when used with -no-shutdown (which applies for qemu
@@ -1947,9 +1946,8 @@ void virQEMUCapsDispose(void *obj)
     VIR_FREE(qemuCaps->machineAliases);
     VIR_FREE(qemuCaps->machineMaxCpus);
 
-    for (i = 0; i < qemuCaps->ncpuDefinitions; i++) {
+    for (i = 0; i < qemuCaps->ncpuDefinitions; i++)
         VIR_FREE(qemuCaps->cpuDefinitions[i]);
-    }
     VIR_FREE(qemuCaps->cpuDefinitions);
 
     virBitmapFree(qemuCaps->flags);
@@ -2837,9 +2835,8 @@ virQEMUCapsReset(virQEMUCapsPtr qemuCaps)
     qemuCaps->arch = VIR_ARCH_NONE;
     qemuCaps->usedQMP = false;
 
-    for (i = 0; i < qemuCaps->ncpuDefinitions; i++) {
+    for (i = 0; i < qemuCaps->ncpuDefinitions; i++)
         VIR_FREE(qemuCaps->cpuDefinitions[i]);
-    }
     VIR_FREE(qemuCaps->cpuDefinitions);
     qemuCaps->ncpuDefinitions = 0;
 

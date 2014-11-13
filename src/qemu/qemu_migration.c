@@ -2853,9 +2853,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, 0);
 
  endjob:
-    if (!qemuMigrationJobFinish(driver, vm)) {
+    if (!qemuMigrationJobFinish(driver, vm))
         vm = NULL;
-    }
     goto cleanup;
 }
 

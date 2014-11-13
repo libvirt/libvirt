@@ -627,9 +627,8 @@ qemuProcessFakeReboot(void *opaque)
 
  cleanup:
     if (vm) {
-        if (ret == -1) {
+        if (ret == -1)
             ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
-        }
         if (virObjectUnref(vm))
             virObjectUnlock(vm);
     }
@@ -1830,9 +1829,8 @@ qemuProcessExtractTTYPath(const char *haystack,
 
     VIR_FREE(*path);
     /* First look for our magic string */
-    if (!(tmp = strstr(haystack + *offset, needle))) {
+    if (!(tmp = strstr(haystack + *offset, needle)))
         return 1;
-    }
     tmp += sizeof(needle);
     dev = tmp;
 
@@ -3470,9 +3468,8 @@ qemuProcessReconnect(void *opaque)
         priv->agentError = true;
     }
 
-    if (qemuUpdateActivePCIHostdevs(driver, obj->def) < 0) {
+    if (qemuUpdateActivePCIHostdevs(driver, obj->def) < 0)
         goto error;
-    }
 
     if (qemuUpdateActiveUSBHostdevs(driver, obj->def) < 0)
         goto error;
@@ -4511,9 +4508,8 @@ int qemuProcessStart(virConnectPtr conn,
     }
 
     VIR_DEBUG("Writing early domain status to disk");
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         goto cleanup;
-    }
 
     VIR_DEBUG("Waiting for handshake from child");
     if (virCommandHandshakeWait(cmd) < 0) {
@@ -4562,9 +4558,8 @@ int qemuProcessStart(virConnectPtr conn,
     }
 
     VIR_DEBUG("Labelling done, completing handshake to child");
-    if (virCommandHandshakeNotify(cmd) < 0) {
+    if (virCommandHandshakeNotify(cmd) < 0)
         goto cleanup;
-    }
     VIR_DEBUG("Handshake complete, child running");
 
     if (migrateFrom)
@@ -4929,9 +4924,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     /* Clear out dynamically assigned labels */
     for (i = 0; i < vm->def->nseclabels; i++) {
-        if (vm->def->seclabels[i]->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
+        if (vm->def->seclabels[i]->type == VIR_DOMAIN_SECLABEL_DYNAMIC)
             VIR_FREE(vm->def->seclabels[i]->label);
-        }
         VIR_FREE(vm->def->seclabels[i]->imagelabel);
     }
 

@@ -920,9 +920,8 @@ qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
     size_t i;
 
     for (i = 0; i < nvcpupin; i++) {
-        if (vcpuid == vcpupin[i]->vcpuid) {
+        if (vcpuid == vcpupin[i]->vcpuid)
             return qemuSetupCgroupEmulatorPin(cgroup, vcpupin[i]->cpumask);
-        }
     }
 
     return -1;
@@ -937,9 +936,8 @@ qemuSetupCgroupIOThreadsPin(virCgroupPtr cgroup,
     size_t i;
 
     for (i = 0; i < niothreadspin; i++) {
-        if (iothreadid == iothreadspin[i]->vcpuid) {
+        if (iothreadid == iothreadspin[i]->vcpuid)
             return qemuSetupCgroupEmulatorPin(cgroup, iothreadspin[i]->cpumask);
-        }
     }
 
     return -1;

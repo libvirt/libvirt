@@ -995,9 +995,8 @@ qemuStateStop(void)
     for (i = 0; i < numDomains; i++) {
         flags[i] = VIR_DOMAIN_SAVE_RUNNING;
         if (virDomainGetState(domains[i], &state, NULL, 0) == 0) {
-            if (state == VIR_DOMAIN_PAUSED) {
+            if (state == VIR_DOMAIN_PAUSED)
                 flags[i] = VIR_DOMAIN_SAVE_PAUSED;
-            }
         }
         virDomainSuspend(domains[i]);
     }
@@ -1840,9 +1839,8 @@ static int qemuDomainSuspend(virDomainPtr dom)
                        "%s", _("domain is pmsuspended"));
         goto endjob;
     } else if (state != VIR_DOMAIN_PAUSED) {
-        if (qemuProcessStopCPUs(driver, vm, reason, QEMU_ASYNC_JOB_NONE) < 0) {
+        if (qemuProcessStopCPUs(driver, vm, reason, QEMU_ASYNC_JOB_NONE) < 0)
             goto endjob;
-        }
 
         if (eventDetail >= 0) {
             event = virDomainEventLifecycleNewFromObj(vm,
@@ -4043,9 +4041,8 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
 
     switch (action) {
     case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY:
-        if (doCoreDumpToAutoDumpPath(driver, vm, VIR_DUMP_MEMORY_ONLY) < 0) {
+        if (doCoreDumpToAutoDumpPath(driver, vm, VIR_DUMP_MEMORY_ONLY) < 0)
             goto cleanup;
-        }
         /* fall through */
 
     case VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY:
@@ -4074,15 +4071,13 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
 
         virDomainAuditStop(vm, "destroyed");
 
-        if (!vm->persistent) {
+        if (!vm->persistent)
             qemuDomainRemoveInactive(driver, vm);
-        }
         break;
 
     case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_RESTART:
-        if (doCoreDumpToAutoDumpPath(driver, vm, VIR_DUMP_MEMORY_ONLY) < 0) {
+        if (doCoreDumpToAutoDumpPath(driver, vm, VIR_DUMP_MEMORY_ONLY) < 0)
             goto cleanup;
-        }
         /* fall through */
 
     case VIR_DOMAIN_LIFECYCLE_CRASH_RESTART:
@@ -4955,9 +4950,8 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
                                         &targetDef) < 0)
         goto cleanup;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+    if (flags & VIR_DOMAIN_AFFECT_LIVE)
         targetDef = vm->def;
-    }
 
     /* Coverity didn't realize that targetDef must be set if we got here.  */
     sa_assert(targetDef);
@@ -4973,9 +4967,8 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     if (ncpumaps > targetDef->vcpus)
         ncpumaps = targetDef->vcpus;
 
-    if (ncpumaps < 1) {
+    if (ncpumaps < 1)
         goto cleanup;
-    }
 
     /* initialize cpumaps */
     memset(cpumaps, 0xff, maplen * ncpumaps);
@@ -5233,9 +5226,8 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
 
     /* initialize cpumaps */
     memset(cpumaps, 0xff, maplen);
-    if (maxcpu % 8) {
+    if (maxcpu % 8)
         cpumaps[maplen - 1] &= (1 << maxcpu % 8) - 1;
-    }
 
     if (targetDef->cputune.emulatorpin) {
         cpumask = targetDef->cputune.emulatorpin->cpumask;
@@ -9532,9 +9524,8 @@ qemuSetEmulatorBandwidthLive(virDomainObjPtr vm, virCgroupPtr cgroup,
     if (period == 0 && quota == 0)
         return 0;
 
-    if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid) {
+    if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid)
         return 0;
-    }
 
     if (virCgroupNewEmulator(cgroup, false, &cgroup_emulator) < 0)
         goto cleanup;
@@ -10510,12 +10501,10 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     /* average is mandatory, peak and burst are optional. So if no
      * average is given, we free inbound/outbound here which causes
      * inbound/outbound to not be set. */
-    if (!bandwidth->in->average) {
+    if (!bandwidth->in->average)
         VIR_FREE(bandwidth->in);
-    }
-    if (!bandwidth->out->average) {
+    if (!bandwidth->out->average)
         VIR_FREE(bandwidth->out);
-    }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (VIR_ALLOC(newBandwidth) < 0)
@@ -14860,9 +14849,8 @@ qemuDomainSnapshotReparentChildren(void *payload,
     virDomainSnapshotObjPtr snap = payload;
     virQEMUSnapReparentPtr rep = data;
 
-    if (rep->err < 0) {
+    if (rep->err < 0)
         return;
-    }
 
     VIR_FREE(snap->def->parent);
     snap->parent = rep->parent;
@@ -15036,9 +15024,8 @@ static int qemuDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
     qemuDomainObjExitMonitor(driver, vm);
 
  endjob:
-    if (!qemuDomainObjEndJob(driver, vm)) {
+    if (!qemuDomainObjEndJob(driver, vm))
         vm = NULL;
-    }
 
  cleanup:
     if (vm)
@@ -15905,9 +15892,8 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     }
 
     device = qemuDiskPathToAlias(vm, path, &idx);
-    if (!device) {
+    if (!device)
         goto endjob;
-    }
     disk = vm->def->disks[idx];
     if (disk->mirror) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
@@ -17032,9 +17018,8 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     }
 
     device = qemuDiskPathToAlias(vm, disk, NULL);
-    if (!device) {
+    if (!device)
         goto endjob;
-    }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         qemuDomainObjEnterMonitor(driver, vm);

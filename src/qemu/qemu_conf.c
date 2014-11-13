@@ -1018,9 +1018,8 @@ qemuSharedDeviceEntryFree(void *payload, const void *name ATTRIBUTE_UNUSED)
     if (!entry)
         return;
 
-    for (i = 0; i < entry->ref; i++) {
+    for (i = 0; i < entry->ref; i++)
         VIR_FREE(entry->domains[i]);
-    }
     VIR_FREE(entry->domains);
     VIR_FREE(entry);
 }

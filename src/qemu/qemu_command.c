@@ -8862,9 +8862,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                                _("network disks are only supported with -drive"));
                 goto error;
             } else {
-                if (VIR_STRDUP(file, disk->src->path) < 0) {
+                if (VIR_STRDUP(file, disk->src->path) < 0)
                     goto error;
-                }
             }
 
             /* Don't start with source if the tray is open for
@@ -10144,9 +10143,8 @@ static int qemuStringToArgvEnv(const char *args,
 
         start = curr;
         /* accept a space in CEPH_ARGS */
-        if (STRPREFIX(curr, "CEPH_ARGS=-m ")) {
+        if (STRPREFIX(curr, "CEPH_ARGS=-m "))
             start += strlen("CEPH_ARGS=-m ");
-        }
         if (*start == '\'') {
             if (start == curr)
                 curr++;

@@ -381,9 +381,8 @@ static int qemuAgentIOProcessData(qemuAgentPtr mon,
             int got = nl - (data + used);
             for (i = 0; i < strlen(LINE_ENDING); i++)
                 data[used + got + i] = '\0';
-            if (qemuAgentIOProcessLine(mon, data + used, msg) < 0) {
+            if (qemuAgentIOProcessLine(mon, data + used, msg) < 0)
                 return -1;
-            }
             used += got + strlen(LINE_ENDING);
         } else {
             break;

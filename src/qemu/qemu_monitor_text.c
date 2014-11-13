@@ -123,9 +123,8 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
          */
         if (msg->txLength > 0) {
             char *tmp;
-            if ((tmp = strchr(msg->txBuffer, '\r'))) {
+            if ((tmp = strchr(msg->txBuffer, '\r')))
                 *tmp = '\0';
-            }
         }
 
         /* QEMU echos the command back to us, full of control
@@ -144,9 +143,8 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         skip = strstr(data + used, msg->txBuffer);
 
         /* After the junk we should have a line ending... */
-        if (skip) {
+        if (skip)
             start = strstr(skip + strlen(msg->txBuffer), LINE_ENDING);
-        }
 
         /* ... then our command reply data, following by a (qemu) prompt */
         if (start) {
