@@ -166,9 +166,8 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
     result = 0;
 
  cleanup:
-    if (result < 0) {
+    if (result < 0)
         esxUtil_FreeParsedUri(parsedUri);
-    }
 
     return result;
 }
@@ -179,9 +178,8 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
 void
 esxUtil_FreeParsedUri(esxUtil_ParsedUri **parsedUri)
 {
-    if (!parsedUri || !(*parsedUri)) {
+    if (!parsedUri || !(*parsedUri))
         return;
-    }
 
     VIR_FREE((*parsedUri)->transport);
     VIR_FREE((*parsedUri)->vCenter);
@@ -197,18 +195,16 @@ int
 esxUtil_ParseVirtualMachineIDString(const char *id_string, int *id)
 {
     /* Try to parse an integer from the complete string. */
-    if (virStrToLong_i(id_string, NULL, 10, id) == 0) {
+    if (virStrToLong_i(id_string, NULL, 10, id) == 0)
         return 0;
-    }
 
     /*
      * If that fails try to parse an integer from the string tail
      * assuming the naming scheme Virtual Center seems to use.
      */
     if (STRPREFIX(id_string, "vm-")) {
-        if (virStrToLong_i(id_string + 3, NULL, 10, id) == 0) {
+        if (virStrToLong_i(id_string + 3, NULL, 10, id) == 0)
             return 0;
-        }
     }
 
     return -1;
@@ -234,9 +230,8 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
         return -1;
     }
 
-    if (VIR_STRDUP(copyOfDatastorePath, datastorePath) < 0) {
+    if (VIR_STRDUP(copyOfDatastorePath, datastorePath) < 0)
         goto cleanup;
-    }
 
     /* Expected format: '[<datastore>] <path>' where <path> is optional */
     if (!(tmp = STRSKIP(copyOfDatastorePath, "[")) || *tmp == ']' ||
@@ -270,30 +265,25 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
         /* Split <path> into <directory>/<file> and remove /<file> */
         tmp = strrchr(preliminaryDirectoryAndFileName, '/');
 
-        if (tmp) {
+        if (tmp)
             *tmp = '\0';
-        }
 
-        if (VIR_STRDUP(*directoryName, preliminaryDirectoryAndFileName) < 0) {
+        if (VIR_STRDUP(*directoryName, preliminaryDirectoryAndFileName) < 0)
             goto cleanup;
-        }
     }
 
     result = 0;
 
  cleanup:
     if (result < 0) {
-        if (datastoreName) {
+        if (datastoreName)
             VIR_FREE(*datastoreName);
-        }
 
-        if (directoryName) {
+        if (directoryName)
             VIR_FREE(*directoryName);
-        }
 
-        if (directoryAndFileName) {
+        if (directoryAndFileName)
             VIR_FREE(*directoryAndFileName);
-        }
     }
 
     VIR_FREE(copyOfDatastorePath);
@@ -408,20 +398,17 @@ esxUtil_EscapeBase64(const char *string)
                 virBufferAddChar(&buffer, base64[(c1 >> 2) & 0x3f]);
                 virBufferAddChar(&buffer, base64[((c1 << 4) + (c2 >> 4)) & 0x3f]);
 
-                if (length > 1) {
+                if (length > 1)
                     virBufferAddChar(&buffer, base64[((c2 << 2) + (c3 >> 6)) & 0x3f]);
-                }
 
-                if (length > 2) {
+                if (length > 2)
                     virBufferAddChar(&buffer, base64[c3 & 0x3f]);
-                }
 
                 length -= length > 3 ? 3 : length;
             }
 
-            if (*tmp1 != '\0') {
+            if (*tmp1 != '\0')
                 virBufferAddChar(&buffer, '-');
-            }
         }
     }
 
@@ -450,9 +437,8 @@ esxUtil_ReplaceSpecialWindowsPathChars(char *string)
             --length;
         }
 
-        if (*tmp != '\0') {
+        if (*tmp != '\0')
             ++tmp;
-        }
     }
 }
 
@@ -472,9 +458,8 @@ esxUtil_EscapeDatastoreItem(const char *string)
 
     escaped1 = virVMXEscapeHexPercent(replaced);
 
-    if (!escaped1) {
+    if (!escaped1)
         goto cleanup;
-    }
 
     escaped2 = esxUtil_EscapeBase64(escaped1);
 

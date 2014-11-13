@@ -98,26 +98,22 @@ ESX_VI__TEMPLATE__FREE(CURL,
     if (shared) {
         esxVI_SharedCURL_Remove(shared, item);
 
-        if (shared->count == 0) {
+        if (shared->count == 0)
             esxVI_SharedCURL_Free(&shared);
-        }
     }
 
     if (multi) {
         esxVI_MultiCURL_Remove(multi, item);
 
-        if (multi->count == 0) {
+        if (multi->count == 0)
             esxVI_MultiCURL_Free(&multi);
-        }
     }
 
-    if (item->handle) {
+    if (item->handle)
         curl_easy_cleanup(item->handle);
-    }
 
-    if (item->headers) {
+    if (item->headers)
         curl_slist_free_all(item->headers);
-    }
 
     virMutexDestroy(&item->lock);
 })
@@ -129,19 +125,16 @@ esxVI_CURL_ReadString(char *data, size_t size, size_t nmemb, void *userdata)
     size_t available = 0;
     size_t requested = size * nmemb;
 
-    if (!content) {
+    if (!content)
         return 0;
-    }
 
     available = strlen(content);
 
-    if (available == 0) {
+    if (available == 0)
         return 0;
-    }
 
-    if (requested > available) {
+    if (requested > available)
         requested = available;
-    }
 
     memcpy(data, content, requested);
 
@@ -162,9 +155,8 @@ esxVI_CURL_WriteBuffer(char *data, size_t size, size_t nmemb, void *userdata)
          * are meant to download small things such as VMX files, VMDK metadata
          * files and SOAP responses.
          */
-        if (size * nmemb > INT32_MAX / 2 - virBufferUse(buffer)) {
+        if (size * nmemb > INT32_MAX / 2 - virBufferUse(buffer))
             return 0;
-        }
 
         virBufferAdd(buffer, data, size * nmemb);
 
@@ -193,9 +185,8 @@ esxVI_CURL_Debug(CURL *curl ATTRIBUTE_UNUSED, curl_infotype type,
      * To handle this properly in order to pass the info string to VIR_DEBUG
      * a zero terminated copy of the info string has to be allocated.
      */
-    if (VIR_ALLOC_N(buffer, size + 1) < 0) {
+    if (VIR_ALLOC_N(buffer, size + 1) < 0)
         return 0;
-    }
 
     if (!virStrncpy(buffer, info, size, size + 1)) {
         VIR_FREE(buffer);
@@ -204,9 +195,8 @@ esxVI_CURL_Debug(CURL *curl ATTRIBUTE_UNUSED, curl_infotype type,
 
     switch (type) {
       case CURLINFO_TEXT:
-        if (size > 0 && buffer[size - 1] == '\n') {
+        if (size > 0 && buffer[size - 1] == '\n')
             buffer[size - 1] = '\0';
-        }
 
         VIR_DEBUG("CURLINFO_TEXT [[[[%s]]]]", buffer);
         break;
@@ -430,9 +420,8 @@ esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content,
     if (virBufferCheckError(&buffer) < 0)
         goto cleanup;
 
-    if (length) {
+    if (length)
         *length = virBufferUse(&buffer);
-    }
 
     *content = virBufferContentAndReset(&buffer);
 
@@ -557,13 +546,11 @@ ESX_VI__TEMPLATE__FREE(SharedCURL,
         return;
     }
 
-    if (item->handle) {
+    if (item->handle)
         curl_share_cleanup(item->handle);
-    }
 
-    for (i = 0; i < ARRAY_CARDINALITY(item->locks); ++i) {
+    for (i = 0; i < ARRAY_CARDINALITY(item->locks); ++i)
         virMutexDestroy(&item->locks[i]);
-    }
 })
 
 int
@@ -735,9 +722,8 @@ ESX_VI__TEMPLATE__FREE(MultiCURL,
         return;
     }
 
-    if (item->handle) {
+    if (item->handle)
         curl_multi_cleanup(item->handle);
-    }
 
 #if ESX_EMULATE_CURL_MULTI_WAIT
     VIR_FREE(item->pollfds);
@@ -856,9 +842,8 @@ esxVI_MultiCURL_Wait(esxVI_MultiCURL *multi, int *runningHandles)
 
     curl_multi_timeout(multi->handle, &timeout);
 
-    if (timeout < 0) {
+    if (timeout < 0)
         timeout = 1000; /* default to 1 sec timeout */
-    }
 
     do {
         rc = poll(multi->pollfds, multi->npollfds, timeout);
@@ -980,9 +965,8 @@ ESX_VI__TEMPLATE__ALLOC(Context)
 /* esxVI_Context_Free */
 ESX_VI__TEMPLATE__FREE(Context,
 {
-    if (item->sessionLock) {
+    if (item->sessionLock)
         virMutexDestroy(item->sessionLock);
-    }
 
     esxVI_CURL_Free(&item->curl);
     VIR_FREE(item->url);
@@ -1036,9 +1020,8 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
         return -1;
     }
 
-    if (esxVI_RetrieveServiceContent(ctx, &ctx->service) < 0) {
+    if (esxVI_RetrieveServiceContent(ctx, &ctx->service) < 0)
         return -1;
-    }
 
     if (STRNEQ(ctx->service->about->apiType, "HostAgent") &&
         STRNEQ(ctx->service->about->apiType, "VirtualCenter")) {
@@ -1121,9 +1104,8 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
         ctx->hasQueryVirtualDiskUuid = true;
     }
 
-    if (ctx->productLine == esxVI_ProductLine_VPX) {
+    if (ctx->productLine == esxVI_ProductLine_VPX)
         ctx->hasSessionIsActive = true;
-    }
 
     if (esxVI_Login(ctx, username, password, NULL, &ctx->session) < 0 ||
         esxVI_BuildSelectSetCollection(ctx) < 0) {
@@ -1212,9 +1194,8 @@ esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
 
         if (folder) {
             /* It's a folder, use it as new lookup root */
-            if (root != ctx->service->rootFolder) {
+            if (root != ctx->service->rootFolder)
                 esxVI_ManagedObjectReference_Free(&root);
-            }
 
             root = folder->_reference;
             folder->_reference = NULL;
@@ -1227,9 +1208,8 @@ esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
         }
 
         /* Build datacenter path */
-        if (virBufferUse(&buffer) > 0) {
+        if (virBufferUse(&buffer) > 0)
             virBufferAddChar(&buffer, '/');
-        }
 
         virBufferAdd(&buffer, item, -1);
 
@@ -1255,9 +1235,8 @@ esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
         goto cleanup;
     }
 
-    if (root != ctx->service->rootFolder) {
+    if (root != ctx->service->rootFolder)
         esxVI_ManagedObjectReference_Free(&root);
-    }
 
     root = ctx->datacenter->hostFolder;
 
@@ -1272,9 +1251,8 @@ esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
 
         if (folder) {
             /* It's a folder, use it as new lookup root */
-            if (root != ctx->datacenter->hostFolder) {
+            if (root != ctx->datacenter->hostFolder)
                 esxVI_ManagedObjectReference_Free(&root);
-            }
 
             root = folder->_reference;
             folder->_reference = NULL;
@@ -1288,9 +1266,8 @@ esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
         }
 
         /* Build compute resource path */
-        if (virBufferUse(&buffer) > 0) {
+        if (virBufferUse(&buffer) > 0)
             virBufferAddChar(&buffer, '/');
-        }
 
         virBufferAdd(&buffer, item, -1);
 
@@ -1355,9 +1332,8 @@ esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
     result = 0;
 
  cleanup:
-    if (result < 0) {
+    if (result < 0)
         virBufferFreeAndReset(&buffer);
-    }
 
     if (root != ctx->service->rootFolder &&
         (!ctx->datacenter || root != ctx->datacenter->hostFolder)) {
@@ -1431,9 +1407,8 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
         return -1;
     }
 
-    if (esxVI_Response_Alloc(response) < 0) {
+    if (esxVI_Response_Alloc(response) < 0)
         return -1;
-    }
 
     virMutexLock(&ctx->curl->lock);
 
@@ -1448,9 +1423,8 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
 
     virMutexUnlock(&ctx->curl->lock);
 
-    if ((*response)->responseCode < 0) {
+    if ((*response)->responseCode < 0)
         goto cleanup;
-    }
 
     if (virBufferCheckError(&buffer) < 0)
         goto cleanup;
@@ -1462,9 +1436,8 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
                                                       _("(esx execute response)"),
                                                       &xpathContext);
 
-        if (!(*response)->document) {
+        if (!(*response)->document)
             goto cleanup;
-        }
 
         xmlXPathRegisterNs(xpathContext, BAD_CAST "soapenv",
                            BAD_CAST "http://schemas.xmlsoap.org/soap/envelope/");
@@ -1710,9 +1683,8 @@ esxVI_Enumeration_Deserialize(const esxVI_Enumeration *enumeration,
 
     *value = 0; /* undefined */
 
-    if (esxVI_String_DeserializeValue(node, &name) < 0) {
+    if (esxVI_String_DeserializeValue(node, &name) < 0)
         return -1;
-    }
 
     for (i = 0; enumeration->values[i].name; ++i) {
         if (STREQ(name, enumeration->values[i].name)) {
@@ -1755,9 +1727,8 @@ esxVI_List_Append(esxVI_List **list, esxVI_List *item)
 
     next = *list;
 
-    while (next->_next) {
+    while (next->_next)
         next = next->_next;
-    }
 
     next->_next = item;
 
@@ -1810,9 +1781,8 @@ esxVI_List_CastFromAnyType(esxVI_AnyType *anyType, esxVI_List **list,
         return -1;
     }
 
-    if (!anyType) {
+    if (!anyType)
         return 0;
-    }
 
     if (! STRPREFIX(anyType->other, "ArrayOf")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1865,14 +1835,12 @@ esxVI_List_Serialize(esxVI_List *list, const char *element,
         return -1;
     }
 
-    if (!list) {
+    if (!list)
         return 0;
-    }
 
     for (item = list; item; item = item->_next) {
-        if (serializeFunc(item, element, output) < 0) {
+        if (serializeFunc(item, element, output) < 0)
             return -1;
-        }
     }
 
     return 0;
@@ -1890,9 +1858,8 @@ esxVI_List_Deserialize(xmlNodePtr node, esxVI_List **list,
         return -1;
     }
 
-    if (!node) {
+    if (!node)
         return 0;
-    }
 
     for (; node; node = node->next) {
         if (node->type != XML_ELEMENT_NODE) {
@@ -2193,9 +2160,8 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
         return -1;
     }
 
-    if (esxVI_ObjectSpec_Alloc(&objectSpec) < 0) {
+    if (esxVI_ObjectSpec_Alloc(&objectSpec) < 0)
         return -1;
-    }
 
     objectSpec->obj = root;
     objectSpec->skip = esxVI_Boolean_False;
@@ -2254,9 +2220,8 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
         }
     }
 
-    if (esxVI_PropertySpec_Alloc(&propertySpec) < 0) {
+    if (esxVI_PropertySpec_Alloc(&propertySpec) < 0)
         goto cleanup;
-    }
 
     propertySpec->type = (char *)type;
     propertySpec->pathSet = propertyNameList;
@@ -2325,13 +2290,11 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
         propertySpec->pathSet = NULL;
     }
 
-    if (!objectSpec_isAppended) {
+    if (!objectSpec_isAppended)
         esxVI_ObjectSpec_Free(&objectSpec);
-    }
 
-    if (!propertySpec_isAppended) {
+    if (!propertySpec_isAppended)
         esxVI_PropertySpec_Free(&propertySpec);
-    }
 
     esxVI_PropertyFilterSpec_Free(&propertyFilterSpec);
 
@@ -2463,9 +2426,8 @@ esxVI_GetLong(esxVI_ObjectContent *objectContent, const char *propertyName,
     for (dynamicProperty = objectContent->propSet; dynamicProperty;
          dynamicProperty = dynamicProperty->_next) {
         if (STREQ(dynamicProperty->name, propertyName)) {
-            if (esxVI_Long_CastFromAnyType(dynamicProperty->val, value) < 0) {
+            if (esxVI_Long_CastFromAnyType(dynamicProperty->val, value) < 0)
                 return -1;
-            }
 
             break;
         }
@@ -2709,9 +2671,8 @@ esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
     return 0;
 
  failure:
-    if (name) {
+    if (name)
         VIR_FREE(*name);
-    }
 
     return -1;
 }
@@ -2760,9 +2721,8 @@ esxVI_GetSnapshotTreeNames(esxVI_VirtualMachineSnapshotTree *snapshotTreeList,
             count++;
         }
 
-        if (count >= nameslen) {
+        if (count >= nameslen)
             break;
-        }
 
         if (recurse) {
             result = esxVI_GetSnapshotTreeNames(snapshotTree->childSnapshotList,
@@ -2770,9 +2730,8 @@ esxVI_GetSnapshotTreeNames(esxVI_VirtualMachineSnapshotTree *snapshotTreeList,
                                                 nameslen - count,
                                                 true, leaves);
 
-            if (result < 0) {
+            if (result < 0)
                 goto failure;
-            }
 
             count += result;
         }
@@ -2781,9 +2740,8 @@ esxVI_GetSnapshotTreeNames(esxVI_VirtualMachineSnapshotTree *snapshotTreeList,
     return count;
 
  failure:
-    for (i = 0; i < count; ++i) {
+    for (i = 0; i < count; ++i)
         VIR_FREE(names[i]);
-    }
 
     return -1;
 }
@@ -2817,9 +2775,8 @@ esxVI_GetSnapshotTreeByName
         if (esxVI_GetSnapshotTreeByName(candidate->childSnapshotList, name,
                                         snapshotTree, snapshotTreeParent,
                                         occurrence) > 0) {
-            if (snapshotTreeParent && !(*snapshotTreeParent)) {
+            if (snapshotTreeParent && !(*snapshotTreeParent))
                 *snapshotTreeParent = candidate;
-            }
 
             return 1;
         }
@@ -2987,13 +2944,11 @@ esxVI_LookupVirtualMachineByName(esxVI_Context *ctx, const char *name,
             goto cleanup;
         }
 
-        if (STRNEQ(name, name_candidate)) {
+        if (STRNEQ(name, name_candidate))
             continue;
-        }
 
-        if (esxVI_ObjectContent_DeepCopy(virtualMachine, candidate) < 0) {
+        if (esxVI_ObjectContent_DeepCopy(virtualMachine, candidate) < 0)
             goto cleanup;
-        }
 
         break;
     }
@@ -3126,9 +3081,8 @@ esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
         }
 
         if (STREQ(name_candidate, name)) {
-            if (esxVI_ObjectContent_DeepCopy(datastore, candidate) < 0) {
+            if (esxVI_ObjectContent_DeepCopy(datastore, candidate) < 0)
                 goto cleanup;
-            }
 
             /* Found datastore with matching name */
             result = 0;
@@ -3199,9 +3153,8 @@ esxVI_LookupDatastoreByAbsolutePath(esxVI_Context *ctx,
             }
         }
 
-        if (!datastoreHostMountList) {
+        if (!datastoreHostMountList)
             continue;
-        }
 
         for (datastoreHostMount = datastoreHostMountList;
              datastoreHostMount;
@@ -3212,9 +3165,8 @@ esxVI_LookupDatastoreByAbsolutePath(esxVI_Context *ctx,
             }
 
             if (STRPREFIX(absolutePath, datastoreHostMount->mountInfo->path)) {
-                if (esxVI_ObjectContent_DeepCopy(datastore, candidate) < 0) {
+                if (esxVI_ObjectContent_DeepCopy(datastore, candidate) < 0)
                     goto cleanup;
-                }
 
                 /* Found datastore with matching mount path */
                 result = 0;
@@ -3284,13 +3236,11 @@ esxVI_LookupDatastoreHostMount(esxVI_Context *ctx,
 
     for (candidate = hostMountList; candidate;
          candidate = candidate->_next) {
-        if (STRNEQ(ctx->hostSystem->_reference->value, candidate->key->value)) {
+        if (STRNEQ(ctx->hostSystem->_reference->value, candidate->key->value))
             continue;
-        }
 
-        if (esxVI_DatastoreHostMount_DeepCopy(hostMount, candidate) < 0) {
+        if (esxVI_DatastoreHostMount_DeepCopy(hostMount, candidate) < 0)
             goto cleanup;
-        }
 
         break;
     }
@@ -3392,9 +3342,8 @@ esxVI_LookupPendingTaskInfoListByVirtualMachine
     /* Lookup task info for each task */
     for (recentTask = recentTaskList; recentTask;
          recentTask = recentTask->_next) {
-        if (esxVI_LookupTaskInfoByTask(ctx, recentTask, &taskInfo) < 0) {
+        if (esxVI_LookupTaskInfoByTask(ctx, recentTask, &taskInfo) < 0)
             goto cleanup;
-        }
 
         if (taskInfo->state == esxVI_TaskInfoState_Queued ||
             taskInfo->state == esxVI_TaskInfoState_Running) {
@@ -3412,9 +3361,8 @@ esxVI_LookupPendingTaskInfoListByVirtualMachine
     result = 0;
 
  cleanup:
-    if (result < 0) {
+    if (result < 0)
         esxVI_TaskInfo_Free(pendingTaskInfoList);
-    }
 
     esxVI_String_Free(&propertyNameList);
     esxVI_ManagedObjectReference_Free(&recentTaskList);
@@ -3509,9 +3457,8 @@ esxVI_LookupRootSnapshotTreeList
     result = 0;
 
  cleanup:
-    if (result < 0) {
+    if (result < 0)
         esxVI_VirtualMachineSnapshotTree_Free(rootSnapshotTreeList);
-    }
 
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
@@ -3651,9 +3598,8 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
                         datastoreName) < 0)
             goto cleanup;
 
-        if (VIR_STRDUP(fileName, directoryAndFileName) < 0) {
+        if (VIR_STRDUP(fileName, directoryAndFileName) < 0)
             goto cleanup;
-        }
     } else {
         if (virAsprintf(&datastorePathWithoutFileName, "[%s] %s",
                         datastoreName, directoryName) < 0)
@@ -3669,9 +3615,8 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
             goto cleanup;
         }
 
-        if (VIR_STRDUP(fileName, directoryAndFileName + length + 1) < 0) {
+        if (VIR_STRDUP(fileName, directoryAndFileName + length + 1) < 0)
             goto cleanup;
-        }
     }
 
     /* Lookup HostDatastoreBrowser */
@@ -3736,9 +3681,8 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
         floppyImageFileQuery = NULL;
     }
 
-    if (esxVI_String_Alloc(&searchSpec->matchPattern) < 0) {
+    if (esxVI_String_Alloc(&searchSpec->matchPattern) < 0)
         goto cleanup;
-    }
 
     searchSpec->matchPattern->value = fileName;
 
@@ -3786,9 +3730,8 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
 
  cleanup:
     /* Don't double free fileName */
-    if (searchSpec && searchSpec->matchPattern) {
+    if (searchSpec && searchSpec->matchPattern)
         searchSpec->matchPattern->value = NULL;
-    }
 
     VIR_FREE(datastoreName);
     VIR_FREE(directoryName);
@@ -3967,17 +3910,15 @@ esxVI_LookupStorageVolumeKeyByDatastorePath(esxVI_Context *ctx,
             if (VIR_ALLOC_N(*key, VIR_UUID_STRING_BUFLEN) < 0)
                 goto cleanup;
 
-            if (esxUtil_ReformatUuid(uuid_string, *key) < 0) {
+            if (esxUtil_ReformatUuid(uuid_string, *key) < 0)
                 goto cleanup;
-            }
         }
     }
 
     if (!(*key)) {
         /* Other files don't have a UUID, fall back to the path as key */
-        if (VIR_STRDUP(*key, datastorePath) < 0) {
+        if (VIR_STRDUP(*key, datastorePath) < 0)
             goto cleanup;
-        }
     }
 
     result = 0;
@@ -4157,17 +4098,15 @@ esxVI_LookupPhysicalNicByName(esxVI_Context *ctx, const char *name,
         return -1;
     }
 
-    if (esxVI_LookupPhysicalNicList(ctx, &physicalNicList) < 0) {
+    if (esxVI_LookupPhysicalNicList(ctx, &physicalNicList) < 0)
         goto cleanup;
-    }
 
     /* Search for a matching physical NIC */
     for (candidate = physicalNicList; candidate;
          candidate = candidate->_next) {
         if (STRCASEEQ(candidate->device, name)) {
-            if (esxVI_PhysicalNic_DeepCopy(physicalNic, candidate) < 0) {
+            if (esxVI_PhysicalNic_DeepCopy(physicalNic, candidate) < 0)
                 goto cleanup;
-            }
 
             /* Found physical NIC with matching name */
             result = 0;
@@ -4206,17 +4145,15 @@ esxVI_LookupPhysicalNicByMACAddress(esxVI_Context *ctx, const char *mac,
         return -1;
     }
 
-    if (esxVI_LookupPhysicalNicList(ctx, &physicalNicList) < 0) {
+    if (esxVI_LookupPhysicalNicList(ctx, &physicalNicList) < 0)
         goto cleanup;
-    }
 
     /* Search for a matching physical NIC */
     for (candidate = physicalNicList; candidate;
          candidate = candidate->_next) {
         if (STRCASEEQ(candidate->mac, mac)) {
-            if (esxVI_PhysicalNic_DeepCopy(physicalNic, candidate) < 0) {
+            if (esxVI_PhysicalNic_DeepCopy(physicalNic, candidate) < 0)
                 goto cleanup;
-            }
 
             /* Found physical NIC with matching MAC address */
             result = 0;
@@ -4299,9 +4236,8 @@ esxVI_LookupHostVirtualSwitchByName(esxVI_Context *ctx, const char *name,
         return -1;
     }
 
-    if (esxVI_LookupHostVirtualSwitchList(ctx, &hostVirtualSwitchList) < 0) {
+    if (esxVI_LookupHostVirtualSwitchList(ctx, &hostVirtualSwitchList) < 0)
         goto cleanup;
-    }
 
     /* Search for a matching HostVirtualSwitch */
     for (candidate = hostVirtualSwitchList; candidate;
@@ -4421,9 +4357,8 @@ esxVI_HandleVirtualMachineQuestion
              elementDescription = elementDescription->_next) {
             virBufferAsprintf(&buffer, "'%s'", elementDescription->label);
 
-            if (elementDescription->_next) {
+            if (elementDescription->_next)
                 virBufferAddLit(&buffer, ", ");
-            }
 
             if (!answerChoice &&
                 questionInfo->choice->defaultIndex &&
@@ -4489,9 +4424,8 @@ esxVI_HandleVirtualMachineQuestion
     result = 0;
 
  cleanup:
-    if (result < 0) {
+    if (result < 0)
         virBufferFreeAndReset(&buffer);
-    }
 
     VIR_FREE(possibleAnswers);
 
@@ -4533,16 +4467,14 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
     if (VIR_STRDUP(version, "") < 0)
         return -1;
 
-    if (esxVI_ObjectSpec_Alloc(&objectSpec) < 0) {
+    if (esxVI_ObjectSpec_Alloc(&objectSpec) < 0)
         goto cleanup;
-    }
 
     objectSpec->obj = task;
     objectSpec->skip = esxVI_Boolean_False;
 
-    if (esxVI_PropertySpec_Alloc(&propertySpec) < 0) {
+    if (esxVI_PropertySpec_Alloc(&propertySpec) < 0)
         goto cleanup;
-    }
 
     propertySpec->type = task->type;
 
@@ -4581,9 +4513,8 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
                  *        esxVI_LookupTaskInfoByTask() and esxVI_CancelTask()
                  *        don't overwrite the actual error
                  */
-                if (esxVI_LookupTaskInfoByTask(ctx, task, &taskInfo)) {
+                if (esxVI_LookupTaskInfoByTask(ctx, task, &taskInfo))
                     goto cleanup;
-                }
 
                 if (taskInfo->cancelable == esxVI_Boolean_True) {
                     if (esxVI_CancelTask(ctx, task) < 0 && blocked) {
@@ -4602,17 +4533,15 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
             }
         }
 
-        if (esxVI_WaitForUpdates(ctx, version, &updateSet) < 0) {
+        if (esxVI_WaitForUpdates(ctx, version, &updateSet) < 0)
             goto cleanup;
-        }
 
         VIR_FREE(version);
         if (VIR_STRDUP(version, updateSet->version) < 0)
             goto cleanup;
 
-        if (!updateSet->filterSet) {
+        if (!updateSet->filterSet)
             continue;
-        }
 
         for (propertyFilterUpdate = updateSet->filterSet;
              propertyFilterUpdate;
@@ -4634,27 +4563,22 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
             }
         }
 
-        if (!propertyValue) {
+        if (!propertyValue)
             continue;
-        }
 
-        if (esxVI_TaskInfoState_CastFromAnyType(propertyValue, &state) < 0) {
+        if (esxVI_TaskInfoState_CastFromAnyType(propertyValue, &state) < 0)
             goto cleanup;
-        }
     }
 
-    if (esxVI_DestroyPropertyFilter(ctx, propertyFilter) < 0) {
+    if (esxVI_DestroyPropertyFilter(ctx, propertyFilter) < 0)
         VIR_DEBUG("DestroyPropertyFilter failed");
-    }
 
-    if (esxVI_TaskInfoState_CastFromAnyType(propertyValue, finalState) < 0) {
+    if (esxVI_TaskInfoState_CastFromAnyType(propertyValue, finalState) < 0)
         goto cleanup;
-    }
 
     if (*finalState != esxVI_TaskInfoState_Success) {
-        if (esxVI_LookupTaskInfoByTask(ctx, task, &taskInfo)) {
+        if (esxVI_LookupTaskInfoByTask(ctx, task, &taskInfo))
             goto cleanup;
-        }
 
         if (!taskInfo->error) {
             if (VIR_STRDUP(*errorMessage, _("Unknown error")) < 0)
@@ -4677,21 +4601,17 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
      * Remove values given by the caller from the data structures to prevent
      * them from being freed by the call to esxVI_PropertyFilterSpec_Free().
      */
-    if (objectSpec) {
+    if (objectSpec)
         objectSpec->obj = NULL;
-    }
 
-    if (propertySpec) {
+    if (propertySpec)
         propertySpec->type = NULL;
-    }
 
-    if (!objectSpec_isAppended) {
+    if (!objectSpec_isAppended)
         esxVI_ObjectSpec_Free(&objectSpec);
-    }
 
-    if (!propertySpec_isAppended) {
+    if (!propertySpec_isAppended)
         esxVI_PropertySpec_Free(&propertySpec);
-    }
 
     esxVI_PropertyFilterSpec_Free(&propertyFilterSpec);
     esxVI_ManagedObjectReference_Free(&propertyFilter);
@@ -4849,9 +4769,8 @@ esxVI_LookupHostInternetScsiHbaStaticTargetByName
 
     for (candidate = hostInternetScsiHba->configuredStaticTarget;
          candidate; candidate = candidate->_next) {
-        if (STREQ(candidate->iScsiName, name)) {
+        if (STREQ(candidate->iScsiName, name))
             break;
-        }
     }
 
     if (!candidate) {
@@ -4863,9 +4782,8 @@ esxVI_LookupHostInternetScsiHbaStaticTargetByName
         goto cleanup;
     }
 
-    if (esxVI_HostInternetScsiHbaStaticTarget_DeepCopy(target, candidate) < 0) {
+    if (esxVI_HostInternetScsiHbaStaticTarget_DeepCopy(target, candidate) < 0)
         goto cleanup;
-    }
 
     result = 0;
 
@@ -5044,9 +4962,8 @@ esxVI_LookupHostScsiTopologyLunListByTargetName
         }
     }
 
-    if (!found || !hostScsiTopologyTarget) {
+    if (!found || !hostScsiTopologyTarget)
         goto cleanup;
-    }
 
     if (!hostScsiTopologyTarget->lun) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

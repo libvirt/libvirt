@@ -46,9 +46,8 @@ esxInterfaceOpen(virConnectPtr conn,
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (conn->driver->no != VIR_DRV_ESX) {
+    if (conn->driver->no != VIR_DRV_ESX)
         return VIR_DRV_OPEN_DECLINED;
-    }
 
     return VIR_DRV_OPEN_SUCCESS;
 }
@@ -98,9 +97,8 @@ esxConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
     int count = 0;
     size_t i;
 
-    if (maxnames == 0) {
+    if (maxnames == 0)
         return 0;
-    }
 
     if (esxVI_EnsureSession(priv->primary) < 0 ||
         esxVI_LookupPhysicalNicList(priv->primary, &physicalNicList) < 0) {
@@ -119,9 +117,8 @@ esxConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
 
  cleanup:
     if (! success) {
-        for (i = 0; i < count; ++i) {
+        for (i = 0; i < count; ++i)
             VIR_FREE(names[i]);
-        }
 
         count = -1;
     }
@@ -234,9 +231,8 @@ esxInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
     if (physicalNic->spec->ip) {
         protocol.family = (char *)"ipv4";
 
-        if (physicalNic->spec->ip->dhcp == esxVI_Boolean_True) {
+        if (physicalNic->spec->ip->dhcp == esxVI_Boolean_True)
             protocol.dhcp = 1;
-        }
 
         if (physicalNic->spec->ip->ipAddress &&
             physicalNic->spec->ip->subnetMask &&

@@ -120,9 +120,8 @@ esxConnectNumOfStoragePools(virConnectPtr conn)
     esxVI_ObjectContent *datastoreList = NULL;
     esxVI_ObjectContent *datastore = NULL;
 
-    if (esxVI_LookupDatastoreList(priv->primary, NULL, &datastoreList) < 0) {
+    if (esxVI_LookupDatastoreList(priv->primary, NULL, &datastoreList) < 0)
         return -1;
-    }
 
     for (datastore = datastoreList; datastore;
          datastore = datastore->_next) {
@@ -149,9 +148,8 @@ esxConnectListStoragePools(virConnectPtr conn, char **const names,
     int count = 0;
     size_t i;
 
-    if (maxnames == 0) {
+    if (maxnames == 0)
         return 0;
-    }
 
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "summary.name") < 0 ||
@@ -185,9 +183,8 @@ esxConnectListStoragePools(virConnectPtr conn, char **const names,
 
  cleanup:
     if (! success) {
-        for (i = 0; i < count; ++i) {
+        for (i = 0; i < count; ++i)
             VIR_FREE(names[i]);
-        }
 
         count = -1;
     }
@@ -295,9 +292,8 @@ esxStoragePoolLookupByUUID(virConnectPtr conn,
         md5_buffer(hostMount->mountInfo->path,
                    strlen(hostMount->mountInfo->path), md5);
 
-        if (memcmp(uuid, md5, VIR_UUID_BUFLEN) == 0) {
+        if (memcmp(uuid, md5, VIR_UUID_BUFLEN) == 0)
             break;
-        }
     }
 
     if (!datastore) {
@@ -580,9 +576,8 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
         return -1;
     }
 
-    if (maxnames == 0) {
+    if (maxnames == 0)
         return 0;
-    }
 
     if (esxVI_LookupDatastoreContentByDatastoreName(priv->primary, pool->name,
                                                     &searchResultsList) < 0) {
@@ -626,9 +621,8 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
 
  cleanup:
     if (! success) {
-        for (i = 0; i < count; ++i) {
+        for (i = 0; i < count; ++i)
             VIR_FREE(names[i]);
-        }
 
         count = -1;
     }
@@ -807,9 +801,8 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
                     goto cleanup;
                 }
 
-                if (esxUtil_ReformatUuid(uuid_string, key_candidate) < 0) {
+                if (esxUtil_ReformatUuid(uuid_string, key_candidate) < 0)
                     goto cleanup;
-                }
 
                 if (STREQ(key, key_candidate)) {
                     /* Found matching UUID */
@@ -873,9 +866,8 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
     /* Parse config */
     def = virStorageVolDefParseString(&poolDef, xmldesc);
 
-    if (!def) {
+    if (!def)
         goto cleanup;
-    }
 
     if (def->type != VIR_STORAGE_VOL_FILE) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -914,16 +906,14 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
 
         directoryName = esxUtil_EscapeDatastoreItem(unescapedDirectoryName);
 
-        if (!directoryName) {
+        if (!directoryName)
             goto cleanup;
-        }
 
         fileName = esxUtil_EscapeDatastoreItem(unescapedDirectoryAndFileName +
                                                strlen(unescapedDirectoryName) + 1);
 
-        if (!fileName) {
+        if (!fileName)
             goto cleanup;
-        }
 
         if (virAsprintf(&datastorePathWithoutFileName, "[%s] %s", pool->name,
                         directoryName) < 0)
@@ -1012,14 +1002,12 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
                 goto cleanup;
             }
 
-            if (esxUtil_ReformatUuid(uuid_string, key) < 0) {
+            if (esxUtil_ReformatUuid(uuid_string, key) < 0)
                 goto cleanup;
-            }
         } else {
             /* Fall back to the path as key */
-            if (VIR_STRDUP(key, datastorePath) < 0) {
+            if (VIR_STRDUP(key, datastorePath) < 0)
                 goto cleanup;
-            }
         }
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1099,9 +1087,8 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     /* Parse config */
     def = virStorageVolDefParseString(&poolDef, xmldesc);
 
-    if (!def) {
+    if (!def)
         goto cleanup;
-    }
 
     if (def->type != VIR_STORAGE_VOL_FILE) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1140,16 +1127,14 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
 
         directoryName = esxUtil_EscapeDatastoreItem(unescapedDirectoryName);
 
-        if (!directoryName) {
+        if (!directoryName)
             goto cleanup;
-        }
 
         fileName = esxUtil_EscapeDatastoreItem(unescapedDirectoryAndFileName +
                                                strlen(unescapedDirectoryName) + 1);
 
-        if (!fileName) {
+        if (!fileName)
             goto cleanup;
-        }
 
         if (virAsprintf(&datastorePathWithoutFileName, "[%s] %s", pool->name,
                         directoryName) < 0)
@@ -1204,14 +1189,12 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
                 goto cleanup;
             }
 
-            if (esxUtil_ReformatUuid(uuid_string, key) < 0) {
+            if (esxUtil_ReformatUuid(uuid_string, key) < 0)
                 goto cleanup;
-            }
         } else {
             /* Fall back to the path as key */
-            if (VIR_STRDUP(key, datastorePath) < 0) {
+            if (VIR_STRDUP(key, datastorePath) < 0)
                 goto cleanup;
-            }
         }
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,

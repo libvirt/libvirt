@@ -944,13 +944,11 @@ esxVI_AnyType_DeepCopy(esxVI_AnyType **dest, esxVI_AnyType *src)
         return -1;
     }
 
-    if (!src) {
+    if (!src)
         return 0;
-    }
 
-    if (esxVI_AnyType_Alloc(dest) < 0) {
+    if (esxVI_AnyType_Alloc(dest) < 0)
         goto failure;
-    }
 
     (*dest)->_type = src->_type;
     (*dest)->node = xmlCopyNode(src->node, 1);
@@ -1015,9 +1013,8 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
         return -1;
     }
 
-    if (esxVI_AnyType_Alloc(anyType) < 0) {
+    if (esxVI_AnyType_Alloc(anyType) < 0)
         return -1;
-    }
 
     (*anyType)->node = xmlCopyNode(node, 1);
 
@@ -1151,9 +1148,8 @@ esxVI_String_ListContainsValue(esxVI_String *stringList, const char *value)
     esxVI_String *string;
 
     for (string = stringList; string; string = string->_next) {
-        if (STREQ(string->value, value)) {
+        if (STREQ(string->value, value))
             return true;
-        }
     }
 
     return false;
@@ -1167,16 +1163,14 @@ esxVI_String_AppendValueToList(esxVI_String **stringList, const char *value)
 {
     esxVI_String *string = NULL;
 
-    if (esxVI_String_Alloc(&string) < 0) {
+    if (esxVI_String_Alloc(&string) < 0)
         return -1;
-    }
 
     if (VIR_STRDUP(string->value, value) < 0)
         goto failure;
 
-    if (esxVI_String_AppendToList(stringList, string) < 0) {
+    if (esxVI_String_AppendToList(stringList, string) < 0)
         goto failure;
-    }
 
     return 0;
 
@@ -1194,16 +1188,14 @@ esxVI_String_AppendValueListToList(esxVI_String **stringList,
     const char *value = valueList;
 
     while (value && *value != '\0') {
-        if (esxVI_String_AppendValueToList(&stringListToAppend, value) < 0) {
+        if (esxVI_String_AppendValueToList(&stringListToAppend, value) < 0)
             goto failure;
-        }
 
         value += strlen(value) + 1;
     }
 
-    if (esxVI_String_AppendToList(stringList, stringListToAppend) < 0) {
+    if (esxVI_String_AppendToList(stringList, stringListToAppend) < 0)
         goto failure;
-    }
 
     return 0;
 
@@ -1230,9 +1222,8 @@ esxVI_String_DeepCopyValue(char **dest, const char *src)
         return -1;
     }
 
-    if (!src) {
+    if (!src)
         return 0;
-    }
 
     return VIR_STRDUP(*dest, src);
 }
@@ -1263,9 +1254,8 @@ esxVI_String_SerializeValue(const char *value, const char *element,
         return -1;
     }
 
-    if (!value) {
+    if (!value)
         return 0;
-    }
 
     ESV_VI__XML_TAG__OPEN(output, element, "xsd:string");
 
@@ -1483,9 +1473,8 @@ esxVI_DateTime_Deserialize(xmlNodePtr node, esxVI_DateTime **dateTime)
         return -1;
     }
 
-    if (esxVI_DateTime_Alloc(dateTime) < 0) {
+    if (esxVI_DateTime_Alloc(dateTime) < 0)
         return -1;
-    }
 
     (*dateTime)->value =
       (char *)xmlNodeListGetString(node->doc, node->children, 1);
@@ -1577,9 +1566,8 @@ esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
 
             tz_offset = tz_hours * 60 * 60 + tz_minutes * 60;
 
-            if (sign == '-') {
+            if (sign == '-')
                 tz_offset = -tz_offset;
-            }
         } else if (STREQ(tmp, "Z")) {
             /* Z refers to UTC. tz_offset is already initialized to zero */
         } else {
@@ -1657,9 +1645,8 @@ esxVI_MethodFault_Deserialize(xmlNodePtr node, esxVI_MethodFault **methodFault)
         return -1;
     }
 
-    if (esxVI_MethodFault_Alloc(methodFault) < 0) {
+    if (esxVI_MethodFault_Alloc(methodFault) < 0)
         return -1;
-    }
 
     (*methodFault)->_actualType =
       (char *)xmlGetNsProp(node, BAD_CAST "type",
@@ -1723,9 +1710,8 @@ esxVI_ManagedObjectReference_Serialize
         return -1;
     }
 
-    if (!managedObjectReference) {
+    if (!managedObjectReference)
         return 0;
-    }
 
     virBufferAddLit(output, "<");
     virBufferAdd(output, element, -1);
@@ -1753,9 +1739,8 @@ esxVI_ManagedObjectReference_Deserialize
         return -1;
     }
 
-    if (esxVI_ManagedObjectReference_Alloc(managedObjectReference) < 0) {
+    if (esxVI_ManagedObjectReference_Alloc(managedObjectReference) < 0)
         return -1;
-    }
 
     (*managedObjectReference)->type =
       (char *)xmlGetNoNsProp(node, BAD_CAST "type");
