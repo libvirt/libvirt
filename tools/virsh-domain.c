@@ -161,9 +161,8 @@ vshNodeGetCPUCount(virConnectPtr conn)
     if ((ret = virNodeGetCPUMap(conn, NULL, NULL, 0)) < 0) {
         /* fall back to nodeinfo */
         vshResetLibvirtError();
-        if (virNodeGetInfo(conn, &nodeinfo) == 0) {
+        if (virNodeGetInfo(conn, &nodeinfo) == 0)
             ret = VIR_NODEINFO_MAXCPUS(nodeinfo);
-        }
     }
     return ret;
 }
@@ -3446,9 +3445,8 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA;
         snapshots_safe = true;
     }
-    if (nvram) {
+    if (nvram)
         flags |= VIR_DOMAIN_UNDEFINE_NVRAM;
-    }
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
@@ -3498,9 +3496,8 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
         flags &= ~VIR_DOMAIN_UNDEFINE_MANAGED_SAVE;
         managed_save_safe = true;
     }
-    if (has_snapshots == 0) {
+    if (has_snapshots == 0)
         snapshots_safe = true;
-    }
     if (has_snapshots_metadata == 0) {
         flags &= ~VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA;
         snapshots_safe = true;
@@ -6183,9 +6180,8 @@ vshPrintPinInfo(unsigned char *cpumaps, size_t cpumaplen,
     int cpu, lastcpu;
     bool bit, lastbit, isInvert;
 
-    if (!cpumaps || cpumaplen <= 0 || maxcpu <= 0 || vcpuindex < 0) {
+    if (!cpumaps || cpumaplen <= 0 || maxcpu <= 0 || vcpuindex < 0)
         return false;
-    }
 
     bit = lastbit = isInvert = false;
     lastcpu = -1;
@@ -6205,9 +6201,8 @@ vshPrintPinInfo(unsigned char *cpumaps, size_t cpumaplen,
             vshPrint(ctl, "-%d", cpu - 1);
         lastbit = bit;
     }
-    if (bit && !isInvert) {
+    if (bit && !isInvert)
         vshPrint(ctl, "-%d", maxcpu - 1);
-    }
 
     return true;
 }
@@ -6364,9 +6359,8 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if ((maxcpu = vshNodeGetCPUCount(ctl->conn)) < 0) {
+    if ((maxcpu = vshNodeGetCPUCount(ctl->conn)) < 0)
         goto cleanup;
-    }
 
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
 
@@ -7934,13 +7928,11 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
     kibibytes = VIR_DIV_UP(bytes, 1024);
 
     if (flags == -1) {
-        if (virDomainSetMemory(dom, kibibytes) != 0) {
+        if (virDomainSetMemory(dom, kibibytes) != 0)
             ret = false;
-        }
     } else {
-        if (virDomainSetMemoryFlags(dom, kibibytes, flags) < 0) {
+        if (virDomainSetMemoryFlags(dom, kibibytes, flags) < 0)
             ret = false;
-        }
     }
 
     virDomainFree(dom);
@@ -9494,9 +9486,8 @@ doMigrate(void *opaque)
     if (vshCommandOptBool(cmd, "rdma-pin-all"))
         flags |= VIR_MIGRATE_RDMA_PIN_ALL;
 
-    if (vshCommandOptBool(cmd, "offline")) {
+    if (vshCommandOptBool(cmd, "offline"))
         flags |= VIR_MIGRATE_OFFLINE;
-    }
 
     if (vshCommandOptBool(cmd, "abort-on-error"))
         flags |= VIR_MIGRATE_ABORT_ON_ERROR;

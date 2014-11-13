@@ -85,9 +85,8 @@ do {
         goto edit_cleanup;
 
     /* Compare original XML with edited.  Has it changed at all? */
-    if (STREQ(doc, doc_edited)) {
+    if (STREQ(doc, doc_edited))
         EDIT_NOT_CHANGED;
-    }
 
  redefine:
     msg = NULL;
@@ -109,9 +108,8 @@ do {
     }
 
     /* Everything checks out, so redefine the object. */
-    if (!msg && !(EDIT_DEFINE)) {
+    if (!msg && !(EDIT_DEFINE))
         msg = _("Failed.");
-    }
 
     if (msg) {
         int c = vshAskReedit(ctl, msg);

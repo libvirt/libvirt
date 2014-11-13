@@ -687,9 +687,8 @@ cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", &name))) {
+    if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", &name)))
         return false;
-    }
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &file) < 0)
         goto cleanup;
@@ -885,9 +884,8 @@ cmdVolDelete(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", &name))) {
+    if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", &name)))
         return false;
-    }
 
     if (virStorageVolDelete(vol, 0) == 0) {
         vshPrint(ctl, _("Vol %s deleted\n"), name);
@@ -945,9 +943,8 @@ cmdVolWipe(vshControl *ctl, const vshCmd *cmd)
     int algorithm = VIR_STORAGE_VOL_WIPE_ALG_ZERO;
     int funcRet;
 
-    if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", &name))) {
+    if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", &name)))
         return false;
-    }
 
     if (vshCommandOptStringReq(ctl, cmd, "algorithm", &algorithm_str) < 0)
         goto out;
@@ -1741,9 +1738,8 @@ cmdVolPath(vshControl *ctl, const vshCmd *cmd)
     virStorageVolPtr vol;
     char * StorageVolPath;
 
-    if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", NULL))) {
+    if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
         return false;
-    }
 
     if ((StorageVolPath = virStorageVolGetPath(vol)) == NULL) {
         virStorageVolFree(vol);

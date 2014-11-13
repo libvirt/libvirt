@@ -499,9 +499,8 @@ vshPrintRaw(vshControl *ctl, ...)
     char *key;
 
     va_start(ap, ctl);
-    while ((key = va_arg(ap, char *)) != NULL) {
+    while ((key = va_arg(ap, char *)) != NULL)
         vshPrint(ctl, "%s\r\n", key);
-    }
     va_end(ap);
 }
 
@@ -874,9 +873,8 @@ cmdCd(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (vshCommandOptString(cmd, "dir", &dir) <= 0) {
+    if (vshCommandOptString(cmd, "dir", &dir) <= 0)
         dir = dir_malloced = virGetUserDirectory();
-    }
     if (!dir)
         dir = "/";
 
@@ -1139,9 +1137,8 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
     const vshCmdOptDef *ret = NULL;
     char *alias = NULL;
 
-    if (STREQ(name, helpopt.name)) {
+    if (STREQ(name, helpopt.name))
         return &helpopt;
-    }
 
     for (i = 0; cmd->opts && cmd->opts[i].name; i++) {
         const vshCmdOptDef *opt = &cmd->opts[i];
@@ -1651,9 +1648,8 @@ vshCommandOptString(const vshCmd *cmd, const char *name, const char **value)
     if (ret <= 0)
         return ret;
 
-    if (!*arg->data && !(arg->def->flags & VSH_OFLAG_EMPTY_OK)) {
+    if (!*arg->data && !(arg->def->flags & VSH_OFLAG_EMPTY_OK))
         return -1;
-    }
     *value = arg->data;
     return 1;
 }
@@ -1848,9 +1844,8 @@ vshCommandOptArgv(const vshCmd *cmd, const vshCmdOpt *opt)
     opt = opt ? opt->next : cmd->opts;
 
     while (opt) {
-        if (opt->def->type == VSH_OT_ARGV) {
+        if (opt->def->type == VSH_OT_ARGV)
             return opt;
-        }
         opt = opt->next;
     }
     return NULL;
@@ -3712,9 +3707,8 @@ main(int argc, char **argv)
     else
         progname++;
 
-    if ((defaultConn = virGetEnvBlockSUID("VIRSH_DEFAULT_CONNECT_URI"))) {
+    if ((defaultConn = virGetEnvBlockSUID("VIRSH_DEFAULT_CONNECT_URI")))
         ctl->name = vshStrdup(ctl, defaultConn);
-    }
 
     vshInitDebug(ctl);
 

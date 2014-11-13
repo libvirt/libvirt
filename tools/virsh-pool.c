@@ -470,13 +470,11 @@ cmdPoolBuild(vshControl *ctl, const vshCmd *cmd)
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
         return false;
 
-    if (vshCommandOptBool(cmd, "no-overwrite")) {
+    if (vshCommandOptBool(cmd, "no-overwrite"))
         flags |= VIR_STORAGE_POOL_BUILD_NO_OVERWRITE;
-    }
 
-    if (vshCommandOptBool(cmd, "overwrite")) {
+    if (vshCommandOptBool(cmd, "overwrite"))
         flags |= VIR_STORAGE_POOL_BUILD_OVERWRITE;
-    }
 
     if (virStoragePoolBuild(pool, flags) == 0) {
         vshPrint(ctl, _("Pool %s built\n"), name);

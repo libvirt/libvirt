@@ -376,9 +376,8 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
                 goto cleanup;
 
             vshPrint(ctl, _("Node %d:\n"), cell);
-            for (j = 0; j < npages; j++) {
+            for (j = 0; j < npages; j++)
                 vshPrint(ctl, "%uKiB: %lld\n", pagesize[j], counts[j]);
-            }
             vshPrint(ctl, "%c", '\n');
         }
 

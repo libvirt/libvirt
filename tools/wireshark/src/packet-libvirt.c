@@ -249,9 +249,8 @@ find_payload_dissector(guint32 proc, guint32 type,
 
     first = pds[0].proc;
     last = pds[length-1].proc;
-    if (proc < first || proc > last) {
+    if (proc < first || proc > last)
         return NULL;
-    }
 
     pd = &pds[proc-first];
     /* There is no guarantee to proc numbers has no gap */
@@ -329,9 +328,8 @@ dissect_libvirt_payload_xdr_data(tvbuff_t *tvb, proto_tree *tree, gint payload_l
     xdr_destroy(&xdrs);
     g_free(payload_data);
 
-    if (nfds != 0) {
+    if (nfds != 0)
         dissect_libvirt_fds(tvb, start + payload_length, nfds);
-    }
 }
 
 static void

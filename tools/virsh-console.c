@@ -224,9 +224,8 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
                    con->terminalToStream.offset,
                    avail);
         if (got < 0) {
-            if (errno != EAGAIN) {
+            if (errno != EAGAIN)
                 virConsoleShutdown(con);
-            }
             return;
         }
         if (got == 0) {
@@ -268,9 +267,8 @@ virConsoleEventOnStdout(int watch ATTRIBUTE_UNUSED,
                      con->streamToTerminal.data,
                      con->streamToTerminal.offset);
         if (done < 0) {
-            if (errno != EAGAIN) {
+            if (errno != EAGAIN)
                 virConsoleShutdown(con);
-            }
             return;
         }
         memmove(con->streamToTerminal.data,
