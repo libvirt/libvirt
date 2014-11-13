@@ -1493,16 +1493,13 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     }
     defPtr->maxvcpus = defPtr->vcpus = xenapiDomainGetMaxVcpus(dom);
     enum xen_on_normal_exit action;
-    if (xen_vm_get_actions_after_shutdown(session, &action, vm)) {
+    if (xen_vm_get_actions_after_shutdown(session, &action, vm))
         defPtr->onPoweroff = xenapiNormalExitEnum2virDomainLifecycle(action);
-    }
-    if (xen_vm_get_actions_after_reboot(session, &action, vm)) {
+    if (xen_vm_get_actions_after_reboot(session, &action, vm))
         defPtr->onReboot = xenapiNormalExitEnum2virDomainLifecycle(action);
-    }
     enum xen_on_crash_behaviour crash;
-    if (xen_vm_get_actions_after_crash(session, &crash, vm)) {
+    if (xen_vm_get_actions_after_crash(session, &crash, vm))
         defPtr->onCrash = xenapiCrashExitEnum2virDomainLifecycle(action);
-    }
     xen_vm_get_platform(session, &result, vm);
     if (result != NULL) {
         size_t i;
@@ -2060,9 +2057,8 @@ call_func(const void *data, size_t len, void *user_handle,
     fflush(stdout);
 #endif
     CURL *curl = curl_easy_init();
-    if (!curl) {
+    if (!curl)
       return -1;
-    }
     xen_comms comms = {
      .func = result_func,
      .handle = result_handle

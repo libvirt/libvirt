@@ -432,9 +432,8 @@ vmwareVmxPath(virDomainDefPtr vmdef, char **vmxPath)
         goto cleanup;
     }
 
-    if (vmwareParsePath(src, &directoryName, &fileName) < 0) {
+    if (vmwareParsePath(src, &directoryName, &fileName) < 0)
         goto cleanup;
-    }
 
     if (!virFileHasSuffix(fileName, ".vmdk")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

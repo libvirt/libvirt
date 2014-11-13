@@ -84,9 +84,8 @@ xenapiUtil_RequestPassword(virConnectAuthPtr auth, const char *username,
         cred.result = NULL;
         cred.resultlen = 0;
 
-        if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0) {
+        if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0)
             VIR_FREE(cred.result);
-        }
 
         break;
     }
@@ -105,9 +104,8 @@ xenapiUtil_ParseQuery(virConnectPtr conn, virURIPtr uri, int *noVerify)
     for (i = 0; i < uri->paramsCount; i++) {
         virURIParamPtr queryParam = &uri->params[i];
         if (STRCASEEQ(queryParam->name, "no_verify")) {
-            if (noVerify == NULL) {
+            if (noVerify == NULL)
                 continue;
-            }
             if (virStrToLong_i(queryParam->value, NULL, 10, noVerify) < 0 ||
                 (*noVerify != 0 && *noVerify != 1)) {
                 xenapiSessionErrorHandler(conn, VIR_ERR_INVALID_ARG,
@@ -282,9 +280,8 @@ mapDomainPinVcpu(unsigned char *cpumap, int maplen)
     size_t i, j;
     for (i = 0; i < maplen; i++) {
         for (j = 0; j < 8; j++) {
-            if (cpumap[i] & (1 << j)) {
+            if (cpumap[i] & (1 << j))
                 virBufferAsprintf(&buf, "%zu,", (8*i)+j);
-            }
         }
     }
     if (virBufferCheckError(&buf) < 0)

@@ -313,9 +313,8 @@ vmwareStopVM(struct vmware_driver *driver,
     vmwareSetSentinal(cmd, vmwareDriverTypeToString(driver->type));
     vmwareSetSentinal(cmd, ((vmwareDomainPtr) vm->privateData)->vmxPath);
 
-    if (virRun(cmd, NULL) < 0) {
+    if (virRun(cmd, NULL) < 0)
         return -1;
-    }
 
     vm->def->id = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
@@ -345,9 +344,8 @@ vmwareStartVM(struct vmware_driver *driver, virDomainObjPtr vm)
     else
         vmwareSetSentinal(cmd, NULL);
 
-    if (virRun(cmd, NULL) < 0) {
+    if (virRun(cmd, NULL) < 0)
         return -1;
-    }
 
     if ((vm->def->id = vmwareExtractPid(vmxPath)) < 0) {
         vmwareStopVM(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);

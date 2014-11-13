@@ -729,9 +729,8 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def)
             !(chr = xenParseSxprChar(str, NULL)))
             goto cleanup;
         if (chr) {
-            if (VIR_ALLOC_N(def->parallels, 1) < 0) {
+            if (VIR_ALLOC_N(def->parallels, 1) < 0)
                 goto cleanup;
-            }
 
             chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
             chr->target.port = 0;
@@ -762,9 +761,8 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def)
                     goto cleanup;
                 chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
                 chr->target.port = portnum;
-                if (VIR_APPEND_ELEMENT(def->serials, def->nserials, chr) < 0) {
+                if (VIR_APPEND_ELEMENT(def->serials, def->nserials, chr) < 0)
                     goto cleanup;
-                }
 
                 value = value->next;
             }

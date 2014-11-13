@@ -147,14 +147,12 @@ wr_sync(int fd, void *buffer, size_t size, int do_read)
         }
 
         /* recoverable error, retry  */
-        if ((len == -1) && ((errno == EAGAIN) || (errno == EINTR))) {
+        if ((len == -1) && ((errno == EAGAIN) || (errno == EINTR)))
             continue;
-        }
 
         /* eof */
-        if (len == 0) {
+        if (len == 0)
             break;
-        }
 
         /* unrecoverable error */
         if (len == -1) {
@@ -1759,9 +1757,8 @@ xenDaemonNodeGetTopology(virConnectPtr conn, virCapsPtr caps)
     struct sexpr *root;
 
     root = sexpr_get(conn, "/xend/node/");
-    if (root == NULL) {
+    if (root == NULL)
         return -1;
-    }
 
     ret = sexpr_to_xend_topology(root, caps);
     sexpr_free(root);
@@ -2078,9 +2075,8 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         names = xenDaemonListDomainsOld(conn);
         tmp = names;
 
-        if (names == NULL) {
+        if (names == NULL)
             return NULL;
-        }
         while (*tmp != NULL) {
             id = xenDaemonDomainLookupByName_ids(conn, *tmp, &ident[0]);
             if (id >= 0) {
@@ -2160,9 +2156,8 @@ xenDaemonCreateXML(virConnectPtr conn, virDomainDefPtr def)
 
     ret = xenDaemonDomainCreateXML(conn, sexpr);
     VIR_FREE(sexpr);
-    if (ret != 0) {
+    if (ret != 0)
         goto error;
-    }
 
     /* This comes before wait_for_devices, to ensure that latter
        cleanup will destroy the domain upon failure */
@@ -2562,9 +2557,8 @@ xenDaemonDomainGetAutostart(virConnectPtr conn,
     *autostart = 0;
 
     tmp = sexpr_node(root, "domain/on_xend_start");
-    if (tmp && STREQ(tmp, "start")) {
+    if (tmp && STREQ(tmp, "start"))
         *autostart = 1;
-    }
 
     sexpr_free(root);
     return 0;

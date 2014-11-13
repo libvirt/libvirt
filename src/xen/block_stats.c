@@ -107,9 +107,8 @@ read_bd_stat(int device, int domid, const char *str)
 
         VIR_FREE(path);
 
-        if (r >= 0) {
+        if (r >= 0)
             return r;
-        }
     }
 
     return -1;

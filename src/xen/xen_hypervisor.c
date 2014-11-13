@@ -2258,9 +2258,8 @@ get_cpu_flags(virConnectPtr conn, const char **hvm, int *pae, int *longmode)
     if (STREQLEN((const char *)&regs.r_ebx, "AuthcAMDenti", 12)) {
         if (pread(fd, &regs, sizeof(regs), 0x80000001) == sizeof(regs)) {
             /* Read secure virtual machine bit (bit 2 of ECX feature ID) */
-            if ((regs.r_ecx >> 2) & 1) {
+            if ((regs.r_ecx >> 2) & 1)
                 *hvm = "svm";
-            }
             if ((regs.r_edx >> 6) & 1)
                 *pae = 1;
         }
@@ -2935,9 +2934,8 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn,
         else
             op_sys.u.availheap.node = cell;
         ret = xenHypervisorDoV2Sys(priv->handle, &op_sys);
-        if (ret < 0) {
+        if (ret < 0)
             return -1;
-        }
         if (hv_versions.sys_interface >= 5)
             freeMems[i] = op_sys.u.availheap5.avail_bytes;
         else
