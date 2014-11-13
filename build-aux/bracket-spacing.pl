@@ -97,26 +97,23 @@ foreach my $file (@ARGV) {
 
         # Require whitespace immediately after keywords,
         # but none after the opening bracket
-        while ($data =~ /\b(if|for|while|switch|return)\(/ ||
-               $data =~ /\b(if|for|while|switch|return)\s+\(\s/) {
+        if ($data =~ /\b(if|for|while|switch|return)\(/ ||
+            $data =~ /\b(if|for|while|switch|return)\s+\(\s/) {
             print "$file:$.: $line";
             $ret = 1;
-            last;
         }
 
         # Forbid whitespace between )( of a function typedef
-        while ($data =~ /\(\*\w+\)\s+\(/) {
+        if ($data =~ /\(\*\w+\)\s+\(/) {
             print "$file:$.: $line";
             $ret = 1;
-            last;
         }
 
         # Forbid whitespace following ( or prior to )
-        while ($data =~ /\S\s+\)/ ||
-               $data =~ /\(\s+\S/) {
+        if ($data =~ /\S\s+\)/ ||
+            $data =~ /\(\s+\S/) {
             print "$file:$.: $line";
             $ret = 1;
-            last;
         }
 
         # Forbid whitespace before ";" or ",". Things like below are allowed:
@@ -129,36 +126,32 @@ foreach my $file (@ARGV) {
         #          errno == EINTR)
         #       ;
         #
-        while ($data =~ /[^;\s]\s+[;,]/) {
+        if ($data =~ /[^;\s]\s+[;,]/) {
             print "$file:$.: $line";
             $ret = 1;
-            last;
         }
 
         # Require EOL, macro line continuation, or whitespace after ";".
         # Allow "for (;;)" as an exception.
-        while ($data =~ /;[^	 \\\n;)]/) {
+        if ($data =~ /;[^	 \\\n;)]/) {
             print "$file:$.: $line";
             $ret = 1;
-            last;
         }
 
         # Require EOL, space, or enum/struct end after comma.
-        while ($data =~ /,[^ \\\n)}]/) {
+        if ($data =~ /,[^ \\\n)}]/) {
             print "$file:$.: $line";
             $ret = 1;
-            last;
         }
 
         # Require spaces around assignment '=', compounds and '=='
         # with the exception of virAssertCmpInt()
         $tmpdata = $data;
         $tmpdata =~ s/(virAssertCmpInt\(.* ).?=,/$1op,/;
-        while ($tmpdata =~ /[^ ]\b[!<>&|\-+*\/%\^=]?=[^=]/ ||
-               $tmpdata =~ /=[^= \\\n]/) {
+        if ($tmpdata =~ /[^ ]\b[!<>&|\-+*\/%\^=]?=[^=]/ ||
+            $tmpdata =~ /=[^= \\\n]/) {
             print "$file:$.: $line";
             $ret = 1;
-            last;
         }
     }
     close FILE;
