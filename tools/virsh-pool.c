@@ -1761,10 +1761,13 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
     }
 
 #define EDIT_GET_XML virStoragePoolGetXMLDesc(pool, flags)
-#define EDIT_NOT_CHANGED \
-    vshPrint(ctl, _("Pool %s XML configuration not changed.\n"),    \
-             virStoragePoolGetName(pool));                          \
-    ret = true; goto edit_cleanup;
+#define EDIT_NOT_CHANGED                                                \
+    do {                                                                \
+        vshPrint(ctl, _("Pool %s XML configuration not changed.\n"),    \
+                 virStoragePoolGetName(pool));                          \
+        ret = true;                                                     \
+        goto edit_cleanup;                                              \
+    } while (0)
 #define EDIT_DEFINE \
     (pool_edited = virStoragePoolDefineXML(ctl->conn, doc_edited, 0))
 #include "virsh-edit.c"

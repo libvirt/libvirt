@@ -1,7 +1,7 @@
 /*
  * virsh-interface.c: Commands to manage host interface
  *
- * Copyright (C) 2005, 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -122,10 +122,13 @@ cmdInterfaceEdit(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
 #define EDIT_GET_XML virInterfaceGetXMLDesc(iface, flags)
-#define EDIT_NOT_CHANGED \
-    vshPrint(ctl, _("Interface %s XML configuration not changed.\n"),   \
-             virInterfaceGetName(iface));                               \
-    ret = true; goto edit_cleanup;
+#define EDIT_NOT_CHANGED                                                \
+    do {                                                                \
+        vshPrint(ctl, _("Interface %s XML configuration not changed.\n"), \
+                 virInterfaceGetName(iface));                           \
+        ret = true;                                                     \
+        goto edit_cleanup;                                              \
+    } while (0)
 #define EDIT_DEFINE \
     (iface_edited = virInterfaceDefineXML(ctl->conn, doc_edited, 0))
 #include "virsh-edit.c"

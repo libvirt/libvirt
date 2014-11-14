@@ -1,7 +1,7 @@
 /*
  * virsh-snapshot.c: Commands to manage domain snapshot
  *
- * Copyright (C) 2005, 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -576,15 +576,17 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
 
 #define EDIT_GET_XML \
     virDomainSnapshotGetXMLDesc(snapshot, getxml_flags)
-#define EDIT_NOT_CHANGED \
-    /* Depending on flags, we re-edit even if XML is unchanged.  */ \
-    if (!(define_flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) {     \
-        vshPrint(ctl,                                               \
-                 _("Snapshot %s XML configuration not changed.\n"), \
-                 name);                                             \
-        ret = true;                                                 \
-        goto edit_cleanup;                                          \
-    }
+#define EDIT_NOT_CHANGED                                                \
+    do {                                                                \
+        /* Depending on flags, we re-edit even if XML is unchanged.  */ \
+        if (!(define_flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) {     \
+            vshPrint(ctl,                                               \
+                     _("Snapshot %s XML configuration not changed.\n"), \
+                     name);                                             \
+            ret = true;                                                 \
+            goto edit_cleanup;                                          \
+        }                                                               \
+    } while (0)
 #define EDIT_DEFINE \
     (strstr(doc, "<state>disk-snapshot</state>") ? \
     define_flags |= VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY : 0), \

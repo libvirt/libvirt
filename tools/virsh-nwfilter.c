@@ -1,7 +1,7 @@
 /*
  * virsh-nwfilter.c: Commands to manage network filters
  *
- * Copyright (C) 2005, 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -421,11 +421,14 @@ cmdNWFilterEdit(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
 #define EDIT_GET_XML virNWFilterGetXMLDesc(nwfilter, 0)
-#define EDIT_NOT_CHANGED \
-    vshPrint(ctl, _("Network filter %s XML "            \
-                    "configuration not changed.\n"),    \
-             virNWFilterGetName(nwfilter));             \
-    ret = true; goto edit_cleanup;
+#define EDIT_NOT_CHANGED                                        \
+    do {                                                        \
+        vshPrint(ctl, _("Network filter %s XML "                \
+                        "configuration not changed.\n"),        \
+                 virNWFilterGetName(nwfilter));                 \
+        ret = true;                                             \
+        goto edit_cleanup;                                      \
+    } while (0)
 #define EDIT_DEFINE \
     (nwfilter_edited = virNWFilterDefineXML(ctl->conn, doc_edited))
 #include "virsh-edit.c"

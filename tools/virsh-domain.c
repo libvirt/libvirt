@@ -4376,10 +4376,13 @@ cmdSaveImageEdit(vshControl *ctl, const vshCmd *cmd)
 
 #define EDIT_GET_XML \
     virDomainSaveImageGetXMLDesc(ctl->conn, file, getxml_flags)
-#define EDIT_NOT_CHANGED \
-    vshPrint(ctl, _("Saved image %s XML configuration " \
-                    "not changed.\n"), file);           \
-    ret = true; goto edit_cleanup;
+#define EDIT_NOT_CHANGED                                        \
+    do {                                                        \
+        vshPrint(ctl, _("Saved image %s XML configuration "     \
+                        "not changed.\n"), file);               \
+        ret = true;                                             \
+        goto edit_cleanup;                                      \
+    } while (0)
 #define EDIT_DEFINE \
     (virDomainSaveImageDefineXML(ctl->conn, file, doc_edited, define_flags) == 0)
 #include "virsh-edit.c"
@@ -7560,10 +7563,13 @@ cmdMetadata(vshControl *ctl, const vshCmd *cmd)
     } else if (edit) {
 #define EDIT_GET_XML \
         vshDomainGetEditMetadata(ctl, dom, uri, flags)
-#define EDIT_NOT_CHANGED                                    \
-        vshPrint(ctl, "%s", _("Metadata not changed"));     \
-        ret = true;                                         \
-        goto edit_cleanup;
+#define EDIT_NOT_CHANGED                                        \
+        do {                                                    \
+            vshPrint(ctl, "%s", _("Metadata not changed"));     \
+            ret = true;                                         \
+            goto edit_cleanup;                                  \
+        } while (0)
+
 #define EDIT_DEFINE                                                         \
         (virDomainSetMetadata(dom, VIR_DOMAIN_METADATA_ELEMENT, doc_edited, \
                               key, uri, flags) == 0)
@@ -11058,10 +11064,13 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
 #define EDIT_GET_XML virDomainGetXMLDesc(dom, flags)
-#define EDIT_NOT_CHANGED \
-    vshPrint(ctl, _("Domain %s XML configuration not changed.\n"),  \
-             virDomainGetName(dom));                                \
-    ret = true; goto edit_cleanup;
+#define EDIT_NOT_CHANGED                                                \
+    do {                                                                \
+        vshPrint(ctl, _("Domain %s XML configuration not changed.\n"),  \
+                 virDomainGetName(dom));                                \
+        ret = true;                                                     \
+        goto edit_cleanup;                                              \
+    } while (0)
 #define EDIT_DEFINE \
     (dom_edited = virDomainDefineXML(ctl->conn, doc_edited))
 #include "virsh-edit.c"

@@ -1105,10 +1105,13 @@ cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
 #define EDIT_GET_XML vshNetworkGetXMLDesc(network)
-#define EDIT_NOT_CHANGED \
-    vshPrint(ctl, _("Network %s XML configuration not changed.\n"), \
-             virNetworkGetName(network));                           \
-    ret = true; goto edit_cleanup;
+#define EDIT_NOT_CHANGED                                                \
+    do {                                                                \
+        vshPrint(ctl, _("Network %s XML configuration not changed.\n"), \
+                 virNetworkGetName(network));                           \
+        ret = true;                                                     \
+        goto edit_cleanup;                                              \
+    } while (0)
 #define EDIT_DEFINE \
     (network_edited = virNetworkDefineXML(ctl->conn, doc_edited))
 #include "virsh-edit.c"
