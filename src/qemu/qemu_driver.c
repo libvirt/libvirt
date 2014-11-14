@@ -11021,7 +11021,6 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     int format;
     bool activeFail = false;
     virQEMUDriverConfigPtr cfg = NULL;
-    char *alias = NULL;
     char *buf = NULL;
     ssize_t len;
 
@@ -11040,11 +11039,19 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         goto cleanup;
     }
 
+    /* Technically, we only need a job if we are going to query the
+     * monitor, which is only for active domains that are using
+     * non-raw block devices.  But it is easier to share code if we
+     * always grab a job; furthermore, grabbing the job ensures that
+     * hot-plug won't change disk behind our backs.  */
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+        goto cleanup;
+
     /* Check the path belongs to this domain. */
     if ((idx = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("invalid path %s not assigned to domain"), path);
-        goto cleanup;
+        goto endjob;
     }
 
     disk = vm->def->disks[idx];
@@ -11054,36 +11061,36 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
             virReportError(VIR_ERR_INVALID_ARG,
                            _("disk '%s' does not currently have a source assigned"),
                            path);
-            goto cleanup;
+            goto endjob;
         }
 
         if ((fd = qemuOpenFile(driver, vm, disk->src->path, O_RDONLY,
                                NULL, NULL)) == -1)
-            goto cleanup;
+            goto endjob;
 
         if (fstat(fd, &sb) < 0) {
             virReportSystemError(errno,
                                  _("cannot stat file '%s'"), disk->src->path);
-            goto cleanup;
+            goto endjob;
         }
 
         if ((len = virFileReadHeaderFD(fd, VIR_STORAGE_MAX_HEADER, &buf)) < 0) {
             virReportSystemError(errno, _("cannot read header '%s'"),
                                  disk->src->path);
-            goto cleanup;
+            goto endjob;
         }
     } else {
         if (virStorageFileInitAs(disk->src, cfg->user, cfg->group) < 0)
-            goto cleanup;
+            goto endjob;
 
         if ((len = virStorageFileReadHeader(disk->src, VIR_STORAGE_MAX_HEADER,
                                             &buf)) < 0)
-            goto cleanup;
+            goto endjob;
 
         if (virStorageFileStat(disk->src, &sb) < 0) {
             virReportSystemError(errno, _("failed to stat remote file '%s'"),
                                  NULLSTR(disk->src->path));
-            goto cleanup;
+            goto endjob;
         }
     }
 
@@ -11095,17 +11102,17 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("no disk format for %s and probing is disabled"),
                            path);
-            goto cleanup;
+            goto endjob;
         }
 
         if ((format = virStorageFileProbeFormatFromBuf(disk->src->path,
                                                        buf, len)) < 0)
-            goto cleanup;
+            goto endjob;
     }
 
     if (!(meta = virStorageFileGetMetadataFromBuf(disk->src->path, buf, len,
                                                   format, NULL)))
-        goto cleanup;
+        goto endjob;
 
     /* Get info for normal formats */
     if (S_ISREG(sb.st_mode) || fd == -1) {
@@ -11127,7 +11134,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         if (end == (off_t)-1) {
             virReportSystemError(errno,
                                  _("failed to seek to end of %s"), path);
-            goto cleanup;
+            goto endjob;
         }
         info->physical = end;
         info->capacity = end;
@@ -11155,35 +11162,24 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         if (!virDomainObjIsActive(vm)) {
             activeFail = true;
             ret = 0;
-            goto cleanup;
+            goto endjob;
         }
 
-        if (VIR_STRDUP(alias, disk->info.alias) < 0)
-            goto cleanup;
+        qemuDomainObjEnterMonitor(driver, vm);
+        ret = qemuMonitorGetBlockExtent(priv->mon,
+                                        disk->info.alias,
+                                        &info->allocation);
+        qemuDomainObjExitMonitor(driver, vm);
 
-        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
-            goto cleanup;
-
-        if (virDomainObjIsActive(vm)) {
-            qemuDomainObjEnterMonitor(driver, vm);
-            ret = qemuMonitorGetBlockExtent(priv->mon,
-                                            alias,
-                                            &info->allocation);
-            qemuDomainObjExitMonitor(driver, vm);
-        } else {
-            activeFail = true;
-            ret = 0;
-        }
-
-        if (!qemuDomainObjEndJob(driver, vm))
-            vm = NULL;
     } else {
         ret = 0;
     }
 
+ endjob:
+    if (!qemuDomainObjEndJob(driver, vm))
+        vm = NULL;
  cleanup:
     VIR_FREE(buf);
-    VIR_FREE(alias);
     virStorageSourceFree(meta);
     VIR_FORCE_CLOSE(fd);
     if (disk)
@@ -11197,7 +11193,8 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
                        _("domain is not running"));
         ret = -1;
     }
-    virObjectUnlock(vm);
+    if (vm)
+        virObjectUnlock(vm);
     virObjectUnref(cfg);
     return ret;
 }
