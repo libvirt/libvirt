@@ -58,14 +58,14 @@ vboxStorageOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
 
     VIR_DEBUG("vbox storage initialized");
-    /* conn->storagePrivateData = some storage specific data */
+
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int vboxStorageClose(virConnectPtr conn)
+static int vboxStorageClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     VIR_DEBUG("vbox storage uninitialized");
-    conn->storagePrivateData = NULL;
+
     return 0;
 }
 

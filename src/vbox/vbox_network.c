@@ -102,17 +102,17 @@ vboxNetworkOpen(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("network initialized");
-    /* conn->networkPrivateData = some network specific data */
+
     return VIR_DRV_OPEN_SUCCESS;
 
  cleanup:
     return VIR_DRV_OPEN_DECLINED;
 }
 
-static int vboxNetworkClose(virConnectPtr conn)
+static int vboxNetworkClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     VIR_DEBUG("network uninitialized");
-    conn->networkPrivateData = NULL;
+
     return 0;
 }
 
