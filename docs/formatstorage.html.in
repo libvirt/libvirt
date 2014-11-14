@@ -157,6 +157,25 @@
             compatibility, this attribute is optional <b>only</b> for the
             "scsi_host" adapter, but is mandatory for the "fc_host" adapter.
             <span class="since">Since 1.0.5</span>
+            A "fc_host" capable scsi_hostN can be determined by using
+            <code>virsh nodedev-list --cap fc_host</code>.
+            <span class="since">Since 1.2.8</span>
+            <p>
+            Note: Regardless of whether a "scsi_host" adapter type is defined
+            using a <code>name</code> or a <code>parentaddr</code>, it
+            should refer to a real scsi_host adapter as found through a
+            <code>virsh nodedev-list scsi_host</code> and <code>virsh
+            nodedev-dumpxml scsi_hostN</code> on one of the scsi_host's
+            displayed. It should not refer to a "fc_host" capable scsi_hostN
+            nor should it refer to the vHBA created for some "fc_host"
+            adapter. For a vHBA the <code>nodedev-dumpxml</code>
+            output parent setting will be the "fc_host" capable scsi_hostN
+            value. Additionally, do not refer to an iSCSI scsi_hostN for the
+            "scsi_host" source. An iSCSI scsi_hostN's
+            <code>nodedev-dumpxml</code> output parent field is generally
+            "computer". This is a libvirt created parent value indicating
+            no parent was defined for the node device.
+            </p>
             </dd>
         </dl>
         <dl>
@@ -187,7 +206,12 @@
             the vHBA created by 'virsh nodedev-create', rather it is
             the parent of that vHBA. If the value is not provided, libvirt
             will determine the parent based either finding the wwnn,wwpn
-            defined for an existing scsi_host or by creating a vHBA.
+            defined for an existing scsi_host or by creating a vHBA. Providing
+            the parent attribute is also useful for the duplicate pool
+            definition checks. This is more important in environments where
+            both the "fc_host" and "scsi_host" source adapter pools are being
+            used in order to ensure a new definition doesn't duplicate using
+            the scsi_hostN of some existing storage pool.
             <span class="since">Since 1.0.4</span>
           </dd>
           <dt><code>managed</code></dt>

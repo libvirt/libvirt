@@ -394,7 +394,8 @@ char *virStoragePoolGetVhbaSCSIHostParent(virConnectPtr conn,
                                           const char *name)
     ATTRIBUTE_NONNULL(1);
 
-int virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
+int virStoragePoolSourceFindDuplicate(virConnectPtr conn,
+                                      virStoragePoolObjListPtr pools,
                                       virStoragePoolDefPtr def);
 
 void virStoragePoolObjLock(virStoragePoolObjPtr obj);

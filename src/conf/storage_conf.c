@@ -2169,6 +2169,83 @@ getSCSIHostNumber(virStoragePoolSourceAdapter adapter,
     VIR_FREE(name);
     return ret;
 }
+
+/*
+ * matchFCHostToSCSIHost:
+ *
+ * @conn: Connection pointer
+ * @fc_adapter: fc_host adapter (either def or pool->def)
+ * @scsi_hostnum: Already determined "scsi_pool" hostnum
+ *
+ * Returns true/false whether there is a match between the incoming
+ *         fc_adapter host# and the scsi_host host#
+ */
+static bool
+matchFCHostToSCSIHost(virConnectPtr conn,
+                      virStoragePoolSourceAdapter fc_adapter,
+                      unsigned int scsi_hostnum)
+{
+    char *name = NULL;
+    char *parent_name = NULL;
+    unsigned int fc_hostnum;
+
+    /* If we have a parent defined, get it's hostnum, and compare to the
+     * scsi_hostnum. If they are the same, then we have a match
+     */
+    if (fc_adapter.data.fchost.parent &&
+        virGetSCSIHostNumber(fc_adapter.data.fchost.parent, &fc_hostnum) == 0 &&
+        scsi_hostnum == fc_hostnum)
+        return true;
+
+    /* If we find an fc_adapter name, then either libvirt created a vHBA
+     * for this fc_host or a 'virsh nodedev-create' generated a vHBA.
+     */
+    if ((name = virGetFCHostNameByWWN(NULL, fc_adapter.data.fchost.wwnn,
+                                      fc_adapter.data.fchost.wwpn))) {
+
+        /* Get the scsi_hostN for the vHBA in order to see if it
+         * matches our scsi_hostnum
+         */
+        if (virGetSCSIHostNumber(name, &fc_hostnum) == 0 &&
+            scsi_hostnum == fc_hostnum) {
+            VIR_FREE(name);
+            return true;
+        }
+
+        /* We weren't provided a parent, so we have to query the node
+         * device driver in order to ascertain the parent of the vHBA.
+         * If the parent fc_hostnum is the same as the scsi_hostnum, we
+         * have a match.
+         */
+        if (conn && !fc_adapter.data.fchost.parent) {
+            parent_name = virStoragePoolGetVhbaSCSIHostParent(conn, name);
+            if (parent_name) {
+                if (virGetSCSIHostNumber(parent_name, &fc_hostnum) == 0 &&
+                    scsi_hostnum == fc_hostnum) {
+                    VIR_FREE(parent_name);
+                    VIR_FREE(name);
+                    return true;
+                }
+                VIR_FREE(parent_name);
+            } else {
+                /* Throw away the error and fall through */
+                virResetLastError();
+                VIR_DEBUG("Could not determine parent vHBA");
+            }
+        }
+        VIR_FREE(name);
+    }
+
+    /* NB: Lack of a name means that this vHBA hasn't yet been created,
+     *     which means our scsi_host cannot be using the vHBA. Furthermore,
+     *     lack of a provided parent means libvirt is going to choose the
+     *     "best" fc_host capable adapter based on availabilty. That could
+     *     conflict with an existing scsi_host definition, but there's no
+     *     way to know that now.
+     */
+    return false;
+}
+
 static bool
 matchSCSIAdapterParent(virStoragePoolObjPtr pool,
                        virStoragePoolDefPtr def)
@@ -2193,7 +2270,8 @@ matchSCSIAdapterParent(virStoragePoolObjPtr pool,
 
 
 int
-virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
+virStoragePoolSourceFindDuplicate(virConnectPtr conn,
+                                  virStoragePoolObjListPtr pools,
                                   virStoragePoolDefPtr def)
 {
     size_t i;
@@ -2253,6 +2331,38 @@ virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
                     break;
                 if (pool_hostnum == def_hostnum)
                     matchpool = pool;
+            } else if (pool->def->source.adapter.type ==
+                       VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST &&
+                       def->source.adapter.type ==
+                       VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
+                unsigned int scsi_hostnum;
+
+                /* Get the scsi_hostN for the scsi_host source adapter def */
+                if (getSCSIHostNumber(def->source.adapter,
+                                      &scsi_hostnum) < 0)
+                    break;
+
+                if (matchFCHostToSCSIHost(conn, pool->def->source.adapter,
+                                          scsi_hostnum)) {
+                    matchpool = pool;
+                    break;
+                }
+
+            } else if (pool->def->source.adapter.type ==
+                       VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST &&
+                       def->source.adapter.type ==
+                       VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+                unsigned int scsi_hostnum;
+
+                if (getSCSIHostNumber(pool->def->source.adapter,
+                                      &scsi_hostnum) < 0)
+                    break;
+
+                if (matchFCHostToSCSIHost(conn, def->source.adapter,
+                                          scsi_hostnum)) {
+                    matchpool = pool;
+                    break;
+                }
             }
             break;
         case VIR_STORAGE_POOL_ISCSI:

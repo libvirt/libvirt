@@ -719,7 +719,7 @@ parallelsStoragePoolDefineXML(virConnectPtr conn,
     if (virStoragePoolObjIsDuplicate(&privconn->pools, def, 0) < 0)
         goto cleanup;
 
-    if (virStoragePoolSourceFindDuplicate(&privconn->pools, def) < 0)
+    if (virStoragePoolSourceFindDuplicate(conn, &privconn->pools, def) < 0)
         goto cleanup;
 
     if (parallelsStoragePoolGetAlloc(def))
