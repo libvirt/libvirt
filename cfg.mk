@@ -1030,7 +1030,7 @@ endif
 bracket-spacing-check:
 	$(AM_V_GEN)files=`$(VC_LIST) | grep '\.c$$'`; \
 	$(PERL) $(top_srcdir)/build-aux/bracket-spacing.pl $$files || \
-	  { echo '$(ME): incorrect whitespace, see HACKING for rules' 1>&2; \
+	  { echo '$(ME): incorrect formatting, see HACKING for rules' 1>&2; \
 	    exit 1; }
 
 # sc_po_check can fail if generated files are not built first

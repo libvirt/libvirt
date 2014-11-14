@@ -89,6 +89,7 @@ foreach my $file (@ARGV) {
             if ($kw =~ /^(if|for|while|switch|return)$/) {
                 $tmpdata =~ s/($kw\s\()/XXX(/;
             } else {
+                print "Whitespace after non-keyword:\n";
                 print "$file:$.: $line";
                 $ret = 1;
                 last;
@@ -99,12 +100,14 @@ foreach my $file (@ARGV) {
         # but none after the opening bracket
         if ($data =~ /\b(if|for|while|switch|return)\(/ ||
             $data =~ /\b(if|for|while|switch|return)\s+\(\s/) {
+            print "No whitespace after keyword:\n";
             print "$file:$.: $line";
             $ret = 1;
         }
 
         # Forbid whitespace between )( of a function typedef
         if ($data =~ /\(\*\w+\)\s+\(/) {
+            print "Whitespace between ')' and '(':\n";
             print "$file:$.: $line";
             $ret = 1;
         }
@@ -112,6 +115,7 @@ foreach my $file (@ARGV) {
         # Forbid whitespace following ( or prior to )
         if ($data =~ /\S\s+\)/ ||
             $data =~ /\(\s+\S/) {
+            print "Whitespace after '(' or before ')':\n";
             print "$file:$.: $line";
             $ret = 1;
         }
@@ -127,6 +131,7 @@ foreach my $file (@ARGV) {
         #       ;
         #
         if ($data =~ /[^;\s]\s+[;,]/) {
+            print "Whitespace before (semi)colon:\n";
             print "$file:$.: $line";
             $ret = 1;
         }
@@ -134,12 +139,14 @@ foreach my $file (@ARGV) {
         # Require EOL, macro line continuation, or whitespace after ";".
         # Allow "for (;;)" as an exception.
         if ($data =~ /;[^	 \\\n;)]/) {
+            print "Invalid character after semicolon:\n";
             print "$file:$.: $line";
             $ret = 1;
         }
 
         # Require EOL, space, or enum/struct end after comma.
         if ($data =~ /,[^ \\\n)}]/) {
+            print "Invalid character after comma:\n";
             print "$file:$.: $line";
             $ret = 1;
         }
@@ -150,6 +157,7 @@ foreach my $file (@ARGV) {
         $tmpdata =~ s/(virAssertCmpInt\(.* ).?=,/$1op,/;
         if ($tmpdata =~ /[^ ]\b[!<>&|\-+*\/%\^=]?=[^=]/ ||
             $tmpdata =~ /=[^= \\\n]/) {
+            print "Spacing around '=' or '==':\n";
             print "$file:$.: $line";
             $ret = 1;
         }
