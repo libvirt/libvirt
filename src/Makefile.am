@@ -833,6 +833,8 @@ BHYVE_DRIVER_SOURCES =						\
 		bhyve/bhyve_domain.h				\
 		bhyve/bhyve_driver.h				\
 		bhyve/bhyve_driver.c				\
+		bhyve/bhyve_monitor.c				\
+		bhyve/bhyve_monitor.h				\
 		bhyve/bhyve_process.c				\
 		bhyve/bhyve_process.h				\
 		bhyve/bhyve_utils.h				\

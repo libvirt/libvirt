@@ -32,8 +32,9 @@
 #include <net/if_tap.h>
 
 #include "bhyve_device.h"
-#include "bhyve_process.h"
 #include "bhyve_command.h"
+#include "bhyve_monitor.h"
+#include "bhyve_process.h"
 #include "datatypes.h"
 #include "virerror.h"
 #include "virlog.h"
@@ -209,6 +210,7 @@ virBhyveProcessStart(virConnectPtr conn,
 
     vm->def->id = vm->pid;
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
+    vm->privateData = bhyveMonitorOpen(vm, driver);
 
     if (virDomainSaveStatus(driver->xmlopt,
                             BHYVE_STATE_DIR,
@@ -267,6 +269,9 @@ virBhyveProcessStop(bhyveConnPtr driver,
                        (int)vm->pid);
         return -1;
     }
+
+    if (vm->privateData != NULL)
+        bhyveMonitorClose((bhyveMonitorPtr)vm->privateData);
 
     /* First, try to kill 'bhyve' process */
     if (virProcessKillPainfully(vm->pid, true) != 0)
@@ -371,9 +376,12 @@ virBhyveProcessReconnect(virDomainObjPtr vm,
         goto cleanup;
 
     proc_argv = kvm_getargv(data->kd, kp, 0);
-    if (proc_argv && proc_argv[0])
-         if (STREQ(expected_proctitle, proc_argv[0]))
+    if (proc_argv && proc_argv[0]) {
+         if (STREQ(expected_proctitle, proc_argv[0])) {
              ret = 0;
+             vm->privateData = bhyveMonitorOpen(vm, data->driver);
+         }
+    }
 
  cleanup:
     if (ret < 0) {
