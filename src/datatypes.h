@@ -350,12 +350,6 @@ struct _virConnect {
      * NB: 'private' is a reserved word in C++.
      */
     void *            privateData;
-    void *            networkPrivateData;
-    void *            interfacePrivateData;
-    void *            storagePrivateData;
-    void *            nodeDevicePrivateData;
-    void *            secretPrivateData;
-    void *            nwfilterPrivateData;
 
     /*
      * The lock mutex must be acquired before accessing/changing
