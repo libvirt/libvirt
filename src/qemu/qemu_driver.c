@@ -17017,11 +17017,10 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
         goto endjob;
     }
 
-    device = qemuDiskPathToAlias(vm, disk, NULL);
-    if (!device)
-        goto endjob;
-
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        device = qemuDiskPathToAlias(vm, disk, NULL);
+        if (!device)
+            goto endjob;
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorGetBlockIoThrottle(priv->mon, device, &reply, supportMaxOptions);
         qemuDomainObjExitMonitor(driver, vm);
