@@ -17000,6 +17000,8 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
                                         &persistentDef) < 0)
         goto endjob;
+    sa_assert((flags & VIR_DOMAIN_AFFECT_LIVE) ||
+              (flags & VIR_DOMAIN_AFFECT_CONFIG));
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         /* If the VM is running, we can check if the current VM can use
