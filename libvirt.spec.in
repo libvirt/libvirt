@@ -2274,6 +2274,9 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Sat Nov 15 2014 Cole Robinson <crobinso@redhat.com> - 1.2.9.1-1
+- Maintenance release 1.2.9.1
+
 * Wed Oct  1 2014 Daniel Veillard <veillard@redhat.com> - 1.2.9-1
 - CVE-2014-3657: domain_conf: fix domain deadlock
 - CVE-2014-3633: qemu: blkiotune: Use correct definition when looking up disk
