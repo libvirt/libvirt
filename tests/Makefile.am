@@ -625,7 +625,7 @@ commandhelper_LDADD = \
 	$(NO_INDIRECT_LDFLAGS) \
 	$(PROBES_O) \
 	../src/libvirt_util.la \
-	$(GNULIB_LIBS)
+	../gnulib/lib/libgnu.la
 
 commandhelper_LDFLAGS = -static
 
