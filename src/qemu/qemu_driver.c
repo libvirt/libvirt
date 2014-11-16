@@ -11016,6 +11016,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     off_t end;
     virStorageSourcePtr meta = NULL;
     virDomainDiskDefPtr disk = NULL;
+    virStorageSourcePtr src;
     struct stat sb;
     int idx;
     int format;
@@ -11055,41 +11056,62 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     }
 
     disk = vm->def->disks[idx];
+    src = disk->src;
 
-    if (virStorageSourceIsLocalStorage(disk->src)) {
-        if (!disk->src->path) {
+    /* FIXME: For an offline domain, we always want to check current
+     * on-disk statistics (as users have been known to change offline
+     * images behind our backs).  For a running domain, however, it
+     * would be nice to avoid opening a file (particularly since
+     * reading a file while qemu is writing it risks the reader seeing
+     * bogus data), or even avoid a stat, if the information
+     * remembered from the previous run is still viable.
+     *
+     * For read-only disks, nothing should be changing unless the user
+     * has requested a block-commit action.  For read-write disks, we
+     * know some special cases: capacity should not change without a
+     * block-resize (where capacity is the only stat that requires
+     * reading a file, and even then, only for non-raw files); and
+     * physical size of a raw image or of a block device should
+     * likewise not be changing without block-resize.  On the other
+     * hand, allocation of a raw file can change (if the file is
+     * sparse, but the amount of sparseness changes due to writes or
+     * punching holes), and physical size of a non-raw file can
+     * change.
+     */
+    if (virStorageSourceIsLocalStorage(src)) {
+        if (!src->path) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("disk '%s' does not currently have a source assigned"),
                            path);
             goto endjob;
         }
 
-        if ((fd = qemuOpenFile(driver, vm, disk->src->path, O_RDONLY,
+        if ((fd = qemuOpenFile(driver, vm, src->path, O_RDONLY,
                                NULL, NULL)) == -1)
             goto endjob;
 
         if (fstat(fd, &sb) < 0) {
             virReportSystemError(errno,
-                                 _("cannot stat file '%s'"), disk->src->path);
+                                 _("cannot stat file '%s'"), src->path);
             goto endjob;
         }
 
         if ((len = virFileReadHeaderFD(fd, VIR_STORAGE_MAX_HEADER, &buf)) < 0) {
             virReportSystemError(errno, _("cannot read header '%s'"),
-                                 disk->src->path);
+                                 src->path);
             goto endjob;
         }
     } else {
-        if (virStorageFileInitAs(disk->src, cfg->user, cfg->group) < 0)
+        if (virStorageFileInitAs(src, cfg->user, cfg->group) < 0)
             goto endjob;
 
-        if ((len = virStorageFileReadHeader(disk->src, VIR_STORAGE_MAX_HEADER,
+        if ((len = virStorageFileReadHeader(src, VIR_STORAGE_MAX_HEADER,
                                             &buf)) < 0)
             goto endjob;
 
-        if (virStorageFileStat(disk->src, &sb) < 0) {
+        if (virStorageFileStat(src, &sb) < 0) {
             virReportSystemError(errno, _("failed to stat remote file '%s'"),
-                                 NULLSTR(disk->src->path));
+                                 NULLSTR(src->path));
             goto endjob;
         }
     }
@@ -11105,27 +11127,27 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
             goto endjob;
         }
 
-        if ((format = virStorageFileProbeFormatFromBuf(disk->src->path,
+        if ((format = virStorageFileProbeFormatFromBuf(src->path,
                                                        buf, len)) < 0)
             goto endjob;
     }
 
-    if (!(meta = virStorageFileGetMetadataFromBuf(disk->src->path, buf, len,
+    if (!(meta = virStorageFileGetMetadataFromBuf(src->path, buf, len,
                                                   format, NULL)))
         goto endjob;
 
     /* Get info for normal formats */
     if (S_ISREG(sb.st_mode) || fd == -1) {
 #ifndef WIN32
-        info->physical = (unsigned long long)sb.st_blocks *
+        src->physical = (unsigned long long)sb.st_blocks *
             (unsigned long long)DEV_BSIZE;
 #else
-        info->physical = sb.st_size;
+        src->physical = sb.st_size;
 #endif
         /* Regular files may be sparse, so logical size (capacity) is not same
          * as actual physical above
          */
-        info->capacity = sb.st_size;
+        src->capacity = sb.st_size;
     } else {
         /* NB. Because we configure with AC_SYS_LARGEFILE, off_t should
          * be 64 bits on all platforms.
@@ -11136,22 +11158,22 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
                                  _("failed to seek to end of %s"), path);
             goto endjob;
         }
-        info->physical = end;
-        info->capacity = end;
+        src->physical = end;
+        src->capacity = end;
     }
 
     /* If the file we probed has a capacity set, then override
      * what we calculated from file/block extents */
     if (meta->capacity)
-        info->capacity = meta->capacity;
+        src->capacity = meta->capacity;
 
     /* Set default value .. */
-    info->allocation = info->physical;
+    src->allocation = src->physical;
 
     /* ..but if guest is not using raw disk format and on a block device,
      * then query highest allocated extent from QEMU
      */
-    if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_BLOCK &&
+    if (virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_BLOCK &&
         format != VIR_STORAGE_FILE_RAW &&
         S_ISBLK(sb.st_mode)) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -11168,11 +11190,17 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorGetBlockExtent(priv->mon,
                                         disk->info.alias,
-                                        &info->allocation);
+                                        &src->allocation);
         qemuDomainObjExitMonitor(driver, vm);
 
     } else {
         ret = 0;
+    }
+
+    if (ret == 0) {
+        info->capacity = src->capacity;
+        info->allocation = src->allocation;
+        info->physical = src->physical;
     }
 
  endjob:

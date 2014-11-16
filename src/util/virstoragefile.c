@@ -1824,8 +1824,9 @@ virStorageSourceCopy(const virStorageSource *src,
     ret->type = src->type;
     ret->protocol = src->protocol;
     ret->format = src->format;
-    ret->allocation = src->allocation;
     ret->capacity = src->capacity;
+    ret->allocation = src->allocation;
+    ret->physical = src->physical;
     ret->readonly = src->readonly;
     ret->shared = src->shared;
 

@@ -257,8 +257,9 @@ struct _virStorageSource {
 
     virStoragePermsPtr perms;
     virStorageTimestampsPtr timestamps;
-    unsigned long long allocation; /* in bytes, 0 if unknown */
     unsigned long long capacity; /* in bytes, 0 if unknown */
+    unsigned long long allocation; /* in bytes, 0 if unknown */
+    unsigned long long physical; /* in bytes, 0 if unknown */
     size_t nseclabels;
     virSecurityDeviceLabelDefPtr *seclabels;
 
