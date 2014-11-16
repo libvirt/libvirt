@@ -2117,6 +2117,9 @@ fi
 %endif
 
 %changelog
+* Sat Nov 15 2014 Cole Robinson <crobinso@redhat.com> - 1.1.3.8-1
+- Maintenance release 1.1.3.8
+
 * Sat Nov 15 2014 Cole Robinson <crobinso@redhat.com> - 1.1.3.7-1
 - Maintenance release 1.1.3.7
 
