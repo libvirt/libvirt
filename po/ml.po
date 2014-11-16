@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2014-09-08 13:09-0400\n"
+"POT-Creation-Date: 2014-11-15 21:34-0500\n"
 "PO-Revision-Date: 2013-09-26 08:41+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Malayalam <discuss@lists.smc.org.in>\n"
@@ -1159,11 +1159,11 @@ msgstr "ഡൊമെയിന്‍ '%s' നിലവില്‍ uuid %s നല
 #: src/qemu/qemu_driver.c:13876 src/qemu/qemu_driver.c:14016
 #: src/qemu/qemu_driver.c:14044 src/qemu/qemu_driver.c:14134
 #: src/qemu/qemu_driver.c:14246 src/qemu/qemu_driver.c:14469
-#: src/qemu/qemu_driver.c:14596 src/qemu/qemu_driver.c:14983
-#: src/qemu/qemu_driver.c:15334 src/qemu/qemu_driver.c:15393
-#: src/qemu/qemu_driver.c:15441 src/qemu/qemu_driver.c:15481
-#: src/qemu/qemu_driver.c:15552 src/qemu/qemu_driver.c:15574
-#: src/qemu/qemu_driver.c:15624 src/qemu/qemu_driver.c:15646
+#: src/qemu/qemu_driver.c:14596 src/qemu/qemu_driver.c:14987
+#: src/qemu/qemu_driver.c:15338 src/qemu/qemu_driver.c:15397
+#: src/qemu/qemu_driver.c:15445 src/qemu/qemu_driver.c:15485
+#: src/qemu/qemu_driver.c:15556 src/qemu/qemu_driver.c:15578
+#: src/qemu/qemu_driver.c:15628 src/qemu/qemu_driver.c:15650
 #: src/qemu/qemu_migration.c:2086 src/qemu/qemu_migration.c:4040
 #: src/uml/uml_driver.c:2564 src/xen/xen_driver.c:2624
 #: src/xen/xm_internal.c:675
@@ -8158,8 +8158,8 @@ msgstr ""
 msgid "libvirt was built without the '%s' driver"
 msgstr "'%s' ഡ്രൈവറില്ലാതെ libvirt തയ്യാക്കിയിരിയ്ക്കുന്നു"
 
-#: src/libvirt.c:2244 src/libvirt.c:11635 src/libvirt.c:13552
-#: src/libvirt.c:16451 src/libvirt.c:18107
+#: src/libvirt.c:2244 src/libvirt.c:11636 src/libvirt.c:13553
+#: src/libvirt.c:16452 src/libvirt.c:18108
 #, c-format
 msgid "uuidstr in %s must be a valid UUID"
 msgstr "%s-ലുള്ള uuidstr-ല്‍ ശരിയായൊരു UUID ആയിരിയ്ക്കണം"
@@ -8216,75 +8216,75 @@ msgstr "NULL സ്ട്രിങ് പരാമീറ്റര്‍ '%s'"
 msgid "string parameter '%s' unsupported"
 msgstr "സ്ട്രിങ് പരാമീറ്റര്‍ '%s' പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/libvirt.c:4124 src/libvirt.c:4386 src/libvirt.c:8173
-#: src/libvirt.c:10095 src/libvirt.c:10320 src/libvirt.c:10832
-#: src/libvirt.c:21663
+#: src/libvirt.c:4124 src/libvirt.c:4386 src/libvirt.c:8174
+#: src/libvirt.c:10096 src/libvirt.c:10321 src/libvirt.c:10833
+#: src/libvirt.c:21664
 #, c-format
 msgid "flags 'affect live' and 'affect config' in %s are mutually exclusive"
 msgstr "%sലെ 'affect live', 'affect config' എന്നീ അടയാളങ്ങള്‍ പരസ്പരവിദുദ്ധമാണ്"
 
-#: src/libvirt.c:4586
+#: src/libvirt.c:4587
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr "സെക്യുര്‍ ഫ്ലാഗിനൊപ്പം virDomainGetXMLDesc"
 
-#: src/libvirt.c:4775
+#: src/libvirt.c:4776
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare യുആര്‍ഐ സജ്ജമാക്കിയില്ല"
 
-#: src/libvirt.c:4897 src/qemu/qemu_migration.c:3549
+#: src/libvirt.c:4898 src/qemu/qemu_migration.c:3549
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare2 uri ക്രമീകരിക്കുന്നില്ല"
 
-#: src/libvirt.c:5098 src/qemu/qemu_migration.c:3749
+#: src/libvirt.c:5099 src/qemu/qemu_migration.c:3749
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare3 യുആര്‍ഐ സജ്ജമാക്കിയിട്ടില്ല"
 
-#: src/libvirt.c:5311
+#: src/libvirt.c:5312
 #, c-format
 msgid "unable to parse server from dconnuri in %s"
 msgstr "%s-ല്‍ dconnuri-നുള്ള സര്‍വര്‍ പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/libvirt.c:5333 src/libvirt.c:5425 src/libvirt.c:5877 src/libvirt.c:5889
-#: src/libvirt.c:6077 src/libvirt.c:6090
+#: src/libvirt.c:5334 src/libvirt.c:5426 src/libvirt.c:5878 src/libvirt.c:5890
+#: src/libvirt.c:6078 src/libvirt.c:6091
 msgid "Unable to change target guest XML during migration"
 msgstr "നീക്കുമ്പോള്‍ ലക്ഷ്യ ഗസ്റ്റ് എക്സ്എംഎല്‍ മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/libvirt.c:5339
+#: src/libvirt.c:5340
 msgid "Unable to override peer2peer migration URI"
 msgstr "peer2peer മൈഗ്രേഷന്‍ യുആര്‍ഐ മാറ്റിസ്ഥാപിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libvirt.c:5558 src/libvirt.c:5798 src/libvirt.c:5989 src/libvirt.c:6213
-#: src/libvirt.c:6377 src/libvirt.c:6493
+#: src/libvirt.c:5559 src/libvirt.c:5799 src/libvirt.c:5990 src/libvirt.c:6214
+#: src/libvirt.c:6378 src/libvirt.c:6494
 #, c-format
 msgid ""
 "flags 'shared disk' and 'shared incremental' in %s are mutually exclusive"
 msgstr ""
 "%s-ലുള്ള 'shared disk', 'shared incremental' എന്നീ ഫ്ലാഗുകള്‍ തമ്മില്‍ പരസ്പര ബന്ധമില്ല"
 
-#: src/libvirt.c:5568 src/libvirt.c:5808 src/libvirt.c:6005 src/libvirt.c:6223
+#: src/libvirt.c:5569 src/libvirt.c:5809 src/libvirt.c:6006 src/libvirt.c:6224
 msgid "offline migration is not supported by the source host"
 msgstr "സോഴ്സ് ഹോസ്റ്റ് ഓഫ്‌ലൈന്‍ മൈഗ്രേഷന്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/libvirt.c:5575 src/libvirt.c:5815 src/libvirt.c:6012
+#: src/libvirt.c:5576 src/libvirt.c:5816 src/libvirt.c:6013
 #: src/qemu/qemu_migration.c:3964
 msgid "offline migration is not supported by the destination host"
 msgstr "ലക്ഷ്യസ്ഥാനത്തുള്ള ഹോസ്റ്റ് ഓഫ്‌ലൈന്‍ മൈഗ്രേഷന്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/libvirt.c:5615 src/libvirt.c:5852 src/libvirt.c:6027
+#: src/libvirt.c:5616 src/libvirt.c:5853 src/libvirt.c:6028
 msgid "cannot enforce change protection"
 msgstr "തിരുത്തല്‍ സംരക്ഷണം ഉറപ്പുവരുത്താന്‍ സാധ്യമല്ല"
 
-#: src/libvirt.c:5621 src/libvirt.c:5858
+#: src/libvirt.c:5622 src/libvirt.c:5859
 msgid "cannot perform tunnelled migration without using peer2peer flag"
 msgstr ""
 "peer2peer അടയാളമുപയോഗിക്കാതെ 'തുരങ്കം വഴി മറ്റൊരിടത്തേക്ക് മാറ്റാന്‍' (tunnelled "
 "migration) സാധ്യമല്ല"
 
-#: src/libvirt.c:5996
+#: src/libvirt.c:5997
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
 msgstr "പിയര്‍-ടു-പിയര്‍ മൈഗ്രേഷനു് virDomainMigrateToURI3 ഉപയോഗിയ്ക്കുക"
 
-#: src/libvirt.c:6047 src/qemu/qemu_migration.c:3957
+#: src/libvirt.c:6048 src/qemu/qemu_migration.c:3957
 msgid ""
 "Migration APIs with extensible parameters are not supported but extended "
 "parameters were passed"
@@ -8292,15 +8292,15 @@ msgstr ""
 "എക്സെന്‍ബിള്‍ പരാമീറ്ററുകള്‍ക്കൊപ്പമുള്ള മൈഗ്രേഷന്‍ എപിഐകള്‍ പിന്തുണയ്ക്കുന്നില്ല പക്ഷേ എക്സ്റ്റെന്‍ഡ് ചെയ്ത "
 "പരാമീറ്ററുകള്‍ നല്‍കിയിരുന്നു"
 
-#: src/libvirt.c:6250 src/libvirt.c:6405
+#: src/libvirt.c:6251 src/libvirt.c:6406
 msgid "direct migration is not supported by the connection driver"
 msgstr "കണക്ഷന്‍ ഡ്രൈവര്‍ നേരിട്ടു് നീക്കുന്നതു് പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/libvirt.c:6517
+#: src/libvirt.c:6518
 msgid "Peer-to-peer migration is not supported by the connection driver"
 msgstr "കണക്ഷന്‍ ഡ്രൈവര്‍ പിയര്‍-ടു-പിയര്‍ മൈഗ്രേഷന്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/libvirt.c:6535
+#: src/libvirt.c:6536
 msgid ""
 "Peer-to-peer migration with extensible parameters is not supported but "
 "extended parameters were passed"
@@ -8308,40 +8308,40 @@ msgstr ""
 "എക്സെന്‍ബിള്‍ പരാമീറ്ററുകള്‍ക്കൊപ്പമുള്ള പിയര്‍-ടു-പിയര്‍ മൈഗ്രേഷന്‍ പിന്തുണയ്ക്കുന്നില്ല പക്ഷേ എക്സ്റ്റെന്‍ഡ് "
 "ചെയ്ത പരാമീറ്ററുകള്‍ നല്‍കിയിരുന്നു"
 
-#: src/libvirt.c:6545
+#: src/libvirt.c:6546
 msgid "Direct migration is not supported by the connection driver"
 msgstr "നേരിട്ടുള്ള മൈഗ്രേഷന്‍ കണക്ഷന്‍ ഡ്രൈവര്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/libvirt.c:6552
+#: src/libvirt.c:6553
 msgid "Direct migration does not support extensible parameters"
 msgstr "നേരിട്ടുള്ള മൈഗ്രേഷന്‍ എക്സ്റ്റെന്‍സിബിള്‍ പരാമീറ്ററുകളെ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/libvirt.c:6847 src/libvirt.c:7015 src/libvirt.c:7344
+#: src/libvirt.c:6848 src/libvirt.c:7016 src/libvirt.c:7345
 #, c-format
 msgid "conn in %s must match stream connection"
 msgstr "%s-ലുള്ള conn സ്ട്രീം കണക്ഷനുമായി പൊരുത്തപ്പെടണം"
 
-#: src/libvirt.c:7677
+#: src/libvirt.c:7678
 #, c-format
 msgid "cpuNum in %s only accepts %d as a negative value"
 msgstr "%sലെ cpuNum %d എന്നത് നെഗറ്റീവ് വില (ഋണമൂല്യം) ആയി മാത്രമേ സ്വീകരിക്കൂ"
 
-#: src/libvirt.c:7766
+#: src/libvirt.c:7767
 #, c-format
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "%sലെ cellNum %d എന്നത് നെഗറ്റീവ് വില (ഋണമൂല്യം) ആയി മാത്രമേ സ്വീകരിക്കൂ"
 
-#: src/libvirt.c:8369 src/libvirt.c:8514
+#: src/libvirt.c:8370 src/libvirt.c:8515
 #, c-format
 msgid "size in %s must not exceed %zu"
 msgstr "%s-ലുള്ള വ്യാപ്തി %zu-ല്‍ കൂടുവാന്‍ പാടില്ല"
 
-#: src/libvirt.c:8994
+#: src/libvirt.c:8995
 #, c-format
 msgid "flags in %s must include VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "%s-ലുള്ള ഫ്ലാഗുകളില്‍ VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL ഉള്‍പ്പെടുത്തണം"
 
-#: src/libvirt.c:10018
+#: src/libvirt.c:10019
 #, c-format
 msgid ""
 "flags 'VIR_DOMAIN_VCPU_MAXIMUM' and 'VIR_DOMAIN_VCPU_GUEST' in '%s' are "
@@ -8349,99 +8349,99 @@ msgid ""
 msgstr ""
 "%s'-ലുള്ള 'VIR_DOMAIN_VCPU_MAXIMUM' , 'VIR_DOMAIN_VCPU_GUEST' പരസ്പര വിരുദ്ധമാണു്"
 
-#: src/libvirt.c:10027 src/libvirt.c:10163 src/libvirt.c:10243
+#: src/libvirt.c:10028 src/libvirt.c:10164 src/libvirt.c:10244
 #, c-format
 msgid "input too large: %u"
 msgstr "ഇന്‍പുട്ട് വളരെ വലുത്: %u"
 
-#: src/libvirt.c:10311 src/libvirt.c:10537
+#: src/libvirt.c:10312 src/libvirt.c:10538
 #, c-format
 msgid "input too large: %d * %d"
 msgstr "ഇന്‍പുട്ട് വളരെ വലുതു്: %d * %d"
 
-#: src/libvirt.c:10755
+#: src/libvirt.c:10756
 #, c-format
 msgid "metadata title in %s can't contain newlines"
 msgstr "%s-ലുള്ള മെറ്റാഡേറ്റാ തലക്കെട്ടില്‍ പുതിയവരികള്‍ പാടില്ല"
 
-#: src/libvirt.c:15298
+#: src/libvirt.c:15299
 #, c-format
 msgid "capacity in %s cannot be zero without 'delta' or 'shrink' flags set"
 msgstr "%sലെ ശേഷി 'delta' അല്ലെങ്കില്‍ 'shrink' അടയാളങ്ങളില്ലാതെ പൂജ്യമാകാന്‍ സാധ്യമല്ല"
 
-#: src/libvirt.c:17254
+#: src/libvirt.c:17255
 msgid "data sources cannot be used for non-blocking streams"
 msgstr "നോണ്‍-ബ്ലോക്കിങ് സ്ട്രീമുകള്‍ക്കു് ഡേറ്റാ ശ്രോതസ്സുകള്‍ ഉപയോഗിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libvirt.c:17351
+#: src/libvirt.c:17352
 msgid "data sinks cannot be used for non-blocking streams"
 msgstr "നോണ്‍-ബ്ലോക്കിങ് സ്ട്രീമുകള്‍ക്കു് ഡേറ്റാ സിങ്കുള്‍ ഉപയോഗിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libvirt.c:19112
+#: src/libvirt.c:19113
 #, c-format
 msgid "eventID in %s must be less than %d"
 msgstr "%s-ലുള്ള eventID %d-നേക്കാള്‍ കുറഞ്ഞതായിരിയ്ക്കണം"
 
-#: src/libvirt.c:19221 src/libvirt.c:20455
+#: src/libvirt.c:19222 src/libvirt.c:20456
 #, c-format
 msgid "running and paused flags in %s are mutually exclusive"
 msgstr ""
 "%s ലെ 'പ്രവര്‍ത്തിപ്പിച്ചു കൊണ്ടിരിക്കുക', 'താല്‍ക്കാലികമായി നിര്‍ത്തിവെക്കുക' എന്നീ അടയാളങ്ങള്‍ "
 "പരസ്പരവിരുദ്ധമാണ്"
 
-#: src/libvirt.c:19540
+#: src/libvirt.c:19541
 #, c-format
 msgid "use of 'current' flag in %s requires 'redefine' flag"
 msgstr "%sലെ 'current' അടയാളമുപയോഗിക്കാന്‍ 'redefine' അടയാളമാവശ്യമാണ്"
 
-#: src/libvirt.c:19547
+#: src/libvirt.c:19548
 #, c-format
 msgid "'redefine' and 'no metadata' flags in %s are mutually exclusive"
 msgstr "%sലെ 'redefine, 'no metadata' എന്നീ അടയാളങ്ങള്‍ പരസ്പരവിരുദ്ധമാണ്"
 
-#: src/libvirt.c:19554
+#: src/libvirt.c:19555
 #, c-format
 msgid "'redefine' and 'halt' flags in %s are mutually exclusive"
 msgstr "%sലെ 'redefine', 'halt' എന്നീ അടയാളങ്ങള്‍ പരസ്പരവിരുദ്ധമാണ്"
 
-#: src/libvirt.c:19608
+#: src/libvirt.c:19609
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc, സുരക്ഷിത ഫ്ലാഗിനൊപ്പം"
 
-#: src/libvirt.c:20523
+#: src/libvirt.c:20524
 #, c-format
 msgid "children and children_only flags in %s are mutually exclusive"
 msgstr "%sലെ 'children', 'children_only' എന്നീ അടയാളങ്ങള്‍ പരസ്പരവിരുദ്ധമാണ്"
 
-#: src/libvirt.c:21100
+#: src/libvirt.c:21101
 #, c-format
 msgid "use of flags in %s requires a copy job"
 msgstr "%sല്‍ അടയാളങ്ങളുപയോഗിക്കാന്‍ ഒരു പകര്‍പ്പ് പ്രവൃത്തി ആവശ്യമാണ്"
 
-#: src/libvirt.c:21274
+#: src/libvirt.c:21275
 #, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "%d ഫയല്‍ വിവരണം ലഭ്യമാക്കുവന്‍ സാധ്യമല്ല"
 
-#: src/libvirt.c:21280
+#: src/libvirt.c:21281
 #, c-format
 msgid "fd %d in %s must be a socket"
 msgstr "fd %d, %s-ലുള്ളതു്, ഒരു സോക്കറ്റായിരിയ്ക്കണം"
 
-#: src/libvirt.c:21451
+#: src/libvirt.c:21452
 msgid "A close callback is already registered"
 msgstr "അടയ്ക്കുവാനുള്ള ഒരു പിന്‍വിളി മുന്‍പേ തന്നെ രേഖപ്പെടുത്തിയിട്ടുണ്ട്"
 
-#: src/libvirt.c:21505
+#: src/libvirt.c:21506
 msgid "A different callback was requested"
 msgstr "മറ്റൊരു കോള്‍ബാക്ക് ആവശ്യപ്പെട്ടിരിയ്ക്കുന്നു"
 
-#: src/libvirt.c:21789
+#: src/libvirt.c:21790
 #, c-format
 msgid "ncpus in %s must be 1 when start_cpu is -1"
 msgstr "start_cpu -1 ആകുമ്പോള്‍, %s-ലുള്ള ncpus 1 ആയിരിയ്ക്കണം"
 
-#: src/libvirt.c:21804
+#: src/libvirt.c:21805
 #, c-format
 msgid "input too large: %u * %u"
 msgstr "ഇന്‍പുട്ട് വളരെ വലുതു്: %u * %u"
@@ -11321,39 +11321,39 @@ msgstr ""
 msgid "Buffer error when generating device name for device with sysname '%s'"
 msgstr "'%s' എന്ന സിസ്റ്റമുള്ള ഉപകരണത്തിന്റെ പേര് ഉണ്ടാക്കുമ്പോള്‍ ബഫര്‍ പിശക് നേരിട്ടു"
 
-#: src/node_device/node_device_udev.c:685
+#: src/node_device/node_device_udev.c:700
 #, c-format
 msgid "SCSI host found, but its udev name '%s' does not begin with 'host'"
 msgstr ""
 "SCSI ആതിഥേയയെ കണ്ടെത്തി, പക്ഷേ അതിന്റെ udev പേര് '%s' 'host' എന്നതില്‍ തുടങ്ങുന്നില്ല"
 
-#: src/node_device/node_device_udev.c:848
+#: src/node_device/node_device_udev.c:863
 #, c-format
 msgid "Failed to process SCSI device with sysfs path '%s'"
 msgstr "sysfs പഥം '%s' ഉള്ള SCSI ഉപകരണം പ്രവര്‍ത്തിപ്പിക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/node_device/node_device_udev.c:1262
+#: src/node_device/node_device_udev.c:1277
 #, c-format
 msgid "Unknown device type %d"
 msgstr "അപരിചിതമായ ഡിവൈസ് തരം %d"
 
-#: src/node_device/node_device_udev.c:1313
+#: src/node_device/node_device_udev.c:1328
 #, c-format
 msgid "Could not get syspath for parent of '%s'"
 msgstr "'%s'-നുള്ള പേരന്റിനുള്ള syspath ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/node_device/node_device_udev.c:1381
-#: src/node_device/node_device_udev.c:1640
+#: src/node_device/node_device_udev.c:1396
+#: src/node_device/node_device_udev.c:1655
 #, c-format
 msgid "Failed to create device for '%s'"
 msgstr "'%s'-നുള്ള ഡിവൈസ് തയ്യാറാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/node_device/node_device_udev.c:1435
+#: src/node_device/node_device_udev.c:1450
 #, c-format
 msgid "udev scan devices returned %d"
 msgstr "ഉപകരണങ്ങളുടെ udev പരിശോധന %d തിരിച്ചു തന്നു"
 
-#: src/node_device/node_device_udev.c:1511
+#: src/node_device/node_device_udev.c:1526
 #, c-format
 msgid ""
 "File descriptor returned by udev %d does not match node device file "
@@ -11361,25 +11361,25 @@ msgid ""
 msgstr ""
 "udev %d തിരിച്ചു തന്ന ഫയല്‍ വിവരണം  നോഡ് ഉപകര്ണത്തിന്റെ %d ഫയല്‍ വിവരണവുമായി ചേരുന്നില്ല "
 
-#: src/node_device/node_device_udev.c:1518
+#: src/node_device/node_device_udev.c:1533
 msgid "udev_monitor_receive_device returned NULL"
 msgstr "udev_monitor_receive_device തന്ന മറുപടി NULL എന്നാണ്"
 
-#: src/node_device/node_device_udev.c:1557
+#: src/node_device/node_device_udev.c:1572
 #, c-format
 msgid "Failed to get udev device for syspath '%s' or '%s'"
 msgstr "'%s' അല്ലെങ്കില്‍ '%s'  എന്ന syspath നു വേണ്ടി udev ഉപകരണം  ലഭ്യമല്ല"
 
-#: src/node_device/node_device_udev.c:1676
+#: src/node_device/node_device_udev.c:1691
 #, c-format
 msgid "Failed to initialize libpciaccess: %s"
 msgstr "libpciaccess ആരംഭിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/node_device/node_device_udev.c:1698
+#: src/node_device/node_device_udev.c:1713
 msgid "Failed to initialize mutex for driverState"
 msgstr "driverState നു വേണ്ടി മ്യൂട്ടെക്സ് സമാരംഭിക്കാന്‍ കഴിഞ്ഞില്ല"
 
-#: src/node_device/node_device_udev.c:1720
+#: src/node_device/node_device_udev.c:1735
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink  NULL എന്നു മറുപടി തന്നിരിക്കുന്നു"
 
@@ -15049,16 +15049,16 @@ msgstr "പ്രക്രിയ വീണ്ടും ആരംഭിക്ക�
 #: src/qemu/qemu_driver.c:1848 src/qemu/qemu_driver.c:1954
 #: src/qemu/qemu_driver.c:4176 src/qemu/qemu_driver.c:4906
 #: src/qemu/qemu_driver.c:11456 src/qemu/qemu_driver.c:11483
-#: src/qemu/qemu_driver.c:15425 src/qemu/qemu_driver.c:15558
-#: src/qemu/qemu_driver.c:15636
+#: src/qemu/qemu_driver.c:15429 src/qemu/qemu_driver.c:15562
+#: src/qemu/qemu_driver.c:15640
 msgid "QEMU guest agent is not available due to an error"
 msgstr "ഒരു പിശക് കാരണം QEMU ഗസ്റ്റ് ഏജന്റ് ലഭ്യമല്ല"
 
 #: src/qemu/qemu_driver.c:1859 src/qemu/qemu_driver.c:1960
 #: src/qemu/qemu_driver.c:4183 src/qemu/qemu_driver.c:4913
 #: src/qemu/qemu_driver.c:11462 src/qemu/qemu_driver.c:11490
-#: src/qemu/qemu_driver.c:15432 src/qemu/qemu_driver.c:15565
-#: src/qemu/qemu_driver.c:15630
+#: src/qemu/qemu_driver.c:15436 src/qemu/qemu_driver.c:15569
+#: src/qemu/qemu_driver.c:15634
 msgid "QEMU guest agent is not configured"
 msgstr "QEMU ഗസ്റ്റ് ഏജന്റ് ക്രമീകരിച്ചിട്ടില്ല"
 
@@ -15986,50 +15986,55 @@ msgstr "ഒരേ സമയത്തു് iops_sec-നുള്ള മൊത്
 msgid "Write to config file failed"
 msgstr "ക്രമീകരണ ഫയലില്‍ സൂക്ഷിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:15112 src/qemu/qemu_driver.c:15126
+#: src/qemu/qemu_driver.c:14884
+#, fuzzy, c-format
+msgid "disk '%s' was not found in the domain config"
+msgstr "'%s' വോള്യം ഡൊമൈനിന്റെ ഡെഫനിഷനില്‍ കാണുന്നില്ല.\n"
+
+#: src/qemu/qemu_driver.c:15116 src/qemu/qemu_driver.c:15130
 msgid "unable to get cpu account"
 msgstr "സിപിയു അക്കൌണ്ട് ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/qemu/qemu_driver.c:15187 src/qemu/qemu_driver.c:15263
+#: src/qemu/qemu_driver.c:15191 src/qemu/qemu_driver.c:15267
 msgid "cpuacct parse error"
 msgstr "cpuacct പാഴ്സ് പിശക്"
 
-#: src/qemu/qemu_driver.c:15240
+#: src/qemu/qemu_driver.c:15244
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
 msgstr "start_cpu %d, %d-ന്റെ ഏറ്റവും കൂടിയ മൂല്ല്യത്തില്‍ നിന്നും വലുതു്"
 
-#: src/qemu/qemu_driver.c:15340
+#: src/qemu/qemu_driver.c:15344
 msgid "cgroup CPUACCT controller is not mounted"
 msgstr "cgroup CPUACCT കണ്ട്രോളര്‍ മൌണ്ട് ചെയ്തിട്ടില്ല"
 
-#: src/qemu/qemu_driver.c:15370
+#: src/qemu/qemu_driver.c:15374
 msgid "Duration not supported. Use 0 for now"
 msgstr "കാലാവധി പിന്തുണയ്ക്കുന്നില്ല, തല്‍ക്കാലം 0 ഉപയോഗിയ്ക്കുക"
 
-#: src/qemu/qemu_driver.c:15378
+#: src/qemu/qemu_driver.c:15382
 #, c-format
 msgid "Unknown suspend target: %u"
 msgstr "അപരിചിതമായ സസ്പെന്‍ഡ് ലക്ഷ്യം: %u"
 
-#: src/qemu/qemu_driver.c:15401
+#: src/qemu/qemu_driver.c:15405
 msgid "Unable to suspend domain due to missing system_wakeup monitor command"
 msgstr ""
 "system_wakeup മെണിറ്റര്‍ കമാന്‍ഡ് ലഭ്യമല്ലാത്തതിനാല്‍ ഡൊമെയിന്‍ സസ്പെന്‍ഡ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:15411
+#: src/qemu/qemu_driver.c:15415
 msgid "S3 state is disabled for this domain"
 msgstr "ഈ ഡൊമെയിനു് S3 അവസ്ഥ പ്രവര്‍ത്തന രഹിതമാക്കിയിരിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:15418
+#: src/qemu/qemu_driver.c:15422
 msgid "S4 state is disabled for this domain"
 msgstr "ഈ ഡൊമെയിനു് S4 അവസ്ഥ പ്രവര്‍ത്തന രഹിതമാക്കിയിരിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:15489
+#: src/qemu/qemu_driver.c:15493
 msgid "Unable to wake up domain due to missing system_wakeup monitor command"
 msgstr "system_wakeup മെണിറ്റര്‍ കമാന്‍ഡ് ലഭ്യമല്ലാത്തതിനാല്‍ ഡൊമെയിന്‍ ഉണര്‍ത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:15609
+#: src/qemu/qemu_driver.c:15613
 msgid "Specifying mount point is not supported for now"
 msgstr "മൌണ്ട് പോയിന്റ് നല്‍കുന്നതു് ഇപ്പോള്‍ പിന്തുണയ്ക്കുന്നില്ല"
 

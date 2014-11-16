@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2014-09-08 13:09-0400\n"
+"POT-Creation-Date: 2014-11-15 21:34-0500\n"
 "PO-Revision-Date: 2013-08-28 16:47+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/fedora/language/"
@@ -1160,11 +1160,11 @@ msgstr "‍డొమైన్ '%s' యిప్పటికే uuid %sతో వ
 #: src/qemu/qemu_driver.c:13876 src/qemu/qemu_driver.c:14016
 #: src/qemu/qemu_driver.c:14044 src/qemu/qemu_driver.c:14134
 #: src/qemu/qemu_driver.c:14246 src/qemu/qemu_driver.c:14469
-#: src/qemu/qemu_driver.c:14596 src/qemu/qemu_driver.c:14983
-#: src/qemu/qemu_driver.c:15334 src/qemu/qemu_driver.c:15393
-#: src/qemu/qemu_driver.c:15441 src/qemu/qemu_driver.c:15481
-#: src/qemu/qemu_driver.c:15552 src/qemu/qemu_driver.c:15574
-#: src/qemu/qemu_driver.c:15624 src/qemu/qemu_driver.c:15646
+#: src/qemu/qemu_driver.c:14596 src/qemu/qemu_driver.c:14987
+#: src/qemu/qemu_driver.c:15338 src/qemu/qemu_driver.c:15397
+#: src/qemu/qemu_driver.c:15445 src/qemu/qemu_driver.c:15485
+#: src/qemu/qemu_driver.c:15556 src/qemu/qemu_driver.c:15578
+#: src/qemu/qemu_driver.c:15628 src/qemu/qemu_driver.c:15650
 #: src/qemu/qemu_migration.c:2086 src/qemu/qemu_migration.c:4040
 #: src/uml/uml_driver.c:2564 src/xen/xen_driver.c:2624
 #: src/xen/xm_internal.c:675
@@ -8062,8 +8062,8 @@ msgstr ""
 msgid "libvirt was built without the '%s' driver"
 msgstr "libvirt అనునది '%s' డ్రైవర్ లేకుండా నిర్మించబడెను"
 
-#: src/libvirt.c:2244 src/libvirt.c:11635 src/libvirt.c:13552
-#: src/libvirt.c:16451 src/libvirt.c:18107
+#: src/libvirt.c:2244 src/libvirt.c:11636 src/libvirt.c:13553
+#: src/libvirt.c:16452 src/libvirt.c:18108
 #, c-format
 msgid "uuidstr in %s must be a valid UUID"
 msgstr "%s నందలి uuidstr తప్పక చెల్లునటువంటి UUID అయివుండాలి"
@@ -8120,126 +8120,126 @@ msgstr "NULL స్ట్రింగ్ పారామితి '%s'"
 msgid "string parameter '%s' unsupported"
 msgstr "స్ట్రింగ్ పారామితి '%s' తోడ్పాటులేనిది"
 
-#: src/libvirt.c:4124 src/libvirt.c:4386 src/libvirt.c:8173
-#: src/libvirt.c:10095 src/libvirt.c:10320 src/libvirt.c:10832
-#: src/libvirt.c:21663
+#: src/libvirt.c:4124 src/libvirt.c:4386 src/libvirt.c:8174
+#: src/libvirt.c:10096 src/libvirt.c:10321 src/libvirt.c:10833
+#: src/libvirt.c:21664
 #, c-format
 msgid "flags 'affect live' and 'affect config' in %s are mutually exclusive"
 msgstr "%s నందలి 'affect live' మరియు 'affect config' ఫ్లాగ్స్ పరస్పర విరుద్దాలు"
 
-#: src/libvirt.c:4586
+#: src/libvirt.c:4587
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr "virDomainGetXMLDesc సురక్షిత ఫ్లాగ్‌తో"
 
-#: src/libvirt.c:4775
+#: src/libvirt.c:4776
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare అనునది uriకు అమర్చలేదు"
 
-#: src/libvirt.c:4897 src/qemu/qemu_migration.c:3549
+#: src/libvirt.c:4898 src/qemu/qemu_migration.c:3549
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare2 అనునది uri అమర్చలేదు"
 
-#: src/libvirt.c:5098 src/qemu/qemu_migration.c:3749
+#: src/libvirt.c:5099 src/qemu/qemu_migration.c:3749
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare3 అనునది uri అమర్చలేదు"
 
-#: src/libvirt.c:5311
+#: src/libvirt.c:5312
 #, c-format
 msgid "unable to parse server from dconnuri in %s"
 msgstr "dconnuri నుండి %s నందు సేవికను పార్స్ చేయలేదు"
 
-#: src/libvirt.c:5333 src/libvirt.c:5425 src/libvirt.c:5877 src/libvirt.c:5889
-#: src/libvirt.c:6077 src/libvirt.c:6090
+#: src/libvirt.c:5334 src/libvirt.c:5426 src/libvirt.c:5878 src/libvirt.c:5890
+#: src/libvirt.c:6078 src/libvirt.c:6091
 msgid "Unable to change target guest XML during migration"
 msgstr "లక్ష్యపు అతిథి XML ను మైగ్రేషన్ నందు మార్చలేక పోయింది"
 
-#: src/libvirt.c:5339
+#: src/libvirt.c:5340
 msgid "Unable to override peer2peer migration URI"
 msgstr "peer2peer మైగ్రేషన్ URI వోవర్‌రైడ్ చేయలేక పోయింది"
 
-#: src/libvirt.c:5558 src/libvirt.c:5798 src/libvirt.c:5989 src/libvirt.c:6213
-#: src/libvirt.c:6377 src/libvirt.c:6493
+#: src/libvirt.c:5559 src/libvirt.c:5799 src/libvirt.c:5990 src/libvirt.c:6214
+#: src/libvirt.c:6378 src/libvirt.c:6494
 #, c-format
 msgid ""
 "flags 'shared disk' and 'shared incremental' in %s are mutually exclusive"
 msgstr ""
 "ఫ్లాగ్స్ 'shared disk' మరియు 'shared incremental' అనునవి %s నందు పరస్పర విరుద్ధాలు"
 
-#: src/libvirt.c:5568 src/libvirt.c:5808 src/libvirt.c:6005 src/libvirt.c:6223
+#: src/libvirt.c:5569 src/libvirt.c:5809 src/libvirt.c:6006 src/libvirt.c:6224
 msgid "offline migration is not supported by the source host"
 msgstr "మూలపు అతిధేయతో ఆఫ్‌లైన్ మైగ్రేషన్ తోడ్పాటునీయదు"
 
-#: src/libvirt.c:5575 src/libvirt.c:5815 src/libvirt.c:6012
+#: src/libvirt.c:5576 src/libvirt.c:5816 src/libvirt.c:6013
 #: src/qemu/qemu_migration.c:3964
 msgid "offline migration is not supported by the destination host"
 msgstr "గమ్యపు అతిధేయ చే ఆఫ్‌లైన్ మైగ్రేషన్ తోడ్పాటులేదు"
 
-#: src/libvirt.c:5615 src/libvirt.c:5852 src/libvirt.c:6027
+#: src/libvirt.c:5616 src/libvirt.c:5853 src/libvirt.c:6028
 msgid "cannot enforce change protection"
 msgstr "మార్పు రక్షణను అమలు చేయలేదు"
 
-#: src/libvirt.c:5621 src/libvirt.c:5858
+#: src/libvirt.c:5622 src/libvirt.c:5859
 msgid "cannot perform tunnelled migration without using peer2peer flag"
 msgstr "peer2peer ఫ్లాగ్ వుపయోగించకుండా టన్నెల్డ్ మైగ్రేషన్‌ను జరుపలేదు"
 
-#: src/libvirt.c:5996
+#: src/libvirt.c:5997
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
 msgstr "virDomainMigrateToURI3 ను peer-to-peer మైగ్రేషన్ కొరకు వుపయోగించు"
 
-#: src/libvirt.c:6047 src/qemu/qemu_migration.c:3957
+#: src/libvirt.c:6048 src/qemu/qemu_migration.c:3957
 msgid ""
 "Migration APIs with extensible parameters are not supported but extended "
 "parameters were passed"
 msgstr "మైగ్రేషన్ API లు విస్తరించదగ పారామితులతో తోడ్పాటునీయవు అయితే విస్తరిత పారామితులు పాసైనవి"
 
-#: src/libvirt.c:6250 src/libvirt.c:6405
+#: src/libvirt.c:6251 src/libvirt.c:6406
 msgid "direct migration is not supported by the connection driver"
 msgstr "అనుసంధాన డ్రైవర్‌ చే డైరెక్ట్ మైగ్రేషన్ తోడ్పాటు లేదు"
 
-#: src/libvirt.c:6517
+#: src/libvirt.c:6518
 msgid "Peer-to-peer migration is not supported by the connection driver"
 msgstr "పీర్-టు-పీర్ మైగ్రేషన్ అనుసంధాని డ్రైవర్ చే తోడ్పాటులేదు"
 
-#: src/libvirt.c:6535
+#: src/libvirt.c:6536
 msgid ""
 "Peer-to-peer migration with extensible parameters is not supported but "
 "extended parameters were passed"
 msgstr "పీర్-టు-పీర్ మైగ్రేషన్ విస్తరించదగ పారామితులతో తోడ్పాటునీయవు అయితే విస్తరిత పారామితులు పాసైనవి"
 
-#: src/libvirt.c:6545
+#: src/libvirt.c:6546
 msgid "Direct migration is not supported by the connection driver"
 msgstr "అనుసంధాన డ్రైవర్‌ చే డైరెక్ట్ మైగ్రేషన్ తోడ్పాటు లేదు"
 
-#: src/libvirt.c:6552
+#: src/libvirt.c:6553
 msgid "Direct migration does not support extensible parameters"
 msgstr "డైరెక్ట్ మైగ్రేషన్ అనునది ఎక్సుటెన్సిబుల్ పారామితులకు తోడ్పాటునీయదు"
 
-#: src/libvirt.c:6847 src/libvirt.c:7015 src/libvirt.c:7344
+#: src/libvirt.c:6848 src/libvirt.c:7016 src/libvirt.c:7345
 #, c-format
 msgid "conn in %s must match stream connection"
 msgstr "%s నందలి అనుసంధానం తప్పక స్ట్రీమ్ అనుసంధానంతో సరిపోవాలి"
 
-#: src/libvirt.c:7677
+#: src/libvirt.c:7678
 #, c-format
 msgid "cpuNum in %s only accepts %d as a negative value"
 msgstr "%s నందలి cpuNum అనునది %d ను మాత్రమే ఋణ విలువగా ఆమోదించును"
 
-#: src/libvirt.c:7766
+#: src/libvirt.c:7767
 #, c-format
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "%s నందలి cellNum అనునది %d ను మాత్రమే ఋణ విలువగా ఆమోదించును"
 
-#: src/libvirt.c:8369 src/libvirt.c:8514
+#: src/libvirt.c:8370 src/libvirt.c:8515
 #, c-format
 msgid "size in %s must not exceed %zu"
 msgstr "%s నందలి పరిమాణం %zu ను మించరాదు"
 
-#: src/libvirt.c:8994
+#: src/libvirt.c:8995
 #, c-format
 msgid "flags in %s must include VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "%s నందలి ఫ్లాగ్స్ తప్పక VIR_MEMORY_VIRTUAL లేదా VIR_MEMORY_PHYSICAL చేర్చాలి"
 
-#: src/libvirt.c:10018
+#: src/libvirt.c:10019
 #, c-format
 msgid ""
 "flags 'VIR_DOMAIN_VCPU_MAXIMUM' and 'VIR_DOMAIN_VCPU_GUEST' in '%s' are "
@@ -8248,97 +8248,97 @@ msgstr ""
 "ఫ్లాగ్స్ 'VIR_DOMAIN_VCPU_MAXIMUM' మరియు 'VIR_DOMAIN_VCPU_GUEST'  '%s' నందలివి "
 "పరస్పరం విరుద్ధం"
 
-#: src/libvirt.c:10027 src/libvirt.c:10163 src/libvirt.c:10243
+#: src/libvirt.c:10028 src/libvirt.c:10164 src/libvirt.c:10244
 #, c-format
 msgid "input too large: %u"
 msgstr "ఇన్పుట్ మరీ పెద్దది: %u"
 
-#: src/libvirt.c:10311 src/libvirt.c:10537
+#: src/libvirt.c:10312 src/libvirt.c:10538
 #, c-format
 msgid "input too large: %d * %d"
 msgstr "ఇన్పుట్ మరీ పెద్దది: %d * %d"
 
-#: src/libvirt.c:10755
+#: src/libvirt.c:10756
 #, c-format
 msgid "metadata title in %s can't contain newlines"
 msgstr "%s నందలి మెటాడాటా శీర్షిక కొత్తవరుసలను కలిగివుండలేదు"
 
-#: src/libvirt.c:15298
+#: src/libvirt.c:15299
 #, c-format
 msgid "capacity in %s cannot be zero without 'delta' or 'shrink' flags set"
 msgstr "%s నందలి సామర్ధ్యం అనునది 'delta' లేదా 'shrink' ఫ్లాగ్స్ అమర్చకుండా సున్నా కాలేదు"
 
-#: src/libvirt.c:17254
+#: src/libvirt.c:17255
 msgid "data sources cannot be used for non-blocking streams"
 msgstr "నాన్-బ్లాకింగ్ స్ట్రీమ్స్ కొరకు డాటా మూలములు వుపయోగించబడలేవు"
 
-#: src/libvirt.c:17351
+#: src/libvirt.c:17352
 msgid "data sinks cannot be used for non-blocking streams"
 msgstr "నాన్-బ్లాకింగ్ స్ట్రీమ్స్ కొరకు డాటా సింక్స్ వుపయోగించబడలేవు"
 
-#: src/libvirt.c:19112
+#: src/libvirt.c:19113
 #, c-format
 msgid "eventID in %s must be less than %d"
 msgstr "%s నందలి ఘటనఐడి తప్పక %d కన్నా తక్కువవుండాలి"
 
-#: src/libvirt.c:19221 src/libvirt.c:20455
+#: src/libvirt.c:19222 src/libvirt.c:20456
 #, c-format
 msgid "running and paused flags in %s are mutually exclusive"
 msgstr "%s నందలి నడుచుచున్న మరియు నిలిపివుంచిన ఫ్లాగ్స్ పరస్పర విరుద్దాలు"
 
-#: src/libvirt.c:19540
+#: src/libvirt.c:19541
 #, c-format
 msgid "use of 'current' flag in %s requires 'redefine' flag"
 msgstr "%s నందు 'current' ఫ్లాగ్‌ వినియోగంకు 'redefine' ఫ్లాగ్ అవసరం"
 
-#: src/libvirt.c:19547
+#: src/libvirt.c:19548
 #, c-format
 msgid "'redefine' and 'no metadata' flags in %s are mutually exclusive"
 msgstr "%s నందలి 'redefine' మరియు 'no metadata' ఫ్లాగ్స్ పరస్పర విరుద్దాలు"
 
-#: src/libvirt.c:19554
+#: src/libvirt.c:19555
 #, c-format
 msgid "'redefine' and 'halt' flags in %s are mutually exclusive"
 msgstr "%s నందలి 'redefine' మరియు 'halt' ఫ్లాగ్స్ పరస్పర విరుద్దాలు"
 
-#: src/libvirt.c:19608
+#: src/libvirt.c:19609
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc సురక్షిత ఫ్లాగ్ తో"
 
-#: src/libvirt.c:20523
+#: src/libvirt.c:20524
 #, c-format
 msgid "children and children_only flags in %s are mutually exclusive"
 msgstr "%s నందలి 'children' మరియు 'children_only' ఫ్లాగ్స్ పరస్పర విరుద్దాలు"
 
-#: src/libvirt.c:21100
+#: src/libvirt.c:21101
 #, c-format
 msgid "use of flags in %s requires a copy job"
 msgstr "%s నందలి ఫ్లాగ్స్ వినియోగంకు కాపీ జాబ్ కావాలి"
 
-#: src/libvirt.c:21274
+#: src/libvirt.c:21275
 #, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "ఫైల్ వివరణి %d యాక్సెస్ చేయలేదు"
 
-#: src/libvirt.c:21280
+#: src/libvirt.c:21281
 #, c-format
 msgid "fd %d in %s must be a socket"
 msgstr "fd %d దీనినందు %s తప్పక సాకెట్ కావాలి"
 
-#: src/libvirt.c:21451
+#: src/libvirt.c:21452
 msgid "A close callback is already registered"
 msgstr "ఒక క్లోజ్ కాల్‌బాక్ యిప్పటికే నమోదైంది"
 
-#: src/libvirt.c:21505
+#: src/libvirt.c:21506
 msgid "A different callback was requested"
 msgstr "ఒక విభిన్న కాల్‌బాక్ అభ్యర్ధించబడెను"
 
-#: src/libvirt.c:21789
+#: src/libvirt.c:21790
 #, c-format
 msgid "ncpus in %s must be 1 when start_cpu is -1"
 msgstr "%s నందలి ncpus తప్పక 1 కావాలి start_cpu అనునది -1 అయినప్పుడు"
 
-#: src/libvirt.c:21804
+#: src/libvirt.c:21805
 #, c-format
 msgid "input too large: %u * %u"
 msgstr "ఇన్పుట్ మరీ పెద్దది: %u * %u"
@@ -11168,63 +11168,63 @@ msgstr ""
 msgid "Buffer error when generating device name for device with sysname '%s'"
 msgstr "పరికరం కొరకు sysname '%s' తో పరికరం పేరును జనియింపచేయునప్పుడు బఫర్ దోషం"
 
-#: src/node_device/node_device_udev.c:685
+#: src/node_device/node_device_udev.c:700
 #, c-format
 msgid "SCSI host found, but its udev name '%s' does not begin with 'host'"
 msgstr "SCSI అతిధేయి కనుగొనబడింది, అయితే దాని udev పేరు '%s' అనునది 'host' తో ప్రారంభం కాదు"
 
-#: src/node_device/node_device_udev.c:848
+#: src/node_device/node_device_udev.c:863
 #, c-format
 msgid "Failed to process SCSI device with sysfs path '%s'"
 msgstr "SCSI పరికరంను sysfs path '%s' తో ప్రోసెస్ చేయుటకు విఫలమైంది"
 
-#: src/node_device/node_device_udev.c:1262
+#: src/node_device/node_device_udev.c:1277
 #, c-format
 msgid "Unknown device type %d"
 msgstr "తెలియని పరికరం రకం %d"
 
-#: src/node_device/node_device_udev.c:1313
+#: src/node_device/node_device_udev.c:1328
 #, c-format
 msgid "Could not get syspath for parent of '%s'"
 msgstr "'%s' యొక్క పేరెంట్ కొరకు syspath కనుగొనలేక పోయింది"
 
-#: src/node_device/node_device_udev.c:1381
-#: src/node_device/node_device_udev.c:1640
+#: src/node_device/node_device_udev.c:1396
+#: src/node_device/node_device_udev.c:1655
 #, c-format
 msgid "Failed to create device for '%s'"
 msgstr "'%s' కొరకు పరికరం సృష్టించటకు విఫలమైంది"
 
-#: src/node_device/node_device_udev.c:1435
+#: src/node_device/node_device_udev.c:1450
 #, c-format
 msgid "udev scan devices returned %d"
 msgstr "udev స్కాన్ పరికరాలు %d తిప్పియిచ్చెను"
 
-#: src/node_device/node_device_udev.c:1511
+#: src/node_device/node_device_udev.c:1526
 #, c-format
 msgid ""
 "File descriptor returned by udev %d does not match node device file "
 "descriptor %d"
 msgstr "udev %d తో తిప్పియిచ్చిన ఫైల్ డిస్క్రిప్టార్ అనునది నోడ్ పరికర ఫైల్ డిస్క్రిప్టార్ %d తో సరిపోలదు"
 
-#: src/node_device/node_device_udev.c:1518
+#: src/node_device/node_device_udev.c:1533
 msgid "udev_monitor_receive_device returned NULL"
 msgstr "udev_monitor_receive_device అనునది NULL తిప్పియిచ్చినది"
 
-#: src/node_device/node_device_udev.c:1557
+#: src/node_device/node_device_udev.c:1572
 #, c-format
 msgid "Failed to get udev device for syspath '%s' or '%s'"
 msgstr "syspath '%s' లేదా '%s' కొరకు udev పరికరం పొందుటకు విఫలమైంది"
 
-#: src/node_device/node_device_udev.c:1676
+#: src/node_device/node_device_udev.c:1691
 #, c-format
 msgid "Failed to initialize libpciaccess: %s"
 msgstr "libpciaccess సిద్దీకరించుటకు విఫలమైంది: %s"
 
-#: src/node_device/node_device_udev.c:1698
+#: src/node_device/node_device_udev.c:1713
 msgid "Failed to initialize mutex for driverState"
 msgstr "డ్రైవర్‌స్థితి కొరకు మ్యూటెక్స్ సిద్దీకరించుటకు విఫలమైంది"
 
-#: src/node_device/node_device_udev.c:1720
+#: src/node_device/node_device_udev.c:1735
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink అనునది NULL తిప్పియిచ్చినది"
 
@@ -14834,16 +14834,16 @@ msgstr "ఆపరేషన్ తిరిగికొనసాగింపు �
 #: src/qemu/qemu_driver.c:1848 src/qemu/qemu_driver.c:1954
 #: src/qemu/qemu_driver.c:4176 src/qemu/qemu_driver.c:4906
 #: src/qemu/qemu_driver.c:11456 src/qemu/qemu_driver.c:11483
-#: src/qemu/qemu_driver.c:15425 src/qemu/qemu_driver.c:15558
-#: src/qemu/qemu_driver.c:15636
+#: src/qemu/qemu_driver.c:15429 src/qemu/qemu_driver.c:15562
+#: src/qemu/qemu_driver.c:15640
 msgid "QEMU guest agent is not available due to an error"
 msgstr "దోషం కారణంగా QEMU అతిథి యేజెంట్ అందుబాటులో లేదు"
 
 #: src/qemu/qemu_driver.c:1859 src/qemu/qemu_driver.c:1960
 #: src/qemu/qemu_driver.c:4183 src/qemu/qemu_driver.c:4913
 #: src/qemu/qemu_driver.c:11462 src/qemu/qemu_driver.c:11490
-#: src/qemu/qemu_driver.c:15432 src/qemu/qemu_driver.c:15565
-#: src/qemu/qemu_driver.c:15630
+#: src/qemu/qemu_driver.c:15436 src/qemu/qemu_driver.c:15569
+#: src/qemu/qemu_driver.c:15634
 msgid "QEMU guest agent is not configured"
 msgstr "QEMU అతిథి యేజెంట్ ఆకృతీరించలేదు"
 
@@ -15750,49 +15750,54 @@ msgstr "మొత్తము మరియు చదువు/వ్రాయు
 msgid "Write to config file failed"
 msgstr "ఆకృతీకరణ ఫైలుకు వ్రాయుట విఫలమైంది"
 
-#: src/qemu/qemu_driver.c:15112 src/qemu/qemu_driver.c:15126
+#: src/qemu/qemu_driver.c:14884
+#, fuzzy, c-format
+msgid "disk '%s' was not found in the domain config"
+msgstr "పరికరం యిప్పటికే డొమైన్ ఆకృతీకరణ నందు వుంది"
+
+#: src/qemu/qemu_driver.c:15116 src/qemu/qemu_driver.c:15130
 msgid "unable to get cpu account"
 msgstr "cpu ఖాతా పొందలేక పోయింది"
 
-#: src/qemu/qemu_driver.c:15187 src/qemu/qemu_driver.c:15263
+#: src/qemu/qemu_driver.c:15191 src/qemu/qemu_driver.c:15267
 msgid "cpuacct parse error"
 msgstr "cpuacct పార్స్ దోషం"
 
-#: src/qemu/qemu_driver.c:15240
+#: src/qemu/qemu_driver.c:15244
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
 msgstr "start_cpu %d అనునది గరిష్ట %d కన్నా పెద్దది"
 
-#: src/qemu/qemu_driver.c:15340
+#: src/qemu/qemu_driver.c:15344
 msgid "cgroup CPUACCT controller is not mounted"
 msgstr "cgroup CPUACCT నియంత్రిక మౌంట్ కాలేదు"
 
-#: src/qemu/qemu_driver.c:15370
+#: src/qemu/qemu_driver.c:15374
 msgid "Duration not supported. Use 0 for now"
 msgstr "నిడివి తోడ్పాటునీయదు. ఇప్పటికి 0 వుపయోగించు"
 
-#: src/qemu/qemu_driver.c:15378
+#: src/qemu/qemu_driver.c:15382
 #, c-format
 msgid "Unknown suspend target: %u"
 msgstr "తెలియని సస్పెండ్ లక్ష్యం: %u"
 
-#: src/qemu/qemu_driver.c:15401
+#: src/qemu/qemu_driver.c:15405
 msgid "Unable to suspend domain due to missing system_wakeup monitor command"
 msgstr "system_wakeup మానిటర్ ఆదేశం దొరకని కారణంగా డొమైన్‌ను సస్పెండ్ చేయలేక పోతోంది"
 
-#: src/qemu/qemu_driver.c:15411
+#: src/qemu/qemu_driver.c:15415
 msgid "S3 state is disabled for this domain"
 msgstr "S3 స్థితి ఈ డొమైన్ కొరకు అచేతనంచేయబడెను"
 
-#: src/qemu/qemu_driver.c:15418
+#: src/qemu/qemu_driver.c:15422
 msgid "S4 state is disabled for this domain"
 msgstr "S4 స్థితి ఈ డొమైన్ కొరకు అచేతనంచేయబడెను"
 
-#: src/qemu/qemu_driver.c:15489
+#: src/qemu/qemu_driver.c:15493
 msgid "Unable to wake up domain due to missing system_wakeup monitor command"
 msgstr "system_wakeup మానిటర్ ఆదేశం దొరకని కారణంగా డొమైన్‌ను మేల్కొలపలేక పోతోంది"
 
-#: src/qemu/qemu_driver.c:15609
+#: src/qemu/qemu_driver.c:15613
 msgid "Specifying mount point is not supported for now"
 msgstr "ప్రస్తుతానికి మౌంట్ పాయింట్ తెలుపుటకు తోడ్పాటులేదు"
 
