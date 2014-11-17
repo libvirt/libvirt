@@ -1995,7 +1995,7 @@ virIsCapableVport(const char *sysfs_prefix,
 {
     char *scsi_host_path = NULL;
     char *fc_host_path = NULL;
-    int ret = false;
+    bool ret = false;
 
     if (virAsprintf(&fc_host_path,
                     "%s/host%d/%s",

@@ -2640,7 +2640,7 @@ cmdBlockResize(vshControl *ctl, const vshCmd *cmd)
     const char *path = NULL;
     unsigned long long size = 0;
     unsigned int flags = 0;
-    int ret = false;
+    bool ret = false;
 
     if (vshCommandOptStringReq(ctl, cmd, "path", (const char **) &path) < 0)
         return false;
@@ -5163,7 +5163,7 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
     virStreamPtr st = NULL;
     unsigned int screen = 0;
     unsigned int flags = 0; /* currently unused */
-    int ret = false;
+    bool ret = false;
     bool created = false;
     bool generated = false;
     char *mime = NULL;
@@ -7615,7 +7615,7 @@ static bool
 cmdInjectNMI(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
-    int ret = true;
+    bool ret = true;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -7678,7 +7678,7 @@ static bool
 cmdSendKey(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
-    int ret = false;
+    bool ret = false;
     const char *codeset_option;
     int codeset;
     unsigned int holdtime = 0;
@@ -7809,7 +7809,7 @@ static bool
 cmdSendProcessSignal(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
-    int ret = false;
+    bool ret = false;
     const char *pidstr;
     const char *signame;
     long long pid_value;
@@ -10592,7 +10592,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     int diff_mac;
     size_t i;
     int ret;
-    int functionReturn = false;
+    bool functionReturn = false;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     bool current = vshCommandOptBool(cmd, "current");
     bool config = vshCommandOptBool(cmd, "config");

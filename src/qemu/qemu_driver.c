@@ -10933,7 +10933,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     struct stat sb;
     int idx;
     int format;
-    int activeFail = false;
+    bool activeFail = false;
     virQEMUDriverConfigPtr cfg = NULL;
     char *alias = NULL;
     char *buf = NULL;
@@ -13809,7 +13809,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     unsigned int parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
     virDomainSnapshotObjPtr other = NULL;
     int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
-    int align_match = true;
+    bool align_match = true;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
 

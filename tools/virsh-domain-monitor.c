@@ -298,7 +298,7 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
     virDomainMemoryStatStruct stats[VIR_DOMAIN_MEMORY_STAT_NR];
     unsigned int nr_stats;
     size_t i;
-    int ret = false;
+    bool ret = false;
     int rv = 0;
     int period = -1;
     bool config = vshCommandOptBool(cmd, "config");

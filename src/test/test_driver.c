@@ -6835,7 +6835,7 @@ testDomainSnapshotAlignDisks(virDomainObjPtr vm,
                              unsigned int flags)
 {
     int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
-    int align_match = true;
+    bool align_match = true;
 
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
         align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;

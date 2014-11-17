@@ -584,6 +584,12 @@ sc_prohibit_loop_var_decl:
 	halt='declare loop iterators outside the for statement'		\
 	  $(_sc_search_regexp)
 
+# Use 'bool', not 'int', when assigning true or false
+sc_prohibit_int_assign_bool:
+	@prohibit='\<int\>.*= *(true|false)'				\
+	halt='use bool type for boolean values'				\
+	  $(_sc_search_regexp)
+
 # Many of the function names below came from this filter:
 # git grep -B2 '\<_('|grep -E '\.c- *[[:alpha:]_][[:alnum:]_]* ?\(.*[,;]$' \
 # |sed 's/.*\.c-  *//'|perl -pe 's/ ?\(.*//'|sort -u \

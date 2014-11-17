@@ -1182,7 +1182,7 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
     virDomainSnapshotDefPtr def = *defptr;
     int ret = -1;
     int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
-    int align_match = true;
+    bool align_match = true;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainSnapshotObjPtr other;
 

@@ -3908,7 +3908,7 @@ bool
 virCgroupSupportsCpuBW(virCgroupPtr cgroup)
 {
     char *path = NULL;
-    int ret = false;
+    bool ret = false;
 
     if (!cgroup)
         return false;

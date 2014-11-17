@@ -1182,7 +1182,7 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev,
                        const char *stubDriverName)
 {
     int result = -1;
-    int reprobe = false;
+    bool reprobe = false;
     char *stubDriverPath = NULL;
     char *driverLink = NULL;
     char *path = NULL; /* reused for different purposes */
