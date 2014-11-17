@@ -34,7 +34,6 @@
 #include "virlog.h"
 #include "virfile.h"
 #include "vircommand.h"
-#include "viraccessapicheck.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
@@ -632,67 +631,6 @@ getAdapterName(virStoragePoolSourceAdapter adapter)
 
 /*
  * Using the host# name found via wwnn/wwpn lookup in the fc_host
- * sysfs tree to get the parent 'scsi_host#'. On entry we need 'conn'
- * set. We won't get here from the autostart path since the caller
- * will return true before calling this function. For the shutdown
- * path we won't be able to delete the vport.
- */
-static char * ATTRIBUTE_NONNULL(1)
-getVhbaSCSIHostParent(virConnectPtr conn,
-                      const char *name)
-{
-    char *nodedev_name = NULL;
-    virNodeDevicePtr device = NULL;
-    char *xml = NULL;
-    virNodeDeviceDefPtr def = NULL;
-    char *vhba_parent = NULL;
-    virErrorPtr savedError = NULL;
-
-    VIR_DEBUG("conn=%p, name=%s", conn, name);
-
-    /* We get passed "host#" from the return from virGetFCHostNameByWWN,
-     * so we need to adjust that to what the nodedev lookup expects
-     */
-    if (virAsprintf(&nodedev_name, "scsi_%s", name) < 0)
-        goto cleanup;
-
-    /* Compare the scsi_host for the name with the provided parent
-     * if not the same, then fail
-     */
-    if (!(device = virNodeDeviceLookupByName(conn, nodedev_name))) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Cannot find '%s' in node device database"),
-                       nodedev_name);
-        goto cleanup;
-    }
-
-    if (!(xml = virNodeDeviceGetXMLDesc(device, 0)))
-        goto cleanup;
-
-    if (!(def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL)))
-        goto cleanup;
-
-    /* The caller checks whether the returned value is NULL or not
-     * before continuing
-     */
-    ignore_value(VIR_STRDUP(vhba_parent, def->parent));
-
- cleanup:
-    if (!vhba_parent)
-        savedError = virSaveLastError();
-    VIR_FREE(nodedev_name);
-    virNodeDeviceDefFree(def);
-    VIR_FREE(xml);
-    virNodeDeviceFree(device);
-    if (savedError) {
-        virSetError(savedError);
-        virFreeError(savedError);
-    }
-    return vhba_parent;
-}
-
-/*
- * Using the host# name found via wwnn/wwpn lookup in the fc_host
  * sysfs tree to get the parent 'scsi_host#' to ensure it matches.
  */
 static bool
@@ -709,7 +647,7 @@ checkVhbaSCSIHostParent(virConnectPtr conn,
     if (!conn)
         return true;
 
-    if (!(vhba_parent = getVhbaSCSIHostParent(conn, name)))
+    if (!(vhba_parent = virStoragePoolGetVhbaSCSIHostParent(conn, name)))
         goto cleanup;
 
     if (STRNEQ(parent_name, vhba_parent)) {
@@ -886,7 +824,7 @@ deleteVport(virConnectPtr conn,
         if (virGetSCSIHostNumber(adapter.data.fchost.parent, &parent_host) < 0)
             goto cleanup;
     } else {
-        if (!(vhba_parent = getVhbaSCSIHostParent(conn, name)))
+        if (!(vhba_parent = virStoragePoolGetVhbaSCSIHostParent(conn, name)))
             goto cleanup;
 
         if (virGetSCSIHostNumber(vhba_parent, &parent_host) < 0)

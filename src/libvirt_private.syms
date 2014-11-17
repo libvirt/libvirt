@@ -744,6 +744,7 @@ virStoragePoolDefParseString;
 virStoragePoolFormatDiskTypeToString;
 virStoragePoolFormatFileSystemNetTypeToString;
 virStoragePoolFormatFileSystemTypeToString;
+virStoragePoolGetVhbaSCSIHostParent;
 virStoragePoolLoadAllConfigs;
 virStoragePoolObjAssignDef;
 virStoragePoolObjClearVols;
