@@ -56,8 +56,6 @@ struct _udevPrivate {
     bool privileged;
 };
 
-static virNodeDeviceDriverStatePtr driverState;
-
 static int udevStrToLong_ull(char const *s,
                              char **end_ptr,
                              int base,
@@ -419,7 +417,7 @@ static int udevProcessPCI(struct udev_device *device,
     virPCIDeviceAddress addr;
     virPCIEDeviceInfoPtr pci_express = NULL;
     virPCIDevicePtr pciDev = NULL;
-    udevPrivate *priv = driverState->privateData;
+    udevPrivate *priv = driver->privateData;
     int tmpGroup, ret = -1;
     char *p;
     int rc;
@@ -1330,12 +1328,12 @@ static int udevRemoveOneDevice(struct udev_device *device)
     int ret = 0;
 
     name = udev_device_get_syspath(device);
-    dev = virNodeDeviceFindBySysfsPath(&driverState->devs, name);
+    dev = virNodeDeviceFindBySysfsPath(&driver->devs, name);
 
     if (dev != NULL) {
         VIR_DEBUG("Removing device '%s' with sysfs path '%s'",
                   dev->def->name, name);
-        virNodeDeviceObjRemove(&driverState->devs, dev);
+        virNodeDeviceObjRemove(&driver->devs, dev);
     } else {
         VIR_DEBUG("Failed to find device to remove that has udev name '%s'",
                   name);
@@ -1369,7 +1367,7 @@ static int udevSetParent(struct udev_device *device,
             goto out;
         }
 
-        dev = virNodeDeviceFindBySysfsPath(&driverState->devs,
+        dev = virNodeDeviceFindBySysfsPath(&driver->devs,
                                            parent_sysfs_path);
         if (dev != NULL) {
             if (VIR_STRDUP(def->parent, dev->def->name) < 0) {
@@ -1426,7 +1424,7 @@ static int udevAddOneDevice(struct udev_device *device)
 
     /* If this is a device change, the old definition will be freed
      * and the current definition will take its place. */
-    dev = virNodeDeviceAssignDef(&driverState->devs, def);
+    dev = virNodeDeviceAssignDef(&driver->devs, def);
 
     if (dev == NULL) {
         VIR_ERROR(_("Failed to create device for '%s'"), def->name);
@@ -1507,15 +1505,15 @@ static int nodeStateCleanup(void)
     struct udev_monitor *udev_monitor = NULL;
     struct udev *udev = NULL;
 
-    if (driverState) {
-        nodeDeviceLock(driverState);
+    if (driver) {
+        nodeDeviceLock();
 
-        priv = driverState->privateData;
+        priv = driver->privateData;
 
         if (priv->watch != -1)
             virEventRemoveHandle(priv->watch);
 
-        udev_monitor = DRV_STATE_UDEV_MONITOR(driverState);
+        udev_monitor = DRV_STATE_UDEV_MONITOR(driver);
 
         if (udev_monitor != NULL) {
             udev = udev_monitor_get_udev(udev_monitor);
@@ -1525,10 +1523,10 @@ static int nodeStateCleanup(void)
         if (udev != NULL)
             udev_unref(udev);
 
-        virNodeDeviceObjListFree(&driverState->devs);
-        nodeDeviceUnlock(driverState);
-        virMutexDestroy(&driverState->lock);
-        VIR_FREE(driverState);
+        virNodeDeviceObjListFree(&driver->devs);
+        nodeDeviceUnlock();
+        virMutexDestroy(&driver->lock);
+        VIR_FREE(driver);
         VIR_FREE(priv);
     } else {
         ret = -1;
@@ -1551,11 +1549,11 @@ static void udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
                                     void *data ATTRIBUTE_UNUSED)
 {
     struct udev_device *device = NULL;
-    struct udev_monitor *udev_monitor = DRV_STATE_UDEV_MONITOR(driverState);
+    struct udev_monitor *udev_monitor = DRV_STATE_UDEV_MONITOR(driver);
     const char *action = NULL;
     int udev_fd = -1;
 
-    nodeDeviceLock(driverState);
+    nodeDeviceLock();
     udev_fd = udev_monitor_get_fd(udev_monitor);
     if (fd != udev_fd) {
         VIR_ERROR(_("File descriptor returned by udev %d does not "
@@ -1584,7 +1582,7 @@ static void udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
 
  out:
     udev_device_unref(device);
-    nodeDeviceUnlock(driverState);
+    nodeDeviceUnlock();
     return;
 }
 
@@ -1598,7 +1596,7 @@ udevGetDMIData(union _virNodeDevCapData *data)
     struct udev_device *device = NULL;
     char *tmp = NULL;
 
-    udev = udev_monitor_get_udev(DRV_STATE_UDEV_MONITOR(driverState));
+    udev = udev_monitor_get_udev(DRV_STATE_UDEV_MONITOR(driver));
 
     device = udev_device_new_from_syspath(udev, DMI_DEVPATH);
     if (device == NULL) {
@@ -1684,7 +1682,7 @@ static int udevSetupSystemDev(void)
     udevGetDMIData(&def->caps->data);
 #endif
 
-    dev = virNodeDeviceAssignDef(&driverState->devs, def);
+    dev = virNodeDeviceAssignDef(&driver->devs, def);
     if (dev == NULL) {
         VIR_ERROR(_("Failed to create device for '%s'"), def->name);
         goto out;
@@ -1737,21 +1735,21 @@ static int nodeStateInitialize(bool privileged,
     priv->watch = -1;
     priv->privileged = privileged;
 
-    if (VIR_ALLOC(driverState) < 0) {
+    if (VIR_ALLOC(driver) < 0) {
         VIR_FREE(priv);
         ret = -1;
         goto out;
     }
 
-    if (virMutexInit(&driverState->lock) < 0) {
-        VIR_ERROR(_("Failed to initialize mutex for driverState"));
+    if (virMutexInit(&driver->lock) < 0) {
+        VIR_ERROR(_("Failed to initialize mutex for driver"));
         VIR_FREE(priv);
-        VIR_FREE(driverState);
+        VIR_FREE(driver);
         ret = -1;
         goto out;
     }
 
-    nodeDeviceLock(driverState);
+    nodeDeviceLock();
 
     /*
      * http://www.kernel.org/pub/linux/utils/kernel/hotplug/libudev/libudev-udev.html#udev-new
@@ -1776,7 +1774,7 @@ static int nodeStateInitialize(bool privileged,
     udev_monitor_enable_receiving(priv->udev_monitor);
 
     /* udev can be retrieved from udev_monitor */
-    driverState->privateData = priv;
+    driver->privateData = priv;
 
     /* We register the monitor with the event callback so we are
      * notified by udev of device changes before we enumerate existing
@@ -1808,7 +1806,7 @@ static int nodeStateInitialize(bool privileged,
     }
 
  out_unlock:
-    nodeDeviceUnlock(driverState);
+    nodeDeviceUnlock();
 
  out:
     if (ret == -1)
@@ -1823,23 +1821,20 @@ static int nodeStateReload(void)
 }
 
 
-static virDrvOpenStatus nodeDeviceOpen(virConnectPtr conn,
+static virDrvOpenStatus nodeDeviceOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                        unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (driverState == NULL)
+    if (driver == NULL)
         return VIR_DRV_OPEN_DECLINED;
-
-    conn->nodeDevicePrivateData = driverState;
 
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int nodeDeviceClose(virConnectPtr conn)
+static int nodeDeviceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    conn->nodeDevicePrivateData = NULL;
     return 0;
 }
 

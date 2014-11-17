@@ -37,8 +37,10 @@ int halNodeRegister(void);
 int udevNodeRegister(void);
 # endif
 
-void nodeDeviceLock(virNodeDeviceDriverStatePtr driver);
-void nodeDeviceUnlock(virNodeDeviceDriverStatePtr driver);
+void nodeDeviceLock(void);
+void nodeDeviceUnlock(void);
+
+extern virNodeDeviceDriverStatePtr driver;
 
 int nodedevRegister(void);
 
