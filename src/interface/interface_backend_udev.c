@@ -48,6 +48,8 @@ typedef enum {
     VIR_UDEV_IFACE_ALL
 } virUdevStatus;
 
+static struct udev_iface_driver *driver;
+
 static virInterfaceDef *udevGetIfaceDef(struct udev *udev, const char *name);
 
 static const char *
@@ -134,48 +136,21 @@ udevGetDevices(struct udev *udev, virUdevStatus status)
 }
 
 static virDrvOpenStatus
-udevInterfaceOpen(virConnectPtr conn,
+udevInterfaceOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                   unsigned int flags)
 {
-    struct udev_iface_driver *driverState = NULL;
-
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (VIR_ALLOC(driverState) < 0)
-        goto cleanup;
-
-    driverState->udev = udev_new();
-    if (!driverState->udev) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to create udev context"));
-        goto cleanup;
-    }
-
-    conn->interfacePrivateData = driverState;
+    if (!driver)
+        return VIR_DRV_OPEN_ERROR;
 
     return VIR_DRV_OPEN_SUCCESS;
-
- cleanup:
-    VIR_FREE(driverState);
-
-    return VIR_DRV_OPEN_ERROR;
 }
 
 static int
-udevInterfaceClose(virConnectPtr conn)
+udevInterfaceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    struct udev_iface_driver *driverState;
-
-    if (conn->interfacePrivateData != NULL) {
-        driverState = conn->interfacePrivateData;
-
-        udev_unref(driverState->udev);
-
-        VIR_FREE(driverState);
-    }
-
-    conn->interfacePrivateData = NULL;
     return 0;
 }
 
@@ -183,8 +158,7 @@ static int
 udevNumOfInterfacesByStatus(virConnectPtr conn, virUdevStatus status,
                             virInterfaceObjListFilter filter)
 {
-    struct udev_iface_driver *driverState = conn->interfacePrivateData;
-    struct udev *udev = udev_ref(driverState->udev);
+    struct udev *udev = udev_ref(driver->udev);
     struct udev_enumerate *enumerate = NULL;
     struct udev_list_entry *devices;
     struct udev_list_entry *dev_entry;
@@ -237,8 +211,7 @@ udevListInterfacesByStatus(virConnectPtr conn,
                            virUdevStatus status,
                            virInterfaceObjListFilter filter)
 {
-    struct udev_iface_driver *driverState = conn->interfacePrivateData;
-    struct udev *udev = udev_ref(driverState->udev);
+    struct udev *udev = udev_ref(driver->udev);
     struct udev_enumerate *enumerate = NULL;
     struct udev_list_entry *devices;
     struct udev_list_entry *dev_entry;
@@ -353,7 +326,6 @@ udevConnectListAllInterfaces(virConnectPtr conn,
                              virInterfacePtr **ifaces,
                              unsigned int flags)
 {
-    struct udev_iface_driver *driverState = conn->interfacePrivateData;
     struct udev *udev;
     struct udev_enumerate *enumerate = NULL;
     struct udev_list_entry *devices;
@@ -371,7 +343,7 @@ udevConnectListAllInterfaces(virConnectPtr conn,
         return -1;
 
     /* Grab a udev reference */
-    udev = udev_ref(driverState->udev);
+    udev = udev_ref(driver->udev);
 
     /* List all interfaces in case we support more filter flags in the future */
     enumerate = udevGetDevices(udev, VIR_UDEV_IFACE_ALL);
@@ -483,8 +455,7 @@ udevConnectListAllInterfaces(virConnectPtr conn,
 static virInterfacePtr
 udevInterfaceLookupByName(virConnectPtr conn, const char *name)
 {
-    struct udev_iface_driver *driverState = conn->interfacePrivateData;
-    struct udev *udev = udev_ref(driverState->udev);
+    struct udev *udev = udev_ref(driver->udev);
     struct udev_device *dev;
     virInterfacePtr ret = NULL;
     virInterfaceDefPtr def = NULL;
@@ -517,8 +488,7 @@ udevInterfaceLookupByName(virConnectPtr conn, const char *name)
 static virInterfacePtr
 udevInterfaceLookupByMACString(virConnectPtr conn, const char *macstr)
 {
-    struct udev_iface_driver *driverState = conn->interfacePrivateData;
-    struct udev *udev = udev_ref(driverState->udev);
+    struct udev *udev = udev_ref(driver->udev);
     struct udev_enumerate *enumerate = NULL;
     struct udev_list_entry *dev_entry;
     struct udev_device *dev;
@@ -1141,8 +1111,7 @@ static char *
 udevInterfaceGetXMLDesc(virInterfacePtr ifinfo,
                         unsigned int flags)
 {
-    struct udev_iface_driver *driverState = ifinfo->conn->interfacePrivateData;
-    struct udev *udev = udev_ref(driverState->udev);
+    struct udev *udev = udev_ref(driver->udev);
     virInterfaceDef *ifacedef;
     char *xmlstr = NULL;
 
@@ -1173,8 +1142,7 @@ udevInterfaceGetXMLDesc(virInterfacePtr ifinfo,
 static int
 udevInterfaceIsActive(virInterfacePtr ifinfo)
 {
-    struct udev_iface_driver *driverState = ifinfo->conn->interfacePrivateData;
-    struct udev *udev = udev_ref(driverState->udev);
+    struct udev *udev = udev_ref(driver->udev);
     struct udev_device *dev;
     virInterfaceDefPtr def = NULL;
     int status = -1;
@@ -1206,6 +1174,43 @@ udevInterfaceIsActive(virInterfacePtr ifinfo)
     return status;
 }
 
+
+static int
+udevStateInitialize(bool privileged ATTRIBUTE_UNUSED,
+                    virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                    void *opaque ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+
+    if (VIR_ALLOC(driver) < 0)
+        goto cleanup;
+
+    driver->udev = udev_new();
+    if (!driver->udev) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to create udev context"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+static int
+udevStateCleanup(void)
+{
+    if (!driver)
+        return -1;
+
+    udev_unref(driver->udev);
+
+    VIR_FREE(driver);
+    return 0;
+}
+
+
 static virInterfaceDriver udevIfaceDriver = {
     "udev",
     .interfaceOpen = udevInterfaceOpen, /* 1.0.0 */
@@ -1221,6 +1226,12 @@ static virInterfaceDriver udevIfaceDriver = {
     .interfaceGetXMLDesc = udevInterfaceGetXMLDesc, /* 1.0.0 */
 };
 
+static virStateDriver interfaceStateDriver = {
+    .name = "udev",
+    .stateInitialize = udevStateInitialize,
+    .stateCleanup = udevStateCleanup,
+};
+
 int
 udevIfaceRegister(void)
 {
@@ -1229,5 +1240,7 @@ udevIfaceRegister(void)
                        _("failed to register udev interface driver"));
         return -1;
     }
+    if (virRegisterStateDriver(&interfaceStateDriver) < 0)
+        return -1;
     return 0;
 }
