@@ -6476,6 +6476,54 @@ virDomainDefineXML(virConnectPtr conn, const char *xml)
 
 
 /**
+ * virDomainDefineXMLFlags:
+ * @conn: pointer to the hypervisor connection
+ * @xml: the XML description for the domain, preferably in UTF-8
+ * @flags: currently unused, pass 0
+ *
+ * Defines a domain, but does not start it.
+ * This definition is persistent, until explicitly undefined with
+ * virDomainUndefine(). A previous definition for this domain would be
+ * overridden if it already exists.
+ *
+ * Some hypervisors may prevent this operation if there is a current
+ * block copy operation on a transient domain with the same id as the
+ * domain being defined; in that case, use virDomainBlockJobAbort() to
+ * stop the block copy first.
+ *
+ * virDomainFree should be used to free the resources after the
+ * domain object is no longer needed.
+ *
+ * Returns NULL in case of error, a pointer to the domain otherwise
+ */
+virDomainPtr
+virDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, xml=%s flags=%x", conn, xml, flags);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, NULL);
+    virCheckReadOnlyGoto(conn->flags, error);
+    virCheckNonNullArgGoto(xml, error);
+
+    if (conn->driver->domainDefineXMLFlags) {
+        virDomainPtr ret;
+        ret = conn->driver->domainDefineXMLFlags(conn, xml, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+
+/**
  * virDomainUndefine:
  * @domain: pointer to a defined domain
  *

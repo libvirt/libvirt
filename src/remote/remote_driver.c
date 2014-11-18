@@ -8151,6 +8151,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainCreateWithFlags = remoteDomainCreateWithFlags, /* 0.8.2 */
     .domainCreateWithFiles = remoteDomainCreateWithFiles, /* 1.1.1 */
     .domainDefineXML = remoteDomainDefineXML, /* 0.3.0 */
+    .domainDefineXMLFlags = remoteDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = remoteDomainUndefine, /* 0.3.0 */
     .domainUndefineFlags = remoteDomainUndefineFlags, /* 0.9.4 */
     .domainAttachDevice = remoteDomainAttachDevice, /* 0.3.0 */

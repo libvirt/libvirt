@@ -1422,6 +1422,10 @@ int                     virDomainMemoryPeek (virDomainPtr dom,
  */
 virDomainPtr            virDomainDefineXML      (virConnectPtr conn,
                                                  const char *xml);
+
+virDomainPtr            virDomainDefineXMLFlags (virConnectPtr conn,
+                                                 const char *xml,
+                                                 unsigned int flags);
 int                     virDomainUndefine       (virDomainPtr domain);
 
 typedef enum {

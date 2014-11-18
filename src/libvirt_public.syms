@@ -690,4 +690,9 @@ LIBVIRT_1.2.11 {
         virDomainGetFSInfo;
 } LIBVIRT_1.2.9;
 
+LIBVIRT_1.2.12 {
+    global:
+        virDomainDefineXMLFlags;
+} LIBVIRT_1.2.11;
+
 # .... define new API here using predicted next version number ....

@@ -1062,6 +1062,15 @@ struct remote_domain_define_xml_ret {
     remote_nonnull_domain dom;
 };
 
+struct remote_domain_define_xml_flags_args {
+    remote_nonnull_string xml;
+    unsigned int flags;
+};
+
+struct remote_domain_define_xml_flags_ret {
+    remote_nonnull_domain dom;
+};
+
 struct remote_domain_undefine_args {
     remote_nonnull_domain dom;
 };
@@ -5550,5 +5559,13 @@ enum remote_procedure {
      * @generate: none
      * @acl: domain:fs_freeze
      */
-    REMOTE_PROC_DOMAIN_GET_FSINFO = 349
+    REMOTE_PROC_DOMAIN_GET_FSINFO = 349,
+
+    /**
+     * @priority: high
+     * @generate: both
+     * @acl: domain:write
+     * @acl: domain:save
+     */
+    REMOTE_PROC_DOMAIN_DEFINE_XML_FLAGS = 350
 };

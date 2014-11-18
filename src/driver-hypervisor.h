@@ -314,6 +314,10 @@ typedef int
 typedef virDomainPtr
 (*virDrvDomainDefineXML)(virConnectPtr conn,
                          const char *xml);
+typedef virDomainPtr
+(*virDrvDomainDefineXMLFlags)(virConnectPtr conn,
+                              const char *xml,
+                              unsigned int flags);
 
 typedef int
 (*virDrvDomainUndefine)(virDomainPtr dom);
@@ -1265,6 +1269,7 @@ struct _virHypervisorDriver {
     virDrvDomainCreateWithFlags domainCreateWithFlags;
     virDrvDomainCreateWithFiles domainCreateWithFiles;
     virDrvDomainDefineXML domainDefineXML;
+    virDrvDomainDefineXMLFlags domainDefineXMLFlags;
     virDrvDomainUndefine domainUndefine;
     virDrvDomainUndefineFlags domainUndefineFlags;
     virDrvDomainAttachDevice domainAttachDevice;
