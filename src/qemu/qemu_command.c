@@ -9212,11 +9212,22 @@ qemuBuildCommandLine(virConnectPtr conn,
 
                 virCommandAddArgList(cmd, "-vga", vgastr, NULL);
 
+                /* If we cannot use --device option to specify the video device
+                 * in QEMU we will fallback to the old --vga option. To get the
+                 * correct device name for the --vga option the 'qemuVideo' is
+                 * used, but to set some device attributes we need to use the
+                 * --global option and for that we need to specify the device
+                 * name the same as for --device option and for that we need to
+                 * use 'qemuDeviceVideo'.
+                 *
+                 * See 'Graphics Devices' section in docs/qdev-device-use.txt in
+                 * QEMU repository.
+                 */
+                const char *dev = qemuDeviceVideoTypeToString(primaryVideoType);
+
                 if (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
                     (def->videos[0]->vram || def->videos[0]->ram) &&
                     virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-                    const char *dev = (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL_VGA)
-                                       ? "qxl-vga" : "qxl");
                     unsigned int ram = def->videos[0]->ram;
                     unsigned int vram = def->videos[0]->vram;
 
