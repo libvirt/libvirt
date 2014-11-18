@@ -50,6 +50,12 @@
  */
 #define VIR_NETWORK_DHCP_LEASE_FILE_SIZE_MAX (32 * 1024 * 1024)
 
+/*
+ * Use this when passing possibly-NULL strings to printf-a-likes.
+ * Required for unknown parameters during init call.
+ */
+#define EMPTY_STR(s) ((s) ? (s) : "*")
+
 static const char *program_name;
 
 /* Display version information. */
@@ -65,7 +71,7 @@ usage(int status)
     if (status) {
         fprintf(stderr, _("%s: try --help for more details\n"), program_name);
     } else {
-        printf(_("Usage: %s add|old|del mac|clientid ip [hostname]\n"
+        printf(_("Usage: %s add|old|del|init mac|clientid ip [hostname]\n"
                  "Designed for use with 'dnsmasq --dhcp-script'\n"
                  "Refer to man page of dnsmasq for more details'\n"),
                program_name);
@@ -89,6 +95,7 @@ enum virLeaseActionFlags {
     VIR_LEASE_ACTION_ADD,       /* Create new lease */
     VIR_LEASE_ACTION_OLD,       /* Lease already exists, renew it */
     VIR_LEASE_ACTION_DEL,       /* Delete the lease */
+    VIR_LEASE_ACTION_INIT,      /* Tell dnsmasq of existing leases on restart */
 
     VIR_LEASE_ACTION_LAST
 };
@@ -96,7 +103,7 @@ enum virLeaseActionFlags {
 VIR_ENUM_DECL(virLeaseAction);
 
 VIR_ENUM_IMPL(virLeaseAction, VIR_LEASE_ACTION_LAST,
-              "add", "old", "del");
+              "add", "old", "del", "init");
 
 int
 main(int argc, char **argv)
@@ -107,12 +114,15 @@ main(int argc, char **argv)
     char *custom_lease_file = NULL;
     const char *ip = NULL;
     const char *mac = NULL;
+    const char *ip_tmp = NULL;
+    const char *leases_str = NULL;
+    const char *server_duid_tmp = NULL;
     const char *iaid = virGetEnvAllowSUID("DNSMASQ_IAID");
     const char *clientid = virGetEnvAllowSUID("DNSMASQ_CLIENT_ID");
     const char *interface = virGetEnvAllowSUID("DNSMASQ_INTERFACE");
     const char *exptime_tmp = virGetEnvAllowSUID("DNSMASQ_LEASE_EXPIRES");
     const char *hostname = virGetEnvAllowSUID("DNSMASQ_SUPPLIED_HOSTNAME");
-    const char *leases_str = NULL;
+    const char *server_duid = virGetEnvAllowSUID("DNSMASQ_SERVER_DUID");
     long long currtime = 0;
     long long expirytime = 0;
     size_t i = 0;
@@ -120,7 +130,6 @@ main(int argc, char **argv)
     int pid_file_fd = -1;
     int rv = EXIT_FAILURE;
     int custom_lease_file_len = 0;
-    bool add = false;
     bool delete = false;
     virJSONValuePtr lease_new = NULL;
     virJSONValuePtr lease_tmp = NULL;
@@ -156,16 +165,17 @@ main(int argc, char **argv)
         }
     }
 
-    if (argc != 4 && argc != 5) {
+    if (argc != 4 && argc != 5 && argc != 2) {
         /* Refer man page of dnsmasq --dhcp-script for more details */
         usage(EXIT_FAILURE);
     }
 
     /* Make sure dnsmasq knows the interface. The interface name is not known
-     * when dnsmasq (re)starts and throws 'del' events for expired leases.
-     * So, if any old lease has expired, it will be automatically removed the
-     * next time this program is invoked */
-    if (!interface)
+     * via env variable set by dnsmasq when dnsmasq (re)starts and throws 'del'
+     * events for expired leases. So, libvirtd sets another env var for this
+     * purpose */
+    if (!interface &&
+        !(interface = virGetEnvAllowSUID("VIR_BRIDGE_NAME")))
         goto cleanup;
 
     ip = argv[3];
@@ -176,15 +186,22 @@ main(int argc, char **argv)
     if (argc == 5)
         hostname = argv[4];
 
-    if (VIR_STRDUP(exptime, exptime_tmp) < 0)
-        goto cleanup;
+    /* In case hostname is still unknown, use the last known one */
+    if (!hostname)
+        hostname = virGetEnvAllowSUID("DNSMASQ_OLD_HOSTNAME");
 
-    /* Removed extraneous trailing space in DNSMASQ_LEASE_EXPIRES (dnsmasq < 2.52) */
-    if (exptime[strlen(exptime) - 1] == ' ')
-        exptime[strlen(exptime) - 1] = '\0';
+    if (exptime_tmp) {
+        if (VIR_STRDUP(exptime, exptime_tmp) < 0)
+            goto cleanup;
+
+        /* Removed extraneous trailing space in DNSMASQ_LEASE_EXPIRES
+         * (dnsmasq < 2.52) */
+        if (exptime[strlen(exptime) - 1] == ' ')
+            exptime[strlen(exptime) - 1] = '\0';
+    }
 
     /* Check if it is an IPv6 lease */
-    if (virGetEnvAllowSUID("DNSMASQ_IAID")) {
+    if (iaid) {
         mac = virGetEnvAllowSUID("DNSMASQ_MAC");
         clientid = argv[2];
     }
@@ -234,7 +251,6 @@ main(int argc, char **argv)
             delete = true;
             if (action == VIR_LEASE_ACTION_ADD ||
                 action == VIR_LEASE_ACTION_OLD) {
-                add = true;
                 /* Create new lease */
                 if (!(lease_new = virJSONValueNewObject())) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -242,10 +258,11 @@ main(int argc, char **argv)
                     goto cleanup;
                 }
 
-                if (virStrToLong_ll(exptime, NULL, 10, &expirytime) < 0) {
+                if (!exptime ||
+                    virStrToLong_ll(exptime, NULL, 10, &expirytime) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("Unable to convert lease expiry time to long long: %s"),
-                                   exptime);
+                                   NULLSTR(exptime));
                     goto cleanup;
                 }
 
@@ -259,11 +276,13 @@ main(int argc, char **argv)
                     goto cleanup;
                 if (clientid && virJSONValueObjectAppendString(lease_new, "client-id", clientid) < 0)
                     goto cleanup;
+                if (server_duid && virJSONValueObjectAppendString(lease_new, "server-duid", server_duid) < 0)
+                    goto cleanup;
                 if (expirytime && virJSONValueObjectAppendNumberLong(lease_new, "expiry-time", expirytime) < 0)
                     goto cleanup;
             }
         }
-    } else {
+    } else if (action != VIR_LEASE_ACTION_INIT) {
         fprintf(stderr, _("Unsupported action: %s\n"),
                 virLeaseActionTypeToString(action));
         exit(EXIT_FAILURE);
@@ -292,8 +311,6 @@ main(int argc, char **argv)
 
             i = 0;
             while (i < virJSONValueArraySize(leases_array)) {
-                const char *ip_tmp = NULL;
-                long long expirytime_tmp = -1;
 
                 if (!(lease_tmp = virJSONValueArrayGet(leases_array, i))) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -302,14 +319,13 @@ main(int argc, char **argv)
                 }
 
                 if (!(ip_tmp = virJSONValueObjectGetString(lease_tmp, "ip-address")) ||
-                    (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time", &expirytime_tmp) < 0)) {
+                    (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time", &expirytime) < 0)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("failed to parse json"));
                     goto cleanup;
                 }
-
                 /* Check whether lease has expired or not */
-                if (expirytime_tmp < currtime) {
+                if (expirytime < currtime) {
                     i++;
                     continue;
                 }
@@ -318,6 +334,25 @@ main(int argc, char **argv)
                 if (delete && STREQ(ip_tmp, ip)) {
                     i++;
                     continue;
+                }
+
+                if (strchr(ip_tmp, ':')) {
+                    /* This is an ipv6 lease */
+                    if ((server_duid_tmp
+                         = virJSONValueObjectGetString(lease_tmp, "server-duid"))) {
+                        if (!server_duid) {
+                            /* Control reaches here when the 'action' is not for an
+                             * ipv6 lease or, for some weird reason the env var
+                             * DNSMASQ_SERVER_DUID wasn't set*/
+                            server_duid = server_duid_tmp;
+                        }
+                    } else {
+                        /* Inject server-duid into those ipv6 leases which
+                         * didn't have it previously, for example, those
+                         * created by leaseshelper from libvirt 1.2.6 */
+                        if (virJSONValueObjectAppendString(lease_tmp, "server-duid", server_duid) < 0)
+                            goto cleanup;
+                    }
                 }
 
                 /* Move old lease to new array */
@@ -332,25 +367,80 @@ main(int argc, char **argv)
         }
     }
 
-    if (add) {
+    switch ((enum virLeaseActionFlags) action) {
+    case VIR_LEASE_ACTION_INIT:
+        /* Man page of dnsmasq says: the script (helper program, in our case)
+         * should write the saved state of the lease database, in dnsmasq
+         * leasefile format, to stdout and exit with zero exit code, when
+         * called with argument init. Format:
+         * $expirytime $mac $ip $hostname $clientid # For all ipv4 leases
+         * duid $server-duid # If DHCPv6 is present
+         * $expirytime $iaid $ip $hostname $clientduid # For all ipv6 leases */
+
+        /* Traversing the ipv4 leases */
+        for (i = 0; i < virJSONValueArraySize(leases_array_new); i++) {
+            lease_tmp = virJSONValueArrayGet(leases_array_new, i);
+            if (!(ip_tmp = virJSONValueObjectGetString(lease_tmp, "ip-address"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("failed to parse json"));
+                goto cleanup;
+            }
+            if (!strchr(ip_tmp, ':')) {
+                virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time", &expirytime);
+                printf("%lld %s %s %s %s\n",
+                       expirytime,
+                       virJSONValueObjectGetString(lease_tmp, "mac-address"),
+                       virJSONValueObjectGetString(lease_tmp, "ip-address"),
+                       EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "hostname")),
+                       EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "client-id")));
+            }
+        }
+
+        /* Traversing the ipv6 leases */
+        if (server_duid) {
+            printf("duid %s\n", server_duid);
+            for (i = 0; i < virJSONValueArraySize(leases_array_new); i++) {
+                lease_tmp = virJSONValueArrayGet(leases_array_new, i);
+                if (!(ip_tmp = virJSONValueObjectGetString(lease_tmp, "ip-address"))) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("failed to parse json"));
+                    goto cleanup;
+                }
+                if (strchr(ip_tmp, ':')) {
+                    virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time", &expirytime);
+                    printf("%lld %s %s %s %s\n",
+                           expirytime,
+                           virJSONValueObjectGetString(lease_tmp, "iaid"),
+                           virJSONValueObjectGetString(lease_tmp, "ip-address"),
+                           EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "hostname")),
+                           EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "client-id")));
+                }
+            }
+        }
+
+        break;
+
+    case VIR_LEASE_ACTION_OLD:
+    case VIR_LEASE_ACTION_ADD:
         if (virJSONValueArrayAppend(leases_array_new, lease_new) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to create json"));
             goto cleanup;
         }
         lease_new = NULL;
-    }
 
-    if (!(leases_str = virJSONValueToString(leases_array_new, true))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("empty json array"));
-        goto cleanup;
-    }
+    default:
+        if (!(leases_str = virJSONValueToString(leases_array_new, true))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("empty json array"));
+            goto cleanup;
+        }
 
-    /* Write to file */
-    if (virFileRewrite(custom_lease_file, 0644,
-                       customLeaseRewriteFile, &leases_str) < 0)
-        goto cleanup;
+        /* Write to file */
+        if (virFileRewrite(custom_lease_file, 0644,
+                           customLeaseRewriteFile, &leases_str) < 0)
+            goto cleanup;
+    }
 
     rv = EXIT_SUCCESS;
 

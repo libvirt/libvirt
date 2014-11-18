@@ -1299,7 +1299,10 @@ networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
 
     cmd = virCommandNew(dnsmasqCapsGetBinaryPath(caps));
     virCommandAddArgFormat(cmd, "--conf-file=%s", configfile);
+    /* Libvirt gains full control of leases database */
+    virCommandAddArgFormat(cmd, "--leasefile-ro");
     virCommandAddArgFormat(cmd, "--dhcp-script=%s", leaseshelper_path);
+    virCommandAddEnvPair(cmd, "VIR_BRIDGE_NAME", network->def->bridge);
 
     *cmdout = cmd;
     ret = 0;
