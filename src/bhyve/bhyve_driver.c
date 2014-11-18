@@ -485,7 +485,7 @@ bhyveDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 }
 
 static virDomainPtr
-bhyveDomainDefineXML(virConnectPtr conn, const char *xml)
+bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 {
     bhyveConnPtr privconn = conn->privateData;
     virDomainPtr dom = NULL;
@@ -494,6 +494,8 @@ bhyveDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainObjPtr vm = NULL;
     virObjectEventPtr event = NULL;
     virCapsPtr caps = NULL;
+
+    virCheckFlags(0, NULL);
 
     caps = bhyveDriverGetCapabilities(privconn);
     if (!caps)
@@ -504,7 +506,7 @@ bhyveDomainDefineXML(virConnectPtr conn, const char *xml)
                                        VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
-    if (virDomainDefineXMLEnsureACL(conn, def) < 0)
+    if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
 
     if (bhyveDomainAssignAddresses(def, NULL) < 0)
@@ -544,6 +546,12 @@ bhyveDomainDefineXML(virConnectPtr conn, const char *xml)
         virObjectEventStateQueue(privconn->domainEventState, event);
 
     return dom;
+}
+
+static virDomainPtr
+bhyveDomainDefineXML(virConnectPtr conn, const char *xml)
+{
+    return bhyveDomainDefineXMLFlags(conn, xml, 0);
 }
 
 static int
@@ -1438,6 +1446,7 @@ static virHypervisorDriver bhyveDriver = {
     .domainLookupByName = bhyveDomainLookupByName, /* 1.2.2 */
     .domainLookupByID = bhyveDomainLookupByID, /* 1.2.3 */
     .domainDefineXML = bhyveDomainDefineXML, /* 1.2.2 */
+    .domainDefineXMLFlags = bhyveDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = bhyveDomainUndefine, /* 1.2.2 */
     .domainGetXMLDesc = bhyveDomainGetXMLDesc, /* 1.2.2 */
     .domainIsActive = bhyveDomainIsActive, /* 1.2.2 */

@@ -1840,7 +1840,8 @@ vboxAttachSharedFolder(virDomainDefPtr def, vboxGlobalData *data, IMachine *mach
     }
 }
 
-static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml)
+static virDomainPtr
+vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 {
     vboxGlobalData *data = conn->privateData;
     IMachine       *machine     = NULL;
@@ -1850,6 +1851,8 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml)
     nsresult rc;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainPtr ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     if (!data->vboxObj)
         return ret;
@@ -1976,6 +1979,12 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml)
     VBOX_RELEASE(machine);
     virDomainDefFree(def);
     return NULL;
+}
+
+static virDomainPtr
+vboxDomainDefineXML(virConnectPtr conn, const char *xml)
+{
+    return vboxDomainDefineXMLFlags(conn, xml, 0);
 }
 
 static void
@@ -7617,6 +7626,7 @@ virHypervisorDriver vboxCommonDriver = {
     .domainCreate = vboxDomainCreate, /* 0.6.3 */
     .domainCreateWithFlags = vboxDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = vboxDomainDefineXML, /* 0.6.3 */
+    .domainDefineXMLFlags = vboxDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = vboxDomainUndefine, /* 0.6.3 */
     .domainUndefineFlags = vboxDomainUndefineFlags, /* 0.9.5 */
     .domainAttachDevice = vboxDomainAttachDevice, /* 0.6.3 */

@@ -977,12 +977,14 @@ openvzDomainSetNetworkConfig(virConnectPtr conn,
 
 
 static virDomainPtr
-openvzDomainDefineXML(virConnectPtr conn, const char *xml)
+openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 {
     struct openvz_driver *driver =  conn->privateData;
     virDomainDefPtr vmdef = NULL;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
+
+    virCheckFlags(0, NULL);
 
     openvzDriverLock(driver);
     if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
@@ -1057,6 +1059,12 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
         virObjectUnlock(vm);
     openvzDriverUnlock(driver);
     return dom;
+}
+
+static virDomainPtr
+openvzDomainDefineXML(virConnectPtr conn, const char *xml)
+{
+    return openvzDomainDefineXMLFlags(conn, xml, 0);
 }
 
 static virDomainPtr
@@ -2596,6 +2604,7 @@ static virHypervisorDriver openvzDriver = {
     .domainCreate = openvzDomainCreate, /* 0.3.1 */
     .domainCreateWithFlags = openvzDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = openvzDomainDefineXML, /* 0.3.3 */
+    .domainDefineXMLFlags = openvzDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = openvzDomainUndefine, /* 0.3.3 */
     .domainUndefineFlags = openvzDomainUndefineFlags, /* 0.9.4 */
     .domainGetAutostart = openvzDomainGetAutostart, /* 0.4.6 */

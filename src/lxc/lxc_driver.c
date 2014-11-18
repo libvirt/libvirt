@@ -444,7 +444,8 @@ static int lxcConnectNumOfDefinedDomains(virConnectPtr conn)
 
 
 
-static virDomainPtr lxcDomainDefineXML(virConnectPtr conn, const char *xml)
+static virDomainPtr
+lxcDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 {
     virLXCDriverPtr driver = conn->privateData;
     virDomainDefPtr def = NULL;
@@ -455,6 +456,8 @@ static virDomainPtr lxcDomainDefineXML(virConnectPtr conn, const char *xml)
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
     virCapsPtr caps = NULL;
 
+    virCheckFlags(0, NULL);
+
     if (!(caps = virLXCDriverGetCapabilities(driver, false)))
         goto cleanup;
 
@@ -463,7 +466,7 @@ static virDomainPtr lxcDomainDefineXML(virConnectPtr conn, const char *xml)
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (virDomainDefineXMLEnsureACL(conn, def) < 0)
+    if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
 
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
@@ -509,6 +512,12 @@ static virDomainPtr lxcDomainDefineXML(virConnectPtr conn, const char *xml)
     virObjectUnref(caps);
     virObjectUnref(cfg);
     return dom;
+}
+
+static virDomainPtr
+lxcDomainDefineXML(virConnectPtr conn, const char *xml)
+{
+    return lxcDomainDefineXMLFlags(conn, xml, 0);
 }
 
 static int lxcDomainUndefineFlags(virDomainPtr dom,
@@ -5745,6 +5754,7 @@ static virHypervisorDriver lxcDriver = {
     .domainCreateWithFlags = lxcDomainCreateWithFlags, /* 0.8.2 */
     .domainCreateWithFiles = lxcDomainCreateWithFiles, /* 1.1.1 */
     .domainDefineXML = lxcDomainDefineXML, /* 0.4.2 */
+    .domainDefineXMLFlags = lxcDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = lxcDomainUndefine, /* 0.4.2 */
     .domainUndefineFlags = lxcDomainUndefineFlags, /* 0.9.4 */
     .domainAttachDevice = lxcDomainAttachDevice, /* 1.0.1 */

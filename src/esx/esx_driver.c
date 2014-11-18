@@ -3019,7 +3019,7 @@ esxDomainCreate(virDomainPtr domain)
 
 
 static virDomainPtr
-esxDomainDefineXML(virConnectPtr conn, const char *xml)
+esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 {
     esxPrivate *priv = conn->privateData;
     virDomainDefPtr def = NULL;
@@ -3044,6 +3044,8 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
     char *taskInfoErrorMessage = NULL;
     virDomainPtr domain = NULL;
     const char *src;
+
+    virCheckFlags(0, NULL);
 
     memset(&data, 0, sizeof(data));
 
@@ -3239,7 +3241,11 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
     return domain;
 }
 
-
+static virDomainPtr
+esxDomainDefineXML(virConnectPtr conn, const char *xml)
+{
+    return esxDomainDefineXMLFlags(conn, xml, 0);
+}
 
 static int
 esxDomainUndefineFlags(virDomainPtr domain,
@@ -5183,6 +5189,7 @@ static virHypervisorDriver esxDriver = {
     .domainCreate = esxDomainCreate, /* 0.7.0 */
     .domainCreateWithFlags = esxDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = esxDomainDefineXML, /* 0.7.2 */
+    .domainDefineXMLFlags = esxDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = esxDomainUndefine, /* 0.7.1 */
     .domainUndefineFlags = esxDomainUndefineFlags, /* 0.9.4 */
     .domainGetAutostart = esxDomainGetAutostart, /* 0.9.0 */

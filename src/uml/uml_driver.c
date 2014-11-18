@@ -2075,12 +2075,15 @@ static int umlDomainCreate(virDomainPtr dom)
     return umlDomainCreateWithFlags(dom, 0);
 }
 
-static virDomainPtr umlDomainDefineXML(virConnectPtr conn, const char *xml)
+static virDomainPtr
+umlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 {
     struct uml_driver *driver = conn->privateData;
     virDomainDefPtr def;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
+
+    virCheckFlags(0, NULL);
 
     umlDriverLock(driver);
     if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
@@ -2088,7 +2091,7 @@ static virDomainPtr umlDomainDefineXML(virConnectPtr conn, const char *xml)
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (virDomainDefineXMLEnsureACL(conn, def) < 0)
+    if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains, def,
@@ -2115,6 +2118,12 @@ static virDomainPtr umlDomainDefineXML(virConnectPtr conn, const char *xml)
         virObjectUnlock(vm);
     umlDriverUnlock(driver);
     return dom;
+}
+
+static virDomainPtr
+umlDomainDefineXML(virConnectPtr conn, const char *xml)
+{
+    return umlDomainDefineXMLFlags(conn, xml, 0);
 }
 
 static int umlDomainUndefineFlags(virDomainPtr dom,
@@ -2958,6 +2967,7 @@ static virHypervisorDriver umlDriver = {
     .domainCreate = umlDomainCreate, /* 0.5.0 */
     .domainCreateWithFlags = umlDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = umlDomainDefineXML, /* 0.5.0 */
+    .domainDefineXMLFlags = umlDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = umlDomainUndefine, /* 0.5.0 */
     .domainUndefineFlags = umlDomainUndefineFlags, /* 0.9.4 */
     .domainAttachDevice = umlDomainAttachDevice, /* 0.8.4 */

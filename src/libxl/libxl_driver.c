@@ -2367,7 +2367,7 @@ libxlDomainCreate(virDomainPtr dom)
 }
 
 static virDomainPtr
-libxlDomainDefineXML(virConnectPtr conn, const char *xml)
+libxlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
@@ -2377,12 +2377,14 @@ libxlDomainDefineXML(virConnectPtr conn, const char *xml)
     virObjectEventPtr event = NULL;
     virDomainDefPtr oldDef = NULL;
 
+    virCheckFlags(0, NULL);
+
     if (!(def = virDomainDefParseString(xml, cfg->caps, driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (virDomainDefineXMLEnsureACL(conn, def) < 0)
+    if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains, def,
@@ -2419,6 +2421,12 @@ libxlDomainDefineXML(virConnectPtr conn, const char *xml)
         libxlDomainEventQueue(driver, event);
     virObjectUnref(cfg);
     return dom;
+}
+
+static virDomainPtr
+libxlDomainDefineXML(virConnectPtr conn, const char *xml)
+{
+    return libxlDomainDefineXMLFlags(conn, xml, 0);
 }
 
 static int
@@ -4783,6 +4791,7 @@ static virHypervisorDriver libxlDriver = {
     .domainCreate = libxlDomainCreate, /* 0.9.0 */
     .domainCreateWithFlags = libxlDomainCreateWithFlags, /* 0.9.0 */
     .domainDefineXML = libxlDomainDefineXML, /* 0.9.0 */
+    .domainDefineXMLFlags = libxlDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = libxlDomainUndefine, /* 0.9.0 */
     .domainUndefineFlags = libxlDomainUndefineFlags, /* 0.9.4 */
     .domainAttachDevice = libxlDomainAttachDevice, /* 0.9.2 */

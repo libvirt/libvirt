@@ -2927,8 +2927,9 @@ static int testConnectListDefinedDomains(virConnectPtr conn,
     return n;
 }
 
-static virDomainPtr testDomainDefineXML(virConnectPtr conn,
-                                        const char *xml)
+static virDomainPtr testDomainDefineXMLFlags(virConnectPtr conn,
+                                             const char *xml,
+                                             unsigned int flags)
 {
     testConnPtr privconn = conn->privateData;
     virDomainPtr ret = NULL;
@@ -2936,6 +2937,8 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
     virDomainObjPtr dom = NULL;
     virObjectEventPtr event = NULL;
     virDomainDefPtr oldDef = NULL;
+
+    virCheckFlags(0, NULL);
 
     testDriverLock(privconn);
     if ((def = virDomainDefParseString(xml, privconn->caps, privconn->xmlopt,
@@ -2973,6 +2976,12 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
         testObjectEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
+}
+
+static virDomainPtr
+testDomainDefineXML(virConnectPtr conn, const char *xml)
+{
+    return testDomainDefineXMLFlags(conn, xml, 0);
 }
 
 static char *testDomainGetMetadata(virDomainPtr dom,
@@ -7372,6 +7381,7 @@ static virHypervisorDriver testDriver = {
     .domainCreate = testDomainCreate, /* 0.1.11 */
     .domainCreateWithFlags = testDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = testDomainDefineXML, /* 0.1.11 */
+    .domainDefineXMLFlags = testDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = testDomainUndefine, /* 0.1.11 */
     .domainUndefineFlags = testDomainUndefineFlags, /* 0.9.4 */
     .domainGetAutostart = testDomainGetAutostart, /* 0.3.2 */

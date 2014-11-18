@@ -1714,12 +1714,15 @@ xenapiDomainCreate(virDomainPtr dom)
  * Returns 0 on success or -1 in case of error
  */
 static virDomainPtr
-xenapiDomainDefineXML(virConnectPtr conn, const char *xml)
+xenapiDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 {
     struct _xenapiPrivate *priv = conn->privateData;
     xen_vm_record *record = NULL;
     xen_vm vm = NULL;
     virDomainPtr domP = NULL;
+
+    virCheckFlags(0, NULL);
+
     if (!priv->caps)
         return NULL;
     virDomainDefPtr defPtr = virDomainDefParseString(xml,
@@ -1750,6 +1753,12 @@ xenapiDomainDefineXML(virConnectPtr conn, const char *xml)
         xen_vm_free(vm);
     virDomainDefFree(defPtr);
     return domP;
+}
+
+static virDomainPtr
+xenapiDomainDefineXML(virConnectPtr conn, const char *xml)
+{
+    return xenapiDomainDefineXMLFlags(conn, xml, 0);
 }
 
 /*
@@ -2002,6 +2011,7 @@ static virHypervisorDriver xenapiDriver = {
     .domainCreate = xenapiDomainCreate, /* 0.8.0 */
     .domainCreateWithFlags = xenapiDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = xenapiDomainDefineXML, /* 0.8.0 */
+    .domainDefineXMLFlags = xenapiDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = xenapiDomainUndefine, /* 0.8.0 */
     .domainUndefineFlags = xenapiDomainUndefineFlags, /* 0.9.5 */
     .domainGetAutostart = xenapiDomainGetAutostart, /* 0.8.0 */

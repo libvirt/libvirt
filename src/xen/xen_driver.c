@@ -1882,18 +1882,20 @@ xenUnifiedDomainCreate(virDomainPtr dom)
 }
 
 static virDomainPtr
-xenUnifiedDomainDefineXML(virConnectPtr conn, const char *xml)
+xenUnifiedDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = conn->privateData;
     virDomainDefPtr def = NULL;
     virDomainPtr ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     if (!(def = virDomainDefParseString(xml, priv->caps, priv->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (virDomainDefineXMLEnsureACL(conn, def) < 0)
+    if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
 
     if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
@@ -1913,6 +1915,12 @@ xenUnifiedDomainDefineXML(virConnectPtr conn, const char *xml)
  cleanup:
     virDomainDefFree(def);
     return ret;
+}
+
+static virDomainPtr
+xenUnifiedDomainDefineXML(virConnectPtr conn, const char *xml)
+{
+    return xenUnifiedDomainDefineXMLFlags(conn, xml, 0);
 }
 
 static int
@@ -2796,6 +2804,7 @@ static virHypervisorDriver xenUnifiedDriver = {
     .domainCreate = xenUnifiedDomainCreate, /* 0.1.1 */
     .domainCreateWithFlags = xenUnifiedDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = xenUnifiedDomainDefineXML, /* 0.1.1 */
+    .domainDefineXMLFlags = xenUnifiedDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = xenUnifiedDomainUndefine, /* 0.1.1 */
     .domainUndefineFlags = xenUnifiedDomainUndefineFlags, /* 0.9.4 */
     .domainAttachDevice = xenUnifiedDomainAttachDevice, /* 0.1.9 */

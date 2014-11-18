@@ -6663,7 +6663,7 @@ qemuDomainCreate(virDomainPtr dom)
     return qemuDomainCreateWithFlags(dom, 0);
 }
 
-static virDomainPtr qemuDomainDefineXML(virConnectPtr conn, const char *xml)
+static virDomainPtr qemuDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
     virDomainDefPtr def = NULL;
@@ -6675,6 +6675,8 @@ static virDomainPtr qemuDomainDefineXML(virConnectPtr conn, const char *xml)
     virQEMUDriverConfigPtr cfg;
     virCapsPtr caps = NULL;
 
+    virCheckFlags(0, NULL);
+
     cfg = virQEMUDriverGetConfig(driver);
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
@@ -6685,7 +6687,7 @@ static virDomainPtr qemuDomainDefineXML(virConnectPtr conn, const char *xml)
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (virDomainDefineXMLEnsureACL(conn, def) < 0)
+    if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
 
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
@@ -6754,6 +6756,12 @@ static virDomainPtr qemuDomainDefineXML(virConnectPtr conn, const char *xml)
     virObjectUnref(caps);
     virObjectUnref(cfg);
     return dom;
+}
+
+static virDomainPtr
+qemuDomainDefineXML(virConnectPtr conn, const char *xml)
+{
+    return qemuDomainDefineXMLFlags(conn, xml, 0);
 }
 
 static int
@@ -18892,6 +18900,7 @@ static virHypervisorDriver qemuDriver = {
     .domainCreate = qemuDomainCreate, /* 0.2.0 */
     .domainCreateWithFlags = qemuDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = qemuDomainDefineXML, /* 0.2.0 */
+    .domainDefineXMLFlags = qemuDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = qemuDomainUndefine, /* 0.2.0 */
     .domainUndefineFlags = qemuDomainUndefineFlags, /* 0.9.4 */
     .domainAttachDevice = qemuDomainAttachDevice, /* 0.4.1 */
