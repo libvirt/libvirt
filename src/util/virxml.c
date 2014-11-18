@@ -1082,3 +1082,82 @@ virXMLInjectNamespace(xmlNodePtr node,
 
     return 0;
 }
+
+static void catchRNGError(void *ctx,
+                          const char *msg,
+                          ...)
+{
+    virBufferPtr buf = ctx;
+    va_list args;
+
+    va_start(args, msg);
+    VIR_WARNINGS_NO_PRINTF;
+    virBufferVasprintf(buf, msg, args);
+    VIR_WARNINGS_RESET;
+    va_end(args);
+}
+
+
+static void ignoreRNGError(void *ctx ATTRIBUTE_UNUSED,
+                           const char *msg ATTRIBUTE_UNUSED,
+                           ...)
+{}
+
+
+int
+virXMLValidateAgainstSchema(const char *schemafile,
+                            xmlDocPtr doc)
+{
+    xmlRelaxNGParserCtxtPtr rngParser = NULL;
+    xmlRelaxNGPtr rng = NULL;
+    xmlRelaxNGValidCtxtPtr rngValid = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
+
+    if (!(rngParser = xmlRelaxNGNewParserCtxt(schemafile))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to create RNG parser for %s"),
+                       schemafile);
+        goto cleanup;
+    }
+
+    xmlRelaxNGSetParserErrors(rngParser,
+                              catchRNGError,
+                              ignoreRNGError,
+                              &buf);
+
+    if (!(rng = xmlRelaxNGParse(rngParser))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to parse RNG %s: %s"),
+                       schemafile, virBufferCurrentContent(&buf));
+        goto cleanup;
+    }
+
+    if (!(rngValid = xmlRelaxNGNewValidCtxt(rng))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to create RNG validation context %s"),
+                       schemafile);
+        goto cleanup;
+    }
+
+    xmlRelaxNGSetValidErrors(rngValid,
+                             catchRNGError,
+                             ignoreRNGError,
+                             &buf);
+
+    if (xmlRelaxNGValidateDoc(rngValid, doc) != 0) {
+        virReportError(VIR_ERR_XML_INVALID_SCHEMA,
+                       _("Unable to validate doc against %s\n%s"),
+                       schemafile, virBufferCurrentContent(&buf));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    xmlRelaxNGFreeParserCtxt(rngParser);
+    xmlRelaxNGFreeValidCtxt(rngValid);
+    xmlRelaxNGFree(rng);
+    return ret;
+}

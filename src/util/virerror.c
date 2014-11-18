@@ -1285,6 +1285,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("the CPU is incompatible with host CPU: %s");
             break;
+        case VIR_ERR_XML_INVALID_SCHEMA:
+            if (info == NULL)
+                errmsg = _("XML document failed to validate against schema");
+            else
+                errmsg = _("XML document failed to validate against schema: %s");
+            break;
     }
     return errmsg;
 }

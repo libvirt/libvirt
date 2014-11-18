@@ -304,6 +304,7 @@ typedef enum {
     VIR_ERR_STORAGE_VOL_EXIST = 90,     /* the storage vol already exists */
     VIR_ERR_CPU_INCOMPATIBLE = 91,      /* given CPU is incompatible with host
                                            CPU*/
+    VIR_ERR_XML_INVALID_SCHEMA = 92,    /* XML document doens't validate against schema */
 } virErrorNumber;
 
 /**

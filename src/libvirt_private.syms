@@ -2252,6 +2252,7 @@ virXMLParseHelper;
 virXMLPickShellSafeComment;
 virXMLPropString;
 virXMLSaveFile;
+virXMLValidateAgainstSchema;
 virXPathBoolean;
 virXPathInt;
 virXPathLong;
