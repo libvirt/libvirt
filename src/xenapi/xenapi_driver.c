@@ -554,7 +554,7 @@ xenapiDomainCreateXML(virConnectPtr conn,
     virDomainDefPtr defPtr = virDomainDefParseString(xmlDesc,
                                                      priv->caps, priv->xmlopt,
                                                      1 << VIR_DOMAIN_VIRT_XEN,
-                                                     flags);
+                                                     VIR_DOMAIN_XML_INACTIVE);
     createVMRecordFromXml(conn, defPtr, &record, &vm);
     virDomainDefFree(defPtr);
     if (record) {
@@ -1728,7 +1728,7 @@ xenapiDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
     virDomainDefPtr defPtr = virDomainDefParseString(xml,
                                                      priv->caps, priv->xmlopt,
                                                      1 << VIR_DOMAIN_VIRT_XEN,
-                                                     0);
+                                                     VIR_DOMAIN_XML_INACTIVE);
     if (!defPtr)
         return NULL;
 
