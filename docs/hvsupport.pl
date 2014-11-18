@@ -205,7 +205,6 @@ foreach my $drivertable (@drivertable) {
             if ($grp ne "virStateDriver" &&
                 $grp ne "virStreamDriver") {
                 $ingrp = $grp;
-                warn "[$ingrp]";
                 $groups{$ingrp} = { apis => {}, drivers => {} };
             }
         } elsif ($ingrp) {
