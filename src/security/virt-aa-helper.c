@@ -740,7 +740,8 @@ get_definition(vahControl * ctl, const char *xmlStr)
 
     ctl->def = virDomainDefParseString(xmlStr,
                                        ctl->caps, ctl->xmlopt,
-                                       -1, VIR_DOMAIN_XML_INACTIVE);
+                                       -1,
+                                       VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (ctl->def == NULL) {
         vah_error(ctl, 0, _("could not parse XML"));
         goto exit;

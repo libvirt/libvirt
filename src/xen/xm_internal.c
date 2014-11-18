@@ -1251,7 +1251,7 @@ xenXMDomainAttachDeviceFlags(virConnectPtr conn,
     if (!(dev = virDomainDeviceDefParse(xml, entry->def,
                                         priv->caps,
                                         priv->xmlopt,
-                                        VIR_DOMAIN_XML_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
     switch (dev->type) {
@@ -1338,7 +1338,7 @@ xenXMDomainDetachDeviceFlags(virConnectPtr conn,
     if (!(dev = virDomainDeviceDefParse(xml, entry->def,
                                         priv->caps,
                                         priv->xmlopt,
-                                        VIR_DOMAIN_XML_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
     switch (dev->type) {

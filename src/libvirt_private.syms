@@ -192,6 +192,7 @@ virDomainDefCompatibleDevice;
 virDomainDefCopy;
 virDomainDefFindDevice;
 virDomainDefFormat;
+virDomainDefFormatConvertXMLFlags;
 virDomainDefFormatInternal;
 virDomainDefFree;
 virDomainDefGetDefaultEmulator;

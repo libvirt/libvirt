@@ -86,7 +86,7 @@ testCompareFiles(const char *xml, const char *vmx, int virtualHW_version)
 
     def = virDomainDefParseString(xmlData, caps, xmlopt,
                                   1 << VIR_DOMAIN_VIRT_VMWARE,
-                                  VIR_DOMAIN_XML_INACTIVE);
+                                  VIR_DOMAIN_DEF_PARSE_INACTIVE);
 
     if (def == NULL)
         goto failure;

@@ -28,10 +28,10 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
 
     if (!(def = virDomainDefParseString(inXmlData, driver.caps, driver.xmlopt,
                                         1 << VIR_DOMAIN_VIRT_BHYVE,
-                                        VIR_DOMAIN_XML_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto fail;
 
-    if (!(actual = virDomainDefFormat(def, VIR_DOMAIN_XML_INACTIVE)))
+    if (!(actual = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_INACTIVE)))
         goto fail;
 
     if (STRNEQ(outXmlData, actual)) {

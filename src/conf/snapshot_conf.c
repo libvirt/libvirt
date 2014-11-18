@@ -287,7 +287,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
             def->dom = virDomainDefParseNode(ctxt->node->doc, domainNode,
                                              caps, xmlopt,
                                              expectedVirtTypes,
-                                             VIR_DOMAIN_XML_INACTIVE);
+                                             VIR_DOMAIN_DEF_PARSE_INACTIVE);
             if (!def->dom)
                 goto cleanup;
         } else {
@@ -677,10 +677,10 @@ char *virDomainSnapshotDefFormat(const char *domain_uuid,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    virCheckFlags(VIR_DOMAIN_XML_SECURE |
-                  VIR_DOMAIN_XML_UPDATE_CPU, NULL);
+    virCheckFlags(VIR_DOMAIN_DEF_FORMAT_SECURE |
+                  VIR_DOMAIN_DEF_FORMAT_UPDATE_CPU, NULL);
 
-    flags |= VIR_DOMAIN_XML_INACTIVE;
+    flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
 
     virBufferAddLit(&buf, "<domainsnapshot>\n");
     virBufferAdjustIndent(&buf, 2);

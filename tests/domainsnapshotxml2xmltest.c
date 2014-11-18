@@ -102,7 +102,7 @@ testCompareXMLToXMLFiles(const char *inxml,
         goto cleanup;
 
     if (!(actual = virDomainSnapshotDefFormat(uuid, def,
-                                              VIR_DOMAIN_XML_SECURE,
+                                              VIR_DOMAIN_DEF_FORMAT_SECURE,
                                               internal)))
         goto cleanup;
 

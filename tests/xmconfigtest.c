@@ -74,7 +74,7 @@ testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
 
     if (!(def = virDomainDefParseString(xmlData, caps, xmlopt,
                                         1 << VIR_DOMAIN_VIRT_XEN,
-                                        VIR_DOMAIN_XML_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto fail;
 
     if (!virDomainDefCheckABIStability(def, def)) {
@@ -140,7 +140,7 @@ testCompareFormatXML(const char *xmcfg, const char *xml, int xendConfigVersion)
     if (!(def = xenParseXM(conf, priv.xendConfigVersion, priv.caps)))
         goto fail;
 
-    if (!(gotxml = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE)))
+    if (!(gotxml = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_SECURE)))
         goto fail;
 
     if (STRNEQ(xmlData, gotxml)) {

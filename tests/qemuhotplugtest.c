@@ -67,7 +67,7 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
                                                driver.caps,
                                                driver.xmlopt,
                                                QEMU_EXPECTED_VIRT_TYPES,
-                                               VIR_DOMAIN_XML_INACTIVE)))
+                                               VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
     priv = (*vm)->privateData;
@@ -177,7 +177,7 @@ testQemuHotplugCheckResult(virDomainObjPtr vm,
     char *actual;
     int ret;
 
-    actual = virDomainDefFormat(vm->def, VIR_DOMAIN_XML_SECURE);
+    actual = virDomainDefFormat(vm->def, VIR_DOMAIN_DEF_FORMAT_SECURE);
     if (!actual)
         return -1;
 
@@ -246,7 +246,7 @@ testQemuHotplug(const void *data)
     }
 
     if (test->action == ATTACH)
-        device_parse_flags = VIR_DOMAIN_XML_INACTIVE;
+        device_parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
     if (!(dev = virDomainDeviceDefParse(device_xml, vm->def,
                                         caps, driver.xmlopt,

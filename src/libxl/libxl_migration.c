@@ -242,7 +242,7 @@ libxlDomainMigrationBegin(virConnectPtr conn,
         if (!(tmpdef = virDomainDefParseString(xmlin, cfg->caps,
                                                driver->xmlopt,
                                                1 << VIR_DOMAIN_VIRT_XEN,
-                                               VIR_DOMAIN_XML_INACTIVE)))
+                                               VIR_DOMAIN_DEF_PARSE_INACTIVE)))
             goto endjob;
 
         if (!libxlDomainDefCheckABIStability(driver, vm->def, tmpdef))
@@ -256,7 +256,7 @@ libxlDomainMigrationBegin(virConnectPtr conn,
     if (!libxlDomainMigrationIsAllowed(def))
         goto endjob;
 
-    xml = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE);
+    xml = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_SECURE);
 
  endjob:
     if (!libxlDomainObjEndJob(driver, vm))
@@ -288,7 +288,7 @@ libxlDomainMigrationPrepareDef(libxlDriverPrivatePtr driver,
 
     if (!(def = virDomainDefParseString(dom_xml, cfg->caps, driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_XEN,
-                                        VIR_DOMAIN_XML_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
     if (dname) {

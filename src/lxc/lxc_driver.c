@@ -463,7 +463,7 @@ lxcDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 
     if (!(def = virDomainDefParseString(xml, caps, driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_LXC,
-                                        VIR_DOMAIN_XML_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
     if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
@@ -1040,7 +1040,7 @@ static char *lxcDomainGetXMLDesc(virDomainPtr dom,
 
     ret = virDomainDefFormat((flags & VIR_DOMAIN_XML_INACTIVE) &&
                              vm->newDef ? vm->newDef : vm->def,
-                             flags);
+                             virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
     if (vm)
@@ -1206,7 +1206,7 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
 
     if (!(def = virDomainDefParseString(xml, caps, driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_LXC,
-                                        VIR_DOMAIN_XML_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
     if (virDomainCreateXMLWithFilesEnsureACL(conn, def) < 0)
@@ -4989,7 +4989,7 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
 
     dev = dev_copy = virDomainDeviceDefParse(xml, vm->def,
                                              caps, driver->xmlopt,
-                                             VIR_DOMAIN_XML_INACTIVE);
+                                             VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (dev == NULL)
         goto cleanup;
 
@@ -5118,7 +5118,7 @@ static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
 
     dev = dev_copy = virDomainDeviceDefParse(xml, vm->def,
                                              caps, driver->xmlopt,
-                                             VIR_DOMAIN_XML_INACTIVE);
+                                             VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (dev == NULL)
         goto cleanup;
 
@@ -5231,7 +5231,7 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
 
     dev = dev_copy = virDomainDeviceDefParse(xml, vm->def,
                                              caps, driver->xmlopt,
-                                             VIR_DOMAIN_XML_INACTIVE);
+                                             VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (dev == NULL)
         goto cleanup;
 

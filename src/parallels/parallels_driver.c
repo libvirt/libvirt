@@ -670,7 +670,7 @@ parallelsDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int 
     parallelsDriverLock(privconn);
     if ((def = virDomainDefParseString(xml, privconn->caps, privconn->xmlopt,
                                        1 << VIR_DOMAIN_VIRT_PARALLELS,
-                                       VIR_DOMAIN_XML_INACTIVE)) == NULL)
+                                       VIR_DOMAIN_DEF_PARSE_INACTIVE)) == NULL)
         goto cleanup;
 
     olddom = virDomainObjListFindByUUID(privconn->domains, def->uuid);

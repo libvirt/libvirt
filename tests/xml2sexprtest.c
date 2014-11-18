@@ -37,7 +37,7 @@ testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
 
   if (!(def = virDomainDefParseString(xmlData, caps, xmlopt,
                                       1 << VIR_DOMAIN_VIRT_XEN,
-                                      VIR_DOMAIN_XML_INACTIVE)))
+                                      VIR_DOMAIN_DEF_PARSE_INACTIVE)))
       goto fail;
 
   if (!virDomainDefCheckABIStability(def, def)) {

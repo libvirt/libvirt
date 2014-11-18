@@ -1699,7 +1699,7 @@ qemuDomainDefCopy(virQEMUDriverPtr driver,
 
     if (!(ret = virDomainDefParseString(xml, caps, driver->xmlopt,
                                         QEMU_EXPECTED_VIRT_TYPES,
-                                        VIR_DOMAIN_XML_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
  cleanup:
@@ -1807,7 +1807,9 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
 
     }
 
-    ret = virDomainDefFormatInternal(def, flags, buf);
+    ret = virDomainDefFormatInternal(def,
+                                     virDomainDefFormatConvertXMLFlags(flags),
+                                     buf);
 
  cleanup:
     def->cpu = def_cpu;
@@ -2159,8 +2161,10 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(vm->def->uuid, uuidstr);
-    newxml = virDomainSnapshotDefFormat(uuidstr, snapshot->def,
-                                        QEMU_DOMAIN_FORMAT_LIVE_FLAGS, 1);
+    newxml = virDomainSnapshotDefFormat(
+        uuidstr, snapshot->def,
+        virDomainDefFormatConvertXMLFlags(QEMU_DOMAIN_FORMAT_LIVE_FLAGS),
+        1);
     if (newxml == NULL)
         return -1;
 

@@ -30,7 +30,10 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
     char *actual = NULL;
     int ret = -1;
     virDomainDefPtr def = NULL;
-    unsigned int flags = live ? 0 : VIR_DOMAIN_XML_INACTIVE;
+    unsigned int parse_flags = live ? 0 : VIR_DOMAIN_DEF_PARSE_INACTIVE;
+    unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
+    if (!live)
+        format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
 
     if (virtTestLoadFile(inxml, &inXmlData) < 0)
         goto fail;
@@ -38,7 +41,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
         goto fail;
 
     if (!(def = virDomainDefParseString(inXmlData, driver.caps, driver.xmlopt,
-                                        QEMU_EXPECTED_VIRT_TYPES, flags)))
+                                        QEMU_EXPECTED_VIRT_TYPES, parse_flags)))
         goto fail;
 
     if (!virDomainDefCheckABIStability(def, def)) {
@@ -46,7 +49,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
         goto fail;
     }
 
-    if (!(actual = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE | flags)))
+    if (!(actual = virDomainDefFormat(def, format_flags)))
         goto fail;
 
     if (STRNEQ(outXmlData, actual)) {

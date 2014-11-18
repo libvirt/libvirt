@@ -643,7 +643,7 @@ libxlDomainCreateXML(virConnectPtr conn, const char *xml,
 
     if (!(def = virDomainDefParseString(xml, cfg->caps, driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_XEN,
-                                        VIR_DOMAIN_XML_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
     if (virDomainCreateXMLEnsureACL(conn, def) < 0)
@@ -2189,7 +2189,8 @@ libxlDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     if (virDomainGetXMLDescEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    ret = virDomainDefFormat(vm->def, flags);
+    ret = virDomainDefFormat(vm->def,
+                              virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
     if (vm)
@@ -2241,7 +2242,7 @@ libxlConnectDomainXMLFromNative(virConnectPtr conn,
         goto cleanup;
     }
 
-    xml = virDomainDefFormat(def, VIR_DOMAIN_XML_INACTIVE);
+    xml = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_INACTIVE);
 
  cleanup:
     virDomainDefFree(def);
@@ -2278,7 +2279,7 @@ libxlConnectDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
     if (!(def = virDomainDefParseString(domainXml,
                                         cfg->caps, driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_XEN,
-                                        VIR_DOMAIN_XML_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
     if (!(conf = xenFormatXM(conn, def, cfg->verInfo->xen_version_major)))
@@ -2381,7 +2382,7 @@ libxlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
 
     if (!(def = virDomainDefParseString(xml, cfg->caps, driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_XEN,
-                                        VIR_DOMAIN_XML_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
     if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
@@ -3274,7 +3275,7 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
                                             cfg->caps, driver->xmlopt,
-                                            VIR_DOMAIN_XML_INACTIVE)))
+                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))
             goto endjob;
 
         /* Make a copy for updated domain. */
@@ -3291,7 +3292,7 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
         virDomainDeviceDefFree(dev);
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
                                             cfg->caps, driver->xmlopt,
-                                            VIR_DOMAIN_XML_INACTIVE)))
+                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))
             goto endjob;
 
         if (libxlDomainAttachDeviceLive(driver, priv, vm, dev) < 0)
@@ -3385,7 +3386,7 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
                                             cfg->caps, driver->xmlopt,
-                                            VIR_DOMAIN_XML_INACTIVE)))
+                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))
             goto endjob;
 
         /* Make a copy for updated domain. */
@@ -3402,7 +3403,7 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
         virDomainDeviceDefFree(dev);
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
                                             cfg->caps, driver->xmlopt,
-                                            VIR_DOMAIN_XML_INACTIVE)))
+                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))
             goto endjob;
 
         if (libxlDomainDetachDeviceLive(driver, priv, vm, dev) < 0)
@@ -3493,7 +3494,7 @@ libxlDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
                                             cfg->caps, driver->xmlopt,
-                                            VIR_DOMAIN_XML_INACTIVE)))
+                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))
             goto cleanup;
 
         /* Make a copy for updated domain. */
@@ -3512,7 +3513,7 @@ libxlDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
         virDomainDeviceDefFree(dev);
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
                                             cfg->caps, driver->xmlopt,
-                                            VIR_DOMAIN_XML_INACTIVE)))
+                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))
             goto cleanup;
 
         if ((ret = libxlDomainUpdateDeviceLive(priv, vm, dev)) < 0)

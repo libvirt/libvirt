@@ -378,7 +378,7 @@ vmwareDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
     vmwareDriverLock(driver);
     if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
                                          1 << VIR_DOMAIN_VIRT_VMWARE,
-                                         VIR_DOMAIN_XML_INACTIVE)) == NULL)
+                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)) == NULL)
         goto cleanup;
 
     /* generate vmx file */
@@ -666,7 +666,7 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
 
     if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
                                          1 << VIR_DOMAIN_VIRT_VMWARE,
-                                         VIR_DOMAIN_XML_INACTIVE)) == NULL)
+                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)) == NULL)
         goto cleanup;
 
     /* generate vmx file */
@@ -984,7 +984,8 @@ vmwareDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    ret = virDomainDefFormat(vm->def, flags);
+    ret = virDomainDefFormat(vm->def,
+                             virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
     if (vm)
@@ -1015,7 +1016,7 @@ vmwareConnectDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     def = virVMXParseConfig(&ctx, driver->xmlopt, nativeConfig);
 
     if (def != NULL)
-        xml = virDomainDefFormat(def, VIR_DOMAIN_XML_INACTIVE);
+        xml = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_INACTIVE);
 
     virDomainDefFree(def);
 

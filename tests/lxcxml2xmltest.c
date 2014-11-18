@@ -38,7 +38,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
 
     if (!(def = virDomainDefParseString(inXmlData, caps, xmlopt,
                                         1 << VIR_DOMAIN_VIRT_LXC,
-                                        live ? 0 : VIR_DOMAIN_XML_INACTIVE)))
+                                        live ? 0 : VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto fail;
 
     if (!virDomainDefCheckABIStability(def, def)) {
@@ -46,7 +46,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
         goto fail;
     }
 
-    if (!(actual = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE)))
+    if (!(actual = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_SECURE)))
         goto fail;
 
     if (STRNEQ(outXmlData, actual)) {

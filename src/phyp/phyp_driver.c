@@ -1720,7 +1720,7 @@ phypDomainAttachDevice(virDomainPtr domain, const char *xml)
         goto cleanup;
 
     dev = virDomainDeviceDefParse(xml, def, phyp_driver->caps, NULL,
-                                  VIR_DOMAIN_XML_INACTIVE);
+                                  VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (!dev)
         goto cleanup;
 
@@ -3291,7 +3291,8 @@ phypDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         goto err;
     }
 
-    return virDomainDefFormat(&def, flags);
+    return virDomainDefFormat(&def,
+                              virDomainDefFormatConvertXMLFlags(flags));
 
  err:
     return NULL;

@@ -566,7 +566,8 @@ static char *openvzDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
         goto cleanup;
     }
 
-    ret = virDomainDefFormat(vm->def, flags);
+    ret = virDomainDefFormat(vm->def,
+                             virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
     if (vm)
@@ -989,7 +990,7 @@ openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
     openvzDriverLock(driver);
     if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
                                          1 << VIR_DOMAIN_VIRT_OPENVZ,
-                                         VIR_DOMAIN_XML_INACTIVE)) == NULL)
+                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)) == NULL)
         goto cleanup;
 
     vm = virDomainObjListFindByName(driver->domains, vmdef->name);
@@ -1082,7 +1083,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     openvzDriverLock(driver);
     if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
                                          1 << VIR_DOMAIN_VIRT_OPENVZ,
-                                         VIR_DOMAIN_XML_INACTIVE)) == NULL)
+                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)) == NULL)
         goto cleanup;
 
     vm = virDomainObjListFindByName(driver->domains, vmdef->name);
@@ -2114,7 +2115,7 @@ openvzDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
         goto cleanup;
 
     dev = virDomainDeviceDefParse(xml, vmdef, driver->caps, driver->xmlopt,
-                                  VIR_DOMAIN_XML_INACTIVE);
+                                  VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (!dev)
         goto cleanup;
 
@@ -2269,7 +2270,7 @@ openvzDomainMigrateBegin3Params(virDomainPtr domain,
         goto cleanup;
     }
 
-    xml = virDomainDefFormat(vm->def, VIR_DOMAIN_XML_SECURE);
+    xml = virDomainDefFormat(vm->def, VIR_DOMAIN_DEF_FORMAT_SECURE);
 
  cleanup:
     if (vm)
@@ -2317,7 +2318,7 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
 
     if (!(def = virDomainDefParseString(dom_xml, driver->caps, driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_OPENVZ,
-                                        VIR_DOMAIN_XML_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto error;
 
     if (!(vm = virDomainObjListAdd(driver->domains, def,

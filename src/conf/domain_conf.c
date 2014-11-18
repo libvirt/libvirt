@@ -86,39 +86,13 @@ struct _virDomainXMLOption {
 
     /* XML namespace callbacks */
     virDomainXMLNamespace ns;
- };
+};
 
-
-/* Private flags used internally by virDomainSaveStatus and
- * virDomainLoadStatus, in addition to the public virDomainXMLFlags. */
-typedef enum {
-   /* dump internal domain status information */
-   VIR_DOMAIN_XML_INTERNAL_STATUS          = 1 << 16,
-   /* dump/parse <actual> element */
-   VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET      = 1 << 17,
-   /* dump/parse original states of host PCI device */
-   VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES = 1 << 18,
-   VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM       = 1 << 19,
-   VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT      = 1 << 20,
-   VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST    = 1 << 21,
-   /* parse only source half of <disk> */
-   VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE     = 1 << 22,
-} virDomainXMLInternalFlags;
-
-#define DUMPXML_FLAGS                           \
-    (VIR_DOMAIN_XML_SECURE |                    \
-     VIR_DOMAIN_XML_INACTIVE |                  \
-     VIR_DOMAIN_XML_UPDATE_CPU |                \
-     VIR_DOMAIN_XML_MIGRATABLE)
-
-verify(((VIR_DOMAIN_XML_INTERNAL_STATUS |
-         VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
-         VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES |
-         VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM |
-         VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT |
-         VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST |
-         VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE)
-        & DUMPXML_FLAGS) == 0);
+#define VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS             \
+    (VIR_DOMAIN_DEF_FORMAT_SECURE |                    \
+     VIR_DOMAIN_DEF_FORMAT_INACTIVE |                  \
+     VIR_DOMAIN_DEF_FORMAT_UPDATE_CPU |                \
+     VIR_DOMAIN_DEF_FORMAT_MIGRATABLE)
 
 VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
               "custom-argv",
@@ -799,9 +773,6 @@ VIR_ENUM_IMPL(virDomainLoader,
 VIR_ENUM_DECL(virDomainBlockJob)
 VIR_ENUM_IMPL(virDomainBlockJob, VIR_DOMAIN_BLOCK_JOB_TYPE_LAST,
               "", "", "copy", "", "active-commit")
-
-#define VIR_DOMAIN_XML_WRITE_FLAGS  VIR_DOMAIN_XML_SECURE
-#define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
 
 static virClassPtr virDomainObjClass;
 static virClassPtr virDomainObjListClass;
@@ -2724,11 +2695,11 @@ virDomainDeviceGetInfo(virDomainDeviceDefPtr device)
 }
 
 static bool
-virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info, unsigned int flags)
+virDomainDeviceInfoNeedsFormat(virDomainDeviceInfoPtr info, unsigned int flags)
 {
     if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
         return true;
-    if (info->alias && !(flags & VIR_DOMAIN_XML_INACTIVE))
+    if (info->alias && !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))
         return true;
     if (info->mastertype != VIR_DOMAIN_CONTROLLER_MASTER_NONE)
         return true;
@@ -3384,11 +3355,11 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                           virDomainDeviceInfoPtr info,
                           unsigned int flags)
 {
-    if ((flags & VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) && info->bootIndex)
+    if ((flags & VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT) && info->bootIndex)
         virBufferAsprintf(buf, "<boot order='%d'/>\n", info->bootIndex);
 
     if (info->alias &&
-        !(flags & VIR_DOMAIN_XML_INACTIVE)) {
+        !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
         virBufferAsprintf(buf, "<alias name='%s'/>\n", info->alias);
     }
 
@@ -3397,7 +3368,7 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                           info->master.usb.startport);
     }
 
-    if ((flags & VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) &&
+    if ((flags & VIR_DOMAIN_DEF_FORMAT_ALLOW_ROM) &&
         (info->rombar || info->romfile)) {
 
         virBufferAddLit(buf, "<rom");
@@ -3881,7 +3852,7 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
             if (alias == NULL &&
-                !(flags & VIR_DOMAIN_XML_INACTIVE) &&
+                !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
                 xmlStrEqual(cur->name, BAD_CAST "alias")) {
                 alias = cur;
             } else if (address == NULL &&
@@ -3891,11 +3862,11 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
                        xmlStrEqual(cur->name, BAD_CAST "master")) {
                 master = cur;
             } else if (boot == NULL &&
-                       (flags & VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) &&
+                       (flags & VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT) &&
                        xmlStrEqual(cur->name, BAD_CAST "boot")) {
                 boot = cur;
             } else if (rom == NULL &&
-                       (flags & VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) &&
+                       (flags & VIR_DOMAIN_DEF_PARSE_ALLOW_ROM) &&
                        xmlStrEqual(cur->name, BAD_CAST "rom")) {
                 rom = cur;
             }
@@ -4223,7 +4194,7 @@ virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
 
                 if (virDevicePCIAddressParseXML(cur, addr) < 0)
                     goto out;
-            } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
+            } else if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
                        xmlStrEqual(cur->name, BAD_CAST "state")) {
                 /* Legacy back-compat. Don't add any more attributes here */
                 char *devaddr = virXMLPropString(cur, "devaddr");
@@ -4237,7 +4208,7 @@ virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
                     goto out;
                 }
                 def->info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-            } else if ((flags & VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES) &&
+            } else if ((flags & VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES) &&
                        xmlStrEqual(cur->name, BAD_CAST "origstates")) {
                 virDomainHostdevOrigStatesPtr states = &def->origstates;
                 if (virDomainHostdevSubsysPCIOrigStatesDefParseXML(cur, states) < 0)
@@ -5191,7 +5162,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
      * present. Hence, return now. */
 
     if (STREQ_NULLABLE(seclabel->model, "none")) {
-        if (flags & VIR_DOMAIN_XML_INACTIVE) {
+        if (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) {
             /* Fix older configurations */
             seclabel->type = VIR_DOMAIN_SECLABEL_NONE;
             seclabel->relabel = false;
@@ -5212,7 +5183,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
      * if the 'live' VM XML is requested
      */
     if (seclabel->type == VIR_DOMAIN_SECLABEL_STATIC ||
-        (!(flags & VIR_DOMAIN_XML_INACTIVE) &&
+        (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
          seclabel->type != VIR_DOMAIN_SECLABEL_NONE)) {
         p = virXPathStringLimit("string(./label[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
@@ -5228,7 +5199,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
 
     /* Only parse imagelabel, if requested live XML with relabeling */
     if (seclabel->relabel &&
-        (!(flags & VIR_DOMAIN_XML_INACTIVE) &&
+        (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
          seclabel->type != VIR_DOMAIN_SECLABEL_NONE)) {
         p = virXPathStringLimit("string(./imagelabel[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
@@ -5319,7 +5290,7 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
         if (def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_NONE ||
             (def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
              !def->seclabels[0]->baselabel &&
-             (flags & VIR_DOMAIN_XML_INACTIVE))) {
+             (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))) {
             /* Copy model from host. */
             VIR_DEBUG("Found seclabel without a model, using '%s'",
                       host->secModels[0].model);
@@ -5327,7 +5298,7 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
                 goto error;
 
             if (STREQ(def->seclabels[0]->model, "none") &&
-                flags & VIR_DOMAIN_XML_INACTIVE) {
+                flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) {
                 /* Fix older configurations */
                 def->seclabels[0]->type = VIR_DOMAIN_SECLABEL_NONE;
                 def->seclabels[0]->relabel = false;
@@ -5435,7 +5406,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
         /* labelskip is only parsed on live images */
         labelskip = virXMLPropString(list[i], "labelskip");
         seclabels[i]->labelskip = false;
-        if (labelskip && !(flags & VIR_DOMAIN_XML_INACTIVE))
+        if (labelskip && !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
             seclabels[i]->labelskip = STREQ(labelskip, "yes");
         VIR_FREE(labelskip);
 
@@ -5941,7 +5912,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 driverIOThread = virXMLPropString(cur, "iothread");
             } else if (!def->mirror &&
                        xmlStrEqual(cur->name, BAD_CAST "mirror") &&
-                       !(flags & VIR_DOMAIN_XML_INACTIVE)) {
+                       !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
                 char *ready;
                 char *blockJob;
 
@@ -6194,7 +6165,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 def->src->shared = true;
             } else if (xmlStrEqual(cur->name, BAD_CAST "transient")) {
                 def->transient = true;
-            } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
+            } else if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
                        xmlStrEqual(cur->name, BAD_CAST "state")) {
                 /* Legacy back-compat. Don't add any more attributes here */
                 devaddr = virXMLPropString(cur, "devaddr");
@@ -6273,7 +6244,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
      * that are not attached to a physical device presently */
     if (source == NULL && def->src->hosts == NULL && !def->src->srcpool &&
         (def->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
-         (flags & VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE))) {
+         (flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE))) {
         virReportError(VIR_ERR_NO_SOURCE,
                        target ? "%s" : NULL, target);
         goto error;
@@ -6293,7 +6264,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         ctxt->node = saved_node;
     }
 
-    if (!target && !(flags & VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE)) {
+    if (!target && !(flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)) {
         if (def->src->srcpool) {
             char *tmp;
             if (virAsprintf(&tmp, "pool = '%s', volume = '%s'",
@@ -6308,7 +6279,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
     }
 
-    if (!(flags & VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE)) {
+    if (!(flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)) {
         if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
             !STRPREFIX(target, "fd")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -6379,7 +6350,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     } else {
         if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
             def->bus = VIR_DOMAIN_DISK_BUS_FDC;
-        } else if (!(flags & VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE)) {
+        } else if (!(flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)) {
             if (STRPREFIX(target, "hd"))
                 def->bus = VIR_DOMAIN_DISK_BUS_IDE;
             else if (STRPREFIX(target, "sd"))
@@ -6553,7 +6524,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
     } else {
         if (virDomainDeviceInfoParseXML(node, bootHash, &def->info,
-                                        flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
+                                        flags | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT) < 0)
             goto error;
     }
 
@@ -6613,7 +6584,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
     }
 
-    if (!(flags & VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE)) {
+    if (!(flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)) {
         if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE
             && virDomainDiskDefAssignAddress(xmlopt, def) < 0)
             goto error;
@@ -7564,7 +7535,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                        xmlStrEqual(cur->name, BAD_CAST "target")) {
                 ifname = virXMLPropString(cur, "dev");
                 if (ifname &&
-                    (flags & VIR_DOMAIN_XML_INACTIVE) &&
+                    (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
                     STRPREFIX(ifname, VIR_NET_GENERATED_PREFIX)) {
                     /* An auto-generated target name, blank it out */
                     VIR_FREE(ifname);
@@ -7597,14 +7568,14 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 filter = virXMLPropString(cur, "filter");
                 virNWFilterHashTableFree(filterparams);
                 filterparams = virNWFilterParseParamAttributes(cur);
-            } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
+            } else if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
                        xmlStrEqual(cur->name, BAD_CAST "state")) {
                 /* Legacy back-compat. Don't add any more attributes here */
                 devaddr = virXMLPropString(cur, "devaddr");
             } else if (xmlStrEqual(cur->name, BAD_CAST "boot")) {
                 /* boot is parsed as part of virDomainDeviceInfoParseXML */
             } else if (!actual &&
-                       (flags & VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET) &&
+                       (flags & VIR_DOMAIN_DEF_PARSE_ACTUAL_NET) &&
                        def->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
                        xmlStrEqual(cur->name, BAD_CAST "actual")) {
                 if (virDomainActualNetDefParseXML(cur, ctxt, def,
@@ -7661,8 +7632,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
     } else {
         if (virDomainDeviceInfoParseXML(node, bootHash, &def->info,
-                                        flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT
-                                        | VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) < 0)
+                                        flags | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT
+                                        | VIR_DOMAIN_DEF_PARSE_ALLOW_ROM) < 0)
             goto error;
     }
 
@@ -7835,7 +7806,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         def->data.direct.linkdev = dev;
         dev = NULL;
 
-        if (flags & VIR_DOMAIN_XML_INACTIVE)
+        if (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)
             VIR_FREE(ifname);
 
         break;
@@ -8274,7 +8245,7 @@ virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
             def->target.name = virXMLPropString(cur, "name");
 
-            if (!(flags & VIR_DOMAIN_XML_INACTIVE) &&
+            if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
                 (stateStr = virXMLPropString(cur, "state"))) {
                 int tmp;
 
@@ -8363,7 +8334,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                     /* PTY path is only parsed from live xml.  */
                     if (!path  &&
                         (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
-                         !(flags & VIR_DOMAIN_XML_INACTIVE)))
+                         !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)))
                         path = virXMLPropString(cur, "path");
 
                     break;
@@ -9363,7 +9334,7 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
     if (address && address[0] &&
         (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS ||
          (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK &&
-          !(flags & VIR_DOMAIN_XML_INACTIVE)))) {
+          !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)))) {
         def->address = address;
         address = NULL;
     }
@@ -9381,7 +9352,7 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
     }
 
     if (fromConfig &&
-        flags & VIR_DOMAIN_XML_INTERNAL_STATUS) {
+        flags & VIR_DOMAIN_DEF_PARSE_STATUS) {
         if (virStrToLong_i(fromConfig, NULL, 10, &tmp) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Invalid fromConfig value: %s"),
@@ -9520,7 +9491,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
             VIR_FREE(port);
             /* Legacy compat syntax, used -1 for auto-port */
             if (def->data.vnc.port == -1) {
-                if (flags & VIR_DOMAIN_XML_INACTIVE)
+                if (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)
                     def->data.vnc.port = 0;
                 def->data.vnc.autoport = true;
             }
@@ -9531,7 +9502,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 
         if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
             if (STREQ(autoport, "yes")) {
-                if (flags & VIR_DOMAIN_XML_INACTIVE)
+                if (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)
                     def->data.vnc.port = 0;
                 def->data.vnc.autoport = true;
             }
@@ -9621,7 +9592,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
             VIR_FREE(autoport);
         }
 
-        if (def->data.rdp.autoport && (flags & VIR_DOMAIN_XML_INACTIVE))
+        if (def->data.rdp.autoport && (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
             def->data.rdp.port = 0;
 
         if ((replaceUser = virXMLPropString(node, "replaceUser")) != NULL) {
@@ -9714,7 +9685,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
             def->data.spice.autoport = true;
         }
 
-        if (def->data.spice.autoport && (flags & VIR_DOMAIN_XML_INACTIVE)) {
+        if (def->data.spice.autoport && (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
             def->data.spice.port = 0;
             def->data.spice.tlsPort = 0;
         }
@@ -10759,8 +10730,8 @@ virDomainHostdevDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     if (def->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
         if (virDomainDeviceInfoParseXML(node, bootHash, def->info,
-                                        flags  | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT
-                                        | VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) < 0)
+                                        flags  | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT
+                                        | VIR_DOMAIN_DEF_PARSE_ALLOW_ROM) < 0)
             goto error;
     }
 
@@ -10854,7 +10825,7 @@ virDomainRedirdevDefParseXML(xmlNodePtr node,
         def->source.chr.data.spicevmc = VIR_DOMAIN_CHR_SPICEVMC_USBREDIR;
 
     if (virDomainDeviceInfoParseXML(node, bootHash, &def->info,
-                                    flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
+                                    flags | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT) < 0)
         goto error;
 
     if (def->bus == VIR_DOMAIN_REDIRDEV_BUS_USB &&
@@ -11293,7 +11264,7 @@ virDomainDiskDefSourceParse(const char *xmlStr,
         goto cleanup;
     }
 
-    flags |= VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE;
+    flags |= VIR_DOMAIN_DEF_PARSE_DISK_SOURCE;
     if (!(disk = virDomainDiskDefParseXML(xmlopt, node, ctxt,
                                           NULL, def->seclabels,
                                           def->nseclabels,
@@ -12652,6 +12623,7 @@ virDomainLoaderDefParseXML(xmlNodePtr node,
     return ret;
 }
 
+
 static virDomainDefPtr
 virDomainDefParseXML(xmlDocPtr xml,
                      xmlNodePtr root,
@@ -12678,7 +12650,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (VIR_ALLOC(def) < 0)
         return NULL;
 
-    if (!(flags & VIR_DOMAIN_XML_INACTIVE))
+    if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
         if (virXPathLong("string(./@id)", ctxt, &id) < 0)
             id = -1;
     def->id = (int)id;
@@ -16469,7 +16441,7 @@ virSecurityDeviceLabelDefFormat(virBufferPtr buf,
 {
     /* For offline output, skip elements that allow labels but have no
      * label specified (possible if labelskip was ignored on input).  */
-    if ((flags & VIR_DOMAIN_XML_INACTIVE) && !def->label && def->relabel)
+    if ((flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) && !def->label && def->relabel)
         return;
 
     virBufferAddLit(buf, "<seclabel");
@@ -16884,7 +16856,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
 
     /* Don't format backingStore to inactive XMLs until the code for
      * persistent storage of backing chains is ready. */
-    if (!(flags & VIR_DOMAIN_XML_INACTIVE) &&
+    if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
         virDomainDiskBackingStoreFormat(buf, def->src->backingStore,
                                         def->src->backingStoreRaw, 1) < 0)
         return -1;
@@ -16898,7 +16870,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
      * the new style similar to backingStore, but for back-compat on
      * blockcopy files we also have to output old style attributes.
      * The parser accepts either style across libvirtd upgrades. */
-    if (def->mirror && !(flags & VIR_DOMAIN_XML_INACTIVE)) {
+    if (def->mirror && !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
         const char *formatStr = NULL;
 
         if (def->mirror->format)
@@ -17041,7 +17013,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virStorageEncryptionFormat(buf, def->src->encryption) < 0)
         return -1;
     if (virDomainDeviceInfoFormat(buf, &def->info,
-                                  flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
+                                  flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT) < 0)
         return -1;
 
     virBufferAdjustIndent(buf, -2);
@@ -17117,7 +17089,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
     }
 
     if (def->queues || def->cmd_per_lun || def->max_sectors ||
-        virDomainDeviceInfoIsSet(&def->info, flags) || pcihole64) {
+        virDomainDeviceInfoNeedsFormat(&def->info, flags) || pcihole64) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
 
@@ -17134,7 +17106,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
             virBufferAddLit(buf, "/>\n");
         }
 
-        if (virDomainDeviceInfoIsSet(&def->info, flags) &&
+        if (virDomainDeviceInfoNeedsFormat(&def->info, flags) &&
             virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
 
@@ -17347,10 +17319,10 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
             policy = virDomainStartupPolicyTypeToString(def->startupPolicy);
             virBufferAsprintf(buf, " startupPolicy='%s'", policy);
         }
-        if (usbsrc->autoAddress && (flags & VIR_DOMAIN_XML_MIGRATABLE))
+        if (usbsrc->autoAddress && (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE))
             virBufferAddLit(buf, " autoAddress='yes'");
 
-        if (def->missing && !(flags & VIR_DOMAIN_XML_INACTIVE))
+        if (def->missing && !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))
             virBufferAddLit(buf, " missing='yes'");
     }
 
@@ -17384,7 +17356,7 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("PCI address Formatting failed"));
 
-        if ((flags & VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES) &&
+        if ((flags & VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES) &&
             (def->origstates.states.pci.unbind_from_stub ||
              def->origstates.states.pci.remove_slot ||
              def->origstates.states.pci.reprobe)) {
@@ -17722,9 +17694,9 @@ virDomainNetDefFormat(virBufferPtr buf,
      */
     if (def->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
         def->data.network.actual &&
-        !(flags & (VIR_DOMAIN_XML_INACTIVE |
-                   VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
-                   VIR_DOMAIN_XML_MIGRATABLE)))
+        !(flags & (VIR_DOMAIN_DEF_FORMAT_INACTIVE |
+                   VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET |
+                   VIR_DOMAIN_DEF_FORMAT_MIGRATABLE)))
         publicActual = true;
 
     if (publicActual) {
@@ -17787,7 +17759,7 @@ virDomainNetDefFormat(virBufferPtr buf,
              * as a subelement of <interface> so that no persistent config
              * data is overwritten.
              */
-            if ((flags & VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET) &&
+            if ((flags & VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET) &&
                 (virDomainActualNetDefFormat(buf, def, flags) < 0))
                 return -1;
             break;
@@ -17865,7 +17837,7 @@ virDomainNetDefFormat(virBufferPtr buf,
     virBufferEscapeString(buf, "<script path='%s'/>\n",
                           def->script);
     if (def->ifname &&
-        !((flags & VIR_DOMAIN_XML_INACTIVE) &&
+        !((flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
           (STRPREFIX(def->ifname, VIR_NET_GENERATED_PREFIX)))) {
         /* Skip auto-generated target names for inactive config. */
         virBufferEscapeString(buf, "<target dev='%s'/>\n", def->ifname);
@@ -17942,8 +17914,8 @@ virDomainNetDefFormat(virBufferPtr buf,
                           virDomainNetInterfaceLinkStateTypeToString(def->linkstate));
     }
     if (virDomainDeviceInfoFormat(buf, &def->info,
-                                  flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT
-                                  | VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) < 0)
+                                  flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT
+                                  | VIR_DOMAIN_DEF_FORMAT_ALLOW_ROM) < 0)
         return -1;
 
     virBufferAdjustIndent(buf, -2);
@@ -17999,7 +17971,7 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
     case VIR_DOMAIN_CHR_TYPE_PIPE:
         if (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
             (def->data.file.path &&
-             !(flags & VIR_DOMAIN_XML_INACTIVE))) {
+             !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))) {
             virBufferEscapeString(buf, "<source path='%s'",
                                   def->data.file.path);
             virDomainSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
@@ -18097,7 +18069,7 @@ virDomainChrDefFormat(virBufferPtr buf,
     tty_compat = (def->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
                   def->target.port == 0 &&
                   def->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
-                  !(flags & VIR_DOMAIN_XML_INACTIVE) &&
+                  !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
                   def->source.data.file.path);
     if (virDomainChrSourceDefFormat(buf, def, &def->source, tty_compat, flags) < 0)
         return -1;
@@ -18136,7 +18108,7 @@ virDomainChrDefFormat(virBufferPtr buf,
                 virBufferEscapeString(buf, " name='%s'", def->target.name);
 
             if (def->state != VIR_DOMAIN_CHR_DEVICE_STATE_DEFAULT &&
-                !(flags & VIR_DOMAIN_XML_INACTIVE)) {
+                !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
                 virBufferAsprintf(buf, " state='%s'",
                                   virDomainChrDeviceStateTypeToString(def->state));
             }
@@ -18170,7 +18142,7 @@ virDomainChrDefFormat(virBufferPtr buf,
         break;
     }
 
-    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
+    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
     }
@@ -18199,7 +18171,7 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, 2);
     switch (def->type) {
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
-        if (!virDomainDeviceInfoIsSet(&def->info, flags)) {
+        if (!virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
             virBufferAdjustIndent(buf, -2);
             virBufferAddLit(buf, "/>\n");
             return 0;
@@ -18275,7 +18247,7 @@ virDomainTPMDefFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</backend>\n");
 
-    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
+    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
     }
@@ -18313,7 +18285,7 @@ virDomainSoundDefFormat(virBufferPtr buf,
         virDomainSoundCodecDefFormat(buf, def->codecs[i]);
     }
 
-    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
+    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
         if (!children) {
             virBufferAddLit(buf, ">\n");
             virBufferAdjustIndent(buf, 2);
@@ -18351,7 +18323,7 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "<memballoon model='%s'", model);
     virBufferAdjustIndent(buf, 2);
 
-    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
+    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
         virBufferAddLit(buf, ">\n");
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
@@ -18381,7 +18353,7 @@ virDomainNVRAMDefFormat(virBufferPtr buf,
 {
     virBufferAddLit(buf, "<nvram>\n");
     virBufferAdjustIndent(buf, 2);
-    if (virDomainDeviceInfoIsSet(&def->info, flags) &&
+    if (virDomainDeviceInfoNeedsFormat(&def->info, flags) &&
         virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;
 
@@ -18415,7 +18387,7 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "<watchdog model='%s' action='%s'",
                       model, action);
 
-    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
+    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
@@ -18452,7 +18424,7 @@ virDomainShmemDefFormat(virBufferPtr buf,
     if (!def->size &&
         !def->server.enabled &&
         !def->msi.enabled &&
-        !virDomainDeviceInfoIsSet(&def->info, flags)) {
+        !virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
         virBufferAddLit(buf, "/>\n");
         return 0;
     } else {
@@ -18524,7 +18496,7 @@ virDomainRNGDefFormat(virBufferPtr buf,
         break;
     }
 
-    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
+    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
     }
@@ -18634,7 +18606,7 @@ virDomainInputDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "<input type='%s' bus='%s'",
                       type, bus);
 
-    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
+    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
@@ -18741,7 +18713,7 @@ virDomainGraphicsAuthDefFormatAttr(virBufferPtr buf,
     if (!def->passwd)
         return;
 
-    if (flags & VIR_DOMAIN_XML_SECURE)
+    if (flags & VIR_DOMAIN_DEF_FORMAT_SECURE)
         virBufferEscapeString(buf, " passwd='%s'",
                               def->passwd);
 
@@ -18766,7 +18738,7 @@ virDomainGraphicsListenDefFormat(virBufferPtr buf,
 {
     /* If generating migratable XML, skip listen address
      * dragged in from config file */
-    if ((flags & VIR_DOMAIN_XML_MIGRATABLE) && def->fromConfig)
+    if ((flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE) && def->fromConfig)
         return;
 
     virBufferAddLit(buf, "<listen");
@@ -18778,7 +18750,7 @@ virDomainGraphicsListenDefFormat(virBufferPtr buf,
     if (def->address &&
         (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS ||
          (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK &&
-          !(flags & VIR_DOMAIN_XML_INACTIVE)))) {
+          !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)))) {
         /* address may also be set to show current status when type='network',
          * but we don't want to print that if INACTIVE data is requested. */
         virBufferAsprintf(buf, " address='%s'", def->address);
@@ -18789,7 +18761,7 @@ virDomainGraphicsListenDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, " network='%s'", def->network);
     }
 
-    if (flags & VIR_DOMAIN_XML_INTERNAL_STATUS)
+    if (flags & VIR_DOMAIN_DEF_FORMAT_STATUS)
         virBufferAsprintf(buf, " fromConfig='%d'", def->fromConfig);
 
     virBufferAddLit(buf, "/>\n");
@@ -18818,7 +18790,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
     for (i = 0; i < def->nListens; i++) {
         if (virDomainGraphicsListenGetType(def, i)
             == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) {
-            if (flags & VIR_DOMAIN_XML_MIGRATABLE &&
+            if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE &&
                 def->listens[i].fromConfig)
                 continue;
             listenAddr = virDomainGraphicsListenGetAddress(def, i);
@@ -18836,7 +18808,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
                                   def->data.vnc.socket);
         } else {
             if (def->data.vnc.port &&
-                (!def->data.vnc.autoport || !(flags & VIR_DOMAIN_XML_INACTIVE)))
+                (!def->data.vnc.autoport || !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)))
                 virBufferAsprintf(buf, " port='%d'",
                                   def->data.vnc.port);
             else if (def->data.vnc.autoport)
@@ -18940,7 +18912,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         if (virDomainGraphicsListenGetType(def, i)
             == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE)
             continue;
-        if (flags & VIR_DOMAIN_XML_MIGRATABLE &&
+        if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE &&
             def->listens[i].fromConfig)
             continue;
         if (!children) {
@@ -19089,8 +19061,8 @@ virDomainHostdevDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "<shareable/>\n");
 
     if (virDomainDeviceInfoFormat(buf, def->info,
-                                  flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT
-                                  | VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) < 0)
+                                  flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT
+                                  | VIR_DOMAIN_DEF_FORMAT_ALLOW_ROM) < 0)
         return -1;
 
     virBufferAdjustIndent(buf, -2);
@@ -19113,7 +19085,7 @@ virDomainRedirdevDefFormat(virBufferPtr buf,
     if (virDomainChrSourceDefFormat(buf, NULL, &def->source.chr, false, flags) < 0)
         return -1;
     if (virDomainDeviceInfoFormat(buf, &def->info,
-                                  flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
+                                  flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT) < 0)
         return -1;
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</redirdev>\n");
@@ -19170,7 +19142,7 @@ virDomainHubDefFormat(virBufferPtr buf,
 
     virBufferAsprintf(buf, "<hub type='%s'", type);
 
-    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
+    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
@@ -19308,9 +19280,9 @@ virDomainDefHasCapabilitiesFeatures(virDomainDefPtr def)
     return false;
 }
 
-/* This internal version can accept VIR_DOMAIN_XML_INTERNAL_*,
- * whereas the public version cannot.  Also, it appends to an existing
- * buffer (possibly with auto-indent), rather than flattening to string.
+/* This internal version appends to an existing buffer
+ * (possibly with auto-indent), rather than flattening
+ * to string.
  * Return -1 on failure.  */
 int
 virDomainDefFormatInternal(virDomainDefPtr def,
@@ -19325,11 +19297,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     bool blkio = false;
     bool cputune = false;
 
-    virCheckFlags(DUMPXML_FLAGS |
-                  VIR_DOMAIN_XML_INTERNAL_STATUS |
-                  VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
-                  VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES |
-                  VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST,
+    virCheckFlags(VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS |
+                  VIR_DOMAIN_DEF_FORMAT_STATUS |
+                  VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET |
+                  VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES |
+                  VIR_DOMAIN_DEF_FORMAT_CLOCK_ADJUST,
                   -1);
 
     if (!(type = virDomainVirtTypeToString(def->virtType))) {
@@ -19339,10 +19311,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     }
 
     if (def->id == -1)
-        flags |= VIR_DOMAIN_XML_INACTIVE;
+        flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
 
     virBufferAsprintf(buf, "<domain type='%s'", type);
-    if (!(flags & VIR_DOMAIN_XML_INACTIVE))
+    if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))
         virBufferAsprintf(buf, " id='%d'", def->id);
     if (def->namespaceData && def->ns.href)
         virBufferAsprintf(buf, " %s", (def->ns.href)());
@@ -19883,7 +19855,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     }
 
     if (virCPUDefFormatBufFull(buf, def->cpu,
-                               !!(flags & VIR_DOMAIN_XML_UPDATE_CPU)) < 0)
+                               !!(flags & VIR_DOMAIN_DEF_FORMAT_UPDATE_CPU)) < 0)
         goto error;
 
     virBufferAsprintf(buf, "<clock offset='%s'",
@@ -19898,7 +19870,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, " adjustment='%lld' basis='%s'",
                           def->clock.data.variable.adjustment,
                           virDomainClockBasisTypeToString(def->clock.data.variable.basis));
-        if (flags & VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST) {
+        if (flags & VIR_DOMAIN_DEF_FORMAT_CLOCK_ADJUST) {
             if (def->clock.data.variable.adjustment0)
                 virBufferAsprintf(buf, " adjustment0='%lld'",
                                   def->clock.data.variable.adjustment0);
@@ -20048,7 +20020,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             if (virDomainInputDefFormat(buf, &autoInput, flags) < 0)
                 goto error;
 
-            if (!(flags & VIR_DOMAIN_XML_MIGRATABLE)) {
+            if (!(flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE)) {
                 autoInput.type = VIR_DOMAIN_INPUT_TYPE_KBD;
                 if (virDomainInputDefFormat(buf, &autoInput, flags) < 0)
                     goto error;
@@ -20136,12 +20108,29 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     return -1;
 }
 
+unsigned int virDomainDefFormatConvertXMLFlags(unsigned int flags)
+{
+    unsigned int formatFlags = 0;
+
+    if (flags & VIR_DOMAIN_XML_SECURE)
+        formatFlags |= VIR_DOMAIN_DEF_FORMAT_SECURE;
+    if (flags & VIR_DOMAIN_XML_INACTIVE)
+        formatFlags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
+    if (flags & VIR_DOMAIN_XML_UPDATE_CPU)
+        formatFlags |= VIR_DOMAIN_DEF_FORMAT_UPDATE_CPU;
+    if (flags & VIR_DOMAIN_XML_MIGRATABLE)
+        formatFlags |= VIR_DOMAIN_DEF_FORMAT_MIGRATABLE;
+
+    return formatFlags;
+}
+
+
 char *
 virDomainDefFormat(virDomainDefPtr def, unsigned int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    virCheckFlags(DUMPXML_FLAGS, NULL);
+    virCheckFlags(VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS, NULL);
     if (virDomainDefFormatInternal(def, flags, &buf) < 0)
         return NULL;
 
@@ -20318,7 +20307,7 @@ virDomainSaveConfig(const char *configDir,
     int ret = -1;
     char *xml;
 
-    if (!(xml = virDomainDefFormat(def, VIR_DOMAIN_XML_WRITE_FLAGS)))
+    if (!(xml = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_SECURE)))
         goto cleanup;
 
     if (virDomainSaveXML(configDir, def, xml))
@@ -20335,11 +20324,11 @@ virDomainSaveStatus(virDomainXMLOptionPtr xmlopt,
                     const char *statusDir,
                     virDomainObjPtr obj)
 {
-    unsigned int flags = (VIR_DOMAIN_XML_SECURE |
-                          VIR_DOMAIN_XML_INTERNAL_STATUS |
-                          VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
-                          VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES |
-                          VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST);
+    unsigned int flags = (VIR_DOMAIN_DEF_FORMAT_SECURE |
+                          VIR_DOMAIN_DEF_FORMAT_STATUS |
+                          VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET |
+                          VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES |
+                          VIR_DOMAIN_DEF_FORMAT_CLOCK_ADJUST);
 
     int ret = -1;
     char *xml;
@@ -20378,7 +20367,7 @@ virDomainObjListLoadConfig(virDomainObjListPtr doms,
         goto error;
     if (!(def = virDomainDefParseFile(configFile, caps, xmlopt,
                                       expectedVirtTypes,
-                                      VIR_DOMAIN_XML_INACTIVE)))
+                                      VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto error;
 
     if ((autostartLink = virDomainConfigFile(autostartDir, name)) == NULL)
@@ -20425,10 +20414,10 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
         goto error;
 
     if (!(obj = virDomainObjParseFile(statusFile, caps, xmlopt, expectedVirtTypes,
-                                      VIR_DOMAIN_XML_INTERNAL_STATUS |
-                                      VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
-                                      VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES |
-                                      VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST)))
+                                      VIR_DOMAIN_DEF_PARSE_STATUS |
+                                      VIR_DOMAIN_DEF_PARSE_ACTUAL_NET |
+                                      VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES |
+                                      VIR_DOMAIN_DEF_PARSE_CLOCK_ADJUST)))
         goto error;
 
     virUUIDFormat(obj->def->uuid, uuidstr);
@@ -20951,17 +20940,17 @@ virDomainDefCopy(virDomainDefPtr src,
 {
     char *xml;
     virDomainDefPtr ret;
-    unsigned int write_flags = VIR_DOMAIN_XML_WRITE_FLAGS;
-    unsigned int read_flags = VIR_DOMAIN_XML_READ_FLAGS;
+    unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
+    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
     if (migratable)
-        write_flags |= VIR_DOMAIN_XML_INACTIVE | VIR_DOMAIN_XML_MIGRATABLE;
+        format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE | VIR_DOMAIN_DEF_FORMAT_MIGRATABLE;
 
     /* Easiest to clone via a round-trip through XML.  */
-    if (!(xml = virDomainDefFormat(src, write_flags)))
+    if (!(xml = virDomainDefFormat(src, format_flags)))
         return NULL;
 
-    ret = virDomainDefParseString(xml, caps, xmlopt, -1, read_flags);
+    ret = virDomainDefParseString(xml, caps, xmlopt, -1, parse_flags);
 
     VIR_FREE(xml);
     return ret;
@@ -21427,7 +21416,7 @@ virDomainNetFind(virDomainDefPtr def, const char *device)
  * @src: source to be copied
  *
  * virDomainDeviceDefCopy does a deep copy of only the parts of a
- * DeviceDef that are valid when just the flag VIR_DOMAIN_XML_INACTIVE is
+ * DeviceDef that are valid when just the flag VIR_DOMAIN_DEF_PARSE_INACTIVE is
  * set. This means that any part of the device xml that is conditionally
  * parsed/formatted based on some other flag being set (or on the INACTIVE
  * flag being reset) *will not* be copied to the destination. Caveat emptor.
@@ -21442,7 +21431,7 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
 {
     virDomainDeviceDefPtr ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    int flags = VIR_DOMAIN_XML_INACTIVE | VIR_DOMAIN_XML_SECURE;
+    int flags = VIR_DOMAIN_DEF_FORMAT_INACTIVE | VIR_DOMAIN_DEF_FORMAT_SECURE;
     char *xmlStr = NULL;
     int rc = -1;
 
@@ -21515,7 +21504,8 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         goto cleanup;
 
     xmlStr = virBufferContentAndReset(&buf);
-    ret = virDomainDeviceDefParse(xmlStr, def, caps, xmlopt, flags);
+    ret = virDomainDeviceDefParse(xmlStr, def, caps, xmlopt,
+                                  VIR_DOMAIN_DEF_PARSE_INACTIVE);
 
  cleanup:
     VIR_FREE(xmlStr);

@@ -2751,7 +2751,8 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
         if (powerState != esxVI_VirtualMachinePowerState_PoweredOff)
             def->id = id;
 
-        xml = virDomainDefFormat(def, flags);
+        xml = virDomainDefFormat(def,
+                                 virDomainDefFormatConvertXMLFlags(flags));
     }
 
  cleanup:
@@ -2805,7 +2806,7 @@ esxConnectDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     def = virVMXParseConfig(&ctx, priv->xmlopt, nativeConfig);
 
     if (def)
-        xml = virDomainDefFormat(def, VIR_DOMAIN_XML_INACTIVE);
+        xml = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_INACTIVE);
 
     virDomainDefFree(def);
 
@@ -2844,7 +2845,7 @@ esxConnectDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
 
     def = virDomainDefParseString(domainXml, priv->caps, priv->xmlopt,
                                   1 << VIR_DOMAIN_VIRT_VMWARE,
-                                  VIR_DOMAIN_XML_INACTIVE);
+                                  VIR_DOMAIN_DEF_PARSE_INACTIVE);
 
     if (!def)
         return NULL;
@@ -3055,7 +3056,7 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     /* Parse domain XML */
     def = virDomainDefParseString(xml, priv->caps, priv->xmlopt,
                                   1 << VIR_DOMAIN_VIRT_VMWARE,
-                                  VIR_DOMAIN_XML_INACTIVE);
+                                  VIR_DOMAIN_DEF_PARSE_INACTIVE);
 
     if (!def)
         return NULL;
@@ -4302,7 +4303,9 @@ esxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     virUUIDFormat(snapshot->domain->uuid, uuid_string);
 
-    xml = virDomainSnapshotDefFormat(uuid_string, &def, flags, 0);
+    xml = virDomainSnapshotDefFormat(uuid_string, &def,
+                                     virDomainDefFormatConvertXMLFlags(flags),
+                                     0);
 
  cleanup:
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotList);

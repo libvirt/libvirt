@@ -2436,6 +2436,37 @@ void virDomainObjListRemove(virDomainObjListPtr doms,
 void virDomainObjListRemoveLocked(virDomainObjListPtr doms,
                                   virDomainObjPtr dom);
 
+typedef enum {
+    /* parse internal domain status information */
+    VIR_DOMAIN_DEF_PARSE_STATUS          = 1 << 0,
+    VIR_DOMAIN_DEF_PARSE_INACTIVE        = 1 << 1,
+    /* parse <actual> element */
+    VIR_DOMAIN_DEF_PARSE_ACTUAL_NET      = 1 << 2,
+    /* parse original states of host PCI device */
+    VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES = 1 << 3,
+    VIR_DOMAIN_DEF_PARSE_ALLOW_ROM       = 1 << 4,
+    VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT      = 1 << 5,
+    VIR_DOMAIN_DEF_PARSE_CLOCK_ADJUST    = 1 << 6,
+    /* parse only source half of <disk> */
+    VIR_DOMAIN_DEF_PARSE_DISK_SOURCE     = 1 << 7,
+} virDomainDefParseFlags;
+
+typedef enum {
+    VIR_DOMAIN_DEF_FORMAT_SECURE          = 1 << 0,
+    VIR_DOMAIN_DEF_FORMAT_INACTIVE        = 1 << 1,
+    VIR_DOMAIN_DEF_FORMAT_UPDATE_CPU      = 1 << 2,
+    VIR_DOMAIN_DEF_FORMAT_MIGRATABLE      = 1 << 3,
+    /* format internal domain status information */
+    VIR_DOMAIN_DEF_FORMAT_STATUS          = 1 << 4,
+    /* format <actual> element */
+    VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET      = 1 << 5,
+    /* format original states of host PCI device */
+    VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES = 1 << 6,
+    VIR_DOMAIN_DEF_FORMAT_ALLOW_ROM       = 1 << 7,
+    VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT      = 1 << 8,
+    VIR_DOMAIN_DEF_FORMAT_CLOCK_ADJUST    = 1 << 9,
+} virDomainDefFormatFlags;
+
 virDomainDeviceDefPtr virDomainDeviceDefParse(const char *xmlStr,
                                               const virDomainDef *def,
                                               virCapsPtr caps,
@@ -2466,6 +2497,8 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
                                    virDomainDefPtr dst);
 
 int virDomainDefAddImplicitControllers(virDomainDefPtr def);
+
+unsigned int virDomainDefFormatConvertXMLFlags(unsigned int flags);
 
 char *virDomainDefFormat(virDomainDefPtr def,
                          unsigned int flags);

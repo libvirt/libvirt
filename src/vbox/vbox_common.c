@@ -1860,7 +1860,7 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
     VBOX_IID_INITIALIZE(&mchiid);
     if (!(def = virDomainDefParseString(xml, data->caps, data->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_VBOX,
-                                        VIR_DOMAIN_XML_INACTIVE))) {
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE))) {
         goto cleanup;
     }
 
@@ -3978,7 +3978,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     /* dump USB devices/filters if active */
     vboxHostDeviceGetXMLDesc(data, def, machine);
 
-    ret = virDomainDefFormat(def, flags);
+    ret = virDomainDefFormat(def, virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
     VBOX_RELEASE(machine);
@@ -4117,7 +4117,7 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
         goto cleanup;
 
     dev = virDomainDeviceDefParse(xml, def, data->caps, data->xmlopt,
-                                  VIR_DOMAIN_XML_INACTIVE);
+                                  VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (dev == NULL)
         goto cleanup;
 
@@ -4249,7 +4249,7 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
         goto cleanup;
 
     dev = virDomainDeviceDefParse(xml, def, data->caps, data->xmlopt,
-                                  VIR_DOMAIN_XML_INACTIVE);
+                                  VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (dev == NULL)
         goto cleanup;
 
@@ -5209,7 +5209,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
         VIR_FREE(currentSnapshotXmlFilePath);
         if (virAsprintf(&currentSnapshotXmlFilePath, "%s%s.xml", machineLocationPath, snapshotMachineDesc->currentSnapshot) < 0)
             goto cleanup;
-        char *snapshotContent = virDomainSnapshotDefFormat(NULL, def, VIR_DOMAIN_XML_SECURE, 0);
+        char *snapshotContent = virDomainSnapshotDefFormat(NULL, def, VIR_DOMAIN_DEF_FORMAT_SECURE, 0);
         if (snapshotContent == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Unable to get snapshot content"));
@@ -6129,7 +6129,9 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     virUUIDFormat(dom->uuid, uuidstr);
     memcpy(def->dom->uuid, dom->uuid, VIR_UUID_BUFLEN);
-    ret = virDomainSnapshotDefFormat(uuidstr, def, flags, 0);
+    ret = virDomainSnapshotDefFormat(uuidstr, def,
+                                      virDomainDefFormatConvertXMLFlags(flags),
+                                      0);
 
  cleanup:
     virDomainSnapshotDefFree(def);
