@@ -370,15 +370,19 @@ vmwareDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
     char *vmxPath = NULL;
     vmwareDomainPtr pDomain = NULL;
     virVMXContext ctx;
+    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_DOMAIN_DEFINE_VALIDATE, NULL);
+
+    if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
 
     ctx.formatFileName = vmwareCopyVMXFileName;
 
     vmwareDriverLock(driver);
     if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
                                          1 << VIR_DOMAIN_VIRT_VMWARE,
-                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)) == NULL)
+                                         parse_flags)) == NULL)
         goto cleanup;
 
     /* generate vmx file */
@@ -657,8 +661,12 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
     char *vmxPath = NULL;
     vmwareDomainPtr pDomain = NULL;
     virVMXContext ctx;
+    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_DOMAIN_START_VALIDATE, NULL);
+
+    if (flags & VIR_DOMAIN_START_VALIDATE)
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
 
     ctx.formatFileName = vmwareCopyVMXFileName;
 
@@ -666,7 +674,7 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
 
     if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
                                          1 << VIR_DOMAIN_VIRT_VMWARE,
-                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)) == NULL)
+                                         parse_flags)) == NULL)
         goto cleanup;
 
     /* generate vmx file */

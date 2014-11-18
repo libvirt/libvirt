@@ -3045,8 +3045,12 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     char *taskInfoErrorMessage = NULL;
     virDomainPtr domain = NULL;
     const char *src;
+    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_DOMAIN_DEFINE_VALIDATE, NULL);
+
+    if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
 
     memset(&data, 0, sizeof(data));
 
@@ -3056,7 +3060,7 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     /* Parse domain XML */
     def = virDomainDefParseString(xml, priv->caps, priv->xmlopt,
                                   1 << VIR_DOMAIN_VIRT_VMWARE,
-                                  VIR_DOMAIN_DEF_PARSE_INACTIVE);
+                                  parse_flags);
 
     if (!def)
         return NULL;

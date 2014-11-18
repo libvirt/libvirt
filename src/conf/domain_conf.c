@@ -29,6 +29,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "configmake.h"
 #include "internal.h"
 #include "virerror.h"
 #include "datatypes.h"
@@ -12648,6 +12649,19 @@ virDomainDefParseXML(xmlDocPtr xml,
     bool usb_other = false;
     bool usb_master = false;
     bool primaryVideo = false;
+
+    if (flags & VIR_DOMAIN_DEF_PARSE_VALIDATE) {
+        char *schema = virFileFindResource("domain.rng",
+                                           "docs/schemas",
+                                           PKGDATADIR "/schemas");
+        if (!schema)
+            return NULL;
+        if (virXMLValidateAgainstSchema(schema, xml) < 0) {
+            VIR_FREE(schema);
+            return NULL;
+        }
+        VIR_FREE(schema);
+    }
 
     if (VIR_ALLOC(def) < 0)
         return NULL;

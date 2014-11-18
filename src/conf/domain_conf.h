@@ -2449,6 +2449,7 @@ typedef enum {
     VIR_DOMAIN_DEF_PARSE_CLOCK_ADJUST    = 1 << 6,
     /* parse only source half of <disk> */
     VIR_DOMAIN_DEF_PARSE_DISK_SOURCE     = 1 << 7,
+    VIR_DOMAIN_DEF_PARSE_VALIDATE        = 1 << 8,
 } virDomainDefParseFlags;
 
 typedef enum {

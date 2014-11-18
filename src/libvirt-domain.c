@@ -6479,7 +6479,7 @@ virDomainDefineXML(virConnectPtr conn, const char *xml)
  * virDomainDefineXMLFlags:
  * @conn: pointer to the hypervisor connection
  * @xml: the XML description for the domain, preferably in UTF-8
- * @flags: currently unused, pass 0
+ * @flags: bitwise OR of the virDomainDefineFlags constants
  *
  * Defines a domain, but does not start it.
  * This definition is persistent, until explicitly undefined with

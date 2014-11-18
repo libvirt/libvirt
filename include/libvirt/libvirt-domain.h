@@ -273,6 +273,7 @@ typedef enum {
     VIR_DOMAIN_START_AUTODESTROY  = 1 << 1, /* Automatically kill guest when virConnectPtr is closed */
     VIR_DOMAIN_START_BYPASS_CACHE = 1 << 2, /* Avoid file system cache pollution */
     VIR_DOMAIN_START_FORCE_BOOT   = 1 << 3, /* Boot, discarding any managed save */
+    VIR_DOMAIN_START_VALIDATE     = 1 << 4, /* Validate the XML document against schema */
 } virDomainCreateFlags;
 
 
@@ -1416,6 +1417,10 @@ int                     virDomainMemoryPeek (virDomainPtr dom,
                                              size_t size,
                                              void *buffer,
                                              unsigned int flags);
+
+typedef enum {
+    VIR_DOMAIN_DEFINE_VALIDATE = (1 << 0), /* Validate the XML document against schema */
+} virDomainDefineFlags;
 
 /*
  * defined but not running domains
