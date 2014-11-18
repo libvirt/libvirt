@@ -3558,7 +3558,7 @@ phypDomainCreateXML(virConnectPtr conn,
     if (!(def = virDomainDefParseString(xml, phyp_driver->caps,
                                         phyp_driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_PHYP,
-                                        VIR_DOMAIN_XML_SECURE)))
+                                        0)))
         goto err;
 
     /* checking if this name already exists on this system */
