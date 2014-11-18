@@ -69,6 +69,7 @@
 #include "storage/storage_driver.h"
 #include "configmake.h"
 #include "nwfilter_conf.h"
+#include "netdev_bandwidth_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -4842,6 +4843,9 @@ void qemuProcessStop(virQEMUDriverPtr driver,
              VIR_WARN("Unable to close logfile: %s",
                       virStrerror(errno, ebuf, sizeof(ebuf)));
     }
+
+    /* Clear network bandwidth */
+    virDomainClearNetBandwidth(vm);
 
     virDomainConfVMNWFilterTeardown(vm);
 

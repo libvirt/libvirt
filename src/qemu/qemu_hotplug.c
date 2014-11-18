@@ -31,6 +31,7 @@
 #include "qemu_command.h"
 #include "qemu_hostdev.h"
 #include "domain_audit.h"
+#include "netdev_bandwidth_conf.h"
 #include "domain_nwfilter.h"
 #include "virlog.h"
 #include "datatypes.h"
@@ -946,6 +947,12 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
     }
+
+    /* Set Bandwidth */
+    if (virNetDevSupportBandwidth(actualType) &&
+        virNetDevBandwidthSet(net->ifname,
+                              virDomainNetGetActualBandwidth(net), false) < 0)
+        goto cleanup;
 
     for (i = 0; i < tapfdSize; i++) {
         if (virSecurityManagerSetTapFDLabel(driver->securityManager,
@@ -3544,6 +3551,11 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
         if (qemuAssignDeviceNetAlias(vm->def, detach, -1) < 0)
             goto cleanup;
     }
+
+    if (virNetDevSupportBandwidth(virDomainNetGetActualType(detach)) &&
+        virNetDevBandwidthClear(detach->ifname) < 0)
+        VIR_WARN("cannot clear bandwidth setting for device : %s",
+                 detach->ifname);
 
     qemuDomainMarkDeviceForRemoval(vm, &detach->info);
 

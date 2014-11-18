@@ -68,7 +68,6 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname,
                                            char **res_ifname,
                                            virNetDevVPortProfileOp vmop,
                                            char *stateDir,
-                                           virNetDevBandwidthPtr bandwidth,
                                            unsigned int flags)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(6)
     ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(10) ATTRIBUTE_RETURN_CHECK;

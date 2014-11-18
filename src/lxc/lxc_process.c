@@ -51,6 +51,7 @@
 #include "viratomic.h"
 #include "virprocess.h"
 #include "virsystemd.h"
+#include "netdev_bandwidth_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -274,11 +275,6 @@ char *virLXCProcessSetupInterfaceBridged(virConnectPtr conn,
     if (virNetDevSetOnline(parentVeth, true) < 0)
         goto cleanup;
 
-    if (virNetDevBandwidthSet(net->ifname,
-                              virDomainNetGetActualBandwidth(net),
-                              false) < 0)
-        goto cleanup;
-
     if (net->filter &&
         virDomainConfNWFilterInstantiate(conn, vm->uuid, net) < 0)
         goto cleanup;
@@ -300,6 +296,7 @@ char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
     virNetDevBandwidthPtr bw;
     virNetDevVPortProfilePtr prof;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
+    const char *linkdev = virDomainNetGetActualDirectDev(net);
 
     /* XXX how todo bandwidth controls ?
      * Since the 'net-ifname' is about to be moved to a different
@@ -329,14 +326,13 @@ char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
 
     if (virNetDevMacVLanCreateWithVPortProfile(
             net->ifname, &net->mac,
-            virDomainNetGetActualDirectDev(net),
+            linkdev,
             virDomainNetGetActualDirectMode(net),
             false, def->uuid,
-            virDomainNetGetActualVirtPortProfile(net),
+            prof,
             &res_ifname,
             VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
-            cfg->stateDir,
-            virDomainNetGetActualBandwidth(net), 0) < 0)
+            cfg->stateDir, 0) < 0)
         goto cleanup;
 
     ret = res_ifname;
@@ -368,6 +364,8 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
     int ret = -1;
     size_t i;
     size_t niface = 0;
+    virDomainNetDefPtr net;
+    virDomainNetType type;
 
     for (i = 0; i < def->nnets; i++) {
         char *veth = NULL;
@@ -375,13 +373,15 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
          * network's pool of devices, or resolve bridge device name
          * to the one defined in the network definition.
          */
-        if (networkAllocateActualDevice(def, def->nets[i]) < 0)
+        net = def->nets[i];
+        if (networkAllocateActualDevice(def, net) < 0)
             goto cleanup;
 
         if (VIR_EXPAND_N(*veths, *nveths, 1) < 0)
             goto cleanup;
 
-        switch (virDomainNetGetActualType(def->nets[i])) {
+        type = virDomainNetGetActualType(net);
+        switch (type) {
         case VIR_DOMAIN_NET_TYPE_NETWORK: {
             virNetworkPtr network;
             char *brname = NULL;
@@ -389,7 +389,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
             virErrorPtr errobj;
 
             if (!(network = virNetworkLookupByName(conn,
-                                                   def->nets[i]->data.network.name)))
+                                                   net->data.network.name)))
                 goto cleanup;
             if (!(brname = virNetworkGetBridgeName(network)))
                fail = true;
@@ -405,7 +405,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
 
             if (!(veth = virLXCProcessSetupInterfaceBridged(conn,
                                                             def,
-                                                            def->nets[i],
+                                                            net,
                                                             brname))) {
                 VIR_FREE(brname);
                 goto cleanup;
@@ -414,7 +414,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
             break;
         }
         case VIR_DOMAIN_NET_TYPE_BRIDGE: {
-            const char *brname = virDomainNetGetActualBridgeName(def->nets[i]);
+            const char *brname = virDomainNetGetActualBridgeName(net);
             if (!brname) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("No bridge name specified"));
@@ -422,7 +422,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
             }
             if (!(veth = virLXCProcessSetupInterfaceBridged(conn,
                                                             def,
-                                                            def->nets[i],
+                                                            net,
                                                             brname)))
                 goto cleanup;
         }   break;
@@ -430,31 +430,39 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
         case VIR_DOMAIN_NET_TYPE_DIRECT:
             if (!(veth = virLXCProcessSetupInterfaceDirect(conn,
                                                            def,
-                                                           def->nets[i])))
+                                                           net)))
                 goto cleanup;
             break;
 
-        case VIR_DOMAIN_NET_TYPE_USER:
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
+            break;
+
+        case VIR_DOMAIN_NET_TYPE_USER:
         case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
         case VIR_DOMAIN_NET_TYPE_SERVER:
         case VIR_DOMAIN_NET_TYPE_CLIENT:
         case VIR_DOMAIN_NET_TYPE_MCAST:
         case VIR_DOMAIN_NET_TYPE_INTERNAL:
         case VIR_DOMAIN_NET_TYPE_LAST:
+        case VIR_DOMAIN_NET_TYPE_HOSTDEV:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unsupported network type %s"),
-                           virDomainNetTypeToString(
-                               virDomainNetGetActualType(def->nets[i])
-                               ));
+                           virDomainNetTypeToString(type));
             goto cleanup;
+
         }
+
+        /* set network bandwidth */
+        if (virNetDevSupportBandwidth(type) &&
+            virNetDevBandwidthSet(net->ifname,
+                                  virDomainNetGetActualBandwidth(net), false) < 0)
+            goto cleanup;
 
         (*veths)[(*nveths)-1] = veth;
 
         /* Make sure all net definitions will have a name in the container */
-        if (!def->nets[i]->ifname_guest) {
-            if (virAsprintf(&def->nets[i]->ifname_guest, "eth%zu", niface) < 0)
+        if (!net->ifname_guest) {
+            if (virAsprintf(&net->ifname_guest, "eth%zu", niface) < 0)
                 return -1;
             niface++;
         }

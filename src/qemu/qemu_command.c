@@ -43,6 +43,7 @@
 #include "domain_addr.h"
 #include "domain_audit.h"
 #include "domain_conf.h"
+#include "netdev_bandwidth_conf.h"
 #include "snapshot_conf.h"
 #include "storage_conf.h"
 #include "secret_conf.h"
@@ -192,7 +193,6 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
         virDomainNetGetActualVirtPortProfile(net),
         &res_ifname,
         vmop, cfg->stateDir,
-        virDomainNetGetActualBandwidth(net),
         macvlan_create_flags);
     if (rc >= 0) {
         virDomainAuditNetDevice(def, net, res_ifname, true);
@@ -370,11 +370,6 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         ebtablesAddForwardAllowIn(driver->ebtables,
                                   net->ifname,
                                   &net->mac) < 0)
-        goto cleanup;
-
-    if (virNetDevBandwidthSet(net->ifname,
-                              virDomainNetGetActualBandwidth(net),
-                              false) < 0)
         goto cleanup;
 
     if (net->filter &&
@@ -7500,6 +7495,13 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
         if (tapfd[0] < 0)
             goto cleanup;
     }
+
+    /* Set Bandwidth */
+    if (virNetDevSupportBandwidth(actualType) &&
+        virNetDevBandwidthSet(net->ifname,
+                              virDomainNetGetActualBandwidth(net),
+                              false) < 0)
+        goto cleanup;
 
     if ((actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||

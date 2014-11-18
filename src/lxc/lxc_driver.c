@@ -72,6 +72,7 @@
 #include "viraccessapicheck.h"
 #include "viraccessapichecklxc.h"
 #include "virhostdev.h"
+#include "netdev_bandwidth_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -4213,6 +4214,11 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
                        _("Network device type is not supported"));
         goto cleanup;
     }
+    /* set network bandwidth */
+    if (virNetDevSupportBandwidth(actualType) &&
+        virNetDevBandwidthSet(net->ifname,
+                              virDomainNetGetActualBandwidth(net), false) < 0)
+        goto cleanup;
 
     if (virNetDevSetNamespace(veth, priv->initpid) < 0) {
         virDomainAuditNet(vm, NULL, net, "attach", false);
@@ -4635,7 +4641,7 @@ static int
 lxcDomainDetachDeviceNetLive(virDomainObjPtr vm,
                              virDomainDeviceDefPtr dev)
 {
-    int detachidx, ret = -1;
+    int detachidx, actualType, ret = -1;
     virDomainNetDefPtr detach = NULL;
     virNetDevVPortProfilePtr vport = NULL;
 
@@ -4643,8 +4649,14 @@ lxcDomainDetachDeviceNetLive(virDomainObjPtr vm,
         goto cleanup;
 
     detach = vm->def->nets[detachidx];
+    actualType = virDomainNetGetActualType(detach);
 
-    switch (virDomainNetGetActualType(detach)) {
+    /* clear network bandwidth */
+    if (virNetDevSupportBandwidth(actualType) &&
+        virNetDevBandwidthClear(detach->ifname))
+        goto cleanup;
+
+    switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_NETWORK:
         if (virNetDevVethDelete(detach->ifname) < 0) {

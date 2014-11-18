@@ -25,7 +25,6 @@
 #include "netdev_bandwidth_conf.h"
 #include "virerror.h"
 #include "viralloc.h"
-#include "domain_conf.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -268,4 +267,17 @@ virNetDevBandwidthFormat(virNetDevBandwidthPtr def, virBufferPtr buf)
 
  cleanup:
     return ret;
+}
+
+void
+virDomainClearNetBandwidth(virDomainObjPtr vm)
+{
+    size_t i;
+    virDomainNetType type;
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        type = virDomainNetGetActualType(vm->def->nets[i]);
+        if (virNetDevSupportBandwidth(type))
+            virNetDevBandwidthClear(vm->def->nets[i]->ifname);
+    }
 }

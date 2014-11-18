@@ -810,7 +810,6 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
                                            char **res_ifname,
                                            virNetDevVPortProfileOp vmOp,
                                            char *stateDir,
-                                           virNetDevBandwidthPtr bandwidth,
                                            unsigned int flags)
 {
     const char *type = (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
@@ -921,14 +920,6 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
         if (VIR_STRDUP(*res_ifname, cr_ifname) < 0)
             goto disassociate_exit;
         rc = 0;
-    }
-
-    if (virNetDevBandwidthSet(cr_ifname, bandwidth, false) < 0) {
-        if (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP)
-            VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
-        else
-            rc = -1;
-        goto disassociate_exit;
     }
 
     if (vmOp == VIR_NETDEV_VPORT_PROFILE_OP_CREATE ||
@@ -1073,7 +1064,6 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname ATTRIBUTE_UNUSED,
                                            char **res_ifname ATTRIBUTE_UNUSED,
                                            virNetDevVPortProfileOp vmop ATTRIBUTE_UNUSED,
                                            char *stateDir ATTRIBUTE_UNUSED,
-                                           virNetDevBandwidthPtr bandwidth ATTRIBUTE_UNUSED,
                                            unsigned int flags)
 {
     virCheckFlags(0, -1);

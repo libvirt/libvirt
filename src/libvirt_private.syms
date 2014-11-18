@@ -507,6 +507,7 @@ virInterfaceRemove;
 
 
 # conf/netdev_bandwidth_conf.h
+virDomainClearNetBandwidth;
 virNetDevBandwidthFormat;
 virNetDevBandwidthParse;
 
