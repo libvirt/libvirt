@@ -72,8 +72,8 @@ parallelsStorageClose(virConnectPtr conn)
 {
     parallelsConnPtr privconn = conn->privateData;
 
-    virStorageDriverStatePtr storageState = conn->privateData->storageState;
-    conn->privateData->storageState = NULL;
+    virStorageDriverStatePtr storageState = privconn->storageState;
+    privconn->storageState = NULL;
 
     parallelsStorageLock(storageState);
     virStoragePoolObjListFree(&privconn->pools);
@@ -189,7 +189,7 @@ parallelsPoolCreateByPath(virConnectPtr conn, const char *path)
     if (!(pool = virStoragePoolObjAssignDef(pools, def)))
         goto error;
 
-    if (virStoragePoolObjSaveDef(conn->privateData->storageState, pool, def) < 0) {
+    if (virStoragePoolObjSaveDef(privconn->storageState, pool, def) < 0) {
         virStoragePoolObjRemove(pools, pool);
         goto error;
     }
@@ -404,7 +404,7 @@ parallelsPoolsAdd(virDomainObjPtr dom,
 static int parallelsLoadPools(virConnectPtr conn)
 {
     parallelsConnPtr privconn = conn->privateData;
-    virStorageDriverStatePtr storageState = conn->privateData->storageState;
+    virStorageDriverStatePtr storageState = privconn->storageState;
     char *base = NULL;
     size_t i;
 
@@ -461,6 +461,7 @@ parallelsStorageOpen(virConnectPtr conn,
                      virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                      unsigned int flags)
 {
+    parallelsConnPtr privconn = conn->privateData;
     virStorageDriverStatePtr storageState;
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -475,7 +476,7 @@ parallelsStorageOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
-    conn->privateData->storageState = storageState;
+    privconn->storageState = storageState;
     parallelsStorageLock(storageState);
 
     if (parallelsLoadPools(conn))
@@ -728,7 +729,7 @@ parallelsStoragePoolDefineXML(virConnectPtr conn,
     if (!(pool = virStoragePoolObjAssignDef(&privconn->pools, def)))
         goto cleanup;
 
-    if (virStoragePoolObjSaveDef(conn->privateData->storageState, pool, def) < 0) {
+    if (virStoragePoolObjSaveDef(privconn->storageState, pool, def) < 0) {
         virStoragePoolObjRemove(&privconn->pools, pool);
         def = NULL;
         goto cleanup;
