@@ -1,7 +1,7 @@
 /*
  * virpolkit.c: helpers for using polkit APIs
  *
- * Copyright (C) 2013 Red Hat, Inc.
+ * Copyright (C) 2013, 2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -64,8 +64,8 @@ int virPolkitCheckAuth(const char *actionid,
     DBusMessage *reply = NULL;
     char **retdetails = NULL;
     size_t nretdetails = 0;
-    int is_authorized; /* var-args requires int not bool */
-    int is_challenge; /* var-args requires int not bool */
+    bool is_authorized;
+    bool is_challenge;
     bool is_dismissed = false;
     size_t i;
     int ret = -1;

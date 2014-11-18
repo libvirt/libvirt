@@ -846,9 +846,10 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
 # undef SET_NEXT_VAL
 
 
-# define GET_NEXT_VAL(dbustype, vargtype, fmt)                          \
+# define GET_NEXT_VAL(dbustype, member, vargtype, fmt)                  \
     do {                                                                \
         dbustype *x;                                                    \
+        DBusBasicValue v;                                               \
         if (arrayref) {                                                 \
             VIR_DEBUG("Use arrayref");                                  \
             vargtype **xptrptr = arrayptr;                              \
@@ -857,9 +858,11 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
             x = (dbustype *)(*xptrptr + (*narrayptr - 1));              \
             VIR_DEBUG("Expanded to %zu", *narrayptr);                   \
         } else {                                                        \
-            x = (dbustype *)va_arg(args, vargtype *);                   \
+            x = (dbustype *)&(v.member);                                \
         }                                                               \
         dbus_message_iter_get_basic(iter, x);                           \
+        if (!arrayref)                                                  \
+            *va_arg(args, vargtype *) = v.member;                       \
         VIR_DEBUG("Read basic type '" #dbustype "' varg '" #vargtype    \
                   "' val '" fmt "'", (vargtype)*x);                     \
     } while (0)
@@ -946,39 +949,39 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
 
         switch (*t) {
         case DBUS_TYPE_BYTE:
-            GET_NEXT_VAL(unsigned char, unsigned char, "%d");
+            GET_NEXT_VAL(unsigned char, byt, unsigned char, "%d");
             break;
 
         case DBUS_TYPE_BOOLEAN:
-            GET_NEXT_VAL(dbus_bool_t, int, "%d");
+            GET_NEXT_VAL(dbus_bool_t, bool_val, bool, "%d");
             break;
 
         case DBUS_TYPE_INT16:
-            GET_NEXT_VAL(dbus_int16_t, short, "%d");
+            GET_NEXT_VAL(dbus_int16_t, i16, short, "%d");
             break;
 
         case DBUS_TYPE_UINT16:
-            GET_NEXT_VAL(dbus_uint16_t, unsigned short, "%d");
+            GET_NEXT_VAL(dbus_uint16_t, u16, unsigned short, "%d");
             break;
 
         case DBUS_TYPE_INT32:
-            GET_NEXT_VAL(dbus_uint32_t, int, "%d");
+            GET_NEXT_VAL(dbus_uint32_t, i32, int, "%d");
             break;
 
         case DBUS_TYPE_UINT32:
-            GET_NEXT_VAL(dbus_uint32_t, unsigned int, "%u");
+            GET_NEXT_VAL(dbus_uint32_t, u32, unsigned int, "%u");
             break;
 
         case DBUS_TYPE_INT64:
-            GET_NEXT_VAL(dbus_uint64_t, long long, "%lld");
+            GET_NEXT_VAL(dbus_uint64_t, i64, long long, "%lld");
             break;
 
         case DBUS_TYPE_UINT64:
-            GET_NEXT_VAL(dbus_uint64_t, unsigned long long, "%llu");
+            GET_NEXT_VAL(dbus_uint64_t, u64, unsigned long long, "%llu");
             break;
 
         case DBUS_TYPE_DOUBLE:
-            GET_NEXT_VAL(double, double, "%lf");
+            GET_NEXT_VAL(double, dbl, double, "%lf");
             break;
 
         case DBUS_TYPE_STRING:
