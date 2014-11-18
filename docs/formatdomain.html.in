@@ -147,7 +147,10 @@
         started up libvirt copies so called master NVRAM store file defined
         in <code>qemu.conf</code>. If needed, the <code>template</code>
         attribute can be used to per domain override map of master NVRAM stores
-        from the config file. <span class="since">Since 1.2.8</span></dd>
+        from the config file. Note, that for transient domains if the NVRAM file
+        has been created by libvirt it is left behind and it is management
+        application's responsibility to save and remove file (if needed to be
+        persistent). <span class="since">Since 1.2.8</span></dd>
       <dt><code>boot</code></dt>
       <dd>The <code>dev</code> attribute takes one of the values "fd", "hd",
         "cdrom" or "network" and is used to specify the next boot device
