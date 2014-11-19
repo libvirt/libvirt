@@ -3627,7 +3627,6 @@ virQEMUCapsGetDefaultMachine(virQEMUCapsPtr qemuCaps)
 static int
 virQEMUCapsFillDomainLoaderCaps(virQEMUCapsPtr qemuCaps,
                                 virDomainCapsLoaderPtr capsLoader,
-                                virArch arch,
                                 char **loader,
                                 size_t nloader)
 {
@@ -3655,8 +3654,7 @@ virQEMUCapsFillDomainLoaderCaps(virQEMUCapsPtr qemuCaps,
     VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->type,
                              VIR_DOMAIN_LOADER_TYPE_ROM);
 
-    if (arch == VIR_ARCH_X86_64 &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE) &&
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_FORMAT))
         VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->type,
                                  VIR_DOMAIN_LOADER_TYPE_PFLASH);
@@ -3673,14 +3671,13 @@ virQEMUCapsFillDomainLoaderCaps(virQEMUCapsPtr qemuCaps,
 static int
 virQEMUCapsFillDomainOSCaps(virQEMUCapsPtr qemuCaps,
                             virDomainCapsOSPtr os,
-                            virArch arch,
                             char **loader,
                             size_t nloader)
 {
     virDomainCapsLoaderPtr capsLoader = &os->loader;
 
     os->device.supported = true;
-    if (virQEMUCapsFillDomainLoaderCaps(qemuCaps, capsLoader, arch,
+    if (virQEMUCapsFillDomainLoaderCaps(qemuCaps, capsLoader,
                                         loader, nloader) < 0)
         return -1;
     return 0;
@@ -3776,7 +3773,7 @@ virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
 
     domCaps->maxvcpus = maxvcpus;
 
-    if (virQEMUCapsFillDomainOSCaps(qemuCaps, os, domCaps->arch,
+    if (virQEMUCapsFillDomainOSCaps(qemuCaps, os,
                                     loader, nloader) < 0 ||
         virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps, disk) < 0 ||
         virQEMUCapsFillDomainDeviceHostdevCaps(qemuCaps, hostdev) < 0)
