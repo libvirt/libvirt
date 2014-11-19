@@ -321,7 +321,7 @@ getBlockDevice(uint32_t host,
     char *lun_path = NULL;
     DIR *lun_dir = NULL;
     struct dirent *lun_dirent = NULL;
-    int retval = 0;
+    int retval = -1;
     int direrr;
 
     if (virAsprintf(&lun_path, "/sys/bus/scsi/devices/%u:%u:%u:%u",
@@ -333,7 +333,6 @@ getBlockDevice(uint32_t host,
         virReportSystemError(errno,
                              _("Failed to opendir sysfs path '%s'"),
                              lun_path);
-        retval = -1;
         goto out;
     }
 
@@ -368,7 +367,7 @@ processLU(virStoragePoolObjPtr pool,
           uint32_t lun)
 {
     char *type_path = NULL;
-    int retval = 0;
+    int retval = -1;
     int device_type;
     char *block_device = NULL;
 
@@ -379,7 +378,6 @@ processLU(virStoragePoolObjPtr pool,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to determine if %u:%u:%u:%u is a Direct-Access LUN"),
                        host, bus, target, lun);
-        retval = -1;
         goto out;
     }
 
@@ -396,17 +394,19 @@ processLU(virStoragePoolObjPtr pool,
     VIR_DEBUG("%u:%u:%u:%u is a Direct-Access LUN",
               host, bus, target, lun);
 
-    if (getBlockDevice(host, bus, target, lun, &block_device) < 0)
+    if (getBlockDevice(host, bus, target, lun, &block_device) < 0) {
+        VIR_DEBUG("Failed to find block device for this LUN");
         goto out;
+    }
 
     if (virStorageBackendSCSINewLun(pool,
                                     host, bus, target, lun,
                                     block_device) < 0) {
         VIR_DEBUG("Failed to create new storage volume for %u:%u:%u:%u",
                   host, bus, target, lun);
-        retval = -1;
         goto out;
     }
+    retval = 0;
 
     VIR_DEBUG("Created new storage volume for %u:%u:%u:%u successfully",
               host, bus, target, lun);
@@ -451,10 +451,10 @@ virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
             continue;
         }
 
-        found = true;
-        VIR_DEBUG("Found LU '%s'", lun_dirent->d_name);
+        VIR_DEBUG("Found possible LU '%s'", lun_dirent->d_name);
 
-        processLU(pool, scanhost, bus, target, lun);
+        if (processLU(pool, scanhost, bus, target, lun) == 0)
+            found = true;
     }
 
     if (!found)
