@@ -1,6 +1,6 @@
 dnl The libdbus.so library
 dnl
-dnl Copyright (C) 2012-2013 Red Hat, Inc.
+dnl Copyright (C) 2012-2014 Red Hat, Inc.
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,7 @@ AC_DEFUN([LIBVIRT_CHECK_DBUS],[
     CFLAGS="$CFLAGS $DBUS_CFLAGS"
     LIBS="$LIBS $DBUS_LIBS"
     AC_CHECK_FUNCS([dbus_watch_get_unix_fd])
+    AC_CHECK_TYPES([DBusBasicValue], [], [], [[#include <dbus/dbus.h>]])
     CFLAGS="$old_CFLAGS"
     LIBS="$old_LIBS"
   fi
