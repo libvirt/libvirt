@@ -4342,6 +4342,7 @@ processSerialChangedEvent(virQEMUDriverPtr driver,
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virDomainChrDeviceState newstate;
+    virObjectEventPtr event = NULL;
     virDomainDeviceDef dev;
 
     if (connected)
@@ -4368,6 +4369,11 @@ processSerialChangedEvent(virQEMUDriverPtr driver,
         dev.data.chr->deviceType != VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL ||
         dev.data.chr->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO)
         goto endjob;
+
+    if (STREQ_NULLABLE(dev.data.chr->target.name, "org.qemu.guest_agent.0") &&
+        (event = virDomainEventAgentLifecycleNewFromObj(vm, newstate,
+                                                        VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_CHANNEL)))
+        qemuDomainEventQueue(driver, event);
 
     dev.data.chr->state = newstate;
 

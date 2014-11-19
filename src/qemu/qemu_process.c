@@ -2069,12 +2069,19 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
 
 
 static int
-qemuProcessRefreshChannelVirtioState(virDomainObjPtr vm,
-                                     virHashTablePtr info)
+qemuProcessRefreshChannelVirtioState(virQEMUDriverPtr driver,
+                                     virDomainObjPtr vm,
+                                     virHashTablePtr info,
+                                     int booted)
 {
     size_t i;
+    int agentReason = VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_CHANNEL;
     qemuMonitorChardevInfoPtr entry;
+    virObjectEventPtr event = NULL;
     char id[32];
+
+    if (booted)
+        agentReason = VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_DOMAIN_STARTED;
 
     for (i = 0; i < vm->def->nchannels; i++) {
         virDomainChrDefPtr chr = vm->def->channels[i];
@@ -2091,6 +2098,12 @@ qemuProcessRefreshChannelVirtioState(virDomainObjPtr vm,
             if (!(entry = virHashLookup(info, id)) ||
                 !entry->state)
                 continue;
+
+            if (entry->state != VIR_DOMAIN_CHR_DEVICE_STATE_DEFAULT &&
+                STREQ_NULLABLE(chr->target.name, "org.qemu.guest_agent.0") &&
+                (event = virDomainEventAgentLifecycleNewFromObj(vm, entry->state,
+                                                                agentReason)))
+                qemuDomainEventQueue(driver, event);
 
             chr->state = entry->state;
         }
@@ -2115,7 +2128,7 @@ qemuProcessReconnectRefreshChannelVirtioState(virQEMUDriverPtr driver,
     if (ret < 0)
         goto cleanup;
 
-    ret = qemuProcessRefreshChannelVirtioState(vm, info);
+    ret = qemuProcessRefreshChannelVirtioState(driver, vm, info, false);
 
  cleanup:
     virHashFree(info);
@@ -2171,7 +2184,8 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
                                                         info)) < 0)
             goto cleanup;
 
-        if ((ret = qemuProcessRefreshChannelVirtioState(vm, info)) < 0)
+        if ((ret = qemuProcessRefreshChannelVirtioState(driver, vm, info,
+                                                        true)) < 0)
             goto cleanup;
     }
 
