@@ -1389,7 +1389,7 @@ AC_ARG_WITH([firewalld],
 if test "x$with_firewalld" = "xcheck" ; then
    with_firewalld=$with_dbus
 fi
-if test "x$with_firewalld" == "xyes" ; then
+if test "x$with_firewalld" = "xyes" ; then
   if test "x$with_dbus" != "xyes" ; then
      AC_MSG_ERROR([You must have dbus enabled for firewalld support])
   fi
