@@ -174,8 +174,9 @@ storageStateInitialize(bool privileged,
     }
     driver->privileged = privileged;
 
-    /* Configuration paths are either $USER_CONFIG_HOME/libvirt/storage/... (session) or
-     * /etc/libvirt/storage/... (system).
+    /*
+     * Configuration paths are either $USER_CONFIG_HOME/libvirt/storage/...
+     * (session) or /etc/libvirt/storage/... (system).
      */
     if (virAsprintf(&driver->configDir,
                     "%s/storage", base) == -1)
@@ -338,7 +339,8 @@ storagePoolLookupByVolume(virStorageVolPtr vol)
 
     if (!pool) {
         virReportError(VIR_ERR_NO_STORAGE_POOL,
-                       _("no storage pool with matching name '%s'"), vol->pool);
+                       _("no storage pool with matching name '%s'"),
+                       vol->pool);
         return NULL;
     }
 
@@ -731,7 +733,9 @@ storagePoolUndefine(virStoragePoolPtr obj)
     if (virStoragePoolObjDeleteDef(pool) < 0)
         goto cleanup;
 
-    if (unlink(pool->autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
+    if (unlink(pool->autostartLink) < 0 &&
+        errno != ENOENT &&
+        errno != ENOTDIR) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to delete autostart link '%s': %s"),
                   pool->autostartLink, virStrerror(errno, ebuf, sizeof(ebuf)));
@@ -1343,13 +1347,14 @@ storageVolLookupByKey(virConnectPtr conn,
                 virStorageVolDefFindByKey(driver->pools.objs[i], key);
 
             if (vol) {
-                if (virStorageVolLookupByKeyEnsureACL(conn, driver->pools.objs[i]->def, vol) < 0) {
+                virStoragePoolDefPtr def = driver->pools.objs[i]->def;
+                if (virStorageVolLookupByKeyEnsureACL(conn, def, vol) < 0) {
                     virStoragePoolObjUnlock(driver->pools.objs[i]);
                     goto cleanup;
                 }
 
                 ret = virGetStorageVol(conn,
-                                       driver->pools.objs[i]->def->name,
+                                       def->name,
                                        vol->name,
                                        vol->key,
                                        NULL, NULL);
@@ -1772,7 +1777,8 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
     if ((backend = virStorageBackendForType(pool->def->type)) == NULL)
         goto cleanup;
 
-    origvol = virStorageVolDefFindByName(origpool ? origpool : pool, vobj->name);
+    origvol = virStorageVolDefFindByName(origpool ?
+                                         origpool : pool, vobj->name);
     if (!origvol) {
         virReportError(VIR_ERR_NO_STORAGE_VOL,
                        _("no storage vol with matching name '%s'"),
@@ -1805,7 +1811,8 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
 
     if (!backend->buildVolFrom) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       "%s", _("storage pool does not support volume creation from an existing volume"));
+                       "%s", _("storage pool does not support"
+                               " volume creation from an existing volume"));
         goto cleanup;
     }
 
@@ -2330,7 +2337,8 @@ storageConnectListAllStoragePools(virConnectPtr conn,
 
     storageDriverLock();
     ret = virStoragePoolObjListExport(conn, driver->pools, pools,
-                                      virConnectListAllStoragePoolsCheckACL, flags);
+                                      virConnectListAllStoragePoolsCheckACL,
+                                      flags);
     storageDriverUnlock();
 
  cleanup:
@@ -2639,7 +2647,8 @@ virStorageFileStat(virStorageSourcePtr src,
  * @buf: buffer to read the data into. buffer shall be freed by caller)
  *
  * Returns the count of bytes read on success and -1 on failure, -2 if the
- * function isn't supported by the backend. Libvirt error is reported on failure.
+ * function isn't supported by the backend.
+ * Libvirt error is reported on failure.
  */
 ssize_t
 virStorageFileReadHeader(virStorageSourcePtr src,
@@ -2895,7 +2904,8 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
         return -1;
 
     if (src->format <= VIR_STORAGE_FILE_NONE)
-        src->format = allow_probe ? VIR_STORAGE_FILE_AUTO : VIR_STORAGE_FILE_RAW;
+        src->format = allow_probe ?
+            VIR_STORAGE_FILE_AUTO : VIR_STORAGE_FILE_RAW;
 
     ret = virStorageFileGetMetadataRecurse(src, src, uid, gid,
                                            allow_probe, report_broken, cycle);
@@ -3110,7 +3120,8 @@ virStorageTranslateDiskSourcePool(virConnectPtr conn,
            def->src->srcpool->actualtype = VIR_STORAGE_TYPE_NETWORK;
            def->src->protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
 
-           if (virStorageTranslateDiskSourcePoolAuth(def, &pooldef->source) < 0)
+           if (virStorageTranslateDiskSourcePoolAuth(def,
+                                                     &pooldef->source) < 0)
                goto cleanup;
 
            if (virStorageAddISCSIPoolSourceHost(def, pooldef) < 0)
