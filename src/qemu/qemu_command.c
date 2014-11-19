@@ -7563,7 +7563,9 @@ qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
 
     case VIR_DOMAIN_LOADER_TYPE_PFLASH:
         /* UEFI is supported only for x86_64 currently */
-        if (def->os.arch != VIR_ARCH_X86_64) {
+        if (def->os.arch != VIR_ARCH_X86_64 &&
+            def->os.arch != VIR_ARCH_ARMV7L &&
+            def->os.arch != VIR_ARCH_AARCH64) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("pflash is not supported for %s guest architecture"),
                            virArchToString(def->os.arch));
