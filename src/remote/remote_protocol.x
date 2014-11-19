@@ -3108,6 +3108,14 @@ struct remote_connect_get_all_domain_stats_args {
     unsigned int flags;
 };
 
+struct remote_domain_event_callback_agent_lifecycle_msg {
+    int callbackID;
+    remote_nonnull_domain dom;
+
+    int state;
+    int reason;
+};
+
 struct remote_connect_get_all_domain_stats_ret {
     remote_domain_stats_record retStats<REMOTE_DOMAIN_LIST_MAX>;
 };
@@ -5506,5 +5514,11 @@ enum remote_procedure {
      * @generate: none
      * @acl: connect:write
      */
-    REMOTE_PROC_NODE_ALLOC_PAGES = 347
+    REMOTE_PROC_NODE_ALLOC_PAGES = 347,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_AGENT_LIFECYCLE = 348
 };

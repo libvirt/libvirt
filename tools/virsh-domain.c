@@ -11672,6 +11672,43 @@ vshEventTunablePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
         vshEventDone(data->ctl);
 }
 
+VIR_ENUM_DECL(vshEventAgentLifecycleState)
+VIR_ENUM_IMPL(vshEventAgentLifecycleState,
+              VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_LAST,
+              N_("unknown"),
+              N_("connected"),
+              N_("disconnected"))
+
+VIR_ENUM_DECL(vshEventAgentLifecycleReason)
+VIR_ENUM_IMPL(vshEventAgentLifecycleReason,
+              VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_LAST,
+              N_("unknown"),
+              N_("domain started"),
+              N_("channel event"))
+
+#define UNKNOWNSTR(str) (str ? str : N_("unsupported value"))
+static void
+vshEventAgentLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                            virDomainPtr dom,
+                            int state,
+                            int reason,
+                            void *opaque)
+{
+    vshDomEventData *data = opaque;
+
+    if (!data->loop && *data->count)
+        return;
+    vshPrint(data->ctl,
+             _("event 'agent-lifecycle' for domain %s: state: '%s' reason: '%s'\n"),
+             virDomainGetName(dom),
+             UNKNOWNSTR(vshEventAgentLifecycleStateTypeToString(state)),
+             UNKNOWNSTR(vshEventAgentLifecycleReasonTypeToString(reason)));
+
+    (*data->count)++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
 static vshEventCallback vshEventCallbacks[] = {
     { "lifecycle",
       VIR_DOMAIN_EVENT_CALLBACK(vshEventLifecyclePrint), },
@@ -11707,6 +11744,8 @@ static vshEventCallback vshEventCallbacks[] = {
       VIR_DOMAIN_EVENT_CALLBACK(vshEventBlockJobPrint), },
     { "tunable",
       VIR_DOMAIN_EVENT_CALLBACK(vshEventTunablePrint), },
+    { "agent-lifecycle",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventAgentLifecyclePrint), },
 };
 verify(VIR_DOMAIN_EVENT_ID_LAST == ARRAY_CARDINALITY(vshEventCallbacks));
 

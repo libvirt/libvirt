@@ -437,6 +437,8 @@ virDomainXMLOptionNew;
 
 
 # conf/domain_event.h
+virDomainEventAgentLifecycleNewFromDom;
+virDomainEventAgentLifecycleNewFromObj;
 virDomainEventBalloonChangeNewFromDom;
 virDomainEventBalloonChangeNewFromObj;
 virDomainEventBlockJob2NewFromDom;

@@ -3332,6 +3332,46 @@ typedef void (*virConnectDomainEventTunableCallback)(virConnectPtr conn,
                                                      void *opaque);
 
 
+typedef enum {
+    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_CONNECTED = 1, /* agent connected */
+    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_DISCONNECTED = 2, /* agent disconnected */
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_LAST
+# endif
+} virConnectDomainEventAgentLifecycleState;
+
+typedef enum {
+    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_UNKNOWN = 0, /* unknown state change reason */
+    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_DOMAIN_STARTED = 1, /* state changed due to domain start */
+    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_CHANNEL = 2, /* channel state changed */
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_LAST
+# endif
+} virConnectDomainEventAgentLifecycleReason;
+
+/**
+ * virConnectDomainEventAgentLifecycleCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @state: new state of the guest agent, one of virConnectDomainEventAgentLifecycleState
+ * @reason: reason for state change; one of virConnectDomainEventAgentLifecycleReason
+ * @opaque: application specified data
+ *
+ * This callback occurs when libvirt detects a change in the state of a guest
+ * agent.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE with virConnectDomainEventRegisterAny()
+ */
+typedef void (*virConnectDomainEventAgentLifecycleCallback)(virConnectPtr conn,
+                                                            virDomainPtr dom,
+                                                            int state,
+                                                            int reason,
+                                                            void *opaque);
+
+
 /**
  * VIR_DOMAIN_EVENT_CALLBACK:
  *
@@ -3367,6 +3407,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED = 15, /* virConnectDomainEventDeviceRemovedCallback */
     VIR_DOMAIN_EVENT_ID_BLOCK_JOB_2 = 16,    /* virConnectDomainEventBlockJobCallback */
     VIR_DOMAIN_EVENT_ID_TUNABLE = 17,        /* virConnectDomainEventTunableCallback */
+    VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE = 18,/* virConnectDomainEventAgentLifecycleCallback */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_ID_LAST

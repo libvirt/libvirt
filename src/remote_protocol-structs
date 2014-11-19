@@ -2573,6 +2573,12 @@ struct remote_connect_get_all_domain_stats_args {
         u_int                      stats;
         u_int                      flags;
 };
+struct remote_domain_event_callback_agent_lifecycle_msg {
+        int                        callbackID;
+        remote_nonnull_domain      dom;
+        int                        state;
+        int                        reason;
+};
 struct remote_connect_get_all_domain_stats_ret {
         struct {
                 u_int              retStats_len;
@@ -2927,4 +2933,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_BLOCK_COPY = 345,
         REMOTE_PROC_DOMAIN_EVENT_CALLBACK_TUNABLE = 346,
         REMOTE_PROC_NODE_ALLOC_PAGES = 347,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_AGENT_LIFECYCLE = 348,
 };

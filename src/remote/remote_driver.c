@@ -335,6 +335,11 @@ remoteDomainBuildEventCallbackTunable(virNetClientProgramPtr prog,
                                       void *evdata, void *opaque);
 
 static void
+remoteDomainBuildEventCallbackAgentLifecycle(virNetClientProgramPtr prog,
+                                             virNetClientPtr client,
+                                             void *evdata, void *opaque);
+
+static void
 remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                  virNetClientPtr client ATTRIBUTE_UNUSED,
                                  void *evdata, void *opaque);
@@ -489,6 +494,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteDomainBuildEventCallbackTunable,
       sizeof(remote_domain_event_callback_tunable_msg),
       (xdrproc_t)xdr_remote_domain_event_callback_tunable_msg },
+    { REMOTE_PROC_DOMAIN_EVENT_CALLBACK_AGENT_LIFECYCLE,
+      remoteDomainBuildEventCallbackAgentLifecycle,
+      sizeof(remote_domain_event_callback_agent_lifecycle_msg),
+      (xdrproc_t)xdr_remote_domain_event_callback_agent_lifecycle_msg },
 };
 
 
@@ -5481,6 +5490,28 @@ remoteDomainBuildEventCallbackTunable(virNetClientProgramPtr prog ATTRIBUTE_UNUS
     remoteEventQueue(priv, event, msg->callbackID);
 }
 
+
+static void
+remoteDomainBuildEventCallbackAgentLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                             virNetClientPtr client ATTRIBUTE_UNUSED,
+                                             void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    remote_domain_event_callback_agent_lifecycle_msg *msg = evdata;
+    struct private_data *priv = conn->privateData;
+    virDomainPtr dom;
+    virObjectEventPtr event = NULL;
+
+    if (!(dom = get_nonnull_domain(conn, msg->dom)))
+        return;
+
+    event = virDomainEventAgentLifecycleNewFromDom(dom, msg->state,
+                                                   msg->reason);
+
+    virDomainFree(dom);
+
+    remoteEventQueue(priv, event, msg->callbackID);
+}
 
 static void
 remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,

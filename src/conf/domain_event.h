@@ -193,6 +193,15 @@ virDomainEventTunableNewFromDom(virDomainPtr dom,
                                 virTypedParameterPtr params,
                                 int nparams);
 
+virObjectEventPtr
+virDomainEventAgentLifecycleNewFromObj(virDomainObjPtr obj,
+                                       int state,
+                                       int reason);
+
+virObjectEventPtr
+virDomainEventAgentLifecycleNewFromDom(virDomainPtr dom,
+                                       int state,
+                                       int reason);
 
 int
 virDomainEventStateRegister(virConnectPtr conn,

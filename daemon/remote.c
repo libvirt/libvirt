@@ -1008,6 +1008,41 @@ remoteRelayDomainEventTunable(virConnectPtr conn,
 }
 
 
+static int
+remoteRelayDomainEventAgentLifecycle(virConnectPtr conn,
+                                     virDomainPtr dom,
+                                     int state,
+                                     int reason,
+                                     void *opaque)
+{
+    daemonClientEventCallbackPtr callback = opaque;
+    remote_domain_event_callback_agent_lifecycle_msg data;
+
+    if (callback->callbackID < 0 ||
+        !remoteRelayDomainEventCheckACL(callback->client, conn, dom))
+        return -1;
+
+    VIR_DEBUG("Relaying domain agent lifecycle event %s %d, callback %d, "
+              " state %d, reason %d",
+              dom->name, dom->id, callback->callbackID, state, reason);
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+    data.callbackID = callback->callbackID;
+    make_nonnull_domain(&data.dom, dom);
+
+    data.state = state;
+    data.reason = reason;
+
+    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+                                  REMOTE_PROC_DOMAIN_EVENT_CALLBACK_AGENT_LIFECYCLE,
+                                  (xdrproc_t)xdr_remote_domain_event_callback_agent_lifecycle_msg,
+                                  &data);
+
+    return 0;
+}
+
+
 static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventReboot),
@@ -1027,6 +1062,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventDeviceRemoved),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventBlockJob2),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventTunable),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventAgentLifecycle),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

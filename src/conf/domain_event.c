@@ -54,6 +54,7 @@ static virClassPtr virDomainEventDeviceRemovedClass;
 static virClassPtr virDomainEventPMClass;
 static virClassPtr virDomainQemuMonitorEventClass;
 static virClassPtr virDomainEventTunableClass;
+static virClassPtr virDomainEventAgentLifecycleClass;
 
 
 static void virDomainEventDispose(void *obj);
@@ -70,6 +71,7 @@ static void virDomainEventDeviceRemovedDispose(void *obj);
 static void virDomainEventPMDispose(void *obj);
 static void virDomainQemuMonitorEventDispose(void *obj);
 static void virDomainEventTunableDispose(void *obj);
+static void virDomainEventAgentLifecycleDispose(void *obj);
 
 static void
 virDomainEventDispatchDefaultFunc(virConnectPtr conn,
@@ -215,6 +217,15 @@ struct _virDomainEventTunable {
 typedef struct _virDomainEventTunable virDomainEventTunable;
 typedef virDomainEventTunable *virDomainEventTunablePtr;
 
+struct _virDomainEventAgentLifecycle {
+    virDomainEvent parent;
+
+    int state;
+    int reason;
+};
+typedef struct _virDomainEventAgentLifecycle virDomainEventAgentLifecycle;
+typedef virDomainEventAgentLifecycle *virDomainEventAgentLifecyclePtr;
+
 
 static int
 virDomainEventsOnceInit(void)
@@ -302,6 +313,12 @@ virDomainEventsOnceInit(void)
                       "virDomainEventTunable",
                       sizeof(virDomainEventTunable),
                       virDomainEventTunableDispose)))
+        return -1;
+    if (!(virDomainEventAgentLifecycleClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventAgentLifecycle",
+                      sizeof(virDomainEventAgentLifecycle),
+                      virDomainEventAgentLifecycleDispose)))
         return -1;
     return 0;
 }
@@ -446,6 +463,13 @@ virDomainEventTunableDispose(void *obj)
 
     virTypedParamsFree(event->params, event->nparams);
 }
+
+static void
+virDomainEventAgentLifecycleDispose(void *obj)
+{
+    virDomainEventAgentLifecyclePtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+};
 
 
 static void *
@@ -1202,6 +1226,49 @@ virDomainEventDeviceRemovedNewFromDom(virDomainPtr dom,
                                           devAlias);
 }
 
+
+static virObjectEventPtr
+virDomainEventAgentLifecycleNew(int id,
+                                const char *name,
+                                const unsigned char *uuid,
+                                int state,
+                                int reason)
+{
+    virDomainEventAgentLifecyclePtr ev;
+
+    if (virDomainEventsInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNew(virDomainEventAgentLifecycleClass,
+                                 VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE,
+                                 id, name, uuid)))
+        return NULL;
+
+    ev->state = state;
+    ev->reason = reason;
+
+    return (virObjectEventPtr)ev;
+}
+
+virObjectEventPtr
+virDomainEventAgentLifecycleNewFromObj(virDomainObjPtr obj,
+                                       int state,
+                                       int reason)
+{
+    return virDomainEventAgentLifecycleNew(obj->def->id, obj->def->name,
+                                           obj->def->uuid, state, reason);
+}
+
+virObjectEventPtr
+virDomainEventAgentLifecycleNewFromDom(virDomainPtr dom,
+                                       int state,
+                                       int reason)
+{
+    return virDomainEventAgentLifecycleNew(dom->id, dom->name, dom->uuid,
+                                           state, reason);
+}
+
+
 /* This function consumes the params so caller don't have to care about
  * freeing it even if error occurs. The reason is to not have to do deep
  * copy of params.
@@ -1456,6 +1523,17 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                                        tunableEvent->params,
                                                        tunableEvent->nparams,
                                                        cbopaque);
+            goto cleanup;
+        }
+
+    case VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE:
+        {
+            virDomainEventAgentLifecyclePtr agentLifecycleEvent;
+            agentLifecycleEvent = (virDomainEventAgentLifecyclePtr)event;
+            ((virConnectDomainEventAgentLifecycleCallback)cb)(conn, dom,
+                                                              agentLifecycleEvent->state,
+                                                              agentLifecycleEvent->reason,
+                                                              cbopaque);
             goto cleanup;
         }
 
