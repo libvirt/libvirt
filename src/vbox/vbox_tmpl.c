@@ -4607,8 +4607,8 @@ static bool _machineStateOnline(PRUint32 state)
 
 static bool _machineStateInactive(PRUint32 state)
 {
-    return ((state > MachineState_FirstOnline) &&
-            (state < MachineState_LastOnline));
+    return ((state < MachineState_FirstOnline) ||
+            (state > MachineState_LastOnline));
 }
 
 static bool _machineStateNotStart(PRUint32 state)
