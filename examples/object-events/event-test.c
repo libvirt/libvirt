@@ -244,6 +244,47 @@ networkEventToString(int event)
     return ret;
 }
 
+static const char *
+guestAgentLifecycleEventStateToString(int event)
+{
+    const char *ret = "";
+
+    switch ((virConnectDomainEventAgentLifecycleState) event) {
+    case VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_DISCONNECTED:
+        ret = "Disconnected";
+        break;
+
+    case VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_CONNECTED:
+        ret = "Connected";
+        break;
+    }
+
+    return ret;
+}
+
+static const char *
+guestAgentLifecycleEventReasonToString(int event)
+{
+    const char *ret = "";
+
+    switch ((virConnectDomainEventAgentLifecycleReason) event) {
+    case VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_UNKNOWN:
+        ret = "Unknown";
+        break;
+
+    case VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_DOMAIN_STARTED:
+        ret = "Domain started";
+        break;
+
+    case VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_CHANNEL:
+        ret = "Channel event";
+        break;
+    }
+
+    return ret;
+}
+
+
 static int myDomainEventCallback1(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virDomainPtr dom,
                                   int event,
@@ -509,6 +550,21 @@ myDomainEventTunableCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+myDomainEventAgentLifecycleCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                    virDomainPtr dom,
+                                    int state,
+                                    int reason,
+                                    void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Domain %s(%d) guest agent state changed: %s reason: %s\n",
+           __func__, virDomainGetName(dom), virDomainGetID(dom),
+           guestAgentLifecycleEventStateToString(state),
+           guestAgentLifecycleEventReasonToString(reason));
+
+    return 0;
+}
+
 static void myFreeFunc(void *opaque)
 {
     char *str = opaque;
@@ -551,6 +607,7 @@ int main(int argc, char **argv)
     int callback15ret = -1;
     int callback16ret = -1;
     int callback17ret = -1;
+    int callback18ret = -1;
     struct sigaction action_stop;
 
     memset(&action_stop, 0, sizeof(action_stop));
@@ -674,6 +731,11 @@ int main(int argc, char **argv)
                                                      VIR_DOMAIN_EVENT_ID_TUNABLE,
                                                      VIR_DOMAIN_EVENT_CALLBACK(myDomainEventTunableCallback),
                                                      strdup("tunable"), myFreeFunc);
+    callback18ret = virConnectDomainEventRegisterAny(dconn,
+                                                     NULL,
+                                                     VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE,
+                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventAgentLifecycleCallback),
+                                                     strdup("guest agent lifecycle"), myFreeFunc);
 
     if ((callback1ret != -1) &&
         (callback2ret != -1) &&
@@ -690,7 +752,8 @@ int main(int argc, char **argv)
         (callback14ret != -1) &&
         (callback15ret != -1) &&
         (callback16ret != -1) &&
-        (callback17ret != -1)) {
+        (callback17ret != -1) &&
+        (callback18ret != -1)) {
         if (virConnectSetKeepAlive(dconn, 5, 3) < 0) {
             virErrorPtr err = virGetLastError();
             fprintf(stderr, "Failed to start keepalive protocol: %s\n",
@@ -723,6 +786,8 @@ int main(int argc, char **argv)
         virConnectDomainEventDeregisterAny(dconn, callback15ret);
         virConnectNetworkEventDeregisterAny(dconn, callback16ret);
         virConnectDomainEventDeregisterAny(dconn, callback17ret);
+        virConnectDomainEventDeregisterAny(dconn, callback18ret);
+
         if (callback8ret != -1)
             virConnectDomainEventDeregisterAny(dconn, callback8ret);
     }
