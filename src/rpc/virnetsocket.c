@@ -1251,10 +1251,14 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
         goto cleanup;
     }
 
-    if (virProcessGetStartTime(cr.pid, timestamp) < 0)
+    *timestamp = -1;
+    if (cr.pid && virProcessGetStartTime(cr.pid, timestamp) < 0)
         goto cleanup;
 
-    *pid = cr.pid;
+    if (cr.pid)
+        *pid = cr.pid;
+    else
+        *pid = -1;
     *uid = cr.uid;
     *gid = cr.gid;
 
