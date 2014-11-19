@@ -1663,9 +1663,15 @@ virNetDevBridgeCreate;
 virNetDevBridgeDelete;
 virNetDevBridgeGetSTP;
 virNetDevBridgeGetSTPDelay;
+virNetDevBridgeGetVlanFiltering;
+virNetDevBridgePortGetLearning;
+virNetDevBridgePortGetUnicastFlood;
+virNetDevBridgePortSetLearning;
+virNetDevBridgePortSetUnicastFlood;
 virNetDevBridgeRemovePort;
 virNetDevBridgeSetSTP;
 virNetDevBridgeSetSTPDelay;
+virNetDevBridgeSetVlanFiltering;
 
 
 # util/virnetdevmacvlan.h
