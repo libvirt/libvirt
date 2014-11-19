@@ -15579,7 +15579,8 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                           unsigned long long bandwidth,
                           unsigned int granularity,
                           unsigned long long buf_size,
-                          unsigned int flags)
+                          unsigned int flags,
+                          bool keepParentLabel)
 {
     virQEMUDriverPtr driver = conn->privateData;
     qemuDomainObjPrivatePtr priv;
@@ -15711,7 +15712,8 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     if (mirror->format > 0)
         format = virStorageFileFormatTypeToString(mirror->format);
 
-    if (virStorageSourceInitChainElement(mirror, disk->src, false) < 0)
+    if (virStorageSourceInitChainElement(mirror, disk->src,
+                                         keepParentLabel) < 0)
         goto endjob;
 
     if (qemuDomainPrepareDiskChainElement(driver, vm, mirror,
@@ -15823,7 +15825,7 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     flags &= (VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
               VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT);
     ret = qemuDomainBlockCopyCommon(vm, dom->conn, path, dest,
-                                    bandwidth, 0, 0, flags);
+                                    bandwidth, 0, 0, flags, true);
     vm = NULL;
     dest = NULL;
 
@@ -15896,8 +15898,8 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *disk, const char *destxml,
                                              VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    ret = qemuDomainBlockCopyCommon(vm, dom->conn, disk, dest,
-                                    bandwidth, granularity, buf_size, flags);
+    ret = qemuDomainBlockCopyCommon(vm, dom->conn, disk, dest, bandwidth,
+                                    granularity, buf_size, flags, false);
     vm = NULL;
 
  cleanup:
@@ -16072,7 +16074,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
             goto endjob;
         if (virStorageSourceInitChainElement(mirror,
                                              disk->src,
-                                             false) < 0)
+                                             true) < 0)
             goto endjob;
     }
 

@@ -1064,7 +1064,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                         copy = virStorageSourceCopy(disk->mirror, false);
                         if (virStorageSourceInitChainElement(copy,
                                                              persistDisk->src,
-                                                             false) < 0) {
+                                                             true) < 0) {
                             VIR_WARN("Unable to update persistent definition "
                                      "on vm %s after block job",
                                      vm->def->name);

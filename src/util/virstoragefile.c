@@ -1901,29 +1901,26 @@ virStorageSourceCopy(const virStorageSource *src,
  * virStorageSourceInitChainElement:
  * @newelem: New backing chain element disk source
  * @old: Existing top level disk source
- * @force: Force-copy the information
+ * @transferLabels: Transfer security lables.
  *
  * Transfers relevant information from the existing disk source to the new
  * backing chain element if they weren't supplied so that labelling info
  * and possibly other stuff is correct.
  *
- * If @force is true, user-supplied information for the new backing store
- * element is overwritten from @old instead of keeping it.
+ * If @transferLabels is true, security labels from the existing disk are copied
+ * to the new disk. Otherwise the default domain imagelabel label will be used.
  *
  * Returns 0 on success, -1 on error.
  */
 int
 virStorageSourceInitChainElement(virStorageSourcePtr newelem,
                                  virStorageSourcePtr old,
-                                 bool force)
+                                 bool transferLabels)
 {
     int ret = -1;
 
-    if (force) {
-        virStorageSourceSeclabelsClear(newelem);
-    }
-
-    if (!newelem->seclabels &&
+    if (transferLabels &&
+        !newelem->seclabels &&
         virStorageSourceSeclabelsCopy(newelem, old) < 0)
         goto cleanup;
 
@@ -2370,7 +2367,7 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent)
         }
 
         /* copy parent's labelling and other top level stuff */
-        if (virStorageSourceInitChainElement(ret, parent, false) < 0)
+        if (virStorageSourceInitChainElement(ret, parent, true) < 0)
             goto error;
     }
 
