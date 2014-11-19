@@ -112,8 +112,9 @@ static void
 virFirewallCheckUpdateLock(bool *lockflag,
                            const char *const*args)
 {
+    int status; /* Ignore failed commands without logging them */
     virCommandPtr cmd = virCommandNewArgs(args);
-    if (virCommandRun(cmd, NULL) < 0) {
+    if (virCommandRun(cmd, &status) < 0 || status) {
         VIR_INFO("locking not supported by %s", args[0]);
     } else {
         VIR_INFO("using locking for %s", args[0]);
