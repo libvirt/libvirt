@@ -37,6 +37,9 @@
 #include <netinet/in.h>
 
 #ifdef __linux__
+# if defined(HAVE_LIBNL)
+#  include "virnetlink.h"
+# endif
 # include <linux/sockios.h>
 # include <linux/param.h>     /* HZ                 */
 # if NETINET_LINUX_WORKAROUND
@@ -913,3 +916,147 @@ virNetDevBridgeSetVlanFiltering(const char *brname ATTRIBUTE_UNUSED,
     return -1;
 }
 #endif
+
+
+#if defined(__linux__) && defined(HAVE_LIBNL)
+/* virNetDevBridgeFDBAddDel:
+ * @mac: the MAC address being added to the table
+ * @ifname: name of the port (interface) of the bridge that wants this MAC
+ * @flags: any of virNetDevBridgeFDBFlags ORed together.
+ * @isAdd: true if adding the entry, fals if deleting
+ *
+ * Use netlink RTM_NEWNEIGH and RTM_DELNEIGH messages to add and
+ * delete entries from a bridge's fdb. The bridge itself is not
+ * referenced in the arguments to the function, only the name of the
+ * device that is attached to the bridge (since a device can only be
+ * attached to one bridge at a time, and must be attached for this
+ * function to make sense, the kernel easily infers which bridge's fdb
+ * is being modified by looking at the device name/index).
+ *
+ * Attempting to add an existing entry, or delete a non-existing entry
+ * *is* an error.
+ *
+ * returns 0 on success, -1 on failure.
+ */
+static int
+virNetDevBridgeFDBAddDel(const virMacAddr *mac, const char *ifname,
+                         unsigned int flags, bool isAdd)
+{
+    int ret = -1;
+    struct nlmsghdr *resp = NULL;
+    struct nlmsgerr *err;
+    unsigned int recvbuflen;
+    struct nl_msg *nl_msg;
+    struct ndmsg ndm = { .ndm_family = PF_BRIDGE, .ndm_state = NUD_NOARP };
+
+    if (virNetDevGetIndex(ifname, &ndm.ndm_ifindex) < 0)
+        return -1;
+
+    if (flags & VIR_NETDEVBRIDGE_FDB_FLAG_ROUTER)
+        ndm.ndm_flags |= NTF_ROUTER;
+    if (flags & VIR_NETDEVBRIDGE_FDB_FLAG_SELF)
+        ndm.ndm_flags |= NTF_SELF;
+    if (flags & VIR_NETDEVBRIDGE_FDB_FLAG_MASTER)
+        ndm.ndm_flags |= NTF_MASTER;
+    /* default self (same as iproute2's bridge command */
+    if (!(ndm.ndm_flags & (NTF_MASTER | NTF_SELF)))
+        ndm.ndm_flags |= NTF_SELF;
+
+    if (flags & VIR_NETDEVBRIDGE_FDB_FLAG_PERMANENT)
+        ndm.ndm_state |= NUD_PERMANENT;
+    if (flags & VIR_NETDEVBRIDGE_FDB_FLAG_TEMP)
+        ndm.ndm_state |= NUD_REACHABLE;
+    /* default permanent, same as iproute2's bridge command */
+    if (!(ndm.ndm_state & (NUD_PERMANENT | NUD_REACHABLE)))
+        ndm.ndm_state |= NUD_PERMANENT;
+
+    nl_msg = nlmsg_alloc_simple(isAdd ? RTM_NEWNEIGH : RTM_DELNEIGH,
+                                NLM_F_REQUEST |
+                                (isAdd ? (NLM_F_CREATE | NLM_F_EXCL) : 0));
+    if (!nl_msg) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (nlmsg_append(nl_msg, &ndm, sizeof(ndm), NLMSG_ALIGNTO) < 0)
+        goto buffer_too_small;
+    if (nla_put(nl_msg, NDA_LLADDR, VIR_MAC_BUFLEN, mac) < 0)
+        goto buffer_too_small;
+
+    /* NB: this message can also accept a Destination IP, a port, a
+     * vlan tag, and a via (see iproute2/bridge/fdb.c:fdb_modify()),
+     * but those aren't required for our application
+     */
+
+    if (virNetlinkCommand(nl_msg, &resp, &recvbuflen, 0, 0,
+                          NETLINK_ROUTE, 0) < 0) {
+        goto cleanup;
+    }
+    if (recvbuflen < NLMSG_LENGTH(0) || resp == NULL)
+        goto malformed_resp;
+
+    switch (resp->nlmsg_type) {
+    case NLMSG_ERROR:
+        err = (struct nlmsgerr *)NLMSG_DATA(resp);
+        if (resp->nlmsg_len < NLMSG_LENGTH(sizeof(*err)))
+            goto malformed_resp;
+        if (err->error) {
+            virReportSystemError(-err->error,
+                                 _("error adding fdb entry for %s"), ifname);
+            goto cleanup;
+        }
+        break;
+    case NLMSG_DONE:
+        break;
+
+    default:
+        goto malformed_resp;
+    }
+
+    ret = 0;
+ cleanup:
+    nlmsg_free(nl_msg);
+    VIR_FREE(resp);
+    return ret;
+
+ malformed_resp:
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("malformed netlink response message"));
+    goto cleanup;
+
+ buffer_too_small:
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("allocated netlink buffer is too small"));
+    goto cleanup;
+}
+
+
+#else
+static int
+virNetDevBridgeFDBAddDel(const virMacAddr *mac ATTRIBUTE_UNUSED,
+                         const char *ifname ATTRIBUTE_UNUSED,
+                         unsigned int fdbFlags ATTRIBUTE_UNUSED,
+                         bool isAdd ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to add/delete fdb entries on this platform"));
+    return -1;
+}
+
+
+#endif
+
+int
+virNetDevBridgeFDBAdd(const virMacAddr *mac, const char *ifname,
+                      unsigned int flags)
+{
+    return virNetDevBridgeFDBAddDel(mac, ifname, flags, true);
+}
+
+
+int
+virNetDevBridgeFDBDel(const virMacAddr *mac, const char *ifname,
+                      unsigned int flags)
+{
+    return virNetDevBridgeFDBAddDel(mac, ifname, flags, false);
+}

@@ -1661,6 +1661,8 @@ virNetDevBandwidthUpdateRate;
 virNetDevBridgeAddPort;
 virNetDevBridgeCreate;
 virNetDevBridgeDelete;
+virNetDevBridgeFDBAdd;
+virNetDevBridgeFDBDel;
 virNetDevBridgeGetSTP;
 virNetDevBridgeGetSTPDelay;
 virNetDevBridgeGetVlanFiltering;
