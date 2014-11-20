@@ -64,7 +64,4 @@ int networkDnsmasqConfContents(virNetworkObjPtr network,
 
 typedef char *(*networkDnsmasqLeaseFileNameFunc)(const char *netname);
 
-/* this allows the testsuite to replace the lease filename resolver function */
-extern networkDnsmasqLeaseFileNameFunc networkDnsmasqLeaseFileName;
-
 #endif /* __VIR_NETWORK__DRIVER_H */

@@ -209,9 +209,6 @@ networkDnsmasqLeaseFileNameDefault(const char *netname)
     return leasefile;
 }
 
-networkDnsmasqLeaseFileNameFunc networkDnsmasqLeaseFileName =
-    networkDnsmasqLeaseFileNameDefault;
-
 static char *
 networkDnsmasqLeaseFileNameCustom(const char *bridge)
 {
@@ -273,7 +270,7 @@ networkRemoveInactive(virNetworkObjPtr net)
         goto cleanup;
     }
 
-    if (!(leasefile = networkDnsmasqLeaseFileName(def->name)))
+    if (!(leasefile = networkDnsmasqLeaseFileNameDefault(def->name)))
         goto cleanup;
 
     if (!(customleasefile = networkDnsmasqLeaseFileNameCustom(def->bridge)))
@@ -1202,14 +1199,8 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
         ipdef = (ipdef == ipv6def) ? NULL : ipv6def;
     }
 
-    if (nbleases > 0) {
-        char *leasefile = networkDnsmasqLeaseFileName(network->def->name);
-        if (!leasefile)
-            goto cleanup;
-        virBufferAsprintf(&configbuf, "dhcp-leasefile=%s\n", leasefile);
-        VIR_FREE(leasefile);
+    if (nbleases > 0)
         virBufferAsprintf(&configbuf, "dhcp-lease-max=%d\n", nbleases);
-    }
 
     /* this is done once per interface */
     if (networkBuildDnsmasqHostsList(dctx, dns) < 0)

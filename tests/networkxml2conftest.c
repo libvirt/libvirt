@@ -100,16 +100,6 @@ testCompareXMLToConfHelper(const void *data)
     return result;
 }
 
-static char *
-testDnsmasqLeaseFileName(const char *netname)
-{
-    char *leasefile;
-
-    ignore_value(virAsprintf(&leasefile, "/var/lib/libvirt/dnsmasq/%s.leases",
-                             netname));
-    return leasefile;
-}
-
 static int
 mymain(void)
 {
@@ -120,8 +110,6 @@ mymain(void)
         = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.63\n--bind-dynamic", DNSMASQ);
     dnsmasqCapsPtr dhcpv6
         = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.64\n--bind-dynamic", DNSMASQ);
-
-    networkDnsmasqLeaseFileName = testDnsmasqLeaseFileName;
 
 #define DO_TEST(xname, xcaps)                                        \
     do {                                                             \
