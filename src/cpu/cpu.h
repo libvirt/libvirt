@@ -100,6 +100,9 @@ typedef char *
 typedef virCPUDataPtr
 (*cpuArchDataParse) (const char *xmlStr);
 
+typedef int
+(*cpuArchGetModels) (char ***models);
+
 struct cpuArchDriver {
     const char *name;
     const virArch *arch;
@@ -115,6 +118,7 @@ struct cpuArchDriver {
     cpuArchHasFeature    hasFeature;
     cpuArchDataFormat   dataFormat;
     cpuArchDataParse    dataParse;
+    cpuArchGetModels    getModels;
 };
 
 

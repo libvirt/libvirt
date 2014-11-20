@@ -650,6 +650,42 @@ ppcBaseline(virCPUDefPtr *cpus,
     goto cleanup;
 }
 
+static int
+ppcGetModels(char ***models)
+{
+    struct ppc_map *map;
+    struct ppc_model *model;
+    char *name;
+    size_t nmodels = 0;
+
+    if (!(map = ppcLoadMap()))
+        goto error;
+
+    if (models && VIR_ALLOC_N(*models, 0) < 0)
+        goto error;
+
+    model = map->models;
+    while (model != NULL) {
+        if (VIR_STRDUP(name, model->name) < 0)
+            goto error;
+
+        if (VIR_INSERT_ELEMENT(*models, 0, nmodels, name) < 0)
+            goto error;
+
+        model = model->next;
+    }
+
+ cleanup:
+    ppcMapFree(map);
+
+    return nmodels;
+
+ error:
+    virStringFreeList(*models);
+    nmodels = -1;
+    goto cleanup;
+}
+
 struct cpuArchDriver cpuDriverPowerPC = {
     .name = "ppc64",
     .arch = archs,
@@ -663,4 +699,5 @@ struct cpuArchDriver cpuDriverPowerPC = {
     .baseline   = ppcBaseline,
     .update     = ppcUpdate,
     .hasFeature = NULL,
+    .getModels  = ppcGetModels,
 };

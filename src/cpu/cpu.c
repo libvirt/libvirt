@@ -724,43 +724,6 @@ cpuModelIsAllowed(const char *model,
     return false;
 }
 
-struct cpuGetModelsData
-{
-    char **data;
-    size_t len;  /* It includes the last element of DATA, which is NULL. */
-};
-
-static int
-cpuGetArchModelsCb(cpuMapElement element,
-                   xmlXPathContextPtr ctxt,
-                   void *cbdata)
-{
-    char *name;
-    struct cpuGetModelsData *data = cbdata;
-    if (element != CPU_MAP_ELEMENT_MODEL)
-        return 0;
-
-    name = virXPathString("string(@name)", ctxt);
-    if (name == NULL)
-        return -1;
-
-    if (!data->data) {
-        VIR_FREE(name);
-        data->len++;
-        return 0;
-    }
-
-    return VIR_INSERT_ELEMENT(data->data, data->len - 1, data->len, name);
-}
-
-
-static int
-cpuGetArchModels(const char *arch, struct cpuGetModelsData *data)
-{
-    return cpuMapLoad(arch, cpuGetArchModelsCb, data);
-}
-
-
 /**
  * cpuGetModels:
  *
@@ -774,18 +737,17 @@ cpuGetArchModels(const char *arch, struct cpuGetModelsData *data)
 int
 cpuGetModels(const char *archName, char ***models)
 {
-    struct cpuGetModelsData data;
-    virArch arch;
     struct cpuArchDriver *driver;
-    data.data = NULL;
-    data.len = 1;
+    virArch arch;
+
+    VIR_DEBUG("arch=%s", archName);
 
     arch = virArchFromString(archName);
     if (arch == VIR_ARCH_NONE) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("cannot find architecture %s"),
                        archName);
-        goto error;
+        return -1;
     }
 
     driver = cpuGetSubDriver(arch);
@@ -793,21 +755,15 @@ cpuGetModels(const char *archName, char ***models)
         virReportError(VIR_ERR_INVALID_ARG,
                        _("cannot find a driver for the architecture %s"),
                        archName);
-        goto error;
+        return -1;
     }
 
-    if (models && VIR_ALLOC_N(data.data, data.len) < 0)
-        goto error;
+    if (!driver->getModels) {
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("CPU driver for %s has no CPU model support"),
+                       virArchToString(arch));
+        return -1;
+    }
 
-    if (cpuGetArchModels(driver->name, &data) < 0)
-        goto error;
-
-    if (models)
-        *models = data.data;
-
-    return data.len - 1;
-
- error:
-    virStringFreeList(data.data);
-    return -1;
+    return driver->getModels(models);
 }

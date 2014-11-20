@@ -2160,6 +2160,38 @@ x86HasFeature(const virCPUData *data,
     return ret;
 }
 
+static int
+x86GetModels(char ***models)
+{
+    const struct x86_map *map;
+    struct x86_model *model;
+    char *name;
+    size_t nmodels = 0;
+
+    if (!(map = virCPUx86GetMap()))
+        return -1;
+
+    if (models && VIR_ALLOC_N(*models, 0) < 0)
+        goto error;
+
+    model = map->models;
+    while (model != NULL) {
+        if (VIR_STRDUP(name, model->name) < 0)
+            goto error;
+
+        if (VIR_INSERT_ELEMENT(*models, 0, nmodels, name) < 0)
+            goto error;
+
+        model = model->next;
+    }
+
+    return nmodels;
+
+ error:
+    virStringFreeList(*models);
+    return -1;
+}
+
 
 struct cpuArchDriver cpuDriverX86 = {
     .name = "x86",
@@ -2180,4 +2212,5 @@ struct cpuArchDriver cpuDriverX86 = {
     .hasFeature = x86HasFeature,
     .dataFormat = x86CPUDataFormat,
     .dataParse  = x86CPUDataParse,
+    .getModels  = x86GetModels,
 };
