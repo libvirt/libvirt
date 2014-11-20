@@ -1,0 +1,6 @@
+<network>
+  <name>host-bridge-net</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a8e</uuid>
+  <forward mode='bridge'/>
+  <bridge name='br0' macTableManager='libvirt'/>
+</network>

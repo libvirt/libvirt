@@ -55,6 +55,10 @@ VIR_ENUM_IMPL(virNetworkForward,
               VIR_NETWORK_FORWARD_LAST,
               "none", "nat", "route", "bridge", "private", "vepa", "passthrough", "hostdev")
 
+VIR_ENUM_IMPL(virNetworkBridgeMACTableManager,
+              VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_LAST,
+              "default", "kernel", "libvirt")
+
 VIR_ENUM_DECL(virNetworkForwardHostdevDevice)
 VIR_ENUM_IMPL(virNetworkForwardHostdevDevice,
               VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_LAST,
@@ -2108,6 +2112,18 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     }
     VIR_FREE(tmp);
 
+    tmp = virXPathString("string(./bridge[1]/@macTableManager)", ctxt);
+    if (tmp) {
+        if ((def->macTableManager
+             = virNetworkBridgeMACTableManagerTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid macTableManager setting '%s' "
+                             "in network '%s'"), tmp, def->name);
+            goto error;
+        }
+        VIR_FREE(tmp);
+    }
+
     tmp = virXPathString("string(./mac[1]/@address)", ctxt);
     if (tmp) {
         if (virMacAddrParse(tmp, &def->mac) < 0) {
@@ -2286,6 +2302,14 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
         if (def->bridge) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("bridge name not allowed in %s mode (network '%s')"),
+                           virNetworkForwardTypeToString(def->forward.type),
+                           def->name);
+            goto error;
+        }
+        if (def->macTableManager) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("bridge macTableManager setting not allowed "
+                             "in %s mode (network '%s')"),
                            virNetworkForwardTypeToString(def->forward.type),
                            def->name);
             goto error;
@@ -2783,21 +2807,26 @@ virNetworkDefFormatBuf(virBufferPtr buf,
             virBufferAddLit(buf, "</forward>\n");
     }
 
+
     if (def->forward.type == VIR_NETWORK_FORWARD_NONE ||
-         def->forward.type == VIR_NETWORK_FORWARD_NAT ||
-         def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
+        def->forward.type == VIR_NETWORK_FORWARD_NAT ||
+        def->forward.type == VIR_NETWORK_FORWARD_ROUTE ||
+        def->bridge || def->macTableManager) {
 
         virBufferAddLit(buf, "<bridge");
-        if (def->bridge)
-            virBufferEscapeString(buf, " name='%s'", def->bridge);
-        virBufferAsprintf(buf, " stp='%s' delay='%ld'/>\n",
-                          def->stp ? "on" : "off",
-                          def->delay);
-    } else if (def->forward.type == VIR_NETWORK_FORWARD_BRIDGE &&
-               def->bridge) {
-        virBufferEscapeString(buf, "<bridge name='%s'/>\n", def->bridge);
+        virBufferEscapeString(buf, " name='%s'", def->bridge);
+        if (def->forward.type == VIR_NETWORK_FORWARD_NONE ||
+            def->forward.type == VIR_NETWORK_FORWARD_NAT ||
+            def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
+            virBufferAsprintf(buf, " stp='%s' delay='%ld'",
+                              def->stp ? "on" : "off", def->delay);
+        }
+        if (def->macTableManager) {
+            virBufferAsprintf(buf, " macTableManager='%s'",
+                             virNetworkBridgeMACTableManagerTypeToString(def->macTableManager));
+        }
+        virBufferAddLit(buf, "/>\n");
     }
-
 
     if (def->mac_specified) {
         char macaddr[VIR_MAC_STRING_BUFLEN];

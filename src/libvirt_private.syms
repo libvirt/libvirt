@@ -529,6 +529,8 @@ virNetDevVPortTypeToString;
 
 # conf/network_conf.h
 virNetworkAssignDef;
+virNetworkBridgeMACTableManagerTypeFromString;
+virNetworkBridgeMACTableManagerTypeToString;
 virNetworkConfigChangeSetup;
 virNetworkConfigFile;
 virNetworkDefCopy;

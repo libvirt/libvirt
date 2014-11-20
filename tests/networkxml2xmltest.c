@@ -120,6 +120,8 @@ mymain(void)
     DO_TEST("hostdev");
     DO_TEST_FULL("hostdev-pf", VIR_NETWORK_XML_INACTIVE);
     DO_TEST("passthrough-address-crash");
+    DO_TEST("nat-network-explicit-flood");
+    DO_TEST("host-bridge-no-flood");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

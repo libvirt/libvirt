@@ -65,6 +65,15 @@
               </attribute>
             </optional>
 
+            <optional>
+              <attribute name="macTableManager">
+                <choice>
+                  <value>kernel</value>
+                  <value>libvirt</value>
+                </choice>
+              </attribute>
+            </optional>
+
           </element>
         </optional>
 

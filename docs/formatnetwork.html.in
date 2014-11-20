@@ -81,7 +81,7 @@
 
     <pre>
         ...
-        &lt;bridge name="virbr0" stp="on" delay="5"/&gt;
+        &lt;bridge name="virbr0" stp="on" delay="5" macTableManager="libvirt"/&gt;
         &lt;domain name="example.com"/&gt;
         &lt;forward mode="nat" dev="eth0"/&gt;
         ...</pre>
@@ -92,18 +92,56 @@
         defines the name of a bridge device which will be used to construct
         the virtual network. The virtual machines will be connected to this
         bridge device allowing them to talk to each other. The bridge device
-        may also be connected to the LAN. It is recommended that bridge
-        device names started with the prefix <code>vir</code>, but the name
-        <code>virbr0</code> is reserved for the "default" virtual
-        network.  This element should always be provided when defining
+        may also be connected to the LAN. When defining
         a new network with a <code>&lt;forward&gt;</code> mode of
+
         "nat" or "route" (or an isolated network with
-        no <code>&lt;forward&gt;</code> element).
+        no <code>&lt;forward&gt;</code> element), libvirt will
+        automatically generate a unique name for the bridge device if
+        none is given, and this name will be permanently stored in the
+        network configuration so that that the same name will be used
+        every time the network is started. For these types of networks
+        (nat, routed, and isolated), a bridge name beginning with the
+        prefix "virbr" is recommended (and that is what is
+        auto-generated), but not enforced.
         Attribute <code>stp</code> specifies if Spanning Tree Protocol
         is 'on' or 'off' (default is
         'on'). Attribute <code>delay</code> sets the bridge's forward
         delay value in seconds (default is 0).
         <span class="since">Since 0.3.0</span>
+
+        <p>
+          The <code>macTableManager</code> attribute of the bridge
+          element is used to tell libvirt how the bridge's MAC address
+          table (used to determine the correct egress port for packets
+          based on destination MAC address) will be managed. In the
+          default <code>kernel</code> setting, the kernel
+          automatically adds and removes entries, typically using
+          learning, flooding, and promiscuous mode on the bridge's
+          ports in order to determine the proper egress port for
+          packets.  When <code>macTableManager</code> is set
+          to <code>libvirt</code>, libvirt disables kernel management
+          of the MAC table (in the case of the Linux host bridge, this
+          means enabling vlan_filtering on the bridge, and disabling
+          learning and unicast_filter for all bridge ports), and
+          explicitly adds/removes entries to the table according to
+          the MAC addresses in the domain interface configurations.
+          Allowing libvirt to manage the MAC table can improve
+          performance - with a Linux host bridge, for example, turning
+          off learning and unicast_flood on ports has its own
+          performance advantage, and can also lead to an additional
+          boost by permitting the kernel to automatically turn off
+          promiscuous mode on some ports of the bridge (in particular,
+          the port attaching the bridge to the physical
+          network). However, it can also cause some networking setups
+          to stop working (e.g. vlan tagging, multicast,
+          guest-initiated changes to MAC address) and is not supported
+          by older kernels.
+          <span class="since">Since 1.2.11, requires kernel 3.17 or
+          newer</span>
+        </p>
+
+
       </dd>
       <dt><code>domain</code></dt>
       <dd>

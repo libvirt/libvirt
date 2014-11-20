@@ -54,6 +54,16 @@ typedef enum {
 } virNetworkForwardType;
 
 typedef enum {
+   VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_DEFAULT = 0,
+   VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_KERNEL,
+   VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_LIBVIRT,
+
+   VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_LAST,
+} virNetworkBridgeMACTableManagerType;
+
+VIR_ENUM_DECL(virNetworkBridgeMACTableManager)
+
+typedef enum {
     VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NONE = 0,
     VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI,
     VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV,
@@ -231,6 +241,7 @@ struct _virNetworkDef {
     int   connections; /* # of guest interfaces connected to this network */
 
     char *bridge;       /* Name of bridge device */
+    int  macTableManager; /* enum virNetworkBridgeMACTableManager */
     char *domain;
     unsigned long delay;   /* Bridge forward delay (ms) */
     bool stp; /* Spanning tree protocol */
