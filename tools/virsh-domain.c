@@ -1709,6 +1709,17 @@ static void vshCatchInt(int sig ATTRIBUTE_UNUSED,
     intCaught = 1;
 }
 
+static void
+vshBlockJobStatusHandler(virConnectPtr conn ATTRIBUTE_UNUSED,
+                         virDomainPtr dom ATTRIBUTE_UNUSED,
+                         const char *disk ATTRIBUTE_UNUSED,
+                         int type ATTRIBUTE_UNUSED,
+                         int status,
+                         void *opaque)
+{
+    *(int *) opaque = status;
+}
+
 /*
  * "blockcommit" command
  */
@@ -1808,6 +1819,8 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
     const char *path = NULL;
     bool quit = false;
     int abort_flags = 0;
+    int status = -1;
+    int cb_id = -1;
 
     blocking |= vshCommandOptBool(cmd, "timeout") || pivot || finish;
     if (blocking) {
@@ -1836,6 +1849,17 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, "%s", _("missing --wait option"));
         return false;
     }
+
+    virConnectDomainEventGenericCallback cb =
+        VIR_DOMAIN_EVENT_CALLBACK(vshBlockJobStatusHandler);
+
+    if ((cb_id = virConnectDomainEventRegisterAny(ctl->conn,
+                                                  dom,
+                                                  VIR_DOMAIN_EVENT_ID_BLOCK_JOB,
+                                                  cb,
+                                                  &status,
+                                                  NULL)) < 0)
+        vshResetLibvirtError();
 
     if (!blockJobImpl(ctl, cmd, VSH_CMD_BLOCK_JOB_COMMIT, &dom))
         goto cleanup;
@@ -1878,7 +1902,7 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
                      intCaught ? "interrupted" : "timeout");
             intCaught = 0;
             timeout = 0;
-            quit = true;
+            status = VIR_DOMAIN_BLOCK_JOB_CANCELED;
             if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
                 vshError(ctl, _("failed to abort job for disk %s"), path);
                 goto cleanup;
@@ -1889,6 +1913,9 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
             usleep(500 * 1000);
         }
     }
+
+    if (status == VIR_DOMAIN_BLOCK_JOB_CANCELED)
+        quit = true;
 
     if (verbose && !quit) {
         /* printf [100 %] */
@@ -1920,6 +1947,8 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
         virDomainFree(dom);
     if (blocking)
         sigaction(SIGINT, &old_sig_action, NULL);
+    if (cb_id >= 0)
+        virConnectDomainEventDeregisterAny(ctl->conn, cb_id);
     return ret;
 }
 
@@ -2043,6 +2072,8 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
     char *xmlstr = NULL;
     virTypedParameterPtr params = NULL;
     int nparams = 0;
+    int status = -1;
+    int cb_id = -1;
 
     if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
         return false;
@@ -2082,6 +2113,17 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, "%s", _("missing --wait option"));
         return false;
     }
+
+    virConnectDomainEventGenericCallback cb =
+        VIR_DOMAIN_EVENT_CALLBACK(vshBlockJobStatusHandler);
+
+    if ((cb_id = virConnectDomainEventRegisterAny(ctl->conn,
+                                                  dom,
+                                                  VIR_DOMAIN_EVENT_ID_BLOCK_JOB,
+                                                  cb,
+                                                  &status,
+                                                  NULL)) < 0)
+        vshResetLibvirtError();
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
@@ -2216,7 +2258,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
                      intCaught ? "interrupted" : "timeout");
             intCaught = 0;
             timeout = 0;
-            quit = true;
+            status = VIR_DOMAIN_BLOCK_JOB_CANCELED;
             if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
                 vshError(ctl, _("failed to abort job for disk %s"), path);
                 goto cleanup;
@@ -2227,6 +2269,9 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
             usleep(500 * 1000);
         }
     }
+
+    if (status == VIR_DOMAIN_BLOCK_JOB_CANCELED)
+        quit = true;
 
     if (!quit && pivot) {
         abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT;
@@ -2256,6 +2301,8 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         virDomainFree(dom);
     if (blocking)
         sigaction(SIGINT, &old_sig_action, NULL);
+    if (cb_id >= 0)
+        virConnectDomainEventDeregisterAny(ctl->conn, cb_id);
     return ret;
 }
 
@@ -2513,6 +2560,8 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
     const char *path = NULL;
     bool quit = false;
     int abort_flags = 0;
+    int status = -1;
+    int cb_id = -1;
 
     if (blocking) {
         if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
@@ -2537,6 +2586,17 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, "%s", _("missing --wait option"));
         return false;
     }
+
+    virConnectDomainEventGenericCallback cb =
+        VIR_DOMAIN_EVENT_CALLBACK(vshBlockJobStatusHandler);
+
+    if ((cb_id = virConnectDomainEventRegisterAny(ctl->conn,
+                                                  dom,
+                                                  VIR_DOMAIN_EVENT_ID_BLOCK_JOB,
+                                                  cb,
+                                                  &status,
+                                                  NULL)) < 0)
+        vshResetLibvirtError();
 
     if (!blockJobImpl(ctl, cmd, VSH_CMD_BLOCK_JOB_PULL, &dom))
         goto cleanup;
@@ -2574,7 +2634,7 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
                      intCaught ? "interrupted" : "timeout");
             intCaught = 0;
             timeout = 0;
-            quit = true;
+            status = VIR_DOMAIN_BLOCK_JOB_CANCELED;
             if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
                 vshError(ctl, _("failed to abort job for disk %s"), path);
                 goto cleanup;
@@ -2585,6 +2645,9 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
             usleep(500 * 1000);
         }
     }
+
+    if (status == VIR_DOMAIN_BLOCK_JOB_CANCELED)
+        quit = true;
 
     if (verbose && !quit) {
         /* printf [100 %] */
@@ -2598,6 +2661,8 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
         virDomainFree(dom);
     if (blocking)
         sigaction(SIGINT, &old_sig_action, NULL);
+    if (cb_id >= 0)
+        virConnectDomainEventDeregisterAny(ctl->conn, cb_id);
     return ret;
 }
 
