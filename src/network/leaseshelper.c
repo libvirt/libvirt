@@ -180,7 +180,11 @@ main(int argc, char **argv)
 
     ip = argv[3];
     mac = argv[2];
-    action = virLeaseActionTypeFromString(argv[1]);
+
+    if ((action = virLeaseActionTypeFromString(argv[1])) < 0) {
+        fprintf(stderr, _("Unsupported action: %s\n"), argv[1]);
+        exit(EXIT_FAILURE);
+    }
 
     /* In case hostname is known, it is the 5th argument */
     if (argc == 5)
@@ -230,9 +234,47 @@ main(int argc, char **argv)
         goto cleanup;
     }
 
-    if (action == VIR_LEASE_ACTION_ADD ||
-        action == VIR_LEASE_ACTION_OLD ||
-        action == VIR_LEASE_ACTION_DEL) {
+    switch ((enum virLeaseActionFlags) action) {
+    case  VIR_LEASE_ACTION_ADD:
+    case VIR_LEASE_ACTION_OLD:
+        if (!mac)
+            break;
+        delete = true;
+
+        /* Create new lease */
+        if (!(lease_new = virJSONValueNewObject())) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to create json"));
+            goto cleanup;
+        }
+
+        if (!exptime ||
+            virStrToLong_ll(exptime, NULL, 10, &expirytime) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to convert lease expiry time to long long: %s"),
+                           NULLSTR(exptime));
+            goto cleanup;
+        }
+
+        if (iaid && virJSONValueObjectAppendString(lease_new, "iaid", iaid) < 0)
+            goto cleanup;
+        if (ip && virJSONValueObjectAppendString(lease_new, "ip-address", ip) < 0)
+            goto cleanup;
+        if (mac && virJSONValueObjectAppendString(lease_new, "mac-address", mac) < 0)
+            goto cleanup;
+        if (hostname && virJSONValueObjectAppendString(lease_new, "hostname", hostname) < 0)
+            goto cleanup;
+        if (clientid && virJSONValueObjectAppendString(lease_new, "client-id", clientid) < 0)
+            goto cleanup;
+        if (server_duid && virJSONValueObjectAppendString(lease_new, "server-duid", server_duid) < 0)
+            goto cleanup;
+        if (expirytime && virJSONValueObjectAppendNumberLong(lease_new, "expiry-time", expirytime) < 0)
+            goto cleanup;
+
+        break;
+
+    case VIR_LEASE_ACTION_DEL:
+        delete = true;
         /* Custom ipv6 leases *will not* be created if the env-var DNSMASQ_MAC
          * is not set. In the special case, when the $(interface).status file
          * is not already present and dnsmasq is (re)started, the corresponding
@@ -246,46 +288,15 @@ main(int argc, char **argv)
          * the new lease will be created irrespective of whether the MACID is
          * known or not.
          */
-        if (mac || action == VIR_LEASE_ACTION_DEL) {
+        if (mac) {
             /* Delete the corresponding lease, if it already exists */
             delete = true;
-            if (action == VIR_LEASE_ACTION_ADD ||
-                action == VIR_LEASE_ACTION_OLD) {
-                /* Create new lease */
-                if (!(lease_new = virJSONValueNewObject())) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("failed to create json"));
-                    goto cleanup;
-                }
-
-                if (!exptime ||
-                    virStrToLong_ll(exptime, NULL, 10, &expirytime) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Unable to convert lease expiry time to long long: %s"),
-                                   NULLSTR(exptime));
-                    goto cleanup;
-                }
-
-                if (iaid && virJSONValueObjectAppendString(lease_new, "iaid", iaid) < 0)
-                    goto cleanup;
-                if (ip && virJSONValueObjectAppendString(lease_new, "ip-address", ip) < 0)
-                    goto cleanup;
-                if (mac && virJSONValueObjectAppendString(lease_new, "mac-address", mac) < 0)
-                    goto cleanup;
-                if (hostname && virJSONValueObjectAppendString(lease_new, "hostname", hostname) < 0)
-                    goto cleanup;
-                if (clientid && virJSONValueObjectAppendString(lease_new, "client-id", clientid) < 0)
-                    goto cleanup;
-                if (server_duid && virJSONValueObjectAppendString(lease_new, "server-duid", server_duid) < 0)
-                    goto cleanup;
-                if (expirytime && virJSONValueObjectAppendNumberLong(lease_new, "expiry-time", expirytime) < 0)
-                    goto cleanup;
-            }
         }
-    } else if (action != VIR_LEASE_ACTION_INIT) {
-        fprintf(stderr, _("Unsupported action: %s\n"),
-                virLeaseActionTypeToString(action));
-        exit(EXIT_FAILURE);
+        break;
+
+    case VIR_LEASE_ACTION_INIT:
+    case VIR_LEASE_ACTION_LAST:
+        break;
     }
 
     if (!(leases_array_new = virJSONValueNewArray())) {
@@ -429,7 +440,8 @@ main(int argc, char **argv)
         }
         lease_new = NULL;
 
-    default:
+        /* fallthrough */
+    case VIR_LEASE_ACTION_DEL:
         if (!(leases_str = virJSONValueToString(leases_array_new, true))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("empty json array"));
@@ -440,6 +452,10 @@ main(int argc, char **argv)
         if (virFileRewrite(custom_lease_file, 0644,
                            customLeaseRewriteFile, &leases_str) < 0)
             goto cleanup;
+        break;
+
+    case VIR_LEASE_ACTION_LAST:
+        break;
     }
 
     rv = EXIT_SUCCESS;
