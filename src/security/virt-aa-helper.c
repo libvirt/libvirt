@@ -1251,6 +1251,12 @@ main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
+    if (virThreadInitialize() < 0 ||
+        virErrorInitialize() < 0) {
+        fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
     /* clear the environment */
     environ = NULL;
     if (setenv("PATH", "/sbin:/usr/sbin", 1) != 0)
