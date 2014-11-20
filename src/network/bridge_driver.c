@@ -1906,6 +1906,29 @@ networkAddAddrToBridge(virNetworkObjPtr network,
     return 0;
 }
 
+
+static int
+networkStartHandleMACTableManagerMode(virNetworkObjPtr network,
+                                      const char *macTapIfName)
+{
+    const char *brname = network->def->bridge;
+
+    if (brname &&
+        network->def->macTableManager
+        == VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_LIBVIRT) {
+        if (virNetDevBridgeSetVlanFiltering(brname, true) < 0)
+            return -1;
+        if (macTapIfName) {
+            if (virNetDevBridgePortSetLearning(brname, macTapIfName, false) < 0)
+                return -1;
+            if (virNetDevBridgePortSetUnicastFlood(brname, macTapIfName, false) < 0)
+                return -1;
+        }
+    }
+    return 0;
+}
+
+
 /* add an IP (static) route to a bridge */
 static int
 networkAddRouteToBridge(virNetworkObjPtr network,
@@ -2031,6 +2054,9 @@ networkStartNetworkVirtual(virNetworkObjPtr network)
         if (networkAddAddrToBridge(network, ipdef) < 0)
             goto err2;
     }
+
+    if (networkStartHandleMACTableManagerMode(network, macTapIfName) < 0)
+        goto err2;
 
     /* Bring up the bridge interface */
     if (virNetDevSetOnline(network->def->bridge, 1) < 0)
@@ -2172,6 +2198,27 @@ static int networkShutdownNetworkVirtual(virNetworkObjPtr network)
         kill(network->radvdPid, SIGKILL);
     network->radvdPid = -1;
 
+    return 0;
+}
+
+
+static int
+networkStartNetworkBridge(virNetworkObjPtr network)
+{
+    /* put anything here that needs to be done each time a network of
+     * type BRIDGE, is started. On failure, undo anything you've done,
+     * and return -1. On success return 0.
+     */
+    return networkStartHandleMACTableManagerMode(network, NULL);
+}
+
+static int
+networkShutdownNetworkBridge(virNetworkObjPtr network ATTRIBUTE_UNUSED)
+{
+    /* put anything here that needs to be done each time a network of
+     * type BRIDGE is shutdown. On failure, undo anything you've done,
+     * and return -1. On success return 0.
+     */
     return 0;
 }
 
@@ -2339,6 +2386,10 @@ networkStartNetwork(virNetworkObjPtr network)
         break;
 
     case VIR_NETWORK_FORWARD_BRIDGE:
+       if (networkStartNetworkBridge(network) < 0)
+          goto cleanup;
+       break;
+
     case VIR_NETWORK_FORWARD_PRIVATE:
     case VIR_NETWORK_FORWARD_VEPA:
     case VIR_NETWORK_FORWARD_PASSTHROUGH:
@@ -2405,6 +2456,9 @@ static int networkShutdownNetwork(virNetworkObjPtr network)
         break;
 
     case VIR_NETWORK_FORWARD_BRIDGE:
+        ret = networkShutdownNetworkBridge(network);
+        break;
+
     case VIR_NETWORK_FORWARD_PRIVATE:
     case VIR_NETWORK_FORWARD_VEPA:
     case VIR_NETWORK_FORWARD_PASSTHROUGH:
