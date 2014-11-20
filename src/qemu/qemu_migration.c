@@ -2757,7 +2757,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                                     QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
         goto stop;
 
-    if (STREQ(protocol, "rdma") &&
+    if (STREQ_NULLABLE(protocol, "rdma") &&
         virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
         goto stop;
     }
