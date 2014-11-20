@@ -31,7 +31,6 @@ apihtml =					\
   html/libvirt-libvirt-domain-snapshot.html	\
   html/libvirt-libvirt-event.html		\
   html/libvirt-libvirt-host.html		\
-  html/libvirt-libvirt.html			\
   html/libvirt-libvirt-interface.html		\
   html/libvirt-libvirt-network.html		\
   html/libvirt-libvirt-nodedev.html		\
@@ -51,7 +50,6 @@ devhelphtml =			\
   devhelp/libvirt.devhelp	\
   devhelp/index.html		\
   devhelp/general.html		\
-  devhelp/libvirt-libvirt.html	\
   devhelp/libvirt-virterror.html
 
 css =         \
@@ -269,7 +267,6 @@ $(addprefix $(srcdir)/,$(devhelphtml)): $(srcdir)/libvirt-api.xml $(devhelpxsl)
 
 
 python_generated_files = \
-		$(srcdir)/html/libvirt-libvirt.html \
 		$(srcdir)/html/libvirt-libvirt-lxc.html \
 		$(srcdir)/html/libvirt-libvirt-qemu.html \
 		$(srcdir)/html/libvirt-virterror.html \
