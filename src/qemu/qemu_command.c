@@ -4911,6 +4911,12 @@ qemuBuildDeviceVideoStr(virDomainDefPtr def,
             /* QEMU accepts bytes for vram_size. */
             virBufferAsprintf(&buf, ",vram_size=%u", video->vram * 1024);
         }
+
+        if ((primary && virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGA_VGAMEM)) ||
+            (!primary && virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGAMEM))) {
+            /* QEMU accepts mebibytes for vgamem_mb. */
+            virBufferAsprintf(&buf, ",vgamem_mb=%u", video->vgamem / 1024);
+        }
     } else if (video->vram &&
         ((video->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
           virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_VGAMEM)) ||
@@ -9244,6 +9250,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                     virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
                     unsigned int ram = def->videos[0]->ram;
                     unsigned int vram = def->videos[0]->vram;
+                    unsigned int vgamem = def->videos[0]->vgamem;
 
                     if (vram > (UINT_MAX / 1024)) {
                         virReportError(VIR_ERR_OVERFLOW,
@@ -9267,6 +9274,12 @@ qemuBuildCommandLine(virConnectPtr conn,
                         virCommandAddArg(cmd, "-global");
                         virCommandAddArgFormat(cmd, "%s.vram_size=%u",
                                                dev, vram * 1024);
+                    }
+                    if (vgamem &&
+                        virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGA_VGAMEM)) {
+                        virCommandAddArg(cmd, "-global");
+                        virCommandAddArgFormat(cmd, "%s.vgamem_mb=%u",
+                                               dev, vgamem / 1024);
                     }
                 }
 
@@ -12284,8 +12297,13 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
         else
             vid->type = video;
         vid->vram = virDomainVideoDefaultRAM(def, vid->type);
-        vid->ram = vid->type == VIR_DOMAIN_VIDEO_TYPE_QXL ?
-                       virDomainVideoDefaultRAM(def, vid->type) : 0;
+        if (vid->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
+            vid->ram = virDomainVideoDefaultRAM(def, vid->type);
+            vid->vgamem = 8 * 1024;
+        } else {
+            vid->ram = 0;
+            vid->vgamem = 0;
+        }
         vid->heads = 1;
 
         if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, vid) < 0) {

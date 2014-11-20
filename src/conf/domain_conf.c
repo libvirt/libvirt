@@ -10272,6 +10272,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
     char *heads = NULL;
     char *vram = NULL;
     char *ram = NULL;
+    char *vgamem = NULL;
     char *primary = NULL;
 
     if (VIR_ALLOC(def) < 0)
@@ -10285,6 +10286,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
                 type = virXMLPropString(cur, "type");
                 ram = virXMLPropString(cur, "ram");
                 vram = virXMLPropString(cur, "vram");
+                vgamem = virXMLPropString(cur, "vgamem");
                 heads = virXMLPropString(cur, "heads");
 
                 if ((primary = virXMLPropString(cur, "primary")) != NULL) {
@@ -10338,6 +10340,19 @@ virDomainVideoDefParseXML(xmlNodePtr node,
         def->vram = virDomainVideoDefaultRAM(dom, def->type);
     }
 
+    if (vgamem) {
+        if (def->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("vgamem attribute only supported for type of qxl"));
+            goto error;
+        }
+        if (virStrToLong_ui(vgamem, NULL, 10, &def->vgamem) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("cannot parse video vgamem '%s'"), vgamem);
+            goto error;
+        }
+    }
+
     if (heads) {
         if (virStrToLong_ui(heads, NULL, 10, &def->heads) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -10354,6 +10369,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
     VIR_FREE(type);
     VIR_FREE(ram);
     VIR_FREE(vram);
+    VIR_FREE(vgamem);
     VIR_FREE(heads);
 
     return def;
@@ -10363,6 +10379,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
     VIR_FREE(type);
     VIR_FREE(ram);
     VIR_FREE(vram);
+    VIR_FREE(vgamem);
     VIR_FREE(heads);
     return NULL;
 }
@@ -14739,6 +14756,13 @@ virDomainVideoDefCheckABIStability(virDomainVideoDefPtr src,
         return false;
     }
 
+    if (src->vgamem != dst->vgamem) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target video card vgamem %u does not match source %u"),
+                       dst->vgamem, src->vgamem);
+        return false;
+    }
+
     if (src->heads != dst->heads) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target video card heads %u does not match source %u"),
@@ -18119,6 +18143,8 @@ virDomainVideoDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " ram='%u'", def->ram);
     if (def->vram)
         virBufferAsprintf(buf, " vram='%u'", def->vram);
+    if (def->vgamem)
+        virBufferAsprintf(buf, " vgamem='%u'", def->vgamem);
     if (def->heads)
         virBufferAsprintf(buf, " heads='%u'", def->heads);
     if (def->primary)

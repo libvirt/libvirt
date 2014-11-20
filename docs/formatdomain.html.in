@@ -4732,7 +4732,10 @@ qemu-kvm -net nic,model=? /dev/null
           only and specifies the size of the primary bar, while the optional
           attribute <code>vram</code> specifies the secondary bar size.
           If "ram" or "vram" are not supplied a default value is used. The ram
-          should also be rounded to power of two as vram.
+          should also be rounded to power of two as vram. There is also optional
+          attribute <code>vgamem</code> (<span class="since">since 1.2.11 (QEMU
+          only)</span>) to set the size of VGA framebuffer for fallback mode of
+          QXL device.
         </p>
       </dd>
 

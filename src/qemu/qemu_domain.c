@@ -1176,6 +1176,25 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         goto cleanup;
     }
 
+    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO &&
+        dev->data.video->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
+        if (dev->data.video->vgamem) {
+            if (dev->data.video->vgamem < 1024) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("value for 'vgamem' must be at least 1 MiB "
+                                 "(1024 KiB)"));
+                goto cleanup;
+            }
+            if (dev->data.video->vgamem != VIR_ROUND_UP_POWER_OF_TWO(dev->data.video->vgamem)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("value for 'vgamem' must be power of two"));
+                goto cleanup;
+            }
+        } else {
+            dev->data.video->vgamem = 8 * 1024;
+        }
+    }
+
     ret = 0;
 
  cleanup:
