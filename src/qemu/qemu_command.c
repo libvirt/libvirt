@@ -4911,6 +4911,20 @@ qemuBuildDeviceVideoStr(virDomainDefPtr def,
             /* QEMU accepts bytes for vram_size. */
             virBufferAsprintf(&buf, ",vram_size=%u", video->vram * 1024);
         }
+    } else if (video->vram &&
+        ((video->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
+          virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_VGAMEM)) ||
+         (video->type == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
+          virQEMUCapsGet(qemuCaps, QEMU_CAPS_VMWARE_SVGA_VGAMEM)))) {
+
+        if (video->vram < 1024) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("value for 'vram' must be at least 1 MiB "
+                                   "(1024 KiB)"));
+            goto error;
+        }
+
+        virBufferAsprintf(&buf, ",vgamem_mb=%u", video->vram / 1024);
     }
 
     if (qemuBuildDeviceAddressStr(&buf, def, &video->info, qemuCaps) < 0)
@@ -7523,7 +7537,7 @@ qemuBuildShmemDevCmd(virCommandPtr cmd,
         }
         if (shmem->size < 1024 * 1024) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("shmem size must be at least 1 MiB"));
+                           _("shmem size must be at least 1 MiB (1024 KiB)"));
             goto error;
         }
         virBufferAsprintf(&buf, ",size=%llum", shmem->size >> 20);
@@ -9254,6 +9268,26 @@ qemuBuildCommandLine(virConnectPtr conn,
                         virCommandAddArgFormat(cmd, "%s.vram_size=%u",
                                                dev, vram * 1024);
                     }
+                }
+
+                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
+                    def->videos[0]->vram &&
+                    ((primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_VGA &&
+                      virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_VGAMEM)) ||
+                     (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
+                      virQEMUCapsGet(qemuCaps, QEMU_CAPS_VMWARE_SVGA_VGAMEM)))) {
+                    unsigned int vram = def->videos[0]->vram;
+
+                    if (vram < 1024) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       "%s", _("value for 'vgamem' must be at "
+                                               "least 1 MiB (1024 KiB)"));
+                        goto error;
+                    }
+
+                    virCommandAddArg(cmd, "-global");
+                    virCommandAddArgFormat(cmd, "%s.vgamem_mb=%u",
+                                           dev, vram / 1024);
                 }
             }
 
