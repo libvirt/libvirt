@@ -382,31 +382,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
 
         type = virDomainNetGetActualType(net);
         switch (type) {
-        case VIR_DOMAIN_NET_TYPE_NETWORK: {
-            virNetworkPtr network;
-            char *brname = NULL;
-            bool fail = false;
-
-            if (!(network = virNetworkLookupByName(conn,
-                                                   net->data.network.name)))
-                goto cleanup;
-            if (!(brname = virNetworkGetBridgeName(network)))
-               fail = true;
-
-            virObjectUnref(network);
-            if (fail)
-                goto cleanup;
-
-            if (!(veth = virLXCProcessSetupInterfaceBridged(conn,
-                                                            def,
-                                                            net,
-                                                            brname))) {
-                VIR_FREE(brname);
-                goto cleanup;
-            }
-            VIR_FREE(brname);
-            break;
-        }
+        case VIR_DOMAIN_NET_TYPE_NETWORK:
         case VIR_DOMAIN_NET_TYPE_BRIDGE: {
             const char *brname = virDomainNetGetActualBridgeName(net);
             if (!brname) {

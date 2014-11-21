@@ -4161,7 +4161,8 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
     actualType = virDomainNetGetActualType(net);
 
     switch (actualType) {
-    case VIR_DOMAIN_NET_TYPE_BRIDGE: {
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+    case VIR_DOMAIN_NET_TYPE_NETWORK: {
         const char *brname = virDomainNetGetActualBridgeName(net);
         if (!brname) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -4173,29 +4174,6 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
                                                         net,
                                                         brname)))
             goto cleanup;
-    }   break;
-    case VIR_DOMAIN_NET_TYPE_NETWORK: {
-        virNetworkPtr network;
-        char *brname = NULL;
-        bool fail = false;
-
-        if (!(network = virNetworkLookupByName(conn, net->data.network.name)))
-            goto cleanup;
-        if (!(brname = virNetworkGetBridgeName(network)))
-           fail = true;
-
-        virObjectUnref(network);
-        if (fail)
-            goto cleanup;
-
-        if (!(veth = virLXCProcessSetupInterfaceBridged(conn,
-                                                        vm->def,
-                                                        net,
-                                                        brname))) {
-            VIR_FREE(brname);
-            goto cleanup;
-        }
-        VIR_FREE(brname);
     }   break;
     case VIR_DOMAIN_NET_TYPE_DIRECT: {
         if (!(veth = virLXCProcessSetupInterfaceDirect(conn,
