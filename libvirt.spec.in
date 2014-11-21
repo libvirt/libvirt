@@ -425,6 +425,7 @@ BuildRequires: gettext-devel
 BuildRequires: libtool
 BuildRequires: /usr/bin/pod2man
 %endif
+BuildRequires: git
 BuildRequires: perl
 BuildRequires: python
 %if %{with_systemd}
@@ -1197,6 +1198,41 @@ driver
 
 %prep
 %setup -q
+
+# Patches have to be stored in a temporary file because RPM has
+# a limit on the length of the result of any macro expansion;
+# if the string is longer, it's silently cropped
+%{lua:
+    tmp = os.tmpname();
+    f = io.open(tmp, "w+");
+    count = 0;
+    for i, p in ipairs(patches) do
+        f:write(p.."\n");
+        count = count + 1;
+    end;
+    f:close();
+    print("PATCHCOUNT="..count.."\n")
+    print("PATCHLIST="..tmp.."\n")
+}
+
+git init -q
+git config user.name rpm-build
+git config user.email rpm-build
+git config gc.auto 0
+git add .
+git commit -q -a --author 'rpm-build <rpm-build>' \
+           -m '%{name}-%{version} base'
+
+COUNT=$(grep '\.patch$' $PATCHLIST | wc -l)
+if [ $COUNT -ne $PATCHCOUNT ]; then
+    echo "Found $COUNT patches in $PATCHLIST, expected $PATCHCOUNT"
+    exit 1
+fi
+if [ $COUNT -gt 0 ]; then
+    xargs git am <$PATCHLIST || exit 1
+fi
+echo "Applied $COUNT patches"
+rm -f $PATCHLIST
 
 %build
 %if ! %{with_xen}
