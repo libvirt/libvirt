@@ -51,6 +51,7 @@
 #include "netdev_bandwidth_conf.h"
 #include "netdev_vlan_conf.h"
 #include "device_conf.h"
+#include "network_conf.h"
 #include "virtpm.h"
 #include "virstring.h"
 
@@ -7003,6 +7004,7 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     char *mode = NULL;
     char *addrtype = NULL;
     char *trustGuestRxFilters = NULL;
+    char *macTableManager = NULL;
 
     if (VIR_ALLOC(actual) < 0)
         return -1;
@@ -7119,6 +7121,16 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
             goto error;
         }
         actual->data.bridge.brname = brname;
+        macTableManager = virXPathString("string(./source/@macTableManager)", ctxt);
+        if (macTableManager &&
+            (actual->data.bridge.macTableManager
+             = virNetworkBridgeMACTableManagerTypeFromString(macTableManager)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid macTableManager setting '%s' "
+                             "in domain interface's <actual> element"),
+                           macTableManager);
+            goto error;
+        }
     }
 
     bandwidth_node = virXPathNode("./bandwidth", ctxt);
@@ -7139,6 +7151,7 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     VIR_FREE(mode);
     VIR_FREE(addrtype);
     VIR_FREE(trustGuestRxFilters);
+    VIR_FREE(macTableManager);
     virDomainActualNetDefFree(actual);
 
     ctxt->node = save_ctxt;
@@ -17156,12 +17169,18 @@ virDomainActualNetDefContentsFormat(virBufferPtr buf,
         }
         if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
             actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            int macTableManager = virDomainNetGetActualBridgeMACTableManager(def);
+
             /* actualType == NETWORK includes the name of the bridge
              * that is used by the network, whether we are
              * "inSubElement" or not.
              */
             virBufferEscapeString(buf, " bridge='%s'",
                                   virDomainNetGetActualBridgeName(def));
+            if (macTableManager) {
+                virBufferAsprintf(buf, " macTableManager='%s'",
+                                  virNetworkBridgeMACTableManagerTypeToString(macTableManager));
+            }
         } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
             const char *mode;
 
@@ -20758,6 +20777,17 @@ virDomainNetGetActualBridgeName(virDomainNetDefPtr iface)
          iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_NETWORK))
         return iface->data.network.actual->data.bridge.brname;
     return NULL;
+}
+
+int
+virDomainNetGetActualBridgeMACTableManager(virDomainNetDefPtr iface)
+{
+    if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
+        iface->data.network.actual &&
+        (iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+         iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_NETWORK))
+        return iface->data.network.actual->data.bridge.macTableManager;
+    return 0;
 }
 
 const char *

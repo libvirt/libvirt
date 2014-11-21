@@ -888,6 +888,7 @@ struct _virDomainActualNetDef {
     union {
         struct {
             char *brname;
+            int macTableManager; /* enum virNetworkBridgeMACTableManagerType */
         } bridge;
         struct {
             char *linkdev;
@@ -2540,6 +2541,7 @@ int virDomainGraphicsListenSetNetwork(virDomainGraphicsDefPtr def,
 
 int virDomainNetGetActualType(virDomainNetDefPtr iface);
 const char *virDomainNetGetActualBridgeName(virDomainNetDefPtr iface);
+int virDomainNetGetActualBridgeMACTableManager(virDomainNetDefPtr iface);
 const char *virDomainNetGetActualDirectDev(virDomainNetDefPtr iface);
 int virDomainNetGetActualDirectMode(virDomainNetDefPtr iface);
 virDomainHostdevDefPtr virDomainNetGetActualHostdev(virDomainNetDefPtr iface);

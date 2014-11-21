@@ -3795,7 +3795,7 @@ networkAllocateActualDevice(virDomainDefPtr dom,
          */
         iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_NETWORK;
 
-        /* we also store the bridge device
+        /* we also store the bridge device and macTableManager settings
          * in iface->data.network.actual->data.bridge for later use
          * after the domain's tap device is created (to attach to the
          * bridge and set flood/learning mode on the tap device)
@@ -3803,6 +3803,8 @@ networkAllocateActualDevice(virDomainDefPtr dom,
         if (VIR_STRDUP(iface->data.network.actual->data.bridge.brname,
                        netdef->bridge) < 0)
             goto error;
+        iface->data.network.actual->data.bridge.macTableManager
+           = netdef->macTableManager;
 
         if (networkPlugBandwidth(network, iface) < 0)
             goto error;
@@ -3818,6 +3820,8 @@ networkAllocateActualDevice(virDomainDefPtr dom,
         if (VIR_STRDUP(iface->data.network.actual->data.bridge.brname,
                        netdef->bridge) < 0)
             goto error;
+        iface->data.network.actual->data.bridge.macTableManager
+           = netdef->macTableManager;
 
         /* merge virtualports from interface, network, and portgroup to
          * arrive at actual virtualport to use

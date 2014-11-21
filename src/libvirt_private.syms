@@ -328,6 +328,7 @@ virDomainNetFind;
 virDomainNetFindIdx;
 virDomainNetGenerateMAC;
 virDomainNetGetActualBandwidth;
+virDomainNetGetActualBridgeMACTableManager;
 virDomainNetGetActualBridgeName;
 virDomainNetGetActualDirectDev;
 virDomainNetGetActualDirectMode;
