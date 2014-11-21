@@ -35,6 +35,7 @@
 #include "virerror.h"
 #include "virfile.h"
 #include "virnetdev.h"
+#include "virnetdevbridge.h"
 #include "virstring.h"
 #include "virtime.h"
 #include "viruuid.h"
@@ -343,6 +344,24 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
                                            tap_create_flags) < 0) {
             virDomainAuditNetDevice(def, net, tunpath, false);
             goto cleanup;
+        }
+        if (virDomainNetGetActualBridgeMACTableManager(net)
+            == VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_LIBVIRT) {
+            /* libvirt is managing the FDB of the bridge this device
+             * is attaching to, so we need to turn off learning and
+             * unicast_flood on the device to prevent the kernel from
+             * adding any FDB entries for it, then add an fdb entry
+             * outselves, using the MAC address from the interface
+             * config.
+             */
+            if (virNetDevBridgePortSetLearning(brname, net->ifname, false) < 0)
+                goto cleanup;
+            if (virNetDevBridgePortSetUnicastFlood(brname, net->ifname, false) < 0)
+                goto cleanup;
+            if (virNetDevBridgeFDBAdd(&net->mac, net->ifname,
+                                      VIR_NETDEVBRIDGE_FDB_FLAG_MASTER |
+                                      VIR_NETDEVBRIDGE_FDB_FLAG_TEMP) < 0)
+                goto cleanup;
         }
     } else {
         if (qemuCreateInBridgePortWithHelper(cfg, brname,
