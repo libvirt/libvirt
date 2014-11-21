@@ -277,6 +277,11 @@ static int qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
     return *tapfd < 0 ? -1 : 0;
 }
 
+/* qemuNetworkIfaceConnect - *only* called if actualType is
+ * VIR_DOMAIN_NET_TYPE_NETWORK or VIR_DOMAIN_NET_TYPE_BRIDGE (i.e. if
+ * the connection is made with a tap device connecting to a bridge
+ * device)
+ */
 int
 qemuNetworkIfaceConnect(virDomainDefPtr def,
                         virConnectPtr conn,
@@ -286,39 +291,19 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
                         int *tapfd,
                         int *tapfdSize)
 {
-    char *brname = NULL;
+    const char *brname;
     int ret = -1;
     unsigned int tap_create_flags = VIR_NETDEV_TAP_CREATE_IFUP;
     bool template_ifname = false;
-    int actualType = virDomainNetGetActualType(net);
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     const char *tunpath = "/dev/net/tun";
 
     if (net->backend.tap)
         tunpath = net->backend.tap;
 
-    if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        bool fail = false;
-        virNetworkPtr network = virNetworkLookupByName(conn,
-                                                       net->data.network.name);
-        if (!network)
-            return ret;
-
-        if (!(brname = virNetworkGetBridgeName(network)))
-           fail = true;
-
-        virObjectUnref(network);
-        if (fail)
-            return ret;
-
-    } else if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-        if (VIR_STRDUP(brname, virDomainNetGetActualBridgeName(net)) < 0)
-            return ret;
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Network type %d is not supported"),
-                       virDomainNetGetActualType(net));
-        return ret;
+    if (!(brname = virDomainNetGetActualBridgeName(net))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Missing bridge name"));
+        goto cleanup;
     }
 
     if (!net->ifname ||
@@ -400,7 +385,6 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         if (template_ifname)
             VIR_FREE(net->ifname);
     }
-    VIR_FREE(brname);
     virObjectUnref(cfg);
 
     return ret;

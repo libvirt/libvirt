@@ -1746,58 +1746,20 @@ static virDomainNetDefPtr *qemuDomainFindNet(virDomainObjPtr vm,
     return NULL;
 }
 
-static char *
-qemuDomainNetGetBridgeName(virConnectPtr conn, virDomainNetDefPtr net)
-{
-    char *brname = NULL;
-    int actualType = virDomainNetGetActualType(net);
-
-    if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-        const char *tmpbr = virDomainNetGetActualBridgeName(net);
-        if (!tmpbr) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("interface is missing bridge name"));
-            goto cleanup;
-        }
-        /* we need a copy, not just a pointer to the original */
-        if (VIR_STRDUP(brname, tmpbr) < 0)
-            goto cleanup;
-    } else if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        virNetworkPtr network;
-
-        if (!(network = virNetworkLookupByName(conn, net->data.network.name))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Couldn't find network '%s'"),
-                           net->data.network.name);
-            goto cleanup;
-        }
-        brname = virNetworkGetBridgeName(network);
-
-        virObjectUnref(network);
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Interface type %d has no bridge name"),
-                       virDomainNetGetActualType(net));
-    }
-
- cleanup:
-    return brname;
-}
 
 static int
-qemuDomainChangeNetBridge(virConnectPtr conn,
-                          virDomainObjPtr vm,
+qemuDomainChangeNetBridge(virDomainObjPtr vm,
                           virDomainNetDefPtr olddev,
                           virDomainNetDefPtr newdev)
 {
     int ret = -1;
-    char *oldbridge = NULL, *newbridge = NULL;
+    const char *oldbridge = virDomainNetGetActualBridgeName(olddev);
+    const char *newbridge = virDomainNetGetActualBridgeName(newdev);
 
-    if (!(oldbridge = qemuDomainNetGetBridgeName(conn, olddev)))
+    if (!oldbridge || !newbridge) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Missing bridge name"));
         goto cleanup;
-
-    if (!(newbridge = qemuDomainNetGetBridgeName(conn, newdev)))
-        goto cleanup;
+    }
 
     VIR_DEBUG("Change bridge for interface %s: %s -> %s",
               olddev->ifname, oldbridge, newbridge);
@@ -1836,8 +1798,6 @@ qemuDomainChangeNetBridge(virConnectPtr conn,
     /* caller will replace entire olddev with newdev in domain nets list */
     ret = 0;
  cleanup:
-    VIR_FREE(oldbridge);
-    VIR_FREE(newbridge);
     return ret;
 }
 
@@ -2231,7 +2191,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     }
 
     if (needBridgeChange) {
-        if (qemuDomainChangeNetBridge(dom->conn, vm, olddev, newdev) < 0)
+        if (qemuDomainChangeNetBridge(vm, olddev, newdev) < 0)
             goto cleanup;
         /* we successfully switched to the new bridge, and we've
          * determined that the rest of newdev is equivalent to olddev,
