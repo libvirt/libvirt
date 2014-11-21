@@ -3413,7 +3413,7 @@
       setting for the attribute is <code>no</code> for security
       reasons and support depends on the guest network device model as
       well as the type of connection on the host - currently it is
-      only supported for the virtio ddevice model and for macvtap
+      only supported for the virtio device model and for macvtap
       connections on the host.
     </p>
     <p>
