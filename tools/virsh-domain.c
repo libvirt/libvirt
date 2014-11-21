@@ -9915,7 +9915,7 @@ static const vshCmdOptDef opts_domdisplay[] = {
     },
     {.name = "type",
      .type = VSH_OT_DATA,
-     .help = N_("select particular graphics display "
+     .help = N_("select particular graphical display "
                 "(e.g. \"vnc\", \"spice\", \"rdp\")")
     },
     {.name = NULL}
