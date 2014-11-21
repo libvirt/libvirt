@@ -1354,6 +1354,7 @@ virDomainActualNetDefFree(virDomainActualNetDefPtr def)
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
         VIR_FREE(def->data.bridge.brname);
         break;
     case VIR_DOMAIN_NET_TYPE_DIRECT:
@@ -7106,9 +7107,12 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
             goto error;
         }
         VIR_FREE(class_id);
-    } else if (actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+    }
+    if (actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+        actual->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
         char *brname = virXPathString("string(./source/@bridge)", ctxt);
-        if (!brname) {
+
+        if (!brname && actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing <source> element with bridge name in "
                              "interface's <actual> element"));
@@ -17126,60 +17130,59 @@ virDomainHostdevDefFormatCaps(virBufferPtr buf,
 static int
 virDomainActualNetDefContentsFormat(virBufferPtr buf,
                                     virDomainNetDefPtr def,
-                                    const char *typeStr,
                                     bool inSubelement,
                                     unsigned int flags)
 {
-    const char *mode;
+    int actualType = virDomainNetGetActualType(def);
 
-    switch (virDomainNetGetActualType(def)) {
-    case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        virBufferEscapeString(buf, "<source bridge='%s'/>\n",
-                              virDomainNetGetActualBridgeName(def));
-        break;
-
-    case VIR_DOMAIN_NET_TYPE_DIRECT:
-        virBufferAddLit(buf, "<source");
-        virBufferEscapeString(buf, " dev='%s'",
-                              virDomainNetGetActualDirectDev(def));
-
-        mode = virNetDevMacVLanModeTypeToString(virDomainNetGetActualDirectMode(def));
-        if (!mode) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected source mode %d"),
-                           virDomainNetGetActualDirectMode(def));
-            return -1;
-        }
-        virBufferAsprintf(buf, " mode='%s'/>\n", mode);
-        break;
-
-    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         if (virDomainHostdevDefFormatSubsys(buf, virDomainNetGetActualHostdev(def),
                                             flags, true) < 0) {
             return -1;
         }
-        break;
-
-    case VIR_DOMAIN_NET_TYPE_NETWORK:
-        if (!inSubelement) {
-            /* the <source> element isn't included in <actual>
-             * (i.e. when we're putting our output into a subelement
-             * rather than inline) because the main element has the
-             * same info already. If we're outputting inline, though,
-             * we *do* need to output <source>, because the caller
-             * won't have done it.
+    } else {
+        virBufferAddLit(buf, "<source");
+        if (def->type == VIR_DOMAIN_NET_TYPE_NETWORK && !inSubelement) {
+            /* When we're putting our output into the <actual>
+             * subelement rather than the main <interface>, the
+             * network name isn't included in the <source> because the
+             * main interface element's <source> has the same info
+             * already. If we've been called to output directly into
+             * the main element's <source> though (the case here -
+             * "!inSubElement"), we *do* need to output the network
+             * name, because the caller won't have done it).
              */
-            virBufferEscapeString(buf, "<source network='%s'/>\n",
-                                  def->data.network.name);
+            virBufferEscapeString(buf, " network='%s'", def->data.network.name);
         }
-        if (def->data.network.actual && def->data.network.actual->class_id)
-            virBufferAsprintf(buf, "<class id='%u'/>\n",
-                              def->data.network.actual->class_id);
-        break;
-    default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected actual net type %s"), typeStr);
-        return -1;
+        if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+            actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            /* actualType == NETWORK includes the name of the bridge
+             * that is used by the network, whether we are
+             * "inSubElement" or not.
+             */
+            virBufferEscapeString(buf, " bridge='%s'",
+                                  virDomainNetGetActualBridgeName(def));
+        } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
+            const char *mode;
+
+            virBufferEscapeString(buf, " dev='%s'",
+                                  virDomainNetGetActualDirectDev(def));
+            mode = virNetDevMacVLanModeTypeToString(virDomainNetGetActualDirectMode(def));
+            if (!mode) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected source mode %d"),
+                               virDomainNetGetActualDirectMode(def));
+                return -1;
+            }
+            virBufferAsprintf(buf, " mode='%s'", mode);
+        }
+
+        virBufferAddLit(buf, "/>\n");
+    }
+    if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT &&
+        def->data.network.actual && def->data.network.actual->class_id) {
+        virBufferAsprintf(buf, "<class id='%u'/>\n",
+                          def->data.network.actual->class_id);
     }
 
     if (virNetDevVlanFormat(virDomainNetGetActualVlan(def), buf) < 0)
@@ -17227,7 +17230,7 @@ virDomainActualNetDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, ">\n");
 
     virBufferAdjustIndent(buf, 2);
-    if (virDomainActualNetDefContentsFormat(buf, def, typeStr, true, flags) < 0)
+    if (virDomainActualNetDefContentsFormat(buf, def, true, flags) < 0)
        return -1;
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</actual>\n");
@@ -17398,7 +17401,7 @@ virDomainNetDefFormat(virBufferPtr buf,
          * the standard place...  (this is for public reporting of
          * interface status)
          */
-        if (virDomainActualNetDefContentsFormat(buf, def, typeStr, false, flags) < 0)
+        if (virDomainActualNetDefContentsFormat(buf, def, false, flags) < 0)
             return -1;
     } else {
         /* ...but if we've asked for the inactive XML (rather than
@@ -20751,7 +20754,8 @@ virDomainNetGetActualBridgeName(virDomainNetDefPtr iface)
         return iface->data.bridge.brname;
     if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
         iface->data.network.actual &&
-        iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE)
+        (iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+         iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_NETWORK))
         return iface->data.network.actual->data.bridge.brname;
     return NULL;
 }

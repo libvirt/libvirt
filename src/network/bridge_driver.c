@@ -3795,6 +3795,15 @@ networkAllocateActualDevice(virDomainDefPtr dom,
          */
         iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_NETWORK;
 
+        /* we also store the bridge device
+         * in iface->data.network.actual->data.bridge for later use
+         * after the domain's tap device is created (to attach to the
+         * bridge and set flood/learning mode on the tap device)
+         */
+        if (VIR_STRDUP(iface->data.network.actual->data.bridge.brname,
+                       netdef->bridge) < 0)
+            goto error;
+
         if (networkPlugBandwidth(network, iface) < 0)
             goto error;
 
@@ -4130,6 +4139,17 @@ networkNotifyActualDevice(virDomainDefPtr dom,
         goto error;
     }
     netdef = network->def;
+
+    /* if we're restarting libvirtd after an upgrade from a version
+     * that didn't save bridge name in actualNetDef for
+     * actualType==network, we need to copy it in so that it will be
+     * available in all cases
+     */
+    if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK &&
+        !iface->data.network.actual->data.bridge.brname &&
+        (VIR_STRDUP(iface->data.network.actual->data.bridge.brname,
+                    netdef->bridge) < 0))
+            goto error;
 
     if (!iface->data.network.actual ||
         (actualType != VIR_DOMAIN_NET_TYPE_DIRECT &&
