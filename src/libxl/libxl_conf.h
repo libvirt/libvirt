@@ -53,7 +53,7 @@
 # define LIBXL_LIB_DIR LOCALSTATEDIR "/lib/libvirt/libxl"
 # define LIBXL_SAVE_DIR LIBXL_LIB_DIR "/save"
 # define LIBXL_DUMP_DIR LIBXL_LIB_DIR "/dump"
-# define LIBXL_BOOTLOADER_PATH BINDIR "/pygrub"
+# define LIBXL_BOOTLOADER_PATH "pygrub"
 
 /* libxl interface for setting VCPU affinity changed in 4.5. In fact, a new
  * parameter has been added, representative of 'VCPU soft affinity'. If one
