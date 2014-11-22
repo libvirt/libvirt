@@ -684,4 +684,10 @@ LIBVIRT_1.2.9 {
         virNodeAllocPages;
 } LIBVIRT_1.2.8;
 
+LIBVIRT_1.2.11 {
+    global:
+        virDomainFSInfoFree;
+        virDomainGetFSInfo;
+} LIBVIRT_1.2.9;
+
 # .... define new API here using predicted next version number ....

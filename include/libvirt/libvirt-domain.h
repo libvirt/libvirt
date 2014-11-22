@@ -3497,6 +3497,28 @@ int virDomainFSThaw(virDomainPtr dom,
                     unsigned int nmountpoints,
                     unsigned int flags);
 
+/**
+ * virDomainFSInfo:
+ *
+ * The data structure containing mounted file systems within a guset
+ *
+ */
+typedef struct _virDomainFSInfo virDomainFSInfo;
+typedef virDomainFSInfo *virDomainFSInfoPtr;
+struct _virDomainFSInfo {
+    char *mountpoint; /* path to mount point */
+    char *name;       /* device name in the guest (e.g. "sda1") */
+    char *fstype;     /* filesystem type */
+    size_t ndevAlias; /* number of elements in devAlias */
+    char **devAlias;  /* array of disk device aliases */
+};
+
+void virDomainFSInfoFree(virDomainFSInfoPtr info);
+
+int virDomainGetFSInfo(virDomainPtr dom,
+                       virDomainFSInfoPtr **info,
+                       unsigned int flags);
+
 int virDomainGetTime(virDomainPtr dom,
                      long long *seconds,
                      unsigned int *nseconds,

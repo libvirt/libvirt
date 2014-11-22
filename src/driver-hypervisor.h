@@ -1139,6 +1139,11 @@ typedef int
                       unsigned int flags);
 
 typedef int
+(*virDrvDomainGetFSInfo)(virDomainPtr dom,
+                         virDomainFSInfoPtr **info,
+                         unsigned int flags);
+
+typedef int
 (*virDrvNodeGetFreePages)(virConnectPtr conn,
                           unsigned int npages,
                           unsigned int *pages,
@@ -1390,6 +1395,7 @@ struct _virHypervisorDriver {
     virDrvConnectGetDomainCapabilities connectGetDomainCapabilities;
     virDrvConnectGetAllDomainStats connectGetAllDomainStats;
     virDrvNodeAllocPages nodeAllocPages;
+    virDrvDomainGetFSInfo domainGetFSInfo;
 };
 
 
