@@ -12225,6 +12225,70 @@ cmdDomFSThaw(vshControl *ctl, const vshCmd *cmd)
     return ret >= 0;
 }
 
+static const vshCmdInfo info_domfsinfo[] = {
+    {.name = "help",
+     .data = N_("Get information of domain's mounted filesystems.")
+    },
+    {.name = "desc",
+     .data = N_("Get information of domain's mounted filesystems.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_domfsinfo[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    int ret = -1;
+    size_t i, j;
+    virDomainFSInfoPtr *info;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    ret = virDomainGetFSInfo(dom, &info, 0);
+    if (ret < 0) {
+        vshError(ctl, _("Unable to get filesystem information"));
+        goto cleanup;
+    }
+    if (ret == 0) {
+        vshError(ctl, _("No filesystems are mounted in the domain"));
+        goto cleanup;
+    }
+
+    if (info) {
+        vshPrintExtra(ctl, "%-36s %-8s %-8s %s\n",
+                      _("Mountpoint"), _("Name"), _("Type"), _("Target"));
+        vshPrintExtra(ctl, "-------------------------------------------------------------------\n");
+        for (i = 0; i < ret; i++) {
+            vshPrintExtra(ctl, "%-36s %-8s %-8s ",
+                          info[i]->mountpoint, info[i]->name, info[i]->fstype);
+            for (j = 0; j < info[i]->ndevAlias; j++) {
+                vshPrintExtra(ctl, "%s", info[i]->devAlias[j]);
+                if (j != info[i]->ndevAlias - 1)
+                    vshPrint(ctl, ",");
+            }
+            vshPrint(ctl, "\n");
+
+            virDomainFSInfoFree(info[i]);
+        }
+        VIR_FREE(info);
+    }
+
+ cleanup:
+    virDomainFree(dom);
+    return ret >= 0;
+}
+
 const vshCmdDef domManagementCmds[] = {
     {.name = "attach-device",
      .handler = cmdAttachDevice,
@@ -12382,6 +12446,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdDomFSThaw,
      .opts = opts_domfsthaw,
      .info = info_domfsthaw,
+     .flags = 0
+    },
+    {.name = "domfsinfo",
+     .handler = cmdDomFSInfo,
+     .opts = opts_domfsinfo,
+     .info = info_domfsinfo,
      .flags = 0
     },
     {.name = "domfstrim",

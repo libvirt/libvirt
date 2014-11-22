@@ -1146,6 +1146,15 @@ be selected using the B<type> parameter (e.g. "vnc", "spice", "rdp").  If
 I<--include-password> is specified, the SPICE channel password will be
 included in the URI.
 
+=item B<domfsinfo> I<domain>
+
+Show a list of mounted filesystems within the running domain. The list contains
+mountpoints, names of a mounted device in the guest, filesystem types, and
+unique target names used in the domain XML (<target dev='name'/>).
+
+Note that this command requires a guest agent configured and running in the
+domain's guest OS.
+
 =item B<domfsfreeze> I<domain> [[I<--mountpoint>] B<mountpoint>...]
 
 Freeze mounted filesystems within a running domain to prepare for consistent
