@@ -164,6 +164,149 @@ testQemuAgentFSTrim(const void *data)
 
 
 static int
+testQemuAgentGetFSInfo(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    virCapsPtr caps = testQemuCapsInit();
+    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    char *domain_filename = NULL;
+    char *domain_xml = NULL;
+    virDomainDefPtr def = NULL;
+    virDomainFSInfoPtr *info = NULL;
+    int ret = -1, ninfo = 0, i;
+
+    if (!test)
+        return -1;
+
+    if (virAsprintf(&domain_filename, "%s/qemuagentdata/qemuagent-fsinfo.xml",
+                    abs_srcdir) < 0)
+        goto cleanup;
+
+    if (virtTestLoadFile(domain_filename, &domain_xml) < 0)
+        goto cleanup;
+
+    if (!(def = virDomainDefParseString(domain_xml, caps, xmlopt,
+                                        QEMU_EXPECTED_VIRT_TYPES,
+                                        VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(test, "guest-get-fsinfo",
+                               "{\"return\": ["
+                               "  {\"name\": \"sda1\", \"mountpoint\": \"/\","
+                               "   \"disk\": ["
+                               "     {\"bus-type\": \"ide\","
+                               "      \"bus\": 1, \"unit\": 0,"
+                               "      \"pci-controller\": {"
+                               "        \"bus\": 0, \"slot\": 1,"
+                               "        \"domain\": 0, \"function\": 1},"
+                               "      \"target\": 0}],"
+                               "   \"type\": \"ext4\"},"
+                               "  {\"name\": \"dm-1\","
+                               "   \"mountpoint\": \"/opt\","
+                               "   \"disk\": ["
+                               "     {\"bus-type\": \"virtio\","
+                               "      \"bus\": 0, \"unit\": 0,"
+                               "      \"pci-controller\": {"
+                               "        \"bus\": 0, \"slot\": 6,"
+                               "        \"domain\": 0, \"function\": 0},"
+                               "      \"target\": 0},"
+                               "     {\"bus-type\": \"virtio\","
+                               "      \"bus\": 0, \"unit\": 0,"
+                               "      \"pci-controller\": {"
+                               "        \"bus\": 0, \"slot\": 7,"
+                               "        \"domain\": 0, \"function\": 0},"
+                               "      \"target\": 0}],"
+                               "   \"type\": \"vfat\"},"
+                               "  {\"name\": \"sdb1\","
+                               "   \"mountpoint\": \"/mnt/disk\","
+                               "   \"disk\": [], \"type\": \"xfs\"}]}") < 0)
+        goto cleanup;
+
+    if ((ninfo = qemuAgentGetFSInfo(qemuMonitorTestGetAgent(test),
+                                    &info, def)) < 0)
+        goto cleanup;
+
+    if (ninfo != 3) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "expected 3 filesystems information, got %d", ninfo);
+        ret = -1;
+        goto cleanup;
+    }
+    if (STRNEQ(info[2]->name, "sda1") ||
+        STRNEQ(info[2]->mountpoint, "/") ||
+        STRNEQ(info[2]->fstype, "ext4") ||
+        info[2]->ndevAlias != 1 ||
+        !info[2]->devAlias || !info[2]->devAlias[0] ||
+        STRNEQ(info[2]->devAlias[0], "hdc")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+            "unexpected filesystems information returned for sda1 (%s,%s)",
+            info[2]->name, info[2]->devAlias ? info[2]->devAlias[0] : "null");
+        ret = -1;
+        goto cleanup;
+    }
+    if (STRNEQ(info[1]->name, "dm-1") ||
+        STRNEQ(info[1]->mountpoint, "/opt") ||
+        STRNEQ(info[1]->fstype, "vfat") ||
+        info[1]->ndevAlias != 2 ||
+        !info[1]->devAlias || !info[1]->devAlias[0] || !info[1]->devAlias[1] ||
+        STRNEQ(info[1]->devAlias[0], "vda") ||
+        STRNEQ(info[1]->devAlias[1], "vdb")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+            "unexpected filesystems information returned for dm-1 (%s,%s)",
+            info[0]->name, info[0]->devAlias ? info[0]->devAlias[0] : "null");
+        ret = -1;
+        goto cleanup;
+    }
+    if (STRNEQ(info[0]->name, "sdb1") ||
+        STRNEQ(info[0]->mountpoint, "/mnt/disk") ||
+        STRNEQ(info[0]->fstype, "xfs") ||
+        info[0]->ndevAlias != 0 || info[0]->devAlias) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+            "unexpected filesystems information returned for sdb1 (%s,%s)",
+            info[0]->name, info[0]->devAlias ? info[0]->devAlias[0] : "null");
+        ret = -1;
+        goto cleanup;
+    }
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(test, "guest-get-fsinfo",
+                               "{\"error\":"
+                               "    {\"class\":\"CommandDisabled\","
+                               "     \"desc\":\"The command guest-get-fsinfo "
+                                               "has been disabled for "
+                                               "this instance\","
+                               "     \"data\":{\"name\":\"guest-get-fsinfo\"}"
+                               "    }"
+                               "}") < 0)
+        goto cleanup;
+
+    if (qemuAgentGetFSInfo(qemuMonitorTestGetAgent(test), &info, def) != -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "agent get-fsinfo command should have failed");
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    for (i = 0; i < ninfo; i++)
+        virDomainFSInfoFree(info[i]);
+    VIR_FREE(info);
+    VIR_FREE(domain_filename);
+    VIR_FREE(domain_xml);
+    virObjectUnref(caps);
+    virDomainDefFree(def);
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+
+static int
 testQemuAgentSuspend(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
@@ -605,6 +748,7 @@ mymain(void)
     DO_TEST(FSFreeze);
     DO_TEST(FSThaw);
     DO_TEST(FSTrim);
+    DO_TEST(GetFSInfo);
     DO_TEST(Suspend);
     DO_TEST(Shutdown);
     DO_TEST(CPU);
