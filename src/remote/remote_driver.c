@@ -7860,6 +7860,98 @@ remoteNodeAllocPages(virConnectPtr conn,
 }
 
 
+static int
+remoteDomainGetFSInfo(virDomainPtr dom,
+                      virDomainFSInfoPtr **info,
+                      unsigned int flags)
+{
+    int rv = -1;
+    size_t i, j, len;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_get_fsinfo_args args;
+    remote_domain_get_fsinfo_ret ret;
+    remote_domain_fsinfo *src;
+    virDomainFSInfoPtr *info_ret = NULL;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, dom);
+
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_FSINFO,
+             (xdrproc_t)xdr_remote_domain_get_fsinfo_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_get_fsinfo_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (ret.info.info_len > REMOTE_DOMAIN_FSINFO_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Too many mountpoints in fsinfo: %d for limit %d"),
+                       ret.info.info_len, REMOTE_DOMAIN_FSINFO_MAX);
+        goto cleanup;
+    }
+
+    if (info) {
+        if (!ret.info.info_len) {
+            *info = NULL;
+            rv = ret.ret;
+            goto cleanup;
+        }
+
+        if (VIR_ALLOC_N(info_ret, ret.info.info_len) < 0)
+            goto cleanup;
+
+        for (i = 0; i < ret.info.info_len; i++) {
+            src = &ret.info.info_val[i];
+
+            if (VIR_ALLOC(info_ret[i]) < 0)
+                goto cleanup;
+
+            if (VIR_STRDUP(info_ret[i]->mountpoint, src->mountpoint) < 0)
+                goto cleanup;
+
+            if (VIR_STRDUP(info_ret[i]->name, src->name) < 0)
+                goto cleanup;
+
+            if (VIR_STRDUP(info_ret[i]->fstype, src->fstype) < 0)
+                goto cleanup;
+
+            len = src->dev_aliases.dev_aliases_len;
+            info_ret[i]->ndevAlias = len;
+            if (len &&
+                VIR_ALLOC_N(info_ret[i]->devAlias, len) < 0)
+                goto cleanup;
+
+            for (j = 0; j < len; j++) {
+                if (VIR_STRDUP(info_ret[i]->devAlias[j],
+                               src->dev_aliases.dev_aliases_val[j]) < 0)
+                    goto cleanup;
+            }
+        }
+
+        *info = info_ret;
+        info_ret = NULL;
+    }
+
+    rv = ret.ret;
+
+ cleanup:
+    if (info_ret) {
+        for (i = 0; i < ret.info.info_len; i++)
+            virDomainFSInfoFree(info_ret[i]);
+        VIR_FREE(info_ret);
+    }
+    xdr_free((xdrproc_t)xdr_remote_domain_get_fsinfo_ret,
+             (char *) &ret);
+
+ done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
  * (name, uuid) pair into virDomainPtr or virNetworkPtr object.
  * These can return NULL if underlying memory allocations fail,
@@ -8202,6 +8294,7 @@ static virHypervisorDriver hypervisor_driver = {
     .connectGetDomainCapabilities = remoteConnectGetDomainCapabilities, /* 1.2.7 */
     .connectGetAllDomainStats = remoteConnectGetAllDomainStats, /* 1.2.8 */
     .nodeAllocPages = remoteNodeAllocPages, /* 1.2.9 */
+    .domainGetFSInfo = remoteDomainGetFSInfo, /* 1.2.11 */
 };
 
 static virNetworkDriver network_driver = {

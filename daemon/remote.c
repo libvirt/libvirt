@@ -6372,6 +6372,120 @@ remoteDispatchNodeAllocPages(virNetServerPtr server ATTRIBUTE_UNUSED,
 }
 
 
+static int
+remoteDispatchDomainGetFSInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
+                              virNetServerClientPtr client,
+                              virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                              virNetMessageErrorPtr rerr,
+                              remote_domain_get_fsinfo_args *args,
+                              remote_domain_get_fsinfo_ret *ret)
+{
+    int rv = -1;
+    size_t i, j;
+    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
+    virDomainFSInfoPtr *info = NULL;
+    virDomainPtr dom = NULL;
+    remote_domain_fsinfo *dst;
+    int ninfo = 0;
+    size_t ndisk;
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    if ((ninfo = virDomainGetFSInfo(dom, &info, args->flags)) < 0)
+        goto cleanup;
+
+    if (ninfo > REMOTE_DOMAIN_FSINFO_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many mountpoints in fsinfo: %d for limit %d"),
+                       ninfo, REMOTE_DOMAIN_FSINFO_MAX);
+        goto cleanup;
+    }
+
+    if (ninfo) {
+        if (VIR_ALLOC_N(ret->info.info_val, ninfo) < 0)
+            goto cleanup;
+
+        ret->info.info_len = ninfo;
+
+        for (i = 0; i < ninfo; i++) {
+            dst = &ret->info.info_val[i];
+            if (VIR_STRDUP(dst->mountpoint, info[i]->mountpoint) < 0)
+                goto cleanup;
+
+            if (VIR_STRDUP(dst->name, info[i]->name) < 0)
+                goto cleanup;
+
+            if (VIR_STRDUP(dst->fstype, info[i]->fstype) < 0)
+                goto cleanup;
+
+            ndisk = info[i]->ndevAlias;
+            if (ndisk > REMOTE_DOMAIN_FSINFO_DISKS_MAX) {
+                virReportError(VIR_ERR_RPC,
+                               _("Too many disks in fsinfo: %zd for limit %d"),
+                               ndisk, REMOTE_DOMAIN_FSINFO_DISKS_MAX);
+                goto cleanup;
+            }
+
+            if (ndisk > 0) {
+                if (VIR_ALLOC_N(dst->dev_aliases.dev_aliases_val, ndisk) < 0)
+                    goto cleanup;
+
+                for (j = 0; j < ndisk; j++) {
+                    if (VIR_STRDUP(dst->dev_aliases.dev_aliases_val[j],
+                                   info[i]->devAlias[j]) < 0)
+                        goto cleanup;
+                }
+
+                dst->dev_aliases.dev_aliases_len = ndisk;
+            } else {
+                dst->dev_aliases.dev_aliases_val = NULL;
+                dst->dev_aliases.dev_aliases_len = 0;
+            }
+        }
+
+    } else {
+        ret->info.info_len = 0;
+        ret->info.info_val = NULL;
+    }
+
+    ret->ret = ninfo;
+
+    rv = 0;
+
+ cleanup:
+    if (rv < 0) {
+        virNetMessageSaveError(rerr);
+
+        if (ret->info.info_val && ninfo > 0) {
+            for (i = 0; i < ninfo; i++) {
+                dst = &ret->info.info_val[i];
+                VIR_FREE(dst->mountpoint);
+                if (dst->dev_aliases.dev_aliases_val) {
+                    for (j = 0; j < dst->dev_aliases.dev_aliases_len; j++)
+                        VIR_FREE(dst->dev_aliases.dev_aliases_val[j]);
+                    VIR_FREE(dst->dev_aliases.dev_aliases_val);
+                }
+            }
+            VIR_FREE(ret->info.info_val);
+        }
+    }
+    if (dom)
+        virDomainFree(dom);
+    if (ninfo >= 0)
+        for (i = 0; i < ninfo; i++)
+            virDomainFSInfoFree(info[i]);
+    VIR_FREE(info);
+
+    return rv;
+}
+
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire

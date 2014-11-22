@@ -2585,6 +2585,26 @@ struct remote_connect_get_all_domain_stats_ret {
                 remote_domain_stats_record * retStats_val;
         } retStats;
 };
+struct remote_domain_fsinfo {
+        remote_nonnull_string      mountpoint;
+        remote_nonnull_string      name;
+        remote_nonnull_string      fstype;
+        struct {
+                u_int              dev_aliases_len;
+                remote_nonnull_string * dev_aliases_val;
+        } dev_aliases;
+};
+struct remote_domain_get_fsinfo_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
+struct remote_domain_get_fsinfo_ret {
+        struct {
+                u_int              info_len;
+                remote_domain_fsinfo * info_val;
+        } info;
+        u_int                      ret;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -2934,4 +2954,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_CALLBACK_TUNABLE = 346,
         REMOTE_PROC_NODE_ALLOC_PAGES = 347,
         REMOTE_PROC_DOMAIN_EVENT_CALLBACK_AGENT_LIFECYCLE = 348,
+        REMOTE_PROC_DOMAIN_GET_FSINFO = 349,
 };

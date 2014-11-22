@@ -250,6 +250,12 @@ const REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX = 4096;
 /* Upper limit of message size for tunable event. */
 const REMOTE_DOMAIN_EVENT_TUNABLE_MAX = 2048;
 
+/* Upper limit on number of mountpoints in fsinfo */
+const REMOTE_DOMAIN_FSINFO_MAX = 256;
+
+/* Upper limit on number of disks per mountpoint in fsinfo */
+const REMOTE_DOMAIN_FSINFO_DISKS_MAX = 256;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -3119,6 +3125,24 @@ struct remote_domain_event_callback_agent_lifecycle_msg {
 struct remote_connect_get_all_domain_stats_ret {
     remote_domain_stats_record retStats<REMOTE_DOMAIN_LIST_MAX>;
 };
+
+struct remote_domain_fsinfo {
+    remote_nonnull_string mountpoint;
+    remote_nonnull_string name;
+    remote_nonnull_string fstype;
+    remote_nonnull_string dev_aliases<REMOTE_DOMAIN_FSINFO_DISKS_MAX>; /* (const char **) */
+};
+
+struct remote_domain_get_fsinfo_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_get_fsinfo_ret {
+    remote_domain_fsinfo info<REMOTE_DOMAIN_FSINFO_MAX>;
+    unsigned int ret;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -5520,5 +5544,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_AGENT_LIFECYCLE = 348
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_AGENT_LIFECYCLE = 348,
+
+    /**
+     * @generate: none
+     * @acl: domain:fs_freeze
+     */
+    REMOTE_PROC_DOMAIN_GET_FSINFO = 349
 };
