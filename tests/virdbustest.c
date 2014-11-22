@@ -183,6 +183,7 @@ static int testMessageArray(const void *args ATTRIBUTE_UNUSED)
     int in_int32a = 1000000000, out_int32a = 0;
     int in_int32b = 2000000000, out_int32b = 0;
     int in_int32c = -2000000000, out_int32c = 0;
+    bool in_bool[] = { true, false, true }, out_bool[] = { false, true, false};
     const char *in_str2 = "World";
     char *out_str1 = NULL, *out_str2 = NULL;
 
@@ -195,18 +196,20 @@ static int testMessageArray(const void *args ATTRIBUTE_UNUSED)
     }
 
     if (virDBusMessageEncode(msg,
-                             "sais",
+                             "saiabs",
                              in_str1,
                              3, in_int32a, in_int32b, in_int32c,
+                             3, in_bool[0], in_bool[1], in_bool[2],
                              in_str2) < 0) {
         VIR_DEBUG("Failed to encode arguments");
         goto cleanup;
     }
 
     if (virDBusMessageDecode(msg,
-                             "sais",
+                             "saiabs",
                              &out_str1,
                              3, &out_int32a, &out_int32b, &out_int32c,
+                             3, &out_bool[0], &out_bool[1], &out_bool[2],
                              &out_str2) < 0) {
         VIR_DEBUG("Failed to decode arguments");
         goto cleanup;
@@ -217,6 +220,9 @@ static int testMessageArray(const void *args ATTRIBUTE_UNUSED)
     VERIFY("int32a", in_int32a, out_int32a, "%d");
     VERIFY("int32b", in_int32b, out_int32b, "%d");
     VERIFY("int32c", in_int32c, out_int32c, "%d");
+    VERIFY("bool[0]", in_bool[0], out_bool[0], "%d");
+    VERIFY("bool[1]", in_bool[1], out_bool[1], "%d");
+    VERIFY("bool[2]", in_bool[2], out_bool[2], "%d");
     VERIFY_STR("str2", in_str2, out_str2, "%s");
 
     ret = 0;
@@ -329,6 +335,7 @@ static int testMessageArrayRef(const void *args ATTRIBUTE_UNUSED)
     int in_int32[] = {
         100000000, 2000000000, -2000000000
     };
+    bool in_bool[] = { true, false, true };
     const char *in_strv1[] = {
         "Fishfood",
     };
@@ -337,6 +344,8 @@ static int testMessageArrayRef(const void *args ATTRIBUTE_UNUSED)
     };
     int *out_int32 = NULL;
     size_t out_nint32 = 0;
+    bool *out_bool = NULL;
+    size_t out_nbool = 0;
     char **out_strv1 = NULL;
     char **out_strv2 = NULL;
     size_t out_nstrv1 = 0;
@@ -354,10 +363,11 @@ static int testMessageArrayRef(const void *args ATTRIBUTE_UNUSED)
     }
 
     if (virDBusMessageEncode(msg,
-                             "sa&sa&ia&ss",
+                             "sa&sa&ia&ba&ss",
                              in_str1,
                              1, in_strv1,
                              3, in_int32,
+                             3, in_bool,
                              2, in_strv2,
                              in_str2) < 0) {
         VIR_DEBUG("Failed to encode arguments");
@@ -365,10 +375,11 @@ static int testMessageArrayRef(const void *args ATTRIBUTE_UNUSED)
     }
 
     if (virDBusMessageDecode(msg,
-                             "sa&sa&ia&ss",
+                             "sa&sa&ia&ba&ss",
                              &out_str1,
                              &out_nstrv1, &out_strv1,
                              &out_nint32, &out_int32,
+                             &out_nbool, &out_bool,
                              &out_nstrv2, &out_strv2,
                              &out_str2) < 0) {
         VIR_DEBUG("Failed to decode arguments");
@@ -393,6 +404,15 @@ static int testMessageArrayRef(const void *args ATTRIBUTE_UNUSED)
     VERIFY("int32b", in_int32[1], out_int32[1], "%d");
     VERIFY("int32c", in_int32[2], out_int32[2], "%d");
 
+    if (out_nbool != 3) {
+        fprintf(stderr, "Expected 3 bools, but got %zu\n",
+                out_nbool);
+        goto cleanup;
+    }
+    VERIFY("bool[0]", in_bool[0], out_bool[0], "%d");
+    VERIFY("bool[1]", in_bool[1], out_bool[1], "%d");
+    VERIFY("bool[2]", in_bool[2], out_bool[2], "%d");
+
     if (out_nstrv2 != 2) {
         fprintf(stderr, "Expected 2 strings, but got %zu\n",
                 out_nstrv2);
@@ -407,6 +427,7 @@ static int testMessageArrayRef(const void *args ATTRIBUTE_UNUSED)
 
  cleanup:
     VIR_FREE(out_int32);
+    VIR_FREE(out_bool);
     VIR_FREE(out_str1);
     VIR_FREE(out_str2);
     for (i = 0; i < out_nstrv1; i++)
