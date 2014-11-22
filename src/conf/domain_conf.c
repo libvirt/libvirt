@@ -11172,6 +11172,60 @@ virDomainHostdevFind(virDomainDefPtr def,
     return *found ? i : -1;
 }
 
+static bool
+virDomainDiskControllerMatch(int controller_type, int disk_bus)
+{
+    if (controller_type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
+        disk_bus == VIR_DOMAIN_DISK_BUS_SCSI)
+        return true;
+
+    if (controller_type == VIR_DOMAIN_CONTROLLER_TYPE_FDC &&
+        disk_bus == VIR_DOMAIN_DISK_BUS_FDC)
+        return true;
+
+    if (controller_type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
+        disk_bus == VIR_DOMAIN_DISK_BUS_IDE)
+        return true;
+
+    if (controller_type == VIR_DOMAIN_CONTROLLER_TYPE_SATA &&
+        disk_bus == VIR_DOMAIN_DISK_BUS_SATA)
+        return true;
+
+    return false;
+}
+
+int
+virDomainDiskIndexByAddress(virDomainDefPtr def,
+                            virDevicePCIAddressPtr pci_address,
+                            unsigned int bus, unsigned int target,
+                            unsigned int unit)
+{
+    virDomainDiskDefPtr vdisk;
+    virDomainControllerDefPtr controller = NULL;
+    size_t i;
+    int cidx;
+
+    if ((cidx = virDomainControllerFindByPCIAddress(def, pci_address)) >= 0)
+        controller = def->controllers[cidx];
+
+    for (i = 0; i < def->ndisks; i++) {
+        vdisk = def->disks[i];
+        if (vdisk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+            virDevicePCIAddressEqual(&vdisk->info.addr.pci, pci_address))
+            return i;
+        if (vdisk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+            virDomainDeviceDriveAddressPtr drive = &vdisk->info.addr.drive;
+            if (controller &&
+                virDomainDiskControllerMatch(controller->type, vdisk->bus) &&
+                drive->controller == controller->idx &&
+                drive->bus == bus && drive->target == target &&
+                drive->unit == unit)
+                return i;
+        }
+    }
+    return -1;
+}
+
 int
 virDomainDiskIndexByName(virDomainDefPtr def, const char *name,
                          bool allow_ambiguous)
@@ -11456,6 +11510,23 @@ virDomainControllerFind(virDomainDefPtr def,
             (def->controllers[i]->idx == idx)) {
             return i;
         }
+    }
+
+    return -1;
+}
+
+int
+virDomainControllerFindByPCIAddress(virDomainDefPtr def,
+                                    virDevicePCIAddressPtr addr)
+{
+    size_t i;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        virDomainDeviceInfoPtr info = &def->controllers[i]->info;
+
+        if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+            virDevicePCIAddressEqual(&info->addr.pci, addr))
+            return i;
     }
 
     return -1;

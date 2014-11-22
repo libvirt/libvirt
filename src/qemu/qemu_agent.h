@@ -73,6 +73,8 @@ int qemuAgentShutdown(qemuAgentPtr mon,
 int qemuAgentFSFreeze(qemuAgentPtr mon,
                       const char **mountpoints, unsigned int nmountpoints);
 int qemuAgentFSThaw(qemuAgentPtr mon);
+int qemuAgentGetFSInfo(qemuAgentPtr mon, virDomainFSInfoPtr **info,
+                       virDomainDefPtr vmdef);
 
 int qemuAgentSuspend(qemuAgentPtr mon,
                      unsigned int target);

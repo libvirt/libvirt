@@ -234,6 +234,7 @@ virDomainDiskGetDriver;
 virDomainDiskGetFormat;
 virDomainDiskGetSource;
 virDomainDiskGetType;
+virDomainDiskIndexByAddress;
 virDomainDiskIndexByName;
 virDomainDiskInsert;
 virDomainDiskInsertPreAlloced;

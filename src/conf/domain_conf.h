@@ -2476,6 +2476,10 @@ int virDomainEmulatorPinDel(virDomainDefPtr def);
 
 void virDomainRNGDefFree(virDomainRNGDefPtr def);
 
+int virDomainDiskIndexByAddress(virDomainDefPtr def,
+                                virDevicePCIAddressPtr pci_controller,
+                                unsigned int bus, unsigned int target,
+                                unsigned int unit);
 int virDomainDiskIndexByName(virDomainDefPtr def, const char *name,
                              bool allow_ambiguous);
 const char *virDomainDiskPathByName(virDomainDefPtr, const char *name);
@@ -2545,6 +2549,8 @@ int virDomainControllerInsert(virDomainDefPtr def,
 void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
                                          virDomainControllerDefPtr controller);
 int virDomainControllerFind(virDomainDefPtr def, int type, int idx);
+int virDomainControllerFindByPCIAddress(virDomainDefPtr def,
+                                        virDevicePCIAddressPtr addr);
 virDomainControllerDefPtr virDomainControllerRemove(virDomainDefPtr def, size_t i);
 
 int virDomainLeaseIndex(virDomainDefPtr def,

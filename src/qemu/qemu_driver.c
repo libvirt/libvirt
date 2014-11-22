@@ -18832,6 +18832,53 @@ qemuNodeAllocPages(virConnectPtr conn,
 }
 
 
+static int
+qemuDomainGetFSInfo(virDomainPtr dom,
+                    virDomainFSInfoPtr **info,
+                    unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    qemuDomainObjPrivatePtr priv;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(0, ret);
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        return ret;
+
+    if (virDomainGetFSInfoEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    priv = vm->privateData;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    if (!qemuDomainAgentAvailable(priv, true))
+        goto endjob;
+
+    qemuDomainObjEnterAgent(vm);
+    ret = qemuAgentGetFSInfo(priv->agent, info, vm->def);
+    qemuDomainObjExitAgent(vm);
+
+ endjob:
+    if (!qemuDomainObjEndJob(driver, vm))
+        vm = NULL;
+
+ cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
+}
+
+
 static virHypervisorDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
     .name = QEMU_DRIVER_NAME,
@@ -19032,6 +19079,7 @@ static virHypervisorDriver qemuDriver = {
     .connectGetDomainCapabilities = qemuConnectGetDomainCapabilities, /* 1.2.7 */
     .connectGetAllDomainStats = qemuConnectGetAllDomainStats, /* 1.2.8 */
     .nodeAllocPages = qemuNodeAllocPages, /* 1.2.9 */
+    .domainGetFSInfo = qemuDomainGetFSInfo, /* 1.2.11 */
 };
 
 
