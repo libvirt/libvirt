@@ -141,6 +141,12 @@ typedef struct _qemuMigrationCookieNBD qemuMigrationCookieNBD;
 typedef qemuMigrationCookieNBD *qemuMigrationCookieNBDPtr;
 struct _qemuMigrationCookieNBD {
     int port; /* on which port does NBD server listen for incoming data */
+
+    size_t ndisks;  /* Number of items in @disk array */
+    struct {
+        char *target;                   /* Disk target */
+        unsigned long long capacity;    /* And its capacity */
+    } *disks;
 };
 
 typedef struct _qemuMigrationCookie qemuMigrationCookie;
@@ -206,6 +212,18 @@ qemuMigrationCookieNetworkFree(qemuMigrationCookieNetworkPtr network)
 }
 
 
+static void qemuMigrationCookieNBDFree(qemuMigrationCookieNBDPtr nbd)
+{
+    if (!nbd)
+        return;
+
+    while (nbd->ndisks)
+        VIR_FREE(nbd->disks[--nbd->ndisks].target);
+    VIR_FREE(nbd->disks);
+    VIR_FREE(nbd);
+}
+
+
 static void qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
 {
     if (!mig)
@@ -213,13 +231,13 @@ static void qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
 
     qemuMigrationCookieGraphicsFree(mig->graphics);
     qemuMigrationCookieNetworkFree(mig->network);
+    qemuMigrationCookieNBDFree(mig->nbd);
 
     VIR_FREE(mig->localHostname);
     VIR_FREE(mig->remoteHostname);
     VIR_FREE(mig->name);
     VIR_FREE(mig->lockState);
     VIR_FREE(mig->lockDriver);
-    VIR_FREE(mig->nbd);
     VIR_FREE(mig->jobInfo);
     VIR_FREE(mig);
 }
@@ -525,20 +543,64 @@ qemuMigrationCookieAddNetwork(qemuMigrationCookiePtr mig,
 
 static int
 qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
-                          virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                          virQEMUDriverPtr driver,
                           virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virHashTablePtr stats = NULL;
+    size_t i;
+    int ret = -1;
 
     /* It is not a bug if there already is a NBD data */
     if (!mig->nbd &&
         VIR_ALLOC(mig->nbd) < 0)
         return -1;
 
+    if (vm->def->ndisks &&
+        VIR_ALLOC_N(mig->nbd->disks, vm->def->ndisks) < 0)
+        return -1;
+    mig->nbd->ndisks = 0;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+        qemuBlockStats *entry;
+
+        if (!stats) {
+            if (!(stats = virHashCreate(10, virHashValueFree)))
+                goto cleanup;
+
+            qemuDomainObjEnterMonitor(driver, vm);
+            if (qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats) < 0) {
+                qemuDomainObjExitMonitor(driver, vm);
+                goto cleanup;
+            }
+            qemuDomainObjExitMonitor(driver, vm);
+
+            if (!virDomainObjIsActive(vm)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("domain exited meanwhile"));
+                goto cleanup;
+            }
+        }
+
+        if (!disk->info.alias ||
+            !(entry = virHashLookup(stats, disk->info.alias)))
+            continue;
+
+        if (VIR_STRDUP(mig->nbd->disks[mig->nbd->ndisks].target,
+                       disk->dst) < 0)
+            goto cleanup;
+        mig->nbd->disks[mig->nbd->ndisks].capacity = entry->capacity;
+        mig->nbd->ndisks++;
+    }
+
     mig->nbd->port = priv->nbdPort;
     mig->flags |= QEMU_MIGRATION_COOKIE_NBD;
 
-    return 0;
+    ret = 0;
+ cleanup:
+    virHashFree(stats);
+    return ret;
 }
 
 
@@ -763,7 +825,20 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
         virBufferAddLit(buf, "<nbd");
         if (mig->nbd->port)
             virBufferAsprintf(buf, " port='%d'", mig->nbd->port);
-        virBufferAddLit(buf, "/>\n");
+        if (mig->nbd->ndisks) {
+            virBufferAddLit(buf, ">\n");
+            virBufferAdjustIndent(buf, 2);
+            for (i = 0; i < mig->nbd->ndisks; i++) {
+                virBufferEscapeString(buf, "<disk target='%s'",
+                                      mig->nbd->disks[i].target);
+                virBufferAsprintf(buf, " capacity='%llu'/>\n",
+                                  mig->nbd->disks[i].capacity);
+            }
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</nbd>\n");
+        } else {
+            virBufferAddLit(buf, "/>\n");
+        }
     }
 
     if (mig->flags & QEMU_MIGRATION_COOKIE_STATS && mig->jobInfo)
@@ -887,6 +962,70 @@ qemuMigrationCookieNetworkXMLParse(xmlXPathContextPtr ctxt)
     VIR_FREE(interfaces);
     qemuMigrationCookieNetworkFree(optr);
     optr = NULL;
+    goto cleanup;
+}
+
+
+static qemuMigrationCookieNBDPtr
+qemuMigrationCookieNBDXMLParse(xmlXPathContextPtr ctxt)
+{
+    qemuMigrationCookieNBDPtr ret = NULL;
+    char *port = NULL, *capacity = NULL;
+    size_t i;
+    int n;
+    xmlNodePtr *disks = NULL;
+    xmlNodePtr save_ctxt = ctxt->node;
+
+    if (VIR_ALLOC(ret) < 0)
+        goto error;
+
+    port = virXPathString("string(./nbd/@port)", ctxt);
+    if (port && virStrToLong_i(port, NULL, 10, &ret->port) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Malformed nbd port '%s'"),
+                       port);
+        goto error;
+    }
+
+    /* Now check if source sent a list of disks to prealloc. We might be
+     * talking to an older server, so it's not an error if the list is
+     * missing. */
+    if ((n = virXPathNodeSet("./nbd/disk", ctxt, &disks)) > 0) {
+        if (VIR_ALLOC_N(ret->disks, n) < 0)
+            goto error;
+        ret->ndisks = n;
+
+        for (i = 0; i < n; i++) {
+            ctxt->node = disks[i];
+            VIR_FREE(capacity);
+
+            if (!(ret->disks[i].target = virXPathString("string(./@target)", ctxt))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Malformed disk target"));
+                goto error;
+            }
+
+            capacity = virXPathString("string(./@capacity)", ctxt);
+            if (!capacity ||
+                virStrToLong_ull(capacity, NULL, 10,
+                                 &ret->disks[i].capacity) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Malformed disk capacity: '%s'"),
+                               NULLSTR(capacity));
+                goto error;
+            }
+        }
+    }
+
+ cleanup:
+    VIR_FREE(port);
+    VIR_FREE(capacity);
+    VIR_FREE(disks);
+    ctxt->node = save_ctxt;
+    return ret;
+ error:
+    qemuMigrationCookieNBDFree(ret);
+    ret = NULL;
     goto cleanup;
 }
 
@@ -1123,22 +1262,9 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
         goto error;
 
     if (flags & QEMU_MIGRATION_COOKIE_NBD &&
-        virXPathBoolean("boolean(./nbd)", ctxt)) {
-        char *port;
-
-        if (VIR_ALLOC(mig->nbd) < 0)
-            goto error;
-
-        port = virXPathString("string(./nbd/@port)", ctxt);
-        if (port && virStrToLong_i(port, NULL, 10, &mig->nbd->port) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Malformed nbd port '%s'"),
-                           port);
-            VIR_FREE(port);
-            goto error;
-        }
-        VIR_FREE(port);
-    }
+        virXPathBoolean("boolean(./nbd)", ctxt) &&
+        (!(mig->nbd = qemuMigrationCookieNBDXMLParse(ctxt))))
+        goto error;
 
     if (flags & QEMU_MIGRATION_COOKIE_STATS &&
         virXPathBoolean("boolean(./statistics)", ctxt) &&
