@@ -1780,7 +1780,7 @@ virFindSCSIHostByPCI(const char *sysfs_prefix,
         virReportSystemError(errno,
                              _("Failed to opendir path '%s'"),
                              prefix);
-        goto cleanup;
+        return NULL;
     }
 
     while (virDirRead(dir, &entry, prefix) > 0) {
