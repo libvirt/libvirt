@@ -1998,7 +1998,7 @@ virStorageVolPoolRefreshThread(void *opaque)
  * to perform a pool refresh.
  *
  * @st Pointer to stream being closed.
- * @opaque Buffer to hold the pool name to be rereshed
+ * @opaque Buffer to hold the pool name to be refreshed
  */
 static void
 virStorageVolFDStreamCloseCb(virStreamPtr st ATTRIBUTE_UNUSED,
