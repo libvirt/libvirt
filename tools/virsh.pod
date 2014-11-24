@@ -849,7 +849,7 @@ I<--vcpu>, I<--interface>, I<--block>.
 
 When selecting the I<--state> group the following fields are returned:
 "state.state" - state of the VM, returned as number from virDomainState enum,
-"state.reason" - reason for entering given state, returned as int from,
+"state.reason" - reason for entering given state, returned as int from
 virDomain*Reason enum corresponding to given state.
 
 I<--cpu-total> returns:
@@ -878,9 +878,9 @@ I<--interface> returns:
 "net.<num>.tx.bytes" - number of bytes transmitted,
 "net.<num>.tx.pkts" - number of packets transmitted,
 "net.<num>.tx.errs" - number of transmission errors,
-"net.<num>.tx.drop" - number of transmit packets dropped,
+"net.<num>.tx.drop" - number of transmit packets dropped
 
-I<block> returns:
+I<--block> returns:
 "block.count" - number of block devices on this domain,
 "block.<num>.name" - name of the target of the block device <num>,
 "block.<num>.rd.reqs" - number of read requests,
@@ -892,6 +892,9 @@ I<block> returns:
 "block.<num>.fl.reqs" - total flush requests,
 "block.<num>.fl.times" - total time (ns) spent on cache flushing,
 "block.<num>.errors" - Xen only: the 'oo_req' value,
+"block.<num>.allocation" - offset of highest written sector in bytes,
+"block.<num>.capacity" - logical size of source file in bytes,
+"block.<num>.physical" - physical size of source file in bytes
 
 Selecting a specific statistics groups doesn't guarantee that the
 daemon supports the selected group of stats. Flag I<--enforce>
