@@ -26,7 +26,7 @@
     <controller type='pci' index='2' model='pci-bridge'/>
     <controller type='sata' index='0'/>
     <video>
-      <model type='qxl' ram='65536' vram='18432' heads='1'/>
+      <model type='qxl' ram='65536' vram='32768' heads='1'/>
     </video>
     <memballoon model='none'/>
   </devices>

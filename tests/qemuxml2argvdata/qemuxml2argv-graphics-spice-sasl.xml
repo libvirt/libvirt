@@ -28,7 +28,7 @@
       <listen type='address' address='127.0.0.1'/>
     </graphics>
     <video>
-      <model type='qxl' ram='65536' vram='18432' heads='1'/>
+      <model type='qxl' ram='65536' vram='32768' heads='1'/>
     </video>
     <memballoon model='virtio'/>
   </devices>

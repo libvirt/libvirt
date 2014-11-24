@@ -358,7 +358,7 @@ xenDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         case VIR_DOMAIN_VIDEO_TYPE_VGA:
         case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
         case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
-            dev->data.video->vram = 9 * 1024;
+            dev->data.video->vram = 16 * 1024;
         break;
 
         case VIR_DOMAIN_VIDEO_TYPE_XEN:

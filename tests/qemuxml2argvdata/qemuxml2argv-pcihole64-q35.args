@@ -6,4 +6,4 @@ LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
 -device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.1,addr=0x1 \
 -drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-sata0-0-0 \
 -device ide-drive,bus=ide.0,drive=drive-sata0-0-0,id=sata0-0-0 \
--vga qxl -global qxl.ram_size=67108864 -global qxl.vram_size=18874368
+-vga qxl -global qxl.ram_size=67108864 -global qxl.vram_size=33554432

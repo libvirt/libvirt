@@ -3189,6 +3189,12 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
         }
     }
 
+    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
+        virDomainVideoDefPtr video = dev->data.video;
+        video->ram = VIR_ROUND_UP_POWER_OF_TWO(video->ram);
+        video->vram = VIR_ROUND_UP_POWER_OF_TWO(video->vram);
+    }
+
     return 0;
 }
 
@@ -10147,16 +10153,15 @@ virSysinfoParseXML(xmlNodePtr node,
     goto cleanup;
 }
 
-int
+unsigned int
 virDomainVideoDefaultRAM(const virDomainDef *def,
-                         int type)
+                         const virDomainVideoType type)
 {
     /* Defer setting default vram to the Xen drivers */
     if (def->virtType == VIR_DOMAIN_VIRT_XEN)
         return 0;
 
     switch (type) {
-        /* Weird, QEMU defaults to 9 MB ??! */
     case VIR_DOMAIN_VIDEO_TYPE_VGA:
     case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
     case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
@@ -10165,7 +10170,7 @@ virDomainVideoDefaultRAM(const virDomainDef *def,
         else if (def->virtType == VIR_DOMAIN_VIRT_VMWARE)
             return 4 * 1024;
         else
-            return 9 * 1024;
+            return 16 * 1024;
         break;
 
     case VIR_DOMAIN_VIDEO_TYPE_XEN:
@@ -10326,7 +10331,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
     if (vram) {
         if (virStrToLong_ui(vram, NULL, 10, &def->vram) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("cannot parse video ram '%s'"), vram);
+                           _("cannot parse video vram '%s'"), vram);
             goto error;
         }
     } else {

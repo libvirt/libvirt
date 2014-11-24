@@ -6,4 +6,4 @@ SASL_CONF_PATH=/root/.sasl2 QEMU_AUDIO_DRV=spice \
 -spice port=5903,tls-port=5904,sasl,addr=127.0.0.1,\
 x509-dir=/etc/pki/libvirt-spice,tls-channel=default \
 -vga qxl -global qxl.ram_size=67108864 -global \
-qxl.vram_size=18874368 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
+qxl.vram_size=33554432 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

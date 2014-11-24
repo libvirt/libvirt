@@ -4902,11 +4902,15 @@ qemuBuildDeviceVideoStr(virDomainDefPtr def,
             goto error;
         }
 
-        /* QEMU accepts bytes for ram_size. */
-        virBufferAsprintf(&buf, ",ram_size=%u", video->ram * 1024);
+        if (video->ram) {
+            /* QEMU accepts bytes for ram_size. */
+            virBufferAsprintf(&buf, ",ram_size=%u", video->ram * 1024);
+        }
 
-        /* QEMU accepts bytes for vram_size. */
-        virBufferAsprintf(&buf, ",vram_size=%u", video->vram * 1024);
+        if (video->vram) {
+            /* QEMU accepts bytes for vram_size. */
+            virBufferAsprintf(&buf, ",vram_size=%u", video->vram * 1024);
+        }
     }
 
     if (qemuBuildDeviceAddressStr(&buf, def, &video->info, qemuCaps) < 0)
@@ -9213,8 +9217,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                     virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
                     const char *dev = (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL_VGA)
                                        ? "qxl-vga" : "qxl");
-                    int ram = def->videos[0]->ram;
-                    int vram = def->videos[0]->vram;
+                    unsigned int ram = def->videos[0]->ram;
+                    unsigned int vram = def->videos[0]->vram;
 
                     if (vram > (UINT_MAX / 1024)) {
                         virReportError(VIR_ERR_OVERFLOW,

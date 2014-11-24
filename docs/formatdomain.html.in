@@ -4679,7 +4679,7 @@ qemu-kvm -net nic,model=? /dev/null
   ...
   &lt;devices&gt;
     &lt;video&gt;
-      &lt;model type='vga' vram='8192' heads='1'&gt;
+      &lt;model type='vga' vram='16384' heads='1'&gt;
         &lt;acceleration accel3d='yes' accel2d='yes'/&gt;
       &lt;/model&gt;
     &lt;/video&gt;
@@ -4689,33 +4689,51 @@ qemu-kvm -net nic,model=? /dev/null
     <dl>
       <dt><code>video</code></dt>
       <dd>
-        The <code>video</code> element is the container for describing
-        video devices. For backwards compatibility, if no <code>video</code>
-        is set but there is a <code>graphics</code> in domain xml, then libvirt
-        will add a default <code>video</code> according to the guest type.
-        For a guest of type "kvm", the default <code>video</code> for it is:
-        <code>type</code> with value "cirrus", <code>vram</code> with value
-        "9216", and <code>heads</code> with value "1". By default, the first
-        video device in domain xml is the primary one, but the optional
-        attribute <code>primary</code> (<span class="since">since 1.0.2</span>)
-        with value 'yes' can be used to mark the primary in cases of multiple
-        video device. The non-primary must be type of "qxl". The optional
-        attribute <code>ram</code> (<span class="since">since
-        1.0.2</span>) is allowed for "qxl" type only and specifies
-        the size of the primary bar, while <code>vram</code> specifies the
-        secondary bar size.  If "ram" or "vram" are not supplied a default
-        value is used.
+        <p>
+          The <code>video</code> element is the container for describing
+          video devices. For backwards compatibility, if no <code>video</code>
+          is set but there is a <code>graphics</code> in domain xml, then
+          libvirt will add a default <code>video</code> according to the guest
+          type.
+        </p>
+        <p>
+          For a guest of type "kvm", the default <code>video</code> is:
+          <code>type</code> with value "cirrus", <code>vram</code> with value
+          "16384" and <code>heads</code> with value "1". By default, the first
+          video device in domain xml is the primary one, but the optional
+          attribute <code>primary</code> (<span class="since">since 1.0.2</span>)
+          with value 'yes' can be used to mark the primary in cases of multiple
+          video device. The non-primary must be type of "qxl".
+        </p>
       </dd>
 
       <dt><code>model</code></dt>
       <dd>
-        The <code>model</code> element has a mandatory <code>type</code>
-        attribute which takes the value "vga", "cirrus", "vmvga", "xen",
-        "vbox", or "qxl" (<span class="since">since 0.8.6</span>)
-        depending on the hypervisor features available.
-        You can also provide the amount of video memory in kibibytes
-        (blocks of 1024 bytes) using
-        <code>vram</code> and the number of screen with <code>heads</code>.
+        <p>
+          The <code>model</code> element has a mandatory <code>type</code>
+          attribute which takes the value "vga", "cirrus", "vmvga", "xen",
+          "vbox", or "qxl" (<span class="since">since 0.8.6</span>) depending
+          on the hypervisor features available.
+        </p>
+        <p>
+          You can provide the amount of video memory in kibibytes (blocks of
+          1024 bytes) using <code>vram</code>. This is supported only for guest
+          type of "libxl", "parallels", "qemu", "vbox", "vmx" and "xen". If no
+          value is provided the default is used. If the size is not a power of
+          two it will be rounded to closest one.
+        </p>
+        <p>
+          The number of screen can be set using <code>heads</code>. This is
+          supported only for guests type of "parallels", "kvm", "vbox" and "vmx".
+        </p>
+        <p>
+          For guest type of kvm the optional attribute <code>ram</code>
+          (<span class="since">since 1.0.2</span>) is allowed for "qxl" type
+          only and specifies the size of the primary bar, while the optional
+          attribute <code>vram</code> specifies the secondary bar size.
+          If "ram" or "vram" are not supplied a default value is used. The ram
+          should also be rounded to power of two as vram.
+        </p>
       </dd>
 
       <dt><code>acceleration</code></dt>
