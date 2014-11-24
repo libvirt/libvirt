@@ -1597,11 +1597,15 @@ static int lxcContainerMountAllFS(virDomainDefPtr vmDef,
         if (STREQ(vmDef->fss[i]->dst, "/"))
             continue;
 
+        VIR_DEBUG("Mounting '%s' -> '%s'", vmDef->fss[i]->src, vmDef->fss[i]->dst);
+
         if (lxcContainerResolveSymlinks(vmDef->fss[i], false) < 0)
             return -1;
 
-        if (lxcContainerUnmountSubtree(vmDef->fss[i]->dst,
-                                       false) < 0)
+
+        if (!(vmDef->fss[i]->src &&
+              STRPREFIX(vmDef->fss[i]->src, vmDef->fss[i]->dst)) &&
+            lxcContainerUnmountSubtree(vmDef->fss[i]->dst, false) < 0)
             return -1;
 
         if (lxcContainerMountFS(vmDef->fss[i], sec_mount_options) < 0)
