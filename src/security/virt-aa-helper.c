@@ -571,7 +571,7 @@ valid_path(const char *path, const bool readonly)
     };
     /* override the above with these */
     const char * const override[] = {
-        "/sys/devices/pci",	/* for hostdev pci devices */
+        "/sys/devices/pci",              /* for hostdev pci devices */
         "/etc/libvirt-sandbox/services/" /* for virt-sandbox service config */
     };
 
