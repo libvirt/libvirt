@@ -10903,13 +10903,22 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  * "net.<num>.tx.errs" - transmission errors as unsigned long long.
  * "net.<num>.tx.drop" - transmit packets dropped as unsigned long long.
  *
- * VIR_DOMAIN_STATS_BLOCK: Return block devices statistics.
+ * VIR_DOMAIN_STATS_BLOCK: Return block devices statistics.  By default,
+ * this information is limited to the active layer of each <disk> of the
+ * domain (where block.count is equal to the number of disks), but adding
+ * VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING to @flags will expand the
+ * array to cover backing chains (block.count corresponds to the number
+ * of host resources used together to provide the guest disks).
  * The typed parameter keys are in this format:
- * "block.count" - number of block devices on this domain
+ * "block.count" - number of block devices in the subsequent list,
  *                 as unsigned int.
  * "block.<num>.name" - name of the block device <num> as string.
  *                      matches the target name (vda/sda/hda) of the
- *                      block device.
+ *                      block device.  If the backing chain is listed,
+ *                      this name is the same for all host resources tied
+ *                      to the same guest device.
+ * "block.<num>.backingIndex" - unsigned int giving the <backingStore> index,
+ *                              only used when backing images are listed.
  * "block.<num>.path" - string describing the source of block device <num>,
  *                      if it is a file or block device (omitted for network
  *                      sources and drives with no media inserted).

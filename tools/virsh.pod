@@ -825,7 +825,7 @@ that require a block device name (such as I<domblkinfo> or
 I<snapshot-create> for disk snapshots) will accept either target
 or unique source names printed by this command.
 
-=item B<domstats> [I<--raw>] [I<--enforce>] [I<--state>]
+=item B<domstats> [I<--raw>] [I<--enforce>] [I<--backing>] [I<--state>]
 [I<--cpu-total>] [I<--balloon>] [I<--vcpu>] [I<--interface>] [I<--block>]
 [[I<--list-active>] [I<--list-inactive>] [I<--list-persistent>]
 [I<--list-transient>] [I<--list-running>] [I<--list-paused>]
@@ -880,9 +880,16 @@ I<--interface> returns:
 "net.<num>.tx.errs" - number of transmission errors,
 "net.<num>.tx.drop" - number of transmit packets dropped
 
-I<--block> returns:
-"block.count" - number of block devices on this domain,
-"block.<num>.name" - name of the target of the block device <num>,
+I<--block> returns information about disks associated with each
+domain.  Using the I<--backing> flag extends this information to
+cover all resources in the backing chain, rather than the default
+of limiting information to the active layer for each guest disk.
+Information listed includes:
+"block.count" - number of block devices being listed,
+"block.<num>.name" - name of the target of the block device <num> (the
+same name for multiple entries if I<--backing> is present),
+"block.<num>.backingIndex" - when I<--backing> is present, matches up
+with the <backingStore> index listed in domain XML for backing files,
 "block.<num>.path" - file source of block device <num>, if it is a
 local file or block device,
 "block.<num>.rd.reqs" - number of read requests,

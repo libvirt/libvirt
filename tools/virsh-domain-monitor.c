@@ -2037,6 +2037,10 @@ static const vshCmdOptDef opts_domstats[] = {
      .type = VSH_OT_BOOL,
      .help = N_("enforce requested stats parameters"),
     },
+    {.name = "backing",
+     .type = VSH_OT_BOOL,
+     .help = N_("add backing chain information to block stats"),
+    },
     {.name = "domain",
      .type = VSH_OT_ARGV,
      .flags = VSH_OFLAG_NONE,
@@ -2129,6 +2133,9 @@ cmdDomstats(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "enforce"))
         flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS;
+
+    if (vshCommandOptBool(cmd, "backing"))
+        flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING;
 
     if (vshCommandOptBool(cmd, "domain")) {
         if (VIR_ALLOC_N(domlist, 1) < 0)
