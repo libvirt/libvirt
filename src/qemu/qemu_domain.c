@@ -258,6 +258,7 @@ int
 qemuDomainJobInfoToInfo(qemuDomainJobInfoPtr jobInfo,
                         virDomainJobInfoPtr info)
 {
+    info->type = jobInfo->type;
     info->timeElapsed = jobInfo->timeElapsed;
     info->timeRemaining = jobInfo->timeRemaining;
 
