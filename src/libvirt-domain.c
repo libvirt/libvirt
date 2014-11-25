@@ -4312,6 +4312,9 @@ virDomainMigrateToURI(virDomainPtr domain,
  * If you want to copy non-shared storage within migration you
  * can use either VIR_MIGRATE_NON_SHARED_DISK or
  * VIR_MIGRATE_NON_SHARED_INC as they are mutually exclusive.
+ * As of 1.2.11 disks of some types ('file' and 'volume') are
+ * precreated automatically, if there's a pool defined on the
+ * destination for the disk path.
  *
  * If a hypervisor supports changing the configuration of the guest
  * during migration, the @dxml parameter specifies the new config
