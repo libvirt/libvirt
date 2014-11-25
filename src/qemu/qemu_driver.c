@@ -18495,19 +18495,20 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     int rc;
     virHashTablePtr stats = NULL;
     qemuDomainObjPrivatePtr priv = dom->privateData;
+    bool abbreviated = false;
 
-    if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom))
-        return 0; /* it's ok, just go ahead silently */
+    if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom)) {
+        abbreviated = true; /* it's ok, just go ahead silently */
+    } else {
+        qemuDomainObjEnterMonitor(driver, dom);
+        rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats);
+        ignore_value(qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats));
+        qemuDomainObjExitMonitor(driver, dom);
 
-    qemuDomainObjEnterMonitor(driver, dom);
-    rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats);
-    ignore_value(qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats));
-    qemuDomainObjExitMonitor(driver, dom);
-
-    if (rc < 0) {
-        virResetLastError();
-        ret = 0; /* still ok, again go ahead silently */
-        goto cleanup;
+        if (rc < 0) {
+            virResetLastError();
+            abbreviated = true; /* still ok, again go ahead silently */
+        }
     }
 
     QEMU_ADD_COUNT_PARAM(record, maxparams, "block", dom->def->ndisks);
@@ -18518,9 +18519,12 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
 
         QEMU_ADD_NAME_PARAM(record, maxparams, "block", i, disk->dst);
 
-        if (!disk->info.alias ||
-            !(entry = virHashLookup(stats, disk->info.alias)))
+        if (abbreviated || !disk->info.alias ||
+            !(entry = virHashLookup(stats, disk->info.alias))) {
+            /* FIXME: we could still look up sizing by sharing code
+             * with qemuDomainGetBlockInfo */
             continue;
+        }
 
         QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
                                 "rd.reqs", entry->rd_req);
