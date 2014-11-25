@@ -30,7 +30,7 @@ static int blankProblemElements(char *data)
         virtTestClearLineRegex("<currentMemory.*>[[:digit:]]+</currentMemory>",
                                data) < 0 ||
         virtTestClearLineRegex("<readonly/>", data) < 0 ||
-        virtTestClearLineRegex("<sharable/>", data) < 0)
+        virtTestClearLineRegex("<shareable/>", data) < 0)
         return -1;
     return 0;
 }
