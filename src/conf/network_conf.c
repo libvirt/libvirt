@@ -4463,10 +4463,8 @@ virNetworkObjListExport(virConnectPtr conn,
 
  cleanup:
     if (tmp_nets) {
-        for (i = 0; i < nnets; i++) {
-            if (tmp_nets[i])
-                virNetworkFree(tmp_nets[i]);
-        }
+        for (i = 0; i < nnets; i++)
+            virObjectUnref(tmp_nets[i]);
     }
 
     VIR_FREE(tmp_nets);
