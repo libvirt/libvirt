@@ -213,7 +213,7 @@ umlBuildCommandLineNet(virConnectPtr conn,
             goto error;
         }
         bridge = virNetworkGetBridgeName(network);
-        virNetworkFree(network);
+        virObjectUnref(network);
         if (bridge == NULL)
             goto error;
 

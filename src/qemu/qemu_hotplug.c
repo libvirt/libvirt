@@ -1763,7 +1763,6 @@ qemuDomainNetGetBridgeName(virConnectPtr conn, virDomainNetDefPtr net)
         if (VIR_STRDUP(brname, tmpbr) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        virErrorPtr errobj;
         virNetworkPtr network;
 
         if (!(network = virNetworkLookupByName(conn, net->data.network.name))) {
@@ -1774,12 +1773,7 @@ qemuDomainNetGetBridgeName(virConnectPtr conn, virDomainNetDefPtr net)
         }
         brname = virNetworkGetBridgeName(network);
 
-        /* Make sure any above failure is preserved */
-        errobj = virSaveLastError();
-        virNetworkFree(network);
-        virSetError(errobj);
-        virFreeError(errobj);
-
+        virObjectUnref(network);
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Interface type %d has no bridge name"),

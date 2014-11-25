@@ -4178,19 +4178,13 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
         virNetworkPtr network;
         char *brname = NULL;
         bool fail = false;
-        virErrorPtr errobj;
 
         if (!(network = virNetworkLookupByName(conn, net->data.network.name)))
             goto cleanup;
         if (!(brname = virNetworkGetBridgeName(network)))
            fail = true;
 
-        /* Make sure any above failure is preserved */
-        errobj = virSaveLastError();
-        virNetworkFree(network);
-        virSetError(errobj);
-        virFreeError(errobj);
-
+        virObjectUnref(network);
         if (fail)
             goto cleanup;
 

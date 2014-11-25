@@ -3063,8 +3063,7 @@ remoteConnectListAllNetworks(virConnectPtr conn,
  cleanup:
     if (tmp_nets) {
         for (i = 0; i < ret.nets.nets_len; i++)
-            if (tmp_nets[i])
-                virNetworkFree(tmp_nets[i]);
+            virObjectUnref(tmp_nets[i]);
         VIR_FREE(tmp_nets);
     }
 
@@ -5529,7 +5528,7 @@ remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 
     event = virNetworkEventLifecycleNew(net->name, net->uuid, msg->event,
                                         msg->detail);
-    virNetworkFree(net);
+    virObjectUnref(net);
 
     remoteEventQueue(priv, event, msg->callbackID);
 }

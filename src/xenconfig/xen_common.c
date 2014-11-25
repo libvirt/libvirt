@@ -1245,7 +1245,7 @@ xenFormatNet(virConnectPtr conn,
             return -1;
         }
         bridge = virNetworkGetBridgeName(network);
-        virNetworkFree(network);
+        virObjectUnref(network);
         if (!bridge) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("network %s is not active"),

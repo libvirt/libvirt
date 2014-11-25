@@ -1058,7 +1058,6 @@ libxlMakeNic(virDomainDefPtr def,
             char *brname = NULL;
             virNetworkPtr network;
             virConnectPtr conn;
-            virErrorPtr errobj;
 
             if (!(conn = virConnectOpen("xen:///system")))
                 return -1;
@@ -1078,11 +1077,7 @@ libxlMakeNic(virDomainDefPtr def,
 
             VIR_FREE(brname);
 
-            /* Preserve any previous failure */
-            errobj = virSaveLastError();
-            virNetworkFree(network);
-            virSetError(errobj);
-            virFreeError(errobj);
+            virObjectUnref(network);
             virObjectUnref(conn);
             if (fail)
                 return -1;

@@ -4790,7 +4790,7 @@ remoteDispatchConnectListAllNetworks(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetMessageSaveError(rerr);
     if (nets && nnets > 0) {
         for (i = 0; i < nnets; i++)
-            virNetworkFree(nets[i]);
+            virObjectUnref(nets[i]);
         VIR_FREE(nets);
     }
     return rv;
@@ -5816,8 +5816,7 @@ remoteDispatchConnectNetworkEventRegisterAny(virNetServerPtr server ATTRIBUTE_UN
     VIR_FREE(callback);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (net)
-        virNetworkFree(net);
+    virObjectUnref(net);
     virMutexUnlock(&priv->lock);
     return rv;
 }
@@ -6202,7 +6201,7 @@ remoteDispatchNetworkGetDHCPLeases(virNetServerPtr server ATTRIBUTE_UNUSED,
             virNetworkDHCPLeaseFree(leases[i]);
         VIR_FREE(leases);
     }
-    virNetworkFree(net);
+    virObjectUnref(net);
     return rv;
 }
 

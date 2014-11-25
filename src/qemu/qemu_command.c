@@ -298,7 +298,6 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
 
     if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
         bool fail = false;
-        virErrorPtr errobj;
         virNetworkPtr network = virNetworkLookupByName(conn,
                                                        net->data.network.name);
         if (!network)
@@ -307,12 +306,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         if (!(brname = virNetworkGetBridgeName(network)))
            fail = true;
 
-        /* Make sure any above failure is preserved */
-        errobj = virSaveLastError();
-        virNetworkFree(network);
-        virSetError(errobj);
-        virFreeError(errobj);
-
+        virObjectUnref(network);
         if (fail)
             return ret;
 

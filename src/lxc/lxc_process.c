@@ -386,7 +386,6 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
             virNetworkPtr network;
             char *brname = NULL;
             bool fail = false;
-            virErrorPtr errobj;
 
             if (!(network = virNetworkLookupByName(conn,
                                                    net->data.network.name)))
@@ -394,12 +393,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
             if (!(brname = virNetworkGetBridgeName(network)))
                fail = true;
 
-            /* Make sure any above failure is preserved */
-            errobj = virSaveLastError();
-            virNetworkFree(network);
-            virSetError(errobj);
-            virFreeError(errobj);
-
+            virObjectUnref(network);
             if (fail)
                 goto cleanup;
 
