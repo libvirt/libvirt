@@ -18374,11 +18374,11 @@ do { \
         goto cleanup; \
 } while (0)
 
-#define QEMU_ADD_NAME_PARAM(record, maxparams, type, num, name) \
+#define QEMU_ADD_NAME_PARAM(record, maxparams, type, subtype, num, name) \
 do { \
     char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
     snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
-             "%s.%zu.name", type, num); \
+             "%s.%zu.%s", type, num, subtype); \
     if (virTypedParamsAddString(&(record)->params, \
                                 &(record)->nparams, \
                                 maxparams, \
@@ -18424,7 +18424,7 @@ qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
         memset(&tmp, 0, sizeof(tmp));
 
         QEMU_ADD_NAME_PARAM(record, maxparams,
-                            "net", i, dom->def->nets[i]->ifname);
+                            "net", "name", i, dom->def->nets[i]->ifname);
 
         if (virNetInterfaceStats(dom->def->nets[i]->ifname, &tmp) < 0) {
             virResetLastError();
@@ -18517,7 +18517,10 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
         qemuBlockStats *entry;
         virDomainDiskDefPtr disk = dom->def->disks[i];
 
-        QEMU_ADD_NAME_PARAM(record, maxparams, "block", i, disk->dst);
+        QEMU_ADD_NAME_PARAM(record, maxparams, "block", "name", i, disk->dst);
+        if (virStorageSourceIsLocalStorage(disk->src) && disk->src->path)
+            QEMU_ADD_NAME_PARAM(record, maxparams, "block", "path",
+                                i, disk->src->path);
 
         if (abbreviated || !disk->info.alias ||
             !(entry = virHashLookup(stats, disk->info.alias))) {

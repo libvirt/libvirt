@@ -883,6 +883,8 @@ I<--interface> returns:
 I<--block> returns:
 "block.count" - number of block devices on this domain,
 "block.<num>.name" - name of the target of the block device <num>,
+"block.<num>.path" - file source of block device <num>, if it is a
+local file or block device,
 "block.<num>.rd.reqs" - number of read requests,
 "block.<num>.rd.bytes" - number of read bytes,
 "block.<num>.rd.times" - total time (ns) spent on reads,

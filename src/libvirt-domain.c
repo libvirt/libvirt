@@ -10910,6 +10910,9 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  * "block.<num>.name" - name of the block device <num> as string.
  *                      matches the target name (vda/sda/hda) of the
  *                      block device.
+ * "block.<num>.path" - string describing the source of block device <num>,
+ *                      if it is a file or block device (omitted for network
+ *                      sources and drives with no media inserted).
  * "block.<num>.rd.reqs" - number of read requests as unsigned long long.
  * "block.<num>.rd.bytes" - number of read bytes as unsigned long long.
  * "block.<num>.rd.times" - total time (ns) spent on reads as
