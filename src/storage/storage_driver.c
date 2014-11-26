@@ -1464,6 +1464,48 @@ storageVolLookupByPath(virConnectPtr conn,
     return ret;
 }
 
+virStoragePoolPtr
+storagePoolLookupByTargetPath(virConnectPtr conn,
+                              const char *path)
+{
+    size_t i;
+    virStoragePoolPtr ret = NULL;
+    char *cleanpath;
+
+    cleanpath = virFileSanitizePath(path);
+    if (!cleanpath)
+        return NULL;
+
+    storageDriverLock();
+    for (i = 0; i < driver->pools.count && !ret; i++) {
+        virStoragePoolObjPtr pool = driver->pools.objs[i];
+
+        virStoragePoolObjLock(pool);
+
+        if (!virStoragePoolObjIsActive(pool)) {
+            virStoragePoolObjUnlock(pool);
+            continue;
+        }
+
+        if (STREQ(path, pool->def->target.path)) {
+            ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid,
+                                    NULL, NULL);
+        }
+
+        virStoragePoolObjUnlock(pool);
+    }
+    storageDriverUnlock();
+
+    if (!ret) {
+        virReportError(VIR_ERR_NO_STORAGE_VOL,
+                       _("no storage pool with matching target path '%s'"),
+                       path);
+    }
+
+    VIR_FREE(cleanpath);
+    return ret;
+}
+
 
 static int
 storageVolDeleteInternal(virStorageVolPtr obj,

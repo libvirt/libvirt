@@ -57,6 +57,11 @@ int virStorageFileGetMetadata(virStorageSourcePtr src,
 int virStorageTranslateDiskSourcePool(virConnectPtr conn,
                                       virDomainDiskDefPtr def);
 
+virStoragePoolPtr
+storagePoolLookupByTargetPath(virConnectPtr conn,
+                              const char *path)
+    ATTRIBUTE_NONNULL(2);
+
 int storageRegister(void);
 
 #endif /* __VIR_STORAGE_DRIVER_H__ */
