@@ -89,7 +89,7 @@ static int virNetDevVethGetFreeNum(int startDev)
  * @veth2: pointer to return name for container end of veth pair
  *
  * Creates a veth device pair using the ip command:
- * ip link add name veth1 type veth peer name veth2
+ * ip link add veth1 type veth peer name veth2
  * If veth1 points to NULL on entry, it will be a valid interface on
  * return.  veth2 should point to NULL on entry.
  *
@@ -146,7 +146,7 @@ int virNetDevVethCreate(char** veth1, char** veth2)
         }
 
         cmd = virCommandNew("ip");
-        virCommandAddArgList(cmd, "link", "add", "name",
+        virCommandAddArgList(cmd, "link", "add",
                              *veth1 ? *veth1 : veth1auto,
                              "type", "veth", "peer", "name",
                              *veth2 ? *veth2 : veth2auto,
