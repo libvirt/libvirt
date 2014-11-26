@@ -175,8 +175,8 @@
  * @retval: the return value
  * @...: pairs of parameter type and parameter name
  *
- * Define a replacement for @name which invokes wrap_@name
- * forwarding on all args, and passing back the return value.
+ * Define a replacement for @name which doesn't invoke anything, just
+ * returns @retval.
  */
 # define VIR_MOCK_STUB_RET_ARGS(name, rettype, retval, ...)             \
     rettype name(VIR_MOCK_ARGTYPENAMES_UNUSED(__VA_ARGS__))             \
@@ -188,9 +188,10 @@
  * VIR_MOCK_STUB_RET_VOID:
  * @name: the symbol name to replace
  * @rettype: the return type
+ * @retval: value to return
  *
- * Define a replacement for @name which invokes wrap_@name
- * with no arguments, and passing back the return value.
+ * Define a replacement for @name which doesn't invoke anything, just
+ * returns @retval.
  */
 # define VIR_MOCK_STUB_RET_VOID(name, rettype, retval)              \
     rettype name(void)                                              \
@@ -203,8 +204,8 @@
  * @name: the symbol name to replace
  * @...: pairs of parameter type and parameter name
  *
- * Define a replacement for @name which invokes wrap_@name
- * forwarding on all args, but with no return value.
+ * Define a replacement for @name which doesn't invoke or return
+ * anything.
  */
 # define VIR_MOCK_STUB_VOID_ARGS(name, ...)                         \
     void name(VIR_MOCK_ARGTYPENAMES_UNUSED(__VA_ARGS__))            \
@@ -217,8 +218,8 @@
  * VIR_MOCK_STUB_VOID_VOID:
  * @name: the symbol name to replace
  *
- * Define a replacement for @name which invokes wrap_@name
- * with no arguments and with no return value
+ * Define a replacement for @name which doesn't invoke or return
+ * anything.
  */
 # define VIR_MOCK_STUB_VOID_VOID(name)                              \
     void name(void)                                                 \
