@@ -499,15 +499,34 @@ networkMigrateStateFiles(void)
     }
 
     while ((direrr = virDirRead(dir, &entry, oldStateDir)) > 0) {
+        if (entry->d_type != DT_UNKNOWN &&
+            entry->d_type != DT_REG)
+            continue;
 
-        if (entry->d_type != DT_REG ||
-            STREQ(entry->d_name, ".") ||
+        if (STREQ(entry->d_name, ".") ||
             STREQ(entry->d_name, ".."))
             continue;
 
         if (virAsprintf(&oldPath, "%s/%s",
                         oldStateDir, entry->d_name) < 0)
             goto cleanup;
+
+        if (entry->d_type == DT_UNKNOWN) {
+            struct stat st;
+
+            if (lstat(oldPath, &st) < 0) {
+                virReportSystemError(errno,
+                                     _("failed to stat network status file '%s'"),
+                                     oldPath);
+                goto cleanup;
+            }
+
+            if (!S_ISREG(st.st_mode)) {
+                VIR_FREE(oldPath);
+                continue;
+            }
+        }
+
         if (virFileReadAll(oldPath, 1024*1024, &contents) < 0)
             goto cleanup;
 
