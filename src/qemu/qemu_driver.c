@@ -17368,8 +17368,11 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
             continue;
 
         if (!domlist &&
-            !virConnectGetAllDomainStatsCheckACL(conn, dom->def))
+            !virConnectGetAllDomainStatsCheckACL(conn, dom->def)) {
+            virObjectUnlock(dom);
+            dom = NULL;
             continue;
+        }
 
         if (qemuDomainGetStats(conn, dom, stats, &tmp, flags) < 0)
             goto cleanup;
