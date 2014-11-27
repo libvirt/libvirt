@@ -12704,33 +12704,16 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
  * is sent but failed, and number of frozen filesystems on success. If -2 is
  * returned, FSThaw should be called revert the quiesced status. */
 static int
-qemuDomainSnapshotFSFreeze(virQEMUDriverPtr driver,
+qemuDomainSnapshotFSFreeze(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                            virDomainObjPtr vm,
                            const char **mountpoints,
                            unsigned int nmountpoints)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUDriverConfigPtr cfg;
     int frozen;
-
-    if (priv->quiesced) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("domain is already quiesced"));
-        return -1;
-    }
 
     if (!qemuDomainAgentAvailable(priv, true))
         return -1;
-
-    priv->quiesced = true;
-
-    cfg = virQEMUDriverGetConfig(driver);
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
-        priv->quiesced = false;
-        virObjectUnref(cfg);
-        return -1;
-    }
-    virObjectUnref(cfg);
 
     qemuDomainObjEnterAgent(vm);
     frozen = qemuAgentFSFreeze(priv->agent, mountpoints, nmountpoints);
@@ -12741,23 +12724,16 @@ qemuDomainSnapshotFSFreeze(virQEMUDriverPtr driver,
 
 /* Return -1 on error, otherwise number of thawed filesystems. */
 static int
-qemuDomainSnapshotFSThaw(virQEMUDriverPtr driver,
+qemuDomainSnapshotFSThaw(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                          virDomainObjPtr vm,
                          bool report)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUDriverConfigPtr cfg;
     int thawed;
     virErrorPtr err = NULL;
 
     if (!qemuDomainAgentAvailable(priv, report))
         return -1;
-
-    if (!priv->quiesced && report) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("domain is not quiesced"));
-        return -1;
-    }
 
     qemuDomainObjEnterAgent(vm);
     if (!report)
@@ -12768,18 +12744,6 @@ qemuDomainSnapshotFSThaw(virQEMUDriverPtr driver,
     qemuDomainObjExitAgent(vm);
 
     virFreeError(err);
-
-    if (!report || thawed >= 0) {
-        priv->quiesced = false;
-
-        cfg = virQEMUDriverGetConfig(driver);
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
-            /* Revert the statuses when we failed to save them. */
-            priv->quiesced = true;
-            thawed = -1;
-        }
-        virObjectUnref(cfg);
-    }
 
     return thawed;
 }
@@ -18033,10 +17997,6 @@ qemuDomainFSFreeze(virDomainPtr dom,
     }
 
     ret = qemuDomainSnapshotFSFreeze(driver, vm, mountpoints, nmountpoints);
-    if (ret == -2) {
-        qemuDomainSnapshotFSThaw(driver, vm, false);
-        ret = -1;
-    }
 
  endjob:
     if (!qemuDomainObjEndJob(driver, vm))

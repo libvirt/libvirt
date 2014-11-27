@@ -539,10 +539,6 @@ qemuProcessHandleReset(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     priv = vm->privateData;
     if (priv->agent)
         qemuAgentNotifyEvent(priv->agent, QEMU_AGENT_EVENT_RESET);
-    /* Clear some domain runtime information. For instance,
-     * fsfreeze won't survive domain reset. This, however,
-     * required the domain status file to be rewritten onto disk. */
-    priv->quiesced = false;
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         VIR_WARN("Failed to save status on vm %s", vm->def->name);
@@ -4985,7 +4981,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     virPortAllocatorRelease(driver->migrationPorts, priv->nbdPort);
     priv->nbdPort = 0;
-    priv->quiesced = false;
 
     if (priv->agent) {
         qemuAgentClose(priv->agent);
