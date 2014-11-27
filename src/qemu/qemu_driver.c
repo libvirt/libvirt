@@ -18514,20 +18514,23 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
         privflags |= QEMU_DOMAIN_STATS_HAVE_JOB;
 
     for (i = 0; i < ndoms; i++) {
-        domflags = privflags;
         virDomainStatsRecordPtr tmp = NULL;
+        domflags = 0;
 
         if (!(dom = qemuDomObjFromDomain(doms[i])))
             continue;
 
         if (doms != domlist &&
-            !virConnectGetAllDomainStatsCheckACL(conn, dom->def))
+            !virConnectGetAllDomainStatsCheckACL(conn, dom->def)) {
+            virObjectUnlock(dom);
+            dom = NULL;
             continue;
+        }
 
-        if (HAVE_JOB(domflags) &&
+        if (HAVE_JOB(privflags) &&
             qemuDomainObjBeginJob(driver, dom, QEMU_JOB_QUERY) < 0)
             /* As it was never requested. Gather as much as possible anyway. */
-            domflags &= ~QEMU_DOMAIN_STATS_HAVE_JOB;
+            domflags |= QEMU_DOMAIN_STATS_HAVE_JOB;
 
         if (qemuDomainGetStats(conn, dom, stats, &tmp, domflags) < 0)
             goto endjob;
@@ -18535,9 +18538,12 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
         if (tmp)
             tmpstats[nstats++] = tmp;
 
-        if (HAVE_JOB(domflags) && !qemuDomainObjEndJob(driver, dom)) {
-            dom = NULL;
-            continue;
+        if (HAVE_JOB(domflags)) {
+            domflags = 0;
+            if (!qemuDomainObjEndJob(driver, dom)) {
+                dom = NULL;
+                continue;
+            }
         }
 
         virObjectUnlock(dom);
