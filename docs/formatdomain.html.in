@@ -5596,7 +5596,7 @@ qemu-kvm -net nic,model=? /dev/null
     </p>
     <p>
       The TPM passthrough device type provides access to the host's TPM
-      for one QEMU guest. No other software may be is using the TPM device,
+      for one QEMU guest. No other software may be using the TPM device,
       typically /dev/tpm0, at the time the QEMU guest is started.
       <span class="since">'passthrough' since 1.0.5</span>
     </p>
