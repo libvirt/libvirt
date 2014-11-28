@@ -235,7 +235,7 @@ internals/%.html.tmp: internals/%.html.in subsite.xsl page.xsl sitemap.html.in
 	  SGML_CATALOG_FILES='$(XML_CATALOG_FILE)' \
 	  $(XMLLINT) --catalogs --nonet --format --valid $< > $(srcdir)/$@ \
 	  || { rm $(srcdir)/$@ && exit 1; }; \
-	  else echo "missing XHTML1 DTD" ; fi ; fi
+	  else echo "missing XHTML1 DTD"; cat $< > $(srcdir)/$@ ; fi ; fi
 
 %.php.tmp: %.php.in site.xsl page.xsl sitemap.html.in
 	@if [ -x $(XSLTPROC) ] ; then \
@@ -263,7 +263,7 @@ html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
 	    > /dev/null ; then \
 	  SGML_CATALOG_FILES='$(XML_CATALOG_FILE)' \
 	  $(XMLLINT) --catalogs --nonet --valid --noout $(srcdir)/html/*.html ; \
-	  else echo "missing XHTML1 DTD" ; fi ; fi
+	  else echo "missing XHTML1 DTD"; cat $< > $(srcdir)/$@ ; fi ; fi
 
 $(addprefix $(srcdir)/,$(devhelphtml)): $(srcdir)/libvirt-api.xml $(devhelpxsl)
 	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then \
