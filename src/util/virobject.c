@@ -220,8 +220,8 @@ void *virObjectLockableNew(virClassPtr klass)
         return NULL;
 
     if (virMutexInit(&obj->lock) < 0) {
-        virReportSystemError(VIR_ERR_INTERNAL_ERROR, "%s",
-                             _("Unable to initialize mutex"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to initialize mutex"));
         virObjectUnref(obj);
         return NULL;
     }

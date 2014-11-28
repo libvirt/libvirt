@@ -369,9 +369,9 @@ qemuMigrationCookieNetworkAlloc(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
             case VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH:
                 if (virNetDevOpenvswitchGetMigrateData(&mig->net[i].portdata,
                                                        netptr->ifname) != 0) {
-                        virReportSystemError(VIR_ERR_INTERNAL_ERROR,
-                                             _("Unable to run command to get OVS port data for "
-                                             "interface %s"), netptr->ifname);
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("Unable to run command to get OVS port data for "
+                                         "interface %s"), netptr->ifname);
                         goto error;
                 }
                 break;
@@ -2223,9 +2223,9 @@ qemuDomainMigrateOPDRelocate(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
         case VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH:
             if (virNetDevOpenvswitchSetMigrateData(cookie->network->net[i].portdata,
                                                    netptr->ifname) != 0) {
-                virReportSystemError(VIR_ERR_INTERNAL_ERROR,
-                                     _("Unable to run command to set OVS port data for "
-                                     "interface %s"), netptr->ifname);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Unable to run command to set OVS port data for "
+                                 "interface %s"), netptr->ifname);
                 goto cleanup;
             }
             break;

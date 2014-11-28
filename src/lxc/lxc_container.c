@@ -2309,8 +2309,8 @@ int lxcContainerStart(virDomainDefPtr def,
             VIR_DEBUG("Enable user namespace");
             cflags |= CLONE_NEWUSER;
         } else {
-            virReportSystemError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                 _("Kernel doesn't support user namespace"));
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Kernel doesn't support user namespace"));
             VIR_FREE(stack);
             return -1;
         }

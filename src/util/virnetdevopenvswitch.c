@@ -147,9 +147,9 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
     }
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virReportSystemError(VIR_ERR_INTERNAL_ERROR,
-                             _("Unable to add port %s to OVS bridge %s"),
-                             ifname, brname);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to add port %s to OVS bridge %s"),
+                       ifname, brname);
         goto cleanup;
     }
 
@@ -181,8 +181,8 @@ int virNetDevOpenvswitchRemovePort(const char *brname ATTRIBUTE_UNUSED, const ch
     virCommandAddArgList(cmd, "--timeout=5", "--", "--if-exists", "del-port", ifname, NULL);
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virReportSystemError(VIR_ERR_INTERNAL_ERROR,
-                             _("Unable to delete port %s from OVS"), ifname);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to delete port %s from OVS"), ifname);
         goto cleanup;
     }
 
@@ -213,9 +213,9 @@ int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
 
     /* Run the command */
     if (virCommandRun(cmd, NULL) < 0) {
-        virReportSystemError(VIR_ERR_INTERNAL_ERROR,
-                             _("Unable to run command to get OVS port data for "
-                             "interface %s"), ifname);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to run command to get OVS port data for "
+                         "interface %s"), ifname);
         goto cleanup;
     }
 
@@ -247,9 +247,9 @@ int virNetDevOpenvswitchSetMigrateData(char *migrate, const char *ifname)
 
     /* Run the command */
     if (virCommandRun(cmd, NULL) < 0) {
-        virReportSystemError(VIR_ERR_INTERNAL_ERROR,
-                             _("Unable to run command to set OVS port data for "
-                             "interface %s"), ifname);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to run command to set OVS port data for "
+                         "interface %s"), ifname);
         goto cleanup;
     }
 

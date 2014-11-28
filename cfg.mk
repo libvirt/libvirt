@@ -983,6 +983,11 @@ sc_prohibit_devname:
 	halt='avoid using 'devname' as FreeBSD exports the symbol' \
 	  $(_sc_search_regexp)
 
+sc_prohibit_system_error_with_vir_err:
+	@prohibit='\bvirReportSystemError *\(VIR_ERR_' \
+	halt='do not use virReportSystemError with VIR_ERR_* error codes' \
+	  $(_sc_search_regexp)
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
