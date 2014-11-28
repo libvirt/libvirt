@@ -3871,7 +3871,7 @@
       &lt;source&gt;
         &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/&gt;
       &lt;/source&gt;
-      &lt;mac address='52:54:00:6d:90:02'&gt;
+      &lt;mac address='52:54:00:6d:90:02'/&gt;
       &lt;virtualport type='802.1Qbh'&gt;
         &lt;parameters profileid='finance'/&gt;
       &lt;/virtualport&gt;
@@ -3898,7 +3898,7 @@
   ...
   &lt;devices&gt;
     &lt;interface type='mcast'&gt;
-      &lt;mac address='52:54:00:6d:90:01'&gt;
+      &lt;mac address='52:54:00:6d:90:01'/&gt;
       &lt;source address='230.0.0.1' port='5558'/&gt;
     &lt;/interface&gt;
   &lt;/devices&gt;
@@ -4772,11 +4772,11 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;source path='/dev/pts/3'/&gt;
       &lt;target port='0'/&gt;
     &lt;/serial&gt;
-    &lt;serial type='file&gt;
+    &lt;serial type='file'&gt;
       &lt;source path='/tmp/file'&gt;
         &lt;seclabel model='dac' relabel='no'/&gt;
       &lt;/source&gt;
-      &lt;target port='0'&gt;
+      &lt;target port='0'/&gt;
     &lt;/serial&gt;
     &lt;console type='pty'&gt;
       &lt;source path='/dev/pts/4'/&gt;
