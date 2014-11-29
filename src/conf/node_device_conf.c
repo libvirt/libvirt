@@ -1825,10 +1825,8 @@ virNodeDeviceObjListExport(virConnectPtr conn,
 
  cleanup:
     if (tmp_devices) {
-        for (i = 0; i < ndevices; i++) {
-            if (tmp_devices[i])
-                virNodeDeviceFree(tmp_devices[i]);
-        }
+        for (i = 0; i < ndevices; i++)
+            virObjectUnref(tmp_devices[i]);
     }
 
     VIR_FREE(tmp_devices);

@@ -3387,8 +3387,7 @@ remoteConnectListAllNodeDevices(virConnectPtr conn,
  cleanup:
     if (tmp_devices) {
         for (i = 0; i < ret.devices.devices_len; i++)
-            if (tmp_devices[i])
-                virNodeDeviceFree(tmp_devices[i]);
+            virObjectUnref(tmp_devices[i]);
         VIR_FREE(tmp_devices);
     }
 

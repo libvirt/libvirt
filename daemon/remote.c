@@ -3375,8 +3375,7 @@ remoteDispatchNodeDeviceGetParent(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dev)
-        virNodeDeviceFree(dev);
+    virObjectUnref(dev);
     return rv;
 }
 
@@ -4908,7 +4907,7 @@ remoteDispatchConnectListAllNodeDevices(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetMessageSaveError(rerr);
     if (devices && ndevices > 0) {
         for (i = 0; i < ndevices; i++)
-            virNodeDeviceFree(devices[i]);
+            virObjectUnref(devices[i]);
         VIR_FREE(devices);
     }
     return rv;
