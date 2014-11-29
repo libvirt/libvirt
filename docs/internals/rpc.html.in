@@ -597,7 +597,7 @@
     <h4><a name="apiclientdispatchex1">Example with buck passing</a></h4>
 
     <p>
-      In the first example, a second thread issues a API call
+      In the first example, a second thread issues an API call
       while the first thread holds the buck. The reply to the
       first call arrives first, so the buck is passed to the
       second thread.
