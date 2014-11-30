@@ -506,7 +506,7 @@ virStorageGenerateSecretUUID(virConnectPtr conn,
         if (tmp == NULL)
             return 0;
 
-        virSecretFree(tmp);
+        virObjectUnref(tmp);
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -589,7 +589,7 @@ virStorageGenerateQcowEncryption(virConnectPtr conn,
         if (ret != 0 &&
             conn->secretDriver->secretUndefine != NULL)
             conn->secretDriver->secretUndefine(secret);
-        virSecretFree(secret);
+        virObjectUnref(secret);
     }
     virBufferFreeAndReset(&buf);
     virSecretDefFree(def);

@@ -700,10 +700,8 @@ secretConnectListAllSecrets(virConnectPtr conn,
  cleanup:
     secretDriverUnlock(driver);
     if (tmp_secrets) {
-        for (i = 0; i < ret_nsecrets; i ++) {
-            if (tmp_secrets[i])
-                virSecretFree(tmp_secrets[i]);
-        }
+        for (i = 0; i < ret_nsecrets; i ++)
+            virObjectUnref(tmp_secrets[i]);
     }
     VIR_FREE(tmp_secrets);
 

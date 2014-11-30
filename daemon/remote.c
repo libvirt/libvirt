@@ -3565,8 +3565,7 @@ remoteDispatchSecretGetValue(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (secret)
-        virSecretFree(secret);
+    virObjectUnref(secret);
     return rv;
 }
 
@@ -5024,7 +5023,7 @@ remoteDispatchConnectListAllSecrets(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetMessageSaveError(rerr);
     if (secrets && nsecrets > 0) {
         for (i = 0; i < nsecrets; i++)
-            virSecretFree(secrets[i]);
+            virObjectUnref(secrets[i]);
         VIR_FREE(secrets);
     }
     return rv;

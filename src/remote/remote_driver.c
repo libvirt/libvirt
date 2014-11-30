@@ -3518,8 +3518,7 @@ remoteConnectListAllSecrets(virConnectPtr conn,
  cleanup:
     if (tmp_secrets) {
         for (i = 0; i < ret.secrets.secrets_len; i++)
-            if (tmp_secrets[i])
-                virSecretFree(tmp_secrets[i]);
+            virObjectUnref(tmp_secrets[i]);
         VIR_FREE(tmp_secrets);
     }
 

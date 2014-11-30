@@ -1201,7 +1201,7 @@ virStorageBackendFileSystemVolRefresh(virConnectPtr conn,
             if (VIR_ALLOC_N(vol->target.encryption->secrets, 1) < 0 ||
                 VIR_ALLOC(encsec) < 0) {
                 VIR_FREE(vol->target.encryption->secrets);
-                virSecretFree(sec);
+                virObjectUnref(sec);
                 return -1;
             }
 
@@ -1210,7 +1210,7 @@ virStorageBackendFileSystemVolRefresh(virConnectPtr conn,
 
             encsec->type = VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE;
             virSecretGetUUID(sec, encsec->uuid);
-            virSecretFree(sec);
+            virObjectUnref(sec);
         }
     }
 

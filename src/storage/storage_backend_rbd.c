@@ -225,8 +225,7 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     VIR_FREE(secret_value);
     VIR_FREE(rados_key);
 
-    if (secret != NULL)
-        virSecretFree(secret);
+    virObjectUnref(secret);
 
     virBufferFreeAndReset(&mon_host);
     VIR_FREE(mon_buff);
