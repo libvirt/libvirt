@@ -469,8 +469,7 @@ elsif ($mode eq "server") {
                      "        goto cleanup;\n");
                 push(@args_list, "dev");
                 push(@free_list,
-                     "    if (dev)\n" .
-                     "        virNodeDeviceFree(dev);");
+                     "    virObjectUnref(dev);");
             }
 
             foreach my $args_member (@{$call->{args_members}}) {
@@ -486,8 +485,7 @@ elsif ($mode eq "server") {
                          "        goto cleanup;\n");
                     push(@args_list, "$2");
                     push(@free_list,
-                         "    if ($2)\n" .
-                         "        vir${type_name}Free($2);");
+                         "    virObjectUnref($2);");
                 } elsif ($args_member =~ m/^remote_nonnull_domain_snapshot /) {
                     push(@vars_list, "virDomainPtr dom = NULL");
                     push(@vars_list, "virDomainSnapshotPtr snapshot = NULL");
@@ -499,10 +497,8 @@ elsif ($mode eq "server") {
                          "        goto cleanup;\n");
                     push(@args_list, "snapshot");
                     push(@free_list,
-                         "    if (snapshot)\n" .
-                         "        virDomainSnapshotFree(snapshot);\n" .
-                         "    if (dom)\n" .
-                         "        virDomainFree(dom);");
+                         "    virObjectUnref(snapshot);\n" .
+                         "    virObjectUnref(dom);");
                 } elsif ($args_member =~ m/^(?:remote_string|remote_uuid) (\S+)<\S+>;/) {
                     if (! @args_list) {
                         push(@args_list, "priv->conn");
@@ -694,8 +690,7 @@ elsif ($mode eq "server") {
                         push(@vars_list, "vir${type_name}Ptr $2 = NULL");
                         push(@ret_list, "make_nonnull_$1(&ret->$2, $2);");
                         push(@free_list,
-                             "    if ($2)\n" .
-                             "        vir${type_name}Free($2);");
+                             "    virObjectUnref($2);");
                         $single_ret_var = $2;
                         $single_ret_by_ref = 0;
                         $single_ret_check = " == NULL";
@@ -845,7 +840,7 @@ elsif ($mode eq "server") {
             push(@free_list_on_error, "    virStreamAbort(st);");
             push(@free_list_on_error, "    daemonFreeClientStream(client, stream);");
             push(@free_list_on_error, "} else {");
-            push(@free_list_on_error, "    virStreamFree(st);");
+            push(@free_list_on_error, "    virObjectUnref(st);");
             push(@free_list_on_error, "}");
         }
 
