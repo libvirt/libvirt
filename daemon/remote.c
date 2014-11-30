@@ -4964,7 +4964,7 @@ remoteDispatchConnectListAllNWFilters(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetMessageSaveError(rerr);
     if (filters && nfilters > 0) {
         for (i = 0; i < nfilters; i++)
-            virNWFilterFree(filters[i]);
+            virObjectUnref(filters[i]);
         VIR_FREE(filters);
     }
     return rv;

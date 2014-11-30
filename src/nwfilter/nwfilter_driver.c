@@ -547,10 +547,8 @@ nwfilterConnectListAllNWFilters(virConnectPtr conn,
  cleanup:
     nwfilterDriverUnlock(driver);
     if (tmp_filters) {
-        for (i = 0; i < nfilters; i ++) {
-            if (tmp_filters[i])
-                virNWFilterFree(tmp_filters[i]);
-        }
+        for (i = 0; i < nfilters; i ++)
+            virObjectUnref(tmp_filters[i]);
     }
     VIR_FREE(tmp_filters);
 

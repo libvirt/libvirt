@@ -3452,8 +3452,7 @@ remoteConnectListAllNWFilters(virConnectPtr conn,
  cleanup:
     if (tmp_filters) {
         for (i = 0; i < ret.filters.filters_len; i++)
-            if (tmp_filters[i])
-                virNWFilterFree(tmp_filters[i]);
+            virObjectUnref(tmp_filters[i]);
         VIR_FREE(tmp_filters);
     }
 
