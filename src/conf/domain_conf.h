@@ -139,6 +139,9 @@ typedef virDomainChrSourceDef *virDomainChrSourceDefPtr;
 typedef struct _virDomainShmemDef virDomainShmemDef;
 typedef virDomainShmemDef *virDomainShmemDefPtr;
 
+typedef struct _virDomainTPMDef virDomainTPMDef;
+typedef virDomainTPMDef *virDomainTPMDefPtr;
+
 /* Flags for the 'type' field in virDomainDeviceDef */
 typedef enum {
     VIR_DOMAIN_DEVICE_NONE = 0,
@@ -161,6 +164,7 @@ typedef enum {
     VIR_DOMAIN_DEVICE_NVRAM,
     VIR_DOMAIN_DEVICE_RNG,
     VIR_DOMAIN_DEVICE_SHMEM,
+    VIR_DOMAIN_DEVICE_TPM,
 
     VIR_DOMAIN_DEVICE_LAST
 } virDomainDeviceType;
@@ -189,6 +193,7 @@ struct _virDomainDeviceDef {
         virDomainNVRAMDefPtr nvram;
         virDomainRNGDefPtr rng;
         virDomainShmemDefPtr shmem;
+        virDomainTPMDefPtr tpm;
     } data;
 };
 

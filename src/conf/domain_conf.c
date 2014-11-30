@@ -256,7 +256,8 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "memballoon",
               "nvram",
               "rng",
-              "shmem")
+              "shmem",
+              "tpm")
 
 VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "none",
@@ -1942,6 +1943,9 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
     case VIR_DOMAIN_DEVICE_SHMEM:
         virDomainShmemDefFree(def->data.shmem);
         break;
+    case VIR_DOMAIN_DEVICE_TPM:
+        virDomainTPMDefFree(def->data.tpm);
+        break;
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_NONE:
         break;
@@ -2643,6 +2647,8 @@ virDomainDeviceGetInfo(virDomainDeviceDefPtr device)
         return &device->data.shmem->info;
     case VIR_DOMAIN_DEVICE_RNG:
         return &device->data.rng->info;
+    case VIR_DOMAIN_DEVICE_TPM:
+        return &device->data.tpm->info;
 
     /* The following devices do not contain virDomainDeviceInfo */
     case VIR_DOMAIN_DEVICE_LEASE:
@@ -2861,6 +2867,12 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
         if (cb(def, &device, &def->shmems[i]->info, opaque) < 0)
             return -1;
     }
+    if (def->tpm) {
+        device.type = VIR_DOMAIN_DEVICE_TPM;
+        device.data.tpm = def->tpm;
+        if (cb(def, &device, &def->tpm->info, opaque) < 0)
+            return -1;
+    }
 
     /* Coverity is not very happy with this - all dead_error_condition */
 #if !STATIC_ANALYSIS
@@ -2890,6 +2902,7 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_RNG:
         break;
@@ -10914,6 +10927,10 @@ virDomainDeviceDefParse(const char *xmlStr,
         if (!(dev->data.shmem = virDomainShmemDefParseXML(node, ctxt, flags)))
             goto error;
         break;
+    case VIR_DOMAIN_DEVICE_TPM:
+        if (!(dev->data.tpm = virDomainTPMDefParseXML(node, ctxt, flags)))
+            goto error;
+        break;
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LAST:
         break;
@@ -15261,6 +15278,25 @@ virDomainShmemDefCheckABIStability(virDomainShmemDefPtr src,
 }
 
 
+static bool
+virDomainTPMDefCheckABIStability(virDomainTPMDefPtr src,
+                                 virDomainTPMDefPtr dst)
+{
+    if (src->type != dst->type) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Target TPM device type doesn't match source"));
+        return false;
+    }
+
+    if (src->model != dst->model) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Target TPM device model doesn't match source"));
+        return false;
+    }
+
+    return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
+}
+
 /* This compares two configurations and looks for any differences
  * which will affect the guest ABI. This is primarily to allow
  * validation of custom XML config passed in during migration
@@ -15674,6 +15710,16 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
             goto error;
     }
 
+    if (src->tpm && dst->tpm) {
+        if (!virDomainTPMDefCheckABIStability(src->tpm, dst->tpm))
+            goto error;
+    } else if (src->tpm || dst->tpm) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Either both target and source domains or none of "
+                         "them must have TPM device present"));
+        goto error;
+    }
+
     /* Coverity is not very happy with this - all dead_error_condition */
 #if !STATIC_ANALYSIS
     /* This switch statement is here to trigger compiler warning when adding
@@ -15702,6 +15748,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_RNG:
+    case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_SHMEM:
         break;
     }
@@ -21033,6 +21080,9 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         break;
     case VIR_DOMAIN_DEVICE_CHR:
         rc = virDomainChrDefFormat(&buf, src->data.chr, flags);
+        break;
+    case VIR_DOMAIN_DEVICE_TPM:
+        rc = virDomainTPMDefFormat(&buf, src->data.tpm, flags);
         break;
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_SMARTCARD:
