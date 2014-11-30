@@ -3321,8 +3321,7 @@ remoteConnectListAllInterfaces(virConnectPtr conn,
  cleanup:
     if (tmp_ifaces) {
         for (i = 0; i < ret.ifaces.ifaces_len; i++)
-            if (tmp_ifaces[i])
-                virInterfaceFree(tmp_ifaces[i]);
+            virObjectUnref(tmp_ifaces[i]);
     }
     VIR_FREE(tmp_ifaces);
 

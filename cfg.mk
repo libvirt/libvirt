@@ -992,7 +992,7 @@ sc_prohibit_system_error_with_vir_err:
 # functions. There's a corresponding exclude to allow usage within tests,
 # docs, examples, tools, src/libvirt-*.c, and include/libvirt/libvirt-*.h
 sc_prohibit_virXXXFree:
-	@prohibit='\bvir(Domain|Network|NodeDevice|StorageVol|StoragePool|Stream|Secret|NWFilter)Free\b'	\
+	@prohibit='\bvir(Domain|Network|NodeDevice|StorageVol|StoragePool|Stream|Secret|NWFilter|Interface)Free\b'	\
 	exclude='sc_prohibit_virXXXFree' \
 	halt='avoid using 'virXXXFree', use 'virObjectUnref' instead' \
 	  $(_sc_search_regexp)
@@ -1186,4 +1186,4 @@ exclude_file_name_regexp--sc_prohibit_devname = \
   ^(tools/virsh.pod|cfg.mk|docs/.*)$$
 
 exclude_file_name_regexp--sc_prohibit_virXXXFree = \
-  ^(docs/|tests/|examples/|tools/|cfg.mk|src/test/test_driver.c|src/libvirt_public.syms|include/libvirt/libvirt-(domain|network|nodedev|storage|stream|secret|nwfilter).h|src/libvirt-(domain|qemu|network|nodedev|storage|stream|secret|nwfilter).c$$)
+  ^(docs/|tests/|examples/|tools/|cfg.mk|src/test/test_driver.c|src/libvirt_public.syms|include/libvirt/libvirt-(domain|network|nodedev|storage|stream|secret|nwfilter|interface).h|src/libvirt-(domain|qemu|network|nodedev|storage|stream|secret|nwfilter|interface).c$$)

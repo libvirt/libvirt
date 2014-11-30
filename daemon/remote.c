@@ -4846,7 +4846,7 @@ remoteDispatchConnectListAllInterfaces(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetMessageSaveError(rerr);
     if (ifaces && nifaces > 0) {
         for (i = 0; i < nifaces; i++)
-            virInterfaceFree(ifaces[i]);
+            virObjectUnref(ifaces[i]);
         VIR_FREE(ifaces);
     }
     return rv;
