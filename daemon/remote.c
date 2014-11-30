@@ -4728,7 +4728,7 @@ remoteDispatchStoragePoolListAllVolumes(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetMessageSaveError(rerr);
     if (vols && nvols > 0) {
         for (i = 0; i < nvols; i++)
-            virStorageVolFree(vols[i]);
+            virObjectUnref(vols[i]);
         VIR_FREE(vols);
     }
     if (pool)

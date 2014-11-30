@@ -1282,10 +1282,8 @@ storagePoolListAllVolumes(virStoragePoolPtr pool,
 
  cleanup:
     if (tmp_vols) {
-        for (i = 0; i < nvols; i++) {
-            if (tmp_vols[i])
-                virStorageVolFree(tmp_vols[i]);
-        }
+        for (i = 0; i < nvols; i++)
+            virObjectUnref(tmp_vols[i]);
         VIR_FREE(tmp_vols);
     }
 
@@ -3148,8 +3146,7 @@ virStorageTranslateDiskSourcePool(virConnectPtr conn,
         savedError = virSaveLastError();
     if (pool)
         virStoragePoolFree(pool);
-    if (vol)
-        virStorageVolFree(vol);
+    virObjectUnref(vol);
     if (savedError) {
         virSetError(savedError);
         virFreeError(savedError);

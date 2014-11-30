@@ -3749,8 +3749,7 @@ remoteStoragePoolListAllVolumes(virStoragePoolPtr pool,
  cleanup:
     if (tmp_vols) {
         for (i = 0; i < ret.vols.vols_len; i++)
-            if (tmp_vols[i])
-                virStorageVolFree(tmp_vols[i]);
+            virObjectUnref(tmp_vols[i]);
         VIR_FREE(tmp_vols);
     }
 
