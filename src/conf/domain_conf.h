@@ -165,6 +165,7 @@ typedef enum {
     VIR_DOMAIN_DEVICE_RNG,
     VIR_DOMAIN_DEVICE_SHMEM,
     VIR_DOMAIN_DEVICE_TPM,
+    VIR_DOMAIN_DEVICE_PANIC,
 
     VIR_DOMAIN_DEVICE_LAST
 } virDomainDeviceType;
@@ -194,6 +195,7 @@ struct _virDomainDeviceDef {
         virDomainRNGDefPtr rng;
         virDomainShmemDefPtr shmem;
         virDomainTPMDefPtr tpm;
+        virDomainPanicDefPtr panic;
     } data;
 };
 

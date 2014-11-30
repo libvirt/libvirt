@@ -257,7 +257,8 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "nvram",
               "rng",
               "shmem",
-              "tpm")
+              "tpm",
+              "panic")
 
 VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "none",
@@ -1946,6 +1947,9 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
     case VIR_DOMAIN_DEVICE_TPM:
         virDomainTPMDefFree(def->data.tpm);
         break;
+    case VIR_DOMAIN_DEVICE_PANIC:
+        virDomainPanicDefFree(def->data.panic);
+        break;
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_NONE:
         break;
@@ -2649,6 +2653,8 @@ virDomainDeviceGetInfo(virDomainDeviceDefPtr device)
         return &device->data.rng->info;
     case VIR_DOMAIN_DEVICE_TPM:
         return &device->data.tpm->info;
+    case VIR_DOMAIN_DEVICE_PANIC:
+        return &device->data.panic->info;
 
     /* The following devices do not contain virDomainDeviceInfo */
     case VIR_DOMAIN_DEVICE_LEASE:
@@ -2873,6 +2879,12 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
         if (cb(def, &device, &def->tpm->info, opaque) < 0)
             return -1;
     }
+    if (def->panic) {
+        device.type = VIR_DOMAIN_DEVICE_PANIC;
+        device.data.panic = def->panic;
+        if (cb(def, &device, &def->panic->info, opaque) < 0)
+            return -1;
+    }
 
     /* Coverity is not very happy with this - all dead_error_condition */
 #if !STATIC_ANALYSIS
@@ -2903,6 +2915,7 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_RNG:
         break;
@@ -8675,6 +8688,23 @@ virDomainTPMDefParseXML(xmlNodePtr node,
     goto cleanup;
 }
 
+static virDomainPanicDefPtr
+virDomainPanicDefParseXML(xmlNodePtr node)
+{
+    virDomainPanicDefPtr panic;
+
+    if (VIR_ALLOC(panic) < 0)
+        return NULL;
+
+    if (virDomainDeviceInfoParseXML(node, NULL, &panic->info, 0) < 0)
+        goto error;
+
+    return panic;
+ error:
+    virDomainPanicDefFree(panic);
+    return NULL;
+}
+
 /* Parse the XML definition for an input device */
 static virDomainInputDefPtr
 virDomainInputDefParseXML(const virDomainDef *dom,
@@ -10931,6 +10961,10 @@ virDomainDeviceDefParse(const char *xmlStr,
         if (!(dev->data.tpm = virDomainTPMDefParseXML(node, ctxt, flags)))
             goto error;
         break;
+    case VIR_DOMAIN_DEVICE_PANIC:
+        if (!(dev->data.panic = virDomainPanicDefParseXML(node)))
+            goto error;
+        break;
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LAST:
         break;
@@ -12023,23 +12057,6 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
  cleanup:
     ctxt->node = save_ctxt;
     return idmap;
-}
-
-static virDomainPanicDefPtr
-virDomainPanicDefParseXML(xmlNodePtr node)
-{
-    virDomainPanicDefPtr panic;
-
-    if (VIR_ALLOC(panic) < 0)
-        return NULL;
-
-    if (virDomainDeviceInfoParseXML(node, NULL, &panic->info, 0) < 0)
-        goto error;
-
-    return panic;
- error:
-    virDomainPanicDefFree(panic);
-    return NULL;
 }
 
 /* Parse the XML definition for a vcpupin or emulatorpin.
@@ -15297,6 +15314,13 @@ virDomainTPMDefCheckABIStability(virDomainTPMDefPtr src,
     return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
 }
 
+static bool
+virDomainPanicDefCheckABIStability(virDomainPanicDefPtr src,
+                                   virDomainPanicDefPtr dst)
+{
+    return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
+}
+
 /* This compares two configurations and looks for any differences
  * which will affect the guest ABI. This is primarily to allow
  * validation of custom XML config passed in during migration
@@ -15720,6 +15744,16 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         goto error;
     }
 
+    if (src->panic && dst->panic) {
+        if (!virDomainPanicDefCheckABIStability(src->panic, dst->panic))
+            goto error;
+    } else if (src->panic || dst->panic) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Either both target and source domains or none of "
+                         "them must have PANIC device present"));
+        goto error;
+    }
+
     /* Coverity is not very happy with this - all dead_error_condition */
 #if !STATIC_ANALYSIS
     /* This switch statement is here to trigger compiler warning when adding
@@ -15749,6 +15783,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_RNG:
     case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_SHMEM:
         break;
     }
@@ -18032,7 +18067,7 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
 }
 
 static int virDomainPanicDefFormat(virBufferPtr buf,
-                                     virDomainPanicDefPtr def)
+                                   virDomainPanicDefPtr def)
 {
     virBufferAddLit(buf, "<panic>\n");
     virBufferAdjustIndent(buf, 2);
@@ -21083,6 +21118,9 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         break;
     case VIR_DOMAIN_DEVICE_TPM:
         rc = virDomainTPMDefFormat(&buf, src->data.tpm, flags);
+        break;
+    case VIR_DOMAIN_DEVICE_PANIC:
+        rc = virDomainPanicDefFormat(&buf, src->data.panic);
         break;
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_SMARTCARD:
