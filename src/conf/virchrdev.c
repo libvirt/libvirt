@@ -221,7 +221,7 @@ static void virChrdevHashEntryFree(void *data,
     virStreamPtr st = data;
 
     /* free stream reference */
-    virStreamFree(st);
+    virObjectUnref(st);
 
     /* delete lock file */
     virChrdevLockFileRemove(dev);
@@ -346,7 +346,6 @@ int virChrdevOpen(virChrdevsPtr devs,
     char *path;
     int ret;
     bool added = false;
-    virErrorPtr savedError;
 
     switch (source->type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
@@ -434,15 +433,10 @@ int virChrdevOpen(virChrdevsPtr devs,
     return 0;
 
  error:
-    savedError = virSaveLastError();
-
     if (added)
         virHashRemoveEntry(devs->hash, path);
     else
-        virStreamFree(st);
-
-    virSetError(savedError);
-    virFreeError(savedError);
+        virObjectUnref(st);
 
     if (cbdata)
         VIR_FREE(cbdata->path);

@@ -187,8 +187,7 @@ static void virFDStreamEvent(int watch ATTRIBUTE_UNUSED,
 
 static void virFDStreamCallbackFree(void *opaque)
 {
-    virStreamPtr st = opaque;
-    virStreamFree(st);
+    virObjectUnref(opaque);
 }
 
 

@@ -5414,7 +5414,7 @@ remoteDispatchDomainMigratePrepareTunnel3Params(virNetServerPtr server ATTRIBUTE
             virStreamAbort(st);
             daemonFreeClientStream(client, stream);
         } else {
-            virStreamFree(st);
+            virObjectUnref(st);
         }
     }
     return rv;

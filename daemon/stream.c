@@ -383,7 +383,7 @@ int daemonFreeClientStream(virNetServerClientPtr client,
         msg = tmp;
     }
 
-    virStreamFree(stream->st);
+    virObjectUnref(stream->st);
     VIR_FREE(stream);
 
     return ret;
