@@ -3682,8 +3682,7 @@ remoteConnectListAllStoragePools(virConnectPtr conn,
  cleanup:
     if (tmp_pools) {
         for (i = 0; i < ret.pools.pools_len; i++)
-            if (tmp_pools[i])
-                virStoragePoolFree(tmp_pools[i]);
+            virObjectUnref(tmp_pools[i]);
         VIR_FREE(tmp_pools);
     }
 

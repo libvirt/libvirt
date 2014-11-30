@@ -3006,7 +3006,6 @@ virStorageTranslateDiskSourcePool(virConnectPtr conn,
     char *poolxml = NULL;
     virStorageVolInfo info;
     int ret = -1;
-    virErrorPtr savedError = NULL;
 
     if (def->src->type != VIR_STORAGE_TYPE_VOLUME)
         return 0;
@@ -3142,16 +3141,8 @@ virStorageTranslateDiskSourcePool(virConnectPtr conn,
 
     ret = 0;
  cleanup:
-    if (ret < 0)
-        savedError = virSaveLastError();
-    if (pool)
-        virStoragePoolFree(pool);
+    virObjectUnref(pool);
     virObjectUnref(vol);
-    if (savedError) {
-        virSetError(savedError);
-        virFreeError(savedError);
-    }
-
     VIR_FREE(poolxml);
     virStoragePoolDefFree(pooldef);
     return ret;

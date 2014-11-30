@@ -2523,10 +2523,8 @@ virStoragePoolObjListExport(virConnectPtr conn,
 
  cleanup:
     if (tmp_pools) {
-        for (i = 0; i < npools; i++) {
-            if (tmp_pools[i])
-                virStoragePoolFree(tmp_pools[i]);
-        }
+        for (i = 0; i < npools; i++)
+            virObjectUnref(tmp_pools[i]);
     }
 
     VIR_FREE(tmp_pools);

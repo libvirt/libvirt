@@ -992,7 +992,7 @@ sc_prohibit_system_error_with_vir_err:
 # functions. There's a corresponding exclude to allow usage within tests,
 # docs, examples, tools, src/libvirt-*.c, and include/libvirt/libvirt-*.h
 sc_prohibit_virXXXFree:
-	@prohibit='\bvir(Domain|Network|NodeDevice|StorageVol)Free\b'	\
+	@prohibit='\bvir(Domain|Network|NodeDevice|StorageVol|StoragePool)Free\b'	\
 	exclude='sc_prohibit_virXXXFree' \
 	halt='avoid using 'virXXXFree', use 'virObjectUnref' instead' \
 	  $(_sc_search_regexp)
