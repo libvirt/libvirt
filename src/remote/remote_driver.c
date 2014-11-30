@@ -1645,8 +1645,7 @@ remoteConnectListAllDomains(virConnectPtr conn,
  cleanup:
     if (doms) {
         for (i = 0; i < ret.domains.domains_len; i++)
-            if (doms[i])
-                virDomainFree(doms[i]);
+            virObjectUnref(doms[i]);
         VIR_FREE(doms);
     }
 
@@ -4764,7 +4763,7 @@ remoteDomainBuildEventLifecycleHelper(virConnectPtr conn,
         return;
 
     event = virDomainEventLifecycleNewFromDom(dom, msg->event, msg->detail);
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, callbackID);
 }
@@ -4802,7 +4801,7 @@ remoteDomainBuildEventRebootHelper(virConnectPtr conn,
         return;
 
     event = virDomainEventRebootNewFromDom(dom);
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, callbackID);
 }
@@ -4839,7 +4838,7 @@ remoteDomainBuildEventRTCChangeHelper(virConnectPtr conn,
         return;
 
     event = virDomainEventRTCChangeNewFromDom(dom, msg->offset);
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, callbackID);
 }
@@ -4876,7 +4875,7 @@ remoteDomainBuildEventWatchdogHelper(virConnectPtr conn,
         return;
 
     event = virDomainEventWatchdogNewFromDom(dom, msg->action);
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, callbackID);
 }
@@ -4916,7 +4915,7 @@ remoteDomainBuildEventIOErrorHelper(virConnectPtr conn,
                                             msg->srcPath,
                                             msg->devAlias,
                                             msg->action);
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, callbackID);
 }
@@ -4958,7 +4957,7 @@ remoteDomainBuildEventIOErrorReasonHelper(virConnectPtr conn,
                                                   msg->action,
                                                   msg->reason);
 
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, callbackID);
 }
@@ -4997,7 +4996,7 @@ remoteDomainBuildEventBlockJobHelper(virConnectPtr conn,
     event = virDomainEventBlockJobNewFromDom(dom, msg->path, msg->type,
                                              msg->status);
 
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, callbackID);
 }
@@ -5037,7 +5036,7 @@ remoteDomainBuildEventBlockJob2(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     event = virDomainEventBlockJob2NewFromDom(dom, msg->dst, msg->type,
                                               msg->status);
 
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, msg->callbackID);
 }
@@ -5091,7 +5090,7 @@ remoteDomainBuildEventGraphicsHelper(virConnectPtr conn,
                                              msg->authScheme,
                                              subject);
 
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, callbackID);
     return;
@@ -5115,7 +5114,7 @@ remoteDomainBuildEventGraphicsHelper(virConnectPtr conn,
         VIR_FREE(subject->identities);
         VIR_FREE(subject);
     }
-    virDomainFree(dom);
+    virObjectUnref(dom);
     return;
 }
 static void
@@ -5152,7 +5151,7 @@ remoteDomainBuildEventControlErrorHelper(virConnectPtr conn,
 
     event = virDomainEventControlErrorNewFromDom(dom);
 
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, callbackID);
 }
@@ -5195,7 +5194,7 @@ remoteDomainBuildEventDiskChangeHelper(virConnectPtr conn,
                                                msg->devAlias,
                                                msg->reason);
 
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, callbackID);
 }
@@ -5236,7 +5235,7 @@ remoteDomainBuildEventTrayChangeHelper(virConnectPtr conn,
                                                msg->devAlias,
                                                msg->reason);
 
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, callbackID);
 }
@@ -5275,7 +5274,7 @@ remoteDomainBuildEventPMWakeupHelper(virConnectPtr conn,
 
     event = virDomainEventPMWakeupNewFromDom(dom, reason);
 
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, callbackID);
 }
@@ -5315,7 +5314,7 @@ remoteDomainBuildEventPMSuspendHelper(virConnectPtr conn,
 
     event = virDomainEventPMSuspendNewFromDom(dom, reason);
 
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, callbackID);
 }
@@ -5354,7 +5353,7 @@ remoteDomainBuildEventBalloonChangeHelper(virConnectPtr conn,
         return;
 
     event = virDomainEventBalloonChangeNewFromDom(dom, msg->actual);
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, callbackID);
 }
@@ -5394,7 +5393,7 @@ remoteDomainBuildEventPMSuspendDiskHelper(virConnectPtr conn,
 
     event = virDomainEventPMSuspendDiskNewFromDom(dom, reason);
 
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, callbackID);
 }
@@ -5434,7 +5433,7 @@ remoteDomainBuildEventDeviceRemovedHelper(virConnectPtr conn,
 
     event = virDomainEventDeviceRemovedNewFromDom(dom, msg->devAlias);
 
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, callbackID);
 }
@@ -5485,7 +5484,7 @@ remoteDomainBuildEventCallbackTunable(virNetClientProgramPtr prog ATTRIBUTE_UNUS
 
     event = virDomainEventTunableNewFromDom(dom, params, nparams);
 
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, msg->callbackID);
 }
@@ -5508,7 +5507,7 @@ remoteDomainBuildEventCallbackAgentLifecycle(virNetClientProgramPtr prog ATTRIBU
     event = virDomainEventAgentLifecycleNewFromDom(dom, msg->state,
                                                    msg->reason);
 
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, msg->callbackID);
 }
@@ -5555,7 +5554,7 @@ remoteDomainBuildQemuMonitorEvent(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                          msg->event, msg->seconds,
                                          msg->micros,
                                          msg->details ? *msg->details : NULL);
-    virDomainFree(dom);
+    virObjectUnref(dom);
 
     remoteEventQueue(priv, event, msg->callbackID);
 }

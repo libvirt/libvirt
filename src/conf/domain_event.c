@@ -1544,7 +1544,7 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
     VIR_WARN("Unexpected event ID %d", event->eventID);
 
  cleanup:
-    virDomainFree(dom);
+    virObjectUnref(dom);
 }
 
 
@@ -1618,7 +1618,7 @@ virDomainQemuMonitorEventDispatchFunc(virConnectPtr conn,
                                                    qemuMonitorEvent->micros,
                                                    qemuMonitorEvent->details,
                                                    data->opaque);
-    virDomainFree(dom);
+    virObjectUnref(dom);
 }
 
 

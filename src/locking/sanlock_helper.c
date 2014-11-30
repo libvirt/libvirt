@@ -106,8 +106,7 @@ main(int argc, char **argv)
     }
 
  cleanup:
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     if (conn)
         virConnectClose(conn);
     VIR_FREE(xml);

@@ -1311,7 +1311,7 @@ hypervConnectListAllDomains(virConnectPtr conn,
  cleanup:
     if (doms) {
         for (i = 0; i < count; ++i)
-            virDomainFree(doms[i]);
+            virObjectUnref(doms[i]);
 
         VIR_FREE(doms);
     }

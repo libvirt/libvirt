@@ -7497,10 +7497,8 @@ vboxConnectListAllDomains(virConnectPtr conn,
 
  cleanup:
     if (doms) {
-        for (i = 0; i < count; i++) {
-            if (doms[i])
-                virDomainFree(doms[i]);
-        }
+        for (i = 0; i < count; i++)
+            virObjectUnref(doms[i]);
     }
     VIR_FREE(doms);
 

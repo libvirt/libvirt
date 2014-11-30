@@ -1347,8 +1347,7 @@ remoteDispatchDomainGetSchedulerType(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -1555,8 +1554,7 @@ remoteDispatchDomainGetSchedulerParameters(virNetServerPtr server ATTRIBUTE_UNUS
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virTypedParamsFree(params, nparams);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -1613,7 +1611,7 @@ remoteDispatchConnectListAllDomains(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetMessageSaveError(rerr);
     if (doms && ndomains > 0) {
         for (i = 0; i < ndomains; i++)
-            virDomainFree(doms[i]);
+            virObjectUnref(doms[i]);
         VIR_FREE(doms);
     }
     return rv;
@@ -1666,8 +1664,7 @@ remoteDispatchDomainGetSchedulerParametersFlags(virNetServerPtr server ATTRIBUTE
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virTypedParamsFree(params, nparams);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -1724,8 +1721,7 @@ remoteDispatchDomainMemoryStats(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     VIR_FREE(stats);
     return rv;
 }
@@ -1780,8 +1776,7 @@ remoteDispatchDomainBlockPeek(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetMessageSaveError(rerr);
         VIR_FREE(ret->buffer.buffer_val);
     }
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -1844,8 +1839,7 @@ remoteDispatchDomainBlockStatsFlags(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virTypedParamsFree(params, nparams);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -1897,8 +1891,7 @@ remoteDispatchDomainMemoryPeek(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetMessageSaveError(rerr);
         VIR_FREE(ret->buffer.buffer_val);
     }
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -1941,8 +1934,7 @@ remoteDispatchDomainGetSecurityLabel(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     VIR_FREE(seclabel);
     return rv;
 }
@@ -2001,8 +1993,7 @@ remoteDispatchDomainGetSecurityLabelList(virNetServerPtr server ATTRIBUTE_UNUSED
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     VIR_FREE(seclabels);
     return rv;
 }
@@ -2107,8 +2098,7 @@ remoteDispatchDomainGetVcpuPinInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (rv < 0)
         virNetMessageSaveError(rerr);
     VIR_FREE(cpumaps);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -2143,8 +2133,7 @@ remoteDispatchDomainPinEmulator(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -2194,8 +2183,7 @@ remoteDispatchDomainGetEmulatorPinInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (rv < 0)
         virNetMessageSaveError(rerr);
     VIR_FREE(cpumaps);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -2276,8 +2264,7 @@ remoteDispatchDomainGetVcpus(virNetServerPtr server ATTRIBUTE_UNUSED,
     }
     VIR_FREE(cpumaps);
     VIR_FREE(info);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -2446,8 +2433,7 @@ remoteDispatchDomainGetMemoryParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virTypedParamsFree(params, nparams);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -2509,8 +2495,7 @@ remoteDispatchDomainGetNumaParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virTypedParamsFree(params, nparams);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -2572,8 +2557,7 @@ remoteDispatchDomainGetBlkioParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virTypedParamsFree(params, nparams);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -2757,8 +2741,7 @@ remoteDispatchDomainGetBlockJobInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -2820,8 +2803,7 @@ remoteDispatchDomainGetBlockIoTune(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virTypedParamsFree(params, nparams);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -3618,8 +3600,7 @@ remoteDispatchDomainGetState(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -3774,8 +3755,7 @@ remoteDispatchConnectDomainEventCallbackRegisterAny(virNetServerPtr server ATTRI
     VIR_FREE(callback);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     virMutexUnlock(&priv->lock);
     return rv;
 }
@@ -3915,8 +3895,7 @@ qemuDispatchDomainMonitorCommand(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -3967,8 +3946,7 @@ remoteDispatchDomainMigrateBegin3(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -4079,8 +4057,7 @@ remoteDispatchDomainMigratePerform3(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -4133,8 +4110,7 @@ remoteDispatchDomainMigrateFinish3(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetMessageSaveError(rerr);
         VIR_FREE(cookieout);
     }
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -4170,8 +4146,7 @@ remoteDispatchDomainMigrateConfirm3(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -4262,8 +4237,7 @@ remoteDispatchDomainOpenGraphics(virNetServerPtr server ATTRIBUTE_UNUSED,
     VIR_FORCE_CLOSE(fd);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -4306,8 +4280,7 @@ remoteDispatchDomainOpenGraphicsFd(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (rv < 0)
         virNetMessageSaveError(rerr);
 
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -4371,8 +4344,7 @@ remoteDispatchDomainGetInterfaceParameters(virNetServerPtr server ATTRIBUTE_UNUS
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virTypedParamsFree(params, nparams);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -4443,8 +4415,7 @@ remoteDispatchDomainGetCPUStats(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (rv < 0)
          virNetMessageSaveError(rerr);
     virTypedParamsFree(params, args->ncpus * args->nparams);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -4498,8 +4469,7 @@ remoteDispatchDomainGetDiskErrors(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     if (errors && len > 0) {
         size_t i;
         for (i = 0; i < len; i++)
@@ -4564,8 +4534,7 @@ remoteDispatchDomainListAllSnapshots(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     if (snaps && nsnaps > 0) {
         for (i = 0; i < nsnaps; i++)
             virDomainSnapshotFree(snaps[i]);
@@ -4635,8 +4604,7 @@ remoteDispatchDomainSnapshotListAllChildren(virNetServerPtr server ATTRIBUTE_UNU
         virNetMessageSaveError(rerr);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     if (snaps && nsnaps > 0) {
         for (i = 0; i < nsnaps; i++)
             virDomainSnapshotFree(snaps[i]);
@@ -5214,8 +5182,7 @@ lxcDispatchDomainOpenNamespace(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -5265,8 +5232,7 @@ remoteDispatchDomainGetJobStats(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virTypedParamsFree(params, nparams);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -5323,8 +5289,7 @@ remoteDispatchDomainMigrateBegin3Params(virNetServerPtr server ATTRIBUTE_UNUSED,
     virTypedParamsFree(params, nparams);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -5514,8 +5479,7 @@ remoteDispatchDomainMigratePerform3Params(virNetServerPtr server ATTRIBUTE_UNUSE
     virTypedParamsFree(params, nparams);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -5575,8 +5539,7 @@ remoteDispatchDomainMigrateFinish3Params(virNetServerPtr server ATTRIBUTE_UNUSED
         virNetMessageSaveError(rerr);
         VIR_FREE(cookieout);
     }
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -5627,8 +5590,7 @@ remoteDispatchDomainMigrateConfirm3Params(virNetServerPtr server ATTRIBUTE_UNUSE
     virTypedParamsFree(params, nparams);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -5728,8 +5690,7 @@ remoteDispatchDomainCreateXMLWithFiles(virNetServerPtr server ATTRIBUTE_UNUSED,
     VIR_FREE(files);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -5779,8 +5740,7 @@ static int remoteDispatchDomainCreateWithFiles(virNetServerPtr server ATTRIBUTE_
     VIR_FREE(files);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -5975,8 +5935,7 @@ qemuDispatchConnectDomainMonitorEventRegister(virNetServerPtr server ATTRIBUTE_U
     VIR_FREE(callback);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     virMutexUnlock(&priv->lock);
     return rv;
 }
@@ -6061,8 +6020,7 @@ remoteDispatchDomainGetTime(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     return rv;
 }
 
@@ -6475,8 +6433,7 @@ remoteDispatchDomainGetFSInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
             VIR_FREE(ret->info.info_val);
         }
     }
-    if (dom)
-        virDomainFree(dom);
+    virObjectUnref(dom);
     if (ninfo >= 0)
         for (i = 0; i < ninfo; i++)
             virDomainFSInfoFree(info[i]);

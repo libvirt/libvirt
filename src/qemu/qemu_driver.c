@@ -1010,7 +1010,7 @@ qemuStateStop(void)
  cleanup:
     if (domains) {
         for (i = 0; i < numDomains; i++)
-            virDomainFree(domains[i]);
+            virObjectUnref(domains[i]);
         VIR_FREE(domains);
     }
     VIR_FREE(flags);

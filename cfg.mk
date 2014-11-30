@@ -988,6 +988,15 @@ sc_prohibit_system_error_with_vir_err:
 	halt='do not use virReportSystemError with VIR_ERR_* error codes' \
 	  $(_sc_search_regexp)
 
+# Rule to prohibit usage of virXXXFree within library, daemon, remote, etc.
+# functions. There's a corresponding exclude to allow usage within tests,
+# docs, examples, tools, src/libvirt-*.c, and include/libvirt/libvirt-*.h
+sc_prohibit_virXXXFree:
+	@prohibit='\bvirDomainFree\b'	\
+	exclude='sc_prohibit_virXXXFree' \
+	halt='avoid using 'virXXXFree', use 'virObjectUnref' instead' \
+	  $(_sc_search_regexp)
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
@@ -1175,3 +1184,6 @@ exclude_file_name_regexp--sc_prohibit_useless_translation = \
 
 exclude_file_name_regexp--sc_prohibit_devname = \
   ^(tools/virsh.pod|cfg.mk|docs/.*)$$
+
+exclude_file_name_regexp--sc_prohibit_virXXXFree = \
+  ^(docs/|tests/|examples/|tools/|cfg.mk|src/libvirt_public.syms|include/libvirt/libvirt-domain.h|src/libvirt-(domain|qemu).c$$)

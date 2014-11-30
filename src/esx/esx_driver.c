@@ -5121,7 +5121,7 @@ esxConnectListAllDomains(virConnectPtr conn,
  cleanup:
     if (doms) {
         for (id = 0; id < count; id++)
-            virDomainFree(doms[id]);
+            virObjectUnref(doms[id]);
 
         VIR_FREE(doms);
     }
