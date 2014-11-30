@@ -634,8 +634,11 @@ virNetClientMarkClose(virNetClientPtr client,
     VIR_DEBUG("client=%p, reason=%d", client, reason);
     if (client->sock)
         virNetSocketRemoveIOCallback(client->sock);
-    client->wantClose = true;
-    client->closeReason = reason;
+    /* Don't override reason that's already set. */
+    if (!client->wantClose) {
+        client->wantClose = true;
+        client->closeReason = reason;
+    }
 }
 
 
