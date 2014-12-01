@@ -41,7 +41,7 @@ int prlsdkStop(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
 int prlsdkPause(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
 int prlsdkResume(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
 
-typedef int (*prlsdkChangeStateFunc)(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
+typedef PRL_RESULT (*prlsdkChangeStateFunc)(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
 int
 prlsdkDomainChangeState(virDomainPtr domain,
                         prlsdkChangeStateFunc chstate);

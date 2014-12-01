@@ -1601,7 +1601,7 @@ void prlsdkUnsubscribeFromPCSEvents(parallelsConnPtr privconn)
         logPrlError(ret);
 }
 
-int prlsdkStart(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+PRL_RESULT prlsdkStart(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
 {
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
@@ -1609,40 +1609,40 @@ int prlsdkStart(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
     return PRL_FAILED(waitJob(job, privconn->jobTimeout)) ? -1 : 0;
 }
 
-static int prlsdkStopEx(parallelsConnPtr privconn,
+static PRL_RESULT prlsdkStopEx(parallelsConnPtr privconn,
                         PRL_HANDLE sdkdom,
                         PRL_UINT32 mode)
 {
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     job = PrlVm_StopEx(sdkdom, mode, 0);
-    return PRL_FAILED(waitJob(job, privconn->jobTimeout)) ? -1 : 0;
+    return waitJob(job, privconn->jobTimeout);
 }
 
-int prlsdkKill(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+PRL_RESULT prlsdkKill(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
 {
     return prlsdkStopEx(privconn, sdkdom, PSM_KILL);
 }
 
-int prlsdkStop(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+PRL_RESULT prlsdkStop(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
 {
     return prlsdkStopEx(privconn, sdkdom, PSM_SHUTDOWN);
 }
 
-int prlsdkPause(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+PRL_RESULT prlsdkPause(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
 {
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     job = PrlVm_Pause(sdkdom, false);
-    return PRL_FAILED(waitJob(job, privconn->jobTimeout)) ? -1 : 0;
+    return waitJob(job, privconn->jobTimeout);
 }
 
-int prlsdkResume(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+PRL_RESULT prlsdkResume(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
 {
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     job = PrlVm_Resume(sdkdom);
-    return PRL_FAILED(waitJob(job, privconn->jobTimeout)) ? -1 : 0;
+    return waitJob(job, privconn->jobTimeout);
 }
 
 int
@@ -1652,7 +1652,9 @@ prlsdkDomainChangeState(virDomainPtr domain,
     parallelsConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr dom;
     parallelsDomObjPtr pdom;
+    PRL_RESULT pret;
     int ret = -1;
+    virErrorNumber virerr;
 
     dom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
     if (dom == NULL) {
@@ -1661,8 +1663,24 @@ prlsdkDomainChangeState(virDomainPtr domain,
     }
 
     pdom = dom->privateData;
-    if ((ret = chstate(privconn, pdom->sdkdom)))
+    pret = chstate(privconn, pdom->sdkdom);
+    virReportError(VIR_ERR_OPERATION_FAILED,
+                   _("Can't change domain state: %d"), pret);
+    if (PRL_FAILED(pret)) {
+        virResetLastError();
+
+        switch (pret) {
+        case PRL_ERR_DISP_VM_IS_NOT_STARTED:
+        case PRL_ERR_DISP_VM_IS_NOT_STOPPED:
+            virerr = VIR_ERR_OPERATION_INVALID;
+            break;
+        default:
+            virerr = VIR_ERR_OPERATION_FAILED;
+        }
+
+        virReportError(virerr, "%s", _("Can't change domain state."));
         goto cleanup;
+    }
 
     ret = prlsdkUpdateDomain(privconn, dom);
 
