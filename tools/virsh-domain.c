@@ -9643,6 +9643,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_BOOL,
      .help = N_("enable post-copy migration; switch to it using migrate-postcopy command")
     },
+    {.name = "postcopy-after-precopy",
+     .type = VSH_OT_BOOL,
+     .help = N_("automatically switch to post-copy migration after one pass of pre-copy")
+    },
     {.name = "migrateuri",
      .type = VSH_OT_STRING,
      .help = N_("migration URI, usually can be omitted")
@@ -9891,6 +9895,23 @@ virshMigrateTimeout(vshControl *ctl,
     }
 }
 
+static void
+virshMigrateIteration(virConnectPtr conn ATTRIBUTE_UNUSED,
+                      virDomainPtr dom,
+                      int iteration,
+                      void *opaque)
+{
+    vshControl *ctl = opaque;
+
+    if (iteration == 2) {
+        vshDebug(ctl, VSH_ERR_DEBUG,
+                 "iteration %d finished; switching to post-copy\n",
+                 iteration - 1);
+        if (virDomainMigrateStartPostCopy(dom, 0) < 0)
+            vshDebug(ctl, VSH_ERR_INFO, "switching to post-copy failed\n");
+    }
+}
+
 static bool
 cmdMigrate(vshControl *ctl, const vshCmd *cmd)
 {
@@ -9903,6 +9924,8 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
     virshMigrateTimeoutAction timeoutAction = VIRSH_MIGRATE_TIMEOUT_DEFAULT;
     bool live_flag = false;
     virshCtrlData data = { .dconn = NULL };
+    virshControlPtr priv = ctl->privData;
+    int iterEvent = -1;
 
     VSH_EXCLUSIVE_OPTIONS("live", "offline");
     VSH_EXCLUSIVE_OPTIONS("timeout-suspend", "timeout-postcopy");
@@ -9934,6 +9957,16 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, "%s",
                  _("migrate: Unexpected --timeout-* option without --timeout"));
         goto cleanup;
+    }
+
+    if (vshCommandOptBool(cmd, "postcopy-after-precopy")) {
+        iterEvent = virConnectDomainEventRegisterAny(
+                            priv->conn, dom,
+                            VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION,
+                            VIR_DOMAIN_EVENT_CALLBACK(virshMigrateIteration),
+                            ctl, NULL);
+        if (iterEvent < 0)
+            goto cleanup;
     }
 
     if (pipe(p) < 0)
@@ -9974,6 +10007,8 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     if (data.dconn)
         virConnectClose(data.dconn);
+    if (iterEvent != -1)
+        virConnectDomainEventDeregisterAny(priv->conn, iterEvent);
     virDomainFree(dom);
     VIR_FORCE_CLOSE(p[0]);
     VIR_FORCE_CLOSE(p[1]);
