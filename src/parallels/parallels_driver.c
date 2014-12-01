@@ -63,14 +63,6 @@ VIR_LOG_INIT("parallels.parallels_driver");
 #define PRLCTL                      "prlctl"
 #define PRLSRVCTL                   "prlsrvctl"
 
-#define parallelsDomNotFoundError(domain)                                \
-    do {                                                                 \
-        char uuidstr[VIR_UUID_STRING_BUFLEN];                            \
-        virUUIDFormat(domain->uuid, uuidstr);                            \
-        virReportError(VIR_ERR_NO_DOMAIN,                                \
-                       _("no domain with matching uuid '%s'"), uuidstr); \
-    } while (0)
-
 static int parallelsConnectClose(virConnectPtr conn);
 
 static const char * parallelsGetDiskBusName(int bus) {
