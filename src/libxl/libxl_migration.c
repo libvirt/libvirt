@@ -133,8 +133,7 @@ libxlMigrateReceive(virNetSocketPtr sock,
     size_t i;
 
     /* Accept migration connection */
-    virNetSocketAccept(sock, &client_sock);
-    if (client_sock == NULL) {
+    if (virNetSocketAccept(sock, &client_sock) < 0 || !client_sock) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Failed to accept migration connection"));
         goto fail;
