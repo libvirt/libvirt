@@ -9639,6 +9639,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_BOOL,
      .help = N_("abort on soft errors during migration")
     },
+    {.name = "postcopy",
+     .type = VSH_OT_BOOL,
+     .help = N_("enable post-copy migration; switch to it using migrate-postcopy command")
+    },
     {.name = "migrateuri",
      .type = VSH_OT_STRING,
      .help = N_("migration URI, usually can be omitted")
@@ -9816,6 +9820,9 @@ doMigrate(void *opaque)
 
     if (vshCommandOptBool(cmd, "abort-on-error"))
         flags |= VIR_MIGRATE_ABORT_ON_ERROR;
+
+    if (vshCommandOptBool(cmd, "postcopy"))
+        flags |= VIR_MIGRATE_POSTCOPY;
 
     if (flags & VIR_MIGRATE_PEER2PEER || vshCommandOptBool(cmd, "direct")) {
         if (virDomainMigrateToURI3(dom, desturi, params, nparams, flags) == 0)
@@ -10117,6 +10124,48 @@ cmdMigrateGetMaxSpeed(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  done:
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "migrate-postcopy" command
+ */
+static const vshCmdInfo info_migrate_postcopy[] = {
+    {.name = "help",
+     .data = N_("Switch running migration from pre-copy to post-copy")
+    },
+    {.name = "desc",
+     .data = N_("Switch running migration from pre-copy to post-copy. "
+                "The migration must have been started with --postcopy option.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_migrate_postcopy[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdMigratePostCopy(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    bool ret = false;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (virDomainMigrateStartPostCopy(dom, 0) < 0)
+        goto cleanup;
+
+    ret = true;
+
+ cleanup:
     virDomainFree(dom);
     return ret;
 }
@@ -12974,6 +13023,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdMigrateGetMaxSpeed,
      .opts = opts_migrate_getspeed,
      .info = info_migrate_getspeed,
+     .flags = 0
+    },
+    {.name = "migrate-postcopy",
+     .handler = cmdMigratePostCopy,
+     .opts = opts_migrate_postcopy,
+     .info = info_migrate_postcopy,
      .flags = 0
     },
     {.name = "numatune",

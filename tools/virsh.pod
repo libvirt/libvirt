@@ -1529,7 +1529,7 @@ to the I<uri> namespace is displayed instead of being modified.
 =item B<migrate> [I<--live>] [I<--offline>] [I<--direct>] [I<--p2p> [I<--tunnelled>]]
 [I<--persistent>] [I<--undefinesource>] [I<--suspend>] [I<--copy-storage-all>]
 [I<--copy-storage-inc>] [I<--change-protection>] [I<--unsafe>] [I<--verbose>]
-[I<--compressed>] [I<--abort-on-error>] [I<--auto-converge>]
+[I<--compressed>] [I<--abort-on-error>] [I<--auto-converge>] [I<--postcopy>]
 I<domain> I<desturi> [I<migrateuri>] [I<graphicsuri>] [I<listen-address>]
 [I<dname>] [I<--timeout> B<seconds>] [I<--xml> B<file>]
 [I<--migrate-disks> B<disk-list>] [I<--disks-port> B<port>]
@@ -1559,6 +1559,10 @@ of migration.  I<--compressed> activates compression of memory pages that have
 to be transferred repeatedly during live migration. I<--abort-on-error> cancels
 the migration if a soft error (for example I/O error) happens during the
 migration. I<--auto-converge> forces convergence during live migration.
+I<--postcopy> enables post-copy logic in migration, but does not
+actually start post-copy, i.e., migration is started in pre-copy mode.
+Once migration is running, the user may switch to post-copy using the
+B<migrate-postcopy> command sent from another virsh instance.
 
 B<Note>: Individual hypervisors usually do not support all possible types of
 migration. For example, QEMU does not support direct migration.
@@ -1691,6 +1695,11 @@ reject the value or convert it to the maximum value allowed.
 =item B<migrate-getspeed> I<domain>
 
 Get the maximum migration bandwidth (in MiB/s) for a domain.
+
+=item B<migrate-postcopy> I<domain>
+
+Switch the current migration from pre-copy to post-copy. This is only
+supported for a migration started with I<--postcopy> option.
 
 =item B<numatune> I<domain> [I<--mode> B<mode>] [I<--nodeset> B<nodeset>]
 [[I<--config>] [I<--live>] | [I<--current>]]
