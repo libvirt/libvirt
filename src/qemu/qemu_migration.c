@@ -2426,11 +2426,14 @@ qemuMigrationSetPostCopy(virQEMUDriverPtr driver,
                          bool state,
                          qemuDomainAsyncJob job)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
     if (qemuMigrationSetOption(driver, vm,
                                QEMU_MONITOR_MIGRATION_CAPS_POSTCOPY,
                                state, job) < 0)
         return -1;
 
+    priv->job.postcopyEnabled = state;
     return 0;
 }
 

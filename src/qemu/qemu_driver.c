@@ -13370,6 +13370,63 @@ qemuDomainMigrateGetMaxSpeed(virDomainPtr dom,
 }
 
 
+static int
+qemuDomainMigrateStartPostCopy(virDomainPtr dom,
+                               unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    qemuDomainObjPrivatePtr priv;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainMigrateStartPostCopyEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MIGRATION_OP) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not running"));
+        goto endjob;
+    }
+
+    priv = vm->privateData;
+
+    if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("post-copy can only be started while "
+                         "outgoing migration is in progress"));
+        goto endjob;
+    }
+
+    if (!priv->job.postcopyEnabled) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("switching to post-copy requires migration to be "
+                         "started with VIR_MIGRATE_POSTCOPY flag"));
+        goto endjob;
+    }
+
+    VIR_DEBUG("Starting post-copy");
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorMigrateStartPostCopy(priv->mon);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 typedef enum {
     VIR_DISK_CHAIN_NO_ACCESS,
     VIR_DISK_CHAIN_READ_ONLY,
@@ -20196,6 +20253,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainInterfaceAddresses = qemuDomainInterfaceAddresses, /* 1.2.14 */
     .domainSetUserPassword = qemuDomainSetUserPassword, /* 1.2.16 */
     .domainRename = qemuDomainRename, /* 1.2.19 */
+    .domainMigrateStartPostCopy = qemuDomainMigrateStartPostCopy, /* 1.3.3 */
 };
 
 

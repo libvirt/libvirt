@@ -141,6 +141,7 @@ struct qemuDomainJobObj {
     bool spiceMigration;                /* we asked for spice migration and we
                                          * should wait for it to finish */
     bool spiceMigrated;                 /* spice migration completed */
+    bool postcopyEnabled;               /* post-copy migration was enabled */
 };
 
 typedef void (*qemuDomainCleanupCallback)(virQEMUDriverPtr driver,
