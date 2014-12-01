@@ -3238,6 +3238,11 @@ struct remote_domain_event_callback_job_completed_msg {
     remote_typed_param params<REMOTE_DOMAIN_JOB_STATS_MAX>;
 };
 
+struct remote_domain_migrate_start_post_copy_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -5740,5 +5745,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_JOB_COMPLETED = 363
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_JOB_COMPLETED = 363,
+
+    /**
+     * @generate: both
+     * @acl: domain:migrate
+     */
+    REMOTE_PROC_DOMAIN_MIGRATE_START_POST_COPY = 364
 };

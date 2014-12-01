@@ -7763,6 +7763,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainRename = remoteDomainRename, /* 1.2.19 */
     .connectRegisterCloseCallback = remoteConnectRegisterCloseCallback, /* 1.3.2 */
     .connectUnregisterCloseCallback = remoteConnectUnregisterCloseCallback, /* 1.3.2 */
+    .domainMigrateStartPostCopy = remoteDomainMigrateStartPostCopy, /* 1.3.3 */
 };
 
 static virNetworkDriver network_driver = {

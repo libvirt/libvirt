@@ -3537,6 +3537,7 @@ virDomainMigrateUnmanaged(virDomainPtr domain,
  *                                 automatically when supported).
  *   VIR_MIGRATE_UNSAFE    Force migration even if it is considered unsafe.
  *   VIR_MIGRATE_OFFLINE Migrate offline
+ *   VIR_MIGRATE_POSTCOPY Enable (but do not start) post-copy
  *
  * VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
  * Applications using the VIR_MIGRATE_PEER2PEER flag will probably
@@ -3572,6 +3573,11 @@ virDomainMigrateUnmanaged(virDomainPtr domain,
  * libvirt will choose a suitable default.  Some hypervisors do
  * not support this feature and will return an error if bandwidth
  * is not 0.
+ *
+ * Enabling the VIR_MIGRATE_POSTCOPY flag tells libvirt to enable post-copy
+ * migration.  Use virDomainMigrateStartPostCopy to switch migration into
+ * the post-copy mode.  See virDomainMigrateStartPostCopy for more details
+ * about post-copy.
  *
  * To see which features are supported by the current hypervisor,
  * see virConnectGetCapabilities, /capabilities/host/migration_features.
@@ -3748,6 +3754,7 @@ virDomainMigrate(virDomainPtr domain,
  *                                 automatically when supported).
  *   VIR_MIGRATE_UNSAFE    Force migration even if it is considered unsafe.
  *   VIR_MIGRATE_OFFLINE Migrate offline
+ *   VIR_MIGRATE_POSTCOPY Enable (but do not start) post-copy
  *
  * VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
  * Applications using the VIR_MIGRATE_PEER2PEER flag will probably
@@ -3783,6 +3790,11 @@ virDomainMigrate(virDomainPtr domain,
  * libvirt will choose a suitable default.  Some hypervisors do
  * not support this feature and will return an error if bandwidth
  * is not 0.
+ *
+ * Enabling the VIR_MIGRATE_POSTCOPY flag tells libvirt to enable post-copy
+ * migration.  Use virDomainMigrateStartPostCopy to switch migration into
+ * the post-copy mode.  See virDomainMigrateStartPostCopy for more details
+ * about post-copy.
  *
  * To see which features are supported by the current hypervisor,
  * see virConnectGetCapabilities, /capabilities/host/migration_features.
@@ -3967,6 +3979,11 @@ virDomainMigrate2(virDomainPtr domain,
  * If you want to copy non-shared storage within migration you
  * can use either VIR_MIGRATE_NON_SHARED_DISK or
  * VIR_MIGRATE_NON_SHARED_INC as they are mutually exclusive.
+ *
+ * Enabling the VIR_MIGRATE_POSTCOPY flag tells libvirt to enable post-copy
+ * migration.  Use virDomainMigrateStartPostCopy to switch migration into
+ * the post-copy mode.  See virDomainMigrateStartPostCopy for more details
+ * about post-copy.
  *
  * There are many limitations on migration imposed by the underlying
  * technology - for example it may not be possible to migrate between
@@ -4208,6 +4225,7 @@ int virDomainMigrateUnmanagedCheckCompat(virDomainPtr domain,
  *                                 automatically when supported).
  *   VIR_MIGRATE_UNSAFE    Force migration even if it is considered unsafe.
  *   VIR_MIGRATE_OFFLINE Migrate offline
+ *   VIR_MIGRATE_POSTCOPY Enable (but do not start) post-copy
  *
  * The operation of this API hinges on the VIR_MIGRATE_PEER2PEER flag.
  * If the VIR_MIGRATE_PEER2PEER flag is NOT set, the duri parameter
@@ -4239,6 +4257,11 @@ int virDomainMigrateUnmanagedCheckCompat(virDomainPtr domain,
  * libvirt will choose a suitable default.  Some hypervisors do
  * not support this feature and will return an error if bandwidth
  * is not 0.
+ *
+ * Enabling the VIR_MIGRATE_POSTCOPY flag tells libvirt to enable post-copy
+ * migration.  Use virDomainMigrateStartPostCopy to switch migration into
+ * the post-copy mode.  See virDomainMigrateStartPostCopy for more details
+ * about post-copy.
  *
  * To see which features are supported by the current hypervisor,
  * see virConnectGetCapabilities, /capabilities/host/migration_features.
@@ -4321,6 +4344,7 @@ virDomainMigrateToURI(virDomainPtr domain,
  *                                 automatically when supported).
  *   VIR_MIGRATE_UNSAFE    Force migration even if it is considered unsafe.
  *   VIR_MIGRATE_OFFLINE Migrate offline
+ *   VIR_MIGRATE_POSTCOPY Enable (but do not start) post-copy
  *
  * The operation of this API hinges on the VIR_MIGRATE_PEER2PEER flag.
  *
@@ -4365,6 +4389,11 @@ virDomainMigrateToURI(virDomainPtr domain,
  * libvirt will choose a suitable default.  Some hypervisors do
  * not support this feature and will return an error if bandwidth
  * is not 0.
+ *
+ * Enabling the VIR_MIGRATE_POSTCOPY flag tells libvirt to enable post-copy
+ * migration.  Use virDomainMigrateStartPostCopy to switch migration into
+ * the post-copy mode.  See virDomainMigrateStartPostCopy for more details
+ * about post-copy.
  *
  * To see which features are supported by the current hypervisor,
  * see virConnectGetCapabilities, /capabilities/host/migration_features.
@@ -4445,6 +4474,11 @@ virDomainMigrateToURI2(virDomainPtr domain,
  * If you want to copy non-shared storage within migration you
  * can use either VIR_MIGRATE_NON_SHARED_DISK or
  * VIR_MIGRATE_NON_SHARED_INC as they are mutually exclusive.
+ *
+ * Enabling the VIR_MIGRATE_POSTCOPY flag tells libvirt to enable post-copy
+ * migration.  Use virDomainMigrateStartPostCopy to switch migration into
+ * the post-copy mode.  See virDomainMigrateStartPostCopy for more details
+ * about post-copy.
  *
  * There are many limitations on migration imposed by the underlying
  * technology - for example it may not be possible to migrate between
@@ -8868,14 +8902,15 @@ virDomainGetJobInfo(virDomainPtr domain, virDomainJobInfoPtr info)
  *
  * When @flags contains VIR_DOMAIN_JOB_STATS_COMPLETED, the function will
  * return statistics about a recently completed job. Specifically, this
- * flag may be used to query statistics of a completed incoming migration.
- * Statistics of a completed job are automatically destroyed once read or
- * when libvirtd is restarted. Note that time information returned for
- * completed migrations may be completely irrelevant unless both source and
- * destination hosts have synchronized time (i.e., NTP daemon is running on
- * both of them). The statistics of a completed job can also be obtained by
- * listening to a VIR_DOMAIN_EVENT_ID_JOB_COMPLETED event (on the source host
- * in case of a migration job).
+ * flag may be used to query statistics of a completed incoming pre-copy
+ * migration (statistics for post-copy migration are only available on the
+ * source hsot). Statistics of a completed job are automatically destroyed
+ * once read or when libvirtd is restarted. Note that time information
+ * returned for completed migrations may be completely irrelevant unless both
+ * source and destination hosts have synchronized time (i.e., NTP daemon is
+ * running on both of them). The statistics of a completed job can also be
+ * obtained by listening to a VIR_DOMAIN_EVENT_ID_JOB_COMPLETED event (on the
+ * source host in case of a migration job).
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -9153,6 +9188,96 @@ virDomainMigrateGetMaxSpeed(virDomainPtr domain,
 
     if (conn->driver->domainMigrateGetMaxSpeed) {
         if (conn->driver->domainMigrateGetMaxSpeed(domain, bandwidth, flags) < 0)
+            goto error;
+        return 0;
+    }
+
+    virReportUnsupportedError();
+ error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/**
+ * virDomainMigrateStartPostCopy:
+ * @domain: a domain object
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Starts post-copy migration. This function has to be called while
+ * migration (initiated with VIR_MIGRATE_POSTCOPY flag) is in progress.
+ *
+ * Traditional pre-copy migration iteratively walks through guest memory
+ * pages and migrates those that changed since the previous iteration. The
+ * iterative phase stops when the number of dirty pages is low enough so that
+ * the virtual CPUs can be paused, all dirty pages transferred to the
+ * destination, where the virtual CPUs are unpaused, and all this can happen
+ * within a predefined downtime period. It's clear that this process may never
+ * converge if downtime is too short and/or the guest keeps changing a lot of
+ * memory pages.
+ *
+ * When migration is switched to post-copy mode, the virtual CPUs are paused
+ * immediately, only a minimum set of pages is transferred, and the CPUs are
+ * unpaused on destination. The source keeps sending all remaining memory pages
+ * to the destination while the guest is already running there. Whenever the
+ * guest tries to read a memory page which has not been migrated yet, the
+ * hypervisor has to tell the source to transfer that page in a priority
+ * channel. To minimize such page faults, it is a good idea to run at least one
+ * iteration of pre-copy migration before switching to post-copy.
+ *
+ * Post-copy migration is guaranteed to converge since each page is transferred
+ * at most once no matter how fast it changes. On the other hand once the
+ * guest is running on the destination host, the migration can no longer be
+ * rolled back because none of the hosts has complete state. If this happens,
+ * libvirt will leave the domain paused on both hosts with
+ * VIR_DOMAIN_PAUSED_POSTCOPY_FAILED reason. It's up to the upper layer to
+ * decide what to do in such case.
+ *
+ * The following domain life cycle events are emitted during post-copy
+ * migration:
+ *  VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY (on the source) -- migration entered
+ *      post-copy mode.
+ *  VIR_DOMAIN_EVENT_RESUMED_POSTCOPY (on the destination) -- the guest is
+ *      running on the destination host while some of its memory pages still
+ *      remain on the source host; neither the source nor the destination host
+ *      contain a complete guest state from this point until migration
+ *      finishes.
+ *  VIR_DOMAIN_EVENT_RESUMED_MIGRATED (on the destination),
+ *  VIR_DOMAIN_EVENT_STOPPED_MIGRATED (on the source) -- migration finished
+ *      successfully and the destination host holds a complete guest state.
+ *  VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY_FAILED (on the destination) -- emitted
+ *      when migration fails in post-copy mode and it's unclear whether any
+ *      of the hosts has a complete guest state.
+ *
+ * The progress of a post-copy migration can be monitored normally using
+ * virDomainGetJobStats on the source host. Fetching statistics of a completed
+ * post-copy migration can also be done on the source host (by calling
+ * virDomainGetJobStats or listening to VIR_DOMAIN_EVENT_ID_JOB_COMPLETED
+ * event, but (in contrast to pre-copy migration) the statistics are not
+ * available on the destination host. Thus, VIR_DOMAIN_EVENT_ID_JOB_COMPLETED
+ * event is the only way of getting statistics of a completed post-copy
+ * migration of a transient domain (because the domain is removed after
+ * migration and there's no domain to run virDomainGetJobStats on).
+ *
+ * Returns 0 in case of success, -1 otherwise.
+ */
+int
+virDomainMigrateStartPostCopy(virDomainPtr domain,
+                              unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    if (conn->driver->domainMigrateStartPostCopy) {
+        if (conn->driver->domainMigrateStartPostCopy(domain, flags) < 0)
             goto error;
         return 0;
     }
