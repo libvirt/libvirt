@@ -532,6 +532,7 @@ typedef enum {
     QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE,
     QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
     QEMU_MONITOR_MIGRATION_CAPS_EVENTS,
+    QEMU_MONITOR_MIGRATION_CAPS_POSTCOPY,
 
     QEMU_MONITOR_MIGRATION_CAPS_LAST
 } qemuMonitorMigrationCaps;
@@ -932,5 +933,7 @@ int qemuMonitorGetMemoryDeviceInfo(qemuMonitorPtr mon,
 
 int qemuMonitorMigrateIncoming(qemuMonitorPtr mon,
                                const char *uri);
+
+int qemuMonitorMigrateStartPostCopy(qemuMonitorPtr mon);
 
 #endif /* QEMU_MONITOR_H */

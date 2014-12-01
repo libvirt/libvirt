@@ -488,4 +488,7 @@ int qemuMonitorJSONMigrateIncoming(qemuMonitorPtr mon,
                                    const char *uri)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+int qemuMonitorJSONMigrateStartPostCopy(qemuMonitorPtr mon)
+    ATTRIBUTE_NONNULL(1);
+
 #endif /* QEMU_MONITOR_JSON_H */

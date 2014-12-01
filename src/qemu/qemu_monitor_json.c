@@ -6737,3 +6737,25 @@ qemuMonitorJSONMigrateIncoming(qemuMonitorPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+
+int
+qemuMonitorJSONMigrateStartPostCopy(qemuMonitorPtr mon)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("migrate-start-postcopy", NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    ret = qemuMonitorJSONCheckError(cmd, reply);
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
