@@ -72,8 +72,6 @@ VIR_LOG_INIT("parallels.parallels_driver");
                        _("no domain with matching uuid '%s'"), uuidstr); \
     } while (0)
 
-#define IS_CT(def)  (STREQ_NULLABLE(def->os.type, "exe"))
-
 static int parallelsConnectClose(virConnectPtr conn);
 
 static const char * parallelsGetDiskBusName(int bus) {
