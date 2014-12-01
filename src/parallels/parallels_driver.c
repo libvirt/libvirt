@@ -908,6 +908,15 @@ static int parallelsDomainIsActive(virDomainPtr domain)
     return ret;
 }
 
+static int
+parallelsDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
+{
+    /* we don't support any create flags */
+    virCheckFlags(0, -1);
+
+    return parallelsDomainCreate(domain);
+}
+
 static virHypervisorDriver parallelsDriver = {
     .no = VIR_DRV_PARALLELS,
     .name = "Parallels",
@@ -938,6 +947,7 @@ static virHypervisorDriver parallelsDriver = {
     .domainDestroy = parallelsDomainDestroy,  /* 0.10.0 */
     .domainShutdown = parallelsDomainShutdown, /* 0.10.0 */
     .domainCreate = parallelsDomainCreate,    /* 0.10.0 */
+    .domainCreateWithFlags = parallelsDomainCreateWithFlags, /* 1.2.10 */
     .domainDefineXML = parallelsDomainDefineXML,      /* 0.10.0 */
     .domainIsActive = parallelsDomainIsActive, /* 1.2.10 */
     .connectDomainEventRegisterAny = parallelsConnectDomainEventRegisterAny, /* 1.2.10 */
