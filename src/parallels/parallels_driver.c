@@ -890,6 +890,24 @@ static int parallelsDomainShutdown(virDomainPtr domain)
     return prlsdkDomainChangeState(domain, prlsdkStop);
 }
 
+static int parallelsDomainIsActive(virDomainPtr domain)
+{
+    parallelsConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr dom = NULL;
+    int ret = -1;
+
+    dom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
+    if (dom == NULL) {
+        parallelsDomNotFoundError(domain);
+        return -1;
+    }
+
+    ret = virDomainObjIsActive(dom);
+    virObjectUnlock(dom);
+
+    return ret;
+}
+
 static virHypervisorDriver parallelsDriver = {
     .no = VIR_DRV_PARALLELS,
     .name = "Parallels",
@@ -921,6 +939,7 @@ static virHypervisorDriver parallelsDriver = {
     .domainShutdown = parallelsDomainShutdown, /* 0.10.0 */
     .domainCreate = parallelsDomainCreate,    /* 0.10.0 */
     .domainDefineXML = parallelsDomainDefineXML,      /* 0.10.0 */
+    .domainIsActive = parallelsDomainIsActive, /* 1.2.10 */
     .connectDomainEventRegisterAny = parallelsConnectDomainEventRegisterAny, /* 1.2.10 */
     .connectDomainEventDeregisterAny = parallelsConnectDomainEventDeregisterAny, /* 1.2.10 */
     .nodeGetCPUMap = parallelsNodeGetCPUMap, /* 1.2.8 */
