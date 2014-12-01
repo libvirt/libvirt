@@ -670,120 +670,6 @@ parallelsDomainGetAutostart(virDomainPtr domain, int *autostart)
     return ret;
 }
 
-typedef int (*parallelsChangeStateFunc)(virDomainObjPtr privdom);
-#define PARALLELS_UUID(x)     (((parallelsDomObjPtr)(x->privateData))->uuid)
-
-static int
-parallelsDomainChangeState(virDomainPtr domain,
-                           virDomainState req_state, const char *req_state_name,
-                           parallelsChangeStateFunc chstate,
-                           virDomainState new_state, int reason)
-{
-    parallelsConnPtr privconn = domain->conn->privateData;
-    virDomainObjPtr privdom;
-    int state;
-    int ret = -1;
-
-    parallelsDriverLock(privconn);
-    privdom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
-    parallelsDriverUnlock(privconn);
-
-    if (privdom == NULL) {
-        parallelsDomNotFoundError(domain);
-        goto cleanup;
-    }
-
-    state = virDomainObjGetState(privdom, NULL);
-    if (state != req_state) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("domain '%s' not %s"),
-                       privdom->def->name, req_state_name);
-        goto cleanup;
-    }
-
-    if (chstate(privdom))
-        goto cleanup;
-
-    virDomainObjSetState(privdom, new_state, reason);
-
-    ret = 0;
-
- cleanup:
-    if (privdom)
-        virObjectUnlock(privdom);
-
-    return ret;
-}
-
-static int parallelsPause(virDomainObjPtr privdom)
-{
-    return parallelsCmdRun(PRLCTL, "pause", PARALLELS_UUID(privdom), NULL);
-}
-
-static int
-parallelsDomainSuspend(virDomainPtr domain)
-{
-    return parallelsDomainChangeState(domain,
-                                      VIR_DOMAIN_RUNNING, "running",
-                                      parallelsPause,
-                                      VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
-}
-
-static int parallelsResume(virDomainObjPtr privdom)
-{
-    return parallelsCmdRun(PRLCTL, "resume", PARALLELS_UUID(privdom), NULL);
-}
-
-static int
-parallelsDomainResume(virDomainPtr domain)
-{
-    return parallelsDomainChangeState(domain,
-                                      VIR_DOMAIN_PAUSED, "paused",
-                                      parallelsResume,
-                                      VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_UNPAUSED);
-}
-
-static int parallelsStart(virDomainObjPtr privdom)
-{
-    return parallelsCmdRun(PRLCTL, "start", PARALLELS_UUID(privdom), NULL);
-}
-
-static int
-parallelsDomainCreate(virDomainPtr domain)
-{
-    return parallelsDomainChangeState(domain,
-                                      VIR_DOMAIN_SHUTOFF, "stopped",
-                                      parallelsStart,
-                                      VIR_DOMAIN_RUNNING, VIR_DOMAIN_EVENT_STARTED_BOOTED);
-}
-
-static int parallelsKill(virDomainObjPtr privdom)
-{
-    return parallelsCmdRun(PRLCTL, "stop", PARALLELS_UUID(privdom), "--kill", NULL);
-}
-
-static int
-parallelsDomainDestroy(virDomainPtr domain)
-{
-    return parallelsDomainChangeState(domain,
-                                      VIR_DOMAIN_RUNNING, "running",
-                                      parallelsKill,
-                                      VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_DESTROYED);
-}
-
-static int parallelsStop(virDomainObjPtr privdom)
-{
-    return parallelsCmdRun(PRLCTL, "stop", PARALLELS_UUID(privdom), NULL);
-}
-
-static int
-parallelsDomainShutdown(virDomainPtr domain)
-{
-    return parallelsDomainChangeState(domain,
-                                      VIR_DOMAIN_RUNNING, "running",
-                                      parallelsStop,
-                                      VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
-}
-
 static int
 parallelsApplyGraphicsParams(virDomainGraphicsDefPtr *oldgraphics, int nold,
                              virDomainGraphicsDefPtr *newgraphics, int nnew)
@@ -1760,6 +1646,31 @@ parallelsConnectDomainEventDeregisterAny(virConnectPtr conn,
 
  cleanup:
     return ret;
+}
+
+static int parallelsDomainSuspend(virDomainPtr domain)
+{
+    return prlsdkDomainChangeState(domain, prlsdkPause);
+}
+
+static int parallelsDomainResume(virDomainPtr domain)
+{
+    return prlsdkDomainChangeState(domain, prlsdkResume);
+}
+
+static int parallelsDomainCreate(virDomainPtr domain)
+{
+    return prlsdkDomainChangeState(domain, prlsdkStart);
+}
+
+static int parallelsDomainDestroy(virDomainPtr domain)
+{
+    return prlsdkDomainChangeState(domain, prlsdkKill);
+}
+
+static int parallelsDomainShutdown(virDomainPtr domain)
+{
+    return prlsdkDomainChangeState(domain, prlsdkStop);
 }
 
 static virHypervisorDriver parallelsDriver = {

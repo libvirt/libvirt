@@ -34,3 +34,13 @@ virDomainObjPtr
 prlsdkAddDomain(parallelsConnPtr privconn, const unsigned char *uuid);
 int prlsdkSubscribeToPCSEvents(parallelsConnPtr privconn);
 void prlsdkUnsubscribeFromPCSEvents(parallelsConnPtr privconn);
+int prlsdkStart(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
+int prlsdkKill(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
+int prlsdkStop(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
+int prlsdkPause(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
+int prlsdkResume(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
+
+typedef int (*prlsdkChangeStateFunc)(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
+int
+prlsdkDomainChangeState(virDomainPtr domain,
+                        prlsdkChangeStateFunc chstate);

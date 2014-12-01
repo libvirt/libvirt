@@ -1548,3 +1548,73 @@ void prlsdkUnsubscribeFromPCSEvents(parallelsConnPtr privconn)
     if (PRL_FAILED(ret))
         logPrlError(ret);
 }
+
+int prlsdkStart(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+{
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+
+    job = PrlVm_StartEx(sdkdom, PSM_VM_START, 0);
+    return waitJob(job, privconn->jobTimeout);
+}
+
+static int prlsdkStopEx(parallelsConnPtr privconn,
+                        PRL_HANDLE sdkdom,
+                        PRL_UINT32 mode)
+{
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+
+    job = PrlVm_StopEx(sdkdom, mode, 0);
+    return waitJob(job, privconn->jobTimeout);
+}
+
+int prlsdkKill(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+{
+    return prlsdkStopEx(privconn, sdkdom, PSM_KILL);
+}
+
+int prlsdkStop(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+{
+    return prlsdkStopEx(privconn, sdkdom, PSM_SHUTDOWN);
+}
+
+int prlsdkPause(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+{
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+
+    job = PrlVm_Pause(sdkdom, false);
+    return waitJob(job, privconn->jobTimeout);
+}
+
+int prlsdkResume(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+{
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+
+    job = PrlVm_Resume(sdkdom);
+    return waitJob(job, privconn->jobTimeout);
+}
+
+int
+prlsdkDomainChangeState(virDomainPtr domain,
+                        prlsdkChangeStateFunc chstate)
+{
+    parallelsConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr dom;
+    parallelsDomObjPtr pdom;
+    int ret = -1;
+
+    dom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
+    if (dom == NULL) {
+        parallelsDomNotFoundError(domain);
+        return -1;
+    }
+
+    pdom = dom->privateData;
+    if ((ret = chstate(privconn, pdom->sdkdom)))
+        goto cleanup;
+
+    ret = prlsdkUpdateDomain(privconn, dom);
+
+ cleanup:
+    virObjectUnlock(dom);
+    return ret;
+}
