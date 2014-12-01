@@ -3723,8 +3723,10 @@ qemuMigrationRun(virQEMUDriverPtr driver,
      * confirm3 step, but need to release the lock state
      */
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
-        if (qemuMigrationSetOffline(driver, vm) < 0)
+        if (qemuMigrationSetOffline(driver, vm) < 0) {
+            priv->job.current->type = VIR_DOMAIN_JOB_FAILED;
             goto cleanup;
+        }
     }
 
     ret = 0;
@@ -3747,6 +3749,9 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         qemuDomainJobInfoUpdateTime(priv->job.completed);
         qemuDomainJobInfoUpdateDowntime(priv->job.completed);
     }
+
+    if (priv->job.current->type == VIR_DOMAIN_JOB_UNBOUNDED)
+        priv->job.current->type = VIR_DOMAIN_JOB_FAILED;
 
     cookieFlags |= QEMU_MIGRATION_COOKIE_NETWORK |
                    QEMU_MIGRATION_COOKIE_STATS;
