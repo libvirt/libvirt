@@ -4535,7 +4535,7 @@ remoteDispatchDomainListAllSnapshots(virNetServerPtr server ATTRIBUTE_UNUSED,
     virObjectUnref(dom);
     if (snaps && nsnaps > 0) {
         for (i = 0; i < nsnaps; i++)
-            virDomainSnapshotFree(snaps[i]);
+            virObjectUnref(snaps[i]);
         VIR_FREE(snaps);
     }
     return rv;
@@ -4600,12 +4600,11 @@ remoteDispatchDomainSnapshotListAllChildren(virNetServerPtr server ATTRIBUTE_UNU
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (snapshot)
-        virDomainSnapshotFree(snapshot);
+    virObjectUnref(snapshot);
     virObjectUnref(dom);
     if (snaps && nsnaps > 0) {
         for (i = 0; i < nsnaps; i++)
-            virDomainSnapshotFree(snaps[i]);
+            virObjectUnref(snaps[i]);
         VIR_FREE(snaps);
     }
     return rv;

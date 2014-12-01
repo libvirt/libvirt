@@ -6766,8 +6766,7 @@ remoteDomainListAllSnapshots(virDomainPtr dom,
  cleanup:
     if (snaps) {
         for (i = 0; i < ret.snapshots.snapshots_len; i++)
-            if (snaps[i])
-                virDomainSnapshotFree(snaps[i]);
+            virObjectUnref(snaps[i]);
         VIR_FREE(snaps);
     }
 
@@ -6833,8 +6832,7 @@ remoteDomainSnapshotListAllChildren(virDomainSnapshotPtr parent,
  cleanup:
     if (snaps) {
         for (i = 0; i < ret.snapshots.snapshots_len; i++)
-            if (snaps[i])
-                virDomainSnapshotFree(snaps[i]);
+            virObjectUnref(snaps[i]);
         VIR_FREE(snaps);
     }
 

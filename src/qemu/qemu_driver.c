@@ -14079,7 +14079,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                                             cfg->snapshotDir) < 0) {
             /* if writing of metadata fails, error out rather than trying
              * to silently carry on without completing the snapshot */
-            virDomainSnapshotFree(snapshot);
+            virObjectUnref(snapshot);
             snapshot = NULL;
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to save metadata for snapshot %s"),
