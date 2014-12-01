@@ -161,6 +161,7 @@ getJobResultHelper(PRL_HANDLE job, unsigned int timeout, PRL_HANDLE *result,
             logPrlErrorHelper(retCode, filename, funcname, linenr);
 
         PrlHandle_Free(err_handle);
+        ret = retCode;
     } else {
         ret = PrlJob_GetResult(job, result);
         if (PRL_FAILED(ret)) {
@@ -169,8 +170,9 @@ getJobResultHelper(PRL_HANDLE job, unsigned int timeout, PRL_HANDLE *result,
             *result = NULL;
             goto cleanup;
         }
+
+        ret = PRL_ERR_SUCCESS;
     }
-    ret = PRL_ERR_SUCCESS;
 
  cleanup:
     PrlHandle_Free(job);
