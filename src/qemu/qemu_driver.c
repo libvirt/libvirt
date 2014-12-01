@@ -1310,9 +1310,9 @@ qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
 {
     char *proc;
     FILE *pidinfo;
-    unsigned long long usertime, systime;
-    long rss;
-    int cpu;
+    unsigned long long usertime = 0, systime = 0;
+    long rss = 0;
+    int cpu = 0;
     int ret;
 
     /* In general, we cannot assume pid_t fits in int; but /proc parsing
@@ -1324,22 +1324,13 @@ qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
     if (ret < 0)
         return -1;
 
-    if (!(pidinfo = fopen(proc, "r"))) {
-        /* VM probably shut down, so fake 0 */
-        if (cpuTime)
-            *cpuTime = 0;
-        if (lastCpu)
-            *lastCpu = 0;
-        if (vm_rss)
-            *vm_rss = 0;
-        VIR_FREE(proc);
-        return 0;
-    }
+    pidinfo = fopen(proc, "r");
     VIR_FREE(proc);
 
     /* See 'man proc' for information about what all these fields are. We're
      * only interested in a very few of them */
-    if (fscanf(pidinfo,
+    if (!pidinfo ||
+        fscanf(pidinfo,
                /* pid -> stime */
                "%*d %*s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %llu %llu"
                /* cutime -> endcode */
@@ -1347,10 +1338,7 @@ qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
                /* startstack -> processor */
                "%*u %*u %*u %*u %*u %*u %*u %*u %*u %*u %*d %d",
                &usertime, &systime, &rss, &cpu) != 4) {
-        VIR_FORCE_FCLOSE(pidinfo);
         VIR_WARN("cannot parse process status data");
-        errno = -EINVAL;
-        return -1;
     }
 
     /* We got jiffies
@@ -1359,7 +1347,8 @@ qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
      * So calculate thus....
      */
     if (cpuTime)
-        *cpuTime = 1000ull * 1000ull * 1000ull * (usertime + systime) / (unsigned long long)sysconf(_SC_CLK_TCK);
+        *cpuTime = 1000ull * 1000ull * 1000ull * (usertime + systime)
+            / (unsigned long long)sysconf(_SC_CLK_TCK);
     if (lastCpu)
         *lastCpu = cpu;
 
