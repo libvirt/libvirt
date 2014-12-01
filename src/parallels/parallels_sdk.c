@@ -452,7 +452,8 @@ prlsdkAddDomainVideoInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
 static int
 prlsdkGetDiskInfo(PRL_HANDLE prldisk,
-                  virDomainDiskDefPtr disk)
+                  virDomainDiskDefPtr disk,
+                  bool isCdrom)
 {
     char *buf = NULL;
     PRL_UINT32 buflen = 0;
@@ -467,10 +468,18 @@ prlsdkGetDiskInfo(PRL_HANDLE prldisk,
     prlsdkCheckRetGoto(pret, cleanup);
     if (emulatedType == PDT_USE_IMAGE_FILE) {
         virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
-        virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_PLOOP);
+        if (isCdrom)
+            virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_AUTO);
+        else
+            virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_PLOOP);
     } else {
         virDomainDiskSetType(disk, VIR_STORAGE_TYPE_BLOCK);
     }
+
+    if (isCdrom)
+        disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
+    else
+        disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;
 
     pret = PrlVmDev_GetFriendlyName(prldisk, NULL, &buflen);
     prlsdkCheckRetGoto(pret, cleanup);
@@ -549,7 +558,7 @@ prlsdkAddDomainHardDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
             if (!(disk = virDomainDiskDefNew()))
                 goto error;
 
-            if (prlsdkGetDiskInfo(hdd, disk) < 0)
+            if (prlsdkGetDiskInfo(hdd, disk, false) < 0)
                 goto error;
 
             PrlHandle_Free(hdd);
@@ -564,6 +573,43 @@ prlsdkAddDomainHardDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
  error:
     PrlHandle_Free(hdd);
+    virDomainDiskDefFree(disk);
+    return -1;
+}
+
+static int
+prlsdkAddDomainOpticalDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
+{
+    PRL_RESULT pret;
+    PRL_UINT32 cdromsCount;
+    PRL_UINT32 i;
+    PRL_HANDLE cdrom = PRL_INVALID_HANDLE;
+    virDomainDiskDefPtr disk = NULL;
+
+    pret = PrlVmCfg_GetOpticalDisksCount(sdkdom, &cdromsCount);
+    prlsdkCheckRetGoto(pret, error);
+
+    for (i = 0; i < cdromsCount; ++i) {
+        pret = PrlVmCfg_GetOpticalDisk(sdkdom, i, &cdrom);
+        prlsdkCheckRetGoto(pret, error);
+
+        if (!(disk = virDomainDiskDefNew()))
+            goto error;
+
+        if (prlsdkGetDiskInfo(cdrom, disk, true) < 0)
+            goto error;
+
+        PrlHandle_Free(cdrom);
+        cdrom = PRL_INVALID_HANDLE;
+
+        if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
+            goto error;
+    }
+
+    return 0;
+
+ error:
+    PrlHandle_Free(cdrom);
     virDomainDiskDefFree(disk);
     return -1;
 }
@@ -785,6 +831,9 @@ prlsdkAddDomainHardware(PRL_HANDLE sdkdom, virDomainDefPtr def)
             goto error;
 
     if (prlsdkAddDomainHardDisksInfo(sdkdom, def) < 0)
+        goto error;
+
+    if (prlsdkAddDomainOpticalDisksInfo(sdkdom, def) < 0)
         goto error;
 
     if (prlsdkAddDomainNetInfo(sdkdom, def) < 0)
@@ -2091,9 +2140,11 @@ static int prlsdkCheckNetUnsupportedParams(virDomainNetDefPtr net)
 
 static int prlsdkCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
 {
-    if (disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) {
+    if (disk->device != VIR_DOMAIN_DISK_DEVICE_DISK &&
+        disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
+
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Only hard disks are supported "
+                       _("Only hard disks and cdroms are supported "
                          "supported by parallels driver."));
         return -1;
     }
@@ -2399,7 +2450,10 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk)
     if (prlsdkCheckDiskUnsupportedParams(disk) < 0)
         return -1;
 
-    pret = PrlVmCfg_CreateVmDev(sdkdom, PDE_HARD_DISK, &sdkdisk);
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
+        pret = PrlVmCfg_CreateVmDev(sdkdom, PDE_HARD_DISK, &sdkdisk);
+    else
+        pret = PrlVmCfg_CreateVmDev(sdkdom, PDE_OPTICAL_DISK, &sdkdisk);
     prlsdkCheckRetGoto(pret, cleanup);
 
     pret = PrlVmDev_SetEnabled(sdkdisk, 1);
@@ -2409,7 +2463,9 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk)
     prlsdkCheckRetGoto(pret, cleanup);
 
     if (disk->src->type == VIR_STORAGE_TYPE_FILE) {
-        if (virDomainDiskGetFormat(disk) != VIR_STORAGE_FILE_PLOOP) {
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
+            virDomainDiskGetFormat(disk) != VIR_STORAGE_FILE_PLOOP) {
+
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Invalid disk format: %d"), disk->src->type);
             goto cleanup;
