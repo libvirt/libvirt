@@ -1258,7 +1258,7 @@ prlsdkAddDomain(parallelsConnPtr privconn, const unsigned char *uuid)
     return dom;
 }
 
-static int
+int
 prlsdkUpdateDomain(parallelsConnPtr privconn, virDomainObjPtr dom)
 {
     PRL_HANDLE job;

@@ -661,10 +661,9 @@ static virDomainPtr
 parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
 {
     parallelsConnPtr privconn = conn->privateData;
-    virDomainPtr ret = NULL;
+    virDomainPtr retdom = NULL;
     virDomainDefPtr def;
     virDomainObjPtr olddom = NULL;
-    virDomainObjPtr dom = NULL;
 
     parallelsDriverLock(privconn);
     if ((def = virDomainDefParseString(xml, privconn->caps, privconn->xmlopt,
@@ -689,34 +688,28 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
                            _("Unsupported OS type: %s"), def->os.type);
             goto cleanup;
         }
-        dom = prlsdkAddDomain(privconn, def->uuid);
-        if (dom)
-            virObjectUnlock(dom);
-        else
+
+        olddom = prlsdkAddDomain(privconn, def->uuid);
+        if (!olddom)
             goto cleanup;
-        olddom = virDomainObjListFindByName(privconn->domains, def->name);
-        if (!olddom) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Domain for '%s' is not defined after creation"),
-                           def->name ? def->name : _("(unnamed)"));
+    } else {
+        if (prlsdkApplyConfig(conn, olddom, def))
             goto cleanup;
-        }
+
+        if (prlsdkUpdateDomain(privconn, olddom))
+            goto cleanup;
     }
 
-    if (prlsdkApplyConfig(conn, olddom, def) < 0) {
-        virObjectUnlock(olddom);
-        goto cleanup;
-    }
-    virObjectUnlock(olddom);
-
-    ret = virGetDomain(conn, def->name, def->uuid);
-    if (ret)
-        ret->id = def->id;
+    retdom = virGetDomain(conn, def->name, def->uuid);
+    if (retdom)
+        retdom->id = def->id;
 
  cleanup:
+    if (olddom)
+        virObjectUnlock(olddom);
     virDomainDefFree(def);
     parallelsDriverUnlock(privconn);
-    return ret;
+    return retdom;
 }
 
 static int
