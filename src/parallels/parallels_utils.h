@@ -62,6 +62,7 @@ struct parallelsDomObj {
     char *uuid;
     char *home;
     virBitmapPtr cpumask;
+    PRL_HANDLE sdkdom;
 };
 
 typedef struct parallelsDomObj *parallelsDomObjPtr;
