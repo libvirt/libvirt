@@ -1889,14 +1889,20 @@ int qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitorPtr mon,
         if (STRPREFIX(dev_name, QEMU_DRIVE_HOST_PREFIX))
             dev_name += strlen(QEMU_DRIVE_HOST_PREFIX);
 
-        /* ignore missing info */
-        if (!(bstats = virHashLookup(stats, dev_name)))
-            continue;
-
         /* drive may be empty */
         if (!(inserted = virJSONValueObjectGet(dev, "inserted")) ||
             !(image = virJSONValueObjectGet(inserted, "image")))
             continue;
+
+        if (!(bstats = virHashLookup(stats, dev_name))) {
+            if (VIR_ALLOC(bstats) < 0)
+                goto cleanup;
+
+            if (virHashAddEntry(stats, dev_name, bstats) < 0) {
+                VIR_FREE(bstats);
+                goto cleanup;
+            }
+        }
 
         if (virJSONValueObjectGetNumberUlong(image, "virtual-size",
                                              &bstats->capacity) < 0)
