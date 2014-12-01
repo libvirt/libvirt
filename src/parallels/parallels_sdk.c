@@ -131,13 +131,12 @@ logPrlEventErrorHelper(PRL_HANDLE event, const char *filename,
     logPrlEventErrorHelper(event, __FILE__,        \
                          __FUNCTION__, __LINE__)
 
-static PRL_HANDLE
-getJobResultHelper(PRL_HANDLE job, unsigned int timeout,
+static PRL_RESULT
+getJobResultHelper(PRL_HANDLE job, unsigned int timeout, PRL_HANDLE *result,
                    const char *filename, const char *funcname,
                    size_t linenr)
 {
     PRL_RESULT ret, retCode;
-    PRL_HANDLE result = NULL;
 
     if ((ret = PrlJob_Wait(job, timeout))) {
         logPrlErrorHelper(ret, filename, funcname, linenr);
@@ -163,36 +162,37 @@ getJobResultHelper(PRL_HANDLE job, unsigned int timeout,
 
         PrlHandle_Free(err_handle);
     } else {
-        ret = PrlJob_GetResult(job, &result);
+        ret = PrlJob_GetResult(job, result);
         if (PRL_FAILED(ret)) {
             logPrlErrorHelper(ret, filename, funcname, linenr);
-            PrlHandle_Free(result);
-            result = NULL;
+            PrlHandle_Free(*result);
+            *result = NULL;
             goto cleanup;
         }
-   }
+    }
+    ret = PRL_ERR_SUCCESS;
 
  cleanup:
     PrlHandle_Free(job);
-    return result;
+    return ret;
 }
 
-#define getJobResult(job, timeout)                  \
-    getJobResultHelper(job, timeout, __FILE__,      \
+#define getJobResult(job, timeout, result)                  \
+    getJobResultHelper(job, timeout, result, __FILE__,      \
                          __FUNCTION__, __LINE__)
 
-static int
+static PRL_RESULT
 waitJobHelper(PRL_HANDLE job, unsigned int timeout,
               const char *filename, const char *funcname,
               size_t linenr)
 {
-    PRL_HANDLE result = NULL;
+    PRL_HANDLE result = PRL_INVALID_HANDLE;
+    PRL_RESULT ret;
 
-    result = getJobResultHelper(job, timeout, filename, funcname, linenr);
-    if (result)
-        PrlHandle_Free(result);
-
-    return result ? 0 : -1;
+    ret = getJobResultHelper(job, timeout, &result,
+                             filename, funcname, linenr);
+    PrlHandle_Free(result);
+    return ret;
 }
 
 #define waitJob(job, timeout)                  \
@@ -267,7 +267,7 @@ prlsdkSdkDomainLookup(parallelsConnPtr privconn,
     int ret = -1;
 
     job = PrlSrv_GetVmConfig(privconn->server, id, flags);
-    if (!(result = getJobResult(job, privconn->jobTimeout)))
+    if (PRL_FAILED(getJobResult(job, privconn->jobTimeout, &result)))
         goto cleanup;
 
     pret = PrlResult_GetParamByIndex(result, 0, sdkdom);
@@ -384,7 +384,7 @@ prlsdkGetDomainState(parallelsConnPtr privconn,
 
     job = PrlVm_GetState(sdkdom);
 
-    if (!(result = getJobResult(job, privconn->jobTimeout)))
+    if (PRL_FAILED(getJobResult(job, privconn->jobTimeout, &result)))
         goto cleanup;
 
     pret = PrlResult_GetParamByIndex(result, 0, &vmInfo);
@@ -1254,7 +1254,7 @@ prlsdkLoadDomains(parallelsConnPtr privconn)
 
     job = PrlSrv_GetVmListEx(privconn->server, PVTF_VM | PVTF_CT);
 
-    if (!(result = getJobResult(job, privconn->jobTimeout)))
+    if (PRL_FAILED(getJobResult(job, privconn->jobTimeout, &result)))
         return -1;
 
     pret = PrlResult_GetParamsCount(result, &paramsCount);
@@ -1604,7 +1604,7 @@ int prlsdkStart(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     job = PrlVm_StartEx(sdkdom, PSM_VM_START, 0);
-    return waitJob(job, privconn->jobTimeout);
+    return PRL_FAILED(waitJob(job, privconn->jobTimeout)) ? -1 : 0;
 }
 
 static int prlsdkStopEx(parallelsConnPtr privconn,
@@ -1614,7 +1614,7 @@ static int prlsdkStopEx(parallelsConnPtr privconn,
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     job = PrlVm_StopEx(sdkdom, mode, 0);
-    return waitJob(job, privconn->jobTimeout);
+    return PRL_FAILED(waitJob(job, privconn->jobTimeout)) ? -1 : 0;
 }
 
 int prlsdkKill(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
@@ -1632,7 +1632,7 @@ int prlsdkPause(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     job = PrlVm_Pause(sdkdom, false);
-    return waitJob(job, privconn->jobTimeout);
+    return PRL_FAILED(waitJob(job, privconn->jobTimeout)) ? -1 : 0;
 }
 
 int prlsdkResume(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
@@ -1640,7 +1640,7 @@ int prlsdkResume(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     job = PrlVm_Resume(sdkdom);
-    return waitJob(job, privconn->jobTimeout);
+    return PRL_FAILED(waitJob(job, privconn->jobTimeout)) ? -1 : 0;
 }
 
 int
@@ -2611,14 +2611,15 @@ prlsdkApplyConfig(virConnectPtr conn,
         return -1;
 
     job = PrlVm_BeginEdit(sdkdom);
-    if (waitJob(job, privconn->jobTimeout) < 0)
+    if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
         return -1;
 
     ret = prlsdkDoApplyConfig(sdkdom, new);
 
     if (ret == 0) {
         job = PrlVm_Commit(sdkdom);
-        ret = waitJob(job, privconn->jobTimeout);
+        if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
+            ret = -1;
     }
 
     PrlHandle_Free(sdkdom);
@@ -2641,7 +2642,7 @@ prlsdkCreateVm(virConnectPtr conn, virDomainDefPtr def)
     prlsdkCheckRetGoto(pret, cleanup);
 
     job = PrlSrv_GetSrvConfig(privconn->server);
-    if (!(result = getJobResult(job, privconn->jobTimeout)))
+    if (PRL_FAILED(getJobResult(job, privconn->jobTimeout, &result)))
         goto cleanup;
 
     pret = PrlResult_GetParamByIndex(result, 0, &srvconf);
@@ -2655,7 +2656,8 @@ prlsdkCreateVm(virConnectPtr conn, virDomainDefPtr def)
         goto cleanup;
 
     job = PrlVm_Reg(sdkdom, "", 1);
-    ret = waitJob(job, privconn->jobTimeout);
+    if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
+        ret = -1;
 
  cleanup:
     PrlHandle_Free(sdkdom);
@@ -2687,7 +2689,7 @@ prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def)
     confParam.nOsVersion = 0;
 
     job = PrlSrv_GetDefaultVmConfig(privconn->server, &confParam, 0);
-    if (!(result = getJobResult(job, privconn->jobTimeout)))
+    if (PRL_FAILED(getJobResult(job, privconn->jobTimeout, &result)))
         goto cleanup;
 
     pret = PrlResult_GetParamByIndex(result, 0, &sdkdom);
@@ -2703,11 +2705,12 @@ prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def)
         goto cleanup;
 
     job = PrlVm_RegEx(sdkdom, "", PACF_NON_INTERACTIVE_MODE);
-    ret = waitJob(job, privconn->jobTimeout);
+    if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
+        ret = -1;
 
  cleanup:
     PrlHandle_Free(sdkdom);
-    return ret;
+    return -1;
 }
 
 int
@@ -2717,7 +2720,7 @@ prlsdkUnregisterDomain(parallelsConnPtr privconn, virDomainObjPtr dom)
     PRL_HANDLE job;
 
     job = PrlVm_Unreg(privdom->sdkdom);
-    if (waitJob(job, privconn->jobTimeout))
+    if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
         return -1;
 
     if (prlsdkSendEvent(privconn, dom, VIR_DOMAIN_EVENT_UNDEFINED,
