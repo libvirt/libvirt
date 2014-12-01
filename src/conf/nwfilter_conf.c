@@ -2778,7 +2778,7 @@ virNWFilterObjFindByName(virNWFilterObjListPtr nwfilters, const char *name)
 
     for (i = 0; i < nwfilters->count; i++) {
         virNWFilterObjLock(nwfilters->objs[i]);
-        if (STREQ(nwfilters->objs[i]->def->name, name))
+        if (STREQ_NULLABLE(nwfilters->objs[i]->def->name, name))
             return nwfilters->objs[i];
         virNWFilterObjUnlock(nwfilters->objs[i]);
     }
