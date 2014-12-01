@@ -2419,6 +2419,22 @@ qemuMigrationSetOption(virQEMUDriverPtr driver,
     return ret;
 }
 
+
+static int
+qemuMigrationSetPostCopy(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         bool state,
+                         qemuDomainAsyncJob job)
+{
+    if (qemuMigrationSetOption(driver, vm,
+                               QEMU_MONITOR_MIGRATION_CAPS_POSTCOPY,
+                               state, job) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static int
 qemuMigrationWaitForSpice(virDomainObjPtr vm)
 {
@@ -3055,6 +3071,15 @@ qemuMigrationBeginPhase(virQEMUDriverPtr driver,
         !qemuMigrationIsSafe(vm->def, nmigrate_disks, migrate_disks))
         goto cleanup;
 
+    if (flags & VIR_MIGRATE_POSTCOPY &&
+        (!(flags & VIR_MIGRATE_LIVE) ||
+         flags & VIR_MIGRATE_PAUSED)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("post-copy migration is not supported with non-live "
+                         "or paused migration"));
+        goto cleanup;
+    }
+
     if (flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC)) {
         bool has_drive_mirror =  virQEMUCapsGet(priv->qemuCaps,
                                                 QEMU_CAPS_DRIVE_MIRROR);
@@ -3395,6 +3420,15 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         cookieFlags = QEMU_MIGRATION_COOKIE_GRAPHICS;
     }
 
+    if (flags & VIR_MIGRATE_POSTCOPY &&
+        (!(flags & VIR_MIGRATE_LIVE) ||
+         flags & VIR_MIGRATE_PAUSED)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("post-copy migration is not supported with non-live "
+                         "or paused migration"));
+        goto cleanup;
+    }
+
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
@@ -3546,6 +3580,11 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                                QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
                                flags & VIR_MIGRATE_RDMA_PIN_ALL,
                                QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
+        goto stopjob;
+
+    if (qemuMigrationSetPostCopy(driver, vm,
+                                 flags & VIR_MIGRATE_POSTCOPY,
+                                 QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
         goto stopjob;
 
     if (mig->nbd &&
@@ -4451,6 +4490,11 @@ qemuMigrationRun(virQEMUDriverPtr driver,
                                QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
                                flags & VIR_MIGRATE_RDMA_PIN_ALL,
                                QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+        goto cleanup;
+
+    if (qemuMigrationSetPostCopy(driver, vm,
+                                 flags & VIR_MIGRATE_POSTCOPY,
+                                 QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm,
