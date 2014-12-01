@@ -5256,6 +5256,8 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (VIR_STRDUP(priv->pidfile, pidfile) < 0)
         goto error;
 
+    vm->pid = pid;
+
     VIR_DEBUG("Detect security driver config");
     sec_managers = virSecurityManagerGetNested(driver->securityManager);
     if (sec_managers == NULL)
@@ -5273,7 +5275,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         seclabeldef->type = VIR_DOMAIN_SECLABEL_STATIC;
         if (VIR_ALLOC(seclabel) < 0)
             goto error;
-        if (virSecurityManagerGetProcessLabel(driver->securityManager,
+        if (virSecurityManagerGetProcessLabel(sec_managers[i],
                                               vm->def, vm->pid, seclabel) < 0)
             goto error;
 
@@ -5290,6 +5292,9 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
             seclabelgen = false;
         }
     }
+
+    if (virSecurityManagerGenLabel(driver->securityManager, vm->def) < 0)
+        goto error;
 
     VIR_DEBUG("Creating domain log file");
     if ((logfile = qemuDomainCreateLog(driver, vm, false)) < 0)
@@ -5334,8 +5339,6 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     qemuDomainObjTaint(driver, vm, VIR_DOMAIN_TAINT_EXTERNAL_LAUNCH, logfile);
-
-    vm->pid = pid;
 
     VIR_DEBUG("Waiting for monitor to show up");
     if (qemuProcessWaitForMonitor(driver, vm, QEMU_ASYNC_JOB_NONE, priv->qemuCaps, -1) < 0)
