@@ -917,6 +917,30 @@ parallelsDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
     return parallelsDomainCreate(domain);
 }
 
+static int
+parallelsDomainUndefineFlags(virDomainPtr domain,
+                             unsigned int flags)
+{
+    parallelsConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr dom = NULL;
+
+    virCheckFlags(0, -1);
+
+    dom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
+    if (dom == NULL) {
+        parallelsDomNotFoundError(domain);
+        return -1;
+    }
+
+    return prlsdkUnregisterDomain(privconn, dom);
+}
+
+static int
+parallelsDomainUndefine(virDomainPtr domain)
+{
+    return parallelsDomainUndefineFlags(domain, 0);
+}
+
 static virHypervisorDriver parallelsDriver = {
     .no = VIR_DRV_PARALLELS,
     .name = "Parallels",
@@ -949,6 +973,8 @@ static virHypervisorDriver parallelsDriver = {
     .domainCreate = parallelsDomainCreate,    /* 0.10.0 */
     .domainCreateWithFlags = parallelsDomainCreateWithFlags, /* 1.2.10 */
     .domainDefineXML = parallelsDomainDefineXML,      /* 0.10.0 */
+    .domainUndefine = parallelsDomainUndefine, /* 1.2.10 */
+    .domainUndefineFlags = parallelsDomainUndefineFlags, /* 1.2.10 */
     .domainIsActive = parallelsDomainIsActive, /* 1.2.10 */
     .connectDomainEventRegisterAny = parallelsConnectDomainEventRegisterAny, /* 1.2.10 */
     .connectDomainEventDeregisterAny = parallelsConnectDomainEventDeregisterAny, /* 1.2.10 */

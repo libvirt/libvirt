@@ -2709,3 +2709,21 @@ prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def)
     PrlHandle_Free(sdkdom);
     return ret;
 }
+
+int
+prlsdkUnregisterDomain(parallelsConnPtr privconn, virDomainObjPtr dom)
+{
+    parallelsDomObjPtr privdom = dom->privateData;
+    PRL_HANDLE job;
+
+    job = PrlVm_Unreg(privdom->sdkdom);
+    if (waitJob(job, privconn->jobTimeout))
+        return -1;
+
+    if (prlsdkSendEvent(privconn, dom, VIR_DOMAIN_EVENT_UNDEFINED,
+                        VIR_DOMAIN_EVENT_UNDEFINED_REMOVED) < 0)
+        return -1;
+
+    virDomainObjListRemove(privconn->domains, dom);
+    return 0;
+}

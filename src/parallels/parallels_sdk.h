@@ -51,3 +51,5 @@ prlsdkApplyConfig(virConnectPtr conn,
                   virDomainDefPtr new);
 int prlsdkCreateVm(virConnectPtr conn, virDomainDefPtr def);
 int prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def);
+int
+prlsdkUnregisterDomain(parallelsConnPtr privconn, virDomainObjPtr dom);
