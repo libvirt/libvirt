@@ -427,6 +427,7 @@ BuildRequires: /usr/bin/pod2man
 %endif
 BuildRequires: git
 BuildRequires: perl
+BuildRequires: perl-XML-XPath
 BuildRequires: python
 %if %{with_systemd}
 BuildRequires: systemd-units

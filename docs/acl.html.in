@@ -90,7 +90,7 @@
       types in its API. Each object type, in turn, has a set
       of permissions defined. To determine what permissions
       are checked for specific API call, consult the
-      <a href="html/libvirt-libvirt.html">API reference manual</a>
+      <a href="html/index.html">API reference manual</a>
       documentation for the API in question.
     </p>
 

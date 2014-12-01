@@ -19,7 +19,15 @@ documents libvirt URIs.
     <h2><a name="URI_libvirt">Specifying URIs to libvirt</a></h2>
 
     <p>
-The URI is passed as the <code>name</code> parameter to <a href="html/libvirt-libvirt.html#virConnectOpen"><code>virConnectOpen</code></a> or <a href="html/libvirt-libvirt.html#virConnectOpenReadOnly"><code>virConnectOpenReadOnly</code></a>.  For example:
+      The URI is passed as the <code>name</code> parameter to
+      <a href="html/libvirt-libvirt-host.html#virConnectOpen">
+        <code>virConnectOpen</code>
+      </a>
+      or
+      <a href="html/libvirt-libvirt-host.html#virConnectOpenReadOnly">
+        <code>virConnectOpenReadOnly</code>
+      </a>.
+      For example:
 </p>
     <pre>
 virConnectPtr conn = virConnectOpenReadOnly (<b>"test:///default"</b>);
@@ -291,7 +299,7 @@ Notes:
     <ol>
       <li> The HTTP client does not fully support IPv6. </li>
       <li> Many features do not work as expected across HTTP connections, in
- particular, <a href="html/libvirt-libvirt.html#virConnectGetCapabilities">virConnectGetCapabilities</a>.
+ particular, <a href="html/libvirt-libvirt-host.html#virConnectGetCapabilities">virConnectGetCapabilities</a>.
  The <a href="remote.html">remote support</a> however does work
  correctly. </li>
       <li> XenD's new-style XMLRPC interface is not supported by

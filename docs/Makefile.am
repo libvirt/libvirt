@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2013 Red Hat, Inc.
+## Copyright (C) 2005-2014 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -195,7 +195,7 @@ todo:
 
 hvsupport.html:: $(srcdir)/hvsupport.html.in
 
-$(srcdir)/hvsupport.html.in: $(srcdir)/hvsupport.pl \
+$(srcdir)/hvsupport.html.in: $(srcdir)/hvsupport.pl $(api_DATA) \
 		$(srcdir)/../src/libvirt_public.syms \
 	$(srcdir)/../src/libvirt_qemu.syms $(srcdir)/../src/libvirt_lxc.syms \
 	$(srcdir)/../src/driver.h

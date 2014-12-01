@@ -16,11 +16,14 @@
     then it needs to be more recent to support VFIO, while legacy KVM is
     achievable just fine with older qemus.</p>
 
-    <p>The main difference between <code
-        class="docref">virConnectGetCapabilities</code> and the emulator
-    capabilities API is, the former one aims more on the host capabilities
-    (e.g.  NUMA topology, security models in effect, etc.) while the latter one
-    specializes on the hypervisor capabilities.</p>
+    <p>The main difference between
+      <a href="/html/libvirt-libvirt-host.html#virConnectGetCapabilities">
+        <code>virConnectGetCapabilities</code>
+      </a>
+    and the emulator capabilities API is, the former one aims more on
+    the host capabilities (e.g.  NUMA topology, security models in
+    effect, etc.) while the latter one specializes on the hypervisor
+    capabilities.</p>
 
     <p>While the <a href="formatcaps.html">Driver Capabilities</a> provides the
     host capabilities (e.g NUMA topology, security models in effect, etc.), the
@@ -41,7 +44,9 @@
     1.2.7</span>):</p>
 
 <pre>
-    <code class="docref">virConnectGetDomainCapabilities</code>
+  <a href="/html/libvirt-libvirt-domain.html#virConnectGetDomainCapabilities">
+    <code>virConnectGetDomainCapabilities</code>
+  </a>
 </pre>
 
     <p>The root element that emulator capability XML document starts with has

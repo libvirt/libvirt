@@ -98,18 +98,18 @@ the code you can build the code with</p>
 <p>The bindings are articulated around a few
 classes in the <code>org/libvirt</code> package, notably the
 <code>Connect</code>, <code>Domain</code> and <code>Network</code>
-ones. Functions in the <a href="html/libvirt-libvirt.html">C API</a>
+ones. Functions in the <a href="html/index.html">C API</a>
 taking <code>virConnectPtr</code>, <code>virDomainPtr</code> or
 <code>virNetworkPtr</code> as their first argument usually become
 methods for the classes, their name is just stripped from the
 virConnect or virDomain(Get) prefix and the first letter gets converted to
 lower case, for example the C functions:</p>
     <p>
-      <code>int <a href="html/libvirt-libvirt.html#virConnectNumOfDomains">virConnectNumOfDomains</a>
+      <code>int <a href="html/libvirt-libvirt-domain.html#virConnectNumOfDomains">virConnectNumOfDomains</a>
 (virConnectPtr conn);</code>
     </p>
     <p>
-      <code>int <a href="html/libvirt-libvirt.html#virDomainSetMaxMemory">virDomainSetMaxMemory</a>
+      <code>int <a href="html/libvirt-libvirt-domain.html#virDomainSetMaxMemory">virDomainSetMaxMemory</a>
 (virDomainPtr domain, unsigned long memory);</code>
     </p>
     <p>become</p>

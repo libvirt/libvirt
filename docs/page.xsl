@@ -10,11 +10,6 @@
   <!-- The sitemap.html.in page contains the master navigation structure -->
   <xsl:variable name="sitemap" select="document('sitemap.html.in')/html:html/html:body/html:div[@id='sitemap']"/>
 
-  <xsl:template match="html:code[@class='docref']" mode="content">
-    <xsl:variable name="name"><xsl:value-of select="."/></xsl:variable>
-    <a href="html/libvirt-libvirt.html#{$name}"><code><xsl:value-of select="$name"/></code></a>
-  </xsl:template>
-
   <xsl:template match="node() | @*" mode="content">
     <xsl:copy>
       <xsl:apply-templates select="node() | @*" mode="content"/>

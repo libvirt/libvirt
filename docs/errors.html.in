@@ -46,9 +46,9 @@ following fields:</p>
       <li>level: the error level, usually VIR_ERR_ERROR, though there is room for
     warnings like VIR_ERR_WARNING</li>
       <li>message: the full human-readable formatted string of the error</li>
-      <li>conn: if available a pointer to the <a href="html/libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>
+      <li>conn: if available a pointer to the <a href="html/libvirt-libvirt-host.html#virConnectPtr">virConnectPtr</a>
     connection to the hypervisor where this happened</li>
-      <li>dom: if available a pointer to the <a href="html/libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain
+      <li>dom: if available a pointer to the <a href="html/libvirt-libvirt-domain.html#virDomainPtr">virDomainPtr</a> domain
     targeted in the operation</li>
     </ul>
     <p>and then extra raw information about the error which may be initialized

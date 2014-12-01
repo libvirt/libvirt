@@ -190,7 +190,7 @@
       "emulate" (let the hypervisor generate all values), "host" (copy
       all of Block 0 and Block 1, except for the UUID, from the host's
       SMBIOS values;
-      the <a href="html/libvirt-libvirt.html#virConnectGetSysinfo">
+      the <a href="html/libvirt-libvirt-host.html#virConnectGetSysinfo">
       <code>virConnectGetSysinfo</code></a> call can be
       used to see what values are copied), or "sysinfo" (use the values in
       the <a href="#elementsSysinfo">sysinfo</a> element).  If not
@@ -1196,9 +1196,16 @@
       It is sometimes necessary to override the default actions taken
       on various events. Not all hypervisors support all events and actions.
       The actions may be taken as a result of calls to libvirt APIs
-      <code class='docref'>virDomainReboot</code>,
-      <code class='docref'>virDomainShutdown</code>, or
-      <code class='docref'>virDomainShutdownFlags</code>.
+      <a href="html/libvirt-libvirt-domain.html#virDomainReboot">
+        <code>virDomainReboot</code>
+      </a>,
+      <a href="html/libvirt-libvirt-domain.html#virDomainShutdown">
+        <code>virDomainShutdown</code>
+      </a>,
+      or
+      <a href="html/libvirt-libvirt-domain.html#virDomainShutdownFlags">
+        <code>virDomainShutdownFlags</code>
+      </a>.
       Using <code>virsh reboot</code> or <code>virsh shutdown</code> would
       also trigger the event.
     </p>

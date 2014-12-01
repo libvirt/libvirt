@@ -12,11 +12,11 @@ becomes methods for the classes, their name is just stripped from the
 virConnect or virDomain(Get) prefix and the first letter gets converted to
 lower case, for example the C functions:</p>
     <p>
-      <code>int <a href="html/libvirt-libvirt.html#virConnectNumOfDomains">virConnectNumOfDomains</a>
+      <code>int <a href="html/libvirt-libvirt-domain.html#virConnectNumOfDomains">virConnectNumOfDomains</a>
 (virConnectPtr conn);</code>
     </p>
     <p>
-      <code>int <a href="html/libvirt-libvirt.html#virDomainSetMaxMemory">virDomainSetMaxMemory</a>
+      <code>int <a href="html/libvirt-libvirt-domain.html#virDomainSetMaxMemory">virDomainSetMaxMemory</a>
 (virDomainPtr domain, unsigned long memory);</code>
     </p>
     <p>become</p>
@@ -31,10 +31,10 @@ in the file libvirtclass.txt present in the python dir or in the docs.There
 is a couple of function who don't map directly to their C counterparts due to
 specificities in their argument conversions:</p>
     <ul>
-      <li><code><a href="html/libvirt-libvirt.html#virConnectListDomains">virConnectListDomains</a></code>
+      <li><code><a href="html/libvirt-libvirt-domain.html#virConnectListDomains">virConnectListDomains</a></code>
     is replaced by <code>virDomain::listDomainsID(self)</code> which returns
     a list of the integer ID for the currently running domains</li>
-      <li><code><a href="html/libvirt-libvirt.html#virDomainGetInfo">virDomainGetInfo</a></code>
+      <li><code><a href="html/libvirt-libvirt-domain.html#virDomainGetInfo">virDomainGetInfo</a></code>
     is replaced by <code>virDomain::info()</code> which returns a list of
     <ol><li>state: one of the state values (virDomainState)</li><li>maxMemory: the maximum memory used by the domain</li><li>memory: the current amount of memory used by the domain</li><li>nbVirtCPU: the number of virtual CPU</li><li>cpuTime: the time used by the domain in nanoseconds</li></ol></li>
     </ul>

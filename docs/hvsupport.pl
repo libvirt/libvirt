@@ -4,6 +4,8 @@ use strict;
 use warnings;
 
 use File::Find;
+use XML::XPath;
+use XML::XPath::XMLParser;
 
 die "syntax: $0 SRCDIR\n" unless int(@ARGV) == 1;
 
@@ -52,6 +54,7 @@ open FILE, "<$symslibvirt"
 
 my $vers;
 my $prevvers;
+my $apixpath = XML::XPath->new(filename => "$srcdir/../docs/libvirt-api.xml");
 while (defined($line = <FILE>)) {
     chomp $line;
     next if $line =~ /^\s*#/;
@@ -75,7 +78,10 @@ while (defined($line = <FILE>)) {
         $prevvers = $vers;
         $vers = undef;
     } elsif ($line =~ /\s*(\w+)\s*;\s*$/) {
-        $apis{$1} = $vers;
+        my $file = $apixpath->find("/api/symbols/function[\@name='$1']/\@file");
+        $apis{$1} = {};
+        $apis{$1}->{vers} = $vers;
+        $apis{$1}->{file} = $file;
     } else {
         die "unexpected data $line\n";
     }
@@ -91,6 +97,7 @@ open FILE, "<$symsqemu"
 
 $prevvers = undef;
 $vers = undef;
+$apixpath = XML::XPath->new(filename => "$srcdir/../docs/libvirt-qemu-api.xml");
 while (defined($line = <FILE>)) {
     chomp $line;
     next if $line =~ /^\s*#/;
@@ -114,7 +121,10 @@ while (defined($line = <FILE>)) {
         $prevvers = $vers;
         $vers = undef;
     } elsif ($line =~ /\s*(\w+)\s*;\s*$/) {
-        $apis{$1} = $vers;
+        my $file = $apixpath->find("/api/symbols/function[\@name='$1']/\@file");
+        $apis{$1} = {};
+        $apis{$1}->{vers} = $vers;
+        $apis{$1}->{file} = $file;
     } else {
         die "unexpected data $line\n";
     }
@@ -130,6 +140,7 @@ open FILE, "<$symslxc"
 
 $prevvers = undef;
 $vers = undef;
+$apixpath = XML::XPath->new(filename => "$srcdir/../docs/libvirt-lxc-api.xml");
 while (defined($line = <FILE>)) {
     chomp $line;
     next if $line =~ /^\s*#/;
@@ -153,7 +164,10 @@ while (defined($line = <FILE>)) {
         $prevvers = $vers;
         $vers = undef;
     } elsif ($line =~ /\s*(\w+)\s*;\s*$/) {
-        $apis{$1} = $vers;
+        my $file = $apixpath->find("/api/symbols/function[\@name='$1']/\@file");
+        $apis{$1} = {};
+        $apis{$1}->{vers} = $vers;
+        $apis{$1}->{file} = $file;
     } else {
         die "unexpected data $line\n";
     }
@@ -164,27 +178,27 @@ close FILE;
 
 # Some special things which aren't public APIs,
 # but we want to report
-$apis{virConnectSupportsFeature} = "0.3.2";
-$apis{virDomainMigratePrepare} = "0.3.2";
-$apis{virDomainMigratePerform} = "0.3.2";
-$apis{virDomainMigrateFinish} = "0.3.2";
-$apis{virDomainMigratePrepare2} = "0.5.0";
-$apis{virDomainMigrateFinish2} = "0.5.0";
-$apis{virDomainMigratePrepareTunnel} = "0.7.2";
+$apis{virConnectSupportsFeature}->{vers} = "0.3.2";
+$apis{virDomainMigratePrepare}->{vers} = "0.3.2";
+$apis{virDomainMigratePerform}->{vers} = "0.3.2";
+$apis{virDomainMigrateFinish}->{vers} = "0.3.2";
+$apis{virDomainMigratePrepare2}->{vers} = "0.5.0";
+$apis{virDomainMigrateFinish2}->{vers} = "0.5.0";
+$apis{virDomainMigratePrepareTunnel}->{vers} = "0.7.2";
 
-$apis{virDomainMigrateBegin3} = "0.9.2";
-$apis{virDomainMigratePrepare3} = "0.9.2";
-$apis{virDomainMigratePrepareTunnel3} = "0.9.2";
-$apis{virDomainMigratePerform3} = "0.9.2";
-$apis{virDomainMigrateFinish3} = "0.9.2";
-$apis{virDomainMigrateConfirm3} = "0.9.2";
+$apis{virDomainMigrateBegin3}->{vers} = "0.9.2";
+$apis{virDomainMigratePrepare3}->{vers} = "0.9.2";
+$apis{virDomainMigratePrepareTunnel3}->{vers} = "0.9.2";
+$apis{virDomainMigratePerform3}->{vers} = "0.9.2";
+$apis{virDomainMigrateFinish3}->{vers} = "0.9.2";
+$apis{virDomainMigrateConfirm3}->{vers} = "0.9.2";
 
-$apis{virDomainMigrateBegin3Params} = "1.1.0";
-$apis{virDomainMigratePrepare3Params} = "1.1.0";
-$apis{virDomainMigratePrepareTunnel3Params} = "1.1.0";
-$apis{virDomainMigratePerform3Params} = "1.1.0";
-$apis{virDomainMigrateFinish3Params} = "1.1.0";
-$apis{virDomainMigrateConfirm3Params} = "1.1.0";
+$apis{virDomainMigrateBegin3Params}->{vers} = "1.1.0";
+$apis{virDomainMigratePrepare3Params}->{vers} = "1.1.0";
+$apis{virDomainMigratePrepareTunnel3Params}->{vers} = "1.1.0";
+$apis{virDomainMigratePerform3Params}->{vers} = "1.1.0";
+$apis{virDomainMigrateFinish3Params}->{vers} = "1.1.0";
+$apis{virDomainMigrateConfirm3Params}->{vers} = "1.1.0";
 
 
 
@@ -406,10 +420,23 @@ EOF
         $groups{$grp}->{apis}->{$b}
         } keys %{$groups{$grp}->{apis}}) {
         my $api = $groups{$grp}->{apis}->{$field};
-        my $vers = $apis{$api};
+        my $vers = $apis{$api}->{vers};
+        my $htmlgrp = $apis{$api}->{file};
         print <<EOF;
 <tr>
-<td><a href=\"html/libvirt-libvirt.html#$api\">$api</a></td>
+<td>
+EOF
+
+        if (defined $htmlgrp) {
+            print <<EOF;
+<a href=\"html/libvirt-$htmlgrp.html#$api\">$api</a>
+EOF
+
+        } else {
+            print $api;
+        }
+        print <<EOF;
+</td>
 <td>$vers</td>
 EOF
 
