@@ -657,47 +657,6 @@ parallelsDomainGetAutostart(virDomainPtr domain, int *autostart)
     return ret;
 }
 
-static int
-parallelsCreateVm(virConnectPtr conn ATTRIBUTE_UNUSED, virDomainDefPtr def)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-    virUUIDFormat(def->uuid, uuidstr);
-
-    if (parallelsCmdRun(PRLCTL, "create", def->name, "--no-hdd",
-                        "--uuid", uuidstr, NULL) < 0)
-        return -1;
-
-    return 0;
-}
-
-static int
-parallelsCreateCt(virConnectPtr conn ATTRIBUTE_UNUSED, virDomainDefPtr def)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-    virUUIDFormat(def->uuid, uuidstr);
-
-    if (def->nfss != 1 ||
-        def->fss[0]->type != VIR_DOMAIN_FS_TYPE_TEMPLATE) {
-
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("There must be only 1 template FS for "
-                         "container creation"));
-        goto error;
-    }
-
-    if (parallelsCmdRun(PRLCTL, "create", def->name, "--vmtype", "ct",
-                        "--uuid", uuidstr,
-                        "--ostemplate", def->fss[0]->src, NULL) < 0)
-        goto error;
-
-    return 0;
-
- error:
-    return -1;
-}
-
 static virDomainPtr
 parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
 {
@@ -720,10 +679,10 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
     if (olddom == NULL) {
         virResetLastError();
         if (STREQ(def->os.type, "hvm")) {
-            if (parallelsCreateVm(conn, def))
+            if (prlsdkCreateVm(conn, def))
                 goto cleanup;
         } else if (STREQ(def->os.type, "exe")) {
-            if (parallelsCreateCt(conn, def))
+            if (prlsdkCreateCt(conn, def))
                 goto cleanup;
         } else {
             virReportError(VIR_ERR_INVALID_ARG,

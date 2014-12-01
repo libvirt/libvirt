@@ -2538,7 +2538,6 @@ prlsdkDoApplyConfig(PRL_HANDLE sdkdom,
 
  error:
     return -1;
-
 }
 
 int
@@ -2568,5 +2567,89 @@ prlsdkApplyConfig(virConnectPtr conn,
 
     PrlHandle_Free(sdkdom);
 
+    return ret;
+}
+
+int
+prlsdkCreateVm(virConnectPtr conn, virDomainDefPtr def)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+    PRL_HANDLE result = PRL_INVALID_HANDLE;
+    PRL_HANDLE srvconf = PRL_INVALID_HANDLE;
+    PRL_RESULT pret;
+    int ret = -1;
+
+    pret = PrlSrv_CreateVm(privconn->server, &sdkdom);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    job = PrlSrv_GetSrvConfig(privconn->server);
+    if (!(result = getJobResult(job, privconn->jobTimeout)))
+        goto cleanup;
+
+    pret = PrlResult_GetParamByIndex(result, 0, &srvconf);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmCfg_SetDefaultConfig(sdkdom, srvconf, PVS_GUEST_VER_LIN_REDHAT, 0);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    ret = prlsdkDoApplyConfig(sdkdom, def);
+    if (ret)
+        goto cleanup;
+
+    job = PrlVm_Reg(sdkdom, "", 1);
+    ret = waitJob(job, privconn->jobTimeout);
+
+ cleanup:
+    PrlHandle_Free(sdkdom);
+    return ret;
+}
+
+int
+prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
+    PRL_GET_VM_CONFIG_PARAM_DATA confParam;
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+    PRL_HANDLE result = PRL_INVALID_HANDLE;
+    PRL_RESULT pret;
+    int ret = -1;
+
+    if (def->nfss  && (def->nfss > 1 ||
+            def->fss[0]->type != VIR_DOMAIN_FS_TYPE_TEMPLATE)) {
+
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("There must be no more than 1 template FS for "
+                         "container creation"));
+        return -1;
+    }
+
+    confParam.nVmType = PVT_CT;
+    confParam.sConfigSample = "vswap.1024MB";
+    confParam.nOsVersion = 0;
+
+    job = PrlSrv_GetDefaultVmConfig(privconn->server, &confParam, 0);
+    if (!(result = getJobResult(job, privconn->jobTimeout)))
+        goto cleanup;
+
+    pret = PrlResult_GetParamByIndex(result, 0, &sdkdom);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    if (def->nfss == 1) {
+        pret = PrlVmCfg_SetOsTemplate(sdkdom, def->fss[0]->src);
+        prlsdkCheckRetGoto(pret, cleanup);
+    }
+
+    ret = prlsdkDoApplyConfig(sdkdom, def);
+    if (ret)
+        goto cleanup;
+
+    job = PrlVm_RegEx(sdkdom, "", PACF_NON_INTERACTIVE_MODE);
+    ret = waitJob(job, privconn->jobTimeout);
+
+ cleanup:
+    PrlHandle_Free(sdkdom);
     return ret;
 }

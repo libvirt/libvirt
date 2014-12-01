@@ -48,3 +48,5 @@ int
 prlsdkApplyConfig(virConnectPtr conn,
                   virDomainObjPtr dom,
                   virDomainDefPtr new);
+int prlsdkCreateVm(virConnectPtr conn, virDomainDefPtr def);
+int prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def);
