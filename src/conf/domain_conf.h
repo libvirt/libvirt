@@ -1185,8 +1185,6 @@ typedef enum {
 
 # define VIR_DOMAIN_TPM_DEFAULT_DEVICE "/dev/tpm0"
 
-typedef struct _virDomainTPMDef virDomainTPMDef;
-typedef virDomainTPMDef *virDomainTPMDefPtr;
 struct _virDomainTPMDef {
     virDomainTPMBackendType type;
     virDomainDeviceInfo info;
