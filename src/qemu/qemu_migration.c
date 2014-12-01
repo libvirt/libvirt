@@ -1504,6 +1504,7 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
                  * as this is a critical section so we are guaranteed
                  * priv->job.asyncAbort will not change */
                 qemuDomainObjExitMonitor(driver, vm);
+                priv->job.current->type = VIR_DOMAIN_JOB_CANCELLED;
                 virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
                                qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
                                _("canceled by client"));
@@ -3611,6 +3612,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
          * as this is a critical section so we are guaranteed
          * priv->job.asyncAbort will not change */
         qemuDomainObjExitMonitor(driver, vm);
+        priv->job.current->type = VIR_DOMAIN_JOB_CANCELLED;
         virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
                        qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
                        _("canceled by client"));
