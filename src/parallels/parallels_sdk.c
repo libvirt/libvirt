@@ -27,6 +27,7 @@
 #include "virstring.h"
 #include "nodeinfo.h"
 #include "virlog.h"
+#include "datatypes.h"
 
 #include "parallels_sdk.h"
 
@@ -1140,9 +1141,7 @@ prlsdkLoadDomain(parallelsConnPtr privconn,
          * for state and domain name */
         dom = olddom;
         virDomainDefFree(dom->def);
-        virDomainDefFree(dom->newDef);
         dom->def = def;
-        dom->newDef = def;
     } else {
         if (!(dom = virDomainObjListAdd(privconn->domains, def,
                                         privconn->xmlopt,
@@ -1256,4 +1255,296 @@ prlsdkAddDomain(parallelsConnPtr privconn, const unsigned char *uuid)
     dom = prlsdkLoadDomain(privconn, sdkdom, NULL);
     PrlHandle_Free(sdkdom);
     return dom;
+}
+
+static int
+prlsdkUpdateDomain(parallelsConnPtr privconn, virDomainObjPtr dom)
+{
+    PRL_HANDLE job;
+    virDomainObjPtr retdom = NULL;
+    parallelsDomObjPtr pdom = dom->privateData;
+
+    job = PrlVm_RefreshConfig(pdom->sdkdom);
+    if (waitJob(job, privconn->jobTimeout))
+        return -1;
+
+    retdom = prlsdkLoadDomain(privconn, pdom->sdkdom, dom);
+    return retdom ? 0 : -1;
+}
+
+static int prlsdkSendEvent(parallelsConnPtr privconn,
+                           virDomainObjPtr dom,
+                           virDomainEventType lvEventType,
+                           int lvEventTypeDetails)
+{
+    virObjectEventPtr event = NULL;
+
+    event = virDomainEventLifecycleNewFromObj(dom,
+                                              lvEventType,
+                                              lvEventTypeDetails);
+    if (!event)
+        return -1;
+
+    virObjectEventStateQueue(privconn->domainEventState, event);
+    return 0;
+}
+
+static void
+prlsdkNewStateToEvent(VIRTUAL_MACHINE_STATE domainState,
+                      virDomainEventType *lvEventType,
+                      int *lvEventTypeDetails)
+{
+    /* We skip all intermediate states here, because
+     * libvirt doesn't have correspoding event types for
+     * them */
+    switch (domainState) {
+    case VMS_STOPPED:
+    case VMS_MOUNTED:
+        *lvEventType = VIR_DOMAIN_EVENT_STOPPED;
+        *lvEventTypeDetails = VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN;
+        break;
+    case VMS_RUNNING:
+        *lvEventType = VIR_DOMAIN_EVENT_STARTED;
+        *lvEventTypeDetails = VIR_DOMAIN_EVENT_STARTED_BOOTED;
+        break;
+    case VMS_PAUSED:
+        *lvEventType = VIR_DOMAIN_EVENT_SUSPENDED;
+        *lvEventTypeDetails = VIR_DOMAIN_EVENT_SUSPENDED_PAUSED;
+        break;
+    case VMS_SUSPENDED:
+        *lvEventType = VIR_DOMAIN_EVENT_STOPPED;
+        *lvEventTypeDetails = VIR_DOMAIN_EVENT_STOPPED_SAVED;
+        break;
+    default:
+        VIR_DEBUG("Skip sending event about changing state to %X",
+                  domainState);
+        break;
+    }
+}
+
+static PRL_RESULT
+prlsdkHandleVmStateEvent(parallelsConnPtr privconn,
+                         PRL_HANDLE prlEvent,
+                         unsigned char *uuid)
+{
+    PRL_RESULT pret = PRL_ERR_FAILURE;
+    PRL_HANDLE eventParam = PRL_INVALID_HANDLE;
+    PRL_INT32 domainState;
+    virDomainObjPtr dom = NULL;
+    parallelsDomObjPtr pdom;
+    virDomainEventType lvEventType = 0;
+    int lvEventTypeDetails = 0;
+
+    pret = PrlEvent_GetParamByName(prlEvent, "vminfo_vm_state", &eventParam);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlEvtPrm_ToInt32(eventParam, &domainState);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    dom = virDomainObjListFindByUUID(privconn->domains, uuid);
+    if (dom == NULL) {
+        pret = PRL_ERR_VM_UUID_NOT_FOUND;
+        goto cleanup;
+    }
+
+    pdom = dom->privateData;
+    if (prlsdkConvertDomainState(domainState, pdom->id, dom) < 0)
+        goto cleanup;
+
+    prlsdkNewStateToEvent(domainState,
+                          &lvEventType,
+                          &lvEventTypeDetails);
+
+    if (prlsdkSendEvent(privconn, dom, lvEventType, lvEventTypeDetails) < 0) {
+        pret = PRL_ERR_OUT_OF_MEMORY;
+        goto cleanup;
+    }
+
+ cleanup:
+    if (dom)
+        virObjectUnlock(dom);
+    return pret;
+}
+
+static PRL_RESULT
+prlsdkHandleVmConfigEvent(parallelsConnPtr privconn,
+                          unsigned char *uuid)
+{
+    PRL_RESULT pret = PRL_ERR_FAILURE;
+    virDomainObjPtr dom = NULL;
+
+    dom = virDomainObjListFindByUUID(privconn->domains, uuid);
+    if (dom == NULL) {
+        pret = PRL_ERR_VM_UUID_NOT_FOUND;
+        goto cleanup;
+    }
+
+    if (prlsdkUpdateDomain(privconn, dom) < 0)
+        goto cleanup;
+
+    if (prlsdkSendEvent(privconn, dom, VIR_DOMAIN_EVENT_DEFINED,
+                        VIR_DOMAIN_EVENT_DEFINED_UPDATED) < 0) {
+        pret = PRL_ERR_OUT_OF_MEMORY;
+        goto cleanup;
+    }
+
+    pret = PRL_ERR_SUCCESS;
+ cleanup:
+    if (dom)
+        virObjectUnlock(dom);
+    return pret;
+}
+
+static PRL_RESULT
+prlsdkHandleVmAddedEvent(parallelsConnPtr privconn,
+                       unsigned char *uuid)
+{
+    PRL_RESULT pret;
+    virDomainObjPtr dom = NULL;
+
+    dom = prlsdkAddDomain(privconn, uuid);
+    if (!dom)
+        return PRL_ERR_FAILURE;
+
+    if (prlsdkSendEvent(privconn, dom, VIR_DOMAIN_EVENT_DEFINED,
+                        VIR_DOMAIN_EVENT_DEFINED_ADDED) < 0) {
+        pret = PRL_ERR_OUT_OF_MEMORY;
+        goto cleanup;
+    }
+
+    pret = PRL_ERR_SUCCESS;
+ cleanup:
+    if (dom)
+        virObjectUnlock(dom);
+    return pret;
+}
+
+static PRL_RESULT
+prlsdkHandleVmRemovedEvent(parallelsConnPtr privconn,
+                           unsigned char *uuid)
+{
+    virDomainObjPtr dom = NULL;
+    PRL_RESULT pret = PRL_ERR_SUCCESS;
+
+    dom = virDomainObjListFindByUUID(privconn->domains, uuid);
+    if (dom == NULL) {
+        /* domain was removed from the list from the libvirt
+         * API function in current connection */
+        return PRL_ERR_SUCCESS;
+    }
+
+    if (prlsdkSendEvent(privconn, dom, VIR_DOMAIN_EVENT_UNDEFINED,
+                        VIR_DOMAIN_EVENT_UNDEFINED_REMOVED) < 0)
+        pret = PRL_ERR_OUT_OF_MEMORY;
+
+    virDomainObjListRemove(privconn->domains, dom);
+    return pret;
+}
+
+static PRL_RESULT
+prlsdkHandleVmEvent(parallelsConnPtr privconn, PRL_HANDLE prlEvent)
+{
+    PRL_RESULT pret;
+    char uuidstr[VIR_UUID_STRING_BUFLEN + 2];
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    PRL_UINT32 bufsize = ARRAY_CARDINALITY(uuidstr);
+    PRL_EVENT_TYPE prlEventType;
+
+    pret = PrlEvent_GetType(prlEvent, &prlEventType);
+    prlsdkCheckRetGoto(pret, error);
+
+    pret = PrlEvent_GetIssuerId(prlEvent, uuidstr, &bufsize);
+    prlsdkCheckRetGoto(pret, error);
+
+    if (prlsdkUUIDParse(uuidstr, uuid) < 0)
+        return PRL_ERR_FAILURE;
+
+    switch (prlEventType) {
+        case PET_DSP_EVT_VM_STATE_CHANGED:
+            return prlsdkHandleVmStateEvent(privconn, prlEvent, uuid);
+        case PET_DSP_EVT_VM_CONFIG_CHANGED:
+            return prlsdkHandleVmConfigEvent(privconn, uuid);
+        case PET_DSP_EVT_VM_CREATED:
+        case PET_DSP_EVT_VM_ADDED:
+            return prlsdkHandleVmAddedEvent(privconn, uuid);
+        case PET_DSP_EVT_VM_DELETED:
+        case PET_DSP_EVT_VM_UNREGISTERED:
+            return prlsdkHandleVmRemovedEvent(privconn, uuid);
+            break;
+        default:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Can't handle event of type %d"), prlEventType);
+            return PRL_ERR_FAILURE;
+    }
+
+ error:
+    return PRL_ERR_FAILURE;
+}
+
+static PRL_RESULT
+prlsdkEventsHandler(PRL_HANDLE prlEvent, PRL_VOID_PTR opaque)
+{
+    parallelsConnPtr privconn = opaque;
+    PRL_RESULT pret = PRL_ERR_UNINITIALIZED;
+    PRL_HANDLE_TYPE handleType;
+    PRL_EVENT_TYPE prlEventType;
+
+    pret = PrlHandle_GetType(prlEvent, &handleType);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    if (handleType != PHT_EVENT) {
+        /* Currently, there is no need to handle anything but events */
+        pret = PRL_ERR_SUCCESS;
+        goto cleanup;
+    }
+
+    if (privconn == NULL) {
+        pret = PRL_ERR_INVALID_ARG;
+        goto cleanup;
+    }
+
+    PrlEvent_GetType(prlEvent, &prlEventType);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    switch (prlEventType) {
+        case PET_DSP_EVT_VM_STATE_CHANGED:
+        case PET_DSP_EVT_VM_CONFIG_CHANGED:
+        case PET_DSP_EVT_VM_CREATED:
+        case PET_DSP_EVT_VM_ADDED:
+        case PET_DSP_EVT_VM_DELETED:
+        case PET_DSP_EVT_VM_UNREGISTERED:
+            pret = prlsdkHandleVmEvent(privconn, prlEvent);
+            break;
+        default:
+            VIR_DEBUG("Skipping event of type %d", prlEventType);
+    }
+
+    pret = PRL_ERR_SUCCESS;
+ cleanup:
+    PrlHandle_Free(prlEvent);
+    return pret;
+}
+
+int prlsdkSubscribeToPCSEvents(parallelsConnPtr privconn)
+{
+    PRL_RESULT pret = PRL_ERR_UNINITIALIZED;
+
+    pret = PrlSrv_RegEventHandler(privconn->server,
+                                 prlsdkEventsHandler,
+                                 privconn);
+    prlsdkCheckRetGoto(pret, error);
+    return 0;
+
+ error:
+    return -1;
+}
+
+void prlsdkUnsubscribeFromPCSEvents(parallelsConnPtr privconn)
+{
+    PRL_RESULT ret = PRL_ERR_UNINITIALIZED;
+    ret = PrlSrv_UnregEventHandler(privconn->server,
+                                 prlsdkEventsHandler,
+                                 privconn);
+    if (PRL_FAILED(ret))
+        logPrlError(ret);
 }

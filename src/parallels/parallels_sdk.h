@@ -32,3 +32,5 @@ int
 prlsdkLoadDomains(parallelsConnPtr privconn);
 virDomainObjPtr
 prlsdkAddDomain(parallelsConnPtr privconn, const unsigned char *uuid);
+int prlsdkSubscribeToPCSEvents(parallelsConnPtr privconn);
+void prlsdkUnsubscribeFromPCSEvents(parallelsConnPtr privconn);

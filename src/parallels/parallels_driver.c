@@ -223,6 +223,12 @@ parallelsOpenDefault(virConnectPtr conn)
     if (!(privconn->domains = virDomainObjListNew()))
         goto error;
 
+    if (!(privconn->domainEventState = virObjectEventStateNew()))
+        goto error;
+
+    if (prlsdkSubscribeToPCSEvents(privconn))
+        goto error;
+
     conn->privateData = privconn;
 
     if (prlsdkLoadDomains(privconn))
@@ -234,6 +240,7 @@ parallelsOpenDefault(virConnectPtr conn)
     virObjectUnref(privconn->domains);
     virObjectUnref(privconn->caps);
     virStoragePoolObjListFree(&privconn->pools);
+    virObjectEventStateFree(privconn->domainEventState);
     prlsdkDisconnect(privconn);
     prlsdkDeinit();
  err_free:
@@ -280,9 +287,11 @@ parallelsConnectClose(virConnectPtr conn)
     parallelsConnPtr privconn = conn->privateData;
 
     parallelsDriverLock(privconn);
+    prlsdkUnsubscribeFromPCSEvents(privconn);
     virObjectUnref(privconn->caps);
     virObjectUnref(privconn->xmlopt);
     virObjectUnref(privconn->domains);
+    virObjectEventStateFree(privconn->domainEventState);
     prlsdkDisconnect(privconn);
     conn->privateData = NULL;
     prlsdkDeinit();
@@ -1717,6 +1726,41 @@ parallelsNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
     return nodeGetCPUMap(cpumap, online, flags);
 }
 
+static int
+parallelsConnectDomainEventRegisterAny(virConnectPtr conn,
+                                       virDomainPtr domain,
+                                       int eventID,
+                                       virConnectDomainEventGenericCallback callback,
+                                       void *opaque,
+                                       virFreeCallback freecb)
+{
+    int ret = -1;
+    parallelsConnPtr privconn = conn->privateData;
+    if (virDomainEventStateRegisterID(conn,
+                                      privconn->domainEventState,
+                                      domain, eventID,
+                                      callback, opaque, freecb, &ret) < 0)
+        ret = -1;
+    return ret;
+}
+
+static int
+parallelsConnectDomainEventDeregisterAny(virConnectPtr conn,
+                                         int callbackID)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    int ret = -1;
+
+    if (virObjectEventStateDeregisterID(conn,
+                                        privconn->domainEventState,
+                                        callbackID) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
 
 static virHypervisorDriver parallelsDriver = {
     .no = VIR_DRV_PARALLELS,
@@ -1749,6 +1793,8 @@ static virHypervisorDriver parallelsDriver = {
     .domainShutdown = parallelsDomainShutdown, /* 0.10.0 */
     .domainCreate = parallelsDomainCreate,    /* 0.10.0 */
     .domainDefineXML = parallelsDomainDefineXML,      /* 0.10.0 */
+    .connectDomainEventRegisterAny = parallelsConnectDomainEventRegisterAny, /* 1.2.10 */
+    .connectDomainEventDeregisterAny = parallelsConnectDomainEventDeregisterAny, /* 1.2.10 */
     .nodeGetCPUMap = parallelsNodeGetCPUMap, /* 1.2.8 */
     .connectIsEncrypted = parallelsConnectIsEncrypted, /* 1.2.5 */
     .connectIsSecure = parallelsConnectIsSecure, /* 1.2.5 */
