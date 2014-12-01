@@ -28,6 +28,7 @@
 #include "nodeinfo.h"
 #include "virlog.h"
 #include "datatypes.h"
+#include "domain_conf.h"
 
 #include "parallels_sdk.h"
 
@@ -1616,5 +1617,956 @@ prlsdkDomainChangeState(virDomainPtr domain,
 
  cleanup:
     virObjectUnlock(dom);
+    return ret;
+}
+
+static int
+prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
+{
+    size_t i;
+    PRL_VM_TYPE vmType;
+    PRL_RESULT pret;
+
+    if (def->title) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("titles are not supported by parallels driver"));
+        return -1;
+    }
+
+    if (def->blkio.ndevices > 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("blkio parameters are not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    if (def->mem.max_balloon != def->mem.cur_balloon) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                   _("changing balloon parameters is not supported "
+                     "by parallels driver"));
+       return -1;
+    }
+
+    if (def->mem.max_balloon % (1 << 10) != 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                   _("Memory size should be multiple of 1Mb."));
+        return -1;
+    }
+
+    if (def->mem.nhugepages ||
+        def->mem.hard_limit ||
+        def->mem.soft_limit ||
+        def->mem.min_guarantee ||
+        def->mem.swap_hard_limit) {
+
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Memory parameter is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    if (def->vcpus != def->maxvcpus) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                   _("current vcpus must be equal to maxvcpus"));
+        return -1;
+    }
+
+    if (def->placement_mode) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("changing cpu placement mode is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    if (def->cpumask != NULL) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("changing cpu mask is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    if (def->cputune.shares ||
+        def->cputune.sharesSpecified ||
+        def->cputune.period ||
+        def->cputune.quota ||
+        def->cputune.nvcpupin) {
+
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cputune is not supported by parallels driver"));
+        return -1;
+    }
+
+    if (def->numatune) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("numa parameters are not supported "
+                          "by parallels driver"));
+        return -1;
+    }
+
+    if (def->onReboot != VIR_DOMAIN_LIFECYCLE_RESTART ||
+        def->onPoweroff != VIR_DOMAIN_LIFECYCLE_DESTROY ||
+        def->onCrash != VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY) {
+
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("on_reboot, on_poweroff and on_crash parameters "
+                         "are not supported by parallels driver"));
+        return -1;
+    }
+
+    /* we fill only type and arch fields in parallelsLoadDomain for
+     * hvm type and also init for containers, so we can check that all
+     * other paramenters are null and boot devices config is default */
+
+    if (def->os.machine != NULL || def->os.bootmenu != 0 ||
+        def->os.kernel != NULL || def->os.initrd != NULL ||
+        def->os.cmdline != NULL || def->os.root != NULL ||
+        def->os.loader != NULL || def->os.bootloader != NULL ||
+        def->os.bootloaderArgs != NULL || def->os.smbios_mode != 0 ||
+        def->os.bios.useserial != 0) {
+
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("changing OS parameters is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    pret = PrlVmCfg_GetVmType(sdkdom, &vmType);
+    if (PRL_FAILED(pret)) {
+        logPrlError(pret);
+        return -1;
+    }
+
+    if (!(vmType == PVT_VM && STREQ(def->os.type, "hvm")) &&
+        !(vmType == PVT_CT && STREQ(def->os.type, "exe"))) {
+
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("changing OS type is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    if (STREQ(def->os.type, "hvm")) {
+        if (def->os.nBootDevs != 1 ||
+            def->os.bootDevs[0] != VIR_DOMAIN_BOOT_DISK ||
+            def->os.init != NULL || def->os.initargv != NULL) {
+
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("changing OS parameters is not supported "
+                             "by parallels driver"));
+            return -1;
+        }
+    } else {
+        if (def->os.nBootDevs != 0 ||
+            !STREQ_NULLABLE(def->os.init, "/sbin/init") ||
+            (def->os.initargv != NULL && def->os.initargv[0] != NULL)) {
+
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("changing OS parameters is not supported "
+                             "by parallels driver"));
+            return -1;
+        }
+    }
+
+    if (def->emulator) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("changing emulator is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
+        if (def->features[i]) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("changing features is not supported "
+                             "by parallels driver"));
+            return -1;
+        }
+    }
+
+    if (def->clock.offset != VIR_DOMAIN_CLOCK_OFFSET_UTC ||
+        def->clock.ntimers != 0) {
+
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("changing clock parameters is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    if (def->nfss != 0 ||
+        def->nsounds != 0 || def->nhostdevs != 0 ||
+        def->nredirdevs != 0 || def->nsmartcards != 0 ||
+        def->nparallels || def->nchannels != 0 ||
+        def->nleases != 0 || def->nhubs != 0) {
+
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("changing devices parameters is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    /* there may be one auto-input */
+    if (def->ninputs != 0 &&
+        (def->ninputs != 2 &&
+            def->inputs[0]->type != VIR_DOMAIN_INPUT_TYPE_MOUSE &&
+            def->inputs[0]->bus != VIR_DOMAIN_INPUT_BUS_PS2 &&
+            def->inputs[1]->type != VIR_DOMAIN_INPUT_TYPE_KBD &&
+            def->inputs[1]->bus != VIR_DOMAIN_INPUT_BUS_PS2)) {
+
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("changing input devices parameters is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    return 0;
+}
+
+static int prlsdkClearDevices(PRL_HANDLE sdkdom)
+{
+    PRL_RESULT pret;
+    PRL_UINT32 n, i;
+    PRL_HANDLE devList;
+    PRL_HANDLE dev;
+    int ret = -1;
+
+    pret = PrlVmCfg_SetVNCMode(sdkdom, PRD_DISABLED);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmCfg_GetAllDevices(sdkdom, &devList);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlHndlList_GetItemsCount(devList, &n);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    for (i = 0; i < n; i++) {
+        pret = PrlHndlList_GetItem(devList, i, &dev);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        pret = PrlVmDev_Remove(dev);
+        PrlHandle_Free(dev);
+    }
+
+    ret = 0;
+ cleanup:
+    PrlHandle_Free(devList);
+    return ret;
+}
+
+static int prlsdkCheckGraphicsUnsupportedParams(virDomainDefPtr def)
+{
+    virDomainGraphicsDefPtr gr;
+
+    if (def->ngraphics == 0)
+        return 0;
+
+    if (def->ngraphics >1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Parallels Cloud Server supports only "
+                         "one VNC per domain."));
+        return -1;
+    }
+
+    gr = def->graphics[0];
+
+    if (gr->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Parallels Cloud Server supports only "
+                         "VNC graphics."));
+        return -1;
+    }
+
+    if (gr->data.vnc.websocket != 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Parallels Cloud Server doesn't support "
+                         "websockets for VNC graphics."));
+        return -1;
+    }
+
+    if (gr->data.vnc.keymap != 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Parallels Cloud Server doesn't support "
+                         "keymap setting for VNC graphics."));
+        return -1;
+    }
+
+    if (gr->data.vnc.sharePolicy == VIR_DOMAIN_GRAPHICS_VNC_SHARE_ALLOW_EXCLUSIVE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Parallels Cloud Server doesn't support "
+                         "exclusive share policy for VNC graphics."));
+        return -1;
+    }
+
+    if (gr->data.vnc.socket) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Parallels Cloud Server doesn't support "
+                         "VNC graphics over unix sockets."));
+        return -1;
+    }
+
+    if (gr->data.vnc.auth.connected == VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_FAIL ||
+            gr->data.vnc.auth.connected == VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_KEEP) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Parallels Cloud Server doesn't support "
+                         "given action in case of password change."));
+        return -1;
+    }
+
+    if (gr->data.vnc.auth.expires) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Parallels Cloud Server doesn't support "
+                         "setting password expire time."));
+        return -1;
+    }
+
+    return 0;
+}
+
+static int prlsdkCheckVideoUnsupportedParams(virDomainDefPtr def)
+{
+    bool isCt = STREQ(def->os.type, "exe");
+    virDomainVideoDefPtr v;
+
+    if (isCt) {
+        if (def->nvideos == 0) {
+            return 0;
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Video adapters are not supported "
+                             "int containers."));
+            return -1;
+        }
+    } else {
+        if (def->nvideos != 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Parallels Cloud Server supports "
+                             "only one video adapter."));
+            return -1;
+        }
+    }
+
+    v = def->videos[0];
+
+    if (v->type != VIR_DOMAIN_VIDEO_TYPE_VGA) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Parallels Cloud Server supports "
+                         "only VGA video adapters."));
+        return -1;
+    }
+
+    if (v->heads != 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Parallels Cloud Server doesn't support "
+                         "multihead video adapters."));
+        return -1;
+    }
+
+    if (v->accel == NULL || v->accel->support2d || v->accel->support3d) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Parallels Cloud Server doesn't support "
+                         "setting video acceleration parameters."));
+        return -1;
+    }
+
+    return 0;
+}
+
+static int prlsdkCheckSerialUnsupportedParams(virDomainChrDefPtr chr)
+{
+    if (chr->deviceType != VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Specified character device type is not supported "
+                         "by parallels driver."));
+        return -1;
+    }
+
+    if (chr->targetTypeAttr) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Specified character device target type is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (chr->source.type != VIR_DOMAIN_CHR_TYPE_DEV &&
+        chr->source.type != VIR_DOMAIN_CHR_TYPE_FILE &&
+        chr->source.type != VIR_DOMAIN_CHR_TYPE_UNIX) {
+
+
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Specified character device source type is not "
+                         "supported by Parallels Cloud Server."));
+        return -1;
+    }
+
+    if (chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting device info for character devices is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (chr->nseclabels > 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting security labels is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    return 0;
+}
+
+static int prlsdkCheckNetUnsupportedParams(virDomainNetDefPtr net)
+{
+    if (net->type != VIR_DOMAIN_NET_TYPE_NETWORK) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Specified network adapter type is not "
+                         "supported by Parallels Cloud Server."));
+        return -1;
+    }
+
+    if (net->backend.tap || net->backend.vhost) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Interface backend parameters are not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (net->data.network.portgroup) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Virtual network portgroups are not "
+                         "supported by Parallels Cloud Server."));
+        return -1;
+    }
+
+    if (net->tune.sndbuf_specified) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting interface sndbuf is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (net->script) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting interface script is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (net->ifname_guest) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting guest interface name is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (net->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting device info for network devices is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (net->filter) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting network filter is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (net->bandwidth) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting network bandwidth is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (net->vlan.trunk) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting up vlans is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    return 0;
+}
+
+static int prlsdkCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
+{
+    if (disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Only hard disks are supported "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+   if (disk->blockio.logical_block_size ||
+       disk->blockio.physical_block_size) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting disk block sizes is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (disk->blkdeviotune.total_bytes_sec ||
+        disk->blkdeviotune.read_bytes_sec ||
+        disk->blkdeviotune.write_bytes_sec ||
+        disk->blkdeviotune.total_iops_sec ||
+        disk->blkdeviotune.read_iops_sec ||
+        disk->blkdeviotune.write_iops_sec) {
+
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting disk io limits is not "
+                         "supported by parallels driver yet."));
+        return -1;
+    }
+
+    if (disk->serial) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting disk serial number is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (disk->wwn) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting disk wwn id is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (disk->vendor) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting disk vendor is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (disk->product) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting disk product id is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (disk->error_policy != VIR_DOMAIN_DISK_ERROR_POLICY_DEFAULT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting disk error policy is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (disk->iomode) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting disk io mode is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (disk->copy_on_read) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Disk copy_on_read is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (disk->startupPolicy != VIR_DOMAIN_STARTUP_POLICY_DEFAULT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting up disk startup policy is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (disk->transient) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Transient disks are not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (disk->discard) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting up disk discard parameter is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (disk->iothread) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting up disk io thread # is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (disk->src->type != VIR_STORAGE_TYPE_FILE &&
+        disk->src->type != VIR_STORAGE_TYPE_BLOCK) {
+
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Only disk and block storage types are "
+                         "supported by parallels driver."));
+        return -1;
+
+    }
+
+    return 0;
+}
+
+static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
+{
+    virDomainGraphicsDefPtr gr;
+    PRL_RESULT pret;
+    int ret  = -1;
+
+    if (prlsdkCheckGraphicsUnsupportedParams(def))
+        return -1;
+
+    if (def->ngraphics == 0)
+        return 0;
+
+    gr = def->graphics[0];
+
+    if (gr->data.vnc.autoport) {
+        pret = PrlVmCfg_SetVNCMode(sdkdom, PRD_AUTO);
+        prlsdkCheckRetGoto(pret, cleanup);
+    } else {
+        pret = PrlVmCfg_SetVNCMode(sdkdom, PRD_MANUAL);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        pret = PrlVmCfg_SetVNCPort(sdkdom, gr->data.vnc.port);
+        prlsdkCheckRetGoto(pret, cleanup);
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+static int prlsdkApplyVideoParams(PRL_HANDLE sdkdom ATTRIBUTE_UNUSED, virDomainDefPtr def)
+{
+    PRL_RESULT pret;
+
+    if (def->nvideos == 0)
+        return 0;
+
+    if (IS_CT(def)) {
+        /* ignore video parameters */
+        return 0;
+    }
+
+    if (prlsdkCheckVideoUnsupportedParams(def))
+        return -1;
+
+    pret = PrlVmCfg_SetVideoRamSize(sdkdom, def->videos[0]->vram >> 10);
+    prlsdkCheckRetGoto(pret, error);
+
+    return 0;
+ error:
+    return -1;
+}
+
+static int prlsdkAddSerial(PRL_HANDLE sdkdom, virDomainChrDefPtr chr)
+{
+    PRL_RESULT pret;
+    PRL_HANDLE sdkchr = PRL_INVALID_HANDLE;
+    PRL_VM_DEV_EMULATION_TYPE emutype;
+    PRL_SERIAL_PORT_SOCKET_OPERATION_MODE socket_mode =
+                                    PSP_SERIAL_SOCKET_SERVER;
+    char *path;
+    int ret = -1;
+
+    if (prlsdkCheckSerialUnsupportedParams(chr) < 0)
+        return -1;
+
+    pret = PrlVmCfg_CreateVmDev(sdkdom, PDE_SERIAL_PORT, &sdkchr);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    switch (chr->source.type) {
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+        emutype = PDT_USE_REAL_DEVICE;
+        path = chr->source.data.file.path;
+        break;
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+        emutype = PDT_USE_OUTPUT_FILE;
+        path = chr->source.data.file.path;
+        break;
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        emutype = PDT_USE_SERIAL_PORT_SOCKET_MODE;
+        path = chr->source.data.nix.path;
+        if (chr->source.data.nix.listen)
+            socket_mode = PSP_SERIAL_SOCKET_SERVER;
+        else
+            socket_mode = PSP_SERIAL_SOCKET_CLIENT;
+        break;
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Parallels Cloud Server doesn't support "
+                         "specified serial source type."));
+        goto cleanup;
+    }
+
+    pret = PrlVmDev_SetEmulatedType(sdkchr, emutype);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_SetSysName(sdkchr, path);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_SetFriendlyName(sdkchr, path);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    if (chr->source.type == VIR_DOMAIN_CHR_TYPE_UNIX) {
+        pret = PrlVmDevSerial_SetSocketMode(sdkchr, socket_mode);
+        prlsdkCheckRetGoto(pret, cleanup);
+    }
+
+    pret = PrlVmDev_SetEnabled(sdkchr, 1);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_SetIndex(sdkchr, chr->target.port);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    ret = 0;
+ cleanup:
+    PrlHandle_Free(sdkchr);
+    return ret;
+}
+
+#define PRL_MAC_STRING_BUFNAME  13
+
+static const char * prlsdkFormatMac(virMacAddrPtr mac, char *macstr)
+{
+    snprintf(macstr, PRL_MAC_STRING_BUFNAME,
+             "%02X%02X%02X%02X%02X%02X",
+             mac->addr[0], mac->addr[1], mac->addr[2],
+             mac->addr[3], mac->addr[4], mac->addr[5]);
+    macstr[PRL_MAC_STRING_BUFNAME - 1] = '\0';
+    return macstr;
+}
+
+static int prlsdkAddNet(PRL_HANDLE sdkdom, virDomainNetDefPtr net)
+{
+    PRL_RESULT pret;
+    PRL_HANDLE sdknet = PRL_INVALID_HANDLE;
+    int ret = -1;
+    char macstr[PRL_MAC_STRING_BUFNAME];
+
+    if (prlsdkCheckNetUnsupportedParams(net) < 0)
+        return -1;
+
+    pret = PrlVmCfg_CreateVmDev(sdkdom, PDE_GENERIC_NETWORK_ADAPTER, &sdknet);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_SetEnabled(sdknet, 1);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_SetConnected(sdknet, net->linkstate);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    if (net->ifname) {
+        pret = PrlVmDevNet_SetHostInterfaceName(sdknet, net->ifname);
+        prlsdkCheckRetGoto(pret, cleanup);
+    }
+
+    prlsdkFormatMac(&net->mac, macstr);
+    pret = PrlVmDevNet_SetMacAddress(sdknet, macstr);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    if (STREQ(net->data.network.name, PARALLELS_ROUTED_NETWORK_NAME)) {
+        pret = PrlVmDev_SetEmulatedType(sdknet, PNA_ROUTED);
+        prlsdkCheckRetGoto(pret, cleanup);
+    } else {
+        pret = PrlVmDevNet_SetVirtualNetworkId(sdknet, net->data.network.name);
+        prlsdkCheckRetGoto(pret, cleanup);
+    }
+
+    if (net->trustGuestRxFilters == VIR_TRISTATE_BOOL_YES)
+        pret = PrlVmDevNet_SetPktFilterPreventMacSpoof(sdknet, 0);
+    else if (net->trustGuestRxFilters == VIR_TRISTATE_BOOL_NO)
+        pret = PrlVmDevNet_SetPktFilterPreventMacSpoof(sdknet, 1);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    ret = 0;
+ cleanup:
+    PrlHandle_Free(sdknet);
+    return ret;
+}
+
+static int prlsdkAddDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk)
+{
+    PRL_RESULT pret;
+    PRL_HANDLE sdkdisk = PRL_INVALID_HANDLE;
+    int ret = -1;
+    PRL_VM_DEV_EMULATION_TYPE emutype;
+    PRL_MASS_STORAGE_INTERFACE_TYPE sdkbus;
+
+    if (prlsdkCheckDiskUnsupportedParams(disk) < 0)
+        return -1;
+
+    pret = PrlVmCfg_CreateVmDev(sdkdom, PDE_HARD_DISK, &sdkdisk);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_SetEnabled(sdkdisk, 1);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_SetConnected(sdkdisk, 1);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    if (disk->src->type == VIR_STORAGE_TYPE_FILE) {
+        if (virDomainDiskGetFormat(disk) != VIR_STORAGE_FILE_PLOOP) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Invalid disk format: %d"), disk->src->type);
+            goto cleanup;
+        }
+
+        emutype = PDT_USE_IMAGE_FILE;
+    } else {
+        emutype = PDT_USE_REAL_DEVICE;
+    }
+
+    pret = PrlVmDev_SetEmulatedType(sdkdisk, emutype);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_SetSysName(sdkdisk, disk->src->path);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_SetFriendlyName(sdkdisk, disk->src->path);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    switch (disk->bus) {
+    case VIR_DOMAIN_DISK_BUS_IDE:
+        sdkbus = PMS_IDE_DEVICE;
+        break;
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+        sdkbus = PMS_SCSI_DEVICE;
+        break;
+    case VIR_DOMAIN_DISK_BUS_SATA:
+        sdkbus = PMS_SATA_DEVICE;
+        break;
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Specified disk bus is not "
+                         "supported by Parallels Cloud Server."));
+        goto cleanup;
+    }
+
+    pret = PrlVmDev_SetIfaceType(sdkdisk, sdkbus);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_SetStackIndex(sdkdisk, disk->info.addr.drive.target);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    switch (disk->cachemode) {
+    case VIR_DOMAIN_DISK_CACHE_DISABLE:
+        pret = PrlVmCfg_SetDiskCacheWriteBack(sdkdom, PRL_FALSE);
+        prlsdkCheckRetGoto(pret, cleanup);
+        break;
+    case VIR_DOMAIN_DISK_CACHE_WRITEBACK:
+        pret = PrlVmCfg_SetDiskCacheWriteBack(sdkdom, PRL_TRUE);
+        prlsdkCheckRetGoto(pret, cleanup);
+        break;
+    case VIR_DOMAIN_DISK_CACHE_DEFAULT:
+        break;
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Specified disk cache mode is not "
+                         "supported by Parallels Cloud Server."));
+        goto cleanup;
+    }
+
+    return 0;
+ cleanup:
+    PrlHandle_Free(sdkdisk);
+    return ret;
+}
+
+static int
+prlsdkDoApplyConfig(PRL_HANDLE sdkdom,
+                    virDomainDefPtr def)
+{
+    PRL_RESULT pret;
+    size_t i;
+    char uuidstr[VIR_UUID_STRING_BUFLEN + 2];
+
+    if (prlsdkCheckUnsupportedParams(sdkdom, def) < 0)
+        return -1;
+
+    if (def->description) {
+        pret = PrlVmCfg_SetDescription(sdkdom, def->description);
+        prlsdkCheckRetGoto(pret, error);
+    }
+
+    if (def->name) {
+        pret = PrlVmCfg_SetName(sdkdom, def->name);
+        prlsdkCheckRetGoto(pret, error);
+    }
+
+    if (def->uuid) {
+        prlsdkUUIDFormat(def->uuid, uuidstr);
+
+        pret = PrlVmCfg_SetUuid(sdkdom, uuidstr);
+        prlsdkCheckRetGoto(pret, error);
+    }
+
+    pret = PrlVmCfg_SetRamSize(sdkdom, def->mem.max_balloon >> 10);
+    prlsdkCheckRetGoto(pret, error);
+
+    pret = PrlVmCfg_SetCpuCount(sdkdom, def->vcpus);
+    prlsdkCheckRetGoto(pret, error);
+
+    if (prlsdkClearDevices(sdkdom) < 0)
+        goto error;
+
+    if (prlsdkApplyGraphicsParams(sdkdom, def) < 0)
+        goto error;
+
+    if (prlsdkApplyVideoParams(sdkdom, def) < 0)
+        goto error;
+
+    for (i = 0; i < def->nserials; i++) {
+       if (prlsdkAddSerial(sdkdom, def->serials[i]) < 0)
+           goto error;
+    }
+
+    for (i = 0; i < def->nnets; i++) {
+       if (prlsdkAddNet(sdkdom, def->nets[i]) < 0)
+           goto error;
+    }
+
+    for (i = 0; i < def->ndisks; i++) {
+       if (prlsdkAddDisk(sdkdom, def->disks[i]) < 0)
+           goto error;
+    }
+
+    return 0;
+
+ error:
+    return -1;
+
+}
+
+int
+prlsdkApplyConfig(virConnectPtr conn,
+                  virDomainObjPtr dom,
+                  virDomainDefPtr new)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+    int ret;
+
+    sdkdom = prlsdkSdkDomainLookupByUUID(privconn, dom->def->uuid);
+    if (sdkdom == PRL_INVALID_HANDLE)
+        return -1;
+
+    job = PrlVm_BeginEdit(sdkdom);
+    if (waitJob(job, privconn->jobTimeout) < 0)
+        return -1;
+
+    ret = prlsdkDoApplyConfig(sdkdom, new);
+
+    if (ret == 0) {
+        job = PrlVm_Commit(sdkdom);
+        ret = waitJob(job, privconn->jobTimeout);
+    }
+
+    PrlHandle_Free(sdkdom);
+
     return ret;
 }

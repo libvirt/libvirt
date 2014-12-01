@@ -44,3 +44,7 @@ typedef int (*prlsdkChangeStateFunc)(parallelsConnPtr privconn, PRL_HANDLE sdkdo
 int
 prlsdkDomainChangeState(virDomainPtr domain,
                         prlsdkChangeStateFunc chstate);
+int
+prlsdkApplyConfig(virConnectPtr conn,
+                  virDomainObjPtr dom,
+                  virDomainDefPtr new);
