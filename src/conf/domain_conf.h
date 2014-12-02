@@ -2287,6 +2287,8 @@ virDomainObjPtr virDomainObjListFindByID(virDomainObjListPtr doms,
                                          int id);
 virDomainObjPtr virDomainObjListFindByUUID(virDomainObjListPtr doms,
                                            const unsigned char *uuid);
+virDomainObjPtr virDomainObjListFindByUUIDRef(virDomainObjListPtr doms,
+                                              const unsigned char *uuid);
 virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,
                                            const char *name);
 

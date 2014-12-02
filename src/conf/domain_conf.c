@@ -1074,8 +1074,10 @@ virDomainObjPtr virDomainObjListFindByID(virDomainObjListPtr doms,
 }
 
 
-virDomainObjPtr virDomainObjListFindByUUID(virDomainObjListPtr doms,
-                                           const unsigned char *uuid)
+static virDomainObjPtr
+virDomainObjListFindByUUIDInternal(virDomainObjListPtr doms,
+                                   const unsigned char *uuid,
+                                   bool ref)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainObjPtr obj;
@@ -1084,15 +1086,36 @@ virDomainObjPtr virDomainObjListFindByUUID(virDomainObjListPtr doms,
     virUUIDFormat(uuid, uuidstr);
 
     obj = virHashLookup(doms->objs, uuidstr);
+    if (ref) {
+        virObjectRef(obj);
+        virObjectUnlock(doms);
+    }
     if (obj) {
         virObjectLock(obj);
         if (obj->removing) {
+            if (ref)
+                virObjectUnref(obj);
             virObjectUnlock(obj);
             obj = NULL;
         }
     }
-    virObjectUnlock(doms);
+    if (!ref)
+        virObjectUnlock(doms);
     return obj;
+}
+
+virDomainObjPtr
+virDomainObjListFindByUUID(virDomainObjListPtr doms,
+                           const unsigned char *uuid)
+{
+    return virDomainObjListFindByUUIDInternal(doms, uuid, false);
+}
+
+virDomainObjPtr
+virDomainObjListFindByUUIDRef(virDomainObjListPtr doms,
+                              const unsigned char *uuid)
+{
+    return virDomainObjListFindByUUIDInternal(doms, uuid, true);
 }
 
 static int virDomainObjListSearchName(const void *payload,

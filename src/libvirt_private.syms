@@ -353,6 +353,7 @@ virDomainObjListExport;
 virDomainObjListFindByID;
 virDomainObjListFindByName;
 virDomainObjListFindByUUID;
+virDomainObjListFindByUUIDRef;
 virDomainObjListForEach;
 virDomainObjListGetActiveIDs;
 virDomainObjListGetInactiveNames;
