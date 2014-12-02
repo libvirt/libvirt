@@ -27,6 +27,9 @@ DEVHELP_DIR=$(datadir)/gtk-doc/html/libvirt
 
 apihtml =					\
   html/index.html				\
+  $(apihtml_generated)
+
+apihtml_generated = \
   html/libvirt-libvirt-domain.html		\
   html/libvirt-libvirt-domain-snapshot.html	\
   html/libvirt-libvirt-event.html		\
@@ -247,6 +250,8 @@ internals/%.html.tmp: internals/%.html.in subsite.xsl page.xsl sitemap.html.in
 	    sed -e '/<span id="php_placeholder"><\/span>/r '"$(srcdir)/$@.code.in" \
 	    -e /php_placeholder/d < $@.tmp > $(srcdir)/$@ \
 	    || { rm $(srcdir)/$@ && exit 1; }; fi
+
+$(apihtml_generated): html/index.html
 
 html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
 	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then \
