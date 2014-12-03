@@ -60,6 +60,13 @@ const char *queryBlockReply =
 "                \"encrypted\": false,"
 "                \"bps\": 1,"
 "                \"bps_rd\": 2,"
+"                \"bps_max\": 7,"
+"                \"iops_max\": 10,"
+"                \"bps_rd_max\": 8,"
+"                \"bps_wr_max\": 9,"
+"                \"iops_rd_max\": 11,"
+"                \"iops_wr_max\": 12,"
+"                \"iops_size\": 13,"
 "                \"file\": \"/home/zippy/work/tmp/gentoo.qcow2\","
 "                \"encryption_key_missing\": false"
 "            },"
@@ -1872,21 +1879,25 @@ testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *data)
                                      "device", "\"drive-virtio-disk1\"",
                                      "bps", "1", "bps_rd", "2", "bps_wr", "3",
                                      "iops", "4", "iops_rd", "5", "iops_wr", "6",
+                                     "bps_max", "7", "bps_rd_max", "8",
+                                     "bps_wr_max", "9",
+                                     "iops_max", "10", "iops_rd_max", "11",
+                                     "iops_wr_max", "12", "iops_size", "13",
                                      NULL, NULL) < 0)
         goto cleanup;
 
     if (qemuMonitorJSONGetBlockIoThrottle(qemuMonitorTestGetMonitor(test),
-                                          "drive-virtio-disk0", &info, false) < 0)
+                                          "drive-virtio-disk0", &info, true) < 0)
         goto cleanup;
 
-    if (memcmp(&info, &expectedInfo, sizeof(info) != 0)) {
+    if (memcmp(&info, &expectedInfo, sizeof(info)) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Invalid @info");
         goto cleanup;
     }
 
     if (qemuMonitorJSONSetBlockIoThrottle(qemuMonitorTestGetMonitor(test),
-                                          "drive-virtio-disk1", &info, false) < 0)
+                                          "drive-virtio-disk1", &info, true) < 0)
         goto cleanup;
 
     ret = 0;
