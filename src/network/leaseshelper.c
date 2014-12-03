@@ -397,7 +397,10 @@ main(int argc, char **argv)
                 goto cleanup;
             }
             if (!strchr(ip_tmp, ':')) {
-                virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time", &expirytime);
+                if (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time",
+                                                    &expirytime) < 0)
+                    continue;
+
                 printf("%lld %s %s %s %s\n",
                        expirytime,
                        virJSONValueObjectGetString(lease_tmp, "mac-address"),
@@ -418,7 +421,10 @@ main(int argc, char **argv)
                     goto cleanup;
                 }
                 if (strchr(ip_tmp, ':')) {
-                    virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time", &expirytime);
+                    if (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time",
+                                                        &expirytime) < 0)
+                        continue;
+
                     printf("%lld %s %s %s %s\n",
                            expirytime,
                            virJSONValueObjectGetString(lease_tmp, "iaid"),
