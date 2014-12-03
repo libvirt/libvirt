@@ -3524,8 +3524,7 @@ qemuProcessUpdateDevices(virQEMUDriverPtr driver,
 struct qemuProcessReconnectData {
     virConnectPtr conn;
     virQEMUDriverPtr driver;
-    void *payload;
-    struct qemuDomainJobObj oldjob;
+    virDomainObjPtr obj;
 };
 /*
  * Open an existing VM's monitor, re-detect VCPU threads
@@ -3534,13 +3533,27 @@ struct qemuProcessReconnectData {
  * We own the virConnectPtr we are passed here - whoever started
  * this thread function has increased the reference counter to it
  * so that we now have to close it.
+ *
+ * This function also inherits a locked domain object.
+ *
+ * This function needs to:
+ * 1. Enter job
+ * 1. just before monitor reconnect do lightweight MonitorEnter
+ *    (increase VM refcount and unlock VM)
+ * 2. reconnect to monitor
+ * 3. do lightweight MonitorExit (lock VM)
+ * 4. continue reconnect process
+ * 5. EndJob
+ *
+ * We can't do normal MonitorEnter & MonitorExit because these two lock the
+ * monitor lock, which does not exists in this early phase.
  */
 static void
 qemuProcessReconnect(void *opaque)
 {
     struct qemuProcessReconnectData *data = opaque;
     virQEMUDriverPtr driver = data->driver;
-    virDomainObjPtr obj = data->payload;
+    virDomainObjPtr obj = data->obj;
     qemuDomainObjPrivatePtr priv;
     virConnectPtr conn = data->conn;
     struct qemuDomainJobObj oldjob;
@@ -3550,25 +3563,23 @@ qemuProcessReconnect(void *opaque)
     size_t i;
     int ret;
 
-    memcpy(&oldjob, &data->oldjob, sizeof(oldjob));
-
     VIR_FREE(data);
 
-    virNWFilterReadLockFilterUpdates();
+    qemuDomainObjRestoreJob(obj, &oldjob);
 
-    virObjectLock(obj);
+    /* Hold an extra reference because we can't allow 'vm' to be
+     * deleted if qemuConnectMonitor() failed */
+    virObjectRef(obj);
+
+    if (qemuDomainObjBeginJob(driver, obj, QEMU_JOB_MODIFY) < 0)
+        goto killvm;
+
+    virNWFilterReadLockFilterUpdates();
 
     cfg = virQEMUDriverGetConfig(driver);
     VIR_DEBUG("Reconnect monitor to %p '%s'", obj, obj->def->name);
 
     priv = obj->privateData;
-
-    /* Job was started by the caller for us */
-    qemuDomainObjTransferJob(obj);
-
-    /* Hold an extra reference because we can't allow 'vm' to be
-     * deleted if qemuConnectMonitor() failed */
-    virObjectRef(obj);
 
     /* XXX check PID liveliness & EXE path */
     if (qemuConnectMonitor(driver, obj, QEMU_ASYNC_JOB_NONE, -1) < 0)
@@ -3701,10 +3712,10 @@ qemuProcessReconnect(void *opaque)
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
  endjob:
-    if (!qemuDomainObjEndJob(driver, obj))
-        obj = NULL;
+    /* we hold an extra reference, so this will never fail */
+    ignore_value(qemuDomainObjEndJob(driver, obj));
 
-    if (obj && virObjectUnref(obj))
+    if (virObjectUnref(obj))
         virObjectUnlock(obj);
 
     virObjectUnref(conn);
@@ -3714,35 +3725,35 @@ qemuProcessReconnect(void *opaque)
     return;
 
  error:
-    if (!qemuDomainObjEndJob(driver, obj))
-        obj = NULL;
+    /* we hold an extra reference, so this will never fail */
+    ignore_value(qemuDomainObjEndJob(driver, obj));
 
-    if (obj) {
-        if (!virDomainObjIsActive(obj)) {
-            if (virObjectUnref(obj))
-                virObjectUnlock(obj);
-        } else if (virObjectUnref(obj)) {
-            /* We can't get the monitor back, so must kill the VM
-             * to remove danger of it ending up running twice if
-             * user tries to start it again later
-             */
-            if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
-                /* If we couldn't get the monitor and qemu supports
-                 * no-shutdown, we can safely say that the domain
-                 * crashed ... */
-                state = VIR_DOMAIN_SHUTOFF_CRASHED;
-            } else {
-                /* ... but if it doesn't we can't say what the state
-                 * really is and FAILED means "failed to start" */
-                state = VIR_DOMAIN_SHUTOFF_UNKNOWN;
-            }
-            qemuProcessStop(driver, obj, state, 0);
-            if (!obj->persistent)
-                qemuDomainRemoveInactive(driver, obj);
-            else
-                virObjectUnlock(obj);
+ killvm:
+    if (virDomainObjIsActive(obj)) {
+        /* We can't get the monitor back, so must kill the VM
+         * to remove danger of it ending up running twice if
+         * user tries to start it again later
+         */
+        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
+            /* If we couldn't get the monitor and qemu supports
+             * no-shutdown, we can safely say that the domain
+             * crashed ... */
+            state = VIR_DOMAIN_SHUTOFF_CRASHED;
+        } else {
+            /* ... but if it doesn't we can't say what the state
+             * really is and FAILED means "failed to start" */
+            state = VIR_DOMAIN_SHUTOFF_UNKNOWN;
         }
+        qemuProcessStop(driver, obj, state, 0);
     }
+
+    if (virObjectUnref(obj)) {
+        if (!obj->persistent)
+            qemuDomainRemoveInactive(driver, obj);
+        else
+            virObjectUnlock(obj);
+    }
+
     virObjectUnref(conn);
     virObjectUnref(cfg);
     virNWFilterUnlockFilterUpdates();
@@ -3756,6 +3767,7 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
     struct qemuProcessReconnectData *src = opaque;
     struct qemuProcessReconnectData *data;
 
+    /* If the VM was inactive, we don't need to reconnect */
     if (!obj->pid)
         return 0;
 
@@ -3763,64 +3775,35 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
         return -1;
 
     memcpy(data, src, sizeof(*data));
-    data->payload = obj;
+    data->obj = obj;
 
-    /*
-     * We create a separate thread to run qemuProcessReconnect in it.
-     * However, qemuProcessReconnect needs to:
-     * 1. just before monitor reconnect do lightweight MonitorEnter
-     *    (increase VM refcount, unlock VM & driver)
-     * 2. reconnect to monitor
-     * 3. do lightweight MonitorExit (lock VM)
-     * 4. continue reconnect process
-     * 5. EndJob
-     *
-     * NB, we can't do normal MonitorEnter & MonitorExit because
-     * these two lock the monitor lock, which does not exists in
-     * this early phase.
-     */
-
+    /* this lock will be eventually transferred to the thread that handles the
+     * reconnect */
     virObjectLock(obj);
 
-    qemuDomainObjRestoreJob(obj, &data->oldjob);
-
-    if (qemuDomainObjBeginJob(src->driver, obj, QEMU_JOB_MODIFY) < 0)
-        goto error;
-
-    /* Since we close the connection later on, we have to make sure
-     * that the threads we start see a valid connection throughout their
-     * lifetime. We simply increase the reference counter here.
+    /* Since we close the connection later on, we have to make sure that the
+     * threads we start see a valid connection throughout their lifetime. We
+     * simply increase the reference counter here.
      */
     virObjectRef(data->conn);
 
     if (virThreadCreate(&thread, false, qemuProcessReconnect, data) < 0) {
-
-        virObjectUnref(data->conn);
-
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not create thread. QEMU initialization "
                          "might be incomplete"));
-        if (!qemuDomainObjEndJob(src->driver, obj)) {
-            obj = NULL;
-        } else if (virObjectUnref(obj)) {
-           /* We can't spawn a thread and thus connect to monitor.
-            * Kill qemu */
-            qemuProcessStop(src->driver, obj, VIR_DOMAIN_SHUTOFF_FAILED, 0);
-            if (!obj->persistent)
-                qemuDomainRemoveInactive(src->driver, obj);
-            else
-                virObjectUnlock(obj);
-        }
-        goto error;
+       /* We can't spawn a thread and thus connect to monitor. Kill qemu. */
+        qemuProcessStop(src->driver, obj, VIR_DOMAIN_SHUTOFF_FAILED, 0);
+        if (!obj->persistent)
+            qemuDomainRemoveInactive(src->driver, obj);
+        else
+            virObjectUnlock(obj);
+
+        virObjectUnref(data->conn);
+        VIR_FREE(data);
+        return -1;
     }
 
-    virObjectUnlock(obj);
-
     return 0;
-
- error:
-    VIR_FREE(data);
-    return -1;
 }
 
 /**

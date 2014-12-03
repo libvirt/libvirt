@@ -185,16 +185,6 @@ qemuDomainObjRestoreJob(virDomainObjPtr obj,
     qemuDomainObjResetAsyncJob(priv);
 }
 
-void
-qemuDomainObjTransferJob(virDomainObjPtr obj)
-{
-    qemuDomainObjPrivatePtr priv = obj->privateData;
-
-    VIR_DEBUG("Changing job owner from %llu to %llu",
-              priv->job.owner, virThreadSelfID());
-    priv->job.owner = virThreadSelfID();
-}
-
 static void
 qemuDomainObjFreeJob(qemuDomainObjPrivatePtr priv)
 {
