@@ -2711,6 +2711,7 @@ networkValidate(virNetworkDefPtr def,
     virPortGroupDefPtr defaultPortGroup = NULL;
     virNetworkIpDefPtr ipdef;
     bool ipv4def = false, ipv6def = false;
+    bool bandwidthAllowed = true;
 
     /* check for duplicate networks */
     if (virNetworkObjIsDuplicate(&driver->networks, def, check_active) < 0)
@@ -2772,6 +2773,7 @@ networkValidate(virNetworkDefPtr def,
                            virNetworkForwardTypeToString(def->forward.type));
             return -1;
         }
+        bandwidthAllowed = false;
     }
 
     /* We only support dhcp on one IPv4 address and
@@ -2849,6 +2851,15 @@ networkValidate(virNetworkDefPtr def,
                 return -1;
             }
             defaultPortGroup = &def->portGroups[i];
+        }
+
+        if (def->portGroups[i].bandwidth && !bandwidthAllowed) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported <bandwidth> element in network '%s' "
+                             "in portgroup '%s' with forward mode='%s'"),
+                           def->name, def->portGroups[i].name,
+                           virNetworkForwardTypeToString(def->forward.type));
+            return -1;
         }
     }
     if (badVlanUse ||
