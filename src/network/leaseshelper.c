@@ -235,7 +235,7 @@ main(int argc, char **argv)
     }
 
     switch ((enum virLeaseActionFlags) action) {
-    case  VIR_LEASE_ACTION_ADD:
+    case VIR_LEASE_ACTION_ADD:
     case VIR_LEASE_ACTION_OLD:
         if (!mac)
             break;
