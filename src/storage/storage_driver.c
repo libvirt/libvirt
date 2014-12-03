@@ -2088,8 +2088,9 @@ storageVolUpload(virStorageVolPtr obj,
             goto cleanup;
     }
 
-    ret = backend->uploadVol(obj->conn, pool, vol, stream,
-                             offset, length, flags);
+    if ((ret = backend->uploadVol(obj->conn, pool, vol, stream,
+                                  offset, length, flags)) < 0)
+        goto cleanup;
 
     /* Add cleanup callback - call after uploadVol since the stream
      * is then fully set up
