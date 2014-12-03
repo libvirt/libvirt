@@ -291,6 +291,17 @@ $(python_generated_files): $(APIBUILD_STAMP)
 
 $(APIBUILD_STAMP): $(srcdir)/apibuild.py \
 		$(srcdir)/../include/libvirt/libvirt.h.in \
+		$(srcdir)/../include/libvirt/libvirt-domain-snapshot.h \
+		$(srcdir)/../include/libvirt/libvirt-domain.h \
+		$(srcdir)/../include/libvirt/libvirt-event.h \
+		$(srcdir)/../include/libvirt/libvirt-host.h \
+		$(srcdir)/../include/libvirt/libvirt-interface.h \
+		$(srcdir)/../include/libvirt/libvirt-network.h \
+		$(srcdir)/../include/libvirt/libvirt-nodedev.h \
+		$(srcdir)/../include/libvirt/libvirt-nwfilter.h \
+		$(srcdir)/../include/libvirt/libvirt-secret.h \
+		$(srcdir)/../include/libvirt/libvirt-storage.h \
+		$(srcdir)/../include/libvirt/libvirt-stream.h \
 		$(srcdir)/../include/libvirt/libvirt-lxc.h \
 		$(srcdir)/../include/libvirt/libvirt-qemu.h \
 		$(srcdir)/../include/libvirt/virterror.h \
