@@ -12885,6 +12885,9 @@ qemuDomainSnapshotCreateActiveInternal(virConnectPtr conn,
     bool resume = false;
     int ret = -1;
 
+    if (!qemuMigrationIsAllowed(driver, vm, vm->def, false, false))
+        goto cleanup;
+
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         /* savevm monitor command pauses the domain emitting an event which
          * confuses libvirt since it's not notified when qemu resumes the
