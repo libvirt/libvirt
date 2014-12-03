@@ -223,6 +223,18 @@ static const vshCmdOptDef opts_pool_X_as[] = {
      .type = VSH_OT_STRING,
      .help = N_("format for underlying storage")
     },
+    {.name = "auth-type",
+     .type = VSH_OT_STRING,
+     .help = N_("auth type to be used for underlying storage")
+    },
+    {.name = "auth-username",
+     .type = VSH_OT_STRING,
+     .help = N_("auth username to be used for underlying storage")
+    },
+    {.name = "secret-usage",
+     .type = VSH_OT_STRING,
+     .help = N_("auth secret usage to be used for underlying storage")
+    },
     {.name = NULL}
 };
 
@@ -234,7 +246,8 @@ vshBuildPoolXML(vshControl *ctl,
 {
     const char *name = NULL, *type = NULL, *srcHost = NULL, *srcPath = NULL,
                *srcDev = NULL, *srcName = NULL, *srcFormat = NULL,
-               *target = NULL;
+               *target = NULL, *authType = NULL, *authUsername = NULL,
+               *secretUsage = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
@@ -247,7 +260,10 @@ vshBuildPoolXML(vshControl *ctl,
         vshCommandOptStringReq(ctl, cmd, "source-dev", &srcDev) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "source-name", &srcName) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "source-format", &srcFormat) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "target", &target) < 0)
+        vshCommandOptStringReq(ctl, cmd, "target", &target) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "auth-type", &authType) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "auth-username", &authUsername) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "secret-usage", &secretUsage) < 0)
         goto cleanup;
 
     virBufferAsprintf(&buf, "<pool type='%s'>\n", type);
@@ -263,6 +279,14 @@ vshBuildPoolXML(vshControl *ctl,
             virBufferAsprintf(&buf, "<dir path='%s'/>\n", srcPath);
         if (srcDev)
             virBufferAsprintf(&buf, "<device path='%s'/>\n", srcDev);
+        if (authType && authUsername && secretUsage) {
+            virBufferAsprintf(&buf, "<auth type='%s' username='%s'>\n",
+                              authType, authUsername);
+            virBufferAdjustIndent(&buf, 2);
+            virBufferAsprintf(&buf, "<secret usage='%s'/>\n", secretUsage);
+            virBufferAdjustIndent(&buf, -2);
+            virBufferAddLit(&buf, "</auth>\n");
+        }
         if (srcFormat)
             virBufferAsprintf(&buf, "<format type='%s'/>\n", srcFormat);
         if (srcName)

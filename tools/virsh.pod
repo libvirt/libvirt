@@ -2959,6 +2959,7 @@ Create and start a pool object from the XML I<file>.
 =item B<pool-create-as> I<name> I<type> [I<--print-xml>]
 [I<--source-host hostname>] [I<--source-path path>] [I<--source-dev path>]
 [I<--source-name name>] [I<--target path>] [I<--source-format format>]
+[I<--auth-type authtype> I<--auth-username username> I<--secret-usage usage>]
 
 Create and start a pool object I<name> from the raw parameters.  If
 I<--print-xml> is specified, then print the XML of the pool object
@@ -2984,6 +2985,11 @@ the host file system.
 [I<--source-format format>] provides information about the format of the
 pool (pool types fs, netfs, disk, logical).
 
+[I<--auth-type authtype> I<--auth-username username> I<--secret-usage usage>]
+provides the elements required to generate authentication credentials for
+the storage pool. The I<authtype> is either chap for iscsi I<type> pools or
+ceph for rbd I<type> pools.
+
 =item B<pool-define> I<file>
 
 Create, but do not start, a pool object from the XML I<file>.
@@ -2991,6 +2997,7 @@ Create, but do not start, a pool object from the XML I<file>.
 =item B<pool-define-as> I<name> I<type> [I<--print-xml>]
 [I<--source-host hostname>] [I<--source-path path>] [I<--source-dev path>]
 [I<--source-name name>] [I<--target path>] [I<--source-format format>]
+[I<--auth-type authtype> I<--auth-username username> I<--secret-usage usage>]
 
 Create, but do not start, a pool object I<name> from the raw parameters.  If
 I<--print-xml> is specified, then print the XML of the pool object
