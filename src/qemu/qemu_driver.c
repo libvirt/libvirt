@@ -15606,6 +15606,8 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
 
         if (disk->mirror && (flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT)) {
             ret = qemuDomainBlockPivot(conn, driver, vm, device, disk);
+            if (ret < 0 && async)
+                goto endjob;
             goto waitjob;
         }
         if (disk->mirror) {
