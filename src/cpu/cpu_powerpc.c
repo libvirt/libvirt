@@ -666,11 +666,15 @@ ppcGetModels(char ***models)
 
     model = map->models;
     while (model != NULL) {
-        if (VIR_STRDUP(name, model->name) < 0)
-            goto error;
+        if (models) {
+            if (VIR_STRDUP(name, model->name) < 0)
+                goto error;
 
-        if (VIR_INSERT_ELEMENT(*models, 0, nmodels, name) < 0)
-            goto error;
+            if (VIR_APPEND_ELEMENT(*models, nmodels, name) < 0)
+                goto error;
+        } else {
+            nmodels++;
+        }
 
         model = model->next;
     }
@@ -681,7 +685,10 @@ ppcGetModels(char ***models)
     return nmodels;
 
  error:
-    virStringFreeList(*models);
+    if (models) {
+        virStringFreeList(*models);
+        *models = NULL;
+    }
     nmodels = -1;
     goto cleanup;
 }
