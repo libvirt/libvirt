@@ -873,8 +873,6 @@ qemuStateInitialize(bool privileged,
                                        NULL, NULL) < 0)
         goto error;
 
-    qemuProcessReconnectAll(conn, qemu_driver);
-
     virDomainObjListForEach(qemu_driver->domains,
                             qemuDomainSnapshotLoad,
                             cfg->snapshotDir);
@@ -882,6 +880,8 @@ qemuStateInitialize(bool privileged,
     virDomainObjListForEach(qemu_driver->domains,
                             qemuDomainManagedSaveLoad,
                             qemu_driver);
+
+    qemuProcessReconnectAll(conn, qemu_driver);
 
     qemu_driver->workerPool = virThreadPoolNew(0, 1, 0, qemuProcessEventHandler, qemu_driver);
     if (!qemu_driver->workerPool)
