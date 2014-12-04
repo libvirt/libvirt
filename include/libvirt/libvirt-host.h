@@ -536,28 +536,32 @@ struct _virNodeMemoryStats {
  */
 # define VIR_NODE_MEMORY_SHARED_PAGES_SHARING      "shm_pages_sharing"
 
-/* VIR_NODE_MEMORY_SHARED_PAGES_UNSHARED:
+/*
+ * VIR_NODE_MEMORY_SHARED_PAGES_UNSHARED:
  *
  * Macro for typed parameter that represents how many pages unique
  * but repeatedly checked for merging.
  */
 # define VIR_NODE_MEMORY_SHARED_PAGES_UNSHARED     "shm_pages_unshared"
 
-/* VIR_NODE_MEMORY_SHARED_PAGES_VOLATILE:
+/*
+ * VIR_NODE_MEMORY_SHARED_PAGES_VOLATILE:
  *
  * Macro for typed parameter that represents how many pages changing
  * too fast to be placed in a tree.
  */
 # define VIR_NODE_MEMORY_SHARED_PAGES_VOLATILE     "shm_pages_volatile"
 
-/* VIR_NODE_MEMORY_SHARED_FULL_SCAN:
+/*
+ * VIR_NODE_MEMORY_SHARED_FULL_SCANS:
  *
  * Macro for typed parameter that represents how many times all
  * mergeable areas have been scanned.
  */
 # define VIR_NODE_MEMORY_SHARED_FULL_SCANS         "shm_full_scans"
 
-/* VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES:
+/*
+ * VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES:
  *
  * Macro for typed parameter that represents whether pages from
  * different NUMA nodes can be merged. The parameter has type int,

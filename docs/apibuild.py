@@ -459,6 +459,14 @@ class CLexer:
             if line[0] == '#':
                 self.tokens = map((lambda x: ('preproc', x)),
                                   string.split(line))
+
+                # We might have whitespace between the '#' and preproc
+                # macro name, so instead of having a single token element
+                # of '#define' we might end up with '#' and 'define'. This
+                # merges them back together
+                if self.tokens[0][1] == "#":
+                    self.tokens[0] = ('preproc', self.tokens[0][1] + self.tokens[1][1])
+                    self.tokens = self.tokens[:1] + self.tokens[2:]
                 break
             l = len(line)
             if line[0] == '"' or line[0] == "'":
