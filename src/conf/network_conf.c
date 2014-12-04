@@ -1854,6 +1854,18 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
 
     /* Parse network domain information */
     def->domain = virXPathString("string(./domain[1]/@name)", ctxt);
+    tmp = virXPathString("string(./domain[1]/@localOnly)", ctxt);
+    if (tmp) {
+        def->domainLocalOnly = virTristateBoolTypeFromString(tmp);
+        if (def->domainLocalOnly <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid domain localOnly setting '%s' "
+                             "in network '%s'"),
+                           tmp, def->name);
+            goto error;
+        }
+        VIR_FREE(tmp);
+    }
 
     if ((bandwidthNode = virXPathNode("./bandwidth", ctxt)) &&
         virNetDevBandwidthParse(&def->bandwidth, bandwidthNode, -1) < 0)
@@ -2560,8 +2572,24 @@ virNetworkDefFormatBuf(virBufferPtr buf,
         virBufferAsprintf(buf, "<mac address='%s'/>\n", macaddr);
     }
 
-    if (def->domain)
-        virBufferAsprintf(buf, "<domain name='%s'/>\n", def->domain);
+    if (def->domain) {
+        virBufferAsprintf(buf, "<domain name='%s'", def->domain);
+
+        /* default to "no", but don't format it in the XML */
+        if (def->domainLocalOnly) {
+            const char *local = virTristateBoolTypeToString(def->domainLocalOnly);
+
+            if (!local) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Unknown localOnly type %d in network"),
+                               def->domainLocalOnly);
+                return -1;
+            }
+            virBufferAsprintf(buf, " localOnly='%s'", local);
+        }
+
+        virBufferAddLit(buf, "/>\n");
+    }
 
     if (virNetworkDNSDefFormat(buf, &def->dns) < 0)
         goto error;

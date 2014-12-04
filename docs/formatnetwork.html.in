@@ -82,7 +82,7 @@
     <pre>
         ...
         &lt;bridge name="virbr0" stp="on" delay="5" macTableManager="libvirt"/&gt;
-        &lt;domain name="example.com"/&gt;
+        &lt;domain name="example.com" localOnly="no"/&gt;
         &lt;forward mode="nat" dev="eth0"/&gt;
         ...</pre>
 
@@ -151,6 +151,16 @@
         a <code>&lt;forward&gt;</code> mode of "nat" or "route" (or an
         isolated network with no <code>&lt;forward&gt;</code>
         element). <span class="since">Since 0.4.5</span>
+
+        <p>
+          If the optional <code>localOnly</code> attribute on the
+          <code>domain</code> element is "yes", then DNS requests under
+          this domain will only be resolved by the virtual network's own
+          DNS server - they will not be forwarded to the host's upstream
+          DNS server.  If <code>localOnly</code> is "no", and by
+          default, unresolved requests <b>will</b> be forwarded.
+          <span class="since">Since 1.2.12</span>
+        </p>
       </dd>
       <dt><code>forward</code></dt>
       <dd>Inclusion of the <code>forward</code> element indicates that

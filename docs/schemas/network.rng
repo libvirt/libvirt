@@ -234,6 +234,9 @@
         <optional>
           <element name="domain">
             <attribute name="name"><ref name="dnsName"/></attribute>
+            <optional>
+              <attribute name="localOnly"><ref name="virYesNo"/></attribute>
+            </optional>
           </element>
         </optional>
 

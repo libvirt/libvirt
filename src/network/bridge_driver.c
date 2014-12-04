@@ -928,6 +928,11 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
     }
 
     if (network->def->domain) {
+        if (network->def->domainLocalOnly == VIR_TRISTATE_BOOL_YES) {
+            virBufferAsprintf(&configbuf,
+                              "local=/%s/\n",
+                              network->def->domain);
+        }
         virBufferAsprintf(&configbuf,
                           "domain=%s\n"
                           "expand-hosts\n",

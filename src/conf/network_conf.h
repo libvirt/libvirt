@@ -225,6 +225,7 @@ struct _virNetworkDef {
     char *bridge;       /* Name of bridge device */
     int  macTableManager; /* enum virNetworkBridgeMACTableManager */
     char *domain;
+    int domainLocalOnly; /* enum virTristateBool: yes disables dns forwarding */
     unsigned long delay;   /* Bridge forward delay (ms) */
     bool stp; /* Spanning tree protocol */
     virMacAddr mac; /* mac address of bridge device */
