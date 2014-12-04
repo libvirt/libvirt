@@ -2960,6 +2960,9 @@ Create and start a pool object from the XML I<file>.
 [I<--source-host hostname>] [I<--source-path path>] [I<--source-dev path>]
 [I<--source-name name>] [I<--target path>] [I<--source-format format>]
 [I<--auth-type authtype> I<--auth-username username> I<--secret-usage usage>]
+[[I<--adapter-name name>] | [I<--adapter-wwnn> I<--adapter-wwpn>]
+[I<--adapter-parent parent>]]
+
 
 Create and start a pool object I<name> from the raw parameters.  If
 I<--print-xml> is specified, then print the XML of the pool object
@@ -2990,6 +2993,14 @@ provides the elements required to generate authentication credentials for
 the storage pool. The I<authtype> is either chap for iscsi I<type> pools or
 ceph for rbd I<type> pools.
 
+[I<--adapter-name name>] defines the scsi_hostN adapter name to be used for
+the scsi_host adapter type pool.
+
+[I<--adapter-wwnn> I<--adapter-wwpn> [I<--adapter-parent parent>]] defines
+the wwnn and wwpn to be used for the fc_host adapter type pool. The parent
+optionally provides the name of the scsi_hostN node device to be used for
+the vHBA.
+
 =item B<pool-define> I<file>
 
 Create, but do not start, a pool object from the XML I<file>.
@@ -2998,6 +3009,8 @@ Create, but do not start, a pool object from the XML I<file>.
 [I<--source-host hostname>] [I<--source-path path>] [I<--source-dev path>]
 [I<--source-name name>] [I<--target path>] [I<--source-format format>]
 [I<--auth-type authtype> I<--auth-username username> I<--secret-usage usage>]
+[[I<--adapter-name name>] | [I<--adapter-wwnn> I<--adapter-wwpn>]
+[I<--adapter-parent parent>]]
 
 Create, but do not start, a pool object I<name> from the raw parameters.  If
 I<--print-xml> is specified, then print the XML of the pool object

@@ -235,6 +235,22 @@ static const vshCmdOptDef opts_pool_X_as[] = {
      .type = VSH_OT_STRING,
      .help = N_("auth secret usage to be used for underlying storage")
     },
+    {.name = "adapter-name",
+     .type = VSH_OT_STRING,
+     .help = N_("adapter name to be used for underlying storage")
+    },
+    {.name = "adapter-wwnn",
+     .type = VSH_OT_STRING,
+     .help = N_("adapter wwnn to be used for underlying storage")
+    },
+    {.name = "adapter-wwpn",
+     .type = VSH_OT_STRING,
+     .help = N_("adapter wwpn to be used for underlying storage")
+    },
+    {.name = "adapter-parent",
+     .type = VSH_OT_STRING,
+     .help = N_("adapter parent to be used for underlying storage")
+    },
     {.name = NULL}
 };
 
@@ -247,7 +263,8 @@ vshBuildPoolXML(vshControl *ctl,
     const char *name = NULL, *type = NULL, *srcHost = NULL, *srcPath = NULL,
                *srcDev = NULL, *srcName = NULL, *srcFormat = NULL,
                *target = NULL, *authType = NULL, *authUsername = NULL,
-               *secretUsage = NULL;
+               *secretUsage = NULL, *adapterName = NULL, *adapterParent = NULL,
+               *adapterWwnn = NULL, *adapterWwpn = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
@@ -263,7 +280,11 @@ vshBuildPoolXML(vshControl *ctl,
         vshCommandOptStringReq(ctl, cmd, "target", &target) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "auth-type", &authType) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "auth-username", &authUsername) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "secret-usage", &secretUsage) < 0)
+        vshCommandOptStringReq(ctl, cmd, "secret-usage", &secretUsage) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "adapter-name", &adapterName) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "adapter-wwnn", &adapterWwnn) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "adapter-wwpn", &adapterWwpn) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "adapter-parent", &adapterParent) < 0)
         goto cleanup;
 
     virBufferAsprintf(&buf, "<pool type='%s'>\n", type);
@@ -279,6 +300,16 @@ vshBuildPoolXML(vshControl *ctl,
             virBufferAsprintf(&buf, "<dir path='%s'/>\n", srcPath);
         if (srcDev)
             virBufferAsprintf(&buf, "<device path='%s'/>\n", srcDev);
+        if (adapterWwnn && adapterWwpn) {
+            virBufferAddLit(&buf, "<adapter type='fc_host'");
+            if (adapterParent)
+                virBufferAsprintf(&buf, " parent='%s'", adapterParent);
+            virBufferAsprintf(&buf, " wwnn='%s' wwpn='%s'/>\n",
+                              adapterWwnn, adapterWwpn);
+        } else if (adapterName) {
+            virBufferAsprintf(&buf, "<adapter type='scsi_host' name='%s'/>\n",
+                              adapterName);
+        }
         if (authType && authUsername && secretUsage) {
             virBufferAsprintf(&buf, "<auth type='%s' username='%s'>\n",
                               authType, authUsername);
