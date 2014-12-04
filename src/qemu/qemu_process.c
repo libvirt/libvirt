@@ -3571,15 +3571,15 @@ qemuProcessReconnect(void *opaque)
      * deleted if qemuConnectMonitor() failed */
     virObjectRef(obj);
 
+    cfg = virQEMUDriverGetConfig(driver);
+    priv = obj->privateData;
+
     if (qemuDomainObjBeginJob(driver, obj, QEMU_JOB_MODIFY) < 0)
         goto killvm;
 
     virNWFilterReadLockFilterUpdates();
 
-    cfg = virQEMUDriverGetConfig(driver);
     VIR_DEBUG("Reconnect monitor to %p '%s'", obj, obj->def->name);
-
-    priv = obj->privateData;
 
     /* XXX check PID liveliness & EXE path */
     if (qemuConnectMonitor(driver, obj, QEMU_ASYNC_JOB_NONE, -1) < 0)
