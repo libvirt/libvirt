@@ -572,6 +572,7 @@ qemuProcessFakeReboot(void *opaque)
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virDomainRunningReason reason = VIR_DOMAIN_RUNNING_BOOTED;
     int ret = -1;
+
     VIR_DEBUG("vm=%p", vm);
     virObjectLock(vm);
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
@@ -620,16 +621,12 @@ qemuProcessFakeReboot(void *opaque)
     ret = 0;
 
  endjob:
-    if (!qemuDomainObjEndJob(driver, vm))
-        vm = NULL;
+    qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    if (vm) {
-        if (ret == -1)
-            ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
-        if (virObjectUnref(vm))
-            virObjectUnlock(vm);
-    }
+    if (ret == -1)
+        ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
+    qemuDomObjEndAPI(&vm);
     if (event)
         qemuDomainEventQueue(driver, event);
     virObjectUnref(cfg);
@@ -1447,7 +1444,7 @@ qemuProcessHandleGuestPanic(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
  cleanup:
     if (vm)
-       virObjectUnlock(vm);
+        virObjectUnlock(vm);
 
     return 0;
 }
@@ -3575,7 +3572,7 @@ struct qemuProcessReconnectData {
  * this thread function has increased the reference counter to it
  * so that we now have to close it.
  *
- * This function also inherits a locked domain object.
+ * This function also inherits a locked and ref'd domain object.
  *
  * This function needs to:
  * 1. Enter job
@@ -3607,10 +3604,6 @@ qemuProcessReconnect(void *opaque)
     VIR_FREE(data);
 
     qemuDomainObjRestoreJob(obj, &oldjob);
-
-    /* Hold an extra reference because we can't allow 'vm' to be
-     * deleted if qemuConnectMonitor() failed */
-    virObjectRef(obj);
 
     cfg = virQEMUDriverGetConfig(driver);
     priv = obj->privateData;
@@ -3700,7 +3693,8 @@ qemuProcessReconnect(void *opaque)
         VIR_DEBUG("Finishing shutdown sequence for domain %s",
                   obj->def->name);
         qemuProcessShutdownOrReboot(driver, obj);
-        goto endjob;
+        qemuDomainObjEndJob(driver, obj);
+        goto cleanup;
     }
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE))
@@ -3752,23 +3746,11 @@ qemuProcessReconnect(void *opaque)
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
- endjob:
-    /* we hold an extra reference, so this will never fail */
-    ignore_value(qemuDomainObjEndJob(driver, obj));
-
-    if (virObjectUnref(obj))
-        virObjectUnlock(obj);
-
-    virObjectUnref(conn);
-    virObjectUnref(cfg);
-    virNWFilterUnlockFilterUpdates();
-
-    return;
+    qemuDomainObjEndJob(driver, obj);
+    goto cleanup;
 
  error:
-    /* we hold an extra reference, so this will never fail */
-    ignore_value(qemuDomainObjEndJob(driver, obj));
-
+    qemuDomainObjEndJob(driver, obj);
  killvm:
     if (virDomainObjIsActive(obj)) {
         /* We can't get the monitor back, so must kill the VM
@@ -3788,13 +3770,11 @@ qemuProcessReconnect(void *opaque)
         qemuProcessStop(driver, obj, state, 0);
     }
 
-    if (virObjectUnref(obj)) {
-        if (!obj->persistent)
-            qemuDomainRemoveInactive(driver, obj);
-        else
-            virObjectUnlock(obj);
-    }
+    if (!obj->persistent)
+        qemuDomainRemoveInactive(driver, obj);
 
+ cleanup:
+    qemuDomObjEndAPI(&obj);
     virObjectUnref(conn);
     virObjectUnref(cfg);
     virNWFilterUnlockFilterUpdates();
@@ -3818,9 +3798,10 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
     memcpy(data, src, sizeof(*data));
     data->obj = obj;
 
-    /* this lock will be eventually transferred to the thread that handles the
-     * reconnect */
+    /* this lock and reference will be eventually transferred to the thread
+     * that handles the reconnect */
     virObjectLock(obj);
+    virObjectRef(obj);
 
     /* Since we close the connection later on, we have to make sure that the
      * threads we start see a valid connection throughout their lifetime. We
@@ -3836,9 +3817,8 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
         qemuProcessStop(src->driver, obj, VIR_DOMAIN_SHUTOFF_FAILED, 0);
         if (!obj->persistent)
             qemuDomainRemoveInactive(src->driver, obj);
-        else
-            virObjectUnlock(obj);
 
+        qemuDomObjEndAPI(&obj);
         virObjectUnref(data->conn);
         VIR_FREE(data);
         return -1;
@@ -5505,12 +5485,11 @@ qemuProcessAutoDestroy(virDomainObjPtr dom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
-    if (!qemuDomainObjEndJob(driver, dom))
-        dom = NULL;
-    if (dom && !dom->persistent) {
+    qemuDomainObjEndJob(driver, dom);
+
+    if (!dom->persistent)
         qemuDomainRemoveInactive(driver, dom);
-        dom = NULL;
-    }
+
     if (event)
         qemuDomainEventQueue(driver, event);
 
@@ -5530,9 +5509,11 @@ int qemuProcessAutoDestroyAdd(virQEMUDriverPtr driver,
 int qemuProcessAutoDestroyRemove(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm)
 {
+    int ret;
     VIR_DEBUG("vm=%s", vm->def->name);
-    return virCloseCallbacksUnset(driver->closeCallbacks, vm,
-                                  qemuProcessAutoDestroy);
+    ret = virCloseCallbacksUnset(driver->closeCallbacks, vm,
+                                 qemuProcessAutoDestroy);
+    return ret;
 }
 
 bool qemuProcessAutoDestroyActive(virQEMUDriverPtr driver,

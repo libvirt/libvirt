@@ -1,7 +1,7 @@
 /*
  * qemu_migration.h: QEMU migration handling
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2011, 2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -82,13 +82,13 @@ void qemuMigrationJobStartPhase(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
                                 qemuMigrationJobPhase phase)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-bool qemuMigrationJobContinue(virDomainObjPtr obj)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+void qemuMigrationJobContinue(virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1);
 bool qemuMigrationJobIsActive(virDomainObjPtr vm,
                               qemuDomainAsyncJob job)
     ATTRIBUTE_NONNULL(1);
-bool qemuMigrationJobFinish(virQEMUDriverPtr driver, virDomainObjPtr obj)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+void qemuMigrationJobFinish(virQEMUDriverPtr driver, virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMigrationSetOffline(virQEMUDriverPtr driver,
                             virDomainObjPtr vm);

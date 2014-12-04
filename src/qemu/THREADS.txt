@@ -26,12 +26,20 @@ There are a number of locks on various objects
   * virDomainObjPtr
 
     Will be locked after calling any of the virDomainFindBy{ID,Name,UUID}
-    methods.
+    methods.  However, preferred method is qemuDomObjFromDomain() that uses
+    virDomainFindByUUIDRef() which also increases the reference counter and
+    finds the domain in the domain list without blocking all other lookups.
+    When the domain is locked and the reference increased, the prefered way of
+    decrementing the reference counter and unlocking the domain is using the
+    qemuDomObjEndAPI() function.
 
     Lock must be held when changing/reading any variable in the virDomainObjPtr
 
     If the lock needs to be dropped & then re-acquired for a short period of
     time, the reference count must be incremented first using virDomainObjRef().
+    There is no need to increase the reference count if qemuDomObjFromDomain()
+    was used for looking up the domain.  In this case there is one reference
+    already added by that function.
 
     This lock must not be held for anything which sleeps/waits (i.e. monitor
     commands).
@@ -109,7 +117,6 @@ To lock the virDomainObjPtr
 To acquire the normal job condition
 
   qemuDomainObjBeginJob()
-    - Increments ref count on virDomainObjPtr
     - Waits until the job is compatible with current async job or no
       async job is running
     - Waits for job.cond condition 'job.active != 0' using virDomainObjPtr
@@ -122,14 +129,12 @@ To acquire the normal job condition
   qemuDomainObjEndJob()
     - Sets job.active to 0
     - Signals on job.cond condition
-    - Decrements ref count on virDomainObjPtr
 
 
 
 To acquire the asynchronous job condition
 
   qemuDomainObjBeginAsyncJob()
-    - Increments ref count on virDomainObjPtr
     - Waits until no async job is running
     - Waits for job.cond condition 'job.active != 0' using virDomainObjPtr
       mutex
@@ -141,7 +146,6 @@ To acquire the asynchronous job condition
   qemuDomainObjEndAsyncJob()
     - Sets job.asyncJob to 0
     - Broadcasts on job.asyncCond condition
-    - Decrements ref count on virDomainObjPtr
 
 
 
@@ -179,12 +183,10 @@ To acquire the QEMU monitor lock as part of an asynchronous job
 To keep a domain alive while waiting on a remote command
 
   qemuDomainObjEnterRemote()
-    - Increments ref count on virDomainObjPtr
     - Releases the virDomainObjPtr lock
 
   qemuDomainObjExitRemote()
     - Acquires the virDomainObjPtr lock
-    - Decrements ref count on virDomainObjPtr
 
 
 Design patterns
@@ -195,18 +197,18 @@ Design patterns
 
      virDomainObjPtr obj;
 
-     obj = virDomainFindByUUID(driver->domains, dom->uuid);
+     obj = qemuDomObjFromDomain(dom);
 
      ...do work...
 
-     virDomainObjUnlock(obj);
+     qemuDomObjEndAPI(&obj);
 
 
  * Updating something directly to do with a virDomainObjPtr
 
      virDomainObjPtr obj;
 
-     obj = virDomainFindByUUID(driver->domains, dom->uuid);
+     obj = qemuDomObjFromDomain(dom);
 
      qemuDomainObjBeginJob(obj, QEMU_JOB_TYPE);
 
@@ -214,18 +216,15 @@ Design patterns
 
      qemuDomainObjEndJob(obj);
 
-     virDomainObjUnlock(obj);
-
-
+     qemuDomObjEndAPI(&obj);
 
 
  * Invoking a monitor command on a virDomainObjPtr
 
-
      virDomainObjPtr obj;
      qemuDomainObjPrivatePtr priv;
 
-     obj = virDomainFindByUUID(driver->domains, dom->uuid);
+     obj = qemuDomObjFromDomain(dom);
 
      qemuDomainObjBeginJob(obj, QEMU_JOB_TYPE);
 
@@ -240,8 +239,7 @@ Design patterns
      ...do final work...
 
      qemuDomainObjEndJob(obj);
-     virDomainObjUnlock(obj);
-
+     qemuDomObjEndAPI(&obj);
 
 
  * Running asynchronous job
@@ -249,7 +247,7 @@ Design patterns
      virDomainObjPtr obj;
      qemuDomainObjPrivatePtr priv;
 
-     obj = virDomainFindByUUID(driver->domains, dom->uuid);
+     obj = qemuDomObjFromDomain(dom);
 
      qemuDomainObjBeginAsyncJob(obj, QEMU_ASYNC_JOB_TYPE);
      qemuDomainObjSetAsyncJobMask(obj, allowedJobs);
@@ -281,7 +279,7 @@ Design patterns
      ...do final work...
 
      qemuDomainObjEndAsyncJob(obj);
-     virDomainObjUnlock(obj);
+     qemuDomObjEndAPI(&obj);
 
 
  * Coordinating with a remote server for migration
@@ -289,7 +287,7 @@ Design patterns
      virDomainObjPtr obj;
      qemuDomainObjPrivatePtr priv;
 
-     obj = virDomainFindByUUID(driver->domains, dom->uuid);
+     obj = qemuDomObjFromDomain(dom);
 
      qemuDomainObjBeginAsyncJob(obj, QEMU_ASYNC_JOB_TYPE);
 
@@ -309,4 +307,4 @@ Design patterns
      ...do final work...
 
      qemuDomainObjEndAsyncJob(obj);
-     virDomainObjUnlock(obj);
+     qemuDomObjEndAPI(&obj);

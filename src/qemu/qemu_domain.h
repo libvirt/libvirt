@@ -226,12 +226,10 @@ int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
                                qemuDomainAsyncJob asyncJob)
     ATTRIBUTE_RETURN_CHECK;
 
-bool qemuDomainObjEndJob(virQEMUDriverPtr driver,
-                         virDomainObjPtr obj)
-    ATTRIBUTE_RETURN_CHECK;
-bool qemuDomainObjEndAsyncJob(virQEMUDriverPtr driver,
-                              virDomainObjPtr obj)
-    ATTRIBUTE_RETURN_CHECK;
+void qemuDomainObjEndJob(virQEMUDriverPtr driver,
+                         virDomainObjPtr obj);
+void qemuDomainObjEndAsyncJob(virQEMUDriverPtr driver,
+                              virDomainObjPtr obj);
 void qemuDomainObjAbortAsyncJob(virDomainObjPtr obj);
 void qemuDomainObjSetJobPhase(virQEMUDriverPtr driver,
                               virDomainObjPtr obj,
@@ -412,5 +410,7 @@ int qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
                               int *nparams)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
+
+void qemuDomObjEndAPI(virDomainObjPtr *vm);
 
 #endif /* __QEMU_DOMAIN_H__ */
