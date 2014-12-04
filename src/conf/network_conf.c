@@ -3508,6 +3508,30 @@ virNetworkIpDefByIndex(virNetworkDefPtr def, int parentIndex)
     return ipdef;
 }
 
+
+static int
+virNetworkDefUpdateCheckMultiDHCP(virNetworkDefPtr def,
+                                  virNetworkIpDefPtr ipdef)
+{
+    int family = VIR_SOCKET_ADDR_FAMILY(&ipdef->address);
+    size_t i;
+    virNetworkIpDefPtr ip;
+
+    for (i = 0; (ip = virNetworkDefGetIpByIndex(def, family, i)); i++) {
+        if (ip != ipdef) {
+            if (ip->nranges || ip->nhosts) {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("dhcp is supported only for a "
+                                 "single %s address on each network"),
+                               (family == AF_INET) ? "IPv4" : "IPv6");
+                return -1;
+            }
+        }
+    }
+    return 0;
+}
+
+
 static int
 virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
                               unsigned int command,
@@ -3572,6 +3596,9 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
 
     } else if ((command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) ||
                (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST)) {
+
+        if (virNetworkDefUpdateCheckMultiDHCP(def, ipdef) < 0)
+            goto cleanup;
 
         /* log error if an entry with same name/address/ip already exists */
         for (i = 0; i < ipdef->nhosts; i++) {
@@ -3679,6 +3706,9 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
 
     if ((command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) ||
         (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST)) {
+
+        if (virNetworkDefUpdateCheckMultiDHCP(def, ipdef) < 0)
+            goto cleanup;
 
         if (i < ipdef->nranges) {
             char *startip = virSocketAddrFormat(&range.start);
