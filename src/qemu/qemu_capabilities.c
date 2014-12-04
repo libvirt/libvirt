@@ -1325,7 +1325,8 @@ int virQEMUCapsParseHelpStr(const char *qemu,
                             unsigned int *version,
                             bool *is_kvm,
                             unsigned int *kvm_version,
-                            bool check_yajl)
+                            bool check_yajl,
+                            const char *qmperr)
 {
     unsigned major, minor, micro;
     const char *p = help;
@@ -1386,9 +1387,15 @@ int virQEMUCapsParseHelpStr(const char *qemu,
      * using QMP probing.
      */
     if (*version >= 1002000) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("QEMU %u.%u.%u is too new for help parsing"),
-                       major, minor, micro);
+        if (qmperr && *qmperr) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("QEMU / QMP failed: %s"),
+                           qmperr);
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("QEMU %u.%u.%u is too new for help parsing"),
+                           major, minor, micro);
+        }
         goto cleanup;
     }
 
@@ -2933,7 +2940,7 @@ virQEMUCapsInitCached(virQEMUCapsPtr qemuCaps, const char *cacheDir)
 #define QEMU_SYSTEM_PREFIX "qemu-system-"
 
 static int
-virQEMUCapsInitHelp(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid)
+virQEMUCapsInitHelp(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid, const char *qmperr)
 {
     virCommandPtr cmd = NULL;
     bool is_kvm;
@@ -2964,7 +2971,8 @@ virQEMUCapsInitHelp(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid)
                                 &qemuCaps->version,
                                 &is_kvm,
                                 &qemuCaps->kvmVersion,
-                                false) < 0)
+                                false,
+                                qmperr) < 0)
         goto cleanup;
 
     /* x86_64 and i686 support PCI-multibus on all machine types
@@ -3215,7 +3223,8 @@ static int
 virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
                    const char *libDir,
                    uid_t runUid,
-                   gid_t runGid)
+                   gid_t runGid,
+                   char **qmperr)
 {
     int ret = -1;
     virCommandPtr cmd = NULL;
@@ -3277,13 +3286,16 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
     virCommandSetGID(cmd, runGid);
     virCommandSetUID(cmd, runUid);
 
+    virCommandSetErrorBuffer(cmd, qmperr);
+
     /* Log, but otherwise ignore, non-zero status.  */
     if (virCommandRun(cmd, &status) < 0)
         goto cleanup;
 
     if (status != 0) {
         ret = 0;
-        VIR_DEBUG("QEMU %s exited with status %d", qemuCaps->binary, status);
+        VIR_DEBUG("QEMU %s exited with status %d: %s",
+                  qemuCaps->binary, status, *qmperr);
         goto cleanup;
     }
 
@@ -3332,6 +3344,8 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
             VIR_ERROR(_("Failed to kill process %lld: %s"),
                       (long long) pid,
                       virStrerror(errno, ebuf, sizeof(ebuf)));
+
+        VIR_FREE(*qmperr);
     }
     if (pidfile) {
         unlink(pidfile);
@@ -3372,6 +3386,7 @@ virQEMUCapsPtr virQEMUCapsNewForBinary(const char *binary,
     virQEMUCapsPtr qemuCaps;
     struct stat sb;
     int rv;
+    char *qmperr = NULL;
 
     if (!(qemuCaps = virQEMUCapsNew()))
         goto error;
@@ -3402,13 +3417,13 @@ virQEMUCapsPtr virQEMUCapsNewForBinary(const char *binary,
         goto error;
 
     if (rv == 0) {
-        if (virQEMUCapsInitQMP(qemuCaps, libDir, runUid, runGid) < 0) {
+        if (virQEMUCapsInitQMP(qemuCaps, libDir, runUid, runGid, &qmperr) < 0) {
             virQEMUCapsLogProbeFailure(binary);
             goto error;
         }
 
         if (!qemuCaps->usedQMP &&
-            virQEMUCapsInitHelp(qemuCaps, runUid, runGid) < 0) {
+            virQEMUCapsInitHelp(qemuCaps, runUid, runGid, qmperr) < 0) {
             virQEMUCapsLogProbeFailure(binary);
             goto error;
         }
@@ -3417,9 +3432,11 @@ virQEMUCapsPtr virQEMUCapsNewForBinary(const char *binary,
             goto error;
     }
 
+    VIR_FREE(qmperr);
     return qemuCaps;
 
  error:
+    VIR_FREE(qmperr);
     virObjectUnref(qemuCaps);
     qemuCaps = NULL;
     return NULL;
