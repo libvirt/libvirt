@@ -1066,6 +1066,12 @@ virXMLInjectNamespace(xmlNodePtr node,
 {
     xmlNsPtr ns;
 
+    if (xmlValidateNCName((const unsigned char *)key, 1) != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to validate prefix for a new XML namespace"));
+        return -1;
+    }
+
     if (!(ns = xmlNewNs(node, (const unsigned char *)uri, (const unsigned char *)key))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to create a new XML namespace"));
