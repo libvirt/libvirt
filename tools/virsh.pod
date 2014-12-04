@@ -2956,27 +2956,48 @@ data on the target device is overwritten unconditionally.
 
 Create and start a pool object from the XML I<file>.
 
-=item B<pool-create-as> I<name> I<--print-xml> I<type> [I<source-host>]
-[I<source-path>] [I<source-dev>] [I<source-name>] [<target>]
-[I<--source-format format>]
+=item B<pool-create-as> I<name> I<type> [I<--print-xml>]
+[I<--source-host hostname>] [I<--source-path path>] [I<--source-dev path>]
+[I<--source-name name>] [I<--target path>] [I<--source-format format>]
 
 Create and start a pool object I<name> from the raw parameters.  If
 I<--print-xml> is specified, then print the XML of the pool object
 without creating the pool.  Otherwise, the pool has the specified
 I<type>.
 
+[I<--source-host hostname>] provides the source hostname for pools backed
+by storage from a remote server (pool types netfs, iscsi, rbd, sheepdog,
+gluster).
+
+[I<--source-path path>] provides the source directory path for pools backed
+by directories (pool type dir).
+
+[I<--source-dev path>] provides the source path for pools backed by physical
+devices (pool types fs, logical, disk, iscsi, zfs).
+
+[I<--source-name name>] provides the source name for pools backed by storage
+from a named element (pool types logical, rbd, sheepdog, gluster).
+
+[I<--target path>] is the path for the mapping of the storage pool into
+the host file system.
+
+[I<--source-format format>] provides information about the format of the
+pool (pool types fs, netfs, disk, logical).
+
 =item B<pool-define> I<file>
 
 Create, but do not start, a pool object from the XML I<file>.
 
-=item B<pool-define-as> I<name> I<--print-xml> I<type> [I<source-host>]
-[I<source-path>] [I<source-dev>] [I<source-name>] [<target>]
-[I<--source-format format>]
+=item B<pool-define-as> I<name> I<type> [I<--print-xml>]
+[I<--source-host hostname>] [I<--source-path path>] [I<--source-dev path>]
+[I<--source-name name>] [I<--target path>] [I<--source-format format>]
 
 Create, but do not start, a pool object I<name> from the raw parameters.  If
 I<--print-xml> is specified, then print the XML of the pool object
 without defining the pool.  Otherwise, the pool has the specified
 I<type>.
+
+Use the same arguments as B<pool-define-as>.
 
 =item B<pool-destroy> I<pool-or-uuid>
 
