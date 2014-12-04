@@ -80,7 +80,7 @@
           &lt;host name="iscsi.example.com"/&gt;
           &lt;device path="demo-target"/&gt;
           &lt;auth type='chap' username='myname'&gt;
-            &lt;secret type='iscsi' usage='mycluster_myname'/&gt;
+            &lt;secret usage='mycluster_myname'/&gt;
           &lt;/auth&gt;
           &lt;vendor name="Acme"/&gt;
           &lt;product name="model"/&gt;
@@ -179,7 +179,7 @@
             </dd>
         </dl>
         <dl>
-          <dt><code>wwwn</code> and <code>wwpn</code></dt>
+          <dt><code>wwnn</code> and <code>wwpn</code></dt>
           <dd>The "World Wide Node Name" (<code>wwnn</code>) and "World Wide
             Port Name" (<code>wwpn</code>) are used by the "fc_host" adapter
             to uniquely identify the device in the Fibre Channel storage fabric
