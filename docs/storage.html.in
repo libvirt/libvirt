@@ -551,12 +551,12 @@
         &lt;name&gt;myrbdpool&lt;/name&gt;
         &lt;source&gt;
           &lt;name&gt;rbdpool&lt;/name&gt;
-            &lt;host name='1.2.3.4' port='6789'/&gt;
-            &lt;host name='my.ceph.monitor' port='6789'/&gt;
-            &lt;host name='third.ceph.monitor' port='6789'/&gt;
-            &lt;auth username='admin' type='ceph'&gt;
-              &lt;secret uuid='2ec115d7-3a88-3ceb-bc12-0ac909a6fd87'/&gt;
-            &lt;/auth&gt;
+          &lt;host name='1.2.3.4' port='6789'/&gt;
+          &lt;host name='my.ceph.monitor' port='6789'/&gt;
+          &lt;host name='third.ceph.monitor' port='6789'/&gt;
+          &lt;auth username='admin' type='ceph'&gt;
+            &lt;secret uuid='2ec115d7-3a88-3ceb-bc12-0ac909a6fd87'/&gt;
+          &lt;/auth&gt;
         &lt;/source&gt;
       &lt;/pool&gt;</pre>
 
