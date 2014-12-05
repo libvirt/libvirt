@@ -18566,6 +18566,7 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = dom->privateData;
     bool abbreviated = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int count_index = -1;
 
     if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom)) {
         abbreviated = true; /* it's ok, just go ahead silently */
@@ -18582,7 +18583,11 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
         }
     }
 
-    QEMU_ADD_COUNT_PARAM(record, maxparams, "block", dom->def->ndisks);
+    /* When listing backing chains, it's easier to fix up the count
+     * after the iteration than it is to iterate twice; but we still
+     * want count listed first.  */
+    count_index = record->nparams;
+    QEMU_ADD_COUNT_PARAM(record, maxparams, "block", 0);
 
     for (i = 0; i < dom->def->ndisks; i++) {
         qemuBlockStats *entry;
@@ -18640,6 +18645,7 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
 
     }
 
+    record->params[count_index].value.ui = i;
     ret = 0;
 
  cleanup:
