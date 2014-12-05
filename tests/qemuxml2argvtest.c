@@ -1467,6 +1467,8 @@ mymain(void)
 
     DO_TEST("fips-enabled", QEMU_CAPS_ENABLE_FIPS);
 
+    DO_TEST("cpu-host-passthrough-features-invalid", QEMU_CAPS_KVM, QEMU_CAPS_CPU_HOST);
+
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
