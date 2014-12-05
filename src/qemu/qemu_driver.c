@@ -18371,7 +18371,7 @@ do { \
                               maxparams, \
                               param_name, \
                               count) < 0) \
-        return -1; \
+        goto cleanup; \
 } while (0)
 
 #define QEMU_ADD_NAME_PARAM(record, maxparams, type, num, name) \
@@ -18384,7 +18384,7 @@ do { \
                                 maxparams, \
                                 param_name, \
                                 name) < 0) \
-        return -1; \
+        goto cleanup; \
 } while (0)
 
 #define QEMU_ADD_NET_PARAM(record, maxparams, num, name, value) \
@@ -18409,6 +18409,7 @@ qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 {
     size_t i;
     struct _virDomainInterfaceStats tmp;
+    int ret = -1;
 
     if (!virDomainObjIsActive(dom))
         return 0;
@@ -18448,7 +18449,9 @@ qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                            "tx.drop", tmp.tx_drop);
     }
 
-    return 0;
+    ret = 0;
+ cleanup:
+    return ret;
 }
 
 #undef QEMU_ADD_NET_PARAM
