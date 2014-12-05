@@ -1034,26 +1034,24 @@ safewrite(int fd, const void *buf, size_t count)
     return nwritten;
 }
 
-#ifdef HAVE_POSIX_FALLOCATE
-int
-safezero(int fd, off_t offset, off_t len)
+static int
+safezero_posix_fallocate(int fd, off_t offset, off_t len)
 {
+#ifdef HAVE_POSIX_FALLOCATE
     int ret = posix_fallocate(fd, offset, len);
     if (ret == 0)
         return 0;
     errno = ret;
+#endif
     return -1;
 }
 
-#else
-
-int
-safezero(int fd, off_t offset, off_t len)
+static int
+safezero_mmap(int fd, off_t offset, off_t len)
 {
+#ifdef HAVE_MMAP
     int r;
     char *buf;
-    unsigned long long remain, bytes;
-# ifdef HAVE_MMAP
     static long pagemask;
     off_t map_skip;
 
@@ -1080,7 +1078,16 @@ safezero(int fd, off_t offset, off_t len)
 
     /* fall back to writing zeroes using safewrite if mmap fails (for
      * example because of virtual memory limits) */
-# endif /* HAVE_MMAP */
+#endif /* HAVE_MMAP */
+    return -1;
+}
+
+static int
+safezero_slow(int fd, off_t offset, off_t len)
+{
+    int r;
+    char *buf;
+    unsigned long long remain, bytes;
 
     if (lseek(fd, offset, SEEK_SET) < 0)
         return -1;
@@ -1111,8 +1118,26 @@ safezero(int fd, off_t offset, off_t len)
     VIR_FREE(buf);
     return 0;
 }
-#endif /* HAVE_POSIX_FALLOCATE */
 
+int safezero(int fd, off_t offset, off_t len)
+{
+    int ret;
+
+    /* posix_fallocate returns 0 on success or error number on failure,
+     * but errno is not set so use that to our advantage since we set
+     * errno to the returned value if we make the call. If we don't make
+     * the call because it doesn't exist, then errno won't change and
+     * we can try other methods.
+     */
+    errno = 0;
+    ret = safezero_posix_fallocate(fd, offset, len);
+    if (ret == 0 || errno != 0)
+        return ret;
+
+    if (safezero_mmap(fd, offset, len) == 0)
+        return 0;
+    return safezero_slow(fd, offset, len);
+}
 
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 /* search /proc/mounts for mount point of *type; return pointer to
