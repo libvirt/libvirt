@@ -666,7 +666,7 @@ virCPUDefFormatBuf(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    for (i = 0; i < def->nfeatures; i++) {
+    for (i = 0; formatModel && i < def->nfeatures; i++) {
         virCPUFeatureDefPtr feature = def->features + i;
 
         if (!feature->name) {
