@@ -288,7 +288,7 @@
             (Single Root I/O Virtualization) virtual function (VF)
             devices can be assigned in this manner; to assign a
             standard single-port PCI or PCIe ethernet card to a guest,
-            use the traditional <code>&lt; hostdev&gt;</code> device
+            use the traditional <code>&lt;hostdev&gt;</code> device
             definition. <span class="since"> Since 0.10.0</span>
 
             <p>
@@ -312,9 +312,9 @@
 
             <p>Note that this "intelligent passthrough" of network
             devices is very similar to the functionality of a
-            standard <code>&lt; hostdev&gt;</code> device, the
+            standard <code>&lt;hostdev&gt;</code> device, the
             difference being that this method allows specifying a MAC
-            address, vlan tag, and <code>&lt;virtualport &gt;</code>
+            address, vlan tag, and <code>&lt;virtualport&gt;</code>
             for the passed-through device. If these capabilities are
             not required, if you have a standard single-port PCI,
             PCIe, or USB network card that doesn't support SR-IOV (and
@@ -383,9 +383,9 @@
           <span class="since">since 0.10.0</span> When using forward
           mode 'hostdev', the interface pool is specified with a list
           of <code>&lt;address&gt;</code> elements, each of which has
-          <code>&lt; type&gt;</code> (must always be <code>'pci'</code>,
+          <code>&lt;type&gt;</code> (must always be <code>'pci'</code>),
           <code>&lt;domain&gt;</code>, <code>&lt;bus&gt;</code>,
-          <code>&lt;slot&gt;</code>, and <code>&lt;function&gt;</code>
+          <code>&lt;slot&gt;</code>and <code>&lt;function&gt;</code>
           attributes.
         </p>
         <pre>
