@@ -2797,7 +2797,8 @@ virStorageFileChown(virStorageSourcePtr src,
         return -2;
     }
 
-    VIR_DEBUG("chown of storage file %p to %d:%d", src, uid, gid);
+    VIR_DEBUG("chown of storage file %p to %u:%u",
+              src, (unsigned int)uid, (unsigned int)gid);
 
     return src->drv->backend->storageFileChown(src, uid, gid);
 }
@@ -2819,9 +2820,9 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     virStorageSourcePtr backingStore = NULL;
     int backingFormat;
 
-    VIR_DEBUG("path=%s format=%d uid=%d gid=%d probe=%d",
+    VIR_DEBUG("path=%s format=%d uid=%u gid=%u probe=%d",
               src->path, src->format,
-              (int)uid, (int)gid, allow_probe);
+              (unsigned int)uid, (unsigned int)gid, allow_probe);
 
     /* exit if we can't load information about the current image */
     if (!virStorageFileSupportsBackingChainTraversal(src))
@@ -2834,13 +2835,15 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         if (src == parent) {
             virReportSystemError(errno,
                                  _("Cannot access storage file '%s' "
-                                   "(as uid:%d, gid:%d)"),
-                                 src->path, (int)uid, (int)gid);
+                                   "(as uid:%u, gid:%u)"),
+                                 src->path, (unsigned int)uid,
+                                 (unsigned int)gid);
         } else {
             virReportSystemError(errno,
                                  _("Cannot access backing file '%s' "
-                                   "of storage file '%s' (as uid:%d, gid:%d)"),
-                                 src->path, parent->path, (int)uid, (int)gid);
+                                   "of storage file '%s' (as uid:%u, gid:%u)"),
+                                 src->path, parent->path,
+                                 (unsigned int)uid, (unsigned int)gid);
         }
 
         goto cleanup;
@@ -2934,8 +2937,8 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
                           bool allow_probe,
                           bool report_broken)
 {
-    VIR_DEBUG("path=%s format=%d uid=%d gid=%d probe=%d, report_broken=%d",
-              src->path, src->format, (int)uid, (int)gid,
+    VIR_DEBUG("path=%s format=%d uid=%u gid=%u probe=%d, report_broken=%d",
+              src->path, src->format, (unsigned int)uid, (unsigned int)gid,
               allow_probe, report_broken);
 
     virHashTablePtr cycle = NULL;
