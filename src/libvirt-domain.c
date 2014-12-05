@@ -10940,7 +10940,11 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *
  * Specifying VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS as @flags makes
  * the function return error in case some of the stat types in @stats were
- * not recognized by the daemon.
+ * not recognized by the daemon.  However, even with this flag, a hypervisor
+ * may omit individual fields within a known group if the information is not
+ * available; as an extreme example, a supported group may produce zero
+ * fields for offline domains if the statistics are meaningful only for a
+ * running domain.
  *
  * Similarly to virConnectListAllDomains, @flags can contain various flags to
  * filter the list of domains to provide stats for.
@@ -11020,9 +11024,13 @@ virConnectGetAllDomainStats(virConnectPtr conn,
  *
  * Specifying VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS as @flags makes
  * the function return error in case some of the stat types in @stats were
- * not recognized by the daemon.
+ * not recognized by the daemon.  However, even with this flag, a hypervisor
+ * may omit individual fields within a known group if the information is not
+ * available; as an extreme example, a supported group may produce zero
+ * fields for offline domains if the statistics are meaningful only for a
+ * running domain.
  *
- * Note that any of the domain list filtering flags in @flags will be rejected
+ * Note that any of the domain list filtering flags in @flags may be rejected
  * by this function.
  *
  * Returns the count of returned statistics structures on success, -1 on error.
