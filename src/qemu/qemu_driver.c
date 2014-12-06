@@ -18565,6 +18565,7 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     virHashTablePtr stats = NULL;
     qemuDomainObjPrivatePtr priv = dom->privateData;
     bool abbreviated = false;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom)) {
         abbreviated = true; /* it's ok, just go ahead silently */
@@ -18594,8 +18595,19 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
 
         if (abbreviated || !disk->info.alias ||
             !(entry = virHashLookup(stats, disk->info.alias))) {
-            /* FIXME: we could still look up sizing by sharing code
-             * with qemuDomainGetBlockInfo */
+            if (virStorageSourceIsEmpty(disk->src))
+                continue;
+            if (qemuStorageLimitsRefresh(driver, cfg, dom, disk->src) < 0)
+                goto cleanup;
+            if (disk->src->allocation)
+                QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, i,
+                                         "allocation", disk->src->allocation);
+            if (disk->src->capacity)
+                QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, i,
+                                         "capacity", disk->src->capacity);
+            if (disk->src->physical)
+                QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, i,
+                                         "physical", disk->src->physical);
             continue;
         }
 
@@ -18632,6 +18644,7 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
 
  cleanup:
     virHashFree(stats);
+    virObjectUnref(cfg);
     return ret;
 }
 
