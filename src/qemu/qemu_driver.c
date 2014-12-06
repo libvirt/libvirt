@@ -18552,6 +18552,82 @@ do { \
         goto cleanup; \
 } while (0)
 
+
+static int
+qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
+                           virQEMUDriverConfigPtr cfg,
+                           virDomainObjPtr dom,
+                           virDomainStatsRecordPtr record,
+                           int *maxparams,
+                           virDomainDiskDefPtr disk,
+                           virStorageSourcePtr src,
+                           size_t block_idx,
+                           bool abbreviated,
+                           virHashTablePtr stats)
+{
+    qemuBlockStats *entry;
+    int ret = -1;
+
+    QEMU_ADD_NAME_PARAM(record, maxparams, "block", "name", block_idx,
+                        disk->dst);
+    if (virStorageSourceIsLocalStorage(src) && src->path)
+        QEMU_ADD_NAME_PARAM(record, maxparams, "block", "path",
+                            block_idx, src->path);
+
+    if (abbreviated || !disk->info.alias ||
+        !(entry = virHashLookup(stats, disk->info.alias))) {
+        if (virStorageSourceIsEmpty(src)) {
+            ret = 0;
+            goto cleanup;
+        }
+        if (qemuStorageLimitsRefresh(driver, cfg, dom, src) < 0)
+            goto cleanup;
+        if (src->allocation)
+            QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+                                     "allocation", src->allocation);
+        if (src->capacity)
+            QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+                                     "capacity", src->capacity);
+        if (src->physical)
+            QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+                                     "physical", src->physical);
+        ret = 0;
+        goto cleanup;
+    }
+
+    QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, block_idx,
+                            "rd.reqs", entry->rd_req);
+    QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, block_idx,
+                            "rd.bytes", entry->rd_bytes);
+    QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, block_idx,
+                            "rd.times", entry->rd_total_times);
+    QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, block_idx,
+                            "wr.reqs", entry->wr_req);
+    QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, block_idx,
+                            "wr.bytes", entry->wr_bytes);
+    QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, block_idx,
+                            "wr.times", entry->wr_total_times);
+    QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, block_idx,
+                            "fl.reqs", entry->flush_req);
+    QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, block_idx,
+                            "fl.times", entry->flush_total_times);
+
+    QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+                             "allocation", entry->wr_highest_offset);
+
+    if (entry->capacity)
+        QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+                                 "capacity", entry->capacity);
+    if (entry->physical)
+        QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+                                 "physical", entry->physical);
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
 static int
 qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
                         virDomainObjPtr dom,
@@ -18590,59 +18666,12 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     QEMU_ADD_COUNT_PARAM(record, maxparams, "block", 0);
 
     for (i = 0; i < dom->def->ndisks; i++) {
-        qemuBlockStats *entry;
         virDomainDiskDefPtr disk = dom->def->disks[i];
 
-        QEMU_ADD_NAME_PARAM(record, maxparams, "block", "name", i, disk->dst);
-        if (virStorageSourceIsLocalStorage(disk->src) && disk->src->path)
-            QEMU_ADD_NAME_PARAM(record, maxparams, "block", "path",
-                                i, disk->src->path);
-
-        if (abbreviated || !disk->info.alias ||
-            !(entry = virHashLookup(stats, disk->info.alias))) {
-            if (virStorageSourceIsEmpty(disk->src))
-                continue;
-            if (qemuStorageLimitsRefresh(driver, cfg, dom, disk->src) < 0)
-                goto cleanup;
-            if (disk->src->allocation)
-                QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, i,
-                                         "allocation", disk->src->allocation);
-            if (disk->src->capacity)
-                QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, i,
-                                         "capacity", disk->src->capacity);
-            if (disk->src->physical)
-                QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, i,
-                                         "physical", disk->src->physical);
-            continue;
-        }
-
-        QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
-                                "rd.reqs", entry->rd_req);
-        QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
-                                "rd.bytes", entry->rd_bytes);
-        QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
-                                "rd.times", entry->rd_total_times);
-        QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
-                                "wr.reqs", entry->wr_req);
-        QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
-                                "wr.bytes", entry->wr_bytes);
-        QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
-                                "wr.times", entry->wr_total_times);
-        QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
-                                "fl.reqs", entry->flush_req);
-        QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, i,
-                                "fl.times", entry->flush_total_times);
-
-        QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, i,
-                                 "allocation", entry->wr_highest_offset);
-
-        if (entry->capacity)
-            QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, i,
-                                     "capacity", entry->capacity);
-        if (entry->physical)
-            QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, i,
-                                     "physical", entry->physical);
-
+        if (qemuDomainGetStatsOneBlock(driver, cfg, dom, record, maxparams,
+                                       disk, disk->src, i, abbreviated,
+                                       stats) < 0)
+            goto cleanup;
     }
 
     record->params[count_index].value.ui = i;
