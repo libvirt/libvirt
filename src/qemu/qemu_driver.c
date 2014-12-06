@@ -18277,8 +18277,10 @@ qemuDomainGetStatsState(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 typedef enum {
-    QEMU_DOMAIN_STATS_HAVE_JOB = (1 << 0), /* job is entered, monitor can be
-                                              accessed */
+    QEMU_DOMAIN_STATS_HAVE_JOB = 1 << 0, /* job is entered, monitor can be
+                                            accessed */
+    QEMU_DOMAIN_STATS_BACKING  = 1 << 1, /* include backing chain in
+                                            block stats */
 } qemuDomainStatsFlags;
 
 
@@ -18525,6 +18527,19 @@ qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 #undef QEMU_ADD_NET_PARAM
 
+#define QEMU_ADD_BLOCK_PARAM_UI(record, maxparams, num, name, value) \
+    do {                                                             \
+        char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];               \
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,           \
+                 "block.%zu.%s", num, name);                         \
+        if (virTypedParamsAddUInt(&(record)->params,                 \
+                                  &(record)->nparams,                \
+                                  maxparams,                         \
+                                  param_name,                        \
+                                  value) < 0)                        \
+            goto cleanup;                                            \
+    } while (0)
+
 /* expects a LL, but typed parameter must be ULL */
 #define QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, num, name, value) \
 do { \
@@ -18562,20 +18577,27 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
                            virDomainDiskDefPtr disk,
                            virStorageSourcePtr src,
                            size_t block_idx,
+                           unsigned int backing_idx,
                            bool abbreviated,
                            virHashTablePtr stats)
 {
     qemuBlockStats *entry;
     int ret = -1;
+    char *alias = NULL;
+
+    if (disk->info.alias)
+        alias = qemuDomainStorageAlias(disk->info.alias, backing_idx);
 
     QEMU_ADD_NAME_PARAM(record, maxparams, "block", "name", block_idx,
                         disk->dst);
     if (virStorageSourceIsLocalStorage(src) && src->path)
         QEMU_ADD_NAME_PARAM(record, maxparams, "block", "path",
                             block_idx, src->path);
+    if (backing_idx)
+        QEMU_ADD_BLOCK_PARAM_UI(record, maxparams, block_idx, "backingIndex",
+                                backing_idx);
 
-    if (abbreviated || !disk->info.alias ||
-        !(entry = virHashLookup(stats, disk->info.alias))) {
+    if (abbreviated || !alias || !(entry = virHashLookup(stats, alias))) {
         if (virStorageSourceIsEmpty(src)) {
             ret = 0;
             goto cleanup;
@@ -18624,6 +18646,7 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
 
     ret = 0;
  cleanup:
+    VIR_FREE(alias);
     return ret;
 }
 
@@ -18643,14 +18666,17 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     bool abbreviated = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int count_index = -1;
+    size_t visited = 0;
+    bool visitBacking = !!(privflags & QEMU_DOMAIN_STATS_BACKING);
 
     if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom)) {
         abbreviated = true; /* it's ok, just go ahead silently */
     } else {
         qemuDomainObjEnterMonitor(driver, dom);
-        rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats, false);
+        rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats,
+                                             visitBacking);
         ignore_value(qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats,
-                                                         false));
+                                                         visitBacking));
         qemuDomainObjExitMonitor(driver, dom);
 
         if (rc < 0) {
@@ -18667,14 +18693,21 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
 
     for (i = 0; i < dom->def->ndisks; i++) {
         virDomainDiskDefPtr disk = dom->def->disks[i];
+        virStorageSourcePtr src = disk->src;
+        unsigned int backing_idx = 0;
 
-        if (qemuDomainGetStatsOneBlock(driver, cfg, dom, record, maxparams,
-                                       disk, disk->src, i, abbreviated,
-                                       stats) < 0)
-            goto cleanup;
+        while (src && (backing_idx == 0 || visitBacking)) {
+            if (qemuDomainGetStatsOneBlock(driver, cfg, dom, record, maxparams,
+                                           disk, src, visited, backing_idx,
+                                           abbreviated, stats) < 0)
+                goto cleanup;
+            visited++;
+            backing_idx++;
+            src = src->backingStore;
+        }
     }
 
-    record->params[count_index].value.ui = i;
+    record->params[count_index].value.ui = visited;
     ret = 0;
 
  cleanup:
@@ -18818,11 +18851,13 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
     unsigned int domflags = 0;
 
     if (ndoms)
-        virCheckFlags(VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS, -1);
+        virCheckFlags(VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING |
+                      VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS, -1);
     else
         virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE |
                       VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT |
                       VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE |
+                      VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING |
                       VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS, -1);
 
     if (virConnectGetAllDomainStatsEnsureACL(conn) < 0)
@@ -18872,6 +18907,8 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
             domflags |= QEMU_DOMAIN_STATS_HAVE_JOB;
         /* else: without a job it's still possible to gather some data */
 
+        if (flags & VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING)
+            domflags |= QEMU_DOMAIN_STATS_BACKING;
         if (qemuDomainGetStats(conn, dom, stats, &tmp, domflags) < 0)
             goto endjob;
 
