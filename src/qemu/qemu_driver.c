@@ -12799,6 +12799,9 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
                 goto cleanup;
             }
             defdisk->src->format = snapdisk->src->format;
+
+            if (virDomainSaveConfig(cfg->configDir, vm->def) < 0)
+                goto cleanup;
         }
     }
 
