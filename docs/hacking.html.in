@@ -65,7 +65,7 @@
         review your patch set. One should avoid sending patches as attachments,
         but rather send them in email body along with commit message. If a
         developer is sending another version of the patch (e.g. to address
-        review comments), he is advised to note differences to previous
+        review comments), they are advised to note differences to previous
         versions after the <code>---</code> line in the patch so that it helps
         reviewers but doesn't become part of git history. Moreover, such patch
         needs to be prefixed correctly with
