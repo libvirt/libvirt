@@ -2290,7 +2290,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
     }
 
     if (dev->nListens != olddev->nListens) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot change the number of listen addresses"));
         goto cleanup;
     }
@@ -2300,7 +2300,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
         virDomainGraphicsListenDefPtr oldlisten = &olddev->listens[i];
 
         if (newlisten->type != oldlisten->type) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot change the type of listen address"));
             goto cleanup;
         }
@@ -2308,7 +2308,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
         switch ((virDomainGraphicsListenType) newlisten->type) {
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
             if (STRNEQ_NULLABLE(newlisten->address, oldlisten->address)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                                dev->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ?
                                _("cannot change listen address setting on vnc graphics") :
                                _("cannot change listen address setting on spice graphics"));
@@ -2318,7 +2318,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
 
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
             if (STRNEQ_NULLABLE(newlisten->network, oldlisten->network)) {
-                virReportError(VIR_ERR_INVALID_ARG, "%s",
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                                dev->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ?
                            _("cannot change listen network setting on vnc graphics") :
                            _("cannot change listen network setting on spice graphics"));
@@ -2338,12 +2338,12 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
         if ((olddev->data.vnc.autoport != dev->data.vnc.autoport) ||
             (!dev->data.vnc.autoport &&
              (olddev->data.vnc.port != dev->data.vnc.port))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot change port settings on vnc graphics"));
             goto cleanup;
         }
         if (STRNEQ_NULLABLE(olddev->data.vnc.keymap, dev->data.vnc.keymap)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot change keymap setting on vnc graphics"));
             goto cleanup;
         }
@@ -2384,13 +2384,13 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
              (olddev->data.spice.port != dev->data.spice.port)) ||
             (!dev->data.spice.autoport &&
              (olddev->data.spice.tlsPort != dev->data.spice.tlsPort))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot change port settings on spice graphics"));
             goto cleanup;
         }
         if (STRNEQ_NULLABLE(olddev->data.spice.keymap,
                             dev->data.spice.keymap)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                             _("cannot change keymap setting on spice graphics"));
             goto cleanup;
         }
