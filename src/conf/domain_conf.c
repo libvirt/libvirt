@@ -3455,28 +3455,28 @@ virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
     unit = virXMLPropString(node, "unit");
 
     if (controller &&
-        virStrToLong_ui(controller, NULL, 10, &addr->controller) < 0) {
+        virStrToLong_uip(controller, NULL, 10, &addr->controller) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'controller' attribute"));
         goto cleanup;
     }
 
     if (bus &&
-        virStrToLong_ui(bus, NULL, 10, &addr->bus) < 0) {
+        virStrToLong_uip(bus, NULL, 10, &addr->bus) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'bus' attribute"));
         goto cleanup;
     }
 
     if (target &&
-        virStrToLong_ui(target, NULL, 10, &addr->target) < 0) {
+        virStrToLong_uip(target, NULL, 10, &addr->target) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'target' attribute"));
         goto cleanup;
     }
 
     if (unit &&
-        virStrToLong_ui(unit, NULL, 10, &addr->unit) < 0) {
+        virStrToLong_uip(unit, NULL, 10, &addr->unit) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'unit' attribute"));
         goto cleanup;
@@ -3509,21 +3509,21 @@ virDomainDeviceVirtioSerialAddressParseXML(
     port = virXMLPropString(node, "port");
 
     if (controller &&
-        virStrToLong_ui(controller, NULL, 10, &addr->controller) < 0) {
+        virStrToLong_uip(controller, NULL, 10, &addr->controller) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'controller' attribute"));
         goto cleanup;
     }
 
     if (bus &&
-        virStrToLong_ui(bus, NULL, 10, &addr->bus) < 0) {
+        virStrToLong_uip(bus, NULL, 10, &addr->bus) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'bus' attribute"));
         goto cleanup;
     }
 
     if (port &&
-        virStrToLong_ui(port, NULL, 10, &addr->port) < 0) {
+        virStrToLong_uip(port, NULL, 10, &addr->port) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'port' attribute"));
         goto cleanup;
@@ -3555,19 +3555,19 @@ virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
 
     if (cssid && ssid && devno) {
         if (cssid &&
-            virStrToLong_ui(cssid, NULL, 0, &addr->cssid) < 0) {
+            virStrToLong_uip(cssid, NULL, 0, &addr->cssid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Cannot parse <address> 'cssid' attribute"));
             goto cleanup;
         }
         if (ssid &&
-            virStrToLong_ui(ssid, NULL, 0, &addr->ssid) < 0) {
+            virStrToLong_uip(ssid, NULL, 0, &addr->ssid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Cannot parse <address> 'ssid' attribute"));
             goto cleanup;
         }
         if (devno &&
-            virStrToLong_ui(devno, NULL, 0, &addr->devno) < 0) {
+            virStrToLong_uip(devno, NULL, 0, &addr->devno) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Cannot parse <address> 'devno' attribute"));
             goto cleanup;
@@ -3609,14 +3609,14 @@ virDomainDeviceCcidAddressParseXML(xmlNodePtr node,
     slot = virXMLPropString(node, "slot");
 
     if (controller &&
-        virStrToLong_ui(controller, NULL, 10, &addr->controller) < 0) {
+        virStrToLong_uip(controller, NULL, 10, &addr->controller) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'controller' attribute"));
         goto cleanup;
     }
 
     if (slot &&
-        virStrToLong_ui(slot, NULL, 10, &addr->slot) < 0) {
+        virStrToLong_uip(slot, NULL, 10, &addr->slot) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'slot' attribute"));
         goto cleanup;
@@ -3644,7 +3644,7 @@ virDomainDeviceUSBAddressParseXML(xmlNodePtr node,
     bus = virXMLPropString(node, "bus");
 
     if (port &&
-        ((virStrToLong_ui(port, &tmp, 10, &p) < 0 || (*tmp != '\0' && *tmp != '.')) ||
+        ((virStrToLong_uip(port, &tmp, 10, &p) < 0 || (*tmp != '\0' && *tmp != '.')) ||
          (*tmp == '.' && (virStrToLong_ui(tmp + 1, &tmp, 10, &p) < 0 || (*tmp != '\0' && *tmp != '.'))) ||
          (*tmp == '.' && (virStrToLong_ui(tmp + 1, &tmp, 10, &p) < 0 || (*tmp != '\0' && *tmp != '.'))) ||
          (*tmp == '.' && (virStrToLong_ui(tmp + 1, &tmp, 10, &p) < 0 || (*tmp != '\0'))))) {
@@ -3657,7 +3657,7 @@ virDomainDeviceUSBAddressParseXML(xmlNodePtr node,
     port = NULL;
 
     if (bus &&
-        virStrToLong_ui(bus, NULL, 10, &addr->bus) < 0) {
+        virStrToLong_uip(bus, NULL, 10, &addr->bus) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'bus' attribute"));
         goto cleanup;
@@ -3779,14 +3779,14 @@ virDomainDeviceISAAddressParseXML(xmlNodePtr node,
     irq = virXMLPropString(node, "irq");
 
     if (iobase &&
-        virStrToLong_ui(iobase, NULL, 16, &addr->iobase) < 0) {
+        virStrToLong_uip(iobase, NULL, 16, &addr->iobase) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Cannot parse <address> 'iobase' attribute"));
         goto cleanup;
     }
 
     if (irq &&
-        virStrToLong_ui(irq, NULL, 16, &addr->irq) < 0) {
+        virStrToLong_uip(irq, NULL, 16, &addr->irq) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Cannot parse <address> 'irq' attribute"));
         goto cleanup;
