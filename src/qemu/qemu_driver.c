@@ -10724,8 +10724,10 @@ qemuDomainMigratePerform(virDomainPtr dom,
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
 
-    if (virDomainMigratePerformEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainMigratePerformEnsureACL(dom->conn, vm->def) < 0) {
+        virObjectUnlock(vm);
         goto cleanup;
+    }
 
     if (flags & VIR_MIGRATE_PEER2PEER) {
         dconnuri = uri;
@@ -10772,8 +10774,10 @@ qemuDomainMigrateFinish2(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (virDomainMigrateFinish2EnsureACL(dconn, vm->def) < 0)
+    if (virDomainMigrateFinish2EnsureACL(dconn, vm->def) < 0) {
+        virObjectUnlock(vm);
         goto cleanup;
+    }
 
     /* Do not use cookies in v2 protocol, since the cookie
      * length was not sufficiently large, causing failures
