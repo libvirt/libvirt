@@ -356,7 +356,7 @@ virNetDevBridgePortGetLearning(const char *brname ATTRIBUTE_UNUSED,
 int
 virNetDevBridgePortSetLearning(const char *brname ATTRIBUTE_UNUSED,
                                const char *ifname ATTRIBUTE_UNUSED,
-                               bool enable)
+                               bool enable ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to set bridge port learning on this platform"));
