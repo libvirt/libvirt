@@ -2257,10 +2257,9 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     return ret;
 }
 
-
-
-static virDomainGraphicsDefPtr qemuDomainFindGraphics(virDomainObjPtr vm,
-                                                      virDomainGraphicsDefPtr dev)
+static virDomainGraphicsDefPtr
+qemuDomainFindGraphics(virDomainObjPtr vm,
+                       virDomainGraphicsDefPtr dev)
 {
     size_t i;
 
@@ -2271,7 +2270,6 @@ static virDomainGraphicsDefPtr qemuDomainFindGraphics(virDomainObjPtr vm,
 
     return NULL;
 }
-
 
 int
 qemuDomainChangeGraphics(virQEMUDriverPtr driver,
