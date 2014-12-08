@@ -55,6 +55,8 @@ int qemuDomainAttachHostDevice(virConnectPtr conn,
                                virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr hostdev);
+int qemuDomainFindGraphicsIndex(virDomainDefPtr def,
+                                virDomainGraphicsDefPtr dev);
 int qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              virDomainGraphicsDefPtr dev);

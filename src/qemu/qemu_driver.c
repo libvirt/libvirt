@@ -7451,6 +7451,7 @@ qemuDomainUpdateDeviceConfig(virQEMUCapsPtr qemuCaps,
                              virDomainDeviceDefPtr dev)
 {
     virDomainDiskDefPtr orig, disk;
+    virDomainGraphicsDefPtr newGraphics;
     virDomainNetDefPtr net;
     int pos;
 
@@ -7489,6 +7490,22 @@ qemuDomainUpdateDeviceConfig(virQEMUCapsPtr qemuCaps,
         orig->startupPolicy = disk->startupPolicy;
         break;
 
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+        newGraphics = dev->data.graphics;
+        pos = qemuDomainFindGraphicsIndex(vmdef, newGraphics);
+        if (pos < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("cannot find existing graphics type '%s' device to modify"),
+                           virDomainGraphicsTypeToString(newGraphics->type));
+            return -1;
+        }
+
+        virDomainGraphicsDefFree(vmdef->graphics[pos]);
+
+        vmdef->graphics[pos] = newGraphics;
+        dev->data.graphics = NULL;
+        break;
+
     case VIR_DOMAIN_DEVICE_NET:
         net = dev->data.net;
         if ((pos = virDomainNetFindIdx(vmdef, net)) < 0)
@@ -7508,7 +7525,6 @@ qemuDomainUpdateDeviceConfig(virQEMUCapsPtr qemuCaps,
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
-    case VIR_DOMAIN_DEVICE_GRAPHICS:
     case VIR_DOMAIN_DEVICE_HUB:
     case VIR_DOMAIN_DEVICE_SMARTCARD:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:

@@ -2272,6 +2272,20 @@ qemuDomainFindGraphics(virDomainObjPtr vm,
 }
 
 int
+qemuDomainFindGraphicsIndex(virDomainDefPtr def,
+                            virDomainGraphicsDefPtr dev)
+{
+    size_t i;
+
+    for (i = 0; i < def->ngraphics; i++) {
+        if (def->graphics[i]->type == dev->type)
+            return i;
+    }
+
+    return -1;
+}
+
+int
 qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          virDomainGraphicsDefPtr dev)

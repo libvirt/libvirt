@@ -21136,7 +21136,7 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
 {
     virDomainDeviceDefPtr ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    int flags = VIR_DOMAIN_XML_INACTIVE;
+    int flags = VIR_DOMAIN_XML_INACTIVE | VIR_DOMAIN_XML_SECURE;
     char *xmlStr = NULL;
     int rc = -1;
 
