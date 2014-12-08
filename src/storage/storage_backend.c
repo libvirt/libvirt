@@ -399,7 +399,7 @@ createRawFile(int fd, virStorageVolDefPtr vol,
     }
 
     if (remain && need_alloc) {
-        if (safezero(fd, vol->target.allocation - remain, remain) < 0) {
+        if (safezero(fd, vol->target.allocation - remain, remain, false) < 0) {
             ret = -errno;
             virReportSystemError(errno, _("cannot fill file '%s'"),
                                  vol->target.path);

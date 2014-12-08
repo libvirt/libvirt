@@ -43,9 +43,6 @@
 #include "viruri.h"
 #include "dirname.h"
 #include "virbuffer.h"
-#if HAVE_SYS_SYSCALL_H
-# include <sys/syscall.h>
-#endif
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -1120,25 +1117,17 @@ virStorageFileResize(const char *path,
     }
 
     if (pre_allocate) {
-#if HAVE_POSIX_FALLOCATE
-        if ((rc = posix_fallocate(fd, offset, len)) != 0) {
-            virReportSystemError(rc,
-                                 _("Failed to pre-allocate space for "
-                                   "file '%s'"), path);
+        if (safezero(fd, offset, len, true) != 0) {
+            if (errno == ENOSYS)
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("preallocate is not supported on this "
+                                 "platform"));
+            else
+                virReportSystemError(errno,
+                                     _("Failed to pre-allocate space for "
+                                       "file '%s'"), path);
             goto cleanup;
         }
-#elif HAVE_SYS_SYSCALL_H && defined(SYS_fallocate)
-        if (syscall(SYS_fallocate, fd, 0, offset, len) != 0) {
-            virReportSystemError(errno,
-                                 _("Failed to pre-allocate space for "
-                                   "file '%s'"), path);
-            goto cleanup;
-        }
-#else
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("preallocate is not supported on this platform"));
-        goto cleanup;
-#endif
     } else {
         if (ftruncate(fd, capacity) < 0) {
             virReportSystemError(errno,

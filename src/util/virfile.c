@@ -42,6 +42,9 @@
 #if HAVE_MMAP
 # include <sys/mman.h>
 #endif
+#if HAVE_SYS_SYSCALL_H
+# include <sys/syscall.h>
+#endif
 
 #ifdef __linux__
 # if HAVE_LINUX_MAGIC_H
@@ -1047,6 +1050,20 @@ safezero_posix_fallocate(int fd, off_t offset, off_t len)
 }
 
 static int
+safezero_sys_fallocate(int fd,
+                       off_t offset,
+                       off_t len)
+{
+    int rc = -1;
+#if HAVE_SYS_SYSCALL_H && defined(SYS_fallocate)
+    rc = syscall(SYS_fallocate, fd, 0, offset, len);
+#else
+    errno = ENOSYS;
+#endif
+    return rc;
+}
+
+static int
 safezero_mmap(int fd, off_t offset, off_t len)
 {
 #ifdef HAVE_MMAP
@@ -1119,7 +1136,7 @@ safezero_slow(int fd, off_t offset, off_t len)
     return 0;
 }
 
-int safezero(int fd, off_t offset, off_t len)
+int safezero(int fd, off_t offset, off_t len, bool resize)
 {
     int ret;
 
@@ -1133,6 +1150,9 @@ int safezero(int fd, off_t offset, off_t len)
     ret = safezero_posix_fallocate(fd, offset, len);
     if (ret == 0 || errno != 0)
         return ret;
+
+    if (resize)
+        return safezero_sys_fallocate(fd, offset, len);
 
     if (safezero_mmap(fd, offset, len) == 0)
         return 0;
