@@ -295,10 +295,17 @@ virISCSIConnection(const char *portal,
             VIR_DEBUG("ifacename: '%s'", ifacename);
             break;
         case IQN_MISSING:
-            if (virStorageBackendCreateIfaceIQN(initiatoriqn,
-                                                &ifacename) != 0) {
+            if (virStorageBackendCreateIfaceIQN(initiatoriqn, &ifacename) != 0)
                 goto cleanup;
-            }
+            /*
+             * iscsiadm doesn't let you send commands to the Interface IQN,
+             * unless you've first issued a 'sendtargets' command to the
+             * portal. Without the sendtargets all that is received is a
+             * "iscsiadm: No records found"
+             */
+            if (virISCSIScanTargets(portal, initiatoriqn, NULL, NULL) < 0)
+                goto cleanup;
+
             break;
         case IQN_ERROR:
         default:
