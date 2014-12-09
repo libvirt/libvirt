@@ -23,6 +23,8 @@
 #ifndef __VIR_CONF_H__
 # define __VIR_CONF_H__
 
+# include "virutil.h"
+
 /**
  * virConfType:
  * one of the possible type for a value from the configuration file
@@ -30,11 +32,14 @@
  * TODO: we probably need a float too.
  */
 typedef enum {
-    VIR_CONF_NONE = 0,		/* undefined */
-    VIR_CONF_LONG = 1,		/* a long int */
-    VIR_CONF_STRING = 2,	/* a string */
-    VIR_CONF_LIST = 3		/* a list */
+    VIR_CONF_NONE = 0,      /* undefined */
+    VIR_CONF_LONG,          /* a long int */
+    VIR_CONF_STRING,        /* a string */
+    VIR_CONF_LIST,          /* a list */
+    VIR_CONF_LAST,          /* sentinel */
 } virConfType;
+
+VIR_ENUM_DECL(virConf)
 
 typedef enum {
     VIR_CONF_FLAG_VMX_FORMAT = 1,  /* allow ':', '.' and '-' in names for compatibility
@@ -44,21 +49,6 @@ typedef enum {
                                       configuration file, restricts allowed value types
                                       to string only and don't expect quotes for values */
 } virConfFlags;
-
-static inline const char *
-virConfTypeName (virConfType t)
-{
-    switch (t) {
-    case VIR_CONF_LONG:
-        return "long";
-    case VIR_CONF_STRING:
-        return "string";
-    case VIR_CONF_LIST:
-        return "list";
-    default:
-        return "*unexpected*";
-    }
-}
 
 /**
  * virConfValue:

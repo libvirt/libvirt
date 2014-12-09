@@ -1211,6 +1211,8 @@ virConfNew;
 virConfReadFile;
 virConfReadMem;
 virConfSetValue;
+virConfTypeFromString;
+virConfTypeToString;
 virConfWalk;
 virConfWriteFile;
 virConfWriteMem;

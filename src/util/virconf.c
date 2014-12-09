@@ -80,6 +80,12 @@ struct _virConfParserCtxt {
  *									*
  ************************************************************************/
 
+VIR_ENUM_IMPL(virConf, VIR_CONF_LAST,
+              "*unexpected*",
+              "long",
+              "string",
+              "list");
+
 typedef struct _virConfEntry virConfEntry;
 typedef virConfEntry *virConfEntryPtr;
 

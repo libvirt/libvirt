@@ -47,8 +47,8 @@ checkType(virConfValuePtr p, const char *filename,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("remoteReadConfigFile: %s: %s: invalid type:"
                          " got %s; expected %s"), filename, key,
-                       virConfTypeName(p->type),
-                       virConfTypeName(required_type));
+                       virConfTypeToString(p->type),
+                       virConfTypeToString(required_type));
         return -1;
     }
     return 0;
