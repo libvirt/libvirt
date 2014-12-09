@@ -23,6 +23,11 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#ifdef  __FreeBSD__
+# include <sys/sysctl.h>
+# include <sys/user.h>
+#endif
+
 #include "security_dac.h"
 #include "virerror.h"
 #include "virfile.h"
@@ -1236,17 +1241,89 @@ virSecurityDACReserveLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     return 0;
 }
 
+#ifdef __linux__
+static int
+virSecurityDACGetProcessLabelInternal(pid_t pid,
+                                      virSecurityLabelPtr seclabel)
+{
+    struct stat sb;
+    char *path = NULL;
+    int ret = -1;
+
+    VIR_DEBUG("Getting DAC user and group on process '%d'", pid);
+
+    if (virAsprintf(&path, "/proc/%d", (int) pid) < 0)
+        goto cleanup;
+
+    if (lstat(path, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("unable to get uid and gid for PID %d via procfs"),
+                             pid);
+        goto cleanup;
+    }
+
+    snprintf(seclabel->label, VIR_SECURITY_LABEL_BUFLEN,
+             "+%u:+%u", (unsigned int) sb.st_uid, (unsigned int) sb.st_gid);
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(path);
+    return ret;
+}
+#elif defined(__FreeBSD__)
+static int
+virSecurityDACGetProcessLabelInternal(pid_t pid,
+                                      virSecurityLabelPtr seclabel)
+{
+    struct kinfo_proc p;
+    int mib[4];
+    size_t len = 4;
+
+    sysctlnametomib("kern.proc.pid", mib, &len);
+
+    len = sizeof(struct kinfo_proc);
+    mib[3] = pid;
+
+    if (sysctl(mib, 4, &p, &len, NULL, 0) < 0) {
+        virReportSystemError(errno,
+                             _("unable to get PID %d uid and gid via sysctl"),
+                             pid);
+        return -1;
+    }
+
+    snprintf(seclabel->label, VIR_SECURITY_LABEL_BUFLEN,
+             "+%u:+%u", (unsigned int) p.ki_uid, (unsigned int) p.ki_groups[0]);
+
+    return 0;
+}
+#else
+static int
+virSecurityDACGetProcessLabelInternal(pid_t pid,
+                                      virSecurityLabelPtr seclabel)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Cannot get process uid and gid on this platform"));
+    return -1;
+}
+#endif
+
 static int
 virSecurityDACGetProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                               virDomainDefPtr def,
-                              pid_t pid ATTRIBUTE_UNUSED,
+                              pid_t pid,
                               virSecurityLabelPtr seclabel)
 {
     virSecurityLabelDefPtr secdef =
         virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
 
-    if (!secdef || !seclabel)
-        return -1;
+    if (secdef == NULL) {
+        VIR_DEBUG("missing label for DAC security "
+                  "driver in domain %s", def->name);
+
+        if (virSecurityDACGetProcessLabelInternal(pid, seclabel) < 0)
+            return -1;
+        return 0;
+    }
 
     if (secdef->label)
         ignore_value(virStrcpy(seclabel->label, secdef->label,
