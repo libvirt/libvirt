@@ -884,7 +884,7 @@ virConfSetValue(virConfPtr conf,
 
     cur = conf->entries;
     while (cur != NULL) {
-        if ((cur->name != NULL) && (STREQ(cur->name, setting)))
+        if (STREQ_NULLABLE(cur->name, setting))
             break;
         prev = cur;
         cur = cur->next;
