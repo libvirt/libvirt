@@ -919,6 +919,15 @@ virNetDevBridgeSetVlanFiltering(const char *brname ATTRIBUTE_UNUSED,
 
 
 #if defined(__linux__) && defined(HAVE_LIBNL)
+
+# ifndef NTF_SELF
+#  define NTF_SELF 0x02
+# endif
+
+# ifndef NTF_MASTER
+#  define NTF_MASTER 0x04
+# endif
+
 /* virNetDevBridgeFDBAddDel:
  * @mac: the MAC address being added to the table
  * @ifname: name of the port (interface) of the bridge that wants this MAC
