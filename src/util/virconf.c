@@ -83,6 +83,7 @@ struct _virConfParserCtxt {
 VIR_ENUM_IMPL(virConf, VIR_CONF_LAST,
               "*unexpected*",
               "long",
+              "unsigned long",
               "string",
               "list");
 
@@ -273,6 +274,7 @@ virConfSaveValue(virBufferPtr buf, virConfValuePtr val)
         case VIR_CONF_NONE:
             return -1;
         case VIR_CONF_LONG:
+        case VIR_CONF_ULONG:
             virBufferAsprintf(buf, "%ld", val->l);
             break;
         case VIR_CONF_STRING:
@@ -534,9 +536,9 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
                          _("numbers not allowed in VMX format"));
             return NULL;
         }
+        type = (c_isdigit(CUR) || CUR == '+') ? VIR_CONF_ULONG : VIR_CONF_LONG;
         if (virConfParseLong(ctxt, &l) < 0)
             return NULL;
-        type = VIR_CONF_LONG;
     } else {
         virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("expecting a value"));
         return NULL;

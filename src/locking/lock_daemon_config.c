@@ -70,12 +70,24 @@ checkType(virConfValuePtr p, const char *filename,
         }                                                               \
     } while (0)
 
-/* Like GET_CONF_STR, but for integral values.  */
+/* Like GET_CONF_STR, but for signed integer values.  */
 #define GET_CONF_INT(conf, filename, var_name)                          \
     do {                                                                \
         virConfValuePtr p = virConfGetValue(conf, #var_name);           \
         if (p) {                                                        \
-            if (checkType(p, filename, #var_name, VIR_CONF_LONG) < 0)   \
+            if (p->type != VIR_CONF_ULONG &&                            \
+                checkType(p, filename, #var_name, VIR_CONF_LONG) < 0)   \
+                goto error;                                             \
+            data->var_name = p->l;                                      \
+        }                                                               \
+    } while (0)
+
+/* Like GET_CONF_STR, but for unsigned integer values.  */
+#define GET_CONF_UINT(conf, filename, var_name)                         \
+    do {                                                                \
+        virConfValuePtr p = virConfGetValue(conf, #var_name);           \
+        if (p) {                                                        \
+            if (checkType(p, filename, #var_name, VIR_CONF_ULONG) < 0)  \
                 goto error;                                             \
             data->var_name = p->l;                                      \
         }                                                               \
@@ -137,10 +149,10 @@ virLockDaemonConfigLoadOptions(virLockDaemonConfigPtr data,
                                const char *filename,
                                virConfPtr conf)
 {
-    GET_CONF_INT(conf, filename, log_level);
+    GET_CONF_UINT(conf, filename, log_level);
     GET_CONF_STR(conf, filename, log_filters);
     GET_CONF_STR(conf, filename, log_outputs);
-    GET_CONF_INT(conf, filename, max_clients);
+    GET_CONF_UINT(conf, filename, max_clients);
 
     return 0;
 

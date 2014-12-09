@@ -412,15 +412,29 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;                                 \
     }
 
-#define GET_VALUE_LONG(NAME, VAR)     \
+#define CHECK_TYPE_ALT(name, type1, type2)                      \
+    if (p && (p->type != (type1) && p->type != (type2))) {      \
+        virReportError(VIR_ERR_INTERNAL_ERROR,                  \
+                       "%s: %s: expected type " #type1,         \
+                       filename, (name));                       \
+        goto cleanup;                                           \
+    }
+
+#define GET_VALUE_LONG(NAME, VAR)                               \
+    p = virConfGetValue(conf, NAME);                            \
+    CHECK_TYPE_ALT(NAME, VIR_CONF_LONG, VIR_CONF_ULONG);        \
+    if (p)                                                      \
+        VAR = p->l;
+
+#define GET_VALUE_ULONG(NAME, VAR)    \
     p = virConfGetValue(conf, NAME);  \
-    CHECK_TYPE(NAME, VIR_CONF_LONG);  \
+    CHECK_TYPE(NAME, VIR_CONF_ULONG); \
     if (p)                            \
         VAR = p->l;
 
 #define GET_VALUE_BOOL(NAME, VAR)     \
     p = virConfGetValue(conf, NAME);  \
-    CHECK_TYPE(NAME, VIR_CONF_LONG);  \
+    CHECK_TYPE(NAME, VIR_CONF_ULONG); \
     if (p)                            \
         VAR = p->l != 0;
 
@@ -489,7 +503,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     GET_VALUE_STR("spice_password", cfg->spicePassword);
 
 
-    GET_VALUE_LONG("remote_websocket_port_min", cfg->webSocketPortMin);
+    GET_VALUE_ULONG("remote_websocket_port_min", cfg->webSocketPortMin);
     if (cfg->webSocketPortMin < QEMU_WEBSOCKET_PORT_MIN) {
         /* if the port is too low, we can't get the display name
          * to tell to vnc (usually subtract 5700, e.g. localhost:1
@@ -501,7 +515,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    GET_VALUE_LONG("remote_websocket_port_max", cfg->webSocketPortMax);
+    GET_VALUE_ULONG("remote_websocket_port_max", cfg->webSocketPortMax);
     if (cfg->webSocketPortMax > QEMU_WEBSOCKET_PORT_MAX ||
         cfg->webSocketPortMax < cfg->webSocketPortMin) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -518,7 +532,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    GET_VALUE_LONG("remote_display_port_min", cfg->remotePortMin);
+    GET_VALUE_ULONG("remote_display_port_min", cfg->remotePortMin);
     if (cfg->remotePortMin < QEMU_REMOTE_PORT_MIN) {
         /* if the port is too low, we can't get the display name
          * to tell to vnc (usually subtract 5900, e.g. localhost:1
@@ -530,7 +544,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    GET_VALUE_LONG("remote_display_port_max", cfg->remotePortMax);
+    GET_VALUE_ULONG("remote_display_port_max", cfg->remotePortMax);
     if (cfg->remotePortMax > QEMU_REMOTE_PORT_MAX ||
         cfg->remotePortMax < cfg->remotePortMin) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -547,7 +561,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    GET_VALUE_LONG("migration_port_min", cfg->migrationPortMin);
+    GET_VALUE_ULONG("migration_port_min", cfg->migrationPortMin);
     if (cfg->migrationPortMin <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("%s: migration_port_min: port must be greater than 0"),
@@ -555,7 +569,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    GET_VALUE_LONG("migration_port_max", cfg->migrationPortMax);
+    GET_VALUE_ULONG("migration_port_max", cfg->migrationPortMax);
     if (cfg->migrationPortMax > 65535 ||
         cfg->migrationPortMax < cfg->migrationPortMin) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -694,15 +708,15 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     GET_VALUE_BOOL("clear_emulator_capabilities", cfg->clearEmulatorCapabilities);
     GET_VALUE_BOOL("allow_disk_format_probing", cfg->allowDiskFormatProbing);
     GET_VALUE_BOOL("set_process_name", cfg->setProcessName);
-    GET_VALUE_LONG("max_processes", cfg->maxProcesses);
-    GET_VALUE_LONG("max_files", cfg->maxFiles);
+    GET_VALUE_ULONG("max_processes", cfg->maxProcesses);
+    GET_VALUE_ULONG("max_files", cfg->maxFiles);
 
     GET_VALUE_STR("lock_manager", cfg->lockManagerName);
 
-    GET_VALUE_LONG("max_queued", cfg->maxQueuedJobs);
+    GET_VALUE_ULONG("max_queued", cfg->maxQueuedJobs);
 
     GET_VALUE_LONG("keepalive_interval", cfg->keepAliveInterval);
-    GET_VALUE_LONG("keepalive_count", cfg->keepAliveCount);
+    GET_VALUE_ULONG("keepalive_count", cfg->keepAliveCount);
 
     GET_VALUE_LONG("seccomp_sandbox", cfg->seccompSandbox);
 
@@ -775,8 +789,9 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     virConfFree(conf);
     return ret;
 }
-#undef GET_VALUE_BOOL
 #undef GET_VALUE_LONG
+#undef GET_VALUE_ULONG
+#undef GET_VALUE_BOOL
 #undef GET_VALUE_STR
 
 virQEMUDriverConfigPtr virQEMUDriverGetConfig(virQEMUDriverPtr driver)

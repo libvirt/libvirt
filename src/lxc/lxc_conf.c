@@ -270,7 +270,7 @@ virLXCLoadDriverConfig(virLXCDriverConfigPtr cfg,
     }
 
     p = virConfGetValue(conf, "log_with_libvirtd");
-    CHECK_TYPE("log_with_libvirtd", VIR_CONF_LONG);
+    CHECK_TYPE("log_with_libvirtd", VIR_CONF_ULONG);
     if (p) cfg->log_libvirtd = p->l;
 
     p = virConfGetValue(conf, "security_driver");
@@ -283,11 +283,11 @@ virLXCLoadDriverConfig(virLXCDriverConfigPtr cfg,
     }
 
     p = virConfGetValue(conf, "security_default_confined");
-    CHECK_TYPE("security_default_confined", VIR_CONF_LONG);
+    CHECK_TYPE("security_default_confined", VIR_CONF_ULONG);
     if (p) cfg->securityDefaultConfined = p->l;
 
     p = virConfGetValue(conf, "security_require_confined");
-    CHECK_TYPE("security_require_confined", VIR_CONF_LONG);
+    CHECK_TYPE("security_require_confined", VIR_CONF_ULONG);
     if (p) cfg->securityRequireConfined = p->l;
 
 

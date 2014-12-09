@@ -65,7 +65,7 @@ munge_param(const char *datain,
         if (c_isspace(*tmp))
             continue;
         if (c_isdigit(*tmp)) {
-            *type = VIR_CONF_LONG;
+            *type = VIR_CONF_ULONG;
             replace = "\"foo\"";
         } else if (*tmp == '[') {
             *type = VIR_CONF_LIST;
@@ -130,15 +130,16 @@ testCorrupt(const void *opaque)
 #endif
 
     switch (type) {
-    case VIR_CONF_LONG:
-        if (!strstr(err->message, "invalid type: got string; expected long")) {
+    case VIR_CONF_ULONG:
+        if (!strstr(err->message, "invalid type: got string; expected unsigned long") &&
+            !strstr(err->message, "invalid type: got string; expected long")) {
             VIR_DEBUG("Wrong error for long: '%s'",
                       err->message);
             ret = -1;
         }
         break;
     case VIR_CONF_STRING:
-        if (!strstr(err->message, "invalid type: got long; expected string")) {
+        if (!strstr(err->message, "invalid type: got unsigned long; expected string")) {
             VIR_DEBUG("Wrong error for string: '%s'",
                       err->message);
             ret = -1;
