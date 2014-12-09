@@ -1008,38 +1008,106 @@ qemuMonitorSetOptions(qemuMonitorPtr mon, virJSONValuePtr options)
     mon->options = options;
 }
 
-/* Search the qom objects for the balloon driver object by it's known name
- * of "virtio-balloon-pci".  The entry for the driver will be found in the
- * returned 'type' field using the syntax "child<virtio-balloon-pci>".
- *
- * Once found, check the entry to ensure it has the correct property listed.
- * If it does not, then obtaining statistics from qemu will not be possible.
- * This feature was added to qemu 1.5.
+
+/**
+ * Search the qom objects by it's known name.  The name is compared against
+ * filed 'type' formatted as 'link<%name>'.
  *
  * This procedure will be call recursively until found or the qom-list is
  * exhausted.
  *
  * Returns:
  *
- *   1  - Found
- *   0  - Not found still looking
+ *   0  - Found
  *  -1  - Error bail out
+ *  -2  - Not found
+ *
+ * NOTE: This assumes we have already called qemuDomainObjEnterMonitor()
+ */
+static int
+qemuMonitorFindObjectPath(qemuMonitorPtr mon,
+                          const char *curpath,
+                          const char *name,
+                          char **path)
+{
+    ssize_t i, npaths = 0;
+    int ret = -2;
+    char *nextpath = NULL;
+    char *type = NULL;
+    qemuMonitorJSONListPathPtr *paths = NULL;
+
+    if (virAsprintf(&type, "link<%s>", name) < 0)
+        return -1;
+
+    VIR_DEBUG("Searching for '%s' Object Path starting at '%s'", type, curpath);
+
+    npaths = qemuMonitorJSONGetObjectListPaths(mon, curpath, &paths);
+    if (npaths < 0)
+        goto cleanup;
+
+    for (i = 0; i < npaths && ret == -2; i++) {
+
+        if (STREQ_NULLABLE(paths[i]->type, type)) {
+            VIR_DEBUG("Path to '%s' is '%s/%s'", type, curpath, paths[i]->name);
+            ret = 0;
+            if (virAsprintf(path, "%s/%s", curpath, paths[i]->name) < 0) {
+                *path = NULL;
+                ret = -1;
+            }
+            goto cleanup;
+        }
+
+        /* Type entries that begin with "child<" are a branch that can be
+         * traversed looking for more entries
+         */
+        if (paths[i]->type && STRPREFIX(paths[i]->type, "child<")) {
+            if (virAsprintf(&nextpath, "%s/%s", curpath, paths[i]->name) < 0) {
+                ret = -1;
+                goto cleanup;
+            }
+
+            ret = qemuMonitorFindObjectPath(mon, nextpath, name, path);
+        }
+    }
+
+ cleanup:
+    for (i = 0; i < npaths; i++)
+        qemuMonitorJSONListPathFree(paths[i]);
+    VIR_FREE(paths);
+    VIR_FREE(nextpath);
+    VIR_FREE(type);
+    return ret;
+}
+
+
+/**
+ * Search the qom objects for the balloon driver object by it's known name
+ * of "virtio-balloon-pci".  The entry for the driver will be found by using
+ * function "qemuMonitorFindObjectPath".
+ *
+ * Once found, check the entry to ensure it has the correct property listed.
+ * If it does not, then obtaining statistics from QEMU will not be possible.
+ * This feature was added to QEMU 1.5.
+ *
+ * Returns:
+ *
+ *   0  - Found
+ *  -1  - Not found or error
  *
  * NOTE: This assumes we have already called qemuDomainObjEnterMonitor()
  */
 static int
 qemuMonitorFindBalloonObjectPath(qemuMonitorPtr mon,
-                                 virDomainObjPtr vm,
                                  const char *curpath)
 {
-    ssize_t i, j, npaths = 0, nprops = 0;
-    int ret = 0;
-    char *nextpath = NULL;
-    qemuMonitorJSONListPathPtr *paths = NULL;
+    ssize_t i, nprops = 0;
+    int ret = -1;
+    char *path = NULL;
     qemuMonitorJSONListPathPtr *bprops = NULL;
+    virDomainObjPtr vm = mon->vm;
 
     if (mon->balloonpath) {
-        return 1;
+        return 0;
     } else if (mon->ballooninit) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot determine balloon device path"));
@@ -1055,70 +1123,34 @@ qemuMonitorFindBalloonObjectPath(qemuMonitorPtr mon,
         return -1;
     }
 
-    VIR_DEBUG("Searching for Balloon Object Path starting at %s", curpath);
-
-    npaths = qemuMonitorJSONGetObjectListPaths(mon, curpath, &paths);
-    if (npaths < 0)
+    if (qemuMonitorFindObjectPath(mon, curpath, "virtio-balloon-pci", &path) < 0)
         return -1;
 
-    for (i = 0; i < npaths && ret == 0; i++) {
+    nprops = qemuMonitorJSONGetObjectListPaths(mon, path, &bprops);
+    if (nprops < 0)
+        goto cleanup;
 
-        if (STREQ_NULLABLE(paths[i]->type, "link<virtio-balloon-pci>")) {
-            VIR_DEBUG("Path to <virtio-balloon-pci> is '%s/%s'",
-                      curpath, paths[i]->name);
-            if (virAsprintf(&nextpath, "%s/%s", curpath, paths[i]->name) < 0) {
-                ret = -1;
-                goto cleanup;
-            }
-
-            /* Now look at the each of the property entries to determine
-             * whether "guest-stats-polling-interval" exists.  If not,
-             * then this version of qemu/kvm does not support the feature.
-             */
-            nprops = qemuMonitorJSONGetObjectListPaths(mon, nextpath, &bprops);
-            if (nprops < 0) {
-                ret = -1;
-                goto cleanup;
-            }
-
-            for (j = 0; j < nprops; j++) {
-                if (STREQ(bprops[j]->name, "guest-stats-polling-interval")) {
-                    VIR_DEBUG("Found Balloon Object Path %s", nextpath);
-                    mon->balloonpath = nextpath;
-                    nextpath = NULL;
-                    ret = 1;
-                    goto cleanup;
-                }
-            }
-
-            /* If we get here, we found the path, but not the property */
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Property 'guest-stats-polling-interval' "
-                             "not found on memory balloon driver."));
-            ret = -1;
+    for (i = 0; i < nprops; i++) {
+        if (STREQ(bprops[i]->name, "guest-stats-polling-interval")) {
+            VIR_DEBUG("Found Balloon Object Path %s", path);
+            mon->balloonpath = path;
+            path = NULL;
+            ret = 0;
             goto cleanup;
-        }
-
-        /* Type entries that begin with "child<" are a branch that can be
-         * traversed looking for more entries
-         */
-        if (paths[i]->type && STRPREFIX(paths[i]->type, "child<")) {
-            if (virAsprintf(&nextpath, "%s/%s", curpath, paths[i]->name) < 0) {
-                ret = -1;
-                goto cleanup;
-            }
-            ret = qemuMonitorFindBalloonObjectPath(mon, vm, nextpath);
         }
     }
 
+
+    /* If we get here, we found the path, but not the property */
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("Property 'guest-stats-polling-interval' "
+                     "not found on memory balloon driver."));
+
  cleanup:
-    for (i = 0; i < npaths; i++)
-        qemuMonitorJSONListPathFree(paths[i]);
-    VIR_FREE(paths);
-    for (j = 0; j < nprops; j++)
-        qemuMonitorJSONListPathFree(bprops[j]);
+    for (i = 0; i < nprops; i++)
+        qemuMonitorJSONListPathFree(bprops[i]);
     VIR_FREE(bprops);
-    VIR_FREE(nextpath);
+    VIR_FREE(path);
     return ret;
 }
 
@@ -1632,7 +1664,7 @@ int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
     }
 
     if (mon->json) {
-        ignore_value(qemuMonitorFindBalloonObjectPath(mon, mon->vm, "/"));
+        ignore_value(qemuMonitorFindBalloonObjectPath(mon, "/"));
         mon->ballooninit = true;
         ret = qemuMonitorJSONGetMemoryStats(mon, mon->balloonpath,
                                             stats, nr_stats);
@@ -1660,7 +1692,7 @@ int qemuMonitorSetMemoryStatsPeriod(qemuMonitorPtr mon,
         return -1;
     }
 
-    if (qemuMonitorFindBalloonObjectPath(mon, mon->vm, "/") == 1) {
+    if (qemuMonitorFindBalloonObjectPath(mon, "/") == 0) {
         ret = qemuMonitorJSONSetMemoryStatsPeriod(mon, mon->balloonpath,
                                                   period);
     }
