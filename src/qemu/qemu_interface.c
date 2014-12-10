@@ -23,10 +23,12 @@
 
 #include <config.h>
 
+#include "network_conf.h"
 #include "qemu_interface.h"
 #include "virnetdev.h"
 #include "virnetdevtap.h"
 #include "virnetdevmacvlan.h"
+#include "virnetdevbridge.h"
 #include "virnetdevvportprofile.h"
 
 /**
@@ -46,6 +48,20 @@ qemuInterfaceStartDevice(virDomainNetDefPtr net)
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_NETWORK:
+        if (virDomainNetGetActualBridgeMACTableManager(net)
+            == VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_LIBVIRT) {
+            /* libvirt is managing the FDB of the bridge this device
+             * is attaching to, so we have turned off learning and
+             * unicast_flood on the device to prevent the kernel from
+             * adding any FDB entries for it. This means we need to
+             * add an fdb entry ourselves, using the MAC address from
+             * the interface config.
+             */
+            if (virNetDevBridgeFDBAdd(&net->mac, net->ifname,
+                                      VIR_NETDEVBRIDGE_FDB_FLAG_MASTER |
+                                      VIR_NETDEVBRIDGE_FDB_FLAG_TEMP) < 0)
+                goto cleanup;
+        }
         break;
     case VIR_DOMAIN_NET_TYPE_DIRECT:
         /* macvtap devices share their MAC address with the guest
@@ -118,6 +134,16 @@ qemuInterfaceStopDevice(virDomainNetDefPtr net)
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_NETWORK:
+        if (virDomainNetGetActualBridgeMACTableManager(net)
+            == VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_LIBVIRT) {
+            /* remove the FDB entries that were added during
+             * qemuInterfaceStartDevices()
+             */
+            if (virNetDevBridgeFDBDel(&net->mac, net->ifname,
+                                      VIR_NETDEVBRIDGE_FDB_FLAG_MASTER |
+                                      VIR_NETDEVBRIDGE_FDB_FLAG_TEMP) < 0)
+                goto cleanup;
+        }
         break;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
