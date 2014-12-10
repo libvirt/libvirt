@@ -10,8 +10,8 @@
     <format type='dir'/>
     <permissions>
       <mode>0600</mode>
-      <owner>-1</owner>
-      <group>-1</group>
+      <owner>4294967295</owner>
+      <group>4294967295</group>
     </permissions>
   </target>
 </volume>

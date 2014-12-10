@@ -3,6 +3,7 @@
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
     datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <include href='basictypes.rng'/>
+  <include href='storagecommon.rng'/>
   <start>
     <ref name='pool'/>
   </start>
@@ -222,35 +223,6 @@
         </element>
       </optional>
     </interleave>
-  </define>
-
-  <define name='permissions'>
-    <optional>
-      <element name='permissions'>
-        <interleave>
-          <element name='mode'>
-            <ref name='octalMode'/>
-          </element>
-          <element name='owner'>
-            <choice>
-              <ref name='unsignedInt'/>
-              <value>-1</value>
-            </choice>
-          </element>
-          <element name='group'>
-            <choice>
-              <ref name='unsignedInt'/>
-              <value>-1</value>
-            </choice>
-          </element>
-          <optional>
-            <element name='label'>
-              <text/>
-            </element>
-          </optional>
-        </interleave>
-      </element>
-    </optional>
   </define>
 
   <define name='target'>

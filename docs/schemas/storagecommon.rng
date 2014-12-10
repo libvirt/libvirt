@@ -93,4 +93,33 @@
     <notAllowed/>
   </define>
 
+  <define name='permissions'>
+    <optional>
+      <element name='permissions'>
+        <interleave>
+          <element name='mode'>
+            <ref name='octalMode'/>
+          </element>
+          <element name='owner'>
+            <choice>
+              <ref name='unsignedInt'/>
+              <value>-1</value>
+            </choice>
+          </element>
+          <element name='group'>
+            <choice>
+              <ref name='unsignedInt'/>
+              <value>-1</value>
+            </choice>
+          </element>
+          <optional>
+            <element name='label'>
+              <text/>
+            </element>
+          </optional>
+        </interleave>
+      </element>
+    </optional>
+  </define>
+
 </grammar>

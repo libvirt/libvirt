@@ -1203,7 +1203,6 @@ virStoragePoolDefFormat(virStoragePoolDefPtr def)
                           (int) def->target.perms.uid);
         virBufferAsprintf(&buf, "<group>%d</group>\n",
                           (int) def->target.perms.gid);
-
         virBufferEscapeString(&buf, "<label>%s</label>\n",
                               def->target.perms.label);
 
@@ -1527,10 +1526,10 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
 
         virBufferAsprintf(buf, "<mode>0%o</mode>\n",
                           def->perms->mode);
-        virBufferAsprintf(buf, "<owner>%u</owner>\n",
-                          (unsigned int) def->perms->uid);
-        virBufferAsprintf(buf, "<group>%u</group>\n",
-                          (unsigned int) def->perms->gid);
+        virBufferAsprintf(buf, "<owner>%d</owner>\n",
+                          (int) def->perms->uid);
+        virBufferAsprintf(buf, "<group>%d</group>\n",
+                          (int) def->perms->gid);
 
 
         virBufferEscapeString(buf, "<label>%s</label>\n",

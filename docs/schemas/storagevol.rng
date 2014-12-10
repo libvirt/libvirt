@@ -59,29 +59,6 @@
     </interleave>
   </define>
 
-  <define name='permissions'>
-    <optional>
-      <element name='permissions'>
-        <interleave>
-          <element name='mode'>
-            <ref name='octalMode'/>
-          </element>
-          <element name='owner'>
-            <ref name='unsignedInt'/>
-          </element>
-          <element name='group'>
-            <ref name='unsignedInt'/>
-          </element>
-          <optional>
-            <element name='label'>
-              <text/>
-            </element>
-          </optional>
-        </interleave>
-      </element>
-    </optional>
-  </define>
-
   <define name='timestamps'>
     <optional>
       <element name='timestamps'>
