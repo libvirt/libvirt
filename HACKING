@@ -383,8 +383,9 @@ single-'statement' loop: each has only one 'line' in its body.
       single_line_stmt(); // {} is optional (not enforced either way)
 
   while (expr1 &&
-         expr2)           // multi-line, at same indentation, {} required
+         expr2) {         // multi-line, at same indentation, {} required
       single_line_stmt();
+  }
 
 However, the moment your loop/if/else body extends on to a second line, for
 whatever reason (even if it's just an added comment), then you should add

@@ -481,8 +481,9 @@
 
 <pre>
   while (expr1 &amp;&amp;
-         expr2)           // multi-line, at same indentation, {} required
+         expr2) {         // multi-line, at same indentation, {} required
       single_line_stmt();
+  }
 </pre>
 
     <p>
