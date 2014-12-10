@@ -800,15 +800,18 @@ typedef struct {
     int mflags;
     bool skipUserNS;
     bool skipUnmounted;
+    bool skipNoNetns;
 } virLXCBasicMountInfo;
 
 static const virLXCBasicMountInfo lxcBasicMounts[] = {
-    { "proc", "/proc", "proc", MS_NOSUID|MS_NOEXEC|MS_NODEV, false, false },
-    { "/proc/sys", "/proc/sys", NULL, MS_BIND|MS_RDONLY, false, false },
-    { "sysfs", "/sys", "sysfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, false, false },
-    { "securityfs", "/sys/kernel/security", "securityfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, true, true },
+    { "proc", "/proc", "proc", MS_NOSUID|MS_NOEXEC|MS_NODEV, false, false, false },
+    { "/proc/sys", "/proc/sys", NULL, MS_BIND|MS_RDONLY, false, false, false },
+    { "/.oldroot/proc/sys/net/ipv4", "/proc/sys/net/ipv4", NULL, MS_BIND, false, false, true },
+    { "/.oldroot/proc/sys/net/ipv6", "/proc/sys/net/ipv6", NULL, MS_BIND, false, false, true },
+    { "sysfs", "/sys", "sysfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, false, false, false },
+    { "securityfs", "/sys/kernel/security", "securityfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, true, true, false },
 #if WITH_SELINUX
-    { SELINUX_MOUNT, SELINUX_MOUNT, "selinuxfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, true, true },
+    { SELINUX_MOUNT, SELINUX_MOUNT, "selinuxfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, true, true, false },
 #endif
 };
 
@@ -940,10 +943,24 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
             continue;
         }
 
+        /* Skip mounts with missing source without shouting: it may be a
+         * missing folder in /proc due to the absence of a kernel feature */
+        if (STRPREFIX(mnt_src, "/") && !virFileExists(mnt_src)) {
+            VIR_DEBUG("Skipping due to missing source: %s", mnt_src);
+            VIR_FREE(mnt_src);
+            continue;
+        }
+
+        if (mnt->skipNoNetns && netns_disabled) {
+            VIR_DEBUG("Skipping due to absence of network namespace");
+            VIR_FREE(mnt_src);
+            continue;
+        }
+
         if (virFileMakePath(mnt->dst) < 0) {
             virReportSystemError(errno,
                                  _("Failed to mkdir %s"),
-                                 mnt_src);
+                                 mnt->dst);
             goto cleanup;
         }
 
@@ -1697,6 +1714,23 @@ static int lxcContainerUnmountForSharedRoot(const char *stateDir,
 }
 
 
+static bool
+lxcNeedNetworkNamespace(virDomainDefPtr def)
+{
+    size_t i;
+    if (def->nets != NULL)
+        return true;
+    if (def->features[VIR_DOMAIN_FEATURE_PRIVNET] == VIR_TRISTATE_SWITCH_ON)
+        return true;
+    for (i = 0; i < def->nhostdevs; i++) {
+        if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES &&
+            def->hostdevs[i]->source.caps.type == VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET)
+            return true;
+    }
+    return false;
+}
+
+
 /* Got a FS mapped to /, we're going the pivot_root
  * approach to do a better-chroot-than-chroot
  * this is based on this thread http://lkml.org/lkml/2008/3/5/29
@@ -1741,7 +1775,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
 
     /* Mounts the core /proc, /sys, etc filesystems */
     if (lxcContainerMountBasicFS(vmDef->idmap.nuidmap,
-                                 !vmDef->nnets) < 0)
+                                 !lxcNeedNetworkNamespace(vmDef)) < 0)
         goto cleanup;
 
     /* Ensure entire root filesystem (except /.oldroot) is readonly */
@@ -2239,22 +2273,6 @@ virArch lxcContainerGetAlt32bitArch(virArch arch)
     return VIR_ARCH_NONE;
 }
 
-
-static bool
-lxcNeedNetworkNamespace(virDomainDefPtr def)
-{
-    size_t i;
-    if (def->nets != NULL)
-        return true;
-    if (def->features[VIR_DOMAIN_FEATURE_PRIVNET] == VIR_TRISTATE_SWITCH_ON)
-        return true;
-    for (i = 0; i < def->nhostdevs; i++) {
-        if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES &&
-            def->hostdevs[i]->source.caps.type == VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET)
-            return true;
-    }
-    return false;
-}
 
 /**
  * lxcContainerStart:
