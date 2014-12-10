@@ -1864,7 +1864,6 @@ static int qemuDomainResume(virDomainPtr dom)
     virObjectEventPtr event = NULL;
     int state;
     virQEMUDriverConfigPtr cfg = NULL;
-    virCapsPtr caps = NULL;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
@@ -1901,8 +1900,6 @@ static int qemuDomainResume(virDomainPtr dom)
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
     }
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto endjob;
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         goto endjob;
     ret = 0;
@@ -1916,7 +1913,6 @@ static int qemuDomainResume(virDomainPtr dom)
         virObjectUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
 }
@@ -7108,7 +7104,6 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
 {
     virDomainDiskDefPtr disk = dev->data.disk;
     virDomainDiskDefPtr orig_disk = NULL;
-    virCapsPtr caps = NULL;
     int ret = -1;
 
     if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
@@ -7128,9 +7123,6 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
                            disk->dst);
             goto end;
         }
-
-        if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-            goto end;
 
         /* Add the new disk src into shared disk hash table */
         if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
@@ -7154,7 +7146,6 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
     }
 
  end:
-    virObjectUnref(caps);
     return ret;
 }
 

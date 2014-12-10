@@ -758,7 +758,6 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
 {
     virDomainDiskDefPtr disk = dev->data.disk;
     virDomainDiskDefPtr orig_disk = NULL;
-    virCapsPtr caps = NULL;
     int ret = -1;
     const char *driverName = virDomainDiskGetDriver(disk);
     const char *src = virDomainDiskGetSource(disk);
@@ -795,9 +794,6 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
                            disk->dst);
             goto end;
         }
-
-        if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-            goto end;
 
         if (qemuDomainChangeEjectableMedia(driver, conn, vm, orig_disk,
                                            disk->src, false) < 0)
@@ -837,7 +833,6 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
  end:
     if (ret != 0)
         ignore_value(qemuRemoveSharedDevice(driver, dev, vm->def->name));
-    virObjectUnref(caps);
     return ret;
 }
 
