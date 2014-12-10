@@ -370,21 +370,26 @@ virStorageBackendDiskFindLabel(const char* device)
     };
     virCommandPtr cmd = virCommandNew(PARTED);
     char *output = NULL;
+    char *error = NULL;
     int ret = -1;
 
     virCommandAddArgSet(cmd, args);
     virCommandAddEnvString(cmd, "LC_ALL=C");
     virCommandSetOutputBuffer(cmd, &output);
+    virCommandSetErrorBuffer(cmd, &error);
 
     /* if parted succeeds we have a valid partition table */
     ret = virCommandRun(cmd, NULL);
     if (ret < 0) {
-        if (strstr(output, "unrecognised disk label"))
+        if (strstr(output, "unrecognised disk label") ||
+            strstr(error, "unrecognised disk label")) {
             ret = 1;
+        }
     }
 
     virCommandFree(cmd);
     VIR_FREE(output);
+    VIR_FREE(error);
     return ret;
 }
 
