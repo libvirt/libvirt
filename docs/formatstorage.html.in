@@ -386,7 +386,7 @@
         like the logical choice, however, devices nodes there are not
         guaranteed stable across reboots, since they are allocated on
         demand. It is preferable to use a stable location such as one
-        of the <code>/dev/disk/by-{path,id,uuid,label</code> locations.
+        of the <code>/dev/disk/by-{path|id|uuid|label}</code> locations.
         <span class="since">Since 0.4.1</span>
       </dd>
       <dt><code>permissions</code></dt>
