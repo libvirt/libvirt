@@ -2767,11 +2767,11 @@ virCgroupAllowDevice(virCgroupPtr group, char type, int major, int minor,
     char *minorstr = NULL;
 
     if ((major < 0 && VIR_STRDUP(majorstr, "*") < 0) ||
-            virAsprintf(&majorstr, "%i", major) < 0)
+        (major >= 0 && virAsprintf(&majorstr, "%i", major) < 0))
         goto cleanup;
 
     if ((minor < 0 && VIR_STRDUP(minorstr, "*") < 0) ||
-            virAsprintf(&minorstr, "%i", minor) < 0)
+        (minor >= 0 && virAsprintf(&minorstr, "%i", minor) < 0))
         goto cleanup;
 
     if (virAsprintf(&devstr, "%c %s:%s %s", type, majorstr, minorstr,
