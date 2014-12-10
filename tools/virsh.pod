@@ -3019,7 +3019,7 @@ I<--print-xml> is specified, then print the XML of the pool object
 without defining the pool.  Otherwise, the pool has the specified
 I<type>.
 
-Use the same arguments as B<pool-define-as>.
+Use the same arguments as B<pool-create-as>.
 
 =item B<pool-destroy> I<pool-or-uuid>
 
