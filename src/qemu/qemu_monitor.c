@@ -1154,6 +1154,40 @@ qemuMonitorFindBalloonObjectPath(qemuMonitorPtr mon,
     return ret;
 }
 
+
+/**
+ * To update video memory size in status XML we need to load correct values from
+ * QEMU.  This is supported only with JSON monitor.
+ *
+ * Returns 0 on success, -1 on failure and sets proper error message.
+ */
+int
+qemuMonitorUpdateVideoMemorySize(qemuMonitorPtr mon,
+                                 virDomainVideoDefPtr video,
+                                 const char *videoName)
+{
+    int ret = -1;
+    char *path = NULL;
+
+    if (mon->json) {
+        ret = qemuMonitorFindObjectPath(mon, "/", videoName, &path);
+        if (ret < 0) {
+            if (ret == -2)
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Failed to find QOM Object path for "
+                                 "device '%s'"), videoName);
+            return -1;
+        }
+
+        ret = qemuMonitorJSONUpdateVideoMemorySize(mon, video, path);
+        VIR_FREE(path);
+        return ret;
+    }
+
+    return 0;
+}
+
+
 int qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
                                 const char *cmd,
                                 int scm_fd,

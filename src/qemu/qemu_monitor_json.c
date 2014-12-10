@@ -1300,6 +1300,75 @@ int qemuMonitorJSONGetVirtType(qemuMonitorPtr mon,
 }
 
 
+/**
+ * Loads correct video memory size values from QEMU and update the video
+ * definition.
+ *
+ * Return 0 on success, -1 on failure and set proper error message.
+ */
+int
+qemuMonitorJSONUpdateVideoMemorySize(qemuMonitorPtr mon,
+                                     virDomainVideoDefPtr video,
+                                     char *path)
+{
+    qemuMonitorJSONObjectProperty prop = {
+        QEMU_MONITOR_OBJECT_PROPERTY_ULONG,
+        {0}
+    };
+
+    switch (video->type) {
+    case VIR_DOMAIN_VIDEO_TYPE_VGA:
+        if (qemuMonitorJSONGetObjectProperty(mon, path, "vgamem_mb", &prop) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("QOM Objext '%s' has no property 'vgamem_mb'"),
+                           path);
+            return -1;
+        }
+        video->vram = prop.val.ul * 1024;
+        break;
+    case VIR_DOMAIN_VIDEO_TYPE_QXL:
+        if (qemuMonitorJSONGetObjectProperty(mon, path, "vram_size", &prop) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("QOM Objext '%s' has no property 'vram_size'"),
+                           path);
+            return -1;
+        }
+        video->vram = prop.val.ul / 1024;
+        if (qemuMonitorJSONGetObjectProperty(mon, path, "ram_size", &prop) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("QOM Objext '%s' has no property 'ram_size'"),
+                           path);
+            return -1;
+        }
+        video->ram = prop.val.ul / 1024;
+        if (qemuMonitorJSONGetObjectProperty(mon, path, "vgamem_mb", &prop) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("QOM Objext '%s' has no property 'vgamem_mb'"),
+                           path);
+            return -1;
+        }
+        video->vgamem = prop.val.ul * 1024;
+        break;
+    case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
+        if (qemuMonitorJSONGetObjectProperty(mon, path, "vgamem_mb", &prop) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("QOM Objext '%s' has no property 'vgamem_mb'"),
+                           path);
+            return -1;
+        }
+        video->vram = prop.val.ul * 1024;
+        break;
+    case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
+    case VIR_DOMAIN_VIDEO_TYPE_XEN:
+    case VIR_DOMAIN_VIDEO_TYPE_VBOX:
+    case VIR_DOMAIN_VIDEO_TYPE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
 /*
  * Returns: 0 if balloon not supported, +1 if balloon query worked
  * or -1 on failure

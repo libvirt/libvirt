@@ -3067,6 +3067,85 @@ qemuProcessCleanupChardevDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
 }
 
 
+/**
+ * Loads and update video memory size for video devices according to QEMU
+ * process as the QEMU will silently update the values that we pass to QEMU
+ * through command line.  We need to load these updated values and store them
+ * into the status XML.
+ *
+ * We will fail if for some reason the values cannot be loaded from QEMU because
+ * its mandatory to get the correct video memory size to status XML to not break
+ * migration.
+ */
+static int
+qemuProcessUpdateVideoRamSize(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              int asyncJob)
+{
+    int ret = -1;
+    ssize_t i;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainVideoDefPtr video = NULL;
+    virQEMUDriverConfigPtr cfg = NULL;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    for (i = 0; i < vm->def->nvideos; i++) {
+        video = vm->def->videos[i];
+
+        switch (video->type) {
+        case VIR_DOMAIN_VIDEO_TYPE_VGA:
+            if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VGA_VGAMEM)) {
+                if (qemuMonitorUpdateVideoMemorySize(priv->mon, video, "VGA") < 0)
+                    goto error;
+            }
+            break;
+        case VIR_DOMAIN_VIDEO_TYPE_QXL:
+            if (i == 0) {
+                if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QXL_VGA_VGAMEM)) {
+                    if (qemuMonitorUpdateVideoMemorySize(priv->mon, video,
+                                                         "qxl-vga") < 0)
+                        goto error;
+                }
+            } else {
+                if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QXL_VGAMEM)) {
+                    if (qemuMonitorUpdateVideoMemorySize(priv->mon, video,
+                                                         "qxl") < 0)
+                        goto error;
+                }
+            }
+            break;
+        case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
+            if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VMWARE_SVGA_VGAMEM)) {
+                if (qemuMonitorUpdateVideoMemorySize(priv->mon, video,
+                                                     "vmware-svga") < 0)
+                    goto error;
+            }
+            break;
+        case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
+        case VIR_DOMAIN_VIDEO_TYPE_XEN:
+        case VIR_DOMAIN_VIDEO_TYPE_VBOX:
+        case VIR_DOMAIN_VIDEO_TYPE_LAST:
+            break;
+        }
+
+    }
+
+    qemuDomainObjExitMonitor(driver, vm);
+
+    cfg = virQEMUDriverGetConfig(driver);
+    ret = virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm);
+    virObjectUnref(cfg);
+
+    return ret;
+
+ error:
+    qemuDomainObjExitMonitor(driver, vm);
+    return -1;
+}
+
+
 struct qemuProcessHookData {
     virConnectPtr conn;
     virDomainObjPtr vm;
@@ -4800,6 +4879,10 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
     }
     qemuDomainObjExitMonitor(driver, vm);
+
+    VIR_DEBUG("Detecting actual memory size for video device");
+    if (qemuProcessUpdateVideoRamSize(driver, vm, asyncJob) < 0)
+        goto cleanup;
 
     if (!(flags & VIR_QEMU_PROCESS_START_PAUSED)) {
         VIR_DEBUG("Starting domain CPUs");
