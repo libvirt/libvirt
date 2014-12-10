@@ -8456,8 +8456,13 @@ virDomainChrDefParseXML(xmlXPathContextPtr ctxt,
         }
     }
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+    if (def->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
+        def->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD) {
+        VIR_DEBUG("Ignoring device address for gustfwd channel");
+    } else if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0) {
         goto error;
+    }
+
 
     if (def->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
         def->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB &&
