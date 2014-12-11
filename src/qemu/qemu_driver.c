@@ -18745,9 +18745,9 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
         }
 
         if (HAVE_JOB(privflags) &&
-            qemuDomainObjBeginJob(driver, dom, QEMU_JOB_QUERY) < 0)
-            /* As it was never requested. Gather as much as possible anyway. */
+            qemuDomainObjBeginJob(driver, dom, QEMU_JOB_QUERY) == 0)
             domflags |= QEMU_DOMAIN_STATS_HAVE_JOB;
+        /* else: without a job it's still possible to gather some data */
 
         if (qemuDomainGetStats(conn, dom, stats, &tmp, domflags) < 0)
             goto endjob;
