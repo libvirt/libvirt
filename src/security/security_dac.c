@@ -1298,8 +1298,8 @@ virSecurityDACGetProcessLabelInternal(pid_t pid,
 }
 #else
 static int
-virSecurityDACGetProcessLabelInternal(pid_t pid,
-                                      virSecurityLabelPtr seclabel)
+virSecurityDACGetProcessLabelInternal(pid_t pid ATTRIBUTE_UNUSED,
+                                      virSecurityLabelPtr seclabel ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot get process uid and gid on this platform"));
