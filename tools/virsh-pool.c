@@ -200,23 +200,23 @@ static const vshCmdOptDef opts_pool_X_as[] = {
      .help = N_("print XML document, but don't define/create")
     },
     {.name = "source-host",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("source-host for underlying storage")
     },
     {.name = "source-path",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("source path for underlying storage")
     },
     {.name = "source-dev",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("source device for underlying storage")
     },
     {.name = "source-name",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("source name for underlying storage")
     },
     {.name = "target",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("target for underlying storage")
     },
     {.name = "source-format",
@@ -1399,15 +1399,15 @@ static const vshCmdOptDef opts_find_storage_pool_sources_as[] = {
      .help = N_("type of storage pool sources to find")
     },
     {.name = "host",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("optional host to query")
     },
     {.name = "port",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("optional port to query")
     },
     {.name = "initiator",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("optional initiator IQN to use for query")
     },
     {.name = NULL}
@@ -1489,7 +1489,7 @@ static const vshCmdOptDef opts_find_storage_pool_sources[] = {
      .help = N_("type of storage pool sources to discover")
     },
     {.name = "srcSpec",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("optional file of source xml to query for pools")
     },
     {.name = NULL}

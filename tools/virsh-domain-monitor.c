@@ -271,7 +271,7 @@ static const vshCmdOptDef opts_dommemstat[] = {
      .help = N_("domain name, id or uuid")
     },
     {.name = "period",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("period in seconds to set collection")
     },
@@ -845,7 +845,7 @@ static const vshCmdOptDef opts_domblkstat[] = {
      .help = N_("domain name, id or uuid")
     },
     {.name = "device",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_EMPTY_OK,
      .help = N_("block device")
     },

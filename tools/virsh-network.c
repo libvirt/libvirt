@@ -1191,11 +1191,11 @@ static const vshCmdInfo info_network_event[] = {
 
 static const vshCmdOptDef opts_network_event[] = {
     {.name = "network",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("filter by network name or uuid")
     },
     {.name = "event",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("which event type to wait for")
     },
     {.name = "loop",
@@ -1305,7 +1305,7 @@ static const vshCmdOptDef opts_network_dhcp_leases[] = {
      .help = N_("network name or uuid")
     },
     {.name = "mac",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_NONE,
      .help = N_("MAC address")
     },

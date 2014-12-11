@@ -435,7 +435,7 @@ static const vshCmdInfo info_connect[] = {
 
 static const vshCmdOptDef opts_connect[] = {
     {.name = "name",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_EMPTY_OK,
      .help = N_("hypervisor connection URI")
     },
@@ -594,7 +594,7 @@ static const vshCmdInfo info_help[] = {
 
 static const vshCmdOptDef opts_help[] = {
     {.name = "command",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("Prints global help, command specific help, or help for a group of related commands")
     },
     {.name = NULL}
@@ -854,7 +854,7 @@ static const vshCmdInfo info_cd[] = {
 
 static const vshCmdOptDef opts_cd[] = {
     {.name = "dir",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("directory to switch to (default: home or else root)")
     },
     {.name = NULL}
@@ -1392,6 +1392,13 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
                     snprintf(buf, sizeof(buf), _("--%s <string>"), opt->name);
                     break;
                 case VSH_OT_DATA:
+                    /* OT_DATA should always be VSH_OFLAG_REQ */
+                    if (!(opt->flags & VSH_OFLAG_REQ)) {
+                        vshError(ctl,
+                                 _("internal error: bad options in command: '%s'"),
+                                 def->name);
+                        return false;
+                    }
                     snprintf(buf, sizeof(buf), _("[--%s] <string>"),
                              opt->name);
                     break;

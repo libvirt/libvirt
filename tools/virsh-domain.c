@@ -755,27 +755,27 @@ static const vshCmdOptDef opts_attach_interface[] = {
      .help = N_("source of network interface")
     },
     {.name = "target",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("target network name")
     },
     {.name = "mac",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("MAC address")
     },
     {.name = "script",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("script used to bridge network interface")
     },
     {.name = "model",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("model type")
     },
     {.name = "inbound",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("control domain's incoming traffics")
     },
     {.name = "outbound",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("control domain's outgoing traffics")
     },
     {.name = "persistent",
@@ -1749,7 +1749,7 @@ static const vshCmdOptDef opts_block_commit[] = {
      .help = N_("bandwidth limit in MiB/s")
     },
     {.name = "base",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("path of base file to commit into (default bottom of chain)")
     },
     {.name = "shallow",
@@ -1757,7 +1757,7 @@ static const vshCmdOptDef opts_block_commit[] = {
      .help = N_("use backing file of top as base")
     },
     {.name = "top",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("path of top file to commit from (default top of chain)")
     },
     {.name = "active",
@@ -1977,7 +1977,7 @@ static const vshCmdOptDef opts_block_copy[] = {
      .help = N_("fully-qualified path of source disk")
     },
     {.name = "dest",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("path of the copy to create")
     },
     {.name = "bandwidth",
@@ -2025,11 +2025,11 @@ static const vshCmdOptDef opts_block_copy[] = {
      .help = N_("with --wait, don't wait for cancel to finish")
     },
     {.name = "xml",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("filename containing XML description of the copy destination")
     },
     {.name = "format",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("format of the destination file")
     },
     {.name = "granularity",
@@ -2519,7 +2519,7 @@ static const vshCmdOptDef opts_block_pull[] = {
      .help = N_("bandwidth limit in MiB/s")
     },
     {.name = "base",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("path of backing file in chain for a partial pull")
     },
     {.name = "wait",
@@ -3046,11 +3046,11 @@ static const vshCmdOptDef opts_domiftune[] = {
      .help = N_("interface device (MAC Address)")
     },
     {.name = "inbound",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("control domain's incoming traffics")
     },
     {.name = "outbound",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("control domain's outgoing traffics")
     },
     {.name = "config",
@@ -3425,7 +3425,7 @@ static const vshCmdOptDef opts_undefine[] = {
      .help = N_("remove domain managed state file")
     },
     {.name = "storage",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("remove associated storage volumes (comma separated list of "
                 "targets or source paths) (see domblklist)")
     },
@@ -5019,7 +5019,7 @@ static const vshCmdOptDef opts_dump[] = {
      .help = N_("dump domain's memory only")
     },
     {.name = "format",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("specify the format of memory-only dump")
     },
     {.name = NULL}
@@ -5173,7 +5173,7 @@ static const vshCmdOptDef opts_screenshot[] = {
      .help = N_("domain name, id or uuid")
     },
     {.name = "file",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("where to store the screenshot")
     },
     {.name = "screen",
@@ -6217,7 +6217,7 @@ static const vshCmdOptDef opts_vcpupin[] = {
      .help = N_("vcpu number")
     },
     {.name = "cpulist",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_EMPTY_OK,
      .help = N_("host cpu number(s) to set, or omit option to query")
     },
@@ -6498,7 +6498,7 @@ static const vshCmdOptDef opts_emulatorpin[] = {
      .help = N_("domain name, id or uuid")
     },
     {.name = "cpulist",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_EMPTY_OK,
      .help = N_("host cpu number(s) to set, or omit option to query")
     },
@@ -7537,11 +7537,11 @@ static const vshCmdOptDef opts_metadata[] = {
      .help = N_("use an editor to change the metadata")
     },
     {.name = "key",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("key to be used as a namespace identifier"),
     },
     {.name = "set",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("new metadata to set"),
     },
     {.name = "remove",
@@ -8326,12 +8326,12 @@ static const vshCmdOptDef opts_numatune[] = {
      .help = N_("domain name, id or uuid")
     },
     {.name = "mode",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("NUMA mode, one of strict, preferred and interleave \n"
                 "or a number from the virDomainNumatuneMemMode enum")
     },
     {.name = "nodeset",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("NUMA node selections to set")
     },
     {.name = "config",
@@ -8602,11 +8602,11 @@ static const vshCmdInfo info_qemu_monitor_event[] = {
 
 static const vshCmdOptDef opts_qemu_monitor_event[] = {
     {.name = "domain",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("filter by domain name, id or uuid")
     },
     {.name = "event",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("filter by event name")
     },
     {.name = "pretty",
@@ -9416,19 +9416,19 @@ static const vshCmdOptDef opts_migrate[] = {
      .help = N_("abort on soft errors during migration")
     },
     {.name = "migrateuri",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("migration URI, usually can be omitted")
     },
     {.name = "graphicsuri",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("graphics URI to be used for seamless graphics migration")
     },
     {.name = "listen-address",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("listen address that destination should bind to for incoming migration")
     },
     {.name = "dname",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("rename to new name during migration (if supported)")
     },
     {.name = "timeout",
@@ -9914,7 +9914,7 @@ static const vshCmdOptDef opts_domdisplay[] = {
      .help = N_("includes the password into the connection URI if available")
     },
     {.name = "type",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("select particular graphical display "
                 "(e.g. \"vnc\", \"spice\", \"rdp\")")
     },
@@ -11761,11 +11761,11 @@ static const vshCmdInfo info_event[] = {
 
 static const vshCmdOptDef opts_event[] = {
     {.name = "domain",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("filter by domain name, id, or uuid")
     },
     {.name = "event",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("which event type to wait for")
     },
     {.name = "all",
@@ -11923,7 +11923,7 @@ static const vshCmdOptDef opts_change_media[] = {
      .help = N_("Fully-qualified path or target of disk device")
     },
     {.name = "source",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("source of the media")
     },
     {.name = "eject",
@@ -12074,7 +12074,7 @@ static const vshCmdOptDef opts_domfstrim[] = {
                 "free ranges smaller than this (Bytes)")
     },
     {.name = "mountpoint",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("which mount point to trim")
     },
     {.name = NULL}

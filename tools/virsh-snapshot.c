@@ -128,7 +128,7 @@ static const vshCmdOptDef opts_snapshot_create[] = {
      .help = N_("domain name, id or uuid")
     },
     {.name = "xmlfile",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("domain snapshot XML")
     },
     {.name = "redefine",
@@ -333,11 +333,11 @@ static const vshCmdOptDef opts_snapshot_create_as[] = {
      .help = N_("domain name, id or uuid")
     },
     {.name = "name",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("name of snapshot")
     },
     {.name = "description",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("description of snapshot")
     },
     {.name = "print-xml",
@@ -529,7 +529,7 @@ static const vshCmdOptDef opts_snapshot_edit[] = {
      .help = N_("domain name, id or uuid")
     },
     {.name = "snapshotname",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("snapshot name")
     },
     {.name = "current",
@@ -658,7 +658,7 @@ static const vshCmdOptDef opts_snapshot_current[] = {
      .help = N_("include security sensitive information in XML dump")
     },
     {.name = "snapshotname",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("name of existing snapshot to make current")
     },
     {.name = NULL}
@@ -886,7 +886,7 @@ static const vshCmdOptDef opts_snapshot_info[] = {
      .help = N_("domain name, id or uuid")
     },
     {.name = "snapshotname",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("snapshot name")
     },
     {.name = "current",
@@ -1491,7 +1491,7 @@ static const vshCmdOptDef opts_snapshot_list[] = {
      .help = N_("list snapshots in a tree")
     },
     {.name = "from",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("limit list to children of given snapshot")
     },
     {.name = "current",
@@ -1775,7 +1775,7 @@ static const vshCmdOptDef opts_snapshot_parent[] = {
      .help = N_("domain name, id or uuid")
     },
     {.name = "snapshotname",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("find parent of snapshot name")
     },
     {.name = "current",
@@ -1843,7 +1843,7 @@ static const vshCmdOptDef opts_snapshot_revert[] = {
      .help = N_("domain name, id or uuid")
     },
     {.name = "snapshotname",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("snapshot name")
     },
     {.name = "current",
@@ -1936,7 +1936,7 @@ static const vshCmdOptDef opts_snapshot_delete[] = {
      .help = N_("domain name, id or uuid")
     },
     {.name = "snapshotname",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .help = N_("snapshot name")
     },
     {.name = "current",
