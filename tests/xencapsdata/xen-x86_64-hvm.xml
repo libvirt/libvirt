@@ -22,8 +22,7 @@
       <wordsize>64</wordsize>
       <emulator>/usr/lib64/xen/bin/qemu-dm</emulator>
       <machine>xenpv</machine>
-      <domain type='xen'>
-      </domain>
+      <domain type='xen'/>
     </arch>
   </guest>
 
@@ -34,8 +33,7 @@
       <emulator>/usr/lib64/xen/bin/qemu-dm</emulator>
       <loader>/usr/lib/xen/boot/hvmloader</loader>
       <machine>xenfv</machine>
-      <domain type='xen'>
-      </domain>
+      <domain type='xen'/>
     </arch>
     <features>
       <pae/>
@@ -52,8 +50,7 @@
       <emulator>/usr/lib64/xen/bin/qemu-dm</emulator>
       <loader>/usr/lib/xen/boot/hvmloader</loader>
       <machine>xenfv</machine>
-      <domain type='xen'>
-      </domain>
+      <domain type='xen'/>
     </arch>
     <features>
       <acpi default='on' toggle='yes'/>

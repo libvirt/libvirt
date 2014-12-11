@@ -43,8 +43,7 @@
     <arch name='i686'>
       <wordsize>32</wordsize>
       <emulator>/usr/bin/test-hv</emulator>
-      <domain type='test'>
-      </domain>
+      <domain type='test'/>
     </arch>
     <features>
       <pae/>
@@ -57,8 +56,7 @@
     <arch name='i686'>
       <wordsize>32</wordsize>
       <emulator>/usr/bin/test-hv</emulator>
-      <domain type='test'>
-      </domain>
+      <domain type='test'/>
     </arch>
     <features>
       <pae/>

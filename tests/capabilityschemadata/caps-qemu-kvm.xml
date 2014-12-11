@@ -39,8 +39,7 @@
       <machine canonical='pc-0.11' maxCpus='255'>pc</machine>
       <machine maxCpus='255'>pc-0.10</machine>
       <machine maxCpus='1'>isapc</machine>
-      <domain type='qemu'>
-      </domain>
+      <domain type='qemu'/>
       <domain type='kvm'>
         <emulator>/usr/bin/qemu-kvm</emulator>
         <machine maxCpus='255'>pc-0.11</machine>
@@ -66,8 +65,7 @@
       <machine canonical='pc-0.11'>pc</machine>
       <machine>pc-0.10</machine>
       <machine>isapc</machine>
-      <domain type='qemu'>
-      </domain>
+      <domain type='qemu'/>
       <domain type='kvm'>
         <emulator>/usr/bin/qemu-kvm</emulator>
         <machine>pc-0.11</machine>
@@ -108,8 +106,7 @@
       <machine>realview</machine>
       <machine>versatilepb</machine>
       <machine>versatileab</machine>
-      <domain type='qemu'>
-      </domain>
+      <domain type='qemu'/>
     </arch>
   </guest>
 
@@ -119,8 +116,7 @@
       <wordsize>64</wordsize>
       <emulator>/usr/bin/qemu-system-aarch64</emulator>
       <machine>machvirt</machine>
-      <domain type='qemu'>
-      </domain>
+      <domain type='qemu'/>
     </arch>
   </guest>
 
@@ -131,8 +127,7 @@
       <emulator>/usr/bin/qemu-system-microblaze</emulator>
       <machine>petalogix-s3adsp1800</machine>
       <machine>microblaze-fdt</machine>
-      <domain type='qemu'>
-      </domain>
+      <domain type='qemu'/>
     </arch>
   </guest>
 
@@ -143,8 +138,7 @@
       <emulator>/usr/bin/qemu-system-microblazeel</emulator>
       <machine>petalogix-s3adsp1800</machine>
       <machine>microblaze-fdt</machine>
-      <domain type='qemu'>
-      </domain>
+      <domain type='qemu'/>
     </arch>
   </guest>
 
@@ -158,8 +152,7 @@
       <machine>magnum</machine>
       <machine>pica61</machine>
       <machine>mips</machine>
-      <domain type='qemu'>
-      </domain>
+      <domain type='qemu'/>
     </arch>
   </guest>
 
@@ -173,8 +166,7 @@
       <machine>magnum</machine>
       <machine>pica61</machine>
       <machine>mips</machine>
-      <domain type='qemu'>
-      </domain>
+      <domain type='qemu'/>
     </arch>
   </guest>
 
@@ -195,8 +187,7 @@
       <machine>SS-1000</machine>
       <machine>SS-2000</machine>
       <machine>SS-2</machine>
-      <domain type='qemu'>
-      </domain>
+      <domain type='qemu'/>
     </arch>
   </guest>
 
@@ -212,8 +203,7 @@
       <machine>taihu</machine>
       <machine>mac99</machine>
       <machine>prep</machine>
-      <domain type='qemu'>
-      </domain>
+      <domain type='qemu'/>
     </arch>
   </guest>
 
@@ -223,8 +213,7 @@
       <wordsize>32</wordsize>
       <emulator>/usr/bin/xenner</emulator>
       <machine>xenner</machine>
-      <domain type='kvm'>
-      </domain>
+      <domain type='kvm'/>
     </arch>
     <features>
       <pae/>
@@ -240,8 +229,7 @@
       <wordsize>64</wordsize>
       <emulator>/usr/bin/xenner</emulator>
       <machine>xenner</machine>
-      <domain type='kvm'>
-      </domain>
+      <domain type='kvm'/>
     </arch>
     <features>
       <acpi default='on' toggle='yes'/>

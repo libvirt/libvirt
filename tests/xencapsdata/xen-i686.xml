@@ -19,8 +19,7 @@
       <wordsize>32</wordsize>
       <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
       <machine>xenpv</machine>
-      <domain type='xen'>
-      </domain>
+      <domain type='xen'/>
     </arch>
     <features>
       <nonpae/>

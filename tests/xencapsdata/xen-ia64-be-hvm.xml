@@ -19,8 +19,7 @@
       <wordsize>64</wordsize>
       <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
       <machine>xenpv</machine>
-      <domain type='xen'>
-      </domain>
+      <domain type='xen'/>
     </arch>
     <features>
       <ia64_be/>
@@ -34,8 +33,7 @@
       <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
       <loader>/usr/lib/xen/boot/hvmloader</loader>
       <machine>xenfv</machine>
-      <domain type='xen'>
-      </domain>
+      <domain type='xen'/>
     </arch>
     <features>
       <ia64_be/>

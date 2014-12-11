@@ -969,8 +969,15 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         }
 
         for (j = 0; j < caps->guests[i]->arch.ndomains; j++) {
-            virBufferAsprintf(&buf, "<domain type='%s'>\n",
+            virBufferAsprintf(&buf, "<domain type='%s'",
                                   caps->guests[i]->arch.domains[j]->type);
+            if (!caps->guests[i]->arch.domains[j]->info.emulator &&
+                !caps->guests[i]->arch.domains[j]->info.loader &&
+                !caps->guests[i]->arch.domains[j]->info.nmachines) {
+                virBufferAddLit(&buf, "/>\n");
+                continue;
+            }
+            virBufferAddLit(&buf, ">\n");
             virBufferAdjustIndent(&buf, 2);
             if (caps->guests[i]->arch.domains[j]->info.emulator)
                 virBufferAsprintf(&buf, "<emulator>%s</emulator>\n",

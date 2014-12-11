@@ -22,8 +22,7 @@
       <wordsize>64</wordsize>
       <emulator>/usr/lib64/xen/bin/qemu-dm</emulator>
       <machine>xenpv</machine>
-      <domain type='xen'>
-      </domain>
+      <domain type='xen'/>
     </arch>
   </guest>
 
