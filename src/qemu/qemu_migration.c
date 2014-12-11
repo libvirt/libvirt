@@ -571,7 +571,8 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
                 goto cleanup;
 
             qemuDomainObjEnterMonitor(driver, vm);
-            if (qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats) < 0) {
+            if (qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats,
+                                                    false) < 0) {
                 qemuDomainObjExitMonitor(driver, vm);
                 goto cleanup;
             }

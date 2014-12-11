@@ -18552,8 +18552,9 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
         abbreviated = true; /* it's ok, just go ahead silently */
     } else {
         qemuDomainObjEnterMonitor(driver, dom);
-        rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats);
-        ignore_value(qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats));
+        rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats, false);
+        ignore_value(qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats,
+                                                         false));
         qemuDomainObjExitMonitor(driver, dom);
 
         if (rc < 0) {

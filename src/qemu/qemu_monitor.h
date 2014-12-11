@@ -382,11 +382,13 @@ struct _qemuBlockStats {
 };
 
 int qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
-                                    virHashTablePtr *ret_stats)
+                                    virHashTablePtr *ret_stats,
+                                    bool backingChain)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorBlockStatsUpdateCapacity(qemuMonitorPtr mon,
-                                        virHashTablePtr stats)
+                                        virHashTablePtr stats,
+                                        bool backingChain)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorGetBlockStatsParamsNumber(qemuMonitorPtr mon,

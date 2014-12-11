@@ -1783,16 +1783,16 @@ int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
     return ret;
 }
 
-/* Fills the first 'nstats' block stats. 'stats' must be an array.
- * Returns <0 on error, otherwise the number of block stats retrieved.
- * if 'dev_name' is != NULL, look for this device only and skip
- * any other. In that case return value cannot be greater than 1.
+
+/* Creates a hash table in 'ret_stats' with all block stats.
+ * Returns <0 on error, 0 on success.
  */
 int
 qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
-                                virHashTablePtr *ret_stats)
+                                virHashTablePtr *ret_stats,
+                                bool backingChain)
 {
-    VIR_DEBUG("mon=%p ret_stats=%p", mon, ret_stats);
+    VIR_DEBUG("mon=%p ret_stats=%p, backing=%d", mon, ret_stats, backingChain);
 
     if (!mon->json) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1800,15 +1800,17 @@ qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
         return -1;
     }
 
-    return qemuMonitorJSONGetAllBlockStatsInfo(mon, ret_stats);
+    return qemuMonitorJSONGetAllBlockStatsInfo(mon, ret_stats, backingChain);
 }
 
 
 /* Updates "stats" to fill virtual and physical size of the image */
-int qemuMonitorBlockStatsUpdateCapacity(qemuMonitorPtr mon,
-                                        virHashTablePtr stats)
+int
+qemuMonitorBlockStatsUpdateCapacity(qemuMonitorPtr mon,
+                                    virHashTablePtr stats,
+                                    bool backingChain)
 {
-    VIR_DEBUG("mon=%p, stats=%p", mon, stats);
+    VIR_DEBUG("mon=%p, stats=%p, backing=%d", mon, stats, backingChain);
 
     if (!mon->json) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -1816,7 +1818,7 @@ int qemuMonitorBlockStatsUpdateCapacity(qemuMonitorPtr mon,
         return -1;
     }
 
-    return qemuMonitorJSONBlockStatsUpdateCapacity(mon, stats);
+    return qemuMonitorJSONBlockStatsUpdateCapacity(mon, stats, backingChain);
 }
 
 
