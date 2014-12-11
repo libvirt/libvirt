@@ -3126,9 +3126,7 @@ qemuProcessStartCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     /* Bring up netdevs before starting CPUs */
-    if (reason != VIR_DOMAIN_RUNNING_UNPAUSED &&
-        reason != VIR_DOMAIN_RUNNING_SAVE_CANCELED &&
-        qemuInterfaceStartDevices(vm->def) < 0)
+    if (qemuInterfaceStartDevices(vm->def) < 0)
        goto cleanup;
 
     VIR_DEBUG("Using lock state '%s'", NULLSTR(priv->lockState));
