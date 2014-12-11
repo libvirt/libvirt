@@ -467,12 +467,6 @@
     </element>
   </define>
 
-  <define name='hexuint'>
-    <data type='string'>
-      <param name="pattern">(0x)?[0-9a-f]+</param>
-    </data>
-  </define>
-
   <define name='mac'>
     <data type='string'>
       <param name="pattern">([a-fA-F0-9]{2}:){5}[a-fA-F0-9]{2}</param>
