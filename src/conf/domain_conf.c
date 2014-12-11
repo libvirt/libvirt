@@ -1062,8 +1062,13 @@ virDomainObjPtr virDomainObjListFindByID(virDomainObjListPtr doms,
     virDomainObjPtr obj;
     virObjectLock(doms);
     obj = virHashSearch(doms->objs, virDomainObjListSearchID, &id);
-    if (obj)
+    if (obj) {
         virObjectLock(obj);
+        if (obj->removing) {
+            virObjectUnlock(obj);
+            obj = NULL;
+        }
+    }
     virObjectUnlock(doms);
     return obj;
 }
@@ -1079,8 +1084,13 @@ virDomainObjPtr virDomainObjListFindByUUID(virDomainObjListPtr doms,
     virUUIDFormat(uuid, uuidstr);
 
     obj = virHashLookup(doms->objs, uuidstr);
-    if (obj)
+    if (obj) {
         virObjectLock(obj);
+        if (obj->removing) {
+            virObjectUnlock(obj);
+            obj = NULL;
+        }
+    }
     virObjectUnlock(doms);
     return obj;
 }
@@ -1105,8 +1115,13 @@ virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,
     virDomainObjPtr obj;
     virObjectLock(doms);
     obj = virHashSearch(doms->objs, virDomainObjListSearchName, name);
-    if (obj)
+    if (obj) {
         virObjectLock(obj);
+        if (obj->removing) {
+            virObjectUnlock(obj);
+            obj = NULL;
+        }
+    }
     virObjectUnlock(doms);
     return obj;
 }
@@ -2551,6 +2566,7 @@ void virDomainObjListRemove(virDomainObjListPtr doms,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
+    dom->removing = true;
     virUUIDFormat(dom->def->uuid, uuidstr);
     virObjectRef(dom);
     virObjectUnlock(dom);

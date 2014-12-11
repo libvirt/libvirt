@@ -2187,6 +2187,7 @@ struct _virDomainObj {
     unsigned int autostart : 1;
     unsigned int persistent : 1;
     unsigned int updated : 1;
+    unsigned int removing : 1;
 
     virDomainDefPtr def; /* The current definition */
     virDomainDefPtr newDef; /* New definition to activate at shutdown */
