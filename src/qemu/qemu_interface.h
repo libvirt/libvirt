@@ -28,5 +28,7 @@
 
 int qemuInterfaceStartDevice(virDomainNetDefPtr net);
 int qemuInterfaceStartDevices(virDomainDefPtr def);
+int qemuInterfaceStopDevice(virDomainNetDefPtr net);
+int qemuInterfaceStopDevices(virDomainDefPtr def);
 
 #endif /* __QEMU_INTERFACE_H__ */

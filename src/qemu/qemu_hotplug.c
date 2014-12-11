@@ -3513,6 +3513,14 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
         VIR_WARN("cannot clear bandwidth setting for device : %s",
                  detach->ifname);
 
+    /* deactivate the tap/macvtap device on the host (currently this
+     * isn't necessary, as everything done in
+     * qemuInterfaceStopDevice() is made meaningless when the device
+     * is deleted anyway, but in the future it may be important, and
+     * doesn't hurt anything for now)
+     */
+    ignore_value(qemuInterfaceStopDevice(detach));
+
     qemuDomainMarkDeviceForRemoval(vm, &detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);

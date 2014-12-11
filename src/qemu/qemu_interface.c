@@ -41,8 +41,9 @@ int
 qemuInterfaceStartDevice(virDomainNetDefPtr net)
 {
     int ret = -1;
+    virDomainNetType actualType = virDomainNetGetActualType(net);
 
-    switch (virDomainNetGetActualType(net)) {
+    switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_NETWORK:
         break;
@@ -94,6 +95,73 @@ qemuInterfaceStartDevices(virDomainDefPtr def)
 
     for (i = 0; i < def->nnets; i++) {
         if (qemuInterfaceStartDevice(def->nets[i]) < 0)
+            return -1;
+    }
+    return 0;
+}
+
+
+/**
+ * qemuInterfaceStopDevice:
+ * @net: net device to stop
+ *
+ * Based upon the type of device provided, perform the appropriate
+ * work to deactivate the device so that packets aren't forwarded to
+ * it from the rest of the network.
+ */
+int
+qemuInterfaceStopDevice(virDomainNetDefPtr net)
+{
+    int ret = -1;
+    virDomainNetType actualType = virDomainNetGetActualType(net);
+
+    switch (actualType) {
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+        /* macvtap interfaces need to be marked !IFF_UP (ie "down") to
+         * prevent any host-generated traffic sent from this interface
+         * from putting bad info into the arp caches of other machines
+         * on this network.
+         */
+        if (virNetDevSetOnline(net->ifname, false) < 0)
+            goto cleanup;
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_LAST:
+        /* these types all require no action */
+        break;
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+/**
+ * qemuInterfaceStopDevices:
+ * @def: domain definition
+ *
+ * Make all interfaces associated with this domain inaccessible from
+ * the rest of the network.
+ */
+int
+qemuInterfaceStopDevices(virDomainDefPtr def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nnets; i++) {
+        if (qemuInterfaceStopDevice(def->nets[i]) < 0)
             return -1;
     }
     return 0;

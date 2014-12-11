@@ -3182,6 +3182,9 @@ int qemuProcessStopCPUs(virQEMUDriverPtr driver,
     if (ret < 0)
         goto cleanup;
 
+    /* de-activate netdevs after stopping CPUs */
+    ignore_value(qemuInterfaceStopDevices(vm->def));
+
     if (priv->job.current)
         ignore_value(virTimeMillisNow(&priv->job.current->stopped));
 
