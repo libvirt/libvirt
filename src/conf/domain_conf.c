@@ -3039,19 +3039,22 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
      * We then fill def->consoles[0] with a stub just so we get sequencing
      * correct for consoles > 0
      */
+
+    /* Only the first console (if there are any) can be of type serial,
+     * verify that no other console is of type serial
+     */
+    for (i = 1; i < def->nconsoles; i++) {
+        virDomainChrDefPtr cons = def->consoles[i];
+
+        if (cons->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only the first console can be a serial port"));
+            return -1;
+        }
+    }
     if (def->nconsoles > 0 && STREQ(def->os.type, "hvm") &&
         (def->consoles[0]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ||
          def->consoles[0]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE)) {
-        /* First verify that only the first console is of type serial */
-        for (i = 1; i < def->nconsoles; i++) {
-            virDomainChrDefPtr cons = def->consoles[i];
-
-            if (cons->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Only the first console can be a serial port"));
-                return -1;
-            }
-        }
 
         /* If there isn't a corresponding serial port:
          *  - create one and set, the console to be an alias for it
