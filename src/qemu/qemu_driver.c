@@ -97,6 +97,7 @@
 #include "virhostdev.h"
 #include "domain_capabilities.h"
 #include "vircgroup.h"
+#include "virnuma.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -4621,6 +4622,11 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     int ncpuinfo;
     qemuDomainObjPrivatePtr priv;
     size_t i;
+    virCgroupPtr cgroup_temp = NULL;
+    char *mem_mask = NULL;
+    char *all_nodes_str = NULL;
+    virBitmapPtr all_nodes = NULL;
+    virErrorPtr err = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -4646,8 +4652,21 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
     priv = vm->privateData;
 
+    if (virCgroupNewEmulator(priv->cgroup, false, &cgroup_temp) < 0)
+        goto cleanup;
+
+    if (!(all_nodes = virNumaGetHostNodeset()))
+        goto cleanup;
+
+    if (!(all_nodes_str = virBitmapFormat(all_nodes)))
+        goto cleanup;
+
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
+
+    if (virCgroupGetCpusetMems(cgroup_temp, &mem_mask) < 0 ||
+        virCgroupSetCpusetMems(cgroup_temp, all_nodes_str) < 0)
+        goto endjob;
 
     maximum = (flags & VIR_DOMAIN_VCPU_MAXIMUM) != 0;
     flags &= ~VIR_DOMAIN_VCPU_MAXIMUM;
@@ -4758,6 +4777,12 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     ret = 0;
 
  endjob:
+    if (mem_mask) {
+        err = virSaveLastError();
+        virCgroupSetCpusetMems(cgroup_temp, mem_mask);
+        virSetError(err);
+    }
+
     if (!qemuDomainObjEndJob(driver, vm))
         vm = NULL;
 
@@ -4766,6 +4791,10 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         virObjectUnlock(vm);
     virObjectUnref(caps);
     VIR_FREE(cpuinfo);
+    VIR_FREE(mem_mask);
+    VIR_FREE(all_nodes_str);
+    virBitmapFree(all_nodes);
+    virCgroupFree(&cgroup_temp);
     virObjectUnref(cfg);
     return ret;
 }
