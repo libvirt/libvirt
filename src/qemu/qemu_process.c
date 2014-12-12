@@ -2377,12 +2377,12 @@ qemuPrepareCpumap(virQEMUDriverPtr driver,
  */
 static int
 qemuProcessInitCpuAffinity(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm,
-                           virBitmapPtr nodemask)
+                           virDomainObjPtr vm)
 {
     int ret = -1;
     virBitmapPtr cpumap = NULL;
     virBitmapPtr cpumapToSet = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if (!vm->pid) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2390,7 +2390,7 @@ qemuProcessInitCpuAffinity(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (!(cpumap = qemuPrepareCpumap(driver, nodemask)))
+    if (!(cpumap = qemuPrepareCpumap(driver, priv->autoNodeset)))
         return -1;
 
     if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
@@ -3041,13 +3041,13 @@ struct qemuProcessHookData {
     virConnectPtr conn;
     virDomainObjPtr vm;
     virQEMUDriverPtr driver;
-    virBitmapPtr nodemask;
     virQEMUDriverConfigPtr cfg;
 };
 
 static int qemuProcessHook(void *data)
 {
     struct qemuProcessHookData *h = data;
+    qemuDomainObjPrivatePtr priv = h->vm->privateData;
     int ret = -1;
     int fd;
     virBitmapPtr nodeset = NULL;
@@ -3084,7 +3084,7 @@ static int qemuProcessHook(void *data)
 
     mode = virDomainNumatuneGetMode(h->vm->def->numatune, -1);
     nodeset = virDomainNumatuneGetNodeset(h->vm->def->numatune,
-                                          h->nodemask, -1);
+                                          priv->autoNodeset, -1);
 
     if (virNumaSetupMemoryPolicy(mode, nodeset) < 0)
         goto cleanup;
@@ -4426,7 +4426,7 @@ int qemuProcessStart(virConnectPtr conn,
         if (virBitmapParse(nodeset, 0, &nodemask, VIR_DOMAIN_CPUMASK_LEN) < 0)
             goto cleanup;
     }
-    hookData.nodemask = nodemask;
+    priv->autoNodeset = nodemask;
 
     /* "volume" type disk's source must be translated before
      * cgroup and security setting.
@@ -4630,13 +4630,13 @@ int qemuProcessStart(virConnectPtr conn,
     }
 
     VIR_DEBUG("Setting up domain cgroup (if required)");
-    if (qemuSetupCgroup(driver, vm, nodemask) < 0)
+    if (qemuSetupCgroup(driver, vm) < 0)
         goto cleanup;
 
     /* This must be done after cgroup placement to avoid resetting CPU
      * affinity */
     if (!vm->def->cputune.emulatorpin &&
-        qemuProcessInitCpuAffinity(driver, vm, nodemask) < 0)
+        qemuProcessInitCpuAffinity(driver, vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting domain security labels");
@@ -4683,7 +4683,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting cgroup for emulator (if required)");
-    if (qemuSetupCgroupForEmulator(driver, vm, nodemask) < 0)
+    if (qemuSetupCgroupForEmulator(driver, vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting affinity of emulator threads");
@@ -4710,7 +4710,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting up post-init cgroup restrictions");
-    if (qemuSetupCpusetMems(vm, nodemask) < 0)
+    if (qemuSetupCpusetMems(vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Detecting VCPU PIDs");
@@ -4848,7 +4848,6 @@ int qemuProcessStart(virConnectPtr conn,
      * if we failed to initialize the now running VM. kill it off and
      * pretend we never started it */
     VIR_FREE(nodeset);
-    virBitmapFree(nodemask);
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);
     if (priv->mon)

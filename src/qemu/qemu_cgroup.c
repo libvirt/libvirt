@@ -608,8 +608,7 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
 
 
 int
-qemuSetupCpusetMems(virDomainObjPtr vm,
-                    virBitmapPtr nodemask)
+qemuSetupCpusetMems(virDomainObjPtr vm)
 {
     virCgroupPtr cgroup_temp = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -624,7 +623,7 @@ qemuSetupCpusetMems(virDomainObjPtr vm,
         return 0;
 
     if (virDomainNumatuneMaybeFormatNodeset(vm->def->numatune,
-                                            nodemask,
+                                            priv->autoNodeset,
                                             &mem_mask, -1) < 0)
         goto cleanup;
 
@@ -644,7 +643,6 @@ qemuSetupCpusetMems(virDomainObjPtr vm,
 
 static int
 qemuSetupCpusetCgroup(virDomainObjPtr vm,
-                      virBitmapPtr nodemask,
                       virCapsPtr caps)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -659,7 +657,7 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
 
         if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
             virBitmapPtr cpumap;
-            if (!(cpumap = virCapabilitiesGetCpusForNodemask(caps, nodemask)))
+            if (!(cpumap = virCapabilitiesGetCpusForNodemask(caps, priv->autoNodeset)))
                 goto cleanup;
             cpu_mask = virBitmapFormat(cpumap);
             virBitmapFree(cpumap);
@@ -823,8 +821,7 @@ qemuConnectCgroup(virQEMUDriverPtr driver,
 
 int
 qemuSetupCgroup(virQEMUDriverPtr driver,
-                virDomainObjPtr vm,
-                virBitmapPtr nodemask)
+                virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCapsPtr caps = NULL;
@@ -857,7 +854,7 @@ qemuSetupCgroup(virQEMUDriverPtr driver,
     if (qemuSetupCpuCgroup(driver, vm) < 0)
         goto cleanup;
 
-    if (qemuSetupCpusetCgroup(vm, nodemask, caps) < 0)
+    if (qemuSetupCpusetCgroup(vm, caps) < 0)
         goto cleanup;
 
     ret = 0;
@@ -1042,8 +1039,7 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
 
 int
 qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm,
-                           virBitmapPtr nodemask)
+                           virDomainObjPtr vm)
 {
     virBitmapPtr cpumask = NULL;
     virBitmapPtr cpumap = NULL;
@@ -1079,7 +1075,7 @@ qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
-        if (!(cpumap = qemuPrepareCpumap(driver, nodemask)))
+        if (!(cpumap = qemuPrepareCpumap(driver, priv->autoNodeset)))
             goto cleanup;
         cpumask = cpumap;
     } else if (def->cputune.emulatorpin) {

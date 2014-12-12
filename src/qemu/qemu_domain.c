@@ -451,6 +451,7 @@ qemuDomainObjPrivateFree(void *data)
         qemuAgentClose(priv->agent);
     }
     VIR_FREE(priv->cleanupCallbacks);
+    virBitmapFree(priv->autoNodeset);
     VIR_FREE(priv);
 }
 
