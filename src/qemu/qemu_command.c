@@ -6616,6 +6616,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     char *nodemask = NULL;
     char *mem_path = NULL;
     int ret = -1;
+    const long system_page_size = sysconf(_SC_PAGESIZE);
 
     if (virDomainNumatuneHasPerNodeBinding(def->numatune) &&
         !(virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
@@ -6626,7 +6627,8 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    if (def->mem.nhugepages && def->mem.hugepages[0].size &&
+    if (def->mem.nhugepages &&
+        def->mem.hugepages[0].size != system_page_size &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("huge pages per NUMA node are not "
@@ -6718,6 +6720,13 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
                  * NUMA node. Use the generic setting then (<page/> without any
                  * @nodemask) if possible. */
                 hugepage = master_hugepage;
+            }
+
+            if (hugepage && hugepage->size == system_page_size) {
+                /* However, if user specified to use "huge" page
+                 * of regular system page size, it's as if they
+                 * hasn't specified any huge pages at all. */
+                hugepage = NULL;
             }
 
             if (hugepage) {
@@ -7882,44 +7891,51 @@ qemuBuildCommandLine(virConnectPtr conn,
     def->mem.max_balloon = VIR_DIV_UP(def->mem.max_balloon, 1024) * 1024;
     virCommandAddArgFormat(cmd, "%llu", def->mem.max_balloon / 1024);
     if (def->mem.nhugepages && (!def->cpu || !def->cpu->ncells)) {
-        char *mem_path;
+        const long system_page_size = sysconf(_SC_PAGESIZE) / 1024;
+        char *mem_path = NULL;
 
-        if (!cfg->nhugetlbfs) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("hugetlbfs filesystem is not mounted "
-                                   "or disabled by administrator config"));
-            goto error;
-        }
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MEM_PATH)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("hugepage backing not supported by '%s'"),
-                           def->emulator);
-            goto error;
-        }
-
-        if (def->mem.hugepages[0].size) {
-            for (j = 0; j < cfg->nhugetlbfs; j++) {
-                if (cfg->hugetlbfs[j].size == def->mem.hugepages[0].size)
-                    break;
-            }
-
-            if (j == cfg->nhugetlbfs) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unable to find any usable hugetlbfs mount for %llu KiB"),
-                               def->mem.hugepages[0].size);
-                goto error;
-            }
-
-            if (!(mem_path = qemuGetHugepagePath(&cfg->hugetlbfs[j])))
-                goto error;
+        if (def->mem.hugepages[0].size == system_page_size) {
+            /* There is one special case: if user specified "huge"
+             * pages of regular system pages size. */
         } else {
-            if (!(mem_path = qemuGetDefaultHugepath(cfg->hugetlbfs,
-                                                    cfg->nhugetlbfs)))
+            if (!cfg->nhugetlbfs) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("hugetlbfs filesystem is not mounted "
+                                       "or disabled by administrator config"));
                 goto error;
+            }
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MEM_PATH)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("hugepage backing not supported by '%s'"),
+                               def->emulator);
+                goto error;
+            }
+
+            if (def->mem.hugepages[0].size) {
+                for (j = 0; j < cfg->nhugetlbfs; j++) {
+                    if (cfg->hugetlbfs[j].size == def->mem.hugepages[0].size)
+                        break;
+                }
+
+                if (j == cfg->nhugetlbfs) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Unable to find any usable hugetlbfs mount for %llu KiB"),
+                                   def->mem.hugepages[0].size);
+                    goto error;
+                }
+
+                if (!(mem_path = qemuGetHugepagePath(&cfg->hugetlbfs[j])))
+                    goto error;
+            } else {
+                if (!(mem_path = qemuGetDefaultHugepath(cfg->hugetlbfs,
+                                                        cfg->nhugetlbfs)))
+                    goto error;
+            }
         }
 
-        virCommandAddArgList(cmd, "-mem-prealloc", "-mem-path",
-                             mem_path, NULL);
+        virCommandAddArg(cmd, "-mem-prealloc");
+        if (mem_path)
+            virCommandAddArgList(cmd, "-mem-path", mem_path, NULL);
         VIR_FREE(mem_path);
     }
 
