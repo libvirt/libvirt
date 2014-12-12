@@ -2694,6 +2694,22 @@ qemuDomainStorageFileInit(virQEMUDriverPtr driver,
 }
 
 
+char *
+qemuDomainStorageAlias(const char *device, int depth)
+{
+    char *alias;
+
+    if (STRPREFIX(device, QEMU_DRIVE_HOST_PREFIX))
+        device += strlen(QEMU_DRIVE_HOST_PREFIX);
+
+    if (!depth)
+        ignore_value(VIR_STRDUP(alias, device));
+    else
+        ignore_value(virAsprintf(&alias, "%s.%d", device, depth));
+    return alias;
+}
+
+
 int
 qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,

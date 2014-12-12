@@ -1696,13 +1696,18 @@ qemuMonitorJSONDevGetBlockExtent(virJSONValuePtr dev,
 static int
 qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
                                     const char *dev_name,
+                                    int depth,
                                     virHashTablePtr hash,
-                                    bool backingChain ATTRIBUTE_UNUSED)
+                                    bool backingChain)
 {
     qemuBlockStatsPtr bstats = NULL;
     virJSONValuePtr stats;
     int ret = -1;
+    char *entry_name = qemuDomainStorageAlias(dev_name, depth);
+    virJSONValuePtr backing;
 
+    if (!entry_name)
+        goto cleanup;
     if (VIR_ALLOC(bstats) < 0)
         goto cleanup;
 
@@ -1778,12 +1783,20 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
     /* it's ok to not have this information here. Just skip silently. */
     qemuMonitorJSONDevGetBlockExtent(dev, &bstats->wr_highest_offset);
 
-    if (virHashAddEntry(hash, dev_name, bstats) < 0)
+    if (virHashAddEntry(hash, entry_name, bstats) < 0)
         goto cleanup;
     bstats = NULL;
+
+    if (backingChain &&
+        (backing = virJSONValueObjectGet(dev, "backing")) &&
+        qemuMonitorJSONGetOneBlockStatsInfo(backing, dev_name, depth + 1,
+                                            hash, true) < 0)
+        goto cleanup;
+
     ret = 0;
  cleanup:
     VIR_FREE(bstats);
+    VIR_FREE(entry_name);
     return ret;
 }
 
@@ -1838,10 +1851,7 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        if (STRPREFIX(dev_name, QEMU_DRIVE_HOST_PREFIX))
-            dev_name += strlen(QEMU_DRIVE_HOST_PREFIX);
-
-        if (qemuMonitorJSONGetOneBlockStatsInfo(dev, dev_name, hash,
+        if (qemuMonitorJSONGetOneBlockStatsInfo(dev, dev_name, 0, hash,
                                                 backingChain) < 0)
             goto cleanup;
 
@@ -1862,17 +1872,20 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
 static int
 qemuMonitorJSONBlockStatsUpdateCapacityOne(virJSONValuePtr image,
                                            const char *dev_name,
+                                           int depth,
                                            virHashTablePtr stats,
-                                           bool backingChain ATTRIBUTE_UNUSED)
+                                           bool backingChain)
 {
     qemuBlockStatsPtr bstats;
     int ret = -1;
+    char *entry_name = qemuDomainStorageAlias(dev_name, depth);
+    virJSONValuePtr backing;
 
-    if (!(bstats = virHashLookup(stats, dev_name))) {
+    if (!(bstats = virHashLookup(stats, entry_name))) {
         if (VIR_ALLOC(bstats) < 0)
             goto cleanup;
 
-        if (virHashAddEntry(stats, dev_name, bstats) < 0) {
+        if (virHashAddEntry(stats, entry_name, bstats) < 0) {
             VIR_FREE(bstats);
             goto cleanup;
         }
@@ -1889,7 +1902,18 @@ qemuMonitorJSONBlockStatsUpdateCapacityOne(virJSONValuePtr image,
     if (virJSONValueObjectGetNumberUlong(image, "actual-size",
                                          &bstats->physical) < 0)
         bstats->physical = bstats->capacity;
+
+    if (backingChain &&
+        (backing = virJSONValueObjectGet(image, "backing-image"))) {
+        ret = qemuMonitorJSONBlockStatsUpdateCapacityOne(backing,
+                                                         dev_name,
+                                                         depth + 1,
+                                                         stats,
+                                                         true);
+    }
+
  cleanup:
+    VIR_FREE(entry_name);
     return ret;
 }
 
@@ -1942,15 +1966,13 @@ qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        if (STRPREFIX(dev_name, QEMU_DRIVE_HOST_PREFIX))
-            dev_name += strlen(QEMU_DRIVE_HOST_PREFIX);
-
         /* drive may be empty */
         if (!(inserted = virJSONValueObjectGet(dev, "inserted")) ||
             !(image = virJSONValueObjectGet(inserted, "image")))
             continue;
 
-        if (qemuMonitorJSONBlockStatsUpdateCapacityOne(image, dev_name, stats,
+        if (qemuMonitorJSONBlockStatsUpdateCapacityOne(image, dev_name, 0,
+                                                       stats,
                                                        backingChain) < 0)
             goto cleanup;
     }
