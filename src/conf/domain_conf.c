@@ -6684,8 +6684,12 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         goto error;
     }
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+    if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+        def->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
+        VIR_DEBUG("Ignoring device address for none model usb controller");
+    } else if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0) {
         goto error;
+    }
 
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL: {
@@ -9990,7 +9994,9 @@ virDomainMemballoonDefParseXML(xmlNodePtr node,
         goto error;
     }
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+    if (def->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE)
+        VIR_DEBUG("Ignoring device address for none model Memballoon");
+    else if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
  cleanup:
