@@ -4710,7 +4710,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting up post-init cgroup restrictions");
-    if (qemuSetupCgroupPostInit(vm, nodemask) < 0)
+    if (qemuSetupCpusetMems(vm, nodemask) < 0)
         goto cleanup;
 
     VIR_DEBUG("Detecting VCPU PIDs");

@@ -47,8 +47,8 @@ int qemuConnectCgroup(virQEMUDriverPtr driver,
 int qemuSetupCgroup(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
                     virBitmapPtr nodemask);
-int qemuSetupCgroupPostInit(virDomainObjPtr vm,
-                            virBitmapPtr nodemask);
+int qemuSetupCpusetMems(virDomainObjPtr vm,
+                        virBitmapPtr nodemask);
 int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
                           unsigned long long period,
                           long long quota);

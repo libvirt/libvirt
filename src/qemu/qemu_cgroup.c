@@ -607,7 +607,7 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
 }
 
 
-static int
+int
 qemuSetupCpusetMems(virDomainObjPtr vm,
                     virBitmapPtr nodemask)
 {
@@ -864,13 +864,6 @@ qemuSetupCgroup(virQEMUDriverPtr driver,
  cleanup:
     virObjectUnref(caps);
     return ret;
-}
-
-int
-qemuSetupCgroupPostInit(virDomainObjPtr vm,
-                        virBitmapPtr nodemask)
-{
-    return qemuSetupCpusetMems(vm, nodemask);
 }
 
 int
