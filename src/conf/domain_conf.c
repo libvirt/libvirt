@@ -6681,6 +6681,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     if (max_sectors && virStrToLong_ui(max_sectors, NULL, 10, &def->max_sectors) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Malformed 'max_sectors' value %s'"), max_sectors);
+        goto error;
     }
 
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
