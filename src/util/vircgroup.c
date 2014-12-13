@@ -3926,6 +3926,20 @@ virCgroupSupportsCpuBW(virCgroupPtr cgroup)
     return ret;
 }
 
+int
+virCgroupHasEmptyTasks(virCgroupPtr cgroup, int controller)
+{
+    int ret = -1;
+    char *content = NULL;
+
+    ret = virCgroupGetValueStr(cgroup, controller, "tasks", &content);
+
+    if (ret == 0 && content[0] == '\0')
+        ret = 1;
+
+    VIR_FREE(content);
+    return ret;
+}
 
 #else /* !VIR_CGROUP_SUPPORTED */
 
@@ -4649,6 +4663,15 @@ virCgroupSetOwner(virCgroupPtr cgroup ATTRIBUTE_UNUSED,
                   uid_t uid ATTRIBUTE_UNUSED,
                   gid_t gid ATTRIBUTE_UNUSED,
                   int controllers ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+int
+virCgroupHasEmptyTasks(virCgroupPtr cgroup ATTRIBUTE_UNUSED,
+                       int controller ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
