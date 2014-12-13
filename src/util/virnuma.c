@@ -983,3 +983,31 @@ virNumaNodesetIsAvailable(virBitmapPtr nodeset)
     }
     return true;
 }
+
+virBitmapPtr
+virNumaGetHostNodeset(void)
+{
+    int maxnode = virNumaGetMaxNode();
+    size_t i = 0;
+    virBitmapPtr nodeset = NULL;
+
+    if (maxnode < 0)
+        return NULL;
+
+    if (!(nodeset = virBitmapNew(maxnode + 1)))
+        return NULL;
+
+    for (i = 0; i <= maxnode; i++) {
+        if (!virNumaNodeIsAvailable(i))
+            continue;
+
+        if (virBitmapSetBit(nodeset, i) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Problem setting bit in bitmap"));
+            virBitmapFree(nodeset);
+            return NULL;
+        }
+    }
+
+    return nodeset;
+}

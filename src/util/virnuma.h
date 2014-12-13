@@ -33,6 +33,7 @@ char *virNumaGetAutoPlacementAdvice(unsigned short vcups,
 int virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode,
                              virBitmapPtr nodeset);
 
+virBitmapPtr virNumaGetHostNodeset(void);
 bool virNumaNodesetIsAvailable(virBitmapPtr nodeset);
 bool virNumaIsAvailable(void);
 int virNumaGetMaxNode(void);
