@@ -1071,7 +1071,7 @@ xenParseOS(virConfPtr conf, virDomainDefPtr def)
             return -1;
 
         for (i = 0; i < VIR_DOMAIN_BOOT_LAST && boot[i]; i++) {
-            switch (*boot) {
+            switch (boot[i]) {
             case 'a':
                 def->os.bootDevs[i] = VIR_DOMAIN_BOOT_FLOPPY;
                 break;
