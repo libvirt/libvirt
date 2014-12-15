@@ -11673,13 +11673,15 @@ int virDomainLeaseIndex(virDomainDefPtr def,
 
     for (i = 0; i < def->nleases; i++) {
         vlease = def->leases[i];
-        /* Either both must have lockspaces present which  match.. */
-        if (vlease->lockspace && lease->lockspace &&
-            STRNEQ(vlease->lockspace, lease->lockspace))
-            continue;
+        /* Either both must have lockspaces present which match.. */
+        if (vlease->lockspace && lease->lockspace) {
+            if (STRNEQ(vlease->lockspace, lease->lockspace))
+                continue;
         /* ...or neither must have a lockspace present */
-        if (vlease->lockspace || lease->lockspace)
+        } else if (vlease->lockspace || lease->lockspace) {
             continue;
+        }
+
         if (STREQ(vlease->key, lease->key))
             return i;
     }
