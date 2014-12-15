@@ -476,6 +476,7 @@ prlsdkGetDiskInfo(PRL_HANDLE prldisk,
             virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_PLOOP);
     } else {
         virDomainDiskSetType(disk, VIR_STORAGE_TYPE_BLOCK);
+        virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_RAW);
     }
 
     if (isCdrom)
@@ -2486,13 +2487,24 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk)
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
             virDomainDiskGetFormat(disk) != VIR_STORAGE_FILE_PLOOP) {
 
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Invalid disk format: %d"), disk->src->type);
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid format of "
+                           "disk %s, Parallels Cloud Server supports only "
+                           "images in ploop format."), disk->src->path);
             goto cleanup;
         }
 
         emutype = PDT_USE_IMAGE_FILE;
     } else {
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
+            (virDomainDiskGetFormat(disk) != VIR_STORAGE_FILE_RAW &&
+             virDomainDiskGetFormat(disk) != VIR_STORAGE_FILE_NONE &&
+             virDomainDiskGetFormat(disk) != VIR_STORAGE_FILE_AUTO)) {
+
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid format "
+                           "of disk %s, it should be either not set, or set "
+                           "to raw or auto."), disk->src->path);
+            goto cleanup;
+        }
         emutype = PDT_USE_REAL_DEVICE;
     }
 
