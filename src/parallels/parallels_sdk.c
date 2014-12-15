@@ -2467,6 +2467,8 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk)
     int ret = -1;
     PRL_VM_DEV_EMULATION_TYPE emutype;
     PRL_MASS_STORAGE_INTERFACE_TYPE sdkbus;
+    int idx;
+    virDomainDeviceDriveAddressPtr drive;
 
     if (prlsdkCheckDiskUnsupportedParams(disk) < 0)
         return -1;
@@ -2517,15 +2519,27 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk)
     pret = PrlVmDev_SetFriendlyName(sdkdisk, disk->src->path);
     prlsdkCheckRetGoto(pret, cleanup);
 
+    drive = &disk->info.addr.drive;
+    if (drive->controller > 0) {
+        /* We have only one controller of each type */
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
+                       "address of disk %s, Parallels Cloud Server has "
+                       "only one controller."), disk->src->path);
+        goto cleanup;
+    }
+
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_IDE:
         sdkbus = PMS_IDE_DEVICE;
+        idx = 2 * drive->bus + drive->unit;
         break;
     case VIR_DOMAIN_DISK_BUS_SCSI:
         sdkbus = PMS_SCSI_DEVICE;
+        idx = drive->unit;
         break;
     case VIR_DOMAIN_DISK_BUS_SATA:
         sdkbus = PMS_SATA_DEVICE;
+        idx = drive->unit;
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -2537,7 +2551,7 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk)
     pret = PrlVmDev_SetIfaceType(sdkdisk, sdkbus);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    pret = PrlVmDev_SetStackIndex(sdkdisk, disk->info.addr.drive.target);
+    pret = PrlVmDev_SetStackIndex(sdkdisk, idx);
     prlsdkCheckRetGoto(pret, cleanup);
 
     switch (disk->cachemode) {
