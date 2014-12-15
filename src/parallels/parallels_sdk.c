@@ -2029,7 +2029,7 @@ static int prlsdkCheckVideoUnsupportedParams(virDomainDefPtr def)
         return -1;
     }
 
-    if (v->accel == NULL || v->accel->support2d || v->accel->support3d) {
+    if (v->accel != NULL && (v->accel->support2d || v->accel->support3d)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Parallels Cloud Server doesn't support "
                          "setting video acceleration parameters."));
