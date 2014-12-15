@@ -11196,6 +11196,9 @@ virDomainHostdevMatchSubsys(virDomainHostdevDefPtr a,
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         return virDomainHostdevMatchSubsysUSB(a, b);
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+        if (a->source.subsys.u.scsi.protocol !=
+            b->source.subsys.u.scsi.protocol)
+            return 0;
         if (a->source.subsys.u.scsi.protocol ==
             VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
             return virDomainHostdevMatchSubsysSCSIiSCSI(a, b);
