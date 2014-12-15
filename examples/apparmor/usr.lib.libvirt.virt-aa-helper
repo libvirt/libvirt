@@ -1,7 +1,7 @@
 # Last Modified: Mon Apr  5 15:10:27 2010
 #include <tunables/global>
 
-/usr/lib/libvirt/virt-aa-helper {
+profile virt-aa-helper /usr/{lib,lib64}/libvirt/virt-aa-helper {
   #include <abstractions/base>
 
   # needed for searching directories
@@ -20,7 +20,7 @@
   /sys/devices/ r,
   /sys/devices/** r,
 
-  /usr/lib/libvirt/virt-aa-helper mr,
+  /usr/{lib,lib64}/libvirt/virt-aa-helper mr,
   /sbin/apparmor_parser Ux,
 
   /etc/apparmor.d/libvirt/* r,

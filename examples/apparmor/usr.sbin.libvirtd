@@ -44,7 +44,7 @@
   /usr/bin/* PUx,
   /usr/sbin/* PUx,
   /lib/udev/scsi_id PUx,
-  /usr/lib/xen-common/bin/xen-toolstack PUx,
+  /usr/{lib,lib64}/xen-common/bin/xen-toolstack PUx,
 
   # force the use of virt-aa-helper
   audit deny /sbin/apparmor_parser rwxl,
@@ -53,7 +53,7 @@
   audit deny /sys/kernel/security/apparmor/matching rwxl,
   audit deny /sys/kernel/security/apparmor/.* rwxl,
   /sys/kernel/security/apparmor/profiles r,
-  /usr/lib/libvirt/* PUxr,
+  /usr/{lib,lib64}/libvirt/* PUxr,
   /etc/libvirt/hooks/** rmix,
   /etc/xen/scripts/** rmix,
 
