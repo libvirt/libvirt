@@ -141,7 +141,7 @@ static int virLockManagerSanlockLoadConfig(const char *configFile)
     }
 
     p = virConfGetValue(conf, "host_id");
-    CHECK_TYPE("host_id", VIR_CONF_UONG);
+    CHECK_TYPE("host_id", VIR_CONF_ULONG);
     if (p) driver->hostID = p->l;
 
     p = virConfGetValue(conf, "require_lease_for_disks");
