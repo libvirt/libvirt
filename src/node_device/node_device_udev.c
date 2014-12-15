@@ -347,7 +347,7 @@ static int udevGenerateDeviceName(struct udev_device *device,
     return ret;
 }
 
-
+#if HAVE_UDEV_LOGGING
 typedef void (*udevLogFunctionPtr)(struct udev *udev,
                                    int priority,
                                    const char *file,
@@ -380,6 +380,7 @@ udevLogFunction(struct udev *udev ATTRIBUTE_UNUSED,
 
     VIR_FREE(format);
 }
+#endif
 
 
 static int udevTranslatePCIIds(unsigned int vendor,
@@ -1726,8 +1727,10 @@ static int nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
      * its return value.
      */
     udev = udev_new();
+#if HAVE_UDEV_LOGGING
     /* cast to get rid of missing-format-attribute warning */
     udev_set_log_fn(udev, (udevLogFunctionPtr) udevLogFunction);
+#endif
 
     priv->udev_monitor = udev_monitor_new_from_netlink(udev, "udev");
     if (priv->udev_monitor == NULL) {
