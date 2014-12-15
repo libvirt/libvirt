@@ -357,6 +357,8 @@
 # changes in reported warnings
 %if 0%{?rhel}
     %define enable_werror --enable-werror
+else
+    %define enable_werror --disable-werror
 %endif
 
 
