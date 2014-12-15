@@ -7250,6 +7250,8 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
         if (virDomainHostdevInsert(vmdef, hostdev))
             return -1;
         dev->data.hostdev = NULL;
+        if (virDomainDefAddImplicitControllers(vmdef) < 0)
+            return -1;
         if (qemuDomainAssignAddresses(vmdef, qemuCaps, NULL) < 0)
             return -1;
         break;
@@ -7290,6 +7292,8 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
         if (qemuDomainChrInsert(vmdef, dev->data.chr) < 0)
             return -1;
         dev->data.chr = NULL;
+        if (virDomainDefAddImplicitControllers(vmdef) < 0)
+            return -1;
         break;
 
     case VIR_DOMAIN_DEVICE_FS:
