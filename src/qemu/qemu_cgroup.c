@@ -800,9 +800,7 @@ qemuRestoreCgroupState(virDomainObjPtr vm)
         goto error;
 
     if ((empty = virCgroupHasEmptyTasks(priv->cgroup,
-                                        VIR_CGROUP_CONTROLLER_CPUSET)) < 0)
-
-    if (!empty)
+                                        VIR_CGROUP_CONTROLLER_CPUSET)) <= 0)
         goto error;
 
     if (virCgroupSetCpusetMems(priv->cgroup, mem_mask) < 0)
