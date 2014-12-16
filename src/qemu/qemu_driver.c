@@ -4781,6 +4781,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         err = virSaveLastError();
         virCgroupSetCpusetMems(cgroup_temp, mem_mask);
         virSetError(err);
+        virFreeError(err);
     }
 
     if (!qemuDomainObjEndJob(driver, vm))
