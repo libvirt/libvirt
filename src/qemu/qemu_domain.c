@@ -2317,7 +2317,7 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
             qemuDomainObjEnterMonitor(driver, vm);
             /* we continue on even in the face of error */
             qemuMonitorDeleteSnapshot(priv->mon, snap->def->name);
-            qemuDomainObjExitMonitor(driver, vm);
+            ignore_value(qemuDomainObjExitMonitor(driver, vm));
         }
     }
 
@@ -2752,17 +2752,18 @@ qemuDomainUpdateDeviceList(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char **aliases;
+    int rc;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT))
         return 0;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
-    if (qemuMonitorGetDeviceAliases(priv->mon, &aliases) < 0) {
-        qemuDomainObjExitMonitor(driver, vm);
+    rc = qemuMonitorGetDeviceAliases(priv->mon, &aliases);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
         return -1;
-    }
-    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
+        return -1;
 
     virStringFreeList(priv->qemuDevices);
     priv->qemuDevices = aliases;

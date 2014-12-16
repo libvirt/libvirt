@@ -247,7 +247,8 @@ void qemuDomainObjEnterMonitor(virQEMUDriverPtr driver,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int qemuDomainObjExitMonitor(virQEMUDriverPtr driver,
                              virDomainObjPtr obj)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_RETURN_CHECK;
 int qemuDomainObjEnterMonitorAsync(virQEMUDriverPtr driver,
                                    virDomainObjPtr obj,
                                    qemuDomainAsyncJob asyncJob)
