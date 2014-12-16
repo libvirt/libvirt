@@ -107,9 +107,9 @@ virDomainChrDefPtr
 qemuDomainChrRemove(virDomainDefPtr vmdef,
                     virDomainChrDefPtr chr);
 
-void qemuDomainRemoveDevice(virQEMUDriverPtr driver,
-                            virDomainObjPtr vm,
-                            virDomainDeviceDefPtr dev);
+int qemuDomainRemoveDevice(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           virDomainDeviceDefPtr dev);
 
 bool qemuDomainSignalDeviceRemoval(virDomainObjPtr vm,
                                    const char *devAlias);

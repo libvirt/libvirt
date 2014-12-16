@@ -3629,8 +3629,10 @@ qemuProcessUpdateDevices(virQEMUDriverPtr driver,
     if ((tmp = old)) {
         while (*tmp) {
             if (!virStringArrayHasString(priv->qemuDevices, *tmp) &&
-                virDomainDefFindDevice(vm->def, *tmp, &dev, false) == 0)
-                qemuDomainRemoveDevice(driver, vm, &dev);
+                virDomainDefFindDevice(vm->def, *tmp, &dev, false) == 0 &&
+                qemuDomainRemoveDevice(driver, vm, &dev) < 0) {
+                goto cleanup;
+            }
             tmp++;
         }
     }

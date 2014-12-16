@@ -4048,7 +4048,8 @@ processDeviceDeletedEvent(virQEMUDriverPtr driver,
     if (virDomainDefFindDevice(vm->def, devAlias, &dev, true) < 0)
         goto endjob;
 
-    qemuDomainRemoveDevice(driver, vm, &dev);
+    if (qemuDomainRemoveDevice(driver, vm, &dev) < 0)
+        goto endjob;
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         VIR_WARN("unable to save domain status after removing device %s",
