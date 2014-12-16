@@ -1037,36 +1037,52 @@ safewrite(int fd, const void *buf, size_t count)
     return nwritten;
 }
 
+#ifdef HAVE_POSIX_FALLOCATE
 static int
 safezero_posix_fallocate(int fd, off_t offset, off_t len)
 {
-#ifdef HAVE_POSIX_FALLOCATE
     int ret = posix_fallocate(fd, offset, len);
     if (ret == 0)
         return 0;
     errno = ret;
-#endif
     return -1;
 }
+#else /* !HAVE_POSIX_FALLOCATE */
+static int
+safezero_posix_fallocate(int fd ATTRIBUTE_UNUSED,
+                         off_t offset ATTRIBUTE_UNUSED,
+                         off_t len ATTRIBUTE_UNUSED)
+{
+    return -1;
+}
+#endif /* !HAVE_POSIX_FALLOCATE */
 
+#if HAVE_SYS_SYSCALL_H && defined(SYS_fallocate)
 static int
 safezero_sys_fallocate(int fd,
                        off_t offset,
                        off_t len)
 {
     int rc = -1;
-#if HAVE_SYS_SYSCALL_H && defined(SYS_fallocate)
     rc = syscall(SYS_fallocate, fd, 0, offset, len);
-#else
-    errno = ENOSYS;
-#endif
     return rc;
 }
+#else /* !HAVE_SYS_SYSCALL_H || !defined(SYS_fallocate) */
+static int
+safezero_sys_fallocate(int fd ATTRIBUTE_UNUSED,
+                       off_t offset ATTRIBUTE_UNUSED,
+                       off_t len ATTRIBUTE_UNUSED)
+{
+    int rc = -1;
+    errno = ENOSYS;
+    return rc;
+}
+#endif /* !HAVE_SYS_SYSCALL_H || !defined(SYS_fallocate) */
 
+#ifdef HAVE_MMAP
 static int
 safezero_mmap(int fd, off_t offset, off_t len)
 {
-#ifdef HAVE_MMAP
     int r;
     char *buf;
     static long pagemask;
@@ -1095,9 +1111,17 @@ safezero_mmap(int fd, off_t offset, off_t len)
 
     /* fall back to writing zeroes using safewrite if mmap fails (for
      * example because of virtual memory limits) */
-#endif /* HAVE_MMAP */
     return -1;
 }
+#else /* !HAVE_MMAP */
+static int
+safezero_mmap(int fd ATTRIBUTE_UNUSED,
+              off_t offset ATTRIBUTE_UNUSED,
+              off_t len ATTRIBUTE_UNUSED)
+{
+    return -1
+}
+#endif /* !HAVE_MMAP */
 
 static int
 safezero_slow(int fd, off_t offset, off_t len)
