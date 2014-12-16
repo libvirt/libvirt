@@ -1358,12 +1358,16 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     virDomainDefPtr def = vm->def;
     char *devstr = NULL;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuAssignDeviceRedirdevAlias(vm->def, redirdev, -1) < 0)
-            goto error;
-        if (!(devstr = qemuBuildRedirdevDevStr(def, redirdev, priv->qemuCaps)))
-            goto error;
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("redirected devices are not supported by this QEMU"));
+        goto error;
     }
+
+    if (qemuAssignDeviceRedirdevAlias(vm->def, redirdev, -1) < 0)
+        goto error;
+    if (!(devstr = qemuBuildRedirdevDevStr(def, redirdev, priv->qemuCaps)))
+        goto error;
 
     if (VIR_REALLOC_N(vm->def->redirdevs, vm->def->nredirdevs+1) < 0)
         goto error;
