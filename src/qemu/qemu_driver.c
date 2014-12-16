@@ -4366,7 +4366,7 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
             if (rc == 0)
                 goto unsupported;
             if (rc < 0)
-                goto cleanup;
+                goto exit_monitor;
 
             vcpus++;
         }
@@ -4377,7 +4377,7 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
             if (rc == 0)
                 goto unsupported;
             if (rc < 0)
-                goto cleanup;
+                goto exit_monitor;
 
             vcpus--;
         }
@@ -4394,6 +4394,10 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
      * fatal */
     if ((ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids)) <= 0) {
         virResetLastError();
+        goto exit_monitor;
+    }
+    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
+        ret = -1;
         goto cleanup;
     }
 
@@ -4514,10 +4518,10 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
     cpupids = NULL;
 
  cleanup:
-    qemuDomainObjExitMonitor(driver, vm);
-    vm->def->vcpus = vcpus;
     VIR_FREE(cpupids);
     VIR_FREE(mem_mask);
+    if (virDomainObjIsActive(vm))
+        vm->def->vcpus = vcpus;
     virDomainAuditVcpu(vm, oldvcpus, nvcpus, "update", rc == 1);
     if (cgroup_vcpu)
         virCgroupFree(&cgroup_vcpu);
@@ -4526,6 +4530,8 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
  unsupported:
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("cannot change vcpu count of this domain"));
+ exit_monitor:
+    ignore_value(qemuDomainObjExitMonitor(driver, vm));
     goto cleanup;
 }
 
