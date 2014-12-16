@@ -40,6 +40,8 @@ enum {
     UPDATE
 };
 
+#define QEMU_HOTPLUG_TEST_DOMAIN_ID 7
+
 struct qemuHotplugTestData {
     const char *domain_filename;
     const char *device_filename;
@@ -89,6 +91,8 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
 
     if (qemuAssignDeviceAliases((*vm)->def, priv->qemuCaps) < 0)
         goto cleanup;
+
+    (*vm)->def->id = QEMU_HOTPLUG_TEST_DOMAIN_ID;
 
     ret = 0;
  cleanup:
@@ -177,9 +181,11 @@ testQemuHotplugCheckResult(virDomainObjPtr vm,
     char *actual;
     int ret;
 
+    vm->def->id = -1;
     actual = virDomainDefFormat(vm->def, VIR_DOMAIN_DEF_FORMAT_SECURE);
     if (!actual)
         return -1;
+    vm->def->id = QEMU_HOTPLUG_TEST_DOMAIN_ID;
 
     if (STREQ(expected, actual)) {
         if (fail && virTestGetVerbose())
