@@ -1119,7 +1119,7 @@ safezero_mmap(int fd ATTRIBUTE_UNUSED,
               off_t offset ATTRIBUTE_UNUSED,
               off_t len ATTRIBUTE_UNUSED)
 {
-    return -1
+    return -1;
 }
 #endif /* !HAVE_MMAP */
 
