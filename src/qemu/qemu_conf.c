@@ -1158,7 +1158,8 @@ qemuAddSharedHostdev(virQEMUDriverPtr driver,
 
     if (!hostdev->shareable ||
         !(hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-          hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI))
+          hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
+          hostdev->source.subsys.u.scsi.protocol != VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI))
         return 0;
 
     if (!(key = qemuGetSharedHostdevKey(hostdev)))
@@ -1261,7 +1262,8 @@ qemuRemoveSharedHostdev(virQEMUDriverPtr driver,
 
     if (!hostdev->shareable ||
         !(hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-          hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI))
+          hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
+          hostdev->source.subsys.u.scsi.protocol != VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI))
         return 0;
 
     if (!(key = qemuGetSharedHostdevKey(hostdev)))
