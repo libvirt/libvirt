@@ -758,6 +758,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
         virCommandAddArgFormat(cmd, "%lluK",
                                VIR_DIV_UP(vol->target.allocation
                                           ? vol->target.allocation : 1, 1024));
+        virCommandAddArgList(cmd, "--type", "snapshot", NULL);
         virCommandAddArg(cmd, "--virtualsize");
         vol->target.sparse = true;
     }
