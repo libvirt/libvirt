@@ -1272,16 +1272,16 @@ in order to get or set the guest time.
 Convert the file I<config> in the native guest configuration format
 named by I<format> to a domain XML format. For QEMU/KVM hypervisor,
 the I<format> argument must be B<qemu-argv>. For Xen hypervisor, the
-I<format> argument may be B<xen-xm> or B<xen-sxpr>. For LXC hypervisor,
-the I<format> argument must be B<lxc-tools>.
+I<format> argument may be B<xen-xm>, B<xen-xl>, or B<xen-sxpr>. For
+LXC hypervisor, the I<format> argument must be B<lxc-tools>.
 
 =item B<domxml-to-native> I<format> I<xml>
 
 Convert the file I<xml> in domain XML format to the native guest
 configuration format named by I<format>. For QEMU/KVM hypervisor,
 the I<format> argument must be B<qemu-argv>. For Xen hypervisor, the
-I<format> argument may be B<xen-xm> or B<xen-sxpr>. For LXC hypervisor,
-the I<format> argument must be B<lxc-tools>.
+I<format> argument may be B<xen-xm>, B<xen-xl>, or B<xen-sxpr>. For
+LXC hypervisor, the I<format> argument must be B<lxc-tools>.
 
 =item B<dump> I<domain> I<corefilepath> [I<--bypass-cache>]
 { [I<--live>] | [I<--crash>] | [I<--reset>] } [I<--verbose>] [I<--memory-only>]

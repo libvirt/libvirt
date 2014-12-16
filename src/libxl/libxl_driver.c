@@ -48,6 +48,7 @@
 #include "libxl_migration.h"
 #include "xen_xm.h"
 #include "xen_sxpr.h"
+#include "xen_xl.h"
 #include "virtypedparam.h"
 #include "viruri.h"
 #include "virstring.h"
@@ -67,6 +68,7 @@ VIR_LOG_INIT("libxl.libxl_driver");
 #define LIBXL_DOM_REQ_CRASH    3
 #define LIBXL_DOM_REQ_HALT     4
 
+#define LIBXL_CONFIG_FORMAT_XL "xen-xl"
 #define LIBXL_CONFIG_FORMAT_XM "xen-xm"
 #define LIBXL_CONFIG_FORMAT_SEXPR "xen-sxpr"
 
@@ -2215,7 +2217,17 @@ libxlConnectDomainXMLFromNative(virConnectPtr conn,
     if (virConnectDomainXMLFromNativeEnsureACL(conn) < 0)
         goto cleanup;
 
-    if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_XM)) {
+    if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_XL)) {
+        if (!(conf = virConfReadMem(nativeConfig, strlen(nativeConfig), 0)))
+            goto cleanup;
+        if (!(def = xenParseXL(conf,
+                               cfg->caps,
+                               cfg->verInfo->xen_version_major))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("parsing xl config failed"));
+            goto cleanup;
+        }
+    } else if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_XM)) {
         if (!(conf = virConfReadMem(nativeConfig, strlen(nativeConfig), 0)))
             goto cleanup;
 
@@ -2270,20 +2282,24 @@ libxlConnectDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
     if (virConnectDomainXMLToNativeEnsureACL(conn) < 0)
         goto cleanup;
 
-    if (STRNEQ(nativeFormat, LIBXL_CONFIG_FORMAT_XM)) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("unsupported config type %s"), nativeFormat);
-        goto cleanup;
-    }
-
     if (!(def = virDomainDefParseString(domainXml,
                                         cfg->caps, driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
-    if (!(conf = xenFormatXM(conn, def, cfg->verInfo->xen_version_major)))
+    if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_XL)) {
+        if (!(conf = xenFormatXL(def, conn, cfg->verInfo->xen_version_major)))
+            goto cleanup;
+    } else if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_XM)) {
+        if (!(conf = xenFormatXM(conn, def, cfg->verInfo->xen_version_major)))
+            goto cleanup;
+    } else {
+
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unsupported config type %s"), nativeFormat);
         goto cleanup;
+    }
 
     if (VIR_ALLOC_N(ret, len) < 0)
         goto cleanup;
