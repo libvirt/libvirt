@@ -11118,18 +11118,21 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     /* Get info for normal formats */
     if (S_ISREG(sb.st_mode) || fd == -1) {
 #ifndef WIN32
-        src->physical = (unsigned long long)sb.st_blocks *
+        src->allocation = (unsigned long long)sb.st_blocks *
             (unsigned long long)DEV_BSIZE;
 #else
-        src->physical = sb.st_size;
+        src->allocation = sb.st_size;
 #endif
-        /* Regular files may be sparse, so logical size (capacity) is not same
-         * as actual physical above
-         */
-        src->capacity = sb.st_size;
+        /* Allocation tracks when the file is sparse, physical is the
+         * last offset of the file. */
+        src->physical = sb.st_size;
     } else {
-        /* NB. Because we configure with AC_SYS_LARGEFILE, off_t should
-         * be 64 bits on all platforms.
+        /* NB. Because we configure with AC_SYS_LARGEFILE, off_t
+         * should be 64 bits on all platforms.  For block devices, we
+         * have to seek (safe even if someone else is writing) to
+         * determine physical size, and assume that allocation is the
+         * same as physical (but can refine that assumption later if
+         * qemu is still running).
          */
         end = lseek(fd, 0, SEEK_END);
         if (end == (off_t)-1) {
@@ -11138,12 +11141,12 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
             goto endjob;
         }
         src->physical = end;
-        src->capacity = end;
+        src->allocation = end;
     }
 
-    /* If the file we probed has a capacity set, then override
-     * what we calculated from file/block extents */
-    /* Probe for magic formats */
+    /* Raw files: capacity is physical size.  For all other files: if
+     * the metadata has a capacity, use that, otherwise fall back to
+     * physical size.  */
     if (!(format = src->format)) {
         if (!cfg->allowDiskFormatProbing) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -11159,13 +11162,15 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     if (!(meta = virStorageFileGetMetadataFromBuf(src->path, buf, len,
                                                   format, NULL)))
         goto endjob;
-    if (meta->capacity)
-        src->capacity = meta->capacity;
+    if (format == VIR_STORAGE_FILE_RAW)
+        src->capacity = src->physical;
+    else if ((meta = virStorageFileGetMetadataFromBuf(src->path, buf,
+                                                      len, format, NULL)))
+        src->capacity = meta->capacity ? meta->capacity : src->physical;
+    else
+        goto endjob;
 
-    /* Set default value .. */
-    src->allocation = src->physical;
-
-    /* ..but if guest is not using raw disk format and on a block device,
+    /* If guest is not using raw disk format and on a block device,
      * then query highest allocated extent from QEMU
      */
     if (virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_BLOCK &&

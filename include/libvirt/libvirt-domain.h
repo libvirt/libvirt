@@ -1356,7 +1356,7 @@ int                     virDomainBlockResize (virDomainPtr dom,
 /** virDomainBlockInfo:
  *
  * This struct provides information about the size of a block device
- * backing store
+ * backing store.
  *
  * Examples:
  *
@@ -1364,13 +1364,13 @@ int                     virDomainBlockResize (virDomainPtr dom,
  *       * capacity, allocation, physical: All the same
  *
  *  - Sparse raw file in filesystem:
- *       * capacity: logical size of the file
- *       * allocation, physical: number of blocks allocated to file
+ *       * capacity, size: logical size of the file
+ *       * allocation: disk space occupied by file
  *
  *  - qcow2 file in filesystem
  *       * capacity: logical size from qcow2 header
- *       * allocation, physical: logical size of the file /
- *                               highest qcow extent (identical)
+ *       * allocation: disk space occupied by file
+ *       * physical: reported size of qcow2 file
  *
  *  - qcow2 file in a block device
  *       * capacity: logical size from qcow2 header
@@ -1380,9 +1380,16 @@ int                     virDomainBlockResize (virDomainPtr dom,
 typedef struct _virDomainBlockInfo virDomainBlockInfo;
 typedef virDomainBlockInfo *virDomainBlockInfoPtr;
 struct _virDomainBlockInfo {
-    unsigned long long capacity;   /* logical size in bytes of the block device backing image */
-    unsigned long long allocation; /* highest allocated extent in bytes of the block device backing image */
-    unsigned long long physical;   /* physical size in bytes of the container of the backing image */
+    unsigned long long capacity;   /* logical size in bytes of the
+                                    * image (how much storage the
+                                    * guest will see) */
+    unsigned long long allocation; /* host storage in bytes occupied
+                                    * by the image (such as highest
+                                    * allocated extent if there are no
+                                    * holes, similar to 'du') */
+    unsigned long long physical;   /* host physical size in bytes of
+                                    * the image container (last
+                                    * offset, similar to 'ls')*/
 };
 
 int                     virDomainGetBlockInfo(virDomainPtr dom,
