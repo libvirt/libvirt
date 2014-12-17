@@ -11116,9 +11116,6 @@ qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
                                                        buf, len)) < 0)
             goto cleanup;
     }
-    if (!(meta = virStorageFileGetMetadataFromBuf(src->path, buf, len,
-                                                  format, NULL)))
-        goto cleanup;
     if (format == VIR_STORAGE_FILE_RAW)
         src->capacity = src->physical;
     else if ((meta = virStorageFileGetMetadataFromBuf(src->path, buf,
