@@ -11003,6 +11003,149 @@ qemuDomainMemoryPeek(virDomainPtr dom,
 }
 
 
+/* Refresh the capacity and allocation limits of a given storage
+ * source.  Assumes that the caller has already obtained a domain
+ * job. */
+static int
+qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
+                         virQEMUDriverConfigPtr cfg,
+                         virDomainObjPtr vm,
+                         virStorageSourcePtr src)
+{
+    int ret = -1;
+    int fd = -1;
+    off_t end;
+    virStorageSourcePtr meta = NULL;
+    struct stat sb;
+    int format;
+    char *buf = NULL;
+    ssize_t len;
+
+    /* FIXME: For an offline domain, we always want to check current
+     * on-disk statistics (as users have been known to change offline
+     * images behind our backs).  For a running domain, however, it
+     * would be nice to avoid opening a file (particularly since
+     * reading a file while qemu is writing it risks the reader seeing
+     * bogus data), or even avoid a stat, if the information
+     * remembered from the previous run is still viable.
+     *
+     * For read-only disks, nothing should be changing unless the user
+     * has requested a block-commit action.  For read-write disks, we
+     * know some special cases: capacity should not change without a
+     * block-resize (where capacity is the only stat that requires
+     * reading a file, and even then, only for non-raw files); and
+     * physical size of a raw image or of a block device should
+     * likewise not be changing without block-resize.  On the other
+     * hand, allocation of a raw file can change (if the file is
+     * sparse, but the amount of sparseness changes due to writes or
+     * punching holes), and physical size of a non-raw file can
+     * change.
+     */
+    if (virStorageSourceIsLocalStorage(src)) {
+        if ((fd = qemuOpenFile(driver, vm, src->path, O_RDONLY,
+                               NULL, NULL)) == -1)
+            goto cleanup;
+
+        if (fstat(fd, &sb) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot stat file '%s'"), src->path);
+            goto cleanup;
+        }
+
+        if ((len = virFileReadHeaderFD(fd, VIR_STORAGE_MAX_HEADER, &buf)) < 0) {
+            virReportSystemError(errno, _("cannot read header '%s'"),
+                                 src->path);
+            goto cleanup;
+        }
+    } else {
+        if (virStorageFileInitAs(src, cfg->user, cfg->group) < 0)
+            goto cleanup;
+
+        if ((len = virStorageFileReadHeader(src, VIR_STORAGE_MAX_HEADER,
+                                            &buf)) < 0)
+            goto cleanup;
+
+        if (virStorageFileStat(src, &sb) < 0) {
+            virReportSystemError(errno, _("failed to stat remote file '%s'"),
+                                 NULLSTR(src->path));
+            goto cleanup;
+        }
+    }
+
+    /* Get info for normal formats */
+    if (S_ISREG(sb.st_mode) || fd == -1) {
+#ifndef WIN32
+        src->allocation = (unsigned long long)sb.st_blocks *
+            (unsigned long long)DEV_BSIZE;
+#else
+        src->allocation = sb.st_size;
+#endif
+        /* Allocation tracks when the file is sparse, physical is the
+         * last offset of the file. */
+        src->physical = sb.st_size;
+    } else {
+        /* NB. Because we configure with AC_SYS_LARGEFILE, off_t
+         * should be 64 bits on all platforms.  For block devices, we
+         * have to seek (safe even if someone else is writing) to
+         * determine physical size, and assume that allocation is the
+         * same as physical (but can refine that assumption later if
+         * qemu is still running).
+         */
+        end = lseek(fd, 0, SEEK_END);
+        if (end == (off_t)-1) {
+            virReportSystemError(errno,
+                                 _("failed to seek to end of %s"), src->path);
+            goto cleanup;
+        }
+        src->physical = end;
+        src->allocation = end;
+    }
+
+    /* Raw files: capacity is physical size.  For all other files: if
+     * the metadata has a capacity, use that, otherwise fall back to
+     * physical size.  */
+    if (!(format = src->format)) {
+        if (!cfg->allowDiskFormatProbing) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("no disk format for %s and probing is disabled"),
+                           src->path);
+            goto cleanup;
+        }
+
+        if ((format = virStorageFileProbeFormatFromBuf(src->path,
+                                                       buf, len)) < 0)
+            goto cleanup;
+    }
+    if (!(meta = virStorageFileGetMetadataFromBuf(src->path, buf, len,
+                                                  format, NULL)))
+        goto cleanup;
+    if (format == VIR_STORAGE_FILE_RAW)
+        src->capacity = src->physical;
+    else if ((meta = virStorageFileGetMetadataFromBuf(src->path, buf,
+                                                      len, format, NULL)))
+        src->capacity = meta->capacity ? meta->capacity : src->physical;
+    else
+        goto cleanup;
+
+    /* If guest is not using raw disk format and is on a host block
+     * device, then leave the value unspecified, so caller knows to
+     * query the highest allocated extent from QEMU
+     */
+    if (virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_BLOCK &&
+        format != VIR_STORAGE_FILE_RAW &&
+        S_ISBLK(sb.st_mode))
+        src->allocation = 0;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(buf);
+    virStorageSourceFree(meta);
+    VIR_FORCE_CLOSE(fd);
+    virStorageFileDeinit(src);
+    return ret;
+}
+
+
 static int
 qemuDomainGetBlockInfo(virDomainPtr dom,
                        const char *path,
@@ -11012,18 +11155,11 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
-    int fd = -1;
-    off_t end;
-    virStorageSourcePtr meta = NULL;
     virDomainDiskDefPtr disk = NULL;
     virStorageSourcePtr src;
-    struct stat sb;
     int idx;
-    int format;
     bool activeFail = false;
     virQEMUDriverConfigPtr cfg = NULL;
-    char *buf = NULL;
-    ssize_t len;
 
     virCheckFlags(0, -1);
 
@@ -11064,118 +11200,10 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         goto endjob;
     }
 
-    /* FIXME: For an offline domain, we always want to check current
-     * on-disk statistics (as users have been known to change offline
-     * images behind our backs).  For a running domain, however, it
-     * would be nice to avoid opening a file (particularly since
-     * reading a file while qemu is writing it risks the reader seeing
-     * bogus data), or even avoid a stat, if the information
-     * remembered from the previous run is still viable.
-     *
-     * For read-only disks, nothing should be changing unless the user
-     * has requested a block-commit action.  For read-write disks, we
-     * know some special cases: capacity should not change without a
-     * block-resize (where capacity is the only stat that requires
-     * reading a file, and even then, only for non-raw files); and
-     * physical size of a raw image or of a block device should
-     * likewise not be changing without block-resize.  On the other
-     * hand, allocation of a raw file can change (if the file is
-     * sparse, but the amount of sparseness changes due to writes or
-     * punching holes), and physical size of a non-raw file can
-     * change.
-     */
-    if (virStorageSourceIsLocalStorage(src)) {
-        if ((fd = qemuOpenFile(driver, vm, src->path, O_RDONLY,
-                               NULL, NULL)) == -1)
-            goto endjob;
-
-        if (fstat(fd, &sb) < 0) {
-            virReportSystemError(errno,
-                                 _("cannot stat file '%s'"), src->path);
-            goto endjob;
-        }
-
-        if ((len = virFileReadHeaderFD(fd, VIR_STORAGE_MAX_HEADER, &buf)) < 0) {
-            virReportSystemError(errno, _("cannot read header '%s'"),
-                                 src->path);
-            goto endjob;
-        }
-    } else {
-        if (virStorageFileInitAs(src, cfg->user, cfg->group) < 0)
-            goto endjob;
-
-        if ((len = virStorageFileReadHeader(src, VIR_STORAGE_MAX_HEADER,
-                                            &buf)) < 0)
-            goto endjob;
-
-        if (virStorageFileStat(src, &sb) < 0) {
-            virReportSystemError(errno, _("failed to stat remote file '%s'"),
-                                 NULLSTR(src->path));
-            goto endjob;
-        }
-    }
-
-    /* Get info for normal formats */
-    if (S_ISREG(sb.st_mode) || fd == -1) {
-#ifndef WIN32
-        src->allocation = (unsigned long long)sb.st_blocks *
-            (unsigned long long)DEV_BSIZE;
-#else
-        src->allocation = sb.st_size;
-#endif
-        /* Allocation tracks when the file is sparse, physical is the
-         * last offset of the file. */
-        src->physical = sb.st_size;
-    } else {
-        /* NB. Because we configure with AC_SYS_LARGEFILE, off_t
-         * should be 64 bits on all platforms.  For block devices, we
-         * have to seek (safe even if someone else is writing) to
-         * determine physical size, and assume that allocation is the
-         * same as physical (but can refine that assumption later if
-         * qemu is still running).
-         */
-        end = lseek(fd, 0, SEEK_END);
-        if (end == (off_t)-1) {
-            virReportSystemError(errno,
-                                 _("failed to seek to end of %s"), path);
-            goto endjob;
-        }
-        src->physical = end;
-        src->allocation = end;
-    }
-
-    /* Raw files: capacity is physical size.  For all other files: if
-     * the metadata has a capacity, use that, otherwise fall back to
-     * physical size.  */
-    if (!(format = src->format)) {
-        if (!cfg->allowDiskFormatProbing) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("no disk format for %s and probing is disabled"),
-                           path);
-            goto endjob;
-        }
-
-        if ((format = virStorageFileProbeFormatFromBuf(src->path,
-                                                       buf, len)) < 0)
-            goto endjob;
-    }
-    if (!(meta = virStorageFileGetMetadataFromBuf(src->path, buf, len,
-                                                  format, NULL)))
-        goto endjob;
-    if (format == VIR_STORAGE_FILE_RAW)
-        src->capacity = src->physical;
-    else if ((meta = virStorageFileGetMetadataFromBuf(src->path, buf,
-                                                      len, format, NULL)))
-        src->capacity = meta->capacity ? meta->capacity : src->physical;
-    else
+    if ((ret = qemuStorageLimitsRefresh(driver, cfg, vm, src)) < 0)
         goto endjob;
 
-    /* If guest is not using raw disk format and on a block device,
-     * then query highest allocated extent from QEMU
-     */
-    if (virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_BLOCK &&
-        format != VIR_STORAGE_FILE_RAW &&
-        S_ISBLK(sb.st_mode)) {
+    if (!src->allocation) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
 
         /* If the guest is not running, then success/failure return
@@ -11183,7 +11211,6 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
          */
         if (!virDomainObjIsActive(vm)) {
             activeFail = true;
-            ret = 0;
             goto endjob;
         }
 
@@ -11192,9 +11219,6 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
                                         disk->info.alias,
                                         &src->allocation);
         qemuDomainObjExitMonitor(driver, vm);
-
-    } else {
-        ret = 0;
     }
 
     if (ret == 0) {
@@ -11207,12 +11231,6 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     if (!qemuDomainObjEndJob(driver, vm))
         vm = NULL;
  cleanup:
-    VIR_FREE(buf);
-    virStorageSourceFree(meta);
-    VIR_FORCE_CLOSE(fd);
-    if (disk)
-        virStorageFileDeinit(disk->src);
-
     /* If we failed to get data from a domain because it's inactive and
      * it's not a persistent domain, then force failure.
      */
