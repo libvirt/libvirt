@@ -11057,6 +11057,12 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
 
     disk = vm->def->disks[idx];
     src = disk->src;
+    if (virStorageSourceIsEmpty(src)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("disk '%s' does not currently have a source assigned"),
+                       path);
+        goto endjob;
+    }
 
     /* FIXME: For an offline domain, we always want to check current
      * on-disk statistics (as users have been known to change offline
@@ -11079,13 +11085,6 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
      * change.
      */
     if (virStorageSourceIsLocalStorage(src)) {
-        if (!src->path) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("disk '%s' does not currently have a source assigned"),
-                           path);
-            goto endjob;
-        }
-
         if ((fd = qemuOpenFile(driver, vm, src->path, O_RDONLY,
                                NULL, NULL)) == -1)
             goto endjob;
@@ -11116,26 +11115,6 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         }
     }
 
-    /* Probe for magic formats */
-    if (virDomainDiskGetFormat(disk)) {
-        format = virDomainDiskGetFormat(disk);
-    } else {
-        if (!cfg->allowDiskFormatProbing) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("no disk format for %s and probing is disabled"),
-                           path);
-            goto endjob;
-        }
-
-        if ((format = virStorageFileProbeFormatFromBuf(src->path,
-                                                       buf, len)) < 0)
-            goto endjob;
-    }
-
-    if (!(meta = virStorageFileGetMetadataFromBuf(src->path, buf, len,
-                                                  format, NULL)))
-        goto endjob;
-
     /* Get info for normal formats */
     if (S_ISREG(sb.st_mode) || fd == -1) {
 #ifndef WIN32
@@ -11164,6 +11143,22 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
 
     /* If the file we probed has a capacity set, then override
      * what we calculated from file/block extents */
+    /* Probe for magic formats */
+    if (!(format = src->format)) {
+        if (!cfg->allowDiskFormatProbing) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("no disk format for %s and probing is disabled"),
+                           path);
+            goto endjob;
+        }
+
+        if ((format = virStorageFileProbeFormatFromBuf(src->path,
+                                                       buf, len)) < 0)
+            goto endjob;
+    }
+    if (!(meta = virStorageFileGetMetadataFromBuf(src->path, buf, len,
+                                                  format, NULL)))
+        goto endjob;
     if (meta->capacity)
         src->capacity = meta->capacity;
 
