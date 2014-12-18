@@ -6660,6 +6660,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     }
 
     for (i = 0; i < def->cpu->ncells; i++) {
+        virDomainHugePagePtr hugepage = NULL;
         unsigned long long cellmem = VIR_DIV_UP(def->cpu->cells[i].mem, 1024);
         def->cpu->cells[i].mem = cellmem * 1024;
         virMemAccess memAccess = def->cpu->cells[i].memAccess;
@@ -6681,7 +6682,6 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
             virDomainNumatuneMemMode mode;
-            virDomainHugePagePtr hugepage = NULL;
             const char *policy = NULL;
 
             mode = virDomainNumatuneGetMode(def->numatune, i);
@@ -6798,8 +6798,12 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
                 virBufferAsprintf(&buf, ",policy=%s", policy);
             }
 
-            virCommandAddArg(cmd, "-object");
-            virCommandAddArgBuffer(cmd, &buf);
+            if (hugepage || nodemask) {
+                virCommandAddArg(cmd, "-object");
+                virCommandAddArgBuffer(cmd, &buf);
+            } else {
+                virBufferFreeAndReset(&buf);
+            }
         } else {
             if (memAccess) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -6819,12 +6823,10 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
             virBufferAdd(&buf, tmpmask, -1);
         }
 
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
+        if (hugepage || nodemask)
             virBufferAsprintf(&buf, ",memdev=ram-node%zu", i);
-        } else {
+        else
             virBufferAsprintf(&buf, ",mem=%llu", cellmem);
-        }
 
         virCommandAddArgBuffer(cmd, &buf);
     }
