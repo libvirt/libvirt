@@ -678,16 +678,8 @@ qemuDomainAttachUSBMassstorageDevice(virConnectPtr conn,
         }
     }
 
-    if (virDomainLockDiskAttach(driver->lockManager, cfg->uri,
-                                vm, disk) < 0)
+    if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
-
-    if (virSecurityManagerSetDiskLabel(driver->securityManager,
-                                       vm->def, disk) < 0) {
-        if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
-            VIR_WARN("Unable to release lock on %s", src);
-        goto cleanup;
-    }
 
     /* XXX not correct once we allow attaching a USB CDROM */
     if (!src) {
@@ -739,13 +731,7 @@ qemuDomainAttachUSBMassstorageDevice(virConnectPtr conn,
     return ret;
 
  error:
-    if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
-                                           vm->def, disk) < 0)
-        VIR_WARN("Unable to restore security label on %s", src);
-
-    if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
-        VIR_WARN("Unable to release lock on %s", src);
-
+    ignore_value(qemuDomainPrepareDisk(driver, vm, disk, NULL, true));
     goto cleanup;
 }
 
