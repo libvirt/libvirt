@@ -1372,6 +1372,7 @@ int virLXCProcessStart(virConnectPtr conn,
             VIR_FREE(vm->def->seclabels[0]->model);
             VIR_FREE(vm->def->seclabels[0]->label);
             VIR_FREE(vm->def->seclabels[0]->imagelabel);
+            VIR_DELETE_ELEMENT(vm->def->seclabels, 0, vm->def->nseclabels);
         }
     }
     for (i = 0; i < nttyFDs; i++)
