@@ -411,14 +411,6 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
         qemuDomainReleaseDeviceAddress(vm, &disk->info, src);
 
     ignore_value(qemuDomainPrepareDisk(driver, vm, disk, NULL, true));
-
-    if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
-                                           vm->def, disk) < 0)
-        VIR_WARN("Unable to restore security label on %s", src);
-
-    if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
-        VIR_WARN("Unable to release lock on %s", src);
-
     goto cleanup;
 }
 
