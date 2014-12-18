@@ -2240,10 +2240,8 @@ qemuProcessDetectVcpuPIDs(virQEMUDriverPtr driver,
         qemuDomainObjExitMonitor(driver, vm);
         virResetLastError();
 
-        priv->nvcpupids = 1;
-        if (VIR_ALLOC_N(priv->vcpupids, priv->nvcpupids) < 0)
-            return -1;
-        priv->vcpupids[0] = vm->pid;
+        priv->nvcpupids = 0;
+        priv->vcpupids = NULL;
         return 0;
     }
     qemuDomainObjExitMonitor(driver, vm);
@@ -2462,7 +2460,8 @@ qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
     virDomainVcpuPinDefPtr pininfo;
     int n;
     int ret = -1;
-
+    VIR_DEBUG("Setting affinity on CPUs nvcpupin=%zu nvcpus=%d nvcpupids=%d",
+              def->cputune.nvcpupin, def->vcpus, priv->nvcpupids);
     if (!def->cputune.nvcpupin)
         return 0;
 
