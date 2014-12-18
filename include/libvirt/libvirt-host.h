@@ -108,12 +108,13 @@ typedef virStream *virStreamPtr;
  * a virSecurityLabel is a structure filled by virDomainGetSecurityLabel(),
  * providing the security label and associated attributes for the specified
  * domain.
- *
  */
-typedef struct _virSecurityLabel {
+typedef struct _virSecurityLabel virSecurityLabel;
+
+struct _virSecurityLabel {
     char label[VIR_SECURITY_LABEL_BUFLEN];    /* security label string */
     int enforcing;                            /* 1 if security policy is being enforced for domain */
-} virSecurityLabel;
+};
 
 /**
  * virSecurityLabelPtr:
@@ -142,12 +143,13 @@ typedef virSecurityLabel *virSecurityLabelPtr;
  * a virSecurityModel is a structure filled by virNodeGetSecurityModel(),
  * providing the per-hypervisor security model and DOI attributes for the
  * specified domain.
- *
  */
-typedef struct _virSecurityModel {
+typedef struct _virSecurityModel virSecurityModel;
+
+struct _virSecurityModel {
     char model[VIR_SECURITY_MODEL_BUFLEN];      /* security model string */
     char doi[VIR_SECURITY_DOI_BUFLEN];          /* domain of interpetation */
-} virSecurityModel;
+};
 
 /**
  * virSecurityModelPtr:
