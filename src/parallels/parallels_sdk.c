@@ -1929,7 +1929,7 @@ static int prlsdkCheckGraphicsUnsupportedParams(virDomainDefPtr def)
     if (def->ngraphics == 0)
         return 0;
 
-    if (def->ngraphics >1) {
+    if (def->ngraphics > 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Parallels Cloud Server supports only "
                          "one VNC per domain."));
@@ -1985,6 +1985,20 @@ static int prlsdkCheckGraphicsUnsupportedParams(virDomainDefPtr def)
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Parallels Cloud Server doesn't support "
                          "setting password expire time."));
+        return -1;
+    }
+
+    if (gr->nListens > 1) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Parallels driver doesn't support more than "
+                         "one listening VNC server per domain"));
+        return -1;
+    }
+
+    if (gr->nListens == 1 &&
+        virDomainGraphicsListenGetType(gr, 0) != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Parallels driver supports only address-based VNC listening"));
         return -1;
     }
 
@@ -2286,6 +2300,7 @@ static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
     virDomainGraphicsDefPtr gr;
     PRL_RESULT pret;
     int ret  = -1;
+    const char *listenAddr = NULL;
 
     if (prlsdkCheckGraphicsUnsupportedParams(def))
         return -1;
@@ -2303,6 +2318,14 @@ static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         prlsdkCheckRetGoto(pret, cleanup);
 
         pret = PrlVmCfg_SetVNCPort(sdkdom, gr->data.vnc.port);
+        prlsdkCheckRetGoto(pret, cleanup);
+    }
+
+    if (gr->nListens == 1) {
+        listenAddr = virDomainGraphicsListenGetAddress(gr, 0);
+        if (!listenAddr)
+            goto cleanup;
+        pret = PrlVmCfg_SetVNCHostName(sdkdom, listenAddr);
         prlsdkCheckRetGoto(pret, cleanup);
     }
 
