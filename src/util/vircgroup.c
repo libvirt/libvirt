@@ -3932,6 +3932,9 @@ virCgroupHasEmptyTasks(virCgroupPtr cgroup, int controller)
     int ret = -1;
     char *content = NULL;
 
+    if (!cgroup)
+        return -1;
+
     ret = virCgroupGetValueStr(cgroup, controller, "tasks", &content);
 
     if (ret == 0 && content[0] == '\0')
