@@ -25,6 +25,7 @@
 #include <config.h>
 
 #include "viralloc.h"
+#include "virstring.h"
 #include "cpu.h"
 
 
@@ -47,7 +48,7 @@ s390NodeData(virArch arch)
 
 
 static int
-s390Decode(virCPUDefPtr cpu ATTRIBUTE_UNUSED,
+s390Decode(virCPUDefPtr cpu,
            const virCPUData *data ATTRIBUTE_UNUSED,
            const char **models ATTRIBUTE_UNUSED,
            unsigned int nmodels ATTRIBUTE_UNUSED,
@@ -56,6 +57,10 @@ s390Decode(virCPUDefPtr cpu ATTRIBUTE_UNUSED,
 {
 
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, -1);
+
+    if (cpu->model == NULL &&
+        VIR_STRDUP(cpu->model, "host") < 0)
+        return -1;
 
     return 0;
 }
