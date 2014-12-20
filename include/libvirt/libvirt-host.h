@@ -148,7 +148,7 @@ typedef struct _virSecurityModel virSecurityModel;
 
 struct _virSecurityModel {
     char model[VIR_SECURITY_MODEL_BUFLEN];      /* security model string */
-    char doi[VIR_SECURITY_DOI_BUFLEN];          /* domain of interpetation */
+    char doi[VIR_SECURITY_DOI_BUFLEN];          /* domain of interpretation */
 };
 
 /**
