@@ -107,6 +107,13 @@ VIR_ONCE_GLOBAL_INIT(virFirewall)
 static bool iptablesUseLock;
 static bool ip6tablesUseLock;
 static bool ebtablesUseLock;
+static bool lockOverride; /* true to avoid lock probes */
+
+void
+virFirewallSetLockOverride(bool avoid)
+{
+    lockOverride = avoid;
+}
 
 static void
 virFirewallCheckUpdateLock(bool *lockflag,
@@ -135,6 +142,8 @@ virFirewallCheckUpdateLocking(void)
     const char *ebtablesArgs[] = {
         EBTABLES_PATH, "--concurrent", "-L", NULL,
     };
+    if (lockOverride)
+        return;
     virFirewallCheckUpdateLock(&iptablesUseLock,
                                iptablesArgs);
     virFirewallCheckUpdateLock(&ip6tablesUseLock,

@@ -474,6 +474,8 @@ mymain(void)
             ret = -1;                                                   \
     } while (0)
 
+    virFirewallSetLockOverride(true);
+
     if (virFirewallSetBackend(VIR_FIREWALL_BACKEND_DIRECT) < 0) {
         ret = -1;
         goto cleanup;

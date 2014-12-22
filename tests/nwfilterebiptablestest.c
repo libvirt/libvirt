@@ -24,6 +24,7 @@
 #include "testutils.h"
 #include "nwfilter/nwfilter_ebiptables_driver.h"
 #include "virbuffer.h"
+#include "virfirewall.h"
 
 #define __VIR_FIREWALL_PRIV_H_ALLOW__
 #include "virfirewallpriv.h"
@@ -521,6 +522,8 @@ static int
 mymain(void)
 {
     int ret = 0;
+
+    virFirewallSetLockOverride(true);
 
     if (virFirewallSetBackend(VIR_FIREWALL_BACKEND_DIRECT) < 0) {
         ret = -1;

@@ -106,4 +106,6 @@ void virFirewallStartRollback(virFirewallPtr firewall,
 
 int virFirewallApply(virFirewallPtr firewall);
 
+void virFirewallSetLockOverride(bool avoid);
+
 #endif /* __VIR_FIREWALL_H__ */
