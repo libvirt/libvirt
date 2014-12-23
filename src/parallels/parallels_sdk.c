@@ -471,7 +471,7 @@ prlsdkGetDiskInfo(PRL_HANDLE prldisk,
     if (emulatedType == PDT_USE_IMAGE_FILE) {
         virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
         if (isCdrom)
-            virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_AUTO);
+            virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_RAW);
         else
             virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_PLOOP);
     } else {
