@@ -512,17 +512,17 @@ xenParseCPUFeatures(virConfPtr conf, virDomainDefPtr def)
         return -1;
 
     if (STREQ(def->os.type, "hvm")) {
-        if (xenConfigGetBool(conf, "pae", &val, 0) < 0)
+        if (xenConfigGetBool(conf, "pae", &val, 1) < 0)
             return -1;
 
         else if (val)
             def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_TRISTATE_SWITCH_ON;
-        if (xenConfigGetBool(conf, "acpi", &val, 0) < 0)
+        if (xenConfigGetBool(conf, "acpi", &val, 1) < 0)
             return -1;
 
         else if (val)
             def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_TRISTATE_SWITCH_ON;
-        if (xenConfigGetBool(conf, "apic", &val, 0) < 0)
+        if (xenConfigGetBool(conf, "apic", &val, 1) < 0)
             return -1;
 
         else if (val)
