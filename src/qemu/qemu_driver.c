@@ -1516,7 +1516,8 @@ static virDomainPtr qemuDomainLookupByName(virConnectPtr conn,
     if (dom) dom->id = vm->def->id;
 
  cleanup:
-    virObjectUnlock(vm);
+    if (vm)
+        virObjectUnlock(vm);
     return dom;
 }
 
