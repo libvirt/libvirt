@@ -1168,6 +1168,8 @@ mymain(void)
     RUN_TEST_DIRECT(name, method)
 # endif /* ! WITH_DBUS */
 
+    virFirewallSetLockOverride(true);
+
     RUN_TEST("single group", testFirewallSingleGroup);
     RUN_TEST("remove rule", testFirewallRemoveRule);
     RUN_TEST("many groups", testFirewallManyGroups);
