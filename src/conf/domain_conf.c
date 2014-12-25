@@ -16737,17 +16737,22 @@ virDomainNetDefFormat(virBufferPtr buf,
                       virDomainNetDefPtr def,
                       unsigned int flags)
 {
+    unsigned int actualType = virDomainNetGetActualType(def);
+    bool publicActual = false;
+    const char *typeStr;
+    virDomainHostdevDefPtr hostdef = NULL;
+    char macstr[VIR_MAC_STRING_BUFLEN];
+
     /* publicActual is true if we should report the current state in
      * def->data.network.actual *instead of* the config (*not* in
      * addition to)
      */
-    unsigned int actualType = virDomainNetGetActualType(def);
-    bool publicActual
-       = (def->type == VIR_DOMAIN_NET_TYPE_NETWORK && def->data.network.actual &&
-          !(flags & (VIR_DOMAIN_XML_INACTIVE | VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET)));
-    const char *typeStr;
-    virDomainHostdevDefPtr hostdef = NULL;
-    char macstr[VIR_MAC_STRING_BUFLEN];
+    if (def->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
+        def->data.network.actual &&
+        !(flags & (VIR_DOMAIN_XML_INACTIVE |
+                   VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
+                   VIR_DOMAIN_XML_MIGRATABLE)))
+        publicActual = true;
 
     if (publicActual) {
         if (!(typeStr = virDomainNetTypeToString(actualType))) {
