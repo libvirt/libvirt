@@ -10510,8 +10510,12 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
                    sizeof(*newBandwidth->out));
         }
 
-        if (virNetDevBandwidthSet(net->ifname, newBandwidth, false) < 0)
+        if (virNetDevBandwidthSet(net->ifname, newBandwidth, false) < 0) {
+            ignore_value(virNetDevBandwidthSet(net->ifname,
+                                               net->bandwidth,
+                                               false));
             goto endjob;
+        }
 
         virNetDevBandwidthFree(net->bandwidth);
         if (newBandwidth->in || newBandwidth->out) {
