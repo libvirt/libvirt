@@ -127,7 +127,7 @@ VIR_ENUM_IMPL(qemuMonitorVMStatus,
               QEMU_MONITOR_VM_STATUS_LAST,
               "debug", "inmigrate", "internal-error", "io-error", "paused",
               "postmigrate", "prelaunch", "finish-migrate", "restore-vm",
-              "running", "save-vm", "shutdown", "watchdog", "guest-panic")
+              "running", "save-vm", "shutdown", "watchdog", "guest-panicked")
 
 typedef enum {
     QEMU_MONITOR_BLOCK_IO_STATUS_OK,
