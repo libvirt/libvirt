@@ -205,6 +205,9 @@ mymain(void)
     DO_TEST("kvm-features");
     DO_TEST("kvm-features-off");
 
+    DO_TEST_DIFFERENT("pmu-feature");
+    DO_TEST("pmu-feature-off");
+
     DO_TEST("hugepages");
     DO_TEST("hugepages-pages");
     DO_TEST("hugepages-pages2");

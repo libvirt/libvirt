@@ -1,7 +1,7 @@
 /*
  * domain_conf.c: domain XML processing
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  * Copyright (c) 2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
@@ -138,7 +138,8 @@ VIR_ENUM_IMPL(virDomainFeature, VIR_DOMAIN_FEATURE_LAST,
               "hyperv",
               "kvm",
               "pvspinlock",
-              "capabilities")
+              "capabilities",
+              "pmu")
 
 VIR_ENUM_IMPL(virDomainCapabilitiesPolicy, VIR_DOMAIN_CAPABILITIES_POLICY_LAST,
               "default",
@@ -13242,6 +13243,8 @@ virDomainDefParseXML(xmlDocPtr xml,
             }
             ctxt->node = node;
             break;
+
+        case VIR_DOMAIN_FEATURE_PMU:
         case VIR_DOMAIN_FEATURE_PVSPINLOCK:
             node = ctxt->node;
             ctxt->node = nodes[i];
@@ -19689,6 +19692,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
                 break;
 
+            case VIR_DOMAIN_FEATURE_PMU:
             case VIR_DOMAIN_FEATURE_PVSPINLOCK:
                 switch ((virTristateSwitch) def->features[i]) {
                 case VIR_TRISTATE_SWITCH_LAST:

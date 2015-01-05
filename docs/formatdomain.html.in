@@ -1456,6 +1456,12 @@
         </tr>
       </table>
       </dd>
+      <dt><code>pmu</code></dt>
+      <dd>Depending on the <code>state</code> attribute (values <code>on</code>,
+        <code>off</code>, default <code>on</code>) enable or disable the
+        performance monitoring unit for the guest.
+        <span class="since">Since 1.2.12</span>
+      </dd>
     </dl>
 
     <h3><a name="elementsTime">Time keeping</a></h3>

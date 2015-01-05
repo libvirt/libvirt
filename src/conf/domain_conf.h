@@ -1,7 +1,7 @@
 /*
  * domain_conf.h: domain XML processing
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  * Copyright (c) 2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
@@ -1605,6 +1605,7 @@ typedef enum {
     VIR_DOMAIN_FEATURE_KVM,
     VIR_DOMAIN_FEATURE_PVSPINLOCK,
     VIR_DOMAIN_FEATURE_CAPABILITIES,
+    VIR_DOMAIN_FEATURE_PMU,
 
     VIR_DOMAIN_FEATURE_LAST
 } virDomainFeature;

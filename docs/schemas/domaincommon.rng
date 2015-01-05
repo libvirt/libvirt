@@ -4054,6 +4054,9 @@
           <optional>
             <ref name="capabilities"/>
           </optional>
+          <optional>
+            <ref name="pmu"/>
+          </optional>
         </interleave>
       </element>
     </optional>
@@ -4876,6 +4879,14 @@
           </element>
         </optional>
       </interleave>
+    </element>
+  </define>
+
+  <define name="pmu">
+    <element name="pmu">
+      <optional>
+        <ref name="featurestate"/>
+      </optional>
     </element>
   </define>
 
