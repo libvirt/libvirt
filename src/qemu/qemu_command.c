@@ -1,7 +1,7 @@
 /*
  * qemu_command.c: QEMU command generation
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -6418,6 +6418,16 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
                 break;
             }
         }
+    }
+
+    if (def->features[VIR_DOMAIN_FEATURE_PMU]) {
+        virTristateSwitch pmu = def->features[VIR_DOMAIN_FEATURE_PMU];
+        if (!have_cpu)
+            virBufferAdd(&buf, default_model, -1);
+
+        virBufferAsprintf(&buf, ",pmu=%s",
+                          virTristateSwitchTypeToString(pmu));
+        have_cpu = true;
     }
 
     if (virBufferCheckError(&buf) < 0)

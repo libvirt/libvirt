@@ -698,6 +698,9 @@ mymain(void)
     DO_TEST("kvm-features", NONE);
     DO_TEST("kvm-features-off", NONE);
 
+    DO_TEST("pmu-feature", NONE);
+    DO_TEST("pmu-feature-off", NONE);
+
     DO_TEST("hugepages", QEMU_CAPS_MEM_PATH);
     DO_TEST_LINUX("hugepages-pages", QEMU_CAPS_MEM_PATH,
                   QEMU_CAPS_OBJECT_MEMORY_RAM,
