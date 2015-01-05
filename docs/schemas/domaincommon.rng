@@ -4088,50 +4088,29 @@
       -->
   <define name="cpu">
     <element name="cpu">
-      <choice>
-        <group>
-          <interleave>
-            <optional>
-              <ref name="cpuTopology"/>
-            </optional>
-            <optional>
-              <ref name="cpuNuma"/>
-            </optional>
-          </interleave>
-        </group>
-        <group>
-          <ref name="cpuMode"/>
-          <interleave>
-            <optional>
-              <ref name="cpuModel"/>
-            </optional>
-            <optional>
-              <ref name="cpuNuma"/>
-            </optional>
-          </interleave>
-        </group>
-        <group>
-          <optional>
-            <ref name="cpuMode"/>
-          </optional>
-          <ref name="cpuMatch"/>
-          <interleave>
-            <ref name="cpuModel"/>
-            <optional>
-              <ref name="cpuVendor"/>
-            </optional>
-            <optional>
-              <ref name="cpuTopology"/>
-            </optional>
-            <zeroOrMore>
-              <ref name="cpuFeature"/>
-            </zeroOrMore>
-            <optional>
-              <ref name="cpuNuma"/>
-            </optional>
-          </interleave>
-        </group>
-      </choice>
+      <optional>
+        <ref name="cpuMode"/>
+      </optional>
+      <optional>
+        <ref name="cpuMatch"/>
+      </optional>
+      <interleave>
+        <optional>
+          <ref name="cpuModel"/>
+        </optional>
+        <optional>
+          <ref name="cpuVendor"/>
+        </optional>
+        <optional>
+          <ref name="cpuTopology"/>
+        </optional>
+        <zeroOrMore>
+          <ref name="cpuFeature"/>
+        </zeroOrMore>
+        <optional>
+          <ref name="cpuNuma"/>
+        </optional>
+      </interleave>
     </element>
   </define>
 

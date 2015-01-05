@@ -982,6 +982,7 @@
 
 <pre>
   &lt;cpu mode='host-passthrough'/&gt;
+    &lt;feature policy='disable' name='lahf_lm'/&gt;
   ...</pre>
 
     <p>
@@ -1083,8 +1084,8 @@
           the same as the host CPU even in the aspects that libvirt does not
           understand. Though the downside of this mode is that the guest
           environment cannot be reproduced on different hardware. Thus, if you
-          hit any bugs, you are on your own. Neither <code>model</code> nor
-          <code>feature</code> elements are allowed in this mode.</dd>
+          hit any bugs, you are on your own. Further details of that CPU can
+          be changed using <code>feature</code> elements.</dd>
         </dl>
 
         In both <code>host-model</code> and <code>host-passthrough</code>

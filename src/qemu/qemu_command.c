@@ -6115,6 +6115,7 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
     virCPUDefPtr host = NULL;
     virCPUDefPtr guest = NULL;
     virCPUDefPtr cpu = NULL;
+    virCPUDefPtr featCpu = NULL;
     size_t ncpus = 0;
     char **cpus = NULL;
     virCPUDataPtr data = NULL;
@@ -6122,8 +6123,9 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
     virCPUCompareResult cmp;
     const char *preferred;
     virCapsPtr caps = NULL;
-    bool compareAgainstHost = (def->virtType == VIR_DOMAIN_VIRT_KVM ||
-        def->cpu->mode != VIR_CPU_MODE_CUSTOM);
+    bool compareAgainstHost = ((def->virtType == VIR_DOMAIN_VIRT_KVM ||
+                                def->cpu->mode != VIR_CPU_MODE_CUSTOM) &&
+                               def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH);
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -6141,7 +6143,7 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
     if (!(cpu = virCPUDefCopy(def->cpu)))
         goto cleanup;
 
-    if (cpu->mode != VIR_CPU_MODE_CUSTOM &&
+    if (cpu->mode == VIR_CPU_MODE_HOST_MODEL &&
         !migrating &&
         cpuUpdate(cpu, host) < 0)
         goto cleanup;
@@ -6200,6 +6202,8 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
         if (ARCH_IS_PPC64(def->os.arch) &&
             cpu->mode == VIR_CPU_MODE_HOST_MODEL) {
             virBufferAsprintf(buf, ",compat=%s", def->cpu->model);
+        } else {
+            featCpu = cpu;
         }
 
     } else {
@@ -6225,18 +6229,21 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
             if (VIR_STRDUP(guest->model, cpu->model) < 0)
                 goto cleanup;
         }
-
         virBufferAdd(buf, guest->model, -1);
         if (guest->vendor_id)
             virBufferAsprintf(buf, ",vendor=%s", guest->vendor_id);
-        for (i = 0; i < guest->nfeatures; i++) {
+        featCpu = guest;
+    }
+
+    if (featCpu) {
+        for (i = 0; i < featCpu->nfeatures; i++) {
             char sign;
-            if (guest->features[i].policy == VIR_CPU_FEATURE_DISABLE)
+            if (featCpu->features[i].policy == VIR_CPU_FEATURE_DISABLE)
                 sign = '-';
             else
                 sign = '+';
 
-            virBufferAsprintf(buf, ",%c%s", sign, guest->features[i].name);
+            virBufferAsprintf(buf, ",%c%s", sign, featCpu->features[i].name);
         }
     }
 

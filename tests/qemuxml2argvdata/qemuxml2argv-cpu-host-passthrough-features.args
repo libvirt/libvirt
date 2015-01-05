@@ -8,7 +8,7 @@ IO_DRV=none \
 /usr/bin/qemu \
 -S \
 -M pc \
--cpu host \
+-cpu host,+abm,+ds,-invtsc \
 -m 214 \
 -smp 1 \
 -nographic \

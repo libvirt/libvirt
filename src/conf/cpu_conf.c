@@ -1,7 +1,7 @@
 /*
  * cpu_conf.c: CPU XML handling
  *
- * Copyright (C) 2009-2014 Red Hat, Inc.
+ * Copyright (C) 2009-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -366,12 +366,8 @@ virCPUDefParseXML(xmlNodePtr node,
         goto error;
 
     if (n > 0) {
-        if (!def->model && def->mode == VIR_CPU_MODE_HOST_PASSTHROUGH) {
-            /* silently ignore incorrectly formatted features generated
-             * by older libvirt */
-            goto cleanup;
-        }
-        if (!def->model && def->mode != VIR_CPU_MODE_HOST_MODEL) {
+        if (!def->model && def->mode != VIR_CPU_MODE_HOST_MODEL &&
+            def->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Non-empty feature list specified without "
                              "CPU model"));
@@ -623,6 +619,7 @@ virCPUDefFormatBuf(virBufferPtr buf,
 
     if (!def->model &&
         def->mode != VIR_CPU_MODE_HOST_MODEL &&
+        def->mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
         def->nfeatures) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Non-empty feature list specified without CPU model"));
@@ -663,30 +660,32 @@ virCPUDefFormatBuf(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    for (i = 0; formatModel && i < def->nfeatures; i++) {
-        virCPUFeatureDefPtr feature = def->features + i;
+    if (formatModel || def->mode == VIR_CPU_MODE_HOST_PASSTHROUGH) {
+        for (i = 0; i < def->nfeatures; i++) {
+            virCPUFeatureDefPtr feature = def->features + i;
 
-        if (!feature->name) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Missing CPU feature name"));
-            return -1;
-        }
-
-        if (def->type == VIR_CPU_TYPE_GUEST) {
-            const char *policy;
-
-            policy = virCPUFeaturePolicyTypeToString(feature->policy);
-            if (!policy) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unexpected CPU feature policy %d"),
-                               feature->policy);
+            if (!feature->name) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Missing CPU feature name"));
                 return -1;
             }
-            virBufferAsprintf(buf, "<feature policy='%s' name='%s'/>\n",
-                              policy, feature->name);
-        } else {
-            virBufferAsprintf(buf, "<feature name='%s'/>\n",
-                              feature->name);
+
+            if (def->type == VIR_CPU_TYPE_GUEST) {
+                const char *policy;
+
+                policy = virCPUFeaturePolicyTypeToString(feature->policy);
+                if (!policy) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Unexpected CPU feature policy %d"),
+                                   feature->policy);
+                    return -1;
+                }
+                virBufferAsprintf(buf, "<feature policy='%s' name='%s'/>\n",
+                                  policy, feature->name);
+            } else {
+                virBufferAsprintf(buf, "<feature name='%s'/>\n",
+                                  feature->name);
+            }
         }
     }
 
