@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2014 Red Hat, Inc.
+ * Copyright (C) 2010-2015 Red Hat, Inc.
  * Copyright (C) 2010-2012 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -276,7 +276,9 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
     return ret;
 }
 
-int virNetlinkGetErrorCode(struct nlmsghdr *resp, unsigned int recvbuflen)
+
+int
+virNetlinkGetErrorCode(struct nlmsghdr *resp, unsigned int recvbuflen)
 {
     struct nlmsgerr *err;
     int result = 0;
@@ -313,6 +315,7 @@ int virNetlinkGetErrorCode(struct nlmsghdr *resp, unsigned int recvbuflen)
                    _("malformed netlink response message"));
     return -EINVAL;
 }
+
 
 static void
 virNetlinkEventServerLock(virNetlinkEventSrvPrivatePtr driver)
@@ -870,6 +873,15 @@ int virNetlinkEventRemoveClient(int watch ATTRIBUTE_UNUSED,
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
+}
+
+
+int
+virNetlinkGetErrorCode(struct nlmsghdr *resp ATTRIBUTE_UNUSED,
+                       unsigned int recvbuflen ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    return -EINVAL;
 }
 
 #endif /* __linux__ */
