@@ -3654,12 +3654,6 @@ networkGetDHCPLeases(virNetworkPtr network,
         VIR_FREE(lease);
     }
 
-    if (need_results && mac && !leases_ret) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("no lease with matching MAC address: %s"), mac);
-        goto error;
-    }
-
     if (leases_ret) {
         /* NULL terminated array */
         ignore_value(VIR_REALLOC_N(leases_ret, nleases + 1));
