@@ -153,7 +153,7 @@ static int
 cpuTestCompareXML(const char *arch,
                   virCPUDef *cpu,
                   const char *name,
-                  unsigned int flags)
+                  bool updateCPU)
 {
     char *xml = NULL;
     char *expected = NULL;
@@ -167,7 +167,7 @@ cpuTestCompareXML(const char *arch,
     if (virtTestLoadFile(xml, &expected) < 0)
         goto cleanup;
 
-    if (!(actual = virCPUDefFormat(cpu, flags)))
+    if (!(actual = virCPUDefFormat(cpu, updateCPU)))
         goto cleanup;
 
     if (STRNEQ(expected, actual)) {
@@ -303,7 +303,7 @@ cpuTestGuestData(const void *arg)
     }
     result = virBufferContentAndReset(&buf);
 
-    ret = cpuTestCompareXML(data->arch, guest, result, 0);
+    ret = cpuTestCompareXML(data->arch, guest, result, false);
 
  cleanup:
     VIR_FREE(result);
@@ -351,7 +351,7 @@ cpuTestBaseline(const void *arg)
     if (virAsprintf(&result, "%s-%s", data->name, suffix) < 0)
         goto cleanup;
 
-    if (cpuTestCompareXML(data->arch, baseline, result, 0) < 0)
+    if (cpuTestCompareXML(data->arch, baseline, result, false) < 0)
         goto cleanup;
 
     for (i = 0; i < ncpus; i++) {
@@ -403,8 +403,7 @@ cpuTestUpdate(const void *arg)
     if (virAsprintf(&result, "%s+%s", data->host, data->name) < 0)
         goto cleanup;
 
-    ret = cpuTestCompareXML(data->arch, cpu, result,
-                            VIR_DOMAIN_XML_UPDATE_CPU);
+    ret = cpuTestCompareXML(data->arch, cpu, result, true);
 
  cleanup:
     virCPUDefFree(host);

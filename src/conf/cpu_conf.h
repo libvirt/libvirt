@@ -158,16 +158,16 @@ virCPUDefIsEqual(virCPUDefPtr src,
 
 char *
 virCPUDefFormat(virCPUDefPtr def,
-                unsigned int flags);
+                bool updateCPU);
 
 int
 virCPUDefFormatBuf(virBufferPtr buf,
                    virCPUDefPtr def,
-                   unsigned int flags);
+                   bool updateCPU);
 int
 virCPUDefFormatBufFull(virBufferPtr buf,
                        virCPUDefPtr def,
-                       unsigned int flags);
+                       bool updateCPU);
 
 int
 virCPUDefAddFeature(virCPUDefPtr cpu,

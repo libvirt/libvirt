@@ -532,11 +532,11 @@ virCPUDefParseXML(xmlNodePtr node,
 
 char *
 virCPUDefFormat(virCPUDefPtr def,
-                unsigned int flags)
+                bool updateCPU)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (virCPUDefFormatBufFull(&buf, def, flags) < 0)
+    if (virCPUDefFormatBufFull(&buf, def, updateCPU) < 0)
         goto cleanup;
 
     if (virBufferCheckError(&buf) < 0)
@@ -553,7 +553,7 @@ virCPUDefFormat(virCPUDefPtr def,
 int
 virCPUDefFormatBufFull(virBufferPtr buf,
                        virCPUDefPtr def,
-                       unsigned int flags)
+                       bool updateCPU)
 {
     if (!def)
         return 0;
@@ -573,7 +573,7 @@ virCPUDefFormatBufFull(virBufferPtr buf,
 
         if (def->model &&
             (def->mode == VIR_CPU_MODE_CUSTOM ||
-             (flags & VIR_DOMAIN_XML_UPDATE_CPU))) {
+             updateCPU)) {
             if (!(tmp = virCPUMatchTypeToString(def->match))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unexpected CPU match policy %d"),
@@ -589,7 +589,7 @@ virCPUDefFormatBufFull(virBufferPtr buf,
     if (def->arch)
         virBufferAsprintf(buf, "<arch>%s</arch>\n",
                           virArchToString(def->arch));
-    if (virCPUDefFormatBuf(buf, def, flags) < 0)
+    if (virCPUDefFormatBuf(buf, def, updateCPU) < 0)
         return -1;
     virBufferAdjustIndent(buf, -2);
 
@@ -601,7 +601,7 @@ virCPUDefFormatBufFull(virBufferPtr buf,
 int
 virCPUDefFormatBuf(virBufferPtr buf,
                    virCPUDefPtr def,
-                   unsigned int flags)
+                   bool updateCPU)
 {
     size_t i;
     bool formatModel;
@@ -612,7 +612,7 @@ virCPUDefFormatBuf(virBufferPtr buf,
 
     formatModel = (def->mode == VIR_CPU_MODE_CUSTOM ||
                    def->mode == VIR_CPU_MODE_HOST_MODEL ||
-                   (flags & VIR_DOMAIN_XML_UPDATE_CPU));
+                   updateCPU);
     formatFallback = (def->type == VIR_CPU_TYPE_GUEST &&
                       (def->mode == VIR_CPU_MODE_HOST_MODEL ||
                        (def->mode == VIR_CPU_MODE_CUSTOM && def->model)));
