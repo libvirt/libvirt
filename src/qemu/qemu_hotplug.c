@@ -924,7 +924,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
 
     /* Set device online immediately */
     if (qemuInterfaceStartDevice(net) < 0)
-       goto cleanup;
+        goto cleanup;
 
     /* Set Bandwidth */
     if (virNetDevSupportBandwidth(actualType) &&
@@ -952,7 +952,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
             goto cleanup;
     } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                        _("virtio-s390 net device cannot be hotplugged."));
+                       _("virtio-s390 net device cannot be hotplugged."));
+        goto cleanup;
     } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
                virDomainPCIAddressEnsureAddr(priv->pciaddrs, &net->info) < 0) {
         goto cleanup;
