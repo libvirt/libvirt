@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2014 Red Hat, Inc.
+## Copyright (C) 2005-2015 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -1074,6 +1074,7 @@ if WITH_XENCONFIG
 # Add the generated object to its own library to control CFLAGS
 noinst_LTLIBRARIES += libvirt_xenxldiskparser.la
 libvirt_xenxldiskparser_la_CFLAGS = \
+		-I$(srcdir)/xenconfig \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS) -Wno-unused-parameter
 libvirt_xenxldiskparser_la_SOURCES = \
 	$(XENXLDISKPARSER_SOURCES)
