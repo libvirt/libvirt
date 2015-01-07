@@ -281,7 +281,7 @@ static int virLockManagerSanlockSetupLockspace(void)
             /*
              * Pre allocate enough data for 1 block of leases at preferred alignment
              */
-            if (safezero(fd, 0, rv, false) < 0) {
+            if (safezero(fd, 0, rv) < 0) {
                 virReportSystemError(errno,
                                      _("Unable to allocate lockspace %s"),
                                      path);
@@ -690,7 +690,7 @@ static int virLockManagerSanlockCreateLease(struct sanlk_resource *res)
             /*
              * Pre allocate enough data for 1 block of leases at preferred alignment
              */
-            if (safezero(fd, 0, rv, false) < 0) {
+            if (safezero(fd, 0, rv) < 0) {
                 virReportSystemError(errno,
                                      _("Unable to allocate lease %s"),
                                      res->disks[0].path);

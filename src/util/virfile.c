@@ -1053,7 +1053,7 @@ safezero_posix_fallocate(int fd ATTRIBUTE_UNUSED,
                          off_t offset ATTRIBUTE_UNUSED,
                          off_t len ATTRIBUTE_UNUSED)
 {
-    return -1;
+    return -2;
 }
 #endif /* !HAVE_POSIX_FALLOCATE */
 
@@ -1063,9 +1063,7 @@ safezero_sys_fallocate(int fd,
                        off_t offset,
                        off_t len)
 {
-    int rc = -1;
-    rc = syscall(SYS_fallocate, fd, 0, offset, len);
-    return rc;
+    return syscall(SYS_fallocate, fd, 0, offset, len);
 }
 #else /* !HAVE_SYS_SYSCALL_H || !defined(SYS_fallocate) */
 static int
@@ -1073,9 +1071,7 @@ safezero_sys_fallocate(int fd ATTRIBUTE_UNUSED,
                        off_t offset ATTRIBUTE_UNUSED,
                        off_t len ATTRIBUTE_UNUSED)
 {
-    int rc = -1;
-    errno = ENOSYS;
-    return rc;
+    return -2;
 }
 #endif /* !HAVE_SYS_SYSCALL_H || !defined(SYS_fallocate) */
 
@@ -1111,7 +1107,7 @@ safezero_mmap(int fd, off_t offset, off_t len)
 
     /* fall back to writing zeroes using safewrite if mmap fails (for
      * example because of virtual memory limits) */
-    return -1;
+    return -2;
 }
 #else /* !HAVE_MMAP */
 static int
@@ -1119,7 +1115,7 @@ safezero_mmap(int fd ATTRIBUTE_UNUSED,
               off_t offset ATTRIBUTE_UNUSED,
               off_t len ATTRIBUTE_UNUSED)
 {
-    return -1;
+    return -2;
 }
 #endif /* !HAVE_MMAP */
 
@@ -1160,26 +1156,20 @@ safezero_slow(int fd, off_t offset, off_t len)
     return 0;
 }
 
-int safezero(int fd, off_t offset, off_t len, bool resize)
+int safezero(int fd, off_t offset, off_t len)
 {
     int ret;
 
-    /* posix_fallocate returns 0 on success or error number on failure,
-     * but errno is not set so use that to our advantage since we set
-     * errno to the returned value if we make the call. If we don't make
-     * the call because it doesn't exist, then errno won't change and
-     * we can try other methods.
-     */
-    errno = 0;
     ret = safezero_posix_fallocate(fd, offset, len);
-    if (ret == 0 || errno != 0)
+    if (ret != -2)
         return ret;
 
-    if (resize)
-        return safezero_sys_fallocate(fd, offset, len);
-
-    if (safezero_mmap(fd, offset, len) == 0)
+    if (safezero_sys_fallocate(fd, offset, len) == 0)
         return 0;
+
+    ret = safezero_mmap(fd, offset, len);
+    if (ret != -2)
+        return ret;
     return safezero_slow(fd, offset, len);
 }
 
