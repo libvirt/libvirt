@@ -17120,14 +17120,19 @@ virDomainControllerDefFormat(virBufferPtr buf,
         virDomainDeviceInfoIsSet(&def->info, flags) || pcihole64) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
-        if (def->queues)
-            virBufferAsprintf(buf, "<driver queues='%u'/>\n", def->queues);
 
-        if (def->cmd_per_lun)
-            virBufferAsprintf(buf, "<driver cmd_per_lun='%u'/>\n", def->cmd_per_lun);
+        if (def->queues || def->cmd_per_lun || def->max_sectors) {
+            virBufferAddLit(buf, "<driver");
+            if (def->queues)
+                virBufferAsprintf(buf, " queues='%u'", def->queues);
 
-        if (def->max_sectors)
-            virBufferAsprintf(buf, "<driver max_sectors='%u'/>\n", def->max_sectors);
+            if (def->cmd_per_lun)
+                virBufferAsprintf(buf, " cmd_per_lun='%u'", def->cmd_per_lun);
+
+            if (def->max_sectors)
+                virBufferAsprintf(buf, " max_sectors='%u'", def->max_sectors);
+            virBufferAddLit(buf, "/>\n");
+        }
 
         if (virDomainDeviceInfoIsSet(&def->info, flags) &&
             virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
