@@ -265,8 +265,8 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
 
 int
 qemuDomainCheckEjectableMedia(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             qemuDomainAsyncJob asyncJob)
+                              virDomainObjPtr vm,
+                              qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virHashTablePtr table = NULL;
