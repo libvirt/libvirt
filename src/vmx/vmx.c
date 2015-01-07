@@ -2697,7 +2697,7 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
         goto ignore;
 
     /* vmx:fileType -> def:type */
-    if (virVMXGetConfigString(conf, fileType_name, &fileType, false) < 0)
+    if (virVMXGetConfigString(conf, fileType_name, &fileType, true) < 0)
         goto cleanup;
 
     /* vmx:fileName -> def:data.file.path */
@@ -2710,8 +2710,12 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
         goto cleanup;
     }
 
-    /* Setup virDomainChrDef */
-    if (STRCASEEQ(fileType, "device")) {
+    /*
+     * Setup virDomainChrDef. The default fileType is "device", and vmware
+     * will sometimes omit this tag when adding a new serial port of this
+     * type.
+     */
+    if (!fileType || STRCASEEQ(fileType, "device")) {
         (*def)->target.port = port;
         (*def)->source.type = VIR_DOMAIN_CHR_TYPE_DEV;
         (*def)->source.data.file.path = fileName;

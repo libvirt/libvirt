@@ -15,6 +15,10 @@
       <source path='/dev/ttyS0'/>
       <target port='0'/>
     </serial>
+    <serial type='dev'>
+      <source path='/dev/ttyS1'/>
+      <target port='1'/>
+    </serial>
     <console type='dev'>
       <source path='/dev/ttyS0'/>
       <target type='serial' port='0'/>
