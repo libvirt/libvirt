@@ -1445,6 +1445,26 @@ static const virXMLAttr2Struct ipv6Attributes[] = {
         .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
         .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.portData.dataDstPortEnd),
     },
+    {
+        .name = "type",
+        .datatype = DATATYPE_UINT8 | DATATYPE_UINT8_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.dataICMPTypeStart),
+    },
+    {
+        .name = "typeend",
+        .datatype = DATATYPE_UINT8 | DATATYPE_UINT8_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.dataICMPTypeEnd),
+    },
+    {
+        .name = "code",
+        .datatype = DATATYPE_UINT8 | DATATYPE_UINT8_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.dataICMPCodeStart),
+    },
+    {
+        .name = "codeend",
+        .datatype = DATATYPE_UINT8 | DATATYPE_UINT8_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.dataICMPCodeEnd),
+    },
     COMMENT_PROP_IPHDR(ipv6HdrFilter),
     {
         .name = NULL,
@@ -2219,6 +2239,12 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
                       rule->p.ipv6HdrFilter.ipHdr.dataSrcIPAddr);
         COPY_NEG_SIGN(rule->p.ipv6HdrFilter.ipHdr.dataDstIPMask,
                       rule->p.ipv6HdrFilter.ipHdr.dataDstIPAddr);
+        COPY_NEG_SIGN(rule->p.ipv6HdrFilter.dataICMPTypeEnd,
+                      rule->p.ipv6HdrFilter.dataICMPTypeStart);
+        COPY_NEG_SIGN(rule->p.ipv6HdrFilter.dataICMPCodeStart,
+                      rule->p.ipv6HdrFilter.dataICMPTypeStart);
+        COPY_NEG_SIGN(rule->p.ipv6HdrFilter.dataICMPCodeEnd,
+                      rule->p.ipv6HdrFilter.dataICMPTypeStart);
         virNWFilterRuleDefFixupIPSet(&rule->p.ipv6HdrFilter.ipHdr);
     break;
 

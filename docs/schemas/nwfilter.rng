@@ -90,6 +90,7 @@
                   <ref name="common-ipv6-attributes-p1"/>
                   <ref name="common-port-attributes"/>
                   <ref name="ip-attributes"/>
+                  <ref name="icmp-attribute-ranges"/>
                   <ref name="comment-attribute"/>
                 </element>
               </zeroOrMore>
@@ -582,6 +583,31 @@
       </optional>
       <optional>
         <attribute name="code">
+          <ref name="uint8range"/>
+        </attribute>
+      </optional>
+    </interleave>
+  </define>
+
+  <define name="icmp-attribute-ranges">
+    <interleave>
+      <optional>
+        <attribute name="type">
+          <ref name="uint8range"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="typeend">
+          <ref name="uint8range"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="code">
+          <ref name="uint8range"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="codeend">
           <ref name="uint8range"/>
         </attribute>
       </optional>

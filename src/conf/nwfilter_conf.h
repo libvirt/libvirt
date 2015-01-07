@@ -265,6 +265,10 @@ struct _ipv6HdrFilterDef {
     ethHdrDataDef  ethHdr;
     ipHdrDataDef   ipHdr;
     portDataDef    portData;
+    nwItemDesc     dataICMPTypeStart;
+    nwItemDesc     dataICMPTypeEnd;
+    nwItemDesc     dataICMPCodeStart;
+    nwItemDesc     dataICMPCodeEnd;
 };
 
 

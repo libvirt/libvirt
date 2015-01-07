@@ -1197,6 +1197,26 @@
          <td>End of range of valid destination ports; requires <code>protocol</code></td>
        </tr>
        <tr>
+         <td>type<span class="since">(Since 1.2.12)</span></td>
+         <td>UINT8</td>
+         <td>ICMPv6 type; requires <code>protocol</code> to be set to <code>icmpv6</code></td>
+       </tr>
+       <tr>
+         <td>typeend<span class="since">(Since 1.2.12)</span></td>
+         <td>UINT8</td>
+         <td>ICMPv6 type end of range; requires <code>protocol</code> to be set to <code>icmpv6</code></td>
+       </tr>
+       <tr>
+         <td>code<span class="since">(Since 1.2.12)</span></td>
+         <td>UINT8</td>
+         <td>ICMPv6 code; requires <code>protocol</code> to be set to <code>icmpv6</code></td>
+       </tr>
+       <tr>
+         <td>code<span class="since">(Since 1.2.12)</span></td>
+         <td>UINT8</td>
+         <td>ICMPv6 code end of range; requires <code>protocol</code> to be set to <code>icmpv6</code></td>
+       </tr>
+       <tr>
          <td>comment <span class="since">(Since 0.8.5)</span></td>
          <td>STRING</td>
          <td>text with max. 256 characters</td>

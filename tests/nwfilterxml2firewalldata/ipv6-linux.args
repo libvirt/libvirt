@@ -18,3 +18,19 @@ ebtables -t nat -A libvirt-J-vnet0 -p ipv6 --ip6-destination 1::2/128 \
 --ip6-source a:b:c::/65 --ip6-protocol 18 -j ACCEPT
 ebtables -t nat -A libvirt-P-vnet0 -p ipv6 --ip6-source 1::2/128 \
 --ip6-destination a:b:c::/65 --ip6-protocol 18 -j ACCEPT
+ebtables -t nat -A libvirt-J-vnet0 -p ipv6 --ip6-destination 1::2/128 \
+--ip6-source a:b:c::/65 --ip6-protocol 58 --ip6-icmp-type 1:11/10:11 -j ACCEPT
+ebtables -t nat -A libvirt-P-vnet0 -p ipv6 --ip6-source 1::2/128 \
+--ip6-destination a:b:c::/65 --ip6-protocol 58 --ip6-icmp-type 1:11/10:11 -j ACCEPT
+ebtables -t nat -A libvirt-J-vnet0 -p ipv6 --ip6-destination 1::2/128 \
+--ip6-source a:b:c::/65 --ip6-protocol 58 --ip6-icmp-type 1:1/10:10 -j ACCEPT
+ebtables -t nat -A libvirt-P-vnet0 -p ipv6 --ip6-source 1::2/128 \
+--ip6-destination a:b:c::/65 --ip6-protocol 58 --ip6-icmp-type 1:1/10:10 -j ACCEPT
+ebtables -t nat -A libvirt-J-vnet0 -p ipv6 --ip6-destination 1::2/128 \
+--ip6-source a:b:c::/65 --ip6-protocol 58 --ip6-icmp-type 0:255/10:10 -j ACCEPT
+ebtables -t nat -A libvirt-P-vnet0 -p ipv6 --ip6-source 1::2/128 \
+--ip6-destination a:b:c::/65 --ip6-protocol 58 --ip6-icmp-type 0:255/10:10 -j ACCEPT
+ebtables -t nat -A libvirt-J-vnet0 -p ipv6 --ip6-destination 1::2/128 \
+--ip6-source a:b:c::/65 --ip6-protocol 58 --ip6-icmp-type 1:1/0:255 -j ACCEPT
+ebtables -t nat -A libvirt-P-vnet0 -p ipv6 --ip6-source 1::2/128 \
+--ip6-destination a:b:c::/65 --ip6-protocol 58 --ip6-icmp-type 1:1/0:255 -j ACCEPT

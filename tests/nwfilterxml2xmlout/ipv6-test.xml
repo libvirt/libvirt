@@ -12,4 +12,16 @@
   <rule action='accept' direction='inout' priority='500'>
     <ipv6 srcipaddr='1::2' srcipmask='128' dstipaddr='a:b:c::' dstipmask='65' protocol='18'/>
   </rule>
+  <rule action='accept' direction='inout'>
+     <ipv6 srcipaddr='1::2' srcipmask='128' dstipaddr='a:b:c::' dstipmask='65' protocol='icmpv6' type='1' typeend='11' code='10' codeend='11'/>
+  </rule>
+  <rule action='accept' direction='inout'>
+     <ipv6 srcipaddr='1::2' srcipmask='128' dstipaddr='a:b:c::' dstipmask='65' protocol='icmpv6' type='1' code='10'/>
+  </rule>
+  <rule action='accept' direction='inout'>
+     <ipv6 srcipaddr='1::2' srcipmask='128' dstipaddr='a:b:c::' dstipmask='65' protocol='icmpv6' code='10'/>
+  </rule>
+  <rule action='accept' direction='inout'>
+     <ipv6 srcipaddr='1::2' srcipmask='128' dstipaddr='a:b:c::' dstipmask='65' protocol='icmpv6' type='1'/>
+  </rule>
 </filter>
