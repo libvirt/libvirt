@@ -29,9 +29,10 @@
 # include "virxml.h"
 # include "domain_conf.h"
 
-virNetDevBandwidthPtr virNetDevBandwidthParse(xmlNodePtr node,
-                                              int net_type)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+int virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
+                            xmlNodePtr node,
+                            int net_type)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 int virNetDevBandwidthFormat(virNetDevBandwidthPtr def,
                              virBufferPtr buf)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);

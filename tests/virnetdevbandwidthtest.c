@@ -43,6 +43,7 @@ struct testSetStruct {
 
 #define PARSE(xml, var)                                                 \
     do {                                                                \
+        int rc;                                                         \
         xmlDocPtr doc;                                                  \
         xmlXPathContextPtr ctxt = NULL;                                 \
                                                                         \
@@ -54,11 +55,12 @@ struct testSetStruct {
                                           &ctxt)))                      \
             goto cleanup;                                               \
                                                                         \
-        (var) = virNetDevBandwidthParse(ctxt->node,                     \
-                                        VIR_DOMAIN_NET_TYPE_NETWORK);   \
+        rc = virNetDevBandwidthParse(&(var),                            \
+                                     ctxt->node,                        \
+                                     VIR_DOMAIN_NET_TYPE_NETWORK);      \
         xmlFreeDoc(doc);                                                \
         xmlXPathFreeContext(ctxt);                                      \
-        if (!(var))                                                     \
+        if (rc < 0)                                                     \
             goto cleanup;                                               \
     } while (0)
 
@@ -127,9 +129,7 @@ mymain(void)
 
     DO_TEST_SET(NULL, NULL);
 
-    DO_TEST_SET(("<bandwidth/>"),
-                (TC " qdisc del dev eth0 root\n"
-                 TC " qdisc del dev eth0 ingress\n"));
+    DO_TEST_SET("<bandwidth/>", NULL);
 
     DO_TEST_SET(("<bandwidth>"
                  "  <inbound average='1024'/>"
