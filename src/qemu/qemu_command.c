@@ -6612,7 +6612,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     char *nodemask = NULL;
     char *mem_path = NULL;
     int ret = -1;
-    const long system_page_size = sysconf(_SC_PAGESIZE);
+    const long system_page_size = sysconf(_SC_PAGESIZE) / 1024;
 
     if (virDomainNumatuneHasPerNodeBinding(def->numatune) &&
         !(virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
