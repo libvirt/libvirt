@@ -10123,6 +10123,7 @@ qemuDomainBlockStats(virDomainPtr dom,
     virDomainObjPtr vm;
     virDomainDiskDefPtr disk = NULL;
     qemuDomainObjPrivatePtr priv;
+    char *diskAlias = NULL;
 
     if (!*path) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -10158,11 +10159,14 @@ qemuDomainBlockStats(virDomainPtr dom,
         goto endjob;
     }
 
+    if (VIR_STRDUP(diskAlias, disk->info.alias) < 0)
+        goto endjob;
+
     priv = vm->privateData;
 
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorGetBlockStatsInfo(priv->mon,
-                                       disk->info.alias,
+                                       diskAlias,
                                        &stats->rd_req,
                                        &stats->rd_bytes,
                                        NULL,
@@ -10172,13 +10176,15 @@ qemuDomainBlockStats(virDomainPtr dom,
                                        NULL,
                                        NULL,
                                        &stats->errs);
-    qemuDomainObjExitMonitor(driver, vm);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
     qemuDomObjEndAPI(&vm);
+    VIR_FREE(diskAlias);
     return ret;
 }
 
@@ -10194,11 +10200,11 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     int idx;
     int tmp, ret = -1;
     virDomainObjPtr vm;
-    virDomainDiskDefPtr disk = NULL;
     qemuDomainObjPrivatePtr priv;
     long long rd_req, rd_bytes, wr_req, wr_bytes, rd_total_times;
     long long wr_total_times, flush_req, flush_total_times, errs;
     virTypedParameterPtr param;
+    char *diskAlias = NULL;
 
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
 
@@ -10227,6 +10233,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     }
 
     if (*nparams != 0) {
+        virDomainDiskDefPtr disk = NULL;
         if ((idx = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("invalid path: %s"), path);
@@ -10240,6 +10247,8 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
                             disk->dst);
              goto endjob;
         }
+        if (VIR_STRDUP(diskAlias, disk->info.alias) < 0)
+            goto endjob;
     }
 
     priv = vm->privateData;
@@ -10250,12 +10259,12 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     ret = qemuMonitorGetBlockStatsParamsNumber(priv->mon, nparams);
 
     if (tmp == 0 || ret < 0) {
-        qemuDomainObjExitMonitor(driver, vm);
+        ignore_value(qemuDomainObjExitMonitor(driver, vm));
         goto endjob;
     }
 
     ret = qemuMonitorGetBlockStatsInfo(priv->mon,
-                                       disk->info.alias,
+                                       diskAlias,
                                        &rd_req,
                                        &rd_bytes,
                                        &rd_total_times,
@@ -10266,7 +10275,8 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
                                        &flush_total_times,
                                        &errs);
 
-    qemuDomainObjExitMonitor(driver, vm);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
 
     if (ret < 0)
         goto endjob;
@@ -10351,6 +10361,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
+    VIR_FREE(diskAlias);
     qemuDomObjEndAPI(&vm);
     return ret;
 }
@@ -16867,7 +16878,8 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorSetBlockIoThrottle(priv->mon, device,
                                             &info, supportMaxOptions);
-        qemuDomainObjExitMonitor(driver, vm);
+        if (qemuDomainObjExitMonitor(driver, vm) < 0)
+            ret = -1;
         if (ret < 0)
             goto endjob;
         vm->def->disks[idx]->blkdeviotune = info;
