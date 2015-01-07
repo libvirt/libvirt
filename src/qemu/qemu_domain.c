@@ -1573,8 +1573,6 @@ qemuDomainObjExitMonitorInternal(virQEMUDriverPtr driver,
         qemuDomainObjResetJob(priv);
         qemuDomainObjSaveJob(driver, obj);
         virCondSignal(&priv->job.cond);
-
-        virObjectUnref(obj);
     }
 }
 
