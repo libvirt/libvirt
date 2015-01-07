@@ -4148,6 +4148,7 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
     int actualType;
+    virNetDevBandwidthPtr actualBandwidth;
     char *veth = NULL;
 
     if (!priv->initpid) {
@@ -4195,11 +4196,18 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
                        _("Network device type is not supported"));
         goto cleanup;
     }
-    /* set network bandwidth */
-    if (virNetDevSupportBandwidth(actualType) &&
-        virNetDevBandwidthSet(net->ifname,
-                              virDomainNetGetActualBandwidth(net), false) < 0)
-        goto cleanup;
+    /* Set bandwidth or warn if requested and not supported. */
+    actualBandwidth = virDomainNetGetActualBandwidth(net);
+    if (actualBandwidth) {
+        if (virNetDevSupportBandwidth(actualType)) {
+            if (virNetDevBandwidthSet(net->ifname, actualBandwidth, false) < 0)
+                goto cleanup;
+        } else {
+            VIR_WARN("setting bandwidth on interfaces of "
+                     "type '%s' is not implemented yet",
+                     virDomainNetTypeToString(actualType));
+        }
+    }
 
     if (virNetDevSetNamespace(veth, priv->initpid) < 0) {
         virDomainAuditNet(vm, NULL, net, "attach", false);

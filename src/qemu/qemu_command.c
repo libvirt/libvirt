@@ -7365,6 +7365,7 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     char **tapfdName = NULL;
     char **vhostfdName = NULL;
     int actualType = virDomainNetGetActualType(net);
+    virNetDevBandwidthPtr actualBandwidth;
     size_t i;
 
     if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER)
@@ -7415,12 +7416,18 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
             goto cleanup;
     }
 
-    /* Set Bandwidth */
-    if (virNetDevSupportBandwidth(actualType) &&
-        virNetDevBandwidthSet(net->ifname,
-                              virDomainNetGetActualBandwidth(net),
-                              false) < 0)
-        goto cleanup;
+    /* Set bandwidth or warn if requested and not supported. */
+    actualBandwidth = virDomainNetGetActualBandwidth(net);
+    if (actualBandwidth) {
+        if (virNetDevSupportBandwidth(actualType)) {
+            if (virNetDevBandwidthSet(net->ifname, actualBandwidth, false) < 0)
+                goto cleanup;
+        } else {
+            VIR_WARN("setting bandwidth on interfaces of "
+                     "type '%s' is not implemented yet",
+                     virDomainNetTypeToString(actualType));
+        }
+    }
 
     if ((actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||

@@ -838,6 +838,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     bool releaseaddr = false;
     bool iface_connected = false;
     int actualType;
+    virNetDevBandwidthPtr actualBandwidth;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     size_t i;
 
@@ -926,11 +927,18 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     if (qemuInterfaceStartDevice(net) < 0)
         goto cleanup;
 
-    /* Set Bandwidth */
-    if (virNetDevSupportBandwidth(actualType) &&
-        virNetDevBandwidthSet(net->ifname,
-                              virDomainNetGetActualBandwidth(net), false) < 0)
-        goto cleanup;
+    /* Set bandwidth or warn if requested and not supported. */
+    actualBandwidth = virDomainNetGetActualBandwidth(net);
+    if (actualBandwidth) {
+        if (virNetDevSupportBandwidth(actualType)) {
+            if (virNetDevBandwidthSet(net->ifname, actualBandwidth, false) < 0)
+                goto cleanup;
+        } else {
+            VIR_WARN("setting bandwidth on interfaces of "
+                     "type '%s' is not implemented yet",
+                     virDomainNetTypeToString(actualType));
+        }
+    }
 
     for (i = 0; i < tapfdSize; i++) {
         if (virSecurityManagerSetTapFDLabel(driver->securityManager,
