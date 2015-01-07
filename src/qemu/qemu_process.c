@@ -2584,6 +2584,8 @@ qemuProcessInitPasswords(virConnectPtr conn,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     size_t i;
+    char *alias = NULL;
+    char *secret = NULL;
 
     for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
@@ -2607,33 +2609,34 @@ qemuProcessInitPasswords(virConnectPtr conn,
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         for (i = 0; i < vm->def->ndisks; i++) {
-            char *secret;
             size_t secretLen;
-            const char *alias;
 
             if (!vm->def->disks[i]->src->encryption ||
                 !virDomainDiskGetSource(vm->def->disks[i]))
                 continue;
 
+            VIR_FREE(secret);
             if (qemuProcessGetVolumeQcowPassphrase(conn,
                                                    vm->def->disks[i],
                                                    &secret, &secretLen) < 0)
                 goto cleanup;
 
-            alias = vm->def->disks[i]->info.alias;
-            if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0) {
-                VIR_FREE(secret);
+            VIR_FREE(alias);
+            if (VIR_STRDUP(alias, vm->def->disks[i]->info.alias) < 0)
                 goto cleanup;
-            }
+            if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+                goto cleanup;
             ret = qemuMonitorSetDrivePassphrase(priv->mon, alias, secret);
-            VIR_FREE(secret);
-            qemuDomainObjExitMonitor(driver, vm);
+            if (qemuDomainObjExitMonitor(driver, vm) < 0)
+                ret = -1;
             if (ret < 0)
                 goto cleanup;
         }
     }
 
  cleanup:
+    VIR_FREE(alias);
+    VIR_FREE(secret);
     virObjectUnref(cfg);
     return ret;
 }
@@ -4258,6 +4261,7 @@ int qemuProcessStart(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     struct qemuProcessHookData hookData;
     unsigned long cur_balloon;
+    unsigned int period = 0;
     size_t i;
     bool rawio_set = false;
     char *nodeset = NULL;
@@ -4870,15 +4874,18 @@ int qemuProcessStart(virConnectPtr conn,
                        vm->def->mem.cur_balloon);
         goto cleanup;
     }
+    if (vm->def->memballoon && vm->def->memballoon->period)
+        period = vm->def->memballoon->period;
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto cleanup;
-    if (vm->def->memballoon && vm->def->memballoon->period)
-        qemuMonitorSetMemoryStatsPeriod(priv->mon, vm->def->memballoon->period);
+    if (period)
+        qemuMonitorSetMemoryStatsPeriod(priv->mon, period);
     if (qemuMonitorSetBalloon(priv->mon, cur_balloon) < 0) {
         qemuDomainObjExitMonitor(driver, vm);
         goto cleanup;
     }
-    qemuDomainObjExitMonitor(driver, vm);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        goto cleanup;
 
     VIR_DEBUG("Detecting actual memory size for video device");
     if (qemuProcessUpdateVideoRamSize(driver, vm, asyncJob) < 0)
