@@ -1,7 +1,7 @@
 /*
  * virprocess.c: interaction with processes
  *
- * Copyright (C) 2010-2014 Red Hat, Inc.
+ * Copyright (C) 2010-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,7 +32,9 @@
 # include <sys/time.h>
 # include <sys/resource.h>
 #endif
-#include <sched.h>
+#if HAVE_SCHED_SETSCHEDULER
+# include <sched.h>
+#endif
 
 #if defined(__FreeBSD__) || HAVE_BSD_CPU_AFFINITY
 # include <sys/param.h>
@@ -103,6 +105,13 @@ static inline int setns(int fd ATTRIBUTE_UNUSED, int nstype ATTRIBUTE_UNUSED)
     return -1;
 }
 #endif
+
+VIR_ENUM_IMPL(virProcessSchedPolicy, VIR_PROC_POLICY_LAST,
+              "none",
+              "batch",
+              "idle",
+              "fifo",
+              "rr");
 
 /**
  * virProcessTranslateStatus:
@@ -1052,3 +1061,99 @@ virProcessExitWithStatus(int status)
     }
     exit(value);
 }
+
+#if HAVE_SCHED_SETSCHEDULER
+
+static int
+virProcessSchedTranslatePolicy(virProcessSchedPolicy policy)
+{
+    switch (policy) {
+    case VIR_PROC_POLICY_NONE:
+        return SCHED_OTHER;
+
+    case VIR_PROC_POLICY_BATCH:
+        return SCHED_BATCH;
+
+    case VIR_PROC_POLICY_IDLE:
+        return SCHED_IDLE;
+
+    case VIR_PROC_POLICY_FIFO:
+        return SCHED_FIFO;
+
+    case VIR_PROC_POLICY_RR:
+        return SCHED_RR;
+
+    case VIR_PROC_POLICY_LAST:
+        /* nada */
+        break;
+    }
+
+    return -1;
+}
+
+int
+virProcessSetScheduler(pid_t pid, virProcessSchedPolicy policy, int priority)
+{
+    struct sched_param param = {0};
+    int pol = virProcessSchedTranslatePolicy(policy);
+
+    VIR_DEBUG("pid=%d, policy=%d, priority=%u", pid, policy, priority);
+
+    if (!policy)
+        return 0;
+
+    if (pol == SCHED_FIFO || pol == SCHED_RR) {
+        int min = 0;
+        int max = 0;
+
+        if ((min = sched_get_priority_min(pol)) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Cannot get minimum scheduler "
+                                   "priority value"));
+            return -1;
+        }
+
+        if ((max = sched_get_priority_max(pol)) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Cannot get maximum scheduler "
+                                   "priority value"));
+            return -1;
+        }
+
+        if (priority < min || priority > max) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Scheduler priority %d out of range [%d, %d]"),
+                           priority, min, max);
+            return -1;
+        }
+
+        param.sched_priority = priority;
+    }
+
+    if (sched_setscheduler(pid, pol, &param) < 0) {
+        virReportSystemError(errno,
+                             _("Cannot set scheduler parameters for pid %d"),
+                             pid);
+        return -1;
+    }
+
+    return 0;
+}
+
+#else /* ! HAVE_SCHED_SETSCHEDULER */
+
+int
+virProcessSetScheduler(pid_t pid ATTRIBUTE_UNUSED,
+                       int policy,
+                       int priority ATTRIBUTE_UNUSED)
+{
+    if (!policy)
+        return 0;
+
+    virReportSystemError(ENOSYS, "%s",
+                         _("Process CPU scheduling is not supported "
+                           "on this platform"));
+    return -1;
+}
+
+#endif /* !HAVE_SCHED_SETSCHEDULER */

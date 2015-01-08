@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright (C) 2005-2014 Red Hat, Inc.
+dnl Copyright (C) 2005-2015 Red Hat, Inc.
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Lesser General Public
@@ -275,7 +275,7 @@ dnl and various less common threadsafe functions
 AC_CHECK_FUNCS_ONCE([cfmakeraw fallocate geteuid getgid getgrnam_r \
   getmntent_r getpwuid_r getuid kill mmap newlocale posix_fallocate \
   posix_memalign prlimit regexec sched_getaffinity setgroups setns \
-  setrlimit symlink sysctlbyname getifaddrs])
+  setrlimit symlink sysctlbyname getifaddrs sched_setscheduler])
 
 dnl Availability of pthread functions. Because of $LIB_PTHREAD, we
 dnl cannot use AC_CHECK_FUNCS_ONCE. LIB_PTHREAD and LIBMULTITHREAD

@@ -1916,11 +1916,14 @@ virProcessGetStartTime;
 virProcessKill;
 virProcessKillPainfully;
 virProcessRunInMountNamespace;
+virProcessSchedPolicyTypeFromString;
+virProcessSchedPolicyTypeToString;
 virProcessSetAffinity;
 virProcessSetMaxFiles;
 virProcessSetMaxMemLock;
 virProcessSetMaxProcesses;
 virProcessSetNamespaces;
+virProcessSetScheduler;
 virProcessTranslateStatus;
 virProcessWait;
 

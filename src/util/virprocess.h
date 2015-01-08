@@ -1,7 +1,7 @@
 /*
  * virprocess.h: interaction with processes
  *
- * Copyright (C) 2010-2014 Red Hat, Inc.
+ * Copyright (C) 2010-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,19 @@
 
 # include "internal.h"
 # include "virbitmap.h"
+# include "virutil.h"
+
+typedef enum {
+    VIR_PROC_POLICY_NONE = 0,
+    VIR_PROC_POLICY_BATCH,
+    VIR_PROC_POLICY_IDLE,
+    VIR_PROC_POLICY_FIFO,
+    VIR_PROC_POLICY_RR,
+
+    VIR_PROC_POLICY_LAST
+} virProcessSchedPolicy;
+
+VIR_ENUM_DECL(virProcessSchedPolicy);
 
 char *
 virProcessTranslateStatus(int status);
@@ -73,4 +86,9 @@ typedef int (*virProcessNamespaceCallback)(pid_t pid, void *opaque);
 int virProcessRunInMountNamespace(pid_t pid,
                                   virProcessNamespaceCallback cb,
                                   void *opaque);
+
+int virProcessSetScheduler(pid_t pid,
+                           virProcessSchedPolicy policy,
+                           int priority);
+
 #endif /* __VIR_PROCESS_H__ */
