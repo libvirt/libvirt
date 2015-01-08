@@ -133,6 +133,28 @@ vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
     return vshLookupDomainInternal(ctl, cmd->def->name, n, flags);
 }
 
+static virDomainPtr
+vshDomainDefine(virConnectPtr conn, const char *xml, unsigned int flags)
+{
+    virDomainPtr dom;
+    if (flags) {
+        dom = virDomainDefineXMLFlags(conn, xml, flags);
+        /* If validate is the only flag, just drop it and
+         * try again.
+         */
+        if (!dom) {
+            virErrorPtr err = virGetLastError();
+            if (err &&
+                (err->code == VIR_ERR_NO_SUPPORT) &&
+                (flags == VIR_DOMAIN_DEFINE_VALIDATE))
+                dom = virDomainDefineXML(conn, xml);
+        }
+    } else {
+        dom = virDomainDefineXML(conn, xml);
+    }
+    return dom;
+}
+
 VIR_ENUM_DECL(vshDomainVcpuState)
 VIR_ENUM_IMPL(vshDomainVcpuState,
               VIR_VCPU_LAST,
@@ -7154,6 +7176,10 @@ static const vshCmdOptDef opts_create[] = {
      .type = VSH_OT_STRING,
      .help = N_("pass file descriptors N,M,... to the guest")
     },
+    {.name = "validate",
+     .type = VSH_OT_BOOL,
+     .help = N_("validate the XML against the schema")
+    },
     {.name = NULL}
 };
 
@@ -7167,7 +7193,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
 #ifndef WIN32
     bool console = vshCommandOptBool(cmd, "console");
 #endif
-    unsigned int flags = VIR_DOMAIN_NONE;
+    unsigned int flags = 0;
     size_t nfds = 0;
     int *fds = NULL;
 
@@ -7184,6 +7210,8 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_START_PAUSED;
     if (vshCommandOptBool(cmd, "autodestroy"))
         flags |= VIR_DOMAIN_START_AUTODESTROY;
+    if (vshCommandOptBool(cmd, "validate"))
+        flags |= VIR_DOMAIN_START_VALIDATE;
 
     if (nfds)
         dom = virDomainCreateXMLWithFiles(ctl->conn, buffer, nfds, fds, flags);
@@ -7229,6 +7257,10 @@ static const vshCmdOptDef opts_define[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("file containing an XML domain description")
     },
+    {.name = "validate",
+     .type = VSH_OT_BOOL,
+     .help = N_("validate the XML against the schema")
+    },
     {.name = NULL}
 };
 
@@ -7239,14 +7271,21 @@ cmdDefine(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = true;
     char *buffer;
+    unsigned int flags = 0;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
 
+    if (vshCommandOptBool(cmd, "validate"))
+        flags |= VIR_DOMAIN_DEFINE_VALIDATE;
+
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    dom = virDomainDefineXML(ctl->conn, buffer);
+    if (flags)
+        dom = virDomainDefineXMLFlags(ctl->conn, buffer, flags);
+    else
+        dom = virDomainDefineXML(ctl->conn, buffer);
     VIR_FREE(buffer);
 
     if (dom != NULL) {
@@ -11105,6 +11144,10 @@ static const vshCmdOptDef opts_edit[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("domain name, id or uuid")
     },
+    {.name = "skip-validate",
+     .type = VSH_OT_BOOL,
+     .help = N_("skip validation of the XML against the schema")
+    },
     {.name = NULL}
 };
 
@@ -11114,13 +11157,17 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     virDomainPtr dom = NULL;
     virDomainPtr dom_edited = NULL;
-    unsigned int flags = VIR_DOMAIN_XML_SECURE | VIR_DOMAIN_XML_INACTIVE;
+    unsigned int query_flags = VIR_DOMAIN_XML_SECURE | VIR_DOMAIN_XML_INACTIVE;
+    unsigned int define_flags = VIR_DOMAIN_DEFINE_VALIDATE;
 
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
         goto cleanup;
 
-#define EDIT_GET_XML virDomainGetXMLDesc(dom, flags)
+    if (vshCommandOptBool(cmd, "skip-validate"))
+        define_flags &= ~VIR_DOMAIN_DEFINE_VALIDATE;
+
+#define EDIT_GET_XML virDomainGetXMLDesc(dom, query_flags)
 #define EDIT_NOT_CHANGED                                                \
     do {                                                                \
         vshPrint(ctl, _("Domain %s XML configuration not changed.\n"),  \
@@ -11129,7 +11176,7 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
         goto edit_cleanup;                                              \
     } while (0)
 #define EDIT_DEFINE \
-    (dom_edited = virDomainDefineXML(ctl->conn, doc_edited))
+    (dom_edited = vshDomainDefine(ctl->conn, doc_edited, define_flags))
 #include "virsh-edit.c"
 
     vshPrint(ctl, _("Domain %s XML configuration edited.\n"),
