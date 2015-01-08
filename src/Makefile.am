@@ -1053,12 +1053,21 @@ libvirt_vmx_la_SOURCES = $(VMX_SOURCES)
 endif WITH_VMX
 
 if WITH_XENCONFIG
-AM_LFLAGS = -Pxl_disk_ --header-file=../$*.h
-LEX_OUTPUT_ROOT = lex.xl_disk_
-BUILT_SOURCES += xenconfig/xen_xl_disk.c xenconfig/xen_xl_disk.h
+# Disable the default rule for lex files because we need to generate the
+# xen_xl_disk files into srcdir instead of builddir.
+.l.c:
+
+$(XENXLDISKPARSER_GENERATED): $(XENXLDISKPARSER_SOURCES)
+	$(AM_V_LEX) $(LEXCOMPILE) $<
+
+AM_LFLAGS = -Pxl_disk_ --header-file=$(abs_srcdir)/xenconfig/xen_xl_disk.h \
+		--outfile=$(abs_srcdir)/xenconfig/xen_xl_disk.c
+XENXLDISKPARSER_GENERATED = xenconfig/xen_xl_disk.c xenconfig/xen_xl_disk.h
+
+BUILT_SOURCES += $(XENXLDISKPARSER_GENERATED)
 # Generated header file is not implicitly added to dist
-EXTRA_DIST += xenconfig/xen_xl_disk.h
-CLEANFILES += xenconfig/xen_xl_disk.h xenconfig/xen_xl_disk.c
+EXTRA_DIST += $(XENXLDISKPARSER_GENERATED)
+MAINTAINERCLEANFILES += $(XENXLDISKPARSER_GENERATED)
 
 XENXLDISKPARSER_SOURCES = xenconfig/xen_xl_disk.l
 
@@ -1078,6 +1087,8 @@ libvirt_xenxldiskparser_la_CFLAGS = \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS) -Wno-unused-parameter
 libvirt_xenxldiskparser_la_SOURCES = \
 	$(XENXLDISKPARSER_SOURCES)
+libvirt_xenxldiskparser_la_DEPENDENCIES = \
+	$(XENXLDISKPARSER_GENERATED)
 
 noinst_LTLIBRARIES += libvirt_xenconfig.la
 libvirt_la_BUILT_LIBADD += libvirt_xenconfig.la
