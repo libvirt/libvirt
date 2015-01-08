@@ -815,8 +815,52 @@
             </attribute>
           </element>
         </zeroOrMore>
+        <zeroOrMore>
+          <element name="vcpusched">
+            <optional>
+              <attribute name="vcpus">
+                <ref name='cpuset'/>
+              </attribute>
+            </optional>
+            <ref name="schedparam"/>
+          </element>
+        </zeroOrMore>
+        <zeroOrMore>
+          <element name="iothreadsched">
+            <optional>
+              <attribute name="iothreads">
+                <ref name='cpuset'/>
+              </attribute>
+            </optional>
+            <ref name="schedparam"/>
+          </element>
+        </zeroOrMore>
       </interleave>
     </element>
+  </define>
+
+  <define name="schedparam">
+    <choice>
+      <group>
+        <attribute name="scheduler">
+          <choice>
+            <value>batch</value>
+            <value>idle</value>
+          </choice>
+        </attribute>
+      </group>
+      <group>
+        <attribute name="scheduler">
+          <choice>
+            <value>fifo</value>
+            <value>rr</value>
+          </choice>
+        </attribute>
+        <attribute name="priority">
+          <ref name="unsignedShort"/>
+        </attribute>
+      </group>
+    </choice>
   </define>
 
   <!-- All the NUMA related tunables would go in the numatune -->

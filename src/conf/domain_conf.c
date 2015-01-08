@@ -772,6 +772,13 @@ VIR_ENUM_IMPL(virDomainLoader,
               "rom",
               "pflash")
 
+VIR_ENUM_IMPL(virDomainThreadSched, VIR_DOMAIN_THREAD_SCHED_LAST,
+              "other", /* default */
+              "batch",
+              "idle",
+              "fifo",
+              "rr")
+
 /* Internal mapping: subset of block job types that can be present in
  * <mirror> XML (remaining types are not two-phase). */
 VIR_ENUM_DECL(virDomainBlockJob)
@@ -2233,6 +2240,14 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virDomainVcpuPinDefArrayFree(def->cputune.iothreadspin,
                                  def->cputune.niothreadspin);
+
+    for (i = 0; i < def->cputune.nvcpusched; i++)
+        virBitmapFree(def->cputune.vcpusched[i].ids);
+    VIR_FREE(def->cputune.vcpusched);
+
+    for (i = 0; i < def->cputune.niothreadsched; i++)
+        virBitmapFree(def->cputune.iothreadsched[i].ids);
+    VIR_FREE(def->cputune.iothreadsched);
 
     virDomainNumatuneFree(def->numatune);
 
@@ -12772,6 +12787,70 @@ virDomainLoaderDefParseXML(xmlNodePtr node,
     return ret;
 }
 
+static int
+virDomainThreadSchedParse(xmlNodePtr node,
+                          unsigned int minid,
+                          unsigned int maxid,
+                          const char *name,
+                          virDomainThreadSchedParamPtr sp)
+{
+    char *tmp = NULL;
+    int sched = 0;
+
+    tmp = virXMLPropString(node, name);
+    if (!tmp) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Missing attribute '%s' in element '%sched'"),
+                       name, name);
+        goto error;
+    }
+
+    if (!virBitmapParse(tmp, 0, &sp->ids,
+                        VIR_DOMAIN_CPUMASK_LEN) ||
+        virBitmapIsAllClear(sp->ids) ||
+        virBitmapNextSetBit(sp->ids, -1) < minid ||
+        virBitmapLastSetBit(sp->ids) > maxid) {
+
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid value of '%s': %s"),
+                       name, tmp);
+        goto error;
+    }
+    VIR_FREE(tmp);
+
+    tmp = virXMLPropString(node, "scheduler");
+    if (tmp) {
+        if ((sched = virDomainThreadSchedTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid scheduler attribute: '%s'"),
+                           tmp);
+            goto error;
+        }
+        sp->scheduler = sched;
+
+        VIR_FREE(tmp);
+        if (sp->scheduler >= VIR_DOMAIN_THREAD_SCHED_FIFO) {
+            tmp = virXMLPropString(node, "priority");
+            if (!tmp) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Missing scheduler priority"));
+                goto error;
+            }
+            if (virStrToLong_i(tmp, NULL, 10, &sp->priority) < 0) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Invalid value for element priority"));
+                goto error;
+            }
+            VIR_FREE(tmp);
+        }
+    }
+
+    return 0;
+
+ error:
+    VIR_FREE(tmp);
+    return -1;
+}
 
 static virDomainDefPtr
 virDomainDefParseXML(xmlDocPtr xml,
@@ -13316,6 +13395,77 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
+    if ((n = virXPathNodeSet("./cputune/vcpusched", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot extract vcpusched nodes"));
+        goto error;
+    }
+    if (n) {
+        if (n > def->maxvcpus) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("too many vcpusched nodes in cputune"));
+            goto error;
+        }
+
+        if (VIR_ALLOC_N(def->cputune.vcpusched, n) < 0)
+            goto error;
+        def->cputune.nvcpusched = n;
+
+        for (i = 0; i < def->cputune.nvcpusched; i++) {
+            if (virDomainThreadSchedParse(nodes[i],
+                                          0, def->maxvcpus - 1,
+                                          "vcpus",
+                                          &def->cputune.vcpusched[i]) < 0)
+                goto error;
+
+            for (j = 0; j < i; j++) {
+                if (virBitmapOverlaps(def->cputune.vcpusched[i].ids,
+                                      def->cputune.vcpusched[j].ids)) {
+                    virReportError(VIR_ERR_XML_DETAIL, "%s",
+                                   _("vcpusched attributes 'vcpus' "
+                                     "must not overlap"));
+                    goto error;
+                }
+            }
+        }
+    }
+    VIR_FREE(nodes);
+
+    if ((n = virXPathNodeSet("./cputune/iothreadsched", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot extract iothreadsched nodes"));
+        goto error;
+    }
+    if (n) {
+        if (n > def->iothreads) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("too many iothreadsched nodes in cputune"));
+            goto error;
+        }
+
+        if (VIR_ALLOC_N(def->cputune.iothreadsched, n) < 0)
+            goto error;
+        def->cputune.niothreadsched = n;
+
+        for (i = 0; i < def->cputune.niothreadsched; i++) {
+            if (virDomainThreadSchedParse(nodes[i],
+                                          1, def->iothreads,
+                                          "iothreads",
+                                          &def->cputune.iothreadsched[i]) < 0)
+                goto error;
+
+            for (j = 0; j < i; j++) {
+                if (virBitmapOverlaps(def->cputune.iothreadsched[i].ids,
+                                      def->cputune.iothreadsched[j].ids)) {
+                    virReportError(VIR_ERR_XML_DETAIL, "%s",
+                                   _("iothreadsched attributes 'iothreads' "
+                                     "must not overlap"));
+                    goto error;
+                }
+            }
+        }
+    }
+    VIR_FREE(nodes);
 
     /* analysis of cpu handling */
     if ((node = virXPathNode("./cpu[1]", ctxt)) != NULL) {
@@ -19621,7 +19771,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         def->cputune.period || def->cputune.quota ||
         def->cputune.emulatorpin ||
         def->cputune.emulator_period || def->cputune.emulator_quota ||
-        def->cputune.niothreadspin) {
+        def->cputune.niothreadspin ||
+        def->cputune.vcpusched || def->cputune.iothreadsched) {
         virBufferAddLit(buf, "<cputune>\n");
         cputune = true;
     }
@@ -19688,6 +19839,36 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
         virBufferAsprintf(buf, "cpuset='%s'/>\n", cpumask);
         VIR_FREE(cpumask);
+    }
+
+    for (i = 0; i < def->cputune.nvcpusched; i++) {
+        virDomainThreadSchedParamPtr sp = &def->cputune.vcpusched[i];
+        char *ids = NULL;
+
+        if (!(ids = virBitmapFormat(sp->ids)))
+            goto error;
+        virBufferAsprintf(buf, "<vcpusched vcpus='%s' scheduler='%s'",
+                          ids, virDomainThreadSchedTypeToString(sp->scheduler));
+        VIR_FREE(ids);
+
+        if (sp->priority)
+            virBufferAsprintf(buf, " priority='%d'", sp->priority);
+        virBufferAddLit(buf, "/>\n");
+    }
+
+    for (i = 0; i < def->cputune.niothreadsched; i++) {
+        virDomainThreadSchedParamPtr sp = &def->cputune.iothreadsched[i];
+        char *ids = NULL;
+
+        if (!(ids = virBitmapFormat(sp->ids)))
+            goto error;
+        virBufferAsprintf(buf, "<iothreadsched iothreads='%s' scheduler='%s'",
+                          ids, virDomainThreadSchedTypeToString(sp->scheduler));
+        VIR_FREE(ids);
+
+        if (sp->priority)
+            virBufferAsprintf(buf, " priority='%d'", sp->priority);
+        virBufferAddLit(buf, "/>\n");
     }
 
     virBufferAdjustIndent(buf, -2);

@@ -310,6 +310,7 @@ mymain(void)
     DO_TEST("blkiotune-device");
     DO_TEST("cputune");
     DO_TEST("cputune-zero-shares");
+    DO_TEST_DIFFERENT("cputune-iothreadsched");
     DO_TEST("cputune-numatune");
     DO_TEST("vcpu-placement-static");
 

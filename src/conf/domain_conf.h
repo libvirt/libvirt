@@ -1810,6 +1810,24 @@ typedef enum {
     VIR_DOMAIN_CPU_PLACEMENT_MODE_LAST
 } virDomainCpuPlacementMode;
 
+typedef enum {
+    VIR_DOMAIN_THREAD_SCHED_OTHER = 0,
+    VIR_DOMAIN_THREAD_SCHED_BATCH,
+    VIR_DOMAIN_THREAD_SCHED_IDLE,
+    VIR_DOMAIN_THREAD_SCHED_FIFO,
+    VIR_DOMAIN_THREAD_SCHED_RR,
+
+    VIR_DOMAIN_THREAD_SCHED_LAST
+} virDomainThreadSched;
+
+typedef struct _virDomainThreadSchedParam virDomainThreadSchedParam;
+typedef virDomainThreadSchedParam *virDomainThreadSchedParamPtr;
+struct _virDomainThreadSchedParam {
+    virBitmapPtr ids;
+    virDomainThreadSched scheduler;
+    int priority;
+};
+
 typedef struct _virDomainTimerCatchupDef virDomainTimerCatchupDef;
 typedef virDomainTimerCatchupDef *virDomainTimerCatchupDefPtr;
 struct _virDomainTimerCatchupDef {
@@ -1997,6 +2015,11 @@ struct _virDomainCputune {
     virDomainVcpuPinDefPtr emulatorpin;
     size_t niothreadspin;
     virDomainVcpuPinDefPtr *iothreadspin;
+
+    size_t nvcpusched;
+    virDomainThreadSchedParamPtr vcpusched;
+    size_t niothreadsched;
+    virDomainThreadSchedParamPtr iothreadsched;
 };
 
 typedef struct _virDomainBlkiotune virDomainBlkiotune;
@@ -2854,6 +2877,7 @@ VIR_ENUM_DECL(virDomainRNGModel)
 VIR_ENUM_DECL(virDomainRNGBackend)
 VIR_ENUM_DECL(virDomainTPMModel)
 VIR_ENUM_DECL(virDomainTPMBackend)
+VIR_ENUM_DECL(virDomainThreadSched)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)
 VIR_ENUM_DECL(virDomainNostateReason)
