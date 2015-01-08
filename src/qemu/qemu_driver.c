@@ -4620,6 +4620,11 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
             }
 
             virCgroupFree(&cgroup_vcpu);
+
+            if (qemuProcessSetSchedParams(i, cpupids[i],
+                                          vm->def->cputune.nvcpusched,
+                                          vm->def->cputune.vcpusched) < 0)
+                goto cleanup;
         }
     } else {
         for (i = oldvcpus - 1; i >= nvcpus; i--) {

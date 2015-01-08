@@ -1,7 +1,7 @@
 /*
  * qemu_process.c: QEMU process management
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2574,6 +2574,57 @@ qemuProcessSetIOThreadsAffinity(virDomainObjPtr vm)
     return ret;
 }
 
+/* Set Scheduler parameters for vCPU or I/O threads. */
+int
+qemuProcessSetSchedParams(int id,
+                          pid_t pid,
+                          size_t nsp,
+                          virDomainThreadSchedParamPtr sp)
+{
+    bool val = false;
+    size_t i = 0;
+    virDomainThreadSchedParamPtr s = NULL;
+
+    for (i = 0; i < nsp; i++) {
+        if (virBitmapGetBit(sp[i].ids, id, &val) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cannot get bit from bitmap"));
+        }
+        if (val) {
+            s = &sp[i];
+            break;
+        }
+    }
+
+    if (!s)
+        return 0;
+
+    return virProcessSetScheduler(pid, s->scheduler, s->priority);
+}
+
+static int
+qemuProcessSetSchedulers(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    size_t i = 0;
+
+    for (i = 0; i < priv->nvcpupids; i++) {
+        if (qemuProcessSetSchedParams(i, priv->vcpupids[i],
+                                      vm->def->cputune.nvcpusched,
+                                      vm->def->cputune.vcpusched) < 0)
+            return -1;
+    }
+
+    for (i = 0; i < priv->niothreadpids; i++) {
+        if (qemuProcessSetSchedParams(i + 1, priv->iothreadpids[i],
+                                      vm->def->cputune.niothreadsched,
+                                      vm->def->cputune.iothreadsched) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
 static int
 qemuProcessInitPasswords(virConnectPtr conn,
                          virQEMUDriverPtr driver,
@@ -4867,6 +4918,10 @@ int qemuProcessStart(virConnectPtr conn,
 
     VIR_DEBUG("Setting affinity of IOThread threads");
     if (qemuProcessSetIOThreadsAffinity(vm) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Setting scheduler parameters");
+    if (qemuProcessSetSchedulers(vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting any required VM passwords");
