@@ -670,11 +670,8 @@ parallelsDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int 
     parallelsDriverLock(privconn);
     if ((def = virDomainDefParseString(xml, privconn->caps, privconn->xmlopt,
                                        1 << VIR_DOMAIN_VIRT_PARALLELS,
-                                       VIR_DOMAIN_XML_INACTIVE)) == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Can't parse XML desc"));
+                                       VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
-    }
 
     olddom = virDomainObjListFindByUUID(privconn->domains, def->uuid);
     if (olddom == NULL) {
