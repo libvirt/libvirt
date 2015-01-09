@@ -17212,6 +17212,7 @@ virDomainNetIpsFormat(virBufferPtr buf, virDomainNetIpDefPtr *ips, size_t nips)
             familyStr = "ipv4";
         virBufferAsprintf(buf, "<ip address='%s'",
                           ipStr);
+        VIR_FREE(ipStr);
         if (familyStr)
             virBufferAsprintf(buf, " family='%s'", familyStr);
         if (ips[i]->prefix != 0)
