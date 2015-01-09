@@ -17196,7 +17196,7 @@ virDomainFSDefFormat(virBufferPtr buf,
     return 0;
 }
 
-static void
+static int
 virDomainNetIpsFormat(virBufferPtr buf, virDomainNetIpDefPtr *ips, size_t nips)
 {
     size_t i;
@@ -17206,6 +17206,9 @@ virDomainNetIpsFormat(virBufferPtr buf, virDomainNetIpDefPtr *ips, size_t nips)
         virSocketAddrPtr address = &ips[i]->address;
         char *ipStr = virSocketAddrFormat(address);
         const char *familyStr = NULL;
+
+        if (!ipStr)
+            return -1;
         if (VIR_SOCKET_ADDR_IS_FAMILY(address, AF_INET6))
             familyStr = "ipv6";
         else if (VIR_SOCKET_ADDR_IS_FAMILY(address, AF_INET))
@@ -17219,6 +17222,7 @@ virDomainNetIpsFormat(virBufferPtr buf, virDomainNetIpDefPtr *ips, size_t nips)
             virBufferAsprintf(buf, " prefix='%u'", ips[i]->prefix);
         virBufferAddLit(buf, "/>\n");
     }
+    return 0;
 }
 
 static int
@@ -17387,8 +17391,9 @@ virDomainHostdevDefFormatCaps(virBufferPtr buf,
     virBufferAddLit(buf, "</source>\n");
 
     if (def->source.caps.type == VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET) {
-        virDomainNetIpsFormat(buf, def->source.caps.u.net.ips,
-                              def->source.caps.u.net.nips);
+        if (virDomainNetIpsFormat(buf, def->source.caps.u.net.ips,
+                                 def->source.caps.u.net.nips) < 0)
+            return -1;
         if (virDomainNetRoutesFormat(buf, def->source.caps.u.net.routes,
                                      def->source.caps.u.net.nroutes) < 0)
             return -1;
@@ -17780,7 +17785,8 @@ virDomainNetDefFormat(virBufferPtr buf,
             return -1;
     }
 
-    virDomainNetIpsFormat(buf, def->ips, def->nips);
+    if (virDomainNetIpsFormat(buf, def->ips, def->nips) < 0)
+        return -1;
     if (virDomainNetRoutesFormat(buf, def->routes, def->nroutes) < 0)
         return -1;
 
