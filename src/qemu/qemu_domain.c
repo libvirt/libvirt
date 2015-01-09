@@ -1200,8 +1200,13 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         }
     }
 
-    if (virDomainDeviceDefCheckUnsupportedMemoryDevice(dev) < 0)
+    if (dev->type == VIR_DOMAIN_DEVICE_MEMORY &&
+        def->mem.max_memory == 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("maxMemory has to be specified when using memory "
+                         "devices "));
         goto cleanup;
+    }
 
     ret = 0;
 
@@ -2958,5 +2963,24 @@ qemuDomainAlignMemorySizes(virDomainDefPtr def)
      * We'll take the "traditional" path and round it to 1MiB*/
     def->mem.max_memory = VIR_ROUND_UP(def->mem.max_memory, 1024);
 
+    /* Align memory module sizes */
+    for (i = 0; i < def->nmems; i++)
+        qemuDomainMemoryDeviceAlignSize(def->mems[i]);
+
     return 0;
+}
+
+
+/**
+ * qemuDomainMemoryDeviceAlignSize:
+ * @mem: memory device definition object
+ *
+ * Aligns the size of the memory module as qemu enforces it. The size is updated
+ * inplace. Default rounding is now to 1 MiB (qemu requires rouding to page,
+ * size so this should be safe).
+ */
+void
+qemuDomainMemoryDeviceAlignSize(virDomainMemoryDefPtr mem)
+{
+    mem->size = VIR_ROUND_UP(mem->size, 1024);
 }

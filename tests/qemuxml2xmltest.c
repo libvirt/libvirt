@@ -430,6 +430,7 @@ mymain(void)
 
     DO_TEST("memory-hotplug");
     DO_TEST("memory-hotplug-nonuma");
+    DO_TEST("memory-hotplug-dimm");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

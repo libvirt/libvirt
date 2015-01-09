@@ -1222,6 +1222,10 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
         if (virAsprintf(&def->tpm->info.alias, "tpm%d", 0) < 0)
             return -1;
     }
+    for (i = 0; i < def->nmems; i++) {
+        if (virAsprintf(&def->mems[i]->info.alias, "dimm%zu", i) < 0)
+            return -1;
+    }
 
     return 0;
 }
@@ -4612,8 +4616,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     virDomainHugePagePtr hugepage = NULL;
     virDomainNumatuneMemMode mode;
     const long system_page_size = virGetSystemPageSizeKB();
-    virNumaMemAccess memAccess = virDomainNumaGetNodeMemoryAccessMode(def->numa, guestNode);
-
+    virNumaMemAccess memAccess = VIR_NUMA_MEM_ACCESS_DEFAULT;
     size_t i;
     char *mem_path = NULL;
     virBitmapPtr nodemask = NULL;
@@ -4623,9 +4626,19 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     *backendProps = NULL;
     *backendType = NULL;
 
+    /* memory devices could provide a invalid guest node */
+    if (guestNode >= virDomainNumaGetNodeCount(def->numa)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("can't add memory backend for guest node '%d' as "
+                         "the guest has only '%zu' NUMA nodes configured"),
+                       guestNode, virDomainNumaGetNodeCount(def->numa));
+        return -1;
+    }
+
     if (!(props = virJSONValueNewObject()))
         return -1;
 
+    memAccess = virDomainNumaGetNodeMemoryAccessMode(def->numa, guestNode);
     mode = virDomainNumatuneGetMode(def->numa, guestNode);
 
     if (pagesize == 0 || pagesize != system_page_size) {
@@ -4821,6 +4834,95 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
     virJSONValueFree(props);
 
     return ret;
+}
+
+
+static char *
+qemuBuildMemoryDimmBackendStr(virDomainMemoryDefPtr mem,
+                              virDomainDefPtr def,
+                              virQEMUCapsPtr qemuCaps,
+                              virQEMUDriverConfigPtr cfg)
+{
+    virJSONValuePtr props = NULL;
+    char *alias = NULL;
+    const char *backendType;
+    char *ret = NULL;
+
+    if (!mem->info.alias) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("memory device alias is not assigned"));
+        return NULL;
+    }
+
+    if (virAsprintf(&alias, "mem%s", mem->info.alias) < 0)
+        goto cleanup;
+
+    if (qemuBuildMemoryBackendStr(mem->size, mem->pagesize,
+                                  mem->targetNode, mem->sourceNodes, NULL,
+                                  def, qemuCaps, cfg,
+                                  &backendType, &props, true) < 0)
+        goto cleanup;
+
+    ret = qemuBuildObjectCommandlineFromJSON(backendType, alias, props);
+
+ cleanup:
+    VIR_FREE(alias);
+    virJSONValueFree(props);
+
+    return ret;
+}
+
+
+static char *
+qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem,
+                         virQEMUCapsPtr qemuCaps)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (!mem->info.alias) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing alias for memory device"));
+        return NULL;
+    }
+
+    switch ((virDomainMemoryModel) mem->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PC_DIMM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this qemu doesn't support the pc-dimm device"));
+            return NULL;
+        }
+
+        if (mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM &&
+            mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("only 'dimm' addresses are supported for the "
+                             "pc-dimm device"));
+            return NULL;
+        }
+
+        virBufferAsprintf(&buf, "pc-dimm,node=%d,memdev=mem%s,id=%s",
+                          mem->targetNode, mem->info.alias, mem->info.alias);
+
+        if (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
+            virBufferAsprintf(&buf, ",slot=%d", mem->info.addr.dimm.slot);
+            virBufferAsprintf(&buf, ",base=%llu", mem->info.addr.dimm.base);
+        }
+
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("invalid memory device type"));
+        break;
+
+    }
+
+    if (virBufferCheckError(&buf) < 0)
+        return NULL;
+
+    return virBufferContentAndReset(&buf);
 }
 
 
@@ -8602,9 +8704,31 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (virDomainNumaGetNodeCount(def->numa))
+    if (virDomainNumaGetNodeCount(def->numa)) {
         if (qemuBuildNumaArgStr(cfg, def, cmd, qemuCaps, nodeset) < 0)
             goto error;
+
+        /* memory hotplug requires NUMA to be enabled - we already checked
+         * that memory devices are present only when NUMA is */
+        for (i = 0; i < def->nmems; i++) {
+            char *backStr;
+            char *dimmStr;
+
+            if (!(backStr = qemuBuildMemoryDimmBackendStr(def->mems[i], def,
+                                                          qemuCaps, cfg)))
+                goto error;
+
+            if (!(dimmStr = qemuBuildMemoryDeviceStr(def->mems[i], qemuCaps))) {
+                VIR_FREE(backStr);
+                goto error;
+            }
+
+            virCommandAddArgList(cmd, "-object", backStr, "-device", dimmStr, NULL);
+
+            VIR_FREE(backStr);
+            VIR_FREE(dimmStr);
+        }
+    }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_UUID))
         virCommandAddArgList(cmd, "-uuid", uuid, NULL);
