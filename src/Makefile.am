@@ -1015,7 +1015,7 @@ XENCONFIG_SOURCES =						\
 		xenconfig/xen_sxpr.c xenconfig/xen_sxpr.h	\
 		xenconfig/xen_xm.c xenconfig/xen_xm.h		\
 		xenconfig/xen_xl.c xenconfig/xen_xl.h		\
-		xenconfig/xen_xl_disk.h
+		xenconfig/xen_xl_disk_i.h
 
 pkgdata_DATA =	cpu/cpu_map.xml
 
