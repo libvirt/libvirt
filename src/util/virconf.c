@@ -887,8 +887,10 @@ virConfSetValue(virConfPtr conf,
 {
     virConfEntryPtr cur, prev = NULL;
 
-    if (value && value->type == VIR_CONF_STRING && value->str == NULL)
+    if (value && value->type == VIR_CONF_STRING && value->str == NULL) {
+        virConfFreeValue(value);
         return -1;
+    }
 
     cur = conf->entries;
     while (cur != NULL) {
