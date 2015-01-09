@@ -2953,13 +2953,20 @@ Configure whether I<pool> should automatically start at boot.
 Build a given pool.
 
 Options I<--overwrite> and I<--no-overwrite> can only be used for
-B<pool-build> a filesystem pool. If neither of them is specified,
-B<pool-build> on a filesystem pool only makes the directory; If
+B<pool-build> a filesystem or disk pool. For a file system pool if
+neither of them is specified, B<pool-build> makes the directory. If
 I<--no-overwrite> is specified, it probes to determine if a
 filesystem already exists on the target device, returning an error
-if exists, or using mkfs to format the target device if not; If
-I<--overwrite> is specified, mkfs is always executed, any existed
-data on the target device is overwritten unconditionally.
+if exists, or using mkfs to format the target device if not. If
+I<--overwrite> is specified, mkfs is always executed and any existing
+data on the target device is overwritten unconditionally. For a disk
+pool, if neither of them is specified or I<--no-overwrite> is specified,
+B<pool-build> will use 'parted --print' in order to determine if the
+disk already has a label before attempting to create one. Only if a disk
+does not already have one will a label be created. If I<--overwrite> is
+specified or it's been determined that the disk doesn't already have one,
+'parted mklabel' will be used to create a label of the format specified
+by the pool source format type or "dos" if not specified for the pool.
 
 =item B<pool-create> I<file>
 
@@ -3939,7 +3946,7 @@ Alternatively report bugs to your software distributor / vendor.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2005, 2007-2014 Red Hat, Inc., and the authors listed in the
+Copyright (C) 2005, 2007-2015 Red Hat, Inc., and the authors listed in the
 libvirt AUTHORS file.
 
 =head1 LICENSE
