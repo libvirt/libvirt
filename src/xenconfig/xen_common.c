@@ -1812,8 +1812,7 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def, int xendConfigVersion)
 {
     int hvm = STREQ(def->os.type, "hvm") ? 1 : 0;
 
-    if (def->ngraphics == 1 &&
-        def->graphics[0]->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+    if (def->ngraphics == 1) {
         if (hvm || (xendConfigVersion < XEND_CONFIG_MIN_VERS_PVFB_NEWCONF)) {
             if (def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
                 if (xenConfigSetInt(conf, "sdl", 1) < 0)

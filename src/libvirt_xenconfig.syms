@@ -16,10 +16,6 @@ xenParseSxprChar;
 xenParseSxprSound;
 xenParseSxprString;
 
-#xenconfig/xen_xl.h
-xenFormatXL;
-xenParseXL;
-
 # xenconfig/xen_xm.h
 xenFormatXM;
 xenParseXM;
