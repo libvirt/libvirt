@@ -911,6 +911,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         for (i = 0; i < net->nips; i++) {
             char *ipStr = virSocketAddrFormat(&net->ips[i]->address);
             virCommandAddArgList(cmd, "--ipadd", ipStr, NULL);
+            VIR_FREE(ipStr);
         }
     }
 
