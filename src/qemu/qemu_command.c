@@ -6637,7 +6637,7 @@ qemuBuildSmpArgStr(const virDomainDef *def,
 
 static int
 qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
-                    const virDomainDef *def,
+                    virDomainDefPtr def,
                     virCommandPtr cmd,
                     virQEMUCapsPtr qemuCaps,
                     virBitmapPtr nodeset)
