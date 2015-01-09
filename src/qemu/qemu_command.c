@@ -4502,6 +4502,243 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
 }
 
 
+/**
+ * qemuBuildMemoryBackendStr:
+ * @size: size of the memory device in kibibytes
+ * @pagesize: size of the requested memory page in KiB, 0 for default
+ * @guestNode: NUMA node in the guest that the memory object will be attached to
+ * @hostNodes: map of host nodes to alloc the memory in, NULL for default
+ * @autoNodeset: fallback nodeset in case of automatic numa placement
+ * @def: domain definition object
+ * @qemuCaps: qemu capabilities object
+ * @cfg: qemu driver config object
+ * @aliasPrefix: prefix string of the alias (to allow for multiple frontents)
+ * @id: index of the device (to construct the alias)
+ * @backendStr: returns the object string
+ *
+ * Formats the configuration string for the memory device backend according
+ * to the configuration. @pagesize and @hostNodes can be used to override the
+ * default source configuration, both are optional.
+ *
+ * Returns 0 on success, 1 if only the implicit memory-device-ram with no
+ * other configuration was used (to detect legacy configurations). Returns
+ * -1 in case of an error.
+ */
+static int
+qemuBuildMemoryBackendStr(unsigned long long size,
+                          unsigned long long pagesize,
+                          int guestNode,
+                          virBitmapPtr userNodeset,
+                          virBitmapPtr autoNodeset,
+                          virDomainDefPtr def,
+                          virQEMUCapsPtr qemuCaps,
+                          virQEMUDriverConfigPtr cfg,
+                          const char *aliasPrefix,
+                          size_t id,
+                          char **backendStr,
+                          bool force)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virDomainHugePagePtr master_hugepage = NULL;
+    virDomainHugePagePtr hugepage = NULL;
+    virDomainNumatuneMemMode mode;
+    const long system_page_size = sysconf(_SC_PAGESIZE) / 1024;
+    virMemAccess memAccess = def->cpu->cells[guestNode].memAccess;
+    size_t i;
+    char *mem_path = NULL;
+    char *nodemask = NULL;
+    char *tmpmask = NULL, *next = NULL;
+    int ret = -1;
+
+    *backendStr = NULL;
+
+    mode = virDomainNumatuneGetMode(def->numatune, guestNode);
+
+    if (pagesize == 0 || pagesize != system_page_size) {
+        /* Find the huge page size we want to use */
+        for (i = 0; i < def->mem.nhugepages; i++) {
+            bool thisHugepage = false;
+
+            hugepage = &def->mem.hugepages[i];
+
+            if (!hugepage->nodemask) {
+                master_hugepage = hugepage;
+                continue;
+            }
+
+            if (virBitmapGetBit(hugepage->nodemask, guestNode,
+                                &thisHugepage) < 0) {
+                /* Ignore this error. It's not an error after all. Well,
+                 * the nodemask for this <page/> can contain lower NUMA
+                 * nodes than we are querying in here. */
+                continue;
+            }
+
+            if (thisHugepage) {
+                /* Hooray, we've found the page size */
+                break;
+            }
+        }
+
+        if (i == def->mem.nhugepages) {
+            /* We have not found specific huge page to be used with this
+             * NUMA node. Use the generic setting then (<page/> without any
+             * @nodemask) if possible. */
+            hugepage = master_hugepage;
+        }
+
+        if (hugepage)
+            pagesize = hugepage->size;
+
+        if (hugepage && hugepage->size == system_page_size) {
+            /* However, if user specified to use "huge" page
+             * of regular system page size, it's as if they
+             * hasn't specified any huge pages at all. */
+            hugepage = NULL;
+        }
+    }
+
+    if (hugepage) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this qemu doesn't support hugepage memory backing"));
+            goto cleanup;
+        }
+
+        /* Now lets see, if the huge page we want to use is even mounted
+         * and ready to use */
+        for (i = 0; i < cfg->nhugetlbfs; i++) {
+            if (cfg->hugetlbfs[i].size == hugepage->size)
+                break;
+        }
+
+        if (i == cfg->nhugetlbfs) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to find any usable hugetlbfs mount for %llu KiB"),
+                           pagesize);
+            goto cleanup;
+        }
+
+        VIR_FREE(mem_path);
+        if (!(mem_path = qemuGetHugepagePath(&cfg->hugetlbfs[i])))
+            goto cleanup;
+
+        virBufferAsprintf(&buf, "memory-backend-file,prealloc=yes,mem-path=%s",
+                          mem_path);
+
+        switch (memAccess) {
+        case VIR_MEM_ACCESS_SHARED:
+            virBufferAddLit(&buf, ",share=on");
+            break;
+
+        case VIR_MEM_ACCESS_PRIVATE:
+            virBufferAddLit(&buf, ",share=off");
+            break;
+
+        case VIR_MEM_ACCESS_DEFAULT:
+        case VIR_MEM_ACCESS_LAST:
+            break;
+        }
+    } else {
+        if (memAccess) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Shared memory mapping is supported "
+                             "only with hugepages"));
+            goto cleanup;
+        }
+
+        virBufferAddLit(&buf, "memory-backend-ram");
+    }
+
+    virBufferAsprintf(&buf, ",size=%lluM,id=%s%zu", size / 1024,
+                      aliasPrefix, id);
+
+    if (userNodeset) {
+        if (!(nodemask = virBitmapFormat(userNodeset)))
+            goto cleanup;
+    } else {
+        if (virDomainNumatuneMaybeFormatNodeset(def->numatune, autoNodeset,
+                                                &nodemask, guestNode) < 0)
+            goto cleanup;
+    }
+
+    if (nodemask) {
+        if (strchr(nodemask, ',') &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disjoint NUMA node ranges are not supported "
+                             "with this QEMU"));
+            goto cleanup;
+        }
+
+        for (tmpmask = nodemask; tmpmask; tmpmask = next) {
+            if ((next = strchr(tmpmask, ',')))
+                *(next++) = '\0';
+            virBufferAddLit(&buf, ",host-nodes=");
+            virBufferAdd(&buf, tmpmask, -1);
+        }
+
+        virBufferAsprintf(&buf, ",policy=%s",  qemuNumaPolicyTypeToString(mode));
+    }
+
+    if (virBufferCheckError(&buf) < 0)
+        goto cleanup;
+
+    *backendStr = virBufferContentAndReset(&buf);
+
+    if (!hugepage) {
+        if ((nodemask || force) &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this qemu doesn't support the "
+                             "memory-backend-ram object"));
+                goto cleanup;
+        }
+
+        /* report back that using the new backend is not necessary to achieve
+         * the desired configuration */
+        if (!nodemask) {
+            ret = 1;
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    VIR_FREE(nodemask);
+    VIR_FREE(mem_path);
+
+    return ret;
+}
+
+
+static int
+qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
+                              virQEMUCapsPtr qemuCaps,
+                              virQEMUDriverConfigPtr cfg,
+                              size_t cell,
+                              virBitmapPtr auto_nodeset,
+                              char **backendStr)
+{
+    int ret;
+
+    ret = qemuBuildMemoryBackendStr(def->cpu->cells[cell].mem, 0, cell,
+                                    NULL, auto_nodeset,
+                                    def, qemuCaps, cfg,
+                                    "ram-node", cell,
+                                    backendStr, false);
+
+    if (ret == 1) {
+        VIR_FREE(*backendStr);
+        return 0;
+    }
+
+    return ret;
+}
+
+
 char *
 qemuBuildNicStr(virDomainNetDefPtr net,
                 const char *prefix,
@@ -6796,14 +7033,12 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
                     virDomainDefPtr def,
                     virCommandPtr cmd,
                     virQEMUCapsPtr qemuCaps,
-                    virBitmapPtr nodeset)
+                    virBitmapPtr auto_nodeset)
 {
-    size_t i, j;
+    size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    virDomainHugePagePtr master_hugepage = NULL;
     char *cpumask = NULL, *tmpmask = NULL, *next = NULL;
-    char *nodemask = NULL;
-    char *mem_path = NULL;
+    char *backendStr = NULL;
     int ret = -1;
     const long system_page_size = sysconf(_SC_PAGESIZE) / 1024;
 
@@ -6825,7 +7060,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    if (!virDomainNumatuneNodesetIsAvailable(def->numatune, nodeset))
+    if (!virDomainNumatuneNodesetIsAvailable(def->numatune, auto_nodeset))
         goto cleanup;
 
     for (i = 0; i < def->mem.nhugepages; i++) {
@@ -6853,13 +7088,11 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     }
 
     for (i = 0; i < def->cpu->ncells; i++) {
-        virDomainHugePagePtr hugepage = NULL;
         unsigned long long cellmem = VIR_DIV_UP(def->cpu->cells[i].mem, 1024);
         def->cpu->cells[i].mem = cellmem * 1024;
-        virMemAccess memAccess = def->cpu->cells[i].memAccess;
 
         VIR_FREE(cpumask);
-        VIR_FREE(nodemask);
+        VIR_FREE(backendStr);
 
         if (!(cpumask = virBitmapFormat(def->cpu->cells[i].cpumask)))
             goto cleanup;
@@ -6872,133 +7105,19 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
             goto cleanup;
         }
 
+
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
-            virDomainNumatuneMemMode mode;
-            const char *policy = NULL;
-
-            mode = virDomainNumatuneGetMode(def->numatune, i);
-            policy = qemuNumaPolicyTypeToString(mode);
-
-            /* Find the huge page size we want to use */
-            for (j = 0; j < def->mem.nhugepages; j++) {
-                bool thisHugepage = false;
-
-                hugepage = &def->mem.hugepages[j];
-
-                if (!hugepage->nodemask) {
-                    master_hugepage = hugepage;
-                    continue;
-                }
-
-                if (virBitmapGetBit(hugepage->nodemask, i, &thisHugepage) < 0) {
-                    /* Ignore this error. It's not an error after all. Well,
-                     * the nodemask for this <page/> can contain lower NUMA
-                     * nodes than we are querying in here. */
-                    continue;
-                }
-
-                if (thisHugepage) {
-                    /* Hooray, we've found the page size */
-                    break;
-                }
-            }
-
-            if (j == def->mem.nhugepages) {
-                /* We have not found specific huge page to be used with this
-                 * NUMA node. Use the generic setting then (<page/> without any
-                 * @nodemask) if possible. */
-                hugepage = master_hugepage;
-            }
-
-            if (hugepage && hugepage->size == system_page_size) {
-                /* However, if user specified to use "huge" page
-                 * of regular system page size, it's as if they
-                 * hasn't specified any huge pages at all. */
-                hugepage = NULL;
-            }
-
-            if (hugepage) {
-                /* Now lets see, if the huge page we want to use is even mounted
-                 * and ready to use */
-
-                for (j = 0; j < cfg->nhugetlbfs; j++) {
-                    if (cfg->hugetlbfs[j].size == hugepage->size)
-                        break;
-                }
-
-                if (j == cfg->nhugetlbfs) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Unable to find any usable hugetlbfs mount for %llu KiB"),
-                                   hugepage->size);
-                    goto cleanup;
-                }
-
-                VIR_FREE(mem_path);
-                if (!(mem_path = qemuGetHugepagePath(&cfg->hugetlbfs[j])))
-                    goto cleanup;
-
-                virBufferAsprintf(&buf,
-                                  "memory-backend-file,prealloc=yes,mem-path=%s",
-                                  mem_path);
-
-                switch (memAccess) {
-                case VIR_MEM_ACCESS_SHARED:
-                    virBufferAddLit(&buf, ",share=on");
-                    break;
-
-                case VIR_MEM_ACCESS_PRIVATE:
-                    virBufferAddLit(&buf, ",share=off");
-                    break;
-
-                case VIR_MEM_ACCESS_DEFAULT:
-                case VIR_MEM_ACCESS_LAST:
-                    break;
-                }
-
-            } else {
-                if (memAccess) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("Shared memory mapping is supported "
-                                     "only with hugepages"));
-                    goto cleanup;
-                }
-                virBufferAddLit(&buf, "memory-backend-ram");
-            }
-
-            virBufferAsprintf(&buf, ",size=%lluM,id=ram-node%zu", cellmem, i);
-
-            if (virDomainNumatuneMaybeFormatNodeset(def->numatune, nodeset,
-                                                    &nodemask, i) < 0)
+            if (qemuBuildMemoryCellBackendStr(def, qemuCaps, cfg, i,
+                                              auto_nodeset, &backendStr) < 0)
                 goto cleanup;
 
-            if (nodemask) {
-                if (strchr(nodemask, ',') &&
-                    !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("disjoint NUMA node ranges are not supported "
-                                     "with this QEMU"));
-                    goto cleanup;
-                }
-
-                for (tmpmask = nodemask; tmpmask; tmpmask = next) {
-                    if ((next = strchr(tmpmask, ',')))
-                        *(next++) = '\0';
-                    virBufferAddLit(&buf, ",host-nodes=");
-                    virBufferAdd(&buf, tmpmask, -1);
-                }
-
-                virBufferAsprintf(&buf, ",policy=%s", policy);
-            }
-
-            if (hugepage || nodemask) {
+            if (backendStr) {
                 virCommandAddArg(cmd, "-object");
-                virCommandAddArgBuffer(cmd, &buf);
-            } else {
-                virBufferFreeAndReset(&buf);
+                virCommandAddArg(cmd, backendStr);
             }
         } else {
-            if (memAccess) {
+            if (def->cpu->cells[i].memAccess) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Shared memory mapping is not supported "
                                  "with this QEMU"));
@@ -7016,7 +7135,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
             virBufferAdd(&buf, tmpmask, -1);
         }
 
-        if (hugepage || nodemask)
+        if (backendStr)
             virBufferAsprintf(&buf, ",memdev=ram-node%zu", i);
         else
             virBufferAsprintf(&buf, ",mem=%llu", cellmem);
@@ -7027,8 +7146,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
 
  cleanup:
     VIR_FREE(cpumask);
-    VIR_FREE(nodemask);
-    VIR_FREE(mem_path);
+    VIR_FREE(backendStr);
     virBufferFreeAndReset(&buf);
     return ret;
 }
