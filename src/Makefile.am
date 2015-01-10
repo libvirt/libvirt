@@ -1005,6 +1005,10 @@ XENCONFIG_SOURCES =						\
 		xenconfig/xen_common.c xenconfig/xen_common.h   \
 		xenconfig/xen_sxpr.c xenconfig/xen_sxpr.h	\
 		xenconfig/xen_xm.c xenconfig/xen_xm.h
+if WITH_LIBXL
+XENCONFIG_SOURCES +=						\
+		xenconfig/xen_xl.c xenconfig/xen_xl.h
+endif WITH_LIBXL
 
 pkgdata_DATA =	cpu/cpu_map.xml
 
@@ -1061,6 +1065,7 @@ endif WITH_VMX
 if WITH_XENCONFIG
 noinst_LTLIBRARIES += libvirt_xenconfig.la
 libvirt_la_BUILT_LIBADD += libvirt_xenconfig.la
+libvirt_la_LIBADD += $(LIBXL_LIBS)
 libvirt_xenconfig_la_CFLAGS = \
 		-I$(srcdir)/conf $(AM_CFLAGS)
 libvirt_xenconfig_la_SOURCES = $(XENCONFIG_SOURCES)
@@ -1978,6 +1983,12 @@ USED_SYM_FILES += $(srcdir)/libvirt_xenconfig.syms
 else ! WITH_XENCONFIG
 SYM_FILES += $(srcdir)/libvirt_xenconfig.syms
 endif ! WITH_XENCONFIG
+
+if WITH_LIBXL
+USED_SYM_FILES += $(srcdir)/libvirt_xenxlconfig.syms
+else ! WITH_LIBXL
+SYM_FILES += $(srcdir)/libvirt_xenxlconfig.syms
+endif ! WITH_LIBXL
 
 if WITH_SASL
 USED_SYM_FILES += $(srcdir)/libvirt_sasl.syms

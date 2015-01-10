@@ -891,6 +891,9 @@ if test $fail = 1; then
 fi
 
 if test "$with_libxl" = "yes"; then
+    dnl If building with libxl, use the libxl utility header and lib too
+    AC_CHECK_HEADERS([libxlutil.h])
+    LIBXL_LIBS="$LIBXL_LIBS -lxlutil"
     AC_DEFINE_UNQUOTED([WITH_LIBXL], 1, [whether libxenlight driver is enabled])
 fi
 AM_CONDITIONAL([WITH_LIBXL], [test "$with_libxl" = "yes"])
