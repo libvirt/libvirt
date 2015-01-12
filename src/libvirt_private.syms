@@ -1534,6 +1534,8 @@ virJSONValueNewNumberUlong;
 virJSONValueNewObject;
 virJSONValueNewString;
 virJSONValueNewStringLen;
+virJSONValueObjectAdd;
+virJSONValueObjectAddVArgs;
 virJSONValueObjectAppend;
 virJSONValueObjectAppendBoolean;
 virJSONValueObjectAppendNull;

@@ -85,6 +85,11 @@ int virJSONValueObjectCreate(virJSONValuePtr *obj, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
 int virJSONValueObjectCreateVArgs(virJSONValuePtr *obj, va_list args)
     ATTRIBUTE_NONNULL(1);
+int virJSONValueObjectAdd(virJSONValuePtr obj, ...)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
+int virJSONValueObjectAddVArgs(virJSONValuePtr obj, va_list args)
+    ATTRIBUTE_NONNULL(1);
+
 
 virJSONValuePtr virJSONValueNewString(const char *data);
 virJSONValuePtr virJSONValueNewStringLen(const char *data, size_t length);
