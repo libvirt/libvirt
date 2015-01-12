@@ -55,6 +55,8 @@
 # define QEMU_MIGRATION_PORT_MIN 49152
 # define QEMU_MIGRATION_PORT_MAX 49215
 
+# define QEMU_QXL_VGAMEM_DEFAULT 16 * 1024
+
 typedef struct _qemuBuildCommandLineCallbacks qemuBuildCommandLineCallbacks;
 typedef qemuBuildCommandLineCallbacks *qemuBuildCommandLineCallbacksPtr;
 struct _qemuBuildCommandLineCallbacks {

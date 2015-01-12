@@ -1178,7 +1178,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                 goto cleanup;
             }
         } else {
-            dev->data.video->vgamem = 8 * 1024;
+            dev->data.video->vgamem = QEMU_QXL_VGAMEM_DEFAULT;
         }
     }
 
