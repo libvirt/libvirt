@@ -1,7 +1,7 @@
 /*
  * qemu_driver.c: core driver methods for managing qemu guests
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -16245,6 +16245,12 @@ qemuDomainBlockCommit(virDomainPtr dom,
                        disk->dst);
         goto endjob;
     }
+    if (disk->mirror) {
+        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
+                       _("disk '%s' already in active block job"),
+                       disk->dst);
+        goto endjob;
+    }
     if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) < 0)
         goto endjob;
 
@@ -16266,12 +16272,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
         if (!(flags & VIR_DOMAIN_BLOCK_COMMIT_ACTIVE)) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("commit of '%s' active layer requires active flag"),
-                           disk->dst);
-            goto endjob;
-        }
-        if (disk->mirror) {
-            virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
-                           _("disk '%s' already in active block job"),
                            disk->dst);
             goto endjob;
         }
