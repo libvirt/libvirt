@@ -2003,6 +2003,7 @@
             <value>handle</value>
             <value>loop</value>
             <value>nbd</value>
+            <value>ploop</value>
           </choice>
         </attribute>
       </optional>

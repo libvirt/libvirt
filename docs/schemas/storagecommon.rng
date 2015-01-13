@@ -75,6 +75,7 @@
       <value>vdi</value>
       <value>fat</value>
       <value>vhd</value>
+      <value>ploop</value>
       <ref name='storageFormatBacking'/>
     </choice>
   </define>

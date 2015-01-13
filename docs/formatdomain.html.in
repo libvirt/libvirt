@@ -2626,7 +2626,8 @@
             attribute provides the format type. For example, LXC
             supports a type of "loop", with a format of "raw" or
             "nbd" with any format. QEMU supports a type of "path"
-            or "handle", but no formats.
+            or "handle", but no formats. Parallels driver supports
+            a type of "ploop" with a format of "ploop".
           </li>
         </ul>
       </dd>
