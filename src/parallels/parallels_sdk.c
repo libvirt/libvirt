@@ -1921,8 +1921,14 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         return -1;
     }
 
-    if (def->nfss != 0 ||
-        def->nsounds != 0 || def->nhostdevs != 0 ||
+    if (!IS_CT(def) && def->nfss != 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Filesystems in VMs are not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    if (def->nsounds != 0 || def->nhostdevs != 0 ||
         def->nredirdevs != 0 || def->nsmartcards != 0 ||
         def->nparallels || def->nchannels != 0 ||
         def->nleases != 0 || def->nhubs != 0) {
@@ -2354,6 +2360,60 @@ static int prlsdkCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
     return 0;
 }
 
+static int prlsdkCheckFSUnsupportedParams(virDomainFSDefPtr fs)
+{
+    if (fs->type != VIR_DOMAIN_FS_TYPE_FILE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Only file based filesystems are "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (fs->fsdriver != VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Only ploop fs driver is "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (fs->accessmode != VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Changing fs access mode is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (fs->wrpolicy != VIR_DOMAIN_FS_WRPOLICY_DEFAULT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Changing fs write policy is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (fs->format != VIR_STORAGE_FILE_PLOOP) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Only ploop disk images are "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (fs->readonly) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting readonly for filesystems is "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    if (fs->space_hard_limit || fs->space_soft_limit) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting fs quotas is not "
+                         "supported by parallels driver."));
+        return -1;
+    }
+
+    return 0;
+}
+
 static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
 {
     virDomainGraphicsDefPtr gr;
@@ -2661,6 +2721,46 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk)
 }
 
 static int
+prlsdkAddFS(PRL_HANDLE sdkdom, virDomainFSDefPtr fs)
+{
+    PRL_RESULT pret;
+    PRL_HANDLE sdkdisk = PRL_INVALID_HANDLE;
+    int ret = -1;
+
+    if (prlsdkCheckFSUnsupportedParams(fs) < 0)
+        return -1;
+
+    pret = PrlVmCfg_CreateVmDev(sdkdom, PDE_HARD_DISK, &sdkdisk);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_SetEnabled(sdkdisk, 1);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_SetConnected(sdkdisk, 1);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_SetEmulatedType(sdkdisk, PDT_USE_IMAGE_FILE);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_SetSysName(sdkdisk, fs->src);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_SetImagePath(sdkdisk, fs->src);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_SetFriendlyName(sdkdisk, fs->src);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDevHd_SetMountPoint(sdkdisk, fs->dst);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    ret = 0;
+
+ cleanup:
+    PrlHandle_Free(sdkdisk);
+    return ret;
+}
+static int
 prlsdkDoApplyConfig(PRL_HANDLE sdkdom,
                     virDomainDefPtr def)
 {
@@ -2715,6 +2815,11 @@ prlsdkDoApplyConfig(PRL_HANDLE sdkdom,
 
     for (i = 0; i < def->ndisks; i++) {
        if (prlsdkAddDisk(sdkdom, def->disks[i]) < 0)
+           goto error;
+    }
+
+    for (i = 0; i < def->nfss; i++) {
+       if (prlsdkAddFS(sdkdom, def->fss[i]) < 0)
            goto error;
     }
 
