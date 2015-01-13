@@ -3104,6 +3104,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     if (ret < 0 && priv) {
         /* priv is set right after vm is added to the list of domains
          * and there is no 'goto cleanup;' in the middle of those */
+        VIR_FREE(priv->origname);
         virPortAllocatorRelease(driver->migrationPorts, priv->nbdPort);
         priv->nbdPort = 0;
         qemuDomainRemoveInactive(driver, vm);
