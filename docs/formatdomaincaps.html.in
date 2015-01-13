@@ -44,9 +44,7 @@
     1.2.7</span>):</p>
 
 <pre>
-  <a href="/html/libvirt-libvirt-domain.html#virConnectGetDomainCapabilities">
-    <code>virConnectGetDomainCapabilities</code>
-  </a>
+<a href="/html/libvirt-libvirt-domain.html#virConnectGetDomainCapabilities">virConnectGetDomainCapabilities</a>
 </pre>
 
     <p>The root element that emulator capability XML document starts with has
