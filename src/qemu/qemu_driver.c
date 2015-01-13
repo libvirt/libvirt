@@ -4576,21 +4576,23 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
     priv = vm->privateData;
 
-    if (virCgroupNewEmulator(priv->cgroup, false, &cgroup_temp) < 0)
-        goto cleanup;
-
-    if (!(all_nodes = virNumaGetHostNodeset()))
-        goto cleanup;
-
-    if (!(all_nodes_str = virBitmapFormat(all_nodes)))
-        goto cleanup;
-
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virCgroupGetCpusetMems(cgroup_temp, &mem_mask) < 0 ||
-        virCgroupSetCpusetMems(cgroup_temp, all_nodes_str) < 0)
-        goto endjob;
+    if (flags & VIR_DOMAIN_AFFECT_LIVE && !(flags & VIR_DOMAIN_VCPU_GUEST)) {
+        if (virCgroupNewEmulator(priv->cgroup, false, &cgroup_temp) < 0)
+            goto cleanup;
+
+        if (!(all_nodes = virNumaGetHostNodeset()))
+            goto cleanup;
+
+        if (!(all_nodes_str = virBitmapFormat(all_nodes)))
+            goto cleanup;
+
+        if (virCgroupGetCpusetMems(cgroup_temp, &mem_mask) < 0 ||
+            virCgroupSetCpusetMems(cgroup_temp, all_nodes_str) < 0)
+            goto endjob;
+    }
 
     maximum = (flags & VIR_DOMAIN_VCPU_MAXIMUM) != 0;
     flags &= ~VIR_DOMAIN_VCPU_MAXIMUM;
