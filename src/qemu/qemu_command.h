@@ -69,6 +69,10 @@ struct _qemuBuildCommandLineCallbacks {
 
 extern qemuBuildCommandLineCallbacks buildCommandLineCallbacks;
 
+char *qemuBuildObjectCommandlineFromJSON(const char *type,
+                                         const char *alias,
+                                         virJSONValuePtr props);
+
 virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    virQEMUDriverPtr driver,
                                    virDomainDefPtr def,

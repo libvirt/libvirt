@@ -416,6 +416,117 @@ qemuDomainSupportsNetdev(virDomainDefPtr def,
     return virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV);
 }
 
+
+static int
+qemuBuildObjectCommandLinePropsInternal(const char *key,
+                                        const virJSONValue *value,
+                                        virBufferPtr buf,
+                                        bool nested)
+{
+    virJSONValuePtr elem;
+    virBitmapPtr bitmap = NULL;
+    ssize_t pos = -1;
+    ssize_t end;
+    size_t i;
+
+    switch ((virJSONType) value->type) {
+    case VIR_JSON_TYPE_STRING:
+        virBufferAsprintf(buf, ",%s=%s", key, value->data.string);
+        break;
+
+    case VIR_JSON_TYPE_NUMBER:
+        virBufferAsprintf(buf, ",%s=%s", key, value->data.number);
+        break;
+
+    case VIR_JSON_TYPE_BOOLEAN:
+        if (value->data.boolean)
+            virBufferAsprintf(buf, ",%s=yes", key);
+        else
+            virBufferAsprintf(buf, ",%s=no", key);
+
+        break;
+
+    case VIR_JSON_TYPE_ARRAY:
+        if (nested) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("nested -object property arrays are not supported"));
+            return -1;
+        }
+
+        if (virJSONValueGetArrayAsBitmap(value, &bitmap) == 0) {
+            while ((pos = virBitmapNextSetBit(bitmap, pos)) > -1) {
+                if ((end = virBitmapNextClearBit(bitmap, pos)) < 0)
+                    end = virBitmapLastSetBit(bitmap) + 1;
+
+                if (end - 1 > pos) {
+                    virBufferAsprintf(buf, ",%s=%zd-%zd", key, pos, end - 1);
+                    pos = end;
+                } else {
+                    virBufferAsprintf(buf, ",%s=%zd", key, pos);
+                }
+            }
+        } else {
+            /* fallback, treat the array as a non-bitmap, adding the key
+             * for each member */
+            for (i = 0; i < virJSONValueArraySize(value); i++) {
+                elem = virJSONValueArrayGet((virJSONValuePtr)value, i);
+
+                /* recurse to avoid duplicating code */
+                if (qemuBuildObjectCommandLinePropsInternal(key, elem, buf,
+                                                            true) < 0)
+                    return -1;
+            }
+        }
+        break;
+
+    case VIR_JSON_TYPE_OBJECT:
+    case VIR_JSON_TYPE_NULL:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("NULL and OBJECT JSON types can't be converted to "
+                         "commandline string"));
+        return -1;
+    }
+
+    virBitmapFree(bitmap);
+    return 0;
+}
+
+
+static int
+qemuBuildObjectCommandLineProps(const char *key,
+                                const virJSONValue *value,
+                                void *opaque)
+{
+    return qemuBuildObjectCommandLinePropsInternal(key, value, opaque, false);
+}
+
+
+char *
+qemuBuildObjectCommandlineFromJSON(const char *type,
+                                   const char *alias,
+                                   virJSONValuePtr props)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *ret = NULL;
+
+    virBufferAsprintf(&buf, "%s,id=%s", type, alias);
+
+    if (virJSONValueObjectForeachKeyValue(props,
+                                          qemuBuildObjectCommandLineProps,
+                                          &buf) < 0)
+        goto cleanup;
+
+    if (virBufferCheckError(&buf) < 0)
+        goto cleanup;
+
+    ret = virBufferContentAndReset(&buf);
+
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    return ret;
+}
+
+
 /**
  * qemuOpenVhostNet:
  * @def: domain definition
