@@ -2745,7 +2745,7 @@ prlsdkApplyConfig(virConnectPtr conn,
     ret = prlsdkDoApplyConfig(sdkdom, new);
 
     if (ret == 0) {
-        job = PrlVm_Commit(sdkdom);
+        job = PrlVm_CommitEx(sdkdom, PVCF_DETACH_HDD_BUNDLE);
         if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
             ret = -1;
     }
