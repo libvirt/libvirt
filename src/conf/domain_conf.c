@@ -8138,7 +8138,7 @@ virDomainChrDefParseXML(xmlXPathContextPtr ctxt,
 
     if (!seenTarget &&
         ((def->targetType = virDomainChrDefaultTargetType(def->deviceType)) < 0))
-        goto cleanup;
+        goto error;
 
     if (virDomainChrSourceDefParseXML(&def->source, node->children, flags, def,
                                       ctxt, vmSeclabels, nvmSeclabels) < 0)
