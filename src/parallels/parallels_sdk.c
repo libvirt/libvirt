@@ -2907,14 +2907,26 @@ prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def)
     PRL_HANDLE result = PRL_INVALID_HANDLE;
     PRL_RESULT pret;
     int ret = -1;
+    int useTemplate = 0;
+    size_t i;
 
-    if (def->nfss  && (def->nfss > 1 ||
-            def->fss[0]->type != VIR_DOMAIN_FS_TYPE_TEMPLATE)) {
-
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("There must be no more than 1 template FS for "
-                         "container creation"));
-        return -1;
+    if (def->nfss > 1) {
+        /* Check all filesystems */
+        for (i = 0; i < def->nfss; i++) {
+            if (def->fss[i]->type != VIR_DOMAIN_FS_TYPE_FILE) {
+                virReportError(VIR_ERR_INVALID_ARG, "%s",
+                               _("Unsupported filesystem type."));
+                return -1;
+            }
+        }
+    } else if (def->nfss == 1) {
+        if (def->fss[0]->type == VIR_DOMAIN_FS_TYPE_TEMPLATE) {
+            useTemplate = 1;
+        } else if (def->fss[0]->type != VIR_DOMAIN_FS_TYPE_FILE) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("Unsupported filesystem type."));
+            return -1;
+        }
     }
 
     confParam.nVmType = PVT_CT;
@@ -2928,22 +2940,24 @@ prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def)
     pret = PrlResult_GetParamByIndex(result, 0, &sdkdom);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    if (def->nfss == 1) {
+    if (useTemplate) {
         pret = PrlVmCfg_SetOsTemplate(sdkdom, def->fss[0]->src);
         prlsdkCheckRetGoto(pret, cleanup);
+
     }
 
     ret = prlsdkDoApplyConfig(sdkdom, def);
     if (ret)
         goto cleanup;
 
-    job = PrlVm_RegEx(sdkdom, "", PACF_NON_INTERACTIVE_MODE);
+    job = PrlVm_RegEx(sdkdom, "",
+                      PACF_NON_INTERACTIVE_MODE | PRNVM_PRESERVE_DISK);
     if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
         ret = -1;
 
  cleanup:
     PrlHandle_Free(sdkdom);
-    return -1;
+    return ret;
 }
 
 int
