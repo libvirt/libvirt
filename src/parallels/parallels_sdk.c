@@ -535,6 +535,55 @@ prlsdkGetDiskInfo(PRL_HANDLE prldisk,
 }
 
 static int
+prlsdkGetFSInfo(PRL_HANDLE prldisk,
+                virDomainFSDefPtr fs)
+{
+    char *buf = NULL;
+    PRL_UINT32 buflen = 0;
+    PRL_RESULT pret;
+    int ret = -1;
+
+    fs->type = VIR_DOMAIN_FS_TYPE_FILE;
+    fs->fsdriver = VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP;
+    fs->accessmode = VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH;
+    fs->wrpolicy = VIR_DOMAIN_FS_WRPOLICY_DEFAULT;
+    fs->format = VIR_STORAGE_FILE_PLOOP;
+
+    fs->readonly = false;
+    fs->symlinksResolved = false;
+
+    pret = PrlVmDev_GetImagePath(prldisk, NULL, &buflen);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    if (VIR_ALLOC_N(buf, buflen) < 0)
+        goto cleanup;
+
+    pret = PrlVmDev_GetImagePath(prldisk, buf, &buflen);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    fs->src = buf;
+    buf = NULL;
+
+    pret = PrlVmDevHd_GetMountPoint(prldisk, NULL, &buflen);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    if (VIR_ALLOC_N(buf, buflen) < 0)
+        goto cleanup;
+
+    pret = PrlVmDevHd_GetMountPoint(prldisk, buf, &buflen);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    fs->dst = buf;
+    buf = NULL;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(buf);
+    return ret;
+}
+
+static int
 prlsdkAddDomainHardDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
 {
     PRL_RESULT pret;
@@ -542,6 +591,7 @@ prlsdkAddDomainHardDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
     PRL_UINT32 i;
     PRL_HANDLE hdd = PRL_INVALID_HANDLE;
     virDomainDiskDefPtr disk = NULL;
+    virDomainFSDefPtr fs = NULL;
 
     pret = PrlVmCfg_GetHardDisksCount(sdkdom, &hddCount);
     prlsdkCheckRetGoto(pret, error);
@@ -551,10 +601,17 @@ prlsdkAddDomainHardDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
         prlsdkCheckRetGoto(pret, error);
 
         if (IS_CT(def)) {
-            /* TODO: convert info about disks in container
-             * to virDomainFSDef structs */
-            VIR_WARN("Skipping disk information for container");
 
+            if (VIR_ALLOC(fs) < 0)
+                goto error;
+
+            if (prlsdkGetFSInfo(hdd, fs) < 0)
+                goto error;
+
+            if (virDomainFSInsert(def, fs) < 0)
+                goto error;
+
+            fs = NULL;
             PrlHandle_Free(hdd);
             hdd = PRL_INVALID_HANDLE;
         } else {
@@ -564,11 +621,12 @@ prlsdkAddDomainHardDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
             if (prlsdkGetDiskInfo(hdd, disk, false) < 0)
                 goto error;
 
-            PrlHandle_Free(hdd);
-            hdd = PRL_INVALID_HANDLE;
-
             if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
                 goto error;
+
+            disk = NULL;
+            PrlHandle_Free(hdd);
+            hdd = PRL_INVALID_HANDLE;
         }
     }
 
@@ -577,6 +635,7 @@ prlsdkAddDomainHardDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
  error:
     PrlHandle_Free(hdd);
     virDomainDiskDefFree(disk);
+    virDomainFSDefFree(fs);
     return -1;
 }
 
