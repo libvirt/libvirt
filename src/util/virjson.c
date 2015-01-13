@@ -99,6 +99,8 @@ struct _virJSONParser {
  *
  * a: json object, must be non-NULL
  * A: json object, omitted if NULL
+ * m: a bitmap represented as a JSON array, must be non-NULL
+ * M: a bitmap represented as a JSON array, omitted if NULL
  *
  * The value corresponds to the selected type.
  *
@@ -241,6 +243,28 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
 
             rc = virJSONValueObjectAppend(obj, key, val);
         }   break;
+
+        case 'M':
+        case 'm': {
+            virBitmapPtr map = va_arg(args, virBitmapPtr);
+            virJSONValuePtr jsonMap;
+
+            if (!map) {
+                if (type == 'M')
+                    continue;
+
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("argument key '%s' must not have null value"),
+                               key);
+                goto cleanup;
+            }
+
+            if (!(jsonMap = virJSONValueNewArrayFromBitmap(map)))
+                goto cleanup;
+
+            if ((rc = virJSONValueObjectAppend(obj, key, jsonMap)) < 0)
+                virJSONValueFree(jsonMap);
+        } break;
 
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -940,6 +964,95 @@ virJSONValueGetBoolean(virJSONValuePtr val,
 
     *value = val->data.boolean;
     return 0;
+}
+
+
+/**
+ * virJSONValueGetArrayAsBitmap:
+ * @val: JSON array to convert to bitmap
+ * @bitmap: New bitmap is allocated filled and returned via this argument
+ *
+ * Attempts a conversion of a JSON array to a bitmap. The members of the array
+ * must be non-negative integers for the conversion to succeed. This function
+ * does not report libvirt errors so that it can be used to probe that the
+ * array can be represented as a bitmap.
+ *
+ * Returns 0 on success and fills @bitmap; -1 on error and  @bitmap is set to
+ * NULL.
+ */
+int
+virJSONValueGetArrayAsBitmap(const virJSONValue *val,
+                             virBitmapPtr *bitmap)
+{
+    int ret = -1;
+    virJSONValuePtr elem;
+    size_t i;
+    unsigned long long *elems = NULL;
+    unsigned long long maxelem = 0;
+
+    *bitmap = NULL;
+
+    if (val->type != VIR_JSON_TYPE_ARRAY)
+        return -1;
+
+    if (VIR_ALLOC_N_QUIET(elems, val->data.array.nvalues) < 0)
+        return -1;
+
+    /* first pass converts array members to numbers and finds the maximum */
+    for (i = 0; i < val->data.array.nvalues; i++) {
+        elem = val->data.array.values[i];
+
+        if (elem->type != VIR_JSON_TYPE_NUMBER ||
+            virStrToLong_ullp(elem->data.number, NULL, 10, &elems[i]) < 0)
+            goto cleanup;
+
+        if (elems[i] > maxelem)
+            maxelem = elems[i];
+    }
+
+    if (!(*bitmap = virBitmapNewQuiet(maxelem + 1)))
+        goto cleanup;
+
+    /* second pass sets the correct bits in the map */
+    for (i = 0; i < val->data.array.nvalues; i++)
+        ignore_value(virBitmapSetBit(*bitmap, elems[i]));
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(elems);
+
+    return ret;
+}
+
+
+virJSONValuePtr
+virJSONValueNewArrayFromBitmap(virBitmapPtr bitmap)
+{
+    virJSONValuePtr ret;
+    ssize_t pos = -1;
+
+    if (!(ret = virJSONValueNewArray()))
+        return NULL;
+
+    if (!bitmap)
+        return ret;
+
+    while ((pos = virBitmapNextSetBit(bitmap, pos)) > -1) {
+        virJSONValuePtr newelem;
+
+        if (!(newelem = virJSONValueNewNumberLong(pos)) ||
+            virJSONValueArrayAppend(ret, newelem) < 0) {
+            virJSONValueFree(newelem);
+            goto error;
+        }
+    }
+
+    return ret;
+
+ error:
+    virJSONValueFree(ret);
+    return NULL;
 }
 
 

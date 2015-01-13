@@ -25,6 +25,7 @@
 # define __VIR_JSON_H_
 
 # include "internal.h"
+# include "virbitmap.h"
 
 # include <stdarg.h>
 
@@ -102,6 +103,7 @@ virJSONValuePtr virJSONValueNewBoolean(int boolean);
 virJSONValuePtr virJSONValueNewNull(void);
 virJSONValuePtr virJSONValueNewArray(void);
 virJSONValuePtr virJSONValueNewObject(void);
+virJSONValuePtr virJSONValueNewArrayFromBitmap(virBitmapPtr bitmap);
 
 int virJSONValueObjectAppend(virJSONValuePtr object, const char *key, virJSONValuePtr value);
 int virJSONValueArrayAppend(virJSONValuePtr object, virJSONValuePtr value);
@@ -125,6 +127,8 @@ int virJSONValueGetNumberLong(virJSONValuePtr object, long long *value);
 int virJSONValueGetNumberUlong(virJSONValuePtr object, unsigned long long *value);
 int virJSONValueGetNumberDouble(virJSONValuePtr object, double *value);
 int virJSONValueGetBoolean(virJSONValuePtr object, bool *value);
+int virJSONValueGetArrayAsBitmap(const virJSONValue *val, virBitmapPtr *bitmap)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int virJSONValueIsNull(virJSONValuePtr object);
 
 const char *virJSONValueObjectGetString(virJSONValuePtr object, const char *key);
