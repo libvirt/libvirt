@@ -1200,6 +1200,39 @@ virJSONValueObjectIsNull(virJSONValuePtr object,
 }
 
 
+/**
+ * virJSONValueObjectForeachKeyValue:
+ * @object: JSON object to iterate
+ * @cb: callback to call on key-value pairs contained in the object
+ * @opaque: generic data for the callback
+ *
+ * Iterates all key=value pairs in @object. Iteration breaks if @cb returns
+ * negative value.
+ *
+ * Returns 0 if all elements were iterated, -2 if @cb returned negative value
+ * during iteration and -1 on generic errors.
+ */
+int
+virJSONValueObjectForeachKeyValue(virJSONValuePtr object,
+                                  virJSONValueObjectIteratorFunc cb,
+                                  void *opaque)
+{
+    size_t i;
+
+    if (object->type != VIR_JSON_TYPE_OBJECT)
+        return -1;
+
+    for (i = 0; i < object->data.object.npairs; i++) {
+        virJSONObjectPairPtr elem = object->data.object.pairs + i;
+
+        if (cb(elem->key, elem->value, opaque) < 0)
+            return -2;
+    }
+
+    return 0;
+}
+
+
 #if WITH_YAJL
 static int
 virJSONParserInsertValue(virJSONParserPtr parser,

@@ -157,4 +157,12 @@ virJSONValuePtr virJSONValueFromString(const char *jsonstring);
 char *virJSONValueToString(virJSONValuePtr object,
                            bool pretty);
 
+typedef int (*virJSONValueObjectIteratorFunc)(const char *key,
+                                              const virJSONValue *value,
+                                              void *opaque);
+
+int virJSONValueObjectForeachKeyValue(virJSONValuePtr object,
+                                      virJSONValueObjectIteratorFunc cb,
+                                      void *opaque);
+
 #endif /* __VIR_JSON_H_ */
