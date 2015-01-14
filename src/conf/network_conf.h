@@ -39,6 +39,7 @@
 # include "virmacaddr.h"
 # include "device_conf.h"
 # include "virbitmap.h"
+# include "networkcommon_conf.h"
 
 typedef enum {
     VIR_NETWORK_FORWARD_NONE   = 0,
@@ -162,25 +163,6 @@ struct _virNetworkIpDef {
     virSocketAddr bootserver;
    };
 
-typedef struct _virNetworkRouteDef virNetworkRouteDef;
-typedef virNetworkRouteDef *virNetworkRouteDefPtr;
-struct _virNetworkRouteDef {
-    char *family;               /* ipv4 or ipv6 - default is ipv4 */
-    virSocketAddr address;      /* Routed Network IP address */
-
-    /* One or the other of the following two will be used for a given
-     * Network address, but never both. The parser guarantees this.
-     * The virSocketAddrGetIpPrefix() can be used to get a
-     * valid prefix.
-     */
-    virSocketAddr netmask;      /* ipv4 - either netmask or prefix specified */
-    unsigned int prefix;        /* ipv6 - only prefix allowed */
-    bool has_prefix;            /* prefix= was specified */
-    unsigned int metric;        /* value for metric (defaults to 1) */
-    bool has_metric;            /* metric= was specified */
-    virSocketAddr gateway;      /* gateway IP address for ip-route */
-   };
-
 typedef struct _virNetworkForwardIfDef virNetworkForwardIfDef;
 typedef virNetworkForwardIfDef *virNetworkForwardIfDefPtr;
 struct _virNetworkForwardIfDef {
@@ -259,7 +241,7 @@ struct _virNetworkDef {
     virNetworkIpDefPtr ips; /* ptr to array of IP addresses on this network */
 
     size_t nroutes;
-    virNetworkRouteDefPtr routes; /* ptr to array of static routes on this interface */
+    virNetworkRouteDefPtr *routes; /* ptr to array of static routes on this interface */
 
     virNetworkDNSDef dns;   /* dns related configuration */
     virNetDevVPortProfilePtr virtPortProfile;

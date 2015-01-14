@@ -582,6 +582,17 @@ virNetworkEventLifecycleNew;
 virNetworkEventStateRegisterID;
 
 
+# conf/networkcommon_conf.h
+virNetworkRouteDefCreate;
+virNetworkRouteDefFormat;
+virNetworkRouteDefFree;
+virNetworkRouteDefGetAddress;
+virNetworkRouteDefGetGateway;
+virNetworkRouteDefGetMetric;
+virNetworkRouteDefGetPrefix;
+virNetworkRouteDefParseXML;
+
+
 # conf/node_device_conf.h
 virNodeDevCapsDefFree;
 virNodeDevCapTypeFromString;
