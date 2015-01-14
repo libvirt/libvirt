@@ -54,6 +54,41 @@ static virClassPtr virHostdevManagerClass;
 static void virHostdevManagerDispose(void *obj);
 static virHostdevManagerPtr virHostdevManagerNew(void);
 
+static int virHostdevIsPCINodeDeviceUsed(virPCIDeviceAddressPtr devAddr, void *opaque)
+{
+    virPCIDevicePtr other;
+    int ret = -1;
+    virPCIDevicePtr pci = NULL;
+    virHostdevManagerPtr hostdev_mgr = opaque;
+
+    if (!(pci = virPCIDeviceNew(devAddr->domain, devAddr->bus,
+                                devAddr->slot, devAddr->function)))
+        goto cleanup;
+
+    other = virPCIDeviceListFind(hostdev_mgr->activePCIHostdevs, pci);
+    if (other) {
+        const char *other_drvname = NULL;
+        const char *other_domname = NULL;
+        virPCIDeviceGetUsedBy(other, &other_drvname, &other_domname);
+
+        if (other_drvname && other_domname)
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("PCI device %s is in use by "
+                             "driver %s, domain %s"),
+                           virPCIDeviceGetName(pci),
+                           other_drvname, other_domname);
+        else
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("PCI device %s is in use"),
+                           virPCIDeviceGetName(pci));
+        goto cleanup;
+    }
+    ret = 0;
+ cleanup:
+    virPCIDeviceFree(pci);
+    return ret;
+}
+
 static int virHostdevManagerOnceInit(void)
 {
     if (!(virHostdevManagerClass = virClassNew(virClassForObject(),
@@ -494,6 +529,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
     int last_processed_hostdev_vf = -1;
     size_t i;
     int ret = -1;
+    virPCIDeviceAddressPtr devAddr = NULL;
 
     if (!nhostdevs)
         return 0;
@@ -518,7 +554,6 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
 
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
-        virPCIDevicePtr other;
         bool strict_acs_check = !!(flags & VIR_HOSTDEV_STRICT_ACS_CHECK);
 
         if (!virPCIDeviceIsAssignable(dev, strict_acs_check)) {
@@ -527,24 +562,22 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
                            virPCIDeviceGetName(dev));
             goto cleanup;
         }
-        /* The device is in use by other active domain if
-         * the dev is in list activePCIHostdevs.
-         */
-        if ((other = virPCIDeviceListFind(hostdev_mgr->activePCIHostdevs, dev))) {
-            const char *other_drvname;
-            const char *other_domname;
 
-            virPCIDeviceGetUsedBy(other, &other_drvname, &other_domname);
-            if (other_drvname && other_domname)
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("PCI device %s is in use by "
-                                 "driver %s, domain %s"),
-                               virPCIDeviceGetName(dev),
-                               other_drvname, other_domname);
-            else
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("PCI device %s is already in use"),
-                               virPCIDeviceGetName(dev));
+        VIR_FREE(devAddr);
+        if (!(devAddr = virPCIDeviceGetAddress(dev)))
+            goto cleanup;
+
+        /* The device is in use by other active domain if
+         * the dev is in list activePCIHostdevs. VFIO devices
+         * belonging to same iommu group cant be shared
+         * across guests.
+         */
+        if (STREQ(virPCIDeviceGetStubDriver(dev), "vfio-pci")) {
+            if (virPCIDeviceAddressIOMMUGroupIterate(devAddr,
+                                                     virHostdevIsPCINodeDeviceUsed,
+                                                     hostdev_mgr) < 0)
+                goto cleanup;
+        } else if (virHostdevIsPCINodeDeviceUsed(devAddr, hostdev_mgr)) {
             goto cleanup;
         }
     }
@@ -678,6 +711,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
     virObjectUnlock(hostdev_mgr->activePCIHostdevs);
     virObjectUnlock(hostdev_mgr->inactivePCIHostdevs);
     virObjectUnref(pcidevs);
+    VIR_FREE(devAddr);
     return ret;
 }
 
@@ -1506,29 +1540,17 @@ int
 virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr hostdev_mgr,
                                 virPCIDevicePtr pci)
 {
-    virPCIDevicePtr other;
+    virPCIDeviceAddressPtr devAddr = NULL;
     int ret = -1;
 
     virObjectLock(hostdev_mgr->activePCIHostdevs);
     virObjectLock(hostdev_mgr->inactivePCIHostdevs);
-    other = virPCIDeviceListFind(hostdev_mgr->activePCIHostdevs, pci);
-    if (other) {
-        const char *other_drvname = NULL;
-        const char *other_domname = NULL;
-        virPCIDeviceGetUsedBy(other, &other_drvname, &other_domname);
 
-        if (other_drvname && other_domname)
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("PCI device %s is still in use by "
-                             "driver %s, domain %s"),
-                           virPCIDeviceGetName(pci),
-                           other_drvname, other_domname);
-        else
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("PCI device %s is still in use"),
-                           virPCIDeviceGetName(pci));
+    if (!(devAddr = virPCIDeviceGetAddress(pci)))
         goto out;
-    }
+
+    if (virHostdevIsPCINodeDeviceUsed(devAddr, hostdev_mgr))
+        goto out;
 
     virPCIDeviceReattachInit(pci);
 
@@ -1540,6 +1562,7 @@ virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr hostdev_mgr,
  out:
     virObjectUnlock(hostdev_mgr->inactivePCIHostdevs);
     virObjectUnlock(hostdev_mgr->activePCIHostdevs);
+    VIR_FREE(devAddr);
     return ret;
 }
 
