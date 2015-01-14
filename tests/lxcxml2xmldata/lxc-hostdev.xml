@@ -37,8 +37,8 @@
       </source>
       <ip address='192.168.122.2' family='ipv4'/>
       <ip address='2003:db8:1:0:214:1234:fe0b:3596' family='ipv6' prefix='24'/>
-      <route family='ipv4' via='192.168.122.1'/>
-      <route family='ipv6' via='2003:db8:1:0:214:1234:fe0b:3595'/>
+      <route family='ipv4' address='0.0.0.0' gateway='192.168.122.1'/>
+      <route family='ipv6' address='::' gateway='2003:db8:1:0:214:1234:fe0b:3595'/>
     </hostdev>
   </devices>
 </domain>

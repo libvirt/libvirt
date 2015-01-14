@@ -228,7 +228,7 @@
   <!-- The (static) route element specifies a network address and gateway
        address to access that network. Both the network address and
        the gateway address must be specified. -->
-  <define name='routex'>
+  <define name='route'>
     <element name="route">
       <optional>
         <attribute name="family"><ref name="addr-family"/></attribute>

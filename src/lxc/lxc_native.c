@@ -2,7 +2,7 @@
  * lxc_native.c: LXC native configuration import
  *
  * Copyright (c) 2014 Red Hat, Inc.
- * Copyright (c) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
+ * Copyright (c) 2013-2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -433,24 +433,37 @@ typedef struct {
 static int
 lxcAddNetworkRouteDefinition(const char *address,
                              int family,
-                             virDomainNetRouteDefPtr **routes,
+                             virNetworkRouteDefPtr **routes,
                              size_t *nroutes)
 {
-    virDomainNetRouteDefPtr route = NULL;
+    virNetworkRouteDefPtr route = NULL;
+    char *familyStr = NULL;
+    char *zero = NULL;
 
-    if (VIR_ALLOC(route) < 0)
+    if (VIR_STRDUP(zero, family == AF_INET ? VIR_SOCKET_ADDR_IPV4_ALL
+                   : VIR_SOCKET_ADDR_IPV6_ALL) < 0)
         goto error;
 
-    if (virSocketAddrParse(&route->via, address, family) < 0)
+    if (VIR_STRDUP(familyStr, family == AF_INET ? "ipv4" : "ipv6") < 0)
+        goto error;
+
+    if (!(route = virNetworkRouteDefCreate(_("Domain interface"), familyStr,
+                                          zero, NULL, address, 0, false,
+                                          0, false)))
         goto error;
 
     if (VIR_APPEND_ELEMENT(*routes, *nroutes, route) < 0)
         goto error;
 
+    VIR_FREE(familyStr);
+    VIR_FREE(zero);
+
     return 0;
 
  error:
-    VIR_FREE(route);
+    VIR_FREE(familyStr);
+    VIR_FREE(zero);
+    virNetworkRouteDefFree(route);
     return -1;
 }
 

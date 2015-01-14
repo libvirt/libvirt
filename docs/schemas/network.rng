@@ -371,7 +371,7 @@
         </zeroOrMore>
         <!-- <route> element -->
         <zeroOrMore>
-          <ref name="routex"/>
+          <ref name="route"/>
         </zeroOrMore>
       </interleave>
     </element>

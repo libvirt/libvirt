@@ -4371,12 +4371,9 @@ qemu-kvm -net nic,model=? /dev/null
 
     <p>
     <span class="since">Since 1.2.12</span> route elements can also be added
-    to define the network routes to use for the network device. This element
-    has a <code>family</code> attribute set either to <code>ipv4</code> or
-    <code>ipv6</code>, a mandatory <code>via</code> attribute defining the
-    IP address to route throught and optional <code>address</code> and <code>prefix</code>
-    attributes defining the target network range. If those aren't given, then
-    a default route will be set.
+    to define the network routes to use for the network device. The attributes
+    of this element are described in the documentation for the <code>route</code>
+    element in <a href="formatnetwork.html#elementsStaticroute">network definitions</a>.
     This is only used by the LXC driver.
     </p>
 

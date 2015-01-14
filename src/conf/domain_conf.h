@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
+ * Copyright (c) 2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,6 +36,7 @@
 # include "virthread.h"
 # include "virhash.h"
 # include "virsocketaddr.h"
+# include "networkcommon_conf.h"
 # include "nwfilter_params.h"
 # include "numatune_conf.h"
 # include "virnetdevmacvlan.h"
@@ -485,14 +487,6 @@ struct _virDomainNetIpDef {
     unsigned int prefix; /* number of 1 bits in the net mask */
 };
 
-typedef struct _virDomainNetRouteDef virDomainNetRouteDef;
-typedef virDomainNetRouteDef *virDomainNetRouteDefPtr;
-struct _virDomainNetRouteDef {
-    virSocketAddr via;
-    virSocketAddr to;
-    unsigned int prefix;
-};
-
 typedef struct _virDomainHostdevCaps virDomainHostdevCaps;
 typedef virDomainHostdevCaps *virDomainHostdevCapsPtr;
 struct _virDomainHostdevCaps {
@@ -509,7 +503,7 @@ struct _virDomainHostdevCaps {
             size_t nips;
             virDomainNetIpDefPtr *ips;
             size_t nroutes;
-            virDomainNetRouteDefPtr *routes;
+            virNetworkRouteDefPtr *routes;
         } net;
     } u;
 };
@@ -1013,7 +1007,7 @@ struct _virDomainNetDef {
     size_t nips;
     virDomainNetIpDefPtr *ips;
     size_t nroutes;
-    virDomainNetRouteDefPtr *routes;
+    virNetworkRouteDefPtr *routes;
 };
 
 /* Used for prefix of ifname of any network name generated dynamically

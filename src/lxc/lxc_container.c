@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2008-2014 Red Hat, Inc.
  * Copyright (C) 2008 IBM Corp.
+ * Copyright (c) 2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
  * lxc_container.c: file description
  *
@@ -544,20 +545,13 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
 
             /* Set the routes */
             for (j = 0; j < netDef->nroutes; j++) {
-                virDomainNetRouteDefPtr route = netDef->routes[j];
-                if (VIR_SOCKET_ADDR_VALID(&route->to))
-                    toStr = virSocketAddrFormat(&route->to);
-                else
-                    if (VIR_STRDUP(toStr, "default") < 0)
-                        goto error_out;
-                viaStr = virSocketAddrFormat(&route->via);
-                VIR_DEBUG("Adding route %s/%d via %s", toStr, route->prefix, viaStr);
+                virNetworkRouteDefPtr route = netDef->routes[j];
 
-                if (virNetDevAddRoute(newname, &route->to, route->prefix,
-                                      &route->via, 0) < 0) {
-                    virReportError(VIR_ERR_SYSTEM_ERROR,
-                                   _("Failed to add route %s/%d via %s"),
-                                   toStr, route->prefix, viaStr);
+                if (virNetDevAddRoute(newname,
+                                      virNetworkRouteDefGetAddress(route),
+                                      virNetworkRouteDefGetPrefix(route),
+                                      virNetworkRouteDefGetGateway(route),
+                                      virNetworkRouteDefGetMetric(route)) < 0) {
                     goto error_out;
                 }
                 VIR_FREE(toStr);

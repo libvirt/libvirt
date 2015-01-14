@@ -59,9 +59,9 @@ virNetworkRouteDefFree(virNetworkRouteDefPtr def)
 virNetworkRouteDefPtr
 virNetworkRouteDefCreate(const char *errorDetail,
                          char *family,
-                         char *address,
-                         char *netmask,
-                         char *gateway,
+                         const char *address,
+                         const char *netmask,
+                         const char *gateway,
                          unsigned int prefix,
                          bool hasPrefix,
                          unsigned int metric,

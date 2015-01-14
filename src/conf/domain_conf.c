@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
+ * Copyright (c) 2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1448,10 +1449,10 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     VIR_FREE(def->ips);
 
     for (i = 0; i < def->nroutes; i++)
-        VIR_FREE(def->routes[i]);
+        virNetworkRouteDefFree(def->routes[i]);
     VIR_FREE(def->routes);
 
-        virDomainDeviceInfoClear(&def->info);
+    virDomainDeviceInfoClear(&def->info);
 
     VIR_FREE(def->filter);
     virNWFilterHashTableFree(def->filterparams);
@@ -4810,64 +4811,6 @@ virDomainNetIpParseXML(xmlNodePtr node)
     return NULL;
 }
 
-static virDomainNetRouteDefPtr
-virDomainNetRouteParse(xmlNodePtr node)
-{
-    virDomainNetRouteDefPtr route = NULL;
-    char *familyStr = NULL;
-    int family = AF_UNSPEC;
-    char *via = NULL;
-    char *to = NULL;
-    char *prefixStr = NULL;
-
-    to = virXMLPropString(node, "address");
-    if (!(via = virXMLPropString(node, "via"))) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Missing route address"));
-        goto error;
-    }
-
-    familyStr = virXMLPropString(node, "family");
-    if (familyStr && STREQ(familyStr, "ipv4"))
-        family = AF_INET;
-    else if (familyStr && STREQ(familyStr, "ipv6"))
-        family = AF_INET6;
-    else
-        family = virSocketAddrNumericFamily(via);
-
-    if (VIR_ALLOC(route) < 0)
-        goto error;
-
-    if (virSocketAddrParse(&route->via, via, family) < 0) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Failed to parse IP address: '%s'"),
-                       via);
-        goto error;
-    }
-
-    if (to && virSocketAddrParse(&route->to, to, family) < 0) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Failed to parse IP address: '%s'"),
-                       to);
-        goto error;
-    }
-
-    if (!(prefixStr = virXMLPropString(node, "prefix")) ||
-        (virStrToLong_ui(prefixStr, NULL, 10, &route->prefix) < 0)) {
-    }
-
-    return route;
-
- error:
-    VIR_FREE(familyStr);
-    VIR_FREE(via);
-    VIR_FREE(to);
-    VIR_FREE(prefixStr);
-    VIR_FREE(route);
-
-    return NULL;
-}
-
 static int
 virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
                                 xmlXPathContextPtr ctxt,
@@ -4961,14 +4904,17 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
         if (nroutenodes) {
             size_t i;
             for (i = 0; i < nroutenodes; i++) {
-                virDomainNetRouteDefPtr route = virDomainNetRouteParse(routenodes[i]);
+                virNetworkRouteDefPtr route = NULL;
 
-                if (!route)
+                if (!(route = virNetworkRouteDefParseXML(_("Domain hostdev device"),
+                                                         routenodes[i],
+                                                         ctxt)))
                     goto error;
+
 
                 if (VIR_APPEND_ELEMENT(def->source.caps.u.net.routes,
                                        def->source.caps.u.net.nroutes, route) < 0) {
-                    VIR_FREE(route);
+                    virNetworkRouteDefFree(route);
                     goto error;
                 }
             }
@@ -7429,7 +7375,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     size_t nips = 0;
     virDomainNetIpDefPtr *ips = NULL;
     size_t nroutes = 0;
-    virDomainNetRouteDefPtr *routes = NULL;
+    virNetworkRouteDefPtr *routes = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -7527,12 +7473,15 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 if (VIR_APPEND_ELEMENT(ips, nips, ip) < 0)
                     goto error;
             } else if (xmlStrEqual(cur->name, BAD_CAST "route")) {
-                virDomainNetRouteDefPtr route = NULL;
-                if (!(route = virDomainNetRouteParse(cur)))
+                virNetworkRouteDefPtr route = NULL;
+                if (!(route = virNetworkRouteDefParseXML(_("Domain interface"),
+                                                         cur, ctxt)))
                     goto error;
 
-                if (VIR_APPEND_ELEMENT(routes, nroutes, route) < 0)
+                if (VIR_APPEND_ELEMENT(routes, nroutes, route) < 0) {
+                    virNetworkRouteDefFree(route);
                     goto error;
+                }
             } else if (!ifname &&
                        xmlStrEqual(cur->name, BAD_CAST "target")) {
                 ifname = virXMLPropString(cur, "dev");
@@ -17271,35 +17220,17 @@ virDomainNetIpsFormat(virBufferPtr buf, virDomainNetIpDefPtr *ips, size_t nips)
     }
 }
 
-static void
+static int
 virDomainNetRoutesFormat(virBufferPtr buf,
-                         virDomainNetRouteDefPtr *routes,
+                         virNetworkRouteDefPtr *routes,
                          size_t nroutes)
 {
     size_t i;
 
-    for (i = 0; i < nroutes; i++) {
-        virDomainNetRouteDefPtr route = routes[i];
-        const char *familyStr = NULL;
-        char *via = virSocketAddrFormat(&route->via);
-        char *to = NULL;
-
-        if (VIR_SOCKET_ADDR_IS_FAMILY(&route->via, AF_INET6))
-            familyStr = "ipv6";
-        else if (VIR_SOCKET_ADDR_IS_FAMILY(&route->via, AF_INET))
-            familyStr = "ipv4";
-        virBufferAsprintf(buf, "<route family='%s' via='%s'", familyStr, via);
-
-        if (VIR_SOCKET_ADDR_VALID(&route->to)) {
-            to = virSocketAddrFormat(&route->to);
-            virBufferAsprintf(buf, " address='%s'", to);
-        }
-
-        if (route->prefix > 0)
-            virBufferAsprintf(buf, " prefix='%d'", route->prefix);
-
-        virBufferAddLit(buf, "/>\n");
-    }
+    for (i = 0; i < nroutes; i++)
+        if (virNetworkRouteDefFormat(buf, routes[i]) < 0)
+            return -1;
+    return 0;
 }
 
 static int
@@ -17457,8 +17388,9 @@ virDomainHostdevDefFormatCaps(virBufferPtr buf,
     if (def->source.caps.type == VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET) {
         virDomainNetIpsFormat(buf, def->source.caps.u.net.ips,
                               def->source.caps.u.net.nips);
-        virDomainNetRoutesFormat(buf, def->source.caps.u.net.routes,
-                                 def->source.caps.u.net.nroutes);
+        if (virDomainNetRoutesFormat(buf, def->source.caps.u.net.routes,
+                                     def->source.caps.u.net.nroutes) < 0)
+            return -1;
     }
 
     return 0;
@@ -17848,7 +17780,8 @@ virDomainNetDefFormat(virBufferPtr buf,
     }
 
     virDomainNetIpsFormat(buf, def->ips, def->nips);
-    virDomainNetRoutesFormat(buf, def->routes, def->nroutes);
+    if (virDomainNetRoutesFormat(buf, def->routes, def->nroutes) < 0)
+        return -1;
 
     virBufferEscapeString(buf, "<script path='%s'/>\n",
                           def->script);
