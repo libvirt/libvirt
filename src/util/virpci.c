@@ -1655,6 +1655,32 @@ virPCIDeviceFree(virPCIDevicePtr dev)
     VIR_FREE(dev);
 }
 
+/**
+ * virPCIDeviceGetAddress:
+ * @dev: device to get address from
+ *
+ * Take a PCI device on input and return its PCI address. The
+ * caller must free the returned value when no longer needed.
+ *
+ * Returns NULL on failure, the device address on success.
+ */
+virPCIDeviceAddressPtr
+virPCIDeviceGetAddress(virPCIDevicePtr dev)
+{
+
+    virPCIDeviceAddressPtr pciAddrPtr;
+
+    if (!dev || (VIR_ALLOC(pciAddrPtr) < 0))
+        return NULL;
+
+    pciAddrPtr->domain = dev->domain;
+    pciAddrPtr->bus = dev->bus;
+    pciAddrPtr->slot = dev->slot;
+    pciAddrPtr->function = dev->function;
+
+    return pciAddrPtr;
+}
+
 const char *
 virPCIDeviceGetName(virPCIDevicePtr dev)
 {

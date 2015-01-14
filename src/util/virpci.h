@@ -94,6 +94,7 @@ int virPCIDeviceSetStubDriver(virPCIDevicePtr dev,
                               const char *driver)
     ATTRIBUTE_NONNULL(2);
 const char *virPCIDeviceGetStubDriver(virPCIDevicePtr dev);
+virPCIDeviceAddressPtr virPCIDeviceGetAddress(virPCIDevicePtr dev);
 int virPCIDeviceSetUsedBy(virPCIDevice *dev,
                           const char *drv_name,
                           const char *dom_name);
