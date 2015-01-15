@@ -188,6 +188,7 @@ mymain(void)
     DO_TEST("cpu-kvmclock");
     DO_TEST("cpu-host-kvmclock");
     DO_TEST("cpu-host-passthrough-features");
+    DO_TEST("cpu-host-model-features");
     DO_TEST("clock-catchup");
     DO_TEST("kvmclock");
     DO_TEST("clock-timer-hyperv-rtc");
