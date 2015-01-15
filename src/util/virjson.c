@@ -797,7 +797,7 @@ virJSONValueIsArray(virJSONValuePtr array)
 
 
 int
-virJSONValueArraySize(virJSONValuePtr array)
+virJSONValueArraySize(const virJSONValue *array)
 {
     if (array->type != VIR_JSON_TYPE_ARRAY)
         return -1;
