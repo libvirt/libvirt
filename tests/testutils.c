@@ -986,3 +986,55 @@ virDomainXMLOptionPtr virTestGenericDomainXMLConfInit(void)
                                  &virTestGenericPrivateDataCallbacks,
                                  NULL);
 }
+
+
+static int virtTestCounter;
+static char virtTestCounterStr[128];
+static char *virtTestCounterPrefixEndOffset;
+
+
+/**
+ * virtTestCounterReset:
+ * @prefix: name of the test group
+ *
+ * Resets the counter and sets up the test group name to use with
+ * virtTestCounterNext(). This function is not thread safe.
+ *
+ * Note: The buffer for the assembled message is 128 bytes long. Longer test
+ * case names (including the number index) will be silently truncated.
+ */
+void
+virtTestCounterReset(const char *prefix)
+{
+    virtTestCounter = 0;
+
+    ignore_value(virStrcpyStatic(virtTestCounterStr, prefix));
+    virtTestCounterPrefixEndOffset = strchrnul(virtTestCounterStr, '\0');
+}
+
+
+/**
+ * virtTestCounterNext:
+ *
+ * This function is designed to ease test creation and reordering by adding
+ * a way to do automagic test case numbering.
+ *
+ * Returns string consisting of test name prefix configured via
+ * virtTestCounterReset() and a number that increments in every call of this
+ * function. This function is not thread safe.
+ *
+ * Note: The buffer for the assembled message is 128 bytes long. Longer test
+ * case names (including the number index) will be silently truncated.
+ */
+const char
+*virtTestCounterNext(void)
+{
+    size_t len = ARRAY_CARDINALITY(virtTestCounterStr);
+
+    /* calculate length of the rest of the string */
+    len -= (virtTestCounterPrefixEndOffset - virtTestCounterStr);
+
+    snprintf(virtTestCounterPrefixEndOffset, len, "%d", ++virtTestCounter);
+
+    return virtTestCounterStr;
+}
