@@ -4623,8 +4623,8 @@ qemuBuildMemoryBackendStr(unsigned long long size,
         if (!(mem_path = qemuGetHugepagePath(&cfg->hugetlbfs[i])))
             goto cleanup;
 
-        virBufferAsprintf(&buf, "memory-backend-file,prealloc=yes,mem-path=%s",
-                          mem_path);
+        virBufferAsprintf(&buf, "memory-backend-file,id=%s%zu", aliasPrefix, id);
+        virBufferAsprintf(&buf, ",prealloc=yes,mem-path=%s", mem_path);
 
         switch (memAccess) {
         case VIR_MEM_ACCESS_SHARED:
@@ -4647,11 +4647,10 @@ qemuBuildMemoryBackendStr(unsigned long long size,
             goto cleanup;
         }
 
-        virBufferAddLit(&buf, "memory-backend-ram");
+        virBufferAsprintf(&buf, "memory-backend-ram,id=%s%zu", aliasPrefix, id);
     }
 
-    virBufferAsprintf(&buf, ",size=%lluM,id=%s%zu", size / 1024,
-                      aliasPrefix, id);
+    virBufferAsprintf(&buf, ",size=%lluM", size / 1024);
 
     if (userNodeset) {
         if (!(nodemask = virBitmapFormat(userNodeset)))
