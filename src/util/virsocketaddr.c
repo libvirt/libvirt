@@ -832,6 +832,12 @@ virSocketAddrGetIpPrefix(const virSocketAddr *address,
          */
         unsigned char octet
             = ntohl(address->data.inet4.sin_addr.s_addr) >> 24;
+
+        /* If address is 0.0.0.0, we surely want to have 0 prefix for
+         * the default route. */
+        if (address->data.inet4.sin_addr.s_addr == 0)
+            return 0;
+
         if ((octet & 0x80) == 0) {
             /* Class A network */
             return 8;
@@ -844,6 +850,8 @@ virSocketAddrGetIpPrefix(const virSocketAddr *address,
         }
         return -1;
     } else if (VIR_SOCKET_ADDR_IS_FAMILY(address, AF_INET6)) {
+        if (address->data.inet6.sin6_addr.s6_addr == 0)
+            return 0;
         return 64;
     }
 
