@@ -626,6 +626,7 @@ virDomainNumatuneGetNodeset;
 virDomainNumatuneHasPerNodeBinding;
 virDomainNumatuneHasPlacementAuto;
 virDomainNumatuneMaybeFormatNodeset;
+virDomainNumatuneMaybeGetNodeset;
 virDomainNumatuneMemModeTypeFromString;
 virDomainNumatuneMemModeTypeToString;
 virDomainNumatuneNodesetIsAvailable;

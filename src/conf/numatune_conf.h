@@ -70,6 +70,11 @@ virBitmapPtr virDomainNumatuneGetNodeset(virDomainNumatunePtr numatune,
                                          virBitmapPtr auto_nodeset,
                                          int cellid);
 
+int virDomainNumatuneMaybeGetNodeset(virDomainNumatunePtr numatune,
+                                     virBitmapPtr auto_nodeset,
+                                     virBitmapPtr *retNodeset,
+                                     int cellid);
+
 /*
  * Formatters
  */

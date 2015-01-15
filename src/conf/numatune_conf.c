@@ -400,13 +400,14 @@ virDomainNumatuneFormatNodeset(virDomainNumatunePtr numatune,
                                                        cellid));
 }
 
+
 int
-virDomainNumatuneMaybeFormatNodeset(virDomainNumatunePtr numatune,
-                                    virBitmapPtr auto_nodeset,
-                                    char **mask,
-                                    int cellid)
+virDomainNumatuneMaybeGetNodeset(virDomainNumatunePtr numatune,
+                                 virBitmapPtr auto_nodeset,
+                                 virBitmapPtr *retNodeset,
+                                 int cellid)
 {
-    *mask = NULL;
+    *retNodeset = NULL;
 
     if (!numatune)
         return 0;
@@ -424,8 +425,26 @@ virDomainNumatuneMaybeFormatNodeset(virDomainNumatunePtr numatune,
         return -1;
     }
 
-    *mask = virDomainNumatuneFormatNodeset(numatune, auto_nodeset, cellid);
-    if (!*mask)
+    *retNodeset = virDomainNumatuneGetNodeset(numatune, auto_nodeset, cellid);
+
+    return 0;
+}
+
+
+int
+virDomainNumatuneMaybeFormatNodeset(virDomainNumatunePtr numatune,
+                                    virBitmapPtr auto_nodeset,
+                                    char **mask,
+                                    int cellid)
+{
+    virBitmapPtr nodeset;
+
+    if (virDomainNumatuneMaybeGetNodeset(numatune, auto_nodeset, &nodeset,
+                                         cellid) < 0)
+        return -1;
+
+    if (nodeset &&
+        !(*mask = virBitmapFormat(nodeset)))
         return -1;
 
     return 0;
