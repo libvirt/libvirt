@@ -4533,12 +4533,10 @@ qemuBuildMemoryBackendStr(unsigned long long size,
                           virDomainDefPtr def,
                           virQEMUCapsPtr qemuCaps,
                           virQEMUDriverConfigPtr cfg,
-                          const char *aliasPrefix,
-                          size_t id,
-                          char **backendStr,
+                          const char **backendType,
+                          virJSONValuePtr *backendProps,
                           bool force)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
     virDomainHugePagePtr master_hugepage = NULL;
     virDomainHugePagePtr hugepage = NULL;
     virDomainNumatuneMemMode mode;
@@ -4546,11 +4544,15 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     virMemAccess memAccess = def->cpu->cells[guestNode].memAccess;
     size_t i;
     char *mem_path = NULL;
-    char *nodemask = NULL;
-    char *tmpmask = NULL, *next = NULL;
+    virBitmapPtr nodemask = NULL;
     int ret = -1;
+    virJSONValuePtr props = NULL;
 
-    *backendStr = NULL;
+    *backendProps = NULL;
+    *backendType = NULL;
+
+    if (!(props = virJSONValueNewObject()))
+        return -1;
 
     mode = virDomainNumatuneGetMode(def->numatune, guestNode);
 
@@ -4623,16 +4625,23 @@ qemuBuildMemoryBackendStr(unsigned long long size,
         if (!(mem_path = qemuGetHugepagePath(&cfg->hugetlbfs[i])))
             goto cleanup;
 
-        virBufferAsprintf(&buf, "memory-backend-file,id=%s%zu", aliasPrefix, id);
-        virBufferAsprintf(&buf, ",prealloc=yes,mem-path=%s", mem_path);
+        *backendType = "memory-backend-file";
+
+        if (virJSONValueObjectAdd(props,
+                                  "b:prealloc", true,
+                                  "s:mem-path", mem_path,
+                                  NULL) < 0)
+            goto cleanup;
 
         switch (memAccess) {
         case VIR_MEM_ACCESS_SHARED:
-            virBufferAddLit(&buf, ",share=yes");
+            if (virJSONValueObjectAdd(props, "b:share", true, NULL) < 0)
+                goto cleanup;
             break;
 
         case VIR_MEM_ACCESS_PRIVATE:
-            virBufferAddLit(&buf, ",share=no");
+            if (virJSONValueObjectAdd(props, "b:share", false, NULL) < 0)
+                goto cleanup;
             break;
 
         case VIR_MEM_ACCESS_DEFAULT:
@@ -4647,43 +4656,30 @@ qemuBuildMemoryBackendStr(unsigned long long size,
             goto cleanup;
         }
 
-        virBufferAsprintf(&buf, "memory-backend-ram,id=%s%zu", aliasPrefix, id);
+        *backendType = "memory-backend-ram";
     }
 
-    virBufferAsprintf(&buf, ",size=%llu", size * 1024);
+    if (virJSONValueObjectAdd(props, "U:size", size * 1024, NULL) < 0)
+        goto cleanup;
 
     if (userNodeset) {
-        if (!(nodemask = virBitmapFormat(userNodeset)))
-            goto cleanup;
+        nodemask = userNodeset;
     } else {
-        if (virDomainNumatuneMaybeFormatNodeset(def->numatune, autoNodeset,
-                                                &nodemask, guestNode) < 0)
+        if (virDomainNumatuneMaybeGetNodeset(def->numatune, autoNodeset,
+                                             &nodemask, guestNode) < 0)
             goto cleanup;
     }
 
     if (nodemask) {
-        if (strchr(nodemask, ',') &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disjoint NUMA node ranges are not supported "
-                             "with this QEMU"));
+        if (virJSONValueObjectAdd(props,
+                                  "m:host-nodes", nodemask,
+                                  "S:policy", qemuNumaPolicyTypeToString(mode),
+                                  NULL) < 0)
             goto cleanup;
-        }
-
-        for (tmpmask = nodemask; tmpmask; tmpmask = next) {
-            if ((next = strchr(tmpmask, ',')))
-                *(next++) = '\0';
-            virBufferAddLit(&buf, ",host-nodes=");
-            virBufferAdd(&buf, tmpmask, -1);
-        }
-
-        virBufferAsprintf(&buf, ",policy=%s",  qemuNumaPolicyTypeToString(mode));
     }
 
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
-
-    *backendStr = virBufferContentAndReset(&buf);
+    *backendProps = props;
+    props = NULL;
 
     if (!hugepage) {
         if ((nodemask || force) &&
@@ -4705,8 +4701,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&buf);
-    VIR_FREE(nodemask);
+    virJSONValueFree(props);
     VIR_FREE(mem_path);
 
     return ret;
@@ -4721,18 +4716,38 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
                               virBitmapPtr auto_nodeset,
                               char **backendStr)
 {
-    int ret;
+    virJSONValuePtr props = NULL;
+    char *alias = NULL;
+    const char *backendType;
+    int ret = -1;
+    int rc;
 
-    ret = qemuBuildMemoryBackendStr(def->cpu->cells[cell].mem, 0, cell,
-                                    NULL, auto_nodeset,
-                                    def, qemuCaps, cfg,
-                                    "ram-node", cell,
-                                    backendStr, false);
+    *backendStr = NULL;
 
-    if (ret == 1) {
-        VIR_FREE(*backendStr);
-        return 0;
+    if (virAsprintf(&alias, "ram-node%zu", cell) < 0)
+        goto cleanup;
+
+    if ((rc = qemuBuildMemoryBackendStr(def->cpu->cells[cell].mem, 0, cell,
+                                        NULL, auto_nodeset,
+                                        def, qemuCaps, cfg,
+                                        &backendType, &props, false)) < 0)
+        goto cleanup;
+
+    if (rc == 1) {
+        ret = 0;
+        goto cleanup;
     }
+
+    if (!(*backendStr = qemuBuildObjectCommandlineFromJSON(backendType,
+                                                           alias,
+                                                           props)))
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(alias);
+    virJSONValueFree(props);
 
     return ret;
 }
