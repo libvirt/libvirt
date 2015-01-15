@@ -1,0 +1,63 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/libexec/qemu-kvm \
+-S -M pc-1.2 -m 2048 -smp 2 -nographic -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -boot c \
+-usb -drive file=/var/iso/f18kde.iso,if=none,media=cdrom,id=drive-ide0-1-0 \
+-device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
+-drive file=/var/lib/libvirt/images/test.img,if=none,id=drive-virtio-disk0 \
+-device virtio-blk-pci,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0 \
+-drive file=/var/lib/libvirt/images/test1.img,if=none,id=drive-virtio-disk0 \
+-device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,id=virtio-disk0 \
+-drive file=/var/lib/libvirt/images/disk-a-a.img,if=none,id=drive-virtio-disk0 \
+-device virtio-blk-pci,bus=pci.0,addr=0x5,drive=drive-virtio-disk0,id=virtio-disk0 \
+-drive file=/var/lib/libvirt/images/disk-a-b.img,if=none,id=drive-virtio-disk27 \
+-device virtio-blk-pci,bus=pci.0,addr=0x7,drive=drive-virtio-disk27,id=virtio-disk27 \
+-drive file=/var/lib/libvirt/images/disk-a-c.img,if=none,id=drive-virtio-disk28 \
+-device virtio-blk-pci,bus=pci.0,addr=0x8,drive=drive-virtio-disk28,id=virtio-disk28 \
+-drive file=/var/lib/libvirt/images/disk-a-d.img,if=none,id=drive-virtio-disk29 \
+-device virtio-blk-pci,bus=pci.0,addr=0x9,drive=drive-virtio-disk29,id=virtio-disk29 \
+-drive file=/var/lib/libvirt/images/disk-b-a.img,if=none,id=drive-virtio-disk52 \
+-device virtio-blk-pci,bus=pci.0,addr=0xa,drive=drive-virtio-disk52,id=virtio-disk52 \
+-drive file=/var/lib/libvirt/images/disk-b-b.img,if=none,id=drive-virtio-disk53 \
+-device virtio-blk-pci,bus=pci.0,addr=0xb,drive=drive-virtio-disk53,id=virtio-disk53 \
+-drive file=/var/lib/libvirt/images/disk-b-c.img,if=none,id=drive-virtio-disk54 \
+-device virtio-blk-pci,bus=pci.0,addr=0xc,drive=drive-virtio-disk54,id=virtio-disk54 \
+-drive file=/var/lib/libvirt/images/disk-b-d.img,if=none,id=drive-virtio-disk55 \
+-device virtio-blk-pci,bus=pci.0,addr=0xd,drive=drive-virtio-disk55,id=virtio-disk55 \
+-drive file=/var/lib/libvirt/images/disk-c-a.img,if=none,id=drive-virtio-disk78 \
+-device virtio-blk-pci,bus=pci.0,addr=0xe,drive=drive-virtio-disk78,id=virtio-disk78 \
+-drive file=/var/lib/libvirt/images/disk-c-b.img,if=none,id=drive-virtio-disk79 \
+-device virtio-blk-pci,bus=pci.0,addr=0xf,drive=drive-virtio-disk79,id=virtio-disk79 \
+-drive file=/var/lib/libvirt/images/disk-c-c.img,if=none,id=drive-virtio-disk80 \
+-device virtio-blk-pci,bus=pci.0,addr=0x10,drive=drive-virtio-disk80,id=virtio-disk80 \
+-drive file=/var/lib/libvirt/images/disk-c-d.img,if=none,id=drive-virtio-disk81 \
+-device virtio-blk-pci,bus=pci.0,addr=0x11,drive=drive-virtio-disk81,id=virtio-disk81 \
+-drive file=/var/lib/libvirt/images/disk-d-a.img,if=none,id=drive-virtio-disk104 \
+-device virtio-blk-pci,bus=pci.0,addr=0x12,drive=drive-virtio-disk104,id=virtio-disk104 \
+-drive file=/var/lib/libvirt/images/disk-d-b.img,if=none,id=drive-virtio-disk105 \
+-device virtio-blk-pci,bus=pci.0,addr=0x13,drive=drive-virtio-disk105,id=virtio-disk105 \
+-drive file=/var/lib/libvirt/images/disk-d-c.img,if=none,id=drive-virtio-disk106 \
+-device virtio-blk-pci,bus=pci.0,addr=0x14,drive=drive-virtio-disk106,id=virtio-disk106 \
+-drive file=/var/lib/libvirt/images/disk-d-d.img,if=none,id=drive-virtio-disk107 \
+-device virtio-blk-pci,bus=pci.0,addr=0x15,drive=drive-virtio-disk107,id=virtio-disk107 \
+-drive file=/var/lib/libvirt/images/disk-e-a.img,if=none,id=drive-virtio-disk130 \
+-device virtio-blk-pci,bus=pci.0,addr=0x16,drive=drive-virtio-disk130,id=virtio-disk130 \
+-drive file=/var/lib/libvirt/images/disk-e-b.img,if=none,id=drive-virtio-disk131 \
+-device virtio-blk-pci,bus=pci.0,addr=0x17,drive=drive-virtio-disk131,id=virtio-disk131 \
+-drive file=/var/lib/libvirt/images/disk-e-c.img,if=none,id=drive-virtio-disk132 \
+-device virtio-blk-pci,bus=pci.0,addr=0x18,drive=drive-virtio-disk132,id=virtio-disk132 \
+-drive file=/var/lib/libvirt/images/disk-e-d.img,if=none,id=drive-virtio-disk133 \
+-device virtio-blk-pci,bus=pci.0,addr=0x19,drive=drive-virtio-disk133,id=virtio-disk133 \
+-drive file=/var/lib/libvirt/images/disk-f-a.img,if=none,id=drive-virtio-disk156 \
+-device virtio-blk-pci,bus=pci.0,addr=0x1a,drive=drive-virtio-disk156,id=virtio-disk156 \
+-drive file=/var/lib/libvirt/images/disk-f-b.img,if=none,id=drive-virtio-disk157 \
+-device virtio-blk-pci,bus=pci.0,addr=0x1b,drive=drive-virtio-disk157,id=virtio-disk157 \
+-drive file=/var/lib/libvirt/images/disk-f-c.img,if=none,id=drive-virtio-disk158 \
+-device virtio-blk-pci,bus=pci.0,addr=0x1c,drive=drive-virtio-disk158,id=virtio-disk158 \
+-drive file=/var/lib/libvirt/images/disk-f-d.img,if=none,id=drive-virtio-disk159 \
+-device virtio-blk-pci,bus=pci.0,addr=0x1d,drive=drive-virtio-disk159,id=virtio-disk159 \
+-drive file=/var/lib/libvirt/images/disk-g-a.img,if=none,id=drive-virtio-disk182 \
+-device virtio-blk-pci,bus=pci.0,addr=0x1e,drive=drive-virtio-disk182,id=virtio-disk182 \
+-drive file=/var/lib/libvirt/images/disk-g-b.img,if=none,id=drive-virtio-disk183 \
+-device virtio-blk-pci,bus=pci.0,addr=0x1f,drive=drive-virtio-disk183,id=virtio-disk183 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6
