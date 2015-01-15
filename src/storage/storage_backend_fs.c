@@ -1266,7 +1266,8 @@ virStorageBackendFileSystemVolResize(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      unsigned long long capacity,
                                      unsigned int flags)
 {
-    virCheckFlags(VIR_STORAGE_VOL_RESIZE_ALLOCATE, -1);
+    virCheckFlags(VIR_STORAGE_VOL_RESIZE_ALLOCATE |
+                  VIR_STORAGE_VOL_RESIZE_SHRINK, -1);
 
     bool pre_allocate = flags & VIR_STORAGE_VOL_RESIZE_ALLOCATE;
 
