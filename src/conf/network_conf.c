@@ -3563,7 +3563,7 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
         /* search for the entry with this (ip|mac|name),
          * and update the IP+(mac|name) */
         for (i = 0; i < ipdef->nhosts; i++) {
-            if ((host.mac &&
+            if ((host.mac && ipdef->hosts[i].mac &&
                  !virMacAddrCompare(host.mac, ipdef->hosts[i].mac)) ||
                 (VIR_SOCKET_ADDR_VALID(&host.ip) &&
                  virSocketAddrEqual(&host.ip, &ipdef->hosts[i].ip)) ||
@@ -3601,7 +3601,7 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
 
         /* log error if an entry with same name/address/ip already exists */
         for (i = 0; i < ipdef->nhosts; i++) {
-            if ((host.mac &&
+            if ((host.mac && ipdef->hosts[i].mac &&
                  !virMacAddrCompare(host.mac, ipdef->hosts[i].mac)) ||
                 (host.name &&
                  STREQ_NULLABLE(host.name, ipdef->hosts[i].name)) ||
@@ -3630,7 +3630,7 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
 
         /* find matching entry - all specified attributes must match */
         for (i = 0; i < ipdef->nhosts; i++) {
-            if ((!host.mac ||
+            if ((!host.mac || !ipdef->hosts[i].mac ||
                  !virMacAddrCompare(host.mac, ipdef->hosts[i].mac)) &&
                 (!host.name ||
                  STREQ_NULLABLE(host.name, ipdef->hosts[i].name)) &&
