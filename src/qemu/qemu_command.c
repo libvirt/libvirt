@@ -4628,11 +4628,11 @@ qemuBuildMemoryBackendStr(unsigned long long size,
 
         switch (memAccess) {
         case VIR_MEM_ACCESS_SHARED:
-            virBufferAddLit(&buf, ",share=on");
+            virBufferAddLit(&buf, ",share=yes");
             break;
 
         case VIR_MEM_ACCESS_PRIVATE:
-            virBufferAddLit(&buf, ",share=off");
+            virBufferAddLit(&buf, ",share=no");
             break;
 
         case VIR_MEM_ACCESS_DEFAULT:
