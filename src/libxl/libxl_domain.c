@@ -1149,6 +1149,42 @@ libxlDomainFreeMem(libxlDomainObjPrivatePtr priv, libxl_domain_config *d_config)
     return ret;
 }
 
+static void
+libxlConsoleCallback(libxl_ctx *ctx, libxl_event* ev, void *for_callback)
+{
+    virDomainObjPtr vm = for_callback;
+    libxlDomainObjPrivatePtr priv = vm->privateData;
+    size_t i;
+
+    virObjectLock(vm);
+    for (i = 0; i < vm->def->nconsoles; i++) {
+        virDomainChrDefPtr chr = vm->def->consoles[i];
+        if (chr && chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
+            libxl_console_type console_type;
+            char *console = NULL;
+            int ret;
+
+            console_type =
+                (chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ?
+                 LIBXL_CONSOLE_TYPE_SERIAL : LIBXL_CONSOLE_TYPE_PV);
+            ret = libxl_console_get_tty(priv->ctx, ev->domid,
+                                        chr->target.port, console_type,
+                                        &console);
+            if (!ret) {
+                VIR_FREE(chr->source.data.file.path);
+                if (console && console[0] != '\0') {
+                    ignore_value(VIR_STRDUP(chr->source.data.file.path,
+                                            console));
+                }
+            }
+            VIR_FREE(console);
+        }
+    }
+    virObjectUnlock(vm);
+    libxl_event_free(ctx, ev);
+}
+
+
 /*
  * Start a domain through libxenlight.
  *
@@ -1173,6 +1209,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     libxl_domain_restore_params params;
 #endif
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    libxl_asyncprogress_how aop_console_how;
 
     libxl_domain_config_init(&d_config);
 
@@ -1242,17 +1279,21 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
 
     /* Unlock virDomainObj while creating the domain */
     virObjectUnlock(vm);
+
+    aop_console_how.for_callback = vm;
+    aop_console_how.callback = libxlConsoleCallback;
     if (restore_fd < 0) {
         ret = libxl_domain_create_new(priv->ctx, &d_config,
-                                      &domid, NULL, NULL);
+                                      &domid, NULL, &aop_console_how);
     } else {
 #ifdef LIBXL_HAVE_DOMAIN_CREATE_RESTORE_PARAMS
         params.checkpointed_stream = 0;
         ret = libxl_domain_create_restore(priv->ctx, &d_config, &domid,
-                                          restore_fd, &params, NULL, NULL);
+                                          restore_fd, &params, NULL,
+                                          &aop_console_how);
 #else
         ret = libxl_domain_create_restore(priv->ctx, &d_config, &domid,
-                                          restore_fd, NULL, NULL);
+                                          restore_fd, NULL, &aop_console_how);
 #endif
     }
     virObjectLock(vm);

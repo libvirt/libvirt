@@ -3991,10 +3991,8 @@ libxlDomainOpenConsole(virDomainPtr dom,
 {
     virDomainObjPtr vm = NULL;
     int ret = -1;
-    libxl_console_type console_type;
     virDomainChrDefPtr chr = NULL;
     libxlDomainObjPrivatePtr priv;
-    char *console = NULL;
 
     virCheckFlags(VIR_DOMAIN_CONSOLE_FORCE, -1);
 
@@ -4036,18 +4034,6 @@ libxlDomainOpenConsole(virDomainPtr dom,
         goto cleanup;
     }
 
-    console_type =
-        (chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ?
-                            LIBXL_CONSOLE_TYPE_SERIAL : LIBXL_CONSOLE_TYPE_PV);
-
-    ret = libxl_console_get_tty(priv->ctx, vm->def->id, chr->target.port,
-                                console_type, &console);
-    if (ret)
-        goto cleanup;
-
-    if (VIR_STRDUP(chr->source.data.file.path, console) < 0)
-        goto cleanup;
-
     /* handle mutually exclusive access to console devices */
     ret = virChrdevOpen(priv->devs,
                         &chr->source,
@@ -4061,7 +4047,6 @@ libxlDomainOpenConsole(virDomainPtr dom,
     }
 
  cleanup:
-    VIR_FREE(console);
     if (vm)
         virObjectUnlock(vm);
     return ret;
