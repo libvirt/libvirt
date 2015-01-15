@@ -660,32 +660,30 @@ virCPUDefFormatBuf(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    if (formatModel || def->mode == VIR_CPU_MODE_HOST_PASSTHROUGH) {
-        for (i = 0; i < def->nfeatures; i++) {
-            virCPUFeatureDefPtr feature = def->features + i;
+    for (i = 0; i < def->nfeatures; i++) {
+        virCPUFeatureDefPtr feature = def->features + i;
 
-            if (!feature->name) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Missing CPU feature name"));
+        if (!feature->name) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing CPU feature name"));
+            return -1;
+        }
+
+        if (def->type == VIR_CPU_TYPE_GUEST) {
+            const char *policy;
+
+            policy = virCPUFeaturePolicyTypeToString(feature->policy);
+            if (!policy) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Unexpected CPU feature policy %d"),
+                               feature->policy);
                 return -1;
             }
-
-            if (def->type == VIR_CPU_TYPE_GUEST) {
-                const char *policy;
-
-                policy = virCPUFeaturePolicyTypeToString(feature->policy);
-                if (!policy) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Unexpected CPU feature policy %d"),
-                                   feature->policy);
-                    return -1;
-                }
-                virBufferAsprintf(buf, "<feature policy='%s' name='%s'/>\n",
-                                  policy, feature->name);
-            } else {
-                virBufferAsprintf(buf, "<feature name='%s'/>\n",
-                                  feature->name);
-            }
+            virBufferAsprintf(buf, "<feature policy='%s' name='%s'/>\n",
+                              policy, feature->name);
+        } else {
+            virBufferAsprintf(buf, "<feature name='%s'/>\n",
+                              feature->name);
         }
     }
 
