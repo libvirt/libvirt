@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------*/
 /*
- * Copyright (C) 2011-2012 Red Hat, Inc.
+ * Copyright (C) 2011-2015 Red Hat, Inc.
  * Copyright 2010, diateam (www.diateam.net)
  * Copyright (C) 2013. Doug Goldstein <cardoe@cardoe.com>
  *
@@ -1195,6 +1195,30 @@ vmwareConnectListAllDomains(virConnectPtr conn,
     return ret;
 }
 
+static int
+vmwareDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
+{
+    struct vmware_driver *driver = dom->conn->privateData;
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    vmwareDriverLock(driver);
+    obj = virDomainObjListFindByUUID(driver->domains, dom->uuid);
+    vmwareDriverUnlock(driver);
+    if (!obj) {
+        virReportError(VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+    ret = 0;
+
+ cleanup:
+    if (obj)
+        virObjectUnlock(obj);
+    return ret;
+}
+
 
 
 static virHypervisorDriver vmwareHypervisorDriver = {
@@ -1233,6 +1257,7 @@ static virHypervisorDriver vmwareHypervisorDriver = {
     .domainIsActive = vmwareDomainIsActive, /* 0.8.7 */
     .domainIsPersistent = vmwareDomainIsPersistent, /* 0.8.7 */
     .connectIsAlive = vmwareConnectIsAlive, /* 0.9.8 */
+    .domainHasManagedSaveImage = vmwareDomainHasManagedSaveImage, /* 1.2.13 */
 };
 
 static virConnectDriver vmwareConnectDriver = {

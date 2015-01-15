@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2014 Red Hat, Inc.
+ * Copyright (C) 2010-2015 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_driver.c: linux container driver functions
@@ -5726,6 +5726,29 @@ lxcNodeAllocPages(virConnectPtr conn,
 }
 
 
+static int
+lxcDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = lxcDomObjFromDomain(dom)))
+        return ret;
+
+    if (virDomainHasManagedSaveImageEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
+}
+
+
 /* Function Tables */
 static virHypervisorDriver lxcHypervisorDriver = {
     .name = LXC_DRIVER_NAME,
@@ -5818,6 +5841,7 @@ static virHypervisorDriver lxcHypervisorDriver = {
     .domainLxcOpenNamespace = lxcDomainLxcOpenNamespace, /* 1.0.2 */
     .nodeGetFreePages = lxcNodeGetFreePages, /* 1.2.6 */
     .nodeAllocPages = lxcNodeAllocPages, /* 1.2.9 */
+    .domainHasManagedSaveImage = lxcDomainHasManagedSaveImage, /* 1.2.13 */
 };
 
 static virConnectDriver lxcConnectDriver = {

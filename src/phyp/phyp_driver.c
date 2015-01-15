@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2014 Red Hat, Inc.
+ * Copyright (C) 2010-2015 Red Hat, Inc.
  * Copyright IBM Corp. 2009
  *
  * phyp_driver.c: ssh layer to access Power Hypervisors
@@ -3669,6 +3669,32 @@ phypDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
     return phypDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
 }
 
+static int
+phypDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
+{
+
+    phyp_driverPtr phyp_driver = dom->conn->privateData;
+    LIBSSH2_SESSION *session = phyp_driver->session;
+    char *managed_system = phyp_driver->managed_system;
+    char *lpar_name = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    lpar_name = phypGetLparNAME(session, managed_system, dom->id, dom->conn);
+
+    if (lpar_name == NULL) {
+        VIR_ERROR(_("Unable to determine domain's name."));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(lpar_name);
+    return ret;
+}
+
 static virHypervisorDriver phypHypervisorDriver = {
     .name = "PHYP",
     .connectOpen = phypConnectOpen, /* 0.7.0 */
@@ -3698,6 +3724,7 @@ static virHypervisorDriver phypHypervisorDriver = {
     .connectIsSecure = phypConnectIsSecure, /* 0.7.3 */
     .domainIsUpdated = phypDomainIsUpdated, /* 0.8.6 */
     .connectIsAlive = phypConnectIsAlive, /* 0.9.8 */
+    .domainHasManagedSaveImage = phypDomainHasManagedSaveImage, /* 1.2.13 */
 };
 
 static virStorageDriver phypStorageDriver = {

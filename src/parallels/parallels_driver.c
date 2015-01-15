@@ -2,7 +2,7 @@
  * parallels_driver.c: core driver functions for managing
  * Parallels Cloud Server hosts
  *
- * Copyright (C) 2014 Red Hat, Inc.
+ * Copyright (C) 2014-2015 Red Hat, Inc.
  * Copyright (C) 2012 Parallels, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -956,6 +956,23 @@ parallelsDomainUndefine(virDomainPtr domain)
     return parallelsDomainUndefineFlags(domain, 0);
 }
 
+static int
+parallelsDomainHasManagedSaveImage(virDomainPtr domain, unsigned int flags)
+{
+    parallelsConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr dom = NULL;
+
+    virCheckFlags(0, -1);
+
+    dom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
+    if (dom == NULL) {
+        parallelsDomNotFoundError(domain);
+        return -1;
+    }
+
+    return 0;
+}
+
 static virHypervisorDriver parallelsDriver = {
     .name = "Parallels",
     .connectOpen = parallelsConnectOpen,            /* 0.10.0 */
@@ -997,6 +1014,7 @@ static virHypervisorDriver parallelsDriver = {
     .connectIsEncrypted = parallelsConnectIsEncrypted, /* 1.2.5 */
     .connectIsSecure = parallelsConnectIsSecure, /* 1.2.5 */
     .connectIsAlive = parallelsConnectIsAlive, /* 1.2.5 */
+    .domainHasManagedSaveImage = parallelsDomainHasManagedSaveImage, /* 1.2.13 */
 };
 
 static virConnectDriver parallelsConnectDriver = {

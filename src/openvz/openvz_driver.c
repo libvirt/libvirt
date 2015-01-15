@@ -1,7 +1,7 @@
 /*
  * openvz_driver.c: core driver methods for managing OpenVZ VEs
  *
- * Copyright (C) 2010-2014 Red Hat, Inc.
+ * Copyright (C) 2010-2015 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
  * Copyright (C) 2007 Anoop Joe Cyriac
@@ -2567,6 +2567,31 @@ openvzDomainMigrateConfirm3Params(virDomainPtr domain,
     return ret;
 }
 
+static int
+openvzDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
+{
+    struct openvz_driver *driver = dom->conn->privateData;
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    openvzDriverLock(driver);
+    obj = virDomainObjListFindByUUID(driver->domains, dom->uuid);
+    openvzDriverUnlock(driver);
+    if (!obj) {
+        virReportError(VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+    ret = 0;
+
+ cleanup:
+    if (obj)
+        virObjectUnlock(obj);
+    return ret;
+}
+
+
 
 static virHypervisorDriver openvzHypervisorDriver = {
     .name = "OPENVZ",
@@ -2632,6 +2657,7 @@ static virHypervisorDriver openvzHypervisorDriver = {
     .domainMigratePerform3Params = openvzDomainMigratePerform3Params, /* 1.2.8 */
     .domainMigrateFinish3Params = openvzDomainMigrateFinish3Params, /* 1.2.8 */
     .domainMigrateConfirm3Params = openvzDomainMigrateConfirm3Params, /* 1.2.8 */
+    .domainHasManagedSaveImage = openvzDomainHasManagedSaveImage, /* 1.2.13 */
 };
 
 static virConnectDriver openvzConnectDriver = {
