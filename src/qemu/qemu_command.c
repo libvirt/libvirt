@@ -4650,7 +4650,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
         virBufferAsprintf(&buf, "memory-backend-ram,id=%s%zu", aliasPrefix, id);
     }
 
-    virBufferAsprintf(&buf, ",size=%lluM", size / 1024);
+    virBufferAsprintf(&buf, ",size=%llu", size * 1024);
 
     if (userNodeset) {
         if (!(nodemask = virBitmapFormat(userNodeset)))
