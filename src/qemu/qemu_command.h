@@ -82,7 +82,9 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    qemuBuildCommandLineCallbacksPtr callbacks,
                                    bool forXMLToArgv,
                                    bool enableFips,
-                                   virBitmapPtr nodeset)
+                                   virBitmapPtr nodeset,
+                                   size_t *nnicindexes,
+                                   int **nicindexes)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(11);
 
 /* Generate '-device' string for chardev device */
@@ -194,7 +196,8 @@ int qemuNetworkIfaceConnect(virDomainDefPtr def,
                             virDomainNetDefPtr net,
                             virQEMUCapsPtr qemuCaps,
                             int *tapfd,
-                            size_t *tapfdSize)
+                            size_t *tapfdSize,
+                            int *nicindex)
     ATTRIBUTE_NONNULL(2);
 
 int qemuPhysIfaceConnect(virDomainDefPtr def,

@@ -45,7 +45,9 @@ int qemuTeardownHostdevCgroup(virDomainObjPtr vm,
 int qemuConnectCgroup(virQEMUDriverPtr driver,
                       virDomainObjPtr vm);
 int qemuSetupCgroup(virQEMUDriverPtr driver,
-                    virDomainObjPtr vm);
+                    virDomainObjPtr vm,
+                    size_t nnicindexes,
+                    int *nicindexes);
 int qemuSetupCpusetMems(virDomainObjPtr vm);
 int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
                           unsigned long long period,

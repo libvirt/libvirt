@@ -4278,6 +4278,8 @@ int qemuProcessStart(virConnectPtr conn,
     virQEMUDriverConfigPtr cfg;
     virCapsPtr caps = NULL;
     unsigned int hostdev_flags = 0;
+    size_t nnicindexes = 0;
+    int *nicindexes = NULL;
 
     VIR_DEBUG("vm=%p name=%s id=%d pid=%llu",
               vm, vm->def->name, vm->def->id,
@@ -4597,7 +4599,8 @@ int qemuProcessStart(virConnectPtr conn,
                                      migrateFrom, stdin_fd, snapshot, vmop,
                                      &buildCommandLineCallbacks, false,
                                      qemuCheckFips(),
-                                     nodemask)))
+                                     nodemask,
+                                     &nnicindexes, &nicindexes)))
         goto cleanup;
 
     /* now that we know it is about to start call the hook if present */
@@ -4734,7 +4737,7 @@ int qemuProcessStart(virConnectPtr conn,
     }
 
     VIR_DEBUG("Setting up domain cgroup (if required)");
-    if (qemuSetupCgroup(driver, vm) < 0)
+    if (qemuSetupCgroup(driver, vm, nnicindexes, nicindexes) < 0)
         goto cleanup;
 
     /* This must be done after cgroup placement to avoid resetting CPU
@@ -4947,6 +4950,7 @@ int qemuProcessStart(virConnectPtr conn,
     VIR_FORCE_CLOSE(logfile);
     virObjectUnref(cfg);
     virObjectUnref(caps);
+    VIR_FREE(nicindexes);
 
     return 0;
 
@@ -4962,6 +4966,7 @@ int qemuProcessStart(virConnectPtr conn,
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stop_flags);
     virObjectUnref(cfg);
     virObjectUnref(caps);
+    VIR_FREE(nicindexes);
 
     return -1;
 

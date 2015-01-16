@@ -727,7 +727,9 @@ qemuSetupCpuCgroup(virQEMUDriverPtr driver,
 
 static int
 qemuInitCgroup(virQEMUDriverPtr driver,
-               virDomainObjPtr vm)
+               virDomainObjPtr vm,
+               size_t nnicindexes,
+               int *nicindexes)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -769,7 +771,7 @@ qemuInitCgroup(virQEMUDriverPtr driver,
                             NULL,
                             vm->pid,
                             false,
-                            0, NULL,
+                            nnicindexes, nicindexes,
                             vm->def->resource->partition,
                             cfg->cgroupControllers,
                             &priv->cgroup) < 0) {
@@ -855,7 +857,9 @@ qemuConnectCgroup(virQEMUDriverPtr driver,
 
 int
 qemuSetupCgroup(virQEMUDriverPtr driver,
-                virDomainObjPtr vm)
+                virDomainObjPtr vm,
+                size_t nnicindexes,
+                int *nicindexes)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCapsPtr caps = NULL;
@@ -867,7 +871,7 @@ qemuSetupCgroup(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (qemuInitCgroup(driver, vm) < 0)
+    if (qemuInitCgroup(driver, vm, nnicindexes, nicindexes) < 0)
         return -1;
 
     if (!priv->cgroup)
@@ -1023,7 +1027,6 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
         /* If we don't know VCPU<->PID mapping or all vcpu runs in the same
          * thread, we cannot control each vcpu.
          */
-        VIR_WARN("Unable to get vcpus' pids.");
         return 0;
     }
 

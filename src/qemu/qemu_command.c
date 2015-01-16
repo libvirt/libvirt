@@ -289,7 +289,8 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
                         virDomainNetDefPtr net,
                         virQEMUCapsPtr qemuCaps,
                         int *tapfd,
-                        size_t *tapfdSize)
+                        size_t *tapfdSize,
+                        int *nicindex)
 {
     const char *brname;
     int ret = -1;
@@ -330,6 +331,8 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
             virDomainAuditNetDevice(def, net, tunpath, false);
             goto cleanup;
         }
+        if (virNetDevGetIndex(net->ifname, nicindex) < 0)
+            goto cleanup;
         if (virDomainNetGetActualBridgeMACTableManager(net)
             == VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_LIBVIRT) {
             /* libvirt is managing the FDB of the bridge this device
@@ -7425,7 +7428,8 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
                               int vlan,
                               int bootindex,
                               virNetDevVPortProfileOp vmop,
-                              bool standalone)
+                              bool standalone,
+                              int *nicindex)
 {
     int ret = -1;
     char *nic = NULL, *host = NULL;
@@ -7438,6 +7442,8 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     int actualType = virDomainNetGetActualType(net);
     virNetDevBandwidthPtr actualBandwidth;
     size_t i;
+
+    *nicindex = -1;
 
     if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER)
         return qemuBuildVhostuserCommandLine(cmd, def, net, qemuCaps);
@@ -7475,7 +7481,8 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
         memset(tapfd, -1, tapfdSize * sizeof(tapfd[0]));
 
         if (qemuNetworkIfaceConnect(def, driver, net,
-                                    qemuCaps, tapfd, &tapfdSize) < 0)
+                                    qemuCaps, tapfd,
+                                    &tapfdSize, nicindex) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
         if (VIR_ALLOC(tapfd) < 0 || VIR_ALLOC(tapfdName) < 0)
@@ -7830,7 +7837,9 @@ qemuBuildCommandLine(virConnectPtr conn,
                      qemuBuildCommandLineCallbacksPtr callbacks,
                      bool standalone,
                      bool enableFips,
-                     virBitmapPtr nodeset)
+                     virBitmapPtr nodeset,
+                     size_t *nnicindexes,
+                     int **nicindexes)
 {
     virErrorPtr originalError = NULL;
     size_t i, j;
@@ -7874,6 +7883,9 @@ qemuBuildCommandLine(virConnectPtr conn,
               qemuCaps, migrateFrom, migrateFd, snapshot, vmop);
 
     virUUIDFormat(def->uuid, uuid);
+
+    *nnicindexes = 0;
+    *nicindexes = NULL;
 
     emulator = def->emulator;
 
@@ -8931,10 +8943,15 @@ qemuBuildCommandLine(virConnectPtr conn,
             else
                 vlan = i;
 
+            if (VIR_EXPAND_N(*nicindexes, *nnicindexes, 1) < 0)
+                goto error;
+
             if (qemuBuildInterfaceCommandLine(cmd, driver, def, net,
                                               qemuCaps, vlan, bootNet, vmop,
-                                              standalone) < 0)
+                                              standalone,
+                                              &((*nicindexes)[*nnicindexes - 1])) < 0)
                 goto error;
+
             last_good_net = i;
             bootNet = 0;
         }

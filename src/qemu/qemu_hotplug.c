@@ -846,6 +846,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char **tapfdName = NULL;
     int *tapfd = NULL;
+    int nicindex = -1;
     size_t tapfdSize = 0;
     char **vhostfdName = NULL;
     int *vhostfd = NULL;
@@ -915,7 +916,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
             goto cleanup;
         memset(vhostfd, -1, sizeof(*vhostfd) * vhostfdSize);
         if (qemuNetworkIfaceConnect(vm->def, driver, net,
-                                    priv->qemuCaps, tapfd, &tapfdSize) < 0)
+                                    priv->qemuCaps, tapfd, &tapfdSize,
+                                    &nicindex) < 0)
             goto cleanup;
         iface_connected = true;
         if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, vhostfd, &vhostfdSize) < 0)

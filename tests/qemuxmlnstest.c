@@ -44,6 +44,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
     char *log = NULL;
     char *emulator = NULL;
     virCommandPtr cmd = NULL;
+    size_t nnicindexes = 0;
+    int *nicindexes = NULL;
 
     if (!(conn = virGetConnect()))
         goto fail;
@@ -119,7 +121,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      vmdef, &monitor_chr, json, extraFlags,
                                      migrateFrom, migrateFd, NULL,
                                      VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
-                                     &testCallbacks, false, false, NULL)))
+                                     &testCallbacks, false, false, NULL,
+                                     &nnicindexes, &nicindexes)))
         goto fail;
 
     if (!virtTestOOMActive()) {
@@ -155,6 +158,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     ret = 0;
 
  fail:
+    VIR_FREE(nicindexes);
     VIR_FREE(log);
     VIR_FREE(emulator);
     VIR_FREE(expectargv);
