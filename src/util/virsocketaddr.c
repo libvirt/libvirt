@@ -850,7 +850,7 @@ virSocketAddrGetIpPrefix(const virSocketAddr *address,
         }
         return -1;
     } else if (VIR_SOCKET_ADDR_IS_FAMILY(address, AF_INET6)) {
-        if (address->data.inet6.sin6_addr.s6_addr == 0)
+        if (virSocketAddrIsWildcard(address))
             return 0;
         return 64;
     }
