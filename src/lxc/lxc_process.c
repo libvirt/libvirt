@@ -748,7 +748,9 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
                                 size_t nttyFDs,
                                 int *files,
                                 size_t nfiles,
-                                int handshakefd)
+                                int handshakefd,
+                                int logfd,
+                                const char *pidfile)
 {
     size_t i;
     char *filterstr;
@@ -810,12 +812,15 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
 
     virCommandAddArg(cmd, "--handshake");
     virCommandAddArgFormat(cmd, "%d", handshakefd);
-    virCommandAddArg(cmd, "--background");
 
     for (i = 0; i < nveths; i++)
         virCommandAddArgList(cmd, "--veth", veths[i], NULL);
 
     virCommandPassFD(cmd, handshakefd, 0);
+    virCommandDaemonize(cmd);
+    virCommandSetPidFile(cmd, pidfile);
+    virCommandSetOutputFD(cmd, &logfd);
+    virCommandSetErrorFD(cmd, &logfd);
 
     return cmd;
  cleanup:
@@ -1187,10 +1192,10 @@ int virLXCProcessStart(virConnectPtr conn,
                                                 nveths, veths,
                                                 ttyFDs, nttyFDs,
                                                 files, nfiles,
-                                                handshakefds[1])))
+                                                handshakefds[1],
+                                                logfd,
+                                                pidfile)))
         goto cleanup;
-    virCommandSetOutputFD(cmd, &logfd);
-    virCommandSetErrorFD(cmd, &logfd);
 
     /* now that we know it is about to start call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
@@ -1243,28 +1248,7 @@ int virLXCProcessStart(virConnectPtr conn,
         goto cleanup;
     }
 
-
-    if (VIR_CLOSE(handshakefds[1]) < 0) {
-        virReportSystemError(errno, "%s", _("could not close handshake fd"));
-        goto cleanup;
-    }
-
-    /* Connect to the controller as a client *first* because
-     * this will block until the child has written their
-     * pid file out to disk & created their cgroup */
-    if (!(priv->monitor = virLXCProcessConnectMonitor(driver, vm))) {
-        /* Intentionally overwrite the real monitor error message,
-         * since a better one is almost always found in the logs
-         */
-        if (virLXCProcessReadLogOutput(vm, logfile, pos, ebuf, sizeof(ebuf)) > 0) {
-            virResetLastError();
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("guest failed to start: %s"), ebuf);
-        }
-        goto cleanup;
-    }
-
-    /* And get its pid */
+    /* It has started running, so get its pid */
     if ((r = virPidFileReadPath(pidfile, &vm->pid)) < 0) {
         if (virLXCProcessReadLogOutput(vm, logfile, pos, ebuf, sizeof(ebuf)) > 0)
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1276,6 +1260,35 @@ int virLXCProcessStart(virConnectPtr conn,
         goto cleanup;
     }
 
+    priv->stopReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
+    priv->wantReboot = false;
+    vm->def->id = vm->pid;
+    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
+    priv->doneStopEvent = false;
+
+    if (VIR_CLOSE(handshakefds[1]) < 0) {
+        virReportSystemError(errno, "%s", _("could not close handshake fd"));
+        goto error;
+    }
+
+    if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
+        driver->inhibitCallback(true, driver->inhibitOpaque);
+
+    if (lxcContainerWaitForContinue(handshakefds[0]) < 0) {
+        char out[1024];
+
+        if (!(virLXCProcessReadLogOutput(vm, logfile, pos, out, 1024) < 0)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("guest failed to start: %s"), out);
+        }
+
+        goto error;
+    }
+
+    /* We know the cgroup must exist by this synchronization
+     * point so lets detect that first, since it gives us a
+     * more reliable way to kill everything off if something
+     * goes wrong from here onwards ... */
     if (virCgroupNewDetectMachine(vm->def->name, "lxc", vm->pid,
                                   vm->def->resource ?
                                   vm->def->resource->partition :
@@ -1290,23 +1303,16 @@ int virLXCProcessStart(virConnectPtr conn,
         goto error;
     }
 
-    priv->stopReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
-    priv->wantReboot = false;
-    vm->def->id = vm->pid;
-    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
-    priv->doneStopEvent = false;
-
-    if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
-        driver->inhibitCallback(true, driver->inhibitOpaque);
-
-    if (lxcContainerWaitForContinue(handshakefds[0]) < 0) {
-        char out[1024];
-
-        if (!(virLXCProcessReadLogOutput(vm, logfile, pos, out, 1024) < 0)) {
+    /* And we can get the first monitor connection now too */
+    if (!(priv->monitor = virLXCProcessConnectMonitor(driver, vm))) {
+        /* Intentionally overwrite the real monitor error message,
+         * since a better one is almost always found in the logs
+         */
+        if (virLXCProcessReadLogOutput(vm, logfile, pos, ebuf, sizeof(ebuf)) > 0) {
+            virResetLastError();
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("guest failed to start: %s"), out);
+                           _("guest failed to start: %s"), ebuf);
         }
-
         goto error;
     }
 
