@@ -463,7 +463,9 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
 
 
 virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
-                                pid_t initpid)
+                                pid_t initpid,
+                                size_t nnicindexes,
+                                int *nicindexes)
 {
     virCgroupPtr cgroup = NULL;
 
@@ -481,7 +483,7 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
                             NULL,
                             initpid,
                             true,
-                            0, NULL,
+                            nnicindexes, nicindexes,
                             def->resource->partition,
                             -1,
                             &cgroup) < 0)

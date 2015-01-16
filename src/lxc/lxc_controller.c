@@ -110,6 +110,9 @@ struct _virLXCController {
     size_t nveths;
     char **veths;
 
+    size_t nnicindexes;
+    int *nicindexes;
+
     size_t npassFDs;
     int *passFDs;
 
@@ -260,6 +263,7 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
     for (i = 0; i < ctrl->nveths; i++)
         VIR_FREE(ctrl->veths[i]);
     VIR_FREE(ctrl->veths);
+    VIR_FREE(ctrl->nicindexes);
 
     for (i = 0; i < ctrl->npassFDs; i++)
         VIR_FORCE_CLOSE(ctrl->passFDs[i]);
@@ -341,6 +345,51 @@ static int virLXCControllerValidateNICs(virLXCControllerPtr ctrl)
     }
 
     return 0;
+}
+
+
+static int virLXCControllerGetNICIndexes(virLXCControllerPtr ctrl)
+{
+    size_t i;
+    int ret = -1;
+
+    VIR_DEBUG("Getting nic indexes");
+    for (i = 0; i < ctrl->def->nnets; i++) {
+        int nicindex = -1;
+        switch (ctrl->def->nets[i]->type) {
+        case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        case VIR_DOMAIN_NET_TYPE_NETWORK:
+            if (ctrl->def->nets[i]->ifname == NULL)
+                continue;
+            if (virNetDevGetIndex(ctrl->def->nets[i]->ifname,
+                                  &nicindex) < 0)
+                goto cleanup;
+            if (VIR_EXPAND_N(ctrl->nicindexes,
+                             ctrl->nnicindexes,
+                             1) < 0)
+                goto cleanup;
+            VIR_DEBUG("Index %d for %s", nicindex,
+                      ctrl->def->nets[i]->ifname);
+            ctrl->nicindexes[ctrl->nnicindexes-1] = nicindex;
+            break;
+
+        case VIR_DOMAIN_NET_TYPE_USER:
+        case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        case VIR_DOMAIN_NET_TYPE_SERVER:
+        case VIR_DOMAIN_NET_TYPE_CLIENT:
+        case VIR_DOMAIN_NET_TYPE_MCAST:
+        case VIR_DOMAIN_NET_TYPE_INTERNAL:
+        case VIR_DOMAIN_NET_TYPE_DIRECT:
+        case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+        default:
+            break;
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
 }
 
 
@@ -732,7 +781,9 @@ static int virLXCControllerSetupCgroupLimits(virLXCControllerPtr ctrl)
     nodeset = virDomainNumatuneGetNodeset(ctrl->def->numatune, auto_nodeset, -1);
 
     if (!(ctrl->cgroup = virLXCCgroupCreate(ctrl->def,
-                                            ctrl->initpid)))
+                                            ctrl->initpid,
+                                            ctrl->nnicindexes,
+                                            ctrl->nicindexes)))
         goto cleanup;
 
     if (virCgroupAddTask(ctrl->cgroup, getpid()) < 0)
@@ -2492,6 +2543,9 @@ int main(int argc, char *argv[])
     }
 
     if (virLXCControllerValidateNICs(ctrl) < 0)
+        goto cleanup;
+
+    if (virLXCControllerGetNICIndexes(ctrl) < 0)
         goto cleanup;
 
     if (virLXCControllerValidateConsoles(ctrl) < 0)

@@ -28,7 +28,9 @@
 # include "virusb.h"
 
 virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
-                                pid_t initpid);
+                                pid_t initpid,
+                                size_t nnicindexes,
+                                int *nicindexes);
 virCgroupPtr virLXCCgroupJoin(virDomainDefPtr def);
 int virLXCCgroupSetup(virDomainDefPtr def,
                       virCgroupPtr cgroup,
