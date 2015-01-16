@@ -338,18 +338,22 @@ int virSystemdTerminateMachine(const char *name,
     int ret;
     DBusConnection *conn;
     char *machinename = NULL;
+    virError error;
+
+    memset(&error, 0, sizeof(error));
 
     ret = virDBusIsServiceEnabled("org.freedesktop.machine1");
     if (ret < 0)
-        return ret;
+        goto cleanup;
 
     if ((ret = virDBusIsServiceRegistered("org.freedesktop.systemd1")) < 0)
-        return ret;
-
-    if (!(conn = virDBusGetSystemBus()))
-        return -1;
+        goto cleanup;
 
     ret = -1;
+
+    if (!(conn = virDBusGetSystemBus()))
+        goto cleanup;
+
     if (!(machinename = virSystemdMakeMachineName(name, drivername, privileged)))
         goto cleanup;
 
@@ -366,7 +370,7 @@ int virSystemdTerminateMachine(const char *name,
     VIR_DEBUG("Attempting to terminate machine via systemd");
     if (virDBusCallMethod(conn,
                           NULL,
-                          NULL,
+                          &error,
                           "org.freedesktop.machine1",
                           "/org/freedesktop/machine1",
                           "org.freedesktop.machine1.Manager",
@@ -375,9 +379,18 @@ int virSystemdTerminateMachine(const char *name,
                           machinename) < 0)
         goto cleanup;
 
+    if (error.code == VIR_ERR_ERROR &&
+        !STREQ_NULLABLE("org.freedesktop.machine1.NoSuchMachine",
+                        error.str1)) {
+        virReportErrorObject(&error);
+        goto cleanup;
+    }
+
     ret = 0;
 
  cleanup:
+    virResetError(&error);
+
     VIR_FREE(machinename);
     return ret;
 }
