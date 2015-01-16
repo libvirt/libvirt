@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2014 Red Hat, Inc.
+ * Copyright (C) 2010-2015 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_process.c: LXC process lifecycle management
@@ -1013,6 +1013,7 @@ int virLXCProcessStart(virConnectPtr conn,
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
     virCgroupPtr selfcgroup;
     int status;
+    char *pidfile = NULL;
 
     if (virCgroupNewSelf(&selfcgroup) < 0)
         return -1;
@@ -1063,7 +1064,10 @@ int virLXCProcessStart(virConnectPtr conn,
 
     if (virAsprintf(&logfile, "%s/%s.log",
                     cfg->logDir, vm->def->name) < 0)
-        return -1;
+        goto cleanup;
+
+    if (!(pidfile = virPidFileBuildPath(cfg->stateDir, vm->def->name)))
+        goto cleanup;
 
     if (!(caps = virLXCDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -1261,14 +1265,14 @@ int virLXCProcessStart(virConnectPtr conn,
     }
 
     /* And get its pid */
-    if ((r = virPidFileRead(cfg->stateDir, vm->def->name, &vm->pid)) < 0) {
+    if ((r = virPidFileReadPath(pidfile, &vm->pid)) < 0) {
         if (virLXCProcessReadLogOutput(vm, logfile, pos, ebuf, sizeof(ebuf)) > 0)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("guest failed to start: %s"), ebuf);
         else
             virReportSystemError(-r,
-                                 _("Failed to read pid file %s/%s.pid"),
-                                 cfg->stateDir, vm->def->name);
+                                 _("Failed to read pid file %s"),
+                                 pidfile);
         goto cleanup;
     }
 
@@ -1387,6 +1391,7 @@ int virLXCProcessStart(virConnectPtr conn,
     VIR_FREE(ttyFDs);
     VIR_FORCE_CLOSE(handshakefds[0]);
     VIR_FORCE_CLOSE(handshakefds[1]);
+    VIR_FREE(pidfile);
     VIR_FREE(logfile);
     virObjectUnref(cfg);
     virObjectUnref(caps);
