@@ -463,7 +463,13 @@
     <dl>
       <dt><code>name</code></dt>
       <dd>Providing a name for the volume which is unique to the pool.
-        This is mandatory when defining a volume.  <span class="since">Since 0.4.1</span></dd>
+        This is mandatory when defining a volume. For a disk pool, the
+        name must be combination of the <code>source</code> device path
+        device and next partition number to be created. For example, if
+        the <code>source</code> device path is /dev/sdb and there are no
+        partitions on the disk, then the name must be sdb1 with the next
+        name being sdb2 and so on.
+        <span class="since">Since 0.4.1</span></dd>
       <dt><code>key</code></dt>
       <dd>Providing an identifier for the volume which identifies a
           single volume. In some cases it's possible to have two distinct keys
@@ -553,7 +559,9 @@
         <span class="since">Since 0.4.1</span></dd>
       <dt><code>format</code></dt>
       <dd>Provides information about the pool specific volume format.
-        For disk pools it will provide the partition type. For filesystem
+        For disk pools it will provide the partition table format type, but is
+        not preserved after a pool refresh or libvirtd restart. Use extended
+        in order to create an extended disk extent partition. For filesystem
         or directory pools it will provide the file format type, eg cow,
         qcow, vmdk, raw. If omitted when creating a volume, the pool's
         default format will be used. The actual format is specified via

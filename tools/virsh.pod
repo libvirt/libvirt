@@ -2983,7 +2983,11 @@ Create and start a pool object from the XML I<file>.
 Create and start a pool object I<name> from the raw parameters.  If
 I<--print-xml> is specified, then print the XML of the pool object
 without creating the pool.  Otherwise, the pool has the specified
-I<type>.
+I<type>. When using B<pool-create-as> for a pool of I<type> "disk",
+the existing partitions found on the I<--source-dev path> will be used
+to populate the disk pool. Therefore, it is suggested to use
+B<pool-define-as> and B<pool-build> with the I<--overwrite> in order
+to properly initialize the disk pool.
 
 [I<--source-host hostname>] provides the source hostname for pools backed
 by storage from a remote server (pool types netfs, iscsi, rbd, sheepdog,
@@ -3175,13 +3179,20 @@ I<vol-name-or-key-or-path>] [I<--backing-vol-format> I<string>]
 Create a volume from a set of arguments.
 I<pool-or-uuid> is the name or UUID of the storage pool to create the volume
 in.
-I<name> is the name of the new volume.
+I<name> is the name of the new volume. For a disk pool, this must match the
+partition name as determined from the pool's source device path and the next
+available partition. For example, a source device path of /dev/sdb and there
+are no partitions on the disk, then the name must be sdb1 with the next
+name being sdb2 and so on.
 I<capacity> is the size of the volume to be created, as a scaled integer
 (see B<NOTES> above), defaulting to bytes if there is no suffix.
 I<--allocation> I<size> is the initial size to be allocated in the volume,
 also as a scaled integer defaulting to bytes.
 I<--format> I<string> is used in file based storage pools to specify the volume
-file format to use; raw, bochs, qcow, qcow2, vmdk, qed.
+file format to use; raw, bochs, qcow, qcow2, vmdk, qed. Use extended for disk
+storage pools in order to create an extended partition (other values are
+validity checked but not preserved when libvirtd is restarted or the pool
+is refreshed).
 I<--backing-vol> I<vol-name-or-key-or-path> is the source backing
 volume to be used if taking a snapshot of an existing volume.
 I<--backing-vol-format> I<string> is the format of the snapshot backing volume;

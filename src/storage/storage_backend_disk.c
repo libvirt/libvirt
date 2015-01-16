@@ -47,16 +47,23 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
                                  char **const groups,
                                  virStorageVolDefPtr vol)
 {
-    char *tmp, *devpath;
+    char *tmp, *devpath, *partname;
+
+    /* Prepended path will be same for all partitions, so we can
+     * strip the path to form a reasonable pool-unique name
+     */
+    if ((tmp = strrchr(groups[0], '/')))
+        partname = tmp + 1;
+    else
+        partname = groups[0];
 
     if (vol == NULL) {
+        /* This is typically a reload/restart/refresh path where
+         * we're discovering the existing partitions for the pool
+         */
         if (VIR_ALLOC(vol) < 0)
             return -1;
-        /* Prepended path will be same for all partitions, so we can
-         * strip the path to form a reasonable pool-unique name
-         */
-        tmp = strrchr(groups[0], '/');
-        if (VIR_STRDUP(vol->name, tmp ? tmp + 1 : groups[0]) < 0 ||
+        if (VIR_STRDUP(vol->name, partname) < 0 ||
             VIR_APPEND_ELEMENT_COPY(pool->volumes.objs,
                                     pool->volumes.count, vol) < 0) {
             virStorageVolDefFree(vol);
@@ -78,6 +85,17 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
         VIR_FREE(devpath);
         if (vol->target.path == NULL)
             return -1;
+    }
+
+    /* Enforce provided vol->name is the same as what parted created.
+     * We do this after filling target.path so that we have a chance at
+     * deleting the partition with this failure from CreateVol path
+     */
+    if (STRNEQ(vol->name, partname)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid partition name '%s', expected '%s'"),
+                       vol->name, partname);
+        return -1;
     }
 
     if (vol->key == NULL) {
