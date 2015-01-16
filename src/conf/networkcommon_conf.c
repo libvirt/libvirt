@@ -52,6 +52,8 @@ struct _virNetworkRouteDef {
 void
 virNetworkRouteDefFree(virNetworkRouteDefPtr def)
 {
+    if (!def)
+        return;
     VIR_FREE(def->family);
     VIR_FREE(def);
 }
