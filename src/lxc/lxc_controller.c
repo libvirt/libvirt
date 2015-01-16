@@ -680,8 +680,9 @@ static int virLXCControllerGetNumadAdvice(virLXCControllerPtr ctrl,
  * virLXCControllerSetupResourceLimits
  * @ctrl: the controller state
  *
- * Creates a cgroup for the container, moves the task inside,
- * and sets resource limits
+ * Sets up the non-cgroup based resource limits that need
+ * to be inherited by the child process across clone()/exec().
+ * The cgroup limits are setup later
  *
  * Returns 0 on success or -1 in case of error
  */
@@ -702,6 +703,37 @@ static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl)
         goto cleanup;
 
     if (virLXCControllerSetupCpuAffinity(ctrl) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virBitmapFree(auto_nodeset);
+    return ret;
+}
+
+
+/*
+ * Creates the cgroup and sets up the various limits associated
+ * with it
+ */
+static int virLXCControllerSetupCgroupLimits(virLXCControllerPtr ctrl)
+{
+    virBitmapPtr auto_nodeset = NULL;
+    int ret = -1;
+    virBitmapPtr nodeset = NULL;
+
+    VIR_DEBUG("Setting up cgroup resource limits");
+
+    if (virLXCControllerGetNumadAdvice(ctrl, &auto_nodeset) < 0)
+        goto cleanup;
+
+    nodeset = virDomainNumatuneGetNodeset(ctrl->def->numatune, auto_nodeset, -1);
+
+    if (!(ctrl->cgroup = virLXCCgroupCreate(ctrl->def,
+                                            ctrl->initpid)))
+        goto cleanup;
+
+    if (virCgroupAddTask(ctrl->cgroup, getpid()) < 0)
         goto cleanup;
 
     if (virLXCCgroupSetup(ctrl->def, ctrl->cgroup, nodeset) < 0)
@@ -2224,6 +2256,9 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
     for (i = 0; i < ctrl->npassFDs; i++)
         VIR_FORCE_CLOSE(ctrl->passFDs[i]);
 
+    if (virLXCControllerSetupCgroupLimits(ctrl) < 0)
+        goto cleanup;
+
     if (virLXCControllerSetupUserns(ctrl) < 0)
         goto cleanup;
 
@@ -2452,9 +2487,6 @@ int main(int argc, char *argv[])
         goto cleanup;
 
     if (virLXCControllerValidateConsoles(ctrl) < 0)
-        goto cleanup;
-
-    if (!(ctrl->cgroup = virLXCCgroupCreate(ctrl->def)))
         goto cleanup;
 
     if (virLXCControllerSetupServer(ctrl) < 0)

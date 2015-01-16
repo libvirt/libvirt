@@ -462,7 +462,8 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
 }
 
 
-virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def)
+virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
+                                pid_t initpid)
 {
     virCgroupPtr cgroup = NULL;
 
@@ -473,18 +474,12 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def)
         goto cleanup;
     }
 
-    /*
-     * XXX
-     * We should pass the PID of the LXC init process
-     * not ourselves, but this requires some more
-     * refactoring. We should also pass the root dir
-     */
     if (virCgroupNewMachine(def->name,
                             "lxc",
                             true,
                             def->uuid,
                             NULL,
-                            getpid(),
+                            initpid,
                             true,
                             0, NULL,
                             def->resource->partition,
