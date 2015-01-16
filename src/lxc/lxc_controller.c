@@ -100,6 +100,7 @@ typedef struct _virLXCController virLXCController;
 typedef virLXCController *virLXCControllerPtr;
 struct _virLXCController {
     char *name;
+    virDomainObjPtr vm;
     virDomainDefPtr def;
 
     int handshakeFd;
@@ -175,11 +176,12 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
                                           ctrl->name)) == NULL)
         goto error;
 
-    if ((ctrl->def = virDomainDefParseFile(configFile,
-                                           caps, xmlopt,
-                                           1 << VIR_DOMAIN_VIRT_LXC,
-                                           0)) == NULL)
+    if ((ctrl->vm = virDomainObjParseFile(configFile,
+                                          caps, xmlopt,
+                                          1 << VIR_DOMAIN_VIRT_LXC,
+                                          0)) == NULL)
         goto error;
+    ctrl->def = ctrl->vm->def;
 
     if ((ctrl->timerShutdown = virEventAddTimeout(-1,
                                                   virLXCControllerQuitTimer, ctrl,
@@ -269,7 +271,7 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
 
     VIR_FREE(ctrl->devptmx);
 
-    virDomainDefFree(ctrl->def);
+    virObjectUnref(ctrl->vm);
     VIR_FREE(ctrl->name);
 
     if (ctrl->timerShutdown != -1)

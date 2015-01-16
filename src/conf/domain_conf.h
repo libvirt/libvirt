@@ -2489,6 +2489,11 @@ virDomainDefPtr virDomainDefParseNode(xmlDocPtr doc,
                                       virDomainXMLOptionPtr xmlopt,
                                       unsigned int expectedVirtTypes,
                                       unsigned int flags);
+virDomainObjPtr virDomainObjParseFile(const char *filename,
+                                      virCapsPtr caps,
+                                      virDomainXMLOptionPtr xmlopt,
+                                      unsigned int expectedVirtTypes,
+                                      unsigned int flags);
 
 bool virDomainDefCheckABIStability(virDomainDefPtr src,
                                    virDomainDefPtr dst);

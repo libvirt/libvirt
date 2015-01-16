@@ -14634,7 +14634,7 @@ virDomainObjParseNode(xmlDocPtr xml,
 }
 
 
-static virDomainObjPtr
+virDomainObjPtr
 virDomainObjParseFile(const char *filename,
                       virCapsPtr caps,
                       virDomainXMLOptionPtr xmlopt,

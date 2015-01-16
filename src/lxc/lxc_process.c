@@ -821,6 +821,9 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
     virCommandSetPidFile(cmd, pidfile);
     virCommandSetOutputFD(cmd, &logfd);
     virCommandSetErrorFD(cmd, &logfd);
+    /* So we can pause before exec'ing the controller to
+     * write the live domain status XML with the PID */
+    virCommandRequireHandshake(cmd);
 
     return cmd;
  cleanup:
@@ -1169,10 +1172,6 @@ int virLXCProcessStart(virConnectPtr conn,
     if (virLXCProcessSetupInterfaces(conn, vm->def, &nveths, &veths) < 0)
         goto cleanup;
 
-    /* Save the configuration for the controller */
-    if (virDomainSaveConfig(cfg->stateDir, vm->def) < 0)
-        goto cleanup;
-
     if ((logfd = open(logfile, O_WRONLY | O_APPEND | O_CREAT,
              S_IRUSR|S_IWUSR)) < 0) {
         virReportSystemError(errno,
@@ -1271,6 +1270,23 @@ int virLXCProcessStart(virConnectPtr conn,
         goto error;
     }
 
+    if (VIR_CLOSE(handshakefds[1]) < 0) {
+        virReportSystemError(errno, "%s", _("could not close handshake fd"));
+        goto error;
+    }
+
+    if (virCommandHandshakeWait(cmd) < 0)
+        goto error;
+
+    /* Write domain status to disk for the controller to
+     * read when it starts */
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        goto error;
+
+    /* Allow the child to exec the controller */
+    if (virCommandHandshakeNotify(cmd) < 0)
+        goto error;
+
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
@@ -1327,15 +1343,6 @@ int virLXCProcessStart(virConnectPtr conn,
 
     /* We don't need the temporary NIC names anymore, clear them */
     virLXCProcessCleanInterfaces(vm->def);
-
-    /* Write domain status to disk.
-     *
-     * XXX: Earlier we wrote the plain "live" domain XML to this
-     * location for the benefit of libvirt_lxc. We're now overwriting
-     * it with the live status XML instead. This is a (currently
-     * harmless) inconsistency we should fix one day */
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
-        goto error;
 
     /* finally we can call the 'started' hook script if any */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
