@@ -215,6 +215,12 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
         ;;
     esac
 
+    case $WARN_CFLAGS in
+        *-Wsuggest-attribute=format*)
+           AC_DEFINE([HAVE_SUGGEST_ATTRIBUTE_FORMAT], [1], [Whether -Wsuggest-attribute=format works])
+        ;;
+    esac
+
     # Silence certain warnings in gnulib, and use improved glibc headers
     AC_DEFINE([lint], [1],
       [Define to 1 if the compiler is checking for lint.])
