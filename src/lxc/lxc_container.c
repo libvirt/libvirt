@@ -274,6 +274,10 @@ static int lxcContainerSetupFDs(int *ttyfd,
     size_t i;
     size_t j;
 
+    VIR_DEBUG("Logging from the container init will now cease "
+              "as the FDs are about to be closed for exec of "
+              "the container init process");
+
     if (setsid() < 0) {
         virReportSystemError(errno, "%s",
                              _("setsid failed"));
@@ -2250,6 +2254,7 @@ static int lxcContainerChild(void *data)
     if (virSecurityManagerSetProcessLabel(argv->securityDriver, vmDef) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Setting up inherited FDs");
     VIR_FORCE_CLOSE(argv->handshakefd);
     VIR_FORCE_CLOSE(argv->monitor);
     if (lxcContainerSetupFDs(&ttyfd,
@@ -2264,11 +2269,13 @@ static int lxcContainerChild(void *data)
     VIR_FORCE_CLOSE(argv->handshakefd);
 
     if (ret == 0) {
+        VIR_DEBUG("Executing init binary");
         /* this function will only return if an error occurred */
         ret = virCommandExec(cmd);
     }
 
     if (ret != 0) {
+        VIR_DEBUG("Tearing down container");
         virErrorPtr err = virGetLastError();
         if (err && err->message)
             fprintf(stderr, "%s\n", err->message);
@@ -2379,6 +2386,7 @@ int lxcContainerStart(virDomainDefPtr def,
         cflags |= CLONE_NEWNET;
     }
 
+    VIR_DEBUG("Cloning container init process");
     pid = clone(lxcContainerChild, stacktop, cflags, &args);
     VIR_FREE(stack);
     VIR_DEBUG("clone() completed, new container PID is %d", pid);

@@ -693,6 +693,8 @@ static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl)
     virBitmapPtr nodeset = NULL;
     virDomainNumatuneMemMode mode;
 
+    VIR_DEBUG("Setting up process resource limits");
+
     if (virLXCControllerGetNumadAdvice(ctrl, &auto_nodeset) < 0)
         goto cleanup;
 
@@ -1263,9 +1265,12 @@ static int virLXCControllerSetupUserns(virLXCControllerPtr ctrl)
     int ret = -1;
 
     /* User namespace is disabled for container */
-    if (ctrl->def->idmap.nuidmap == 0)
+    if (ctrl->def->idmap.nuidmap == 0) {
+        VIR_DEBUG("No uid map, skipping userns setup");
         return 0;
+    }
 
+    VIR_DEBUG("Setting up userns maps");
     if (virAsprintf(&uid_map, "/proc/%d/uid_map", ctrl->initpid) < 0)
         goto cleanup;
 
@@ -1866,9 +1871,12 @@ static int lxcSetPersonality(virDomainDefPtr def)
 {
     virArch altArch;
 
+    VIR_DEBUG("Checking for 32-bit personality");
     altArch = lxcContainerGetAlt32bitArch(virArchFromHost());
     if (altArch &&
         (def->os.arch == altArch)) {
+        VIR_DEBUG("Setting personality to %s",
+                  virArchToString(altArch));
         if (personality(PER_LINUX32) < 0) {
             virReportSystemError(errno, _("Unable to request personality for %s on %s"),
                                  virArchToString(altArch),
