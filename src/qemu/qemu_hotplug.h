@@ -100,7 +100,9 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
 int qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainRNGDefPtr rng);
-
+int qemuDomainDetachRNGDevice(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              virDomainRNGDefPtr rng);
 
 int
 qemuDomainChrInsert(virDomainDefPtr vmdef,

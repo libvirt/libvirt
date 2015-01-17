@@ -2990,6 +2990,58 @@ qemuDomainRemoveChrDevice(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuDomainRemoveRNGDevice(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm,
+                          virDomainRNGDefPtr rng)
+{
+    virObjectEventPtr event;
+    char *charAlias = NULL;
+    char *objAlias = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    ssize_t idx;
+    int ret = -1;
+    int rc;
+
+    VIR_DEBUG("Removing RNG device %s from domain %p %s",
+              rng->info.alias, vm, vm->def->name);
+
+    if (virAsprintf(&objAlias, "obj%s", rng->info.alias) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&charAlias, "char%s", rng->info.alias) < 0)
+        goto cleanup;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    rc = qemuMonitorDelObject(priv->mon, objAlias);
+
+    if (rc == 0 && rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD)
+        ignore_value(qemuMonitorDetachCharDev(priv->mon, charAlias));
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        goto cleanup;
+
+    virDomainAuditRNG(vm, rng, NULL, "detach", rc == 0);
+
+    if (rc < 0)
+        goto cleanup;
+
+    if ((event = virDomainEventDeviceRemovedNewFromObj(vm, rng->info.alias)))
+        qemuDomainEventQueue(driver, event);
+
+    if ((idx = virDomainRNGFind(vm->def, rng)) >= 0)
+        virDomainRNGRemove(vm->def, idx);
+    qemuDomainReleaseDeviceAddress(vm, &rng->info, NULL);
+    virDomainRNGDefFree(rng);
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(charAlias);
+    VIR_FREE(objAlias);
+    return ret;
+}
+
+
 int
 qemuDomainRemoveDevice(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
@@ -3013,6 +3065,9 @@ qemuDomainRemoveDevice(virQEMUDriverPtr driver,
     case VIR_DOMAIN_DEVICE_CHR:
         ret = qemuDomainRemoveChrDevice(driver, vm, dev->data.chr);
         break;
+    case VIR_DOMAIN_DEVICE_RNG:
+        qemuDomainRemoveRNGDevice(driver, vm, dev->data.rng);
+        break;
 
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LEASE:
@@ -3027,7 +3082,6 @@ qemuDomainRemoveDevice(virQEMUDriverPtr driver,
     case VIR_DOMAIN_DEVICE_SMARTCARD:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
-    case VIR_DOMAIN_DEVICE_RNG:
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
@@ -3912,5 +3966,55 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
  cleanup:
     qemuDomainResetDeviceRemoval(vm);
     VIR_FREE(devstr);
+    return ret;
+}
+
+
+int
+qemuDomainDetachRNGDevice(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm,
+                          virDomainRNGDefPtr rng)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    ssize_t idx;
+    virDomainRNGDefPtr tmpRNG;
+    int rc;
+    int ret = -1;
+
+    if ((idx = virDomainRNGFind(vm->def, rng) < 0)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("device not present in domain configuration"));
+        return -1;
+    }
+
+    tmpRNG = vm->def->rngs[idx];
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("qemu does not support -device"));
+        return -1;
+    }
+
+    if (!tmpRNG->info.alias) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("alias not set for RNG device"));
+        return -1;
+    }
+
+    qemuDomainMarkDeviceForRemoval(vm, &tmpRNG->info);
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    rc = qemuMonitorDelDevice(priv->mon, tmpRNG->info.alias);
+    if (qemuDomainObjExitMonitor(driver, vm) || rc < 0)
+        goto cleanup;
+
+    rc = qemuDomainWaitForDeviceRemoval(vm);
+    if (rc == 0 || rc == 1)
+        ret = qemuDomainRemoveRNGDevice(driver, vm, tmpRNG);
+    else
+        ret = 0;
+
+ cleanup:
+    qemuDomainResetDeviceRemoval(vm);
     return ret;
 }
