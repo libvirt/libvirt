@@ -171,6 +171,10 @@ char *qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
                                 const char *configfd,
                                 virQEMUCapsPtr qemuCaps);
 
+char *qemuBuildRNGDevStr(virDomainDefPtr def,
+                         virDomainRNGDefPtr dev,
+                         virQEMUCapsPtr qemuCaps);
+
 int qemuOpenPCIConfig(virDomainHostdevDefPtr dev);
 
 /* Legacy, pre device support */

@@ -6217,21 +6217,19 @@ qemuBuildRNGBackendArgs(virCommandPtr cmd,
 }
 
 
-static int
-qemuBuildRNGDeviceArgs(virCommandPtr cmd,
-                       virDomainDefPtr def,
-                       virDomainRNGDefPtr dev,
-                       virQEMUCapsPtr qemuCaps)
+char *
+qemuBuildRNGDevStr(virDomainDefPtr def,
+                   virDomainRNGDefPtr dev,
+                   virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
 
     if (dev->model != VIR_DOMAIN_RNG_MODEL_VIRTIO ||
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_RNG)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("this qemu doesn't support RNG device type '%s'"),
                        virDomainRNGModelTypeToString(dev->model));
-        goto cleanup;
+        goto error;
     }
 
     if (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)
@@ -6252,16 +6250,15 @@ qemuBuildRNGDeviceArgs(virCommandPtr cmd,
     }
 
     if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
-        goto cleanup;
+        goto error;
+    if (virBufferCheckError(&buf) < 0)
+        goto error;
 
-    virCommandAddArg(cmd, "-device");
-    virCommandAddArgBuffer(cmd, &buf);
+    return virBufferContentAndReset(&buf);
 
-    ret = 0;
-
- cleanup:
+ error:
     virBufferFreeAndReset(&buf);
-    return ret;
+    return NULL;
 }
 
 
@@ -10160,13 +10157,16 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     for (i = 0; i < def->nrngs; i++) {
+        char *devstr;
         /* add the RNG source backend */
         if (qemuBuildRNGBackendArgs(cmd, def->rngs[i], qemuCaps) < 0)
             goto error;
 
         /* add the device */
-        if (qemuBuildRNGDeviceArgs(cmd, def, def->rngs[i], qemuCaps) < 0)
+        if (!(devstr = qemuBuildRNGDevStr(def, def->rngs[i], qemuCaps)))
             goto error;
+        virCommandAddArgList(cmd, "-device", devstr, NULL);
+        VIR_FREE(devstr);
     }
 
     if (def->nvram) {
