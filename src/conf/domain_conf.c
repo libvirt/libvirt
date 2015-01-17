@@ -12177,6 +12177,76 @@ virDomainChrRemove(virDomainDefPtr vmdef,
     return ret;
 }
 
+
+int
+virDomainRNGInsert(virDomainDefPtr def,
+                   virDomainRNGDefPtr rng,
+                   bool inplace)
+{
+    if (inplace)
+        return VIR_APPEND_ELEMENT_INPLACE(def->rngs, def->nrngs, rng);
+    else
+        return VIR_APPEND_ELEMENT(def->rngs, def->nrngs, rng);
+}
+
+
+ssize_t
+virDomainRNGFind(virDomainDefPtr def,
+                 virDomainRNGDefPtr rng)
+{
+    size_t i;
+
+    for (i = 0; i < def->nrngs; i++) {
+        virDomainRNGDefPtr tmp = def->rngs[i];
+
+        if (rng->model != tmp->model || rng->backend != tmp->backend)
+            continue;
+
+        if (rng->rate != tmp->rate || rng->period != tmp->period)
+            continue;
+
+        switch ((virDomainRNGBackend) rng->backend) {
+        case VIR_DOMAIN_RNG_BACKEND_RANDOM:
+            if (STRNEQ_NULLABLE(rng->source.file, tmp->source.file))
+                continue;
+            break;
+
+        case VIR_DOMAIN_RNG_BACKEND_EGD:
+            if (!virDomainChrSourceDefIsEqual(rng->source.chardev,
+                                              tmp->source.chardev))
+                continue;
+            break;
+
+        case VIR_DOMAIN_RNG_BACKEND_LAST:
+            break;
+        }
+
+        if (rng->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+            !virDomainDeviceInfoAddressIsEqual(&rng->info, &tmp->info))
+            continue;
+
+        break;
+    }
+
+    if (i < def->nrngs)
+        return i;
+
+    return -1;
+}
+
+
+virDomainRNGDefPtr
+virDomainRNGRemove(virDomainDefPtr def,
+                   size_t idx)
+{
+    virDomainRNGDefPtr ret = def->rngs[idx];
+
+    VIR_DELETE_ELEMENT(def->rngs, idx, def->nrngs);
+
+    return ret;
+}
+
+
 char *
 virDomainDefGetDefaultEmulator(virDomainDefPtr def,
                                virCapsPtr caps)

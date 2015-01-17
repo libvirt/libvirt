@@ -2665,6 +2665,12 @@ virDomainChrDefPtr
 virDomainChrRemove(virDomainDefPtr vmdef,
                    virDomainChrDefPtr chr);
 
+int virDomainRNGInsert(virDomainDefPtr def,
+                       virDomainRNGDefPtr rng,
+                       bool inplace);
+ssize_t virDomainRNGFind(virDomainDefPtr def, virDomainRNGDefPtr rng);
+virDomainRNGDefPtr virDomainRNGRemove(virDomainDefPtr def, size_t idx);
+
 int virDomainSaveXML(const char *configDir,
                      virDomainDefPtr def,
                      const char *xml);
