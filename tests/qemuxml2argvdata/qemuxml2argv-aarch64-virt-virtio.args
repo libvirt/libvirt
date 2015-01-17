@@ -11,5 +11,5 @@ LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
 -net user,vlan=0,name=hostnet0 -serial pty -chardev pty,id=charconsole1 \
 -device virtconsole,chardev=charconsole1,id=console1 \
 -device virtio-balloon-device,id=balloon0 \
--object rng-random,id=rng0,filename=/dev/random \
--device virtio-rng-device,rng=rng0
+-object rng-random,id=objrng0,filename=/dev/random \
+-device virtio-rng-device,rng=objrng0,id=rng0

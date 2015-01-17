@@ -10,5 +10,5 @@ id=virtio-disk0,bootindex=1 \
 -chardev pty,id=charconsole0 \
 -device virtconsole,chardev=charconsole0,id=console0 \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.000a \
--object rng-random,id=rng0,filename=/dev/hwrng \
--device virtio-rng-ccw,rng=rng0,devno=fe.0.0002
+-object rng-random,id=objrng0,filename=/dev/hwrng \
+-device virtio-rng-ccw,rng=objrng0,id=rng0,devno=fe.0.0002

@@ -6177,7 +6177,7 @@ qemuBuildRNGBackendArgs(virCommandPtr cmd,
             goto cleanup;
         }
 
-        virBufferAsprintf(&buf, "rng-random,id=%s,filename=%s",
+        virBufferAsprintf(&buf, "rng-random,id=obj%s,filename=%s",
                           dev->info.alias, dev->source.file);
 
         virCommandAddArg(cmd, "-object");
@@ -6200,7 +6200,7 @@ qemuBuildRNGBackendArgs(virCommandPtr cmd,
         virCommandAddArgList(cmd, "-chardev", backend, NULL);
 
         virCommandAddArg(cmd, "-object");
-        virCommandAddArgFormat(cmd, "rng-egd,chardev=char%s,id=%s",
+        virCommandAddArgFormat(cmd, "rng-egd,chardev=char%s,id=obj%s",
                                dev->info.alias, dev->info.alias);
         break;
 
@@ -6233,13 +6233,13 @@ qemuBuildRNGDevStr(virDomainDefPtr def,
     }
 
     if (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)
-        virBufferAsprintf(&buf, "virtio-rng-ccw,rng=%s", dev->info.alias);
+        virBufferAsprintf(&buf, "virtio-rng-ccw,rng=obj%s,id=%s", dev->info.alias, dev->info.alias);
     else if (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390)
-        virBufferAsprintf(&buf, "virtio-rng-s390,rng=%s", dev->info.alias);
+        virBufferAsprintf(&buf, "virtio-rng-s390,rng=obj%s,id=%s", dev->info.alias, dev->info.alias);
     else if (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO)
-        virBufferAsprintf(&buf, "virtio-rng-device,rng=%s", dev->info.alias);
+        virBufferAsprintf(&buf, "virtio-rng-device,rng=obj%s,id=%s", dev->info.alias, dev->info.alias);
     else
-        virBufferAsprintf(&buf, "virtio-rng-pci,rng=%s", dev->info.alias);
+        virBufferAsprintf(&buf, "virtio-rng-pci,rng=obj%s,id=%s", dev->info.alias, dev->info.alias);
 
     if (dev->rate > 0) {
         virBufferAsprintf(&buf, ",max-bytes=%u", dev->rate);

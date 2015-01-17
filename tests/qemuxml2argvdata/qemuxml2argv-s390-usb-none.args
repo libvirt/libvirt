@@ -8,4 +8,5 @@ LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
 -device virtio-blk-s390,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
 -chardev pty,id=charconsole0 \
 -device virtconsole,chardev=charconsole0,id=console0 \
--object rng-random,id=rng0,filename=/dev/hwrng -device virtio-rng-s390,rng=rng0
+-object rng-random,id=objrng0,filename=/dev/hwrng \
+-device virtio-rng-s390,rng=objrng0,id=rng0
