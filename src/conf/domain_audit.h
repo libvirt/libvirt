@@ -117,5 +117,12 @@ void virDomainAuditChardev(virDomainObjPtr vm,
                            const char *reason,
                            bool success)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+void virDomainAuditRNG(virDomainObjPtr vm,
+                       virDomainRNGDefPtr oldDef,
+                       virDomainRNGDefPtr newDef,
+                       const char *reason,
+                       bool success)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+
 
 #endif /* __VIR_DOMAIN_AUDIT_H__ */

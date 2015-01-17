@@ -123,6 +123,7 @@ virDomainAuditMemory;
 virDomainAuditNet;
 virDomainAuditNetDevice;
 virDomainAuditRedirdev;
+virDomainAuditRNG;
 virDomainAuditSecurityLabel;
 virDomainAuditStart;
 virDomainAuditStop;

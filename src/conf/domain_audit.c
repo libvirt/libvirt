@@ -242,7 +242,7 @@ virDomainAuditDisk(virDomainObjPtr vm,
 }
 
 
-static void
+void
 virDomainAuditRNG(virDomainObjPtr vm,
                   virDomainRNGDefPtr oldDef, virDomainRNGDefPtr newDef,
                   const char *reason, bool success)
