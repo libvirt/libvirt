@@ -1031,6 +1031,17 @@ qemuGetNextChrDevIndex(virDomainDefPtr def,
 
 
 int
+qemuAssignDeviceRNGAlias(virDomainRNGDefPtr rng,
+                         size_t idx)
+{
+    if (virAsprintf(&rng->info.alias, "rng%zu", idx) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+int
 qemuAssignDeviceChrAlias(virDomainDefPtr def,
                          virDomainChrDefPtr chr,
                          ssize_t idx)
@@ -1155,7 +1166,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
             return -1;
     }
     for (i = 0; i < def->nrngs; i++) {
-        if (virAsprintf(&def->rngs[i]->info.alias, "rng%zu", i) < 0)
+        if (qemuAssignDeviceRNGAlias(def->rngs[i], i) < 0)
             return -1;
     }
     if (def->tpm) {

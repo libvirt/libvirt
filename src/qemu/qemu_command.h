@@ -269,6 +269,7 @@ int qemuAssignDeviceRedirdevAlias(virDomainDefPtr def, virDomainRedirdevDefPtr r
 int qemuAssignDeviceChrAlias(virDomainDefPtr def,
                              virDomainChrDefPtr chr,
                              ssize_t idx);
+int qemuAssignDeviceRNGAlias(virDomainRNGDefPtr rng, size_t idx);
 
 int
 qemuParseKeywords(const char *str,
