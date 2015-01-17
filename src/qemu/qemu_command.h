@@ -174,6 +174,10 @@ char *qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
 char *qemuBuildRNGDevStr(virDomainDefPtr def,
                          virDomainRNGDefPtr dev,
                          virQEMUCapsPtr qemuCaps);
+int qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
+                             virQEMUCapsPtr qemuCaps,
+                             const char **type,
+                             virJSONValuePtr *props);
 
 int qemuOpenPCIConfig(virDomainHostdevDefPtr dev);
 

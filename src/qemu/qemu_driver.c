@@ -7109,6 +7109,13 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
             dev->data.chr = NULL;
         break;
 
+    case VIR_DOMAIN_DEVICE_RNG:
+        ret = qemuDomainAttachRNGDevice(driver, vm,
+                                        dev->data.rng);
+        if (!ret)
+            dev->data.rng = NULL;
+        break;
+
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -7120,7 +7127,6 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
     case VIR_DOMAIN_DEVICE_SMARTCARD:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
-    case VIR_DOMAIN_DEVICE_RNG:
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:

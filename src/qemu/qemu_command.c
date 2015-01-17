@@ -6182,7 +6182,7 @@ qemuBuildRNGBackendChrdevStr(virDomainRNGDefPtr rng,
 }
 
 
-static int
+int
 qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
                          virQEMUCapsPtr qemuCaps,
                          const char **type,

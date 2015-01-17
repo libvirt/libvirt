@@ -1569,6 +1569,109 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     return ret;
 }
 
+
+int
+qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm,
+                          virDomainRNGDefPtr rng)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *devstr = NULL;
+    char *charAlias = NULL;
+    char *objAlias = NULL;
+    virJSONValuePtr props = NULL;
+    const char *type;
+    int ret = -1;
+
+    if (qemuAssignDeviceRNGAlias(rng, vm->def->nrngs) < 0)
+        return -1;
+
+    /* preallocate space for the device definition */
+    if (VIR_REALLOC_N(vm->def->rngs, vm->def->nrngs + 1) < 0)
+        return -1;
+
+    if (rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+        if (STRPREFIX(vm->def->os.machine, "s390-ccw") &&
+            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
+            rng->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
+        } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390)) {
+            rng->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390;
+        }
+    }
+
+    if (rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
+        rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        if (virDomainPCIAddressEnsureAddr(priv->pciaddrs, &rng->info) < 0)
+            return -1;
+    } else if (rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+        if (virDomainCCWAddressAssign(&rng->info, priv->ccwaddrs,
+                                      !rng->info.addr.ccw.assigned) < 0)
+            return -1;
+    }
+
+    /* build required metadata */
+    if (!(devstr = qemuBuildRNGDevStr(vm->def, rng, priv->qemuCaps)))
+        goto cleanup;
+
+    if (qemuBuildRNGBackendProps(rng, priv->qemuCaps, &type, &props) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&objAlias, "obj%s", rng->info.alias) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&charAlias, "char%s", rng->info.alias) < 0)
+        goto cleanup;
+
+    /* attach the device - up to a 3 stage process */
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD &&
+        qemuMonitorAttachCharDev(priv->mon, charAlias,
+                                 rng->source.chardev) < 0)
+        goto failchardev;
+
+    if (qemuMonitorAddObject(priv->mon, type, objAlias, props) < 0)
+        goto failbackend;
+
+    if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
+        goto failfrontend;
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
+        vm = NULL;
+        goto cleanup;
+    }
+
+    if (virDomainRNGInsert(vm->def, rng, true) < 0)
+        goto audit;
+
+    ret = 0;
+
+ audit:
+    virDomainAuditRNG(vm, NULL, rng, "attach", ret == 0);
+ cleanup:
+    if (vm)
+        qemuDomainReleaseDeviceAddress(vm, &rng->info, NULL);
+    VIR_FREE(charAlias);
+    VIR_FREE(objAlias);
+    VIR_FREE(devstr);
+    return ret;
+
+    /* rollback */
+ failfrontend:
+    ignore_value(qemuMonitorDelObject(priv->mon, objAlias));
+ failbackend:
+    if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD)
+        ignore_value(qemuMonitorDetachCharDev(priv->mon, charAlias));
+ failchardev:
+    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
+        vm = NULL;
+        goto cleanup;
+    }
+
+    goto audit;
+}
+
+
 static int
 qemuDomainAttachHostUSBDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,

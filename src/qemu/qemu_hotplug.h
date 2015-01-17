@@ -97,6 +97,9 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
 int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainChrDefPtr chr);
+int qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              virDomainRNGDefPtr rng);
 
 
 int
