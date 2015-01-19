@@ -460,7 +460,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
 
     p = virConfGetValue(conf, "security_driver");
     if (p && p->type == VIR_CONF_LIST) {
-        size_t len;
+        size_t len, j;
         virConfValuePtr pp;
 
         /* Calc length and check items */
@@ -476,6 +476,13 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
             goto cleanup;
 
         for (i = 0, pp = p->list; pp; i++, pp = pp->next) {
+            for (j = 0; j < i; j++) {
+                if (STREQ(pp->str, cfg->securityDriverNames[j])) {
+                    virReportError(VIR_ERR_CONF_SYNTAX,
+                                   _("Duplicate security driver %s"), pp->str);
+                    goto cleanup;
+                }
+            }
             if (VIR_STRDUP(cfg->securityDriverNames[i], pp->str) < 0)
                 goto cleanup;
         }
