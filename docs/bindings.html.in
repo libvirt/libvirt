@@ -44,8 +44,10 @@
       </li>
       <li>
         <p>
-          <strong>Python</strong>: Libvirt comes with direct support for
-          the Python language.
+          <strong>Python</strong>: Libvirt's python bindings are split to a
+          separate <a href="http://libvirt.org/git/?p=libvirt-python.git">package</a>
+          since version 1.2.0, older versions came with direct support for the
+          Python language.
         </p>
         <p>
           If your libvirt is installed as packages, rather than compiled
