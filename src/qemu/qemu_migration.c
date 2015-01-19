@@ -2021,6 +2021,20 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
         }
     }
 
+    /* Verify that memory device config can be transferred reliably */
+    for (i = 0; i < def->nmems; i++) {
+        virDomainMemoryDefPtr mem = def->mems[i];
+
+        if (mem->model == VIR_DOMAIN_MEMORY_MODEL_DIMM &&
+            mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("domain's dimm info lacks slot ID "
+                             "or base address"));
+
+            return false;
+        }
+    }
+
     return true;
 }
 
