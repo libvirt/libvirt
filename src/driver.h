@@ -91,9 +91,7 @@ typedef enum {
 # include "driver-nodedev.h"
 # include "driver-nwfilter.h"
 # include "driver-secret.h"
-# ifdef WITH_LIBVIRTD
-#  include "driver-state.h"
-# endif
+# include "driver-state.h"
 # include "driver-stream.h"
 # include "driver-storage.h"
 
@@ -106,9 +104,7 @@ int virRegisterNetworkDriver(virNetworkDriverPtr) ATTRIBUTE_RETURN_CHECK;
 int virRegisterNodeDeviceDriver(virNodeDeviceDriverPtr) ATTRIBUTE_RETURN_CHECK;
 int virRegisterNWFilterDriver(virNWFilterDriverPtr) ATTRIBUTE_RETURN_CHECK;
 int virRegisterSecretDriver(virSecretDriverPtr) ATTRIBUTE_RETURN_CHECK;
-# ifdef WITH_LIBVIRTD
 int virRegisterStateDriver(virStateDriverPtr) ATTRIBUTE_RETURN_CHECK;
-# endif
 int virRegisterStorageDriver(virStorageDriverPtr) ATTRIBUTE_RETURN_CHECK;
 
 void *virDriverLoadModule(const char *name);

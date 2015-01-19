@@ -1949,12 +1949,6 @@ else ! WITH_ESX
 SYM_FILES += $(srcdir)/libvirt_esx.syms
 endif ! WITH_ESX
 
-if WITH_LIBVIRTD
-USED_SYM_FILES += $(srcdir)/libvirt_daemon.syms
-else ! WITH_LIBVIRTD
-SYM_FILES += $(srcdir)/libvirt_daemon.syms
-endif ! WITH_LIBVIRTD
-
 if WITH_REMOTE
 USED_SYM_FILES += $(srcdir)/libvirt_remote.syms
 else ! WITH_REMOTE

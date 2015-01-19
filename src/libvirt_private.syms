@@ -889,7 +889,12 @@ virRegisterNetworkDriver;
 virRegisterNodeDeviceDriver;
 virRegisterNWFilterDriver;
 virRegisterSecretDriver;
+virRegisterStateDriver;
 virRegisterStorageDriver;
+virStateCleanup;
+virStateInitialize;
+virStateReload;
+virStateStop;
 
 
 # locking/domain_lock.h

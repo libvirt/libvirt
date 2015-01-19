@@ -164,7 +164,6 @@ static void make_nonnull_domain_snapshot(remote_nonnull_domain_snapshot *snapsho
 /* Helper functions for remoteOpen. */
 static char *get_transport_from_scheme(char *scheme);
 
-#ifdef WITH_LIBVIRTD
 static int
 remoteStateInitialize(bool privileged ATTRIBUTE_UNUSED,
                       virStateInhibitCallback callback ATTRIBUTE_UNUSED,
@@ -176,7 +175,6 @@ remoteStateInitialize(bool privileged ATTRIBUTE_UNUSED,
     inside_daemon = true;
     return 0;
 }
-#endif
 
 
 static void
@@ -8433,12 +8431,10 @@ static virNWFilterDriver nwfilter_driver = {
 };
 
 
-#ifdef WITH_LIBVIRTD
 static virStateDriver state_driver = {
     .name = "Remote",
     .stateInitialize = remoteStateInitialize,
 };
-#endif
 
 
 /** remoteRegister:
@@ -8464,10 +8460,8 @@ remoteRegister(void)
         return -1;
     if (virRegisterNWFilterDriver(&nwfilter_driver) < 0)
         return -1;
-#ifdef WITH_LIBVIRTD
     if (virRegisterStateDriver(&state_driver) < 0)
         return -1;
-#endif
 
     return 0;
 }

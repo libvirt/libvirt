@@ -135,10 +135,8 @@ static virSecretDriverPtr virSecretDriverTab[MAX_DRIVERS];
 static int virSecretDriverTabCount;
 static virNWFilterDriverPtr virNWFilterDriverTab[MAX_DRIVERS];
 static int virNWFilterDriverTabCount;
-#ifdef WITH_LIBVIRTD
 static virStateDriverPtr virStateDriverTab[MAX_DRIVERS];
 static int virStateDriverTabCount;
-#endif
 
 
 #if defined(POLKIT_AUTH)
@@ -691,7 +689,6 @@ virRegisterHypervisorDriver(virHypervisorDriverPtr driver)
 }
 
 
-#ifdef WITH_LIBVIRTD
 /**
  * virRegisterStateDriver:
  * @driver: pointer to a driver block
@@ -826,7 +823,6 @@ virStateStop(void)
     }
     return ret;
 }
-#endif /* WITH_LIBVIRTD */
 
 
 /**
