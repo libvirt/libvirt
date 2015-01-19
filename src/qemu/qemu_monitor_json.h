@@ -469,4 +469,9 @@ int qemuMonitorJSONRTCResetReinjection(qemuMonitorPtr mon);
 int qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,
                                 qemuMonitorIOThreadsInfoPtr **iothreads)
     ATTRIBUTE_NONNULL(2);
+
+int qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitorPtr mon,
+                                       virHashTablePtr info)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 #endif /* QEMU_MONITOR_JSON_H */

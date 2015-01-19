@@ -4916,6 +4916,10 @@ int qemuProcessStart(virConnectPtr conn,
     if (qemuDomainUpdateDeviceList(driver, vm, asyncJob) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Updating info of memory devices");
+    if (qemuDomainUpdateMemoryDeviceInfo(driver, vm, asyncJob) < 0)
+        goto cleanup;
+
     /* Technically, qemuProcessStart can be called from inside
      * QEMU_ASYNC_JOB_MIGRATION_IN, but we are okay treating this like
      * a sync job since no other job can call into the domain until

@@ -4363,3 +4363,45 @@ void qemuMonitorIOThreadsInfoFree(qemuMonitorIOThreadsInfoPtr iothread)
     VIR_FREE(iothread->name);
     VIR_FREE(iothread);
 }
+
+
+/**
+ * qemuMonitorGetMemoryDeviceInfo:
+ * @mon: pointer to the monitor
+ * @info: Location to return the hash of qemuMonitorMemoryDeviceInfo
+ *
+ * Retrieve state and addresses of frontend memory devices present in
+ * the guest.
+ *
+ * Returns 0 on success and fills @info with a newly allocated struct; if the
+ * data can't be retrieved due to lack of support in qemu, returns -2. On
+ * other errors returns -1.
+ */
+int
+qemuMonitorGetMemoryDeviceInfo(qemuMonitorPtr mon,
+                               virHashTablePtr *info)
+{
+    VIR_DEBUG("mon=%p info=%p", mon, info);
+    int ret;
+
+    *info = NULL;
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json)
+        return -2;
+
+    if (!(*info = virHashCreate(10, virHashValueFree)))
+        return -1;
+
+    if ((ret = qemuMonitorJSONGetMemoryDeviceInfo(mon, *info)) < 0) {
+        virHashFree(*info);
+        *info = NULL;
+    }
+
+    return ret;
+}

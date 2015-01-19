@@ -2815,6 +2815,55 @@ qemuDomainUpdateDeviceList(virQEMUDriverPtr driver,
     return 0;
 }
 
+
+int
+qemuDomainUpdateMemoryDeviceInfo(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm,
+                                 int asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virHashTablePtr meminfo = NULL;
+    int rc;
+    size_t i;
+
+    if (vm->def->nmems == 0)
+        return 0;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    rc = qemuMonitorGetMemoryDeviceInfo(priv->mon, &meminfo);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        return -1;
+
+    /* if qemu doesn't support the info request, just carry on */
+    if (rc == -2)
+        return 0;
+
+    if (rc < 0)
+        return -1;
+
+    for (i = 0; i < vm->def->nmems; i++) {
+        virDomainMemoryDefPtr mem = vm->def->mems[i];
+        qemuMonitorMemoryDeviceInfoPtr dimm;
+
+        if (!mem->info.alias)
+            continue;
+
+        if (!(dimm = virHashLookup(meminfo, mem->info.alias)))
+            continue;
+
+        mem->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM;
+        mem->info.addr.dimm.slot = dimm->slot;
+        mem->info.addr.dimm.base = dimm->address;
+    }
+
+    virHashFree(meminfo);
+    return 0;
+}
+
+
 bool
 qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
                                virDomainDefPtr src,

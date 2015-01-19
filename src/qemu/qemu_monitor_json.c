@@ -6493,3 +6493,125 @@ qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+
+int
+qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitorPtr mon,
+                                   virHashTablePtr info)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data = NULL;
+    qemuMonitorMemoryDeviceInfoPtr meminfo = NULL;
+    ssize_t n;
+    size_t i;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-memory-devices", NULL)))
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0) {
+        if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+            ret = -2;
+            goto cleanup;
+        }
+
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+    }
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-memory-devices reply was missing return data"));
+        goto cleanup;
+    }
+
+    if ((n = virJSONValueArraySize(data)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-memory-devices reply data was not an array"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < n; i++) {
+        virJSONValuePtr elem = virJSONValueArrayGet(data, i);
+        const char *type;
+
+        if (!(type = virJSONValueObjectGetString(elem, "type"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-memory-devices reply data doesn't contain "
+                             "enum type discriminator"));
+            goto cleanup;
+        }
+
+        /* dimm memory devices */
+        if (STREQ(type, "dimm")) {
+            virJSONValuePtr dimminfo;
+            const char *devalias;
+
+            if (!(dimminfo = virJSONValueObjectGet(elem, "data"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("query-memory-devices reply data doesn't "
+                                 "contain enum data"));
+                goto cleanup;
+            }
+
+            if (!(devalias = virJSONValueObjectGetString(dimminfo, "id"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("dimm memory info data is missing 'id'"));
+                goto cleanup;
+            }
+
+            if (VIR_ALLOC(meminfo) < 0)
+                goto cleanup;
+
+            if (virJSONValueObjectGetNumberUlong(dimminfo, "addr",
+                                                 &meminfo->address) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("malformed/missing addr in dimm memory info"));
+                goto cleanup;
+            }
+
+            if (virJSONValueObjectGetNumberUint(dimminfo, "slot",
+                                                &meminfo->slot) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("malformed/missing slot in dimm memory info"));
+                goto cleanup;
+            }
+
+            if (virJSONValueObjectGetBoolean(dimminfo, "hotplugged",
+                                             &meminfo->hotplugged) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("malformed/missing hotplugged in dimm memory info"));
+                goto cleanup;
+
+            }
+
+            if (virJSONValueObjectGetBoolean(dimminfo, "hotpluggable",
+                                             &meminfo->hotpluggable) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("malformed/missing hotpluggable in dimm memory info"));
+                goto cleanup;
+
+            }
+
+            if (virHashAddEntry(info, devalias, meminfo) < 0)
+                goto cleanup;
+
+            meminfo = NULL;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(meminfo);
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
