@@ -217,7 +217,6 @@ src/util/virstorageencryption.c
 src/util/virstoragefile.c
 src/util/virstring.c
 src/util/virsysinfo.c
-src/util/virsystemd.c
 src/util/virerror.c
 src/util/virerror.h
 src/util/virtime.c

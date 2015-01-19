@@ -156,7 +156,6 @@ static int
 virFirewallValidateBackend(virFirewallBackend backend)
 {
     VIR_DEBUG("Validating backend %d", backend);
-#if WITH_DBUS
     if (backend == VIR_FIREWALL_BACKEND_AUTOMATIC ||
         backend == VIR_FIREWALL_BACKEND_FIREWALLD) {
         int rv = virDBusIsServiceRegistered(VIR_FIREWALL_FIREWALLD_SERVICE);
@@ -180,16 +179,6 @@ virFirewallValidateBackend(virFirewallBackend backend)
             backend = VIR_FIREWALL_BACKEND_FIREWALLD;
         }
     }
-#else
-    if (backend == VIR_FIREWALL_BACKEND_AUTOMATIC) {
-        VIR_DEBUG("DBus support disabled, trying direct backend");
-        backend = VIR_FIREWALL_BACKEND_DIRECT;
-    } else if (backend == VIR_FIREWALL_BACKEND_FIREWALLD) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("firewalld firewall backend requested, but DBus support disabled"));
-        return -1;
-    }
-#endif
 
     if (backend == VIR_FIREWALL_BACKEND_DIRECT) {
         const char *commands[] = {
@@ -755,7 +744,6 @@ virFirewallApplyRuleDirect(virFirewallRulePtr rule,
 }
 
 
-#ifdef WITH_DBUS
 static int
 virFirewallApplyRuleFirewallD(virFirewallRulePtr rule,
                               bool ignoreErrors,
@@ -764,13 +752,13 @@ virFirewallApplyRuleFirewallD(virFirewallRulePtr rule,
     const char *ipv = virFirewallLayerFirewallDTypeToString(rule->layer);
     DBusConnection *sysbus = virDBusGetSystemBus();
     DBusMessage *reply = NULL;
-    DBusError error;
+    virError error;
     int ret = -1;
 
     if (!sysbus)
         return -1;
 
-    dbus_error_init(&error);
+    memset(&error, 0, sizeof(error));
 
     if (!ipv) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -792,7 +780,7 @@ virFirewallApplyRuleFirewallD(virFirewallRulePtr rule,
                           rule->args) < 0)
         goto cleanup;
 
-    if (dbus_error_is_set(&error)) {
+    if (error.level == VIR_ERR_ERROR) {
         /*
          * As of firewalld-0.3.9.3-1.fc20.noarch the name and
          * message fields in the error look like
@@ -820,11 +808,9 @@ virFirewallApplyRuleFirewallD(virFirewallRulePtr rule,
          */
         if (ignoreErrors) {
             VIR_DEBUG("Ignoring error '%s': '%s'",
-                      error.name, error.message);
+                      error.str1, error.message);
         } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to apply rule '%s'"),
-                           error.message);
+            virReportErrorObject(&error);
             goto cleanup;
         }
     } else {
@@ -835,12 +821,11 @@ virFirewallApplyRuleFirewallD(virFirewallRulePtr rule,
     ret = 0;
 
  cleanup:
-    dbus_error_free(&error);
+    virResetError(&error);
     if (reply)
         dbus_message_unref(reply);
     return ret;
 }
-#endif
 
 static int
 virFirewallApplyRule(virFirewallPtr firewall,
@@ -862,12 +847,10 @@ virFirewallApplyRule(virFirewallPtr firewall,
         if (virFirewallApplyRuleDirect(rule, ignoreErrors, &output) < 0)
             return -1;
         break;
-#if WITH_DBUS
     case VIR_FIREWALL_BACKEND_FIREWALLD:
         if (virFirewallApplyRuleFirewallD(rule, ignoreErrors, &output) < 0)
             return -1;
         break;
-#endif
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unexpected firewall engine backend"));

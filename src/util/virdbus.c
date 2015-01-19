@@ -1522,7 +1522,7 @@ static int
 virDBusCall(DBusConnection *conn,
             DBusMessage *call,
             DBusMessage **replyout,
-            DBusError *error)
+            virErrorPtr error)
 
 {
     DBusMessage *reply = NULL;
@@ -1530,8 +1530,9 @@ virDBusCall(DBusConnection *conn,
     int ret = -1;
     const char *iface, *member, *path, *dest;
 
-    if (!error)
-        dbus_error_init(&localerror);
+    dbus_error_init(&localerror);
+    if (error)
+        memset(error, 0, sizeof(*error));
 
     iface = dbus_message_get_interface(call);
     member = dbus_message_get_member(call);
@@ -1545,13 +1546,20 @@ virDBusCall(DBusConnection *conn,
     if (!(reply = dbus_connection_send_with_reply_and_block(conn,
                                                             call,
                                                             VIR_DBUS_METHOD_CALL_TIMEOUT_MILLIS,
-                                                            error ? error : &localerror))) {
+                                                            &localerror))) {
         PROBE(DBUS_METHOD_ERROR,
               "'%s.%s' on '%s' at '%s' error %s: %s",
               iface, member, path, dest,
-              error ? error->name : localerror.name,
-              error ? error->message : localerror.message);
+              localerror.name,
+              localerror.message);
         if (error) {
+            error->level = VIR_ERR_ERROR;
+            error->code = VIR_ERR_DBUS_SERVICE;
+            error->domain = VIR_FROM_DBUS;
+            if (VIR_STRDUP(error->message, localerror.message) < 0)
+                goto cleanup;
+            if (VIR_STRDUP(error->str1, localerror.name) < 0)
+                goto cleanup;
             ret = 0;
         } else {
             virReportError(VIR_ERR_DBUS_SERVICE, _("%s: %s"), member,
@@ -1567,8 +1575,9 @@ virDBusCall(DBusConnection *conn,
     ret = 0;
 
  cleanup:
-    if (!error)
-        dbus_error_free(&localerror);
+    if (ret < 0 && error)
+        virResetError(error);
+    dbus_error_free(&localerror);
     if (reply) {
         if (ret == 0 && replyout)
             *replyout = reply;
@@ -1616,7 +1625,7 @@ virDBusCall(DBusConnection *conn,
  */
 int virDBusCallMethod(DBusConnection *conn,
                       DBusMessage **replyout,
-                      DBusError *error,
+                      virErrorPtr error,
                       const char *destination,
                       const char *path,
                       const char *iface,
@@ -1633,8 +1642,6 @@ int virDBusCallMethod(DBusConnection *conn,
     va_end(args);
     if (ret < 0)
         goto cleanup;
-
-    ret = -1;
 
     ret = virDBusCall(conn, call, replyout, error);
 
@@ -1832,7 +1839,7 @@ int virDBusCreateReply(DBusMessage **reply ATTRIBUTE_UNUSED,
 
 int virDBusCallMethod(DBusConnection *conn ATTRIBUTE_UNUSED,
                       DBusMessage **reply ATTRIBUTE_UNUSED,
-                      DBusError *error ATTRIBUTE_UNUSED,
+                      virErrorPtr error ATTRIBUTE_UNUSED,
                       const char *destination ATTRIBUTE_UNUSED,
                       const char *path ATTRIBUTE_UNUSED,
                       const char *iface ATTRIBUTE_UNUSED,

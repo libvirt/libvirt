@@ -252,8 +252,8 @@ int virSystemdCreateMachine(const char *name,
 
     VIR_DEBUG("Attempting to create machine via systemd");
     if (virAtomicIntGet(&hasCreateWithNetwork)) {
-        DBusError error;
-        dbus_error_init(&error);
+        virError error;
+        memset(&error, 0, sizeof(error));
 
         if (virDBusCallMethod(conn,
                               NULL,
@@ -280,21 +280,20 @@ int virSystemdCreateMachine(const char *name,
                               "Before", "as", 1, "libvirt-guests.service") < 0)
             goto cleanup;
 
-        if (dbus_error_is_set(&error)) {
+        if (error.level == VIR_ERR_ERROR) {
             if (STREQ_NULLABLE("org.freedesktop.DBus.Error.UnknownMethod",
-                               error.name)) {
+                               error.str1)) {
                 VIR_INFO("CreateMachineWithNetwork isn't supported, switching "
                          "to legacy CreateMachine method for systemd-machined");
-                dbus_error_free(&error);
+                virResetError(&error);
                 virAtomicIntSet(&hasCreateWithNetwork, 0);
                 /* Could re-structure without Using goto, but this
                  * avoids another atomic read which would trigger
                  * another memory barrier */
                 goto fallback;
             }
-            virReportError(VIR_ERR_DBUS_SERVICE,
-                           _("CreateMachineWithNetwork: %s"),
-                           error.message ? error.message : _("unknown error"));
+            virReportErrorObject(&error);
+            virResetError(&error);
             goto cleanup;
         }
     } else {

@@ -1284,6 +1284,7 @@ virErrorInitialize;
 virErrorSetErrnoFromLastError;
 virLastErrorIsSystemErrno;
 virRaiseErrorFull;
+virRaiseErrorObject;
 virReportErrorHelper;
 virReportOOMErrorFull;
 virReportSystemErrorFull;

@@ -618,6 +618,39 @@ virDispatchError(virConnectPtr conn)
 }
 
 
+/*
+ * Reports an error through the logging subsystem
+ */
+static
+void virRaiseErrorLog(const char *filename,
+                      const char *funcname,
+                      size_t linenr,
+                      virErrorPtr err,
+                      virLogMetadata *meta)
+{
+    int priority;
+
+    /*
+     * Hook up the error or warning to the logging facility
+     */
+    priority = virErrorLevelPriority(err->level);
+    if (virErrorLogPriorityFilter)
+        priority = virErrorLogPriorityFilter(err, priority);
+
+    /* We don't want to pollute stderr if no logging outputs
+     * are explicitly requested by the user, since the default
+     * error function already pollutes stderr and most apps
+     * hate & thus disable that too. If the daemon has set
+     * a priority filter though, we should always forward
+     * all errors to the logging code.
+     */
+    if (virLogGetNbOutputs() > 0 ||
+        virErrorLogPriorityFilter)
+        virLogMessage(&virLogSelf,
+                      priority,
+                      filename, linenr, funcname,
+                      meta, "%s", err->message);
+}
 
 /**
  * virRaiseErrorFull:
@@ -639,7 +672,7 @@ virDispatchError(virConnectPtr conn)
  * immediately if a callback is found and store it for later handling.
  */
 void
-virRaiseErrorFull(const char *filename ATTRIBUTE_UNUSED,
+virRaiseErrorFull(const char *filename,
                   const char *funcname,
                   size_t linenr,
                   int domain,
@@ -655,7 +688,6 @@ virRaiseErrorFull(const char *filename ATTRIBUTE_UNUSED,
     int save_errno = errno;
     virErrorPtr to;
     char *str;
-    int priority;
     virLogMetadata meta[] = {
         { .key = "LIBVIRT_DOMAIN", .s = NULL, .iv = domain },
         { .key = "LIBVIRT_CODE", .s = NULL, .iv = code },
@@ -709,29 +741,57 @@ virRaiseErrorFull(const char *filename ATTRIBUTE_UNUSED,
     to->int1 = int1;
     to->int2 = int2;
 
-    /*
-     * Hook up the error or warning to the logging facility
-     */
-    priority = virErrorLevelPriority(level);
-    if (virErrorLogPriorityFilter)
-        priority = virErrorLogPriorityFilter(to, priority);
-
-    /* We don't want to pollute stderr if no logging outputs
-     * are explicitly requested by the user, since the default
-     * error function already pollutes stderr and most apps
-     * hate & thus disable that too. If the daemon has set
-     * a priority filter though, we should always forward
-     * all errors to the logging code.
-     */
-    if (virLogGetNbOutputs() > 0 ||
-        virErrorLogPriorityFilter)
-        virLogMessage(&virLogSelf,
-                      priority,
-                      filename, linenr, funcname,
-                      meta, "%s", str);
+    virRaiseErrorLog(filename, funcname, linenr,
+                     to, meta);
 
     errno = save_errno;
 }
+
+
+/**
+ * virRaiseErrorObject:
+ * @filename: filename where error was raised
+ * @funcname: function name where error was raised
+ * @linenr: line number where error was raised
+ * @newerr: the error object to report
+ *
+ * Sets the thread local error object to be a copy of
+ * @newerr and logs the error
+ *
+ * This is like virRaiseErrorFull, except that it accepts the
+ * error information via a pre-filled virErrorPtr object
+ *
+ * This is like virSetError, except that it will trigger the
+ * logging callbacks.
+ *
+ * The caller must clear the @newerr instance afterwards, since
+ * it will be copied into the thread local error.
+ */
+void virRaiseErrorObject(const char *filename,
+                         const char *funcname,
+                         size_t linenr,
+                         virErrorPtr newerr)
+{
+    int saved_errno = errno;
+    virErrorPtr err;
+    virLogMetadata meta[] = {
+        { .key = "LIBVIRT_DOMAIN", .s = NULL, .iv = newerr->domain },
+        { .key = "LIBVIRT_CODE", .s = NULL, .iv = newerr->code },
+        { .key = NULL },
+    };
+
+    err = virLastErrorObject();
+    if (!err)
+        goto cleanup;
+
+    virResetError(err);
+    virCopyError(newerr, err);
+    virRaiseErrorLog(filename, funcname, linenr,
+                     err, meta);
+ cleanup:
+    errno = saved_errno;
+}
+
 
 /**
  * virErrorMsg:

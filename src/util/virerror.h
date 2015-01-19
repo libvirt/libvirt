@@ -47,6 +47,11 @@ void virRaiseErrorFull(const char *filename,
                        const char *fmt, ...)
     ATTRIBUTE_FMT_PRINTF(12, 13);
 
+void virRaiseErrorObject(const char *filename,
+                         const char *funcname,
+                         size_t linenr,
+                         virErrorPtr err);
+
 void virReportErrorHelper(int domcode, int errcode,
                           const char *filename,
                           const char *funcname,
@@ -164,6 +169,9 @@ void virReportOOMErrorFull(int domcode,
 # define virReportError(code, ...)                                   \
     virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,              \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
+
+# define virReportErrorObject(obj)                                   \
+    virRaiseErrorObject(__FILE__, __FUNCTION__, __LINE__, obj)
 
 int virSetError(virErrorPtr newerr);
 void virDispatchError(virConnectPtr conn);
