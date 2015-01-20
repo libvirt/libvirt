@@ -4073,6 +4073,8 @@ virCgroupNewMachine(const char *name ATTRIBUTE_UNUSED,
                     const char *rootdir ATTRIBUTE_UNUSED,
                     pid_t pidleader ATTRIBUTE_UNUSED,
                     bool isContainer ATTRIBUTE_UNUSED,
+                    size_t nnicindexes ATTRIBUTE_UNUSED,
+                    int *nicindexes ATTRIBUTE_UNUSED,
                     const char *partition ATTRIBUTE_UNUSED,
                     int controllers ATTRIBUTE_UNUSED,
                     virCgroupPtr *group ATTRIBUTE_UNUSED)
