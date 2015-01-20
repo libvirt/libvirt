@@ -36,7 +36,7 @@
 #include "virstring.h"
 #include "testutils.h"
 #include "testutilsxen.h"
-#include "xen/xen_driver.h"
+#include "libxl/libxl_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -198,7 +198,7 @@ mymain(void)
     if (!(caps = testXLInitCaps()))
         return EXIT_FAILURE;
 
-    if (!(xmlopt = xenDomainXMLConfInit()))
+    if (!(xmlopt = libxlCreateXMLConf()))
         return EXIT_FAILURE;
 
 #define DO_TEST(name, version)                                          \

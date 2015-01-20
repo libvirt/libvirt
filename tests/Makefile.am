@@ -483,11 +483,6 @@ sexpr2xmltest_SOURCES = \
 	testutils.c testutils.h
 sexpr2xmltest_LDADD = $(xen_LDADDS)
 
-xlconfigtest_SOURCES = \
-	xlconfigtest.c testutilsxen.c testutilsxen.h \
-	testutils.c testutils.h
-xlconfigtest_LDADD =$(xen_LDADDS)
-
 xmconfigtest_SOURCES = \
 	xmconfigtest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
@@ -510,6 +505,18 @@ EXTRA_DIST += xml2sexprtest.c sexpr2xmltest.c xmconfigtest.c \
 	xencapstest.c reconnect.c \
 	testutilsxen.c testutilsxen.h
 endif ! WITH_XEN
+
+if WITH_LIBXL
+libxl_LDADDS = ../src/libvirt_driver_libxl_impl.la
+libxl_LDADDS += $(LDADDS)
+
+xlconfigtest_SOURCES = \
+	xlconfigtest.c testutilsxen.c testutilsxen.h \
+	testutils.c testutils.h
+xlconfigtest_LDADD =$(libxl_LDADDS)
+else ! WITH_LIBXL
+EXTRA_DIST += xlconfigtest.c
+endif ! WITH_LIBXL
 
 QEMUMONITORTESTUTILS_SOURCES = \
 	qemumonitortestutils.c \
