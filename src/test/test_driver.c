@@ -3485,23 +3485,6 @@ static int testDomainInterfaceStats(virDomainPtr domain,
     return ret;
 }
 
-static virDrvOpenStatus testNetworkOpen(virConnectPtr conn,
-                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                        unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (STRNEQ(conn->driver->name, "Test"))
-        return VIR_DRV_OPEN_DECLINED;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-static int testNetworkClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
 
 static virNetworkPtr testNetworkLookupByUUID(virConnectPtr conn,
                                              const unsigned char *uuid)
@@ -4043,23 +4026,6 @@ static int testNetworkSetAutostart(virNetworkPtr network,
  * Physical host interface routines
  */
 
-static virDrvOpenStatus testInterfaceOpen(virConnectPtr conn,
-                                          virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                          unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (STRNEQ(conn->driver->name, "Test"))
-        return VIR_DRV_OPEN_DECLINED;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-static int testInterfaceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
 
 static int testConnectNumOfInterfaces(virConnectPtr conn)
 {
@@ -4476,23 +4442,6 @@ static int testStoragePoolObjSetDefaults(virStoragePoolObjPtr pool)
     pool->def->available = defaultPoolCap - defaultPoolAlloc;
 
     return VIR_STRDUP(pool->configFile, "");
-}
-
-static virDrvOpenStatus testStorageOpen(virConnectPtr conn,
-                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                        unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (STRNEQ(conn->driver->name, "Test"))
-        return VIR_DRV_OPEN_DECLINED;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-static int testStorageClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
 }
 
 
@@ -5816,22 +5765,6 @@ testStorageVolGetPath(virStorageVolPtr vol)
 
 
 /* Node device implementations */
-static virDrvOpenStatus testNodeDeviceOpen(virConnectPtr conn,
-                                           virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                           unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (STRNEQ(conn->driver->name, "Test"))
-        return VIR_DRV_OPEN_DECLINED;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-static int testNodeDeviceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
 
 static int
 testNodeNumOfDevices(virConnectPtr conn,
@@ -6279,41 +6212,6 @@ static void testObjectEventQueue(testConnPtr driver,
                                  virObjectEventPtr event)
 {
     virObjectEventStateQueue(driver->eventState, event);
-}
-
-static virDrvOpenStatus testSecretOpen(virConnectPtr conn,
-                                       virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                       unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (STRNEQ(conn->driver->name, "Test"))
-        return VIR_DRV_OPEN_DECLINED;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-static int testSecretClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-
-static virDrvOpenStatus testNWFilterOpen(virConnectPtr conn,
-                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                         unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (STRNEQ(conn->driver->name, "Test"))
-        return VIR_DRV_OPEN_DECLINED;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-static int testNWFilterClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
 }
 
 
@@ -7344,8 +7242,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
 
 
-static virHypervisorDriver testDriver = {
-    .no = VIR_DRV_TEST,
+static virHypervisorDriver testHypervisorDriver = {
     .name = "Test",
     .connectOpen = testConnectOpen, /* 0.1.1 */
     .connectClose = testConnectClose, /* 0.1.1 */
@@ -7444,9 +7341,6 @@ static virHypervisorDriver testDriver = {
 };
 
 static virNetworkDriver testNetworkDriver = {
-    "Test",
-    .networkOpen = testNetworkOpen, /* 0.3.2 */
-    .networkClose = testNetworkClose, /* 0.3.2 */
     .connectNumOfNetworks = testConnectNumOfNetworks, /* 0.3.2 */
     .connectListNetworks = testConnectListNetworks, /* 0.3.2 */
     .connectNumOfDefinedNetworks = testConnectNumOfDefinedNetworks, /* 0.3.2 */
@@ -7471,9 +7365,6 @@ static virNetworkDriver testNetworkDriver = {
 };
 
 static virInterfaceDriver testInterfaceDriver = {
-    "Test",                     /* name */
-    .interfaceOpen = testInterfaceOpen, /* 0.7.0 */
-    .interfaceClose = testInterfaceClose, /* 0.7.0 */
     .connectNumOfInterfaces = testConnectNumOfInterfaces, /* 0.7.0 */
     .connectListInterfaces = testConnectListInterfaces, /* 0.7.0 */
     .connectNumOfDefinedInterfaces = testConnectNumOfDefinedInterfaces, /* 0.7.0 */
@@ -7493,10 +7384,6 @@ static virInterfaceDriver testInterfaceDriver = {
 
 
 static virStorageDriver testStorageDriver = {
-    .name = "Test",
-    .storageOpen = testStorageOpen, /* 0.4.1 */
-    .storageClose = testStorageClose, /* 0.4.1 */
-
     .connectNumOfStoragePools = testConnectNumOfStoragePools, /* 0.5.0 */
     .connectListStoragePools = testConnectListStoragePools, /* 0.5.0 */
     .connectNumOfDefinedStoragePools = testConnectNumOfDefinedStoragePools, /* 0.5.0 */
@@ -7536,10 +7423,6 @@ static virStorageDriver testStorageDriver = {
 };
 
 static virNodeDeviceDriver testNodeDeviceDriver = {
-    .name = "Test",
-    .nodeDeviceOpen = testNodeDeviceOpen, /* 0.6.0 */
-    .nodeDeviceClose = testNodeDeviceClose, /* 0.6.0 */
-
     .nodeNumOfDevices = testNodeNumOfDevices, /* 0.7.2 */
     .nodeListDevices = testNodeListDevices, /* 0.7.2 */
     .nodeDeviceLookupByName = testNodeDeviceLookupByName, /* 0.7.2 */
@@ -7551,17 +7434,14 @@ static virNodeDeviceDriver testNodeDeviceDriver = {
     .nodeDeviceDestroy = testNodeDeviceDestroy, /* 0.7.3 */
 };
 
-static virSecretDriver testSecretDriver = {
-    .name = "Test",
-    .secretOpen = testSecretOpen, /* 0.7.1 */
-    .secretClose = testSecretClose, /* 0.7.1 */
-};
-
-
-static virNWFilterDriver testNWFilterDriver = {
-    .name = "Test",
-    .nwfilterOpen = testNWFilterOpen, /* 0.8.0 */
-    .nwfilterClose = testNWFilterClose, /* 0.8.0 */
+static virConnectDriver testConnectDriver = {
+    .hypervisorDriver = &testHypervisorDriver,
+    .interfaceDriver = &testInterfaceDriver,
+    .networkDriver = &testNetworkDriver,
+    .nodeDeviceDriver = &testNodeDeviceDriver,
+    .nwfilterDriver = NULL,
+    .secretDriver = NULL,
+    .storageDriver = &testStorageDriver,
 };
 
 /**
@@ -7572,20 +7452,6 @@ static virNWFilterDriver testNWFilterDriver = {
 int
 testRegister(void)
 {
-    if (virRegisterHypervisorDriver(&testDriver) < 0)
-        return -1;
-    if (virRegisterNetworkDriver(&testNetworkDriver) < 0)
-        return -1;
-    if (virRegisterInterfaceDriver(&testInterfaceDriver) < 0)
-        return -1;
-    if (virRegisterStorageDriver(&testStorageDriver) < 0)
-        return -1;
-    if (virRegisterNodeDeviceDriver(&testNodeDeviceDriver) < 0)
-        return -1;
-    if (virRegisterSecretDriver(&testSecretDriver) < 0)
-        return -1;
-    if (virRegisterNWFilterDriver(&testNWFilterDriver) < 0)
-        return -1;
-
-    return 0;
+    return virRegisterConnectDriver(&testConnectDriver,
+                                    false);
 }

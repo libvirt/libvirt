@@ -67,7 +67,7 @@ parallelsStorageUnlock(virStorageDriverStatePtr driver)
     virMutexUnlock(&driver->lock);
 }
 
-static int
+int
 parallelsStorageClose(virConnectPtr conn)
 {
     parallelsConnPtr privconn = conn->privateData;
@@ -456,9 +456,8 @@ static int parallelsLoadPools(virConnectPtr conn)
     return -1;
 }
 
-static virDrvOpenStatus
+virDrvOpenStatus
 parallelsStorageOpen(virConnectPtr conn,
-                     virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                      unsigned int flags)
 {
     parallelsConnPtr privconn = conn->privateData;
@@ -1612,10 +1611,8 @@ parallelsStorageVolGetPath(virStorageVolPtr vol)
     return ret;
 }
 
-static virStorageDriver parallelsStorageDriver = {
+virStorageDriver parallelsStorageDriver = {
     .name = "Parallels",
-    .storageOpen = parallelsStorageOpen,     /* 0.10.0 */
-    .storageClose = parallelsStorageClose,   /* 0.10.0 */
 
     .connectNumOfStoragePools = parallelsConnectNumOfStoragePools,   /* 0.10.0 */
     .connectListStoragePools = parallelsConnectListStoragePools,   /* 0.10.0 */
@@ -1648,12 +1645,3 @@ static virStorageDriver parallelsStorageDriver = {
     .storagePoolIsActive = parallelsStoragePoolIsActive,     /* 0.10.0 */
     .storagePoolIsPersistent = parallelsStoragePoolIsPersistent,     /* 0.10.0 */
 };
-
-int
-parallelsStorageRegister(void)
-{
-    if (virRegisterStorageDriver(&parallelsStorageDriver) < 0)
-        return -1;
-
-    return 0;
-}

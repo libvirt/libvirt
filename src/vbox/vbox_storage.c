@@ -42,33 +42,6 @@ static vboxUniformedAPI gVBoxAPI;
  * The Storage Functions here on
  */
 
-static virDrvOpenStatus
-vboxStorageOpen(virConnectPtr conn,
-                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                unsigned int flags)
-{
-    vboxGlobalData *data = conn->privateData;
-
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (STRNEQ(conn->driver->name, "VBOX"))
-        return VIR_DRV_OPEN_DECLINED;
-
-    if ((!data->pFuncs) || (!data->vboxObj) || (!data->vboxSession))
-        return VIR_DRV_OPEN_ERROR;
-
-    VIR_DEBUG("vbox storage initialized");
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-static int vboxStorageClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    VIR_DEBUG("vbox storage uninitialized");
-
-    return 0;
-}
-
 static int vboxConnectNumOfStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
 
@@ -894,9 +867,6 @@ static char *vboxStorageVolGetPath(virStorageVolPtr vol)
  */
 
 virStorageDriver vboxStorageDriver = {
-    .name = "VBOX",
-    .storageOpen = vboxStorageOpen, /* 0.7.1 */
-    .storageClose = vboxStorageClose, /* 0.7.1 */
     .connectNumOfStoragePools = vboxConnectNumOfStoragePools, /* 0.7.1 */
     .connectListStoragePools = vboxConnectListStoragePools, /* 0.7.1 */
     .storagePoolLookupByName = vboxStoragePoolLookupByName, /* 0.7.1 */

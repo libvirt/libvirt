@@ -111,32 +111,17 @@ VIR_LOG_INIT("libvirt");
 
 #define MAX_DRIVERS 20
 
-#define virDriverCheckTabMaxReturn(count, ret)                          \
-    do {                                                                \
-        if ((count) >= MAX_DRIVERS) {                                   \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
-                           _("Too many drivers, cannot register %s"),   \
-                           driver->name);                               \
-            return ret;                                                 \
-        }                                                               \
-    } while (0)
-
-static virHypervisorDriverPtr virHypervisorDriverTab[MAX_DRIVERS];
-static int virHypervisorDriverTabCount;
-static virNetworkDriverPtr virNetworkDriverTab[MAX_DRIVERS];
-static int virNetworkDriverTabCount;
-static virInterfaceDriverPtr virInterfaceDriverTab[MAX_DRIVERS];
-static int virInterfaceDriverTabCount;
-static virStorageDriverPtr virStorageDriverTab[MAX_DRIVERS];
-static int virStorageDriverTabCount;
-static virNodeDeviceDriverPtr virNodeDeviceDriverTab[MAX_DRIVERS];
-static int virNodeDeviceDriverTabCount;
-static virSecretDriverPtr virSecretDriverTab[MAX_DRIVERS];
-static int virSecretDriverTabCount;
-static virNWFilterDriverPtr virNWFilterDriverTab[MAX_DRIVERS];
-static int virNWFilterDriverTabCount;
+static virConnectDriverPtr virConnectDriverTab[MAX_DRIVERS];
+static int virConnectDriverTabCount;
 static virStateDriverPtr virStateDriverTab[MAX_DRIVERS];
 static int virStateDriverTabCount;
+
+static virNetworkDriverPtr virSharedNetworkDriver;
+static virInterfaceDriverPtr virSharedInterfaceDriver;
+static virStorageDriverPtr virSharedStorageDriver;
+static virNodeDeviceDriverPtr virSharedNodeDeviceDriver;
+static virSecretDriverPtr virSharedSecretDriver;
+static virNWFilterDriverPtr virSharedNWFilterDriver;
 
 
 #if defined(POLKIT_AUTH)
@@ -533,29 +518,33 @@ DllMain(HINSTANCE instance ATTRIBUTE_UNUSED,
 
 
 /**
- * virRegisterNetworkDriver:
+ * virSetSharedNetworkDriver:
  * @driver: pointer to a network driver block
  *
  * Register a network virtualization driver
  *
- * Returns the driver priority or -1 in case of error.
+ * Returns 0 on success, or -1 in case of error.
  */
 int
-virRegisterNetworkDriver(virNetworkDriverPtr driver)
+virSetSharedNetworkDriver(virNetworkDriverPtr driver)
 {
     virCheckNonNullArgReturn(driver, -1);
-    virDriverCheckTabMaxReturn(virNetworkDriverTabCount, -1);
 
-    VIR_DEBUG("registering %s as network driver %d",
-           driver->name, virNetworkDriverTabCount);
+    if (virSharedNetworkDriver) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("A network driver is already registered"));
+        return -1;
+    }
 
-    virNetworkDriverTab[virNetworkDriverTabCount] = driver;
-    return virNetworkDriverTabCount++;
+    VIR_DEBUG("registering %s as network driver", driver->name);
+
+    virSharedNetworkDriver = driver;
+    return 0;
 }
 
 
 /**
- * virRegisterInterfaceDriver:
+ * virSetSharedInterfaceDriver:
  * @driver: pointer to an interface driver block
  *
  * Register an interface virtualization driver
@@ -563,21 +552,25 @@ virRegisterNetworkDriver(virNetworkDriverPtr driver)
  * Returns the driver priority or -1 in case of error.
  */
 int
-virRegisterInterfaceDriver(virInterfaceDriverPtr driver)
+virSetSharedInterfaceDriver(virInterfaceDriverPtr driver)
 {
     virCheckNonNullArgReturn(driver, -1);
-    virDriverCheckTabMaxReturn(virInterfaceDriverTabCount, -1);
 
-    VIR_DEBUG("registering %s as interface driver %d",
-           driver->name, virInterfaceDriverTabCount);
+    if (virSharedInterfaceDriver) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("A interface driver is already registered"));
+        return -1;
+    }
 
-    virInterfaceDriverTab[virInterfaceDriverTabCount] = driver;
-    return virInterfaceDriverTabCount++;
+    VIR_DEBUG("registering %s as interface driver", driver->name);
+
+    virSharedInterfaceDriver = driver;
+    return 0;
 }
 
 
 /**
- * virRegisterStorageDriver:
+ * virSetSharedStorageDriver:
  * @driver: pointer to a storage driver block
  *
  * Register a storage virtualization driver
@@ -585,21 +578,25 @@ virRegisterInterfaceDriver(virInterfaceDriverPtr driver)
  * Returns the driver priority or -1 in case of error.
  */
 int
-virRegisterStorageDriver(virStorageDriverPtr driver)
+virSetSharedStorageDriver(virStorageDriverPtr driver)
 {
     virCheckNonNullArgReturn(driver, -1);
-    virDriverCheckTabMaxReturn(virStorageDriverTabCount, -1);
 
-    VIR_DEBUG("registering %s as storage driver %d",
-           driver->name, virStorageDriverTabCount);
+    if (virSharedStorageDriver) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("A storage driver is already registered"));
+        return -1;
+    }
 
-    virStorageDriverTab[virStorageDriverTabCount] = driver;
-    return virStorageDriverTabCount++;
+    VIR_DEBUG("registering %s as storage driver", driver->name);
+
+    virSharedStorageDriver = driver;
+    return 0;
 }
 
 
 /**
- * virRegisterNodeDeviceDriver:
+ * virSetSharedNodeDeviceDriver:
  * @driver: pointer to a device monitor block
  *
  * Register a device monitor
@@ -607,21 +604,25 @@ virRegisterStorageDriver(virStorageDriverPtr driver)
  * Returns the driver priority or -1 in case of error.
  */
 int
-virRegisterNodeDeviceDriver(virNodeDeviceDriverPtr driver)
+virSetSharedNodeDeviceDriver(virNodeDeviceDriverPtr driver)
 {
     virCheckNonNullArgReturn(driver, -1);
-    virDriverCheckTabMaxReturn(virNodeDeviceDriverTabCount, -1);
 
-    VIR_DEBUG("registering %s as device driver %d",
-           driver->name, virNodeDeviceDriverTabCount);
+    if (virSharedNodeDeviceDriver) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("A node device driver is already registered"));
+        return -1;
+    }
 
-    virNodeDeviceDriverTab[virNodeDeviceDriverTabCount] = driver;
-    return virNodeDeviceDriverTabCount++;
+    VIR_DEBUG("registering %s as device driver", driver->name);
+
+    virSharedNodeDeviceDriver = driver;
+    return 0;
 }
 
 
 /**
- * virRegisterSecretDriver:
+ * virSetSharedSecretDriver:
  * @driver: pointer to a secret driver block
  *
  * Register a secret driver
@@ -629,21 +630,25 @@ virRegisterNodeDeviceDriver(virNodeDeviceDriverPtr driver)
  * Returns the driver priority or -1 in case of error.
  */
 int
-virRegisterSecretDriver(virSecretDriverPtr driver)
+virSetSharedSecretDriver(virSecretDriverPtr driver)
 {
     virCheckNonNullArgReturn(driver, -1);
-    virDriverCheckTabMaxReturn(virSecretDriverTabCount, -1);
 
-    VIR_DEBUG("registering %s as secret driver %d",
-           driver->name, virSecretDriverTabCount);
+    if (virSharedSecretDriver) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("A secret driver is already registered"));
+        return -1;
+    }
 
-    virSecretDriverTab[virSecretDriverTabCount] = driver;
-    return virSecretDriverTabCount++;
+    VIR_DEBUG("registering %s as secret driver", driver->name);
+
+    virSharedSecretDriver = driver;
+    return 0;
 }
 
 
 /**
- * virRegisterNWFilterDriver:
+ * virSetSharedNWFilterDriver:
  * @driver: pointer to a network filter driver block
  *
  * Register a network filter virtualization driver
@@ -651,41 +656,68 @@ virRegisterSecretDriver(virSecretDriverPtr driver)
  * Returns the driver priority or -1 in case of error.
  */
 int
-virRegisterNWFilterDriver(virNWFilterDriverPtr driver)
+virSetSharedNWFilterDriver(virNWFilterDriverPtr driver)
 {
     virCheckNonNullArgReturn(driver, -1);
-    virDriverCheckTabMaxReturn(virNWFilterDriverTabCount, -1);
 
-    VIR_DEBUG("registering %s as network filter driver %d",
-           driver->name, virNWFilterDriverTabCount);
+    if (virSharedNWFilterDriver) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("A network filter driver is already registered"));
+        return -1;
+    }
 
-    virNWFilterDriverTab[virNWFilterDriverTabCount] = driver;
-    return virNWFilterDriverTabCount++;
+    VIR_DEBUG("registering %s as network filter driver", driver->name);
+
+    virSharedNWFilterDriver = driver;
+    return 0;
 }
 
 
 /**
- * virRegisterHypervisorDriver:
+ * virRegisterConnectDriver:
  * @driver: pointer to a driver block
+ * @setSharedDrivers: populate shared drivers
  *
- * Register a virtualization driver
+ * Register a virtualization driver, optionally filling in
+ * any empty pointers for shared secondary drivers
  *
  * Returns the driver priority or -1 in case of error.
  */
 int
-virRegisterHypervisorDriver(virHypervisorDriverPtr driver)
+virRegisterConnectDriver(virConnectDriverPtr driver,
+                         bool setSharedDrivers)
 {
     VIR_DEBUG("driver=%p name=%s", driver,
-              driver ? NULLSTR(driver->name) : "(null)");
+              driver ? NULLSTR(driver->hypervisorDriver->name) : "(null)");
 
     virCheckNonNullArgReturn(driver, -1);
-    virDriverCheckTabMaxReturn(virHypervisorDriverTabCount, -1);
+    if (virConnectDriverTabCount >= MAX_DRIVERS) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Too many drivers, cannot register %s"),
+                       driver->hypervisorDriver->name);
+        return -1;
+    }
 
     VIR_DEBUG("registering %s as driver %d",
-           driver->name, virHypervisorDriverTabCount);
+           driver->hypervisorDriver->name, virConnectDriverTabCount);
 
-    virHypervisorDriverTab[virHypervisorDriverTabCount] = driver;
-    return virHypervisorDriverTabCount++;
+    if (setSharedDrivers) {
+        if (driver->interfaceDriver == NULL)
+            driver->interfaceDriver = virSharedInterfaceDriver;
+        if (driver->networkDriver == NULL)
+            driver->networkDriver = virSharedNetworkDriver;
+        if (driver->nodeDeviceDriver == NULL)
+            driver->nodeDeviceDriver = virSharedNodeDeviceDriver;
+        if (driver->nwfilterDriver == NULL)
+            driver->nwfilterDriver = virSharedNWFilterDriver;
+        if (driver->secretDriver == NULL)
+            driver->secretDriver = virSharedSecretDriver;
+        if (driver->storageDriver == NULL)
+            driver->storageDriver = virSharedStorageDriver;
+    }
+
+    virConnectDriverTab[virConnectDriverTabCount] = driver;
+    return virConnectDriverTabCount++;
 }
 
 
@@ -701,7 +733,13 @@ int
 virRegisterStateDriver(virStateDriverPtr driver)
 {
     virCheckNonNullArgReturn(driver, -1);
-    virDriverCheckTabMaxReturn(virStateDriverTabCount, -1);
+
+    if (virStateDriverTabCount >= MAX_DRIVERS) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Too many drivers, cannot register %s"),
+                       driver->name);
+        return -1;
+    }
 
     virStateDriverTab[virStateDriverTabCount] = driver;
     return virStateDriverTabCount++;
@@ -1101,7 +1139,7 @@ do_open(const char *name,
     /* Cleansing flags */
     ret->flags = flags & VIR_CONNECT_RO;
 
-    for (i = 0; i < virHypervisorDriverTabCount; i++) {
+    for (i = 0; i < virConnectDriverTabCount; i++) {
         /* We're going to probe the remote driver next. So we have already
          * probed all other client-side-only driver before, but none of them
          * accepted the URI.
@@ -1109,7 +1147,7 @@ do_open(const char *name,
          * driver then report a useful error, instead of a cryptic one about
          * not being able to connect to libvirtd or not being able to find
          * certificates. */
-        if (virHypervisorDriverTab[i]->no == VIR_DRV_REMOTE &&
+        if (STREQ(virConnectDriverTab[i]->hypervisorDriver->name, "remote") &&
             ret->uri != NULL && ret->uri->scheme != NULL &&
             (
 #ifndef WITH_PHYP
@@ -1137,22 +1175,37 @@ do_open(const char *name,
             goto failed;
         }
 
-        VIR_DEBUG("trying driver %zu (%s) ...", i, virHypervisorDriverTab[i]->name);
-        ret->driver = virHypervisorDriverTab[i];
-        res = virHypervisorDriverTab[i]->connectOpen(ret, auth, flags);
+        VIR_DEBUG("trying driver %zu (%s) ...",
+                  i, virConnectDriverTab[i]->hypervisorDriver->name);
+
+        ret->driver = virConnectDriverTab[i]->hypervisorDriver;
+        ret->interfaceDriver = virConnectDriverTab[i]->interfaceDriver;
+        ret->networkDriver = virConnectDriverTab[i]->networkDriver;
+        ret->nodeDeviceDriver = virConnectDriverTab[i]->nodeDeviceDriver;
+        ret->nwfilterDriver = virConnectDriverTab[i]->nwfilterDriver;
+        ret->secretDriver = virConnectDriverTab[i]->secretDriver;
+        ret->storageDriver = virConnectDriverTab[i]->storageDriver;
+
+        res = virConnectDriverTab[i]->hypervisorDriver->connectOpen(ret, auth, flags);
         VIR_DEBUG("driver %zu %s returned %s",
-                  i, virHypervisorDriverTab[i]->name,
+                  i, virConnectDriverTab[i]->hypervisorDriver->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
                   (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
                   (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
 
         if (res == VIR_DRV_OPEN_SUCCESS) {
             break;
-        } else if (res == VIR_DRV_OPEN_ERROR) {
-            ret->driver = NULL;
-            goto failed;
         } else {
             ret->driver = NULL;
+            ret->interfaceDriver = NULL;
+            ret->networkDriver = NULL;
+            ret->nodeDeviceDriver = NULL;
+            ret->nwfilterDriver = NULL;
+            ret->secretDriver = NULL;
+            ret->storageDriver = NULL;
+
+            if (res == VIR_DRV_OPEN_ERROR)
+                goto failed;
         }
     }
 
@@ -1160,106 +1213,6 @@ do_open(const char *name,
         /* If we reach here, then all drivers declined the connection. */
         virReportError(VIR_ERR_NO_CONNECT, "%s", NULLSTR(name));
         goto failed;
-    }
-
-    for (i = 0; i < virNetworkDriverTabCount; i++) {
-        res = virNetworkDriverTab[i]->networkOpen(ret, auth, flags);
-        VIR_DEBUG("network driver %zu %s returned %s",
-                  i, virNetworkDriverTab[i]->name,
-                  res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
-                  (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
-                  (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
-
-        if (res == VIR_DRV_OPEN_SUCCESS) {
-            ret->networkDriver = virNetworkDriverTab[i];
-            break;
-        } else if (res == VIR_DRV_OPEN_ERROR) {
-            break;
-        }
-    }
-
-    for (i = 0; i < virInterfaceDriverTabCount; i++) {
-        res = virInterfaceDriverTab[i]->interfaceOpen(ret, auth, flags);
-        VIR_DEBUG("interface driver %zu %s returned %s",
-                  i, virInterfaceDriverTab[i]->name,
-                  res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
-                  (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
-                  (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
-
-        if (res == VIR_DRV_OPEN_SUCCESS) {
-            ret->interfaceDriver = virInterfaceDriverTab[i];
-            break;
-        } else if (res == VIR_DRV_OPEN_ERROR) {
-            break;
-        }
-    }
-
-    /* Secondary driver for storage. Optional */
-    for (i = 0; i < virStorageDriverTabCount; i++) {
-        res = virStorageDriverTab[i]->storageOpen(ret, auth, flags);
-        VIR_DEBUG("storage driver %zu %s returned %s",
-                  i, virStorageDriverTab[i]->name,
-                  res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
-                  (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
-                  (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
-
-        if (res == VIR_DRV_OPEN_SUCCESS) {
-            ret->storageDriver = virStorageDriverTab[i];
-            break;
-        } else if (res == VIR_DRV_OPEN_ERROR) {
-            break;
-        }
-    }
-
-    /* Node driver (optional) */
-    for (i = 0; i < virNodeDeviceDriverTabCount; i++) {
-        res = virNodeDeviceDriverTab[i]->nodeDeviceOpen(ret, auth, flags);
-        VIR_DEBUG("node driver %zu %s returned %s",
-                  i, virNodeDeviceDriverTab[i]->name,
-                  res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
-                  (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
-                  (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
-
-        if (res == VIR_DRV_OPEN_SUCCESS) {
-            ret->nodeDeviceDriver = virNodeDeviceDriverTab[i];
-            break;
-        } else if (res == VIR_DRV_OPEN_ERROR) {
-            break;
-        }
-    }
-
-    /* Secret manipulation driver. Optional */
-    for (i = 0; i < virSecretDriverTabCount; i++) {
-        res = virSecretDriverTab[i]->secretOpen(ret, auth, flags);
-        VIR_DEBUG("secret driver %zu %s returned %s",
-                  i, virSecretDriverTab[i]->name,
-                  res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
-                  (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
-                  (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
-
-        if (res == VIR_DRV_OPEN_SUCCESS) {
-            ret->secretDriver = virSecretDriverTab[i];
-            break;
-        } else if (res == VIR_DRV_OPEN_ERROR) {
-            break;
-        }
-    }
-
-    /* Network filter driver. Optional */
-    for (i = 0; i < virNWFilterDriverTabCount; i++) {
-        res = virNWFilterDriverTab[i]->nwfilterOpen(ret, auth, flags);
-        VIR_DEBUG("nwfilter driver %zu %s returned %s",
-                  i, virNWFilterDriverTab[i]->name,
-                  res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
-                  (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
-                  (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
-
-        if (res == VIR_DRV_OPEN_SUCCESS) {
-            ret->nwfilterDriver = virNWFilterDriverTab[i];
-            break;
-        } else if (res == VIR_DRV_OPEN_ERROR) {
-            break;
-        }
     }
 
     virConfFree(conf);

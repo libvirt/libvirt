@@ -135,25 +135,6 @@ udevGetDevices(struct udev *udev, virUdevStatus status)
     return enumerate;
 }
 
-static virDrvOpenStatus
-udevInterfaceOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
-                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                  unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (!driver)
-        return VIR_DRV_OPEN_ERROR;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-static int
-udevInterfaceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
 static int
 udevNumOfInterfacesByStatus(virConnectPtr conn, virUdevStatus status,
                             virInterfaceObjListFilter filter)
@@ -1212,9 +1193,7 @@ udevStateCleanup(void)
 
 
 static virInterfaceDriver udevIfaceDriver = {
-    "udev",
-    .interfaceOpen = udevInterfaceOpen, /* 1.0.0 */
-    .interfaceClose = udevInterfaceClose, /* 1.0.0 */
+    .name = "udev",
     .connectNumOfInterfaces = udevConnectNumOfInterfaces, /* 1.0.0 */
     .connectListInterfaces = udevConnectListInterfaces, /* 1.0.0 */
     .connectNumOfDefinedInterfaces = udevConnectNumOfDefinedInterfaces, /* 1.0.0 */
@@ -1235,7 +1214,7 @@ static virStateDriver interfaceStateDriver = {
 int
 udevIfaceRegister(void)
 {
-    if (virRegisterInterfaceDriver(&udevIfaceDriver) < 0) {
+    if (virSetSharedInterfaceDriver(&udevIfaceDriver) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to register udev interface driver"));
         return -1;

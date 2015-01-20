@@ -1430,8 +1430,7 @@ bhyveConnectDomainEventDeregisterAny(virConnectPtr conn,
     return 0;
 }
 
-static virHypervisorDriver bhyveDriver = {
-    .no = VIR_DRV_BHYVE,
+static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectOpen = bhyveConnectOpen, /* 1.2.2 */
     .connectClose = bhyveConnectClose, /* 1.2.2 */
@@ -1480,6 +1479,10 @@ static virHypervisorDriver bhyveDriver = {
 };
 
 
+static virConnectDriver bhyveConnectDriver = {
+    .hypervisorDriver = &bhyveHypervisorDriver,
+};
+
 static virStateDriver bhyveStateDriver = {
     .name = "bhyve",
     .stateInitialize = bhyveStateInitialize,
@@ -1490,9 +1493,10 @@ static virStateDriver bhyveStateDriver = {
 int
 bhyveRegister(void)
 {
-     if (virRegisterHypervisorDriver(&bhyveDriver) < 0)
+    if (virRegisterConnectDriver(&bhyveConnectDriver,
+                                 true) < 0)
         return -1;
-     if (virRegisterStateDriver(&bhyveStateDriver) < 0)
+    if (virRegisterStateDriver(&bhyveStateDriver) < 0)
         return -1;
-     return 0;
+    return 0;
 }

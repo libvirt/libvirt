@@ -539,8 +539,6 @@ DRIVER_SOURCE_FILES = \
 	$(TEST_DRIVER_SOURCES) \
 	$(UML_DRIVER_SOURCES) \
 	$(VBOX_DRIVER_SOURCES) \
-	$(VBOX_NETWORK_DRIVER_SOURCES) \
-	$(VBOX_STORAGE_DRIVER_SOURCES) \
 	vbox/vbox_tmpl.c \
 	$(VMWARE_DRIVER_SOURCES) \
 	$(XEN_DRIVER_SOURCES) \
@@ -701,15 +699,9 @@ VBOX_DRIVER_SOURCES =						\
 	vbox/vbox_V4_3_4.c vbox/vbox_CAPI_v4_3_4.h              \
 	vbox/vbox_common.c vbox/vbox_common.h                   \
 	vbox/vbox_uniformed_api.h                               \
-	vbox/vbox_get_driver.h
-
-VBOX_NETWORK_DRIVER_SOURCES =					\
-	vbox/vbox_driver.c vbox/vbox_driver.h			\
-	vbox/vbox_network.c vbox/vbox_get_driver.h
-
-VBOX_STORAGE_DRIVER_SOURCES =					\
-	vbox/vbox_driver.c vbox/vbox_driver.h			\
-	vbox/vbox_storage.c vbox/vbox_get_driver.h
+	vbox/vbox_get_driver.h					\
+	vbox/vbox_network.c					\
+	vbox/vbox_storage.c
 
 VBOX_DRIVER_EXTRA_DIST =					\
 		vbox/vbox_tmpl.c vbox/README			\
@@ -760,10 +752,7 @@ ESX_DRIVER_SOURCES =							\
 		esx/esx_storage_driver.c esx/esx_storage_driver.h	\
 		esx/esx_storage_backend_vmfs.c esx/esx_storage_backend_vmfs.h	\
 		esx/esx_storage_backend_iscsi.c esx/esx_storage_backend_iscsi.h	\
-		esx/esx_device_monitor.c esx/esx_device_monitor.h	\
-		esx/esx_secret_driver.c esx/esx_secret_driver.h		\
 		esx/esx_stream.c esx/esx_stream.h			\
-		esx/esx_nwfilter_driver.c esx/esx_nwfilter_driver.h	\
 		esx/esx_util.c esx/esx_util.h				\
 		esx/esx_vi.c esx/esx_vi.h				\
 		esx/esx_vi_methods.c esx/esx_vi_methods.h		\
@@ -791,12 +780,6 @@ ESX_DRIVER_EXTRA_DIST =							\
 HYPERV_DRIVER_SOURCES =									\
 		hyperv/hyperv_private.h							\
 		hyperv/hyperv_driver.c hyperv/hyperv_driver.h				\
-		hyperv/hyperv_interface_driver.c hyperv/hyperv_interface_driver.h	\
-		hyperv/hyperv_network_driver.c hyperv/hyperv_network_driver.h		\
-		hyperv/hyperv_storage_driver.c hyperv/hyperv_storage_driver.h		\
-		hyperv/hyperv_device_monitor.c hyperv/hyperv_device_monitor.h		\
-		hyperv/hyperv_secret_driver.c hyperv/hyperv_secret_driver.h		\
-		hyperv/hyperv_nwfilter_driver.c hyperv/hyperv_nwfilter_driver.h		\
 		hyperv/hyperv_util.c hyperv/hyperv_util.h				\
 		hyperv/hyperv_wmi.c hyperv/hyperv_wmi.h					\
 		hyperv/hyperv_wmi_classes.c hyperv/hyperv_wmi_classes.h			\
@@ -1180,33 +1163,19 @@ endif WITH_VMWARE
 
 if WITH_VBOX
 noinst_LTLIBRARIES += \
-		libvirt_driver_vbox_impl.la	\
-		libvirt_driver_vbox_network_impl.la	\
-		libvirt_driver_vbox_storage_impl.la
+		libvirt_driver_vbox_impl.la
 libvirt_driver_vbox_la_SOURCES =
 libvirt_driver_vbox_la_LIBADD = libvirt_driver_vbox_impl.la
-libvirt_driver_vbox_network_la_SOURCES =
-libvirt_driver_vbox_network_la_LIBADD = libvirt_driver_vbox_network_impl.la
-libvirt_driver_vbox_storage_la_SOURCES =
-libvirt_driver_vbox_storage_la_LIBADD = libvirt_driver_vbox_storage_impl.la
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += \
-		libvirt_driver_vbox.la	\
-		libvirt_driver_vbox_network.la	\
-		libvirt_driver_vbox_storage.la
+		libvirt_driver_vbox.la
 libvirt_driver_vbox_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_vbox_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
-libvirt_driver_vbox_network_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_vbox_network_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
-libvirt_driver_vbox_storage_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_vbox_storage_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 else ! WITH_DRIVER_MODULES
 noinst_LTLIBRARIES += libvirt_driver_vbox.la
 # GPLv2-only license requries that it be linked into
 # libvirtd and *not* libvirt.so
 #libvirt_la_BUILT_LIBADD += libvirt_driver_vbox.la
-libvirt_driver_vbox_la_LIBADD += libvirt_driver_vbox_network_impl.la \
-				 libvirt_driver_vbox_storage_impl.la
 endif ! WITH_DRIVER_MODULES
 
 libvirt_driver_vbox_impl_la_CFLAGS =				\
@@ -1218,28 +1187,6 @@ libvirt_driver_vbox_impl_la_LIBADD =  $(DLOPEN_LIBS)		\
 		$(MSCOM_LIBS)					\
 		$(LIBXML_LIBS)
 libvirt_driver_vbox_impl_la_SOURCES = $(VBOX_DRIVER_SOURCES)
-
-libvirt_driver_vbox_network_impl_la_CFLAGS =	\
-		-I$(srcdir)/conf	\
-		$(AM_CFLAGS)	\
-		-DVBOX_NETWORK_DRIVER
-libvirt_driver_vbox_network_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_vbox_network_impl_la_LIBADD = $(DLOPEN_LIBS)		\
-		$(MSCOM_LIBS)					\
-		$(LIBXML_LIBS)					\
-		libvirt_driver_vbox_impl.la
-libvirt_driver_vbox_network_impl_la_SOURCES = $(VBOX_NETWORK_DRIVER_SOURCES)
-
-libvirt_driver_vbox_storage_impl_la_CFLAGS =	\
-		-I$(srcdir)/conf	\
-		$(AM_CFLAGS)	\
-		-DVBOX_STORAGE_DRIVER
-libvirt_driver_vbox_storage_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_vbox_storage_impl_la_LIBADD = $(DLOPEN_LIBS)		\
-		$(MSCOM_LIBS)					\
-		$(LIBXML_LIBS)					\
-		libvirt_driver_vbox_impl.la
-libvirt_driver_vbox_storage_impl_la_SOURCES = $(VBOX_STORAGE_DRIVER_SOURCES)
 endif WITH_VBOX
 
 if WITH_XENAPI

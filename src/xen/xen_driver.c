@@ -2759,8 +2759,7 @@ xenUnifiedNodeSuspendForDuration(virConnectPtr conn,
 /*----- Register with libvirt.c, and initialize Xen drivers. -----*/
 
 /* The interface which we export upwards to libvirt.c. */
-static virHypervisorDriver xenUnifiedDriver = {
-    .no = VIR_DRV_XEN_UNIFIED,
+static virHypervisorDriver xenUnifiedHypervisorDriver = {
     .name = "Xen",
     .connectOpen = xenUnifiedConnectOpen, /* 0.0.3 */
     .connectClose = xenUnifiedConnectClose, /* 0.0.3 */
@@ -2856,6 +2855,11 @@ static virHypervisorDriver xenUnifiedDriver = {
     .nodeSetMemoryParameters = xenUnifiedNodeSetMemoryParameters, /* 0.10.2 */
 };
 
+
+static virConnectDriver xenUnifiedConnectDriver = {
+    .hypervisorDriver = &xenUnifiedHypervisorDriver,
+};
+
 /**
  * xenRegister:
  *
@@ -2868,7 +2872,8 @@ xenRegister(void)
 {
     if (virRegisterStateDriver(&state_driver) == -1) return -1;
 
-    return virRegisterHypervisorDriver(&xenUnifiedDriver);
+    return virRegisterConnectDriver(&xenUnifiedConnectDriver,
+                                    true);
 }
 
 /**

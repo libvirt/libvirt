@@ -23,6 +23,8 @@
 #ifndef __ESX_NETWORK_DRIVER_H__
 # define __ESX_NETWORK_DRIVER_H__
 
-int esxNetworkRegister(void);
+# include "driver.h"
+
+extern virNetworkDriver esxNetworkDriver;
 
 #endif /* __ESX_NETWORK_DRIVER_H__ */

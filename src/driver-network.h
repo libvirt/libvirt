@@ -25,9 +25,6 @@
 #  error "Don't include this file directly, only use driver.h"
 # endif
 
-typedef virDrvConnectOpen virDrvNetworkOpen;
-typedef virDrvConnectClose virDrvNetworkClose;
-
 typedef int
 (*virDrvConnectNumOfNetworks)(virConnectPtr conn);
 
@@ -129,15 +126,9 @@ typedef virNetworkDriver *virNetworkDriverPtr;
  *
  * Structure associated to a network virtualization driver, defining the various
  * entry points for it.
- *
- * All drivers must support the following fields/methods:
- *  - open
- *  - close
  */
 struct _virNetworkDriver {
-    const char * name; /* the name of the driver */
-    virDrvNetworkOpen networkOpen;
-    virDrvNetworkClose networkClose;
+    const char *name; /* the name of the driver */
     virDrvConnectNumOfNetworks connectNumOfNetworks;
     virDrvConnectListNetworks connectListNetworks;
     virDrvConnectNumOfDefinedNetworks connectNumOfDefinedNetworks;

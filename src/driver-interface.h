@@ -25,9 +25,6 @@
 #  error "Don't include this file directly, only use driver.h"
 # endif
 
-typedef virDrvConnectOpen virDrvInterfaceOpen;
-typedef virDrvConnectClose virDrvInterfaceClose;
-
 typedef int
 (*virDrvConnectNumOfInterfaces)(virConnectPtr conn);
 
@@ -100,15 +97,9 @@ typedef virInterfaceDriver *virInterfaceDriverPtr;
  *
  * Structure associated to a network interface driver, defining the various
  * entry points for it.
- *
- * All drivers must support the following fields/methods:
- *  - open
- *  - close
  */
 struct _virInterfaceDriver {
     const char *name; /* the name of the driver */
-    virDrvInterfaceOpen interfaceOpen;
-    virDrvInterfaceClose interfaceClose;
     virDrvConnectNumOfInterfaces connectNumOfInterfaces;
     virDrvConnectListInterfaces connectListInterfaces;
     virDrvConnectNumOfDefinedInterfaces connectNumOfDefinedInterfaces;

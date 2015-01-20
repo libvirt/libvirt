@@ -3527,69 +3527,6 @@ remoteConnectListAllSecrets(virConnectPtr conn,
 
 /*----------------------------------------------------------------------*/
 
-static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
-remoteGenericOpen(virConnectPtr conn)
-{
-    if (inside_daemon)
-        return VIR_DRV_OPEN_DECLINED;
-
-    if (conn->driver &&
-        STREQ(conn->driver->name, "remote")) {
-        return VIR_DRV_OPEN_SUCCESS;
-    }
-
-    return VIR_DRV_OPEN_DECLINED;
-}
-
-static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
-remoteNetworkOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                  unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    return remoteGenericOpen(conn);
-}
-
-static int
-remoteNetworkClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-/*----------------------------------------------------------------------*/
-
-static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
-remoteInterfaceOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                    unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    return remoteGenericOpen(conn);
-}
-
-static int
-remoteInterfaceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-/*----------------------------------------------------------------------*/
-
-static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
-remoteStorageOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                  unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    return remoteGenericOpen(conn);
-}
-
-static int
-remoteStorageClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
 static char *
 remoteConnectFindStoragePoolSources(virConnectPtr conn,
                                     const char *type,
@@ -3757,21 +3694,6 @@ remoteStoragePoolListAllVolumes(virStoragePoolPtr pool,
 
 /*----------------------------------------------------------------------*/
 
-static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
-remoteNodeDeviceOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                     unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    return remoteGenericOpen(conn);
-}
-
-static int
-remoteNodeDeviceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
 static int
 remoteNodeDeviceDettach(virNodeDevicePtr dev)
 {
@@ -3870,22 +3792,6 @@ remoteNodeDeviceReset(virNodeDevicePtr dev)
     return rv;
 }
 
-/* ------------------------------------------------------------- */
-
-static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
-remoteNWFilterOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                   unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    return remoteGenericOpen(conn);
-}
-
-static int
-remoteNWFilterClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
 
 /*----------------------------------------------------------------------*/
 
@@ -5550,21 +5456,6 @@ remoteDomainBuildQemuMonitorEvent(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     remoteEventQueue(priv, event, msg->callbackID);
 }
 
-
-static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
-remoteSecretOpen(virConnectPtr conn, virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                 unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    return remoteGenericOpen(conn);
-}
-
-static int
-remoteSecretClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
 
 static unsigned char *
 remoteSecretGetValue(virSecretPtr secret, size_t *value_size,
@@ -8074,7 +7965,6 @@ unsigned long remoteVersion(void)
 }
 
 static virHypervisorDriver hypervisor_driver = {
-    .no = VIR_DRV_REMOTE,
     .name = "remote",
     .connectOpen = remoteConnectOpen, /* 0.3.0 */
     .connectClose = remoteConnectClose, /* 0.3.0 */
@@ -8287,9 +8177,6 @@ static virHypervisorDriver hypervisor_driver = {
 };
 
 static virNetworkDriver network_driver = {
-    .name = "remote",
-    .networkOpen = remoteNetworkOpen, /* 0.3.0 */
-    .networkClose = remoteNetworkClose, /* 0.3.0 */
     .connectNumOfNetworks = remoteConnectNumOfNetworks, /* 0.3.0 */
     .connectListNetworks = remoteConnectListNetworks, /* 0.3.0 */
     .connectNumOfDefinedNetworks = remoteConnectNumOfDefinedNetworks, /* 0.3.0 */
@@ -8315,9 +8202,6 @@ static virNetworkDriver network_driver = {
 };
 
 static virInterfaceDriver interface_driver = {
-    .name = "remote",
-    .interfaceOpen = remoteInterfaceOpen, /* 0.7.2 */
-    .interfaceClose = remoteInterfaceClose, /* 0.7.2 */
     .connectNumOfInterfaces = remoteConnectNumOfInterfaces, /* 0.7.2 */
     .connectListInterfaces = remoteConnectListInterfaces, /* 0.7.2 */
     .connectNumOfDefinedInterfaces = remoteConnectNumOfDefinedInterfaces, /* 0.7.2 */
@@ -8337,9 +8221,6 @@ static virInterfaceDriver interface_driver = {
 };
 
 static virStorageDriver storage_driver = {
-    .name = "remote",
-    .storageOpen = remoteStorageOpen, /* 0.4.1 */
-    .storageClose = remoteStorageClose, /* 0.4.1 */
     .connectNumOfStoragePools = remoteConnectNumOfStoragePools, /* 0.4.1 */
     .connectListStoragePools = remoteConnectListStoragePools, /* 0.4.1 */
     .connectNumOfDefinedStoragePools = remoteConnectNumOfDefinedStoragePools, /* 0.4.1 */
@@ -8384,9 +8265,6 @@ static virStorageDriver storage_driver = {
 };
 
 static virSecretDriver secret_driver = {
-    .name = "remote",
-    .secretOpen = remoteSecretOpen, /* 0.7.1 */
-    .secretClose = remoteSecretClose, /* 0.7.1 */
     .connectNumOfSecrets = remoteConnectNumOfSecrets, /* 0.7.1 */
     .connectListSecrets = remoteConnectListSecrets, /* 0.7.1 */
     .connectListAllSecrets = remoteConnectListAllSecrets, /* 0.10.2 */
@@ -8400,9 +8278,6 @@ static virSecretDriver secret_driver = {
 };
 
 static virNodeDeviceDriver node_device_driver = {
-    .name = "remote",
-    .nodeDeviceOpen = remoteNodeDeviceOpen, /* 0.5.0 */
-    .nodeDeviceClose = remoteNodeDeviceClose, /* 0.5.0 */
     .nodeNumOfDevices = remoteNodeNumOfDevices, /* 0.5.0 */
     .nodeListDevices = remoteNodeListDevices, /* 0.5.0 */
     .connectListAllNodeDevices  = remoteConnectListAllNodeDevices, /* 0.10.2 */
@@ -8417,9 +8292,6 @@ static virNodeDeviceDriver node_device_driver = {
 };
 
 static virNWFilterDriver nwfilter_driver = {
-    .name = "remote",
-    .nwfilterOpen = remoteNWFilterOpen, /* 0.8.0 */
-    .nwfilterClose = remoteNWFilterClose, /* 0.8.0 */
     .nwfilterLookupByUUID = remoteNWFilterLookupByUUID, /* 0.8.0 */
     .nwfilterLookupByName = remoteNWFilterLookupByName, /* 0.8.0 */
     .nwfilterGetXMLDesc           = remoteNWFilterGetXMLDesc, /* 0.8.0 */
@@ -8430,6 +8302,15 @@ static virNWFilterDriver nwfilter_driver = {
     .connectListAllNWFilters     = remoteConnectListAllNWFilters, /* 0.10.2 */
 };
 
+static virConnectDriver connect_driver = {
+    .hypervisorDriver = &hypervisor_driver,
+    .interfaceDriver = &interface_driver,
+    .networkDriver = &network_driver,
+    .nodeDeviceDriver = &node_device_driver,
+    .nwfilterDriver = &nwfilter_driver,
+    .secretDriver = &secret_driver,
+    .storageDriver = &storage_driver,
+};
 
 static virStateDriver state_driver = {
     .name = "Remote",
@@ -8446,19 +8327,8 @@ static virStateDriver state_driver = {
 int
 remoteRegister(void)
 {
-    if (virRegisterHypervisorDriver(&hypervisor_driver) < 0)
-        return -1;
-    if (virRegisterNetworkDriver(&network_driver) < 0)
-        return -1;
-    if (virRegisterInterfaceDriver(&interface_driver) < 0)
-        return -1;
-    if (virRegisterStorageDriver(&storage_driver) < 0)
-        return -1;
-    if (virRegisterNodeDeviceDriver(&node_device_driver) < 0)
-        return -1;
-    if (virRegisterSecretDriver(&secret_driver) < 0)
-        return -1;
-    if (virRegisterNWFilterDriver(&nwfilter_driver) < 0)
+    if (virRegisterConnectDriver(&connect_driver,
+                                 false) < 0)
         return -1;
     if (virRegisterStateDriver(&state_driver) < 0)
         return -1;

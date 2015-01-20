@@ -7594,7 +7594,6 @@ vboxNodeAllocPages(virConnectPtr conn ATTRIBUTE_UNUSED,
  */
 
 virHypervisorDriver vboxCommonDriver = {
-    .no = VIR_DRV_VBOX,
     .name = "VBOX",
     .connectOpen = vboxConnectOpen, /* 0.6.3 */
     .connectClose = vboxConnectClose, /* 0.6.3 */

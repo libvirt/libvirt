@@ -1821,27 +1821,8 @@ static int nodeStateReload(void)
 }
 
 
-static virDrvOpenStatus nodeDeviceOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                       virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                       unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (driver == NULL)
-        return VIR_DRV_OPEN_DECLINED;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-static int nodeDeviceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
 static virNodeDeviceDriver udevNodeDeviceDriver = {
-    .name = "udevNodeDeviceDriver",
-    .nodeDeviceOpen = nodeDeviceOpen, /* 0.7.3 */
-    .nodeDeviceClose = nodeDeviceClose, /* 0.7.3 */
+    .name = "udev",
     .nodeNumOfDevices = nodeNumOfDevices, /* 0.7.3 */
     .nodeListDevices = nodeListDevices, /* 0.7.3 */
     .connectListAllNodeDevices = nodeConnectListAllNodeDevices, /* 0.10.2 */
@@ -1866,7 +1847,7 @@ int udevNodeRegister(void)
 {
     VIR_DEBUG("Registering udev node device backend");
 
-    if (virRegisterNodeDeviceDriver(&udevNodeDeviceDriver) < 0)
+    if (virSetSharedNodeDeviceDriver(&udevNodeDeviceDriver) < 0)
         return -1;
 
     return virRegisterStateDriver(&udevStateDriver);

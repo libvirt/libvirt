@@ -58,16 +58,7 @@ fakeSecretLookupByUsage(virConnectPtr conn,
     return virGetSecret(conn, uuid, usageType, usageID);
 }
 
-static int
-fakeSecretClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
 static virSecretDriver fakeSecretDriver = {
-    .name = "fake_secret",
-    .secretOpen = NULL,
-    .secretClose = fakeSecretClose,
     .connectNumOfSecrets = NULL,
     .connectListSecrets = NULL,
     .secretLookupByUUID = NULL,
@@ -213,12 +204,6 @@ fakeStoragePoolGetXMLDesc(virStoragePoolPtr pool,
 }
 
 static int
-fakeStorageClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-static int
 fakeStoragePoolIsActive(virStoragePoolPtr pool)
 {
     if (STREQ(pool->name, "inactive"))
@@ -244,8 +229,6 @@ fakeStoragePoolIsActive(virStoragePoolPtr pool)
  * type is assumed.
  */
 static virStorageDriver fakeStorageDriver = {
-    .name = "fake_storage",
-    .storageClose = fakeStorageClose,
     .storagePoolLookupByName = fakeStoragePoolLookupByName,
     .storageVolLookupByName = fakeStorageVolLookupByName,
     .storagePoolGetXMLDesc = fakeStoragePoolGetXMLDesc,

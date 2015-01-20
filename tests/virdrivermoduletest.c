@@ -30,23 +30,12 @@
 
 VIR_LOG_INIT("tests.drivermoduletest");
 
-struct testDriverData {
-    const char *name;
-    const char *dep1;
-};
-
-
 static int testDriverModule(const void *args)
 {
-    const struct testDriverData *data = args;
+    const char *name = args;
 
     /* coverity[leaked_storage] */
-    if (data->dep1 &&
-        !virDriverLoadModule(data->dep1))
-        return -1;
-
-    /* coverity[leaked_storage] */
-    if (!virDriverLoadModule(data->name))
+    if (!virDriverLoadModule(name))
         return -1;
 
     return 0;
@@ -60,8 +49,7 @@ mymain(void)
 
 #define TEST(name, dep1)                                                \
     do  {                                                               \
-        const struct testDriverData data = { name, dep1 };              \
-        if (virtTestRun("Test driver " # name, testDriverModule, &data) < 0) \
+        if (virtTestRun("Test driver " # name, testDriverModule, name) < 0) \
             ret = -1;                                                   \
     } while (0)
 

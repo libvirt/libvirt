@@ -31,10 +31,6 @@ enum {
     VIR_SECRET_GET_VALUE_INTERNAL_CALL = 1 << 0,
 };
 
-typedef virDrvConnectOpen virDrvSecretOpen;
-typedef virDrvConnectClose virDrvSecretClose;
-
-
 typedef virSecretPtr
 (*virDrvSecretLookupByUUID)(virConnectPtr conn,
                             const unsigned char *uuid);
@@ -89,15 +85,9 @@ typedef virSecretDriver *virSecretDriverPtr;
  *
  * Structure associated to a driver for storing secrets, defining the various
  * entry points for it.
- *
- * All drivers must support the following fields/methods:
- *  - open
- *  - close
  */
 struct _virSecretDriver {
-    const char *name;
-    virDrvSecretOpen secretOpen;
-    virDrvSecretClose secretClose;
+    const char *name; /* the name of the driver */
     virDrvConnectNumOfSecrets connectNumOfSecrets;
     virDrvConnectListSecrets connectListSecrets;
     virDrvConnectListAllSecrets connectListAllSecrets;

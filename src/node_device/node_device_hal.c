@@ -777,30 +777,8 @@ nodeStateReload(void)
 }
 
 
-static virDrvOpenStatus
-nodeDeviceOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
-               virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-               unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (driver == NULL)
-        return VIR_DRV_OPEN_DECLINED;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-static int
-nodeDeviceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-
 static virNodeDeviceDriver halNodeDeviceDriver = {
-    .name = "halNodeDeviceDriver",
-    .nodeDeviceOpen = nodeDeviceOpen, /* 0.5.0 */
-    .nodeDeviceClose = nodeDeviceClose, /* 0.5.0 */
+    .name = "HAL",
     .nodeNumOfDevices = nodeNumOfDevices, /* 0.5.0 */
     .nodeListDevices = nodeListDevices, /* 0.5.0 */
     .connectListAllNodeDevices = nodeConnectListAllNodeDevices, /* 0.10.2 */
@@ -825,7 +803,7 @@ static virStateDriver halStateDriver = {
 int
 halNodeRegister(void)
 {
-    if (virRegisterNodeDeviceDriver(&halNodeDeviceDriver) < 0)
+    if (virSetSharedNodeDeviceDriver(&halNodeDeviceDriver) < 0)
         return -1;
     return virRegisterStateDriver(&halStateDriver);
 }

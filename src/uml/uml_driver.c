@@ -2943,8 +2943,7 @@ umlNodeAllocPages(virConnectPtr conn,
 }
 
 
-static virHypervisorDriver umlDriver = {
-    .no = VIR_DRV_UML,
+static virHypervisorDriver umlHypervisorDriver = {
     .name = "UML",
     .connectOpen = umlConnectOpen, /* 0.5.0 */
     .connectClose = umlConnectClose, /* 0.5.0 */
@@ -3009,6 +3008,10 @@ static virHypervisorDriver umlDriver = {
     .nodeAllocPages = umlNodeAllocPages, /* 1.2.9 */
 };
 
+static virConnectDriver umlConnectDriver = {
+    .hypervisorDriver = &umlHypervisorDriver,
+};
+
 static virStateDriver umlStateDriver = {
     .name = "UML",
     .stateInitialize = umlStateInitialize,
@@ -3019,7 +3022,8 @@ static virStateDriver umlStateDriver = {
 
 int umlRegister(void)
 {
-    if (virRegisterHypervisorDriver(&umlDriver) < 0)
+    if (virRegisterConnectDriver(&umlConnectDriver,
+                                 true) < 0)
         return -1;
     if (virRegisterStateDriver(&umlStateDriver) < 0)
         return -1;

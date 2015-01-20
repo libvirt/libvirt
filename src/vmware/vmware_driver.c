@@ -1197,8 +1197,7 @@ vmwareConnectListAllDomains(virConnectPtr conn,
 
 
 
-static virHypervisorDriver vmwareDriver = {
-    .no = VIR_DRV_VMWARE,
+static virHypervisorDriver vmwareHypervisorDriver = {
     .name = "VMWARE",
     .connectOpen = vmwareConnectOpen, /* 0.8.7 */
     .connectClose = vmwareConnectClose, /* 0.8.7 */
@@ -1236,10 +1235,13 @@ static virHypervisorDriver vmwareDriver = {
     .connectIsAlive = vmwareConnectIsAlive, /* 0.9.8 */
 };
 
+static virConnectDriver vmwareConnectDriver = {
+    .hypervisorDriver = &vmwareHypervisorDriver,
+};
+
 int
 vmwareRegister(void)
 {
-    if (virRegisterHypervisorDriver(&vmwareDriver) < 0)
-        return -1;
-    return 0;
+    return virRegisterConnectDriver(&vmwareConnectDriver,
+                                    false);
 }

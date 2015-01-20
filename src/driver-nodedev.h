@@ -25,10 +25,6 @@
 #  error "Don't include this file directly, only use driver.h"
 # endif
 
-typedef virDrvConnectOpen virDrvNodeDeviceOpen;
-typedef virDrvConnectClose virDrvNodeDeviceClose;
-
-
 typedef int
 (*virDrvNodeNumOfDevices)(virConnectPtr conn,
                           const char *cap,
@@ -92,9 +88,7 @@ typedef virNodeDeviceDriver *virNodeDeviceDriverPtr;
  *
  */
 struct _virNodeDeviceDriver {
-    const char * name; /* the name of the driver */
-    virDrvNodeDeviceOpen nodeDeviceOpen;
-    virDrvNodeDeviceClose nodeDeviceClose;
+    const char *name; /* the name of the driver */
     virDrvNodeNumOfDevices nodeNumOfDevices;
     virDrvNodeListDevices nodeListDevices;
     virDrvConnectListAllNodeDevices connectListAllNodeDevices;

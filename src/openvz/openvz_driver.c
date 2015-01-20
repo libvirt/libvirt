@@ -2568,8 +2568,7 @@ openvzDomainMigrateConfirm3Params(virDomainPtr domain,
 }
 
 
-static virHypervisorDriver openvzDriver = {
-    .no = VIR_DRV_OPENVZ,
+static virHypervisorDriver openvzHypervisorDriver = {
     .name = "OPENVZ",
     .connectOpen = openvzConnectOpen, /* 0.3.1 */
     .connectClose = openvzConnectClose, /* 0.3.1 */
@@ -2635,9 +2634,12 @@ static virHypervisorDriver openvzDriver = {
     .domainMigrateConfirm3Params = openvzDomainMigrateConfirm3Params, /* 1.2.8 */
 };
 
+static virConnectDriver openvzConnectDriver = {
+    .hypervisorDriver = &openvzHypervisorDriver,
+};
+
 int openvzRegister(void)
 {
-    if (virRegisterHypervisorDriver(&openvzDriver) < 0)
-        return -1;
-    return 0;
+    return virRegisterConnectDriver(&openvzConnectDriver,
+                                    false);
 }

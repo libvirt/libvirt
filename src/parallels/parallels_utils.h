@@ -75,8 +75,13 @@ struct parallelsDomObj {
 
 typedef struct parallelsDomObj *parallelsDomObjPtr;
 
-int parallelsStorageRegister(void);
-int parallelsNetworkRegister(void);
+virDrvOpenStatus parallelsStorageOpen(virConnectPtr conn, unsigned int flags);
+int parallelsStorageClose(virConnectPtr conn);
+extern virStorageDriver parallelsStorageDriver;
+
+virDrvOpenStatus parallelsNetworkOpen(virConnectPtr conn, unsigned int flags);
+int parallelsNetworkClose(virConnectPtr conn);
+extern virNetworkDriver parallelsNetworkDriver;
 
 virJSONValuePtr parallelsParseOutput(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;

@@ -86,35 +86,6 @@ static vboxUniformedAPI gVBoxAPI;
  * The Network Functions here on
  */
 
-static virDrvOpenStatus
-vboxNetworkOpen(virConnectPtr conn,
-                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                unsigned int flags)
-{
-    vboxGlobalData *data = conn->privateData;
-
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (STRNEQ(conn->driver->name, "VBOX"))
-        goto cleanup;
-
-    if (!data->pFuncs || !data->vboxObj || !data->vboxSession)
-        goto cleanup;
-
-    VIR_DEBUG("network initialized");
-
-    return VIR_DRV_OPEN_SUCCESS;
-
- cleanup:
-    return VIR_DRV_OPEN_DECLINED;
-}
-
-static int vboxNetworkClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    VIR_DEBUG("network uninitialized");
-
-    return 0;
-}
 
 static int vboxConnectNumOfNetworks(virConnectPtr conn)
 {
@@ -998,9 +969,6 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
 }
 
 virNetworkDriver vboxNetworkDriver = {
-    "VBOX",
-    .networkOpen = vboxNetworkOpen, /* 0.6.4 */
-    .networkClose = vboxNetworkClose, /* 0.6.4 */
     .connectNumOfNetworks = vboxConnectNumOfNetworks, /* 0.6.4 */
     .connectListNetworks = vboxConnectListNetworks, /* 0.6.4 */
     .connectNumOfDefinedNetworks = vboxConnectNumOfDefinedNetworks, /* 0.6.4 */

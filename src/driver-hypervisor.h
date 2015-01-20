@@ -33,7 +33,6 @@ typedef virDrvOpenStatus
 typedef int
 (*virDrvConnectClose)(virConnectPtr conn);
 
-
 typedef int
 (*virDrvConnectSupportsFeature)(virConnectPtr conn,
                                 int feature);
@@ -1185,13 +1184,11 @@ typedef virHypervisorDriver *virHypervisorDriverPtr;
  * entry points for it.
  *
  * All drivers must support the following fields/methods:
- *  - no
  *  - name
  *  - open
  *  - close
  */
 struct _virHypervisorDriver {
-    int no; /* the number virDrvNo */
     const char *name; /* the name of the driver */
     virDrvConnectOpen connectOpen;
     virDrvConnectClose connectClose;

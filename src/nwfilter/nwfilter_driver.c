@@ -413,27 +413,6 @@ nwfilterLookupByName(virConnectPtr conn,
 }
 
 
-static virDrvOpenStatus
-nwfilterOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
-             virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-             unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (!driver)
-        return VIR_DRV_OPEN_DECLINED;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-
-static int
-nwfilterClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-
 static int
 nwfilterConnectNumOfNWFilters(virConnectPtr conn)
 {
@@ -686,8 +665,6 @@ nwfilterTeardownFilter(virDomainNetDefPtr net)
 
 static virNWFilterDriver nwfilterDriver = {
     .name = "nwfilter",
-    .nwfilterOpen = nwfilterOpen, /* 0.8.0 */
-    .nwfilterClose = nwfilterClose, /* 0.8.0 */
     .connectNumOfNWFilters = nwfilterConnectNumOfNWFilters, /* 0.8.0 */
     .connectListNWFilters = nwfilterConnectListNWFilters, /* 0.8.0 */
     .connectListAllNWFilters = nwfilterConnectListAllNWFilters, /* 0.10.2 */
@@ -715,7 +692,7 @@ static virDomainConfNWFilterDriver domainNWFilterDriver = {
 
 int nwfilterRegister(void)
 {
-    if (virRegisterNWFilterDriver(&nwfilterDriver) < 0)
+    if (virSetSharedNWFilterDriver(&nwfilterDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&stateDriver) < 0)
         return -1;

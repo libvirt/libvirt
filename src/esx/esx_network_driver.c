@@ -44,30 +44,6 @@
 verify(MD5_DIGEST_SIZE == VIR_UUID_BUFLEN);
 
 
-
-static virDrvOpenStatus
-esxNetworkOpen(virConnectPtr conn,
-               virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-               unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (conn->driver->no != VIR_DRV_ESX)
-        return VIR_DRV_OPEN_DECLINED;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-
-
-static int
-esxNetworkClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-
-
 static int
 esxConnectNumOfNetworks(virConnectPtr conn)
 {
@@ -881,10 +857,7 @@ esxNetworkIsPersistent(virNetworkPtr network ATTRIBUTE_UNUSED)
 
 
 
-static virNetworkDriver esxNetworkDriver = {
-    .name = "ESX",
-    .networkOpen = esxNetworkOpen, /* 0.7.6 */
-    .networkClose = esxNetworkClose, /* 0.7.6 */
+virNetworkDriver esxNetworkDriver = {
     .connectNumOfNetworks = esxConnectNumOfNetworks, /* 0.10.0 */
     .connectListNetworks = esxConnectListNetworks, /* 0.10.0 */
     .connectNumOfDefinedNetworks = esxConnectNumOfDefinedNetworks, /* 0.10.0 */
@@ -899,11 +872,3 @@ static virNetworkDriver esxNetworkDriver = {
     .networkIsActive = esxNetworkIsActive, /* 0.10.0 */
     .networkIsPersistent = esxNetworkIsPersistent, /* 0.10.0 */
 };
-
-
-
-int
-esxNetworkRegister(void)
-{
-    return virRegisterNetworkDriver(&esxNetworkDriver);
-}

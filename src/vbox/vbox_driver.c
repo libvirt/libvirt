@@ -50,36 +50,6 @@ VIR_LOG_INIT("vbox.vbox_driver");
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
-#if !defined(WITH_DRIVER_MODULES) || defined(VBOX_NETWORK_DRIVER)
-int vboxNetworkRegister(void)
-{
-    virNetworkDriverPtr networkDriver = NULL;
-    uint32_t uVersion;
-
-    if (VBoxCGlueInit(&uVersion) == 0)
-        networkDriver = vboxGetNetworkDriver(uVersion);
-
-    if (networkDriver && virRegisterNetworkDriver(networkDriver) < 0)
-        return -1;
-    return 0;
-}
-#endif
-
-#if !defined(WITH_DRIVER_MODULES) || defined(VBOX_STORAGE_DRIVER)
-int vboxStorageRegister(void)
-{
-    virStorageDriverPtr storageDriver = NULL;
-    uint32_t uVersion;
-
-    if (VBoxCGlueInit(&uVersion) == 0)
-        storageDriver = vboxGetStorageDriver(uVersion);
-
-    if (storageDriver && virRegisterStorageDriver(storageDriver) < 0)
-        return -1;
-    return 0;
-}
-#endif
-
 #if !defined(WITH_DRIVER_MODULES) || defined(VBOX_DRIVER)
 static virDrvOpenStatus dummyConnectOpen(virConnectPtr conn,
                                          virConnectAuthPtr auth ATTRIBUTE_UNUSED,
@@ -122,23 +92,28 @@ static virDrvOpenStatus dummyConnectOpen(virConnectPtr conn,
 }
 
 static virHypervisorDriver vboxDriverDummy = {
-    VIR_DRV_VBOX,
     "VBOX",
     .connectOpen = dummyConnectOpen, /* 0.6.3 */
 };
 
+static virConnectDriver vboxConnectDriver;
+
 int vboxRegister(void)
 {
-    virHypervisorDriverPtr driver = NULL;
     uint32_t uVersion;
 
     if (VBoxCGlueInit(&uVersion) == 0)
-        driver = vboxGetHypervisorDriver(uVersion);
+        vboxConnectDriver.hypervisorDriver = vboxGetHypervisorDriver(uVersion);
 
-    if (!driver)
-        driver = &vboxDriverDummy;
+    if (vboxConnectDriver.hypervisorDriver) {
+        vboxConnectDriver.networkDriver = vboxGetNetworkDriver(uVersion);
+        vboxConnectDriver.storageDriver = vboxGetStorageDriver(uVersion);
+    } else {
+        vboxConnectDriver.hypervisorDriver = &vboxDriverDummy;
+    }
 
-    if (virRegisterHypervisorDriver(driver) < 0)
+    if (virRegisterConnectDriver(&vboxConnectDriver,
+                                 false) < 0)
         return -1;
     return 0;
 }

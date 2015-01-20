@@ -616,17 +616,11 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
 
 int nodedevRegister(void)
 {
-#if defined(WITH_HAL) && defined(WITH_UDEV)
-    /* Register only one of these two - they conflict */
-    if (udevNodeRegister() == -1)
-        return halNodeRegister();
-    return 0;
+#ifdef WITH_UDEV
+    return udevNodeRegister();
 #else
 # ifdef WITH_HAL
     return halNodeRegister();
-# endif
-# ifdef WITH_UDEV
-    return udevNodeRegister();
 # endif
 #endif
 }

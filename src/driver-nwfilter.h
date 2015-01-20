@@ -25,11 +25,6 @@
 #  error "Don't include this file directly, only use driver.h"
 # endif
 
-
-typedef virDrvConnectOpen virDrvNWFilterOpen;
-typedef virDrvConnectClose virDrvNWFilterClose;
-
-
 typedef int
 (*virDrvConnectNumOfNWFilters)(virConnectPtr conn);
 
@@ -71,15 +66,9 @@ typedef virNWFilterDriver *virNWFilterDriverPtr;
  *
  * Structure associated to a network filter driver, defining the various
  * entry points for it.
- *
- * All drivers must support the following fields/methods:
- *  - open
- *  - close
  */
 struct _virNWFilterDriver {
-    const char * name; /* the name of the driver */
-    virDrvNWFilterOpen nwfilterOpen;
-    virDrvNWFilterClose nwfilterClose;
+    const char *name; /* the name of the driver */
     virDrvConnectNumOfNWFilters connectNumOfNWFilters;
     virDrvConnectListNWFilters connectListNWFilters;
     virDrvConnectListAllNWFilters connectListAllNWFilters;

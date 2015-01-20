@@ -264,25 +264,6 @@ netcfInterfaceObjIsActive(struct netcf_if *iface,
     return ret;
 }
 
-static virDrvOpenStatus
-netcfInterfaceOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
-                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                   unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (!driver)
-        return VIR_DRV_OPEN_ERROR;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-static int
-netcfInterfaceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
 static int netcfConnectNumOfInterfacesImpl(virConnectPtr conn,
                                            int status,
                                            virInterfaceObjListFilter filter)
@@ -1136,8 +1117,6 @@ static int netcfInterfaceChangeRollback(virConnectPtr conn, unsigned int flags)
 
 static virInterfaceDriver interfaceDriver = {
     .name = INTERFACE_DRIVER_NAME,
-    .interfaceOpen = netcfInterfaceOpen, /* 0.7.0 */
-    .interfaceClose = netcfInterfaceClose, /* 0.7.0 */
     .connectNumOfInterfaces = netcfConnectNumOfInterfaces, /* 0.7.0 */
     .connectListInterfaces = netcfConnectListInterfaces, /* 0.7.0 */
     .connectNumOfDefinedInterfaces = netcfConnectNumOfDefinedInterfaces, /* 0.7.0 */
@@ -1167,11 +1146,8 @@ static virStateDriver interfaceStateDriver = {
 
 int netcfIfaceRegister(void)
 {
-    if (virRegisterInterfaceDriver(&interfaceDriver) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to register netcf interface driver"));
+    if (virSetSharedInterfaceDriver(&interfaceDriver) < 0)
         return -1;
-    }
     if (virRegisterStateDriver(&interfaceStateDriver) < 0)
         return -1;
     return 0;

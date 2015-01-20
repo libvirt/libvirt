@@ -318,9 +318,8 @@ static int parallelsLoadNetworks(parallelsConnPtr privconn)
     return ret;
 }
 
-static virDrvOpenStatus
+virDrvOpenStatus
 parallelsNetworkOpen(virConnectPtr conn,
-                     virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                      unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
@@ -334,7 +333,7 @@ parallelsNetworkOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int parallelsNetworkClose(virConnectPtr conn)
+int parallelsNetworkClose(virConnectPtr conn)
 {
     parallelsConnPtr privconn = conn->privateData;
     parallelsDriverLock(privconn);
@@ -597,10 +596,9 @@ static int parallelsNetworkGetAutostart(virNetworkPtr net,
         virNetworkObjUnlock(network);
     return ret;
 }
-static virNetworkDriver parallelsNetworkDriver = {
-    "Parallels",
-    .networkOpen = parallelsNetworkOpen, /* 1.0.1 */
-    .networkClose = parallelsNetworkClose, /* 1.0.1 */
+
+virNetworkDriver parallelsNetworkDriver = {
+    .name = "Parallels",
     .connectNumOfNetworks = parallelsConnectNumOfNetworks, /* 1.0.1 */
     .connectListNetworks = parallelsConnectListNetworks, /* 1.0.1 */
     .connectNumOfDefinedNetworks = parallelsConnectNumOfDefinedNetworks, /* 1.0.1 */
@@ -613,12 +611,3 @@ static virNetworkDriver parallelsNetworkDriver = {
     .networkIsActive = parallelsNetworkIsActive, /* 1.0.1 */
     .networkIsPersistent = parallelsNetworkIsPersistent, /* 1.0.1 */
 };
-
-int
-parallelsNetworkRegister(void)
-{
-    if (virRegisterNetworkDriver(&parallelsNetworkDriver) < 0)
-        return -1;
-
-    return 0;
-}

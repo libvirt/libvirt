@@ -355,25 +355,6 @@ storagePoolLookupByVolume(virStorageVolPtr vol)
     return ret;
 }
 
-static virDrvOpenStatus
-storageOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
-            virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-            unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (!driver)
-        return VIR_DRV_OPEN_DECLINED;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-static int
-storageClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
 static int
 storageConnectNumOfStoragePools(virConnectPtr conn)
 {
@@ -2389,8 +2370,6 @@ storageConnectListAllStoragePools(virConnectPtr conn,
 
 static virStorageDriver storageDriver = {
     .name = "storage",
-    .storageOpen = storageOpen, /* 0.4.0 */
-    .storageClose = storageClose, /* 0.4.0 */
     .connectNumOfStoragePools = storageConnectNumOfStoragePools, /* 0.4.0 */
     .connectListStoragePools = storageConnectListStoragePools, /* 0.4.0 */
     .connectNumOfDefinedStoragePools = storageConnectNumOfDefinedStoragePools, /* 0.4.0 */
@@ -2437,7 +2416,7 @@ static virStorageDriver storageDriver = {
 
 
 static virStateDriver stateDriver = {
-    .name = "Storage",
+    .name = "storage",
     .stateInitialize = storageStateInitialize,
     .stateAutoStart = storageStateAutoStart,
     .stateCleanup = storageStateCleanup,
@@ -2446,7 +2425,7 @@ static virStateDriver stateDriver = {
 
 int storageRegister(void)
 {
-    if (virRegisterStorageDriver(&storageDriver) < 0)
+    if (virSetSharedStorageDriver(&storageDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&stateDriver) < 0)
         return -1;

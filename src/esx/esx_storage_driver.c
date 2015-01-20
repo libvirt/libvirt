@@ -52,30 +52,6 @@ static virStorageDriverPtr backends[] = {
 };
 
 
-
-static virDrvOpenStatus
-esxStorageOpen(virConnectPtr conn,
-               virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-               unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (conn->driver->no != VIR_DRV_ESX)
-        return VIR_DRV_OPEN_DECLINED;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-
-
-static int
-esxStorageClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-
-
 static int
 esxConnectNumOfStoragePools(virConnectPtr conn)
 {
@@ -541,10 +517,7 @@ esxStoragePoolIsPersistent(virStoragePoolPtr pool ATTRIBUTE_UNUSED)
 
 
 
-static virStorageDriver esxStorageDriver = {
-    .name = "ESX",
-    .storageOpen = esxStorageOpen, /* 0.7.6 */
-    .storageClose = esxStorageClose, /* 0.7.6 */
+virStorageDriver esxStorageDriver = {
     .connectNumOfStoragePools = esxConnectNumOfStoragePools, /* 0.8.2 */
     .connectListStoragePools = esxConnectListStoragePools, /* 0.8.2 */
     .connectNumOfDefinedStoragePools = esxConnectNumOfDefinedStoragePools, /* 0.8.2 */
@@ -572,11 +545,3 @@ static virStorageDriver esxStorageDriver = {
     .storagePoolIsActive = esxStoragePoolIsActive, /* 0.8.2 */
     .storagePoolIsPersistent = esxStoragePoolIsPersistent, /* 0.8.2 */
 };
-
-
-
-int
-esxStorageRegister(void)
-{
-    return virRegisterStorageDriver(&esxStorageDriver);
-}

@@ -262,7 +262,9 @@ parallelsConnectOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if ((ret = parallelsOpenDefault(conn)) != VIR_DRV_OPEN_SUCCESS)
+    if ((ret = parallelsOpenDefault(conn)) != VIR_DRV_OPEN_SUCCESS ||
+        (ret = parallelsStorageOpen(conn, flags)) != VIR_DRV_OPEN_SUCCESS ||
+        (ret = parallelsNetworkOpen(conn, flags)) != VIR_DRV_OPEN_SUCCESS)
         return ret;
 
     return VIR_DRV_OPEN_SUCCESS;
@@ -272,6 +274,9 @@ static int
 parallelsConnectClose(virConnectPtr conn)
 {
     parallelsConnPtr privconn = conn->privateData;
+
+    parallelsNetworkClose(conn);
+    parallelsStorageClose(conn);
 
     parallelsDriverLock(privconn);
     prlsdkUnsubscribeFromPCSEvents(privconn);
@@ -952,7 +957,6 @@ parallelsDomainUndefine(virDomainPtr domain)
 }
 
 static virHypervisorDriver parallelsDriver = {
-    .no = VIR_DRV_PARALLELS,
     .name = "Parallels",
     .connectOpen = parallelsConnectOpen,            /* 0.10.0 */
     .connectClose = parallelsConnectClose,          /* 0.10.0 */
@@ -995,6 +999,12 @@ static virHypervisorDriver parallelsDriver = {
     .connectIsAlive = parallelsConnectIsAlive, /* 1.2.5 */
 };
 
+static virConnectDriver parallelsConnectDriver = {
+    .hypervisorDriver = &parallelsDriver,
+    .storageDriver = &parallelsStorageDriver,
+    .networkDriver = &parallelsNetworkDriver,
+};
+
 /**
  * parallelsRegister:
  *
@@ -1013,11 +1023,7 @@ parallelsRegister(void)
 
     VIR_FREE(prlctl_path);
 
-    if (virRegisterHypervisorDriver(&parallelsDriver) < 0)
-        return -1;
-    if (parallelsStorageRegister())
-        return -1;
-    if (parallelsNetworkRegister())
+    if (virRegisterConnectDriver(&parallelsConnectDriver, false) < 0)
         return -1;
 
     return 0;

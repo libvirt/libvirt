@@ -514,25 +514,6 @@ loadSecrets(virSecretEntryPtr *dest)
 
  /* Driver functions */
 
-static virDrvOpenStatus
-secretOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
-           virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-           unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (driver == NULL)
-        return VIR_DRV_OPEN_DECLINED;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-static int
-secretClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
 static int
 secretConnectNumOfSecrets(virConnectPtr conn)
 {
@@ -1152,8 +1133,6 @@ secretStateReload(void)
 
 static virSecretDriver secretDriver = {
     .name = "secret",
-    .secretOpen = secretOpen, /* 0.7.1 */
-    .secretClose = secretClose, /* 0.7.1 */
     .connectNumOfSecrets = secretConnectNumOfSecrets, /* 0.7.1 */
     .connectListSecrets = secretConnectListSecrets, /* 0.7.1 */
     .connectListAllSecrets = secretConnectListAllSecrets, /* 0.10.2 */
@@ -1167,7 +1146,7 @@ static virSecretDriver secretDriver = {
 };
 
 static virStateDriver stateDriver = {
-    .name = "Secret",
+    .name = "secret",
     .stateInitialize = secretStateInitialize,
     .stateCleanup = secretStateCleanup,
     .stateReload = secretStateReload,
@@ -1176,7 +1155,7 @@ static virStateDriver stateDriver = {
 int
 secretRegister(void)
 {
-    if (virRegisterSecretDriver(&secretDriver) < 0)
+    if (virSetSharedSecretDriver(&secretDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&stateDriver) < 0)
         return -1;

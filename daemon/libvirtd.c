@@ -334,12 +334,7 @@ static void daemonInitialize(void)
      * priority when calling virStateInitialize. We must register the
      * network, storage and nodedev drivers before any stateful domain
      * driver, since their resources must be auto-started before any
-     * domains can be auto-started. Moreover, some stateless drivers
-     * implement their own subdrivers (e.g. the vbox driver has its
-     * own network and storage subdriers) which need to have higher
-     * priority. Otherwise, when connecting to such driver the generic
-     * subdriver may be opened instead of the one corresponding to the
-     * stateless driver.
+     * domains can be auto-started.
      */
 #ifdef WITH_DRIVER_MODULES
     /* We don't care if any of these fail, because the whole point
@@ -347,17 +342,11 @@ static void daemonInitialize(void)
      * If they try to open a connection for a module that
      * is not loaded they'll get a suitable error at that point
      */
-# ifdef WITH_VBOX
-    virDriverLoadModule("vbox_network");
-# endif
 # ifdef WITH_NETWORK
     virDriverLoadModule("network");
 # endif
 # ifdef WITH_INTERFACE
     virDriverLoadModule("interface");
-# endif
-# ifdef WITH_VBOX
-    virDriverLoadModule("vbox_storage");
 # endif
 # ifdef WITH_STORAGE
     virDriverLoadModule("storage");
@@ -393,17 +382,11 @@ static void daemonInitialize(void)
     virDriverLoadModule("bhyve");
 # endif
 #else
-# ifdef WITH_VBOX
-    vboxNetworkRegister();
-# endif
 # ifdef WITH_NETWORK
     networkRegister();
 # endif
 # ifdef WITH_INTERFACE
     interfaceRegister();
-# endif
-# ifdef WITH_VBOX
-    vboxStorageRegister();
 # endif
 # ifdef WITH_STORAGE
     storageRegister();

@@ -38,30 +38,6 @@
 #define VIR_FROM_THIS VIR_FROM_ESX
 
 
-
-static virDrvOpenStatus
-esxInterfaceOpen(virConnectPtr conn,
-                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                 unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (conn->driver->no != VIR_DRV_ESX)
-        return VIR_DRV_OPEN_DECLINED;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-
-
-static int
-esxInterfaceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-
-
 static int
 esxConnectNumOfInterfaces(virConnectPtr conn)
 {
@@ -282,10 +258,7 @@ esxInterfaceIsActive(virInterfacePtr iface ATTRIBUTE_UNUSED)
 
 
 
-static virInterfaceDriver esxInterfaceDriver = {
-    .name = "ESX",
-    .interfaceOpen = esxInterfaceOpen, /* 0.7.6 */
-    .interfaceClose = esxInterfaceClose, /* 0.7.6 */
+virInterfaceDriver esxInterfaceDriver = {
     .connectNumOfInterfaces = esxConnectNumOfInterfaces, /* 0.10.0 */
     .connectListInterfaces = esxConnectListInterfaces, /* 0.10.0 */
     .connectNumOfDefinedInterfaces = esxConnectNumOfDefinedInterfaces, /* 0.10.0 */
@@ -295,11 +268,3 @@ static virInterfaceDriver esxInterfaceDriver = {
     .interfaceGetXMLDesc = esxInterfaceGetXMLDesc, /* 0.10.0 */
     .interfaceIsActive = esxInterfaceIsActive, /* 0.10.0 */
 };
-
-
-
-int
-esxInterfaceRegister(void)
-{
-    return virRegisterInterfaceDriver(&esxInterfaceDriver);
-}

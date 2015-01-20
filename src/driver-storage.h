@@ -25,10 +25,6 @@
 #  error "Don't include this file directly, only use driver.h"
 # endif
 
-typedef virDrvConnectOpen virDrvStorageOpen;
-typedef virDrvConnectClose virDrvStorageClose;
-
-
 typedef int
 (*virDrvConnectNumOfStoragePools)(virConnectPtr conn);
 
@@ -210,15 +206,9 @@ typedef virStorageDriver *virStorageDriverPtr;
  *
  * Structure associated to a storage driver, defining the various
  * entry points for it.
- *
- * All drivers must support the following fields/methods:
- *  - open
- *  - close
  */
 struct _virStorageDriver {
-    const char * name; /* the name of the driver */
-    virDrvStorageOpen storageOpen;
-    virDrvStorageClose storageClose;
+    const char *name; /* the name of the driver */
     virDrvConnectNumOfStoragePools connectNumOfStoragePools;
     virDrvConnectListStoragePools connectListStoragePools;
     virDrvConnectNumOfDefinedStoragePools connectNumOfDefinedStoragePools;

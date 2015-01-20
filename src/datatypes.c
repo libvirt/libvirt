@@ -138,18 +138,6 @@ virConnectDispose(void *obj)
 {
     virConnectPtr conn = obj;
 
-    if (conn->networkDriver)
-        conn->networkDriver->networkClose(conn);
-    if (conn->interfaceDriver)
-        conn->interfaceDriver->interfaceClose(conn);
-    if (conn->storageDriver)
-        conn->storageDriver->storageClose(conn);
-    if (conn->nodeDeviceDriver)
-        conn->nodeDeviceDriver->nodeDeviceClose(conn);
-    if (conn->secretDriver)
-        conn->secretDriver->secretClose(conn);
-    if (conn->nwfilterDriver)
-        conn->nwfilterDriver->nwfilterClose(conn);
     if (conn->driver)
         conn->driver->connectClose(conn);
 

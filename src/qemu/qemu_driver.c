@@ -18934,8 +18934,7 @@ qemuDomainGetFSInfo(virDomainPtr dom,
 }
 
 
-static virHypervisorDriver qemuDriver = {
-    .no = VIR_DRV_QEMU,
+static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
     .connectOpen = qemuConnectOpen, /* 0.2.0 */
     .connectClose = qemuConnectClose, /* 0.2.0 */
@@ -19139,6 +19138,10 @@ static virHypervisorDriver qemuDriver = {
 };
 
 
+static virConnectDriver qemuConnectDriver = {
+    .hypervisorDriver = &qemuHypervisorDriver,
+};
+
 static virStateDriver qemuStateDriver = {
     .name = QEMU_DRIVER_NAME,
     .stateInitialize = qemuStateInitialize,
@@ -19150,7 +19153,8 @@ static virStateDriver qemuStateDriver = {
 
 int qemuRegister(void)
 {
-    if (virRegisterHypervisorDriver(&qemuDriver) < 0)
+    if (virRegisterConnectDriver(&qemuConnectDriver,
+                                 true) < 0)
         return -1;
     if (virRegisterStateDriver(&qemuStateDriver) < 0)
         return -1;

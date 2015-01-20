@@ -2514,23 +2514,6 @@ static virNetworkPtr networkLookupByName(virConnectPtr conn,
     return ret;
 }
 
-static virDrvOpenStatus networkOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                    virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                    unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (!driver)
-        return VIR_DRV_OPEN_DECLINED;
-
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-static int networkClose(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
 static int networkConnectNumOfNetworks(virConnectPtr conn)
 {
     int nactive = 0;
@@ -3670,9 +3653,7 @@ networkGetDHCPLeases(virNetworkPtr network,
 
 
 static virNetworkDriver networkDriver = {
-    "Network",
-    .networkOpen = networkOpen, /* 0.2.0 */
-    .networkClose = networkClose, /* 0.2.0 */
+    .name = "bridge",
     .connectNumOfNetworks = networkConnectNumOfNetworks, /* 0.2.0 */
     .connectListNetworks = networkConnectListNetworks, /* 0.2.0 */
     .connectNumOfDefinedNetworks = networkConnectNumOfDefinedNetworks, /* 0.2.0 */
@@ -3698,7 +3679,7 @@ static virNetworkDriver networkDriver = {
 };
 
 static virStateDriver networkStateDriver = {
-    .name = "Network",
+    .name = "bridge",
     .stateInitialize  = networkStateInitialize,
     .stateAutoStart  = networkStateAutoStart,
     .stateCleanup = networkStateCleanup,
@@ -3707,7 +3688,7 @@ static virStateDriver networkStateDriver = {
 
 int networkRegister(void)
 {
-    if (virRegisterNetworkDriver(&networkDriver) < 0)
+    if (virSetSharedNetworkDriver(&networkDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&networkStateDriver) < 0)
         return -1;
