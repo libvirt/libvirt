@@ -35,6 +35,7 @@
   network inet6 stream,
   network inet6 dgram,
   network packet dgram,
+  network packet raw,
 
   # Very lenient profile for libvirtd since we want to first focus on confining
   # the guests. Guests will have a very restricted profile.
