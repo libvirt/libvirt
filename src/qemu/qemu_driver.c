@@ -14381,7 +14381,7 @@ qemuDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     if (!(vm = qemuDomObjFromSnapshot(snapshot)))
         return NULL;
 
-    if (virDomainSnapshotGetXMLDescEnsureACL(snapshot->domain->conn, vm->def) < 0)
+    if (virDomainSnapshotGetXMLDescEnsureACL(snapshot->domain->conn, vm->def, flags) < 0)
         goto cleanup;
 
     if (!(snap = qemuSnapObjFromSnapshot(vm, snapshot)))
