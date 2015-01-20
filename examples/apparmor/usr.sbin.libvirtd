@@ -13,6 +13,7 @@
   capability sys_admin,
   capability sys_module,
   capability sys_ptrace,
+  capability sys_pacct,
   capability sys_nice,
   capability sys_chroot,
   capability setuid,
@@ -24,6 +25,7 @@
   capability mknod,
   capability fsetid,
   capability audit_write,
+  capability ipc_lock,
 
   # Needed for vfio
   capability sys_resource,
@@ -45,6 +47,7 @@
   /usr/sbin/* PUx,
   /lib/udev/scsi_id PUx,
   /usr/{lib,lib64}/xen-common/bin/xen-toolstack PUx,
+  /usr/{lib,lib64}/xen/bin/* Ux,
 
   # force the use of virt-aa-helper
   audit deny /sbin/apparmor_parser rwxl,
