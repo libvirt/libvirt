@@ -52,7 +52,7 @@ struct _virDevicePCIAddress {
     unsigned int bus;
     unsigned int slot;
     unsigned int function;
-    int          multi;  /* enum virDomainDeviceAddressPCIMulti */
+    int          multi;  /* virTristateSwitch */
 };
 
 typedef struct _virInterfaceLink virInterfaceLink;
