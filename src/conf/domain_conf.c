@@ -15637,18 +15637,10 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
             goto error;
         }
 
-        if (src_huge->nodemask && dst_huge->nodemask) {
-            if (!virBitmapEqual(src_huge->nodemask, dst_huge->nodemask)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Target huge page nodemask does not match source"));
-                goto error;
-            }
-        } else {
-            if (src_huge->nodemask || dst_huge->nodemask) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Target huge page nodemask does not match source"));
-                goto error;
-            }
+        if (!virBitmapEqual(src_huge->nodemask, dst_huge->nodemask)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Target huge page nodemask does not match source"));
+            goto error;
         }
     }
 
@@ -19138,20 +19130,12 @@ virDomainIsAllVcpupinInherited(virDomainDefPtr def)
 {
     size_t i;
 
-    if (!def->cpumask) {
-        if (def->cputune.nvcpupin)
+    for (i = 0; i < def->cputune.nvcpupin; i++) {
+        if (!virBitmapEqual(def->cputune.vcpupin[i]->cpumask, def->cpumask))
             return false;
-        else
-            return true;
-    } else {
-        for (i = 0; i < def->cputune.nvcpupin; i++) {
-            if (!virBitmapEqual(def->cputune.vcpupin[i]->cpumask,
-                                def->cpumask))
-                return false;
-        }
+    }
 
-        return true;
-   }
+    return true;
 }
 
 
@@ -19489,9 +19473,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     for (i = 0; i < def->cputune.nvcpupin; i++) {
         char *cpumask;
         /* Ignore the vcpupin which inherit from "cpuset of "<vcpu>." */
-        if (def->cpumask &&
-            virBitmapEqual(def->cpumask,
-                           def->cputune.vcpupin[i]->cpumask))
+        if (virBitmapEqual(def->cpumask, def->cputune.vcpupin[i]->cpumask))
             continue;
 
         virBufferAsprintf(buf, "<vcpupin vcpu='%u' ",
@@ -19518,9 +19500,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     for (i = 0; i < def->cputune.niothreadspin; i++) {
         char *cpumask;
         /* Ignore the iothreadpin which inherit from "cpuset of "<vcpu>." */
-        if (def->cpumask &&
-            virBitmapEqual(def->cpumask,
-                           def->cputune.iothreadspin[i]->cpumask))
+        if (virBitmapEqual(def->cpumask, def->cputune.iothreadspin[i]->cpumask))
             continue;
 
         virBufferAsprintf(buf, "<iothreadpin iothread='%u' ",

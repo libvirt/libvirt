@@ -542,9 +542,6 @@ virDomainNumatuneNodesEqual(virDomainNumatunePtr n1,
         if (!nd1->nodeset && !nd2->nodeset)
             continue;
 
-        if (!nd1->nodeset || !nd2->nodeset)
-            return false;
-
         if (nd1->mode != nd2->mode)
             return false;
 

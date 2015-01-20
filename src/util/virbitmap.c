@@ -504,6 +504,12 @@ bool virBitmapEqual(virBitmapPtr b1, virBitmapPtr b2)
     virBitmapPtr tmp;
     size_t i;
 
+    if (!b1 && !b2)
+        return true;
+
+    if (!b1 || !b2)
+        return false;
+
     if (b1->max_bit > b2->max_bit) {
         tmp = b1;
         b1 = b2;
