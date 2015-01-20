@@ -4576,7 +4576,8 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     case VIR_DOMAIN_NET_TYPE_SERVER:
        virBufferAsprintf(&buf, "socket%clisten=%s:%d",
                          type_sep,
-                         net->data.socket.address,
+                         net->data.socket.address ? net->data.socket.address
+                                                  : "",
                          net->data.socket.port);
        type_sep = ',';
        break;

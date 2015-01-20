@@ -33,6 +33,11 @@
       <source type='unix' path='/tmp/vhost1.sock' mode='client'/>
       <model type='virtio'/>
     </interface>
+    <interface type='server'>
+      <mac address='52:54:00:95:db:c0'/>
+      <source port='2015'/>
+      <model type='rtl8139'/>
+    </interface>
     <memballoon model='none'/>
   </devices>
 </domain>
