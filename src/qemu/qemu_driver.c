@@ -7741,7 +7741,9 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
         ret = qemuDomainDetachRNGDevice(driver, vm, dev->data.rng);
         break;
     case VIR_DOMAIN_DEVICE_MEMORY:
-        /* TODO: Implement later */
+        ret = qemuDomainDetachMemoryDevice(driver, vm, dev->data.memory);
+        break;
+
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:

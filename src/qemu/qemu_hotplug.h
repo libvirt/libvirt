@@ -60,6 +60,9 @@ int qemuDomainFindGraphicsIndex(virDomainDefPtr def,
 int qemuDomainAttachMemory(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            virDomainMemoryDefPtr mem);
+int qemuDomainDetachMemoryDevice(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm,
+                                 virDomainMemoryDefPtr memdef);
 int qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              virDomainGraphicsDefPtr dev);
