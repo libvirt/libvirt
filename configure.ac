@@ -2796,6 +2796,23 @@ AC_ARG_WITH([default-editor],
   [DEFAULT_EDITOR=vi])
 AC_DEFINE_UNQUOTED([DEFAULT_EDITOR], ["$DEFAULT_EDITOR"], [Default editor to use])
 
+AC_ARG_WITH([loader-nvram],
+  [AS_HELP_STRING([--with-loader-nvram],
+    [Pass list of pairs of <loader>:<nvram> paths. Both
+     pairs and list items are separated by a colon.
+     @<:default=paths to OVMF and its clones@:>@])],
+     [if test "$withval" = "no"; then
+        withval=""
+      else
+        l=`echo $withval | tr ':' '\n' | wc -l`
+        if test "`expr $l % 2`" -ne 0; then
+            AC_MSG_ERROR([Malformed --with-loader-nvram argument])
+        fi
+      fi
+      AC_DEFINE_UNQUOTED([DEFAULT_LOADER_NVRAM],
+                          ["$withval"],
+                          [List of laoder:nvram pairs])])
+
 # Some GNULIB base64 symbols clash with a kerberos library
 AC_DEFINE_UNQUOTED([isbase64],[libvirt_gl_isbase64],[Hack to avoid symbol clash])
 AC_DEFINE_UNQUOTED([base64_encode],[libvirt_gl_base64_encode],[Hack to avoid symbol clash])

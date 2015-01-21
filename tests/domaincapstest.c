@@ -105,6 +105,7 @@ fillQemuCaps(virDomainCapsPtr domCaps,
     struct fillQemuCapsData *data = (struct fillQemuCapsData *) opaque;
     virQEMUCapsPtr qemuCaps = data->qemuCaps;
     virQEMUDriverConfigPtr cfg = data->cfg;
+    virDomainCapsLoaderPtr loader = &domCaps->os.loader;
 
     if (virQEMUCapsFillDomainCaps(domCaps, qemuCaps,
                                   cfg->loader, cfg->nloader) < 0)
@@ -122,14 +123,14 @@ fillQemuCaps(virDomainCapsPtr domCaps,
 
     /* Moreover, as of f05b6a918e28 we are expecting to see
      * OVMF_CODE.fd file which may not exists everywhere. */
-    if (!domCaps->os.loader.values.nvalues) {
-        virDomainCapsLoaderPtr loader = &domCaps->os.loader;
+    while (loader->values.nvalues)
+        VIR_FREE(loader->values.values[--loader->values.nvalues]);
 
-        if (fillStringValues(&loader->values,
-                             "/usr/share/OVMF/OVMF_CODE.fd",
-                             NULL) < 0)
-            return -1;
-    }
+    if (fillStringValues(&loader->values,
+                         "/usr/share/OVMF/OVMF_CODE.fd",
+                         NULL) < 0)
+        return -1;
+
     return 0;
 }
 #endif /* WITH_QEMU */
