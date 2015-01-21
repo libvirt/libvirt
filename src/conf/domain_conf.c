@@ -2715,6 +2715,90 @@ virDomainDeviceInfoNeedsFormat(virDomainDeviceInfoPtr info, unsigned int flags)
     return false;
 }
 
+static bool
+virDomainDeviceInfoAddressIsEqual(const virDomainDeviceInfo *a,
+                                  const virDomainDeviceInfo *b)
+{
+
+    if (a->type != b->type)
+        return false;
+
+    switch ((virDomainDeviceAddressType) a->type) {
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
+    /* address types below don't have any specific data */
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
+        /* the 'multi' field shouldn't be checked */
+        if (a->addr.pci.domain != b->addr.pci.domain ||
+            a->addr.pci.bus != b->addr.pci.bus ||
+            a->addr.pci.slot != b->addr.pci.slot ||
+            a->addr.pci.function != b->addr.pci.function)
+            return false;
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
+        if (memcmp(&a->addr.drive, &b->addr.drive, sizeof(a->addr.drive)))
+            return false;
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
+        if (memcmp(&a->addr.vioserial, &b->addr.vioserial, sizeof(a->addr.vioserial)))
+            return false;
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
+        if (memcmp(&a->addr.ccid, &b->addr.ccid, sizeof(a->addr.ccid)))
+            return false;
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
+        if (memcmp(&a->addr.usb, &b->addr.usb, sizeof(a->addr.usb)))
+            return false;
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
+        if (memcmp(&a->addr.spaprvio, &b->addr.spaprvio, sizeof(a->addr.spaprvio)))
+            return false;
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
+        /* the 'assigned' field denotes that the address was generated */
+        if (a->addr.ccw.cssid != b->addr.ccw.cssid ||
+            a->addr.ccw.ssid != b->addr.ccw.ssid ||
+            a->addr.ccw.devno != b->addr.ccw.devno)
+            return false;
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
+        if (memcmp(&a->addr.isa, &b->addr.isa, sizeof(a->addr.isa)))
+            return false;
+        break;
+    }
+
+    return true;
+}
+
+
+static int
+virDomainDefHasDeviceAddressIterator(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                     virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+                                     virDomainDeviceInfoPtr info,
+                                     void *opaque)
+{
+    virDomainDeviceInfoPtr needle = opaque;
+
+    /* break iteration if the info was found */
+    if (virDomainDeviceInfoAddressIsEqual(info, needle))
+        return -1;
+
+    return 0;
+}
+
+
 int
 virDomainDeviceInfoCopy(virDomainDeviceInfoPtr dst,
                         virDomainDeviceInfoPtr src)
@@ -2964,6 +3048,20 @@ virDomainDeviceInfoIterate(virDomainDefPtr def,
                            void *opaque)
 {
     return virDomainDeviceInfoIterateInternal(def, cb, false, opaque);
+}
+
+
+bool
+virDomainDefHasDeviceAddress(virDomainDefPtr def,
+                             virDomainDeviceInfoPtr info)
+{
+    if (virDomainDeviceInfoIterateInternal(def,
+                                           virDomainDefHasDeviceAddressIterator,
+                                           true,
+                                           info) < 0)
+        return true;
+
+    return false;
 }
 
 
