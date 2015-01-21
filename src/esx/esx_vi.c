@@ -3292,13 +3292,12 @@ esxVI_LookupTaskInfoByTask(esxVI_Context *ctx,
                 goto cleanup;
             }
 
+            result = 0;
             break;
         } else {
             VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
         }
     }
-
-    result = 0;
 
  cleanup:
     esxVI_String_Free(&propertyNameList);
