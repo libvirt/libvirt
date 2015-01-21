@@ -1504,7 +1504,7 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         defPtr->onReboot = xenapiNormalExitEnum2virDomainLifecycle(action);
     enum xen_on_crash_behaviour crash;
     if (xen_vm_get_actions_after_crash(session, &crash, vm))
-        defPtr->onCrash = xenapiCrashExitEnum2virDomainLifecycle(action);
+        defPtr->onCrash = xenapiCrashExitEnum2virDomainLifecycle(crash);
     xen_vm_get_platform(session, &result, vm);
     if (result != NULL) {
         size_t i;
