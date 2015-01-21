@@ -654,6 +654,13 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     virCheckFlags(0, -1);
 
+    if (!vol->target.path) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("volume target path empty for source path '%s'"),
+                      pool->def->source.devices[0].path);
+        return -1;
+    }
+
     if (virFileResolveLink(vol->target.path, &devpath) < 0) {
         virReportSystemError(errno,
                              _("Couldn't read volume target path '%s'"),
@@ -709,7 +716,7 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendDiskCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
+virStorageBackendDiskCreateVol(virConnectPtr conn,
                                virStoragePoolObjPtr pool,
                                virStorageVolDefPtr vol)
 {
@@ -756,8 +763,16 @@ virStorageBackendDiskCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_FREE(vol->target.path);
 
     /* Fetch actual extent info, generate key */
-    if (virStorageBackendDiskReadPartitions(pool, vol) < 0)
+    if (virStorageBackendDiskReadPartitions(pool, vol) < 0) {
+        /* Best effort to remove the partition. Ignore any errors
+         * since we could be calling this with vol->target.path == NULL
+         */
+        virErrorPtr save_err = virSaveLastError();
+        ignore_value(virStorageBackendDiskDeleteVol(conn, pool, vol, 0));
+        virSetError(save_err);
+        virFreeError(save_err);
         goto cleanup;
+    }
 
     res = 0;
 
