@@ -1510,7 +1510,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                          i, bus->model)) < 0)
                     goto cleanup;
                 /* If we added a new bridge, we will need one more address */
-                if (rv == 0 &&
+                if (rv > 0 &&
                     virDomainPCIAddressReserveNextSlot(addrs, &info, flags) < 0)
                     goto cleanup;
             }
