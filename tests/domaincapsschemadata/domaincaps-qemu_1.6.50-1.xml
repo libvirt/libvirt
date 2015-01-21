@@ -5,6 +5,7 @@
   <arch>x86_64</arch>
   <os supported='yes'>
     <loader supported='yes'>
+      <value>/usr/share/AAVMF/AAVMF_CODE.fd</value>
       <value>/usr/share/OVMF/OVMF_CODE.fd</value>
       <enum name='type'>
         <value>rom</value>

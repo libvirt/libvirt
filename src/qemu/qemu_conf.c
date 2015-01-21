@@ -149,8 +149,10 @@ virQEMUDriverConfigLoaderNVRAMParse(virQEMUDriverConfigPtr cfg,
 }
 
 
-#define VIR_QEMU_LOADER_FILE_PATH "/usr/share/OVMF/OVMF_CODE.fd"
-#define VIR_QEMU_NVRAM_FILE_PATH "/usr/share/OVMF/OVMF_VARS.fd"
+#define VIR_QEMU_OVMF_LOADER_PATH "/usr/share/AAVMF/AAVMF_CODE.fd"
+#define VIR_QEMU_OVMF_NVRAM_PATH "/usr/share/AAVMF/AAVMF_VARS.fd"
+#define VIR_QEMU_AAVMF_LOADER_PATH "/usr/share/OVMF/OVMF_CODE.fd"
+#define VIR_QEMU_AAVMF_NVRAM_PATH "/usr/share/OVMF/OVMF_VARS.fd"
 
 virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
 {
@@ -306,13 +308,15 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
 
 #else
 
-    if (VIR_ALLOC_N(cfg->loader, 1) < 0 ||
-        VIR_ALLOC_N(cfg->nvram, 1) < 0)
+    if (VIR_ALLOC_N(cfg->loader, 2) < 0 ||
+        VIR_ALLOC_N(cfg->nvram, 2) < 0)
         goto error;
-    cfg->nloader = 1;
+    cfg->nloader = 2;
 
-    if (VIR_STRDUP(cfg->loader[0], VIR_QEMU_LOADER_FILE_PATH) < 0 ||
-        VIR_STRDUP(cfg->nvram[0], VIR_QEMU_NVRAM_FILE_PATH) < 0)
+    if (VIR_STRDUP(cfg->loader[0], VIR_QEMU_OVMF_LOADER_PATH) < 0 ||
+        VIR_STRDUP(cfg->nvram[0], VIR_QEMU_OVMF_NVRAM_PATH) < 0  ||
+        VIR_STRDUP(cfg->loader[1], VIR_QEMU_AAVMF_LOADER_PATH) < 0 ||
+        VIR_STRDUP(cfg->nvram[1], VIR_QEMU_AAVMF_NVRAM_PATH) < 0)
         goto error;
 #endif
 

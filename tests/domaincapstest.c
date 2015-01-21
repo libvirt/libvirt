@@ -127,6 +127,7 @@ fillQemuCaps(virDomainCapsPtr domCaps,
         VIR_FREE(loader->values.values[--loader->values.nvalues]);
 
     if (fillStringValues(&loader->values,
+                         "/usr/share/AAVMF/AAVMF_CODE.fd",
                          "/usr/share/OVMF/OVMF_CODE.fd",
                          NULL) < 0)
         return -1;

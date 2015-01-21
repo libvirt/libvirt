@@ -76,4 +76,5 @@ module Test_libvirtd_qemu =
 { "log_timestamp" = "0" }
 { "nvram"
     { "1" = "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd" }
+    { "2" = "/usr/share/AAVMF/AAVMF_CODE.fd:/usr/share/AAVMF/AAVMF_VARS.fd" }
 }
