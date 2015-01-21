@@ -640,6 +640,75 @@ virStorageBackendDiskPartBoundaries(virStoragePoolObjPtr pool,
 
 
 static int
+virStorageBackendDiskDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
+                               virStoragePoolObjPtr pool,
+                               virStorageVolDefPtr vol,
+                               unsigned int flags)
+{
+    char *part_num = NULL;
+    char *devpath = NULL;
+    char *dev_name, *srcname;
+    virCommandPtr cmd = NULL;
+    bool isDevMapperDevice;
+    int rc = -1;
+
+    virCheckFlags(0, -1);
+
+    if (virFileResolveLink(vol->target.path, &devpath) < 0) {
+        virReportSystemError(errno,
+                             _("Couldn't read volume target path '%s'"),
+                             vol->target.path);
+        goto cleanup;
+    }
+
+    dev_name = last_component(devpath);
+    srcname = last_component(pool->def->source.devices[0].path);
+    VIR_DEBUG("dev_name=%s, srcname=%s", dev_name, srcname);
+
+    isDevMapperDevice = virIsDevMapperDevice(devpath);
+
+    if (!isDevMapperDevice && !STRPREFIX(dev_name, srcname)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Volume path '%s' did not start with parent "
+                         "pool source device name."), dev_name);
+        goto cleanup;
+    }
+
+    if (!isDevMapperDevice) {
+        part_num = dev_name + strlen(srcname);
+
+        if (*part_num == 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot parse partition number from target "
+                             "'%s'"), dev_name);
+            goto cleanup;
+        }
+
+        /* eg parted /dev/sda rm 2 */
+        cmd = virCommandNewArgList(PARTED,
+                                   pool->def->source.devices[0].path,
+                                   "rm",
+                                   "--script",
+                                   part_num,
+                                   NULL);
+        if (virCommandRun(cmd, NULL) < 0)
+            goto cleanup;
+    } else {
+        cmd = virCommandNewArgList(DMSETUP, "remove", "--force", devpath, NULL);
+
+        if (virCommandRun(cmd, NULL) < 0)
+            goto cleanup;
+    }
+
+    rc = 0;
+ cleanup:
+    VIR_FREE(devpath);
+    virCommandFree(cmd);
+    return rc;
+}
+
+
+static int
 virStorageBackendDiskCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                                virStoragePoolObjPtr pool,
                                virStorageVolDefPtr vol)
@@ -712,74 +781,6 @@ virStorageBackendDiskBuildVolFrom(virConnectPtr conn,
         return -1;
 
     return build_func(conn, pool, vol, inputvol, flags);
-}
-
-static int
-virStorageBackendDiskDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
-                               virStoragePoolObjPtr pool,
-                               virStorageVolDefPtr vol,
-                               unsigned int flags)
-{
-    char *part_num = NULL;
-    char *devpath = NULL;
-    char *dev_name, *srcname;
-    virCommandPtr cmd = NULL;
-    bool isDevMapperDevice;
-    int rc = -1;
-
-    virCheckFlags(0, -1);
-
-    if (virFileResolveLink(vol->target.path, &devpath) < 0) {
-        virReportSystemError(errno,
-                             _("Couldn't read volume target path '%s'"),
-                             vol->target.path);
-        goto cleanup;
-    }
-
-    dev_name = last_component(devpath);
-    srcname = last_component(pool->def->source.devices[0].path);
-    VIR_DEBUG("dev_name=%s, srcname=%s", dev_name, srcname);
-
-    isDevMapperDevice = virIsDevMapperDevice(devpath);
-
-    if (!isDevMapperDevice && !STRPREFIX(dev_name, srcname)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Volume path '%s' did not start with parent "
-                         "pool source device name."), dev_name);
-        goto cleanup;
-    }
-
-    if (!isDevMapperDevice) {
-        part_num = dev_name + strlen(srcname);
-
-        if (*part_num == 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot parse partition number from target "
-                             "'%s'"), dev_name);
-            goto cleanup;
-        }
-
-        /* eg parted /dev/sda rm 2 */
-        cmd = virCommandNewArgList(PARTED,
-                                   pool->def->source.devices[0].path,
-                                   "rm",
-                                   "--script",
-                                   part_num,
-                                   NULL);
-        if (virCommandRun(cmd, NULL) < 0)
-            goto cleanup;
-    } else {
-        cmd = virCommandNewArgList(DMSETUP, "remove", "--force", devpath, NULL);
-
-        if (virCommandRun(cmd, NULL) < 0)
-            goto cleanup;
-    }
-
-    rc = 0;
- cleanup:
-    VIR_FREE(devpath);
-    virCommandFree(cmd);
-    return rc;
 }
 
 
