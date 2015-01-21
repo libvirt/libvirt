@@ -7999,7 +7999,10 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
         break;
 
     case VIR_DOMAIN_DEVICE_MEMORY:
-        /* TODO: implement later */
+        if (virDomainMemoryInsert(vmdef, dev->data.memory) < 0)
+            return -1;
+        dev->data.memory = NULL;
+        break;
 
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
@@ -8127,7 +8130,15 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         break;
 
     case VIR_DOMAIN_DEVICE_MEMORY:
-        /* TODO: implement later */
+        if ((idx = virDomainMemoryFindInactiveByDef(vmdef,
+                                                    dev->data.memory)) < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("matching memory device was not found"));
+            return -1;
+        }
+
+        virDomainMemoryDefFree(virDomainMemoryRemove(vmdef, idx));
+        break;
 
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:

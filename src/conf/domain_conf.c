@@ -12812,6 +12812,106 @@ virDomainRNGRemove(virDomainDefPtr def,
 }
 
 
+static int
+virDomainMemoryFindByDefInternal(virDomainDefPtr def,
+                                 virDomainMemoryDefPtr mem,
+                                 bool allowAddressFallback)
+{
+    size_t i;
+
+    for (i = 0; i < def->nmems; i++) {
+        virDomainMemoryDefPtr tmp = def->mems[i];
+
+        /* address, if present */
+        if (allowAddressFallback) {
+            if (tmp->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+                continue;
+        } else {
+            if (mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                !virDomainDeviceInfoAddressIsEqual(&tmp->info, &mem->info))
+                continue;
+        }
+
+        /* alias, if present */
+        if (mem->info.alias &&
+            STRNEQ_NULLABLE(tmp->info.alias, mem->info.alias))
+            continue;
+
+        /* target info -> always present */
+        if (tmp->model != mem->model ||
+            tmp->targetNode != mem->targetNode ||
+            tmp->size != mem->size)
+            continue;
+
+        /* source stuff -> match with device */
+        if (tmp->pagesize != mem->pagesize)
+            continue;
+
+        if (!virBitmapEqual(tmp->sourceNodes, mem->sourceNodes))
+            continue;
+
+        break;
+    }
+
+    if (i == def->nmems)
+        return -1;
+
+    return i;
+}
+
+
+int
+virDomainMemoryFindByDef(virDomainDefPtr def,
+                         virDomainMemoryDefPtr mem)
+{
+    return virDomainMemoryFindByDefInternal(def, mem, false);
+}
+
+
+int
+virDomainMemoryFindInactiveByDef(virDomainDefPtr def,
+                                 virDomainMemoryDefPtr mem)
+{
+    int ret;
+
+    if ((ret = virDomainMemoryFindByDefInternal(def, mem, false)) < 0)
+        ret = virDomainMemoryFindByDefInternal(def, mem, true);
+
+    return ret;
+}
+
+
+int
+virDomainMemoryInsert(virDomainDefPtr def,
+                      virDomainMemoryDefPtr mem)
+{
+    int id = def->nmems;
+
+    if (mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        virDomainDefHasDeviceAddress(def, &mem->info)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Domain already contains a device with the same "
+                         "address"));
+        return -1;
+    }
+
+    if (VIR_APPEND_ELEMENT(def->mems, def->nmems, mem) < 0)
+        return -1;
+
+    return id;
+}
+
+
+virDomainMemoryDefPtr
+virDomainMemoryRemove(virDomainDefPtr def,
+                      int idx)
+{
+    virDomainMemoryDefPtr ret = def->mems[idx];
+    VIR_DELETE_ELEMENT(def->mems, idx, def->nmems);
+    return ret;
+}
+
+
 char *
 virDomainDefGetDefaultEmulator(virDomainDefPtr def,
                                virCapsPtr caps)
