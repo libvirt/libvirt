@@ -13084,28 +13084,20 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
-    /* Ignore emulatorpin if <vcpu> placement is "auto", they
-     * conflicts with each other, and <vcpu> placement can't be
-     * simply ignored, as <numatune>'s placement defaults to it.
-     */
     if (n) {
-        if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
-            if (n > 1) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("only one emulatorpin is supported"));
-                VIR_FREE(nodes);
-                goto error;
-            }
-
-            def->cputune.emulatorpin = virDomainVcpuPinDefParseXML(nodes[0],
-                                                                   ctxt, 0,
-                                                                   true, false);
-
-            if (!def->cputune.emulatorpin)
-                goto error;
-        } else {
-            VIR_WARN("Ignore emulatorpin for <vcpu> placement is 'auto'");
+        if (n > 1) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("only one emulatorpin is supported"));
+            VIR_FREE(nodes);
+            goto error;
         }
+
+        def->cputune.emulatorpin = virDomainVcpuPinDefParseXML(nodes[0],
+                                                               ctxt, 0,
+                                                               true, false);
+
+        if (!def->cputune.emulatorpin)
+            goto error;
     }
     VIR_FREE(nodes);
 
@@ -13116,38 +13108,28 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
-    /* Ignore iothreadpin if <vcpu> placement is "auto", they
-     * conflict with each other, and <vcpu> placement can't be
-     * simply ignored, as <numatune>'s placement defaults to it.
-     */
-    if (n) {
-        if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
-            if (VIR_ALLOC_N(def->cputune.iothreadspin, n) < 0)
-                goto error;
+    if (n && VIR_ALLOC_N(def->cputune.iothreadspin, n) < 0)
+        goto error;
 
-            for (i = 0; i < n; i++) {
-                virDomainVcpuPinDefPtr iothreadpin = NULL;
-                iothreadpin = virDomainVcpuPinDefParseXML(nodes[i], ctxt,
-                                                          def->iothreads,
-                                                          false, true);
-                if (!iothreadpin)
-                    goto error;
+    for (i = 0; i < n; i++) {
+        virDomainVcpuPinDefPtr iothreadpin = NULL;
+        iothreadpin = virDomainVcpuPinDefParseXML(nodes[i], ctxt,
+                                                  def->iothreads,
+                                                  false, true);
+        if (!iothreadpin)
+            goto error;
 
-                if (virDomainVcpuPinIsDuplicate(def->cputune.iothreadspin,
-                                                def->cputune.niothreadspin,
-                                                iothreadpin->vcpuid)) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("duplicate iothreadpin for same iothread"));
-                    virDomainVcpuPinDefFree(iothreadpin);
-                    goto error;
-                }
-
-                def->cputune.iothreadspin[def->cputune.niothreadspin++] =
-                    iothreadpin;
-            }
-        } else {
-            VIR_WARN("Ignore iothreadpin for <vcpu> placement is 'auto'");
+        if (virDomainVcpuPinIsDuplicate(def->cputune.iothreadspin,
+                                        def->cputune.niothreadspin,
+                                        iothreadpin->vcpuid)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("duplicate iothreadpin for same iothread"));
+            virDomainVcpuPinDefFree(iothreadpin);
+            goto error;
         }
+
+        def->cputune.iothreadspin[def->cputune.niothreadspin++] =
+            iothreadpin;
     }
     VIR_FREE(nodes);
 
@@ -13185,7 +13167,9 @@ virDomainDefParseXML(xmlDocPtr xml,
                                   ctxt) < 0)
         goto error;
 
-    if (virDomainNumatuneHasPlacementAuto(def->numatune) && !def->cpumask)
+    if (virDomainNumatuneHasPlacementAuto(def->numatune) &&
+        !def->cpumask && !def->cputune.vcpupin &&
+        !def->cputune.emulatorpin && !def->cputune.iothreadspin)
         def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO;
 
     if ((n = virXPathNodeSet("./resource", ctxt, &nodes)) < 0) {

@@ -1,0 +1,37 @@
+<domain type='kvm'>
+  <name>dummy2</name>
+  <uuid>4d92ec27-9ebf-400b-ae91-20c71c647c19</uuid>
+  <memory unit='KiB'>131072</memory>
+  <currentMemory unit='KiB'>65536</currentMemory>
+  <vcpu placement='auto' current='2'>6</vcpu>
+  <iothreads>2</iothreads>
+  <cputune>
+    <emulatorpin cpuset='1-3'/>
+    <iothreadpin iothread='1' cpuset='2'/>
+  </cputune>
+  <numatune>
+    <memory mode='strict' placement='auto'/>
+  </numatune>
+  <os>
+    <type arch='x86_64' machine='pc-q35-2.3'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='sata' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <controller type='pci' index='1' model='dmi-to-pci-bridge'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1e' function='0x0'/>
+    </controller>
+    <controller type='pci' index='2' model='pci-bridge'>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x01' function='0x0'/>
+    </controller>
+    <memballoon model='none'/>
+  </devices>
+</domain>

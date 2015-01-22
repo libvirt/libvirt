@@ -577,14 +577,12 @@
        <dt><code>emulatorpin</code></dt>
        <dd>
          The optional <code>emulatorpin</code> element specifies which of host
-         physical CPUs the "emulator", a subset of a domain not including vcpu,
-         will be pinned to. If this is omitted, and attribute
+         physical CPUs the "emulator", a subset of a domain not including vcpu
+         or iothreads will be pinned to. If this is omitted, and attribute
          <code>cpuset</code> of element <code>vcpu</code> is not specified,
          "emulator" is pinned to all the physical CPUs by default. It contains
          one required attribute <code>cpuset</code> specifying which physical
-         CPUs to pin to. NB, <code>emulatorpin</code> is not allowed if
-         attribute <code>placement</code> of element <code>vcpu</code> is
-         "auto".
+         CPUs to pin to.
        </dd>
        <dt><code>iothreadpin</code></dt>
        <dd>
@@ -598,8 +596,6 @@
          <code>iothread</code> value begins at "1" through the number of
           <a href="#elementsIOThreadsAllocation"><code>iothreads</code></a>
          allocated to the domain. A value of "0" is not permitted.
-         NB, <code>iothreadpin</code> is not allowed if attribute
-         <code>placement</code> of element <code>vcpu</code> is "auto".
         <span class="since">Since 1.2.9</span>
        </dd>
       <dt><code>shares</code></dt>
