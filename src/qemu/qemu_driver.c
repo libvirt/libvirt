@@ -8996,21 +8996,24 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
                                         &persistentDef) < 0)
-        goto cleanup;
+        goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_MEMORY)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            "%s", _("cgroup memory controller is not mounted"));
-            goto cleanup;
+            goto endjob;
         }
     }
 
 #define VIR_GET_LIMIT_PARAMETER(PARAM, VALUE)                                \
     if ((rc = virTypedParamsGetULLong(params, nparams, PARAM, &VALUE)) < 0)  \
-        goto cleanup;                                                        \
+        goto endjob;                                                         \
                                                                              \
     if (rc == 1)                                                             \
         set_ ## VALUE = true;
@@ -9037,7 +9040,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("memory hard_limit tunable value must be lower "
                              "than or equal to swap_hard_limit"));
-            goto cleanup;
+            goto endjob;
         }
     }
 
@@ -9048,7 +9051,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
                 virReportSystemError(-rc, _("unable to set memory %s tunable"), \
                                      #VALUE);                                   \
                                                                                 \
-                goto cleanup;                                                   \
+                goto endjob;                                                   \
             }                                                                   \
             vm->def->mem.VALUE = VALUE;                                         \
         }                                                                       \
@@ -9076,9 +9079,12 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG &&
         virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
-        goto cleanup;
+        goto endjob;
 
     ret = 0;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
 
  cleanup:
     qemuDomObjEndAPI(&vm);
