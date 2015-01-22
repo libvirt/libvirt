@@ -1438,6 +1438,10 @@ virStorageBackendVolOpen(const char *path, struct stat *sb,
             VIR_WARN("ignoring missing file '%s'", path);
             return -2;
         }
+        if (errno == ENXIO && noerror) {
+            VIR_WARN("ignoring missing fifo '%s'", path);
+            return -2;
+        }
 
         virReportSystemError(errno, _("cannot open volume '%s'"), path);
         return -1;

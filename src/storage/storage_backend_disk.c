@@ -110,11 +110,6 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
             return -1;
     }
 
-    /* Refresh allocation/capacity/perms */
-    if (virStorageBackendUpdateVolInfo(vol, true, false,
-                                       VIR_STORAGE_VOL_OPEN_DEFAULT) < 0)
-        return -1;
-
     /* set partition type */
     if (STREQ(groups[1], "normal"))
        vol->source.partType = VIR_STORAGE_VOL_DISK_TYPE_PRIMARY;
@@ -127,10 +122,29 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
 
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
-    /* The above gets allocation wrong for
-     * extended partitions, so overwrite it */
-    vol->target.allocation = vol->target.capacity =
-        (vol->source.extents[0].end - vol->source.extents[0].start);
+    /* Refresh allocation/capacity/perms
+     *
+     * For an extended partition, virStorageBackendUpdateVolInfo will
+     * return incorrect values for allocation and capacity, so use the
+     * extent information captured above instead.
+     *
+     * Also once a logical partition exists or another primary partition
+     * after an extended partition is created an open on the extended
+     * partition will fail, so pass the NOERROR flag and only error if a
+     * -1 was returned indicating some other error than an open error.
+     */
+    if (vol->source.partType == VIR_STORAGE_VOL_DISK_TYPE_EXTENDED) {
+        if (virStorageBackendUpdateVolInfo(vol, true, false,
+                                           VIR_STORAGE_VOL_OPEN_DEFAULT |
+                                           VIR_STORAGE_VOL_OPEN_NOERROR) == -1)
+            return -1;
+        vol->target.allocation = vol->target.capacity =
+            (vol->source.extents[0].end - vol->source.extents[0].start);
+    } else {
+        if (virStorageBackendUpdateVolInfo(vol, true, false,
+                                           VIR_STORAGE_VOL_OPEN_DEFAULT) < 0)
+            return -1;
+    }
 
     if (STRNEQ(groups[2], "metadata"))
         pool->def->allocation += vol->target.allocation;
