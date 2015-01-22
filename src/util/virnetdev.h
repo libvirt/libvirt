@@ -83,7 +83,7 @@ int virNetDevExists(const char *brname)
 int virNetDevSetOnline(const char *ifname,
                        bool online)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
-int virNetDevIsOnline(const char *ifname,
+int virNetDevGetOnline(const char *ifname,
                       bool *online)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
@@ -200,4 +200,26 @@ int virNetDevDelMulti(const char *ifname,
                       virMacAddrPtr macaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
+int virNetDevSetIFFlag(const char *ifname, int flag, bool val)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevGetIFFlag(const char *ifname, int flag, bool *val)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevSetPromiscuous(const char *ifname, bool promiscuous)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+int virNetDevGetPromiscuous(const char *ifname, bool *promiscuous)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevSetRcvMulti(const char *ifname, bool receive)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+int virNetDevGetRcvMulti(const char *ifname, bool *receive)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevSetRcvAllMulti(const char *ifname, bool receive)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+int virNetDevGetRcvAllMulti(const char *ifname, bool *receive)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 #endif /* __VIR_NETDEV_H__ */
