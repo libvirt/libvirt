@@ -74,4 +74,6 @@ void virDBusMessageUnref(DBusMessage *msg);
 
 int virDBusIsServiceEnabled(const char *name);
 int virDBusIsServiceRegistered(const char *name);
+
+bool virDBusErrorIsUnknownMethod(virErrorPtr err);
 #endif /* __VIR_DBUS_H__ */

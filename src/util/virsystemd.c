@@ -281,8 +281,7 @@ int virSystemdCreateMachine(const char *name,
             goto cleanup;
 
         if (error.level == VIR_ERR_ERROR) {
-            if (STREQ_NULLABLE("org.freedesktop.DBus.Error.UnknownMethod",
-                               error.str1)) {
+            if (virDBusErrorIsUnknownMethod(&error)) {
                 VIR_INFO("CreateMachineWithNetwork isn't supported, switching "
                          "to legacy CreateMachine method for systemd-machined");
                 virResetError(&error);

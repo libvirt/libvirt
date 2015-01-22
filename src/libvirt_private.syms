@@ -1244,6 +1244,7 @@ virDBusCreateMethod;
 virDBusCreateMethodV;
 virDBusCreateReply;
 virDBusCreateReplyV;
+virDBusErrorIsUnknownMethod;
 virDBusGetSessionBus;
 virDBusGetSystemBus;
 virDBusHasSystemBus;

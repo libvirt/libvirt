@@ -1894,3 +1894,12 @@ void virDBusMessageUnref(DBusMessage *msg ATTRIBUTE_UNUSED)
     /* nothing */
 }
 #endif /* ! WITH_DBUS */
+
+bool virDBusErrorIsUnknownMethod(virErrorPtr err)
+{
+    return err->domain == VIR_FROM_DBUS &&
+        err->code == VIR_ERR_DBUS_SERVICE &&
+        err->level == VIR_ERR_ERROR &&
+        STREQ_NULLABLE("org.freedesktop.DBus.Error.UnknownMethod",
+                       err->str1);
+}
