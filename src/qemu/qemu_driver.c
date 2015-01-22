@@ -17038,7 +17038,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
         goto cleanup;
 
     if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
