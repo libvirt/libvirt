@@ -4183,6 +4183,94 @@ syncNicRxFilterHostMulticast(char *ifname, virNetDevRxFilterPtr guestFilter,
 
 
 static void
+syncNicRxFilterPromiscMode(char *ifname,
+                           virNetDevRxFilterPtr guestFilter,
+                           virNetDevRxFilterPtr hostFilter)
+{
+    bool promisc;
+    bool setpromisc = false;
+
+    /* Set macvtap promisc mode to true if the guest has vlans defined */
+    /* or synchronize the macvtap promisc mode if different from guest */
+    if (guestFilter->vlan.nTable > 0) {
+        if (!hostFilter->promiscuous) {
+            setpromisc = true;
+            promisc = true;
+        }
+    } else if (hostFilter->promiscuous != guestFilter->promiscuous) {
+        setpromisc = true;
+        promisc = guestFilter->promiscuous;
+    }
+
+    if (setpromisc) {
+        if (virNetDevSetPromiscuous(ifname, promisc) < 0) {
+            VIR_WARN("Couldn't set PROMISC flag to %s for device %s "
+                     "while responding to NIC_RX_FILTER_CHANGED",
+                     promisc ? "true" : "false", ifname);
+        }
+    }
+}
+
+
+static void
+syncNicRxFilterMultiMode(char *ifname, virNetDevRxFilterPtr guestFilter,
+                         virNetDevRxFilterPtr hostFilter)
+{
+    if (hostFilter->multicast.mode != guestFilter->multicast.mode) {
+        switch (guestFilter->multicast.mode) {
+            case VIR_NETDEV_RX_FILTER_MODE_ALL:
+                if (virNetDevSetRcvAllMulti(ifname, true)) {
+
+                    VIR_WARN("Couldn't set allmulticast flag to 'on' for "
+                             "device %s while responding to "
+                             "NIC_RX_FILTER_CHANGED", ifname);
+                }
+                break;
+
+            case VIR_NETDEV_RX_FILTER_MODE_NORMAL:
+                if (virNetDevSetRcvMulti(ifname, true)) {
+
+                    VIR_WARN("Couldn't set multicast flag to 'on' for "
+                             "device %s while responding to "
+                             "NIC_RX_FILTER_CHANGED", ifname);
+                }
+
+                if (virNetDevSetRcvAllMulti(ifname, false)) {
+                    VIR_WARN("Couldn't set allmulticast flag to 'off' for "
+                             "device %s while responding to "
+                             "NIC_RX_FILTER_CHANGED", ifname);
+                }
+                break;
+
+            case VIR_NETDEV_RX_FILTER_MODE_NONE:
+                if (virNetDevSetRcvAllMulti(ifname, false)) {
+                    VIR_WARN("Couldn't set allmulticast flag to 'off' for "
+                             "device %s while responding to "
+                             "NIC_RX_FILTER_CHANGED", ifname);
+                }
+
+                if (virNetDevSetRcvMulti(ifname, false)) {
+                    VIR_WARN("Couldn't set multicast flag to 'off' for "
+                             "device %s while responding to "
+                             "NIC_RX_FILTER_CHANGED",
+                             ifname);
+                }
+                break;
+        }
+    }
+}
+
+
+static void
+syncNicRxFilterDeviceOptions(char *ifname, virNetDevRxFilterPtr guestFilter,
+                           virNetDevRxFilterPtr hostFilter)
+{
+    syncNicRxFilterPromiscMode(ifname, guestFilter, hostFilter);
+    syncNicRxFilterMultiMode(ifname, guestFilter, hostFilter);
+}
+
+
+static void
 syncNicRxFilterMulticast(char *ifname,
                          virNetDevRxFilterPtr guestFilter,
                          virNetDevRxFilterPtr hostFilter)
@@ -4265,9 +4353,14 @@ processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
          * attributes to match those of the guest network device:
          * - MAC address
          * - Multicast MAC address table
+         * - Device options:
+         *   - PROMISC
+         *   - MULTICAST
+         *   - ALLMULTI
          */
         syncNicRxFilterMacAddr(def->ifname, guestFilter, hostFilter);
         syncNicRxFilterMulticast(def->ifname, guestFilter, hostFilter);
+        syncNicRxFilterDeviceOptions(def->ifname, guestFilter, hostFilter);
     }
 
  endjob:
