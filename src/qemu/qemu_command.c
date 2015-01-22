@@ -10068,13 +10068,18 @@ qemuBuildConsoleChrDeviceStr(char **deviceStr,
         break;
 
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL:
+        break;
+
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE:
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN:
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_UML:
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LXC:
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_OPENVZ:
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LAST:
-        break;
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unsupported console target type %s"),
+                       NULLSTR(virDomainChrConsoleTargetTypeToString(chr->targetType)));
+        goto cleanup;
     }
 
     ret = 0;
