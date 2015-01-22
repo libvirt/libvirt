@@ -538,12 +538,35 @@ static int testCgroupGetPercpuStats(const void *args ATTRIBUTE_UNUSED)
     virCgroupPtr cgroup = NULL;
     size_t i;
     int rv, ret = -1;
-    virTypedParameter params[2];
+    virTypedParameterPtr params = NULL;
+# define EXPECTED_NCPUS 160
 
-    // TODO: mock nodeGetCPUCount() as well & check 2nd cpu, too
     unsigned long long expected[] = {
-        1413142688153030ULL
+        0, 0, 0, 0, 0, 0, 0, 0,
+        7059492996, 0, 0, 0, 0, 0, 0, 0,
+        4180532496, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        1957541268, 0, 0, 0, 0, 0, 0, 0,
+        2065932204, 0, 0, 0, 0, 0, 0, 0,
+        18228689414, 0, 0, 0, 0, 0, 0, 0,
+        4245525148, 0, 0, 0, 0, 0, 0, 0,
+        2911161568, 0, 0, 0, 0, 0, 0, 0,
+        1407758136, 0, 0, 0, 0, 0, 0, 0,
+        1836807700, 0, 0, 0, 0, 0, 0, 0,
+        1065296618, 0, 0, 0, 0, 0, 0, 0,
+        2046213266, 0, 0, 0, 0, 0, 0, 0,
+        747889778, 0, 0, 0, 0, 0, 0, 0,
+        709566900, 0, 0, 0, 0, 0, 0, 0,
+        444777342, 0, 0, 0, 0, 0, 0, 0,
+        5683512916, 0, 0, 0, 0, 0, 0, 0,
+        635751356, 0, 0, 0, 0, 0, 0, 0,
     };
+    verify(ARRAY_CARDINALITY(expected) == EXPECTED_NCPUS);
+
+    if (VIR_ALLOC_N(params, EXPECTED_NCPUS) < 0)
+        goto cleanup;
 
     if ((rv = virCgroupNewPartition("/virtualmachines", true,
                                     (1 << VIR_CGROUP_CONTROLLER_CPU) |
@@ -553,37 +576,37 @@ static int testCgroupGetPercpuStats(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (nodeGetCPUCount() < 1) {
+    if (nodeGetCPUCount() != EXPECTED_NCPUS) {
         fprintf(stderr, "Unexpected: nodeGetCPUCount() yields: %d\n", nodeGetCPUCount());
         goto cleanup;
     }
 
     if ((rv = virCgroupGetPercpuStats(cgroup,
                                       params,
-                                      2, 0, 1, 0)) < 0) {
+                                      1, 0, EXPECTED_NCPUS, 0)) < 0) {
         fprintf(stderr, "Failed call to virCgroupGetPercpuStats for /virtualmachines cgroup: %d\n", -rv);
         goto cleanup;
     }
 
-    for (i = 0; i < ARRAY_CARDINALITY(expected); i++) {
+    for (i = 0; i < EXPECTED_NCPUS; i++) {
         if (!STREQ(params[i].field, VIR_DOMAIN_CPU_STATS_CPUTIME)) {
             fprintf(stderr,
-                    "Wrong parameter name value from virCgroupGetPercpuStats (is: %s)\n",
-                    params[i].field);
+                    "Wrong parameter name value from virCgroupGetPercpuStats at %zu (is: %s)\n",
+                    i, params[i].field);
             goto cleanup;
         }
 
         if (params[i].type != VIR_TYPED_PARAM_ULLONG) {
             fprintf(stderr,
-                    "Wrong parameter value type from virCgroupGetPercpuStats (is: %d)\n",
-                    params[i].type);
+                    "Wrong parameter value type from virCgroupGetPercpuStats at %zu (is: %d)\n",
+                    i, params[i].type);
             goto cleanup;
         }
 
         if (params[i].value.ul != expected[i]) {
             fprintf(stderr,
-                    "Wrong value from virCgroupGetMemoryUsage (expected %llu)\n",
-                    params[i].value.ul);
+                    "Wrong value from virCgroupGetMemoryUsage at %zu (expected %llu)\n",
+                    i, params[i].value.ul);
             goto cleanup;
         }
     }

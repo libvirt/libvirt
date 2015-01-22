@@ -1242,6 +1242,23 @@ nodeGetCPUCount(void)
 }
 
 virBitmapPtr
+nodeGetPresentCPUBitmap(void)
+{
+    int max_present;
+
+    if ((max_present = nodeGetCPUCount()) < 0)
+        return NULL;
+
+#ifdef __linux__
+    if (virFileExists(SYSFS_SYSTEM_PATH "/cpu/present"))
+        return linuxParseCPUmap(max_present, SYSFS_SYSTEM_PATH "/cpu/present");
+#endif
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("non-continuous host cpu numbers not implemented on this platform"));
+    return NULL;
+}
+
+virBitmapPtr
 nodeGetCPUBitmap(int *max_id ATTRIBUTE_UNUSED)
 {
 #ifdef __linux__

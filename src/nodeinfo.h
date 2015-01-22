@@ -43,6 +43,7 @@ int nodeGetCellsFreeMemory(unsigned long long *freeMems,
 int nodeGetMemory(unsigned long long *mem,
                   unsigned long long *freeMem);
 
+virBitmapPtr nodeGetPresentCPUBitmap(void);
 virBitmapPtr nodeGetCPUBitmap(int *max_id);
 int nodeGetCPUCount(void);
 

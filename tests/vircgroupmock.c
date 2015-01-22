@@ -51,6 +51,8 @@ const char *fakedevicedir1 = FAKEDEVDIR1;
 
 
 # define SYSFS_PREFIX "/not/really/sys/fs/cgroup/"
+# define SYSFS_CPU_PRESENT "/sys/devices/system/cpu/present"
+# define SYSFS_CPU_PRESENT_MOCKED "devices_system_cpu_present"
 
 /*
  * The plan:
@@ -215,7 +217,15 @@ static int make_controller(const char *path, mode_t mode)
                   "user 216687025\n"
                   "system 43421396\n");
         MAKE_FILE("cpuacct.usage", "2787788855799582\n");
-        MAKE_FILE("cpuacct.usage_percpu", "1413142688153030 1374646168910542\n");
+        MAKE_FILE("cpuacct.usage_percpu",
+                  "7059492996 0 0 0 0 0 0 0 4180532496 0 0 0 0 0 0 0 "
+                  "1957541268 0 0 0 0 0 0 0 2065932204 0 0 0 0 0 0 0 "
+                  "18228689414 0 0 0 0 0 0 0 4245525148 0 0 0 0 0 0 0 "
+                  "2911161568 0 0 0 0 0 0 0 1407758136 0 0 0 0 0 0 0 "
+                  "1836807700 0 0 0 0 0 0 0 1065296618 0 0 0 0 0 0 0 "
+                  "2046213266 0 0 0 0 0 0 0 747889778 0 0 0 0 0 0 0 "
+                  "709566900 0 0 0 0 0 0 0 444777342 0 0 0 0 0 0 0 "
+                  "5683512916 0 0 0 0 0 0 0 635751356 0 0 0 0 0 0 0\n");
     } else if (STRPREFIX(controller, "cpuset")) {
         MAKE_FILE("cpuset.cpu_exclusive", "1\n");
         if (STREQ(controller, "cpuset"))
@@ -431,6 +441,9 @@ static void init_sysfs(void)
     MAKE_CONTROLLER("blkio");
     MAKE_CONTROLLER("memory");
     MAKE_CONTROLLER("freezer");
+
+    if (make_file(fakesysfsdir, SYSFS_CPU_PRESENT_MOCKED, "8-23,48-159\n") < 0)
+        abort();
 }
 
 
@@ -623,21 +636,27 @@ int __xstat(int ver, const char *path, struct stat *sb)
 
 int stat(const char *path, struct stat *sb)
 {
+    char *newpath = NULL;
     int ret;
 
     init_syms();
 
-    if (STRPREFIX(path, SYSFS_PREFIX)) {
+    if (STREQ(path, SYSFS_CPU_PRESENT)) {
         init_sysfs();
-        char *newpath;
+        if (asprintf(&newpath, "%s/%s",
+                     fakesysfsdir,
+                     SYSFS_CPU_PRESENT_MOCKED) < 0) {
+            errno = ENOMEM;
+            return -1;
+        }
+    } else if (STRPREFIX(path, SYSFS_PREFIX)) {
+        init_sysfs();
         if (asprintf(&newpath, "%s/%s",
                      fakesysfsdir,
                      path + strlen(SYSFS_PREFIX)) < 0) {
             errno = ENOMEM;
             return -1;
         }
-        ret = realstat(newpath, sb);
-        free(newpath);
     } else if (STRPREFIX(path, fakedevicedir0)) {
         sb->st_mode = S_IFBLK;
         sb->st_rdev = makedev(8, 0);
@@ -647,8 +666,11 @@ int stat(const char *path, struct stat *sb)
         sb->st_rdev = makedev(9, 0);
         return 0;
     } else {
-        ret = realstat(path, sb);
+        if (!(newpath = strdup(path)))
+            return -1;
     }
+    ret = realstat(newpath, sb);
+    free(newpath);
     return ret;
 }
 
@@ -681,6 +703,16 @@ int open(const char *path, int flags, ...)
     char *newpath = NULL;
 
     init_syms();
+
+    if (STREQ(path, SYSFS_CPU_PRESENT)) {
+        init_sysfs();
+        if (asprintf(&newpath, "%s/%s",
+                     fakesysfsdir,
+                     SYSFS_CPU_PRESENT_MOCKED) < 0) {
+            errno = ENOMEM;
+            return -1;
+        }
+    }
 
     if (STRPREFIX(path, SYSFS_PREFIX)) {
         init_sysfs();
