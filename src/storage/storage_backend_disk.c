@@ -654,7 +654,7 @@ virStorageBackendDiskPartBoundaries(virStoragePoolObjPtr pool,
 
 
 static int
-virStorageBackendDiskDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
+virStorageBackendDiskDeleteVol(virConnectPtr conn,
                                virStoragePoolObjPtr pool,
                                virStorageVolDefPtr vol,
                                unsigned int flags)
@@ -718,6 +718,15 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
         cmd = virCommandNewArgList(DMSETUP, "remove", "--force", devpath, NULL);
 
         if (virCommandRun(cmd, NULL) < 0)
+            goto cleanup;
+    }
+
+    /* If this was the extended partition, then all the logical partitions
+     * are then lost. Make it easy on ourselves and just refresh the pool
+     */
+    if (vol->source.partType == VIR_STORAGE_VOL_DISK_TYPE_EXTENDED) {
+        virStoragePoolObjClearVols(pool);
+        if (virStorageBackendDiskRefreshPool(conn, pool) < 0)
             goto cleanup;
     }
 
