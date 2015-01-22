@@ -8038,35 +8038,45 @@ static int qemuDomainSetAutostart(virDomainPtr dom,
     autostart = (autostart != 0);
 
     if (vm->autostart != autostart) {
-        if ((configFile = virDomainConfigFile(cfg->configDir, vm->def->name)) == NULL)
+        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
             goto cleanup;
-        if ((autostartLink = virDomainConfigFile(cfg->autostartDir, vm->def->name)) == NULL)
-            goto cleanup;
+
+        if (!(configFile = virDomainConfigFile(cfg->configDir, vm->def->name)))
+            goto endjob;
+
+        if (!(autostartLink = virDomainConfigFile(cfg->autostartDir,
+                                                  vm->def->name)))
+            goto endjob;
 
         if (autostart) {
             if (virFileMakePath(cfg->autostartDir) < 0) {
                 virReportSystemError(errno,
                                      _("cannot create autostart directory %s"),
                                      cfg->autostartDir);
-                goto cleanup;
+                goto endjob;
             }
 
             if (symlink(configFile, autostartLink) < 0) {
                 virReportSystemError(errno,
                                      _("Failed to create symlink '%s to '%s'"),
                                      autostartLink, configFile);
-                goto cleanup;
+                goto endjob;
             }
         } else {
-            if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
+            if (unlink(autostartLink) < 0 &&
+                errno != ENOENT &&
+                errno != ENOTDIR) {
                 virReportSystemError(errno,
                                      _("Failed to delete symlink '%s'"),
                                      autostartLink);
-                goto cleanup;
+                goto endjob;
             }
         }
 
         vm->autostart = autostart;
+
+ endjob:
+        qemuDomainObjEndJob(driver, vm);
     }
     ret = 0;
 
