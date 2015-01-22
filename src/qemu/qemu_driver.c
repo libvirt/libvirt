@@ -9658,22 +9658,24 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
                                         &vmdef) < 0)
-        goto cleanup;
+        goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         /* Make a copy for updated domain. */
-        vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt);
-        if (!vmdef)
-            goto cleanup;
+        if (!(vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt)))
+            goto endjob;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            "%s", _("cgroup CPU controller is not mounted"));
-            goto cleanup;
+            goto endjob;
         }
     }
 
@@ -9686,10 +9688,10 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
             if (flags & VIR_DOMAIN_AFFECT_LIVE) {
                 unsigned long long val;
                 if (virCgroupSetCpuShares(priv->cgroup, value_ul) < 0)
-                    goto cleanup;
+                    goto endjob;
 
                 if (virCgroupGetCpuShares(priv->cgroup, &val) < 0)
-                    goto cleanup;
+                    goto endjob;
 
                 vm->def->cputune.shares = val;
                 vm->def->cputune.sharesSpecified = true;
@@ -9698,7 +9700,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                                             &eventMaxNparams,
                                             VIR_DOMAIN_TUNABLE_CPU_CPU_SHARES,
                                             val) < 0)
-                    goto cleanup;
+                    goto endjob;
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
@@ -9713,7 +9715,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
             if (flags & VIR_DOMAIN_AFFECT_LIVE && value_ul) {
                 if ((rc = qemuSetVcpusBWLive(vm, priv->cgroup, value_ul, 0)))
-                    goto cleanup;
+                    goto endjob;
 
                 vm->def->cputune.period = value_ul;
 
@@ -9721,7 +9723,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                                             &eventMaxNparams,
                                             VIR_DOMAIN_TUNABLE_CPU_VCPU_PERIOD,
                                             value_ul) < 0)
-                    goto cleanup;
+                    goto endjob;
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG)
@@ -9733,7 +9735,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
             if (flags & VIR_DOMAIN_AFFECT_LIVE && value_l) {
                 if ((rc = qemuSetVcpusBWLive(vm, priv->cgroup, 0, value_l)))
-                    goto cleanup;
+                    goto endjob;
 
                 vm->def->cputune.quota = value_l;
 
@@ -9741,7 +9743,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                                            &eventMaxNparams,
                                            VIR_DOMAIN_TUNABLE_CPU_VCPU_QUOTA,
                                            value_l) < 0)
-                    goto cleanup;
+                    goto endjob;
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG)
@@ -9754,7 +9756,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
             if (flags & VIR_DOMAIN_AFFECT_LIVE && value_ul) {
                 if ((rc = qemuSetEmulatorBandwidthLive(vm, priv->cgroup,
                                                        value_ul, 0)))
-                    goto cleanup;
+                    goto endjob;
 
                 vm->def->cputune.emulator_period = value_ul;
 
@@ -9762,7 +9764,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                                             &eventMaxNparams,
                                             VIR_DOMAIN_TUNABLE_CPU_EMULATOR_PERIOD,
                                             value_ul) < 0)
-                    goto cleanup;
+                    goto endjob;
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG)
@@ -9775,7 +9777,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
             if (flags & VIR_DOMAIN_AFFECT_LIVE && value_l) {
                 if ((rc = qemuSetEmulatorBandwidthLive(vm, priv->cgroup,
                                                        0, value_l)))
-                    goto cleanup;
+                    goto endjob;
 
                 vm->def->cputune.emulator_quota = value_l;
 
@@ -9783,7 +9785,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                                            &eventMaxNparams,
                                            VIR_DOMAIN_TUNABLE_CPU_EMULATOR_QUOTA,
                                            value_l) < 0)
-                    goto cleanup;
+                    goto endjob;
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG)
@@ -9792,7 +9794,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
     }
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
-        goto cleanup;
+        goto endjob;
 
     if (eventNparams) {
         event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
@@ -9804,13 +9806,16 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         rc = virDomainSaveConfig(cfg->configDir, vmdef);
         if (rc < 0)
-            goto cleanup;
+            goto endjob;
 
         virDomainObjAssignDef(vm, vmdef, false, NULL);
         vmdef = NULL;
     }
 
     ret = 0;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
 
  cleanup:
     virDomainDefFree(vmdef);
