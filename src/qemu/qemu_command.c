@@ -1158,7 +1158,8 @@ qemuDomainAssignARMVirtioMMIOAddresses(virDomainDefPtr def,
     if (((def->os.arch == VIR_ARCH_ARMV7L) ||
         (def->os.arch == VIR_ARCH_AARCH64)) &&
         (STRPREFIX(def->os.machine, "vexpress-") ||
-            STREQ(def->os.machine, "virt")) &&
+            STREQ(def->os.machine, "virt") ||
+            STRPREFIX(def->os.machine, "virt-")) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MMIO)) {
         qemuDomainPrimeVirtioDeviceAddresses(
             def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO);
