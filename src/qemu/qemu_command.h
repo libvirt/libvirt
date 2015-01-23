@@ -249,7 +249,6 @@ virDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
                                                         bool dryRun);
 
 int qemuAssignDevicePCISlots(virDomainDefPtr def,
-                             virQEMUCapsPtr qemuCaps,
                              virDomainPCIAddressSetPtr addrs);
 
 int qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps);

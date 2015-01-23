@@ -1874,6 +1874,27 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
     return ret;
 }
 
+static int
+qemuValidateDevicePCISlotsChipsets(virDomainDefPtr def,
+                                   virQEMUCapsPtr qemuCaps,
+                                   virDomainPCIAddressSetPtr addrs)
+{
+    if ((STRPREFIX(def->os.machine, "pc-0.") ||
+        STRPREFIX(def->os.machine, "pc-1.") ||
+        STRPREFIX(def->os.machine, "pc-i440") ||
+        STREQ(def->os.machine, "pc") ||
+        STRPREFIX(def->os.machine, "rhel")) &&
+        qemuValidateDevicePCISlotsPIIX3(def, qemuCaps, addrs) < 0) {
+        return -1;
+    }
+
+    if (qemuDomainMachineIsQ35(def) &&
+        qemuDomainValidateDevicePCISlotsQ35(def, qemuCaps, addrs) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
 
 int
 qemuDomainAssignPCIAddresses(virDomainDefPtr def,
@@ -1907,7 +1928,11 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
             /* 1st pass to figure out how many PCI bridges we need */
             if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses, true)))
                 goto cleanup;
-            if (qemuAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
+
+            if (qemuValidateDevicePCISlotsChipsets(def, qemuCaps, addrs) < 0)
+                goto cleanup;
+
+            if (qemuAssignDevicePCISlots(def, addrs) < 0)
                 goto cleanup;
 
             for (i = 0; i < addrs->nbuses; i++) {
@@ -1946,7 +1971,10 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
             goto cleanup;
 
         if (qemuDomainSupportsPCI(def)) {
-            if (qemuAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
+            if (qemuValidateDevicePCISlotsChipsets(def, qemuCaps, addrs) < 0)
+                goto cleanup;
+
+            if (qemuAssignDevicePCISlots(def, addrs) < 0)
                 goto cleanup;
         }
     }
@@ -1990,6 +2018,9 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
  *  - PIIX3 ISA bridge, IDE controller, something else unknown, USB controller (slot 1)
  *  - Video (slot 2)
  *
+ *  - These integrated devices were already added by
+ *    qemuValidateDevicePCISlotsChipsets invoked right before this function
+ *
  * Incrementally assign slots from 3 onwards:
  *
  *  - Net
@@ -2007,26 +2038,11 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
  */
 int
 qemuAssignDevicePCISlots(virDomainDefPtr def,
-                         virQEMUCapsPtr qemuCaps,
                          virDomainPCIAddressSetPtr addrs)
 {
     size_t i, j;
     virDomainPCIConnectFlags flags;
     virDevicePCIAddress tmp_addr;
-
-    if ((STRPREFIX(def->os.machine, "pc-0.") ||
-        STRPREFIX(def->os.machine, "pc-1.") ||
-        STRPREFIX(def->os.machine, "pc-i440") ||
-        STREQ(def->os.machine, "pc") ||
-        STRPREFIX(def->os.machine, "rhel")) &&
-        qemuValidateDevicePCISlotsPIIX3(def, qemuCaps, addrs) < 0) {
-        goto error;
-    }
-
-    if (qemuDomainMachineIsQ35(def) &&
-        qemuDomainValidateDevicePCISlotsQ35(def, qemuCaps, addrs) < 0) {
-        goto error;
-    }
 
     /* PCI controllers */
     for (i = 0; i < def->ncontrollers; i++) {
