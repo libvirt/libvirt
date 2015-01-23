@@ -46,6 +46,10 @@
 # include <selinux/selinux.h>
 #endif
 
+#if HAVE_LINUX_BTRFS_H
+# include <linux/btrfs.h>
+#endif
+
 #include "datatypes.h"
 #include "virerror.h"
 #include "viralloc.h"
@@ -155,6 +159,26 @@ enum {
 
 #define READ_BLOCK_SIZE_DEFAULT  (1024 * 1024)
 #define WRITE_BLOCK_SIZE_DEFAULT (4 * 1024)
+
+/*
+ * Perform the O(1) btrfs clone operation, if possible.
+ * Upon success, return 0.  Otherwise, return -1 and set errno.
+ */
+#if HAVE_LINUX_BTRFS_H
+static inline int
+btrfsCloneFile(int dest_fd, int src_fd)
+{
+    return ioctl(dest_fd, BTRFS_IOC_CLONE, src_fd);
+}
+#else
+static inline int
+btrfsCloneFile(int dest_fd ATTRIBUTE_UNUSED,
+               int src_fd ATTRIBUTE_UNUSED)
+{
+    errno = ENOTSUP;
+    return -1;
+}
+#endif
 
 static int ATTRIBUTE_NONNULL(2)
 virStorageBackendCopyToFD(virStorageVolDefPtr vol,

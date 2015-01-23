@@ -2175,6 +2175,13 @@ fi
 AM_CONDITIONAL([WITH_HYPERV], [test "$with_hyperv" = "yes"])
 
 
+dnl
+dnl check for kernel headers required by btrfs ioctl
+dnl
+if test "$with_linux" = "yes"; then
+    AC_CHECK_HEADERS([linux/btrfs.h])
+fi
+
 dnl Allow perl/python overrides
 AC_PATH_PROGS([PYTHON], [python2 python])
 AC_PATH_PROG([PERL], [perl])
