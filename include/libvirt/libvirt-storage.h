@@ -306,6 +306,7 @@ const char*             virStorageVolGetKey             (virStorageVolPtr vol);
 
 typedef enum {
     VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA = 1 << 0,
+    VIR_STORAGE_VOL_CREATE_REFLINK = 1 << 1, /* perform a btrfs lightweight copy */
 } virStorageVolCreateFlags;
 
 virStorageVolPtr        virStorageVolCreateXML          (virStoragePoolPtr pool,

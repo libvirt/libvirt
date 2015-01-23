@@ -1105,7 +1105,9 @@ virStorageBackendFileSystemVolBuild(virConnectPtr conn,
                                     virStorageVolDefPtr vol,
                                     unsigned int flags)
 {
-    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, -1);
+    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA |
+                  VIR_STORAGE_VOL_CREATE_REFLINK,
+                  -1);
 
     return _virStorageBackendFileSystemVolBuild(conn, pool, vol, NULL, flags);
 }
@@ -1120,7 +1122,9 @@ virStorageBackendFileSystemVolBuildFrom(virConnectPtr conn,
                                         virStorageVolDefPtr inputvol,
                                         unsigned int flags)
 {
-    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, -1);
+    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA |
+                  VIR_STORAGE_VOL_CREATE_REFLINK,
+                  -1);
 
     return _virStorageBackendFileSystemVolBuild(conn, pool, vol, inputvol, flags);
 }

@@ -1756,7 +1756,9 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
     unsigned long long allocation;
     int buildret;
 
-    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, NULL);
+    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA |
+                  VIR_STORAGE_VOL_CREATE_REFLINK,
+                  NULL);
 
     storageDriverLock();
     pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid);
