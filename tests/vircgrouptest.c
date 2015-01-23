@@ -541,7 +541,7 @@ static int testCgroupGetPercpuStats(const void *args ATTRIBUTE_UNUSED)
     virTypedParameterPtr params = NULL;
 # define EXPECTED_NCPUS 160
 
-    unsigned long long expected[] = {
+    unsigned long long expected[EXPECTED_NCPUS] = {
         0, 0, 0, 0, 0, 0, 0, 0,
         7059492996, 0, 0, 0, 0, 0, 0, 0,
         4180532496, 0, 0, 0, 0, 0, 0, 0,
@@ -563,7 +563,6 @@ static int testCgroupGetPercpuStats(const void *args ATTRIBUTE_UNUSED)
         5683512916, 0, 0, 0, 0, 0, 0, 0,
         635751356, 0, 0, 0, 0, 0, 0, 0,
     };
-    verify(ARRAY_CARDINALITY(expected) == EXPECTED_NCPUS);
 
     if (VIR_ALLOC_N(params, EXPECTED_NCPUS) < 0)
         goto cleanup;
