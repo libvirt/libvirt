@@ -1910,6 +1910,8 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
         int nbuses = 0;
         size_t i;
         int rv;
+        bool buses_reserved = true;
+
         virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_TYPE_PCI;
 
         for (i = 0; i < def->ncontrollers; i++) {
@@ -1932,17 +1934,20 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
             if (qemuValidateDevicePCISlotsChipsets(def, qemuCaps, addrs) < 0)
                 goto cleanup;
 
-            if (qemuAssignDevicePCISlots(def, addrs) < 0)
+            for (i = 0; i < addrs->nbuses; i++) {
+                if (!qemuDomainPCIBusFullyReserved(&addrs->buses[i]))
+                    buses_reserved = false;
+            }
+
+            /* Reserve 1 extra slot for a (potential) bridge only if buses
+             * are not fully reserved yet
+             */
+            if (!buses_reserved &&
+                virDomainPCIAddressReserveNextSlot(addrs, &info, flags) < 0)
                 goto cleanup;
 
-            for (i = 0; i < addrs->nbuses; i++) {
-                if (!qemuDomainPCIBusFullyReserved(&addrs->buses[i])) {
-
-                    /* Reserve 1 extra slot for a (potential) bridge */
-                    if (virDomainPCIAddressReserveNextSlot(addrs, &info, flags) < 0)
-                        goto cleanup;
-                }
-            }
+            if (qemuAssignDevicePCISlots(def, addrs) < 0)
+                goto cleanup;
 
             for (i = 1; i < addrs->nbuses; i++) {
                 virDomainPCIAddressBusPtr bus = &addrs->buses[i];
