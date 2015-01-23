@@ -1458,102 +1458,6 @@ qemuDomainPCIBusFullyReserved(virDomainPCIAddressBusPtr bus)
     return true;
 }
 
-int
-qemuDomainAssignPCIAddresses(virDomainDefPtr def,
-                             virQEMUCapsPtr qemuCaps,
-                             virDomainObjPtr obj)
-{
-    int ret = -1;
-    virDomainPCIAddressSetPtr addrs = NULL;
-    qemuDomainObjPrivatePtr priv = NULL;
-
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-        int max_idx = -1;
-        int nbuses = 0;
-        size_t i;
-        int rv;
-        virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_TYPE_PCI;
-
-        for (i = 0; i < def->ncontrollers; i++) {
-            if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-                if ((int) def->controllers[i]->idx > max_idx)
-                    max_idx = def->controllers[i]->idx;
-            }
-        }
-
-        nbuses = max_idx + 1;
-
-        if (nbuses > 0 &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCI_BRIDGE)) {
-            virDomainDeviceInfo info;
-
-            /* 1st pass to figure out how many PCI bridges we need */
-            if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses, true)))
-                goto cleanup;
-            if (qemuAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
-                goto cleanup;
-
-            for (i = 0; i < addrs->nbuses; i++) {
-                if (!qemuDomainPCIBusFullyReserved(&addrs->buses[i])) {
-
-                    /* Reserve 1 extra slot for a (potential) bridge */
-                    if (virDomainPCIAddressReserveNextSlot(addrs, &info, flags) < 0)
-                        goto cleanup;
-                }
-            }
-
-            for (i = 1; i < addrs->nbuses; i++) {
-                virDomainPCIAddressBusPtr bus = &addrs->buses[i];
-
-                if ((rv = virDomainDefMaybeAddController(
-                         def, VIR_DOMAIN_CONTROLLER_TYPE_PCI,
-                         i, bus->model)) < 0)
-                    goto cleanup;
-                /* If we added a new bridge, we will need one more address */
-                if (rv > 0 &&
-                    virDomainPCIAddressReserveNextSlot(addrs, &info, flags) < 0)
-                    goto cleanup;
-            }
-            nbuses = addrs->nbuses;
-            virDomainPCIAddressSetFree(addrs);
-            addrs = NULL;
-
-        } else if (max_idx > 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("PCI bridges are not supported "
-                             "by this QEMU binary"));
-            goto cleanup;
-        }
-
-        if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses, false)))
-            goto cleanup;
-
-        if (qemuDomainSupportsPCI(def)) {
-            if (qemuAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
-                goto cleanup;
-        }
-    }
-
-    if (obj && obj->privateData) {
-        priv = obj->privateData;
-        if (addrs) {
-            /* if this is the live domain object, we persist the PCI addresses*/
-            virDomainPCIAddressSetFree(priv->pciaddrs);
-            priv->persistentAddrs = 1;
-            priv->pciaddrs = addrs;
-            addrs = NULL;
-        } else {
-            priv->persistentAddrs = 0;
-        }
-    }
-
-    ret = 0;
-
- cleanup:
-    virDomainPCIAddressSetFree(addrs);
-
-    return ret;
-}
 
 int qemuDomainAssignAddresses(virDomainDefPtr def,
                               virQEMUCapsPtr qemuCaps,
@@ -1967,6 +1871,104 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
     ret = 0;
  cleanup:
     VIR_FREE(addrStr);
+    return ret;
+}
+
+
+int
+qemuDomainAssignPCIAddresses(virDomainDefPtr def,
+                             virQEMUCapsPtr qemuCaps,
+                             virDomainObjPtr obj)
+{
+    int ret = -1;
+    virDomainPCIAddressSetPtr addrs = NULL;
+    qemuDomainObjPrivatePtr priv = NULL;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+        int max_idx = -1;
+        int nbuses = 0;
+        size_t i;
+        int rv;
+        virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_TYPE_PCI;
+
+        for (i = 0; i < def->ncontrollers; i++) {
+            if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
+                if ((int) def->controllers[i]->idx > max_idx)
+                    max_idx = def->controllers[i]->idx;
+            }
+        }
+
+        nbuses = max_idx + 1;
+
+        if (nbuses > 0 &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCI_BRIDGE)) {
+            virDomainDeviceInfo info;
+
+            /* 1st pass to figure out how many PCI bridges we need */
+            if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses, true)))
+                goto cleanup;
+            if (qemuAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
+                goto cleanup;
+
+            for (i = 0; i < addrs->nbuses; i++) {
+                if (!qemuDomainPCIBusFullyReserved(&addrs->buses[i])) {
+
+                    /* Reserve 1 extra slot for a (potential) bridge */
+                    if (virDomainPCIAddressReserveNextSlot(addrs, &info, flags) < 0)
+                        goto cleanup;
+                }
+            }
+
+            for (i = 1; i < addrs->nbuses; i++) {
+                virDomainPCIAddressBusPtr bus = &addrs->buses[i];
+
+                if ((rv = virDomainDefMaybeAddController(
+                         def, VIR_DOMAIN_CONTROLLER_TYPE_PCI,
+                         i, bus->model)) < 0)
+                    goto cleanup;
+                /* If we added a new bridge, we will need one more address */
+                if (rv > 0 &&
+                    virDomainPCIAddressReserveNextSlot(addrs, &info, flags) < 0)
+                    goto cleanup;
+            }
+            nbuses = addrs->nbuses;
+            virDomainPCIAddressSetFree(addrs);
+            addrs = NULL;
+
+        } else if (max_idx > 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("PCI bridges are not supported "
+                             "by this QEMU binary"));
+            goto cleanup;
+        }
+
+        if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses, false)))
+            goto cleanup;
+
+        if (qemuDomainSupportsPCI(def)) {
+            if (qemuAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
+                goto cleanup;
+        }
+    }
+
+    if (obj && obj->privateData) {
+        priv = obj->privateData;
+        if (addrs) {
+            /* if this is the live domain object, we persist the PCI addresses*/
+            virDomainPCIAddressSetFree(priv->pciaddrs);
+            priv->persistentAddrs = 1;
+            priv->pciaddrs = addrs;
+            addrs = NULL;
+        } else {
+            priv->persistentAddrs = 0;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    virDomainPCIAddressSetFree(addrs);
+
     return ret;
 }
 
