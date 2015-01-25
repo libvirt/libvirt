@@ -171,6 +171,9 @@ static int qemuOpenFileAs(uid_t fallback_uid, gid_t fallback_gid,
                           const char *path, int oflags,
                           bool *needUnlink, bool *bypassSecurityDriver);
 
+static int qemuGetDHCPInterfaces(virDomainPtr dom,
+                                 virDomainObjPtr vm,
+                                 virDomainInterfacePtr **ifaces);
 
 virQEMUDriverPtr qemu_driver = NULL;
 
@@ -19571,6 +19574,177 @@ qemuDomainGetFSInfo(virDomainPtr dom,
     return ret;
 }
 
+static int
+qemuDomainInterfaceAddresses(virDomainPtr dom,
+                             virDomainInterfacePtr **ifaces,
+                             unsigned int source,
+                             unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    qemuDomainObjPrivatePtr priv = NULL;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    priv = vm->privateData;
+
+    if (virDomainInterfaceAddressesEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not running"));
+        goto cleanup;
+    }
+
+    switch (source) {
+    case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE:
+        ret = qemuGetDHCPInterfaces(dom, vm, ifaces);
+        break;
+
+    case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT:
+        if (priv->agentError) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("QEMU guest agent is not "
+                             "available due to an error"));
+            goto cleanup;
+        }
+
+        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+            goto cleanup;
+
+        if (!virDomainObjIsActive(vm)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("domain is not running"));
+            goto endjob;
+        }
+
+        if (!priv->agent) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("QEMU guest agent is not configured"));
+            goto endjob;
+        }
+
+        qemuDomainObjEnterAgent(vm);
+        ret = qemuAgentGetInterfaces(priv->agent, ifaces);
+        qemuDomainObjExitAgent(vm);
+
+    endjob:
+        qemuDomainObjEndJob(driver, vm);
+
+        break;
+
+    default:
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("Unknown IP address data source %d"),
+                       source);
+        break;
+    }
+
+ cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
+}
+
+static int
+qemuGetDHCPInterfaces(virDomainPtr dom,
+                      virDomainObjPtr vm,
+                      virDomainInterfacePtr **ifaces)
+{
+    int rv = -1;
+    int n_leases = 0;
+    size_t i, j;
+    size_t ifaces_count = 0;
+    virNetworkPtr network;
+    char macaddr[VIR_MAC_STRING_BUFLEN];
+    virDomainInterfacePtr iface = NULL;
+    virNetworkDHCPLeasePtr *leases = NULL;
+    virDomainInterfacePtr *ifaces_ret = NULL;
+
+    if (!dom->conn->networkDriver ||
+        !dom->conn->networkDriver->networkGetDHCPLeases) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Network driver does not support DHCP lease query"));
+        return -1;
+    }
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        if (vm->def->nets[i]->type != VIR_DOMAIN_NET_TYPE_NETWORK)
+            continue;
+
+        virMacAddrFormat(&(vm->def->nets[i]->mac), macaddr);
+        network = virNetworkLookupByName(dom->conn,
+                                         vm->def->nets[i]->data.network.name);
+
+        if ((n_leases = virNetworkGetDHCPLeases(network, macaddr,
+                                                &leases, 0)) < 0)
+            goto error;
+
+        if (n_leases) {
+            if (VIR_EXPAND_N(ifaces_ret, ifaces_count, 1) < 0)
+                goto error;
+
+            if (VIR_ALLOC(ifaces_ret[ifaces_count - 1]) < 0)
+                goto error;
+
+            iface = ifaces_ret[ifaces_count - 1];
+            /* Assuming each lease corresponds to a separate IP */
+            iface->naddrs = n_leases;
+
+            if (VIR_ALLOC_N(iface->addrs, iface->naddrs) < 0)
+                goto error;
+
+            if (VIR_STRDUP(iface->name, vm->def->nets[i]->ifname) < 0)
+                goto cleanup;
+
+            if (VIR_STRDUP(iface->hwaddr, macaddr) < 0)
+                goto cleanup;
+        }
+
+        for (j = 0; j < n_leases; j++) {
+            virNetworkDHCPLeasePtr lease = leases[j];
+            virDomainIPAddressPtr ip_addr = &iface->addrs[j];
+
+            if (VIR_STRDUP(ip_addr->addr, lease->ipaddr) < 0)
+                goto cleanup;
+
+            ip_addr->type = lease->type;
+            ip_addr->prefix = lease->prefix;
+        }
+
+        for (j = 0; j < n_leases; j++)
+            virNetworkDHCPLeaseFree(leases[j]);
+
+        VIR_FREE(leases);
+    }
+
+    *ifaces = ifaces_ret;
+    ifaces_ret = NULL;
+    rv = ifaces_count;
+
+ cleanup:
+    if (leases) {
+        for (i = 0; i < n_leases; i++)
+            virNetworkDHCPLeaseFree(leases[i]);
+    }
+    VIR_FREE(leases);
+
+    return rv;
+
+ error:
+    if (ifaces_ret) {
+        for (i = 0; i < ifaces_count; i++)
+            virDomainInterfaceFree(ifaces_ret[i]);
+    }
+    VIR_FREE(ifaces_ret);
+
+    goto cleanup;
+}
 
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
@@ -19775,6 +19949,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .connectGetAllDomainStats = qemuConnectGetAllDomainStats, /* 1.2.8 */
     .nodeAllocPages = qemuNodeAllocPages, /* 1.2.9 */
     .domainGetFSInfo = qemuDomainGetFSInfo, /* 1.2.11 */
+    .domainInterfaceAddresses = qemuDomainInterfaceAddresses, /* 1.2.14 */
 };
 
 

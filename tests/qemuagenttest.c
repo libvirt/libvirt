@@ -723,6 +723,193 @@ testQemuAgentTimeout(const void *data)
     return ret;
 }
 
+static const char testQemuAgentGetInterfacesResponse[] =
+    "{\"return\": "
+    "    ["
+    "       {\"name\":\"eth2\","
+    "        \"hardware-address\":\"52:54:00:36:2a:e5\""
+    "       },"
+    "       {\"name\":\"eth1:0\","
+    "        \"ip-addresses\":"
+    "          ["
+    "             {\"ip-address-type\":\"ipv4\","
+    "              \"ip-address\":\"192.168.10.91\","
+    "              \"prefix\":24"
+    "             },"
+    "             {\"ip-address-type\":\"ipv6\","
+    "              \"ip-address\":\"fe80::fc54:ff:fefe:4c4f\","
+    "              \"prefix\":64"
+    "             }"
+    "          ],"
+    "        \"hardware-address\":\"52:54:00:d3:39:ee\""
+    "       },"
+    "       {\"name\":\"eth0\","
+    "        \"ip-addresses\":"
+    "          ["
+    "             {\"ip-address-type\":\"ipv6\","
+    "              \"ip-address\":\"fe80::5054:ff:fe89:ad35\","
+    "              \"prefix\":64"
+    "             },"
+    "             {\"ip-address-type\":\"ipv4\","
+    "              \"ip-address\":\"192.168.102.142\","
+    "              \"prefix\":24"
+    "             },"
+    "             {\"ip-address-type\":\"ipv4\","
+    "              \"ip-address\":\"192.168.234.152\","
+    "              \"prefix\":16"
+    "             },"
+    "             {\"ip-address-type\":\"ipv6\","
+    "              \"ip-address\":\"fe80::5054:ff:fec3:68bb\","
+    "              \"prefix\":64"
+    "             }"
+    "          ],"
+    "        \"hardware-address\":\"52:54:00:89:ad:35\""
+    "       },"
+    "       {\"name\":\"eth1\","
+    "        \"ip-addresses\":"
+    "          ["
+    "             {\"ip-address-type\":\"ipv4\","
+    "              \"ip-address\":\"192.168.103.83\","
+    "              \"prefix\":32"
+    "             },"
+    "             {\"ip-address-type\":\"ipv6\","
+    "              \"ip-address\":\"fe80::5054:ff:fed3:39ee\","
+    "              \"prefix\":64"
+    "             }"
+    "          ],"
+    "        \"hardware-address\":\"52:54:00:d3:39:ee\""
+    "       },"
+    "       {\"name\":\"lo\","
+    "        \"ip-addresses\":"
+    "          ["
+    "             {\"ip-address-type\":\"ipv4\","
+    "              \"ip-address\":\"127.0.0.1\","
+    "              \"prefix\":8"
+    "             },"
+    "             {\"ip-address-type\":\"ipv6\","
+    "              \"ip-address\":\"::1\","
+    "              \"prefix\":128"
+    "             }"
+    "          ],"
+    "        \"hardware-address\":\"00:00:00:00:00:00\""
+    "       }"
+    "    ]"
+    "}";
+
+static int
+testQemuAgentGetInterfaces(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    size_t i;
+    int ret = -1;
+    int ifaces_count = 0;
+    virDomainInterfacePtr *ifaces = NULL;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(test, "guest-network-get-interfaces",
+                               testQemuAgentGetInterfacesResponse) < 0)
+        goto cleanup;
+
+    if ((ifaces_count = qemuAgentGetInterfaces(qemuMonitorTestGetAgent(test),
+                                               &ifaces)) < 0)
+        goto cleanup;
+
+    if (ifaces_count != 4) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "expected 4 interfaces, got %d", ret);
+        goto cleanup;
+    }
+
+    if (STRNEQ(ifaces[0]->name, "eth2") ||
+        STRNEQ(ifaces[1]->name, "eth1") ||
+        STRNEQ(ifaces[2]->name, "eth0") ||
+        STRNEQ(ifaces[3]->name, "lo")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "unexpected return values for interface names");
+        goto cleanup;
+    }
+
+    if (STRNEQ(ifaces[0]->hwaddr, "52:54:00:36:2a:e5") ||
+        STRNEQ(ifaces[1]->hwaddr, "52:54:00:d3:39:ee") ||
+        STRNEQ(ifaces[2]->hwaddr, "52:54:00:89:ad:35") ||
+        STRNEQ(ifaces[3]->hwaddr, "00:00:00:00:00:00")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "unexpected return values for MAC addresses");
+        goto cleanup;
+    }
+
+    if (ifaces[0]->naddrs != 0 ||
+        ifaces[1]->naddrs != 4 ||
+        ifaces[2]->naddrs != 4 ||
+        ifaces[3]->naddrs != 2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "unexpected return values for number of IP addresses");
+        goto cleanup;
+    }
+
+    if (ifaces[1]->addrs[0].type != VIR_IP_ADDR_TYPE_IPV4 ||
+        ifaces[1]->addrs[1].type != VIR_IP_ADDR_TYPE_IPV6 ||
+        ifaces[1]->addrs[2].type != VIR_IP_ADDR_TYPE_IPV4 ||
+        ifaces[1]->addrs[3].type != VIR_IP_ADDR_TYPE_IPV6 ||
+        ifaces[2]->addrs[0].type != VIR_IP_ADDR_TYPE_IPV6 ||
+        ifaces[2]->addrs[1].type != VIR_IP_ADDR_TYPE_IPV4 ||
+        ifaces[2]->addrs[2].type != VIR_IP_ADDR_TYPE_IPV4 ||
+        ifaces[2]->addrs[3].type != VIR_IP_ADDR_TYPE_IPV6 ||
+        ifaces[3]->addrs[0].type != VIR_IP_ADDR_TYPE_IPV4 ||
+        ifaces[3]->addrs[1].type != VIR_IP_ADDR_TYPE_IPV6) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "unexpected return values for IP address types");
+        goto cleanup;
+    }
+
+    if (ifaces[1]->addrs[0].prefix != 24 ||
+        ifaces[1]->addrs[1].prefix != 64 ||
+        ifaces[1]->addrs[2].prefix != 32 ||
+        ifaces[1]->addrs[3].prefix != 64 ||
+        ifaces[2]->addrs[0].prefix != 64 ||
+        ifaces[2]->addrs[1].prefix != 24 ||
+        ifaces[2]->addrs[2].prefix != 16 ||
+        ifaces[2]->addrs[3].prefix != 64 ||
+        ifaces[3]->addrs[0].prefix != 8 ||
+        ifaces[3]->addrs[1].prefix != 128) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "unexpected return values for IP address prefix");
+        goto cleanup;
+    }
+
+    if (STRNEQ(ifaces[1]->addrs[0].addr, "192.168.10.91") ||
+        STRNEQ(ifaces[1]->addrs[1].addr, "fe80::fc54:ff:fefe:4c4f") ||
+        STRNEQ(ifaces[1]->addrs[2].addr, "192.168.103.83") ||
+        STRNEQ(ifaces[1]->addrs[3].addr, "fe80::5054:ff:fed3:39ee") ||
+        STRNEQ(ifaces[2]->addrs[0].addr, "fe80::5054:ff:fe89:ad35") ||
+        STRNEQ(ifaces[2]->addrs[1].addr, "192.168.102.142") ||
+        STRNEQ(ifaces[2]->addrs[2].addr, "192.168.234.152") ||
+        STRNEQ(ifaces[2]->addrs[3].addr, "fe80::5054:ff:fec3:68bb") ||
+        STRNEQ(ifaces[3]->addrs[0].addr, "127.0.0.1") ||
+        STRNEQ(ifaces[3]->addrs[1].addr, "::1")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "unexpected return values for IP address values");
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    qemuMonitorTestFree(test);
+    if (ifaces) {
+        for (i = 0; i < ifaces_count; i++)
+            virDomainInterfaceFree(ifaces[i]);
+    }
+    VIR_FREE(ifaces);
+
+    return ret;
+}
 
 static int
 mymain(void)
@@ -753,6 +940,7 @@ mymain(void)
     DO_TEST(Shutdown);
     DO_TEST(CPU);
     DO_TEST(ArbitraryCommand);
+    DO_TEST(GetInterfaces);
 
     DO_TEST(Timeout); /* Timeout should always be called last */
 

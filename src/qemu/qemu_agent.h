@@ -108,4 +108,8 @@ int qemuAgentSetTime(qemuAgentPtr mon,
                      long long seconds,
                      unsigned int nseconds,
                      bool sync);
+
+int qemuAgentGetInterfaces(qemuAgentPtr mon,
+                           virDomainInterfacePtr **ifaces);
+
 #endif /* __QEMU_AGENT_H__ */
