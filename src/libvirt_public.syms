@@ -700,6 +700,8 @@ LIBVIRT_1.2.14 {
         virDomainIOThreadsInfoFree;
         virDomainGetIOThreadsInfo;
         virDomainPinIOThread;
+        virDomainInterfaceAddresses;
+        virDomainInterfaceFree;
 } LIBVIRT_1.2.12;
 
 # .... define new API here using predicted next version number ....

@@ -3739,5 +3739,37 @@ typedef struct _virTypedParameter virMemoryParameter;
  */
 typedef virMemoryParameter *virMemoryParameterPtr;
 
+typedef enum {
+    VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE = 0, /* Parse DHCP lease file */
+    VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT = 1, /* Query qemu guest agent */
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LAST
+# endif
+} virDomainInterfaceAddressesSource;
+
+typedef struct _virDomainInterfaceIPAddress virDomainIPAddress;
+typedef virDomainIPAddress *virDomainIPAddressPtr;
+struct _virDomainInterfaceIPAddress {
+    int type;                /* virIPAddrType */
+    char *addr;              /* IP address */
+    unsigned int prefix;     /* IP address prefix */
+};
+
+typedef struct _virDomainInterface virDomainInterface;
+typedef virDomainInterface *virDomainInterfacePtr;
+struct _virDomainInterface {
+    char *name;                     /* interface name */
+    char *hwaddr;                   /* hardware address */
+    unsigned int naddrs;            /* number of items in @addrs */
+    virDomainIPAddressPtr addrs;    /* array of IP addresses */
+};
+
+int virDomainInterfaceAddresses(virDomainPtr dom,
+                                virDomainInterfacePtr **ifaces,
+                                unsigned int source,
+                                unsigned int flags);
+
+void virDomainInterfaceFree(virDomainInterfacePtr iface);
 
 #endif /* __VIR_LIBVIRT_DOMAIN_H__ */

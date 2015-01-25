@@ -11416,3 +11416,122 @@ virDomainFSInfoFree(virDomainFSInfoPtr info)
 
     VIR_FREE(info);
 }
+
+/**
+ * virDomainInterfaceAddresses:
+ * @dom: domain object
+ * @ifaces: pointer to an array of pointers pointing to interface objects
+ * @source: one of the virDomainInterfaceAddressesSource constants
+ * @flags: currently unused, pass zero
+ *
+ * Return a pointer to the allocated array of pointers to interfaces
+ * present in given domain along with their IP and MAC addresses. Note that
+ * single interface can have multiple or even 0 IP addresses.
+ *
+ * This API dynamically allocates the virDomainInterfacePtr struct based on
+ * how many interfaces domain @dom has, usually there's 1:1 correlation. The
+ * count of the interfaces is returned as the return value.
+ *
+ * If @source is VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE, the DHCP lease
+ * file associated with any virtual networks will be examined to obtain
+ * the interface addresses. This only returns data for interfaces which
+ * are connected to virtual networks managed by libvirt.
+ *
+ * If @source is VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT, a configured
+ * guest agent is needed for successful return from this API. Moreover, if
+ * guest agent is used then the interface name is the one seen by guest OS.
+ * To match such interface with the one from @dom XML use MAC address or IP
+ * range.
+ *
+ * @ifaces->name and @ifaces->hwaddr are never NULL.
+ *
+ * The caller *must* free @ifaces when no longer needed. Usual use case
+ * looks like this:
+ *
+ *  virDomainInterfacePtr *ifaces = NULL;
+ *  int ifaces_count = 0;
+ *  size_t i, j;
+ *  virDomainPtr dom = ... obtain a domain here ...;
+ *
+ *  if ((ifaces_count = virDomainInterfaceAddresses(dom, &ifaces,
+ *           VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE)) < 0)
+ *      goto cleanup;
+ *
+ *  ... do something with returned values, for example:
+ *  for (i = 0; i < ifaces_count; i++) {
+ *      printf("name: %s", ifaces[i]->name);
+ *      printf(" hwaddr: %s", ifaces[i]->hwaddr);
+ *
+ *      for (j = 0; j < ifaces[i]->naddrs; j++) {
+ *          virDomainIPAddressPtr ip_addr = ifaces[i]->addrs + j;
+ *          printf("[addr: %s prefix: %d type: %d]",
+ *                 ip_addr->addr, ip_addr->prefix, ip_addr->type);
+ *      }
+ *      printf("\n");
+ *  }
+ *
+ *  cleanup:
+ *      if (ifaces && ifaces_count > 0)
+ *          for (i = 0; i < ifaces_count; i++)
+ *              virDomainInterfaceFree(ifaces[i]);
+ *      free(ifaces);
+ *
+ * Returns the number of interfaces on success, -1 in case of error.
+ */
+int
+virDomainInterfaceAddresses(virDomainPtr dom,
+                            virDomainInterfacePtr **ifaces,
+                            unsigned int source,
+                            unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(dom, "ifaces=%p, source=%d, flags=%x", ifaces, source, flags);
+
+    virResetLastError();
+
+    if (ifaces)
+        *ifaces = NULL;
+    virCheckDomainReturn(dom, -1);
+    virCheckNonNullArgGoto(ifaces, error);
+    virCheckReadOnlyGoto(dom->conn->flags, error);
+
+    if (dom->conn->driver->domainInterfaceAddresses) {
+        int ret;
+        ret = dom->conn->driver->domainInterfaceAddresses(dom, ifaces, source, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+ error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+
+/**
+ * virDomainInterfaceFree:
+ * @iface: an interface object
+ *
+ * Free the interface object. The data structure is
+ * freed and should not be used thereafter. If @iface
+ * is NULL, then this method has no effect.
+ */
+void
+virDomainInterfaceFree(virDomainInterfacePtr iface)
+{
+    size_t i;
+
+    if (!iface)
+        return;
+
+    VIR_FREE(iface->name);
+    VIR_FREE(iface->hwaddr);
+
+    for (i = 0; i < iface->naddrs; i++)
+        VIR_FREE(iface->addrs[i].addr);
+    VIR_FREE(iface->addrs);
+
+    VIR_FREE(iface);
+}

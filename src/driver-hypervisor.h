@@ -1185,6 +1185,11 @@ typedef int
                         unsigned int cellCount,
                         unsigned int flags);
 
+typedef int
+(*virDrvDomainInterfaceAddresses)(virDomainPtr dom,
+                                  virDomainInterfacePtr **ifaces,
+                                  unsigned int source,
+                                  unsigned int flags);
 
 typedef struct _virHypervisorDriver virHypervisorDriver;
 typedef virHypervisorDriver *virHypervisorDriverPtr;
@@ -1412,6 +1417,7 @@ struct _virHypervisorDriver {
     virDrvConnectGetAllDomainStats connectGetAllDomainStats;
     virDrvNodeAllocPages nodeAllocPages;
     virDrvDomainGetFSInfo domainGetFSInfo;
+    virDrvDomainInterfaceAddresses domainInterfaceAddresses;
 };
 
 
