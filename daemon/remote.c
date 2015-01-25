@@ -6499,6 +6499,130 @@ remoteDispatchDomainGetFSInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
 }
 
 
+static int
+remoteSerializeDomainInterface(virDomainInterfacePtr *ifaces,
+                               unsigned int ifaces_count,
+                               remote_domain_interface_addresses_ret *ret)
+{
+    size_t i, j;
+
+    if (ifaces_count > REMOTE_DOMAIN_INTERFACE_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Number of interfaces, %d exceeds the max limit: %d"),
+                       ifaces_count, REMOTE_DOMAIN_INTERFACE_MAX);
+        return -1;
+    }
+
+    if (VIR_ALLOC_N(ret->ifaces.ifaces_val, ifaces_count) < 0)
+        return -1;
+
+    ret->ifaces.ifaces_len = ifaces_count;
+
+    for (i = 0; i < ifaces_count; i++) {
+        virDomainInterfacePtr iface = ifaces[i];
+        remote_domain_interface *iface_ret = &(ret->ifaces.ifaces_val[i]);
+
+        if ((VIR_STRDUP(iface_ret->name, iface->name)) < 0)
+            goto cleanup;
+
+        if ((VIR_STRDUP(iface_ret->hwaddr, iface->hwaddr)) < 0)
+            goto cleanup;
+
+        if (iface->naddrs > REMOTE_DOMAIN_IP_ADDR_MAX) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Number of interfaces, %d exceeds the max limit: %d"),
+                           iface->naddrs, REMOTE_DOMAIN_IP_ADDR_MAX);
+            goto cleanup;
+        }
+
+        if (VIR_ALLOC_N(iface_ret->addrs.addrs_val,
+                        iface->naddrs) < 0)
+            goto cleanup;
+
+        iface_ret->addrs.addrs_len = iface->naddrs;
+
+        for (j = 0; j < iface->naddrs; j++) {
+            virDomainIPAddressPtr ip_addr = &(iface->addrs[j]);
+            remote_domain_ip_addr *ip_addr_ret =
+                &(iface_ret->addrs.addrs_val[j]);
+
+            if (VIR_STRDUP(ip_addr_ret->addr, ip_addr->addr) < 0)
+                goto cleanup;
+
+            ip_addr_ret->prefix = ip_addr->prefix;
+            ip_addr_ret->type = ip_addr->type;
+        }
+    }
+
+    return 0;
+
+ cleanup:
+    if (ret->ifaces.ifaces_val) {
+        for (i = 0; i < ifaces_count; i++) {
+            remote_domain_interface *iface_ret = &(ret->ifaces.ifaces_val[i]);
+            VIR_FREE(iface_ret->name);
+            VIR_FREE(iface_ret->hwaddr);
+            for (j = 0; j < iface_ret->addrs.addrs_len; j++) {
+                remote_domain_ip_addr *ip_addr =
+                    &(iface_ret->addrs.addrs_val[j]);
+                VIR_FREE(ip_addr->addr);
+            }
+        }
+        VIR_FREE(ret->ifaces.ifaces_val);
+    }
+
+    return -1;
+}
+
+
+static int
+remoteDispatchDomainInterfaceAddresses(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                       virNetServerClientPtr client,
+                                       virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                       virNetMessageErrorPtr rerr,
+                                       remote_domain_interface_addresses_args *args,
+                                       remote_domain_interface_addresses_ret *ret)
+{
+    size_t i;
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    virDomainInterfacePtr *ifaces = NULL;
+    int ifaces_count = 0;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    if ((ifaces_count = virDomainInterfaceAddresses(dom, &ifaces, args->source, args->flags)) < 0)
+        goto cleanup;
+
+    if (remoteSerializeDomainInterface(ifaces, ifaces_count, ret) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+
+    virObjectUnref(dom);
+
+    if (ifaces && ifaces_count > 0) {
+        for (i = 0; i < ifaces_count; i++)
+            virDomainInterfaceFree(ifaces[i]);
+    }
+    VIR_FREE(ifaces);
+
+    return rv;
+}
+
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire

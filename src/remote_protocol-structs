@@ -2639,6 +2639,30 @@ struct remote_domain_get_fsinfo_ret {
         } info;
         u_int                      ret;
 };
+struct remote_domain_ip_addr {
+        int                        type;
+        remote_nonnull_string      addr;
+        u_int                      prefix;
+};
+struct remote_domain_interface {
+        remote_nonnull_string      name;
+        remote_nonnull_string      hwaddr;
+        struct {
+                u_int              addrs_len;
+                remote_domain_ip_addr * addrs_val;
+        } addrs;
+};
+struct remote_domain_interface_addresses_args {
+        remote_nonnull_domain      dom;
+        u_int                      source;
+        u_int                      flags;
+};
+struct remote_domain_interface_addresses_ret {
+        struct {
+                u_int              ifaces_len;
+                remote_domain_interface * ifaces_val;
+        } ifaces;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -2992,4 +3016,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_DEFINE_XML_FLAGS = 350,
         REMOTE_PROC_DOMAIN_GET_IOTHREADS_INFO = 351,
         REMOTE_PROC_DOMAIN_PIN_IOTHREAD = 352,
+        REMOTE_PROC_DOMAIN_INTERFACE_ADDRESSES = 353,
 };

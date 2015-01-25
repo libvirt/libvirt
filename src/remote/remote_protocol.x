@@ -259,6 +259,12 @@ const REMOTE_DOMAIN_FSINFO_MAX = 256;
 /* Upper limit on number of disks per mountpoint in fsinfo */
 const REMOTE_DOMAIN_FSINFO_DISKS_MAX = 256;
 
+/* Upper limit on number of interfaces per domain */
+const REMOTE_DOMAIN_INTERFACE_MAX = 2048;
+
+/* Upper limit on number of IP addresses per interface */
+const REMOTE_DOMAIN_IP_ADDR_MAX = 2048;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -3177,6 +3183,29 @@ struct remote_domain_get_fsinfo_ret {
     unsigned int ret;
 };
 
+struct remote_domain_ip_addr {
+    int type;
+    remote_nonnull_string addr;
+    unsigned int prefix;
+};
+
+struct remote_domain_interface {
+    remote_nonnull_string name;
+    remote_nonnull_string hwaddr;
+    remote_domain_ip_addr addrs<REMOTE_DOMAIN_IP_ADDR_MAX>;
+};
+
+struct remote_domain_interface_addresses_args {
+    remote_nonnull_domain dom;
+    unsigned int source;
+    unsigned int flags;
+};
+
+struct remote_domain_interface_addresses_ret {
+    remote_domain_interface ifaces<REMOTE_DOMAIN_INTERFACE_MAX>;
+};
+
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -5608,5 +5637,11 @@ enum remote_procedure {
      * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
      * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
      */
-    REMOTE_PROC_DOMAIN_PIN_IOTHREAD = 352
+    REMOTE_PROC_DOMAIN_PIN_IOTHREAD = 352,
+
+    /**
+     * @generate: none
+     * @acl: domain:read
+     */
+    REMOTE_PROC_DOMAIN_INTERFACE_ADDRESSES = 353
 };
