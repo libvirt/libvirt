@@ -731,6 +731,22 @@ B<Explanation of fields> (fields appear in the following order):
   flush_total_times - total time flush operations took (ns)
     <-- other fields provided by hypervisor -->
 
+
+=item B<domifaddr> I<domain> [I<interface>] [I<--full>]
+              [I<--source lease|agent>]
+
+Get a list of interfaces of a running domain along with their IP and MAC
+addresses, or limited output just for one interface if I<interface> is
+specified. Note that I<interface> can be driver dependent, it can be the name
+within guest OS or the name you would see in domain XML. Moreover, the whole
+command may require a guest agent to be configured for the queried domain under
+some drivers, notably qemu. If I<--full> is specified, the interface name is
+always displayed when the interface has multiple addresses or alias, otherwise
+it only displays the interface name for the first address, and "-" for the
+others. The I<--source> argument specifies what data source to use for the
+addresses, currently one of 'lease' to read DHCP leases, or 'agent' to query
+the guest OS via an agent. If unspecified, 'lease' is the default.
+
 =item B<domifstat> I<domain> I<interface-device>
 
 Get network interface stats for a running domain.
