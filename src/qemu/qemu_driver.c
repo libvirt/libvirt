@@ -2961,6 +2961,9 @@ qemuOpenFileAs(uid_t fallback_uid, gid_t fallback_gid,
 
             /* Retry creating the file as qemu user */
 
+            /* Since we're passing different modes... */
+            vfoflags |= VIR_FILE_OPEN_FORCE_MODE;
+
             if ((fd = virFileOpenAs(path, oflags,
                                     S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP,
                                     fallback_uid, fallback_gid,
