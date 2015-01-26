@@ -3208,9 +3208,9 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_SAVED);
  endjob:
-    qemuDomainObjEndAsyncJob(driver, vm);
     if (ret != 0) {
         if (was_running && virDomainObjIsActive(vm)) {
+            virErrorPtr save_err = virSaveLastError();
             rc = qemuProcessStartCPUs(driver, vm, dom->conn,
                                       VIR_DOMAIN_RUNNING_SAVE_CANCELED,
                                       QEMU_ASYNC_JOB_SAVE);
@@ -3220,10 +3220,13 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
                                                           VIR_DOMAIN_EVENT_SUSPENDED,
                                                           VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
             }
+            virSetError(save_err);
+            virFreeError(save_err);
         }
-    } else if (!vm->persistent) {
-        qemuDomainRemoveInactive(driver, vm);
     }
+    qemuDomainObjEndAsyncJob(driver, vm);
+    if (ret == 0 && !vm->persistent)
+        qemuDomainRemoveInactive(driver, vm);
 
  cleanup:
     VIR_FREE(xml);
