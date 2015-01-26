@@ -3061,8 +3061,10 @@ virCgroupGetPercpuStats(virCgroupPtr group,
 
     total_cpus = virBitmapSize(cpumap);
 
-    if (ncpus == 0)
-        return total_cpus;
+    if (ncpus == 0) {
+        rv = total_cpus;
+        goto cleanup;
+    }
 
     if (start_cpu >= total_cpus) {
         virReportError(VIR_ERR_INVALID_ARG,

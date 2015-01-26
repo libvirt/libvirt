@@ -614,6 +614,7 @@ static int testCgroupGetPercpuStats(const void *args ATTRIBUTE_UNUSED)
 
  cleanup:
     virCgroupFree(&cgroup);
+    VIR_FREE(params);
     return ret;
 }
 
