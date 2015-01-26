@@ -348,7 +348,8 @@ mymain(void)
 
     virEventRegisterDefaultImpl();
 
-    driver.config = virQEMUDriverConfigNew(false);
+    if (!(driver.config = virQEMUDriverConfigNew(false)))
+        return EXIT_FAILURE;
     VIR_FREE(driver.config->spiceListen);
     VIR_FREE(driver.config->vncListen);
     /* some dummy values from 'config file' */

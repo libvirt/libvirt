@@ -211,7 +211,8 @@ mymain(void)
     if (!abs_top_srcdir)
         abs_top_srcdir = abs_srcdir "/..";
 
-    driver.config = virQEMUDriverConfigNew(false);
+    if (!(driver.config = virQEMUDriverConfigNew(false)))
+        return EXIT_FAILURE;
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
     if (!(driver.xmlopt = virQEMUDriverCreateXMLConf(&driver)))

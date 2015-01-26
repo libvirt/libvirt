@@ -231,6 +231,9 @@ mymain(void)
 
     virQEMUDriverConfigPtr cfg = virQEMUDriverConfigNew(false);
 
+    if (!cfg)
+        return EXIT_FAILURE;
+
 # define DO_TEST_QEMU(Filename, QemuCapsFile, Emulatorbin, Machine, Arch, Type, ...)    \
     do {                                                                                \
         const char *capsPath = abs_srcdir "/qemucapabilitiesdata/" QemuCapsFile ".caps";    \
