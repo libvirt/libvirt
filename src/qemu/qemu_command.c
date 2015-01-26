@@ -4733,17 +4733,12 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
                                         &backendType, &props, false)) < 0)
         goto cleanup;
 
-    if (rc == 1) {
-        ret = 0;
-        goto cleanup;
-    }
-
     if (!(*backendStr = qemuBuildObjectCommandlineFromJSON(backendType,
                                                            alias,
                                                            props)))
         goto cleanup;
 
-    ret = 0;
+    ret = rc;
 
  cleanup:
     VIR_FREE(alias);
@@ -7052,7 +7047,9 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *cpumask = NULL, *tmpmask = NULL, *next = NULL;
-    char *backendStr = NULL;
+    char **nodeBackends = NULL;
+    bool needBackend = false;
+    int rc;
     int ret = -1;
     const long system_page_size = sysconf(_SC_PAGESIZE) / 1024;
 
@@ -7101,13 +7098,36 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         }
     }
 
+    if (VIR_ALLOC_N(nodeBackends, def->cpu->ncells) < 0)
+        goto cleanup;
+
+    /* using of -numa memdev= cannot be combined with -numa mem=, thus we
+     * need to check which approach to use */
     for (i = 0; i < def->cpu->ncells; i++) {
         unsigned long long cellmem = VIR_DIV_UP(def->cpu->cells[i].mem, 1024);
         def->cpu->cells[i].mem = cellmem * 1024;
 
-        VIR_FREE(cpumask);
-        VIR_FREE(backendStr);
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
+            if ((rc = qemuBuildMemoryCellBackendStr(def, qemuCaps, cfg, i,
+                                                    auto_nodeset,
+                                                    &nodeBackends[i])) < 0)
+                goto cleanup;
 
+            if (rc == 0)
+                needBackend = true;
+        } else {
+            if (def->cpu->cells[i].memAccess) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Shared memory mapping is not supported "
+                                 "with this QEMU"));
+                goto cleanup;
+            }
+        }
+    }
+
+    for (i = 0; i < def->cpu->ncells; i++) {
+        VIR_FREE(cpumask);
         if (!(cpumask = virBitmapFormat(def->cpu->cells[i].cpumask)))
             goto cleanup;
 
@@ -7119,25 +7139,8 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
             goto cleanup;
         }
 
-
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
-            if (qemuBuildMemoryCellBackendStr(def, qemuCaps, cfg, i,
-                                              auto_nodeset, &backendStr) < 0)
-                goto cleanup;
-
-            if (backendStr) {
-                virCommandAddArg(cmd, "-object");
-                virCommandAddArg(cmd, backendStr);
-            }
-        } else {
-            if (def->cpu->cells[i].memAccess) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Shared memory mapping is not supported "
-                                 "with this QEMU"));
-                goto cleanup;
-            }
-        }
+        if (needBackend)
+            virCommandAddArgList(cmd, "-object", nodeBackends[i], NULL);
 
         virCommandAddArg(cmd, "-numa");
         virBufferAsprintf(&buf, "node,nodeid=%zu", i);
@@ -7149,10 +7152,10 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
             virBufferAdd(&buf, tmpmask, -1);
         }
 
-        if (backendStr)
+        if (needBackend)
             virBufferAsprintf(&buf, ",memdev=ram-node%zu", i);
         else
-            virBufferAsprintf(&buf, ",mem=%llu", cellmem);
+            virBufferAsprintf(&buf, ",mem=%llu", def->cpu->cells[i].mem / 1024);
 
         virCommandAddArgBuffer(cmd, &buf);
     }
@@ -7160,7 +7163,14 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
 
  cleanup:
     VIR_FREE(cpumask);
-    VIR_FREE(backendStr);
+
+    if (nodeBackends) {
+        for (i = 0; i < def->cpu->ncells; i++)
+            VIR_FREE(nodeBackends[i]);
+
+        VIR_FREE(nodeBackends);
+    }
+
     virBufferFreeAndReset(&buf);
     return ret;
 }
