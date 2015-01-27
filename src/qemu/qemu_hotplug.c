@@ -1523,59 +1523,47 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     virDomainDefPtr vmdef = vm->def;
     char *devstr = NULL;
     char *charAlias = NULL;
-    bool need_remove = false;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("qemu does not support -device"));
-        return ret;
+        goto cleanup;
     }
 
     if (qemuAssignDeviceChrAlias(vmdef, chr, -1) < 0)
-        return ret;
+        goto cleanup;
 
     if (qemuBuildChrDeviceStr(&devstr, vm->def, chr, priv->qemuCaps) < 0)
-        return ret;
+        goto cleanup;
 
     if (virAsprintf(&charAlias, "char%s", chr->info.alias) < 0)
         goto cleanup;
 
-    if (qemuDomainChrInsert(vmdef, chr) < 0)
+    if (qemuDomainChrPreInsert(vmdef, chr) < 0)
         goto cleanup;
-    need_remove = true;
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorAttachCharDev(priv->mon, charAlias, &chr->source) < 0) {
-        if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-            need_remove = false;
-            ret = -1;
-            goto cleanup;
-        }
+        ignore_value(qemuDomainObjExitMonitor(driver, vm));
         goto audit;
     }
 
     if (devstr && qemuMonitorAddDevice(priv->mon, devstr) < 0) {
         /* detach associated chardev on error */
         qemuMonitorDetachCharDev(priv->mon, charAlias);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-            need_remove = false;
-            ret = -1;
-            goto cleanup;
-        }
+        ignore_value(qemuDomainObjExitMonitor(driver, vm));
         goto audit;
     }
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        need_remove = false;
-        ret = -1;
-        goto cleanup;
-    }
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        goto audit;
 
+    qemuDomainChrInsertPreAlloced(vm->def, chr);
     ret = 0;
  audit:
     virDomainAuditChardev(vm, NULL, chr, "attach", ret == 0);
  cleanup:
-    if (ret < 0 && need_remove)
-        qemuDomainChrRemove(vmdef, chr);
+    if (ret < 0 && virDomainObjIsActive(vm))
+        qemuDomainChrInsertPreAllocCleanup(vm->def, chr);
     VIR_FREE(charAlias);
     VIR_FREE(devstr);
     return ret;
