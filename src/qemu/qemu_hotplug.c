@@ -1403,9 +1403,9 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
 
 }
 
-int
-qemuDomainChrInsert(virDomainDefPtr vmdef,
-                    virDomainChrDefPtr chr)
+static int
+qemuDomainChrPreInsert(virDomainDefPtr vmdef,
+                       virDomainChrDefPtr chr)
 {
     if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
         chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL) {
@@ -1420,25 +1420,63 @@ qemuDomainChrInsert(virDomainDefPtr vmdef,
         return -1;
     }
 
-    if (virDomainChrInsert(vmdef, chr) < 0)
+    if (virDomainChrPreAlloc(vmdef, chr) < 0)
         return -1;
 
     /* Due to some crazy backcompat stuff, the first serial device is an alias
      * to the first console too. If this is the case, the definition must be
      * duplicated as first console device. */
-    if (vmdef->nserials == 1 && vmdef->nconsoles == 0) {
-        if ((!vmdef->consoles && VIR_ALLOC(vmdef->consoles) < 0) ||
-            VIR_ALLOC(vmdef->consoles[0]) < 0) {
-            virDomainChrRemove(vmdef, chr);
+    if (vmdef->nserials == 0 && vmdef->nconsoles == 0 &&
+        chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
+        if (!vmdef->consoles && VIR_ALLOC(vmdef->consoles) < 0)
+            return -1;
+
+        if (VIR_ALLOC(vmdef->consoles[0]) < 0) {
+            VIR_FREE(vmdef->consoles);
             return -1;
         }
+        vmdef->nconsoles++;
+    }
+    return 0;
+}
+
+static void
+qemuDomainChrInsertPreAlloced(virDomainDefPtr vmdef,
+                              virDomainChrDefPtr chr)
+{
+    virDomainChrInsertPreAlloced(vmdef, chr);
+    if (vmdef->nserials == 1 && vmdef->nconsoles == 0 &&
+        chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
         vmdef->nconsoles = 1;
 
         /* Create an console alias for the serial port */
         vmdef->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
         vmdef->consoles[0]->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
     }
+}
 
+static void
+qemuDomainChrInsertPreAllocCleanup(virDomainDefPtr vmdef,
+                                   virDomainChrDefPtr chr)
+{
+    /* Remove the stub console added by qemuDomainChrPreInsert */
+    if (vmdef->nserials == 0 && vmdef->nconsoles == 1 &&
+        chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
+        VIR_FREE(vmdef->consoles[0]);
+        VIR_FREE(vmdef->consoles);
+        vmdef->nconsoles = 0;
+    }
+}
+
+int
+qemuDomainChrInsert(virDomainDefPtr vmdef,
+                    virDomainChrDefPtr chr)
+{
+    if (qemuDomainChrPreInsert(vmdef, chr) < 0) {
+        qemuDomainChrInsertPreAllocCleanup(vmdef, chr);
+        return -1;
+    }
+    qemuDomainChrInsertPreAlloced(vmdef, chr);
     return 0;
 }
 

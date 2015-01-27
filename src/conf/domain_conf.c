@@ -12027,15 +12027,27 @@ virDomainChrGetDomainPtrs(const virDomainDef *vmdef,
 
 
 int
-virDomainChrInsert(virDomainDefPtr vmdef,
-                   virDomainChrDefPtr chr)
+virDomainChrPreAlloc(virDomainDefPtr vmdef,
+                     virDomainChrDefPtr chr)
 {
     virDomainChrDefPtr **arrPtr = NULL;
     size_t *cntPtr = NULL;
 
     virDomainChrGetDomainPtrsInternal(vmdef, chr->deviceType, &arrPtr, &cntPtr);
 
-    return VIR_APPEND_ELEMENT(*arrPtr, *cntPtr, chr);
+    return VIR_REALLOC_N(*arrPtr, *cntPtr + 1);
+}
+
+void
+virDomainChrInsertPreAlloced(virDomainDefPtr vmdef,
+                             virDomainChrDefPtr chr)
+{
+    virDomainChrDefPtr **arrPtr = NULL;
+    size_t *cntPtr = NULL;
+
+    virDomainChrGetDomainPtrsInternal(vmdef, chr->deviceType, &arrPtr, &cntPtr);
+
+    ignore_value(VIR_APPEND_ELEMENT_INPLACE(*arrPtr, *cntPtr, chr));
 }
 
 virDomainChrDefPtr

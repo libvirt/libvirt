@@ -2652,8 +2652,11 @@ bool
 virDomainChrEquals(virDomainChrDefPtr src,
                    virDomainChrDefPtr tgt);
 int
-virDomainChrInsert(virDomainDefPtr vmdef,
-                   virDomainChrDefPtr chr);
+virDomainChrPreAlloc(virDomainDefPtr vmdef,
+                     virDomainChrDefPtr chr);
+void
+virDomainChrInsertPreAlloced(virDomainDefPtr vmdef,
+                             virDomainChrDefPtr chr);
 virDomainChrDefPtr
 virDomainChrRemove(virDomainDefPtr vmdef,
                    virDomainChrDefPtr chr);
