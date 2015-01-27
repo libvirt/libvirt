@@ -727,13 +727,13 @@ daemonSetupAccessManager(struct daemonConfig *config)
 {
     virAccessManagerPtr mgr;
     const char *none[] = { "none", NULL };
-    const char **driver = (const char **)config->access_drivers;
+    const char **drv = (const char **)config->access_drivers;
 
-    if (!driver ||
-        !driver[0])
-        driver = none;
+    if (!drv ||
+        !drv[0])
+        drv = none;
 
-    if (!(mgr = virAccessManagerNewStack(driver)))
+    if (!(mgr = virAccessManagerNewStack(drv)))
         return -1;
 
     virAccessManagerSetDefault(mgr);
