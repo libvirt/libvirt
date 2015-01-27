@@ -2281,6 +2281,11 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Tue Jan 27 2015 Daniel Veillard <veillard@redhat.com> - 1.2.12-1
+- CVE-2015-0236: qemu: Check ACLs when dumping security info from snapshots
+- CVE-2015-0236: qemu: Check ACLs when dumping security info from save image
+- a lot of improvement and bug fixes
+
 * Sat Dec 13 2014 Daniel Veillard <veillard@redhat.com> - 1.2.11-1
 - CVE-2014-8131: Fix possible deadlock and segfault in qemuConnectGetAllDomainStats()
 - CVE-2014-7823: dumpxml: security hole with migratable flag
