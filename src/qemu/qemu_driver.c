@@ -2899,6 +2899,9 @@ qemuOpenFileAs(uid_t fallback_uid, gid_t fallback_gid,
             vfoflags |= VIR_FILE_OPEN_FORCE_OWNER;
 
         if (stat(path, &sb) == 0) {
+            /* It already exists, we don't want to delete it on error */
+            need_unlink = false;
+
             is_reg = !!S_ISREG(sb.st_mode);
             /* If the path is regular file which exists
              * already and dynamic_ownership is off, we don't
@@ -2950,6 +2953,15 @@ qemuOpenFileAs(uid_t fallback_uid, gid_t fallback_gid,
                     /* local file - log the error returned by virFileOpenAs */
                     goto error;
             }
+
+            /* If we created the file above, then we need to remove it;
+             * otherwise, the next attempt to create will fail. If the
+             * file had already existed before we got here, then we also
+             * don't want to delete it and allow the following to succeed
+             * or fail based on existing protections
+             */
+            if (need_unlink)
+                unlink(path);
 
             /* Retry creating the file as qemu user */
 
