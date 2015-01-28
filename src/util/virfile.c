@@ -2125,7 +2125,8 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
     } while (fd < 0 && errno == EINTR);
     VIR_FORCE_CLOSE(pair[0]); /* NB: this preserves errno */
 
-    if (fd < 0 && errno != EACCES) {
+    /* gnulib will return ENOTCONN in certain instances */
+    if (fd < 0 && !(errno == EACCES || errno == ENOTCONN)) {
         ret = -errno;
         while (waitpid(pid, NULL, 0) == -1 && errno == EINTR);
         return ret;
