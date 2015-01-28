@@ -2034,6 +2034,7 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
 {
     pid_t pid;
     int waitret, status, ret = 0;
+    int recvfd_errno = 0;
     int fd = -1;
     int pair[2] = { -1, -1 };
     gid_t *groups;
@@ -2124,15 +2125,12 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
         fd = recvfd(pair[0], 0);
     } while (fd < 0 && errno == EINTR);
     VIR_FORCE_CLOSE(pair[0]); /* NB: this preserves errno */
+    if (fd < 0)
+        recvfd_errno = errno;
 
-    /* gnulib will return ENOTCONN in certain instances */
-    if (fd < 0 && !(errno == EACCES || errno == ENOTCONN)) {
-        ret = -errno;
-        while (waitpid(pid, NULL, 0) == -1 && errno == EINTR);
-        return ret;
-    }
-
-    /* wait for child to complete, and retrieve its exit code */
+    /* wait for child to complete, and retrieve its exit code
+     * if waitpid fails, use that status
+     */
     while ((waitret = waitpid(pid, &status, 0)) == -1 && errno == EINTR);
     if (waitret == -1) {
         ret = -errno;
@@ -2142,28 +2140,41 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
         VIR_FORCE_CLOSE(fd);
         return ret;
     }
-    if (!WIFEXITED(status) || (ret = -WEXITSTATUS(status)) == -EACCES ||
-        fd == -1) {
-        /* fall back to the simpler method, which works better in
-         * some cases */
+
+    /*
+     * If waitpid succeeded, but if the child exited abnormally or
+     * reported non-zero status, report failure.
+     */
+    if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+        char *msg = virProcessTranslateStatus(status);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("child failed to create '%s': %s"),
+                       path, msg);
         VIR_FORCE_CLOSE(fd);
-        if (flags & VIR_FILE_OPEN_NOFORK) {
-            /* If we had already tried opening w/o fork+setuid and
-             * failed, no sense trying again. Just set return the
-             * original errno that we got at that time (by
-             * definition, always either EACCES or EPERM - EACCES
-             * is close enough).
-             */
-            return -EACCES;
-        }
-        if ((fd = open(path, openflags, mode)) < 0)
-            return -errno;
-        ret = virFileOpenForceOwnerMode(path, fd, mode, uid, gid, flags);
-        if (ret < 0) {
-            VIR_FORCE_CLOSE(fd);
-            return ret;
-        }
+        VIR_FREE(msg);
+        /* Use child exit status if possible; otherwise,
+         * just use -EACCES, since by our original failure in
+         * the non fork+setuid path would have been EACCES or
+         * EPERM by definition (see qemuOpenFileAs after the
+         * first virFileOpenAs failure), but EACCES is close enough.
+         * Besides -EPERM is like returning fd == -1.
+         */
+        if (WIFEXITED(status))
+            ret = -WEXITSTATUS(status);
+        else
+            ret = -EACCES;
+        return ret;
     }
+
+    /* if waitpid succeeded, but recvfd failed, report recvfd_errno */
+    if (recvfd_errno != 0) {
+        virReportSystemError(recvfd_errno,
+                             _("failed recvfd for child creating '%s'"),
+                             path);
+        return -recvfd_errno;
+    }
+
+    /* otherwise, waitpid and recvfd succeeded, return the fd */
     return fd;
 }
 
