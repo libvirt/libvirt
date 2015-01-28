@@ -2173,14 +2173,7 @@
               </attribute>
               <empty/>
             </element>
-            <optional>
-              <element name="mac">
-                <attribute name="address">
-                  <ref name="uniMacAddr"/>
-                </attribute>
-                <empty/>
-              </element>
-            </optional>
+            <ref name="interface-options"/>
           </interleave>
         </group>
         <group>
@@ -2199,24 +2192,7 @@
               </attribute>
               <empty/>
             </element>
-            <optional>
-              <element name="mac">
-                <attribute name="address">
-                  <ref name="uniMacAddr"/>
-                </attribute>
-                <empty/>
-              </element>
-            </optional>
-            <optional>
-              <element name="model">
-                <attribute name="type">
-                  <data type="string">
-                    <param name='pattern'>[a-zA-Z0-9\-_]+</param>
-                  </data>
-                </attribute>
-                <empty/>
-              </element>
-            </optional>
+            <ref name="interface-options"/>
           </interleave>
         </group>
         <group>
