@@ -1066,7 +1066,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname ATTRIBUTE_UNUSED,
                                            char **res_ifname ATTRIBUTE_UNUSED,
                                            virNetDevVPortProfileOp vmop ATTRIBUTE_UNUSED,
                                            char *stateDir ATTRIBUTE_UNUSED,
-                                           unsigned int flags ATTRIBUTE_UNUSED)
+                                           unsigned int unused_flags ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
