@@ -3338,9 +3338,10 @@ virDomainXMLDevID(virConnectPtr conn,
     xenUnifiedPrivatePtr priv = conn->privateData;
     char *xref;
     char *tmp;
-    const char *driver = virDomainDiskGetDriver(dev->data.disk);
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
+        const char *driver = virDomainDiskGetDriver(dev->data.disk);
+
         if (STREQ_NULLABLE(driver, "tap") || STREQ_NULLABLE(driver, "tap2"))
             strcpy(class, driver);
         else
