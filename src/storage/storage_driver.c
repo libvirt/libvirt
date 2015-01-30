@@ -125,6 +125,7 @@ storageDriverAutostart(virStorageDriverStatePtr driver)
         }
 
         if (started) {
+            virStoragePoolObjClearVols(pool);
             if (backend->refreshPool(conn, pool) < 0) {
                 virErrorPtr err = virGetLastError();
                 if (backend->stopPool)
