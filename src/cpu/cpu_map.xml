@@ -600,6 +600,7 @@
   <arch name='ppc64'>
     <!-- vendor definitions -->
     <vendor name='IBM'/>
+    <vendor name='Freescale'/>
 
     <!-- IBM-based CPU models -->
     <model name='POWER7'>
@@ -655,6 +656,17 @@
       <vendor name='IBM'/>
       <compat isa='2.07'/>
       <pvr value='0x004d0000'/>
+    </model>
+
+<!-- Freescale-based CPU models -->
+    <model name='POWERPC_e5500'>
+      <vendor name='Freescale'/>
+      <pvr value='0x80240000'/>
+    </model>
+
+    <model name='POWERPC_e6500'>
+      <vendor name='Freescale'/>
+      <pvr value='0x80400000'/>
     </model>
 
   </arch>
