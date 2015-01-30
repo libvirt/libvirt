@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2007-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -199,14 +199,6 @@ int virNetDevAddMulti(const char *ifname,
 int virNetDevDelMulti(const char *ifname,
                       virMacAddrPtr macaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
-
-int virNetDevSetIFFlag(const char *ifname, int flag, bool val)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_RETURN_CHECK;
-
-int virNetDevGetIFFlag(const char *ifname, int flag, bool *val)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevSetPromiscuous(const char *ifname, bool promiscuous)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;

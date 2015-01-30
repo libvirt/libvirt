@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2007-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -610,7 +610,8 @@ int virNetDevSetName(const char* ifname, const char *newifname)
 
 
 #if defined(SIOCSIFFLAGS) && defined(HAVE_STRUCT_IFREQ)
-int virNetDevSetIFFlag(const char *ifname, int flag, bool val)
+static int
+virNetDevSetIFFlag(const char *ifname, int flag, bool val)
 {
     int fd = -1;
     int ret = -1;
@@ -649,9 +650,10 @@ int virNetDevSetIFFlag(const char *ifname, int flag, bool val)
     return ret;
 }
 #else
-int virNetDevSetIFFlag(const char *ifname,
-                       int flag ATTRIBUTE_UNUSED,
-                       bool val ATTRIBUTE_UNUSED)
+static int
+virNetDevSetIFFlag(const char *ifname,
+                   int flag ATTRIBUTE_UNUSED,
+                   bool val ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS,
                          _("Cannot set interface flags on '%s'"),
@@ -731,7 +733,8 @@ int virNetDevSetRcvAllMulti(const char *ifname,
 
 
 #if defined(SIOCGIFFLAGS) && defined(HAVE_STRUCT_IFREQ)
-int virNetDevGetIFFlag(const char *ifname, int flag, bool *val)
+static int
+virNetDevGetIFFlag(const char *ifname, int flag, bool *val)
 {
     int fd = -1;
     int ret = -1;
@@ -755,9 +758,10 @@ int virNetDevGetIFFlag(const char *ifname, int flag, bool *val)
     return ret;
 }
 #else
-int virNetDevGetIFFlag(const char *ifname,
-                       int flag ATTRIBUTE_UNUSED,
-                       bool *val ATTRIBUTE_UNUSED)
+static int
+virNetDevGetIFFlag(const char *ifname,
+                   int flag ATTRIBUTE_UNUSED,
+                   bool *val ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS,
                          _("Cannot get interface flags on '%s'"),
