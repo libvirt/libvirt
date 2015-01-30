@@ -54,31 +54,29 @@ struct _virBitmap {
 
 
 /**
- * virBitmapNew:
+ * virBitmapNewQuiet:
  * @size: number of bits
  *
  * Allocate a bitmap capable of containing @size bits.
  *
- * Returns a pointer to the allocated bitmap or NULL if
- * memory cannot be allocated.
+ * Returns a pointer to the allocated bitmap or NULL if memory cannot be
+ * allocated. Does not report libvirt errors.
  */
-virBitmapPtr virBitmapNew(size_t size)
+virBitmapPtr
+virBitmapNewQuiet(size_t size)
 {
     virBitmapPtr bitmap;
     size_t sz;
 
-    if (SIZE_MAX - VIR_BITMAP_BITS_PER_UNIT < size || size == 0) {
-        virReportOOMError();
-        return NULL;
-    }
-
-    sz = (size + VIR_BITMAP_BITS_PER_UNIT - 1) /
-          VIR_BITMAP_BITS_PER_UNIT;
-
-    if (VIR_ALLOC(bitmap) < 0)
+    if (SIZE_MAX - VIR_BITMAP_BITS_PER_UNIT < size || size == 0)
         return NULL;
 
-    if (VIR_ALLOC_N(bitmap->map, sz) < 0) {
+    sz = (size + VIR_BITMAP_BITS_PER_UNIT - 1) / VIR_BITMAP_BITS_PER_UNIT;
+
+    if (VIR_ALLOC_QUIET(bitmap) < 0)
+        return NULL;
+
+    if (VIR_ALLOC_N_QUIET(bitmap->map, sz) < 0) {
         VIR_FREE(bitmap);
         return NULL;
     }
@@ -87,6 +85,28 @@ virBitmapPtr virBitmapNew(size_t size)
     bitmap->map_len = sz;
     return bitmap;
 }
+
+
+/**
+ * virBitmapNew:
+ * @size: number of bits
+ *
+ * Allocate a bitmap capable of containing @size bits.
+ *
+ * Returns a pointer to the allocated bitmap or NULL if memory cannot be
+ * allocated. Reports libvirt errors.
+ */
+virBitmapPtr
+virBitmapNew(size_t size)
+{
+    virBitmapPtr ret;
+
+    if (!(ret = virBitmapNewQuiet(size)))
+        virReportOOMError();
+
+    return ret;
+}
+
 
 /**
  * virBitmapFree:

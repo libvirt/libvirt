@@ -35,6 +35,7 @@ typedef virBitmap *virBitmapPtr;
 /*
  * Allocate a bitmap capable of containing @size bits.
  */
+virBitmapPtr virBitmapNewQuiet(size_t size) ATTRIBUTE_RETURN_CHECK;
 virBitmapPtr virBitmapNew(size_t size) ATTRIBUTE_RETURN_CHECK;
 
 /*
