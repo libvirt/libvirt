@@ -2,7 +2,7 @@
  * libxl_driver.c: core driver methods for managing libxenlight domains
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
- * Copyright (C) 2011-2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
+ * Copyright (C) 2011-2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
  * Copyright (C) 2011 Univention GmbH.
  *
  * This library is free software; you can redistribute it and/or
@@ -80,6 +80,15 @@ VIR_LOG_INIT("libxl.libxl_driver");
 
 static libxlDriverPrivatePtr libxl_driver;
 
+/* Object used to store info related to libxl event registrations */
+typedef struct _libxlOSEventHookInfo libxlOSEventHookInfo;
+typedef libxlOSEventHookInfo *libxlOSEventHookInfoPtr;
+struct _libxlOSEventHookInfo {
+    libxl_ctx *ctx;
+    void *xl_priv;
+    int id;
+};
+
 /* Function declarations */
 static int
 libxlDomainManagedSaveLoad(virDomainObjPtr vm,
@@ -87,6 +96,183 @@ libxlDomainManagedSaveLoad(virDomainObjPtr vm,
 
 
 /* Function definitions */
+static void
+libxlOSEventHookInfoFree(void *obj)
+{
+    VIR_FREE(obj);
+}
+
+static void
+libxlFDEventCallback(int watch ATTRIBUTE_UNUSED,
+                     int fd,
+                     int vir_events,
+                     void *fd_info)
+{
+    libxlOSEventHookInfoPtr info = fd_info;
+    int events = 0;
+
+    if (vir_events & VIR_EVENT_HANDLE_READABLE)
+        events |= POLLIN;
+    if (vir_events & VIR_EVENT_HANDLE_WRITABLE)
+        events |= POLLOUT;
+    if (vir_events & VIR_EVENT_HANDLE_ERROR)
+        events |= POLLERR;
+    if (vir_events & VIR_EVENT_HANDLE_HANGUP)
+        events |= POLLHUP;
+
+    libxl_osevent_occurred_fd(info->ctx, info->xl_priv, fd, 0, events);
+}
+
+static int
+libxlFDRegisterEventHook(void *priv,
+                         int fd,
+                         void **hndp,
+                         short events,
+                         void *xl_priv)
+{
+    int vir_events = VIR_EVENT_HANDLE_ERROR;
+    libxlOSEventHookInfoPtr info;
+
+    if (VIR_ALLOC(info) < 0)
+        return -1;
+
+    info->ctx = priv;
+    info->xl_priv = xl_priv;
+
+    if (events & POLLIN)
+        vir_events |= VIR_EVENT_HANDLE_READABLE;
+    if (events & POLLOUT)
+        vir_events |= VIR_EVENT_HANDLE_WRITABLE;
+
+    info->id = virEventAddHandle(fd, vir_events, libxlFDEventCallback,
+                                 info, libxlOSEventHookInfoFree);
+    if (info->id < 0) {
+        VIR_FREE(info);
+        return -1;
+    }
+
+    *hndp = info;
+
+    return 0;
+}
+
+static int
+libxlFDModifyEventHook(void *priv ATTRIBUTE_UNUSED,
+                       int fd ATTRIBUTE_UNUSED,
+                       void **hndp,
+                       short events)
+{
+    libxlOSEventHookInfoPtr info = *hndp;
+    int vir_events = VIR_EVENT_HANDLE_ERROR;
+
+    if (events & POLLIN)
+        vir_events |= VIR_EVENT_HANDLE_READABLE;
+    if (events & POLLOUT)
+        vir_events |= VIR_EVENT_HANDLE_WRITABLE;
+
+    virEventUpdateHandle(info->id, vir_events);
+
+    return 0;
+}
+
+static void
+libxlFDDeregisterEventHook(void *priv ATTRIBUTE_UNUSED,
+                           int fd ATTRIBUTE_UNUSED,
+                           void *hnd)
+{
+    libxlOSEventHookInfoPtr info = hnd;
+
+    virEventRemoveHandle(info->id);
+}
+
+static void
+libxlTimerCallback(int timer ATTRIBUTE_UNUSED, void *timer_info)
+{
+    libxlOSEventHookInfoPtr info = timer_info;
+
+    /*
+     * libxl expects the event to be deregistered when calling
+     * libxl_osevent_occurred_timeout, but we dont want the event info
+     * destroyed.  Disable the timeout and only remove it after returning
+     * from libxl.
+     */
+    virEventUpdateTimeout(info->id, -1);
+    libxl_osevent_occurred_timeout(info->ctx, info->xl_priv);
+    virEventRemoveTimeout(info->id);
+}
+
+static int
+libxlTimeoutRegisterEventHook(void *priv,
+                              void **hndp,
+                              struct timeval abs_t,
+                              void *xl_priv)
+{
+    libxlOSEventHookInfoPtr info;
+    struct timeval now;
+    struct timeval res;
+    static struct timeval zero;
+    int timeout;
+
+    if (VIR_ALLOC(info) < 0)
+        return -1;
+
+    info->ctx = priv;
+    info->xl_priv = xl_priv;
+
+    gettimeofday(&now, NULL);
+    timersub(&abs_t, &now, &res);
+    /* Ensure timeout is not overflowed */
+    if (timercmp(&res, &zero, <)) {
+        timeout = 0;
+    } else if (res.tv_sec > INT_MAX / 1000) {
+        timeout = INT_MAX;
+    } else {
+        timeout = res.tv_sec * 1000 + (res.tv_usec + 999) / 1000;
+    }
+    info->id = virEventAddTimeout(timeout, libxlTimerCallback,
+                                  info, libxlOSEventHookInfoFree);
+    if (info->id < 0) {
+        VIR_FREE(info);
+        return -1;
+    }
+
+    *hndp = info;
+
+    return 0;
+}
+
+/*
+ * Note:  There are two changes wrt timeouts starting with xen-unstable
+ * changeset 26469:
+ *
+ * 1. Timeout modify callbacks will only be invoked with an abs_t of {0,0},
+ * i.e. make the timeout fire immediately.  Prior to this commit, timeout
+ * modify callbacks were never invoked.
+ *
+ * 2. Timeout deregister hooks will no longer be called.
+ */
+static int
+libxlTimeoutModifyEventHook(void *priv ATTRIBUTE_UNUSED,
+                            void **hndp,
+                            struct timeval abs_t ATTRIBUTE_UNUSED)
+{
+    libxlOSEventHookInfoPtr info = *hndp;
+
+    /* Make the timeout fire */
+    virEventUpdateTimeout(info->id, 0);
+
+    return 0;
+}
+
+static void
+libxlTimeoutDeregisterEventHook(void *priv ATTRIBUTE_UNUSED,
+                                void *hnd)
+{
+    libxlOSEventHookInfoPtr info = hnd;
+
+    virEventRemoveTimeout(info->id);
+}
+
 static virDomainObjPtr
 libxlDomObjFromDomain(virDomainPtr dom)
 {
@@ -277,6 +463,16 @@ libxlDriverShouldLoad(bool privileged)
     return ret;
 }
 
+/* Callbacks wrapping libvirt's event loop interface */
+static const libxl_osevent_hooks libxl_osevent_callbacks = {
+    .fd_register = libxlFDRegisterEventHook,
+    .fd_modify = libxlFDModifyEventHook,
+    .fd_deregister = libxlFDDeregisterEventHook,
+    .timeout_register = libxlTimeoutRegisterEventHook,
+    .timeout_modify = libxlTimeoutModifyEventHook,
+    .timeout_deregister = libxlTimeoutDeregisterEventHook,
+};
+
 static int
 libxlStateInitialize(bool privileged,
                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
@@ -321,6 +517,9 @@ libxlStateInitialize(bool privileged,
 
     if (!(cfg = libxlDriverConfigNew()))
         goto error;
+
+    /* Register the callbacks providing access to libvirt's event loop */
+    libxl_osevent_register_hooks(cfg->ctx, &libxl_osevent_callbacks, cfg->ctx);
 
     libxl_driver->config = cfg;
     if (virFileMakePath(cfg->stateDir) < 0) {
