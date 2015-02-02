@@ -1352,12 +1352,8 @@ qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
     if (lastCpu)
         *lastCpu = cpu;
 
-    /* We got pages
-     * We want kiloBytes
-     * _SC_PAGESIZE is page size in Bytes
-     * So calculate, but first lower the pagesize so we don't get overflow */
     if (vm_rss)
-        *vm_rss = rss * (sysconf(_SC_PAGESIZE) >> 10);
+        *vm_rss = rss * virGetSystemPageSizeKB();
 
 
     VIR_DEBUG("Got status for %d/%d user=%llu sys=%llu cpu=%d rss=%ld",

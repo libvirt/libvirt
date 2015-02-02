@@ -22,6 +22,7 @@
 # include "cpu/cpu_map.h"
 # include "virstring.h"
 # include "storage/storage_driver.h"
+# include "virmock.h"
 
 # include "testutilsqemu.h"
 

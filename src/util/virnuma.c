@@ -639,7 +639,7 @@ virNumaGetPageInfo(int node,
                    unsigned int *page_free)
 {
     int ret = -1;
-    long system_page_size = sysconf(_SC_PAGESIZE);
+    long system_page_size = virGetSystemPageSize();
 
     /* sysconf() returns page size in bytes,
      * the @page_size is however in kibibytes */
@@ -717,7 +717,7 @@ virNumaGetPages(int node,
 
     /* sysconf() returns page size in bytes,
      * but we are storing the page size in kibibytes. */
-    system_page_size = sysconf(_SC_PAGESIZE) / 1024;
+    system_page_size = virGetSystemPageSizeKB();
 
     /* Query huge pages at first.
      * On Linux systems, the huge pages pool cuts off the available memory and
@@ -841,7 +841,7 @@ virNumaSetPagePoolSize(int node,
     char *end;
     unsigned long long nr_count;
 
-    if (page_size == sysconf(_SC_PAGESIZE) / 1024) {
+    if (page_size == virGetSystemPageSizeKB()) {
         /* Special case as kernel handles system pages
          * differently to huge pages. */
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",

@@ -42,10 +42,7 @@ openvzKBPerPages(void)
     static long kb_per_pages;
 
     if (kb_per_pages == 0) {
-        kb_per_pages = sysconf(_SC_PAGESIZE);
-        if (kb_per_pages > 0) {
-            kb_per_pages /= 1024;
-        } else {
+        if ((kb_per_pages = virGetSystemPageSizeKB()) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Can't determine page size"));
             kb_per_pages = 0;

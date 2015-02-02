@@ -244,4 +244,7 @@ VIR_ENUM_DECL(virTristateSwitch)
 
 unsigned int virGetListenFDs(void);
 
+long virGetSystemPageSize(void);
+long virGetSystemPageSizeKB(void);
+
 #endif /* __VIR_UTIL_H__ */

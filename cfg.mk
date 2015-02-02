@@ -997,6 +997,11 @@ sc_prohibit_virXXXFree:
 	halt='avoid using 'virXXXFree', use 'virObjectUnref' instead' \
 	  $(_sc_search_regexp)
 
+sc_prohibit_sysconf_pagesize:
+	@prohibit='sysconf\(_SC_PAGESIZE' \
+	halt='use virGetSystemPageSize[KB] instead of sysconf(_SC_PAGESIZE)' \
+	  $(_sc_search_regexp)
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
@@ -1187,3 +1192,6 @@ exclude_file_name_regexp--sc_prohibit_devname = \
 
 exclude_file_name_regexp--sc_prohibit_virXXXFree = \
   ^(docs/|tests/|examples/|tools/|cfg.mk|src/test/test_driver.c|src/libvirt_public.syms|include/libvirt/libvirt-(domain|network|nodedev|storage|stream|secret|nwfilter|interface|domain-snapshot).h|src/libvirt-(domain|qemu|network|nodedev|storage|stream|secret|nwfilter|interface|domain-snapshot).c$$)
+
+exclude_file_name_regexp--sc_prohibit_sysconf_pagesize = \
+  ^(cfg\.mk|src/util/virutil\.c)$$

@@ -1086,7 +1086,7 @@ safezero_mmap(int fd, off_t offset, off_t len)
 
     /* align offset and length, rounding offset down and length up */
     if (pagemask == 0)
-        pagemask = ~(sysconf(_SC_PAGESIZE) - 1);
+        pagemask = ~(virGetSystemPageSize() - 1);
     map_skip = offset - (offset & pagemask);
 
     /* memset wants the mmap'ed file to be present on disk so create a

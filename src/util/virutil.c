@@ -2577,3 +2577,16 @@ virGetListenFDs(void)
 }
 
 #endif /* WIN32 */
+
+long virGetSystemPageSize(void)
+{
+    return sysconf(_SC_PAGESIZE);
+}
+
+long virGetSystemPageSizeKB(void)
+{
+    long val = virGetSystemPageSize();
+    if (val < 0)
+        return val;
+    return val / 1024;
+}

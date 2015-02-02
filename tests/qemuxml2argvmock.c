@@ -22,7 +22,15 @@
 
 #include "internal.h"
 #include "virnuma.h"
+#include "virmock.h"
+#include "virutil.h"
 #include <time.h>
+#include <unistd.h>
+
+long virGetSystemPageSize(void)
+{
+    return 4096;
+}
 
 time_t time(time_t *t)
 {

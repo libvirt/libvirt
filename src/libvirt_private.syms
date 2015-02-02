@@ -2228,6 +2228,8 @@ virGetListenFDs;
 virGetSCSIHostNameByParentaddr;
 virGetSCSIHostNumber;
 virGetSelfLastChanged;
+virGetSystemPageSize;
+virGetSystemPageSizeKB;
 virGetUnprivSGIOSysfsPath;
 virGetUserCacheDirectory;
 virGetUserConfigDirectory;

@@ -4540,7 +4540,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     virDomainHugePagePtr master_hugepage = NULL;
     virDomainHugePagePtr hugepage = NULL;
     virDomainNumatuneMemMode mode;
-    const long system_page_size = sysconf(_SC_PAGESIZE) / 1024;
+    const long system_page_size = virGetSystemPageSizeKB();
     virMemAccess memAccess = def->cpu->cells[guestNode].memAccess;
     size_t i;
     char *mem_path = NULL;
@@ -7051,7 +7051,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     bool needBackend = false;
     int rc;
     int ret = -1;
-    const long system_page_size = sysconf(_SC_PAGESIZE) / 1024;
+    const long system_page_size = virGetSystemPageSizeKB();
 
     if (virDomainNumatuneHasPerNodeBinding(def->numatune) &&
         !(virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
@@ -8239,7 +8239,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     def->mem.max_balloon = VIR_DIV_UP(def->mem.max_balloon, 1024) * 1024;
     virCommandAddArgFormat(cmd, "%llu", def->mem.max_balloon / 1024);
     if (def->mem.nhugepages && (!def->cpu || !def->cpu->ncells)) {
-        const long system_page_size = sysconf(_SC_PAGESIZE) / 1024;
+        const long system_page_size = virGetSystemPageSizeKB();
         char *mem_path = NULL;
 
         if (def->mem.hugepages[0].size == system_page_size) {
