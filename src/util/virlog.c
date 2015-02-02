@@ -448,21 +448,8 @@ static int
 virLogVersionString(const char **rawmsg,
                     char **msg)
 {
-#ifdef PACKAGER_VERSION
-# ifdef PACKAGER
-#  define LOG_VERSION_STRING \
-    "libvirt version: " VERSION ", package: " PACKAGER_VERSION " (" PACKAGER ")"
-# else
-#  define LOG_VERSION_STRING \
-    "libvirt version: " VERSION ", package: " PACKAGER_VERSION
-# endif
-#else
-# define LOG_VERSION_STRING  \
-    "libvirt version: " VERSION
-#endif
-
-    *rawmsg = LOG_VERSION_STRING;
-    return virLogFormatString(msg, 0, NULL, VIR_LOG_INFO, LOG_VERSION_STRING);
+    *rawmsg = VIR_LOG_VERSION_STRING;
+    return virLogFormatString(msg, 0, NULL, VIR_LOG_INFO, VIR_LOG_VERSION_STRING);
 }
 
 

@@ -76,7 +76,6 @@
 
 VIR_LOG_INIT("qemu.qemu_process");
 
-#define START_POSTFIX ": starting up\n"
 #define ATTACH_POSTFIX ": attaching\n"
 #define SHUTDOWN_POSTFIX ": shutting down\n"
 
@@ -4249,6 +4248,45 @@ qemuPrepareNVRAM(virQEMUDriverConfigPtr cfg,
 }
 
 
+static void
+qemuLogOperation(virDomainObjPtr vm,
+                 const char *msg,
+                 int logfd,
+                 virCommandPtr cmd)
+{
+    char *timestamp;
+    char *logline;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int qemuVersion = virQEMUCapsGetVersion(priv->qemuCaps);
+    const char *package = virQEMUCapsGetPackage(priv->qemuCaps);
+    char ebuf[1024];
+
+    if ((timestamp = virTimeStringNow()) == NULL)
+        goto error;
+
+    if (virAsprintf(&logline, "%s: %s %s, qemu version: %d.%d.%d%s\n",
+                    timestamp, msg, VIR_LOG_VERSION_STRING,
+                    (qemuVersion / 1000000) % 1000, (qemuVersion / 1000) % 1000, qemuVersion % 1000,
+                    package ? package : "") < 0)
+        goto error;
+
+    if (safewrite(logfd, logline, strlen(logline)) < 0)
+        goto error;
+
+    if (cmd)
+        virCommandWriteArgLog(cmd, logfd);
+
+ cleanup:
+    VIR_FREE(timestamp);
+    VIR_FREE(logline);
+    return;
+
+ error:
+    VIR_WARN("Unable to write banner to logfile: %s",
+             virStrerror(errno, ebuf, sizeof(ebuf)));
+    goto cleanup;
+}
+
 int qemuProcessStart(virConnectPtr conn,
                      virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
@@ -4264,7 +4302,6 @@ int qemuProcessStart(virConnectPtr conn,
     off_t pos = -1;
     char ebuf[1024];
     int logfile = -1;
-    char *timestamp;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCommandPtr cmd = NULL;
     struct qemuProcessHookData hookData;
@@ -4620,19 +4657,7 @@ int qemuProcessStart(virConnectPtr conn,
             goto cleanup;
     }
 
-    if ((timestamp = virTimeStringNow()) == NULL) {
-        goto cleanup;
-    } else {
-        if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
-            safewrite(logfile, START_POSTFIX, strlen(START_POSTFIX)) < 0) {
-            VIR_WARN("Unable to write timestamp to logfile: %s",
-                     virStrerror(errno, ebuf, sizeof(ebuf)));
-        }
-
-        VIR_FREE(timestamp);
-    }
-
-    virCommandWriteArgLog(cmd, logfile);
+    qemuLogOperation(vm, "starting up", logfile, cmd);
 
     qemuDomainObjCheckTaint(driver, vm, logfile);
 

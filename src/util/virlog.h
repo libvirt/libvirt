@@ -25,6 +25,19 @@
 # include "internal.h"
 # include "virbuffer.h"
 
+# ifdef PACKAGER_VERSION
+#  ifdef PACKAGER
+#   define VIR_LOG_VERSION_STRING \
+     "libvirt version: " VERSION ", package: " PACKAGER_VERSION " (" PACKAGER ")"
+#  else
+#   define VIR_LOG_VERSION_STRING \
+     "libvirt version: " VERSION ", package: " PACKAGER_VERSION
+#  endif
+# else
+#  define VIR_LOG_VERSION_STRING  \
+    "libvirt version: " VERSION
+# endif
+
 /*
  * To be made public
  */

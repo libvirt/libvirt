@@ -299,6 +299,7 @@ struct _virQEMUCaps {
 
     unsigned int version;
     unsigned int kvmVersion;
+    char *package;
 
     virArch arch;
 
@@ -1941,6 +1942,10 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
     ret->usedQMP = qemuCaps->usedQMP;
     ret->version = qemuCaps->version;
     ret->kvmVersion = qemuCaps->kvmVersion;
+
+    if (VIR_STRDUP(ret->package, qemuCaps->package) < 0)
+        goto error;
+
     ret->arch = qemuCaps->arch;
 
     if (VIR_ALLOC_N(ret->cpuDefinitions, qemuCaps->ncpuDefinitions) < 0)
@@ -1992,6 +1997,7 @@ void virQEMUCapsDispose(void *obj)
 
     virBitmapFree(qemuCaps->flags);
 
+    VIR_FREE(qemuCaps->package);
     VIR_FREE(qemuCaps->binary);
 }
 
@@ -2113,6 +2119,12 @@ unsigned int virQEMUCapsGetVersion(virQEMUCapsPtr qemuCaps)
 unsigned int virQEMUCapsGetKVMVersion(virQEMUCapsPtr qemuCaps)
 {
     return qemuCaps->kvmVersion;
+}
+
+
+const char *virQEMUCapsGetPackage(virQEMUCapsPtr qemuCaps)
+{
+    return qemuCaps->package;
 }
 
 
@@ -2672,6 +2684,9 @@ virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
         goto cleanup;
     }
 
+    /* Don't check for NULL, since it is optional and thus may be missing */
+    qemuCaps->package = virXPathString("string(./package)", ctxt);
+
     if (!(str = virXPathString("string(./arch)", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing arch in QEMU capabilities cache"));
@@ -2783,6 +2798,10 @@ virQEMUCapsSaveCache(virQEMUCapsPtr qemuCaps, const char *filename)
     virBufferAsprintf(&buf, "<kvmVersion>%d</kvmVersion>\n",
                       qemuCaps->kvmVersion);
 
+    if (qemuCaps->package)
+        virBufferAsprintf(&buf, "<package>%s</package>\n",
+                          qemuCaps->package);
+
     virBufferAsprintf(&buf, "<arch>%s</arch>\n",
                       virArchToString(qemuCaps->arch));
 
@@ -2872,6 +2891,7 @@ virQEMUCapsReset(virQEMUCapsPtr qemuCaps)
 
     virBitmapClearAll(qemuCaps->flags);
     qemuCaps->version = qemuCaps->kvmVersion = 0;
+    VIR_FREE(qemuCaps->package);
     qemuCaps->arch = VIR_ARCH_NONE;
     qemuCaps->usedQMP = false;
 
@@ -3204,6 +3224,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     }
 
     qemuCaps->version = major * 1000000 + minor * 1000 + micro;
+    qemuCaps->package = package;
     qemuCaps->usedQMP = true;
 
     virQEMUCapsInitQMPBasic(qemuCaps);
@@ -3249,7 +3270,6 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
 
     ret = 0;
  cleanup:
-    VIR_FREE(package);
     return ret;
 }
 
