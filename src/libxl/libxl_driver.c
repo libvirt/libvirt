@@ -473,6 +473,14 @@ static const libxl_osevent_hooks libxl_osevent_callbacks = {
     .timeout_deregister = libxlTimeoutDeregisterEventHook,
 };
 
+static const libxl_childproc_hooks libxl_child_hooks = {
+#ifdef LIBXL_HAVE_SIGCHLD_OWNER_SELECTIVE_REAP
+    .chldowner = libxl_sigchld_owner_libxl_always_selective_reap,
+#else
+    .chldowner = libxl_sigchld_owner_libxl,
+#endif
+};
+
 static int
 libxlStateInitialize(bool privileged,
                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
@@ -520,6 +528,9 @@ libxlStateInitialize(bool privileged,
 
     /* Register the callbacks providing access to libvirt's event loop */
     libxl_osevent_register_hooks(cfg->ctx, &libxl_osevent_callbacks, cfg->ctx);
+
+    /* Setup child process handling.  See $xen-src/tools/libxl/libxl_event.h */
+    libxl_childproc_setmode(cfg->ctx, &libxl_child_hooks, cfg->ctx);
 
     libxl_driver->config = cfg;
     if (virFileMakePath(cfg->stateDir) < 0) {
