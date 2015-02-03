@@ -2578,10 +2578,18 @@ virGetListenFDs(void)
 
 #endif /* WIN32 */
 
+#ifndef WIN32
 long virGetSystemPageSize(void)
 {
     return sysconf(_SC_PAGESIZE);
 }
+#else /* WIN32 */
+long virGetSystemPageSize(void)
+{
+    errno = ENOSYS;
+    return -1;
+}
+#endif /* WIN32 */
 
 long virGetSystemPageSizeKB(void)
 {
