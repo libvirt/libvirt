@@ -78,6 +78,14 @@ int virNodeDeviceHasCap(const virNodeDeviceObj *dev, const char *cap)
     while (caps) {
         if (STREQ(cap, virNodeDevCapTypeToString(caps->type)))
             return 1;
+        else if (caps->type == VIR_NODE_DEV_CAP_SCSI_HOST)
+            if ((STREQ(cap, "fc_host") &&
+                (caps->data.scsi_host.flags &
+                 VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST)) ||
+                (STREQ(cap, "vports") &&
+                (caps->data.scsi_host.flags &
+                 VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS)))
+                return 1;
         caps = caps->next;
     }
     return 0;
