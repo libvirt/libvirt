@@ -66,6 +66,18 @@ VIR_LOG_INIT("util.netdev");
 #define VIR_MCAST_TOKEN_DELIMS " \n"
 #define VIR_MCAST_ADDR_LEN (VIR_MAC_HEXLEN + 1)
 
+#if defined(SIOCSIFFLAGS) && defined(HAVE_STRUCT_IFREQ)
+# define VIR_IFF_UP IFF_UP
+# define VIR_IFF_PROMISC IFF_PROMISC
+# define VIR_IFF_MULTICAST IFF_MULTICAST
+# define VIR_IFF_ALLMULTI IFF_ALLMULTI
+#else
+# define VIR_IFF_UP 0
+# define VIR_IFF_PROMISC 0
+# define VIR_IFF_MULTICAST 0
+# define VIR_IFF_ALLMULTI 0
+#endif
+
 typedef enum {
     VIR_MCAST_TYPE_INDEX_TOKEN,
     VIR_MCAST_TYPE_NAME_TOKEN,
@@ -673,11 +685,12 @@ virNetDevSetIFFlag(const char *ifname,
  *
  * Returns 0 in case of success or -1 on error.
  */
-int virNetDevSetOnline(const char *ifname,
-                       bool online)
+int
+virNetDevSetOnline(const char *ifname,
+                   bool online)
 {
 
-    return virNetDevSetIFFlag(ifname, IFF_UP, online);
+    return virNetDevSetIFFlag(ifname, VIR_IFF_UP, online);
 }
 
 /**
@@ -691,10 +704,11 @@ int virNetDevSetOnline(const char *ifname,
  *
  * Returns 0 in case of success or -1 on error.
  */
-int virNetDevSetPromiscuous(const char *ifname,
-                            bool promiscuous)
+int
+virNetDevSetPromiscuous(const char *ifname,
+                        bool promiscuous)
 {
-    return virNetDevSetIFFlag(ifname, IFF_PROMISC, promiscuous);
+    return virNetDevSetIFFlag(ifname, VIR_IFF_PROMISC, promiscuous);
 }
 
 /**
@@ -709,10 +723,11 @@ int virNetDevSetPromiscuous(const char *ifname,
  *
  * Returns 0 in case of success or -1 on error.
  */
-int virNetDevSetRcvMulti(const char *ifname,
-                         bool receive)
+int
+virNetDevSetRcvMulti(const char *ifname,
+                     bool receive)
 {
-    return virNetDevSetIFFlag(ifname, IFF_MULTICAST, receive);
+    return virNetDevSetIFFlag(ifname, VIR_IFF_MULTICAST, receive);
 }
 
 /**
@@ -725,10 +740,11 @@ int virNetDevSetRcvMulti(const char *ifname,
  *
  * Returns 0 in case of success or -1 on error.
  */
-int virNetDevSetRcvAllMulti(const char *ifname,
-                            bool receive)
+int
+virNetDevSetRcvAllMulti(const char *ifname,
+                        bool receive)
 {
-    return virNetDevSetIFFlag(ifname, IFF_ALLMULTI, receive);
+    return virNetDevSetIFFlag(ifname, VIR_IFF_ALLMULTI, receive);
 }
 
 
@@ -780,10 +796,11 @@ virNetDevGetIFFlag(const char *ifname,
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-int virNetDevGetOnline(const char *ifname,
-                       bool *online)
+int
+virNetDevGetOnline(const char *ifname,
+                   bool *online)
 {
-    return virNetDevGetIFFlag(ifname, IFF_UP, online);
+    return virNetDevGetIFFlag(ifname, VIR_IFF_UP, online);
 }
 
 /**
@@ -796,10 +813,11 @@ int virNetDevGetOnline(const char *ifname,
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-int virNetDevGetPromiscuous(const char *ifname,
-                           bool *promiscuous)
+int
+virNetDevGetPromiscuous(const char *ifname,
+                        bool *promiscuous)
 {
-    return virNetDevGetIFFlag(ifname, IFF_PROMISC, promiscuous);
+    return virNetDevGetIFFlag(ifname, VIR_IFF_PROMISC, promiscuous);
 }
 
 /**
@@ -812,10 +830,11 @@ int virNetDevGetPromiscuous(const char *ifname,
  *
  * Returns 0 in case of success or -1 on error.
  */
-int virNetDevGetRcvMulti(const char *ifname,
-                        bool *receive)
+int
+virNetDevGetRcvMulti(const char *ifname,
+                     bool *receive)
 {
-    return virNetDevGetIFFlag(ifname, IFF_MULTICAST, receive);
+    return virNetDevGetIFFlag(ifname, VIR_IFF_MULTICAST, receive);
 }
 
 /**
@@ -828,10 +847,11 @@ int virNetDevGetRcvMulti(const char *ifname,
  *
  * Returns 0 in case of success or -1 on error.
  */
-int virNetDevGetRcvAllMulti(const char *ifname,
-                           bool *receive)
+int
+virNetDevGetRcvAllMulti(const char *ifname,
+                        bool *receive)
 {
-    return virNetDevGetIFFlag(ifname, IFF_ALLMULTI, receive);
+    return virNetDevGetIFFlag(ifname, VIR_IFF_ALLMULTI, receive);
 }
 
 
@@ -2668,7 +2688,7 @@ int virNetDevGetRxFilter(const char *ifname,
                          virNetDevRxFilterPtr *filter)
 {
     int ret = -1;
-    bool receive;
+    bool receive = false;
     virNetDevRxFilterPtr fil = virNetDevRxFilterNew();
 
     if (!fil)
