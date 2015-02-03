@@ -6200,7 +6200,7 @@ qemuBuildRNGBackendArgs(virCommandPtr cmd,
         virCommandAddArgList(cmd, "-chardev", backend, NULL);
 
         virCommandAddArg(cmd, "-object");
-        virCommandAddArgFormat(cmd, "rng-egd,chardev=char%s,id=obj%s",
+        virCommandAddArgFormat(cmd, "rng-egd,id=obj%s,chardev=char%s",
                                dev->info.alias, dev->info.alias);
         break;
 
