@@ -2166,7 +2166,8 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
     /* XXX We currently don't support auth, so don't bother parsing it */
 
     /* possibly skip the leading slash */
-    if (VIR_STRDUP(src->path,
+    if (uri->path &&
+        VIR_STRDUP(src->path,
                    *uri->path == '/' ? uri->path + 1 : uri->path) < 0)
         goto cleanup;
 
