@@ -685,7 +685,7 @@ mymain(void)
     if ((ret = testPrepImages()) != 0)
         return ret;
 
-#define TEST_ONE_CHAIN(id, start, format, flags, ...)                \
+#define TEST_ONE_CHAIN(start, format, flags, ...)                    \
     do {                                                             \
         size_t i;                                                    \
         memset(&data, 0, sizeof(data));                              \
@@ -695,7 +695,7 @@ mymain(void)
         for (i = 0; i < ARRAY_CARDINALITY(data.files); i++)          \
             if (data.files[i])                                       \
                 data.nfiles++;                                       \
-        if (virtTestRun("Storage backing chain " id,                 \
+        if (virtTestRun(virtTestCounterNext(),                      \
                         testStorageChain, &data) < 0)                \
             ret = -1;                                                \
     } while (0)
@@ -703,16 +703,17 @@ mymain(void)
 #define VIR_FLATTEN_2(...) __VA_ARGS__
 #define VIR_FLATTEN_1(_1) VIR_FLATTEN_2 _1
 
-#define TEST_CHAIN(id, path, format, chain1, flags1, chain2, flags2)           \
-    do {                                                                       \
-        TEST_ONE_CHAIN(#id "a", path, format, flags1, VIR_FLATTEN_1(chain1));  \
-        TEST_ONE_CHAIN(#id "b", path, format, flags2, VIR_FLATTEN_1(chain2));  \
+#define TEST_CHAIN(path, format, chain1, flags1, chain2, flags2)      \
+    do {                                                              \
+        TEST_ONE_CHAIN(path, format, flags1, VIR_FLATTEN_1(chain1));  \
+        TEST_ONE_CHAIN(path, format, flags2, VIR_FLATTEN_1(chain2));  \
     } while (0)
 
     /* The actual tests, in several groups. */
+    virtTestCounterReset("Storage backing chain ");
 
     /* Missing file */
-    TEST_ONE_CHAIN("0", "bogus", VIR_STORAGE_FILE_RAW, EXP_FAIL);
+    TEST_ONE_CHAIN("bogus", VIR_STORAGE_FILE_RAW, EXP_FAIL);
 
     /* Raw image, whether with right format or no specified format */
     testFileData raw = {
@@ -720,10 +721,10 @@ mymain(void)
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_RAW,
     };
-    TEST_CHAIN(1, absraw, VIR_STORAGE_FILE_RAW,
+    TEST_CHAIN(absraw, VIR_STORAGE_FILE_RAW,
                (&raw), EXP_PASS,
                (&raw), ALLOW_PROBE | EXP_PASS);
-    TEST_CHAIN(2, absraw, VIR_STORAGE_FILE_AUTO,
+    TEST_CHAIN(absraw, VIR_STORAGE_FILE_AUTO,
                (&raw), EXP_PASS,
                (&raw), ALLOW_PROBE | EXP_PASS);
 
@@ -741,10 +742,10 @@ mymain(void)
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_RAW,
     };
-    TEST_CHAIN(3, absqcow2, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2, &raw), EXP_PASS,
                (&qcow2, &raw), ALLOW_PROBE | EXP_PASS);
-    TEST_CHAIN(4, absqcow2, VIR_STORAGE_FILE_AUTO,
+    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_AUTO,
                (&qcow2_as_raw), EXP_PASS,
                (&qcow2, &raw), ALLOW_PROBE | EXP_PASS);
 
@@ -758,10 +759,10 @@ mymain(void)
     raw.pathRel = NULL;
 
     /* Qcow2 file with raw as absolute backing, backing format provided */
-    TEST_CHAIN(5, absqcow2, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2, &raw), EXP_PASS,
                (&qcow2, &raw), ALLOW_PROBE | EXP_PASS);
-    TEST_CHAIN(6, absqcow2, VIR_STORAGE_FILE_AUTO,
+    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_AUTO,
                (&qcow2_as_raw), EXP_PASS,
                (&qcow2, &raw), ALLOW_PROBE | EXP_PASS);
 
@@ -773,7 +774,7 @@ mymain(void)
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_QCOW2,
     };
-    TEST_CHAIN(7, abswrap, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(abswrap, VIR_STORAGE_FILE_QCOW2,
                (&wrap, &qcow2, &raw), EXP_PASS,
                (&wrap, &qcow2, &raw), ALLOW_PROBE | EXP_PASS);
 
@@ -798,7 +799,7 @@ mymain(void)
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_QCOW2,
     };
-    TEST_CHAIN(8, abswrap, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(abswrap, VIR_STORAGE_FILE_QCOW2,
                (&wrap_as_raw, &qcow2_as_raw), EXP_PASS,
                (&wrap, &qcow2, &raw), ALLOW_PROBE | EXP_PASS);
 
@@ -812,7 +813,7 @@ mymain(void)
     qcow2.expBackingStoreRaw = datadir "/bogus";
 
     /* Qcow2 file with missing backing file but specified type */
-    TEST_CHAIN(9, absqcow2, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2), EXP_WARN,
                (&qcow2), ALLOW_PROBE | EXP_WARN);
 
@@ -824,7 +825,7 @@ mymain(void)
         ret = -1;
 
     /* Qcow2 file with missing backing file and no specified type */
-    TEST_CHAIN(10, absqcow2, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2), EXP_WARN,
                (&qcow2), ALLOW_PROBE | EXP_WARN);
 
@@ -845,7 +846,7 @@ mymain(void)
         .protocol = VIR_STORAGE_NET_PROTOCOL_NBD,
         .hostname = "example.org",
     };
-    TEST_CHAIN(11, absqcow2, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2, &nbd), EXP_PASS,
                (&qcow2, &nbd), ALLOW_PROBE | EXP_PASS);
 
@@ -866,7 +867,7 @@ mymain(void)
         .protocol = VIR_STORAGE_NET_PROTOCOL_NBD,
         .hostname = "example.org",
     };
-    TEST_CHAIN(12, absqcow2, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2, &nbd2), EXP_PASS,
                (&qcow2, &nbd2), ALLOW_PROBE | EXP_PASS);
 
@@ -883,7 +884,7 @@ mymain(void)
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_RAW,
     };
-    TEST_CHAIN(13, absqed, VIR_STORAGE_FILE_AUTO,
+    TEST_CHAIN(absqed, VIR_STORAGE_FILE_AUTO,
                (&qed_as_raw), EXP_PASS,
                (&qed, &raw), ALLOW_PROBE | EXP_PASS);
 
@@ -893,10 +894,10 @@ mymain(void)
         .type = VIR_STORAGE_TYPE_DIR,
         .format = VIR_STORAGE_FILE_DIR,
     };
-    TEST_CHAIN(14, absdir, VIR_STORAGE_FILE_AUTO,
+    TEST_CHAIN(absdir, VIR_STORAGE_FILE_AUTO,
                (&dir), EXP_PASS,
                (&dir), ALLOW_PROBE | EXP_PASS);
-    TEST_CHAIN(15, absdir, VIR_STORAGE_FILE_DIR,
+    TEST_CHAIN(absdir, VIR_STORAGE_FILE_DIR,
                (&dir), EXP_PASS,
                (&dir), ALLOW_PROBE | EXP_PASS);
 
@@ -935,7 +936,7 @@ mymain(void)
 
     raw.path = datadir "/sub/../sub/../raw";
     raw.pathRel = "../raw";
-    TEST_CHAIN(16, abslink2, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(abslink2, VIR_STORAGE_FILE_QCOW2,
                (&link2, &link1, &raw), EXP_PASS,
                (&link2, &link1, &raw), ALLOW_PROBE | EXP_PASS);
 #endif
@@ -949,7 +950,7 @@ mymain(void)
     qcow2.expBackingStoreRaw = "qcow2";
 
     /* Behavior of an infinite loop chain */
-    TEST_CHAIN(17, absqcow2, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2), EXP_WARN,
                (&qcow2), ALLOW_PROBE | EXP_WARN);
 
@@ -968,7 +969,7 @@ mymain(void)
     qcow2.expBackingStoreRaw = "wrap";
 
     /* Behavior of an infinite loop chain */
-    TEST_CHAIN(18, abswrap, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(abswrap, VIR_STORAGE_FILE_QCOW2,
                (&wrap, &qcow2), EXP_WARN,
                (&wrap, &qcow2), ALLOW_PROBE | EXP_WARN);
 
@@ -988,7 +989,7 @@ mymain(void)
         .format = VIR_STORAGE_FILE_RAW,
         .protocol = VIR_STORAGE_NET_PROTOCOL_RBD,
     };
-    TEST_CHAIN(19, absqcow2, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2, &rbd1), EXP_PASS,
                (&qcow2, &rbd1), ALLOW_PROBE | EXP_PASS);
 
@@ -1010,7 +1011,7 @@ mymain(void)
         .secret = "asdf",
         .hostname = "example.com",
     };
-    TEST_CHAIN(20, absqcow2, VIR_STORAGE_FILE_QCOW2,
+    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2,
                (&qcow2, &rbd2), EXP_PASS,
                (&qcow2, &rbd2), ALLOW_PROBE | EXP_PASS);
 
