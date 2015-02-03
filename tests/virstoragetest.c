@@ -871,6 +871,20 @@ mymain(void)
                (&qcow2, &nbd2), EXP_PASS,
                (&qcow2, &nbd2), ALLOW_PROBE | EXP_PASS);
 
+    /* Rewrite qcow2 to use an nbd: protocol without path as backend */
+    virCommandFree(cmd);
+    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
+                               "-F", "raw", "-b", "nbd://example.org",
+                               "qcow2", NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        ret = -1;
+    qcow2.expBackingStoreRaw = "nbd://example.org";
+
+    nbd2.path = NULL;
+    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2,
+               (&qcow2, &nbd2), EXP_PASS,
+               (&qcow2, &nbd2), ALLOW_PROBE | EXP_PASS);
+
     /* qed file */
     testFileData qed = {
         .expBackingStoreRaw = absraw,
