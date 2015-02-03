@@ -6160,15 +6160,38 @@ qemuBuildSclpDevStr(virDomainChrDefPtr dev)
 
 
 static int
-qemuBuildRNGBackendArgs(virCommandPtr cmd,
-                        virDomainRNGDefPtr dev,
-                        virQEMUCapsPtr qemuCaps)
+qemuBuildRNGBackendChrdevStr(virDomainRNGDefPtr rng,
+                             virQEMUCapsPtr qemuCaps,
+                             char **chr)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *backend = NULL;
+    *chr = NULL;
+
+    switch ((virDomainRNGBackend) rng->backend) {
+    case VIR_DOMAIN_RNG_BACKEND_RANDOM:
+    case VIR_DOMAIN_RNG_BACKEND_LAST:
+        /* no chardev backend is needed */
+        return 0;
+
+    case VIR_DOMAIN_RNG_BACKEND_EGD:
+        if (!(*chr = qemuBuildChrChardevStr(rng->source.chardev,
+                                            rng->info.alias, qemuCaps)))
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
+                         virQEMUCapsPtr qemuCaps,
+                         const char **type,
+                         virJSONValuePtr *props)
+{
+    char *charBackendAlias = NULL;
     int ret = -1;
 
-    switch ((virDomainRNGBackend) dev->backend) {
+    switch ((virDomainRNGBackend) rng->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_RNG_RANDOM)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -6177,15 +6200,14 @@ qemuBuildRNGBackendArgs(virCommandPtr cmd,
             goto cleanup;
         }
 
-        virBufferAsprintf(&buf, "rng-random,id=obj%s,filename=%s",
-                          dev->info.alias, dev->source.file);
+        *type = "rng-random";
 
-        virCommandAddArg(cmd, "-object");
-        virCommandAddArgBuffer(cmd, &buf);
+        if (virJSONValueObjectCreate(props, "s:filename", rng->source.file,
+                                     NULL) < 0)
+            goto cleanup;
         break;
 
     case VIR_DOMAIN_RNG_BACKEND_EGD:
-
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_RNG_EGD)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu doesn't support the rng-egd "
@@ -6193,15 +6215,15 @@ qemuBuildRNGBackendArgs(virCommandPtr cmd,
             goto cleanup;
         }
 
-        if (!(backend = qemuBuildChrChardevStr(dev->source.chardev,
-                                               dev->info.alias, qemuCaps)))
+        *type = "rng-egd";
+
+        if (virAsprintf(&charBackendAlias, "char%s", rng->info.alias) < 0)
             goto cleanup;
 
-        virCommandAddArgList(cmd, "-chardev", backend, NULL);
+        if (virJSONValueObjectCreate(props, "s:chardev", charBackendAlias,
+                                     NULL) < 0)
+            goto cleanup;
 
-        virCommandAddArg(cmd, "-object");
-        virCommandAddArgFormat(cmd, "rng-egd,id=obj%s,chardev=char%s",
-                               dev->info.alias, dev->info.alias);
         break;
 
     case VIR_DOMAIN_RNG_BACKEND_LAST:
@@ -6211,8 +6233,31 @@ qemuBuildRNGBackendArgs(virCommandPtr cmd,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&buf);
-    VIR_FREE(backend);
+    VIR_FREE(charBackendAlias);
+    return ret;
+}
+
+
+static char *
+qemuBuildRNGBackendStr(virDomainRNGDefPtr rng,
+                       virQEMUCapsPtr qemuCaps)
+{
+    const char *type = NULL;
+    char *alias = NULL;
+    virJSONValuePtr props = NULL;
+    char *ret = NULL;
+
+    if (virAsprintf(&alias, "obj%s", rng->info.alias) < 0)
+        goto cleanup;
+
+    if (qemuBuildRNGBackendProps(rng, qemuCaps, &type, &props) < 0)
+        goto cleanup;
+
+    ret = qemuBuildObjectCommandlineFromJSON(type, alias, props);
+
+ cleanup:
+    VIR_FREE(alias);
+    virJSONValueFree(props);
     return ret;
 }
 
@@ -10161,16 +10206,36 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     for (i = 0; i < def->nrngs; i++) {
-        char *devstr;
-        /* add the RNG source backend */
-        if (qemuBuildRNGBackendArgs(cmd, def->rngs[i], qemuCaps) < 0)
+        virDomainRNGDefPtr rng = def->rngs[i];
+        char *tmp;
+
+        if (!rng->info.alias) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("RNG device is missing alias"));
+            goto error;
+        }
+
+        /* possibly add character device for backend */
+        if (qemuBuildRNGBackendChrdevStr(rng, qemuCaps, &tmp) < 0)
             goto error;
 
-        /* add the device */
-        if (!(devstr = qemuBuildRNGDevStr(def, def->rngs[i], qemuCaps)))
+        if (tmp) {
+            virCommandAddArgList(cmd, "-chardev", tmp, NULL);
+            VIR_FREE(tmp);
+        }
+
+        /* add the RNG source backend */
+        if (!(tmp = qemuBuildRNGBackendStr(rng, qemuCaps)))
             goto error;
-        virCommandAddArgList(cmd, "-device", devstr, NULL);
-        VIR_FREE(devstr);
+
+        virCommandAddArgList(cmd, "-object", tmp, NULL);
+        VIR_FREE(tmp);
+
+        /* add the device */
+        if (!(tmp = qemuBuildRNGDevStr(def, rng, qemuCaps)))
+            goto error;
+        virCommandAddArgList(cmd, "-device", tmp, NULL);
+        VIR_FREE(tmp);
     }
 
     if (def->nvram) {
