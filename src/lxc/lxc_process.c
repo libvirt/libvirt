@@ -1270,11 +1270,6 @@ int virLXCProcessStart(virConnectPtr conn,
         goto error;
     }
 
-    if (VIR_CLOSE(handshakefds[1]) < 0) {
-        virReportSystemError(errno, "%s", _("could not close handshake fd"));
-        goto error;
-    }
-
     if (virCommandHandshakeWait(cmd) < 0)
         goto error;
 
