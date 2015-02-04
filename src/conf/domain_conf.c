@@ -8969,6 +8969,7 @@ virDomainInputDefParseXML(const virDomainDef *dom,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unsupported input bus %s"),
                                bus);
+                goto error;
             }
             if (def->type != VIR_DOMAIN_INPUT_TYPE_MOUSE &&
                 def->type != VIR_DOMAIN_INPUT_TYPE_KBD) {
