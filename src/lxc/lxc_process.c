@@ -1023,6 +1023,7 @@ int virLXCProcessStart(virConnectPtr conn,
     int status;
     char *pidfile = NULL;
     bool clearSeclabel = false;
+    bool need_stop = false;
 
     if (virCgroupNewSelf(&selfcgroup) < 0)
         return -1;
@@ -1274,6 +1275,7 @@ int virLXCProcessStart(virConnectPtr conn,
         goto cleanup;
     }
 
+    need_stop = true;
     priv->stopReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
     priv->wantReboot = false;
     vm->def->id = vm->pid;
@@ -1282,20 +1284,20 @@ int virLXCProcessStart(virConnectPtr conn,
 
     if (VIR_CLOSE(handshakefds[1]) < 0) {
         virReportSystemError(errno, "%s", _("could not close handshake fd"));
-        goto error;
+        goto cleanup;
     }
 
     if (virCommandHandshakeWait(cmd) < 0)
-        goto error;
+        goto cleanup;
 
     /* Write domain status to disk for the controller to
      * read when it starts */
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
-        goto error;
+        goto cleanup;
 
     /* Allow the child to exec the controller */
     if (virCommandHandshakeNotify(cmd) < 0)
-        goto error;
+        goto cleanup;
 
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
@@ -1308,7 +1310,7 @@ int virLXCProcessStart(virConnectPtr conn,
                            _("guest failed to start: %s"), out);
         }
 
-        goto error;
+        goto cleanup;
     }
 
     /* We know the cgroup must exist by this synchronization
@@ -1320,13 +1322,13 @@ int virLXCProcessStart(virConnectPtr conn,
                                   vm->def->resource->partition :
                                   NULL,
                                   -1, &priv->cgroup) < 0)
-        goto error;
+        goto cleanup;
 
     if (!priv->cgroup) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("No valid cgroup for machine %s"),
                        vm->def->name);
-        goto error;
+        goto cleanup;
     }
 
     /* And we can get the first monitor connection now too */
@@ -1339,17 +1341,17 @@ int virLXCProcessStart(virConnectPtr conn,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("guest failed to start: %s"), ebuf);
         }
-        goto error;
+        goto cleanup;
     }
 
     if (autoDestroy &&
         virCloseCallbacksSet(driver->closeCallbacks, vm,
                              conn, lxcProcessAutoDestroy) < 0)
-        goto error;
+        goto cleanup;
 
     if (virDomainObjSetDefTransient(caps, driver->xmlopt,
                                     vm, false) < 0)
-        goto error;
+        goto cleanup;
 
     /* We don't need the temporary NIC names anymore, clear them */
     virLXCProcessCleanInterfaces(vm->def);
@@ -1368,48 +1370,39 @@ int virLXCProcessStart(virConnectPtr conn,
          * If the script raised an error abort the launch
          */
         if (hookret < 0)
-            goto error;
+            goto cleanup;
     }
 
     rc = 0;
 
  cleanup:
-    if (rc != 0 && !err)
-        err = virSaveLastError();
-    virCommandFree(cmd);
     if (VIR_CLOSE(logfd) < 0) {
         virReportSystemError(errno, "%s", _("could not close logfile"));
         rc = -1;
     }
-    for (i = 0; i < nveths; i++) {
-        if (rc != 0 && veths[i])
-            ignore_value(virNetDevVethDelete(veths[i]));
-        VIR_FREE(veths[i]);
-    }
     if (rc != 0) {
-        if (vm->newDef) {
-            virDomainDefFree(vm->newDef);
-            vm->newDef = NULL;
-        }
-        if (priv->monitor) {
-            virObjectUnref(priv->monitor);
-            priv->monitor = NULL;
-        }
-        virDomainConfVMNWFilterTeardown(vm);
-
-        virSecurityManagerRestoreAllLabel(driver->securityManager,
-                                          vm->def, false);
-        virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
-        /* Clear out dynamically assigned labels */
-        if (vm->def->nseclabels &&
-            (vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DYNAMIC ||
-            clearSeclabel)) {
-            VIR_FREE(vm->def->seclabels[0]->model);
-            VIR_FREE(vm->def->seclabels[0]->label);
-            VIR_FREE(vm->def->seclabels[0]->imagelabel);
-            VIR_DELETE_ELEMENT(vm->def->seclabels, 0, vm->def->nseclabels);
+        err = virSaveLastError();
+        if (need_stop) {
+            virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
+        } else {
+            virSecurityManagerRestoreAllLabel(driver->securityManager,
+                                              vm->def, false);
+            virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
+            /* Clear out dynamically assigned labels */
+            if (vm->def->nseclabels &&
+                (vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DYNAMIC ||
+                clearSeclabel)) {
+                VIR_FREE(vm->def->seclabels[0]->model);
+                VIR_FREE(vm->def->seclabels[0]->label);
+                VIR_FREE(vm->def->seclabels[0]->imagelabel);
+                VIR_DELETE_ELEMENT(vm->def->seclabels, 0, vm->def->nseclabels);
+            }
+            virLXCProcessCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
         }
     }
+    virCommandFree(cmd);
+    for (i = 0; i < nveths; i++)
+        VIR_FREE(veths[i]);
     for (i = 0; i < nttyFDs; i++)
         VIR_FORCE_CLOSE(ttyFDs[i]);
     VIR_FREE(ttyFDs);
@@ -1426,11 +1419,6 @@ int virLXCProcessStart(virConnectPtr conn,
     }
 
     return rc;
-
- error:
-    err = virSaveLastError();
-    virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
-    goto cleanup;
 }
 
 struct virLXCProcessAutostartData {
