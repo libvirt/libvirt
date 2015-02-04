@@ -8609,6 +8609,7 @@ virDomainChrDefParseXML(xmlXPathContextPtr ctxt,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown character device type: %s"),
                        nodeName);
+        goto error;
     }
 
     cur = node->children;
