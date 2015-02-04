@@ -2755,9 +2755,8 @@
         <code>devno</code> (a hex value between 0 and 0xffff, inclusive).
         Partially specified bus addresses are not allowed.
         If omitted, libvirt will assign a free bus address with
-        cssid=0xfe and ssid=0. Virtio devices for s390 must have their
-        cssid set to 0xfe in order to be recognized by the guest
-        operating system.
+        cssid=0xfe and ssid=0. Virtio-ccw devices must have their cssid
+        set to 0xfe.
         <span class="since">Since 1.0.4</span>
       </dd>
       <dt><code>type='isa'</code></dt>
