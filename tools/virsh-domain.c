@@ -404,6 +404,7 @@ enum {
     DISK_ADDR_TYPE_PCI,
     DISK_ADDR_TYPE_SCSI,
     DISK_ADDR_TYPE_IDE,
+    DISK_ADDR_TYPE_CCW,
 };
 
 struct PCIAddress {
@@ -425,12 +426,19 @@ struct IDEAddress {
     unsigned int unit;
 };
 
+struct CCWAddress {
+    unsigned int cssid;
+    unsigned int ssid;
+    unsigned int devno;
+};
+
 struct DiskAddress {
     int type;
     union {
         struct PCIAddress pci;
         struct SCSIAddress scsi;
         struct IDEAddress ide;
+        struct CCWAddress ccw;
     } addr;
 };
 
@@ -513,9 +521,35 @@ static int str2IDEAddress(const char *str, struct IDEAddress *ideAddr)
     return 0;
 }
 
+static int str2CCWAddress(const char *str, struct CCWAddress *ccwAddr)
+{
+    char *cssid, *ssid, *devno;
+
+    if (!ccwAddr)
+        return -1;
+    if (!str)
+        return -1;
+
+    cssid = (char *)str;
+
+    if (virStrToLong_ui(cssid, &ssid, 0, &ccwAddr->cssid) != 0)
+        return -1;
+
+    ssid++;
+    if (virStrToLong_ui(ssid, &devno, 0, &ccwAddr->ssid) != 0)
+        return -1;
+
+    devno++;
+    if (virStrToLong_ui(devno, NULL, 0, &ccwAddr->devno) != 0)
+        return -1;
+
+    return 0;
+}
+
 /* pci address pci:0000.00.0x0a.0 (domain:bus:slot:function)
  * ide disk address: ide:00.00.0 (controller:bus:unit)
  * scsi disk address: scsi:00.00.0 (controller:bus:unit)
+ * ccw disk address: ccw:0xfe.0.0000 (cssid:ssid:devno)
  */
 
 static int str2DiskAddress(const char *str, struct DiskAddress *diskAddr)
@@ -541,6 +575,9 @@ static int str2DiskAddress(const char *str, struct DiskAddress *diskAddr)
     } else if (STREQLEN(type, "ide", addr - type)) {
         diskAddr->type = DISK_ADDR_TYPE_IDE;
         return str2IDEAddress(addr + 1, &diskAddr->addr.ide);
+    } else if (STREQLEN(type, "ccw", addr - type)) {
+        diskAddr->type = DISK_ADDR_TYPE_CCW;
+        return str2CCWAddress(addr + 1, &diskAddr->addr.ccw);
     }
 
     return -1;
@@ -675,8 +712,15 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
                 if (vshCommandOptBool(cmd, "multifunction"))
                     virBufferAddLit(&buf, " multifunction='on'");
                 virBufferAddLit(&buf, "/>\n");
+            } else if (diskAddr.type == DISK_ADDR_TYPE_CCW) {
+                virBufferAsprintf(&buf,
+                                  "<address type='ccw' cssid='0x%02x'"
+                                  " ssid='0x%01x' devno='0x%04x' />\n",
+                                  diskAddr.addr.ccw.cssid, diskAddr.addr.ccw.ssid,
+                                  diskAddr.addr.ccw.devno);
             } else {
-                vshError(ctl, "%s", _("expecting a pci:0000.00.00.00 address."));
+                vshError(ctl, "%s",
+                         _("expecting a pci:0000.00.00.00 or ccw:00.0.0000 address."));
                 goto cleanup;
             }
         } else if (STRPREFIX((const char *)target, "sd")) {
