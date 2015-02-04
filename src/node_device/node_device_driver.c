@@ -383,8 +383,20 @@ nodeDeviceNumOfCaps(virNodeDevicePtr dev)
     if (virNodeDeviceNumOfCapsEnsureACL(dev->conn, obj->def) < 0)
         goto cleanup;
 
-    for (caps = obj->def->caps; caps; caps = caps->next)
+    for (caps = obj->def->caps; caps; caps = caps->next) {
         ++ncaps;
+
+        if (caps->type == VIR_NODE_DEV_CAP_SCSI_HOST) {
+            if (caps->data.scsi_host.flags &
+                VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST)
+                ncaps++;
+
+            if (caps->data.scsi_host.flags &
+                VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS)
+                ncaps++;
+        }
+    }
+
     ret = ncaps;
 
  cleanup:
@@ -419,6 +431,24 @@ nodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
     for (caps = obj->def->caps; caps && ncaps < maxnames; caps = caps->next) {
         if (VIR_STRDUP(names[ncaps++], virNodeDevCapTypeToString(caps->type)) < 0)
             goto cleanup;
+
+        if (caps->type == VIR_NODE_DEV_CAP_SCSI_HOST) {
+            if (ncaps < maxnames &&
+                caps->data.scsi_host.flags &
+                VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
+                if (VIR_STRDUP(names[ncaps++],
+                               virNodeDevCapTypeToString(VIR_NODE_DEV_CAP_FC_HOST)) < 0)
+                    goto cleanup;
+            }
+
+            if (ncaps < maxnames &&
+                caps->data.scsi_host.flags &
+                VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS) {
+                if (VIR_STRDUP(names[ncaps++],
+                               virNodeDevCapTypeToString(VIR_NODE_DEV_CAP_VPORTS)) < 0)
+                    goto cleanup;
+            }
+        }
     }
     ret = ncaps;
 
