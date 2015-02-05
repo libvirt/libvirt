@@ -4144,8 +4144,9 @@ qemu-kvm -net nic,model=? /dev/null
       For tuning the backend of the network, the <code>backend</code> element
       can be used. The <code>vhost</code> attribute can override the default vhost
       device path (<code>/dev/vhost-net</code>) for devices with <code>virtio</code> model.
-      Supported attributes are <code>tap</code> and <code>vhost</code>,
-      allowing to override the default devices for creating tap and vhost devices.
+      The <code>tap</code> attribute overrides the tun/tap device path (default:
+      <code>/dev/net/tun</code>) for network and bridge interfaces. This does not work
+      in session mode.
     </p>
     <h5><a name="elementsNICSTargetOverride">Overriding the target element</a></h5>
 

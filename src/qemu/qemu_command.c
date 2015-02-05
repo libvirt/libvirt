@@ -299,8 +299,14 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     const char *tunpath = "/dev/net/tun";
 
-    if (net->backend.tap)
+    if (net->backend.tap) {
         tunpath = net->backend.tap;
+        if (!cfg->privileged) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("cannot use custom tap device in session mode"));
+            goto cleanup;
+        }
+    }
 
     if (!(brname = virDomainNetGetActualBridgeName(net))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Missing bridge name"));
@@ -7717,6 +7723,15 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
           actualType == VIR_DOMAIN_NET_TYPE_BRIDGE)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Multiqueue network is not supported for: %s"),
+                       virDomainNetTypeToString(actualType));
+        return -1;
+    }
+
+    if (net->backend.tap &&
+        !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Custom tap device path is not supported for: %s"),
                        virDomainNetTypeToString(actualType));
         return -1;
     }
