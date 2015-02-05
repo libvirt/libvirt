@@ -1,7 +1,7 @@
 /*
  * bridge_driver.c: core driver methods for managing network
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -2728,7 +2728,7 @@ static int
 networkValidate(virNetworkDefPtr def,
                 bool check_active)
 {
-    size_t i;
+    size_t i, j;
     bool vlanUsed, vlanAllowed, badVlanUse = false;
     virPortGroupDefPtr defaultPortGroup = NULL;
     virNetworkIpDefPtr ipdef;
@@ -2874,7 +2874,15 @@ networkValidate(virNetworkDefPtr def,
             }
             defaultPortGroup = &def->portGroups[i];
         }
-
+        for (j = i + 1; j < def->nPortGroups; j++) {
+            if (STREQ(def->portGroups[i].name, def->portGroups[j].name)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("multiple <portgroup> elements with the "
+                                 "same name (%s) in network '%s'"),
+                               def->portGroups[i].name, def->name);
+                return -1;
+            }
+        }
         if (def->portGroups[i].bandwidth && !bandwidthAllowed) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported <bandwidth> element in network '%s' "
