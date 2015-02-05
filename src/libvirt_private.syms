@@ -380,6 +380,7 @@ virDomainPMSuspendedReasonTypeToString;
 virDomainRedirdevBusTypeFromString;
 virDomainRedirdevBusTypeToString;
 virDomainRNGBackendTypeToString;
+virDomainRNGDefFree;
 virDomainRNGFind;
 virDomainRNGInsert;
 virDomainRNGModelTypeToString;
