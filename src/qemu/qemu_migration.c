@@ -1147,6 +1147,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Incoming cookie data had unexpected UUID %s vs %s"),
                        tmp, uuidstr);
+        goto error;
     }
     VIR_FREE(tmp);
 
