@@ -2375,6 +2375,9 @@ libxlDomainCreateWithFlags(virDomainPtr dom,
     }
 
     ret = libxlDomainStart(driver, vm, (flags & VIR_DOMAIN_START_PAUSED) != 0, -1);
+    if (ret < 0)
+        goto cleanup;
+    dom->id = vm->def->id;
 
  cleanup:
     if (vm)
