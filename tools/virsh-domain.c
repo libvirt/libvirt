@@ -6913,6 +6913,10 @@ static const vshCmdOptDef opts_cpu_baseline[] = {
      .type = VSH_OT_BOOL,
      .help = N_("Show features that are part of the CPU model type")
     },
+    {.name = "migratable",
+     .type = VSH_OT_BOOL,
+     .help = N_("Do not include features that block migration")
+    },
     {.name = NULL}
 };
 
@@ -6935,6 +6939,8 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "features"))
         flags |= VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES;
+    if (vshCommandOptBool(cmd, "migratable"))
+        flags |= VIR_CONNECT_BASELINE_CPU_MIGRATABLE;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;

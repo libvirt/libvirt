@@ -569,7 +569,7 @@ I<cellno> modifier can be used to narrow the modification down to
 a single host NUMA cell. On the other end of spectrum lies
 I<--all> which executes the modification on all NUMA cells.
 
-=item B<cpu-baseline> I<FILE> [I<--features>]
+=item B<cpu-baseline> I<FILE> [I<--features>] [I<--migratable>]
 
 Compute baseline CPU which will be supported by all host CPUs given in <file>.
 The list of host CPUs is built by extracting all <cpu> elements from the
@@ -578,7 +578,8 @@ by new lines or even a set of complete <capabilities> elements printed by
 B<capabilities> command.  If I<--features> is specified then the
 resulting XML description will explicitly include all features that make
 up the CPU, without this option features that are part of the CPU model
-will not be listed in the XML description.
+will not be listed in the XML description.   If I<--migratable> is specified,
+features that block migration will not be included in the resulting CPU.
 
 =item B<cpu-compare> I<FILE> [I<--error>]
 
