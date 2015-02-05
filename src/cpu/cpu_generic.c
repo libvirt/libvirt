@@ -126,7 +126,8 @@ genericBaseline(virCPUDefPtr *cpus,
     unsigned int count;
     size_t i, j;
 
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, NULL);
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
+                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
 
     if (!cpuModelIsAllowed(cpus[0]->model, models, nmodels)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

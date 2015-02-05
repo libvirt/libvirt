@@ -94,7 +94,8 @@ AArch64Baseline(virCPUDefPtr *cpus,
 {
     virCPUDefPtr cpu = NULL;
 
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, NULL);
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
+                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
 
     if (VIR_ALLOC(cpu) < 0 ||
         VIR_STRDUP(cpu->model, cpus[0]->model) < 0) {

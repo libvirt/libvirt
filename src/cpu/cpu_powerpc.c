@@ -580,7 +580,8 @@ ppcBaseline(virCPUDefPtr *cpus,
     virCPUDefPtr cpu = NULL;
     size_t i;
 
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, NULL);
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
+                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
 
     if (!(map = ppcLoadMap()))
         goto error;
