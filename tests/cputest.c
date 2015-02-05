@@ -346,6 +346,8 @@ cpuTestBaseline(const void *arg)
 
     if (data->flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES)
         suffix = "expanded";
+    else if (data->flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE)
+        suffix = "migratable";
     else
         suffix = "result";
     if (virAsprintf(&result, "%s-%s", data->name, suffix) < 0)
@@ -533,6 +535,8 @@ mymain(void)
         char *label;                                                    \
         if ((flags) & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES)         \
             suffix = " (expanded)";                                     \
+        if ((flags) & VIR_CONNECT_BASELINE_CPU_MIGRATABLE)              \
+            suffix = " (migratable)";                                   \
         if (virAsprintf(&label, "%s%s", name, suffix) < 0) {            \
             ret = -1;                                                   \
         } else {                                                        \
@@ -612,6 +616,8 @@ mymain(void)
     DO_TEST_BASELINE("x86", "4", VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, 0);
     DO_TEST_BASELINE("x86", "5", 0, 0);
     DO_TEST_BASELINE("x86", "5", VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, 0);
+    DO_TEST_BASELINE("x86", "6", 0, 0);
+    DO_TEST_BASELINE("x86", "6", VIR_CONNECT_BASELINE_CPU_MIGRATABLE, 0);
 
     DO_TEST_BASELINE("ppc64", "incompatible-vendors", 0, -1);
     DO_TEST_BASELINE("ppc64", "no-vendor", 0, 0);

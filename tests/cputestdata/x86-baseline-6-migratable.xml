@@ -1,0 +1,10 @@
+<cpu mode='custom' match='exact'>
+  <model fallback='allow'>SandyBridge</model>
+  <vendor>Intel</vendor>
+  <feature policy='require' name='hypervisor'/>
+  <feature policy='require' name='osxsave'/>
+  <feature policy='require' name='pcid'/>
+  <feature policy='require' name='ss'/>
+  <feature policy='require' name='vme'/>
+  <feature policy='disable' name='rdtscp'/>
+</cpu>

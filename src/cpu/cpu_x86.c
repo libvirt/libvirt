@@ -1556,7 +1556,8 @@ x86Decode(virCPUDefPtr cpu,
     const virCPUx86Data *cpuData = NULL;
     size_t i;
 
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, -1);
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
+                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, -1);
 
     if (!data || !(map = virCPUx86GetMap()))
         return -1;
@@ -1631,6 +1632,21 @@ x86Decode(virCPUDefPtr cpu,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Cannot find suitable CPU model for given data"));
         goto out;
+    }
+
+    /* Remove non-migratable features if requested
+     * Note: this only works as long as no CPU model contains non-migratable
+     * features directly */
+    if (flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE) {
+        for (i = 0; i < cpuModel->nfeatures; i++) {
+            const struct x86_feature *feat;
+            for (feat = map->migrate_blockers; feat; feat = feat->next) {
+                if (STREQ(feat->name, cpuModel->features[i].name)) {
+                    VIR_FREE(cpuModel->features[i].name);
+                    VIR_DELETE_ELEMENT_INPLACE(cpuModel->features, i, cpuModel->nfeatures);
+                }
+            }
+        }
     }
 
     if (flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) {
@@ -1914,6 +1930,9 @@ x86Baseline(virCPUDefPtr *cpus,
     bool outputVendor = true;
     const char *modelName;
     bool matchingNames = true;
+
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
+                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
 
     if (!(map = virCPUx86GetMap()))
         goto error;
