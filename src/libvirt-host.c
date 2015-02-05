@@ -1052,6 +1052,9 @@ virConnectGetCPUModelNames(virConnectPtr conn, const char *arch, char ***models,
  * without this flag features that are part of the CPU model will not be
  * listed.
  *
+ * If @flags includes VIR_CONNECT_BASELINE_CPU_MIGRATABLE, the resulting
+ * CPU will not include features that block migration.
+ *
  * Returns XML description of the computed CPU (caller frees) or NULL on error.
  */
 char *
