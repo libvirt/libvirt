@@ -7369,6 +7369,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *vhostuser_path = NULL;
     char *vhostuser_type = NULL;
     char *trustGuestRxFilters = NULL;
+    char *vhost_path = NULL;
     virNWFilterHashTablePtr filterparams = NULL;
     virDomainActualNetDefPtr actual = NULL;
     xmlNodePtr oldnode = ctxt->node;
@@ -7550,8 +7551,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                     def->backend.tap = virFileSanitizePath(tmp);
                 VIR_FREE(tmp);
 
-                if ((tmp = virXMLPropString(cur, "vhost")))
-                    def->backend.vhost = virFileSanitizePath(tmp);
+                if (!vhost_path && (tmp = virXMLPropString(cur, "vhost")))
+                    vhost_path = virFileSanitizePath(tmp);
                 VIR_FREE(tmp);
             }
         }
@@ -7992,6 +7993,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             }
             def->driver.virtio.guest.ufo = val;
         }
+        def->backend.vhost = vhost_path;
+        vhost_path = NULL;
     }
 
     def->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DEFAULT;
@@ -8061,6 +8064,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(addrtype);
     VIR_FREE(trustGuestRxFilters);
     VIR_FREE(ips);
+    VIR_FREE(vhost_path);
     virNWFilterHashTableFree(filterparams);
 
     return def;

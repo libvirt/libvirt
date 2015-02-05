@@ -417,6 +417,7 @@ mymain(void)
     DO_TEST("bios-nvram");
 
     DO_TEST("tap-vhost");
+    DO_TEST_DIFFERENT("tap-vhost-incorrect");
     DO_TEST("shmem");
     DO_TEST("smbios");
 
