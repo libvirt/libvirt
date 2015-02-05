@@ -430,7 +430,7 @@ vboxStorageVolCreateXML(virStoragePoolPtr pool,
     memset(&poolDef, 0, sizeof(poolDef));
     poolDef.type = VIR_STORAGE_POOL_DIR;
 
-    if ((def = virStorageVolDefParseString(&poolDef, xml)) == NULL)
+    if ((def = virStorageVolDefParseString(&poolDef, xml, 0)) == NULL)
         goto cleanup;
 
     if (!def->name ||

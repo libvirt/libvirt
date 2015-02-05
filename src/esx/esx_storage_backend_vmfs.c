@@ -864,7 +864,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
     }
 
     /* Parse config */
-    def = virStorageVolDefParseString(&poolDef, xmldesc);
+    def = virStorageVolDefParseString(&poolDef, xmldesc, 0);
 
     if (!def)
         goto cleanup;
@@ -1085,7 +1085,7 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
         goto cleanup;
 
     /* Parse config */
-    def = virStorageVolDefParseString(&poolDef, xmldesc);
+    def = virStorageVolDefParseString(&poolDef, xmldesc, 0);
 
     if (!def)
         goto cleanup;

@@ -2026,7 +2026,7 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
         goto err;
     }
 
-    if ((voldef = virStorageVolDefParseString(spdef, xml)) == NULL) {
+    if ((voldef = virStorageVolDefParseString(spdef, xml, 0)) == NULL) {
         VIR_ERROR(_("Error parsing volume XML."));
         goto err;
     }

@@ -1208,9 +1208,9 @@ parallelsStorageVolDefineXML(virStoragePoolObjPtr pool,
     char *xml_path = NULL;
 
     if (xmlfile)
-        privvol = virStorageVolDefParseFile(pool->def, xmlfile);
+        privvol = virStorageVolDefParseFile(pool->def, xmlfile, 0);
     else
-        privvol = virStorageVolDefParseString(pool->def, xmldesc);
+        privvol = virStorageVolDefParseString(pool->def, xmldesc, 0);
 
     if (privvol == NULL)
         goto cleanup;
@@ -1335,7 +1335,7 @@ parallelsStorageVolCreateXMLFrom(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    privvol = virStorageVolDefParseString(privpool->def, xmldesc);
+    privvol = virStorageVolDefParseString(privpool->def, xmldesc, 0);
     if (privvol == NULL)
         goto cleanup;
 

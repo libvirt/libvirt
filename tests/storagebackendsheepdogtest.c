@@ -100,7 +100,7 @@ test_vdi_list_parser(collie_test test, char *poolxml, char *volxml)
     if (!(pool = virStoragePoolDefParseString(poolXmlData)))
         goto cleanup;
 
-    if (!(vol = virStorageVolDefParseString(pool, volXmlData)))
+    if (!(vol = virStorageVolDefParseString(pool, volXmlData, 0)))
         goto cleanup;
 
     if (VIR_STRDUP(output, test.output) < 0)

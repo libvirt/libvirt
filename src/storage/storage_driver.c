@@ -1649,7 +1649,7 @@ storageVolCreateXML(virStoragePoolPtr obj,
     if ((backend = virStorageBackendForType(pool->def->type)) == NULL)
         goto cleanup;
 
-    voldef = virStorageVolDefParseString(pool->def, xmldesc);
+    voldef = virStorageVolDefParseString(pool->def, xmldesc, 0);
     if (voldef == NULL)
         goto cleanup;
 
@@ -1810,7 +1810,7 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
         goto cleanup;
     }
 
-    newvol = virStorageVolDefParseString(pool->def, xmldesc);
+    newvol = virStorageVolDefParseString(pool->def, xmldesc, 0);
     if (newvol == NULL)
         goto cleanup;
 

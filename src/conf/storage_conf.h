@@ -347,14 +347,17 @@ char *virStoragePoolDefFormat(virStoragePoolDefPtr def);
 
 virStorageVolDefPtr
 virStorageVolDefParseString(virStoragePoolDefPtr pool,
-                            const char *xml);
+                            const char *xml,
+                            unsigned int flags);
 virStorageVolDefPtr
 virStorageVolDefParseFile(virStoragePoolDefPtr pool,
-                          const char *filename);
+                          const char *filename,
+                          unsigned int flags);
 virStorageVolDefPtr
 virStorageVolDefParseNode(virStoragePoolDefPtr pool,
                           xmlDocPtr xml,
-                          xmlNodePtr root);
+                          xmlNodePtr root,
+                          unsigned int flags);
 char *virStorageVolDefFormat(virStoragePoolDefPtr pool,
                              virStorageVolDefPtr def);
 

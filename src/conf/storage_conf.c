@@ -1245,7 +1245,8 @@ virStorageSize(const char *unit,
 
 static virStorageVolDefPtr
 virStorageVolDefParseXML(virStoragePoolDefPtr pool,
-                         xmlXPathContextPtr ctxt)
+                         xmlXPathContextPtr ctxt,
+                         unsigned int flags)
 {
     virStorageVolDefPtr ret;
     virStorageVolOptionsPtr options;
@@ -1258,6 +1259,8 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     xmlNodePtr *nodes = NULL;
     size_t i;
     int n;
+
+    virCheckFlags(0, NULL);
 
     options = virStorageVolOptionsForPoolType(pool->type);
     if (options == NULL)
@@ -1429,7 +1432,8 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
 virStorageVolDefPtr
 virStorageVolDefParseNode(virStoragePoolDefPtr pool,
                           xmlDocPtr xml,
-                          xmlNodePtr root)
+                          xmlNodePtr root,
+                          unsigned int flags)
 {
     xmlXPathContextPtr ctxt = NULL;
     virStorageVolDefPtr def = NULL;
@@ -1449,7 +1453,7 @@ virStorageVolDefParseNode(virStoragePoolDefPtr pool,
     }
 
     ctxt->node = root;
-    def = virStorageVolDefParseXML(pool, ctxt);
+    def = virStorageVolDefParseXML(pool, ctxt, flags);
  cleanup:
     xmlXPathFreeContext(ctxt);
     return def;
@@ -1458,13 +1462,14 @@ virStorageVolDefParseNode(virStoragePoolDefPtr pool,
 static virStorageVolDefPtr
 virStorageVolDefParse(virStoragePoolDefPtr pool,
                       const char *xmlStr,
-                      const char *filename)
+                      const char *filename,
+                      unsigned int flags)
 {
     virStorageVolDefPtr ret = NULL;
     xmlDocPtr xml;
 
     if ((xml = virXMLParse(filename, xmlStr, _("(storage_volume_definition)")))) {
-        ret = virStorageVolDefParseNode(pool, xml, xmlDocGetRootElement(xml));
+        ret = virStorageVolDefParseNode(pool, xml, xmlDocGetRootElement(xml), flags);
         xmlFreeDoc(xml);
     }
 
@@ -1473,16 +1478,18 @@ virStorageVolDefParse(virStoragePoolDefPtr pool,
 
 virStorageVolDefPtr
 virStorageVolDefParseString(virStoragePoolDefPtr pool,
-                            const char *xmlStr)
+                            const char *xmlStr,
+                            unsigned int flags)
 {
-    return virStorageVolDefParse(pool, xmlStr, NULL);
+    return virStorageVolDefParse(pool, xmlStr, NULL, flags);
 }
 
 virStorageVolDefPtr
 virStorageVolDefParseFile(virStoragePoolDefPtr pool,
-                          const char *filename)
+                          const char *filename,
+                          unsigned int flags)
 {
-    return virStorageVolDefParse(pool, NULL, filename);
+    return virStorageVolDefParse(pool, NULL, filename, flags);
 }
 
 static void
