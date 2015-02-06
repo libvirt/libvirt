@@ -20,6 +20,10 @@ no_git=
 if test "x$1" = "x--no-git"; then
   no_git=" $1"
   shift
+  case "$1 $2" in
+    --gnulib-srcdir=*) no_git="$no_git $1"; shift ;;
+    --gnulib-srcdir\ *) no_git="$no_git $1=$2"; shift; shift;;
+  esac
 fi
 if test -z "$NOCONFIGURE" ; then
   if test "x$1" = "x--system"; then
