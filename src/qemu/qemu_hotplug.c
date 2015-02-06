@@ -2106,6 +2106,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
          olddev->driver.virtio.host.tso6 != newdev->driver.virtio.host.tso6 ||
          olddev->driver.virtio.host.ecn != newdev->driver.virtio.host.ecn ||
          olddev->driver.virtio.host.ufo != newdev->driver.virtio.host.ufo ||
+         olddev->driver.virtio.host.mrg_rxbuf != newdev->driver.virtio.host.mrg_rxbuf ||
          olddev->driver.virtio.guest.csum != newdev->driver.virtio.guest.csum ||
          olddev->driver.virtio.guest.tso4 != newdev->driver.virtio.guest.tso4 ||
          olddev->driver.virtio.guest.tso6 != newdev->driver.virtio.guest.tso6 ||

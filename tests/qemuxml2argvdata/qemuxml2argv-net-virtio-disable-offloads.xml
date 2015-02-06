@@ -26,7 +26,7 @@
       <mac address='00:22:44:66:88:aa'/>
       <model type='virtio'/>
       <driver>
-        <host csum='off' gso='off' tso4='off' tso6='off' ecn='off' ufo='off'/>
+        <host csum='off' gso='off' tso4='off' tso6='off' ecn='off' ufo='off' mrg_rxbuf='off'/>
         <guest csum='off' tso4='off' tso6='off' ecn='off' ufo='off'/>
       </driver>
     </interface>

@@ -4869,6 +4869,10 @@ qemuBuildNicDevStr(virDomainDefPtr def,
             virBufferAsprintf(&buf, ",host_ufo=%s",
                               virTristateSwitchTypeToString(net->driver.virtio.host.ufo));
         }
+        if (net->driver.virtio.host.mrg_rxbuf) {
+            virBufferAsprintf(&buf, ",mrg_rxbuf=%s",
+                              virTristateSwitchTypeToString(net->driver.virtio.host.mrg_rxbuf));
+        }
         if (net->driver.virtio.guest.csum) {
             virBufferAsprintf(&buf, ",guest_csum=%s",
                               virTristateSwitchTypeToString(net->driver.virtio.guest.csum));
