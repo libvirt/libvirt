@@ -1022,6 +1022,7 @@ int virLXCProcessStart(virConnectPtr conn,
     virCgroupPtr selfcgroup;
     int status;
     char *pidfile = NULL;
+    bool clearSeclabel = false;
 
     if (virCgroupNewSelf(&selfcgroup) < 0)
         return -1;
@@ -1126,6 +1127,10 @@ int virLXCProcessStart(virConnectPtr conn,
     /* If you are using a SecurityDriver with dynamic labelling,
        then generate a security label for isolation */
     VIR_DEBUG("Generating domain security label (if required)");
+
+    clearSeclabel = vm->def->nseclabels == 0 ||
+                    vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DEFAULT;
+
     if (vm->def->nseclabels &&
         vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DEFAULT)
         vm->def->seclabels[0]->type = VIR_DOMAIN_SECLABEL_NONE;
@@ -1387,7 +1392,8 @@ int virLXCProcessStart(virConnectPtr conn,
         virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
         /* Clear out dynamically assigned labels */
         if (vm->def->nseclabels &&
-            vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
+            (vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DYNAMIC ||
+            clearSeclabel)) {
             VIR_FREE(vm->def->seclabels[0]->model);
             VIR_FREE(vm->def->seclabels[0]->label);
             VIR_FREE(vm->def->seclabels[0]->imagelabel);
