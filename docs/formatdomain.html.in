@@ -4012,7 +4012,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;target dev='vnet1'/&gt;
       &lt;model type='virtio'/&gt;
       <b>&lt;driver name='vhost' txmode='iothread' ioeventfd='on' event_idx='off' queues='5'&gt;
-        &lt;host csum='off' gso='off' tso4='off' tso6='off' ecn='off' ufo='off'/&gt;
+        &lt;host csum='off' gso='off' tso4='off' tso6='off' ecn='off' ufo='off' mrg_rxbuf='off'/&gt;
         &lt;guest csum='off' tso4='off' tso6='off' ecn='off' ufo='off'/&gt;
       &lt;/driver&gt;
       </b>
@@ -4127,6 +4127,10 @@ qemu-kvm -net nic,model=? /dev/null
         and <code>off</code> can be used to turn off host offloading options.
         By default, the supported offloads are enabled by QEMU.
         <span class="since">Since 1.2.9 (QEMU only)</span>
+        The <code>mrg_rxbuf</code> attribute can be used to control
+        mergeable rx buffers on the host side. Possible values are
+        <code>on</code> (default) and <code>off</code>.
+        <span class="since">Since 1.2.13 (QEMU only)</span>
       </dd>
       <dt><code>guest</code> offloading options</dt>
       <dd>

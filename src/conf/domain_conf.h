@@ -938,6 +938,7 @@ struct _virDomainNetDef {
                 virTristateSwitch tso6;
                 virTristateSwitch ecn;
                 virTristateSwitch ufo;
+                virTristateSwitch mrg_rxbuf;
             } host;
             struct {
                 virTristateSwitch csum;

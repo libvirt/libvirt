@@ -8066,6 +8066,16 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             def->driver.virtio.host.ufo = val;
         }
         VIR_FREE(str);
+        if ((str = virXPathString("string(./driver/host/@mrg_rxbuf)", ctxt))) {
+            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown host mrg_rxbuf mode '%s'"),
+                               str);
+                goto error;
+            }
+            def->driver.virtio.host.mrg_rxbuf = val;
+        }
+        VIR_FREE(str);
         if ((str = virXPathString("string(./driver/guest/@csum)", ctxt))) {
             if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -17915,6 +17925,10 @@ virDomainVirtioNetHostOptsFormat(char **outstr,
     if (def->driver.virtio.host.ufo) {
         virBufferAsprintf(&buf, "ufo='%s' ",
                           virTristateSwitchTypeToString(def->driver.virtio.host.ufo));
+    }
+    if (def->driver.virtio.host.mrg_rxbuf) {
+        virBufferAsprintf(&buf, "mrg_rxbuf='%s' ",
+                          virTristateSwitchTypeToString(def->driver.virtio.host.mrg_rxbuf));
     }
     virBufferTrim(&buf, " ", -1);
 
