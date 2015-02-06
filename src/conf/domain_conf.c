@@ -5213,7 +5213,7 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
         for (j = 0; j < i; j++) {
             if (STREQ_NULLABLE(seclabel->model, def->seclabels[j]->model)) {
                 virReportError(VIR_ERR_XML_DETAIL,
-                               _("seclablel for model %s is already provided"),
+                               _("seclabel for model %s is already provided"),
                                seclabel->model);
                 virSecurityLabelDefFree(seclabel);
                 goto error;
