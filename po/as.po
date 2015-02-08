@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2014-11-15 22:19-0500\n"
+"POT-Creation-Date: 2015-02-07 21:33-0500\n"
 "PO-Revision-Date: 2013-09-26 14:22+0000\n"
 "Last-Translator: ngoswami <ngoswami@redhat.com>\n"
 "Language-Team: Assamese (http://www.transifex.com/projects/p/fedora/language/"
@@ -1159,21 +1159,21 @@ msgstr "'%s' ডোমেইন uuid %s সহ পূৰ্বেই নিৰ�
 #: src/qemu/qemu_driver.c:5685 src/qemu/qemu_driver.c:8882
 #: src/qemu/qemu_driver.c:8944 src/qemu/qemu_driver.c:9020
 #: src/qemu/qemu_driver.c:9173 src/qemu/qemu_driver.c:9520
-#: src/qemu/qemu_driver.c:9642 src/qemu/qemu_driver.c:10940
-#: src/qemu/qemu_driver.c:10979 src/qemu/qemu_driver.c:11113
-#: src/qemu/qemu_driver.c:11170 src/qemu/qemu_driver.c:11220
-#: src/qemu/qemu_driver.c:11275 src/qemu/qemu_driver.c:11334
-#: src/qemu/qemu_driver.c:11646 src/qemu/qemu_driver.c:12009
-#: src/qemu/qemu_driver.c:13529 src/qemu/qemu_driver.c:13538
-#: src/qemu/qemu_driver.c:13686 src/qemu/qemu_driver.c:13767
-#: src/qemu/qemu_driver.c:13876 src/qemu/qemu_driver.c:14016
-#: src/qemu/qemu_driver.c:14044 src/qemu/qemu_driver.c:14134
-#: src/qemu/qemu_driver.c:14246 src/qemu/qemu_driver.c:14469
-#: src/qemu/qemu_driver.c:14596 src/qemu/qemu_driver.c:14987
-#: src/qemu/qemu_driver.c:15338 src/qemu/qemu_driver.c:15397
-#: src/qemu/qemu_driver.c:15445 src/qemu/qemu_driver.c:15485
-#: src/qemu/qemu_driver.c:15556 src/qemu/qemu_driver.c:15578
-#: src/qemu/qemu_driver.c:15628 src/qemu/qemu_driver.c:15650
+#: src/qemu/qemu_driver.c:9642 src/qemu/qemu_driver.c:10944
+#: src/qemu/qemu_driver.c:10983 src/qemu/qemu_driver.c:11117
+#: src/qemu/qemu_driver.c:11174 src/qemu/qemu_driver.c:11224
+#: src/qemu/qemu_driver.c:11279 src/qemu/qemu_driver.c:11338
+#: src/qemu/qemu_driver.c:11650 src/qemu/qemu_driver.c:12013
+#: src/qemu/qemu_driver.c:13533 src/qemu/qemu_driver.c:13542
+#: src/qemu/qemu_driver.c:13690 src/qemu/qemu_driver.c:13771
+#: src/qemu/qemu_driver.c:13880 src/qemu/qemu_driver.c:14020
+#: src/qemu/qemu_driver.c:14048 src/qemu/qemu_driver.c:14138
+#: src/qemu/qemu_driver.c:14250 src/qemu/qemu_driver.c:14473
+#: src/qemu/qemu_driver.c:14600 src/qemu/qemu_driver.c:14991
+#: src/qemu/qemu_driver.c:15342 src/qemu/qemu_driver.c:15401
+#: src/qemu/qemu_driver.c:15449 src/qemu/qemu_driver.c:15489
+#: src/qemu/qemu_driver.c:15560 src/qemu/qemu_driver.c:15582
+#: src/qemu/qemu_driver.c:15632 src/qemu/qemu_driver.c:15654
 #: src/qemu/qemu_migration.c:2086 src/qemu/qemu_migration.c:4040
 #: src/uml/uml_driver.c:2564 src/xen/xen_driver.c:2624
 #: src/xen/xm_internal.c:675
@@ -6579,7 +6579,7 @@ msgstr "স্নেপশ্বট '%s' ইতিমধ্যে অস্ত�
 msgid "Could not create snapshot: %s"
 msgstr "স্নেপশ্বট সৃষ্টি কৰিব পৰা নগল: %s"
 
-#: src/esx/esx_driver.c:4612 src/qemu/qemu_driver.c:12880
+#: src/esx/esx_driver.c:4612 src/qemu/qemu_driver.c:12884
 #: src/vbox/vbox_tmpl.c:6356
 #, c-format
 msgid "snapshot '%s' does not have a parent"
@@ -9768,7 +9768,7 @@ msgid "default"
 msgstr "অবিকল্পিত"
 
 #: src/lxc/lxc_driver.c:2594 src/libxl/libxl_driver.c:3899
-#: src/qemu/qemu_driver.c:13722 src/uml/uml_driver.c:2592
+#: src/qemu/qemu_driver.c:13726 src/uml/uml_driver.c:2592
 #: src/xen/xen_driver.c:2652
 #, c-format
 msgid "character device %s is not using a PTY"
@@ -10522,12 +10522,12 @@ msgstr "libxenlight ৰ সৈতে ডমেইন '%d' ৰ বাবে স�
 msgid "Named device aliases are not supported"
 msgstr "নাম থকা ডিভাইচ এলিয়াচসমূহ সমৰ্থিত নহয়"
 
-#: src/libxl/libxl_driver.c:3892 src/qemu/qemu_driver.c:13715
+#: src/libxl/libxl_driver.c:3892 src/qemu/qemu_driver.c:13719
 #, c-format
 msgid "cannot find character device %s"
 msgstr "আখৰ ডিভাইচ %s সন্ধান কৰিব নোৱাৰি"
 
-#: src/libxl/libxl_driver.c:3919 src/qemu/qemu_driver.c:13735
+#: src/libxl/libxl_driver.c:3919 src/qemu/qemu_driver.c:13739
 msgid "Active console session exists for this domain"
 msgstr "এই ডমেইনৰ বাবে সক্ৰিয় কনচৌল অধিবেশন অস্তিত্ববান"
 
@@ -12201,8 +12201,8 @@ msgid "Unexpected Parallels URI path '%s', try parallels:///system"
 msgstr "অপ্ৰত্যাশিত সমান্তৰাল URl পথ '%s', parallels:///system চেষ্টা কৰি চাওক"
 
 #: src/parallels/parallels_driver.c:1169 src/qemu/qemu_driver.c:1403
-#: src/qemu/qemu_driver.c:10133 src/qemu/qemu_driver.c:10533
-#: src/qemu/qemu_driver.c:10576
+#: src/qemu/qemu_driver.c:10135 src/qemu/qemu_driver.c:10537
+#: src/qemu/qemu_driver.c:10580
 #, c-format
 msgid "no domain with matching name '%s'"
 msgstr "'%s' নামৰ সৈতে মিল থকা কোনো ডোমেইন নাই"
@@ -13530,7 +13530,7 @@ msgstr "এই QEMU বাইনাৰি দ্বাৰা ডিস্কা�
 msgid "disk aio mode not supported with this QEMU binary"
 msgstr "ডিস্ক aio অৱস্থা এই QEMU বাইনাৰিৰ সৈতে সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_command.c:4189 src/qemu/qemu_driver.c:14757
+#: src/qemu/qemu_command.c:4189 src/qemu/qemu_driver.c:14761
 msgid "block I/O throttling not supported with this QEMU binary"
 msgstr "এই QEMU বাইনাৰিৰ সৈতে খণ্ড I/O থ্ৰটলিং সমৰ্থিত নহয়"
 
@@ -14959,17 +14959,17 @@ msgstr "পুনৰাৰম্ভৰ কাৰ্য্য বিফল"
 
 #: src/qemu/qemu_driver.c:1848 src/qemu/qemu_driver.c:1954
 #: src/qemu/qemu_driver.c:4176 src/qemu/qemu_driver.c:4906
-#: src/qemu/qemu_driver.c:11456 src/qemu/qemu_driver.c:11483
-#: src/qemu/qemu_driver.c:15429 src/qemu/qemu_driver.c:15562
-#: src/qemu/qemu_driver.c:15640
+#: src/qemu/qemu_driver.c:11460 src/qemu/qemu_driver.c:11487
+#: src/qemu/qemu_driver.c:15433 src/qemu/qemu_driver.c:15566
+#: src/qemu/qemu_driver.c:15644
 msgid "QEMU guest agent is not available due to an error"
 msgstr "QEMU অতিথি সহায়ক এটা ত্ৰুটিৰ বাবে উপলব্ধ নহয়"
 
 #: src/qemu/qemu_driver.c:1859 src/qemu/qemu_driver.c:1960
 #: src/qemu/qemu_driver.c:4183 src/qemu/qemu_driver.c:4913
-#: src/qemu/qemu_driver.c:11462 src/qemu/qemu_driver.c:11490
-#: src/qemu/qemu_driver.c:15436 src/qemu/qemu_driver.c:15569
-#: src/qemu/qemu_driver.c:15634
+#: src/qemu/qemu_driver.c:11466 src/qemu/qemu_driver.c:11494
+#: src/qemu/qemu_driver.c:15440 src/qemu/qemu_driver.c:15573
+#: src/qemu/qemu_driver.c:15638
 msgid "QEMU guest agent is not configured"
 msgstr "QEMU অতিথি সহায়ক সংৰূপীত নহয়"
 
@@ -15067,9 +15067,9 @@ msgid "unable to write %s"
 msgstr "%s লিখিবলে ব্যৰ্থ"
 
 #: src/qemu/qemu_driver.c:3065 src/qemu/qemu_driver.c:3539
-#: src/qemu/qemu_driver.c:11662 src/qemu/qemu_driver.c:12160
-#: src/qemu/qemu_driver.c:13189 src/qemu/qemu_driver.c:13241
-#: src/qemu/qemu_driver.c:13909 src/qemu/qemu_hotplug.c:449
+#: src/qemu/qemu_driver.c:11666 src/qemu/qemu_driver.c:12164
+#: src/qemu/qemu_driver.c:13193 src/qemu/qemu_driver.c:13245
+#: src/qemu/qemu_driver.c:13913 src/qemu/qemu_hotplug.c:449
 #: src/qemu/qemu_hotplug.c:979 src/qemu/qemu_migration.c:3224
 #: src/qemu/qemu_migration.c:3542 src/qemu/qemu_migration.c:3972
 #: src/qemu/qemu_migration.c:4380 src/qemu/qemu_process.c:562
@@ -15316,8 +15316,8 @@ msgstr "ব্যৱস্থাপিত সংৰক্ষণ ফাইল %s 
 msgid "domain is already running"
 msgstr "ডোমেইন বৰ্তমানে সক্ৰিয়ন"
 
-#: src/qemu/qemu_driver.c:6155 src/qemu/qemu_driver.c:12342
-#: src/qemu/qemu_driver.c:13067
+#: src/qemu/qemu_driver.c:6155 src/qemu/qemu_driver.c:12346
+#: src/qemu/qemu_driver.c:13071
 msgid "domain has active block copy job"
 msgstr "ডমেইনৰ সক্ৰিয় খণ্ড কপি কাৰ্য্য আছে"
 
@@ -15507,8 +15507,8 @@ msgstr "ফাইল '%s' stat কৰোঁতে ব্যৰ্থ"
 msgid "failed to seek to end of %s"
 msgstr "%s ৰ অন্ত সন্ধান কৰিবলে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:9975 src/qemu/qemu_driver.c:10351
-#: src/qemu/qemu_driver.c:10404
+#: src/qemu/qemu_driver.c:9975 src/qemu/qemu_driver.c:10355
+#: src/qemu/qemu_driver.c:10408
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel কল কৰা হৈছে কিন্তু কোনো TUNNELLED ফ্লেগ নিৰ্ধাৰণ কৰা নহয়"
 
@@ -15518,67 +15518,67 @@ msgstr "PrepareTunnel কল কৰা হৈছে কিন্তু কোন
 msgid "Cannot use migrate v2 protocol with lock manager %s"
 msgstr "লক ব্যৱস্থাপক %s ৰ সৈতে migrate v2 প্ৰটোকল ব্যৱহাৰ কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_driver.c:10029 src/qemu/qemu_driver.c:10244
-#: src/qemu/qemu_driver.c:10306
+#: src/qemu/qemu_driver.c:10029 src/qemu/qemu_driver.c:10248
+#: src/qemu/qemu_driver.c:10310
 msgid "Tunnelled migration requested but invalid RPC method called"
 msgstr "টানেল প্ৰব্ৰজনৰ অনুৰোধ জনোৱা হৈছে কিন্তু অবৈধ RPC মেথড কল কৰা হৈছে"
 
-#: src/qemu/qemu_driver.c:10670 src/xen/xen_driver.c:2446
+#: src/qemu/qemu_driver.c:10674 src/xen/xen_driver.c:2446
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "ডিভাইচ %s এটা PCI ডিভাইচ নহয়"
 
-#: src/qemu/qemu_driver.c:10719 src/xen/xen_driver.c:2480
+#: src/qemu/qemu_driver.c:10723 src/xen/xen_driver.c:2480
 #, c-format
 msgid "unknown driver name '%s'"
 msgstr "অজ্ঞাত ড্ৰাইভাৰ নাম '%s'"
 
-#: src/qemu/qemu_driver.c:10785
+#: src/qemu/qemu_driver.c:10789
 #, c-format
 msgid "PCI device %s is still in use by domain %s"
 msgstr "PCI ডিভাইচ %s এতিয়াও ডমেইন %s দ্বাৰা ব্যৱহৃত"
 
-#: src/qemu/qemu_driver.c:10789
+#: src/qemu/qemu_driver.c:10793
 #, c-format
 msgid "PCI device %s is still in use"
 msgstr "PCI ডিভাইচ %s এতিয়াও ব্যৱহৃত"
 
-#: src/qemu/qemu_driver.c:11121
+#: src/qemu/qemu_driver.c:11125
 msgid "no job is active on the domain"
 msgstr "ডোমেইনত কোনো সক্ৰিয় কাৰ্য্য নাই"
 
-#: src/qemu/qemu_driver.c:11125
+#: src/qemu/qemu_driver.c:11129
 msgid "cannot abort incoming migration; use virDomainDestroy instead"
 msgstr ""
 "আহি থকা প্ৰব্ৰজন বাতিল কৰিব নোৱাৰি; তাৰ পৰিবৰ্তে virDomainDestroy ব্যৱহাৰ কৰক"
 
-#: src/qemu/qemu_driver.c:11178
+#: src/qemu/qemu_driver.c:11182
 msgid "domain is not being migrated"
 msgstr "ডোমেইন প্ৰব্ৰজন কৰা হোৱা নাই"
 
-#: src/qemu/qemu_driver.c:11233 src/qemu/qemu_driver.c:11288
+#: src/qemu/qemu_driver.c:11237 src/qemu/qemu_driver.c:11292
 msgid "Compressed migration is not supported by QEMU binary"
 msgstr "QEMU বাইনাৰি দ্বাৰা সংকেচিত প্ৰব্ৰজন সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_driver.c:11566
+#: src/qemu/qemu_driver.c:11570
 #, c-format
 msgid "unknown image format of '%s' and format probing is disabled"
 msgstr "'%s' ৰ অজ্ঞাত ছবি বিন্যাস আৰু বিন্যাস প্ৰৌবিং অসামৰ্থবান"
 
-#: src/qemu/qemu_driver.c:11695 src/qemu/qemu_driver.c:12249
+#: src/qemu/qemu_driver.c:11699 src/qemu/qemu_driver.c:12253
 msgid "resuming after snapshot failed"
 msgstr "স্নেপশ্বট ব্যৰ্থ হোৱাৰ পিছত অব্যাহত ৰখা হৈছে"
 
-#: src/qemu/qemu_driver.c:11730
+#: src/qemu/qemu_driver.c:11734
 msgid "reuse is not supported with this QEMU binary"
 msgstr "এই QEMU লাইব্ৰেৰীৰ সৈতে পুনৰব্যৱহাৰ সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_driver.c:11751
+#: src/qemu/qemu_driver.c:11755
 #, c-format
 msgid "internal snapshot for disk %s unsupported for storage type %s"
 msgstr "ডিস্ক %s ৰ বাবে অভ্যন্তৰীক স্নেপশ্বট সংৰক্ষণ ধৰণ %s ৰ বাবে অসমৰ্থিত"
 
-#: src/qemu/qemu_driver.c:11760
+#: src/qemu/qemu_driver.c:11764
 #, c-format
 msgid ""
 "active qemu domains require external disk snapshots; disk %s requested "
@@ -15587,22 +15587,22 @@ msgstr ""
 "সক্ৰিয় qemu ডমেইনসমূহৰ বহিৰ্তম ডিস্ক স্নেপশ্বটসমূহৰ প্ৰয়োজন; ডিস্ক %s এ অভ্যন্তৰীক "
 "অনুৰোধ কৰিলে"
 
-#: src/qemu/qemu_driver.c:11773
+#: src/qemu/qemu_driver.c:11777
 #, c-format
 msgid "external snapshot format for disk %s is unsupported: %s"
 msgstr "ডিস্ক %s ৰ বাবে বহিৰ্তম স্নেপশ্বট বিন্যাস অসমৰ্থিত: %s"
 
-#: src/qemu/qemu_driver.c:11782 src/qemu/qemu_driver.c:14294
+#: src/qemu/qemu_driver.c:11786 src/qemu/qemu_driver.c:14298
 #, c-format
 msgid "unable to stat for disk %s: %s"
 msgstr "ডিস্ক %s ৰ বাবে পৰিসংখ্যা কৰিবলে অক্ষম: %s"
 
-#: src/qemu/qemu_driver.c:11787
+#: src/qemu/qemu_driver.c:11791
 #, c-format
 msgid "missing existing file for disk %s: %s"
 msgstr "ডিস্ক %s ৰ বাবে স্থায়ী ফাইল সন্ধানহিন: %s"
 
-#: src/qemu/qemu_driver.c:11793
+#: src/qemu/qemu_driver.c:11797
 #, c-format
 msgid ""
 "external snapshot file for disk %s already exists and is not a block device: "
@@ -15611,214 +15611,214 @@ msgstr ""
 "ডিস্ক %s ৰ বাবে বহিৰ্তম স্নেপশ্বট ফাইল ইতিমধ্যে অস্তিত্ববান আৰু ই এটা খণ্ড ডিভাইচ "
 "নহয়:  %s"
 
-#: src/qemu/qemu_driver.c:11807 src/qemu/qemu_driver.c:11883
+#: src/qemu/qemu_driver.c:11811 src/qemu/qemu_driver.c:11887
 msgid "unexpected code path"
 msgstr "অপ্ৰত্যাশিত ক'ড পথ"
 
-#: src/qemu/qemu_driver.c:11816
+#: src/qemu/qemu_driver.c:11820
 msgid ""
 "internal checkpoints require at least one disk to be selected for snapshot"
 msgstr ""
 "অভ্যন্তৰীক চেকপইন্টসমূহৰ বাবে স্নেপশ্বটৰ কাৰণে অন্তত এটা ডিস্ক নিৰ্বাচন কৰাৰ প্ৰয়োজন"
 
-#: src/qemu/qemu_driver.c:11824
+#: src/qemu/qemu_driver.c:11828
 msgid ""
 "disk-only snapshots require at least one disk to be selected for snapshot"
 msgstr "কেৱল-ডিস্ক স্নেপশ্বটসমূহৰ স্নেপশ্বটৰ কাৰণে অন্তত এটা ডিস্ক নিৰ্বাচন কৰাৰ প্ৰয়োজন"
 
-#: src/qemu/qemu_driver.c:11834
+#: src/qemu/qemu_driver.c:11838
 msgid "mixing internal and external snapshots is not supported yet"
 msgstr "অভ্যন্তৰীক আৰু বহিৰ্তম স্নেপশ্বটসমূহৰ মিহলি এতিয়াও সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_driver.c:11849
+#: src/qemu/qemu_driver.c:11853
 msgid "atomic live snapshot of multiple disks is unsupported"
 msgstr "একাধিক ডিস্কসমূহৰ এটমিক জীৱন্ত স্নেপশ্বট অসমৰ্থিত"
 
-#: src/qemu/qemu_driver.c:12018
+#: src/qemu/qemu_driver.c:12022
 msgid "live disk snapshot not supported with this QEMU binary"
 msgstr "জীৱন্ত ডিস্ক স্নেপশ্বট এই QEMU বাইনাৰিৰ সৈতে সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_driver.c:12311
+#: src/qemu/qemu_driver.c:12315
 msgid "quiesce requires disk-only"
 msgstr "quiesce ৰ কেৱল-ডিস্কৰ প্ৰয়োজন"
 
-#: src/qemu/qemu_driver.c:12337 src/qemu/qemu_migration.c:1410
+#: src/qemu/qemu_driver.c:12341 src/qemu/qemu_migration.c:1410
 msgid "domain is marked for auto destroy"
 msgstr "ডমেইনক স্ব ধ্বংসৰ বাবে চিহ্নিত কৰা হৈছে"
 
-#: src/qemu/qemu_driver.c:12348
+#: src/qemu/qemu_driver.c:12352
 msgid "cannot halt after transient domain snapshot"
 msgstr "পৰিবৰ্তনশীল ডমেইন স্নেপশ্বটৰ পিছত ৰখিব নোৱাৰি"
 
-#: src/qemu/qemu_driver.c:12365
+#: src/qemu/qemu_driver.c:12369
 #, c-format
 msgid "invalid snapshot name '%s': name can't contain '/'"
 msgstr "অবৈধ স্নেপশ্বট নাম '%s': নামে '/' অন্তৰ্ভুক্ত কৰিব নোৱাৰিব"
 
-#: src/qemu/qemu_driver.c:12373
+#: src/qemu/qemu_driver.c:12377
 #, c-format
 msgid "invalid snapshot name '%s': name can't start with '.'"
 msgstr "অবৈধ স্নেপশ্বট নাম '%s': নামে '.'  ৰ সৈতে আৰম্ভ হব নোৱাৰিব"
 
-#: src/qemu/qemu_driver.c:12386
+#: src/qemu/qemu_driver.c:12390
 msgid "live snapshot creation is supported only with external checkpoints"
 msgstr "জীৱন্ত স্নেপশ্বট সৃষ্টি কেৱল বহিৰ্তম চেকপইন্টসমূহৰ সৈতে সমৰ্থিত"
 
-#: src/qemu/qemu_driver.c:12396
+#: src/qemu/qemu_driver.c:12400
 #, c-format
 msgid "cannot set snapshot %s as its own parent"
 msgstr "স্নেপশ্বট %s ক তাৰ নিজস্ব উপধায়ক হিচাপে প্ৰাপ্ত কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_driver.c:12403
+#: src/qemu/qemu_driver.c:12407
 #, c-format
 msgid "parent %s for snapshot %s not found"
 msgstr "স্নেপশ্বট %s ৰ বাবে উপধায়ক %s পোৱা নগল"
 
-#: src/qemu/qemu_driver.c:12410
+#: src/qemu/qemu_driver.c:12414
 #, c-format
 msgid "parent %s would create cycle to %s"
 msgstr "উপধায়ক %s এ %s লে চক্ৰ সৃষ্টি কৰিব"
 
-#: src/qemu/qemu_driver.c:12428
+#: src/qemu/qemu_driver.c:12432
 #, c-format
 msgid "disk-only flag for snapshot %s requires disk-snapshot state"
 msgstr "স্নেপশ্বট %s ৰ বাবে কেৱল-ডিস্ক ফ্লেগৰ ডিস্ক-স্নেপশ্বট অৱস্থাৰ প্ৰয়োজন"
 
-#: src/qemu/qemu_driver.c:12438
+#: src/qemu/qemu_driver.c:12442
 #, c-format
 msgid "definition for snapshot %s must use uuid %s"
 msgstr "স্নেপশ্বট %s ৰ বিৱৰণে uuid %s ব্যৱহাৰ কৰিব লাগিব"
 
-#: src/qemu/qemu_driver.c:12450
+#: src/qemu/qemu_driver.c:12454
 #, c-format
 msgid "cannot change between online and offline snapshot state in snapshot %s"
 msgstr "স্নেপশ্বট %s ত অনলাইন আৰু অফলাইন স্নেপশ্বট অৱস্থা পৰিবৰ্তন কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_driver.c:12459
+#: src/qemu/qemu_driver.c:12463
 #, c-format
 msgid ""
 "cannot change between disk snapshot and system checkpoint in snapshot %s"
 msgstr "স্নেপশ্বট %s ত ডিস্ক স্নেপশ্বট আৰু চিস্টেম চেকপইন্টৰ মাজত পৰিবৰ্তন কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_driver.c:12624
+#: src/qemu/qemu_driver.c:12628
 #, c-format
 msgid "unable to save metadata for snapshot %s"
 msgstr "স্নেপশ্বট %s ৰ বাবে মেটাডাটা সংৰক্ষণ কৰিবলে অক্ষম"
 
-#: src/qemu/qemu_driver.c:12909
+#: src/qemu/qemu_driver.c:12913
 msgid "the domain does not have a current snapshot"
 msgstr "ডমেইনৰ এটা বৰ্তমান স্নেপশ্বট নাই"
 
-#: src/qemu/qemu_driver.c:13080
+#: src/qemu/qemu_driver.c:13084
 msgid ""
 "transient domain needs to request run or pause to revert to inactive snapshot"
 msgstr ""
 "পৰিবৰ্তনশীল ডমেইনৰ নিষ্ক্ৰিয় স্নেপশ্বটলে উভতি যাবলে চলন অথবা বিৰামৰ অনুৰোধ কৰাৰ "
 "প্ৰয়োজন"
 
-#: src/qemu/qemu_driver.c:13086
+#: src/qemu/qemu_driver.c:13090
 msgid "revert to external disk snapshot not supported yet"
 msgstr "বহিৰ্তম ডিস্ক স্নেপশ্বটলে উভতি যোৱাটো এতিয়াও সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_driver.c:13093
+#: src/qemu/qemu_driver.c:13097
 #, c-format
 msgid "snapshot '%s' lacks domain '%s' rollback info"
 msgstr "স্নেপশ্বট '%s' ত ডমেইন '%s' ৰলবেক তথ্য নাই"
 
-#: src/qemu/qemu_driver.c:13103
+#: src/qemu/qemu_driver.c:13107
 msgid "must respawn qemu to start inactive snapshot"
 msgstr "নিষ্ক্ৰিয় স্নেপশ্বট আৰম্ভ কৰিবলে qemu respawn কৰিব লাগিব"
 
-#: src/qemu/qemu_driver.c:13438
+#: src/qemu/qemu_driver.c:13442
 #, c-format
 msgid "deletion of %d external disk snapshots not supported yet"
 msgstr "%d বহিৰ্তম ডিস্ক স্নেপশ্বটসমূহ মচি পেলোৱা এতিয়াও সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_driver.c:13465
+#: src/qemu/qemu_driver.c:13469
 #, c-format
 msgid "failed to set snapshot '%s' as current"
 msgstr "স্নেপশ্বট '%s' ক বৰ্তমান হিচাপে সংহতি কৰিবলে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:13593
+#: src/qemu/qemu_driver.c:13597
 #, c-format
 msgid "No monitor connection for pid %u"
 msgstr "pid %u ৰ বাবে কোনো মনিটৰ সংযোগ নাই"
 
-#: src/qemu/qemu_driver.c:13598
+#: src/qemu/qemu_driver.c:13602
 #, c-format
 msgid "Cannot connect to monitor connection of type '%s' for pid %u"
 msgstr "ধৰণ '%s' ৰ সংযোগ পৰ্যবেক্ষন কৰিবলে সংযোগ কৰিব নোৱাৰি pid %u"
 
-#: src/qemu/qemu_driver.c:13790
+#: src/qemu/qemu_driver.c:13794
 #, c-format
 msgid "cannot find channel %s"
 msgstr "চেনেল %s সন্ধান কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_driver.c:13797
+#: src/qemu/qemu_driver.c:13801
 #, c-format
 msgid "channel %s is not using a UNIX socket"
 msgstr "চেনেল %s এ এটা UNIX চকেট ব্যৱহাৰ কৰা নাই"
 
-#: src/qemu/qemu_driver.c:13810
+#: src/qemu/qemu_driver.c:13814
 msgid "Active channel stream exists for this domain"
 msgstr "সক্ৰিয় চেনেল স্ট্ৰিম এই ডমেইনৰ বাবে অস্তিত্ববান"
 
-#: src/qemu/qemu_driver.c:13843
+#: src/qemu/qemu_driver.c:13847
 msgid "No device found for specified path"
 msgstr "ধাৰ্য্যত পথৰ বাবে কোনো ডিভাইচ পোৱা নগল"
 
-#: src/qemu/qemu_driver.c:13886
+#: src/qemu/qemu_driver.c:13890
 #, c-format
 msgid "disk '%s' not ready for pivot yet"
 msgstr "ডিস্ক '%s' এতিয়াও pivot ৰ বাবে প্ৰস্তুত নহয়"
 
-#: src/qemu/qemu_driver.c:13991
+#: src/qemu/qemu_driver.c:13995
 msgid "resuming after drive-reopen failed"
 msgstr "drive-reopen ৰ পিছত অব্যাহত ৰখা ব্যৰ্থ হল"
 
-#: src/qemu/qemu_driver.c:14025
+#: src/qemu/qemu_driver.c:14029
 msgid "block jobs not supported with this QEMU binary"
 msgstr "এই QEMU বাইনাৰিৰ সৈতে খণ্ড কাৰ্য্যসমূহ সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_driver.c:14029
+#: src/qemu/qemu_driver.c:14033
 msgid "partial block pull not supported with this QEMU binary"
 msgstr "এই QEMU বাইনাৰিৰ সৈতে আংশিক খণ্ড টান সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_driver.c:14034
+#: src/qemu/qemu_driver.c:14038
 msgid ""
 "setting bandwidth at start of block pull not supported with this QEMU binary"
 msgstr ""
 "এই QEMU বাইনাৰিৰ সৈতে খণ্ডৰ টানৰ আৰম্ভণিত বেণ্ডৱাইড্ত সংহতি কৰাটো সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_driver.c:14055 src/qemu/qemu_driver.c:14257
+#: src/qemu/qemu_driver.c:14059 src/qemu/qemu_driver.c:14261
 #, c-format
 msgid "disk '%s' already in active block copy job"
 msgstr "ডিস্ক '%s' ইতিমধ্যে সক্ৰিয় খণ্ড কপি কাৰ্য্যত আছে"
 
-#: src/qemu/qemu_driver.c:14063
+#: src/qemu/qemu_driver.c:14067
 #, c-format
 msgid "pivot of disk '%s' requires an active copy job"
 msgstr "ডিস্ক '%s' ৰ pivot ৰ এটা সক্ৰিয় কপি কাৰ্য্যৰ প্ৰয়োজন হয়"
 
-#: src/qemu/qemu_driver.c:14265
+#: src/qemu/qemu_driver.c:14269
 msgid "block copy is not supported with this QEMU binary"
 msgstr "খণ্ড কপি এই QEMU বাইনাৰিৰ সৈতে সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_driver.c:14274
+#: src/qemu/qemu_driver.c:14278
 msgid "domain is not transient"
 msgstr "ডমেইন পৰিবৰ্তনশীল নহয়"
 
-#: src/qemu/qemu_driver.c:14285
+#: src/qemu/qemu_driver.c:14289
 #, c-format
 msgid "disk '%s' has backing file, so raw shallow copy is not possible"
 msgstr "ডিস্ক '%s' ৰ বেকিং ফাইল আছে, সেয়েহে raw তৰং কপি সম্ভৱ নহয়"
 
-#: src/qemu/qemu_driver.c:14299
+#: src/qemu/qemu_driver.c:14303
 #, c-format
 msgid "missing destination file for disk %s: %s"
 msgstr "ডিস্ক %s ৰ বাবে গন্তব্য ফাইল সন্ধানহিন: %s"
 
-#: src/qemu/qemu_driver.c:14306
+#: src/qemu/qemu_driver.c:14310
 #, c-format
 msgid ""
 "external destination file for disk %s already exists and is not a block "
@@ -15826,115 +15826,115 @@ msgid ""
 msgstr ""
 "ডিস্ক %s ৰ বাবে বহিৰ্তম গন্তব্য ফাইল ইতিমধ্যে অস্তিত্ববান আৰু এটা খণ্ড ডিভাইচ নহয়: %s"
 
-#: src/qemu/qemu_driver.c:14314
+#: src/qemu/qemu_driver.c:14318
 #, c-format
 msgid "unrecognized format '%s'"
 msgstr "অপৰিচিত বিন্যাস '%s'"
 
-#: src/qemu/qemu_driver.c:14474
+#: src/qemu/qemu_driver.c:14478
 msgid "online commit not supported with this QEMU binary"
 msgstr "এই QEMU বাইনাৰিৰ সৈতে অনলাইন commit সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_driver.c:14485
+#: src/qemu/qemu_driver.c:14489
 #, c-format
 msgid "disk %s has no source file to be committed"
 msgstr "ডিস্ক %s ৰ commit কৰিবলে কোনো উৎস ফাইল নাই"
 
-#: src/qemu/qemu_driver.c:14500
+#: src/qemu/qemu_driver.c:14504
 #, c-format
 msgid "could not find top '%s' in chain for '%s'"
 msgstr "'%s' ৰ বাবে শৃংখলত ওপৰ '%s' পোৱা নগল"
 
-#: src/qemu/qemu_driver.c:14506
+#: src/qemu/qemu_driver.c:14510
 #, c-format
 msgid "top '%s' in chain for '%s' has no backing file"
 msgstr "'%s' ৰ বাবে ওপৰ '%s' ৰ কোনো বেকিং ফাইল"
 
-#: src/qemu/qemu_driver.c:14515
+#: src/qemu/qemu_driver.c:14519
 #, c-format
 msgid "could not find base '%s' below '%s' in chain for '%s'"
 msgstr "'%s' ৰ বাবে শৃংখলত ভিত্তি '%s' তল '%s' পোৱা নগল"
 
-#: src/qemu/qemu_driver.c:14526
+#: src/qemu/qemu_driver.c:14530
 #, c-format
 msgid "base '%s' is not immediately below '%s' in chain for '%s'"
 msgstr "'%s' ৰ বাবে ভিত্তি '%s' '%s' ৰ একদম তলত নহয়"
 
-#: src/qemu/qemu_driver.c:14604
+#: src/qemu/qemu_driver.c:14608
 #, c-format
 msgid "No graphics backend with index %d"
 msgstr "সূচী %d ৰ সৈতে কোনো গ্ৰাফিক্স বেকএণ্ড নাই"
 
-#: src/qemu/qemu_driver.c:14616
+#: src/qemu/qemu_driver.c:14620
 #, c-format
 msgid "Can only open VNC or SPICE graphics backends, not %s"
 msgstr "কেৱল VNC অথবা SPICE গ্ৰাফিক্স বেকএণ্ড খোলিব পাৰে, %s নোৱাৰে"
 
-#: src/qemu/qemu_driver.c:14709
+#: src/qemu/qemu_driver.c:14713
 #, c-format
 msgid "block I/O throttle limit value must be less than %llu"
 msgstr "খণ্ড I/O থ্ৰট'ল সীমা মান %llu কে কম হ'ব লাগিব"
 
-#: src/qemu/qemu_driver.c:14743
+#: src/qemu/qemu_driver.c:14747
 msgid "total and read/write of bytes_sec cannot be set at the same time"
 msgstr "bytes_sec ৰ সৰ্বমুঠ আৰু পঢ়া/লিখা একে সময়ত সংহতি কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_driver.c:14750
+#: src/qemu/qemu_driver.c:14754
 msgid "total and read/write of iops_sec cannot be set at the same time"
 msgstr "iops_sec ৰ সৰ্বমুঠ আৰু পঢ়া/লিখা একে সময়তে সংহতি কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_driver.c:14801
+#: src/qemu/qemu_driver.c:14805
 msgid "Write to config file failed"
 msgstr "config ফাইললে লিখা ব্যৰ্থ হল"
 
-#: src/qemu/qemu_driver.c:14884
+#: src/qemu/qemu_driver.c:14888
 #, fuzzy, c-format
 msgid "disk '%s' was not found in the domain config"
 msgstr "ভলিউম '%s' ডমেইনৰ বিৱৰণত পোৱা নগল।\n"
 
-#: src/qemu/qemu_driver.c:15116 src/qemu/qemu_driver.c:15130
+#: src/qemu/qemu_driver.c:15120 src/qemu/qemu_driver.c:15134
 msgid "unable to get cpu account"
 msgstr "cpu একাওন্ট প্ৰাপ্ত কৰিবলে অক্ষম"
 
-#: src/qemu/qemu_driver.c:15191 src/qemu/qemu_driver.c:15267
+#: src/qemu/qemu_driver.c:15195 src/qemu/qemu_driver.c:15271
 msgid "cpuacct parse error"
 msgstr "cpuacct বিশ্লেষণ ত্ৰুটি"
 
-#: src/qemu/qemu_driver.c:15244
+#: src/qemu/qemu_driver.c:15248
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
 msgstr "start_cpu %d, %d ৰ সৰ্বাধিকতকে ডাঙৰ"
 
-#: src/qemu/qemu_driver.c:15344
+#: src/qemu/qemu_driver.c:15348
 msgid "cgroup CPUACCT controller is not mounted"
 msgstr "cgroup CPUACCT নিয়ন্ত্ৰক মাউন্টেড নহয়"
 
-#: src/qemu/qemu_driver.c:15374
+#: src/qemu/qemu_driver.c:15378
 msgid "Duration not supported. Use 0 for now"
 msgstr "অৱধি সমৰ্থিত নহয়। এতিয়াৰ বাবে 0 ব্যৱহাৰ কৰক"
 
-#: src/qemu/qemu_driver.c:15382
+#: src/qemu/qemu_driver.c:15386
 #, c-format
 msgid "Unknown suspend target: %u"
 msgstr "অজ্ঞাত স্থগিত লক্ষ্য: %u"
 
-#: src/qemu/qemu_driver.c:15405
+#: src/qemu/qemu_driver.c:15409
 msgid "Unable to suspend domain due to missing system_wakeup monitor command"
 msgstr "system_wakeup মনিটৰ কমান্ড নথকা বাবে ডমেইন স্থগিত কৰিবলে অক্ষম"
 
-#: src/qemu/qemu_driver.c:15415
+#: src/qemu/qemu_driver.c:15419
 msgid "S3 state is disabled for this domain"
 msgstr "এই ডমেইনৰ বাবে S3 অৱস্থা অসামৰ্থবান কৰা আছে"
 
-#: src/qemu/qemu_driver.c:15422
+#: src/qemu/qemu_driver.c:15426
 msgid "S4 state is disabled for this domain"
 msgstr "এই ডমেইনৰ বাবে S4 অৱস্থা অসামৰ্থবান কৰা আছে"
 
-#: src/qemu/qemu_driver.c:15493
+#: src/qemu/qemu_driver.c:15497
 msgid "Unable to wake up domain due to missing system_wakeup monitor command"
 msgstr "system_wakeup মনিটৰ কমান্ড নথকা বাবে ডমেইন ৱেইক আপ কৰিবলে অক্ষম"
 
-#: src/qemu/qemu_driver.c:15613
+#: src/qemu/qemu_driver.c:15617
 msgid "Specifying mount point is not supported for now"
 msgstr "মাউন্ট পইন্ট ধাৰ্য্য কৰাটো এতিয়াৰ বাবে সমৰ্থিত নহয়"
 
