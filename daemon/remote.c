@@ -1,7 +1,7 @@
 /*
  * remote.c: handlers for RPC method calls
  *
- * Copyright (C) 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2007-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2265,6 +2265,78 @@ remoteDispatchDomainGetVcpus(virNetServerPtr server ATTRIBUTE_UNUSED,
     VIR_FREE(cpumaps);
     VIR_FREE(info);
     virObjectUnref(dom);
+    return rv;
+}
+
+static int
+remoteDispatchDomainGetIOThreadsInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                     virNetServerClientPtr client,
+                                     virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                     virNetMessageErrorPtr rerr,
+                                     remote_domain_get_iothreads_info_args *args,
+                                     remote_domain_get_iothreads_info_ret *ret)
+{
+    int rv = -1;
+    size_t i;
+    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
+    virDomainIOThreadInfoPtr *info = NULL;
+    virDomainPtr dom = NULL;
+    remote_domain_iothread_info *dst;
+    int ninfo = 0;
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    if ((ninfo = virDomainGetIOThreadsInfo(dom, &info, args->flags)) < 0)
+        goto cleanup;
+
+    if (ninfo > REMOTE_IOTHREADS_INFO_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many IOThreads in info: %d for limit %d"),
+                       ninfo, REMOTE_IOTHREADS_INFO_MAX);
+        goto cleanup;
+    }
+
+    if (ninfo) {
+        if (VIR_ALLOC_N(ret->info.info_val, ninfo) < 0)
+            goto cleanup;
+
+        ret->info.info_len = ninfo;
+
+        for (i = 0; i < ninfo; i++) {
+            dst = &ret->info.info_val[i];
+            dst->iothread_id = info[i]->iothread_id;
+
+            /* No need to allocate/copy the cpumap if we make the reasonable
+             * assumption that unsigned char and char are the same size.
+             */
+            dst->cpumap.cpumap_len = info[i]->cpumaplen;
+            dst->cpumap.cpumap_val = (char *)info[i]->cpumap;
+            info[i]->cpumap = NULL;
+        }
+    } else {
+        ret->info.info_len = 0;
+        ret->info.info_val = NULL;
+    }
+
+    ret->ret = ninfo;
+
+    rv = 0;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    virObjectUnref(dom);
+    if (ninfo >= 0)
+        for (i = 0; i < ninfo; i++)
+            virDomainIOThreadsInfoFree(info[i]);
+    VIR_FREE(info);
+
     return rv;
 }
 

@@ -807,6 +807,24 @@ struct remote_domain_get_max_vcpus_args {
 struct remote_domain_get_max_vcpus_ret {
         int                        num;
 };
+struct remote_domain_iothread_info {
+        u_int                      iothread_id;
+        struct {
+                u_int              cpumap_len;
+                char *             cpumap_val;
+        } cpumap;
+};
+struct remote_domain_get_iothreads_info_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
+struct remote_domain_get_iothreads_info_ret {
+        struct {
+                u_int              info_len;
+                remote_domain_iothread_info * info_val;
+        } info;
+        u_int                      ret;
+};
 struct remote_domain_get_security_label_args {
         remote_nonnull_domain      dom;
 };
@@ -2963,4 +2981,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_CALLBACK_AGENT_LIFECYCLE = 348,
         REMOTE_PROC_DOMAIN_GET_FSINFO = 349,
         REMOTE_PROC_DOMAIN_DEFINE_XML_FLAGS = 350,
+        REMOTE_PROC_DOMAIN_GET_IOTHREADS_INFO = 351,
 };

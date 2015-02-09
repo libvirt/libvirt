@@ -2,7 +2,7 @@
  * remote_driver.c: driver to provide access to libvirtd running
  *   on a remote machine
  *
- * Copyright (C) 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2007-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2309,6 +2309,84 @@ remoteDomainGetVcpus(virDomainPtr domain,
 
  cleanup:
     xdr_free((xdrproc_t) xdr_remote_domain_get_vcpus_ret, (char *) &ret);
+
+ done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteDomainGetIOThreadsInfo(virDomainPtr dom,
+                             virDomainIOThreadInfoPtr **info,
+                             unsigned int flags)
+{
+    int rv = -1;
+    size_t i;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_get_iothreads_info_args args;
+    remote_domain_get_iothreads_info_ret ret;
+    remote_domain_iothread_info *src;
+    virDomainIOThreadInfoPtr *info_ret = NULL;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, dom);
+
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_IOTHREADS_INFO,
+             (xdrproc_t)xdr_remote_domain_get_iothreads_info_args,
+             (char *)&args,
+             (xdrproc_t)xdr_remote_domain_get_iothreads_info_ret,
+             (char *)&ret) == -1)
+        goto done;
+
+    if (ret.info.info_len > REMOTE_IOTHREADS_INFO_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Too many IOThreads in info: %d for limit %d"),
+                       ret.info.info_len, REMOTE_IOTHREADS_INFO_MAX);
+        goto cleanup;
+    }
+
+    if (info) {
+        if (!ret.info.info_len) {
+            *info = NULL;
+            rv = ret.ret;
+            goto cleanup;
+        }
+
+        if (VIR_ALLOC_N(info_ret, ret.info.info_len) < 0)
+            goto cleanup;
+
+        for (i = 0; i < ret.info.info_len; i++) {
+            src = &ret.info.info_val[i];
+
+            if (VIR_ALLOC(info_ret[i]) < 0)
+                goto cleanup;
+
+            info_ret[i]->iothread_id = src->iothread_id;
+            if (VIR_ALLOC_N(info_ret[i]->cpumap, src->cpumap.cpumap_len) < 0)
+                goto cleanup;
+            memcpy(info_ret[i]->cpumap, src->cpumap.cpumap_val,
+                   src->cpumap.cpumap_len);
+            info_ret[i]->cpumaplen = src->cpumap.cpumap_len;
+        }
+        *info = info_ret;
+        info_ret = NULL;
+    }
+
+    rv = ret.ret;
+
+ cleanup:
+    if (info_ret) {
+        for (i = 0; i < ret.info.info_len; i++)
+            virDomainIOThreadsInfoFree(info_ret[i]);
+        VIR_FREE(info_ret);
+    }
+    xdr_free((xdrproc_t)xdr_remote_domain_get_iothreads_info_ret,
+             (char *) &ret);
 
  done:
     remoteDriverUnlock(priv);
@@ -8027,6 +8105,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainGetEmulatorPinInfo = remoteDomainGetEmulatorPinInfo, /* 0.10.0 */
     .domainGetVcpus = remoteDomainGetVcpus, /* 0.3.0 */
     .domainGetMaxVcpus = remoteDomainGetMaxVcpus, /* 0.3.0 */
+    .domainGetIOThreadsInfo = remoteDomainGetIOThreadsInfo, /* 1.2.14 */
     .domainGetSecurityLabel = remoteDomainGetSecurityLabel, /* 0.6.1 */
     .domainGetSecurityLabelList = remoteDomainGetSecurityLabelList, /* 0.10.0 */
     .nodeGetSecurityModel = remoteNodeGetSecurityModel, /* 0.6.1 */

@@ -3,7 +3,7 @@
  *   remote_internal driver and libvirtd.  This protocol is
  *   internal and may change at any time.
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -84,6 +84,9 @@ const REMOTE_VCPUINFO_MAX = 16384;
 
 /* Upper limit on cpumaps (bytes) passed to virDomainGetVcpus. */
 const REMOTE_CPUMAPS_MAX = 8388608;
+
+/* Upper limit on number of info fields returned by virDomainGetIOThreads. */
+const REMOTE_IOTHREADS_INFO_MAX = 16384;
 
 /* Upper limit on migrate cookie. */
 const REMOTE_MIGRATE_COOKIE_MAX = 4194304;
@@ -1179,6 +1182,21 @@ struct remote_domain_get_max_vcpus_args {
 
 struct remote_domain_get_max_vcpus_ret {
     int num;
+};
+
+struct remote_domain_iothread_info {
+    unsigned int iothread_id;
+    opaque cpumap<REMOTE_CPUMAP_MAX>;
+};
+
+struct remote_domain_get_iothreads_info_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_get_iothreads_info_ret {
+    remote_domain_iothread_info info<REMOTE_IOTHREADS_INFO_MAX>;
+    unsigned int ret;
 };
 
 struct remote_domain_get_security_label_args {
@@ -5569,5 +5587,11 @@ enum remote_procedure {
      * @acl: domain:write
      * @acl: domain:save
      */
-    REMOTE_PROC_DOMAIN_DEFINE_XML_FLAGS = 350
+    REMOTE_PROC_DOMAIN_DEFINE_XML_FLAGS = 350,
+
+    /**
+     * @generate: none
+     * @acl: domain:read
+     */
+    REMOTE_PROC_DOMAIN_GET_IOTHREADS_INFO = 351
 };
