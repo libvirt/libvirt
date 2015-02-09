@@ -1,7 +1,7 @@
 /*
  * driver-hypervisor.h: entry points for hypervisor drivers
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -379,6 +379,11 @@ typedef int
 
 typedef int
 (*virDrvDomainGetMaxVcpus)(virDomainPtr domain);
+
+typedef int
+(*virDrvDomainGetIOThreadsInfo)(virDomainPtr domain,
+                                virDomainIOThreadInfoPtr **info,
+                                unsigned int flags);
 
 typedef int
 (*virDrvDomainGetSecurityLabel)(virDomainPtr domain,
@@ -1254,6 +1259,7 @@ struct _virHypervisorDriver {
     virDrvDomainGetEmulatorPinInfo domainGetEmulatorPinInfo;
     virDrvDomainGetVcpus domainGetVcpus;
     virDrvDomainGetMaxVcpus domainGetMaxVcpus;
+    virDrvDomainGetIOThreadsInfo domainGetIOThreadsInfo;
     virDrvDomainGetSecurityLabel domainGetSecurityLabel;
     virDrvDomainGetSecurityLabelList domainGetSecurityLabelList;
     virDrvNodeGetSecurityModel nodeGetSecurityModel;

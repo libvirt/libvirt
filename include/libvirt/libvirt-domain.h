@@ -4,7 +4,7 @@
  * Description: Provides APIs for the management of domains
  * Author: Daniel Veillard <veillard@redhat.com>
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1589,6 +1589,26 @@ int                     virDomainGetEmulatorPinInfo (virDomainPtr domain,
                                                      unsigned char *cpumaps,
                                                      int maplen,
                                                      unsigned int flags);
+
+/**
+ * virIOThreadInfo:
+ *
+ * The data structure for information about all IOThreads in a domain
+ */
+typedef struct _virDomainIOThreadInfo virDomainIOThreadInfo;
+typedef virDomainIOThreadInfo *virDomainIOThreadInfoPtr;
+struct _virDomainIOThreadInfo {
+    unsigned int iothread_id;          /* IOThread ID */
+    unsigned char *cpumap;             /* CPU map for thread. A pointer to an */
+                                       /* array of real CPUs (in 8-bit bytes) */
+    int cpumaplen;                     /* cpumap size */
+};
+
+void                 virDomainIOThreadsInfoFree(virDomainIOThreadInfoPtr info);
+
+int                  virDomainGetIOThreadsInfo(virDomainPtr domain,
+                                               virDomainIOThreadInfoPtr **info,
+                                               unsigned int flags);
 
 /**
  * VIR_USE_CPU:

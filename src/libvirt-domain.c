@@ -1,7 +1,7 @@
 /*
  * libvirt-domain.c: entry points for virDomainPtr APIs
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -7890,6 +7890,79 @@ virDomainGetMaxVcpus(virDomainPtr domain)
  error:
     virDispatchError(domain->conn);
     return -1;
+}
+
+
+/**
+ * virDomainGetIOThreadsInfo:
+ * @dom: a domain object
+ * @info: pointer to an array of virDomainIOThreadInfo structures (OUT)
+ * @flags: bitwise-OR of virDomainModificationImpact
+ *     Must not be VIR_DOMAIN_AFFECT_LIVE and
+ *     VIR_DOMAIN_AFFECT_CONFIG concurrently.
+ *
+ * Fetch IOThreads of an active domain including the cpumap information to
+ * determine on which CPU the IOThread has affinity to run.
+ *
+ * Returns the number of IOThreads or -1 in case of error.
+ * On success, the array of information is stored into @info. The caller is
+ * responsible for calling virDomainIOThreadsInfoFree() on each array element,
+ * then calling free() on @info. On error, @info is set to NULL.
+ */
+int
+virDomainGetIOThreadsInfo(virDomainPtr dom,
+                          virDomainIOThreadInfoPtr **info,
+                          unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(dom, "info=%p flags=%x", info, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(dom, -1);
+    virCheckReadOnlyGoto(dom->conn->flags, error);
+    virCheckNonNullArgGoto(info, error);
+    *info = NULL;
+
+    /* At most one of these two flags should be set.  */
+    if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
+        (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
+        virReportInvalidArg(flags,
+                            _("flags 'affect live' and 'affect config' in %s "
+                              "are mutually exclusive"),
+                            __FUNCTION__);
+        goto error;
+    }
+
+    if (dom->conn->driver->domainGetIOThreadsInfo) {
+        int ret;
+        ret = dom->conn->driver->domainGetIOThreadsInfo(dom, info, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+
+/**
+ * virDomainIOThreadsInfoFree:
+ * @info: pointer to a virDomainIOThreadInfo object
+ *
+ * Frees the memory used by @info.
+ */
+void
+virDomainIOThreadsInfoFree(virDomainIOThreadInfoPtr info)
+{
+    if (!info)
+        return;
+
+    VIR_FREE(info->cpumap);
+    VIR_FREE(info);
 }
 
 

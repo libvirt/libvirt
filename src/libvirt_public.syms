@@ -695,4 +695,10 @@ LIBVIRT_1.2.12 {
         virDomainDefineXMLFlags;
 } LIBVIRT_1.2.11;
 
+LIBVIRT_1.2.14 {
+    global:
+        virDomainIOThreadsInfoFree;
+        virDomainGetIOThreadsInfo;
+} LIBVIRT_1.2.12;
+
 # .... define new API here using predicted next version number ....
