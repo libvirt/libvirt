@@ -945,11 +945,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     /* check interface type */
-    if (STREQ(type, "network")) {
-        typ = VIR_DOMAIN_NET_TYPE_NETWORK;
-    } else if (STREQ(type, "bridge")) {
-        typ = VIR_DOMAIN_NET_TYPE_BRIDGE;
-    } else {
+    if ((int)(typ = virDomainNetTypeFromString(type)) < 0) {
         vshError(ctl, _("No support for %s in command 'attach-interface'"),
                  type);
         goto cleanup;
@@ -982,10 +978,28 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     virBufferAsprintf(&buf, "<interface type='%s'>\n", type);
     virBufferAdjustIndent(&buf, 2);
 
-    if (typ == VIR_DOMAIN_NET_TYPE_NETWORK)
-        virBufferAsprintf(&buf, "<source network='%s'/>\n", source);
-    else if (typ == VIR_DOMAIN_NET_TYPE_BRIDGE)
-        virBufferAsprintf(&buf, "<source bridge='%s'/>\n", source);
+    switch (typ) {
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        virBufferAsprintf(&buf, "<source %s='%s'/>\n",
+                          virDomainNetTypeToString(typ), source);
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_LAST:
+        vshError(ctl, _("No support for %s in command 'attach-interface'"),
+                 type);
+        goto cleanup;
+        break;
+    }
 
     if (target != NULL)
         virBufferAsprintf(&buf, "<target dev='%s'/>\n", target);
