@@ -984,6 +984,9 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         virBufferAsprintf(&buf, "<source %s='%s'/>\n",
                           virDomainNetTypeToString(typ), source);
         break;
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+        virBufferAsprintf(&buf, "<source dev='%s'/>\n", source);
+        break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -992,7 +995,6 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     case VIR_DOMAIN_NET_TYPE_CLIENT:
     case VIR_DOMAIN_NET_TYPE_MCAST:
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
-    case VIR_DOMAIN_NET_TYPE_DIRECT:
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
     case VIR_DOMAIN_NET_TYPE_LAST:
         vshError(ctl, _("No support for %s in command 'attach-interface'"),
