@@ -137,6 +137,8 @@
 /src/locking/qemu-lockd.conf
 /src/locking/qemu-sanlock.conf
 /src/locking/test_libvirt_sanlock.aug
+/src/logging/log_daemon_dispatch_stubs.h
+/src/logging/log_protocol.[ch]
 /src/lxc/lxc_controller_dispatch.h
 /src/lxc/lxc_monitor_dispatch.h
 /src/lxc/lxc_monitor_protocol.c
@@ -150,12 +152,17 @@
 /src/rpc/virnetprotocol.[ch]
 /src/test_libvirt*.aug
 /src/test_virtlockd.aug
+/src/test_virtlogd.aug
 /src/util/virkeymaps.h
 /src/virt-aa-helper
 /src/virtlockd
 /src/virtlockd.8
 /src/virtlockd.8.in
 /src/virtlockd.init
+/src/virtlogd
+/src/virtlogd.8
+/src/virtlogd.8.in
+/src/virtlogd.init
 /tests/*.log
 /tests/*.pid
 /tests/*.trs

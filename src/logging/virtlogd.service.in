@@ -1,0 +1,17 @@
+[Unit]
+Description=Virtual machine log manager
+Requires=virtlogd.socket
+Documentation=man:virtlogd(8)
+Documentation=http://libvirt.org
+
+[Service]
+EnvironmentFile=-/etc/sysconfig/virtlogd
+ExecStart=@sbindir@/virtlogd $VIRTLOGD_ARGS
+ExecReload=/bin/kill -USR1 $MAINPID
+# Loosing the logs is a really bad thing that will
+# cause the machine to be fenced (rebooted), so make
+# sure we discourage OOM killer
+OOMScoreAdjust=-900
+
+[Install]
+Also=virtlogd.socket

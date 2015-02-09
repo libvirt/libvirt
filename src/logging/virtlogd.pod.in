@@ -1,0 +1,167 @@
+=head1 NAME
+
+virtlogd - libvirt log management daemon
+
+=head1 SYNOPSIS
+
+B<virtlogd> [ -dvV ] [-t timeout] [ -f config_file ] [ -p pid_file ]
+
+B<virtlogd> --version
+
+=head1 DESCRIPTION
+
+The B<virtlogd> program is a server side daemon component of the libvirt
+virtualization management system that is used to manage logs from virtual
+machine consoles.
+
+This daemon is not used directly by libvirt client applications, rather it
+is called on their behalf by B<libvirtd>. By maintaining the logs in a
+standalone daemon, the main libvirtd daemon can be restarted without risk
+of losing logs. The B<virtlogd> daemon has the ability to re-exec()
+itself upon receiving SIGUSR1, to allow live upgrades without downtime.
+
+The virtlogd daemon listens for requests on a local Unix domain socket.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-h, --help>
+
+Display command line help usage then exit.
+
+=item B<-d, --daemon>
+
+Run as a daemon and write PID file.
+
+=item B<-f, --config> I<FILE>
+
+Use this configuration file, overriding the default value.
+
+=item B<-t, --timeout> I<SECONDS>
+
+Automatically shutdown after I<SECONDS> have elapsed with
+no active console log.
+
+=item B<-p, --pid-file> I<FILE>
+
+Use this name for the PID file, overriding the default value.
+
+=item B<-v, --verbose>
+
+Enable output of verbose messages.
+
+=item B<-V, --version>
+
+Display version information then exit.
+
+=back
+
+=head1 SIGNALS
+
+On receipt of B<SIGUSR1> virtlogd will re-exec() its binary, while
+maintaining all current logs and clients. This allows for live
+upgrades of the virtlogd service.
+
+=head1 FILES
+
+=head2 When run as B<root>.
+
+=over
+
+=item F<SYSCONFDIR/virtlogd.conf>
+
+The default configuration file used by virtlogd, unless overridden on the
+command line using the B<-f>|B<--config> option.
+
+=item F<LOCALSTATEDIR/run/libvirt/virtlogd-sock>
+
+The sockets libvirtd will use.
+
+=item F<LOCALSTATEDIR/run/virtlogd.pid>
+
+The PID file to use, unless overridden by the B<-p>|B<--pid-file> option.
+
+=back
+
+=head2 When run as B<non-root>.
+
+=over
+
+=item F<$XDG_CONFIG_HOME/virtlogd.conf>
+
+The default configuration file used by libvirtd, unless overridden on the
+command line using the B<-f>|B<--config> option.
+
+=item F<$XDG_RUNTIME_DIR/libvirt/virtlogd-sock>
+
+The socket libvirtd will use.
+
+=item F<$XDG_RUNTIME_DIR/libvirt/virtlogd.pid>
+
+The PID file to use, unless overridden by the B<-p>|B<--pid-file> option.
+
+=item If $XDG_CONFIG_HOME is not set in your environment, libvirtd will use F<$HOME/.config>
+
+=item If $XDG_RUNTIME_DIR is not set in your environment, libvirtd will use F<$HOME/.cache>
+
+=back
+
+=head1 EXAMPLES
+
+To retrieve the version of virtlogd:
+
+ # virtlogd --version
+ virtlogd (libvirt) 1.1.1
+ #
+
+To start virtlogd, instructing it to daemonize and create a PID file:
+
+ # virtlogd -d
+ # ls -la LOCALSTATEDIR/run/virtlogd.pid
+ -rw-r--r-- 1 root root 6 Jul  9 02:40 LOCALSTATEDIR/run/virtlogd.pid
+ #
+
+=head1 BUGS
+
+Please report all bugs you discover.  This should be done via either:
+
+=over
+
+=item a) the mailing list
+
+L<http://libvirt.org/contact.html>
+
+=item or,
+
+B<>
+
+=item b) the bug tracker
+
+L<http://libvirt.org/bugs.html>
+
+=item Alternatively, you may report bugs to your software distributor / vendor.
+
+=back
+
+=head1 AUTHORS
+
+Please refer to the AUTHORS file distributed with libvirt.
+
+=head1 COPYRIGHT
+
+Copyright (C) 2006-2015 Red Hat, Inc., and the authors listed in the
+libvirt AUTHORS file.
+
+=head1 LICENSE
+
+virtlogd is distributed under the terms of the GNU LGPL v2.1+.
+This is free software; see the source for copying conditions. There
+is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE
+
+=head1 SEE ALSO
+
+L<libvirtd(8)>,  L<http://www.libvirt.org/>
+
+=cut

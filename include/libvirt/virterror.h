@@ -127,6 +127,7 @@ typedef enum {
     VIR_FROM_POLKIT = 60,       /* Error from polkit code */
     VIR_FROM_THREAD = 61,       /* Error from thread utils */
     VIR_FROM_ADMIN = 62,        /* Error from admin backend */
+    VIR_FROM_LOGGING = 63,      /* Error from log manager */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_DOMAIN_LAST
