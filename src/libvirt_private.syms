@@ -345,6 +345,7 @@ virDomainNetGetActualVlan;
 virDomainNetInsert;
 virDomainNetRemove;
 virDomainNetRemoveHostdev;
+virDomainNetTypeFromString;
 virDomainNetTypeToString;
 virDomainNostateReasonTypeFromString;
 virDomainNostateReasonTypeToString;
