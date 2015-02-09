@@ -906,7 +906,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
                 *type = NULL, *source = NULL, *model = NULL,
                 *inboundStr = NULL, *outboundStr = NULL;
     virNetDevBandwidthRate inbound, outbound;
-    int typ;
+    virDomainNetType typ;
     int ret;
     bool functionReturn = false;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -946,9 +946,9 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 
     /* check interface type */
     if (STREQ(type, "network")) {
-        typ = 1;
+        typ = VIR_DOMAIN_NET_TYPE_NETWORK;
     } else if (STREQ(type, "bridge")) {
-        typ = 2;
+        typ = VIR_DOMAIN_NET_TYPE_BRIDGE;
     } else {
         vshError(ctl, _("No support for %s in command 'attach-interface'"),
                  type);
@@ -982,9 +982,9 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     virBufferAsprintf(&buf, "<interface type='%s'>\n", type);
     virBufferAdjustIndent(&buf, 2);
 
-    if (typ == 1)
+    if (typ == VIR_DOMAIN_NET_TYPE_NETWORK)
         virBufferAsprintf(&buf, "<source network='%s'/>\n", source);
-    else if (typ == 2)
+    else if (typ == VIR_DOMAIN_NET_TYPE_BRIDGE)
         virBufferAsprintf(&buf, "<source bridge='%s'/>\n", source);
 
     if (target != NULL)
