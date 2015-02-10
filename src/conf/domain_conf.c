@@ -21449,7 +21449,7 @@ virDomainGraphicsListenSetAddress(virDomainGraphicsDefPtr def,
         listenInfo->type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
 
     if (!address) {
-        listenInfo->address = NULL;
+        VIR_FREE(listenInfo->address);
         return 0;
     }
 
@@ -21487,7 +21487,7 @@ virDomainGraphicsListenSetNetwork(virDomainGraphicsDefPtr def,
     listenInfo->type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK;
 
     if (!network) {
-        listenInfo->network = NULL;
+        VIR_FREE(listenInfo->network);
         return 0;
     }
 
