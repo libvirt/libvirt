@@ -1344,9 +1344,9 @@
           <optional>
             <ref name="storageStartupPolicy"/>
           </optional>
-          <optional>
+          <zeroOrMore>
             <ref name='devSeclabel'/>
-          </optional>
+          </zeroOrMore>
         </element>
       </optional>
     </interleave>
@@ -1367,9 +1367,9 @@
           <optional>
             <ref name="storageStartupPolicy"/>
           </optional>
-          <optional>
+          <zeroOrMore>
             <ref name='devSeclabel'/>
-          </optional>
+          </zeroOrMore>
         </element>
       </optional>
     </interleave>
@@ -1497,9 +1497,9 @@
           <optional>
             <ref name="storageStartupPolicy"/>
           </optional>
-          <optional>
+          <zeroOrMore>
             <ref name='devSeclabel'/>
-          </optional>
+          </zeroOrMore>
         </element>
       </optional>
     </interleave>
@@ -3195,9 +3195,9 @@
         <optional>
           <attribute name="slave"/>
         </optional>
-        <optional>
+        <zeroOrMore>
           <ref name='devSeclabel'/>
-        </optional>
+        </zeroOrMore>
       </element>
     </zeroOrMore>
     <optional>

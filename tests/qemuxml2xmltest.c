@@ -337,6 +337,7 @@ mymain(void)
     DO_TEST_DIFFERENT("seclabel-none");
     DO_TEST("seclabel-dac-none");
     DO_TEST("seclabel-dynamic-none");
+    DO_TEST("seclabel-device-multiple");
     DO_TEST_FULL("seclabel-dynamic-none-relabel", true, WHEN_INACTIVE);
     DO_TEST("numad-static-vcpu-no-numatune");
     DO_TEST("disk-scsi-lun-passthrough-sgio");
