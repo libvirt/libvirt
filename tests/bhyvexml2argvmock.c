@@ -24,7 +24,7 @@ int virNetDevTapCreateInBridgePort(const char *brname ATTRIBUTE_UNUSED,
                                    const unsigned char *vmuuid ATTRIBUTE_UNUSED,
                                    const char *tunpath ATTRIBUTE_UNUSED,
                                    int *tapfd ATTRIBUTE_UNUSED,
-                                   int tapfdSize ATTRIBUTE_UNUSED,
+                                   size_t tapfdSize ATTRIBUTE_UNUSED,
                                    virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
                                    virNetDevVlanPtr virtVlan ATTRIBUTE_UNUSED,
                                    unsigned int fakeflags ATTRIBUTE_UNUSED)
