@@ -1103,7 +1103,8 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         case VIR_DOMAIN_BLOCK_JOB_CANCELED:
             virStorageSourceFree(disk->mirror);
             disk->mirror = NULL;
-            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+            disk->mirrorState = status == VIR_DOMAIN_BLOCK_JOB_FAILED ?
+                VIR_DOMAIN_DISK_MIRROR_STATE_ABORT : VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
             disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
             save = true;
             break;
