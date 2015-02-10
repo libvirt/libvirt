@@ -2498,9 +2498,18 @@ qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
         return 0;
 
     if (priv->vcpupids == NULL) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("cpu affinity is not supported"));
-        return -1;
+        /* If any CPU has custom affinity that differs from the
+         * VM default affinity, we must reject it
+         */
+        for (n = 0; n < def->vcpus; n++) {
+            if (!virBitmapEqual(def->cpumask,
+                                def->cputune.vcpupin[n]->cpumask)) {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               "%s", _("cpu affinity is not supported"));
+                return -1;
+            }
+        }
+        return 0;
     }
 
     for (n = 0; n < def->vcpus; n++) {
