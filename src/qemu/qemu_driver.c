@@ -1376,6 +1376,12 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm, virVcpuInfoPtr info, int maxinfo,
     if ((hostcpus = nodeGetCPUCount()) < 0)
         return -1;
 
+    if (priv->vcpupids == NULL) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("cpu affinity is not supported"));
+        return -1;
+    }
+
     maxcpu = maplen * 8;
     if (maxcpu > hostcpus)
         maxcpu = hostcpus;
@@ -1391,8 +1397,7 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm, virVcpuInfoPtr info, int maxinfo,
                 info[i].number = i;
                 info[i].state = VIR_VCPU_RUNNING;
 
-                if (priv->vcpupids != NULL &&
-                    qemuGetProcessInfo(&(info[i].cpuTime),
+                if (qemuGetProcessInfo(&(info[i].cpuTime),
                                        &(info[i].cpu),
                                        NULL,
                                        vm->pid,
@@ -1406,28 +1411,22 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm, virVcpuInfoPtr info, int maxinfo,
 
         if (cpumaps != NULL) {
             memset(cpumaps, 0, maplen * maxinfo);
-            if (priv->vcpupids != NULL) {
-                for (v = 0; v < maxinfo; v++) {
-                    unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, v);
-                    virBitmapPtr map = NULL;
-                    unsigned char *tmpmap = NULL;
-                    int tmpmapLen = 0;
+            for (v = 0; v < maxinfo; v++) {
+                unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, v);
+                virBitmapPtr map = NULL;
+                unsigned char *tmpmap = NULL;
+                int tmpmapLen = 0;
 
-                    if (virProcessGetAffinity(priv->vcpupids[v],
-                                              &map, maxcpu) < 0)
-                        return -1;
-                    virBitmapToData(map, &tmpmap, &tmpmapLen);
-                    if (tmpmapLen > maplen)
-                        tmpmapLen = maplen;
-                    memcpy(cpumap, tmpmap, tmpmapLen);
+                if (virProcessGetAffinity(priv->vcpupids[v],
+                                          &map, maxcpu) < 0)
+                    return -1;
+                virBitmapToData(map, &tmpmap, &tmpmapLen);
+                if (tmpmapLen > maplen)
+                    tmpmapLen = maplen;
+                memcpy(cpumap, tmpmap, tmpmapLen);
 
-                    VIR_FREE(tmpmap);
-                    virBitmapFree(map);
-                }
-            } else {
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               "%s", _("cpu affinity is not available"));
-                return -1;
+                VIR_FREE(tmpmap);
+                virBitmapFree(map);
             }
         }
     }
