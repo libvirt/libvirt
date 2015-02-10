@@ -1,7 +1,7 @@
 /*
  * virsh-domain.c: Commands to manage domain
  *
- * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -10024,7 +10024,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     int tmp;
     int flags = 0;
     bool params = false;
-    const char *xpath_fmt = "string(/domain/devices/graphics[@type='%s']/@%s)";
+    const char *xpath_fmt = "string(/domain/devices/graphics[@type='%s']/%s)";
     virSocketAddr addr;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
@@ -10054,7 +10054,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
             continue;
 
         /* Create our XPATH lookup for the current display's port */
-        if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "port") < 0)
+        if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "@port") < 0)
             goto cleanup;
 
         /* Attempt to get the port number for the current graphics scheme */
@@ -10068,7 +10068,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
 
         /* Create our XPATH lookup for TLS Port (automatically skipped
          * for unsupported schemes */
-        if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "tlsPort") < 0)
+        if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "@tlsPort") < 0)
             goto cleanup;
 
         /* Attempt to get the TLS port number */
@@ -10081,7 +10081,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
             continue;
 
         /* Create our XPATH lookup for the current display's address */
-        if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "listen") < 0)
+        if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "@listen") < 0)
             goto cleanup;
 
         /* Attempt to get the listening addr if set for the current
@@ -10089,13 +10089,29 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
         listen_addr = virXPathString(xpath, ctxt);
         VIR_FREE(xpath);
 
+        if (!listen_addr) {
+            /* The subelement address - <listen address='xyz'/> -
+             * *should* have been automatically backfilled into its
+             * parent <graphics listen='xyz'> (which we just tried to
+             * retrieve into listen_addr above) but in some cases it
+             * isn't, so we also do an explicit check for the
+             * subelement (which, by the way, doesn't exist on libvirt
+             * < 0.9.4, so we really do need to check both places)
+             */
+            if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "listen/@address") < 0)
+                goto cleanup;
+
+            listen_addr = virXPathString(xpath, ctxt);
+            VIR_FREE(xpath);
+        }
+
         /* We can query this info for all the graphics types since we'll
          * get nothing for the unsupported ones (just rdp for now).
          * Also the parameter '--include-password' was already taken
          * care of when getting the XML */
 
         /* Create our XPATH lookup for the password */
-        if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "passwd") < 0)
+        if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "@passwd") < 0)
             goto cleanup;
 
         /* Attempt to get the password */
