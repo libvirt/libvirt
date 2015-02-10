@@ -5421,6 +5421,15 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
                     break;
                 }
             }
+
+            /* check for duplicate seclabels */
+            for (j = 0; j < i; j++) {
+                if (STREQ_NULLABLE(model, seclabels[j]->model)) {
+                    virReportError(VIR_ERR_XML_DETAIL,
+                                   _("seclabel for model %s is already provided"), model);
+                    goto error;
+                }
+            }
             seclabels[i]->model = model;
         }
 

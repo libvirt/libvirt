@@ -1302,6 +1302,7 @@ mymain(void)
     DO_TEST("seclabel-none", QEMU_CAPS_NAME);
     DO_TEST("seclabel-dac-none", QEMU_CAPS_NAME);
     DO_TEST_PARSE_ERROR("seclabel-multiple", QEMU_CAPS_NAME);
+    DO_TEST_PARSE_ERROR("seclabel-device-duplicates", QEMU_CAPS_NAME);
 
     DO_TEST("pseries-basic",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
