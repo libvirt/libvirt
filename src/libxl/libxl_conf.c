@@ -745,6 +745,10 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
             return -1;
         }
 
+        /* Disable VNC and SDL until explicitly enabled */
+        libxl_defbool_set(&b_info->u.hvm.vnc.enable, 0);
+        libxl_defbool_set(&b_info->u.hvm.sdl.enable, 0);
+
         /*
          * The following comment and calculation were taken directly from
          * libxenlight's internal function libxl_get_required_shadow_memory():
