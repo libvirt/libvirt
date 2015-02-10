@@ -9740,7 +9740,7 @@ qemuSetEmulatorBandwidthLive(virDomainObjPtr vm, virCgroupPtr cgroup,
                        _("value of '%s' is out of range [%lld, %lld]"),     \
                        NAME, MIN, MAX);                                     \
         rc = -1;                                                            \
-        goto cleanup;                                                       \
+        goto endjob;                                                        \
     }
 
 static int
