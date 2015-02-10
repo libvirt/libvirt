@@ -1051,6 +1051,11 @@ libxlMakeNic(virDomainDefPtr def,
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
             if (VIR_STRDUP(x_nic->script, l_nic->script) < 0)
                 return -1;
+            if (l_nic->nips > 0) {
+                x_nic->ip = virSocketAddrFormat(&l_nic->ips[0]->address);
+                if (!x_nic->ip)
+                    return -1;
+            }
             break;
         case VIR_DOMAIN_NET_TYPE_NETWORK:
         {
@@ -1066,6 +1071,12 @@ libxlMakeNic(virDomainDefPtr def,
                   virNetworkLookupByName(conn, l_nic->data.network.name))) {
                 virObjectUnref(conn);
                 return -1;
+            }
+
+            if (l_nic->nips > 0) {
+                x_nic->ip = virSocketAddrFormat(&l_nic->ips[0]->address);
+                if (!x_nic->ip)
+                    return -1;
             }
 
             if ((brname = virNetworkGetBridgeName(network))) {
