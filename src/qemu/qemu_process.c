@@ -1041,7 +1041,8 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
         /* If we completed a block pull or commit, then update the XML
          * to match.  */
-        if (status == VIR_DOMAIN_BLOCK_JOB_COMPLETED) {
+        switch ((virConnectDomainEventBlockJobStatus) status) {
+        case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
             if (disk->mirrorState == VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT) {
                 if (vm->newDef) {
                     int indx = virDomainDiskIndexByName(vm->newDef, disk->dst,
@@ -1091,20 +1092,24 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
             disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
             ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk,
                                                       true, true));
-        } else if (disk->mirror &&
-                   (type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY ||
-                    type == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)) {
-            if (status == VIR_DOMAIN_BLOCK_JOB_READY) {
-                disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
-                save = true;
-            } else if (status == VIR_DOMAIN_BLOCK_JOB_FAILED ||
-                       status == VIR_DOMAIN_BLOCK_JOB_CANCELED) {
-                virStorageSourceFree(disk->mirror);
-                disk->mirror = NULL;
-                disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
-                disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
-                save = true;
-            }
+            break;
+
+        case VIR_DOMAIN_BLOCK_JOB_READY:
+            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
+            save = true;
+            break;
+
+        case VIR_DOMAIN_BLOCK_JOB_FAILED:
+        case VIR_DOMAIN_BLOCK_JOB_CANCELED:
+            virStorageSourceFree(disk->mirror);
+            disk->mirror = NULL;
+            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+            disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
+            save = true;
+            break;
+
+        case VIR_DOMAIN_BLOCK_JOB_LAST:
+            break;
         }
     }
 
