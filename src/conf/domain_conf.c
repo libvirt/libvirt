@@ -18915,17 +18915,23 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    /* find the first listen element of type='address' and duplicate
-    * its address attribute as the listen attribute of
-    * <graphics>. This is done to improve backward compatibility. */
+    /* find the first listen subelement with a valid address and
+    * duplicate its address attribute as the listen attribute of
+    * <graphics>. This is done to improve backward compatibility.
+    */
     for (i = 0; i < def->nListens; i++) {
-        if (virDomainGraphicsListenGetType(def, i)
-            == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) {
-            if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE &&
-                def->listens[i].fromConfig)
-                continue;
-            listenAddr = virDomainGraphicsListenGetAddress(def, i);
-            break;
+        virDomainGraphicsListenType listenType;
+
+        if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE &&
+            def->listens[i].fromConfig)
+            continue;
+        listenType = virDomainGraphicsListenGetType(def, i);
+
+        if (listenType == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS ||
+            (listenType == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK &&
+             !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))) {
+            if ((listenAddr = virDomainGraphicsListenGetAddress(def, i)))
+                break;
         }
     }
 
