@@ -10580,7 +10580,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
                            _("ram attribute only supported for type of qxl"));
             goto error;
         }
-        if (virStrToLong_ui(ram, NULL, 10, &def->ram) < 0) {
+        if (virStrToLong_uip(ram, NULL, 10, &def->ram) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("cannot parse video ram '%s'"), ram);
             goto error;
@@ -10590,7 +10590,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
     }
 
     if (vram) {
-        if (virStrToLong_ui(vram, NULL, 10, &def->vram) < 0) {
+        if (virStrToLong_uip(vram, NULL, 10, &def->vram) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("cannot parse video vram '%s'"), vram);
             goto error;
@@ -10605,7 +10605,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
                            _("vgamem attribute only supported for type of qxl"));
             goto error;
         }
-        if (virStrToLong_ui(vgamem, NULL, 10, &def->vgamem) < 0) {
+        if (virStrToLong_uip(vgamem, NULL, 10, &def->vgamem) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("cannot parse video vgamem '%s'"), vgamem);
             goto error;
@@ -10613,7 +10613,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
     }
 
     if (heads) {
-        if (virStrToLong_ui(heads, NULL, 10, &def->heads) < 0) {
+        if (virStrToLong_uip(heads, NULL, 10, &def->heads) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot parse video heads '%s'"), heads);
             goto error;
