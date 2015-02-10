@@ -3172,6 +3172,26 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
         return -1;
     }
 
+    if (def->mem.cur_balloon > def->mem.max_balloon) {
+        /* Older libvirt could get into this situation due to
+         * rounding; if the discrepancy is less than 4MiB, we silently
+         * round down, otherwise we flag the issue.  */
+        if (VIR_DIV_UP(def->mem.cur_balloon, 4096) >
+            VIR_DIV_UP(def->mem.max_balloon, 4096)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("current memory '%lluk' exceeds "
+                             "maximum '%lluk'"),
+                           def->mem.cur_balloon, def->mem.max_balloon);
+            return -1;
+        } else {
+            VIR_DEBUG("Truncating current %lluk to maximum %lluk",
+                      def->mem.cur_balloon, def->mem.max_balloon);
+            def->mem.cur_balloon = def->mem.max_balloon;
+        }
+    } else if (def->mem.cur_balloon == 0) {
+        def->mem.cur_balloon = def->mem.max_balloon;
+    }
+
     /*
      * Some really crazy backcompat stuff for consoles
      *
@@ -13035,27 +13055,6 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     VIR_FREE(tmp);
-
-    if (def->mem.cur_balloon > def->mem.max_balloon) {
-        /* Older libvirt could get into this situation due to
-         * rounding; if the discrepancy is less than 4MiB, we silently
-         * round down, otherwise we flag the issue.  */
-        if (VIR_DIV_UP(def->mem.cur_balloon, 4096) >
-            VIR_DIV_UP(def->mem.max_balloon, 4096)) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("current memory '%lluk' exceeds "
-                             "maximum '%lluk'"),
-                           def->mem.cur_balloon, def->mem.max_balloon);
-            goto error;
-        } else {
-            VIR_DEBUG("Truncating current %lluk to maximum %lluk",
-                      def->mem.cur_balloon, def->mem.max_balloon);
-            def->mem.cur_balloon = def->mem.max_balloon;
-        }
-    } else if (def->mem.cur_balloon == 0) {
-        def->mem.cur_balloon = def->mem.max_balloon;
-    }
-
 
     if ((n = virXPathNodeSet("./memoryBacking/hugepages/page", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
