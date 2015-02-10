@@ -17600,14 +17600,18 @@ virDomainActualNetDefContentsFormat(virBufferPtr buf,
         if (def->type == VIR_DOMAIN_NET_TYPE_NETWORK && !inSubelement) {
             /* When we're putting our output into the <actual>
              * subelement rather than the main <interface>, the
-             * network name isn't included in the <source> because the
-             * main interface element's <source> has the same info
-             * already. If we've been called to output directly into
-             * the main element's <source> though (the case here -
-             * "!inSubElement"), we *do* need to output the network
-             * name, because the caller won't have done it).
+             * network name and portgroup don't need to be included in
+             * the <source> here because the main interface element's
+             * <source> has the same info already. If we've been
+             * called to output directly into the main element's
+             * <source> though (the case here - "!inSubElement"), we
+             * *do* need to output network/portgroup, because the
+             * caller won't have done it).
              */
-            virBufferEscapeString(buf, " network='%s'", def->data.network.name);
+            virBufferEscapeString(buf, " network='%s'",
+                                  def->data.network.name);
+            virBufferEscapeString(buf, " portgroup='%s'",
+                                  def->data.network.portgroup);
         }
         if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
             actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
