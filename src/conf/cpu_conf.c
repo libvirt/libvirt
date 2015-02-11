@@ -495,8 +495,11 @@ virCPUDefFormatBufFull(virBufferPtr buf,
                           virArchToString(def->arch));
     if (virCPUDefFormatBuf(buf, def, updateCPU) < 0)
         return -1;
-    virBufferAdjustIndent(buf, -2);
 
+    if (virDomainNumaDefCPUFormat(buf, def) < 0)
+        return -1;
+
+    virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</cpu>\n");
 
     return 0;
@@ -591,30 +594,6 @@ virCPUDefFormatBuf(virBufferPtr buf,
         }
     }
 
-    if (def->ncells) {
-        virBufferAddLit(buf, "<numa>\n");
-        virBufferAdjustIndent(buf, 2);
-        for (i = 0; i < def->ncells; i++) {
-            virMemAccess memAccess = def->cells[i].memAccess;
-            char *cpustr = NULL;
-
-            if (!(cpustr = virBitmapFormat(def->cells[i].cpumask)))
-                return -1;
-
-            virBufferAddLit(buf, "<cell");
-            virBufferAsprintf(buf, " id='%zu'", i);
-            virBufferAsprintf(buf, " cpus='%s'", cpustr);
-            virBufferAsprintf(buf, " memory='%llu'", def->cells[i].mem);
-            virBufferAddLit(buf, " unit='KiB'");
-            if (memAccess)
-                virBufferAsprintf(buf, " memAccess='%s'",
-                                  virMemAccessTypeToString(memAccess));
-            virBufferAddLit(buf, "/>\n");
-            VIR_FREE(cpustr);
-        }
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</numa>\n");
-    }
     return 0;
 }
 

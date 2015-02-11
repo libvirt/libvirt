@@ -117,5 +117,6 @@ bool virDomainNumatuneNodeSpecified(virDomainNumatunePtr numatune,
                                     int cellid);
 
 int virDomainNumaDefCPUParseXML(virCPUDefPtr def, xmlXPathContextPtr ctxt);
+int virDomainNumaDefCPUFormat(virBufferPtr buf, virCPUDefPtr def);
 
 #endif /* __NUMA_CONF_H__ */

@@ -777,3 +777,40 @@ virDomainNumaDefCPUParseXML(virCPUDefPtr def,
     VIR_FREE(tmp);
     return ret;
 }
+
+
+int
+virDomainNumaDefCPUFormat(virBufferPtr buf,
+                          virCPUDefPtr def)
+{
+    virMemAccess memAccess;
+    char *cpustr;
+    size_t i;
+
+    if (def->ncells == 0)
+        return 0;
+
+    virBufferAddLit(buf, "<numa>\n");
+    virBufferAdjustIndent(buf, 2);
+    for (i = 0; i < def->ncells; i++) {
+        memAccess = def->cells[i].memAccess;
+
+        if (!(cpustr = virBitmapFormat(def->cells[i].cpumask)))
+            return -1;
+
+        virBufferAddLit(buf, "<cell");
+        virBufferAsprintf(buf, " id='%zu'", i);
+        virBufferAsprintf(buf, " cpus='%s'", cpustr);
+        virBufferAsprintf(buf, " memory='%llu'", def->cells[i].mem);
+        virBufferAddLit(buf, " unit='KiB'");
+        if (memAccess)
+            virBufferAsprintf(buf, " memAccess='%s'",
+                              virMemAccessTypeToString(memAccess));
+        virBufferAddLit(buf, "/>\n");
+        VIR_FREE(cpustr);
+    }
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</numa>\n");
+
+    return 0;
+}
