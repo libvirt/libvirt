@@ -3281,6 +3281,13 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
         if (!(uri = qemuMigrationParseURI(uri_in, &well_formed_uri)))
             goto cleanup;
 
+        if (uri->scheme == NULL) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("missing scheme in migration URI: %s"),
+                           uri_in);
+            goto cleanup;
+        }
+
         if (STRNEQ(uri->scheme, "tcp") &&
             STRNEQ(uri->scheme, "rdma")) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
@@ -4082,6 +4089,13 @@ static int doNativeMigrate(virQEMUDriverPtr driver,
 
     if (!(uribits = qemuMigrationParseURI(uri, NULL)))
         return -1;
+
+    if (uribits->scheme == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing scheme in migration URI: %s"),
+                       uri);
+        goto cleanup;
+    }
 
     if (STREQ(uribits->scheme, "rdma")) {
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_RDMA)) {
