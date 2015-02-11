@@ -141,10 +141,6 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver,
                              virDomainObjPtr vm);
 
 int
-libxlDomainFreeMem(libxlDomainObjPrivatePtr priv,
-                   libxl_domain_config *d_config);
-
-int
 libxlDomainStart(libxlDriverPrivatePtr driver,
                  virDomainObjPtr vm,
                  bool start_paused,
