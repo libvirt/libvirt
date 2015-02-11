@@ -104,7 +104,6 @@ typedef struct _virCellDef virCellDef;
 typedef virCellDef *virCellDefPtr;
 struct _virCellDef {
     virBitmapPtr cpumask; /* CPUs that are part of this node */
-    char *cpustr;         /* CPUs stored in string form for dumpxml */
     unsigned long long mem;     /* Node memory in kB */
     virMemAccess memAccess;
 };

@@ -86,10 +86,8 @@ virCPUDefFree(virCPUDefPtr def)
 
     virCPUDefFreeModel(def);
 
-    for (i = 0; i < def->ncells; i++) {
+    for (i = 0; i < def->ncells; i++)
         virBitmapFree(def->cells[i].cpumask);
-        VIR_FREE(def->cells[i].cpustr);
-    }
     VIR_FREE(def->cells);
     VIR_FREE(def->vendor_id);
 
@@ -161,9 +159,6 @@ virCPUDefCopy(const virCPUDef *cpu)
             copy->cells[i].cpumask = virBitmapNewCopy(cpu->cells[i].cpumask);
 
             if (!copy->cells[i].cpumask)
-                goto error;
-
-            if (VIR_STRDUP(copy->cells[i].cpustr, cpu->cells[i].cpustr) < 0)
                 goto error;
         }
         copy->cells_cpus = cpu->cells_cpus;
@@ -601,16 +596,21 @@ virCPUDefFormatBuf(virBufferPtr buf,
         virBufferAdjustIndent(buf, 2);
         for (i = 0; i < def->ncells; i++) {
             virMemAccess memAccess = def->cells[i].memAccess;
+            char *cpustr = NULL;
+
+            if (!(cpustr = virBitmapFormat(def->cells[i].cpumask)))
+                return -1;
 
             virBufferAddLit(buf, "<cell");
             virBufferAsprintf(buf, " id='%zu'", i);
-            virBufferAsprintf(buf, " cpus='%s'", def->cells[i].cpustr);
+            virBufferAsprintf(buf, " cpus='%s'", cpustr);
             virBufferAsprintf(buf, " memory='%llu'", def->cells[i].mem);
             virBufferAddLit(buf, " unit='KiB'");
             if (memAccess)
                 virBufferAsprintf(buf, " memAccess='%s'",
                                   virMemAccessTypeToString(memAccess));
             virBufferAddLit(buf, "/>\n");
+            VIR_FREE(cpustr);
         }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</numa>\n");

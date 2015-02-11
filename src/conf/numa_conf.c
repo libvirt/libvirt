@@ -749,9 +749,7 @@ virDomainNumaDefCPUParseXML(virCPUDefPtr def,
         if (ncpus <= 0)
             goto cleanup;
         def->cells_cpus += ncpus;
-
-        def->cells[cur_cell].cpustr = tmp;
-        tmp = NULL;
+        VIR_FREE(tmp);
 
         ctxt->node = nodes[i];
         if (virDomainParseMemory("./@memory", "./@unit", ctxt,
