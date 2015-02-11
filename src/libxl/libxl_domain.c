@@ -356,6 +356,7 @@ virDomainDefParserConfig libxlDomainDefParserConfig = {
 
 struct libxlShutdownThreadInfo
 {
+    libxlDriverPrivatePtr driver;
     virDomainObjPtr vm;
     libxl_event *event;
 };
@@ -366,15 +367,14 @@ libxlDomainShutdownThread(void *opaque)
 {
     struct libxlShutdownThreadInfo *shutdown_info = opaque;
     virDomainObjPtr vm = shutdown_info->vm;
-    libxlDomainObjPrivatePtr priv = vm->privateData;
     libxl_event *ev = shutdown_info->event;
-    libxlDriverPrivatePtr driver = priv->driver;
-    libxl_ctx *ctx = priv->ctx;
+    libxlDriverPrivatePtr driver = shutdown_info->driver;
     virObjectEventPtr dom_event = NULL;
     libxl_shutdown_reason xl_reason = ev->u.domain_shutdown.shutdown_reason;
     virDomainShutoffReason reason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
+    libxlDriverConfigPtr cfg;
 
-    virObjectLock(vm);
+    cfg = libxlDriverConfigGet(driver);
 
     if (xl_reason == LIBXL_SHUTDOWN_REASON_POWEROFF) {
         dom_event = virDomainEventLifecycleNewFromObj(vm,
@@ -437,7 +437,7 @@ libxlDomainShutdownThread(void *opaque)
         libxlDomainEventQueue(driver, dom_event);
         dom_event = NULL;
     }
-    libxl_domain_destroy(ctx, vm->def->id, NULL);
+    libxl_domain_destroy(cfg->ctx, vm->def->id, NULL);
     if (libxlDomainCleanupJob(driver, vm, reason)) {
         if (!vm->persistent) {
             virDomainObjListRemove(driver->domains, vm);
@@ -451,7 +451,7 @@ libxlDomainShutdownThread(void *opaque)
         libxlDomainEventQueue(driver, dom_event);
         dom_event = NULL;
     }
-    libxl_domain_destroy(ctx, vm->def->id, NULL);
+    libxl_domain_destroy(cfg->ctx, vm->def->id, NULL);
     libxlDomainCleanupJob(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
     if (libxlDomainStart(driver, vm, false, -1) < 0) {
         virErrorPtr err = virGetLastError();
@@ -464,8 +464,9 @@ libxlDomainShutdownThread(void *opaque)
         virObjectUnlock(vm);
     if (dom_event)
         libxlDomainEventQueue(driver, dom_event);
-    libxl_event_free(ctx, ev);
+    libxl_event_free(cfg->ctx, ev);
     VIR_FREE(shutdown_info);
+    virObjectUnref(cfg);
 }
 
 /*
@@ -474,11 +475,12 @@ libxlDomainShutdownThread(void *opaque)
 void
 libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
 {
-    virDomainObjPtr vm = data;
-    libxlDomainObjPrivatePtr priv = vm->privateData;
+    libxlDriverPrivatePtr driver = data;
+    virDomainObjPtr vm = NULL;
     libxl_shutdown_reason xl_reason = event->u.domain_shutdown.shutdown_reason;
     struct libxlShutdownThreadInfo *shutdown_info;
     virThread thread;
+    libxlDriverConfigPtr cfg;
 
     if (event->type != LIBXL_EVENT_TYPE_DOMAIN_SHUTDOWN) {
         VIR_INFO("Unhandled event type %d", event->type);
@@ -492,6 +494,12 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     if (xl_reason == LIBXL_SHUTDOWN_REASON_SUSPEND)
         goto error;
 
+    vm = virDomainObjListFindByID(driver->domains, event->domid);
+    if (!vm) {
+        VIR_INFO("Received event for unknown domain ID %d", event->domid);
+        goto error;
+    }
+
     /*
      * Start a thread to handle shutdown.  We don't want to be tying up
      * libxl's event machinery by doing a potentially lengthy shutdown.
@@ -499,7 +507,8 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     if (VIR_ALLOC(shutdown_info) < 0)
         goto error;
 
-    shutdown_info->vm = data;
+    shutdown_info->driver = driver;
+    shutdown_info->vm = vm;
     shutdown_info->event = (libxl_event *)event;
     if (virThreadCreate(&thread, false, libxlDomainShutdownThread,
                         shutdown_info) < 0) {
@@ -511,13 +520,17 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     }
 
     /*
-     * libxl_event freed in shutdown thread
+     * VM is unlocked and libxl_event freed in shutdown thread
      */
     return;
 
  error:
+    cfg = libxlDriverConfigGet(driver);
     /* Cast away any const */
-    libxl_event_free(priv->ctx, (libxl_event *)event);
+    libxl_event_free(cfg->ctx, (libxl_event *)event);
+    virObjectUnref(cfg);
+    if (vm)
+        virObjectUnlock(vm);
 }
 
 int
