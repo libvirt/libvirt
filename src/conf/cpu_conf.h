@@ -127,7 +127,6 @@ struct _virCPUDef {
     size_t nfeatures_max;
     virCPUFeatureDefPtr features;
     size_t ncells;
-    size_t ncells_max;
     virCellDefPtr cells;
     unsigned int cells_cpus;
 };

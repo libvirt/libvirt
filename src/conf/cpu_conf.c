@@ -154,7 +154,6 @@ virCPUDefCopy(const virCPUDef *cpu)
     if (cpu->ncells) {
         if (VIR_ALLOC_N(copy->cells, cpu->ncells) < 0)
             goto error;
-        copy->ncells_max = copy->ncells = cpu->ncells;
 
         for (i = 0; i < cpu->ncells; i++) {
             copy->cells[i].mem = cpu->cells[i].mem;
