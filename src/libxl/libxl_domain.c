@@ -1158,10 +1158,9 @@ libxlDomainFreeMem(libxlDomainObjPrivatePtr priv, libxl_domain_config *d_config)
 }
 
 static void
-libxlConsoleCallback(libxl_ctx *ctx, libxl_event* ev, void *for_callback)
+libxlConsoleCallback(libxl_ctx *ctx, libxl_event *ev, void *for_callback)
 {
     virDomainObjPtr vm = for_callback;
-    libxlDomainObjPrivatePtr priv = vm->privateData;
     size_t i;
 
     virObjectLock(vm);
@@ -1175,7 +1174,7 @@ libxlConsoleCallback(libxl_ctx *ctx, libxl_event* ev, void *for_callback)
             console_type =
                 (chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ?
                  LIBXL_CONSOLE_TYPE_SERIAL : LIBXL_CONSOLE_TYPE_PV);
-            ret = libxl_console_get_tty(priv->ctx, ev->domid,
+            ret = libxl_console_get_tty(ctx, ev->domid,
                                         chr->target.port, console_type,
                                         &console);
             if (!ret) {
