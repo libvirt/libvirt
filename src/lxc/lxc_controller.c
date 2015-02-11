@@ -747,8 +747,8 @@ static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl)
     if (virLXCControllerGetNumadAdvice(ctrl, &auto_nodeset) < 0)
         goto cleanup;
 
-    nodeset = virDomainNumatuneGetNodeset(ctrl->def->numatune, auto_nodeset, -1);
-    mode = virDomainNumatuneGetMode(ctrl->def->numatune, -1);
+    nodeset = virDomainNumatuneGetNodeset(ctrl->def->numa, auto_nodeset, -1);
+    mode = virDomainNumatuneGetMode(ctrl->def->numa, -1);
 
     if (virNumaSetupMemoryPolicy(mode, nodeset) < 0)
         goto cleanup;
@@ -778,7 +778,7 @@ static int virLXCControllerSetupCgroupLimits(virLXCControllerPtr ctrl)
     if (virLXCControllerGetNumadAdvice(ctrl, &auto_nodeset) < 0)
         goto cleanup;
 
-    nodeset = virDomainNumatuneGetNodeset(ctrl->def->numatune, auto_nodeset, -1);
+    nodeset = virDomainNumatuneGetNodeset(ctrl->def->numa, auto_nodeset, -1);
 
     if (!(ctrl->cgroup = virLXCCgroupCreate(ctrl->def,
                                             ctrl->initpid,

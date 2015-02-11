@@ -1825,7 +1825,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         return -1;
     }
 
-    if (def->numatune) {
+    if (def->numa) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("numa parameters are not supported "
                           "by parallels driver"));

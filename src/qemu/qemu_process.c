@@ -3263,8 +3263,8 @@ static int qemuProcessHook(void *data)
     if (virSecurityManagerClearSocketLabel(h->driver->securityManager, h->vm->def) < 0)
         goto cleanup;
 
-    mode = virDomainNumatuneGetMode(h->vm->def->numatune, -1);
-    nodeset = virDomainNumatuneGetNodeset(h->vm->def->numatune,
+    mode = virDomainNumatuneGetMode(h->vm->def->numa, -1);
+    nodeset = virDomainNumatuneGetNodeset(h->vm->def->numa,
                                           priv->autoNodeset, -1);
 
     if (virNumaSetupMemoryPolicy(mode, nodeset) < 0)

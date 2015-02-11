@@ -43,10 +43,10 @@ VIR_ENUM_IMPL(virDomainNumatunePlacement,
               "static",
               "auto");
 
-typedef struct _virDomainNumatuneNode virDomainNumatuneNode;
-typedef virDomainNumatuneNode *virDomainNumatuneNodePtr;
+typedef struct _virDomainNumaNode virDomainNumaNode;
+typedef virDomainNumaNode *virDomainNumaNodePtr;
 
-struct _virDomainNumatune {
+struct _virDomainNuma {
     struct {
         bool specified;
         virBitmapPtr nodeset;
@@ -54,7 +54,7 @@ struct _virDomainNumatune {
         virDomainNumatunePlacement placement;
     } memory;               /* pinning for all the memory */
 
-    struct _virDomainNumatuneNode {
+    struct _virDomainNumaNode {
         virBitmapPtr nodeset;
         virDomainNumatuneMemMode mode;
     } *mem_nodes;           /* fine tuning per guest node */
@@ -65,7 +65,7 @@ struct _virDomainNumatune {
 
 
 inline bool
-virDomainNumatuneNodeSpecified(virDomainNumatunePtr numatune,
+virDomainNumatuneNodeSpecified(virDomainNumaPtr numatune,
                                int cellid)
 {
     if (numatune &&
@@ -77,7 +77,7 @@ virDomainNumatuneNodeSpecified(virDomainNumatunePtr numatune,
 }
 
 static int
-virDomainNumatuneNodeParseXML(virDomainNumatunePtr *numatunePtr,
+virDomainNumatuneNodeParseXML(virDomainNumaPtr *numatunePtr,
                               size_t ncells,
                               xmlXPathContextPtr ctxt)
 {
@@ -85,7 +85,7 @@ virDomainNumatuneNodeParseXML(virDomainNumatunePtr *numatunePtr,
     int n = 0;
     int ret = -1;
     size_t i = 0;
-    virDomainNumatunePtr numatune = *numatunePtr;
+    virDomainNumaPtr numatune = *numatunePtr;
     xmlNodePtr *nodes = NULL;
 
     if ((n = virXPathNodeSet("./numatune/memnode", ctxt, &nodes)) < 0) {
@@ -126,7 +126,7 @@ virDomainNumatuneNodeParseXML(virDomainNumatunePtr *numatunePtr,
     for (i = 0; i < n; i++) {
         int mode = 0;
         unsigned int cellid = 0;
-        virDomainNumatuneNodePtr mem_node = NULL;
+        virDomainNumaNodePtr mem_node = NULL;
         xmlNodePtr cur_node = nodes[i];
 
         tmp = virXMLPropString(cur_node, "cellid");
@@ -194,7 +194,7 @@ virDomainNumatuneNodeParseXML(virDomainNumatunePtr *numatunePtr,
 }
 
 int
-virDomainNumatuneParseXML(virDomainNumatunePtr *numatunePtr,
+virDomainNumatuneParseXML(virDomainNumaPtr *numatunePtr,
                           bool placement_static,
                           size_t ncells,
                           xmlXPathContextPtr ctxt)
@@ -220,7 +220,7 @@ virDomainNumatuneParseXML(virDomainNumatunePtr *numatunePtr,
     node = virXPathNode("./numatune/memory[1]", ctxt);
 
     if (*numatunePtr) {
-        virDomainNumatuneFree(*numatunePtr);
+        virDomainNumaFree(*numatunePtr);
         *numatunePtr = NULL;
     }
 
@@ -288,7 +288,7 @@ virDomainNumatuneParseXML(virDomainNumatunePtr *numatunePtr,
 
 int
 virDomainNumatuneFormatXML(virBufferPtr buf,
-                           virDomainNumatunePtr numatune)
+                           virDomainNumaPtr numatune)
 {
     const char *tmp = NULL;
     char *nodeset = NULL;
@@ -316,7 +316,7 @@ virDomainNumatuneFormatXML(virBufferPtr buf,
     }
 
     for (i = 0; i < numatune->nmem_nodes; i++) {
-        virDomainNumatuneNodePtr mem_node = &numatune->mem_nodes[i];
+        virDomainNumaNodePtr mem_node = &numatune->mem_nodes[i];
 
         if (!mem_node->nodeset)
             continue;
@@ -338,23 +338,23 @@ virDomainNumatuneFormatXML(virBufferPtr buf,
 }
 
 void
-virDomainNumatuneFree(virDomainNumatunePtr numatune)
+virDomainNumaFree(virDomainNumaPtr numa)
 {
     size_t i = 0;
 
-    if (!numatune)
+    if (!numa)
         return;
 
-    virBitmapFree(numatune->memory.nodeset);
-    for (i = 0; i < numatune->nmem_nodes; i++)
-        virBitmapFree(numatune->mem_nodes[i].nodeset);
-    VIR_FREE(numatune->mem_nodes);
+    virBitmapFree(numa->memory.nodeset);
+    for (i = 0; i < numa->nmem_nodes; i++)
+        virBitmapFree(numa->mem_nodes[i].nodeset);
+    VIR_FREE(numa->mem_nodes);
 
-    VIR_FREE(numatune);
+    VIR_FREE(numa);
 }
 
 virDomainNumatuneMemMode
-virDomainNumatuneGetMode(virDomainNumatunePtr numatune,
+virDomainNumatuneGetMode(virDomainNumaPtr numatune,
                          int cellid)
 {
     if (!numatune)
@@ -370,7 +370,7 @@ virDomainNumatuneGetMode(virDomainNumatunePtr numatune,
 }
 
 virBitmapPtr
-virDomainNumatuneGetNodeset(virDomainNumatunePtr numatune,
+virDomainNumatuneGetNodeset(virDomainNumaPtr numatune,
                             virBitmapPtr auto_nodeset,
                             int cellid)
 {
@@ -391,7 +391,7 @@ virDomainNumatuneGetNodeset(virDomainNumatunePtr numatune,
 }
 
 char *
-virDomainNumatuneFormatNodeset(virDomainNumatunePtr numatune,
+virDomainNumatuneFormatNodeset(virDomainNumaPtr numatune,
                                virBitmapPtr auto_nodeset,
                                int cellid)
 {
@@ -402,7 +402,7 @@ virDomainNumatuneFormatNodeset(virDomainNumatunePtr numatune,
 
 
 int
-virDomainNumatuneMaybeGetNodeset(virDomainNumatunePtr numatune,
+virDomainNumatuneMaybeGetNodeset(virDomainNumaPtr numatune,
                                  virBitmapPtr auto_nodeset,
                                  virBitmapPtr *retNodeset,
                                  int cellid)
@@ -432,7 +432,7 @@ virDomainNumatuneMaybeGetNodeset(virDomainNumatunePtr numatune,
 
 
 int
-virDomainNumatuneMaybeFormatNodeset(virDomainNumatunePtr numatune,
+virDomainNumatuneMaybeFormatNodeset(virDomainNumaPtr numatune,
                                     virBitmapPtr auto_nodeset,
                                     char **mask,
                                     int cellid)
@@ -451,7 +451,7 @@ virDomainNumatuneMaybeFormatNodeset(virDomainNumatunePtr numatune,
 }
 
 int
-virDomainNumatuneSet(virDomainNumatunePtr *numatunePtr,
+virDomainNumatuneSet(virDomainNumaPtr *numatunePtr,
                      bool placement_static,
                      int placement,
                      int mode,
@@ -459,7 +459,7 @@ virDomainNumatuneSet(virDomainNumatunePtr *numatunePtr,
 {
     bool created = false;
     int ret = -1;
-    virDomainNumatunePtr numatune;
+    virDomainNumaPtr numatune;
 
     /* No need to do anything in this case */
     if (mode == -1 && placement == -1 && !nodeset)
@@ -538,7 +538,7 @@ virDomainNumatuneSet(virDomainNumatunePtr *numatunePtr,
 
  cleanup:
     if (ret < 0 && created) {
-        virDomainNumatuneFree(*numatunePtr);
+        virDomainNumaFree(*numatunePtr);
         *numatunePtr = NULL;
     }
 
@@ -546,8 +546,8 @@ virDomainNumatuneSet(virDomainNumatunePtr *numatunePtr,
 }
 
 static bool
-virDomainNumatuneNodesEqual(virDomainNumatunePtr n1,
-                            virDomainNumatunePtr n2)
+virDomainNumaNodesEqual(virDomainNumaPtr n1,
+                        virDomainNumaPtr n2)
 {
     size_t i = 0;
 
@@ -555,8 +555,8 @@ virDomainNumatuneNodesEqual(virDomainNumatunePtr n1,
         return false;
 
     for (i = 0; i < n1->nmem_nodes; i++) {
-        virDomainNumatuneNodePtr nd1 = &n1->mem_nodes[i];
-        virDomainNumatuneNodePtr nd2 = &n2->mem_nodes[i];
+        virDomainNumaNodePtr nd1 = &n1->mem_nodes[i];
+        virDomainNumaNodePtr nd2 = &n2->mem_nodes[i];
 
         if (!nd1->nodeset && !nd2->nodeset)
             continue;
@@ -572,8 +572,8 @@ virDomainNumatuneNodesEqual(virDomainNumatunePtr n1,
 }
 
 bool
-virDomainNumatuneEquals(virDomainNumatunePtr n1,
-                        virDomainNumatunePtr n2)
+virDomainNumaEquals(virDomainNumaPtr n1,
+                    virDomainNumaPtr n2)
 {
     if (!n1 && !n2)
         return true;
@@ -582,7 +582,7 @@ virDomainNumatuneEquals(virDomainNumatunePtr n1,
         return false;
 
     if (!n1->memory.specified && !n2->memory.specified)
-        return virDomainNumatuneNodesEqual(n1, n2);
+        return virDomainNumaNodesEqual(n1, n2);
 
     if (!n1->memory.specified || !n2->memory.specified)
         return false;
@@ -596,11 +596,11 @@ virDomainNumatuneEquals(virDomainNumatunePtr n1,
     if (!virBitmapEqual(n1->memory.nodeset, n2->memory.nodeset))
         return false;
 
-    return virDomainNumatuneNodesEqual(n1, n2);
+    return virDomainNumaNodesEqual(n1, n2);
 }
 
 bool
-virDomainNumatuneHasPlacementAuto(virDomainNumatunePtr numatune)
+virDomainNumatuneHasPlacementAuto(virDomainNumaPtr numatune)
 {
     if (!numatune)
         return false;
@@ -615,7 +615,7 @@ virDomainNumatuneHasPlacementAuto(virDomainNumatunePtr numatune)
 }
 
 bool
-virDomainNumatuneHasPerNodeBinding(virDomainNumatunePtr numatune)
+virDomainNumatuneHasPerNodeBinding(virDomainNumaPtr numatune)
 {
     size_t i = 0;
 
@@ -631,7 +631,7 @@ virDomainNumatuneHasPerNodeBinding(virDomainNumatunePtr numatune)
 }
 
 int
-virDomainNumatuneSpecifiedMaxNode(virDomainNumatunePtr numatune)
+virDomainNumatuneSpecifiedMaxNode(virDomainNumaPtr numatune)
 {
     int ret = -1;
     virBitmapPtr nodemask = NULL;
@@ -659,7 +659,7 @@ virDomainNumatuneSpecifiedMaxNode(virDomainNumatunePtr numatune)
 }
 
 bool
-virDomainNumatuneNodesetIsAvailable(virDomainNumatunePtr numatune,
+virDomainNumatuneNodesetIsAvailable(virDomainNumaPtr numatune,
                                     virBitmapPtr auto_nodeset)
 {
     size_t i = 0;

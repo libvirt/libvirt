@@ -2091,7 +2091,7 @@ struct _virDomainDef {
 
     virDomainCputune cputune;
 
-    virDomainNumatunePtr numatune;
+    virDomainNumaPtr numa;
     virDomainResourceDefPtr resource;
     virDomainIdMapDef idmap;
 

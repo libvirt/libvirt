@@ -619,11 +619,11 @@ qemuSetupCpusetMems(virDomainObjPtr vm)
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
         return 0;
 
-    if (virDomainNumatuneGetMode(vm->def->numatune, -1) !=
+    if (virDomainNumatuneGetMode(vm->def->numa, -1) !=
         VIR_DOMAIN_NUMATUNE_MEM_STRICT)
         return 0;
 
-    if (virDomainNumatuneMaybeFormatNodeset(vm->def->numatune,
+    if (virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
                                             priv->autoNodeset,
                                             &mem_mask, -1) < 0)
         goto cleanup;
@@ -1030,9 +1030,9 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
         return 0;
     }
 
-    if (virDomainNumatuneGetMode(vm->def->numatune, -1) ==
+    if (virDomainNumatuneGetMode(vm->def->numa, -1) ==
         VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
-        virDomainNumatuneMaybeFormatNodeset(vm->def->numatune,
+        virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
                                             priv->autoNodeset,
                                             &mem_mask, -1) < 0)
         goto cleanup;
@@ -1201,9 +1201,9 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
         return 0;
     }
 
-    if (virDomainNumatuneGetMode(vm->def->numatune, -1) ==
+    if (virDomainNumatuneGetMode(vm->def->numa, -1) ==
         VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
-        virDomainNumatuneMaybeFormatNodeset(vm->def->numatune,
+        virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
                                             priv->autoNodeset,
                                             &mem_mask, -1) < 0)
         goto cleanup;

@@ -4571,7 +4571,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     if (!(props = virJSONValueNewObject()))
         return -1;
 
-    mode = virDomainNumatuneGetMode(def->numatune, guestNode);
+    mode = virDomainNumatuneGetMode(def->numa, guestNode);
 
     if (pagesize == 0 || pagesize != system_page_size) {
         /* Find the huge page size we want to use */
@@ -4682,7 +4682,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     if (userNodeset) {
         nodemask = userNodeset;
     } else {
-        if (virDomainNumatuneMaybeGetNodeset(def->numatune, autoNodeset,
+        if (virDomainNumatuneMaybeGetNodeset(def->numa, autoNodeset,
                                              &nodemask, guestNode) < 0)
             goto cleanup;
     }
@@ -4699,7 +4699,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     props = NULL;
 
     if (!hugepage) {
-        bool nodeSpecified = virDomainNumatuneNodeSpecified(def->numatune, guestNode);
+        bool nodeSpecified = virDomainNumatuneNodeSpecified(def->numa, guestNode);
 
         if ((userNodeset || nodeSpecified || force) &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
@@ -7123,7 +7123,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     int ret = -1;
     const long system_page_size = virGetSystemPageSizeKB();
 
-    if (virDomainNumatuneHasPerNodeBinding(def->numatune) &&
+    if (virDomainNumatuneHasPerNodeBinding(def->numa) &&
         !(virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
           virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -7141,7 +7141,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    if (!virDomainNumatuneNodesetIsAvailable(def->numatune, auto_nodeset))
+    if (!virDomainNumatuneNodesetIsAvailable(def->numa, auto_nodeset))
         goto cleanup;
 
     for (i = 0; i < def->mem.nhugepages; i++) {

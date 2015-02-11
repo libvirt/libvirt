@@ -32,8 +32,8 @@
 # include "cpu_conf.h"
 
 
-typedef struct _virDomainNumatune virDomainNumatune;
-typedef virDomainNumatune *virDomainNumatunePtr;
+typedef struct _virDomainNuma virDomainNuma;
+typedef virDomainNuma *virDomainNumaPtr;
 
 typedef enum {
     VIR_DOMAIN_NUMATUNE_PLACEMENT_DEFAULT = 0,
@@ -47,31 +47,31 @@ VIR_ENUM_DECL(virDomainNumatunePlacement)
 VIR_ENUM_DECL(virDomainNumatuneMemMode)
 
 
-void virDomainNumatuneFree(virDomainNumatunePtr numatune);
+void virDomainNumaFree(virDomainNumaPtr numa);
 
 /*
  * XML Parse/Format functions
  */
-int virDomainNumatuneParseXML(virDomainNumatunePtr *numatunePtr,
+int virDomainNumatuneParseXML(virDomainNumaPtr *numatunePtr,
                               bool placement_static,
                               size_t ncells,
                               xmlXPathContextPtr ctxt)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 
-int virDomainNumatuneFormatXML(virBufferPtr buf, virDomainNumatunePtr numatune)
+int virDomainNumatuneFormatXML(virBufferPtr buf, virDomainNumaPtr numatune)
     ATTRIBUTE_NONNULL(1);
 
 /*
  * Getters
  */
-virDomainNumatuneMemMode virDomainNumatuneGetMode(virDomainNumatunePtr numatune,
+virDomainNumatuneMemMode virDomainNumatuneGetMode(virDomainNumaPtr numatune,
                                                   int cellid);
 
-virBitmapPtr virDomainNumatuneGetNodeset(virDomainNumatunePtr numatune,
+virBitmapPtr virDomainNumatuneGetNodeset(virDomainNumaPtr numatune,
                                          virBitmapPtr auto_nodeset,
                                          int cellid);
 
-int virDomainNumatuneMaybeGetNodeset(virDomainNumatunePtr numatune,
+int virDomainNumatuneMaybeGetNodeset(virDomainNumaPtr numatune,
                                      virBitmapPtr auto_nodeset,
                                      virBitmapPtr *retNodeset,
                                      int cellid);
@@ -79,11 +79,11 @@ int virDomainNumatuneMaybeGetNodeset(virDomainNumatunePtr numatune,
 /*
  * Formatters
  */
-char *virDomainNumatuneFormatNodeset(virDomainNumatunePtr numatune,
+char *virDomainNumatuneFormatNodeset(virDomainNumaPtr numatune,
                                      virBitmapPtr auto_nodeset,
                                      int cellid);
 
-int virDomainNumatuneMaybeFormatNodeset(virDomainNumatunePtr numatune,
+int virDomainNumatuneMaybeFormatNodeset(virDomainNumaPtr numatune,
                                         virBitmapPtr auto_nodeset,
                                         char **mask,
                                         int cellid);
@@ -91,7 +91,7 @@ int virDomainNumatuneMaybeFormatNodeset(virDomainNumatunePtr numatune,
 /*
  * Setters
  */
-int virDomainNumatuneSet(virDomainNumatunePtr *numatunePtr,
+int virDomainNumatuneSet(virDomainNumaPtr *numatunePtr,
                          bool placement_static,
                          int placement,
                          int mode,
@@ -101,19 +101,19 @@ int virDomainNumatuneSet(virDomainNumatunePtr *numatunePtr,
 /*
  * Other accessors
  */
-bool virDomainNumatuneEquals(virDomainNumatunePtr n1,
-                             virDomainNumatunePtr n2);
+bool virDomainNumaEquals(virDomainNumaPtr n1,
+                         virDomainNumaPtr n2);
 
-bool virDomainNumatuneHasPlacementAuto(virDomainNumatunePtr numatune);
+bool virDomainNumatuneHasPlacementAuto(virDomainNumaPtr numatune);
 
-bool virDomainNumatuneHasPerNodeBinding(virDomainNumatunePtr numatune);
+bool virDomainNumatuneHasPerNodeBinding(virDomainNumaPtr numatune);
 
-int virDomainNumatuneSpecifiedMaxNode(virDomainNumatunePtr numatune);
+int virDomainNumatuneSpecifiedMaxNode(virDomainNumaPtr numatune);
 
-bool virDomainNumatuneNodesetIsAvailable(virDomainNumatunePtr numatune,
+bool virDomainNumatuneNodesetIsAvailable(virDomainNumaPtr numatune,
                                          virBitmapPtr auto_nodeset);
 
-bool virDomainNumatuneNodeSpecified(virDomainNumatunePtr numatune,
+bool virDomainNumatuneNodeSpecified(virDomainNumaPtr numatune,
                                     int cellid);
 
 int virDomainNumaDefCPUParseXML(virCPUDefPtr def, xmlXPathContextPtr ctxt);

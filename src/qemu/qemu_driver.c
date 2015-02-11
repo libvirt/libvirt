@@ -4544,9 +4544,9 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (virDomainNumatuneGetMode(vm->def->numatune, -1) ==
+    if (virDomainNumatuneGetMode(vm->def->numa, -1) ==
         VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
-        virDomainNumatuneMaybeFormatNodeset(vm->def->numatune,
+        virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
                                             priv->autoNodeset,
                                             &mem_mask, -1) < 0)
         goto cleanup;
@@ -9404,7 +9404,7 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
     size_t i = 0;
     int ret = -1;
 
-    if (virDomainNumatuneGetMode(vm->def->numatune, -1) !=
+    if (virDomainNumatuneGetMode(vm->def->numa, -1) !=
         VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("change of nodeset for running domain "
@@ -9533,7 +9533,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (mode != -1 &&
-            virDomainNumatuneGetMode(vm->def->numatune, -1) != mode) {
+            virDomainNumatuneGetMode(vm->def->numa, -1) != mode) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("can't change numatune mode for running domain"));
             goto endjob;
@@ -9543,7 +9543,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
             qemuDomainSetNumaParamsLive(vm, nodeset) < 0)
             goto endjob;
 
-        if (virDomainNumatuneSet(&vm->def->numatune,
+        if (virDomainNumatuneSet(&vm->def->numa,
                                  vm->def->placement_mode ==
                                  VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
                                  -1, mode, nodeset) < 0)
@@ -9554,7 +9554,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (virDomainNumatuneSet(&persistentDef->numatune,
+        if (virDomainNumatuneSet(&persistentDef->numa,
                                  persistentDef->placement_mode ==
                                  VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
                                  -1, mode, nodeset) < 0)
@@ -9632,14 +9632,14 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
                 goto cleanup;
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-                param->value.i = virDomainNumatuneGetMode(persistentDef->numatune, -1);
+                param->value.i = virDomainNumatuneGetMode(persistentDef->numa, -1);
             else
-                param->value.i = virDomainNumatuneGetMode(vm->def->numatune, -1);
+                param->value.i = virDomainNumatuneGetMode(vm->def->numa, -1);
             break;
 
         case 1: /* fill numa nodeset here */
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                nodeset = virDomainNumatuneFormatNodeset(persistentDef->numatune,
+                nodeset = virDomainNumatuneFormatNodeset(persistentDef->numa,
                                                          NULL, -1);
                 if (!nodeset)
                     goto cleanup;
@@ -9647,7 +9647,7 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
                 if (!virCgroupHasController(priv->cgroup,
                                             VIR_CGROUP_CONTROLLER_MEMORY) ||
                     virCgroupGetCpusetMems(priv->cgroup, &nodeset) < 0) {
-                    nodeset = virDomainNumatuneFormatNodeset(vm->def->numatune,
+                    nodeset = virDomainNumatuneFormatNodeset(vm->def->numa,
                                                              NULL, -1);
                     if (!nodeset)
                         goto cleanup;

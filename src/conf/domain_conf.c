@@ -2249,7 +2249,7 @@ void virDomainDefFree(virDomainDefPtr def)
         virBitmapFree(def->cputune.iothreadsched[i].ids);
     VIR_FREE(def->cputune.iothreadsched);
 
-    virDomainNumatuneFree(def->numatune);
+    virDomainNumaFree(def->numa);
 
     virSysinfoDefFree(def->sysinfo);
 
@@ -13508,14 +13508,14 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
-    if (virDomainNumatuneParseXML(&def->numatune,
+    if (virDomainNumatuneParseXML(&def->numa,
                                   def->placement_mode ==
                                   VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
                                   def->cpu ? def->cpu->ncells : 0,
                                   ctxt) < 0)
         goto error;
 
-    if (virDomainNumatuneHasPlacementAuto(def->numatune) &&
+    if (virDomainNumatuneHasPlacementAuto(def->numa) &&
         !def->cpumask && !def->cputune.vcpupin &&
         !def->cputune.emulatorpin && !def->cputune.iothreadspin)
         def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO;
@@ -19894,7 +19894,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (cputune)
         virBufferAddLit(buf, "</cputune>\n");
 
-    if (virDomainNumatuneFormatXML(buf, def->numatune) < 0)
+    if (virDomainNumatuneFormatXML(buf, def->numa) < 0)
         goto error;
 
     if (def->resource)
@@ -22322,7 +22322,7 @@ virDomainDefNeedsPlacementAdvice(virDomainDefPtr def)
     if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
         return true;
 
-    if (virDomainNumatuneHasPlacementAuto(def->numatune))
+    if (virDomainNumatuneHasPlacementAuto(def->numa))
         return true;
 
     return false;
