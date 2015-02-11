@@ -4558,7 +4558,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     virDomainHugePagePtr hugepage = NULL;
     virDomainNumatuneMemMode mode;
     const long system_page_size = virGetSystemPageSizeKB();
-    virMemAccess memAccess = def->cpu->cells[guestNode].memAccess;
+    virNumaMemAccess memAccess = def->cpu->cells[guestNode].memAccess;
     size_t i;
     char *mem_path = NULL;
     virBitmapPtr nodemask = NULL;
@@ -4651,18 +4651,18 @@ qemuBuildMemoryBackendStr(unsigned long long size,
             goto cleanup;
 
         switch (memAccess) {
-        case VIR_MEM_ACCESS_SHARED:
+        case VIR_NUMA_MEM_ACCESS_SHARED:
             if (virJSONValueObjectAdd(props, "b:share", true, NULL) < 0)
                 goto cleanup;
             break;
 
-        case VIR_MEM_ACCESS_PRIVATE:
+        case VIR_NUMA_MEM_ACCESS_PRIVATE:
             if (virJSONValueObjectAdd(props, "b:share", false, NULL) < 0)
                 goto cleanup;
             break;
 
-        case VIR_MEM_ACCESS_DEFAULT:
-        case VIR_MEM_ACCESS_LAST:
+        case VIR_NUMA_MEM_ACCESS_DEFAULT:
+        case VIR_NUMA_MEM_ACCESS_LAST:
             break;
         }
     } else {

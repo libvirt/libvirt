@@ -43,6 +43,11 @@ VIR_ENUM_IMPL(virDomainNumatunePlacement,
               "static",
               "auto");
 
+VIR_ENUM_IMPL(virNumaMemAccess, VIR_NUMA_MEM_ACCESS_LAST,
+              "default",
+              "shared",
+              "private");
+
 typedef struct _virDomainNumaNode virDomainNumaNode;
 typedef virDomainNumaNode *virDomainNumaNodePtr;
 
@@ -757,7 +762,7 @@ virDomainNumaDefCPUParseXML(virCPUDefPtr def,
             goto cleanup;
 
         if ((tmp = virXMLPropString(nodes[i], "memAccess"))) {
-            if ((rc = virMemAccessTypeFromString(tmp)) <= 0) {
+            if ((rc = virNumaMemAccessTypeFromString(tmp)) <= 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Invalid 'memAccess' attribute value '%s'"),
                                tmp);
@@ -783,7 +788,7 @@ int
 virDomainNumaDefCPUFormat(virBufferPtr buf,
                           virCPUDefPtr def)
 {
-    virMemAccess memAccess;
+    virNumaMemAccess memAccess;
     char *cpustr;
     size_t i;
 
@@ -805,7 +810,7 @@ virDomainNumaDefCPUFormat(virBufferPtr buf,
         virBufferAddLit(buf, " unit='KiB'");
         if (memAccess)
             virBufferAsprintf(buf, " memAccess='%s'",
-                              virMemAccessTypeToString(memAccess));
+                              virNumaMemAccessTypeToString(memAccess));
         virBufferAddLit(buf, "/>\n");
         VIR_FREE(cpustr);
     }

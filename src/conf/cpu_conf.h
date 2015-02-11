@@ -83,16 +83,6 @@ typedef enum {
 
 VIR_ENUM_DECL(virCPUFeaturePolicy)
 
-typedef enum {
-    VIR_MEM_ACCESS_DEFAULT,
-    VIR_MEM_ACCESS_SHARED,
-    VIR_MEM_ACCESS_PRIVATE,
-
-    VIR_MEM_ACCESS_LAST,
-} virMemAccess;
-
-VIR_ENUM_DECL(virMemAccess)
-
 typedef struct _virCPUFeatureDef virCPUFeatureDef;
 typedef virCPUFeatureDef *virCPUFeatureDefPtr;
 struct _virCPUFeatureDef {
@@ -105,7 +95,7 @@ typedef virCellDef *virCellDefPtr;
 struct _virCellDef {
     virBitmapPtr cpumask; /* CPUs that are part of this node */
     unsigned long long mem;     /* Node memory in kB */
-    virMemAccess memAccess;
+    int memAccess; /* virNumaMemAccess */
 };
 
 typedef struct _virCPUDef virCPUDef;

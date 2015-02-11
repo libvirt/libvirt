@@ -46,6 +46,15 @@ typedef enum {
 VIR_ENUM_DECL(virDomainNumatunePlacement)
 VIR_ENUM_DECL(virDomainNumatuneMemMode)
 
+typedef enum {
+    VIR_NUMA_MEM_ACCESS_DEFAULT,
+    VIR_NUMA_MEM_ACCESS_SHARED,
+    VIR_NUMA_MEM_ACCESS_PRIVATE,
+
+    VIR_NUMA_MEM_ACCESS_LAST
+} virNumaMemAccess;
+
+VIR_ENUM_DECL(virNumaMemAccess)
 
 void virDomainNumaFree(virDomainNumaPtr numa);
 

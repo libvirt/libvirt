@@ -56,12 +56,6 @@ VIR_ENUM_IMPL(virCPUFeaturePolicy, VIR_CPU_FEATURE_LAST,
               "disable",
               "forbid")
 
-VIR_ENUM_IMPL(virMemAccess, VIR_MEM_ACCESS_LAST,
-              "default",
-              "shared",
-              "private")
-
-
 void ATTRIBUTE_NONNULL(1)
 virCPUDefFreeModel(virCPUDefPtr def)
 {
