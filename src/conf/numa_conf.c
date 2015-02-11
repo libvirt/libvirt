@@ -749,9 +749,14 @@ virDomainNumaDefCPUParseXML(virCPUDefPtr def,
         }
 
         if (virBitmapParse(tmp, 0, &def->cells[cur_cell].cpumask,
-                           VIR_DOMAIN_CPUMASK_LEN) <= 0)
+                           VIR_DOMAIN_CPUMASK_LEN) < 0)
             goto cleanup;
 
+        if (virBitmapIsAllClear(def->cells[cur_cell].cpumask)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                          _("NUMA cell %d has no vCPUs assigned"), cur_cell);
+            goto cleanup;
+        }
         VIR_FREE(tmp);
 
         ctxt->node = nodes[i];
