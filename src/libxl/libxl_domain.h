@@ -60,11 +60,6 @@ typedef libxlDomainObjPrivate *libxlDomainObjPrivatePtr;
 struct _libxlDomainObjPrivate {
     virObjectLockable parent;
 
-    /* per domain log stream for libxl messages */
-    FILE *logger_file;
-    xentoollog_logger *logger;
-    /* per domain libxl ctx */
-    libxl_ctx *ctx;
     /* console */
     virChrdevsPtr devs;
     libxl_evgen_domain_death *deathW;

@@ -1,7 +1,7 @@
 /*
  * libxl_migration.c: methods for handling migration with libxenlight
  *
- * Copyright (C) 2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
+ * Copyright (C) 2014-2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -176,7 +176,6 @@ libxlDoMigrateSend(libxlDriverPrivatePtr driver,
                    unsigned long flags,
                    int sockfd)
 {
-    libxlDomainObjPrivatePtr priv;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virObjectEventPtr event = NULL;
     int xl_flags = 0;
@@ -185,12 +184,11 @@ libxlDoMigrateSend(libxlDriverPrivatePtr driver,
     if (flags & VIR_MIGRATE_LIVE)
         xl_flags = LIBXL_SUSPEND_LIVE;
 
-    priv = vm->privateData;
-    ret = libxl_domain_suspend(priv->ctx, vm->def->id, sockfd,
+    ret = libxl_domain_suspend(cfg->ctx, vm->def->id, sockfd,
                                xl_flags, NULL);
     if (ret != 0) {
         /* attempt to resume the domain on failure */
-        if (libxl_domain_resume(priv->ctx, vm->def->id, 1, 0) != 0) {
+        if (libxl_domain_resume(cfg->ctx, vm->def->id, 1, 0) != 0) {
             VIR_DEBUG("Failed to resume domain following failed migration");
             virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
                                  VIR_DOMAIN_PAUSED_MIGRATION);
@@ -547,7 +545,7 @@ libxlDomainMigrationFinish(virConnectPtr dconn,
 
     /* Unpause if requested */
     if (!(flags & VIR_MIGRATE_PAUSED)) {
-        if (libxl_domain_unpause(priv->ctx, vm->def->id) != 0) {
+        if (libxl_domain_unpause(cfg->ctx, vm->def->id) != 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("Failed to unpause domain"));
             goto cleanup;
@@ -577,7 +575,7 @@ libxlDomainMigrationFinish(virConnectPtr dconn,
 
  cleanup:
     if (dom == NULL) {
-        libxl_domain_destroy(priv->ctx, vm->def->id, NULL);
+        libxl_domain_destroy(cfg->ctx, vm->def->id, NULL);
         libxlDomainCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FAILED);
@@ -598,12 +596,11 @@ libxlDomainMigrationConfirm(libxlDriverPrivatePtr driver,
                             int cancelled)
 {
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
-    libxlDomainObjPrivatePtr priv = vm->privateData;
     virObjectEventPtr event = NULL;
     int ret = -1;
 
     if (cancelled) {
-        if (libxl_domain_resume(priv->ctx, vm->def->id, 1, 0) == 0) {
+        if (libxl_domain_resume(cfg->ctx, vm->def->id, 1, 0) == 0) {
             ret = 0;
         } else {
             VIR_DEBUG("Unable to resume domain '%s' after failed migration",
@@ -617,7 +614,7 @@ libxlDomainMigrationConfirm(libxlDriverPrivatePtr driver,
         goto cleanup;
     }
 
-    libxl_domain_destroy(priv->ctx, vm->def->id, NULL);
+    libxl_domain_destroy(cfg->ctx, vm->def->id, NULL);
     libxlDomainCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_MIGRATED);
     event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                               VIR_DOMAIN_EVENT_STOPPED_MIGRATED);

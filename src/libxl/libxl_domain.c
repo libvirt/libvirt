@@ -210,11 +210,6 @@ libxlDomainObjPrivateDispose(void *obj)
 
     libxlDomainObjFreeJob(priv);
     virChrdevFree(priv->devs);
-    libxl_ctx_free(priv->ctx);
-    if (priv->logger_file)
-        VIR_FORCE_FCLOSE(priv->logger_file);
-
-    xtl_logger_destroy(priv->logger);
 }
 
 static void
@@ -533,49 +528,6 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
         virObjectUnlock(vm);
 }
 
-int
-libxlDomainObjPrivateInitCtx(virDomainObjPtr vm)
-{
-    libxlDomainObjPrivatePtr priv = vm->privateData;
-    char *log_file;
-    int ret = -1;
-
-    if (priv->ctx)
-        return 0;
-
-    if (virAsprintf(&log_file, "%s/%s.log", LIBXL_LOG_DIR, vm->def->name) < 0)
-        return -1;
-
-    if ((priv->logger_file = fopen(log_file, "a")) == NULL)  {
-        virReportSystemError(errno,
-                             _("failed to open logfile %s"),
-                             log_file);
-        goto cleanup;
-    }
-
-    priv->logger =
-        (xentoollog_logger *)xtl_createlogger_stdiostream(priv->logger_file,
-                                                          XTL_DEBUG, 0);
-    if (!priv->logger) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot create libxenlight logger for domain %s"),
-                       vm->def->name);
-        goto cleanup;
-    }
-
-    if (libxl_ctx_alloc(&priv->ctx, LIBXL_VERSION, 0, priv->logger)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed libxl context initialization"));
-        goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(log_file);
-    return ret;
-}
-
 void
 libxlDomainEventQueue(libxlDriverPrivatePtr driver, virObjectEventPtr event)
 {
@@ -690,7 +642,7 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
     vm->def->id = -1;
 
     if (priv->deathW) {
-        libxl_evdisable_domain_death(priv->ctx, priv->deathW);
+        libxl_evdisable_domain_death(cfg->ctx, priv->deathW);
         priv->deathW = NULL;
     }
 
@@ -766,7 +718,6 @@ int
 libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
                         virDomainObjPtr vm)
 {
-    libxlDomainObjPrivatePtr priv = vm->privateData;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     time_t curtime = time(NULL);
     char timestr[100];
@@ -788,7 +739,7 @@ libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
 
     /* Unlock virDomainObj while dumping core */
     virObjectUnlock(vm);
-    libxl_domain_core_dump(priv->ctx, vm->def->id, dumpfile, NULL);
+    libxl_domain_core_dump(cfg->ctx, vm->def->id, dumpfile, NULL);
     virObjectLock(vm);
 
     ignore_value(libxlDomainObjEndJob(driver, vm));
@@ -804,7 +755,7 @@ libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
 int
 libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
 {
-    libxlDomainObjPrivatePtr priv = vm->privateData;
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainDefPtr def = vm->def;
     libxl_bitmap map;
     virBitmapPtr cpumask = NULL;
@@ -837,7 +788,7 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
         map.size = cpumaplen;
         map.map = cpumap;
 
-        if (libxl_set_vcpuaffinity(priv->ctx, def->id, vcpu, &map) != 0) {
+        if (libxl_set_vcpuaffinity(cfg->ctx, def->id, vcpu, &map) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to pin vcpu '%d' with libxenlight"), vcpu);
             goto cleanup;
@@ -850,6 +801,7 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
 
  cleanup:
     VIR_FREE(cpumap);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -955,9 +907,6 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
 
     libxl_domain_config_init(&d_config);
 
-    if (libxlDomainObjPrivateInitCtx(vm) < 0)
-        return ret;
-
     if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
         return ret;
 
@@ -1005,10 +954,10 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     }
 
     if (libxlBuildDomainConfig(driver->reservedVNCPorts, vm->def,
-                               priv->ctx, &d_config) < 0)
+                               cfg->ctx, &d_config) < 0)
         goto endjob;
 
-    if (cfg->autoballoon && libxlDomainFreeMem(priv->ctx, &d_config) < 0) {
+    if (cfg->autoballoon && libxlDomainFreeMem(cfg->ctx, &d_config) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("libxenlight failed to get free memory for domain '%s'"),
                        d_config.c_info.name);
@@ -1025,16 +974,16 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     aop_console_how.for_callback = vm;
     aop_console_how.callback = libxlConsoleCallback;
     if (restore_fd < 0) {
-        ret = libxl_domain_create_new(priv->ctx, &d_config,
+        ret = libxl_domain_create_new(cfg->ctx, &d_config,
                                       &domid, NULL, &aop_console_how);
     } else {
 #ifdef LIBXL_HAVE_DOMAIN_CREATE_RESTORE_PARAMS
         params.checkpointed_stream = 0;
-        ret = libxl_domain_create_restore(priv->ctx, &d_config, &domid,
+        ret = libxl_domain_create_restore(cfg->ctx, &d_config, &domid,
                                           restore_fd, &params, NULL,
                                           &aop_console_how);
 #else
-        ret = libxl_domain_create_restore(priv->ctx, &d_config, &domid,
+        ret = libxl_domain_create_restore(cfg->ctx, &d_config, &domid,
                                           restore_fd, NULL, &aop_console_how);
 #endif
     }
@@ -1059,13 +1008,13 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     vm->def->id = domid;
 
     /* Always enable domain death events */
-    if (libxl_evenable_domain_death(priv->ctx, vm->def->id, 0, &priv->deathW))
+    if (libxl_evenable_domain_death(cfg->ctx, vm->def->id, 0, &priv->deathW))
         goto cleanup_dom;
 
     if ((dom_xml = virDomainDefFormat(vm->def, 0)) == NULL)
         goto cleanup_dom;
 
-    if (libxl_userdata_store(priv->ctx, domid, "libvirt-xml",
+    if (libxl_userdata_store(cfg->ctx, domid, "libvirt-xml",
                              (uint8_t *)dom_xml, strlen(dom_xml) + 1)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("libxenlight failed to store userdata"));
@@ -1076,7 +1025,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         goto cleanup_dom;
 
     if (!start_paused) {
-        libxl_domain_unpause(priv->ctx, domid);
+        libxl_domain_unpause(cfg->ctx, domid);
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
     } else {
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
@@ -1100,10 +1049,10 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
 
  cleanup_dom:
     if (priv->deathW) {
-        libxl_evdisable_domain_death(priv->ctx, priv->deathW);
+        libxl_evdisable_domain_death(cfg->ctx, priv->deathW);
         priv->deathW = NULL;
     }
-    libxl_domain_destroy(priv->ctx, domid, NULL);
+    libxl_domain_destroy(cfg->ctx, domid, NULL);
     vm->def->id = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_FAILED);
 
