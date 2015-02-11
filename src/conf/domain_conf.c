@@ -15969,30 +15969,6 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
                        dst->mem.cur_balloon, src->mem.cur_balloon);
         goto error;
     }
-    if (src->mem.nhugepages != dst->mem.nhugepages) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain huge pages count %zu does not match source %zu"),
-                       dst->mem.nhugepages, src->mem.nhugepages);
-        goto error;
-    }
-    for (i = 0; i < src->mem.nhugepages; i++) {
-        virDomainHugePagePtr src_huge = &src->mem.hugepages[i];
-        virDomainHugePagePtr dst_huge = &dst->mem.hugepages[i];
-
-        if (src_huge->size != dst_huge->size) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Target domain huge page size %llu "
-                             "does not match source %llu"),
-                           dst_huge->size, src_huge->size);
-            goto error;
-        }
-
-        if (!virBitmapEqual(src_huge->nodemask, dst_huge->nodemask)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Target huge page nodemask does not match source"));
-            goto error;
-        }
-    }
 
     if (src->vcpus != dst->vcpus) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
