@@ -680,3 +680,114 @@ virDomainNumatuneNodesetIsAvailable(virDomainNumatunePtr numatune,
 
     return true;
 }
+
+
+int
+virDomainNumaDefCPUParseXML(virCPUDefPtr def,
+                            xmlXPathContextPtr ctxt)
+{
+    xmlNodePtr *nodes = NULL;
+    xmlNodePtr oldNode = ctxt->node;
+    int n;
+    size_t i;
+    int ret = -1;
+
+    if (virXPathNode("/domain/cpu/numa[1]", ctxt)) {
+        VIR_FREE(nodes);
+
+        n = virXPathNodeSet("/domain/cpu/numa[1]/cell", ctxt, &nodes);
+        if (n <= 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("NUMA topology defined without NUMA cells"));
+            goto error;
+        }
+
+        if (VIR_RESIZE_N(def->cells, def->ncells_max,
+                         def->ncells, n) < 0)
+            goto error;
+
+        def->ncells = n;
+
+        for (i = 0; i < n; i++) {
+            char *cpus, *memAccessStr;
+            int rc, ncpus = 0;
+            unsigned int cur_cell;
+            char *tmp = NULL;
+
+            tmp = virXMLPropString(nodes[i], "id");
+            if (!tmp) {
+                cur_cell = i;
+            } else {
+                rc  = virStrToLong_ui(tmp, NULL, 10, &cur_cell);
+                if (rc == -1) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("Invalid 'id' attribute in NUMA cell: %s"),
+                                   tmp);
+                    VIR_FREE(tmp);
+                    goto error;
+                }
+                VIR_FREE(tmp);
+            }
+
+            if (cur_cell >= n) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Exactly one 'cell' element per guest "
+                                 "NUMA cell allowed, non-contiguous ranges or "
+                                 "ranges not starting from 0 are not allowed"));
+                goto error;
+            }
+
+            if (def->cells[cur_cell].cpustr) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Duplicate NUMA cell info for cell id '%u'"),
+                               cur_cell);
+                goto error;
+            }
+
+            cpus = virXMLPropString(nodes[i], "cpus");
+            if (!cpus) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Missing 'cpus' attribute in NUMA cell"));
+                goto error;
+            }
+            def->cells[cur_cell].cpustr = cpus;
+
+            ncpus = virBitmapParse(cpus, 0, &def->cells[cur_cell].cpumask,
+                                   VIR_DOMAIN_CPUMASK_LEN);
+            if (ncpus <= 0)
+                goto error;
+            def->cells_cpus += ncpus;
+
+            ctxt->node = nodes[i];
+            if (virDomainParseMemory("./@memory", "./@unit", ctxt,
+                                     &def->cells[cur_cell].mem, true, false) < 0)
+                goto cleanup;
+
+            memAccessStr = virXMLPropString(nodes[i], "memAccess");
+            if (memAccessStr) {
+                rc = virMemAccessTypeFromString(memAccessStr);
+
+                if (rc <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("Invalid 'memAccess' attribute "
+                                     "value '%s'"),
+                                   memAccessStr);
+                    VIR_FREE(memAccessStr);
+                    goto error;
+                }
+
+                def->cells[cur_cell].memAccess = rc;
+
+                VIR_FREE(memAccessStr);
+            }
+        }
+    }
+
+    ret = 0;
+
+ error:
+ cleanup:
+    ctxt->node = oldNode;
+    VIR_FREE(nodes);
+    return ret;
+}

@@ -29,6 +29,7 @@
 # include "virutil.h"
 # include "virbitmap.h"
 # include "virbuffer.h"
+# include "cpu_conf.h"
 
 
 typedef struct _virDomainNumatune virDomainNumatune;
@@ -114,4 +115,7 @@ bool virDomainNumatuneNodesetIsAvailable(virDomainNumatunePtr numatune,
 
 bool virDomainNumatuneNodeSpecified(virDomainNumatunePtr numatune,
                                     int cellid);
+
+int virDomainNumaDefCPUParseXML(virCPUDefPtr def, xmlXPathContextPtr ctxt);
+
 #endif /* __NUMA_CONF_H__ */
