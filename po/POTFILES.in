@@ -27,7 +27,7 @@ src/conf/netdev_vport_profile_conf.c
 src/conf/network_conf.c
 src/conf/networkcommon_conf.c
 src/conf/node_device_conf.c
-src/conf/numatune_conf.c
+src/conf/numa_conf.c
 src/conf/nwfilter_conf.c
 src/conf/nwfilter_params.c
 src/conf/object_event.c

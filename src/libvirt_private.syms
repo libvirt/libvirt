@@ -625,7 +625,7 @@ virNodeDeviceObjRemove;
 virNodeDeviceObjUnlock;
 
 
-# conf/numatune_conf.h
+# conf/numa_conf.h
 virDomainNumatuneEquals;
 virDomainNumatuneFormatNodeset;
 virDomainNumatuneFormatXML;

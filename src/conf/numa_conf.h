@@ -1,7 +1,7 @@
 /*
- * numatune_conf.h
+ * numa_conf.h
  *
- * Copyright (C) 2014 Red Hat, Inc.
+ * Copyright (C) 2014-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,8 +20,8 @@
  * Author: Martin Kletzander <mkletzan@redhat.com>
  */
 
-#ifndef __NUMATUNE_CONF_H__
-# define __NUMATUNE_CONF_H__
+#ifndef __NUMA_CONF_H__
+# define __NUMA_CONF_H__
 
 # include <libxml/xpath.h>
 
@@ -114,4 +114,4 @@ bool virDomainNumatuneNodesetIsAvailable(virDomainNumatunePtr numatune,
 
 bool virDomainNumatuneNodeSpecified(virDomainNumatunePtr numatune,
                                     int cellid);
-#endif /* __NUMATUNE_CONF_H__ */
+#endif /* __NUMA_CONF_H__ */

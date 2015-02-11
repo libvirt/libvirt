@@ -1,7 +1,7 @@
 /*
- * numatune_conf.c
+ * numa_conf.c
  *
- * Copyright (C) 2014 Red Hat, Inc.
+ * Copyright (C) 2014-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,7 @@
 
 #include <config.h>
 
-#include "numatune_conf.h"
+#include "numa_conf.h"
 
 #include "domain_conf.h"
 #include "viralloc.h"

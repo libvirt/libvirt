@@ -38,7 +38,7 @@
 # include "virsocketaddr.h"
 # include "networkcommon_conf.h"
 # include "nwfilter_params.h"
-# include "numatune_conf.h"
+# include "numa_conf.h"
 # include "virnetdevmacvlan.h"
 # include "virsysinfo.h"
 # include "virnetdevvportprofile.h"

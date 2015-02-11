@@ -275,7 +275,7 @@ DOMAIN_CONF_SOURCES =						\
 		conf/domain_audit.c conf/domain_audit.h		\
 		conf/domain_nwfilter.c conf/domain_nwfilter.h	\
 		conf/snapshot_conf.c conf/snapshot_conf.h	\
-		conf/numatune_conf.c conf/numatune_conf.h
+		conf/numa_conf.c conf/numa_conf.h
 
 OBJECT_EVENT_SOURCES =						\
 		conf/object_event.c conf/object_event.h \
