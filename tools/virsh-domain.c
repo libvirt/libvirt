@@ -6790,6 +6790,94 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "iothreadsinfo" command
+ */
+static const vshCmdInfo info_iothreads[] = {
+    {.name = "help",
+     .data = N_("view domain IOThreads")
+    },
+    {.name = "desc",
+     .data = N_("Returns basic information about the domain IOThreads.")
+    },
+    {.name = NULL}
+};
+static const vshCmdOptDef opts_iothreads[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = "config",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect next boot")
+    },
+    {.name = "live",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect running domain")
+    },
+    {.name = "current",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect current domain")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdIOThreadsInfo(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    int niothreads = 0;
+    virDomainIOThreadInfoPtr *info;
+    size_t i;
+    int maxcpu;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if ((maxcpu = vshNodeGetCPUCount(ctl->conn)) < 0)
+        goto cleanup;
+
+    if ((niothreads = virDomainGetIOThreadsInfo(dom, &info, flags)) < 0) {
+        vshError(ctl, _("Unable to get domain IOThreads information"));
+        goto cleanup;
+    }
+
+    if (niothreads == 0) {
+        vshPrintExtra(ctl, _("No IOThreads found for the domain"));
+        goto cleanup;
+    }
+
+    vshPrintExtra(ctl, " %-15s %-15s\n",
+                  _("IOThread ID"), _("CPU Affinity"));
+    vshPrintExtra(ctl, "---------------------------------------------------\n");
+    for (i = 0; i < niothreads; i++) {
+
+        vshPrint(ctl, " %-15u ", info[i]->iothread_id);
+        ignore_value(vshPrintPinInfo(info[i]->cpumap, info[i]->cpumaplen,
+                                     maxcpu, 0));
+        vshPrint(ctl, "\n");
+        virDomainIOThreadsInfoFree(info[i]);
+    }
+    VIR_FREE(info);
+
+ cleanup:
+    virDomainFree(dom);
+    return niothreads >= 0;
+}
+
+/*
  * "cpu-compare" command
  */
 static const vshCmdInfo info_cpu_compare[] = {
@@ -12690,6 +12778,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdInjectNMI,
      .opts = opts_inject_nmi,
      .info = info_inject_nmi,
+     .flags = 0
+    },
+    {.name = "iothreadsinfo",
+     .handler = cmdIOThreadsInfo,
+     .opts = opts_iothreads,
+     .info = info_iothreads,
      .flags = 0
     },
     {.name = "send-key",

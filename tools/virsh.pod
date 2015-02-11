@@ -1361,6 +1361,18 @@ If I<--timeout> is specified, the command gives up waiting for events
 after I<seconds> have elapsed.   With I<--loop>, the command prints all
 events until a timeout or interrupt key.
 
+=item B<iothreadsinfo> I<domain> [[I<--live>] [I<--config>] | [I<--current>]]
+
+Display basic domain IOThreads information including the IOThread ID and
+the CPU Affinity for each IOThread.
+
+If I<--live> is specified, get the IOThreads data from the running guest. If
+the guest is not running, an error is returned.
+If I<--config> is specified, get the IOThreads data from the next boot of
+a persistent guest.
+If I<--current> is specified or I<--live> and I<--config> are not specified,
+then get the IOThread data based on the current guest state.
+
 =item B<managedsave> I<domain> [I<--bypass-cache>]
 [{I<--running> | I<--paused>}] [I<--verbose>]
 
