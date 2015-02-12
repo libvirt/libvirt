@@ -284,6 +284,8 @@ int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
 
 bool virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps);
 
+void virQEMUCapsFilterByMachineType(virQEMUCapsPtr qemuCaps,
+                                    const char *machineType);
 
 virQEMUCapsCachePtr virQEMUCapsCacheNew(const char *libDir,
                                         const char *cacheDir,

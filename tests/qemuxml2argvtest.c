@@ -312,6 +312,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
             goto out;
     }
 
+    virQEMUCapsFilterByMachineType(extraFlags, vmdef->os.machine);
+
     if (virQEMUCapsGet(extraFlags, QEMU_CAPS_DEVICE)) {
         if (qemuDomainAssignAddresses(vmdef, extraFlags, NULL)) {
             if (flags & FLAG_EXPECT_ERROR)

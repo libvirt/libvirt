@@ -3516,6 +3516,42 @@ bool virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps)
 }
 
 
+struct virQEMUCapsMachineTypeFilter {
+    const char *machineType;
+    virQEMUCapsFlags *flags;
+    size_t nflags;
+};
+
+static const struct virQEMUCapsMachineTypeFilter virQEMUCapsMachineFilter[] = {
+    /* { "blah", virQEMUCapsMachineBLAHFilter,
+         ARRAY_CARDINALITY(virQEMUCapsMachineBLAHFilter) }, */
+    { "", NULL, 0 },
+};
+
+
+void
+virQEMUCapsFilterByMachineType(virQEMUCapsPtr qemuCaps,
+                               const char *machineType)
+{
+    size_t i;
+
+    if (!machineType)
+        return;
+
+    for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsMachineFilter); i++) {
+        const struct virQEMUCapsMachineTypeFilter *filter = &virQEMUCapsMachineFilter[i];
+        size_t j;
+
+        if (STRNEQ(filter->machineType, machineType))
+            continue;
+
+        for (j = 0; j < filter->nflags; j++)
+            virQEMUCapsClear(qemuCaps, filter->flags[j]);
+    }
+
+}
+
+
 virQEMUCapsCachePtr
 virQEMUCapsCacheNew(const char *libDir,
                     const char *cacheDir,
@@ -3590,7 +3626,7 @@ virQEMUCapsCacheLookup(virQEMUCapsCachePtr cache, const char *binary)
 virQEMUCapsPtr
 virQEMUCapsCacheLookupCopy(virQEMUCapsCachePtr cache,
                            const char *binary,
-                           const char *machineType ATTRIBUTE_UNUSED)
+                           const char *machineType)
 {
     virQEMUCapsPtr qemuCaps = virQEMUCapsCacheLookup(cache, binary);
     virQEMUCapsPtr ret;
@@ -3600,6 +3636,7 @@ virQEMUCapsCacheLookupCopy(virQEMUCapsCachePtr cache,
 
     ret = virQEMUCapsNewCopy(qemuCaps);
     virObjectUnref(qemuCaps);
+    virQEMUCapsFilterByMachineType(ret, machineType);
     return ret;
 }
 
