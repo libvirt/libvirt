@@ -3588,7 +3588,9 @@ virQEMUCapsCacheLookup(virQEMUCapsCachePtr cache, const char *binary)
 
 
 virQEMUCapsPtr
-virQEMUCapsCacheLookupCopy(virQEMUCapsCachePtr cache, const char *binary)
+virQEMUCapsCacheLookupCopy(virQEMUCapsCachePtr cache,
+                           const char *binary,
+                           const char *machineType ATTRIBUTE_UNUSED)
 {
     virQEMUCapsPtr qemuCaps = virQEMUCapsCacheLookup(cache, binary);
     virQEMUCapsPtr ret;

@@ -2915,7 +2915,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
             hostIPv6Capable = true;
         }
         if (!(qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
-                                                    (*def)->emulator)))
+                                                    (*def)->emulator,
+                                                    (*def)->os.machine)))
             goto cleanup;
 
         qemuIPv6Capable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_IPV6_MIGRATION);

@@ -3834,7 +3834,8 @@ qemuProcessReconnect(void *opaque)
      */
     if (!priv->qemuCaps &&
         !(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
-                                                      obj->def->emulator)))
+                                                      obj->def->emulator,
+                                                      obj->def->os.machine)))
         goto error;
 
     /* In case the domain shutdown while we were not running,
@@ -4466,7 +4467,8 @@ int qemuProcessStart(virConnectPtr conn,
     VIR_DEBUG("Determining emulator version");
     virObjectUnref(priv->qemuCaps);
     if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
-                                                      vm->def->emulator)))
+                                                      vm->def->emulator,
+                                                      vm->def->os.machine)))
         goto cleanup;
 
     /* network devices must be "prepared" before hostdevs, because
@@ -5510,7 +5512,8 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_DEBUG("Determining emulator version");
     virObjectUnref(priv->qemuCaps);
     if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
-                                                      vm->def->emulator)))
+                                                      vm->def->emulator,
+                                                      vm->def->os.machine)))
         goto error;
 
     VIR_DEBUG("Preparing monitor state");

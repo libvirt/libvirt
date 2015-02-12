@@ -291,7 +291,8 @@ virQEMUCapsCachePtr virQEMUCapsCacheNew(const char *libDir,
 virQEMUCapsPtr virQEMUCapsCacheLookup(virQEMUCapsCachePtr cache,
                                       const char *binary);
 virQEMUCapsPtr virQEMUCapsCacheLookupCopy(virQEMUCapsCachePtr cache,
-                                          const char *binary);
+                                          const char *binary,
+                                          const char *machineType);
 virQEMUCapsPtr virQEMUCapsCacheLookupByArch(virQEMUCapsCachePtr cache,
                                             virArch arch);
 void virQEMUCapsCacheFree(virQEMUCapsCachePtr cache);
