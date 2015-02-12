@@ -664,7 +664,7 @@
         real-time schedulers (<code>fifo</code>, <code>rr</code>), priority must
         be specified as well (and is ignored for non-real-time ones). The value
         range for the priority depends on the host kernel (usually 1-99).
-        <span class="since">Since 1.2.12</span>
+        <span class="since">Since 1.2.13</span>
       </dd>
 
     </dl>
