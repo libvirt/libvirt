@@ -703,6 +703,90 @@ virSecurityManagerReleaseLabel(virSecurityManagerPtr mgr,
 }
 
 
+static int virSecurityManagerCheckModel(virSecurityManagerPtr mgr,
+                                        char *secmodel)
+{
+    size_t i;
+    virSecurityManagerPtr *sec_managers = NULL;
+
+    if ((sec_managers = virSecurityManagerGetNested(mgr)) == NULL)
+        return -1;
+
+    if (STREQ_NULLABLE(secmodel, "none"))
+        return 0;
+
+    for (i = 0; sec_managers[i]; i++) {
+        if (STREQ_NULLABLE(secmodel, sec_managers[i]->drv->name))
+            return 0;
+    }
+
+    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                   _("Unable to find security driver for model %s"),
+                   secmodel);
+    return -1;
+}
+
+
+static int
+virSecurityManagerCheckDiskLabel(virSecurityManagerPtr mgr,
+                                 virDomainDiskDefPtr disk)
+{
+    size_t i;
+
+    for (i = 0; i < disk->src->nseclabels; i++) {
+        if (virSecurityManagerCheckModel(mgr, disk->src->seclabels[i]->model) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virSecurityManagerCheckChardevLabel(virSecurityManagerPtr mgr,
+                                    virDomainChrDefPtr dev)
+{
+    size_t i;
+
+    for (i = 0; i < dev->nseclabels; i++) {
+        if (virSecurityManagerCheckModel(mgr, dev->seclabels[i]->model) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virSecurityManagerCheckChardevCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                       virDomainChrDefPtr dev,
+                                       void *opaque)
+{
+    virSecurityManagerPtr mgr = opaque;
+    return virSecurityManagerCheckChardevLabel(mgr, dev);
+}
+
+
+int virSecurityManagerCheckAllLabel(virSecurityManagerPtr mgr,
+                                    virDomainDefPtr vm)
+{
+    size_t i;
+
+    for (i = 0; i < vm->ndisks; i++) {
+        if (virSecurityManagerCheckDiskLabel(mgr, vm->disks[i]) < 0)
+            return -1;
+    }
+
+    if (virDomainChrDefForeach(vm,
+                               true,
+                               virSecurityManagerCheckChardevCallback,
+                               mgr) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 int
 virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr vm,

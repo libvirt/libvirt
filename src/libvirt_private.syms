@@ -956,6 +956,7 @@ virSecurityDriverLookup;
 
 
 # security/security_manager.h
+virSecurityManagerCheckAllLabel;
 virSecurityManagerClearSocketLabel;
 virSecurityManagerGenLabel;
 virSecurityManagerGetBaseLabel;

@@ -111,6 +111,8 @@ int virSecurityManagerReserveLabel(virSecurityManagerPtr mgr,
                                    pid_t pid);
 int virSecurityManagerReleaseLabel(virSecurityManagerPtr mgr,
                                    virDomainDefPtr sec);
+int virSecurityManagerCheckAllLabel(virSecurityManagerPtr mgr,
+                                    virDomainDefPtr sec);
 int virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
                                   virDomainDefPtr sec,
                                   const char *stdin_path);

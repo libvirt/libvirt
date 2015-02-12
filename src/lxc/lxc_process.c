@@ -1135,6 +1135,9 @@ int virLXCProcessStart(virConnectPtr conn,
         vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DEFAULT)
         vm->def->seclabels[0]->type = VIR_DOMAIN_SECLABEL_NONE;
 
+    if (virSecurityManagerCheckAllLabel(driver->securityManager, vm->def) < 0)
+        goto cleanup;
+
     if (virSecurityManagerGenLabel(driver->securityManager, vm->def) < 0) {
         virDomainAuditSecurityLabel(vm, false);
         goto cleanup;

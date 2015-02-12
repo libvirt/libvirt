@@ -4488,6 +4488,10 @@ int qemuProcessStart(virConnectPtr conn,
                                NULL) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Checking domain and device security labels");
+    if (virSecurityManagerCheckAllLabel(driver->securityManager, vm->def) < 0)
+        goto cleanup;
+
     /* If you are using a SecurityDriver with dynamic labelling,
        then generate a security label for isolation */
     VIR_DEBUG("Generating domain security label (if required)");
@@ -5488,6 +5492,8 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
     }
 
+    if (virSecurityManagerCheckAllLabel(driver->securityManager, vm->def) < 0)
+        goto error;
     if (virSecurityManagerGenLabel(driver->securityManager, vm->def) < 0)
         goto error;
 
