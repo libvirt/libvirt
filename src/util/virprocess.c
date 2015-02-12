@@ -1062,7 +1062,7 @@ virProcessExitWithStatus(int status)
     exit(value);
 }
 
-#if HAVE_SCHED_SETSCHEDULER
+#if HAVE_SCHED_SETSCHEDULER && defined(SCHED_BATCH) && defined(SCHED_IDLE)
 
 static int
 virProcessSchedTranslatePolicy(virProcessSchedPolicy policy)
@@ -1092,7 +1092,9 @@ virProcessSchedTranslatePolicy(virProcessSchedPolicy policy)
 }
 
 int
-virProcessSetScheduler(pid_t pid, virProcessSchedPolicy policy, int priority)
+virProcessSetScheduler(pid_t pid,
+                       virProcessSchedPolicy policy,
+                       int priority)
 {
     struct sched_param param = {0};
     int pol = virProcessSchedTranslatePolicy(policy);
@@ -1144,7 +1146,7 @@ virProcessSetScheduler(pid_t pid, virProcessSchedPolicy policy, int priority)
 
 int
 virProcessSetScheduler(pid_t pid ATTRIBUTE_UNUSED,
-                       int policy,
+                       virProcessSchedPolicy policy,
                        int priority ATTRIBUTE_UNUSED)
 {
     if (!policy)
