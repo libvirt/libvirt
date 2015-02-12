@@ -154,7 +154,7 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
     virNetDevVPortProfilePtr vport = NULL;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
-    VIR_DEBUG("Stopping VM name=%s pid=%d reason=%d",
+    VIR_DEBUG("Cleanup VM name=%s pid=%d reason=%d",
               vm->def->name, (int)vm->pid, (int)reason);
 
     /* now that we know it's stopped call the hook if present */
@@ -1163,6 +1163,7 @@ int virLXCProcessStart(virConnectPtr conn,
                                       vm->def, NULL) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Setting up consoles");
     for (i = 0; i < vm->def->nconsoles; i++) {
         char *ttyPath;
 
@@ -1180,9 +1181,11 @@ int virLXCProcessStart(virConnectPtr conn,
             goto cleanup;
     }
 
+    VIR_DEBUG("Setting up Interfaces");
     if (virLXCProcessSetupInterfaces(conn, vm->def, &nveths, &veths) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Preparing to launch");
     if ((logfd = open(logfile, O_WRONLY | O_APPEND | O_CREAT,
              S_IRUSR|S_IWUSR)) < 0) {
         virReportSystemError(errno,
@@ -1240,6 +1243,7 @@ int virLXCProcessStart(virConnectPtr conn,
         VIR_WARN("Unable to seek to end of logfile: %s",
                  virStrerror(errno, ebuf, sizeof(ebuf)));
 
+    VIR_DEBUG("Launching container");
     virCommandRawStatus(cmd);
     if (virCommandRun(cmd, &status) < 0)
         goto cleanup;
