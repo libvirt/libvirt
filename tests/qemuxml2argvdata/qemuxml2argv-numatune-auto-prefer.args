@@ -1,0 +1,5 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/kvm -S -M pc -m 64 -smp 1 \
+-numa node,nodeid=0,cpus=0,mem=64 \
+-nographic -monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi -boot c -usb -net none -serial none -parallel none

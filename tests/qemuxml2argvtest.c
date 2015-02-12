@@ -1260,6 +1260,10 @@ mymain(void)
     DO_TEST("cputune-zero-shares", QEMU_CAPS_NAME);
     DO_TEST_PARSE_ERROR("cputune-iothreadsched-toomuch", QEMU_CAPS_NAME);
     DO_TEST_PARSE_ERROR("cputune-vcpusched-overlap", QEMU_CAPS_NAME);
+    DO_TEST("cputune-numatune", QEMU_CAPS_SMP_TOPOLOGY,
+            QEMU_CAPS_KVM,
+            QEMU_CAPS_OBJECT_MEMORY_RAM,
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
 
     DO_TEST("numatune-memory", NONE);
     DO_TEST_PARSE_ERROR("numatune-memory-invalid-nodeset", NONE);
@@ -1272,6 +1276,8 @@ mymain(void)
     DO_TEST_FAILURE("numatune-memnode-no-memory", NONE);
 
     DO_TEST("numatune-auto-nodeset-invalid", NONE);
+    DO_TEST("numatune-auto-prefer", QEMU_CAPS_OBJECT_MEMORY_RAM,
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST_FAILURE("numatune-static-nodeset-exceed-hostnode",
                     QEMU_CAPS_OBJECT_MEMORY_RAM);
     DO_TEST_PARSE_ERROR("numatune-memnode-nocpu", NONE);

@@ -4699,7 +4699,9 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     props = NULL;
 
     if (!hugepage) {
-        if ((nodemask || force) &&
+        bool nodeSpecified = virDomainNumatuneNodeSpecified(def->numatune, guestNode);
+
+        if ((userNodeset || nodeSpecified || force) &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu doesn't support the "
@@ -4709,7 +4711,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
 
         /* report back that using the new backend is not necessary to achieve
          * the desired configuration */
-        if (!nodemask) {
+        if (!userNodeset && !nodeSpecified) {
             ret = 1;
             goto cleanup;
         }
