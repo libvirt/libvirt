@@ -68,7 +68,6 @@ struct _libxlDomainObjPrivate {
     /* console */
     virChrdevsPtr devs;
     libxl_evgen_domain_death *deathW;
-    libxlDriverPrivatePtr driver;
     unsigned short migrationPort;
 
     struct libxlDomainJobObj job;
@@ -132,10 +131,6 @@ libxlDomainCleanupJob(libxlDriverPrivatePtr driver,
 void
 libxlDomainEventHandler(void *data,
                         VIR_LIBXL_EVENT_CONST libxl_event *event);
-
-int
-libxlDomainEventsRegister(libxlDriverPrivatePtr driver,
-                          virDomainObjPtr vm);
 
 int
 libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,

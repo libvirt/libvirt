@@ -367,8 +367,9 @@ libxlReconnectDomain(virDomainObjPtr vm,
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
-    /* Re-register domain death et. al. events */
-    libxlDomainEventsRegister(driver, vm);
+    /* Enable domain death events */
+    libxl_evenable_domain_death(priv->ctx, vm->def->id, 0, &priv->deathW);
+
     virObjectUnlock(vm);
     return 0;
 

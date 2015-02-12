@@ -758,30 +758,6 @@ libxlDomainCleanupJob(libxlDriverPrivatePtr driver,
 }
 
 /*
- * Register for domain events emitted by libxl.
- */
-int
-libxlDomainEventsRegister(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
-{
-    libxlDomainObjPrivatePtr priv = vm->privateData;
-
-    priv->driver = driver;
-
-    /* Always enable domain death events */
-    if (libxl_evenable_domain_death(priv->ctx, vm->def->id, 0, &priv->deathW))
-        goto error;
-
-    return 0;
-
- error:
-    if (priv->deathW) {
-        libxl_evdisable_domain_death(priv->ctx, priv->deathW);
-        priv->deathW = NULL;
-    }
-    return -1;
-}
-
-/*
  * Core dump domain to default dump path.
  *
  * virDomainObjPtr must be locked on invocation
@@ -1081,7 +1057,9 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
      * be cleaned up if there are any subsequent failures.
      */
     vm->def->id = domid;
-    if (libxlDomainEventsRegister(driver, vm) < 0)
+
+    /* Always enable domain death events */
+    if (libxl_evenable_domain_death(priv->ctx, vm->def->id, 0, &priv->deathW))
         goto cleanup_dom;
 
     if ((dom_xml = virDomainDefFormat(vm->def, 0)) == NULL)
@@ -1121,6 +1099,10 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     goto endjob;
 
  cleanup_dom:
+    if (priv->deathW) {
+        libxl_evdisable_domain_death(priv->ctx, priv->deathW);
+        priv->deathW = NULL;
+    }
     libxl_domain_destroy(priv->ctx, domid, NULL);
     vm->def->id = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_FAILED);
