@@ -111,4 +111,7 @@ int virDomainNumatuneSpecifiedMaxNode(virDomainNumatunePtr numatune);
 
 bool virDomainNumatuneNodesetIsAvailable(virDomainNumatunePtr numatune,
                                          virBitmapPtr auto_nodeset);
+
+bool virDomainNumatuneNodeSpecified(virDomainNumatunePtr numatune,
+                                    int cellid);
 #endif /* __NUMATUNE_CONF_H__ */

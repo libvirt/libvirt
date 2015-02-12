@@ -639,6 +639,7 @@ virDomainNumatuneMaybeGetNodeset;
 virDomainNumatuneMemModeTypeFromString;
 virDomainNumatuneMemModeTypeToString;
 virDomainNumatuneNodesetIsAvailable;
+virDomainNumatuneNodeSpecified;
 virDomainNumatuneParseXML;
 virDomainNumatunePlacementTypeFromString;
 virDomainNumatunePlacementTypeToString;
