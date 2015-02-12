@@ -1050,6 +1050,20 @@ int virLXCProcessStart(virConnectPtr conn,
     }
     virCgroupFree(&selfcgroup);
 
+    if (vm->def->nconsoles == 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("At least one PTY console is required"));
+        return -1;
+    }
+
+    for (i = 0; i < vm->def->nconsoles; i++) {
+        if (vm->def->consoles[i]->source.type != VIR_DOMAIN_CHR_TYPE_PTY) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only PTY console types are supported"));
+            return -1;
+        }
+    }
+
     if (virFileMakePath(cfg->logDir) < 0) {
         virReportSystemError(errno,
                              _("Cannot create log directory '%s'"),
@@ -1149,19 +1163,8 @@ int virLXCProcessStart(virConnectPtr conn,
                                       vm->def, NULL) < 0)
         goto cleanup;
 
-    if (vm->def->nconsoles == 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("At least one PTY console is required"));
-        goto cleanup;
-    }
-
     for (i = 0; i < vm->def->nconsoles; i++) {
         char *ttyPath;
-        if (vm->def->consoles[i]->source.type != VIR_DOMAIN_CHR_TYPE_PTY) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Only PTY console types are supported"));
-            goto cleanup;
-        }
 
         if (virFileOpenTty(&ttyFDs[i], &ttyPath, 1) < 0) {
             virReportSystemError(errno, "%s",
