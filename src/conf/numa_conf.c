@@ -245,32 +245,24 @@ virDomainNumatuneParseXML(virDomainNumaPtr *numatunePtr,
         goto cleanup;
     }
 
-    tmp = virXMLPropString(node, "mode");
-    if (tmp) {
-        mode = virDomainNumatuneMemModeTypeFromString(tmp);
-        if (mode < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported NUMA memory tuning mode '%s'"),
-                           tmp);
-            goto cleanup;
-        }
+    if ((tmp = virXMLPropString(node, "mode")) &&
+        (mode = virDomainNumatuneMemModeTypeFromString(tmp)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported NUMA memory tuning mode '%s'"), tmp);
+        goto cleanup;
     }
     VIR_FREE(tmp);
 
-    tmp = virXMLPropString(node, "placement");
-    if (tmp) {
-        placement = virDomainNumatunePlacementTypeFromString(tmp);
-        if (placement < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported NUMA memory placement mode '%s'"),
-                           tmp);
-            goto cleanup;
-        }
+    if ((tmp = virXMLPropString(node, "placement")) &&
+        (placement = virDomainNumatunePlacementTypeFromString(tmp)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported NUMA memory placement mode '%s'"), tmp);
+        goto cleanup;
     }
     VIR_FREE(tmp);
 
-    tmp = virXMLPropString(node, "nodeset");
-    if (tmp && virBitmapParse(tmp, 0, &nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
+    if ((tmp = virXMLPropString(node, "nodeset")) &&
+        virBitmapParse(tmp, 0, &nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
         goto cleanup;
     VIR_FREE(tmp);
 
