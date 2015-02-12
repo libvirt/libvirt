@@ -128,4 +128,7 @@ bool virDomainNumatuneNodeSpecified(virDomainNumaPtr numatune,
 int virDomainNumaDefCPUParseXML(virCPUDefPtr def, xmlXPathContextPtr ctxt);
 int virDomainNumaDefCPUFormat(virBufferPtr buf, virCPUDefPtr def);
 
+unsigned int virDomainNumaGetCPUCountTotal(virCPUDefPtr numa);
+
+
 #endif /* __NUMA_CONF_H__ */

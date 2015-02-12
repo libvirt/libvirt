@@ -117,7 +117,6 @@ struct _virCPUDef {
     virCPUFeatureDefPtr features;
     size_t ncells;
     virCellDefPtr cells;
-    unsigned int cells_cpus;
 };
 
 

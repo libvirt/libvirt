@@ -155,7 +155,6 @@ virCPUDefCopy(const virCPUDef *cpu)
             if (!copy->cells[i].cpumask)
                 goto error;
         }
-        copy->cells_cpus = cpu->cells_cpus;
     }
 
     return copy;

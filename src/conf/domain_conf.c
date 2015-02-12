@@ -13501,7 +13501,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     if (def->cpu &&
-        def->cpu->cells_cpus > def->maxvcpus) {
+        virDomainNumaGetCPUCountTotal(def->cpu) > def->maxvcpus) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Number of CPUs in <numa> exceeds the"
                          " <vcpu> count"));

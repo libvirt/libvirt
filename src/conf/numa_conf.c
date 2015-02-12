@@ -713,7 +713,7 @@ virDomainNumaDefCPUParseXML(virCPUDefPtr def,
     def->ncells = n;
 
     for (i = 0; i < n; i++) {
-        int rc, ncpus = 0;
+        int rc;
         unsigned int cur_cell = i;
 
         /* cells are in order of parsing or explicitly numbered */
@@ -748,12 +748,10 @@ virDomainNumaDefCPUParseXML(virCPUDefPtr def,
             goto cleanup;
         }
 
-        ncpus = virBitmapParse(tmp, 0, &def->cells[cur_cell].cpumask,
-                               VIR_DOMAIN_CPUMASK_LEN);
-
-        if (ncpus <= 0)
+        if (virBitmapParse(tmp, 0, &def->cells[cur_cell].cpumask,
+                           VIR_DOMAIN_CPUMASK_LEN) <= 0)
             goto cleanup;
-        def->cells_cpus += ncpus;
+
         VIR_FREE(tmp);
 
         ctxt->node = nodes[i];
@@ -818,4 +816,17 @@ virDomainNumaDefCPUFormat(virBufferPtr buf,
     virBufferAddLit(buf, "</numa>\n");
 
     return 0;
+}
+
+
+unsigned int
+virDomainNumaGetCPUCountTotal(virCPUDefPtr numa)
+{
+    size_t i;
+    unsigned int ret = 0;
+
+    for (i = 0; i < numa->ncells; i++)
+        ret += virBitmapCountBits(numa->cells[i].cpumask);
+
+    return ret;
 }
