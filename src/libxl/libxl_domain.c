@@ -439,9 +439,6 @@ libxlDomainObjPrivateDispose(void *obj)
 {
     libxlDomainObjPrivatePtr priv = obj;
 
-    if (priv->deathW)
-        libxl_evdisable_domain_death(priv->ctx, priv->deathW);
-
     libxlDomainObjFreeJob(priv);
     virChrdevFree(priv->devs);
     libxl_ctx_free(priv->ctx);
@@ -455,11 +452,6 @@ static void
 libxlDomainObjPrivateFree(void *data)
 {
     libxlDomainObjPrivatePtr priv = data;
-
-    if (priv->deathW) {
-        libxl_evdisable_domain_death(priv->ctx, priv->deathW);
-        priv->deathW = NULL;
-    }
 
     virObjectUnref(priv);
 }
