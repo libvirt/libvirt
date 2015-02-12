@@ -470,19 +470,9 @@ libxlDomainShutdownThread(void *opaque)
 
 /*
  * Handle previously registered domain event notification from libxenlight.
- *
- * Note: Xen 4.3 removed the const from the event handler signature.
- * Detect which signature to use based on
- * LIBXL_HAVE_NONCONST_EVENT_OCCURS_EVENT_ARG.
  */
-#ifdef LIBXL_HAVE_NONCONST_EVENT_OCCURS_EVENT_ARG
-# define VIR_LIBXL_EVENT_CONST /* empty */
-#else
-# define VIR_LIBXL_EVENT_CONST const
-#endif
-
-static void
-libxlEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
+void
+libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
 {
     virDomainObjPtr vm = data;
     libxlDomainObjPrivatePtr priv = vm->privateData;
@@ -529,12 +519,6 @@ libxlEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     /* Cast away any const */
     libxl_event_free(priv->ctx, (libxl_event *)event);
 }
-
-const struct libxl_event_hooks ev_hooks = {
-    .event_occurs_mask = LIBXL_EVENTMASK_ALL,
-    .event_occurs = libxlEventHandler,
-    .disaster = NULL,
-};
 
 int
 libxlDomainObjPrivateInitCtx(virDomainObjPtr vm)
@@ -769,7 +753,6 @@ libxlDomainEventsRegister(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
     libxlDomainObjPrivatePtr priv = vm->privateData;
 
     priv->driver = driver;
-    libxl_event_register_callbacks(priv->ctx, &ev_hooks, vm);
 
     /* Always enable domain death events */
     if (libxl_evenable_domain_death(priv->ctx, vm->def->id, 0, &priv->deathW))

@@ -481,6 +481,12 @@ static const libxl_childproc_hooks libxl_child_hooks = {
 #endif
 };
 
+const struct libxl_event_hooks ev_hooks = {
+    .event_occurs_mask = LIBXL_EVENTMASK_ALL,
+    .event_occurs = libxlDomainEventHandler,
+    .disaster = NULL,
+};
+
 static int
 libxlStateInitialize(bool privileged,
                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
@@ -531,6 +537,9 @@ libxlStateInitialize(bool privileged,
 
     /* Setup child process handling.  See $xen-src/tools/libxl/libxl_event.h */
     libxl_childproc_setmode(cfg->ctx, &libxl_child_hooks, cfg->ctx);
+
+    /* Register callback to handle domain events */
+    libxl_event_register_callbacks(cfg->ctx, &ev_hooks, libxl_driver);
 
     libxl_driver->config = cfg;
     if (virFileMakePath(cfg->stateDir) < 0) {
