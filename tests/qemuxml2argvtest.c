@@ -265,11 +265,15 @@ static int testCompareXMLToArgvFiles(const char *xml,
     size_t i;
     size_t nnicindexes = 0;
     int *nicindexes = NULL;
+    virBitmapPtr nodeset = NULL;
 
     if (!(conn = virGetConnect()))
         goto out;
     conn->secretDriver = &fakeSecretDriver;
     conn->storageDriver = &fakeStorageDriver;
+
+    if (virBitmapParse("0-3", '\0', &nodeset, 4) < 0)
+        goto out;
 
     if (!(vmdef = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
                                         QEMU_EXPECTED_VIRT_TYPES,
@@ -349,7 +353,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
                                      &testCallbacks, false,
                                      (flags & FLAG_FIPS),
-                                     NULL, &nnicindexes, &nicindexes))) {
+                                     nodeset, &nnicindexes, &nicindexes))) {
         if (!virtTestOOMActive() &&
             (flags & FLAG_EXPECT_FAILURE)) {
             ret = 0;
@@ -403,6 +407,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virCommandFree(cmd);
     virDomainDefFree(vmdef);
     virObjectUnref(conn);
+    virBitmapFree(nodeset);
     return ret;
 }
 
