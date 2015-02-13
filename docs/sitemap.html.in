@@ -101,6 +101,12 @@
               <li>
                 <a href="locking.html">Disk locking</a>
                 <span>Ensuring exclusive guest access to disks</span>
+                <ul>
+                  <li>
+                    <a href="locking-sanlock.html">Sanlock</a>
+                    <span>Sanlock lock manager plugin</span>
+                  </li>
+                </ul>
               </li>
               <li>
                 <a href="cgroups.html">CGroups</a>
