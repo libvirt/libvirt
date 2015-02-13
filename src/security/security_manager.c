@@ -688,24 +688,29 @@ virSecurityManagerReleaseLabel(virSecurityManagerPtr mgr,
 static int virSecurityManagerCheckModel(virSecurityManagerPtr mgr,
                                         char *secmodel)
 {
+    int ret = -1;
     size_t i;
     virSecurityManagerPtr *sec_managers = NULL;
-
-    if ((sec_managers = virSecurityManagerGetNested(mgr)) == NULL)
-        return -1;
 
     if (STREQ_NULLABLE(secmodel, "none"))
         return 0;
 
+    if ((sec_managers = virSecurityManagerGetNested(mgr)) == NULL)
+        return -1;
+
     for (i = 0; sec_managers[i]; i++) {
-        if (STREQ_NULLABLE(secmodel, sec_managers[i]->drv->name))
-            return 0;
+        if (STREQ_NULLABLE(secmodel, sec_managers[i]->drv->name)) {
+            ret = 0;
+            goto cleanup;
+        }
     }
 
     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                    _("Unable to find security driver for model %s"),
                    secmodel);
-    return -1;
+ cleanup:
+    VIR_FREE(sec_managers);
+    return ret;
 }
 
 
