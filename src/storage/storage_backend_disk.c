@@ -301,7 +301,7 @@ virStorageBackendDiskReadPartitions(virStoragePoolObjPtr pool,
     int ret;
 
     if (!(parthelper_path = virFileFindResource("libvirt_parthelper",
-                                                "src",
+                                                abs_topbuilddir "/src",
                                                 LIBEXECDIR)))
         return -1;
 
@@ -346,7 +346,7 @@ virStorageBackendDiskReadGeometry(virStoragePoolObjPtr pool)
     int ret;
 
     if (!(parthelper_path = virFileFindResource("libvirt_parthelper",
-                                                "src",
+                                                abs_topbuilddir "/src",
                                                 LIBEXECDIR)))
         return -1;
 

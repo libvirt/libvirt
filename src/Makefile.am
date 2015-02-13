@@ -20,6 +20,7 @@
 abs_builddir = $(shell pwd)
 abs_topbuilddir = $(shell cd .. && pwd)
 abs_srcdir = $(shell cd $(srcdir) && pwd)
+abs_topsrcdir = $(shell cd $(srcdir)/.. && pwd)
 
 # No libraries with the exception of LIBXML should be listed
 # here. List them against the individual XXX_la_CFLAGS targets
@@ -32,6 +33,7 @@ INCLUDES =	-I../gnulib/lib					\
 		-I$(srcdir)/util				\
 		-DIN_LIBVIRT					\
 		-Dabs_topbuilddir="\"$(abs_topbuilddir)\""	\
+		-Dabs_topsrcdir="\"$(abs_topsrcdir)\""		\
 		$(GETTEXT_CPPFLAGS)
 
 AM_CFLAGS =	$(LIBXML_CFLAGS)				\

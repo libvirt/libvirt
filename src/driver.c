@@ -56,7 +56,7 @@ virDriverLoadModule(const char *name)
     if (!(modfile = virFileFindResourceFull(name,
                                             "libvirt_driver_",
                                             ".so",
-                                            "src/.libs",
+                                            abs_topbuilddir "/src/.libs",
                                             LIBDIR "/libvirt/connection-driver",
                                             "LIBVIRT_DRIVER_DIR")))
         return NULL;

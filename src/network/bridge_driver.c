@@ -1289,7 +1289,7 @@ networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
 
     /* This helper is used to create custom leases file for libvirt */
     if (!(leaseshelper_path = virFileFindResource("libvirt_leaseshelper",
-                                                  "src",
+                                                  abs_topbuilddir "/src",
                                                   LIBEXECDIR)))
         goto cleanup;
 

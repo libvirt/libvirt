@@ -12887,7 +12887,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     if (flags & VIR_DOMAIN_DEF_PARSE_VALIDATE) {
         char *schema = virFileFindResource("domain.rng",
-                                           "docs/schemas",
+                                           abs_topsrcdir "/docs/schemas",
                                            PKGDATADIR "/schemas");
         if (!schema)
             return NULL;

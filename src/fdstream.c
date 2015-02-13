@@ -641,7 +641,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
         }
 
         if (!(iohelper_path = virFileFindResource("libvirt_iohelper",
-                                                  "src",
+                                                  abs_topbuilddir "/src",
                                                   LIBEXECDIR)))
             goto error;
 
