@@ -6691,7 +6691,8 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
         virBufferAddLit(buf, "host");
 
         if (ARCH_IS_PPC64(def->os.arch) &&
-            cpu->mode == VIR_CPU_MODE_HOST_MODEL) {
+            cpu->mode == VIR_CPU_MODE_HOST_MODEL &&
+            def->cpu->model != NULL) {
             virBufferAsprintf(buf, ",compat=%s", def->cpu->model);
         } else {
             featCpu = cpu;
