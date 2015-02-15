@@ -10269,6 +10269,18 @@ cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
 
     listen_addr = virXPathString("string(/domain/devices/graphics"
                                  "[@type='vnc']/@listen)", ctxt);
+    if (!listen_addr) {
+        /* The subelement address - <listen address='xyz'/> -
+         * *should* have been automatically backfilled into its
+         * parent <graphics listen='xyz'> (which we just tried to
+         * retrieve into listen_addr above) but in some cases it
+         * isn't, so we also do an explicit check for the
+         * subelement (which, by the way, doesn't exist on libvirt
+         * < 0.9.4, so we really do need to check both places)
+         */
+        listen_addr = virXPathString("string(/domain/devices/graphics"
+                                     "[@type='vnc']/listen/@address)", ctxt);
+    }
     if (listen_addr == NULL || STREQ(listen_addr, "0.0.0.0"))
         vshPrint(ctl, ":%d\n", port-5900);
     else
