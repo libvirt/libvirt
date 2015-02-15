@@ -1,7 +1,7 @@
 /*
  * network_conf.c: network XML handling
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1636,14 +1636,6 @@ virNetworkForwardDefParseXML(const char *networkName,
                                             *forwardNatNodes,
                                             ctxt, def) < 0)
             goto cleanup;
-    }
-
-    if (((nForwardIfs > 0) + (nForwardAddrs > 0) + (nForwardPfs > 0)) > 1) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("<address>, <interface>, and <pf> elements in <forward> "
-                         "of network %s are mutually exclusive"),
-                       networkName);
-        goto cleanup;
     }
 
     forwardDev = virXPathString("string(./@dev)", ctxt);

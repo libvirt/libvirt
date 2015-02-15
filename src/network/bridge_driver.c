@@ -2734,6 +2734,7 @@ networkValidate(virNetworkDefPtr def,
     virNetworkIpDefPtr ipdef;
     bool ipv4def = false, ipv6def = false;
     bool bandwidthAllowed = true;
+    bool usesInterface = false, usesAddress = false;
 
     /* check for duplicate networks */
     if (virNetworkObjIsDuplicate(&driver->networks, def, check_active) < 0)
@@ -2796,6 +2797,40 @@ networkValidate(virNetworkDefPtr def,
             return -1;
         }
         bandwidthAllowed = false;
+    }
+
+    /* we support configs with a single PF defined:
+     *   <pf dev='eth0'/>
+     * or with a list of netdev names:
+     *   <interface dev='eth9'/>
+     * OR a list of PCI addresses
+     *   <address type='pci' domain='0' bus='4' slot='0' function='1'/>
+     * but not any combination of those.
+     *
+     * Since <interface> and <address> are for some strange reason
+     * stored in the same array, we need to cycle through it and check
+     * the type of each.
+     */
+    for (i = 0; i < def->forward.nifs; i++) {
+        switch ((virNetworkForwardHostdevDeviceType)
+                def->forward.ifs[i].type) {
+        case VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV:
+            usesInterface = true;
+            break;
+        case VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI:
+            usesAddress = true;
+            break;
+        case VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NONE:
+        case VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_LAST:
+            break;
+        }
+    }
+    if ((def->forward.npfs > 0) + usesInterface + usesAddress > 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("<address>, <interface>, and <pf> elements of "
+                         "<forward> in network %s are mutually exclusive"),
+                       def->name);
+        return -1;
     }
 
     /* We only support dhcp on one IPv4 address and
