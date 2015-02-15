@@ -673,8 +673,13 @@ virQEMUCapsFindBinaryForArch(virArch hostarch,
                              virArch guestarch)
 {
     char *ret;
-    const char *archstr = virQEMUCapsArchToString(guestarch);
+    const char *archstr;
     char *binary;
+
+    if (ARCH_IS_PPC64(guestarch))
+        archstr = virQEMUCapsArchToString(VIR_ARCH_PPC64);
+    else
+        archstr = virQEMUCapsArchToString(guestarch);
 
     if (virAsprintf(&binary, "qemu-system-%s", archstr) < 0)
         return NULL;
