@@ -12910,7 +12910,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         VIR_FREE(schema);
     }
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainDefNew()))
         return NULL;
 
     if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))

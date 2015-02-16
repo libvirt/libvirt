@@ -102,7 +102,7 @@ testReadNetworkConf(const void *data ATTRIBUTE_UNUSED)
         "  </devices>\n"
         "</domain>\n";
 
-    if (VIR_ALLOC(def) < 0 ||
+    if (!(def = virDomainDefNew()) ||
         VIR_STRDUP(def->os.type, "exe") < 0 ||
         VIR_STRDUP(def->os.init, "/sbin/init") < 0)
         goto cleanup;

@@ -1002,7 +1002,7 @@ lxcParseConfigString(const char *config)
     if (!(properties = virConfReadMem(config, 0, VIR_CONF_FLAG_LXC_FORMAT)))
         return NULL;
 
-    if (VIR_ALLOC(vmdef) < 0)
+    if (!(vmdef = virDomainDefNew()))
         goto error;
 
     if (virUUIDGenerate(vmdef->uuid) < 0) {

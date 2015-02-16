@@ -1708,7 +1708,7 @@ phypDomainAttachDevice(virDomainPtr domain, const char *xml)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *domain_name = NULL;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainDefNew()))
         goto cleanup;
 
     domain_name = escape_specialcharacters(domain->name);

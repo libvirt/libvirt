@@ -70,7 +70,7 @@ testBuildDomainDef(bool dynamic,
     virDomainDefPtr def;
     virSecurityLabelDefPtr secdef;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainDefNew()))
         goto error;
 
     if (VIR_ALLOC_N(def->seclabels, 1) < 0)

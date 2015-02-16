@@ -3860,7 +3860,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainDefNew()))
         goto cleanup;
 
     gVBoxAPI.UIMachine.GetAccessible(machine, &accessible);
@@ -4114,7 +4114,7 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
         return ret;
 
     VBOX_IID_INITIALIZE(&iid);
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainDefNew()))
         return ret;
 
     if (VIR_STRDUP(def->os.type, "hvm") < 0)
@@ -4246,7 +4246,7 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
         return ret;
 
     VBOX_IID_INITIALIZE(&iid);
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainDefNew()))
         return ret;
 
     if (VIR_STRDUP(def->os.type, "hvm") < 0)
@@ -6032,7 +6032,7 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     if (!(snap = vboxDomainSnapshotGet(data, dom, machine, snapshot->name)))
         goto cleanup;
 
-    if (VIR_ALLOC(def) < 0 || VIR_ALLOC(def->dom) < 0)
+    if (VIR_ALLOC(def) < 0 || !(def->dom = virDomainDefNew()))
         goto cleanup;
     if (VIR_STRDUP(def->name, snapshot->name) < 0)
         goto cleanup;

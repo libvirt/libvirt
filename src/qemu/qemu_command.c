@@ -11870,7 +11870,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
         return NULL;
     }
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainDefNew()))
         goto error;
 
     /* allocate the cmdlinedef up-front; if it's unused, we'll free it later */

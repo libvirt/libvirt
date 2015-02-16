@@ -295,7 +295,7 @@ xenParseXL(virConfPtr conf, virCapsPtr caps, int xendConfigVersion)
 {
     virDomainDefPtr def = NULL;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainDefNew()))
         return NULL;
 
     def->virtType = VIR_DOMAIN_VIRT_XEN;

@@ -1186,7 +1186,7 @@ prlsdkLoadDomain(parallelsConnPtr privconn,
     virCheckNonNullArgGoto(privconn, error);
     virCheckNonNullArgGoto(sdkdom, error);
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainDefNew()))
         goto error;
 
     if (!olddom) {

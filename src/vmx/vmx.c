@@ -1298,7 +1298,7 @@ virVMXParseConfig(virVMXContext *ctx,
     }
 
     /* Allocate domain def */
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainDefNew()))
         goto cleanup;
 
     def->virtType = VIR_DOMAIN_VIRT_VMWARE;

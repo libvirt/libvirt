@@ -543,7 +543,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
         }
         *line++ = '\0';
 
-        if (VIR_ALLOC(def) < 0)
+        if (!(def = virDomainDefNew()))
             goto cleanup;
 
         def->virtType = VIR_DOMAIN_VIRT_OPENVZ;

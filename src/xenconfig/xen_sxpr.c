@@ -1093,7 +1093,7 @@ xenParseSxpr(const struct sexpr *root,
     virDomainDefPtr def;
     int hvm = 0, vmlocaltime;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainDefNew()))
         goto error;
 
     tmp = sexpr_node(root, "domain/domid");
