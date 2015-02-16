@@ -2319,9 +2319,17 @@ virDomainDefNew(void)
 {
     virDomainDefPtr ret;
 
-    ignore_value(VIR_ALLOC(ret));
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    if (!(ret->numa = virDomainNumaNew()))
+        goto error;
 
     return ret;
+
+ error:
+    virDomainDefFree(ret);
+    return NULL;
 }
 
 

@@ -629,6 +629,7 @@ virNodeDeviceObjUnlock;
 # conf/numa_conf.h
 virDomainNumaEquals;
 virDomainNumaFree;
+virDomainNumaNew;
 virDomainNumatuneFormatNodeset;
 virDomainNumatuneFormatXML;
 virDomainNumatuneGetMode;

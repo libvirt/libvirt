@@ -117,11 +117,6 @@ virDomainNumatuneNodeParseXML(virDomainNumaPtr *numatunePtr,
         goto cleanup;
     }
 
-    if (!numatune && VIR_ALLOC(numatune) < 0)
-        goto cleanup;
-
-    *numatunePtr = numatune;
-
     VIR_FREE(numatune->mem_nodes);
     if (VIR_ALLOC_N(numatune->mem_nodes, ncells) < 0)
         goto cleanup;
@@ -223,11 +218,6 @@ virDomainNumatuneParseXML(virDomainNumaPtr *numatunePtr,
     }
 
     node = virXPathNode("./numatune/memory[1]", ctxt);
-
-    if (*numatunePtr) {
-        virDomainNumaFree(*numatunePtr);
-        *numatunePtr = NULL;
-    }
 
     if (!placement_static && !node)
         placement = VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO;
@@ -454,26 +444,19 @@ virDomainNumatuneSet(virDomainNumaPtr *numatunePtr,
                      int mode,
                      virBitmapPtr nodeset)
 {
-    bool created = false;
     int ret = -1;
-    virDomainNumaPtr numatune;
+    virDomainNumaPtr numatune = *numatunePtr;
 
     /* No need to do anything in this case */
     if (mode == -1 && placement == -1 && !nodeset)
         return 0;
 
-    if (!(*numatunePtr)) {
-        if (VIR_ALLOC(*numatunePtr) < 0)
-            goto cleanup;
-
-        created = true;
+    if (!numatune->memory.specified) {
         if (mode == -1)
             mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
         if (placement == -1)
             placement = VIR_DOMAIN_NUMATUNE_PLACEMENT_DEFAULT;
     }
-
-    numatune = *numatunePtr;
 
     /* Range checks */
     if (mode != -1 &&
@@ -534,11 +517,6 @@ virDomainNumatuneSet(virDomainNumaPtr *numatunePtr,
     ret = 0;
 
  cleanup:
-    if (ret < 0 && created) {
-        virDomainNumaFree(*numatunePtr);
-        *numatunePtr = NULL;
-    }
-
     return ret;
 }
 
@@ -824,6 +802,17 @@ virDomainNumaGetCPUCountTotal(virCPUDefPtr numa)
 
     for (i = 0; i < numa->ncells; i++)
         ret += virBitmapCountBits(numa->cells[i].cpumask);
+
+    return ret;
+}
+
+
+virDomainNumaPtr
+virDomainNumaNew(void)
+{
+    virDomainNumaPtr ret = NULL;
+
+    ignore_value(VIR_ALLOC(ret));
 
     return ret;
 }

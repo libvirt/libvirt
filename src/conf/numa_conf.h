@@ -56,6 +56,7 @@ typedef enum {
 
 VIR_ENUM_DECL(virNumaMemAccess)
 
+virDomainNumaPtr virDomainNumaNew(void);
 void virDomainNumaFree(virDomainNumaPtr numa);
 
 /*
