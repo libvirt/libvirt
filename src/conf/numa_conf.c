@@ -278,9 +278,20 @@ virDomainNumatuneFormatXML(virBufferPtr buf,
 {
     const char *tmp = NULL;
     char *nodeset = NULL;
+    bool nodesetSpecified = false;
     size_t i = 0;
 
     if (!numatune)
+        return 0;
+
+    for (i = 0; i < numatune->nmem_nodes; i++) {
+        if (numatune->mem_nodes[i].nodeset) {
+            nodesetSpecified = true;
+            break;
+        }
+    }
+
+    if (!nodesetSpecified && !numatune->memory.specified)
         return 0;
 
     virBufferAddLit(buf, "<numatune>\n");
