@@ -760,14 +760,15 @@ virDomainNumaDefCPUFormat(virBufferPtr buf,
 {
     virNumaMemAccess memAccess;
     char *cpustr;
+    size_t ncells = virDomainNumaGetNodeCount(def);
     size_t i;
 
-    if (def->ncells == 0)
+    if (ncells == 0)
         return 0;
 
     virBufferAddLit(buf, "<numa>\n");
     virBufferAdjustIndent(buf, 2);
-    for (i = 0; i < def->ncells; i++) {
+    for (i = 0; i < ncells; i++) {
         memAccess = def->cells[i].memAccess;
 
         if (!(cpustr = virBitmapFormat(def->cells[i].cpumask)))
@@ -812,4 +813,14 @@ virDomainNumaNew(void)
     ignore_value(VIR_ALLOC(ret));
 
     return ret;
+}
+
+
+size_t
+virDomainNumaGetNodeCount(virCPUDefPtr numa)
+{
+    if (!numa)
+        return 0;
+
+    return numa->ncells;
 }

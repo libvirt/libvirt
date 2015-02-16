@@ -7121,7 +7121,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     bool needBackend = false;
     int rc;
     int ret = -1;
-    size_t ncells = def->cpu->ncells;
+    size_t ncells = virDomainNumaGetNodeCount(def->cpu);
     const long system_page_size = virGetSystemPageSizeKB();
 
     if (virDomainNumatuneHasPerNodeBinding(def->numa) &&
@@ -8318,7 +8318,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     virCommandAddArg(cmd, "-m");
     def->mem.max_balloon = VIR_DIV_UP(def->mem.max_balloon, 1024) * 1024;
     virCommandAddArgFormat(cmd, "%llu", def->mem.max_balloon / 1024);
-    if (def->mem.nhugepages && (!def->cpu || !def->cpu->ncells)) {
+    if (def->mem.nhugepages && !virDomainNumaGetNodeCount(def->cpu)) {
         const long system_page_size = virGetSystemPageSizeKB();
         char *mem_path = NULL;
 
@@ -8398,7 +8398,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (def->cpu && def->cpu->ncells)
+    if (virDomainNumaGetNodeCount(def->cpu))
         if (qemuBuildNumaArgStr(cfg, def, cmd, qemuCaps, nodeset) < 0)
             goto error;
 
