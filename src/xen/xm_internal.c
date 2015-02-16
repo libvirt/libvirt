@@ -844,7 +844,7 @@ xenXMDomainLookupByName(virConnectPtr conn, const char *domname)
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto cleanup;
 
-    ret = virDomainDefNew(domname, entry->def->uuid, -1);
+    ret = virDomainDefNewFull(domname, entry->def->uuid, -1);
 
  cleanup:
     xenUnifiedUnlock(priv);
@@ -887,7 +887,7 @@ xenXMDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (!(entry = virHashSearch(priv->configCache, xenXMDomainSearchForUUID, (const void *)uuid)))
         goto cleanup;
 
-    ret = virDomainDefNew(entry->def->name, uuid, -1);
+    ret = virDomainDefNewFull(entry->def->name, uuid, -1);
 
  cleanup:
     xenUnifiedUnlock(priv);

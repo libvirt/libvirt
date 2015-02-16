@@ -1152,7 +1152,7 @@ sexpr_to_domain(virConnectPtr conn, const struct sexpr *root)
     if (tmp)
         id = sexpr_int(root, "domain/domid");
 
-    return virDomainDefNew(name, uuid, id);
+    return virDomainDefNewFull(name, uuid, id);
 
  error:
     virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2117,7 +2117,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (name == NULL)
         return NULL;
 
-    ret = virDomainDefNew(name, uuid, id);
+    ret = virDomainDefNewFull(name, uuid, id);
 
     VIR_FREE(name);
     return ret;

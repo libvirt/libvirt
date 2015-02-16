@@ -204,6 +204,7 @@ virDomainDefMaybeAddController;
 virDomainDefMaybeAddInput;
 virDomainDefNeedsPlacementAdvice;
 virDomainDefNew;
+virDomainDefNewFull;
 virDomainDefParseFile;
 virDomainDefParseNode;
 virDomainDefParseString;

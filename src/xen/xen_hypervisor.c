@@ -2634,9 +2634,9 @@ xenHypervisorLookupDomainByID(virConnectPtr conn, int id)
     if (!name)
         return NULL;
 
-    ret = virDomainDefNew(name,
-                          XEN_GETDOMAININFO_UUID(dominfo),
-                          id);
+    ret = virDomainDefNewFull(name,
+                              XEN_GETDOMAININFO_UUID(dominfo),
+                              id);
     VIR_FREE(name);
     return ret;
 }
@@ -2699,7 +2699,7 @@ xenHypervisorLookupDomainByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (!name)
         return NULL;
 
-    ret = virDomainDefNew(name, uuid, id);
+    ret = virDomainDefNewFull(name, uuid, id);
     if (ret)
         ret->id = id;
     VIR_FREE(name);

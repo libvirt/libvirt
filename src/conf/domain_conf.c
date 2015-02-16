@@ -2314,13 +2314,25 @@ virDomainObjNew(virDomainXMLOptionPtr xmlopt)
 }
 
 
-virDomainDefPtr virDomainDefNew(const char *name,
-                                const unsigned char *uuid,
-                                int id)
+virDomainDefPtr
+virDomainDefNew(void)
+{
+    virDomainDefPtr ret;
+
+    ignore_value(VIR_ALLOC(ret));
+
+    return ret;
+}
+
+
+virDomainDefPtr
+virDomainDefNewFull(const char *name,
+                    const unsigned char *uuid,
+                    int id)
 {
     virDomainDefPtr def;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainDefNew()))
         return NULL;
 
     if (VIR_STRDUP(def->name, name) < 0) {

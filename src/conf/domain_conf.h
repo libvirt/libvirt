@@ -2414,9 +2414,10 @@ void virDomainDefFree(virDomainDefPtr vm);
 
 virDomainChrDefPtr virDomainChrDefNew(void);
 
-virDomainDefPtr virDomainDefNew(const char *name,
-                                const unsigned char *uuid,
-                                int id);
+virDomainDefPtr virDomainDefNew(void);
+virDomainDefPtr virDomainDefNewFull(const char *name,
+                                    const unsigned char *uuid,
+                                    int id);
 
 enum {
     VIR_DOMAIN_OBJ_LIST_ADD_LIVE = (1 << 0),
