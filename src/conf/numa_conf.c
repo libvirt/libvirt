@@ -771,7 +771,7 @@ virDomainNumaDefCPUFormat(virBufferPtr buf,
     for (i = 0; i < ncells; i++) {
         memAccess = def->cells[i].memAccess;
 
-        if (!(cpustr = virBitmapFormat(def->cells[i].cpumask)))
+        if (!(cpustr = virBitmapFormat(virDomainNumaGetNodeCpumask(def, i))))
             return -1;
 
         virBufferAddLit(buf, "<cell");
@@ -799,7 +799,7 @@ virDomainNumaGetCPUCountTotal(virCPUDefPtr numa)
     unsigned int ret = 0;
 
     for (i = 0; i < numa->ncells; i++)
-        ret += virBitmapCountBits(numa->cells[i].cpumask);
+        ret += virBitmapCountBits(virDomainNumaGetNodeCpumask(numa, i));
 
     return ret;
 }
@@ -823,4 +823,12 @@ virDomainNumaGetNodeCount(virCPUDefPtr numa)
         return 0;
 
     return numa->ncells;
+}
+
+
+virBitmapPtr
+virDomainNumaGetNodeCpumask(virCPUDefPtr numa,
+                            size_t node)
+{
+    return numa->cells[node].cpumask;
 }

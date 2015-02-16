@@ -630,6 +630,7 @@ virNodeDeviceObjUnlock;
 virDomainNumaEquals;
 virDomainNumaFree;
 virDomainNumaGetNodeCount;
+virDomainNumaGetNodeCpumask;
 virDomainNumaNew;
 virDomainNumatuneFormatNodeset;
 virDomainNumatuneFormatXML;

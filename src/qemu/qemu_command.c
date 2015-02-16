@@ -7199,7 +7199,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
 
     for (i = 0; i < ncells; i++) {
         VIR_FREE(cpumask);
-        if (!(cpumask = virBitmapFormat(def->cpu->cells[i].cpumask)))
+        if (!(cpumask = virBitmapFormat(virDomainNumaGetNodeCpumask(def->cpu, i))))
             goto cleanup;
 
         if (strchr(cpumask, ',') &&

@@ -88,6 +88,9 @@ int virDomainNumatuneMaybeGetNodeset(virDomainNumaPtr numatune,
 
 size_t virDomainNumaGetNodeCount(virCPUDefPtr numa)
     ATTRIBUTE_NONNULL(1);
+virBitmapPtr virDomainNumaGetNodeCpumask(virCPUDefPtr numa,
+                                         size_t node)
+    ATTRIBUTE_NONNULL(1);
 
 /*
  * Formatters
