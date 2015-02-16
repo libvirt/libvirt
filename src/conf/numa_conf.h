@@ -91,6 +91,9 @@ size_t virDomainNumaGetNodeCount(virCPUDefPtr numa)
 virBitmapPtr virDomainNumaGetNodeCpumask(virCPUDefPtr numa,
                                          size_t node)
     ATTRIBUTE_NONNULL(1);
+virNumaMemAccess virDomainNumaGetNodeMemoryAccessMode(virCPUDefPtr numa,
+                                                      size_t node)
+    ATTRIBUTE_NONNULL(1);
 
 /*
  * Formatters

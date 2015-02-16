@@ -4558,7 +4558,8 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     virDomainHugePagePtr hugepage = NULL;
     virDomainNumatuneMemMode mode;
     const long system_page_size = virGetSystemPageSizeKB();
-    virNumaMemAccess memAccess = def->cpu->cells[guestNode].memAccess;
+    virNumaMemAccess memAccess = virDomainNumaGetNodeMemoryAccessMode(def->cpu, guestNode);
+
     size_t i;
     char *mem_path = NULL;
     virBitmapPtr nodemask = NULL;
@@ -7188,7 +7189,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
             if (rc == 0)
                 needBackend = true;
         } else {
-            if (def->cpu->cells[i].memAccess) {
+            if (virDomainNumaGetNodeMemoryAccessMode(def->cpu, i)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Shared memory mapping is not supported "
                                  "with this QEMU"));

@@ -631,6 +631,7 @@ virDomainNumaEquals;
 virDomainNumaFree;
 virDomainNumaGetNodeCount;
 virDomainNumaGetNodeCpumask;
+virDomainNumaGetNodeMemoryAccessMode;
 virDomainNumaNew;
 virDomainNumatuneFormatNodeset;
 virDomainNumatuneFormatXML;

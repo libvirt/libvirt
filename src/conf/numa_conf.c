@@ -769,7 +769,7 @@ virDomainNumaDefCPUFormat(virBufferPtr buf,
     virBufferAddLit(buf, "<numa>\n");
     virBufferAdjustIndent(buf, 2);
     for (i = 0; i < ncells; i++) {
-        memAccess = def->cells[i].memAccess;
+        memAccess = virDomainNumaGetNodeMemoryAccessMode(def, i);
 
         if (!(cpustr = virBitmapFormat(virDomainNumaGetNodeCpumask(def, i))))
             return -1;
@@ -831,4 +831,12 @@ virDomainNumaGetNodeCpumask(virCPUDefPtr numa,
                             size_t node)
 {
     return numa->cells[node].cpumask;
+}
+
+
+virNumaMemAccess
+virDomainNumaGetNodeMemoryAccessMode(virCPUDefPtr numa,
+                                     size_t node)
+{
+    return numa->cells[node].memAccess;
 }
