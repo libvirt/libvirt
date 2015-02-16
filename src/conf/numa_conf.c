@@ -894,3 +894,16 @@ virDomainNumaSetNodeMemorySize(virDomainNumaPtr numa,
 {
     numa->mem_nodes[node].mem = size;
 }
+
+
+unsigned long long
+virDomainNumaGetMemorySize(virDomainNumaPtr numa)
+{
+    size_t i;
+    unsigned long long ret = 0;
+
+    for (i = 0; i < numa->nmem_nodes; i++)
+        ret += numa->mem_nodes[i].mem;
+
+    return ret;
+}
