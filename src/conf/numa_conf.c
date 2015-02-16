@@ -82,7 +82,7 @@ virDomainNumatuneNodeSpecified(virDomainNumaPtr numatune,
 }
 
 static int
-virDomainNumatuneNodeParseXML(virDomainNumaPtr *numatunePtr,
+virDomainNumatuneNodeParseXML(virDomainNumaPtr numa,
                               size_t ncells,
                               xmlXPathContextPtr ctxt)
 {
@@ -90,7 +90,6 @@ virDomainNumatuneNodeParseXML(virDomainNumaPtr *numatunePtr,
     int n = 0;
     int ret = -1;
     size_t i = 0;
-    virDomainNumaPtr numatune = *numatunePtr;
     xmlNodePtr *nodes = NULL;
 
     if ((n = virXPathNodeSet("./numatune/memnode", ctxt, &nodes)) < 0) {
@@ -102,8 +101,8 @@ virDomainNumatuneNodeParseXML(virDomainNumaPtr *numatunePtr,
     if (!n)
         return 0;
 
-    if (numatune && numatune->memory.specified &&
-        numatune->memory.placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO) {
+    if (numa->memory.specified &&
+        numa->memory.placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Per-node binding is not compatible with "
                          "automatic NUMA placement."));
@@ -117,11 +116,11 @@ virDomainNumatuneNodeParseXML(virDomainNumaPtr *numatunePtr,
         goto cleanup;
     }
 
-    VIR_FREE(numatune->mem_nodes);
-    if (VIR_ALLOC_N(numatune->mem_nodes, ncells) < 0)
+    VIR_FREE(numa->mem_nodes);
+    if (VIR_ALLOC_N(numa->mem_nodes, ncells) < 0)
         goto cleanup;
 
-    numatune->nmem_nodes = ncells;
+    numa->nmem_nodes = ncells;
 
     for (i = 0; i < n; i++) {
         int mode = 0;
@@ -144,14 +143,14 @@ virDomainNumatuneNodeParseXML(virDomainNumaPtr *numatunePtr,
         }
         VIR_FREE(tmp);
 
-        if (cellid >= numatune->nmem_nodes) {
+        if (cellid >= numa->nmem_nodes) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Argument 'cellid' in memnode element must "
                              "correspond to existing guest's NUMA cell"));
             goto cleanup;
         }
 
-        mem_node = &numatune->mem_nodes[cellid];
+        mem_node = &numa->mem_nodes[cellid];
 
         if (mem_node->nodeset) {
             virReportError(VIR_ERR_XML_ERROR,
@@ -194,7 +193,7 @@ virDomainNumatuneNodeParseXML(virDomainNumaPtr *numatunePtr,
 }
 
 int
-virDomainNumatuneParseXML(virDomainNumaPtr *numatunePtr,
+virDomainNumatuneParseXML(virDomainNumaPtr numa,
                           bool placement_static,
                           size_t ncells,
                           xmlXPathContextPtr ctxt)
@@ -245,14 +244,14 @@ virDomainNumatuneParseXML(virDomainNumaPtr *numatunePtr,
         VIR_FREE(tmp);
     }
 
-    if (virDomainNumatuneSet(*numatunePtr,
+    if (virDomainNumatuneSet(numa,
                              placement_static,
                              placement,
                              mode,
                              nodeset) < 0)
         goto cleanup;
 
-    if (virDomainNumatuneNodeParseXML(numatunePtr, ncells, ctxt) < 0)
+    if (virDomainNumatuneNodeParseXML(numa, ncells, ctxt) < 0)
         goto cleanup;
 
     ret = 0;

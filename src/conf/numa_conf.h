@@ -62,7 +62,7 @@ void virDomainNumaFree(virDomainNumaPtr numa);
 /*
  * XML Parse/Format functions
  */
-int virDomainNumatuneParseXML(virDomainNumaPtr *numatunePtr,
+int virDomainNumatuneParseXML(virDomainNumaPtr numa,
                               bool placement_static,
                               size_t ncells,
                               xmlXPathContextPtr ctxt)

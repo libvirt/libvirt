@@ -13528,7 +13528,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
-    if (virDomainNumatuneParseXML(&def->numa,
+    if (virDomainNumatuneParseXML(def->numa,
                                   def->placement_mode ==
                                   VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
                                   def->cpu ? def->cpu->ncells : 0,
