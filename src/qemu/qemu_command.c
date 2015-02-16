@@ -7121,6 +7121,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     bool needBackend = false;
     int rc;
     int ret = -1;
+    size_t ncells = def->cpu->ncells;
     const long system_page_size = virGetSystemPageSizeKB();
 
     if (virDomainNumatuneHasPerNodeBinding(def->numa) &&
@@ -7153,10 +7154,10 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
             continue;
         }
 
-        if (def->cpu->ncells) {
+        if (ncells) {
             /* Fortunately, we allow only guest NUMA nodes to be continuous
              * starting from zero. */
-            pos = def->cpu->ncells - 1;
+            pos = ncells - 1;
         }
 
         next_bit = virBitmapNextSetBit(def->mem.hugepages[i].nodemask, pos);
@@ -7168,12 +7169,12 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         }
     }
 
-    if (VIR_ALLOC_N(nodeBackends, def->cpu->ncells) < 0)
+    if (VIR_ALLOC_N(nodeBackends, ncells) < 0)
         goto cleanup;
 
     /* using of -numa memdev= cannot be combined with -numa mem=, thus we
      * need to check which approach to use */
-    for (i = 0; i < def->cpu->ncells; i++) {
+    for (i = 0; i < ncells; i++) {
         unsigned long long cellmem = VIR_DIV_UP(def->cpu->cells[i].mem, 1024);
         def->cpu->cells[i].mem = cellmem * 1024;
 
@@ -7196,7 +7197,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         }
     }
 
-    for (i = 0; i < def->cpu->ncells; i++) {
+    for (i = 0; i < ncells; i++) {
         VIR_FREE(cpumask);
         if (!(cpumask = virBitmapFormat(def->cpu->cells[i].cpumask)))
             goto cleanup;
@@ -7235,7 +7236,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     VIR_FREE(cpumask);
 
     if (nodeBackends) {
-        for (i = 0; i < def->cpu->ncells; i++)
+        for (i = 0; i < ncells; i++)
             VIR_FREE(nodeBackends[i]);
 
         VIR_FREE(nodeBackends);
