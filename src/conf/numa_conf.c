@@ -245,7 +245,7 @@ virDomainNumatuneParseXML(virDomainNumaPtr *numatunePtr,
         VIR_FREE(tmp);
     }
 
-    if (virDomainNumatuneSet(numatunePtr,
+    if (virDomainNumatuneSet(*numatunePtr,
                              placement_static,
                              placement,
                              mode,
@@ -438,20 +438,19 @@ virDomainNumatuneMaybeFormatNodeset(virDomainNumaPtr numatune,
 }
 
 int
-virDomainNumatuneSet(virDomainNumaPtr *numatunePtr,
+virDomainNumatuneSet(virDomainNumaPtr numa,
                      bool placement_static,
                      int placement,
                      int mode,
                      virBitmapPtr nodeset)
 {
     int ret = -1;
-    virDomainNumaPtr numatune = *numatunePtr;
 
     /* No need to do anything in this case */
     if (mode == -1 && placement == -1 && !nodeset)
         return 0;
 
-    if (!numatune->memory.specified) {
+    if (!numa->memory.specified) {
         if (mode == -1)
             mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
         if (placement == -1)
@@ -476,26 +475,25 @@ virDomainNumatuneSet(virDomainNumaPtr *numatunePtr,
     }
 
     if (mode != -1)
-        numatune->memory.mode = mode;
+        numa->memory.mode = mode;
 
     if (nodeset) {
-        virBitmapFree(numatune->memory.nodeset);
-        numatune->memory.nodeset = virBitmapNewCopy(nodeset);
-        if (!numatune->memory.nodeset)
+        virBitmapFree(numa->memory.nodeset);
+        if (!(numa->memory.nodeset = virBitmapNewCopy(nodeset)))
             goto cleanup;
         if (placement == -1)
             placement = VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC;
     }
 
     if (placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_DEFAULT) {
-        if (numatune->memory.nodeset || placement_static)
+        if (numa->memory.nodeset || placement_static)
             placement = VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC;
         else
             placement = VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO;
     }
 
     if (placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC &&
-        !numatune->memory.nodeset) {
+        !numa->memory.nodeset) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("nodeset for NUMA memory tuning must be set "
                          "if 'placement' is 'static'"));
@@ -504,15 +502,15 @@ virDomainNumatuneSet(virDomainNumaPtr *numatunePtr,
 
     /* setting nodeset when placement auto is invalid */
     if (placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO &&
-        numatune->memory.nodeset) {
-        virBitmapFree(numatune->memory.nodeset);
-        numatune->memory.nodeset = NULL;
+        numa->memory.nodeset) {
+        virBitmapFree(numa->memory.nodeset);
+        numa->memory.nodeset = NULL;
     }
 
     if (placement != -1)
-        numatune->memory.placement = placement;
+        numa->memory.placement = placement;
 
-    numatune->memory.specified = true;
+    numa->memory.specified = true;
 
     ret = 0;
 

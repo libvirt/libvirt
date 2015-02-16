@@ -9543,7 +9543,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
             qemuDomainSetNumaParamsLive(vm, nodeset) < 0)
             goto endjob;
 
-        if (virDomainNumatuneSet(&vm->def->numa,
+        if (virDomainNumatuneSet(vm->def->numa,
                                  vm->def->placement_mode ==
                                  VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
                                  -1, mode, nodeset) < 0)
@@ -9554,7 +9554,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (virDomainNumatuneSet(&persistentDef->numa,
+        if (virDomainNumatuneSet(persistentDef->numa,
                                  persistentDef->placement_mode ==
                                  VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
                                  -1, mode, nodeset) < 0)

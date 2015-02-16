@@ -101,7 +101,7 @@ int virDomainNumatuneMaybeFormatNodeset(virDomainNumaPtr numatune,
 /*
  * Setters
  */
-int virDomainNumatuneSet(virDomainNumaPtr *numatunePtr,
+int virDomainNumatuneSet(virDomainNumaPtr numa,
                          bool placement_static,
                          int placement,
                          int mode,
