@@ -103,6 +103,10 @@
                 <span>Ensuring exclusive guest access to disks</span>
                 <ul>
                   <li>
+                    <a href="locking-lockd.html">virtlockd</a>
+                    <span>virtlockd lock manager plugin</span>
+                  </li>
+                  <li>
                     <a href="locking-sanlock.html">Sanlock</a>
                     <span>Sanlock lock manager plugin</span>
                   </li>

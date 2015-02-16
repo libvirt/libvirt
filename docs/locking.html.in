@@ -28,7 +28,7 @@
         nothing. This can be used if mutual exclusion between
         virtual machines is not required, or if it is being
         solved at another level in the management stack.</dd>
-      <dt>lockd</dt>
+      <dt><a href="locking-lockd.html">lockd</a></dt>
       <dd>This is the current preferred implementation shipped
         with libvirt. It uses the <code>virtlockd</code> daemon
         to manage locks using the POSIX fcntl() advisory locking
