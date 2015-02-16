@@ -94,6 +94,9 @@ virBitmapPtr virDomainNumaGetNodeCpumask(virCPUDefPtr numa,
 virNumaMemAccess virDomainNumaGetNodeMemoryAccessMode(virCPUDefPtr numa,
                                                       size_t node)
     ATTRIBUTE_NONNULL(1);
+unsigned long long virDomainNumaGetNodeMemorySize(virCPUDefPtr numa,
+                                                  size_t node)
+    ATTRIBUTE_NONNULL(1);
 
 /*
  * Formatters
@@ -115,6 +118,11 @@ int virDomainNumatuneSet(virDomainNumaPtr numa,
                          int placement,
                          int mode,
                          virBitmapPtr nodeset)
+    ATTRIBUTE_NONNULL(1);
+
+void virDomainNumaSetNodeMemorySize(virCPUDefPtr numa,
+                                    size_t node,
+                                    unsigned long long size)
     ATTRIBUTE_NONNULL(1);
 
 /*

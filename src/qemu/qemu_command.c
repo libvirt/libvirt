@@ -4747,7 +4747,8 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
     if (virAsprintf(&alias, "ram-node%zu", cell) < 0)
         goto cleanup;
 
-    if ((rc = qemuBuildMemoryBackendStr(def->cpu->cells[cell].mem, 0, cell,
+    if ((rc = qemuBuildMemoryBackendStr(virDomainNumaGetNodeMemorySize(def->cpu, cell),
+                                        0, cell,
                                         NULL, auto_nodeset,
                                         def, qemuCaps, cfg,
                                         &backendType, &props, false)) < 0)
@@ -7176,8 +7177,8 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     /* using of -numa memdev= cannot be combined with -numa mem=, thus we
      * need to check which approach to use */
     for (i = 0; i < ncells; i++) {
-        unsigned long long cellmem = VIR_DIV_UP(def->cpu->cells[i].mem, 1024);
-        def->cpu->cells[i].mem = cellmem * 1024;
+        unsigned long long cellmem = virDomainNumaGetNodeMemorySize(def->cpu, i);
+        virDomainNumaSetNodeMemorySize(def->cpu, i, VIR_ROUND_UP(cellmem, 1024));
 
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
@@ -7227,7 +7228,8 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         if (needBackend)
             virBufferAsprintf(&buf, ",memdev=ram-node%zu", i);
         else
-            virBufferAsprintf(&buf, ",mem=%llu", def->cpu->cells[i].mem / 1024);
+            virBufferAsprintf(&buf, ",mem=%llu",
+                              virDomainNumaGetNodeMemorySize(def->cpu, i) / 1024);
 
         virCommandAddArgBuffer(cmd, &buf);
     }

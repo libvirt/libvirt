@@ -777,7 +777,8 @@ virDomainNumaDefCPUFormat(virBufferPtr buf,
         virBufferAddLit(buf, "<cell");
         virBufferAsprintf(buf, " id='%zu'", i);
         virBufferAsprintf(buf, " cpus='%s'", cpustr);
-        virBufferAsprintf(buf, " memory='%llu'", def->cells[i].mem);
+        virBufferAsprintf(buf, " memory='%llu'",
+                          virDomainNumaGetNodeMemorySize(def, i));
         virBufferAddLit(buf, " unit='KiB'");
         if (memAccess)
             virBufferAsprintf(buf, " memAccess='%s'",
@@ -839,4 +840,21 @@ virDomainNumaGetNodeMemoryAccessMode(virCPUDefPtr numa,
                                      size_t node)
 {
     return numa->cells[node].memAccess;
+}
+
+
+unsigned long long
+virDomainNumaGetNodeMemorySize(virCPUDefPtr numa,
+                               size_t node)
+{
+    return numa->cells[node].mem;
+}
+
+
+void
+virDomainNumaSetNodeMemorySize(virCPUDefPtr numa,
+                               size_t node,
+                               unsigned long long size)
+{
+    numa->cells[node].mem = size;
 }
