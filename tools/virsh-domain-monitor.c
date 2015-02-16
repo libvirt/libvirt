@@ -199,7 +199,8 @@ VIR_ENUM_IMPL(vshDomainPausedReason,
               N_("from snapshot"),
               N_("shutting down"),
               N_("creating snapshot"),
-              N_("crashed"))
+              N_("crashed"),
+              N_("starting up"))
 
 VIR_ENUM_DECL(vshDomainShutdownReason)
 VIR_ENUM_IMPL(vshDomainShutdownReason,

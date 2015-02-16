@@ -3338,6 +3338,7 @@ qemuProcessUpdateState(virQEMUDriverPtr driver, virDomainObjPtr vm)
     virDomainState state;
     virDomainPausedReason reason;
     virDomainState newState = VIR_DOMAIN_NOSTATE;
+    int oldReason;
     int newReason;
     bool running;
     char *msg = NULL;
@@ -3351,9 +3352,16 @@ qemuProcessUpdateState(virQEMUDriverPtr driver, virDomainObjPtr vm)
     if (ret < 0)
         return -1;
 
-    state = virDomainObjGetState(vm, NULL);
+    state = virDomainObjGetState(vm, &oldReason);
 
-    if (state == VIR_DOMAIN_PAUSED && running) {
+    if (running &&
+        (state == VIR_DOMAIN_SHUTOFF ||
+         (state == VIR_DOMAIN_PAUSED &&
+          oldReason == VIR_DOMAIN_PAUSED_STARTING_UP))) {
+        newState = VIR_DOMAIN_RUNNING;
+        newReason = VIR_DOMAIN_RUNNING_BOOTED;
+        ignore_value(VIR_STRDUP_QUIET(msg, "finished booting"));
+    } else if (state == VIR_DOMAIN_PAUSED && running) {
         newState = VIR_DOMAIN_RUNNING;
         newReason = VIR_DOMAIN_RUNNING_UNPAUSED;
         ignore_value(VIR_STRDUP_QUIET(msg, "was unpaused"));
@@ -3372,10 +3380,6 @@ qemuProcessUpdateState(virQEMUDriverPtr driver, virDomainObjPtr vm)
             ignore_value(virAsprintf(&msg, "was paused (%s)",
                                  virDomainPausedReasonTypeToString(reason)));
         }
-    } else if (state == VIR_DOMAIN_SHUTOFF && running) {
-        newState = VIR_DOMAIN_RUNNING;
-        newReason = VIR_DOMAIN_RUNNING_BOOTED;
-        ignore_value(VIR_STRDUP_QUIET(msg, "finished booting"));
     }
 
     if (newState != VIR_DOMAIN_NOSTATE) {
@@ -3748,7 +3752,9 @@ qemuProcessReconnect(void *opaque)
         goto error;
 
     state = virDomainObjGetState(obj, &reason);
-    if (state == VIR_DOMAIN_SHUTOFF) {
+    if (state == VIR_DOMAIN_SHUTOFF ||
+        (state == VIR_DOMAIN_PAUSED &&
+         reason == VIR_DOMAIN_PAUSED_STARTING_UP)) {
         VIR_DEBUG("Domain '%s' wasn't fully started yet, killing it",
                   obj->def->name);
         goto error;
@@ -4379,7 +4385,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     vm->def->id = qemuDriverAllocateID(driver);
     qemuDomainSetFakeReboot(driver, vm, false);
-    virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_UNKNOWN);
+    virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_STARTING_UP);
 
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);

@@ -661,7 +661,8 @@ VIR_ENUM_IMPL(virDomainPausedReason, VIR_DOMAIN_PAUSED_LAST,
               "from snapshot",
               "shutdown",
               "snapshot",
-              "panicked")
+              "panicked",
+              "starting up")
 
 VIR_ENUM_IMPL(virDomainShutdownReason, VIR_DOMAIN_SHUTDOWN_LAST,
               "unknown",
