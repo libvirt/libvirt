@@ -242,8 +242,6 @@ virCapsPtr testQemuCapsInit(void)
         ARRAY_CARDINALITY(host_cpu_features), /* nfeatures */
         ARRAY_CARDINALITY(host_cpu_features), /* nfeatures_max */
         host_cpu_features,      /* features */
-        0,                      /* ncells */
-        NULL,                   /* cells */
     };
 
     if ((caps = virCapabilitiesNew(host_cpu.arch,

@@ -73,16 +73,11 @@ virCPUDefFreeModel(virCPUDefPtr def)
 void
 virCPUDefFree(virCPUDefPtr def)
 {
-    size_t i;
-
     if (!def)
         return;
 
     virCPUDefFreeModel(def);
 
-    for (i = 0; i < def->ncells; i++)
-        virBitmapFree(def->cells[i].cpumask);
-    VIR_FREE(def->cells);
     VIR_FREE(def->vendor_id);
 
     VIR_FREE(def);
@@ -126,7 +121,6 @@ virCPUDefPtr
 virCPUDefCopy(const virCPUDef *cpu)
 {
     virCPUDefPtr copy;
-    size_t i;
 
     if (!cpu || VIR_ALLOC(copy) < 0)
         return NULL;
@@ -142,20 +136,6 @@ virCPUDefCopy(const virCPUDef *cpu)
 
     if (virCPUDefCopyModel(copy, cpu, false) < 0)
         goto error;
-
-    if (cpu->ncells) {
-        if (VIR_ALLOC_N(copy->cells, cpu->ncells) < 0)
-            goto error;
-
-        for (i = 0; i < cpu->ncells; i++) {
-            copy->cells[i].mem = cpu->cells[i].mem;
-
-            copy->cells[i].cpumask = virBitmapNewCopy(cpu->cells[i].cpumask);
-
-            if (!copy->cells[i].cpumask)
-                goto error;
-        }
-    }
 
     return copy;
 
@@ -429,11 +409,12 @@ virCPUDefParseXML(xmlNodePtr node,
 
 char *
 virCPUDefFormat(virCPUDefPtr def,
+                virDomainNumaPtr numa,
                 bool updateCPU)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (virCPUDefFormatBufFull(&buf, def, updateCPU) < 0)
+    if (virCPUDefFormatBufFull(&buf, def, numa, updateCPU) < 0)
         goto cleanup;
 
     if (virBufferCheckError(&buf) < 0)
@@ -450,6 +431,7 @@ virCPUDefFormat(virCPUDefPtr def,
 int
 virCPUDefFormatBufFull(virBufferPtr buf,
                        virCPUDefPtr def,
+                       virDomainNumaPtr numa,
                        bool updateCPU)
 {
     if (!def)
@@ -489,7 +471,7 @@ virCPUDefFormatBufFull(virBufferPtr buf,
     if (virCPUDefFormatBuf(buf, def, updateCPU) < 0)
         return -1;
 
-    if (virDomainNumaDefCPUFormat(buf, def) < 0)
+    if (virDomainNumaDefCPUFormat(buf, numa) < 0)
         return -1;
 
     virBufferAdjustIndent(buf, -2);

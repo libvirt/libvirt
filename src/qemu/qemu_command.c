@@ -4558,7 +4558,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     virDomainHugePagePtr hugepage = NULL;
     virDomainNumatuneMemMode mode;
     const long system_page_size = virGetSystemPageSizeKB();
-    virNumaMemAccess memAccess = virDomainNumaGetNodeMemoryAccessMode(def->cpu, guestNode);
+    virNumaMemAccess memAccess = virDomainNumaGetNodeMemoryAccessMode(def->numa, guestNode);
 
     size_t i;
     char *mem_path = NULL;
@@ -4747,7 +4747,7 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
     if (virAsprintf(&alias, "ram-node%zu", cell) < 0)
         goto cleanup;
 
-    if ((rc = qemuBuildMemoryBackendStr(virDomainNumaGetNodeMemorySize(def->cpu, cell),
+    if ((rc = qemuBuildMemoryBackendStr(virDomainNumaGetNodeMemorySize(def->numa, cell),
                                         0, cell,
                                         NULL, auto_nodeset,
                                         def, qemuCaps, cfg,
@@ -7123,7 +7123,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     bool needBackend = false;
     int rc;
     int ret = -1;
-    size_t ncells = virDomainNumaGetNodeCount(def->cpu);
+    size_t ncells = virDomainNumaGetNodeCount(def->numa);
     const long system_page_size = virGetSystemPageSizeKB();
 
     if (virDomainNumatuneHasPerNodeBinding(def->numa) &&
@@ -7177,8 +7177,8 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     /* using of -numa memdev= cannot be combined with -numa mem=, thus we
      * need to check which approach to use */
     for (i = 0; i < ncells; i++) {
-        unsigned long long cellmem = virDomainNumaGetNodeMemorySize(def->cpu, i);
-        virDomainNumaSetNodeMemorySize(def->cpu, i, VIR_ROUND_UP(cellmem, 1024));
+        unsigned long long cellmem = virDomainNumaGetNodeMemorySize(def->numa, i);
+        virDomainNumaSetNodeMemorySize(def->numa, i, VIR_ROUND_UP(cellmem, 1024));
 
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
@@ -7190,7 +7190,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
             if (rc == 0)
                 needBackend = true;
         } else {
-            if (virDomainNumaGetNodeMemoryAccessMode(def->cpu, i)) {
+            if (virDomainNumaGetNodeMemoryAccessMode(def->numa, i)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Shared memory mapping is not supported "
                                  "with this QEMU"));
@@ -7201,7 +7201,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
 
     for (i = 0; i < ncells; i++) {
         VIR_FREE(cpumask);
-        if (!(cpumask = virBitmapFormat(virDomainNumaGetNodeCpumask(def->cpu, i))))
+        if (!(cpumask = virBitmapFormat(virDomainNumaGetNodeCpumask(def->numa, i))))
             goto cleanup;
 
         if (strchr(cpumask, ',') &&
@@ -7229,7 +7229,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
             virBufferAsprintf(&buf, ",memdev=ram-node%zu", i);
         else
             virBufferAsprintf(&buf, ",mem=%llu",
-                              virDomainNumaGetNodeMemorySize(def->cpu, i) / 1024);
+                              virDomainNumaGetNodeMemorySize(def->numa, i) / 1024);
 
         virCommandAddArgBuffer(cmd, &buf);
     }
@@ -8321,7 +8321,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     virCommandAddArg(cmd, "-m");
     def->mem.max_balloon = VIR_DIV_UP(def->mem.max_balloon, 1024) * 1024;
     virCommandAddArgFormat(cmd, "%llu", def->mem.max_balloon / 1024);
-    if (def->mem.nhugepages && !virDomainNumaGetNodeCount(def->cpu)) {
+    if (def->mem.nhugepages && !virDomainNumaGetNodeCount(def->numa)) {
         const long system_page_size = virGetSystemPageSizeKB();
         char *mem_path = NULL;
 
@@ -8401,7 +8401,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (virDomainNumaGetNodeCount(def->cpu))
+    if (virDomainNumaGetNodeCount(def->numa))
         if (qemuBuildNumaArgStr(cfg, def, cmd, qemuCaps, nodeset) < 0)
             goto error;
 

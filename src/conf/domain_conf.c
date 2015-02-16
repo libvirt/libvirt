@@ -13517,11 +13517,10 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     }
 
-    if (virDomainNumaDefCPUParseXML(def->cpu, ctxt) < 0)
+    if (virDomainNumaDefCPUParseXML(def->numa, ctxt) < 0)
         goto error;
 
-    if (def->cpu &&
-        virDomainNumaGetCPUCountTotal(def->cpu) > def->maxvcpus) {
+    if (virDomainNumaGetCPUCountTotal(def->numa) > def->maxvcpus) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Number of CPUs in <numa> exceeds the"
                          " <vcpu> count"));
@@ -13531,7 +13530,6 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (virDomainNumatuneParseXML(def->numa,
                                   def->placement_mode ==
                                   VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
-                                  virDomainNumaGetNodeCount(def->cpu),
                                   ctxt) < 0)
         goto error;
 
@@ -20204,7 +20202,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAddLit(buf, "</features>\n");
     }
 
-    if (virCPUDefFormatBufFull(buf, def->cpu,
+    if (virCPUDefFormatBufFull(buf, def->cpu, def->numa,
                                !!(flags & VIR_DOMAIN_DEF_FORMAT_UPDATE_CPU)) < 0)
         goto error;
 

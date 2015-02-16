@@ -472,7 +472,7 @@ cpuBaselineXML(const char **xmlCPUs,
     if (!(cpu = cpuBaseline(cpus, ncpus, models, nmodels, flags)))
         goto error;
 
-    cpustr = virCPUDefFormat(cpu, false);
+    cpustr = virCPUDefFormat(cpu, NULL, false);
 
  cleanup:
     if (cpus) {

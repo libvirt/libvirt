@@ -29,7 +29,6 @@
 # include "virutil.h"
 # include "virbitmap.h"
 # include "virbuffer.h"
-# include "cpu_conf.h"
 
 
 typedef struct _virDomainNuma virDomainNuma;
@@ -64,9 +63,8 @@ void virDomainNumaFree(virDomainNumaPtr numa);
  */
 int virDomainNumatuneParseXML(virDomainNumaPtr numa,
                               bool placement_static,
-                              size_t ncells,
                               xmlXPathContextPtr ctxt)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 
 int virDomainNumatuneFormatXML(virBufferPtr buf, virDomainNumaPtr numatune)
     ATTRIBUTE_NONNULL(1);
@@ -86,15 +84,15 @@ int virDomainNumatuneMaybeGetNodeset(virDomainNumaPtr numatune,
                                      virBitmapPtr *retNodeset,
                                      int cellid);
 
-size_t virDomainNumaGetNodeCount(virCPUDefPtr numa)
+size_t virDomainNumaGetNodeCount(virDomainNumaPtr numa)
     ATTRIBUTE_NONNULL(1);
-virBitmapPtr virDomainNumaGetNodeCpumask(virCPUDefPtr numa,
+virBitmapPtr virDomainNumaGetNodeCpumask(virDomainNumaPtr numa,
                                          size_t node)
     ATTRIBUTE_NONNULL(1);
-virNumaMemAccess virDomainNumaGetNodeMemoryAccessMode(virCPUDefPtr numa,
+virNumaMemAccess virDomainNumaGetNodeMemoryAccessMode(virDomainNumaPtr numa,
                                                       size_t node)
     ATTRIBUTE_NONNULL(1);
-unsigned long long virDomainNumaGetNodeMemorySize(virCPUDefPtr numa,
+unsigned long long virDomainNumaGetNodeMemorySize(virDomainNumaPtr numa,
                                                   size_t node)
     ATTRIBUTE_NONNULL(1);
 
@@ -120,7 +118,7 @@ int virDomainNumatuneSet(virDomainNumaPtr numa,
                          virBitmapPtr nodeset)
     ATTRIBUTE_NONNULL(1);
 
-void virDomainNumaSetNodeMemorySize(virCPUDefPtr numa,
+void virDomainNumaSetNodeMemorySize(virDomainNumaPtr numa,
                                     size_t node,
                                     unsigned long long size)
     ATTRIBUTE_NONNULL(1);
@@ -143,10 +141,10 @@ bool virDomainNumatuneNodesetIsAvailable(virDomainNumaPtr numatune,
 bool virDomainNumatuneNodeSpecified(virDomainNumaPtr numatune,
                                     int cellid);
 
-int virDomainNumaDefCPUParseXML(virCPUDefPtr def, xmlXPathContextPtr ctxt);
-int virDomainNumaDefCPUFormat(virBufferPtr buf, virCPUDefPtr def);
+int virDomainNumaDefCPUParseXML(virDomainNumaPtr def, xmlXPathContextPtr ctxt);
+int virDomainNumaDefCPUFormat(virBufferPtr buf, virDomainNumaPtr def);
 
-unsigned int virDomainNumaGetCPUCountTotal(virCPUDefPtr numa);
+unsigned int virDomainNumaGetCPUCountTotal(virDomainNumaPtr numa);
 
 
 #endif /* __NUMA_CONF_H__ */
