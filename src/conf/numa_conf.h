@@ -129,6 +129,9 @@ void virDomainNumaSetNodeMemorySize(virDomainNumaPtr numa,
 bool virDomainNumaEquals(virDomainNumaPtr n1,
                          virDomainNumaPtr n2);
 
+bool virDomainNumaCheckABIStability(virDomainNumaPtr src,
+                                    virDomainNumaPtr tgt);
+
 bool virDomainNumatuneHasPlacementAuto(virDomainNumaPtr numatune);
 
 bool virDomainNumatuneHasPerNodeBinding(virDomainNumaPtr numatune);

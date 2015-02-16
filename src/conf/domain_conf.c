@@ -15970,6 +15970,9 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         goto error;
     }
 
+    if (!virDomainNumaCheckABIStability(src->numa, dst->numa))
+        goto error;
+
     if (src->vcpus != dst->vcpus) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain vCPU count %d does not match source %d"),

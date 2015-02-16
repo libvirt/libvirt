@@ -814,6 +814,45 @@ virDomainNumaNew(void)
 }
 
 
+bool
+virDomainNumaCheckABIStability(virDomainNumaPtr src,
+                               virDomainNumaPtr tgt)
+{
+    size_t i;
+
+    if (virDomainNumaGetNodeCount(src) != virDomainNumaGetNodeCount(tgt)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target NUMA node count '%zu' doesn't match "
+                         "source '%zu'"),
+                       virDomainNumaGetNodeCount(tgt),
+                       virDomainNumaGetNodeCount(src));
+        return false;
+    }
+
+    for (i = 0; i < virDomainNumaGetNodeCount(src); i++) {
+        if (virDomainNumaGetNodeMemorySize(src, i) !=
+            virDomainNumaGetNodeMemorySize(tgt, i)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Size of target NUMA node %zu (%llu) doesn't "
+                             "match source (%llu)"), i,
+                           virDomainNumaGetNodeMemorySize(tgt, i),
+                           virDomainNumaGetNodeMemorySize(src, i));
+            return false;
+        }
+
+        if (!virBitmapEqual(virDomainNumaGetNodeCpumask(src, i),
+                            virDomainNumaGetNodeCpumask(tgt, i))) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Processor mask of target NUMA node %zu doesn't "
+                             "match source"), i);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 size_t
 virDomainNumaGetNodeCount(virDomainNumaPtr numa)
 {
