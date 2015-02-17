@@ -126,6 +126,8 @@ mymain(void)
     DO_TEST("pool-sheepdog", "vol-sheepdog");
     DO_TEST("pool-gluster", "vol-gluster-dir");
     DO_TEST("pool-gluster", "vol-gluster-dir-neg-uid");
+    DO_TEST_FULL("pool-dir", "vol-qcow2-nocapacity",
+                 VIR_VOL_XML_PARSE_NO_CAPACITY);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

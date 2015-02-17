@@ -1810,7 +1810,8 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
         goto cleanup;
     }
 
-    newvol = virStorageVolDefParseString(pool->def, xmldesc, 0);
+    newvol = virStorageVolDefParseString(pool->def, xmldesc,
+                                         VIR_VOL_XML_PARSE_NO_CAPACITY);
     if (newvol == NULL)
         goto cleanup;
 
@@ -1824,7 +1825,8 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
         goto cleanup;
     }
 
-    /* Is there ever a valid case for this? */
+    /* Use the original volume's capacity in case the new capacity
+     * is less than that, or it was omitted */
     if (newvol->target.capacity < origvol->target.capacity)
         newvol->target.capacity = origvol->target.capacity;
 

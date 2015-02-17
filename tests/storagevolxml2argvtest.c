@@ -49,6 +49,7 @@ testCompareXMLToArgvFiles(bool shouldFail,
     char *expectedCmdline = NULL;
     char *actualCmdline = NULL;
     int ret = -1;
+    unsigned long parse_flags = 0;
 
     int len;
 
@@ -84,7 +85,10 @@ testCompareXMLToArgvFiles(bool shouldFail,
             goto cleanup;
     }
 
-    if (!(vol = virStorageVolDefParseString(pool, volXmlData, 0)))
+    if (inputvolxml)
+        parse_flags |= VIR_VOL_XML_PARSE_NO_CAPACITY;
+
+    if (!(vol = virStorageVolDefParseString(pool, volXmlData, parse_flags)))
         goto cleanup;
 
     if (inputvolxml &&
@@ -305,6 +309,9 @@ mymain(void)
     DO_TEST("pool-dir", "vol-qcow2-nocow",
             NULL, NULL,
             "qcow2-nocow-compat", 0, FMT_COMPAT);
+    DO_TEST("pool-dir", "vol-qcow2-nocapacity",
+            "pool-dir", "vol-file",
+            "qcow2-nocapacity-convert-prealloc", flags, FMT_OPTIONS);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
