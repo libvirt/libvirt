@@ -16798,6 +16798,70 @@ virDomainEmulatorPinDel(virDomainDefPtr def)
     return 0;
 }
 
+int
+virDomainIOThreadsPinAdd(virDomainVcpuPinDefPtr **iothreadspin_list,
+                         size_t *niothreadspin,
+                         unsigned char *cpumap,
+                         int maplen,
+                         unsigned int iothread_id)
+{
+    /* IOThreads share the virDomainVcpuPinDefPtr */
+    virDomainVcpuPinDefPtr iothreadpin = NULL;
+
+    if (!iothreadspin_list)
+        return -1;
+
+    iothreadpin = virDomainVcpuPinFindByVcpu(*iothreadspin_list,
+                                             *niothreadspin,
+                                             iothread_id);
+    if (iothreadpin) {
+        iothreadpin->vcpuid = iothread_id;
+        virBitmapFree(iothreadpin->cpumask);
+        iothreadpin->cpumask = virBitmapNewData(cpumap, maplen);
+        if (!iothreadpin->cpumask)
+            return -1;
+
+        return 0;
+    }
+
+    /* No existing iothreadpin matches iothread_id, adding a new one */
+
+    if (VIR_ALLOC(iothreadpin) < 0)
+        goto error;
+
+    iothreadpin->vcpuid = iothread_id;
+    iothreadpin->cpumask = virBitmapNewData(cpumap, maplen);
+    if (!iothreadpin->cpumask)
+        goto error;
+
+    if (VIR_APPEND_ELEMENT(*iothreadspin_list, *niothreadspin, iothreadpin) < 0)
+        goto error;
+
+    return 0;
+
+ error:
+    virDomainVcpuPinDefFree(iothreadpin);
+    return -1;
+}
+
+void
+virDomainIOThreadsPinDel(virDomainDefPtr def,
+                         unsigned int iothread_id)
+{
+    size_t i;
+    /* IOThreads share the virDomainVcpuPinDefPtr */
+    virDomainVcpuPinDefPtr *iothreadspin_list = def->cputune.iothreadspin;
+
+    for (i = 0; i < def->cputune.niothreadspin; i++) {
+        if (iothreadspin_list[i]->vcpuid == iothread_id) {
+            virBitmapFree(iothreadspin_list[i]->cpumask);
+            VIR_DELETE_ELEMENT(def->cputune.iothreadspin, i,
+                               def->cputune.niothreadspin);
+            return;
+        }
+    }
+}
+
 static int
 virDomainEventActionDefFormat(virBufferPtr buf,
                               int type,

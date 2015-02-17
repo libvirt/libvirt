@@ -2563,6 +2563,16 @@ int virDomainEmulatorPinAdd(virDomainDefPtr def,
 
 int virDomainEmulatorPinDel(virDomainDefPtr def);
 
+/* IOThreads share the virDomainVcpuPinDefPtr */
+int virDomainIOThreadsPinAdd(virDomainVcpuPinDefPtr **iothreadspin_list,
+                             size_t *niothreads,
+                             unsigned char *cpumap,
+                             int maplen,
+                             unsigned int iothread_id);
+
+void virDomainIOThreadsPinDel(virDomainDefPtr def,
+                              unsigned int iothread_id);
+
 void virDomainRNGDefFree(virDomainRNGDefPtr def);
 
 bool virDomainDiskDefDstDuplicates(virDomainDefPtr def);
