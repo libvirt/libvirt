@@ -345,6 +345,10 @@ virStoragePoolDefPtr virStoragePoolDefParseNode(xmlDocPtr xml,
                                                 xmlNodePtr root);
 char *virStoragePoolDefFormat(virStoragePoolDefPtr def);
 
+typedef enum {
+    /* do not require volume capacity at all */
+    VIR_VOL_XML_PARSE_NO_CAPACITY  = 1 << 0,
+} virStorageVolDefParseFlags;
 virStorageVolDefPtr
 virStorageVolDefParseString(virStoragePoolDefPtr pool,
                             const char *xml,
