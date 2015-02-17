@@ -2308,6 +2308,16 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
         if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
             /* Help clang 2.8 decipher the logic flow.  */
             sa_assert(persistentDef);
+
+            /* resizing memory with NUMA nodes specified doesn't work as there
+             * is no way to change the individual node sizes with this API */
+            if (virDomainNumaGetNodeCount(persistentDef->numa) > 0) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("maximum memory size of a domain with NUMA "
+                                 "nodes cannot be modified with this API"));
+                goto endjob;
+            }
+
             persistentDef->mem.max_balloon = newmem;
             if (persistentDef->mem.cur_balloon > newmem)
                 persistentDef->mem.cur_balloon = newmem;

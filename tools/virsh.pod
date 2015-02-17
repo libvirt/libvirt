@@ -1938,7 +1938,10 @@ exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
 
 Some hypervisors such as QEMU/KVM don't support live changes (especially
-increasing) of the maximum memory limit.
+increasing) of the maximum memory limit.  Even persistent configuration changes
+might not be performed with some hypervisors/configuration (e.g. on NUMA enabled
+domains on QEMU).  For complex configuration changes use command B<edit>
+instead).
 
 I<size> is a scaled integer (see B<NOTES> above); it defaults to kibibytes
 (blocks of 1024 bytes) unless you provide a suffix (and the older option
