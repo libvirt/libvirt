@@ -348,6 +348,8 @@ char *virStoragePoolDefFormat(virStoragePoolDefPtr def);
 typedef enum {
     /* do not require volume capacity at all */
     VIR_VOL_XML_PARSE_NO_CAPACITY  = 1 << 0,
+    /* do not require volume capacity if the volume has a backing store */
+    VIR_VOL_XML_PARSE_OPT_CAPACITY = 1 << 1,
 } virStorageVolDefParseFlags;
 virStorageVolDefPtr
 virStorageVolDefParseString(virStoragePoolDefPtr pool,

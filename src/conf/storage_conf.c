@@ -1260,7 +1260,8 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     size_t i;
     int n;
 
-    virCheckFlags(VIR_VOL_XML_PARSE_NO_CAPACITY, NULL);
+    virCheckFlags(VIR_VOL_XML_PARSE_NO_CAPACITY |
+                  VIR_VOL_XML_PARSE_OPT_CAPACITY, NULL);
 
     options = virStorageVolOptionsForPoolType(pool->type);
     if (options == NULL)
@@ -1325,7 +1326,8 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     if (capacity) {
         if (virStorageSize(unit, capacity, &ret->target.capacity) < 0)
             goto error;
-    } else if (!(flags & VIR_VOL_XML_PARSE_NO_CAPACITY)) {
+    } else if (!(flags & VIR_VOL_XML_PARSE_NO_CAPACITY) &&
+               !((flags & VIR_VOL_XML_PARSE_OPT_CAPACITY) && ret->target.backingStore)) {
         virReportError(VIR_ERR_XML_ERROR, "%s", _("missing capacity element"));
         goto error;
     }
