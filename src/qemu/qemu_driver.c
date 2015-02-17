@@ -9495,7 +9495,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
         flags & VIR_DOMAIN_AFFECT_LIVE) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("NUMA tuning is not available in session mode"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
