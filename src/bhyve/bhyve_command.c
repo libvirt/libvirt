@@ -237,7 +237,7 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
     /* Memory */
     virCommandAddArg(cmd, "-m");
     virCommandAddArgFormat(cmd, "%llu",
-                           VIR_DIV_UP(def->mem.max_balloon, 1024));
+                           VIR_DIV_UP(virDomainDefGetMemoryInitial(def), 1024));
 
     /* Options */
     if (def->features[VIR_DOMAIN_FEATURE_ACPI] == VIR_TRISTATE_SWITCH_ON)
@@ -322,7 +322,7 @@ virBhyveProcessBuildBhyveloadCmd(virDomainDefPtr def, virDomainDiskDefPtr disk)
         /* Memory (MB) */
         virCommandAddArg(cmd, "-m");
         virCommandAddArgFormat(cmd, "%llu",
-                               VIR_DIV_UP(def->mem.max_balloon, 1024));
+                               VIR_DIV_UP(virDomainDefGetMemoryInitial(def), 1024));
 
         /* Image path */
         virCommandAddArg(cmd, "-d");
@@ -477,7 +477,7 @@ virBhyveProcessBuildGrubbhyveCmd(virDomainDefPtr def,
     /* Memory in MB */
     virCommandAddArg(cmd, "--memory");
     virCommandAddArgFormat(cmd, "%llu",
-                           VIR_DIV_UP(def->mem.max_balloon, 1024));
+                           VIR_DIV_UP(virDomainDefGetMemoryInitial(def), 1024));
 
     if ((bhyveDriverGetGrubCaps(conn) & BHYVE_GRUB_CAP_CONSDEV) != 0 &&
         def->nserials > 0) {

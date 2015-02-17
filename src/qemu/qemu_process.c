@@ -4568,7 +4568,7 @@ int qemuProcessStart(virConnectPtr conn,
      */
     if (virDomainDefNeedsPlacementAdvice(vm->def)) {
         nodeset = virNumaGetAutoPlacementAdvice(vm->def->vcpus,
-                                                vm->def->mem.max_balloon);
+                                                virDomainDefGetMemoryActual(vm->def));
         if (!nodeset)
             goto cleanup;
 

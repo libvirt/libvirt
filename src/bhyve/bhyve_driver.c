@@ -303,7 +303,7 @@ bhyveDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     }
 
     info->state = virDomainObjGetState(vm, NULL);
-    info->maxMem = vm->def->mem.max_balloon;
+    info->maxMem = virDomainDefGetMemoryActual(vm->def);
     info->nrVirtCpu = vm->def->vcpus;
     ret = 0;
 

@@ -1075,7 +1075,7 @@ libxlDomainGetMaxMemory(virDomainPtr dom)
     if (virDomainGetMaxMemoryEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    ret = vm->def->mem.max_balloon;
+    ret = virDomainDefGetMemoryActual(vm->def);
 
  cleanup:
     if (vm)
@@ -1157,7 +1157,7 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
         if (flags & VIR_DOMAIN_MEM_CONFIG) {
             /* Help clang 2.8 decipher the logic flow.  */
             sa_assert(persistentDef);
-            persistentDef->mem.max_balloon = newmem;
+            virDomainDefSetMemoryInitial(persistentDef, newmem);
             if (persistentDef->mem.cur_balloon > newmem)
                 persistentDef->mem.cur_balloon = newmem;
             ret = virDomainSaveConfig(cfg->configDir, persistentDef);
@@ -1167,7 +1167,7 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     } else {
         /* resize the current memory */
 
-        if (newmem > vm->def->mem.max_balloon) {
+        if (newmem > virDomainDefGetMemoryActual(vm->def)) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("cannot set memory higher than max memory"));
             goto endjob;
@@ -1241,7 +1241,7 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
     if (!virDomainObjIsActive(vm)) {
         info->cpuTime = 0;
         info->memory = vm->def->mem.cur_balloon;
-        info->maxMem = vm->def->mem.max_balloon;
+        info->maxMem = virDomainDefGetMemoryActual(vm->def);
     } else {
         if (libxl_domain_info(priv->ctx, &d_info, vm->def->id) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

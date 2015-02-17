@@ -617,7 +617,7 @@ static int lxcDomainGetInfo(virDomainPtr dom,
         }
     }
 
-    info->maxMem = vm->def->mem.max_balloon;
+    info->maxMem = virDomainDefGetMemoryActual(vm->def);
     info->nrVirtCpu = vm->def->vcpus;
     ret = 0;
 
@@ -686,7 +686,7 @@ lxcDomainGetMaxMemory(virDomainPtr dom)
     if (virDomainGetMaxMemoryEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    ret = vm->def->mem.max_balloon;
+    ret = virDomainDefGetMemoryActual(vm->def);
 
  cleanup:
     if (vm)
@@ -735,7 +735,7 @@ static int lxcDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
         }
 
         if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-            persistentDef->mem.max_balloon = newmem;
+            virDomainDefSetMemoryInitial(persistentDef, newmem);
             if (persistentDef->mem.cur_balloon > newmem)
                 persistentDef->mem.cur_balloon = newmem;
             if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
@@ -745,10 +745,10 @@ static int lxcDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
         unsigned long oldmax = 0;
 
         if (flags & VIR_DOMAIN_AFFECT_LIVE)
-            oldmax = vm->def->mem.max_balloon;
+            oldmax = virDomainDefGetMemoryActual(vm->def);
         if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-            if (!oldmax || oldmax > persistentDef->mem.max_balloon)
-                oldmax = persistentDef->mem.max_balloon;
+            if (!oldmax || oldmax > virDomainDefGetMemoryActual(persistentDef))
+                oldmax = virDomainDefGetMemoryActual(persistentDef);
         }
 
         if (newmem > oldmax) {

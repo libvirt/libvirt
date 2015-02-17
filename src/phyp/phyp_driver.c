@@ -3252,6 +3252,7 @@ phypDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     LIBSSH2_SESSION *session = phyp_driver->session;
     virDomainDef def;
     char *managed_system = phyp_driver->managed_system;
+    unsigned long long memory;
 
     /* Flags checked by virDomainDefFormat */
 
@@ -3273,11 +3274,12 @@ phypDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         goto err;
     }
 
-    if ((def.mem.max_balloon =
-         phypGetLparMem(dom->conn, managed_system, dom->id, 0)) == 0) {
+    if ((memory = phypGetLparMem(dom->conn, managed_system, dom->id, 0)) == 0) {
         VIR_ERROR(_("Unable to determine domain's max memory."));
         goto err;
     }
+
+    virDomainDefSetMemoryInitial(&def, memory);
 
     if ((def.mem.cur_balloon =
          phypGetLparMem(dom->conn, managed_system, dom->id, 1)) == 0) {
@@ -3491,7 +3493,7 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
         goto cleanup;
     }
 
-    if (!def->mem.max_balloon) {
+    if (!virDomainDefGetMemoryInitial(def)) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Field <memory> on the domain XML file is missing or "
                          "has invalid value"));
@@ -3517,7 +3519,8 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
     virBufferAsprintf(&buf, " -r lpar -p %s -i min_mem=%lld,desired_mem=%lld,"
                       "max_mem=%lld,desired_procs=%d,virtual_scsi_adapters=%s",
                       def->name, def->mem.cur_balloon,
-                      def->mem.cur_balloon, def->mem.max_balloon,
+                      def->mem.cur_balloon,
+                      virDomainDefGetMemoryInitial(def),
                       (int) def->vcpus, virDomainDiskGetSource(def->disks[0]));
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
 

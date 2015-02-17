@@ -146,7 +146,7 @@ static int virLXCCgroupSetupMemTune(virDomainDefPtr def,
 {
     int ret = -1;
 
-    if (virCgroupSetMemory(cgroup, def->mem.max_balloon) < 0)
+    if (virCgroupSetMemory(cgroup, virDomainDefGetMemoryInitial(def)) < 0)
         goto cleanup;
 
     if (virMemoryLimitIsSet(def->mem.hard_limit))

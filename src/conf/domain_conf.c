@@ -3208,24 +3208,26 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
         return -1;
     }
 
-    if (def->mem.cur_balloon > def->mem.max_balloon) {
+    if (def->mem.cur_balloon > virDomainDefGetMemoryActual(def)) {
         /* Older libvirt could get into this situation due to
          * rounding; if the discrepancy is less than 4MiB, we silently
          * round down, otherwise we flag the issue.  */
         if (VIR_DIV_UP(def->mem.cur_balloon, 4096) >
-            VIR_DIV_UP(def->mem.max_balloon, 4096)) {
+            VIR_DIV_UP(virDomainDefGetMemoryActual(def), 4096)) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("current memory '%lluk' exceeds "
                              "maximum '%lluk'"),
-                           def->mem.cur_balloon, def->mem.max_balloon);
+                           def->mem.cur_balloon,
+                           virDomainDefGetMemoryActual(def));
             return -1;
         } else {
             VIR_DEBUG("Truncating current %lluk to maximum %lluk",
-                      def->mem.cur_balloon, def->mem.max_balloon);
-            def->mem.cur_balloon = def->mem.max_balloon;
+                      def->mem.cur_balloon,
+                      virDomainDefGetMemoryActual(def));
+            def->mem.cur_balloon = virDomainDefGetMemoryActual(def);
         }
     } else if (def->mem.cur_balloon == 0) {
-        def->mem.cur_balloon = def->mem.max_balloon;
+        def->mem.cur_balloon = virDomainDefGetMemoryActual(def);
     }
 
     /*
@@ -6969,6 +6971,51 @@ virDomainParseMemoryLimit(const char *xpath,
         *mem = virMemoryLimitTruncate(VIR_DIV_UP(bytes, 1024));
 
     return 0;
+}
+
+
+/**
+ * virDomainDefGetMemoryInitial:
+ * @def: domain definition
+ *
+ * Returns the size of the initial amount of guest memory. The initial amount
+ * is the memory size is either the configured amount in the <memory> element
+ * or the sum of memory sizes of NUMA nodes in case NUMA is enabled in @def.
+ */
+unsigned long long
+virDomainDefGetMemoryInitial(virDomainDefPtr def)
+{
+    return def->mem.max_balloon;
+}
+
+
+/**
+ * virDomainDefSetMemoryInitial:
+ * @def: domain definition
+ * @size: size to set
+ *
+ * Sets the initial memory size in @def.
+ */
+void
+virDomainDefSetMemoryInitial(virDomainDefPtr def,
+                             unsigned long long size)
+{
+    def->mem.max_balloon = size;
+}
+
+
+/**
+ * virDomainDefGetMemoryActual:
+ * @def: domain definition
+ *
+ * Returns the current maximum memory size usable by the domain described by
+ * @def. This size is a sum of size returned by virDomainDefGetMemoryInitial
+ * and possible additional memory devices.
+ */
+unsigned long long
+virDomainDefGetMemoryActual(virDomainDefPtr def)
+{
+    return virDomainDefGetMemoryInitial(def);
 }
 
 
@@ -16108,10 +16155,11 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         goto error;
     }
 
-    if (src->mem.max_balloon != dst->mem.max_balloon) {
+    if (virDomainDefGetMemoryInitial(src) != virDomainDefGetMemoryInitial(dst)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain max memory %lld does not match source %lld"),
-                       dst->mem.max_balloon, src->mem.max_balloon);
+                       virDomainDefGetMemoryInitial(dst),
+                       virDomainDefGetMemoryInitial(src));
         goto error;
     }
     if (src->mem.cur_balloon != dst->mem.cur_balloon) {
@@ -19885,7 +19933,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, " dumpCore='%s'",
                           virTristateSwitchTypeToString(def->mem.dump_core));
     virBufferAsprintf(buf, " unit='KiB'>%llu</memory>\n",
-                      def->mem.max_balloon);
+                      virDomainDefGetMemoryActual(def));
 
     virBufferAsprintf(buf, "<currentMemory unit='KiB'>%llu</currentMemory>\n",
                       def->mem.cur_balloon);

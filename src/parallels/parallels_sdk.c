@@ -1211,9 +1211,9 @@ prlsdkLoadDomain(parallelsConnPtr privconn,
     /* get RAM parameters */
     pret = PrlVmCfg_GetRamSize(sdkdom, &ram);
     prlsdkCheckRetGoto(pret, error);
-    def->mem.max_balloon = ram << 10; /* RAM size obtained in Mbytes,
-                                         convert to Kbytes */
-    def->mem.cur_balloon = def->mem.max_balloon;
+    virDomainDefSetMemoryInitial(def, ram << 10); /* RAM size obtained in Mbytes,
+                                                     convert to Kbytes */
+    def->mem.cur_balloon = ram << 10;
 
     if (prlsdkConvertCpuInfo(sdkdom, def) < 0)
         goto error;
@@ -1767,14 +1767,14 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         return -1;
     }
 
-    if (def->mem.max_balloon != def->mem.cur_balloon) {
+    if (virDomainDefGetMemoryActual(def) != def->mem.cur_balloon) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                    _("changing balloon parameters is not supported "
                      "by parallels driver"));
        return -1;
     }
 
-    if (def->mem.max_balloon % (1 << 10) != 0) {
+    if (virDomainDefGetMemoryActual(def) % (1 << 10) != 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                    _("Memory size should be multiple of 1Mb."));
         return -1;
@@ -2873,7 +2873,7 @@ prlsdkDoApplyConfig(PRL_HANDLE sdkdom,
         prlsdkCheckRetGoto(pret, error);
     }
 
-    pret = PrlVmCfg_SetRamSize(sdkdom, def->mem.max_balloon >> 10);
+    pret = PrlVmCfg_SetRamSize(sdkdom, virDomainDefGetMemoryActual(def) >> 10);
     prlsdkCheckRetGoto(pret, error);
 
     pret = PrlVmCfg_SetCpuCount(sdkdom, def->vcpus);

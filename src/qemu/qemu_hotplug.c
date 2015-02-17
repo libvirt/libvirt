@@ -1250,9 +1250,11 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
          * Kibibytes, but virProcessSetMaxMemLock expects the value in
          * bytes.
          */
-        memKB = virMemoryLimitIsSet(vm->def->mem.hard_limit)
-            ? vm->def->mem.hard_limit
-            : vm->def->mem.max_balloon + (1024 * 1024);
+        if (virMemoryLimitIsSet(vm->def->mem.hard_limit))
+            memKB = vm->def->mem.hard_limit;
+        else
+            memKB = virDomainDefGetMemoryActual(vm->def) + (1024 * 1024);
+
         virProcessSetMaxMemLock(vm->pid, memKB * 1024);
         break;
 

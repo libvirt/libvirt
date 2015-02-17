@@ -2259,7 +2259,7 @@ qemuDomainGetMaxMemory(virDomainPtr dom)
     if (virDomainGetMaxMemoryEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    ret = vm->def->mem.max_balloon;
+    ret = virDomainDefGetMemoryActual(vm->def);
 
  cleanup:
     qemuDomObjEndAPI(&vm);
@@ -2321,7 +2321,8 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
                 goto endjob;
             }
 
-            persistentDef->mem.max_balloon = newmem;
+            virDomainDefSetMemoryInitial(persistentDef, newmem);
+
             if (persistentDef->mem.cur_balloon > newmem)
                 persistentDef->mem.cur_balloon = newmem;
             ret = virDomainSaveConfig(cfg->configDir, persistentDef);
@@ -2333,10 +2334,10 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
         unsigned long oldmax = 0;
 
         if (flags & VIR_DOMAIN_AFFECT_LIVE)
-            oldmax = vm->def->mem.max_balloon;
+            oldmax = virDomainDefGetMemoryActual(vm->def);
         if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-            if (!oldmax || oldmax > persistentDef->mem.max_balloon)
-                oldmax = persistentDef->mem.max_balloon;
+            if (!oldmax || oldmax > virDomainDefGetMemoryActual(persistentDef))
+                oldmax = virDomainDefGetMemoryActual(persistentDef);
         }
 
         if (newmem > oldmax) {
@@ -2598,14 +2599,14 @@ static int qemuDomainGetInfo(virDomainPtr dom,
         }
     }
 
-    info->maxMem = vm->def->mem.max_balloon;
+    info->maxMem = virDomainDefGetMemoryActual(vm->def);
 
     if (virDomainObjIsActive(vm)) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
 
         if ((vm->def->memballoon != NULL) &&
             (vm->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE)) {
-            info->memory = vm->def->mem.max_balloon;
+            info->memory = virDomainDefGetMemoryActual(vm->def);
         } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BALLOON_EVENT)) {
             info->memory = vm->def->mem.cur_balloon;
         } else if (qemuDomainJobAllowed(priv, QEMU_JOB_QUERY)) {
@@ -2631,7 +2632,7 @@ static int qemuDomainGetInfo(virDomainPtr dom,
                 info->memory = vm->def->mem.cur_balloon;
             } else if (err == 0) {
                 /* Balloon not supported, so maxmem is always the allocation */
-                info->memory = vm->def->mem.max_balloon;
+                info->memory = virDomainDefGetMemoryActual(vm->def);
             } else {
                 info->memory = balloon;
             }
@@ -18897,7 +18898,7 @@ qemuDomainGetStatsBalloon(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
     if (dom->def->memballoon &&
         dom->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
-        cur_balloon = dom->def->mem.max_balloon;
+        cur_balloon = virDomainDefGetMemoryActual(dom->def);
     } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BALLOON_EVENT)) {
         cur_balloon = dom->def->mem.cur_balloon;
     } else {
@@ -18915,7 +18916,7 @@ qemuDomainGetStatsBalloon(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                                 &record->nparams,
                                 maxparams,
                                 "balloon.maximum",
-                                dom->def->mem.max_balloon) < 0)
+                                virDomainDefGetMemoryActual(dom->def)) < 0)
         return -1;
 
     return 0;

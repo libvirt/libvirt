@@ -1126,7 +1126,7 @@ vmwareDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
 
     info->state = virDomainObjGetState(vm, NULL);
     info->cpuTime = 0;
-    info->maxMem = vm->def->mem.max_balloon;
+    info->maxMem = virDomainDefGetMemoryActual(vm->def);
     info->memory = vm->def->mem.cur_balloon;
     info->nrVirtCpu = vm->def->vcpus;
     ret = 0;

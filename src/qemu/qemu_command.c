@@ -8496,8 +8496,9 @@ qemuBuildCommandLine(virConnectPtr conn,
      * XML to reflect our rounding.
      */
     virCommandAddArg(cmd, "-m");
-    def->mem.max_balloon = VIR_DIV_UP(def->mem.max_balloon, 1024) * 1024;
-    virCommandAddArgFormat(cmd, "%llu", def->mem.max_balloon / 1024);
+    virDomainDefSetMemoryInitial(def, VIR_ROUND_UP(virDomainDefGetMemoryInitial(def), 1024));
+    virCommandAddArgFormat(cmd, "%llu", virDomainDefGetMemoryInitial(def)  / 1024);
+
     if (def->mem.nhugepages && !virDomainNumaGetNodeCount(def->numa)) {
         const long system_page_size = virGetSystemPageSizeKB();
         char *mem_path = NULL;
@@ -10480,8 +10481,11 @@ qemuBuildCommandLine(virConnectPtr conn,
          * space just to be safe (some finer tuning might be
          * nice, though).
          */
-        memKB = virMemoryLimitIsSet(def->mem.hard_limit) ?
-            def->mem.hard_limit : def->mem.max_balloon + 1024 * 1024;
+        if (virMemoryLimitIsSet(def->mem.hard_limit))
+            memKB = def->mem.hard_limit;
+        else
+            memKB = virDomainDefGetMemoryActual(def) + 1024 * 1024;
+
         virCommandSetMaxMemLock(cmd, memKB * 1024);
     }
 
@@ -12045,7 +12049,8 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
     }
 
     def->id = -1;
-    def->mem.cur_balloon = def->mem.max_balloon = 64 * 1024;
+    def->mem.cur_balloon = 64 * 1024;
+    virDomainDefSetMemoryInitial(def, def->mem.cur_balloon);
     def->maxvcpus = 1;
     def->vcpus = 1;
     def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
@@ -12253,7 +12258,8 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                                _("cannot parse memory level '%s'"), val);
                 goto error;
             }
-            def->mem.cur_balloon = def->mem.max_balloon = mem * 1024;
+            virDomainDefSetMemoryInitial(def, mem * 1024);
+            def->mem.cur_balloon = mem * 1024;
         } else if (STREQ(arg, "-smp")) {
             WANT_VALUE();
             if (qemuParseCommandLineSmp(def, val) < 0)

@@ -2194,6 +2194,10 @@ struct _virDomainDef {
     xmlNodePtr metadata;
 };
 
+unsigned long long virDomainDefGetMemoryInitial(virDomainDefPtr def);
+void virDomainDefSetMemoryInitial(virDomainDefPtr def, unsigned long long size);
+unsigned long long virDomainDefGetMemoryActual(virDomainDefPtr def);
+
 typedef enum {
     VIR_DOMAIN_TAINT_CUSTOM_ARGV,      /* Custom ARGV passthrough from XML */
     VIR_DOMAIN_TAINT_CUSTOM_MONITOR,   /* Custom monitor commands issued */

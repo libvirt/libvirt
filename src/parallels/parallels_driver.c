@@ -534,7 +534,7 @@ parallelsDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 
     info->state = virDomainObjGetState(privdom, NULL);
     info->memory = privdom->def->mem.cur_balloon;
-    info->maxMem = privdom->def->mem.max_balloon;
+    info->maxMem = virDomainDefGetMemoryActual(privdom->def);
     info->nrVirtCpu = privdom->def->vcpus;
     info->cpuTime = 0;
     ret = 0;

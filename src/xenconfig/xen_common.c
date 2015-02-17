@@ -305,16 +305,18 @@ xenConfigSetString(virConfPtr conf, const char *setting, const char *str)
 static int
 xenParseMem(virConfPtr conf, virDomainDefPtr def)
 {
+    unsigned long long memory;
+
     if (xenConfigGetULongLong(conf, "memory", &def->mem.cur_balloon,
                                 MIN_XEN_GUEST_SIZE * 2) < 0)
         return -1;
 
-    if (xenConfigGetULongLong(conf, "maxmem", &def->mem.max_balloon,
+    if (xenConfigGetULongLong(conf, "maxmem", &memory,
                                 def->mem.cur_balloon) < 0)
         return -1;
 
     def->mem.cur_balloon *= 1024;
-    def->mem.max_balloon *= 1024;
+    virDomainDefSetMemoryInitial(def, memory * 1024);
 
     return 0;
 }
@@ -1383,7 +1385,7 @@ static int
 xenFormatMem(virConfPtr conf, virDomainDefPtr def)
 {
     if (xenConfigSetInt(conf, "maxmem",
-                        VIR_DIV_UP(def->mem.max_balloon, 1024)) < 0)
+                        VIR_DIV_UP(virDomainDefGetMemoryActual(def), 1024)) < 0)
         return -1;
 
     if (xenConfigSetInt(conf, "memory",

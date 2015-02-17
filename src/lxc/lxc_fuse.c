@@ -166,12 +166,12 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
 
             if (STREQ(line, "MemTotal") &&
                 (virMemoryLimitIsSet(def->mem.hard_limit) ||
-                 def->mem.max_balloon)) {
+                 virDomainDefGetMemoryActual(def))) {
                 virBufferAsprintf(new_meminfo, "MemTotal:       %8llu kB\n",
                                   meminfo.memtotal);
             } else if (STREQ(line, "MemFree") &&
                        (virMemoryLimitIsSet(def->mem.hard_limit) ||
-                        def->mem.max_balloon)) {
+                        virDomainDefGetMemoryActual(def))) {
                 virBufferAsprintf(new_meminfo, "MemFree:        %8llu kB\n",
                                   (meminfo.memtotal - meminfo.memusage));
             } else if (STREQ(line, "Buffers")) {
