@@ -789,7 +789,7 @@ qemuInitCgroup(virQEMUDriverPtr driver,
 static void
 qemuRestoreCgroupState(virDomainObjPtr vm)
 {
-    char *mem_mask;
+    char *mem_mask = NULL;
     int empty = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virBitmapPtr all_nodes;
