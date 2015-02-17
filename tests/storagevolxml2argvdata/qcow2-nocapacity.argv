@@ -1,0 +1,5 @@
+qemu-img create \
+-f qcow2 \
+-b /dev/null \
+-o backing_fmt=raw,encryption=on \
+/var/lib/libvirt/images/OtherDemo.img

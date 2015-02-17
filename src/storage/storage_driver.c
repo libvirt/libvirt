@@ -1649,9 +1649,17 @@ storageVolCreateXML(virStoragePoolPtr obj,
     if ((backend = virStorageBackendForType(pool->def->type)) == NULL)
         goto cleanup;
 
-    voldef = virStorageVolDefParseString(pool->def, xmldesc, 0);
+    voldef = virStorageVolDefParseString(pool->def, xmldesc,
+                                         VIR_VOL_XML_PARSE_OPT_CAPACITY);
     if (voldef == NULL)
         goto cleanup;
+
+    if (!voldef->target.capacity && !backend->buildVol) {
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       "%s", _("volume capacity required for this "
+                               "storage pool"));
+        goto cleanup;
+    }
 
     if (virStorageVolCreateXMLEnsureACL(obj->conn, pool->def, voldef) < 0)
         goto cleanup;
@@ -1724,6 +1732,10 @@ storageVolCreateXML(virStoragePoolPtr obj,
         }
 
     }
+
+    if (backend->refreshVol &&
+        backend->refreshVol(obj->conn, pool, voldef) < 0)
+        goto cleanup;
 
     /* Update pool metadata */
     pool->def->allocation += buildvoldef->target.allocation;

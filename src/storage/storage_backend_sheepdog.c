@@ -266,6 +266,12 @@ virStorageBackendSheepdogBuildVol(virConnectPtr conn,
 
     virCheckFlags(0, -1);
 
+    if (!vol->target.capacity) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("volume capacity required for this pool"));
+        goto cleanup;
+    }
+
     virCommandPtr cmd = virCommandNewArgList(COLLIE, "vdi", "create", vol->name, NULL);
     virCommandAddArgFormat(cmd, "%llu", vol->target.capacity);
     virStorageBackendSheepdogAddHostArg(cmd, pool);

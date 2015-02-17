@@ -487,6 +487,12 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
+    if (vol->target.backingStore) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("backing storage not supported for raw volumes"));
+        goto cleanup;
+    }
+
     if (flags & VIR_STORAGE_VOL_CREATE_REFLINK)
         reflink_copy = true;
 
@@ -1055,7 +1061,7 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
     if (convert)
         virCommandAddArg(cmd, inputPath);
     virCommandAddArg(cmd, vol->target.path);
-    if (!convert)
+    if (!convert && size_arg)
         virCommandAddArgFormat(cmd, "%lluK", size_arg);
 
     return cmd;

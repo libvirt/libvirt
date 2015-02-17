@@ -509,6 +509,12 @@ virStorageBackendRBDBuildVol(virConnectPtr conn,
 
     virCheckFlags(0, -1);
 
+    if (!vol->target.capacity) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("volume capacity required for this storage pool"));
+        goto cleanup;
+    }
+
     if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, &pool->def->source) < 0)
         goto cleanup;
 
