@@ -1865,8 +1865,8 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         return -1;
     }
 
-    if (!(vmType == PVT_VM && STREQ(def->os.type, "hvm")) &&
-        !(vmType == PVT_CT && STREQ(def->os.type, "exe"))) {
+    if (!(vmType == PVT_VM && !IS_CT(def)) &&
+        !(vmType == PVT_CT && IS_CT(def))) {
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing OS type is not supported "
@@ -1874,7 +1874,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         return -1;
     }
 
-    if (STREQ(def->os.type, "hvm")) {
+    if (!IS_CT(def)) {
         if (def->os.nBootDevs != 1 ||
             def->os.bootDevs[0] != VIR_DOMAIN_BOOT_DISK ||
             def->os.init != NULL || def->os.initargv != NULL) {
@@ -2072,10 +2072,9 @@ static int prlsdkCheckGraphicsUnsupportedParams(virDomainDefPtr def)
 
 static int prlsdkCheckVideoUnsupportedParams(virDomainDefPtr def)
 {
-    bool isCt = STREQ(def->os.type, "exe");
     virDomainVideoDefPtr v;
 
-    if (isCt) {
+    if (IS_CT(def)) {
         if (def->nvideos == 0) {
             return 0;
         } else {
