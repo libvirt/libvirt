@@ -2804,23 +2804,23 @@ prlsdkDoApplyConfig(PRL_HANDLE sdkdom,
         goto error;
 
     for (i = 0; i < def->nserials; i++) {
-       if (prlsdkAddSerial(sdkdom, def->serials[i]) < 0)
-           goto error;
+        if (prlsdkAddSerial(sdkdom, def->serials[i]) < 0)
+            goto error;
     }
 
     for (i = 0; i < def->nnets; i++) {
-       if (prlsdkAddNet(sdkdom, def->nets[i]) < 0)
-           goto error;
+        if (prlsdkAddNet(sdkdom, def->nets[i]) < 0)
+            goto error;
     }
 
     for (i = 0; i < def->ndisks; i++) {
-       if (prlsdkAddDisk(sdkdom, def->disks[i]) < 0)
-           goto error;
+        if (prlsdkAddDisk(sdkdom, def->disks[i]) < 0)
+            goto error;
     }
 
     for (i = 0; i < def->nfss; i++) {
-       if (prlsdkAddFS(sdkdom, def->fss[i]) < 0)
-           goto error;
+        if (prlsdkAddFS(sdkdom, def->fss[i]) < 0)
+            goto error;
     }
 
     return 0;
