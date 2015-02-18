@@ -200,6 +200,8 @@
             <p><span class="since">Since 1.0.3</span> it is possible to
             specify a public IPv4 address and port range to be used for
             the NAT by using the <code>&lt;nat&gt;</code> subelement.
+            Note that all addresses from the range are used, not just those
+            that are in use on the host.
             The address range is set with the <code>&lt;address&gt;</code>
             subelements and <code>start</code> and <code>stop</code>
             attributes:
